@@ -1,0 +1,21 @@
+@use '@smui-extra/badge/index' as badge;
+@use '@material/theme/index' as theme;
+ 
+@include badge.badge-color(
+  custom-green,
+  theme.$lime-500,
+  theme.accessible-ink-color(theme.$lime-500)
+);
+
+@include badge.badge-color(
+  custom-correct,
+  theme.$green-500,
+  theme.accessible-ink-color(theme.$lime-500)
+);
+
+@include badge.badge-color(
+  custom-incorrect,
+  theme.$red-400,
+  theme.accessible-ink-color(theme.$lime-500)
+);
+

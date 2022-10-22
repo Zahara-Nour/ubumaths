@@ -12,4 +12,4 @@
 @use './app';
 
 // Custom styles
-// @use './routes/automaths/_CustomColor.scss' as badge-custom-color;
+@use './_CustomColor.scss' as badge-custom-color;

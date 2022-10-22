@@ -17,11 +17,17 @@
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.25.0",
+		"@smui-extra/accordion": "^7.0.0-beta.0",
+		"@smui-extra/badge": "^7.0.0-beta.0",
 		"@smui/button": "^7.0.0-beta.0",
-		"@smui/common": "^7.0.0-beta.0",
 		"@smui/drawer": "^7.0.0-beta.0",
+		"@smui/fab": "^7.0.0-beta.0",
 		"@smui/icon-button": "^7.0.0-beta.0",
 		"@smui/list": "^7.0.0-beta.0",
+		"@smui/select": "^7.0.0-beta.0",
+		"@smui/slider": "^7.0.0-beta.0",
+		"@smui/tab": "^7.0.0-beta.0",
+		"@smui/tab-bar": "^7.0.0-beta.0",
 		"@smui/top-app-bar": "^7.0.0-beta.0",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
@@ -41,6 +47,10 @@
 	"type": "module",
 	"dependencies": {
 		"@mdi/js": "^7.0.96",
+		"@supabase/supabase-js": "^2.0.4",
+		"svelte-confetti": "^1.2.0",
+		"svelte-loading-spinners": "^0.3.4",
+		"tinycas": "^0.8.57",
 		"tinymathlive": "^0.79.2"
 	}
 }

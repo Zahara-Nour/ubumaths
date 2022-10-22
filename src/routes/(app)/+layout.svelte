@@ -3,7 +3,7 @@
 	import links from '$lib/navlinks.js'
 	import TopAppBar, { Row, Section, Title as TitleBar } from '@smui/top-app-bar'
 	import IconButton from '@smui/icon-button'
-	import { Icon } from '@smui/common'
+	import { Icon, Svg } from '@smui/common'
 	import List, { Item, Text } from '@smui/list'
 	import Drawer, {
 		AppContent,
@@ -19,7 +19,6 @@
 		mdiFormatFontSizeDecrease,
 		mdiFormatFontSizeIncrease,
 	} from '@mdi/js'
-	import { Svg } from '@smui/common'
 	import {
 		darkmode,
 		fontSize,
