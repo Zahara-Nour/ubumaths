@@ -1,0 +1,15 @@
+//
+// Site Styles
+//
+
+// Import the theme first.
+@use 'smui-theme';
+
+// This adds classes like "mdc-theme--primary-bg".
+@use '@material/theme/styles';
+
+// App styles.
+@use './app';
+
+// Custom styles
+// @use './routes/automaths/_CustomColor.scss' as badge-custom-color;

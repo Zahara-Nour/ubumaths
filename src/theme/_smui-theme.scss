@@ -2,14 +2,25 @@
 
 @use '@material/theme/color-palette';
 
-// Svelte Colors!
+
 @use '@material/theme/index' as theme with (
-  $primary: #ff3e00,
-  $secondary: #676778,
-  $surface: #fff,
-  $background: #fff,
-  $error: color-palette.$red-900
+	$primary: color-palette.$amber-500,
+	$on-primary: #fff,
+	$secondary: color-palette.$blue-grey-400,
+	$on-secondary: #fff,
+	$surface: #fff,
+	$background: #fff,
+	$error: color-palette.$red-900
 );
+
+// Svelte Colors!
+// @use '@material/theme/index' as theme with (
+//   $primary: #ff3e00,
+//   $secondary: #676778,
+//   $surface: #fff,
+//   $background: #fff,
+//   $error: color-palette.$red-900
+// );
 
 html,
 body {
@@ -17,9 +28,15 @@ body {
   color: theme.$on-surface;
 }
 
+
 a {
-  color: #40b3ff;
+	text-decoration: none;
+	color: theme.$on-primary;
 }
-a:visited {
-  color: color.scale(#40b3ff, $lightness: -35%);
-}
+
+// a {
+//   color: #40b3ff;
+// }
+// a:visited {
+//   color: color.scale(#40b3ff, $lightness: -35%);
+// }

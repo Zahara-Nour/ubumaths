@@ -1,3 +1,6 @@
+
+
+
 // Import all the styles for the classes.
 @use '@material/typography/mdc-typography';
 // The following classes become available:
@@ -18,6 +21,11 @@
 
 // Import the mixins.
 @use '@material/typography/index' as typography;
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 //
 // Some defaults that may be helpful to you.
@@ -83,6 +91,6 @@ strong {
 	font-weight: bold;
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+a {
+	color: #ffffff;
+  }

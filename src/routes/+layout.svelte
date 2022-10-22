@@ -1,5 +1,7 @@
 <script>
+	// import '../tailwind.scss'
 	import '../app.scss'
+	
 	import {
 		touchDevice,
 		toMarkup,

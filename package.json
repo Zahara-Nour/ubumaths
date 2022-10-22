@@ -9,26 +9,38 @@
 		"test": "playwright test",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write .",
-		"prepare": "npm run smui-theme-light && npm run smui-theme-dark",
+		"prepare": "npm run smui-theme-light && npm run smui-theme-dark && npm run site-light && npm run site-dark",
 		"smui-theme-light": "smui-theme compile static/smui.css -i src/theme",
-		"smui-theme-dark": "smui-theme compile static/smui-dark.css -i src/theme/dark"
+		"smui-theme-dark": "smui-theme compile static/smui-dark.css -i src/theme/dark",
+		"site-light": "sass --no-source-map -I src/theme -I node_modules -I ../smui-theme/node_modules -I ../../node_modules src/site.scss static/site.css",
+		"site-dark": "sass --no-source-map -I src/theme/dark -I node_modules -I ../smui-theme/node_modules -I ../../node_modules src/site.scss static/site-dark.css"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.25.0",
 		"@smui/button": "^7.0.0-beta.0",
+		"@smui/common": "^7.0.0-beta.0",
+		"@smui/drawer": "^7.0.0-beta.0",
+		"@smui/icon-button": "^7.0.0-beta.0",
+		"@smui/list": "^7.0.0-beta.0",
+		"@smui/top-app-bar": "^7.0.0-beta.0",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
+		"autoprefixer": "^10.4.12",
 		"eslint": "^8.16.0",
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-svelte3": "^4.0.0",
+		"postcss": "^8.4.18",
 		"prettier": "^2.6.2",
 		"prettier-plugin-svelte": "^2.7.0",
 		"smui-theme": "^7.0.0-beta.0",
 		"svelte": "^3.44.0",
+		"svelte-preprocess": "^4.10.7",
+		"tailwindcss": "^3.2.1",
 		"vite": "^3.1.0"
 	},
 	"type": "module",
 	"dependencies": {
+		"@mdi/js": "^7.0.96",
 		"tinymathlive": "^0.79.2"
 	}
 }
