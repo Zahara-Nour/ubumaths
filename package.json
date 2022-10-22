@@ -54,6 +54,6 @@
 		"tinymathlive": "^0.79.2"
 	},
 	"engines": {
-		"node": "=16 "
+		"node": ">=14.0 <16"
 	}
 }
