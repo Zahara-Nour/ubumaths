@@ -52,8 +52,5 @@
 		"svelte-loading-spinners": "^0.3.4",
 		"tinycas": "^0.8.57",
 		"tinymathlive": "^0.79.2"
-	},
-	"engines": {
-		"node": ">=14.0 <16"
 	}
 }
