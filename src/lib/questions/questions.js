@@ -5170,33 +5170,19 @@ const questions = {
 						'Traduis cette phrase par une expression mathématique : la somme de $$&1$$ et de $$&2$$',
 						'Traduis cette phrase par une expression mathématique : le produit de $$&1$$ par $$&2$$',
 						'Traduis cette phrase par une expression mathématique : la différence entre $$&1$$ et $$&2$$',
-						'Traduis cette phrase par une expression mathématique : le quotient de $$&1$$ par de $$&2$$',
+						'Traduis cette phrase par une expression mathématique : le quotient de $$&1$$ par $$&2$$',
 					],
-					options: ['no-exp'],
 					variables: [
 						{
 							'&1': '$e[3;9]',
 							'&2': '$e[2;&1-1]\\{&1}',
 						},
 					],
-					expressions: ['&1+&2', '&1*&2', '&1-&2', '&1:&2'],
-					solutions: [['&1+&2'], ['&1*&2'], ['&1-&2'], ['&1:&2 ;; &1/&2']],
+					solutions: [['&1+&2'], ['&1*&2'], ['&1-&2'], ['&1/&2']],
+					// solutions: [['&1+&2'], ['&1*&2'], ['&1-&2'], ['&1:&2 ;; &1/&2']],
 					correctionFormat: [
 						{
-							correct: ["La somme de $$&1$$ et de $$&2$$ s'écrit &answer"],
-							answer: "L'expression est &answer.",
-						},
-						{
-							correct: ["Le produit de $$&1$$ par $$&2$$ s'écrit &answer"],
-							answer: "L'expression est &answer.",
-						},
-						{
-							correct: ["La différence entre $$&1$$ et $$&2$$ s'écrit &answer"],
-							answer: "L'expression est &answer.",
-						},
-						{
-							correct: ["Le quotient de $$&1$$ par $$&2$$ s'écrit &answer"],
-							answer: "L'expression est &answer.",
+							correct: ["L'expression est &answer."],
 						},
 					],
 
@@ -5212,7 +5198,6 @@ const questions = {
 						'Traduis cette phrase par une expression mathématique : la différence entre $$&1$$ et le quotient de $$&2$$ par $$&3$$',
 						'Traduis cette phrase par une expression mathématique : le quotient de la somme $$&1$$ et de $$&3$$ par $$&2$$',
 					],
-					options: ['no-exp'],
 					variables: [
 						{
 							'&1': '$e[2;9]',
@@ -5220,7 +5205,6 @@ const questions = {
 							'&3': '$e[2;&2-1]\\{&1}',
 						},
 					],
-					expressions: ['&1*&3+&2', '&1*(&2-&3)', '&1-&2:&3', '(&1+&3):&2'],
 					solutions: [
 						['&1*&3+&2'],
 						['&1*(&2-&3)'],
@@ -5230,29 +5214,11 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								"La somme du produit de $$&1$$ par $$&3$$ et de $$&2$$ s'écrit &answer",
+								"L'expression est &answer.",
 							],
-							answer: "L'expression est &answer.",
-						},
-						{
-							correct: [
-								"Le produit de $$&1$$ par la différence  entre $$&2$$ et $$&3$$ s'écrit &answer",
-							],
-							answer: "L'expression est &answer.",
-						},
-						{
-							correct: [
-								"La différence entre $$&1$$ et le quotient de $$&2$$ par $$&3$$ s'écrit &answer",
-							],
-							answer: "L'expression est &answer.",
-						},
-						{
-							correct: [
-								"Le quotient de la somme $$&1$$ et de $$&3$$ par $$&2$$ s'écrit &answer",
-							],
-							answer: "L'expression est &answer.",
 						},
 					],
+					options:['no-penalty-for-explicit-products '],
 					type: 'enonce',
 					defaultDelay: 20,
 					grade: CINQUIEME,
@@ -6172,9 +6138,8 @@ const questions = {
 				{
 					description: 'Trouver la moitié',
 					subdescription: 'Nombres de 1 à 20',
-					enounces: ['Quel est la moitié du nombre $$[._&1_]$$ ?'],
-					expressions: ['&2'],
-					options: ['no-exp'],
+					enounces: ['Quelle est la moitié du nombre $$[._&1_]$$ ?'],
+					solutions: [['&2']],
 					variables: [
 						{
 							'&1': '$e[0;14]*2+1',
@@ -6247,12 +6212,33 @@ const questions = {
 				{
 					description: 'Calculer une différence ',
 					subdescription:
+						'Partie entière à 1 chiffre et partie décimale à 1 et 2 chiffres (pas de retenue)',
+					variables: [
+						{
+							'&1': '$e[2;9]',
+							'&2': '$e[2;9]',
+							'&3': '$e[1;9]',
+							'&4': '&1.&2&3',
+							'&5': '$e[1;&1-1]',
+							'&6': '$e[1;&2-1]',
+							'&7': '&5.&6',
+						},
+					],
+					expressions: ['&4-&7'],
+
+					'result-type': 'decimal',
+					defaultDelay: 20,
+					grade: CM1,
+				},
+				{
+					description: 'Calculer une différence ',
+					subdescription:
 						'Partie entière et partie décimale à 1 chiffre (avec retenue)',
 					enounces: ['Calcule.'],
 					variables: [
 						{
 							'&1': '$e[2;9]',
-							'&2': '$e[0;8]',
+							'&2': '$e[1;8]',
 							'&3': '&1.&2',
 							'&4': '$e[1;&1-1]',
 							'&5': '$e[&2+1;9]',
@@ -6263,204 +6249,6 @@ const questions = {
 
 					'result-type': 'decimal',
 					defaultDelay: 20,
-					grade: CM1,
-				},
-				{
-					description: 'Calculer une somme ',
-					subdescription:
-						'Partie entière et partie décimale à 1 chiffre (avec retenues)',
-					enounces: ['Calcule.'],
-					variables: [
-						{
-							'&1': '$e[1;9]',
-							'&2': '$e[1;9]',
-							'&3': '&1.&2',
-							'&4': '$e[10-&1;9]',
-							'&5': '$e[10-&2;9]',
-							'&6': '&4.&5',
-						},
-					],
-					expressions: ['&3+&6'],
-
-					'result-type': 'decimal',
-					defaultDelay: 20,
-					grade: CM1,
-				},
-			],
-			'A trou': [
-				{
-					description: 'Trouver le complément ',
-					subdescription: "A l'entier supérieur",
-					enounces: ['Complète.'],
-					variables: [
-						{
-							'&1': '$e[1;9]',
-							'&2': '$d{0;$e[1;2]}',
-						},
-					],
-					expressions: ['?+[._&1-&2_]=&1', '[._&1-&2_]+?=&1'],
-					type: 'trou',
-					solutions: [['&2']],
-					defaultDelay: 15,
-					grade: CM1,
-				},
-				{
-					description: 'Compléter une addition à trou ',
-					subdescription:
-						'Partie entière et partie décimale à 1 chiffre (pas de retenue)',
-					enounces: ['Complète.'],
-					variables: [
-						{
-							'&1': '$e[1;8]',
-							'&2': '$e[1;8]',
-							'&3': '&1.&2',
-							'&4': '$e[1;9-&1]',
-							'&5': '$e[1;9-&2]',
-							'&6': '&4.&5',
-						},
-					],
-					expressions: ['&3+?=[._&3+&6_]', '?+&3=[._&3+&6_]'],
-					type: 'trou',
-					solutions: [['&6']],
-					'result-type': 'decimal',
-					defaultDelay: 20,
-					grade: CM1,
-				},
-				{
-					description: 'Compléter une addition à trou',
-					subdescription:
-						'Parties décimales à 1 et 2 chiffres (pas de retenue)',
-					enounces: ['Complète.'],
-					variables: [
-						{
-							'&1': '$e[1;8]',
-							'&2': '$e[1;8]',
-							'&3': '&1.&2',
-							'&4': '$e[1;9-&1]',
-							'&5': '$e[1;9-&2]',
-							'&6': '$e[1;9-&2]',
-							'&7': '&4.&5&6',
-						},
-					],
-					expressions: ['&3+?=[._&7+&3_]', '?+&3=[._&7+&3_]'],
-					solutions: [['&7']],
-					type: 'trou',
-					'result-type': 'decimal',
-					defaultDelay: 20,
-					grade: CM1,
-				},
-				{
-					description: 'Compléter une addition à trou',
-					subdescription:
-						'Partie entière et partie décimale à 1 chiffre (avec retenue pour la partie decimale)',
-					enounces: ['Complète.'],
-					variables: [
-						{
-							'&1': '$e[1;7]',
-							'&2': '$e[2;9]',
-							'&3': '&1.&2',
-							'&4': '$e[1;8-&1]',
-							'&5': '$e[10-&2;9]',
-							'&6': '&4.&5',
-						},
-					],
-					expressions: ['&3+?=[._&6+&3_]', '?+&3=[._&6+&3_]'],
-					type: 'trou',
-					solutions: [['&6']],
-					'result-type': 'decimal',
-					defaultDelay: 20,
-					grade: CM1,
-				},
-				{
-					description: 'Compléter une addition à trou',
-					subdescription:
-						'Partie entière et partie décimale à 1 chiffre (avec retenues)',
-					enounces: ['Complète'],
-					variables: [
-						{
-							'&1': '$e[1;9]',
-							'&2': '$e[1;9]',
-							'&3': '&1.&2',
-							'&4': '$e[10-&1;9]',
-							'&5': '$e[10-&2;9]',
-							'&6': '&4.&5',
-						},
-					],
-					expressions: ['&3+?=[._&6+&3_]', '?+&3=[._&6+&3_]'],
-					solutions: [['&6']],
-					type: 'trou',
-					'result-type': 'decimal',
-					defaultDelay: 20,
-					grade: CM1,
-				},
-			],
-			'Somme astucieuse': [
-				{
-					description: 'Additionner par regroupements',
-					subdescription:
-						'Regrouper pour obtenir un nombre entier. 2 nombres à une décimale.',
-					enounces: ['Calcule de manière astucieuse.'],
-					expressions: ['&5+&8+&6', '&8+&5+&6'],
-
-					variables: [
-						{
-							'&1': '$e{1}',
-							'&2': '10-&1',
-							'&3': '$e[0;9]',
-							'&4': '$e[0;9-&3]',
-							'&5': '[._&3+&1/10_]',
-							'&6': '[._&4+(&2)/10_]',
-							'&7': '$e{1}+($e[1;9]\\{&1;[_&2_]})/10',
-							'&8': '[._&7_]',
-						},
-					],
-					correctionDetails: [
-						[
-							{
-								text: `$$\\begin{align} [._&8_] +\\bold{\\textcolor{${color1}}{[._&5_]}} + \\bold{\\textcolor{${color1}}{[._&6_]}} &= [._&8_] + \\bold{\\textcolor{${color1}}{[._&5+&6_]}} \\\\ &=  &sol \\end{align}$$`,
-							},
-						],
-						[
-							{
-								text: `$$\\begin{align} \\bold{\\textcolor{${color1}}{[._&5_]}}+ [._&8_] + \\bold{\\textcolor{${color1}}{[._&6_]}} &= [._&8_] + \\bold{\\textcolor{${color1}}{[._&5+&6_]}} \\\\ &=  &sol \\end{align}$$`,
-							},
-						],
-					],
-
-					'result-type': 'decimal',
-					defaultDelay: 20,
-					grade: CM1,
-				},
-			],
-
-			Moitié: [
-				{
-					description: 'Trouver la moitié',
-					subdescription: 'Nombres de 1 à 20',
-					enounces: ['Quel est la moitié du nombre $$[._&1_]$$ ?'],
-					expressions: ['&2'],
-					options: ['no-exp'],
-					variables: [
-						{
-							'&1': '$e[0;14]*2+1',
-							'&2': '[._(&1)/2_]',
-						},
-					],
-					correctionFormat: [
-						{
-							correct: ['La moitié de $$[._&1_]$$ est &answer.'],
-						},
-					],
-					correctionDetails: [
-						[
-							{
-								text: 'Le moitié de $$[._&1_]$$ est &solution car $$2 \\times &sol = [_&1_]$$',
-							},
-						],
-					],
-					type: 'rewrite',
-					'result-type': 'decimal',
-					defaultDelay: 15,
 					grade: CM1,
 				},
 			],
@@ -6516,11 +6304,15 @@ const questions = {
 							// '&5': '[._&3:10^(&1-1)_]*[._&4:10^(&2-1)_]'
 						},
 					],
-					// options: ['no-exp'],
-					// expressions: ['[._&3:10^(&1-1)_]*[._&4:10^(&2-1)_]'],
 					expressions: ['[._&3:10^(&1-1)_]*[._&4:10^(&2-1)_]=[_&3*&4_]'],
+					answerFields: ['$$[._&3:10^(&1-1)_] \\times [._&4:10^(&2-1)_]=?$$'],
 					conditions: ['mod(&3*&4;10)!=0'],
 					solutions: [['[._&3*&4:10^(&1+&2-2)_]']],
+					correctionFormat: [
+						{
+							correct: ['$$[._&3:10^(&1-1)_] \\times [._&4:10^(&2-1)_]=$$&answer'],
+						},
+					],
 					correctionDetails: [
 						[
 							{
@@ -6580,8 +6372,8 @@ const questions = {
 					description: 'Calculer un produit',
 					subdescription: "Determiner un produit à partir d'un autre",
 					enounces: [
-						'Sachant que $$[._&1_] \\times [._&2_]=[._&1*&2_]$$ combien vaut $$[._&1*&3_] \\times [._&2_]$$ ?',
-						'Sachant que $$[._&2_] \\times [._&1_]=[._&1*&2_]$$ combien vaut $$[._&2_] \\times [._&1*&3_]$$ ?',
+						'Sachant que $$[._&1_] \\times [._&2_]=[._&1*&2_]$$ , calcule :',
+						'Sachant que $$[._&2_] \\times [._&1_]=[._&1*&2_]$$ , calcule :',
 					],
 					variables: [
 						{
@@ -6590,7 +6382,6 @@ const questions = {
 							'&3': '$l{10;100;1000}',
 						},
 					],
-					options: ['no-exp'],
 					expressions: ['[._&1*&3_]* &2', '&2*[._&1*&3_]'],
 					correctionDetails: [
 						[
@@ -9959,13 +9750,11 @@ const questions = {
 				{
 					description: "Calculer l'inverse d'un nombre",
 					enounces: [
-						"Quel est l'inverse de $$&1$$",
-						"Quel est l'inverse de $$\\dfrac{1}{&1}$$",
-						"Quel est l'inverse de $$\\dfrac{&1}{&2}$$",
+						"Quel est l'inverse de ce nombre :",
 					],
-					options: ['no-exp'],
 					expressions: ['&1', '1/&1', '&1/&2'],
 					variables: [{ '&1': '$e[2;19]', '&2': '$e[2;19]\\{cd(&1)}' }],
+					answerFields:["L'inverse de ce nombre est $$?$$."],
 					solutions: [['1/&1'], ['&1'], ['&2/&1']],
 					correctionFormat: [
 						{
@@ -11287,7 +11076,6 @@ const questions = {
 						['[_4*&1_hm_]'],
 						['[_4*&1_km_]'],
 					],
-					options: ['no-exp'],
 					correctionFormat: [
 						{
 							correct: ['Le périmètre du carré est &answer.'],
@@ -11411,7 +11199,6 @@ const questions = {
 						['[_(&3+&4)*2_hm_]'],
 						['[_(&3+&4)*2_km_]'],
 					],
-					options: ['no-exp'],
 					correctionFormat: [
 						{
 							correct: ['Le périmètre du rectangle est &answer.'],
@@ -15017,7 +14804,7 @@ const questions = {
 					description: "Trouver l'échelle d'une carte",
 					subdescription: 'Mêmes unités.',
 					enounces: [
-						"Quelle est l'échelle d'une carte où $$[°&3°]$$ sur la carte correspond à $$1\\,cm$$ en réalité ?",
+						"Quelle est l'échelle d'une carte où  $$1\\,cm$$ sur la carte correspond à $$[°&3°]$$ en réalité ?",
 					],
 					solutions: [['[_(1 cm)/&3_]']],
 					variables: [
@@ -15035,7 +14822,7 @@ const questions = {
 					description: "Trouver l'échelle d'une carte",
 					subdescription: 'Unités différentes.',
 					enounces: [
-						"Quelle est l'échelle d'une carte où $$[°&1°]$$ sur la carte correspond à $$1\\,cm$$ en réalité ?",
+						"Quelle est l'échelle d'une carte où $$1\\,cm$$ sur la carte correspond à $$[°&1°]$$ en réalité ?",
 					],
 					solutions: [['[_(1 cm)/&1_]']],
 					variables: [
@@ -15058,7 +14845,6 @@ const questions = {
 						],
 					],
 
-					options: ['no-exp'],
 					defaultDelay: 10,
 					grade: SIXIEME,
 				},
@@ -15243,209 +15029,22 @@ const questions = {
 						{ '&1': '$e[1;9]', '&2': '10^$e[1;6]', '&3': '[_&1*&2_] cm' },
 					],
 
-					options: ['no-exp'],
-					defaultDelay: 10,
-					grade: SIXIEME,
-				},
-				{
-					description: "Trouver l'échelle d'une carte",
-					subdescription: 'Unités différentes.',
-					enounces: [
-						"Quelle est l'échelle d'une carte où $$[°&1°]$$ sur la carte correspond à $$1\\,cm$$ en réalité ?",
-					],
-					expressions: ['(1 cm)/&1'],
-					variables: [
-						{ '&1': '$e[2;9] dm' },
-						{ '&1': '$e[2;9] m' },
-						{ '&1': '$e[2;9] dam' },
-						{ '&1': '$e[2;9] hm' },
-						{ '&1': '$e[2;9] km' },
-					],
-					correctionDetails: [
-						[
-							{
-								text: '$$\\frac{1\\,cm}{[°&1°]}=\\frac{1\\,cm}{[_&1;cm_]}=&sol$$',
-							},
-						],
-					],
-
-					options: ['no-exp'],
 					defaultDelay: 10,
 					grade: SIXIEME,
 				},
 			],
-			"Utiliser l'échelle": [
-				{
-					description: 'Calculer la longueur sur une carte',
-					enounces: [
-						"Sur une carte à l'échelle $$[_&4_]$$, je veux représenter une longueur de $$[°&3°]$$. Quelle est, en $$cm$$, la longueur sur la carte ?",
-					],
-					expressions: ['(&3)/&1'],
-					variables: [
-						{ '&1': '10', '&2': '$e[1;9]*10', '&3': '[_&2_] dm', '&4': '1/&1' },
-						{
-							'&1': '100',
-							'&2': '$e[1;9]*10',
-							'&3': '[_&2_] dm',
-							'&4': '1/&1',
-						},
-						{ '&1': '100', '&2': '$e[1;9]*10', '&3': '[_&2_] m', '&4': '1/&1' },
-						{
-							'&1': '1000',
-							'&2': '$e[1;9]*10',
-							'&3': '[_&2_] m',
-							'&4': '1/&1',
-						},
-						{
-							'&1': '100000',
-							'&2': '$e[1;9]*10',
-							'&3': '[_&2_] km',
-							'&4': '1/&1',
-						},
-						{
-							'&1': '1000000',
-							'&2': '$e[1;9]*10',
-							'&3': '[_&2_] km',
-							'&4': '1/&1',
-						},
-					],
-					units: ['cm'],
-
-					options: ['no-exp'],
-					correctionFormat: [
-						{
-							correct: [
-								'Avec une échelle de $$[_&4_]$$, $$[°&3°]$$ est représenté par &answer.',
-							],
-							answer: '$$[°&3°]$$ est représenté par &answer.',
-						},
-					],
-					correctionDetails: [
-						[
-							{
-								text: '$$[_&4_]=\\frac{1\\,cm}{&1\\,cm}= \\frac{1\\,cm}{[_&1:10_]\\,dm}= \\frac{&sol}{[°&3°]}$$',
-							},
-						],
-						[
-							{
-								text: '$$[_&4_]=\\frac{1\\,cm}{&1\\,cm}= \\frac{1\\,cm}{[_&1:10_]\\,dm}= \\frac{&sol}{[°&3°]}$$',
-							},
-						],
-						[
-							{
-								text: '$$[_&4_]=\\frac{1\\,cm}{&1\\,cm}= \\frac{1\\,cm}{[_&1:100_]\\,m}= \\frac{&sol}{[°&3°]}$$',
-							},
-						],
-						[
-							{
-								text: '$$[_&4_]=\\frac{1\\,cm}{&1\\,cm}= \\frac{1\\,cm}{[_&1:100_]\\,m}= \\frac{&sol}{[°&3°]}$$',
-							},
-						],
-						[
-							{
-								text: '$$[_&4_]=\\frac{1\\,cm}{&1\\,cm}= \\frac{1\\,cm}{[_&1:100000_]\\,km}= \\frac{&sol}{[°&3°]}$$',
-							},
-						],
-						[
-							{
-								text: '$$[_&4_]=\\frac{1\\,cm}{&1\\,cm}= \\frac{1\\,cm}{[_&1:100000_]\\,km}= \\frac{&sol}{[°&3°]}$$',
-							},
-						],
-					],
-					defaultDelay: 10,
-					grade: SIXIEME,
-				},
-				{
-					description: 'Calculer la longueur réelle',
-					enounces: [
-						"Sur une carte à l'échelle $$[_&4_]$$, je mesure une longueur de $$[°&3°]$$. Quelle est, en $$dm$$, la longueur réelle ?",
-					],
-					expressions: ['(&3)*&1'],
-					variables: [
-						{
-							'&1': '10',
-							'&2': '$e[2;9]*10^$e[0;1]',
-							'&3': '[_&2_] cm',
-							'&4': '1/&1',
-						},
-						{ '&1': '100', '&2': '$e[2;9]', '&3': '&2 cm', '&4': '1/&1' },
-						{
-							'&1': '100',
-							'&2': '$e[2;9]*10^$e[0;1]',
-							'&3': '[_&2_] cm',
-							'&4': '1/&1',
-						},
-						{ '&1': '1000', '&2': '$e[2;9]', '&3': '&2 cm', '&4': '1/&1' },
-						{
-							'&1': '100000',
-							'&2': '$e[2;9]*10^$e[0;1]',
-							'&3': '[_&2_] cm',
-							'&4': '1/&1',
-						},
-						{ '&1': '1000000', '&2': '$e[2;9]', '&3': '&2 cm', '&4': '1/&1' },
-					],
-					units: ['dm', 'dm', 'm', 'm', 'km', 'km'],
-
-					// options: ['no-exp'],
-					correctionFormat: [
-						{
-							correct: [
-								'A une échelle de $$[_&4_]$$, $$[°&3°]$$ sur la carte correspond à une longueur réelle de &answer.',
-							],
-							answer: 'La longueur réelle est de &answer.',
-						},
-					],
-					correctionDetails: [
-						[
-							{
-								text: '$$[_&4_]=\\frac{1\\,cm}{[°&1 cm°]}= \\frac{1\\,cm}{[_(&1:10)_]\\,dm}= \\frac{[°&3°]}{&sol}$$',
-							},
-						],
-						[
-							{
-								text: '$$[_&4_]=\\frac{1\\,cm}{[°&1 cm°]}= \\frac{1\\,cm}{[_(&1:10)_]\\,dm}= \\frac{[°&3°]}{&sol}$$',
-							},
-						],
-						[
-							{
-								text: '$$[_&4_]=\\frac{1\\,cm}{[°&1 cm°]}= \\frac{1\\,cm}{[_(&1:100)_]\\,m}= \\frac{[°&3°]}{&sol}$$',
-							},
-						],
-						[
-							{
-								text: '$$[_&4_]=\\frac{1\\,cm}{[°&1 cm°]}= \\frac{1\\,cm}{[_(&1:100)_]\\,m}= \\frac{[°&3°]}{&sol}$$',
-							},
-						],
-						[
-							{
-								text: '$$[_&4_]=\\frac{1\\,cm}{[°&1 cm°]}= \\frac{1\\,cm}{[_(&1:100000)_]\\,km}= \\frac{[°&3°]}{&sol}$$',
-							},
-						],
-						[
-							{
-								text: '$$[_&4_]=\\frac{1\\,cm}{[°&1 cm°]}= \\frac{1\\,cm}{[_(&1:100000)_]\\,km}= \\frac{[°&3°]}{&sol}$$',
-							},
-						],
-					],
-					options: ['no-exp'],
-					defaultDelay: 10,
-					grade: SIXIEME,
-				},
-			],
+			
 		},
 	},
 	'Calcul littéral': {
 		Calculs: {
 			'Par substitution': [
 				{
-					description: 'Calculer en substituant les variables',
+					description: 'Calcule en substituant les variables',
 					subdescription:
 						'Expressions simples. Pas de simplification de la multiplication.',
 					enounces: [
-						'Calculer $$&3 \\times &1$$ avec $$&1=&2$$',
-						'Calculer $$&1 \\times &3$$ avec $$&1=&2$$',
-						'Calculer $$&3 + &1$$ avec $$&1=&2$$',
-						'Calculer $$&1 + &3$$ avec $$&1=&2$$',
+						'Calcule avec $$&1=&2$$.',
 					],
 					expressions: ['&3*&1', '&1*&3', '&3+&1', '&1+&3'],
 					variables: [
@@ -15460,7 +15059,6 @@ const questions = {
 							'&1': '&2',
 						},
 					],
-					options: ['no-exp'],
 
 					correctionDetails: [
 						[
@@ -15492,8 +15090,7 @@ const questions = {
 					subdescription:
 						'Expressions simples. Simplification de la multiplication.',
 					enounces: [
-						'Calculer $$&3&1$$ avec $$&1=&2$$',
-						'Calculer $$&3 + &1$$ avec $$&1=&2$$',
+						'Calcule avec $$&1=&2$$',
 					],
 					expressions: ['&3&1', '&3+&1'],
 					variables: [
@@ -15508,7 +15105,6 @@ const questions = {
 							'&1': '&2',
 						},
 					],
-					options: ['no-exp'],
 
 					correctionDetails: [
 						[
@@ -15530,9 +15126,9 @@ const questions = {
 					description: 'Calculer en substituant les variables',
 					subdescription: 'Entiers naturels',
 					enounces: [
-						'Calculer $$&3&1+&4$$ avec $$&1=&2$$',
-						'Calculer $$&4+&3&1$$ avec $$&1=&2$$',
-						'Calculer $$&4&5+&3&1$$ avec $$&1=&2$$ et $$&5=&6$$',
+						'Calcule avec $$&1=&2$$',
+						'Calcule avec $$&1=&2$$',
+						'Calcule avec $$&1=&2$$ et $$&5=&6$$',
 					],
 					expressions: ['&3&1+&4', '&4+&3&1', '&4&5+&3&1'],
 					variables: [
@@ -15551,7 +15147,6 @@ const questions = {
 							'&5': '&6',
 						},
 					],
-					options: ['no-exp'],
 
 					correctionDetails: [
 						[
@@ -15577,11 +15172,11 @@ const questions = {
 					description: 'Calculer en substituant les variables',
 					subdescription: 'Entiers relatifs',
 					enounces: [
-						'Calculer $$&3&1[+_&4_]$$ avec $$&1=&2$$',
-						'Calculer $$&3&1[+_&4_]$$ avec $$&1=&2$$',
-						'Calculer $$&4[+_&3_]&1$$ avec $$&1=&2$$',
-						'Calculer $$&4[+_&3_]&1$$ avec $$&1=&2$$',
-						'Calculer $$&4&5[+_&3_]&1$$ avec $$&1=&2$$ et $$&5=&6$$',
+						'Calcule avec $$&1=&2$$',
+						'Calcule avec $$&1=&2$$',
+						'Calcule avec $$&1=&2$$',
+						'Calcule avec $$&1=&2$$',
+						'Calcule avec $$&1=&2$$ et $$&5=&6$$',
 					],
 					expressions: [
 						'&3&1[+_&4_]',
@@ -15638,7 +15233,6 @@ const questions = {
 							'&5': '&6',
 						},
 					],
-					options: ['no-exp'],
 
 					correctionDetails: [
 						[
@@ -19730,7 +19324,6 @@ const questions = {
 							correct: ["L'ordonnée à l'origine est &answer."],
 						},
 					],
-					options: ['no-exp'],
 
 					defaultDelay: 10,
 					grade: SECONDE,
@@ -21722,9 +21315,9 @@ const questions = {
 					description: 'Calculer un terme',
 					subdescription: "A l'aide d'une formule explicite",
 					enounces: [
-						'Calculer $$u_&1$$ pour la suite $$(u_n)$$ définie par $$u_n=&2n[+_&3_]$$ pour $$n \\ge 0$$',
-						'Calculer $$u_&1$$ pour la suite $$(u_n)$$ définie par $$u_n=&2n^2$$ pour $$n \\ge 0$$',
-						'Calculer $$u_&1$$ pour la suite $$(u_n)$$ définie par $$u_n=(-1)^n$$ pour $$n  \\ge 0$$',
+						'Calcule $$u_&1$$ pour la suite $$(u_n)$$ définie par $$u_n=&2n[+_&3_]$$ pour $$n \\ge 0$$',
+						'Calcule $$u_&1$$ pour la suite $$(u_n)$$ définie par $$u_n=&2n^2$$ pour $$n \\ge 0$$',
+						'Calcule $$u_&1$$ pour la suite $$(u_n)$$ définie par $$u_n=(-1)^n$$ pour $$n  \\ge 0$$',
 					],
 					solutions: [['[_&2*&1+(&3)_]'], ['[_&2*&1^2_]'], ['[_(-1)^&1_]']],
 					variables: [
@@ -21774,7 +21367,7 @@ const questions = {
 					enounces: [
 						'Calculer $$u_2$$ pour la suite $$(u_n)$$ définie par $$u_0=&1$$ et $$u_{n+1}=&2u_n[+_&3_]$$',
 					],
-					expressions: ['&5'],
+					solutions: [['&5']],
 					variables: [
 						{
 							'&1': '$er[2;5]',
@@ -21784,7 +21377,6 @@ const questions = {
 							'&5': '[_&2*(&4)+(&3)_]',
 						},
 					],
-					options: ['no-exp'],
 					correctionFormat: [
 						{
 							correct: [

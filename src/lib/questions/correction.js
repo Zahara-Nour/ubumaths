@@ -615,7 +615,7 @@ function checkForm(item) {
 				// 	.removeSigns()
 				// 	.removeUnecessaryBrackets()
 				// 	.removeMultOperator()
-				// 	.sortTermsAndFactors()
+					.sortTermsAndFactors()
 
 				console.log('answer & solution', e.string, solution.string)
 
