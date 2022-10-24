@@ -68,13 +68,15 @@
 <!-- <svelte:window on:resize="{setMiniWindow}" on:keydown="{$handleKeydown}" /> -->
 <svelte:head>
 	{#if $darkmode}
+	<!-- je ne comprends pas pourquoi il faut mettre les 2 -->
+	<!-- problèmes de style sinon -->
 		<!-- SMUI Styles -->
-		<!-- <link rel="stylesheet" href="/smui-dark.css" /> -->
+		<link rel="stylesheet" href="/smui-dark.css" />
 		<!-- Site Styles -->
 		<link rel="stylesheet" href="/site-dark.css" />
 	{:else}
 		<!-- SMUI Styles -->
-		<!-- <link rel="stylesheet" href="/smui.css" /> -->
+		<link rel="stylesheet" href="/smui.css" />
 		<!-- Site Styles -->
 		<link rel="stylesheet" href="/site.css" />
 	{/if}
