@@ -1,5 +1,10 @@
 <script>
-	import { toMarkup, formatLatex, MathfieldElement, virtualKeyboardMode } from '$lib/stores'
+	import {
+		toMarkup,
+		formatLatex,
+		MathfieldElement,
+		virtualKeyboardMode,
+	} from '$lib/stores'
 	import { afterUpdate, onDestroy, tick } from 'svelte'
 	import { getLogger } from '$lib/utils'
 	import virtualKeyboard from '$lib/mathlive/virtualKeyboard'
@@ -180,7 +185,7 @@
 	}
 
 	function initQuestion(question) {
-		if (!masked) console.log('init question')
+		// if (!masked) console.log('init question')
 
 		removeListeners()
 
@@ -201,11 +206,11 @@
 	}
 
 	function makeCorrection(answers) {
-		if (!masked) console.log('makeCorrection')
+		// if (!masked) console.log('makeCorrection')
 		if (interactive) {
 			const item = { ...question, answers, answers_latex }
 			assessItem(item)
-			if (!masked) console.log('assess item', item)
+			// if (!masked) console.log('assess item', item)
 			coms = item.coms
 			simpleCorrection = item.simpleCorrection
 		} else if (question.simpleCorrection) {
@@ -213,7 +218,7 @@
 		} else {
 			const q = question
 			assessItem(q)
-			if (!masked) console.log('assess item', q)
+			// if (!masked) console.log('assess item', q)
 			simpleCorrection = q.simpleCorrection
 			detailedCorrection = q.detailedCorrection
 		}
@@ -229,7 +234,7 @@
 	}
 
 	async function prepareInteractive() {
-		if (!masked) console.log('prepare interactive')
+		// if (!masked) console.log('prepare interactive')
 		mfs = []
 		nmfs = 0
 
@@ -238,7 +243,7 @@
 
 		if (
 			expression &&
-			(question.type === 'result' || question.type === 'rewrite') &&
+			(question.type === 'result') &&
 			!question.answerFields
 		) {
 			expression += '=\\ldots'
@@ -270,14 +275,12 @@
 
 		possiblyResetAnswers()
 
-		if (!masked) console.log('tick')
 		await tick()
-		if (!masked) console.log('ticked')
 		insertMathFields()
 	}
 
 	function stopInteractive() {
-		if (!masked) console.log('stop interactive')
+		// if (!masked) console.log('stop interactive')
 		removeListeners()
 		mfs = null
 
@@ -306,8 +309,14 @@
 			answers_latex = null
 		} else {
 			// if faut garder les réponses si on sort du mode correction
-			if (!answers) answers = question.solutions.map((s) => '')
-			if (!answers_latex) answers_latex = question.solutions.map((s) => '')
+			if (!answers)
+				answers = question.solutions
+					? question.solutions.map((s) => '')
+					: question.testAnswer.map((s) => '')
+			if (!answers_latex)
+				answers_latex = question.solutions
+					? question.solutions.map((s) => '')
+					: question.testAnswer.map((s) => '')
 		}
 	}
 
@@ -326,7 +335,7 @@
 	})
 
 	function insertMathFields() {
-		if (!masked) console.log('insertathFields', answers, answers_latex)
+		// if (!masked) console.log('insertathFields', answers, answers_latex)
 		const elements = []
 		if (answerFields) {
 			for (let i of document
@@ -485,7 +494,7 @@
 					{error}
 				{/await}
 			{/if}
-		{:else if element === 'expression' && expression && (!correction || question.answerFields || (question.type !== 'result' && question.type !== 'trou' && question.type !== 'rewrite'))}
+		{:else if element === 'expression' && expression && (!correction || question.answerFields || (question.type !== 'result' && question.type !== 'trou'))}
 			<div
 				id="expressions"
 				class=" flex flex-col items-center justify-center"
@@ -548,7 +557,7 @@
 			</div>
 		{/if}
 	{/each}
-	{#if (!correction && question.answerFields && question.type==='trou') || (!correction && answerFields && interactive)}
+	{#if (!correction && question.answerFields && question.type === 'trou') || (!correction && answerFields && interactive)}
 		<div
 			id="{`answerFields-${question.num}${masked ? '-masked' : ''}`}"
 			class="my-3 flex flex-col items-center justify-center"

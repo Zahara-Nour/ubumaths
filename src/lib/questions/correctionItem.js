@@ -155,7 +155,7 @@ export function createCorrection(item) {
 					line = `<img src='${img}' style="max-width:400px;max-height:40vh;" alt='toto'>`
 				} else {
 					line = format
-					.replace(regexExpression2, replaceExpression2)
+						.replace(regexExpression2, replaceExpression2)
 						.replace(regexExpression, replaceExpression)
 						.replace(regexExp2, replaceExp2)
 						.replace(regexExp, replaceExp)
@@ -174,9 +174,9 @@ export function createCorrection(item) {
 					line = `<img style="max-width:400px;max-height:40vh;" src='${img}' alt='toto'>`
 				} else {
 					line = format
-					.replace(regexExpression2, replaceExpression2)
-					.replace(regexExpression, replaceExpression)
-					.replace(regexExp2, replaceExp2)
+						.replace(regexExpression2, replaceExpression2)
+						.replace(regexExpression, replaceExpression)
+						.replace(regexExp2, replaceExp2)
 						.replace(regexExp, replaceExp)
 						// .replace(new RegExp('&exp2', 'g'), '$$$$'+expression2_latex+'$$$$')
 						// .replace(new RegExp('&exp', 'g'), '$$$$'+expression_latex+'$$$$')
@@ -213,8 +213,7 @@ export function createCorrection(item) {
 		}
 	} else {
 		switch (item.type) {
-			case 'result':
-			case 'rewrite': {
+			case 'result': {
 				line = `$$\\begin{align*}  ${expression_latex}`
 				if (status === STATUS_INCORRECT) {
 					line += `&= \\enclose{updiagonalstrike}[3px solid ${incorrect_color}]{${answers_latex[0]}} \\\\`
@@ -236,11 +235,12 @@ export function createCorrection(item) {
 
 			case 'equation': {
 				// let exp = '$$\\begin{align*}x & =5-3 \\\\  & =2\\end{align*}$$'
-				
+
 				line = `$$\\begin{align*}  x`
 				if (status === STATUS_EMPTY) {
 					line +=
-						`=\\enclose{roundedbox}[3px solid ${correct_color}]{\\textcolor{${correct_color}}{${solutions_latex[0]}}}` + '\\end{align*}$$'
+						`=\\enclose{roundedbox}[3px solid ${correct_color}]{\\textcolor{${correct_color}}{${solutions_latex[0]}}}` +
+						'\\end{align*}$$'
 				} else if (status === STATUS_INCORRECT) {
 					line +=
 						`&= \\enclose{updiagonalstrike}[6px solid rgba(205, 0, 11, .4)]{\\textcolor{${incorrect_color}}{${answers_latex[0]}}}` +
@@ -266,8 +266,8 @@ export function createCorrection(item) {
 				console.log('item.choices', item.choices)
 				item.choices.forEach((choice, i) => {
 					console.log('choice', choice)
-					const c= {}
-					
+					const c = {}
+
 					if (solutions.includes(i)) {
 						c.solution = true
 						if (answers && answers.includes(i)) {
@@ -388,8 +388,7 @@ export function createCorrection(item) {
 }
 
 export function createDetailedCorrection(item) {
-	const { solutions, correctionDetails } =
-		item
+	const { solutions, correctionDetails } = item
 
 	let lines = []
 	let line
@@ -446,8 +445,8 @@ export function createDetailedCorrection(item) {
 				// .replace(new RegExp('&exp', 'g'), '$$$$'+expression_latex+'$$$$')
 				.replace(regexExpression2, replaceExpression2)
 				.replace(regexExpression, replaceExpression)
-						.replace(regexExp2, replaceExp2)
-						.replace(regexExp, replaceExp)
+				.replace(regexExp2, replaceExp2)
+				.replace(regexExp, replaceExp)
 				.replace(regexSolution, replaceSolution)
 				.replace(regexSol, replaceSol)
 				.replace(
