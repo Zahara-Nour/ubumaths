@@ -185,7 +185,7 @@
 	}
 
 	function initQuestion(question) {
-		if (!masked) console.log('init question')
+		// if (!masked) console.log('init question')
 
 		removeListeners()
 
@@ -206,11 +206,11 @@
 	}
 
 	function makeCorrection(answers) {
-		if (!masked) console.log('makeCorrection')
+		// if (!masked) console.log('makeCorrection')
 		if (interactive) {
 			const item = { ...question, answers, answers_latex }
 			assessItem(item)
-			if (!masked) console.log('assess item', item)
+			// if (!masked) console.log('assess item', item)
 			coms = item.coms
 			simpleCorrection = item.simpleCorrection
 		} else if (question.simpleCorrection) {
@@ -218,7 +218,7 @@
 		} else {
 			const q = question
 			assessItem(q)
-			if (!masked) console.log('assess item', q)
+			// if (!masked) console.log('assess item', q)
 			simpleCorrection = q.simpleCorrection
 			detailedCorrection = q.detailedCorrection
 		}
@@ -234,7 +234,7 @@
 	}
 
 	async function prepareInteractive() {
-		if (!masked) console.log('prepare interactive')
+		// if (!masked) console.log('prepare interactive')
 		mfs = []
 		nmfs = 0
 
@@ -275,14 +275,12 @@
 
 		possiblyResetAnswers()
 
-		if (!masked) console.log('tick')
 		await tick()
-		if (!masked) console.log('ticked')
 		insertMathFields()
 	}
 
 	function stopInteractive() {
-		if (!masked) console.log('stop interactive')
+		// if (!masked) console.log('stop interactive')
 		removeListeners()
 		mfs = null
 
@@ -337,7 +335,7 @@
 	})
 
 	function insertMathFields() {
-		if (!masked) console.log('insertathFields', answers, answers_latex)
+		// if (!masked) console.log('insertathFields', answers, answers_latex)
 		const elements = []
 		if (answerFields) {
 			for (let i of document

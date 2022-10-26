@@ -508,7 +508,6 @@ export default function generateQuestion(
 
 	solutions = getSelectedElement('solutions')
 	testAnswer = getSelectedElement('testAnswers')
-	console.log('testAnswer generated', testAnswer)
 	letters = getSelectedElement('letters')
 	imageCorrection = getSelectedElement('imagesCorrection')
 	correctionDetails = getSelectedElement('correctionDetails')
@@ -525,7 +524,6 @@ export default function generateQuestion(
 
 	solutions = replaceVariables(solutions)
 	testAnswer = replaceVariables(testAnswer)
-	console.log('testAnswer generated', testAnswer)
 	correctionDetails = replaceVariables(correctionDetails)
 	correct = replaceVariables(correct)
 	uncorrect = replaceVariables(uncorrect)
@@ -534,7 +532,6 @@ export default function generateQuestion(
 
 	solutions = evaluate(solutions)
 	testAnswer = evaluate(testAnswer)
-	console.log('testAnswer generated', testAnswer)
 	
 	correctionDetails = toLatex(correctionDetails)
 	correctionDetails = evaluateToLatex(correctionDetails)
