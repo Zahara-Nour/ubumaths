@@ -183,14 +183,10 @@ const questions = {
 					solutions: [['&1'], ['&2'], ['&3']],
 					correctionFormat: [
 						{
-							correct: [
-								'Le chiffre des centaines est &answer.',
-							],
+							correct: ['Le chiffre des centaines est &answer.'],
 						},
 						{
-							correct: [
-								'Le chiffre des dizaines est &answer.',
-							],
+							correct: ['Le chiffre des dizaines est &answer.'],
 						},
 						{
 							correct: ['Le chiffre des unités est &answer.'],
@@ -254,9 +250,7 @@ const questions = {
 							correct: ['Le chiffre des milliers est &answer.'],
 						},
 						{
-							correct: [
-								'Le chiffre des centaines est &answer.',
-							],
+							correct: ['Le chiffre des centaines est &answer.'],
 						},
 						{
 							correct: ['Le chiffre des dizaines est &answer.'],
@@ -4612,9 +4606,9 @@ const questions = {
 					],
 					variables: [{ '&1': '$e[2;9]', '&2': '$e[2;9]\\{&1}' }],
 					expressions: ['[_&1*&2_]=&1*&2'],
-					// solutions: [['&1']],
+					answerFields: ['$$?$$'],
 					testAnswers: [
-						'&answer!=1 && &answer!=[_&1*&2_] && mod([_&1*&2_]; &answer)=0',
+						['&answer!=1 && &answer!=&1*&2 && mod(&1*&2; &answer)=0'],
 					],
 					type: 'rewrite',
 					correctionFormat: [
@@ -4635,16 +4629,22 @@ const questions = {
 					],
 					variables: [{ '&1': '$e[2;9]', '&2': '$e[2;9]\\{&1}' }],
 					testAnswers: [
-						'&answer!=1 && &answer!=[_&1*&2_] && mod([_&1*&2_]; &answer)=0',
+						['&answer!=1 && &answer!=&1*&2 && mod(&1*&2; &answer)=0'],
 					],
+					solutions: [['&1']],
+					answerFields: ['$$?$$'],
 					type: 'rewrite',
 					correctionFormat: [
 						{
 							correct: ['&answer est un diviseur de $$[_&1*&2_]$$'],
-							uncorrect: [
-								'<span style="color:green;">$$&1$$</span> et <span style="color:green;">$$&2$$</span> sont des diviseurs de $$[_&1*&2_]$$',
-							],
 						},
+					],
+					correctionDetails: [
+						[
+							{
+								text: '&solution est un diviseur de $$[_&1*&2_]$$ car $$[_&1*&2_]=&1 \\times &2$$',
+							},
+						],
 					],
 
 					defaultDelay: 15,
@@ -4661,11 +4661,14 @@ const questions = {
 					//   'Entre $$[._&6_]$$ et $$[._&7_]$$ le plus petit est ',
 					// ],
 					solutions: [['mod(&1;2)=0 ?? 0 :: 1']],
-					correctionFormat: [
-						{
-							correct: ['$$2$$ est un diviseur de $$[_&1_]$$ ? &answer'],
-							answer: ' &answer',
-						},
+					correctionDetails: [
+						[
+							{
+								text: "\
+								@@ mod(&1;2)=0 ?? &solution, $$[_&1_]$$ est divisible par 2 car il se termine par 0,2,4,6 ou 8.@@\
+								@@ mod(&1;2)!=0 ?? &solution, $$[_&1_]$$ n'est <b>pas</b> divisible par 2 car il se termine par 1,3,5,7 ou 9.@@",
+							},
+						],
 					],
 					options: ['no-shuffle-choices'],
 					defaultDelay: 10,
@@ -4682,11 +4685,14 @@ const questions = {
 					//   'Entre $$[._&6_]$$ et $$[._&7_]$$ le plus petit est ',
 					// ],
 					solutions: [['mod(&1;5)=0 ?? 0 :: 1']],
-					correctionFormat: [
-						{
-							correct: ['$$5$$ est un diviseur de $$[_&1_]$$ ? &answer'],
-							answer: ' &answer',
-						},
+					correctionDetails: [
+						[
+							{
+								text: "\
+								@@ mod(&1;5)=0 ?? &solution, $$[_&1_]$$ est divisible par 5 car il se termine par 0 ou 5.@@\
+								@@ mod(&1;5)!=0 ?? &solution, $$[_&1_]$$ n'est <b>pas</b> divisible par 5 car il ne se termine pas par 0 ou 5.@@",
+							},
+						],
 					],
 					options: ['no-shuffle-choices'],
 					defaultDelay: 10,
@@ -4703,11 +4709,14 @@ const questions = {
 					//   'Entre $$[._&6_]$$ et $$[._&7_]$$ le plus petit est ',
 					// ],
 					solutions: [['mod(&1;10)=0 ?? 0 :: 1']],
-					correctionFormat: [
-						{
-							correct: ['$$10$$ est un diviseur de $$[_&1_]$$ ? &answer'],
-							answer: ' &answer',
-						},
+					correctionDetails: [
+						[
+							{
+								text: "\
+								@@ mod(&1;10)=0 ?? &solution, $$[_&1_]$$ est divisible par 10 car il se termine par 0.@@\
+								@@ mod(&1;10)!=0 ?? &solution, $$[_&1_]$$ n'est <b>pas</b> divisible par 10 car il ne se termine <b>pas</b> par 0.@@",
+							},
+						],
 					],
 					options: ['no-shuffle-choices'],
 					defaultDelay: 30,
@@ -4716,23 +4725,45 @@ const questions = {
 				{
 					description: 'Utiliser un critère de divisibilité',
 					subdescription: 'Par 3',
-					enounces: ['Le nombre $$[_&1_]$$ est-il divisible par 3 ?'],
+					enounces: ['Le nombre $$[°&1&2&5°]$$ est-il divisible par 3 ?'],
 					variables: [
-						{ '&1': '3*$e[21;333]' },
-						{ '&1': '3*$e[21;332]+$e[1;2]' },
+						{
+							'&1': '$e[1;9]',
+							'&2': '$e[1;9]',
+							'&3': '$e[1;6]',
+							'&4': '&3+3-mod(&1+&2+&3;3)',
+							'&5': '[_&4_]',
+						},
+						{
+							'&1': '$e[1;9]',
+							'&2': '$e[1;9]',
+							'&3': '$e[1;5]',
+							'&4': '&3+4-mod(&1+&2+&3;3)',
+							'&5': '[_&4_]',
+						},
 					],
 
 					choices: [[{ text: 'Oui' }, { text: 'Non' }]],
-					// corrections: [
-					//   'Entre $$[._&6_]$$ et $$[._&7_]$$ le plus petit est ',
-					// ],
-					solutions: [['mod(&1;3)=0 ?? 0 :: 1']],
-					correctionFormat: [
-						{
-							correct: ['$$3$$ est un diviseur de $$[_&1_]$$ ? &answer'],
-							answer: ' &answer',
-						},
+
+					correctionDetails: [
+						[
+							{
+								text: '$$[°&1&2&5°]$$ est divisible par 3 car la somme de ses chiffres est divisible par 3 :',
+							},
+							{
+								text: '$$&1+&2+&5=[_&1+&2+&5_]$$ est divisible par 3.',
+							},
+						],
+						[
+							{
+								text: "$$[°&1&2&5°]$$ n'est pas divisible par 3 car la somme de ses chiffres n'est pas divisible par 3 :",
+							},
+							{
+								text: "$$&1+&2+&5=[_&1+&2+&5_]$$ n'est pas divisible par 3.",
+							},
+						],
 					],
+					solutions: [[0], [1]],
 					options: ['no-shuffle-choices'],
 					defaultDelay: 15,
 					grade: CM2,
@@ -4740,27 +4771,73 @@ const questions = {
 				{
 					description: 'Utiliser un critère de divisibilité',
 					subdescription: 'Par 9',
-					enounces: ['Le nombre $$[_&1_]$$ est-il divisible par 3 ?'],
+					enounces: ['Le nombre $$[°&1&2&5°]$$ est-il divisible par 9 ?'],
 					variables: [
-						{ '&1': '9*$e[21;333]' },
-						{ '&1': '9*$e[21;110]+$e[1;8]' },
+						{
+							'&1': '$e[1;9]',
+							'&2': '$e[1;9]',
+							'&3': '0',
+							'&4': '&3+9-mod(&1+&2+&3;9)',
+							'&5': '[_&4_]',
+						},
+						{
+							'&1': '$e[1;9]',
+							'&2': '$e[1;9]',
+							'&3': '$e[0;1]',
+							'&4': '&3+8-mod(&1+&2+&3;9)',
+							'&5': '[_&4_]',
+						},
 					],
 
 					choices: [[{ text: 'Oui' }, { text: 'Non' }]],
-					// corrections: [
-					//   'Entre $$[._&6_]$$ et $$[._&7_]$$ le plus petit est ',
-					// ],
-					solutions: [['mod(&1;9)=0 ?? 0 :: 1']],
-					correctionFormat: [
-						{
-							correct: ['$$9$$ est un diviseur de $$[_&1_]$$ ? &answer'],
-							answer: ' &answer',
-						},
+
+					correctionDetails: [
+						[
+							{
+								text: '$$[°&1&2&5°]$$ est divisible par 9 car la somme de ses chiffres est divisible par 9 :',
+							},
+							{
+								text: '$$&1+&2+&5=[_&1+&2+&5_]$$ est divisible par 9.',
+							},
+						],
+						[
+							{
+								text: "$$[°&1&2&5°]$$ n'est pas divisible par 9 car la somme de ses chiffres n'est pas divisible par 9 :",
+							},
+							{
+								text: "$$&1+&2+&5=[_&1+&2+&5_]$$ n'est pas divisible par 9.",
+							},
+						],
 					],
+					solutions: [[0], [1]],
 					options: ['no-shuffle-choices'],
 					defaultDelay: 15,
 					grade: CM2,
 				},
+				// {
+				// 	description: 'Utiliser un critère de divisibilité',
+				// 	subdescription: 'Par 9',
+				// 	enounces: ['Le nombre $$[_&1_]$$ est-il divisible par 3 ?'],
+				// 	variables: [
+				// 		{ '&1': '9*$e[21;333]' },
+				// 		{ '&1': '9*$e[21;110]+$e[1;8]' },
+				// 	],
+
+				// 	choices: [[{ text: 'Oui' }, { text: 'Non' }]],
+				// 	// corrections: [
+				// 	//   'Entre $$[._&6_]$$ et $$[._&7_]$$ le plus petit est ',
+				// 	// ],
+				// 	solutions: [['mod(&1;9)=0 ?? 0 :: 1']],
+				// 	correctionFormat: [
+				// 		{
+				// 			correct: ['$$9$$ est un diviseur de $$[_&1_]$$ ? &answer'],
+				// 			answer: ' &answer',
+				// 		},
+				// 	],
+				// 	options: ['no-shuffle-choices'],
+				// 	defaultDelay: 15,
+				// 	grade: CM2,
+				// },
 			],
 			'Division euclidienne': [
 				{
@@ -5213,12 +5290,10 @@ const questions = {
 					],
 					correctionFormat: [
 						{
-							correct: [
-								"L'expression est &answer.",
-							],
+							correct: ["L'expression est &answer."],
 						},
 					],
-					options:['no-penalty-for-explicit-products '],
+					options: ['no-penalty-for-explicit-products '],
 					type: 'enonce',
 					defaultDelay: 20,
 					grade: CINQUIEME,
@@ -6101,29 +6176,29 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\bold{\\textcolor{${color1}}{[._&3_]}} + \\bold{\\textcolor{${color1}}{[._&4_]}} + \\bold{\\textcolor{${color2}}{[._&5_]}} + \\bold{\\textcolor{${color2}}{[._&6_]}} \
               &=  \\bold{\\textcolor{${color1}}{[._&3+&4_]}} + \\bold{\\textcolor{${color2}}{[._&5+&6_]}} \\\\ \
               &=  &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\bold{\\textcolor{${color1}}{[._&3_]}} + \\bold{\\textcolor{${color2}}{[._&5_]}} + \\bold{\\textcolor{${color1}}{[._&4_]}} + \\bold{\\textcolor{${color2}}{[._&6_]}} \
               &=  \\bold{\\textcolor{${color1}}{[._&3+&4_]}} + \\bold{\\textcolor{${color2}}{[._&5+&6_]}} \\\\ \
               &=  &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\bold{\\textcolor{${color1}}{[._&3_]}} + \\bold{\\textcolor{${color2}}{[._&5_]}} + \\bold{\\textcolor{${color2}}{[._&6_]}} + \\bold{\\textcolor{${color1}}{[._&4_]}} \
               &=  \\bold{\\textcolor{${color1}}{[._&3+&4_]}} + \\bold{\\textcolor{${color2}}{[._&5+&6_]}} \\\\ \
               &=  &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -6310,7 +6385,9 @@ const questions = {
 					solutions: [['[._&3*&4:10^(&1+&2-2)_]']],
 					correctionFormat: [
 						{
-							correct: ['$$[._&3:10^(&1-1)_] \\times [._&4:10^(&2-1)_]=$$&answer'],
+							correct: [
+								'$$[._&3:10^(&1-1)_] \\times [._&4:10^(&2-1)_]=$$&answer',
+							],
 						},
 					],
 					correctionDetails: [
@@ -7671,7 +7748,8 @@ const questions = {
 			'Sur la droite graduée': [
 				{
 					description: 'Calculer une somme ou une différence',
-					subdescription: "A l'aide de la droite graduée, entre $$-4$$ et $$4$$.",
+					subdescription:
+						"A l'aide de la droite graduée, entre $$-4$$ et $$4$$.",
 					enounces: ["Calcule en t'aidant de la droite graduée."],
 					expressions: ['(-&1)+&2', '(-&1)-&2', '&1-&2'],
 					variables: [
@@ -7688,7 +7766,8 @@ const questions = {
 				},
 				{
 					description: 'Calculer une somme ou une différence',
-					subdescription: "A l'aide de la droite graduée, entre $$-7$$ et $$7$$.",
+					subdescription:
+						"A l'aide de la droite graduée, entre $$-7$$ et $$7$$.",
 					enounces: ["Calcule en t'aidant de la droite graduée."],
 					expressions: ['(-&1)+&2', '(-&1)-&2', '&1-&2'],
 					variables: [
@@ -7757,7 +7836,7 @@ const questions = {
 					grade: CINQUIEME,
 				},
 			],
-			'Sommes': [
+			Sommes: [
 				{
 					description: 'Ajouter 1 ou 2 à un nombre négatif',
 					expressions: ['(-&1)+1', '(-&1)+2'],
@@ -7766,7 +7845,7 @@ const questions = {
 
 					defaultDelay: 20,
 					grade: CINQUIEME,
-				},				
+				},
 				{
 					description: 'Ajouter 2 nombres opposés',
 					expressions: ['(-&1)+&1', '&1+(-&1)'],
@@ -7792,7 +7871,7 @@ const questions = {
 
 					defaultDelay: 20,
 					grade: CINQUIEME,
-				},				
+				},
 				{
 					description: 'Ajouter deux nombres négatifs',
 					expressions: ['(-&1)+(-&2)'],
@@ -7890,8 +7969,7 @@ const questions = {
 					grade: CINQUIEME,
 				},
 			],
-			'Différences': [
-				
+			Différences: [
 				{
 					description: 'Enlever 1 ou 2 à un nombre négatif',
 					expressions: ['(-&1)-1', '(-&1)-2'],
@@ -7901,7 +7979,7 @@ const questions = {
 					defaultDelay: 20,
 					grade: CINQUIEME,
 				},
-				
+
 				{
 					description:
 						'Enlever un nombre positif à un nombre positif en dépassant 0',
@@ -7940,7 +8018,6 @@ const questions = {
 				},
 			],
 			'Sommes algébriques': [
-		
 				{
 					description: "Simplifier l'écriture",
 					enounces: ['Simplifie les doubles signes de cette expression.'],
@@ -7981,12 +8058,18 @@ const questions = {
 					description: 'Calculer une somme algébrique',
 					subdescription: 'Avec écriture simplifiée',
 					enounces: ['Calcule.'],
-					expressions: [
-						'[_&1_][+_&2_][+_&3_][+_&4_]',
-						
+					expressions: ['[_&1_][+_&2_][+_&3_][+_&4_]'],
+					variables: [
+						{
+							'&1': '$er[2;9]',
+							'&2': '$er[2;9]',
+							'&3': '$er[2;9]',
+							'&4': '$er[2;9]',
+						},
 					],
-					variables: [{ '&1': '$er[2;9]', '&2': '$er[2;9]', '&3': '$er[2;9]', '&4': '$er[2;9]',  }],
-					conditions:['abs(&1)/(&1)+abs(&2)/(&2)+abs(&3)/(&3)+abs(&4)/(&4)>-4 && abs(&1)/(&1)+abs(&2)/(&2)+abs(&3)/(&3)+abs(&4)/(&4)<4 '],
+					conditions: [
+						'abs(&1)/(&1)+abs(&2)/(&2)+abs(&3)/(&3)+abs(&4)/(&4)>-4 && abs(&1)/(&1)+abs(&2)/(&2)+abs(&3)/(&3)+abs(&4)/(&4)<4 ',
+					],
 					defaultDelay: 20,
 					grade: CINQUIEME,
 				},
@@ -9008,14 +9091,14 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '@@ &5<&6 ?? $$\\frac{&2}{&3} = \\frac{&2 \\textcolor{${color1}}{\\times &1}}{&3 \\textcolor{${color1}}{\\times &1}} = \\frac{[_&2*&1_]}{[_&3*&1_]}$$ et $$\\frac{[_&2*&1_]}{[_&3*&1_]}<\\frac{&4}{[_&3*&1_]}$$, donc $$&sol <\\frac{&4}{[_&3*&1_]$$@@ \
-              @@ &5>&6 ?? $$\\frac{&2}{&3} = \\frac{&2 \\textcolor{${color1}}{\\times &1}}{&3 \\textcolor{${color1}}{\\times &1}} = \\frac{[_&2*&1_]}{[_&3*&1_]}$$ et $$\\frac{[_&2*&1_]}{[_&3*&1_]}>\\frac{&4}{[_&3*&1_]}$$, donc $$\\frac{&2}{&3}>&sol $$@@',
+								text: `@@ &5<&6 ?? $$\\frac{&2}{&3} = \\frac{&2 \\textcolor{${color1}}{\\times &1}}{&3 \\textcolor{${color1}}{\\times &1}} = \\frac{[_&2*&1_]}{[_&3*&1_]}$$ et $$\\frac{[_&2*&1_]}{[_&3*&1_]}<\\frac{&4}{[_&3*&1_]}$$, donc $$&sol <\\frac{&4}{[_&3*&1_]$$@@ \
+              @@ &5>&6 ?? $$\\frac{&2}{&3} = \\frac{&2 \\textcolor{${color1}}{\\times &1}}{&3 \\textcolor{${color1}}{\\times &1}} = \\frac{[_&2*&1_]}{[_&3*&1_]}$$ et $$\\frac{[_&2*&1_]}{[_&3*&1_]}>\\frac{&4}{[_&3*&1_]}$$, donc $$\\frac{&2}{&3}>&sol $$@@`,
 							},
 						],
 						[
 							{
-								text: '@@ &5<&6 ?? $$\\frac{&3}{&2} = \\frac{&3 \\textcolor{${color1}}{\\times &1}}{&2 \\textcolor{${color1}}{\\times &1}} = \\frac{[_&3*&1_]}{[_&2*&1_]}$$ et $$\\frac{[_&3*&1_]}{[_&2*&1_]}<\\frac{&4}{[_&2*&1_]}$$, donc $$&sol <\\frac{&4}{[_&2*&1_]$$@@ \
-              @@ &5>&6 ?? $$\\frac{&3}{&2} = \\frac{&3 \\textcolor{${color1}}{\\times &1}}{&2 \\textcolor{${color1}}{\\times &1}} = \\frac{[_&3*&1_]}{[_&2*&1_]}$$ et $$\\frac{[_&3*&1_]}{[_&2*&1_]}>\\frac{&4}{[_&2*&1_]}$$, donc $$\\frac{&3}{&2}>&sol $$@@',
+								text: `@@ &5<&6 ?? $$\\frac{&3}{&2} = \\frac{&3 \\textcolor{${color1}}{\\times &1}}{&2 \\textcolor{${color1}}{\\times &1}} = \\frac{[_&3*&1_]}{[_&2*&1_]}$$ et $$\\frac{[_&3*&1_]}{[_&2*&1_]}<\\frac{&4}{[_&2*&1_]}$$, donc $$&sol <\\frac{&4}{[_&2*&1_]$$@@ \
+              @@ &5>&6 ?? $$\\frac{&3}{&2} = \\frac{&3 \\textcolor{${color1}}{\\times &1}}{&2 \\textcolor{${color1}}{\\times &1}} = \\frac{[_&3*&1_]}{[_&2*&1_]}$$ et $$\\frac{[_&3*&1_]}{[_&2*&1_]}>\\frac{&4}{[_&2*&1_]}$$, donc $$\\frac{&3}{&2}>&sol $$@@`,
 							},
 						],
 					],
@@ -9749,12 +9832,10 @@ const questions = {
 			Inverse: [
 				{
 					description: "Calculer l'inverse d'un nombre",
-					enounces: [
-						"Quel est l'inverse de ce nombre :",
-					],
+					enounces: ["Quel est l'inverse de ce nombre :"],
 					expressions: ['&1', '1/&1', '&1/&2'],
 					variables: [{ '&1': '$e[2;19]', '&2': '$e[2;19]\\{cd(&1)}' }],
-					answerFields:["L'inverse de ce nombre est $$?$$."],
+					answerFields: ["L'inverse de ce nombre est $$?$$."],
 					solutions: [['1/&1'], ['&1'], ['&2/&1']],
 					correctionFormat: [
 						{
@@ -13572,7 +13653,7 @@ const questions = {
 						{ '&1': 'pi' },
 					],
 					choices: [[{ text: 'Oui' }, { text: 'Non' }]],
-					
+
 					correctionDetails: [
 						[
 							{
@@ -13613,7 +13694,9 @@ const questions = {
 							},
 						],
 						[
-							{ text: '&solution, &expression existe car $$\\pi$$ est positif.' },
+							{
+								text: '&solution, &expression existe car $$\\pi$$ est positif.',
+							},
 							{
 								text: "On ne peut pas mettre &expression sous la forme d'un nombre décimal.",
 							},
@@ -13754,12 +13837,12 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\sqrt{[_&1*&1*&3_]} + \\sqrt{[_&2*&2*&3_]} &= \\sqrt{[_&1*&1_]} \\times \\sqrt{&3} + \\sqrt{[_&2*&2_]} \\times \\sqrt{&3} \\\\ \
               &= &1 \\times \\textcolor{${color1}}{\\sqrt{&3}} + &2 \\times \\textcolor{${color1}}{\\sqrt{&3}} \\\\ \
               &= &1 \\textcolor{${color1}}{\\sqrt{&3}} + &2 \\textcolor{${color1}}{\\sqrt{&3}} \\\\ \
               &= &sol  \\\\ \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -13787,7 +13870,7 @@ const questions = {
 					conditions: ['true', '&2+(&3) !=1'],
 					solutions: [[0], [1]],
 					options: ['no-shuffle-choices'],
-					
+
 					correctionDetails: [
 						[
 							{
@@ -15033,7 +15116,6 @@ const questions = {
 					grade: SIXIEME,
 				},
 			],
-			
 		},
 	},
 	'Calcul littéral': {
@@ -15043,9 +15125,7 @@ const questions = {
 					description: 'Calcule en substituant les variables',
 					subdescription:
 						'Expressions simples. Pas de simplification de la multiplication.',
-					enounces: [
-						'Calcule avec $$&1=&2$$.',
-					],
+					enounces: ['Calcule avec $$&1=&2$$.'],
 					expressions: ['&3*&1', '&1*&3', '&3+&1', '&1+&3'],
 					variables: [
 						{
@@ -15089,9 +15169,7 @@ const questions = {
 					description: 'Calculer en substituant les variables',
 					subdescription:
 						'Expressions simples. Simplification de la multiplication.',
-					enounces: [
-						'Calcule avec $$&1=&2$$',
-					],
+					enounces: ['Calcule avec $$&1=&2$$'],
 					expressions: ['&3&1', '&3+&1'],
 					variables: [
 						{
@@ -15237,50 +15315,50 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &3 \\textcolor{${color1}}{&1} [+_&4_] \
               &= &3 \\times \\textcolor{${color1}}{&2} [+_&4_] \\\\ \
               &= [_&3*(&2)_] [+_&4_]  \\\\ \
               &=  &sol  \\\\ \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &3 \\textcolor{${color1}}{&1} [+_&4_] \
               &= &3 \\times  \\textcolor{${color1}}{\\left( &2 \\right) } [+_&4_] \\\\ \
               &= [_&3*(&2)_] [+_&4_]  \\\\ \
               &=  &sol  \\\\ \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &4 [+_&3_] \\textcolor{${color1}}{&1} \
               &= &4 [+_&3_] \\times \\textcolor{${color1}}{&2} \\\\ \
               &= &4  [+_&3*&2_]  \\\\ \
-              &=  &sol  \\\\ \\end{align}$$',
+              &=  &sol  \\\\ \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &4 [+_&3_] \\textcolor{${color1}}{&1} \
               &= &4 [+_&3_] \\times  \\textcolor{${color1}}{\\left( &2 \\right)}  \\\\ \
               &= &4 [+_&3*(&2)_]  \\\\ \
-              &=  &sol  \\\\ \\end{align}$$',
+              &=  &sol  \\\\ \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &4 \\textcolor{${color2}}{&5}  [+_&3_] \\textcolor{${color1}}{&1} \
               &= &4 \\times \\textcolor{${color2}}{&6} [+_&3_] \\times \\textcolor{${color1}}{&2} \\\\ \
               &= [_&4*&6_] [+_&3*&2_]  \\\\ \
               &=  &sol  \\\\ \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -15565,32 +15643,32 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &2\\textcolor{${color1}}{&1}+&3\\textcolor{${color1}}{&1}+&5\\textcolor{${color2}}{&4}+&6\\textcolor{${color2}}{&4} \
               &= (&2+&3) \\times \\textcolor{${color1}}{&1} + (&5+&6) \\times \\textcolor{${color2}}{&4} \\\\ \
               &= [_&2+&3_] \\times \\textcolor{${color1}}{&1} + [_&5+&6_] \\times \\textcolor{${color2}}{&4} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &2\\textcolor{${color1}}{&1} + &5\\textcolor{${color2}}{&4} + &3\\textcolor{${color1}}{&1}+&6\\textcolor{${color2}}{&4} \
               &= (&2+&3) \\times \\textcolor{${color1}}{&1} + (&5+&6) \\times \\textcolor{${color2}}{&4} \\\\ \
               &= [_&2+&3_] \\times \\textcolor{${color1}}{&1} + [_&5+&6_] \\times \\textcolor{${color2}}{&4} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &2\\textcolor{${color1}}{&1} + &5\\textcolor{${color2}}{&4} + &6\\textcolor{${color2}}{&4} + &3\\textcolor{${color1}}{&1} \
               &= (&2+&3) \\times \\textcolor{${color1}}{&1} + (&5+&6) \\times \\textcolor{${color2}}{&4} \\\\ \
               &= [_&2+&3_] \\times \\textcolor{${color1}}{&1} + [_&5+&6_] \\times \\textcolor{${color2}}{&4} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -15804,170 +15882,170 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &1 \\times \\bold{\\textcolor{${color1}}{(-&2) \\times &3}} \
               &= &1 \\times \\bold{\\textcolor{${color1}}{(-[_&2*&3_])}} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (-&2) \\times &1 \\times &3 \
               &= \\bold{\\textcolor{${color1}}{(-&2) \\times &3}} \\times &1 \\\\ \
               &=  \\bold{\\textcolor{${color1}}{(-[_&2*&3_])}} \\times &1 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\bold{\\textcolor{${color1}}{&3 \\times (-&2)}} \\times &1 \
               &=  \\bold{\\textcolor{${color1}}{(-[_&2*&3_])}} \\times &1 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &1 \\times \\bold{\\textcolor{${color1}}{&2 \\times (-&3)}} \
               &= &1 \\times \\bold{\\textcolor{${color1}}{(-[_&2*&3_])}} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &2 \\times &1 \\times (-&3) \
               &= \\bold{\\textcolor{${color1}}{&2 \\times (-&3)}} \\times &1 \\\\ \
               &=  \\bold{\\textcolor{${color1}}{(-[_&2*&3_])}} \\times &1 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\bold{\\textcolor{${color1}}{(-&3) \\times &2}} \\times &1 \
               &=  \\bold{\\textcolor{${color1}}{(-[_&2*&3_])}} \\times &1 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &1 \\times \\bold{\\textcolor{${color1}}{(-&2) \\times (-&3)}} \
               &= &1 \\times \\bold{\\textcolor{${color1}}{[_&2*&3_]}} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (-&2) \\times &1 \\times (-&3) \
               &=  \\bold{\\textcolor{${color1}}{(-&2) \\times (-&3)}} \\times &1 \\\\ \
               &=  \\bold{\\textcolor{${color1}}{[_&2*&3_]}} \\times &1 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\bold{\\textcolor{${color1}}{(-&3) \\times (-&2)}} \\times &1 \
               &=  \\bold{\\textcolor{${color1}}{[_&2*&3_]}} \\times &1 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (-&1) \\times \\bold{\\textcolor{${color1}}{(-&2) \\times &3}} \
               &=  (-&1) \\times \\bold{\\textcolor{${color1}}{([_-&2*&3_])}} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (-&2) \\times (-&1) \\times &3 \
               &=  \\bold{\\textcolor{${color1}}{(-&2) \\times &3}} \\times (-&1) \\\\ \
               &=  \\bold{\\textcolor{${color1}}{([_-&2*&3_])}} \\times (-&1) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\bold{\\textcolor{${color1}}{&3 \\times (-&2)}} \\times (-&1) \
               &=  \\bold{\\textcolor{${color1}}{([_-&2*&3_])}} \\times (-&1) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (-&1) \\times \\bold{\\textcolor{${color1}}{&2 \\times (-&3)}} \
               &=  (-&1) \\times \\bold{\\textcolor{${color1}}{([_-&2*&3_])}} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &2 \\times (-&1) \\times (-&3) \
               &=  \\bold{\\textcolor{${color1}}{&2 \\times (-&3)}} \\times (-&1) \\\\ \
               &=  \\bold{\\textcolor{${color1}}{([_-&2*&3_])}} \\times (-&1) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\bold{\\textcolor{${color1}}{(-&3) \\times &2}} \\times (-&1) \
               &=  \\bold{\\textcolor{${color1}}{([_-&2*&3_])}} \\times (-&1) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (-&1) \\times \\bold{\\textcolor{${color1}}{(-&2) \\times (-&3)}} \
               &=  (-&1) \\times  \\bold{\\textcolor{${color1}}{[_&2*&3_]}} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (-&2) \\times (-&1) \\times (-&3) \
               &=  \\bold{\\textcolor{${color1}}{(-&2) \\times (-&3)}} \\times (-&1) \\\\ \
               &=  \\bold{\\textcolor{${color1}}{[_&2*&3_]}} \\times (-&1) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\bold{\\textcolor{${color1}}{(-&3) \\times (-&2)}} \\times (-&1) \
               &=  \\bold{\\textcolor{${color1}}{[_&2*&3_]}} \\times (-&1) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -15999,32 +16077,32 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               [_&2&1^2_][+_&3&1_][+_&4_][+_&5&1^2_][+_&6&1_][+_&7_] \
               &= (&2[+_&5_]) \\times &1^2 + (&3[+_&6_]) \\times &1 [+_&4_] [+_&7_] \\\\ \
               &= [_&2+(&5)_] \\times &1^2  [+_&3+(&6)_] \\times &1 [+_&4+(&7)_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               [_&2&1_][+_&3&1^2_][+_&4_][+_&5&1^2_][+_&6&1_][+_&7_] \
               &= (&3[+_&5_]) \\times &1^2 + (&2[+_&6_]) \\times &1 [+_&4_] [+_&7_] \\\\ \
               &= [_&3+(&5)_] \\times &1^2  [+_&2+(&6)_] \\times &1 [+_&4+(&7)_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               [_&2&1_][+_&3_][+_&4^2_][+_&5&1^2_][+_&6&1_][+_&7_] \
               &= (&4[+_&5_]) \\times &1^2 + (&2[+_&6_]) \\times &1 [+_&3_] [+_&7_] \\\\ \
               &= [_&4+(&5)_] \\times &1^2  [+_&2+(&6)_] \\times &1 [+_&3+(&7)_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -16167,74 +16245,74 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1}(&2+&3) \
               &= \\textcolor{${color1}}{&1} \\times &2 + \\textcolor{${color1}}{&1} \\times &3 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1}(&3+&2) \
               &= \\textcolor{${color1}}{&1} \\times &3 + \\textcolor{${color1}}{&1} \\times &2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (&2+&3) \\times \\textcolor{${color1}}{&1} \
               &= &2 \\times \\textcolor{${color1}}{&1} + &3 \\times \\textcolor{${color1}}{&1} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (&3+&2) \\times \\textcolor{${color1}}{&1} \
               &= &3 \\times \\textcolor{${color1}}{&1} + &2 \\times \\textcolor{${color1}}{&1} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1}(&2-&3) \
               &= \\textcolor{${color1}}{&1} \\times &2 - \\textcolor{${color1}}{&1} \\times &3 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1}(&3-&2) \
               &= \\textcolor{${color1}}{&1} \\times &3 - \\textcolor{${color1}}{&1} \\times &2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (&2-&3) \\times \\textcolor{${color1}}{&1} \
               &= &2 \\times \\textcolor{${color1}}{&1} - &3 \\times \\textcolor{${color1}}{&1} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (&3-&2) \\times \\textcolor{${color1}}{&1} \
               &= &3 \\times \\textcolor{${color1}}{&1} - &2 \\times \\textcolor{${color1}}{&1} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -16296,146 +16374,146 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1}(&2+[_&3&4_]) \
               &= \\textcolor{${color1}}{&1} \\times &2 + \\textcolor{${color1}}{&1} \\times [_&3&4_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1}([_&3&4_]+&2) \
               &= \\textcolor{${color1}}{&1} \\times [_&3&4_] + \\textcolor{${color1}}{&1} \\times &2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (&2+[_&3&4_]) \\times \\textcolor{${color1}}{&1} \
               &=   &2 \\times \\textcolor{${color1}}{&1} +[_&3&4_] \\times \\textcolor{${color1}}{&1} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               ([_&3&4_]+&2) \\times \\textcolor{${color1}}{&1} \
               &=  [_&3&4_] \\times \\textcolor{${color1}}{&1} + &2 \\times \\textcolor{${color1}}{&1}  \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&4}(&2+[_&3&4_]) \
               &= \\textcolor{${color1}}{&4} \\times &2 + \\textcolor{${color1}}{&4} \\times [_&3&4_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&4}([_&3&4_]+&2) \
               &= \\textcolor{${color1}}{&4} \\times [_&3&4_] + \\textcolor{${color1}}{&4} \\times &2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (&2+[_&3&4_]) \\times \\textcolor{${color1}}{&4} \
               &=   &2 \\times \\textcolor{${color1}}{&4} +[_&3&4_] \\times \\textcolor{${color1}}{&4} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               ([_&3&4_]+&2) \\times \\textcolor{${color1}}{&4} \
               &=  [_&3&4_] \\times \\textcolor{${color1}}{&4} + &2 \\times \\textcolor{${color1}}{&4}  \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1}(&2 - [_&3&4_]) \
               &= \\textcolor{${color1}}{&1} \\times &2 - \\textcolor{${color1}}{&1} \\times [_&3&4_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1}([_&3&4_]-&2) \
               &= \\textcolor{${color1}}{&1} \\times [_&3&4_] - \\textcolor{${color1}}{&1} \\times &2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (&2-[_&3&4_]) \\times \\textcolor{${color1}}{&1} \
               &=   &2 \\times \\textcolor{${color1}}{&1} - [_&3&4_] \\times \\textcolor{${color1}}{&1} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               ([_&3&4_] - &2) \\times \\textcolor{${color1}}{&1} \
               &=  [_&3&4_] \\times \\textcolor{${color1}}{&1} - &2 \\times \\textcolor{${color1}}{&1}  \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&4}(&2 - [_&3&4_]) \
               &= \\textcolor{${color1}}{&4} \\times &2 - \\textcolor{${color1}}{&4} \\times [_&3&4_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&4}([_&3&4_] - &2) \
               &= \\textcolor{${color1}}{&4} \\times [_&3&4_] - \\textcolor{${color1}}{&4} \\times &2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (&2-[_&3&4_]) \\times \\textcolor{${color1}}{&4} \
               &=   &2 \\times \\textcolor{${color1}}{&4} - [_&3&4_] \\times \\textcolor{${color1}}{&4} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               ([_&3&4_]+&2) \\times \\textcolor{${color1}}{&4} \
               &=  [_&3&4_] \\times \\textcolor{${color1}}{&4} - &2 \\times \\textcolor{${color1}}{&4}  \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -16476,148 +16554,148 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1}(&2[+_&3&4_]) \
               &=   &2 \\times \\textcolor{${color1}}{&1} [+_&3&4_] \\times \\textcolor{${color1}}{&1} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1}([_&3&4_][+_&2_]) \
               &=    [_&3&4_] \\times \\textcolor{${color1}}{&1}  [+_&2_] \\times \\textcolor{${color1}}{&1}\\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{-&1}(&2[+_&3&4_]) \
               &=   &2 \\times \\textcolor{${color1}}{(-&1)} [+_&3&4_] \\times \\textcolor{${color1}}{(-&1)} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{-&1}([_&3&4_][+_&2_]) \
               &=    [_&3&4_] \\times \\textcolor{${color1}}{(-&1)}  [+_&2_] \\times \\textcolor{${color1}}{(-&1)}\\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (&2[+_&3&4_]) \\times \\textcolor{${color1}}{&1} \
               &=   &2 \\times \\textcolor{${color1}}{&1} [+_&3&4_] \\times \\textcolor{${color1}}{&1} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               ([_&3&4_][+_&2_]) \\times \\textcolor{${color1}}{&1} \
               &=    [_&3&4_] \\times \\textcolor{${color1}}{&1}  [+_&2_] \\times \\textcolor{${color1}}{&1}\\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (&2[+_&3&4_]) \\times \\textcolor{${color1}}{(-&1)} \
               &=   &2 \\times \\textcolor{${color1}}{(-&1)} [+_&3&4_] \\times \\textcolor{${color1}}{(-&1)} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               ([_&3&4_][+_&2_]) \\times \\textcolor{${color1}}{(-&1)} \
               &=    [_&3&4_] \\times \\textcolor{${color1}}{(-&1)}  [+_&2_] \\times \\textcolor{${color1}}{(-&1)}\\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&4}(&2[+_&3&4_]) \
               &=   &2 \\times \\textcolor{${color1}}{&4} [+_&3&4_] \\times \\textcolor{${color1}}{&4} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&4}([_&3&4_][+_&2_]) \
               &=    [_&3&4_] \\times \\textcolor{${color1}}{&4}  [+_&2_] \\times \\textcolor{${color1}}{&4}\\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (&2[+_&3&4_]) \\times \\textcolor{${color1}}{&4} \
               &=   &2 \\times \\textcolor{${color1}}{&4} [+_&3&4_] \\times \\textcolor{${color1}}{&4} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               ([_&3&4_][+_&2_]) \\times \\textcolor{${color1}}{&4} \
               &=    [_&3&4_] \\times \\textcolor{${color1}}{&4}  [+_&2_] \\times \\textcolor{${color1}}{&4}\\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{-&4}(&2[+_&3&4_]) \
               &=   &2 \\times \\textcolor{${color1}}{(-&4)} [+_&3&4_] \\times \\textcolor{${color1}}{(-&4)} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{-&4}([_&3&4_][+_&2_]) \
               &=    [_&3&4_] \\times \\textcolor{${color1}}{(-&4)}  [+_&2_] \\times \\textcolor{${color1}}{(-&4)}\\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (&2[+_&3&4_]) \\times \\textcolor{${color1}}{(-&4)} \
               &=   &2 \\times \\textcolor{${color1}}{(-&4)} [+_&3&4_] \\times \\textcolor{${color1}}{(-&4)} \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               ([_&3&4_][+_&2_]) \\times \\textcolor{${color1}}{(-&4)} \
               &=    [_&3&4_] \\times \\textcolor{${color1}}{(-&4)}  [+_&2_] \\times \\textcolor{${color1}}{(-&4)}\\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -16667,42 +16745,42 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (\\textcolor{${color1}}{&1}+\\textcolor{${color2}}{[_&2&3_]})(&4+[_&5&3_]) \
               &= \\textcolor{${color1}}{&1} \\times &4 + \\textcolor{${color1}}{&1} \\times [_&5&3_] + \\textcolor{${color2}}{[_&2&3_]} \\times &4 + \\textcolor{${color2}}{[_&2&3_]} \\times [_&5&3_] \\\\ \
               &= [_&1*&4_] +   [_&5*&1&3_] + [_&2*&4&3_] + [_&2&3*&5&3_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (\\textcolor{${color2}}{[_&2&3_]} + \\textcolor{${color1}}{&1})(&4+[_&5&3_]) \
               &= \\textcolor{${color2}}{[_&2&3_]} \\times &4 + \\textcolor{${color2}}{[_&2&3_]} \\times [_&5&3_] + \\textcolor{${color1}}{&1} \\times &4 + \\textcolor{${color1}}{&1} \\times [_&5&3_]  \\\\ \
               &= [_&2*&4&3_] + [_&2&3*&5&3_] + [_&1*&4_] +   [_&5*&1&3_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (\\textcolor{${color1}}{&1}+\\textcolor{${color2}}{[_&2&3_]})([_&5&3_]+&4) \
               &= \\textcolor{${color1}}{&1} \\times [_&5&3_] + \\textcolor{${color1}}{&1} \\times &4 + \\textcolor{${color2}}{[_&2&3_]} \\times [_&5&3_] + \\textcolor{${color2}}{[_&2&3_]} \\times &4 \\\\ \
               &= [_&5*&1&3_] + [_&1*&4_] + [_&2&3*&5&3_]  + [_&2*&4&3_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (\\textcolor{${color2}}{[_&2&3_]} + \\textcolor{${color1}}{&1})([_&5&3_]+&4) \
               &= \\textcolor{${color2}}{[_&2&3_]} \\times [_&5&3_] + \\textcolor{${color2}}{[_&2&3_]} \\times &4 + \\textcolor{${color1}}{&1} \\times [_&5&3_] + \\textcolor{${color1}}{&1} \\times &4  \\\\ \
               &= [_&2&3*&5&3_] + [_&2*&4&3_] +  [_&5*&1&3_] + [_&1*&4_]  \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -16733,38 +16811,38 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (&1[+_&2&3_])(&4[+_&5&3_]) \
               &= [_&1*(&4)_] [+_&1*(&5)*&3_] [+_&2&3*(&4)_] [+_&2&3*(&5)*&3_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               ([_&2&3_][+_&1_])(&4[+_&5&3_]) \
               &= [_&2&3*(&4)_] [+_&2&3*(&5)*&3_] [+_&1*(&4)_] [+_&1*(&5)*&3_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               ([_&2&3_][+_&1_])([_&5&3_][+_&4_]) \
               &=  [_&2&3*(&5)*&3_] [+_&2&3*(&4)_] [+_&1*(&5)*&3_] [+_&1*(&4)_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               (&1[+_&2&3_])([_&5&3_][+_&4_]) \
               &=  [_&1*(&5)*&3_] [+_&1*(&4)_] [+_&2&3*(&5)*&3_] [+_&2&3*(&4)_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -16798,9 +16876,7 @@ const questions = {
 					],
 					correctionFormat: [
 						{
-							correct: [
-								"Un facteur commun est &answer.",
-							],
+							correct: ['Un facteur commun est &answer.'],
 						},
 					],
 
@@ -16843,80 +16919,80 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1} \\times &2+\\textcolor{${color1}}{&1} \\times &3 \
               &= \\textcolor{${color1}}{&1} \\times (&2+&3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &2 \\times \\textcolor{${color1}}{&1}+\\textcolor{${color1}}{&1} \\times &3 \
               &= \\textcolor{${color1}}{&1} \\times &2 + \\textcolor{${color1}}{&1} \\times &3 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2+&3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1} \\times &2 +  &3 \\times \\textcolor{${color1}}{&1} \
               &= \\textcolor{${color1}}{&1} \\times &2 +  \\textcolor{${color1}}{&1} \\times &3 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2+&3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &2 \\times \\textcolor{${color1}}{&1} + &3 \\times \\textcolor{${color1}}{&1} \
               &= \\textcolor{${color1}}{&1} \\times &2 + \\textcolor{${color1}}{&1} \\times &3 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2+&3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1} \\times &2 - \\textcolor{${color1}}{&1} \\times &3 \
               &= \\textcolor{${color1}}{&1} \\times (&2 - &3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &2 \\times \\textcolor{${color1}}{&1} - \\textcolor{${color1}}{&1} \\times &3 \
               &= \\textcolor{${color1}}{&1} \\times &2 - \\textcolor{${color1}}{&1} \\times &3 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2 - &3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1} \\times &2 -  &3 \\times \\textcolor{${color1}}{&1} \
               &= \\textcolor{${color1}}{&1} \\times &2 -  \\textcolor{${color1}}{&1} \\times &3 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2 - &3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &2 \\times \\textcolor{${color1}}{&1} + &3 \\times \\textcolor{${color1}}{&1} \
               &= \\textcolor{${color1}}{&1} \\times &2 + \\textcolor{${color1}}{&1}  \\times &3 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2 - &3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -16955,9 +17031,7 @@ const questions = {
 					],
 					correctionFormat: [
 						{
-							correct: [
-								"Un facteur commun est &answer,",
-							],
+							correct: ['Un facteur commun est &answer,'],
 						},
 					],
 					solutions: [
@@ -17024,123 +17098,123 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1} \\times &2 + \\textcolor{${color1}}{&1} &3 \
               &= \\textcolor{${color1}}{&1} \\times &2 + \\textcolor{${color1}}{&1}  \\times &3 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2+&3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 \\textcolor{${color1}}{&1} &3 + \\textcolor{${color1}}{&1} \\times &2 \
                &= \\textcolor{${color1}}{&1}  \\times &3 + \\textcolor{${color1}}{&1} \\times &2 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&3+&2) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 \\textcolor{${color1}}{&1} &3 + \\textcolor{${color1}}{&1}&4 \
                &= \\textcolor{${color1}}{&1} \\times &3 + \\textcolor{${color1}}{&1} \\times &4 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&3+&4) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 \\textcolor{${color1}}{&1} &3 - \\textcolor{${color1}}{&1}&4 \
               &=  \\textcolor{${color1}}{&1} \\times &3 - \\textcolor{${color1}}{&1} \\times &4 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&3-&4) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&1} \\times &2 - \\textcolor{${color1}}{&1} &3 \
               &= \\textcolor{${color1}}{&1} \\times &2 - \\textcolor{${color1}}{&1} \\times &3 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2-&3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 \\textcolor{${color1}}{&1} &3 - \\textcolor{${color1}}{&1} \\times &2 \
               &= \\textcolor{${color1}}{&1} \\times &3 - \\textcolor{${color1}}{&1} \\times &2 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&3-&2) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &1\\textcolor{${color1}}{&3} + &2\\textcolor{${color1}}{&3} \
               &= &1 \\times \\textcolor{${color1}}{&3} + &2 \\times \\textcolor{${color1}}{&3} \\\\ \
               &= (&1+&2)\\times \\textcolor{${color1}}{&3}  \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &1\\textcolor{${color1}}{&3} - &2\\textcolor{${color1}}{&3} \
               &= &1  \\times \\textcolor{${color1}}{&3} - &2 \\times \\textcolor{${color1}}{&3} \\\\ \
               &= (&1-&2)\\times \\textcolor{${color1}}{&3}  \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &4\\textcolor{${color1}}{&3} + &1\\textcolor{${color1}}{&3} \
               &= \\textcolor{${color1}}{&3}  \\times &4 + \\textcolor{${color1}}{&3}  \\times &1 \\\\ \
               &= \\textcolor{${color1}}{&3} \\times (&4+&1)  \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&3}&4 + &1\\textcolor{${color1}}{&3} \
               &= \\textcolor{${color1}}{&3} \\times &4 + \\textcolor{${color1}}{&3} \\times &1 \\\\ \
               &= \\textcolor{${color1}}{&3}  \\times (&4+&1) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &4\\textcolor{${color1}}{&3} - &1\\textcolor{${color1}}{&3} \
               &= \\textcolor{${color1}}{&3}  \\times &4 - \\textcolor{${color1}}{&3} \\times &1 \\\\ \
               &= \\textcolor{${color1}}{&3} \\times (&4-&1)  \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{&3}&4 - &1\\textcolor{${color1}}{&3} \
               &= \\textcolor{${color1}}{&3} \\times &4 - \\textcolor{${color1}}{&3} \\times &1 \\\\ \
               &= \\textcolor{${color1}}{&3}  \\times (&4-&1) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -17169,9 +17243,7 @@ const questions = {
 					],
 					correctionFormat: [
 						{
-							correct: [
-								"Le plus grand facteur commun est &answer.",
-							],
+							correct: ['Le plus grand facteur commun est &answer.'],
 						},
 					],
 					correctionDetails: [
@@ -17217,42 +17289,42 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 &1&3+[_&1*&2_]&4 \
               &= \\textcolor{${color1}}{&1} \\times &3+\\textcolor{${color1}}{&1} \\times &2&4 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&3 + &2&4) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2_]&4 + &1&3\
               &= \\textcolor{${color1}}{&1} \\times &2&4 + \\textcolor{${color1}}{&1} \\times &3 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2&4 + &3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 &1&3 - [_&1*&2_]&4 \
               &= \\textcolor{${color1}}{&1} \\times &3 - \\textcolor{${color1}}{&1} \\times &2&4 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&3 - &2&4) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2_]&4 - &1&3\
               &= \\textcolor{${color1}}{&1} \\times &2&4 - \\textcolor{${color1}}{&1} \\times &3 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2&4 - &3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -17281,9 +17353,7 @@ const questions = {
 					],
 					correctionFormat: [
 						{
-							correct: [
-								"Le plus grand facteur commun est &answer,",
-							],
+							correct: ['Le plus grand facteur commun est &answer,'],
 						},
 					],
 					correctionDetails: [
@@ -17332,42 +17402,42 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2_]&5+[_&1*&3_]&4 \
               &= \\textcolor{${color1}}{&1} \\times &2&5 + \\textcolor{${color1}}{&1} \\times &3&4 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2&5 + &3&4) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2_]&5 - [_&1*&3_]&4 \
               &= \\textcolor{${color1}}{&1} \\times &2&5 - \\textcolor{${color1}}{&1} \\times &3&4 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2&5 - &3&4) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2_]&5+[_&1*&3_] \
               &= \\textcolor{${color1}}{&1} \\times &2&5 + \\textcolor{${color1}}{&1} \\times &3 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2&5 + &3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2_]&5-[_&1*&3_] \
               &= \\textcolor{${color1}}{&1} \\times &2&5 - \\textcolor{${color1}}{&1} \\times &3 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2&5 - &3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -17401,42 +17471,42 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 &1+[_&1*&2_]&3 \
               &= \\textcolor{${color1}}{&1} \\times 1 + \\textcolor{${color1}}{&1} \\times &2&3 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (1 + &2&3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2_]&3 + &1 \
               &= \\textcolor{${color1}}{&1} \\times &2&3 + \\textcolor{${color1}}{&1} \\times 1 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2&3 + 1) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 &1 - [_&1*&2_]&3 \
               &= \\textcolor{${color1}}{&1} \\times 1 - \\textcolor{${color1}}{&1} \\times &2&3 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (1 - &2&3) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2_]&3 - &1 \
               &= \\textcolor{${color1}}{&1} \\times &2&3 - \\textcolor{${color1}}{&1} \\times 1 \\\\ \
               &= \\textcolor{${color1}}{&1} \\times (&2&3 - 1) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -17483,82 +17553,82 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2*&4^2_]+[_&1*&3*&4_] \
               &= \\textcolor{${color1}}{[_&5_]&4} \\times [_&6*&4_] + \\textcolor{${color1}}{[_&5_]&4} \\times [_&7_] \\\\ \
               &= \\textcolor{${color1}}{[_&5_]&4} \\times ([_&6*&4_] + [_&7_]) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2*&4_]+[_&1*&3*&4^2_] \
               &= \\textcolor{${color1}}{[_&5_]&4} \\times [_&6_] + \\textcolor{${color1}}{[_&5_]&4} \\times [_&7*&4_] \\\\ \
               &= \\textcolor{${color1}}{[_&5_]&4} \\times ([_&6_] + [_&7*&4_]) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2*&4^2_] - [_&1*&3*&4_] \
               &= \\textcolor{${color1}}{[_&5_]&4} \\times [_&6*&4_] - \\textcolor{${color1}}{[_&5_]&4} \\times [_&7_] \\\\ \
               &= \\textcolor{${color1}}{[_&5_]&4} \\times ([_&6*&4_] - [_&7_]) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2*&4_] - [_&1*&3*&4^2_] \
               &= \\textcolor{${color1}}{[_&5_]&4} \\times [_&6_] - \\textcolor{${color1}}{[_&5_]&4} \\times [_&7*&4_] \\\\ \
               &= \\textcolor{${color1}}{[_&5_]&4} \\times ([_&6_] - [_&7*&4_]) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2*&4^2_]+[_&1*&3_] \
               &= \\textcolor{${color1}}{[_&5_]} \\times [_&6*&4^2_] + \\textcolor{${color1}}{[_&5_]} \\times [_&7_] \\\\ \
               &= \\textcolor{${color1}}{[_&5_]} \\times ([_&6*&4^2_] + [_&7_]) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2_]+[_&1*&3*&4^2_] \
               &= \\textcolor{${color1}}{[_&5_]} \\times [_&6_] + \\textcolor{${color1}}{[_&5_]} \\times [_&7*&4^2_] \\\\ \
               &= \\textcolor{${color1}}{[_&5_]} \\times ([_&6_] + [_&7*&4^2_]) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2*&4^2_] - [_&1*&3_] \
               &= \\textcolor{${color1}}{[_&5_]} \\times [_&6*&4^2_] - \\textcolor{${color1}}{[_&5_]} \\times [_&7_] \\\\ \
               &= \\textcolor{${color1}}{[_&5_]} \\times ([_&6*&4^2_] - [_&7_]) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 [_&1*&2_] - [_&1*&3*&4^2_] \
               &= \\textcolor{${color1}}{[_&5_]} \\times [_&6_] - \\textcolor{${color1}}{[_&5_]} \\times [_&7*&4^2_] \\\\ \
               &= \\textcolor{${color1}}{[_&5_]} \\times ([_&6_] - [_&7*&4^2_]) \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -17622,42 +17692,42 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 (\\textcolor{${color1}}{&1}+\\textcolor{${color2}}{[_&2&3_]})(\\textcolor{${color1}}{&1}-\\textcolor{${color2}}{[_&2&3_]}) \
               &= \\textcolor{${color1}}{&1}^2 -(\\textcolor{${color2}}{[_&2&3_]})^2 \\\\ \
               &= [_&1^2_] -&2^2 \\times &3^2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 (\\textcolor{${color1}}{&1}-\\textcolor{${color2}}{[_&2&3_]})(\\textcolor{${color1}}{&1}+\\textcolor{${color2}}{[_&2&3_]}) \
               &= \\textcolor{${color1}}{&1}^2 -(\\textcolor{${color2}}{[_&2&3_]})^2 \\\\ \
               &= [_&1^2_] -&2^2 \\times &3^2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 (\\textcolor{${color1}}{[_&2&3_]} + \\textcolor{${color2}}{&1})(\\textcolor{${color1}}{[_&2&3_]} - \\textcolor{${color2}}{&1}) \
               &=  (\\textcolor{${color1}}{[_&2&3_]})^2 - \\textcolor{${color2}}{&1}^2 \\\\ \
               &= &2^2 \\times &3^2 - [_&1^2_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 (\\textcolor{${color1}}{[_&2&3_]} - \\textcolor{${color2}}{&1})(\\textcolor{${color1}}{[_&2&3_]} - \\textcolor{${color2}}{&1}) \
               &= (\\textcolor{${color1}}{[_&2&3_]})^2 - \\textcolor{${color2}}{&1}^2 \\\\ \
               &=  &2^2 \\times &3^2 - [_&1^2_] \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -17734,20 +17804,20 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 (\\textcolor{${color1}}{&1}+\\textcolor{${color2}}{&2})^2 \
               &=  \\textcolor{${color1}}{&1}^2 + 2 \\times \\textcolor{${color1}}{&1} \\times \\textcolor{${color2}}{&2} + \\textcolor{${color2}}{&2}^2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 (\\textcolor{${color1}}{&2}+\\textcolor{${color2}}{&1})^2 \
               &=  \\textcolor{${color1}}{&2}^2 + 2 \\times \\textcolor{${color1}}{&2} \\times \\textcolor{${color2}}{&1} + \\textcolor{${color2}}{&1}^2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -17777,20 +17847,20 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 (\\textcolor{${color1}}{&1}-\\textcolor{${color2}}{&2})^2 \
               &=  \\textcolor{${color1}}{&1}^2 - 2 \\times \\textcolor{${color1}}{&1} \\times \\textcolor{${color2}}{&2} + \\textcolor{${color2}}{&2}^2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 (\\textcolor{${color1}}{&2} - \\textcolor{${color2}}{&1})^2 \
               &=  \\textcolor{${color1}}{&2}^2 - 2 \\times \\textcolor{${color1}}{&2} \\times \\textcolor{${color2}}{&1} + \\textcolor{${color2}}{&1}^2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -17818,20 +17888,20 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 (\\textcolor{${color1}}{&1} + \\textcolor{${color2}}{[_&2&3_]})^2 \
               &=  \\textcolor{${color1}}{&1}^2 + 2 \\times \\textcolor{${color1}}{&1} \\times \\textcolor{${color2}}{[_&2&3_]} + (\\textcolor{${color2}}{[_&2&3_]})^2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 (\\textcolor{${color1}}{[_&2&3_]}+\\textcolor{${color2}}{&1})^2 \
               &=  (\\textcolor{${color1}}{[_&2&3_]})^2 + 2 \\times \\textcolor{${color1}}{[_&2&3_]} \\times \\textcolor{${color2}}{&1} + \\textcolor{${color2}}{&1}^2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -17859,20 +17929,20 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 (\\textcolor{${color1}}{&1} - \\textcolor{${color2}}{[_&2&3_]})^2 \
               &=  \\textcolor{${color1}}{&1}^2 - 2 \\times \\textcolor{${color1}}{&1} \\times \\textcolor{${color2}}{[_&2&3_]} + (\\textcolor{${color2}}{[_&2&3_]})^2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 (\\textcolor{${color1}}{[_&2&3_]} - \\textcolor{${color2}}{&1})^2 \
               &=  (\\textcolor{${color1}}{[_&2&3_]})^2 - 2 \\times \\textcolor{${color1}}{[_&2&3_]} \\times \\textcolor{${color2}}{&1} + \\textcolor{${color2}}{&1}^2 \\\\ \
               &= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -18554,51 +18624,51 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 \\textcolor{${color1}}{&2}x = \\frac{[_&2*&3_]}{&1} \
               & \\quad \\lrArr \\quad x = \\frac{[_&2*&3_]}{&1} \\textcolor{${color1}}{\\div &2} \\\\ \
               & \\quad \\lrArr \\quad x = \\frac{[_&2*&3_] \\div &2 }{&1} \\\\ \
               & \\quad \\lrArr \\quad  x= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 x \\textcolor{${color1}}{\\times &2} = \\frac{[_&2*&3_]}{&1} \
               & \\quad \\lrArr \\quad x = \\frac{[_&2*&3_]}{&1} \\textcolor{${color1}}{\\div &2} \\\\ \
               & \\quad \\lrArr \\quad x = \\frac{[_&2*&3_] \\div &2 }{&1} \\\\ \
               & \\quad \\lrArr \\quad  x= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 \\textcolor{${color1}}{&2}x=\\frac{&1}{&3} \
               & \\quad \\lrArr \\quad x = \\frac{&1}{&3} \\textcolor{${color1}}{\\times \\frac{1}{&2}} \\\\ \
               & \\quad \\lrArr \\quad x = \\frac{&1}{&3 \\times &2} \\\\ \
               & \\quad \\lrArr \\quad  x= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 x \\textcolor{${color1}}{\\times &2} = \\frac{&1}{&3} \
               & \\quad \\lrArr \\quad x = \\frac{&1}{&3} \\textcolor{${color1}}{\\times \\frac{1}{&2}} \\\\ \
               & \\quad \\lrArr \\quad x = \\frac{&1}{&3 \\times &2} \\\\ \
               & \\quad \\lrArr \\quad  x= &sol  \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 x \\textcolor{${color1}}{\\times &1} = &2\
                 @@ pgcd(&2;&1) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
                 @@ pgcd(&2;&1) != 1 ?? & \\quad \\lrArr \\quad  x= \\frac{&2}{\\textcolor{${color1}}{&1}} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-                \\end{align}$$',
+                \\end{align}$$`,
 							},
 						],
 						[
@@ -18631,13 +18701,13 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 \\frac{x}{\\textcolor{${color1}}{&2}}=\\frac{&3}{&1} \
               & \\quad \\lrArr \\quad x = \\frac{&3}{&1} \\textcolor{${color1}}{\\times &2} \\\\ \
               & \\quad \\lrArr \\quad x = \\frac{&3 \\times &2}{&1} \\\\ \
               @@ pgcd(&2*&3;&1) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
               @@ pgcd(&2*&3;&1) != 1 ?? & \\quad \\lrArr \\quad  x= \\frac{[_&2*&3_]}{&1} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-              \\end{align}$$',
+              \\end{align}$$`,
 							},
 						],
 					],
@@ -18665,26 +18735,26 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 \\frac{&2}{x}=\\frac{&3}{&1} \
               & \\quad \\lrArr \\quad \\frac{x}{\\textcolor{${color1}}{&2}} = \\frac{&1}{&3} \\\\ \
               & \\quad \\lrArr \\quad x = \\frac{&1}{&3} \\times \\textcolor{${color1}}{&2} \\\\ \
               & \\quad \\lrArr \\quad x = \\frac{&1 \\times &2}{&3} \\\\ \
               @@ pgcd(&2*&1;&3) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
               @@ pgcd(&2*&1;&3) != 1 ?? & \\quad \\lrArr \\quad  x= \\frac{[_&2*&1_]}{&3} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-             \\end{align}$$',
+             \\end{align}$$`,
 							},
 						],
 
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 \\frac{&2}{x}=&1 \
               & \\quad \\lrArr \\quad \\frac{x}{\\textcolor{${color1}}{&2}} = \\frac{1}{&1} \\\\ \
               & \\quad \\lrArr \\quad x = \\frac{1}{&1} \\times \\textcolor{${color1}}{&2} \\\\ \
               @@ pgcd(&1;&2) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
               @@ pgcd(&1;&2) != 1 ?? & \\quad \\lrArr \\quad  x= \\frac{&2}{&1} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-             \\end{align}$$',
+             \\end{align}$$`,
 							},
 						],
 					],
@@ -18710,24 +18780,24 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 &1x\\textcolor{${color1}}{+&2}=0 \
               & \\quad \\lrArr \\quad \\textcolor{${color2}}{&1}x = \\textcolor{${color1}}{-&2}\\\\ \
               & \\quad \\lrArr \\quad x = \\frac{-&2}{\\textcolor{${color2}}{&1}}\\\\ \
               @@ pgcd(&2;&1) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
               @@ pgcd(&2;&1) != 1 ?? & \\quad \\lrArr \\quad  x= -\\frac{&2}{&1} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-             \\end{align}$$',
+             \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 \\textcolor{${color1}}{&2+}&1x=0 \
               & \\quad \\lrArr \\quad \\textcolor{${color2}}{&1}x = \\textcolor{${color1}}{-&2}\\\\ \
               & \\quad \\lrArr \\quad x = \\frac{-&2}{\\textcolor{${color2}}{&1}}\\\\ \
               @@ pgcd(&2;&1) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
               @@ pgcd(&2;&1) != 1 ?? & \\quad \\lrArr \\quad  x= -\\frac{&2}{&1} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-             \\end{align}$$',
+             \\end{align}$$`,
 							},
 						],
 					],
@@ -18769,89 +18839,89 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &1x\\textcolor{${color1}}{+&2}=0 \
               & \\quad \\lrArr \\quad  \\textcolor{${color2}}{&1}x = \\textcolor{${color1}}{-&2} \\\\ \
               & \\quad \\lrArr \\quad  x = \\frac{-&2}{\\textcolor{${color2}}{&1}} \\\\ \
               @@ pgcd(&2;&1) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
             @@ pgcd(&2;&1) != 1 ?? & \\quad \\lrArr \\quad  x= -\\frac{&2}{&1} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-           \\end{align}$$',
+           \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
             \\textcolor{${color1}}{&2}+&1x=0 \
             & \\quad \\lrArr \\quad  \\textcolor{${color2}}{&1}x = \\textcolor{${color1}}{-&2} \\\\ \
             & \\quad \\lrArr \\quad  x = \\frac{-&2}{\\textcolor{${color2}}{&1}} \\\\ \
             @@ pgcd(&2;&1) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
           @@ pgcd(&2;&1) != 1  ?? & \\quad \\lrArr \\quad  x= -\\frac{&2}{&1} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-         \\end{align}$$',
+         \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &1x\\textcolor{${color1}}{-&2}=0 \
               & \\quad \\lrArr \\quad  \\textcolor{${color2}}{&1}x = \\textcolor{${color1}}{&2} \\\\ \
               @@ pgcd(&2;&1) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
             @@ pgcd(&2;&1) != 1  ?? & \\quad \\lrArr \\quad  x= \\frac{&2}{&1} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-           \\end{align}$$',
+           \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
             \\textcolor{${color1}}{-&2}+&1x=0 \
             & \\quad \\lrArr \\quad  \\textcolor{${color2}}{&1}x = \\textcolor{${color1}}{&2} \\\\ \
             @@ pgcd(&2;&1) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
           @@ pgcd(&2;&1) != 1  ?? & \\quad \\lrArr \\quad  x= \\frac{&2}{&1} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-         \\end{align}$$',
+         \\end{align}$$`,
 							},
 						],
 
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               -&1x\\textcolor{${color1}}{+&2}=0 \
               & \\quad \\lrArr \\quad  \\textcolor{${color2}}{-&1}x = \\textcolor{${color1}}{-&2} \\\\ \
               & \\quad \\lrArr \\quad  x = \\frac{-&2}{\\textcolor{${color2}}{-&1}} \\\\ \
               @@ pgcd(&2;&1) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
             @@ pgcd(&2;&1) != 1 ?? & \\quad \\lrArr \\quad  x= \\frac{&2}{&1} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-           \\end{align}$$',
+           \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
             \\textcolor{${color1}}{&2}-&1x=0 \
             & \\quad \\lrArr \\quad  \\textcolor{${color2}}{-&1}x = \\textcolor{${color1}}{-&2} \\\\ \
             & \\quad \\lrArr \\quad  x = \\frac{-&2}{\\textcolor{${color2}}{-&1}} \\\\ \
             @@ pgcd(&2;&1) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
           @@ pgcd(&2;&1) != 1  ?? & \\quad \\lrArr \\quad  x= \\frac{&2}{&1} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-         \\end{align}$$',
+         \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               -&1x\\textcolor{${color1}}{-&2}=0 \
               & \\quad \\lrArr \\quad  \\textcolor{${color2}}{-&1}x = \\textcolor{${color1}}{&2} \\\\ \
               & \\quad \\lrArr \\quad  x = \\frac{&2}{\\textcolor{${color2}}{-&1}} \\\\ \
               @@ pgcd(&2;&1) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
             @@ pgcd(&2;&1) != 1  ?? & \\quad \\lrArr \\quad  x= -\\frac{&2}{&1} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-           \\end{align}$$',
+           \\end{align}$$`,
 							},
 						],
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               \\textcolor{${color1}}{-&2}-&1x=0 \
               & \\quad \\lrArr \\quad  \\textcolor{${color2}}{-&1}x = \\textcolor{${color1}}{&2} \\\\ \
               & \\quad \\lrArr \\quad  x = \\frac{&2}{\\textcolor{${color2}}{-&1}} \\\\ \
               @@ pgcd(&2;&1) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
             @@ pgcd(&2;&1) != 1  ?? & \\quad \\lrArr \\quad  x= -\\frac{&2}{&1} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-           \\end{align}$$',
+           \\end{align}$$`,
 							},
 						],
 					],
@@ -18876,13 +18946,13 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 &3x\\textcolor{${color1}}{+&2}=&1 \
               & \\quad \\lrArr \\quad &3x = &1\\textcolor{${color1}}{-&2} \\\\ \
               & \\quad \\lrArr \\quad \\textcolor{${color2}}{&3}x = [_&1-&2_] \\\\ \
               @@ pgcd(&1-&2;&3) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
               @@ pgcd(&1-&2;&3) != 1 ?? & \\quad \\lrArr \\quad  x= \\frac{[_&1-&2_]}{\\textcolor{${color2}}{&3}} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-             \\end{align}$$',
+             \\end{align}$$`,
 							},
 						],
 					],
@@ -18908,7 +18978,7 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
               &1x\\textcolor{${color1}}{[+_&2_]}=&3 \
               & \\quad \\lrArr \\quad  &1x = &3\\textcolor{${color1}}{[+_-(&2)_]} \\\\  \
               & \\quad \\lrArr \\quad  \\textcolor{${color2}}{&1}x = [_&3-(&2)_] \\\\ \
@@ -18916,7 +18986,7 @@ const questions = {
               @@ pgcd(abs(&3-(&2));&1) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
             @@ pgcd(abs(&3-(&2));&1) != 1 && (&3-(&2))*(&1)>0  ?? & \\quad \\lrArr \\quad  x= \\frac{[_abs(&3-(&2))_]}{[_abs(&1)_]} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
             @@ pgcd(abs(&3-(&2));&1) != 1 && (&3-(&2))*(&1)<0  ?? & \\quad \\lrArr \\quad  x= -\\frac{[_abs(&3-(&2))_]}{[_abs(&1)_]} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-           \\end{align}$$',
+           \\end{align}$$`,
 							},
 						],
 						[
@@ -18955,13 +19025,13 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$\\begin{align} \
+								text: `$$\\begin{align} \
                 &3x\\textcolor{${color1}}{+&2}=\\textcolor{${color2}}{[_&4x_]}+&1 \
               & \\quad \\lrArr \\quad &3x \\textcolor{${color2}}{-[_&4x_]} = &1\\textcolor{${color1}}{-&2} \\\\ \
               & \\quad \\lrArr \\quad \\textcolor{violet}{[_&3-&4_]}x = [_&1-&2_] \\\\ \
               @@ pgcd(&3-&4;&1-&2) = 1 ?? & \\quad \\lrArr \\quad  x= &sol  @@ \
               @@ pgcd(&3-&4;&1-&2) != 1 ?? & \\quad \\lrArr \\quad  x= \\frac{[_&1-&2_]}{\\textcolor{violet}{[_&3-&4_]}} \\\\ & \\quad \\lrArr \\quad  x= &sol  @@ \
-             \\end{align}$$',
+             \\end{align}$$`,
 							},
 						],
 					],
@@ -19929,7 +19999,6 @@ const questions = {
 							},
 						],
 					],
-				
 
 					solutions: [[0]],
 
@@ -20499,9 +20568,7 @@ const questions = {
 					answerFields: ['$$x=\\ldots$$ ou $$x=\\ldots$$'],
 					correctionFormat: [
 						{
-							correct: [
-								"Les solutions sont $$x=$$&answer1 et $$x=$$&answer2",
-							],
+							correct: ['Les solutions sont $$x=$$&answer1 et $$x=$$&answer2'],
 						},
 					],
 					correctionDetails: [
@@ -20540,7 +20607,7 @@ const questions = {
 		'Polynôme du second degré': {
 			Apprivoiser: [
 				{
-					description: "Reconnaître un polynôme du second degré",
+					description: 'Reconnaître un polynôme du second degré',
 					enounces: [
 						"Cette expression est-elle celle d'un polynôme du second degré ?",
 					],
@@ -20586,16 +20653,9 @@ const questions = {
 							'&3': '$er[0;5]',
 							'&4': '$er[1;5]',
 						},
-
-						
 					],
-					choices: [
-						[
-							{ text: 'Oui' },
-							{ text: 'Non' },
-						],
-					],
-					solutions: [[1], [0], [1], [0],[0],[1], ],
+					choices: [[{ text: 'Oui' }, { text: 'Non' }]],
+					solutions: [[1], [0], [1], [0], [0], [1]],
 					correctionDetails: [
 						[
 							{
@@ -20627,9 +20687,8 @@ const questions = {
 								text: "&solution, l'expression &expression est une fraction entre un polynôme du second degré et l'expression d'une fonction affine, ce n'est pas un polynôme.",
 							},
 						],
-					
 					],
-					options:['no-shuffle-choices', 'remove-null-terms'],
+					options: ['no-shuffle-choices', 'remove-null-terms'],
 					defaultDelay: 20,
 					grade: PREMIERE_SPE_MATHS,
 				},
@@ -20849,14 +20908,12 @@ const questions = {
 					grade: PREMIERE_SPE_MATHS,
 				},
 				{
-					description: "Déterminer les coordonnées du sommet",
+					description: 'Déterminer les coordonnées du sommet',
 					enounces: [
-						"Quelles sont les coordonnées du sommet S de la courbe représentative de ce polynôme du second degré ?",
+						'Quelles sont les coordonnées du sommet S de la courbe représentative de ce polynôme du second degré ?',
 					],
-					expressions: [
-						'&1(x[+_&2_])^2[+_&3_]',
-					],
-					answerFields:['$$S\\left( \\, ? \\, ; \\, ? \\, \\right)$$'],
+					expressions: ['&1(x[+_&2_])^2[+_&3_]'],
+					answerFields: ['$$S\\left( \\, ? \\, ; \\, ? \\, \\right)$$'],
 					variables: [
 						{
 							'&1': '$er[2;5]',
@@ -20864,12 +20921,12 @@ const questions = {
 							'&3': '$er[1;5]',
 						},
 					],
-					solutions: [
-						['[_-(&2)_]', '&3'],
-					],
+					solutions: [['[_-(&2)_]', '&3']],
 					correctionFormat: [
 						{
-							correct: ['Les coordonnées sont $$\\left( \\, &ans1 \\, ; \\, &ans2 \\, \\right)$$.'],
+							correct: [
+								'Les coordonnées sont $$\\left( \\, &ans1 \\, ; \\, &ans2 \\, \\right)$$.',
+							],
 						},
 					],
 					correctionDetails: [
@@ -20880,22 +20937,19 @@ const questions = {
 								@@ &2 >0 ?? L'expression &expression se met sous la forme canonique $$&1(x-\\textcolor{${color1}}{[(_-(&2)_]})^2\\textcolor{${color1}}{[+_&3_]}$$ , ce qui nous donne  les coordonnées du sommet $$S\\left( \\, &sol1 \\, ; \\, &sol2 \\, \\right)$$ @@ \
 								`,
 							},
-							
 						],
-						
 					],
 					defaultDelay: 20,
 					grade: PREMIERE_SPE_MATHS,
 				},
 				{
-					description: "Déterminer l'équation de l'axe de symétrie de la parabole",
+					description:
+						"Déterminer l'équation de l'axe de symétrie de la parabole",
 					enounces: [
 						"Quelle est l'équation de l'axe de symétrie de la courbe représentative de ce polynôme du second degré ?",
 					],
-					expressions: [
-						'&1(x[+_&2_])^2[+_&3_]',
-					],
-					answerFields:["L'équation est $$?$$"],
+					expressions: ['&1(x[+_&2_])^2[+_&3_]'],
+					answerFields: ["L'équation est $$?$$"],
 					variables: [
 						{
 							'&1': '$er[2;5]',
@@ -20903,9 +20957,7 @@ const questions = {
 							'&3': '$er[1;5]',
 						},
 					],
-					solutions: [
-						['x=[_-(&2)_]'],
-					],
+					solutions: [['x=[_-(&2)_]']],
 					correctionFormat: [
 						{
 							correct: ["L'équation est  &answer."],
@@ -20919,9 +20971,7 @@ const questions = {
 								@@ &2 >0 ?? L'expression &expression se met sous la forme canonique $$&1(x-\\textcolor{${color1}}{[(_-(&2)_]})^2[+_&3_]$$ , ce qui nous donne l'équation &solution @@ \
 								`,
 							},
-							
 						],
-						
 					],
 					defaultDelay: 20,
 					grade: PREMIERE_SPE_MATHS,
@@ -20930,7 +20980,7 @@ const questions = {
 					description: "Déterminer les racines d'un polynôme du second degré.",
 					subdescription: 'Graphiquement',
 					enounces: [
-						"Quelles sont les racines du polynôme représenté par cette parabole ?",
+						'Quelles sont les racines du polynôme représenté par cette parabole ?',
 					],
 					images: [
 						'polynome-second-degre/trouver-racines/trouver_racines-0-600.png',
@@ -20966,11 +21016,27 @@ const questions = {
 						'polynome-second-degre/trouver-racines/correction_trouver_racines-13-600.png',
 						'polynome-second-degre/trouver-racines/correction_trouver_racines-14-600.png',
 					],
-					answerFields:['Les racines sont $$?$$ et $$?$$'],
-					solutions: [["-3","1"],["-3","-1"],["1","3"],["-2","0"],["1","2"],["0","2"],["-1","2"],["2","3"],["0","3"],["0","1"],["-2","1"],["-1","0"],["-1","1"],["-1","3"],["-2","-1"]],
+					answerFields: ['Les racines sont $$?$$ et $$?$$'],
+					solutions: [
+						['-3', '1'],
+						['-3', '-1'],
+						['1', '3'],
+						['-2', '0'],
+						['1', '2'],
+						['0', '2'],
+						['-1', '2'],
+						['2', '3'],
+						['0', '3'],
+						['0', '1'],
+						['-2', '1'],
+						['-1', '0'],
+						['-1', '1'],
+						['-1', '3'],
+						['-2', '-1'],
+					],
 					correctionFormat: [
 						{
-							correct: ["Les racines sont &answer1 et &answer2."],
+							correct: ['Les racines sont &answer1 et &answer2.'],
 						},
 					],
 					defaultDelay: 15,
@@ -20978,12 +21044,8 @@ const questions = {
 				},
 				{
 					description: "Déterminer le signe d'une expression du second degré",
-					enounces: [
-						"Quel est le signe de cette expression ?",
-					],
-					expressions: [
-						'&1(x[+_&2_])^2[+_&3_]',
-					],
+					enounces: ['Quel est le signe de cette expression ?'],
+					expressions: ['&1(x[+_&2_])^2[+_&3_]'],
 					variables: [
 						{
 							'&1': '$e[2;5]',
@@ -21001,21 +21063,23 @@ const questions = {
 							'&3': '-{abs(&1)/(&1)}*$e[1;5]',
 						},
 					],
-					solutions: [
-						[0],
-						[1],
-						[2],
+					solutions: [[0], [1], [2]],
+					choices: [
+						[
+							{ text: 'positif' },
+							{ text: 'négatif' },
+							{ text: 'son signe dépend de la valeur de $$x$$' },
+						],
 					],
-					choices: [[{ text: 'positif' }, { text: 'négatif' }, { text: 'son signe dépend de la valeur de $$x$$' } ]],
 					correctionDetails: [
 						[
 							{
-								text: "&solution, car $$&1(x[+_&2_])^2 \\ge 0$$ et donc $$&1(x[+_&2_])^2[+_&3_] \\ge 0$$",
+								text: '&solution, car $$&1(x[+_&2_])^2 \\ge 0$$ et donc $$&1(x[+_&2_])^2[+_&3_] \\ge 0$$',
 							},
 						],
 						[
 							{
-								text: "&solution, car $$&1(x[+_&2_])^2 \\le 0$$ et donc $$&1(x[+_&2_])^2[+_&3_] \\le 0$$",
+								text: '&solution, car $$&1(x[+_&2_])^2 \\le 0$$ et donc $$&1(x[+_&2_])^2[+_&3_] \\le 0$$',
 							},
 						],
 						[
@@ -21023,17 +21087,16 @@ const questions = {
 								text: "L'expression &expression est une somme d'un nombre positif et d'un nombre négatif, &solution.",
 							},
 						],
-						
 					],
 					options: ['no-shuffle-choices'],
 					defaultDelay: 20,
 					grade: PREMIERE_SPE_MATHS,
 				},
 				{
-					description: "Déterminer la forme canonique.",
+					description: 'Déterminer la forme canonique.',
 					subdescription: 'Graphiquement',
 					enounces: [
-						"Quelle est la forme canonique du polynôme représenté par cette parabole ?",
+						'Quelle est la forme canonique du polynôme représenté par cette parabole ?',
 					],
 					images: [
 						'polynome-second-degre/forme-canonique/forme-canonique-0-600.png',
@@ -21069,11 +21132,27 @@ const questions = {
 						'polynome-second-degre/forme-canonique/correction-forme-canonique-13-600.png',
 						'polynome-second-degre/forme-canonique/correction-forme-canonique-14-600.png',
 					],
-					answerFields:['La forme canonique est $$?$$'],
-					solutions: [["{[_-1/2_]}(x[+_-(-2)_])^2[+_-1_]"],["{[_3/4_]}(x[+_-(-2)_])^2[+_-1_]"],["-(x[+_-(-1)_])^2[+_3_]"],["{[_3_]}(x[+_-(-1)_])^2[+_-2_]"],["{[_-5_]}(x[+_-(-1)_])^2[+_2_]"],["{[_4_]}(x[+_-(1)_])^2[+_-1_]"],["{[_1/4_]}(x[+_-(-2)_])^2[+_-2_]"],["{[_-3_]}(x[+_-(-1)_])^2[+_1_]"],["{[_-3/4_]}(x[+_-(-2)_])^2[+_2_]"],["-(x[+_-(2)_])^2[+_3_]"],["{[_4_]}(x[+_-(-1)_])^2[+_-2_]"],["{[_-3/4_]}(x[+_-(2)_])^2[+_1_]"],["-(x[+_-(-1)_])^2[+_2_]"],["(x[+_-(1)_])^2[+_-3_]"],["{[_-1/2_]}(x[+_-(2)_])^2[+_-1_]"]],
+					answerFields: ['La forme canonique est $$?$$'],
+					solutions: [
+						['{[_-1/2_]}(x[+_-(-2)_])^2[+_-1_]'],
+						['{[_3/4_]}(x[+_-(-2)_])^2[+_-1_]'],
+						['-(x[+_-(-1)_])^2[+_3_]'],
+						['{[_3_]}(x[+_-(-1)_])^2[+_-2_]'],
+						['{[_-5_]}(x[+_-(-1)_])^2[+_2_]'],
+						['{[_4_]}(x[+_-(1)_])^2[+_-1_]'],
+						['{[_1/4_]}(x[+_-(-2)_])^2[+_-2_]'],
+						['{[_-3_]}(x[+_-(-1)_])^2[+_1_]'],
+						['{[_-3/4_]}(x[+_-(-2)_])^2[+_2_]'],
+						['-(x[+_-(2)_])^2[+_3_]'],
+						['{[_4_]}(x[+_-(-1)_])^2[+_-2_]'],
+						['{[_-3/4_]}(x[+_-(2)_])^2[+_1_]'],
+						['-(x[+_-(-1)_])^2[+_2_]'],
+						['(x[+_-(1)_])^2[+_-3_]'],
+						['{[_-1/2_]}(x[+_-(2)_])^2[+_-1_]'],
+					],
 					correctionFormat: [
 						{
-							correct: ["La forme caconique est &answer."],
+							correct: ['La forme caconique est &answer.'],
 						},
 					],
 					defaultDelay: 40,
@@ -21143,16 +21222,15 @@ const questions = {
 					description: "Trouver une racine évidente d'un polynôme",
 					enounces: ['Trouve une racine évidente de ce polynôme :'],
 					expressions: ['x^2[+_-(&1+(&2))x_][+_(&1)*(&2)_]'],
-					answerFields:['Une racine évidente est $$?$$'],
-					solutions:[['&1']],
+					answerFields: ['Une racine évidente est $$?$$'],
+					solutions: [['&1']],
 					variables: [
 						{
 							'&1': '$er[1;3]',
 							'&2': '$er[1;3]\\{&1}',
 						},
-						
 					],
-					testAnswers:[['(&answer)^2-(&1+(&2))*(&answer)+(&1)*(&2)=0']],
+					testAnswers: [['(&answer)^2-(&1+(&2))*(&answer)+(&1)*(&2)=0']],
 					correctionFormat: [
 						{
 							correct: ['&answer est une racine évidente.'],
@@ -21161,7 +21239,7 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: "&solution est une racine évidente du polynôme &expression car :",
+								text: '&solution est une racine évidente du polynôme &expression car :',
 							},
 							{
 								text: `$$  \\textcolor{${color1}}{[(_&1_]}^2 \
@@ -21176,7 +21254,6 @@ const questions = {
 								[+_&1*(&2)_] = [_(&1)^2-(&1+(&2))*(&1)+(&1)*(&2)_] $$`,
 							},
 						],
-						
 					],
 					options: ['remove-null-terms'],
 					defaultDelay: 20,
@@ -21339,7 +21416,7 @@ const questions = {
 							correct: ['$$u_&1=&ans$$'],
 						},
 					],
-				
+
 					correctionDetails: [
 						[
 							{
@@ -21365,6 +21442,40 @@ const questions = {
 					description: 'Calculer un terme',
 					subdescription: "A l'aide d'une formule de récurrence",
 					enounces: [
+						'Calculer $$u_1$$ pour la suite $$(u_n)$$ définie par $$u_0=&1$$ et $$u_{n+1}=&2u_n[+_&3_]$$',
+					],
+					solutions: [['&4']],
+					variables: [
+						{
+							'&1': '$er[2;5]',
+							'&2': '$er[2;3]',
+							'&3': '$er[1;3]',
+							'&4': '[_&2*(&1)+(&3)_]',
+						},
+					],
+					correctionFormat: [
+						{
+							correct: ['$$u_1=&ans$$'],
+						},
+					],
+
+					correctionDetails: [
+						[
+							{
+								text: `Avec $$u_0=&1$$ et $$u_{n+1}=&2u_n[+_&3_]$$`,
+							},
+							{
+								text: `$$u_1=&2u_0[+_&3_]= &2 \\times [(_&1_] [+_&3_]=$$&solution`,
+							},
+						],
+					],
+					defaultDelay: 30,
+					grade: PREMIERE_SPE_MATHS,
+				},
+				{
+					description: 'Calculer un terme',
+					subdescription: "A l'aide d'une formule de récurrence",
+					enounces: [
 						'Calculer $$u_2$$ pour la suite $$(u_n)$$ définie par $$u_0=&1$$ et $$u_{n+1}=&2u_n[+_&3_]$$',
 					],
 					solutions: [['&5']],
@@ -21379,35 +21490,23 @@ const questions = {
 					],
 					correctionFormat: [
 						{
-							correct: [
-								`Avec $$u_0=&1$$ et $$u_{n+1}=&2u_n[+_&3_]$$, $$u_2=&ans$$`,
-							],
-							answer: '$$u_2=&ans$$',
+							correct: [`$$u_2=&ans$$`],
 						},
 					],
-				
+
 					correctionDetails: [
 						[
 							{
 								text: `Avec $$u_0=&1$$ et $$u_{n+1}=&2u_n[+_&3_]$$`,
 							},
 							{
-								text: `$$u_1=&2u_0[+_&3_]= &2 \\times &1 [+_&3_]=&4$$`,
+								text: `$$u_1=&2u_0[+_&3_]= &2 \\times [(_&1_] [+_&3_]=\\textcolor{${color1}}{&4}$$`,
 							},
 							{
-								text: `$$u_2=&2u_1[+_&3_]= &2 \\times &4 [+_&3_]=&sol$$`,
+								text: `$$u_2=&2u_1[+_&3_]= &2 \\times \\textcolor{${color1}}{[(_&4_]} [+_&3_]=$$&solution`,
 							},
 						],
 					],
-
-					// correctionDetails: [
-					// 	[
-					// 		{
-					// 			text: `$$\\begin{align} &3 \\times \\textcolor{${color1}}{&1} &= &3 \\times \\textcolor{${color1}}{&2} \\\\ &=  &sol  \\\\ \\end{align}$$`,
-					// 		},
-					// 	],
-
-					// ],
 					defaultDelay: 30,
 					grade: PREMIERE_SPE_MATHS,
 				},
@@ -21422,7 +21521,7 @@ const questions = {
 					],
 					enounces2: ['$$&3 \\quad &4 \\quad &5 \\quad &6 \\quad &7$$'],
 					solutions: [['&1[+_&2_]n']],
-					answerFields: ['$$u_n=\\ldots$$'],
+					answerFields: ['$$u_n=?$$'],
 					variables: [
 						{
 							'&1': '$er[2;9]',
@@ -21437,18 +21536,15 @@ const questions = {
 
 					correctionFormat: [
 						{
-							correct: [
-								`La suite de termes $$&3 \\quad &4 \\quad &5 \\quad &6 \\quad &7$$ peut être représentée par la suite arithmétique de terme général $$u_n=$$&answer `,
-							],
-							answer: 'Le terme général est $$u_n=&ans$$',
+							correct: [`$$u_n=$$&answer`],
 						},
 					],
 
 					correctionDetails: [
 						[
 							{
-								text: `@@ &2>=0 ?? Le premier terme de la suite est $$u_0=&3$$ et on ajoute &2 entre chaque terme, donc $$u_n=$$&solution.@@ \
-								@@ &2<0 ?? Le premier terme de la suite est $$u_0=&3$$ et on enlève [_-(&2)_] entre chaque terme, donc $$u_n=$$&solution.@@`,
+								text: `@@ &2>=0 ?? Le premier terme de la suite est $$u_0=&3$$ et on ajoute $$&2$$ entre chaque terme, donc $$u_n=$$&solution.@@ \
+								@@ &2<0 ?? Le premier terme de la suite est $$u_0=&3$$ et on enlève $$[_-(&2)_]$$ entre chaque terme, donc $$u_n=$$&solution.@@`,
 							},
 						],
 					],
@@ -21464,7 +21560,7 @@ const questions = {
 					],
 					enounces2: ['$$&3 \\quad &4 \\quad &5 \\quad &6 \\quad &7$$'],
 					solutions: [['[_&1*(&2)^n_]']],
-					answerFields: ['$$u_n=\\ldots$$'],
+					answerFields: ['$$u_n=?$$'],
 					variables: [
 						{
 							'&1': '$er[1;4]',
@@ -21479,17 +21575,14 @@ const questions = {
 					conditions: ['abs(&1) != abs(&2)'],
 					correctionFormat: [
 						{
-							correct: [
-								`La suite de termes $$&3 \\quad &4 \\quad &5 \\quad &6 \\quad &7$$ peut être représentée par la suite géométrique de terme général $$u_n=$$&answer `,
-							],
-							answer: 'Le terme général est $$u_n=&ans$$',
+							correct: ['$$u_n=$$&answer'],
 						},
 					],
 
 					correctionDetails: [
 						[
 							{
-								text: `Le premier terme de la suite est $$u_0=&3$$ et on multiplie par &2 entre chaque terme, donc $$u_n=$$&solution.`,
+								text: `Le premier terme de la suite est $$u_0=&3$$ et on multiplie par $$[°&2°]$$ entre chaque terme, donc $$u_n=$$&solution.`,
 							},
 						],
 					],
@@ -21507,7 +21600,7 @@ const questions = {
 						'$$[°&4°] \\quad [°&5°] \\quad [°&6°] \\quad [°&7°] \\quad [°&8°]$$',
 					],
 					solutions: [['&1*(&3)^n']],
-					answerFields: ['$$u_n=\\ldots$$'],
+					answerFields: ['$$u_n=?$$'],
 					variables: [
 						{
 							'&1': '$er[2;9]',
@@ -21523,9 +21616,8 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								`La suite de termes $$&4 \\quad &5 \\quad &6 \\quad &7 \\quad &8$$ peut être représentée par la suite géométrique de terme général $$u_n=$$&answer `,
+								"Le terme général est $$u_n=&ans$$",
 							],
-							answer: 'Le terme général est $$u_n=&ans$$',
 						},
 					],
 
@@ -21815,7 +21907,9 @@ const questions = {
 						[],
 						[],
 						[],
-						[],
+						[{
+							text: '$$-1<[_1/(&2)_]<1$$ donc la limite est $$0$$.',
+						},],
 						[],
 					],
 					options: ['no-shuffle-choices'],

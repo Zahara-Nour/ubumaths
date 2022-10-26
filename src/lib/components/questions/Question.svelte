@@ -1,5 +1,10 @@
 <script>
-	import { toMarkup, formatLatex, MathfieldElement, virtualKeyboardMode } from '$lib/stores'
+	import {
+		toMarkup,
+		formatLatex,
+		MathfieldElement,
+		virtualKeyboardMode,
+	} from '$lib/stores'
 	import { afterUpdate, onDestroy, tick } from 'svelte'
 	import { getLogger } from '$lib/utils'
 	import virtualKeyboard from '$lib/mathlive/virtualKeyboard'
@@ -306,8 +311,14 @@
 			answers_latex = null
 		} else {
 			// if faut garder les réponses si on sort du mode correction
-			if (!answers) answers = question.solutions.map((s) => '')
-			if (!answers_latex) answers_latex = question.solutions.map((s) => '')
+			if (!answers)
+				answers = question.solutions
+					? question.solutions.map((s) => '')
+					: question.testAnswer.map((s) => '')
+			if (!answers_latex)
+				answers_latex = question.solutions
+					? question.solutions.map((s) => '')
+					: question.testAnswer.map((s) => '')
 		}
 	}
 
@@ -548,7 +559,7 @@
 			</div>
 		{/if}
 	{/each}
-	{#if (!correction && question.answerFields && question.type==='trou') || (!correction && answerFields && interactive)}
+	{#if (!correction && question.answerFields && question.type === 'trou') || (!correction && answerFields && interactive)}
 		<div
 			id="{`answerFields-${question.num}${masked ? '-masked' : ''}`}"
 			class="my-3 flex flex-col items-center justify-center"
