@@ -1,5 +1,7 @@
 <script>
 	import Paper, { Title, Subtitle, Content } from '@smui/paper'
+	import Checkbox from '@smui/checkbox'
+	import FormField from '@smui/form-field'
 	import { mdiMinus, mdiPlus } from '@mdi/js'
 	import Fab, { Icon } from '@smui/fab'
 	import { Svg } from '@smui/common'
@@ -11,6 +13,7 @@
 
 	export let basket
 	export let courseAuxNombres
+	let enounceAlone
 
 	const addItem = (i) => {
 		basket[i].count++
@@ -123,6 +126,13 @@
 						</Fab>
 					</div>
 				{/if}
+			</div>
+			<div>
+				Options :
+				<FormField>
+					<Checkbox bind:checked={enounceAlone} />
+					<span slot="label">Remember me.</span>
+				</FormField>
 			</div>
 		</div>
 	{/each}
