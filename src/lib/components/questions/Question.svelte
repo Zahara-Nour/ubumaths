@@ -243,7 +243,7 @@
 
 		if (
 			expression &&
-			(question.type === 'result' || question.type === 'rewrite') &&
+			(question.type === 'result') &&
 			!question.answerFields
 		) {
 			expression += '=\\ldots'
@@ -496,7 +496,7 @@
 					{error}
 				{/await}
 			{/if}
-		{:else if element === 'expression' && expression && (!correction || question.answerFields || (question.type !== 'result' && question.type !== 'trou' && question.type !== 'rewrite'))}
+		{:else if element === 'expression' && expression && (!correction || question.answerFields || (question.type !== 'result' && question.type !== 'trou'))}
 			<div
 				id="expressions"
 				class=" flex flex-col items-center justify-center"
