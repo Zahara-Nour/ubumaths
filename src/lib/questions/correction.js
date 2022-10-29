@@ -723,9 +723,9 @@ export function assessItem(item) {
 				item.coms.push(MATH_INCORRECT_MULTIPLE_ANSWERS)
 			}
 
-			// dans le cas d'une égalité à trou, il faut vérifier que l'expression globale est également
+			// dans le cas d'une expression à trou, il faut vérifier que l'expression globale est également
 			// écrite correctement
-			if (item.type === 'trou') {
+			if (item.type === 'fill in' && item.expression) {
 				const putAnswers = (() => {
 					let count = 0
 					return () => item.answers[count++]

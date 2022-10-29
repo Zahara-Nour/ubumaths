@@ -13,11 +13,15 @@
 
 	export let basket
 	export let courseAuxNombres
-	let enounceAlone
+	export let enounceAlone = false
 
 	const addItem = (i) => {
 		basket[i].count++
 		basket = basket
+	}
+
+	function toggleEnounceAlone(i) {
+		basket[i].enounceAlone = enounceAlone
 	}
 
 	function removeItem(i) {
@@ -130,8 +134,11 @@
 			<div>
 				Options :
 				<FormField>
-					<Checkbox bind:checked={enounceAlone} />
-					<span slot="label">Remember me.</span>
+					<Checkbox
+						on:change="{() => toggleEnounceAlone(i)}"
+						bind:checked="{enounceAlone}"
+					/>
+					<span slot="label">Enoncé séparé </span>
 				</FormField>
 			</div>
 		</div>

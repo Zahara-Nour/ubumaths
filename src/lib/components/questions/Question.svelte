@@ -494,7 +494,7 @@
 					{error}
 				{/await}
 			{/if}
-		{:else if element === 'expression' && expression && (!correction || question.answerFields || (question.type !== 'result' && question.type !== 'trou'))}
+		{:else if element === 'expression' && expression && (!correction || question.answerFields || (question.type !== 'result' && question.type !== 'fill in'))}
 			<div
 				id="expressions"
 				class=" flex flex-col items-center justify-center"
@@ -557,7 +557,7 @@
 			</div>
 		{/if}
 	{/each}
-	{#if (!correction && question.answerFields && question.type === 'trou') || (!correction && answerFields && interactive)}
+	{#if (!correction && question.answerFields && question.type === 'fill in') || (!correction && answerFields && interactive)}
 		<div
 			id="{`answerFields-${question.num}${masked ? '-masked' : ''}`}"
 			class="my-3 flex flex-col items-center justify-center"

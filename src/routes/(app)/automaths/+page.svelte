@@ -16,6 +16,7 @@
 	import { goto } from '$app/navigation'
 	import { getLogger } from '$lib/utils'
 	import { darkmode, formatLatex } from '$lib/stores'
+	import { assessItem } from '$lib/questions/correction'
 	// import { dev } from '$app/env'
 	import { page } from '$app/stores'
 
@@ -47,7 +48,10 @@
 	const first_theme = decodeURI($page.url.searchParams.get('theme'))
 	const first_domain = decodeURI($page.url.searchParams.get('domain'))
 	const first_subdomain = decodeURI($page.url.searchParams.get('subdomain'))
-	const first_level = parseInt(decodeURI($page.url.searchParams.get('level')), 10)
+	const first_level = parseInt(
+		decodeURI($page.url.searchParams.get('level')),
+		10,
+	)
 
 	// $: console.log('theme', theme)
 	// $: console.log('domain', domain)
@@ -57,7 +61,7 @@
 	$: changeGrade(grade)
 	$: changeTheme(theme)
 	// $ changeDomain(domain)
-	
+
 	function generateExoLatex() {
 		let questions = []
 		if (basket.length) {
@@ -67,29 +71,72 @@
 			questions.push({ id: q.id, count: 10 })
 		}
 
-
 		let offset = 0
-		let latex ='\\begin{enumerate} \n'
+		let enounce
+		let solution = ''
+		let generateds = []
 
-		let generateds =[]
 		questions.forEach((q) => {
 			const { theme, domain, subdomain, level } = ids[q.id]
 			const question = getQuestion(theme, domain, subdomain, level)
-
-			for (let i = 0; i < q.count; i++) {
-				const generated = generateQuestion(question, generateds, q.count, offset)
-				console.log('generated', generated)
-				latex += '\\item ' + generated.enounce.replace(/\$\$/g, '$') + '\n'
-				generateds.push(generated)
+			
+			if (q.enounceAlone) {
+				enounce = question.enounces[0].replace(/\$\$/g, '$') + '\n'
+				enounce += '\\begin{enumerate} \n'
+				solution += '\\begin{enumerate} \n'
+				for (let i = 0; i < q.count; i++) {
+					const generated = generateQuestion(
+						question,
+						generateds,
+						q.count,
+						offset,
+					)
+					assessItem(generated)
+					enounce += '\\item '
+					solution += '\\item ' + generated.simpleCorrection.map(line => line.texmacs).join(' ')
+					if (generated.expression) {
+						enounce += '$'+generated.expression +'$' + '\n'
+					}
+					if (generated.answerFields) {
+						enounce += generated.answerFields.replace(/\$\$/g, '$') + '\n'
+					}
+					generateds.push(generated)
+				}
+				
+			} else {
+				enounce = '\\begin{enumerate} \n'
+				solution += '\\begin{enumerate} \n'
+				for (let i = 0; i < q.count; i++) {
+					const generated = generateQuestion(
+						question,
+						generateds,
+						q.count,
+						offset,
+					)
+					assessItem(generated)
+					console.log('simpleCorrectiopn', generated.simpleCorrection)
+					solution += '\\item ' + generated.simpleCorrection.map(line => line.texmacs).join(' ')
+					enounce += '\\item ' + generated.enounce.replace(/\$\$/g, '$') + '\n'
+					if (generated.expression) {
+						enounce += generated.expression.replace(/\$\$/g, '$') + '\n'
+					}
+					if (generated.answerFields) {
+						enounce += generated.answerFields.replace(/\$\$/g, '$') + '\n'
+					}
+					generateds.push(generated)
+				}
 			}
+
 			offset += q.count
 		})
-		latex += '\\end{enumerate}\n'
+		enounce += '\\end{enumerate}\n'
+		solution += '\\end{enumerate}\n'
 
+		const output = enounce +'\n'+solution
 		navigator.clipboard
-			.writeText(latex)
+			.writeText(output)
 			.then(function () {
-				info('latex to clipboard: ', latex)
+				info('latex to clipboard: ', output)
 			})
 			.catch(function () {
 				fail('failed to write exercice in latex to clipboard')
@@ -122,7 +169,7 @@
 				!domain && first_domain && domains.includes(first_domain)
 					? first_domain
 					: domains[0]
-			
+
 			panelOpenStatus[d] = true
 			if (domains.length) {
 				changeDomain(d)
@@ -143,7 +190,10 @@
 			const levels = availableLevels[theme][domain][subd]
 			// console.log('levels', levels)
 			if (levels) {
-				const l= !level && first_level && levels.includes(first_level) ? first_level : levels[0]
+				const l =
+					!level && first_level && levels.includes(first_level)
+						? first_level
+						: levels[0]
 				changeLevel(subd, l)
 			}
 		}
@@ -296,7 +346,7 @@
 	launchTest="{launchTest}"
 	fillBasket="{fillBasket}"
 	copyLink="{copyLink}"
-	generateExoLatex={generateExoLatex}
+	generateExoLatex="{generateExoLatex}"
 	flushBasket="{flushBasket}"
 />
 
@@ -326,7 +376,7 @@
 
 	<div class="accordion-container">
 		<Accordion>
-			{#each Object.keys(availableLevels[theme]) as d (theme+'-'+d)}
+			{#each Object.keys(availableLevels[theme]) as d (theme + '-' + d)}
 				<Panel
 					bind:open="{panelOpenStatus[d]}"
 					on:click="{() => {
@@ -342,7 +392,7 @@
 					</Header>
 					<Content>
 						<div class="pl-5">
-							{#each Object.keys(availableLevels[theme][d]) as subd }
+							{#each Object.keys(availableLevels[theme][d]) as subd}
 								<div class="my-5 flex items-center">
 									<span>{@html $formatLatex(subd)}</span>
 									<div flex flex-wrap>
