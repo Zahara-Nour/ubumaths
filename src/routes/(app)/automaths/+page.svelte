@@ -17,7 +17,7 @@
 	import { getLogger } from '$lib/utils'
 	import { darkmode, formatLatex } from '$lib/stores'
 	import { assessItem } from '$lib/questions/correction'
-	// import { dev } from '$app/env'
+	import { dev } from '$app/environment'
 	import { page } from '$app/stores'
 
 	let { info, fail, warn } = getLogger('Automaths', 'info')
