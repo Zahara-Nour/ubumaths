@@ -256,13 +256,13 @@
 			question.type !== 'choice' &&
 			question.type !== 'choices'
 		) {
-			answerFields = '$$?$$'
+			answerFields = '...'
 		}
 
 		if (answerFields) {
 			answerFields = $formatLatex(
-				answerFields.replace(/\?/g, '\\ldots'),
-			).replace(/…/g, addMathfield)
+				answerFields
+			).replace(/\.\.\./g, addMathfield)
 		}
 
 		if (expression) {
@@ -289,7 +289,7 @@
 		answerFields = question.answerFields
 
 		if (answerFields) {
-			answerFields = $formatLatex(answerFields.replace(/\?/g, '\\ldots'))
+			answerFields = $formatLatex(answerFields)
 		}
 
 		if (expression) {

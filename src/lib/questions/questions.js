@@ -4592,7 +4592,7 @@ const questions = {
 					],
 					variables: [{ '&1': '$e[2;9]', '&2': '$e[2;9]\\{&1}' }],
 					expressions: ['[_&1*&2_]=&1*&2'],
-					answerFields: ['$$?$$'],
+					answerFields: ['...'],
 					testAnswers: [
 						['&answer!=1 && &answer!=&1*&2 && mod(&1*&2; &answer)=0'],
 					],
@@ -4617,7 +4617,7 @@ const questions = {
 						['&answer!=1 && &answer!=&1*&2 && mod(&1*&2; &answer)=0'],
 					],
 					solutions: [['&1']],
-					answerFields: ['$$?$$'],
+					answerFields: ['...'],
 					correctionFormat: [
 						{
 							correct: ['&answer est un diviseur de $$[_&1*&2_]$$'],
@@ -7661,12 +7661,15 @@ const questions = {
 					enounces: [
 						"Complète :",
 					],
-					answerFields:["L'opposé de $$&1$$ est $$?$$", "L'opposé de $$-&1$$ est $$?$$"],
+					answerFields:["L'opposé de $$&1$$ est ...", "L'opposé de $$-&1$$ est ..."],
 					variables: [{ '&1': '$e[1;20]' }],
 					solutions: [['-&1'], ['&1']],
 					correctionFormat: [
 						{
-							correct: ["L'opposé de &expression est &answer"],
+							correct: ["L'opposé de &1 est &answer"],
+						},
+						{
+							correct: ["L'opposé de -&1 est &answer"],
 						},
 					],
 					type: 'fill in',
@@ -7677,7 +7680,7 @@ const questions = {
 			Comparer: [
 				{
 					description: 'Comparer deux nombres relatifs.',
-					subdescription: 'Valeurs entières.',
+					subdescription: 'Valeurs entières - qcm',
 					enounces: ['Quel est le plus petit de ces 2 nombres ?'],
 					variables: [{ '&1': '$e[1;19]', '&2': '$e[&1+1;20]' }],
 					choices: [
@@ -7686,6 +7689,17 @@ const questions = {
 						[{ text: '$$-&2$$' }, { text: '$$-&1$$' }],
 					],
 					solutions: [[1], [1], [0]],
+					defaultDelay: 20,
+					grade: CINQUIEME,
+				},
+				{
+					description: 'Comparer deux nombres relatifs.',
+					subdescription: 'Valeurs entières - à compléter',
+					enounces: ['Complète avec $$\\lt$$ ou $$\\gt$$ :'],
+					variables: [{ '&1': '$e[1;19]', '&2': '$e[&1+1;20]' }],
+					answerFields:['&1 ... &2'],
+					testAnswers:[['&1 &ans &2 = true']],
+					solutions:[['&1 < &2 = true ?? &1 < &2 :: &1 > &2']],
 					defaultDelay: 20,
 					grade: CINQUIEME,
 				},
@@ -9810,7 +9824,7 @@ const questions = {
 					enounces: ["Quel est l'inverse de ce nombre :"],
 					expressions: ['&1', '1/&1', '&1/&2'],
 					variables: [{ '&1': '$e[2;19]', '&2': '$e[2;19]\\{cd(&1)}' }],
-					answerFields: ["L'inverse de ce nombre est $$?$$."],
+					answerFields: ["L'inverse de ce nombre est ...."],
 					solutions: [['1/&1'], ['&1'], ['&2/&1']],
 					correctionFormat: [
 						{
@@ -20204,7 +20218,7 @@ const questions = {
 					description: "Opposé d'une expression",
 					enounces: ["Quel est l'opposé de l'expression :"],
 					expressions: ['[_&1x_]', 'x[+_&2_]', '&2-x'],
-					answerFields: ["L'opposé est $$?$$"],
+					answerFields: ["L'opposé est ..."],
 					variables: [
 						{
 							'&1': '$er[1;2]',
@@ -20770,7 +20784,7 @@ const questions = {
 						],
 					],
 					conditions: ['abs(&1) != abs(&2) && abs(&1) != abs(&3)'],
-					answerFields: ['Le coefficient est $$?$$'],
+					answerFields: ['Le coefficient est ...'],
 
 					solutions: [
 						['&1'],
@@ -20916,7 +20930,7 @@ const questions = {
 						"Quelle est l'équation de l'axe de symétrie de la courbe représentative de ce polynôme du second degré ?",
 					],
 					expressions: ['&1(x[+_&2_])^2[+_&3_]'],
-					answerFields: ["L'équation est $$?$$"],
+					answerFields: ["L'équation est ..."],
 					variables: [
 						{
 							'&1': '$er[2;5]',
@@ -20983,7 +20997,7 @@ const questions = {
 						'polynome-second-degre/trouver-racines/correction_trouver_racines-13-600.png',
 						'polynome-second-degre/trouver-racines/correction_trouver_racines-14-600.png',
 					],
-					answerFields: ['Les racines sont $$?$$ et $$?$$'],
+					answerFields: ['Les racines sont ... et ...'],
 					solutions: [
 						['-3', '1'],
 						['-3', '-1'],
@@ -21099,7 +21113,7 @@ const questions = {
 						'polynome-second-degre/forme-canonique/correction-forme-canonique-13-600.png',
 						'polynome-second-degre/forme-canonique/correction-forme-canonique-14-600.png',
 					],
-					answerFields: ['La forme canonique est $$?$$'],
+					answerFields: ['La forme canonique est ...'],
 					solutions: [
 						['{[_-1/2_]}(x[+_-(-2)_])^2[+_-1_]'],
 						['{[_3/4_]}(x[+_-(-2)_])^2[+_-1_]'],
@@ -21189,7 +21203,7 @@ const questions = {
 					description: "Trouver une racine évidente d'un polynôme",
 					enounces: ['Trouve une racine évidente de ce polynôme :'],
 					expressions: ['x^2[+_-(&1+(&2))x_][+_(&1)*(&2)_]'],
-					answerFields: ['Une racine évidente est $$?$$'],
+					answerFields: ['Une racine évidente est ...'],
 					solutions: [['&1']],
 					variables: [
 						{
@@ -21241,7 +21255,7 @@ const questions = {
 						},
 					],
 					conditions: ['abs(&2) != abs(&3)'],
-					answerFields: ['Las racines sont $$?$$ et $$?$$.'],
+					answerFields: ['Las racines sont ... et ....'],
 					solutions: [['[_-(&2)_]', '[_-(&3)_]']],
 					correctionFormat: [
 						{
@@ -21272,7 +21286,7 @@ const questions = {
 						},
 					],
 					conditions: ['abs(&2) != abs(&3)'],
-					answerFields: ['Las racines sont $$?$$ et $$?$$.'],
+					answerFields: ['Las racines sont ... et ....'],
 					solutions: [['[_-(&2)_]', '[_-(&3)_]']],
 					correctionFormat: [
 						{

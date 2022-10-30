@@ -95,7 +95,7 @@
 					enounce += '\\item '
 					solution += '\\item ' + generated.simpleCorrection.map(line => line.texmacs).join(' ')
 					if (generated.expression) {
-						enounce += '$'+generated.expression +'$' + '\n'
+						enounce += '$'+generated.expression_latex.replace(/\\ldots/g, '\\, \\ldots\\ldots \\,') +'$' + '\n'
 					}
 					if (generated.answerFields) {
 						enounce += generated.answerFields.replace(/\$\$/g, '$') + '\n'
@@ -118,7 +118,7 @@
 					solution += '\\item ' + generated.simpleCorrection.map(line => line.texmacs).join(' ')
 					enounce += '\\item ' + generated.enounce.replace(/\$\$/g, '$') + '\n'
 					if (generated.expression) {
-						enounce += generated.expression.replace(/\$\$/g, '$') + '\n'
+						enounce += generated.expression_latex.replace(/\\ldots/g, '\\, \\ldots\\ldots \\,') + '\n'
 					}
 					if (generated.answerFields) {
 						enounce += generated.answerFields.replace(/\$\$/g, '$') + '\n'

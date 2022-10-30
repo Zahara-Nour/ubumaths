@@ -360,6 +360,7 @@ export default function generateQuestion(
 		(question.enounces2 && question.enounces2.length) || 0,
 		(question.variables && question.variables.length) || 0,
 		(question.images && question.images.length) || 0,
+		(question.answerFields && question.answerFields.length) || 0,
 	)
 
 	// les limites permettent que les différentes expressions possibles pour la question
