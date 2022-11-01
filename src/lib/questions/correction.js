@@ -203,7 +203,7 @@ function checkConstraints(item) {
 	]
 
 	// on doit checker chaque contrainte si require est positionnée ou si no-penalty n'est pas positionnée
-	// (les 2 ne peuvent pas petre positionnées en même temps)
+	// (les 2 ne peuvent pas etre positionnées en même temps)
 	//
 	checks.forEach((check) => {
 		if (!item.options.includes(check.option[0])) {
@@ -384,6 +384,7 @@ function checkProducts(item) {
 			item.statuss[i] !== STATUS_INCORRECT
 		) {
 			const e = math(answer)
+			console.log('checkProducts', e.string)
 			if (e.removeMultOperator().string !== e.string) result.push(i)
 		}
 	})
@@ -604,17 +605,17 @@ function checkForm(item) {
 				// pourquoi le faire pour solutions ?
 				// la solution est censé est écrite sous une forme correcte.
 				let solution = math(item.solutions[indexSolution])
-				// 	.removeZerosAndSpaces()
-				// 	.reduceFractions()
-				// 	.simplifyNullProducts()
-				// if (!item.options.includes('no-penalty-for-null-terms')) {
-				// 	solution = solution.removeNullTerms()
-				// }
-				// solution = solution
-				// 	.removeFactorsOne()
-				// 	.removeSigns()
-				// 	.removeUnecessaryBrackets()
-				// 	.removeMultOperator()
+					// 	.removeZerosAndSpaces()
+					// 	.reduceFractions()
+					// 	.simplifyNullProducts()
+					// if (!item.options.includes('no-penalty-for-null-terms')) {
+					// 	solution = solution.removeNullTerms()
+					// }
+					// solution = solution
+					// 	.removeFactorsOne()
+					// 	.removeSigns()
+					// 	.removeUnecessaryBrackets()
+					// 	.removeMultOperator()
 					.sortTermsAndFactors()
 
 				console.log('answer & solution', e.string, solution.string)
@@ -706,36 +707,61 @@ export function assessItem(item) {
 			}
 
 			// On vérifie que les réponses sont écrites correctement
-			let incorrectForm = false
-			item.answers.forEach((answer, i) => {
-				console.log('math(answer)', math(answer).string)
-				if (item.statuss[i] !== STATUS_EMPTY && math(answer).isIncorrect()) {
-					console.log('incorrect')
-					item.statuss[i] = STATUS_INCORRECT
-					item.status = STATUS_INCORRECT
-					incorrectForm = true
-				}
-			})
-
-			if (incorrectForm && item.answers.length === 1) {
-				item.coms.push(MATH_INCORRECT)
-			} else if (incorrectForm) {
-				item.coms.push(MATH_INCORRECT_MULTIPLE_ANSWERS)
-			}
-
-			// dans le cas d'une expression à trou, il faut vérifier que l'expression globale est également
+			// dans le cas d'une expression à trou, il faut vérifier que l'expression globale est
 			// écrite correctement
-			if (item.type === 'fill in' && item.expression) {
-				const putAnswers = (() => {
-					let count = 0
-					return () => item.answers[count++]
-				})()
-				const globallyIncorrectForm = math(
-					item.expression.replace(/\?/g, putAnswers),
-				).isIncorrect()
-				if (globallyIncorrectForm) {
-					item.status = STATUS_INCORRECT
-					if (!incorrectForm) item.coms.push(MATH_GLOBALLY_INCORRECT)
+			// TODO: ne faudrait-il pas mettre toutes les égalités à compléter dans un answerFields ?
+			if (item.type === 'fill in') {
+				let i = -1
+				const putAnswers = () => {
+					i++
+					return item.answers[i]
+				}
+
+				if (item.answerFields) {
+					// dans ce cas c'est un answerFields qu'il faut compléter, et il correspond à une
+					// expression mathématique. La différence c'est que le champs réponse peut contenir une expression
+					//  qui n'est pas une expression mathématique correcte mais juste un symboel par exemple.
+					// donc pas besoin de positionner item.statuss[i]
+					{
+						const regex = /\$\$.*?\.\.\..*?\$\$/g
+						const matched = item.answerFields.match(regex)
+						matched.forEach((match) => {
+							// on enlève les $$ au début et à la fin
+							match = match.replace(/\$\$/g, '')
+							const exp = match.replace(/\.\.\./g, putAnswers)
+							console.log('exp', exp)
+							if (math(exp).isIncorrect()) {
+								item.status = STATUS_INCORRECT
+								item.coms.push(
+									"L'expression $$" + exp + "$$ n'est pas écrite correctement.",
+								)
+							}
+						})
+					}
+				}
+				// c'est une expression à compléter
+				else {
+					let incorrectForm = false
+					item.answers.forEach((answer, i) => {
+						if (
+							item.statuss[i] !== STATUS_EMPTY &&
+							math(answer).isIncorrect()
+						) {
+							item.statuss[i] = STATUS_INCORRECT
+							item.status = STATUS_INCORRECT
+							incorrectForm = true
+						}
+					})
+					const exp = math(item.expression.replace(/\?/g, putAnswers))
+					if (exp.isIncorrect) {
+						item.status = STATUS_INCORRECT
+						if (!incorrectForm) item.coms.push(MATH_GLOBALLY_INCORRECT)
+					}
+					if (incorrectForm && item.answers.length === 1) {
+						item.coms.push(MATH_INCORRECT)
+					} else if (incorrectForm) {
+						item.coms.push(MATH_INCORRECT_MULTIPLE_ANSWERS)
+					}
 				}
 			}
 
@@ -757,8 +783,17 @@ export function assessItem(item) {
 								item.statuss[0] !== STATUS_INCORRECT)
 						) {
 							const t = item.testAnswer[i] || item.testAnswer[0]
-							const tests = t.replace(/&answer/g, answer).replace(/,/g,'.').split('&&')
-							const failed = tests.some((test) => !math(test).isIncorrect() && math(test).eval().isFalse())
+							const tests = t
+								.replace(/&answer/g, answer)
+								.replace(/,/g, '.')
+								.split('&&')
+							const failed = tests.some((test) => {
+								const result =
+									math(test).isIncorrect() || math(test).eval().isFalse()
+								console.log('test', test, result)
+								return result
+							})
+							console.log('failed', failed)
 							if (failed) {
 								item.statuss[i] = STATUS_INCORRECT
 								item.status = STATUS_INCORRECT

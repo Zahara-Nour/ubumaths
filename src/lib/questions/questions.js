@@ -12,7 +12,7 @@ import {
 	PREMIERE_SPE_MATHS,
 	TERMINALE_SPE_MATHS,
 } from '$lib/grades.js'
-import { color1, color2, color3, correct_color } from '$lib/colors'
+import { color1, color2, color3, correct_color, incorrect_color } from '$lib/colors'
 const UNKNOWN = 'a determiner'
 
 // OPTIONS
@@ -4612,12 +4612,14 @@ const questions = {
 					enounces: [
 						'Trouve un diviseur de $$[_&1*&2_]$$ (autre que $$1$$ et $$[_&1*&2_]$$).',
 					],
-					variables: [{ '&1': '$e[2;9]', '&2': '$e[2;9]\\{&1}' }],
+					variables: [
+						{ '&1': '$l{2;4;6;8}','&2': '$e[2;9]\\{&1;m2}' },
+						{ '&1': '$l{3;5;7;9}','&2': '$e[2;9]\\{&1;m2}' }
+					],
 					testAnswers: [
 						['&answer!=1 && &answer!=&1*&2 && mod(&1*&2; &answer)=0'],
 					],
 					solutions: [['&1']],
-					answerFields: ['...'],
 					correctionFormat: [
 						{
 							correct: ['&answer est un diviseur de $$[_&1*&2_]$$'],
@@ -4798,30 +4800,52 @@ const questions = {
 					defaultDelay: 15,
 					grade: CM2,
 				},
-				// {
-				// 	description: 'Utiliser un critère de divisibilité',
-				// 	subdescription: 'Par 9',
-				// 	enounces: ['Le nombre $$[_&1_]$$ est-il divisible par 3 ?'],
-				// 	variables: [
-				// 		{ '&1': '9*$e[21;333]' },
-				// 		{ '&1': '9*$e[21;110]+$e[1;8]' },
-				// 	],
+				{
+					description: 'Trouver un diviseur',
+					subdescription:'Nombre à 3',
+					enounces: [
+						'Trouve un diviseur de $$[°&4°]$$ (autre que $$1$$ et $$[°&4°]$$).',
+					],
+					variables: [
+						{ '&1': '$e[1;9]','&2': '$e[1;9]', '&3': '$l{2;4;6;8}', '&4':'[_&1*100+&2*10+&3_]' },
+						{ '&1': '$e[1;9]','&2': '$e[1;9]', '&3': '$l{5;0}', '&4':'[_&1*100+&2*10+&3_]' },
+						{ '&1': '$e[1;9]','&2': '$e[1;9]', '&3': '$l{1;4;7}+2-mod(&1+&2;3)', '&4':'[_&1*100+&2*10+&3_]' },
+					],
+					testAnswers: [
+						['&answer!=1 && &answer!=&4 && mod(&4; &answer)=0'],
+					],
+					solutions: [
+						['2'],
+						['5'],
+						['3'],
+					],
+					correctionFormat: [
+						{
+							correct: ['&answer est un diviseur de $$[_&4_]$$'],
+						},
+					],
+					correctionDetails: [
+						[
+							{
+								text: '&solution est un diviseur de $$[_&4_]$$ car $$[°&4°]$$ se termine par $$0$$, $$2$$, $$4$$, $$6$$ ou $$8$$.',
+							},
+						],
+						[
+							{
+								text: '&solution est un diviseur de $$[_&4_]$$ car $$[°&4°]$$ se termine par $$0$$ ou $$5$$.',
+							},
+						],
+						[
+							{
+								text: '&solution est un diviseur de $$[_&4_]$$ car $$&1+&2+[_&3_]=[_&1+&2+&3_]$$ est un multiple de 3.',
+							},
+						],
+					],
 
-				// 	choices: [[{ text: 'Oui' }, { text: 'Non' }]],
-				// 	// corrections: [
-				// 	//   'Entre $$[._&6_]$$ et $$[._&7_]$$ le plus petit est ',
-				// 	// ],
-				// 	solutions: [['mod(&1;9)=0 ?? 0 :: 1']],
-				// 	correctionFormat: [
-				// 		{
-				// 			correct: ['$$9$$ est un diviseur de $$[_&1_]$$ ? &answer'],
-				// 			answer: ' &answer',
-				// 		},
-				// 	],
-				// 	options: ['no-shuffle-choices'],
-				// 	defaultDelay: 15,
-				// 	grade: CM2,
-				// },
+					defaultDelay: 15,
+					grade: CM2,
+				},
+				
 			],
 			'Division euclidienne': [
 				{
@@ -7666,10 +7690,10 @@ const questions = {
 					solutions: [['-&1'], ['&1']],
 					correctionFormat: [
 						{
-							correct: ["L'opposé de &1 est &answer"],
+							correct: ["L'opposé de $$&1$$ est &answer"],
 						},
 						{
-							correct: ["L'opposé de -&1 est &answer"],
+							correct: ["L'opposé de $$-&1$$ est &answer"],
 						},
 					],
 					type: 'fill in',
@@ -7697,9 +7721,34 @@ const questions = {
 					subdescription: 'Valeurs entières - à compléter',
 					enounces: ['Complète avec $$\\lt$$ ou $$\\gt$$ :'],
 					variables: [{ '&1': '$e[1;19]', '&2': '$e[&1+1;20]' }],
-					answerFields:['&1 ... &2'],
-					testAnswers:[['&1 &ans &2 = true']],
-					solutions:[['&1 < &2 = true ?? &1 < &2 :: &1 > &2']],
+					answerFields:[
+						'$$&1 ... -&2$$',
+						'$$-&1 ... -&2$$',
+						'$$-&2 ... -&1$$',
+					],
+					testAnswers:[
+						['&1 &answer -&2'],
+						['-&1 &answer -&2'],
+						['-&2 &answer -&1'],
+					
+					],
+					solutions:[
+						['&1 < -&2 ?? < :: >'],
+						['-&1 < -&2 ?? < :: >'],
+						['-&2 < -&1 ?? < :: >'],
+					],
+					correctionFormat: [
+						{
+							correct: ['$$&1 &ans -&2$$'],
+						},
+						{
+							correct: ['$$-&1 &ans -&2$$'],
+						},
+						{
+							correct: ['$$-&2 &ans -&1$$'],
+						},
+					],
+					type:"fill in",
 					defaultDelay: 20,
 					grade: CINQUIEME,
 				},

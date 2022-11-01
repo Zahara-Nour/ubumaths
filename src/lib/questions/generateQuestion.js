@@ -559,7 +559,7 @@ export default function generateQuestion(
 							.replace(/&ans/g, '&sol'),
 				  ),
 			answer:
-				answer ||
+				answer && answer.replace(regex, replacement) ||
 				correct.map((c) => c.replace(regex, replacement)).filter((m) => !!m)[0],
 		}
 	}

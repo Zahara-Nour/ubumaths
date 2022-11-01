@@ -6,7 +6,7 @@ export default {
         [
           {
             class: 'keycap tex',
-            latex: '$$\\lt$$',
+            latex: '\\lt',
           },
           {
             class: 'keycap tex',
@@ -57,7 +57,7 @@ export default {
         [
           {
             class: 'keycap tex',
-            latex: '$$\\gt$$',
+            latex: '\\gt',
           },
           {
             class: 'keycap tex',
@@ -104,7 +104,7 @@ export default {
         [
           {
             class: 'keycap tex',
-            latex: '$$\\le$$',
+            latex: '\\le',
           },
           {
             class: 'keycap tex',
@@ -159,7 +159,7 @@ export default {
         [
           {
             class: 'keycap tex',
-            latex: '$$\\ge$$',
+            latex: '\\ge',
           },
           {
             class: 'keycap tex',

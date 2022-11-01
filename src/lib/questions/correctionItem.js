@@ -24,7 +24,7 @@ function createSolutionsLatex(item) {
 				} else {
 					console.log('solution', solution)
 					const e = math(solution)
-					return e.type === '!! Error !!' ? solution : e.toLatex()
+					return e.latex
 				}
 		  })
 		: null
@@ -113,9 +113,7 @@ export function createCorrection(item) {
 	function replaceSolutionTexmacs(match, p1) {
 		return item.type === 'choice'
 			? item.choices[solutions[p1 ? p1 - 1 : 0]].text
-			: `$\\color{${mdc_colors['green-400']}}` +
-					solutions_latex[p1 ? p1 - 1 : 0] +
-					'\\color{black}$'
+			: `$\\textcolor{green}{` + solutions_latex[p1 ? p1 - 1 : 0] + '}$'
 	}
 
 	const regexSol = /&sol([1-9]?)/g
@@ -130,9 +128,7 @@ export function createCorrection(item) {
 	function replaceSolTexmacs(match, p1) {
 		return item.type === 'choice'
 			? item.choices[solutions[p1 ? p1 - 1 : 0]].text
-			: `$\\color{${mdc_colors['green-400']}}` +
-					solutions_latex[p1 ? p1 - 1 : 0] +
-					'\\color{black}$'
+			: `\\textcolor{green}{` + solutions_latex[p1 ? p1 - 1 : 0] + '}'
 	}
 
 	function replaceAnswerUncorrect(match, p1) {
@@ -209,6 +205,8 @@ export function createCorrection(item) {
 						.replace(regexSolution, replaceSolutionTexmacs)
 						.replace(regexSol, replaceSolTexmacs)
 						.replace(/\$\$/g, '$')
+						.replace(/\\lt/g, '<')
+						.replace(/\\gt/g, '>')
 				}
 
 				lines.push({ html: get(formatLatex)(html), texmacs })
@@ -242,7 +240,7 @@ export function createCorrection(item) {
 		switch (item.type) {
 			case 'result': {
 				let html
-				
+
 				if (status === STATUS_CORRECT) {
 					html =
 						`$$${expression_latex}=$$` +
@@ -251,9 +249,7 @@ export function createCorrection(item) {
 						answers_latex[0] +
 						'$$' +
 						'</span>'
-					
-				} 
-				else if (status === STATUS_EMPTY) {
+				} else if (status === STATUS_EMPTY) {
 					html =
 						`$$${expression_latex}=$$` +
 						`<span style="color:${correct_color}; border:2px solid ${correct_color}; border-radius: 5px;  margin:2px; padding:5px;display:inline-block">` +
@@ -261,9 +257,7 @@ export function createCorrection(item) {
 						solutions_latex[0] +
 						'$$' +
 						'</span>'
-					
-				}
-				else {
+				} else {
 					html = `$$\\begin{align*}  ${expression_latex}`
 					if (status === STATUS_INCORRECT) {
 						html += `&= \\enclose{updiagonalstrike}[3px solid ${incorrect_color}]{${answers_latex[0]}} \\\\`
@@ -273,18 +267,22 @@ export function createCorrection(item) {
 						html += `&= \\textcolor{${unoptimal_color}}{${answers_latex[0]}} \\\\`
 					}
 
-					html += `&=\\enclose{roundedbox}[2px solid ${correct_color}]{\\textcolor{${correct_color}}{${
-						 solutions_latex[0]
-					}}}`
+					html += `&=\\enclose{roundedbox}[2px solid ${correct_color}]{\\textcolor{${correct_color}}{${solutions_latex[0]}}}`
 
 					html += '\\end{align*}$$'
 				}
-				const texmacs = '$' + expression_latex + `=\\color{${mdc_colors['green-400']}}${solutions_latex[0]}` +'\\color{black}$'
-				lines.push({ html:get(formatLatex)(html), texmacs })
+				const texmacs =
+					'$' +
+					expression_latex +
+					`=\\textcolor{green}{${solutions_latex[0]
+						.replace(/\\lt/g, '<')
+						.replace(/\\gt/g, '>')}}` +
+					'$'
+				lines.push({ html: get(formatLatex)(html), texmacs })
 
 				break
 			}
-			
+
 			case 'equation': {
 				// let exp = '$$\\begin{align*}x & =5-3 \\\\  & =2\\end{align*}$$'
 				let html
@@ -388,7 +386,13 @@ export function createCorrection(item) {
 						)
 					}
 				}
-				const texmacs = '$'+expression_latex.replace(/\\ldots/, `\\color{${mdc_colors['green-400']}}${solutions_latex[0]}\\color{black}`)+'$'
+				const texmacs =
+					'$' +
+					expression_latex
+						.replace(/\\ldots/, `\\textcolor{green}{${solutions_latex[0]}}`)
+						.replace(/\\lt/g, '<')
+						.replace(/\\gt/g, '>') +
+					'$'
 
 				lines.push({ html: get(formatLatex)(html), texmacs })
 			}
