@@ -32,6 +32,8 @@
 		// console.log('height', height)
 	}
 
+	$: console.log('questionCard flash', flashcard)
+
 	$: if (card) {
 		updatedFlashCard =
 			flashcard === null
@@ -70,6 +72,7 @@
 		// console.log('changing size')
 		height = 0
 	}
+	$: console.log('updatedFlashcard', updatedFlashCard)
 </script>
 
 <div class="card" style="{height ? `height:${height}px;` : ''}">

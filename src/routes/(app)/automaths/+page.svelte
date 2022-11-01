@@ -363,6 +363,8 @@
 		})
 		basket = basket
 	}
+
+	$:console.log('automaths flash', flash)
 </script>
 
 <h3>Les automaths !</h3>

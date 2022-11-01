@@ -43,7 +43,7 @@
 	let correct = false
 	let restart = false
 	let classroom
-	let flash
+	let flash = false
 	let courseAuxNombres
 	let pause = false
 	let previous
@@ -120,7 +120,7 @@
 		cards = []
 
 		classroom = JSON.parse(decodeURI($page.url.searchParams.get('classroom')))
-		flash = JSON.parse(decodeURI($page.url.searchParams.get('flash')))
+		flash = JSON.parse(decodeURI($page.url.searchParams.get('flash'))) || false
 		courseAuxNombres = JSON.parse(
 			decodeURI($page.url.searchParams.get('courseAuxNombres')),
 		)
@@ -326,6 +326,7 @@
 	}
 	$: virtualKeyboardMode.set($touchDevice)
 	$: delay = slider * 1000
+	$: console.log('assessment flash', flash)
 
 	commit = {
 		exec: function () {
