@@ -79,9 +79,13 @@
 		questions.forEach((q) => {
 			const { theme, domain, subdomain, level } = ids[q.id]
 			const question = getQuestion(theme, domain, subdomain, level)
-			
+
 			if (q.enounceAlone) {
-				enounce = question.enounces[0].replace(/\$\$/g, '$') + '\n'
+				enounce =
+					question.enounces[0]
+						.replace(/\$\$/g, '$')
+						.replace(/\\lt/g, '<')
+						.replace(/\\gt/g, '>') + '\n'
 				enounce += '\\begin{enumerate} \n'
 				solution += '\\begin{enumerate} \n'
 				for (let i = 0; i < q.count; i++) {
@@ -93,16 +97,27 @@
 					)
 					assessItem(generated)
 					enounce += '\\item '
-					solution += '\\item ' + generated.simpleCorrection.map(line => line.texmacs).join(' ')
+					solution +=
+						'\\item ' +
+						generated.simpleCorrection.map((line) => line.texmacs).join(' ')
 					if (generated.expression) {
-						enounce += '$'+generated.expression_latex.replace(/\\ldots/g, '\\, \\ldots\\ldots \\,') +'$' + '\n'
+						enounce +=
+							'$' +
+							generated.expression_latex.replace(
+								/\\ldots/g,
+								'\\text{\\ \\ldots\\ldots \\ }',
+							) +
+							'$' +
+							'\n'
 					}
 					if (generated.answerFields) {
-						enounce += generated.answerFields.replace(/\$\$/g, '$') + '\n'
+						enounce +=
+							generated.answerFields
+								.replace(/\$\$/g, '$')
+								.replace(/\.\.\./g, '\\text{\\ \\ldots\\ldots \\ }') + '\n'
 					}
 					generateds.push(generated)
 				}
-				
 			} else {
 				enounce = '\\begin{enumerate} \n'
 				solution += '\\begin{enumerate} \n'
@@ -115,13 +130,29 @@
 					)
 					assessItem(generated)
 					console.log('simpleCorrectiopn', generated.simpleCorrection)
-					solution += '\\item ' + generated.simpleCorrection.map(line => line.texmacs).join(' ')
-					enounce += '\\item ' + generated.enounce.replace(/\$\$/g, '$') + '\n'
+					solution +=
+						'\\item ' +
+						generated.simpleCorrection.map((line) => line.texmacs).join(' ')
+					enounce +=
+						'\\item ' +
+						generated.enounce
+							.replace(/\$\$/g, '$')
+							.replace(/\\lt/g, '<')
+							.replace(/\\gt/g, '>') +
+						'\n'
 					if (generated.expression) {
-						enounce += generated.expression_latex.replace(/\\ldots/g, '\\, \\ldots\\ldots \\,') + '\n'
+						enounce +=
+							generated.expression_latex.replace(
+								/\\ldots/g,
+								'\\text{\\ \\ldots\\ldots \\ }',
+							) + '\n'
 					}
 					if (generated.answerFields) {
-						enounce += generated.answerFields.replace(/\$\$/g, '$') + '\n'
+						enounce +=
+							generated.answerFields
+								.replace(/\$\$/g, '$')
+								.replace(/\.\.\./g, '\\text{\\ \\ldots\\ldots \\ }') + '\n'
+						console.log('enounce', enounce)
 					}
 					generateds.push(generated)
 				}
@@ -132,7 +163,7 @@
 		enounce += '\\end{enumerate}\n'
 		solution += '\\end{enumerate}\n'
 
-		const output = enounce +'\n'+solution
+		const output = enounce + '\n' + solution
 		navigator.clipboard
 			.writeText(output)
 			.then(function () {
@@ -206,6 +237,13 @@
 		// console.log('generate')
 		generated = generateExemple(theme, domain, subdomain, level)
 
+		// console.log('generated', generated)
+	}
+
+	function generateExemple(theme, domain, subdomain, level) {
+		
+		const q = getQuestion(theme, domain, subdomain, level)
+		const generated = generateQuestion(q)
 		if (generated.image) {
 			generated.imageBase64P = fetchImage(generated.image)
 		}
@@ -219,14 +257,7 @@
 				}
 			})
 		}
-
-		// console.log('generated', generated)
-	}
-
-	function generateExemple(theme, domain, subdomain, level) {
-		let qs = questions[theme][domain][subdomain]
-		const q = { ...qs.find((q) => qs.indexOf(q) + 1 === parseInt(level, 10)) }
-		return generateQuestion(q)
+		return generated
 	}
 
 	// suivant le niveau (grade), retourne l'ensemble des levels disponibles par theme/domaine/sous-domaine

@@ -186,6 +186,7 @@
 		}
 
 		info('Begining test with questions :', cards)
+		console.log('flash', flash)
 		if (flash) {
 			beginTest()
 		}
@@ -195,6 +196,19 @@
 		const { theme, domain, subdomain, level } = ids[basket[0].id]
 		const question = getQuestion(theme, domain, subdomain, level)
 		generatedExemple = generate(question)
+		if (generatedExemple.image) {
+			generatedExemple.imageBase64P = fetchImage(generatedExemple.image)
+		}
+		if (generatedExemple.imageCorrection) {
+			generatedExemple.imageCorrectionBase64P = fetchImage(generatedExemple.imageCorrection)
+		}
+		if (generatedExemple.choices) {
+			generatedExemple.choices.forEach(async (choice) => {
+				if (choice.image) {
+					choice.imageBase64P = fetchImage(choice.image)
+				}
+			})
+		}
 	}
 
 	function beginTest() {
