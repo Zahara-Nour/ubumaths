@@ -129,7 +129,7 @@
 						offset,
 					)
 					assessItem(generated)
-					console.log('simpleCorrectiopn', generated.simpleCorrection)
+					// console.log('simpleCorrectiopn', generated.simpleCorrection)
 					solution +=
 						'\\item ' +
 						generated.simpleCorrection.map((line) => line.texmacs).join(' ')
@@ -152,7 +152,7 @@
 							generated.answerFields
 								.replace(/\$\$/g, '$')
 								.replace(/\.\.\./g, '\\text{\\ \\ldots\\ldots \\ }') + '\n'
-						console.log('enounce', enounce)
+						// console.log('enounce', enounce)
 					}
 					generateds.push(generated)
 				}
@@ -321,7 +321,7 @@
 			questions.push({ id: q.id, count: 10 })
 		}
 
-		const base = dev ? 'http://localhost:3000/' : 'http://ubumaths.net/'
+		const base = dev ? 'http://localhost:5173/' : 'http://ubumaths.net/'
 
 		let href = base + 'automaths/assessment/?questions='
 		href += encodeURI(JSON.stringify(questions))
@@ -364,7 +364,6 @@
 		basket = basket
 	}
 
-	$:console.log('automaths flash', flash)
 </script>
 
 <h3>Les automaths !</h3>

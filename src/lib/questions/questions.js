@@ -7780,6 +7780,49 @@ const questions = {
 					defaultDelay: 20,
 					grade: CINQUIEME,
 				},
+				{
+					description: 'Comparer deux nombres relatifs.',
+					subdescription: 'Valeurs décimales - à compléter',
+					enounces: ['Complète avec $$\\lt$$ ou $$\\gt$$ :'],
+					variables: [
+						{
+							'&1': '$e{1}',
+							'&2': '$e[1;2]',
+							'&3': '$e{&2;&2}\\{m(10)}',
+							'&4': '$e{1;1}\\{&3}',
+							'&6': '[._-&1,&3_]',
+							'&7': '[._-&1,&4_]',
+						},
+						{
+							'&1': '$er{1}',
+							'&2': '$er{1}',
+							'&3': '$e[1;2]',
+							'&4': '$e{&3;&3}\\{m(10)}',
+							'&5': '$e{1}\\{&4}',
+							'&6': '[._&1,&4_]',
+							'&7': '[._&2,&5_]',
+						},
+					],
+					
+					answerFields:[
+						'$$[._&6_] ... [._&7_]$$',
+					],
+					testAnswers:[
+						['&6 &answer &7'],					
+					],
+					solutions:[
+						['&6 < &7 ?? < :: >'],
+		
+					],
+					correctionFormat: [
+						{
+							correct: ['$$[._&6_] &ans [._&7_]$$'],
+						},
+					],
+					type:"fill in",
+					defaultDelay: 20,
+					grade: CINQUIEME,
+				},
 			],
 		},
 		'Additionner et soustraire': {
@@ -7870,6 +7913,24 @@ const questions = {
 					options: [
 						'no-penalty-for-extraneous-brackets-in-first-negative-term',
 					],
+					defaultDelay: 20,
+					grade: CINQUIEME,
+				},
+				{
+					description: 'Calculer une somme ou une différence',
+					subdescription:
+						"A l'aide de la droite graduée, entre $$-4$$ et $$4$$, nombres en ,5",
+					enounces: ["Calcule en t'aidant de la droite graduée."],
+					expressions: ['(-&1,5)+&2', '(-&1,5)-&2', '&1,5-&2'],
+					variables: [
+						{ '&1': '$e[1;3]', '&2': '$e[1;4]' },
+						{ '&1': '$e[1;2]', '&2': '$e[1;3-&1]' },
+						{ '&1': '$e[1;2]', '&2': '$e[&1+1;4]' },
+					],
+					images: [
+						'relatifs/droite-graduee-operations/droite-graduee--4-4-600.png',
+					],
+					'result-type':'decimal',
 					defaultDelay: 20,
 					grade: CINQUIEME,
 				},
@@ -10547,7 +10608,9 @@ const questions = {
 							},
 						],
 					],
-
+					// bug de mathlive sur les puissances
+					// qui rajoute des parenthèses à l'exposant
+					options: ['no-penalty-for-extraneous-brackets'],
 					defaultDelay: 20,
 					grade: QUATRIEME,
 				},

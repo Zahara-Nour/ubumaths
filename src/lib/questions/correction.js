@@ -717,30 +717,33 @@ export function assessItem(item) {
 					return item.answers[i]
 				}
 
-				if (item.answerFields) {
-					// dans ce cas c'est un answerFields qu'il faut compléter, et il correspond à une
-					// expression mathématique. La différence c'est que le champs réponse peut contenir une expression
-					//  qui n'est pas une expression mathématique correcte mais juste un symboel par exemple.
-					// donc pas besoin de positionner item.statuss[i]
-					{
-						const regex = /\$\$.*?\.\.\..*?\$\$/g
-						const matched = item.answerFields.match(regex)
-						matched.forEach((match) => {
-							// on enlève les $$ au début et à la fin
-							match = match.replace(/\$\$/g, '')
-							const exp = match.replace(/\.\.\./g, putAnswers)
-							console.log('exp', exp)
-							if (math(exp).isIncorrect()) {
-								item.status = STATUS_INCORRECT
-								item.coms.push(
-									"L'expression $$" + exp + "$$ n'est pas écrite correctement.",
-								)
-							}
-						})
-					}
-				}
+				// if (item.answerFields) {
+				// dans ce cas c'est un answerFields qu'il faut compléter, et il correspond à une
+				// expression mathématique. La différence c'est que le champs réponse peut contenir une expression
+				//  qui n'est pas une expression mathématique correcte mais juste un symboel par exemple.
+				// donc pas besoin de positionner item.statuss[i]
+
+				// ENFAIT, c'est trop compliqué car l'expression est en latex
+				// {
+				// 	const regex = /\$\$.*?\.\.\..*?\$\$/g
+				// 	const matched = item.answerFields.match(regex)
+				// 	matched.forEach((match) => {
+				// 		// on enlève les $$ au début et à la fin
+				// 		match = match.replace(/\$\$/g, '')
+				// 		const exp = match.replace(/\.\.\./g, putAnswers)
+				// 		console.log('exp', exp)
+				// 		if (math(exp).isIncorrect()) {
+				// 			item.status = STATUS_INCORRECT
+				// 			item.coms.push(
+				// 				"L'expression $$" + exp + "$$ n'est pas écrite correctement.",
+				// 			)
+				// 		}
+				// 	})
+				// }
+				// }
 				// c'est une expression à compléter
-				else {
+				// else {
+				if (item.expression && !item.answerFields) {
 					let incorrectForm = false
 					item.answers.forEach((answer, i) => {
 						if (
@@ -788,12 +791,10 @@ export function assessItem(item) {
 								.replace(/,/g, '.')
 								.split('&&')
 							const failed = tests.some((test) => {
-								const result =
+								const failure =
 									math(test).isIncorrect() || math(test).eval().isFalse()
-								console.log('test', test, result)
-								return result
+								return failure
 							})
-							console.log('failed', failed)
 							if (failed) {
 								item.statuss[i] = STATUS_INCORRECT
 								item.status = STATUS_INCORRECT

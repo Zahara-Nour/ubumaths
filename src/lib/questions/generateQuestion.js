@@ -2,7 +2,7 @@ import math from 'tinycas'
 import emptyQuestion from './emptyQuestion'
 import { getLogger, lexicoSort, shuffle } from '$lib/utils'
 
-let { warn, trace } = getLogger('generateQuestion', 'info')
+let { warn, trace } = getLogger('generateQuestion', 'warn')
 
 export default function generateQuestion(
 	question,
@@ -31,7 +31,6 @@ export default function generateQuestion(
 	let answerFields
 	let type
 
-
 	type = type || question.choices ? 'choice' : 'result'
 
 	const { options = [] } = question
@@ -53,7 +52,6 @@ export default function generateQuestion(
 
 	// [° °] : simple mise en forme LaTeX
 	const regexLatex = /\[°(.*?)°\]/g
-
 
 	const replace = (matched, p1, p2, p3, p4) => {
 		const modifiers = p1
@@ -211,137 +209,209 @@ export default function generateQuestion(
 	}
 
 	function checkDuplicate() {
-		let repeat
-		if (expression && enounce && enounce2 && choices) {
-			repeat = generateds.some(
+		let duplicate
+		console.log('checkDuplicate')
+		// on vérifie en premier lieu si les variables sont identiques
+		if (Object.getOwnPropertyNames(variables).length) {
+			console.log('checking variables', variables)
+			duplicate = generateds.some(
 				(g) =>
-					g.enounce === enounce &&
-					g.enounce2 === enounce2 &&
-					JSON.stringify(g.choices) === JSON.stringify(choices) &&
-					g.expression === expression,
+					g.i === i &&
+					Object.getOwnPropertyNames(variables).every((key) => {
+						console.log('key', key, variables[key], g.generatedVariables[key])
+						const e1 = math(variables[key])
+						const e2 = math(g.generatedVariables[key])
+						return e1.isCorrect() && e2.isCorrect()
+							? e1.string === e2.string
+							: variables[key] === g.generatedVariables[key]
+					}),
 			)
-			if (repeat)
-				warn(
-					'même énoncé ET même énoncé2 ET choix ET image',
-					enounce,
-					enounce2,
-					JSON.stringify(choices),
-					expression,
-				)
-		} else if (image && enounce && enounce2 && choices) {
-			repeat = generateds.some(
-				(g) =>
-					g.enounce === enounce &&
-					g.enounce2 === enounce2 &&
-					JSON.stringify(g.choices) === JSON.stringify(choices) &&
-					g.image === image,
-			)
-			if (repeat)
-				warn(
-					'même énoncé ET même enoncé2 ET choix ET image',
-					enounce,
-					enounce2,
-					JSON.stringify(choices),
-					image,
-				)
-		} else if (expression && enounce && enounce2) {
-			repeat = generateds.some(
-				(g) =>
-					g.expression === expression &&
-					g.enounce === enounce &&
-					g.enounce2 === enounce2,
-			)
-			if (repeat)
-				warn(
-					'même énoncé ET même énoncé2 ET expression: ',
-					enounce,
-					enounce2,
-					expression,
-				)
-		} else if (enounce && enounce2 && choices) {
-			repeat = generateds.some(
-				(g) =>
-					g.enounce === enounce &&
-					g.enounce2 === enounce2 &&
-					JSON.stringify(g.choices) === JSON.stringify(choices),
-			)
-			if (repeat)
-				warn(
-					'même énoncé ET même enoncé2 ET choix ',
-					enounce,
-					enounce2,
-					JSON.stringify(choices),
-				)
-		} else if (enounce && enounce2 && image) {
-			repeat = generateds.some(
-				(g) =>
-					g.enounce === enounce && g.enounce2 === enounce2 && g.image === image,
-			)
-			if (repeat)
-				warn('même énoncé ET même énoncé2 ET image', enounce, enounce, image)
-		} else if (expression && enounce && choices) {
-			repeat = generateds.some(
-				(g) =>
-					g.enounce === enounce &&
-					JSON.stringify(g.choices) === JSON.stringify(choices) &&
-					g.expression === expression,
-			)
-			if (repeat)
-				warn(
-					'même énoncé ET choix ET image',
-					enounce,
-					JSON.stringify(choices),
-					expression,
-				)
-		} else if (image && enounce && choices) {
-			repeat = generateds.some(
-				(g) =>
-					g.enounce === enounce &&
-					JSON.stringify(g.choices) === JSON.stringify(choices) &&
-					g.image === image,
-			)
-			if (repeat)
-				warn(
-					'même énoncé ET choix ET image',
-					enounce,
-					JSON.stringify(choices),
-					image,
-				)
-		} else if (expression && enounce) {
-			repeat = generateds.some(
-				(g) => g.expression === expression && g.enounce === enounce,
-			)
-			if (repeat) warn('même énoncé ET expression: ', enounce, expression)
-		} else if (enounce && choices) {
-			repeat = generateds.some(
-				(g) =>
-					g.enounce === enounce &&
-					JSON.stringify(g.choices) === JSON.stringify(choices),
-			)
-			if (repeat)
-				warn('même énoncé ET choix ', enounce, JSON.stringify(choices))
-		} else if (enounce && image) {
-			repeat = generateds.some(
-				(g) => g.enounce === enounce && g.image === image,
-			)
-			if (repeat) warn('même énoncé ET image', enounce, image)
-		} else if (expression && !options.includes('allow-same-expression')) {
-			repeat = generatedExpressions.includes(expression)
-			if (repeat) warn('même image expression', expression)
-		} else if (enounce && enounce2 && !options.includes('allow-same-enounce')) {
-			repeat =
-				generatedEnounces.includes(enounce) &&
-				generatedEnounces2.includes(enounce2)
-			if (repeat) warn('même énoncé ET même énoncé2', enounce, enounce2)
-		} else if (enounce && !options.includes('allow-same-enounce')) {
-			repeat = generatedEnounces.includes(enounce)
-			if (repeat) warn('même énoncé', enounce)
-		} else if (image) {
-			const test = generatedImages.includes(image)
-			if (test) warn('même image pour la question', image)
-			repeat = repeat || test
+			if (repeat) warn('mêmes variables', variables)
 		}
-		return repeat
+
+		if (enounce) {
+			duplicate = duplicate && generateds.some(
+				(g) =>
+					g.i === i &&
+					g.enounce === enounce
+			)
+		}
+
+		if (enounce2) {
+			duplicate = duplicate && generateds.some(
+				(g) =>
+					g.i === i &&
+					g.enounce2 === enounce2
+			)
+		}
+
+		if (expression) {
+			duplicate = duplicate && generateds.some(
+				(g) =>
+					g.i === i &&
+					g.expression === expression
+			)
+		}
+
+		if (answerFields) {
+			duplicate = duplicate && generateds.some(
+				(g) =>
+					g.i === i &&
+					g.answerFields === answerFields
+			)
+		}
+
+
+		if (choices) {
+			duplicate = duplicate && generateds.some(
+				(g) =>
+					g.i === i &&
+					JSON.stringify(g.choices) === JSON.stringify(choices)
+			)
+		}
+
+		if (image) {
+			duplicate = duplicate && generateds.some(
+				(g) =>
+					g.i === i &&
+					g.image === image
+			)
+		}
+
+		if (duplicate) {
+			warn('duplicate question')
+		}
+
+		// if (expression && enounce && enounce2 && choices) {
+		// 	repeat = generateds.some(
+		// 		(g) =>
+		// 			g.enounce === enounce &&
+		// 			g.enounce2 === enounce2 &&
+		// 			JSON.stringify(g.choices) === JSON.stringify(choices) &&
+		// 			g.expression === expression,
+		// 	)
+		// 	if (repeat)
+		// 		warn(
+		// 			'même énoncé ET même énoncé2 ET choix ET image',
+		// 			enounce,
+		// 			enounce2,
+		// 			JSON.stringify(choices),
+		// 			expression,
+		// 		)
+		// } else if (image && enounce && enounce2 && choices) {
+		// 	repeat = generateds.some(
+		// 		(g) =>
+		// 			g.enounce === enounce &&
+		// 			g.enounce2 === enounce2 &&
+		// 			JSON.stringify(g.choices) === JSON.stringify(choices) &&
+		// 			g.image === image,
+		// 	)
+		// 	if (repeat)
+		// 		warn(
+		// 			'même énoncé ET même enoncé2 ET choix ET image',
+		// 			enounce,
+		// 			enounce2,
+		// 			JSON.stringify(choices),
+		// 			image,
+		// 		)
+		// } else if (expression && enounce && enounce2) {
+		// 	repeat = generateds.some(
+		// 		(g) =>
+		// 			g.expression === expression &&
+		// 			g.enounce === enounce &&
+		// 			g.enounce2 === enounce2,
+		// 	)
+		// 	if (repeat)
+		// 		warn(
+		// 			'même énoncé ET même énoncé2 ET expression: ',
+		// 			enounce,
+		// 			enounce2,
+		// 			expression,
+		// 		)
+		// } else if (enounce && enounce2 && choices) {
+		// 	repeat = generateds.some(
+		// 		(g) =>
+		// 			g.enounce === enounce &&
+		// 			g.enounce2 === enounce2 &&
+		// 			JSON.stringify(g.choices) === JSON.stringify(choices),
+		// 	)
+		// 	if (repeat)
+		// 		warn(
+		// 			'même énoncé ET même enoncé2 ET choix ',
+		// 			enounce,
+		// 			enounce2,
+		// 			JSON.stringify(choices),
+		// 		)
+		// } else if (enounce && enounce2 && image) {
+		// 	repeat = generateds.some(
+		// 		(g) =>
+		// 			g.enounce === enounce && g.enounce2 === enounce2 && g.image === image,
+		// 	)
+		// 	if (repeat)
+		// 		warn('même énoncé ET même énoncé2 ET image', enounce, enounce, image)
+		// } else if (expression && enounce && choices) {
+		// 	repeat = generateds.some(
+		// 		(g) =>
+		// 			g.enounce === enounce &&
+		// 			JSON.stringify(g.choices) === JSON.stringify(choices) &&
+		// 			g.expression === expression,
+		// 	)
+		// 	if (repeat)
+		// 		warn(
+		// 			'même énoncé ET choix ET image',
+		// 			enounce,
+		// 			JSON.stringify(choices),
+		// 			expression,
+		// 		)
+		// } else if (image && enounce && choices) {
+		// 	repeat = generateds.some(
+		// 		(g) =>
+		// 			g.enounce === enounce &&
+		// 			JSON.stringify(g.choices) === JSON.stringify(choices) &&
+		// 			g.image === image,
+		// 	)
+		// 	if (repeat)
+		// 		warn(
+		// 			'même énoncé ET choix ET image',
+		// 			enounce,
+		// 			JSON.stringify(choices),
+		// 			image,
+		// 		)
+		// } else if (expression && enounce) {
+		// 	repeat = generateds.some(
+		// 		(g) => g.expression === expression && g.enounce === enounce,
+		// 	)
+		// 	if (repeat) warn('même énoncé ET expression: ', enounce, expression)
+		// } else if (enounce && choices) {
+		// 	repeat = generateds.some(
+		// 		(g) =>
+		// 			g.enounce === enounce &&
+		// 			JSON.stringify(g.choices) === JSON.stringify(choices),
+		// 	)
+		// 	if (repeat)
+		// 		warn('même énoncé ET choix ', enounce, JSON.stringify(choices))
+		// } else if (enounce && image) {
+		// 	repeat = generateds.some(
+		// 		(g) => g.enounce === enounce && g.image === image,
+		// 	)
+		// 	if (repeat) warn('même énoncé ET image', enounce, image)
+		// } else if (expression && !options.includes('allow-same-expression')) {
+		// 	repeat = generatedExpressions.includes(expression)
+		// 	if (repeat) warn('même image expression', expression)
+		// } else if (enounce && enounce2 && !options.includes('allow-same-enounce')) {
+		// 	repeat =
+		// 		generatedEnounces.includes(enounce) &&
+		// 		generatedEnounces2.includes(enounce2)
+		// 	if (repeat) warn('même énoncé ET même énoncé2', enounce, enounce2)
+		// } else if (enounce && !options.includes('allow-same-enounce')) {
+		// 	repeat = generatedEnounces.includes(enounce)
+		// 	if (repeat) warn('même énoncé', enounce)
+		// } else if (image) {
+		// 	const test = generatedImages.includes(image)
+		// 	if (test) warn('même image pour la question', image)
+		// 	repeat = repeat || test
+		// }
+		return duplicate
 	}
 
 	if (!question) return emptyQuestion
@@ -372,7 +442,7 @@ export default function generateQuestion(
 		for (let i = 0; i < n; i++) {
 			question.limits.limits[i] = {}
 			question.limits.limits[i].count = 0
-			
+
 			if (question.options && question.options.includes('exhaust')) {
 				nbuniques += 1
 				question.limits.limits[i].limit = 1
@@ -533,7 +603,7 @@ export default function generateQuestion(
 
 	solutions = evaluate(solutions)
 	testAnswer = evaluate(testAnswer)
-	
+
 	correctionDetails = toLatex(correctionDetails)
 	correctionDetails = evaluateToLatex(correctionDetails)
 	correct = toLatex(correct)
@@ -559,7 +629,7 @@ export default function generateQuestion(
 							.replace(/&ans/g, '&sol'),
 				  ),
 			answer:
-				answer && answer.replace(regex, replacement) ||
+				(answer && answer.replace(regex, replacement)) ||
 				correct.map((c) => c.replace(regex, replacement)).filter((m) => !!m)[0],
 		}
 	}
@@ -587,7 +657,7 @@ export default function generateQuestion(
 			// if (question.type === 'choice' && typeof solution === 'number') {
 			//   solution = choices[solution]
 			// }
-			
+
 			return solution
 		})
 	}
@@ -693,7 +763,9 @@ export default function generateQuestion(
 
 	const generated = {
 		points: 1,
+		i,
 		type,
+		generatedVariables: variables,
 		...question,
 		// TODO: le mettre ailleurs ça alourdit ici
 		order_elements: question.order_elements || [

@@ -261,8 +261,8 @@
 
 		if (answerFields) {
 			answerFields = $formatLatex(
-				answerFields
-			).replace(/\.\.\./g, addMathfield)
+				answerFields.replace(/\.\.\./g, '\\ldots')
+			).replace(/…/g, addMathfield)
 		}
 
 		if (expression) {
@@ -289,7 +289,7 @@
 		answerFields = question.answerFields
 
 		if (answerFields) {
-			answerFields = $formatLatex(answerFields)
+			answerFields = $formatLatex(answerFields.replace(/\.\.\./g, '\\; \\ldots \\;'))
 		}
 
 		if (expression) {

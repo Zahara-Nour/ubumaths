@@ -22,7 +22,7 @@ function createSolutionsLatex(item) {
 				if (item.type === 'choice') {
 					return item.choices[solution]
 				} else {
-					console.log('solution', solution)
+					// console.log('solution', solution)
 					const e = math(solution)
 					return e.latex
 				}
