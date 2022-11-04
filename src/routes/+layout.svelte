@@ -31,7 +31,7 @@
 			false,
 		)
 
-		import('tinymathlive/dist/mathlive.min.mjs')
+		import('mathlive/dist/mathlive.min.mjs')
 			.then((m) => {
 				mathliveReady.set(true)
 				MathfieldElement.set(m.MathfieldElement)

@@ -52,7 +52,6 @@
 		"@supabase/supabase-js": "^2.0.4",
 		"svelte-confetti": "^1.2.0",
 		"svelte-loading-spinners": "^0.3.4",
-		"tinycas": "^0.8.57",
-		"tinymathlive": "^0.79.2"
+		"tinycas": "^0.8.57"
 	}
 }
