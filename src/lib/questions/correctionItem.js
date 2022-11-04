@@ -12,8 +12,9 @@ import {
 	incorrect_color,
 	unoptimal_color,
 } from '$lib/colors'
-import { toMarkup, formatLatex } from '$lib/stores'
+import { toMarkup, formatToHtml } from '$lib/stores'
 import math from 'tinycas'
+import {formatToLatex} from '$lib/utils' 
 import { get } from 'svelte/store'
 
 function createSolutionsLatex(item) {
@@ -93,7 +94,7 @@ export function createCorrection(item) {
 	const regexAns = /&ans([1-9]?)/g
 	function replaceAnsCorrect(match, p1) {
 		return (
-			`\\enclose{roundedbox}[3px solid ${correct_color}]{\\textcolor{${correct_color}}{` +
+			`\\enclose{roundedbox}[3px solid ${correct_color}, padding="auto"]{\\textcolor{${correct_color}}{` +
 			answers_latex[p1 ? p1 - 1 : 0] +
 			'}}'
 		)
@@ -120,7 +121,7 @@ export function createCorrection(item) {
 	function replaceSol(match, p1) {
 		return item.type === 'choice'
 			? item.choices[solutions[p1 ? p1 - 1 : 0]].text
-			: `\\enclose{roundedbox}[3px solid ${correct_color}]{\\textcolor{${correct_color}}{` +
+			: `\\enclose{roundedbox}[3px solid ${correct_color}, padding="6"]{\\textcolor{${correct_color}}{` +
 					solutions_latex[p1 ? p1 - 1 : 0] +
 					'}}'
 	}
@@ -180,7 +181,7 @@ export function createCorrection(item) {
 						.replace(regexAns, replaceAnsCorrect)
 				}
 
-				lines.push({ html: get(formatLatex)(html) })
+				lines.push({ html: get(formatToHtml)(formatToLatex(html)) })
 			})
 		} else {
 			correctionFormat.uncorrect.forEach((format) => {
@@ -190,7 +191,9 @@ export function createCorrection(item) {
 					let img = choices[solutions[0]].imageBase64
 					html = `<img style="max-width:400px;max-height:40vh;" src='${img}' alt='toto'>`
 				} else {
-					html = format
+					html = formatToLatex(format)
+					console.log('html', html)
+					html = html
 						.replace(regexExpression2, replaceExpression2)
 						.replace(regexExpression, replaceExpression)
 						.replace(regexExp2, replaceExp2)
@@ -204,12 +207,10 @@ export function createCorrection(item) {
 						.replace(regexExp, replaceExp)
 						.replace(regexSolution, replaceSolutionTexmacs)
 						.replace(regexSol, replaceSolTexmacs)
-						.replace(/\$\$/g, '$')
-						.replace(/\\lt/g, '<')
-						.replace(/\\gt/g, '>')
 				}
 
-				lines.push({ html: get(formatLatex)(html), texmacs })
+				console.log('html', html)
+				lines.push({ html: get(formatToHtml)(html), texmacs })
 			})
 
 			// le commentaire avec la réponse de l'utilisateur
@@ -278,7 +279,7 @@ export function createCorrection(item) {
 						.replace(/\\lt/g, '<')
 						.replace(/\\gt/g, '>')}}` +
 					'$'
-				lines.push({ html: get(formatLatex)(html), texmacs })
+				lines.push({ html: get(formatToHtml)(formatToLatex(html)), texmacs })
 
 				break
 			}
@@ -305,7 +306,7 @@ export function createCorrection(item) {
 				} else {
 					html += `=\\enclose{roundedbox}[3px solid ${correct_color}]{\\textcolor{${correct_color}}{${answers_latex[0]}}}\\end{align*}$$`
 				}
-				lines.push({ html: get(formatLatex)(html) })
+				lines.push({ html: get(formatToHtml)(html) })
 
 				break
 			}
@@ -331,7 +332,7 @@ export function createCorrection(item) {
 						c.image = choice.base64
 					} else {
 						c.text = choice.text
-						c.html = get(formatLatex)(choice.text)
+						c.html = get(formatToHtml)(choice.text)
 					}
 					if (answers || c.solution) {
 						choices.push(c)
@@ -394,14 +395,14 @@ export function createCorrection(item) {
 						.replace(/\\gt/g, '>') +
 					'$'
 
-				lines.push({ html: get(formatLatex)(html), texmacs })
+				lines.push({ html: get(formatToHtml)(html), texmacs })
 			}
 		}
 	}
 
 	if (item.answers) {
 		coms = coms.map((com) =>
-			get(formatLatex)(com).replace(/_COLORANSWER_/g, answerColor),
+			get(formatToHtml)(com).replace(/_COLORANSWER_/g, answerColor),
 		)
 	}
 	item.coms = coms
@@ -440,7 +441,7 @@ export function createDetailedCorrection(item) {
 		return (
 			`<span style="color:${correct_color}; border:2px solid ${correct_color}; border-radius: 5px; margin:2px;padding:5px;display:inline-block">` +
 			(item.type === 'choice'
-				? get(formatLatex)(item.choices[solutions[p1 ? p1 - 1 : 0]].text)
+				? get(formatToHtml)(item.choices[solutions[p1 ? p1 - 1 : 0]].text)
 				: get(toMarkup)(solutions_latex[p1 ? p1 - 1 : 0])) +
 			'</span>'
 		)
@@ -475,7 +476,7 @@ export function createDetailedCorrection(item) {
 					() =>
 						`<span style="color:${correct_color}; border:2px solid ${correct_color}; border-radius: 5px;  margin:2px; padding:5px;display:inline-block">` +
 						(item.type === 'choice'
-							? get(formatLatex)(item.choices[solutions[0]].text)
+							? get(formatToHtml)(item.choices[solutions[0]].text)
 							: get(toMarkup)(solutions_latex[0])) +
 						'</span>',
 				)
@@ -490,6 +491,6 @@ export function createDetailedCorrection(item) {
 		}
 		lines.push(line)
 	})
-	lines = lines.map(get(formatLatex))
+	lines = lines.map(get(formatToHtml))
 	return lines
 }

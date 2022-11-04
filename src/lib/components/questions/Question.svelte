@@ -1,12 +1,12 @@
 <script>
 	import {
 		toMarkup,
-		formatLatex,
+		formatToHtml,
 		MathfieldElement,
 		virtualKeyboardMode,
 	} from '$lib/stores'
 	import { afterUpdate, onDestroy, tick } from 'svelte'
-	import { getLogger } from '$lib/utils'
+	import { getLogger, formatToLatex } from '$lib/utils'
 	import virtualKeyboard from '$lib/mathlive/virtualKeyboard'
 	import Button, { Label } from '@smui/button'
 	import { createDetailedCorrection } from '$lib/questions/correctionItem'
@@ -201,8 +201,8 @@
 		answers = question.answers
 		answers_latex = question.answers_latex
 
-		enounce = question.enounce ? $formatLatex(question.enounce) : null
-		enounce2 = question.enounce2 ? $formatLatex(question.enounce2) : null
+		enounce = question.enounce ? $formatToHtml(formatToLatex(question.enounce)) : null
+		enounce2 = question.enounce2 ? $formatToHtml(formatToLatex(question.enounce2)) : null
 	}
 
 	function makeCorrection(answers) {
@@ -256,11 +256,11 @@
 			question.type !== 'choice' &&
 			question.type !== 'choices'
 		) {
-			answerFields = '...'
+			answerFields = '$$...$$'
 		}
 
 		if (answerFields) {
-			answerFields = $formatLatex(
+			answerFields = $formatToHtml(
 				answerFields.replace(/\.\.\./g, '\\ldots')
 			).replace(/…/g, addMathfield)
 		}
@@ -289,7 +289,7 @@
 		answerFields = question.answerFields
 
 		if (answerFields) {
-			answerFields = $formatLatex(answerFields.replace(/\.\.\./g, '\\; \\ldots \\;'))
+			answerFields = $formatToHtml(answerFields.replace(/\.\.\./g, '\\; \\ldots \\;'))
 		}
 
 		if (expression) {
@@ -549,7 +549,7 @@
 						{/if}
 						{#if choice.text}
 							<div>
-								{@html $formatLatex(choice.text)}
+								{@html $formatToHtml(choice.text)}
 							</div>
 						{/if}
 					</button>

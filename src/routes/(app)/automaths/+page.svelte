@@ -15,7 +15,7 @@
 	import { fetchImage } from '$lib/images'
 	import { goto } from '$app/navigation'
 	import { getLogger } from '$lib/utils'
-	import { darkmode, formatLatex } from '$lib/stores'
+	import { darkmode, formatToHtml } from '$lib/stores'
 	import { assessItem } from '$lib/questions/correction'
 	import { dev } from '$app/environment'
 	import { page } from '$app/stores'
@@ -426,7 +426,7 @@
 						<div class="pl-5">
 							{#each Object.keys(availableLevels[theme][d]) as subd}
 								<div class="my-5 flex items-center">
-									<span>{@html $formatLatex(subd)}</span>
+									<span>{@html $formatToHtml(subd)}</span>
 									<div flex flex-wrap>
 										{#each availableLevels[theme][d][subd] as i}
 											{@const q = questions[theme][d][subd][i - 1]}

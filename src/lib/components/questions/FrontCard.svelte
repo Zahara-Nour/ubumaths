@@ -5,7 +5,7 @@
 	import { Svg } from '@smui/common'
 	import Paper, { Title, Subtitle, Content } from '@smui/paper'
 	import Question from './Question.svelte'
-	import { formatLatex } from '$lib/stores'
+	import { formatToHtml } from '$lib/stores'
 	import { mdc_colors } from '$lib/colors'
 	import Button, { Label } from '@smui/button'
 
@@ -26,8 +26,8 @@
 	export let immediateCommit = false
 	export let flashcard
 
-	$: description = $formatLatex(card.description)
-	$: subdescription = $formatLatex(card.subdescription)
+	$: description = $formatToHtml(card.description)
+	$: subdescription = $formatToHtml(card.subdescription)
 </script>
 
 <div bind:clientHeight="{h}" bind:clientWidth="{w}">
@@ -46,7 +46,7 @@
 										class="z-0 relative"
 										style="{'color:var(--mdc-theme-primary'}"
 									>
-										{@html $formatLatex(description)}
+										{@html $formatToHtml(description)}
 									</span>
 								</Title>
 								{#if subdescription}
@@ -54,7 +54,7 @@
 										<span
 											class="z-0 relative"
 											style="{'color:var(--mdc-theme-on-surface'}"
-											>{@html $formatLatex(subdescription)}</span
+											>{@html $formatToHtml(subdescription)}</span
 										>
 									</Subtitle>
 								{/if}

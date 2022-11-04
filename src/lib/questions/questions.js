@@ -136,7 +136,7 @@ const questions = {
 					description: 'Connaître la position décimale',
 					subdescription: "Jusqu'aux dizaines.",
 					enounces: [
-						'Dans le nombre $$&4$$,  quel est le chiffre des dizaines ?',
+						'Dans le nombre $$&4$$, quel est le chiffre des dizaines ?',
 						'Dans le nombre $$&4$$, quel est le chiffre des unités ?',
 					],
 					variables: [
@@ -3470,8 +3470,8 @@ const questions = {
 					description: 'Trouver le quadruple',
 					subdescription: 'Nombre inférieur à 10',
 					enounces: [
-						'Quel est le quadruple de $$[°&1°]$$ ?',
-						'Quel est le résultat de $$[°4*&1°]$$ ?',
+						'Quel est le quadruple de $$&1$$ ?',
+						'Quel est le résultat de $$4*&1$$ ?',
 					],
 					solutions: [['[_4*&1_]']],
 					variables: [{ '&1': '$e[0;9]' }],
@@ -3480,7 +3480,7 @@ const questions = {
 							correct: ['Le quadruple de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$4*&1=$$&answer'],
+							correct: ['$$4*&1=&ans$$'],
 						},
 					],
 

@@ -5,11 +5,11 @@
 	import {
 		touchDevice,
 		toMarkup,
-		formatLatex,
+		formatToHtml,
 		mathliveReady,
 		MathfieldElement
 	} from '$lib/stores'
-	import { getLogger } from '$lib/utils'
+	import { getLogger, formatToLatex } from '$lib/utils'
 	import { onMount, onDestroy } from 'svelte'
 
 	// import { dev } from '$app/environnment'
@@ -38,21 +38,22 @@
 				toMarkup.set(m.convertLatexToMarkup)
 				const regex = /\$\$(.*?)\$\$/g
 				const replacement = (_, p1) => m.convertLatexToMarkup(p1)
-				const _formatLatex = (o) => {
+				const _formatToHtml = (o) => {
 					if (!o) {
 						return ''
 					}
+					
 					if (Array.isArray(o)) {
-						return o.map((elmt) => _formatLatex(elmt))
+						return o.map((elmt) => _formatToHtml(elmt))
 					} else if (o.text) {
-						return { ...o, text: _formatLatex(o.text) }
+						return { ...o, text: _formatToHtml(o.text) }
 					} else if (typeof o === 'string') {
 						return o.replace(regex, replacement)
 					} else {
 						return o
 					}
 				}
-				formatLatex.set(_formatLatex)
+				formatToHtml.set(_formatToHtml)
 			})
 			.catch((e) => {
 				fail('erreur while importing mathlive', e)

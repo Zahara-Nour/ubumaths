@@ -5,7 +5,7 @@
 	import Fab, { Icon } from '@smui/fab'
 	import { Svg } from '@smui/common'
 	import Paper from '@smui/paper'
-	import { formatLatex } from '$lib/stores'
+	import { formatToHtml } from '$lib/stores'
 	import { mdc_colors, correct_color } from '$lib/colors'
 	import CorrectionLine from './CorrectionLine.svelte'
 
@@ -65,7 +65,7 @@
 			}
 		} else {
 			if (card.answerFields && card.type !== 'equation') {
-				s = $formatLatex(card.answerFields.replace(/\?/g, replaceSol))
+				s = $formatToHtml(card.answerFields.replace(/\?/g, replaceSol))
 			} else {
 				s = card.solutions[0]
 				s = '$$' + math(s).latex + '$$'
@@ -74,7 +74,7 @@
 		return s
 	}
 
-	$: solution = $formatLatex(getSolution(card))
+	$: solution = $formatToHtml(getSolution(card))
 	$: details = detailedCorrection
 		? detailedCorrection
 		// : simpleCorrection

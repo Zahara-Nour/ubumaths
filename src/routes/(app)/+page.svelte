@@ -3,7 +3,7 @@
     import {
 		touchDevice,
 		toMarkup,
-		formatLatex,
+		formatToHtml,
 		mathliveReady,
 	} from '$lib/stores'
 
