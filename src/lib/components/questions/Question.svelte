@@ -201,8 +201,12 @@
 		answers = question.answers
 		answers_latex = question.answers_latex
 
-		enounce = question.enounce ? $formatToHtml(formatToLatex(question.enounce)) : null
-		enounce2 = question.enounce2 ? $formatToHtml(formatToLatex(question.enounce2)) : null
+		enounce = question.enounce
+			? $formatToHtml(formatToLatex(question.enounce))
+			: null
+		enounce2 = question.enounce2
+			? $formatToHtml(formatToLatex(question.enounce2))
+			: null
 	}
 
 	function makeCorrection(answers) {
@@ -241,11 +245,7 @@
 		expression = question.expression_latex
 		expression2 = question.expression2_latex
 
-		if (
-			expression &&
-			(question.type === 'result') &&
-			!question.answerFields
-		) {
+		if (expression && question.type === 'result' && !question.answerFields) {
 			expression += '=\\ldots'
 		}
 
@@ -261,7 +261,7 @@
 
 		if (answerFields) {
 			answerFields = $formatToHtml(
-				answerFields.replace(/\.\.\./g, '\\ldots')
+				answerFields.replace(/\.\.\./g, '\\ldots'),
 			).replace(/…/g, addMathfield)
 		}
 
@@ -289,7 +289,9 @@
 		answerFields = question.answerFields
 
 		if (answerFields) {
-			answerFields = $formatToHtml(answerFields.replace(/\.\.\./g, '\\; \\ldots \\;'))
+			answerFields = $formatToHtml(
+				answerFields.replace(/\.\.\./g, '\\; \\ldots \\;'),
+			)
 		}
 
 		if (expression) {
@@ -393,10 +395,6 @@
 					mathModeSpace: '\\,',
 				})
 
-				if (answers_latex[i]) {
-					mfe.value = answers_latex[i]
-				}
-
 				mfs.push(mfe)
 				// answers.push('')
 				// answers_latex.push('')
@@ -425,11 +423,19 @@
 				added = true
 			}
 		})
-		if (added && !masked) {
-			if (!mfs[0].hasFocus()) {
-				mfs[0].focus()
+		
+		mfs.forEach((mfe, i) => {
+			if (answers_latex[i]) {
+				// mfe.value = answers_latex[i]
+				mfe.setValue(answers_latex[i], {selectionMode:'after', focus:true})
 			}
+		})
+		if (added && !masked) {
+			// if (!mfs[0].hasFocus()) {
+			mfs[0].focus()
+			// }
 		}
+		
 
 		fieldsNb = mfs?.length || 0
 	}
@@ -549,7 +555,7 @@
 						{/if}
 						{#if choice.text}
 							<div>
-								{@html $formatToHtml(choice.text)}
+								{@html $formatToHtml(formatToLatex(choice.text))}
 							</div>
 						{/if}
 					</button>

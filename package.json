@@ -6,6 +6,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
+		"deploy": "vercel deploy --prebuilt",
 		"test": "playwright test",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write .",
@@ -51,7 +52,6 @@
 		"@mdi/js": "^7.0.96",
 		"@supabase/supabase-js": "^2.0.4",
 		"svelte-confetti": "^1.2.0",
-		"svelte-loading-spinners": "^0.3.4",
-		"tinycas": "^0.8.57"
+		"svelte-loading-spinners": "^0.3.4"
 	}
 }

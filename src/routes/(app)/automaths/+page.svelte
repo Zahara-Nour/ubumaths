@@ -19,6 +19,7 @@
 	import { assessItem } from '$lib/questions/correction'
 	import { dev } from '$app/environment'
 	import { page } from '$app/stores'
+	import math from 'tinycas'
 
 	let { info, fail, warn } = getLogger('Automaths', 'info')
 	const questions = data.questions
@@ -62,7 +63,7 @@
 	$: changeTheme(theme)
 	// $ changeDomain(domain)
 
-	function generateExoLatex() {
+	function generateExoTexmacs() {
 		let questions = []
 		if (basket.length) {
 			questions = basket
@@ -76,18 +77,29 @@
 		let solution = ''
 		let generateds = []
 
+		function replaceTexmacs(match, p1) {
+			return '<math|'+math(p1).texmacs +'>'
+		}
+
 		questions.forEach((q) => {
 			const { theme, domain, subdomain, level } = ids[q.id]
 			const question = getQuestion(theme, domain, subdomain, level)
 
 			if (q.enounceAlone) {
-				enounce =
-					question.enounces[0]
-						.replace(/\$\$/g, '$')
-						.replace(/\\lt/g, '<')
-						.replace(/\\gt/g, '>') + '\n'
-				enounce += '\\begin{enumerate} \n'
-				solution += '\\begin{enumerate} \n'
+				enounce = '<\\exo|'
+				enounce += question.enounces[0].replace(
+					/\$\$(.*)?\$\$/g,
+					replaceTexmacs,
+				)
+				enounce += '>\n'
+				enounce += '<\\enumerate-alpha>\n'
+				solution = '<\\exo|'
+				solution += question.enounces[0].replace(
+					/\$\$(.*)?\$\$/g,
+					replaceTexmacs,
+				)
+				solution += '>\n'
+				solution += '<\\enumerate-alpha>\n'
 				for (let i = 0; i < q.count; i++) {
 					const generated = generateQuestion(
 						question,
@@ -96,26 +108,20 @@
 						offset,
 					)
 					assessItem(generated)
-					enounce += '\\item '
+					enounce += '<item>'
 					solution +=
-						'\\item ' +
-						generated.simpleCorrection.map((line) => line.texmacs).join(' ')
+						'<item>' +
+						generated.simpleCorrection.map((line) => line.texmacs).join('') +'\n\n'
 					if (generated.expression) {
-						enounce +=
-							'$' +
-							generated.expression_latex.replace(
-								/\\ldots/g,
-								'\\text{\\ \\ldots\\ldots \\ }',
-							) +
-							'$' +
-							'\n'
+						enounce += '<math|'+ math(generated.expression).texmacs + '>\n\n'
 					}
 					if (generated.answerFields) {
 						enounce +=
 							generated.answerFields
-								.replace(/\$\$/g, '$')
-								.replace(/\.\.\./g, '\\text{\\ \\ldots\\ldots \\ }') + '\n'
+								.replace(/\$\$(.*)?\$\$/g, replaceTexmacs)
+								.replace(/\.\.\./g, '......') + '\n\n'
 					}
+
 					generateds.push(generated)
 				}
 			} else {
@@ -160,9 +166,12 @@
 
 			offset += q.count
 		})
-		enounce += '\\end{enumerate}\n'
-		solution += '\\end{enumerate}\n'
+		enounce += '</enumerate-alpha>\n'
+		solution += '</enumerate-alpha>\n'
+		enounce += '</exo>'
+		solution += '</exo>'
 
+		// const output = enounce + '\n'
 		const output = enounce + '\n' + solution
 		navigator.clipboard
 			.writeText(output)
@@ -241,7 +250,6 @@
 	}
 
 	function generateExemple(theme, domain, subdomain, level) {
-		
 		const q = getQuestion(theme, domain, subdomain, level)
 		const generated = generateQuestion(q)
 		if (generated.image) {
@@ -363,7 +371,6 @@
 		})
 		basket = basket
 	}
-
 </script>
 
 <h3>Les automaths !</h3>
@@ -378,7 +385,7 @@
 	launchTest="{launchTest}"
 	fillBasket="{fillBasket}"
 	copyLink="{copyLink}"
-	generateExoLatex="{generateExoLatex}"
+	generateExoTexmacs="{generateExoTexmacs}"
 	flushBasket="{flushBasket}"
 />
 

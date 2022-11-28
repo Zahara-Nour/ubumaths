@@ -12,7 +12,13 @@ import {
 	PREMIERE_SPE_MATHS,
 	TERMINALE_SPE_MATHS,
 } from '$lib/grades.js'
-import { color1, color2, color3, correct_color, incorrect_color } from '$lib/colors'
+import {
+	color1,
+	color2,
+	color3,
+	correct_color,
+	incorrect_color,
+} from '$lib/colors'
 const UNKNOWN = 'a determiner'
 
 // OPTIONS
@@ -191,6 +197,11 @@ const questions = {
 							correct: ['Le chiffre des unités est &answer.'],
 						},
 					],
+					options: [
+						'require-no-extraneaous-zeros',
+						'require-no-extraneaous-brackets',
+						'require-no-extraneaous-signs',
+					],
 					defaultDelay: 10,
 					grade: CE1,
 				},
@@ -228,10 +239,10 @@ const questions = {
 					description: 'Connaître la position décimale',
 					subdescription: "Jusqu'aux milliers",
 					enounces: [
-						'Dans le nombre $$[_&5_]$$, quel est le chiffre des milliers ?',
-						'Dans le nombre $$[_&5_]$$, quel est le chiffre des centaines ?',
-						'Dans le nombre $$[_&5_]$$,  quel est le chiffre des dizaines ?',
-						'Dans le nombre $$[_&5_]$$, quel est le chiffre des unités ?',
+						'Dans le nombre $$&5$$, quel est le chiffre des milliers ?',
+						'Dans le nombre $$&5$$, quel est le chiffre des centaines ?',
+						'Dans le nombre $$&5$$,  quel est le chiffre des dizaines ?',
+						'Dans le nombre $$&5$$, quel est le chiffre des unités ?',
 					],
 					variables: [
 						{
@@ -239,7 +250,7 @@ const questions = {
 							'&2': '$e[0;9]\\{&1}',
 							'&3': '$e[0;9]\\{&1;&2}',
 							'&4': '$e[0;9]\\{&1;&2;&3}',
-							'&5': '&1*1000+&2*100+&3*10+&4',
+							'&5': '[_&1*1000+&2*100+&3*10+&4_]',
 						},
 					],
 					solutions: [['&1'], ['&2'], ['&3'], ['&4']],
@@ -256,6 +267,11 @@ const questions = {
 						{
 							correct: ['Le chiffre des unités est &answer.'],
 						},
+					],
+					options: [
+						'require-no-extraneaous-zeros',
+						'require-no-extraneaous-brackets',
+						'require-no-extraneaous-signs',
 					],
 					defaultDelay: 10,
 					grade: CE2,
@@ -307,7 +323,10 @@ const questions = {
 							'&4': '$e[1;9]',
 						},
 					],
-					options: ['exp-allow-unecessary-zeros'],
+					options: [
+						'exp-allow-unecessary-zeros',
+						'require-no-extraneaous-zeros',
+					],
 					defaultDelay: 20,
 					grade: CM1,
 				},
@@ -346,7 +365,9 @@ const questions = {
 				{
 					description: "Décomposer l'écriture décimale un nombre",
 					subdescription: 'En dizaines et unités',
-					enounces: ['Décompose ce nombre en dizaines et unités.'],
+					enounces: [
+						'Décompose ce nombre en dizaines et unités comme dans cet exemple : $$74=70+4$$.',
+					],
 					expressions: ['[_&1*10+&2_]'],
 					solutions: [['[_&1*10_]+&2']],
 					variables: [{ '&1': '$e[1;9]', '&2': '$e[1;9]' }],
@@ -368,7 +389,6 @@ const questions = {
 						},
 					],
 					options: ['remove-null-terms'],
-					type: 'result',
 					defaultDelay: 20,
 					grade: CE1,
 				},
@@ -379,11 +399,6 @@ const questions = {
 					expressions: ['[_&1*100+&2*10+&3_]'],
 					solutions: [['[_&1*100_]+[_&2*10_]+&3']],
 					variables: [{ '&1': '$e[1;9]', '&2': '$e[0;9]', '&3': '$e[0;9]' }],
-					options: [
-						'no-penalty-for-extraneous-brackets',
-						'no-penalty-for-factor-one',
-						'no-penalty-for-factor-zero',
-					],
 					defaultDelay: 20,
 					grade: CE1,
 				},
@@ -392,7 +407,7 @@ const questions = {
 					subdescription:
 						"En centaines, dizaines et unités, à l'aide de produits",
 					enounces: [
-						'Décompose ce nombre comme dans cet exemple : $$345 = (3 \\times 100) +(4 \\times 10) + 5$$.',
+						'Décompose ce nombre comme dans cet exemple : $$345 = (3 * 100) +(4 * 10) + 5$$.',
 					],
 					expressions: [
 						'[_&1*100 + &2*10 + &3_]',
@@ -429,8 +444,12 @@ const questions = {
 							'&4': '$e[0;9]',
 						},
 					],
-					options: ['remove-null-terms'],
-					type: 'result',
+					options: [
+						'remove-null-terms',
+						'no-penalty-for-extraneous-brackets',
+						'no-penalty-for-factor-one',
+						'no-penalty-for-factor-zero',
+					],
 					defaultDelay: 20,
 					grade: CE2,
 				},
@@ -438,7 +457,7 @@ const questions = {
 					description: "Décomposer l'écriture décimale un nombre",
 					subdescription: 'En milliers, centaines, dizaines et unités',
 					enounces: [
-						'Décompose ce nombre comme dans cet exemple : $$345 = 300 + 40 + 5$$.',
+						'Décompose ce nombre comme dans cet exemple : $$2345 = 2000+ 300 + 40 + 5$$.',
 					],
 					expressions: ['[_&1*1000+&2*100+&3*10+&4_]'],
 					solutions: [['[_&1*1000_]+[_&2*100_]+[_&3*10_]+&4']],
@@ -458,7 +477,7 @@ const questions = {
 					subdescription:
 						"En milliers, centaines, dizaines et unités, à l'aide de produits",
 					enounces: [
-						'Décompose ce nombre comme dans cet exemple : $$2\\,345 = (2 \\times 1\\,000) + (3 \\times 100) +(4 \\times 10) + 5$$.',
+						'Décompose ce nombre comme dans cet exemple : $$2345 = (2 * 1000) + (3 * 100) +(4 * 10) + 5$$',
 					],
 					expressions: [
 						'[_&1*1000 + &2*100 + &3*10+&4_]',
@@ -526,7 +545,7 @@ const questions = {
 					subdescription:
 						'En dizaines de milliers, milliers, centaines, dizaines et unités',
 					enounces: [
-						'Décompose ce nombre en dizaines de milliers, milliers, centaines, dizaines et unités, comme dans cet exemple : $$23\\,456 = 20\\,000 + 3\\,000 + 400 + 50 + 6$$.',
+						'Décompose ce nombre en dizaines de milliers, milliers, centaines, dizaines et unités, comme dans cet exemple : $$23456 = 20000 + 3000 + 400 + 50 + 6$$.',
 					],
 					expressions: ['[_&1*10000+&2*1000+&3*100+&4*10+&5_]'],
 					solutions: [['[_&1*10000_]+[_&2*1000_]+[_&3*100_]+[_&4*10_]+&5']],
@@ -548,7 +567,7 @@ const questions = {
 					subdescription:
 						"En dizaines de milliers, milliers, centaines, dizaines et unités, à l'aide de produits",
 					enounces: [
-						'Décompose ce nombre comme dans cet exemple : $$12\\,345 = (1 \\times 10\\,000) +(2 \\times 1\\,000) + (3 \\times 100) +(4 \\times 10) + 5$$.',
+						'Décompose ce nombre comme dans cet exemple : $$23456 = (2 * 10000) +(3 * 1000) + (4*100) +(5*10) + 6$$.',
 					],
 					expressions: [
 						'[_&1*10000 + &2*1000 + &3*100+&4*10+&5_]',
@@ -625,18 +644,7 @@ const questions = {
 						},
 					],
 					conditions: ['&5!=&6'],
-					choices: [[{ text: '$$[._&5_]$$' }, { text: '$$[._&6_]$$' }]],
-					// correctionFormat: [
-					// 	{
-					// 		correct: [
-					// 			'Entre $$[._&5_]$$ et $$[._&6_]$$ le plus petit est &answer',
-					// 		],
-					// 		answer: 'Le plus petit est &answer',
-					// 	},
-					// ],
-					// corrections: [
-					//   'Entre $$[._&5_]$$ et $$[._&6_]$$ le plus petit est ',
-					// ],
+					choices: [[{ text: '$$&5$$' }, { text: '$$&6$$' }]],
 					solutions: [['&5<&6 ?? 0 :: 1']],
 					defaultDelay: 10,
 					grade: CP,
@@ -658,25 +666,14 @@ const questions = {
 						},
 					],
 					conditions: ['&7!=&8'],
-					choices: [[{ text: '$$[._&7_]$$' }, { text: '$$[._&8_]$$' }]],
-					correctionFormat: [
-						{
-							correct: [
-								'Entre $$[._&7_]$$ et $$[._&8_]$$ le plus petit est &answer',
-							],
-							answer: 'Le plus petit est &answer',
-						},
-					],
-					// corrections: [
-					//   'Entre $$[._&5_]$$ et $$[._&6_]$$ le plus petit est ',
-					// ],
+					choices: [[{ text: '$$&7$$' }, { text: '$$&8$$' }]],
 					solutions: [['&7<&8 ?? 0 :: 1']],
 					defaultDelay: 10,
 					grade: CE1,
 				},
 				{
 					description: 'Comparer deux nombres entiers',
-					subdescription: 'Nombres inférieurs à 10000',
+					subdescription: 'Nombres inférieurs à $$10000$$',
 					enounces: ['Quel est le plus petit de ces 2 nombres ?'],
 					variables: [
 						{
@@ -690,19 +687,8 @@ const questions = {
 							'&8': '&4*1000+&5*100+&6*10+$e[0;9]',
 						},
 					],
-					conditions: ['[_&7_]!=[_&8_]'],
-					choices: [[{ text: '$$[._&7_]$$' }, { text: '$$[._&8_]$$' }]],
-					correctionFormat: [
-						{
-							correct: [
-								'Entre $$[._&7_]$$ et $$[._&8_]$$ le plus petit est &answer',
-							],
-							answer: 'Le plus petit est &answer',
-						},
-					],
-					// corrections: [
-					//   'Entre $$[._&5_]$$ et $$[._&6_]$$ le plus petit est ',
-					// ],
+					conditions: ['&7!=&8'],
+					choices: [[{ text: '$$[_&7_]$$' }, { text: '$$[_&8_]$$' }]],
 					solutions: [['&7<&8 ?? 0 :: 1']],
 					defaultDelay: 10,
 					grade: CE2,
@@ -723,15 +709,7 @@ const questions = {
 						},
 					],
 					conditions: ['&6!=&7'],
-					choices: [[{ text: '$$[._&6_]$$' }, { text: '$$[._&7_]$$' }]],
-					correctionFormat: [
-						{
-							correct: [
-								'Entre $$[._&6_]$$ et $$[._&7_]$$ le plus petit est &answer',
-							],
-							answer: 'Le plus petit est &answer',
-						},
-					],
+					choices: [[{ text: '$$&6$$' }, { text: '$$&7$$' }]],
 					solutions: [['&6<&7 ?? 0 :: 1']],
 					defaultDelay: 20,
 					grade: CM1,
@@ -838,7 +816,6 @@ const questions = {
 					enounces: ['Calcule.'],
 					expressions: ['&1 + [_10-&1_]'],
 					variables: [{ '&1': '$e[0;9]' }],
-
 					defaultDelay: 10,
 					grade: CP,
 				},
@@ -846,7 +823,7 @@ const questions = {
 					description: 'Calculer une somme',
 					subdescription:
 						'Nombres à 1 chiffre. Nombre plus grand en premier. Somme inférieure ou égale à 10',
-					enounces: ['Calculer.'],
+					enounces: ['Calcule.'],
 					expressions: ['&1 + &2'],
 					variables: [
 						{
@@ -875,7 +852,7 @@ const questions = {
 				{
 					description: 'Calculer une somme',
 					subdescription: 'Nombres à 1 chiffre. Nombre plus grand en premier.',
-					enounces: ['Calculer.'],
+					enounces: ['Calcule.'],
 					expressions: ['&1 + &2'],
 					variables: [
 						{
@@ -1505,7 +1482,7 @@ const questions = {
 				{
 					description: 'Compléter une addition à trou',
 					subdescription:
-						'somme de deux termes dont le résultat est inférieur à 100',
+						'somme de deux termes dont le résultat est inférieur à $$100$$',
 					enounces: ['Complète.'],
 					expressions: ['&1 + ? =  [_&2+&1_]', '? + &2 = [_&2+&1_]'],
 					variables: [{ '&1': '$e[1;98]', '&2': '$e[1;99-&1]' }],
@@ -1696,7 +1673,7 @@ const questions = {
 			'Double et moitié': [
 				{
 					description: 'Trouver le double',
-					subdescription: 'Nombre inférieur à 10',
+					subdescription: 'Nombre inférieur à $$10$$',
 					enounces: [
 						'Quel est le double de $$&1$$ ?',
 						'Quel est le résultat de $$&1+&1$$ ?',
@@ -1708,7 +1685,7 @@ const questions = {
 							correct: ['Le double de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$&1+&1=$$&answer'],
+							correct: ['$$&1+&1=&ans$$'],
 						},
 					],
 
@@ -1717,7 +1694,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le double',
-					subdescription: "Dizaines entières (jusqu'à 50)",
+					subdescription: "Dizaines entières (jusqu'à $$50$$)",
 					enounces: [
 						'Quel est le double de $$&2$$ ?',
 						'Quel est le résultat de $$&2+&2$$ ?',
@@ -1734,7 +1711,7 @@ const questions = {
 							correct: ['Le double de $$&2$$ est &answer.'],
 						},
 						{
-							correct: ['$$&2+&2=$$&answer'],
+							correct: ['$$&2+&2=&ans$$'],
 						},
 					],
 
@@ -1743,7 +1720,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver la moitié',
-					subdescription: 'Nombre pair inférieur à 20',
+					subdescription: 'Nombre pair inférieur à $$20$$',
 					enounces: ['Quelle est la moitié de $$[_2*&1_]$$ ?'],
 					solutions: [['&1']],
 					variables: [{ '&1': '$e[0;10]' }],
@@ -1765,7 +1742,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le double',
-					subdescription: 'Nombres de 1 à 15, 25, 30, 40, 50 et 100',
+					subdescription: 'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
 					enounces: [
 						'Quel est le double de $$&1$$ ?',
 						'Quel est le résultat de $$&1+&1$$ ?',
@@ -1781,7 +1758,7 @@ const questions = {
 							correct: ['Le double de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$&1+&1=$$&answer'],
+							correct: ['$$&1+&1=&ans$$'],
 						},
 					],
 
@@ -1790,7 +1767,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver la moitié',
-					subdescription: 'Nombres pairs de 1 à 30, 40, 50 et 100',
+					subdescription: 'Nombres pairs de $$1$$ à $$30$$, $$40$$, $$50$$ et $$100$$',
 					enounces: ['Quelle est la moitié de $$&2$$ ?'],
 					solutions: [['[_&1_]']],
 					variables: [
@@ -1816,7 +1793,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le double',
-					subdescription: 'Nombres de 1 à 20, 25, 30, 40, 50, 60 et 100',
+					subdescription: 'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
 					enounces: [
 						'Quel est le double de $$&1$$ ?',
 						'Quel est le résultat de $$&1+&1$$ ?',
@@ -1832,7 +1809,7 @@ const questions = {
 							correct: ['Le double de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$&1+&1=$$&answer'],
+							correct: ['$$&1+&1=&ans$$'],
 						},
 					],
 
@@ -1841,7 +1818,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver la moitié',
-					subdescription: 'Nombres pairs de 1 à 40, 50, 60 et 100',
+					subdescription: 'Nombres pairs de $$1$$ à $$40$$, $$50$$, $$60$$ et $$100$$',
 					enounces: ['Quelle est la moitié de $$&2$$ ?'],
 					solutions: [['[_&1_]']],
 					variables: [
@@ -1869,7 +1846,7 @@ const questions = {
 			'Triple et tiers': [
 				{
 					description: 'Trouver le triple',
-					subdescription: 'Nombre inférieur à 10',
+					subdescription: 'Nombre inférieur à $$10$$',
 					enounces: [
 						'Quel est le triple de $$&1$$ ?',
 						'Quel est le résultat de $$&1+&1+&1$$ ?',
@@ -1881,7 +1858,7 @@ const questions = {
 							correct: ['Le triple de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$&1+&1+&1=$$&answer'],
+							correct: ['$$&1+&1+&1=&ans$$'],
 						},
 					],
 
@@ -1890,7 +1867,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le triple',
-					subdescription: "Dizaines entières (jusqu'à 50)",
+					subdescription: "Dizaines entières (jusqu'à $$50$$)",
 					enounces: [
 						'Quel est le triple de $$&2$$ ?',
 						'Quel est le résultat de $$&2+&2+&2$$ ?',
@@ -1907,7 +1884,7 @@ const questions = {
 							correct: ['Le triple de $$&2$$ est &answer.'],
 						},
 						{
-							correct: ['$$&2+&2+&2=$$&answer'],
+							correct: ['$$&2+&2+&2=&ans$$'],
 						},
 					],
 
@@ -1916,7 +1893,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le tiers',
-					subdescription: 'Multiples de 3 inférieurs à 30',
+					subdescription: 'Multiples de $$3$$ inférieurs à $$30$$',
 					enounces: ['Quelle est le tiers de $$[_3*&1_]$$ ?'],
 					solutions: [['&1']],
 					variables: [{ '&1': '$e[0;10]' }],
@@ -1938,7 +1915,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le triple',
-					subdescription: 'Nombres de 1 à 15, 25, 30, 40, 50 et 100',
+					subdescription: 'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
 					enounces: [
 						'Quel est le triple de $$&1$$ ?',
 						'Quel est le résultat de $$&1+&1+&1$$ ?',
@@ -1954,7 +1931,7 @@ const questions = {
 							correct: ['Le triple de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$&1+&1+&1=$$&answer'],
+							correct: ['$$&1+&1+&1=&ans$$'],
 						},
 					],
 
@@ -1963,7 +1940,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le triple',
-					subdescription: 'Nombres de 1 à 20, 25, 30, 40, 50, 60 et 100',
+					subdescription: 'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
 					enounces: [
 						'Quel est le triple de $$&1$$ ?',
 						'Quel est le résultat de $$&1+&1+&1$$ ?',
@@ -1979,7 +1956,7 @@ const questions = {
 							correct: ['Le triple de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$&1+&1+&1=$$&answer'],
+							correct: ['$$&1+&1+&1=&ans$$'],
 						},
 					],
 
@@ -1989,7 +1966,7 @@ const questions = {
 			],
 			'Somme astucieuse': [
 				{
-					description: 'Ajouter 9',
+					description: 'Ajouter $$9$$',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: ['&3+9', '9+&3'],
 					correctionDetails: [
@@ -2017,7 +1994,7 @@ const questions = {
 				},
 				{
 					description: 'Additionner par regroupements',
-					subdescription: 'Regrouper pour obtenir 10. 3 nombres à un chiffre.',
+					subdescription: 'Regrouper pour obtenir $$10$$. $$3$$ nombres à un chiffre.',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: ['&2+&1+[_10-&1_]', '&1+&2+[_10-&1_]'],
 
@@ -2034,12 +2011,11 @@ const questions = {
 						],
 					],
 					variables: [{ '&1': '$e{1}', '&2': '$e[7;9]\\{&1}' }],
-
 					defaultDelay: 10,
 					grade: CP,
 				},
 				{
-					description: 'Ajouter 19, 29, 39, ....',
+					description: 'Ajouter $$19$$, $$29$$, $$39$$, ....',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: ['&4+&5', '&5+&4'],
 
@@ -2071,7 +2047,7 @@ const questions = {
 				{
 					description: 'Additionner par regroupements',
 					subdescription:
-						'Regrouper pour obtenir 10. 2 nombres à un chiffre et un à 2 chiffres.',
+						'Regrouper pour obtenir $$10$$. $$2$$ nombres à un chiffre et un à $$2$$ chiffres.',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: ['&2+&1+[_10-&1_]', '&1+&2+[_10-&1_]'],
 					correctionDetails: [
@@ -2093,7 +2069,7 @@ const questions = {
 				},
 				{
 					description: 'Additionner par regroupements',
-					subdescription: '5 Nombres à 1 chiffre',
+					subdescription: '$$5$$ Nombres à $$1$$ chiffre',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: [
 						'&1+[_10-&1_]+&2+[_10-&2_]+&3',
@@ -2143,7 +2119,7 @@ const questions = {
 				},
 				{
 					description: 'Additionner par regroupements',
-					subdescription: '3 Nombres à 2 chiffres. Regrouper pour obtenir 100',
+					subdescription: '$$3$$ Nombres à $$2$$ chiffres. Regrouper pour obtenir $$100$$',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: ['&2+&1+[_100-&1_]', '&1+&2+[_100-&1_]'],
 					correctionDetails: [
@@ -2166,7 +2142,7 @@ const questions = {
 
 				{
 					description: 'Additionner par regroupements',
-					subdescription: '3 Nombres à 2 chiffres.',
+					subdescription: '$$3$$ Nombres à $$2$$ chiffres.',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: [
 						'&6+[_&1*10-&6_]+&7',
@@ -2207,7 +2183,7 @@ const questions = {
 				},
 				{
 					description: 'Additionner par regroupements',
-					subdescription: '4 Nombres à 2 chiffres.',
+					subdescription: '$$4$$ Nombres à $$2$$ chiffres.',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: ['&4+[_&1*10-&4_]+&8+[_&5*10-&8_]'],
 					correctionDetails: [
@@ -2240,7 +2216,7 @@ const questions = {
 				{
 					description: 'Calculer une somme',
 					subdescription:
-						'Somme d’un nombre ayant au plus quatre chiffres et de 9 ou 19',
+						'Somme d’un nombre ayant au plus quatre chiffres et de $$9$$ ou $$19$$',
 					enounces: ['Calcule.'],
 					expressions: ['&5+9', '&5+19'],
 					variables: [
@@ -2270,7 +2246,7 @@ const questions = {
 				},
 				{
 					description: 'Additionner par regroupements',
-					subdescription: 'Nombres à 3 chiffres. Regrouper pour faire 1000',
+					subdescription: 'Nombres à $$3$$ chiffres. Regrouper pour faire $$1000$$',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: ['&2+&1+[_1000-&1_]', '&1+&2+[_1000-&1_]'],
 					correctionDetails: [
@@ -2525,7 +2501,8 @@ const questions = {
 			],
 			'A trou': [
 				{
-					description: 'Compléter une soustraction à fill in (résultat positif)',
+					description:
+						'Compléter une soustraction à fill in (résultat positif)',
 					subdescription: 'Nombres à 1 chiffre',
 					enounces: ['Complète'],
 					expressions: ['?-&1=&2', '&1-?=&2'],
@@ -3162,9 +3139,7 @@ const questions = {
 					solutions: [['[_(&3:10-floor(&3:10))*10_]']],
 					correctionFormat: [
 						{
-							correct: [
-								'Le chiffre des unités est &answer.',
-							],
+							correct: ['Le chiffre des unités est &answer.'],
 						},
 					],
 					defaultDelay: 30,
@@ -3491,8 +3466,8 @@ const questions = {
 					description: 'Trouver le quadruple',
 					subdescription: "Dizaines entières (jusqu'à 50)",
 					enounces: [
-						'Quel est le quadruple de $$[°&2°]$$ ?',
-						'Quel est le résultat de $$[°4*&2°]$$ ?',
+						'Quel est le quadruple de $$&2$$ ?',
+						'Quel est le résultat de $$4*&2$$ ?',
 					],
 					solutions: [['[_4*&2_]']],
 					variables: [
@@ -3539,8 +3514,8 @@ const questions = {
 					description: 'Trouver le quadruple',
 					subdescription: 'Nombres de 1 à 15, 25, 30, 40, 50 et 100',
 					enounces: [
-						'Quel est le quadruple de $$[°&1°]$$ ?',
-						'Quel est le résultat de $$[°4*&1°]$$ ?',
+						'Quel est le quadruple de $$&1$$ ?',
+						'Quel est le résultat de $$4*&1$$ ?',
 					],
 					solutions: [['[_4*&1_]']],
 					variables: [
@@ -3565,7 +3540,7 @@ const questions = {
 					subdescription: 'Nombres de 1 à 20, 25, 30, 40, 50, 60 et 100',
 					enounces: [
 						'Quel est le quadruple de $$&1$$ ?',
-						'Quel est le résultat de $$[°4*&1°]$$ ?',
+						'Quel est le résultat de $$4*&1$$ ?',
 					],
 					solutions: [['[_4*&1_]']],
 					variables: [
@@ -4613,8 +4588,8 @@ const questions = {
 						'Trouve un diviseur de $$[_&1*&2_]$$ (autre que $$1$$ et $$[_&1*&2_]$$).',
 					],
 					variables: [
-						{ '&1': '$l{2;4;6;8}','&2': '$e[2;9]\\{&1;m2}' },
-						{ '&1': '$l{3;5;7;9}','&2': '$e[2;9]\\{&1;m2}' }
+						{ '&1': '$l{2;4;6;8}', '&2': '$e[2;9]\\{&1;m2}' },
+						{ '&1': '$l{3;5;7;9}', '&2': '$e[2;9]\\{&1;m2}' },
 					],
 					testAnswers: [
 						['&answer!=1 && &answer!=&1*&2 && mod(&1*&2; &answer)=0'],
@@ -4711,7 +4686,7 @@ const questions = {
 				{
 					description: 'Utiliser un critère de divisibilité',
 					subdescription: 'Par 3',
-					enounces: ['Le nombre $$[°&1&2&5°]$$ est-il divisible par 3 ?'],
+					enounces: ['Le nombre $$&1&2&5$$ est-il divisible par 3 ?'],
 					variables: [
 						{
 							'&1': '$e[1;9]',
@@ -4734,7 +4709,7 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$[°&1&2&5°]$$ est divisible par 3 car la somme de ses chiffres est divisible par 3 :',
+								text: '$$&1&2&5$$ est divisible par 3 car la somme de ses chiffres est divisible par 3 :',
 							},
 							{
 								text: '$$&1+&2+&5=[_&1+&2+&5_]$$ est divisible par 3.',
@@ -4742,7 +4717,7 @@ const questions = {
 						],
 						[
 							{
-								text: "$$[°&1&2&5°]$$ n'est pas divisible par 3 car la somme de ses chiffres n'est pas divisible par 3 :",
+								text: "$$&1&2&5$$ n'est pas divisible par 3 car la somme de ses chiffres n'est pas divisible par 3 :",
 							},
 							{
 								text: "$$&1+&2+&5=[_&1+&2+&5_]$$ n'est pas divisible par 3.",
@@ -4757,7 +4732,7 @@ const questions = {
 				{
 					description: 'Utiliser un critère de divisibilité',
 					subdescription: 'Par 9',
-					enounces: ['Le nombre $$[°&1&2&5°]$$ est-il divisible par 9 ?'],
+					enounces: ['Le nombre $$&1&2&5$$ est-il divisible par 9 ?'],
 					variables: [
 						{
 							'&1': '$e[1;9]',
@@ -4780,7 +4755,7 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$[°&1&2&5°]$$ est divisible par 9 car la somme de ses chiffres est divisible par 9 :',
+								text: '$$&1&2&5$$ est divisible par 9 car la somme de ses chiffres est divisible par 9 :',
 							},
 							{
 								text: '$$&1+&2+&5=[_&1+&2+&5_]$$ est divisible par 9.',
@@ -4788,7 +4763,7 @@ const questions = {
 						],
 						[
 							{
-								text: "$$[°&1&2&5°]$$ n'est pas divisible par 9 car la somme de ses chiffres n'est pas divisible par 9 :",
+								text: "$$&1&2&5$$ n'est pas divisible par 9 car la somme de ses chiffres n'est pas divisible par 9 :",
 							},
 							{
 								text: "$$&1+&2+&5=[_&1+&2+&5_]$$ n'est pas divisible par 9.",
@@ -4802,23 +4777,32 @@ const questions = {
 				},
 				{
 					description: 'Trouver un diviseur',
-					subdescription:'Nombre à 3',
+					subdescription: 'Nombre à 3',
 					enounces: [
-						'Trouve un diviseur de $$[°&4°]$$ (autre que $$1$$ et $$[°&4°]$$).',
+						'Trouve un diviseur de $$&4$$ (autre que $$1$$ et $$&4$$).',
 					],
 					variables: [
-						{ '&1': '$e[1;9]','&2': '$e[1;9]', '&3': '$l{2;4;6;8}', '&4':'[_&1*100+&2*10+&3_]' },
-						{ '&1': '$e[1;9]','&2': '$e[1;9]', '&3': '$l{5;0}', '&4':'[_&1*100+&2*10+&3_]' },
-						{ '&1': '$e[1;9]','&2': '$e[1;9]', '&3': '$l{1;4;7}+2-mod(&1+&2;3)', '&4':'[_&1*100+&2*10+&3_]' },
+						{
+							'&1': '$e[1;9]',
+							'&2': '$e[1;9]',
+							'&3': '$l{2;4;6;8}',
+							'&4': '[_&1*100+&2*10+&3_]',
+						},
+						{
+							'&1': '$e[1;9]',
+							'&2': '$e[1;9]',
+							'&3': '$l{5;0}',
+							'&4': '[_&1*100+&2*10+&3_]',
+						},
+						{
+							'&1': '$e[1;9]',
+							'&2': '$e[1;9]',
+							'&3': '$l{1;4;7}+2-mod(&1+&2;3)',
+							'&4': '[_&1*100+&2*10+&3_]',
+						},
 					],
-					testAnswers: [
-						['&answer!=1 && &answer!=&4 && mod(&4; &answer)=0'],
-					],
-					solutions: [
-						['2'],
-						['5'],
-						['3'],
-					],
+					testAnswers: [['&answer!=1 && &answer!=&4 && mod(&4; &answer)=0']],
+					solutions: [['2'], ['5'], ['3']],
 					correctionFormat: [
 						{
 							correct: ['&answer est un diviseur de $$[_&4_]$$'],
@@ -4827,12 +4811,12 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '&solution est un diviseur de $$[_&4_]$$ car $$[°&4°]$$ se termine par $$0$$, $$2$$, $$4$$, $$6$$ ou $$8$$.',
+								text: '&solution est un diviseur de $$[_&4_]$$ car $$&4$$ se termine par $$0$$, $$2$$, $$4$$, $$6$$ ou $$8$$.',
 							},
 						],
 						[
 							{
-								text: '&solution est un diviseur de $$[_&4_]$$ car $$[°&4°]$$ se termine par $$0$$ ou $$5$$.',
+								text: '&solution est un diviseur de $$[_&4_]$$ car $$&4$$ se termine par $$0$$ ou $$5$$.',
 							},
 						],
 						[
@@ -4845,7 +4829,6 @@ const questions = {
 					defaultDelay: 15,
 					grade: CM2,
 				},
-				
 			],
 			'Division euclidienne': [
 				{
@@ -7665,10 +7648,8 @@ const questions = {
 				},
 				{
 					description: 'Nombre négatif défini par une soustraction',
-					enounces: [
-						'Ecris la soustraction définissant le nombre :',
-					],
-					expressions:['-&1'],
+					enounces: ['Ecris la soustraction définissant le nombre :'],
+					expressions: ['-&1'],
 					options: ['no-penalty-for-null-terms'],
 					variables: [{ '&1': '$e[2;20]' }],
 					solutions: [['0-&1']],
@@ -7682,10 +7663,11 @@ const questions = {
 				},
 				{
 					description: "Trouver l'opposé d'un nombre :",
-					enounces: [
-						"Complète :",
+					enounces: ['Complète :'],
+					answerFields: [
+						"L'opposé de $$&1$$ est ...",
+						"L'opposé de $$-&1$$ est ...",
 					],
-					answerFields:["L'opposé de $$&1$$ est ...", "L'opposé de $$-&1$$ est ..."],
 					variables: [{ '&1': '$e[1;20]' }],
 					solutions: [['-&1'], ['&1']],
 					correctionFormat: [
@@ -7721,18 +7703,17 @@ const questions = {
 					subdescription: 'Valeurs entières - à compléter',
 					enounces: ['Complète avec $$\\lt$$ ou $$\\gt$$ :'],
 					variables: [{ '&1': '$e[1;19]', '&2': '$e[&1+1;20]' }],
-					answerFields:[
+					answerFields: [
 						'$$&1 ... -&2$$',
 						'$$-&1 ... -&2$$',
 						'$$-&2 ... -&1$$',
 					],
-					testAnswers:[
+					testAnswers: [
 						['&1 &answer -&2'],
 						['-&1 &answer -&2'],
 						['-&2 &answer -&1'],
-					
 					],
-					solutions:[
+					solutions: [
 						['&1 < -&2 ?? < :: >'],
 						['-&1 < -&2 ?? < :: >'],
 						['-&2 < -&1 ?? < :: >'],
@@ -7748,7 +7729,7 @@ const questions = {
 							correct: ['$$-&2 &ans -&1$$'],
 						},
 					],
-					type:"fill in",
+					type: 'fill in',
 					defaultDelay: 20,
 					grade: CINQUIEME,
 				},
@@ -7803,23 +7784,16 @@ const questions = {
 							'&7': '[._&2,&5_]',
 						},
 					],
-					
-					answerFields:[
-						'$$[._&6_] ... [._&7_]$$',
-					],
-					testAnswers:[
-						['&6 &answer &7'],					
-					],
-					solutions:[
-						['&6 < &7 ?? < :: >'],
-		
-					],
+
+					answerFields: ['$$[._&6_] ... [._&7_]$$'],
+					testAnswers: [['&6 &answer &7']],
+					solutions: [['&6 < &7 ?? < :: >']],
 					correctionFormat: [
 						{
 							correct: ['$$[._&6_] &ans [._&7_]$$'],
 						},
 					],
-					type:"fill in",
+					type: 'fill in',
 					defaultDelay: 20,
 					grade: CINQUIEME,
 				},
@@ -7930,7 +7904,7 @@ const questions = {
 					images: [
 						'relatifs/droite-graduee-operations/droite-graduee--4-4-600.png',
 					],
-					'result-type':'decimal',
+					'result-type': 'decimal',
 					defaultDelay: 20,
 					grade: CINQUIEME,
 				},
@@ -11222,7 +11196,7 @@ const questions = {
 					description: "Calcul du périmètre d'un carré.",
 					subdescription: "A partir d'une description",
 					enounces: [
-						"Quel est le périmètre d'un <b>carré</b> de côté $$[°&1°]$$ ?",
+						"Quel est le périmètre d'un <b>carré</b> de côté $$&1$$ ?",
 					],
 					variables: [
 						{
@@ -11361,7 +11335,7 @@ const questions = {
 					description: "Calcul du périmètre d'un rectangle.",
 					subdescription: "A partir d'une description",
 					enounces: [
-						"Quel est le périmètre d'un <b>rectangle</b> de longueur $$[°&3°]$$ et de largeur $$[°&4°]$$ ?",
+						"Quel est le périmètre d'un <b>rectangle</b> de longueur $$&3$$ et de largeur $$&4$$ ?",
 					],
 					variables: [
 						{
@@ -11400,13 +11374,13 @@ const questions = {
 					description: "Trouver la largeur d'un rectangle.",
 					subdescription: 'A partir de son aire et de sa longueur.',
 					enounces: [
-						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$[°&3°]$$ et d'aire $$[_&3*&4_mm^2_]$$ ?",
-						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$[°&3°]$$ et d'aire $$[_&3*&4_cm^2_]$$ ?",
-						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$[°&3°]$$ et d'aire $$[_&3*&4_dm^2_]$$ ?",
-						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$[°&3°]$$ et d'aire $$[_&3*&4_m^2_]$$ ?",
-						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$[°&3°]$$ et d'aire $$[_&3*&4_dam^2_]$$ ?",
-						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$[°&3°]$$ et d'aire $$[_&3*&4_hm^2_]$$ ?",
-						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$[°&3°]$$ et d'aire $$[_&3*&4_km^2_]$$ ?",
+						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$&3$$ et d'aire $$[_&3*&4_mm^2_]$$ ?",
+						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$&3$$ et d'aire $$[_&3*&4_cm^2_]$$ ?",
+						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$&3$$ et d'aire $$[_&3*&4_dm^2_]$$ ?",
+						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$&3$$ et d'aire $$[_&3*&4_m^2_]$$ ?",
+						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$&3$$ et d'aire $$[_&3*&4_dam^2_]$$ ?",
+						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$&3$$ et d'aire $$[_&3*&4_hm^2_]$$ ?",
+						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$&3$$ et d'aire $$[_&3*&4_km^2_]$$ ?",
 					],
 					variables: [
 						{
@@ -11506,9 +11480,7 @@ const questions = {
 				{
 					description: "Calcul de l'aire d'un carré.",
 					subdescription: "A partir d'une description",
-					enounces: [
-						"Quelle est l'aire d'un <b>carré</b> de côté $$[°&1°]$$ ?",
-					],
+					enounces: ["Quelle est l'aire d'un <b>carré</b> de côté $$&1$$ ?"],
 					variables: [
 						{
 							'&1': '$e[1;11] mm',
@@ -11711,13 +11683,13 @@ const questions = {
 					description: "Trouver la largeur d'un rectangle.",
 					subdescription: 'A partir de son aire et de sa longueur.',
 					enounces: [
-						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$[°&3°]$$ et d'aire $$[_&3*&4_mm^2_]$$ ?",
-						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$[°&3°]$$ et d'aire $$[_&3*&4_cm^2_]$$ ?",
-						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$[°&3°]$$ et d'aire $$[_&3*&4_dm^2_]$$ ?",
-						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$[°&3°]$$ et d'aire $$[_&3*&4_m^2_]$$ ?",
-						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$[°&3°]$$ et d'aire $$[_&3*&4_dam^2_]$$ ?",
-						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$[°&3°]$$ et d'aire $$[_&3*&4_hm^2_]$$ ?",
-						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$[°&3°]$$ et d'aire $$[_&3*&4_km^2_]$$ ?",
+						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$&3$$ et d'aire $$[_&3*&4_mm^2_]$$ ?",
+						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$&3$$ et d'aire $$[_&3*&4_cm^2_]$$ ?",
+						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$&3$$ et d'aire $$[_&3*&4_dm^2_]$$ ?",
+						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$&3$$ et d'aire $$[_&3*&4_m^2_]$$ ?",
+						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$&3$$ et d'aire $$[_&3*&4_dam^2_]$$ ?",
+						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$&3$$ et d'aire $$[_&3*&4_hm^2_]$$ ?",
+						"Quelle est la largeur d'un <b>rectangle</b> de longueur $$&3$$ et d'aire $$[_&3*&4_km^2_]$$ ?",
 					],
 					variables: [
 						{
@@ -11816,7 +11788,7 @@ const questions = {
 					description: "Calcul de l'aire d'un triangle rectangle.",
 					subdescription: "A partir d'une description",
 					enounces: [
-						"Quelle est l'aire d'un <b>triangle rectangle</b> de longueur $$[°&3°]$$ et de largeur $$[°&4°]$$ ?",
+						"Quelle est l'aire d'un <b>triangle rectangle</b> de longueur $$&3$$ et de largeur $$&4$$ ?",
 					],
 					variables: [
 						{
@@ -11892,13 +11864,13 @@ const questions = {
 					subdescription:
 						"A partir de son aire et du premier côté de l'angle droit.",
 					enounces: [
-						"Quelle est la longueur du 2ème côté de l'angle droit d'un <b>triangle rectangle</b> dont le premier côté de l'angle droit mesure $$[°&3°]$$ et d'aire $$[._&3*&4:2_mm^2_]$$ ?",
-						"Quelle est la longueur du 2ème côté de l'angle droit d'un <b>triangle rectangle</b> dont le premier côté de l'angle droit mesure $$[°&3°]$$ et d'aire $$[._&3*&4:2_cm^2_]$$ ?",
-						"Quelle est la longueur du 2ème côté de l'angle droit d'un <b>triangle rectangle</b> dont le premier côté de l'angle droit mesure $$[°&3°]$$ et d'aire $$[._&3*&4:2_dm^2_]$$ ?",
-						"Quelle est la longueur du 2ème côté de l'angle droit d'un <b>triangle rectangle</b> dont le premier côté de l'angle droit mesure $$[°&3°]$$ et d'aire $$[._&3*&4:2_m^2_]$$ ?",
-						"Quelle est la longueur du 2ème côté de l'angle droit d'un <b>triangle rectangle</b> dont le premier côté de l'angle droit mesure $$[°&3°]$$ et d'aire $$[._&3*&4:2_dam^2_]$$ ?",
-						"Quelle est la longueur du 2ème côté de l'angle droit d'un <b>triangle rectangle</b> dont le premier côté de l'angle droit mesure $$[°&3°]$$ et d'aire $$[._&3*&4:2_hm^2_]$$ ?",
-						"Quelle est la longueur du 2ème côté de l'angle droit d'un <b>triangle rectangle</b> dont le premier côté de l'angle droit mesure $$[°&3°]$$ et d'aire $$[._&3*&4:2_km^2_]$$ ?",
+						"Quelle est la longueur du 2ème côté de l'angle droit d'un <b>triangle rectangle</b> dont le premier côté de l'angle droit mesure $$&3$$ et d'aire $$[._&3*&4:2_mm^2_]$$ ?",
+						"Quelle est la longueur du 2ème côté de l'angle droit d'un <b>triangle rectangle</b> dont le premier côté de l'angle droit mesure $$&3$$ et d'aire $$[._&3*&4:2_cm^2_]$$ ?",
+						"Quelle est la longueur du 2ème côté de l'angle droit d'un <b>triangle rectangle</b> dont le premier côté de l'angle droit mesure $$&3$$ et d'aire $$[._&3*&4:2_dm^2_]$$ ?",
+						"Quelle est la longueur du 2ème côté de l'angle droit d'un <b>triangle rectangle</b> dont le premier côté de l'angle droit mesure $$&3$$ et d'aire $$[._&3*&4:2_m^2_]$$ ?",
+						"Quelle est la longueur du 2ème côté de l'angle droit d'un <b>triangle rectangle</b> dont le premier côté de l'angle droit mesure $$&3$$ et d'aire $$[._&3*&4:2_dam^2_]$$ ?",
+						"Quelle est la longueur du 2ème côté de l'angle droit d'un <b>triangle rectangle</b> dont le premier côté de l'angle droit mesure $$&3$$ et d'aire $$[._&3*&4:2_hm^2_]$$ ?",
+						"Quelle est la longueur du 2ème côté de l'angle droit d'un <b>triangle rectangle</b> dont le premier côté de l'angle droit mesure $$&3$$ et d'aire $$[._&3*&4:2_km^2_]$$ ?",
 					],
 					variables: [
 						{
@@ -11997,7 +11969,7 @@ const questions = {
 					description: "Calcul de l'aire d'un triangle quelconque.",
 					subdescription: "A partir d'une description",
 					enounces: [
-						"Quelle est l'aire d'un <b>triangle</b> de base $$[°&3°]$$ et de hauteur associée $$[°&4°]$$ ?",
+						"Quelle est l'aire d'un <b>triangle</b> de base $$&3$$ et de hauteur associée $$&4$$ ?",
 					],
 					variables: [
 						{
@@ -12072,13 +12044,13 @@ const questions = {
 					description: "Trouver la base d'un triangle quelconque.",
 					subdescription: 'A partir de son aire et de la hauteur associée.',
 					enounces: [
-						"Quelle est la base d'un <b>triangle</b> de hauteur associée $$[°&3°]$$ et d'aire $$[._&3*&4:2_mm^2_]$$ ?",
-						"Quelle est la base d'un <b>triangle</b> de hauteur associée $$[°&3°]$$ et d'aire $$[._&3*&4:2_cm^2_]$$ ?",
-						"Quelle est la base d'un <b>triangle</b> de hauteur associée $$[°&3°]$$ et d'aire $$[._&3*&4:2_dm^2_]$$ ?",
-						"Quelle est la base d'un <b>triangle</b> de hauteur associée $$[°&3°]$$ et d'aire $$[._&3*&4:2_m^2_]$$ ?",
-						"Quelle est la base d'un <b>triangle</b> de hauteur associée $$[°&3°]$$ et d'aire $$[._&3*&4:2_dam^2_]$$ ?",
-						"Quelle est la base d'un <b>triangle</b> de hauteur associée $$[°&3°]$$ et d'aire $$[._&3*&4:2_hm^2_]$$ ?",
-						"Quelle est la base d'un <b>triangle</b> de hauteur associée $$[°&3°]$$ et d'aire $$[._&3*&4:2_km^2_]$$ ?",
+						"Quelle est la base d'un <b>triangle</b> de hauteur associée $$&3$$ et d'aire $$[._&3*&4:2_mm^2_]$$ ?",
+						"Quelle est la base d'un <b>triangle</b> de hauteur associée $$&3$$ et d'aire $$[._&3*&4:2_cm^2_]$$ ?",
+						"Quelle est la base d'un <b>triangle</b> de hauteur associée $$&3$$ et d'aire $$[._&3*&4:2_dm^2_]$$ ?",
+						"Quelle est la base d'un <b>triangle</b> de hauteur associée $$&3$$ et d'aire $$[._&3*&4:2_m^2_]$$ ?",
+						"Quelle est la base d'un <b>triangle</b> de hauteur associée $$&3$$ et d'aire $$[._&3*&4:2_dam^2_]$$ ?",
+						"Quelle est la base d'un <b>triangle</b> de hauteur associée $$&3$$ et d'aire $$[._&3*&4:2_hm^2_]$$ ?",
+						"Quelle est la base d'un <b>triangle</b> de hauteur associée $$&3$$ et d'aire $$[._&3*&4:2_km^2_]$$ ?",
 					],
 					variables: [
 						{
@@ -12175,13 +12147,13 @@ const questions = {
 					description: "Trouver la hauteur d'un triangle quelconque.",
 					subdescription: 'A partir de son aire et de la base associée.',
 					enounces: [
-						"Quelle est la hauteur d'un <b>triangle</b> de base associée $$[°&3°]$$ et d'aire $$[._&3*&4:2_mm^2_]$$ ?",
-						"Quelle est la hauteur d'un <b>triangle</b> de base associée $$[°&3°]$$ et d'aire $$[._&3*&4:2_cm^2_]$$ ?",
-						"Quelle est la hauteur d'un <b>triangle</b> de base associée $$[°&3°]$$ et d'aire $$[._&3*&4:2_dm^2_]$$ ?",
-						"Quelle est la hauteur d'un <b>triangle</b> de base associée $$[°&3°]$$ et d'aire $$[._&3*&4:2_m^2_]$$ ?",
-						"Quelle est la hauteur d'un <b>triangle</b> de base associée $$[°&3°]$$ et d'aire $$[._&3*&4:2_dam^2_]$$ ?",
-						"Quelle est la hauteur d'un <b>triangle</b> de base associée $$[°&3°]$$ et d'aire $$[._&3*&4:2_hm^2_]$$ ?",
-						"Quelle est la hauteur d'un <b>triangle</b> de base associée $$[°&3°]$$ et d'aire $$[._&3*&4:2_km^2_]$$ ?",
+						"Quelle est la hauteur d'un <b>triangle</b> de base associée $$&3$$ et d'aire $$[._&3*&4:2_mm^2_]$$ ?",
+						"Quelle est la hauteur d'un <b>triangle</b> de base associée $$&3$$ et d'aire $$[._&3*&4:2_cm^2_]$$ ?",
+						"Quelle est la hauteur d'un <b>triangle</b> de base associée $$&3$$ et d'aire $$[._&3*&4:2_dm^2_]$$ ?",
+						"Quelle est la hauteur d'un <b>triangle</b> de base associée $$&3$$ et d'aire $$[._&3*&4:2_m^2_]$$ ?",
+						"Quelle est la hauteur d'un <b>triangle</b> de base associée $$&3$$ et d'aire $$[._&3*&4:2_dam^2_]$$ ?",
+						"Quelle est la hauteur d'un <b>triangle</b> de base associée $$&3$$ et d'aire $$[._&3*&4:2_hm^2_]$$ ?",
+						"Quelle est la hauteur d'un <b>triangle</b> de base associée $$&3$$ et d'aire $$[._&3*&4:2_km^2_]$$ ?",
 					],
 					variables: [
 						{
@@ -12280,7 +12252,7 @@ const questions = {
 					description: "Calcul de l'aire d'un parallélogramme.",
 					subdescription: "A partir d'une description",
 					enounces: [
-						"Quelle est l'aire d'un <b>parallélogramme</b> de base $$[°&3°]$$ et de hauteur $$[°&4°]$$ ?",
+						"Quelle est l'aire d'un <b>parallélogramme</b> de base $$&3$$ et de hauteur $$&4$$ ?",
 					],
 					variables: [
 						{
@@ -12355,13 +12327,13 @@ const questions = {
 					description: "Trouver la base d'un parallélogramme.",
 					subdescription: 'A partir de son aire et de la hauteur associée .',
 					enounces: [
-						"Quelle est la base d'un <b>parallélogramme</b> de hauteur associée $$[°&3°]$$ et d'aire $$[._&3*&4_mm^2_]$$ ?",
-						"Quelle est la base d'un <b>parallélogramme</b> de hauteur associée $$[°&3°]$$ et d'aire $$[._&3*&4_cm^2_]$$ ?",
-						"Quelle est la base d'un <b>parallélogramme</b> de hauteur associée $$[°&3°]$$ et d'aire $$[._&3*&4_dm^2_]$$ ?",
-						"Quelle est la base d'un <b>parallélogramme</b> de hauteur associée $$[°&3°]$$ et d'aire $$[._&3*&4_m^2_]$$ ?",
-						"Quelle est la base d'un <b>parallélogramme</b> de hauteur associée $$[°&3°]$$ et d'aire $$[._&3*&4_dam^2_]$$ ?",
-						"Quelle est la base d'un <b>parallélogramme</b> de hauteur associée $$[°&3°]$$ et d'aire $$[._&3*&4_hm^2_]$$ ?",
-						"Quelle est la base d'un <b>parallélogramme</b> de hauteur associée $$[°&3°]$$ et d'aire $$[._&3*&4_km^2_]$$ ?",
+						"Quelle est la base d'un <b>parallélogramme</b> de hauteur associée $$&3$$ et d'aire $$[._&3*&4_mm^2_]$$ ?",
+						"Quelle est la base d'un <b>parallélogramme</b> de hauteur associée $$&3$$ et d'aire $$[._&3*&4_cm^2_]$$ ?",
+						"Quelle est la base d'un <b>parallélogramme</b> de hauteur associée $$&3$$ et d'aire $$[._&3*&4_dm^2_]$$ ?",
+						"Quelle est la base d'un <b>parallélogramme</b> de hauteur associée $$&3$$ et d'aire $$[._&3*&4_m^2_]$$ ?",
+						"Quelle est la base d'un <b>parallélogramme</b> de hauteur associée $$&3$$ et d'aire $$[._&3*&4_dam^2_]$$ ?",
+						"Quelle est la base d'un <b>parallélogramme</b> de hauteur associée $$&3$$ et d'aire $$[._&3*&4_hm^2_]$$ ?",
+						"Quelle est la base d'un <b>parallélogramme</b> de hauteur associée $$&3$$ et d'aire $$[._&3*&4_km^2_]$$ ?",
 					],
 					variables: [
 						{
@@ -12458,13 +12430,13 @@ const questions = {
 					description: "Trouver la hauteur d'un parallélogramme.",
 					subdescription: 'A partir de son aire et de la base associée.',
 					enounces: [
-						"Quelle est la hauteur d'un <b>parallélogramme</b> de base associée $$[°&3°]$$ et d'aire $$[._&3*&4_mm^2_]$$ ?",
-						"Quelle est la hauteur d'un <b>parallélogramme</b> de base associée $$[°&3°]$$ et d'aire $$[._&3*&4_cm^2_]$$ ?",
-						"Quelle est la hauteur d'un <b>parallélogramme</b> de base associée $$[°&3°]$$ et d'aire $$[._&3*&4_dm^2_]$$ ?",
-						"Quelle est la hauteur d'un <b>parallélogramme</b> de base associée $$[°&3°]$$ et d'aire $$[._&3*&4_m^2_]$$ ?",
-						"Quelle est la hauteur d'un <b>parallélogramme</b> de base associée $$[°&3°]$$ et d'aire $$[._&3*&4_dam^2_]$$ ?",
-						"Quelle est la hauteur d'un <b>parallélogramme</b> de base associée $$[°&3°]$$ et d'aire $$[._&3*&4_hm^2_]$$ ?",
-						"Quelle est la hauteur d'un <b>parallélogramme</b> de base associée $$[°&3°]$$ et d'aire $$[._&3*&4_km^2_]$$ ?",
+						"Quelle est la hauteur d'un <b>parallélogramme</b> de base associée $$&3$$ et d'aire $$[._&3*&4_mm^2_]$$ ?",
+						"Quelle est la hauteur d'un <b>parallélogramme</b> de base associée $$&3$$ et d'aire $$[._&3*&4_cm^2_]$$ ?",
+						"Quelle est la hauteur d'un <b>parallélogramme</b> de base associée $$&3$$ et d'aire $$[._&3*&4_dm^2_]$$ ?",
+						"Quelle est la hauteur d'un <b>parallélogramme</b> de base associée $$&3$$ et d'aire $$[._&3*&4_m^2_]$$ ?",
+						"Quelle est la hauteur d'un <b>parallélogramme</b> de base associée $$&3$$ et d'aire $$[._&3*&4_dam^2_]$$ ?",
+						"Quelle est la hauteur d'un <b>parallélogramme</b> de base associée $$&3$$ et d'aire $$[._&3*&4_hm^2_]$$ ?",
+						"Quelle est la hauteur d'un <b>parallélogramme</b> de base associée $$&3$$ et d'aire $$[._&3*&4_km^2_]$$ ?",
 					],
 					variables: [
 						{
@@ -13080,11 +13052,11 @@ const questions = {
 							'&3': '&1,&2',
 						},
 					],
-					answerFields: ['$$[°&3°]\\,h= ?\\,min$$'],
+					answerFields: ['$$[°&3°]\\,h= ...\\,min$$'],
 					solutions: [['[_&3*60_]']],
 					correctionFormat: [
 						{
-							correct: ['$$[°&3°]\\,h=$$ &answer $$min$$'],
+							correct: ['$$&3\\,h=$$ &answer $$min$$'],
 						},
 					],
 
@@ -13510,7 +13482,7 @@ const questions = {
 					description: 'Soustraire des durées',
 					subdescription: 'en HMS',
 					enounces: [
-						"J'ai commencé à regarder un épisode d'une série à $$[°&1 h &2 min°]$$, et je l'ai terminé à $$[_&1 h &2 min + &3 min_HMS_]$$. Quelle était la durée de cet épisode ? (n'oublie pas l'unité)",
+						"J'ai commencé à regarder un épisode d'une série à $$[_&1 h &2 min_HMS_]$$, et je l'ai terminé à $$[_&1 h &2 min + &3 min_HMS_]$$. Quelle était la durée de cet épisode ? (n'oublie pas l'unité)",
 					],
 					variables: [
 						{
@@ -13549,7 +13521,7 @@ const questions = {
 					description: 'Soustraire des durées (2)',
 					subdescription: 'en HMS',
 					enounces: [
-						"J'ai commencé à regarder un film  à $$[°&1 h &3 min°]$$, et je l'ai terminé à $$[_&1 h &3 min + &2 h &4 min_HMS_]$$. Quelle était la durée de ce film ? (n'oublie pas l'unité)",
+						"J'ai commencé à regarder un film  à $$[_&1 h &3 min_HMS_]$$, et je l'ai terminé à $$[_&1 h &3 min + &2 h &4 min_HMS_]$$. Quelle était la durée de ce film ? (n'oublie pas l'unité)",
 					],
 					variables: [
 						{
@@ -13672,7 +13644,7 @@ const questions = {
 				{
 					description: 'Calculer une vitesse moyenne.',
 					enounces: [
-						"Quelle est la vitesse moyenne d'une voiture parcourant $$[_{&2}*{&3}_km_]$$ en $$[°&3°]$$ ? (n'oublie pas l'unité)",
+						"Quelle est la vitesse moyenne d'une voiture parcourant $$[_{&2}*{&3}_km_]$$ en $$&3$$ ? (n'oublie pas l'unité)",
 					],
 					variables: [
 						{
@@ -14986,7 +14958,7 @@ const questions = {
 					description: "Trouver l'échelle d'une carte",
 					subdescription: 'Mêmes unités.',
 					enounces: [
-						"Quelle est l'échelle d'une carte où  $$1\\,cm$$ sur la carte correspond à $$[°&3°]$$ en réalité ?",
+						"Quelle est l'échelle d'une carte où  $$1\\,cm$$ sur la carte correspond à $$&3$$ en réalité ?",
 					],
 					solutions: [['[_(1 cm)/&3_]']],
 					variables: [
@@ -15004,7 +14976,7 @@ const questions = {
 					description: "Trouver l'échelle d'une carte",
 					subdescription: 'Unités différentes.',
 					enounces: [
-						"Quelle est l'échelle d'une carte où $$1\\,cm$$ sur la carte correspond à $$[°&1°]$$ en réalité ?",
+						"Quelle est l'échelle d'une carte où $$1\\,cm$$ sur la carte correspond à $$&1$$ en réalité ?",
 					],
 					solutions: [['[_(1 cm)/&1_]']],
 					variables: [
@@ -15035,7 +15007,7 @@ const questions = {
 				{
 					description: 'Calculer la longueur sur une carte',
 					enounces: [
-						"Sur une carte à l'échelle $$[_&4_]$$, je veux représenter une longueur de $$[°&3°]$$. Quelle est, en $$cm$$, la longueur sur la carte ?",
+						"Sur une carte à l'échelle $$[_&4_]$$, je veux représenter une longueur de $$&3$$. Quelle est, en $$cm$$, la longueur sur la carte ?",
 					],
 					answerFields: ['$$? cm$$'],
 					solutions: [['[_&5/(&1 cm)_]']],
@@ -15121,7 +15093,7 @@ const questions = {
 				{
 					description: 'Calculer la longueur réelle',
 					enounces: [
-						"Sur une carte à l'échelle $$[_&4_]$$, je mesure une longueur de $$[°&3°]$$. Quelle est la longueur réelle ?",
+						"Sur une carte à l'échelle $$[_&4_]$$, je mesure une longueur de $$&3$$. Quelle est la longueur réelle ?",
 					],
 					solutions: [
 						['[_(&3)*&1_dm_]'],
@@ -15204,7 +15176,7 @@ const questions = {
 				{
 					description: 'Déterminer une vitesse moyenne',
 					enounces: [
-						"Une voiture parcourt $$&1$$ en Quelle est l'échelle d'une carte où $$[°&3°]$$ sur la carte correspond à $$1\\,cm$$ en réalité ?",
+						"Une voiture parcourt $$&1$$ en Quelle est l'échelle d'une carte où $$&3$$ sur la carte correspond à $$1\\,cm$$ en réalité ?",
 					],
 					expressions: ['(1 cm)/&3'],
 					variables: [
@@ -21690,7 +21662,15 @@ const questions = {
 						'Quel semble être le terme général de la suite dont les premiers termes sont:',
 					],
 					enounces2: [
-						'$$[°&4°] \\quad [°&5°] \\quad [°&6°] \\quad [°&7°] \\quad [°&8°]$$',
+						'$$&4$$' +
+							'  ' +
+							'$$&5$$' +
+							'  ' +
+							'$$&6$$' +
+							'  ' +
+							'$$&7$$' +
+							'  ' +
+							'$$&8$$',
 					],
 					solutions: [['&1*(&3)^n']],
 					answerFields: ['$$u_n=?$$'],
@@ -21708,9 +21688,7 @@ const questions = {
 					],
 					correctionFormat: [
 						{
-							correct: [
-								"Le terme général est $$u_n=&ans$$",
-							],
+							correct: ['Le terme général est $$u_n=&ans$$'],
 						},
 					],
 
@@ -22000,9 +21978,11 @@ const questions = {
 						[],
 						[],
 						[],
-						[{
-							text: '$$-1<[_1/(&2)_]<1$$ donc la limite est $$0$$.',
-						},],
+						[
+							{
+								text: '$$-1<[_1/(&2)_]<1$$ donc la limite est $$0$$.',
+							},
+						],
 						[],
 					],
 					options: ['no-shuffle-choices'],

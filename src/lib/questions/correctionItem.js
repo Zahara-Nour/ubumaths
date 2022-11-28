@@ -14,7 +14,7 @@ import {
 } from '$lib/colors'
 import { toMarkup, formatToHtml } from '$lib/stores'
 import math from 'tinycas'
-import {formatToLatex} from '$lib/utils' 
+import { formatToLatex, formatToTexmacs } from '$lib/utils'
 import { get } from 'svelte/store'
 
 function createSolutionsLatex(item) {
@@ -33,6 +33,7 @@ function createSolutionsLatex(item) {
 
 export function createCorrection(item) {
 	const {
+		expression,
 		expression_latex,
 		solutions,
 		answers,
@@ -172,7 +173,7 @@ export function createCorrection(item) {
 					let img = choices[solutions[0]].imageBase64
 					html = `<img src='${img}' style="max-width:400px;max-height:40vh;" alt='toto'>`
 				} else {
-					html = format
+					html = formatToLatex(format)
 						.replace(regexExpression2, replaceExpression2)
 						.replace(regexExpression, replaceExpression)
 						.replace(regexExp2, replaceExp2)
@@ -192,15 +193,13 @@ export function createCorrection(item) {
 					html = `<img style="max-width:400px;max-height:40vh;" src='${img}' alt='toto'>`
 				} else {
 					html = formatToLatex(format)
-					console.log('html', html)
-					html = html
 						.replace(regexExpression2, replaceExpression2)
 						.replace(regexExpression, replaceExpression)
 						.replace(regexExp2, replaceExp2)
 						.replace(regexExp, replaceExp)
 						.replace(regexSolution, replaceSolution)
 						.replace(regexSol, replaceSol)
-					texmacs = format
+					texmacs = formatToTexmacs(format)
 						.replace(regexExpression2, replaceExpression2)
 						.replace(regexExpression, replaceExpression)
 						.replace(regexExp2, replaceExp2)
@@ -209,7 +208,6 @@ export function createCorrection(item) {
 						.replace(regexSol, replaceSolTexmacs)
 				}
 
-				console.log('html', html)
 				lines.push({ html: get(formatToHtml)(html), texmacs })
 			})
 
@@ -242,43 +240,43 @@ export function createCorrection(item) {
 			case 'result': {
 				let html
 
-				if (status === STATUS_CORRECT) {
-					html =
-						`$$${expression_latex}=$$` +
-						`<span style="color:${correct_color}; border:2px solid ${correct_color}; border-radius: 5px;  margin:2px; padding:5px;display:inline-block">` +
-						'$$' +
-						answers_latex[0] +
-						'$$' +
-						'</span>'
-				} else if (status === STATUS_EMPTY) {
-					html =
-						`$$${expression_latex}=$$` +
-						`<span style="color:${correct_color}; border:2px solid ${correct_color}; border-radius: 5px;  margin:2px; padding:5px;display:inline-block">` +
-						'$$' +
-						solutions_latex[0] +
-						'$$' +
-						'</span>'
-				} else {
-					html = `$$\\begin{align*}  ${expression_latex}`
-					if (status === STATUS_INCORRECT) {
-						html += `&= \\enclose{updiagonalstrike}[3px solid ${incorrect_color}]{${answers_latex[0]}} \\\\`
-					} else if (status === STATUS_BAD_FORM || status === STATUS_BAD_UNIT) {
-						html += `&= \\textcolor{${incorrect_color}}{${answers_latex[0]}} \\\\`
-					} else if (status === STATUS_UNOPTIMAL_FORM) {
-						html += `&= \\textcolor{${unoptimal_color}}{${answers_latex[0]}} \\\\`
-					}
-
-					html += `&=\\enclose{roundedbox}[2px solid ${correct_color}]{\\textcolor{${correct_color}}{${solutions_latex[0]}}}`
-
-					html += '\\end{align*}$$'
+				// if (status === STATUS_CORRECT) {
+				// 	html =
+				// 		`$$${expression_latex}=$$` +
+				// 		`<span style="color:${correct_color}; border:2px solid ${correct_color}; border-radius: 5px;  margin:2px; padding:5px;display:inline-block">` +
+				// 		'$$' +
+				// 		answers_latex[0] +
+				// 		'$$' +
+				// 		'</span>'
+				// } else if (status === STATUS_EMPTY) {
+				// 	html =
+				// 		`$$${expression_latex}=$$` +
+				// 		`<span style="color:${correct_color}; border:2px solid ${correct_color}; border-radius: 5px;  margin:2px; padding:5px;display:inline-block">` +
+				// 		'$$' +
+				// 		solutions_latex[0] +
+				// 		'$$' +
+				// 		'</span>'
+				// } else {
+				html = `$$\\begin{align*}  ${expression_latex}`
+				if (status === STATUS_INCORRECT) {
+					html += `&= \\enclose{updiagonalstrike}[3px solid ${incorrect_color}]{${answers_latex[0]}} \\\\`
+				} else if (status === STATUS_BAD_FORM || status === STATUS_BAD_UNIT) {
+					html += `&= \\textcolor{${incorrect_color}}{${answers_latex[0]}} \\\\`
+				} else if (status === STATUS_UNOPTIMAL_FORM) {
+					html += `&= \\textcolor{${unoptimal_color}}{${answers_latex[0]}} \\\\`
 				}
+				if (status === STATUS_CORRECT) {
+					html += `&=\\enclose{roundedbox}[2px solid ${correct_color}, padding='2']{\\textcolor{${correct_color}}{${answers_latex[0]}}}`
+				} else {
+					html += `&=\\enclose{roundedbox}[2px solid ${correct_color}, padding='2']{\\textcolor{${correct_color}}{${solutions_latex[0]}}}`
+				}
+				html += '\\end{align*}$$'
+				// }
 				const texmacs =
-					'$' +
-					expression_latex +
-					`=\\textcolor{green}{${solutions_latex[0]
-						.replace(/\\lt/g, '<')
-						.replace(/\\gt/g, '>')}}` +
-					'$'
+					'<math|' +
+					math(expression).texmacs +
+					`=<with|color|#66bb6a|${math(solutions[0]).texmacs}>>`
+
 				lines.push({ html: get(formatToHtml)(formatToLatex(html)), texmacs })
 
 				break
@@ -332,7 +330,7 @@ export function createCorrection(item) {
 						c.image = choice.base64
 					} else {
 						c.text = choice.text
-						c.html = get(formatToHtml)(choice.text)
+						c.html = get(formatToHtml)(formatToLatex(choice.text))
 					}
 					if (answers || c.solution) {
 						choices.push(c)
@@ -364,7 +362,7 @@ export function createCorrection(item) {
 						) +
 						'$$'
 
-					if (status === STATUS_INCORRECT) {
+					if (status === STATUS_INCORRECT || status === STATUS_BAD_FORM) {
 						coms.unshift(
 							'Ta réponse : $$' +
 								expression_latex.replace(
@@ -373,10 +371,7 @@ export function createCorrection(item) {
 								) +
 								'$$',
 						)
-					} else if (
-						status === STATUS_BAD_FORM ||
-						status === STATUS_UNOPTIMAL_FORM
-					) {
+					} else if (status === STATUS_UNOPTIMAL_FORM) {
 						coms.unshift(
 							'Ta réponse : $$' +
 								expression_latex.replace(
@@ -387,14 +382,16 @@ export function createCorrection(item) {
 						)
 					}
 				}
+				let i = -1
+				const putSolutions = () => {
+					i++
+					return `<with|color|#66bb6a|${math(solutions[i]).texmacs}>`
+				}
+				expression
 				const texmacs =
-					'$' +
-					expression_latex
-						.replace(/\\ldots/, `\\textcolor{green}{${solutions_latex[0]}}`)
-						.replace(/\\lt/g, '<')
-						.replace(/\\gt/g, '>') +
-					'$'
-
+					'<math|' +
+					math(expression).texmacs.replace(/\.\.\.\.\.\./g, putSolutions) +
+					'>'
 				lines.push({ html: get(formatToHtml)(html), texmacs })
 			}
 		}

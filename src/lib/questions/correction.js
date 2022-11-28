@@ -207,6 +207,7 @@ function checkConstraints(item) {
 	//
 	checks.forEach((check) => {
 		if (!item.options.includes(check.option[0])) {
+			console.log('check', check.text)
 			const problematicAnswers = check.function(item)
 			if (problematicAnswers.length) {
 				item.unoptimals.push(check.text)
@@ -214,11 +215,13 @@ function checkConstraints(item) {
 					item.answers.length === 1 ? check.com : check.comMultipleAnswers,
 				)
 				problematicAnswers.forEach((i) => {
+					console.log('item.statuss',item.statuss[i], check.option[1] )
 					item.statuss[i] =
 						!item.options.includes(check.option[1]) &&
 						item.statuss[i] !== STATUS_BAD_FORM
 							? STATUS_UNOPTIMAL_FORM
 							: STATUS_BAD_FORM
+					console.log('item.statuss',item.statuss[i] )
 				})
 			}
 		}
@@ -558,7 +561,7 @@ function checkSpaces(item) {
 //     return true
 // }
 
-// retourne true si la vérification est OK
+
 function checkZeros(item) {
 	const result = []
 	item.answers.forEach((answer, i) => {
@@ -604,24 +607,26 @@ function checkForm(item) {
 
 				// pourquoi le faire pour solutions ?
 				// la solution est censé est écrite sous une forme correcte.
+				// oui mais pas toujours sous sorme optimale
 				let solution = math(item.solutions[indexSolution])
-					// 	.removeZerosAndSpaces()
-					// 	.reduceFractions()
-					// 	.simplifyNullProducts()
+						.removeZerosAndSpaces()
+						.reduceFractions()
+						.simplifyNullProducts()
 					// if (!item.options.includes('no-penalty-for-null-terms')) {
-					// 	solution = solution.removeNullTerms()
+						solution = solution.removeNullTerms()
 					// }
-					// solution = solution
-					// 	.removeFactorsOne()
-					// 	.removeSigns()
-					// 	.removeUnecessaryBrackets()
-					// 	.removeMultOperator()
+					solution = solution
+						.removeFactorsOne()
+						.removeSigns()
+						.removeUnecessaryBrackets()
+						.removeMultOperator()
 					.sortTermsAndFactors()
 
 				console.log('answer & solution', e.string, solution.string)
 
 				// il faut trouver une autre solution quand il y a des unités
 				if (!e.unit && !e.strictlyEquals(solution)) {
+					console.log('!! bad form !!')
 					item.statuss[i] = STATUS_BAD_FORM
 					item.coms.push(
 						item.answers.length === 1 ? BAD_FORM : BAD_FORM_MULTIPLE_ANSWERS,
@@ -746,6 +751,7 @@ export function assessItem(item) {
 				if (item.expression && !item.answerFields) {
 					let incorrectForm = false
 					item.answers.forEach((answer, i) => {
+						console.log('answer', answer)
 						if (
 							item.statuss[i] !== STATUS_EMPTY &&
 							math(answer).isIncorrect()
@@ -756,7 +762,7 @@ export function assessItem(item) {
 						}
 					})
 					const exp = math(item.expression.replace(/\?/g, putAnswers))
-					if (exp.isIncorrect) {
+					if (exp.isIncorrect()) {
 						item.status = STATUS_INCORRECT
 						if (!incorrectForm) item.coms.push(MATH_GLOBALLY_INCORRECT)
 					}
@@ -766,6 +772,18 @@ export function assessItem(item) {
 						item.coms.push(MATH_INCORRECT_MULTIPLE_ANSWERS)
 					}
 				}
+			}
+			else {
+				item.answers.forEach((answer, i) => {
+					console.log('answer', answer)
+					if (
+						item.statuss[i] !== STATUS_EMPTY &&
+						math(answer).isIncorrect()
+					) {
+						item.statuss[i] = STATUS_INCORRECT
+						item.status = STATUS_INCORRECT
+					}
+				})
 			}
 
 			if (
@@ -804,6 +822,7 @@ export function assessItem(item) {
 				}
 				// les solutions sont explicites et sont dans item.solutions
 				else {
+					console.log('item', item)
 					item.answers.forEach((answer, i) => {
 						if (
 							item.statuss[i] !== STATUS_EMPTY &&
@@ -843,8 +862,10 @@ export function assessItem(item) {
 				checkTermsAndFactors(item)
 				// TODO : tester les formats
 				checkForm(item)
+				console.log('item after check form', item)
 				if (item.status !== STATUS_EMPTY && item.status !== STATUS_INCORRECT) {
 					if (item.statuss.some((status) => status === STATUS_BAD_FORM)) {
+						console.log('bad form')
 						item.status = STATUS_BAD_FORM
 					} else if (
 						item.statuss.some((status) => status === STATUS_UNOPTIMAL_FORM) ||

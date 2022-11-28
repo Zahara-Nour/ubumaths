@@ -25,7 +25,7 @@
 	export let displayExemple
 	export let flushBasket
 	export let courseAuxNombres
-	export let generateExoLatex
+	export let generateExoTexmacs
 
 	const toggleExemple = () => (displayExemple = !displayExemple)
 	const toggleBasket = () => (showBasket = !showBasket)
@@ -47,7 +47,7 @@
 			</Icon>
 		</Fab>
 
-		<Fab class="mx-1" color="secondary" on:click="{generateExoLatex}" mini>
+		<Fab class="mx-1" color="secondary" on:click="{generateExoTexmacs}" mini>
 			<Icon component="{Svg}" viewBox="2 2 20 20">
 				<path fill="currentColor" d="{mdiNewspaperVariantOutline}"></path>
 			</Icon>
