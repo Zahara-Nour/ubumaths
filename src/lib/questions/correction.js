@@ -215,13 +215,22 @@ function checkConstraints(item) {
 					item.answers.length === 1 ? check.com : check.comMultipleAnswers,
 				)
 				problematicAnswers.forEach((i) => {
-					console.log('item.statuss',item.statuss[i], check.option[1] )
-					item.statuss[i] =
-						!item.options.includes(check.option[1]) &&
-						item.statuss[i] !== STATUS_BAD_FORM
-							? STATUS_UNOPTIMAL_FORM
-							: STATUS_BAD_FORM
-					console.log('item.statuss',item.statuss[i] )
+					if (i === -1) {
+						console.log("i=-1")
+						item.status =
+							!item.options.includes(check.option[1]) &&
+							item.status !== STATUS_BAD_FORM
+								? STATUS_UNOPTIMAL_FORM
+								: STATUS_BAD_FORM
+					} else {
+						console.log('item.statuss', item.statuss[i], check.option[1])
+						item.statuss[i] =
+							!item.options.includes(check.option[1]) &&
+							item.statuss[i] !== STATUS_BAD_FORM
+								? STATUS_UNOPTIMAL_FORM
+								: STATUS_BAD_FORM
+						console.log('item.statuss', item.statuss[i])
+					}
 				})
 			}
 		}
@@ -427,20 +436,38 @@ function checkBrackets(item) {
 	const allowBracketsInFirstNegativeTerm = item.options.includes(
 		'no-penalty-for-extraneous-brackets-in-first-negative-term',
 	)
-	item.answers.forEach((answer, i) => {
-		if (
-			item.statuss[i] !== STATUS_EMPTY &&
-			item.statuss[i] !== STATUS_INCORRECT
-		) {
-			const e = math(answer)
-			if (
-				e.removeUnecessaryBrackets(allowBracketsInFirstNegativeTerm).string !==
-				e.string
-			) {
-				result.push(i)
-			}
+
+	if (item.type === 'fill in' && item.expression && !item.answerFields) {
+		let i = -1
+		const putAnswers = () => {
+			i++
+			return item.answers[i]
 		}
-	})
+
+		const exp = math(item.expression.replace(/\?/g, putAnswers))
+		console.log('exp', exp.removeUnecessaryBrackets(allowBracketsInFirstNegativeTerm).string, exp.string)
+		if (
+			exp.removeUnecessaryBrackets(allowBracketsInFirstNegativeTerm).string !==
+			exp.string
+		) {
+			result.push(-1)
+		}
+	} else {
+		item.answers.forEach((answer, i) => {
+			if (
+				item.statuss[i] !== STATUS_EMPTY &&
+				item.statuss[i] !== STATUS_INCORRECT
+			) {
+				const e = math(answer)
+				if (
+					e.removeUnecessaryBrackets(allowBracketsInFirstNegativeTerm)
+						.string !== e.string
+				) {
+					result.push(i)
+				}
+			}
+		})
+	}
 	return result
 }
 
@@ -561,7 +588,6 @@ function checkSpaces(item) {
 //     return true
 // }
 
-
 function checkZeros(item) {
 	const result = []
 	item.answers.forEach((answer, i) => {
@@ -609,24 +635,23 @@ function checkForm(item) {
 				// la solution est censé est écrite sous une forme correcte.
 				// oui mais pas toujours sous sorme optimale
 				let solution = math(item.solutions[indexSolution])
-						.removeZerosAndSpaces()
-						.reduceFractions()
-						.simplifyNullProducts()
-					// if (!item.options.includes('no-penalty-for-null-terms')) {
-						solution = solution.removeNullTerms()
-					// }
-					solution = solution
-						.removeFactorsOne()
-						.removeSigns()
-						.removeUnecessaryBrackets()
-						.removeMultOperator()
+					.removeZerosAndSpaces()
+					.reduceFractions()
+					.simplifyNullProducts()
+				// if (!item.options.includes('no-penalty-for-null-terms')) {
+				solution = solution.removeNullTerms()
+				// }
+				solution = solution
+					.removeFactorsOne()
+					.removeSigns()
+					.removeUnecessaryBrackets()
+					.removeMultOperator()
 					.sortTermsAndFactors()
 
 				console.log('answer & solution', e.string, solution.string)
 
 				// il faut trouver une autre solution quand il y a des unités
 				if (!e.unit && !e.strictlyEquals(solution)) {
-					console.log('!! bad form !!')
 					item.statuss[i] = STATUS_BAD_FORM
 					item.coms.push(
 						item.answers.length === 1 ? BAD_FORM : BAD_FORM_MULTIPLE_ANSWERS,
@@ -772,14 +797,10 @@ export function assessItem(item) {
 						item.coms.push(MATH_INCORRECT_MULTIPLE_ANSWERS)
 					}
 				}
-			}
-			else {
+			} else {
 				item.answers.forEach((answer, i) => {
 					console.log('answer', answer)
-					if (
-						item.statuss[i] !== STATUS_EMPTY &&
-						math(answer).isIncorrect()
-					) {
+					if (item.statuss[i] !== STATUS_EMPTY && math(answer).isIncorrect()) {
 						item.statuss[i] = STATUS_INCORRECT
 						item.status = STATUS_INCORRECT
 					}

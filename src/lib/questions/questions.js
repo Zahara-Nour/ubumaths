@@ -2272,7 +2272,7 @@ const questions = {
 			Différence: [
 				{
 					description: 'Calculer une différence (résultat positif)',
-					subdescription: 'Nombres à 1 chiffre',
+					subdescription: 'Nombres à $$1$$ chiffre',
 					enounces: ['Calcule.'],
 					expressions: ['&1-&2'],
 					variables: [{ '&1': '$e[5;9]', '&2': '$e[1;&1-1]' }],
@@ -2349,7 +2349,7 @@ const questions = {
 				{
 					description: 'Calculer une différence (résultat positif)',
 					subdescription:
-						' Soustraire un nombre à deux chiffres à un nombre à 3 chiffres, sans retenue',
+						' Soustraire un nombre à deux chiffres à un nombre à $$3$$ chiffres, sans retenue',
 					enounces: ['Calcule.'],
 					expressions: ['[_ &1*100 + &2*10 + &3 _] - [_ &4*10 + &5 _]'],
 					variables: [
@@ -2386,7 +2386,7 @@ const questions = {
 				{
 					description: 'Calculer une différence (résultat positif)',
 					subdescription:
-						"Soustraire un nombre d'au plus 3 chiffres à un nombre à 4 chiffres, sans retenue",
+						"Soustraire un nombre d'au plus $$3$$ chiffres à un nombre à $$4$$ chiffres, sans retenue",
 					enounces: ['Calcule.'],
 					expressions: [
 						'[_ &1*1000 + &2*100 + &3*10+&4_]-[_ &5*100 + &6*10+&7 _]',
@@ -2460,7 +2460,7 @@ const questions = {
 
 				{
 					description: 'Calculer une différence (résultat positif)',
-					subdescription: 'Nombres à 2 chiffres (avec retenue)',
+					subdescription: 'Nombres à $$2$$ chiffres (avec retenue)',
 					enounces: ['Calcule.'],
 					expressions: ['[_ &1*10 + &4 _] - [_ &3*10 + &2 _]'],
 					variables: [
@@ -2478,7 +2478,7 @@ const questions = {
 				},
 				{
 					description: 'Calculer une différence (résultat positif)',
-					subdescription: 'Nombres à 3 chiffres (avec retenue)',
+					subdescription: 'Nombres à $$3$$ chiffres (avec retenue)',
 					enounces: ['Calcule.'],
 					expressions: [
 						'[_ &1*100 + &5*10 + &6 _] - [_ &4*100 + &2*10 + &3 _]',
@@ -2502,8 +2502,8 @@ const questions = {
 			'A trou': [
 				{
 					description:
-						'Compléter une soustraction à fill in (résultat positif)',
-					subdescription: 'Nombres à 1 chiffre',
+						'Compléter une soustraction à trou (résultat positif)',
+					subdescription: 'Nombres à $$1$$ chiffre',
 					enounces: ['Complète'],
 					expressions: ['?-&1=&2', '&1-?=&2'],
 					variables: [
@@ -2588,7 +2588,7 @@ const questions = {
 				{
 					description: 'Compléter une soustraction à trou',
 					subdescription:
-						' Soustraire un nombre à deux chiffres à un nombre à 3 chiffres, sans retenue',
+						' Soustraire un nombre à deux chiffres à un nombre à $$3$$ chiffres, sans retenue',
 					enounces: ['Complète.'],
 					expressions: [
 						'[_ &1*100 + &2*10 + &3 _] - ? =  [_ &1*100 + &2*10 + &3 - (&4*10 + &5) _]',
@@ -2610,7 +2610,7 @@ const questions = {
 				{
 					description: 'Compléter une soustraction à trou',
 					subdescription: '  Soustraire des centaines entières à un nombre',
-					enounces: ['COmplète.'],
+					enounces: ['Complète.'],
 					expressions: [
 						'[_ &1*100 + &2*10 + &3 _] - ? =  [_&1*100 + &2*10 + &3 - &4*100_]',
 					],
@@ -2630,7 +2630,7 @@ const questions = {
 				{
 					description: 'Compléter une soustraction à trou',
 					subdescription:
-						"Soustraire un nombre d'au plus 3 chiffres à un nombre à 4 chiffres, sans retenue",
+						"Soustraire un nombre d'au plus $$3$$ chiffres à un nombre à $$4$$ chiffres, sans retenue",
 					enounces: ['Complète.'],
 					expressions: [
 						'[_ &1*1000 + &2*100 + &3*10+&4_]- ? = [_&1*1000 + &2*100 + &3*10+&4-(&5*100 + &6*10+&7) _]',
@@ -2711,7 +2711,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une soustraction à trou (résultat positif)',
-					subdescription: 'Nombres à 2 chiffres sans retenue.',
+					subdescription: 'Nombres à $$2$$ chiffres sans retenue.',
 					enounces: ['Quel est le nombre manquant dans cette égalité ?'],
 					expressions: [
 						'[_ &1*10 + &2 _] - ? =  [_ &3*10 + &4 _]',
@@ -2741,7 +2741,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une soustraction à trou (résultat positif)',
-					subdescription: 'Nombres à 3 chiffres (sans retenue)',
+					subdescription: 'Nombres à $$3$$ chiffres (sans retenue)',
 					enounces: ['Quel est le nombre manquant dans cette égalité ?'],
 					expressions: [
 						'[_ &1*100 + &2*10 + &3 _] - ? = [_ &4*100 + &5*10 + &6 _]',
@@ -2888,7 +2888,7 @@ const questions = {
 
 					variables: [
 						{
-							'&1': '$e[0;8]',
+							'&1': '$e[1;8]',
 							'&2': '$e[&1+1;9]',
 							'&3': '$e[1;8]',
 							'&4': '[_&2*10+&3_]',
@@ -2912,7 +2912,7 @@ const questions = {
 			Tables: [
 				{
 					description: 'Table de multiplication',
-					subdescription: 'Par 1',
+					subdescription: 'Par $$1$$',
 					enounces: ['Calcule.'],
 					expressions: ['1*&1'],
 					variables: [{ '&1': '$e[2;12]' }],
@@ -2922,7 +2922,7 @@ const questions = {
 				},
 				{
 					description: 'Table de multiplication',
-					subdescription: 'Par 2',
+					subdescription: 'Par $$2$$',
 					enounces: ['Calcule.'],
 					expressions: ['2*&1'],
 					variables: [{ '&1': '$e[2;12]' }],
@@ -2932,7 +2932,7 @@ const questions = {
 				},
 				{
 					description: 'Table de multiplication',
-					subdescription: 'Par 3',
+					subdescription: 'Par $$3$$',
 					enounces: ['Calcule.'],
 					expressions: ['3*&1'],
 					variables: [{ '&1': '$e[2;12]' }],
@@ -2942,7 +2942,7 @@ const questions = {
 				},
 				{
 					description: 'Table de multiplication',
-					subdescription: 'Par 4',
+					subdescription: 'Par $$4$$',
 					enounces: ['Calcule.'],
 					expressions: ['4*&1'],
 					variables: [{ '&1': '$e[2;12]' }],
@@ -2952,7 +2952,7 @@ const questions = {
 				},
 				{
 					description: 'Table de multiplication',
-					subdescription: 'Par 5',
+					subdescription: 'Par $$5$$',
 					enounces: ['Calcule.'],
 					expressions: ['5*&1'],
 					variables: [{ '&1': '$e[2;12]' }],
@@ -2962,7 +2962,7 @@ const questions = {
 				},
 				{
 					description: 'Table de multiplication',
-					subdescription: 'Par 6',
+					subdescription: 'Par $$6$$',
 					enounces: ['Calcule.'],
 					expressions: ['6*&1'],
 					variables: [{ '&1': '$e[2;12]' }],
@@ -2972,7 +2972,7 @@ const questions = {
 				},
 				{
 					description: 'Table de multiplication',
-					subdescription: 'Par 7',
+					subdescription: 'Par $$7$$',
 					enounces: ['Calcule.'],
 					expressions: ['7*&1'],
 					variables: [{ '&1': '$e[2;12]' }],
@@ -2982,7 +2982,7 @@ const questions = {
 				},
 				{
 					description: 'Table de multiplication',
-					subdescription: 'Par 8',
+					subdescription: 'Par $$8$$',
 					enounces: ['Calcule.'],
 					expressions: ['8*&1'],
 					variables: [{ '&1': '$e[2;12]' }],
@@ -2992,7 +2992,7 @@ const questions = {
 				},
 				{
 					description: 'Table de multiplication',
-					subdescription: 'Par 9',
+					subdescription: 'Par $$9$$',
 					enounces: ['Calcule.'],
 					expressions: ['9*&1'],
 					variables: [{ '&1': '$e[2;12]' }],
@@ -3004,7 +3004,7 @@ const questions = {
 			Produit: [
 				{
 					description: "Calculer un produit d'entiers",
-					subdescription: 'Nombres à 1 chiffre',
+					subdescription: 'Nombres à $$1$$ chiffre',
 					enounces: ['Calcule.'],
 					expressions: ['&1*&2'],
 					variables: [{ '&1': '$e[2;9]', '&2': '$e[2;9]' }],
@@ -3014,7 +3014,7 @@ const questions = {
 				},
 				{
 					description: 'Multiplier par 20',
-					subdescription: 'Nombre à 1 chiffre',
+					subdescription: 'Nombre à $$1$$ chiffre',
 					enounces: ['Calcule.'],
 					expressions: ['&1*20', '20*&1'],
 					variables: [{ '&1': '$e[0;9]' }],
@@ -3024,7 +3024,7 @@ const questions = {
 				},
 				{
 					description: 'Multiplier par 20',
-					subdescription: 'Nombre à 2 chiffres',
+					subdescription: 'Nombre à $$2$$ chiffres',
 					enounces: ['Calcule.'],
 					expressions: ['&1*20', '20*&1'],
 					variables: [{ '&1': '$l{$e[11;15];$e[15;20];25;30;40;50}' }],
@@ -3045,8 +3045,8 @@ const questions = {
 					grade: CE2,
 				},
 				{
-					description: 'Multiplier par 30, 40, 50, 60, 70, 80, 90',
-					subdescription: 'Nombre à 1 chiffres',
+					description: 'Multiplier par $$30$$, $$40$$, $$50$$, $$60$$, $$70$$, $$80$$, $$90$$',
+					subdescription: 'Nombre à $$1$$ chiffres',
 					enounces: ['Calcule.'],
 					expressions: ['[_&1*10_]*&2', '&2*[_&1*10_]'],
 					variables: [{ '&1': '$e[3;9]', '&2': '$e[2;9]' }],
@@ -3055,7 +3055,7 @@ const questions = {
 					grade: CM1,
 				},
 				{
-					description: 'Multiplier deux multiples de 10',
+					description: 'Multiplier deux multiples de $$10$$',
 					enounces: ['Calcule.'],
 					expressions: ['&3*&4'],
 					variables: [
@@ -3080,7 +3080,7 @@ const questions = {
 				{
 					description: "Calculer un produit d'entiers",
 					subdescription:
-						'Les 2 facteurs sont des multiples de 10, 100 ou 1000',
+						'Les $$2$$ facteurs sont des multiples de $$10$$, $$100$$ ou $$1000$$',
 					enounces: ['Calcule.'],
 					expressions: ['&5*&6'],
 					variables: [
@@ -3106,41 +3106,50 @@ const questions = {
 				},
 				{
 					description: "Calculer un produit d'entiers",
-					subdescription: 'Un facteur à 2 chiffres',
+					subdescription: 'Un facteur à $$2$$ chiffres',
 					enounces: ['Calcule.'],
 					expressions: ['&1*&2', '&2*&1'],
 					variables: [{ '&1': '$e[2;9]', '&2': '$e[12;99]' }],
-
 					defaultDelay: 30,
 					grade: CM2,
 				},
 				{
 					description: "Calculer un produit d'entiers",
-					subdescription: 'Un facteur à 3 chiffres',
+					subdescription: 'Un facteur à $$3$$ chiffres',
 					enounces: ['Calcule.'],
 					expressions: ['&1*&2', '&2*&1'],
 					variables: [{ '&1': '$e[2;9]', '&2': '$e[102;999]' }],
-
 					defaultDelay: 30,
 					grade: SIXIEME,
 				},
 				{
 					description: "Chiffre des unités d'un produit",
 					enounces: [
-						'Quel est le chiffre des unités du produit de $$&1$$ par $$&2$$ ?',
+						'Quel est le chiffre des unités du produit de $$[_&2_]$$ par $$[_&4_]$$ ?',
 					],
 					variables: [
 						{
-							'&1': '$e[11;99]',
-							'&2': '$e[102;999]',
-							'&3': '&2*&1',
+							'&1': '$e[1;9]',
+							'&2': '$e[1;9]*10+&1',
+							'&3': '$e[1;9]',
+							'&4': '$e[1;9]*100+$e[1;9]*10+&3',
+							'&5': '&3*&1',
+							'&6': '[_(&5:10-floor(&5:10))*10_]'
 						},
 					],
-					solutions: [['[_(&3:10-floor(&3:10))*10_]']],
+					solutions: [['&6']],
 					correctionFormat: [
 						{
 							correct: ['Le chiffre des unités est &answer.'],
 						},
+					],
+					correctionDetails: [
+						[
+							{
+								text: `@@&5>=10 ?? $$&1\\times &3 = [_(&5-&6):10_]\\textcolor{${correct_color}}{&6}$$@@ 
+								@@&5<10 ?? $$&1\\times &3 = \\textcolor{${correct_color}}{&6}$$@@ `,
+							},
+						],
 					],
 					defaultDelay: 30,
 					grade: SIXIEME,
@@ -3149,7 +3158,7 @@ const questions = {
 			'Double et moitié': [
 				{
 					description: 'Trouver le double',
-					subdescription: 'Nombre inférieur à 10',
+					subdescription: 'Nombre inférieur à $$10$$',
 					enounces: [
 						'Quel est le double de $$&1$$ ?',
 						'Quel est le résultat de $$2*&1$$ ?',
@@ -3161,7 +3170,7 @@ const questions = {
 							correct: ['Le double de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$2*&1=$$&answer'],
+							correct: ['$$2*&1=&ans$$'],
 						},
 					],
 
@@ -3170,7 +3179,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le double',
-					subdescription: "Dizaines entières (jusqu'à 50)",
+					subdescription: "Dizaines entières (jusqu'à $$50$$)",
 					enounces: [
 						'Quel est le double de $$&2$$ ?',
 						'Quel est le résultat de $$2*&2$$ ?',
@@ -3187,7 +3196,7 @@ const questions = {
 							correct: ['Le double de $$&2$$ est &answer.'],
 						},
 						{
-							correct: ['$$2*&2=$$&answer'],
+							correct: ['$$2*&2=&ans$$'],
 						},
 					],
 
@@ -3196,7 +3205,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver la moitié',
-					subdescription: 'Nombre pair inférieur à 20',
+					subdescription: 'Nombre pair inférieur à $$20$$',
 					enounces: ['Quelle est la moitié de $$[_2*&1_]$$ ?'],
 					solutions: [['[_&1_]']],
 					variables: [{ '&1': '$e[0;10]' }],
@@ -3218,7 +3227,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le double',
-					subdescription: 'Nombres de 1 à 15, 25, 30, 40, 50 et 100',
+					subdescription: 'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
 					enounces: [
 						'Quel est le double de $$&1$$ ?',
 						'Quel est le résultat de $$2*&1$$ ?',
@@ -3234,7 +3243,7 @@ const questions = {
 							correct: ['Le double de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$2*&1=$$&answer'],
+							correct: ['$$2*&1=&ans$$'],
 						},
 					],
 
@@ -3243,7 +3252,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver la moitié',
-					subdescription: 'Nombres pairs de 1 à 30, 40, 50 et 100',
+					subdescription: 'Nombres pairs de $$1$$ à $$30$$, $$40$$, $$50$$ et $$100$$',
 					enounces: ['Quelle est la moitié de $$&2$$ ?'],
 					solutions: [['[_&1_]']],
 					variables: [
@@ -3269,7 +3278,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le double',
-					subdescription: 'Nombres de 1 à 20, 25, 30, 40, 50, 60 et 100',
+					subdescription: 'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
 					enounces: [
 						'Quel est le double de $$&1$$ ?',
 						'Quel est le résultat de $$2*&1$$ ?',
@@ -3285,7 +3294,7 @@ const questions = {
 							correct: ['Le double de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$2*&1=$$&answer'],
+							correct: ['$$2*&1=&ans$$'],
 						},
 					],
 
@@ -3294,7 +3303,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver la moitié',
-					subdescription: 'Nombres pairs de 1 à 40, 50, 60 et 100',
+					subdescription: 'Nombres pairs de $$1$$ à $$40$$, $$50$$, $$60$$ et $$100$$',
 					enounces: ['Quelle est la moitié de $$&2$$ ?'],
 					solutions: [['[_&1_]']],
 					variables: [
@@ -3322,7 +3331,7 @@ const questions = {
 			'Triple et tiers': [
 				{
 					description: 'Trouver le triple',
-					subdescription: 'Nombre inférieur à 10',
+					subdescription: 'Nombre inférieur à $$10$$',
 					enounces: [
 						'Quel est le triple de $$&1$$ ?',
 						'Quel est le résultat de $$3*&1$$ ?',
@@ -3334,7 +3343,7 @@ const questions = {
 							correct: ['Le triple de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$3*&1=$$&answer'],
+							correct: ['$$3*&1=&ans$$'],
 						},
 					],
 
@@ -3343,7 +3352,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le triple',
-					subdescription: "Dizaines entières (jusqu'à 50)",
+					subdescription: "Dizaines entières (jusqu'à $$50$$)",
 					enounces: [
 						'Quel est le triple de $$&2$$ ?',
 						'Quel est le résultat de $$3*&2$$ ?',
@@ -3360,7 +3369,7 @@ const questions = {
 							correct: ['Le triple de $$&2$$ est &answer.'],
 						},
 						{
-							correct: ['$$3*&2=$$&answer'],
+							correct: ['$$3*&2=&ans$$'],
 						},
 					],
 
@@ -3369,7 +3378,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le tiers',
-					subdescription: 'Multiples de 3 inférieurs à 30',
+					subdescription: 'Multiples de $$3$$ inférieurs à $$30$$',
 					enounces: ['Quelle est le tiers de $$[_3*&1_]$$ ?'],
 					solutions: [['[_&1_]']],
 					variables: [{ '&1': '$e[0;10]' }],
@@ -3391,7 +3400,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le triple',
-					subdescription: 'Nombres de 1 à 15, 25, 30, 40, 50 et 100',
+					subdescription: 'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
 					enounces: [
 						'Quel est le triple de $$&1$$ ?',
 						'Quel est le résultat de $$3*&1$$ ?',
@@ -3407,7 +3416,7 @@ const questions = {
 							correct: ['Le triple de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$3*&1=$$&answer'],
+							correct: ['$$3*&1=&ans$$'],
 						},
 					],
 
@@ -3416,7 +3425,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le triple',
-					subdescription: 'Nombres de 1 à 20, 25, 30, 40, 50, 60 et 100',
+					subdescription: 'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
 					enounces: [
 						'Quel est le triple de $$&1$$ ?',
 						'Quel est le résultat de $$3*&1$$ ?',
@@ -3432,10 +3441,9 @@ const questions = {
 							correct: ['Le triple de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$3*&1=$$&answer'],
+							correct: ['$$3*&1=&ans$$'],
 						},
 					],
-
 					defaultDelay: 15,
 					grade: CE2,
 				},
@@ -3443,7 +3451,7 @@ const questions = {
 			'Quadruple et quart': [
 				{
 					description: 'Trouver le quadruple',
-					subdescription: 'Nombre inférieur à 10',
+					subdescription: 'Nombre inférieur à $$10$$',
 					enounces: [
 						'Quel est le quadruple de $$&1$$ ?',
 						'Quel est le résultat de $$4*&1$$ ?',
@@ -3464,7 +3472,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le quadruple',
-					subdescription: "Dizaines entières (jusqu'à 50)",
+					subdescription: "Dizaines entières (jusqu'à $$50$$)",
 					enounces: [
 						'Quel est le quadruple de $$&2$$ ?',
 						'Quel est le résultat de $$4*&2$$ ?',
@@ -3481,7 +3489,7 @@ const questions = {
 							correct: ['Le quadruple de $$&2$$ est &answer.'],
 						},
 						{
-							correct: ['$$4*&2=$$&answer'],
+							correct: ['$$4*&2=&ans$$'],
 						},
 					],
 
@@ -3490,7 +3498,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le quart',
-					subdescription: 'Multiples de 4 inférieurs à 40',
+					subdescription: 'Multiples de $$4$$ inférieurs à $$40$$',
 					enounces: ['Quelle est le quart de $$[_4*&1_]$$ ?'],
 					solutions: [['[_&1_]']],
 					variables: [{ '&1': '$e[0;10]' }],
@@ -3512,7 +3520,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le quadruple',
-					subdescription: 'Nombres de 1 à 15, 25, 30, 40, 50 et 100',
+					subdescription: 'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
 					enounces: [
 						'Quel est le quadruple de $$&1$$ ?',
 						'Quel est le résultat de $$4*&1$$ ?',
@@ -3528,7 +3536,7 @@ const questions = {
 							correct: ['Le quadruple de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$4*&1=$$&answer'],
+							correct: ['$$4*&1=&ans$$'],
 						},
 					],
 
@@ -3537,7 +3545,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver le quadruple',
-					subdescription: 'Nombres de 1 à 20, 25, 30, 40, 50, 60 et 100',
+					subdescription: 'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
 					enounces: [
 						'Quel est le quadruple de $$&1$$ ?',
 						'Quel est le résultat de $$4*&1$$ ?',
@@ -3553,7 +3561,7 @@ const questions = {
 							correct: ['Le quadruple de $$&1$$ est &answer.'],
 						},
 						{
-							correct: ['$$4*&1=$$&answer'],
+							correct: ['$$4*&1=&ans$$'],
 						},
 					],
 
@@ -3564,7 +3572,7 @@ const questions = {
 			'Produits particuliers': [
 				{
 					description: "Calculer un produit d'entiers",
-					subdescription: 'Premiers multiples de 25 et 50',
+					subdescription: 'Premiers multiples de $$25$$ et $$50$$',
 					enounces: ['Calcule.'],
 					expressions: ['&1*50', '&1*25'],
 
@@ -3595,7 +3603,7 @@ const questions = {
 				},
 				{
 					description: "Calculer un produit d'entiers",
-					subdescription: 'Multiplication par 50',
+					subdescription: 'Multiplication par $$50$$',
 					enounces: ['Calcule.'],
 					expressions: ['[_&1*2+1_]*50', '[_&1*2_]*50'],
 
@@ -3617,7 +3625,7 @@ const questions = {
 				},
 				{
 					description: "Calculer un produit d'entiers",
-					subdescription: 'Multiplication par 25',
+					subdescription: 'Multiplication par $$25$$',
 					enounces: ['Calcule.'],
 					expressions: ['[_&1*4+&2_]*25', '[_&1*4_]*25'],
 
@@ -3646,7 +3654,7 @@ const questions = {
 			'Puissances de 10': [
 				{
 					description: "Calculer un produit d'entiers",
-					subdescription: "Multiplication par 10 d'un nombre inférieur à 100",
+					subdescription: "Multiplication par $$10$$ d'un nombre inférieur à $$100$$",
 					enounces: ['Calcule.'],
 					expressions: ['&1*10', '10*&1'],
 					variables: [{ '&1': '$e[1;99]' }],
@@ -3656,17 +3664,16 @@ const questions = {
 				},
 				{
 					description: "Calculer un produit d'entiers",
-					subdescription: "Multiplication par 100 d'un nombre inférieur à 100",
+					subdescription: "Multiplication par $$100$$ d'un nombre inférieur à $$100$$",
 					enounces: ['Calcule.'],
 					expressions: ['&1*100', '100*&1'],
 					variables: [{ '&1': '$e[1;99]' }],
-
 					defaultDelay: 10,
 					grade: CE2,
 				},
 				{
 					description: "Calculer un produit d'entiers",
-					subdescription: 'Multiplication par 10, 100 ou 1000',
+					subdescription: 'Multiplication par $$10$$, $$100$$ ou $$1000$$',
 					enounces: ['Calcule.'],
 					expressions: ['&1*[_10^&2_]'],
 					variables: [{ '&1': '$e[2;99]', '&2': '$e[1;3]' }],
@@ -3678,7 +3685,7 @@ const questions = {
 			'A trou': [
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplication par 2',
+					subdescription: 'Multiplication par $$2$$',
 					enounces: ['Complète.'],
 					expressions: ['?*2=[_&1*2_]', '2*?=[_&1*2_]'],
 					variables: [{ '&1': '$e[2;9]' }],
@@ -3689,7 +3696,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplication par 3',
+					subdescription: 'Multiplication par $$3$$',
 					enounces: ['Complète.'],
 					expressions: ['?*3=[_&1*3_]', '3*?=[_&1*3_]'],
 					variables: [{ '&1': '$e[2;9]' }],
@@ -3700,7 +3707,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplication par 4',
+					subdescription: 'Multiplication par $$4$$',
 					enounces: ['Complète.'],
 					expressions: ['?*4=[_&1*4_]', '4*?=[_&1*4_]'],
 					variables: [{ '&1': '$e[2;9]' }],
@@ -3711,7 +3718,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplication par 5',
+					subdescription: 'Multiplication par $$5$$',
 					enounces: ['Complète.'],
 					expressions: ['?*5=[_&1*5_]', '5*?=[_&1*5_]'],
 					variables: [{ '&1': '$e[2;9]' }],
@@ -3722,7 +3729,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplication par 6',
+					subdescription: 'Multiplication par $$6$$',
 					enounces: ['Complète.'],
 					expressions: ['?*6=[_&1*6_]', '6*?=[_&1*6_]'],
 					variables: [{ '&1': '$e[2;9]' }],
@@ -3733,7 +3740,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplication par 7',
+					subdescription: 'Multiplication par $$7$$',
 					enounces: ['Complète.'],
 					expressions: ['?*7=[_&1*7_]', '7*?=[_&1*7_]'],
 					variables: [{ '&1': '$e[2;9]' }],
@@ -3744,7 +3751,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplication par 8',
+					subdescription: 'Multiplication par $$8$$',
 					enounces: ['Complète.'],
 					expressions: ['?*8=[_&1*8_]', '8*?=[_&1*8_]'],
 					variables: [{ '&1': '$e[2;9]' }],
@@ -3755,7 +3762,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplication par 9',
+					subdescription: 'Multiplication par $$9$$',
 					enounces: ['Complète.'],
 					expressions: ['?*9=[_&1*9_]', '9*?=[_&1*9_]'],
 					variables: [{ '&1': '$e[2;9]' }],
@@ -3766,7 +3773,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Facteurs à 1 chiffre',
+					subdescription: 'Facteurs à $$1$$ chiffre',
 					enounces: ['Complète.'],
 					expressions: ['?*&1=[_&1*&2_]', '&1*?=[_&1*&2_]'],
 					variables: [{ '&1': '$e[2;9]', '&2': '$e[3;9]' }],
@@ -3777,7 +3784,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplier par 20. Nombre à 1 chiffre',
+					subdescription: 'Multiplier par $$20$$. Nombre à $$1$$ chiffre.',
 					enounces: ['Complète.'],
 					expressions: ['?*20=[_&1*20_]', '20*?=[_20*&1_]'],
 					variables: [{ '&1': '$e[0;9]' }],
@@ -3788,7 +3795,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplier par 20.Nombre à 2 chiffres',
+					subdescription: 'Multiplier par $$20$$. Nombre à $$2$$ chiffres.',
 					enounces: ['Complète.'],
 					expressions: ['?*20=[_&1*20_]', '20*?=[_20*&1_]'],
 					variables: [{ '&1': '$l{$e[11;15];$e[15;20];25;30;40;50}' }],
@@ -3800,7 +3807,7 @@ const questions = {
 				{
 					description: 'Compléter une multiplication à trou.',
 					subdescription:
-						'Multiplier par 30, 40, 50, 60, 70, 80, 90. Nombre à 1 chiffres',
+						'Multiplier par $$30$$, $$40$$, $$50$$, $$60$$, $$70$$, $$80$$, $$90$$. Nombre à $$1$$ chiffres.',
 					enounces: ['Complète.'],
 					expressions: [
 						'[_&1*10_]*? = [_&1*10*&2_]',
@@ -3815,7 +3822,7 @@ const questions = {
 				{
 					description: 'Compléter une multiplication à trou.',
 					subdescription:
-						'Multiplier par 30, 40, 50, 60, 70, 80, 90. Nombre à 1 chiffres',
+						'Multiplier par $$30$$, $$40$$, $$50$$, $$60$$, $$70$$, $$80$$, $$90$$. Nombre à 1 chiffre.',
 					enounces: ['Complète.'],
 					expressions: ['?*&2 = [_&1*10*&2_]', '&2*? = [_&2*&1*10_]'],
 					variables: [{ '&1': '$e[3;9]', '&2': '$e[2;9]' }],
@@ -3827,7 +3834,7 @@ const questions = {
 				{
 					description: 'Combien de fois ... dans ....',
 					subdescription:
-						'Multiplier par 30, 40, 50, 60, 70, 80, 90. Nombre à 1 chiffres',
+						'Multiplier par $$30$$, $$40$$, $$50$$, $$60$$, $$70$$, $$80$$, $$90$$. Nombre à 1 chiffre.',
 					enounces: ['Dans $$[_&1*10*&2_]$$ combien de fois $$&2$$ ?'],
 					// expressions: ['?*&2 = [_&1*10*&2_]', '&2*? = [_&2*&1*10_]'],
 					variables: [{ '&1': '$e[3;9]', '&2': '$e[2;9]' }],
@@ -3842,7 +3849,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplier deux multiples de 10',
+					subdescription: 'Multiplier deux multiples de $$10$$',
 					enounces: ['Complète.'],
 					expressions: [
 						'[_&1*10_]* ?= [_&1*10*&2*10_]',
@@ -3856,7 +3863,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou.',
-					subdescription: 'Premiers multiples de 25 et 50',
+					subdescription: 'Premiers multiples de $$25$$ et $$50$$',
 					enounces: ['Complète.'],
 					expressions: ['?*50=[_&1*50_]', '?*25=[_&1*25_]'],
 					type: 'fill in',
@@ -3868,7 +3875,7 @@ const questions = {
 				{
 					description: 'Compléter une multiplication à trou',
 					subdescription:
-						'Les 2 facteurs sont des multiples de 10, 100 ou 1000',
+						'Les $$2$$ facteurs sont des multiples de $$10$$, $$100$$ ou $$1000$$',
 					enounces: ['Complète.'],
 					expressions: [
 						'[_&1*10^&2_]*?= [_&1*10^&2*&3*10^&4_]',
@@ -3937,7 +3944,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplication par 50',
+					subdescription: 'Multiplication par $$50$$',
 					enounces: ['Complète.'],
 					expressions: ['?*50=[_(&1*2+1)*50_]', '?*50 = [_&1*2*50_]'],
 					type: 'fill in',
@@ -3948,7 +3955,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplication par 25',
+					subdescription: 'Multiplication par $$25$$',
 					enounces: ['Complète.'],
 					expressions: ['?*25=[_(&1*4+&2)*25_]', '?*25=[_&1*4*25_]'],
 					type: 'fill in',
@@ -3962,10 +3969,10 @@ const questions = {
 			Carrés: [
 				{
 					description: 'Calculer un carré',
-					subdescription: 'Entier de 1 à 12',
+					subdescription: 'Entier de 1 à 15',
 					enounces: ['Calcule.'],
 					expressions: ['&1^2'],
-					variables: [{ '&1': '$e[1;12]' }],
+					variables: [{ '&1': '$e[1;15]' }],
 
 					defaultDelay: 10,
 					grade: CINQUIEME,
@@ -3975,7 +3982,7 @@ const questions = {
 			'Produits astucieux': [
 				{
 					description: 'Calculer astucieusement un produit',
-					subdescription: 'Utiiser 2 facteurs dont le produit est 10',
+					subdescription: 'Utiiser $$2$$ facteurs dont le produit est $$10$$',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: ['2*&1*5', '5*&1*2', '&1*5*2', '&1*2*5'],
 					variables: [{ '&1': '$e[19;40]' }],
@@ -4007,7 +4014,7 @@ const questions = {
 				},
 				{
 					description: 'Calculer astucieusement un produit',
-					subdescription: 'Utiiser 2 facteurs dont le produit est 100',
+					subdescription: 'Utiiser $$2$$ facteurs dont le produit est $$100$$',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: [
 						'&1*&2*&3',
@@ -4060,8 +4067,8 @@ const questions = {
 			Distributivité: [
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à 1 chiffre par 12",
-					enounces: ['Calculer.'],
+					subdescription: "Multiplication d'un nombre à $$1$$ chiffre par $$12$$",
+					enounces: ['Calcule.'],
 					expressions: ['12*&1'],
 					variables: [{ '&1': '$e[0;9]' }],
 
@@ -4077,8 +4084,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à 1 chiffre par 13",
-					enounces: ['Calculer.'],
+					subdescription: "Multiplication d'un nombre à $$1$$ chiffre par $$13$$",
+					enounces: ['Calcule.'],
 					expressions: ['13*&1'],
 					variables: [{ '&1': '$e[0;9]' }],
 					correctionDetails: [
@@ -4094,8 +4101,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à 1 chiffre par 21",
-					enounces: ['Calculer.'],
+					subdescription: "Multiplication d'un nombre à $$1$$ chiffre par $$21$$",
+					enounces: ['Calcule.'],
 					expressions: ['21*&1'],
 					variables: [{ '&1': '$e[0;9]' }],
 					correctionDetails: [
@@ -4112,8 +4119,8 @@ const questions = {
 
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à 1 chiffre par 22",
-					enounces: ['Calculer.'],
+					subdescription: "Multiplication d'un nombre à $$1$$ chiffre par $$22$$",
+					enounces: ['Calcule.'],
 					expressions: ['22*&1'],
 					variables: [{ '&1': '$e[0;9]' }],
 					correctionDetails: [
@@ -4129,8 +4136,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à 1 chiffre par 19",
-					enounces: ['Calculer.'],
+					subdescription: "Multiplication d'un nombre à $$1$$ chiffre par $$19$$",
+					enounces: ['Calcule.'],
 					expressions: ['19*&1'],
 					variables: [{ '&1': '$e[0;9]' }],
 					correctionDetails: [
@@ -4146,8 +4153,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à 1 chiffre par 18",
-					enounces: ['Calculer.'],
+					subdescription: "Multiplication d'un nombre à $$1$$ chiffre par $$18$$",
+					enounces: ['Calcule.'],
 					expressions: ['18*&1'],
 					variables: [{ '&1': '$e[0;9]' }],
 					correctionDetails: [
@@ -4163,8 +4170,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à 2 chiffres par 11",
-					enounces: ['Calculer.'],
+					subdescription: "Multiplication d'un nombre à $$2$$ chiffres par $$11$$",
+					enounces: ['Calcule.'],
 					expressions: ['11*&1'],
 					variables: [{ '&1': '$e[13;45]' }],
 					correctionDetails: [
@@ -4180,8 +4187,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à 2 chiffres par  12",
-					enounces: ['Calculer.'],
+					subdescription: "Multiplication d'un nombre à $$2$$ chiffres par $$12$$",
+					enounces: ['Calcule.'],
 					expressions: ['12*&1'],
 					variables: [{ '&1': '$l{13;14;15;23;24;25;33;34;35;45}' }],
 					correctionDetails: [
@@ -4198,10 +4205,10 @@ const questions = {
 				{
 					description: 'Utiliser la distributivité',
 					subdescription:
-						"Multiplication d'un nombre à 1 ou 2 chiffres par  21",
-					enounces: ['Calculer.'],
+						"Multiplication d'un nombre à $$1$$ ou $$2$$ chiffres par $$21$$",
+					enounces: ['Calcule.'],
 					expressions: ['21*&1'],
-					variables: [{ '&1': '$l{5;6;7;8;9;13;14;15;23;24;25;35;45}]' }],
+					variables: [{ '&1': '$l{5;6;7;8;9;13;14;15;23;24;25;35;45}' }],
 					correctionDetails: [
 						[
 							{
@@ -4216,10 +4223,10 @@ const questions = {
 				{
 					description: 'Utiliser la distributivité',
 					subdescription:
-						"Multiplication d'un nombre à 1 ou 2 chiffres par  22",
-					enounces: ['Calculer.'],
+						"Multiplication d'un nombre à $$1$$ ou $$2$$ chiffres par $$22$$",
+					enounces: ['Calcule.'],
 					expressions: ['22*&1'],
-					variables: [{ '&1': '$l{5;6;7;8;9;13;14;15;23;24;25;35;45}]' }],
+					variables: [{ '&1': '$l{5;6;7;8;9;13;14;15;23;24;25;35;45}' }],
 					correctionDetails: [
 						[
 							{
@@ -4233,8 +4240,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à 2 chiffres par  9",
-					enounces: ['Calculer.'],
+					subdescription: "Multiplication d'un nombre à $$2$$ chiffres par $$9$$",
+					enounces: ['Calcule.'],
 					expressions: ['9*&1'],
 					variables: [{ '&1': '$e[12;19]' }, { '&1': '$e[23;29]' }],
 					correctionDetails: [
@@ -4251,8 +4258,8 @@ const questions = {
 				{
 					description: 'Utiliser la distributivité',
 					subdescription:
-						"Multiplication d'un nombre à 1 ou 2 chiffres par  19",
-					enounces: ['Calculer.'],
+						"Multiplication d'un nombre à $$1$$ ou $$2$$ chiffres par $$19$$",
+					enounces: ['Calcule.'],
 					expressions: ['19*&1'],
 					variables: [{ '&1': '$e[13;19]' }, { '&1': '$e[5;9]' }],
 					correctionDetails: [
@@ -4269,8 +4276,8 @@ const questions = {
 				{
 					description: 'Utiliser la distributivité',
 					subdescription:
-						"Multiplication d'un nombre à 1 ou 2 chiffres par  18",
-					enounces: ['Calculer.'],
+						"Multiplication d'un nombre à $$1$$ ou $$2$$ chiffres par $$18$$",
+					enounces: ['Calcule.'],
 					expressions: ['18*&1'],
 					variables: [{ '&1': '$e[4;9]' }, { '&1': '$l{13;14;15;25}' }],
 					correctionDetails: [
@@ -4286,8 +4293,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: 'Multiplication par 101',
-					enounces: ['Calculer'],
+					subdescription: 'Multiplication par $$101$$',
+					enounces: ['Calcule.'],
 					expressions: ['101*&1'],
 					variables: [{ '&1': '$e[15;40]' }],
 					correctionDetails: [
@@ -4303,8 +4310,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: 'Multiplication par 102',
-					enounces: ['Calculer'],
+					subdescription: 'Multiplication par $$102$$',
+					enounces: ['Calcule.'],
 					expressions: ['102*&1'],
 					variables: [{ '&1': '$e[15;49]' }],
 					correctionDetails: [
@@ -4320,8 +4327,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: 'Multiplication par 99',
-					enounces: ['Calculer'],
+					subdescription: 'Multiplication par $$99$$',
+					enounces: ['Calcule.'],
 					expressions: ['99*&1'],
 					variables: [{ '&1': '$e[15;40]' }],
 					correctionDetails: [
@@ -4338,8 +4345,8 @@ const questions = {
 
 				{
 					description: 'Utiliser la distributivité',
-					enounces: ['Calculer'],
-					subdescription: 'Multiplication par 98',
+					enounces: ['Calcule.'],
+					subdescription: 'Multiplication par $$98$$',
 					expressions: ['98*&1'],
 					variables: [{ '&1': '$e[15;40]' }],
 					correctionDetails: [
@@ -4355,7 +4362,7 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: '99 fois plus 1 fois',
+					subdescription: '$$99$$ fois plus $$1$$ fois',
 					enounces: ['Calcule.'],
 					expressions: ['99*&1+&1', '&1+99*&1', '&1*99+&1', '&1+&1*99'],
 					variables: [{ '&1': '$e[50;85]' }],
@@ -4372,7 +4379,7 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: 'Factorisation pour un facteur 10',
+					subdescription: 'Factorisation pour un facteur $$10$$',
 					enounces: ['Calcule.'],
 					expressions: [
 						'&2*&1+[_10-&2_]*&1',
@@ -4409,8 +4416,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: 'Factorisation pour un facteur 100',
-					enounces: ['Calculer'],
+					subdescription: 'Factorisation pour un facteur $$100$$',
+					enounces: ['Calcule.'],
 					expressions: [
 						'&2*&1+[_100-&2_]*&1',
 						'&1*&2+[_100-&2_]*&1',
@@ -4450,7 +4457,7 @@ const questions = {
 					description: 'Décomposer un entier en produit',
 					subdescription: 'Produit de deux nombres entiers',
 					enounces: [
-						"Décompose ce nombre en un produit de 2 facteurs (1 n'est pas un facteur autorisé).",
+						"Décompose ce nombre en un produit de $$2$$ facteurs ($$1$$ n'est pas un facteur autorisé).",
 					],
 					expressions: [
 						'[_&1*&2_]',
@@ -4567,7 +4574,7 @@ const questions = {
 					],
 					variables: [{ '&1': '$e[2;9]', '&2': '$e[2;9]\\{&1}' }],
 					expressions: ['[_&1*&2_]=&1*&2'],
-					answerFields: ['...'],
+					answerFields: ['$$...$$'],
 					testAnswers: [
 						['&answer!=1 && &answer!=&1*&2 && mod(&1*&2; &answer)=0'],
 					],
@@ -4613,8 +4620,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser un critère de divisibilité',
-					subdescription: 'Par 2',
-					enounces: ['Le nombre $$[_&1_]$$ est-il divisible par 2 ?'],
+					subdescription: 'Par $$2$$',
+					enounces: ['Le nombre $$[_&1_]$$ est-il divisible par $$2$$ ?'],
 					variables: [{ '&1': '2*$e{3}' }, { '&1': '2*$e{3}+1' }],
 
 					choices: [[{ text: 'Oui' }, { text: 'Non' }]],
@@ -4626,8 +4633,8 @@ const questions = {
 						[
 							{
 								text: "\
-								@@ mod(&1;2)=0 ?? &solution, $$[_&1_]$$ est divisible par 2 car il se termine par 0,2,4,6 ou 8.@@\
-								@@ mod(&1;2)!=0 ?? &solution, $$[_&1_]$$ n'est <b>pas</b> divisible par 2 car il se termine par 1,3,5,7 ou 9.@@",
+								@@ mod(&1;2)=0 ?? &solution, $$[_&1_]$$ est divisible par $$2$$ car il se termine par $$0$$,$$2$$,$$4$$,$$6$$ ou $$8$$.@@\
+								@@ mod(&1;2)!=0 ?? &solution, $$[_&1_]$$ n'est <b>pas</b> divisible par $$2$$ car il se termine par $$1$$,$$3$$,$$5$$,$$7$$ ou $$9$$.@@",
 							},
 						],
 					],
@@ -4637,8 +4644,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser un critère de divisibilité',
-					subdescription: 'Par 5',
-					enounces: ['Le nombre $$[_&1_]$$ est-il divisible par 5 ?'],
+					subdescription: 'Par $$5$$',
+					enounces: ['Le nombre $$[_&1_]$$ est-il divisible par $$5$$ ?'],
 					variables: [{ '&1': '5*$e{3}' }, { '&1': '5*$e{5}+$e[1;4]' }],
 
 					choices: [[{ text: 'Oui' }, { text: 'Non' }]],
@@ -4650,8 +4657,8 @@ const questions = {
 						[
 							{
 								text: "\
-								@@ mod(&1;5)=0 ?? &solution, $$[_&1_]$$ est divisible par 5 car il se termine par 0 ou 5.@@\
-								@@ mod(&1;5)!=0 ?? &solution, $$[_&1_]$$ n'est <b>pas</b> divisible par 5 car il ne se termine pas par 0 ou 5.@@",
+								@@ mod(&1;5)=0 ?? &solution, $$[_&1_]$$ est divisible par $$5$$ car il se termine par $$0$$ ou $$5$$.@@\
+								@@ mod(&1;5)!=0 ?? &solution, $$[_&1_]$$ n'est <b>pas</b> divisible par $$5$$ car il ne se termine pas par $$0$$ ou $$5$$.@@",
 							},
 						],
 					],
@@ -4661,8 +4668,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser un critère de divisibilité',
-					subdescription: 'Par 10',
-					enounces: ['Le nombre $$[_&1_]$$ est-il divisible par 10 ?'],
+					subdescription: 'Par $$10$$',
+					enounces: ['Le nombre $$[_&1_]$$ est-il divisible par $$10$$ ?'],
 					variables: [{ '&1': '10*$e{3}' }, { '&1': '10*$e{5}+$e[1;9]' }],
 
 					choices: [[{ text: 'Oui' }, { text: 'Non' }]],
@@ -4674,8 +4681,8 @@ const questions = {
 						[
 							{
 								text: "\
-								@@ mod(&1;10)=0 ?? &solution, $$[_&1_]$$ est divisible par 10 car il se termine par 0.@@\
-								@@ mod(&1;10)!=0 ?? &solution, $$[_&1_]$$ n'est <b>pas</b> divisible par 10 car il ne se termine <b>pas</b> par 0.@@",
+								@@ mod(&1;10)=0 ?? &solution, $$[_&1_]$$ est divisible par $$10$ car il se termine par $$0$$.@@\
+								@@ mod(&1;10)!=0 ?? &solution, $$[_&1_]$$ n'est <b>pas</b> divisible par $$10$$ car il ne se termine <b>pas</b> par $$0$$.@@",
 							},
 						],
 					],
@@ -4685,8 +4692,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser un critère de divisibilité',
-					subdescription: 'Par 3',
-					enounces: ['Le nombre $$&1&2&5$$ est-il divisible par 3 ?'],
+					subdescription: 'Par $$3$$',
+					enounces: ['Le nombre $$&1&2&5$$ est-il divisible par $$3$$ ?'],
 					variables: [
 						{
 							'&1': '$e[1;9]',
@@ -4709,18 +4716,18 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$&1&2&5$$ est divisible par 3 car la somme de ses chiffres est divisible par 3 :',
+								text: '$$&1&2&5$$ est divisible par $$3$$ car la somme de ses chiffres est divisible par $$3$$ :',
 							},
 							{
-								text: '$$&1+&2+&5=[_&1+&2+&5_]$$ est divisible par 3.',
+								text: '$$&1+&2+&5=[_&1+&2+&5_]$$ est divisible par $$3$$.',
 							},
 						],
 						[
 							{
-								text: "$$&1&2&5$$ n'est pas divisible par 3 car la somme de ses chiffres n'est pas divisible par 3 :",
+								text: "$$&1&2&5$$ n'est pas divisible par $$3$$ car la somme de ses chiffres n'est pas divisible par $$3$$ :",
 							},
 							{
-								text: "$$&1+&2+&5=[_&1+&2+&5_]$$ n'est pas divisible par 3.",
+								text: "$$&1+&2+&5=[_&1+&2+&5_]$$ n'est pas divisible par $$3$$.",
 							},
 						],
 					],
@@ -4731,8 +4738,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser un critère de divisibilité',
-					subdescription: 'Par 9',
-					enounces: ['Le nombre $$&1&2&5$$ est-il divisible par 9 ?'],
+					subdescription: 'Par $$9$$',
+					enounces: ['Le nombre $$&1&2&5$$ est-il divisible par $$9$$ ?'],
 					variables: [
 						{
 							'&1': '$e[1;9]',
@@ -4755,18 +4762,18 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: '$$&1&2&5$$ est divisible par 9 car la somme de ses chiffres est divisible par 9 :',
+								text: '$$&1&2&5$$ est divisible par $$9$$ car la somme de ses chiffres est divisible par $$9$$ :',
 							},
 							{
-								text: '$$&1+&2+&5=[_&1+&2+&5_]$$ est divisible par 9.',
+								text: '$$&1+&2+&5=[_&1+&2+&5_]$$ est divisible par $$9$$.',
 							},
 						],
 						[
 							{
-								text: "$$&1&2&5$$ n'est pas divisible par 9 car la somme de ses chiffres n'est pas divisible par 9 :",
+								text: "$$&1&2&5$$ n'est pas divisible par $$9$$ car la somme de ses chiffres n'est pas divisible par $$9$$ :",
 							},
 							{
-								text: "$$&1+&2+&5=[_&1+&2+&5_]$$ n'est pas divisible par 9.",
+								text: "$$&1+&2+&5=[_&1+&2+&5_]$$ n'est pas divisible par $$9$$.",
 							},
 						],
 					],
@@ -4777,7 +4784,7 @@ const questions = {
 				},
 				{
 					description: 'Trouver un diviseur',
-					subdescription: 'Nombre à 3',
+					subdescription: 'Nombre à $$3$$ chiffres.',
 					enounces: [
 						'Trouve un diviseur de $$&4$$ (autre que $$1$$ et $$&4$$).',
 					],
@@ -4821,7 +4828,7 @@ const questions = {
 						],
 						[
 							{
-								text: '&solution est un diviseur de $$[_&4_]$$ car $$&1+&2+[_&3_]=[_&1+&2+&3_]$$ est un multiple de 3.',
+								text: '&solution est un diviseur de $$[_&4_]$$ car $$&1+&2+[_&3_]=[_&1+&2+&3_]$$ est un multiple de $$3$$.',
 							},
 						],
 					],
@@ -4838,7 +4845,8 @@ const questions = {
 						"En regardant l'égalité ci-dessous, quel est le <b>quotient</b> de la division euclidienne de $$[_&1*&2+&3_]$$ par $$&1$$ ?",
 						"En regardant l'égalité ci-dessous, quel est le <b>reste</b> de la division euclidienne de $$[_&1*&2+&3_]$$ par $$&1$$ ?",
 					],
-					enounces2: ['$$[_&1*&2+&3_]=(&1 \\times &2)+&3$$'],
+					expressions: ['$$[_&1*&2+&3_]=(&1 \\times &2)+&3$$'],
+					answerFields:['$$...$$'],
 					variables: [
 						{
 							'&1': '$e[2;9]',
@@ -4913,7 +4921,7 @@ const questions = {
 					variables: [
 						{ '&1': '$e[2;9]', '&2': '$e[2;10]', '&3': '$e[1;&1-1]' },
 					],
-					answerFields: ['$$[_&1*&2+&3_]=(&1\\times ?) + ?$$'],
+					expressions:['[_&1*&2+&3_]=(&1*?)+?'],
 					solutions: [['&2', '&3']],
 					defaultDelay: 30,
 					correctionFormat: [
@@ -4921,6 +4929,8 @@ const questions = {
 							correct: ['$$[_&1*&2+&3_]=(&1\\times &ans1) + &ans2$$'],
 						},
 					],
+					type:"fill in",
+					options: ['no-penalty-for-extraneous-brackets'],
 					grade: CE2,
 				},
 
@@ -5014,7 +5024,7 @@ const questions = {
 				},
 				{
 					description: 'Calculer une expression avec parenthèses',
-					subdescription: '2 expressions parenthèsées (imbriquées ou non)',
+					subdescription: '$$2$$ expressions parenthèsées (imbriquées ou non)',
 					enounces: ['Calcule.'],
 					expressions: [
 						'(&1+&2)*(&3+&4)',
