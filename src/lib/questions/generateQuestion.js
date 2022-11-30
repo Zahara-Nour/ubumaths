@@ -524,9 +524,11 @@ export default function generateQuestion(
 
 		expression = evaluate(expression)
 		expression2 = evaluate(expression2)
-		enounce = evaluateToLatex(enounce)
+		// enounce = evaluateToLatex(enounce)
+		enounce = evaluate(enounce)
 		enounce = toLatex(enounce)
-		enounce2 = evaluateToLatex(enounce2)
+		// enounce2 = evaluateToLatex(enounce2)
+		enounce2 = evaluate(enounce2)
 		enounce2 = toLatex(enounce2)
 		choices = evaluateToLatex(choices)
 		choices = toLatex(choices)

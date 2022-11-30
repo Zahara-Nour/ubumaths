@@ -445,6 +445,7 @@ function checkBrackets(item) {
 		}
 
 		const exp = math(item.expression.replace(/\?/g, putAnswers))
+		console.log('exp', exp.removeUnecessaryBrackets(allowBracketsInFirstNegativeTerm))
 		console.log('exp', exp.removeUnecessaryBrackets(allowBracketsInFirstNegativeTerm).string, exp.string)
 		if (
 			exp.removeUnecessaryBrackets(allowBracketsInFirstNegativeTerm).string !==
@@ -615,12 +616,12 @@ function checkForm(item) {
 					.removeZerosAndSpaces()
 					.reduceFractions()
 					.simplifyNullProducts()
-				if (!item.options.includes('no-penalty-for-null-terms')) {
+				// if (!item.options.includes('no-penalty-for-null-terms')) {
 					e = e.removeNullTerms()
-				}
+				// }
 				e = e
 					.removeFactorsOne()
-					.removeSigns()
+					
 					.removeUnecessaryBrackets()
 					.removeMultOperator()
 					.sortTermsAndFactors()

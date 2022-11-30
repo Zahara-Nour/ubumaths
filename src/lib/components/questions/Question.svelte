@@ -204,9 +204,14 @@
 		enounce = question.enounce
 			? $formatToHtml(formatToLatex(question.enounce))
 			: null
+
+			console.log('enounce2', question.enounce2)
+		console.log('enounce2 formatLatex', formatToLatex(question.enounce2))
 		enounce2 = question.enounce2
 			? $formatToHtml(formatToLatex(question.enounce2))
 			: null
+		
+		
 	}
 
 	function makeCorrection(answers) {

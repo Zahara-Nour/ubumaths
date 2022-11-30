@@ -5307,9 +5307,9 @@ const questions = {
 					description: 'Connaître la position décimale',
 					subdescription: "Des unités jusqu'aux centièmes",
 					enounces: [
-						'Quel est le chiffre des <b>centièmes</b> dans le nombre $$[._&4_]$$ ?',
-						'Quel est le chiffre des <b>dizièmes</b> dans le nombre $$[._&4_]$$ ?',
-						'Quel est le chiffre des <b>unités</b> dans le nombre $$[._&4_]$$ ?',
+						'Quel est le chiffre des <b>centièmes</b> dans le nombre $$&4$$ ?',
+						'Quel est le chiffre des <b>dizièmes</b> dans le nombre $$&4$$ ?',
+						'Quel est le chiffre des <b>unités</b> dans le nombre $$&4$$ ?',
 					],
 					variables: [
 						{
@@ -5323,21 +5323,19 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								'Dans $$[._&4_]$$ le chiffre des centièmes est &answer.',
+								'Le chiffre des centièmes est &answer.',
 							],
-							answer: 'Le chiffre des centièmes est &answer.',
 						},
 						{
 							correct: [
-								'Dans $$[._&4_]$$ le chiffre des dizièmes est &answer.',
+								'Le chiffre des dizièmes est &answer.',
 							],
-							answer: 'Le chiffre des dizièmes est &answer.',
 						},
 						{
-							correct: ['Dans $$[._&4_]$$ le chiffre des unités est &answer.'],
-							answer: 'Le chiffre des unités est &answer.',
+							correct: ['Le chiffre des unités est &answer.'],
 						},
 					],
+					options:['require-no-extraneaous-zeros'],
 					defaultDelay: 10,
 					grade: CM1,
 				},
@@ -5345,11 +5343,11 @@ const questions = {
 					description: 'Connaître la position décimale',
 					subdescription: "Des centaines jusqu'aux centièmes",
 					enounces: [
-						'Quel est le chiffre des <b>centièmes</b> dans le nombre $$[._&6_]$$ ?',
-						'Quel est le chiffre des <b>dizièmes</b> dans le nombre $$[._&6_]$$ ?',
-						'Quel est le chiffre des <b>unités</b> dans le nombre $$[._&6_]$$ ?',
-						'Quel est le chiffre des <b>dizaines</b> dans le nombre $$[._&6_]$$ ?',
-						'Quel est le chiffre des <b>centaines</b> dans le nombre $$[._&6_]$$ ?',
+						'Quel est le chiffre des <b>centièmes</b> dans le nombre $$&6$$ ?',
+						'Quel est le chiffre des <b>dizièmes</b> dans le nombre $$&6$$ ?',
+						'Quel est le chiffre des <b>unités</b> dans le nombre $$&6$$ ?',
+						'Quel est le chiffre des <b>dizaines</b> dans le nombre $$&6$$ ?',
+						'Quel est le chiffre des <b>centaines</b> dans le nombre $$&6$$ ?',
 					],
 					variables: [
 						{
@@ -5365,33 +5363,29 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								'Dans $$[._&6_]$$ le chiffre des centièmes est &answer.',
+								'Le chiffre des centièmes est &answer.',
 							],
-							answer: 'Le chiffre des centièmes est &answer.',
 						},
 						{
 							correct: [
-								'Dans $$[._&6_]$$ le chiffre des dizièmes est &answer.',
+								'Le chiffre des dizièmes est &answer.',
 							],
-							answer: 'Le chiffre des dizièmes est &answer.',
 						},
 						{
-							correct: ['Dans $$[._&6_]$$ le chiffre des unités est &answer.'],
-							answer: 'Le chiffre des unités est &answer.',
-						},
-						{
-							correct: [
-								'Dans $$[._&6_]$$ le chiffre des dizaines est &answer.',
-							],
-							answer: 'Le chiffre des dizaines est &answer.',
+							correct: ['Le chiffre des unités est &answer.'],
 						},
 						{
 							correct: [
-								'Dans $$[._&6_]$$ le chiffre des centaines est &answer.',
+								'Le chiffre des dizaines est &answer.',
 							],
-							answer: 'Le chiffre des centaines est &answer.',
+						},
+						{
+							correct: [
+								'Le chiffre des centaines est &answer.',
+							],
 						},
 					],
+					options:['require-no-extraneaous-zeros'],
 					defaultDelay: 10,
 					grade: CM1,
 				},
@@ -5399,7 +5393,7 @@ const questions = {
 					description: "Définition à l'aide de fractions décimales",
 					subdescription: "Jusqu'au centièmes",
 					enounces: [
-						'Quel est le nombre décimal représenté par cette expression ?',
+						"Réécris sous la forme d'un nombre décimal.",
 					],
 					variables: [
 						{
@@ -5420,7 +5414,6 @@ const questions = {
 					],
 					expressions: ['&1+&2/10+&3/100'],
 					options: ['remove-null-terms'],
-
 					'result-type': 'decimal',
 					defaultDelay: 15,
 					grade: CM1,
@@ -5429,7 +5422,7 @@ const questions = {
 					description: "Définition à l'aide de fractions décimales",
 					subdescription: "Jusqu'au centièmes (mélangée)",
 					enounces: [
-						'Quel est le nombre décimal représenté par cette expression ?',
+						"Réécris sous la forme d'un nombre décimal.",
 					],
 					variables: [
 						{
@@ -5457,9 +5450,9 @@ const questions = {
 				},
 				{
 					description: "Définition à l'aide de fractions décimales (2)",
-					subdescription: "Jusqu'au centièmes",
+					subdescription: "Jusqu'aux centièmes",
 					enounces: [
-						'Quel est le nombre décimal représenté par cette expression ?',
+						"Réécris sous la forme d'un nombre décimal.",
 					],
 					variables: [
 						{
@@ -5470,7 +5463,6 @@ const questions = {
 						},
 					],
 					expressions: ['&4'],
-
 					'result-type': 'decimal',
 					defaultDelay: 10,
 					grade: CM1,
@@ -5479,10 +5471,10 @@ const questions = {
 					description: 'Connaître la position décimale',
 					subdescription: "Des unités jusqu'aux millièmes",
 					enounces: [
-						'Quel est le chiffre des <b>millièmes</b> dans le nombre $$[._&5_]$$ ?',
-						'Quel est le chiffre des <b>centièmes</b> dans le nombre $$[._&5_]$$ ?',
-						'Quel est le chiffre des <b>dizièmes</b> dans le nombre $$[._&5_]$$ ?',
-						'Quel est le chiffre des <b>unités</b> dans le nombre $$[._&5_]$$ ?',
+						'Quel est le chiffre des <b>millièmes</b> dans le nombre $$&5$$ ?',
+						'Quel est le chiffre des <b>centièmes</b> dans le nombre $$&5$$ ?',
+						'Quel est le chiffre des <b>dizièmes</b> dans le nombre $$&5$$ ?',
+						'Quel est le chiffre des <b>unités</b> dans le nombre $$&5$$ ?',
 					],
 					variables: [
 						{
@@ -5497,25 +5489,21 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								'Dans $$[._&5_]$$ le chiffre des millièmes est &answer.',
+								'Le chiffre des millièmes est &answer.',
 							],
-							answer: 'Le chiffre des millièmes est &answer.',
 						},
 						{
 							correct: [
-								'Dans $$[._&5_]$$ le chiffre des centièmes est &answer.',
+								'Le chiffre des centièmes est &answer.',
 							],
-							answer: 'Le chiffre des centièmes est &answer.',
 						},
 						{
 							correct: [
-								'Dans $$[._&5_]$$ le chiffre des dizièmes est &answer.',
+								'Le chiffre des dizièmes est &answer.',
 							],
-							answer: 'Le chiffre des dizièmes est &answer.',
 						},
 						{
-							correct: ['Dans $$[._&5_]$$ le chiffre des unités est &answer.'],
-							answer: 'Le chiffre des unités est &answer.',
+							correct: ['Le chiffre des unités est &answer.'],
 						},
 					],
 					defaultDelay: 10,
@@ -5525,13 +5513,13 @@ const questions = {
 					description: 'Connaître la position décimale',
 					subdescription: "Des milliers jusqu'aux millièmes",
 					enounces: [
-						'Quel est le chiffre des <b>millièmes</b> dans le nombre $$[._&8_]$$ ?',
-						'Quel est le chiffre des <b>centièmes</b> dans le nombre $$[._&8_]$$ ?',
-						'Quel est le chiffre des <b>dizièmes</b> dans le nombre $$[._&8_]$$ ?',
-						'Quel est le chiffre des <b>unités</b> dans le nombre $$[._&8_]$$ ?',
-						'Quel est le chiffre des <b>dizaines</b> dans le nombre $$[._&8_]$$ ?',
-						'Quel est le chiffre des <b>centaines</b> dans le nombre $$[._&8_]$$ ?',
-						'Quel est le chiffre des <b>milliers</b> dans le nombre $$[._&8_]$$ ?',
+						'Quel est le chiffre des <b>millièmes</b> dans le nombre $$&8$$ ?',
+						'Quel est le chiffre des <b>centièmes</b> dans le nombre $$&8$$ ?',
+						'Quel est le chiffre des <b>dizièmes</b> dans le nombre $$&8$$ ?',
+						'Quel est le chiffre des <b>unités</b> dans le nombre $$&8$$ ?',
+						'Quel est le chiffre des <b>dizaines</b> dans le nombre $$&8$$ ?',
+						'Quel est le chiffre des <b>centaines</b> dans le nombre $$&8$$ ?',
+						'Quel est le chiffre des <b>milliers</b> dans le nombre $$&8$$ ?',
 					],
 					variables: [
 						{
@@ -5549,43 +5537,36 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								'Dans $$[._&8_]$$ le chiffre des millièmes est &answer.',
+								'Le chiffre des millièmes est &answer.',
 							],
-							answer: 'Le chiffre des millièmes est &answer.',
 						},
 						{
 							correct: [
-								'Dans $$[._&8_]$$ le chiffre des centièmes est &answer.',
+								'Le chiffre des centièmes est &answer.',
 							],
-							answer: 'Le chiffre des centièmes est &answer.',
 						},
 						{
 							correct: [
-								'Dans $$[._&8_]$$ le chiffre des dizièmes est &answer.',
+								'Le chiffre des dizièmes est &answer.',
 							],
-							answer: 'Le chiffre des dizièmes est &answer.',
 						},
 						{
-							correct: ['Dans $$[._&8_]$$ le chiffre des unités est &answer.'],
-							answer: 'Le chiffre des unités est &answer.',
-						},
-						{
-							correct: [
-								'Dans $$[._&8_]$$ le chiffre des dizaines est &answer.',
-							],
-							answer: 'Le chiffre des dizaines est &answer.',
+							correct: ['Le chiffre des unités est &answer.'],
 						},
 						{
 							correct: [
-								'Dans $$[._&8_]$$ le chiffre des centaines est &answer.',
+								'Le chiffre des dizaines est &answer.',
 							],
-							answer: 'Le chiffre des centaines est &answer.',
 						},
 						{
 							correct: [
-								'Dans $$[._&8_]$$ le chiffre des milliers est &answer.',
+								'Le chiffre des centaines est &answer.',
 							],
-							answer: 'Le chiffre des milliers est &answer.',
+						},
+						{
+							correct: [
+								'Le chiffre des milliers est &answer.',
+							],
 						},
 					],
 					defaultDelay: 10,
@@ -5634,7 +5615,7 @@ const questions = {
 					description: "Définition à l'aide de fractions décimales",
 					subdescription: "Jusqu'aux millièmes (mélangée)",
 					enounces: [
-						'Quel est le nombre décimal représenté par cette expression ?',
+						"Réécris sous la forme d'un nombre décimal.",
 					],
 					variables: [
 						{
@@ -5673,7 +5654,7 @@ const questions = {
 					description: "Définition à l'aide de fractions décimales (2)",
 					subdescription: "Jusqu'aux millièmes",
 					enounces: [
-						'Quel est le nombre décimal représenté par cette expression ?',
+						"Réécris sous la forme d'un nombre décimal.",
 					],
 					variables: [
 						{
@@ -5712,7 +5693,7 @@ const questions = {
 					description: 'Décomposer en unités, dixièmes, centièmes',
 					subdescription: 'avec fractions décimales',
 					enounces: [
-						'Décomposer comme dans cet exemple : $$5,34=5+\\dfrac{3}{10}+\\dfrac{4}{100}$$.',
+						'Décomposer comme dans cet exemple : $$5,34=5+3/10+4/100$$.',
 					],
 					variables: [
 						{
@@ -5738,6 +5719,7 @@ const questions = {
 						'no-penalty-for-extraneous-brackets',
 						'no-penalty-for-factor-zero',
 						'no-penalty-for-factor-one',
+						'no-penalty-for-non-reduced-fractions',
 					],
 
 					defaultDelay: 25,
@@ -5745,7 +5727,7 @@ const questions = {
 				},
 				{
 					description: 'Décomposer en unités, dixièmes, centièmes, millièmes',
-					subdescription: 'avec décimaux',
+					subdescription: 'avec des décimaux',
 					enounces: [
 						'Décompose comme dans cet exemple : $$5,346=5+0,3+0,04+0,006$$.',
 					],
@@ -5759,8 +5741,6 @@ const questions = {
 					],
 					expressions: ['[._&1+&2/10+&3/100+&4/1000_]'],
 					solutions: [['&1+[._&2*0,1_]+[._&3*0,01_]+[._&4*0,001_]']],
-					options: ['no-penalty-for-null-terms'],
-
 					defaultDelay: 30,
 					grade: CM2,
 				},
@@ -5768,7 +5748,7 @@ const questions = {
 					description: 'Décomposer en unités, dixièmes, centièmes, millièmes',
 					subdescription: 'avec des fractions décimales',
 					enounces: [
-						'Décomposer comme dans cet exemple : $$5,346=5+\\dfrac{3}{10}+\\dfrac{4}{100}+\\dfrac{6}{1000}$$.',
+						'Décomposer comme dans cet exemple : $$5,346=5+3/10+4/100+6/1000$$.',
 					],
 					variables: [
 						{
@@ -5797,6 +5777,7 @@ const questions = {
 						'no-penalty-for-extraneous-brackets',
 						'no-penalty-for-factor-zero',
 						'no-penalty-for-factor-one',
+						'no-penalty-for-non-reduced-fractions',
 					],
 
 					defaultDelay: 30,
@@ -5809,7 +5790,18 @@ const questions = {
 					enounces: ['Réécris ce nombre décimal sous forme fractionnaire.'],
 					expressions: ['[._&2/&1_]'],
 					variables: [{ '&1': '$l{2;4;5;10}', '&2': '$e[1;&1-1]' }],
-
+					options:['no-penalty-for-non-reduced-fractions'],
+					defaultDelay: 20,
+					// TODO: autoriser fraction non simplifiée
+					grade: SIXIEME,
+				},
+				{
+					description: 'Déterminer une forme fractionnaire',
+					subdescription: 'Simplification exigée',
+					enounces: ['Réécris ce nombre décimal sous forme fractionnaire.'],
+					expressions: ['[._&2/&1_]'],
+					variables: [{ '&1': '$l{2;4;5;10}', '&2': '$e[1;&1-1]' }],
+					
 					defaultDelay: 20,
 					// TODO: autoriser fraction non simplifiée
 					grade: SIXIEME,
@@ -5818,22 +5810,32 @@ const questions = {
 			Comparer: [
 				{
 					description: 'Trouver le plus petit entier supérieur',
-					enounces: ['Quel est le plus petit entier supérieur à $$[._&3_]$$ ?'],
+					enounces: [
+						'Quel est le plus petit entier supérieur à $$&3$$ ?',
+						'Quel est le plus grand entier inférieur à $$&3$$ ?',
+					],
 					variables: [
 						{
 							'&1': '$e[1;9]',
 							'&2': '$e[1;9]',
-							'&3': '&1+&2*0,1',
+							'&3': '[._&1+&2*0,1_]',
 						},
 					],
-					solutions: [['[_&1+1_]']],
+					solutions: [
+						['[_&1+1_]'],
+						['&1'],
+					],
 
 					correctionFormat: [
 						{
 							correct: [
-								'Le plus petit entier supérieur à $$[._&3_]$$ est &answer',
+								'Le plus petit entier supérieur est &answer',
 							],
-							answer: 'Le plus petit entier est &answer',
+						},
+						{
+							correct: [
+								'Le plus grand entier inférieur est &answer',
+							],
 						},
 					],
 					defaultDelay: 20,
@@ -5843,16 +5845,7 @@ const questions = {
 					description: 'Comparer deux nombres entiers',
 					enounces: ['Quel est le plus petit de ces 2 nombres ?'],
 					variables: [
-						// {
-						//   '&1': '$e[0;2]', // nombre de chiffres identiques
-						//   '&2': '$e[3-&1;4-&1]', // nombre de chiffres différents
-						//   '&3': '$e{&1;&1}', //partie identique
-						//   '&4': '$e{&2;&2}', // parties différentes
-						//   '&5': '$e{&2;&2}',
-						//   '&6': '$e[1;2]',  // nombre de décimales
-						//   '&7': '[._(&4+&3*10^&2)/10^&6_]',
-						//   '&8': '[._(&5+&3*10^&2)/10^&6_]',
-						// },
+					
 						{
 							'&1': '$e[1;2]', // nombre de chiffres identiques
 							'&2': '$e[1;2]', // nombre de chiffres différents
@@ -5874,15 +5867,7 @@ const questions = {
 						},
 					],
 					conditions: ['&7!=&8'],
-					choices: [[{ text: '$$[._&7_]$$' }, { text: '$$[._&8_]$$' }]],
-					correctionFormat: [
-						{
-							correct: [
-								'Entre $$[._&7_]$$ et $$[._&8_]$$ le plus petit est &answer',
-							],
-							answer: 'Le plus petit est &answer',
-						},
-					],
+					choices: [[{ text: '$$&7$$' }, { text: '$$&8$$' }]],
 					solutions: [['&7<&8 ?? 0 :: 1']],
 					defaultDelay: 20,
 					grade: CM1,
@@ -5893,22 +5878,73 @@ const questions = {
 					description:
 						'Encadrer un nombre décimal par deux entiers consécutifs',
 					enounces: ['Encadre ce nombre décimal par deux entiers consécutifs.'],
-					expressions: ['?<[._&3_]<?'],
+					expressions: ['?<&3<?'],
 					variables: [
 						{
 							'&1': '$e[0;9]',
 							'&2': '$e[1;9]',
-							'&3': '&1+&2*0,1',
+							'&3': '[._&1+&2*0,1_]',
 						},
 					],
 					solutions: [['&1', '[_&1+1_]']],
 
 					correctionFormat: [
 						{
-							correct: ['$$&ans1<[._&3_]<&ans2$$'],
-							answer: '$$&ans1<[._&3_]<&ans2$$',
+							correct: ['$$&ans1<&3<&ans2$$'],
 						},
 					],
+					type:"fill in",
+					defaultDelay: 20,
+					grade: CM1,
+				},
+				{
+					description:
+						'Encadrer un nombre décimal au dixième près',
+					enounces: ['Encadre ce nombre décimal au dixième près.'],
+					expressions: ['?<&4<?'],
+					variables: [
+						{
+							'&1': '$e[0;9]',
+							'&2': '$e[0;9]',
+							'&3': '$e[1;9]',
+							'&4': '[._&1+&2*0,1+&3*0,01_]',
+						},
+					],
+					solutions: [['[._&1+&2*0,1_]', '[._&1+(&2+1)*0,1_]']],
+
+					correctionFormat: [
+						{
+							correct: ['$$&ans1<[°&4°]<&ans2$$'],
+						},
+					],
+					type:"fill in",
+					options:['no-penalty-for-extraneous-zeros'],
+					defaultDelay: 20,
+					grade: CM1,
+				},
+				{
+					description:
+						'Encadrer un nombre décimal au centième près',
+					enounces: ['Encadre ce nombre décimal au centième près.'],
+					expressions: ['?<&5<?'],
+					variables: [
+						{
+							'&1': '$e[0;9]',
+							'&2': '$e[0;9]',
+							'&3': '$e[0;9]',
+							'&4': '$e[1;9]',
+							'&5': '[._&1+&2*0,1+&3*0,01+&4*0,001_]',
+						},
+					],
+					solutions: [['[._&1+&2*0,1+&3*0,01_]', '[._&1+&2*0,1+(&3+1)*0,01_]']],
+
+					correctionFormat: [
+						{
+							correct: ['$$&ans1<[°&5°]<&ans2$$'],
+						},
+					],
+					type:"fill in",
+					options:['no-penalty-for-extraneous-zeros'],
 					defaultDelay: 20,
 					grade: CM1,
 				},
@@ -5919,7 +5955,7 @@ const questions = {
 				{
 					description: 'Calculer une somme ',
 					subdescription:
-						'Partie entière et partie décimale à 1 chiffre (pas de retenue)',
+						'Partie entière et partie décimale à $$1$$ chiffre (pas de retenue)',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -5940,7 +5976,7 @@ const questions = {
 				{
 					description: 'Calculer une somme ',
 					subdescription:
-						'Parties décimales à 1 et 2 chiffres (pas de retenue)',
+						'Parties décimales à $$1$$ et $$2$$ chiffres (pas de retenue)',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -5962,7 +5998,7 @@ const questions = {
 				{
 					description: 'Calculer une somme ',
 					subdescription:
-						'Partie entière et partie décimale à 1 chiffre (avec retenue pour la partie decimale)',
+						'Partie entière et partie décimale à $$1$$ chiffre (avec retenue pour la partie décimale)',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -5981,9 +6017,9 @@ const questions = {
 					grade: CM1,
 				},
 				{
-					description: 'Calculer une somme ',
+					description: 'Calculer une somme',
 					subdescription:
-						'Partie entière et partie décimale à 1 chiffre (avec retenues)',
+						'Partie entière et partie décimale à $$1$$ chiffre (avec retenues)',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -5996,7 +6032,6 @@ const questions = {
 						},
 					],
 					expressions: ['&3+&6'],
-
 					'result-type': 'decimal',
 					defaultDelay: 20,
 					grade: CM1,
@@ -6022,7 +6057,7 @@ const questions = {
 				{
 					description: 'Compléter une addition à trou ',
 					subdescription:
-						'Partie entière et partie décimale à 1 chiffre (pas de retenue)',
+						'Partie entière et partie décimale à $$1$$ chiffre (pas de retenue)',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -6044,7 +6079,7 @@ const questions = {
 				{
 					description: 'Compléter une addition à trou',
 					subdescription:
-						'Parties décimales à 1 et 2 chiffres (pas de retenue)',
+						'Parties décimales à $$1$$ et $$2$$ chiffres (pas de retenue)',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -6067,7 +6102,7 @@ const questions = {
 				{
 					description: 'Compléter une addition à trou',
 					subdescription:
-						'Partie entière et partie décimale à 1 chiffre (avec retenue pour la partie decimale)',
+						'Partie entière et partie décimale à $$1$$ chiffre (avec retenue pour la partie decimale)',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -6089,7 +6124,7 @@ const questions = {
 				{
 					description: 'Compléter une addition à trou',
 					subdescription:
-						'Partie entière et partie décimale à 1 chiffre (avec retenues)',
+						'Partie entière et partie décimale à $$1$$ chiffre (avec retenues)',
 					enounces: ['Complète'],
 					variables: [
 						{
@@ -6113,7 +6148,7 @@ const questions = {
 				{
 					description: 'Additionner par regroupements',
 					subdescription:
-						'Regrouper pour obtenir un nombre entier. 3 nombres à une décimale.',
+						'Regrouper pour obtenir un nombre entier. $$3$$ nombres à une décimale.',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: ['&5+&8+&6', '&8+&5+&6'],
 
@@ -6149,7 +6184,7 @@ const questions = {
 				{
 					description: 'Additionner par regroupements',
 					subdescription:
-						'Regrouper pour obtenir un nombre entier. 4 nombres à une décimale.',
+						'Regrouper pour obtenir un nombre entier. $$4$$ nombres à une décimale.',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: [
 						'[._&3_]+[._&4_]+[._&5_]+[._&6_]',
@@ -6205,7 +6240,7 @@ const questions = {
 			Moitié: [
 				{
 					description: 'Trouver la moitié',
-					subdescription: 'Nombres de 1 à 20',
+					subdescription: 'Nombres de $$1$$ à $$20$$',
 					enounces: ['Quelle est la moitié du nombre $$[._&1_]$$ ?'],
 					solutions: [['&2']],
 					variables: [
@@ -6237,7 +6272,7 @@ const questions = {
 				{
 					description: 'Calculer une différence ',
 					subdescription:
-						'Partie entière et partie décimale à 1 chiffre (pas de retenue)',
+						'Partie entière et partie décimale à $$1$$ chiffre (pas de retenue)',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -6258,7 +6293,7 @@ const questions = {
 				{
 					description: 'Calculer une différence ',
 					subdescription:
-						'Partie entière à 2 chiffres et partie entière à 1 (retenue sur la partie entière)',
+						'Partie entière à $$2$$ chiffres et partie entière à $$1$$ (retenue sur la partie entière)',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -6279,7 +6314,7 @@ const questions = {
 				{
 					description: 'Calculer une différence ',
 					subdescription:
-						'Partie entière à 1 chiffre et partie décimale à 1 et 2 chiffres (pas de retenue)',
+						'Partie entière à $$1$$ chiffre et partie décimale à $$1$$ et $$2$$ chiffres (pas de retenue)',
 					variables: [
 						{
 							'&1': '$e[2;9]',
@@ -6300,7 +6335,7 @@ const questions = {
 				{
 					description: 'Calculer une différence ',
 					subdescription:
-						'Partie entière et partie décimale à 1 chiffre (avec retenue)',
+						'Partie entière et partie décimale à $$1$$ chiffre (avec retenue)',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -6324,7 +6359,7 @@ const questions = {
 			Produit: [
 				{
 					description: 'Calculer un produit',
-					subdescription: 'Un entier par un décimal inférieur à 1',
+					subdescription: 'Un entier par un décimal inférieur à $$1$$',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -6362,6 +6397,7 @@ const questions = {
 					enounces: [
 						'La virgule a été oubliée dans le produit. Réécris le produit en rajoutant la virgule.',
 					],
+					
 					variables: [
 						{
 							'&1': '$e[2;4]',
@@ -6371,14 +6407,14 @@ const questions = {
 							// '&5': '[._&3:10^(&1-1)_]*[._&4:10^(&2-1)_]'
 						},
 					],
-					expressions: ['[._&3:10^(&1-1)_]*[._&4:10^(&2-1)_]=[_&3*&4_]'],
-					answerFields: ['$$[._&3:10^(&1-1)_] \\times [._&4:10^(&2-1)_]=?$$'],
+					enounces2: ['$$[._&3:10^(&1-1)_]*[._&4:10^(&2-1)_]=[_&3*&4_]$$'],
+					expressions: ['[._&3:10^(&1-1)_]*[._&4:10^(&2-1)_]=?'],
 					conditions: ['mod(&3*&4;10)!=0'],
 					solutions: [['[._&3*&4:10^(&1+&2-2)_]']],
 					correctionFormat: [
 						{
 							correct: [
-								'$$[._&3:10^(&1-1)_] \\times [._&4:10^(&2-1)_]=$$&answer',
+								'$$[._&3:10^(&1-1)_] \\times [._&4:10^(&2-1)_]=&ans$$',
 							],
 						},
 					],
@@ -6391,12 +6427,13 @@ const questions = {
 					],
 
 					'result-type': 'decimal',
+					type:'fill in',
 					defaultDelay: 20,
 					grade: SIXIEME,
 				},
 				{
 					description: 'Calculer un produit',
-					subdescription: 'Multiplier deux nombres décimaux inférieurs à 1',
+					subdescription: 'Multiplier deux nombres décimaux inférieurs à $$1$$',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -6441,8 +6478,8 @@ const questions = {
 					description: 'Calculer un produit',
 					subdescription: "Determiner un produit à partir d'un autre",
 					enounces: [
-						'Sachant que $$[._&1_] \\times [._&2_]=[._&1*&2_]$$ , calcule :',
-						'Sachant que $$[._&2_] \\times [._&1_]=[._&1*&2_]$$ , calcule :',
+						'Sachant que $$[._&1_] * [._&2_]=[._&1*&2_]$$ , calcule :',
+						'Sachant que $$[._&2_] * [._&1_]=[._&1*&2_]$$ , calcule :',
 					],
 					variables: [
 						{
@@ -6473,7 +6510,7 @@ const questions = {
 			],
 			'Produit particulier': [
 				{
-					description: 'Multiplier par 0,5',
+					description: 'Multiplier par $$0,5$$',
 					subdescription: 'Un entier',
 					enounces: ['Calcule.'],
 					variables: [
@@ -6500,7 +6537,7 @@ const questions = {
 					grade: SIXIEME,
 				},
 				{
-					description: 'Multiplier par 0,5',
+					description: 'Multiplier par $$0,5$$',
 					subdescription: 'Un nombre décimal',
 					enounces: ['Calcule.'],
 					variables: [
@@ -6529,7 +6566,7 @@ const questions = {
 					grade: SIXIEME,
 				},
 				{
-					description: 'Multiplier par 1,5',
+					description: 'Multiplier par $$1,5$$',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -6555,7 +6592,7 @@ const questions = {
 					grade: SIXIEME,
 				},
 				{
-					description: 'Multiplier par 2,5',
+					description: 'Multiplier par $$2,5çi',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -6584,7 +6621,7 @@ const questions = {
 			'Puissances de 10': [
 				{
 					description: 'Calculer un produit',
-					subdescription: 'Multiplier par 10',
+					subdescription: 'Multiplier par $$10$$',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -6599,7 +6636,7 @@ const questions = {
 				},
 				{
 					description: 'Calculer un produit',
-					subdescription: 'Multiplier par 100',
+					subdescription: 'Multiplier par $$100$$',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -6614,7 +6651,7 @@ const questions = {
 				},
 				{
 					description: 'Calculer un produit',
-					subdescription: 'Multiplier par 1000',
+					subdescription: 'Multiplier par $$1000$$',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -6629,7 +6666,7 @@ const questions = {
 				},
 				{
 					description: 'Calculer un produit',
-					subdescription: 'Multiplier par 10, 100 ou 1000',
+					subdescription: 'Multiplier par $$10$$, $$100$$ ou $$1000$$',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -6644,7 +6681,7 @@ const questions = {
 					grade: SIXIEME,
 				},
 				{
-					description: 'Multiplier par 0,1',
+					description: 'Multiplier par $$0,1$$',
 					subdescription: 'Nombre entier',
 					enounces: ['Calcule.'],
 					variables: [
@@ -6672,7 +6709,7 @@ const questions = {
 					grade: SIXIEME,
 				},
 				{
-					description: 'Multiplier par 0,1',
+					description: 'Multiplier par $$0,1$$',
 					subdescription: 'Nombre décimal',
 					enounces: ['Calcule.'],
 					variables: [
@@ -6701,7 +6738,7 @@ const questions = {
 					grade: SIXIEME,
 				},
 				{
-					description: 'Multiplier par 0,01',
+					description: 'Multiplier par $$0,01$$',
 					subdescription: 'Nombre entier ou décimal',
 					enounces: ['Calcule.'],
 					variables: [
@@ -6730,7 +6767,7 @@ const questions = {
 					grade: SIXIEME,
 				},
 				{
-					description: 'Multiplier par 0,001',
+					description: 'Multiplier par $$0,001$$',
 					subdescription: 'Nombre entier ou décimal',
 					enounces: ['Calcule.'],
 					variables: [
@@ -6760,7 +6797,7 @@ const questions = {
 				},
 				{
 					description: 'Calculer un produit',
-					subdescription: 'Multiplier par 0,1 ; 0,01 ou 0,001',
+					subdescription: 'Multiplier par $$0,1$$, $$0,01$$ ou $$0,001$$',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -6790,7 +6827,7 @@ const questions = {
 			'Produits astucieux': [
 				{
 					description: 'Calculer astucieusement un produit',
-					subdescription: 'Utiiser 2 facteurs dont le produit est 100',
+					subdescription: 'Utiiser $$2$$ facteurs dont le produit est $$100$$',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: [
 						'&1*[_&2_]*&3',
@@ -6847,7 +6884,7 @@ const questions = {
 				{
 					description: 'Calculer astucieusement un produit',
 					subdescription:
-						'Utiiser 2 facteurs dont le produit est 10 (avec 0,5)',
+						'Utiiser $$2$$ facteurs dont le produit est $$10$$ (avec $$0,5$$)',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: [
 						'20*[_2*&1_]*0,5',
@@ -6885,7 +6922,7 @@ const questions = {
 				{
 					description: 'Calculer astucieusement un produit',
 					subdescription:
-						'Utiiser 2 facteurs dont le produit est 10 (avec 0,2 ; 0,25 ; 0,5)',
+						'Utiiser $$2$$ facteurs dont le produit est $$10$$ (avec $$0,2$$ ; $$0,25$$ ; $$0,5$$)',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: [
 						'&1*&2*&3',
@@ -6938,7 +6975,7 @@ const questions = {
 			Distributivité: [
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: 'Factorisation pour obternir un facteur égal à 10',
+					subdescription: 'Factorisation pour obternir un facteur égal à $$10$$',
 					enounces: ['Calcule.'],
 					expressions: [
 						'&2*&1+[_10-&2_]*&1',
@@ -6998,7 +7035,7 @@ const questions = {
 				{
 					description: 'Utiliser la distributivité',
 					subdescription:
-						'Factorisation pour obternir un facteur égal à 10 (2)',
+						'Factorisation pour obternir un facteur égal à $$10$$ (2)',
 					enounces: ['Calcule.'],
 					expressions: [
 						'&2*&1+[._10-&2_]*&1',
@@ -7055,7 +7092,7 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: 'Factorisation pour obtenir un facteur égal à 100',
+					subdescription: 'Factorisation pour obtenir un facteur égal à $$100$$',
 					enounces: ['Calculer'],
 					expressions: [
 						'&2*&1+[_100-&2_]*&1',
@@ -7117,7 +7154,7 @@ const questions = {
 			'A trou': [
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplication par 0,5',
+					subdescription: 'Multiplication par $$0,5$$',
 					enounces: ['Complète'],
 					variables: [
 						{
@@ -7145,7 +7182,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplier par 0,5 un nombre décimal',
+					subdescription: 'Multiplier un nombre décimal par $$0,5$$',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -7175,7 +7212,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplier par 10',
+					subdescription: 'Multiplier par $$10$$',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -7202,7 +7239,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplier par 100',
+					subdescription: 'Multiplier par $$100$$',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -7230,7 +7267,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplier par 1000',
+					subdescription: 'Multiplier par $$1000$$',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -7257,7 +7294,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplier par 10, 100 ou 1000',
+					subdescription: 'Multiplier par $$10$$, $$100$$ ou $$1000$$',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -7290,7 +7327,7 @@ const questions = {
 
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplier par 0,1 un nombre décimal',
+					subdescription: 'Multiplier par $$0,1$$ un nombre décimal',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -7320,7 +7357,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplier par 0,01 un nombre décimal',
+					subdescription: 'Multiplier par $$0,01$$ un nombre décimal',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -7350,7 +7387,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplier par 0,001 un nombre décimal',
+					subdescription: 'Multiplier par $$0,001$$ un nombre décimal',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -7380,7 +7417,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une multiplication à trou',
-					subdescription: 'Multiplier par 0,1 ; 0,01 ou 0,001',
+					subdescription: 'Multiplier par $$0,1$$ ; $$0,01$$ ou $$0,001$$',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -7416,7 +7453,7 @@ const questions = {
 			Quotient: [
 				{
 					description: 'Calculer un quotient',
-					subdescription: 'Diviser par 10',
+					subdescription: 'Diviser par $$10$$',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -7431,7 +7468,7 @@ const questions = {
 				},
 				{
 					description: 'Calculer un quotient',
-					subdescription: 'Diviser par 100',
+					subdescription: 'Diviser par $$100$$',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -7446,7 +7483,7 @@ const questions = {
 				},
 				{
 					description: 'Calculer un quotient',
-					subdescription: 'Diviser par 1000',
+					subdescription: 'Diviser par $$1000$$',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -7462,7 +7499,7 @@ const questions = {
 				},
 				{
 					description: 'Calculer un quotient',
-					subdescription: 'Diviser par 10, 100 ou 1000',
+					subdescription: 'Diviser par $$10$$, $$100$$ ou $$1000$$',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -7503,7 +7540,7 @@ const questions = {
 
 				{
 					description: 'Calculer un quotient',
-					subdescription: 'Diviser par 0,1 ; 0,01 ou 0,001',
+					subdescription: 'Diviser par $$0,1$$ ; $$0,01$$ ou $$0,001$$',
 					enounces: ['Calcule.'],
 					variables: [
 						{
@@ -7558,7 +7595,7 @@ const questions = {
 			'A trou': [
 				{
 					description: 'Compléter une division a trou',
-					subdescription: 'Diviser par 10',
+					subdescription: 'Diviser par $$10$$',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -7574,7 +7611,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une division a trou',
-					subdescription: 'Diviser par 100',
+					subdescription: 'Diviser par $$100$$',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -7590,7 +7627,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une division a trou',
-					subdescription: 'Diviser par 1000',
+					subdescription: 'Diviser par $$1000$$',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -7607,7 +7644,7 @@ const questions = {
 				},
 				{
 					description: 'Compléter une division a trou',
-					subdescription: 'Diviser par 10, 100 ou 1000',
+					subdescription: 'Diviser par $$10$$, $$100$$ ou $$1000$$',
 					enounces: ['Complète.'],
 					variables: [
 						{
@@ -7625,7 +7662,7 @@ const questions = {
 
 				{
 					description: 'Compléter une division a trou',
-					subdescription: 'Diviser par 0,1 ; 0,01 ou 0,001',
+					subdescription: 'Diviser par $$0,1$$ ; $$0,01$$ ou $$0,001$$',
 					enounces: ['Complète.'],
 					variables: [
 						{
