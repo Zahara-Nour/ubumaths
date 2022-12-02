@@ -216,7 +216,7 @@ function checkConstraints(item) {
 				)
 				problematicAnswers.forEach((i) => {
 					if (i === -1) {
-						console.log("i=-1")
+						console.log('i=-1')
 						item.status =
 							!item.options.includes(check.option[1]) &&
 							item.status !== STATUS_BAD_FORM
@@ -445,8 +445,7 @@ function checkBrackets(item) {
 		}
 
 		const exp = math(item.expression.replace(/\?/g, putAnswers))
-		console.log('exp', exp.removeUnecessaryBrackets(allowBracketsInFirstNegativeTerm))
-		console.log('exp', exp.removeUnecessaryBrackets(allowBracketsInFirstNegativeTerm).string, exp.string)
+
 		if (
 			exp.removeUnecessaryBrackets(allowBracketsInFirstNegativeTerm).string !==
 			exp.string
@@ -605,62 +604,86 @@ function checkZeros(item) {
 
 function checkForm(item) {
 	if (!item.testAnswer && item.solutions) {
-		// const result = []
-		item.answers.forEach((answer, i) => {
-			if (
-				item.statuss[i] !== STATUS_EMPTY &&
-				item.statuss[i] !== STATUS_INCORRECT
-			) {
-				// A REVOIR
-				let e = math(answer)
-					.removeZerosAndSpaces()
-					.reduceFractions()
-					.simplifyNullProducts()
-				// if (!item.options.includes('no-penalty-for-null-terms')) {
-					e = e.removeNullTerms()
-				// }
-				e = e
-					.removeFactorsOne()
-					
-					.removeUnecessaryBrackets()
-					.removeMultOperator()
-					.sortTermsAndFactors()
-
-				const indexSolution = item.options?.includes(
-					'solutions-order-not-important',
-				)
-					? item.solutionsIndexs[i]
-					: i
-
-				// pourquoi le faire pour solutions ?
-				// la solution est censé est écrite sous une forme correcte.
-				// oui mais pas toujours sous sorme optimale
-				let solution = math(item.solutions[indexSolution])
-					.removeZerosAndSpaces()
-					.reduceFractions()
-					.simplifyNullProducts()
-				// if (!item.options.includes('no-penalty-for-null-terms')) {
-				solution = solution.removeNullTerms()
-				// }
-				solution = solution
-					.removeFactorsOne()
-					.removeSigns()
-					.removeUnecessaryBrackets()
-					.removeMultOperator()
-					.sortTermsAndFactors()
-
-				console.log('answer & solution', e.string, solution.string)
-
-				// il faut trouver une autre solution quand il y a des unités
-				if (!e.unit && !e.strictlyEquals(solution)) {
-					item.statuss[i] = STATUS_BAD_FORM
-					item.coms.push(
-						item.answers.length === 1 ? BAD_FORM : BAD_FORM_MULTIPLE_ANSWERS,
+		if (item.options.includes('one-single-form-solution')) {
+			item.answers.forEach((answer, i) => {
+				if (
+					item.statuss[i] !== STATUS_EMPTY &&
+					item.statuss[i] !== STATUS_INCORRECT
+				) {
+					let e = math(answer)
+					const indexSolution = item.options?.includes(
+						'solutions-order-not-important',
 					)
-				}
-			}
-		})
+						? item.solutionsIndexs[i]
+						: i
 
+					let solution = math(item.solutions[indexSolution])
+					// trouver une solution pour les unités
+					if (!e.unit && !e.strictlyEquals(solution)) {
+						item.statuss[i] = STATUS_BAD_FORM
+						item.coms.push(
+							item.answers.length === 1 ? BAD_FORM : BAD_FORM_MULTIPLE_ANSWERS,
+						)
+					}
+				}
+			})
+		} else {
+			// const result = []
+			item.answers.forEach((answer, i) => {
+				if (
+					item.statuss[i] !== STATUS_EMPTY &&
+					item.statuss[i] !== STATUS_INCORRECT
+				) {
+					// A REVOIR
+					let e = math(answer)
+						.removeZerosAndSpaces()
+						.reduceFractions()
+						.simplifyNullProducts()
+					// if (!item.options.includes('no-penalty-for-null-terms')) {
+					e = e.removeNullTerms()
+					// }
+					e = e
+						.removeFactorsOne()
+
+						.removeUnecessaryBrackets()
+						.removeMultOperator()
+						.sortTermsAndFactors()
+
+					const indexSolution = item.options?.includes(
+						'solutions-order-not-important',
+					)
+						? item.solutionsIndexs[i]
+						: i
+
+					// pourquoi le faire pour solutions ?
+					// la solution est censé est écrite sous une forme correcte.
+					// oui mais pas toujours sous sorme optimale
+					let solution = math(item.solutions[indexSolution])
+						.removeZerosAndSpaces()
+						.reduceFractions()
+						.simplifyNullProducts()
+					// if (!item.options.includes('no-penalty-for-null-terms')) {
+					solution = solution.removeNullTerms()
+					// }
+					solution = solution
+						.removeFactorsOne()
+						.removeSigns()
+						.removeUnecessaryBrackets()
+						.removeMultOperator()
+						.sortTermsAndFactors()
+
+					console.log('answer & solution', e.string, solution.string)
+
+					// il faut trouver une autre solution quand il y a des unités
+					if (!e.unit && !e.strictlyEquals(solution)) {
+						item.statuss[i] = STATUS_BAD_FORM
+						item.coms.push(
+							item.answers.length === 1 ? BAD_FORM : BAD_FORM_MULTIPLE_ANSWERS,
+						)
+					}
+				}
+			})
+		}
 		// return result
 	}
 }
@@ -742,6 +765,7 @@ export function assessItem(item) {
 			// écrite correctement
 			// TODO: ne faudrait-il pas mettre toutes les égalités à compléter dans un answerFields ?
 			if (item.type === 'fill in') {
+				
 				let i = -1
 				const putAnswers = () => {
 					i++
@@ -843,7 +867,21 @@ export function assessItem(item) {
 					})
 				}
 				// les solutions sont explicites et sont dans item.solutions
-				else {
+				else if (item.type === 'fill in') {
+					
+					let i = -1
+					const putAnswers = () => {
+						i++
+						return item.answers[i]
+					}
+
+					const exp = math(item.expression.replace(/\?/g, putAnswers))
+
+					if (exp.eval().isFalse()) {
+						item.status = STATUS_INCORRECT
+					}
+					console.log('equivalence fill in', exp.string, item.status, exp.eval().string)
+				} else {
 					console.log('item', item)
 					item.answers.forEach((answer, i) => {
 						if (
@@ -879,13 +917,16 @@ export function assessItem(item) {
 
 				//  A ce stade,le status chaque élément de réponse est STATUS_EMPTY, STATUS_CORRECT
 				// ou STATUS_INCORRECT
+				// les question 'fill in' peuvent aussi avoir un STATUS_INCORRECT
 				// On vérifie les contraintes de formes
-				checkConstraints(item)
-				checkTermsAndFactors(item)
-				// TODO : tester les formats
-				checkForm(item)
-				console.log('item after check form', item)
+				console.log('status', item.status)
 				if (item.status !== STATUS_EMPTY && item.status !== STATUS_INCORRECT) {
+					checkConstraints(item)
+					checkTermsAndFactors(item)
+					// TODO : tester les formats
+					checkForm(item)
+					console.log('item after check form', item)
+
 					if (item.statuss.some((status) => status === STATUS_BAD_FORM)) {
 						console.log('bad form')
 						item.status = STATUS_BAD_FORM

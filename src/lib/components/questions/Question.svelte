@@ -205,8 +205,7 @@
 			? $formatToHtml(formatToLatex(question.enounce))
 			: null
 
-			console.log('enounce2', question.enounce2)
-		console.log('enounce2 formatLatex', formatToLatex(question.enounce2))
+			
 		enounce2 = question.enounce2
 			? $formatToHtml(formatToLatex(question.enounce2))
 			: null
@@ -271,7 +270,10 @@
 		}
 
 		if (expression) {
-			expression = $toMarkup(expression).replace(/…/g, addMathfield)
+			expression = $toMarkup(expression)
+			if (question.type !== 'choice' && question.type!=='choices') {
+				expression = expression.replace(/…/g, addMathfield)
+			}
 		}
 
 		if (expression2) {

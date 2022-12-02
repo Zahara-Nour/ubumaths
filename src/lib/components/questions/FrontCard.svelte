@@ -6,6 +6,7 @@
 	import Paper, { Title, Subtitle, Content } from '@smui/paper'
 	import Question from './Question.svelte'
 	import { formatToHtml } from '$lib/stores'
+	import { formatToLatex } from '$lib/utils'
 	import { mdc_colors } from '$lib/colors'
 	import Button, { Label } from '@smui/button'
 
@@ -26,8 +27,8 @@
 	export let immediateCommit = false
 	export let flashcard
 
-	$: description = $formatToHtml(card.description)
-	$: subdescription = $formatToHtml(card.subdescription)
+	$: description = $formatToHtml(formatToLatex(card.description))
+	$: subdescription = $formatToHtml(formatToLatex(card.subdescription))
 </script>
 
 <div bind:clientHeight="{h}" bind:clientWidth="{w}">
