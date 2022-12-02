@@ -19597,7 +19597,7 @@ const questions = {
 							'&4': '&1*(&3)+(&2)',
 						},
 					],
-					answerFields: ['$$f(&3)=?$$'],
+					answerFields: ['$$f(&3)=...$$'],
 					solutions: [['[_&4_]']],
 
 					correctionFormat: [
@@ -19641,12 +19641,12 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: `$$f(\\bold{\\textcolor{${color1}}{&3}})=&1 \\times \\bold{\\textcolor{${color1}}{[(_&3)_]}} [+_&2_]= \\bold{\\textcolor{${color2}}{[_&4_]}}$$ donc le point $$A(\\bold{\\textcolor{${color1}}{&3}};\\bold{\\textcolor{${color2}}{[_&4_]}})$$ appartient à la courbe représentative de la fonction affine &expression.`,
+								text: `$$f(\\bold{\\textcolor{${color1}}{&3}})=&1 \\times \\bold{\\textcolor{${color1}}{[(_&3_]}} [+_&2_]= \\bold{\\textcolor{${color2}}{[_&4_]}}$$ donc le point $$A(\\bold{\\textcolor{${color1}}{&3}};\\bold{\\textcolor{${color2}}{[_&4_]}})$$ appartient à la courbe représentative de la fonction affine &expression.`,
 							},
 						],
 						[
 							{
-								text: `$$f(\\bold{\\textcolor{${color1}}{&3}})=&1 \\times \\bold{\\textcolor{${color1}}{[(_&3)_]}} [+_&2_]= [_&1*(&3)+(&2)_] \\bold{\\textcolor{red}{\\ne}} \\bold{\\textcolor{${color2}}{[_&4_]}}$$ donc le point $$A(\\bold{\\textcolor{${color1}}{&3}};\\bold{\\textcolor{${color2}}{[_&4_]}})$$ n'appartient pas à la courbe représentative de la fonction affine &expression.`,
+								text: `$$f(\\bold{\\textcolor{${color1}}{&3}})=&1 \\times \\bold{\\textcolor{${color1}}{[(_&3_]}} [+_&2_]= [_&1*(&3)+(&2)_] \\bold{\\textcolor{red}{\\ne}} \\bold{\\textcolor{${color2}}{[_&4_]}}$$ donc le point $$A(\\bold{\\textcolor{${color1}}{&3}};\\bold{\\textcolor{${color2}}{[_&4_]}})$$ n'appartient pas à la courbe représentative de la fonction affine &expression.`,
 							},
 						],
 					],
@@ -20087,6 +20087,7 @@ const questions = {
 						"Pour quelle valeur de $$x$$ la fonction $$f$$ s'annulle-t-elle?",
 					],
 					expressions: ['f(x)=&1x[+_&2_]', 'f(x)=&2[+_&1_]x'],
+					answerFields: ['$$f(...)=0$$'],
 					variables: [
 						{
 							'&1': '$er[2;9]',
@@ -20106,6 +20107,7 @@ const questions = {
 					description: "Résoudre l'équation $$f(x)=k$$",
 					subdescription: 'Graphiquement',
 					enounces: ["Résoudre graphiquement l'équation $$f(x)=&1$$"],
+					answerFields: ['$$f(...)=&1$$'],
 					variables: [
 						{
 							'&1': '-3',
@@ -20310,7 +20312,7 @@ const questions = {
 					description: "Opposé d'une expression",
 					enounces: ["Quel est l'opposé de l'expression :"],
 					expressions: ['[_&1x_]', 'x[+_&2_]', '&2-x'],
-					answerFields: ["L'opposé est ..."],
+					answerFields: ["L'opposé est $$...$$"],
 					variables: [
 						{
 							'&1': '$er[1;2]',
@@ -20822,6 +20824,7 @@ const questions = {
 						'([_&4x_][+_&2_])([_&5x_][+_&3_])',
 						'&1([_&4x_][+_&2_])([_&5x_][+_&3_])',
 					],
+					answerFields:['Le coefficient est $$...$$'],
 					variables: [
 						{
 							'&1': '$er[2;5]',
@@ -20876,8 +20879,6 @@ const questions = {
 						],
 					],
 					conditions: ['abs(&1) != abs(&2) && abs(&1) != abs(&3)'],
-					answerFields: ['Le coefficient est ...'],
-
 					solutions: [
 						['&1'],
 						['&1'],
@@ -20986,7 +20987,7 @@ const questions = {
 						'Quelles sont les coordonnées du sommet S de la courbe représentative de ce polynôme du second degré ?',
 					],
 					expressions: ['&1(x[+_&2_])^2[+_&3_]'],
-					answerFields: ['$$S\\left( \\, ? \\, ; \\, ? \\, \\right)$$'],
+					answerFields: ['$$S\\left( \\, ... \\, ; \\, ... \\, \\right)$$'],
 					variables: [
 						{
 							'&1': '$er[2;5]',
@@ -21022,7 +21023,7 @@ const questions = {
 						"Quelle est l'équation de l'axe de symétrie de la courbe représentative de ce polynôme du second degré ?",
 					],
 					expressions: ['&1(x[+_&2_])^2[+_&3_]'],
-					answerFields: ["L'équation est ..."],
+					answerFields: ["L'équation est $$...$$"],
 					variables: [
 						{
 							'&1': '$er[2;5]',
@@ -21089,7 +21090,7 @@ const questions = {
 						'polynome-second-degre/trouver-racines/correction_trouver_racines-13-600.png',
 						'polynome-second-degre/trouver-racines/correction_trouver_racines-14-600.png',
 					],
-					answerFields: ['Les racines sont ... et ...'],
+					answerFields: ['Les racines sont $$...$$ et $$...$$'],
 					solutions: [
 						['-3', '1'],
 						['-3', '-1'],
@@ -21205,7 +21206,7 @@ const questions = {
 						'polynome-second-degre/forme-canonique/correction-forme-canonique-13-600.png',
 						'polynome-second-degre/forme-canonique/correction-forme-canonique-14-600.png',
 					],
-					answerFields: ['La forme canonique est ...'],
+					answerFields: ['La forme canonique est $$...$$'],
 					solutions: [
 						['{[_-1/2_]}(x[+_-(-2)_])^2[+_-1_]'],
 						['{[_3/4_]}(x[+_-(-2)_])^2[+_-1_]'],
@@ -21225,7 +21226,7 @@ const questions = {
 					],
 					correctionFormat: [
 						{
-							correct: ['La forme caconique est &answer.'],
+							correct: ['La forme canonique est &answer.'],
 						},
 					],
 					defaultDelay: 40,
@@ -21295,7 +21296,7 @@ const questions = {
 					description: "Trouver une racine évidente d'un polynôme",
 					enounces: ['Trouve une racine évidente de ce polynôme :'],
 					expressions: ['x^2[+_-(&1+(&2))x_][+_(&1)*(&2)_]'],
-					answerFields: ['Une racine évidente est ...'],
+					answerFields: ['Une racine évidente est $$...$$'],
 					solutions: [['&1']],
 					variables: [
 						{
@@ -21347,12 +21348,12 @@ const questions = {
 						},
 					],
 					conditions: ['abs(&2) != abs(&3)'],
-					answerFields: ['Las racines sont ... et ....'],
+					answerFields: ['Las racines sont $$...$$ et $$...$$'],
 					solutions: [['[_-(&2)_]', '[_-(&3)_]']],
 					correctionFormat: [
 						{
 							correct: [
-								'Le polynôme est sous forme factorisée, les racines sont &answer1 et &answer2',
+								'Les racines sont &answer1 et &answer2',
 							],
 						},
 					],
@@ -21378,7 +21379,7 @@ const questions = {
 						},
 					],
 					conditions: ['abs(&2) != abs(&3)'],
-					answerFields: ['Las racines sont ... et ....'],
+					answerFields: ['Las racines sont $$...$$ et $$...$$'],
 					solutions: [['[_-(&2)_]', '[_-(&3)_]']],
 					correctionFormat: [
 						{
