@@ -882,7 +882,6 @@ export function assessItem(item) {
 					}
 					console.log('equivalence fill in', exp.string, item.status, exp.eval().string)
 				} else {
-					console.log('item', item)
 					item.answers.forEach((answer, i) => {
 						if (
 							item.statuss[i] !== STATUS_EMPTY &&
