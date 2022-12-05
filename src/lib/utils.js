@@ -114,6 +114,7 @@ export function getRandomIntInclusive(min, max) {
 
 const regex = /\$\$(.*?)\$\$/g
 const replacementLatex = (_, p1) => '$$' + math(p1).latex + '$$'
+
 const replacementTexmacs = (_, p1) => '$' + math(p1).texmacs + '$'
 
 export const formatToLatex = (o) => {
