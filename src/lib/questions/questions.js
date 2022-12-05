@@ -21466,10 +21466,15 @@ const questions = {
 					description: 'Calculer un terme',
 					subdescription: "A l'aide d'une formule explicite",
 					enounces: [
-						'Calcule $$u_&1$$ pour la suite $$(u_n)$$ définie par $$u_n=&2n[+_&3_]$$ pour $$n \\ge 0$$',
-						'Calcule $$u_&1$$ pour la suite $$(u_n)$$ définie par $$u_n=&2n^2$$ pour $$n \\ge 0$$',
-						'Calcule $$u_&1$$ pour la suite $$(u_n)$$ définie par $$u_n=(-1)^n$$ pour $$n  \\ge 0$$',
+						"Calcule le terme demandé.",
+						
 					],
+					expressions:[
+						'u_n=&2n[+_&3_]',
+						'u_n=&2n^2',
+						'u_n=(-1)^n',
+					],
+					answerFields:['$$u_&1=...$$'],
 					solutions: [['[_&2*&1+(&3)_]'], ['[_&2*&1^2_]'], ['[_(-1)^&1_]']],
 					variables: [
 						{
@@ -21516,8 +21521,12 @@ const questions = {
 					description: 'Calculer un terme',
 					subdescription: "A l'aide d'une formule de récurrence",
 					enounces: [
-						'Calculer $$u_1$$ pour la suite $$(u_n)$$ définie par $$u_0=&1$$ et $$u_{n+1}=&2u_n[+_&3_]$$',
+						'Calcule le terme demandé.',
 					],
+					enounces2:[
+						'$$u_0=&1$$ et $$u_{n+1}=&2u_n[+_&3_]$$',
+					],
+					answerFields:['$$u_1=...$$'],
 					solutions: [['&4']],
 					variables: [
 						{
@@ -21548,10 +21557,14 @@ const questions = {
 				},
 				{
 					description: 'Calculer un terme',
-					subdescription: "A l'aide d'une formule de récurrence",
+					subdescription: "A l'aide d'une formule de récurrence, deuxième terme",
 					enounces: [
-						'Calculer $$u_2$$ pour la suite $$(u_n)$$ définie par $$u_0=&1$$ et $$u_{n+1}=&2u_n[+_&3_]$$',
+						'Calcule le terme demandé.',
 					],
+					enounces2:[
+						'$$u_0=&1$$ et $$u_{n+1}=&2u_n[+_&3_]$$',
+					],
+					answerFields:['$$u_2=...$$'],
 					solutions: [['&5']],
 					variables: [
 						{
@@ -21595,7 +21608,7 @@ const questions = {
 					],
 					enounces2: ['$$&3 \\quad &4 \\quad &5 \\quad &6 \\quad &7$$'],
 					solutions: [['&1[+_&2_]n']],
-					answerFields: ['$$u_n=?$$'],
+					answerFields: ['$$u_n=...$$'],
 					variables: [
 						{
 							'&1': '$er[2;9]',
@@ -21634,7 +21647,7 @@ const questions = {
 					],
 					enounces2: ['$$&3 \\quad &4 \\quad &5 \\quad &6 \\quad &7$$'],
 					solutions: [['[_&1*(&2)^n_]']],
-					answerFields: ['$$u_n=?$$'],
+					answerFields: ['$$u_n=...$$'],
 					variables: [
 						{
 							'&1': '$er[1;4]',
@@ -21660,6 +21673,7 @@ const questions = {
 							},
 						],
 					],
+					options:['no-penalty-for-explicit-products'],
 					defaultDelay: 30,
 					grade: PREMIERE_SPE_MATHS,
 				},
@@ -21672,17 +21686,17 @@ const questions = {
 					],
 					enounces2: [
 						'$$&4$$' +
-							'  ' +
+							' ; ' +
 							'$$&5$$' +
-							'  ' +
+							' ; ' +
 							'$$&6$$' +
-							'  ' +
+							' ; ' +
 							'$$&7$$' +
-							'  ' +
+							' ; ' +
 							'$$&8$$',
 					],
 					solutions: [['&1*(&3)^n']],
-					answerFields: ['$$u_n=?$$'],
+					answerFields: ['$$u_n=...$$'],
 					variables: [
 						{
 							'&1': '$er[2;9]',
@@ -21695,6 +21709,7 @@ const questions = {
 							'&8': '[_&1*(&3)^4_]',
 						},
 					],
+					options:['no-penalty-for-explicit-products'],
 					correctionFormat: [
 						{
 							correct: ['Le terme général est $$u_n=&ans$$'],
@@ -21925,51 +21940,6 @@ const questions = {
 							'&4': '$e[2;9]',
 						},
 					],
-					correctionFormat: [
-						{
-							correct: ['&answer'],
-							answer: '&answer',
-						},
-						{
-							correct: ['La limite est &answer'],
-							answer: '&answer',
-						},
-						{
-							correct: ['La limite est &answer'],
-							answer: '&answer',
-						},
-						{
-							correct: ['La limite est &answer'],
-							answer: '&answer',
-						},
-						{
-							correct: ['La limite est &answer'],
-							answer: '&answer',
-						},
-						{
-							correct: ['La limite est &answer'],
-							answer: '&answer',
-						},
-						{
-							correct: ['La limite est &answer'],
-							answer: '&answer',
-						},
-						{
-							correct: [
-								'@@ &2>0 ?? La limite est &answer @@',
-								'@@ &2<0 ?? &answer @@',
-							],
-							answer: '&answer',
-						},
-						{
-							correct: ['La limite est &answer'],
-							answer: '&answer',
-						},
-						{
-							correct: ['La limite est &answer'],
-							answer: '&answer',
-						},
-					],
 					correctionDetails: [
 						[
 							{
@@ -22003,48 +21973,59 @@ const questions = {
 					subdescription: 'En utilisant les règles de calcul sur les limites',
 					enounces: ['Quelle est la limite obtenue ?'],
 					enounces2: [
-						'$$\\frac{\\infin}{\\infin}$$',
+						'$$infplus/infplus$$',
+						'$$infplus/infmoins$$',
+						'$$infmoins/infmoins$$',
+						'$$infmoins/infplus$$',
 
-						'$$\\frac{0}{\\infin}$$',
+						'$$0/infplus$$',
+						'$$0/infmoins$$',
 
-						'$$\\frac{+\\infin}{\\O^+}$$',
-						'$$\\frac{-\\infin}{\\O^+}$$',
-						'$$\\frac{+\\infin}{\\O^-}$$',
-						'$$\\frac{-\\infin}{\\O^-}$$',
+						'$$infplus/0plus$$',
+						'$$infmoins/0plus$$',
+						'$$infplus/0moins$$',
+						'$$infmoins/0moins$$',
 
-						'$$\\frac{&1}{+\\infin}$$',
-						'$$\\frac{-&1}{+\\infin}$$',
-						'$$\\frac{&1}{-\\infin}$$',
-						'$$\\frac{-&1}{-\\infin}$$',
+						'$${&1}/infplus$$',
+						'$${-&1}/infplus$$',
+						'$${&1}/infmoins$$',
+						'$${-&1}/infmoins$$',
 
-						'$$\\frac{+\\infin}{&1}$$',
-						'$$\\frac{+\\infin}{-&1}$$',
-						'$$\\frac{-\\infin}{&1}$$',
-						'$$\\frac{-\\infin}{-&1}$$',
+						'$$infplus/{&1}$$',
+						'$$infplus/{-&1}$$',
+						'$$infmoins/{&1}$$',
+						'$$infmoins/{-&1}$$',
 
-						'$$\\infini\\times 0$$',
-						'$$+\\infini \\times \\left( +\\infini  \\right)$$',
-						'$$+\\infini \\times \\left( -\\infini \\right)$$',
-						'$$-\\infini \\times \\left( -\\infini \\right)$$',
-						'$$-\\infini \\times \\left( +\\infini \\right)$$',
+						'$$infplus * 0$$',
+						'$$infmoins * 0$$',
 
-						'$$&1 \\times \\left( +\\infini  \\right)$$',
-						'$$&1 \\times \\left( -\\infini \\right)$$',
-						'$$-&1 \\times \\left( -\\infini \\right)$$',
-						'$$-&1 \\times \\left( +\\infini \\right)$$',
+						'$$infplus *  (infplus) $$',
+						'$$infplus * ( infmoins )$$',
+						'$$infmoins * ( infmoins )$$',
+						'$$infmoins * ( infplus )$$',
 
-						'$$+\\infini + \\left( +\\infini \\right)$$',
-						'$$+\\infini + \\left( -\\infini \\right)$$',
-						'$$-\\infini + \\left( -\\infini \\right)$$',
-						'$$-\\infini + \\left( +\\infini \\right)$$',
-						'$$+\\infini - \\left( +\\infini \\right)$$',
-						'$$+\\infini - \\left( -\\infini \\right)$$',
-						'$$-\\infini - \\left( -\\infini \\right)$$',
-						'$$-\\infini - \\left( +\\infini \\right)$$',
-						'$$+\\infini[+_&1_]$$',
-						'$$+\\infini[+_&1_]$$',
-						'$$-\\infini[+_&1_]$$',
-						'$$-\\infini[+_&1_]$$',
+						'$$&1 * ( infplus  )$$',
+						'$$-&1 * ( infplus  )$$',
+						'$$&1 * ( infmoins )$$',
+						'$$-&1 * ( infmoins )$$',
+
+						'$$infplus + ( infplus )$$',
+						'$$infplus + ( infmoins )$$',
+						'$$infmoins + ( infmoins )$$',
+						'$$infmoins + ( infplus )$$',
+
+						'$$infplus - ( infplus )$$',
+						'$$infplus - ( infmoins )$$',
+						'$$infmoins - ( infmoins )$$',
+						'$$infmoins - ( infplus )$$',
+
+						'$$infplus[+_&1_]$$',
+						'$$infmoins[+_&1_]$$',
+
+						'$$&1/{0plus}$$',
+						'$${-&1}/{0plus}$$',
+						'$$&1/{0moins}$$',
+						'$${-&1}/{0moins}$$',
 					],
 					choices: [
 						[
@@ -22062,89 +22043,73 @@ const questions = {
 							},
 						],
 
-						[
-							{
-								text: '$$+\\infin$$',
-							},
-							{
-								text: '$$-\\infin$$',
-							},
-							{
-								text: '$$0$$',
-							},
-							{
-								text: 'Forme indéterminée',
-							},
-						],
+					
 
-						[
-							{
-								text: '$$+\\infin$$',
-							},
-							{
-								text: '$$-\\infin$$',
-							},
-							{
-								text: '$$0$$',
-							},
-							{
-								text: 'Forme indéterminée',
-							},
-						],
-						[
-							{
-								text: '$$+\\infin$$',
-							},
-							{
-								text: '$$-\\infin$$',
-							},
-							{
-								text: '$$0$$',
-							},
-							{
-								text: 'Forme indéterminée',
-							},
-						],
-						[
-							{
-								text: '$$+\\infin$$',
-							},
-							{
-								text: '$$-\\infin$$',
-							},
-							{
-								text: '$$0$$',
-							},
-							{
-								text: 'Forme indéterminée',
-							},
-						],
-						[
-							{
-								text: '$$+\\infin$$',
-							},
-							{
-								text: '$$-\\infin$$',
-							},
-							{
-								text: '$$0$$',
-							},
-							{
-								text: 'Forme indéterminée',
-							},
-						],
+						
+					
+					
 					],
-					solutions: [[3]],
+					solutions: [
+						[3],
+						[3],
+						[3],
+						[3],
+
+						[2],
+						[2],
+						
+						[0],
+						[1],
+						[1],
+						[0],
+						
+						[2],
+						[2],
+						[2],
+						[2],
+
+						[0],
+						[1],
+						[1],
+						[0],
+
+						[3],
+						[3],
+
+						[0],
+						[1],
+						[0],
+						[1],
+
+						[0],
+						[1],
+						[1],
+						[0],
+
+						[0],
+						[3],
+						[1],
+						[3],
+
+						[3],
+						[0],
+						[3],
+						[1],
+
+						[0],
+						[1],
+
+						[0],
+						[1],
+						[1],
+						[0],
+
+
+					],
 					variables: [
 						{
-							'&1': '$er[1;9]',
+							'&1': '$e[1;9]',
 							'&2': '$e[2;9]',
-						},
-					],
-					correctionFormat: [
-						{
-							correct: ['&answer'],
-							answer: '&answer',
 						},
 					],
 					options: ['no-shuffle-choices'],
@@ -22159,7 +22124,7 @@ const questions = {
 					description: "Calculer un terme d'une suite arithmétique",
 					subdescription: 'Calculer le terme suivant',
 					enounces: [
-						'Pour une suite arithmétique de raison &1, quel est le terme suivant &2 ?',
+						'Pour une suite arithmétique de raison $$&1$$, quel est le terme suivant $$&2$$ ?',
 					],
 					solutions: [['[_&1+(&2)_]']],
 					variables: [
@@ -22172,9 +22137,8 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								'Si la raison est $$&1$$, le terme suivant &2 est &answer',
+								'Le terme suivant est &answer',
 							],
-							answer: 'Le terme suivant est &answer',
 						},
 					],
 					correctionDetails: [
@@ -22191,7 +22155,7 @@ const questions = {
 					description: "Calculer un terme d'une suite arithmétique",
 					subdescription: 'Calculer le terme précédent',
 					enounces: [
-						'Pour une suite arithmétique de raison &1, quel est le terme précédant &2 ?',
+						'Pour une suite arithmétique de raison $$&1$$, quel est le terme précédant $$&2$$ ?',
 					],
 					solutions: [['[_&2-(&1)_]']],
 					variables: [
@@ -22204,15 +22168,14 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								'Si la raison est $$&1$$, le terme précédant &2 est &answer',
+								'Le terme précédant est &answer',
 							],
-							answer: 'Le terme précédent est &answer',
 						},
 					],
 					correctionDetails: [
 						[
 							{
-								text: 'Si la raison est $$&1$$, le terme précédent est $$&2[+_-(&1)_]=$$&solution',
+								text: 'Si la raison est $$&1$$, le terme précédent est $$&2[+_-(&1)_]=&sol',
 							},
 						],
 					],
@@ -22222,9 +22185,9 @@ const questions = {
 				{
 					description: "Calculer un terme d'une suite arithmétique",
 					subdescription: "Calculer un terme à partir d'un autre",
-					enounces: [
-						'Pour une suite $$(u_n)$$ arithmétique de raison $$&3$$, que vaut $$u_&2$$ si $$u_&1=[_&1*(&3)_]$$ ?',
-					],
+					enounces:['Calcule le terme demandé.'],
+					enounces2:['$$(u_n)$$ est une suite arithmétique de raison $$&3$$, et $$u_&1=[_&1*(&3)_]$$.'],
+					answerFields:['$$u_&2=...$$'],
 					solutions: [['[_&2*(&3)_]']],
 					variables: [
 						{
@@ -22237,15 +22200,14 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								'Si la raison est $$&3$$ et $$u_&1=[_&1*(&3)_]$$, alors $$u_&2=$$&answer',
+								'$$u_&2=&answer$$',
 							],
-							answer: '$$u_&2=$$&answer',
 						},
 					],
 					correctionDetails: [
 						[
 							{
-								text: `Si la raison est $$\\textcolor{${color1}}{&3}$$ et $$u_&1=[_&1*(&3)_]$$, alors $$u_&2=u_&1\\textcolor{${color1}}{[+_&3_]} \\times [_&2-&1_]=u_&1[+_(&2-&1)*(&3)_]=$$&solution`,
+								text: `Si la raison est $$\\textcolor{${color1}}{&3}$$ et $$u_&1=[_&1*(&3)_]$$, alors $$u_&2=u_&1\\textcolor{${color1}}{[+_&3_]} \\times [_&2-&1_]=u_&1[+_(&2-&1)*(&3)_]=&sol$$`,
 							},
 						],
 					],
@@ -22255,9 +22217,11 @@ const questions = {
 				{
 					description: "Calculer un terme d'une suite arithmétique",
 					subdescription: "Calculer un terme à partir d'un autre",
-					enounces: [
-						'Pour une suite $$(u_n)$$ arithmétique de raison $$&3$$, que vaut $$u_&2$$ si $$u_&1=[_&1*(&3)_]$$ ?',
+					enounces:['Calcule le terme demandé.'],
+					enounces2: [
+						'$$(u_n)$$ est une suite arithmétique de raison $$&3$$, et $$u_&1=[_&1*(&3)_]$$.',
 					],
+					answerFields:['$$u_&2=...$$'],
 					solutions: [['[_&2*(&3)_]']],
 					variables: [
 						{
@@ -22270,15 +22234,14 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								'Si la raison est $$&3$$ et $$u_&1=[_&1*(&3)_]$$, alors $$u_&2=$$&answer',
+								'$$u_&2=&answer$$',
 							],
-							answer: '$$u_&2=$$&answer',
 						},
 					],
 					correctionDetails: [
 						[
 							{
-								text: `Si la raison est $$\\textcolor{${color1}}{&3}$$ et $$u_&1=[_&1*(&3)_]$$, alors $$u_&2=u_&1\\textcolor{${color1}}{[+_&3_]} \\times [_&2-&1_]=u_&1[+_(&2-&1)*(&3)_]=$$&solution`,
+								text: `Si la raison est $$\\textcolor{${color1}}{&3}$$ et $$u_&1=[_&1*(&3)_]$$, alors $$u_&2=u_&1\\textcolor{${color1}}{[+_&3_]} \\times [_&2-&1_]=u_&1[+_(&2-&1)*(&3)_]=&sol$$`,
 							},
 						],
 					],
@@ -22291,8 +22254,9 @@ const questions = {
 					description: "Déterminer la raison d'une suite arithmétique",
 					subdescription: 'A partir de deux termes consécutifs',
 					enounces: [
-						"Quelle est la raison d'une suite arithmétique où $$u_&1=&3$$ et $$u_&2=[_&3+(&4)_]$$ ?",
+						"Quelle est la raison de cette  suite arithmétique ?",
 					],
+					enounces2:['$$u_&1=&3$$ et $$u_&2=[_&3+(&4)_]$$'],
 					solutions: [['&4']],
 					variables: [
 						{
@@ -22306,9 +22270,8 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								'Si $$u_&1=&3$$ et $$u_&2=[_&3+(&4)_]$$, alors la raison est &answer.',
+								'La raison est &answer.',
 							],
-							answer: 'La raison est &answer.',
 						},
 					],
 					correctionDetails: [
@@ -22325,8 +22288,9 @@ const questions = {
 					description: "Déterminer la raison d'une suite arithmétique",
 					subdescription: 'A partir de deux termes',
 					enounces: [
-						"Quelle est la raison d'une suite arithmétique où $$u_&1=&3$$ et $$u_&2=[_&3+(&2-&1)*(&4)_]$$ ?",
+						"Quelle est la raison de cette suite arithmétique ?",
 					],
+					enounces2:['$$u_&1=&3$$ et $$u_&2=[_&3+(&2-&1)*(&4)_]$$'],
 					solutions: [['&4']],
 					variables: [
 						{
@@ -22340,9 +22304,8 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								'Si $$u_&1=&3$$ et $$u_&2=[_&3+(&2-&1)*(&4)_]$$, alors la raison est &answer.',
+								'La raison est &answer.',
 							],
-							answer: 'La raison est &answer.',
 						},
 					],
 					correctionDetails: [

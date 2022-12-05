@@ -134,7 +134,6 @@ export function createCorrection(item) {
 	}
 
 	function replaceAnswerUncorrect(match, p1) {
-		console.log('answers', item.answers)
 		return (
 			`<span style="color:${
 				item.statuss[p1 ? p1 - 1 : 0] === STATUS_UNOPTIMAL_FORM
@@ -312,9 +311,7 @@ export function createCorrection(item) {
 			case 'choices': {
 				// line = '<div class="flex flex-wrap justify-start">'
 				let choices = []
-				console.log('item.choices', item.choices)
 				item.choices.forEach((choice, i) => {
-					console.log('choice', choice)
 					const c = {}
 
 					if (solutions.includes(i)) {
@@ -336,7 +333,6 @@ export function createCorrection(item) {
 						choices.push(c)
 					}
 				})
-				console.log('choices', choices)
 
 				lines.push({ choices })
 				break

@@ -207,7 +207,6 @@ function checkConstraints(item) {
 	//
 	checks.forEach((check) => {
 		if (!item.options.includes(check.option[0])) {
-			console.log('check', check.text)
 			const problematicAnswers = check.function(item)
 			if (problematicAnswers.length) {
 				item.unoptimals.push(check.text)
@@ -216,20 +215,17 @@ function checkConstraints(item) {
 				)
 				problematicAnswers.forEach((i) => {
 					if (i === -1) {
-						console.log('i=-1')
 						item.status =
 							!item.options.includes(check.option[1]) &&
 							item.status !== STATUS_BAD_FORM
 								? STATUS_UNOPTIMAL_FORM
 								: STATUS_BAD_FORM
 					} else {
-						console.log('item.statuss', item.statuss[i], check.option[1])
 						item.statuss[i] =
 							!item.options.includes(check.option[1]) &&
 							item.statuss[i] !== STATUS_BAD_FORM
 								? STATUS_UNOPTIMAL_FORM
 								: STATUS_BAD_FORM
-						console.log('item.statuss', item.statuss[i])
 					}
 				})
 			}
@@ -396,7 +392,6 @@ function checkProducts(item) {
 			item.statuss[i] !== STATUS_INCORRECT
 		) {
 			const e = math(answer)
-			console.log('checkProducts', e.string)
 			if (e.removeMultOperator().string !== e.string) result.push(i)
 		}
 	})
@@ -672,7 +667,7 @@ function checkForm(item) {
 						.removeMultOperator()
 						.sortTermsAndFactors()
 
-					console.log('answer & solution', e.string, solution.string)
+					// console.log('answer & solution', e.string, solution.string)
 
 					// il faut trouver une autre solution quand il y a des unités
 					if (!e.unit && !e.strictlyEquals(solution)) {
@@ -801,7 +796,6 @@ export function assessItem(item) {
 				if (item.expression && !item.answerFields) {
 					let incorrectForm = false
 					item.answers.forEach((answer, i) => {
-						console.log('answer', answer)
 						if (
 							item.statuss[i] !== STATUS_EMPTY &&
 							math(answer).isIncorrect()
@@ -824,7 +818,6 @@ export function assessItem(item) {
 				}
 			} else {
 				item.answers.forEach((answer, i) => {
-					console.log('answer', answer)
 					if (item.statuss[i] !== STATUS_EMPTY && math(answer).isIncorrect()) {
 						item.statuss[i] = STATUS_INCORRECT
 						item.status = STATUS_INCORRECT
@@ -840,7 +833,6 @@ export function assessItem(item) {
 				// Premièrement, vérification que la ou les réponses sont seulement équivalentes à la solution
 				//  ou vérifient le critère de validation
 				if (item.testAnswer) {
-					console.log('correction with testAnswer')
 					item.answers.forEach((answer, i) => {
 						if (
 							(item.testAnswer[i] &&
@@ -880,7 +872,6 @@ export function assessItem(item) {
 					if (exp.eval().isFalse()) {
 						item.status = STATUS_INCORRECT
 					}
-					console.log('equivalence fill in', exp.string, item.status, exp.eval().string)
 				} else {
 					item.answers.forEach((answer, i) => {
 						if (
@@ -918,16 +909,13 @@ export function assessItem(item) {
 				// ou STATUS_INCORRECT
 				// les question 'fill in' peuvent aussi avoir un STATUS_INCORRECT
 				// On vérifie les contraintes de formes
-				console.log('status', item.status)
 				if (item.status !== STATUS_EMPTY && item.status !== STATUS_INCORRECT) {
 					checkConstraints(item)
 					checkTermsAndFactors(item)
 					// TODO : tester les formats
 					checkForm(item)
-					console.log('item after check form', item)
 
 					if (item.statuss.some((status) => status === STATUS_BAD_FORM)) {
-						console.log('bad form')
 						item.status = STATUS_BAD_FORM
 					} else if (
 						item.statuss.some((status) => status === STATUS_UNOPTIMAL_FORM) ||

@@ -128,7 +128,6 @@
 		testParams.classroom = classroom
 		testParams.flash = flash
 
-		console.log('go', go)
 
 		basket = JSON.parse(decodeURI($page.url.searchParams.get('questions')))
 
@@ -142,7 +141,6 @@
 			//  check that delay is a multiple of five
 			const rest = question.delay % 5
 			question.delay = question.delay + 5 - rest
-			console.log('delay:', question.delay)
 
 			for (let i = 0; i < q.count; i++) {
 				const generated = generate(question, cards, q.count, offset)
@@ -186,7 +184,6 @@
 		}
 
 		info('Begining test with questions :', cards)
-		console.log('flash', flash)
 		if (flash) {
 			beginTest()
 		}
@@ -326,7 +323,6 @@
 	}
 	$: virtualKeyboardMode.set($touchDevice)
 	$: delay = slider * 1000
-	$: console.log('assessment flash', flash)
 
 	commit = {
 		exec: function () {

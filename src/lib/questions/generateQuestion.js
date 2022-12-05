@@ -210,15 +210,12 @@ export default function generateQuestion(
 
 	function checkDuplicate() {
 		let duplicate
-		console.log('checkDuplicate')
 		// on vérifie en premier lieu si les variables sont identiques
 		if (Object.getOwnPropertyNames(variables).length) {
-			console.log('checking variables', variables)
 			duplicate = generateds.some(
 				(g) =>
 					g.i === i &&
 					Object.getOwnPropertyNames(variables).every((key) => {
-						console.log('key', key, variables[key], g.generatedVariables[key])
 						const e1 = math(variables[key])
 						const e2 = math(g.generatedVariables[key])
 						return e1.isCorrect() && e2.isCorrect()

@@ -3,9 +3,6 @@
 	import { correct_color } from '$lib/colors'
 	export let line
 
-	if (line && line.choices) {
-		console.log('choices', line.choices)
-	}
 </script>
 
 {#if line}

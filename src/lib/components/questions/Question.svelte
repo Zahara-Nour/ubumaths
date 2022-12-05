@@ -205,7 +205,6 @@
 			? $formatToHtml(formatToLatex(question.enounce))
 			: null
 
-			
 		enounce2 = question.enounce2
 			? $formatToHtml(formatToLatex(question.enounce2))
 			: null
@@ -570,7 +569,7 @@
 			</div>
 		{/if}
 	{/each}
-	{#if (!correction && question.answerFields && question.type === 'fill in') || (!correction && answerFields && interactive)}
+	{#if (!correction && question.answerFields && question.type === 'fill in') || (!correction && answerFields && question.answerFields !=='$$...$$')}
 		<div
 			id="{`answerFields-${question.num}${masked ? '-masked' : ''}`}"
 			class="my-3 flex flex-col items-center justify-center"
