@@ -33,6 +33,7 @@
 		"@smui/tab-bar": "^7.0.0-beta.0",
 		"@smui/top-app-bar": "^7.0.0-beta.0",
 		"@sveltejs/adapter-auto": "next",
+		"@sveltejs/adapter-vercel": "^1.0.0-next.84",
 		"@sveltejs/kit": "next",
 		"autoprefixer": "^10.4.12",
 		"eslint": "^8.16.0",
