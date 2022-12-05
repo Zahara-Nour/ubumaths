@@ -1,6 +1,6 @@
 {
 	"name": "ubumaths",
-	"version": "0.9.1",
+	"version": "0.9.2",
 	"private": false,
 	"scripts": {
 		"dev": "vite dev",
@@ -52,6 +52,8 @@
 		"@mdi/js": "^7.0.96",
 		"@supabase/supabase-js": "^2.0.4",
 		"svelte-confetti": "^1.2.0",
-		"svelte-loading-spinners": "^0.3.4"
+		"svelte-loading-spinners": "^0.3.4",
+		"tinycas": "^0.8.73",
+		"tinymathlive": "^0.85.1"
 	}
 }

@@ -5,7 +5,7 @@ const config = {
 	build: {
 		rollupOptions: {
 		  // https://rollupjs.org/guide/en/#big-list-of-options
-		  external:['mathlive']
+		//   external:['mathlive']
 		}
 	  }
 };
