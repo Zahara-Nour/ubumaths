@@ -214,10 +214,19 @@ export default function generateQuestion(
 		if (Object.getOwnPropertyNames(variables).length) {
 			duplicate = generateds.some(
 				(g) =>
-					g.i === i &&
+					g.id === question.id && g.i === i &&
 					Object.getOwnPropertyNames(variables).every((key) => {
 						const e1 = math(variables[key])
-						const e2 = math(g.generatedVariables[key])
+						let e2
+						try {
+						e2 = math(g.generatedVariables[key])
+						}
+						catch (e){
+							console.log(e)
+							console.log('variables', variables)
+							console.log(Object.getOwnPropertyNames(variables))
+							console.log('g',g, key)
+						}
 						return e1.isCorrect() && e2.isCorrect()
 							? e1.string === e2.string
 							: variables[key] === g.generatedVariables[key]
