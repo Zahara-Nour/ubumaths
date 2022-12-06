@@ -21457,6 +21457,51 @@ const questions = {
 				},
 			],
 		},
+		'Dérivation': {
+			Apprivoiser: [
+				{
+					description: 'Calculer une dérivée.',
+					subdescription:'Fonctions usuelles.',
+					enounces: [
+						"Calcule la dérivée de cette fonction.",
+					],
+					expressions: [
+						'f(x)=x',
+						'f(x)=x^2',
+						'f(x)=x^&1',
+						'f(x)=1/x',
+						'f(x)=sqrt(x)',
+						'f(x)=&1'
+					],
+					answerFields:["$$f'(x)=...$$"],
+					variables: [
+						{
+							'&1': '$e[3;5]',	
+						},
+					],
+					solutions: [['1'], ['2x'], ['&1x^[_&1-1_]'], ['-1/{x^2}'], ['1/{2sqrt(x)}'], ['0']],
+					// pb mathlive : ascimath output
+					options:['no-penalty-for-extraneous-brackets'],
+					correctionFormat: [
+						{
+							correct: ["$$f'(x)=&ans$$"],
+						},
+					],
+					correctionDetails: [
+						[
+							{
+								text: "&solution",
+							},
+						],
+		
+					],
+					defaultDelay: 20,
+					grade: PREMIERE_SPE_MATHS,
+				},
+			],
+			
+			
+		},
 	},
 
 	Suites: {
