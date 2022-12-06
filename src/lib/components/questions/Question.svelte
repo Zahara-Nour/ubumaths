@@ -620,7 +620,5 @@
 </div>
 
 <style>
-	math-field {
-		min-height: 200px;
-	}
+
 </style>

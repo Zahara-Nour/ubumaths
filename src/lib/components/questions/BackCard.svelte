@@ -18,7 +18,6 @@
 	export let magnify
 	export let correction
 	export let detailedCorrection = null
-	export let simpleCorrection = null
 
 	function getSolution(card) {
 		let nSol = -1
@@ -77,8 +76,6 @@
 	$: solution = $formatToHtml(getSolution(card))
 	$: details = detailedCorrection
 		? detailedCorrection
-		// : simpleCorrection
-		// ? simpleCorrection
 		: []
 </script>
 

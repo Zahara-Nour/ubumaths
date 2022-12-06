@@ -121,8 +121,4 @@
 	.correction-title {
 		transform: rotate(-45deg);
 	}
-
-	.buttons {
-		margin-top: 2em;
-	}
 </style>
