@@ -21498,6 +21498,45 @@ const questions = {
 					defaultDelay: 20,
 					grade: PREMIERE_SPE_MATHS,
 				},
+				{
+					description: 'Calculer une dérivée.',
+					subdescription:'Fonctions usuelles avec coefficient.',
+					enounces: [
+						"Calcule la dérivée de cette fonction.",
+					],
+					expressions: [
+						'f(x)=&2x',
+						'f(x)=&2x^2',
+						'f(x)=&2x^&1',
+						'f(x)=&2/x',
+						'f(x)=&2sqrt(x)',
+					],
+					answerFields:["$$f'(x)=...$$"],
+					variables: [
+						{
+							'&1': '$e[3;5]',
+							'&2': '$er[2;9]'	
+						},
+					],
+					solutions: [['&2'], ['[_&2*2_]x'], ['[_&2*&1_]x^[_&1-1_]'], ['[_-(&2)_]/{x^2}'], ['&2/{2sqrt(x)}']],
+					// pb mathlive : ascimath output
+					options:['no-penalty-for-extraneous-brackets'],
+					correctionFormat: [
+						{
+							correct: ["$$f'(x)=&ans$$"],
+						},
+					],
+					correctionDetails: [
+						[
+							{
+								text: "&solution",
+							},
+						],
+		
+					],
+					defaultDelay: 20,
+					grade: PREMIERE_SPE_MATHS,
+				},
 			],
 			
 			
