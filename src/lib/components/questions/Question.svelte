@@ -237,7 +237,7 @@
 		q.answers = answers
 		q.answers_latex = answers_latex
 		assessItem(q)
-		if (!masked) console.log('assess item', q)
+		// if (!masked) console.log('assess item', q)
 	}
 
 	async function prepareInteractive() {
