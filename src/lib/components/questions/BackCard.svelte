@@ -17,7 +17,8 @@
 	export let width = 0
 	export let magnify
 	export let correction
-	export let detailedCorrection = null
+	export let detailedCorrection = card.detailedCorrection
+	export let masked = false
 
 
 	function getSolution(card) {
@@ -74,11 +75,9 @@
 		return s
 	}
 
-	$: console.log('back card detailedCorrection', detailedCorrection)
+	$: if (!masked) console.log('back card details',card.num, details)
 	$: solution = $formatToHtml(getSolution(card))
-	$: details = detailedCorrection
-		? detailedCorrection
-		: []
+	$: details = detailedCorrection || []
 </script>
 
 <div bind:clientHeight="{h}" bind:clientWidth="{w}">

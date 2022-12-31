@@ -20,7 +20,7 @@
 	export let magnify = 1
 	export let correction = false
 	export let simpleCorrection = []
-	export let detailedCorrection = null
+	export let detailedCorrection = question.detailedCorrection
 	export let commit
 	export let immediateCommit
 
@@ -194,10 +194,20 @@
 
 		// pour  empecher un update
 		const q = question
-		if (!question.detailedCorrection && question.correctionDetails) {
+		// if (!question.detailedCorrection && question.correctionDetails) {
+			
+		// 	q.detailedCorrection = createDetailedCorrection(question)
+		// 	if (!masked) console.log('create detailed correction', q.detailedCorrection)
+		// }
+		// detailedCorrection = question.detailedCorrection
+
+		if (!detailedCorrection && question.correctionDetails) {
+			
 			q.detailedCorrection = createDetailedCorrection(question)
+			detailedCorrection = q.detailedCorrection
+			if (!masked) console.log('create detailed correction', detailedCorrection)
 		}
-		detailedCorrection = question.detailedCorrection
+
 		console.log('detailedCorrection',detailedCorrection)
 		answers = question.answers
 		answers_latex = question.answers_latex

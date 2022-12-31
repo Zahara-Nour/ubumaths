@@ -23,7 +23,7 @@
 	let width = 0
 
 	let simpleCorrection = null
-	let detailedCorrection = null
+	let detailedCorrection = card.detailedCorrection
 
 	async function updateHeight() {
 		// console.log('updateHeight')npm
@@ -73,7 +73,7 @@
 	}
 
 	$: console.log('updatedFlashCard', updatedFlashCard)
-	$: console.log('QuestionCard detailedCorrection', detailedCorrection)
+	$: console.log('QuestionCard detailedCorrection', card.num, detailedCorrection)
 </script>
 
 <div class="card" style="{height ? `height:${height}px;` : ''}">
@@ -132,6 +132,7 @@
 		<BackCard
 			card="{card}"
 			bind:h="{hback_masked}"
+			masked="{true}"
 			magnify="{magnify}"
 			correction="{correction}"
 			simpleCorrection="{simpleCorrection}"

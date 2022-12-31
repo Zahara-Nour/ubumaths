@@ -29,7 +29,7 @@
 
 	$: description = $formatToHtml(formatToLatex(card.description))
 	$: subdescription = $formatToHtml(formatToLatex(card.subdescription))
-	$: console.log('front card detailedCorrection', detailedCorrection)
+	$: if (!masked) console.log('front card detailedCorrection', card.num, detailedCorrection)
 </script>
 
 <div bind:clientHeight="{h}" bind:clientWidth="{w}">
