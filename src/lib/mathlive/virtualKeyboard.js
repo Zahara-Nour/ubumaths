@@ -4,10 +4,10 @@ export default {
       styles: '',
       rows: [
         [
-          {
-            class: 'keycap tex',
-            latex: '\\lt',
-          },
+          // {
+          //   class: 'keycap tex',
+          //   latex: '\\lt',
+          // },
           {
             class: 'keycap tex',
             label: '<i>a</i>',
@@ -55,10 +55,10 @@ export default {
           },
         ],
         [
-          {
-            class: 'keycap tex',
-            latex: '\\gt',
-          },
+          // {
+          //   class: 'keycap tex',
+          //   latex: '\\gt',
+          // },
           {
             class: 'keycap tex',
             label: '<i>b</i>',
@@ -102,10 +102,10 @@ export default {
           },
         ],
         [
-          {
-            class: 'keycap tex',
-            latex: '\\le',
-          },
+          // {
+          //   class: 'keycap tex',
+          //   latex: '\\le',
+          // },
           {
             class: 'keycap tex',
             label: '<i>c</i>',
@@ -157,10 +157,10 @@ export default {
           },
         ],
         [
-          {
-            class: 'keycap tex',
-            latex: '\\ge',
-          },
+          // {
+          //   class: 'keycap tex',
+          //   latex: '\\ge',
+          // },
           {
             class: 'keycap tex',
             label: '(',
