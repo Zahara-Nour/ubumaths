@@ -198,6 +198,7 @@
 			q.detailedCorrection = createDetailedCorrection(question)
 		}
 		detailedCorrection = question.detailedCorrection
+		console.log('detailedCorrection',detailedCorrection)
 		answers = question.answers
 		answers_latex = question.answers_latex
 
@@ -225,9 +226,10 @@
 		} else {
 			const q = question
 			assessItem(q)
-			// if (!masked) console.log('assess item', q)
+			if (!masked) console.log('assess item', q)
 			simpleCorrection = q.simpleCorrection
 			detailedCorrection = q.detailedCorrection
+			console.log('detailedCorrection', detailedCorrection)
 		}
 	}
 

@@ -29,6 +29,7 @@
 
 	$: description = $formatToHtml(formatToLatex(card.description))
 	$: subdescription = $formatToHtml(formatToLatex(card.subdescription))
+	$: console.log('front card detailedCorrection', detailedCorrection)
 </script>
 
 <div bind:clientHeight="{h}" bind:clientWidth="{w}">

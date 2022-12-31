@@ -19,6 +19,7 @@
 	export let correction
 	export let detailedCorrection = null
 
+
 	function getSolution(card) {
 		let nSol = -1
 		let s
@@ -73,6 +74,7 @@
 		return s
 	}
 
+	$: console.log('back card detailedCorrection', detailedCorrection)
 	$: solution = $formatToHtml(getSolution(card))
 	$: details = detailedCorrection
 		? detailedCorrection
