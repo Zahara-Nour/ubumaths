@@ -28,6 +28,7 @@
 
 	
 	items.forEach((item) => {
+		console.log('item', item)
 		total += item.points
 		score +=
 			item.status == STATUS_CORRECT

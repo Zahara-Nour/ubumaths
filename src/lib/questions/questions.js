@@ -9325,6 +9325,11 @@ const questions = {
 					subdescription: 'Fractions décimales.',
 					enounces: ['Calcule.'],
 					expressions: ['&1/10+&2/10', '&1/10+&2/10+&3/10', '&1/100+&2/100'],
+					solutions:[
+						['{[_&1+&2_]}/10'],
+						['{[_&1+&2+&3_]}/10'],
+						['{[_&1+&2_]}/100'],
+					],
 					variables: [
 						{
 							'&1': '$e[2;13]',
@@ -9358,6 +9363,7 @@ const questions = {
 							},
 						],
 					],
+					options:['no-penalty-for-non-reduced-fractions'],
 					defaultDelay: 30,
 					grade: CM1,
 				},
@@ -9531,7 +9537,7 @@ const questions = {
 					description: 'Additionner ou soustraire',
 					subdescription:
 						'Fractions de même dénominateur, nombres positifs, simplification intermediaire possible, simplification finale',
-					enounces: ['Calcule.'],
+					enounces: ['Calcule en simplifiant le plus possible résultat.'],
 					expressions: [
 						'[_&2*&4_]/[_&1*&3_]+[_(&1-&2)*&4_]/[_&1*&3_]',
 						'[_&1*&4_]/[_&2*&3_]-[_(&1-&2)*&4_]/[_&2*&3_]',
@@ -9757,6 +9763,7 @@ const questions = {
 			],
 			Multiplication: [
 				{
+					enounces:['Calcule.'],
 					description: 'Calculer un produit',
 					subdescription: 'un entier par un quotient de numérateur $$1$$',
 					expressions: ['&1*{1/&2}', '{1/&2}*&1'],
@@ -9783,6 +9790,7 @@ const questions = {
 					grade: CM1,
 				},
 				{
+					enounces:['Calcule.'],
 					description: 'Calculer un produit',
 					subdescription: 'un entier par un quotient',
 					expressions: ['&1*{&3/&2}', '{&3/&2}*&1'],
@@ -9810,6 +9818,7 @@ const questions = {
 					grade: CM1,
 				},
 				{
+					enounces:['Calcule.'],
 					description: 'Calculer un produit',
 					subdescription: 'Pas de simplification',
 					expressions: ['{&1/&3}*{&2/&4}'],
@@ -9861,9 +9870,9 @@ const questions = {
 					grade: QUATRIEME,
 				},
 				{
+					enounces:['Calcule.'],
 					description: 'Calculer un produit',
 					subdescription: 'avec peut-être une simplification simple',
-					enounces: [''],
 					expressions: ['{&1/&3}*{&2/&4}'],
 					variables: [
 						{
@@ -9879,6 +9888,7 @@ const questions = {
 					grade: QUATRIEME,
 				},
 				{
+					enounces: [''],
 					description: 'Calculer un produit',
 					subdescription: 'Nombres, relatifs, pas de simplification',
 					expressions: [
@@ -9931,6 +9941,7 @@ const questions = {
 					grade: QUATRIEME,
 				},
 				{
+					enounces: ['Calcule.'],
 					description: "Calculer l'inverse d'un nombre",
 					subdescription: 'Avec la notation puissance',
 					expressions: ['&1^{-1}', '(1/&1)^{-1}', '(&1/&2)^{-1}'],
@@ -9943,6 +9954,7 @@ const questions = {
 			],
 			Division: [
 				{
+					enounces: ['Calcule.'],
 					description: 'Calculer un quotient',
 					subdescription:
 						'Pas de simplification, avec le symbole de la division',
@@ -9967,6 +9979,7 @@ const questions = {
 					grade: QUATRIEME,
 				},
 				{
+					enounces: ['Calcule.'],
 					description: 'Calculer un quotient',
 					subdescription:
 						'Division par un entier, avec le symbole de la division',
@@ -9990,6 +10003,7 @@ const questions = {
 					grade: QUATRIEME,
 				},
 				{
+					enounces: ['Calcule.'],
 					description: 'Calculer un quotient',
 					subdescription: 'Pas de simplification',
 					expressions: ['{&1/&3}/{&4/&2}'],
@@ -10013,6 +10027,7 @@ const questions = {
 					grade: QUATRIEME,
 				},
 				{
+					enounces: ['Calcule.'],
 					description: 'Calculer un quotient',
 					subdescription: 'Division par un entier, avec fraction',
 					expressions: ['{&1/&3}/&2'],
@@ -10027,6 +10042,29 @@ const questions = {
 						[
 							{
 								text: `$$\\begin{align} \\dfrac{\\dfrac{&1}{&3}}{\\textcolor{${color1}}{&2}} &= \\dfrac{&1}{&3} \\textcolor{${color1}}{\\div \\dfrac{&2}{1}} \\\\ &= \\dfrac{&1}{&3} \\textcolor{${color1}}{\\times \\dfrac{1}{&2}} \\\\ &= \\dfrac{&1 \\times 1}{&3 \\times &2}  \\\\ &= &sol  \\end{align}$$`,
+							},
+						],
+					],
+
+					defaultDelay: 20,
+					grade: QUATRIEME,
+				},
+				{
+					enounces: ['Calcule.'],
+					description: 'Calculer un quotient',
+					subdescription: 'Division par un entier, avec fraction',
+					expressions: ['&1/{&3/&2}'],
+					variables: [
+						{
+							'&1': '$e[2;9]',
+							'&2': '$e[2;9]',
+							'&3': '$e[2;9]\\{cd(&1)}',
+						},
+					],
+					correctionDetails: [
+						[
+							{
+								text: `$$\\begin{align} \\frac{&1}{{\\textcolor{${color1}}{\\dfrac{\\dfrac{&1}{&3}}}}} &= \\dfrac{&1}{&3} \\textcolor{${color1}}{\\div \\dfrac{&2}{1}} \\\\ &= \\dfrac{&1}{&3} \\textcolor{${color1}}{\\times \\dfrac{1}{&2}} \\\\ &= \\dfrac{&1 \\times 1}{&3 \\times &2}  \\\\ &= &sol  \\end{align}$$`,
 							},
 						],
 					],
@@ -21480,6 +21518,45 @@ const questions = {
 						},
 					],
 					solutions: [['1'], ['2x'], ['&1x^[_&1-1_]'], ['-1/{x^2}'], ['1/{2sqrt(x)}'], ['0']],
+					// pb mathlive : ascimath output
+					options:['no-penalty-for-extraneous-brackets'],
+					correctionFormat: [
+						{
+							correct: ["$$f'(x)=&ans$$"],
+						},
+					],
+					correctionDetails: [
+						[
+							{
+								text: "&solution",
+							},
+						],
+		
+					],
+					defaultDelay: 20,
+					grade: PREMIERE_SPE_MATHS,
+				},
+				{
+					description: 'Calculer une dérivée.',
+					subdescription:'Fonctions usuelles avec coefficient.',
+					enounces: [
+						"Calcule la dérivée de cette fonction.",
+					],
+					expressions: [
+						'f(x)=&2x',
+						'f(x)=&2x^2',
+						'f(x)=&2x^&1',
+						'f(x)=&2/x',
+						'f(x)=&2sqrt(x)',
+					],
+					answerFields:["$$f'(x)=...$$"],
+					variables: [
+						{
+							'&1': '$e[3;5]',
+							'&2': '$er[2;9]'	
+						},
+					],
+					solutions: [['&2'], ['[_&2*2_]x'], ['[_&2*&1_]x^[_&1-1_]'], ['[_-(&2)_]/{x^2}'], ['&2/{2sqrt(x)}']],
 					// pb mathlive : ascimath output
 					options:['no-penalty-for-extraneous-brackets'],
 					correctionFormat: [
