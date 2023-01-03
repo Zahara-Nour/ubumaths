@@ -6625,7 +6625,7 @@ const questions = {
 					enounces: ['Calcule.'],
 					variables: [
 						{
-							'&1': '$d{$e[0;2];$e[0;2]}',
+							'&1': '$d{$e[0;2];$e[1;2]}',
 						},
 					],
 					expressions: ['&1*10'],
@@ -6640,11 +6640,10 @@ const questions = {
 					enounces: ['Calcule.'],
 					variables: [
 						{
-							'&1': '$d{$e[0;2];$e[0;2]}',
+							'&1': '$d{$e[0;2];$e[1;2]}',
 						},
 					],
 					expressions: ['&1*100'],
-
 					'result-type': 'decimal',
 					defaultDelay: 15,
 					grade: CM1,
@@ -6655,11 +6654,10 @@ const questions = {
 					enounces: ['Calcule.'],
 					variables: [
 						{
-							'&1': '$d{$e[0;2];$e[0;2]}',
+							'&1': '$d{$e[0;2];$e[1;2]}',
 						},
 					],
 					expressions: ['&1*1000'],
-
 					'result-type': 'decimal',
 					defaultDelay: 15,
 					grade: CM1,
@@ -6671,11 +6669,10 @@ const questions = {
 					variables: [
 						{
 							'&1': '$e[1;3]',
-							'&2': '$d{$e[0;4-&1];$e[0;4]}',
+							'&2': '$d{$e[0;4-&1];$e[1;4]}',
 						},
 					],
 					expressions: ['[_10^&1_]*&2', '&2*[_10^&1_]'],
-
 					'result-type': 'decimal',
 					defaultDelay: 20,
 					grade: SIXIEME,
@@ -6690,6 +6687,7 @@ const questions = {
 							'&2': '$e{&1;&1}',
 						},
 					],
+					conditions:['&1!=1'],
 					expressions: ['&2*0,1', '0,1*&2'],
 					correctionDetails: [
 						[
@@ -6744,12 +6742,15 @@ const questions = {
 					variables: [
 						{
 							'&1': '$e[0;3]',
-							'&2': '$e[0;2]',
+							'&2': '$e[1;2]',
 							'&3': '$d{&1;&2}',
+						},
+						{
+							'&3': '$e{1;3}',
 						},
 					],
 					expressions: ['&3*0,01', '0,01*&3'],
-
+					conditions:['&3 != 0 && &3 != 1'],
 					correctionDetails: [
 						[
 							{
@@ -6773,8 +6774,11 @@ const questions = {
 					variables: [
 						{
 							'&1': '$e[0;3]',
-							'&2': '$e[0;1]',
+							'&2': '$e[1;2]',
 							'&3': '$d{&1;&2}',
+						},
+						{
+							'&3': '$e{1;3}',
 						},
 					],
 					expressions: ['&3*0,001', '0,001*&3'],
@@ -6806,7 +6810,7 @@ const questions = {
 						},
 					],
 					expressions: ['[._10^(-&1)_]*[._&2_]', '[._&2_]*[._10^(-&1)_]'],
-
+					conditions:['&2 != 1'],
 					correctionDetails: [
 						[
 							{
