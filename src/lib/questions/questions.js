@@ -12637,7 +12637,7 @@ const questions = {
 							'&2': '[_&1 h_min_]',
 						},
 					],
-					answerFields: ['$$&1\\,h = ?\\,min$$'],
+					answerFields: ['$$&1\\,h = ...\\,min$$'],
 					solutions: [['[_&2/(1 min)_]']],
 					correctionFormat: [
 						{
@@ -12682,7 +12682,7 @@ const questions = {
 							'&1': '$e[1;10]',
 						},
 					],
-					answerFields: ['$$[_&1*60_]\\,min= ? h$$'],
+					answerFields: ['$$[_&1*60_]\\,min= ...\\,h$$'],
 					solutions: [['&1']],
 					correctionFormat: [
 						{
@@ -12733,7 +12733,7 @@ const questions = {
 							'&2': '[_&1 min_s_]',
 						},
 					],
-					answerFields: ['$$&1\\,min = ?\\,s$$'],
+					answerFields: ['$$&1\\,min = ...\\,s$$'],
 					solutions: [['[_&2/(1 s)_]']],
 					correctionFormat: [
 						{
@@ -12777,7 +12777,7 @@ const questions = {
 							'&1': '$e[1;10]',
 						},
 					],
-					answerFields: ['$$[_&1*60_]\\,s= ? min$$'],
+					answerFields: ['$$[_&1*60_]\\,s= ...\\,min$$'],
 					solutions: [['&1']],
 					correctionFormat: [
 						{
@@ -12828,7 +12828,7 @@ const questions = {
 							'&4': '[_&3_min_]',
 						},
 					],
-					answerFields: ['$$&1\\,h\\,[_&2_]\\,min = ?\\,min$$'],
+					answerFields: ['$$&1\\,h\\,[_&2_]\\,min = ...\\,min$$'],
 					solutions: [['[_&4/(1 min)_]']],
 
 					correctionFormat: [
@@ -12885,7 +12885,7 @@ const questions = {
 							'&4': '[_&3_min_]',
 						},
 					],
-					answerFields: ['$$&1\\,h\\,[_&2_]\\,min = ?\\,min$$'],
+					answerFields: ['$$&1\\,h\\,[_&2_]\\,min = ...\\,min$$'],
 					solutions: [['[_&4/(1 min)_]']],
 
 					correctionFormat: [
@@ -12940,7 +12940,7 @@ const questions = {
 							'&2': '$e[1;5]*10',
 						},
 					],
-					answerFields: ['$$[_&1*60+&2_]\\,min= ?\\,h\\,?\\,min$$'],
+					answerFields: ['$$[_&1*60+&2_]\\,min= ...\\,h\\,...\\,min$$'],
 					solutions: [['&1', '[_&2_]']],
 					correctionFormat: [
 						{
@@ -12996,7 +12996,7 @@ const questions = {
 							'&2': '$e[1;59]',
 						},
 					],
-					answerFields: ['$$[_&1*60+&2_]\\,min= ?\\,h\\,?\\,min$$'],
+					answerFields: ['$$[_&1*60+&2_]\\,min= ...\\,h\\,...\\,min$$'],
 					solutions: [['&1', '&2']],
 					correctionFormat: [
 						{
@@ -13052,7 +13052,7 @@ const questions = {
 							'&2': '$l{1;5;25}',
 						},
 					],
-					answerFields: ['$$&1{,}&2\\,h= ?\\,h\\,?\\,min$$'],
+					answerFields: ['$$&1{,}&2\\,h= ...\\,h\\,...\\,min$$'],
 					solutions: [['&1', '[_0,&2*60_]']],
 					correctionFormat: [
 						{
@@ -13165,7 +13165,7 @@ const questions = {
 							'&2': '$e[1;9]',
 						},
 					],
-					answerFields: ['$$&1{,}&2\\,h= ?\\,h\\,?\\,min$$'],
+					answerFields: ['$$&1{,}&2\\,h= ...\\,h\\,...\\,min$$'],
 					solutions: [['&1', '[_0,&2*60_]']],
 					correctionFormat: [
 						{
@@ -13219,14 +13219,14 @@ const questions = {
 				{
 					description: 'Convertir des durées',
 					subdescription: 'heures en minutes, heures décimales (2)',
-					enounces: ["Convertis en minutes (n'oublie pas l'unité <i>min</i>)."],
+					enounces: ["Convertis en minutes."],
 					variables: [
 						{
 							'&1': '$e[1;2]',
 							'&2': '$e[1;9]',
 						},
 					],
-					answerFields: ['$$&1{,}&2\\,h= ?\\,min$$'],
+					answerFields: ['$$&1{,}&2\\,h= ...\\,min$$'],
 					solutions: [['[_&1,&2*60_]']],
 					correctionFormat: [
 						{
@@ -13290,7 +13290,7 @@ const questions = {
 						},
 					],
 					answerFields: [
-						'$$[°&1°] \\, h \\, [°&2°] \\, min \\, + \\, [°&3°] \\, min = ? \\, h \\, ? \\, min$$',
+						'$$[°&1°] \\, h \\, [°&2°] \\, min \\, + \\, [°&3°] \\, min = ... \\, h \\, ... \\, min$$',
 					],
 					solutions: [
 						[
@@ -13301,7 +13301,7 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								'$$&1 \\, h \\, &2 \\, min \\, + \\, &3 \\, min=$$ &solution1 h &solution2 min',
+								'$$&1 \\, h \\, &2 \\, min \\, + \\, &3 \\, min=$$ &answer1 $$ h $$ &answer2 $$\\, min$$',
 							],
 						},
 					],
@@ -13370,7 +13370,7 @@ const questions = {
 						},
 					],
 					answerFields: [
-						'$$&1 \\, h \\, [_&3*10_] \\, min \\, + \\, &2 \\, h \\, [_&4*10_] \\, min=? \\, h \\, ? \\, min$$',
+						'$$&1 \\, h \\, [_&3*10_] \\, min \\, + \\, &2 \\, h \\, [_&4*10_] \\, min=... \\, h \\, ... \\, min$$',
 					],
 					solutions: [
 						[
@@ -13381,7 +13381,7 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								'$$&1 \\, h \\, [_&3*10_] \\, min \\, + \\, &2 \\, h \\, [_&4*10_] \\, min=$$ &solution1 $$h$$ &solution2 $$min$$',
+								'$$&1 \\, h \\, [_&3*10_] \\, min \\, + \\, &2 \\, h \\, [_&4*10_] \\, min=$$ &answer1 $$h$$ &answer2 $$min$$',
 							],
 						},
 					],
@@ -13416,13 +13416,13 @@ const questions = {
 						},
 					],
 					expressions: ['&1 h [_&3*10_] min + &2 h [_&4*10_] min'],
-					correctionFormat: [
-						{
-							correct: [
-								'$$&1 \\, h \\, [_&3*10_] \\, min \\, + \\, &2 \\, h \\, [_&4*10_] \\, min=$$ &solution',
-							],
-						},
-					],
+					// correctionFormat: [
+					// 	{
+					// 		correct: [
+					// 			'$$&1 \\, h \\, [_&3*10_] \\, min \\, + \\, &2 \\, h \\, [_&4*10_] \\, min=$$ &solution',
+					// 		],
+					// 	},
+					// ],
 					correctionDetails: [
 						[
 							{
@@ -13459,7 +13459,7 @@ const questions = {
 						},
 					],
 					answerFields: [
-						'$$&1 \\, h \\, &3 \\, min \\, + \\, &2 \\, h \\, &4 \\, min=? \\, h \\, ? \\, min$$',
+						'$$&1 \\, h \\, &3 \\, min \\, + \\, &2 \\, h \\, &4 \\, min=... \\, h \\, ... \\, min$$',
 					],
 					solutions: [
 						[
@@ -13470,7 +13470,7 @@ const questions = {
 					correctionFormat: [
 						{
 							correct: [
-								'$$&1 \\, h \\, &3 \\, min \\, + \\, &2 \\, h \\, &4 \\, min=$$ &solution1 $$h$$ &solution2 $$min$$',
+								'$$&1 \\, h \\, &3 \\, min \\, + \\, &2 \\, h \\, &4 \\, min=$$ &answer1 $$h$$ &answer2 $$min$$',
 							],
 						},
 					],
@@ -13504,13 +13504,13 @@ const questions = {
 						},
 					],
 					expressions: ['&1 h &3 min + &2 h &4 min'],
-					correctionFormat: [
-						{
-							correct: [
-								'$$&1 \\, h \\, &3 \\, min \\, + \\, &2 \\, h \\, &4 \\, min=$$ &solution',
-							],
-						},
-					],
+					// correctionFormat: [
+					// 	{
+					// 		correct: [
+					// 			'$$&1 \\, h \\, &3 \\, min \\, + \\, &2 \\, h \\, &4 \\, min=$$ &solution',
+					// 		],
+					// 	},
+					// ],
 					correctionDetails: [
 						[
 							{
