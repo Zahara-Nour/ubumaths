@@ -4379,7 +4379,7 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: 'Factorisation pour un facteur $$10$$',
+					subdescription: 'Factorisation pour obtenir un facteur égal à $$10$$',
 					enounces: ['Calcule.'],
 					expressions: [
 						'&2*&1+[_10-&2_]*&1',
@@ -4387,7 +4387,7 @@ const questions = {
 						'&2*&1+&1*[_10-&2_]',
 						'&1*&2+&1*[_10-&2_]',
 					],
-					variables: [{ '&1': '$e[23;99]', '&2': '$e[2;8]' }],
+					variables: [{ '&1': '$e[23;99]', '&2': '$e[2;8]\\{5}' }],
 					correctionDetails: [
 						[
 							{
