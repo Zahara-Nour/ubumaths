@@ -1742,7 +1742,8 @@ const questions = {
 				},
 				{
 					description: 'Trouver le double',
-					subdescription: 'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
+					subdescription:
+						'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
 					enounces: [
 						'Quel est le double de $$&1$$ ?',
 						'Quel est le résultat de $$&1+&1$$ ?',
@@ -1767,7 +1768,8 @@ const questions = {
 				},
 				{
 					description: 'Trouver la moitié',
-					subdescription: 'Nombres pairs de $$1$$ à $$30$$, $$40$$, $$50$$ et $$100$$',
+					subdescription:
+						'Nombres pairs de $$1$$ à $$30$$, $$40$$, $$50$$ et $$100$$',
 					enounces: ['Quelle est la moitié de $$&2$$ ?'],
 					solutions: [['[_&1_]']],
 					variables: [
@@ -1793,7 +1795,8 @@ const questions = {
 				},
 				{
 					description: 'Trouver le double',
-					subdescription: 'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
+					subdescription:
+						'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
 					enounces: [
 						'Quel est le double de $$&1$$ ?',
 						'Quel est le résultat de $$&1+&1$$ ?',
@@ -1818,7 +1821,8 @@ const questions = {
 				},
 				{
 					description: 'Trouver la moitié',
-					subdescription: 'Nombres pairs de $$1$$ à $$40$$, $$50$$, $$60$$ et $$100$$',
+					subdescription:
+						'Nombres pairs de $$1$$ à $$40$$, $$50$$, $$60$$ et $$100$$',
 					enounces: ['Quelle est la moitié de $$&2$$ ?'],
 					solutions: [['[_&1_]']],
 					variables: [
@@ -1915,7 +1919,8 @@ const questions = {
 				},
 				{
 					description: 'Trouver le triple',
-					subdescription: 'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
+					subdescription:
+						'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
 					enounces: [
 						'Quel est le triple de $$&1$$ ?',
 						'Quel est le résultat de $$&1+&1+&1$$ ?',
@@ -1940,7 +1945,8 @@ const questions = {
 				},
 				{
 					description: 'Trouver le triple',
-					subdescription: 'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
+					subdescription:
+						'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
 					enounces: [
 						'Quel est le triple de $$&1$$ ?',
 						'Quel est le résultat de $$&1+&1+&1$$ ?',
@@ -1994,7 +2000,8 @@ const questions = {
 				},
 				{
 					description: 'Additionner par regroupements',
-					subdescription: 'Regrouper pour obtenir $$10$$. $$3$$ nombres à un chiffre.',
+					subdescription:
+						'Regrouper pour obtenir $$10$$. $$3$$ nombres à un chiffre.',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: ['&2+&1+[_10-&1_]', '&1+&2+[_10-&1_]'],
 
@@ -2119,7 +2126,8 @@ const questions = {
 				},
 				{
 					description: 'Additionner par regroupements',
-					subdescription: '$$3$$ Nombres à $$2$$ chiffres. Regrouper pour obtenir $$100$$',
+					subdescription:
+						'$$3$$ Nombres à $$2$$ chiffres. Regrouper pour obtenir $$100$$',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: ['&2+&1+[_100-&1_]', '&1+&2+[_100-&1_]'],
 					correctionDetails: [
@@ -2246,7 +2254,8 @@ const questions = {
 				},
 				{
 					description: 'Additionner par regroupements',
-					subdescription: 'Nombres à $$3$$ chiffres. Regrouper pour faire $$1000$$',
+					subdescription:
+						'Nombres à $$3$$ chiffres. Regrouper pour faire $$1000$$',
 					enounces: ['Calcule de manière astucieuse.'],
 					expressions: ['&2+&1+[_1000-&1_]', '&1+&2+[_1000-&1_]'],
 					correctionDetails: [
@@ -2501,8 +2510,7 @@ const questions = {
 			],
 			'A trou': [
 				{
-					description:
-						'Compléter une soustraction à trou (résultat positif)',
+					description: 'Compléter une soustraction à trou (résultat positif)',
 					subdescription: 'Nombres à $$1$$ chiffre',
 					enounces: ['Complète'],
 					expressions: ['?-&1=&2', '&1-?=&2'],
@@ -3045,7 +3053,8 @@ const questions = {
 					grade: CE2,
 				},
 				{
-					description: 'Multiplier par $$30$$, $$40$$, $$50$$, $$60$$, $$70$$, $$80$$, $$90$$',
+					description:
+						'Multiplier par $$30$$, $$40$$, $$50$$, $$60$$, $$70$$, $$80$$, $$90$$',
 					subdescription: 'Nombre à $$1$$ chiffres',
 					enounces: ['Calcule.'],
 					expressions: ['[_&1*10_]*&2', '&2*[_&1*10_]'],
@@ -3134,7 +3143,7 @@ const questions = {
 							'&3': '$e[1;9]',
 							'&4': '$e[1;9]*100+$e[1;9]*10+&3',
 							'&5': '&3*&1',
-							'&6': '[_(&5:10-floor(&5:10))*10_]'
+							'&6': '[_(&5:10-floor(&5:10))*10_]',
 						},
 					],
 					solutions: [['&6']],
@@ -3227,7 +3236,8 @@ const questions = {
 				},
 				{
 					description: 'Trouver le double',
-					subdescription: 'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
+					subdescription:
+						'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
 					enounces: [
 						'Quel est le double de $$&1$$ ?',
 						'Quel est le résultat de $$2*&1$$ ?',
@@ -3252,7 +3262,8 @@ const questions = {
 				},
 				{
 					description: 'Trouver la moitié',
-					subdescription: 'Nombres pairs de $$1$$ à $$30$$, $$40$$, $$50$$ et $$100$$',
+					subdescription:
+						'Nombres pairs de $$1$$ à $$30$$, $$40$$, $$50$$ et $$100$$',
 					enounces: ['Quelle est la moitié de $$&2$$ ?'],
 					solutions: [['[_&1_]']],
 					variables: [
@@ -3278,7 +3289,8 @@ const questions = {
 				},
 				{
 					description: 'Trouver le double',
-					subdescription: 'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
+					subdescription:
+						'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
 					enounces: [
 						'Quel est le double de $$&1$$ ?',
 						'Quel est le résultat de $$2*&1$$ ?',
@@ -3303,7 +3315,8 @@ const questions = {
 				},
 				{
 					description: 'Trouver la moitié',
-					subdescription: 'Nombres pairs de $$1$$ à $$40$$, $$50$$, $$60$$ et $$100$$',
+					subdescription:
+						'Nombres pairs de $$1$$ à $$40$$, $$50$$, $$60$$ et $$100$$',
 					enounces: ['Quelle est la moitié de $$&2$$ ?'],
 					solutions: [['[_&1_]']],
 					variables: [
@@ -3400,7 +3413,8 @@ const questions = {
 				},
 				{
 					description: 'Trouver le triple',
-					subdescription: 'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
+					subdescription:
+						'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
 					enounces: [
 						'Quel est le triple de $$&1$$ ?',
 						'Quel est le résultat de $$3*&1$$ ?',
@@ -3425,7 +3439,8 @@ const questions = {
 				},
 				{
 					description: 'Trouver le triple',
-					subdescription: 'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
+					subdescription:
+						'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
 					enounces: [
 						'Quel est le triple de $$&1$$ ?',
 						'Quel est le résultat de $$3*&1$$ ?',
@@ -3520,7 +3535,8 @@ const questions = {
 				},
 				{
 					description: 'Trouver le quadruple',
-					subdescription: 'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
+					subdescription:
+						'Nombres de $$1$$ à $$15$$, $$25$$, $$30$$, $$40$$, $$50$$ et $$100$$',
 					enounces: [
 						'Quel est le quadruple de $$&1$$ ?',
 						'Quel est le résultat de $$4*&1$$ ?',
@@ -3545,7 +3561,8 @@ const questions = {
 				},
 				{
 					description: 'Trouver le quadruple',
-					subdescription: 'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
+					subdescription:
+						'Nombres de $$1$$ à $$20$$, $$25$$, $$30$$, $$40$$, $$50$$, $$60$$ et $$100$$',
 					enounces: [
 						'Quel est le quadruple de $$&1$$ ?',
 						'Quel est le résultat de $$4*&1$$ ?',
@@ -3654,7 +3671,8 @@ const questions = {
 			'Puissances de 10': [
 				{
 					description: "Calculer un produit d'entiers",
-					subdescription: "Multiplication par $$10$$ d'un nombre inférieur à $$100$$",
+					subdescription:
+						"Multiplication par $$10$$ d'un nombre inférieur à $$100$$",
 					enounces: ['Calcule.'],
 					expressions: ['&1*10', '10*&1'],
 					variables: [{ '&1': '$e[1;99]' }],
@@ -3664,7 +3682,8 @@ const questions = {
 				},
 				{
 					description: "Calculer un produit d'entiers",
-					subdescription: "Multiplication par $$100$$ d'un nombre inférieur à $$100$$",
+					subdescription:
+						"Multiplication par $$100$$ d'un nombre inférieur à $$100$$",
 					enounces: ['Calcule.'],
 					expressions: ['&1*100', '100*&1'],
 					variables: [{ '&1': '$e[1;99]' }],
@@ -4067,7 +4086,8 @@ const questions = {
 			Distributivité: [
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à $$1$$ chiffre par $$12$$",
+					subdescription:
+						"Multiplication d'un nombre à $$1$$ chiffre par $$12$$",
 					enounces: ['Calcule.'],
 					expressions: ['12*&1'],
 					variables: [{ '&1': '$e[0;9]' }],
@@ -4084,7 +4104,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à $$1$$ chiffre par $$13$$",
+					subdescription:
+						"Multiplication d'un nombre à $$1$$ chiffre par $$13$$",
 					enounces: ['Calcule.'],
 					expressions: ['13*&1'],
 					variables: [{ '&1': '$e[0;9]' }],
@@ -4101,7 +4122,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à $$1$$ chiffre par $$21$$",
+					subdescription:
+						"Multiplication d'un nombre à $$1$$ chiffre par $$21$$",
 					enounces: ['Calcule.'],
 					expressions: ['21*&1'],
 					variables: [{ '&1': '$e[0;9]' }],
@@ -4119,7 +4141,8 @@ const questions = {
 
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à $$1$$ chiffre par $$22$$",
+					subdescription:
+						"Multiplication d'un nombre à $$1$$ chiffre par $$22$$",
 					enounces: ['Calcule.'],
 					expressions: ['22*&1'],
 					variables: [{ '&1': '$e[0;9]' }],
@@ -4136,7 +4159,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à $$1$$ chiffre par $$19$$",
+					subdescription:
+						"Multiplication d'un nombre à $$1$$ chiffre par $$19$$",
 					enounces: ['Calcule.'],
 					expressions: ['19*&1'],
 					variables: [{ '&1': '$e[0;9]' }],
@@ -4153,7 +4177,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à $$1$$ chiffre par $$18$$",
+					subdescription:
+						"Multiplication d'un nombre à $$1$$ chiffre par $$18$$",
 					enounces: ['Calcule.'],
 					expressions: ['18*&1'],
 					variables: [{ '&1': '$e[0;9]' }],
@@ -4170,7 +4195,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à $$2$$ chiffres par $$11$$",
+					subdescription:
+						"Multiplication d'un nombre à $$2$$ chiffres par $$11$$",
 					enounces: ['Calcule.'],
 					expressions: ['11*&1'],
 					variables: [{ '&1': '$e[13;45]' }],
@@ -4187,7 +4213,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à $$2$$ chiffres par $$12$$",
+					subdescription:
+						"Multiplication d'un nombre à $$2$$ chiffres par $$12$$",
 					enounces: ['Calcule.'],
 					expressions: ['12*&1'],
 					variables: [{ '&1': '$l{13;14;15;23;24;25;33;34;35;45}' }],
@@ -4240,7 +4267,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: "Multiplication d'un nombre à $$2$$ chiffres par $$9$$",
+					subdescription:
+						"Multiplication d'un nombre à $$2$$ chiffres par $$9$$",
 					enounces: ['Calcule.'],
 					expressions: ['9*&1'],
 					variables: [{ '&1': '$e[12;19]' }, { '&1': '$e[23;29]' }],
@@ -4846,7 +4874,7 @@ const questions = {
 						"En regardant l'égalité ci-dessous, quel est le <b>reste</b> de la division euclidienne de $$[_&1*&2+&3_]$$ par $$&1$$ ?",
 					],
 					expressions: ['$$[_&1*&2+&3_]=(&1 \\times &2)+&3$$'],
-					answerFields:['$$...$$'],
+					answerFields: ['$$...$$'],
 					variables: [
 						{
 							'&1': '$e[2;9]',
@@ -4921,7 +4949,7 @@ const questions = {
 					variables: [
 						{ '&1': '$e[2;9]', '&2': '$e[2;10]', '&3': '$e[1;&1-1]' },
 					],
-					expressions:['[_&1*&2+&3_]=(&1*?)+?'],
+					expressions: ['[_&1*&2+&3_]=(&1*?)+?'],
 					solutions: [['&2', '&3']],
 					defaultDelay: 30,
 					correctionFormat: [
@@ -4929,7 +4957,7 @@ const questions = {
 							correct: ['$$[_&1*&2+&3_]=(&1\\times &ans1) + &ans2$$'],
 						},
 					],
-					type:"fill in",
+					type: 'fill in',
 					options: ['no-penalty-for-extraneous-brackets'],
 					grade: CE2,
 				},
@@ -5322,20 +5350,16 @@ const questions = {
 					solutions: [['&1'], ['&2'], ['&3']],
 					correctionFormat: [
 						{
-							correct: [
-								'Le chiffre des centièmes est &answer.',
-							],
+							correct: ['Le chiffre des centièmes est &answer.'],
 						},
 						{
-							correct: [
-								'Le chiffre des dizièmes est &answer.',
-							],
+							correct: ['Le chiffre des dizièmes est &answer.'],
 						},
 						{
 							correct: ['Le chiffre des unités est &answer.'],
 						},
 					],
-					options:['require-no-extraneaous-zeros'],
+					options: ['require-no-extraneaous-zeros'],
 					defaultDelay: 10,
 					grade: CM1,
 				},
@@ -5362,39 +5386,29 @@ const questions = {
 					solutions: [['&1'], ['&2'], ['&3'], ['&4'], ['&5']],
 					correctionFormat: [
 						{
-							correct: [
-								'Le chiffre des centièmes est &answer.',
-							],
+							correct: ['Le chiffre des centièmes est &answer.'],
 						},
 						{
-							correct: [
-								'Le chiffre des dizièmes est &answer.',
-							],
+							correct: ['Le chiffre des dizièmes est &answer.'],
 						},
 						{
 							correct: ['Le chiffre des unités est &answer.'],
 						},
 						{
-							correct: [
-								'Le chiffre des dizaines est &answer.',
-							],
+							correct: ['Le chiffre des dizaines est &answer.'],
 						},
 						{
-							correct: [
-								'Le chiffre des centaines est &answer.',
-							],
+							correct: ['Le chiffre des centaines est &answer.'],
 						},
 					],
-					options:['require-no-extraneaous-zeros'],
+					options: ['require-no-extraneaous-zeros'],
 					defaultDelay: 10,
 					grade: CM1,
 				},
 				{
 					description: "Définition à l'aide de fractions décimales",
 					subdescription: "Jusqu'au centièmes",
-					enounces: [
-						"Réécris sous la forme d'un nombre décimal.",
-					],
+					enounces: ["Réécris sous la forme d'un nombre décimal."],
 					variables: [
 						{
 							'&1': '$e{1;1}',
@@ -5421,9 +5435,7 @@ const questions = {
 				{
 					description: "Définition à l'aide de fractions décimales",
 					subdescription: "Jusqu'au centièmes (mélangée)",
-					enounces: [
-						"Réécris sous la forme d'un nombre décimal.",
-					],
+					enounces: ["Réécris sous la forme d'un nombre décimal."],
 					variables: [
 						{
 							'&1': '$e{1;1}',
@@ -5451,9 +5463,7 @@ const questions = {
 				{
 					description: "Définition à l'aide de fractions décimales (2)",
 					subdescription: "Jusqu'aux centièmes",
-					enounces: [
-						"Réécris sous la forme d'un nombre décimal.",
-					],
+					enounces: ["Réécris sous la forme d'un nombre décimal."],
 					variables: [
 						{
 							'&1': '$e{1;1}',
@@ -5488,19 +5498,13 @@ const questions = {
 					solutions: [['&1'], ['&2'], ['&3'], ['&4']],
 					correctionFormat: [
 						{
-							correct: [
-								'Le chiffre des millièmes est &answer.',
-							],
+							correct: ['Le chiffre des millièmes est &answer.'],
 						},
 						{
-							correct: [
-								'Le chiffre des centièmes est &answer.',
-							],
+							correct: ['Le chiffre des centièmes est &answer.'],
 						},
 						{
-							correct: [
-								'Le chiffre des dizièmes est &answer.',
-							],
+							correct: ['Le chiffre des dizièmes est &answer.'],
 						},
 						{
 							correct: ['Le chiffre des unités est &answer.'],
@@ -5536,37 +5540,25 @@ const questions = {
 					solutions: [['&1'], ['&2'], ['&3'], ['&4'], ['&5'], ['&6'], ['&7']],
 					correctionFormat: [
 						{
-							correct: [
-								'Le chiffre des millièmes est &answer.',
-							],
+							correct: ['Le chiffre des millièmes est &answer.'],
 						},
 						{
-							correct: [
-								'Le chiffre des centièmes est &answer.',
-							],
+							correct: ['Le chiffre des centièmes est &answer.'],
 						},
 						{
-							correct: [
-								'Le chiffre des dizièmes est &answer.',
-							],
+							correct: ['Le chiffre des dizièmes est &answer.'],
 						},
 						{
 							correct: ['Le chiffre des unités est &answer.'],
 						},
 						{
-							correct: [
-								'Le chiffre des dizaines est &answer.',
-							],
+							correct: ['Le chiffre des dizaines est &answer.'],
 						},
 						{
-							correct: [
-								'Le chiffre des centaines est &answer.',
-							],
+							correct: ['Le chiffre des centaines est &answer.'],
 						},
 						{
-							correct: [
-								'Le chiffre des milliers est &answer.',
-							],
+							correct: ['Le chiffre des milliers est &answer.'],
 						},
 					],
 					defaultDelay: 10,
@@ -5614,9 +5606,7 @@ const questions = {
 				{
 					description: "Définition à l'aide de fractions décimales",
 					subdescription: "Jusqu'aux millièmes (mélangée)",
-					enounces: [
-						"Réécris sous la forme d'un nombre décimal.",
-					],
+					enounces: ["Réécris sous la forme d'un nombre décimal."],
 					variables: [
 						{
 							'&1': '$e{1;1}',
@@ -5653,9 +5643,7 @@ const questions = {
 				{
 					description: "Définition à l'aide de fractions décimales (2)",
 					subdescription: "Jusqu'aux millièmes",
-					enounces: [
-						"Réécris sous la forme d'un nombre décimal.",
-					],
+					enounces: ["Réécris sous la forme d'un nombre décimal."],
 					variables: [
 						{
 							'&1': '$e{1;1}',
@@ -5790,7 +5778,7 @@ const questions = {
 					enounces: ['Réécris ce nombre décimal sous forme fractionnaire.'],
 					expressions: ['[._&2/&1_]'],
 					variables: [{ '&1': '$l{2;4;5;10}', '&2': '$e[1;&1-1]' }],
-					options:['no-penalty-for-non-reduced-fractions'],
+					options: ['no-penalty-for-non-reduced-fractions'],
 					defaultDelay: 20,
 					// TODO: autoriser fraction non simplifiée
 					grade: SIXIEME,
@@ -5801,7 +5789,7 @@ const questions = {
 					enounces: ['Réécris ce nombre décimal sous forme fractionnaire.'],
 					expressions: ['[._&2/&1_]'],
 					variables: [{ '&1': '$l{2;4;5;10}', '&2': '$e[1;&1-1]' }],
-					
+
 					defaultDelay: 20,
 					// TODO: autoriser fraction non simplifiée
 					grade: SIXIEME,
@@ -5821,21 +5809,14 @@ const questions = {
 							'&3': '[._&1+&2*0,1_]',
 						},
 					],
-					solutions: [
-						['[_&1+1_]'],
-						['&1'],
-					],
+					solutions: [['[_&1+1_]'], ['&1']],
 
 					correctionFormat: [
 						{
-							correct: [
-								'Le plus petit entier supérieur est &answer',
-							],
+							correct: ['Le plus petit entier supérieur est &answer'],
 						},
 						{
-							correct: [
-								'Le plus grand entier inférieur est &answer',
-							],
+							correct: ['Le plus grand entier inférieur est &answer'],
 						},
 					],
 					defaultDelay: 20,
@@ -5845,7 +5826,6 @@ const questions = {
 					description: 'Comparer deux nombres entiers',
 					enounces: ['Quel est le plus petit de ces 2 nombres ?'],
 					variables: [
-					
 						{
 							'&1': '$e[1;2]', // nombre de chiffres identiques
 							'&2': '$e[1;2]', // nombre de chiffres différents
@@ -5893,13 +5873,12 @@ const questions = {
 							correct: ['$$&ans1<&3<&ans2$$'],
 						},
 					],
-					type:"fill in",
+					type: 'fill in',
 					defaultDelay: 20,
 					grade: CM1,
 				},
 				{
-					description:
-						'Encadrer un nombre décimal au dixième près',
+					description: 'Encadrer un nombre décimal au dixième près',
 					enounces: ['Encadre ce nombre décimal au dixième près.'],
 					expressions: ['?<&4<?'],
 					variables: [
@@ -5917,14 +5896,13 @@ const questions = {
 							correct: ['$$&ans1<[°&4°]<&ans2$$'],
 						},
 					],
-					type:"fill in",
-					options:['no-penalty-for-extraneous-zeros'],
+					type: 'fill in',
+					options: ['no-penalty-for-extraneous-zeros'],
 					defaultDelay: 20,
 					grade: CM1,
 				},
 				{
-					description:
-						'Encadrer un nombre décimal au centième près',
+					description: 'Encadrer un nombre décimal au centième près',
 					enounces: ['Encadre ce nombre décimal au centième près.'],
 					expressions: ['?<&5<?'],
 					variables: [
@@ -5943,8 +5921,8 @@ const questions = {
 							correct: ['$$&ans1<[°&5°]<&ans2$$'],
 						},
 					],
-					type:"fill in",
-					options:['no-penalty-for-extraneous-zeros'],
+					type: 'fill in',
+					options: ['no-penalty-for-extraneous-zeros'],
 					defaultDelay: 20,
 					grade: CM1,
 				},
@@ -6397,7 +6375,7 @@ const questions = {
 					enounces: [
 						'La virgule a été oubliée dans le produit. Réécris le produit en rajoutant la virgule.',
 					],
-					
+
 					variables: [
 						{
 							'&1': '$e[2;4]',
@@ -6413,9 +6391,7 @@ const questions = {
 					solutions: [['[._&3*&4:10^(&1+&2-2)_]']],
 					correctionFormat: [
 						{
-							correct: [
-								'$$[._&3:10^(&1-1)_] \\times [._&4:10^(&2-1)_]=&ans$$',
-							],
+							correct: ['$$[._&3:10^(&1-1)_] \\times [._&4:10^(&2-1)_]=&ans$$'],
 						},
 					],
 					correctionDetails: [
@@ -6427,7 +6403,7 @@ const questions = {
 					],
 
 					'result-type': 'decimal',
-					type:'fill in',
+					type: 'fill in',
 					defaultDelay: 20,
 					grade: SIXIEME,
 				},
@@ -6687,7 +6663,7 @@ const questions = {
 							'&2': '$e{&1;&1}',
 						},
 					],
-					conditions:['&1!=1'],
+					conditions: ['&1!=1'],
 					expressions: ['&2*0,1', '0,1*&2'],
 					correctionDetails: [
 						[
@@ -6750,7 +6726,7 @@ const questions = {
 						},
 					],
 					expressions: ['&3*0,01', '0,01*&3'],
-					conditions:['&3 != 0 && &3 != 1'],
+					conditions: ['&3 != 0 && &3 != 1'],
 					correctionDetails: [
 						[
 							{
@@ -6810,7 +6786,7 @@ const questions = {
 						},
 					],
 					expressions: ['[._10^(-&1)_]*[._&2_]', '[._&2_]*[._10^(-&1)_]'],
-					conditions:['&2 != 1'],
+					conditions: ['&2 != 1'],
 					correctionDetails: [
 						[
 							{
@@ -6979,7 +6955,8 @@ const questions = {
 			Distributivité: [
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: 'Factorisation pour obternir un facteur égal à $$10$$',
+					subdescription:
+						'Factorisation pour obternir un facteur égal à $$10$$',
 					enounces: ['Calcule.'],
 					expressions: [
 						'&2*&1+[_10-&2_]*&1',
@@ -7096,7 +7073,8 @@ const questions = {
 				},
 				{
 					description: 'Utiliser la distributivité',
-					subdescription: 'Factorisation pour obtenir un facteur égal à $$100$$',
+					subdescription:
+						'Factorisation pour obtenir un facteur égal à $$100$$',
 					enounces: ['Calculer'],
 					expressions: [
 						'&2*&1+[_100-&2_]*&1',
@@ -7729,7 +7707,7 @@ const questions = {
 							correct: ["L'opposé de $$-&1$$ est &answer"],
 						},
 					],
-					
+
 					defaultDelay: 20,
 					grade: CINQUIEME,
 				},
@@ -8959,7 +8937,8 @@ const questions = {
 				},
 				{
 					description: 'Simplifier une fraction',
-					subdescription: 'simplification par $$2$$, $$3$$, $$5$$, $$7$$ ou $$11$$',
+					subdescription:
+						'simplification par $$2$$, $$3$$, $$5$$, $$7$$ ou $$11$$',
 					enounces: ['Simplifie cette fraction.'],
 					expressions: ['[_&1*&2_]/[_&1*&3_]'],
 					variables: [
@@ -9067,7 +9046,6 @@ const questions = {
 						[{ text: '$$\\dfrac{&2}{&1}$$' }, { text: '$$\\dfrac{&3}{&1}$$' }],
 					],
 
-					
 					correctionDetails: [
 						[
 							{
@@ -9175,7 +9153,7 @@ const questions = {
 							{ text: '$$\\dfrac{[_&4_]}{[_&2*&1_]}$$' },
 						],
 					],
-					
+
 					correctionDetails: [
 						[
 							{
@@ -9329,7 +9307,7 @@ const questions = {
 					subdescription: 'Fractions décimales.',
 					enounces: ['Calcule.'],
 					expressions: ['&1/10+&2/10', '&1/10+&2/10+&3/10', '&1/100+&2/100'],
-					solutions:[
+					solutions: [
 						['{[_&1+&2_]}/10'],
 						['{[_&1+&2+&3_]}/10'],
 						['{[_&1+&2_]}/100'],
@@ -9367,7 +9345,7 @@ const questions = {
 							},
 						],
 					],
-					options:['no-penalty-for-non-reduced-fractions'],
+					options: ['no-penalty-for-non-reduced-fractions'],
 					defaultDelay: 30,
 					grade: CM1,
 				},
@@ -9717,7 +9695,7 @@ const questions = {
 				},
 				{
 					description: "Calculer une fraction d'une quantité",
-					enounces:['Calcule'],
+					enounces: ['Calcule'],
 					subdescription: 'Dans les $$2$$ sens',
 					expressions: ['(&2/&3)*[_&1*&3_]', '[_&1*&3_]*(&2/&3)'],
 					variables: [
@@ -9767,7 +9745,7 @@ const questions = {
 			],
 			Multiplication: [
 				{
-					enounces:['Calcule.'],
+					enounces: ['Calcule.'],
 					description: 'Calculer un produit',
 					subdescription: 'un entier par un quotient de numérateur $$1$$',
 					expressions: ['&1*{1/&2}', '{1/&2}*&1'],
@@ -9794,7 +9772,7 @@ const questions = {
 					grade: CM1,
 				},
 				{
-					enounces:['Calcule.'],
+					enounces: ['Calcule.'],
 					description: 'Calculer un produit',
 					subdescription: 'un entier par un quotient',
 					expressions: ['&1*{&3/&2}', '{&3/&2}*&1'],
@@ -9822,7 +9800,7 @@ const questions = {
 					grade: CM1,
 				},
 				{
-					enounces:['Calcule.'],
+					enounces: ['Calcule.'],
 					description: 'Calculer un produit',
 					subdescription: 'Pas de simplification',
 					expressions: ['{&1/&3}*{&2/&4}'],
@@ -9874,7 +9852,7 @@ const questions = {
 					grade: QUATRIEME,
 				},
 				{
-					enounces:['Calcule.'],
+					enounces: ['Calcule.'],
 					description: 'Calculer un produit',
 					subdescription: 'avec peut-être une simplification simple',
 					expressions: ['{&1/&3}*{&2/&4}'],
@@ -10137,7 +10115,7 @@ const questions = {
 						},
 					],
 					solutions: [['1/{&1^&2}']],
-					//  mathlive 
+					//  mathlive
 					// qui rajoute des parenthèses au dénominateur quand c'est une puissance
 					options: ['no-penalty-for-extraneous-brackets'],
 					defaultDelay: 20,
@@ -10161,7 +10139,8 @@ const questions = {
 			],
 			'Puissances de 10': [
 				{
-					description: "Ecrire un nombre entier à l'aide d'une puissance de $$10$$",
+					description:
+						"Ecrire un nombre entier à l'aide d'une puissance de $$10$$",
 					subdescription:
 						'de la forme avec puissances de $$10$$ à la forme décimale.',
 					enounces: ["Ecris ce nombre sous la forme d'un seul nombre entier."],
@@ -10177,7 +10156,8 @@ const questions = {
 					grade: QUATRIEME,
 				},
 				{
-					description: "Ecrire un nombre entier à l'aide d'une puissance de $$10$$",
+					description:
+						"Ecrire un nombre entier à l'aide d'une puissance de $$10$$",
 					subdescription:
 						'De la forme décimale à la forme avec puissances de $$10$$.',
 					enounces: ["Ecris ce nombre à l'aide d'une puissance de $$10$$."],
@@ -13219,7 +13199,7 @@ const questions = {
 				{
 					description: 'Convertir des durées',
 					subdescription: 'heures en minutes, heures décimales (2)',
-					enounces: ["Convertis en minutes."],
+					enounces: ['Convertis en minutes.'],
 					variables: [
 						{
 							'&1': '$e[1;2]',
@@ -14067,6 +14047,144 @@ const questions = {
 			],
 		},
 	},
+	Probabilités: {
+		apprivoiser: {
+			fréquences: [
+				{
+					description: 'fréquence et probabilité',
+					enounces: [
+						"Quelle est la probabilité d'obtenir le nombre $$&2$$ quand on lance un dé à $$&1$$ faces ?",
+						"Quelle est la probabilité d'obtenir le nombre $$&2$$ quand on lance un dé à $$&1$$ faces ?",
+						"Quelle est la probabilité d'obtenir un nombre pair quand on lance un dé à $$&1$$ faces ?",
+						"Quelle est la probabilité d'obtenir un multiple de $$&2$$ quand on lance un dé à $$&1$$ faces ?",
+					],
+					solutions: [
+						['1/&1'],
+						['0'],
+						['1/2'],
+						['[_((&1-mod(&1;&2))/&2)/&1_]'],
+					],
+					testAnswers: [
+						['&answer=1/&1'],
+						['&answer=0'],
+						['&answer=1/2'],
+						['&answer=((&1-mod(&1;&2))/&2)/&1'],
+					],
+					variables: [
+						{
+							'&1': '$l{6;8;10;12;20}',
+							'&2': '$e[1;&1]',
+						},
+						{
+							'&1': '$l{6;8;10;12;20}',
+							'&2': '$e[&1+1;&1+3]',
+						},
+						{
+							'&1': '$l{6;8;10;12;20}',
+						},
+						{
+							'&1': '$l{6;8;10;12;20}',
+							'&2': '$l{3;4;5}',
+							'&3': '[_(&1-mod(&1;&2))/&2_]',
+						},
+					],
+					correctionFormat: [
+						{
+							correct: ["La fréquence d'apparition est &answer."],
+						},
+					],
+					correctionDetails: [
+						[
+							{
+								text: "Avec un dé à $$&1$$ faces, il y a une seule façon d'obtenir $$&2$$ parmi $$&1$$ possibilités. La probabilité est donc &solution.",
+							},
+						],
+						[
+							{
+								text: "Avec un dé à $$&1$$ faces, il est impossible d'obtenir $$&2$$. La probabilité est donc &solution.",
+							},
+						],
+						[
+							{
+								text: 'Avec un dé à $$&1$$ faces, il y a autant de nombres pairs que de nombres impairs. La probabilité est donc &solution.',
+							},
+						],
+						[
+							{
+								text: 'Sur un dé à $$&1$$ faces, il y a $$&3$$ multiples de $$&2$$.',
+							},
+							{
+								text: '@@ pgcd(&3;&1)=1 ?? La probabilité est donc &solution.@@ \
+								@@ pgcd(&3;&1)!=1 ?? La probabilité est donc $$\\frac{&3}{&1}=&sol$$.@@',
+							},
+						],
+					],
+					options: ['no-penalty-for-non-reduced-fractions'],
+					defaultDelay: 20,
+					grade: SIXIEME,
+				},
+				{
+					description: 'fréquence et probabilité',
+					enounces: [
+						"Je lance &1 fois un dé à &2 faces. J'obtiens &3 fois le nombre &4. Quelle est la fréquence d'apparition du nombre &4 ?",
+						"Je lance &1 fois une pièce de monnaie. J'obtiens &2 fois le côté face. Quelle est la fréquence d'apparition du côté face?",
+						"Je lance &1 fois une pièce de monnaie. J'obtiens &2 fois le côté face. Quelle est la fréquence d'apparition du côté pile?",
+					],
+					solutions: [['[_&3/&1_]'], ['[_&2/&1_]'], ['[_{&1-&2}/&1_]']],
+					testAnswers: [
+						['&answer=&3/&1'],
+						['&answer=&2/&1'],
+						['&answer={&1-&2}/&1'],
+					],
+					variables: [
+						{
+							'&1': '$e[4;9]',
+							'&2': '$l{6;8;10;12;20}',
+							'&3': '$e[1;&1]',
+							'&4': '$e[1;&2]',
+						},
+						{
+							'&1': '$e[4;9]',
+							'&2': '$e[1;&1]',
+						},
+						{
+							'&1': '$e[4;9]',
+							'&2': '$e[1;&1-1]',
+						},
+					],
+					correctionFormat: [
+						{
+							correct: ["La fréquence d'apparition est &answer."],
+						},
+					],
+					correctionDetails: [
+						[
+							{
+								text: "@@ pgcd(&3;&1)=1 ?? La fréquence d'apparition du nombre $$&4$$ est &solution.@@ \
+								@@ pgcd(&3;&1)!=1 ?? La fréquence d'apparition du nombre &4 est $$\\frac{&3}{&1}=&sol$$.@@",
+							},
+						],
+						[
+							{
+								text: "@@ pgcd(&2;&1)=1 ?? La fréquence d'apparition du côté face est &solution.@@ \
+									@@ pgcd(&2;&1)!=1 ?? La fréquence d'apparition du côté face est $$\\frac{&2}{&1}=&sol$$.@@",
+							},
+						],
+						[
+							{
+								text: "@@ pgcd(&1-&2;&1)=1 ?? La fréquence d'apparition du côté pile est $$\\frac{&1-&2}{&1}=&sol$$.@@ \
+									@@ pgcd(&1-&2;&1)!=1 ?? La fréquence d'apparition du côté pile est $$\\frac{&1-&2}{&1}=\\frac{[_&1-&2_]}{&1}=&sol$$.@@",
+							},
+						],
+					],
+
+					options: ['no-penalty-for-non-reduced-fractions'],
+					defaultDelay: 20,
+					grade: SIXIEME,
+				},
+			],
+		},
+	},
 	Proportionnalité: {
 		'Tableaux de proportionnalité': {
 			Reconnaître: [
@@ -14094,7 +14212,7 @@ const questions = {
 						},
 					],
 					solutions: [[0], [1]],
-					
+
 					correctionDetails: [
 						[
 							{
@@ -14147,7 +14265,7 @@ const questions = {
 						},
 					],
 					solutions: [[0], [1]],
-					
+
 					correctionDetails: [
 						[
 							{
@@ -16980,7 +17098,7 @@ const questions = {
 						'&1*&2-&3*&1',
 						'&2*&1-&3*&1',
 					],
-					answerFields:['Un facteur commun est $$...$$'],
+					answerFields: ['Un facteur commun est $$...$$'],
 					variables: [
 						{
 							'&1': '$e[2;9]',
@@ -17030,7 +17148,7 @@ const questions = {
 						['&1(&2-&3)'],
 						['&1(&2-&3)'],
 					],
-					
+
 					correctionDetails: [
 						[
 							{
@@ -17144,7 +17262,7 @@ const questions = {
 							'&4': '$l{x;y;z}\\{&3}',
 						},
 					],
-					answerFields:['Un facteur commun est $$...$$'],
+					answerFields: ['Un facteur commun est $$...$$'],
 					correctionFormat: [
 						{
 							correct: ['Un facteur commun est &answer'],
@@ -17357,7 +17475,7 @@ const questions = {
 							'&4': '$l{x;y;z}\\{&3}',
 						},
 					],
-					answerFields:['Le plus grand facteur commun est $$...$$'],
+					answerFields: ['Le plus grand facteur commun est $$...$$'],
 					correctionFormat: [
 						{
 							correct: ['Le plus grand facteur commun est &answer.'],
@@ -17467,7 +17585,7 @@ const questions = {
 							// '&8': '&1*&3:&6',
 						},
 					],
-					answerFields:['Le plus grand facteur commun est $$...$$'],
+					answerFields: ['Le plus grand facteur commun est $$...$$'],
 					correctionFormat: [
 						{
 							correct: ['Le plus grand facteur commun est &answer.'],
@@ -20866,7 +20984,7 @@ const questions = {
 						'([_&4x_][+_&2_])([_&5x_][+_&3_])',
 						'&1([_&4x_][+_&2_])([_&5x_][+_&3_])',
 					],
-					answerFields:['Le coefficient est $$...$$'],
+					answerFields: ['Le coefficient est $$...$$'],
 					variables: [
 						{
 							'&1': '$er[2;5]',
@@ -21394,9 +21512,7 @@ const questions = {
 					solutions: [['[_-(&2)_]', '[_-(&3)_]']],
 					correctionFormat: [
 						{
-							correct: [
-								'Les racines sont &answer1 et &answer2',
-							],
+							correct: ['Les racines sont &answer1 et &answer2'],
 						},
 					],
 					options: ['solutions-order-not-important'],
@@ -21499,31 +21615,36 @@ const questions = {
 				},
 			],
 		},
-		'Dérivation': {
+		Dérivation: {
 			Apprivoiser: [
 				{
 					description: 'Calculer une dérivée.',
-					subdescription:'Fonctions usuelles.',
-					enounces: [
-						"Calcule la dérivée de cette fonction.",
-					],
+					subdescription: 'Fonctions usuelles.',
+					enounces: ['Calcule la dérivée de cette fonction.'],
 					expressions: [
 						'f(x)=x',
 						'f(x)=x^2',
 						'f(x)=x^&1',
 						'f(x)=1/x',
 						'f(x)=sqrt(x)',
-						'f(x)=&1'
+						'f(x)=&1',
 					],
-					answerFields:["$$f'(x)=...$$"],
+					answerFields: ["$$f'(x)=...$$"],
 					variables: [
 						{
-							'&1': '$e[3;5]',	
+							'&1': '$e[3;5]',
 						},
 					],
-					solutions: [['1'], ['2x'], ['&1x^[_&1-1_]'], ['-1/{x^2}'], ['1/{2sqrt(x)}'], ['0']],
+					solutions: [
+						['1'],
+						['2x'],
+						['&1x^[_&1-1_]'],
+						['-1/{x^2}'],
+						['1/{2sqrt(x)}'],
+						['0'],
+					],
 					// pb mathlive : ascimath output
-					options:['no-penalty-for-extraneous-brackets'],
+					options: ['no-penalty-for-extraneous-brackets'],
 					correctionFormat: [
 						{
 							correct: ["$$f'(x)=&ans$$"],
@@ -21532,20 +21653,17 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: "&solution",
+								text: '&solution',
 							},
 						],
-		
 					],
 					defaultDelay: 20,
 					grade: PREMIERE_SPE_MATHS,
 				},
 				{
 					description: 'Calculer une dérivée.',
-					subdescription:'Fonctions usuelles avec coefficient.',
-					enounces: [
-						"Calcule la dérivée de cette fonction.",
-					],
+					subdescription: 'Fonctions usuelles avec coefficient.',
+					enounces: ['Calcule la dérivée de cette fonction.'],
 					expressions: [
 						'f(x)=&2x',
 						'f(x)=&2x^2',
@@ -21553,16 +21671,22 @@ const questions = {
 						'f(x)=&2/x',
 						'f(x)=&2sqrt(x)',
 					],
-					answerFields:["$$f'(x)=...$$"],
+					answerFields: ["$$f'(x)=...$$"],
 					variables: [
 						{
 							'&1': '$e[3;5]',
-							'&2': '$er[2;9]'	
+							'&2': '$er[2;9]',
 						},
 					],
-					solutions: [['&2'], ['[_&2*2_]x'], ['[_&2*&1_]x^[_&1-1_]'], ['[_-(&2)_]/{x^2}'], ['&2/{2sqrt(x)}']],
+					solutions: [
+						['&2'],
+						['[_&2*2_]x'],
+						['[_&2*&1_]x^[_&1-1_]'],
+						['[_-(&2)_]/{x^2}'],
+						['&2/{2sqrt(x)}'],
+					],
 					// pb mathlive : ascimath output
-					options:['no-penalty-for-extraneous-brackets'],
+					options: ['no-penalty-for-extraneous-brackets'],
 					correctionFormat: [
 						{
 							correct: ["$$f'(x)=&ans$$"],
@@ -21571,17 +21695,14 @@ const questions = {
 					correctionDetails: [
 						[
 							{
-								text: "&solution",
+								text: '&solution',
 							},
 						],
-		
 					],
 					defaultDelay: 20,
 					grade: PREMIERE_SPE_MATHS,
 				},
 			],
-			
-			
 		},
 	},
 
@@ -21591,16 +21712,9 @@ const questions = {
 				{
 					description: 'Calculer un terme',
 					subdescription: "A l'aide d'une formule explicite",
-					enounces: [
-						"Calcule le terme demandé.",
-						
-					],
-					expressions:[
-						'u_n=&2n[+_&3_]',
-						'u_n=&2n^2',
-						'u_n=(-1)^n',
-					],
-					answerFields:['$$u_&1=...$$'],
+					enounces: ['Calcule le terme demandé.'],
+					expressions: ['u_n=&2n[+_&3_]', 'u_n=&2n^2', 'u_n=(-1)^n'],
+					answerFields: ['$$u_&1=...$$'],
 					solutions: [['[_&2*&1+(&3)_]'], ['[_&2*&1^2_]'], ['[_(-1)^&1_]']],
 					variables: [
 						{
@@ -21646,13 +21760,9 @@ const questions = {
 				{
 					description: 'Calculer un terme',
 					subdescription: "A l'aide d'une formule de récurrence",
-					enounces: [
-						'Calcule le terme demandé.',
-					],
-					enounces2:[
-						'$$u_0=&1$$ et $$u_{n+1}=&2u_n[+_&3_]$$',
-					],
-					answerFields:['$$u_1=...$$'],
+					enounces: ['Calcule le terme demandé.'],
+					enounces2: ['$$u_0=&1$$ et $$u_{n+1}=&2u_n[+_&3_]$$'],
+					answerFields: ['$$u_1=...$$'],
 					solutions: [['&4']],
 					variables: [
 						{
@@ -21683,14 +21793,11 @@ const questions = {
 				},
 				{
 					description: 'Calculer un terme',
-					subdescription: "A l'aide d'une formule de récurrence, deuxième terme",
-					enounces: [
-						'Calcule le terme demandé.',
-					],
-					enounces2:[
-						'$$u_0=&1$$ et $$u_{n+1}=&2u_n[+_&3_]$$',
-					],
-					answerFields:['$$u_2=...$$'],
+					subdescription:
+						"A l'aide d'une formule de récurrence, deuxième terme",
+					enounces: ['Calcule le terme demandé.'],
+					enounces2: ['$$u_0=&1$$ et $$u_{n+1}=&2u_n[+_&3_]$$'],
+					answerFields: ['$$u_2=...$$'],
 					solutions: [['&5']],
 					variables: [
 						{
@@ -21720,6 +21827,96 @@ const questions = {
 							},
 						],
 					],
+					defaultDelay: 30,
+					grade: PREMIERE_SPE_MATHS,
+				},
+			],
+			'Ecriture des termes': [
+				{
+					description: 'Exprimer le terme suivant',
+					enounces: [" Quel est l'expression du terme suivant $$u_n$$?"],
+					expressions: [
+						'u_n=&1n^2',
+						'u_n=&1n',
+						'u_n={n+&1}/{n+&2}',
+						'u_n=&1n+&2',
+						'u_n=&1n-&2',
+					],
+					answerFields: ['$$u_{n+1}=...$$'],
+					variables: [
+						{
+							'&1': '$e[2;9]',
+							'&2': '$e[2;9]\\{&1}',
+						},
+					],
+					testAnswers: [
+						['&answer=&1(n+1)^2'],
+						['&answer=&1(n+1)'],
+						['&answer={n+[_&1+1_]}/{n+[_&2+1_]}'],
+						['&answer=&1n+[_&1+&2_]}'],
+						['&answer=&1n[+_&1-&2_]}'],
+					],
+					correctionFormat: [
+						{
+							correct: ['$$u_{n+1}=&ans$$'],
+							uncorrect: [
+								'$$u_{n+1}=\\enclose{roundedbox}[3px solid green]{\\textcolor{green}{&1(n+1)^2}}$$',
+							],
+						},
+						{
+							correct: ['$$u_{n+1}=&ans$$'],
+							uncorrect: [
+								'$$u_{n+1}=\\enclose{roundedbox}[3px solid green]{\\textcolor{green}{&1n+&1}}$$',
+							],
+						},
+						{
+							correct: ['$$u_{n+1}=&ans$$'],
+							uncorrect: [
+								'$$u_{n+1}=\\enclose{roundedbox}[3px solid green]{\\textcolor{green}{\\frac{n+[_&1+1_]}{n+[_&2+1_]}}}$$',
+							],
+						},
+						{
+							correct: ['$$u_{n+1}=&ans$$'],
+							uncorrect: [
+								'$$u_{n+1}=\\enclose{roundedbox}[3px solid green]{\\textcolor{green}{&1n+[_&1+&2_]}}$$',
+							],
+						},
+						{
+							correct: ['$$u_{n+1}=&ans$$'],
+							uncorrect: [
+								'$$u_{n+1}=\\enclose{roundedbox}[3px solid green]{\\textcolor{green}{&1n[+_&1-&2_]}}$$',
+							],
+						},
+					],
+
+					correctionDetails: [
+						[
+							{
+								text: `$$u_{n+1}=\\enclose{roundedbox}[3px solid green]{\\textcolor{green}{&1(n+1)^2}}$$`,
+							},
+						],
+						[
+							{
+								text: `$$u_{n+1}=&1(n+1)=\\enclose{roundedbox}[3px solid green]{\\textcolor{green}{&1n+&1}}$$`,
+							},
+						],
+						[
+							{
+								text: `$$u_{n+1}=\\frac{n+1+&1}{n+1+&2}=\\enclose{roundedbox}[3px solid green]{\\textcolor{green}{\\frac{n+[_&1+1_]}{n+[_&2+1_]}}}$$`,
+							},
+						],
+						[
+							{
+								text: `$$u_{n+1}=&1(n+1)+&2=&1n+&1+&2=\\enclose{roundedbox}[3px solid green]{\\textcolor{green}{&1n+[_&1+&2_]}}$$`,
+							},
+						],
+						[
+							{
+								text: `$$u_{n+1}=&1(n+1)-&2=&1n+&1-&2=\\enclose{roundedbox}[3px solid green]{\\textcolor{green}{&1n[+_&1-&2_]}}$$`,
+							},
+						],
+					],
+
 					defaultDelay: 30,
 					grade: PREMIERE_SPE_MATHS,
 				},
@@ -21799,7 +21996,7 @@ const questions = {
 							},
 						],
 					],
-					options:['no-penalty-for-explicit-products'],
+					options: ['no-penalty-for-explicit-products'],
 					defaultDelay: 30,
 					grade: PREMIERE_SPE_MATHS,
 				},
@@ -21835,7 +22032,7 @@ const questions = {
 							'&8': '[_&1*(&3)^4_]',
 						},
 					],
-					options:['no-penalty-for-explicit-products'],
+					options: ['no-penalty-for-explicit-products'],
 					correctionFormat: [
 						{
 							correct: ['Le terme général est $$u_n=&ans$$'],
@@ -22168,12 +22365,6 @@ const questions = {
 								text: 'Forme indéterminée',
 							},
 						],
-
-					
-
-						
-					
-					
 					],
 					solutions: [
 						[3],
@@ -22183,12 +22374,12 @@ const questions = {
 
 						[2],
 						[2],
-						
+
 						[0],
 						[1],
 						[1],
 						[0],
-						
+
 						[2],
 						[2],
 						[2],
@@ -22229,8 +22420,6 @@ const questions = {
 						[1],
 						[1],
 						[0],
-
-
 					],
 					variables: [
 						{
@@ -22262,9 +22451,7 @@ const questions = {
 
 					correctionFormat: [
 						{
-							correct: [
-								'Le terme suivant est &answer',
-							],
+							correct: ['Le terme suivant est &answer'],
 						},
 					],
 					correctionDetails: [
@@ -22293,9 +22480,7 @@ const questions = {
 
 					correctionFormat: [
 						{
-							correct: [
-								'Le terme précédant est &answer',
-							],
+							correct: ['Le terme précédant est &answer'],
 						},
 					],
 					correctionDetails: [
@@ -22311,9 +22496,11 @@ const questions = {
 				{
 					description: "Calculer un terme d'une suite arithmétique",
 					subdescription: "Calculer un terme à partir d'un autre",
-					enounces:['Calcule le terme demandé.'],
-					enounces2:['$$(u_n)$$ est une suite arithmétique de raison $$&3$$, et $$u_&1=[_&1*(&3)_]$$.'],
-					answerFields:['$$u_&2=...$$'],
+					enounces: ['Calcule le terme demandé.'],
+					enounces2: [
+						'$$(u_n)$$ est une suite arithmétique de raison $$&3$$, et $$u_&1=[_&1*(&3)_]$$.',
+					],
+					answerFields: ['$$u_&2=...$$'],
 					solutions: [['[_&2*(&3)_]']],
 					variables: [
 						{
@@ -22325,9 +22512,7 @@ const questions = {
 
 					correctionFormat: [
 						{
-							correct: [
-								'$$u_&2=&answer$$',
-							],
+							correct: ['$$u_&2=&answer$$'],
 						},
 					],
 					correctionDetails: [
@@ -22343,11 +22528,11 @@ const questions = {
 				{
 					description: "Calculer un terme d'une suite arithmétique",
 					subdescription: "Calculer un terme à partir d'un autre",
-					enounces:['Calcule le terme demandé.'],
+					enounces: ['Calcule le terme demandé.'],
 					enounces2: [
 						'$$(u_n)$$ est une suite arithmétique de raison $$&3$$, et $$u_&1=[_&1*(&3)_]$$.',
 					],
-					answerFields:['$$u_&2=...$$'],
+					answerFields: ['$$u_&2=...$$'],
 					solutions: [['[_&2*(&3)_]']],
 					variables: [
 						{
@@ -22359,9 +22544,7 @@ const questions = {
 
 					correctionFormat: [
 						{
-							correct: [
-								'$$u_&2=&answer$$',
-							],
+							correct: ['$$u_&2=&answer$$'],
 						},
 					],
 					correctionDetails: [
@@ -22379,10 +22562,8 @@ const questions = {
 				{
 					description: "Déterminer la raison d'une suite arithmétique",
 					subdescription: 'A partir de deux termes consécutifs',
-					enounces: [
-						"Quelle est la raison de cette  suite arithmétique ?",
-					],
-					enounces2:['$$u_&1=&3$$ et $$u_&2=[_&3+(&4)_]$$'],
+					enounces: ['Quelle est la raison de cette  suite arithmétique ?'],
+					enounces2: ['$$u_&1=&3$$ et $$u_&2=[_&3+(&4)_]$$'],
 					solutions: [['&4']],
 					variables: [
 						{
@@ -22395,9 +22576,7 @@ const questions = {
 
 					correctionFormat: [
 						{
-							correct: [
-								'La raison est &answer.',
-							],
+							correct: ['La raison est &answer.'],
 						},
 					],
 					correctionDetails: [
@@ -22413,10 +22592,8 @@ const questions = {
 				{
 					description: "Déterminer la raison d'une suite arithmétique",
 					subdescription: 'A partir de deux termes',
-					enounces: [
-						"Quelle est la raison de cette suite arithmétique ?",
-					],
-					enounces2:['$$u_&1=&3$$ et $$u_&2=[_&3+(&2-&1)*(&4)_]$$'],
+					enounces: ['Quelle est la raison de cette suite arithmétique ?'],
+					enounces2: ['$$u_&1=&3$$ et $$u_&2=[_&3+(&2-&1)*(&4)_]$$'],
 					solutions: [['&4']],
 					variables: [
 						{
@@ -22429,9 +22606,7 @@ const questions = {
 
 					correctionFormat: [
 						{
-							correct: [
-								'La raison est &answer.',
-							],
+							correct: ['La raison est &answer.'],
 						},
 					],
 					correctionDetails: [
