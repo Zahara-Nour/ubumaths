@@ -127,7 +127,7 @@
 				>
 					Réponse :
 				</div>
-				<div class="my-5 z-O relative" style="{`font-size:${2 * magnify}rem`}">
+				<div class="my-5 z-0 relative" style="{`font-size:${2 * magnify}rem`}">
 					{@html solution}
 				</div>
 				{#if card.imageCorrection}

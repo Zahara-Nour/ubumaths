@@ -6,7 +6,6 @@ import {browser} from '$app/environment'
 
 export async function fetchImage(name) {
 	let base64
-
 	if (browser) {
 		 base64 = sessionStorage.getItem(name)
 		
