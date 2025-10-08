@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en" data-theme="cerberus">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<!-- Mathlive fonts - preload only essential fonts -->
+	<link rel="preload" as="font" type="font/woff2" crossorigin href="%sveltekit.assets%/fonts/KaTeX_Main-Regular.woff2" />
+	<link rel="preload" as="font" type="font/woff2" crossorigin href="%sveltekit.assets%/fonts/KaTeX_Math-Italic.woff2" />
+	<link rel="stylesheet" href="../mathlive-fonts.css" />
+
+	%sveltekit.head%
+</head>
+
+<body data-sveltekit-preload-data="hover">
+	<div style="display: contents">%sveltekit.body%</div>
+</body>
+
+</html>
