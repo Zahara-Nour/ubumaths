@@ -2,7 +2,11 @@
 	import MathField from '$lib/components/MathField.svelte';
 	import DynamicMathField from '$lib/components/DynamicMathField.svelte';
 	import FlipCard from '$lib/components/FlipCard.svelte';
+	import LoggerDemo from '$lib/components/LoggerDemo.svelte';
 	import type { MathfieldElement } from 'mathlive';
+	import { createLogger } from '$lib/utils/logger';
+
+	const logger = createLogger('+page.svelte');
 
 	let latex = $state('');
 	let mathfieldRef: any;
@@ -11,9 +15,9 @@
 	let flipped2 = $state(false);
 	let flipped3 = $state(false);
 
-	function handleInput(latex: string, mf: MathfieldElement) {
+	function handleInput(latex: string, _mf: MathfieldElement) {
 		currentLatex = latex;
-		console.log('Current LaTeX:', latex);
+		logger.trace('Current LaTeX:', latex);
 	}
 
 	function setFormula() {
@@ -134,6 +138,9 @@
 		<button onclick={() => (flipped3 = !flipped3)} class="btn variant-filled-secondary flip-button">
 			{flipped3 ? 'Show Front' : 'Show Back'}
 		</button>
+
+		<h2 class="text-on-surface-token mt-12">Logger System Demo</h2>
+		<LoggerDemo />
 	</div>
 </div>
 

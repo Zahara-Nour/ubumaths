@@ -32,13 +32,16 @@ import { createBrowserClient, createServerClient, isBrowser } from '@supabase/ss
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { invalidate } from '$app/navigation';
 import type { LayoutLoad } from './$types';
+import { createLogger } from '$lib/utils/logger';
+
+const logger = createLogger('+layout.ts');
 
 export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	// Register this load function to re-run when 'supabase:auth' is invalidated
 	// This enables reactive auth state updates throughout the app
 	depends('supabase:auth');
 
-	console.log('[Layout] Loading, isBrowser:', isBrowser());
+	logger.info('Loading, isBrowser:', isBrowser());
 
 	/**
 	 * Create a Supabase client appropriate for the environment
@@ -72,12 +75,12 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 				}
 			});
 
-	console.log('[Layout] Supabase client created');
+	logger.trace('Supabase client created');
 
 	// Use the verified session and user from the server
 	// The server already verified these with getUser() - safe to trust
-	console.log('[Layout] Session from server:', data.session ? `User: ${data.session.user.email}` : 'No session');
-	console.log('[Layout] User from server:', data.user ? data.user.email : 'No user');
+	logger.info('Session from server:', data.session ? `User: ${data.session.user.email}` : 'No session');
+	logger.info('User from server:', data.user ? data.user.email : 'No user');
 
 	/**
 	 * Set up auth state change listener (browser only)
@@ -101,11 +104,11 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	 */
 	if (isBrowser()) {
 		supabase.auth.onAuthStateChange((event, session) => {
-			console.log('[Layout] Auth state changed:', event, session ? 'has session' : 'no session');
+			logger.info('Auth state changed:', event, session ? 'has session' : 'no session');
 
 			// On these events, reload verified data from server
 			if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
-				console.log('[Layout] Invalidating supabase:auth');
+				logger.info('Invalidating supabase:auth');
 				// This triggers the reactive chain:
 				// invalidate → depends() → re-run this load → +layout.server.ts → verified data
 				invalidate('supabase:auth');

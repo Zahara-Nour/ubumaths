@@ -14,7 +14,11 @@
 		"lint": "prettier --check . && eslint .",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
-		"test:e2e": "playwright test"
+		"test:e2e": "playwright test",
+		"db:migrate": "npx supabase db push",
+		"db:fix-profiles": "npx supabase db execute --file supabase/migrations/005_fix_existing_users.sql",
+		"db:status": "npx supabase db execute --sql \"SELECT COUNT(CASE WHEN p.id IS NULL THEN 1 END) as missing_profiles, COUNT(CASE WHEN p.id IS NOT NULL THEN 1 END) as users_with_profiles, COUNT(*) as total_users FROM auth.users u LEFT JOIN public.profiles p ON u.id = p.id;\"",
+		"db:link": "npx supabase link"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",
@@ -39,6 +43,7 @@
 		"prettier": "^3.6.2",
 		"prettier-plugin-svelte": "^3.4.0",
 		"prettier-plugin-tailwindcss": "^0.6.14",
+		"supabase": "^2.48.3",
 		"svelte": "^5.39.5",
 		"svelte-check": "^4.3.2",
 		"tailwindcss": "^4.1.13",

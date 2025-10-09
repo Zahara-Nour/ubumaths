@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
+	import { createLogger } from '$lib/utils/logger';
+
+	const logger = createLogger('signup/+page.svelte');
 
 	let { data }: { data: PageData } = $props();
 
@@ -27,7 +30,7 @@
 				return;
 			}
 
-			console.log('[Signup] Attempting signup for:', email);
+			logger.info('Attempting signup for:', email);
 
 			const { data: authData, error } = await data.supabase.auth.signUp({
 				email,
@@ -35,16 +38,16 @@
 			});
 
 			if (error) {
-				console.error('[Signup] Error:', error.message);
+				logger.error('Error:', error.message);
 				errorMessage = error.message;
 			} else {
-				console.log('[Signup] Success! User:', authData.user?.email);
-				console.log('[Signup] Session:', authData.session ? 'Created' : 'Email confirmation required');
+				logger.info('Success! User:', authData.user?.email);
+				logger.info('Session:', authData.session ? 'Created' : 'Email confirmation required');
 				successMessage = 'Account created! Check your email to confirm your account.';
 				setTimeout(() => goto('/login'), 2000);
 			}
 		} catch (err) {
-			console.error('[Signup] Unexpected error:', err);
+			logger.error('Unexpected error:', err);
 			errorMessage = 'An unexpected error occurred';
 		} finally {
 			loading = false;

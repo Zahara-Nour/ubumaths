@@ -46,13 +46,27 @@
 		title = 'UbuMaths',
 		session = null,
 		user = null,
-		supabase
+		supabase,
+		sidebarItems = [
+			{ label: 'Home', href: '/', icon: '🏠' },
+			{ label: 'Exercises', href: '/exercises', icon: '📝' },
+			{ label: 'Practice', href: '/practice', icon: '✏️' },
+			{ label: 'Resources', href: '/resources', icon: '📚' }
+		]
 	}: {
 		title?: string;
 		session?: Session | null; // Verified session from server
 		user?: User | null; // Verified user from server
 		supabase?: SupabaseClient; // Client for making auth requests
+		sidebarItems?: Array<{ label: string; href: string; icon?: string }>;
 	} = $props();
+
+	// Mobile menu state
+	let mobileMenuOpen = $state(false);
+
+	function closeMobileMenu() {
+		mobileMenuOpen = false;
+	}
 
 	/**
 	 * Handle user logout
@@ -96,6 +110,50 @@
 
 <AppBar>
 	{#snippet lead()}
+		<!-- Hamburger menu - visible only on mobile (lg:hidden) -->
+		<div class="lg:hidden">
+			<Popover
+				open={mobileMenuOpen}
+				onOpenChange={(e) => (mobileMenuOpen = e.open)}
+				positioning={{ placement: 'bottom-start' }}
+				triggerBase="p-2 rounded-md text-surface-700-300 hover:bg-surface-200-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+				contentBase="card bg-surface-100-900 shadow-xl border border-surface-200-800 w-64 mt-2"
+			>
+				{#snippet trigger()}
+					<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+						{#if mobileMenuOpen}
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+						{:else}
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+						{/if}
+					</svg>
+					<span class="sr-only">Toggle menu</span>
+				{/snippet}
+
+				{#snippet content()}
+					<nav class="p-2">
+						<div class="px-3 py-2 border-b border-surface-200-800 mb-2">
+							<p class="text-sm font-semibold text-surface-900-50">Navigation</p>
+						</div>
+						<div class="space-y-1">
+							{#each sidebarItems as item}
+								<a
+									href={item.href}
+									class="flex items-center gap-3 px-3 py-2 rounded-lg text-surface-700-300 hover:bg-surface-200-800 hover:text-surface-900-50 transition-colors"
+									onclick={closeMobileMenu}
+								>
+									{#if item.icon}
+										<span class="text-xl">{item.icon}</span>
+									{/if}
+									<span class="font-medium">{item.label}</span>
+								</a>
+							{/each}
+						</div>
+					</nav>
+				{/snippet}
+			</Popover>
+		</div>
+
 		<h1 class="text-2xl font-bold">{title}</h1>
 	{/snippet}
 

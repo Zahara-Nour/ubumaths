@@ -19,9 +19,12 @@
 import { createServerClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { Handle } from '@sveltejs/kit';
+import { createLogger } from '$lib/utils/logger';
+
+const logger = createLogger('server/supabase.ts');
 
 export const handle: Handle = async ({ event, resolve }) => {
-	console.log('[Supabase] Creating server client for URL:', PUBLIC_SUPABASE_URL);
+	logger.info('Creating server client for URL:', PUBLIC_SUPABASE_URL);
 
 	/**
 	 * Create a Supabase client for this request
@@ -66,7 +69,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	 * @returns {Object} { session, user } - Both verified and safe to use
 	 */
 	event.locals.safeGetSession = async () => {
-		console.log('[Supabase] Checking and verifying session...');
+		logger.info('Checking and verifying session...');
 
 		// STEP 1: Verify the user with Supabase's auth server
 		// This is the critical security step - never skip this!
@@ -77,11 +80,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 		// If verification fails, return null (user not authenticated)
 		if (error || !user) {
-			console.log('[Supabase] No valid session found');
+			logger.info('No valid session found');
 			return { session: null, user: null };
 		}
 
-		console.log('[Supabase] User verified:', user.email);
+		logger.info('User verified:', user.email);
 
 		// STEP 2: Get the session tokens (safe because user is verified)
 		// The session contains access/refresh tokens needed for authenticated requests

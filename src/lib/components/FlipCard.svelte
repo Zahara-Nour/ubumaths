@@ -11,10 +11,6 @@
 	let backHeight = $state(0);
 
 	let currentHeight = $derived(Math.max(frontHeight, backHeight));
-
-	$effect(() => {
-		console.log('Heights:', { frontHeight, backHeight, currentHeight });
-	});
 </script>
 
 <div class="flip-card {className}">

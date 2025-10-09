@@ -27,6 +27,9 @@
  */
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
+import { createLogger } from '$lib/utils/logger';
+
+const logger = createLogger('login/+page.server.ts');
 
 export const actions = {
 	/**
@@ -57,7 +60,7 @@ export const actions = {
 		});
 
 		if (error) {
-			console.error('[Login] Error:', error.message);
+			logger.error('Error:', error.message);
 			// Return error to display in form
 			return fail(400, {
 				error: error.message,
