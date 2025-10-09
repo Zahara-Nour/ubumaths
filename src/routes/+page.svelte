@@ -27,15 +27,15 @@
 </script>
 
 <div class="container">
-	<h1>MathLive Example</h1>
+	<h1 class="text-on-surface-token">MathLive Example</h1>
 
 	<div class="demo">
-		<h2>Interactive Math Editor</h2>
+		<h2 class="text-on-surface-token">Interactive Math Editor</h2>
 		<MathField bind:value={latex} placeholder={'\\text' + '{' + 'Enter a formula...' + '}'} />
 
-		<div class="output">
-			<h3>LaTeX Output:</h3>
-			<pre>{latex}</pre>
+		<div class="bg-surface-200-800 output">
+			<h3 class="text-on-surface-token">LaTeX Output:</h3>
+			<pre class="text-on-surface-token">{latex}</pre>
 		</div>
 
 		<DynamicMathField
@@ -45,13 +45,15 @@
 			oninput={handleInput}
 		/>
 
-		<p>Current LaTeX: {currentLatex}</p>
+		<p class="text-on-surface-token">Current LaTeX: {currentLatex}</p>
 
-		<button onclick={setFormula}>Set Formula</button>
-		<button onclick={getFormula}>Get Formula</button>
-		<button onclick={() => mathfieldRef?.focus()}>Focus</button>
+		<button class="btn btn-sm variant-filled-primary" onclick={setFormula}>Set Formula</button>
+		<button class="btn btn-sm variant-filled-primary" onclick={getFormula}>Get Formula</button>
+		<button class="btn btn-sm variant-filled-primary" onclick={() => mathfieldRef?.focus()}
+			>Focus</button
+		>
 
-		<h2>Flip Card Example</h2>
+		<h2 class="text-on-surface-token">Flip Card Example</h2>
 		<FlipCard bind:flipped>
 			{#snippet front()}
 				<div class="card-content front">
@@ -78,11 +80,11 @@
 			{/snippet}
 		</FlipCard>
 
-		<button onclick={() => (flipped = !flipped)} class="flip-button">
+		<button onclick={() => (flipped = !flipped)} class="btn variant-filled-secondary flip-button">
 			{flipped ? 'Show Front' : 'Show Back'}
 		</button>
 
-		<h2>Compact Card</h2>
+		<h2 class="text-on-surface-token">Compact Card</h2>
 		<FlipCard bind:flipped={flipped2}>
 			{#snippet front()}
 				<div class="card-content compact-front">
@@ -99,11 +101,11 @@
 			{/snippet}
 		</FlipCard>
 
-		<button onclick={() => (flipped2 = !flipped2)} class="flip-button">
+		<button onclick={() => (flipped2 = !flipped2)} class="btn variant-filled-secondary flip-button">
 			{flipped2 ? 'Show Front' : 'Show Back'}
 		</button>
 
-		<h2>Large Card</h2>
+		<h2 class="text-on-surface-token">Large Card</h2>
 		<FlipCard bind:flipped={flipped3}>
 			{#snippet front()}
 				<div class="card-content large-front">
@@ -129,7 +131,7 @@
 			{/snippet}
 		</FlipCard>
 
-		<button onclick={() => (flipped3 = !flipped3)} class="flip-button">
+		<button onclick={() => (flipped3 = !flipped3)} class="btn variant-filled-secondary flip-button">
 			{flipped3 ? 'Show Front' : 'Show Back'}
 		</button>
 	</div>
@@ -161,7 +163,6 @@
 	.output {
 		margin-top: 1.5rem;
 		padding: 1rem;
-		background-color: #f3f4f6;
 		border-radius: 0.5rem;
 	}
 
@@ -183,6 +184,10 @@
 		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 	}
 
+	:global(.dark) .card-content {
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+	}
+
 	.front {
 		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 		color: white;
@@ -191,28 +196,6 @@
 	.back {
 		background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
 		color: white;
-	}
-
-	.flip-button {
-		display: block;
-		margin: 2rem auto 0;
-		padding: 0.75rem 2rem;
-		font-size: 1rem;
-		font-weight: 600;
-		color: white;
-		background: #4f46e5;
-		border: none;
-		border-radius: 8px;
-		cursor: pointer;
-		transition: background 0.2s;
-	}
-
-	.flip-button:hover {
-		background: #4338ca;
-	}
-
-	.flip-button:active {
-		transform: scale(0.98);
 	}
 
 	.compact-front {
@@ -233,5 +216,10 @@
 	.large-back {
 		background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
 		color: #333;
+	}
+
+	.flip-button {
+		display: block;
+		margin: 2rem auto 0;
 	}
 </style>

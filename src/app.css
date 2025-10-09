@@ -4,5 +4,122 @@
 
 /* Skeleton Imports */
 @import '@skeletonlabs/skeleton';
-@import '@skeletonlabs/skeleton-svelte';
 @import '@skeletonlabs/skeleton/themes/cerberus';
+
+html,
+body {
+	@apply h-full overflow-hidden;
+}
+
+/*
+ * Font Scaling System for Main Content
+ * =====================================
+ *
+ * This uses Skeleton UI's --text-scaling CSS variable infrastructure.
+ *
+ * How it works:
+ * 1. Skeleton UI provides --text-scaling at :root level that all text variables use
+ *
+ * 2. The fontSize store sets --text-scaling globally on :root
+ *
+ * 3. To prevent header/sidebar from scaling, we fix their font sizes explicitly
+ *
+ * 4. Main content uses Skeleton's text variables (--text-xl, --text-base, etc.)
+ *    which automatically scale with --text-scaling
+ *
+ * 5. The fontSize store (fontSize.svelte.ts) controls --text-scaling via buttons in header
+ *    - Range: 0.75 (75%) to 1.5 (150%)
+ *    - Step: 0.125 (12.5%)
+ *    - Persists to localStorage
+ *
+ * Benefits:
+ * - Uses Skeleton's built-in variables = automatic scaling
+ * - Includes proper line-height scaling
+ * - True integration with Skeleton's typography system
+ *
+ * Result: Only main content scales; header and sidebar stay at standard size
+ */
+
+/* Fix header and sidebar font sizes to prevent scaling */
+header,
+header *,
+aside,
+aside * {
+	font-size: 1rem !important;
+	line-height: 1.5 !important;
+}
+
+header h1 {
+	font-size: 1.5rem !important;
+}
+
+/* Apply Skeleton's text size variables to main content headings */
+main h1 {
+	font-size: var(--text-3xl) !important;
+	line-height: var(--text-3xl--line-height) !important;
+}
+
+main h2 {
+	font-size: var(--text-2xl) !important;
+	line-height: var(--text-2xl--line-height) !important;
+}
+
+main h3 {
+	font-size: var(--text-xl) !important;
+	line-height: var(--text-xl--line-height) !important;
+}
+
+main h4 {
+	font-size: var(--text-lg) !important;
+	line-height: var(--text-lg--line-height) !important;
+}
+
+main h5 {
+	font-size: var(--text-base) !important;
+	line-height: var(--text-base--line-height) !important;
+}
+
+main h6 {
+	font-size: var(--text-sm) !important;
+	line-height: var(--text-sm--line-height) !important;
+}
+
+/* Apply Skeleton's text size variables to main content text elements */
+main p,
+main li {
+	font-size: var(--text-base) !important;
+	line-height: var(--text-base--line-height) !important;
+}
+
+main pre {
+	font-size: var(--text-sm) !important;
+	line-height: var(--text-sm--line-height) !important;
+}
+
+/* Apply Skeleton's text size variables to main content buttons */
+main button {
+	font-size: var(--text-base) !important;
+	line-height: var(--text-base--line-height) !important;
+	background-color: var(--color-primary-500);
+	color: var(--color-primary-contrast-500);
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+	transition: all 0.2s;
+}
+
+main button:hover:not(:disabled) {
+	background-color: var(--color-primary-600);
+}
+
+main button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+/* Apply Skeleton's text size variables to MathField */
+main math-field {
+	font-size: var(--text-base) !important;
+	line-height: var(--text-base--line-height) !important;
+}
+
+@custom-variant dark (&:is(.dark, .dark *));
