@@ -21,16 +21,25 @@
  */
 
 import type { LayoutServerLoad } from './$types';
+import { getUserProfile } from '$lib/server/auth';
 
-export const load: LayoutServerLoad = async ({ locals: { safeGetSession }, cookies }) => {
+export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase }, cookies }) => {
 	// Get verified session and user from the server hook
 	const { session, user } = await safeGetSession();
+
+	// Fetch profile for authenticated users (null for anonymous)
+	let profile = null;
+	if (user) {
+		profile = await getUserProfile(supabase, user.id);
+	}
 
 	return {
 		// Verified session (contains auth tokens)
 		session,
 		// Verified user object (authenticated via getUser())
 		user,
+		// User profile (includes role) - cached at root level
+		profile,
 		// All cookies (needed for client-side Supabase initialization)
 		cookies: cookies.getAll()
 	};

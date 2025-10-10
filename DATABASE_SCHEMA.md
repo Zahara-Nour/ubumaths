@@ -6,6 +6,7 @@ This document describes the database schema for the UbuMaths educational math ap
 
 The database is designed to support a complete math learning platform with:
 - **User Management**: Students, teachers, and admins
+- **School Management**: Multi-school support with school profiles
 - **Content Organization**: Topics, subtopics, and exercises
 - **Progress Tracking**: Student attempts and progress metrics
 - **Classroom Management**: Classes, assignments, and submissions
@@ -17,6 +18,10 @@ auth.users (Supabase Auth)
     ↓
 profiles (user_role: student/teacher/admin)
     ↓
+    ├─→ schools (school_id FK)
+    │       ├─ name, city, country (unique)
+    │       └─ address, logo_url, is_active
+    │
     ├─→ exercises (created_by) → exercise_options
     │                         → exercise_answers
     │
@@ -37,6 +42,27 @@ profiles (user_role: student/teacher/admin)
 
 ### Core User Tables
 
+#### `schools`
+Educational institutions where students and teachers belong.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | School ID |
+| name | TEXT | School name |
+| city | TEXT | City location |
+| country | TEXT | Country location |
+| address | TEXT | Optional full address |
+| logo_url | TEXT | Optional school logo |
+| is_active | BOOLEAN | Whether school is active |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Last update time |
+
+**Unique Constraint**: (name, city, country) combination must be unique.
+
+**RLS Policies**:
+- Anyone can view schools (needed for registration/selection)
+- Only admins can insert, update, or delete schools
+
 #### `profiles`
 Extends Supabase's `auth.users` with application-specific data.
 
@@ -44,12 +70,19 @@ Extends Supabase's `auth.users` with application-specific data.
 |--------|------|-------------|
 | id | UUID (PK) | References auth.users(id) |
 | email | TEXT | User's email |
-| full_name | TEXT | User's full name |
+| full_name | TEXT | User's full name (deprecated) |
+| firstname | TEXT | User's first name |
+| lastname | TEXT | User's last name |
 | role | user_role | 'student', 'teacher', or 'admin' |
+| school_id | UUID (FK) | References schools(id) |
 | created_at | TIMESTAMPTZ | Account creation time |
 | updated_at | TIMESTAMPTZ | Last update time |
 
 **Automatic Creation**: A trigger automatically creates a profile when a user signs up.
+
+**RLS Policies**:
+- Users can view and update their own profile
+- Profile creation allowed (for signup trigger)
 
 ### Content Organization Tables
 
@@ -224,6 +257,7 @@ All tables have RLS enabled with the following access patterns:
 
 ### Students can:
 - View their own profile
+- View all schools (for selection during registration)
 - View all published topics, subtopics, and exercises
 - Create and view their own attempts and progress
 - View classes they're members of
@@ -231,7 +265,7 @@ All tables have RLS enabled with the following access patterns:
 - Manage their own assignment submissions
 
 ### Teachers can:
-- View profiles of students in their classes
+- View all schools (for selection during registration)
 - Create and manage topics, subtopics, and exercises
 - View all attempts and progress for their students
 - Create and manage their own classes
@@ -241,6 +275,7 @@ All tables have RLS enabled with the following access patterns:
 
 ### Admins can:
 - Everything teachers can do (role check in policies)
+- Full CRUD operations on schools table
 
 ## Key Functions & Triggers
 

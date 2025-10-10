@@ -34,6 +34,7 @@
 
 <script lang="ts">
 	import type { LayoutData } from './$types';
+	import { Navigation } from '@skeletonlabs/skeleton-svelte';
 
 	// PROPS RECEIVED FROM PARENT LAYOUT SERVER LOAD:
 	// - data: Contains profile from +layout.server.ts
@@ -63,6 +64,7 @@
 		} else if (role === 'admin') {
 			return [
 				...commonLinks,
+				{ href: '/dashboard/admin/schools', label: 'Schools', icon: '🏫' },
 				{ href: '/dashboard/users', label: 'Users', icon: '👥' },
 				{ href: '/dashboard/classes', label: 'Classes', icon: '🎓' },
 				{ href: '/dashboard/settings', label: 'Settings', icon: '⚙️' }
@@ -105,27 +107,25 @@
 		</div>
 	</header>
 
-	<div class="flex">
-		<!-- SIDEBAR - Hidden on mobile (lg:block), always visible on desktop -->
-		<aside class="hidden lg:block w-64 bg-surface-100-900 border-r border-surface-200-800 min-h-[calc(100vh-73px)]">
-			<nav class="p-4 space-y-2">
-				{#each getNavLinks(data.profile.role) as link}
-					<a
-						href={link.href}
-						class="flex items-center gap-3 px-4 py-3 rounded-lg text-surface-700-300 hover:bg-surface-200-800 hover:text-surface-900-50 transition-colors"
-					>
-						<span class="text-xl">{link.icon}</span>
-						<span class="font-medium">{link.label}</span>
-					</a>
-				{/each}
-			</nav>
-		</aside>
+	<div class="flex h-[calc(100vh-73px)]">
+		<!-- RAIL SIDEBAR - Vertical icon navigation -->
+		<div class="bg-surface-100-900 border-r border-surface-200-800">
+			<Navigation.Rail>
+				{#snippet tiles()}
+					{#each getNavLinks(data.profile.role) as link}
+						<Navigation.Tile label={link.label} href={link.href}>
+							<span class="text-2xl">{link.icon}</span>
+						</Navigation.Tile>
+					{/each}
+				{/snippet}
+			</Navigation.Rail>
+		</div>
 
 		<!-- DASHBOARD CONTENT AREA -->
 		<!-- This is where child routes are rendered -->
 		<!-- For /dashboard, this renders +page.svelte which shows role-specific dashboards -->
 		<!-- For /dashboard/classes, this would render classes/+page.svelte, etc. -->
-		<main class="flex-1 p-4 sm:p-6 lg:p-8">
+		<main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
 			<div class="max-w-7xl mx-auto">
 				{@render children()}
 			</div>

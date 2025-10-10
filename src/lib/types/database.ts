@@ -2,11 +2,24 @@ export type UserRole = 'student' | 'teacher' | 'admin';
 export type DifficultyLevel = 'easy' | 'medium' | 'hard';
 export type ExerciseType = 'multiple_choice' | 'free_response' | 'true_false' | 'fill_blank';
 
+export interface School {
+	id: string;
+	name: string;
+	city: string;
+	country: string;
+	address: string | null;
+	logo_url: string | null;
+	is_active: boolean;
+	created_at: string;
+	updated_at: string;
+}
+
 export interface Profile {
 	id: string;
 	email: string;
 	full_name: string | null;
 	role: UserRole;
+	school_id: string | null;
 	created_at: string;
 	updated_at: string;
 }
@@ -147,6 +160,15 @@ export interface AssignmentSubmission {
 export interface Database {
 	public: {
 		Tables: {
+			schools: {
+				Row: School;
+				Insert: Omit<School, 'id' | 'created_at' | 'updated_at'> & {
+					id?: string;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: Partial<Omit<School, 'id' | 'created_at' | 'updated_at'>>;
+			};
 			profiles: {
 				Row: Profile;
 				Insert: Omit<Profile, 'id' | 'created_at' | 'updated_at'> & {

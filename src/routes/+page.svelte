@@ -3,6 +3,7 @@
 	import DynamicMathField from '$lib/components/DynamicMathField.svelte';
 	import FlipCard from '$lib/components/FlipCard.svelte';
 	import LoggerDemo from '$lib/components/LoggerDemo.svelte';
+	import ToastDemo from '$lib/components/ToastDemo.svelte';
 	import type { MathfieldElement } from 'mathlive';
 	import { createLogger } from '$lib/utils/logger';
 
@@ -141,6 +142,9 @@
 
 		<h2 class="text-on-surface-token mt-12">Logger System Demo</h2>
 		<LoggerDemo />
+
+		<h2 class="text-on-surface-token mt-12">Toast Notifications Demo</h2>
+		<ToastDemo />
 	</div>
 </div>
 

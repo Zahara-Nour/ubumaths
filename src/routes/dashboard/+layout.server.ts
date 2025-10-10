@@ -38,12 +38,12 @@
 
 import type { LayoutServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { requireAuth, getUserProfile } from '$lib/server/auth';
+import { requireAuth } from '$lib/server/auth';
 import { createLogger } from '$lib/utils/logger';
 
 const logger = createLogger('dashboard/+layout.server.ts');
 
-export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
+export const load: LayoutServerLoad = async ({ locals: { safeGetSession }, parent }) => {
 	// STEP 1: Get the authenticated user's session
 	// safeGetSession() verifies the user with Supabase auth server
 	// (see src/lib/server/supabase.ts for security details)
@@ -54,17 +54,9 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
 	// This protects all /dashboard/* routes with a single check
 	requireAuth(user);
 
-	// At this point, we know user is authenticated and user.id exists
-	// We can safely use user!.id (the ! tells TypeScript it's not null)
-
-	// STEP 3: Fetch the user's profile from the database
-	// The profile contains critical information for the role-based dashboard:
-	// - id: user's unique identifier
-	// - email: user's email address
-	// - full_name: display name (optional)
-	// - role: 'student' | 'teacher' | 'admin' <- KEY FIELD for dashboard routing
-	// - created_at, updated_at: timestamps
-	const profile = await getUserProfile(supabase, user!.id);
+	// STEP 3: Get profile from parent layout (already fetched in root +layout.server.ts)
+	// This avoids redundant database queries
+	const { profile } = await parent();
 
 	// STEP 4: Verify profile exists
 	// Every authenticated user should have a profile
