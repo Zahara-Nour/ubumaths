@@ -82,16 +82,16 @@
 <!-- Main dashboard container -->
 <div class="min-h-screen bg-background">
 	<!-- DASHBOARD HEADER (shared across all dashboard pages) -->
-	<header class="bg-card shadow-sm border-b border-border">
+	<header class="bg-background border-b border-border shadow-sm">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
 			<div class="flex items-center justify-between">
 				<!-- Left side: Dashboard title -->
 				<div>
-					<h1 class="text-2xl font-bold text-foreground">Dashboard</h1>
+					<h1 class="text-2xl font-bold text-foreground tracking-tight">Dashboard</h1>
 					<!-- Display user's role (student/teacher/admin) -->
 					<!-- This comes from data.profile.role fetched in +layout.server.ts -->
 					<p class="text-sm text-muted-foreground mt-1">
-						Role: <span class="capitalize font-medium text-foreground">{data.profile.role}</span>
+						Role: <span class="capitalize font-medium text-primary">{data.profile.role}</span>
 					</p>
 				</div>
 
@@ -103,7 +103,7 @@
 					<!-- Navigation link back to home page -->
 					<a
 						href="/"
-						class="text-sm text-primary hover:text-primary/80 font-medium"
+						class="text-sm text-primary hover:text-primary/90 font-medium transition-colors duration-300"
 					>
 						Back to Home
 					</a>
@@ -113,19 +113,19 @@
 	</header>
 
 	<div class="flex h-[calc(100vh-73px)]">
-		<!-- RAIL SIDEBAR - Vertical icon navigation -->
-		<div class="bg-card border-r border-border w-20">
-			<nav class="flex flex-col items-center gap-2 py-4">
+		<!-- RAIL SIDEBAR - Vertical icon navigation (Claude AI style) -->
+		<div class="bg-card/50 dark:bg-card border-r border-border w-20 shadow-sm">
+			<nav class="flex flex-col items-center gap-1 py-4">
 				{#each getNavLinks(data.profile.role) as link}
 					<a
 						href={link.href}
-						class="flex flex-col items-center gap-1 px-3 py-2 rounded-md transition-colors w-16 {isActive(link.href)
-							? 'bg-accent text-accent-foreground'
-							: 'text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground'}"
+						class="flex flex-col items-center gap-1 px-2 py-3 rounded-lg transition-all duration-300 w-16 group {isActive(link.href)
+							? 'bg-primary/10 text-primary'
+							: 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}"
 						title={link.label}
 					>
-						<span class="text-2xl">{link.icon}</span>
-						<span class="text-xs text-center leading-tight">{link.label}</span>
+						<span class="text-2xl group-hover:scale-110 transition-transform duration-300">{link.icon}</span>
+						<span class="text-xs text-center leading-tight font-medium">{link.label}</span>
 					</a>
 				{/each}
 			</nav>
@@ -135,7 +135,7 @@
 		<!-- This is where child routes are rendered -->
 		<!-- For /dashboard, this renders +page.svelte which shows role-specific dashboards -->
 		<!-- For /dashboard/classes, this would render classes/+page.svelte, etc. -->
-		<main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+		<main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-background">
 			<div class="max-w-7xl mx-auto">
 				{@render children()}
 			</div>

@@ -1,5 +1,14 @@
 <script lang="ts">
 	import '../app.css';
+	// Import Claude AI fonts
+	import '@fontsource/inter/400.css';
+	import '@fontsource/inter/500.css';
+	import '@fontsource/inter/600.css';
+	import '@fontsource/inter/700.css';
+	import '@fontsource/lora/400.css';
+	import '@fontsource/lora/600.css';
+	import '@fontsource/lora/700.css';
+
 	import favicon from '$lib/assets/favicon.svg';
 	import Header from '$lib/components/Header.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
@@ -32,7 +41,8 @@
 </svelte:head>
 
 <!-- Mode Watcher for automatic dark/light mode syncing -->
-<ModeWatcher />
+<!-- track={true} syncs with system preferences -->
+<ModeWatcher track={true} defaultMode="system" />
 
 <!-- Loading bar that appears during navigation -->
 {#if $navigating}

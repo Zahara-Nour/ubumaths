@@ -111,7 +111,7 @@
 	}
 </script>
 
-<header class="border-b bg-background">
+<header class="border-b border-border bg-background shadow-sm">
 	<div class="flex h-16 items-center px-4 gap-4">
 		<!-- Hamburger menu - visible only on mobile (lg:hidden) -->
 		<div class="lg:hidden">
@@ -144,7 +144,7 @@
 		</div>
 
 		<!-- Title -->
-		<h1 class="text-2xl font-bold">{title}</h1>
+		<h1 class="text-2xl font-bold text-foreground tracking-tight">{title}</h1>
 
 		<!-- Spacer -->
 		<div class="flex-1"></div>
@@ -187,7 +187,7 @@
 					</DropdownMenu.Root>
 				</div>
 			{:else}
-				<Button href="/login" size="sm">
+				<Button href="/login" size="sm" variant="default">
 					<LogIn class="h-4 w-4 mr-2" />
 					Login
 				</Button>
