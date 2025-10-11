@@ -24,7 +24,7 @@
  * 1. User submits form (POST to /login?/login)
  * 2. Server action receives email/password
  * 3. Server calls signInWithPassword() → sets cookies
- * 4. Server redirects to original page or home
+ * 4. Server redirects to dashboard
  * 5. Browser's onAuthStateChange fires (SIGNED_IN event)
  * 6. Browser calls invalidate('supabase:auth')
  * 7. Layout re-runs → server verifies session → UI updates
@@ -35,7 +35,7 @@
  * 3. User is redirected to Google consent screen
  * 4. Google redirects back to /auth/callback
  * 5. Callback handler validates and creates session
- * 6. User is redirected back to original page
+ * 6. User is redirected to dashboard (or original page if specified)
  */
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
@@ -52,8 +52,8 @@ export const actions = {
 	 * Redirects user to Google for authentication, then back to our callback handler.
 	 */
 	googleSignIn: async ({ request, locals: { supabase }, url }) => {
-		// Get the current page URL for redirect after successful login
-		const redirectTo = url.searchParams.get('redirectTo') || url.pathname;
+		// Get the redirect destination - default to dashboard
+		const redirectTo = url.searchParams.get('redirectTo') || '/dashboard';
 
 		// Determine the callback URL based on environment
 		const callbackUrl = dev
@@ -127,7 +127,7 @@ export const actions = {
 		logger.info('Email/password login successful for:', email);
 
 		// Success! Cookies are now set.
-		// Redirect to home page - the layout will detect the auth change
-		throw redirect(303, '/');
+		// Redirect to dashboard - the layout will detect the auth change
+		throw redirect(303, '/dashboard');
 	}
 } satisfies Actions;

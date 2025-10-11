@@ -224,7 +224,7 @@ Server: Validates email domain
   │   ├─ If exists: Link Google account
   │   ├─ If new: Create profile (role: 'student')
   │   ├─ Cookies set
-  │   └─ Redirect to original page (logged in)
+  │   └─ Redirect to /dashboard (or original page if next param provided)
   └─ If other domain:
       ├─ Sign out immediately
       └─ Redirect to /login with error
@@ -301,7 +301,7 @@ Server: supabase.auth.signInWithPassword()
 If valid credentials:
   ├─ Session created
   ├─ Cookies set
-  └─ Redirect to home (logged in)
+  └─ Redirect to /dashboard (logged in)
 If invalid:
   └─ Return error to display in form
 ```

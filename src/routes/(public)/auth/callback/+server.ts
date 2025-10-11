@@ -9,7 +9,7 @@
  * 2. Exchange code for session using Supabase
  * 3. Validate user email domain (@voltairedoha.com only)
  * 4. Check if profile exists, create if not
- * 5. Redirect to original page (or home)
+ * 5. Redirect to original page (or dashboard)
  *
  * SECURITY:
  * - Email domain validation prevents unauthorized access
@@ -29,7 +29,7 @@ const ALLOWED_DOMAIN = '@voltairedoha.com';
 export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	// Extract OAuth code and next URL from query parameters
 	const code = url.searchParams.get('code');
-	const next = url.searchParams.get('next') ?? '/';
+	const next = url.searchParams.get('next') ?? '/dashboard';
 
 	logger.info('OAuth callback received', { hasCode: !!code, next });
 

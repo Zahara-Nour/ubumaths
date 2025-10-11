@@ -186,15 +186,15 @@
 						Sign in
 					</button>
 				</div>
+
+				<!-- Sign up link - only show in email/password tab -->
+				<div class="text-center text-sm">
+					<span class="text-gray-600 dark:text-gray-400">Don't have an account?</span>
+					<a href="/signup" class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
+						Sign up
+					</a>
+				</div>
 			</form>
 		{/if}
-
-		<!-- Sign up link -->
-		<div class="text-center text-sm">
-			<span class="text-gray-600 dark:text-gray-400">Don't have an account?</span>
-			<a href="/signup" class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
-				Sign up
-			</a>
-		</div>
 	</div>
 </div>

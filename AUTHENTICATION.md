@@ -70,7 +70,7 @@ If domain valid:
   ├─ Create profile if new user (role: 'student')
   ├─ Link Google account if existing user
   ├─ Sets auth cookies ✅
-  └─ Redirect to original page
+  └─ Redirect to /dashboard (or original page if specified)
 If domain invalid:
   ├─ Sign out user immediately
   └─ Redirect to /login with error message
@@ -83,7 +83,7 @@ Server: safeGetSession() verifies user
   ↓
 Updated data flows to components
   ↓
-UI shows avatar/user menu
+Dashboard displays with user context
 ```
 
 ### Login Flow - Email/Password (Alternative Method)
@@ -97,7 +97,7 @@ Server: supabase.auth.signInWithPassword()
   ↓
 Server: Sets auth cookies ✅
   ↓
-Server: Redirects to home page
+Server: Redirects to /dashboard
   ↓
 Browser: onAuthStateChange fires (SIGNED_IN)
   ↓
@@ -107,7 +107,7 @@ Server: safeGetSession() verifies user
   ↓
 Updated data flows to components
   ↓
-UI shows avatar/user menu
+Dashboard displays with user context
 ```
 
 ### Logout Flow (Server-Side)
