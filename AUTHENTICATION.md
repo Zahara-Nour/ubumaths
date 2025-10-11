@@ -46,7 +46,47 @@ The authentication system uses **Supabase** for authentication and follows a **s
 
 ## Login/Logout Flow
 
-### Login Flow (Server-Side)
+### Login Flow - Google OAuth (Default Method)
+
+```
+User clicks "Sign in with Google"
+  ↓
+POST to /login?/googleSignIn (server action)
+  ↓
+Server: supabase.auth.signInWithOAuth({ provider: 'google' })
+  ↓
+Server: Redirects to Google consent screen
+  ↓
+User authenticates with Google workspace account
+  ↓
+Google redirects to /auth/callback?code=...
+  ↓
+Server: supabase.auth.exchangeCodeForSession(code)
+  ↓
+Server: Validates email domain (@voltairedoha.com only)
+  ↓
+If domain valid:
+  ├─ Check if profile exists
+  ├─ Create profile if new user (role: 'student')
+  ├─ Link Google account if existing user
+  ├─ Sets auth cookies ✅
+  └─ Redirect to original page
+If domain invalid:
+  ├─ Sign out user immediately
+  └─ Redirect to /login with error message
+  ↓
+Browser: onAuthStateChange fires (SIGNED_IN)
+  ↓
+Browser: invalidate('supabase:auth')
+  ↓
+Server: safeGetSession() verifies user
+  ↓
+Updated data flows to components
+  ↓
+UI shows avatar/user menu
+```
+
+### Login Flow - Email/Password (Alternative Method)
 
 ```
 User submits login form
@@ -214,20 +254,36 @@ UI updates automatically (Svelte 5 reactivity)
 - Sets up auth state change listener
 - Manages reactive updates via invalidate()
 
-### 5. src/routes/login/+page.server.ts
-**Role**: Server-side login action
-- Handles login form submission
-- Calls `signInWithPassword()` on server
-- Sets auth cookies properly
+### 5. src/routes/(public)/login/+page.server.ts
+**Role**: Server-side login actions
+- Handles **Google OAuth** sign-in (`?/googleSignIn` action)
+  - Initiates OAuth flow with Google provider
+  - Redirects to Google consent screen
+- Handles **Email/Password** login (`?/login` action)
+  - Calls `signInWithPassword()` on server
+  - Sets auth cookies properly
 - Redirects on success
 
-### 6. src/routes/login/+page.svelte
-**Role**: Login form UI
-- Displays email/password form
+### 6. src/routes/(public)/login/+page.svelte
+**Role**: Login form UI with tab switcher
+- **Tab 1: Google Sign In** (default)
+  - Single button with Google branding
+  - POSTs to `?/googleSignIn` action
+- **Tab 2: Email & Password**
+  - Email/password form
+  - POSTs to `?/login` action
+- Displays errors from OAuth callback or form actions
 - Uses SvelteKit form actions (`use:enhance`)
-- POSTs to server action for cookie management
 
-### 7. src/routes/auth/logout/+server.ts
+### 7. src/routes/(public)/auth/callback/+server.ts
+**Role**: OAuth callback handler
+- Handles redirect from Google after authentication
+- Exchanges authorization code for session
+- Validates email domain (@voltairedoha.com)
+- Creates or links user profile
+- Redirects to original page
+
+### 8. src/routes/auth/logout/+server.ts
 **Role**: Server-side logout endpoint
 - Handles logout POST request
 - Calls `signOut()` on server
@@ -287,11 +343,19 @@ async function logout() {
 Required in `.env` file:
 
 ```env
+# Supabase Configuration
 PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+
+# Google OAuth Configuration
+PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET=your-google-client-secret
 ```
 
-These are **public** and safe to expose in the browser.
+**Notes**:
+- `PUBLIC_*` variables are safe to expose in the browser
+- Google Client ID and Secret obtained from Google Cloud Console
+- Configure OAuth redirect URLs in both Google Console and Supabase Dashboard
 
 ## Security Checklist
 

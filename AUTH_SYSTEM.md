@@ -28,7 +28,8 @@ Complete technical documentation for the UbuMaths authentication system built wi
 ### Key Features
 
 ✅ Server-side rendering (SSR) compatible
-✅ Email/password authentication
+✅ **Google OAuth (default method)** with domain restriction
+✅ Email/password authentication (alternative method)
 ✅ Email confirmation
 ✅ Password reset flow
 ✅ Password strength indicator
@@ -37,6 +38,7 @@ Complete technical documentation for the UbuMaths authentication system built wi
 ✅ Role-based access control (RBAC)
 ✅ Secure token verification
 ✅ Progressive enhancement
+✅ Automatic profile creation/linking for OAuth users
 
 ---
 
@@ -199,7 +201,48 @@ export const load = async ({ depends }) => {
 
 ## Authentication Flows
 
-### 1. Signup Flow
+### 1. Google OAuth Flow (Primary Method)
+
+```
+User clicks "Sign in with Google" (/login)
+  ↓
+Form submits to ?/googleSignIn action
+  ↓
+Server: supabase.auth.signInWithOAuth({ provider: 'google' })
+  ↓
+User redirected to Google consent screen
+  ↓
+User authenticates with Google workspace account
+  ↓
+Google redirects to /auth/callback?code=...&next=/original-page
+  ↓
+Server: exchangeCodeForSession(code)
+  ↓
+Server: Validates email domain
+  ├─ If @voltairedoha.com:
+  │   ├─ Check if profile exists in database
+  │   ├─ If exists: Link Google account
+  │   ├─ If new: Create profile (role: 'student')
+  │   ├─ Cookies set
+  │   └─ Redirect to original page (logged in)
+  └─ If other domain:
+      ├─ Sign out immediately
+      └─ Redirect to /login with error
+```
+
+**Files Involved**:
+- `src/routes/(public)/login/+page.svelte`: Tab 1 - Google Sign In button
+- `src/routes/(public)/login/+page.server.ts`: `googleSignIn` action
+- `src/routes/(public)/auth/callback/+server.ts`: OAuth callback handler
+
+**Email Domain Restriction**:
+- Only `@voltairedoha.com` accounts can sign in
+- Other domains are rejected with clear error message
+- Security check happens server-side (cannot be bypassed)
+
+---
+
+### 2. Signup Flow (Email/Password)
 
 ```
 User fills form (/signup)
@@ -219,10 +262,10 @@ If email confirmation required:
 ```
 
 **Files Involved**:
-- `src/routes/signup/+page.svelte`: Form with password strength indicator
-- `src/routes/signup/+page.server.ts`: Server-side signup action
+- `src/routes/(public)/signup/+page.svelte`: Form with password strength indicator
+- `src/routes/(public)/signup/+page.server.ts`: Server-side signup action
 
-### 2. Email Confirmation Flow
+### 3. Email Confirmation Flow
 
 ```
 User clicks link in email
@@ -240,14 +283,18 @@ If invalid:
 ```
 
 **Files Involved**:
-- `src/routes/auth/confirm/+server.ts`: Token verification and session creation
+- `src/routes/(public)/auth/confirm/+server.ts`: Token verification and session creation
 
-### 3. Login Flow
+---
+
+### 4. Login Flow (Email/Password - Alternative)
 
 ```
-User fills form (/login)
+User switches to "Email & Password" tab (/login)
   ↓
-Form submits to server action
+User fills form
+  ↓
+Form submits to ?/login action
   ↓
 Server: supabase.auth.signInWithPassword()
   ↓
@@ -260,10 +307,12 @@ If invalid:
 ```
 
 **Files Involved**:
-- `src/routes/login/+page.svelte`: Login form
-- `src/routes/login/+page.server.ts`: Server-side login action
+- `src/routes/(public)/login/+page.svelte`: Tab 2 - Email/Password form
+- `src/routes/(public)/login/+page.server.ts`: `login` action
 
-### 4. Logout Flow
+---
+
+### 5. Logout Flow
 
 ```
 User clicks logout button
@@ -289,10 +338,10 @@ UI updates to show logged-out state
 - `src/routes/auth/logout/+server.ts`: Server-side logout endpoint
 - `src/lib/components/Header.svelte`: Logout button (likely)
 
-### 5. Password Reset Flow
+### 6. Password Reset Flow
 
 ```
-User clicks "Forgot password?" (/login)
+User clicks "Forgot password?" (/login, Email & Password tab)
   ↓
 Navigates to /auth/reset-password
   ↓
@@ -327,11 +376,11 @@ Redirect to home (logged in with new password)
 ```
 
 **Files Involved**:
-- `src/routes/auth/reset-password/+page.svelte`: Request reset form
-- `src/routes/auth/reset-password/+page.server.ts`: Send reset email action
-- `src/routes/auth/confirm/+server.ts`: Verify token and redirect
-- `src/routes/auth/update-password/+page.svelte`: New password form
-- `src/routes/auth/update-password/+page.server.ts`: Update password action
+- `src/routes/(public)/auth/reset-password/+page.svelte`: Request reset form
+- `src/routes/(public)/auth/reset-password/+page.server.ts`: Send reset email action
+- `src/routes/(public)/auth/confirm/+server.ts`: Verify token and redirect
+- `src/routes/(public)/auth/update-password/+page.svelte`: New password form
+- `src/routes/(public)/auth/update-password/+page.server.ts`: Update password action
 
 ---
 
@@ -575,14 +624,37 @@ Configure SMTP settings in **Supabase Dashboard → Project Settings → Auth �
 
 **`.env` file**:
 ```bash
+# Supabase Configuration
 PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+
+# Google OAuth Configuration
+PUBLIC_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET=your-client-secret
 ```
 
 **Security Notes**:
 - `PUBLIC_*` variables are safe to expose (they're public)
 - Never commit `.env` to git
 - Service role key (if needed) should never be exposed to client
+- Google Client ID is public, but Client Secret must remain private
+
+**Google OAuth Setup**:
+
+1. **Google Cloud Console**:
+   - Create OAuth 2.0 credentials
+   - Add authorized JavaScript origins:
+     - `http://localhost:5173` (dev)
+     - `https://ubumaths-6op8.vercel.app` (production)
+   - Add authorized redirect URIs (from Supabase dashboard)
+
+2. **Supabase Dashboard** → Authentication → Providers → Google:
+   - Enable Google provider
+   - Add Client ID and Client Secret
+   - Note the callback URL for Google Console
+   - Authorized redirect URLs:
+     - `http://localhost:5173/auth/callback` (dev)
+     - `https://ubumaths-6op8.vercel.app/auth/callback` (production)
 
 ---
 

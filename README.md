@@ -4,7 +4,7 @@ An educational math application built by a math teacher for students, featuring 
 
 ## Features
 
-- 🔐 **Secure Authentication** - Supabase Auth with SSR support, email confirmation, and password reset
+- 🔐 **Secure Authentication** - Google OAuth (primary) + email/password, with SSR support and domain restrictions
 - ✏️ **Interactive Math Editor** - Powered by **MathLive** for mathematical input and rendering
 - 🎨 **Modern UI** - Responsive design with **Tailwind CSS 4** and **Skeleton UI**
 - 🚀 **Built with Svelte 5** - Modern reactive framework with runes and **SvelteKit**
@@ -45,11 +45,18 @@ pnpm install
 Create a `.env` file in the root directory:
 
 ```bash
+# Supabase Configuration
 PUBLIC_SUPABASE_URL=your-supabase-project-url
 PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+
+# Google OAuth Configuration
+PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET=your-google-client-secret
 ```
 
-Get these values from your [Supabase Dashboard](https://app.supabase.com) → Project Settings → API
+Get Supabase values from your [Supabase Dashboard](https://app.supabase.com) → Project Settings → API
+
+Get Google OAuth credentials from [Google Cloud Console](https://console.cloud.google.com/)
 
 3. **Configure Supabase (first-time setup):**
 
@@ -57,6 +64,11 @@ Get these values from your [Supabase Dashboard](https://app.supabase.com) → Pr
 - Update redirect URLs:
   - **Confirm signup**: `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup`
   - **Reset password**: `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery`
+
+- Go to **Authentication → Providers → Google** in Supabase Dashboard
+- Enable Google provider
+- Add your Client ID and Client Secret
+- Note the callback URL for configuring Google Cloud Console
 
 4. **Run database migrations (if needed):**
 
@@ -154,18 +166,21 @@ The application uses **Supabase Auth** with a fully SSR-compatible implementatio
 ### Features
 
 - ✅ Server-side rendering support
-- ✅ Email/password authentication
+- ✅ **Google OAuth authentication** (primary method, @voltairedoha.com domain only)
+- ✅ Email/password authentication (alternative method)
 - ✅ Email confirmation
 - ✅ Password reset with email
 - ✅ Password strength indicator
 - ✅ Real-time auth state synchronization
 - ✅ Cookie-based session management
 - ✅ Role-based access control (student, teacher, admin)
+- ✅ Automatic profile creation for OAuth users
 
 ### Available Routes
 
-- `/login` - Login with email/password
+- `/login` - Login with Google OAuth or email/password (tab-based UI)
 - `/signup` - Create account with password strength feedback
+- `/auth/callback` - OAuth callback handler (Google redirect endpoint)
 - `/auth/reset-password` - Request password reset email
 - `/auth/update-password` - Set new password after reset
 - `/auth/confirm` - Email confirmation and password reset handler

@@ -16,26 +16,82 @@
  * - Browser: Calls invalidate() to refresh data ✅
  * - Result: UI updates instantly
  *
- * FLOW:
+ * AUTHENTICATION METHODS:
+ * 1. Google OAuth - Initiates OAuth flow with Google provider
+ * 2. Email/Password - Traditional authentication method
+ *
+ * FLOW (Email/Password):
  * 1. User submits form (POST to /login?/login)
  * 2. Server action receives email/password
  * 3. Server calls signInWithPassword() → sets cookies
- * 4. Server redirects to home page
+ * 4. Server redirects to original page or home
  * 5. Browser's onAuthStateChange fires (SIGNED_IN event)
  * 6. Browser calls invalidate('supabase:auth')
  * 7. Layout re-runs → server verifies session → UI updates
+ *
+ * FLOW (Google OAuth):
+ * 1. User submits form (POST to /login?/googleSignIn)
+ * 2. Server action initiates OAuth flow with redirectTo URL
+ * 3. User is redirected to Google consent screen
+ * 4. Google redirects back to /auth/callback
+ * 5. Callback handler validates and creates session
+ * 6. User is redirected back to original page
  */
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { createLogger } from '$lib/utils/logger';
+import { dev } from '$app/environment';
 
 const logger = createLogger('login/+page.server.ts');
 
 export const actions = {
 	/**
-	 * Login action
+	 * Google OAuth Sign In action
 	 *
-	 * Authenticates user and sets server-side cookies
+	 * Initiates the OAuth flow with Google provider.
+	 * Redirects user to Google for authentication, then back to our callback handler.
+	 */
+	googleSignIn: async ({ request, locals: { supabase }, url }) => {
+		// Get the current page URL for redirect after successful login
+		const redirectTo = url.searchParams.get('redirectTo') || url.pathname;
+
+		// Determine the callback URL based on environment
+		const callbackUrl = dev
+			? 'http://localhost:5173/auth/callback'
+			: 'https://ubumaths-6op8.vercel.app/auth/callback';
+
+		logger.info('Initiating Google OAuth flow', { callbackUrl, redirectTo });
+
+		// Initiate OAuth flow with Google
+		const { data, error } = await supabase.auth.signInWithOAuth({
+			provider: 'google',
+			options: {
+				redirectTo: `${callbackUrl}?next=${encodeURIComponent(redirectTo)}`
+			}
+		});
+
+		if (error) {
+			logger.error('Google OAuth initiation failed:', error);
+			return fail(400, {
+				error: 'Failed to initiate Google sign-in. Please try again.'
+			});
+		}
+
+		// Redirect to Google's OAuth consent screen
+		if (data.url) {
+			throw redirect(303, data.url);
+		}
+
+		// Shouldn't reach here, but handle gracefully
+		return fail(400, {
+			error: 'Failed to initiate Google sign-in. Please try again.'
+		});
+	},
+
+	/**
+	 * Email/Password Login action
+	 *
+	 * Authenticates user with email and password, sets server-side cookies
 	 */
 	login: async ({ request, locals: { supabase } }) => {
 		// Extract form data
@@ -60,13 +116,15 @@ export const actions = {
 		});
 
 		if (error) {
-			logger.error('Error:', error.message);
+			logger.error('Email/password login failed:', error.message);
 			// Return error to display in form
 			return fail(400, {
 				error: error.message,
 				email // Preserve email for convenience
 			});
 		}
+
+		logger.info('Email/password login successful for:', email);
 
 		// Success! Cookies are now set.
 		// Redirect to home page - the layout will detect the auth change
