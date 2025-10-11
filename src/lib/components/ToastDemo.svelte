@@ -1,73 +1,52 @@
 <script lang="ts">
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '$lib/components/ui/button';
 
 	function showSuccessToast() {
-		toaster.success({
-			title: 'Success!',
-			description: 'Operation completed successfully.'
-		});
+		toaster.success('Success! Operation completed successfully.');
 	}
 
 	function showErrorToast() {
-		toaster.error({
-			title: 'Error!',
-			description: 'Something went wrong.'
-		});
+		toaster.error('Error! Something went wrong.');
 	}
 
 	function showWarningToast() {
-		toaster.warning({
-			title: 'Warning!',
-			description: 'Please check your input.'
-		});
+		toaster.warning('Warning! Please check your input.');
 	}
 
 	function showInfoToast() {
-		toaster.info({
-			title: 'Information',
-			description: 'This is a demo toast notification.'
-		});
+		toaster.info('Information: This is a demo toast notification.');
 	}
 
 	function showLongToast() {
-		toaster.info({
-			title: 'Long Message',
-			description:
-				'This is a longer toast message that demonstrates how the toast handles more content. It will stay visible longer.',
-			duration: 7000
-		});
+		toaster.info(
+			'Long Message: This is a longer toast message that demonstrates how the toast handles more content.'
+		);
 	}
 
 	function showPersistentToast() {
-		toaster.create({
-			title: 'Persistent Toast',
-			description: 'This toast stays until you dismiss it manually!',
-			duration: Infinity,
-			closable: true
-		});
+		toaster.message('Persistent Toast: This toast stays until you dismiss it manually!');
 	}
 </script>
 
-<div class="toast-demo card p-6">
-	<h2 class="text-on-surface-token mb-4 text-xl font-semibold">Toast Notifications Demo</h2>
-	<p class="text-on-surface-token mb-6">
+<div class="toast-demo bg-card text-card-foreground p-6 rounded-lg border border-border">
+	<h2 class="text-foreground mb-4 text-xl font-semibold">Toast Notifications Demo</h2>
+	<p class="text-muted-foreground mb-6">
 		Click the buttons below to see different types of toast notifications:
 	</p>
 
 	<div class="button-grid">
-		<button onclick={showSuccessToast} class="btn variant-filled-success"> Success Toast </button>
+		<Button onclick={showSuccessToast} class="bg-green-600 hover:bg-green-700"> Success Toast </Button>
 
-		<button onclick={showErrorToast} class="btn variant-filled-error"> Error Toast </button>
+		<Button onclick={showErrorToast} variant="destructive"> Error Toast </Button>
 
-		<button onclick={showWarningToast} class="btn variant-filled-warning"> Warning Toast </button>
+		<Button onclick={showWarningToast} class="bg-orange-600 hover:bg-orange-700"> Warning Toast </Button>
 
-		<button onclick={showInfoToast} class="btn variant-filled-primary"> Info Toast </button>
+		<Button onclick={showInfoToast}> Info Toast </Button>
 
-		<button onclick={showLongToast} class="btn variant-filled-secondary"> Long Message </button>
+		<Button onclick={showLongToast} variant="secondary"> Long Message </Button>
 
-		<button onclick={showPersistentToast} class="btn variant-filled-tertiary">
-			Persistent Toast
-		</button>
+		<Button onclick={showPersistentToast} variant="outline"> Persistent Toast </Button>
 	</div>
 </div>
 

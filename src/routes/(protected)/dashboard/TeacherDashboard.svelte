@@ -37,6 +37,7 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { Button } from '$lib/components/ui/button';
 
 	// Receive data from parent (+page.svelte)
 	// Contains profile with teacher's information
@@ -46,12 +47,12 @@
 <div class="space-y-6">
 	<!-- WELCOME SECTION -->
 	<!-- Personalized greeting for teachers -->
-	<div class="bg-secondary-100-900 border border-secondary-200-800 rounded-lg p-6">
-		<h2 class="text-xl font-semibold text-secondary-900-50">
+	<div class="bg-secondary/10 border border-secondary/20 rounded-lg p-6">
+		<h2 class="text-xl font-semibold text-foreground">
 			<!-- Use full_name if available, otherwise fallback to 'Teacher' -->
 			Welcome, {data.profile.full_name || 'Teacher'}!
 		</h2>
-		<p class="text-secondary-700-300 mt-2">
+		<p class="text-muted-foreground mt-2">
 			Manage your classes, create assignments, and track student progress.
 		</p>
 	</div>
@@ -61,84 +62,78 @@
 	<!-- TODO: Replace hardcoded values with real data from database -->
 	<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
 		<!-- Stat 1: Total Classes -->
-		<div class="bg-surface-100-900 rounded-lg shadow p-6">
-			<h3 class="text-sm font-medium text-surface-500-400 uppercase">Total Classes</h3>
+		<div class="bg-card rounded-lg shadow p-6">
+			<h3 class="text-sm font-medium text-muted-foreground uppercase">Total Classes</h3>
 			<!-- TODO: Count classes where teacher_id = data.profile.id -->
-			<p class="text-3xl font-bold text-surface-900-50 mt-2">3</p>
+			<p class="text-3xl font-bold text-foreground mt-2">3</p>
 		</div>
 
 		<!-- Stat 2: Total Students (across all classes) -->
-		<div class="bg-surface-100-900 rounded-lg shadow p-6">
-			<h3 class="text-sm font-medium text-surface-500-400 uppercase">Total Students</h3>
+		<div class="bg-card rounded-lg shadow p-6">
+			<h3 class="text-sm font-medium text-muted-foreground uppercase">Total Students</h3>
 			<!-- TODO: Count distinct students in class_members for teacher's classes -->
-			<p class="text-3xl font-bold text-surface-900-50 mt-2">87</p>
+			<p class="text-3xl font-bold text-foreground mt-2">87</p>
 		</div>
 
 		<!-- Stat 3: Active Assignments -->
-		<div class="bg-surface-100-900 rounded-lg shadow p-6">
-			<h3 class="text-sm font-medium text-surface-500-400 uppercase">Active Assignments</h3>
+		<div class="bg-card rounded-lg shadow p-6">
+			<h3 class="text-sm font-medium text-muted-foreground uppercase">Active Assignments</h3>
 			<!-- TODO: Count assignments where created_by = teacher and is_published = true -->
-			<p class="text-3xl font-bold text-surface-900-50 mt-2">12</p>
+			<p class="text-3xl font-bold text-foreground mt-2">12</p>
 		</div>
 
 		<!-- Stat 4: Submissions Needing Review -->
-		<div class="bg-surface-100-900 rounded-lg shadow p-6">
-			<h3 class="text-sm font-medium text-surface-500-400 uppercase">Pending Reviews</h3>
+		<div class="bg-card rounded-lg shadow p-6">
+			<h3 class="text-sm font-medium text-muted-foreground uppercase">Pending Reviews</h3>
 			<!-- TODO: Count unreviewed free-response submissions for teacher's assignments -->
-			<p class="text-3xl font-bold text-surface-900-50 mt-2">24</p>
+			<p class="text-3xl font-bold text-foreground mt-2">24</p>
 		</div>
 	</div>
 
 	<!-- QUICK ACTIONS SECTION -->
 	<!-- Common teacher tasks as quick-access buttons -->
-	<div class="bg-surface-100-900 rounded-lg shadow p-6">
-		<h3 class="text-lg font-semibold text-surface-900-50 mb-4">Quick Actions</h3>
+	<div class="bg-card rounded-lg shadow p-6">
+		<h3 class="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 			<!-- Action 1: Create new assignment -->
-			<button
-				class="px-4 py-3 bg-primary-600-400 text-white rounded-lg hover:bg-primary-700-300 font-medium"
-			>
+			<Button class="px-4 py-3">
 				Create Assignment
 				<!-- TODO: Link to /dashboard/assignments/create -->
-			</button>
+			</Button>
 
 			<!-- Action 2: Create new exercise -->
-			<button
-				class="px-4 py-3 bg-secondary-600-400 text-white rounded-lg hover:bg-secondary-700-300 font-medium"
-			>
+			<Button variant="secondary" class="px-4 py-3">
 				Create Exercise
 				<!-- TODO: Link to /dashboard/exercises/create -->
-			</button>
+			</Button>
 
 			<!-- Action 3: Add new class -->
-			<button
-				class="px-4 py-3 bg-tertiary-600-400 text-white rounded-lg hover:bg-tertiary-700-300 font-medium"
-			>
+			<Button variant="outline" class="px-4 py-3">
 				Add New Class
 				<!-- TODO: Link to /dashboard/classes/create -->
-			</button>
+			</Button>
 		</div>
 	</div>
 
 	<!-- MY CLASSES SECTION -->
 	<!-- Lists all classes owned by this teacher -->
-	<div class="bg-surface-100-900 rounded-lg shadow">
-		<div class="px-6 py-4 border-b border-surface-200-800">
-			<h3 class="text-lg font-semibold text-surface-900-50">My Classes</h3>
+	<div class="bg-card rounded-lg shadow">
+		<div class="px-6 py-4 border-b border-border">
+			<h3 class="text-lg font-semibold text-foreground">My Classes</h3>
 		</div>
 		<div class="p-6">
 			<!-- TODO: Query classes table where teacher_id = data.profile.id -->
 			<!-- Show: class name, student count, join code, active status -->
 			<!-- Each class should link to /dashboard/classes/[id] for management -->
-			<p class="text-surface-500-400 text-center py-8">No classes created yet</p>
+			<p class="text-muted-foreground text-center py-8">No classes created yet</p>
 		</div>
 	</div>
 
 	<!-- RECENT SUBMISSIONS SECTION -->
 	<!-- Shows recent student submissions that may need review -->
-	<div class="bg-surface-100-900 rounded-lg shadow">
-		<div class="px-6 py-4 border-b border-surface-200-800">
-			<h3 class="text-lg font-semibold text-surface-900-50">Recent Submissions</h3>
+	<div class="bg-card rounded-lg shadow">
+		<div class="px-6 py-4 border-b border-border">
+			<h3 class="text-lg font-semibold text-foreground">Recent Submissions</h3>
 		</div>
 		<div class="p-6">
 			<!-- TODO: Query assignment_submissions for teacher's assignments -->
@@ -148,7 +143,7 @@
 			<!-- - Submission date -->
 			<!-- - Score/completion percentage -->
 			<!-- - Link to review submission -->
-			<p class="text-surface-500-400 text-center py-8">No recent submissions to review</p>
+			<p class="text-muted-foreground text-center py-8">No recent submissions to review</p>
 		</div>
 	</div>
 </div>

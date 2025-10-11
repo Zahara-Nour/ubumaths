@@ -34,7 +34,7 @@
 
 <script lang="ts">
 	import type { LayoutData } from './$types';
-	import { Navigation } from '@skeletonlabs/skeleton-svelte';
+	import { page } from '$app/stores';
 
 	// PROPS RECEIVED FROM PARENT LAYOUT SERVER LOAD:
 	// - data: Contains profile from +layout.server.ts
@@ -72,33 +72,38 @@
 		}
 		return commonLinks;
 	};
+
+	// Check if a link is active
+	function isActive(href: string) {
+		return $page.url.pathname === href;
+	}
 </script>
 
-<!-- Main dashboard container with Skeleton theming -->
-<div class="min-h-screen bg-surface-50-950">
+<!-- Main dashboard container -->
+<div class="min-h-screen bg-background">
 	<!-- DASHBOARD HEADER (shared across all dashboard pages) -->
-	<header class="bg-surface-100-900 shadow-sm border-b border-surface-200-800">
+	<header class="bg-card shadow-sm border-b border-border">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
 			<div class="flex items-center justify-between">
 				<!-- Left side: Dashboard title -->
 				<div>
-					<h1 class="text-2xl font-bold text-surface-900-50">Dashboard</h1>
+					<h1 class="text-2xl font-bold text-foreground">Dashboard</h1>
 					<!-- Display user's role (student/teacher/admin) -->
 					<!-- This comes from data.profile.role fetched in +layout.server.ts -->
-					<p class="text-sm text-surface-500-400 mt-1">
-						Role: <span class="capitalize font-medium text-surface-700-300">{data.profile.role}</span>
+					<p class="text-sm text-muted-foreground mt-1">
+						Role: <span class="capitalize font-medium text-foreground">{data.profile.role}</span>
 					</p>
 				</div>
 
 				<!-- Right side: User email and navigation -->
 				<div class="flex items-center gap-4">
 					<!-- Display user's email from profile -->
-					<span class="text-sm text-surface-700-300 hidden sm:inline">{data.profile.email}</span>
+					<span class="text-sm text-foreground hidden sm:inline">{data.profile.email}</span>
 
 					<!-- Navigation link back to home page -->
 					<a
 						href="/"
-						class="text-sm text-primary-600-400 hover:text-primary-700-300 font-medium"
+						class="text-sm text-primary hover:text-primary/80 font-medium"
 					>
 						Back to Home
 					</a>
@@ -109,16 +114,21 @@
 
 	<div class="flex h-[calc(100vh-73px)]">
 		<!-- RAIL SIDEBAR - Vertical icon navigation -->
-		<div class="bg-surface-100-900 border-r border-surface-200-800">
-			<Navigation.Rail>
-				{#snippet tiles()}
-					{#each getNavLinks(data.profile.role) as link}
-						<Navigation.Tile label={link.label} href={link.href}>
-							<span class="text-2xl">{link.icon}</span>
-						</Navigation.Tile>
-					{/each}
-				{/snippet}
-			</Navigation.Rail>
+		<div class="bg-card border-r border-border w-20">
+			<nav class="flex flex-col items-center gap-2 py-4">
+				{#each getNavLinks(data.profile.role) as link}
+					<a
+						href={link.href}
+						class="flex flex-col items-center gap-1 px-3 py-2 rounded-md transition-colors w-16 {isActive(link.href)
+							? 'bg-accent text-accent-foreground'
+							: 'text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground'}"
+						title={link.label}
+					>
+						<span class="text-2xl">{link.icon}</span>
+						<span class="text-xs text-center leading-tight">{link.label}</span>
+					</a>
+				{/each}
+			</nav>
 		</div>
 
 		<!-- DASHBOARD CONTENT AREA -->

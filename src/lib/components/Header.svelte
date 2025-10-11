@@ -35,10 +35,13 @@
      - Updated props flow to this component → Login button appears
 -->
 <script lang="ts">
-	import { AppBar, Avatar, Popover } from '@skeletonlabs/skeleton-svelte';
+	import { Button } from '$lib/components/ui/button';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as Avatar from '$lib/components/ui/avatar';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import type { Session, User, SupabaseClient } from '@supabase/supabase-js';
+	import { Menu, X, Home, LogIn, LogOut, LayoutDashboard, Sun, Moon, Minus, Plus } from 'lucide-svelte';
 
 	// Props received from parent layout (+layout.svelte)
 	// These are automatically reactive in Svelte 5
@@ -108,229 +111,126 @@
 	}
 </script>
 
-<AppBar>
-	{#snippet lead()}
+<header class="border-b bg-background">
+	<div class="flex h-16 items-center px-4 gap-4">
 		<!-- Hamburger menu - visible only on mobile (lg:hidden) -->
 		<div class="lg:hidden">
-			<Popover
-				open={mobileMenuOpen}
-				onOpenChange={(e) => (mobileMenuOpen = e.open)}
-				positioning={{ placement: 'bottom-start' }}
-				triggerBase="p-2 rounded-md text-surface-700-300 hover:bg-surface-200-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
-				contentBase="card bg-surface-100-900 shadow-xl border border-surface-200-800 w-64 mt-2"
-			>
-				{#snippet trigger()}
-					<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-						{#if mobileMenuOpen}
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-						{:else}
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-						{/if}
-					</svg>
+			<DropdownMenu.Root bind:open={mobileMenuOpen}>
+				<DropdownMenu.Trigger
+					class="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 w-9"
+				>
+					{#if mobileMenuOpen}
+						<X class="h-6 w-6" />
+					{:else}
+						<Menu class="h-6 w-6" />
+					{/if}
 					<span class="sr-only">Toggle menu</span>
-				{/snippet}
-
-				{#snippet content()}
-					<nav class="p-2">
-						<div class="px-3 py-2 border-b border-surface-200-800 mb-2">
-							<p class="text-sm font-semibold text-surface-900-50">Navigation</p>
-						</div>
-						<div class="space-y-1">
-							{#each sidebarItems as item}
-								<a
-									href={item.href}
-									class="flex items-center gap-3 px-3 py-2 rounded-lg text-surface-700-300 hover:bg-surface-200-800 hover:text-surface-900-50 transition-colors"
-									onclick={closeMobileMenu}
-								>
-									{#if item.icon}
-										<span class="text-xl">{item.icon}</span>
-									{/if}
-									<span class="font-medium">{item.label}</span>
-								</a>
-							{/each}
-						</div>
-					</nav>
-				{/snippet}
-			</Popover>
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content align="start" class="w-64">
+					<DropdownMenu.Label>Navigation</DropdownMenu.Label>
+					<DropdownMenu.Separator />
+					{#each sidebarItems as item}
+						<DropdownMenu.Item>
+							<a href={item.href} class="flex items-center w-full" onclick={closeMobileMenu}>
+								{#if item.icon}
+									<span class="mr-2">{item.icon}</span>
+								{/if}
+								{item.label}
+							</a>
+						</DropdownMenu.Item>
+					{/each}
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
 		</div>
 
+		<!-- Title -->
 		<h1 class="text-2xl font-bold">{title}</h1>
-	{/snippet}
 
-	{#snippet trail()}
+		<!-- Spacer -->
+		<div class="flex-1"></div>
+
+		<!-- Navigation -->
 		<nav class="flex items-center gap-2">
 			<!-- Home link -->
-			<a href="/" class="btn btn-sm variant-ghost-surface">Home</a>
+			<Button href="/" variant="ghost" size="sm">
+				<Home class="h-4 w-4 mr-2" />
+				Home
+			</Button>
 
-			<!-- Auth buttons -->
+			<!-- Auth section -->
 			{#if session}
-				<div class="border-l border-surface-400-500 pl-2">
-					<Popover closeOnInteractOutside={true}>
-						{#snippet trigger()}
-							<Avatar
-								src={getAvatarUrl(user)}
-								name={user?.email || 'User'}
-								size="w-10 h-10"
-								classes="cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all"
-							>
-								{getUserInitials(user?.email)}
-							</Avatar>
-						{/snippet}
-						{#snippet content()}
-							<div class="bg-surface-100-900 rounded-lg shadow-xl border border-surface-300-700 min-w-48">
-								<div class="p-3 border-b border-surface-300-700">
-									<p class="text-sm font-medium">{user?.email}</p>
-								</div>
-								<div class="p-2">
-									<a
-										href="/dashboard"
-										class="flex items-center gap-2 px-3 py-2 text-sm hover:bg-surface-200-800 rounded transition-colors"
-									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											class="h-4 w-4"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor"
-										>
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-											/>
-										</svg>
-										Dashboard
-									</a>
-									<button
-										onclick={handleLogout}
-										class="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-surface-200-800 rounded transition-colors text-left"
-									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											class="h-4 w-4"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor"
-										>
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-											/>
-										</svg>
-										Logout
-									</button>
-								</div>
-							</div>
-						{/snippet}
-					</Popover>
+				<div class="border-l pl-2">
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger
+							class="cursor-pointer relative h-10 w-10 rounded-full hover:ring-2 hover:ring-ring transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						>
+							<Avatar.Root class="h-10 w-10">
+								<Avatar.Image src={getAvatarUrl(user)} alt={user?.email || 'User'} />
+								<Avatar.Fallback>{getUserInitials(user?.email)}</Avatar.Fallback>
+							</Avatar.Root>
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content align="end" class="w-48">
+							<DropdownMenu.Label>{user?.email}</DropdownMenu.Label>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item>
+								<a href="/dashboard" class="flex items-center w-full">
+									<LayoutDashboard class="mr-2 h-4 w-4" />
+									Dashboard
+								</a>
+							</DropdownMenu.Item>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item onclick={handleLogout}>
+								<LogOut class="mr-2 h-4 w-4" />
+								Logout
+							</DropdownMenu.Item>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
 				</div>
 			{:else}
-				<a href="/login" class="btn btn-sm variant-filled-primary flex items-center gap-2">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-4 w-4"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-						/>
-					</svg>
+				<Button href="/login" size="sm">
+					<LogIn class="h-4 w-4 mr-2" />
 					Login
-				</a>
+				</Button>
 			{/if}
 
 			<!-- Font size controls -->
-			<div class="flex items-center gap-1 border-l border-surface-400-500 pl-2">
-				<button
+			<div class="flex items-center gap-1 border-l pl-2">
+				<Button
 					onclick={() => fontSize.decrease()}
 					disabled={!fontSize.canDecrease}
-					class="btn-icon btn-icon-sm variant-filled-surface"
+					variant="ghost"
+					size="icon-sm"
 					aria-label="Decrease font size"
 					title="Decrease font size"
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-5 w-5"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-					</svg>
-				</button>
+					<Minus class="h-5 w-5" />
+				</Button>
 				<span class="text-sm font-medium">A</span>
-				<button
+				<Button
 					onclick={() => fontSize.increase()}
 					disabled={!fontSize.canIncrease}
-					class="btn-icon btn-icon-sm variant-filled-surface"
+					variant="ghost"
+					size="icon-sm"
 					aria-label="Increase font size"
 					title="Increase font size"
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-5 w-5"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M12 4v16m8-8H4"
-						/>
-					</svg>
-				</button>
+					<Plus class="h-5 w-5" />
+				</Button>
 			</div>
 
 			<!-- Dark mode toggle -->
-			<button
+			<Button
 				onclick={() => theme.toggle()}
-				class="btn-icon btn-icon-sm variant-filled-surface"
+				variant="ghost"
+				size="icon-sm"
 				aria-label="Toggle dark mode"
 			>
 				{#if theme.dark}
-					<!-- Sun icon -->
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-6 w-6"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-						/>
-					</svg>
+					<Sun class="h-6 w-6" />
 				{:else}
-					<!-- Moon icon -->
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-6 w-6"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-						/>
-					</svg>
+					<Moon class="h-6 w-6" />
 				{/if}
-			</button>
+			</Button>
 		</nav>
-	{/snippet}
-</AppBar>
+	</div>
+</header>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { cn } from '$lib/utils';
+
 	// You can add navigation items as props
 	let {
 		items = [
@@ -12,17 +14,21 @@
 	} = $props();
 </script>
 
-<aside class="bg-surface-100-900 hidden w-64 border-r border-surface-300-700 shadow-sm lg:block">
+<aside class="hidden w-64 border-r bg-background shadow-sm lg:block">
 	<nav class="flex flex-col gap-2 p-4">
 		{#each items as item}
 			<a
 				href={item.href}
-				class="text-on-surface-token hover:bg-surface-200-800 flex items-center gap-3 rounded-lg px-4 py-3 transition-colors hover:text-primary-500"
+				class={cn(
+					'flex items-center gap-3 rounded-lg px-4 py-3 transition-colors',
+					'text-foreground hover:bg-accent hover:text-accent-foreground',
+					'font-medium'
+				)}
 			>
 				{#if item.icon}
 					<span class="text-xl">{item.icon}</span>
 				{/if}
-				<span class="font-medium">{item.label}</span>
+				<span>{item.label}</span>
 			</a>
 		{/each}
 	</nav>

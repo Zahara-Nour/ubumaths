@@ -1,6 +1,9 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
+	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
+	import { Textarea } from '$lib/components/ui/textarea';
 
 	let { data }: { data: PageData } = $props();
 
@@ -106,60 +109,57 @@
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<div>
-			<h1 class="text-3xl font-bold text-surface-900-50">School Management</h1>
-			<p class="mt-2 text-surface-600-400">
+			<h1 class="text-3xl font-bold text-foreground">School Management</h1>
+			<p class="mt-2 text-muted-foreground">
 				Manage schools in the system
 			</p>
 		</div>
-		<button
-			onclick={openCreateModal}
-			class="btn bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium"
-		>
+		<Button onclick={openCreateModal}>
 			+ Add School
-		</button>
+		</Button>
 	</div>
 
 	<!-- Schools Table -->
-	<div class="bg-surface-100-900 rounded-lg shadow border border-surface-200-800 overflow-hidden">
+	<div class="bg-card rounded-lg shadow border border-border overflow-hidden">
 		<div class="overflow-x-auto">
 			<table class="w-full">
-				<thead class="bg-surface-200-800 border-b border-surface-300-700">
+				<thead class="bg-muted border-b border-border">
 					<tr>
-						<th class="px-6 py-3 text-left text-xs font-medium text-surface-700-300 uppercase tracking-wider">
+						<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
 							School Name
 						</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-surface-700-300 uppercase tracking-wider">
+						<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
 							Location
 						</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-surface-700-300 uppercase tracking-wider">
+						<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
 							Address
 						</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-surface-700-300 uppercase tracking-wider">
+						<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
 							Status
 						</th>
-						<th class="px-6 py-3 text-right text-xs font-medium text-surface-700-300 uppercase tracking-wider">
+						<th class="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
 							Actions
 						</th>
 					</tr>
 				</thead>
-				<tbody class="divide-y divide-surface-200-800">
+				<tbody class="divide-y divide-border">
 					{#each data.schools as school (school.id)}
-						<tr class="hover:bg-surface-200-800 transition-colors">
+						<tr class="hover:bg-muted/50 transition-colors">
 							<td class="px-6 py-4 whitespace-nowrap">
 								<div class="flex items-center">
 									{#if school.logo_url}
 										<img src={school.logo_url} alt={school.name} class="h-8 w-8 rounded mr-3" />
 									{/if}
-									<div class="text-sm font-medium text-surface-900-50">{school.name}</div>
+									<div class="text-sm font-medium text-foreground">{school.name}</div>
 								</div>
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap">
-								<div class="text-sm text-surface-700-300">
+								<div class="text-sm text-muted-foreground">
 									{school.city}, {school.country}
 								</div>
 							</td>
 							<td class="px-6 py-4">
-								<div class="text-sm text-surface-700-300">
+								<div class="text-sm text-muted-foreground">
 									{school.address || '—'}
 								</div>
 							</td>
@@ -175,17 +175,20 @@
 								{/if}
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-								<button
+								<Button
+									variant="ghost"
+									size="sm"
 									onclick={() => openEditModal(school)}
-									class="text-primary-600 hover:text-primary-700"
 								>
 									Edit
-								</button>
+								</Button>
 								<form method="POST" action="?/delete" use:enhance class="inline">
 									<input type="hidden" name="id" value={school.id} />
-									<button
+									<Button
 										type="submit"
-										class="text-red-600 hover:text-red-700"
+										variant="ghost"
+										size="sm"
+										class="text-destructive hover:text-destructive"
 										onclick={(e) => {
 											if (!confirm('Are you sure you want to delete this school?')) {
 												e.preventDefault();
@@ -193,13 +196,13 @@
 										}}
 									>
 										Delete
-									</button>
+									</Button>
 								</form>
 							</td>
 						</tr>
 					{:else}
 						<tr>
-							<td colspan="5" class="px-6 py-8 text-center text-surface-500-400">
+							<td colspan="5" class="px-6 py-8 text-center text-muted-foreground">
 								No schools found. Click "Add School" to create one.
 							</td>
 						</tr>
@@ -222,16 +225,16 @@
 			></div>
 
 			<!-- Modal panel -->
-			<div class="relative inline-block align-middle bg-surface-100-900 rounded-lg text-left overflow-visible shadow-xl transform transition-all sm:my-8 sm:max-w-2xl sm:w-full">
+			<div class="relative inline-block align-middle bg-card rounded-lg text-left overflow-visible shadow-xl transform transition-all sm:my-8 sm:max-w-2xl sm:w-full border border-border">
 				<!-- Modal Header -->
-				<div class="bg-surface-100-900 px-6 pt-6 pb-4 border-b border-surface-200-800">
-					<h3 class="text-lg font-medium text-surface-900-50" id="modal-title">
+				<div class="bg-card px-6 pt-6 pb-4 border-b border-border">
+					<h3 class="text-lg font-medium text-foreground" id="modal-title">
 						{editingSchool ? 'Edit School' : 'Add School(s)'}
 					</h3>
 
 					<!-- Tabs (only show for new schools, not editing) -->
 					{#if !editingSchool}
-						<div class="mt-4 flex space-x-1 bg-surface-200-800 p-1 rounded-lg">
+						<div class="mt-4 flex space-x-1 bg-muted p-1 rounded-lg">
 							<button
 								type="button"
 								onclick={() => activeTab = 'single'}
@@ -271,79 +274,74 @@
 						<input type="hidden" name="id" value={editingSchool.id} />
 					{/if}
 
-					<div class="bg-surface-100-900 px-6 py-4">
+					<div class="bg-card px-6 py-4">
 						<div class="space-y-4">
 							<div>
-								<label for="name" class="block text-sm font-medium text-surface-700-300 mb-1">
+								<label for="name" class="block text-sm font-medium text-foreground mb-1">
 									School Name *
 								</label>
-								<input
+								<Input
 									type="text"
 									name="name"
 									id="name"
 									required
 									bind:value={formData.name}
-									class="input"
 									placeholder="Enter school name"
 								/>
 							</div>
 
 							<div class="grid grid-cols-2 gap-4">
 								<div>
-									<label for="city" class="block text-sm font-medium text-surface-700-300 mb-1">
+									<label for="city" class="block text-sm font-medium text-foreground mb-1">
 										City *
 									</label>
-									<input
+									<Input
 										type="text"
 										name="city"
 										id="city"
 										required
 										bind:value={formData.city}
-										class="input"
 										placeholder="Enter city"
 									/>
 								</div>
 
 								<div>
-									<label for="country" class="block text-sm font-medium text-surface-700-300 mb-1">
+									<label for="country" class="block text-sm font-medium text-foreground mb-1">
 										Country *
 									</label>
-									<input
+									<Input
 										type="text"
 										name="country"
 										id="country"
 										required
 										bind:value={formData.country}
-										class="input"
 										placeholder="Enter country"
 									/>
 								</div>
 							</div>
 
 							<div>
-								<label for="address" class="block text-sm font-medium text-surface-700-300 mb-1">
+								<label for="address" class="block text-sm font-medium text-foreground mb-1">
 									Address
 								</label>
-								<textarea
+								<Textarea
 									name="address"
 									id="address"
-									rows="2"
+									rows={2}
 									bind:value={formData.address}
-									class="textarea"
 									placeholder="Enter full address (optional)"
-								></textarea>
+								/>
 							</div>
 
 							<div>
-								<label for="logo_url" class="block text-sm font-medium text-surface-700-300 mb-1">
+								<label for="logo_url" class="block text-sm font-medium text-foreground mb-1">
 									Logo URL
 								</label>
-								<input
+								<Input
 									type="url"
 									name="logo_url"
 									id="logo_url"
 									bind:value={formData.logo_url}
-									class="input"
 									placeholder="https://example.com/logo.png"
 								/>
 							</div>
@@ -356,9 +354,9 @@
 										id="is_active"
 										value="true"
 										bind:checked={formData.is_active}
-										class="checkbox"
+										class="h-4 w-4 rounded border-input"
 									/>
-									<label for="is_active" class="text-sm text-surface-700-300">
+									<label for="is_active" class="text-sm text-foreground">
 										School is active
 									</label>
 								</div>
@@ -366,20 +364,17 @@
 						</div>
 					</div>
 
-					<div class="bg-surface-200-800 px-6 py-3 flex justify-end gap-2">
-						<button
+					<div class="bg-muted px-6 py-3 flex justify-end gap-2">
+						<Button
 							type="button"
+							variant="outline"
 							onclick={closeModal}
-							class="px-4 py-2 border border-surface-300-700 rounded-md text-surface-700-300 hover:bg-surface-300-700 font-medium"
 						>
 							Cancel
-						</button>
-						<button
-							type="submit"
-							class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md font-medium"
-						>
+						</Button>
+						<Button type="submit">
 							{editingSchool ? 'Update' : 'Create'}
-						</button>
+						</Button>
 					</div>
 				</form>
 				{:else}
@@ -396,25 +391,25 @@
 						};
 					}}
 				>
-					<div class="bg-surface-100-900 px-6 py-4">
+					<div class="bg-card px-6 py-4">
 						<div class="space-y-4">
 							<div>
-								<label for="bulk-data" class="block text-sm font-medium text-surface-700-300 mb-2">
+								<label for="bulk-data" class="block text-sm font-medium text-foreground mb-2">
 									Paste from Spreadsheet
 								</label>
-								<p class="text-xs text-surface-500-400 mb-2">
+								<p class="text-xs text-muted-foreground mb-2">
 									Paste data from Excel/Google Sheets with columns: Name | City | Country | Address (optional) | Logo URL (optional)
 								</p>
-								<textarea
+								<Textarea
 									id="bulk-data"
 									bind:value={bulkData}
 									oninput={parseBulkData}
-									rows="8"
+									rows={8}
 									placeholder="School Name	City	Country	Address	Logo URL
 Example School	Paris	France	123 Main St
 Another School	London	UK		"
-									class="textarea font-mono text-sm"
-								></textarea>
+									class="font-mono text-sm"
+								/>
 							</div>
 
 							{#if parseError}
@@ -429,25 +424,25 @@ Another School	London	UK		"
 								</div>
 
 								<!-- Preview -->
-								<div class="border border-surface-300-700 rounded-md overflow-hidden">
-									<div class="bg-surface-200-800 px-3 py-2 text-sm font-medium text-surface-900-50">
+								<div class="border border-border rounded-md overflow-hidden">
+									<div class="bg-muted px-3 py-2 text-sm font-medium text-foreground">
 										Preview
 									</div>
 									<div class="max-h-48 overflow-y-auto">
 										<table class="w-full text-sm">
-											<thead class="bg-surface-200-800">
+											<thead class="bg-muted">
 												<tr>
-													<th class="px-3 py-2 text-left text-xs font-medium text-surface-700-300">Name</th>
-													<th class="px-3 py-2 text-left text-xs font-medium text-surface-700-300">City</th>
-													<th class="px-3 py-2 text-left text-xs font-medium text-surface-700-300">Country</th>
+													<th class="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Name</th>
+													<th class="px-3 py-2 text-left text-xs font-medium text-muted-foreground">City</th>
+													<th class="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Country</th>
 												</tr>
 											</thead>
 											<tbody>
 												{#each parsedSchools as school}
-													<tr class="border-t border-surface-200-800">
-														<td class="px-3 py-2 text-surface-900-50">{school.name}</td>
-														<td class="px-3 py-2 text-surface-700-300">{school.city}</td>
-														<td class="px-3 py-2 text-surface-700-300">{school.country}</td>
+													<tr class="border-t border-border">
+														<td class="px-3 py-2 text-foreground">{school.name}</td>
+														<td class="px-3 py-2 text-muted-foreground">{school.city}</td>
+														<td class="px-3 py-2 text-muted-foreground">{school.country}</td>
 													</tr>
 												{/each}
 											</tbody>
@@ -461,21 +456,20 @@ Another School	London	UK		"
 						</div>
 					</div>
 
-					<div class="bg-surface-200-800 px-6 py-3 flex justify-end gap-2">
-						<button
+					<div class="bg-muted px-6 py-3 flex justify-end gap-2">
+						<Button
 							type="button"
+							variant="outline"
 							onclick={closeModal}
-							class="px-4 py-2 border border-surface-300-700 rounded-md text-surface-700-300 hover:bg-surface-300-700 font-medium"
 						>
 							Cancel
-						</button>
-						<button
+						</Button>
+						<Button
 							type="submit"
 							disabled={parsedSchools.length === 0}
-							class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							Import {parsedSchools.length} School{parsedSchools.length !== 1 ? 's' : ''}
-						</button>
+						</Button>
 					</div>
 				</form>
 				{/if}

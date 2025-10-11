@@ -2,9 +2,75 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
-/* Skeleton Imports */
-@import '@skeletonlabs/skeleton';
-@import '@skeletonlabs/skeleton/themes/cerberus';
+@layer base {
+	:root {
+		--background: 0 0% 100%;
+		--foreground: 222.2 84% 4.9%;
+		--card: 0 0% 100%;
+		--card-foreground: 222.2 84% 4.9%;
+		--popover: 0 0% 100%;
+		--popover-foreground: 222.2 84% 4.9%;
+		--primary: 221.2 83.2% 53.3%;
+		--primary-foreground: 210 40% 98%;
+		--secondary: 210 40% 96.1%;
+		--secondary-foreground: 222.2 47.4% 11.2%;
+		--muted: 210 40% 96.1%;
+		--muted-foreground: 215.4 16.3% 46.9%;
+		--accent: 210 40% 96.1%;
+		--accent-foreground: 222.2 47.4% 11.2%;
+		--destructive: 0 84.2% 60.2%;
+		--destructive-foreground: 210 40% 98%;
+		--border: 214.3 31.8% 91.4%;
+		--input: 214.3 31.8% 91.4%;
+		--ring: 221.2 83.2% 53.3%;
+		--radius: 0.5rem;
+		--chart-1: 12 76% 61%;
+		--chart-2: 173 58% 39%;
+		--chart-3: 197 37% 24%;
+		--chart-4: 43 74% 66%;
+		--chart-5: 27 87% 67%;
+
+		/* Font scaling - default 100% */
+		--font-scale: 1;
+	}
+
+	.dark {
+		--background: 222.2 84% 4.9%;
+		--foreground: 210 40% 98%;
+		--card: 222.2 84% 4.9%;
+		--card-foreground: 210 40% 98%;
+		--popover: 222.2 84% 4.9%;
+		--popover-foreground: 210 40% 98%;
+		--primary: 217.2 91.2% 59.8%;
+		--primary-foreground: 222.2 47.4% 11.2%;
+		--secondary: 217.2 32.6% 17.5%;
+		--secondary-foreground: 210 40% 98%;
+		--muted: 217.2 32.6% 17.5%;
+		--muted-foreground: 215 20.2% 65.1%;
+		--accent: 217.2 32.6% 17.5%;
+		--accent-foreground: 210 40% 98%;
+		--destructive: 0 62.8% 30.6%;
+		--destructive-foreground: 210 40% 98%;
+		--border: 217.2 32.6% 17.5%;
+		--input: 217.2 32.6% 17.5%;
+		--ring: 224.3 76.3% 48%;
+		--chart-1: 220 70% 50%;
+		--chart-2: 160 60% 45%;
+		--chart-3: 30 80% 55%;
+		--chart-4: 280 65% 60%;
+		--chart-5: 340 75% 55%;
+	}
+}
+
+@layer base {
+	* {
+		border-color: hsl(var(--border));
+	}
+	body {
+		background-color: hsl(var(--background));
+		color: hsl(var(--foreground));
+	}
+}
 
 html,
 body {
@@ -15,27 +81,25 @@ body {
  * Font Scaling System for Main Content
  * =====================================
  *
- * This uses Skeleton UI's --text-scaling CSS variable infrastructure.
+ * Uses CSS-based scaling with --font-scale variable
  *
  * How it works:
- * 1. Skeleton UI provides --text-scaling at :root level that all text variables use
- *
- * 2. The fontSize store sets --text-scaling globally on :root
- *
- * 3. To prevent header/sidebar from scaling, we fix their font sizes explicitly
- *
- * 4. Main content uses Skeleton's text variables (--text-xl, --text-base, etc.)
- *    which automatically scale with --text-scaling
- *
- * 5. The fontSize store (fontSize.svelte.ts) controls --text-scaling via buttons in header
- *    - Range: 0.75 (75%) to 1.5 (150%)
- *    - Step: 0.125 (12.5%)
- *    - Persists to localStorage
+ * 1. Root element has --font-scale variable (default: 1)
+ * 2. The fontSize store updates --font-scale on root element
+ * 3. Main content uses calc() to multiply base sizes by --font-scale
+ * 4. Header and sidebar use fixed sizes (not affected by scaling)
  *
  * Benefits:
- * - Uses Skeleton's built-in variables = automatic scaling
- * - Includes proper line-height scaling
- * - True integration with Skeleton's typography system
+ * - Simple CSS calc() based scaling
+ * - No framework dependency
+ * - Automatically includes line-height scaling
+ * - Easy to understand and maintain
+ *
+ * Controls:
+ * - fontSize store (fontSize.svelte.ts) controls --font-scale
+ * - Range: 0.75 (75%) to 1.5 (150%)
+ * - Step: 0.125 (12.5%)
+ * - Persists to localStorage
  *
  * Result: Only main content scales; header and sidebar stay at standard size
  */
@@ -53,73 +117,51 @@ header h1 {
 	font-size: 1.5rem !important;
 }
 
-/* Apply Skeleton's text size variables to main content headings */
+/* Apply scaling to main content headings */
 main h1 {
-	font-size: var(--text-3xl) !important;
-	line-height: var(--text-3xl--line-height) !important;
+	font-size: calc(2.25rem * var(--font-scale)) !important;
+	line-height: calc(2.5rem * var(--font-scale)) !important;
 }
 
 main h2 {
-	font-size: var(--text-2xl) !important;
-	line-height: var(--text-2xl--line-height) !important;
+	font-size: calc(1.875rem * var(--font-scale)) !important;
+	line-height: calc(2.25rem * var(--font-scale)) !important;
 }
 
 main h3 {
-	font-size: var(--text-xl) !important;
-	line-height: var(--text-xl--line-height) !important;
+	font-size: calc(1.5rem * var(--font-scale)) !important;
+	line-height: calc(2rem * var(--font-scale)) !important;
 }
 
 main h4 {
-	font-size: var(--text-lg) !important;
-	line-height: var(--text-lg--line-height) !important;
+	font-size: calc(1.25rem * var(--font-scale)) !important;
+	line-height: calc(1.75rem * var(--font-scale)) !important;
 }
 
 main h5 {
-	font-size: var(--text-base) !important;
-	line-height: var(--text-base--line-height) !important;
+	font-size: calc(1.125rem * var(--font-scale)) !important;
+	line-height: calc(1.75rem * var(--font-scale)) !important;
 }
 
 main h6 {
-	font-size: var(--text-sm) !important;
-	line-height: var(--text-sm--line-height) !important;
+	font-size: calc(1rem * var(--font-scale)) !important;
+	line-height: calc(1.5rem * var(--font-scale)) !important;
 }
 
-/* Apply Skeleton's text size variables to main content text elements */
+/* Apply scaling to main content text elements */
 main p,
 main li {
-	font-size: var(--text-base) !important;
-	line-height: var(--text-base--line-height) !important;
+	font-size: calc(1rem * var(--font-scale)) !important;
+	line-height: calc(1.5rem * var(--font-scale)) !important;
 }
 
 main pre {
-	font-size: var(--text-sm) !important;
-	line-height: var(--text-sm--line-height) !important;
+	font-size: calc(0.875rem * var(--font-scale)) !important;
+	line-height: calc(1.25rem * var(--font-scale)) !important;
 }
 
-/* Apply Skeleton's text size variables to main content buttons */
-main button {
-	font-size: var(--text-base) !important;
-	line-height: var(--text-base--line-height) !important;
-	background-color: var(--color-primary-500);
-	color: var(--color-primary-contrast-500);
-	padding: 0.5rem 1rem;
-	border-radius: 0.5rem;
-	transition: all 0.2s;
-}
-
-main button:hover:not(:disabled) {
-	background-color: var(--color-primary-600);
-}
-
-main button:disabled {
-	opacity: 0.5;
-	cursor: not-allowed;
-}
-
-/* Apply Skeleton's text size variables to MathField */
+/* Apply scaling to MathField in main content */
 main math-field {
-	font-size: var(--text-base) !important;
-	line-height: var(--text-base--line-height) !important;
+	font-size: calc(1rem * var(--font-scale)) !important;
+	line-height: calc(1.5rem * var(--font-scale)) !important;
 }
-
-@custom-variant dark (&:is(.dark, .dark *));

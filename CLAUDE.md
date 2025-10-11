@@ -15,7 +15,7 @@ SvelteKit application built with:
 - **Svelte 5** (latest with runes)
 - **TypeScript** (strict mode enabled)
 - **Tailwind CSS 4** (integrated via Vite plugin)
-- **Skeleton UI v3** (UI component library with Tailwind integration)
+- **Shadcn-svelte** (UI component library)
 - **MathLive** (mathematical formula editor and rendering)
 - **Vercel** deployment (adapter configured)
 - **pnpm** as package manager
@@ -131,64 +131,312 @@ src/
 
 Use Tailwind classes for styling HTML elements instead of CSS or <style> tags.
 
-### Skeleton UI v3
+### Shadcn-svelte
 
-The application uses **Skeleton UI v3** for component styling and theming:
+The application uses **Shadcn-svelte** for component styling and theming:
 
-- **Documentation**: https://www.skeleton.dev/docs
+- **Documentation**: https://www.shadcn-svelte.com/docs
+- **Components Location**: `src/lib/components/ui/`
 - **Packages installed**:
-  - `@skeletonlabs/skeleton` (core Tailwind utilities)
-  - `@skeletonlabs/skeleton-svelte` (Svelte components)
+  - `shadcn-svelte` (CLI for component installation)
+  - `bits-ui` (headless component primitives)
+  - `lucide-svelte` (icon library)
+  - `svelte-sonner` (toast notifications)
+  - `mode-watcher` (dark/light mode management)
   - `@tailwindcss/forms` (form styling plugin)
+  - `clsx`, `tailwind-merge`, `tailwind-variants` (utility libraries)
 
-### Form Elements
+### Installed Components
 
-Always use Skeleton UI's form classes for consistency:
+The following Shadcn components are available in `$lib/components/ui/`:
 
-```svelte
-<!-- Text inputs -->
-<input type="text" class="input" placeholder="Enter text" />
+- **Button** (`button`) - Multiple variants and sizes
+- **Input** (`input`) - Form input fields
+- **Textarea** (`textarea`) - Multi-line text inputs
+- **Select** (`select`) - Dropdown selections
+- **Dropdown Menu** (`dropdown-menu`) - Context menus and dropdowns
+- **Avatar** (`avatar`) - User avatars with fallback
+- **Tabs** (`tabs`) - Tabbed interfaces
+- **Separator** (`separator`) - Visual dividers
 
-<!-- Textareas -->
-<textarea class="textarea" rows="4" placeholder="Enter text"></textarea>
-
-<!-- Select dropdowns -->
-<select class="select">
-	<option>Option 1</option>
-</select>
-
-<!-- Checkboxes -->
-<input type="checkbox" class="checkbox" />
-
-<!-- Radio buttons -->
-<input type="radio" class="radio" />
-```
-
-### Navigation Components
-
-Use Skeleton UI's Navigation components for navigation elements:
+### Component Usage
 
 ```svelte
 <script>
-	import { Navigation } from '@skeletonlabs/skeleton-svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
+	import { Textarea } from '$lib/components/ui/textarea';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as Avatar from '$lib/components/ui/avatar';
+	import * as Tabs from '$lib/components/ui/tabs';
+	import * as Select from '$lib/components/ui/select';
 </script>
 
-<!-- Vertical Rail Navigation (icon sidebar) -->
-<Navigation.Rail>
-	{#snippet tiles()}
-		<Navigation.Tile label="Home" href="/home">
-			<HomeIcon />
-		</Navigation.Tile>
-	{/snippet}
-</Navigation.Rail>
+<!-- Button -->
+<Button variant="default">Click me</Button>
+<Button variant="destructive">Delete</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="ghost">Ghost</Button>
+
+<!-- Input -->
+<Input type="text" placeholder="Enter text..." />
+
+<!-- Textarea -->
+<Textarea placeholder="Enter longer text..." />
+
+<!-- Dropdown Menu -->
+<DropdownMenu.Root>
+	<DropdownMenu.Trigger class="cursor-pointer">Open Menu</DropdownMenu.Trigger>
+	<DropdownMenu.Content>
+		<!-- Menu item with onclick handler -->
+		<DropdownMenu.Item onclick={() => console.log('Clicked')}>
+			Item 1
+		</DropdownMenu.Item>
+		<DropdownMenu.Separator />
+		<!-- Menu item with navigation link -->
+		<DropdownMenu.Item>
+			<a href="/dashboard" class="flex items-center w-full">
+				Item 2 (with navigation)
+			</a>
+		</DropdownMenu.Item>
+	</DropdownMenu.Content>
+</DropdownMenu.Root>
+
+<!-- Avatar -->
+<Avatar.Root>
+	<Avatar.Image src="/avatar.jpg" alt="User" />
+	<Avatar.Fallback>CN</Avatar.Fallback>
+</Avatar.Root>
+
+<!-- Tabs -->
+<Tabs.Root value="tab1">
+	<Tabs.List>
+		<Tabs.Trigger value="tab1">Tab 1</Tabs.Trigger>
+		<Tabs.Trigger value="tab2">Tab 2</Tabs.Trigger>
+	</Tabs.List>
+	<Tabs.Content value="tab1">Content 1</Tabs.Content>
+	<Tabs.Content value="tab2">Content 2</Tabs.Content>
+</Tabs.Root>
 ```
 
-### Important Notes
+### Toast Notifications
 
-- Prefer Skeleton UI components and classes over custom Tailwind when available
-- Use Skeleton's theming system with `surface-*` color utilities for dark/light mode support
-- Form elements require `@tailwindcss/forms` plugin (already installed)
+The project uses **svelte-sonner** for toast notifications via a custom toaster store:
+
+```svelte
+<script>
+	import { toaster } from '$lib/stores/toaster.svelte';
+</script>
+
+<!-- Usage -->
+<button onclick={() => toaster.success('Success message!')}>Show Success</button>
+<button onclick={() => toaster.error('Error message!')}>Show Error</button>
+<button onclick={() => toaster.warning('Warning message!')}>Show Warning</button>
+<button onclick={() => toaster.info('Info message!')}>Show Info</button>
+```
+
+The `<Toaster />` component is already included in the root layout.
+
+### Theme System (Light/Dark Mode)
+
+The application uses **Shadcn's CSS variable theming system** for light/dark mode:
+
+**CSS Variables (in app.css):**
+```css
+:root {
+	--background: 0 0% 100%;
+	--foreground: 222.2 84% 4.9%;
+	--card: 0 0% 100%;
+	--card-foreground: 222.2 84% 4.9%;
+	--popover: 0 0% 100%;
+	--popover-foreground: 222.2 84% 4.9%;
+	--primary: 221.2 83.2% 53.3%;
+	--primary-foreground: 210 40% 98%;
+	--secondary: 210 40% 96.1%;
+	--secondary-foreground: 222.2 47.4% 11.2%;
+	--muted: 210 40% 96.1%;
+	--muted-foreground: 215.4 16.3% 46.9%;
+	--accent: 210 40% 96.1%;
+	--accent-foreground: 222.2 47.4% 11.2%;
+	--destructive: 0 84.2% 60.2%;
+	--destructive-foreground: 210 40% 98%;
+	--border: 214.3 31.8% 91.4%;
+	--input: 214.3 31.8% 91.4%;
+	--ring: 221.2 83.2% 53.3%;
+}
+
+.dark {
+	/* Dark mode values... */
+}
+```
+
+**Semantic Tailwind Classes:**
+- `bg-background` - Main background
+- `bg-card` - Card backgrounds
+- `bg-muted` - Muted/subtle backgrounds
+- `bg-primary` / `bg-secondary` / `bg-destructive` - Action colors
+- `text-foreground` - Main text color
+- `text-muted-foreground` - Secondary text
+- `border-border` - Border colors
+
+**Dark Mode Management:**
+
+The project uses a custom theme store (`$lib/stores/theme.svelte.ts`) combined with `mode-watcher`:
+
+```typescript
+import { theme } from '$lib/stores/theme.svelte';
+
+// Toggle dark mode
+theme.toggle();
+
+// Check if dark mode is active
+if (theme.dark) {
+	// ...
+}
+```
+
+The theme automatically:
+- Syncs with system preferences
+- Persists to localStorage
+- Updates the DOM with `.dark` class
+
+### Font Scaling System
+
+The application includes a **CSS-based font scaling system** for accessibility:
+
+**Location:** `$lib/stores/fontSize.svelte.ts`
+
+**How it works:**
+- Uses `--font-scale` CSS variable (default: 1.0)
+- Applied only to `<main>` content (header and sidebar remain fixed)
+- Range: 0.75 (75%) to 1.5 (150%) in 0.125 (12.5%) increments
+- Persists to localStorage
+
+**Usage:**
+```typescript
+import { fontSize } from '$lib/stores/fontSize.svelte';
+
+// Increase font size
+fontSize.increase();
+
+// Decrease font size
+fontSize.decrease();
+
+// Reset to default
+fontSize.reset();
+
+// Check if can increase/decrease
+fontSize.canIncrease; // boolean
+fontSize.canDecrease; // boolean
+```
+
+Font size controls are already integrated into the Header component.
+
+### Utility Functions
+
+**`cn()` utility** (from `$lib/utils.ts`):
+
+Combines `clsx` and `tailwind-merge` for conditional class names:
+
+```typescript
+import { cn } from '$lib/utils';
+
+<div class={cn(
+	'base-class',
+	condition && 'conditional-class',
+	'another-class'
+)}>
+```
+
+### Adding New Shadcn Components
+
+To add more Shadcn components:
+
+```bash
+npx shadcn-svelte@latest add <component-name>
+```
+
+Example:
+```bash
+npx shadcn-svelte@latest add card dialog badge
+```
+
+### Important Notes & Best Practices
+
+#### Component Ownership
+- All Shadcn components are **copied into your project** (not imported from node_modules)
+- You have full control to customize components in `src/lib/components/ui/`
+- Components use **Svelte 5 runes** (`$props()`, `$bindable()`, snippets)
+
+#### Event Handlers (Svelte 5)
+- **Always use lowercase event handlers**: `onclick`, `onsubmit`, `onchange` (NOT `on:click`)
+- Example:
+  ```svelte
+  <!-- ✅ CORRECT -->
+  <Button onclick={() => handleClick()}>Click me</Button>
+
+  <!-- ❌ WRONG (Svelte 4 syntax) -->
+  <Button on:click={() => handleClick()}>Click me</Button>
+  ```
+
+#### Dropdown Menu Navigation
+- `DropdownMenu.Item` **does NOT support `href` directly**
+- Wrap navigation links in `<a>` tags inside the item:
+  ```svelte
+  <!-- ✅ CORRECT -->
+  <DropdownMenu.Item>
+    <a href="/dashboard" class="flex items-center w-full">
+      Dashboard
+    </a>
+  </DropdownMenu.Item>
+
+  <!-- ❌ WRONG -->
+  <DropdownMenu.Item href="/dashboard">Dashboard</DropdownMenu.Item>
+  ```
+
+#### Cursor Pointer
+- Button component includes `cursor-pointer` by default
+- For custom interactive elements, add `class="cursor-pointer"` explicitly
+- Dropdown triggers need manual `cursor-pointer` class
+
+#### Styling
+- Use semantic color classes (`bg-background`, `text-foreground`) instead of arbitrary colors
 - When Tailwind classes don't work reactively in Svelte 5, use inline `style` attributes as a fallback
+- The `cn()` utility from `$lib/utils` helps merge Tailwind classes correctly
+
+### Migration from Skeleton UI (Completed)
+
+This project was migrated from Skeleton UI v3 to Shadcn-svelte. Key changes:
+
+#### Class Name Replacements
+- `surface-*` colors → `background`, `card`, `muted`, `border`
+- `text-surface-*` → `text-foreground`, `text-muted-foreground`
+- `border-surface-*` → `border-border`
+- `variant-filled-*` → Button component with variants
+- `variant-ghost-*` → `variant="ghost"`
+- `btn` / `btn-sm` → `<Button>` component
+- `card` class → `bg-card text-card-foreground border border-border`
+
+#### Component Replacements
+- Skeleton `input` class → `<Input>` component
+- Skeleton `textarea` class → `<Textarea>` component
+- Skeleton `select` class → `<Select>` components
+- Skeleton `AppBar` → Custom header with Shadcn components
+- Skeleton `Popover` → `<DropdownMenu>` components
+- Skeleton `Avatar` → `<Avatar>` components
+- Skeleton `Toaster` → `svelte-sonner` with custom wrapper
+
+#### Theme System Changes
+- Skeleton's `--text-scaling` → Custom `--font-scale` CSS variable
+- Skeleton's numeric color variants (`surface-100-900`) → Semantic CSS variables (`--background`, `--foreground`)
+- Dark mode still uses `.dark` class but with Shadcn's color palette
+
+#### Migration Benefits
+- ✅ Modern Shadcn aesthetic (cleaner, more minimal)
+- ✅ Full component ownership and customization
+- ✅ Better TypeScript support with Svelte 5
+- ✅ Active ecosystem and community
+- ✅ Semantic color system (easier theming)
 
 ## Database Management (Supabase)
 

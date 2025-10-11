@@ -6,9 +6,11 @@
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { page, navigating } from '$app/stores';
+	import { page } from '$app/stores';
+	import { navigating } from '$app/stores';
 	import type { LayoutData } from './$types';
-	import { Toaster } from '@skeletonlabs/skeleton-svelte';
+	import { Toaster } from 'svelte-sonner';
+	import { ModeWatcher } from 'mode-watcher';
 
 	let { children, data }: { children: any; data: LayoutData } = $props();
 
@@ -29,19 +31,16 @@
 	<meta name="sveltekit:preload-data" content="hover" />
 </svelte:head>
 
+<!-- Mode Watcher for automatic dark/light mode syncing -->
+<ModeWatcher />
+
 <!-- Loading bar that appears during navigation -->
 {#if $navigating}
-	<div class="fixed top-0 left-0 right-0 h-1 bg-primary-600 z-[200] animate-pulse shadow-lg"></div>
+	<div class="fixed top-0 left-0 right-0 h-1 bg-primary z-[200] animate-pulse shadow-lg"></div>
 {/if}
 
-<Toaster
-	{toaster}
-	classes="card p-4 shadow-lg"
-	stateSuccess="bg-green-600 text-white"
-	stateError="bg-red-600 text-white"
-	stateWarning="bg-orange-600 text-white"
-	stateInfo="bg-blue-600 text-white"
-/>
+<!-- Toast notifications -->
+<Toaster richColors position="top-right" />
 
 <div class="flex h-screen flex-col">
 	<!-- Header - only show on non-dashboard routes -->
@@ -57,7 +56,7 @@
 		{/if}
 
 		<!-- Main content -->
-		<main class="bg-surface-50-950 flex-1 overflow-y-auto {isDashboardRoute ? '' : 'p-6'}">
+		<main class="flex-1 overflow-y-auto {isDashboardRoute ? '' : 'p-6'}">
 			{@render children?.()}
 		</main>
 	</div>

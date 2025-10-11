@@ -46,6 +46,7 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { Button } from '$lib/components/ui/button';
 
 	// Receive data from parent (+page.svelte)
 	// Contains profile with admin's information
@@ -55,12 +56,12 @@
 <div class="space-y-6">
 	<!-- WELCOME SECTION -->
 	<!-- Special admin greeting with emphasized access level -->
-	<div class="bg-tertiary-100-900 border border-tertiary-200-800 rounded-lg p-6">
-		<h2 class="text-xl font-semibold text-tertiary-900-50">
+	<div class="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
+		<h2 class="text-xl font-semibold text-foreground">
 			<!-- Emphasize admin role in title -->
 			Admin Dashboard - Welcome, {data.profile.full_name || 'Administrator'}!
 		</h2>
-		<p class="text-tertiary-700-300 mt-2">
+		<p class="text-muted-foreground mt-2">
 			Manage users, system settings, and oversee all platform activity.
 		</p>
 	</div>
@@ -70,72 +71,72 @@
 	<!-- TODO: Replace hardcoded values with real database queries -->
 	<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
 		<!-- Stat 1: Total Users (all roles) -->
-		<div class="bg-surface-100-900 rounded-lg shadow p-6">
-			<h3 class="text-sm font-medium text-surface-500-400 uppercase">Total Users</h3>
+		<div class="bg-card rounded-lg shadow p-6">
+			<h3 class="text-sm font-medium text-muted-foreground uppercase">Total Users</h3>
 			<!-- TODO: Count all records in profiles table -->
-			<p class="text-3xl font-bold text-surface-900-50 mt-2">342</p>
+			<p class="text-3xl font-bold text-foreground mt-2">342</p>
 			<!-- TODO: Compare with count from 7 days ago to show trend -->
-			<p class="text-sm text-surface-500-400 mt-1">↑ 12 this week</p>
+			<p class="text-sm text-muted-foreground mt-1">↑ 12 this week</p>
 		</div>
 
 		<!-- Stat 2: Active Classes (across all teachers) -->
-		<div class="bg-surface-100-900 rounded-lg shadow p-6">
-			<h3 class="text-sm font-medium text-surface-500-400 uppercase">Active Classes</h3>
+		<div class="bg-card rounded-lg shadow p-6">
+			<h3 class="text-sm font-medium text-muted-foreground uppercase">Active Classes</h3>
 			<!-- TODO: Count classes where is_active = true -->
-			<p class="text-3xl font-bold text-surface-900-50 mt-2">48</p>
-			<p class="text-sm text-surface-500-400 mt-1">↑ 3 this week</p>
+			<p class="text-3xl font-bold text-foreground mt-2">48</p>
+			<p class="text-sm text-muted-foreground mt-1">↑ 3 this week</p>
 		</div>
 
 		<!-- Stat 3: Total Exercises (platform-wide) -->
-		<div class="bg-surface-100-900 rounded-lg shadow p-6">
-			<h3 class="text-sm font-medium text-surface-500-400 uppercase">Total Exercises</h3>
+		<div class="bg-card rounded-lg shadow p-6">
+			<h3 class="text-sm font-medium text-muted-foreground uppercase">Total Exercises</h3>
 			<!-- TODO: Count all records in exercises table -->
-			<p class="text-3xl font-bold text-surface-900-50 mt-2">1,256</p>
-			<p class="text-sm text-surface-500-400 mt-1">↑ 45 this week</p>
+			<p class="text-3xl font-bold text-foreground mt-2">1,256</p>
+			<p class="text-sm text-muted-foreground mt-1">↑ 45 this week</p>
 		</div>
 
 		<!-- Stat 4: System Health Indicator -->
-		<div class="bg-surface-100-900 rounded-lg shadow p-6">
-			<h3 class="text-sm font-medium text-surface-500-400 uppercase">System Health</h3>
+		<div class="bg-card rounded-lg shadow p-6">
+			<h3 class="text-sm font-medium text-muted-foreground uppercase">System Health</h3>
 			<!-- TODO: Check database connection, API status, etc. -->
-			<p class="text-3xl font-bold text-secondary-600-400 mt-2">100%</p>
-			<p class="text-sm text-surface-500-400 mt-1">All systems operational</p>
+			<p class="text-3xl font-bold text-secondary mt-2">100%</p>
+			<p class="text-sm text-muted-foreground mt-1">All systems operational</p>
 		</div>
 	</div>
 
 	<!-- USER MANAGEMENT SECTION -->
 	<!-- Overview of users by role with quick add action -->
-	<div class="bg-surface-100-900 rounded-lg shadow">
-		<div class="px-6 py-4 border-b border-surface-200-800 flex items-center justify-between">
-			<h3 class="text-lg font-semibold text-surface-900-50">User Management</h3>
+	<div class="bg-card rounded-lg shadow">
+		<div class="px-6 py-4 border-b border-border flex items-center justify-between">
+			<h3 class="text-lg font-semibold text-foreground">User Management</h3>
 			<!-- Quick action to add new users -->
-			<button class="px-4 py-2 bg-primary-600-400 text-white rounded-lg hover:bg-primary-700-300 text-sm font-medium">
+			<Button>
 				Add New User
 				<!-- TODO: Link to /dashboard/admin/users/create -->
-			</button>
+			</Button>
 		</div>
 		<div class="p-6">
 			<!-- User breakdown by role -->
 			<!-- TODO: Query profiles table grouped by role -->
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 				<!-- Student count -->
-				<div class="border border-surface-200-800 rounded-lg p-4">
-					<div class="text-2xl font-bold text-primary-600-400">245</div>
-					<div class="text-sm text-surface-600-400 mt-1">Students</div>
+				<div class="border border-border rounded-lg p-4">
+					<div class="text-2xl font-bold text-primary">245</div>
+					<div class="text-sm text-muted-foreground mt-1">Students</div>
 					<!-- TODO: SELECT COUNT(*) FROM profiles WHERE role = 'student' -->
 				</div>
 
 				<!-- Teacher count -->
-				<div class="border border-surface-200-800 rounded-lg p-4">
-					<div class="text-2xl font-bold text-secondary-600-400">92</div>
-					<div class="text-sm text-surface-600-400 mt-1">Teachers</div>
+				<div class="border border-border rounded-lg p-4">
+					<div class="text-2xl font-bold text-secondary">92</div>
+					<div class="text-sm text-muted-foreground mt-1">Teachers</div>
 					<!-- TODO: SELECT COUNT(*) FROM profiles WHERE role = 'teacher' -->
 				</div>
 
 				<!-- Admin count -->
-				<div class="border border-surface-200-800 rounded-lg p-4">
-					<div class="text-2xl font-bold text-tertiary-600-400">5</div>
-					<div class="text-sm text-surface-600-400 mt-1">Administrators</div>
+				<div class="border border-border rounded-lg p-4">
+					<div class="text-2xl font-bold text-destructive">5</div>
+					<div class="text-sm text-muted-foreground mt-1">Administrators</div>
 					<!-- TODO: SELECT COUNT(*) FROM profiles WHERE role = 'admin' -->
 				</div>
 			</div>
@@ -144,40 +145,40 @@
 
 	<!-- SYSTEM SETTINGS SECTION -->
 	<!-- Navigation to various admin configuration pages -->
-	<div class="bg-surface-100-900 rounded-lg shadow">
-		<div class="px-6 py-4 border-b border-surface-200-800">
-			<h3 class="text-lg font-semibold text-surface-900-50">System Settings</h3>
+	<div class="bg-card rounded-lg shadow">
+		<div class="px-6 py-4 border-b border-border">
+			<h3 class="text-lg font-semibold text-foreground">System Settings</h3>
 		</div>
 		<div class="p-6">
 			<div class="space-y-4">
 				<!-- Setting 1: Content Management -->
-				<button class="w-full text-left px-4 py-3 border border-surface-200-800 rounded-lg hover:bg-surface-200-800 flex items-center justify-between">
+				<button class="w-full text-left px-4 py-3 border border-border rounded-lg hover:bg-accent hover:text-accent-foreground flex items-center justify-between">
 					<div>
-						<div class="font-medium text-surface-900-50">Content Management</div>
-						<div class="text-sm text-surface-500-400">Manage topics, subtopics, and exercises</div>
+						<div class="font-medium text-foreground">Content Management</div>
+						<div class="text-sm text-muted-foreground">Manage topics, subtopics, and exercises</div>
 						<!-- TODO: Link to /dashboard/admin/content -->
 					</div>
-					<span class="text-surface-400-600">→</span>
+					<span class="text-muted-foreground">→</span>
 				</button>
 
 				<!-- Setting 2: Platform Configuration -->
-				<button class="w-full text-left px-4 py-3 border border-surface-200-800 rounded-lg hover:bg-surface-200-800 flex items-center justify-between">
+				<button class="w-full text-left px-4 py-3 border border-border rounded-lg hover:bg-accent hover:text-accent-foreground flex items-center justify-between">
 					<div>
-						<div class="font-medium text-surface-900-50">Platform Settings</div>
-						<div class="text-sm text-surface-500-400">Configure system-wide settings</div>
+						<div class="font-medium text-foreground">Platform Settings</div>
+						<div class="text-sm text-muted-foreground">Configure system-wide settings</div>
 						<!-- TODO: Link to /dashboard/admin/settings -->
 					</div>
-					<span class="text-surface-400-600">→</span>
+					<span class="text-muted-foreground">→</span>
 				</button>
 
 				<!-- Setting 3: Analytics & Reports -->
-				<button class="w-full text-left px-4 py-3 border border-surface-200-800 rounded-lg hover:bg-surface-200-800 flex items-center justify-between">
+				<button class="w-full text-left px-4 py-3 border border-border rounded-lg hover:bg-accent hover:text-accent-foreground flex items-center justify-between">
 					<div>
-						<div class="font-medium text-surface-900-50">Reports & Analytics</div>
-						<div class="text-sm text-surface-500-400">View platform usage and performance</div>
+						<div class="font-medium text-foreground">Reports & Analytics</div>
+						<div class="text-sm text-muted-foreground">View platform usage and performance</div>
 						<!-- TODO: Link to /dashboard/admin/analytics -->
 					</div>
-					<span class="text-surface-400-600">→</span>
+					<span class="text-muted-foreground">→</span>
 				</button>
 			</div>
 		</div>
@@ -185,9 +186,9 @@
 
 	<!-- RECENT SYSTEM ACTIVITY SECTION -->
 	<!-- Audit log of recent admin and system actions -->
-	<div class="bg-surface-100-900 rounded-lg shadow">
-		<div class="px-6 py-4 border-b border-surface-200-800">
-			<h3 class="text-lg font-semibold text-surface-900-50">Recent System Activity</h3>
+	<div class="bg-card rounded-lg shadow">
+		<div class="px-6 py-4 border-b border-border">
+			<h3 class="text-lg font-semibold text-foreground">Recent System Activity</h3>
 		</div>
 		<div class="p-6">
 			<!-- TODO: Implement audit logging system -->
@@ -198,7 +199,7 @@
 			     - Exercise published: "Quadratic Equations" by teacher@school.com
 			     - Settings changed: "Max students per class" by admin@school.com
 			-->
-			<p class="text-surface-500-400 text-center py-8">No recent activity to display</p>
+			<p class="text-muted-foreground text-center py-8">No recent activity to display</p>
 		</div>
 	</div>
 </div>

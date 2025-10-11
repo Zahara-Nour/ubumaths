@@ -4,10 +4,10 @@ import { browser } from '$app/environment';
  * Font Size Store
  * ===============
  *
- * Manages the --text-scaling CSS variable for main content area only.
+ * Manages the --font-scale CSS variable for main content area only.
  *
- * Integration with Skeleton UI:
- * - Uses Skeleton's --text-scaling variable infrastructure
+ * CSS-based scaling:
+ * - Uses --font-scale variable in CSS calc() functions
  * - Applied only to <main> element, not globally
  * - Works with custom scaling rules in app.css
  *
@@ -37,9 +37,9 @@ function createFontSizeStore() {
 
 	function updateDOM() {
 		if (browser) {
-			// Apply Skeleton's text-scaling CSS variable globally
-			// This allows Skeleton's text variables (--text-xl, etc.) to scale
-			document.documentElement.style.setProperty('--text-scaling', scale.toString());
+			// Apply CSS-based font scaling variable globally
+			// This allows main content to scale via calc() in CSS
+			document.documentElement.style.setProperty('--font-scale', scale.toString());
 		}
 	}
 

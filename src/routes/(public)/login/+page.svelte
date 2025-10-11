@@ -51,7 +51,7 @@
 		</div>
 
 		<!-- Tab Switcher -->
-		<div class="flex space-x-1 bg-surface-200-800 p-1 rounded-lg">
+		<div class="flex space-x-1 bg-muted p-1 rounded-lg">
 			<button
 				type="button"
 				onclick={() => (activeTab = 'google')}

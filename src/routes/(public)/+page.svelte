@@ -4,6 +4,7 @@
 	import FlipCard from '$lib/components/FlipCard.svelte';
 	import LoggerDemo from '$lib/components/LoggerDemo.svelte';
 	import ToastDemo from '$lib/components/ToastDemo.svelte';
+	import { Button } from '$lib/components/ui/button';
 	import type { MathfieldElement } from 'mathlive';
 	import { createLogger } from '$lib/utils/logger';
 
@@ -32,15 +33,15 @@
 </script>
 
 <div class="container">
-	<h1 class="text-on-surface-token">MathLive Example</h1>
+	<h1 class="text-foreground">MathLive Example</h1>
 
 	<div class="demo">
-		<h2 class="text-on-surface-token">Interactive Math Editor</h2>
+		<h2 class="text-foreground">Interactive Math Editor</h2>
 		<MathField bind:value={latex} placeholder={'\\text' + '{' + 'Enter a formula...' + '}'} />
 
-		<div class="bg-surface-200-800 output">
-			<h3 class="text-on-surface-token">LaTeX Output:</h3>
-			<pre class="text-on-surface-token">{latex}</pre>
+		<div class="bg-muted output">
+			<h3 class="text-foreground">LaTeX Output:</h3>
+			<pre class="text-foreground">{latex}</pre>
 		</div>
 
 		<DynamicMathField
@@ -50,15 +51,13 @@
 			oninput={handleInput}
 		/>
 
-		<p class="text-on-surface-token">Current LaTeX: {currentLatex}</p>
+		<p class="text-foreground">Current LaTeX: {currentLatex}</p>
 
-		<button class="btn btn-sm variant-filled-primary" onclick={setFormula}>Set Formula</button>
-		<button class="btn btn-sm variant-filled-primary" onclick={getFormula}>Get Formula</button>
-		<button class="btn btn-sm variant-filled-primary" onclick={() => mathfieldRef?.focus()}
-			>Focus</button
-		>
+		<Button size="sm" onclick={setFormula}>Set Formula</Button>
+		<Button size="sm" onclick={getFormula}>Get Formula</Button>
+		<Button size="sm" onclick={() => mathfieldRef?.focus()}>Focus</Button>
 
-		<h2 class="text-on-surface-token">Flip Card Example</h2>
+		<h2 class="text-foreground">Flip Card Example</h2>
 		<FlipCard bind:flipped>
 			{#snippet front()}
 				<div class="card-content front">
@@ -85,11 +84,11 @@
 			{/snippet}
 		</FlipCard>
 
-		<button onclick={() => (flipped = !flipped)} class="btn variant-filled-secondary flip-button">
+		<Button onclick={() => (flipped = !flipped)} variant="secondary" class="flip-button">
 			{flipped ? 'Show Front' : 'Show Back'}
-		</button>
+		</Button>
 
-		<h2 class="text-on-surface-token">Compact Card</h2>
+		<h2 class="text-foreground">Compact Card</h2>
 		<FlipCard bind:flipped={flipped2}>
 			{#snippet front()}
 				<div class="card-content compact-front">
@@ -106,11 +105,11 @@
 			{/snippet}
 		</FlipCard>
 
-		<button onclick={() => (flipped2 = !flipped2)} class="btn variant-filled-secondary flip-button">
+		<Button onclick={() => (flipped2 = !flipped2)} variant="secondary" class="flip-button">
 			{flipped2 ? 'Show Front' : 'Show Back'}
-		</button>
+		</Button>
 
-		<h2 class="text-on-surface-token">Large Card</h2>
+		<h2 class="text-foreground">Large Card</h2>
 		<FlipCard bind:flipped={flipped3}>
 			{#snippet front()}
 				<div class="card-content large-front">
@@ -136,14 +135,14 @@
 			{/snippet}
 		</FlipCard>
 
-		<button onclick={() => (flipped3 = !flipped3)} class="btn variant-filled-secondary flip-button">
+		<Button onclick={() => (flipped3 = !flipped3)} variant="secondary" class="flip-button">
 			{flipped3 ? 'Show Front' : 'Show Back'}
-		</button>
+		</Button>
 
-		<h2 class="text-on-surface-token mt-12">Logger System Demo</h2>
+		<h2 class="text-foreground mt-12">Logger System Demo</h2>
 		<LoggerDemo />
 
-		<h2 class="text-on-surface-token mt-12">Toast Notifications Demo</h2>
+		<h2 class="text-foreground mt-12">Toast Notifications Demo</h2>
 		<ToastDemo />
 	</div>
 </div>
