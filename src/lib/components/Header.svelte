@@ -41,7 +41,38 @@
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import type { Session, User, SupabaseClient } from '@supabase/supabase-js';
-	import { Menu, X, Home, LogIn, LogOut, LayoutDashboard, Sun, Moon, Minus, Plus } from 'lucide-svelte';
+	import type { Profile } from '$lib/types/database';
+	import { Menu, X, Home, LogIn, LogOut, LayoutDashboard, Sun, Moon, Minus, Plus, Maximize, Minimize } from 'lucide-svelte';
+	import gidouille from '$lib/assets/images/gidouille.png';
+	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
+
+	// Fullscreen state
+	let isFullscreen = $state(false);
+
+	function toggleFullscreen() {
+		if (!document.fullscreenElement) {
+			document.documentElement.requestFullscreen();
+			isFullscreen = true;
+		} else {
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+				isFullscreen = false;
+			}
+		}
+	}
+
+	// Listen for fullscreen changes
+	$effect(() => {
+		const handleFullscreenChange = () => {
+			isFullscreen = !!document.fullscreenElement;
+		};
+
+		document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+		return () => {
+			document.removeEventListener('fullscreenchange', handleFullscreenChange);
+		};
+	});
 
 	// Props received from parent layout (+layout.svelte)
 	// These are automatically reactive in Svelte 5
@@ -49,17 +80,19 @@
 		title = 'UbuMaths',
 		session = null,
 		user = null,
+		profile = null,
 		supabase,
 		sidebarItems = [
-			{ label: 'Home', href: '/', icon: '🏠' },
-			{ label: 'Exercises', href: '/exercises', icon: '📝' },
-			{ label: 'Practice', href: '/practice', icon: '✏️' },
-			{ label: 'Resources', href: '/resources', icon: '📚' }
+			{ label: 'Accueil', href: '/', icon: '🏠' },
+			{ label: 'Exercices', href: '/exercises', icon: '📝' },
+			{ label: 'Pratique', href: '/practice', icon: '✏️' },
+			{ label: 'Ressources', href: '/resources', icon: '📚' }
 		]
 	}: {
 		title?: string;
 		session?: Session | null; // Verified session from server
 		user?: User | null; // Verified user from server
+		profile?: Profile | null; // User profile from database
 		supabase?: SupabaseClient; // Client for making auth requests
 		sidebarItems?: Array<{ label: string; href: string; icon?: string }>;
 	} = $props();
@@ -92,22 +125,27 @@
 	}
 
 	/**
-	 * Get user initials from email for avatar fallback
-	 * @param email - User's email address
-	 * @returns First letter of email, uppercased
+	 * Get user avatar URL with fallback based on role and gender
+	 * Priority: profile avatar_url > user metadata avatar_url > role/gender fallback
 	 */
-	function getUserInitials(email: string | undefined): string {
-		if (!email) return '?';
-		return email.charAt(0).toUpperCase();
-	}
+	function getAvatarSrc(): string {
+		// First try profile avatar_url
+		if (profile?.avatar_url) {
+			return profile.avatar_url;
+		}
 
-	/**
-	 * Get user avatar URL from Supabase user metadata
-	 * @param user - Supabase user object
-	 * @returns Avatar URL if set, undefined otherwise
-	 */
-	function getAvatarUrl(user: User | null): string | undefined {
-		return user?.user_metadata?.avatar_url;
+		// Then try user metadata avatar_url
+		if (user?.user_metadata?.avatar_url) {
+			return user.user_metadata.avatar_url;
+		}
+
+		// Finally, use role/gender-based fallback if profile is available
+		if (profile) {
+			return getAvatarFallback(profile.role, profile.gender);
+		}
+
+		// Default fallback - empty string will trigger Avatar.Fallback
+		return '';
 	}
 </script>
 
@@ -124,7 +162,7 @@
 					{:else}
 						<Menu class="h-6 w-6" />
 					{/if}
-					<span class="sr-only">Toggle menu</span>
+					<span class="sr-only">Afficher le menu</span>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="start" class="w-64">
 					<DropdownMenu.Label>Navigation</DropdownMenu.Label>
@@ -143,19 +181,17 @@
 			</DropdownMenu.Root>
 		</div>
 
-		<!-- Title -->
-		<h1 class="text-2xl font-bold text-foreground tracking-tight">{title}</h1>
+		<!-- Title with Gidouille - links to home -->
+		<a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+			<img src={gidouille} alt="Gidouille" class="h-10 w-10" />
+			<h1 class="text-2xl font-bold text-foreground tracking-tight">{title}</h1>
+		</a>
 
 		<!-- Spacer -->
 		<div class="flex-1"></div>
 
 		<!-- Navigation -->
 		<nav class="flex items-center gap-2">
-			<!-- Home link -->
-			<Button href="/" variant="ghost" size="sm">
-				<Home class="h-4 w-4 mr-2" />
-				Home
-			</Button>
 
 			<!-- Auth section -->
 			{#if session}
@@ -165,8 +201,10 @@
 							class="cursor-pointer relative h-10 w-10 rounded-full hover:ring-2 hover:ring-ring transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 						>
 							<Avatar.Root class="h-10 w-10">
-								<Avatar.Image src={getAvatarUrl(user)} alt={user?.email || 'User'} />
-								<Avatar.Fallback>{getUserInitials(user?.email)}</Avatar.Fallback>
+								<Avatar.Image src={getAvatarSrc()} alt={user?.email || 'User'} />
+								<Avatar.Fallback>
+									{getAvatarInitials(profile?.firstname ?? null, profile?.lastname ?? null) || user?.email?.charAt(0).toUpperCase() || '?'}
+								</Avatar.Fallback>
 							</Avatar.Root>
 						</DropdownMenu.Trigger>
 						<DropdownMenu.Content align="end" class="w-48">
@@ -175,13 +213,13 @@
 							<DropdownMenu.Item>
 								<a href="/dashboard" class="flex items-center w-full">
 									<LayoutDashboard class="mr-2 h-4 w-4" />
-									Dashboard
+									Tableau de bord
 								</a>
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item onclick={handleLogout}>
 								<LogOut class="mr-2 h-4 w-4" />
-								Logout
+								Déconnexion
 							</DropdownMenu.Item>
 						</DropdownMenu.Content>
 					</DropdownMenu.Root>
@@ -189,7 +227,7 @@
 			{:else}
 				<Button href="/login" size="sm" variant="default">
 					<LogIn class="h-4 w-4 mr-2" />
-					Login
+					Connexion
 				</Button>
 			{/if}
 
@@ -200,8 +238,8 @@
 					disabled={!fontSize.canDecrease}
 					variant="ghost"
 					size="icon-sm"
-					aria-label="Decrease font size"
-					title="Decrease font size"
+					aria-label="Réduire la taille du texte"
+					title="Réduire la taille du texte"
 				>
 					<Minus class="h-5 w-5" />
 				</Button>
@@ -211,8 +249,8 @@
 					disabled={!fontSize.canIncrease}
 					variant="ghost"
 					size="icon-sm"
-					aria-label="Increase font size"
-					title="Increase font size"
+					aria-label="Augmenter la taille du texte"
+					title="Augmenter la taille du texte"
 				>
 					<Plus class="h-5 w-5" />
 				</Button>
@@ -223,12 +261,27 @@
 				onclick={() => theme.toggle()}
 				variant="ghost"
 				size="icon-sm"
-				aria-label="Toggle dark mode"
+				aria-label="Basculer le mode sombre"
 			>
 				{#if theme.dark}
 					<Sun class="h-6 w-6" />
 				{:else}
 					<Moon class="h-6 w-6" />
+				{/if}
+			</Button>
+
+			<!-- Fullscreen toggle -->
+			<Button
+				onclick={toggleFullscreen}
+				variant="ghost"
+				size="icon-sm"
+				aria-label="Basculer le plein écran"
+				title="Basculer le plein écran"
+			>
+				{#if isFullscreen}
+					<Minimize class="h-6 w-6" />
+				{:else}
+					<Maximize class="h-6 w-6" />
 				{/if}
 			</Button>
 		</nav>

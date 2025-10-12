@@ -63,6 +63,7 @@ Extends Supabase's `auth.users` with application-specific data.
 | avatar_url | TEXT | URL to user's avatar image |
 | class_ids | UUID[] | Array of class IDs user belongs to/teaches |
 | grade | TEXT | Student's grade level (e.g., "6ème", "5ème", "4ème", "3ème") |
+| gender | TEXT | User's gender ('boy' or 'girl') for avatar fallback purposes |
 | gidouilles | INTEGER | Student currency/points for rewards system (default: 0) |
 | vip_cards | JSONB | JSON object storing student VIP cards and their properties |
 | created_at | TIMESTAMPTZ | Account creation time |

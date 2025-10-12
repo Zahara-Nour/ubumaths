@@ -43,8 +43,22 @@
 		TrendingUp,
 		School,
 		Settings,
-		Gift
+		Gift,
+		LogOut,
+		Sun,
+		Moon,
+		Minus,
+		Plus,
+		Maximize,
+		Minimize
 	} from 'lucide-svelte';
+	import { Button } from '$lib/components/ui/button';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as Avatar from '$lib/components/ui/avatar';
+	import { theme } from '$lib/stores/theme.svelte';
+	import { fontSize } from '$lib/stores/fontSize.svelte';
+	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
+	import gidouille from '$lib/assets/images/gidouille.png';
 
 	// PROPS RECEIVED FROM PARENT LAYOUT SERVER LOAD:
 	// - data: Contains profile from +layout.server.ts
@@ -88,36 +102,169 @@
 	function isActive(href: string) {
 		return $page.url.pathname === href;
 	}
+
+	// Get role-specific background color
+	function getRoleHeaderColor(role: string) {
+		if (role === 'student') return 'bg-primary/10 border-primary/20';
+		if (role === 'teacher') return 'bg-secondary/10 border-secondary/20';
+		if (role === 'admin') return 'bg-destructive/10 border-destructive/20';
+		return 'bg-background';
+	}
+
+	// Fullscreen state
+	let isFullscreen = $state(false);
+
+	function toggleFullscreen() {
+		if (!document.fullscreenElement) {
+			document.documentElement.requestFullscreen();
+			isFullscreen = true;
+		} else {
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+				isFullscreen = false;
+			}
+		}
+	}
+
+	// Listen for fullscreen changes
+	$effect(() => {
+		const handleFullscreenChange = () => {
+			isFullscreen = !!document.fullscreenElement;
+		};
+
+		document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+		return () => {
+			document.removeEventListener('fullscreenchange', handleFullscreenChange);
+		};
+	});
+
+	// Handle logout
+	async function handleLogout() {
+		const form = document.createElement('form');
+		form.method = 'POST';
+		form.action = '/auth/logout';
+		document.body.appendChild(form);
+		form.submit();
+	}
+
+	// Get user avatar URL with fallback based on role and gender
+	function getAvatarSrc(): string {
+		if (data.profile.avatar_url) {
+			return data.profile.avatar_url;
+		}
+		if (data.user?.user_metadata?.avatar_url) {
+			return data.user.user_metadata.avatar_url;
+		}
+		if (data.profile) {
+			return getAvatarFallback(data.profile.role, data.profile.gender);
+		}
+		return '';
+	}
 </script>
 
 <!-- Main dashboard container -->
 <div class="min-h-screen bg-background">
 	<!-- DASHBOARD HEADER (shared across all dashboard pages) -->
-	<header class="bg-background border-b border-border shadow-sm">
+	<header class="border-b shadow-sm {getRoleHeaderColor(data.profile.role)}">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
 			<div class="flex items-center justify-between">
-				<!-- Left side: Dashboard title -->
-				<div>
-					<h1 class="text-2xl font-bold text-foreground tracking-tight">Dashboard</h1>
-					<!-- Display user's role (student/teacher/admin) -->
-					<!-- This comes from data.profile.role fetched in +layout.server.ts -->
-					<p class="text-sm text-muted-foreground mt-1">
-						Role: <span class="capitalize font-medium text-primary">{data.profile.role}</span>
-					</p>
+				<!-- Left side: Gidouille, Welcome message, and Avatar -->
+				<div class="flex items-center gap-4">
+					<!-- Gidouille - links to home -->
+					<a href="/" class="hover:opacity-80 transition-opacity" aria-label="Back to home">
+						<img src={gidouille} alt="Gidouille" class="h-16 w-16" />
+					</a>
+
+					<!-- Welcome message -->
+					<div>
+						<h1 class="text-2xl font-bold text-foreground tracking-tight">
+							Welcome, {data.profile.firstname || data.profile.full_name || 'User'}!
+						</h1>
+						<!-- Display user's role (student/teacher/admin) -->
+						<p class="text-sm text-muted-foreground mt-1">
+							<span class="capitalize font-medium">{data.profile.role}</span> Dashboard
+						</p>
+					</div>
+
+					<!-- User Avatar (larger) -->
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger
+							class="cursor-pointer relative h-16 w-16 rounded-full hover:ring-2 hover:ring-ring transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						>
+							<Avatar.Root class="h-16 w-16">
+								<Avatar.Image src={getAvatarSrc()} alt={data.profile.email || 'User'} />
+								<Avatar.Fallback class="text-xl">
+									{getAvatarInitials(data.profile?.firstname ?? null, data.profile?.lastname ?? null) || data.profile.email?.charAt(0).toUpperCase() || '?'}
+								</Avatar.Fallback>
+							</Avatar.Root>
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content align="start" class="w-48">
+							<DropdownMenu.Label>{data.profile.email}</DropdownMenu.Label>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item onclick={handleLogout}>
+								<LogOut class="mr-2 h-4 w-4" />
+								Logout
+							</DropdownMenu.Item>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
 				</div>
 
-				<!-- Right side: User email and navigation -->
-				<div class="flex items-center gap-4">
-					<!-- Display user's email from profile -->
-					<span class="text-sm text-foreground hidden sm:inline">{data.profile.email}</span>
+				<!-- Right side: Controls -->
+				<div class="flex items-center gap-2">
+					<!-- Font size controls -->
+					<div class="flex items-center gap-1">
+						<Button
+							onclick={() => fontSize.decrease()}
+							disabled={!fontSize.canDecrease}
+							variant="ghost"
+							size="icon-sm"
+							aria-label="Decrease font size"
+							title="Decrease font size"
+						>
+							<Minus class="h-5 w-5" />
+						</Button>
+						<span class="text-sm font-medium">A</span>
+						<Button
+							onclick={() => fontSize.increase()}
+							disabled={!fontSize.canIncrease}
+							variant="ghost"
+							size="icon-sm"
+							aria-label="Increase font size"
+							title="Increase font size"
+						>
+							<Plus class="h-5 w-5" />
+						</Button>
+					</div>
 
-					<!-- Navigation link back to home page -->
-					<a
-						href="/"
-						class="text-sm text-primary hover:text-primary/90 font-medium transition-colors duration-300"
+					<!-- Dark mode toggle -->
+					<Button
+						onclick={() => theme.toggle()}
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Toggle dark mode"
 					>
-						Back to Home
-					</a>
+						{#if theme.dark}
+							<Sun class="h-6 w-6" />
+						{:else}
+							<Moon class="h-6 w-6" />
+						{/if}
+					</Button>
+
+					<!-- Fullscreen toggle -->
+					<Button
+						onclick={toggleFullscreen}
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Toggle fullscreen"
+						title="Toggle fullscreen"
+					>
+						{#if isFullscreen}
+							<Minimize class="h-6 w-6" />
+						{:else}
+							<Maximize class="h-6 w-6" />
+						{/if}
+					</Button>
 				</div>
 			</div>
 		</div>

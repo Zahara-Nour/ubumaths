@@ -123,6 +123,8 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 		// Supabase client for making authenticated requests
 		supabase,
 		// Verified user from server (safe to use)
-		user: data.user
+		user: data.user,
+		// User profile from server (includes role, gender, etc.)
+		profile: data.profile
 	};
 };

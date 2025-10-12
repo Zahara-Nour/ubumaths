@@ -49,13 +49,13 @@
 <div class="min-h-screen flex items-center justify-center bg-background px-4">
 	<Card.Root class="max-w-md w-full">
 		<Card.Header>
-			<Card.Title class="text-center text-3xl">Create your account</Card.Title>
+			<Card.Title class="text-center text-3xl">Créer votre compte</Card.Title>
 		</Card.Header>
 
 		<Card.Content>
 			<form method="POST" action="?/signup" use:enhance class="space-y-4">
 				<div class="space-y-2">
-					<Label for="email">Email address</Label>
+					<Label for="email">Adresse email</Label>
 					<Input
 						id="email"
 						name="email"
@@ -67,7 +67,7 @@
 				</div>
 
 				<div class="space-y-2">
-					<Label for="password">Password</Label>
+					<Label for="password">Mot de passe</Label>
 					<Input
 						id="password"
 						name="password"
@@ -99,7 +99,7 @@
 							<div class="text-xs space-y-1 text-muted-foreground">
 								<div class="flex items-center gap-2">
 									<span class={passwordStrength.requirements.minLength ? 'text-green-600' : ''}>
-										{passwordStrength.requirements.minLength ? '✓' : '○'} At least 8 characters
+										{passwordStrength.requirements.minLength ? '✓' : '○'} Au moins 8 caractères
 									</span>
 								</div>
 								<div class="flex items-center gap-2">
@@ -112,19 +112,19 @@
 										{passwordStrength.requirements.hasUpperCase &&
 										passwordStrength.requirements.hasLowerCase
 											? '✓'
-											: '○'} Mixed case letters
+											: '○'} Lettres majuscules et minuscules
 									</span>
 								</div>
 								<div class="flex items-center gap-2">
 									<span class={passwordStrength.requirements.hasNumber ? 'text-green-600' : ''}>
-										{passwordStrength.requirements.hasNumber ? '✓' : '○'} Numbers
+										{passwordStrength.requirements.hasNumber ? '✓' : '○'} Chiffres
 									</span>
 								</div>
 								<div class="flex items-center gap-2">
 									<span
 										class={passwordStrength.requirements.hasSpecialChar ? 'text-green-600' : ''}
 									>
-										{passwordStrength.requirements.hasSpecialChar ? '✓' : '○'} Special characters
+										{passwordStrength.requirements.hasSpecialChar ? '✓' : '○'} Caractères spéciaux
 									</span>
 								</div>
 							</div>
@@ -133,7 +133,7 @@
 				</div>
 
 				<div class="space-y-2">
-					<Label for="confirmPassword">Confirm Password</Label>
+					<Label for="confirmPassword">Confirmer le mot de passe</Label>
 					<Input
 						id="confirmPassword"
 						name="confirmPassword"
@@ -157,11 +157,11 @@
 					</Alert.Root>
 				{/if}
 
-				<Button type="submit" class="w-full">Sign up</Button>
+				<Button type="submit" class="w-full">S'inscrire</Button>
 
 				<p class="text-center text-sm text-muted-foreground">
-					Already have an account?
-					<a href="/login" class="text-primary hover:underline font-medium">Sign in</a>
+					Vous avez déjà un compte ?
+					<a href="/login" class="text-primary hover:underline font-medium">Se connecter</a>
 				</p>
 			</form>
 		</Card.Content>

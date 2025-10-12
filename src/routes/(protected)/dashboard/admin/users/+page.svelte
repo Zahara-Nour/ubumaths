@@ -20,6 +20,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
 	import type { Profile, Class } from '$lib/types/database';
+	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 
 	let { data }: { data: PageData } = $props();
 
@@ -41,16 +42,6 @@
 	/**
 	 * Utility Functions
 	 */
-
-	/**
-	 * Generate avatar initials from user's first and last name
-	 * @returns Two uppercase letters (first + last) or '?' if no name available
-	 */
-	function getInitials(firstname: string | null, lastname: string | null): string {
-		const first = firstname?.charAt(0)?.toUpperCase() || '';
-		const last = lastname?.charAt(0)?.toUpperCase() || '';
-		return first + last || '?';
-	}
 
 	/**
 	 * Get user's full display name
@@ -386,10 +377,11 @@
 										>
 											<div class="flex items-center gap-3">
 												<Avatar.Root class="h-10 w-10">
-													{#if user.avatar_url}
-														<Avatar.Image src={user.avatar_url} alt={getFullName(user)} />
-													{/if}
-													<Avatar.Fallback>{getInitials(user.firstname, user.lastname)}</Avatar.Fallback>
+													<Avatar.Image
+														src={user.avatar_url || getAvatarFallback(user.role, user.gender)}
+														alt={getFullName(user)}
+													/>
+													<Avatar.Fallback>{getAvatarInitials(user.firstname, user.lastname)}</Avatar.Fallback>
 												</Avatar.Root>
 												<div class="flex-1 min-w-0">
 													<p class="text-sm font-medium text-foreground truncate">
@@ -435,14 +427,16 @@
 								<!-- Avatar -->
 								<div class="flex items-center gap-4">
 									<Avatar.Root class="h-20 w-20">
-										{#if (isEditing ? editedUser.avatar_url : selectedUser.avatar_url)}
-											<Avatar.Image
-												src={isEditing ? editedUser.avatar_url : selectedUser.avatar_url}
-												alt={getFullName(isEditing ? editedUser : selectedUser)}
-											/>
-										{/if}
+										<Avatar.Image
+											src={(isEditing ? editedUser.avatar_url : selectedUser.avatar_url) ||
+												getAvatarFallback(
+													isEditing ? editedUser.role : selectedUser.role,
+													isEditing ? editedUser.gender : selectedUser.gender
+												)}
+											alt={getFullName(isEditing ? editedUser : selectedUser)}
+										/>
 										<Avatar.Fallback class="text-2xl">
-											{getInitials(
+											{getAvatarInitials(
 												isEditing ? editedUser.firstname : selectedUser.firstname,
 												isEditing ? editedUser.lastname : selectedUser.lastname
 											)}
@@ -534,6 +528,33 @@
 												<Input id="email" name="email" type="email" bind:value={editedUser.email} />
 											{:else}
 												<p class="text-sm mt-1">{selectedUser.email}</p>
+											{/if}
+										</div>
+
+										<!-- Gender -->
+										<div>
+											<Label for="gender">Genre</Label>
+											{#if isEditing}
+												<select
+													id="gender"
+													name="gender"
+													bind:value={editedUser.gender}
+													class="w-full px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+												>
+													<option value="">Non spécifié</option>
+													<option value="boy">Garçon</option>
+													<option value="girl">Fille</option>
+												</select>
+											{:else}
+												<p class="text-sm mt-1">
+													{#if selectedUser.gender === 'boy'}
+														Garçon
+													{:else if selectedUser.gender === 'girl'}
+														Fille
+													{:else}
+														Non spécifié
+													{/if}
+												</p>
 											{/if}
 										</div>
 

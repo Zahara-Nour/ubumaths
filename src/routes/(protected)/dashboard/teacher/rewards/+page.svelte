@@ -31,6 +31,7 @@
 	import { Plus, Minus } from 'lucide-svelte';
 	import { invalidateAll } from '$app/navigation';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
+	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 
 	// Data from server load function
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -63,13 +64,6 @@
 			toaster.error(form.message);
 		}
 	});
-
-	// Fonction pour obtenir les initiales de l'élève
-	function getInitials(firstname: string | null, lastname: string | null): string {
-		const first = firstname?.charAt(0)?.toUpperCase() || '';
-		const last = lastname?.charAt(0)?.toUpperCase() || '';
-		return first + last || '?';
-	}
 
 	// Fonction pour obtenir le nom complet ou l'identifiant de l'élève
 	function getFullName(
@@ -211,11 +205,11 @@
 										<!-- AVATAR -->
 										<Avatar.Root class="w-12 h-12 flex-shrink-0">
 											<Avatar.Image
-												src={student.avatar_url || undefined}
+												src={student.avatar_url || getAvatarFallback(student.role, student.gender)}
 												alt={getFullName(student.firstname, student.lastname, student.full_name)}
 											/>
 											<Avatar.Fallback class="bg-primary/10 text-primary font-semibold">
-												{getInitials(student.firstname, student.lastname)}
+												{getAvatarInitials(student.firstname, student.lastname)}
 											</Avatar.Fallback>
 										</Avatar.Root>
 

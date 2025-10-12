@@ -4,10 +4,10 @@
 	// You can add navigation items as props
 	let {
 		items = [
-			{ label: 'Home', href: '/', icon: '🏠' },
-			{ label: 'Exercises', href: '/exercises', icon: '📝' },
-			{ label: 'Practice', href: '/practice', icon: '✏️' },
-			{ label: 'Resources', href: '/resources', icon: '📚' }
+			{ label: 'Accueil', href: '/', icon: '🏠' },
+			{ label: 'Exercices', href: '/exercises', icon: '📝' },
+			{ label: 'Pratique', href: '/practice', icon: '✏️' },
+			{ label: 'Ressources', href: '/resources', icon: '📚' }
 		]
 	}: {
 		items?: Array<{ label: string; href: string; icon?: string }>;

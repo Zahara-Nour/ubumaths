@@ -1,4 +1,5 @@
 export type UserRole = 'student' | 'teacher' | 'admin';
+export type Gender = 'boy' | 'girl';
 
 export interface School {
 	id: string;
@@ -23,6 +24,7 @@ export interface Profile {
 	avatar_url: string | null;
 	class_ids: string[];
 	grade: string | null;
+	gender: Gender | null;
 	gidouilles: number;
 	vip_cards: Record<string, unknown>;
 	created_at: string;

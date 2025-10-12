@@ -48,7 +48,7 @@
 <div class="min-h-screen flex items-center justify-center bg-background px-4">
 	<Card.Root class="max-w-md w-full">
 		<Card.Header>
-			<Card.Title class="text-center text-3xl">Sign in to your account</Card.Title>
+			<Card.Title class="text-center text-3xl">Connexion à votre compte</Card.Title>
 		</Card.Header>
 
 		<Card.Content class="space-y-6">
@@ -62,15 +62,15 @@
 			<!-- Tabs for Google vs Email/Password -->
 			<Tabs.Root value="google">
 				<Tabs.List class="grid w-full grid-cols-2">
-					<Tabs.Trigger value="google">Google Sign In</Tabs.Trigger>
-					<Tabs.Trigger value="email">Email & Password</Tabs.Trigger>
+					<Tabs.Trigger value="google">Connexion Google</Tabs.Trigger>
+					<Tabs.Trigger value="email">Email & Mot de passe</Tabs.Trigger>
 				</Tabs.List>
 
 				<!-- Google Sign In Tab -->
 				<Tabs.Content value="google" class="space-y-4">
 					<form method="POST" action="?/googleSignIn" use:enhance class="space-y-4">
 						<p class="text-sm text-muted-foreground text-center">
-							Sign in with your Voltaire Doha Google account (@voltairedoha.com)
+							Connectez-vous avec votre compte Google Voltaire Doha (@voltairedoha.com)
 						</p>
 
 						<Button type="submit" variant="outline" class="w-full gap-3">
@@ -92,7 +92,7 @@
 									fill="#EA4335"
 								/>
 							</svg>
-							Sign in with Google
+							Se connecter avec Google
 						</Button>
 
 						{#if form?.error && !urlError}
@@ -107,7 +107,7 @@
 				<Tabs.Content value="email" class="space-y-4">
 					<form method="POST" action="?/login" use:enhance class="space-y-4">
 						<div class="space-y-2">
-							<Label for="email">Email address</Label>
+							<Label for="email">Adresse email</Label>
 							<Input
 								id="email"
 								name="email"
@@ -120,9 +120,9 @@
 
 						<div class="space-y-2">
 							<div class="flex items-center justify-between">
-								<Label for="password">Password</Label>
+								<Label for="password">Mot de passe</Label>
 								<a href="/auth/reset-password" class="text-sm text-primary hover:underline">
-									Forgot password?
+									Mot de passe oublié ?
 								</a>
 							</div>
 							<Input
@@ -140,12 +140,12 @@
 							</Alert.Root>
 						{/if}
 
-						<Button type="submit" class="w-full">Sign in</Button>
+						<Button type="submit" class="w-full">Se connecter</Button>
 
 						<!-- Sign up link -->
 						<p class="text-center text-sm text-muted-foreground">
-							Don't have an account?
-							<a href="/signup" class="text-primary hover:underline font-medium">Sign up</a>
+							Vous n'avez pas de compte ?
+							<a href="/signup" class="text-primary hover:underline font-medium">S'inscrire</a>
 						</p>
 					</form>
 				</Tabs.Content>

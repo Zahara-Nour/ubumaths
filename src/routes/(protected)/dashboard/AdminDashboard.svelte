@@ -54,53 +54,41 @@
 </script>
 
 <div class="space-y-6">
-	<!-- WELCOME SECTION -->
-	<!-- Special admin greeting with emphasized access level -->
-	<div class="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
-		<h2 class="text-xl font-semibold text-foreground">
-			<!-- Emphasize admin role in title -->
-			Admin Dashboard - Welcome, {data.profile.full_name || 'Administrator'}!
-		</h2>
-		<p class="text-muted-foreground mt-2">
-			Manage users, system settings, and oversee all platform activity.
-		</p>
-	</div>
-
 	<!-- SYSTEM STATS SECTION -->
 	<!-- Platform-wide metrics with trend indicators -->
 	<!-- TODO: Replace hardcoded values with real database queries -->
 	<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
 		<!-- Stat 1: Total Users (all roles) -->
 		<div class="bg-card rounded-lg shadow p-6">
-			<h3 class="text-sm font-medium text-muted-foreground uppercase">Total Users</h3>
+			<h3 class="text-sm font-medium text-muted-foreground uppercase">Utilisateurs Totaux</h3>
 			<!-- TODO: Count all records in profiles table -->
 			<p class="text-3xl font-bold text-foreground mt-2">342</p>
 			<!-- TODO: Compare with count from 7 days ago to show trend -->
-			<p class="text-sm text-muted-foreground mt-1">↑ 12 this week</p>
+			<p class="text-sm text-muted-foreground mt-1">↑ 12 cette semaine</p>
 		</div>
 
 		<!-- Stat 2: Active Classes (across all teachers) -->
 		<div class="bg-card rounded-lg shadow p-6">
-			<h3 class="text-sm font-medium text-muted-foreground uppercase">Active Classes</h3>
+			<h3 class="text-sm font-medium text-muted-foreground uppercase">Classes Actives</h3>
 			<!-- TODO: Count classes where is_active = true -->
 			<p class="text-3xl font-bold text-foreground mt-2">48</p>
-			<p class="text-sm text-muted-foreground mt-1">↑ 3 this week</p>
+			<p class="text-sm text-muted-foreground mt-1">↑ 3 cette semaine</p>
 		</div>
 
 		<!-- Stat 3: Total Exercises (platform-wide) -->
 		<div class="bg-card rounded-lg shadow p-6">
-			<h3 class="text-sm font-medium text-muted-foreground uppercase">Total Exercises</h3>
+			<h3 class="text-sm font-medium text-muted-foreground uppercase">Exercices Totaux</h3>
 			<!-- TODO: Count all records in exercises table -->
 			<p class="text-3xl font-bold text-foreground mt-2">1,256</p>
-			<p class="text-sm text-muted-foreground mt-1">↑ 45 this week</p>
+			<p class="text-sm text-muted-foreground mt-1">↑ 45 cette semaine</p>
 		</div>
 
 		<!-- Stat 4: System Health Indicator -->
 		<div class="bg-card rounded-lg shadow p-6">
-			<h3 class="text-sm font-medium text-muted-foreground uppercase">System Health</h3>
+			<h3 class="text-sm font-medium text-muted-foreground uppercase">État du Système</h3>
 			<!-- TODO: Check database connection, API status, etc. -->
 			<p class="text-3xl font-bold text-secondary mt-2">100%</p>
-			<p class="text-sm text-muted-foreground mt-1">All systems operational</p>
+			<p class="text-sm text-muted-foreground mt-1">Tous les systèmes opérationnels</p>
 		</div>
 	</div>
 
@@ -108,10 +96,10 @@
 	<!-- Overview of users by role with quick add action -->
 	<div class="bg-card rounded-lg shadow">
 		<div class="px-6 py-4 border-b border-border flex items-center justify-between">
-			<h3 class="text-lg font-semibold text-foreground">User Management</h3>
+			<h3 class="text-lg font-semibold text-foreground">Gestion des Utilisateurs</h3>
 			<!-- Quick action to add new users -->
 			<Button>
-				Add New User
+				Ajouter un Utilisateur
 				<!-- TODO: Link to /dashboard/admin/users/create -->
 			</Button>
 		</div>
@@ -122,21 +110,21 @@
 				<!-- Student count -->
 				<div class="border border-border rounded-lg p-4">
 					<div class="text-2xl font-bold text-primary">245</div>
-					<div class="text-sm text-muted-foreground mt-1">Students</div>
+					<div class="text-sm text-muted-foreground mt-1">Élèves</div>
 					<!-- TODO: SELECT COUNT(*) FROM profiles WHERE role = 'student' -->
 				</div>
 
 				<!-- Teacher count -->
 				<div class="border border-border rounded-lg p-4">
 					<div class="text-2xl font-bold text-secondary">92</div>
-					<div class="text-sm text-muted-foreground mt-1">Teachers</div>
+					<div class="text-sm text-muted-foreground mt-1">Enseignants</div>
 					<!-- TODO: SELECT COUNT(*) FROM profiles WHERE role = 'teacher' -->
 				</div>
 
 				<!-- Admin count -->
 				<div class="border border-border rounded-lg p-4">
 					<div class="text-2xl font-bold text-destructive">5</div>
-					<div class="text-sm text-muted-foreground mt-1">Administrators</div>
+					<div class="text-sm text-muted-foreground mt-1">Administrateurs</div>
 					<!-- TODO: SELECT COUNT(*) FROM profiles WHERE role = 'admin' -->
 				</div>
 			</div>
@@ -147,15 +135,15 @@
 	<!-- Navigation to various admin configuration pages -->
 	<div class="bg-card rounded-lg shadow">
 		<div class="px-6 py-4 border-b border-border">
-			<h3 class="text-lg font-semibold text-foreground">System Settings</h3>
+			<h3 class="text-lg font-semibold text-foreground">Paramètres du Système</h3>
 		</div>
 		<div class="p-6">
 			<div class="space-y-4">
 				<!-- Setting 1: Content Management -->
 				<button class="w-full text-left px-4 py-3 border border-border rounded-lg hover:bg-accent hover:text-accent-foreground flex items-center justify-between">
 					<div>
-						<div class="font-medium text-foreground">Content Management</div>
-						<div class="text-sm text-muted-foreground">Manage topics, subtopics, and exercises</div>
+						<div class="font-medium text-foreground">Gestion du Contenu</div>
+						<div class="text-sm text-muted-foreground">Gérer les sujets, sous-sujets et exercices</div>
 						<!-- TODO: Link to /dashboard/admin/content -->
 					</div>
 					<span class="text-muted-foreground">→</span>
@@ -164,8 +152,8 @@
 				<!-- Setting 2: Platform Configuration -->
 				<button class="w-full text-left px-4 py-3 border border-border rounded-lg hover:bg-accent hover:text-accent-foreground flex items-center justify-between">
 					<div>
-						<div class="font-medium text-foreground">Platform Settings</div>
-						<div class="text-sm text-muted-foreground">Configure system-wide settings</div>
+						<div class="font-medium text-foreground">Paramètres de la Plateforme</div>
+						<div class="text-sm text-muted-foreground">Configurer les paramètres du système</div>
 						<!-- TODO: Link to /dashboard/admin/settings -->
 					</div>
 					<span class="text-muted-foreground">→</span>
@@ -174,8 +162,8 @@
 				<!-- Setting 3: Analytics & Reports -->
 				<button class="w-full text-left px-4 py-3 border border-border rounded-lg hover:bg-accent hover:text-accent-foreground flex items-center justify-between">
 					<div>
-						<div class="font-medium text-foreground">Reports & Analytics</div>
-						<div class="text-sm text-muted-foreground">View platform usage and performance</div>
+						<div class="font-medium text-foreground">Rapports & Analyses</div>
+						<div class="text-sm text-muted-foreground">Voir l'utilisation et les performances de la plateforme</div>
 						<!-- TODO: Link to /dashboard/admin/analytics -->
 					</div>
 					<span class="text-muted-foreground">→</span>
@@ -188,7 +176,7 @@
 	<!-- Audit log of recent admin and system actions -->
 	<div class="bg-card rounded-lg shadow">
 		<div class="px-6 py-4 border-b border-border">
-			<h3 class="text-lg font-semibold text-foreground">Recent System Activity</h3>
+			<h3 class="text-lg font-semibold text-foreground">Activité Récente du Système</h3>
 		</div>
 		<div class="p-6">
 			<!-- TODO: Implement audit logging system -->
@@ -199,7 +187,7 @@
 			     - Exercise published: "Quadratic Equations" by teacher@school.com
 			     - Settings changed: "Max students per class" by admin@school.com
 			-->
-			<p class="text-muted-foreground text-center py-8">No recent activity to display</p>
+			<p class="text-muted-foreground text-center py-8">Aucune activité récente à afficher</p>
 		</div>
 	</div>
 </div>

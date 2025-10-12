@@ -55,7 +55,7 @@
 <div class="flex h-screen flex-col">
 	<!-- Header - only show on non-dashboard routes -->
 	{#if !isDashboardRoute}
-		<Header title="UbuMaths" session={data.session} user={data.user} supabase={data.supabase} />
+		<Header title="UbuMaths" session={data.session} user={data.user} profile={data.profile} supabase={data.supabase} />
 	{/if}
 
 	<!-- Main content area with sidebar -->
@@ -66,7 +66,7 @@
 		{/if}
 
 		<!-- Main content -->
-		<main class="flex-1 overflow-y-auto {isDashboardRoute ? '' : 'p-6'}">
+		<main class="flex-1 overflow-y-auto" class:p-6={!isDashboardRoute}>
 			{@render children?.()}
 		</main>
 	</div>
