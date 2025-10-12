@@ -65,7 +65,7 @@
 			return [
 				...commonLinks,
 				{ href: '/dashboard/admin/schools', label: 'Schools', icon: '🏫' },
-				{ href: '/dashboard/users', label: 'Users', icon: '👥' },
+				{ href: '/dashboard/admin/users', label: 'Users', icon: '👥' },
 				{ href: '/dashboard/classes', label: 'Classes', icon: '🎓' },
 				{ href: '/dashboard/settings', label: 'Settings', icon: '⚙️' }
 			];
