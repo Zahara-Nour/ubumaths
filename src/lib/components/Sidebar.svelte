@@ -1,35 +1,41 @@
 <script lang="ts">
-	import { cn } from '$lib/utils';
+	import { page } from '$app/stores';
+	import { Home, BookOpen, PenTool, Library } from 'lucide-svelte';
 
-	// You can add navigation items as props
+	// Default navigation items
 	let {
 		items = [
-			{ label: 'Accueil', href: '/', icon: '🏠' },
-			{ label: 'Exercices', href: '/exercises', icon: '📝' },
-			{ label: 'Pratique', href: '/practice', icon: '✏️' },
-			{ label: 'Ressources', href: '/resources', icon: '📚' }
+			{ label: 'Accueil', href: '/', icon: Home },
+			{ label: 'Exercices', href: '/exercises', icon: BookOpen },
+			{ label: 'Pratique', href: '/practice', icon: PenTool },
+			{ label: 'Ressources', href: '/resources', icon: Library }
 		]
 	}: {
-		items?: Array<{ label: string; href: string; icon?: string }>;
+		items?: Array<{ label: string; href: string; icon: any }>;
 	} = $props();
+
+	// Check if a link is active
+	function isActive(href: string) {
+		return $page.url.pathname === href;
+	}
 </script>
 
-<aside class="hidden w-64 border-r border-border bg-background lg:block">
-	<nav class="flex flex-col gap-1 p-3">
+<!-- RAIL SIDEBAR - Vertical icon navigation (Claude AI style) -->
+<aside class="hidden bg-card/50 dark:bg-card border-r border-border w-20 shadow-sm lg:block">
+	<nav class="flex flex-col items-center gap-1 py-4">
 		{#each items as item}
 			<a
 				href={item.href}
-				class={cn(
-					'flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-300',
-					'text-foreground hover:bg-muted/80 dark:hover:bg-muted/60',
-					'font-medium text-sm',
-					'group'
-				)}
+				class="flex flex-col items-center gap-1 px-2 py-3 rounded-lg transition-all duration-300 w-16 group {isActive(item.href)
+					? 'bg-primary/10 text-primary'
+					: 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}"
+				title={item.label}
 			>
-				{#if item.icon}
-					<span class="text-xl group-hover:scale-110 transition-transform duration-300">{item.icon}</span>
-				{/if}
-				<span>{item.label}</span>
+				<svelte:component
+					this={item.icon}
+					class="w-6 h-6 group-hover:scale-110 transition-transform duration-300"
+				/>
+				<span class="text-xs text-center leading-tight font-medium">{item.label}</span>
 			</a>
 		{/each}
 	</nav>

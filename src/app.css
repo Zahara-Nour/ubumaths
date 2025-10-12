@@ -114,15 +114,38 @@ body {
 
 /* Fix header and sidebar font sizes to prevent scaling */
 header,
-header *,
-aside,
-aside * {
+header *:not(svg):not(img) {
 	font-size: 1rem !important;
 	line-height: 1.5 !important;
 }
 
-header h1 {
+/* Override Tailwind text-* classes in header */
+header h1,
+header .text-2xl {
 	font-size: 1.5rem !important;
+	line-height: 2rem !important;
+}
+
+header p,
+header .text-sm {
+	font-size: 0.875rem !important;
+	line-height: 1.25rem !important;
+}
+
+header span:not(.sr-only),
+header .text-xl {
+	font-size: 1rem !important;
+	line-height: 1.5 !important;
+}
+
+header button {
+	font-size: 1rem !important;
+	line-height: 1.5 !important;
+}
+
+/* Allow sidebar to use its own smaller sizes (don't force 1rem) */
+aside {
+	/* Don't override font-size - let Tailwind classes work */
 }
 
 /* Apply scaling to main content headings */
