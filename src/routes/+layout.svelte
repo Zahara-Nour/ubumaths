@@ -9,7 +9,7 @@
 	import '@fontsource/lora/600.css';
 	import '@fontsource/lora/700.css';
 
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/images/favicon.png';
 	import Header from '$lib/components/Header.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { theme } from '$lib/stores/theme.svelte';
@@ -46,7 +46,7 @@
 
 <!-- Loading bar that appears during navigation -->
 {#if $navigating}
-	<div class="fixed top-0 left-0 right-0 h-1 bg-primary z-[200] animate-pulse shadow-lg"></div>
+	<div class="fixed top-0 right-0 left-0 z-[200] h-1 animate-pulse bg-primary shadow-lg"></div>
 {/if}
 
 <!-- Toast notifications -->

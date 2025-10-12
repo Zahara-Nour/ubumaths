@@ -35,6 +35,16 @@
 <script lang="ts">
 	import type { LayoutData } from './$types';
 	import { page } from '$app/stores';
+	import {
+		LayoutDashboard,
+		GraduationCap,
+		Users,
+		ClipboardList,
+		TrendingUp,
+		School,
+		Settings,
+		Gift
+	} from 'lucide-svelte';
 
 	// PROPS RECEIVED FROM PARENT LAYOUT SERVER LOAD:
 	// - data: Contains profile from +layout.server.ts
@@ -44,30 +54,31 @@
 	// Navigation links based on role
 	const getNavLinks = (role: string) => {
 		const commonLinks = [
-			{ href: '/dashboard', label: 'Dashboard', icon: '📊' }
+			{ href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }
 		];
 
 		if (role === 'student') {
 			return [
 				...commonLinks,
-				{ href: '/dashboard/assignments', label: 'Assignments', icon: '📝' },
-				{ href: '/dashboard/classes', label: 'My Classes', icon: '🎓' },
-				{ href: '/dashboard/progress', label: 'Progress', icon: '📈' }
+				{ href: '/dashboard/assignments', label: 'Assignments', icon: ClipboardList },
+				{ href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap },
+				{ href: '/dashboard/progress', label: 'Progress', icon: TrendingUp }
 			];
 		} else if (role === 'teacher') {
 			return [
 				...commonLinks,
-				{ href: '/dashboard/classes', label: 'My Classes', icon: '🎓' },
-				{ href: '/dashboard/students', label: 'Students', icon: '👥' },
-				{ href: '/dashboard/assignments', label: 'Assignments', icon: '📝' }
+				{ href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap },
+				{ href: '/dashboard/students', label: 'Students', icon: Users },
+				{ href: '/dashboard/assignments', label: 'Assignments', icon: ClipboardList },
+				{ href: '/dashboard/teacher/rewards', label: 'Rewards', icon: Gift }
 			];
 		} else if (role === 'admin') {
 			return [
 				...commonLinks,
-				{ href: '/dashboard/admin/schools', label: 'Schools', icon: '🏫' },
-				{ href: '/dashboard/admin/users', label: 'Users', icon: '👥' },
-				{ href: '/dashboard/classes', label: 'Classes', icon: '🎓' },
-				{ href: '/dashboard/settings', label: 'Settings', icon: '⚙️' }
+				{ href: '/dashboard/admin/schools', label: 'Schools', icon: School },
+				{ href: '/dashboard/admin/users', label: 'Users', icon: Users },
+				{ href: '/dashboard/classes', label: 'Classes', icon: GraduationCap },
+				{ href: '/dashboard/settings', label: 'Settings', icon: Settings }
 			];
 		}
 		return commonLinks;
@@ -124,7 +135,10 @@
 							: 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}"
 						title={link.label}
 					>
-						<span class="text-2xl group-hover:scale-110 transition-transform duration-300">{link.icon}</span>
+						<svelte:component
+							this={link.icon}
+							class="w-6 h-6 group-hover:scale-110 transition-transform duration-300"
+						/>
 						<span class="text-xs text-center leading-tight font-medium">{link.label}</span>
 					</a>
 				{/each}

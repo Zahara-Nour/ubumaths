@@ -185,6 +185,51 @@ These functions use `SECURITY DEFINER` to bypass RLS when checking roles/permiss
 **Returns**: Boolean - true if current user (teacher) has student in their class
 **Purpose**: Bypasses RLS to check teacher-student relationship without recursion
 
+### Gidouilles Management (Rewards System)
+
+#### `update_student_gidouilles(student_id UUID, delta INTEGER)`
+**Returns**: INTEGER - New gidouilles count after update
+**Purpose**: Securely updates a single student's gidouilles (reward points)
+**Security**:
+- SECURITY DEFINER function (runs with elevated permissions)
+- Verifies caller is a teacher via `is_teacher_or_admin()`
+- Verifies student is in one of the teacher's classes
+- Enforces minimum of 0 gidouilles (cannot go negative)
+**Usage**:
+```sql
+-- Add 5 gidouilles to a student
+SELECT update_student_gidouilles('student-uuid', 5);
+
+-- Remove 2 gidouilles from a student
+SELECT update_student_gidouilles('student-uuid', -2);
+```
+**Errors**:
+- Raises exception if caller is not a teacher
+- Raises exception if student is not in teacher's classes
+- Raises exception if operation would result in negative gidouilles
+
+#### `update_class_gidouilles(class_id UUID, delta INTEGER)`
+**Returns**: INTEGER - Number of students updated
+**Purpose**: Updates gidouilles for ALL students in a class at once
+**Security**:
+- SECURITY DEFINER function (runs with elevated permissions)
+- Verifies caller is the teacher who owns the class
+- Only updates students where new value would be >= 0
+**Usage**:
+```sql
+-- Add 10 gidouilles to all students in class
+SELECT update_class_gidouilles('class-uuid', 10);
+
+-- Remove 5 gidouilles from all students in class
+SELECT update_class_gidouilles('class-uuid', -5);
+```
+**Behavior**:
+- If delta is negative and would cause some students to go below 0, those students are SKIPPED
+- Returns count of students actually updated (may be less than total class size if some are skipped)
+**Errors**:
+- Raises exception if caller is not a teacher
+- Raises exception if caller doesn't own the class
+
 ### Triggers
 
 #### `update_updated_at_column()`

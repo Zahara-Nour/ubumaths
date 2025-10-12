@@ -1,0 +1,190 @@
+import { error, fail } from '@sveltejs/kit';
+import type { PageServerLoad, Actions } from './$types';
+import type { Profile, Class } from '$lib/types/database';
+
+// Type pour les élèves avec leurs gidouilles
+export interface StudentWithGidouilles extends Profile {
+	gidouilles: number;
+}
+
+// Load function: Récupère les classes du professeur avec leurs élèves
+export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
+	// Get user and profile from parent (protected) layout
+	const { user, profile } = await parent();
+
+	if (!user || !profile) {
+		throw error(401, 'Unauthorized');
+	}
+
+	// Vérifier que l'utilisateur est professeur
+	if (profile.role !== 'teacher') {
+		throw error(403, 'Only teachers can access this page');
+	}
+
+	// Récupérer toutes les classes du professeur
+	const { data: classes, error: classesError } = await supabase
+		.from('classes')
+		.select('*')
+		.eq('teacher_id', user.id)
+		.eq('is_active', true)
+		.order('name');
+
+	if (classesError) {
+		console.error('Error loading classes:', classesError);
+		throw error(500, 'Failed to load classes');
+	}
+
+	// Pour chaque classe, récupérer les élèves avec leurs gidouilles
+	const classesWithStudents = await Promise.all(
+		(classes || []).map(async (classItem) => {
+			// D'abord, récupérer les IDs des élèves de cette classe
+			const { data: memberIds } = await supabase
+				.from('class_members')
+				.select('student_id')
+				.eq('class_id', classItem.id);
+
+			const studentIds = memberIds?.map((m) => m.student_id) || [];
+
+			// Si pas d'élèves, retourner la classe vide
+			if (studentIds.length === 0) {
+				return {
+					...classItem,
+					students: []
+				};
+			}
+
+			// Ensuite, récupérer les profils des élèves
+			const { data: students, error: studentsError } = await supabase
+				.from('profiles')
+				.select(
+					`
+					id,
+					firstname,
+					lastname,
+					full_name,
+					avatar_url,
+					gidouilles
+				`
+				)
+				.in('id', studentIds)
+				.order('firstname');
+
+			if (studentsError) {
+				console.error(`Error loading students for class ${classItem.id}:`, studentsError);
+				return {
+					...classItem,
+					students: []
+				};
+			}
+
+			return {
+				...classItem,
+				students: students || []
+			};
+		})
+	);
+
+	return {
+		classes: classesWithStudents as Array<
+			Class & {
+				students: Array<{
+					id: string;
+					firstname: string | null;
+					lastname: string | null;
+					full_name: string | null;
+					avatar_url: string | null;
+					gidouilles: number;
+				}>;
+			}
+		>
+	};
+};
+
+// Actions: Gérer les modifications de gidouilles
+export const actions: Actions = {
+	// Action pour mettre à jour les gidouilles d'un élève
+	updateStudent: async ({ request, locals: { safeGetSession, supabase } }) => {
+		const { user } = await safeGetSession();
+
+		if (!user) {
+			return fail(401, { message: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const studentId = formData.get('studentId') as string;
+		const delta = parseInt(formData.get('delta') as string, 10);
+
+		if (!studentId || isNaN(delta)) {
+			return fail(400, { message: 'Invalid data' });
+		}
+
+		try {
+			// Appeler la fonction RPC sécurisée
+			const { data, error: rpcError } = await supabase.rpc('update_student_gidouilles', {
+				p_student_id: studentId,
+				p_delta: delta
+			});
+
+			if (rpcError) {
+				console.error('RPC Error:', rpcError);
+				return fail(500, {
+					message: rpcError.message || 'Failed to update gidouilles'
+				});
+			}
+
+			return {
+				success: true,
+				message: `Gidouilles mises à jour avec succès`,
+				newValue: data
+			};
+		} catch (err) {
+			console.error('Error updating student gidouilles:', err);
+			return fail(500, {
+				message: 'An error occurred while updating gidouilles'
+			});
+		}
+	},
+
+	// Action pour mettre à jour les gidouilles de toute une classe
+	updateClass: async ({ request, locals: { safeGetSession, supabase } }) => {
+		const { user } = await safeGetSession();
+
+		if (!user) {
+			return fail(401, { message: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const classId = formData.get('classId') as string;
+		const delta = parseInt(formData.get('delta') as string, 10);
+
+		if (!classId || isNaN(delta)) {
+			return fail(400, { message: 'Invalid data' });
+		}
+
+		try {
+			// Appeler la fonction RPC sécurisée
+			const { data, error: rpcError } = await supabase.rpc('update_class_gidouilles', {
+				p_class_id: classId,
+				p_delta: delta
+			});
+
+			if (rpcError) {
+				console.error('RPC Error:', rpcError);
+				return fail(500, {
+					message: rpcError.message || 'Failed to update class gidouilles'
+				});
+			}
+
+			return {
+				success: true,
+				message: `${data} élève(s) mis à jour avec succès`,
+				studentsUpdated: data
+			};
+		} catch (err) {
+			console.error('Error updating class gidouilles:', err);
+			return fail(500, {
+				message: 'An error occurred while updating class gidouilles'
+			});
+		}
+	}
+};
