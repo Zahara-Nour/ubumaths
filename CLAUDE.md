@@ -1197,6 +1197,264 @@ After completing the code, ask the user if they want a playground link. Only cal
   - `@sveltejs/adapter-netlify` - Netlify
   - `@sveltejs/adapter-cloudflare` - Cloudflare Pages
 
+## Holographic VIP Cards System
+
+The project includes an advanced holographic card effect system for VIP rewards, inspired by Pokemon trading cards. The system provides interactive 3D effects that respond to mouse movement and device orientation.
+
+### Overview
+
+**Location:** `/vip-cards-demo` - Public showcase page
+**Component:** `VipCardHolo.svelte` - Main holographic card component
+**Original Source:** Adapted from [Pokemon Cards CSS](https://github.com/simeydotme/pokemon-cards-css)
+
+### Architecture
+
+#### Asset Files (`static/`)
+
+```
+static/
+├── holo-assets/              # Holographic textures
+│   ├── grain.webp           # Texture overlay
+│   ├── glitter.png          # Sparkle effect
+│   └── cosmos.png           # Galaxy background
+├── images/vip-cards/         # 26 VIP card images
+│   └── *.jpg                # Card front images
+└── css/holo-cards/           # Effect CSS files
+    ├── base.css             # Core 3D transforms
+    ├── cards.css            # Shared variables
+    ├── regular-holo.css     # Common rarity
+    ├── cosmos-holo.css      # Rare rarity
+    ├── rainbow-holo.css     # Epic rarity
+    └── secret-rare.css      # Legendary rarity
+```
+
+#### Code Files (`src/lib/`)
+
+```
+src/lib/
+├── components/
+│   ├── VipCard.svelte       # Simple flip card (original)
+│   └── VipCardHolo.svelte   # Holographic card (new)
+├── stores/
+│   └── holo-card.svelte.ts  # Active card & orientation stores
+├── utils/
+│   └── holo-math.ts         # Math helpers (round, clamp, adjust)
+└── types/
+    └── vip-card.ts          # VIP card types & data
+```
+
+### Rarity-Based Effects
+
+The holographic effect changes based on card rarity:
+
+| Rarity | CSS File | Effect Description | Count |
+|--------|----------|-------------------|-------|
+| **Common** | `regular-holo.css` | Vertical beam holographic pattern | 9 |
+| **Rare** | `cosmos-holo.css` | Galaxy background with rainbow gradients | 10 |
+| **Epic** | `rainbow-holo.css` | Intense glitter with pastel rainbow | 5 |
+| **Legendary** | `secret-rare.css` | Shimmering gold with multiple layers | 2 |
+
+### Component Usage
+
+#### Basic Usage
+
+```svelte
+<script>
+import VipCardHolo from '$lib/components/VipCardHolo.svelte';
+import { VIP_CARDS } from '$lib/types/vip-card';
+
+const card = VIP_CARDS[0]; // Any VIP card
+</script>
+
+<VipCardHolo {card} />
+```
+
+#### With Count Badge
+
+```svelte
+<VipCardHolo {card} count={3} />
+```
+
+#### Showcase Mode (Auto-Rotation)
+
+```svelte
+<VipCardHolo {card} showcase={true} />
+```
+
+### Component Props
+
+```typescript
+interface Props {
+  card: VipCard;        // Required: VIP card data
+  count?: number;       // Optional: Display count badge (default: 1)
+  showcase?: boolean;   // Optional: Enable auto-rotation (default: false)
+}
+```
+
+**Image Handling:** Card images automatically scale to fill the entire card area using `object-fit: cover`, maintaining the card's aspect ratio while cropping the image as needed. This ensures personal images of any dimension will properly fill the card without distortion.
+
+### Interactive Features
+
+All holographic cards support:
+
+1. **Mouse Tracking** - 3D tilt follows cursor position
+2. **Touch Support** - Works on mobile devices
+3. **Click to Expand** - Full-screen card view with 360° spin animation
+4. **Gyroscope Support** - Tilts with device orientation on mobile
+5. **Spring Animations** - Smooth physics-based transitions
+
+### Stores (Svelte 5 Runes)
+
+#### Active Card Store
+
+Tracks which card is currently expanded:
+
+```typescript
+import { activeCard } from '$lib/stores/holo-card.svelte';
+
+// Set active card
+activeCard.set(cardElement);
+
+// Get active card
+const current = activeCard.get();
+
+// Clear active card
+activeCard.clear();
+```
+
+#### Orientation Store
+
+Tracks device gyroscope for mobile tilt effects:
+
+```typescript
+import { orientation, resetBaseOrientation } from '$lib/stores/holo-card.svelte';
+
+// Get current orientation
+const current = orientation.get();
+// Returns: { absolute: {...}, relative: {...} }
+
+// Reset base orientation
+resetBaseOrientation();
+```
+
+### CSS Architecture
+
+The holographic effects use CSS custom properties for dynamic positioning:
+
+```css
+/* Dynamic CSS variables set by component */
+--pointer-x: 50%;              /* Mouse X position */
+--pointer-y: 50%;              /* Mouse Y position */
+--pointer-from-center: 0;      /* Distance from center (0-1) */
+--pointer-from-top: 0;         /* Distance from top (0-1) */
+--pointer-from-left: 0;        /* Distance from left (0-1) */
+--card-opacity: 0;             /* Holographic effect opacity */
+--rotate-x: 0deg;              /* 3D rotation X */
+--rotate-y: 0deg;              /* 3D rotation Y */
+--background-x: 50%;           /* Background position X */
+--background-y: 50%;           /* Background position Y */
+--card-scale: 1;               /* Card scale factor */
+--translate-x: 0px;            /* Translation X */
+--translate-y: 0px;            /* Translation Y */
+```
+
+### Loading CSS Files
+
+To use holographic cards, include CSS in your layout:
+
+```svelte
+<!-- +layout.svelte -->
+<svelte:head>
+  <link rel="stylesheet" href="/css/holo-cards/base.css" />
+  <link rel="stylesheet" href="/css/holo-cards/cards.css" />
+  <link rel="stylesheet" href="/css/holo-cards/regular-holo.css" />
+  <link rel="stylesheet" href="/css/holo-cards/cosmos-holo.css" />
+  <link rel="stylesheet" href="/css/holo-cards/rainbow-holo.css" />
+  <link rel="stylesheet" href="/css/holo-cards/secret-rare.css" />
+</svelte:head>
+```
+
+### Migration from Svelte 3 to Svelte 5
+
+The holographic card component was migrated from the original Pokemon cards project (Svelte 3) to Svelte 5:
+
+**Key Changes:**
+- `export let` → `$props()`
+- `$: reactive` → `$derived` and `$effect`
+- Store subscriptions (`$store`) → `.get()` method
+- Svelte 3 stores → Svelte 5 runes-based stores
+- Fixed `$` prefix variable naming (reserved in Svelte 5)
+
+### Performance Considerations
+
+**Hardware Acceleration:**
+- All cards use `transform: translate3d()` for GPU acceleration
+- Spring animations use `will-change` hints
+- Transform-style preserved for 3D effects
+
+**Optimization Tips:**
+- Limit number of visible cards (use pagination/virtual scrolling for large lists)
+- Disable showcase mode on low-end devices
+- Consider using simple `VipCard` component for list views
+- Use `VipCardHolo` only for detail/showcase views
+
+### Demo Page
+
+**Route:** `/vip-cards-demo`
+**Access:** Public (no authentication required)
+
+The demo page showcases:
+- All 26 VIP cards organized by rarity
+- Interactive showcase card with auto-rotation
+- Rarity legend explaining each effect
+- Responsive grid layout
+- Back-to-top navigation
+
+### Integration Example
+
+Replace existing VipCard with VipCardHolo in specific views:
+
+```svelte
+<!-- Before -->
+<VipCard card={myCard} />
+
+<!-- After (with holographic effect) -->
+<VipCardHolo card={myCard} />
+```
+
+**When to use each:**
+- **VipCard** - Simple lists, compact views, better performance
+- **VipCardHolo** - Feature highlights, rewards showcase, detail views
+
+### Troubleshooting
+
+**Cards not displaying effects:**
+- Ensure CSS files are loaded in layout
+- Check browser DevTools for 404 errors on assets
+- Verify `card.rarity` matches CSS selectors
+
+**Poor performance:**
+- Reduce number of visible cards
+- Disable showcase mode
+- Check for CSS `will-change` support
+- Consider using IntersectionObserver to lazy-load effects
+
+**Mobile gyroscope not working:**
+- Request device orientation permission
+- Test on HTTPS (required for sensors)
+- Check browser compatibility
+
+### Browser Compatibility
+
+**Fully Supported:**
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+
+**Partial Support:**
+- Older browsers may lack gyroscope or 3D transforms
+- Fallback: Static card display without effects
+
 ---
 
 **Remember:** Svelte 5 and SvelteKit 2 are designed to be simpler and more intuitive. When in doubt, prefer explicit, straightforward code over clever tricks.

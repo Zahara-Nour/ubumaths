@@ -1,0 +1,20 @@
+/*
+  HOLOGRAPHIC CARDS - SHARED VARIABLES
+  Common CSS variables and effects for all card types
+*/
+
+.holo-card {
+  --grain: url("/holo-assets/grain.webp");
+  --glitter: url("/holo-assets/glitter.png");
+  --glittersize: 25%;
+
+  --space: 5%;
+  --angle: 133deg;
+  --imgsize: cover;
+
+  --red: #f80e35;
+  --yellow: #eedf10;
+  --green: #21e985;
+  --blue: #0dbde9;
+  --violet: #c929f1;
+}
