@@ -71,15 +71,17 @@
 	}
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
 	class={cn(
 		'vip-card-container relative',
 		sizeClasses[size],
 		clickable && 'cursor-pointer'
 	)}
-	onclick={handleClick}
-	role={clickable ? 'button' : 'img'}
+	onclick={clickable ? handleClick : undefined}
+	role={clickable ? 'button' : undefined}
 	tabindex={clickable ? 0 : undefined}
+	aria-label={!clickable ? card.name : undefined}
 	onkeydown={(e) => {
 		if (clickable && (e.key === 'Enter' || e.key === ' ')) {
 			e.preventDefault();
