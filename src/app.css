@@ -196,3 +196,33 @@ main math-field {
 	font-size: calc(1rem * var(--font-scale)) !important;
 	line-height: calc(1.5rem * var(--font-scale)) !important;
 }
+
+/*
+ * Toast Notification Spacing Fix
+ * ===============================
+ *
+ * Forces proper vertical stacking of toast notifications to prevent overlap.
+ * svelte-sonner sometimes has CSS specificity issues, so we use !important
+ * to ensure toasts maintain proper spacing.
+ */
+[data-sonner-toaster] {
+	/* Ensure container uses flexbox with proper gap */
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 12px !important;
+}
+
+[data-sonner-toast] {
+	/* Force each toast to maintain separation */
+	margin-bottom: 12px !important;
+	position: relative !important;
+}
+
+/* Ensure toasts don't collapse into each other */
+[data-sonner-toaster][data-y-position='top'] {
+	top: 16px !important;
+}
+
+[data-sonner-toaster][data-x-position='right'] {
+	right: 16px !important;
+}

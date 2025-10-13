@@ -47,7 +47,9 @@
 
 	5. SUCCESS CONFIRMATION
 	   - Toast notification shows accumulated delta after sync
-	   - Format: "+3 gidouilles" or "+2 gidouilles pour 15 élèves"
+	   - Individual student: "+3 gidouilles (Marie)" - includes student's first name
+	   - Class-wide: "+2 gidouilles pour 15 élèves" - shows student count
+	   - Toasts stack vertically without overlap (custom CSS applied)
 	   - Appears ~600ms after last click
 
 	6. SMART CLEANUP
@@ -254,18 +256,20 @@
 	 * 2. Starts/resets a 500ms timer
 	 * 3. Accumulates all deltas within the debounce window
 	 * 4. After 500ms of no clicks, sends ONE request with total accumulated delta
-	 * 5. On success: refreshes data and shows success toast
+	 * 5. On success: refreshes data and shows success toast with student name
 	 * 6. On error: rolls back optimistic update and shows error
 	 *
 	 * Example: User clicks +1, +1, +1 rapidly
 	 * - UI shows: 0 → 1 → 2 → 3 (instant)
 	 * - Server receives: ONE request with delta = +3 (after 500ms)
+	 * - Toast shows: "+3 gidouilles (Marie)"
 	 *
 	 * @param studentId - The student's ID
 	 * @param delta - The change amount for this click (positive or negative)
 	 * @param currentValue - The current gidouilles count (may be optimistic)
+	 * @param studentName - The student's first name for the success toast
 	 */
-	function debouncedUpdateStudent(studentId: string, delta: number, currentValue: number) {
+	function debouncedUpdateStudent(studentId: string, delta: number, currentValue: number, studentName: string) {
 		const key = `student-${studentId}`;
 
 		// STEP 1: Apply optimistic update immediately for instant UI feedback
@@ -307,8 +311,8 @@
 					// Wait 100ms then refresh data from server and show confirmation
 					setTimeout(() => {
 						invalidateAll(); // Fetch fresh data from server
-						// Show success toast with accumulated delta
-						toaster.success(`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''}`);
+						// Show success toast with accumulated delta and student name
+						toaster.success(`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} (${studentName})`);
 					}, 100);
 				} else {
 					// ERROR: Server returned error status
@@ -591,7 +595,9 @@
 												onclick={() => {
 													const delta = -studentDeltas[student.id];
 													const currentValue = getStudentGidouilles(student.id, student.gidouilles);
-													debouncedUpdateStudent(student.id, delta, currentValue);
+													// Get student name for toast (priority: firstname > full_name > fallback)
+													const name = student.firstname || student.full_name || 'Élève';
+													debouncedUpdateStudent(student.id, delta, currentValue, name);
 												}}
 											>
 												−
@@ -616,7 +622,9 @@
 												onclick={() => {
 													const delta = studentDeltas[student.id];
 													const currentValue = getStudentGidouilles(student.id, student.gidouilles);
-													debouncedUpdateStudent(student.id, delta, currentValue);
+													// Get student name for toast (priority: firstname > full_name > fallback)
+													const name = student.firstname || student.full_name || 'Élève';
+													debouncedUpdateStudent(student.id, delta, currentValue, name);
 												}}
 											>
 												+

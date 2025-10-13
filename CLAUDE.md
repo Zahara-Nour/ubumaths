@@ -337,7 +337,50 @@ The project uses **svelte-sonner** for toast notifications via a custom toaster 
 <button onclick={() => toaster.info('Info message!')}>Show Info</button>
 ```
 
-The `<Toaster />` component is already included in the root layout.
+**Toaster Configuration:**
+
+The `<Toaster />` component is configured in the root layout (`src/routes/+layout.svelte`) with:
+- `expand={true}` - Enables expanded stacking mode
+- `visibleToasts={5}` - Limits maximum number of visible toasts
+- `gap={12}` - 12px vertical spacing between toasts
+- `offset="16px"` - 16px padding from screen edges
+- `richColors` - Uses semantic colors for different toast types
+- `position="top-right"` - Displays toasts in the top-right corner
+
+**Custom CSS for Toast Spacing:**
+
+To ensure toasts never overlap, custom CSS is applied in `src/app.css`:
+
+```css
+/* Force proper vertical stacking */
+[data-sonner-toaster] {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+/* Individual toast spacing */
+[data-sonner-toast] {
+  margin-bottom: 12px !important;
+  position: relative !important;
+}
+
+/* Container positioning */
+[data-sonner-toaster][data-y-position='top'] {
+  top: 16px !important;
+}
+
+[data-sonner-toaster][data-x-position='right'] {
+  right: 16px !important;
+}
+```
+
+**Best Practices:**
+- Use `toaster.success()` with descriptive messages
+- Include context in messages (e.g., student name, item count)
+- Example: `toaster.success('+3 gidouilles (Marie)')` - clear and informative
+- Toasts automatically stack vertically with 12px gaps
+- Maximum 5 visible toasts - older ones auto-dismiss
 
 ### Theme System (Light/Dark Mode)
 
