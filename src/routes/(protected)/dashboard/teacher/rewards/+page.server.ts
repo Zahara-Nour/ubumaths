@@ -1,6 +1,7 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { Profile, Class } from '$lib/types/database';
+import type { StudentVipCards } from '$lib/types/vip-card';
 
 // Type pour les élèves avec leurs gidouilles
 export interface StudentWithGidouilles extends Profile {
@@ -53,7 +54,7 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 				};
 			}
 
-			// Ensuite, récupérer les profils des élèves
+			// Ensuite, récupérer les profils des élèves (avec vip_cards)
 			const { data: students, error: studentsError } = await supabase
 				.from('profiles')
 				.select(
@@ -63,7 +64,10 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 					lastname,
 					full_name,
 					avatar_url,
-					gidouilles
+					gidouilles,
+					vip_cards,
+					role,
+					gender
 				`
 				)
 				.in('id', studentIds)
@@ -94,14 +98,106 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 					full_name: string | null;
 					avatar_url: string | null;
 					gidouilles: number;
+					vip_cards: StudentVipCards;
+					role: string | null;
+					gender: string | null;
 				}>;
 			}
 		>
 	};
 };
 
-// Actions: Gérer les modifications de gidouilles
+// Actions: Gérer les modifications de gidouilles et cartes VIP
 export const actions: Actions = {
+	// Action pour obtenir une carte VIP aléatoire
+	awardVipCard: async ({ request, locals: { safeGetSession, supabase } }) => {
+		const { user } = await safeGetSession();
+
+		if (!user) {
+			return fail(401, { message: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const studentId = formData.get('studentId') as string;
+
+		if (!studentId) {
+			return fail(400, { message: 'Invalid data' });
+		}
+
+		try {
+			// Appeler la fonction RPC pour attribuer une carte VIP aléatoire
+			const { data: cardId, error: rpcError } = await supabase.rpc('award_random_vip_card', {
+				p_student_id: studentId
+			});
+
+			if (rpcError) {
+				console.error('RPC Error:', rpcError);
+				return fail(500, {
+					message: rpcError.message || 'Failed to award VIP card'
+				});
+			}
+
+			return {
+				success: true,
+				message: 'Carte VIP attribuée avec succès !',
+				cardId: cardId
+			};
+		} catch (err) {
+			console.error('Error awarding VIP card:', err);
+			return fail(500, {
+				message: 'An error occurred while awarding VIP card'
+			});
+		}
+	},
+
+	// Action pour utiliser une carte VIP
+	useVipCard: async ({ request, locals: { safeGetSession, supabase } }) => {
+		const { user } = await safeGetSession();
+
+		if (!user) {
+			return fail(401, { message: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const studentId = formData.get('studentId') as string;
+		const cardId = formData.get('cardId') as string;
+
+		if (!studentId || !cardId) {
+			return fail(400, { message: 'Invalid data' });
+		}
+
+		try {
+			// Appeler la fonction RPC pour utiliser une carte VIP
+			const { data: success, error: rpcError } = await supabase.rpc('use_vip_card', {
+				p_student_id: studentId,
+				p_card_id: cardId
+			});
+
+			if (rpcError) {
+				console.error('RPC Error:', rpcError);
+				return fail(500, {
+					message: rpcError.message || 'Failed to use VIP card'
+				});
+			}
+
+			if (!success) {
+				return fail(404, {
+					message: 'No unused card found'
+				});
+			}
+
+			return {
+				success: true,
+				message: 'Carte VIP utilisée avec succès'
+			};
+		} catch (err) {
+			console.error('Error using VIP card:', err);
+			return fail(500, {
+				message: 'An error occurred while using VIP card'
+			});
+		}
+	},
+
 	// Action pour mettre à jour les gidouilles d'un élève
 	updateStudent: async ({ request, locals: { safeGetSession, supabase } }) => {
 		const { user } = await safeGetSession();

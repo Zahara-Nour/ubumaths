@@ -1,6 +1,9 @@
 export type UserRole = 'student' | 'teacher' | 'admin';
 export type Gender = 'boy' | 'girl';
 
+// Import VIP card types
+import type { StudentVipCards } from './vip-card';
+
 export interface School {
 	id: string;
 	name: string;
@@ -26,7 +29,7 @@ export interface Profile {
 	grade: string | null;
 	gender: Gender | null;
 	gidouilles: number;
-	vip_cards: Record<string, unknown>;
+	vip_cards: StudentVipCards;
 	created_at: string;
 	updated_at: string;
 }

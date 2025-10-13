@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This project is an educational math application created by a math teacher for his students. It makes heavy use of **MathLive** for mathematical input and rendering.
 
-**Language**: The application is in **French** as it is directed towards French-speaking students.
+**Language**: The application is in **French** as it is directed towards French-speaking students. But the comments in code must be in english.
 
 SvelteKit application built with:
 
@@ -189,15 +189,11 @@ The following Shadcn components are available in `$lib/components/ui/`:
 	<DropdownMenu.Trigger class="cursor-pointer">Open Menu</DropdownMenu.Trigger>
 	<DropdownMenu.Content>
 		<!-- Menu item with onclick handler -->
-		<DropdownMenu.Item onclick={() => console.log('Clicked')}>
-			Item 1
-		</DropdownMenu.Item>
+		<DropdownMenu.Item onclick={() => console.log('Clicked')}>Item 1</DropdownMenu.Item>
 		<DropdownMenu.Separator />
 		<!-- Menu item with navigation link -->
 		<DropdownMenu.Item>
-			<a href="/dashboard" class="flex items-center w-full">
-				Item 2 (with navigation)
-			</a>
+			<a href="/dashboard" class="flex w-full items-center"> Item 2 (with navigation) </a>
 		</DropdownMenu.Item>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>
@@ -242,6 +238,7 @@ The `<Toaster />` component is already included in the root layout.
 The application uses **Shadcn's CSS variable theming system** for light/dark mode:
 
 **CSS Variables (in app.css):**
+
 ```css
 :root {
 	--background: 0 0% 100%;
@@ -271,6 +268,7 @@ The application uses **Shadcn's CSS variable theming system** for light/dark mod
 ```
 
 **Semantic Tailwind Classes:**
+
 - `bg-background` - Main background
 - `bg-card` - Card backgrounds
 - `bg-muted` - Muted/subtle backgrounds
@@ -296,6 +294,7 @@ if (theme.dark) {
 ```
 
 The theme automatically:
+
 - Syncs with system preferences
 - Persists to localStorage
 - Updates the DOM with `.dark` class
@@ -307,12 +306,14 @@ The application includes a **CSS-based font scaling system** for accessibility:
 **Location:** `$lib/stores/fontSize.svelte.ts`
 
 **How it works:**
+
 - Uses `--font-scale` CSS variable (default: 1.0)
 - Applied only to `<main>` content (header and sidebar remain fixed)
 - Range: 0.75 (75%) to 1.5 (150%) in 0.125 (12.5%) increments
 - Persists to localStorage
 
 **Usage:**
+
 ```typescript
 import { fontSize } from '$lib/stores/fontSize.svelte';
 
@@ -357,6 +358,7 @@ npx shadcn-svelte@latest add <component-name>
 ```
 
 Example:
+
 ```bash
 npx shadcn-svelte@latest add card dialog badge
 ```
@@ -364,13 +366,16 @@ npx shadcn-svelte@latest add card dialog badge
 ### Important Notes & Best Practices
 
 #### Component Ownership
+
 - All Shadcn components are **copied into your project** (not imported from node_modules)
 - You have full control to customize components in `src/lib/components/ui/`
 - Components use **Svelte 5 runes** (`$props()`, `$bindable()`, snippets)
 
 #### Event Handlers (Svelte 5)
+
 - **Always use lowercase event handlers**: `onclick`, `onsubmit`, `onchange` (NOT `on:click`)
 - Example:
+
   ```svelte
   <!-- ✅ CORRECT -->
   <Button onclick={() => handleClick()}>Click me</Button>
@@ -380,14 +385,14 @@ npx shadcn-svelte@latest add card dialog badge
   ```
 
 #### Dropdown Menu Navigation
+
 - `DropdownMenu.Item` **does NOT support `href` directly**
 - Wrap navigation links in `<a>` tags inside the item:
+
   ```svelte
   <!-- ✅ CORRECT -->
   <DropdownMenu.Item>
-    <a href="/dashboard" class="flex items-center w-full">
-      Dashboard
-    </a>
+  	<a href="/dashboard" class="flex w-full items-center"> Dashboard </a>
   </DropdownMenu.Item>
 
   <!-- ❌ WRONG -->
@@ -395,11 +400,13 @@ npx shadcn-svelte@latest add card dialog badge
   ```
 
 #### Cursor Pointer
+
 - Button component includes `cursor-pointer` by default
 - For custom interactive elements, add `class="cursor-pointer"` explicitly
 - Dropdown triggers need manual `cursor-pointer` class
 
 #### Styling
+
 - Use semantic color classes (`bg-background`, `text-foreground`) instead of arbitrary colors
 - When Tailwind classes don't work reactively in Svelte 5, use inline `style` attributes as a fallback
 - The `cn()` utility from `$lib/utils` helps merge Tailwind classes correctly
@@ -409,6 +416,7 @@ npx shadcn-svelte@latest add card dialog badge
 This project was migrated from Skeleton UI v3 to Shadcn-svelte. Key changes:
 
 #### Class Name Replacements
+
 - `surface-*` colors → `background`, `card`, `muted`, `border`
 - `text-surface-*` → `text-foreground`, `text-muted-foreground`
 - `border-surface-*` → `border-border`
@@ -418,6 +426,7 @@ This project was migrated from Skeleton UI v3 to Shadcn-svelte. Key changes:
 - `card` class → `bg-card text-card-foreground border border-border`
 
 #### Component Replacements
+
 - Skeleton `input` class → `<Input>` component
 - Skeleton `textarea` class → `<Textarea>` component
 - Skeleton `select` class → `<Select>` components
@@ -427,11 +436,13 @@ This project was migrated from Skeleton UI v3 to Shadcn-svelte. Key changes:
 - Skeleton `Toaster` → `svelte-sonner` with custom wrapper
 
 #### Theme System Changes
+
 - Skeleton's `--text-scaling` → Custom `--font-scale` CSS variable
 - Skeleton's numeric color variants (`surface-100-900`) → Semantic CSS variables (`--background`, `--foreground`)
 - Dark mode still uses `.dark` class but with Shadcn's color palette
 
 #### Migration Benefits
+
 - ✅ Modern Shadcn aesthetic (cleaner, more minimal)
 - ✅ Full component ownership and customization
 - ✅ Better TypeScript support with Svelte 5

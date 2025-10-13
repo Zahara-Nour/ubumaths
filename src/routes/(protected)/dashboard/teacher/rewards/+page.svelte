@@ -10,14 +10,27 @@
 	- View all students in the selected class with their current gidouilles
 	- Add/remove gidouilles for individual students via input + buttons
 	- Add/remove gidouilles for all students in a class at once
+	- Award random VIP cards to students (costs 3 gidouilles)
+	- View student VIP card collections
+	- Animated card reveal with loading state
 	- Real-time reactive updates
 	- Toast notifications for success/error feedback
+
+	VIP CARD FLOW:
+	--------------
+	1. Teacher clicks "Carte VIP" button for a student
+	2. Loading animation shows (mystery card shaking)
+	3. Server assigns random card and returns cardId
+	4. Loading transitions to reveal animation
+	5. Card flips to show front with confetti celebration
+	6. Data refreshes to show updated collection
 
 	SECURITY:
 	---------
 	- Uses secure RPC functions (update_student_gidouilles, update_class_gidouilles)
 	- Teachers can only modify gidouilles for students in their classes
 	- All operations enforce minimum of 0 gidouilles
+	- VIP card awards validate sufficient gidouilles on server side
 -->
 
 <script lang="ts">
@@ -28,21 +41,36 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Plus, Minus } from 'lucide-svelte';
 	import { invalidateAll } from '$app/navigation';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
+	import VipCardsModal from '$lib/components/VipCardsModal.svelte';
+	import VipCardReveal from '$lib/components/VipCardReveal.svelte';
+	import VipCardLoading from '$lib/components/VipCardLoading.svelte';
+	import { getVipCardById } from '$lib/types/vip-card';
+	import { canAffordVipCard } from '$lib/utils/vip-cards';
+	import { Sparkles, Eye, Loader2 } from 'lucide-svelte';
 
 	// Data from server load function
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	// État local pour les inputs de gidouilles (par élève)
+	// Local state for selected class
+	let selectedClassId = $state(data.classes[0]?.id);
+
+	// Local state for gidouilles inputs (per student)
 	let studentDeltas = $state<Record<string, number>>({});
 
-	// État local pour l'input de gidouilles au niveau classe
+	// Local state for gidouilles input at class level
 	let classDeltas = $state<Record<string, number>>({});
 
-	// Initialiser les deltas à 1 pour chaque élève et classe
+	// VIP card states
+	let vipModalOpen = $state(false);
+	let selectedStudentForVipModal = $state<{ id: string; name: string; vipCards: any } | null>(null);
+	let revealingCard = $state<{ cardId: string; studentName: string } | null>(null);
+	let awardingCard = $state(false); // Shows loading animation (shaking mystery card)
+	let lastProcessedCardId = $state<string | null>(null); // Tracks last processed cardId to prevent duplicates and infinite loops
+
+	// Initialize deltas to 1 for each student and class
 	$effect(() => {
 		data.classes.forEach((classItem) => {
 			if (!classDeltas[classItem.id]) {
@@ -56,43 +84,75 @@
 		});
 	});
 
-	// Gérer les toasts en fonction du résultat de l'action
+	// Handle toasts and animations based on action result
+	// IMPORTANT: lastProcessedCardId prevents duplicates and infinite loops.
+	// Without this check, the effect would trigger every time revealingCard changes,
+	// creating an infinite loop of revelations.
 	$effect(() => {
 		if (form?.success) {
-			toaster.success(form.message || 'Gidouilles mises à jour avec succès');
+			// If it's a VIP card award, show reveal animation
+			if (form.cardId && form.cardId !== lastProcessedCardId) {
+				// Only process if it's a new card (not already processed)
+				const card = getVipCardById(form.cardId);
+				if (card) {
+					// Mark this card as processed to prevent re-triggers
+					lastProcessedCardId = form.cardId;
+
+					// Hide loading and show reveal
+					awardingCard = false;
+					const studentName = selectedStudentForVipModal?.name || 'Élève';
+					revealingCard = { cardId: form.cardId, studentName };
+				}
+			} else if (!form.cardId) {
+				// Other successful actions (add/remove gidouilles)
+				toaster.success(form.message || 'Opération réussie');
+			}
 		} else if (form?.message && !form?.success) {
+			// On error, hide loading
+			awardingCard = false;
 			toaster.error(form.message);
 		}
 	});
 
-	// Fonction pour obtenir le nom complet ou l'identifiant de l'élève
+	// Get full name or identifier for student
 	function getFullName(
 		firstname: string | null,
 		lastname: string | null,
 		fullname: string | null
 	): string {
-		// Si prénom ou nom existe, on les utilise
+		// Use firstname and lastname if they exist
 		const name = [firstname, lastname].filter(Boolean).join(' ');
 		if (name) return name;
 
-		// Sinon, on utilise full_name
+		// Otherwise use full_name
 		if (fullname) return fullname;
 
-		// En dernier recours
+		// Last resort
 		return 'Élève sans nom';
+	}
+
+	// Open VIP cards modal for a student
+	function openVipModal(student: any) {
+		selectedStudentForVipModal = {
+			id: student.id,
+			name: getFullName(student.firstname, student.lastname, student.full_name),
+			vipCards: student.vip_cards || {}
+		};
+		vipModalOpen = true;
+	}
+
+	// Close card reveal modal
+	function handleRevealComplete() {
+		revealingCard = null;
+		awardingCard = false; // Ensure loading animation is hidden
+		invalidateAll(); // Refresh data to update card collection
 	}
 </script>
 
 <div class="space-y-6">
 	<!-- HEADER -->
-	<div class="flex items-center gap-3">
-		<img src={gidouilleImg} alt="Gidouille" class="w-12 h-12" />
-		<div>
-			<h1 class="text-3xl font-bold text-foreground">Gestion des Récompenses</h1>
-			<p class="text-muted-foreground mt-1">
-				Gérez les gidouilles de vos élèves par classe
-			</p>
-		</div>
+	<div>
+		<h1 class="text-3xl font-bold text-foreground">Gestion des Récompenses</h1>
 	</div>
 
 	<!-- MAIN CONTENT -->
@@ -107,20 +167,17 @@
 		</div>
 	{:else}
 		<!-- TABS PAR CLASSE -->
-		<Tabs.Root value={data.classes[0]?.id} class="w-full">
-			<Tabs.List class="grid w-full grid-cols-{Math.min(data.classes.length, 4)}">
+		<Tabs.Root bind:value={selectedClassId} class="w-full">
+			<Tabs.List class="mb-6">
 				{#each data.classes as classItem}
 					<Tabs.Trigger value={classItem.id}>
 						{classItem.name}
-						<span class="ml-2 text-xs text-muted-foreground">
-							({classItem.students.length})
-						</span>
 					</Tabs.Trigger>
 				{/each}
 			</Tabs.List>
 
 			{#each data.classes as classItem}
-				<Tabs.Content value={classItem.id} class="space-y-6">
+				<Tabs.Content value={classItem.id} class="space-y-6 mt-0">
 					<!-- CONTRÔLES AU NIVEAU CLASSE -->
 					<div class="bg-card border border-border rounded-lg p-6">
 						<h3 class="text-lg font-semibold text-foreground mb-4">
@@ -133,7 +190,7 @@
 									method="POST"
 									action="?/updateClass"
 									use:enhance={() => {
-										return async ({ result, update }) => {
+										return async ({ update }) => {
 											await update();
 											await invalidateAll();
 										};
@@ -166,7 +223,7 @@
 									method="POST"
 									action="?/updateClass"
 									use:enhance={() => {
-										return async ({ result, update }) => {
+										return async ({ update }) => {
 											await update();
 											await invalidateAll();
 										};
@@ -205,7 +262,7 @@
 										<!-- AVATAR -->
 										<Avatar.Root class="w-12 h-12 flex-shrink-0">
 											<Avatar.Image
-												src={student.avatar_url || getAvatarFallback(student.role, student.gender)}
+												src={student.avatar_url || getAvatarFallback(student.role || 'student', student.gender)}
 												alt={getFullName(student.firstname, student.lastname, student.full_name)}
 											/>
 											<Avatar.Fallback class="bg-primary/10 text-primary font-semibold">
@@ -283,6 +340,64 @@
 												</Button>
 											</form>
 										</div>
+
+										<!-- SÉPARATEUR VERTICAL -->
+										<div class="h-10 w-px bg-border mx-2"></div>
+
+										<!-- BOUTONS CARTES VIP -->
+										<div class="flex items-center gap-2 flex-shrink-0">
+											<!-- Bouton Voir Cartes VIP -->
+											<Button
+												size="sm"
+												variant="outline"
+												class="gap-1"
+												onclick={() => openVipModal(student)}
+											>
+												<Eye class="w-4 h-4" />
+												<span class="hidden sm:inline">Voir Cartes</span>
+											</Button>
+
+											<!-- Form to award VIP card -->
+											<form
+												method="POST"
+												action="?/awardVipCard"
+												use:enhance={() => {
+													// Save student name for reveal animation
+													selectedStudentForVipModal = {
+														id: student.id,
+														name: getFullName(student.firstname, student.lastname, student.full_name),
+														vipCards: student.vip_cards || {}
+													};
+
+													// Show loading animation (mystery card) immediately
+													awardingCard = true;
+
+													return async ({ update }) => {
+														await update();
+														// Note: awardingCard will be set to false in $effect when response arrives
+														await invalidateAll();
+													};
+												}}
+											>
+												<input type="hidden" name="studentId" value={student.id} />
+												<Button
+													type="submit"
+													size="sm"
+													variant="default"
+													class="gap-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+													disabled={!canAffordVipCard(student.gidouilles) || awardingCard}
+												>
+													{#if awardingCard}
+														<Loader2 class="w-4 h-4 animate-spin" />
+														<span class="hidden sm:inline">Attribution...</span>
+													{:else}
+														<Sparkles class="w-4 h-4" />
+														<span class="hidden sm:inline">Carte VIP</span>
+														<span class="text-xs opacity-80">(3 <img src={gidouilleImg} alt="gidouille" class="inline w-3 h-3" />)</span>
+													{/if}
+												</Button>
+											</form>
+										</div>
 									</div>
 								{/each}
 							</div>
@@ -293,3 +408,37 @@
 		</Tabs.Root>
 	{/if}
 </div>
+
+<!-- Loading State: Shaking Mystery Card -->
+<!-- Displayed immediately when "Carte VIP" button is clicked -->
+{#if awardingCard && selectedStudentForVipModal}
+	<VipCardLoading
+		visible={true}
+		studentName={selectedStudentForVipModal.name}
+	/>
+{/if}
+
+<!-- VIP Card Reveal Animation -->
+<!-- Displayed once server returns the cardId -->
+<!-- The #key ensures each new card triggers a fresh animation -->
+{#if revealingCard}
+	{@const card = getVipCardById(revealingCard.cardId)}
+	{#if card}
+		{#key revealingCard.cardId}
+			<VipCardReveal
+				{card}
+				fromLoadingState={true}
+				onComplete={handleRevealComplete}
+			/>
+		{/key}
+	{/if}
+{/if}
+
+<!-- Modal des Cartes VIP -->
+{#if selectedStudentForVipModal && vipModalOpen}
+	<VipCardsModal
+		bind:open={vipModalOpen}
+		studentName={selectedStudentForVipModal.name}
+		vipCards={selectedStudentForVipModal.vipCards}
+	/>
+{/if}
