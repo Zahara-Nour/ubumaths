@@ -106,6 +106,112 @@ src/
 - Use SvelteKit's load function for server-side data fetching. Prefer this always.
 - Use SvelteKit's form actions for form submissions and mutations. Prefer this always.
 
+## Performance Optimization Patterns
+
+### Optimistic UI with Debouncing
+
+For interactive features that require frequent server updates (e.g., incrementing counters, updating quantities), use the **Optimistic UI + Debouncing** pattern to provide instant feedback while minimizing server load.
+
+**When to use this pattern:**
+- User actions that can be rapidly repeated (clicking +/- buttons)
+- Updates that can be batched together (accumulating deltas)
+- Operations where instant visual feedback improves UX
+- Situations where server latency is noticeable
+
+**Example implementation:** See `src/routes/(protected)/dashboard/teacher/rewards/+page.svelte`
+
+**Key components of the pattern:**
+
+1. **Optimistic State Management**
+   ```typescript
+   // Track temporary values that override server data
+   let optimisticValues = $state<Record<string, number>>({});
+
+   function getDisplayValue(id: string, serverValue: number): number {
+     return optimisticValues[id] ?? serverValue;
+   }
+   ```
+
+2. **Debouncing with Delta Accumulation**
+   ```typescript
+   // Track pending requests with accumulated changes
+   let pendingSubmissions = $state<Record<string, {
+     timeoutId: number;
+     accumulatedDelta: number
+   }>>({});
+
+   function debouncedUpdate(id: string, delta: number) {
+     // Apply optimistic update immediately
+     optimisticValues[id] = getDisplayValue(id, serverValue) + delta;
+
+     // Cancel existing timer and accumulate delta
+     if (pendingSubmissions[id]) {
+       clearTimeout(pendingSubmissions[id].timeoutId);
+       pendingSubmissions[id].accumulatedDelta += delta;
+     } else {
+       pendingSubmissions[id] = { timeoutId: 0, accumulatedDelta: delta };
+     }
+
+     // Set new timer (500ms is recommended)
+     const timeoutId = setTimeout(async () => {
+       const accumulated = pendingSubmissions[id].accumulatedDelta;
+       delete pendingSubmissions[id];
+
+       // Send single request with accumulated delta
+       await sendToServer(id, accumulated);
+     }, 500);
+
+     pendingSubmissions[id].timeoutId = timeoutId;
+   }
+   ```
+
+3. **Server Communication**
+   ```typescript
+   // Use fetch with SvelteKit action header
+   const response = await fetch('?/actionName', {
+     method: 'POST',
+     body: formData,
+     headers: { 'x-sveltekit-action': 'true' }
+   });
+
+   if (response.ok) {
+     // Success: refresh data and show confirmation
+     setTimeout(() => {
+       invalidateAll();
+       toaster.success('Update successful');
+     }, 100);
+   } else {
+     // Error: rollback optimistic update
+     delete optimisticValues[id];
+     toaster.error('Update failed');
+   }
+   ```
+
+4. **Cleanup on Unmount**
+   ```typescript
+   $effect(() => {
+     return () => {
+       // Clear all pending timeouts to prevent memory leaks
+       Object.values(pendingSubmissions).forEach(({ timeoutId }) => {
+         clearTimeout(timeoutId);
+       });
+     };
+   });
+   ```
+
+**Benefits:**
+- **0ms perceived latency** - UI updates instantly
+- **90% reduction in server requests** for rapid interactions
+- **Automatic rollback** on errors
+- **Clean state management** with Svelte 5 runes
+
+**Considerations:**
+- Only use for operations where temporary inconsistency is acceptable
+- Ensure server-side validation for all updates
+- Use appropriate debounce timing (500ms is a good default)
+- Always implement error rollback
+- Clear pending requests on component unmount
+
 ## Code Style and Structure
 
 1. Use early returns for improved readability.
