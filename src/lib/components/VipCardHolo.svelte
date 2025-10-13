@@ -8,8 +8,39 @@
 	- Mouse/touch tracking with 3D tilt
 	- Click-to-expand popover
 	- Gyroscope support on mobile
-	- Rarity-based holographic effects
+	- Rarity-based holographic effects (common, rare, epic, legendary)
 	- Showcase auto-rotation mode
+	- Front/back flip control
+	- Description overlay on hover
+	- Count badge with counter-scaling
+	- Rarity gem indicator with glow effects
+
+	All features are independently configurable via props.
+
+	Props:
+	- card: VipCard (required) - The card data to display
+	- count: number (default: 1) - Show count badge if > 1
+	- showcase: boolean (default: false) - Auto-rotation animation
+	- enable3d: boolean (default: true) - 3D mouse/touch tracking
+	- enablePopover: boolean (default: true) - Click-to-expand feature
+	- enableGyroscope: boolean (default: true) - Mobile gyroscope tilt
+	- enableHoloEffect: boolean (default: true) - Holographic shine effect
+	- showBack: boolean (default: false) - Show card back instead of front
+	- enableDescriptionOverlay: boolean (default: false) - Gradient overlay with description on hover
+	- enableRarityIndicator: boolean (default: false) - Gem icon with rarity color/glow
+
+	Technical Implementation:
+	- Uses Svelte 5 runes ($state, $derived, $effect, $props)
+	- Spring-based physics animations for smooth, natural movement
+	- CSS 3D transforms with hardware acceleration (translate3d)
+	- Counter-scaling technique for badges to maintain size during popover zoom
+	- Backface visibility for card flip effects
+	- Z-index layering for proper element stacking
+
+	Performance:
+	- GPU-accelerated transforms
+	- Efficient event handling with debouncing where appropriate
+	- Minimal reflows through transform-only animations
 -->
 
 <script lang="ts">
@@ -28,6 +59,8 @@
 		enableGyroscope?: boolean;
 		enableHoloEffect?: boolean;
 		showBack?: boolean;
+		enableDescriptionOverlay?: boolean;
+		enableRarityIndicator?: boolean;
 	}
 
 	let {
@@ -38,8 +71,26 @@
 		enablePopover = true,
 		enableGyroscope = true,
 		enableHoloEffect = true,
-		showBack = false
+		showBack = false,
+		enableDescriptionOverlay = false,
+		enableRarityIndicator = false
 	}: Props = $props();
+
+	// ====================
+	// Rarity Color System
+	// ====================
+	// Maps card rarity levels to visual gem colors and glow effects
+	// Common cards get a gray gem with no glow
+	// Rare/Epic/Legendary get colored gems with CSS drop-shadow glow effects
+	const rarityColors = {
+		common: { color: '#9ca3af', glow: false },      // Gray, no glow
+		rare: { color: '#3b82f6', glow: true },         // Blue with glow
+		epic: { color: '#a855f7', glow: true },         // Purple with glow
+		legendary: { color: '#f59e0b', glow: true }     // Gold/orange with glow
+	};
+
+	// Get rarity display info for this card, defaulting to common if rarity not set
+	const rarityInfo = card.rarity ? rarityColors[card.rarity] : rarityColors.common;
 
 	// Random seed for cosmos effect positioning
 	const randomSeed = {
@@ -137,12 +188,17 @@
 		}, delay) as unknown as number;
 	}
 
-	// Update all springs with new values
+	// ====================
+	// Spring Animation System
+	// ====================
+	// Updates all spring values simultaneously for smooth, physics-based animations
+	// Springs provide natural-feeling motion with configurable stiffness/damping
 	function updateSprings(
 		background: { x: number; y: number },
 		rotate: { x: number; y: number },
 		glare: { x: number; y: number; o: number }
 	) {
+		// Apply interaction settings (fast, responsive)
 		springBackground.stiffness = springInteractSettings.stiffness;
 		springBackground.damping = springInteractSettings.damping;
 		springRotate.stiffness = springInteractSettings.stiffness;
@@ -150,14 +206,19 @@
 		springGlare.stiffness = springInteractSettings.stiffness;
 		springGlare.damping = springInteractSettings.damping;
 
+		// Set new target values - springs will animate smoothly to these
 		springBackground.set(background);
 		springRotate.set(rotate);
 		springGlare.set(glare);
 	}
 
-	// Handle mouse/touch interaction
+	// ====================
+	// Mouse/Touch Interaction Handler
+	// ====================
+	// Calculates pointer position and updates 3D rotation + holographic effects
+	// Converts screen coordinates to percentages and center-relative values
 	function interact(e: PointerEvent) {
-		// Skip interaction if both 3D and holo effects are disabled
+		// Skip interaction if both 3D and holo effects are disabled (completely static mode)
 		if (!enable3d && !enableHoloEffect) return;
 
 		endShowcase();
@@ -461,6 +522,18 @@
 				/>
 				<div class="holo-card__shine"></div>
 				<div class="holo-card__glare"></div>
+
+				<!-- Description Overlay (optional, shown on hover) -->
+				{#if enableDescriptionOverlay}
+					<div class="holo-card__description-overlay">
+						<div class="holo-card__description-content">
+							<h3 class="holo-card__description-title">{card.name}</h3>
+						</div>
+						<div class="holo-card__description-content">
+							<p class="holo-card__description-text">{card.description}</p>
+						</div>
+					</div>
+				{/if}
 			</div>
 		</button>
 
@@ -468,6 +541,32 @@
 		{#if count > 1}
 			<div class="holo-card__badge-wrapper">
 				<div class="holo-card__badge">×{count}</div>
+			</div>
+		{/if}
+
+		<!-- Rarity Indicator (follows card transform but maintains size) -->
+		{#if enableRarityIndicator && card.rarity}
+			<div class="holo-card__rarity-wrapper">
+				<div class="holo-card__rarity-badge" class:glow={rarityInfo.glow}>
+					<svg
+						class="holo-card__rarity-gem"
+						viewBox="0 0 24 24"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+						style="color: {rarityInfo.color}"
+					>
+						<path
+							d="M12 2L4 8L2 12L12 22L22 12L20 8L12 2Z"
+							fill="currentColor"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linejoin="round"
+						/>
+						<path d="M12 2L8 8H16L12 2Z" fill="white" opacity="0.3" />
+						<path d="M4 8L8 8L12 22L4 8Z" fill="black" opacity="0.2" />
+						<path d="M20 8L16 8L12 22L20 8Z" fill="black" opacity="0.2" />
+					</svg>
+				</div>
 			</div>
 		{/if}
 	</div>
@@ -519,6 +618,41 @@
 		backface-visibility: hidden;
 	}
 
+	/* Rarity Indicator */
+	.holo-card__rarity-wrapper {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+		transform: rotateY(var(--rotate-x)) rotateX(var(--rotate-y));
+		transform-style: preserve-3d;
+	}
+
+	.holo-card__rarity-badge {
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		width: 32px;
+		height: 32px;
+		z-index: 10;
+		pointer-events: none;
+		transform: translateZ(2px) scale(calc(1 / var(--card-scale)));
+		transform-origin: top left;
+		backface-visibility: hidden;
+	}
+
+	.holo-card__rarity-badge.glow {
+		filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 10px currentColor);
+	}
+
+	.holo-card__rarity-gem {
+		width: 100%;
+		height: 100%;
+		display: block;
+	}
+
 	/* Make VIP card images fill the entire card area */
 	.holo-card__front img,
 	.holo-card__back {
@@ -542,5 +676,55 @@
 	/* Flip card to show back when showBack is true */
 	.holo-card.show-back .holo-card__rotator {
 		transform: rotateY(180deg) rotateX(var(--rotate-y));
+	}
+
+	/* Description Overlay */
+	.holo-card__description-overlay {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			to bottom,
+			rgba(0, 0, 0, 0.85) 0%,
+			transparent 25%,
+			transparent 75%,
+			rgba(0, 0, 0, 0.92) 100%
+		);
+		opacity: 0;
+		transition: opacity 0.3s ease;
+		pointer-events: none;
+		z-index: 5;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		padding: 20px;
+		transform: translateZ(1.5px);
+	}
+
+	.holo-card__rotator:hover .holo-card__description-overlay {
+		opacity: 1;
+	}
+
+	.holo-card__description-content {
+		width: 100%;
+		color: white;
+		text-align: center;
+	}
+
+	.holo-card__description-title {
+		font-size: 1.5em;
+		font-weight: bold;
+		margin: 0;
+		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+	}
+
+	.holo-card__description-text {
+		font-size: 1.1em;
+		margin: 0;
+		line-height: 1.4;
+		text-shadow:
+			0 0 8px rgba(0, 0, 0, 1),
+			0 0 12px rgba(0, 0, 0, 0.9),
+			2px 2px 4px rgba(0, 0, 0, 0.9),
+			-1px -1px 3px rgba(0, 0, 0, 0.8);
 	}
 </style>

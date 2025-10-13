@@ -23,6 +23,9 @@
 	let showBack7 = $state(false);
 	let showBack8 = $state(false);
 	let showBack9 = $state(false);
+	let showBack10 = $state(false);
+	let showBack11 = $state(false);
+	let showBack12 = $state(false);
 </script>
 
 <svelte:head>
@@ -307,6 +310,106 @@
 				</div>
 			</div>
 		</section>
+
+		<!-- 10. Description Overlay on Hover -->
+		<section class="example-card">
+			<div class="example-demo">
+				<VipCardHolo card={exampleCard} enableDescriptionOverlay={true} showBack={showBack10} />
+			</div>
+			<div class="example-code">
+				<h3>📝 Description Overlay</h3>
+				<p>Hover to reveal card name and description with gradient overlay</p>
+				<pre><code>&lt;VipCardHolo
+  card=&#123;card&#125;
+  enableDescriptionOverlay=&#123;true&#125;
+/&gt;</code></pre>
+				<ul class="features-list">
+					<li>✅ 3D mouse tracking</li>
+					<li>✅ Click to expand</li>
+					<li>✅ Mobile gyroscope</li>
+					<li>✅ Holographic effect</li>
+					<li>📝 Description overlay on hover</li>
+				</ul>
+				<div class="restart-button">
+					<Button onclick={() => (showBack10 = !showBack10)} variant="outline">
+						{showBack10 ? '👁️ Show Front' : '🔙 Show Back'}
+					</Button>
+				</div>
+			</div>
+		</section>
+
+		<!-- 11. Rarity Indicator -->
+		<section class="example-card">
+			<div class="example-demo">
+				<VipCardHolo card={exampleCard} enableRarityIndicator={true} showBack={showBack11} />
+			</div>
+			<div class="example-code">
+				<h3>💎 Rarity Indicator</h3>
+				<p>Gem icon in top-left corner showing card rarity with colored glow</p>
+				<pre><code>&lt;VipCardHolo
+  card=&#123;card&#125;
+  enableRarityIndicator=&#123;true&#125;
+/&gt;</code></pre>
+				<ul class="features-list">
+					<li>✅ 3D mouse tracking</li>
+					<li>✅ Click to expand</li>
+					<li>✅ Mobile gyroscope</li>
+					<li>✅ Holographic effect</li>
+					<li>💎 Rarity gem indicator (legendary = gold glow)</li>
+				</ul>
+				<div class="restart-button">
+					<Button onclick={() => (showBack11 = !showBack11)} variant="outline">
+						{showBack11 ? '👁️ Show Front' : '🔙 Show Back'}
+					</Button>
+				</div>
+			</div>
+		</section>
+
+		<!-- 12. Everything Enabled -->
+		<section class="example-card">
+			<div class="example-demo">
+				<VipCardHolo
+					card={exampleCard}
+					count={3}
+					enable3d={true}
+					enablePopover={true}
+					enableGyroscope={true}
+					enableHoloEffect={true}
+					enableDescriptionOverlay={true}
+					enableRarityIndicator={true}
+					showBack={showBack12}
+				/>
+			</div>
+			<div class="example-code">
+				<h3>🎯 All Features Enabled</h3>
+				<p>Complete experience with all features active</p>
+				<pre><code>&lt;VipCardHolo
+  card=&#123;card&#125;
+  count=&#123;3&#125;
+  enable3d=&#123;true&#125;
+  enablePopover=&#123;true&#125;
+  enableGyroscope=&#123;true&#125;
+  enableHoloEffect=&#123;true&#125;
+  enableDescriptionOverlay=&#123;true&#125;
+  enableRarityIndicator=&#123;true&#125;
+/&gt;</code></pre>
+				<ul class="features-list">
+					<li>✅ 3D mouse tracking</li>
+					<li>✅ Click to expand</li>
+					<li>✅ Mobile gyroscope</li>
+					<li>✅ Holographic effect</li>
+					<li>✅ Count badge (×3)</li>
+					<li>✅ Description overlay on hover</li>
+					<li>✅ Rarity gem indicator</li>
+					<li>✅ Front/back flip control</li>
+				</ul>
+				<div class="restart-button">
+					<Button onclick={() => (showBack12 = !showBack12)} variant="outline">
+						{showBack12 ? '👁️ Show Front' : '🔙 Show Back'}
+					</Button>
+				</div>
+			</div>
+		</section>
 	</div>
 
 	<!-- Props Reference -->
@@ -370,6 +473,18 @@
 						<td>boolean</td>
 						<td>false</td>
 						<td>Show card back instead of front</td>
+					</tr>
+					<tr>
+						<td><code>enableDescriptionOverlay</code></td>
+						<td>boolean</td>
+						<td>false</td>
+						<td>Show gradient overlay with description on hover</td>
+					</tr>
+					<tr>
+						<td><code>enableRarityIndicator</code></td>
+						<td>boolean</td>
+						<td>false</td>
+						<td>Show gem icon in top-left with rarity color and glow</td>
 					</tr>
 				</tbody>
 			</table>
