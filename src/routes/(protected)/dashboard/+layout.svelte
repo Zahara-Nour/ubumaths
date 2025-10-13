@@ -50,7 +50,8 @@
 		Minus,
 		Plus,
 		Maximize,
-		Minimize
+		Minimize,
+		Upload
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -91,7 +92,7 @@
 				...commonLinks,
 				{ href: '/dashboard/admin/schools', label: 'Schools', icon: School },
 				{ href: '/dashboard/admin/users', label: 'Users', icon: Users },
-				{ href: '/dashboard/classes', label: 'Classes', icon: GraduationCap },
+				{ href: '/dashboard/admin/classes', label: 'Classes', icon: GraduationCap },
 				{ href: '/dashboard/settings', label: 'Settings', icon: Settings }
 			];
 		}

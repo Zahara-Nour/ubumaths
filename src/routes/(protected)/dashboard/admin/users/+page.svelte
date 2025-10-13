@@ -21,6 +21,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import type { Profile, Class } from '$lib/types/database';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
+	import { Upload } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -302,6 +303,10 @@
 			<h1 class="text-3xl font-bold text-foreground">Gestion des Utilisateurs</h1>
 			<p class="mt-2 text-muted-foreground">Gérer les profils des étudiants et enseignants</p>
 		</div>
+		<Button href="/dashboard/admin/import-students">
+			<Upload class="mr-2 h-4 w-4" />
+			Importer des Étudiants
+		</Button>
 	</div>
 
 	<!-- CARD LAYOUT -->

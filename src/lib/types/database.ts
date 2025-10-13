@@ -50,6 +50,21 @@ export interface ClassMember {
 	joined_at: string;
 }
 
+export interface PendingStudent {
+	id: string;
+	email: string;
+	firstname: string;
+	lastname: string;
+	grade: string | null;
+	school_id: string | null;
+	gender: Gender | null;
+	class_ids: string[];
+	is_activated: boolean;
+	activated_at: string | null;
+	created_at: string;
+	updated_at: string;
+}
+
 // Database schema type (for Supabase client)
 export interface Database {
 	public: {
@@ -88,6 +103,17 @@ export interface Database {
 					joined_at?: string;
 				};
 				Update: Partial<Omit<ClassMember, 'id' | 'joined_at'>>;
+			};
+			pending_students: {
+				Row: PendingStudent;
+				Insert: Omit<PendingStudent, 'id' | 'is_activated' | 'activated_at' | 'created_at' | 'updated_at'> & {
+					id?: string;
+					is_activated?: boolean;
+					activated_at?: string | null;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: Partial<Omit<PendingStudent, 'id' | 'created_at' | 'updated_at'>>;
 			};
 		};
 	};

@@ -14,7 +14,7 @@ The database is designed to support a complete math learning platform with:
 ```
 auth.users (Supabase Auth)
     ↓
-profiles (user_role: student/teacher/admin)
+profiles (user_role: student/teacher/admin) ← pending_students (pre-populated)
     ↓
     ├─→ schools (school_id FK)
     │       ├─ name, city, country (unique)
@@ -110,6 +110,39 @@ Students enrolled in classes.
 
 **Unique Constraint**: A student can only join each class once.
 
+#### `pending_students`
+Pre-populated student data before first authentication.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Pending student ID |
+| email | TEXT (UNIQUE) | Student's email (must match Google account) |
+| firstname | TEXT | Student's first name |
+| lastname | TEXT | Student's last name |
+| grade | TEXT | Student's grade level (e.g., "6ème", "5ème") |
+| school_id | UUID (FK) | References schools(id) |
+| gender | TEXT | 'boy' or 'girl' for avatar fallback |
+| is_activated | BOOLEAN | True when student has logged in (default: false) |
+| activated_at | TIMESTAMPTZ | When student first authenticated |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Last update time |
+
+**Purpose**: Allows admins to pre-populate students before they log in with Google for the first time. When a student authenticates, the `handle_new_user()` trigger checks this table and creates their profile with pre-populated data.
+
+**Workflow**:
+1. **Teachers create classes** - Each class gets a unique `join_code` (e.g., MATH6A)
+2. **Admin imports students** via CSV at `/dashboard/admin/import-students` with class codes
+3. **System validates** class codes against existing classes (rejects invalid codes)
+4. Students stored in `pending_students` with `class_ids` array (resolved from codes)
+5. **Student logs in with Google** - Trigger checks for matching email
+6. Profile created with pre-populated data + **auto-enrolled in classes**
+7. Student marked as activated, immediately has access to all assigned classes
+
+**Important**: Class codes in import MUST match existing `join_code` values from the `classes` table. Admins cannot invent arbitrary codes.
+
+**RLS Policies**:
+- Only admins can view, insert, update, or delete pending students
+
 ## Row Level Security (RLS)
 
 All tables have RLS enabled with the following access patterns:
@@ -136,6 +169,7 @@ All tables have RLS enabled with the following access patterns:
 - Add/remove users from classes via class_ids array
 - Update avatar URLs and personal information
 - Search users by email, firstname, or lastname
+- Full CRUD operations on pending_students table (pre-populate students)
 
 ### RLS Implementation Notes
 
@@ -156,7 +190,7 @@ These functions use `SECURITY DEFINER` to bypass RLS when checking roles/permiss
 
 #### `handle_new_user()`
 **Trigger**: After user signup in `auth.users`
-**Action**: Automatically creates a profile with role='student'
+**Action**: Automatically creates a profile. If user's email exists in `pending_students`, creates profile with pre-populated data (firstname, lastname, school, grade, gender) and marks the pending student as activated. Otherwise, creates a default profile with role='student'.
 
 ### Class Management
 
@@ -248,6 +282,8 @@ Performance indexes are created for:
 - Role and school composite queries (`idx_profiles_role_school`)
 - Class membership lookups (`idx_class_members_composite`)
 - JSONB vip_cards queries (`idx_profiles_vip_cards`)
+- Pending student email lookups (`idx_pending_students_email` - partial index for non-activated only)
+- Pending student school filtering (`idx_pending_students_school`)
 
 ### Query Performance Notes
 
