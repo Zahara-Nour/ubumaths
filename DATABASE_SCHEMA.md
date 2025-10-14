@@ -8,6 +8,8 @@ The database is designed to support a complete math learning platform with:
 - **User Management**: Students, teachers, and admins
 - **School Management**: Multi-school support with school profiles
 - **Classroom Management**: Classes and class memberships
+- **Friend System**: Mutual friendships with request/accept workflow
+- **Real-Time Presence**: WebSocket-based online/offline status
 
 ## Entity Relationship Diagram
 
@@ -20,7 +22,14 @@ profiles (user_role: student/teacher/admin) ← pending_students (pre-populated)
     │       ├─ name, city, country (unique)
     │       └─ address, logo_url, is_active
     │
-    └─→ classes (teacher_id, school_id FK) → class_members (students)
+    ├─→ classes (teacher_id, school_id FK) → class_members (students)
+    │
+    ├─→ friendships (requester_id, addressee_id FK) [mutual friend system]
+    │       └─ status: pending/accepted/rejected
+    │       └─ friendship_type: classmate/mentor
+    │
+    └─→ user_presence (user_id FK) [real-time online/offline status]
+            └─ WebSocket heartbeat (60s interval)
 ```
 
 ## Tables
@@ -147,6 +156,67 @@ Pre-populated student data before first authentication.
 
 **RLS Policies**:
 - Only admins can view, insert, update, or delete pending students
+
+### Friend System Tables
+
+#### `friendships`
+Mutual friend relationships between users with request/accept workflow.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Friendship ID |
+| requester_id | UUID (FK) | User who sent friend request |
+| addressee_id | UUID (FK) | User who receives friend request |
+| status | TEXT | 'pending', 'accepted', or 'rejected' |
+| friendship_type | TEXT | 'classmate' (student-student) or 'mentor' (teacher-student) |
+| created_at | TIMESTAMPTZ | When request was sent |
+| updated_at | TIMESTAMPTZ | Last status change |
+
+**Unique Constraint**: (requester_id, addressee_id) - prevents duplicate friend requests
+**Check Constraint**: requester_id ≠ addressee_id - prevents self-friendship
+
+**Friendship Workflow**:
+1. User A sends request to User B → status = 'pending'
+2. User B accepts → status = 'accepted' (friends)
+3. User B rejects → status = 'rejected'
+4. Either user can unfriend → DELETE row
+
+**Friendship Types**:
+- `classmate`: Student-to-student friendships
+- `mentor`: Teacher-to-student relationships
+
+**RLS Policies**:
+- Users can view friendships they're part of (requester or addressee)
+- Users can create friend requests (as requester)
+- Addressees can update status (accept/reject)
+- Users can delete friendships they're part of (unfriend)
+- Teachers can view and delete all student friendships (moderation)
+
+#### `user_presence`
+Real-time online/offline status tracked via WebSocket heartbeats.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| user_id | UUID (PK) | References profiles(id) |
+| status | TEXT | 'online' or 'offline' |
+| last_heartbeat | TIMESTAMPTZ | Last WebSocket heartbeat received |
+| updated_at | TIMESTAMPTZ | Last status change |
+
+**WebSocket System**:
+- **Heartbeat Interval**: 60 seconds (client sends heartbeat)
+- **Timeout**: Users marked offline after 2 minutes without heartbeat
+- **Presence Updates**: Friends notified in real-time via WebSocket
+- **Privacy**: Only friends can see each other's presence status
+
+**RLS Policies**:
+- Users can view their own presence
+- Users can view presence of accepted friends only
+- Users can update their own presence (via WebSocket server)
+
+**Helper Functions**:
+- `upsert_user_presence(user_id, status)` - Update presence (used by WebSocket server)
+- `cleanup_stale_presence()` - Mark offline users with old heartbeats
+- `get_friend_ids(user_id)` - Get list of friend IDs (for presence broadcasting)
 
 ## Row Level Security (RLS)
 

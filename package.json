@@ -18,7 +18,8 @@
 		"db:migrate": "npx supabase db push",
 		"db:fix-profiles": "npx supabase db execute --file supabase/migrations/005_fix_existing_users.sql",
 		"db:status": "npx supabase db execute --sql \"SELECT COUNT(CASE WHEN p.id IS NULL THEN 1 END) as missing_profiles, COUNT(CASE WHEN p.id IS NOT NULL THEN 1 END) as users_with_profiles, COUNT(*) as total_users FROM auth.users u LEFT JOIN public.profiles p ON u.id = p.id;\"",
-		"db:link": "npx supabase link"
+		"db:link": "npx supabase link",
+		"ws:dev": "npx tsx src/lib/server/websocket-server.ts"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",
@@ -33,6 +34,7 @@
 		"@tailwindcss/typography": "^0.5.18",
 		"@tailwindcss/vite": "^4.1.13",
 		"@types/node": "^22",
+		"@types/ws": "^8.18.1",
 		"@vitest/browser": "^3.2.4",
 		"bits-ui": "^2.11.5",
 		"clsx": "^2.1.1",
@@ -72,6 +74,7 @@
 		"@supabase/supabase-js": "^2.74.0",
 		"mathlive": "^0.107.1",
 		"mode-watcher": "^1.1.0",
-		"svelte-sonner": "^1.0.5"
+		"svelte-sonner": "^1.0.5",
+		"ws": "^8.18.3"
 	}
 }

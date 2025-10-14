@@ -1,5 +1,8 @@
 export type UserRole = 'student' | 'teacher' | 'admin';
 export type Gender = 'boy' | 'girl';
+export type FriendshipStatus = 'pending' | 'accepted' | 'rejected';
+export type FriendshipType = 'classmate' | 'mentor';
+export type PresenceStatus = 'online' | 'offline';
 
 // Import VIP card types
 import type { StudentVipCards } from './vip-card';
@@ -68,6 +71,36 @@ export interface PendingStudent {
 	updated_at: string;
 }
 
+export interface Friendship {
+	id: string;
+	requester_id: string;
+	addressee_id: string;
+	status: FriendshipStatus;
+	friendship_type: FriendshipType;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface UserPresence {
+	user_id: string;
+	status: PresenceStatus;
+	last_heartbeat: string;
+	updated_at: string;
+}
+
+// Helper type for enriched friendship data with profile info
+export interface FriendshipWithProfile extends Friendship {
+	friend_profile: {
+		id: string;
+		full_name: string | null;
+		firstname: string | null;
+		lastname: string | null;
+		avatar_url: string | null;
+		role: UserRole;
+	};
+	presence?: UserPresence;
+}
+
 // Database schema type (for Supabase client)
 export interface Database {
 	public: {
@@ -117,6 +150,22 @@ export interface Database {
 					updated_at?: string;
 				};
 				Update: Partial<Omit<PendingStudent, 'id' | 'created_at' | 'updated_at'>>;
+			};
+			friendships: {
+				Row: Friendship;
+				Insert: Omit<Friendship, 'id' | 'created_at' | 'updated_at'> & {
+					id?: string;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: Partial<Omit<Friendship, 'id' | 'created_at' | 'updated_at'>>;
+			};
+			user_presence: {
+				Row: UserPresence;
+				Insert: Omit<UserPresence, 'updated_at'> & {
+					updated_at?: string;
+				};
+				Update: Partial<Omit<UserPresence, 'user_id'>>;
 			};
 		};
 	};
