@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { GROQ_API_KEY } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 
 interface ChatMessage {
@@ -21,7 +21,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		// Check if API key is configured
-		if (!GROQ_API_KEY) {
+		if (!env.GROQ_API_KEY) {
 			console.error('GROQ_API_KEY not configured');
 			return json(
 				{
@@ -39,7 +39,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
 			method: 'POST',
 			headers: {
-				Authorization: `Bearer ${GROQ_API_KEY}`,
+				Authorization: `Bearer ${env.GROQ_API_KEY}`,
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
