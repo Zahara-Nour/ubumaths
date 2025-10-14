@@ -20,7 +20,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import VipCard from './VipCard.svelte';
+	import VipCardHolo from './VipCardHolo.svelte';
 	import type { VipCard as VipCardType } from '$lib/types/vip-card';
 	import { cn } from '$lib/utils';
 
@@ -46,24 +46,32 @@
 	let cardFlipped = $state(false);
 	let confettiActive = $state(false);
 	let shakeStop = $state(false); // For dramatic pause when coming from loading
+	let showCardBack = $state(true); // Start with back, then flip to front
+	let cardPopped = $state(false); // Trigger pop animation after flip
 
 	onMount(() => {
 		if (fromLoadingState) {
 			// Coming from loading state - card is already visible
-			// Start with shake-stop animation and card showing BACK (flipped = true)
+			// Start with shake-stop animation and card showing BACK
 			visible = true;
 			cardVisible = true;
-			cardFlipped = true; // Start with BACK showing (flipped state)
+			showCardBack = true; // Start with BACK showing
 
 			// Dramatic pause (shake stops)
 			setTimeout(() => {
 				shakeStop = true;
 			}, 200);
 
-			// Then flip the card to FRONT (unflip)
+			// Then flip the card to FRONT
 			setTimeout(() => {
-				cardFlipped = false; // Flip to FRONT
+				showCardBack = false; // Flip to FRONT
+				cardFlipped = true; // Mark as flipped for other animations
 			}, 600);
+
+			// Trigger pop animation after flip
+			setTimeout(() => {
+				cardPopped = true;
+			}, 800);
 
 			// Confetti
 			setTimeout(() => {
@@ -84,11 +92,18 @@
 
 			setTimeout(() => {
 				cardVisible = true;
+				showCardBack = true; // Start with back
 			}, 300);
 
 			setTimeout(() => {
+				showCardBack = false; // Flip to front
 				cardFlipped = true;
 			}, 1200);
+
+			// Trigger pop animation after flip
+			setTimeout(() => {
+				cardPopped = true;
+			}, 1400);
 
 			setTimeout(() => {
 				confettiActive = true;
@@ -206,10 +221,19 @@
 					? 'translate-y-0 opacity-100 rotate-2'
 					: 'translate-y-[200px] opacity-0 rotate-[-15deg]',
 				fromLoadingState && !shakeStop && 'animate-final-shake',
-				fromLoadingState && shakeStop && 'animate-shake-stop'
+				fromLoadingState && shakeStop && 'animate-shake-stop',
+				cardPopped && 'animate-card-pop'
 			)}
 		>
-			<VipCard {card} isFlipped={cardFlipped} size="lg" clickable={false} />
+			<VipCardHolo
+				{card}
+				showBack={showCardBack}
+				showcase={cardFlipped}
+				enable3d={cardFlipped}
+				enablePopover={false}
+				enableGyroscope={false}
+				enableHoloEffect={cardFlipped}
+			/>
 		</div>
 
 		<!-- Card Name and Description -->
@@ -331,5 +355,22 @@
 
 	.animate-shake-stop {
 		animation: shake-stop 0.4s ease-out forwards;
+	}
+
+	/* Card pop animation - subtle scale bounce */
+	@keyframes card-pop {
+		0% {
+			transform: scale(1);
+		}
+		50% {
+			transform: scale(1.15);
+		}
+		100% {
+			transform: scale(1.1);
+		}
+	}
+
+	.animate-card-pop {
+		animation: card-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 	}
 </style>

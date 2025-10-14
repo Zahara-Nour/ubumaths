@@ -68,14 +68,30 @@
 	- Cleanup: $effect with return cleanup function
 	- Server communication: fetch with x-sveltekit-action header
 
-	VIP CARD FLOW:
-	--------------
+	VIP CARD FLOW (HOLOGRAPHIC REVEAL WITH SHAKE):
+	------------------------------------------------
 	1. Teacher clicks "Carte VIP" button for a student
-	2. Loading animation shows (mystery card shaking)
-	3. Server assigns random card and returns cardId
-	4. Loading transitions to reveal animation
-	5. Card flips to show front with confetti celebration
-	6. Data refreshes to show updated collection
+	2. Optimistic UI: -3 gidouilles deducted immediately
+	3. Modal appears with card BACK showing, shaking animation starts
+	4. "Attribution en cours..." text displays while syncing with database
+	5. Server assigns weighted random card and returns cardId
+	6. On confirmation: shake stops (dramatic pause)
+	7. Card flips to reveal holographic FRONT
+	8. Confetti and sparkles celebration
+	9. Card info (name, description) appears
+	10. User clicks anywhere to dismiss
+	11. Data refreshes to show updated collection
+
+	ERROR HANDLING:
+	- If server fails, modal closes immediately
+	- Toast error message appears
+	- Optimistic gidouilles update is rolled back
+
+	TECHNICAL DETAILS:
+	- Uses VipCardHoloReveal component with loading/confirmed states
+	- Shake animation: 2deg rotation, 0.4s duration, infinite loop
+	- Flip animation: Y-axis rotation using showBack prop
+	- Weighted random selection based on rarity (common: 40%, rare: 30%, epic: 20%, legendary: 10%)
 
 	SECURITY:
 	---------
@@ -97,8 +113,7 @@
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import VipCardsModal from '$lib/components/VipCardsModal.svelte';
-	import VipCardReveal from '$lib/components/VipCardReveal.svelte';
-	import VipCardLoading from '$lib/components/VipCardLoading.svelte';
+	import VipCardHoloReveal from '$lib/components/VipCardHoloReveal.svelte';
 	import { getVipCardById } from '$lib/types/vip-card';
 	import { canAffordVipCard } from '$lib/utils/vip-cards';
 	import { Sparkles, Eye, Loader2 } from 'lucide-svelte';
@@ -131,8 +146,7 @@
 	// VIP card states
 	let vipModalOpen = $state(false);
 	let selectedStudentForVipModal = $state<{ id: string; name: string; vipCards: any } | null>(null);
-	let revealingCard = $state<{ cardId: string; studentName: string } | null>(null);
-	let awardingCard = $state(false); // Shows loading animation (shaking mystery card)
+	let revealingCard = $state<{ card: any; studentName: string; loading: boolean; confirmed: boolean } | null>(null); // Tracks card reveal state with loading/confirmed
 	let lastProcessedCardId = $state<string | null>(null); // Tracks last processed cardId to prevent duplicates and infinite loops
 
 	// Initialize deltas to 1 for each student and class
@@ -155,27 +169,32 @@
 	// creating an infinite loop of revelations.
 	$effect(() => {
 		if (form?.success) {
-			// If it's a VIP card award, show reveal animation
+			// If it's a VIP card award, trigger confirmation (flip animation)
 			if (form.cardId && form.cardId !== lastProcessedCardId) {
 				// Only process if it's a new card (not already processed)
 				const card = getVipCardById(form.cardId);
-				if (card) {
+				if (card && revealingCard) {
 					// Mark this card as processed to prevent re-triggers
 					lastProcessedCardId = form.cardId;
 
-					// Hide loading and show reveal
-					awardingCard = false;
-					const studentName = selectedStudentForVipModal?.name || 'Élève';
-					revealingCard = { cardId: form.cardId, studentName };
+					// Update revealingCard to show confirmation (triggers flip)
+					revealingCard = {
+						card,
+						studentName: revealingCard.studentName,
+						loading: false,
+						confirmed: true
+					};
 				}
 			} else if (!form.cardId) {
 				// Other successful actions (add/remove gidouilles)
 				toaster.success(form.message || 'Opération réussie');
 			}
 		} else if (form?.message && !form?.success) {
-			// On error, hide loading
-			awardingCard = false;
+			// On error, hide reveal and show toast
+			revealingCard = null;
 			toaster.error(form.message);
+
+			// The optimistic override will be rolled back by the enhance callback
 		}
 	});
 
@@ -455,7 +474,6 @@
 	// Close card reveal modal
 	function handleRevealComplete() {
 		revealingCard = null;
-		awardingCard = false; // Ensure loading animation is hidden
 		invalidateAll(); // Refresh data to update card collection
 	}
 </script>
@@ -653,28 +671,30 @@
 												action="?/awardVipCard"
 												use:enhance={() => {
 													// Save student name for reveal animation
-													selectedStudentForVipModal = {
-														id: student.id,
-														name: getFullName(student.firstname, student.lastname, student.full_name),
-														vipCards: student.vip_cards || {}
+													const studentName = getFullName(student.firstname, student.lastname, student.full_name);
+
+													// Initialize reveal modal with loading state (back of card, shaking)
+													revealingCard = {
+														card: getVipCardById('bonus'), // Temporary card (will be replaced)
+														studentName,
+														loading: true,
+														confirmed: false
 													};
 
 													// Optimistically deduct 3 gidouilles
 													const currentValue = getStudentGidouilles(student.id, student.gidouilles);
 													updateStudentGidouillesOptimistic(student.id, -3, currentValue);
 
-													// Show loading animation (mystery card) immediately
-													awardingCard = true;
-
 													return async ({ result, update }) => {
 														await update();
-														// Note: awardingCard will be set to false in $effect when response arrives
 														// Clear optimistic override after server response
 														if (result.type === 'success') {
 															clearOptimisticOverride(student.id);
+															// Card will be updated by $effect when form.cardId arrives
 														} else {
 															// Rollback on error
 															clearOptimisticOverride(student.id);
+															revealingCard = null;
 														}
 													};
 												}}
@@ -685,9 +705,9 @@
 													size="sm"
 													variant="default"
 													class="gap-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-													disabled={!canAffordVipCard(getStudentGidouilles(student.id, student.gidouilles)) || awardingCard}
+													disabled={!canAffordVipCard(getStudentGidouilles(student.id, student.gidouilles)) || revealingCard !== null}
 												>
-													{#if awardingCard}
+													{#if revealingCard !== null}
 														<Loader2 class="w-4 h-4 animate-spin" />
 														<span class="hidden sm:inline">Attribution...</span>
 													{:else}
@@ -709,29 +729,16 @@
 	{/if}
 </div>
 
-<!-- Loading State: Shaking Mystery Card -->
-<!-- Displayed immediately when "Carte VIP" button is clicked -->
-{#if awardingCard && selectedStudentForVipModal}
-	<VipCardLoading
-		visible={true}
-		studentName={selectedStudentForVipModal.name}
+<!-- VIP Card Reveal Modal -->
+<!-- Fullscreen modal with shake animation during loading, then flip reveal -->
+{#if revealingCard && revealingCard.card}
+	<VipCardHoloReveal
+		card={revealingCard.card}
+		studentName={revealingCard.studentName}
+		loading={revealingCard.loading}
+		confirmed={revealingCard.confirmed}
+		onComplete={handleRevealComplete}
 	/>
-{/if}
-
-<!-- VIP Card Reveal Animation -->
-<!-- Displayed once server returns the cardId -->
-<!-- The #key ensures each new card triggers a fresh animation -->
-{#if revealingCard}
-	{@const card = getVipCardById(revealingCard.cardId)}
-	{#if card}
-		{#key revealingCard.cardId}
-			<VipCardReveal
-				{card}
-				fromLoadingState={true}
-				onComplete={handleRevealComplete}
-			/>
-		{/key}
-	{/if}
 {/if}
 
 <!-- Modal des Cartes VIP -->

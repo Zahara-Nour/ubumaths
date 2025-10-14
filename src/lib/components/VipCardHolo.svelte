@@ -28,6 +28,7 @@
 	- showBack: boolean (default: false) - Show card back instead of front
 	- enableDescriptionOverlay: boolean (default: false) - Gradient overlay with description on hover
 	- enableRarityIndicator: boolean (default: false) - Gem icon with rarity color/glow
+	- autoPopover: boolean (default: false) - Automatically trigger popover animation on mount
 
 	Technical Implementation:
 	- Uses Svelte 5 runes ($state, $derived, $effect, $props)
@@ -61,6 +62,7 @@
 		showBack?: boolean;
 		enableDescriptionOverlay?: boolean;
 		enableRarityIndicator?: boolean;
+		autoPopover?: boolean;
 	}
 
 	let {
@@ -73,7 +75,8 @@
 		enableHoloEffect = true,
 		showBack = false,
 		enableDescriptionOverlay = false,
-		enableRarityIndicator = false
+		enableRarityIndicator = false,
+		autoPopover = false
 	}: Props = $props();
 
 	// ====================
@@ -348,6 +351,13 @@
 		let scaleW = (window.innerWidth / rect.width) * 0.9;
 		let scaleH = (window.innerHeight / rect.height) * 0.9;
 		let scaleF = 1.75;
+		let targetScale = Math.min(scaleW, scaleH, scaleF);
+
+		console.log('[VipCardHolo] popover() called', {
+			firstPop,
+			targetScale,
+			currentScale: $springScale
+		});
 
 		setCenter();
 
@@ -360,7 +370,7 @@
 		}
 
 		firstPop = false;
-		springScale.set(Math.min(scaleW, scaleH, scaleF));
+		springScale.set(targetScale);
 		interactEnd(delay);
 	}
 
@@ -413,6 +423,7 @@
 	// Watch for active card changes
 	$effect(() => {
 		if (activeCard.get() && activeCard.get() === thisCard) {
+			console.log('[VipCardHolo] Active card matched - calling popover()');
 			popover();
 			active = true;
 		} else {
@@ -467,6 +478,35 @@
 		--translate-y: ${$springTranslate.y}px;
 	`);
 
+	// Auto-popover effect - triggers when prop changes to true
+	// This effect runs whenever autoPopover or thisCard changes
+	$effect(() => {
+		if (autoPopover && thisCard && enablePopover) {
+			console.log('[VipCardHolo] autoPopover triggered!', {
+				thisCard: !!thisCard,
+				currentActive: !!activeCard.get(),
+				enablePopover
+			});
+
+			// Small delay to ensure DOM is ready and card is positioned
+			const timer = setTimeout(() => {
+				if (thisCard && !activeCard.get()) {
+					console.log('[VipCardHolo] Setting activeCard to trigger popover');
+					// Only set if no card is currently active
+					activeCard.set(thisCard);
+					resetBaseOrientation();
+				} else {
+					console.log('[VipCardHolo] Skipped activation', {
+						hasCard: !!thisCard,
+						hasActive: !!activeCard.get()
+					});
+				}
+			}, 200);
+
+			return () => clearTimeout(timer);
+		}
+	});
+
 	// Showcase animation on mount
 	onMount(() => {
 		if (showcase && isVisible) {
@@ -501,15 +541,35 @@
 			aria-label="Expand the VIP Card: {card.name}"
 			tabindex="0"
 		>
-			<!-- Card Back -->
-			<img
-				class="holo-card__back"
-				src="/images/vip-cards/bonus1@0.5x.jpg"
-				alt="VIP Card Back"
-				loading="lazy"
-				width="660"
-				height="921"
-			/>
+			<!-- Card Back (Luxury Gold Design matching VipCard) -->
+			<div class="holo-card__back">
+				<div class="w-full h-full bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 relative rounded-[2.5%/1.8%] overflow-hidden">
+					<!-- Geometric Pattern Overlay -->
+					<div class="absolute inset-0 opacity-20" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.3) 35px, rgba(255,255,255,.3) 70px);"></div>
+
+					<!-- Radial Gradient Shine -->
+					<div class="absolute inset-0" style="background: radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, transparent 70%);"></div>
+
+					<!-- Center VIP Logo -->
+					<div class="absolute inset-0 flex flex-col items-center justify-center text-white">
+						<div class="text-center">
+							<div class="text-8xl font-black tracking-wider mb-4" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.3);">
+								VIP
+							</div>
+							<div class="text-lg font-bold tracking-widest" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.3);">
+								CARTE PRIVILÈGE
+							</div>
+							<div class="mt-6 w-24 h-1.5 bg-white/50 mx-auto rounded-full"></div>
+						</div>
+					</div>
+
+					<!-- Corner Decorations -->
+					<div class="absolute top-6 left-6 w-12 h-12 border-t-2 border-l-2 border-white/60 rounded-tl-lg"></div>
+					<div class="absolute top-6 right-6 w-12 h-12 border-t-2 border-r-2 border-white/60 rounded-tr-lg"></div>
+					<div class="absolute bottom-6 left-6 w-12 h-12 border-b-2 border-l-2 border-white/60 rounded-bl-lg"></div>
+					<div class="absolute bottom-6 right-6 w-12 h-12 border-b-2 border-r-2 border-white/60 rounded-br-lg"></div>
+				</div>
+			</div>
 
 			<!-- Card Front -->
 			<div class="holo-card__front" style={staticStyles}>
