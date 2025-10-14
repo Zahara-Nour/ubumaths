@@ -61,7 +61,7 @@ Extends Supabase's `auth.users` with application-specific data.
 | role | user_role | 'student', 'teacher', or 'admin' |
 | school_id | UUID (FK) | References schools(id) |
 | avatar_url | TEXT | URL to user's avatar image |
-| class_ids | UUID[] | Array of class IDs user belongs to/teaches |
+| class_ids | UUID[] | Array of class IDs (automatically synced from `class_members` table via trigger) |
 | grade | TEXT | Student's grade level (e.g., "6ème", "5ème", "4ème", "3ème") |
 | gender | TEXT | User's gender ('boy' or 'girl') for avatar fallback purposes |
 | gidouilles | INTEGER | Student currency/points for rewards system (default: 0) |
@@ -71,6 +71,9 @@ Extends Supabase's `auth.users` with application-specific data.
 
 **Note on Student-Teacher Relationship**:
 Students don't have a single `teacher_id` because they have different teachers for each class. To find a student's teacher for a specific class, query: `class_members` → `classes.teacher_id`.
+
+**Note on class_ids Column**:
+The `class_ids` array is maintained for backward compatibility but is NOT the source of truth. The `class_members` table is the authoritative source for class memberships. A trigger automatically syncs changes from `class_members` to `class_ids` to keep them in sync. Always use `class_members` table when querying or modifying class memberships.
 
 **Automatic Creation**: A trigger automatically creates a profile when a user signs up.
 
@@ -99,7 +102,7 @@ Teacher-created groups of students within a school.
 **Automatic Join Code**: A function generates unique 6-character codes.
 
 #### `class_members`
-Students enrolled in classes.
+Students enrolled in classes. **This is the source of truth for class memberships.**
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -108,7 +111,9 @@ Students enrolled in classes.
 | student_id | UUID (FK) | Student |
 | joined_at | TIMESTAMPTZ | When student joined |
 
-**Unique Constraint**: A student can only join each class once.
+**Unique Constraint**: A student can only join each class once (student_id, class_id).
+
+**Automatic Synchronization**: Changes to this table automatically update the `profiles.class_ids` array via trigger for backward compatibility. Always modify class memberships through this table, not the `class_ids` array.
 
 #### `pending_students`
 Pre-populated student data before first authentication.
@@ -264,6 +269,85 @@ SELECT update_class_gidouilles('class-uuid', -5);
 **Errors**:
 - Raises exception if caller is not a teacher
 - Raises exception if caller doesn't own the class
+
+### VIP Cards Management (Rewards System)
+
+VIP cards are special reward items that students can earn by spending 3 gidouilles. The cards are stored in a JSONB column on the profiles table, where each card instance has a unique ID, card type, earned timestamp, and optional used timestamp.
+
+**VIP Card Data Structure**:
+```json
+{
+  "uuid-1": { "cardId": "bonus", "earnedAt": "2025-10-13T...", "usedAt": null },
+  "uuid-2": { "cardId": "captain", "earnedAt": "2025-10-13T...", "usedAt": "2025-10-14T..." }
+}
+```
+
+#### `award_random_vip_card(student_id UUID)`
+**Returns**: TEXT - The card ID that was awarded (e.g., "bonus", "captain")
+**Purpose**: Awards a random VIP card to a student by deducting 3 gidouilles
+**Security**:
+- SECURITY DEFINER function (runs with elevated permissions)
+- Verifies caller is a teacher via `is_teacher_or_admin()`
+- Verifies student is in one of the teacher's classes
+- Ensures student has at least 3 gidouilles before awarding
+**Behavior**:
+- Deducts 3 gidouilles from student's balance
+- Randomly selects from 26 available VIP cards
+- Creates new card instance with unique UUID
+- Adds card to student's vip_cards JSONB column
+**Usage**:
+```sql
+-- Award random VIP card to a student
+SELECT award_random_vip_card('student-uuid');
+-- Returns: 'bonus' (or any other card ID)
+```
+**Errors**:
+- Raises exception if caller is not a teacher
+- Raises exception if student is not in teacher's classes
+- Raises exception if student has less than 3 gidouilles
+
+#### `use_vip_card(student_id UUID, card_id TEXT)`
+**Returns**: BOOLEAN - TRUE if card was successfully used, FALSE if no unused card found
+**Purpose**: Marks a VIP card instance as used (consumed) by setting the usedAt timestamp
+**Security**:
+- SECURITY DEFINER function (runs with elevated permissions)
+- Verifies caller is a teacher via `is_teacher_or_admin()`
+- Verifies student is in one of the teacher's classes
+**Behavior**:
+- Finds the oldest unused instance of the specified card
+- Sets usedAt timestamp to current time
+- Returns FALSE if no unused instance exists
+**Usage**:
+```sql
+-- Use a bonus card for a student
+SELECT use_vip_card('student-uuid', 'bonus');
+-- Returns: true (if card was found and used)
+```
+**Errors**:
+- Raises exception if caller is not a teacher
+- Raises exception if student is not in teacher's classes
+
+#### `remove_student_vip_card(student_id UUID, card_id TEXT)`
+**Returns**: BOOLEAN - TRUE if card was successfully removed, FALSE if no card found
+**Purpose**: Removes one instance of a VIP card from a student's collection (no gidouilles refund)
+**Security**:
+- SECURITY DEFINER function (runs with elevated permissions)
+- Verifies caller is a teacher via `is_teacher_or_admin()`
+- Verifies student is in one of the teacher's classes
+**Behavior**:
+- Finds the oldest unused instance of the specified card
+- Completely removes it from the vip_cards JSONB object
+- No gidouilles refund (card is simply deleted)
+- Returns FALSE if no unused instance exists
+**Usage**:
+```sql
+-- Remove a captain card from a student
+SELECT remove_student_vip_card('student-uuid', 'captain');
+-- Returns: true (if card was found and removed)
+```
+**Errors**:
+- Raises exception if caller is not a teacher
+- Raises exception if student is not in teacher's classes
 
 ### Triggers
 

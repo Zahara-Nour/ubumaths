@@ -2,7 +2,7 @@
 	Rewards Management Page for Teachers
 	=====================================
 
-	This page allows teachers to manage gidouilles (reward points) for their students.
+	This page allows teachers to manage gidouilles (reward points) and VIP cards for their students.
 
 	FEATURES:
 	---------
@@ -11,7 +11,8 @@
 	- Add/remove gidouilles for individual students via input + buttons
 	- Add/remove gidouilles for all students in a class at once
 	- Award random VIP cards to students (costs 3 gidouilles)
-	- View student VIP card collections
+	- View student VIP card collections (with removal capability)
+	- Remove VIP cards from students (teacher-only, no gidouilles refund)
 	- Animated card reveal with loading state
 	- Real-time reactive updates with optimistic UI
 	- Toast notifications for success/error feedback
@@ -461,7 +462,10 @@
 		return 'Élève sans nom';
 	}
 
-	// Open VIP cards modal for a student
+	/**
+	 * Open VIP cards modal for a student
+	 * Passes student ID for card removal functionality (teacher view)
+	 */
 	function openVipModal(student: any) {
 		selectedStudentForVipModal = {
 			id: student.id,
@@ -469,6 +473,13 @@
 			vipCards: student.vip_cards || {}
 		};
 		vipModalOpen = true;
+	}
+
+	/**
+	 * Handle VIP modal open/close state
+	 */
+	function handleVipModalClose(newOpen: boolean) {
+		vipModalOpen = newOpen;
 	}
 
 	// Close card reveal modal
@@ -741,11 +752,20 @@
 	/>
 {/if}
 
-<!-- Modal des Cartes VIP -->
+<!-- Modal des Cartes VIP (Teacher View with Removal) -->
+<!--
+	teacherView={true} enables:
+	- Trash buttons on each card for removal
+	- Optimistic UI for instant feedback
+	- No gidouilles refund when cards removed
+-->
 {#if selectedStudentForVipModal && vipModalOpen}
 	<VipCardsModal
 		bind:open={vipModalOpen}
+		onOpenChange={handleVipModalClose}
 		studentName={selectedStudentForVipModal.name}
+		studentId={selectedStudentForVipModal.id}
 		vipCards={selectedStudentForVipModal.vipCards}
+		teacherView={true}
 	/>
 {/if}

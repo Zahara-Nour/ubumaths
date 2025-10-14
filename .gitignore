@@ -25,3 +25,9 @@ vite.config.ts.timestamp-*
 
 # secret
 secret
+
+# Debug scripts (temporary investigation tools)
+debug-*.js
+check-*.js
+investigate-*.sql
+fix-*.sql

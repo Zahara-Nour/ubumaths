@@ -644,6 +644,31 @@ When creating database migrations, Claude should:
 - Test migrations locally when possible before pushing to remote
 - Keep `DATABASE_SCHEMA.md` synchronized with actual schema
 
+### Student Import System
+
+The application has a student import system at `/dashboard/admin/import-students` that handles two different scenarios:
+
+#### Normal Flow (Import BEFORE Login)
+1. Admin imports students via CSV with class join codes
+2. Students are added to `pending_students` table with pre-assigned classes
+3. When student logs in for the first time, `handle_new_user()` trigger:
+   - Creates their profile in `profiles` table
+   - Automatically enrolls them in `class_members` table
+   - Marks them as activated in `pending_students`
+
+#### Edge Case (Login BEFORE Import)
+**Problem**: If a student logs in before being imported, they get a default profile with no class assignments.
+
+**Solution** (implemented in migration 033 and import-students page):
+1. Import system detects student already exists (duplicate email error)
+2. Instead of failing, it checks if profile exists
+3. Adds student directly to `class_members` table for each class
+4. Shows message: "X élève(s) déjà existant(s) mis à jour"
+
+**Key Insight**: The `class_members` table is the source of truth for class memberships. The `class_ids` array in profiles is kept synchronized via triggers for backward compatibility.
+
+**Important**: Always query `class_members` table (not `class_ids` array) when checking class membership. The triggers ensure they stay in sync, but `class_members` is authoritative.
+
 ## Available MCP Tools:
 
 You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation. Here's how to use the available tools effectively:

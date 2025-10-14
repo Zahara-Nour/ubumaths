@@ -1,3 +1,17 @@
+/**
+ * API: Get Students in a Class
+ *
+ * Returns all students enrolled in a specific class by querying the class_members table.
+ * This is the source of truth for class memberships.
+ *
+ * Query Parameters:
+ * - class_id: UUID of the class
+ *
+ * Returns:
+ * - users: Array of student profiles with their full class memberships
+ *   Each profile includes class_ids array (derived from class_members for backward compatibility)
+ */
+
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 

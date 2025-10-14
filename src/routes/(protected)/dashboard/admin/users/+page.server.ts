@@ -1,3 +1,21 @@
+/**
+ * Admin Users Management Server
+ *
+ * This server file provides:
+ * - Loading classes and schools data for selectors
+ * - Profile update action (name, email, role, school, gender, avatar)
+ *
+ * NOTE: User search and class filtering are handled by API routes:
+ * - /api/admin/search-users (text search by email/name)
+ * - /api/admin/class-students (filter by class)
+ * - /api/admin/add-to-class (add student to class via class_members table)
+ * - /api/admin/remove-from-class (remove student from class via class_members table)
+ *
+ * IMPORTANT: All class membership operations use the class_members table,
+ * which is the source of truth. The profiles.class_ids array is kept in sync
+ * via database triggers for backward compatibility.
+ */
+
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 
@@ -43,75 +61,6 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 };
 
 export const actions: Actions = {
-	search_users: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
-
-		const formData = await request.formData();
-		const searchTerm = (formData.get('search') as string)?.trim();
-
-		if (!searchTerm || searchTerm.length < 3) {
-			return fail(400, { message: 'Search term must be at least 3 characters' });
-		}
-
-		// Case-insensitive partial match across email, firstname, lastname (OR logic)
-		const { data: users, error: searchError } = await supabase
-			.from('profiles')
-			.select('*, schools(name)')
-			.or(
-				`email.ilike.%${searchTerm}%,firstname.ilike.%${searchTerm}%,lastname.ilike.%${searchTerm}%`
-			)
-			.order('lastname', { ascending: true })
-			.order('firstname', { ascending: true })
-			.limit(50);
-
-		if (searchError) {
-			console.error('Search error:', searchError);
-			return fail(400, { message: 'Search failed' });
-		}
-
-		return {
-			success: true,
-			users: users || []
-		};
-	},
-
-	get_class_students: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
-
-		const formData = await request.formData();
-		const classId = formData.get('class_id') as string;
-
-		if (!classId) {
-			return fail(400, { message: 'Class ID is required' });
-		}
-
-		// Get all profiles where class_ids array contains the given classId
-		const { data: students, error: studentsError } = await supabase
-			.from('profiles')
-			.select('*, schools(name)')
-			.contains('class_ids', [classId])
-			.order('lastname', { ascending: true })
-			.order('firstname', { ascending: true });
-
-		if (studentsError) {
-			console.error('Error fetching class students:', studentsError);
-			return fail(400, { message: 'Failed to fetch students' });
-		}
-
-		return {
-			success: true,
-			users: students || []
-		};
-	},
-
 	update_profile: async ({ request, locals: { safeGetSession, supabase } }) => {
 		const { user } = await safeGetSession();
 
@@ -173,100 +122,5 @@ export const actions: Actions = {
 		};
 
 		return { success: true, profile: profileWithClasses };
-	},
-
-	add_to_class: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
-
-		const formData = await request.formData();
-		const userId = formData.get('user_id') as string;
-		const classId = formData.get('class_id') as string;
-
-		if (!userId || !classId) {
-			return fail(400, { message: 'User ID and Class ID are required' });
-		}
-
-		// Get current class_ids
-		const { data: profile, error: fetchError } = await supabase
-			.from('profiles')
-			.select('class_ids')
-			.eq('id', userId)
-			.single();
-
-		if (fetchError) {
-			console.error('Fetch error:', fetchError);
-			return fail(400, { message: 'Failed to fetch user profile' });
-		}
-
-		const currentClassIds = profile.class_ids || [];
-
-		// Check if already in class
-		if (currentClassIds.includes(classId)) {
-			return fail(400, { message: 'User is already in this class' });
-		}
-
-		// Add class to array
-		const newClassIds = [...currentClassIds, classId];
-
-		const { error: updateError } = await supabase
-			.from('profiles')
-			.update({ class_ids: newClassIds })
-			.eq('id', userId);
-
-		if (updateError) {
-			console.error('Update error:', updateError);
-			return fail(400, { message: updateError.message });
-		}
-
-		return { success: true };
-	},
-
-	remove_from_class: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
-
-		const formData = await request.formData();
-		const userId = formData.get('user_id') as string;
-		const classId = formData.get('class_id') as string;
-
-		if (!userId || !classId) {
-			return fail(400, { message: 'User ID and Class ID are required' });
-		}
-
-		// Get current class_ids
-		const { data: profile, error: fetchError } = await supabase
-			.from('profiles')
-			.select('class_ids')
-			.eq('id', userId)
-			.single();
-
-		if (fetchError) {
-			console.error('Fetch error:', fetchError);
-			return fail(400, { message: 'Failed to fetch user profile' });
-		}
-
-		const currentClassIds = profile.class_ids || [];
-
-		// Remove class from array
-		const newClassIds = currentClassIds.filter((id: string) => id !== classId);
-
-		const { error: updateError } = await supabase
-			.from('profiles')
-			.update({ class_ids: newClassIds })
-			.eq('id', userId);
-
-		if (updateError) {
-			console.error('Update error:', updateError);
-			return fail(400, { message: updateError.message });
-		}
-
-		return { success: true };
 	}
 };

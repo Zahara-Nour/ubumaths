@@ -282,5 +282,53 @@ export const actions: Actions = {
 				message: 'An error occurred while updating class gidouilles'
 			});
 		}
+	},
+
+	// Action pour retirer une carte VIP d'un élève
+	removeVipCard: async ({ request, locals: { safeGetSession, supabase } }) => {
+		const { user } = await safeGetSession();
+
+		if (!user) {
+			return fail(401, { message: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const studentId = formData.get('studentId') as string;
+		const cardId = formData.get('cardId') as string;
+
+		if (!studentId || !cardId) {
+			return fail(400, { message: 'Invalid data' });
+		}
+
+		try {
+			// Appeler la fonction RPC pour retirer une carte VIP
+			const { data: success, error: rpcError } = await supabase.rpc('remove_student_vip_card', {
+				p_student_id: studentId,
+				p_card_id: cardId
+			});
+
+			if (rpcError) {
+				console.error('RPC Error:', rpcError);
+				return fail(500, {
+					message: rpcError.message || 'Failed to remove VIP card'
+				});
+			}
+
+			if (!success) {
+				return fail(404, {
+					message: 'No card found to remove'
+				});
+			}
+
+			return {
+				success: true,
+				message: 'Carte retirée avec succès'
+			};
+		} catch (err) {
+			console.error('Error removing VIP card:', err);
+			return fail(500, {
+				message: 'An error occurred while removing VIP card'
+			});
+		}
 	}
 };

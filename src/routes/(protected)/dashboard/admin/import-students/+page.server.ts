@@ -138,7 +138,8 @@ export const actions: Actions = {
 				};
 			});
 
-			// Insert into pending_students table
+			// Try to insert into pending_students table (normal flow)
+			// This is the happy path: students don't exist yet and will be activated on first login
 			const { data, error: insertError } = await supabase
 				.from('pending_students')
 				.insert(pendingStudents)
@@ -147,13 +148,73 @@ export const actions: Actions = {
 			if (insertError) {
 				console.error('Error inserting pending students:', insertError);
 
-				// Check for duplicate emails
+				// Handle duplicate emails (error code 23505 = unique_violation)
+				// This happens when students logged in BEFORE being imported
+				// In this case, we need to add them directly to class_members instead
 				if (insertError.code === '23505') {
-					return fail(400, {
-						message: 'Un ou plusieurs emails existent déjà dans le système'
-					});
+					console.log('Some students already exist, checking profiles...');
+
+					let updatedCount = 0;
+					let skippedCount = 0;
+
+					// Process each student individually to handle already-logged-in students
+					for (const student of pendingStudents) {
+						// Check if student already has an active profile (logged in before import)
+						const { data: existingProfile, error: profileError } = await supabase
+							.from('profiles')
+							.select('id, class_ids')
+							.eq('email', student.email)
+							.single();
+
+						if (existingProfile) {
+							console.log(`Profile exists for ${student.email}, updating class memberships...`);
+
+							// Add student to class_members table directly (bypassing pending_students)
+							// This syncs their profile with the imported class assignments
+							for (const classId of student.class_ids) {
+								const { error: memberError } = await supabase
+									.from('class_members')
+									.insert({
+										student_id: existingProfile.id,
+										class_id: classId
+									})
+									.select();
+
+								// Ignore if student is already in the class (error code 23505)
+								if (memberError && memberError.code !== '23505') {
+									console.error(`Error adding ${student.email} to class ${classId}:`, memberError);
+								}
+							}
+
+							updatedCount++;
+						} else {
+							// Student not in profiles, try adding to pending_students individually
+							const { error: pendingError } = await supabase
+								.from('pending_students')
+								.insert(student);
+
+							if (pendingError && pendingError.code === '23505') {
+								// Already exists in pending_students, skip
+								console.log(`Student ${student.email} exists in pending_students, skipping...`);
+								skippedCount++;
+							} else if (pendingError) {
+								console.error(`Error adding ${student.email} to pending:`, pendingError);
+								skippedCount++;
+							}
+						}
+					}
+
+					// Return success with detailed counts
+					return {
+						success: true,
+						count: pendingStudents.length,
+						updated: updatedCount,
+						skipped: skippedCount,
+						message: `${updatedCount} élève(s) déjà existant(s) mis à jour, ${skippedCount} ignoré(s)`
+					};
 				}
 
+				// Other database errors (not duplicate email)
 				return fail(500, { message: 'Erreur lors de l\'importation des élèves' });
 			}
 
