@@ -158,6 +158,7 @@
 	{:else}
 		<div class="space-y-2">
 			{#each filteredFriendships() as friendship (friendship.id)}
+				{@const badge = getStatusBadge(friendship.status)}
 				<div class="flex items-center justify-between rounded-lg border border-border bg-card p-4">
 					<div class="flex flex-1 items-center gap-6">
 						<!-- Requester -->
@@ -204,7 +205,6 @@
 						</div>
 
 						<!-- Status Badge -->
-						{@const badge = getStatusBadge(friendship.status)}
 						<div class="ml-auto">
 							<span class="rounded-full px-3 py-1 text-xs font-medium {badge.class}">
 								{badge.label}
