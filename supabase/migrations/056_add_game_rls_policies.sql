@@ -32,7 +32,7 @@ CREATE POLICY "Teachers can view student game profiles"
     EXISTS (
       SELECT 1 FROM class_members cm
       JOIN classes c ON cm.class_id = c.id
-      WHERE cm.user_id = game_players.user_id
+      WHERE cm.student_id = game_players.user_id
         AND c.teacher_id = auth.uid()
     )
   );
@@ -72,7 +72,7 @@ CREATE POLICY "Teachers can view student spells"
     EXISTS (
       SELECT 1 FROM class_members cm
       JOIN classes c ON cm.class_id = c.id
-      WHERE cm.user_id = game_spells.user_id
+      WHERE cm.student_id = game_spells.user_id
         AND c.teacher_id = auth.uid()
     )
   );
@@ -138,7 +138,7 @@ CREATE POLICY "Teachers can view student combats"
     EXISTS (
       SELECT 1 FROM class_members cm
       JOIN classes c ON cm.class_id = c.id
-      WHERE cm.user_id = game_combats.organizer_id
+      WHERE cm.student_id = game_combats.organizer_id
         AND c.teacher_id = auth.uid()
     )
   );
@@ -194,7 +194,7 @@ CREATE POLICY "Teachers can view student attempts"
     EXISTS (
       SELECT 1 FROM class_members cm
       JOIN classes c ON cm.class_id = c.id
-      WHERE cm.user_id = game_challenge_attempts.user_id
+      WHERE cm.student_id = game_challenge_attempts.user_id
         AND c.teacher_id = auth.uid()
     )
   );
@@ -235,7 +235,7 @@ CREATE POLICY "Teachers can view student achievement progress"
     EXISTS (
       SELECT 1 FROM class_members cm
       JOIN classes c ON cm.class_id = c.id
-      WHERE cm.user_id = game_player_achievements.user_id
+      WHERE cm.student_id = game_player_achievements.user_id
         AND c.teacher_id = auth.uid()
     )
   );
@@ -270,7 +270,7 @@ CREATE POLICY "Students can view class timeslots"
     EXISTS (
       SELECT 1 FROM class_members cm
       WHERE cm.class_id = game_timeslots.class_id
-        AND cm.user_id = auth.uid()
+        AND cm.student_id = auth.uid()
     )
   );
 
@@ -316,7 +316,7 @@ CREATE POLICY "Students can view class game settings"
     EXISTS (
       SELECT 1 FROM class_members cm
       WHERE cm.class_id = game_class_settings.class_id
-        AND cm.user_id = auth.uid()
+        AND cm.student_id = auth.uid()
     )
   );
 

@@ -2,10 +2,14 @@
 // Author: Claude Code
 // Date: 2025-10-15
 
+import { config } from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import path from 'path';
 import { glob } from 'glob';
+
+// Load environment variables from .env file
+config();
 
 // Configuration
 const NAVADRA_ROOT = path.join(process.cwd(), 'extern/navadra-jeu/webroot');
