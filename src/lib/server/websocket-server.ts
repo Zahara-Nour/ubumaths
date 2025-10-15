@@ -20,16 +20,64 @@ const connections = new Map<string, WebSocket>();
 
 // WebSocket message types
 interface WSMessage {
-	type: 'heartbeat' | 'auth' | 'presence_update';
+	type:
+		| 'heartbeat'
+		| 'auth'
+		| 'presence_update'
+		| 'chat_message'
+		| 'typing_indicator'
+		| 'message_read'
+		| 'message_reaction';
 	userId?: string;
 	token?: string;
 	status?: 'online' | 'offline';
+	// Chat-specific fields
+	conversationId?: string;
+	messageId?: string;
+	content?: any;
+	attachments?: any[];
+	isTyping?: boolean;
+	emoji?: string;
+	action?: 'add' | 'remove';
 }
 
 interface PresenceUpdateMessage {
 	type: 'presence_update';
 	userId: string;
 	status: 'online' | 'offline';
+}
+
+interface ChatMessageBroadcast {
+	type: 'chat_message';
+	conversationId: string;
+	messageId: string;
+	senderId: string;
+	content: any;
+	attachments?: any[];
+	createdAt: string;
+}
+
+interface TypingIndicatorBroadcast {
+	type: 'typing_indicator';
+	conversationId: string;
+	userId: string;
+	isTyping: boolean;
+}
+
+interface MessageReadBroadcast {
+	type: 'message_read';
+	conversationId: string;
+	userId: string;
+	messageId: string;
+	readAt: string;
+}
+
+interface MessageReactionBroadcast {
+	type: 'message_reaction';
+	messageId: string;
+	userId: string;
+	emoji: string;
+	action: 'add' | 'remove';
 }
 
 // Get friend IDs for a user
@@ -42,6 +90,21 @@ async function getFriendIds(userId: string): Promise<string[]> {
 	}
 
 	return data?.map((row: { friend_id: string }) => row.friend_id) || [];
+}
+
+// Get conversation participant IDs
+async function getConversationParticipantIds(conversationId: string): Promise<string[]> {
+	const { data, error } = await supabase
+		.from('conversation_participants')
+		.select('user_id')
+		.eq('conversation_id', conversationId);
+
+	if (error) {
+		console.error('Error fetching conversation participants:', error);
+		return [];
+	}
+
+	return data?.map((row) => row.user_id) || [];
 }
 
 // Update user presence in database
@@ -132,6 +195,113 @@ async function handleConnection(ws: WebSocket): Promise<void> {
 					if (userId) {
 						await updatePresence(userId, 'online');
 					}
+					break;
+				}
+
+				case 'chat_message': {
+					// Broadcast new message to conversation participants
+					if (!userId || !message.conversationId || !message.messageId) {
+						ws.send(
+							JSON.stringify({ type: 'error', message: 'Invalid chat message payload' })
+						);
+						return;
+					}
+
+					const participantIds = await getConversationParticipantIds(message.conversationId);
+					const broadcast: ChatMessageBroadcast = {
+						type: 'chat_message',
+						conversationId: message.conversationId,
+						messageId: message.messageId,
+						senderId: userId,
+						content: message.content,
+						attachments: message.attachments,
+						createdAt: new Date().toISOString()
+					};
+
+					// Broadcast to all participants except sender
+					broadcastToUsers(
+						participantIds.filter((id) => id !== userId),
+						broadcast
+					);
+					break;
+				}
+
+				case 'typing_indicator': {
+					// Broadcast typing indicator to conversation participants
+					if (!userId || !message.conversationId || message.isTyping === undefined) {
+						return;
+					}
+
+					const participantIds = await getConversationParticipantIds(message.conversationId);
+					const broadcast: TypingIndicatorBroadcast = {
+						type: 'typing_indicator',
+						conversationId: message.conversationId,
+						userId,
+						isTyping: message.isTyping
+					};
+
+					// Broadcast to all participants except sender
+					broadcastToUsers(
+						participantIds.filter((id) => id !== userId),
+						broadcast
+					);
+					break;
+				}
+
+				case 'message_read': {
+					// Broadcast read receipt to conversation participants
+					if (!userId || !message.conversationId || !message.messageId) {
+						return;
+					}
+
+					const participantIds = await getConversationParticipantIds(message.conversationId);
+					const broadcast: MessageReadBroadcast = {
+						type: 'message_read',
+						conversationId: message.conversationId,
+						userId,
+						messageId: message.messageId,
+						readAt: new Date().toISOString()
+					};
+
+					// Broadcast to all participants except reader
+					broadcastToUsers(
+						participantIds.filter((id) => id !== userId),
+						broadcast
+					);
+					break;
+				}
+
+				case 'message_reaction': {
+					// Broadcast reaction to conversation participants
+					if (!userId || !message.messageId || !message.emoji || !message.action) {
+						return;
+					}
+
+					// Get conversation ID from message
+					const { data: msg } = await supabase
+						.from('messages')
+						.select('conversation_id')
+						.eq('id', message.messageId)
+						.single();
+
+					if (!msg) {
+						return;
+					}
+
+					const participantIds = await getConversationParticipantIds(msg.conversation_id);
+					const broadcast: MessageReactionBroadcast = {
+						type: 'message_reaction',
+						messageId: message.messageId,
+						userId,
+						emoji: message.emoji,
+						action: message.action
+					};
+
+					// Broadcast to all participants except reactor
+					broadcastToUsers(
+						participantIds.filter((id) => id !== userId),
+						broadcast
+					);
 					break;
 				}
 

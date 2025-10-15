@@ -19,7 +19,10 @@
 		"db:fix-profiles": "npx supabase db execute --file supabase/migrations/005_fix_existing_users.sql",
 		"db:status": "npx supabase db execute --sql \"SELECT COUNT(CASE WHEN p.id IS NULL THEN 1 END) as missing_profiles, COUNT(CASE WHEN p.id IS NOT NULL THEN 1 END) as users_with_profiles, COUNT(*) as total_users FROM auth.users u LEFT JOIN public.profiles p ON u.id = p.id;\"",
 		"db:link": "npx supabase link",
-		"ws:dev": "npx tsx src/lib/server/websocket-server.ts"
+		"ws:dev": "npx tsx src/lib/server/websocket-server.ts",
+		"game:import-challenges": "npx tsx scripts/import-navadra-challenges.ts",
+		"game:migrate-assets": "npx tsx scripts/migrate-navadra-assets.ts",
+		"game:seed-spells": "npx tsx scripts/seed-spell-definitions.ts"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",
@@ -72,6 +75,10 @@
 		"@fontsource/lora": "^5.2.8",
 		"@supabase/ssr": "^0.7.0",
 		"@supabase/supabase-js": "^2.74.0",
+		"@tiptap/core": "^3.7.0",
+		"@tiptap/starter-kit": "^3.7.0",
+		"bad-words": "^4.0.0",
+		"mathjs": "^15.0.0",
 		"mathlive": "^0.107.1",
 		"mode-watcher": "^1.1.0",
 		"svelte-sonner": "^1.0.5",

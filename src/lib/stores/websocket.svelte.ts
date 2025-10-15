@@ -166,7 +166,7 @@ class WebSocketManager {
 	/**
 	 * Send message to WebSocket server
 	 */
-	private send(message: object): void {
+	send(message: object): void {
 		if (this.ws && this.ws.readyState === WebSocket.OPEN) {
 			this.ws.send(JSON.stringify(message));
 		}

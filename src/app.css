@@ -226,3 +226,69 @@ main math-field {
 [data-sonner-toaster][data-x-position='right'] {
 	right: 16px !important;
 }
+
+/*
+ * Rich Text Editor - MathLive Integration Styles
+ * ==============================================
+ *
+ * Global styles for MathLive fields used in TipTap rich text editor
+ * These styles ensure consistent appearance for inline and block math
+ */
+
+/* Base math-field styling */
+math-field {
+	border: 1px solid var(--color-border);
+	border-radius: 4px;
+	padding: 4px 8px;
+	margin: 0 4px;
+	background: var(--color-muted);
+	transition: all 0.2s;
+}
+
+math-field:hover {
+	border-color: var(--color-primary);
+}
+
+math-field:focus {
+	outline: 2px solid var(--color-ring);
+	outline-offset: 2px;
+	background: var(--color-background);
+}
+
+/* Block math styling */
+.math-block-wrapper math-field {
+	width: 100%;
+	border: 2px dashed var(--color-border);
+	margin: 1rem 0;
+	padding: 1rem;
+	text-align: center;
+	font-size: 1.2em;
+}
+
+/* TipTap editor base styles */
+.ProseMirror {
+	min-height: 100px;
+	color: var(--color-foreground) !important;
+}
+
+.ProseMirror:focus {
+	outline: none;
+}
+
+/* Override prose colors for better visibility */
+.ProseMirror p,
+.ProseMirror li,
+.ProseMirror span,
+.ProseMirror strong,
+.ProseMirror em {
+	color: var(--color-foreground) !important;
+}
+
+/* Ensure proper math field rendering in editor */
+.math-inline-wrapper {
+	display: inline-block;
+}
+
+.math-block-wrapper {
+	display: block;
+}
