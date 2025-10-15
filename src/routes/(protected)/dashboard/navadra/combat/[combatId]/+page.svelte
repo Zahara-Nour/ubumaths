@@ -28,6 +28,17 @@
 	const playerMaxHP = $derived(calculatePlayerMaxEndurance(data.gamePlayer.level));
 	const playerCurrentHP = $state(playerMaxHP);
 
+	// Derived view state for debugging
+	const currentView = $derived(
+		victory && rewards
+			? 'victory'
+			: challengeResult
+				? 'result'
+				: activeChallenge && challengeInstance
+					? 'challenge'
+					: 'combat'
+	);
+
 	// Monitor form responses
 	$effect(() => {
 		if (form?.challenge) {
@@ -39,8 +50,12 @@
 			victory = true;
 			rewards = form.rewards;
 			toaster.success('🎉 Victoire ! Monstre vaincu !');
-		} else if (form?.damageDealt) {
-			toaster.success(`⚔️ ${form.damageDealt} points de dégâts !`);
+		} else if (form?.damageDealt !== undefined) {
+			if (form.damageDealt > 0) {
+				toaster.success(`⚔️ ${form.damageDealt} points de dégâts !`);
+			} else {
+				toaster.error('❌ Réponse incorrecte ! Aucun dégât infligé.');
+			}
 			invalidateAll(); // Refresh combat data
 		}
 	});
@@ -50,7 +65,19 @@
 	}
 
 	async function handleChallengeSubmit(answer: any, timeTaken: number) {
-		if (!activeChallenge || !selectedSpellNum) return;
+		console.log('[handleChallengeSubmit] Called with:', { answer, timeTaken });
+		console.log('[handleChallengeSubmit] State:', { activeChallenge, selectedSpellNum, challengeInstance });
+
+		if (!activeChallenge || !selectedSpellNum) {
+			console.log('[handleChallengeSubmit] Missing activeChallenge or selectedSpellNum, returning');
+			return;
+		}
+
+		console.log('[handleChallengeSubmit] Setting challengeResult:', {
+			answer,
+			timeTaken,
+			correctAnswer: challengeInstance.correct_answer
+		});
 
 		challengeResult = {
 			answer,
@@ -58,7 +85,16 @@
 			correctAnswer: challengeInstance.correct_answer
 		};
 
-		submitting = true;
+		// Clear challenge instance to prevent showing challenge input again
+		challengeInstance = null;
+
+		console.log('[handleChallengeSubmit] challengeResult set:', challengeResult);
+		console.log('[handleChallengeSubmit] State after update:', {
+			challengeResult,
+			challengeInstance,
+			activeChallenge,
+			submitting
+		});
 	}
 
 	function handleChallengeContinue() {
@@ -70,79 +106,102 @@
 	}
 </script>
 
-{#if victory && rewards}
-	<!-- Victory Screen -->
-	<div class="victory-screen mx-auto max-w-4xl p-8">
-		<div class="space-y-6 rounded-lg border-2 border-yellow-500 bg-gradient-to-br from-yellow-50 to-orange-50 p-8 text-center dark:from-yellow-950/20 dark:to-orange-950/20">
-			<div class="text-8xl">🏆</div>
+<!-- DEBUG: Template state -->
+<div class="fixed left-0 top-0 z-50 bg-black p-2 text-xs text-white opacity-75">
+	<div>currentView: {currentView}</div>
+	<div>victory: {victory}</div>
+	<div>challengeResult: {challengeResult ? 'SET' : 'null'}</div>
+	<div>activeChallenge: {activeChallenge ? 'SET' : 'null'}</div>
+	<div>challengeInstance: {challengeInstance ? 'SET' : 'null'}</div>
+	<div>submitting: {submitting}</div>
+</div>
 
-			<h1 class="text-4xl font-bold text-yellow-600 dark:text-yellow-400">VICTOIRE !</h1>
+{#key currentView}
+	{#if currentView === 'victory'}
+		<!-- Victory Screen -->
+		<div class="victory-screen mx-auto max-w-4xl p-8">
+			<div class="space-y-6 rounded-lg border-2 border-yellow-500 bg-gradient-to-br from-yellow-50 to-orange-50 p-8 text-center dark:from-yellow-950/20 dark:to-orange-950/20">
+				<div class="text-8xl">🏆</div>
 
-			<p class="text-xl text-foreground">
-				Tu as vaincu <strong>{data.monster.name}</strong> !
-			</p>
+				<h1 class="text-4xl font-bold text-yellow-600 dark:text-yellow-400">VICTOIRE !</h1>
 
-			<!-- Rewards -->
-			<div class="grid grid-cols-3 gap-4 rounded-lg bg-background p-6">
-				<div class="space-y-1">
-					<p class="text-3xl font-bold text-primary">+{rewards.xp}</p>
-					<p class="text-sm text-muted-foreground">XP</p>
+				<p class="text-xl text-foreground">
+					Tu as vaincu <strong>{data.monster.name}</strong> !
+				</p>
+
+				<!-- Rewards -->
+				<div class="grid grid-cols-3 gap-4 rounded-lg bg-background p-6">
+					<div class="space-y-1">
+						<p class="text-3xl font-bold text-primary">+{rewards.xp}</p>
+						<p class="text-sm text-muted-foreground">XP</p>
+					</div>
+					<div class="space-y-1">
+						<p class="text-3xl font-bold text-primary">+{rewards.prestige}</p>
+						<p class="text-sm text-muted-foreground">Prestige</p>
+					</div>
+					<div class="space-y-1">
+						<p class="text-3xl font-bold text-primary">+{rewards.pyrs}</p>
+						<p class="text-sm text-muted-foreground">Pyrs {rewards.element}</p>
+					</div>
 				</div>
-				<div class="space-y-1">
-					<p class="text-3xl font-bold text-primary">+{rewards.prestige}</p>
-					<p class="text-sm text-muted-foreground">Prestige</p>
-				</div>
-				<div class="space-y-1">
-					<p class="text-3xl font-bold text-primary">+{rewards.pyrs}</p>
-					<p class="text-sm text-muted-foreground">Pyrs {rewards.element}</p>
-				</div>
-			</div>
 
-			<div class="space-y-3">
-				<Button href="/dashboard/navadra/combat" size="lg" class="w-full">
-					Combattre un autre monstre
-				</Button>
-				<Button href="/dashboard/navadra" variant="outline" size="lg" class="w-full">
-					Retour au hub
-				</Button>
+				<div class="space-y-3">
+					<Button href="/dashboard/navadra/combat" size="lg" class="w-full">
+						Combattre un autre monstre
+					</Button>
+					<Button href="/dashboard/navadra" variant="outline" size="lg" class="w-full">
+						Retour au hub
+					</Button>
+				</div>
 			</div>
 		</div>
-	</div>
-{:else if challengeResult}
-	<!-- Challenge Result -->
-	<div class="mx-auto max-w-4xl p-8">
-		<ChallengeResult
-			success={form?.challengeSuccess ?? false}
-			studentAnswer={challengeResult.answer}
-			correctAnswer={challengeResult.correctAnswer}
-			timeTaken={challengeResult.timeTaken}
-		/>
+	{:else if currentView === 'result'}
+		<!-- Challenge Result -->
+		<div class="mx-auto max-w-4xl p-8">
+			<ChallengeResult
+				success={form?.challengeSuccess ?? false}
+				studentAnswer={challengeResult.answer}
+				correctAnswer={challengeResult.correctAnswer}
+				timeTaken={challengeResult.timeTaken}
+			/>
 
-		<form method="POST" action="?/submitAnswer" use:enhance={() => {
-			return async ({ update }) => {
-				await update();
-				handleChallengeContinue();
-			};
-		}} class="mt-6">
-			<input type="hidden" name="challenge_id" value={activeChallenge.id} />
-			<input type="hidden" name="answer" value={JSON.stringify(challengeResult.answer)} />
-			<input type="hidden" name="time_taken" value={challengeResult.timeTaken} />
-			<input type="hidden" name="spell_num" value={selectedSpellNum} />
+			<form method="POST" action="?/submitAnswer" use:enhance={() => {
+				console.log('[CLIENT] Submitting challenge answer form...');
+				submitting = true;
+				console.log('[CLIENT] Form data:', {
+					challenge_id: activeChallenge.id,
+					answer: challengeResult.answer,
+					correct_answer: challengeResult.correctAnswer,
+					time_taken: challengeResult.timeTaken,
+					spell_num: selectedSpellNum
+				});
+				return async ({ update, result }) => {
+					console.log('[CLIENT] Form submission result:', result);
+					await update();
+					submitting = false;
+					handleChallengeContinue();
+				};
+			}} class="mt-6">
+				<input type="hidden" name="challenge_id" value={activeChallenge.id} />
+				<input type="hidden" name="answer" value={JSON.stringify(challengeResult.answer)} />
+				<input type="hidden" name="correct_answer" value={JSON.stringify(challengeResult.correctAnswer)} />
+				<input type="hidden" name="time_taken" value={challengeResult.timeTaken} />
+				<input type="hidden" name="spell_num" value={selectedSpellNum} />
 
-			<Button type="submit" size="lg" class="w-full" disabled={submitting}>
-				{submitting ? 'Application des dégâts...' : 'Continuer'}
-			</Button>
-		</form>
-	</div>
-{:else if activeChallenge && challengeInstance}
-	<!-- Active Challenge -->
-	<div class="mx-auto max-w-4xl p-8">
-		<ChallengeContainer
-			instance={challengeInstance}
-			onsubmit={handleChallengeSubmit}
-		/>
-	</div>
-{:else}
+				<Button type="submit" size="lg" class="w-full" disabled={submitting}>
+					{submitting ? 'Application des dégâts...' : 'Continuer'}
+				</Button>
+			</form>
+		</div>
+	{:else if currentView === 'challenge'}
+		<!-- Active Challenge -->
+		<div class="mx-auto max-w-4xl p-8">
+			<ChallengeContainer
+				instance={challengeInstance}
+				onsubmit={handleChallengeSubmit}
+			/>
+		</div>
+	{:else}
 	<!-- Combat Arena -->
 	<div class="combat-arena mx-auto max-w-7xl p-8">
 		<div class="grid gap-6 lg:grid-cols-3">
@@ -181,6 +240,11 @@
 							<span class="font-medium">{data.combat.current_turn}</span>
 						</div>
 					</div>
+					<div class="mt-4 border-t border-border pt-4">
+						<Button href="/dashboard/navadra" variant="ghost" size="sm" class="w-full gap-2">
+							← Abandonner le combat
+						</Button>
+					</div>
 				</div>
 
 				<!-- Spell Selection -->
@@ -212,4 +276,5 @@
 			</div>
 		</div>
 	</div>
-{/if}
+	{/if}
+{/key}

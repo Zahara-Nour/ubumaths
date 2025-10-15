@@ -46,15 +46,15 @@ This imports all 464 math challenges from JSON files into the database.
 
 **Note**: Requires `SUPABASE_SERVICE_ROLE_KEY` in your `.env` file.
 
-#### Upload Assets (Optional - for images/sounds)
+#### Setup Game Assets (Required - for images/sounds)
 
 ```bash
-pnpm game:migrate-assets
+pnpm game:setup-assets
 ```
 
-Uploads monster images, spell icons, and sounds to Supabase Storage.
+Copies monster images, spell icons, and sounds from the original Navadra codebase to the static folder for local serving.
 
-**Note**: This will fail if the `extern/navadra-jeu/` folder doesn't exist. You can skip this for now and use placeholder images.
+**Note**: This requires the `extern/navadra-jeu/` folder to exist. If you don't have it, placeholder images will be used automatically.
 
 ### Step 3: Create Test User with Spells
 

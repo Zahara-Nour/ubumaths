@@ -126,11 +126,12 @@ Challenge system (ported from original):
 
 ### 6. Migration Scripts ✅
 
-#### `scripts/migrate-navadra-assets.ts`
-Upload game assets to Supabase Storage:
-- Creates `game-assets` public bucket
-- Uploads monsters, spells, characters, UI, sounds
-- Progress indicators and error handling
+#### `scripts/setup-game-assets.sh`
+Copy game assets to static folder for local serving:
+- Creates `static/game/` directories
+- Copies monsters, spells, characters, UI, sounds
+- Progress indicators and asset counting
+- Simple bash script (no Supabase Storage needed)
 
 #### `scripts/import-navadra-challenges.ts`
 Import 464 JSON challenges to database:
@@ -159,17 +160,17 @@ This will create all 12 game tables with RLS policies and triggers.
 
 #### 2. Import Game Data
 
+**Setup game assets** (copy to static folder):
+```bash
+pnpm game:setup-assets
+```
+
 **Import challenges**:
 ```bash
-npx tsx scripts/import-navadra-challenges.ts
+pnpm game:import-challenges
 ```
 
-**Upload assets**:
-```bash
-npx tsx scripts/migrate-navadra-assets.ts
-```
-
-Note: You'll need `SUPABASE_SERVICE_ROLE_KEY` in your `.env` file.
+Note: You'll need `SUPABASE_SERVICE_ROLE_KEY` in your `.env` file for importing challenges.
 
 ### Remaining Milestones
 

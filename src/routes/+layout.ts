@@ -34,7 +34,7 @@ import { invalidate } from '$app/navigation';
 import type { LayoutLoad } from './$types';
 import { createLogger } from '$lib/utils/logger';
 
-const logger = createLogger('+layout.ts');
+const logger = createLogger('+layout.ts', 'error');
 
 export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	// Register this load function to re-run when 'supabase:auth' is invalidated
@@ -79,7 +79,10 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 
 	// Use the verified session and user from the server
 	// The server already verified these with getUser() - safe to trust
-	logger.info('Session from server:', data.session ? `User: ${data.session.user.email}` : 'No session');
+	logger.info(
+		'Session from server:',
+		data.session ? `User: ${data.session.user.email}` : 'No session'
+	);
 	logger.info('User from server:', data.user ? data.user.email : 'No user');
 
 	/**

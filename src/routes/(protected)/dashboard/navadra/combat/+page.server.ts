@@ -5,6 +5,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { generateRandomMonster } from '$lib/utils/game/combat';
+import { getRandomMonsterTemplate, getMonsterImagePaths } from '$lib/data/game/monsters';
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -73,18 +74,22 @@ export const actions: Actions = {
 
 			const monsterConfig = generateRandomMonster(gamePlayer?.level || 1);
 
+			// Get monster template with proper name and images
+			const template = getRandomMonsterTemplate(monsterConfig.element, monsterConfig.category);
+			const imagePaths = getMonsterImagePaths(template);
+
 			// Create monster in database
 			const { data: newMonster, error: createError } = await supabase
 				.from('game_monsters')
 				.insert({
-					name: `${monsterConfig.element} Monster`, // TODO: Use proper name generator
+					name: template.name,
 					element: monsterConfig.element,
 					level: monsterConfig.level,
 					category: monsterConfig.category,
 					max_endurance: monsterConfig.max_endurance,
 					attack_coefficient: monsterConfig.attack_coefficient,
-					img_url: `monsters/${monsterConfig.element}_${monsterConfig.category}.png`, // TODO: Proper mapping
-					img_head_url: `monsters/${monsterConfig.element}_head.png`,
+					img_url: imagePaths.img_url,
+					img_head_url: imagePaths.img_head_url,
 					spawned_at: new Date().toISOString()
 				})
 				.select()

@@ -118,7 +118,7 @@ All with LocalStorage persistence and reactive updates.
 
 ### 📦 Migration Scripts (3)
 
-- `migrate-navadra-assets.ts` - Upload images/sounds to Supabase
+- `setup-game-assets.sh` - Copy images/sounds to static folder (local serving)
 - `import-navadra-challenges.ts` - Import 464 challenges
 - `seed-spell-definitions.ts` - Spell definitions (20 spells)
 
@@ -180,12 +180,17 @@ Monster Defeated → Victory Screen → Rewards Awarded
 pnpm db:migrate
 ```
 
-### 2. Import Challenges
+### 2. Setup Game Assets
+```bash
+pnpm game:setup-assets
+```
+
+### 3. Import Challenges
 ```bash
 pnpm game:import-challenges
 ```
 
-### 3. Create Test Spells
+### 4. Create Test Spells
 ```sql
 -- Replace YOUR_USER_ID with your auth.users ID
 INSERT INTO game_spells (user_id, spell_num, level, element, power, type) VALUES
@@ -201,7 +206,7 @@ INSERT INTO game_spells (user_id, spell_num, level, element, power, type) VALUES
   ('YOUR_USER_ID', 19, 1, 'wind', 35, 'heal');
 ```
 
-### 4. Start Playing!
+### 5. Start Playing!
 Navigate to: `http://localhost:5173/dashboard/navadra`
 
 ---

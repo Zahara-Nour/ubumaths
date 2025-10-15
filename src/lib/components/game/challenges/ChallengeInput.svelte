@@ -16,21 +16,25 @@
 	let errorMessage = $state('');
 
 	function handleSubmit() {
-		// Validate input
-		if (!answer.trim()) {
+		// Convert to string and validate input
+		const answerStr = String(answer || '');
+
+		if (!answerStr.trim()) {
 			errorMessage = 'Veuillez entrer une réponse';
 			return;
 		}
 
 		// Parse answer based on type
-		let parsedAnswer: any = answer.trim();
+		let parsedAnswer: any = answerStr.trim();
 		if (type === 'number') {
-			parsedAnswer = parseFloat(answer);
+			parsedAnswer = parseFloat(answerStr);
 			if (isNaN(parsedAnswer)) {
 				errorMessage = 'Veuillez entrer un nombre valide';
 				return;
 			}
 		}
+
+		console.log('Submitting answer:', parsedAnswer, 'type:', typeof parsedAnswer);
 
 		// Submit answer
 		onsubmit(parsedAnswer);

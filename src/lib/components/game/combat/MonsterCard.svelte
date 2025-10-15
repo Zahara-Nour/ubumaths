@@ -11,6 +11,7 @@
 	let { monster, onclick, selectable = false }: Props = $props();
 
 	const imageUrl = $derived(getMonsterImageUrl(monster.img_url));
+	let imageError = $state(false);
 
 	const categoryColors = {
 		common: 'border-gray-400',
@@ -36,13 +37,18 @@
 	disabled={!onclick}
 >
 	<!-- Monster Image -->
-	<div class="aspect-square overflow-hidden bg-muted">
-		<img
-			src={imageUrl}
-			alt={monster.name}
-			class="h-full w-full object-cover transition-transform group-hover:scale-110"
-			loading="lazy"
-		/>
+	<div class="aspect-square overflow-hidden bg-muted flex items-center justify-center">
+		{#if imageError}
+			<div class="text-8xl">{elementEmojis[monster.element]}</div>
+		{:else}
+			<img
+				src={imageUrl}
+				alt={monster.name}
+				class="h-full w-full object-cover transition-transform group-hover:scale-110"
+				loading="lazy"
+				onerror={() => imageError = true}
+			/>
+		{/if}
 	</div>
 
 	<!-- Monster Info -->

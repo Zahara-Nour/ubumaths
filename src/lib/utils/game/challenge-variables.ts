@@ -109,7 +109,10 @@ export function generateChallengeInstance(challenge: GameChallenge): ChallengeIn
 	}
 
 	// Evaluate correct answer
+	console.log('Challenge answer definition:', JSON.stringify(challenge.answer, null, 2));
+	console.log('Variables:', JSON.stringify(variables, null, 2));
 	const correctAnswer = evaluateAnswer(challenge.answer, variables);
+	console.log('Evaluated correct answer:', correctAnswer);
 
 	return {
 		challenge,
@@ -127,7 +130,7 @@ export function generateChallengeInstance(challenge: GameChallenge): ChallengeIn
  */
 function evaluateWithContext(expr: string, context: Record<string, any>): any {
 	// Replace variable references {varName} with actual values
-	const interpolated = expr.replace(/\{(\w+)\}/g, (_, varName) => {
+	let interpolated = expr.replace(/\{(\w+)\}/g, (_, varName) => {
 		if (context[varName] !== undefined) {
 			// If it's a string or array, return as-is
 			if (typeof context[varName] === 'string') {
@@ -140,6 +143,13 @@ function evaluateWithContext(expr: string, context: Record<string, any>): any {
 		}
 		return varName;
 	});
+
+	// Replace 'x' used as multiplication operator with '*'
+	// Match 'x' surrounded by spaces or between number and word
+	// Examples: "13 x 10" -> "13 * 10", "5x" -> "5*", "x3" -> "*3"
+	interpolated = interpolated.replace(/(\d+)\s*x\s+/gi, '$1 * ');
+	interpolated = interpolated.replace(/\s+x\s*(\d+)/gi, ' * $1');
+	interpolated = interpolated.replace(/(\d+)x(\d+)/gi, '$1*$2');
 
 	try {
 		return math.evaluate(interpolated, context);
@@ -226,9 +236,57 @@ function topologicalSort(variables: ChallengeVariables): string[] {
  * @returns Evaluated answer
  */
 function evaluateAnswer(answerDef: ChallengeAnswer, variables: Record<string, any>): any {
+	// Handle array format from original Navadra JSON: ["variableName"] or ["expression"] or [{ if: ..., choice: ... }]
+	if (Array.isArray(answerDef)) {
+		// If first element is a string, it could be a variable reference OR an expression
+		if (typeof answerDef[0] === 'string') {
+			const str = answerDef[0];
+
+			// Check if it's a simple variable name (just letters/numbers/underscore)
+			if (/^[a-zA-Z_]\w*$/.test(str) && variables[str] !== undefined) {
+				// It's a variable reference
+				return variables[str];
+			}
+
+			// Otherwise, treat it as an expression and evaluate it
+			return evaluateWithContext(str, variables);
+		}
+
+		// If first element is an object with conditions
+		for (const option of answerDef) {
+			// Handle "determined: true" format
+			if (option.determined === true && option.choice) {
+				// Interpolate the choice with variables and evaluate if it's an expression
+				const interpolated = interpolateExpression(option.choice, variables);
+				// Try to evaluate as expression (e.g., "28 - 3 - 5")
+				return evaluateWithContext(interpolated, variables);
+			}
+
+			// Handle "if: condition" format
+			if (option.if && option.choice) {
+				try {
+					const conditionResult = evaluateWithContext(option.if, variables);
+					if (conditionResult) {
+						// Interpolate the choice with variables and evaluate if it's an expression
+						const interpolated = interpolateExpression(option.choice, variables);
+						return evaluateWithContext(interpolated, variables);
+					}
+				} catch (error) {
+					console.error('Failed to evaluate answer condition:', option.if, error);
+				}
+			}
+		}
+		return null;
+	}
+
+	// Handle object format with value property
 	if (answerDef.value !== undefined) {
 		if (typeof answerDef.value === 'string') {
-			// Evaluate string expression
+			// Could be a variable reference or an expression
+			if (variables[answerDef.value] !== undefined) {
+				return variables[answerDef.value];
+			}
+			// Otherwise evaluate as expression
 			return evaluateWithContext(answerDef.value, variables);
 		}
 		return answerDef.value;
@@ -276,14 +334,31 @@ export function validateAnswer(
 	correctAnswer: any,
 	tolerance: number = 0.01
 ): boolean {
+	console.log('Validating answer:', {
+		studentAnswer,
+		studentType: typeof studentAnswer,
+		correctAnswer,
+		correctType: typeof correctAnswer,
+		tolerance
+	});
+
 	// Handle null/undefined
 	if (studentAnswer === null || studentAnswer === undefined) {
+		console.log('Validation failed: student answer is null/undefined');
+		return false;
+	}
+
+	if (correctAnswer === null || correctAnswer === undefined) {
+		console.log('Validation failed: correct answer is null/undefined');
 		return false;
 	}
 
 	// Numeric comparison with tolerance
 	if (typeof correctAnswer === 'number' && typeof studentAnswer === 'number') {
-		return Math.abs(studentAnswer - correctAnswer) <= tolerance;
+		const diff = Math.abs(studentAnswer - correctAnswer);
+		const isValid = diff <= tolerance;
+		console.log('Numeric comparison:', { diff, tolerance, isValid });
+		return isValid;
 	}
 
 	// Array comparison
@@ -310,7 +385,9 @@ export function validateAnswer(
 	}
 
 	// Direct comparison
-	return studentAnswer === correctAnswer;
+	const isValid = studentAnswer === correctAnswer;
+	console.log('Direct comparison:', isValid);
+	return isValid;
 }
 
 /**

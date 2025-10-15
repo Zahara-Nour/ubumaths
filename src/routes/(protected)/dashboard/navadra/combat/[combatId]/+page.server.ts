@@ -140,8 +140,17 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const challengeId = data.get('challenge_id') as string;
 		const answer = JSON.parse(data.get('answer') as string);
+		const correctAnswer = JSON.parse(data.get('correct_answer') as string);
 		const timeTaken = parseInt(data.get('time_taken') as string);
 		const spellNum = parseInt(data.get('spell_num') as string);
+
+		console.log('[submitAnswer] Received form data:', {
+			challengeId,
+			answer,
+			correctAnswer,
+			timeTaken,
+			spellNum
+		});
 
 		// Fetch combat
 		const { data: combat } = await supabase
@@ -165,9 +174,11 @@ export const actions: Actions = {
 			return fail(400, { error: 'Challenge not found' });
 		}
 
-		// Generate challenge instance and validate answer
-		const instance = generateChallengeInstance(challenge);
-		const success = validateAnswer(answer, instance.correct_answer, challenge.answer.tolerance);
+		// Validate answer using the correct answer from the client
+		// (generated on the client with the same random seed as displayed)
+		console.log('[submitAnswer] About to validate with tolerance:', challenge.answer?.tolerance);
+		const success = validateAnswer(answer, correctAnswer, challenge.answer?.tolerance);
+		console.log('[submitAnswer] Validation result:', success);
 
 		// Record challenge attempt
 		await supabase.from('game_challenge_attempts').insert({
@@ -177,11 +188,8 @@ export const actions: Actions = {
 			success,
 			time_taken: timeTaken,
 			answer_given: answer,
-			correct_answer: instance.correct_answer,
-			challenge_instance: {
-				variables: instance.variables,
-				expressions: instance.expressions
-			}
+			correct_answer: correctAnswer,
+			challenge_instance: null // We don't need to store the full instance anymore
 		});
 
 		// Fetch spell and player level
@@ -202,15 +210,16 @@ export const actions: Actions = {
 			return fail(500, { error: 'Failed to fetch spell or player data' });
 		}
 
-		// Calculate damage
-		const effectiveness = success ? 1.0 : 0.5; // 50% damage on failed challenge
-		const damage = calculateDamage(
-			spell,
-			gamePlayer.level,
-			combat.monster.element,
-			effectiveness,
-			0 // No combo meter for now
-		);
+		// Calculate damage (only if answer is correct)
+		const damage = success
+			? calculateDamage(
+					spell,
+					gamePlayer.level,
+					combat.monster.element,
+					1.0, // Full effectiveness on correct answer
+					0 // No combo meter for now
+			  )
+			: 0; // No damage on wrong answer
 
 		// Update monster HP
 		const newMonsterHP = Math.max(0, (combat.monster_endurance_remaining || combat.monster.max_endurance) - damage);

@@ -1,22 +1,26 @@
 // Game asset URL helpers
 // Author: Claude Code
 // Date: 2025-10-15
-
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+// Updated: 2025-10-15 - Switched to local static assets
 
 export type AssetCategory = 'monsters' | 'spells' | 'characters' | 'sounds' | 'ui';
 
 /**
- * Generate URL for game asset in Supabase Storage
+ * Base path for local game assets in static folder
+ */
+const ASSET_BASE = '/game';
+
+/**
+ * Generate URL for local game asset
  * @param category - Asset category (monsters, spells, characters, sounds, ui)
  * @param filename - Asset filename with extension
- * @returns Full URL to asset
+ * @returns Local URL to asset
  */
 export function getGameAssetUrl(category: AssetCategory, filename: string): string {
 	// Remove leading slash if present
 	const cleanFilename = filename.startsWith('/') ? filename.slice(1) : filename;
 
-	return `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/game-assets/${category}/${cleanFilename}`;
+	return `${ASSET_BASE}/${category}/${cleanFilename}`;
 }
 
 /**
@@ -39,11 +43,34 @@ export function getMonsterHeadUrl(imgHeadUrl: string): string {
 
 /**
  * Get spell icon URL
- * @param spellNum - Spell number
+ * @param spellNum - Spell number (1-28+)
  * @returns Full URL to spell icon
+ *
+ * Spell numbering by element:
+ * - Fire (feu): 1-7
+ * - Water (eau): 8-14
+ * - Wind (vent): 15-21
+ * - Earth (terre): 22-28
  */
 export function getSpellIconUrl(spellNum: number): string {
-	return getGameAssetUrl('spells', `spell_${spellNum}.png`);
+	// Determine element and use French naming convention
+	let element: string;
+
+	if (spellNum >= 1 && spellNum <= 7) {
+		element = 'feu';
+	} else if (spellNum >= 8 && spellNum <= 14) {
+		element = 'eau';
+	} else if (spellNum >= 15 && spellNum <= 21) {
+		element = 'vent';
+	} else if (spellNum >= 22 && spellNum <= 28) {
+		element = 'terre';
+	} else {
+		// Fallback for spells outside known range
+		element = 'base';
+		spellNum = 0;
+	}
+
+	return getGameAssetUrl('spells', `${element}_${spellNum}.png`);
 }
 
 /**

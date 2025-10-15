@@ -12,6 +12,7 @@
 	const imageUrl = $derived(getMonsterImageUrl(monster.img_url));
 	const hpPercentage = $derived((currentHP / monster.max_endurance) * 100);
 	const isLowHP = $derived(hpPercentage < 30);
+	let imageError = $state(false);
 
 	const elementEmojis = {
 		fire: '🔥',
@@ -35,8 +36,17 @@
 
 <div class="monster-panel rounded-lg border border-border bg-card p-4">
 	<!-- Monster Image -->
-	<div class="mb-3 aspect-video overflow-hidden rounded-md bg-muted">
-		<img src={imageUrl} alt={monster.name} class="h-full w-full object-cover" />
+	<div class="mb-3 aspect-video overflow-hidden rounded-md bg-muted flex items-center justify-center">
+		{#if imageError}
+			<div class="text-6xl">{elementEmojis[monster.element]}</div>
+		{:else}
+			<img
+				src={imageUrl}
+				alt={monster.name}
+				class="h-full w-full object-cover"
+				onerror={() => imageError = true}
+			/>
+		{/if}
 	</div>
 
 	<!-- Monster Info -->
