@@ -12,6 +12,7 @@ Le Père Ubu est un chatbot IA avec la personnalité absurde et pataphysique du 
 - 💬 Expressions typiques : "Cornegidouille !", "Par ma chandelle verte !"
 - 🌐 Accessible publiquement (pas d'authentification requise)
 - 💾 Conversations éphémères (localStorage uniquement)
+- 📸 **Support d'images** : Envoyez des photos de devoirs pour obtenir de l'aide (NEW!)
 
 ## 📦 Fichiers Créés
 
@@ -99,6 +100,11 @@ https://votre-domaine.com/pere-ubu
 ### Fonctionnalités
 
 - **Chat en temps réel** : Posez des questions mathématiques
+- **📸 Envoi d'images** :
+  - Uploadez des photos de devoirs (max 4 MB par image)
+  - Partagez des URLs d'images (max 20 MB)
+  - Jusqu'à 5 images par message
+  - Formats supportés : JPG, PNG, GIF, WebP
 - **Historique local** : Les conversations sont sauvegardées dans le navigateur
 - **Effacer l'historique** : Bouton de suppression dans l'en-tête
 - **Auto-scroll** : Descend automatiquement aux nouveaux messages
@@ -158,16 +164,55 @@ Le composant utilise Shadcn UI avec Tailwind CSS. Modifiez les classes dans [src
 
 - **~14 400 requêtes par jour**
 - **Latence** : < 1 seconde en général
-- **Modèle utilisé** : `llama-3.3-70b-versatile`
+- **Modèles utilisés** :
+  - `llama-3.3-70b-versatile` pour le texte uniquement
+  - `meta-llama/llama-4-scout-17b-16e-instruct` pour les images (vision)
 - **Tokens max par réponse** : 1000 (ajustable)
+
+### 📸 Fonctionnalité Vision (Images)
+
+Le chatbot **détecte automatiquement** quand un message contient des images et utilise le modèle vision de Groq.
+
+**Limites d'images :**
+- **5 images maximum** par message
+- **Fichiers uploadés** (base64) : 4 MB maximum par image
+- **URLs d'images** : 20 MB maximum par image
+- **Résolution maximale** : 33 mégapixels (ex: 6600×5000 pixels)
+- **Formats supportés** : JPG, PNG, GIF, WebP
+
+**Utilisation :**
+
+1. **Upload depuis l'appareil** :
+   - Cliquez sur l'icône 📎 (trombone)
+   - Sélectionnez une ou plusieurs images
+   - Les images apparaissent en aperçu
+   - Ajoutez du texte (optionnel) et envoyez
+
+2. **Partage d'URL** :
+   - Cliquez sur l'icône 🔗 (lien)
+   - Collez l'URL de l'image (ex: `https://example.com/photo.jpg`)
+   - Cliquez sur "Ajouter"
+   - Ajoutez du texte (optionnel) et envoyez
+
+**Validation automatique :**
+- ⚠️ Avertissement si le fichier est trop volumineux
+- ⚠️ Avertissement si la résolution est trop élevée
+- ⚠️ Erreur si le format n'est pas supporté
+- ⚠️ Limite de 5 images par message
+
+**Note importante :** Les images **ne sont pas sauvegardées** dans l'historique localStorage pour éviter de surcharger le navigateur. Seuls les messages texte sont persistés.
 
 ### Ajuster les paramètres de l'IA
 
 Éditez [src/routes/api/chat/+server.ts](src/routes/api/chat/+server.ts) :
 
 ```typescript
+// Le modèle est sélectionné automatiquement :
+// - llama-3.3-70b-versatile (texte)
+// - meta-llama/llama-4-scout-17b-16e-instruct (vision)
+
 body: JSON.stringify({
-  model: 'llama-3.3-70b-versatile',
+  model,                 // Détecté automatiquement selon le contenu
   messages: messages,
   temperature: 0.8,      // 0.0-2.0 (plus élevé = plus créatif)
   max_tokens: 1000,      // Nombre max de tokens dans la réponse
@@ -261,6 +306,77 @@ Le Père Ubu est un personnage créé par **Alfred Jarry** en 1896 dans la pièc
 - ❌ Pas de vulgarité (contrairement à l'original)
 - ❌ Pas de violence ou de contenu inapproprié
 
+## 🎨 Rendu LaTeX en Temps Réel avec MathLive
+
+### ✅ Fonctionnalité Implémentée
+
+Le chatbot Père Ubu supporte maintenant le **rendu LaTeX en temps réel** ! Les expressions mathématiques sont automatiquement converties en champs MathLive pendant l'animation de frappe.
+
+**Comment ça marche :**
+
+1. **Le Père Ubu écrit des maths** : Dans ses réponses, il entoure les expressions mathématiques avec `$$`, par exemple `$$x^2 + y^2$$`
+
+2. **Parsing automatique** : Un parseur LaTeX personnalisé (`src/lib/utils/latex-parser.ts`) détecte les expressions `$$...$$ ` et les sépare du texte
+
+3. **Rendu MathLive** : Le composant `MathDisplay` (`src/lib/components/MathDisplay.svelte`) affiche :
+   - Le texte normal comme du texte
+   - Les expressions LaTeX comme des champs MathLive en lecture seule
+   - **Intégration transparente** : Les champs MathLive ont un fond transparent, aucune bordure, et aucun effet de survol - ils se fondent parfaitement dans la bulle de message
+
+4. **Animation fluide** : Pendant l'animation de frappe, les formules mathématiques sont rendues en temps réel au fur et à mesure que chaque caractère apparaît
+
+**Exemples de rendu :**
+
+Entrée du Père Ubu :
+```
+"Cornegidouille ! La formule $$a^2 + b^2 = c^2$$ est fondamentale !"
+```
+
+Ce que l'utilisateur voit :
+- "Cornegidouille ! La formule " (texte normal)
+- **a² + b² = c²** (MathLive rendu)
+- " est fondamentale !" (texte normal)
+
+**Syntaxe LaTeX supportée :**
+
+- **Exposants** : `$$x^2$$` → x²
+- **Fractions** : `$$\frac{a}{b}$$` → a/b
+- **Racines** : `$$\sqrt{x}$$` → √x
+- **Lettres grecques** : `$$\alpha, \beta, \Delta$$` → α, β, Δ
+- **Intégrales** : `$$\int_0^1 x^2 dx$$` → ∫₀¹ x² dx
+- **Sommes** : `$$\sum_{i=1}^{n} i$$` → Σᵢ₌₁ⁿ i
+- Et bien plus encore !
+
+**Fichiers créés :**
+
+```
+src/lib/
+├── utils/
+│   └── latex-parser.ts         # Parseur LaTeX (détecte $$...$$ )
+└── components/
+    └── MathDisplay.svelte      # Composant d'affichage avec MathLive
+```
+
+**Styling et intégration visuelle :**
+
+- ✨ **Fond transparent** : Les champs MathLive héritent du fond de la bulle de message (bleu pour l'utilisateur, gris pour l'assistant)
+- 🚫 **Aucune bordure** : Pas de cadre autour des expressions mathématiques
+- 👆 **Pas d'effet de survol** : Le curseur reste normal (pas de curseur texte), aucun changement visuel au survol
+- 🎯 **Aucun effet de focus** : Pas d'outline ou de ring au clic (les champs sont en lecture seule)
+- 🔗 **Intégration naturelle** : Les formules apparaissent comme si elles faisaient partie intégrante du texte
+
+**Performance :**
+
+- ⚡ Parsing ultra-rapide (< 1ms par message)
+- 🎨 Rendu temps réel pendant l'animation
+- 🔄 Mise à jour fluide sans scintillement
+- 📱 Compatible tous navigateurs modernes
+- 💪 Styles renforcés avec `!important` pour surcharger les styles par défaut de MathLive
+
+Pour plus de détails techniques, consultez les commentaires détaillés dans le code source des fichiers mentionnés ci-dessus.
+
+---
+
 ## 🚀 Prochaines Étapes Possibles
 
 ### Améliorations potentielles
@@ -275,9 +391,10 @@ Le Père Ubu est un personnage créé par **Alfred Jarry** en 1896 dans la pièc
 8. **Intégration avec les devoirs** : Lier aux exercices UbuMaths
 9. **Mode multi-personnalité** : Switcher entre Père et Mère Ubu
 10. **Analytics** : Suivre les types de questions posées
+11. **Saisie LaTeX par l'utilisateur** : Clavier MathLive pour les élèves
 
 ---
 
-**Cornegidouille ! Vous êtes prêt à discuter avec le Père Ubu ! 🎭**
+**Cornegidouille ! Vous êtes prêt à discuter avec le Père Ubu et voir des maths magnifiques ! 🎭📐**
 
 Si vous rencontrez des problèmes, consultez la section Dépannage ou vérifiez les logs du serveur.

@@ -2,9 +2,23 @@ import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 
+interface TextContent {
+	type: 'text';
+	text: string;
+}
+
+interface ImageUrlContent {
+	type: 'image_url';
+	image_url: {
+		url: string;
+	};
+}
+
+type MessageContent = string | Array<TextContent | ImageUrlContent>;
+
 interface ChatMessage {
 	role: 'system' | 'user' | 'assistant';
-	content: string;
+	content: MessageContent;
 }
 
 interface ChatRequest {
@@ -35,6 +49,16 @@ export const POST: RequestHandler = async ({ request }) => {
 		// Strip out any extra properties (like timestamp) and keep only role and content for API
 		const apiMessages = messages.map(({ role, content }) => ({ role, content }));
 
+		// Detect if any message contains images (array content with image_url type)
+		const hasImages = apiMessages.some(
+			(msg) =>
+				Array.isArray(msg.content) &&
+				msg.content.some((item) => typeof item === 'object' && item.type === 'image_url')
+		);
+
+		// Use vision model if images are present, otherwise use standard text model
+		const model = hasImages ? 'meta-llama/llama-4-scout-17b-16e-instruct' : 'llama-3.3-70b-versatile';
+
 		// Call Groq API
 		const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
 			method: 'POST',
@@ -43,7 +67,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				model: 'llama-3.3-70b-versatile',
+				model,
 				messages: apiMessages,
 				temperature: 0.8, // Higher temperature for more creative/absurd responses
 				max_tokens: 1000,
