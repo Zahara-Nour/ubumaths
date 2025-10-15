@@ -125,26 +125,44 @@
 	}
 
 	/**
-	 * Get user avatar URL with fallback based on role and gender
-	 * Priority: profile avatar_url > user metadata avatar_url > role/gender fallback
+	 * Get user avatar URL with multi-level fallback strategy
+	 *
+	 * PRIORITY ORDER:
+	 * 1. profile.avatar_url - Stored in database (primary source, saved on login)
+	 * 2. user.user_metadata.picture - Google OAuth session data (Google's standard field)
+	 * 3. user.user_metadata.avatar_url - Other OAuth providers (fallback field)
+	 * 4. Role/gender-based default avatar - Static fallback images based on user role and gender
+	 * 5. Empty string - Triggers Avatar.Fallback to show initials
+	 *
+	 * IMPORTANT: Google OAuth stores avatars in 'picture' field, not 'avatar_url'
+	 * See: src/routes/(public)/auth/callback/+server.ts for avatar saving logic
+	 * See: supabase/migrations/061_fix_google_avatar_picture_field.sql for database trigger
+	 *
+	 * @returns Avatar URL string or empty string for fallback to initials
 	 */
 	function getAvatarSrc(): string {
-		// First try profile avatar_url
+		// First try profile avatar_url (saved in database from OAuth login)
 		if (profile?.avatar_url) {
 			return profile.avatar_url;
 		}
 
-		// Then try user metadata avatar_url
+		// Then try user metadata - Google uses 'picture' field (OAuth standard)
+		if (user?.user_metadata?.picture) {
+			return user.user_metadata.picture;
+		}
+
+		// Check 'avatar_url' for other OAuth providers
 		if (user?.user_metadata?.avatar_url) {
 			return user.user_metadata.avatar_url;
 		}
 
-		// Finally, use role/gender-based fallback if profile is available
+		// Use role/gender-based default avatar if profile is available
+		// See: src/lib/utils/avatar.ts for implementation
 		if (profile) {
 			return getAvatarFallback(profile.role, profile.gender);
 		}
 
-		// Default fallback - empty string will trigger Avatar.Fallback
+		// Empty string triggers Avatar.Fallback component to show initials
 		return '';
 	}
 </script>

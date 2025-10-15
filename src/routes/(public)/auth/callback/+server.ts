@@ -90,10 +90,13 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 		if (!existingProfile) {
 			logger.info('Creating new profile for user:', user.email);
 
+			// Extract avatar URL from Google OAuth metadata
+			// Google uses 'picture' field (standard), but check 'avatar_url' as fallback
 			const { error: insertError } = await supabase.from('profiles').insert({
 				id: user.id,
 				email: user.email!,
 				full_name: user.user_metadata?.full_name || null,
+				avatar_url: user.user_metadata?.picture || user.user_metadata?.avatar_url || null,
 				role: 'student', // Default role for new users
 				school_id: null
 			});
@@ -106,7 +109,24 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 				logger.info('Profile created successfully');
 			}
 		} else {
-			logger.info('Profile already exists, linking Google account');
+			logger.info('Profile already exists, updating Google avatar if available');
+
+			// Update avatar_url if we have one from Google and profile doesn't have one
+			// This handles users who logged in before avatar saving was implemented
+			// Google OAuth stores avatar in 'picture' field (standard), check 'avatar_url' as fallback
+			const googleAvatar = user.user_metadata?.picture || user.user_metadata?.avatar_url;
+			if (googleAvatar && !existingProfile.avatar_url) {
+				const { error: updateError } = await supabase
+					.from('profiles')
+					.update({ avatar_url: googleAvatar })
+					.eq('id', user.id);
+
+				if (updateError) {
+					logger.error('Failed to update avatar:', updateError);
+				} else {
+					logger.info('Updated avatar for existing user');
+				}
+			}
 		}
 
 		// Success! Session cookies are set by the server client.

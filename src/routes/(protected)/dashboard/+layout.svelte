@@ -51,7 +51,8 @@
 		Plus,
 		Maximize,
 		Minimize,
-		Upload
+		Upload,
+		Bug
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -93,6 +94,7 @@
 				{ href: '/dashboard/admin/schools', label: 'Schools', icon: School },
 				{ href: '/dashboard/admin/users', label: 'Users', icon: Users },
 				{ href: '/dashboard/admin/classes', label: 'Classes', icon: GraduationCap },
+				{ href: '/dashboard/admin/debug/database', label: 'Debug', icon: Bug },
 				{ href: '/dashboard/settings', label: 'Settings', icon: Settings }
 			];
 		}
@@ -101,6 +103,10 @@
 
 	// Check if a link is active
 	function isActive(href: string) {
+		// For debug pages, match any /dashboard/admin/debug/* route
+		if (href === '/dashboard/admin/debug/database') {
+			return $page.url.pathname.startsWith('/dashboard/admin/debug');
+		}
 		return $page.url.pathname === href;
 	}
 

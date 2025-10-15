@@ -669,6 +669,115 @@ The application has a student import system at `/dashboard/admin/import-students
 
 **Important**: Always query `class_members` table (not `class_ids` array) when checking class membership. The triggers ensure they stay in sync, but `class_members` is authoritative.
 
+### Google OAuth and Avatar Management
+
+The application uses **Google OAuth** for authentication, restricted to `@voltairedoha.com` email addresses.
+
+#### Avatar URL Extraction
+
+**Important**: Google OAuth stores the user's profile picture in the `picture` field, NOT `avatar_url`.
+
+When handling OAuth user metadata, always check both fields:
+```typescript
+// CORRECT: Check 'picture' first (Google standard), then 'avatar_url' (fallback)
+const avatarUrl = user.user_metadata?.picture || user.user_metadata?.avatar_url;
+
+// WRONG: Only checking avatar_url will not work with Google OAuth
+const avatarUrl = user.user_metadata?.avatar_url;
+```
+
+#### Avatar Storage Flow
+
+**Migrations**: [060_save_google_avatar_url.sql](supabase/migrations/060_save_google_avatar_url.sql), [061_fix_google_avatar_picture_field.sql](supabase/migrations/061_fix_google_avatar_picture_field.sql)
+
+1. **User Signs Up/Logs In** with Google OAuth
+2. **handle_new_user() Trigger** (Database):
+   - Extracts avatar from `raw_user_meta_data->>'picture'` or `raw_user_meta_data->>'avatar_url'`
+   - Saves to `profiles.avatar_url` when creating new profile
+   - Updates existing profiles if they don't have an avatar set
+3. **OAuth Callback Handler** ([callback/+server.ts](src/routes/(public)/auth/callback/+server.ts)):
+   - Also extracts and saves avatar URL for redundancy
+   - Updates existing profiles that logged in before avatar saving was implemented
+
+#### Avatar Display Logic
+
+**Component**: [Header.svelte](src/lib/components/Header.svelte)
+
+Avatar display priority (fallback chain):
+1. **profile.avatar_url** - Stored in database (primary source)
+2. **user.user_metadata.picture** - Google OAuth session data
+3. **user.user_metadata.avatar_url** - Other OAuth providers
+4. **Role/gender-based fallback** - Default avatars based on user role and gender
+5. **Initials fallback** - First/last name initials or email initial
+
+```typescript
+function getAvatarSrc(): string {
+  // First try profile avatar_url (saved in database)
+  if (profile?.avatar_url) {
+    return profile.avatar_url;
+  }
+
+  // Then try user metadata (Google uses 'picture')
+  if (user?.user_metadata?.picture) {
+    return user.user_metadata.picture;
+  }
+  if (user?.user_metadata?.avatar_url) {
+    return user.user_metadata.avatar_url;
+  }
+
+  // Finally, use role/gender-based fallback
+  if (profile) {
+    return getAvatarFallback(profile.role, profile.gender);
+  }
+
+  return '';
+}
+```
+
+#### Avatar Utility Functions
+
+**Location**: [src/lib/utils/avatar.ts](src/lib/utils/avatar.ts)
+
+- **getAvatarFallback(role, gender)** - Returns default avatar based on user role (student/teacher/admin) and gender (boy/girl)
+- **getAvatarInitials(firstname, lastname)** - Generates two-letter initials for avatar fallback
+
+#### Debugging Avatar Issues
+
+**Debug Page**: `/debug-avatar` (protected route)
+
+Shows:
+- Current avatar display with all fallback stages
+- Avatar source URL being used
+- Full user object and metadata
+- Profile data from database
+- Specific checks for `picture`, `avatar_url`, role, and gender fields
+
+Use this page when troubleshooting why avatars aren't displaying for specific users.
+
+#### OAuth Configuration
+
+**Google OAuth Settings**:
+- **Provider**: Google
+- **Allowed Domain**: `@voltairedoha.com` (enforced in callback handler)
+- **Callback URL**: `/auth/callback`
+- **Metadata Fields Used**: `picture`, `given_name`, `family_name`, `full_name`, `email`
+
+**Domain Validation** ([callback/+server.ts](src/routes/(public)/auth/callback/+server.ts#L61-L73)):
+```typescript
+if (!email || !email.endsWith('@voltairedoha.com')) {
+  await supabase.auth.signOut();
+  throw redirect(303, '/login?error=Only @voltairedoha.com email accounts are allowed');
+}
+```
+
+#### Important Notes
+
+- Users must **log out and log back in** for avatar updates to take effect after deploying avatar-related changes
+- The `handle_new_user()` trigger runs automatically on first login and saves the avatar
+- For existing users without avatars, the callback handler updates their profile on next login
+- Avatar URLs from Google are direct links to Google's CDN and require no additional storage
+- If a user changes their Google profile picture, it will update on next login
+
 ## Available MCP Tools:
 
 You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation. Here's how to use the available tools effectively:
