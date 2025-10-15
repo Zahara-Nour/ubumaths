@@ -45,6 +45,7 @@
 	let showConversationList = $state(true); // For mobile: true = show list, false = show chat
 	let showNewChatDialog = $state(false);
 	let reportMessageId = $state<string | null>(null);
+	let showReportDialog = $state(false);
 
 	// Initialize chat store
 	onMount(() => {
@@ -204,6 +205,7 @@
 	 */
 	function handleReport(messageId: string): void {
 		reportMessageId = messageId;
+		showReportDialog = true;
 	}
 
 	/**
@@ -223,6 +225,7 @@
 		if (success) {
 			toaster.success('Message signalé avec succès');
 			reportMessageId = null;
+			showReportDialog = false;
 		} else {
 			toaster.error('Erreur lors du signalement');
 		}
@@ -383,9 +386,10 @@
 />
 
 <ReportMessageDialog
-	bind:open={reportMessageId !== null}
+	bind:open={showReportDialog}
 	messageId={reportMessageId}
 	onOpenChange={(open) => {
+		showReportDialog = open;
 		if (!open) reportMessageId = null;
 	}}
 	onSubmit={handleSubmitReport}
