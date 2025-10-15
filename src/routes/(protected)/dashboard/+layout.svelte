@@ -52,7 +52,8 @@
 		Maximize,
 		Minimize,
 		Upload,
-		Bug
+		Bug,
+		MessageCircle
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -76,6 +77,8 @@
 		if (role === 'student') {
 			return [
 				...commonLinks,
+				{ href: '/dashboard/friends', label: 'Amis', icon: Users },
+				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
 				{ href: '/dashboard/assignments', label: 'Assignments', icon: ClipboardList },
 				{ href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap },
 				{ href: '/dashboard/progress', label: 'Progress', icon: TrendingUp }
@@ -83,6 +86,8 @@
 		} else if (role === 'teacher') {
 			return [
 				...commonLinks,
+				{ href: '/dashboard/friends', label: 'Amis', icon: Users },
+				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
 				{ href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap },
 				{ href: '/dashboard/students', label: 'Students', icon: Users },
 				{ href: '/dashboard/assignments', label: 'Assignments', icon: ClipboardList },

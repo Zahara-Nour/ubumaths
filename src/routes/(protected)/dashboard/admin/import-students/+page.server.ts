@@ -160,14 +160,42 @@ export const actions: Actions = {
 					// Process each student individually to handle already-logged-in students
 					for (const student of pendingStudents) {
 						// Check if student already has an active profile (logged in before import)
-						const { data: existingProfile, error: profileError } = await supabase
+						const { data: existingProfile } = await supabase
 							.from('profiles')
 							.select('id, class_ids')
 							.eq('email', student.email)
 							.single();
 
 						if (existingProfile) {
-							console.log(`Profile exists for ${student.email}, updating class memberships...`);
+							console.log(`Profile exists for ${student.email}, updating profile and class memberships...`);
+
+							// Update the student's profile with school_id, grade, and gender from import
+							const profileUpdates: {
+								school_id: string;
+								grade?: string | null;
+								gender?: string | null;
+							} = {
+								school_id: student.school_id
+							};
+
+							// Only update grade if provided in import
+							if (student.grade) {
+								profileUpdates.grade = student.grade;
+							}
+
+							// Only update gender if provided in import
+							if (student.gender) {
+								profileUpdates.gender = student.gender;
+							}
+
+							const { error: profileUpdateError } = await supabase
+								.from('profiles')
+								.update(profileUpdates)
+								.eq('id', existingProfile.id);
+
+							if (profileUpdateError) {
+								console.error(`Error updating profile for ${student.email}:`, profileUpdateError);
+							}
 
 							// Add student to class_members table directly (bypassing pending_students)
 							// This syncs their profile with the imported class assignments
@@ -184,6 +212,21 @@ export const actions: Actions = {
 								if (memberError && memberError.code !== '23505') {
 									console.error(`Error adding ${student.email} to class ${classId}:`, memberError);
 								}
+							}
+
+							// Check if there's a pending_students entry for this email and mark it as activated
+							// This handles the edge case where student logged in BEFORE being imported
+							const { error: activateError } = await supabase
+								.from('pending_students')
+								.update({
+									is_activated: true,
+									activated_at: new Date().toISOString()
+								})
+								.eq('email', student.email)
+								.eq('is_activated', false);
+
+							if (activateError) {
+								console.error(`Error activating pending student ${student.email}:`, activateError);
 							}
 
 							updatedCount++;

@@ -161,7 +161,7 @@
 
 				<p class="text-center text-sm text-muted-foreground">
 					Vous avez déjà un compte ?
-					<a href="/login" class="text-primary hover:underline font-medium">Se connecter</a>
+					<a href="/auth/login" class="text-primary hover:underline font-medium">Se connecter</a>
 				</p>
 			</form>
 		</Card.Content>

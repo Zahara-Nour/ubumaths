@@ -16,9 +16,15 @@
 </svelte:head>
 
 <div class="h-screen">
-	<ChatWindow
-		userId={data.session.user.id}
-		isTeacher={data.profile.role === 'teacher' || data.profile.role === 'admin'}
-		supabase={data.supabase}
-	/>
+	{#if data.user && data.profile && data.supabase}
+		<ChatWindow
+			userId={data.user.id}
+			isTeacher={data.profile.role === 'teacher' || data.profile.role === 'admin'}
+			supabase={data.supabase}
+		/>
+	{:else}
+		<div class="flex items-center justify-center h-full">
+			<p class="text-muted-foreground">Loading...</p>
+		</div>
+	{/if}
 </div>

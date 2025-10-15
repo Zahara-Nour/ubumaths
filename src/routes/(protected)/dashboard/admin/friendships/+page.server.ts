@@ -1,25 +1,15 @@
-import { redirect, fail } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
+import { requireRole } from '$lib/server/auth';
 
-export const load: PageServerLoad = async ({ locals }) => {
-	const { session, user } = await locals.safeGetSession();
+export const load: PageServerLoad = async ({ locals, parent }) => {
+	// Get authenticated user and profile from parent layout
+	const { profile } = await parent();
 
-	if (!session || !user) {
-		redirect(303, '/auth/login');
-	}
+	// Require teacher or admin role
+	requireRole(profile, ['teacher', 'admin']);
 
 	const supabase = locals.supabase;
-
-	// Check if user is teacher or admin
-	const { data: profile } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {
-		redirect(303, '/dashboard');
-	}
 
 	// Fetch all friendships with profile data
 	const { data: friendships, error: friendshipsError } = await supabase
@@ -115,9 +105,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
 	deleteFriendship: async ({ request, locals }) => {
-		const { session, user } = await locals.safeGetSession();
+		const { user } = await locals.safeGetSession();
 
-		if (!session || !user) {
+		if (!user) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 

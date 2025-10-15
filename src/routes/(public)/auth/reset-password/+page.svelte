@@ -58,7 +58,7 @@
 
 				<div class="text-center text-sm space-y-2">
 					<div>
-						<a href="/login" class="text-primary hover:underline font-medium">Back to login</a>
+						<a href="/auth/login" class="text-primary hover:underline font-medium">Back to login</a>
 					</div>
 					<div class="text-muted-foreground">
 						Don't have an account?

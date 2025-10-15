@@ -116,8 +116,8 @@ export async function getUserProfile(
 export function requireAuth(user: { id: string } | null) {
 	if (!user) {
 		// User is not authenticated - redirect to login page
-		// 303 status ensures a GET request is made to /login
-		throw redirect(303, '/login');
+		// 303 status ensures a GET request is made to /auth/login
+		throw redirect(303, '/auth/login');
 	}
 }
 

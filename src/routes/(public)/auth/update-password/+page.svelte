@@ -124,7 +124,7 @@
 				<Button type="submit" class="w-full">Update password</Button>
 
 				<div class="text-center text-sm">
-					<a href="/login" class="text-primary hover:underline font-medium">Back to login</a>
+					<a href="/auth/login" class="text-primary hover:underline font-medium">Back to login</a>
 				</div>
 			</form>
 		</Card.Content>

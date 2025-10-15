@@ -42,7 +42,7 @@
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import type { Session, User, SupabaseClient } from '@supabase/supabase-js';
 	import type { Profile } from '$lib/types/database';
-	import { Menu, X, Home, LogIn, LogOut, LayoutDashboard, Sun, Moon, Minus, Plus, Maximize, Minimize } from 'lucide-svelte';
+	import { Menu, X, Home, LogIn, LogOut, LayoutDashboard, Sun, Moon, Minus, Plus, Maximize, Minimize, Users, MessageCircle } from 'lucide-svelte';
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 
@@ -225,13 +225,25 @@
 								</Avatar.Fallback>
 							</Avatar.Root>
 						</DropdownMenu.Trigger>
-						<DropdownMenu.Content align="end" class="w-48">
+						<DropdownMenu.Content align="end" class="w-56">
 							<DropdownMenu.Label>{user?.email}</DropdownMenu.Label>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item>
 								<a href="/dashboard" class="flex items-center w-full">
 									<LayoutDashboard class="mr-2 h-4 w-4" />
 									Tableau de bord
+								</a>
+							</DropdownMenu.Item>
+							<DropdownMenu.Item>
+								<a href="/dashboard/friends" class="flex items-center w-full">
+									<Users class="mr-2 h-4 w-4" />
+									Amis
+								</a>
+							</DropdownMenu.Item>
+							<DropdownMenu.Item>
+								<a href="/dashboard/chat" class="flex items-center w-full">
+									<MessageCircle class="mr-2 h-4 w-4" />
+									Chat
 								</a>
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
@@ -243,7 +255,7 @@
 					</DropdownMenu.Root>
 				</div>
 			{:else}
-				<Button href="/login" size="sm" variant="default">
+				<Button href="/auth/login" size="sm" variant="default">
 					<LogIn class="h-4 w-4 mr-2" />
 					Connexion
 				</Button>

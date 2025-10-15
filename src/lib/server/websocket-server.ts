@@ -1,6 +1,10 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 const PORT = 3001;
 
@@ -10,6 +14,8 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 if (!supabaseUrl || !supabaseServiceKey) {
 	console.error('Missing Supabase environment variables');
+	console.error('PUBLIC_SUPABASE_URL:', supabaseUrl);
+	console.error('SUPABASE_SERVICE_ROLE_KEY:', supabaseServiceKey ? 'Set' : 'Not set');
 	process.exit(1);
 }
 
