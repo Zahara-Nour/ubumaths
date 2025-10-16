@@ -1,0 +1,90 @@
+﻿<html>
+	
+<head>
+	<title>Function curve tangent</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Functioncurvetangent");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">Function curve tangent</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Curvesandgraphs.html">Curves and graphs</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Curvesandgraphs.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Recurrentsequencegraph.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Macros.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts27">This is not an object but the result of an internal construction allowing you creating a tangent to a unction curve through the abscissa of the point.</span></p>
+<p class="rvps2"><span class="rvts27">Click on the icon </span><img alt="" style="padding : 1px;" src="lib/TangenteBig.png"><span class="rvts27"> in the lines expandable bar.</span></p>
+<p class="rvps2"><span class="rvts27">A dialog box pops up.</span></p>
+<p class="rvps2"><span class="rvts27">Select the function and the frame.</span></p>
+<p class="rvps2"><span class="rvts27">Enter the abscissa of the point. It may a reference to an already existing value or a calculus. In the second case a new calculus will be created name of which will start with </span><span class="rvts38">abs</span><span class="rvts27">.</span></p>
+<p class="rvps2"><span class="rvts27">Enter a name for the calculus that will contain the slope of the line created.</span></p>
+<p class="rvps2"><span class="rvts27"><br/></span></p>
+<p class="rvps2"><span class="rvts26">To be noticed :</span><span class="rvts27"> For the tangent to be created, MathGraph32 computes the formal derivative of the function. Sometimes, it may happen that the tangent will not exist while it should. For example, if f(x)=x*sqrt(x), the tangent at point of abscissa 0 will not exist while it should.</span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2021&gt;, &lt;Yves Biton&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

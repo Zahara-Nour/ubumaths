@@ -1,0 +1,24 @@
+{
+  "name": "mathgraph32-electron",
+  "version": "9.4.0",
+  "description": "MathGraph32 en version Desktop",
+  "homepage": "https://www.mathgraph32.org",
+  "main": "main.js",
+  "scripts": {
+    "create-installer-mac": "electron-installer-dmg ../docroot/build/electron/MathGraph32JS-darwin-x64/MathGraph32JS.app MathGraph32JS-app --out=../docroot/build/electron/OSXInstaller --overwrite --icon=logoMathGraph.icns",
+    "package-all": "npm run package-linux && npm run package-win",
+    "package-mac": "electron-packager . MathGraph32JS --overwrite --platform=darwin --electronVersion=34.2.0 --arch=x64 --icon=logoMathGraph.icns --prune=true --out=../electron-packages",
+    "package-linux": "electron-packager . MathGraph32JS --overwrite  --asar --electronVersion=34.2.0 --platform=linux --arch=all --icon=logoMathGraph.png --prune=true --out=../electron-packages",
+    "package-win": "electron-packager . MathGraph32JS  --overwrite --asar --electronVersion=34.2.0 --platform=win32 --arch=all --icon=logoMathGraph.ico --prune=true --out=../electron-packages",
+    "start": "electron .",
+    "start-no-sandbox": "electron --no-sandbox .",
+    "start-debug": "electron --inspect .",
+    "start-debug-no-sandbox": "electron --no-sandbox --debug ."
+  },
+  "author": "Yves Biton",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "electron": "^30.1.0",
+    "@electron/packager": "18.3.2"
+  }
+}

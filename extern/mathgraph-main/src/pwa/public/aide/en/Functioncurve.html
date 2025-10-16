@@ -1,0 +1,125 @@
+﻿<html>
+	
+<head>
+	<title>Function curve</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Functioncurve");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">Function curve</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Curvesandgraphs.html">Curves and graphs</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Curvesandgraphs.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Curvesandgraphs.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Recurrentsequencegraph.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts27">The function curve is not an object.</span></p>
+<p class="rvps2"><span class="rvts27">MathGraph32 draws a function curve as a point locus.</span></p>
+<p class="rvps2"><span class="rvts27">Your figure must own a frame.</span></p>
+<p class="rvps2"><span class="rvts27">You must first create a function must be created through icon </span><img alt="" style="padding : 1px;" src="lib/FonctionBig.png"><span class="rvts27"> </span><span class="rvts38">.</span></p>
+<p class="rvps2"><span class="rvts27">If your figure contains one or several frames, at the bottom of the dialog box the checkbox </span><span class="rvts39">Draw curve</span><span class="rvts27"> is selected.</span></p>
+<p class="rvps2"><span class="rvts27">If you keep the checkbox </span><span class="rvts39">Draw curve</span><span class="rvts27"> selected, the function curve will be added to your figure (defined on R).</span></p>
+<p class="rvps2"><span class="rvts27">If you wish to draw this function curve only on an interval (or don't want the curve to be created) uncheck </span><span class="rvts39">Draw curve</span><span class="rvts27"> checkbox.</span><span class="rvts38"> </span></p>
+<p class="rvps2"><span class="rvts27"><br/></span></p>
+<p class="rvps2"><span class="rvts27">If you have chosen not to check </span><span class="rvts39">Draw curve</span><span class="rvts27"> checkbox, you can draw the curve afterwards using icon </span><img width="38" height="38" alt="" style="padding : 1px;" src="lib/CourbeFonctionBig1.png"><span class="rvts27">.</span></p>
+<p class="rvps2"><span class="rvts27">A dialog box pops up.</span></p>
+<p class="rvps2"><span class="rvts27">Select the function and the frame the curve will be traced in.</span></p>
+<p class="rvps2"><span class="rvts27">Select the type of interval on which the curve is to be calculated.</span></p>
+<p class="rvps2"><span class="rvts27"><br/></span></p>
+<p class="rvps2"><span class="rvts27">The function curve is created as follows :</span></p>
+<p class="rvps2"><span class="rvts27"><br/></span></p>
+<p class="rvps2"><span class="rvts27">MathGraph32 creates a point linked to a line, ray or segment according to the type of interval chosen.</span></p>
+<p class="rvps2"><span class="rvts27">Then are created :</span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside; list-style-type: disc;">
+<li class="rvps2"><span class="rvts27">The measure of the abscissa of the linked point in the frame.</span></li>
+<li class="rvps2"><span class="rvts27">A calculus containing this abscissa. We will refer to it as </span><span class="rvts38">x</span><span class="rvts27">.</span></li>
+<li class="rvps2"><span class="rvts27">Another calculus containing the image of the abscissa through the function. We will refer to it as </span><span class="rvts38">y</span><span class="rvts27">.</span></li>
+<li class="rvps2"><span class="rvts27">A point of coordinates (</span><span class="rvts38">x</span><span class="rvts27">; </span><span class="rvts38">y</span><span class="rvts27">) in the frame.</span></li>
+<li class="rvps2"><span class="rvts27">A point locus of this last point through the positions of the linked point.</span></li>
+</ul>
+<p class="rvps2"><span class="rvts27"><br/></span></p>
+<p class="rvps2"><span class="rvts27">In the dialog box you can change the number of points used to draw the point locus (curve).</span></p>
+<p class="rvps2"><span class="rvts27"><br/></span></p>
+<p class="rvps2"><span class="rvts27">You can also ask for :</span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside; list-style-type: disc;">
+<li class="rvps2"><span class="rvts27">the linked point to be hidden or not.</span></li>
+<li class="rvps2"><span class="rvts27">the point generating the curve to be hidden or not.</span></li>
+<li class="rvps2"><span class="rvts27">the automatic management of discontinuity</span></li>
+</ul>
+<p class="rvps2"><span class="rvts27"><br/></span></p>
+<p class="rvps2"><span class="rvts39">Three more tools allow function curves creation.</span></p>
+<p class="rvps2"><span class="rvts39"><br/></span></p>
+<p class="rvps2"><span class="rvts27">Tool </span><img width="44" height="44" alt="" style="padding : 1px;" src="lib/outilCourbeFoncCr.png"><span class="rvts27"> &nbsp;allows the creation of a function curve with one or two brackets at the edge of the curve.</span></p>
+<p class="rvps2"><span class="rvts27"><br/></span></p>
+<p class="rvps2"><span class="rvts27">Tool </span><img width="42" height="42" alt="" style="padding : 1px;" src="lib/outilCourbeAvecTan.png"><span class="rvts27"> allow the creation of a curve going through </span><span class="rvts38">n</span><span class="rvts27"> given points and the tangent slope at these points. (</span><span class="rvts38">n</span><span class="rvts27"> in the range 2 to 10).</span></p>
+<p class="rvps2"><span class="rvts27"><br/></span></p>
+<p class="rvps2"><span class="rvts27">Tool </span><img width="41" height="41" alt="" style="padding : 1px;" src="lib/outilCourbePoly.png"><span class="rvts27"> &nbsp;allows the creation of a polynomial function curve (of degree less or equal </span><span class="rvts38">n</span><span class="rvts27">) going through </span><span class="rvts38">n</span><span class="rvts27"> given points (n valant de 2 à 8).</span></p>
+<p class="rvps2"><span class="rvts27"><br/></span></p>
+<p class="rvps2"><span class="rvts26">To be noticed :</span><span class="rvts27"> A function curve is a point locus and therefore you can create a point linked to it.</span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2021&gt;, &lt;Yves Biton&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

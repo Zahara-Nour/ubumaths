@@ -39,24 +39,11 @@
 					: 'combat'
 	);
 
-	// Monitor form responses
+	// Monitor form responses for spell selection
 	$effect(() => {
 		if (form?.challenge) {
 			activeChallenge = form.challenge;
 			challengeInstance = generateChallengeInstance(form.challenge);
-		}
-
-		if (form?.victory) {
-			victory = true;
-			rewards = form.rewards;
-			toaster.success('🎉 Victoire ! Monstre vaincu !');
-		} else if (form?.damageDealt !== undefined) {
-			if (form.damageDealt > 0) {
-				toaster.success(`⚔️ ${form.damageDealt} points de dégâts !`);
-			} else {
-				toaster.error('❌ Réponse incorrecte ! Aucun dégât infligé.');
-			}
-			invalidateAll(); // Refresh combat data
 		}
 	});
 
@@ -73,28 +60,134 @@
 			return;
 		}
 
-		console.log('[handleChallengeSubmit] Setting challengeResult:', {
-			answer,
-			timeTaken,
-			correctAnswer: challengeInstance.correct_answer
-		});
+		if (submitting) {
+			console.log('[handleChallengeSubmit] Already submitting, ignoring');
+			return;
+		}
 
-		challengeResult = {
+		// Store challenge result for display
+		const correctAnswer = challengeInstance.correct_answer;
+
+		console.log('[handleChallengeSubmit] Submitting to server:', {
 			answer,
 			timeTaken,
-			correctAnswer: challengeInstance.correct_answer
-		};
+			correctAnswer
+		});
 
 		// Clear challenge instance to prevent showing challenge input again
 		challengeInstance = null;
 
-		console.log('[handleChallengeSubmit] challengeResult set:', challengeResult);
-		console.log('[handleChallengeSubmit] State after update:', {
-			challengeResult,
-			challengeInstance,
-			activeChallenge,
-			submitting
-		});
+		// Submit directly to server
+		submitting = true;
+
+		const formData = new FormData();
+		formData.append('challenge_id', activeChallenge.id);
+		formData.append('answer', JSON.stringify(answer));
+		formData.append('correct_answer', JSON.stringify(correctAnswer));
+		formData.append('time_taken', String(timeTaken));
+		formData.append('spell_num', String(selectedSpellNum));
+
+		try {
+			const response = await fetch('?/submitAnswer', {
+				method: 'POST',
+				body: formData,
+				headers: {
+					'x-sveltekit-action': 'true'
+				}
+			});
+
+			if (response.ok) {
+				const result = await response.json();
+				console.log('[handleChallengeSubmit] Full server response:', JSON.stringify(result, null, 2));
+
+				// SvelteKit action responses wrap data in a specific structure
+				// result.data is a JSON string containing an array:
+				// [{ columnIndices... }, actualSuccess, actualDamage, actualVictory]
+				let success = false;
+				let damageDealt = 0;
+				let isVictory = false;
+
+				if (result.type === 'success' && result.data) {
+					if (typeof result.data === 'string') {
+						console.log('[handleChallengeSubmit] result.data is a string, parsing JSON');
+						const parsed = JSON.parse(result.data);
+						console.log('[handleChallengeSubmit] Parsed array:', parsed);
+
+						if (Array.isArray(parsed) && parsed.length >= 4) {
+							// Array format: [columnIndices, success, damageDealt, victory]
+							success = parsed[1] ?? false;
+							damageDealt = parsed[2] ?? 0;
+							isVictory = parsed[3] ?? false;
+							console.log('[handleChallengeSubmit] Extracted from array indices:', {
+								success,
+								damageDealt,
+								isVictory
+							});
+						} else {
+							// Fallback: try to use as object
+							const serverData = Array.isArray(parsed) ? parsed[0] : parsed;
+							success = serverData?.challengeSuccess ?? false;
+							damageDealt = serverData?.damageDealt ?? 0;
+							isVictory = serverData?.victory ?? false;
+							console.log('[handleChallengeSubmit] Extracted from object:', {
+								success,
+								damageDealt,
+								isVictory
+							});
+						}
+					} else if (Array.isArray(result.data) && result.data.length >= 4) {
+						// Already parsed array
+						success = result.data[1] ?? false;
+						damageDealt = result.data[2] ?? 0;
+						isVictory = result.data[3] ?? false;
+					} else {
+						// Object format
+						const serverData = Array.isArray(result.data) ? result.data[0] : result.data;
+						success = serverData?.challengeSuccess ?? false;
+						damageDealt = serverData?.damageDealt ?? 0;
+						isVictory = serverData?.victory ?? false;
+					}
+				}
+
+				console.log('[handleChallengeSubmit] Parsed values:', {
+					success,
+					damageDealt,
+					isVictory
+				});
+
+				// Set challenge result with server validation
+				challengeResult = {
+					answer,
+					timeTaken,
+					correctAnswer,
+					success
+				};
+
+				// Show toast messages
+				if (isVictory) {
+					victory = true;
+					rewards = serverData.rewards;
+					toaster.success('🎉 Victoire ! Monstre vaincu !');
+				} else if (damageDealt > 0) {
+					toaster.success(`⚔️ ${damageDealt} points de dégâts !`);
+				} else {
+					toaster.error('❌ Réponse incorrecte ! Aucun dégât infligé.');
+				}
+
+				// Refresh data
+				await invalidateAll();
+			} else {
+				console.error('[handleChallengeSubmit] Server error:', response.status);
+				toaster.error('Erreur lors de la validation de la réponse');
+				handleChallengeContinue();
+			}
+		} catch (error) {
+			console.error('[handleChallengeSubmit] Fetch error:', error);
+			toaster.error('Erreur de connexion');
+			handleChallengeContinue();
+		} finally {
+			submitting = false;
+		}
 	}
 
 	function handleChallengeContinue() {
@@ -159,39 +252,15 @@
 		<!-- Challenge Result -->
 		<div class="mx-auto max-w-4xl p-8">
 			<ChallengeResult
-				success={form?.challengeSuccess ?? false}
+				success={challengeResult.success ?? false}
 				studentAnswer={challengeResult.answer}
 				correctAnswer={challengeResult.correctAnswer}
 				timeTaken={challengeResult.timeTaken}
 			/>
 
-			<form method="POST" action="?/submitAnswer" use:enhance={() => {
-				console.log('[CLIENT] Submitting challenge answer form...');
-				submitting = true;
-				console.log('[CLIENT] Form data:', {
-					challenge_id: activeChallenge.id,
-					answer: challengeResult.answer,
-					correct_answer: challengeResult.correctAnswer,
-					time_taken: challengeResult.timeTaken,
-					spell_num: selectedSpellNum
-				});
-				return async ({ update, result }) => {
-					console.log('[CLIENT] Form submission result:', result);
-					await update();
-					submitting = false;
-					handleChallengeContinue();
-				};
-			}} class="mt-6">
-				<input type="hidden" name="challenge_id" value={activeChallenge.id} />
-				<input type="hidden" name="answer" value={JSON.stringify(challengeResult.answer)} />
-				<input type="hidden" name="correct_answer" value={JSON.stringify(challengeResult.correctAnswer)} />
-				<input type="hidden" name="time_taken" value={challengeResult.timeTaken} />
-				<input type="hidden" name="spell_num" value={selectedSpellNum} />
-
-				<Button type="submit" size="lg" class="w-full" disabled={submitting}>
-					{submitting ? 'Application des dégâts...' : 'Continuer'}
-				</Button>
-			</form>
+			<Button onclick={handleChallengeContinue} size="lg" class="mt-6 w-full">
+				Continuer
+			</Button>
 		</div>
 	{:else if currentView === 'challenge'}
 		<!-- Active Challenge -->

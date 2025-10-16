@@ -1,0 +1,156 @@
+﻿<html>
+	
+<head>
+	<title>Construction. Example 1.</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("ConstructionExample1");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">Construction. Example 1.</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Constructions.html">Constructions</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Constructions.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Presentationofconstructions.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="ConstructionExample2.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts20">We will here explain how to create a construction and how to use it.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">We wish to create a construction. It's purpose will be, given two points A and B and a numerical value </span><span class="rvts82">ang</span><span class="rvts20">, to create a triangle AMB right-angled in M with angle BAM of measure </span><span class="rvts82">ang</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Create a new figure with icon </span><img width="30" height="30" alt="" style="padding : 1px;" src="lib/New24.png"><span class="rvts82">. </span><span class="rvts20">Choose a figure without frame and with an unity length.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">If necessary, use menu icon </span><img alt="" style="padding : 1px;" src="lib/outilOptionsFig.png"><span class="rvts20"> to set degree as angle unity for the current figure.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Use icon </span><img alt="" style="padding : 1px;" src="lib/CalculBig.png"><span class="rvts20"> to create a calculation named </span><span class="rvts82">ang</span><span class="rvts20"> with formula </span><span class="rvts82">30</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">Create two free points with icon </span><img alt="" style="padding : 1px;" src="lib/PointLibreBig.png"><span class="rvts20"> et name them </span><span class="rvts82">A</span><span class="rvts20"> and </span><span class="rvts82">B</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">Use icon </span><img alt="" style="padding : 1px;" src="lib/MilieuBig.png"><span class="rvts20"> to create midpoint of segment [</span><span class="rvts82">AB</span><span class="rvts20">].</span></p>
+<p class="rvps2"><span class="rvts20">With icon </span><img alt="" style="padding : 1px;" src="lib/CercOABig.png"><span class="rvts20"> create a circle of center the midpoint and going through point </span><span class="rvts82">A</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Let's now create the image of B through rotation center A and angle </span><span class="rvts82">ang</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">Click on tool </span><img width="38" height="38" alt="" style="padding : 1px;" src="lib/RotationBig.png"><span class="rvts20">. Then click on A (rotation center). </span><span class="rvts82">A</span><span class="rvts20"> starts blinking. Click on point </span><span class="rvts82">B</span><span class="rvts20"> to get it's image created.</span></p>
+<p class="rvps2"><span class="rvts20">Use tool </span><img width="38" height="38" alt="" style="padding : 1px;" src="lib/DemiDtBig.png"><span class="rvts20"> to create the ray with origin A and going through the last point created (image point).</span></p>
+<p class="rvps2"><span class="rvts20">Click on intersection tool </span><img alt="" style="padding : 1px;" src="lib/IntBig.png"><span class="rvts20">, then click at the intersection of the last ray and the circle. We will call the new point created C.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Use tool </span><img alt="" style="padding : 1px;" src="lib/SegmentBig.png"><span class="rvts20"> &nbsp;to create segments [</span><span class="rvts82">AB</span><span class="rvts20">], [</span><span class="rvts82">BC</span><span class="rvts20">] and [</span><span class="rvts82">CA</span><span class="rvts20">] and tool </span><img alt="" style="padding : 1px;" src="lib/MarqueAngNorBig.png"><span class="rvts20"> to mark the right angle in C (click on A, C and B in this order).</span></p>
+<p class="rvps2"><span class="rvts20">Our figure is now ready to create our construction.</span></p>
+<p class="rvps2"><span class="rvts20">Use icon &nbsp;</span><img width="44" height="44" alt="" style="padding : 1px;" src="lib/outilCreationConst.png"><span class="rvts82"> </span><span class="rvts20">then choose </span><span class="rvts82">Graphical sources objects choice</span><span class="rvts20">. Click on </span><span class="rvts82">A</span><span class="rvts20"> and </span><span class="rvts82">B</span><span class="rvts20">, then click on the red STOP button on the right bottom side of the window.</span></p>
+<p class="rvps2"><span class="rvts20">Use icon </span><img width="44" height="44" alt="" style="padding : 1px;" src="lib/outilCreationConst.png"><span class="rvts20"> then &nbsp;choose </span><span class="rvts82">Numerical sources objects choice</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">A dialog box pops up.</span></p>
+<p class="rvps2"><span class="rvts20">The left list contains all numerical objects which are potential object sources.</span></p>
+<p class="rvps2"><span class="rvts20">Click on </span><span class="rvts82">ang</span><span class="rvts20"> then click on button</span><span class="rvts80"> Insert</span><span class="rvts20"> (you can also double click on </span><span class="rvts82">ang</span><span class="rvts20">) then validate.</span></p>
+<p class="rvps2"><span class="rvts20">Now we have to choose the final objects of our figure. In this example, all the final objects are numerical.</span></p>
+<p class="rvps2"><span class="rvts20">Let's point out that it is only possible to choose as final objects objects exclusively created through sources objects.</span></p>
+<p class="rvps2"><span class="rvts20">Use icon </span><img width="44" height="44" alt="" style="padding : 1px;" src="lib/outilCreationConst.png"><span class="rvts20"> &nbsp;then choose</span><span class="rvts82"> Graphical final objects choice</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">Click on point </span><span class="rvts82">C</span><span class="rvts20">, on the three segments and on the angle mark then click on the red STOP button.</span></p>
+<p class="rvps2"><span class="rvts20">To finalize the construction, la construction, use icon </span><img width="44" height="44" alt="" style="padding : 1px;" src="lib/outilCreationConst.png"><span class="rvts20"> then choose</span><span class="rvts82"> Finish current construction</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Fill in the dialog box as underneath :</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/ExempleConstruction6.png"></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Let us explain the information entered here.</span></p>
+<p class="rvps2"><span class="rvts20">The first five lines are general explanations for the future user. These explanations will pop up when pressing key </span><span class="rvts80">F7</span><span class="rvts20"> while implementing the construction.</span></p>
+<p class="rvps2"><span class="rvts20">The last three lines will be displayed in the indication line(at the bottom of MathGraph32 window) when the user will be asked to click on sources objects.</span></p>
+<p class="rvps2"><span class="rvts20">Each line starts with character # followed with the index of the source object.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts118">To be noticed :</span><span class="rvts28"> When implementing a macro, &nbsp;numerical sources objects must always be specified first.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">If you don't delete this construction, it will be saved with the figure when you save the figure to a file. But it is better to save the construction in a separate file with extension </span><span class="rvts82">mgc</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">For this use icon </span><img width="40" height="40" alt="" style="padding : 1px;" src="lib/outilGestionConst.png"><span class="rvts20"> and choose </span><span class="rvts82">Save a construction of the figure.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Let us now implement this construction in another figure.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Use menu icon </span><img alt="" style="padding : 1px;" src="lib/New24.png"><span class="rvts20"> and choose a figure with or without a frame.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Use icon </span><img width="40" height="40" alt="" style="padding : 1px;" src="lib/outilGestionConst.png"><span class="rvts20">and choose </span><span class="rvts82">Incorporate construction from file</span><span class="rvts20"> to incorporate the construction you just saved in a file.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Use icon </span><img alt="" style="padding : 1px;" src="lib/CreerVariableBig.png"><span class="rvts20"> (toolbar of calculations and cursors) to create a new variable named </span><span class="rvts82">a</span><span class="rvts20">, with mini value of - </span><span class="rvts82">90</span><span class="rvts20">, maxi value of </span><span class="rvts82">90</span><span class="rvts20">, step value of </span><span class="rvts82">10</span><span class="rvts20"> , current value of </span><span class="rvts82">30</span><span class="rvts20"> and select checkbox </span><span class="rvts80">Associated dialog</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">Create two free points with tool </span><img alt="" style="padding : 1px;" src="lib/PointLibreBig.png"><span class="rvts20"> and get them named C and D.</span></p>
+<p class="rvps2"><span class="rvts20">Use now icon </span><img width="40" height="40" alt="" style="padding : 1px;" src="lib/outilGestionConst.png"><span class="rvts20"> and choose &nbsp;</span><span class="rvts82">Implement a construction of the figure</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">A dialog box pops up with a list of the constructions of the figure. Click on </span><span class="rvts82">Tangents </span><span class="rvts20">then click on button </span><span class="rvts80">Implement</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">Another dialog box pops up for the choice of numerical objects.</span></p>
+<p class="rvps2"><span class="rvts20">In the right list, click on variable </span><span class="rvts82">a</span><span class="rvts20"> to associate </span><span class="rvts82">a</span><span class="rvts20"> to the first source object (only source object in this example).</span></p>
+<p class="rvps2"><span class="rvts20">Then in the indication line we see that the construction is waiting for us to click on two points. Click on point C and D.</span></p>
+<p class="rvps2"><span class="rvts20">You see now new objects appear : the final objects of the construction.</span></p>
+<p class="rvps2"><span class="rvts20">Click on buttons + and - in the little dialog box associated with the variable to change the angle in C.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">In more complicated constructions you can also have numerical final object sources.</span></p>
+<p class="rvps2"><span class="rvts20">Using </span><img width="31" height="31" alt="" style="padding : 1px;" src="lib/Historique24.png"><span class="rvts20"> icon (figure protocol) &nbsp;and checking the checkbox </span><span class="rvts80">Intermediary objects</span><span class="rvts20">, you will be able to see all the objects created, including intermediary objects.</span></p>
+<p class="rvps2"><span class="rvts20">Intermediary objects cannot be used by other objects, except using icon </span><img width="40" height="40" alt="" style="padding : 1px;" src="lib/outilGestionConst.png"><span class="rvts20"> and choosing &nbsp;</span><span class="rvts82">Merge constructions implemented in figure</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts103">To be noticed :</span></p>
+<p class="rvps2"><span class="rvts20">In current use, free points are only sources objects.</span></p>
+<p class="rvps2"><span class="rvts20">But you may want a free point to become a final object of a construction.</span></p>
+<p class="rvps2"><span class="rvts20">To do so :</span></p>
+<p class="rvps2"><span class="rvts20">Click on the free point while choosing graphical sources objects.</span></p>
+<p class="rvps2"><span class="rvts20">Click on the same point when clicking on final graphical objects.</span></p>
+<p class="rvps2"><span class="rvts20">A confirmation will be asked and your point will become a final object.</span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2021&gt;, &lt;Yves Biton&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

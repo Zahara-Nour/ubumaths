@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>MathGraph32 Dys Mode collège</title>
+
+	<script type="text/javascript" src="build/mtgLoad.js"></script>
+	<script type="text/javascript" src="build/MathJax3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" type="text/css" href="build/mathgraph.css"></link>
+</head>
+<body>
+    <div id="main">
+	</div>
+    <script type="text/javascript">
+      /* glob mtgLoader */
+	  (function autostart() {
+	  const width = 1100
+      const height = 600
+      var svgOptions = {
+        width: width,
+		height: height
+      }
+	  const zoomFactor = Math.floor(Math.min(width / 950, height / 550) * 100) / 100
+      var mtgOptions = {
+        fig: {
+          type: "orthonormal",
+          datarep: {
+            quadhor: false,
+            quadver: false,
+            grid: true,
+            withvect: false,
+            grad: "simple"
+          },
+          unity: "deg"
+        },
+        translatable: false,
+		zoomFactor : zoomFactor,
+		local: true,
+        level: 1,
+        dys: true,
+        newFig: true,
+        open: true,
+        options: true,
+        stylePointCroix: true,
+        save: true, // pour que l'outil permettant d'enregistrer une figure soit présent
+        callBackAfterReady: function callBackAfterReady (app) {
+			console.log('app is ready', app);
+        }
+      }
+      mtgLoad('main', svgOptions, mtgOptions, (error, app) => {
+        if (error) return console.error(error)
+    })
+
+	})()
+    </script>
+
+</body>
+</html>

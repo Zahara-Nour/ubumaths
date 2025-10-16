@@ -1,0 +1,221 @@
+﻿<html>
+	
+<head>
+	<title>Visualizaci&oacute;n de c&oacute;digo LaTeX</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("VisualizaciondecodigoLaTeX");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">Visualizaci&oacute;n de c&oacute;digo LaTeX</h1>
+				
+				</div>
+			<div id="topic_header_nav">
+				<a href="Visualizacionesespeciales.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Lastransformacionesgeometricas.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts18">MathGraph32 permite visualizar fórmulas matemáticas escritas con el código LaTeX en las visualizaciones LaTeX.</span></p>
+<p class="rvps2"><span class="rvts18"><br/></span></p>
+<p class="rvps2"><span class="rvts18">Para que un comentario se convierta en una pantalla LaTeX, simplemente encierre el texto de comentario entre dos caracteres $.</span></p>
+<p class="rvps2"><span class="rvts18"><br/></span></p>
+<p class="rvps2"><span class="rvts18">Para visualizar el código LaTeX en una visualización LaTeX escriba simplemente el código LaTeX.</span></p>
+<p class="rvps2"><span class="rvts18"><br/></span></p>
+<p class="rvps2"><span class="rvts18">En los dos casos (creación de un comentario o de una visualización LaTeX) el resultado es visible e intermitente sobre la figura a medida que mecanografíe el código LaTeX en la caja de diálogo.</span></p>
+<p class="rvps2"><span class="rvts18">Botones presentes en lo alto de la caja de diálogo nos permiten insertar automáticamente el código LaTeX para las visualizaciones más corrientes. No se tiene más que que llenar el contenido de los delimitadores (oprimiendo la tecla TAB se hará saltar el cursor dentro del delimitador siguiente).</span></p>
+<p class="rvps2"><span class="rvts18"><br/></span></p>
+<p class="rvps2"><span class="rvts18">MathGraph32 utiliza tres códigos LaTeX que le son específicos:</span></p>
+<p class="rvps2"><span class="rvts18"><br/></span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside; list-style-type: disc;">
+<li class="rvps2"><span class="rvts18">\Val que permite visualizar dinámicamente el valor de un cálculo o de una variable en una fórmula.</span></li>
+<li class="rvps2"><span class="rvts18">\ValFrac: Para mostrar dinámicamente un valor en una visualizaciónLaTeX en forma de fracción racional aproximada.</span></li>
+<li class="rvps2"><span class="rvts18">\FracRed que permite visualizar una fracción reducida igual a una fracción dada precisando el numerador y el denominador.</span></li>
+<li class="rvps2"><span class="rvts18">\If : que permite hacer una visualización condicional.</span></li>
+<li class="rvps2"><span class="rvts18">\For : que permite visualizar con el estilo LaTeX la fórmula de un cálculo o de una función.</span></li>
+<li class="rvps2"><span class="rvts18">\ForSimp : que permite visualizar con el estilo LaTeX la fórmula de un cálculo o una función reemplazando los cálculos o variables utilizados en la fórmula por su fórmula, con la simplificación de 1 o 0 inútiles.</span></li>
+<li class="rvps2"><span class="rvts18">\ForSimpFrac: Para mostrar dinámicamente la fórmula simplificada de uncálculo o de una función (real o compleja) con fracciones racionales aproximadas.</span></li>
+<li class="rvps2"><span class="rvts18">\Calc : que permite visualizar la fórmula en línea (con signos operativos) de un cálculo o función.</span></li>
+<li class="rvps2"><span class="rvts18">\CalcSimp : que permite visualizar la fórmula en línea (con signos operativos) de un cálculo o una función, con la simplificación de 1 o 0 inútiles.</span></li>
+<li class="rvps2"><span class="rvts18">\Descomp: Para mostrar la descomposición en producto de potencias de factores primos de un entero.</span></li>
+<li class="rvps2"><span class="rvts18">\DecompFull: Para mostrar la descomposición como producto de factores números primos de un número entero sin usar un exponente.</span></li>
+</ul>
+<p class="rvps2"><span class="rvts18"><br/></span></p>
+<p class="rvps2"><span class="rvts18">Notará que los nombres de estas siete funciones comienzan con una letra mayúscula, a diferencia de las funciones habituales de LaTeX.</span></p>
+<p class="rvps2"><span class="rvts18"><br/></span></p>
+<h1 class="rvps6"><span class="rvts0"><span class="rvts79">\Val: Para indicar dinámicamente un valor en una visualización LaTeX.</span></span></h1>
+<p class="rvps2"><span class="rvts81"><br/></span></p>
+<p class="rvps7"><span class="rvts20">MathGraph32 &nbsp;permite indicar dinámicamente en una visualización LaTeX el valor de un cálculo (real o complejo) o el valor de una variable.</span></p>
+<p class="rvps7"><span class="rvts20">Si se quiere indicar dinámicamente otro objeto numérico (una medida por ejemplo), se crea en primer lugar un cálculo conteniendo el valor dinámico que debe indicarse en la visualización LaTeX.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">Supongamos que </span><span class="rvts21">num</span><span class="rvts20"> es un cálculo o una variable anteriormente definida y deseamos indicar dinámicamente una fracción que tiene este valor para numerador y que tiene como denominador 2.</span></p>
+<p class="rvps7"><span class="rvts20">Cliquear sobre el botón </span><img alt="" style="padding : 1px;" src="lib/LatexQuotient.png"><span class="rvts20"> que inserta el código LaTeX \ frac {} {}.</span></p>
+<p class="rvps7"><span class="rvts20">Coloque el cursor dentro de los dos últimos delimitadores y mecanografíe 2, luego coloque el cursor dentro de los dos primeros delimitadores y oprima el botón &nbsp;</span><span class="rvts78">Inserción de valor dinámico.</span><span class="rvts20">Cliquear sobre </span><span class="rvts21">num</span><span class="rvts20"> y validar.</span></p>
+<p class="rvps7"><span class="rvts20">Se obtiene el código siguiente LaTeX: \ frac {\ Val {</span><span class="rvts21">num</span><span class="rvts20">} {2}} que causará la visualización de </span><span class="rvts21">num</span><span class="rvts20"> en el numerador de la fracción y con dos decimales.</span></p>
+<p class="rvps7"><span class="rvts20">Pueden también elegir pedir otro número de decimales o que la visualización del valor de </span><span class="rvts21">num</span><span class="rvts20"> vaya precedida de un signo + cuando el valor de </span><span class="rvts21">num</span><span class="rvts20"> es positivo o nulo.</span></p>
+<p class="rvps7"><span class="rvts20">Por ejemplo, el código \ frac {\ Val {</span><span class="rvts21">num</span><span class="rvts20">, 3, +} {2}} causará la visualización de </span><span class="rvts21">num</span><span class="rvts20"> en el numerador con 3 decimales y precedido del signo + cuando </span><span class="rvts21">num</span><span class="rvts20"> es positivo.</span></p>
+<p class="rvps7"><span class="rvts21"><br/></span></p>
+<p class="rvps7"><span class="rvts20">Una utilización aún más avanzada es posible:</span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside; list-style-type: disc;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside; list-style-type: circle;">
+<li style="margin-left: 0px" class="rvps7"><span class="rvts20"> \Val{</span><span class="rvts21">num, dec,+0</span><span class="rvts20">} causa la visualización de </span><span class="rvts21">num</span><span class="rvts20"> con </span><span class="rvts21">dec</span><span class="rvts20"> decimales, precedida de un signo + si es positivo o nulo pero que desaparece si </span><span class="rvts21">num</span><span class="rvts20"> es igual a 0.</span><br/><span class="rvts21"><br/></span></li>
+<li style="margin-left: 0px" class="rvps7"><span class="rvts20"> \Val{</span><span class="rvts21">num, dec,0</span><span class="rvts20">} causa la visualización de </span><span class="rvts21">num</span><span class="rvts20"> con </span><span class="rvts21">dec</span><span class="rvts20"> decimales que desaparece si num es igual a 0.</span></li>
+<li style="margin-left: 0px" class="rvps7"><span class="rvts20">\Val{</span><span class="rvts21">num, dec,+1</span><span class="rvts20">} causa la visualización de </span><span class="rvts21">num</span><span class="rvts20"> con </span><span class="rvts21">dec</span><span class="rvts20"> decimales que es sustituida por un signo + cuando </span><span class="rvts21">num</span><span class="rvts20"> es igual a 1 y un signo – cuando </span><span class="rvts21">num</span><span class="rvts20"> es igual a –1.</span><br/><span class="rvts20"><br/></span></li>
+<li style="margin-left: 0px" class="rvps7"><span class="rvts20">\Val{</span><span class="rvts21">num,dec,1</span><span class="rvts20">} causa la visualización de </span><span class="rvts21">num</span><span class="rvts20"> con </span><span class="rvts21">dec</span><span class="rvts20"> decimales que desaparece cuando </span><span class="rvts21">num</span><span class="rvts20"> es igual a 1 y es sustituida por un signo – cuando </span><span class="rvts21">num</span><span class="rvts20"> es igual a –1.</span></li>
+</ul></ul>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts85">\ValFrac: Para mostrar dinámicamente un valor en una visualización LaTeX en forma de fracción racional aproximada</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">La sintaxis es la siguiente: \ValFrac{número}.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">El número se reemplaza por la fracción racional con una aproximación de 10^(-12)</span></p>
+<p class="rvps7"><span class="rvts20">obtenido por el algoritmo de fracciones continuas.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">Para mostrar una matriz mat con sus términos reemplazados por</span></p>
+<p class="rvps7"><span class="rvts20">fracciones racionales aproximadas, usamos la sintaxis \ValFrac{mat}</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">Si el número es un valor real, también podemos usar la sintaxis</span></p>
+<p class="rvps7"><span class="rvts20">\ValFrac{número,+} si se desea que el número esté precedido por el signo +</span></p>
+<p class="rvps7"><span class="rvts20">cuando es positivo o nulo.</span></p>
+<p class="rvps7"><span class="rvts20"></span><br/><span class="rvts20"><br/></span></p>
+<h1 class="rvps6"><span class="rvts0"><span class="rvts79">\FracRed:</span></span><span class="rvts0"><span class="rvts84"> Para visualizar una fracción racional bajo la forma más simple posible.</span></span></h1>
+<p class="rvps2"><span class="rvts83"><br/></span></p>
+<p class="rvps7"><span class="rvts20">La sintaxis es la siguiente:</span></p>
+<p class="rvps7"><span class="rvts21"><br/></span></p>
+<p class="rvps7"><span class="rvts20">\FracRed {</span><span class="rvts21">num</span><span class="rvts20">, </span><span class="rvts21">den</span><span class="rvts20">} o \FracRed {</span><span class="rvts21">num</span><span class="rvts20">, </span><span class="rvts21">den</span><span class="rvts20">, </span><span class="rvts21">code</span><span class="rvts20">}</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">Las dos causarán la visualización de una fracción irreducible igual a la fracción de numerador </span><span class="rvts21">num</span><span class="rvts20"> y de denominador </span><span class="rvts21">den</span><span class="rvts20">.</span></p>
+<p class="rvps7"><span class="rvts20">Si la fracción es igual a un número entero, es este número que se indicará sin barra de fracción.</span></p>
+<p class="rvps7"><span class="rvts20">Si </span><span class="rvts21">num</span><span class="rvts20"> o </span><span class="rvts21">den</span><span class="rvts20"> no son nombres de cálculo o variable, no son enteros o si </span><span class="rvts21">den</span><span class="rvts20"> es nulo, </span><span class="rvts21">Frac Error</span><span class="rvts20"> será indicado.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">Si </span><span class="rvts21">code</span><span class="rvts20"> es igual +0, la fracción irá precedida de un signo + cuando el resultado es positivo y desaparecerá cuando el resultado es nulo.</span></p>
+<p class="rvps7"><span class="rvts20">Si </span><span class="rvts21">code</span><span class="rvts20"> es igual 0, la fracción desaparecerá cuando el resultado es nulo.</span></p>
+<p class="rvps7"><span class="rvts20">Si </span><span class="rvts21">code</span><span class="rvts20"> es igual +1, la fracción irá precedida de un signo + cuando el resultado es positivo será sustituido por un signo + cuando el resultado es 1 y por un signo – cuando el resultado es –1.</span></p>
+<p class="rvps7"><span class="rvts20">Si </span><span class="rvts21">code</span><span class="rvts20"> es igual 1, la fracción desaparecerá cuando valga 1 y será sustituida por un signo – cuando el resultado es –1.</span></p>
+<h1 class="rvps14"><span class="rvts0"><span class="rvts79"><br/></span></span></h1>
+<h1 class="rvps6"><span class="rvts0"><span class="rvts79">\If : Para realizar una visualización condicional.</span></span></h1>
+<p class="rvps2"><span class="rvts82"><br/></span></p>
+<p class="rvps7"><span class="rvts20">La sintaxis es la siguiente: : \If {</span><span class="rvts21">test</span><span class="rvts20">} {code1} {code2} dónde </span><span class="rvts21">test</span><span class="rvts20"> es un cálculo real o una variable anteriormente creada. Si test vale 1 entonces es el código LaTeX </span><span class="rvts21">code1</span><span class="rvts20"> que se indicará y si no es el código LaTeX &nbsp;</span><span class="rvts21">code2</span><span class="rvts20"> que se indicará.</span></p>
+<p class="rvps7"><span class="rvts21">code1</span><span class="rvts20"> y </span><span class="rvts21">code2</span><span class="rvts20"> pueden ellos mismos utilizar \ If y esto con cualquier número de anidación.</span></p>
+<p class="rvps7"><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<h1 class="rvps6"><span class="rvts0"><span class="rvts79">\For : Para visualizar dinámicamente la fórmula de un cálculo o de una funciónn (real o compleja).</span></span></h1>
+<p class="rvps2"><span class="rvts81"><br/></span></p>
+<p class="rvps7"><span class="rvts20">La sintaxis es la siguiente: \For {</span><span class="rvts21">calc</span><span class="rvts20">} donde </span><span class="rvts21">calc</span><span class="rvts20"> es un cálculo o una función precedentemente definida.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<h1 class="rvps6"><span class="rvts0"><span class="rvts79">\ForSimp : Para mostrar dinámicamente la fórmula no simplificada de un cálculo o de una función (real o compleja)..</span></span></h1>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">La sintaxis es la siguiente: \ForSimp {</span><span class="rvts21">calc</span><span class="rvts20">} donde </span><span class="rvts21">calc</span><span class="rvts20"> es un cálculo o función previamente definida.</span></p>
+<p class="rvps7"><span class="rvts20">Las llamadas a variables y cálculos se reemplazan por su valor numérico y la expresión del cálculo se simplifica tanto como sea posible (por ejemplo, los términos nulos de una suma no se escriben, 1*x se reemplaza por x).</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<h1 class="rvps6"><span class="rvts0"><span class="rvts79">\ForRep :Para mostrar dinámicamente la fórmula no simplificada de un cálculo o función (real o compleja)..</span></span></h1>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">La sintaxis es la siguiente: \ForRepl {calc} donde calc es un cálculo o una función previamente definida.</span></p>
+<p class="rvps7"><span class="rvts20">Las llamadas a variables y cálculos se reemplazan por su valor numérico sin ninguna simplificación..</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts86">\ForSimpFrac: Para mostrar dinámicamente la fórmula simplificada de un cálculo o de una función (real o compleja) con fracciones racionales aproximadas.</span></p>
+<p class="rvps2"><span class="rvts86"><br/></span></p>
+<p class="rvps7"><span class="rvts87">La sintaxis es la siguiente: \ForSimpFrac {calc} donde calc es un cálculo o una función previamente definida.</span></p>
+<p class="rvps7"><span class="rvts87">Las llamadas de variables y cálculos se reemplazan por su fracción racional aproximada al 10^(-12) y la expresión del cálculo es simplificado tanto como sea posible (por ejemplo, los términos nulos de una suma no se escriben, 1*x y se reemplaza por x).</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<h1 class="rvps6"><span class="rvts0"><span class="rvts79">\Calc : Para visualizar la fórmula en línea correspondiente a la fórmula de un cálculo o de una función.</span></span></h1>
+<p class="rvps2"><span class="rvts81"><br/></span></p>
+<p class="rvps7"><span class="rvts20">La sintaxis es la siguiente: \ Calc {</span><span class="rvts21">calc</span><span class="rvts20">} donde </span><span class="rvts21">calc</span><span class="rvts20"> es un cálculo o función previamente definida.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<h1 class="rvps6"><span class="rvts0"><span class="rvts79">\CalcSimp : Para visualizar la fórmula en línea simplificada correspondiente a la fórmula de un cálculo o de una función.</span></span></h1>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">La sintaxis es la siguiente: \CalcSimp {</span><span class="rvts21">calc</span><span class="rvts20">} donde </span><span class="rvts21">calc</span><span class="rvts20"> es un cálculo o función previamente definida.</span></p>
+<p class="rvps7"><span class="rvts20">Las llamadas a variables y cálculos se reemplazan por su valor numérico y la expresión del cálculo se simplifica tanto como sea posible (por ejemplo, los términos nulos de una suma no se escriben, 1*x se reemplaza por x).</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts86">\Decomp: Para mostrar la descomposición como producto de factores números primos de un número entero sin usar un exponente.</span></p>
+<p class="rvps2"><span class="rvts88"><br/></span></p>
+<p class="rvps7"><span class="rvts87">La sintaxis es la siguiente: \Decomp {número} donde número es un cálculo o</span></p>
+<p class="rvps7"><span class="rvts87">una variable previamente definida.</span></p>
+<p class="rvps7"><span class="rvts87"><br/></span></p>
+<p class="rvps7"><span class="rvts87">Si el número no es un número entero, devuelve la visualización decimal del número</span></p>
+<p class="rvps7"><span class="rvts87">(con 12 decimales como máximo).</span></p>
+<p class="rvps7"><span class="rvts87"><br/></span></p>
+<p class="rvps7"><span class="rvts87">Si el número es -1, 1 o 0 devuelve -1, 1 o 0.</span></p>
+<p class="rvps7"><span class="rvts87"><br/></span></p>
+<p class="rvps7"><span class="rvts87"><br/></span></p>
+<p class="rvps2"><span class="rvts86">\Decomp: Para mostrar la descomposición como producto de factores números primos de un número entero sin usar un exponente.</span></p>
+<p class="rvps2"><span class="rvts88"><br/></span></p>
+<p class="rvps7"><span class="rvts87">La sintaxis es: \DecompFull {número} donde número es un</span></p>
+<p class="rvps7"><span class="rvts87">cálculo o una variable previamente definida.</span></p>
+<p class="rvps7"><span class="rvts87"><br/></span></p>
+<p class="rvps7"><span class="rvts87">Si el número no es un número entero, se devuelve la visualización decimal del número</span></p>
+<p class="rvps7"><span class="rvts87">(con 12 decimales como máximo).</span></p>
+<p class="rvps7"><span class="rvts87"><br/></span></p>
+<p class="rvps7"><span class="rvts87">Si el número es -1, 1 o 0 se devuelve -1, 1 o 0.</span></p>
+<p class="rvps7"><span class="rvts87"><br/></span></p>
+<p class="rvps2"><span class="rvts89">\Lat: Para utilizar el contenido de una visualización LaTeX en otra visualización LaTeX:</span></p>
+<p class="rvps7"><span class="rvts87"><br/></span></p>
+<p class="rvps7"><span class="rvts87"><br/></span></p>
+<p class="rvps7"><span class="rvts87">La sintaxis es la siguiente: \Lat {valtag} donde valtag es la etiqueta de una visualización LaTeX previamente definida (cadena de caracteres).</span></p>
+<p class="rvps7"><span class="rvts87"><br/></span></p>
+<p class="rvps7"><span class="rvts87">Reemplaza \Lat{tag} con el contenido de la visualización LaTeX de la etiqueta valtag siempre que exista una visualización LaTeX de la etiqueta valtag y se haya definido antes de la visualización LaTeX en la que se inserta este código.</span></p>
+<p class="rvps7"><span class="rvts87"><br/></span></p>
+<p class="rvps7"><span class="rvts85"><br/></span></p>
+<p class="rvps2"><span class="rvts85"><br/></span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2021&gt;, &lt;Yves Biton - Luis Belcredi&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

@@ -1,0 +1,95 @@
+﻿<html>
+	
+<head>
+	<title>Macro jouant un fichier sonore</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Macrojouantunfichiersonore");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">Macro jouant un fichier sonore</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Lasmacros.html">Las macros</a> &rsaquo;&rsaquo; <a href="Losdiferentestiposdemacros.html">Los diferentes tipos de macros</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Losdiferentestiposdemacros.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Macrodepausa.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Macrodebucleconanimacion.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts20">Se crea una macro de apertura de un archivo sonoro usando el icono</span><span class="rvts21"> </span><img alt="" style="padding : 1px;" src="lib/outilAdd.png"><span class="rvts21"> </span><span class="rvts20">de la barra de iconos reservada para las visualizaciones (cuarta desde la parte inferior).</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Esta macro, cuando se active, causará la ejecución de un fichero sonoro.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Es imprescindible que este fichero sonoro ya esté creado (por ejemplo con ayuda de la grabadora de Windows) y esté guardado en el mismo directorio que la figura MathGraph32 o en un subdirectorio de éste.</span></p>
+<p class="rvps2"><span class="rvts20">Cliquear en primer lugar en donde se ubicará el título de la macro.</span></p>
+<p class="rvps2"><span class="rvts20">Una caja de diálogo se abre para permitirles especificar el título de la macro, las características de visualización de este título así como un comentario en el cual podrán explicar el funcionamiento de esta macro.</span></p>
+<p class="rvps2"><span class="rvts20">Cliquear a continuación el botón </span><span class="rvts78">Recorrer</span><span class="rvts20">. Una caja de diálogo se abre que les permite elegir el fichero sonoro que se ejecutará. Valide por </span><span class="rvts78">OK</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">El camino de acceso al fichero sonoro se volvió a copiar en el campo </span><span class="rvts78">Fichero sonoro</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">Valide por </span><span class="rvts78">OK</span><span class="rvts20">.</span><span class="rvts78">.</span></p>
+<p class="rvps2"><span class="rvts98"><br/></span></p>
+<p class="rvps2"><span class="rvts98">A tener en cuenta</span></p>
+<p class="rvps2"><span class="rvts20">Cuando una macro que descarga un fichero sonoro forma parte de las macros ejecutadas por una macro de ejecución de una sucesión de macros, si esta macro se realiza se ejecuta en segundo plano, la macro siguiente se realizará sin esperar el final de la lectura del fichero sonoro. Esta posibilidad permite crear presentaciones animadas y sonoras.</span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2021&gt;, &lt;Yves Biton - Luis Belcredi&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

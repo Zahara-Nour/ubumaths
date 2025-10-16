@@ -1,0 +1,19 @@
+svg {
+    -webkit-user-select: none; /* Chrome all / Safari all */
+    -moz-user-select: none; /* Firefox all */
+    -ms-user-select: none; /* IE 10+ */
+    -webkit-tap-highlight-color: transparent; /* Nécessaire sur ipad pour ne pas avoir de rectanle gris sélectionné lors des touch events */
+}
+
+.error {
+  color: hsl(0, 80%, 40%);
+  margin: 0.5rem 1rem;
+}
+.error::before {
+  content: '⚠️';
+  margin-right: 10px;
+}
+.error::after {
+  content: '⚠️';
+  margin-left: 10px;
+}

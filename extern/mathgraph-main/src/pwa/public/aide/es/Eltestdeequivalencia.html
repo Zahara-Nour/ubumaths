@@ -1,0 +1,91 @@
+﻿<html>
+	
+<head>
+	<title>El test de equivalencia</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Eltestdeequivalencia");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">El test de equivalencia</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Losobjetosnumericos.html">Los objetos num&eacute;ricos</a> &rsaquo;&rsaquo; <a href="Losobjetosnumericostipocalculo.html">Los objetos num&eacute;ricos tipo c&aacute;lculo</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Losobjetosnumericostipocalculo.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Eltestdeexistencia.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Eltestdefactorizacion.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts23">Un test de equivalencia es un valor que permite comparar la equivalencia algebraica de dos cálculos o de dos funciones.</span></p>
+<p class="rvps2"><span class="rvts23">El valor devuelto es 1 si los dos cálculos son equivalentes y 0 si no.</span></p>
+<p class="rvps2"><span class="rvts23">Este tipo de objetos sirve principalmente para poner on-line los ejercicios hechos con MathGraph32 gracias a su applet.y su biblioteca JavaScript.</span></p>
+<p class="rvps2"><span class="rvts23">Por ejemplo son considerados como equivalentes -2*sqrt(2)/3+1 y 1-2*sqrt(2)/3 o 1 -2/3*sqrt(2) ou 1-1/3*2*srqt(2) pero no -4*sqrt(2)/6+1</span></p>
+<p class="rvps2"><span class="rvts23">Para definir tal objeto se utiliza el icono</span><span class="rvts107"> </span><img alt="" style="padding : 1px;" src="lib/outilAdd.png"><span class="rvts20"> de la tercera fila de iconos desde la parte inferior</span></p>
+<p class="rvps2"><span class="rvts23">Una caja de diálogo se abre.</span></p>
+<p class="rvps2"><span class="rvts23">Se selecciona en las listas de izquierda y de derecha los cálculos a comparar. Si se marca la celda </span><span class="rvts41">Reemplazo de los valores luego &nbsp;de la comparación</span><span class="rvts23"> los llamados a las variables o cálculos son remplazados por su valor numérico antes de la comparación.</span></p>
+<p class="rvps2"><span class="rvts23">Por ejemplo si </span><span class="rvts35">a</span><span class="rvts23"> y </span><span class="rvts35">b</span><span class="rvts23"> son dos cálculos que contienen como valores 2 y 3, si Calc1 es un cálculo que contiene como fórmula </span><span class="rvts35">a/b</span><span class="rvts23"> + </span><span class="rvts35">sqrt(2)</span><span class="rvts23"> y si </span><span class="rvts35">calc2 </span><span class="rvts23">es un cálculo que contiene como fórmula </span><span class="rvts35">sqrt(2)+1/3*2</span><span class="rvts23">, un test de equivalencia de los dos cálculos creado marcando la celda &nbsp;</span><span class="rvts41">Reemplazo de los valores luego &nbsp;de la comparación</span><span class="rvts23"> para </span><span class="rvts35">calc1</span><span class="rvts23"> devolverá como valor 1 porque los dos cálculos son considerados como equivalentes.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2021&gt;, &lt;Yves Biton - Luis Belcredi&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

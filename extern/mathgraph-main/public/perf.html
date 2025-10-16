@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=9">
+  <title>Test de mathgraph avec webpackDevServer</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <style type="text/css">
+    #errors {
+      color: red;
+    }
+
+    svg {
+      -webkit-user-select: none; /* Chrome all / Safari all */
+      -moz-user-select: none; /* Firefox all */
+      -ms-user-select: none; /* IE 10+ */
+      -webkit-tap-highlight-color: transparent; /*Nécessaire sur ipad pour ne pas avoir de rectanle gris sélectionné lors des touch events */
+    }
+  </style>
+</head>
+<body>
+  <form id="formNbFig">
+    <label for="nbFig">Nb de figures : </label>
+    <input id="nbFig" type="number" maxlength="3" size="3">
+  </form>
+  <div id="errors"></div>
+  <div id="main"></div>
+  <script type="application/javascript">
+    // il faut définir ça avant de charger mtgLoad pour qu'il charge ce build
+    window.mtgPublicPath = 'build/'
+  </script>
+  <script type="text/javascript" src="build/mtgLoad.js"></script>
+  <script type="application/javascript">
+/* global mtgLoad */
+function getTime () {
+  const d = new Date()
+  return `${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}.${d.getMilliseconds()}`
+}
+function callBackAfterReady (app) {
+  console.log(getTime(), 'app is ready', app);
+}
+function addError (error) {
+  console.error(error)
+  const errElt = document.createElement('p')
+  errElt.appendChild(document.createTextNode(error.message || error))
+  document.getElementById('errors').appendChild(errElt)
+}
+function fetchMtg (id) {
+  return fetch(`https://bibliotheque.sesamath.net/api/public/${id}`).then(response => {
+    if (!response.ok) throw Error(`HTTP error ${response.status} ${response.statusText}`)
+    return response.json()
+  }).then(({data: ress}) => {
+    load(ress.titre, ress.parametres.content.fig)
+  }).catch(addError).then(() => Promise.resolve()) // on chope l'erreur pour l'afficher mais on retourne toujours une promesse résolue, pour continuer d'afficher les autres figures
+}
+function load (titre, fig) {
+  const main = document.getElementById('main')
+  // titre
+  const h1 = document.createElement('h1')
+  h1.appendChild(document.createTextNode(titre))
+  main.appendChild(h1)
+  // on ajoute un div conteneur du svg
+  const container = document.createElement('div')
+  container.id = `container${figIndex++}`
+  main.appendChild(container)
+  const mtgOptions = {
+    fig,
+    isEditable: false,
+    callBackAfterReady
+  }
+  const svgOptions = {
+    idSvg: `svg${figIndex}`,
+  }
+  console.log(`Chargement de la figure ${figIndex} (${titre})`)
+  // pour les tests de perfs, utiliser
+  // mtgLoad pour avoir toujours la même instance du player
+  // mtgLoad(container, svgOptions, mtgOptions, function (error, app) {
+  // et mtgLoad.loadNewPlayer pour avoir une nouvelle instance à chaque figure :
+  // mtgLoad.loadNewPlayer(container, svgOptions, mtgOptions, function (error, app) {
+  mtgLoad(container, svgOptions, mtgOptions, function (error, app) {
+    if (error) return addError(error)
+    console.log(`On récupère app pour ${svgOptions.idSvg} (qui contient les docs ["${app.docs.map(({idDoc}) => idDoc).join('", "')}"])`, app)
+  })
+}
+
+function refresh () {
+  const main = document.getElementById('main')
+  // on vide
+  while (main.lastChild) main.removeChild(main.lastChild)
+  figIndex = 0
+  // on regarde le nb demandé
+  let nbFig = window.location.hash.length > 1 ? Math.round(Number(window.location.hash.substr(1))) : nbFigDefault
+  if (isNaN(nbFig) || nbFig < 1 || nbFig > 250) {
+    console.error(`nb de figures invalide ${window.location.hash} => ${nbFigDefault}`)
+    nbFig = nbFigDefault
+  }
+  // si l'input ne contient pas cette valeur on corrige
+  const input = document.getElementById('nbFig')
+  if (Number(input.value) !== nbFig) {
+    input.value = nbFig
+    // la ligne précédente modifie l'input mais ne déclenche pas le listener change… faut pas de return ici
+  }
+  // on récupère la liste de ressources
+  fetch(`https://bibliotheque.sesamath.net/api/liste?format=light&limit=${nbFig}&publie=true&restriction=0&type=mathgraph`).then((response) => {
+    if (!response.ok) throw Error(`HTTP error ${response.status} ${response.statusText}`)
+    return response.json()
+  }).then(({data: {liste}}) => {
+    console.log('La liste des ressources mathgraph', liste)
+    return Promise.all(liste.map(item => fetchMtg(item.oid)))
+  }).then(() => {
+    console.log(`On a chargé ${figIndex} figures`)
+  }).catch(addError)
+}
+
+const nbFigDefault = 10
+let figIndex = 0
+
+try {
+  if (typeof mtgLoad !== 'function') throw Error('mtgLoad non dispo')
+  // on rafraîchit à chaque changement de hash
+  window.addEventListener('hashchange', refresh)
+  // on shunt le submit du form
+  document.getElementById('formNbFig').addEventListener('submit', (event) => event.preventDefault())
+  // on écoute les modifs de l'input
+  const input = document.getElementById('nbFig')
+  input.addEventListener('change', () => {
+    window.location.hash = input.value
+  })
+  // et on lance un 1er refresh au 1er chargement de la page
+  refresh()
+} catch (error) {
+  addError(error)
+}
+  </script>
+</body>
+</html>

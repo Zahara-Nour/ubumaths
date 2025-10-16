@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MathJax mis-measuring</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+  <style type="text/css">
+    body {
+      font-family: serif;
+      font-size: 18px;
+    }
+    #errors p {
+      color: #a00;
+      border: #600 solid 1px;
+      margin: 0.5em;
+      padding: 0.5em 1em;
+    }
+    #small {
+      font-family: sans-serif;
+      font-size: 12px;
+    }
+    #big {
+      font-family: Roboto;
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+
+<ul>This page show a Mathjax bug about text size in svg rendering, leading to text overriding mathjs expression (for this <a href="https://github.com/mathjax/MathJax/issues/2257">issue</a>)
+  <li>font-family and font-face are inherit, but text size detection is failing a bit, as you can see with this sample where mathjs override text, « : - » becomes ÷ because mathjs is displayed a little bit too far to the left (text block override mathjs block)<br>
+    If you swap serif/sans-serif (sans-serif on body and serif on #small), mathjs is displayed too far to the right in serif case (too much space and no more overriding)
+  </li>
+  <li>svg.mtextInheritFont: true seems ok if done before MathJax loading but not after, already in this <a href="https://github.com/mathjax/MathJax/issues/2189">issue</a> (cf comments in source code, to reproduce it comment the config before loading and uncomment the one after loading)</li>
+</ul>
+
+<p>LaTeX string, change it and rendering will occurs on blur</p>
+<textarea id="latex" cols="80" rows="5">\text{some text before mathjs : }-\frac{\sqrt{2}}{2}</textarea>
+
+<div id="errors"></div>
+
+<div id="normal">
+  <p>normal (as body : serif), MathJax svg embed in our svg</p>
+  <svg id="svgnormal" width="800" height="100"></svg>
+  <p>And raw MathJax output</p>
+  <div></div>
+</div>
+
+<hr>
+<div id="small">
+  <p>small sans-serif, MathJax svg embed in our svg</p>
+  <svg id="svgsmall" width="800" height="100"></svg>
+  <p>And raw MathJax output</p>
+  <div></div>
+</div>
+
+<hr>
+<div id="big">
+  <p>big Roboto, MathJax svg embed in our svg</p>
+  <svg id="svgbig" width="800" height="100"></svg>
+  <p>And raw MathJax output</p>
+  <div></div>
+</div>
+
+<script type="application/javascript">
+  // if this config is done after loading, mtextInheritFont: true is ignored by tex2svgPromise
+  // can be https://github.com/mathjax/MathJax/issues/2189
+window.MathJax = {
+  svg: {
+    // @see http://docs.mathjax.org/en/latest/options/output/svg.html#the-configuration-block
+    mtextInheritFont: true
+  }
+}
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<script type="application/javascript">
+/* global MathJax */
+/**
+ * log & show error
+ * @param {Error} error
+ */
+function showError (error) {
+  console.error(error)
+  const errors = document.getElementById('errors')
+  const p = document.createElement('p');
+  const txt = document.createTextNode(error.message)
+  p.appendChild(txt)
+  errors.appendChild(p)
+  p.addEventListener('click', () => errors.removeChild(p))
+}
+
+/**
+ * Render the latex string in our 3 svg
+ * @param {string} latex
+ */
+function render (latex) {
+  // empty errors
+  const errors = document.getElementById('errors')
+  while (errors.hasChildNodes()) errors.removeChild(errors.lastChild)
+  // typeset latex
+  MathJax.tex2svgPromise(latex).then((html) => {
+    svgs.forEach(svg => {
+      // empty parent svg
+      while (svg.hasChildNodes()) svg.removeChild(svg.lastChild)
+      // get MathJax svg
+      const jaxSvg = html.cloneNode(true).firstElementChild
+      // and rendering it in our svg
+      svg.appendChild(jaxSvg)
+    })
+    // same rendering directly mathjax html in parent
+    containers.forEach(container => {
+      container.removeChild(container.lastChild)
+      container.appendChild(html.cloneNode(true))
+    })
+  }).catch(showError)
+}
+
+/* Mathjax config
+MathJax.config = {
+  svg: {
+    // @see http://docs.mathjax.org/en/latest/options/output/svg.html#the-configuration-block
+    // changing this here, after MathJax Loading, doesn't change anything on rendering (serif for everybody)
+    mtextInheritFont: true
+  }
+} /* */
+
+const ids = ['normal', 'small', 'big']
+// ours svg
+const svgs = ids.map(suffix => document.getElementById(`svg${suffix}`))
+// and containers
+const containers = ids.map(id => document.getElementById(id))
+
+// a listener on latex change
+document.getElementById('latex').addEventListener('blur', event => render(event.target.value))
+
+// initial latex rendering on load
+render(document.getElementById('latex').value)
+</script>
+</body>
+</html>

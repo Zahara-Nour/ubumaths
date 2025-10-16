@@ -1,0 +1,99 @@
+﻿<html>
+	
+<head>
+	<title>The indexed multiplication</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Theindexedmultiplication");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">The indexed multiplication</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Numericalobjects.html">Numerical objects</a> &rsaquo;&rsaquo; <a href="Numericalobjectsofcalculationtyp.html">Numerical objects of calculation type</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Numericalobjectsofcalculationtyp.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Theindexedsum.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Therealrecurrentsequence.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps16"><span class="rvts28">The indexed multiplication is the sum of &nbsp;a numerical object, named </span><span class="rvts117">value to be multiplied</span><span class="rvts28"> obtained when a variable (called the index &nbsp;variable) takes all the integer values between the start and end values of index specified.</span></p>
+<p class="rvps16"><span class="rvts28">The result is calculated as follows :</span></p>
+<p class="rvps16"><span class="rvts28">Variable index is given all the integer values from mini value to maxi value. Each time, all the elements elements of the figure depending on &nbsp;value to be multiplied and depending on variable index are re-calculated</span><span class="rvts117">.</span><span class="rvts28"> The </span><span class="rvts117">value to be multiplied</span><span class="rvts28"> is multiplied to the result and so on.</span></p>
+<p class="rvps16"><span class="rvts28"><br/></span></p>
+<p class="rvps16"><span class="rvts28">Let us have a simple example :</span></p>
+<p class="rvps16"><span class="rvts28">We have already defined a real function </span><span class="rvts117">f</span><span class="rvts28"> , a variable </span><span class="rvts117">N</span><span class="rvts28"> current value of which is 10.</span></p>
+<p class="rvps16"><span class="rvts28">We wish to calculate the multiplication of all </span><span class="rvts117">f(k)</span><span class="rvts28"> for </span><span class="rvts117">k</span><span class="rvts28"> in the range from 1 to </span><span class="rvts117">N</span><span class="rvts28">.</span></p>
+<p class="rvps16"><span class="rvts28">We will use a variable </span><span class="rvts117">k</span><span class="rvts28"> with minimal value of 1, maximal &nbsp;value of 100, step 1 and current value 2. We will notice that mini, maxi values and the step values of the variable are not used by the sum</span></p>
+<p class="rvps16"><span class="rvts28">Then we create a calculus named </span><span class="rvts117">v</span><span class="rvts28"> (the </span><span class="rvts117">value to be multiplied</span><span class="rvts28">) that will contain the formula </span><span class="rvts117">f(k)</span><span class="rvts28">.</span></p>
+<p class="rvps16"><span class="rvts28">Then we will use &nbsp;icon </span><img alt="" style="padding : 1px;" src="lib/outilAdd.png"><span class="rvts28"> of the calculations expandable bar (third from the bottom)</span><span class="rvts117">.</span></p>
+<p class="rvps16"><span class="rvts28">Enter </span><span class="rvts117">P</span><span class="rvts28"> as name for the multiplication.</span></p>
+<p class="rvps16"><span class="rvts28">Choose v as value to be summed.</span></p>
+<p class="rvps16"><span class="rvts28">Choose </span><span class="rvts117">k</span><span class="rvts28"> for index variable.</span></p>
+<p class="rvps16"><span class="rvts28">Choose 1 for start index.</span></p>
+<p class="rvps16"><span class="rvts28">Choose </span><span class="rvts117">N</span><span class="rvts28"> for end index.</span></p>
+<p class="rvps16"><span class="rvts28"><br/></span></p>
+<p class="rvps16"><span class="rvts118">To be noticed &nbsp;:</span><span class="rvts28"> This multiplication is dynamic.Modifying &nbsp;N value will modify the result.</span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2021&gt;, &lt;Yves Biton&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

@@ -1,0 +1,114 @@
+/** Pour la console python|javascript
+par défaut on a :
+
+div.mtgUiCommandsContainer
+  div.mtgUiCommands
+    div.mtgUiCommandsRmq
+    div.mtgUiCommandsTerminal
+      div.aceEditorContainer (relative)
+        div.ace_editor (absolute collé au précédent et filé à ace.edit()
+    div.mtgUiCommandsActions
+    div.mtgUiCommandsResult
+  div.mtgFigCommandedContainer (créé par mtgLoad:initDom)
+    div.mtgFigCommanded (créé par mtgLoad:initDom, conteneur de mtgAppLecteurApi)
+    div.mtgFigActions
+
+Si on passe un mtgOptions.commandsContainer à mtgLoad, alors initDom lui ajoute simplement la classe mtgUiCommands
+*/
+.mtgUiCommandsContainer {
+  display: flex;
+  align-content: stretch;
+  justify-content: stretch;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mtgUiCommands, .mtgFigCommandedContainer {
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+  min-height: 600px;
+}
+
+.mtgUiCommands {
+  /* par défaut on le veut au minimum, en le laissant grandir si y'a la place
+   mais sans forcer .mtgFigCommandedContainer à passer dessous (s'il était à droite) */
+  width: min-content;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+/* sa taille est imposée par le svg */
+.mtgFigCommandedContainer {
+  width: fit-content;
+  margin: auto;
+  position: relative;
+}
+
+.mtgRmq {
+  padding: 0.5rem;
+  font-family: sans-serif;
+  background-color: #f8e0a8;
+}
+
+.mtgUiCommandsEditor {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 400px;
+  min-height: 450px;
+}
+
+.mtgUiCommandsEditor > div.ace_editor {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  font-family: monospace;
+}
+.mtgUiCommandsOutput {
+  background-color: black;
+  color: white;
+  min-height: 1rem;
+  max-height: 200px;
+  /* ça déborde jamais en x avec le break qui suit => on veut pas de scroll horizontal */
+  overflow-x: hidden;
+  overflow-y: auto;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  font-family: monospace;
+}
+
+.mtgActions {
+  margin: 5px;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.mtgActions span {
+  margin: 0 10px;
+}
+
+.mtgFigCommanded {
+  border: black solid 1px;
+  overflow: auto;
+}
+
+/* Le conteneur du textarea, en absolute et "collé" sur .mtgFigCommandedContainer */
+.mtgFigExchangeCt {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: none;
+  padding: 20px;
+  overflow: auto;
+  background-color: hsla(0 0% 100% / 80%);
+}
+.mtgFigExchangeCt textarea {
+  /*overflow-wrap: break-word;*/
+  width: 100%;
+  /* une estimation de la place qui reste pour le textarea, parent moins mtgRmq moins mtgActions */
+  height: calc(100% - calc(6rem + 20px));
+}

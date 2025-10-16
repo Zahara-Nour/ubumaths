@@ -176,7 +176,10 @@ export const actions: Actions = {
 
 		// Validate answer using the correct answer from the client
 		// (generated on the client with the same random seed as displayed)
-		console.log('[submitAnswer] About to validate with tolerance:', challenge.answer?.tolerance);
+		console.log('[submitAnswer] Validating answer:');
+		console.log('  - Student answer:', JSON.stringify(answer));
+		console.log('  - Correct answer:', JSON.stringify(correctAnswer));
+		console.log('  - Tolerance:', challenge.answer?.tolerance);
 		const success = validateAnswer(answer, correctAnswer, challenge.answer?.tolerance);
 		console.log('[submitAnswer] Validation result:', success);
 

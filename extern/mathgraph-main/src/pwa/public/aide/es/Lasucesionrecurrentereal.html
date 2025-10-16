@@ -1,0 +1,102 @@
+﻿<html>
+	
+<head>
+	<title>La sucesi&oacute;n recurrente real</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Lasucesionrecurrentereal");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">La sucesi&oacute;n recurrente real</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Losobjetosnumericos.html">Los objetos num&eacute;ricos</a> &rsaquo;&rsaquo; <a href="Losobjetosnumericostipocalculo.html">Los objetos num&eacute;ricos tipo c&aacute;lculo</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Losobjetosnumericostipocalculo.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Elproductoindicial.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Lasucesionrecurrentecompleja.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts23">Se trata de una sucesión definida por una fórmula de uno de los tres tipos siguientes:</span></p>
+<p class="rvps2"><span class="rvts23"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts23">u(n+1) = f[u(n)] donde </span><span class="rvts35">f</span><span class="rvts23"> designa una función real de una variable real.</span></p>
+<p class="rvps2"><span class="rvts23"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts23">u(n+1)=f[n,u(n)] donde </span><span class="rvts35">f</span><span class="rvts23"> designa una función real de dos variables reales.</span></p>
+<p class="rvps2"><span class="rvts23"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts23">u(n+2)=f[n,u(n+1),u(n)] donde </span><span class="rvts35">f </span><span class="rvts23">designa una función real de tres variables reales.</span></p>
+<p class="rvps2"><span class="rvts20">Creamos una sucesión recurrente real usando el ícono </span><img alt="" style="padding : 1px;" src="lib/SuiteRecurrenteBig.png"><span class="rvts20"> de la tercera fila de iconos desde la parte inferior</span></p>
+<p class="rvps2"><span class="rvts21">.</span></p>
+<p class="rvps2"><span class="rvts23">Una caja de diálogo se abre.</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts23">Se &nbsp;les pide:</span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside; list-style-type: disc;">
+<li class="rvps2"><span class="rvts23">El nombre de la sucesión.</span></li>
+<li class="rvps2"><span class="rvts23">Seleccionar la función asociada en una lista.</span></li>
+<li class="rvps2"><span class="rvts23">Elegir el primer término de la sucesión (pueden entrar una constante o un cálculo) para los dos primeros tipos y los dos primeros términos de la sucesión para el tercero.</span></li>
+<li class="rvps2"><span class="rvts23">Elegir el número de términos de la sucesión (pueden entrar un constante o un cálculo).</span></li>
+</ul>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts23">Los índices de sucesión comienzan por 0.</span></p>
+<p class="rvps2"><span class="rvts23">Una vez la sucesión creada, pueden para la sucesión utilizar uno de los términos de esta sucesión con la siguiente sintaxis: Si la sucesión se llama </span><span class="rvts35">u</span><span class="rvts23">, </span><span class="rvts35">u</span><span class="rvts23">(índice) devolverá el término de la sucesión de índice </span><span class="rvts35">índice</span><span class="rvts23">. Este término sólo existe si </span><span class="rvts35">índice</span><span class="rvts23"> es entero y estrictamente inferior a los términos de la sucesión (bajo reserva de existencia de este término).</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts28">Ver también:</span><span class="rvts23"> </span><span class="rvts108">El gráfico de una suces</span><a class="rvts15" href="Losobjetosgraficos.html#GrapheSuiteRecReelle">Los objetos gráficos</a><span class="rvts108">ión recurrente.</span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2021&gt;, &lt;Yves Biton - Luis Belcredi&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

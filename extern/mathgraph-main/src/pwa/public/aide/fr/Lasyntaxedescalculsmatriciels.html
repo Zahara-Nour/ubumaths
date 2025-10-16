@@ -1,0 +1,177 @@
+﻿<html>
+	
+<head>
+	<title>La syntaxe des calculs matriciels</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Lasyntaxedescalculsmatriciels");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">La syntaxe des calculs matriciels</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Lesobjetsnumeriques.html">Les objets num&eacute;riques</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Lesobjetsnumeriques.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Lasyntaxedescalculscomplexes.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Lesobjetsnumeriquesdetypecalcul.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts6">Une matrice peut être définie par un calcul matriciel.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">Un calcul matriciel utiliser tout ce qui est permis pour un calcul réel et d'autres opérateurs spécifiques aux matrices.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Référence à un terme d'une matrice :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Un calcul matriciel peut faire référence à un terme d'une matrice précédemment définie. Par exemple, si A est une matrice 3x2, A(3,1) fera référence au premier terme de la troisième ligne de la matrice A.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Somme et différence de deux matrices :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si A et B sont deux matrices de mêmes dimensions, A+B renvoie la matrice somme et A - B renvoie la matrice différence de A et B.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Produit de deux matrices :</span></p>
+<p class="rvps2"><span class="rvts94"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si A est une matrice à </span><span class="rvts93">n</span><span class="rvts6"> lignes et </span><span class="rvts93">p</span><span class="rvts6"> colonnes et B une matrice à </span><span class="rvts93">p</span><span class="rvts6"> lignes et </span><span class="rvts93">q</span><span class="rvts6"> colonnes, le produit A*B renvoie le produit matriciel de A par B (matrice de </span><span class="rvts93">n</span><span class="rvts6"> lignes et </span><span class="rvts93">q</span><span class="rvts6"> colonnes).</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Inverse d'une matrice :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si A est une matrice carrée inversible, A^(-1) renvoie la matrice inverse de A.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Puissance d'une matrice :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si A est une matrice et </span><span class="rvts93">n</span><span class="rvts6"> un entier positif, A^</span><span class="rvts93">n</span><span class="rvts6"> renvoie la puissance </span><span class="rvts93">n</span><span class="rvts6"> ième de A. Si </span><span class="rvts93">n</span><span class="rvts6"> ≥ 256, le calcul n'existe pas.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Déterminant d'une matrice :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Un calcul matriciel peut faire référence au déterminant d'une matrice carrée précédemment définie. Si A est une matrice carrée, deter(A) fait référence au déterminant de A.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Transposée d'une matrice :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Dans un calcul matriciel, si A est une matrice à </span><span class="rvts93">n</span><span class="rvts6"> lignes et </span><span class="rvts93">p</span><span class="rvts6"> colonnes, transp(A) renvoie la transposée de A (matrice à </span><span class="rvts93">p</span><span class="rvts6"> lignes et </span><span class="rvts93">n</span><span class="rvts6"> colonnes).</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Inverse terme à terme :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si A est une matrice, inv(A) renvoie la matrice formée des inverses terme à terme de la matrice A. Si un des termes de A est nul le résultat n'existe pas.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Produit terme à terme :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si A et B sont deux matrices de même dimensions, dotmult(A, B) renvoie la matrice formée des produits des termes de la matrice A par les termes correspondants de la matrice B.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Division terme à terme :</span></p>
+<p class="rvps2"><span class="rvts94"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si A et B sont deux matrices de même dimensions et si tous les termes de B sont non nuls, A/B renvoie la matrice formée des termes de A divisés par les termes correspondants de B.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Tri par ligne :</span></p>
+<p class="rvps2"><span class="rvts94"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si A est une matrice, sortbyrow(A, indrow) renvoie une matrice dont les colonnes sont celles de la matrice initiale, mais rangées suivant l'ordre croissant des éléments de la ligne indrow.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Tri par colonne :</span></p>
+<p class="rvps2"><span class="rvts94"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si A est une matrice, sortbycol(A, indcol) renvoie une matrice dont les lignes sont celles de la matrice initiales, mais rangées suivant l'ordre croissant des éléments de la colonne indcol.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Image par une fonction prédéfinie :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Par exemple, Si A est une matrice, cos(A) renvoie la matrice dont les termes sont les images des termes de A par la fonction cosinus.</span></p>
+<p class="rvps7"><span class="rvts94"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Image par une fonction utilisateur :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">SI A est une matrice et </span><span class="rvts93">f</span><span class="rvts6"> une fonction réelle d'une variable définie par l'utilisateur, f(A) renvoie la matrice dont les termes sont les images des termes de A par la fonction f.</span></p>
+<p class="rvps7"><span class="rvts94"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Addition d'une constante :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si A est une matrice et </span><span class="rvts93">k</span><span class="rvts6"> un nombre, </span><span class="rvts93">k</span><span class="rvts6"> + A ou A + </span><span class="rvts93">k</span><span class="rvts6"> renvoie la matrice dont les termes sont les termes de A auxquels on additionne la valeur de </span><span class="rvts93">k</span><span class="rvts6">.</span></p>
+<p class="rvps7"><span class="rvts94"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Soustraction d'une constante :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si A est une matrice et </span><span class="rvts93">k</span><span class="rvts6"> un nombre réel, A - </span><span class="rvts93">k</span><span class="rvts6"> renvoie la matrice dont les termes sont les termes de A auxquels on soustrait </span><span class="rvts93">k</span><span class="rvts6">.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si </span><span class="rvts93">k</span><span class="rvts6"> est un nombre réel et A une matrice, </span><span class="rvts93">k</span><span class="rvts6"> - A renvoie la matrice dont les termes le résultat de la soustraction de k par les termes de A.</span></p>
+<p class="rvps7"><span class="rvts94"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Multiplication par une constante :</span></p>
+<p class="rvps2"><span class="rvts94"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si A est une matrice et </span><span class="rvts93">k</span><span class="rvts6"> un nombre, </span><span class="rvts93">k</span><span class="rvts6">*A ou A*</span><span class="rvts93">k</span><span class="rvts6"> renvoie la matrice dont les termes sont les termes de A multipliés par </span><span class="rvts93">k</span><span class="rvts6">.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Division par une constante :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si A est une matrice et </span><span class="rvts93">k</span><span class="rvts6"> un nombre non nul, A/</span><span class="rvts93">k</span><span class="rvts6"> renvoie la matrice dont les termes sont les termes de A divisés par </span><span class="rvts93">k</span><span class="rvts6">.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si </span><span class="rvts93">k</span><span class="rvts6"> est un nombre et A une matrice, k/A renvoie la matrice dont les termes le résultat de la division de </span><span class="rvts93">k</span><span class="rvts6"> par les termes de A. Le résultat n'existe pas si un des termes de A est nul.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Approximation d'un nombre par une fraction rationnelle :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">SI </span><span class="rvts93">a</span><span class="rvts6"> est un nombre réel, frac(a) renvoie une matrice à une ligne et deux colonnes sont le premier terme est le numérateur de la fraction rationnelle approchée de ce nombre (à 10^(-12) près) et le deuxième terme le dénominateur.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si a est une matrice colonne, frac(a) renvoie une matrice à deux colonnes, la première colonne contenant les numérateurs et la deuxième les dénominateurs des fractions rationnelles approchées des termes de la matrice initiale </span><span class="rvts93">a</span><span class="rvts6">.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si a est une matrice ligne, frac(a) renvoie une matrice à deux lignes, la première ligne contenant les numérateurs et la deuxième les dénominateurs des fractions rationnelles approchées des termes de la matrice initiale </span><span class="rvts93">a</span><span class="rvts6">.</span></p>
+<p class="rvps7"><span class="rvts94"><br/></span></p>
+<p class="rvps2"><span class="rvts94">Remarque importante :</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Si le résultat d'un calcul matriciel A est une matrice à une ligne et une colonne, toute référence à A dans un calcul matriciel sera considéré comme un nombre.</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p class="rvps7"><span class="rvts6">Pour avoir le résultat d'un déterminant dans un calcul réel, utilisez l'outil de calcul de déterminant fourni (qui est le résultat d'une macro-construction).</span></p>
+<p class="rvps7"><span class="rvts6"><br/></span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2025&gt;, &lt;Yves Biton&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

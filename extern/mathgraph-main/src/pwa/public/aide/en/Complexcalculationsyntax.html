@@ -1,0 +1,374 @@
+﻿<html>
+	
+<head>
+	<title>Complex calculation  syntax</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Complexcalculationsyntax");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">Complex calculation  syntax</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Numericalobjects.html">Numerical objects</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Numericalobjects.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Realcalculationsyntax.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Matrixcalculationsyntax.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts20">A complex calculus is allowed to use operators + (addition), - (subtraction), * (multiplication), / (division), ^ (power of a number), ² (square), (by priority decreasing priority order).</span></p>
+<p class="rvps2"><span class="rvts103">To be noticed :</span><span class="rvts20"> Operators must be written and spaces are allowed. No implicit multiplication is allowed.</span></p>
+<p class="rvps2"><span class="rvts20">Parenthesis may be used.</span></p>
+<p class="rvps2"><span class="rvts20">Function arguments must lay between braces.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts80">The predefined complex functions are :</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<div class="rvps2"><table border="1" cellpadding="2" cellspacing="-1" style="border-width: 0px; border-collapse: collapse;">
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">abs</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Module of a complex. Result is a complex number of imaginary part 0.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">conj</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Complex conjugate.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">angle</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Returns &nbsp;a complex number imaginary part of which is zero and real part of which is principal argument of the complex given as argument.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">re</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Returns &nbsp;a complex number imaginary part of which is zero and real part of which is the real part of the complex given as argument.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">im</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Returns &nbsp;a complex number imaginary part of which is zero and imaginary part of which is the real part of the complex given as argument.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">sqrt</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Square root. If the argument is not real or is strictly negative, the result doesn't exist.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">int</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Integer part. If the argument is not real, the result doesn't exist.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">sin</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">complex sine.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">cos</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">complex cosine.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">tan</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">complex tangent.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">ln</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">complex neperian logarithm.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">exp</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">complex exponential.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">asin</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">arcsine. &nbsp;If the argument is not real, the result doesn't exist.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">acos</span><span class="rvts20"> &nbsp; &nbsp; &nbsp; &nbsp;</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">arcsine. &nbsp;If the argument is not real or doesn't lay between -1 and 1, the result doesn't exist.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">atan</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">arctangent. If the argument is not real, the result doesn't exist.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">cosh</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Hyperbolic cosine</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">sinh</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Hyperbolic sine</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">tanh</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Hyperbolic tangent</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">asinh</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Hyperbolic arcsine. If the argument is not real, the result doesn't exist.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">acosh</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Hyperbolic arccosine.If the argument is not real is strictly inferior to 1, the result doesn't exist..</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">atanh</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Hyperbolic arctangent. If the argument is not real or doesn't lay strictly between -1 and +1, the result doesn't exist.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">rand</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Returns a complex number containing a real value which is a pseudo-random real number lying between 0 and 1 (0 excluded and 1 included).</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">²</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Square.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">fact(z)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">returns z</span><span class="rvts82"> !</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">z &nbsp;must be real, integer, positive or null.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">left(z)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">If </span><span class="rvts82">z</span><span class="rvts20"> is a calculation containing a test or an operation, returns the left member. Otherwise the calculation containing this formula will return the same calculation as </span><span class="rvts82">z</span><span class="rvts20">.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">right(z)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">If </span><span class="rvts82">x</span><span class="rvts20"> is a calculation containing a test or an operation, returns the right member. Otherwise the calculation containing this formula will return the same calculation as </span><span class="rvts82">x</span><span class="rvts20">.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts80">The predefined complex functions of two variables are :</span></p>
+<p class="rvps2"><span class="rvts80"><br/></span></p>
+<div class="rvps2"><table border="1" cellpadding="2" cellspacing="-1" style="border-width: 0px; border-collapse: collapse;">
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">max(</span><span class="rvts102">z, z'</span><span class="rvts80">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">returns the greater number of </span><span class="rvts82">z</span><span class="rvts20"> and </span><span class="rvts82">z'</span><span class="rvts20">. </span><span class="rvts82">z</span><span class="rvts20"> and </span><span class="rvts82">z' </span><span class="rvts20">must be real.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">min(</span><span class="rvts102">z, z'</span><span class="rvts80">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">returns the lowest number of </span><span class="rvts82">z</span><span class="rvts20"> and </span><span class="rvts82">z'</span><span class="rvts20">. </span><span class="rvts82">z</span><span class="rvts20"> and </span><span class="rvts82">z' </span><span class="rvts20">must be real.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">pgcd(</span><span class="rvts102">z, z'</span><span class="rvts80">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">returns the GCD of </span><span class="rvts82">z</span><span class="rvts20"> and </span><span class="rvts82">z'</span><span class="rvts20">. </span><span class="rvts82">z</span><span class="rvts20"> and </span><span class="rvts82">z'</span><span class="rvts20"> must be real, integer positive and not null.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">ppcm(</span><span class="rvts102">z, z'</span><span class="rvts80">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">returns the LCM of </span><span class="rvts82">z</span><span class="rvts20"> and </span><span class="rvts82">z'</span><span class="rvts20">. </span><span class="rvts82">z</span><span class="rvts20"> and </span><span class="rvts82">z'</span><span class="rvts20"> must be real, integer positive and not null.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">mod(</span><span class="rvts102">z, z'</span><span class="rvts80">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">returns the rest of the integer division of </span><span class="rvts82">z</span><span class="rvts20"> by </span><span class="rvts82">z'</span><span class="rvts20">. </span><span class="rvts82">z</span><span class="rvts20"> and </span><span class="rvts82">z'</span><span class="rvts20"> must be real and integer &nbsp;positive with &nbsp;b not null.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">ncr(</span><span class="rvts102">z, z'</span><span class="rvts80">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">returns the number of subsets of </span><span class="rvts82">z'</span><span class="rvts20"> elements in a set of </span><span class="rvts82">z</span><span class="rvts20"> elements.</span></p>
+<p class="rvps2"><span class="rvts82">z</span><span class="rvts20"> and&nbsp;</span><span class="rvts82"> </span><span class="rvts20">z'</span><span class="rvts82"> </span><span class="rvts20">must be real, integer positive with </span><span class="rvts82">z'</span><span class="rvts20"> lower or equal to </span><span class="rvts82">z</span><span class="rvts20">.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">npr(</span><span class="rvts102">z, z'</span><span class="rvts80">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">returns the number of permutations of </span><span class="rvts82">z'</span><span class="rvts20"> elements in a set of </span><span class="rvts82">z</span><span class="rvts20"> elements.</span></p>
+<p class="rvps2"><span class="rvts82">z</span><span class="rvts20"> and&nbsp;</span><span class="rvts82"> </span><span class="rvts20">z'</span><span class="rvts82"> </span><span class="rvts20">must be real, integer positive with </span><span class="rvts82">z'</span><span class="rvts20"> lower or equal to </span><span class="rvts82">z</span><span class="rvts20">.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">divmaxp(n,p)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">Returns the highest positive integer k such as n is divisible by k^p</span><br/><span class="rvts20">with 1 &lt; p &lt; 256 et 1 &lt; |n| &lt; 1000000. n and p must be real.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="rvps2"><span class="rvts80"><br/></span></p>
+<p class="rvps2"><span class="rvts80">The predefined functions of three variables are :</span></p>
+<p class="rvps2"><span class="rvts80"><br/></span></p>
+<div class="rvps2"><table border="1" cellpadding="2" cellspacing="-1" style="border-width: 0px; border-collapse: collapse;">
+<tr valign="top">
+<td width="106" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">if(</span><span class="rvts102">cond</span><span class="rvts80">, </span><span class="rvts102">x</span><span class="rvts80">, </span><span class="rvts102">y</span><span class="rvts80">)</span></p>
+</td>
+<td width="467" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">returns </span><span class="rvts82">x</span><span class="rvts20"> if </span><span class="rvts82">cond</span><span class="rvts20"> &nbsp;equals 1 and </span><span class="rvts82">y</span><span class="rvts20"> otherwise.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts80">The predefined functions of four variables are :</span></p>
+<p class="rvps2"><span class="rvts80"><br/></span></p>
+<div class="rvps2"><table border="1" cellpadding="2" cellspacing="-1" style="border-width: 0px; border-collapse: collapse;">
+<tr valign="top">
+<td width="188" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">integral(</span><span class="rvts102">expr</span><span class="rvts80">, </span><span class="rvts102">var</span><span class="rvts80">, </span><span class="rvts102">a</span><span class="rvts80">, </span><span class="rvts102">b</span><span class="rvts80">)</span></p>
+</td>
+<td width="421" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">returns an appoximated value of the integral of </span><span class="rvts82">expr</span><span class="rvts20"> between </span><span class="rvts82">a</span><span class="rvts20"> and </span><span class="rvts82">b, var</span><span class="rvts20"> is the variable of integration.</span></p>
+<p class="rvps2"><span class="rvts82">a</span><span class="rvts20"> and </span><span class="rvts82">b</span><span class="rvts20"> must be real.</span></p>
+<p class="rvps2"><span class="rvts20">The integral is calculated through Simpson's method with 400 intervals.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="188" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">primitive(</span><span class="rvts102">expr</span><span class="rvts80">, </span><span class="rvts102">var</span><span class="rvts80">, </span><span class="rvts102">a</span><span class="rvts80">, </span><span class="rvts102">b</span><span class="rvts80">)</span></p>
+</td>
+<td width="421" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">expr is a function of variable var. Returns f(b) - f(a).</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="rvps2"><span class="rvts80"><br/></span></p>
+<p class="rvps2"><span class="rvts80">The predefined functions of five variables are :</span></p>
+<p class="rvps2"><span class="rvts80"><br/></span></p>
+<div class="rvps2"><table border="1" cellpadding="2" cellspacing="-1" style="border-width: 0px; border-collapse: collapse;">
+<tr valign="top">
+<td width="249" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">sum(e</span><span class="rvts102">xpr</span><span class="rvts80">, </span><span class="rvts102">var, start, end</span><span class="rvts80">, </span><span class="rvts102">step</span><span class="rvts80">)</span></p>
+</td>
+<td width="364" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">returns sum of expression </span><span class="rvts82">expr</span><span class="rvts20"> when all integer values in the range </span><span class="rvts82">start-end </span><span class="rvts20">with an increment of </span><span class="rvts82">step </span><span class="rvts20">are given to variable </span><span class="rvts82">var</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts82">expr</span><span class="rvts20"> may use all values or functions already defined.</span></p>
+<p class="rvps2"><span class="rvts82">start, end</span><span class="rvts20"> and </span><span class="rvts82">step</span><span class="rvts20"> must have integer values.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="249" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts80">prod(e</span><span class="rvts102">xpr</span><span class="rvts80">, </span><span class="rvts102">var, start, end</span><span class="rvts80">, </span><span class="rvts102">step</span><span class="rvts80">)</span></p>
+</td>
+<td width="364" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts20">returns product of expression </span><span class="rvts82">expr</span><span class="rvts20"> when all integer values in the range </span><span class="rvts82">start-end </span><span class="rvts20">with an increment of </span><span class="rvts82">step </span><span class="rvts20">are given to variable </span><span class="rvts82">var</span><span class="rvts20">&nbsp;</span><span class="rvts82"> </span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts82">expr</span><span class="rvts20"> may use all values or functions already defined.</span></p>
+<p class="rvps2"><span class="rvts82">start, end</span><span class="rvts20"> and </span><span class="rvts82">step</span><span class="rvts20"> must have integer values.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts80">The tests:</span><span class="rvts20"> In complex calculus,the test exist only if the two arguments are real. They return a complex value which is 1 when the result is true, zero otherwise.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts82">a</span><span class="rvts80"> &gt; </span><span class="rvts82">b</span><span class="rvts20"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts20">return 1 if a &gt; b and zero otherwise.</span></p>
+<p class="rvps2"><span class="rvts20"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts82">a</span><span class="rvts80"> &lt; </span><span class="rvts82">b</span><span class="rvts20"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts20">return 1 if a &lt; b and zero otherwise.</span></p>
+<p class="rvps2"><span class="rvts20"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts82">a</span><span class="rvts80"> &gt;= </span><span class="rvts82">b</span><span class="rvts20"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts20">return 1 if a &gt;= b and zero otherwise.</span></p>
+<p class="rvps2"><span class="rvts20"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts82">a</span><span class="rvts80"> &lt;= </span><span class="rvts82">b</span><span class="rvts20"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts20">return 1 if a &lt;= b and zero otherwise.</span></p>
+<p class="rvps2"><span class="rvts20"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts82">a</span><span class="rvts80"> = </span><span class="rvts20">b</span><span class="rvts80">&nbsp;</span><span class="rvts20"> &nbsp;return 1 if a = b and zero otherwise.</span></p>
+<p class="rvps2"><span class="rvts20"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts82">a</span><span class="rvts80"> &lt;&gt; </span><span class="rvts82">b</span><span class="rvts80"> &nbsp;</span><span class="rvts20">return 1 if a is not equal to b and zero otherwise.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts80">Boolean operators :</span></p>
+<p class="rvps2"><span class="rvts80"><br/></span></p>
+<p class="rvps2"><span class="rvts80"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts20">a&amp;b : Returns 1 if a = 1 et b = 1 and 0 otherwise.</span></p>
+<p class="rvps2"><span class="rvts20"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts20">a|b : Returns 1 if a = 1 ou b = 1 et 0 otherwise.</span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2021&gt;, &lt;Yves Biton&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

@@ -1,0 +1,362 @@
+﻿<html>
+	
+<head>
+	<title>La syntaxe des calculs r&eacute;els</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Lasyntaxedescalculsreels");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">La syntaxe des calculs r&eacute;els</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Lesobjetsnumeriques.html">Les objets num&eacute;riques</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Lesobjetsnumeriques.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Lesobjetsnumeriques.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Lasyntaxedescalculscomplexes.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts68">Un calcul réel peut utiliser les opérateurs + (addition), - (soustraction), * (multiplication), / (division), ^ (élévation à une puissance), ² (élévation au carré), (cités par ordre de priorité croissante) ou faire référence à un terme d'une matrice.</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts92">A noter :</span><span class="rvts68"> Ces opérateurs doivent impérativement être écrits et les espaces sont permis.</span></p>
+<p class="rvps2"><span class="rvts68">Les parenthèses ouvrantes et fermantes peuvent être utilisées.</span></p>
+<p class="rvps2"><span class="rvts68">L'argument des fonctions mathématiques doit toujours être contenu dans une parenthèse.</span></p>
+<p class="rvps2"><span class="rvts68">Pour les fonctions de plusieurs variables, les paramètres doivent être séparés par une virgule.</span></p>
+<p class="rvps2"><span class="rvts74">Les fonctions mathématique d'une variables prédéfinies sont :</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<div class="rvps2"><table border="1" cellpadding="2" cellspacing="-1" style="border-width: 0px; border-collapse: collapse;">
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">abs(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">valeur absolue de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">sqrt ou rac(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">racine carrée de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">int(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">partie entière de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">sin(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">sinus de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">cos(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">cosinus de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">tan(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">tangente de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">ln(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">logarithme népérien de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">exp(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">fonction exponentielle de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">arcsin(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Arc Sinus de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">arccos(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Arc Cosinus de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">arctan(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Arc Tangente de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">ch(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Cosinus hyperbolique de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">sh(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Sinus hyperbolique de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">th(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">tangente hyperbolique de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">argsh(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Arc Sinus hyperbolique de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">argch(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Arc Cosinus hyperbolique de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">argth(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Arc Tangente hyperbolique de </span><span class="rvts76">x</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">rand(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie un nombre pseudo aléatoire compris entre 0 et 1 (0 compris et 1 exclu).</span></p>
+<p class="rvps2"><span class="rvts68">La valeur de </span><span class="rvts76">x</span><span class="rvts68"> n'est pas prise en compte.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">²</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Elève au carré le nombre qui précède le symbole ² </span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">fact(</span><span class="rvts91">x</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie factorielle de </span><span class="rvts76">x</span><span class="rvts68">. </span><span class="rvts76">x</span><span class="rvts68"> doit être un entier positif ou nul.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">gauche(x)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Si </span><span class="rvts76">x</span><span class="rvts68"> est un calcul ou une fonction contenant un test ou une opération, renvoie le membre de gauche de ce test. Sinon renvoie le même calcul que l'argument.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">droit(x)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Si </span><span class="rvts76">x</span><span class="rvts68"> est un calcul ou une fonction contenant un test ou une opération, renvoie le membre de droite de ce test. Sinon renvoie le même calcul que l'argument.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">core(x)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie le calcul équivalent à x dans lequel tous les appels au fonctions gauche et droit et les si() sont remplacés par leur argument effectif et tous les appels de fonction utilisateur sont remplacés par la formule de cette fonction.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts74">Les fonctions de deux variables prédéfinies sont :</span></p>
+<p class="rvps2"><span class="rvts74"><br/></span></p>
+<div class="rvps2"><table border="1" cellpadding="2" cellspacing="-1" style="border-width: 0px; border-collapse: collapse;">
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">max(</span><span class="rvts91">x, y</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie le plus grand des deux nombres </span><span class="rvts76">x</span><span class="rvts68"> et </span><span class="rvts76">y</span><span class="rvts68">.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">min(</span><span class="rvts91">x, y</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie le plus petit des deux nombres </span><span class="rvts76">x</span><span class="rvts68"> et </span><span class="rvts76">y</span><span class="rvts68">.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">pgcd(</span><span class="rvts91">n</span><span class="rvts74">, </span><span class="rvts91">p</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie le PGCD de </span><span class="rvts76">n</span><span class="rvts68"> et </span><span class="rvts76">p</span><span class="rvts68">. </span><span class="rvts76">n</span><span class="rvts68"> et </span><span class="rvts76">p</span><span class="rvts68"> doivent être entiers positifs et non tous les deux nuls.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">ppcm(</span><span class="rvts91">n</span><span class="rvts74">, </span><span class="rvts91">p</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie le PPCM de </span><span class="rvts76">n</span><span class="rvts68"> et </span><span class="rvts76">p</span><span class="rvts68">. </span><span class="rvts76">n</span><span class="rvts68"> et </span><span class="rvts76">p</span><span class="rvts68"> doivent être entiers positifs.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">mod(</span><span class="rvts91">n</span><span class="rvts74">, </span><span class="rvts91">p</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie le reste de la division Euclidienne de n par b. </span><span class="rvts76">n</span><span class="rvts68"> et </span><span class="rvts76">p</span><span class="rvts68"> doivent être entiers positifs et b non nul.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">ncr(</span><span class="rvts91">n</span><span class="rvts74">, </span><span class="rvts91">p</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie le nombre de combinaisons à </span><span class="rvts76">p</span><span class="rvts68"> éléments d'un ensemble à </span><span class="rvts76">n</span><span class="rvts68"> éléments.</span></p>
+<p class="rvps2"><span class="rvts76">n</span><span class="rvts68"> et&nbsp;</span><span class="rvts76"> p </span><span class="rvts68">doivent être des entiers positifs avec </span><span class="rvts76">p</span><span class="rvts68"> inférieur ou égal à </span><span class="rvts76">n</span><span class="rvts68">.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">npr(</span><span class="rvts91">n</span><span class="rvts74">, </span><span class="rvts91">p</span><span class="rvts74">)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie le nombre de permutations à </span><span class="rvts76">p</span><span class="rvts68"> éléments d'un ensemble à </span><span class="rvts76">n</span><span class="rvts68"> éléments.</span></p>
+<p class="rvps2"><span class="rvts76">n</span><span class="rvts68"> et&nbsp;</span><span class="rvts76"> p </span><span class="rvts68">doivent être des entiers positifs avec </span><span class="rvts76">p</span><span class="rvts68"> inférieur ou égal à </span><span class="rvts76">n</span><span class="rvts68">.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="94" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">divmaxp(n,p)</span></p>
+</td>
+<td width="480" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie le plus grand nombre entier positif k tel que k^p divise n avec 1 &lt; p &lt; 256 et 1 &lt; |n| &lt; 1000000</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="rvps2"><span class="rvts74"><br/></span></p>
+<p class="rvps2"><span class="rvts74">La seule fonction de trois variables prédéfinie est :</span></p>
+<p class="rvps2"><span class="rvts74"><br/></span></p>
+<div class="rvps2"><table border="1" cellpadding="2" cellspacing="-1" style="border-width: 0px; border-collapse: collapse;">
+<tr valign="top">
+<td width="106" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">si(</span><span class="rvts91">cond</span><span class="rvts74">, </span><span class="rvts91">x</span><span class="rvts74">, </span><span class="rvts91">y</span><span class="rvts74">)</span></p>
+</td>
+<td width="467" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie </span><span class="rvts76">x</span><span class="rvts68"> si </span><span class="rvts76">cond</span><span class="rvts68"> est égal à 1 et </span><span class="rvts76">y</span><span class="rvts68"> sinon.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="rvps2"><span class="rvts74"><br/></span></p>
+<p class="rvps2"><span class="rvts74">La seule fonction de quatre variables prédéfinie est :</span></p>
+<p class="rvps2"><span class="rvts74"><br/></span></p>
+<div class="rvps2"><table border="1" cellpadding="2" cellspacing="-1" style="border-width: 0px; border-collapse: collapse;">
+<tr valign="top">
+<td width="176" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">integrale(</span><span class="rvts91">exp</span><span class="rvts74">, </span><span class="rvts91">var,</span><span class="rvts74"> </span><span class="rvts91">a</span><span class="rvts74">, </span><span class="rvts91">b</span><span class="rvts74">)</span></p>
+</td>
+<td width="396" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie une valeur approché de l'intégrale de </span><span class="rvts76">expr</span><span class="rvts68"> entre les bornes </span><span class="rvts76">a</span><span class="rvts68"> et </span><span class="rvts76">b, var</span><span class="rvts68"> désignant la variable d'intégration.</span></p>
+<p class="rvps2"><span class="rvts68">L'intégrale est calculée par la méthode de Simpson avec 400 intervalles.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="176" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">primitive(expr, var, a, b)</span></p>
+</td>
+<td width="396" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">expr étant une formule d'une fonction f de la variable var, renvoie f(b)-f(a).</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="rvps2"><span class="rvts74"><br/></span></p>
+<p class="rvps2"><span class="rvts74">Les fonctions de cinq variables prédéfinies sont :</span></p>
+<p class="rvps2"><span class="rvts74"><br/></span></p>
+<div class="rvps2"><table border="1" cellpadding="2" cellspacing="-1" style="border-width: 0px; border-collapse: collapse;">
+<tr valign="top">
+<td width="249" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">somme(e</span><span class="rvts91">xpr</span><span class="rvts74">, </span><span class="rvts91">var, deb, fin</span><span class="rvts74">, </span><span class="rvts91">pas</span><span class="rvts74">)</span></p>
+</td>
+<td width="319" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie la somme de l'expression </span><span class="rvts76">expr</span><span class="rvts68"> quand la variable &nbsp;</span><span class="rvts76">var </span><span class="rvts68">prend toutes les valeurs entières de </span><span class="rvts76">deb</span><span class="rvts68"> jusqu'à </span><span class="rvts76">fin</span><span class="rvts68"> par pas d'incrément </span><span class="rvts76">pas</span><span class="rvts68">.</span></p>
+<p class="rvps2"><span class="rvts76">expr</span><span class="rvts68"> peut utiliser toute fonction ou valeur précédemment définie.</span></p>
+<p class="rvps2"><span class="rvts76">deb</span><span class="rvts68">, </span><span class="rvts76">fin</span><span class="rvts68"> et </span><span class="rvts76">pas</span><span class="rvts68"> doivent prendre des valeurs entières.</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="249" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts74">produit(e</span><span class="rvts91">xpr</span><span class="rvts74">, </span><span class="rvts91">var, deb, fin</span><span class="rvts74">, </span><span class="rvts91">pas</span><span class="rvts74">)</span></p>
+</td>
+<td width="319" valign="top" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 0px 5px;"><p class="rvps2"><span class="rvts68">Renvoie le produit de l'expression </span><span class="rvts76">expr</span><span class="rvts68"> quand la variable &nbsp;</span><span class="rvts76">var </span><span class="rvts68">prend toutes les valeurs entières de </span><span class="rvts76">deb</span><span class="rvts68"> jusqu'à </span><span class="rvts76">fin</span><span class="rvts68"> par pas d'incrément </span><span class="rvts76">pas</span><span class="rvts68">.</span></p>
+<p class="rvps2"><span class="rvts76">expr</span><span class="rvts68"> peut utiliser toute fonction ou valeur précédemment définie.</span></p>
+<p class="rvps2"><span class="rvts76">deb</span><span class="rvts68">, </span><span class="rvts76">fin</span><span class="rvts68"> et </span><span class="rvts76">pas</span><span class="rvts68"> doivent prendre des valeurs entières.</span></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts74">Un terme de matrice :</span></p>
+<p class="rvps2"><span class="rvts74"><br/></span></p>
+<p class="rvps7"><span class="rvts68">Si A est une matrice, par exemple à 3 lignes et 2 colonnes, un calcul réel peut par exemple utiliser le premier terme de la troisième ligne de cette matrice par la formule A(3,1), mais &nbsp;un calcul utilisant A(1,3) n'existera pas.</span></p>
+<p class="rvps7"><span class="rvts68"><br/></span></p>
+<p class="rvps7"><span class="rvts68">Les indices de lignes et de colonnes commencent à 1.</span></p>
+<p class="rvps2"><span class="rvts74"><br/></span></p>
+<p class="rvps2"><span class="rvts74">Les tests :</span><span class="rvts68"> ils rendent une valeur qui est 1 quand le résultat du test est vrai, sinon ils rendent zéro.</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts76">a</span><span class="rvts74"> &gt; </span><span class="rvts76">b</span><span class="rvts68"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts68">renvoie 1 si a est strictement supérieur à b et zéro sinon.</span></p>
+<p class="rvps2"><span class="rvts68"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts76">a</span><span class="rvts74"> &lt; </span><span class="rvts76">b</span><span class="rvts68"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts68">renvoie 1 si a est strictement inférieur à b et zéro sinon.</span></p>
+<p class="rvps2"><span class="rvts68"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts76">a</span><span class="rvts74"> &gt;= </span><span class="rvts76">b</span><span class="rvts68"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts68">renvoie 1 si a est supérieur ou égal à b et zéro sinon.</span></p>
+<p class="rvps2"><span class="rvts68"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts76">a</span><span class="rvts74"> &lt;= </span><span class="rvts76">b</span><span class="rvts68"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts68">renvoie 1 si a est inférieur ou égal à b et zéro sinon.</span></p>
+<p class="rvps2"><span class="rvts68"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts76">a</span><span class="rvts74"> = </span><span class="rvts68">b</span><span class="rvts74">&nbsp;</span><span class="rvts68"> &nbsp; renvoie 1 &nbsp;si a est égal à b et zéro sinon.</span></p>
+<p class="rvps2"><span class="rvts68"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts76">a</span><span class="rvts74"> &lt;&gt; </span><span class="rvts76">b</span><span class="rvts74"> &nbsp;</span><span class="rvts68">renvoie 1 si a est différent de b et zéro.</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts74">Les opérateurs logiques :</span></p>
+<p class="rvps2"><span class="rvts74"> &nbsp; &nbsp; &nbsp; &nbsp;</span></p>
+<p class="rvps2"><span class="rvts74"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts68">a&amp;b : Renvoie 1 si a = 1 et b = 1 et 0 sinon.</span></p>
+<p class="rvps2"><span class="rvts68"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts68">a|b : Renvoie 1 si a = 1 ou b = 1 et 0 sinon.</span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2025&gt;, &lt;Yves Biton&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

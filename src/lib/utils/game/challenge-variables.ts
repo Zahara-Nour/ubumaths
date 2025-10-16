@@ -334,60 +334,80 @@ export function validateAnswer(
 	correctAnswer: any,
 	tolerance: number = 0.01
 ): boolean {
-	console.log('Validating answer:', {
-		studentAnswer,
-		studentType: typeof studentAnswer,
-		correctAnswer,
-		correctType: typeof correctAnswer,
-		tolerance
-	});
+	console.log('[validateAnswer] Starting validation');
+	console.log('[validateAnswer] Student:', JSON.stringify(studentAnswer), 'Type:', typeof studentAnswer);
+	console.log('[validateAnswer] Correct:', JSON.stringify(correctAnswer), 'Type:', typeof correctAnswer);
+	console.log('[validateAnswer] Tolerance:', tolerance);
 
 	// Handle null/undefined
 	if (studentAnswer === null || studentAnswer === undefined) {
-		console.log('Validation failed: student answer is null/undefined');
+		console.log('[validateAnswer] FAIL: Student answer is null/undefined');
 		return false;
 	}
 
 	if (correctAnswer === null || correctAnswer === undefined) {
-		console.log('Validation failed: correct answer is null/undefined');
+		console.log('[validateAnswer] FAIL: Correct answer is null/undefined');
 		return false;
 	}
 
+	// Try to parse student answer if it's a string that looks like a number
+	let parsedStudentAnswer = studentAnswer;
+	if (typeof studentAnswer === 'string' && /^-?\d+\.?\d*$/.test(studentAnswer.trim())) {
+		parsedStudentAnswer = parseFloat(studentAnswer);
+		console.log('[validateAnswer] Parsed student answer from string to number:', parsedStudentAnswer);
+	}
+
 	// Numeric comparison with tolerance
-	if (typeof correctAnswer === 'number' && typeof studentAnswer === 'number') {
-		const diff = Math.abs(studentAnswer - correctAnswer);
-		const isValid = diff <= tolerance;
-		console.log('Numeric comparison:', { diff, tolerance, isValid });
-		return isValid;
+	if (typeof correctAnswer === 'number') {
+		console.log('[validateAnswer] Correct answer is number, checking student...');
+		if (typeof parsedStudentAnswer === 'number') {
+			const diff = Math.abs(parsedStudentAnswer - correctAnswer);
+			const result = diff <= tolerance;
+			console.log('[validateAnswer] Numeric comparison: diff =', diff, 'tolerance =', tolerance, 'result =', result);
+			return result;
+		} else {
+			console.log('[validateAnswer] FAIL: Correct is number but student is', typeof parsedStudentAnswer);
+			return false;
+		}
 	}
 
 	// Array comparison
-	if (Array.isArray(correctAnswer) && Array.isArray(studentAnswer)) {
-		if (correctAnswer.length !== studentAnswer.length) {
+	if (Array.isArray(correctAnswer) && Array.isArray(parsedStudentAnswer)) {
+		console.log('[validateAnswer] Array comparison');
+		if (correctAnswer.length !== parsedStudentAnswer.length) {
+			console.log('[validateAnswer] FAIL: Array lengths differ');
 			return false;
 		}
 		for (let i = 0; i < correctAnswer.length; i++) {
-			if (!validateAnswer(studentAnswer[i], correctAnswer[i], tolerance)) {
+			if (!validateAnswer(parsedStudentAnswer[i], correctAnswer[i], tolerance)) {
+				console.log('[validateAnswer] FAIL: Array element', i, 'differs');
 				return false;
 			}
 		}
+		console.log('[validateAnswer] SUCCESS: All array elements match');
 		return true;
 	}
 
 	// String comparison (case-insensitive, trimmed)
-	if (typeof correctAnswer === 'string' && typeof studentAnswer === 'string') {
-		return correctAnswer.trim().toLowerCase() === studentAnswer.trim().toLowerCase();
+	if (typeof correctAnswer === 'string') {
+		const studentStr = String(parsedStudentAnswer).trim().toLowerCase();
+		const correctStr = correctAnswer.trim().toLowerCase();
+		const result = correctStr === studentStr;
+		console.log('[validateAnswer] String comparison:', studentStr, '===', correctStr, '?', result);
+		return result;
 	}
 
 	// Object comparison
-	if (typeof correctAnswer === 'object' && typeof studentAnswer === 'object') {
-		return JSON.stringify(correctAnswer) === JSON.stringify(studentAnswer);
+	if (typeof correctAnswer === 'object' && typeof parsedStudentAnswer === 'object') {
+		const result = JSON.stringify(parsedStudentAnswer) === JSON.stringify(correctAnswer);
+		console.log('[validateAnswer] Object comparison:', result);
+		return result;
 	}
 
 	// Direct comparison
-	const isValid = studentAnswer === correctAnswer;
-	console.log('Direct comparison:', isValid);
-	return isValid;
+	const result = parsedStudentAnswer === correctAnswer;
+	console.log('[validateAnswer] Direct comparison:', parsedStudentAnswer, '===', correctAnswer, '?', result);
+	return result;
 }
 
 /**

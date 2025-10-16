@@ -1,0 +1,112 @@
+﻿<html>
+	
+<head>
+	<title>Graphe de suite r&eacute;currente</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Graphedesuiterecurrente");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">Graphe de suite r&eacute;currente</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Lescourbesetgraphes.html">Les courbes et graphes</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Lescourbesetgraphes.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Courbedefonction.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Tangenteaunecourbedefonction.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts20">MathGraph32 permet de tracer dans un repère le graphe d'une suite récurrente du type u(n+1) = f[u(n)], où </span><span class="rvts32">f</span><span class="rvts20"> désigne une fonction d'une variable réelle ou complexe.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Depuis la version 5.0, des figures prédéfinies permettant de tracer des graphes de suites récurrentes sont disponibles par le menu </span><span class="rvts32">Fichier - Nouvelle figure avec - Graphe de suite</span><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<h1 class="rvps6"><span class="rvts0"><span class="rvts117">Graphe d'une suite récurrente réelle.</span></span></h1>
+<h1 class="rvps6"><span class="rvts0"><span class="rvts119"><br/></span></span></h1>
+<p class="rvps2"><span class="rvts20">Il s'agit du graphe appelé "en toile d'araignée".</span></p>
+<p class="rvps2"><span class="rvts20">Il n'est disponible que pour les suites du type u(n+1)=f[u(n)].</span></p>
+<p class="rvps2"><span class="rvts20">Avant de tracer le graphe vous devez créer la </span><a class="rvts116" href="Lasuiterecurrentereelle.html">suite récurrente réelle.</a></p>
+<p class="rvps2"><span class="rvts118">Pour cela il faut d'abord avoir créé une fonction numérique (icône </span><img alt="" style="padding : 1px;" src="lib/FonctionBig.png"><span class="rvts20">).</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">On crée ensuite le graphe à l'aide de l'icône </span><img alt="" style="padding : 1px;" src="lib/CreationGrapheSuiteRecurrenteBig.png"><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Une boîte de dialogue s'ouvre.</span></p>
+<p class="rvps2"><span class="rvts20">Vous choisissez la suite récurrente dont le graphe doit être tracé, et si les points du graphe doivent être reliés ou non à l'axe des abscisses.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<h1 class="rvps6"><span class="rvts0"><span class="rvts117">Graphe de suite récurrente complexe.</span></span></h1>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Avant de tracer le graphe vous devez créer la </span><a class="rvts116" href="Lasuitercurrentecomplexe.html">suite récurrente complexe</a><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">Pour cela vous devez d'abord avoir créé une fonction complexe (icône </span><img alt="" style="padding : 1px;" src="lib/CreationFonctionComplexeBig.png"><span class="rvts20">).</span></p>
+<p class="rvps2"><span class="rvts20">Chaque terme de la suite récurrente complexe est représenté par un point dont il est l'affixe. Ce point est tracé dans le style de point actif.</span></p>
+<p class="rvps2"><span class="rvts20">Chaque point est relié au suivant par un segment. Ce segment est tracé dans le style de trait et la couleur actifs.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">On crée ensuite le graphe à l'aide </span><span class="rvts32">de l'icône </span><img alt="" style="padding : 1px;" src="lib/CreationGrapheSuiteRecurrenteBig.png"><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">Il est disponible pour les trois types de suites récurrentes complexes (u(n+1)=f[u(n)] ou u(n+1)=f[n,u(n)] ou u(n+2)=f[n,u(n+1),u(n)]).</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Une boîte de dialogue s'ouvre.</span></p>
+<p class="rvps2"><span class="rvts20">Vous choisissez la suite récurrente dont le graphe doit être tracé.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2025&gt;, &lt;Yves Biton&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

@@ -1,0 +1,57 @@
+# ce script doit être posix shell compliant ;-)
+# cf https://steinbaugh.com/posts/posix.html
+
+# 1) La commande
+# git status -uno -s |awk '$NF ~ /\.js$/ { printf("%s ", $NF) }' |xargs --no-run-if-empty eslint --fix
+# sort tous les fichiers modifiés, pas seulement ceux qui seront inclus dans le commit
+# et plante sur les fichiers supprimés, ce qui est bizarre car par ex pour une ligne
+# ^RM path/to/deleted/file.js -> path/to/new/file.js
+# awk devrait ne passer à xargs que le dernier fichier
+# ça pose aussi pb en cas d’espace dans le nom du fichier (ça n’envoie que le dernier morceau à eslint)
+
+# 2)
+# git diff --name-only --cached …
+# c'est mieux (les fichiers modifiés de l’index, --staged est un alias),
+# mais faut ajouter --diff-filter sinon ça plante sur les fichiers supprimés
+
+# 3)
+# git diff --name-only --cached --diff-filter=AMR|awk '$NF ~ /\.js$/ { printf("'%s' ", $0) }' | command xargs --no-run-if-empty ./node_modules/.bin/eslint --fix
+# mais
+# - pas sûr que l’option --no-run-if-empty soit POSIX (ajout GNU)
+# - ça plante si y’a un ' dans un nom de fichier (c'est arrivé sinon je ne le saurais pas), ce qui n’est finalement pas plus mal…
+# - eslint peut planter si y’a des centaines de fichiers => on ajoute un --max-args
+# mais cette commande plante sous mac
+# git diff --name-only --cached --diff-filter=AMR|awk '$NF ~ /\.js$/ { printf("'%s' ", $0) }' | command xargs --no-run-if-empty --max-args 50 ./node_modules/.bin/eslint --fix
+# On décompose en essayant d'être davantage posix
+jsfiles() {
+  git diff --name-only --cached --diff-filter=AMR|grep -E '\.([cm]?j)s$'
+}
+
+exitCode=0
+# nb de js +mjs +cjs
+nbJs=0
+for f in $(jsfiles); do
+  # on peut avoir des deleted dans la liste
+  [ ! -f "$f" ] && continue
+  if ./node_modules/.bin/eslint --fix "$f"; then
+    nbJs=$((nbJs+1))
+    # il faut gérer ça ici car la règle https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/extensions.md
+    # ne peut pas distinguer les imports statiques des imports dynamiques
+    # et on veut never en statique et always en dynamique
+    # sauf pour scripts et vite.config
+    [ "$f" = "vite.config.js" ] && continue
+    [ "$(dirname "$f")" = "scripts" ] && continue
+    if grep -n -E "^import[^(].*\.[jt]s'" "$f"; then
+      echo "Pb dans $f\\nIl ne faut jamais préciser l’extension dans les imports statiques (vitest n’aime pas, et ça peut aussi poser pb avec le mix ts/js)">&2
+      exitCode=1
+    fi
+  else
+    # le code de sortie de eslint --fix
+    exitCode=$?
+  fi
+done
+
+[ "$exitCode" -ne 0 ] && exit "$exitCode"
+[ "$nbJs" -eq 0 ] && exit "$exitCode"
+
+exit "$exitCode"

@@ -1,0 +1,216 @@
+﻿<html>
+	
+<head>
+	<title>LaTeX code display</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("LaTeXcodedisplay");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">LaTeX code display</h1>
+				
+				</div>
+			<div id="topic_header_nav">
+				<a href="Specialdisplays.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Geometricaltransformations.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts19">MathGraph32 allows the user to display mathematics formulas written in LaTeX code in text displays et in LaTeX displays.</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts19">To display LaTeX code in a text display (even in a text display with several lines), get the LaTeX code surrounded by two characters $.</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts19">To display LaTeX code in a LaTeX display, simply write the LaTeX code.</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts19">In both cases, the result is visible and blinking when you type the LaTeX display in the dialog box.</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts19">Buttons at the top of the edit dialog box allow the user to get the most usual LaTeX codes. You just have to complete the code inside the brackets. Pressing the TAB key will send the caret inside the next pair of brackets.</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts19">MathGraph32 uses specific LaTeX codes :</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside; list-style-type: disc;">
+<li class="rvps2"><span class="rvts19">\Val allowing the user to display dynamically the value of a calculus or a varaible in a formula.</span></li>
+<li class="rvps2"><span class="rvts19">\FracRed allowing the user to display an irreducible fraction equaling a given fraction by specifying the numerator and denominator of the fraction.</span></li>
+<li class="rvps2"><span class="rvts19">\If : allowing a conditional display inside LaTeX code.</span></li>
+<li class="rvps2"><span class="rvts19">\For : allowing the display of a formula with LaTeX style.</span></li>
+<li class="rvps2"><span class="rvts19">\ForSimp : allowing the display of a formula with LaTeX style with replacement of the values used in the formula and simplification of addition of 0 and multiplication, or division by 1.</span></li>
+<li class="rvps2"><span class="rvts19">\ForSimpFrac : allowing the display of a formula with LaTeX style with replacement of the values used in the formula by approximated rational fractions and simplification of addition of 0 and multiplication, or division by 1.</span></li>
+<li class="rvps2"><span class="rvts19">\Calc : &nbsp;allowing the display of a formula with inline style (with calculation signs).</span></li>
+<li class="rvps2"><span class="rvts19">\CalcSimp : allowing the display of a formula with inline style (with calculation signs) with replacement of the values used in the formula and simplification of addition of 0 and multiplication, or division by 1.</span></li>
+<li class="rvps2"><span class="rvts19">\Decomp : returns the primary decomposition of an integer using exponents.</span></li>
+<li class="rvps2"><span class="rvts19">\DecompFull : returns the primary decomposition of an integer without using exponents.</span></li>
+</ul>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts19">To be noticed : the name of these specific LaTeX functions begin with a upper case character.</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts91">\Val : To dynamically display a value in a LaTeX formula.</span></p>
+<p class="rvps2"><span class="rvts84"><br/></span></p>
+<p class="rvps7"><span class="rvts20">This LaTeX function allows you to dynamically display the value of a calculus (real or complex) or a variable in a MaTeX formula.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">If you want to dynamically display another numerical object (a measure for instance), create first a calculus containing this value.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">Let us assume that </span><span class="rvts82">num</span><span class="rvts20"> is a calculus or a variable already defined and you wish to display a fraction with </span><span class="rvts82">num</span><span class="rvts20"> as numerator and 2 as denominator.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">Click on &nbsp;icon </span><img alt="" style="padding : 1px;" src="lib/LatexBig.png"><span class="rvts20"> to create a display of a LaTeX formula.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">Click on button </span><img alt="" style="padding : 1px;" src="lib/LatexQuotient.png"><span class="rvts20"> that inserts code LaTeX \frac{ }{ }.</span></p>
+<p class="rvps7"><span class="rvts20">Set the caret position inside the last pair of brackets and type 2, the set the caret position inside the first pair of brackets and press button </span><span class="rvts80">Dynamic value insertion</span><span class="rvts20">.</span></p>
+<p class="rvps7"><span class="rvts20">Click on </span><span class="rvts82">num</span><span class="rvts20"> and validate.You get the following LaTeX code : &nbsp;\frac{\Val{</span><span class="rvts82">num</span><span class="rvts20">} {2}} that will display the display of </span><span class="rvts82">num</span><span class="rvts20"> value as numerator for the fraction with two digits.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">You can also get another number of digits or get a + sign before the value when it is positive.</span></p>
+<p class="rvps7"><span class="rvts20">For instance, code will display a fraction with </span><span class="rvts82">num</span><span class="rvts20"> as numerator (with three digits) and a + sign at the beginning if the value is positive.</span></p>
+<p class="rvps7"><span class="rvts82"><br/></span></p>
+<p class="rvps7"><span class="rvts20">A more sophisticated use is available :</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside; list-style-type: disc;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside; list-style-type: circle;">
+<li style="margin-left: 0px" class="rvps7"><span class="rvts20"> \Val{</span><span class="rvts82">num, dec,+0</span><span class="rvts20">} displays </span><span class="rvts82">num </span><span class="rvts20">value with </span><span class="rvts82">dec</span><span class="rvts20"> digits, preceded with a + sign before if it is positive or null, display invisible if </span><span class="rvts82">num</span><span class="rvts20"> value equals 0.</span><br/><span class="rvts82"><br/></span></li>
+<li style="margin-left: 0px" class="rvps7"><span class="rvts20"> \Val{</span><span class="rvts82">num, dec,0</span><span class="rvts20">} &nbsp;displays </span><span class="rvts82">num </span><span class="rvts20">value with </span><span class="rvts82">dec</span><span class="rvts20"> digits, display invisible if &nbsp;</span><span class="rvts82">num</span><span class="rvts20"> value equals 0.</span><br/><span class="rvts82"><br/></span></li>
+<li style="margin-left: 0px" class="rvps7"><span class="rvts20">\Val{</span><span class="rvts82">num, dec,+1</span><span class="rvts20">} displays </span><span class="rvts82">num </span><span class="rvts20">value with </span><span class="rvts82">dec</span><span class="rvts20"> digits, display replaced by a + sign if </span><span class="rvts82">num</span><span class="rvts20"> equals 1 and a signe - if </span><span class="rvts82">num</span><span class="rvts20"> equals - 1.</span><br/><span class="rvts20"><br/></span></li>
+<li style="margin-left: 0px" class="rvps7"><span class="rvts20">\Val{</span><span class="rvts82">num,dec,1</span><span class="rvts20">} displays </span><span class="rvts82">num </span><span class="rvts20">value with </span><span class="rvts82">dec</span><span class="rvts20"> digits, display invisible if </span><span class="rvts82">num</span><span class="rvts20"> equals 1 and by a - sign if </span><span class="rvts82">num</span><span class="rvts20"> equals -1.</span></li>
+</ul></ul>
+<p class="rvps7"><span class="rvts87"><br/></span></p>
+<h1 class="rvps6"><span class="rvts0"><span class="rvts95"><br/></span></span></h1>
+<h1 class="rvps6"><span class="rvts0"><span class="rvts95">\ValFrac : To dynamically display a value in a LaTeX formula in the form of an approximated fraction.</span></span></h1>
+<p class="rvps2"><span class="rvts84"><br/></span></p>
+<p class="rvps7"><span class="rvts20">The syntax is : \ValFrac{</span><span class="rvts82">number</span><span class="rvts20">}.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">number is replaced by the approximated rational fraction gotten from the continue fraction algorithm ( approximated to 10^(-12)).</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">To display a matrix </span><span class="rvts82">mat</span><span class="rvts20"> with the terms approximated by rational fractions, use syntax \ValFrac{mat}</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">If </span><span class="rvts82">number</span><span class="rvts20"> is a real value, you can also use syntax \ValFrac{</span><span class="rvts82">number</span><span class="rvts20">,+} if you wish the number representation to start with a plus sign when the number is positive or null.</span></p>
+<p class="rvps7"><span class="rvts84"></span><br/><span class="rvts93"><br/></span></p>
+<p class="rvps2"><span class="rvts91">\FracRed :</span><span class="rvts94"> </span><span class="rvts91">To display a rational fraction in the most simple way</span><span class="rvts94">.</span></p>
+<p class="rvps2"><span class="rvts86"><br/></span></p>
+<p class="rvps7"><span class="rvts82">The syntax is as follows :</span></p>
+<p class="rvps7"><span class="rvts82"><br/></span></p>
+<p class="rvps7"><span class="rvts20">\FracRed {</span><span class="rvts82">num</span><span class="rvts20">, </span><span class="rvts82">den</span><span class="rvts20">} ou \FracRed {</span><span class="rvts82">num</span><span class="rvts20">, </span><span class="rvts82">den</span><span class="rvts20">, </span><span class="rvts82">code</span><span class="rvts20">}</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">Both will display an irreducible fraction equaling fraction of numerator </span><span class="rvts82">num</span><span class="rvts20"> and denominator </span><span class="rvts82">den</span><span class="rvts20">.</span></p>
+<p class="rvps7"><span class="rvts20">If the fraction equals an integer number, this integer number will be displayed (not a fraction).</span></p>
+<p class="rvps7"><span class="rvts20">If </span><span class="rvts82">num</span><span class="rvts20"> or </span><span class="rvts82">den</span><span class="rvts20"> are not the names of calculuses, or are nor of integer value, or if </span><span class="rvts82">den</span><span class="rvts20"> value is 0, </span><span class="rvts82">Frac Error</span><span class="rvts20"> will be displayed.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">If </span><span class="rvts82">code</span><span class="rvts20"> equals +0, the fraction will be preceded with a + sign when the result is positive and will disappear when the result is 0.</span></p>
+<p class="rvps7"><span class="rvts20">If </span><span class="rvts82">code</span><span class="rvts20"> equals 0, the fraction will disappear when the result is zero.</span></p>
+<p class="rvps7"><span class="rvts20">If </span><span class="rvts82">code</span><span class="rvts20"> equals +1, the fraction the fraction will be preceded by a + sign when the result is positive and a - sign when it is negative.</span></p>
+<p class="rvps7"><span class="rvts20">If </span><span class="rvts82">code</span><span class="rvts20"> equals 1, the fraction will disappear when the result equals 1 and will be replaced by a - sign when the result is -1.</span></p>
+<p class="rvps7"><span class="rvts90"><br/></span></p>
+<p class="rvps2"><span class="rvts91">\If : to create a conditional display of LaTeX code inside a LaTeX display.</span></p>
+<p class="rvps2"><span class="rvts85"><br/></span></p>
+<p class="rvps7"><span class="rvts20">The syntax is : \If {</span><span class="rvts82">test</span><span class="rvts20">} {code1} {code2} where </span><span class="rvts82">test</span><span class="rvts20"> is a real calculus or a variable already created.</span></p>
+<p class="rvps7"><span class="rvts20">If </span><span class="rvts82">test</span><span class="rvts20"> value is 1 then LaTeX code </span><span class="rvts82">code1</span><span class="rvts20"> is dispalyed et otherwise &nbsp;LaTeX code </span><span class="rvts82">code2</span><span class="rvts20"> is displayed.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts82">code1</span><span class="rvts20"> et </span><span class="rvts82">code2</span><span class="rvts20"> may themselves use the command \If and this with a some interweaving level.</span></p>
+<p class="rvps7"><span class="rvts90"><br/></span></p>
+<p class="rvps2"><span class="rvts91">\For : to create the display of the formula of a calculation or function (complex or real).</span></p>
+<p class="rvps2"><span class="rvts88"><br/></span></p>
+<p class="rvps7"><span class="rvts20">The syntax is : \For {</span><span class="rvts82">calc</span><span class="rvts20">} where </span><span class="rvts82">calc</span><span class="rvts20"> is the name of a calculation or a function.</span></p>
+<p class="rvps7"><span class="rvts89"><br/></span></p>
+<p class="rvps2"><span class="rvts92">\ForSimp : To display dynamically the simplified formula of a calculation or a function (real or complex).</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">The syntax is : \ForSimp {</span><span class="rvts82">calc</span><span class="rvts20">} where </span><span class="rvts82">calc</span><span class="rvts20"> is a calculation or a function already defined.</span></p>
+<p class="rvps7"><span class="rvts20">The calls to variables or calculations are replaced by their numerical value and the formula displayed is simplified as much as possible (for instance the null terms of a sum are dismissed and 1*x is replaced with x).</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts92">\ForRep : To display dynamically the formula of a calculation or a function (real or complex) without simplification.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">The syntax is : \ForRep {</span><span class="rvts82">calc</span><span class="rvts20">} where </span><span class="rvts82">calc</span><span class="rvts20"> is a calculation or a function already defined.</span></p>
+<p class="rvps7"><span class="rvts20">The calls to variables or calculations are replaced by their numerical value and the formula displayed without any simplification.</span></p>
+<p class="rvps7"><span class="rvts90"><br/></span></p>
+<p class="rvps2"><span class="rvts91">\ForSimpFrac : To display dynamically the formula of a calculation or a function (real or complex) with real values replaced by an approximated rational fraction.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">The syntax is : \ForSimpFrac {</span><span class="rvts82">calc</span><span class="rvts20">} where </span><span class="rvts82">calc</span><span class="rvts20"> is a calculation or a function already defined.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">Variables and calculations used in the formula of </span><span class="rvts82">calc</span><span class="rvts20"> are replaced par their approxiamted rational fraction (rounded to 10^(-12) ) and the formula displayed is simplified as much as possible (for instance the null terms of a sum are dismissed and 1*x is replaced with x).</span></p>
+<p class="rvps7"><span class="rvts87"><br/></span></p>
+<p class="rvps2"><span class="rvts91">\Calc : To display the inline formula of a calculation or a function.</span></p>
+<p class="rvps2"><span class="rvts84"><br/></span></p>
+<p class="rvps7"><span class="rvts20">The syntax is : \Calc {calc} where </span><span class="rvts82">calc</span><span class="rvts20"> is the name of a calculation or a function.</span></p>
+<p class="rvps2"><span class="rvts90"><br/></span></p>
+<p class="rvps2"><span class="rvts91">\CalcSimp : To display the simplified inline formula of a calculation or a function.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">The syntax is : \CalcSimp {calc} where </span><span class="rvts82">calc</span><span class="rvts20"> is the name of a calculation or a function.</span></p>
+<p class="rvps7"><span class="rvts20">The calls to variables or calculations are replaced by their numerical value and the &nbsp;formula displayed is simplfied as much as possible (for instance the null terms of a sum are dismissed and 1*x is replaced with x).</span></p>
+<p class="rvps7"><span class="rvts87"><br/></span></p>
+<p class="rvps2"><span class="rvts91">\Decomp : to display the primary decomposition of an integer using exponents.</span></p>
+<p class="rvps2"><span class="rvts84"><br/></span></p>
+<p class="rvps7"><span class="rvts20">The syntax is : \Decomp {</span><span class="rvts82">number</span><span class="rvts20">} where </span><span class="rvts82">number</span><span class="rvts20"> is a real calculation or a variable already defined.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">If </span><span class="rvts82">number</span><span class="rvts20"> is not an integer, returns the decimal display of the number (with 12 digits max).</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">If </span><span class="rvts82">number</span><span class="rvts20"> is -1, 1 or 0 returns -1, 1 or 0.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts91">\DecompFull : to display the primary decomposition of an integer without using exponents.</span></p>
+<p class="rvps2"><span class="rvts84"><br/></span></p>
+<p class="rvps7"><span class="rvts20">The syntax is : \DecompFull {</span><span class="rvts82">number</span><span class="rvts20">} where </span><span class="rvts82">number</span><span class="rvts20"> is a real calculation or a variable already defined.</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">If </span><span class="rvts82">number</span><span class="rvts20"> is not an integer, returns the decimal display of the number (with 12 digits max).</span></p>
+<p class="rvps7"><span class="rvts20"><br/></span></p>
+<p class="rvps7"><span class="rvts20">If </span><span class="rvts82">number</span><span class="rvts20"> is -1, 1 or 0 returns -1, 1 or 0.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2021&gt;, &lt;Yves Biton&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

@@ -1,0 +1,100 @@
+﻿<html>
+	
+<head>
+	<title>Macro de construction it&eacute;rative</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Macrodeconstructioniterative");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">Macro de construction it&eacute;rative</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Lesmacros.html">Les macros</a> &rsaquo;&rsaquo; <a href="Lesdiffrentstypesdemacros.html">Les diff&eacute;rents types de macros</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Lesdiffrentstypesdemacros.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Macrodedsactivationdumodetrace.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Macrosdeconstructionrecursive.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts20">Une telle macro sert à appliquer une construction de la figure de façon itérative.</span></p>
+<p class="rvps2"><span class="rvts20">Pour cela, une construction doit être présente dans la figure.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Ce type de macro est créé avec l'icône </span><img width="40" height="40" alt="" style="padding : 1px;" src="lib/outilMacroAdd.png"><span class="rvts20"> situé à l’extrémité droite de la barre d'outils des affichages. Une boîte de dialogue apparaît. Tout en bas de la liste cliquez sur </span><span class="rvts32">Macro de construction itérative.</span></p>
+<p class="rvps2"><span class="rvts20">Cliquez d'abord sur la figure à l'endroit où sera affiché l'intitulé de la macro puis remplissez la boite de dialogue.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Lors de la création d'une telle macro on choisit d'abord les objets sources auxquels elle s'appliquera.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">La construction est implémentée une première fois, puis, si c'est possible elle est appliquée ensuite en prenant comme objets sources les premiers objets finaux qu'elle a créés. On réitère le procédé jusqu'à obtenir le nombre d'itération demandé.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">On peut aussi demander que certains objets sources ( à partir du premier) soient communs à toutes les implémentations de la construction. Par exemple, si une construction a trois objets sources qui sont un nombre (un angle) et deux points, on pourra demander que le premier objet source soit commun à toutes les implémentations de la construction. Les objets finaux de la construction devront alors commencer par deux points et c'est à ces deux points que s'appliquera l'implémentation suivante.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">On peut aussi demander d'imposer une couleur pour tous les objets créés lors des implémentations. Sinon ce seront les couleurs initiales de la construction qui seront utilisées.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Enfin on peut demander que le premier des points finaux créés à chaque itération soit utilisé pour créer une ligne brisée ou un polygone (qu'on peut demander à remplir).</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Si la construction choisie ne peut pas être implémentée de façon itérative avec les choix effectués, la création de la macro sera refusée.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2025&gt;, &lt;Yves Biton&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

@@ -1,0 +1,159 @@
+﻿<html>
+	
+<head>
+	<title>Pr&eacute;sentation des constructions</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Presentationdesconstructions");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">Pr&eacute;sentation des constructions</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Lesconstructions.html">Les constructions</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Lesconstructions.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Lesconstructions.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="ConstructionsExemple1.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts68">Les constructions sont une des fonctionnalités les plus puissantes de MathGraph32.</span></p>
+<p class="rvps2"><span class="rvts68">Les constructions sont des sortes de figures que l’on peut incorporer dans d’autres figures.</span></p>
+<p class="rvps2"><span class="rvts68">Une construction utilise des objets de la figure dans laquelle on l’incorpore, appelés objets sources.</span></p>
+<p class="rvps2"><span class="rvts68">Elle utilise de façon interne des objets (appelés objets intermédiaires) qui serviront à créer de nouveaux objets (appelés objets finaux) &nbsp;qui eux pourront être utilisés par les objets que l’on créera après dans la figure.</span></p>
+<p class="rvps2"><span class="rvts68">Les objets sources et finaux peuvent être des objets graphiques ou de type calcul. Les repères sont considérés comme des objets numériques dans la version java.</span></p>
+<p class="rvps2"><span class="rvts68">Les objets sources numériques peuvent être :</span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside; list-style-type: disc;">
+<li class="rvps2"><span class="rvts68">un calcul numérique réel.</span></li>
+<li class="rvps2"><span class="rvts68">un calcul numérique complexe.</span></li>
+<li class="rvps2"><span class="rvts68">une fonction numérique réelle.</span></li>
+<li class="rvps2"><span class="rvts68">une fonction numérique complexe.</span></li>
+<li class="rvps2"><span class="rvts68">une variable.</span></li>
+<li class="rvps2"><span class="rvts68">une suite récurrente réelle.</span></li>
+<li class="rvps2"><span class="rvts68">une suite récurrente complexe.</span></li>
+</ul>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68">Les objets graphiques sources peuvent être :</span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside; list-style-type: disc;">
+<li class="rvps2"><span class="rvts68">un point libre</span></li>
+<li class="rvps2"><span class="rvts68">un point lié</span></li>
+<li class="rvps2"><span class="rvts68">une droite</span></li>
+<li class="rvps2"><span class="rvts68">une demi-droite</span></li>
+<li class="rvps2"><span class="rvts68">un segment</span></li>
+<li class="rvps2"><span class="rvts68">un cercle</span></li>
+<li class="rvps2"><span class="rvts68">un arc de cercle</span></li>
+<li class="rvps2"><span class="rvts68">un polygone</span></li>
+<li class="rvps2"><span class="rvts68">une ligne brisée</span></li>
+<li class="rvps2"><span class="rvts68">un vecteur</span></li>
+</ul>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68">Pour être valide, une construction doit respecter la règle suivante:</span></p>
+<p class="rvps7"><span class="rvts68">Les objets finaux ne doivent être construits qu’avec des objets construits uniquement avec les objets sources &nbsp;sources et chacun des objets sources doit servir au moins une fois pour créer un objet final.</span></p>
+<p class="rvps2"><span class="rvts68">Une seule exception à cette règle&nbsp;: Si les objets finaux sont construits en utilisant les objets sources et une variable qui n’est pas un objet source, la construction est acceptée et la variable utilisée fera partie des objets intermédiaires.</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68">Les constructions sont enregistrées dans des fichiers dont l’extension est mgc (un tel fichier s’appellera par exemple Tangentes.mgc).</span></p>
+<p class="rvps2"><span class="rvts68">Les icônes pour créer et gérer les macro-constructions sont accessibles quand on clique sur l'outil </span><img alt="" style="padding : 1px;" src="lib/outilToggleToolsAdd.png"><span class="rvts76"> </span><span class="rvts68">situé à droite de la barre d'outils supérieure.</span></p>
+<p class="rvps2"><span class="rvts68">L'icône </span><img width="36" height="36" alt="" style="padding : 1px;" src="lib/outilGestionConst1.png"><span class="rvts68"> sert à gérer les macro-constructions. Cliquer sur cette icône fait apparaître une boîte de dialogue de choix.</span></p>
+<p class="rvps2"><span class="rvts68">L'icône </span><img width="40" height="40" alt="" style="padding : 1px;" src="lib/outilCreationConst1.png"><span class="rvts68"> sert à créer une nouvelle macro-construction. Cliquer sur cette icône fait apparaître une boîte de dialogue de choix.</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68">On charge une construction dans une figure depuis un fichier à l’aide de l'icône </span><img width="36" height="36" alt="" style="padding : 1px;" src="lib/outilGestionConst1.png"><span class="rvts68"> et en choisissant </span><span class="rvts76">Incorporer une construction depuis un fichier</span><span class="rvts68">.</span></p>
+<p class="rvps2"><span class="rvts68">On utilise une construction déjà chargée dans la figure à l’aide de l'icône </span><img width="36" height="36" alt="" style="padding : 1px;" src="lib/outilGestionConst1.png"><span class="rvts68"> et en choisissant </span><span class="rvts76">Implémenter une construction de la construction de la figure</span><span class="rvts68">.</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68">On enregistre une construction sur un disque ou tout autre support d’enregistrement à l’aide de l'icône </span><img width="36" height="36" alt="" style="padding : 1px;" src="lib/outilGestionConst1.png"><span class="rvts68"> et en choisissant </span><span class="rvts76">Enregistrer une construction de la figure</span><span class="rvts68">.</span></p>
+<p class="rvps2"><span class="rvts76"><br/></span></p>
+<p class="rvps2"><span class="rvts68">Lorsqu’une construction a été implémentée dans une figure, il est possible d’obtenir que tous les objets intermédiaires redeviennent des objets normaux en utilisant l'icône </span><img width="36" height="36" alt="" style="padding : 1px;" src="lib/outilGestionConst1.png"><span class="rvts68">.et en choisissant l'item </span><span class="rvts74">Fusionner les constructions de la figure</span><span class="rvts68"> ou </span><span class="rvts74">Fusionner certaines constructions de la figure</span><span class="rvts68">. Le premier fusionne toutes les constructions de la figure. Le second vous laisse choisir quelles sont les constructions de la figure à fusionner</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts131">Comment définir une construction.</span></p>
+<p class="rvps2"><span class="rvts131"><br/></span></p>
+<p class="rvps2"><span class="rvts68">Pour définir une construction, on commence par choisir les objets sources numériques et graphiques.</span></p>
+<p class="rvps2"><span class="rvts68">Il est important de comprendre que, lors de l'implémentation de la construction, les objets sources numériques seront ceux qui devront être désignes en premier.</span></p>
+<p class="rvps2"><span class="rvts68">Le choix des objets sources se fait via l'icône </span><img width="40" height="40" alt="" style="padding : 1px;" src="lib/outilCreationConst1.png"><span class="rvts68"> puis </span><span class="rvts76">Choix des objets sources numériques </span><span class="rvts68">ou &nbsp;</span><span class="rvts76">Choix des objets sources graphiques</span><span class="rvts68">. Il faut penser à cliquer sur le bouton STOP rouge quand tous les objets ont été désignés.</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68">Une fois les objets sources choisis on choisit les objets finaux numériques et graphiques. Il n'est possible de choisir que des objets exclusivement construits avec les objets sources spécifiés.</span></p>
+<p class="rvps2"><span class="rvts68">Le choix des objets finaux se fait via l'icône </span><img width="40" height="40" alt="" style="padding : 1px;" src="lib/outilCreationConst1.png"><span class="rvts68"> puis </span><span class="rvts76">Choix des objets finaux numériques </span><span class="rvts68">ou</span><span class="rvts76"> Choix des objets finaux graphiques</span><span class="rvts68">. Il faut penser à cliquer sur le bouton STOP rouge quand tous les objets ont été désignés.</span></p>
+<p class="rvps2"><span class="rvts68">Il est possible d'annuler les choix des éléments sources et finaux via &nbsp;l'icône </span><img width="40" height="40" alt="" style="padding : 1px;" src="lib/outilCreationConst1.png"><span class="rvts68"> puis </span><span class="rvts76">Réinitialiser la construction en cours</span><span class="rvts68">.</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68">Pour finaliser la construction en cours d'élaboration, utiliser l'icône </span><img width="40" height="40" alt="" style="padding : 1px;" src="lib/outilCreationConst1.png"><span class="rvts68"> puis </span><span class="rvts76">Finir la construction </span><span class="rvts68">en cours.</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68">Dans le commentaire de la macro vous pouvez entrer les informations de votre choix et certaines indications qui seront affichées lors de l'implémentation de la construction pour guider l'utilisateur.</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68">Imaginons que votre construction comporte comme un objet sources un calcul réel représentant une valeur d'un angle, un point et un cercle.</span></p>
+<p class="rvps2"><span class="rvts68">Vous pouvez alors ajouter au commentaire de la macro les lignes suivantes :</span></p>
+<p class="rvps2"><span class="rvts68">#1:la valeur de l'angle</span></p>
+<p class="rvps2"><span class="rvts68">#2:un point</span></p>
+<p class="rvps2"><span class="rvts68">#3:le cercle</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts131">Comment implémenter une construction.</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68">On ne peut implémenter une construction que si celle-ci a été créée dans la figure ou incorporée dans la figure à partir d'un fichier.</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68">Pour implémenter une construction, utilisez l'icône </span><img width="36" height="36" alt="" style="padding : 1px;" src="lib/outilGestionConst1.png"><span class="rvts76">&nbsp;</span><span class="rvts68"> puis </span><span class="rvts76">Implémenter une construction de la figure</span><span class="rvts68">.</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68">Si la construction comporte à la fois des objets sources graphiques et non graphiques, ce seront les objets sources non graphiques qui seront demandés en premier lors de l'implémentation à l'aie d'une boîte de dialogue.</span></p>
+<p class="rvps2"><span class="rvts68">Il faudra ensuite cliquer sur les objets sources graphiques de la construction (si cette construction utilise des objets sources graphiques).</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts92">A noter :</span><span class="rvts68"> Si une construction utilise un seul objet non graphique et que c'est un repère, et si la figure dans laquelle on doit l'implémenter ne comporte qu'un seul repère alors ce repère est automatiquement choisi comme objet source pour la construction et la boîte de dialogue de choix des objets sources numériques n'apparaît pas.</span></p>
+<p class="rvps2"><span class="rvts68"><br/></span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2025&gt;, &lt;Yves Biton&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

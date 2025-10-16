@@ -1,0 +1,27 @@
+/*
+ * Created by yvesb on 21/03/2017.
+ */
+/*
+ * MathGraph32 Javascript : Software for animating online dynamic mathematics figures
+ * https://www.mathgraph32.org/
+ * @Author Yves Biton (yves.biton@sesamath.net)
+ * @License: GNU AGPLv3 https://www.gnu.org/licenses/agpl-3.0.html
+ */
+import CPointInterieurPolygone from '../objets/CPointInterieurPolygone'
+import CPointAncetrePointsMobiles from '../objets/CPointAncetrePointsMobiles'
+import { getStr } from '../kernel/kernel'
+export default CPointInterieurPolygone
+
+CPointInterieurPolygone.prototype.infoHist = function () {
+  return this.getName() + ' : ' + getStr('chinfo169') + ' ' + this.polygoneAssocie.nomSommetsPolygone()
+}
+
+CPointInterieurPolygone.prototype.depDe4Rec = function (p) {
+  if (this.elementTestePourDependDePourRec === p) return this.dependDeElementTestePourRec
+  return this.memDep4Rec(CPointAncetrePointsMobiles.prototype.depDe4Rec.call(this, p) ||
+    this.polygoneAssocie.depDe4Rec(p))
+}
+
+CPointInterieurPolygone.prototype.estDefiniParObjDs = function (listeOb) {
+  return this.polygoneAssocie.estDefPar(listeOb)
+}

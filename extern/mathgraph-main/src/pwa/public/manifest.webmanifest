@@ -1,0 +1,48 @@
+{
+  "name": "Mathgraph",
+  "short_name": "Mathgraph",
+  "id": "mathgraph-pwa",
+  "start_url": "index.html?v=9.4.2",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "lang": "fr",
+  "scope": "./",
+  "description": "Logiciel libre de géométrie dynamique, d’analyse et de simulation",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "images/pwa-64x64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "images/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "images/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "images/maskable-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "images/screenshotWide.png",
+      "sizes": "1024x538",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "images/screenshot.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
+}

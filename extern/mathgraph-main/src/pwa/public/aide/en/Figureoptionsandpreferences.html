@@ -1,0 +1,121 @@
+﻿<html>
+	
+<head>
+	<title>Figure options and preferences</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Figureoptionsandpreferences");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">Figure options and preferences</h1>
+				
+				</div>
+			<div id="topic_header_nav">
+				<a href="Levelsofuse.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Graphicalobjects.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts19">Options for the current figure and preferences are available by clicking on icon </span><img alt="" style="padding : 1px;" src="lib/outilOptionsFig.png"><span class="rvts19"> of the top toolbar</span><span class="rvts22"> </span><span class="rvts19">.</span></p>
+<p class="rvps2"><span class="rvts19">A dialog box pops up.</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts55">Angle unity </span><span class="rvts19">tab changes the angle unity of the current </span></p>
+<p class="rvps2"><span class="rvts19">.</span></p>
+<p class="rvps2"><span class="rvts19">Underneath you can choose the level of use :</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside; list-style-type: disc;">
+<li class="rvps2"><span class="rvts27">Elementary level.</span></li>
+<li class="rvps2"><span class="rvts27">Mid-level.</span></li>
+<li class="rvps2"><span class="rvts27">Advanced level without complex numbers calculation.</span></li>
+<li class="rvps2"><span class="rvts27">Advanced level with complex numbers calculation.</span></li>
+</ul>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts19">If the checkbox </span><span class="rvts55">Use chosen level for next start</span><span class="rvts19"> is checked, this level will be used on next start of the software.</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts19">If the checkbox </span><span class="rvts55">Use dys mode for next start</span><span class="rvts19"> is checked, on next start, the default point style will be a big point, the default line thickness will be 2 pixels and indications on the figure will be bigger. The creation of point on click will first be deactivated.</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts55">Starting figure</span><span class="rvts19"> is for the figure displayed on start of MathGraph 32 : Frame with grid or Frame dotted or Empty figure with unity length.</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts19">When the check box </span><span class="rvts55">Automatic display of measures</span><span class="rvts19"> is checked, measures are automatically displayed on the figure.</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts19">If the checkbox </span><span class="rvts55">Display a frame of given dimensions</span><span class="rvts19"> is checked, a selection rectangle will appear on the figure. Enter the rectangle dimensions in pixels (starting from the top left corner of the figure). This rectangle is not part of the figure, just a help.</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts19">The inputs </span><span class="rvts55">Min width in pixels</span><span class="rvts19"> and</span><span class="rvts55"> Min Height in pixels</span><span class="rvts19"> allow you to specify minimum dimensions for working on the current figure. Their initial values are 0. When opening a figure, if these dimensions where not 0 when the figure was saved and if the working area of the application is not big enough to contain a figure with the minimum dimensions specified, scroll bars will be added so that you will be able to work on the figure with the minimum dimensions specified in these inputs (on table or mobile phone, &nbsp;you will be able to browse in the figure sliding a finger on it).</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts55">Scale factor for export of images</span><span class="rvts19"> : If you choose a factor bigger than 1 the quality of the figure will be better (but the image will be bigger).</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts19">If you click on :</span></p>
+<p class="rvps2"><span class="rvts55">Fixed objects : &nbsp;</span><span class="rvts19">You will choose if angle marks or displays are movable or not by tools </span><img alt="" style="padding : 1px;" src="lib/Main24.png"><span class="rvts19"> and </span><img alt="" style="padding : 1px;" src="lib/Translation24.png"><span class="rvts57">.</span></p>
+<p class="rvps2"><span class="rvts55">Animation options</span><span class="rvts19">, you will choose animation options when using tool </span><img alt="" style="padding : 1px;" src="lib/outilAnimation.png"><span class="rvts19">of linked point animation (in the first left expandable bar).</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts55">Background image choice</span><span class="rvts19">, you will choose an image file for the background image of the figure (Click on button </span><span class="rvts55">browse</span><span class="rvts19">).</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts55">Background image deletion</span><span class="rvts19">, you will be able to delete the current background image (if present).</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts55">Figure background color</span><span class="rvts19">, you can choose a background color for the figure (default is white)..</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts55">Language</span><span class="rvts19">, you can change the language of the software for next start (French, English or Spanish).</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts55">About MathGraph</span><span class="rvts19">, an about dialog box pops up.</span></p>
+<p class="rvps2"><span class="rvts19"><br/></span></p>
+<p class="rvps2"><span class="rvts55">MathGraph32 website</span><span class="rvts19">, your browser opens a window on MathGraph32 website.</span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2021&gt;, &lt;Yves Biton&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

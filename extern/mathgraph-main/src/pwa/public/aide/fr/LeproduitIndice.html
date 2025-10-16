@@ -1,0 +1,102 @@
+﻿<html>
+	
+<head>
+	<title>Le produit Indic&eacute;</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("LeproduitIndice");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">Le produit Indic&eacute;</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Lesobjetsnumeriques.html">Les objets num&eacute;riques</a> &rsaquo;&rsaquo; <a href="Lesobjetsnumeriquesdetypecalcul.html">Les objets num&eacute;riques de type calcul</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Lesobjetsnumeriquesdetypecalcul.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Lasommeindicee.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Lasuiterecurrentereelle.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps16"><span class="rvts68">Le produit indicé est le produit d'un objet de type calcul ou mesure, appelé </span><span class="rvts76">valeur à multiplier</span><span class="rvts68"> obtenu lorsqu'une variable (appelée l'indice) prend toutes les valeurs entières de la valeur minimale de l'indice à la valeur maximale.</span></p>
+<p class="rvps16"><span class="rvts68">Le produit est calculé de la façon suivante :</span></p>
+<p class="rvps16"><span class="rvts68">On donne à la variable </span><span class="rvts76">indice</span><span class="rvts68"> toutes les valeurs entières de la valeur minimale à la valeur maximale. A chaque fois, on recalcule les éléments de la figure dont dépend la </span><span class="rvts76">valeur à multiplier</span><span class="rvts68"> et qui dépendant de la variable </span><span class="rvts76">indice.</span><span class="rvts68"> On multiplie cette valeur avec le produit et ainsi de suite.</span></p>
+<p class="rvps16"><span class="rvts68"><br/></span></p>
+<p class="rvps2"><span class="rvts68">On crée un produit indicé en utilisant l'icône </span><img alt="" style="padding : 1px;" src="lib/outilAdd.png"><span class="rvts68"> de la troisième rangée d'icônes à partir du bas</span><span class="rvts76">.</span></p>
+<p class="rvps16"><span class="rvts68"><br/></span></p>
+<p class="rvps16"><span class="rvts68">Prenons un exemple simple :</span></p>
+<p class="rvps16"><span class="rvts68"><br/></span></p>
+<p class="rvps16"><span class="rvts68">Nous avons déjà défini une fonction numérique réelle </span><span class="rvts76">f</span><span class="rvts68"> , une variable </span><span class="rvts76">N</span><span class="rvts68"> dont la valeur actuelle est de 10.</span></p>
+<p class="rvps16"><span class="rvts68">Nous voulons calculer le produit de tous les </span><span class="rvts76">f(k)</span><span class="rvts68"> pour </span><span class="rvts76">k</span><span class="rvts68"> entier variant de 1 à </span><span class="rvts76">N</span><span class="rvts68">.</span></p>
+<p class="rvps16"><span class="rvts68">Nous allons utiliser créer une variable nommé </span><span class="rvts76">k</span><span class="rvts68"> avec pour valeur minimale 1, maximale 100, pas 1 et valeur actuelle 2. Remarquons que les valeurs mini, maxi et le pas ne servent pas pour notre somme.</span></p>
+<p class="rvps16"><span class="rvts68">Nous allons ensuite créer un calcul nommé </span><span class="rvts76">v</span><span class="rvts68"> (la valeur à multiplier) qui contiendra comme formule </span><span class="rvts76">f(k)</span><span class="rvts68">.</span></p>
+<p class="rvps16"><span class="rvts68">Nous allons enfin utiliser le menu </span><span class="rvts76">Calculs - Nouveau calcul dans R - Produit indicé.</span></p>
+<p class="rvps16"><span class="rvts68">Entrer P comme nom du produit.</span></p>
+<p class="rvps16"><span class="rvts68">Choisir v comme valeur à sommer.</span></p>
+<p class="rvps16"><span class="rvts68">Choisir </span><span class="rvts76">k</span><span class="rvts68"> comme variable indice.</span></p>
+<p class="rvps16"><span class="rvts68">Choisir 1 comme valeur minimale.</span></p>
+<p class="rvps16"><span class="rvts68">Choisir </span><span class="rvts76">N</span><span class="rvts68"> comme valeur maximale.</span></p>
+<p class="rvps16"><span class="rvts68"><br/></span></p>
+<p class="rvps16"><span class="rvts68">Il faut noter que notre produit est dynamique : en modifiant la valeur de N, le produit sera actualisé.</span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2025&gt;, &lt;Yves Biton&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

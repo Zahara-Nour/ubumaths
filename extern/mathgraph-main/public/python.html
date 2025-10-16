@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=9">
+  <title>Test de mathgraph avec une console python</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body>
+<div id="main"></div>
+<script type="application/javascript">
+  // il faut définir ça avant de charger mtgLoad pour qu'il charge ce build
+  window.mtgPublicPath = 'build/'
+</script>
+<script type="text/javascript" src="build/mtgLoad.js"></script>
+<script type="text/javascript">
+  if (typeof mtgLoad === 'function') {
+    /** @type {MtgOptions} */
+    const mtgOptions = {
+      loadPython: true,
+      language: 'fr',
+      local: true,
+      zoomOnWheel: true,
+      // facultatif, on peut préciser des figures d'initialisations
+      // passer une liste vide va retirer la possibilité de changer de figure
+      // la première de la liste sera affichée au chargement
+      commandsFigs: [
+        // cf src/kernel/figures.js
+        { figRef: 'figRepOrthonorm', name: 'Repère orthonormé (degré)' },
+        { figRef: 'figVideUnite', name: 'Figure sans repère avec longueur unité' },
+        { figRef: 'figVide', name: 'Figure sans repère et sans longueur unité' },
+        { figRef: 'figRepModif', name: 'Repère modifiable (radian)' },
+        { figRef: 'reporthonfr', name: 'Repère 3D' },
+        { figRef: 'surffr', name: 'Une jolie surface' }
+        /* on peut aussi passer le code base64 d'une figure avec * /
+        {
+          name: 'ma figure perso',
+          fig: 'son code base64'
+        } /* */
+      ]
+    }
+    const container = document.getElementById('main')
+    mtgLoad(container, {}, mtgOptions, function (error, app) {
+      if (error) return console.error(error)
+    })
+  } else {
+    console.error(Error('mathgraph n’est pas chargé correctement'), 'mtgLoad est ' + typeof mtgLoad)
+  }
+</script>
+</body>
+</html>

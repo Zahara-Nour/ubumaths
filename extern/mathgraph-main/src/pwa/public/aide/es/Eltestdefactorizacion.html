@@ -1,0 +1,90 @@
+﻿<html>
+	
+<head>
+	<title>El test de factorizaci&oacute;n</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Eltestdefactorizacion");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">El test de factorizaci&oacute;n</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Losobjetosnumericos.html">Los objetos num&eacute;ricos</a> &rsaquo;&rsaquo; <a href="Losobjetosnumericostipocalculo.html">Los objetos num&eacute;ricos tipo c&aacute;lculo</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Losobjetosnumericostipocalculo.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Eltestdeequivalencia.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Lasumaindicial.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><span class="rvts23">Un test de factorización es un valor que permite saber si una fórmula de un cálculo o de una función es factorizada por la fórmula de otro cálculo o de otra función.</span></p>
+<p class="rvps2"><span class="rvts23"> El valor de retorno es 1 si la factorización es posible, y 0 en caso contrario.</span></p>
+<p class="rvps2"><span class="rvts23"> Este tipo de objeto se utiliza principalmente para poner ejercicios en línea creados con MathGraph32 gracias a su applet y su biblioteca de JavaScript.</span></p>
+<p class="rvps2"><span class="rvts23"> Por ejemplo, si la función</span><span class="rvts35"> f </span><span class="rvts23">de una variable real contiene como fórmula 2*(2*</span><span class="rvts35">x</span><span class="rvts23">+3)*(1–</span><span class="rvts35">x</span><span class="rvts23">^2) y si la función </span><span class="rvts35">g</span><span class="rvts23"> contiene como fórmula 3+</span><span class="rvts35">x</span><span class="rvts23">*2, una prueba de factorización de</span><span class="rvts35"> f</span><span class="rvts23"> por </span><span class="rvts35">g</span><span class="rvts23"> devuelve el valor 1. Pero si </span><span class="rvts35">g</span><span class="rvts23"> contiene como fórmula 1+</span><span class="rvts35">x</span><span class="rvts23">, devolverá 0 (incluso si </span><span class="rvts35">f</span><span class="rvts23">(</span><span class="rvts35">x</span><span class="rvts23">) en realidad puede efectivamente factorizarse por 1+</span><span class="rvts35">x</span><span class="rvts23">).</span></p>
+<p class="rvps2"><span class="rvts23"> Para definir un objeto de este tipo se utiliza el icono</span><span class="rvts20"> </span><img alt="" style="padding : 1px;" src="lib/outilAdd.png"><span class="rvts20"> de la tercera fila de iconos desde la parte inferior</span><span class="rvts21">.</span></p>
+<p class="rvps2"><span class="rvts23">Se abrirá un cuadro de diálogo.</span></p>
+<p class="rvps2"><span class="rvts23"> Se seleccionan en la listas de la izquierda y de la derecha los cálculos o funciones a comparar. A la izquierda se selecciona el que se quiere determinar si es factorizado por el de la derecha. Si se marca la casilla Reemplazamiento de valores luego de la comparación &nbsp;las llamadas a las variables o cálculos son reemplazadas por su valor numérico antes del test de factorización.</span></p>
+<p class="rvps2"><span class="rvts23"> Por ejemplo, si a y b son dos cálculos que contienen como valores 2 y 3, si CALC1 es un cálculo que contiene como fórmula sqrt(3)*5 *sqrt(2)*3, y si &nbsp;Calc2 es un cálculo que contiene como fórmula &nbsp;b*sqrt(a), un test de factorización creado marcando la casilla Reemplazamiento de valores &nbsp;luego de la comparación con Calc2 devolverá como valor 1.</span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2021&gt;, &lt;Yves Biton - Luis Belcredi&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

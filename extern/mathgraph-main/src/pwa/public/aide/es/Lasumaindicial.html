@@ -1,0 +1,101 @@
+﻿<html>
+	
+<head>
+	<title>La  suma indicial</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Lasumaindicial");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">La  suma indicial</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="Losobjetosnumericos.html">Los objetos num&eacute;ricos</a> &rsaquo;&rsaquo; <a href="Losobjetosnumericostipocalculo.html">Los objetos num&eacute;ricos tipo c&aacute;lculo</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="Losobjetosnumericostipocalculo.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="Eltestdefactorizacion.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Elproductoindicial.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps19"><span class="rvts20">La suma indicial (o sumatoria) es la suma de un objeto de tipo cálculo o medida, llamado </span><span class="rvts21">valor a sumar</span><span class="rvts20">, obtenido cuando una variable (llamada índice) toma todos los valores enteros del valor mínimo del índice al valor máximo.</span></p>
+<p class="rvps19"><span class="rvts20">La suma se calcula de la siguiente forma:</span></p>
+<p class="rvps19"><span class="rvts20">Se da a la variable </span><span class="rvts21">índice</span><span class="rvts20"> todos los valores enteros del valor mínimo al valor máximo. Cada vez, se recalculan los elementos de la figura de la que depende el </span><span class="rvts21">valor a sumar</span><span class="rvts20"> y que depende de la variable </span><span class="rvts21">índice</span><span class="rvts20">. Se añade este valor a la suma y así sucesivamente.</span></p>
+<p class="rvps19"><span class="rvts20">.</span></p>
+<p class="rvps2"><span class="rvts20">Creamos una suma indicial usando el ícono </span><img alt="" style="padding : 1px;" src="lib/outilAdd.png"><span class="rvts20"> de la tercera fila de iconos desde la parte inferior</span><span class="rvts21">.</span></p>
+<p class="rvps19"><span class="rvts20"><br/></span></p>
+<p class="rvps19"><span class="rvts20">Tomemos un ejemplo simple:</span></p>
+<p class="rvps19"><span class="rvts20">Ya definimos una función numérica real </span><span class="rvts21">f</span><span class="rvts20">, una variable </span><span class="rvts21">N</span><span class="rvts20"> cuyo valor actual es 10.</span></p>
+<p class="rvps19"><span class="rvts20">Queremos calcular la suma de todos los </span><span class="rvts21">f</span><span class="rvts20">(</span><span class="rvts21">k</span><span class="rvts20">) para </span><span class="rvts21">k</span><span class="rvts20"> entero variable de 1 a </span><span class="rvts21">N</span><span class="rvts20">.</span></p>
+<p class="rvps19"><span class="rvts20">Vamos a crear una variable nombrada </span><span class="rvts21">k</span><span class="rvts20"> con valor mínimo 1, máximo 100, paso 1 y valor actual 2. Observemos que los valores mini, máximo y el paso sirvan por nuestra suma.</span></p>
+<p class="rvps19"><span class="rvts20">Vamos a continuación a crear un cálculo nombrado </span><span class="rvts21">v</span><span class="rvts20"> (el valor que debe sumarse) que contendrá como fórmula </span><span class="rvts21">f</span><span class="rvts20">(</span><span class="rvts21">k</span><span class="rvts20">).</span></p>
+<p class="rvps19"><span class="rvts20">Finalmente vamos a utilizar el menú </span><span class="rvts21">Cálculos - Nuevo cálculo en R - Suma indicial</span><span class="rvts20">.</span></p>
+<p class="rvps19"><span class="rvts20">Ingresar </span><span class="rvts21">S</span><span class="rvts20"> como nombre de la suma.</span></p>
+<p class="rvps19"><span class="rvts20">Elegir </span><span class="rvts21">v</span><span class="rvts20"> como valor que debe sumarse.</span></p>
+<p class="rvps19"><span class="rvts20">Elegir </span><span class="rvts21">k</span><span class="rvts20"> como variable indicial.</span></p>
+<p class="rvps19"><span class="rvts20">Elegir 1 como valor mínimo.</span></p>
+<p class="rvps19"><span class="rvts20">Elegir </span><span class="rvts21">N</span><span class="rvts20"> como valor máximo.</span></p>
+<p class="rvps19"><span class="rvts20"><br/></span></p>
+<p class="rvps19"><span class="rvts20">Hay que señalar que nuestra suma es dinámica: al modificar el valor de </span><span class="rvts21">N</span><span class="rvts20"> se actualizará la suma</span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2021&gt;, &lt;Yves Biton - Luis Belcredi&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

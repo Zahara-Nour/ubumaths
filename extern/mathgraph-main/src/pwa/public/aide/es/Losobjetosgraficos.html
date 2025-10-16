@@ -1,0 +1,436 @@
+﻿<html>
+	
+<head>
+	<title>Los objetos gr&aacute;ficos</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Professional Edition 4.9.2.132">
+	<meta name="keywords" content="">
+	
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "MathGraph32Help.htm?" + sTopicUrl;
+			}
+			else
+			{
+				var bTocSelected = false;
+				(function waitForTOC()
+				{
+					if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+					{
+						top.FrameTOC.SelectTocItem("Losobjetosgraficos");
+						bTocSelected = true;
+					}
+					if (!bTocSelected) setTimeout(function() { waitForTOC(); }, 300);
+				})();
+			}
+		});
+	</script>
+	
+	</head>
+
+<body>
+
+<div id="topic_header">
+			<div id="topic_header_content">
+				<h1 id="topic_header_text">Los objetos gr&aacute;ficos</h1>
+				
+				</div>
+			<div id="topic_header_nav">
+				<a href="Opcionesdelafiguraydefuncionamie.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="Loscursores.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p></p>
+<p class="rvps2"><a name="HautPage"></a>
+<span class="rvts64">Les objets graphiques.</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<div class="rvps2"><table width="100%" border="1" cellpadding="2" cellspacing="2" style="border-width: 0px; border-spacing: 2px;">
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#PointLibre">El punto libre</a><span class="rvts65"> </span></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#PointLibreEntier">El punto libre de coordenadas enteras</a><span class="rvts65"> </span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><span class="rvts66">El punto</span><a class="rvts66" href="Losobjetosgraficos.html#PointConstruit"> construido</a></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#PointLie">El punto ligado</a><span class="rvts65"> </span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><span class="rvts66">El punto</span><a class="rvts71" href="Losobjetosgraficos.html#PointParSomme"> por suma de dos vectores</a></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#PointParMult">El punto por multiplicación de un vector por un número</a></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#PointParCoord">El punto por coordenadas en un referencial</a></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#PointInterieur">El punto interior a un polígono o a una circunferencia</a></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts66" href="Losobjetosgraficos.html#Droite">La recta</a></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#Segment">El segmento</a><span class="rvts65"> </span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#Cercle">La circunferencia</a><span class="rvts65"> </span></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#DemiDroite">La semirrecta</a></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#Vecteur">El vector</a></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#ArcCercle">El arco de circunferencia</a><span class="rvts65"> </span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#Polygone">El polígono</a><span class="rvts65"> </span></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#LigneBrisee">La poligonal</a></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#MarqueAngle">La marca de ángulo</a><span class="rvts65"> </span></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#MarqueSegment">La marca de segmento</a><span class="rvts65"> </span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts66" href="Losobjetosgraficos.html#Commentaire">El comentario (visualización de texto)</a><span class="rvts65"> </span></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#AffichageValeur">La visualización de valor</a><span class="rvts65"> </span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts66" href="Losobjetosgraficos.html#AffichageLatex">La </a><a class="rvts71" href="Losobjetosgraficos.html#AffichageLatex">visualización</a><a class="rvts66" href="Losobjetosgraficos.html#AffichageLatex"> LaTeX</a></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#LieuPoints">El lugar de puntos conectados</a></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts66" href="Losobjetosgraficos.html#LieuPointsNonRelies">El lugar de puntos no ligados</a></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#Surface">La superficie</a></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts66" href="Losobjetosgraficos.html#DemiPlan">El semiplano</a></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#GrapheSuiteRecReelle">La gráfica de una sucesión recurrente real</a></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#GrapheSuiteRecComplexe">La gráfica de una sucesión recurrente compleja</a></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#AffichageImage">La visualización de imagen</a></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts66" href="Losobjetosgraficos.html#LieuObjet">El liugar de objetos</a></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#ObjetDuplique">El objeto duplicado</a></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="376" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#ObjetClone">El objeto clon</a></p>
+</td>
+<td width="574" style="border-width : 1px; border-color: #000000; border-style: solid; padding: 1px 2px; border-top: none; border-right: none; border-bottom: none; border-left: none;"><p class="rvps2"><a class="rvts71" href="Losobjetosgraficos.html#EditeurFormule">El editor de fórmulas</a></p>
+</td>
+</tr>
+</table>
+</div>
+<p class="rvps2"><a name="PointLibre"></a>
+<span class="rvts67">El punto libre :</span><span class="rvts52"> </span><img alt="" style="padding : 1px;" src="lib/PointLibreBig.png"></p>
+<p class="rvps2"><span class="rvts23">Es un punto que se puede desplazar libremente sobre la figura.</span></p>
+<p class="rvps2"><span class="rvts69"><br/></span></p>
+<p class="rvps2"><span class="rvts67">El punto libre de coordenadas enteras </span><a name="PointLibreEntier"></a>
+<span class="rvts67">:</span><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/PointLibreEntBig.png"></p>
+<p class="rvps2"><span class="rvts23">Es un punto que se puede desplazar libremente sobre la figura pero cuyos coordenadas permanecen enteras. Es posible limitar las &nbsp;posiciones posibles horizontal y verticalmente..</span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><span class="rvts67">El punto construido </span><a name="PointConstruit"></a>
+<span class="rvts67">:</span></p>
+<p class="rvps2"><span class="rvts23">Es un punto que ha sido definido como intersección de dos objetos o como imagen de otro punto en una transformación.</span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><span class="rvts67">El punto ligado </span><a name="PointLie"></a>
+<span class="rvts67">:</span><span class="rvts52"> </span><img alt="" style="padding : 1px;" src="lib/PointLieBig.png"></p>
+<p class="rvps2"><span class="rvts23">Es un punto que queda vinculado a un objeto. Puede ser desplazado pero debe permanecer sobre el objeto.</span></p>
+<p class="rvps2"><span class="rvts23">Un punto se puede ligar a una recta, una semirrecta, un segmento, una circunferencia, un polígono, una poligonal, un arco de circunferencia o un lugar de puntos conectados.</span></p>
+<p class="rvps2"><span class="rvts23">Se puede transformar un punto libre en punto ligado con la herramienta </span><img alt="" style="padding : 1px;" src="lib/CreationLiaisonPointObjetBig.png"><span class="rvts23">.</span></p>
+<p class="rvps2"><span class="rvts23">Se puede transformar un punto ligado en punto libre con la herramienta</span><span class="rvts35"> </span><img alt="" style="padding : 1px;" src="lib/SuppresionLiaisonPointObjetBig.png"><span class="rvts23">.</span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><a name="PointParSomme"></a>
+<span class="rvts67">El punto por suma de dos vectores :</span><span class="rvts41"> </span><img alt="" style="padding : 1px;" src="lib/PointParSommeVectBig.png"></p>
+<p class="rvps2"><span class="rvts23">Es un punto que es la imagen de otro por una traslación cuyo vector es la suma de dos vectores.</span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><span class="rvts67">El punto por producto de un vector por un número </span><a name="PointParMult"></a>
+<span class="rvts67">:</span><span class="rvts41"> </span><img alt="" style="padding : 1px;" src="lib/PointParMultVectBig.png"></p>
+<p class="rvps2"><span class="rvts23">Es un punto que es la imagen de otro por una traslación cuyo vector es el producto de un vector por un número.</span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><a name="PointParCoord"></a>
+<span class="rvts67">El punto por coordenadas en un referencial </span><a name="PointRepere"></a>
+<span class="rvts67">:</span><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/PointParCoordonneesBig.png"></p>
+<p class="rvps2"><span class="rvts23">Es un punto definido por sus coordenadas en un referencial.</span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><span class="rvts67">El punto interior a un polígono o une circunferencia </span><a name="PointInterieur"></a>
+<span class="rvts67">:</span><span class="rvts41"> </span><img alt="" style="padding : 1px;" src="lib/PointInterieurPolygoneBig.png"></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts23">Este es un punto que se crea haciendo clic en el interior de un polígono o una circunferencia.</span></p>
+<p class="rvps2"><span class="rvts23">Se puede capturar, pero permanecerá dentro del polígono o circunferencia.</span></p>
+<p class="rvps2"><span class="rvts23">Si el polígono no es convexo, puede suceder que al deformar el punto "salte" sobre uno de los bordes.</span></p>
+<p class="rvps2"><span class="rvts23">Se puede transformar un punto interior en un punto libre utilizando la herramienta </span><img alt="" style="padding : 1px;" src="lib/SuppresionLiaisonPointObjetBig.png"><span class="rvts23"> de supresión de ligadura punto-objeto.</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><a name="Droite"></a>
+<span class="rvts67">La recta :</span><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/DteABBig.png"><span class="rvts65"> </span><img alt="" style="padding : 1px;" src="lib/DteParBig.png"><span class="rvts65"> </span><img alt="" style="padding : 1px;" src="lib/DtePerBig.png"><span class="rvts65"> </span><img alt="" style="padding : 1px;" src="lib/DteBisBig.png"><span class="rvts65"> </span><img alt="" style="padding : 1px;" src="lib/DteMedBig.png"><span class="rvts65"> </span><img alt="" style="padding : 1px;" src="lib/DteHorBig.png"><span class="rvts65"> </span><img alt="" style="padding : 1px;" src="lib/DteVerBig.png"><span class="rvts65"> </span><img alt="" style="padding : 1px;" src="lib/DteParCoefBig.png"><span class="rvts68"> </span><img alt="" style="padding : 1px;" src="lib/DteParEqBig.png"><span class="rvts64"> </span><img alt="" style="padding : 1px;" src="lib/outilDtReg.png"></p>
+<p class="rvps2"><span class="rvts23">Se puede crear una recta por dos puntos, paralela, perpendicular, bisectriz, mediatriz, recta horizontal, recta vertical, recta definida por un punto y su coeficiente director en un referencial o por una ecuación de recta en un referencial o recta de regresión lineal.</span></p>
+<p class="rvps2"><span class="rvts23">Se puede también crear la imagen de una recta por una transformación (excepto la inversión).</span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><span class="rvts67">El segmento </span><a name="Segment"></a>
+<span class="rvts67">:</span><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/SegmentBig.png"></p>
+<p class="rvps2"><span class="rvts23">Un segmento se crea designando sus dos extremos.</span></p>
+<p class="rvps2"><span class="rvts23">Se puede también crear la imagen de un segmento por &nbsp;una transformación (excepto la inversión)..</span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><a name="Cercle"></a>
+<span class="rvts67">La circunferencia :</span><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/CercOABig.png"><span class="rvts65"> </span><img alt="" style="padding : 1px;" src="lib/CercORBig.png"></p>
+<p class="rvps2"><span class="rvts23">Se crea una circunferencia cliqueando sobre su centro y un punto o cliqueando sobre su centro y dando su radio.</span></p>
+<p class="rvps2"><span class="rvts23">Se puede también crear la imagen de una circunferencia por &nbsp;una transformación (excepto la inversión).</span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><a name="DemiDroite"></a>
+<span class="rvts67">La semirrecta :</span><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/DemiDtBig.png"></p>
+<p class="rvps2"><span class="rvts23">Se crea una semirrecta cliqueando sobre el origen y sobre otro punto..</span></p>
+<p class="rvps2"><span class="rvts23">Se puede también crear la imagen de una semirrecta por una transformación (excepto la inversión).</span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><a name="Vecteur"></a>
+<span class="rvts67">El vector :</span><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/VecteurBig.png"></p>
+<p class="rvps2"><span class="rvts23">Se crea un vector cliqueando sobre su origen luego sobre su extremo.</span></p>
+<p class="rvps2"><span class="rvts23">No se trata de un verdadero vector en el sentido matemático sino de un segmento provisto de una flecha. Se puede entonces vincular un punto a un vector.</span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><a name="ArcCercle"></a>
+<span class="rvts67">El arco de circunferencia :</span><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/ArcPetitParPointBig.png"><span class="rvts65"> </span><img alt="" style="padding : 1px;" src="lib/ArcGrandParPointBig.png"><span class="rvts65"> </span><img alt="" style="padding : 1px;" src="lib/ArcDirectParPointBig.png"><span class="rvts65"> </span><img alt="" style="padding : 1px;" src="lib/ArcIndirectParPointBig.png"><img alt="" style="padding : 1px;" src="lib/CreerPetitArcCentrePointAngleBig.png"><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/CreerGrandArcCentrePointAngleBig.png"><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/CreerArcCercleDirectCentrePointAngleBig.png"><img alt="" style="padding : 1px;" src="lib/CreerArcCercleIndirectCentrePointAngleBig.png"><img width="37" height="37" alt="" style="padding : 1px;" src="lib/ArcPetitParRapporteur.png"><span class="rvts23"> </span><img width="34" height="34" alt="" style="padding : 1px;" src="lib/ArcGrandParRapporteur.png"></p>
+<p class="rvps2"><span class="rvts23">Se crea un arco de circunferencia:</span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside; list-style-type: disc;">
+<li class="rvps2"><span class="rvts23">ya sea por tres puntos: se cliquea sobre su centro, luego sobre el inicio del arco luego sobre un punto que da la dirección del final del arco (4 primeros iconos).</span></li>
+<li class="rvps2"><span class="rvts23">ya sea por dos puntos y el valor del ángulo orientado dando el final del arco (4 últimos iconos).</span></li>
+<li class="rvps2"><span class="rvts23">Los arcos por transportador están disponibles sólo en el nivel Elemental</span></li>
+</ul>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><a name="Polygone"></a>
+<span class="rvts67">El polígono :</span><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/PolygoneBig.png"></p>
+<p class="rvps2"><span class="rvts23">Se crea un polígono cliqueando sobre sus vértices luego cliqueando con el botón rojo STOP cuando se ha designado el último vértice (se puede también cliquear nuevamente sobre el primer vértice).</span></p>
+<p class="rvps2"><span class="rvts23">Se puede también crear la imagen de un arco por una transformación (excepto la inversión)</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><a name="LigneBrisee"></a>
+<span class="rvts67">La poligonal :</span><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/LigneBriseeBig.png"></p>
+<p class="rvps2"><span class="rvts23">Se crea una poligonal cliqueando sobre sus vértices luego cliqueando con el botón derecho cuando se ha designado el último vértice.</span></p>
+<p class="rvps2"><span class="rvts23">Se puede también crear la imagen de una poligonal por una transformación (excepto la inversión).</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><a name="MarqueAngle"></a>
+<span class="rvts67">La marca de un ángulo :</span><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/MarqueAngNorBig.png"><span class="rvts65"> </span><img alt="" style="padding : 1px;" src="lib/MarqueAngOrBig.png"><span class="rvts23"> </span><img width="35" height="35" alt="" style="padding : 1px;" src="lib/MarqueAngOrDir.png"><span class="rvts23"> </span><img width="32" height="32" alt="" style="padding : 1px;" src="lib/MarqueAngOrInd.png"></p>
+<p class="rvps2"><span class="rvts23">Es posible crear:</span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside; list-style-type: disc;">
+<li class="rvps2"><span class="rvts23">una marca de ángulo no orientado: </span><img alt="" style="padding : 1px;" src="lib/MarqueAngNorBig.png"></li>
+<li class="rvps2"><span class="rvts23">una marca de ángulo orientado en el sentido más corto: </span><img alt="" style="padding : 1px;" src="lib/MarqueAngOrBig.png"></li>
+<li class="rvps2"><span class="rvts23">una marca de ángulo orientado en el sentido directo </span><img width="35" height="35" alt="" style="padding : 1px;" src="lib/MarqueAngOrDir.png"></li>
+<li class="rvps2"><span class="rvts23">una marca de ángulo orientado en el sentido indirecto </span><img width="32" height="32" alt="" style="padding : 1px;" src="lib/MarqueAngOrInd.png"><span class="rvts23">.</span></li>
+</ul>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><a name="MarqueSegment"></a>
+<span class="rvts67">La marca de un segmento :</span><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/MarqueSegmentBig.png"></p>
+<p class="rvps2"><span class="rvts23">Una marca de segmento debe asociarse a un segmento. Se la crea cliqueando sobre el segmento.</span></p>
+<p class="rvps2"><span class="rvts23">La paleta de estilo de marca permite elegir la marca creada.</span></p>
+<p class="rvps2"><span class="rvts23">La marca del segmento se crea en el estilo de la traza activa.</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts67">El comentario :</span><img alt="" style="padding : 1px;" src="lib/CommentaireBig.png"><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/CommentaireLieBig.png"></p>
+<p class="rvps2"><span class="rvts23">Un comentario es una visualización de texto sobre la figura.</span></p>
+<p class="rvps2"><span class="rvts23">El comentario puede ser libre (</span><img alt="" style="padding : 1px;" src="lib/CommentaireBig.png"><span class="rvts23">) o ligado a un punto (</span><img alt="" style="padding : 1px;" src="lib/CommentaireLieBig.png"><span class="rvts23">).</span></p>
+<p class="rvps2"><span class="rvts23">Puede contener referencias a cálculos o variables y permitir así la visualización de valores dinámicos.</span></p>
+<p class="rvps2"><span class="rvts23">Puede también contener caracteres griegos o especiales.</span></p>
+<p class="rvps2"><span class="rvts23">Puede tapar o no los objetos que el recubre y que lo preceden.</span></p>
+<p class="rvps2"><span class="rvts23">Puede ser encuadrado o no (con o sin efecto de relieve).</span></p>
+<p class="rvps2"><span class="rvts23">Varios tamaños de caracteres están disponibles..</span></p>
+<p class="rvps2"><span class="rvts23">Se puede elegir el tipo de alineación (</span><img alt="" style="padding : 1px;" src="lib/AlignementHorGauche.gif"><span class="rvts23"> a izquierda, </span><img alt="" style="padding : 1px;" src="lib/AlignementHorCentre.gif"><span class="rvts23"> centrada o </span><img alt="" style="padding : 1px;" src="lib/AlignementHorDroit.gif"><span class="rvts23">a la derecha) y la alineación vertical (</span><img alt="" style="padding : 1px;" src="lib/AlignementVertHaut.gif"><span class="rvts23"> arriba, </span><img alt="" style="padding : 1px;" src="lib/AlignementVertCentre.gif"><span class="rvts23"> centrada o</span><img alt="" style="padding : 1px;" src="lib/AlignementVertBas.gif"><span class="rvts23"> abajo).</span></p>
+<p class="rvps2"><span class="rvts23">Para que los caracteres siguientes se escriban en cursiva, entrar los caracteres #I.</span></p>
+<p class="rvps2"><span class="rvts23">Para que los caracteres siguientes se escriban en negrita, entrar los caracteres #G.</span></p>
+<p class="rvps2"><span class="rvts23">Para que los caracteres siguientes se escriban en subrayado, entrar los caracteres #U.</span></p>
+<p class="rvps2"><span class="rvts23">Los modos cursiva, negrita y subrayado pueden ser combinados. Por ejemplo &nbsp;#G#U devolverá el texto en negrita y subrayado.</span></p>
+<p class="rvps2"><span class="rvts23">Para volver de nuevo a una visualización de fuente normal, entrar los caracteres #N.</span></p>
+<p class="rvps2"><span class="rvts23">Para escribir en exponente </span><span class="rvts35">chaine</span><span class="rvts23"> utilice #H(</span><span class="rvts35">chaine</span><span class="rvts23">)</span></p>
+<p class="rvps2"><span class="rvts23">Para escribir en subíndice </span><span class="rvts35">chaine</span><span class="rvts23"> utilice #L(</span><span class="rvts35">chaine</span><span class="rvts23">)</span></p>
+<p class="rvps2"><span class="rvts23">Para transformar una visualización de texto en código LaTeX, es posible &nbsp;encuadrando ese código entre dos caracteres $</span></p>
+<p class="rvps2"><span class="rvts23">Se puede ligar un comentario de texto libre a un punto con el icono</span><img alt="" style="padding : 1px;" src="lib/CreationLiaisonTextePointBig.png"><span class="rvts23">.</span></p>
+<p class="rvps2"><span class="rvts23">Se puede dejar libre un comentario de texto ligado a un punto con el icono </span><img alt="" style="padding : 1px;" src="lib/SuprresionLiaisonTextePointBig.png"><span class="rvts23">.</span></p>
+<p class="rvps2"><span class="rvts67"><br/></span></p>
+<p class="rvps2"><a name="AffichageValeur"></a>
+<span class="rvts67">La visualización de un valor :</span><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/AffichageValeurBig.png"><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/AffichageValeurLieBig.png"></p>
+<p class="rvps2"><span class="rvts23">Permite indicar un valor sobre la figura..</span></p>
+<p class="rvps2"><span class="rvts23">La visualización de valor puede ser libre (</span><img alt="" style="padding : 1px;" src="lib/AffichageValeurBig.png"><span class="rvts23">) o ligada a un punto (</span><img alt="" style="padding : 1px;" src="lib/AffichageValeurLieBig.png"><span class="rvts23">).</span></p>
+<p class="rvps2"><span class="rvts23">Se puede especificar:</span></p>
+<p class="rvps2"><span class="rvts23">el número de decimales,</span></p>
+<p class="rvps2"><span class="rvts23">un encabezamiento (que se mostrará antes del valor),</span></p>
+<p class="rvps2"><span class="rvts23">una post cadena (que se indicará después del valor).</span></p>
+<p class="rvps2"><span class="rvts23">Puede borrar o no los objetos que recubre y que lo preceden.</span></p>
+<p class="rvps2"><span class="rvts23">Puede estar encuadrada o no (con o sin efecto de relieve).</span></p>
+<p class="rvps2"><span class="rvts23">Se puede elegir el tipo de alineación (</span><img alt="" style="padding : 1px;" src="lib/AlignementHorGauche.gif"><span class="rvts23"> a izquierda, </span><img alt="" style="padding : 1px;" src="lib/AlignementHorCentre.gif"><span class="rvts23"> centrada o </span><img alt="" style="padding : 1px;" src="lib/AlignementHorDroit.gif"><span class="rvts23">a la derecha) y la alineación vertical (</span><img alt="" style="padding : 1px;" src="lib/AlignementVertHaut.gif"><span class="rvts23"> arriba, </span><img alt="" style="padding : 1px;" src="lib/AlignementVertCentre.gif"><span class="rvts23"> centrada o</span><img alt="" style="padding : 1px;" src="lib/AlignementVertBas.gif"><span class="rvts23"> abajo).</span></p>
+<p class="rvps2"><span class="rvts23">Se puede ligar a un punto una visualización de valor libre con el icono </span><img alt="" style="padding : 1px;" src="lib/CreationLiaisonTextePointBig.png"><span class="rvts23">.</span></p>
+<p class="rvps2"><span class="rvts23">Se puede hacer libre una visualización de valor ligada a un punto con el icono </span><img alt="" style="padding : 1px;" src="lib/SuprresionLiaisonTextePointBig.png"><span class="rvts23">.</span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><span class="rvts67">La visualización LaTeX </span><a name="AffichageLatex"></a>
+<span class="rvts67">:</span><span class="rvts41"> </span><img alt="" style="padding : 1px;" src="lib/LatexBig.png"><span class="rvts23"> </span><img alt="" style="padding : 1px;" src="lib/LatexLieBig.png"></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts23">Permite incorporar un texto matemático que utiliza la sintaxis LaTeX. Es posible insertar de manera dinámica el resultado de un cálculo real o complejo o de una variable..</span></p>
+<p class="rvps2"><span class="rvts23">La visualización LaTeX puede ser libre (</span><img alt="" style="padding : 1px;" src="lib/LatexBig.png"><span class="rvts23">) o ligada a un punto (</span><img alt="" style="padding : 1px;" src="lib/LatexLieBig.png"><span class="rvts23">).</span></p>
+<p class="rvps2"><span class="rvts23">Puede contener referencias a cálculos o variables y permitir así la visualización de valores dinámicos.</span></p>
+<p class="rvps2"><span class="rvts23">Puede tapar o no los objetos que recubre y que lo preceden.</span></p>
+<p class="rvps2"><span class="rvts23">Puede ser encuadrado o no (con o sin efecto de relieve).</span></p>
+<p class="rvps2"><span class="rvts23">Varios tamaños de caracteres están disponibles.</span></p>
+<p class="rvps2"><span class="rvts23">Se puede elegir el tipo de alineación (</span><img alt="" style="padding : 1px;" src="lib/AlignementHorGauche.gif"><span class="rvts23"> a izquierda, </span><img alt="" style="padding : 1px;" src="lib/AlignementHorCentre.gif"><span class="rvts23"> centrada o </span><img alt="" style="padding : 1px;" src="lib/AlignementHorDroit.gif"><span class="rvts23">a la derecha) y la alineación vertical (</span><img alt="" style="padding : 1px;" src="lib/AlignementVertHaut.gif"><span class="rvts23"> arriba, </span><img alt="" style="padding : 1px;" src="lib/AlignementVertCentre.gif"><span class="rvts23"> centrada o</span><img alt="" style="padding : 1px;" src="lib/AlignementVertBas.gif"><span class="rvts23"> abajo).</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts23">Los botones permiten insertar los códigos LaTeX más usuales.</span></p>
+<p class="rvps2"><span class="rvts23">Se puede ligar una visualización LaTeX libre a un punto con el icono </span><img alt="" style="padding : 1px;" src="lib/CreationLiaisonTextePointBig.png"><span class="rvts23">.</span></p>
+<p class="rvps2"><span class="rvts23">Se puede dejar libre una visualización LaTeX ligada a un punto con el icono </span><img alt="" style="padding : 1px;" src="lib/SuprresionLiaisonTextePointBig.png"><span class="rvts23">.</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts23">También se puede insertar en una visualización LaTeX el contenido de una visualización LaTeX previamente definido con el código LaTeX \Lat{valtag}, donde valtag es la etiqueta que se asignó previamente a la visualización LaTeX anterior.</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts23">Por ejemplo, se puede crear una primera visualización LaTeX con el siguiente código LaTeX: \srqt{2}.</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts23">Para ello utilice la herramienta de protocolo para asignarle la siguiente etiqueta: lat1</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts23">Luego cree otra visualización cuyo código LaTeX sea \Lat{lat1} + 3.</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts23">Todo sucederá como si la segunda visualización LaTeX tuviera el código \sqrt{2} + 3</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts67"><br/></span></p>
+<p class="rvps2"><span class="rvts67"><br/></span></p>
+<p class="rvps2"><a name="EditeurFormule"></a>
+<span class="rvts67">El editor de fórmula :</span><span class="rvts41"> </span><img alt="" style="padding : 1px;" src="lib/EditeurFormuleBig.png"></p>
+<p class="rvps2"><span class="rvts23">Permite incorporar un campo de edición para la fórmula de un cálculo o una función (real o compleja).</span></p>
+<p class="rvps2"><span class="rvts23">Cuando se crea un editor de fórmula, primero elija su ubicación en la figura, y, a continuación, un cuadro de diálogo que se abre, permite seleccionar de una lista el cálculo o la función con la que está asociada y el tamaño. Puede elegir un encabezado que aparecerá delante del campo de edición. Si este encabezado está vacío, se mostrará el nombre del cálculo delante seguido del signo de igualdad (por ejemplo para una función f de dos variables será mostrado f(x,y) =).</span></p>
+<p class="rvps2"><span class="rvts23">Si deja marcada la casilla </span><span class="rvts35">Visualización de la fórmula en LaTeX</span><span class="rvts23">, a fórmula introducida en el campo de edición será restaurada en forma natural en LaTeX a la derecha del campo de edición.</span></p>
+<p class="rvps2"><span class="rvts23">Sobre el cuadro</span><span class="rvts35"> Visualización de la fórmula en LaTeX</span><span class="rvts23"> se puede especificar un código en el campo </span><span class="rvts35">Pre-código LaTeX</span><span class="rvts23"> que se insertará delante del código LaTeX correspondiente a la fórmula ingresada en el editor. También en este caso, si la fórmula de </span><span class="rvts35">Visualización en tiempo real de la fórmula</span><span class="rvts23"> está marcada, la fórmula se mostrará cuando el usuario ingrese su fórmula en el editor. De lo contrario, solo se mostrará cuando el usuario haya validado presionando la tecla </span><span class="rvts35">Enter</span><span class="rvts23">.</span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><a name="LieuPoints"></a>
+<span class="rvts67">El lugar de puntos conectados : </span><img alt="" style="padding : 1px;" src="lib/LieuBig.png"><span class="rvts67"> </span><img alt="" style="padding : 1px;" src="lib/LieuPointsVariableBig.png"></p>
+<p class="rvps2"><span class="rvts23">Se obtiene uniendo las posiciones posibles de un punto por segmentos.</span></p>
+<p class="rvps2"><span class="rvts23">Estas posiciones pueden pueden se generadas:</span></p>
+<p class="rvps2"><span class="rvts23">ya sea por las posiciones de un punto ligado a un objeto (</span><img alt="" style="padding : 1px;" src="lib/LieuBig.png"><span class="rvts23">).</span></p>
+<p class="rvps2"><span class="rvts23">ya sea por los valores de una variable (</span><img alt="" style="padding : 1px;" src="lib/LieuPointsVariableBig.png"><span class="rvts23">).</span></p>
+<p class="rvps2"><span class="rvts23">Se puede especificar el número de puntos para obtener el lugar e indicar si el lugar es cerrado o no).</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><span class="rvts67">El lugar de puntos no conectados :</span><a name="LieuPointsNonRelies"></a>
+<span class="rvts67"> </span></p>
+<p class="rvps2"><span class="rvts23">Se obtiene trazando las posiciones posibles de un punto.</span></p>
+<p class="rvps2"><span class="rvts23">Estas posiciones pueden ser generadas:</span></p>
+<p class="rvps2"><span class="rvts23">ya sea por las posiciones de un punto ligado a un objeto (</span><img width="33" height="33" alt="" style="padding : 1px;" src="lib/LieuPointsDiscretPointLie.png"><span class="rvts23">).</span></p>
+<p class="rvps2"><span class="rvts23">ya sea por los valores de una variable (</span><img width="37" height="37" alt="" style="padding : 1px;" src="lib/LieuPointsDiscretVariable.png"><span class="rvts23">).</span></p>
+<p class="rvps2"><span class="rvts23">Se puede especificar el número de puntos para obtener el lugar e indicar si el lugar es cerrado o no)</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts41"><br/></span></p>
+<p class="rvps2"><a name="Surface"></a>
+<span class="rvts67">La superficie :&nbsp;</span><span class="rvts23"> </span><img width="32" height="32" alt="" style="padding : 1px;" src="lib/Surface.png"><img width="32" height="33" alt="" style="padding : 1px;" src="lib/SurfaceLieuDroite.png"><img width="32" height="32" alt="" style="padding : 1px;" src="lib/SurfaceLieuDeuxPoints.png"><img width="35" height="35" alt="" style="padding : 1px;" src="lib/SurfaceDeuxLieux.png"></p>
+<p class="rvps2"><span class="rvts23">Una superficie se obtiene rellenando una parte de la figura.</span></p>
+<p class="rvps2"><span class="rvts23">La superficie se crea en el estilo de relleno activo y el color activo.</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><img width="39" height="39" alt="" style="padding : 1px;" src="lib/SurfaceLieuDroite.png"><span class="rvts23">: Creación de un superficie delimitada por un lugar de puntos y una recta.</span></p>
+<p class="rvps2"><span class="rvts23"> </span><img width="38" height="38" alt="" style="padding : 1px;" src="lib/Surface.png"><span class="rvts23">: Creación de un superficie delimitada por un polígono, una circunferencia, un arco de circunferencia o un lugar de puntos conectados cerrado.</span></p>
+<p class="rvps2"><span class="rvts23"> </span><img width="41" height="41" alt="" style="padding : 1px;" src="lib/SurfaceDeuxLieux.png"><span class="rvts23"> : Creación de un superficie delimitada por dos lugares de puntos.</span></p>
+<p class="rvps2"><img width="41" height="41" alt="" style="padding : 1px;" src="lib/SurfaceLieuDeuxPoints.png"><span class="rvts23">: Creación de un superficie delimitada por un lugar de puntos y dos puntos.</span></p>
+<p class="rvps2"><span class="rvts67"><br/></span></p>
+<p class="rvps2"><span class="rvts67">El semiplano :</span><a name="DemiPlan"></a>
+<span class="rvts67"> </span><img width="56" height="56" alt="" style="padding : 1px;" src="lib/DemiPlanBig.png"></p>
+<p class="rvps2"><span class="rvts67"><br/></span></p>
+<p class="rvps2"><span class="rvts23">Un semiplano es trazado en el estilo de relleno activo y el color activo.</span></p>
+<p class="rvps2"><span class="rvts23">Se lo crea cliqueando sobre una recta (el borde) y sobre un punto interior al semiplano.</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts67">La gráfica de una sucesión recurrente real :</span><a name="GrapheSuiteRecReelle"></a>
+<span class="rvts67"> </span><img width="42" height="42" alt="" style="padding : 1px;" src="lib/outilGrapheSuiteRec.png"></p>
+<p class="rvps2"><span class="rvts23">Se crea en el estilo de trazo activo y el color activo.</span></p>
+<p class="rvps2"><span class="rvts23">Se trata del gráfico "en tela de araña" de una sucesión recurrente real definida por su primer término y una relación de la forma u(n+1) = f[u(n)] dónde f es una función numérica real.</span></p>
+<p class="rvps2"><span class="rvts23">Se pueden o no conectar los puntos al eje de las abscisas.</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts67">La gráfica de una sucesión recurrente compleja </span><a name="GrapheSuiteRecComplexe"></a>
+<span class="rvts67">: </span><img alt="" style="padding : 1px;" src="lib/outilGrapheSuiteRecComp.png"></p>
+<p class="rvps2"><span class="rvts23">Se crea en el estilo de trazo activo y el color activo.</span></p>
+<p class="rvps2"><span class="rvts23">Es la gráfica de una sucesión recurrente compleja definida por su primer término y una relación de la forma u(n+1) = f[u(n)] dónde f es una función numérica compleja.</span></p>
+<p class="rvps2"><span class="rvts23">Cada término de la sucesión es señalado por un punto (trazado en el estilo de punto activo) y es conectado al siguiente por un segmento (trazado en el color y el estilo de trazo activos).</span></p>
+<p class="rvps2"><span class="rvts52"><br/></span></p>
+<p class="rvps2"><a name="Image"></a>
+<span class="rvts67">La visualización de una imagen :</span><a name="AffichageImage"></a>
+<span class="rvts67"> </span><img alt="" style="padding : 1px;" src="lib/ImageBig.png"><span class="rvts67"> </span></p>
+<p class="rvps2"><span class="rvts40">Ella puede ser libre (</span><img alt="" style="padding : 1px;" src="lib/ImageBig.png"><span class="rvts40">) o ligada a un punto (</span><img alt="" style="padding : 1px;" src="lib/ImageLieBig.png"><span class="rvts40">).</span></p>
+<p class="rvps2"><span class="rvts23">Sirve para visualizar en la figura una imagen contenida en un archivo.</span></p>
+<p class="rvps2"><span class="rvts23">Esta visualización puede ocultar o no los objetos que recubre y que le preceden.</span></p>
+<p class="rvps2"><span class="rvts23">Puede ser recuadrada o no (con o sin efecto de relieve).</span></p>
+<p class="rvps2"><span class="rvts23">Se puede elegir el tipo de alineación (</span><img alt="" style="padding : 1px;" src="lib/AlignementHorGauche.gif"><span class="rvts23"> a izquierda, </span><img alt="" style="padding : 1px;" src="lib/AlignementHorCentre.gif"><span class="rvts23"> centrada o </span><img alt="" style="padding : 1px;" src="lib/AlignementHorDroit.gif"><span class="rvts23">a la derecha) y la alineación vertical (</span><img alt="" style="padding : 1px;" src="lib/AlignementVertHaut.gif"><span class="rvts23"> arriba, </span><img alt="" style="padding : 1px;" src="lib/AlignementVertCentre.gif"><span class="rvts23"> centrada o</span><img alt="" style="padding : 1px;" src="lib/AlignementVertBas.gif"><span class="rvts23"> abajo).</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><span class="rvts67">El lugar de objetos :</span><a name="LieuObjet"></a>
+<span class="rvts67"> </span><img alt="" style="padding : 1px;" src="lib/LieuObjetsBig.png"><span class="rvts67"> </span><img alt="" style="padding : 1px;" src="lib/LieuObjetsVariableBig.png"></p>
+<p class="rvps2"><span class="rvts20">El lugar de objetos es un conjunto de trazas dejadas por un objeto.</span></p>
+<p class="rvps2"><span class="rvts20">Puede ser generado por un punto ligado a un objeto o por una variable.</span></p>
+<p class="rvps2"><span class="rvts20"><br/></span></p>
+<p class="rvps2"><span class="rvts20">Se puede crear con los iconos </span><img alt="" style="padding : 1px;" src="lib/LieuObjetsBig.png"><span class="rvts20"> (lugar de objetos generado por punto ligado) y </span><img alt="" style="padding : 1px;" src="lib/LieuObjetsVariableBig.png"><span class="rvts20"> (lugar de objetos generado por variable).</span></p>
+<p class="rvps2"><span class="rvts20">El número </span><span class="rvts21">N</span><span class="rvts20"> de trazas que forman el lugar se limita a 2000. Este número puede ser dinámico.</span></p>
+<p class="rvps2"><span class="rvts20">Cuando el lugar de objetos es generado por un punto ligado a un objeto, las trazas que forman el lugar de objetos se calculan de la siguiente manera: Se simulan </span><span class="rvts21">N</span><span class="rvts20"> posiciones sucesivas del punto ligado sobre el objeto al cual está ligado. Para cada una de esas posiciones se deja una traza para el objeto elegido (un segmento por ejemplo).</span></p>
+<p class="rvps2"><span class="rvts20">El principio es el mismo cuando el lugar de objetos está generado por una variable, se procede de la misma forma simulando </span><span class="rvts21">N</span><span class="rvts20"> valores sucesivos de la variable incluidos entre su valor mínimo y su valor máximo.</span></p>
+<p class="rvps2"><span class="rvts20">Para designar un lugar de objetos basta con cliquear en la proximidad de una de las trazas que lo componen.</span></p>
+<p class="rvps2"><span class="rvts70">A tener en cuenta:</span></p>
+<p class="rvps11"><span class="rvts20">Para cambiar el color de un lugar de objetos, es necesario utilizar la herramienta paleta (</span><img alt="" style="padding : 1px;" src="lib/Palette.png"><span class="rvts20">).</span></p>
+<p class="rvps11"><span class="rvts23">Un lugar de objetos generado por un objeto de tipo lineal no tiene estilo de trazado que le sea propio.</span></p>
+<p class="rvps11"><span class="rvts23">Para cambiar el estilo de trazo de un lugar de objeto, es necesario cambiar el estilo de trazo del objeto cuyas trazas generan el lugar de objetos.</span></p>
+<p class="rvps11"><span class="rvts23">Es posible crear lugares de lugares de objetos pero sólo se trazarán si el número total de objetos no sobrepasa 5000.</span></p>
+<p class="rvps2"><span class="rvts67">El objeto duplicado :</span><a name="ObjetDuplique"></a>
+<span class="rvts67"> </span><img alt="" style="padding : 1px;" src="lib/outilAdd.png"></p>
+<p class="rvps2"><span class="rvts23">Use el icono </span><img alt="" style="padding : 1px;" src="lib/outilAdd.png"><span class="rvts23"> en la parte inferior de la barra de herramientas izquierda.</span></p>
+<p class="rvps2"><span class="rvts23">En algunos casos, un objeto puede ser ocultado parcialmente por objetos que se definieron después de él.</span></p>
+<p class="rvps2"><span class="rvts23">Se puede entonces crear un duplicado de ese objeto cuya única función será redibujar este objeto.</span></p>
+<p class="rvps2"><span class="rvts23">No se puede crear más que un único duplicado para un objeto dado.</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p class="rvps2"><a name="ObjetClone"></a>
+<span class="rvts67">El objeto clone :</span><a name="EquationDroite"></a>
+<span class="rvts67"> </span><img alt="" style="padding : 1px;" src="lib/outilAdd.png"></p>
+<p class="rvps2"><span class="rvts23">Use el icono </span><img alt="" style="padding : 1px;" src="lib/outilAdd.png"><span class="rvts23"> en la parte inferior de la barra de herramientas izquierda.</span></p>
+<p class="rvps2"><span class="rvts23">Es un objeto que juega exactamente el mismo papel que un objeto del mismo tipo precedentemente definido.</span></p>
+<p class="rvps2"><span class="rvts23">Este tipo de objeto es especialmente útil para las construcciones iterativas y recursivas aparecidas con la versión 4.8 de MathGraph32.</span></p>
+<p class="rvps2"><span class="rvts23">Es posible crear un clon de los objetos siguientes: punto, recta, semirrecta, segmento y circunferencia.</span></p>
+<p class="rvps2"><span class="rvts23"><br/></span></p>
+<p></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; &lt;2017-2021&gt;, &lt;Yves Biton - Luis Belcredi&gt; sous licence Creative Common CC-by-sa</div>
+		</div>
+	</body>
+	
+</html>
+

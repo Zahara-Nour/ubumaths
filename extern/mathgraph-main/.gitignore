@@ -1,0 +1,43 @@
+# IDE
+.idea
+.project
+.settings
+nbproject
+
+# fichiers générés par buildDependencies
+src/factory.js
+src/mtgLoad.dependencies.js
+
+# généré à la compilation
+docroot/*
+electron/build/*
+electron/images
+# aussi les packages, mais pas les txt à la racine
+electron-packages/MathGraph32JS*
+
+# cuisine npm
+node_modules
+
+# on utilise pnpm dans ce dépôt (ceux qui utilisent yarn ou npm
+# auront leur fichier de lock en local seulement)
+# Sauf pour le dossier electron où il faut npm…
+/package-lock.json
+yarn.lock
+shrinkwrap.yaml
+pnpm-debug.log
+electron/pnpm-lock.json
+
+# les packages electron
+electron-packages/*.zip
+
+# la documentation générée
+documentation
+
+# la génération des versions portables (mtgLoad et le cli convert.mjs)
+dist/*
+
+# en dev on garde une version du dernier déploiement en prod
+docroot.prod/
+/electron/en/
+/electron/es/
+/electron/fr/
