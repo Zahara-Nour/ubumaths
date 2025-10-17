@@ -7,6 +7,18 @@ export type PresenceStatus = 'online' | 'offline';
 // Import VIP card types
 import type { StudentVipCards } from './vip-card';
 
+// School Timetable Types
+export interface SchoolPeriod {
+	number: number; // 1, 2, 3, etc. (sequential)
+	name?: string; // Optional custom name (e.g., "Morning Break")
+	start_time: string; // HH:MM:SS format
+	end_time: string; // HH:MM:SS format
+}
+
+export interface SchoolTimetable {
+	periods: SchoolPeriod[];
+}
+
 export interface School {
 	id: string;
 	name: string;
@@ -15,6 +27,7 @@ export interface School {
 	address: string | null;
 	logo_url: string | null;
 	is_active: boolean;
+	timetable: SchoolTimetable | null;
 	created_at: string;
 	updated_at: string;
 }
@@ -85,6 +98,21 @@ export interface UserPresence {
 	user_id: string;
 	status: PresenceStatus;
 	last_heartbeat: string;
+	updated_at: string;
+}
+
+export interface ClassSchedule {
+	id: string;
+	class_id: string;
+	teacher_id: string;
+	day_of_week: number; // 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday
+	start_time: string; // HH:MM:SS format from database TIME type
+	end_time: string; // HH:MM:SS format from database TIME type
+	period_number: number | null; // Links to school timetable period (source of truth)
+	subject: string | null;
+	room: string | null;
+	notes: string | null;
+	created_at: string;
 	updated_at: string;
 }
 
@@ -166,6 +194,15 @@ export interface Database {
 					updated_at?: string;
 				};
 				Update: Partial<Omit<UserPresence, 'user_id'>>;
+			};
+			class_schedules: {
+				Row: ClassSchedule;
+				Insert: Omit<ClassSchedule, 'id' | 'created_at' | 'updated_at'> & {
+					id?: string;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: Partial<Omit<ClassSchedule, 'id' | 'created_at' | 'updated_at'>>;
 			};
 		};
 	};

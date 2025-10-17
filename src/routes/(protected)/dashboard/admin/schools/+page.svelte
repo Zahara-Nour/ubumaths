@@ -135,6 +135,9 @@
 							Address
 						</th>
 						<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+							Périodes
+						</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
 							Status
 						</th>
 						<th class="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -164,6 +167,11 @@
 								</div>
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap">
+								<div class="text-sm text-muted-foreground">
+									{school.timetable?.periods?.length || 0} période{(school.timetable?.periods?.length || 0) !== 1 ? 's' : ''}
+								</div>
+							</td>
+							<td class="px-6 py-4 whitespace-nowrap">
 								{#if school.is_active}
 									<span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
 										Active
@@ -175,12 +183,17 @@
 								{/if}
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+								<a href="/dashboard/admin/schools/{school.id}/timetable">
+									<Button variant="ghost" size="sm">
+										Emploi du Temps
+									</Button>
+								</a>
 								<Button
 									variant="ghost"
 									size="sm"
 									onclick={() => openEditModal(school)}
 								>
-									Edit
+									Modifier
 								</Button>
 								<form method="POST" action="?/delete" use:enhance class="inline">
 									<input type="hidden" name="id" value={school.id} />
@@ -190,20 +203,20 @@
 										size="sm"
 										class="text-destructive hover:text-destructive"
 										onclick={(e) => {
-											if (!confirm('Are you sure you want to delete this school?')) {
+											if (!confirm('Êtes-vous sûr de vouloir supprimer cette école ?')) {
 												e.preventDefault();
 											}
 										}}
 									>
-										Delete
+										Supprimer
 									</Button>
 								</form>
 							</td>
 						</tr>
 					{:else}
 						<tr>
-							<td colspan="5" class="px-6 py-8 text-center text-muted-foreground">
-								No schools found. Click "Add School" to create one.
+							<td colspan="6" class="px-6 py-8 text-center text-muted-foreground">
+								Aucune école trouvée. Cliquez sur "Add School" pour en créer une.
 							</td>
 						</tr>
 					{/each}

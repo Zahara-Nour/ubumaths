@@ -1591,4 +1591,720 @@ Replace existing VipCard with VipCardHolo in specific views:
 
 ---
 
+## Teacher Class Schedule System
+
+The Teacher Class Schedule System allows teachers to manage weekly recurring schedules for their classes. It provides a visual calendar grid showing Sunday through Thursday with time slots from 7:00 to 18:00.
+
+### Overview
+
+**Location:** `/dashboard/teacher/classes`
+**Access:** Teachers and admins only
+**Database Table:** `class_schedules`
+
+The system displays each class in a separate tab, with:
+- **Stats card** showing student count (expandable for future metrics)
+- **Weekly schedule grid** displaying all schedule entries
+- **CRUD modal** for creating, editing, and deleting schedule entries
+
+### Database Schema
+
+**Table:** `class_schedules`
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID | Primary key |
+| class_id | UUID | Foreign key to classes table |
+| teacher_id | UUID | Foreign key to profiles table |
+| day_of_week | INTEGER | 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday |
+| start_time | TIME | Session start time (HH:MM:SS) |
+| end_time | TIME | Session end time (HH:MM:SS) |
+| subject | TEXT | Optional subject name |
+| room | TEXT | Optional room number |
+| notes | TEXT | Optional notes |
+
+**Constraints:**
+- `day_of_week` must be 0-4 (Sunday-Thursday)
+- `end_time` must be greater than `start_time`
+
+**RLS Policies:**
+- Teachers can manage schedules for their own classes
+- Students can view schedules for classes they're enrolled in
+- Admins can view and manage all schedules
+
+### Components
+
+#### 1. Main Page (`+page.svelte`)
+
+**File:** `src/routes/(protected)/dashboard/teacher/classes/+page.svelte`
+
+Displays all teacher's classes in tabs using Shadcn's Tabs component:
+
+```svelte
+<Tabs.Root value={classes[0]?.id}>
+  <Tabs.List>
+    {#each classes as class}
+      <Tabs.Trigger value={class.id}>{class.name}</Tabs.Trigger>
+    {/each}
+  </Tabs.List>
+
+  {#each classes as class}
+    <Tabs.Content value={class.id}>
+      <ClassStatsCard studentCount={class.student_count} />
+      <ClassScheduleGrid schedules={class.schedules} />
+    </Tabs.Content>
+  {/each}
+</Tabs.Root>
+```
+
+**Features:**
+- Tab navigation between classes
+- Stats card with student count
+- Weekly schedule grid
+- Modal for adding/editing schedule entries
+- Toast notifications for success/error
+- Auto-refresh after changes
+
+#### 2. ClassStatsCard Component
+
+**File:** `src/lib/components/ClassStatsCard.svelte`
+
+**Props:**
+- `studentCount: number` - Number of students in the class
+- `onEditSchedule: () => void` - Callback when "Edit Schedule" button is clicked
+
+**Displays:**
+- Student count with icon
+- "Modifier l'Emploi du Temps" button
+- Expandable for future stats (assignments, pending reviews, etc.)
+
+#### 3. ClassScheduleGrid Component
+
+**File:** `src/lib/components/ClassScheduleGrid.svelte`
+
+**Props:**
+- `schedules: ClassSchedule[]` - Array of schedule entries
+- `onCellClick?: (day, time, entry?) => void` - Callback when cell is clicked
+- `readonly?: boolean` - Disable editing (default: false)
+
+**Features:**
+- Custom 5×12 grid (Sunday-Thursday × 7h-18h)
+- Time slots displayed in 1-hour increments
+- Schedule entries span multiple rows for multi-hour sessions
+- Click empty cell to add new entry
+- Click existing entry to edit
+- Color-coded entries with subject and room displayed
+- Empty state when no schedules exist
+
+**Grid Structure:**
+```
+┌──────┬────────┬────────┬────────┬────────┬────────┐
+│ Heure│ Dimanche│ Lundi │ Mardi │Mercredi│ Jeudi  │
+├──────┼────────┼────────┼────────┼────────┼────────┤
+│ 7h00 │        │  Math  │        │  Math  │        │
+│      │        │ Rm 101 │        │ Rm 101 │        │
+├──────┼────────┼────────┼────────┼────────┼────────┤
+│ 8h00 │        │        │        │        │        │
+├──────┼────────┼────────┼────────┼────────┼────────┤
+│ ...  │  ...   │  ...   │  ...   │  ...   │  ...   │
+└──────┴────────┴────────┴────────┴────────┴────────┘
+```
+
+#### 4. ScheduleEntryModal Component
+
+**File:** `src/lib/components/ScheduleEntryModal.svelte`
+
+**Props:**
+- `open: boolean` - Whether modal is open (bindable)
+- `mode: 'create' | 'edit' | 'view'` - Modal mode
+- `entry?: ClassSchedule` - Existing entry (for edit/view modes)
+- `defaultDay?: number` - Default day for new entries
+- `defaultTime?: string` - Default start time for new entries
+- `onClose: () => void` - Callback when modal closes
+- `onSave: (data) => void` - Callback when form is submitted
+- `onDelete?: () => void` - Callback for delete action (edit mode only)
+
+**Form Fields:**
+- Day of week (Select: Dimanche-Jeudi)
+- Start time (Time input)
+- End time (Time input)
+- Subject (Text input, optional)
+- Room (Text input, optional)
+- Notes (Textarea, optional)
+
+**Validation:**
+- End time must be after start time
+- Day of week must be 0-4
+
+**Actions:**
+- **Create mode**: Save button creates new entry
+- **Edit mode**: Save button updates entry, Delete button removes it
+- **View mode**: No actions, read-only display
+
+### Server-Side Logic
+
+**File:** `src/routes/(protected)/dashboard/teacher/classes/+page.server.ts`
+
+#### Load Function
+
+Fetches teacher's classes with student counts and schedules:
+
+```typescript
+export const load: PageServerLoad = async ({ parent, locals }) => {
+  const { profile } = await parent();
+
+  // Fetch teacher's classes
+  const { data: classes } = await supabase
+    .from('classes')
+    .select('*')
+    .eq('teacher_id', profile.id)
+    .eq('is_active', true);
+
+  // For each class, fetch student count and schedules
+  const classesWithData = await Promise.all(
+    classes.map(async (cls) => {
+      const { count } = await supabase
+        .from('class_members')
+        .select('*', { count: 'exact', head: true })
+        .eq('class_id', cls.id);
+
+      const { data: schedules } = await supabase
+        .from('class_schedules')
+        .select('*')
+        .eq('class_id', cls.id)
+        .order('day_of_week')
+        .order('start_time');
+
+      return { ...cls, student_count: count, schedules };
+    })
+  );
+
+  return { classes: classesWithData };
+};
+```
+
+#### Form Actions
+
+**`createScheduleEntry`**
+- Validates required fields and time range
+- Verifies teacher owns the class
+- Inserts new schedule entry
+- Returns success message
+
+**`updateScheduleEntry`**
+- Validates fields and ownership
+- Updates existing schedule entry
+- Returns success message
+
+**`deleteScheduleEntry`**
+- Verifies teacher owns the schedule entry
+- Deletes entry from database
+- Returns success message
+
+**Security:**
+All actions verify that the teacher owns the class before allowing modifications.
+
+### Utility Functions
+
+**File:** `src/lib/utils/schedule.ts`
+
+Provides helper functions for schedule management:
+
+**Day Name Functions:**
+- `getDayName(dayNum, short?)` - Get French day name (Dimanche, Lundi, etc.)
+- `DAY_NAMES` - Full day names (0-4)
+- `DAY_NAMES_SHORT` - Abbreviated day names (Dim, Lun, etc.)
+
+**Time Functions:**
+- `formatTime(time)` - Convert HH:MM:SS to HH:MM
+- `formatTimeDisplay(time)` - Convert to display format (e.g., "8h00")
+- `timeToMinutes(time)` - Convert time to minutes since midnight
+- `minutesToTime(minutes)` - Convert minutes to time string
+- `isValidTimeRange(start, end)` - Validate end > start
+- `getDefaultStartTime()` - Default start time (08:00:00)
+- `getDefaultEndTime(start?)` - Default end time (1 hour after start)
+
+**Grid Functions:**
+- `getTimeSlots(startHour, endHour, interval)` - Generate time slots array
+- `findScheduleAtSlot(schedules, day, time)` - Find entry at grid position
+- `calculateSlotSpan(schedule, interval)` - Calculate row span for entry
+- `isScheduleStart(schedule, time)` - Check if entry starts at this slot
+
+**Display Functions:**
+- `formatScheduleDisplay(schedule)` - Format entry for grid display
+
+### Usage Example
+
+```typescript
+// In +page.svelte
+import ClassScheduleGrid from '$lib/components/ClassScheduleGrid.svelte';
+import ScheduleEntryModal from '$lib/components/ScheduleEntryModal.svelte';
+
+let modalOpen = $state(false);
+let selectedEntry = $state<ClassSchedule | undefined>(undefined);
+
+function handleCellClick(day: number, time: string, entry?: ClassSchedule) {
+  if (entry) {
+    // Edit existing entry
+    selectedEntry = entry;
+  } else {
+    // Create new entry
+    selectedEntry = undefined;
+  }
+  modalOpen = true;
+}
+
+async function handleSave(formData: ScheduleFormData) {
+  const action = selectedEntry ? '?/updateScheduleEntry' : '?/createScheduleEntry';
+
+  const data = new FormData();
+  data.append('class_id', currentClassId);
+  data.append('day_of_week', formData.day_of_week.toString());
+  // ... append other fields
+
+  const response = await fetch(action, {
+    method: 'POST',
+    body: data,
+    headers: { 'x-sveltekit-action': 'true' }
+  });
+
+  if (response.ok) {
+    await invalidateAll();
+    toaster.success('Créneau créé avec succès');
+  }
+}
+```
+
+### Navigation
+
+The schedule system is accessible via:
+- **Sidebar:** "Classes" link (teachers only)
+- **Teacher Dashboard:** "Voir Mes Classes" button
+- **Direct URL:** `/dashboard/teacher/classes`
+
+### Best Practices
+
+**DO:**
+- Use the utility functions from `schedule.ts` for consistency
+- Validate time ranges before saving
+- Show toast notifications for user feedback
+- Refresh data after mutations using `invalidateAll()`
+- Use semantic colors for schedule entries
+
+**DON'T:**
+- Modify schedule entries without verifying teacher ownership
+- Allow overlapping time ranges for the same class/day
+- Hard-code time slots or day names
+- Skip validation on form submission
+
+### Future Enhancements
+
+Potential improvements for the schedule system:
+- Drag-and-drop to move schedule entries
+- Duplicate schedule from one class to another
+- Export schedule to PDF or iCalendar format
+- Conflict detection (same teacher, overlapping times across classes)
+- Color-coding by subject
+- Student view (read-only schedules for enrolled students)
+- Recurring event exceptions (holidays, special events)
+- Integration with assignment due dates
+
+---
+
+## Wheel of Fortune Component
+
+The Wheel component is an interactive spinning wheel for randomly selecting students in a class. It features beautiful SVG-based graphics with customizable colors and animations.
+
+### Overview
+
+**Location:** `src/lib/components/Wheel.svelte`
+**Demo Page:** `/dashboard/teacher/wheel` (teacher/admin only)
+**Debug Page:** `/dashboard/admin/debug/wheel` (admin only)
+
+The wheel uses the original design pattern with:
+- Pink/blue alternating slices using `stroke-dasharray` technique
+- Decorative yellow dots around the perimeter
+- Blue-gray outer ring with drop shadow
+- Yellow-stroked center circle
+- Gradient pointer/marker at top
+- Blur animation during spinning
+- Confetti celebration on winner selection
+
+### Component Props
+
+```typescript
+interface Props {
+  // Required
+  students: Student[];              // Array of students
+
+  // Optional customization
+  wheelRadius?: number;             // Default: 18 (em units)
+  primaryColor?: string;            // Default: '#e7c9de' (pink)
+  secondaryColor?: string;          // Default: '#3a507e' (dark blue)
+  accentColor?: string;             // Default: '#788bb2' (gray-blue)
+  spinDuration?: number;            // Default: 4 (seconds)
+  addJokerIfOdd?: boolean;         // Default: false
+  showConfetti?: boolean;           // Default: true
+
+  // Gidouille rewards
+  gidouilleReward?: number;         // Optional reward amount
+  onRewardGiven?: (id, amount) => Promise<void>;
+
+  // Callbacks
+  onWinner?: (student) => void;
+  onSpinStart?: () => void;
+  onSpinEnd?: () => void;
+}
+```
+
+### Basic Usage
+
+```svelte
+<script>
+  import Wheel from '$lib/components/Wheel.svelte';
+
+  const students = [
+    { id: '1', firstname: 'Alice' },
+    { id: '2', firstname: 'Bob' },
+    { id: '3', firstname: 'Charlie' }
+  ];
+
+  function handleWinner(student) {
+    console.log('Winner:', student.firstname);
+  }
+</script>
+
+<Wheel
+  {students}
+  onWinner={handleWinner}
+/>
+```
+
+### Advanced Usage with Rewards
+
+```svelte
+<script>
+  import Wheel from '$lib/components/Wheel.svelte';
+
+  const students = [/* ... */];
+
+  async function handleRewardGiven(studentId, amount) {
+    const response = await fetch('/api/rewards/gidouilles', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ studentId, amount })
+    });
+
+    if (response.ok) {
+      console.log(`Awarded ${amount} gidouilles`);
+    }
+  }
+</script>
+
+<Wheel
+  {students}
+  gidouilleReward={10}
+  onRewardGiven={handleRewardGiven}
+  primaryColor="#ff6b9d"
+  wheelRadius={20}
+/>
+```
+
+### SVG Architecture
+
+The wheel uses a clever SVG technique to create alternating slices:
+
+```svelte
+<!-- Base pink circle -->
+<circle r="18em" fill="#e7c9de" />
+
+<!-- Alternating dark blue slices (stroke-dasharray magic!) -->
+<circle
+  r="9em"
+  stroke="#3a507e"
+  stroke-width="18em"
+  stroke-dasharray="{pieceAngle * radius / 2}em {pieceAngle * radius / 2}em"
+/>
+
+<!-- Decorative yellow dots (count * 3) -->
+{#each Array(count * 3) as _, i}
+  <circle
+    fill="#f9ef69"
+    transform="rotate({i * 360 / (count * 3)})"
+  />
+{/each}
+```
+
+### Animation System
+
+**Spinning:**
+- CSS `transform: rotate()` with `transition: all 4s ease-out`
+- Rotates 9 full times (360° × 9) plus random angle
+- Winner calculated from final angle position
+- Avoids landing on slice boundaries
+
+**Blur Effect:**
+- Custom keyframe animation during spin
+- Subtle blur (0 → 1px → 0px) over 4 seconds
+- Applied via `.blur-wheel` class
+
+**Confetti:**
+- Uses `canvas-confetti` library
+- Fires from both sides of screen
+- 3-second duration with particle effects
+- Configurable via `showConfetti` prop
+
+### Debug Page (`/dashboard/admin/debug/wheel`)
+
+Interactive testing page with:
+
+**1. Control Panel**
+- Color pickers (primary, secondary, accent)
+- Range sliders (radius, duration)
+- Toggles (joker, confetti)
+- Number input (gidouille reward)
+
+**2. Student List Editor**
+- Add/remove students dynamically
+- Pre-loaded with 8 mock students
+- Real-time wheel updates
+
+**3. Preset Configurations**
+- Default (Pink/Blue)
+- Dark Mode
+- Vibrant
+- Ocean
+- Reset to Defaults button
+
+**4. Code Generation**
+- Auto-generates Svelte code
+- Shows only non-default props
+- Copy to clipboard
+- Live preview
+
+**5. Live Wheel Preview**
+- Fully functional wheel
+- Displays last winner
+- All callbacks working
+
+### Teacher Dashboard Integration
+
+The Wheel component is integrated into the Teacher Dashboard in two ways:
+
+#### 1. Standalone Page (`/dashboard/teacher/wheel`)
+
+**Features:**
+- Class selector dropdown (native `<select>`)
+- Gidouille reward configuration
+- Student count display
+- Auto-refresh after rewards
+- Toast notifications
+
+**API Endpoint:** `/api/rewards/gidouilles`
+- Validates teacher-student relationship
+- Increments gidouille balance
+- Returns new total
+
+#### 2. Teacher Dashboard Modal (NEW)
+
+**Location:** `/dashboard` (Teacher Dashboard main page)
+**Component:** `src/routes/(protected)/dashboard/TeacherDashboard.svelte`
+
+**Access:**
+Teachers can launch the wheel directly from the dashboard via a gradient "Choisir un élève" button in the Class Selection card.
+
+**Features:**
+- **On-demand student fetching**: API call `/api/classes/[classId]/students` when modal opens
+- **Wide modal**: Responsive width (80-90vw) to properly fit the wheel
+- **No gidouille rewards**: Pure random selection (no points awarded)
+- **Confetti above modal**: `confettiZIndex={100}` ensures visibility
+- **Loading state**: Spinner while fetching students
+- **Empty state**: Graceful handling when no students
+- **Winner display**: Built into Wheel component below the wheel
+- **Continuous spinning**: Click "Lancer la roue" multiple times without closing modal
+
+**Button Styling:**
+```svelte
+<Button
+  onclick={handleOpenWheel}
+  disabled={!selectedClassId || (selectedClass.student_count || 0) === 0}
+  class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600
+         hover:to-pink-600 text-white font-semibold shadow-lg hover:shadow-xl
+         transition-all duration-200"
+>
+  <Target class="h-5 w-5 mr-2" />
+  Choisir un élève
+</Button>
+```
+
+**Modal Structure:**
+```svelte
+<Dialog.Root bind:open={wheelModalOpen}>
+  <Dialog.Content class="sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[80vw]">
+    <Dialog.Header>
+      <Dialog.Title>Choisir un élève</Dialog.Title>
+      <Dialog.Description>
+        Sélectionnez aléatoirement un élève de {selectedClass.name}
+      </Dialog.Description>
+    </Dialog.Header>
+
+    {#if isLoadingStudents}
+      <!-- Loading spinner -->
+    {:else if wheelStudents.length === 0}
+      <!-- Empty state -->
+    {:else}
+      <Wheel
+        students={wheelStudents}
+        onWinner={handleWinner}
+        showConfetti={true}
+        confettiZIndex={100}
+      />
+    {/if}
+  </Dialog.Content>
+</Dialog.Root>
+```
+
+**API Endpoint:** `GET /api/classes/[classId]/students`
+- **Security**: Verifies teacher owns the class
+- **Returns**: `{ students: Array<{ id, firstname, lastname, avatar_url }> }`
+- **RLS**: Teachers can only access their own classes
+- **Error handling**: 401 Unauthorized, 403 Forbidden, 404 Not Found
+
+**User Flow:**
+1. Teacher selects a class from dropdown (auto-selects first class on load)
+2. "Choisir un élève" button becomes enabled
+3. Click button → Modal opens with loading spinner
+4. Students fetched via API → Wheel displays
+5. Click "Lancer la roue" → Wheel spins with confetti
+6. Winner displays below wheel with name
+7. Can spin again immediately or close modal with X button
+
+**Edge Cases Handled:**
+- No class selected → Button disabled with tooltip
+- Class with 0 students → Button disabled with tooltip
+- API fetch error → Toast error, modal closes
+- Empty class → "Cette classe ne contient aucun élève" message
+
+### Winner Calculation Algorithm
+
+**CRITICAL: The Proven Formula**
+
+```typescript
+const winnerIndex = Math.floor((normalizedAngle * wheelData().length) / 360);
+const winner = students[winnerIndex];
+```
+
+**Why This Works:**
+- The wheel SVG has `transform: rotate(-{angle + 90}deg)` (see line 428 in Wheel.svelte)
+- The `-90deg` offset aligns the first slice with the top pointer
+- As the wheel rotates, this formula correctly maps the final angle to the student index
+- **Works on first spin** (angle 0-360) **and all subsequent spins** (any normalized angle)
+
+**Example with 8 students (45° per slice):**
+| Final Angle | Calculation | Winner Index | Student |
+|-------------|-------------|--------------|---------|
+| 0° | floor(0 × 8 / 360) = 0 | 0 | First student |
+| 45° | floor(45 × 8 / 360) = 1 | 1 | Second student |
+| 90° | floor(90 × 8 / 360) = 2 | 2 | Third student |
+| 270° | floor(270 × 8 / 360) = 6 | 6 | Seventh student |
+
+**Important Notes:**
+- **DO NOT** modify this formula without testing extensively
+- **DO NOT** try to "fix" it with angle adjustments or inversions
+- This is the original formula from `Wheel-Old.svelte:92` that has been proven to work
+- The formula accounts for the wheel's initial rotation offset
+- Calculates based on the **final normalized angle** after spin completes
+
+**Text Color Contrast:**
+- Pink slices (index % 2 === 0): **White text** (good contrast)
+- Blue slices (index % 2 === 1): **Dark text** `#1a1a1a` (good contrast)
+
+**Boundary Avoidance:**
+The random angle generation ensures we don't land exactly on slice boundaries:
+```typescript
+const sliceSize = Math.floor(360 / wheelData().length);
+do {
+  randomAngle = Math.floor(Math.random() * 360) + 1;
+} while (randomAngle % sliceSize < 2); // Minimum 2° from boundaries
+```
+
+### Default Colors
+
+| Prop | Default Value | Description | Text Color |
+|------|---------------|-------------|------------|
+| `primaryColor` | `#e7c9de` | Pink (main wheel slices) | White |
+| `secondaryColor` | `#3a507e` | Dark blue (alternating slices) | Dark (#1a1a1a) |
+| `accentColor` | `#788bb2` | Gray-blue (outer ring/center) | N/A |
+| Yellow dots | `#f9ef69` | Decorative perimeter dots | N/A |
+| Marker gradient | `#f9ef69` → `#ff9800` | Orange-yellow pointer | N/A |
+
+### Component Behavior Updates (v2)
+
+**Recent Improvements:**
+1. **Single Button**: Removed "Recommencer" button - now only "Lancer la roue"
+   - Can spin again immediately without resetting
+   - Simpler UX with one consistent button
+
+2. **Continuous Spinning**: Wheel continues from current position
+   - First spin: 0° → 3240° (9 rotations + random)
+   - Second spin: 3240° → 6480° (9 more rotations + random)
+   - Angle normalized after each spin for accurate winner calculation
+
+3. **Confetti Z-Index**: New `confettiZIndex` prop
+   - Default: 0 (for standalone pages)
+   - Set to 100+ for modal usage (above Dialog z-50)
+   - Ensures confetti visibility in all contexts
+
+4. **Text Contrast**: Automatic color adjustment
+   - White text on light pink slices
+   - Dark text on dark blue slices
+   - Ensures readability for all students
+
+### Best Practices
+
+**DO:**
+- Use even number of students for perfect visual balance
+- Set `addJokerIfOdd={true}` to balance odd numbers
+- Set `confettiZIndex={100}` when using inside modals
+- Provide meaningful `onWinner` callback
+- Use color picker in debug page to test themes
+- Test with different student counts (2, 5, 10, 20)
+
+**DON'T:**
+- Use extremely small (`< 10em`) or large (`> 30em`) radius
+- Rely on `gidouilleReward` without `onRewardGiven` callback
+- Pass empty students array (component handles it gracefully)
+- Modify wheel props during spinning (wait for `onSpinEnd`)
+
+### Troubleshooting
+
+**Wheel not spinning:**
+- Check that `students` array is not empty
+- Verify `isSpinning` state is not stuck
+- Look for JavaScript errors in console
+
+**Wrong student selected:**
+- Verify students array hasn't changed during spin
+- Check that angle calculation matches student count
+- Test in debug page with known student lists
+
+**Colors not applying:**
+- Ensure hex color format is correct (`#rrggbb`)
+- Check that props are passed correctly
+- Use debug page to test color combinations
+
+**Confetti not showing:**
+- Verify `showConfetti={true}` (default)
+- Check browser console for `canvas-confetti` errors
+- Ensure `canvas-confetti` package is installed
+
+### Performance Notes
+
+- GPU-accelerated with `transform: translate3d()`
+- Efficient SVG rendering (no canvas)
+- Minimal re-renders with Svelte 5 runes
+- Confetti runs in separate animation loop
+- Suitable for classes up to 50 students
+
+---
+
 **Remember:** Svelte 5 and SvelteKit 2 are designed to be simpler and more intuitive. When in doubt, prefer explicit, straightforward code over clever tricks.

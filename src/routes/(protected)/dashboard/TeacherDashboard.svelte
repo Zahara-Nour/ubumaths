@@ -8,6 +8,9 @@
 	TEACHER ROLE CAPABILITIES:
 	--------------------------
 	Teachers can:
+	- Select and manage their classes via dropdown
+	- Find their current class based on schedule (auto-detection)
+	- View quick stats: total classes, students, assignments, pending reviews
 	- Create and manage classes
 	- Add students to their classes
 	- Create custom exercises for their students
@@ -16,6 +19,20 @@
 	- Track student progress across all their classes
 	- Generate class performance reports
 
+	NEW FEATURES (Class Selection):
+	--------------------------------
+	1. **Class Selector Dropdown**:
+	   - Displays all teacher's classes
+	   - Selection persists to localStorage
+	   - Auto-selects first class on initial load
+	   - Shows selected class info with student count
+
+	2. **"Find Current Class" Button**:
+	   - Matches current day (Sunday-Thursday) and time against schedules
+	   - Auto-selects matching class in dropdown
+	   - Shows success toast with schedule details
+	   - Handles edge cases: weekends, no classes, no schedules
+
 	RENDERED BY:
 	------------
 	+page.svelte when data.profile.role === 'teacher'
@@ -23,28 +40,368 @@
 	RECEIVED DATA:
 	--------------
 	- data.profile: User's profile with { id, email, full_name, role }
-	- Future: Will receive teacher's classes, students, assignments, and submissions
+	- data.teacherClasses: Array of teacher's classes with:
+	  - Class info (id, name, description, join_code, etc.)
+	  - student_count: Number of enrolled students
+	  - schedules: Array of ClassSchedule entries
 
 	FUTURE ENHANCEMENTS:
 	--------------------
-	- Fetch teacher's classes from classes table (where teacher_id = profile.id)
-	- Count total students across all classes (join class_members)
+	- Replace hardcoded stats with real database queries
 	- Show active assignments (where is_published = true)
 	- List recent submissions needing review
 	- Add quick action buttons that navigate to creation pages
 	- Display class performance analytics and charts
+	- Use selected class for filtering dashboard data
 -->
 
 <script lang="ts">
-	import type { PageData } from './$types';
-	import { Button } from '$lib/components/ui/button';
+	// ============================================================================
+	// IMPORTS
+	// ============================================================================
 
-	// Receive data from parent (+page.svelte)
-	// Contains profile with teacher's information
+	// Types
+	import type { PageData } from './$types';
+	import type { Class } from '$lib/types/database';
+
+	// UI Components
+	import { Button } from '$lib/components/ui/button';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { Clock, Target } from 'lucide-svelte';
+	import Wheel from '$lib/components/Wheel.svelte';
+
+	// Stores & Utilities
+	import { toaster } from '$lib/stores/toaster.svelte';
+	import {
+		getSelectedClassId,
+		setSelectedClass,
+		clearSelectedClass
+	} from '$lib/stores/selectedClass.svelte';
+	import {
+		findCurrentSchedule,
+		formatScheduleMatch,
+		getNoClassMessage,
+		isWeekend
+	} from '$lib/utils/timeMatching';
+
+	// ============================================================================
+	// COMPONENT STATE
+	// ============================================================================
+
+	/**
+	 * Received data from parent (+page.svelte)
+	 * Contains profile and teacherClasses loaded from dashboard layout
+	 */
 	let { data }: { data: PageData } = $props();
+
+	/**
+	 * Teacher's classes enriched with student count and schedules
+	 * Derived from data.teacherClasses (loaded in +layout.server.ts)
+	 */
+	type ClassWithData = Class & { student_count?: number; schedules?: any[] };
+	const classes = $derived<ClassWithData[]>((data.teacherClasses as ClassWithData[]) || []);
+
+	/**
+	 * Currently selected class ID
+	 * Restored from localStorage on component mount
+	 * Updated when teacher changes dropdown or uses "Find Current Class"
+	 */
+	let selectedClassId = $state<string | null>(getSelectedClassId());
+
+	/**
+	 * Full class object for the selected class ID
+	 * Used to display class name, description, and student count
+	 */
+	const selectedClass = $derived<ClassWithData | undefined>(
+		classes.find((c) => c.id === selectedClassId)
+	);
+
+	// ============================================================================
+	// WHEEL OF FORTUNE MODAL STATE
+	// ============================================================================
+
+	/**
+	 * Modal visibility state
+	 */
+	let wheelModalOpen = $state(false);
+
+	/**
+	 * Students fetched for the wheel (with full details)
+	 */
+	let wheelStudents = $state<Array<{ id: string; firstname: string; lastname?: string; avatar_url?: string }>>([]);
+
+	/**
+	 * Loading state while fetching students
+	 */
+	let isLoadingStudents = $state(false);
+
+	// ============================================================================
+	// EVENT HANDLERS
+	// ============================================================================
+
+	/**
+	 * Handle class selection change from dropdown
+	 * Updates reactive state and persists to localStorage
+	 *
+	 * @param event - Change event from native <select> element
+	 */
+	function handleClassChange(event: Event) {
+		const value = (event.target as HTMLSelectElement).value;
+
+		if (value) {
+			// Valid class selected
+			selectedClassId = value;
+			setSelectedClass(value); // Persist to localStorage
+		} else {
+			// Empty selection (shouldn't happen with current UI)
+			selectedClassId = null;
+			clearSelectedClass();
+		}
+	}
+
+	/**
+	 * Handle "Find Current Class" button click
+	 *
+	 * Matches current day/time against all class schedules:
+	 * 1. Validates teacher has classes and schedules configured
+	 * 2. Checks if current day is a school day (Sunday-Thursday)
+	 * 3. Finds schedule entry matching current time
+	 * 4. Auto-selects matching class in dropdown
+	 * 5. Shows appropriate toast notification
+	 *
+	 * EDGE CASES HANDLED:
+	 * - Teacher with no classes → Error toast
+	 * - Weekend (Friday/Saturday) → Warning toast
+	 * - No schedules configured → Error toast
+	 * - No class at current time → Info toast
+	 * - Class found → Success toast with details + auto-select
+	 */
+	function handleFindCurrentClass() {
+		// Edge case 1: Teacher has no classes assigned
+		if (classes.length === 0) {
+			toaster.error('Aucune classe assignée');
+			return;
+		}
+
+		// Edge case 2: Current day is weekend (Friday or Saturday)
+		if (isWeekend()) {
+			toaster.warning("Pas de cours aujourd'hui (weekend)");
+			return;
+		}
+
+		// Edge case 3: Classes exist but no schedules configured
+		const hasAnySchedules = classes.some((cls) => cls.schedules && cls.schedules.length > 0);
+		if (!hasAnySchedules) {
+			toaster.error('Aucun emploi du temps configuré');
+			return;
+		}
+
+		// Find matching schedule for current day/time
+		const match = findCurrentSchedule(classes);
+
+		if (match) {
+			// SUCCESS: Class found at current time
+			// Auto-select the matched class in dropdown
+			selectedClassId = match.class.id;
+			setSelectedClass(match.class.id);
+
+			// Show success toast with schedule details
+			// Format: "Math 6A - Mathématiques - Salle 101 (8h00-9h00)"
+			const details = formatScheduleMatch(match);
+			toaster.success(`Classe trouvée : ${details}`);
+		} else {
+			// NO MATCH: Valid school day/time, but no class scheduled
+			const message = getNoClassMessage(classes);
+			toaster.info(message);
+		}
+	}
+
+	/**
+	 * Handle opening the Wheel of Fortune modal
+	 *
+	 * Fetches students for the selected class and opens the modal.
+	 * Shows loading state while fetching.
+	 *
+	 * EDGE CASES HANDLED:
+	 * - No class selected → Should be prevented by disabled button
+	 * - Fetch error → Shows error toast and doesn't open modal
+	 */
+	async function handleOpenWheel() {
+		if (!selectedClassId) {
+			toaster.error('Veuillez sélectionner une classe');
+			return;
+		}
+
+		// Reset state
+		wheelStudents = [];
+		isLoadingStudents = true;
+		wheelModalOpen = true;
+
+		try {
+			// Fetch students from API
+			const response = await fetch(`/api/classes/${selectedClassId}/students`);
+
+			if (!response.ok) {
+				throw new Error('Failed to fetch students');
+			}
+
+			const data = await response.json();
+			wheelStudents = data.students || [];
+
+			if (wheelStudents.length === 0) {
+				toaster.warning('Cette classe ne contient aucun élève');
+			}
+		} catch (error) {
+			console.error('Error fetching students:', error);
+			toaster.error('Erreur lors du chargement des élèves');
+			wheelModalOpen = false;
+		} finally {
+			isLoadingStudents = false;
+		}
+	}
+
+	/**
+	 * Handle winner selection from the wheel
+	 *
+	 * Called by the Wheel component when a student is selected.
+	 * Currently just logs the winner (Wheel component displays it internally).
+	 */
+	function handleWinner(student: { id: string; firstname: string }) {
+		console.log('Winner selected:', student.firstname);
+	}
+
+	/**
+	 * Handle modal close
+	 *
+	 * Resets all wheel-related state.
+	 */
+	function handleCloseWheel() {
+		wheelModalOpen = false;
+		wheelStudents = [];
+	}
+
+	// ============================================================================
+	// REACTIVE EFFECTS
+	// ============================================================================
+
+	/**
+	 * Auto-select first class if none selected
+	 *
+	 * Runs when:
+	 * - Component mounts and no class is selected
+	 * - Teacher's classes change (e.g., new class created)
+	 *
+	 * Ensures dropdown always has a valid selection when classes exist.
+	 */
+	$effect(() => {
+		if (!selectedClassId && classes.length > 0) {
+			const firstClassId = classes[0].id;
+			selectedClassId = firstClassId;
+			setSelectedClass(firstClassId); // Persist to localStorage
+		}
+	});
 </script>
 
+<!-- ============================================================================
+     TEMPLATE
+     ============================================================================ -->
+
 <div class="space-y-6">
+	<!--
+		CLASS SELECTOR SECTION
+		======================
+
+		Displays a dropdown for manual class selection and a button for automatic
+		detection of current class based on schedule.
+
+		Features:
+		- Native HTML <select> dropdown (better accessibility than custom component)
+		- Selection persists to localStorage via selectedClass store
+		- "Find Current Class" button with Clock icon
+		- Displays selected class info: name, description, student count
+
+		Only visible when teacher has at least one class.
+	-->
+	{#if classes.length > 0}
+		<div class="bg-card rounded-lg shadow p-6">
+			<h3 class="text-lg font-semibold text-foreground mb-4">Sélection de Classe</h3>
+
+			<!-- Class selector and "Find Current Class" button (responsive flex layout) -->
+			<div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+				<!-- Native HTML select dropdown (accessible and performant) -->
+				<div class="flex-1 w-full">
+					<select
+						value={selectedClassId || ''}
+						onchange={handleClassChange}
+						class="w-full h-10 px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
+					>
+						<!-- Placeholder option (disabled, should never be visible due to auto-select) -->
+						<option value="" disabled>Sélectionner une classe...</option>
+
+						<!-- Loop through all teacher's classes -->
+						{#each classes as cls}
+							<option value={cls.id}>{cls.name}</option>
+						{/each}
+					</select>
+				</div>
+
+				<!-- "Find Current Class" button (auto-detection based on schedule) -->
+				<Button
+					onclick={handleFindCurrentClass}
+					variant="secondary"
+					class="whitespace-nowrap w-full sm:w-auto"
+				>
+					<Clock class="h-4 w-4 mr-2" />
+					Trouver ma classe actuelle
+				</Button>
+			</div>
+
+			<!-- Selected class information card (conditional rendering) -->
+			{#if selectedClass}
+				<div class="mt-4 p-4 bg-muted rounded-lg">
+					<div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+						<div class="flex-1">
+							<!-- Label -->
+							<p class="text-sm text-muted-foreground mb-1">Classe sélectionnée :</p>
+
+							<!-- Class name (always present) -->
+							<p class="text-lg font-semibold text-foreground">{selectedClass.name}</p>
+
+							<!-- Class description (optional) -->
+							{#if selectedClass.description}
+								<p class="text-sm text-muted-foreground mt-1">{selectedClass.description}</p>
+							{/if}
+
+							<!-- Student count with proper French pluralization -->
+							<p class="text-sm text-muted-foreground mt-2">
+								{selectedClass.student_count || 0} élève{(selectedClass.student_count || 0) > 1
+									? 's'
+									: ''}
+							</p>
+						</div>
+
+						<!-- Wheel of Fortune Button -->
+						<div class="flex-shrink-0">
+							<Button
+								onclick={handleOpenWheel}
+								disabled={!selectedClassId || (selectedClass.student_count || 0) === 0}
+								class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-500"
+								title={!selectedClassId
+									? 'Sélectionnez une classe'
+									: (selectedClass.student_count || 0) === 0
+										? 'Aucun élève dans cette classe'
+										: 'Choisir un élève aléatoirement'}
+							>
+								<Target class="h-5 w-5 mr-2" />
+								Choisir un élève
+							</Button>
+						</div>
+					</div>
+				</div>
+			{/if}
+		</div>
+	{/if}
+
 	<!-- QUICK STATS SECTION -->
 	<!-- Four-column grid showing key teacher metrics -->
 	<!-- TODO: Replace hardcoded values with real data from database -->
@@ -110,10 +467,15 @@
 			<h3 class="text-lg font-semibold text-foreground">Mes Classes</h3>
 		</div>
 		<div class="p-6">
-			<!-- TODO: Query classes table where teacher_id = data.profile.id -->
-			<!-- Show: class name, student count, join code, active status -->
-			<!-- Each class should link to /dashboard/classes/[id] for management -->
-			<p class="text-muted-foreground text-center py-8">Aucune classe créée pour le moment</p>
+			<!-- Link to classes page with schedules -->
+			<div class="text-center py-8">
+				<p class="text-muted-foreground mb-4">
+					Gérez vos classes et leurs emplois du temps
+				</p>
+				<a href="/dashboard/teacher/classes">
+					<Button>Voir Mes Classes</Button>
+				</a>
+			</div>
 		</div>
 	</div>
 
@@ -135,3 +497,52 @@
 		</div>
 	</div>
 </div>
+
+<!-- ============================================================================
+     WHEEL OF FORTUNE MODAL
+     ============================================================================ -->
+
+<Dialog.Root bind:open={wheelModalOpen} onOpenChange={(open) => !open && handleCloseWheel()}>
+	<Dialog.Content class="sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[80vw] max-h-[95vh] overflow-y-auto">
+		<Dialog.Header>
+			<Dialog.Title class="flex items-center gap-2 text-2xl">
+				<Target class="h-6 w-6 text-purple-500" />
+				Choisir un élève
+			</Dialog.Title>
+			<Dialog.Description>
+				{#if selectedClass}
+					Sélectionnez aléatoirement un élève de {selectedClass.name}
+				{:else}
+					Sélectionnez aléatoirement un élève
+				{/if}
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<div class="mt-6 w-full">
+			{#if isLoadingStudents}
+				<!-- Loading state -->
+				<div class="flex flex-col items-center justify-center py-16">
+					<div
+						class="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-500 mb-4"
+					></div>
+					<p class="text-muted-foreground">Chargement des élèves...</p>
+				</div>
+			{:else if wheelStudents.length === 0}
+				<!-- Empty state -->
+				<div class="text-center py-16">
+					<p class="text-lg text-muted-foreground">Cette classe ne contient aucun élève.</p>
+				</div>
+			{:else}
+				<!-- Wheel component (includes winner display and controls) -->
+				<div class="w-full flex justify-center py-4">
+					<Wheel
+						students={wheelStudents}
+						onWinner={handleWinner}
+						showConfetti={true}
+						confettiZIndex={100}
+					/>
+				</div>
+			{/if}
+		</div>
+	</Dialog.Content>
+</Dialog.Root>

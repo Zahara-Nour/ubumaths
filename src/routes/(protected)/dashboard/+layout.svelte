@@ -88,7 +88,7 @@
 				...commonLinks,
 				{ href: '/dashboard/friends', label: 'Amis', icon: Users },
 				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
-				{ href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap },
+				{ href: '/dashboard/teacher/classes', label: 'Classes', icon: GraduationCap },
 				{ href: '/dashboard/students', label: 'Students', icon: Users },
 				{ href: '/dashboard/assignments', label: 'Assignments', icon: ClipboardList },
 				{ href: '/dashboard/teacher/rewards', label: 'Rewards', icon: Gift }

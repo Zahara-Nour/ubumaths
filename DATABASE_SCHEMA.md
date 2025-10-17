@@ -48,10 +48,32 @@ Educational institutions where students and teachers belong.
 | address | TEXT | Optional full address |
 | logo_url | TEXT | Optional school logo |
 | is_active | BOOLEAN | Whether school is active |
+| timetable | JSONB | School-level timetable configuration (periods) |
 | created_at | TIMESTAMPTZ | Creation time |
 | updated_at | TIMESTAMPTZ | Last update time |
 
 **Unique Constraint**: (name, city, country) combination must be unique.
+
+**Timetable Structure**:
+```json
+{
+  "periods": [
+    {
+      "number": 1,
+      "name": "Period 1",          // Optional custom name
+      "start_time": "07:00:00",
+      "end_time": "08:00:00"
+    },
+    {
+      "number": 2,
+      "start_time": "08:00:00",
+      "end_time": "09:00:00"
+    }
+  ]
+}
+```
+
+The timetable defines standardized periods that teachers must use when creating class schedules. All periods are identical across all days of the week (Sunday-Thursday).
 
 **RLS Policies**:
 - Anyone can view schools (needed for registration/selection)
@@ -123,6 +145,45 @@ Students enrolled in classes. **This is the source of truth for class membership
 **Unique Constraint**: A student can only join each class once (student_id, class_id).
 
 **Automatic Synchronization**: Changes to this table automatically update the `profiles.class_ids` array via trigger for backward compatibility. Always modify class memberships through this table, not the `class_ids` array.
+
+#### `class_schedules`
+Weekly recurring schedules for teacher's classes (Sunday-Thursday).
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Schedule entry ID |
+| class_id | UUID (FK) | References classes(id) ON DELETE CASCADE |
+| teacher_id | UUID (FK) | References profiles(id) ON DELETE CASCADE |
+| day_of_week | INTEGER | Day of week: 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday |
+| start_time | TIME | Session start time (derived from period, e.g., 08:00:00) |
+| end_time | TIME | Session end time (derived from period, e.g., 09:00:00) |
+| period_number | INTEGER | Links to period number in school timetable (source of truth for times) |
+| subject | TEXT | Optional subject/topic name |
+| room | TEXT | Optional room number or location |
+| notes | TEXT | Optional notes or description |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Last update time |
+
+**Constraints**:
+- `day_of_week` must be between 0-4 (Sunday-Thursday)
+- `end_time` must be greater than `start_time`
+
+**Important**: The `period_number` field links to the school's timetable configuration. When a teacher creates a schedule entry, they select a period from the school timetable, and the `start_time` and `end_time` are automatically populated from that period. This ensures consistency across all classes in the school.
+
+**Indexes**:
+- `idx_class_schedules_class_id` - Fast lookup by class
+- `idx_class_schedules_teacher_id` - Fast lookup by teacher
+- `idx_class_schedules_day` - Fast lookup by day of week
+- `idx_class_schedules_period` - Fast lookup by period number
+- `idx_class_schedules_composite` - Composite index on (class_id, day_of_week, start_time)
+
+**RLS Policies**:
+- Teachers can view, create, update, and delete schedules for their own classes
+- Students can view schedules for classes they're enrolled in
+- Admins can view and manage all schedules
+
+**Usage**:
+Teachers use this table to define their weekly class schedules. The schedule is displayed as a grid in the teacher dashboard at `/dashboard/teacher/classes`, showing Sunday through Thursday with time slots from 7:00 to 18:00.
 
 #### `pending_students`
 Pre-populated student data before first authentication.
