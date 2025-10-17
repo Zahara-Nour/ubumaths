@@ -551,3 +551,304 @@ const { data: students } = await supabase
   .eq('class_members.class_id', 'your-class-id')
   .eq('role', 'student');
 ```
+
+## Navadra Game System
+
+The Navadra game system provides a math-learning RPG experience where students solve math challenges in combat scenarios.
+
+### Game Tables Overview
+
+```
+game_players (user progress & stats)
+    ↓
+game_spell_decks (active spell loadout)
+    ↓
+game_spells (owned spells)
+    ↓
+game_challenges (math problems) → game_challenge_attempts (student answers)
+    ↓
+game_combats (battle sessions) → game_monsters (enemies)
+```
+
+### `game_players`
+Player progression and statistics.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Player ID |
+| user_id | UUID (FK) | References profiles(id) |
+| level | INTEGER | Player level (1-100) |
+| xp | INTEGER | Total experience points |
+| prestige | INTEGER | Prestige points (for leaderboards) |
+| pyrs | JSONB | Elemental currency (fire, water, earth, air, light, dark) |
+| max_endurance | INTEGER | Maximum HP in combat |
+| created_at | TIMESTAMPTZ | Account creation |
+| updated_at | TIMESTAMPTZ | Last update |
+
+**RLS**: Users can view and update their own game_players record.
+
+### `game_spells`
+Spells (math abilities) owned by players.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Spell ID |
+| user_id | UUID (FK) | References profiles(id) |
+| spell_num | INTEGER | Spell slot number (1-10) |
+| name | TEXT | Spell name |
+| element | TEXT | Element type (fire/water/earth/air/light/dark) |
+| attack | INTEGER | Base damage value |
+| cost | INTEGER | Pyr cost to cast |
+| image_url | TEXT | Spell icon/image |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Last update |
+
+**Unique Constraint**: (user_id, spell_num) - each player has 10 spell slots.
+
+**RLS**: Users can view and manage their own spells.
+
+### `game_spell_decks`
+Active spell loadouts for combat.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Deck ID |
+| user_id | UUID (FK) | References profiles(id) |
+| name | TEXT | Deck name |
+| spell_ids | UUID[] | Array of spell IDs (max 10) |
+| is_active | BOOLEAN | Whether this is the active deck |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Last update |
+
+**RLS**: Users can view and manage their own decks.
+
+### `game_challenges`
+Math challenge definitions (problems to solve during combat).
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Challenge ID |
+| name | TEXT | Challenge name/description |
+| element | TEXT | Required element (fire/water/earth/air/light/dark) |
+| difficulty | INTEGER | Difficulty level (1-10) |
+| question | TEXT | Question template (supports {variable} placeholders) |
+| variables | JSONB | Variable definitions and ranges |
+| answer | JSONB | Answer definition (can be value, expression, or multiple choice) |
+| is_active | BOOLEAN | Whether challenge is available |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Last update |
+
+**Variable System**:
+Variables are defined in JSONB format:
+```json
+{
+  "x": {"type": "number", "value": "randomInt(1, 10)"},
+  "y": {"type": "number", "value": "randomInt(1, 10)"}
+}
+```
+
+**Answer Types**:
+- Simple value: `["x + y"]`
+- Multiple choice: `[{"choice": "A", "determined": true}, {"choice": "B", "determined": false}]`
+- Conditional: `[{"if": "x > y", "choice": "{x}"}, {"if": "x <= y", "choice": "{y}"}]`
+
+**Known Limitations**:
+- Array values with expression strings are not automatically evaluated
+- MathJS array indexing doesn't work with JavaScript arrays
+- Variables with complex conditions may fail to evaluate
+- Custom function return types may have compatibility issues
+
+Simple challenges work well. Complex challenges with nested dependencies and conditions may require manual testing.
+
+**RLS**: Public read access. Admin-only write access.
+
+### `game_challenge_attempts`
+Student answers to challenges (for analytics and progress tracking).
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Attempt ID |
+| user_id | UUID (FK) | References profiles(id) |
+| challenge_id | UUID (FK) | References game_challenges(id) |
+| combat_id | UUID (FK) | References game_combats(id) (optional) |
+| success | BOOLEAN | Whether answer was correct |
+| time_taken | INTEGER | Time in milliseconds |
+| answer_given | JSONB | Student's answer |
+| correct_answer | JSONB | The correct answer (for review) |
+| challenge_instance | JSONB | Specific variable values used (deprecated - not stored anymore) |
+| created_at | TIMESTAMPTZ | Attempt timestamp |
+
+**RLS**: Users can insert their own attempts and view their own history.
+
+### `game_monsters`
+Monster/enemy definitions for combat.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Monster ID |
+| name | TEXT | Monster name |
+| element | TEXT | Monster element (affects damage calculation) |
+| max_endurance | INTEGER | Monster's maximum HP |
+| attack | INTEGER | Monster's attack power |
+| image_url | TEXT | Monster sprite/image |
+| loot_xp | INTEGER | XP reward for defeating |
+| loot_prestige | INTEGER | Prestige reward |
+| loot_pyrs | JSONB | Pyr rewards by element |
+| is_active | BOOLEAN | Whether monster can appear in combat |
+| created_at | TIMESTAMPTZ | Creation time |
+
+**RLS**: Public read access. Admin-only write access.
+
+### `game_combats`
+Active and completed combat sessions.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Combat ID |
+| organizer_id | UUID (FK) | References profiles(id) - player who started combat |
+| monster_id | UUID (FK) | References game_monsters(id) |
+| status | TEXT | 'active', 'completed', or 'abandoned' |
+| outcome | TEXT | 'victory', 'defeat', or NULL (if active) |
+| monster_endurance_remaining | INTEGER | Monster's current HP |
+| current_round | INTEGER | Current combat round |
+| current_turn | INTEGER | Current turn number |
+| combat_flow | JSONB | Array of turn history (actions, damage, etc.) |
+| xp_gained | INTEGER | XP earned (if victory) |
+| prestige_gained | INTEGER | Prestige earned (if victory) |
+| pyrs_gained | JSONB | Pyrs earned (if victory) |
+| started_at | TIMESTAMPTZ | Combat start time |
+| completed_at | TIMESTAMPTZ | Combat end time |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Last update |
+
+**Combat Flow Format**:
+```json
+[
+  {
+    "round": 1,
+    "turn": 1,
+    "player_id": "user-uuid",
+    "action": "spell",
+    "spell_num": 1,
+    "challenge_result": {
+      "challenge_id": "challenge-uuid",
+      "success": true,
+      "time_taken": 5000
+    },
+    "damage_dealt": 25,
+    "timestamp": "2025-10-17T12:00:00Z"
+  }
+]
+```
+
+**RLS**: Users can view and manage their own combats.
+
+### Game Mechanics
+
+#### Element System
+- **Elements**: Fire, Water, Earth, Air, Light, Dark
+- **Element Matching**: Spells must match challenge element to be castable
+- **Damage Calculation**: Based on spell attack, player level, and element effectiveness
+
+#### Combat Flow
+1. Player selects a spell from their active deck
+2. A challenge matching the spell's element is randomly selected
+3. Player solves the math problem
+4. **If correct**: Spell damage is dealt to monster
+5. **If incorrect**: No damage dealt
+6. Combat continues until monster HP reaches 0 (victory) or player gives up
+
+#### Answer Validation
+- Client generates challenge instance with random variables
+- Client evaluates correct answer using same random seed
+- Server validates the answer using client-provided correct answer
+- Results are recorded in `game_challenge_attempts` and `game_combats.combat_flow`
+
+**Important**: The server trusts the client-provided correct answer since the challenge variables are randomly generated client-side. This is acceptable for an educational app but should not be used for competitive/ranked modes.
+
+#### Progression System
+- **XP**: Gained from defeating monsters, levels up player
+- **Prestige**: Leaderboard currency, gained from fast/efficient combat
+- **Pyrs**: Elemental currency for buying/upgrading spells
+- **Levels**: Increase max endurance and spell effectiveness
+
+### Debug Features
+
+#### Debug Monster (Development Tool)
+
+A special debug action is available at `/dashboard/navadra/combat` for quick testing:
+
+**Action**: `?/spawnDebugMonster`
+
+Creates a very weak monster with:
+- **Level**: 1
+- **HP**: 1 (dies in one hit!)
+- **Element**: Fire
+- **Category**: Common
+- **Name**: "🐛 [MonsterName] DEBUG"
+
+**Purpose**: Allows rapid testing of victory conditions, reward calculations, and post-combat flows without spending time on multiple challenges.
+
+**Implementation**: See `src/routes/(protected)/dashboard/navadra/combat/+page.server.ts` line 44
+
+#### Victory Panel Response Format
+
+When a combat ends in victory, the server returns rewards in a **nested PostgreSQL array format**:
+
+```javascript
+// Server response structure
+[
+  {success: 1, damageDealt: 2, victory: 1, rewards: 3},  // Index 0: Column mappings
+  true,                                                    // Index 1: success boolean
+  26,                                                      // Index 2: damageDealt value
+  {xp: 4, prestige: 5, pyrs: 6, element: 7},              // Index 3: Nested rewards mapping
+  50,                                                      // Index 4: XP value
+  12,                                                      // Index 5: Prestige value
+  5,                                                       // Index 6: Pyrs value
+  'fire'                                                   // Index 7: Element value
+]
+```
+
+**Important**: The `rewards` field at index 3 is itself a mapping object that points to the actual reward values at indices 4-7. The client must decode this nested structure to extract the correct reward values.
+
+**Implementation**: See `src/routes/(protected)/dashboard/navadra/combat/[combatId]/+page.svelte` lines 148-165 for the parsing logic.
+
+### Example Queries
+
+```typescript
+// Start a new combat
+const { data: combat } = await supabase
+  .from('game_combats')
+  .insert({
+    organizer_id: session.user.id,
+    monster_id: 'selected-monster-uuid',
+    status: 'active',
+    monster_endurance_remaining: monsterMaxHP,
+    current_round: 1,
+    current_turn: 1,
+    combat_flow: []
+  })
+  .select('*, monster:game_monsters(*)')
+  .single();
+
+// Record challenge attempt and update combat
+const formData = new FormData();
+formData.append('challenge_id', challengeId);
+formData.append('answer', JSON.stringify(studentAnswer));
+formData.append('correct_answer', JSON.stringify(correctAnswer));
+formData.append('time_taken', String(milliseconds));
+formData.append('spell_num', String(spellSlotNumber));
+
+const result = await fetch('?/submitAnswer', {
+  method: 'POST',
+  body: formData,
+  headers: { 'x-sveltekit-action': 'true' }
+});
+
+// Get player's combat history
+const { data: combats } = await supabase
+  .from('game_combats')
+  .select('*, monster:game_monsters(*)')
+  .eq('organizer_id', session.user.id)
+  .order('created_at', { ascending: false });
+```

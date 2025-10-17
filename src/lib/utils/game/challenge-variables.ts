@@ -2,6 +2,16 @@
 // Ported from original Navadra challenge.js
 // Author: Claude Code
 // Date: 2025-10-15
+//
+// KNOWN LIMITATIONS:
+// 1. Array values with expression strings (e.g., allLengths: ["a*10^baseA", "b*10^baseB"])
+//    are not automatically evaluated - they remain as strings
+// 2. MathJS array indexing doesn't work with JavaScript arrays - use subset() function instead
+// 3. Variables with complex conditions that reference other variables may fail to evaluate
+// 4. Custom function return types (pickRandom, randomInt) may have type compatibility issues with MathJS
+//
+// Simpler challenges work well. Complex challenges with nested dependencies and conditions
+// may require manual testing and adjustment.
 
 import { create, all, type MathJsInstance } from 'mathjs';
 import type {
@@ -23,8 +33,15 @@ math.import(
 		},
 
 		// Pick random element from array
-		pickRandom: (arr: any[]) => {
-			return arr[Math.floor(Math.random() * arr.length)];
+		pickRandom: (arr: any) => {
+			// Math.js passes arrays as Matrix objects, convert to JS array
+			const jsArray = Array.isArray(arr) ? arr : arr.toArray ? arr.toArray() : [arr];
+			return jsArray[Math.floor(Math.random() * jsArray.length)];
+		},
+
+		// Find index of element in array
+		indexOf: (arr: any[], element: any) => {
+			return arr.indexOf(element);
 		},
 
 		// Check if arrays are different
@@ -94,17 +111,28 @@ export function generateChallengeInstance(challenge: GameChallenge): ChallengeIn
 		const varDef = challenge.variables[varName];
 
 		if (varDef.value !== undefined) {
-			// Evaluate value with Math.js
-			try {
-				const evaluated = evaluateWithContext(varDef.value, variables);
-				variables[varName] = evaluated;
-			} catch (error) {
-				console.error(`Failed to evaluate variable ${varName}:`, error);
-				variables[varName] = null;
+			// Check if value is an array - store directly without evaluation
+			if (Array.isArray(varDef.value)) {
+				variables[varName] = varDef.value;
+			} else {
+				// Evaluate value with Math.js (it's a string expression)
+				try {
+					const evaluated = evaluateWithContext(varDef.value, variables);
+					variables[varName] = evaluated;
+				} catch (error) {
+					console.error(`Failed to evaluate variable ${varName}:`, error);
+					variables[varName] = null;
+				}
 			}
 		} else if (varDef.expression !== undefined) {
-			// Store expression (don't evaluate, used for display)
-			expressions[varName] = interpolateExpression(varDef.expression, variables);
+			// Check if expression is an array - store directly
+			if (Array.isArray(varDef.expression)) {
+				expressions[varName] = JSON.stringify(varDef.expression);
+				variables[varName] = varDef.expression;
+			} else {
+				// Store expression (don't evaluate, used for display)
+				expressions[varName] = interpolateExpression(varDef.expression, variables);
+			}
 		}
 	}
 
@@ -165,7 +193,13 @@ function evaluateWithContext(expr: string, context: Record<string, any>): any {
  * @param variables - Variable values
  * @returns Interpolated expression
  */
-function interpolateExpression(expr: string, variables: Record<string, any>): string {
+function interpolateExpression(expr: any, variables: Record<string, any>): string {
+	// Ensure expr is a string
+	if (typeof expr !== 'string') {
+		console.error('[interpolateExpression] expr is not a string:', { expr, type: typeof expr });
+		return String(expr || '');
+	}
+
 	return expr.replace(/\{(\w+)\}/g, (_, varName) => {
 		return variables[varName] !== undefined ? String(variables[varName]) : `{${varName}}`;
 	});
@@ -188,18 +222,84 @@ function topologicalSort(variables: ChallengeVariables): string[] {
 
 	for (const varName in variables) {
 		const varDef = variables[varName];
-		const expr = varDef.value || varDef.expression || '';
 
-		// Find variable references {otherVar}
-		const matches = expr.match(/\{(\w+)\}/g);
-		if (matches) {
-			for (const match of matches) {
+		// Ensure expr is always a string
+		let expr = '';
+		if (typeof varDef === 'string') {
+			expr = varDef;
+		} else if (varDef && typeof varDef === 'object') {
+			// Extract expression from value or expression field
+			const rawValue = varDef.value || varDef.expression;
+
+			// If it's an array, check if array elements reference other variables
+			if (Array.isArray(rawValue)) {
+				// Array elements might be variable names (strings)
+				expr = rawValue.filter(item => typeof item === 'string').join(' ');
+			} else {
+				expr = String(rawValue || '');
+			}
+		} else {
+			console.error('[topologicalSort] Invalid varDef type:', {
+				varName,
+				varDef,
+				type: typeof varDef
+			});
+			continue; // Skip invalid variable definitions
+		}
+
+		// Find all variable references (avoid duplicates with a Set)
+		const dependencies = new Set<string>();
+
+		// Pattern 1: {varName} - template variables
+		const templateMatches = expr.match(/\{(\w+)\}/g);
+		if (templateMatches) {
+			for (const match of templateMatches) {
 				const depVar = match.slice(1, -1); // Remove { }
 				if (graph[depVar]) {
-					graph[depVar].push(varName);
-					inDegree[varName]++;
+					dependencies.add(depVar);
 				}
 			}
+		}
+
+		// Pattern 2: varName[index] or varName.property - direct variable access
+		const directMatches = expr.match(/\b(\w+)\s*[\[\.]]/g);
+		if (directMatches) {
+			for (const match of directMatches) {
+				const depVar = match.replace(/[\[\.\s]/g, ''); // Extract variable name
+				if (graph[depVar] && depVar !== varName) {
+					dependencies.add(depVar);
+				}
+			}
+		}
+
+		// Pattern 3: Function calls - varName(args)
+		const functionMatches = expr.match(/(\w+)\s*\(/g);
+		if (functionMatches) {
+			for (const match of functionMatches) {
+				const depVar = match.replace(/[\(\s]/g, ''); // Extract variable name
+				// Only add if it's a variable name in our graph (not a function like pickRandom)
+				if (graph[depVar] && depVar !== varName) {
+					dependencies.add(depVar);
+				}
+			}
+		}
+
+		// Pattern 4: Bare variable names (e.g., x in "x*y")
+		// Match word boundaries to get all identifiers
+		const bareMatches = expr.match(/\b[a-zA-Z_]\w*/g);
+		if (bareMatches) {
+			for (const depVar of bareMatches) {
+				// Only add if it's a variable in our graph (not a function or the variable itself)
+				if (graph[depVar] && depVar !== varName) {
+					dependencies.add(depVar);
+				}
+			}
+		}
+
+		// Add edges for all unique dependencies
+		for (const depVar of dependencies) {
+			graph[depVar].push(varName);
+			inDegree[varName]++;
 		}
 	}
 

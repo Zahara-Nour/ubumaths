@@ -101,55 +101,101 @@
 				console.log('[handleChallengeSubmit] Full server response:', JSON.stringify(result, null, 2));
 
 				// SvelteKit action responses wrap data in a specific structure
-				// result.data is a JSON string containing an array:
-				// [{ columnIndices... }, actualSuccess, actualDamage, actualVictory]
+				// result.data contains the server action return value
 				let success = false;
 				let damageDealt = 0;
 				let isVictory = false;
+				let serverData: any = null;
 
 				if (result.type === 'success' && result.data) {
-					if (typeof result.data === 'string') {
-						console.log('[handleChallengeSubmit] result.data is a string, parsing JSON');
-						const parsed = JSON.parse(result.data);
-						console.log('[handleChallengeSubmit] Parsed array:', parsed);
+					// Parse result.data if it's a string
+					const parsed = typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
+					console.log('[handleChallengeSubmit] Parsed response:', parsed);
 
-						if (Array.isArray(parsed) && parsed.length >= 4) {
-							// Array format: [columnIndices, success, damageDealt, victory]
-							success = parsed[1] ?? false;
-							damageDealt = parsed[2] ?? 0;
-							isVictory = parsed[3] ?? false;
-							console.log('[handleChallengeSubmit] Extracted from array indices:', {
-								success,
-								damageDealt,
-								isVictory
-							});
-						} else {
-							// Fallback: try to use as object
-							const serverData = Array.isArray(parsed) ? parsed[0] : parsed;
-							success = serverData?.challengeSuccess ?? false;
-							damageDealt = serverData?.damageDealt ?? 0;
-							isVictory = serverData?.victory ?? false;
-							console.log('[handleChallengeSubmit] Extracted from object:', {
-								success,
-								damageDealt,
-								isVictory
-							});
+					// SvelteKit form actions return data directly as objects
+					// Check if parsed is already an object with the expected properties
+					if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+						// Direct object format from server
+						serverData = parsed;
+						success = serverData.challengeSuccess ?? false;
+						damageDealt = serverData.damageDealt ?? 0;
+						isVictory = serverData.victory ?? false;
+
+						console.log('[handleChallengeSubmit] Extracted from object:', {
+							success,
+							damageDealt,
+							isVictory,
+							rewards: serverData.rewards
+						});
+					} else if (Array.isArray(parsed) && parsed.length >= 4) {
+						// PostgreSQL array format: [columnIndices, ...values]
+						// The first element contains column-to-index mappings
+						const columnIndices = parsed[0];
+						console.log('[handleChallengeSubmit] Column indices:', columnIndices);
+
+						// Extract values using column indices
+						// Note: Column indices can be 1 (true) or 3 (false) for booleans
+						// For challengeSuccess: 1 = true (correct), 3 = false (incorrect)
+						const challengeSuccessIdx = columnIndices?.challengeSuccess ?? 1;
+						success = challengeSuccessIdx === 1;
+
+					const damageDealtIdx = columnIndices?.damageDealt ?? 2;
+					damageDealt = parsed[damageDealtIdx] ?? 0;
+
+					const victoryIdx = columnIndices?.victory ?? 3;
+					isVictory = parsed[victoryIdx] === true;
+
+					// Extract rewards - the rewards field contains ANOTHER mapping object
+					// that tells us where to find the actual XP, prestige, pyrs values
+					let rewardsData = null;
+					if (isVictory && columnIndices?.rewards !== undefined) {
+						const rewardsMapping = parsed[columnIndices.rewards];
+						console.log('[handleChallengeSubmit] Rewards mapping:', rewardsMapping);
+
+						if (rewardsMapping && typeof rewardsMapping === 'object') {
+							// Use the rewards mapping to extract actual values
+							rewardsData = {
+								xp: parsed[rewardsMapping.xp] ?? 0,
+								prestige: parsed[rewardsMapping.prestige] ?? 0,
+								pyrs: parsed[rewardsMapping.pyrs] ?? 0,
+								element: parsed[rewardsMapping.element] ?? ''
+							};
+							console.log('[handleChallengeSubmit] Extracted rewards:', rewardsData);
 						}
-					} else if (Array.isArray(result.data) && result.data.length >= 4) {
-						// Already parsed array
-						success = result.data[1] ?? false;
-						damageDealt = result.data[2] ?? 0;
-						isVictory = result.data[3] ?? false;
+					}
+
+					// Store serverData for rewards access
+					serverData = {
+						success: parsed[1],
+						damageDealt: parsed[damageDealtIdx],
+						challengeSuccess: success,
+						victory: isVictory,
+						rewards: rewardsData
+					};
+
+					console.log('[handleChallengeSubmit] Extracted values:', {
+						success,
+						damageDealt,
+						isVictory,
+						challengeSuccessIdx,
+						rewards: serverData.rewards
+					});
 					} else {
-						// Object format
-						const serverData = Array.isArray(result.data) ? result.data[0] : result.data;
+						// Fallback
+						serverData = Array.isArray(parsed) ? parsed[0] : parsed;
 						success = serverData?.challengeSuccess ?? false;
 						damageDealt = serverData?.damageDealt ?? 0;
 						isVictory = serverData?.victory ?? false;
+
+						console.log('[handleChallengeSubmit] Extracted from fallback:', {
+							success,
+							damageDealt,
+							isVictory
+						});
 					}
 				}
 
-				console.log('[handleChallengeSubmit] Parsed values:', {
+				console.log('[handleChallengeSubmit] Final parsed values:', {
 					success,
 					damageDealt,
 					isVictory
@@ -166,7 +212,12 @@
 				// Show toast messages
 				if (isVictory) {
 					victory = true;
-					rewards = serverData.rewards;
+					rewards = serverData?.rewards;
+					console.log('[handleChallengeSubmit] Setting victory state:', {
+						victory,
+						rewards,
+						serverData
+					});
 					toaster.success('🎉 Victoire ! Monstre vaincu !');
 				} else if (damageDealt > 0) {
 					toaster.success(`⚔️ ${damageDealt} points de dégâts !`);
@@ -203,6 +254,7 @@
 <div class="fixed left-0 top-0 z-50 bg-black p-2 text-xs text-white opacity-75">
 	<div>currentView: {currentView}</div>
 	<div>victory: {victory}</div>
+	<div>rewards: {rewards ? JSON.stringify(rewards) : 'null'}</div>
 	<div>challengeResult: {challengeResult ? 'SET' : 'null'}</div>
 	<div>activeChallenge: {activeChallenge ? 'SET' : 'null'}</div>
 	<div>challengeInstance: {challengeInstance ? 'SET' : 'null'}</div>
@@ -223,20 +275,26 @@
 				</p>
 
 				<!-- Rewards -->
-				<div class="grid grid-cols-3 gap-4 rounded-lg bg-background p-6">
-					<div class="space-y-1">
-						<p class="text-3xl font-bold text-primary">+{rewards.xp}</p>
-						<p class="text-sm text-muted-foreground">XP</p>
+				{#if rewards}
+					<div class="grid grid-cols-3 gap-4 rounded-lg bg-background p-6">
+						<div class="space-y-1">
+							<p class="text-3xl font-bold text-primary">+{rewards.xp ?? 0}</p>
+							<p class="text-sm text-muted-foreground">XP</p>
+						</div>
+						<div class="space-y-1">
+							<p class="text-3xl font-bold text-primary">+{rewards.prestige ?? 0}</p>
+							<p class="text-sm text-muted-foreground">Prestige</p>
+						</div>
+						<div class="space-y-1">
+							<p class="text-3xl font-bold text-primary">+{rewards.pyrs ?? 0}</p>
+							<p class="text-sm text-muted-foreground">Pyrs {rewards.element ?? ''}</p>
+						</div>
 					</div>
-					<div class="space-y-1">
-						<p class="text-3xl font-bold text-primary">+{rewards.prestige}</p>
-						<p class="text-sm text-muted-foreground">Prestige</p>
+				{:else}
+					<div class="rounded-lg bg-background p-6 text-center">
+						<p class="text-muted-foreground">Calcul des récompenses...</p>
 					</div>
-					<div class="space-y-1">
-						<p class="text-3xl font-bold text-primary">+{rewards.pyrs}</p>
-						<p class="text-sm text-muted-foreground">Pyrs {rewards.element}</p>
-					</div>
-				</div>
+				{/if}
 
 				<div class="space-y-3">
 					<Button href="/dashboard/navadra/combat" size="lg" class="w-full">

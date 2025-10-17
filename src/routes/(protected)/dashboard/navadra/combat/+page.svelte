@@ -43,6 +43,26 @@
 		</form>
 	</div>
 
+	<!-- DEBUG: Weak Monster -->
+	<div class="mb-8 rounded-lg border border-yellow-500 bg-yellow-50 p-6 dark:bg-yellow-950/20">
+		<h2 class="mb-3 text-2xl font-bold text-foreground">🐛 DEBUG: Monstre faible</h2>
+		<p class="mb-4 text-muted-foreground">
+			Affronte un monstre de test avec seulement 1 PV pour tester rapidement la victoire.
+		</p>
+
+		<form method="POST" action="?/spawnDebugMonster" use:enhance={() => {
+			loading = true;
+			return async ({ update }) => {
+				await update();
+				loading = false;
+			};
+		}}>
+			<Button type="submit" size="lg" variant="outline" disabled={loading} class="border-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-900/30">
+				{loading ? 'Création...' : '🐛 Combattre un monstre DEBUG (1 PV)'}
+			</Button>
+		</form>
+	</div>
+
 	<!-- Available Monsters -->
 	{#if data.availableMonsters.length > 0}
 		<div class="mb-8">

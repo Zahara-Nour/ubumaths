@@ -41,6 +41,65 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 };
 
 export const actions: Actions = {
+	// DEBUG: Create a very weak monster for testing (level 1, 1 HP)
+	spawnDebugMonster: async ({ locals: { safeGetSession, supabase } }) => {
+		const { user } = await safeGetSession();
+		if (!user) throw error(401, 'Unauthorized');
+
+		// Create a super weak debug monster
+		const template = getRandomMonsterTemplate('fire', 'common');
+		const imagePaths = getMonsterImagePaths(template);
+
+		const { data: debugMonster, error: createError } = await supabase
+			.from('game_monsters')
+			.insert({
+				name: '🐛 ' + template.name + ' DEBUG',
+				element: 'fire',
+				level: 1,
+				category: 'common',
+				max_endurance: 1, // Only 1 HP!
+				attack_coefficient: 0.1,
+				img_url: imagePaths.img_url,
+				img_head_url: imagePaths.img_head_url,
+				spawned_at: new Date().toISOString()
+			})
+			.select()
+			.single();
+
+		if (createError || !debugMonster) {
+			throw error(500, 'Failed to create debug monster');
+		}
+
+		// Create combat
+		const { data: combat, error: combatError } = await supabase
+			.from('game_combats')
+			.insert({
+				organizer_id: user.id,
+				monster_id: debugMonster.id,
+				status: 'active',
+				started_at: new Date().toISOString(),
+				monster_endurance_remaining: debugMonster.max_endurance,
+				monster_snapshot: {
+					name: debugMonster.name,
+					element: debugMonster.element,
+					level: debugMonster.level,
+					max_endurance: debugMonster.max_endurance,
+					attack_coefficient: debugMonster.attack_coefficient,
+					img_url: debugMonster.img_url
+				},
+				player_snapshots: {}
+			})
+			.select()
+			.single();
+
+		if (combatError || !combat) {
+			throw error(500, 'Failed to create combat');
+		}
+
+		// Redirect to combat page
+		throw redirect(303, `/dashboard/navadra/combat/${combat.id}`);
+	},
+
 	// Start a new combat with a random or selected monster
 	startCombat: async ({ request, locals: { safeGetSession, supabase } }) => {
 		const { user } = await safeGetSession();

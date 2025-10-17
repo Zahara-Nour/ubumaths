@@ -434,6 +434,49 @@ Students can now:
 
 ---
 
+## 🐛 Recent Fixes & Improvements
+
+### Victory Panel Rewards Display (October 17, 2025)
+
+**Issue**: XP, prestige, and pyrs rewards were showing as 0 in the victory panel after defeating a monster.
+
+**Root Cause**: The server returns rewards in a nested PostgreSQL array format where the rewards object itself contains index mappings. The client was incorrectly trying to use the mapping object as the actual rewards data.
+
+**Solution**: Updated the client-side parsing logic in `src/routes/(protected)/dashboard/navadra/combat/[combatId]/+page.svelte` (lines 148-165) to properly decode the nested structure:
+
+```javascript
+// Extract the rewards mapping from index 3
+const rewardsMapping = parsed[columnIndices.rewards];
+
+// Use the mapping to extract actual values at their correct indices
+rewardsData = {
+  xp: parsed[rewardsMapping.xp],           // Index 4
+  prestige: parsed[rewardsMapping.prestige], // Index 5
+  pyrs: parsed[rewardsMapping.pyrs],        // Index 6
+  element: parsed[rewardsMapping.element]    // Index 7
+};
+```
+
+**Status**: ✅ Fixed - Rewards now display correctly
+
+### Debug Monster Feature (October 17, 2025)
+
+**Purpose**: Rapid testing of victory conditions without spending time on lengthy combats.
+
+**Implementation**: Added `spawnDebugMonster` action in `src/routes/(protected)/dashboard/navadra/combat/+page.server.ts` (line 44)
+
+**Features**:
+- Creates a monster with only **1 HP** (dies in one hit)
+- Level 1, Fire element, Common category
+- Name prefixed with "🐛 DEBUG"
+- Accessible via yellow button at `/dashboard/navadra/combat`
+
+**Usage**: Click "🐛 Combattre un monstre DEBUG (1 PV)" button, solve one challenge, and instantly test victory panel.
+
+**Status**: ✅ Implemented - Available for development testing
+
+---
+
 ## 🚀 Ready to Launch!
 
 The game is **ready for testing**. Follow the setup guide in [NAVADRA_SETUP.md](NAVADRA_SETUP.md) and start playing!
