@@ -118,6 +118,7 @@
 	import { getVipCardById } from '$lib/types/vip-card';
 	import { canAffordVipCard } from '$lib/utils/vip-cards';
 	import { Sparkles, Eye, Loader2 } from 'lucide-svelte';
+	import { teacherStudentsCache } from '$lib/stores/teacherStudentsCache.svelte';
 
 	// Data from server load function
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -331,6 +332,11 @@
 					// Wait 100ms then refresh data from server and show confirmation
 					setTimeout(() => {
 						invalidateAll(); // Fetch fresh data from server
+						// Invalidate cache for this class (student's gidouilles changed)
+						const classId = data.classes.find(c => c.students.some(s => s.id === studentId))?.id;
+						if (classId) {
+							teacherStudentsCache.invalidate(classId);
+						}
 						// Show success toast with accumulated delta and student name
 						toaster.success(`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} (${studentName})`);
 					}, 100);
@@ -406,6 +412,8 @@
 					const studentCount = classItem?.students.length || 0;
 					setTimeout(() => {
 						invalidateAll(); // Refresh all student data
+						// Invalidate cache for this class (all students' gidouilles changed)
+						teacherStudentsCache.invalidate(classId);
 						// Show success toast with student count
 						toaster.success(`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} pour ${studentCount} élève${studentCount > 1 ? 's' : ''}`);
 					}, 100);
@@ -486,6 +494,10 @@
 	function handleRevealComplete() {
 		revealingCard = null;
 		invalidateAll(); // Refresh data to update card collection
+
+		// Invalidate cache for all classes (VIP cards changed)
+		// We invalidate all because we don't know which class the student belongs to here
+		data.classes.forEach(c => teacherStudentsCache.invalidate(c.id));
 	}
 </script>
 

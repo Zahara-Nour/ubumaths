@@ -5,7 +5,11 @@ import type { RequestHandler } from './$types';
  * GET /api/classes/[classId]/students
  *
  * Fetches all students in a specific class.
- * Used by the Wheel of Fortune modal to get student data on-demand.
+ * Used by the Wheel of Fortune modal and teacher students cache.
+ *
+ * QUERY PARAMETERS:
+ * - full=true: Include gidouilles, vip_cards, role, gender (for rewards page)
+ * - full=false or omitted: Basic data only (id, firstname, lastname, avatar_url)
  *
  * SECURITY:
  * - Verifies user is authenticated
@@ -13,9 +17,9 @@ import type { RequestHandler } from './$types';
  * - For teachers: verifies they own the class
  *
  * RETURNS:
- * Array of students with { id, firstname, lastname, avatar_url }
+ * Array of students with fields based on 'full' parameter
  */
-export const GET: RequestHandler = async ({ params, locals: { safeGetSession, supabase } }) => {
+export const GET: RequestHandler = async ({ params, url, locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
 
 	if (!user) {
@@ -27,6 +31,9 @@ export const GET: RequestHandler = async ({ params, locals: { safeGetSession, su
 	if (!classId) {
 		throw error(400, 'Class ID is required');
 	}
+
+	// Check if full data is requested
+	const full = url.searchParams.get('full') === 'true';
 
 	try {
 		// Fetch user's profile to check role
@@ -62,11 +69,23 @@ export const GET: RequestHandler = async ({ params, locals: { safeGetSession, su
 			}
 		}
 
-		// Fetch students in this class
-		const { data: members, error: membersError } = await supabase
-			.from('class_members')
-			.select(
-				`
+		// Build select query based on 'full' parameter
+		const selectFields = full
+			? `
+				student_id,
+				profiles!class_members_student_id_fkey (
+					id,
+					firstname,
+					lastname,
+					full_name,
+					avatar_url,
+					gidouilles,
+					vip_cards,
+					role,
+					gender
+				)
+			`
+			: `
 				student_id,
 				profiles!class_members_student_id_fkey (
 					id,
@@ -74,8 +93,12 @@ export const GET: RequestHandler = async ({ params, locals: { safeGetSession, su
 					lastname,
 					avatar_url
 				)
-			`
-			)
+			`;
+
+		// Fetch students in this class
+		const { data: members, error: membersError } = await supabase
+			.from('class_members')
+			.select(selectFields)
 			.eq('class_id', classId);
 
 		if (membersError) {
@@ -88,12 +111,24 @@ export const GET: RequestHandler = async ({ params, locals: { safeGetSession, su
 				const profile = Array.isArray(member.profiles) ? member.profiles[0] : member.profiles;
 				if (!profile) return null;
 
-				return {
+				// Base student data (always included)
+				const student: any = {
 					id: profile.id,
 					firstname: profile.firstname || '',
 					lastname: profile.lastname || '',
 					avatar_url: profile.avatar_url || ''
 				};
+
+				// Add full data if requested
+				if (full) {
+					student.full_name = profile.full_name || '';
+					student.gidouilles = profile.gidouilles || 0;
+					student.vip_cards = profile.vip_cards || {};
+					student.role = profile.role || '';
+					student.gender = profile.gender || '';
+				}
+
+				return student;
 			})
 			.filter((s): s is NonNullable<typeof s> => s !== null);
 

@@ -83,6 +83,7 @@
 		getNoClassMessage,
 		isWeekend
 	} from '$lib/utils/timeMatching';
+	import { teacherStudentsCache } from '$lib/stores/teacherStudentsCache.svelte';
 
 	// ============================================================================
 	// COMPONENT STATE
@@ -219,12 +220,19 @@
 	/**
 	 * Handle opening the Wheel of Fortune modal
 	 *
-	 * Fetches students for the selected class and opens the modal.
-	 * Shows loading state while fetching.
+	 * Uses cache to fetch students for the selected class and opens the modal.
+	 * Shows loading state while fetching (only on first fetch per class).
+	 *
+	 * CACHE INTEGRATION:
+	 * - First check cache for existing data
+	 * - If cached, show immediately (no loading state)
+	 * - If not cached, fetch from API and populate cache
+	 * - Future opens of same class are instant (cached)
 	 *
 	 * EDGE CASES HANDLED:
 	 * - No class selected → Should be prevented by disabled button
 	 * - Fetch error → Shows error toast and doesn't open modal
+	 * - Cache invalidation → Automatic refetch on next open
 	 */
 	async function handleOpenWheel() {
 		if (!selectedClassId) {
@@ -232,21 +240,26 @@
 			return;
 		}
 
-		// Reset state
-		wheelStudents = [];
-		isLoadingStudents = true;
-		wheelModalOpen = true;
+		// Check cache first for instant display
+		const cached = teacherStudentsCache.getCached(selectedClassId);
+
+		if (cached) {
+			// Cache hit - instant display
+			wheelStudents = cached;
+			wheelModalOpen = true;
+			isLoadingStudents = false;
+		} else {
+			// Cache miss - show loading state
+			wheelStudents = [];
+			isLoadingStudents = true;
+			wheelModalOpen = true;
+		}
 
 		try {
-			// Fetch students from API
-			const response = await fetch(`/api/classes/${selectedClassId}/students`);
-
-			if (!response.ok) {
-				throw new Error('Failed to fetch students');
-			}
-
-			const data = await response.json();
-			wheelStudents = data.students || [];
+			// Fetch students from cache (will use cached data or fetch from API)
+			// Using non-full data for wheel (id, firstname, lastname, avatar_url only)
+			const students = await teacherStudentsCache.getStudents(selectedClassId, false);
+			wheelStudents = students;
 
 			if (wheelStudents.length === 0) {
 				toaster.warning('Cette classe ne contient aucun élève');
@@ -298,6 +311,23 @@
 			const firstClassId = classes[0].id;
 			selectedClassId = firstClassId;
 			setSelectedClass(firstClassId); // Persist to localStorage
+		}
+	});
+
+	/**
+	 * Preload students for selected class (optional performance optimization)
+	 *
+	 * When a class is selected, preload its students in the background.
+	 * This makes the wheel modal open instantly on first click.
+	 *
+	 * Benefits:
+	 * - First wheel open feels instant (data already cached)
+	 * - Minimal overhead (fire-and-forget background fetch)
+	 */
+	$effect(() => {
+		if (selectedClassId) {
+			// Preload students for selected class (non-blocking)
+			teacherStudentsCache.preload(selectedClassId, false);
 		}
 	});
 </script>
