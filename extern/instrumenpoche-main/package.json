@@ -1,0 +1,94 @@
+{
+  "name": "instrumenpoche",
+  "version": "2.4.5",
+  "license": "AGPL-3.0-or-later",
+  "main": "src/iepLoadPromise.js",
+  "engines": {
+    "node": ">8.0.0"
+  },
+  "scripts": {
+    "build": "webpack",
+    "build-dev": "webpack --debug --verbose",
+    "build-element": "node buildElement.js",
+    "doc": "jsdoc -c jsdoc/base.json",
+    "doc:all": "jsdoc -c jsdoc/all.json",
+    "lint": "eslint src",
+    "lint:fix": "eslint --fix src",
+    "start": "webpack serve"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "corejs": {
+            "version": 3
+          },
+          "useBuiltIns": "usage"
+        }
+      ]
+    ],
+    "plugins": [
+      "@babel/plugin-syntax-dynamic-import"
+    ],
+    "sourceType": "unambiguous"
+  },
+  "browserslist": [
+    "defaults",
+    "ie 11"
+  ],
+  "dependencies": {
+    "core-js": "^3.30.2",
+    "docdash": "^1.2.0",
+    "sesajstools": "git+https://git.sesamath.net/sesamath/sesajstools.git",
+    "whatwg-fetch": "^3.6.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.21.8",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/preset-env": "^7.21.5",
+    "babel-loader": "^8.3.0",
+    "browserslist": "^4.21.5",
+    "css-loader": "^5.2.7",
+    "eslint": "^7.32.0",
+    "eslint-config-standard": "16.0.2",
+    "eslint-import-resolver-node": "^0.3.7",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1",
+    "file-loader": "^6.2.0",
+    "husky": "^6.0.0",
+    "jsdoc": "^3.6.11",
+    "minimist": "^1.2.8",
+    "style-loader": "^2.0.0",
+    "terser": "^5.17.4",
+    "terser-webpack-plugin": "^5.3.8",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.82.1",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^3.11.3"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true
+    },
+    "extends": [
+      "standard"
+    ],
+    "overrides": [
+      {
+        "files": "src/iepLoad.js",
+        "parserOptions": {
+          "ecmaVersion": 5,
+          "sourceType": "script"
+        },
+        "rules": {
+          "no-var": "off"
+        }
+      }
+    ],
+    "rules": {
+      "camelcase": "off"
+    }
+  }
+}

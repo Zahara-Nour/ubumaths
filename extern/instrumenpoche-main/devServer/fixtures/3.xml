@@ -1,0 +1,430 @@
+﻿
+<?xml version="1.0" encoding="UTF-8" ?>
+<INSTRUMENPOCHE version="2" auteur="Sésamath" licence="CC-BY-SA" >
+<action abscisse="200" ordonnee="300" mouvement="montrer" objet="regle" />
+<action abscisse="200" ordonnee="300" mouvement="montrer" objet="crayon" />
+<action epaisseur="1" couleur="0" abscisse="650" ordonnee="300" id="1" mouvement="tracer" objet="crayon" vitesse="15" tempo="10" />
+<action mouvement="masquer" objet="regle" />
+<action mouvement="masquer" objet="crayon" tempo="5" />
+<action id="2" ordonnee="295" abscisse="200" mouvement="creer" objet="texte" />
+<action couleur="noir" texte="x" id="2" mouvement="ecrire" objet="texte" tempo="5" />
+<action id="3" ordonnee="295" abscisse="640" mouvement="creer" objet="texte" />
+<action couleur="noir" texte="y" id="3" mouvement="ecrire" objet="texte" tempo="5" />
+<action abscisse="200" ordonnee="200" mouvement="montrer" objet="equerre" />
+<action abscisse="425" ordonnee="300" mouvement="translation" objet="equerre" tempo="10" />
+<action sens="500" angle="90" mouvement="rotation" objet="regle" />
+<action abscisse="425" ordonnee="80" mouvement="montrer" objet="regle" tempo="10" />
+<action mouvement="masquer" objet="equerre" />
+<action abscisse="425" ordonnee="80" mouvement="montrer" objet="crayon" tempo="10"/>
+<action epaisseur="1" couleur="0" abscisse="425" ordonnee="530" id="6" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" tempo="10" />
+<action mouvement="masquer" objet="regle" />
+<action id="5" ordonnee="65" abscisse="430" mouvement="creer" objet="texte" />
+<action couleur="noir" texte="u" id="5" mouvement="ecrire" objet="texte" tempo="5" />
+<action id="7" ordonnee="510" abscisse="430" mouvement="creer" objet="texte" />
+<action couleur="noir" texte="v" id="7" mouvement="ecrire" objet="texte" tempo="5" />
+<action type="point" couleur="noir" id="8" ordonnee="300" abscisse="425" mouvement="creer" objet="point" />
+<action couleur="noir" nom="O" id="8" mouvement="nommer" objet="point" tempo="10" />
+<action mouvement="montrer" objet="compas" />
+<action abscisse="425" ordonnee="300" mouvement="translation" objet="compas" tempo="10" />
+<action ecart="100" mouvement="ecarter" objet="compas" tempo="10" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="5" fin="10" debut="-10" id="9" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action sens="-5" angle="-90" mouvement="rotation" objet="compas" tempo="10" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="-5" fin="-100" debut="-80" id="10" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="525" ordonnee="300" mouvement="translation" objet="compas" tempo="10" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="5" fin="-80" debut="-100" id="11" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="425" ordonnee="200" mouvement="translation" objet="compas" tempo="10" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="-5" fin="-5" debut="5" id="12" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action mouvement="masquer" objet="compas" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="regle" />
+<action sens="-5" angle="-45" mouvement="rotation" objet="regle" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="crayon" />
+<action epaisseur="1" couleur="0" abscisse="650" ordonnee="75" id="13" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="regle" />
+<action mouvement="masquer" objet="crayon" tempo="10" />
+
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="compas" />
+<action sens="-5" angle="-170" mouvement="rotation" objet="compas" tempo="10" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="-5" fin="-190" debut="-170" id="14" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="325" ordonnee="300" mouvement="translation" objet="compas" />
+<action sens="5" angle="-90" mouvement="rotation" objet="compas" tempo="10" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="5" fin="-80" debut="-100" id="15" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="425" ordonnee="200" mouvement="translation" objet="compas" />
+<action sens="-5" angle="-175" mouvement="rotation" objet="compas" tempo="10" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="5" fin="-175" debut="-185" id="16" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action mouvement="masquer" objet="compas" />
+<action mouvement="montrer" objet="regle" />
+<action sens="-5" angle="-135" mouvement="rotation" objet="regle" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="crayon" />
+<action epaisseur="1" couleur="0" abscisse="187" ordonnee="62" id="17" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action mouvement="montrer" objet="compas" />
+<action abscisse="425" ordonnee="300" mouvement="translation" objet="compas" />
+<action sens="-5" angle="90" mouvement="rotation" objet="compas" tempo="10" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="5" fin="100" debut="80" id="18" mouvement="tracer" objet="compas" tempo="10" />
+<action mouvement="coucher" objet="compas" />
+<action abscisse="325" ordonnee="300" mouvement="translation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="5" fin="100" debut="80" id="19" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="425" ordonnee="400" mouvement="translation" objet="compas" />
+<action sens="5" angle="180" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="5" fin="-170" debut="-190" id="20" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" />
+<action mouvement="masquer" objet="compas" tempo="10" />
+<action mouvement="montrer" objet="regle" />
+<action sens="-5" angle="135" mouvement="rotation" objet="regle" tempo="10" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="crayon" />
+<action epaisseur="1" couleur="0" abscisse="200" ordonnee="525" id="22" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action mouvement="montrer" objet="compas" />
+<action sens="5" angle="0" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="-5" fin="-5" debut="5" id="21" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="525" ordonnee="300" mouvement="translation" objet="compas" />
+<action sens="5" angle="90" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="5" fin="95" debut="85" id="23" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" />
+<action mouvement="masquer" objet="compas" tempo="10" />
+<action mouvement="montrer" objet="regle" />
+<action sens="-5" angle="45" mouvement="rotation" objet="regle" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="crayon" />
+<action epaisseur="1" couleur="0" abscisse="650" ordonnee="525" id="25" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" tempo="20"/>
+<action mouvement="masquer" objet="trait" id="9" />
+<action mouvement="masquer" objet="trait" id="10" />
+<action mouvement="masquer" objet="trait" id="11" />
+<action mouvement="masquer" objet="trait" id="12" />
+
+<action mouvement="masquer" objet="trait" id="14" />
+<action mouvement="masquer" objet="trait" id="15" />
+<action mouvement="masquer" objet="trait" id="16" />
+<action mouvement="masquer" objet="trait" id="18" />
+<action mouvement="masquer" objet="trait" id="19" />
+<action mouvement="masquer" objet="trait" id="20" />
+<action mouvement="masquer" objet="trait" id="21" />
+<action mouvement="masquer" objet="trait" id="23" />
+
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action abscisse="100" ordonnee="500" mouvement="montrer" objet="regle" />
+<action sens="-5" angle="0" mouvement="rotation" objet="regle" />
+<action abscisse="100" ordonnee="500" mouvement="montrer" objet="compas" />
+<action sens="-5" angle="0" mouvement="rotation" objet="compas" />
+<action ecart="300" mouvement="ecarter" objet="compas" tempo="20" />
+<action abscisse="425" ordonnee="300" mouvement="translation" objet="compas" />
+<action mouvement="masquer" objet="regle" />
+<action sens="-5" angle="-45" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="-5" fin="-48" debut="-42" id="24" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action sens="-5" angle="-135" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="5" fin="-132" debut="-138" id="26" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action sens="-5" angle="135" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="-5" fin="132" debut="138" id="27" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action sens="-5" angle="45" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="noir" epaisseur="1" sens="-5" fin="42" debut="48" id="28" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action mouvement="masquer" objet="compas" />
+<action type="point" couleur="blanc" id="29" ordonnee="87.87" abscisse="212.87" mouvement="creer" objet="point" />
+<action ordonnee="-29" abscisse="-10" couleur="noir" nom="A" id="29" mouvement="nommer" objet="point" tempo="5" />
+<action type="point" couleur="blanc" id="30" ordonnee="87.87" abscisse="637.13" mouvement="creer" objet="point" />
+<action ordonnee="-28" abscisse="-8" couleur="noir" nom="B" id="30" mouvement="nommer" objet="point" tempo="5" />
+<action type="point" couleur="blanc" id="31" ordonnee="512.13" abscisse="637.13" mouvement="creer" objet="point" />
+<action ordonnee="4" abscisse="-9" couleur="noir" nom="C" id="31" mouvement="nommer" objet="point" tempo="5" />
+<action type="point" couleur="blanc" id="32" ordonnee="512.13" abscisse="212.87" mouvement="creer" objet="point" />
+<action ordonnee="3" abscisse="-8" couleur="noir" nom="D" id="32" mouvement="nommer" objet="point" tempo="5" />
+<action abscisse="200" ordonnee="87.87" mouvement="montrer" objet="regle" />
+<action abscisse="212.87" ordonnee="87.87" mouvement="montrer" objet="crayon" />
+<action epaisseur="2" couleur="0" abscisse="637.13" ordonnee="87.87" id="33a" mouvement="tracer" objet="crayon" vitesse="15" tempo="10" />
+<action abscisse="200" ordonnee="512.13" mouvement="montrer" objet="regle" tempo="10" />
+<action abscisse="212.87" ordonnee="512.13" mouvement="montrer" objet="crayon" tempo="10" />
+<action epaisseur="2" couleur="0" abscisse="637.13" ordonnee="512.13" id="33" mouvement="tracer" objet="crayon" vitesse="15" tempo="10" />
+<action sens="5" angle="90" mouvement="rotation" objet="regle" />
+<action abscisse="212.87" ordonnee="80" mouvement="montrer" objet="regle" tempo="10" />
+<action abscisse="212.87" ordonnee="87.87" mouvement="montrer" objet="crayon" tempo="10" />
+<action epaisseur="2" couleur="0" abscisse="212.87" ordonnee="512.13" id="34" mouvement="tracer" objet="crayon" vitesse="15" />
+<action abscisse="637.13" ordonnee="80" mouvement="montrer" objet="regle" tempo="10" />
+<action abscisse="637.13" ordonnee="87.87" mouvement="montrer" objet="crayon" tempo="10" />
+<action epaisseur="2" couleur="0" abscisse="637.13" ordonnee="512.13" id="36" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="trait" id="24" />
+<action mouvement="masquer" objet="trait" id="26" />
+<action mouvement="masquer" objet="trait" id="27" />
+<action mouvement="masquer" objet="trait" id="28" />
+
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action mouvement="montrer" objet="compas" />
+<action abscisse="212.87" ordonnee="87.87" mouvement="translation" objet="compas" />
+<action ecart="110" mouvement="ecarter" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="rouge" epaisseur="1" sens="5" fin="50" debut="40" id="35" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" />
+<action sens="5" angle="90" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="rouge" epaisseur="1" sens="-5" fin="85" debut="95" id="37" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="212.87" ordonnee="197.87" mouvement="translation" objet="compas" tempo="10" />
+<action sens="-5" angle="43.86" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="rouge" epaisseur="1" sens="-5" fin="40" debut="50" id="38" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="290.65" ordonnee="165.65" mouvement="translation" objet="compas" tempo="10" />
+<action sens="5" angle="95.08" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="rouge" epaisseur="1" sens="-5" fin="77.11" debut="95.08" id="39" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" />
+<action mouvement="masquer" objet="compas" tempo="10" />
+<action abscisse="212.87" ordonnee="87.87" mouvement="montrer" objet="regle" />
+<action sens="-5" angle="67.5" mouvement="rotation" objet="regle" tempo="10" />
+<action abscisse="212.87" ordonnee="87.87" mouvement="montrer" objet="crayon" />
+<action epaisseur="2" couleur="0xff0000" abscisse="300.74" ordonnee="300" id="40" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action abscisse="212.87" ordonnee="87.87" mouvement="montrer" objet="compas" />
+<action sens="-5" angle="6.99" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="rouge" epaisseur="1" sens="5" fin="5" debut="-5" id="41" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="290.65" ordonnee="165.65" mouvement="translation" objet="compas" tempo="10" />
+<action mouvement="lever" objet="compas" />
+<action couleur="rouge" epaisseur="1" sens="5" fin="8" debut="-2.74" id="42" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="322.87" ordonnee="87.87" mouvement="translation" objet="compas" tempo="10" />
+<action sens="5" angle="50" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="rouge" epaisseur="1" sens="-5" fin="38.13" debut="50" id="43" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" />
+<action mouvement="masquer" objet="compas" tempo="10" />
+<action mouvement="montrer" objet="regle" />
+<action sens="-5" angle="22.5" mouvement="rotation" objet="regle" tempo="10" />
+<action abscisse="212.87" ordonnee="87.87" mouvement="montrer" objet="crayon" />
+<action epaisseur="2" couleur="0xff0000" abscisse="425" ordonnee="175.75" id="44" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action abscisse="300.74" ordonnee="300" mouvement="montrer" objet="regle" />
+<action sens="-5" angle="-45" mouvement="rotation" objet="regle" />
+<action mouvement="montrer" objet="crayon" />
+<action epaisseur="2" couleur="0xff0000" abscisse="300.74" ordonnee="300" id="45" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action mouvement="masquer" objet="trait" id="35" />
+<action mouvement="masquer" objet="trait" id="37" />
+<action mouvement="masquer" objet="trait" id="38" />
+<action mouvement="masquer" objet="trait" id="39" />
+<action mouvement="masquer" objet="trait" id="41" />
+<action mouvement="masquer" objet="trait" id="42" />
+<action mouvement="masquer" objet="trait" id="43" />
+
+
+
+<action abscisse="637.13" ordonnee="512.13" mouvement="montrer" objet="compas" tempo="10" />
+<action sens="5" angle="-175" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="rouge" epaisseur="1" sens="-5" fin="-185" debut="-175" id="46" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action sens="5" angle="-130" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="rouge" epaisseur="1" sens="-5" fin="-140" debut="-130" id="47" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="527.13" ordonnee="512.13" mouvement="translation" objet="compas" tempo="10" />
+<action sens="5" angle="-130" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="rouge" epaisseur="1" sens="-5" fin="-140" debut="-130" id="48" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="559.35" ordonnee="434.35" mouvement="translation" objet="compas" tempo="10" />
+<action sens="-5" angle="-175" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="rouge" epaisseur="1" sens="-5" fin="-185" debut="-175" id="49" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action mouvement="masquer" objet="compas" />
+<action abscisse="637.13" ordonnee="512.13" mouvement="montrer" objet="regle" />
+<action sens="-5" angle="-157.5" mouvement="rotation" objet="regle" tempo="10" />
+<action abscisse="637.13" ordonnee="512.13" mouvement="montrer" objet="crayon" />
+<action epaisseur="2" couleur="rouge" abscisse="425" ordonnee="424.26" id="50" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action abscisse="637.13" ordonnee="512.13" mouvement="montrer" objet="compas" tempo="10" />
+<action sens="5" angle="-85" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="rouge" epaisseur="1" sens="-5" fin="-95" debut="-85" id="51" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="637.13" ordonnee="402.13" mouvement="translation" objet="compas" tempo="10" />
+<action sens="-5" angle="-130" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="rouge" epaisseur="1" sens="-5" fin="-140" debut="-130" id="52" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="559.35" ordonnee="434.35" mouvement="translation" objet="compas" tempo="10" />
+<action sens="5" angle="-85" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="rouge" epaisseur="1" sens="-5" fin="-95" debut="-85" id="53" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action mouvement="masquer" objet="compas" />
+<action abscisse="637.13" ordonnee="512.13" mouvement="montrer" objet="regle" />
+<action sens="5" angle="-112.5" mouvement="rotation" objet="regle" tempo="10" />
+<action abscisse="637.13" ordonnee="512.13" mouvement="montrer" objet="crayon" />
+<action epaisseur="2" couleur="rouge" abscisse="549.26" ordonnee="300" id="54" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action abscisse="425" ordonnee="424.26" mouvement="montrer" objet="regle" />
+<action sens="5" angle="-45" mouvement="rotation" objet="regle" tempo="10" />
+<action abscisse="425" ordonnee="424.26" mouvement="montrer" objet="crayon" />
+<action epaisseur="2" couleur="rouge" abscisse="549.26" ordonnee="300" id="55" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action mouvement="masquer" objet="trait" id="46" />
+<action mouvement="masquer" objet="trait" id="47" />
+<action mouvement="masquer" objet="trait" id="48" />
+<action mouvement="masquer" objet="trait" id="49" />
+<action mouvement="masquer" objet="trait" id="51" />
+<action mouvement="masquer" objet="trait" id="52" />
+<action mouvement="masquer" objet="trait" id="53" />
+
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="compas" tempo="10" />
+<action sens="-5" angle="-175" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="0x8800" epaisseur="1" sens="-5" fin="-185" debut="-175" id="56" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action sens="-5" angle="-220" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="0x8800" epaisseur="1" sens="-5" fin="-230" debut="-220" id="57" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="315" ordonnee="300" mouvement="translation" objet="compas" tempo="10" />
+<action mouvement="lever" objet="compas" />
+<action couleur="0x8800" epaisseur="1" sens="5" fin="140" debut="130" id="58" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="347.22" ordonnee="377.78" mouvement="translation" objet="compas" tempo="10" />
+<action sens="5" angle="-175" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="0x8800" epaisseur="1" sens="-5" fin="-185" debut="-175" id="59" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action mouvement="masquer" objet="compas" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="regle" />
+<action sens="-5" angle="157.5" mouvement="rotation" objet="regle" tempo="10" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="crayon" />
+<action epaisseur="2" couleur="0x8800" abscisse="212.87" ordonnee="387.87" id="60" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="compas" tempo="10" />
+<action sens="-5" angle="95" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="0x8800" epaisseur="1" sens="-5" fin="85" debut="95" id="61" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="425" ordonnee="410" mouvement="translation" objet="compas" tempo="10" />
+<action sens="5" angle="140" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="0x8800" epaisseur="1" sens="-5" fin="130" debut="140" id="62" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="347.22" ordonnee="377.78" mouvement="translation" objet="compas" tempo="10" />
+<action sens="-5" angle="95" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="0x8800" epaisseur="1" sens="-5" fin="85" debut="95" id="63" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action mouvement="masquer" objet="compas" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="regle" />
+<action sens="-5" angle="112.5" mouvement="rotation" objet="regle" tempo="10" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="crayon" />
+<action epaisseur="2" couleur="0x8800" abscisse="337.13" ordonnee="512.13" id="64" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action abscisse="212.17" ordonnee="387.87" mouvement="montrer" objet="regle" />
+<action sens="-5" angle="45" mouvement="rotation" objet="regle" tempo="10" />
+<action abscisse="212.17" ordonnee="387.87" mouvement="montrer" objet="crayon" />
+<action epaisseur="2" couleur="0x8800" abscisse="337.13" ordonnee="512.13" id="65" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action mouvement="masquer" objet="trait" id="56" />
+<action mouvement="masquer" objet="trait" id="57" />
+<action mouvement="masquer" objet="trait" id="58" />
+<action mouvement="masquer" objet="trait" id="59" />
+<action mouvement="masquer" objet="trait" id="61" />
+<action mouvement="masquer" objet="trait" id="62" />
+<action mouvement="masquer" objet="trait" id="63" />
+
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="compas" tempo="10" />
+<action sens="-5" angle="-85" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="0x8800" epaisseur="1" sens="-5" fin="-95" debut="-85" id="66" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action sens="5" angle="-40" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="0x8800" epaisseur="1" sens="-5" fin="-50" debut="-40" id="67" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="425" ordonnee="190" mouvement="translation" objet="compas" tempo="10" />
+<action sens="5" angle="-40" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="0x8800" epaisseur="1" sens="-5" fin="-50" debut="-40" id="68" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="502.78" ordonnee="222.22" mouvement="translation" objet="compas" tempo="10" />
+<action sens="-5" angle="-85" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="0x8800" epaisseur="1" sens="-5" fin="-95" debut="-85" id="69" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action mouvement="masquer" objet="compas" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="regle" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="regle" />
+<action sens="-5" angle="-67.5" mouvement="rotation" objet="regle" tempo="10" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="crayon" />
+<action epaisseur="2" couleur="0x8800" abscisse="512.87" ordonnee="87.87" id="70" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="compas" tempo="10" />
+<action sens="5" angle="5" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="0x8800" epaisseur="1" sens="-5" fin="-5" debut="5" id="71" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="535" ordonnee="300" mouvement="translation" objet="compas" tempo="10" />
+<action sens="-5" angle="-40" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="0x8800" epaisseur="1" sens="-5" fin="-50" debut="-40" id="72" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action abscisse="502.78" ordonnee="222.22" mouvement="translation" objet="compas" tempo="10" />
+<action sens="5" angle="5" mouvement="rotation" objet="compas" />
+<action mouvement="lever" objet="compas" />
+<action couleur="0x8800" epaisseur="1" sens="-5" fin="-5" debut="5" id="73" mouvement="tracer" objet="compas" />
+<action mouvement="coucher" objet="compas" tempo="10" />
+<action mouvement="masquer" objet="compas" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="regle" />
+<action sens="5" angle="-22.5" mouvement="rotation" objet="regle" tempo="10" />
+<action abscisse="425" ordonnee="300" mouvement="montrer" objet="crayon" />
+<action epaisseur="2" couleur="0x8800" abscisse="637.13" ordonnee="212.13" id="74" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action abscisse="512.87" ordonnee="87.87" mouvement="montrer" objet="regle" />
+<action sens="5" angle="45" mouvement="rotation" objet="regle" tempo="10" />
+<action abscisse="512.87" ordonnee="87.87" mouvement="montrer" objet="crayon" />
+<action epaisseur="2" couleur="0x8800" abscisse="637.13" ordonnee="212.13" id="75" mouvement="tracer" objet="crayon" vitesse="15" />
+<action mouvement="masquer" objet="crayon" />
+<action mouvement="masquer" objet="regle" tempo="10" />
+<action mouvement="masquer" objet="trait" id="66" />
+<action mouvement="masquer" objet="trait" id="67" />
+<action mouvement="masquer" objet="trait" id="68" />
+<action mouvement="masquer" objet="trait" id="69" />
+<action mouvement="masquer" objet="trait" id="71" />
+<action mouvement="masquer" objet="trait" id="72" />
+<action mouvement="masquer" objet="trait" id="73" />
+</INSTRUMENPOCHE>  

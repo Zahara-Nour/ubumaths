@@ -1,0 +1,27 @@
+﻿<INSTRUMENPOCHE version="2">
+<viewBox width="487" height="827" commentaire="L’image fait 748×1300, soit 441×767 avec le zoom à 0.59 et 487×827 avec les marges du décalage ci-dessous" />
+<action id="1" url="https://zoneur.sesamath.net/imgs_produites/vign/cslp2_2014/66102-1.gif" mouvement="chargement" objet="image" />
+<action abscisse="23" ordonnee="30" id="1" mouvement="translation" objet="image" vitesse="1000" />
+<action id="1" echelle="59" mouvement="zoom" objet="image" />
+<action abscisse="133.05" ordonnee="91.15" mouvement="translation" objet="crayon" />
+<action abscisse="133.7" ordonnee="185.1" epaisseur="20" couleur="rouge" opacite="15" id="2" mouvement="tracer" objet="crayon" />
+<action abscisse="133.7" ordonnee="185.1" mouvement="translation" objet="crayon" />
+<action ordonnee="523" abscisse="67" epaisseur="3" couleur="rouge" id="3" mouvement="creer" objet="point" tempo="15" />
+<action abscisse="213.65" ordonnee="92.95" mouvement="translation" objet="crayon" />
+<action abscisse="215.2" ordonnee="163.3" epaisseur="20" couleur="rouge" opacite="15" id="4" mouvement="tracer" objet="crayon" />
+<action abscisse="215.2" ordonnee="163.3" mouvement="translation" objet="crayon" />
+<action ordonnee="339" abscisse="156.85" epaisseur="3" couleur="rouge" id="5" mouvement="creer" objet="point" tempo="15" />
+<action abscisse="301.5" ordonnee="93.5" mouvement="translation" objet="crayon" />
+<action abscisse="302.25" ordonnee="180" epaisseur="20" couleur="rouge" opacite="15" id="6" mouvement="tracer" objet="crayon" />
+<action abscisse="302.25" ordonnee="180" mouvement="translation" objet="crayon" />
+<action ordonnee="546" abscisse="225" epaisseur="3" couleur="rouge" id="7" mouvement="creer" objet="point" tempo="15" />
+<action abscisse="404.4" ordonnee="177.65" mouvement="translation" objet="crayon" />
+<action abscisse="403.6" ordonnee="95.3" epaisseur="20" couleur="rouge" opacite="15" id="8" mouvement="tracer" objet="crayon" />
+<action abscisse="403.6" ordonnee="95.3" mouvement="translation" objet="crayon" />
+<action ordonnee="385" abscisse="338" epaisseur="3" couleur="rouge" id="9" mouvement="creer" objet="point" />
+<action mouvement="montrer" objet="crayon" />
+<action cible="3" mouvement="translation" objet="crayon" />
+<action cible="5" epaisseur="3" couleur="bleu" id="10" mouvement="tracer" objet="crayon" />
+<action cible="7" epaisseur="3" couleur="bleu" id="11" mouvement="tracer" objet="crayon" />
+<action cible="9" epaisseur="3" couleur="bleu" id="12" mouvement="tracer" objet="crayon" />
+</INSTRUMENPOCHE>

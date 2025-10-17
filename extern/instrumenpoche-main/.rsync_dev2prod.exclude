@@ -1,0 +1,10 @@
+# Ce fichier contient la liste des fichiers / dossiers
+# qui ne doivent pas être déployés du dev vers la prod
+# (un par ligne)
+.svn
+.git
+robots.txt
+
+# pour instrumenpoche, on ne déploie rien dev => prod, seulement une
+# recompilation webpack
+*

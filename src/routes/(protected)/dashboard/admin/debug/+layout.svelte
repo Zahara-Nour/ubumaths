@@ -8,7 +8,8 @@
 		{ href: '/dashboard/admin/debug/database', label: 'Database' },
 		{ href: '/dashboard/admin/debug/session', label: 'Session' },
 		{ href: '/dashboard/admin/debug/rls', label: 'RLS Policies' },
-		{ href: '/dashboard/admin/debug/avatar', label: 'Avatar' }
+		{ href: '/dashboard/admin/debug/avatar', label: 'Avatar' },
+		{ href: '/dashboard/admin/debug/mathgraph', label: 'MathGraph32' }
 	];
 
 	function isActivePage(href: string): boolean {

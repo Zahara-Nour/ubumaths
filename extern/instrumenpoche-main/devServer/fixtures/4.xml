@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<INSTRUMENPOCHE version="2" auteur="Florence Decool" licence="CC-BY-SA" >
+    <commentaire texte="tiré de https://ressources.sesamath.net/coll_docs/bibliotheque_iep/valide/scr_iep_081.xml" />
+    <action pris="false" abscisse="10" ordonnee="50" id="titre" mouvement="creer" objet="texte" />
+    <action couleur="darkgreen" taille="18" texte="$\begin{array}{l}
+\text{Un théor} \grave{e} \text{me et une racine}\sqrt{42}
+\end{array}$" id="titre" mouvement="ecrire" objet="texte" />
+    <action pris="false" abscisse="10" ordonnee="100" id="titre2" mouvement="creer" objet="texte" />
+    <action couleur="darkgreen" taille="18" texte="$\begin{array}{l}
+\textbf{ Représentation graphique de la fonction affine }\textit{ f }\text{}\textbf{, définie par :}~\text{}\textit{ f(x) }\text{= }\displaystyle{\frac{3}{2}}~\text{}\textit{x}~~\text{-  5}
+\textbf{ avec un prix en pound : £42}
+\end{array}$" id="titre2" mouvement="ecrire" objet="texte" />
+</INSTRUMENPOCHE>

@@ -1,0 +1,57 @@
+/*
+ * Différents tests pour utiliser une police téléchargée, la même pour tout
+ * le monde, mais ça marche mal (MathJax ne génère pas le même svg que si on
+ * utilise Serif, et y'a des pbs sur les accents)
+ */
+@font-face {
+    font-family: 'open_sansregular';
+    src: url('OpenSans-Regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'dejavuserif';
+    src: url('dejavuserif_regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+/* cf https://fonts.googleapis.com/css?family=Roboto&display=swap */
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    /*src: */
+    /*  local('Roboto'),*/
+    /*  local('Roboto-Regular'),*/
+    /*  url('roboto_regular.woff2') format('woff2')*/
+    /*  url('roboto_regular.ttf') format('truetype');*/
+    /*src: local('Roboto');*/
+    /*src: local('Roboto-Regular');*/
+    src: url('roboto_regular.woff') format('woff');
+     /*src: url('roboto_regular.woff2') format('woff2');*/
+    /*src: url('roboto_regular.woff2') format('svg');*/
+    /*src: url('roboto_regular.ttf') format('truetype');*/
+    unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* avec la version de https://www.fontsquirrel.com/fonts/roboto */
+@font-face {
+    font-family: 'robotoregular';
+    src: url('Roboto-Regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+/* id mis par iepLoad.js */
+.svgIep {
+    /* font-family: Roboto; */
+    /* l'anti aliasing est pas toujours génial, les textes sont parfois un peu crénelés
+    (avec dejavu ça va plutôt mieux), on essaie d'améliorer ça : */
+    /* text-shadow: 0 0 1px rgba(0,0,0,0.3); /* cf https://stackoverflow.com/a/4012154, marche pas dans le svg */
+    /* text-shadow: 0 0 0; /* pas mieux avec https://stackoverflow.com/a/28376193 */
+    /* cf https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/text-rendering, c'est pas top avec optimizeLegibility, mais propre avec geometricPrecision */
+    font-family: Serif;
+    /* avec une police installée sur la machine ça semble plus nécéssaire de préciser ça */
+    /*text-rendering: geometricPrecision;*/
+}
