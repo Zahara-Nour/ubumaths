@@ -86,7 +86,8 @@
 			{ label: 'Accueil', href: '/', icon: '🏠' },
 			{ label: 'Exercices', href: '/exercises', icon: '📝' },
 			{ label: 'Pratique', href: '/practice', icon: '✏️' },
-			{ label: 'Ressources', href: '/resources', icon: '📚' }
+			{ label: 'Ressources', href: '/resources', icon: '📚' },
+			{ label: 'Jeux', href: '/games', icon: '🎮' }
 		]
 	}: {
 		title?: string;

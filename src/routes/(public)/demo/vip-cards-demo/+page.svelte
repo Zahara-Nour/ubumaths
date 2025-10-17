@@ -24,7 +24,7 @@
 		<nav class="demo-nav">
 			<a href="/">← Retour à l'application</a>
 			<span class="nav-separator">|</span>
-			<a href="/vip-cards-demo/examples">📖 Configuration Examples</a>
+			<a href="/demo/vip-cards-demo/examples">📖 Configuration Examples</a>
 		</nav>
 
 		<div class="intro-section">

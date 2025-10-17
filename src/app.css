@@ -18,7 +18,7 @@
 	--color-primary-foreground: #ffffff;
 
 	/* Secondary = Neutral light gray / dark gray */
-	--color-secondary: light-dark(#f0f0f0, #333331);
+	--color-secondary: light-dark(#f0f0f0, #5b8cc6);
 	--color-secondary-foreground: light-dark(#1a1a1a, #efefef);
 
 	--color-muted: light-dark(#f0f0f0, #333331);
@@ -37,6 +37,15 @@
 	/* Ring = Accent color for focus states */
 	--color-ring: light-dark(#ffa000, #e0d5a6);
 	--radius: 0.625rem;
+
+	/* Secondary = Neutral light gray / dark gray */
+	--color-neutral: light-dark(#f0f0f0, #333331);
+	--color-neutral-foreground: light-dark(#1a1a1a, #efefef);
+
+	--color-success: light-dark(#d5d651, #d5d651);
+	--color-success-foreground: light-dark(#ffffff, #ffffff);
+	--color-failure: light-dark(#ff5757, #ff5757);
+	--color-failure-foreground: light-dark(#ffffff, #ffffff);
 
 	/* Font scaling - default 100% */
 	--font-scale: 1;

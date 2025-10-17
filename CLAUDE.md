@@ -802,6 +802,85 @@ You MUST use this tool whenever writing Svelte code before sending it to the use
 Generates a Svelte Playground link with the provided code.
 After completing the code, ask the user if they want a playground link. Only call this tool after user confirmation and NEVER if code was written to files in their project.
 
+## Demo Pages
+
+The application includes a centralized demo page at `/demo` for showcasing various components and features.
+
+### Overview
+
+**Route:** `/demo`
+**Access:** Public (no authentication required)
+**Location:** `src/routes/(public)/demo/`
+
+### Available Demos
+
+The demo hub includes links to the following demonstrations:
+
+1. **VIP Cards Demo** (`/demo/vip-cards-demo`)
+   - Holographic VIP card effects
+   - All 26 cards organized by rarity
+   - Interactive showcase with auto-rotation
+   - See [Holographic VIP Cards System](#holographic-vip-cards-system) section
+
+2. **Rich Text Editor Demo** (`/demo/rich-text-editor-demo`)
+   - TipTap-based rich text editor
+   - Formatting, lists, links, and more
+   - Used in assignment creation
+
+3. **Geometry Demo** (`/demo/geometry`)
+   - Interactive geometry tools and visualizations
+   - Math-focused graphics demonstrations
+
+4. **Theme Test** (`/demo/theme-test`)
+   - Light/dark mode testing
+   - Color palette showcase
+   - Component theming examples
+
+### Structure
+
+```
+src/routes/(public)/demo/
+├── +page.svelte                    # Demo hub landing page
+├── vip-cards-demo/
+│   ├── +layout.svelte             # VIP cards demo layout
+│   ├── +page.svelte               # Main VIP cards showcase
+│   └── examples/
+│       └── +page.svelte           # VIP card usage examples
+├── rich-text-editor-demo/
+│   └── +page.svelte               # Rich text editor demo
+├── geometry/
+│   └── +page.svelte               # Geometry tools demo
+└── theme-test/
+    └── +page.svelte               # Theme testing page
+```
+
+### Adding New Demos
+
+To add a new demo page:
+
+1. Create a new directory under `src/routes/(public)/demo/`
+2. Add a `+page.svelte` file with your demo component
+3. Add a link to the new demo in `/demo/+page.svelte`
+4. Follow the existing demo page structure and styling
+5. Include a "Back to Demos" link for easy navigation
+
+### Best Practices
+
+**DO:**
+- Keep demos focused on a single component or feature
+- Include interactive examples with clear instructions
+- Provide code snippets showing how to use the component
+- Make demos responsive and mobile-friendly
+- Add clear headings and descriptions
+
+**DON'T:**
+- Require authentication for demo pages (keep them public)
+- Mix multiple unrelated features in one demo
+- Skip accessibility considerations
+- Hard-code data that could be dynamic
+
+---
+
 ## Svelte 5 with Runes & SvelteKit 2 - Best Practices
 
 ### Reactivity (Runes)
@@ -1534,7 +1613,7 @@ The holographic card component was migrated from the original Pokemon cards proj
 
 ### Demo Page
 
-**Route:** `/vip-cards-demo`
+**Route:** `/demo/vip-cards-demo`
 **Access:** Public (no authentication required)
 
 The demo page showcases:
@@ -2130,7 +2209,7 @@ The Wheel component is an interactive spinning wheel for randomly selecting stud
 
 **Location:** `src/lib/components/Wheel.svelte`
 **Demo Page:** `/dashboard/teacher/wheel` (teacher/admin only)
-**Debug Page:** `/dashboard/admin/debug/wheel` (admin only)
+**Debug Page:** `/demo` (public access - includes wheel and other component demos)
 
 The wheel uses the original design pattern with:
 - Pink/blue alternating slices using `stroke-dasharray` technique
@@ -2516,6 +2595,185 @@ do {
 - Minimal re-renders with Svelte 5 runes
 - Confetti runs in separate animation loop
 - Suitable for classes up to 50 students
+
+---
+
+## Trio Game
+
+The Trio Game is a math puzzle game where players select 3 aligned numbers from a grid to match a target equation: `a × b ± c = target`.
+
+### Overview
+
+**Location:** `/demo` (accessible from demo page)
+**Access:** Public (no authentication required)
+**Components:**
+- `src/routes/(public)/games/trio/Trio.svelte` - Main game component
+- `src/routes/(public)/games/trio/Tile.svelte` - Individual grid cell component
+
+**Note:** The Trio game is available at `/games/trio` and also linked from the main demo page at `/demo`.
+
+### Game Rules
+
+1. **Grid:** Players see a grid of numbers (default 9×9, adjustable from 3×3 to 15×15)
+2. **Selection:** Select 3 cells that are aligned (horizontal, vertical, or diagonal)
+3. **Alignment:** Cells can have gaps between them (e.g., A1, C3, E5 is valid)
+4. **Operation:** Toggle between `+` and `-` operations
+5. **Goal:** Match the target value displayed on screen
+6. **Win:** When the equation `a × b ± c` equals the target, confetti fires!
+
+### Component Architecture
+
+#### Trio.svelte
+
+**State Management:**
+```typescript
+let grid: Grid = $state([]);                // Game grid (size × size)
+let target: Target = $state({...});        // Current puzzle target
+let result: number | null = $state(null);  // Current equation result
+let op = $state('+');                       // User's selected operation
+let win = $state(false);                    // Whether player has won
+let selecteds: Position[] = $state([]);     // Currently selected cells (max 3)
+let gridSize = $state(size);                // Current grid dimensions (3-15)
+```
+
+**Key Functions:**
+- **`changeGrid(size)`** - Generate new random grid
+- **`choseTarget()`** - Choose 3 random aligned cells and calculate target value
+- **`handleClick(i, j)`** - Handle cell selection with alignment validation
+- **`calculateValue(selecteds, op)`** - Calculate equation result: `a × b ± c`
+- **`showSolution()`** - Reveal the answer
+- **`toggleOp()`** - Switch between `+` and `-`
+
+**Important Implementation Details:**
+
+1. **Target Generation Algorithm:**
+   ```
+   1. Pick random starting cell
+   2. Choose random direction (8 possible)
+   3. Move 2 steps in that direction → 3 aligned cells
+   4. Calculate target value from those cells
+   5. Retry if value is negative or already used
+   ```
+
+   **CRITICAL:** The algorithm picks cells FIRST, then calculates the target value. It does NOT pick a target and search for matching cells.
+
+2. **Infinite Loop Prevention:**
+   - `targets` array tracks used values (prevents duplicates)
+   - **Must be cleared** in `changeGrid()` to prevent accumulation
+   - `MAX_ATTEMPTS = 1000` limit breaks loop if no unique value found
+   - Without these safeguards, the game freezes after many grid changes
+
+3. **Svelte 5 Reactivity with `untrack()`:**
+   ```svelte
+   // ✅ CORRECT - Tracks gridSize changes, but not state mutations inside changeGrid
+   $effect(() => {
+       const currentSize = gridSize; // Track dependency
+       untrack(() => changeGrid(currentSize)); // Don't track mutations
+   });
+
+   // ❌ WRONG - Would cause infinite loop
+   $effect(() => {
+       changeGrid(gridSize); // Tracks all state changes = infinite loop
+   });
+   ```
+
+   **Why:** `changeGrid()` modifies `grid`, `win`, `result`, `selecteds`, and `target`. Without `untrack()`, the effect re-triggers infinitely, causing browser crash with `effect_update_depth_exceeded` error.
+
+4. **Dynamic Grid Columns:**
+   ```svelte
+   // CSS grid-template-columns must be dynamic (can't use Tailwind classes)
+   let gridTemplateColumns = $derived(`repeat(${gridSize + 1}, minmax(0, 1fr))`);
+
+   <div style="grid-template-columns: {gridTemplateColumns}">
+   ```
+
+   **Why:** Tailwind requires class names to be statically analyzable. Dynamic classes like `grid-cols-${gridSize + 1}` won't work. Use inline CSS instead.
+
+#### Tile.svelte
+
+**Props:**
+```typescript
+{
+  n: number;                    // Number to display (1-9)
+  status: string;                // 'selected' | 'selected-third' | 'not_available' | ''
+  onclick: () => void;           // Click handler
+}
+```
+
+**Visual States:**
+- **Default:** Neutral background, clickable
+- **Selected (1st/2nd):** Secondary color with shadow
+- **Selected Third:** Accent color (highlights the 3rd cell)
+- **Not Available:** Dimmed and disabled (opacity 20%)
+
+### Bug Fixes Applied
+
+**Issue #1: App Stalling (Infinite Loop)**
+- **Problem:** `targets` array never cleared, causing `choseTarget()` to loop forever
+- **Fix:** Clear `targets.length = 0` in `changeGrid()`
+- **Fix:** Add `MAX_ATTEMPTS = 1000` safety limit
+
+**Issue #2: Grid Not Displaying**
+- **Problem:** Hardcoded `grid-cols-10` class only worked for 9×9 grids
+- **Fix:** Use dynamic inline CSS: `style="grid-template-columns: {gridTemplateColumns}"`
+
+**Issue #3: Infinite Reactivity Loop (Browser Crash)**
+- **Problem:** `$effect` watching state changes but also modifying state
+- **Error:** `Svelte error: effect_update_depth_exceeded`
+- **Fix:** Wrap state mutations with `untrack()` to prevent re-triggering
+
+**Issue #4: Grid Not Updating on Size Change**
+- **Problem:** `untrack()` was preventing `gridSize` from being tracked
+- **Fix:** Read `gridSize` outside `untrack()`: `const currentSize = gridSize; untrack(() => ...)`
+
+### UI Controls
+
+**Buttons:**
+- **Nouvelle cible** - Generate new target (keeps same grid)
+- **Solution** - Reveal the answer
+- **Nouvelle grille** - Generate new grid with new target
+- **Taille +/-** - Adjust grid size (3-15)
+
+**Equation Display:**
+- Left column shows: `? × ? ± ? = ?`
+- Numbers fill in as cells are selected
+- Result turns green (correct) or red (incorrect)
+- Confetti fires on correct answer
+
+### Best Practices
+
+**DO:**
+- Use `untrack()` when effects modify state to prevent infinite loops
+- Clear `targets` array when generating new grids
+- Add safety limits (`MAX_ATTEMPTS`) to loops with unpredictable exit conditions
+- Use inline CSS for dynamic styling (Tailwind won't work for dynamic values)
+- Comment complex algorithms (especially `choseTarget()` and `handleClick()`)
+
+**DON'T:**
+- Modify state inside `$effect()` without `untrack()`
+- Use dynamic Tailwind class names (e.g., `grid-cols-${n}`)
+- Remove the `targets.length = 0` line from `changeGrid()`
+- Remove the `MAX_ATTEMPTS` safety limit from `choseTarget()`
+
+### Testing
+
+The game has been tested for:
+- ✅ Grid size changes (3×3 to 15×15)
+- ✅ Multiple grid regenerations (no infinite loops)
+- ✅ Target uniqueness across games
+- ✅ Alignment validation (horizontal, vertical, diagonal, with gaps)
+- ✅ Operation toggling (+/-)
+- ✅ Solution reveal
+- ✅ Win condition and confetti
+- ✅ Mobile responsiveness
+
+### Performance
+
+- **Grid rendering:** O(n²) where n = grid size
+- **Target generation:** O(1) average, O(MAX_ATTEMPTS) worst case
+- **Click handling:** O(n²) for availability calculation
+- **Memory:** ~100 bytes per cell + targets array (<10KB total for 15×15 grid)
+- **Recommended max grid size:** 15×15 (225 cells)
 
 ---
 

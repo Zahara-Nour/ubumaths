@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Home, BookOpen, PenTool, Library } from 'lucide-svelte';
+	import { Home, BookOpen, PenTool, Library, Gamepad2 } from 'lucide-svelte';
 
 	// Default navigation items
 	let {
@@ -8,7 +8,8 @@
 			{ label: 'Accueil', href: '/', icon: Home },
 			{ label: 'Exercices', href: '/exercises', icon: BookOpen },
 			{ label: 'Pratique', href: '/practice', icon: PenTool },
-			{ label: 'Ressources', href: '/resources', icon: Library }
+			{ label: 'Ressources', href: '/resources', icon: Library },
+			{ label: 'Jeux', href: '/games', icon: Gamepad2 }
 		]
 	}: {
 		items?: Array<{ label: string; href: string; icon: any }>;
