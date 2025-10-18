@@ -47,6 +47,85 @@ pnpm test:e2e         # Run Playwright e2e tests
 pnpm db:migrate       # Push pending migrations to Supabase
 pnpm db:status        # Check database user/profile status
 pnpm db:link          # Link to Supabase project
+pnpm release          # Create new version release (auto-detects bump)
+pnpm release:patch    # Force patch version bump (0.0.x)
+pnpm release:minor    # Force minor version bump (0.x.0)
+pnpm release:major    # Force major version bump (x.0.0)
+```
+
+## Version Management & Git Workflow
+
+This project uses **automated version management** with Husky git hooks and Conventional Commits.
+
+### Quick Reference
+
+**Feature Development:**
+```bash
+git checkout -b feature/my-feature    # Create branch (no hooks)
+git commit -m "wip"                   # Any format works
+git checkout main
+git merge --squash feature/my-feature
+git commit -m "feat: add my feature"  # Proper format (hooks validate)
+git push origin main
+```
+
+**Release:**
+```bash
+pnpm release                          # Auto-detects version bump
+git push --follow-tags origin main    # Push commits AND tags
+```
+
+### Commit Format (Main Branch Only)
+
+All commits on `main` must follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>(<scope>): <subject>
+
+Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore
+```
+
+**Examples:**
+```bash
+✅ feat: add user dashboard
+✅ fix: resolve login timeout
+✅ feat!: redesign API (breaking change)
+❌ Added feature (wrong format)
+```
+
+### Git Hooks (Main Branch Only)
+
+**pre-commit:** Runs `pnpm lint` before commits
+**commit-msg:** Validates conventional commit format
+
+Hooks automatically **skip on feature branches** for faster development.
+
+### Versioning Rules
+
+| Commit Type | Version Bump | Example |
+|-------------|--------------|---------|
+| `fix:` | Patch (0.0.x) | 0.0.1 → 0.0.2 |
+| `feat:` | Minor (0.x.0) | 0.0.1 → 0.1.0 |
+| `feat!:` or `BREAKING CHANGE:` | Major (x.0.0) | 0.1.0 → 1.0.0 |
+
+### Version Display
+
+The version number automatically displays in:
+- **Public footer:** All non-dashboard pages (bottom-right)
+- **Admin settings:** `/dashboard/admin/settings` page
+
+Version is injected at build time from `package.json` via Vite config.
+
+### Documentation
+
+- **[GIT_WORKFLOW.md](GIT_WORKFLOW.md)** - Quick reference guide
+- **[VERSION_MANAGEMENT.md](VERSION_MANAGEMENT.md)** - Complete workflow documentation
+- **[CHANGELOG.md](CHANGELOG.md)** - Auto-generated version history
+
+### Bypass Hooks (Emergencies Only)
+
+```bash
+git commit --no-verify -m "emergency fix"
 ```
 
 ## Testing Architecture
