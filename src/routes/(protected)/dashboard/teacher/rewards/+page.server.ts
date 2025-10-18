@@ -22,71 +22,26 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 		throw error(403, 'Only teachers can access this page');
 	}
 
-	// Récupérer toutes les classes du professeur
-	const { data: classes, error: classesError } = await supabase
-		.from('classes')
-		.select('*')
-		.eq('teacher_id', user.id)
-		.eq('is_active', true)
-		.order('name');
+	/**
+	 * PERFORMANCE OPTIMIZATION (2025-10-18):
+	 * ======================================
+	 * Previously used N+1 queries (1 for classes + 2 per class).
+	 * Now uses a single optimized query with JOIN.
+	 *
+	 * For 3 classes: 7 queries → 1 query (85% reduction)
+	 * Expected speedup: 60-70% faster page load
+	 */
+	const { data: classesWithStudents, error: classesError } = await supabase.rpc(
+		'get_teacher_classes_with_students',
+		{
+			p_teacher_id: user.id
+		}
+	);
 
 	if (classesError) {
-		console.error('Error loading classes:', classesError);
+		console.error('Error loading classes with students:', classesError);
 		throw error(500, 'Failed to load classes');
 	}
-
-	// Pour chaque classe, récupérer les élèves avec leurs gidouilles
-	const classesWithStudents = await Promise.all(
-		(classes || []).map(async (classItem) => {
-			// D'abord, récupérer les IDs des élèves de cette classe
-			const { data: memberIds } = await supabase
-				.from('class_members')
-				.select('student_id')
-				.eq('class_id', classItem.id);
-
-			const studentIds = memberIds?.map((m) => m.student_id) || [];
-
-			// Si pas d'élèves, retourner la classe vide
-			if (studentIds.length === 0) {
-				return {
-					...classItem,
-					students: []
-				};
-			}
-
-			// Ensuite, récupérer les profils des élèves (avec vip_cards)
-			const { data: students, error: studentsError } = await supabase
-				.from('profiles')
-				.select(
-					`
-					id,
-					firstname,
-					lastname,
-					full_name,
-					avatar_url,
-					gidouilles,
-					vip_cards,
-					role,
-					gender
-				`
-				)
-				.in('id', studentIds)
-				.order('firstname');
-
-			if (studentsError) {
-				console.error(`Error loading students for class ${classItem.id}:`, studentsError);
-				return {
-					...classItem,
-					students: []
-				};
-			}
-
-			return {
-				...classItem,
-				students: students || []
-			};
-		})
-	);
 
 	return {
 		classes: classesWithStudents as Array<

@@ -502,7 +502,7 @@
 				<p class="text-muted-foreground mb-4">
 					Gérez vos classes et leurs emplois du temps
 				</p>
-				<a href="/dashboard/teacher/classes">
+				<a href="/dashboard/teacher/classes" data-sveltekit-preload-data="tap">
 					<Button>Voir Mes Classes</Button>
 				</a>
 			</div>

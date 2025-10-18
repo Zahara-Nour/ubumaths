@@ -55,44 +55,21 @@ export default defineConfig({
 	/**
 	 * Build Optimizations
 	 * -------------------
-	 * Manual code splitting separates large vendor libraries into independent
-	 * chunks that can be cached separately and loaded in parallel.
+	 * The Vercel adapter automatically handles code splitting and marks certain
+	 * packages as external for SSR (Supabase, TipTap, etc.).
 	 *
-	 * This improves both build and production performance by:
-	 * - Reducing initial bundle size
-	 * - Enabling better browser caching (vendors change less often)
-	 * - Allowing parallel downloads of chunks
+	 * Manual chunking is disabled to avoid conflicts with the adapter's
+	 * automatic optimization. Vite will still perform automatic code splitting
+	 * based on dynamic imports and route-based splitting.
+	 *
+	 * Benefits:
+	 * - Adapter-optimized bundle sizes for Vercel platform
+	 * - Automatic splitting of routes and dynamic imports
+	 * - Better compatibility with serverless functions
 	 */
 	build: {
-		// Increase chunk size warning limit (we intentionally create larger vendor chunks)
-		chunkSizeWarningLimit: 1000,
-		rollupOptions: {
-			output: {
-				manualChunks: {
-					// Supabase authentication (~150KB) - Used on every page
-					'vendor-supabase': ['@supabase/supabase-js', '@supabase/ssr'],
-
-					// TipTap rich text editor (~200KB) - Only used in specific routes
-					'vendor-tiptap': [
-						'@tiptap/core',
-						'@tiptap/starter-kit',
-						'@tiptap/extension-color',
-						'@tiptap/extension-highlight',
-						'@tiptap/extension-link',
-						'@tiptap/extension-subscript',
-						'@tiptap/extension-superscript',
-						'@tiptap/extension-task-item',
-						'@tiptap/extension-task-list',
-						'@tiptap/extension-text-align',
-						'@tiptap/extension-text-style',
-						'@tiptap/extension-underline'
-					],
-
-					// UI components (~100KB) - Used frequently across dashboard
-					'vendor-ui': ['bits-ui', 'lucide-svelte', 'mode-watcher', 'svelte-sonner']
-				}
-			}
-		}
+		// Increase chunk size warning limit
+		chunkSizeWarningLimit: 1000
 	},
 
 	test: {

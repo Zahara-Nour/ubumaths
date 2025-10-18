@@ -5,6 +5,11 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 
+	<!-- Performance Optimizations (2025-10-18) -->
+	<!-- Preconnect to Supabase for faster auth/API requests -->
+	<link rel="preconnect" href="https://umamathsprod.supabase.co" crossorigin />
+	<link rel="dns-prefetch" href="https://umamathsprod.supabase.co" />
+
 	<!-- Mathlive fonts - preload only essential fonts -->
 	<link rel="preload" as="font" type="font/woff2" crossorigin
 		href="%sveltekit.assets%/fonts/KaTeX_Main-Regular.woff2" />

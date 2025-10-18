@@ -157,6 +157,7 @@
 				src={card.imagePath}
 				alt={card.name}
 				class="w-full h-full object-cover"
+				loading="lazy"
 			/>
 
 			<!-- Description Overlay (appears on hover) -->

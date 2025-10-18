@@ -27,6 +27,7 @@
 		{#each items as item}
 			<a
 				href={item.href}
+				data-sveltekit-preload-data="tap"
 				class="flex flex-col items-center gap-1 px-2 py-3 rounded-lg transition-all duration-300 w-16 group {isActive(item.href)
 					? 'bg-primary/10 text-primary'
 					: 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}"

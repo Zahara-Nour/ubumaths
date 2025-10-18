@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
-<INSTRUMENPOCHE version="2" auteur=" Julien Crémoux " licence="CC-BY-SA" >
-    <action objet="crayon" mouvement="translation" abscisse="30" ordonnee="300" tempo="0" vitesse="10000" />
-    <action abscisse="180" ordonnee="270" epaisseur="2" couleur="blue" mouvement="tracer" objet="crayon" tempo="0" vitesse="10000" id="1" />
-    <action abscisse="105" ordonnee="285" forme="X"  couleur="#f15929" id="2" tempo="5" mouvement="creer" objet="marque" rayon="10" epaisseur="2" idSeg = "1" />
-</INSTRUMENPOCHE>
