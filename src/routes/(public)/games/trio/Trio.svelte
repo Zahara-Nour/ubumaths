@@ -529,7 +529,7 @@
 			style="grid-template-columns: {gridTemplateColumns}"
 		>
 			<div></div>
-			{#each grid as _, i (i)}
+			{#each grid as _unused, i (i)}
 				<div
 					class="flex h-12 w-12 items-center justify-center text-2xl md:h-16 md:w-16 md:text-3xl"
 				>

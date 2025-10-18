@@ -162,7 +162,7 @@
 		try {
 			await navigator.clipboard.writeText(generateCode());
 			toaster.success('Code copied to clipboard!');
-		} catch (err) {
+		} catch {
 			toaster.error('Failed to copy code');
 		}
 	};
@@ -244,7 +244,7 @@
 	<div class="rounded-lg border border-border bg-card p-6">
 		<h2 class="mb-4 text-xl font-semibold">Preset Configurations</h2>
 		<div class="flex flex-wrap gap-2">
-			{#each presets as preset}
+			{#each presets as preset (preset.name)}
 				<Button variant="outline" size="sm" onclick={() => applyPreset(preset)}>
 					{preset.name}
 				</Button>

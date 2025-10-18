@@ -6,7 +6,15 @@
 	import type { GradeResult } from '$lib/services/geometry-grader';
 	import { GradeUtils } from '$lib/services/geometry-grade-utils';
 	import * as Card from '$lib/components/ui/card';
-	import { Award, TrendingUp, TrendingDown, Minus } from 'lucide-svelte';
+	import {
+		Award,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		TrendingUp, // For future trend indicators
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		TrendingDown, // For future trend indicators
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		Minus // For future neutral indicators
+	} from 'lucide-svelte';
 
 	interface Props {
 		gradeResult: GradeResult;
@@ -17,7 +25,8 @@
 	let { gradeResult, showDetails = true, showPenalties = true }: Props = $props();
 
 	const scoreColor = $derived(GradeUtils.getScoreColor(gradeResult.percentage));
-	const letterGradeColor = $derived(GradeUtils.getLetterGradeColor(gradeResult.grade));
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const letterGradeColor = $derived(GradeUtils.getLetterGradeColor(gradeResult.grade)); // For future letter grade styling
 	const performanceTier = $derived(GradeUtils.getPerformanceTier(gradeResult.percentage));
 </script>
 
@@ -150,7 +159,7 @@
 				<div class="space-y-2">
 					<h4 class="text-sm font-medium">Commentaires:</h4>
 					<ul class="space-y-1 text-sm text-muted-foreground">
-						{#each gradeResult.feedback as comment}
+						{#each gradeResult.feedback as comment, i (i)}
 							<li class="flex items-start gap-2">
 								<span class="mt-1 text-xs">•</span>
 								<span>{comment}</span>

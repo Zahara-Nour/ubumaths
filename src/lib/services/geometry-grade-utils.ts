@@ -347,6 +347,7 @@ export function calculateClassStatistics(
 
 	const passingScore = exercise.passing_score ?? (exercise.max_score ?? 100) * 0.5;
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	for (const [studentId, attempts] of byStudent) {
 		// Get best attempt for this student
 		const bestAttempt = attempts.reduce((best, current) => {

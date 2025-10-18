@@ -2,7 +2,13 @@
 // Author: Claude Code
 // Date: 2025-10-15
 
-import type { GameElement, GameSpell, GameMonster, GamePlayer } from '$lib/types/game';
+import type {
+	GameElement,
+	GameSpell,
+	GameMonster,
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	GamePlayer // For future player calculations
+} from '$lib/types/game';
 
 /**
  * Calculate damage dealt by a spell

@@ -2,6 +2,7 @@
 	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
 	import { VIP_CARDS } from '$lib/types/vip-card';
 	import { Button } from '$lib/components/ui/button';
+	import { resolve } from '$app/paths';
 
 	// Use a legendary card for all examples
 	const exampleCard = VIP_CARDS.find((c) => c.rarity === 'legendary') || VIP_CARDS[0];
@@ -38,7 +39,7 @@
 		<p class="subtitle">Explore different ways to use the VipCardHolo component</p>
 
 		<nav class="examples-nav">
-			<a href="/vip-cards-demo">← Back to Gallery</a>
+			<a href={resolve('/vip-cards-demo')}>← Back to Gallery</a>
 		</nav>
 	</header>
 

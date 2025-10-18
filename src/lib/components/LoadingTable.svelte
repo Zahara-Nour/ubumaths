@@ -21,7 +21,8 @@
 			</div>
 
 			<!-- Table rows -->
-			{#each Array(5) as _, i (i)}
+			<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
+			{#each Array(5) as _unused, i (i)}
 				<div class="grid grid-cols-5 gap-4">
 					<div class="h-8 animate-pulse rounded bg-muted"></div>
 					<div class="h-8 animate-pulse rounded bg-muted"></div>

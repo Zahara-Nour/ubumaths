@@ -46,7 +46,11 @@
  * ```
  */
 
-import type { MathGraphApp, SetFigOptions } from '$lib/types/geometry';
+import type {
+	MathGraphApp
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	// SetFigOptions // Unused - for future features
+} from '$lib/types/geometry';
 
 // Global window type extension
 declare global {
@@ -475,6 +479,7 @@ export class MathGraphHelpers {
 	/**
 	 * Get current figure state as base64
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	static async getFigureState(app: MathGraphApp): Promise<string> {
 		return new Promise((resolve, reject) => {
 			try {

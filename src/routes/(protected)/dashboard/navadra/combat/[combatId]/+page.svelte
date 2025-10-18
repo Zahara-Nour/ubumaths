@@ -8,8 +8,10 @@
 	import CombatLog from '$lib/components/game/combat/CombatLog.svelte';
 	import ChallengeContainer from '$lib/components/game/challenges/ChallengeContainer.svelte';
 	import ChallengeResult from '$lib/components/game/challenges/ChallengeResult.svelte';
-	import { generateChallengeInstance } from '$lib/utils/game/challenge-variables';
-	import { calculatePlayerMaxEndurance } from '$lib/utils/game/combat';
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	import { generateChallengeInstance } from '$lib/utils/game/challenge-variables'; // For future challenge generation
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	import { calculatePlayerMaxEndurance } from '$lib/utils/game/combat'; // For future endurance calculations
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData, ActionData } from './$types';
 

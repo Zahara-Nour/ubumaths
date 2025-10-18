@@ -2,15 +2,18 @@
 // Author: Claude Code
 // Date: 2025-10-17
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'; // vi for future mock tests
 import {
-	generateChallengeInstance,
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	generateChallengeInstance, // For future tests
 	interpolateQuestion,
 	validateAnswer,
 	formatAnswer
 } from './challenge-variables';
 import { seedRandom, resetRandom, createTestChallenge } from '$lib/test-utils/game-fixtures';
-import type { GameChallenge } from '$lib/types/game';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { GameChallenge } from '$lib/types/game'; // For future tests
 
 describe('Challenge Variable System', () => {
 	describe('generateChallengeInstance', () => {

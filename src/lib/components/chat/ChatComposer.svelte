@@ -33,7 +33,8 @@
 		onTyping: (isTyping: boolean) => void;
 	}
 
-	let { conversationId, isTeacher = false, onSend, onTyping }: Props = $props();
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let { conversationId, isTeacher = false, onSend, onTyping }: Props = $props(); // conversationId for future features
 
 	// Component State
 	let attachments = $state<File[]>([]);
@@ -115,7 +116,8 @@
 	/**
 	 * Handle typing indicator (debounced)
 	 */
-	function handleTypingIndicator(): void {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	function handleTypingIndicator(): void { // For future typing indicators
 		// Send typing = true
 		onTyping(true);
 
@@ -146,7 +148,7 @@
 	<!-- File Attachments Preview -->
 	{#if attachments.length > 0}
 		<div class="mb-3 space-y-2">
-			{#each attachments as file, index}
+			{#each attachments as file, index (index)}
 				<div class="flex items-center justify-between rounded-lg border border-border bg-muted p-2">
 					<div class="flex items-center gap-2 overflow-hidden">
 						<Paperclip class="h-4 w-4 flex-shrink-0 text-muted-foreground" />

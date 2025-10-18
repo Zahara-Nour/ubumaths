@@ -14,7 +14,8 @@
 		onHintUsed: (hintLevel: HintLevel, penalty: number) => void;
 	}
 
-	let { exerciseId, currentStep = null, onHintUsed }: Props = $props();
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let { exerciseId, currentStep = null, onHintUsed }: Props = $props(); // exerciseId, currentStep for future hint filtering
 
 	let hints = $state<GeometryHint[]>([]);
 	let revealedHints = $state<Set<string>>(new Set());

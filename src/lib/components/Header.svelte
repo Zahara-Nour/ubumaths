@@ -59,6 +59,7 @@
 	} from 'lucide-svelte';
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
+	import { resolve } from '$app/paths';
 
 	// Fullscreen state
 	let isFullscreen = $state(false);
@@ -197,7 +198,7 @@
 					<DropdownMenu.Separator />
 					{#each sidebarItems as item (item.href)}
 						<DropdownMenu.Item>
-							<a href={item.href} class="flex w-full items-center" onclick={closeMobileMenu}>
+							<a href={resolve(item.href)} class="flex w-full items-center" onclick={closeMobileMenu}>
 								{#if item.icon}
 									<span class="mr-2">{item.icon}</span>
 								{/if}
@@ -210,7 +211,7 @@
 		</div>
 
 		<!-- Title with Gidouille - links to home -->
-		<a href="/" class="flex items-center gap-3 transition-opacity hover:opacity-80">
+		<a href={resolve('/')} class="flex items-center gap-3 transition-opacity hover:opacity-80">
 			<img src={gidouille} alt="Gidouille" class="h-10 w-10" />
 			<h1 class="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
 		</a>
@@ -240,19 +241,19 @@
 							<DropdownMenu.Label>{user?.email}</DropdownMenu.Label>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item>
-								<a href="/dashboard" class="flex w-full items-center">
+								<a href={resolve('/dashboard')} class="flex w-full items-center">
 									<LayoutDashboard class="mr-2 h-4 w-4" />
 									Tableau de bord
 								</a>
 							</DropdownMenu.Item>
 							<DropdownMenu.Item>
-								<a href="/dashboard/friends" class="flex w-full items-center">
+								<a href={resolve('/dashboard/friends')} class="flex w-full items-center">
 									<Users class="mr-2 h-4 w-4" />
 									Amis
 								</a>
 							</DropdownMenu.Item>
 							<DropdownMenu.Item>
-								<a href="/dashboard/chat" class="flex w-full items-center">
+								<a href={resolve('/dashboard/chat')} class="flex w-full items-center">
 									<MessageCircle class="mr-2 h-4 w-4" />
 									Chat
 								</a>

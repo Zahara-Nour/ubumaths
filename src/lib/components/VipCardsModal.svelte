@@ -120,9 +120,12 @@
 	});
 
 	// Statistics
-	const uniqueCardsCount = $derived(getUniqueCardTypesCount(vipCards));
-	const totalCardsCount = $derived(getTotalUnusedCards(vipCards));
-	const totalAvailableCards = getTotalVipCards();
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const uniqueCardsCount = $derived(getUniqueCardTypesCount(vipCards)); // For future stats display
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const totalCardsCount = $derived(getTotalUnusedCards(vipCards)); // For future stats display
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const totalAvailableCards = getTotalVipCards(); // Total cards in the game
 
 	// Handle dialog open/close
 	function handleOpenChange(newOpen: boolean) {
@@ -207,7 +210,7 @@
 				}
 				toaster.error('Échec de la suppression de la carte');
 			}
-		} catch (error) {
+		} catch {
 			// STEP 4b: NETWORK ERROR - Rollback optimistic update
 			const newCount = Math.max(0, (optimisticRemovedCounts[card.id] || 0) - 1);
 			if (newCount === 0) {
@@ -250,7 +253,7 @@
 		{:else}
 			<!-- All Cards Grid - Sorted by Rarity -->
 			<div class="grid grid-cols-2 gap-8 p-6 sm:grid-cols-3 xl:grid-cols-3">
-				{#each cardsWithCounts as cardWithCount}
+				{#each cardsWithCounts as cardWithCount (cardWithCount.card.id)}
 					<div
 						class="transform cursor-pointer transition-transform hover:scale-105"
 						onclick={() => handleCardClick(cardWithCount, cardWithCount.count)}

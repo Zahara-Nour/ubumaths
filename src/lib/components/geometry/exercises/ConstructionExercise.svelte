@@ -400,7 +400,7 @@
 									<div class="mt-4 rounded-lg bg-muted p-4 text-left">
 										<p class="mb-2 text-sm font-medium">Critères de validation:</p>
 										<ul class="space-y-1 text-sm text-muted-foreground">
-											{#each validationHelp() as item}
+											{#each validationHelp() as item, i (i)}
 												<li>• {item}</li>
 											{/each}
 										</ul>
@@ -424,7 +424,7 @@
 			</Card.Header>
 			<Card.Content>
 				<ul class="space-y-2 text-sm text-blue-800 dark:text-blue-200">
-					{#each exercise.learning_objectives as objective}
+					{#each exercise.learning_objectives as objective, i (i)}
 						<li class="flex items-start gap-2">
 							<Check class="mt-0.5 h-4 w-4 flex-shrink-0" />
 							<span>{objective}</span>

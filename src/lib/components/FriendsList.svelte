@@ -6,6 +6,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { MoreVertical, Search, User } from 'lucide-svelte';
+	import { resolve } from '$app/paths';
 
 	let searchQuery = $state('');
 
@@ -89,7 +90,7 @@
 						<DropdownMenu.Content align="end">
 							<DropdownMenu.Item>
 								<a
-									href="/dashboard/profile/{friend.friend_profile.id}"
+									href={resolve(`/dashboard/profile/${friend.friend_profile.id}`)}
 									class="flex w-full items-center"
 								>
 									Voir le profil

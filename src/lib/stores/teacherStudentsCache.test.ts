@@ -10,7 +10,8 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { teacherStudentsCache } from './teacherStudentsCache.svelte';
-import type { CachedStudent, CachedStudentFull } from './teacherStudentsCache.svelte';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { CachedStudent, CachedStudentFull } from './teacherStudentsCache.svelte'; // Types for tests
 import {
 	mockFetchResponse,
 	mockApiResponse,
@@ -18,8 +19,8 @@ import {
 	getEmptyClassScenario,
 	getLargeClassScenario,
 	getFullDataScenario,
-	MOCK_STUDENTS,
-	MOCK_STUDENTS_FULL
+	MOCK_STUDENTS
+	// MOCK_STUDENTS_FULL // Unused - for future tests
 } from '$lib/test-utils/cache-fixtures';
 
 // ============================================================================
@@ -385,7 +386,8 @@ describe('TeacherStudentsCacheStore', () => {
 			mockFetch.mockReturnValueOnce(neverResolves);
 
 			// Start first request
-			const request1 = cache.getStudents(scenario.classId);
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const request1 = cache.getStudents(scenario.classId); // For future timeout tests
 
 			// Wait 100ms
 			vi.advanceTimersByTime(100);
@@ -840,7 +842,8 @@ describe('TeacherStudentsCacheStore', () => {
 
 			mockFetch.mockResolvedValueOnce(mockFetchResponse(malformedData));
 
-			const students = await cache.getStudents(scenario.classId);
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const students = await cache.getStudents(scenario.classId); // For future validation tests
 
 			// Should still cache (garbage in, garbage out)
 			expect(cache.has(scenario.classId)).toBe(true);

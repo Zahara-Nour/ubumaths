@@ -138,7 +138,7 @@
 			<div class="space-y-3">
 				<Label>Raison du signalement *</Label>
 				<RadioGroup.Root bind:value={selectedReason}>
-					{#each reportReasons as reason}
+					{#each reportReasons as reason (reason.value)}
 						<div
 							class="flex items-start space-x-3 rounded-lg border p-3 transition-colors hover:bg-accent"
 						>

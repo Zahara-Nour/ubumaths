@@ -83,7 +83,7 @@
 					class="w-full rounded-md border border-input bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 				>
 					<option value="">Sélectionner une classe</option>
-					{#each data.classes as classItem}
+					{#each data.classes as classItem (classItem.id)}
 						<option value={classItem.id}>
 							{classItem.name} ({classItem.students.length} élèves)
 						</option>

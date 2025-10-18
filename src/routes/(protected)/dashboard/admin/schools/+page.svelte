@@ -484,7 +484,7 @@ Another School	London	UK		"
 													</tr>
 												</thead>
 												<tbody>
-													{#each parsedSchools as school}
+													{#each parsedSchools as school (school.name)}
 														<tr class="border-t border-border">
 															<td class="px-3 py-2 text-foreground">{school.name}</td>
 															<td class="px-3 py-2 text-muted-foreground">{school.city}</td>

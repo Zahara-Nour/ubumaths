@@ -15,7 +15,8 @@
 	import { Input } from '$lib/components/ui/input';
 	import * as Card from '$lib/components/ui/card';
 	import { Ruler, Check, AlertCircle, RotateCcw } from 'lucide-svelte';
-	import { validateExercise } from '$lib/services/geometry-validator';
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	import { validateExercise } from '$lib/services/geometry-validator'; // For future auto-validation
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	interface Props {
@@ -25,7 +26,8 @@
 		onSave?: (data: { answers: Record<string, number>; attempts: number }) => void;
 	}
 
-	let { exercise, attempt = null, onValidate, onSave }: Props = $props();
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let { exercise, attempt = null, onValidate, onSave }: Props = $props(); // attempt for future features
 
 	// State
 	let mathGraphApp: MathGraphApp | null = $state(null);
@@ -296,7 +298,7 @@
 		</Card.Header>
 		<Card.Content>
 			<div class="space-y-4">
-				{#each questions as question, index}
+				{#each questions as question, index (question.id)}
 					{@const status = getAnswerStatus(question.id)}
 					<div class="flex items-start gap-4">
 						<!-- Question Number -->

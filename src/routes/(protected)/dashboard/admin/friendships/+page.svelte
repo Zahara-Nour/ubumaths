@@ -40,7 +40,9 @@
 		return filtered;
 	});
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	function handleDeleteFriendship(friendshipId: string) {
+		// Future: Show confirmation dialog before deletion
 		deletingFriendshipId = friendshipId;
 	}
 

@@ -6,6 +6,7 @@
 -->
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { resolve } from '$app/paths';
 	import type { ActionData } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -60,11 +61,11 @@
 
 				<div class="space-y-2 text-center text-sm">
 					<div>
-						<a href="/auth/login" class="font-medium text-primary hover:underline">Back to login</a>
+						<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline">Back to login</a>
 					</div>
 					<div class="text-muted-foreground">
 						Don't have an account?
-						<a href="/signup" class="font-medium text-primary hover:underline">Sign up</a>
+						<a href={resolve('/signup')} class="font-medium text-primary hover:underline">Sign up</a>
 					</div>
 				</div>
 			</form>

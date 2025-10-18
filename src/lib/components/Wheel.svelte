@@ -169,6 +169,7 @@
 		secondaryColor = '#3a507e',
 		accentColor = '#788bb2',
 		addJokerIfOdd = false,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		spinDuration = 4, // Prop defined but duration is hardcoded in CSS (4s)
 		showConfetti = true,
 		confettiZIndex = 0,

@@ -33,7 +33,7 @@
 
 		<!-- Tab Navigation -->
 		<nav class="flex gap-2 overflow-x-auto">
-			{#each debugPages as debugPage}
+			{#each debugPages as debugPage (debugPage.href)}
 				<a
 					href={debugPage.href}
 					class="rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors {isActivePage(

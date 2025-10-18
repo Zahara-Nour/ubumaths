@@ -39,8 +39,8 @@
 		LayoutDashboard,
 		GraduationCap,
 		Users,
-		ClipboardList,
-		TrendingUp,
+		// ClipboardList, // Unused - for future features
+		// TrendingUp, // Unused - for future features
 		School,
 		Settings,
 		Gift,
@@ -51,7 +51,7 @@
 		Plus,
 		Maximize,
 		Minimize,
-		Upload,
+		// Upload, // Unused - for future features
 		Bug,
 		MessageCircle
 	} from 'lucide-svelte';
@@ -313,7 +313,7 @@
 		<!-- RAIL SIDEBAR - Vertical icon navigation (Claude AI style) -->
 		<div class="w-20 border-r border-border bg-card/50 shadow-sm dark:bg-card">
 			<nav class="flex flex-col items-center gap-1 py-4">
-				{#each getNavLinks(data.profile.role) as link}
+				{#each getNavLinks(data.profile.role) as link (link.href)}
 					<a
 						href={link.href}
 						class="group flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(

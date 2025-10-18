@@ -225,7 +225,7 @@
 						<Select.Value placeholder="Sélectionner un jour" />
 					</Select.Trigger>
 					<Select.Content>
-						{#each dayOptions as dayOpt}
+						{#each dayOptions as dayOpt (dayOpt.value)}
 							<Select.Item value={dayOpt.value}>{dayOpt.label}</Select.Item>
 						{/each}
 					</Select.Content>
@@ -254,7 +254,7 @@
 							<Select.Value placeholder="Sélectionner une période" />
 						</Select.Trigger>
 						<Select.Content>
-							{#each periodOptions as periodOpt}
+							{#each periodOptions as periodOpt (periodOpt.value)}
 								<Select.Item value={periodOpt.value}>{periodOpt.label}</Select.Item>
 							{/each}
 						</Select.Content>

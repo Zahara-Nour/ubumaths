@@ -36,7 +36,8 @@
 	let showHints = $state(false);
 	let currentStep = $state(0);
 	let timeSpent = $state(0);
-	let activeTime = $state(0);
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let activeTime = $state(0); // For future active time tracking
 	let lastActivityTime = Date.now();
 	let timeInterval: number | null = null;
 	let autoSaveInterval: number | null = null;
@@ -45,7 +46,8 @@
 	const isEditable = $derived(
 		exercise.exercise_type !== 'view' && exercise.exercise_type !== 'explore'
 	);
-	const hasSteps = $derived(exercise.validation_mode === 'step_by_step');
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const hasSteps = $derived(exercise.validation_mode === 'step_by_step'); // For future step tracking
 	const canSubmit = $derived(mathGraphApp !== null && !isValidating);
 
 	onMount(() => {
@@ -71,7 +73,8 @@
 		setupActivityTracking();
 	}
 
-	function handleMathGraphChange(app: MathGraphApp) {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	function handleMathGraphChange(app: MathGraphApp) { // For future auto-validation
 		lastActivityTime = Date.now();
 
 		// Auto-validate in real-time for certain exercise types

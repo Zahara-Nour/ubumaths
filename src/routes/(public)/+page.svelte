@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 </script>
 
 <div
@@ -10,7 +11,7 @@
 
 	<figure>
 		<div class="img-bg"></div>
-		<a href="/chat" aria-label="Découvre qui est Père Ubu et tchat avec lui.">
+		<a href={resolve('/chat')} aria-label="Découvre qui est Père Ubu et tchat avec lui.">
 			<svg
 				height="100%"
 				stroke-miterlimit="10"

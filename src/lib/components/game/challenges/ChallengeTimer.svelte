@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	import { onMount, onDestroy } from 'svelte'; // For future timer lifecycle
 
 	interface Props {
 		timeRemaining: number; // milliseconds

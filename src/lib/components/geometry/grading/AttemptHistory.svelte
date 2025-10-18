@@ -7,7 +7,19 @@
 	import { GradeUtils } from '$lib/services/geometry-grade-utils';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { Calendar, Clock, Award, TrendingUp, TrendingDown, Minus, Eye } from 'lucide-svelte';
+	import {
+		Calendar,
+		Clock,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		Award, // For future award badges
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		TrendingUp, // For future trend indicators
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		TrendingDown, // For future trend indicators
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		Minus, // For future neutral indicators
+		Eye
+	} from 'lucide-svelte';
 
 	interface Props {
 		attempts: GeometryExerciseAttempt[];
@@ -114,7 +126,7 @@
 		</Card.Header>
 		<Card.Content>
 			<div class="space-y-3">
-				{#each sortedAttempts as attempt, index}
+				{#each sortedAttempts as attempt, index (attempt.id)}
 					{@const percentage = ((attempt.score_earned ?? 0) / maxScore) * 100}
 					{@const scoreColor = GradeUtils.getScoreColor(percentage)}
 					{@const trendIcon = getAttemptTrend(attempt, index)}

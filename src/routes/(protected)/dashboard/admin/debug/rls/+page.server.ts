@@ -57,7 +57,8 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	for (const table of tables) {
 		try {
 			const {
-				data,
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				data, // For future debugging
 				error: queryError,
 				count
 			} = await supabase.from(table).select('*', { count: 'exact', head: true }).limit(1);

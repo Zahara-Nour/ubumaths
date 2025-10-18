@@ -365,7 +365,7 @@
 					clearOptimisticOverride(studentId); // Rollback to server value
 					toaster.error('Échec de la mise à jour');
 				}
-			} catch (error) {
+			} catch {
 				// NETWORK ERROR: Request failed completely
 				clearOptimisticOverride(studentId); // Rollback to server value
 				toaster.error('Erreur réseau');
@@ -445,7 +445,7 @@
 					classItem?.students.forEach((student) => clearOptimisticOverride(student.id));
 					toaster.error('Échec de la mise à jour de la classe');
 				}
-			} catch (error) {
+			} catch {
 				// NETWORK ERROR: Rollback all students
 				const classItem = data.classes.find((c) => c.id === classId);
 				classItem?.students.forEach((student) => clearOptimisticOverride(student.id));
@@ -550,7 +550,7 @@
 				{/each}
 			</Tabs.List>
 
-			{#each data.classes as classItem}
+			{#each data.classes as classItem (classItem.id)}
 				<Tabs.Content value={classItem.id} class="mt-0 space-y-6">
 					<!-- CONTRÔLES AU NIVEAU CLASSE -->
 					<div class="rounded-lg border border-border bg-card p-6">

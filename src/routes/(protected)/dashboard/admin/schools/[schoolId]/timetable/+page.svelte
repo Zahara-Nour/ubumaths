@@ -6,7 +6,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { invalidateAll, goto } from '$app/navigation';
 	import {
-		formatPeriodDisplay,
+		// formatPeriodDisplay, // Unused - for future features
 		formatPeriodTimes,
 		validateTimetable,
 		sortPeriods,
@@ -263,7 +263,7 @@
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-border">
-						{#each sortedPeriods as period, index}
+						{#each sortedPeriods as period, index (period.id)}
 							{@const duration =
 								(new Date(`2000-01-01T${period.end_time}`).getTime() -
 									new Date(`2000-01-01T${period.start_time}`).getTime()) /

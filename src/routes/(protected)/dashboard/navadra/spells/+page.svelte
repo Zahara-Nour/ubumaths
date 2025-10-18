@@ -70,7 +70,7 @@
 	</div>
 
 	<!-- Spells by Element -->
-	{#each Object.entries(spellsByElement) as [element, spells]}
+	{#each Object.entries(spellsByElement) as [element, spells] (element)}
 		{#if spells.length > 0}
 			<div class="mb-8">
 				<h2 class="mb-4 flex items-center gap-2 text-2xl font-bold text-foreground">
@@ -80,7 +80,7 @@
 				</h2>
 
 				<div class="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
-					{#each spells as spell}
+					{#each spells as spell (spell.spell_num)}
 						<div class="spell-card rounded-lg border border-border bg-card p-4">
 							<!-- Spell Icon -->
 							<div class="mb-3 flex items-center justify-center">
@@ -107,7 +107,7 @@
 								<div class="flex items-center justify-center gap-2 text-sm">
 									<span class="text-muted-foreground">Niveau</span>
 									<div class="flex gap-0.5">
-										{#each Array(5) as _, i}
+										{#each Array(5) as _unused, i (i)}
 											<div
 												class="h-2 w-2 rounded-full {i < spell.level ? 'bg-primary' : 'bg-muted'}"
 											></div>

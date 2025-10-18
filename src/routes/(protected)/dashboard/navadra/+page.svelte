@@ -2,6 +2,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { playerStore } from '$lib/stores/game/player.svelte';
 	import { spellsStore } from '$lib/stores/game/spells.svelte';
+	import { resolve } from '$app/paths';
 
 	// Game stats
 	const stats = $derived({
@@ -66,7 +67,7 @@
 	<section class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 		<!-- Combat Card -->
 		<a
-			href="/dashboard/navadra/combat"
+			href={resolve('/dashboard/navadra/combat')}
 			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
 		>
 			<div class="mb-4 text-5xl">⚔️</div>
@@ -80,7 +81,7 @@
 
 		<!-- Spells Card -->
 		<a
-			href="/dashboard/navadra/spells"
+			href={resolve('/dashboard/navadra/spells')}
 			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
 		>
 			<div class="mb-4 text-5xl">📖</div>
@@ -92,7 +93,7 @@
 
 		<!-- Achievements Card -->
 		<a
-			href="/dashboard/navadra/achievements"
+			href={resolve('/dashboard/navadra/achievements')}
 			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
 		>
 			<div class="mb-4 text-5xl">🏆</div>
@@ -102,7 +103,7 @@
 
 		<!-- Leaderboard Card -->
 		<a
-			href="/dashboard/navadra/leaderboard"
+			href={resolve('/dashboard/navadra/leaderboard')}
 			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
 		>
 			<div class="mb-4 text-5xl">🥇</div>
@@ -114,7 +115,7 @@
 
 		<!-- Profile Card -->
 		<a
-			href="/dashboard/navadra/profile"
+			href={resolve('/dashboard/navadra/profile')}
 			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
 		>
 			<div class="mb-4 text-5xl">👤</div>

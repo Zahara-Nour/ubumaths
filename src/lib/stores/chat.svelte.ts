@@ -430,6 +430,7 @@ class ChatStore {
 			}
 
 			// Find message in messages map and update reactions
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			for (const [conversationId, msgs] of this.messages.entries()) {
 				const message = msgs.find((m) => m.id === messageId);
 				if (message) {

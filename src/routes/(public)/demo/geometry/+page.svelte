@@ -284,6 +284,7 @@
 				nameVisible: true
 			});
 
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const segmentAB = app.addSegment({
 				tag: 'segDE',
 				a: pointA,
@@ -293,6 +294,7 @@
 			});
 
 			// Create midpoint using object references
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const midpoint = app.addMidpoint({
 				tag: 'midpointM',
 				name: 'M₁',
@@ -873,7 +875,7 @@
 			<!-- Features Tab -->
 			<Tabs.Content value="features" class="mt-6">
 				<div class="grid gap-4 md:grid-cols-2">
-					{#each systemFeatures as feature}
+					{#each systemFeatures as feature (feature.title)}
 						<div class="flex items-start gap-3 rounded-lg border p-4">
 							<div class="text-2xl">{feature.icon}</div>
 							<div>
@@ -1011,7 +1013,7 @@
 						</Card.Description>
 					</Card.Header>
 					<Card.Content class="space-y-4">
-						{#each documentation as doc}
+						{#each documentation as doc (doc.title)}
 							<div class="rounded-lg border p-4">
 								<div class="mb-2 flex items-start justify-between">
 									<div>

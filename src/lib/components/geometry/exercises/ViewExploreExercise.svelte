@@ -20,7 +20,8 @@
 		onSave?: (data: { viewTime: number; interactionCount: number }) => void;
 	}
 
-	let { exercise, attempt = null, onComplete, onSave }: Props = $props();
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let { exercise, attempt = null, onComplete, onSave }: Props = $props(); // attempt for future features
 
 	// State
 	let mathGraphApp: MathGraphApp | null = $state(null);
@@ -124,7 +125,8 @@
 
 		try {
 			// Get current figure state
-			const figureState = await mathGraphApp.getFig();
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const figureState = await mathGraphApp.getFig(); // For future figure state saving
 
 			onSave?.({
 				viewTime,
@@ -247,7 +249,7 @@
 			</Card.Header>
 			<Card.Content>
 				<ul class="space-y-2 text-sm">
-					{#each exercise.learning_objectives as objective}
+					{#each exercise.learning_objectives as objective, i (i)}
 						<li class="flex items-start gap-2">
 							<Check class="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-400" />
 							<span>{objective}</span>

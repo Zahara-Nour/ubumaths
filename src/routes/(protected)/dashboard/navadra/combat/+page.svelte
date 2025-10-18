@@ -81,7 +81,7 @@
 			<h2 class="mb-4 text-2xl font-bold text-foreground">Monstres disponibles</h2>
 
 			<div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-				{#each data.availableMonsters as monster}
+				{#each data.availableMonsters as monster (monster.id)}
 					<form
 						method="POST"
 						action="?/startCombat"

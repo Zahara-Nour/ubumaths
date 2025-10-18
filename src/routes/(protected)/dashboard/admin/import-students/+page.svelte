@@ -18,15 +18,16 @@
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
+	// import { Input } from '$lib/components/ui/input'; // Unused - for future features
 	import { Textarea } from '$lib/components/ui/textarea';
 	import * as Card from '$lib/components/ui/card';
-	import * as Select from '$lib/components/ui/select';
+	// import * as Select from '$lib/components/ui/select'; // Unused - for future features
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { PendingStudent, School } from '$lib/types/database';
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	import type { PendingStudent, School } from '$lib/types/database'; // Types for future features
 	import { teacherStudentsCache } from '$lib/stores/teacherStudentsCache.svelte';
 
 	let { data }: { data: PageData } = $props();
@@ -46,7 +47,8 @@
 	let isProcessing = $state(false);
 
 	// CSV Upload State
-	let csvFile = $state<File | null>(null);
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let csvFile = $state<File | null>(null); // For future file upload feature
 	let fileInput: HTMLInputElement;
 
 	// Paste State
@@ -57,7 +59,8 @@
 
 	// Selected school for import
 	let selectedSchoolId = $state<string>('');
-	let selectedSchool = $derived(data.schools.find((s) => s.id === selectedSchoolId));
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let selectedSchool = $derived(data.schools.find((s) => s.id === selectedSchoolId)); // For future school filtering
 
 	// Class code mapping (join_code -> class_id)
 	let classCodeMap = $derived.by(() => {

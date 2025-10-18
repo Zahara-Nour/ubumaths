@@ -19,7 +19,8 @@ import { teacherStudentsCache } from './teacherStudentsCache.svelte';
 // CONFIGURATION
 // ============================================================================
 
-const TEST_API_BASE = process.env.VITE_TEST_API_BASE || 'http://localhost:5173';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const TEST_API_BASE = process.env.VITE_TEST_API_BASE || 'http://localhost:5173'; // For future API tests
 
 // Skip integration tests if TEST_SKIP_INTEGRATION is set
 const describeIntegration = process.env.TEST_SKIP_INTEGRATION ? describe.skip : describe;
@@ -123,6 +124,7 @@ describeIntegration('Cache + API Integration', () => {
 			const testClassId = process.env.TEST_CLASS_ID || 'test-class-1';
 
 			// First: fetch minimal data
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const minimalStudents = await teacherStudentsCache.getStudents(testClassId, false);
 			expect(teacherStudentsCache.has(testClassId)).toBe(true);
 

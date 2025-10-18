@@ -355,7 +355,7 @@
 		</Card.Header>
 
 		<Card.Content class="space-y-6">
-			{#each proofSteps as step, index}
+			{#each proofSteps as step, index (index)}
 				{@const status = getStepStatus(index)}
 				<div class="proof-step space-y-3">
 					<!-- Step Header -->
@@ -434,7 +434,7 @@
 								<Select.Value placeholder="Choisir une justification..." />
 							</Select.Trigger>
 							<Select.Content>
-								{#each commonJustifications as justification}
+								{#each commonJustifications as justification, i (i)}
 									<Select.Item value={justification}>{justification}</Select.Item>
 								{/each}
 							</Select.Content>

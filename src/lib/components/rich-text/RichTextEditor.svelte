@@ -841,7 +841,7 @@
 							Paragraphe
 						</DropdownMenu.Item>
 						<DropdownMenu.Separator />
-						{#each [1, 2, 3, 4, 5, 6] as level}
+						{#each [1, 2, 3, 4, 5, 6] as level (level)}
 							<DropdownMenu.Item onclick={() => setHeading(level)}>
 								Titre {level}
 							</DropdownMenu.Item>
@@ -948,7 +948,7 @@
 					<DropdownMenu.Content>
 						<DropdownMenu.Label>Couleur du texte</DropdownMenu.Label>
 						<div class="grid grid-cols-4 gap-1 p-2">
-							{#each colors as color}
+							{#each colors as color (color)}
 								<button
 									onclick={() => setColor(color)}
 									class="h-8 w-8 rounded border-2 border-border transition-transform hover:scale-110"
@@ -971,7 +971,7 @@
 					<DropdownMenu.Content>
 						<DropdownMenu.Label>Surlignage</DropdownMenu.Label>
 						<div class="grid grid-cols-4 gap-1 p-2">
-							{#each highlights as color, i}
+							{#each highlights as color, i (i)}
 								<button
 									onclick={() => setHighlight(color)}
 									class="h-8 w-8 rounded border-2 border-border transition-transform hover:scale-110"
@@ -1014,7 +1014,7 @@
 					<DropdownMenu.Content class="w-80">
 						<!-- Emoji Category Tabs -->
 						<div class="mb-2 flex border-b border-border">
-							{#each emojiCategories as category, index}
+							{#each emojiCategories as category, index (category.name)}
 								<button
 									onclick={() => (selectedEmojiCategory = index)}
 									class="flex-1 px-2 py-1.5 text-xs font-medium transition-colors hover:bg-accent {selectedEmojiCategory ===
@@ -1028,7 +1028,7 @@
 						</div>
 						<!-- Emoji Grid -->
 						<div class="grid max-h-64 grid-cols-8 gap-1 overflow-y-auto p-2">
-							{#each emojiCategories[selectedEmojiCategory].emojis as emoji}
+							{#each emojiCategories[selectedEmojiCategory].emojis as emoji (emoji)}
 								<button
 									onclick={() => insertEmoji(emoji)}
 									class="rounded p-1 text-2xl transition-colors hover:bg-accent"
@@ -1061,7 +1061,7 @@
 				<div class="mx-1 h-6 w-px bg-border"></div>
 
 				<!-- Math Template Buttons -->
-				{#each mathTemplates as template}
+				{#each mathTemplates as template (template.latex)}
 					<Button
 						variant="ghost"
 						size="sm"

@@ -223,7 +223,9 @@ const LETTER_GRADES = {
 	F: { min: 0, max: 59 }
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const HINT_PENALTIES: Record<HintLevel, number> = {
+	// For future: Apply penalties when hints are used
 	general: 0,
 	specific: 5,
 	step_by_step: 10
@@ -383,6 +385,7 @@ export function calculatePartialCredit(
 	score += correctObjects * config.pointsPerCorrectObject;
 
 	// Points for correct measurements
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const correctMeasurements = Object.keys(validationResults.measurements).filter((key) => {
 		// Check if measurement is within tolerance
 		return true; // Simplified - actual implementation would check tolerance

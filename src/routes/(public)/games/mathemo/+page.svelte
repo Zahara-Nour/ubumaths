@@ -249,11 +249,11 @@
 		class:bad-guess={badGuess}
 		style="--grid-size: {game.getSize()}"
 	>
-		{#each Array(game.maxAttempts) as _, row (row)}
+		{#each Array(game.maxAttempts) as _unused, row (row)}
 			{@const current = row === game.currentRow && !gameOver}
 			<h2 class="visually-hidden">Row {row + 1}</h2>
 			<div class="row" class:current>
-				{#each Array(game.getSize()) as _, column (column)}
+				{#each Array(game.getSize()) as _unused2, column (column)}
 					{@const answer = game.answers[row]?.[column]}
 					{@const value = game.guesses[row]?.[column] ?? ''}
 					{@const selected = current && column === currentGuess.length}

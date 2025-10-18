@@ -19,7 +19,8 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
-	import type { Profile, Class } from '$lib/types/database';
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	import type { Profile, Class } from '$lib/types/database'; // Types for future features
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import { Upload } from 'lucide-svelte';
 
@@ -76,7 +77,9 @@
 	 * Convert array of class IDs to array of class names
 	 * Filters out any IDs that don't match existing classes
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	function getClassNames(classIds: string[]): string[] {
+		// For future: Display class names in user cards
 		if (!classIds || classIds.length === 0) return [];
 		return classIds
 			.map((id) => data.classes.find((c) => c.id === id)?.name)
@@ -343,7 +346,7 @@
 							class="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 						>
 							<option value="">Sélectionner une classe</option>
-							{#each data.classes as classItem}
+							{#each data.classes as classItem (classItem.id)}
 								<option value={classItem.id}>{classItem.name}</option>
 							{/each}
 						</select>
@@ -369,7 +372,7 @@
 						</Card.Header>
 						<Card.Content>
 							<div class="max-h-96 space-y-2 overflow-y-auto">
-								{#each searchResults.length > 0 ? searchResults : classResults as user}
+								{#each searchResults.length > 0 ? searchResults : classResults as user (user.id)}
 									<button
 										type="button"
 										onclick={() => selectUser(user)}
@@ -595,7 +598,7 @@
 												class="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 											>
 												<option value="">Aucune école</option>
-												{#each data.schools as school}
+												{#each data.schools as school (school.id)}
 													<option value={school.id}>{school.name}</option>
 												{/each}
 											</select>
@@ -611,7 +614,7 @@
 										<Label>Classes</Label>
 										<div class="mt-2 flex flex-wrap gap-2">
 											{#if selectedUser.class_ids && selectedUser.class_ids.length > 0}
-												{#each selectedUser.class_ids as classId}
+												{#each selectedUser.class_ids as classId (classId)}
 													{@const className = data.classes.find((c) => c.id === classId)?.name}
 													<Badge variant="outline" class="flex items-center gap-1">
 														{className || 'Unknown'}
@@ -639,7 +642,7 @@
 														class="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 													>
 														<option value="">Ajouter une classe</option>
-														{#each data.classes.filter((c) => !selectedUser.class_ids?.includes(c.id)) as classItem}
+														{#each data.classes.filter((c) => !selectedUser.class_ids?.includes(c.id)) as classItem (classItem.id)}
 															<option value={classItem.id}>{classItem.name}</option>
 														{/each}
 													</select>

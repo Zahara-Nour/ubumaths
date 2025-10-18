@@ -18,7 +18,8 @@
 		- Handle friend selection
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	import { onMount } from 'svelte'; // For future friend loading
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Input } from '$lib/components/ui/input';

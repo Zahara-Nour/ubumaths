@@ -47,12 +47,13 @@
 
 import type {
 	MathGraphApp,
-	GeometryExercise,
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	GeometryExercise, // Type for future exercise generation
 	RandomizationParams,
 	Point2D,
-	MathGraphPoint,
-	MathGraphLine,
-	MathGraphCircle
+	MathGraphPoint
+	// MathGraphLine, // Unused - for future features
+	// MathGraphCircle // Unused - for future features
 } from '$lib/types/geometry';
 import { MathGraphHelpers } from '$lib/services/mathgraph-api';
 
@@ -705,6 +706,7 @@ export async function generateTransformationProblem(
 	app: MathGraphApp,
 	problem: TransformationProblem
 ): Promise<GeneratedFigure> {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { type, sourceShape, includeGrid = true, showConstruction = false } = problem;
 
 	const metadata: GeneratedFigure['metadata'] = {
@@ -955,6 +957,7 @@ export async function generateAngleProblem(
 	app: MathGraphApp,
 	problem: AngleProblem
 ): Promise<GeneratedFigure> {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { difficulty, type, targetAngle, includeProtractor = false } = problem;
 
 	const metadata: GeneratedFigure['metadata'] = {

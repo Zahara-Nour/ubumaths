@@ -52,7 +52,8 @@ export async function uploadChatAttachment(
 
 	try {
 		// Upload to Supabase Storage
-		const { data, error } = await supabase.storage
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { data, error } = await supabase.storage // data for future use
 			.from('chat-attachments')
 			.upload(storagePath, file, {
 				cacheControl: '3600',

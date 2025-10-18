@@ -187,7 +187,8 @@ export const MOCK_CLASSES: Record<string, MockClass> = {
  */
 export function mockApiResponse(
 	students: CachedStudent[] | CachedStudentFull[],
-	full: boolean = false
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	full: boolean = false // For future filtering
 ): { students: CachedStudent[] | CachedStudentFull[] } {
 	return { students };
 }

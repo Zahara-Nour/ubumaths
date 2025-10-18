@@ -6,6 +6,7 @@
 	import { MathGraphService } from '$lib/services/mathgraph-api';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import MathGraphFullscreen from '$lib/components/MathGraphFullscreen.svelte';
+	import { resolve } from '$app/paths';
 
 	let mathGraphLoaded = $state(false);
 	let currentExample = $state<string>('');
@@ -803,7 +804,7 @@ await supabase
 									</Card.Header>
 									<Card.Content class="space-y-2 text-sm">
 										<a
-											href="/MATHGRAPH32_API_GUIDE.md"
+											href={resolve('/MATHGRAPH32_API_GUIDE.md')}
 											target="_blank"
 											class="block text-primary hover:underline"
 										>
@@ -814,7 +815,7 @@ await supabase
 										</p>
 
 										<a
-											href="/GEOMETRY_API_DOCS.md"
+											href={resolve('/GEOMETRY_API_DOCS.md')}
 											target="_blank"
 											class="mt-3 block text-primary hover:underline"
 										>
@@ -825,7 +826,7 @@ await supabase
 										</p>
 
 										<a
-											href="/GEOMETRY_EXAMPLES.md"
+											href={resolve('/GEOMETRY_EXAMPLES.md')}
 											target="_blank"
 											class="mt-3 block text-primary hover:underline"
 										>
@@ -836,7 +837,7 @@ await supabase
 										</p>
 
 										<a
-											href="/demo/geometry"
+											href={resolve('/demo/geometry')}
 											target="_blank"
 											class="mt-3 block text-primary hover:underline"
 										>

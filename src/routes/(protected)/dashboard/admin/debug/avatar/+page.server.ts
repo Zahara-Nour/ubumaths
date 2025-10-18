@@ -19,7 +19,8 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession }, parent }) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession }, parent }) => { // supabase for future queries
 	const { user } = await safeGetSession();
 
 	if (!user) {

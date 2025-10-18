@@ -27,7 +27,8 @@
 		onComplete?: () => void;
 	}
 
-	let { exercise, attempt = null, hints = [], onValidate, onSave, onComplete }: Props = $props();
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let { exercise, attempt = null, hints = [], onValidate, onSave, onComplete }: Props = $props(); // exerciseId, currentStep for future features
 
 	// Determine which component to render based on exercise type
 	const ExerciseComponent = $derived(() => {

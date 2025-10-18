@@ -1,6 +1,7 @@
 <script lang="ts">
 	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
 	import { VIP_CARDS } from '$lib/types/vip-card';
+	import { resolve } from '$app/paths';
 
 	// Group cards by rarity
 	const legendaryCards = VIP_CARDS.filter((c) => c.rarity === 'legendary');
@@ -22,9 +23,9 @@
 		<p class="subtitle">Effet holographique interactif inspiré des cartes Pokémon</p>
 
 		<nav class="demo-nav">
-			<a href="/">← Retour à l'application</a>
+			<a href={resolve('/')}>← Retour à l'application</a>
 			<span class="nav-separator">|</span>
-			<a href="/demo/vip-cards-demo/examples">📖 Configuration Examples</a>
+			<a href={resolve('/demo/vip-cards-demo/examples')}>📖 Configuration Examples</a>
 		</nav>
 
 		<div class="intro-section">
@@ -78,7 +79,7 @@
 		<section class="cards-section">
 			<h2>✨ Cartes Légendaires ({legendaryCards.length})</h2>
 			<div class="cards-grid">
-				{#each legendaryCards as card}
+				{#each legendaryCards as card (card.id)}
 					<div class="card-container">
 						<VipCardHolo {card} />
 						<div class="card-name">{card.name}</div>
@@ -93,7 +94,7 @@
 		<section class="cards-section">
 			<h2>💎 Cartes Épiques ({epicCards.length})</h2>
 			<div class="cards-grid">
-				{#each epicCards as card}
+				{#each epicCards as card (card.id)}
 					<div class="card-container">
 						<VipCardHolo {card} />
 						<div class="card-name">{card.name}</div>
@@ -108,7 +109,7 @@
 		<section class="cards-section">
 			<h2>⭐ Cartes Rares ({rareCards.length})</h2>
 			<div class="cards-grid">
-				{#each rareCards as card}
+				{#each rareCards as card (card.id)}
 					<div class="card-container">
 						<VipCardHolo {card} />
 						<div class="card-name">{card.name}</div>
@@ -123,7 +124,7 @@
 		<section class="cards-section">
 			<h2>🎴 Cartes Communes ({commonCards.length})</h2>
 			<div class="cards-grid">
-				{#each commonCards as card}
+				{#each commonCards as card (card.id)}
 					<div class="card-container">
 						<VipCardHolo {card} />
 						<div class="card-name">{card.name}</div>

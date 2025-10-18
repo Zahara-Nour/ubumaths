@@ -19,7 +19,7 @@
 	let flipped2 = $state(false);
 	let flipped3 = $state(false);
 
-	function handleInput(latex: string, _mf: MathfieldElement) {
+	function handleInput(latex: string, _mfElement: MathfieldElement) {
 		currentLatex = latex;
 		logger.trace('Current LaTeX:', latex);
 	}
@@ -93,7 +93,7 @@
 
 	<!-- Demo Pages Grid -->
 	<div class="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-		{#each demoPages as demo}
+		{#each demoPages as demo (demo.href)}
 			<a href={demo.href} class="group block">
 				<Card.Root
 					class="h-full border-2 transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg"

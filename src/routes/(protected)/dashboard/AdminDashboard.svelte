@@ -46,11 +46,12 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { Button } from '$lib/components/ui/button';
+	// import { Button } from '$lib/components/ui/button'; // Unused - for future features
 
 	// Receive data from parent (+page.svelte)
 	// Contains profile with admin's information
-	let { data }: { data: PageData } = $props();
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let { data }: { data: PageData } = $props(); // For future dashboard features
 </script>
 
 <div class="space-y-6">

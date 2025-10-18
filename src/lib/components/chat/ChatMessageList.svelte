@@ -27,7 +27,8 @@
 		- Show "Today", "Yesterday", etc.
 -->
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	import { onMount, tick } from 'svelte'; // onMount for future scroll handling
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Button } from '$lib/components/ui/button';
@@ -267,7 +268,7 @@
 							<!-- Attachments -->
 							{#if message.attachments && message.attachments.length > 0}
 								<div class="mt-2 space-y-2">
-									{#each message.attachments as attachment}
+									{#each message.attachments as attachment (attachment.id)}
 										<a
 											href={attachment.public_url}
 											target="_blank"
@@ -318,7 +319,7 @@
 							<!-- Reactions -->
 							{#if message.reactions && message.reactions.length > 0}
 								<div class="flex gap-1">
-									{#each message.reactions as reaction}
+									{#each message.reactions as reaction (reaction.emoji)}
 										<button
 											onclick={() => onReact?.(message.id, reaction.emoji)}
 											class="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs transition-colors hover:bg-muted/80 {reaction.user_reacted
@@ -336,7 +337,7 @@
 						<!-- Quick Reactions -->
 						{#if onReact}
 							<div class="mt-1 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-								{#each reactionEmojis as emoji}
+								{#each reactionEmojis as emoji (emoji)}
 									<button
 										onclick={() => onReact?.(message.id, emoji)}
 										class="rounded p-1 text-sm transition-colors hover:bg-muted"

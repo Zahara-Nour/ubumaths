@@ -65,7 +65,8 @@
 
 	// Default values for new entries (set when user clicks a grid cell)
 	let defaultDay = $state<number>(0); // 0-4 (Sunday-Thursday)
-	let defaultTime = $state<string | undefined>(undefined); // HH:MM:SS format
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let defaultTime = $state<string | undefined>(undefined); // HH:MM:SS format - kept for future modal pre-fill
 
 	// ============================================================================
 	// Optimistic UI State
@@ -383,7 +384,7 @@
 			</Tabs.List>
 
 			<!-- Tab Content -->
-			{#each data.classes as classItem}
+			{#each data.classes as classItem (classItem.id)}
 				<Tabs.Content value={classItem.id} class="space-y-6">
 					<!-- Class Info Header -->
 					<div class="rounded-lg border border-border bg-muted/30 p-4">

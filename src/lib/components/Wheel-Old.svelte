@@ -34,7 +34,8 @@
 	];
 
 	const teacher = data.userProfile as TeacherProfile;
-	const classe_ids = teacher.classe_ids;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const classe_ids = teacher.classe_ids; // Legacy - kept for backwards compatibility
 	const classes = teacher.classes;
 	const studentsByClasseId = teacher.students;
 
@@ -148,7 +149,8 @@
 					stroke-width="0.5em"
 					filter="url(#shadow2)"
 				/>
-				{#each Array(size * 3).fill(0) as _, i}
+				<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
+				{#each Array(size * 3).fill(0) as _unused, i}
 					<circle
 						r="0.1em"
 						cx="{2 * radius + 0.5}em"
