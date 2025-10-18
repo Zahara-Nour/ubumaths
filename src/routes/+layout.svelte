@@ -1,13 +1,21 @@
 <script lang="ts">
+	/**
+	 * Root Layout Component
+	 * =====================
+	 *
+	 * This is the root layout that wraps all pages in the application.
+	 *
+	 * PERFORMANCE OPTIMIZATIONS:
+	 * - Fonts loaded from separate CSS file (fonts.css) for better Vite optimization
+	 * - Dashboard-specific CSS loaded conditionally in dashboard layout
+	 * - Minimal imports to reduce initial bundle size
+	 *
+	 * LAYOUT STRUCTURE:
+	 * - Non-dashboard routes: Header + Sidebar + Content + Footer
+	 * - Dashboard routes: Handled by dashboard/+layout.svelte (custom header/sidebar)
+	 */
 	import '../app.css';
-	// Import Claude AI fonts
-	import '@fontsource/inter/400.css';
-	import '@fontsource/inter/500.css';
-	import '@fontsource/inter/600.css';
-	import '@fontsource/inter/700.css';
-	import '@fontsource/lora/400.css';
-	import '@fontsource/lora/600.css';
-	import '@fontsource/lora/700.css';
+	import '../fonts.css'; // Consolidated font imports (optimized loading)
 
 	import favicon from '$lib/assets/images/favicon.png';
 	import Header from '$lib/components/Header.svelte';
@@ -26,7 +34,7 @@
 	// Check if we're in a dashboard route
 	let isDashboardRoute = $derived($page.url.pathname.startsWith('/dashboard'));
 
-	// Initialize theme and fontSize (this ensures the stores are created and DOM is updated)
+	// Initialize theme and fontSize stores (ensures DOM updates on mode/size changes)
 	$effect(() => {
 		// Access to ensure reactivity
 		theme.dark;

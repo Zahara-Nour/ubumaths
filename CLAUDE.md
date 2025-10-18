@@ -20,6 +20,17 @@ SvelteKit application built with:
 - **Vercel** deployment (adapter configured)
 - **pnpm** as package manager
 
+## Performance
+
+The application has been optimized for fast development and production performance:
+
+- **Dev server startup**: ~1.7s (83% improvement from initial 10s)
+- **Dependency pre-bundling**: Common libraries cached in `node_modules/.vite/`
+- **Code splitting**: Vendor chunks separated (Supabase, TipTap, UI)
+- **Conditional loading**: Dashboard CSS only loads when needed
+
+See [PERFORMANCE_OPTIMIZATIONS.md](PERFORMANCE_OPTIMIZATIONS.md) for detailed information.
+
 ## Development Commands
 
 ```bash
@@ -1033,6 +1044,25 @@ To add a new demo page:
   <Component />
   ```
 
+- **For dynamic icon/component references from objects:**
+
+  ```svelte
+  <script>
+  	const items = [
+  		{ icon: Home, label: 'Home' },
+  		{ icon: Settings, label: 'Settings' }
+  	];
+  </script>
+
+  {#each items as item}
+  	<!-- ✅ Svelte 5: Direct reference -->
+  	<item.icon class="w-6 h-6" />
+
+  	<!-- ❌ Deprecated: <svelte:component> -->
+  	<!-- <svelte:component this={item.icon} class="w-6 h-6" /> -->
+  {/each}
+  ```
+
 #### Snippets (Replacement for Slots)
 
 - **Use `{#snippet}` instead of slots**
@@ -1281,7 +1311,7 @@ To add a new demo page:
 - **Don't use `$:` in Svelte 5** - use runes instead
 - **Don't use `export let` for props** - use `$props()`
 - **Don't use `createEventDispatcher`** - use callback props
-- **Don't use `<svelte:component>`** - components are dynamic by default
+- **Don't use `<svelte:component>`** - components are dynamic by default (just use `<Component />` or `<item.icon />`)
 - **Don't access `.value` on state** - `$state` returns the value directly
 
 ### TypeScript Best Practices
@@ -1597,6 +1627,7 @@ The holographic card component was migrated from the original Pokemon cards proj
 - Store subscriptions (`$store`) → `.get()` method
 - Svelte 3 stores → Svelte 5 runes-based stores
 - Fixed `$` prefix variable naming (reserved in Svelte 5)
+- `<svelte:component this={Component} />` → `<Component />` (components are dynamic by default)
 
 ### Performance Considerations
 

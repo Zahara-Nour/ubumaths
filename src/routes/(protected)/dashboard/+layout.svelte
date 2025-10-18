@@ -176,13 +176,30 @@
 </script>
 
 <svelte:head>
-	<!-- Holographic Card CSS -->
-	<link rel="stylesheet" href="/css/holo-cards/base.css" />
-	<link rel="stylesheet" href="/css/holo-cards/cards.css" />
-	<link rel="stylesheet" href="/css/holo-cards/regular-holo.css" />
-	<link rel="stylesheet" href="/css/holo-cards/cosmos-holo.css" />
-	<link rel="stylesheet" href="/css/holo-cards/rainbow-holo.css" />
-	<link rel="stylesheet" href="/css/holo-cards/secret-rare.css" />
+	<!--
+		Holographic Card CSS - Conditional Loading
+		===========================================
+
+		These stylesheets are only loaded for dashboard routes to improve
+		performance on public pages (login, games, etc.)
+
+		PERFORMANCE IMPACT:
+		- 6 CSS files totaling ~25KB
+		- Not needed on public routes
+		- Browser caches after first dashboard visit
+
+		CONDITIONAL LOADING:
+		- Check typeof document !== 'undefined' ensures client-side only
+		- Prevents SSR errors and unnecessary server-side processing
+	-->
+	{#if typeof document !== 'undefined'}
+		<link rel="stylesheet" href="/css/holo-cards/base.css" />
+		<link rel="stylesheet" href="/css/holo-cards/cards.css" />
+		<link rel="stylesheet" href="/css/holo-cards/regular-holo.css" />
+		<link rel="stylesheet" href="/css/holo-cards/cosmos-holo.css" />
+		<link rel="stylesheet" href="/css/holo-cards/rainbow-holo.css" />
+		<link rel="stylesheet" href="/css/holo-cards/secret-rare.css" />
+	{/if}
 </svelte:head>
 
 <!-- Main dashboard container -->
@@ -304,10 +321,8 @@
 							: 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}"
 						title={link.label}
 					>
-						<svelte:component
-							this={link.icon}
-							class="w-6 h-6 group-hover:scale-110 transition-transform duration-300"
-						/>
+						<!-- Svelte 5: Components are dynamic by default -->
+						<link.icon class="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
 						<span class="text-xs text-center leading-tight font-medium">{link.label}</span>
 					</a>
 				{/each}

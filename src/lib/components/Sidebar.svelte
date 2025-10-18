@@ -32,10 +32,8 @@
 					: 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}"
 				title={item.label}
 			>
-				<svelte:component
-					this={item.icon}
-					class="w-6 h-6 group-hover:scale-110 transition-transform duration-300"
-				/>
+				<!-- Svelte 5: Components are dynamic by default, no need for svelte:component -->
+				<item.icon class="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
 				<span class="text-xs text-center leading-tight font-medium">{item.label}</span>
 			</a>
 		{/each}

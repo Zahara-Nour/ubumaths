@@ -161,7 +161,8 @@
 							{@const badge = getStatusBadge(user.friendship_status)}
 							<div class="flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium {badge.class}">
 								{#if badge.icon}
-									<svelte:component this={badge.icon} class="size-4" />
+									<!-- Svelte 5: Components are dynamic by default -->
+									<badge.icon class="size-4" />
 								{/if}
 								{badge.label}
 							</div>

@@ -53,8 +53,9 @@
 
 <div class="geometry-exercise-wrapper">
 	{#if ExerciseComponent()}
-		<svelte:component
-			this={ExerciseComponent()}
+		<!-- Svelte 5: Components are dynamic by default -->
+		{@const Component = ExerciseComponent()}
+		<Component
 			{exercise}
 			{attempt}
 			{hints}

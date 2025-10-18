@@ -110,7 +110,8 @@
 							<div
 								class="p-3 rounded-lg bg-gradient-to-br {demo.color} text-white shadow-md group-hover:shadow-lg transition-shadow"
 							>
-								<svelte:component this={demo.icon} class="h-6 w-6" />
+								<!-- Svelte 5: Components are dynamic by default -->
+								<demo.icon class="h-6 w-6" />
 							</div>
 						</div>
 						<Card.Title class="text-xl group-hover:text-primary transition-colors">
