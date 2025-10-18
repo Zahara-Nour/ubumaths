@@ -28,6 +28,44 @@ The project uses:
 - Feature branches are unrestricted for faster development
 - Quality gates enforce standards before merging to main
 
+### ⚠️ Important: Husky vs pnpm release
+
+**Common Misconception:** "Husky bumps the version automatically"
+
+**Reality:** Husky does NOT bump versions - it only validates commits!
+
+| Tool | When it Runs | What it Does | Version Changes? |
+|------|-------------|--------------|------------------|
+| **Husky** | Every commit on main | Validates format & linting | ❌ No |
+| **pnpm release** | When YOU run it | Bumps version, tags, CHANGELOG | ✅ Yes |
+
+**The workflow:**
+```bash
+# Step 1: Make commits (Husky validates)
+git commit -m "feat: add feature"  # ✅ Validated, but version stays 0.0.2
+git commit -m "fix: bug fix"       # ✅ Validated, but version stays 0.0.2
+
+# Step 2: When ready to deploy, create release
+pnpm release                       # ✅ Bumps to 0.1.0, creates tag
+git push --follow-tags origin main # ✅ Deploys version 0.1.0
+```
+
+**Why two separate steps?**
+1. **Control:** You decide WHEN to release (not on every commit)
+2. **Meaningful versions:** One version for multiple related commits
+3. **Grouped CHANGELOG:** All commits grouped by type in one release
+
+**Example timeline:**
+```
+Day 1: git commit "feat: add dashboard"   → Version: 0.0.2 (no change)
+Day 2: git commit "fix: resolve bug"      → Version: 0.0.2 (no change)
+Day 3: git commit "feat: add export"      → Version: 0.0.2 (no change)
+Day 4: pnpm release                        → Version: 0.1.0 (bumped!)
+       → CHANGELOG includes all 3 commits grouped together
+```
+
+See [FAQ: Why do I need pnpm release?](#faq) for detailed explanation.
+
 ## 🚀 Quick Start
 
 ### Daily Development (Feature Branches)
@@ -820,12 +858,255 @@ git checkout --theirs CHANGELOG.md
 pnpm release         # Regenerates CHANGELOG from commits
 ```
 
+## ❓ FAQ
+
+### Why do I need `pnpm release` if Husky already validates commits?
+
+**Short answer:** Husky validates, `pnpm release` bumps versions. They do different jobs!
+
+**Detailed explanation:**
+
+**Husky's role (Quality Gate):**
+```bash
+git commit -m "feat: add feature"
+# ↓ Husky runs
+# 1. ✅ Checks linting
+# 2. ✅ Validates commit message format
+# 3. ✅ Creates commit
+# 4. ❌ Does NOT change version (still 0.0.2)
+# 5. ❌ Does NOT create tags
+# 6. ❌ Does NOT update CHANGELOG
+```
+
+**pnpm release's role (Release Manager):**
+```bash
+pnpm release
+# ↓ Standard-version runs
+# 1. ✅ Analyzes ALL commits since last tag
+# 2. ✅ Determines version bump (feat = minor, fix = patch)
+# 3. ✅ Updates package.json (0.0.2 → 0.1.0)
+# 4. ✅ Updates CHANGELOG.md with grouped commits
+# 5. ✅ Creates commit: "chore(release): 0.1.0"
+# 6. ✅ Creates tag: v0.1.0
+```
+
+**Why separate steps?**
+
+**1. Control over releases:**
+```bash
+# Week of development:
+Day 1: git commit "feat: add dashboard"    # Version: 0.0.2 (no change)
+Day 2: git commit "feat: add export"       # Version: 0.0.2 (no change)
+Day 3: git commit "fix: resolve bug"       # Version: 0.0.2 (no change)
+Day 4: git commit "docs: update README"    # Version: 0.0.2 (no change)
+
+# Friday deployment:
+pnpm release                                # Version: 0.1.0 (ONE bump!)
+# ↓
+# CHANGELOG.md:
+# ## v0.1.0 (2025-10-18)
+# ### Features
+# - add dashboard
+# - add export
+# ### Bug Fixes
+# - resolve bug
+# ### Documentation
+# - update README
+```
+
+**2. Without `pnpm release` (automatic on every commit):**
+```bash
+Day 1: commit → v0.0.2 (one commit, one version)
+Day 2: commit → v0.0.3 (one commit, one version)
+Day 3: commit → v0.0.4 (one commit, one version)
+Day 4: commit → v0.0.5 (one commit, one version)
+# ❌ Too many versions!
+# ❌ Messy CHANGELOG (one entry per version)
+# ❌ Confusing for users
+# ❌ Hard to track meaningful releases
+```
+
+**3. With `pnpm release` (manual control):**
+```bash
+Week 1: Multiple commits → ONE release → v0.1.0
+Week 2: Multiple commits → ONE release → v0.1.1
+Week 3: Multiple commits → ONE release → v0.2.0
+# ✅ Clean version history
+# ✅ Meaningful releases
+# ✅ Grouped CHANGELOG entries
+# ✅ Clear for users
+```
+
+**Think of it like this:**
+- **Husky = Security Guard** - "Is this commit allowed in?"
+- **pnpm release = Shipping Manager** - "Package everything up and ship it!"
+
+### Can I automate `pnpm release` to run on every commit?
+
+**Technically yes, but NOT recommended!**
+
+You could add to `.husky/post-commit`:
+```bash
+pnpm release
+git push --follow-tags origin main
+```
+
+**But this would cause:**
+- ❌ Version bump on EVERY commit
+- ❌ New git tag on EVERY commit
+- ❌ CHANGELOG entry for EVERY commit
+- ❌ Messy git history
+- ❌ No control over releases
+- ❌ Slow commits (release takes time)
+
+**Recommended approach:**
+- Commit freely during development
+- Run `pnpm release` when ready to deploy
+- You control when versions are created
+
+### How often should I run `pnpm release`?
+
+**It depends on your workflow:**
+
+**Daily/Weekly deployments:**
+```bash
+# End of week
+pnpm release
+git push --follow-tags origin main
+```
+
+**Feature-based releases:**
+```bash
+# After completing a feature
+git commit -m "feat: complete user authentication"
+pnpm release  # Bumps to 0.1.0
+git push --follow-tags origin main
+```
+
+**Sprint-based releases:**
+```bash
+# End of 2-week sprint
+pnpm release  # Bumps based on all sprint commits
+git push --follow-tags origin main
+```
+
+**Hotfix releases:**
+```bash
+# Immediately after critical fix
+git commit -m "fix: security vulnerability"
+pnpm release:patch  # Immediate patch release
+git push --follow-tags origin main
+```
+
+### What happens if I forget to run `pnpm release`?
+
+**Nothing breaks!** Your commits are still valid and pushed to `main`.
+
+**But:**
+- ❌ Version number stays the same (e.g., 0.0.2)
+- ❌ No git tag created for this work
+- ❌ CHANGELOG not updated
+- ❌ App still displays old version
+
+**To fix:**
+```bash
+# Just run release when you remember
+pnpm release
+# Analyzes ALL commits since last tag
+# Creates proper version, tag, and CHANGELOG entry
+git push --follow-tags origin main
+```
+
+### Can I skip `pnpm release` and just manually update package.json?
+
+**Not recommended!** If you manually change version in `package.json`:
+
+**What you'd have to do manually:**
+1. Edit `package.json` version
+2. Update `CHANGELOG.md` with all changes
+3. Create git commit
+4. Create git tag with correct name
+5. Ensure tag points to correct commit
+
+**What `pnpm release` does automatically:**
+1. ✅ Analyzes commits since last tag
+2. ✅ Determines correct version bump
+3. ✅ Updates `package.json`
+4. ✅ Generates CHANGELOG from commits
+5. ✅ Creates properly formatted commit
+6. ✅ Creates properly named tag
+7. ✅ All in one command!
+
+**Example of manual approach (error-prone):**
+```bash
+# Edit package.json: "version": "0.1.0"
+# Edit CHANGELOG.md manually (might miss commits)
+git add package.json CHANGELOG.md
+git commit -m "chore: bump version to 0.1.0"
+git tag v0.1.0  # Easy to misspell or forget
+git push --follow-tags origin main
+```
+
+**With pnpm release (safe):**
+```bash
+pnpm release  # Does everything correctly
+git push --follow-tags origin main
+```
+
+### What if I make a mistake in the version bump?
+
+**If you haven't pushed yet:**
+```bash
+# Delete the tag
+git tag -d v0.1.0
+
+# Reset the commit
+git reset --hard HEAD~1
+
+# Run release again
+pnpm release
+```
+
+**If you already pushed:**
+```bash
+# 1. Delete remote tag
+git push origin --delete v0.1.0
+
+# 2. Delete local tag
+git tag -d v0.1.0
+
+# 3. Reset commit
+git reset --hard HEAD~1
+git push --force origin main  # ⚠️ Use carefully!
+
+# 4. Create correct release
+pnpm release
+git push --follow-tags origin main
+```
+
+⚠️ **Warning:** Force pushing to `main` can cause issues for team members. Only do this if:
+- You're the only one working on the project, OR
+- You coordinate with your team first
+
+### Summary: Husky vs pnpm release
+
+| Aspect | Husky | pnpm release |
+|--------|-------|--------------|
+| **Runs when** | Every commit on main | When YOU run it |
+| **Purpose** | Validate quality | Create release |
+| **Changes version** | ❌ No | ✅ Yes |
+| **Creates tags** | ❌ No | ✅ Yes |
+| **Updates CHANGELOG** | ❌ No | ✅ Yes |
+| **Can skip** | Yes (--no-verify) | No (required for releases) |
+| **Frequency** | Every commit | When deploying |
+
 ## 📖 Additional Resources
 
 - [Conventional Commits Specification](https://www.conventionalcommits.org/)
 - [Standard-version Documentation](https://github.com/conventional-changelog/standard-version)
 - [Husky Documentation](https://typicode.github.io/husky/)
 - [Commitlint Documentation](https://commitlint.js.org/)
+- [Semantic Versioning](https://semver.org/)
 
 ## 🔄 Version Update Workflow Summary
 

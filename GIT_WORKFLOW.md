@@ -2,6 +2,28 @@
 
 **TL;DR:** Work on feature branches freely, merge to `main` with proper commit format, release with `pnpm release`, push with `--follow-tags`.
 
+## ⚠️ Important: Husky Does NOT Bump Versions!
+
+**Common Misconception:** "Husky automatically updates the version"
+
+**Reality:**
+- **Husky** = Validates commits (linting + format) ❌ Does NOT change version
+- **pnpm release** = Bumps version, creates tags, updates CHANGELOG ✅ Changes version
+
+| Tool | Runs When | Changes Version? |
+|------|-----------|------------------|
+| Husky | Every commit on main | ❌ No |
+| pnpm release | When YOU run it | ✅ Yes |
+
+**Example:**
+```bash
+git commit "feat: add feature"  # Husky validates ✅, version stays 0.0.2
+git commit "fix: bug"           # Husky validates ✅, version stays 0.0.2
+pnpm release                    # NOW version bumps to 0.1.0 ✅
+```
+
+See [VERSION_MANAGEMENT.md FAQ](VERSION_MANAGEMENT.md#faq) for detailed explanation.
+
 ## 🚦 Daily Workflow
 
 ### 1. Start New Feature
