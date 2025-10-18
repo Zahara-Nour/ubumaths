@@ -19,6 +19,7 @@ We followed a **hybrid approach** that balances visual impact with performance:
 **Location:** `src/lib/components/VipCardHoloModal.svelte`
 
 **Features:**
+
 - Full-screen overlay with dark backdrop
 - VipCardHolo component in showcase mode (auto-rotation)
 - Card name, description, and metadata display
@@ -28,12 +29,13 @@ We followed a **hybrid approach** that balances visual impact with performance:
 - Prevents event propagation (clicking card doesn't close modal)
 
 **Usage:**
+
 ```svelte
 <VipCardHoloModal
-  card={selectedCard}
-  count={cardCount}
-  visible={isModalOpen}
-  onClose={handleClose}
+	card={selectedCard}
+	count={cardCount}
+	visible={isModalOpen}
+	onClose={handleClose}
 />
 ```
 
@@ -42,6 +44,7 @@ We followed a **hybrid approach** that balances visual impact with performance:
 ### VipCardsModal.svelte
 
 **Changes:**
+
 1. Added `VipCardHoloModal` import
 2. Added state management for holographic modal:
    - `holoModalVisible` - Controls modal visibility
@@ -55,6 +58,7 @@ We followed a **hybrid approach** that balances visual impact with performance:
 6. Rendered VipCardHoloModal at the end of the component
 
 **User Experience:**
+
 - Grid shows all cards (up to 26) with simple flip cards
 - Hover scales card slightly (1.05x) to indicate interactivity
 - Click opens full-screen holographic view with auto-rotation
@@ -74,11 +78,13 @@ Initially planned to use IntersectionObserver for viewport-based effect activati
 ### Performance Characteristics
 
 **Grid View (26 cards):**
+
 - ✅ Lightweight flip cards (CSS 3D transforms only)
 - ✅ No mouse tracking or holographic effects
 - ✅ Fast rendering and smooth scrolling
 
 **Full-Screen View (1 card):**
+
 - ✅ Single VipCardHolo with all effects enabled
 - ✅ Auto-rotation showcase mode
 - ✅ Mouse/touch tracking
@@ -92,6 +98,7 @@ Initially planned to use IntersectionObserver for viewport-based effect activati
 **Location:** `src/routes/(protected)/dashboard/teacher/rewards/+page.svelte`
 
 **Current State:** No changes needed
+
 - Already uses VipCardsModal for viewing student collections
 - The modal now automatically provides holographic expansion
 - Teachers click "Voir Cartes" button → Opens modal with new functionality
@@ -110,12 +117,15 @@ Initially planned to use IntersectionObserver for viewport-based effect activati
 ## File Changes
 
 ### New Files
+
 - `src/lib/components/VipCardHoloModal.svelte` (169 lines)
 
 ### Modified Files
+
 - `src/lib/components/VipCardsModal.svelte` (added ~50 lines)
 
 ### No Changes Required
+
 - `src/lib/components/VipCard.svelte` - Still used in grid
 - `src/lib/components/VipCardHolo.svelte` - Used in new modal
 - `src/routes/(protected)/dashboard/teacher/rewards/+page.svelte` - Works automatically
@@ -138,11 +148,13 @@ Initially planned to use IntersectionObserver for viewport-based effect activati
 ## Browser Compatibility
 
 **Fully Supported:**
+
 - Chrome/Edge 90+
 - Firefox 88+
 - Safari 14+
 
 **Graceful Degradation:**
+
 - Older browsers: Static cards without 3D effects
 - No gyroscope: Mouse/touch tracking still works
 - Mobile: Touch interaction + gyroscope tilt
@@ -189,6 +201,7 @@ If you want to add more features later:
 ### Props Pattern
 
 All holographic components follow consistent prop patterns:
+
 - `card: VipCard` (required) - Card data
 - `count: number` (default: 1) - Count badge
 - `visible: boolean` - Modal visibility

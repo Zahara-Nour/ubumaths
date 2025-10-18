@@ -129,7 +129,9 @@
 	/**
 	 * Students fetched for the wheel (with full details)
 	 */
-	let wheelStudents = $state<Array<{ id: string; firstname: string; lastname?: string; avatar_url?: string }>>([]);
+	let wheelStudents = $state<
+		Array<{ id: string; firstname: string; lastname?: string; avatar_url?: string }>
+	>([]);
 
 	/**
 	 * Loading state while fetching students
@@ -353,23 +355,23 @@
 		Only visible when teacher has at least one class.
 	-->
 	{#if classes.length > 0}
-		<div class="bg-card rounded-lg shadow p-6">
-			<h3 class="text-lg font-semibold text-foreground mb-4">Sélection de Classe</h3>
+		<div class="rounded-lg bg-card p-6 shadow">
+			<h3 class="mb-4 text-lg font-semibold text-foreground">Sélection de Classe</h3>
 
 			<!-- Class selector and "Find Current Class" button (responsive flex layout) -->
-			<div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+			<div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
 				<!-- Native HTML select dropdown (accessible and performant) -->
-				<div class="flex-1 w-full">
+				<div class="w-full flex-1">
 					<select
 						value={selectedClassId || ''}
 						onchange={handleClassChange}
-						class="w-full h-10 px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
+						class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-ring focus:ring-2 focus:ring-ring focus:outline-none"
 					>
 						<!-- Placeholder option (disabled, should never be visible due to auto-select) -->
 						<option value="" disabled>Sélectionner une classe...</option>
 
 						<!-- Loop through all teacher's classes -->
-						{#each classes as cls}
+						{#each classes as cls (cls.id)}
 							<option value={cls.id}>{cls.name}</option>
 						{/each}
 					</select>
@@ -379,31 +381,31 @@
 				<Button
 					onclick={handleFindCurrentClass}
 					variant="secondary"
-					class="whitespace-nowrap w-full sm:w-auto"
+					class="w-full whitespace-nowrap sm:w-auto"
 				>
-					<Clock class="h-4 w-4 mr-2" />
+					<Clock class="mr-2 h-4 w-4" />
 					Trouver ma classe actuelle
 				</Button>
 			</div>
 
 			<!-- Selected class information card (conditional rendering) -->
 			{#if selectedClass}
-				<div class="mt-4 p-4 bg-muted rounded-lg">
-					<div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+				<div class="mt-4 rounded-lg bg-muted p-4">
+					<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 						<div class="flex-1">
 							<!-- Label -->
-							<p class="text-sm text-muted-foreground mb-1">Classe sélectionnée :</p>
+							<p class="mb-1 text-sm text-muted-foreground">Classe sélectionnée :</p>
 
 							<!-- Class name (always present) -->
 							<p class="text-lg font-semibold text-foreground">{selectedClass.name}</p>
 
 							<!-- Class description (optional) -->
 							{#if selectedClass.description}
-								<p class="text-sm text-muted-foreground mt-1">{selectedClass.description}</p>
+								<p class="mt-1 text-sm text-muted-foreground">{selectedClass.description}</p>
 							{/if}
 
 							<!-- Student count with proper French pluralization -->
-							<p class="text-sm text-muted-foreground mt-2">
+							<p class="mt-2 text-sm text-muted-foreground">
 								{selectedClass.student_count || 0} élève{(selectedClass.student_count || 0) > 1
 									? 's'
 									: ''}
@@ -415,14 +417,14 @@
 							<Button
 								onclick={handleOpenWheel}
 								disabled={!selectedClassId || (selectedClass.student_count || 0) === 0}
-								class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-500"
+								class="bg-gradient-to-r from-purple-500 to-pink-500 font-semibold text-white shadow-lg transition-all duration-200 hover:from-purple-600 hover:to-pink-600 hover:shadow-xl disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-500 disabled:opacity-50"
 								title={!selectedClassId
 									? 'Sélectionnez une classe'
 									: (selectedClass.student_count || 0) === 0
 										? 'Aucun élève dans cette classe'
 										: 'Choisir un élève aléatoirement'}
 							>
-								<Target class="h-5 w-5 mr-2" />
+								<Target class="mr-2 h-5 w-5" />
 								Choisir un élève
 							</Button>
 						</div>
@@ -435,41 +437,41 @@
 	<!-- QUICK STATS SECTION -->
 	<!-- Four-column grid showing key teacher metrics -->
 	<!-- TODO: Replace hardcoded values with real data from database -->
-	<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+	<div class="grid grid-cols-1 gap-6 md:grid-cols-4">
 		<!-- Stat 1: Total Classes -->
-		<div class="bg-card rounded-lg shadow p-6">
+		<div class="rounded-lg bg-card p-6 shadow">
 			<h3 class="text-sm font-medium text-muted-foreground uppercase">Classes Totales</h3>
 			<!-- TODO: Count classes where teacher_id = data.profile.id -->
-			<p class="text-3xl font-bold text-foreground mt-2">3</p>
+			<p class="mt-2 text-3xl font-bold text-foreground">3</p>
 		</div>
 
 		<!-- Stat 2: Total Students (across all classes) -->
-		<div class="bg-card rounded-lg shadow p-6">
+		<div class="rounded-lg bg-card p-6 shadow">
 			<h3 class="text-sm font-medium text-muted-foreground uppercase">Élèves Totaux</h3>
 			<!-- TODO: Count distinct students in class_members for teacher's classes -->
-			<p class="text-3xl font-bold text-foreground mt-2">87</p>
+			<p class="mt-2 text-3xl font-bold text-foreground">87</p>
 		</div>
 
 		<!-- Stat 3: Active Assignments -->
-		<div class="bg-card rounded-lg shadow p-6">
+		<div class="rounded-lg bg-card p-6 shadow">
 			<h3 class="text-sm font-medium text-muted-foreground uppercase">Devoirs Actifs</h3>
 			<!-- TODO: Count assignments where created_by = teacher and is_published = true -->
-			<p class="text-3xl font-bold text-foreground mt-2">12</p>
+			<p class="mt-2 text-3xl font-bold text-foreground">12</p>
 		</div>
 
 		<!-- Stat 4: Submissions Needing Review -->
-		<div class="bg-card rounded-lg shadow p-6">
+		<div class="rounded-lg bg-card p-6 shadow">
 			<h3 class="text-sm font-medium text-muted-foreground uppercase">Révisions en Attente</h3>
 			<!-- TODO: Count unreviewed free-response submissions for teacher's assignments -->
-			<p class="text-3xl font-bold text-foreground mt-2">24</p>
+			<p class="mt-2 text-3xl font-bold text-foreground">24</p>
 		</div>
 	</div>
 
 	<!-- QUICK ACTIONS SECTION -->
 	<!-- Common teacher tasks as quick-access buttons -->
-	<div class="bg-card rounded-lg shadow p-6">
-		<h3 class="text-lg font-semibold text-foreground mb-4">Actions Rapides</h3>
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+	<div class="rounded-lg bg-card p-6 shadow">
+		<h3 class="mb-4 text-lg font-semibold text-foreground">Actions Rapides</h3>
+		<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 			<!-- Action 1: Create new assignment -->
 			<Button class="px-4 py-3">
 				Créer un Devoir
@@ -492,16 +494,14 @@
 
 	<!-- MY CLASSES SECTION -->
 	<!-- Lists all classes owned by this teacher -->
-	<div class="bg-card rounded-lg shadow">
-		<div class="px-6 py-4 border-b border-border">
+	<div class="rounded-lg bg-card shadow">
+		<div class="border-b border-border px-6 py-4">
 			<h3 class="text-lg font-semibold text-foreground">Mes Classes</h3>
 		</div>
 		<div class="p-6">
 			<!-- Link to classes page with schedules -->
-			<div class="text-center py-8">
-				<p class="text-muted-foreground mb-4">
-					Gérez vos classes et leurs emplois du temps
-				</p>
+			<div class="py-8 text-center">
+				<p class="mb-4 text-muted-foreground">Gérez vos classes et leurs emplois du temps</p>
 				<a href="/dashboard/teacher/classes" data-sveltekit-preload-data="tap">
 					<Button>Voir Mes Classes</Button>
 				</a>
@@ -511,8 +511,8 @@
 
 	<!-- RECENT SUBMISSIONS SECTION -->
 	<!-- Shows recent student submissions that may need review -->
-	<div class="bg-card rounded-lg shadow">
-		<div class="px-6 py-4 border-b border-border">
+	<div class="rounded-lg bg-card shadow">
+		<div class="border-b border-border px-6 py-4">
 			<h3 class="text-lg font-semibold text-foreground">Soumissions Récentes</h3>
 		</div>
 		<div class="p-6">
@@ -523,7 +523,7 @@
 			<!-- - Submission date -->
 			<!-- - Score/completion percentage -->
 			<!-- - Link to review submission -->
-			<p class="text-muted-foreground text-center py-8">Aucune soumission récente à réviser</p>
+			<p class="py-8 text-center text-muted-foreground">Aucune soumission récente à réviser</p>
 		</div>
 	</div>
 </div>
@@ -533,7 +533,9 @@
      ============================================================================ -->
 
 <Dialog.Root bind:open={wheelModalOpen} onOpenChange={(open) => !open && handleCloseWheel()}>
-	<Dialog.Content class="sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[80vw] max-h-[95vh] overflow-y-auto">
+	<Dialog.Content
+		class="max-h-[95vh] overflow-y-auto sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-[80vw]"
+	>
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2 text-2xl">
 				<Target class="h-6 w-6 text-purple-500" />
@@ -552,19 +554,17 @@
 			{#if isLoadingStudents}
 				<!-- Loading state -->
 				<div class="flex flex-col items-center justify-center py-16">
-					<div
-						class="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-500 mb-4"
-					></div>
+					<div class="mb-4 h-16 w-16 animate-spin rounded-full border-b-4 border-purple-500"></div>
 					<p class="text-muted-foreground">Chargement des élèves...</p>
 				</div>
 			{:else if wheelStudents.length === 0}
 				<!-- Empty state -->
-				<div class="text-center py-16">
+				<div class="py-16 text-center">
 					<p class="text-lg text-muted-foreground">Cette classe ne contient aucun élève.</p>
 				</div>
 			{:else}
 				<!-- Wheel component (includes winner display and controls) -->
-				<div class="w-full flex justify-center py-4">
+				<div class="flex w-full justify-center py-4">
 					<Wheel
 						students={wheelStudents}
 						onWinner={handleWinner}

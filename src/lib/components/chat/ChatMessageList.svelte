@@ -188,11 +188,7 @@
 
 <div class="flex h-full flex-col">
 	<!-- Messages Container -->
-	<div
-		bind:this={messagesContainer}
-		onscroll={handleScroll}
-		class="flex-1 overflow-y-auto p-4"
-	>
+	<div bind:this={messagesContainer} onscroll={handleScroll} class="flex-1 overflow-y-auto p-4">
 		{#if isLoading && messages.length === 0}
 			<div class="flex h-full items-center justify-center text-muted-foreground">
 				<p>Chargement des messages...</p>
@@ -222,20 +218,13 @@
 				{/if}
 
 				<!-- Message -->
-				<div
-					class="mb-4 flex gap-3 {isOwnMessage(message)
-						? 'flex-row-reverse'
-						: 'flex-row'}"
-				>
+				<div class="mb-4 flex gap-3 {isOwnMessage(message) ? 'flex-row-reverse' : 'flex-row'}">
 					<!-- Avatar (only for other users) -->
 					{#if !isOwnMessage(message)}
 						<div class="flex-shrink-0">
 							<Avatar.Root class="h-8 w-8">
 								{#if message.sender_avatar_url}
-									<Avatar.Image
-										src={message.sender_avatar_url}
-										alt={getSenderName(message)}
-									/>
+									<Avatar.Image src={message.sender_avatar_url} alt={getSenderName(message)} />
 								{/if}
 								<Avatar.Fallback class="bg-primary/10 text-xs text-primary">
 									{message.sender_firstname?.[0]?.toUpperCase() || '?'}
@@ -245,7 +234,11 @@
 					{/if}
 
 					<!-- Message Content -->
-					<div class="flex min-w-0 max-w-[70%] flex-col {isOwnMessage(message) ? 'items-end' : 'items-start'}">
+					<div
+						class="flex max-w-[70%] min-w-0 flex-col {isOwnMessage(message)
+							? 'items-end'
+							: 'items-start'}"
+					>
 						<!-- Sender Name (only for other users) -->
 						{#if !isOwnMessage(message)}
 							<span class="mb-1 text-xs font-semibold text-foreground">
@@ -293,7 +286,7 @@
 
 							<!-- Message Actions (3-dot menu) -->
 							<div
-								class="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100"
+								class="absolute top-2 right-2 opacity-0 transition-opacity group-hover:opacity-100"
 							>
 								<DropdownMenu.Root>
 									<DropdownMenu.Trigger class="cursor-pointer">

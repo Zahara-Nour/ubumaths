@@ -169,6 +169,7 @@ src/
 ```
 
 **Route Groups:**
+
 - `(public)/` - No authentication required
 - `(protected)/` - Automatic authentication for all child routes
 - Parentheses don't affect URLs: `(public)/login` → `/login`
@@ -208,10 +209,10 @@ Protecting a route:
 import { requireAuth } from '$lib/server/auth';
 
 export const load = async ({ locals: { safeGetSession } }) => {
-  const { user } = await safeGetSession();
-  requireAuth(user); // Redirects to login if not authenticated
+	const { user } = await safeGetSession();
+	requireAuth(user); // Redirects to login if not authenticated
 
-  // Your protected page logic here
+	// Your protected page logic here
 };
 ```
 
@@ -244,19 +245,19 @@ import { createLogger } from '$lib/utils/logger';
 // Default threshold (info) - trace messages suppressed
 const logger = createLogger('MyComponent.svelte');
 
-logger.trace('Detailed debug info');  // Not displayed (below threshold)
-logger.info('User action');           // ✅ Displayed
-logger.warn('Potential issue');       // ✅ Displayed
-logger.error('Error occurred');       // ✅ Displayed
+logger.trace('Detailed debug info'); // Not displayed (below threshold)
+logger.info('User action'); // ✅ Displayed
+logger.warn('Potential issue'); // ✅ Displayed
+logger.error('Error occurred'); // ✅ Displayed
 
 // Custom threshold for debugging
 const debugLogger = createLogger('Debug.svelte', 'trace');
-debugLogger.trace('Now visible');     // ✅ Displayed (trace threshold)
+debugLogger.trace('Now visible'); // ✅ Displayed (trace threshold)
 
 // Production-like (errors only)
 const prodLogger = createLogger('Service.ts', 'error');
-prodLogger.info('Info message');      // Not displayed (below error threshold)
-prodLogger.error('Critical error');   // ✅ Displayed
+prodLogger.info('Info message'); // Not displayed (below error threshold)
+prodLogger.error('Critical error'); // ✅ Displayed
 ```
 
 ### Server Output Format
@@ -279,6 +280,7 @@ Visit the main page to see an interactive demo of the logging system with exampl
 ## Contributing
 
 This is an educational project. For development guidelines:
+
 1. Follow the code style in [CLAUDE.md](./CLAUDE.md)
 2. Use the logging system for debugging
 3. Write tests for new features

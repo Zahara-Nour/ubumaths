@@ -13,7 +13,8 @@
 	const games = [
 		{
 			title: 'Père Ubu',
-			description: 'Discutez avec le Père Ubu, votre professeur de mathématiques pataphysique. Posez vos questions et recevez des explications... originales !',
+			description:
+				'Discutez avec le Père Ubu, votre professeur de mathématiques pataphysique. Posez vos questions et recevez des explications... originales !',
 			icon: MessageCircle,
 			href: '/pere-ubu',
 			color: 'from-purple-500 to-indigo-600',
@@ -23,7 +24,8 @@
 		},
 		{
 			title: 'Trio',
-			description: 'Trouvez trois nombres alignés qui satisfont une équation mathématique. Entraînez-vous au calcul mental tout en résolvant des puzzles !',
+			description:
+				'Trouvez trois nombres alignés qui satisfont une équation mathématique. Entraînez-vous au calcul mental tout en résolvant des puzzles !',
 			icon: Target,
 			href: '/games/trio',
 			color: 'from-green-500 to-blue-600',
@@ -32,7 +34,8 @@
 		},
 		{
 			title: 'Navadra',
-			description: 'Affrontez des monstres épiques en résolvant des problèmes mathématiques. Gagnez de l\'expérience et débloquez de nouveaux sorts !',
+			description:
+				"Affrontez des monstres épiques en résolvant des problèmes mathématiques. Gagnez de l'expérience et débloquez de nouveaux sorts !",
 			icon: Sword,
 			href: '/dashboard/navadra',
 			color: 'from-red-500 to-orange-600',
@@ -60,9 +63,7 @@
 				🎮
 			</div>
 		</div>
-		<h1 class="mb-4 text-4xl font-bold text-foreground md:text-5xl">
-			Jeux Mathématiques
-		</h1>
+		<h1 class="mb-4 text-4xl font-bold text-foreground md:text-5xl">Jeux Mathématiques</h1>
 		<p class="mx-auto max-w-2xl text-lg text-muted-foreground">
 			Apprenez les mathématiques en vous amusant ! Explorez nos jeux éducatifs interactifs et
 			progressez tout en jouant.
@@ -72,7 +73,7 @@
 	<!-- Games Grid -->
 	<section class="mb-12">
 		<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-			{#each games as game}
+			{#each games as game (game.href)}
 				<div
 					class="group relative overflow-hidden rounded-xl border border-border bg-card shadow-lg transition-all hover:shadow-xl"
 				>

@@ -559,7 +559,7 @@
 								? 'grid-cols-1'
 								: 'grid-cols-2'}"
 						>
-							{#each getMessageImages(message.content) as imageUrl}
+							{#each getMessageImages(message.content) as imageUrl (imageUrl)}
 								<img
 									src={imageUrl}
 									alt="Attached image"
@@ -659,7 +659,7 @@
 		<!-- Attached Images Preview -->
 		{#if attachedImages.length > 0}
 			<div class="mb-3 flex flex-wrap gap-2">
-				{#each attachedImages as img, idx}
+				{#each attachedImages as img, idx (img.url)}
 					<div class="relative">
 						<img
 							src={img.url}

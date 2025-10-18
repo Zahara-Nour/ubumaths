@@ -668,10 +668,7 @@ class TeacherStudentsCacheStore {
 			loadingClasses: Array.from(this.cache.values()).filter((e) => e.isLoading).length,
 
 			// Total students across all cached classes
-			totalStudents: Array.from(this.cache.values()).reduce(
-				(sum, e) => sum + e.students.length,
-				0
-			)
+			totalStudents: Array.from(this.cache.values()).reduce((sum, e) => sum + e.students.length, 0)
 		};
 	}
 }

@@ -155,7 +155,12 @@
 		{ label: 'Somme', latex: '\\sum_{i=1}^{n} x_i', icon: '∑', title: 'Somme' },
 		{ label: 'Limite', latex: '\\lim_{x \\to \\infty} f(x)', icon: 'lim', title: 'Limite' },
 		{ label: 'Dérivée', latex: '\\frac{d}{dx} f(x)', icon: "f'", title: 'Dérivée' },
-		{ label: 'Équation du 2nd degré', latex: '\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}', icon: '±', title: 'Équation du 2nd degré' }
+		{
+			label: 'Équation du 2nd degré',
+			latex: '\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}',
+			icon: '±',
+			title: 'Équation du 2nd degré'
+		}
 	];
 
 	// Color palettes
@@ -170,15 +175,7 @@
 		'#ec4899'
 	];
 
-	const highlights = [
-		'',
-		'#fef3c7',
-		'#fecaca',
-		'#d9f99d',
-		'#bfdbfe',
-		'#e9d5ff',
-		'#fbcfe8'
-	];
+	const highlights = ['', '#fef3c7', '#fecaca', '#d9f99d', '#bfdbfe', '#e9d5ff', '#fbcfe8'];
 
 	/**
 	 * Curated Emoji Categories for Educational Use
@@ -200,35 +197,225 @@
 	const emojiCategories = [
 		{
 			name: 'Smileys',
-			emojis: ['😊', '😀', '😃', '😄', '😁', '😅', '😂', '🤣', '😉', '😌', '😍', '🥰', '😘', '😋', '😎', '🤓', '🧐', '🤔', '🤨', '😐', '😑', '😶', '🙄', '😏', '😬', '😮', '😯', '😲', '😳', '🥺', '😢', '😭', '😤', '😠', '😡', '🤯', '😱']
+			emojis: [
+				'😊',
+				'😀',
+				'😃',
+				'😄',
+				'😁',
+				'😅',
+				'😂',
+				'🤣',
+				'😉',
+				'😌',
+				'😍',
+				'🥰',
+				'😘',
+				'😋',
+				'😎',
+				'🤓',
+				'🧐',
+				'🤔',
+				'🤨',
+				'😐',
+				'😑',
+				'😶',
+				'🙄',
+				'😏',
+				'😬',
+				'😮',
+				'😯',
+				'😲',
+				'😳',
+				'🥺',
+				'😢',
+				'😭',
+				'😤',
+				'😠',
+				'😡',
+				'🤯',
+				'😱'
+			]
 		},
 		{
 			name: 'Feedback',
-			emojis: ['👍', '👎', '👏', '🙌', '👌', '✌️', '🤞', '🤝', '🙏', '✋', '🤚', '👋', '💪', '✊', '👊', '🤜', '🤛']
+			emojis: [
+				'👍',
+				'👎',
+				'👏',
+				'🙌',
+				'👌',
+				'✌️',
+				'🤞',
+				'🤝',
+				'🙏',
+				'✋',
+				'🤚',
+				'👋',
+				'💪',
+				'✊',
+				'👊',
+				'🤜',
+				'🤛'
+			]
 		},
 		{
 			name: 'Math & Science',
-			emojis: ['📐', '📏', '📊', '📈', '📉', '🔬', '🔭', '⚗️', '🧮', '🧬', '⚛️', '🔢', '➕', '➖', '✖️', '➗', '🟰']
+			emojis: [
+				'📐',
+				'📏',
+				'📊',
+				'📈',
+				'📉',
+				'🔬',
+				'🔭',
+				'⚗️',
+				'🧮',
+				'🧬',
+				'⚛️',
+				'🔢',
+				'➕',
+				'➖',
+				'✖️',
+				'➗',
+				'🟰'
+			]
 		},
 		{
 			name: 'School',
-			emojis: ['📚', '📖', '📝', '✏️', '✒️', '🖊️', '🖍️', '📒', '📓', '📔', '📕', '📗', '📘', '📙', '🎓', '🎒', '🏫', '💡', '🧠', '📌', '📍', '✂️', '📎']
+			emojis: [
+				'📚',
+				'📖',
+				'📝',
+				'✏️',
+				'✒️',
+				'🖊️',
+				'🖍️',
+				'📒',
+				'📓',
+				'📔',
+				'📕',
+				'📗',
+				'📘',
+				'📙',
+				'🎓',
+				'🎒',
+				'🏫',
+				'💡',
+				'🧠',
+				'📌',
+				'📍',
+				'✂️',
+				'📎'
+			]
 		},
 		{
 			name: 'Stars & Symbols',
-			emojis: ['⭐', '🌟', '✨', '💫', '🔥', '💥', '✅', '❌', '⚠️', '❗', '❓', '❕', '❔', '💯', '🎯', '🏆', '🥇', '🥈', '🥉', '🎖️', '🏅']
+			emojis: [
+				'⭐',
+				'🌟',
+				'✨',
+				'💫',
+				'🔥',
+				'💥',
+				'✅',
+				'❌',
+				'⚠️',
+				'❗',
+				'❓',
+				'❕',
+				'❔',
+				'💯',
+				'🎯',
+				'🏆',
+				'🥇',
+				'🥈',
+				'🥉',
+				'🎖️',
+				'🏅'
+			]
 		},
 		{
 			name: 'Shapes',
-			emojis: ['🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '🟤', '⚫', '⚪', '🟥', '🟧', '🟨', '🟩', '🟦', '🟪', '🟫', '⬛', '⬜', '🔶', '🔷', '🔸', '🔹', '🔺', '🔻', '💠', '🔘']
+			emojis: [
+				'🔴',
+				'🟠',
+				'🟡',
+				'🟢',
+				'🔵',
+				'🟣',
+				'🟤',
+				'⚫',
+				'⚪',
+				'🟥',
+				'🟧',
+				'🟨',
+				'🟩',
+				'🟦',
+				'🟪',
+				'🟫',
+				'⬛',
+				'⬜',
+				'🔶',
+				'🔷',
+				'🔸',
+				'🔹',
+				'🔺',
+				'🔻',
+				'💠',
+				'🔘'
+			]
 		},
 		{
 			name: 'Arrows',
-			emojis: ['⬆️', '↗️', '➡️', '↘️', '⬇️', '↙️', '⬅️', '↖️', '↕️', '↔️', '↩️', '↪️', '⤴️', '⤵️', '🔃', '🔄', '🔀', '🔁', '🔂']
+			emojis: [
+				'⬆️',
+				'↗️',
+				'➡️',
+				'↘️',
+				'⬇️',
+				'↙️',
+				'⬅️',
+				'↖️',
+				'↕️',
+				'↔️',
+				'↩️',
+				'↪️',
+				'⤴️',
+				'⤵️',
+				'🔃',
+				'🔄',
+				'🔀',
+				'🔁',
+				'🔂'
+			]
 		},
 		{
 			name: 'Nature',
-			emojis: ['🌞', '🌝', '🌛', '⭐', '🌟', '💫', '✨', '🌍', '🌎', '🌏', '🌈', '☀️', '⛅', '☁️', '🌧️', '⛈️', '🌩️', '⚡', '❄️', '🔥', '💧', '🌊']
+			emojis: [
+				'🌞',
+				'🌝',
+				'🌛',
+				'⭐',
+				'🌟',
+				'💫',
+				'✨',
+				'🌍',
+				'🌎',
+				'🌏',
+				'🌈',
+				'☀️',
+				'⛅',
+				'☁️',
+				'🌧️',
+				'⛈️',
+				'🌩️',
+				'⚡',
+				'❄️',
+				'🔥',
+				'💧',
+				'🌊'
+			]
 		}
 	];
 
@@ -430,7 +617,7 @@
 <!--
 	Editor Container with Organized Collapsible Toolbar
 -->
-<div class="border border-border rounded-lg bg-card overflow-hidden">
+<div class="overflow-hidden rounded-lg border border-border bg-card">
 	<!-- Toolbar -->
 	<div class="border-b border-border bg-muted/50">
 		<!-- Main Toolbar Row -->
@@ -443,12 +630,12 @@
 				class="font-medium"
 				disabled={!editor}
 			>
-				<Type class="h-4 w-4 mr-1" />
+				<Type class="mr-1 h-4 w-4" />
 				Texte
 				{#if textSectionOpen}
-					<ChevronDown class="h-3 w-3 ml-1" />
+					<ChevronDown class="ml-1 h-3 w-3" />
 				{:else}
-					<ChevronRight class="h-3 w-3 ml-1" />
+					<ChevronRight class="ml-1 h-3 w-3" />
 				{/if}
 			</Button>
 
@@ -460,12 +647,12 @@
 				class="font-medium"
 				disabled={!editor}
 			>
-				<PilcrowSquare class="h-4 w-4 mr-1" />
+				<PilcrowSquare class="mr-1 h-4 w-4" />
 				Paragraphe
 				{#if paragraphSectionOpen}
-					<ChevronDown class="h-3 w-3 ml-1" />
+					<ChevronDown class="ml-1 h-3 w-3" />
 				{:else}
-					<ChevronRight class="h-3 w-3 ml-1" />
+					<ChevronRight class="ml-1 h-3 w-3" />
 				{/if}
 			</Button>
 
@@ -477,12 +664,12 @@
 				class="font-medium"
 				disabled={!editor}
 			>
-				<Plus class="h-4 w-4 mr-1" />
+				<Plus class="mr-1 h-4 w-4" />
 				Insertion
 				{#if insertSectionOpen}
-					<ChevronDown class="h-3 w-3 ml-1" />
+					<ChevronDown class="ml-1 h-3 w-3" />
 				{:else}
-					<ChevronRight class="h-3 w-3 ml-1" />
+					<ChevronRight class="ml-1 h-3 w-3" />
 				{/if}
 			</Button>
 
@@ -494,19 +681,19 @@
 				class="font-medium"
 				disabled={!editor}
 			>
-				<Sigma class="h-4 w-4 mr-1" />
+				<Sigma class="mr-1 h-4 w-4" />
 				Formule
 				{#if formuleSectionOpen}
-					<ChevronDown class="h-3 w-3 ml-1" />
+					<ChevronDown class="ml-1 h-3 w-3" />
 				{:else}
-					<ChevronRight class="h-3 w-3 ml-1" />
+					<ChevronRight class="ml-1 h-3 w-3" />
 				{/if}
 			</Button>
 
 			<!-- More Dropdown (Advanced Features) -->
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger
-					class="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3"
+					class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
 					disabled={!editor}
 				>
 					<MoreHorizontal class="h-4 w-4" />
@@ -518,18 +705,18 @@
 						onclick={() => editor?.chain().focus().toggleBlockquote().run()}
 						class={isBlockquote ? 'bg-accent' : ''}
 					>
-						<Quote class="h-4 w-4 mr-2" />
+						<Quote class="mr-2 h-4 w-4" />
 						Citation
 					</DropdownMenu.Item>
 					<DropdownMenu.Item
 						onclick={() => editor?.chain().focus().toggleCodeBlock().run()}
 						class={isCodeBlock ? 'bg-accent' : ''}
 					>
-						<CodeSquare class="h-4 w-4 mr-2" />
+						<CodeSquare class="mr-2 h-4 w-4" />
 						Bloc de code
 					</DropdownMenu.Item>
 					<DropdownMenu.Item onclick={() => editor?.chain().focus().setHorizontalRule().run()}>
-						<Minus class="h-4 w-4 mr-2" />
+						<Minus class="mr-2 h-4 w-4" />
 						Ligne horizontale
 					</DropdownMenu.Item>
 				</DropdownMenu.Content>
@@ -540,16 +727,16 @@
 
 			<!-- Action Buttons (Always Visible) -->
 			<Button variant="ghost" size="sm" onclick={handleClear} disabled={!editor}>
-				<Eraser class="h-4 w-4 mr-1" />
+				<Eraser class="mr-1 h-4 w-4" />
 				Effacer
 			</Button>
 
-			<Button size="sm" onclick={handleSend} disabled={!editor}> Envoyer </Button>
+			<Button size="sm" onclick={handleSend} disabled={!editor}>Envoyer</Button>
 		</div>
 
 		<!-- Text Section (Collapsible) -->
 		{#if textSectionOpen}
-			<div class="flex flex-wrap items-center gap-1 px-2 pb-2 border-t border-border/50 pt-2">
+			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 				<Button
 					variant="ghost"
 					size="sm"
@@ -605,7 +792,7 @@
 					<Code class="h-4 w-4" />
 				</Button>
 
-				<div class="w-px h-6 bg-border mx-1"></div>
+				<div class="mx-1 h-6 w-px bg-border"></div>
 
 				<Button
 					variant="ghost"
@@ -633,16 +820,16 @@
 
 		<!-- Paragraph Section (Collapsible) -->
 		{#if paragraphSectionOpen}
-			<div class="flex flex-wrap items-center gap-1 px-2 pb-2 border-t border-border/50 pt-2">
+			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 				<!-- Headings Dropdown -->
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger
-						class="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 {currentHeading
+						class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 {currentHeading
 							? 'bg-accent'
 							: ''}"
 						disabled={!editor}
 					>
-						<Heading class="h-4 w-4 mr-1" />
+						<Heading class="mr-1 h-4 w-4" />
 						{#if currentHeading}
 							<span>H{currentHeading}</span>
 						{:else}
@@ -662,7 +849,7 @@
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
 
-				<div class="w-px h-6 bg-border mx-1"></div>
+				<div class="mx-1 h-6 w-px bg-border"></div>
 
 				<!-- Text Alignment -->
 				<Button
@@ -713,7 +900,7 @@
 
 		<!-- Insert Section (Collapsible) -->
 		{#if insertSectionOpen}
-			<div class="flex flex-wrap items-center gap-1 px-2 pb-2 border-t border-border/50 pt-2">
+			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 				<!-- Lists -->
 				<Button
 					variant="ghost"
@@ -748,12 +935,12 @@
 					<ListTodo class="h-4 w-4" />
 				</Button>
 
-				<div class="w-px h-6 bg-border mx-1"></div>
+				<div class="mx-1 h-6 w-px bg-border"></div>
 
 				<!-- Color Picker -->
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger
-						class="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3"
+						class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
 						disabled={!editor}
 					>
 						<Palette class="h-4 w-4" />
@@ -764,7 +951,7 @@
 							{#each colors as color}
 								<button
 									onclick={() => setColor(color)}
-									class="w-8 h-8 rounded border-2 border-border hover:scale-110 transition-transform"
+									class="h-8 w-8 rounded border-2 border-border transition-transform hover:scale-110"
 									style="background-color: {color}"
 									title={color}
 								></button>
@@ -776,7 +963,7 @@
 				<!-- Highlight Picker -->
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger
-						class="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3"
+						class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
 						disabled={!editor}
 					>
 						<Highlighter class="h-4 w-4" />
@@ -787,7 +974,7 @@
 							{#each highlights as color, i}
 								<button
 									onclick={() => setHighlight(color)}
-									class="w-8 h-8 rounded border-2 border-border hover:scale-110 transition-transform"
+									class="h-8 w-8 rounded border-2 border-border transition-transform hover:scale-110"
 									style="background-color: {color || 'transparent'}"
 									title={i === 0 ? 'Aucun' : color}
 								>
@@ -800,7 +987,7 @@
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
 
-				<div class="w-px h-6 bg-border mx-1"></div>
+				<div class="mx-1 h-6 w-px bg-border"></div>
 
 				<!-- Link -->
 				<Button
@@ -814,19 +1001,19 @@
 					<LinkIcon class="h-4 w-4" />
 				</Button>
 
-				<div class="w-px h-6 bg-border mx-1"></div>
+				<div class="mx-1 h-6 w-px bg-border"></div>
 
 				<!-- Emoji Picker -->
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger
-						class="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3"
+						class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
 						disabled={!editor}
 					>
 						<Smile class="h-4 w-4" />
 					</DropdownMenu.Trigger>
 					<DropdownMenu.Content class="w-80">
 						<!-- Emoji Category Tabs -->
-						<div class="flex border-b border-border mb-2">
+						<div class="mb-2 flex border-b border-border">
 							{#each emojiCategories as category, index}
 								<button
 									onclick={() => (selectedEmojiCategory = index)}
@@ -840,11 +1027,11 @@
 							{/each}
 						</div>
 						<!-- Emoji Grid -->
-						<div class="grid grid-cols-8 gap-1 p-2 max-h-64 overflow-y-auto">
+						<div class="grid max-h-64 grid-cols-8 gap-1 overflow-y-auto p-2">
 							{#each emojiCategories[selectedEmojiCategory].emojis as emoji}
 								<button
 									onclick={() => insertEmoji(emoji)}
-									class="text-2xl hover:bg-accent rounded p-1 transition-colors"
+									class="rounded p-1 text-2xl transition-colors hover:bg-accent"
 									title={emoji}
 								>
 									{emoji}
@@ -858,7 +1045,7 @@
 
 		<!-- Formule Section (Collapsible) -->
 		{#if formuleSectionOpen}
-			<div class="flex flex-wrap items-center gap-1 px-2 pb-2 border-t border-border/50 pt-2">
+			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 				<!-- Empty Formula Button -->
 				<Button
 					variant="ghost"
@@ -871,7 +1058,7 @@
 					∅
 				</Button>
 
-				<div class="w-px h-6 bg-border mx-1"></div>
+				<div class="mx-1 h-6 w-px bg-border"></div>
 
 				<!-- Math Template Buttons -->
 				{#each mathTemplates as template}
@@ -887,7 +1074,7 @@
 					</Button>
 				{/each}
 
-				<div class="w-px h-6 bg-border mx-1"></div>
+				<div class="mx-1 h-6 w-px bg-border"></div>
 
 				<!-- Block Formula Button -->
 				<Button
@@ -906,7 +1093,7 @@
 
 	<!-- Link Dialog -->
 	{#if showLinkDialog}
-		<div class="p-3 bg-muted/50 border-b border-border flex items-center gap-2">
+		<div class="flex items-center gap-2 border-b border-border bg-muted/50 p-3">
 			<Input
 				type="url"
 				bind:value={linkUrl}

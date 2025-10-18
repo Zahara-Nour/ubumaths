@@ -2,7 +2,6 @@
   Grade Display Component
   Shows grade results with score, percentage, and letter grade
 -->
-<parameter name="content">
 <script lang="ts">
 	import type { GradeResult } from '$lib/services/geometry-grader';
 	import { GradeUtils } from '$lib/services/geometry-grade-utils';
@@ -78,7 +77,9 @@
 				{#if showPenalties && gradeResult.penalties.total > 0}
 					<!-- Hint Penalties -->
 					{#if gradeResult.penalties.hints}
-						<div class="flex items-center justify-between rounded-lg bg-orange-50 p-3 dark:bg-orange-950">
+						<div
+							class="flex items-center justify-between rounded-lg bg-orange-50 p-3 dark:bg-orange-950"
+						>
 							<span class="text-sm text-orange-700 dark:text-orange-300">
 								Pénalité indices ({gradeResult.penalties.hints.hintsUsed})
 							</span>
@@ -90,10 +91,10 @@
 
 					<!-- Time Penalties -->
 					{#if gradeResult.penalties.time}
-						<div class="flex items-center justify-between rounded-lg bg-orange-50 p-3 dark:bg-orange-950">
-							<span class="text-sm text-orange-700 dark:text-orange-300">
-								Pénalité temps
-							</span>
+						<div
+							class="flex items-center justify-between rounded-lg bg-orange-50 p-3 dark:bg-orange-950"
+						>
+							<span class="text-sm text-orange-700 dark:text-orange-300"> Pénalité temps </span>
 							<span class="font-medium text-orange-700 dark:text-orange-300">
 								-{Math.round(gradeResult.penalties.time.penalty)}
 							</span>
@@ -102,7 +103,9 @@
 
 					<!-- Attempt Penalties -->
 					{#if gradeResult.penalties.attempts && gradeResult.penalties.attempts > 0}
-						<div class="flex items-center justify-between rounded-lg bg-orange-50 p-3 dark:bg-orange-950">
+						<div
+							class="flex items-center justify-between rounded-lg bg-orange-50 p-3 dark:bg-orange-950"
+						>
 							<span class="text-sm text-orange-700 dark:text-orange-300">
 								Pénalité tentatives
 							</span>
@@ -133,7 +136,10 @@
 			</div>
 
 			<!-- Performance Message -->
-			<div class="rounded-lg border-2 border-dashed p-4 text-center" style="border-color: {performanceTier.color}">
+			<div
+				class="rounded-lg border-2 border-dashed p-4 text-center"
+				style="border-color: {performanceTier.color}"
+			>
 				<p class="text-sm font-medium" style="color: {performanceTier.color}">
 					{performanceTier.message}
 				</p>

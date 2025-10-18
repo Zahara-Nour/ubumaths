@@ -355,14 +355,12 @@
 	<!-- Page Header -->
 	<div>
 		<h1 class="text-3xl font-bold text-foreground">Mes Classes</h1>
-		<p class="text-muted-foreground mt-2">
-			Gérez vos classes et leurs emplois du temps
-		</p>
+		<p class="mt-2 text-muted-foreground">Gérez vos classes et leurs emplois du temps</p>
 	</div>
 
 	<!-- Warning if no timetable configured -->
 	{#if !data.school?.timetable || data.school.timetable.periods.length === 0}
-		<div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4">
+		<div class="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-yellow-800">
 			<p class="text-sm">
 				<strong>Attention:</strong> Aucun emploi du temps n'est configuré pour votre école. Contactez
 				l'administrateur pour configurer les périodes avant de créer des créneaux.
@@ -374,8 +372,10 @@
 	{#if data.classes && data.classes.length > 0}
 		<Tabs.Root value={data.classes[0]?.id} class="space-y-6">
 			<!-- Tab List -->
-			<Tabs.List class="grid w-full grid-cols-{data.classes.length > 4 ? '5' : data.classes.length}">
-				{#each data.classes as classItem}
+			<Tabs.List
+				class="grid w-full grid-cols-{data.classes.length > 4 ? '5' : data.classes.length}"
+			>
+				{#each data.classes as classItem (classItem.id)}
 					<Tabs.Trigger value={classItem.id}>
 						{classItem.name}
 					</Tabs.Trigger>
@@ -386,12 +386,12 @@
 			{#each data.classes as classItem}
 				<Tabs.Content value={classItem.id} class="space-y-6">
 					<!-- Class Info Header -->
-					<div class="bg-muted/30 rounded-lg p-4 border border-border">
+					<div class="rounded-lg border border-border bg-muted/30 p-4">
 						<h2 class="text-xl font-semibold text-foreground">{classItem.name}</h2>
 						{#if classItem.description}
-							<p class="text-sm text-muted-foreground mt-1">{classItem.description}</p>
+							<p class="mt-1 text-sm text-muted-foreground">{classItem.description}</p>
 						{/if}
-						<p class="text-sm text-muted-foreground mt-2">
+						<p class="mt-2 text-sm text-muted-foreground">
 							Code de classe: <span class="font-mono font-semibold">{classItem.join_code}</span>
 						</p>
 					</div>
@@ -404,7 +404,7 @@
 
 					<!-- Schedule Grid -->
 					<div>
-						<h3 class="text-lg font-semibold text-foreground mb-4">Emploi du Temps</h3>
+						<h3 class="mb-4 text-lg font-semibold text-foreground">Emploi du Temps</h3>
 						<ClassScheduleGrid
 							schedules={getMergedSchedules(classItem.id, classItem.schedules)}
 							periods={data.school?.timetable?.periods || []}
@@ -416,8 +416,8 @@
 		</Tabs.Root>
 	{:else}
 		<!-- Empty State -->
-		<div class="bg-card rounded-lg border border-border shadow-sm p-12 text-center">
-			<h3 class="text-lg font-semibold text-foreground mb-2">Aucune classe</h3>
+		<div class="rounded-lg border border-border bg-card p-12 text-center shadow-sm">
+			<h3 class="mb-2 text-lg font-semibold text-foreground">Aucune classe</h3>
 			<p class="text-muted-foreground">
 				Vous n'avez pas encore de classes. Contactez un administrateur pour créer une classe.
 			</p>
@@ -431,7 +431,7 @@
 		bind:open={modalOpen}
 		mode={modalMode}
 		entry={selectedEntry}
-		defaultDay={defaultDay}
+		{defaultDay}
 		periods={data.school.timetable.periods}
 		onClose={handleModalClose}
 		onSave={handleSave}
@@ -443,7 +443,7 @@
 		bind:open={modalOpen}
 		mode={modalMode}
 		entry={selectedEntry}
-		defaultDay={defaultDay}
+		{defaultDay}
 		periods={[]}
 		onClose={handleModalClose}
 		onSave={handleSave}

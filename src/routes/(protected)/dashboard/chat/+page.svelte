@@ -23,7 +23,7 @@
 			supabase={data.supabase}
 		/>
 	{:else}
-		<div class="flex items-center justify-center h-full">
+		<div class="flex h-full items-center justify-center">
 			<p class="text-muted-foreground">Loading...</p>
 		</div>
 	{/if}

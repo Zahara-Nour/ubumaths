@@ -44,11 +44,13 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 	// Fetch all classes with teacher and school info
 	const { data: classes, error: classesError } = await supabase
 		.from('classes')
-		.select(`
+		.select(
+			`
 			*,
 			teacher:profiles!classes_teacher_id_fkey(id, firstname, lastname, email),
 			school:schools(id, name)
-		`)
+		`
+		)
 		.order('name');
 
 	if (classesError) {

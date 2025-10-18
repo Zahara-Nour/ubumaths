@@ -9,8 +9,12 @@
 		type?: 'number' | 'text';
 	}
 
-	let { onsubmit, disabled = false, placeholder = 'Votre réponse', type = 'number' }: Props =
-		$props();
+	let {
+		onsubmit,
+		disabled = false,
+		placeholder = 'Votre réponse',
+		type = 'number'
+	}: Props = $props();
 
 	let answer = $state('');
 	let errorMessage = $state('');
@@ -52,7 +56,7 @@
 	<!-- Input Field -->
 	<div class="space-y-2">
 		<Input
-			type={type}
+			{type}
 			bind:value={answer}
 			{placeholder}
 			{disabled}
@@ -67,7 +71,5 @@
 	</div>
 
 	<!-- Submit Button -->
-	<Button onclick={handleSubmit} {disabled} class="w-full" size="lg">
-		Valider
-	</Button>
+	<Button onclick={handleSubmit} {disabled} class="w-full" size="lg">Valider</Button>
 </div>

@@ -49,7 +49,9 @@ async function assignVoltaireSchool() {
 	}
 
 	const voltaireSchool = schools[0];
-	console.log(`✅ Found school: ${voltaireSchool.name} (${voltaireSchool.city}, ${voltaireSchool.country})`);
+	console.log(
+		`✅ Found school: ${voltaireSchool.name} (${voltaireSchool.city}, ${voltaireSchool.country})`
+	);
 	console.log(`   School ID: ${voltaireSchool.id}\n`);
 
 	console.log('═══════════════════════════════════════════════════════════════\n');
@@ -80,9 +82,10 @@ async function assignVoltaireSchool() {
 	let skippedCount = 0;
 
 	for (const profile of profiles) {
-		const name = profile.firstname && profile.lastname
-			? `${profile.firstname} ${profile.lastname}`
-			: profile.email;
+		const name =
+			profile.firstname && profile.lastname
+				? `${profile.firstname} ${profile.lastname}`
+				: profile.email;
 
 		console.log(`📧 ${name} (${profile.role})`);
 

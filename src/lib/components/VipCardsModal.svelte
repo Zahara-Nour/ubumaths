@@ -61,10 +61,7 @@
 		getTotalUnusedCards,
 		sortCardsByPriority
 	} from '$lib/utils/vip-cards';
-	import {
-		getTotalVipCards,
-		type VipCard as VipCardType
-	} from '$lib/types/vip-card';
+	import { getTotalVipCards, type VipCard as VipCardType } from '$lib/types/vip-card';
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { Sparkles } from 'lucide-svelte';
 	import { invalidateAll } from '$app/navigation';
@@ -252,7 +249,7 @@
 			</div>
 		{:else}
 			<!-- All Cards Grid - Sorted by Rarity -->
-			<div class="grid grid-cols-2 gap-8 sm:grid-cols-3 xl:grid-cols-3 p-6">
+			<div class="grid grid-cols-2 gap-8 p-6 sm:grid-cols-3 xl:grid-cols-3">
 				{#each cardsWithCounts as cardWithCount}
 					<div
 						class="transform cursor-pointer transition-transform hover:scale-105"

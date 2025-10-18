@@ -23,13 +23,11 @@
 <div class="space-y-6">
 	<!-- Page Header -->
 	<div>
-		<h1 class="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
+		<h1 class="flex items-center gap-2 text-3xl font-bold tracking-tight text-foreground">
 			<Settings class="h-8 w-8" />
 			Settings
 		</h1>
-		<p class="mt-2 text-muted-foreground">
-			System settings and application information
-		</p>
+		<p class="mt-2 text-muted-foreground">System settings and application information</p>
 	</div>
 
 	<Separator />
@@ -41,9 +39,7 @@
 				<Info class="h-5 w-5" />
 				Application Information
 			</Card.Title>
-			<Card.Description>
-				Current version and system details
-			</Card.Description>
+			<Card.Description>Current version and system details</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			<div class="space-y-4">
@@ -53,7 +49,7 @@
 						<p class="text-sm font-medium text-foreground">Version</p>
 						<p class="text-xs text-muted-foreground">Current application version</p>
 					</div>
-					<Badge variant="outline" class="text-base px-4 py-1">
+					<Badge variant="outline" class="px-4 py-1 text-base">
 						{getVersion()}
 					</Badge>
 				</div>
@@ -66,7 +62,7 @@
 						<p class="text-sm font-medium text-foreground">Raw Version</p>
 						<p class="text-xs text-muted-foreground">Semantic version number</p>
 					</div>
-					<code class="text-xs bg-muted px-2 py-1 rounded">
+					<code class="rounded bg-muted px-2 py-1 text-xs">
 						{getRawVersion()}
 					</code>
 				</div>
@@ -78,9 +74,7 @@
 	<Card.Root>
 		<Card.Header>
 			<Card.Title>Version Management</Card.Title>
-			<Card.Description>
-				How to update the application version
-			</Card.Description>
+			<Card.Description>How to update the application version</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			<div class="space-y-3">
@@ -90,22 +84,22 @@
 
 				<div class="space-y-2 text-sm">
 					<div class="flex items-start gap-2">
-						<code class="bg-muted px-2 py-1 rounded text-xs flex-shrink-0">pnpm version patch</code>
+						<code class="flex-shrink-0 rounded bg-muted px-2 py-1 text-xs">pnpm version patch</code>
 						<span class="text-muted-foreground">Bug fixes (0.0.1 → 0.0.2)</span>
 					</div>
 
 					<div class="flex items-start gap-2">
-						<code class="bg-muted px-2 py-1 rounded text-xs flex-shrink-0">pnpm version minor</code>
+						<code class="flex-shrink-0 rounded bg-muted px-2 py-1 text-xs">pnpm version minor</code>
 						<span class="text-muted-foreground">New features (0.0.1 → 0.1.0)</span>
 					</div>
 
 					<div class="flex items-start gap-2">
-						<code class="bg-muted px-2 py-1 rounded text-xs flex-shrink-0">pnpm version major</code>
+						<code class="flex-shrink-0 rounded bg-muted px-2 py-1 text-xs">pnpm version major</code>
 						<span class="text-muted-foreground">Breaking changes (0.0.1 → 1.0.0)</span>
 					</div>
 				</div>
 
-				<p class="text-xs text-muted-foreground mt-4">
+				<p class="mt-4 text-xs text-muted-foreground">
 					These commands automatically update package.json and create a git tag.
 				</p>
 			</div>

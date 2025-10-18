@@ -70,7 +70,9 @@ class CombatStore {
 	}
 
 	get monsterHP() {
-		return this._combat?.monster_endurance_remaining ?? this._combat?.monster_snapshot.max_endurance ?? 0;
+		return (
+			this._combat?.monster_endurance_remaining ?? this._combat?.monster_snapshot.max_endurance ?? 0
+		);
 	}
 
 	get monsterMaxHP() {

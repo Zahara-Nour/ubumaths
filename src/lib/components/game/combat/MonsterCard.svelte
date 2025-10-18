@@ -30,14 +30,14 @@
 <button
 	class="monster-card group relative overflow-hidden rounded-lg border-2 bg-card transition-all {categoryColors[
 		monster.category
-	]} {selectable
-		? 'cursor-pointer hover:scale-105 hover:shadow-lg'
-		: 'cursor-default'} {onclick ? '' : 'pointer-events-none'}"
-	onclick={onclick}
+	]} {selectable ? 'cursor-pointer hover:scale-105 hover:shadow-lg' : 'cursor-default'} {onclick
+		? ''
+		: 'pointer-events-none'}"
+	{onclick}
 	disabled={!onclick}
 >
 	<!-- Monster Image -->
-	<div class="aspect-square overflow-hidden bg-muted flex items-center justify-center">
+	<div class="flex aspect-square items-center justify-center overflow-hidden bg-muted">
 		{#if imageError}
 			<div class="text-8xl">{elementEmojis[monster.element]}</div>
 		{:else}
@@ -46,13 +46,13 @@
 				alt={monster.name}
 				class="h-full w-full object-cover transition-transform group-hover:scale-110"
 				loading="lazy"
-				onerror={() => imageError = true}
+				onerror={() => (imageError = true)}
 			/>
 		{/if}
 	</div>
 
 	<!-- Monster Info -->
-	<div class="p-3 space-y-2">
+	<div class="space-y-2 p-3">
 		<!-- Name & Level -->
 		<div class="flex items-center justify-between">
 			<h3 class="font-bold text-card-foreground">{monster.name}</h3>
@@ -63,9 +63,9 @@
 		<div class="flex items-center justify-between text-sm">
 			<span class="flex items-center gap-1">
 				<span>{elementEmojis[monster.element]}</span>
-				<span class="capitalize text-muted-foreground">{monster.element}</span>
+				<span class="text-muted-foreground capitalize">{monster.element}</span>
 			</span>
-			<span class="capitalize text-muted-foreground">{monster.category}</span>
+			<span class="text-muted-foreground capitalize">{monster.category}</span>
 		</div>
 
 		<!-- HP -->
@@ -77,7 +77,7 @@
 
 	<!-- Legendary Badge -->
 	{#if monster.category === 'legendary'}
-		<div class="absolute right-2 top-2 rounded-full bg-yellow-500 px-2 py-1 text-xs font-bold">
+		<div class="absolute top-2 right-2 rounded-full bg-yellow-500 px-2 py-1 text-xs font-bold">
 			⭐ LÉGENDAIRE
 		</div>
 	{/if}

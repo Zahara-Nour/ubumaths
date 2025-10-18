@@ -98,7 +98,7 @@
 			</span>
 		</div>
 		<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-			{#each cardsByRarity.common as card}
+			{#each cardsByRarity.common as card (card.id)}
 				<div class:grayscale={!isCardOwned(card)} class:opacity-50={!isCardOwned(card)}>
 					<VipCardHolo {card} count={getCardCount(card)} />
 				</div>
@@ -115,7 +115,7 @@
 			</span>
 		</div>
 		<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-			{#each cardsByRarity.rare as card}
+			{#each cardsByRarity.rare as card (card.id)}
 				<div class:grayscale={!isCardOwned(card)} class:opacity-50={!isCardOwned(card)}>
 					<VipCardHolo {card} count={getCardCount(card)} />
 				</div>
@@ -132,7 +132,7 @@
 			</span>
 		</div>
 		<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-			{#each cardsByRarity.epic as card}
+			{#each cardsByRarity.epic as card (card.id)}
 				<div class:grayscale={!isCardOwned(card)} class:opacity-50={!isCardOwned(card)}>
 					<VipCardHolo {card} count={getCardCount(card)} />
 				</div>
@@ -149,7 +149,7 @@
 			</span>
 		</div>
 		<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-			{#each cardsByRarity.legendary as card}
+			{#each cardsByRarity.legendary as card (card.id)}
 				<div class:grayscale={!isCardOwned(card)} class:opacity-50={!isCardOwned(card)}>
 					<VipCardHolo {card} count={getCardCount(card)} />
 				</div>

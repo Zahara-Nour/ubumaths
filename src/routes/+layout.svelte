@@ -61,19 +61,18 @@
 <!-- Toast notifications -->
 <!-- gap={12} adds spacing between toasts to prevent overlap -->
 <!-- offset="16px" adds padding from screen edge -->
-<Toaster
-	richColors
-	position="top-right"
-	expand={true}
-	visibleToasts={5}
-	gap={12}
-	offset="16px"
-/>
+<Toaster richColors position="top-right" expand={true} visibleToasts={5} gap={12} offset="16px" />
 
 <div class="flex h-screen flex-col">
 	<!-- Header - only show on non-dashboard routes -->
 	{#if !isDashboardRoute}
-		<Header title="UbuMaths" session={data.session} user={data.user} profile={data.profile} supabase={data.supabase} />
+		<Header
+			title="UbuMaths"
+			session={data.session}
+			user={data.user}
+			profile={data.profile}
+			supabase={data.supabase}
+		/>
 	{/if}
 
 	<!-- Main content area with sidebar -->
@@ -92,7 +91,9 @@
 	<!-- Footer - only show on non-dashboard routes -->
 	{#if !isDashboardRoute}
 		<footer class="border-t border-border bg-background py-4">
-			<div class="container mx-auto px-4 flex justify-between items-center text-sm text-muted-foreground">
+			<div
+				class="container mx-auto flex items-center justify-between px-4 text-sm text-muted-foreground"
+			>
 				<p>&copy; {new Date().getFullYear()} UbuMaths. Tous droits réservés.</p>
 				<p class="text-xs">{getVersion()}</p>
 			</div>

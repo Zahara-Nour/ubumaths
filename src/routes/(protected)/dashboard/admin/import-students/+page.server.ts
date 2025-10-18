@@ -167,7 +167,9 @@ export const actions: Actions = {
 							.single();
 
 						if (existingProfile) {
-							console.log(`Profile exists for ${student.email}, updating profile and class memberships...`);
+							console.log(
+								`Profile exists for ${student.email}, updating profile and class memberships...`
+							);
 
 							// Update the student's profile with school_id, grade, and gender from import
 							const profileUpdates: {
@@ -258,7 +260,7 @@ export const actions: Actions = {
 				}
 
 				// Other database errors (not duplicate email)
-				return fail(500, { message: 'Erreur lors de l\'importation des élèves' });
+				return fail(500, { message: "Erreur lors de l'importation des élèves" });
 			}
 
 			return {

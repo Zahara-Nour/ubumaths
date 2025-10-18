@@ -17,13 +17,13 @@
   - Different backgrounds for light/dark mode
 -->
 <script lang="ts">
-	import { confetti } from '@neoconfetti/svelte'
-	import { reducedMotion } from './reduced-motion.svelte'
-	import { game } from './game.svelte'
-	import dancing from '$lib/assets/images/dancing.gif'
-	import type { Difficulty } from './types'
-	import { Button } from '$lib/components/ui/button'
-	import * as Select from '$lib/components/ui/select'
+	import { confetti } from '@neoconfetti/svelte';
+	import { reducedMotion } from './reduced-motion.svelte';
+	import { game } from './game.svelte';
+	import dancing from '$lib/assets/images/dancing.gif';
+	import type { Difficulty } from './types';
+	import { Button } from '$lib/components/ui/button';
+	import * as Select from '$lib/components/ui/select';
 
 	// Random congratulations messages for when player wins
 	const congrats = [
@@ -32,33 +32,33 @@
 		'Well Done !',
 		'You nailed it !',
 		'You rock !',
-		'Great !',
-	]
+		'Great !'
+	];
 
 	// All available difficulty levels (French grade levels)
-	const difficulties: Difficulty[] = ['6ème', '5ème', '4ème', '3ème', '2nde', '1ère', 'Tale']
+	const difficulties: Difficulty[] = ['6ème', '5ème', '4ème', '3ème', '2nde', '1ère', 'Tale'];
 
 	// ===== Local Component State =====
 
 	/** Triggers wiggle animation when invalid word is submitted */
-	let badGuess = $state(false)
+	let badGuess = $state(false);
 
 	// ===== Derived Values (Computed from Game State) =====
 
 	/** Has the player won the game? */
-	let won = $derived(game.hasWon())
+	let won = $derived(game.hasWon());
 
 	/** Has the player lost the game? */
-	let lost = $derived(game.hasLost())
+	let lost = $derived(game.hasLost());
 
 	/** Is the game over (won or lost)? */
-	let gameOver = $derived(game.isGameOver())
+	let gameOver = $derived(game.isGameOver());
 
 	/** Current guess being typed (may be incomplete) */
-	let currentGuess = $derived(game.getCurrentGuess())
+	let currentGuess = $derived(game.getCurrentGuess());
 
 	/** Can the current guess be submitted? (at least 1 letter required) */
-	let canSubmit = $derived(currentGuess.length > 0)
+	let canSubmit = $derived(currentGuess.length > 0);
 
 	/**
 	 * Map of CSS classnames for keyboard styling
@@ -68,49 +68,49 @@
 	 * - 'missing': Letter not in word (gray)
 	 */
 	let classnames = $derived.by(() => {
-		const map: Record<string, 'exact' | 'close' | 'missing'> = {}
+		const map: Record<string, 'exact' | 'close' | 'missing'> = {};
 
 		game.answers.forEach((answer, i) => {
-			const guess = game.guesses[i]
+			const guess = game.guesses[i];
 
 			for (let i = 0; i < guess.length; i += 1) {
-				const letter = guess[i]
+				const letter = guess[i];
 
 				if (answer[i] === 'x') {
-					map[letter] = 'exact'
+					map[letter] = 'exact';
 				} else if (!map[letter]) {
 					// Only update if not already marked as exact
-					map[letter] = answer[i] === 'c' ? 'close' : 'missing'
+					map[letter] = answer[i] === 'c' ? 'close' : 'missing';
 				}
 			}
-		})
+		});
 
-		return map
-	})
+		return map;
+	});
 
 	/**
 	 * Map of accessibility descriptions for screen readers
 	 * Provides text descriptions of letter states
 	 */
 	let description = $derived.by(() => {
-		const map: Record<string, string> = {}
+		const map: Record<string, string> = {};
 
 		game.answers.forEach((answer, i) => {
-			const guess = game.guesses[i]
+			const guess = game.guesses[i];
 
 			for (let i = 0; i < guess.length; i += 1) {
-				const letter = guess[i]
+				const letter = guess[i];
 
 				if (answer[i] === 'x') {
-					map[letter] = 'correct'
+					map[letter] = 'correct';
 				} else if (!map[letter]) {
-					map[letter] = answer[i] === 'c' ? 'present' : 'absent'
+					map[letter] = answer[i] === 'c' ? 'present' : 'absent';
 				}
 			}
-		})
+		});
 
-		return map
-	})
+		return map;
+	});
 
 	// ===== Event Handlers =====
 
@@ -120,22 +120,22 @@
 	 */
 	function handleKeyClick(key: string) {
 		if (key === 'enter') {
-			if (!canSubmit) return
+			if (!canSubmit) return;
 
 			// Try to submit guess
-			const valid = game.enterGuess()
+			const valid = game.enterGuess();
 			if (!valid) {
 				// Trigger wiggle animation for invalid word
-				badGuess = true
-				setTimeout(() => (badGuess = false), 500)
+				badGuess = true;
+				setTimeout(() => (badGuess = false), 500);
 			}
 		} else if (key === 'backspace') {
-			game.updateGuess('backspace')
-			badGuess = false
+			game.updateGuess('backspace');
+			badGuess = false;
 		} else {
 			// Regular letter
-			game.updateGuess(key)
-			badGuess = false
+			game.updateGuess(key);
+			badGuess = false;
 		}
 	}
 
@@ -146,15 +146,15 @@
 	 */
 	function handleKeydown(event: KeyboardEvent) {
 		// Ignore keyboard input if game is over or meta key is pressed
-		if (event.metaKey || gameOver) return
+		if (event.metaKey || gameOver) return;
 
 		if (event.key === 'Enter') {
-			handleKeyClick('enter')
+			handleKeyClick('enter');
 		} else if (event.key === 'Backspace') {
-			handleKeyClick('backspace')
+			handleKeyClick('backspace');
 		} else if (/^[a-z]$/i.test(event.key)) {
 			// Only accept single letters
-			handleKeyClick(event.key.toLowerCase())
+			handleKeyClick(event.key.toLowerCase());
 		}
 	}
 
@@ -164,8 +164,8 @@
 	 * @param selected - Selected difficulty option from Select component
 	 */
 	function handleDifficultyChange(selected: { value: Difficulty; label: string } | undefined) {
-		if (!selected || gameOver) return
-		game.startNewGame(selected.value, game.maxAttempts)
+		if (!selected || gameOver) return;
+		game.startNewGame(selected.value, game.maxAttempts);
 	}
 
 	/**
@@ -173,7 +173,7 @@
 	 * @param delta - Amount to change (+1 or -1)
 	 */
 	function handleAdjustAttempts(delta: number) {
-		game.adjustAttempts(delta)
+		game.adjustAttempts(delta);
 	}
 
 	/**
@@ -181,9 +181,9 @@
 	 * Clears localStorage and generates new word
 	 */
 	function handleRestart() {
-		game.clearSaved()
-		game.startNewGame(game.difficulty, game.maxAttempts)
-		badGuess = false
+		game.clearSaved();
+		game.startNewGame(game.difficulty, game.maxAttempts);
+		badGuess = false;
 	}
 </script>
 
@@ -211,7 +211,7 @@
 						{game.difficulty}
 					</Select.Trigger>
 					<Select.Content>
-						{#each difficulties as diff}
+						{#each difficulties as diff (diff)}
 							<Select.Item value={diff}>{diff}</Select.Item>
 						{/each}
 					</Select.Content>
@@ -243,12 +243,17 @@
 	{/if}
 
 	<!-- Game Grid -->
-	<div class="grid" class:playing={!won} class:bad-guess={badGuess} style="--grid-size: {game.getSize()}">
-		{#each Array(game.maxAttempts) as _, row}
+	<div
+		class="grid"
+		class:playing={!won}
+		class:bad-guess={badGuess}
+		style="--grid-size: {game.getSize()}"
+	>
+		{#each Array(game.maxAttempts) as _, row (row)}
 			{@const current = row === game.currentRow && !gameOver}
 			<h2 class="visually-hidden">Row {row + 1}</h2>
 			<div class="row" class:current>
-				{#each Array(game.getSize()) as _, column}
+				{#each Array(game.getSize()) as _, column (column)}
 					{@const answer = game.answers[row]?.[column]}
 					{@const value = game.guesses[row]?.[column] ?? ''}
 					{@const selected = current && column === currentGuess.length}
@@ -328,9 +333,9 @@
 
 				<button data-key="backspace" onclick={() => handleKeyClick('backspace')}> back </button>
 
-				{#each ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'] as row}
+				{#each ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'] as row (row)}
 					<div class="row">
-						{#each row as letter}
+						{#each row as letter (letter)}
 							<button
 								data-key={letter}
 								class={classnames[letter]}
@@ -356,7 +361,7 @@
 			force: 0.7,
 			stageWidth: typeof window !== 'undefined' ? window.innerWidth : 800,
 			stageHeight: typeof window !== 'undefined' ? window.innerHeight : 600,
-			colors: ['#ff3e00', '#40b3ff', '#676778'],
+			colors: ['#ff3e00', '#40b3ff', '#676778']
 		}}
 	></div>
 {/if}

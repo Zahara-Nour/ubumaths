@@ -50,7 +50,7 @@
 			toaster.success(`+${amount} gidouilles pour ${studentName} !`);
 		} catch (error) {
 			console.error('Error awarding gidouilles:', error);
-			toaster.error('Erreur lors de l\'attribution des gidouilles');
+			toaster.error("Erreur lors de l'attribution des gidouilles");
 		}
 	};
 
@@ -64,9 +64,7 @@
 	<!-- Header -->
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold text-foreground">Roue de la Fortune</h1>
-		<p class="mt-2 text-muted-foreground">
-			Sélectionnez aléatoirement un élève de votre classe
-		</p>
+		<p class="mt-2 text-muted-foreground">Sélectionnez aléatoirement un élève de votre classe</p>
 	</div>
 
 	<!-- Class Selection -->
@@ -82,7 +80,7 @@
 				<select
 					id="class-select"
 					bind:value={selectedClassId}
-					class="w-full rounded-md border border-input bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+					class="w-full rounded-md border border-input bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 				>
 					<option value="">Sélectionner une classe</option>
 					{#each data.classes as classItem}
@@ -104,7 +102,7 @@
 					min="0"
 					step="1"
 					bind:value={gidouilleReward}
-					class="w-full rounded-md border border-input bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+					class="w-full rounded-md border border-input bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 					placeholder="10"
 				/>
 				<p class="mt-1 text-xs text-muted-foreground">

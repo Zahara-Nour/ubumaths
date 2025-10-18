@@ -144,7 +144,7 @@ export async function validateExercise(
 	const feedback: string[] = [];
 	const measurements: Record<string, number> = {};
 
-	let score = 0;
+	const score = 0;
 	const maxScore = exercise.max_score;
 
 	try {
@@ -240,7 +240,7 @@ async function validateMeasurement(
 			score = Math.max(0, 100 - (difference / tolerance) * 20);
 			errors.push({
 				code: 'MEASUREMENT_INCORRECT',
-				message: 'La mesure n\'est pas correcte',
+				message: "La mesure n'est pas correcte",
 				expectedValue: expectedAnswer,
 				actualValue
 			});
@@ -599,9 +599,7 @@ export function validatePointCoordinates(
 
 	if (!point || !point.existe) return false;
 
-	return (
-		Math.abs(point.x - expectedX) <= tolerance && Math.abs(point.y - expectedY) <= tolerance
-	);
+	return Math.abs(point.x - expectedX) <= tolerance && Math.abs(point.y - expectedY) <= tolerance;
 }
 
 // =========================
@@ -656,7 +654,13 @@ export function validateLinesParallel(
 
 	if (!points1 || !points2) return false;
 
-	return MathGraphHelpers.linesParallel(points1.p1, points1.p2, points2.p1, points2.p2, angleTolerance);
+	return MathGraphHelpers.linesParallel(
+		points1.p1,
+		points1.p2,
+		points2.p1,
+		points2.p2,
+		angleTolerance
+	);
 }
 
 /**
@@ -955,10 +959,7 @@ export function validateDistance(
 
 	if (!a || !b) return false;
 
-	const actualDistance = MathGraphHelpers.calculateDistance(
-		{ x: a.x, y: a.y },
-		{ x: b.x, y: b.y }
-	);
+	const actualDistance = MathGraphHelpers.calculateDistance({ x: a.x, y: a.y }, { x: b.x, y: b.y });
 
 	return Math.abs(actualDistance - expectedDistance) <= tolerance;
 }
@@ -1005,8 +1006,7 @@ export function validateTriangle(
 	if (!a || !b || !c) return false;
 
 	// Check points are not collinear by calculating area
-	const area =
-		Math.abs((b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y)) / 2;
+	const area = Math.abs((b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y)) / 2;
 
 	return area > 1; // Minimum area threshold
 }
@@ -1090,7 +1090,9 @@ export function validateRightTriangle(
  * This is a simplified version - actual implementation would
  * depend on MathGraph32's line representation
  */
-function extractLinePoints(line: any): { p1: { x: number; y: number }; p2: { x: number; y: number } } | null {
+function extractLinePoints(
+	line: any
+): { p1: { x: number; y: number }; p2: { x: number; y: number } } | null {
 	// This would need to be implemented based on MathGraph32's internal structure
 	// For now, return null as placeholder
 	return null;

@@ -21,9 +21,12 @@
 <div class="space-y-6">
 	<!-- Debug Section Header with Tab Navigation -->
 	<div class="border-b border-border pb-4">
-		<div class="flex items-center gap-3 mb-4">
+		<div class="mb-4 flex items-center gap-3">
 			<h1 class="text-3xl font-bold text-foreground">Admin Debug Tools</h1>
-			<Badge variant="outline" class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+			<Badge
+				variant="outline"
+				class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+			>
 				Admin Only
 			</Badge>
 		</div>
@@ -33,7 +36,9 @@
 			{#each debugPages as debugPage}
 				<a
 					href={debugPage.href}
-					class="px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap {isActivePage(debugPage.href)
+					class="rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors {isActivePage(
+						debugPage.href
+					)
 						? 'bg-primary text-primary-foreground'
 						: 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'}"
 				>

@@ -39,7 +39,7 @@
 	const systemFeatures = [
 		{ icon: '⚡', title: 'Validation automatique', desc: '30+ validateurs géométriques' },
 		{ icon: '🎯', title: 'Notation intelligente', desc: 'Lettres A-F avec pénalités' },
-		{ icon: '💡', title: 'Système d\'indices', desc: '3 niveaux progressifs' },
+		{ icon: '💡', title: "Système d'indices", desc: '3 niveaux progressifs' },
 		{ icon: '🏆', title: 'Récompenses', desc: '5 succès déblocables' },
 		{ icon: '📊', title: 'Suivi de progression', desc: 'Statistiques détaillées' },
 		{ icon: '🔄', title: 'Génération aléatoire', desc: 'Figures randomisées' }
@@ -48,7 +48,7 @@
 	const documentation = [
 		{
 			title: 'MATHGRAPH32_API_GUIDE.md',
-			desc: 'Guide complet de l\'API MathGraph32',
+			desc: "Guide complet de l'API MathGraph32",
 			lines: '~1,000 lignes',
 			audience: 'Développeurs'
 		},
@@ -72,7 +72,7 @@
 		},
 		{
 			title: 'GEOMETRY_EXAMPLES.md',
-			desc: '12 exemples d\'exercices complets',
+			desc: "12 exemples d'exercices complets",
 			lines: '~1,200 lignes',
 			audience: 'Tous'
 		}
@@ -109,7 +109,7 @@
 			triangleContainer.appendChild(canvas);
 
 			// Wait a tick for DOM to update
-			await new Promise(resolve => setTimeout(resolve, 10));
+			await new Promise((resolve) => setTimeout(resolve, 10));
 
 			const service = MathGraphService.getInstance();
 			const app = await service.initializeEditor(canvas, {
@@ -198,7 +198,7 @@
 			circleContainer.appendChild(canvas);
 
 			// Wait a tick for DOM to update
-			await new Promise(resolve => setTimeout(resolve, 10));
+			await new Promise((resolve) => setTimeout(resolve, 10));
 
 			const service = MathGraphService.getInstance();
 			const app = await service.initializeEditor(canvas, {
@@ -256,7 +256,7 @@
 			bisectorContainer.appendChild(canvas);
 
 			// Wait a tick for DOM to update
-			await new Promise(resolve => setTimeout(resolve, 10));
+			await new Promise((resolve) => setTimeout(resolve, 10));
 
 			const service = MathGraphService.getInstance();
 			const app = await service.initializeEditor(canvas, {
@@ -331,7 +331,7 @@
 			measureContainer.appendChild(canvas);
 
 			// Wait a tick for DOM to update
-			await new Promise(resolve => setTimeout(resolve, 10));
+			await new Promise((resolve) => setTimeout(resolve, 10));
 
 			const service = MathGraphService.getInstance();
 			const app = await service.initializeEditor(canvas, {
@@ -446,15 +446,11 @@
 		if (demoHints >= 2) hintPenalties.push({ level: 'step_by_step' as const, penalty: 10 });
 		if (demoHints >= 3) hintPenalties.push({ level: 'step_by_step' as const, penalty: 10 });
 
-		gradeResult = calculateGrade(
-			mockExercise as GeometryExercise,
-			mockValidation,
-			{
-				hintsUsed: hintPenalties,
-				timeSpent: demoTime,
-				attemptNumber: demoAttempts
-			}
-		);
+		gradeResult = calculateGrade(mockExercise as GeometryExercise, mockValidation, {
+			hintsUsed: hintPenalties,
+			timeSpent: demoTime,
+			attemptNumber: demoAttempts
+		});
 	}
 
 	// Auto-calculate when sliders change
@@ -520,7 +516,8 @@
 						<Card.Header>
 							<Card.Title>🔺 Exemple 1 : Triangle Interactif (avec plein écran)</Card.Title>
 							<Card.Description>
-								Créez un triangle avec 3 points déplaçables - l'exemple le plus basique. Cliquez sur l'icône en bas à droite pour passer en plein écran !
+								Créez un triangle avec 3 points déplaçables - l'exemple le plus basique. Cliquez sur
+								l'icône en bas à droite pour passer en plein écran !
 							</Card.Description>
 						</Card.Header>
 						<Card.Content class="space-y-4">
@@ -531,7 +528,10 @@
 								bind:container={triangleWrapper}
 								onFullscreenChange={(isFullscreen) => console.log('Fullscreen:', isFullscreen)}
 							>
-								<div bind:this={triangleContainer} class="relative min-h-[350px] rounded-lg border border-border bg-card">
+								<div
+									bind:this={triangleContainer}
+									class="relative min-h-[350px] rounded-lg border border-border bg-card"
+								>
 									{#if !triangleCreated}
 										<div class="flex h-[350px] items-center justify-center text-muted-foreground">
 											Cliquez sur le bouton pour créer un triangle
@@ -542,10 +542,10 @@
 							{#if triangleCreated}
 								<div class="rounded-lg bg-muted/50 p-4 text-sm">
 									<p class="font-semibold">💡 Essayez de déplacer les points A, B, C !</p>
-									<p class="text-muted-foreground mt-1">
+									<p class="mt-1 text-muted-foreground">
 										Les segments restent connectés car c'est une construction géométrique dynamique.
 									</p>
-									<p class="text-muted-foreground mt-2 text-xs font-semibold">
+									<p class="mt-2 text-xs font-semibold text-muted-foreground">
 										🖥️ Astuce : Appuyez sur F ou cliquez sur l'icône pour passer en plein écran !
 									</p>
 								</div>
@@ -557,17 +557,19 @@
 						<Card.Header>
 							<Card.Title>⭕ Exemple 2 : Cercle avec Rayon (avec plein écran)</Card.Title>
 							<Card.Description>
-								Cercle défini par son centre O et un point A sur le cercle. Cliquez sur l'icône en bas à droite pour passer en plein écran !
+								Cercle défini par son centre O et un point A sur le cercle. Cliquez sur l'icône en
+								bas à droite pour passer en plein écran !
 							</Card.Description>
 						</Card.Header>
 						<Card.Content class="space-y-4">
 							<Button onclick={createCircle} disabled={circleCreated}>
 								{circleCreated ? '✅ Cercle créé' : 'Créer le cercle'}
 							</Button>
-							<MathGraphFullscreen
-								bind:container={circleWrapper}
-							>
-								<div bind:this={circleContainer} class="relative min-h-[350px] rounded-lg border border-border bg-card">
+							<MathGraphFullscreen bind:container={circleWrapper}>
+								<div
+									bind:this={circleContainer}
+									class="relative min-h-[350px] rounded-lg border border-border bg-card"
+								>
 									{#if !circleCreated}
 										<div class="flex h-[350px] items-center justify-center text-muted-foreground">
 											Cliquez sur le bouton pour créer un cercle
@@ -578,10 +580,10 @@
 							{#if circleCreated}
 								<div class="rounded-lg bg-muted/50 p-4 text-sm">
 									<p class="font-semibold">💡 Déplacez le point O ou le point A !</p>
-									<p class="text-muted-foreground mt-1">
+									<p class="mt-1 text-muted-foreground">
 										Le cercle s'adapte automatiquement pour garder A sur sa circonférence.
 									</p>
-									<p class="text-muted-foreground mt-2 text-xs font-semibold">
+									<p class="mt-2 text-xs font-semibold text-muted-foreground">
 										🖥️ Touche F ou Échap pour contrôler le plein écran !
 									</p>
 								</div>
@@ -613,10 +615,10 @@
 							{#if bisectorCreated}
 								<div class="rounded-lg bg-muted/50 p-4 text-sm">
 									<p class="font-semibold">💡 Déplacez A ou B !</p>
-									<p class="text-muted-foreground mt-1">
+									<p class="mt-1 text-muted-foreground">
 										La médiatrice reste toujours perpendiculaire et passe par le milieu M.
 									</p>
-									<p class="text-muted-foreground mt-2 text-xs">
+									<p class="mt-2 text-xs text-muted-foreground">
 										Cet exemple montre comment le système valide les constructions d'élèves.
 									</p>
 								</div>
@@ -648,10 +650,10 @@
 							{#if measurementCreated}
 								<div class="rounded-lg bg-muted/50 p-4 text-sm">
 									<p class="font-semibold">💡 Exercice : Mesurez les 3 angles</p>
-									<p class="text-muted-foreground mt-1">
+									<p class="mt-1 text-muted-foreground">
 										Les élèves doivent mesurer α, β et γ, puis vérifier que α + β + γ = 180°
 									</p>
-									<p class="text-muted-foreground mt-2 text-xs">
+									<p class="mt-2 text-xs text-muted-foreground">
 										Le système valide automatiquement les mesures avec une tolérance de ±2°
 									</p>
 								</div>
@@ -885,7 +887,9 @@
 				<Card.Root class="mt-6">
 					<Card.Header>
 						<Card.Title>10 Outils de Construction</Card.Title>
-						<Card.Description>Outils disponibles pour les exercices de construction</Card.Description>
+						<Card.Description
+							>Outils disponibles pour les exercices de construction</Card.Description
+						>
 					</Card.Header>
 					<Card.Content>
 						<div class="grid gap-3 md:grid-cols-2">
@@ -907,7 +911,9 @@
 							</div>
 							<div class="flex items-center gap-2 rounded border p-2">
 								<span class="font-mono text-sm">⊥</span>
-								<span class="text-sm"><strong>Perpendiculaire</strong> - Tracer une perpendiculaire</span>
+								<span class="text-sm"
+									><strong>Perpendiculaire</strong> - Tracer une perpendiculaire</span
+								>
 							</div>
 							<div class="flex items-center gap-2 rounded border p-2">
 								<span class="font-mono text-sm">∥</span>
@@ -939,9 +945,7 @@
 				<Card.Root>
 					<Card.Header>
 						<Card.Title>12 Exemples d'Exercices Complets</Card.Title>
-						<Card.Description>
-							Consultez GEOMETRY_EXAMPLES.md pour le code complet
-						</Card.Description>
+						<Card.Description>Consultez GEOMETRY_EXAMPLES.md pour le code complet</Card.Description>
 					</Card.Header>
 					<Card.Content class="space-y-4">
 						<div class="grid gap-4 md:grid-cols-2">

@@ -1,9 +1,11 @@
 # Instructions pour Claude Code : Application de chat avec mathématiques
 
 ## Objectif
+
 Créer une application de chat permettant aux utilisateurs d'envoyer des messages avec du texte enrichi et des formules mathématiques éditables, en utilisant **Svelte 5**, **TipTap** et **MathLive**.
 
 ## Stack technique
+
 - **Framework**: Svelte 5 avec Vite
 - **Éditeur de texte riche**: TipTap (basé sur ProseMirror)
 - **Rendu mathématique**: MathLive
@@ -12,6 +14,7 @@ Créer une application de chat permettant aux utilisateurs d'envoyer des message
 ## Architecture de l'application
 
 ### Structure des fichiers
+
 ```
 mon-chat-math/
 ├── src/
@@ -36,6 +39,7 @@ mon-chat-math/
 ### 1. Initialisation du projet
 
 Créer un nouveau projet Svelte 5 avec Vite :
+
 ```bash
 npm create vite@latest mon-chat-math -- --template svelte
 cd mon-chat-math
@@ -53,27 +57,25 @@ npx tailwindcss init -p
 ### 3. Configuration de Tailwind CSS
 
 **tailwind.config.js** :
+
 ```javascript
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{svelte,js,ts,jsx,tsx}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ],
-}
+	content: ['./index.html', './src/**/*.{svelte,js,ts,jsx,tsx}'],
+	theme: {
+		extend: {}
+	},
+	plugins: [require('@tailwindcss/typography')]
+};
 ```
 
 N'oublie pas d'installer le plugin typography :
+
 ```bash
 npm install -D @tailwindcss/typography
 ```
 
 **src/app.css** :
+
 ```css
 @tailwind base;
 @tailwind components;
@@ -85,10 +87,12 @@ npm install -D @tailwindcss/typography
 **src/lib/extensions/math-extension.js** :
 
 Créer deux extensions TipTap personnalisées :
+
 - `MathInline` : pour les formules en ligne (inline)
 - `MathBlock` : pour les formules en bloc (display mode)
 
 Caractéristiques importantes :
+
 - Utiliser `Node.create()` de TipTap
 - Attribut `latex` pour stocker la formule LaTeX
 - `addNodeView()` pour créer un élément `<math-field>` de MathLive
@@ -102,124 +106,128 @@ Caractéristiques importantes :
 import { Node, mergeAttributes } from '@tiptap/core';
 
 export const MathInline = Node.create({
-  name: 'mathInline',
-  group: 'inline',
-  inline: true,
-  atom: true,
+	name: 'mathInline',
+	group: 'inline',
+	inline: true,
+	atom: true,
 
-  addAttributes() {
-    return {
-      latex: {
-        default: '',
-      },
-    };
-  },
+	addAttributes() {
+		return {
+			latex: {
+				default: ''
+			}
+		};
+	},
 
-  parseHTML() {
-    return [{ tag: 'span[data-math-inline]' }];
-  },
+	parseHTML() {
+		return [{ tag: 'span[data-math-inline]' }];
+	},
 
-  renderHTML({ HTMLAttributes }) {
-    return ['span', mergeAttributes({ 'data-math-inline': '' }, HTMLAttributes)];
-  },
+	renderHTML({ HTMLAttributes }) {
+		return ['span', mergeAttributes({ 'data-math-inline': '' }, HTMLAttributes)];
+	},
 
-  addNodeView() {
-    return ({ node, editor, getPos }) => {
-      const dom = document.createElement('span');
-      dom.classList.add('math-inline-wrapper');
-      
-      const mathfield = document.createElement('math-field');
-      mathfield.value = node.attrs.latex;
-      mathfield.style.display = 'inline-block';
-      mathfield.style.fontSize = 'inherit';
-      
-      if (!editor.isEditable) {
-        mathfield.readOnly = true;
-      }
+	addNodeView() {
+		return ({ node, editor, getPos }) => {
+			const dom = document.createElement('span');
+			dom.classList.add('math-inline-wrapper');
 
-      mathfield.addEventListener('input', (e) => {
-        const pos = getPos();
-        editor.commands.updateAttributes('mathInline', { 
-          latex: e.target.value 
-        });
-      });
+			const mathfield = document.createElement('math-field');
+			mathfield.value = node.attrs.latex;
+			mathfield.style.display = 'inline-block';
+			mathfield.style.fontSize = 'inherit';
 
-      dom.appendChild(mathfield);
-      return { dom };
-    };
-  },
+			if (!editor.isEditable) {
+				mathfield.readOnly = true;
+			}
 
-  addCommands() {
-    return {
-      insertMathInline: (latex = '') => ({ commands }) => {
-        return commands.insertContent({
-          type: this.name,
-          attrs: { latex },
-        });
-      },
-    };
-  },
+			mathfield.addEventListener('input', (e) => {
+				const pos = getPos();
+				editor.commands.updateAttributes('mathInline', {
+					latex: e.target.value
+				});
+			});
+
+			dom.appendChild(mathfield);
+			return { dom };
+		};
+	},
+
+	addCommands() {
+		return {
+			insertMathInline:
+				(latex = '') =>
+				({ commands }) => {
+					return commands.insertContent({
+						type: this.name,
+						attrs: { latex }
+					});
+				}
+		};
+	}
 });
 
 export const MathBlock = Node.create({
-  name: 'mathBlock',
-  group: 'block',
-  atom: true,
+	name: 'mathBlock',
+	group: 'block',
+	atom: true,
 
-  addAttributes() {
-    return {
-      latex: {
-        default: '',
-      },
-    };
-  },
+	addAttributes() {
+		return {
+			latex: {
+				default: ''
+			}
+		};
+	},
 
-  parseHTML() {
-    return [{ tag: 'div[data-math-block]' }];
-  },
+	parseHTML() {
+		return [{ tag: 'div[data-math-block]' }];
+	},
 
-  renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes({ 'data-math-block': '' }, HTMLAttributes)];
-  },
+	renderHTML({ HTMLAttributes }) {
+		return ['div', mergeAttributes({ 'data-math-block': '' }, HTMLAttributes)];
+	},
 
-  addNodeView() {
-    return ({ node, editor, getPos }) => {
-      const dom = document.createElement('div');
-      dom.classList.add('math-block-wrapper');
-      
-      const mathfield = document.createElement('math-field');
-      mathfield.value = node.attrs.latex;
-      mathfield.style.display = 'block';
-      mathfield.style.fontSize = '1.2em';
-      mathfield.style.textAlign = 'center';
-      mathfield.style.padding = '1rem';
-      
-      if (!editor.isEditable) {
-        mathfield.readOnly = true;
-      }
+	addNodeView() {
+		return ({ node, editor, getPos }) => {
+			const dom = document.createElement('div');
+			dom.classList.add('math-block-wrapper');
 
-      mathfield.addEventListener('input', (e) => {
-        const pos = getPos();
-        editor.commands.updateAttributes('mathBlock', { 
-          latex: e.target.value 
-        });
-      });
+			const mathfield = document.createElement('math-field');
+			mathfield.value = node.attrs.latex;
+			mathfield.style.display = 'block';
+			mathfield.style.fontSize = '1.2em';
+			mathfield.style.textAlign = 'center';
+			mathfield.style.padding = '1rem';
 
-      dom.appendChild(mathfield);
-      return { dom };
-    };
-  },
+			if (!editor.isEditable) {
+				mathfield.readOnly = true;
+			}
 
-  addCommands() {
-    return {
-      insertMathBlock: (latex = '') => ({ commands }) => {
-        return commands.insertContent({
-          type: this.name,
-          attrs: { latex },
-        });
-      },
-    };
-  },
+			mathfield.addEventListener('input', (e) => {
+				const pos = getPos();
+				editor.commands.updateAttributes('mathBlock', {
+					latex: e.target.value
+				});
+			});
+
+			dom.appendChild(mathfield);
+			return { dom };
+		};
+	},
+
+	addCommands() {
+		return {
+			insertMathBlock:
+				(latex = '') =>
+				({ commands }) => {
+					return commands.insertContent({
+						type: this.name,
+						attrs: { latex }
+					});
+				}
+		};
+	}
 });
 ```
 
@@ -228,6 +236,7 @@ export const MathBlock = Node.create({
 **src/lib/components/ChatEditor.svelte** :
 
 Fonctionnalités :
+
 - Éditeur TipTap avec StarterKit et extensions mathématiques
 - Toolbar avec boutons : Gras, Italique, Insertion de formules
 - Menu déroulant avec formules courantes :
@@ -246,6 +255,7 @@ Fonctionnalités :
 **src/lib/components/ChatMessage.svelte** :
 
 Fonctionnalités :
+
 - Afficher un message avec son auteur
 - Créer un éditeur TipTap en lecture seule pour le contenu
 - Styling avec avatar, bulle de message
@@ -255,61 +265,63 @@ Fonctionnalités :
 
 ```svelte
 <script>
-  import { onMount } from 'svelte';
-  import { Editor } from '@tiptap/core';
-  import StarterKit from '@tiptap/starter-kit';
-  import { MathInline, MathBlock } from '../extensions/math-extension.js';
-  import 'mathlive';
+	import { onMount } from 'svelte';
+	import { Editor } from '@tiptap/core';
+	import StarterKit from '@tiptap/starter-kit';
+	import { MathInline, MathBlock } from '../extensions/math-extension.js';
+	import 'mathlive';
 
-  let { message } = $props();
+	let { message } = $props();
 
-  let messageElement = $state(null);
-  let editor = $state(null);
+	let messageElement = $state(null);
+	let editor = $state(null);
 
-  onMount(() => {
-    editor = new Editor({
-      element: messageElement,
-      extensions: [StarterKit, MathInline, MathBlock],
-      content: message.content,
-      editable: false,
-      editorProps: {
-        attributes: {
-          class: 'prose prose-sm max-w-none',
-        },
-      },
-    });
+	onMount(() => {
+		editor = new Editor({
+			element: messageElement,
+			extensions: [StarterKit, MathInline, MathBlock],
+			content: message.content,
+			editable: false,
+			editorProps: {
+				attributes: {
+					class: 'prose prose-sm max-w-none'
+				}
+			}
+		});
 
-    return () => editor?.destroy();
-  });
+		return () => editor?.destroy();
+	});
 
-  function formatTime(date) {
-    if (!date) return '';
-    const d = new Date(date);
-    return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-  }
+	function formatTime(date) {
+		if (!date) return '';
+		const d = new Date(date);
+		return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+	}
 </script>
 
-<div class="flex gap-3 mb-4">
-  <!-- Avatar -->
-  <div class="flex-shrink-0">
-    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold">
-      {message.author[0].toUpperCase()}
-    </div>
-  </div>
-  
-  <!-- Message content -->
-  <div class="flex-1 min-w-0">
-    <div class="flex items-baseline gap-2 mb-1">
-      <span class="font-semibold text-gray-900">{message.author}</span>
-      {#if message.timestamp}
-        <span class="text-xs text-gray-500">{formatTime(message.timestamp)}</span>
-      {/if}
-    </div>
-    
-    <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
-      <div bind:this={messageElement}></div>
-    </div>
-  </div>
+<div class="mb-4 flex gap-3">
+	<!-- Avatar -->
+	<div class="flex-shrink-0">
+		<div
+			class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-500 font-semibold text-white"
+		>
+			{message.author[0].toUpperCase()}
+		</div>
+	</div>
+
+	<!-- Message content -->
+	<div class="min-w-0 flex-1">
+		<div class="mb-1 flex items-baseline gap-2">
+			<span class="font-semibold text-gray-900">{message.author}</span>
+			{#if message.timestamp}
+				<span class="text-xs text-gray-500">{formatTime(message.timestamp)}</span>
+			{/if}
+		</div>
+
+		<div class="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+			<div bind:this={messageElement}></div>
+		</div>
+	</div>
 </div>
 ```
 
@@ -318,6 +330,7 @@ Fonctionnalités :
 **src/lib/components/ChatWindow.svelte** :
 
 Fonctionnalités :
+
 - Liste des messages avec scroll automatique vers le bas
 - Intégration de ChatEditor
 - Gestion de l'état des messages (array)
@@ -328,64 +341,61 @@ Fonctionnalités :
 
 ```svelte
 <script>
-  import { tick } from 'svelte';
-  import ChatMessage from './ChatMessage.svelte';
-  import ChatEditor from './ChatEditor.svelte';
+	import { tick } from 'svelte';
+	import ChatMessage from './ChatMessage.svelte';
+	import ChatEditor from './ChatEditor.svelte';
 
-  let { initialMessages = [] } = $props();
+	let { initialMessages = [] } = $props();
 
-  let messages = $state(initialMessages);
-  let messagesContainer = $state(null);
+	let messages = $state(initialMessages);
+	let messagesContainer = $state(null);
 
-  async function handleSendMessage(content) {
-    const newMessage = {
-      id: messages.length + 1,
-      author: 'Vous',
-      content: content,
-      timestamp: new Date(),
-    };
-    
-    messages = [...messages, newMessage];
-    
-    // Scroll vers le bas après l'ajout du message
-    await tick();
-    if (messagesContainer) {
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-  }
+	async function handleSendMessage(content) {
+		const newMessage = {
+			id: messages.length + 1,
+			author: 'Vous',
+			content: content,
+			timestamp: new Date()
+		};
+
+		messages = [...messages, newMessage];
+
+		// Scroll vers le bas après l'ajout du message
+		await tick();
+		if (messagesContainer) {
+			messagesContainer.scrollTop = messagesContainer.scrollHeight;
+		}
+	}
 </script>
 
-<div class="flex flex-col h-screen max-w-5xl mx-auto p-4">
-  <div class="mb-4">
-    <h1 class="text-3xl font-bold text-gray-900">Chat Mathématiques</h1>
-    <p class="text-gray-600 mt-1">Échangez avec des formules mathématiques éditables</p>
-  </div>
+<div class="mx-auto flex h-screen max-w-5xl flex-col p-4">
+	<div class="mb-4">
+		<h1 class="text-3xl font-bold text-gray-900">Chat Mathématiques</h1>
+		<p class="mt-1 text-gray-600">Échangez avec des formules mathématiques éditables</p>
+	</div>
 
-  <!-- Zone des messages -->
-  <div 
-    bind:this={messagesContainer}
-    class="flex-1 overflow-y-auto mb-4 bg-gray-50 rounded-lg p-4"
-  >
-    {#if messages.length === 0}
-      <div class="text-center text-gray-500 py-12">
-        <p class="text-lg">Aucun message pour le moment</p>
-        <p class="text-sm mt-2">Envoyez votre premier message avec des formules mathématiques !</p>
-      </div>
-    {:else}
-      {#each messages as message (message.id)}
-        <ChatMessage {message} />
-      {/each}
-    {/if}
-  </div>
+	<!-- Zone des messages -->
+	<div bind:this={messagesContainer} class="mb-4 flex-1 overflow-y-auto rounded-lg bg-gray-50 p-4">
+		{#if messages.length === 0}
+			<div class="py-12 text-center text-gray-500">
+				<p class="text-lg">Aucun message pour le moment</p>
+				<p class="mt-2 text-sm">Envoyez votre premier message avec des formules mathématiques !</p>
+			</div>
+		{:else}
+			{#each messages as message (message.id)}
+				<ChatMessage {message} />
+			{/each}
+		{/if}
+	</div>
 
-  <!-- Zone de composition -->
-  <div class="bg-white rounded-lg shadow-lg">
-    <ChatEditor onSend={handleSendMessage} />
-  </div>
+	<!-- Zone de composition -->
+	<div class="rounded-lg bg-white shadow-lg">
+		<ChatEditor onSend={handleSendMessage} />
+	</div>
 
-  <div class="mt-3 text-sm text-gray-600 text-center">
-    <p>💡 Utilisez le bouton "ƒ(x) Formule" pour insérer des mathématiques</p>
-  </div>
+	<div class="mt-3 text-center text-sm text-gray-600">
+		<p>💡 Utilisez le bouton "ƒ(x) Formule" pour insérer des mathématiques</p>
+	</div>
 </div>
 ```
 
@@ -402,73 +412,74 @@ Fonctionnalités :
 
 ```svelte
 <script>
-  import ChatWindow from './lib/components/ChatWindow.svelte';
+	import ChatWindow from './lib/components/ChatWindow.svelte';
 
-  const demoMessages = [
-    {
-      id: 1,
-      author: 'Alice',
-      timestamp: new Date('2025-10-14T10:30:00'),
-      content: {
-        type: 'doc',
-        content: [
-          {
-            type: 'paragraph',
-            content: [
-              { type: 'text', text: 'Salut ! Pour résoudre cette équation du second degré, on utilise : ' },
-              { 
-                type: 'mathInline', 
-                attrs: { latex: '\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}' } 
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      id: 2,
-      author: 'Bob',
-      timestamp: new Date('2025-10-14T10:32:00'),
-      content: {
-        type: 'doc',
-        content: [
-          {
-            type: 'paragraph',
-            content: [
-              { type: 'text', text: 'Excellent ! Et voici une intégrale célèbre :' }
-            ]
-          },
-          {
-            type: 'mathBlock',
-            attrs: { 
-              latex: '\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}' 
-            }
-          }
-        ]
-      }
-    },
-    {
-      id: 3,
-      author: 'Charlie',
-      timestamp: new Date('2025-10-14T10:35:00'),
-      content: {
-        type: 'doc',
-        content: [
-          {
-            type: 'paragraph',
-            content: [
-              { type: 'text', text: 'Pour le théorème de Pythagore, on a simplement : ' },
-              { 
-                type: 'mathInline', 
-                attrs: { latex: 'a^2 + b^2 = c^2' } 
-              },
-              { type: 'text', text: ' 🎯' }
-            ]
-          }
-        ]
-      }
-    }
-  ];
+	const demoMessages = [
+		{
+			id: 1,
+			author: 'Alice',
+			timestamp: new Date('2025-10-14T10:30:00'),
+			content: {
+				type: 'doc',
+				content: [
+					{
+						type: 'paragraph',
+						content: [
+							{
+								type: 'text',
+								text: 'Salut ! Pour résoudre cette équation du second degré, on utilise : '
+							},
+							{
+								type: 'mathInline',
+								attrs: { latex: '\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}' }
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			id: 2,
+			author: 'Bob',
+			timestamp: new Date('2025-10-14T10:32:00'),
+			content: {
+				type: 'doc',
+				content: [
+					{
+						type: 'paragraph',
+						content: [{ type: 'text', text: 'Excellent ! Et voici une intégrale célèbre :' }]
+					},
+					{
+						type: 'mathBlock',
+						attrs: {
+							latex: '\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}'
+						}
+					}
+				]
+			}
+		},
+		{
+			id: 3,
+			author: 'Charlie',
+			timestamp: new Date('2025-10-14T10:35:00'),
+			content: {
+				type: 'doc',
+				content: [
+					{
+						type: 'paragraph',
+						content: [
+							{ type: 'text', text: 'Pour le théorème de Pythagore, on a simplement : ' },
+							{
+								type: 'mathInline',
+								attrs: { latex: 'a^2 + b^2 = c^2' }
+							},
+							{ type: 'text', text: ' 🎯' }
+						]
+					}
+				]
+			}
+		}
+	];
 </script>
 
 <ChatWindow initialMessages={demoMessages} />
@@ -479,14 +490,14 @@ Fonctionnalités :
 #### **src/main.js** :
 
 ```javascript
-import './app.css'
-import App from './App.svelte'
+import './app.css';
+import App from './App.svelte';
 
 const app = new App({
-  target: document.getElementById('app'),
-})
+	target: document.getElementById('app')
+});
 
-export default app
+export default app;
 ```
 
 #### **src/app.css** :
@@ -498,58 +509,58 @@ export default app
 
 /* Styles globaux pour MathLive */
 :global(math-field) {
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
-  padding: 4px 8px;
-  margin: 0 4px;
-  background: #f9fafb;
-  transition: all 0.2s;
+	border: 1px solid #e5e7eb;
+	border-radius: 4px;
+	padding: 4px 8px;
+	margin: 0 4px;
+	background: #f9fafb;
+	transition: all 0.2s;
 }
 
 :global(math-field:hover) {
-  border-color: #3b82f6;
+	border-color: #3b82f6;
 }
 
 :global(math-field:focus) {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-  background: white;
+	outline: 2px solid #3b82f6;
+	outline-offset: 2px;
+	background: white;
 }
 
 :global(.math-block-wrapper math-field) {
-  width: 100%;
-  border: 2px dashed #d1d5db;
-  margin: 1rem 0;
-  padding: 1rem;
-  text-align: center;
-  font-size: 1.2em;
+	width: 100%;
+	border: 2px dashed #d1d5db;
+	margin: 1rem 0;
+	padding: 1rem;
+	text-align: center;
+	font-size: 1.2em;
 }
 
 :global(.ProseMirror) {
-  min-height: 100px;
+	min-height: 100px;
 }
 
 :global(.ProseMirror:focus) {
-  outline: none;
+	outline: none;
 }
 
 /* Scrollbar personnalisée */
 :global(*::-webkit-scrollbar) {
-  width: 8px;
-  height: 8px;
+	width: 8px;
+	height: 8px;
 }
 
 :global(*::-webkit-scrollbar-track) {
-  background: #f1f1f1;
+	background: #f1f1f1;
 }
 
 :global(*::-webkit-scrollbar-thumb) {
-  background: #888;
-  border-radius: 4px;
+	background: #888;
+	border-radius: 4px;
 }
 
 :global(*::-webkit-scrollbar-thumb:hover) {
-  background: #555;
+	background: #555;
 }
 ```
 
@@ -558,43 +569,44 @@ export default app
 ```html
 <!doctype html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat Mathématiques</title>
-  </head>
-  <body class="bg-gray-100">
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" type="image/svg+xml" href="/vite.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Chat Mathématiques</title>
+	</head>
+	<body class="bg-gray-100">
+		<div id="app"></div>
+		<script type="module" src="/src/main.js"></script>
+	</body>
 </html>
 ```
 
 #### **vite.config.js** :
 
 ```javascript
-import { defineConfig } from 'vite'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
+import { defineConfig } from 'vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 export default defineConfig({
-  plugins: [svelte()],
-})
+	plugins: [svelte()]
+});
 ```
 
 #### **svelte.config.js** :
 
 ```javascript
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 export default {
-  preprocess: vitePreprocess(),
-}
+	preprocess: vitePreprocess()
+};
 ```
 
 ## Fonctionnalités à implémenter
 
 ### Priorité 1 (Core)
+
 - ✅ Affichage des messages
 - ✅ Éditeur de texte riche (gras, italique)
 - ✅ Insertion de formules mathématiques inline
@@ -603,6 +615,7 @@ export default {
 - ✅ Envoi de messages
 
 ### Priorité 2 (Amélioration UX)
+
 - Auto-scroll vers le bas quand nouveau message
 - Timestamp sur chaque message
 - Indicateur "en train d'écrire"
@@ -610,6 +623,7 @@ export default {
 - Placeholder dans l'éditeur
 
 ### Priorité 3 (Fonctionnalités avancées)
+
 - Sauvegarde des messages dans localStorage
 - Export des messages en Markdown + LaTeX
 - Recherche dans l'historique
@@ -619,6 +633,7 @@ export default {
 ## Points d'attention importants
 
 ### 1. Svelte 5 - Utiliser les runes
+
 ```javascript
 // ✅ Correct
 let count = $state(0);
@@ -630,42 +645,50 @@ export let message;
 ```
 
 ### 2. TipTap - Destruction de l'éditeur
+
 Toujours détruire l'éditeur dans `onMount` :
+
 ```javascript
 onMount(() => {
-  editor = new Editor({ /* ... */ });
-  
-  return () => {
-    editor?.destroy();
-  };
+	editor = new Editor({
+		/* ... */
+	});
+
+	return () => {
+		editor?.destroy();
+	};
 });
 ```
 
 ### 3. MathLive - Mode lecture seule
+
 Pour les messages affichés, mettre `readOnly: true` sur le MathField :
+
 ```javascript
 if (!editor.isEditable) {
-  mathfield.readOnly = true;
+	mathfield.readOnly = true;
 }
 ```
 
 ### 4. Format de stockage
+
 Les messages sont stockés au format JSON de TipTap :
+
 ```json
 {
-  "type": "doc",
-  "content": [
-    {
-      "type": "paragraph",
-      "content": [
-        { "type": "text", "text": "Voici une formule : " },
-        { 
-          "type": "mathInline", 
-          "attrs": { "latex": "\\frac{a}{b}" } 
-        }
-      ]
-    }
-  ]
+	"type": "doc",
+	"content": [
+		{
+			"type": "paragraph",
+			"content": [
+				{ "type": "text", "text": "Voici une formule : " },
+				{
+					"type": "mathInline",
+					"attrs": { "latex": "\\frac{a}{b}" }
+				}
+			]
+		}
+	]
 }
 ```
 
@@ -691,69 +714,70 @@ Créer quelques messages initiaux pour tester :
 
 ```javascript
 const demoMessages = [
-  {
-    id: 1,
-    author: 'Alice',
-    timestamp: new Date('2025-10-14T10:30:00'),
-    content: {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [
-            { type: 'text', text: 'Salut ! Pour résoudre cette équation du second degré, on utilise : ' },
-            { 
-              type: 'mathInline', 
-              attrs: { latex: '\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}' } 
-            }
-          ]
-        }
-      ]
-    }
-  },
-  {
-    id: 2,
-    author: 'Bob',
-    timestamp: new Date('2025-10-14T10:32:00'),
-    content: {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [
-            { type: 'text', text: 'Excellent ! Et voici une intégrale célèbre :' }
-          ]
-        },
-        {
-          type: 'mathBlock',
-          attrs: { 
-            latex: '\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}' 
-          }
-        }
-      ]
-    }
-  },
-  {
-    id: 3,
-    author: 'Charlie',
-    timestamp: new Date('2025-10-14T10:35:00'),
-    content: {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [
-            { type: 'text', text: 'Pour le théorème de Pythagore, on a simplement : ' },
-            { 
-              type: 'mathInline', 
-              attrs: { latex: 'a^2 + b^2 = c^2' } 
-            },
-            { type: 'text', text: ' 🎯' }
-          ]
-        }
-      ]
-    }
-  }
+	{
+		id: 1,
+		author: 'Alice',
+		timestamp: new Date('2025-10-14T10:30:00'),
+		content: {
+			type: 'doc',
+			content: [
+				{
+					type: 'paragraph',
+					content: [
+						{
+							type: 'text',
+							text: 'Salut ! Pour résoudre cette équation du second degré, on utilise : '
+						},
+						{
+							type: 'mathInline',
+							attrs: { latex: '\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}' }
+						}
+					]
+				}
+			]
+		}
+	},
+	{
+		id: 2,
+		author: 'Bob',
+		timestamp: new Date('2025-10-14T10:32:00'),
+		content: {
+			type: 'doc',
+			content: [
+				{
+					type: 'paragraph',
+					content: [{ type: 'text', text: 'Excellent ! Et voici une intégrale célèbre :' }]
+				},
+				{
+					type: 'mathBlock',
+					attrs: {
+						latex: '\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}'
+					}
+				}
+			]
+		}
+	},
+	{
+		id: 3,
+		author: 'Charlie',
+		timestamp: new Date('2025-10-14T10:35:00'),
+		content: {
+			type: 'doc',
+			content: [
+				{
+					type: 'paragraph',
+					content: [
+						{ type: 'text', text: 'Pour le théorème de Pythagore, on a simplement : ' },
+						{
+							type: 'mathInline',
+							attrs: { latex: 'a^2 + b^2 = c^2' }
+						},
+						{ type: 'text', text: ' 🎯' }
+					]
+				}
+			]
+		}
+	}
 ];
 ```
 
@@ -767,6 +791,7 @@ const demoMessages = [
 ## Résultat attendu
 
 L'application devrait permettre :
+
 1. ✅ D'afficher une liste de messages avec texte et formules mathématiques
 2. ✅ D'écrire un nouveau message avec l'éditeur riche
 3. ✅ D'insérer des formules mathématiques inline et en bloc

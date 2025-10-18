@@ -197,7 +197,7 @@ test.describe('Challenge Types', () => {
 	});
 
 	test.describe('MathLive Input Integration (Deferred)', () => {
-		test.skip('should accept LaTeX input from MathLive', async ({ page }) => {
+		test.skip('should accept LaTeX input from MathLive', async () => {
 			// This test is skipped for Phase 1
 			// Will be implemented in Phase 2 when MathLive integration is complete
 		});
@@ -255,9 +255,9 @@ test.describe('Challenge Types', () => {
 				const feedbackIncorrect = page.locator('.feedback-incorrect');
 
 				// Either correct or incorrect, but shouldn't crash
-				expect(
-					(await feedbackCorrect.isVisible()) || (await feedbackIncorrect.isVisible())
-				).toBe(true);
+				expect((await feedbackCorrect.isVisible()) || (await feedbackIncorrect.isVisible())).toBe(
+					true
+				);
 			}
 		});
 

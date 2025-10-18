@@ -57,7 +57,9 @@ export const POST: RequestHandler = async ({ request }) => {
 		);
 
 		// Use vision model if images are present, otherwise use standard text model
-		const model = hasImages ? 'meta-llama/llama-4-scout-17b-16e-instruct' : 'llama-3.3-70b-versatile';
+		const model = hasImages
+			? 'meta-llama/llama-4-scout-17b-16e-instruct'
+			: 'llama-3.3-70b-versatile';
 
 		// Call Groq API
 		const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {

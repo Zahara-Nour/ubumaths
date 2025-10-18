@@ -53,9 +53,7 @@
 	let autoSaveInterval: number | null = null;
 
 	// Initialize from previous attempt
-	let initialFigure = $state(
-		attempt?.current_figure_state ?? exercise.base_figure ?? ''
-	);
+	let initialFigure = $state(attempt?.current_figure_state ?? exercise.base_figure ?? '');
 
 	// Start auto-save
 	$effect(() => {

@@ -147,9 +147,7 @@
 	{#if attachments.length > 0}
 		<div class="mb-3 space-y-2">
 			{#each attachments as file, index}
-				<div
-					class="flex items-center justify-between rounded-lg border border-border bg-muted p-2"
-				>
+				<div class="flex items-center justify-between rounded-lg border border-border bg-muted p-2">
 					<div class="flex items-center gap-2 overflow-hidden">
 						<Paperclip class="h-4 w-4 flex-shrink-0 text-muted-foreground" />
 						<span class="truncate text-sm">{file.name}</span>
@@ -197,10 +195,7 @@
 
 		<!-- Rich Text Editor -->
 		<div class="flex-1">
-			<RichTextEditor
-				placeholder="Écrivez votre message..."
-				onSend={handleSend}
-			/>
+			<RichTextEditor placeholder="Écrivez votre message..." onSend={handleSend} />
 		</div>
 	</div>
 

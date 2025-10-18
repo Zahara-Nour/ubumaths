@@ -29,24 +29,28 @@
 	}
 </script>
 
-<div class="toast-demo bg-card text-card-foreground p-6 rounded-lg border border-border">
-	<h2 class="text-foreground mb-4 text-xl font-semibold">Toast Notifications Demo</h2>
-	<p class="text-muted-foreground mb-6">
+<div class="toast-demo rounded-lg border border-border bg-card p-6 text-card-foreground">
+	<h2 class="mb-4 text-xl font-semibold text-foreground">Toast Notifications Demo</h2>
+	<p class="mb-6 text-muted-foreground">
 		Click the buttons below to see different types of toast notifications:
 	</p>
 
 	<div class="button-grid">
-		<Button onclick={showSuccessToast} class="bg-green-600 hover:bg-green-700"> Success Toast </Button>
+		<Button onclick={showSuccessToast} class="bg-green-600 hover:bg-green-700">
+			Success Toast
+		</Button>
 
-		<Button onclick={showErrorToast} variant="destructive"> Error Toast </Button>
+		<Button onclick={showErrorToast} variant="destructive">Error Toast</Button>
 
-		<Button onclick={showWarningToast} class="bg-orange-600 hover:bg-orange-700"> Warning Toast </Button>
+		<Button onclick={showWarningToast} class="bg-orange-600 hover:bg-orange-700">
+			Warning Toast
+		</Button>
 
-		<Button onclick={showInfoToast}> Info Toast </Button>
+		<Button onclick={showInfoToast}>Info Toast</Button>
 
-		<Button onclick={showLongToast} variant="secondary"> Long Message </Button>
+		<Button onclick={showLongToast} variant="secondary">Long Message</Button>
 
-		<Button onclick={showPersistentToast} variant="outline"> Persistent Toast </Button>
+		<Button onclick={showPersistentToast} variant="outline">Persistent Toast</Button>
 	</div>
 </div>
 

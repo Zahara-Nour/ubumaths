@@ -84,7 +84,10 @@ export const actions = {
 		}
 
 		logger.info('Signup successful for:', email);
-		logger.info('Session:', data.session ? 'Created (auto-confirm)' : 'Email confirmation required');
+		logger.info(
+			'Session:',
+			data.session ? 'Created (auto-confirm)' : 'Email confirmation required'
+		);
 
 		// Check if email confirmation is required
 		// If session exists, user is auto-confirmed and logged in

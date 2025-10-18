@@ -54,12 +54,12 @@ export default defineConfig({
 	 */
 	optimizeDeps: {
 		include: [
-			'@supabase/supabase-js',  // Authentication client
-			'@supabase/ssr',           // Server-side auth helpers
-			'mathlive',                // Math input editor (large library)
-			'canvas-confetti',         // Celebration effects
-			'mode-watcher',            // Dark mode management
-			'svelte-sonner'            // Toast notifications
+			'@supabase/supabase-js', // Authentication client
+			'@supabase/ssr', // Server-side auth helpers
+			'mathlive', // Math input editor (large library)
+			'canvas-confetti', // Celebration effects
+			'mode-watcher', // Dark mode management
+			'svelte-sonner' // Toast notifications
 		],
 		// Exclude heavy dependencies that don't need pre-bundling
 		// TipTap is only used in specific routes, better to load on-demand

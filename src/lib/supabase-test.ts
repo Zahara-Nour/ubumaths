@@ -15,10 +15,7 @@ export async function testSupabaseConnection() {
 	try {
 		// Test 1: Basic connection
 		logger.info('[Test 1] Testing basic connection...');
-		const { error: healthError } = await supabase
-			.from('profiles')
-			.select('count')
-			.limit(1);
+		const { error: healthError } = await supabase.from('profiles').select('count').limit(1);
 
 		if (healthError) {
 			logger.error('[Test 1] ❌ Connection failed:', healthError.message);
@@ -28,7 +25,9 @@ export async function testSupabaseConnection() {
 
 		// Test 2: Auth state
 		logger.info('[Test 2] Checking auth state...');
-		const { data: { session } } = await supabase.auth.getSession();
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
 
 		if (session) {
 			logger.info('[Test 2] ✅ User logged in:', session.user.email);
@@ -38,10 +37,7 @@ export async function testSupabaseConnection() {
 
 		// Test 3: Database access
 		logger.info('[Test 3] Testing database read access...');
-		const { data: topics, error: topicsError } = await supabase
-			.from('topics')
-			.select('*')
-			.limit(5);
+		const { data: topics, error: topicsError } = await supabase.from('topics').select('*').limit(5);
 
 		if (topicsError) {
 			logger.error('[Test 3] ❌ Database read failed:', topicsError.message);

@@ -5,21 +5,25 @@ Your missing profile issue has been successfully resolved using the Supabase CLI
 ## What Was Done
 
 ### 1. Installed Supabase CLI
+
 ```bash
 brew install supabase/tap/supabase
 ```
 
 ### 2. Linked to Your Project
+
 ```bash
 supabase link --project-ref aqtijumsgfufoztohdua
 ```
 
 ### 3. Applied Migrations
+
 ```bash
 supabase db push
 ```
 
 **Migrations applied:**
+
 - `004_create_profile_trigger.sql` - Creates automatic profile creation for new signups
 - `005_fix_existing_users.sql` - Fixed all existing users without profiles
 
@@ -73,6 +77,7 @@ supabase link --project-ref aqtijumsgfufoztohdua
 ## How It Works Now
 
 When a user signs up:
+
 1. User record created in `auth.users` ✓
 2. **Trigger fires automatically** ✓
 3. Profile created in `public.profiles` with role='student' ✓
@@ -99,11 +104,13 @@ Your database now has profiles with these possible roles:
 ## Verification
 
 The migration confirmed:
+
 ```
 NOTICE: Migration completed: All 2 users already have profiles
 ```
 
 This means:
+
 - ✅ 2 users total
 - ✅ 2 users with profiles
 - ✅ 0 users missing profiles

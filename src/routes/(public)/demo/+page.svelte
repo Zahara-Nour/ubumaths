@@ -1,14 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import {
-		Sparkles,
-		Palette,
-		FileText,
-		Shapes,
-		Gamepad2,
-		Presentation
-	} from 'lucide-svelte';
+	import { Sparkles, Palette, FileText, Shapes, Gamepad2, Presentation } from 'lucide-svelte';
 	import MathField from '$lib/components/MathField.svelte';
 	import DynamicMathField from '$lib/components/DynamicMathField.svelte';
 	import FlipCard from '$lib/components/FlipCard.svelte';
@@ -78,7 +71,7 @@
 		},
 		{
 			title: 'Trio',
-			description: 'Jeu mathématique: alignez 3 nombres pour résoudre l\'équation',
+			description: "Jeu mathématique: alignez 3 nombres pour résoudre l'équation",
 			href: '/games/trio',
 			icon: Gamepad2,
 			color: 'from-indigo-500 to-purple-500'
@@ -86,35 +79,35 @@
 	];
 </script>
 
-<div class="container mx-auto px-4 py-8 max-w-7xl">
+<div class="container mx-auto max-w-7xl px-4 py-8">
 	<!-- Hero Section -->
-	<div class="text-center mb-12">
-		<div class="inline-flex items-center justify-center mb-4">
-			<Presentation class="h-12 w-12 text-primary mr-3" />
+	<div class="mb-12 text-center">
+		<div class="mb-4 inline-flex items-center justify-center">
+			<Presentation class="mr-3 h-12 w-12 text-primary" />
 			<h1 class="text-4xl font-bold text-foreground">Démonstrations de Composants</h1>
 		</div>
-		<p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+		<p class="mx-auto max-w-2xl text-lg text-muted-foreground">
 			Explorez les différents composants et fonctionnalités de l'application UbuMaths
 		</p>
 	</div>
 
 	<!-- Demo Pages Grid -->
-	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+	<div class="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 		{#each demoPages as demo}
 			<a href={demo.href} class="group block">
 				<Card.Root
-					class="h-full transition-all duration-200 hover:shadow-lg hover:-translate-y-1 border-2 hover:border-primary/50"
+					class="h-full border-2 transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg"
 				>
 					<Card.Header>
-						<div class="flex items-start justify-between mb-2">
+						<div class="mb-2 flex items-start justify-between">
 							<div
-								class="p-3 rounded-lg bg-gradient-to-br {demo.color} text-white shadow-md group-hover:shadow-lg transition-shadow"
+								class="rounded-lg bg-gradient-to-br p-3 {demo.color} text-white shadow-md transition-shadow group-hover:shadow-lg"
 							>
 								<!-- Svelte 5: Components are dynamic by default -->
 								<demo.icon class="h-6 w-6" />
 							</div>
 						</div>
-						<Card.Title class="text-xl group-hover:text-primary transition-colors">
+						<Card.Title class="text-xl transition-colors group-hover:text-primary">
 							{demo.title}
 						</Card.Title>
 					</Card.Header>
@@ -122,9 +115,7 @@
 						<p class="text-muted-foreground">{demo.description}</p>
 					</Card.Content>
 					<Card.Footer>
-						<Button variant="ghost" class="w-full group-hover:bg-primary/10">
-							Voir la démo →
-						</Button>
+						<Button variant="ghost" class="w-full group-hover:bg-primary/10">Voir la démo →</Button>
 					</Card.Footer>
 				</Card.Root>
 			</a>
@@ -137,9 +128,7 @@
 			<div class="w-full border-t border-border"></div>
 		</div>
 		<div class="relative flex justify-center text-sm">
-			<span class="px-4 bg-background text-muted-foreground font-medium">
-				Démos Intégrées
-			</span>
+			<span class="bg-background px-4 font-medium text-muted-foreground"> Démos Intégrées </span>
 		</div>
 	</div>
 
@@ -147,18 +136,23 @@
 	<div class="space-y-12">
 		<!-- Math Editor Demo -->
 		<section>
-			<h2 class="text-2xl font-semibold text-foreground mb-4 flex items-center gap-2">
-				<span class="inline-block p-2 rounded-lg bg-gradient-to-br from-violet-500 to-purple-500 text-white">
+			<h2 class="mb-4 flex items-center gap-2 text-2xl font-semibold text-foreground">
+				<span
+					class="inline-block rounded-lg bg-gradient-to-br from-violet-500 to-purple-500 p-2 text-white"
+				>
 					∫
 				</span>
 				Éditeur Mathématique Interactif
 			</h2>
-			<div class="bg-card border border-border rounded-lg p-6">
-				<MathField bind:value={latex} placeholder={'\\text' + '{' + 'Entrez une formule...' + '}'} />
+			<div class="rounded-lg border border-border bg-card p-6">
+				<MathField
+					bind:value={latex}
+					placeholder={'\\text' + '{' + 'Entrez une formule...' + '}'}
+				/>
 
-				<div class="mt-6 p-4 bg-muted rounded-lg">
-					<h3 class="text-foreground font-semibold mb-2">Sortie LaTeX :</h3>
-					<pre class="text-foreground font-mono text-sm">{latex || '(aucune formule)'}</pre>
+				<div class="mt-6 rounded-lg bg-muted p-4">
+					<h3 class="mb-2 font-semibold text-foreground">Sortie LaTeX :</h3>
+					<pre class="font-mono text-sm text-foreground">{latex || '(aucune formule)'}</pre>
 				</div>
 
 				<div class="mt-6 space-y-4">
@@ -169,16 +163,14 @@
 						oninput={handleInput}
 					/>
 
-					<p class="text-muted-foreground text-sm">
+					<p class="text-sm text-muted-foreground">
 						LaTeX actuel : <code class="text-foreground">{currentLatex || '(vide)'}</code>
 					</p>
 
 					<div class="flex flex-wrap gap-2">
 						<Button size="sm" onclick={setFormula}>Définir la formule</Button>
 						<Button size="sm" onclick={getFormula} variant="secondary">Obtenir la formule</Button>
-						<Button size="sm" onclick={() => mathfieldRef?.focus()} variant="outline"
-							>Focus</Button
-						>
+						<Button size="sm" onclick={() => mathfieldRef?.focus()} variant="outline">Focus</Button>
 					</div>
 				</div>
 			</div>
@@ -186,18 +178,18 @@
 
 		<!-- Flip Card Demo -->
 		<section>
-			<h2 class="text-2xl font-semibold text-foreground mb-4 flex items-center gap-2">
+			<h2 class="mb-4 flex items-center gap-2 text-2xl font-semibold text-foreground">
 				<span
-					class="inline-block p-2 rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 text-white"
+					class="inline-block rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 p-2 text-white"
 				>
 					⇄
 				</span>
 				Cartes Retournables
 			</h2>
-			<div class="grid md:grid-cols-3 gap-6">
+			<div class="grid gap-6 md:grid-cols-3">
 				<!-- Card 1: Default -->
 				<div>
-					<h3 class="text-lg font-medium text-foreground mb-3">Carte Standard</h3>
+					<h3 class="mb-3 text-lg font-medium text-foreground">Carte Standard</h3>
 					<FlipCard bind:flipped>
 						{#snippet front()}
 							<div class="card-content front">
@@ -211,9 +203,7 @@
 							<div class="card-content back">
 								<h3>Verso</h3>
 								<p>La hauteur s'adapte dynamiquement !</p>
-								<p>
-									Ce côté a plus de contenu pour démontrer la fonction de hauteur dynamique.
-								</p>
+								<p>Ce côté a plus de contenu pour démontrer la fonction de hauteur dynamique.</p>
 								<p>
 									Remarquez comment la carte passe en douceur pour s'adapter aux différentes
 									hauteurs de contenu.
@@ -227,18 +217,14 @@
 						{/snippet}
 					</FlipCard>
 
-					<Button
-						onclick={() => (flipped = !flipped)}
-						variant="secondary"
-						class="w-full mt-4"
-					>
+					<Button onclick={() => (flipped = !flipped)} variant="secondary" class="mt-4 w-full">
 						{flipped ? 'Afficher le recto' : 'Afficher le verso'}
 					</Button>
 				</div>
 
 				<!-- Card 2: Compact -->
 				<div>
-					<h3 class="text-lg font-medium text-foreground mb-3">Carte Compacte</h3>
+					<h3 class="mb-3 text-lg font-medium text-foreground">Carte Compacte</h3>
 					<FlipCard bind:flipped={flipped2}>
 						{#snippet front()}
 							<div class="card-content compact-front">
@@ -255,18 +241,14 @@
 						{/snippet}
 					</FlipCard>
 
-					<Button
-						onclick={() => (flipped2 = !flipped2)}
-						variant="secondary"
-						class="w-full mt-4"
-					>
+					<Button onclick={() => (flipped2 = !flipped2)} variant="secondary" class="mt-4 w-full">
 						{flipped2 ? 'Afficher le recto' : 'Afficher le verso'}
 					</Button>
 				</div>
 
 				<!-- Card 3: Large -->
 				<div>
-					<h3 class="text-lg font-medium text-foreground mb-3">Grande Carte</h3>
+					<h3 class="mb-3 text-lg font-medium text-foreground">Grande Carte</h3>
 					<FlipCard bind:flipped={flipped3}>
 						{#snippet front()}
 							<div class="card-content large-front">
@@ -292,11 +274,7 @@
 						{/snippet}
 					</FlipCard>
 
-					<Button
-						onclick={() => (flipped3 = !flipped3)}
-						variant="secondary"
-						class="w-full mt-4"
-					>
+					<Button onclick={() => (flipped3 = !flipped3)} variant="secondary" class="mt-4 w-full">
 						{flipped3 ? 'Afficher le recto' : 'Afficher le verso'}
 					</Button>
 				</div>
@@ -305,30 +283,30 @@
 
 		<!-- Logger Demo -->
 		<section>
-			<h2 class="text-2xl font-semibold text-foreground mb-4 flex items-center gap-2">
+			<h2 class="mb-4 flex items-center gap-2 text-2xl font-semibold text-foreground">
 				<span
-					class="inline-block p-2 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 text-white"
+					class="inline-block rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 p-2 text-white"
 				>
 					📝
 				</span>
 				Système de Journalisation
 			</h2>
-			<div class="bg-card border border-border rounded-lg p-6">
+			<div class="rounded-lg border border-border bg-card p-6">
 				<LoggerDemo />
 			</div>
 		</section>
 
 		<!-- Toast Demo -->
 		<section>
-			<h2 class="text-2xl font-semibold text-foreground mb-4 flex items-center gap-2">
+			<h2 class="mb-4 flex items-center gap-2 text-2xl font-semibold text-foreground">
 				<span
-					class="inline-block p-2 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-500 text-white"
+					class="inline-block rounded-lg bg-gradient-to-br from-teal-500 to-cyan-500 p-2 text-white"
 				>
 					🔔
 				</span>
 				Notifications Toast
 			</h2>
-			<div class="bg-card border border-border rounded-lg p-6">
+			<div class="rounded-lg border border-border bg-card p-6">
 				<ToastDemo />
 			</div>
 		</section>

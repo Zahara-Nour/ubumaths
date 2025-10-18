@@ -7,15 +7,17 @@
 **Common Misconception:** "Husky automatically updates the version"
 
 **Reality:**
+
 - **Husky** = Validates commits (linting + format) ❌ Does NOT change version
 - **pnpm release** = Bumps version, creates tags, updates CHANGELOG ✅ Changes version
 
-| Tool | Runs When | Changes Version? |
-|------|-----------|------------------|
-| Husky | Every commit on main | ❌ No |
-| pnpm release | When YOU run it | ✅ Yes |
+| Tool         | Runs When            | Changes Version? |
+| ------------ | -------------------- | ---------------- |
+| Husky        | Every commit on main | ❌ No            |
+| pnpm release | When YOU run it      | ✅ Yes           |
 
 **Example:**
+
 ```bash
 git commit "feat: add feature"  # Husky validates ✅, version stays 0.0.2
 git commit "fix: bug"           # Husky validates ✅, version stays 0.0.2
@@ -219,11 +221,11 @@ git push --follow-tags origin main
 
 ## 🪝 Hook Behavior
 
-| Branch | Pre-commit (Linting) | Commit-msg (Format) |
-|--------|---------------------|---------------------|
-| `main` | ✅ Runs | ✅ Validates |
-| `feature/*` | ⏭️ Skips | ⏭️ Skips |
-| `fix/*` | ⏭️ Skips | ⏭️ Skips |
+| Branch      | Pre-commit (Linting) | Commit-msg (Format) |
+| ----------- | -------------------- | ------------------- |
+| `main`      | ✅ Runs              | ✅ Validates        |
+| `feature/*` | ⏭️ Skips             | ⏭️ Skips            |
+| `fix/*`     | ⏭️ Skips             | ⏭️ Skips            |
 
 ## 🆘 Troubleshooting
 
@@ -264,6 +266,7 @@ git ls-remote --tags origin
 ## 📚 Full Documentation
 
 For detailed explanations, see:
+
 - **[VERSION_MANAGEMENT.md](VERSION_MANAGEMENT.md)** - Complete guide with examples
 - **[CHANGELOG.md](CHANGELOG.md)** - Version history
 - **[commitlint.config.cjs](commitlint.config.cjs)** - Commit rules

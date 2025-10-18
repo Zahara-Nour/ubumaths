@@ -5,6 +5,7 @@ This document summarizes the deprecation warnings fixed in the migration to Svel
 ## Issue: `<svelte:component>` Deprecated
 
 **Warning Message:**
+
 ```
 [vite-plugin-svelte] src/lib/components/Sidebar.svelte:35:4
 `<svelte:component>` is deprecated in runes mode — components are dynamic by default
@@ -15,11 +16,13 @@ This document summarizes the deprecation warnings fixed in the migration to Svel
 In **Svelte 5 with runes mode**, components are dynamic by default. The `<svelte:component>` syntax is no longer needed and has been deprecated.
 
 **Svelte 4 / Legacy Svelte 5:**
+
 ```svelte
 <svelte:component this={MyComponent} class="..." />
 ```
 
 **Svelte 5 Runes Mode (Recommended):**
+
 ```svelte
 <MyComponent class="..." />
 ```
@@ -27,59 +30,72 @@ In **Svelte 5 with runes mode**, components are dynamic by default. The `<svelte
 ## Files Fixed
 
 ### 1. Sidebar Component
+
 **File:** `src/lib/components/Sidebar.svelte`
 **Line:** 35
 
 **Before:**
+
 ```svelte
 <svelte:component
 	this={item.icon}
-	class="w-6 h-6 group-hover:scale-110 transition-transform duration-300"
+	class="h-6 w-6 transition-transform duration-300 group-hover:scale-110"
 />
 ```
 
 **After:**
+
 ```svelte
 <!-- Svelte 5: Components are dynamic by default, no need for svelte:component -->
-<item.icon class="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
+<item.icon class="h-6 w-6 transition-transform duration-300 group-hover:scale-110" />
 ```
 
 ---
 
 ### 2. Dashboard Layout
+
 **File:** `src/routes/(protected)/dashboard/+layout.svelte`
 **Line:** 324
 
 **Before:**
+
 ```svelte
 <svelte:component
 	this={link.icon}
-	class="w-6 h-6 group-hover:scale-110 transition-transform duration-300"
+	class="h-6 w-6 transition-transform duration-300 group-hover:scale-110"
 />
 ```
 
 **After:**
+
 ```svelte
 <!-- Svelte 5: Components are dynamic by default -->
-<link.icon class="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
+<link.icon class="h-6 w-6 transition-transform duration-300 group-hover:scale-110" />
 ```
 
 ---
 
 ### 3. Demo Page
+
 **File:** `src/routes/(public)/demo/+page.svelte`
 **Line:** 113
 
 **Before:**
+
 ```svelte
-<div class="p-3 rounded-lg bg-gradient-to-br {demo.color} text-white shadow-md group-hover:shadow-lg transition-shadow">
+<div
+	class="rounded-lg bg-gradient-to-br p-3 {demo.color} text-white shadow-md transition-shadow group-hover:shadow-lg"
+>
 	<svelte:component this={demo.icon} class="h-6 w-6" />
 </div>
 ```
 
 **After:**
+
 ```svelte
-<div class="p-3 rounded-lg bg-gradient-to-br {demo.color} text-white shadow-md group-hover:shadow-lg transition-shadow">
+<div
+	class="rounded-lg bg-gradient-to-br p-3 {demo.color} text-white shadow-md transition-shadow group-hover:shadow-lg"
+>
 	<!-- Svelte 5: Components are dynamic by default -->
 	<demo.icon class="h-6 w-6" />
 </div>
@@ -88,10 +104,12 @@ In **Svelte 5 with runes mode**, components are dynamic by default. The `<svelte
 ---
 
 ### 4. Geometry Exercise Wrapper
+
 **File:** `src/lib/components/geometry/GeometryExerciseWrapper.svelte`
 **Lines:** 56-64
 
 **Before:**
+
 ```svelte
 {#if ExerciseComponent()}
 	<svelte:component
@@ -107,6 +125,7 @@ In **Svelte 5 with runes mode**, components are dynamic by default. The `<svelte
 ```
 
 **After:**
+
 ```svelte
 {#if ExerciseComponent()}
 	<!-- Svelte 5: Components are dynamic by default -->
@@ -127,10 +146,12 @@ In **Svelte 5 with runes mode**, components are dynamic by default. The `<svelte
 ---
 
 ### 5. AddFriend Component
+
 **File:** `src/lib/components/AddFriend.svelte`
 **Line:** 164
 
 **Before:**
+
 ```svelte
 {#if badge.icon}
 	<svelte:component this={badge.icon} class="size-4" />
@@ -138,6 +159,7 @@ In **Svelte 5 with runes mode**, components are dynamic by default. The `<svelte
 ```
 
 **After:**
+
 ```svelte
 {#if badge.icon}
 	<!-- Svelte 5: Components are dynamic by default -->
@@ -163,7 +185,7 @@ When components are stored in object properties (common for icon libraries like 
 
 {#each items as item}
 	<!-- ✅ Svelte 5: Direct property access -->
-	<item.icon class="w-6 h-6" />
+	<item.icon class="h-6 w-6" />
 
 	<!-- ❌ Deprecated: <svelte:component> -->
 	<!-- <svelte:component this={item.icon} class="w-6 h-6" /> -->

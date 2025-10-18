@@ -29,10 +29,7 @@ async function checkAdminProfile() {
 	console.log('🔍 Checking admin profile...\n');
 
 	// Find admin users
-	const { data: admins, error } = await supabase
-		.from('profiles')
-		.select('*')
-		.eq('role', 'admin');
+	const { data: admins, error } = await supabase.from('profiles').select('*').eq('role', 'admin');
 
 	if (error) {
 		console.error('❌ Error fetching admins:', error);

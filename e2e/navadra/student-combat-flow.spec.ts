@@ -174,7 +174,8 @@ test.describe('Student Combat Flow', () => {
 		// Complete one turn
 		await page.locator('[data-spell]').first().click();
 		await expect(page.locator('.challenge-container')).toBeVisible();
-		const questionText = await page.locator('.challenge-question').textContent();
+		// Verify question is displayed (validates UI state)
+		await expect(page.locator('.challenge-question')).toBeVisible();
 		await page.locator('input[name="answer"]').fill('42');
 		await page.click('button:has-text("Valider")');
 

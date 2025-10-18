@@ -234,7 +234,7 @@ function topologicalSort(variables: ChallengeVariables): string[] {
 			// If it's an array, check if array elements reference other variables
 			if (Array.isArray(rawValue)) {
 				// Array elements might be variable names (strings)
-				expr = rawValue.filter(item => typeof item === 'string').join(' ');
+				expr = rawValue.filter((item) => typeof item === 'string').join(' ');
 			} else {
 				expr = String(rawValue || '');
 			}
@@ -435,8 +435,18 @@ export function validateAnswer(
 	tolerance: number = 0.01
 ): boolean {
 	console.log('[validateAnswer] Starting validation');
-	console.log('[validateAnswer] Student:', JSON.stringify(studentAnswer), 'Type:', typeof studentAnswer);
-	console.log('[validateAnswer] Correct:', JSON.stringify(correctAnswer), 'Type:', typeof correctAnswer);
+	console.log(
+		'[validateAnswer] Student:',
+		JSON.stringify(studentAnswer),
+		'Type:',
+		typeof studentAnswer
+	);
+	console.log(
+		'[validateAnswer] Correct:',
+		JSON.stringify(correctAnswer),
+		'Type:',
+		typeof correctAnswer
+	);
 	console.log('[validateAnswer] Tolerance:', tolerance);
 
 	// Handle null/undefined
@@ -454,7 +464,10 @@ export function validateAnswer(
 	let parsedStudentAnswer = studentAnswer;
 	if (typeof studentAnswer === 'string' && /^-?\d+\.?\d*$/.test(studentAnswer.trim())) {
 		parsedStudentAnswer = parseFloat(studentAnswer);
-		console.log('[validateAnswer] Parsed student answer from string to number:', parsedStudentAnswer);
+		console.log(
+			'[validateAnswer] Parsed student answer from string to number:',
+			parsedStudentAnswer
+		);
 	}
 
 	// Numeric comparison with tolerance
@@ -463,10 +476,20 @@ export function validateAnswer(
 		if (typeof parsedStudentAnswer === 'number') {
 			const diff = Math.abs(parsedStudentAnswer - correctAnswer);
 			const result = diff <= tolerance;
-			console.log('[validateAnswer] Numeric comparison: diff =', diff, 'tolerance =', tolerance, 'result =', result);
+			console.log(
+				'[validateAnswer] Numeric comparison: diff =',
+				diff,
+				'tolerance =',
+				tolerance,
+				'result =',
+				result
+			);
 			return result;
 		} else {
-			console.log('[validateAnswer] FAIL: Correct is number but student is', typeof parsedStudentAnswer);
+			console.log(
+				'[validateAnswer] FAIL: Correct is number but student is',
+				typeof parsedStudentAnswer
+			);
 			return false;
 		}
 	}
@@ -506,7 +529,14 @@ export function validateAnswer(
 
 	// Direct comparison
 	const result = parsedStudentAnswer === correctAnswer;
-	console.log('[validateAnswer] Direct comparison:', parsedStudentAnswer, '===', correctAnswer, '?', result);
+	console.log(
+		'[validateAnswer] Direct comparison:',
+		parsedStudentAnswer,
+		'===',
+		correctAnswer,
+		'?',
+		result
+	);
 	return result;
 }
 

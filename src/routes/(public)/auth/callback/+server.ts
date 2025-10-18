@@ -45,14 +45,20 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 		if (exchangeError) {
 			logger.error('Code exchange failed:', exchangeError);
 			// Redirect to login with error message
-			throw redirect(303, `/login?error=${encodeURIComponent('Authentication failed. Please try again.')}`);
+			throw redirect(
+				303,
+				`/login?error=${encodeURIComponent('Authentication failed. Please try again.')}`
+			);
 		}
 
 		const { session, user } = data;
 
 		if (!session || !user) {
 			logger.error('No session or user after code exchange');
-			throw redirect(303, `/login?error=${encodeURIComponent('Authentication failed. Please try again.')}`);
+			throw redirect(
+				303,
+				`/login?error=${encodeURIComponent('Authentication failed. Please try again.')}`
+			);
 		}
 
 		logger.info('Session created for user:', user.email);

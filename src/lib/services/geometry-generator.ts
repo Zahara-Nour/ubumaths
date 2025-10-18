@@ -171,13 +171,7 @@ export interface AngleProblem {
 	difficulty: 'easy' | 'medium' | 'hard';
 
 	/** Type of angle problem */
-	type:
-		| 'measure'
-		| 'construct'
-		| 'complementary'
-		| 'supplementary'
-		| 'vertical'
-		| 'parallel-lines';
+	type: 'measure' | 'construct' | 'complementary' | 'supplementary' | 'vertical' | 'parallel-lines';
 
 	/** Target angle value in degrees */
 	targetAngle?: number;
@@ -409,7 +403,8 @@ export async function generateRandomTriangle(
 			metadata.measurements['angle_B'] = toDegrees(
 				Math.acos((a * a + c * c - b * b) / (2 * a * c))
 			);
-			metadata.measurements['angle_C'] = 180 - metadata.measurements['angle_A'] - metadata.measurements['angle_B'];
+			metadata.measurements['angle_C'] =
+				180 - metadata.measurements['angle_A'] - metadata.measurements['angle_B'];
 			break;
 		}
 	}
@@ -464,15 +459,14 @@ export async function generateRandomTriangle(
 		visible: true
 	});
 
-	metadata.objects = [
-		...pointLabels,
-		'seg_AB',
-		'seg_BC',
-		'seg_CA'
-	];
+	metadata.objects = [...pointLabels, 'seg_AB', 'seg_BC', 'seg_CA'];
 
 	// Get figure as base64
-	const figureBase64 = app.getBase64Code ? app.getBase64Code() : (app.getFig ? await app.getFig() : "");
+	const figureBase64 = app.getBase64Code
+		? app.getBase64Code()
+		: app.getFig
+			? await app.getFig()
+			: '';
 
 	return {
 		figureBase64,
@@ -536,8 +530,8 @@ export async function generateCircleConfiguration(
 			// Add circle (OFFICIAL API: addCircleOA)
 			await app.addCircleOA({
 				tag: 'circle1',
-				o: centerLabels[0],      // Center point
-				a: pointLabels[0],       // Point on circle (defines radius)
+				o: centerLabels[0], // Center point
+				a: pointLabels[0], // Point on circle (defines radius)
 				hidden: false
 			});
 
@@ -643,7 +637,7 @@ export async function generateCircleConfiguration(
 			const C = { x: pointC?.x ?? 0, y: pointC?.y ?? 0 };
 
 			// Calculate circumcenter using perpendicular bisectors
-			const D = (2 * (A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y)));
+			const D = 2 * (A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y));
 			const ux =
 				((A.x * A.x + A.y * A.y) * (B.y - C.y) +
 					(B.x * B.x + B.y * B.y) * (C.y - A.y) +
@@ -688,7 +682,11 @@ export async function generateCircleConfiguration(
 		}
 	}
 
-	const figureBase64 = app.getBase64Code ? app.getBase64Code() : (app.getFig ? await app.getFig() : "");
+	const figureBase64 = app.getBase64Code
+		? app.getBase64Code()
+		: app.getFig
+			? await app.getFig()
+			: '';
 
 	return {
 		figureBase64,
@@ -934,7 +932,11 @@ export async function generateTransformationProblem(
 		metadata.objects.push('seg_transformed');
 	}
 
-	const figureBase64 = app.getBase64Code ? app.getBase64Code() : (app.getFig ? await app.getFig() : "");
+	const figureBase64 = app.getBase64Code
+		? app.getBase64Code()
+		: app.getFig
+			? await app.getFig()
+			: '';
 
 	return {
 		figureBase64,
@@ -1030,8 +1032,7 @@ export async function generateAngleProblem(
 		case 'construct': {
 			// Student must construct an angle
 			const angle =
-				targetAngle ??
-				(difficulty === 'easy' ? randomInt(1, 12) * 15 : randomInt(10, 170));
+				targetAngle ?? (difficulty === 'easy' ? randomInt(1, 12) * 15 : randomInt(10, 170));
 
 			// Provide starting ray
 			await app.addPointXY({
@@ -1070,7 +1071,7 @@ export async function generateAngleProblem(
 			// Given one angle, find the complementary/supplementary angle
 			const baseAngle =
 				difficulty === 'easy'
-					? randomInt(1, (type === 'complementary' ? 6 : 12)) * 15
+					? randomInt(1, type === 'complementary' ? 6 : 12) * 15
 					: randomInt(10, type === 'complementary' ? 80 : 170);
 
 			const targetSum = type === 'complementary' ? 90 : 180;
@@ -1223,7 +1224,11 @@ export async function generateAngleProblem(
 		}
 	}
 
-	const figureBase64 = app.getBase64Code ? app.getBase64Code() : (app.getFig ? await app.getFig() : "");
+	const figureBase64 = app.getBase64Code
+		? app.getBase64Code()
+		: app.getFig
+			? await app.getFig()
+			: '';
 
 	return {
 		figureBase64,
@@ -1291,7 +1296,11 @@ export async function applyRandomization(
 	// Refresh display
 	await app.refresh?.();
 
-	const figureBase64 = app.getBase64Code ? app.getBase64Code() : (app.getFig ? await app.getFig() : "");
+	const figureBase64 = app.getBase64Code
+		? app.getBase64Code()
+		: app.getFig
+			? await app.getFig()
+			: '';
 
 	return {
 		figureBase64,

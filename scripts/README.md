@@ -18,6 +18,7 @@ This guide explains how to promote users to different roles in your UbuMaths app
    - Copy the `service_role` key (NOT the `anon` key)
 
 2. **Add to `.env` file**:
+
    ```bash
    PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    PUBLIC_SUPABASE_ANON_KEY=your-anon-key
@@ -31,16 +32,19 @@ This guide explains how to promote users to different roles in your UbuMaths app
 4. **Run the appropriate script**:
 
    **To create a teacher:**
+
    ```bash
    npx tsx scripts/create-teacher.ts user@example.com
    ```
 
    **To create an admin:**
+
    ```bash
    npx tsx scripts/create-admin.ts user@example.com
    ```
 
    You should see:
+
    ```
    🔍 Looking for user: user@example.com
    ✅ Found user: User Name
@@ -75,19 +79,23 @@ After promoting a user to admin, you can verify by:
 ## Troubleshooting
 
 **"User not found" error**:
+
 - Make sure the user has signed up first
 - Check that the email matches exactly (case-sensitive)
 
 **"Missing environment variables" error**:
+
 - Make sure your `.env` file contains both `PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`
 
 **Permission errors**:
+
 - Ensure you're using the `service_role` key, not the `anon` key
 - The service role key bypasses Row Level Security (RLS)
 
 ## Security Notes
 
 ⚠️ **IMPORTANT**:
+
 - Never commit your `.env` file or service role key to git
 - The service role key has full database access - keep it secret
 - Only use the script in development or secure environments

@@ -17,6 +17,7 @@ I've successfully implemented the **complete foundation** for the Navadra educat
 ### 🗄️ Database (14 Migration Files)
 
 **Core Tables (12)**:
+
 - `game_players` - Player profiles with XP, level, prestige, element pyrs
 - `game_spells` - Spell collection system
 - `game_monsters` - Monster instances
@@ -31,6 +32,7 @@ I've successfully implemented the **complete foundation** for the Navadra educat
 - `game_class_settings` - Class-level configuration
 
 **Security & Automation (2)**:
+
 - Complete RLS policies (40+ policies)
 - Automated triggers (17 triggers for auto-updates, rewards, stats)
 
@@ -52,6 +54,7 @@ All with LocalStorage persistence and reactive updates.
 ### 🧮 Challenge System
 
 **Variable Evaluation** (`challenge-variables.ts`):
+
 - Math.js-based expression evaluation
 - Variable dependency resolution (topological sort)
 - Custom functions: `randomInt()`, `pickRandom()`, `pgcd()`, `ppcm()`, etc.
@@ -59,6 +62,7 @@ All with LocalStorage persistence and reactive updates.
 - Question interpolation
 
 **UI Components (4)**:
+
 - `ChallengeContainer.svelte` - Main challenge wrapper
 - `ChallengeTimer.svelte` - Countdown timer with visual warnings
 - `ChallengeInput.svelte` - Numeric/text answer input
@@ -67,6 +71,7 @@ All with LocalStorage persistence and reactive updates.
 ### ⚔️ Combat System
 
 **Calculations** (`combat.ts`):
+
 - Damage calculation with element advantages (Fire > Earth > Wind > Water > Fire)
 - Monster attack damage
 - XP/Prestige/Pyrs reward formulas
@@ -75,6 +80,7 @@ All with LocalStorage persistence and reactive updates.
 - Random monster generation
 
 **UI Components (5)**:
+
 - `MonsterCard.svelte` - Monster selection with rarity badges
 - `PlayerPanel.svelte` - Player HP bar and stats
 - `MonsterPanel.svelte` - Monster HP bar and info
@@ -96,6 +102,7 @@ All with LocalStorage persistence and reactive updates.
 ```
 
 **Server Actions**:
+
 - `startCombat` - Generate monster and create combat
 - `selectSpell` - Choose spell and fetch challenge
 - `submitAnswer` - Validate answer and resolve combat turn
@@ -127,16 +134,19 @@ All with LocalStorage persistence and reactive updates.
 ## 🎮 Complete Game Flow
 
 ### 1. Game Entry
+
 ```
 Dashboard → Navadra Hub → Player Stats Display
 ```
 
 ### 2. Combat Start
+
 ```
 Combat Selection → Generate Random Monster → Combat Arena
 ```
 
 ### 3. Turn Sequence
+
 ```
 Select Spell → Challenge Appears → Solve Math Problem
 → Submit Answer → See Result → Damage Applied
@@ -144,6 +154,7 @@ Select Spell → Challenge Appears → Solve Math Problem
 ```
 
 ### 4. Victory
+
 ```
 Monster Defeated → Victory Screen → Rewards Awarded
 → XP to Gidouilles Conversion → Stats Updated
@@ -154,18 +165,21 @@ Monster Defeated → Victory Screen → Rewards Awarded
 ## 📊 Technical Achievements
 
 ### Security
+
 - ✅ Complete RLS policies (students, teachers, admins)
 - ✅ Server-side answer validation (no client-side cheating)
 - ✅ Server-side damage calculation
 - ✅ Automated reward distribution via triggers
 
 ### Performance
+
 - ✅ Indexed database queries
 - ✅ Derived reactive values (Svelte 5)
 - ✅ LocalStorage persistence
 - ✅ Lazy-loaded images
 
 ### Integration
+
 - ✅ XP → Gidouilles conversion (10:1 + 5 bonus)
 - ✅ Automatic stat tracking
 - ✅ Challenge attempt history for teacher analytics
@@ -176,21 +190,25 @@ Monster Defeated → Victory Screen → Rewards Awarded
 ## 🚀 Quick Start Guide
 
 ### 1. Apply Migrations
+
 ```bash
 pnpm db:migrate
 ```
 
 ### 2. Setup Game Assets
+
 ```bash
 pnpm game:setup-assets
 ```
 
 ### 3. Import Challenges
+
 ```bash
 pnpm game:import-challenges
 ```
 
 ### 4. Create Test Spells
+
 ```sql
 -- Replace YOUR_USER_ID with your auth.users ID
 INSERT INTO game_spells (user_id, spell_num, level, element, power, type) VALUES
@@ -207,6 +225,7 @@ INSERT INTO game_spells (user_id, spell_num, level, element, power, type) VALUES
 ```
 
 ### 5. Start Playing!
+
 Navigate to: `http://localhost:5173/dashboard/navadra`
 
 ---
@@ -245,25 +264,26 @@ Documentation:
 
 ## 🎯 Features Implemented vs. Planned
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Database Schema | ✅ Complete | All 12 tables + RLS + triggers |
-| Challenge System | ✅ Complete | Math.js evaluation, timer, validation |
-| Combat System | ✅ Complete | Turn-based, element advantages, rewards |
-| Spell Management | ✅ Complete | Collection page, stats display |
-| XP/Rewards | ✅ Complete | Auto-conversion to gidouilles |
-| Victory Screen | ✅ Complete | Full reward breakdown |
-| Game Hub | ✅ Complete | Stats, navigation |
-| Monster Selection | ✅ Complete | Random generation |
-| Spell Unlocking | ⚠️ Manual | Needs auto-unlock system |
-| Deck Builder | 🔄 Basic | Uses first 10 spells automatically |
-| Achievements | 🔄 Schema Only | UI pending |
-| Leaderboards | 🔄 Schema Only | UI pending |
-| Multiplayer | ❌ Phase 3 | Not started |
-| Teacher Tools | ❌ Phase 4 | Not started |
-| Geometry Challenges | ❌ Future | Numeric only for now |
+| Feature             | Status         | Notes                                   |
+| ------------------- | -------------- | --------------------------------------- |
+| Database Schema     | ✅ Complete    | All 12 tables + RLS + triggers          |
+| Challenge System    | ✅ Complete    | Math.js evaluation, timer, validation   |
+| Combat System       | ✅ Complete    | Turn-based, element advantages, rewards |
+| Spell Management    | ✅ Complete    | Collection page, stats display          |
+| XP/Rewards          | ✅ Complete    | Auto-conversion to gidouilles           |
+| Victory Screen      | ✅ Complete    | Full reward breakdown                   |
+| Game Hub            | ✅ Complete    | Stats, navigation                       |
+| Monster Selection   | ✅ Complete    | Random generation                       |
+| Spell Unlocking     | ⚠️ Manual      | Needs auto-unlock system                |
+| Deck Builder        | 🔄 Basic       | Uses first 10 spells automatically      |
+| Achievements        | 🔄 Schema Only | UI pending                              |
+| Leaderboards        | 🔄 Schema Only | UI pending                              |
+| Multiplayer         | ❌ Phase 3     | Not started                             |
+| Teacher Tools       | ❌ Phase 4     | Not started                             |
+| Geometry Challenges | ❌ Future      | Numeric only for now                    |
 
 **Legend**:
+
 - ✅ Complete
 - ⚠️ Partial (works but needs improvement)
 - 🔄 Schema ready, UI pending
@@ -276,6 +296,7 @@ Documentation:
 See [NAVADRA_SETUP.md](NAVADRA_SETUP.md) for complete testing guide.
 
 **Quick Test**:
+
 1. Apply migrations
 2. Import challenges
 3. Insert test spells
@@ -288,6 +309,7 @@ See [NAVADRA_SETUP.md](NAVADRA_SETUP.md) for complete testing guide.
 ## 📈 Statistics
 
 ### Code Written
+
 - **Lines of Code**: ~5,000+ lines
 - **Components**: 13 Svelte components
 - **Database Tables**: 12 new tables
@@ -296,6 +318,7 @@ See [NAVADRA_SETUP.md](NAVADRA_SETUP.md) for complete testing guide.
 - **TypeScript Types**: 30+ interfaces
 
 ### Time Estimates
+
 - **Foundation**: ~8 hours
 - **Challenge System**: ~6 hours
 - **Combat System**: ~8 hours
@@ -307,6 +330,7 @@ See [NAVADRA_SETUP.md](NAVADRA_SETUP.md) for complete testing guide.
 ## 🎓 What You Can Do Now
 
 ### As a Student
+
 1. ✅ View your game stats
 2. ✅ See unlocked spells
 3. ✅ Start a combat
@@ -316,6 +340,7 @@ See [NAVADRA_SETUP.md](NAVADRA_SETUP.md) for complete testing guide.
 7. ✅ Track combat history
 
 ### As a Developer
+
 1. ✅ Extend with new challenge types
 2. ✅ Add more monsters
 3. ✅ Create achievements
@@ -328,24 +353,28 @@ See [NAVADRA_SETUP.md](NAVADRA_SETUP.md) for complete testing guide.
 ## 🔮 Next Steps (Phase 2)
 
 ### Priority 1: Quality of Life
+
 - [ ] Auto-unlock starter spells on first game visit
 - [ ] Spell unlock system (earn spells from victories)
 - [ ] Better monster name generation
 - [ ] Monster image mapping
 
 ### Priority 2: Content
+
 - [ ] More challenge types (multiple choice, drag-drop)
 - [ ] Achievement UI and notifications
 - [ ] Leaderboard page
 - [ ] Boss monsters
 
 ### Priority 3: Features
+
 - [ ] Deck builder UI (choose 10 spells)
 - [ ] Spell upgrade system
 - [ ] Tutorial system
 - [ ] Sound effects
 
 ### Priority 4: Polish
+
 - [ ] Animations (spell casting, damage numbers)
 - [ ] Loading states
 - [ ] Error handling improvements
@@ -364,28 +393,34 @@ See [NAVADRA_SETUP.md](NAVADRA_SETUP.md) for complete testing guide.
 ## 💡 Key Design Decisions
 
 ### 1. Svelte 5 Runes over Stores
+
 - Modern reactive syntax
 - Better performance
 - Type-safe by default
 
 ### 2. Server-First Security
+
 - All calculations on server
 - Client can't cheat
 - RLS policies enforce access
 
 ### 3. Element Rock-Paper-Scissors
+
 ```
 Fire > Earth > Wind > Water > Fire
 ```
+
 - 50% damage bonus
 - 25% damage penalty
 
 ### 4. XP → Gidouilles Integration
+
 - 10:1 conversion ratio
 - +5 bonus per victory
 - Automatic via database triggers
 
 ### 5. Challenge Variable System
+
 - Math.js for evaluation
 - Topological sort for dependencies
 - Custom functions for randomization
@@ -418,6 +453,7 @@ From **zero** to a **fully functional educational RPG** in one implementation se
 ### Impact
 
 Students can now:
+
 - **Learn math** through engaging combat
 - **Earn rewards** (gidouilles) while studying
 - **Track progress** through XP and levels
@@ -450,10 +486,10 @@ const rewardsMapping = parsed[columnIndices.rewards];
 
 // Use the mapping to extract actual values at their correct indices
 rewardsData = {
-  xp: parsed[rewardsMapping.xp],           // Index 4
-  prestige: parsed[rewardsMapping.prestige], // Index 5
-  pyrs: parsed[rewardsMapping.pyrs],        // Index 6
-  element: parsed[rewardsMapping.element]    // Index 7
+	xp: parsed[rewardsMapping.xp], // Index 4
+	prestige: parsed[rewardsMapping.prestige], // Index 5
+	pyrs: parsed[rewardsMapping.pyrs], // Index 6
+	element: parsed[rewardsMapping.element] // Index 7
 };
 ```
 
@@ -466,6 +502,7 @@ rewardsData = {
 **Implementation**: Added `spawnDebugMonster` action in `src/routes/(protected)/dashboard/navadra/combat/+page.server.ts` (line 44)
 
 **Features**:
+
 - Creates a monster with only **1 HP** (dies in one hit)
 - Level 1, Fire element, Common category
 - Name prefixed with "🐛 DEBUG"

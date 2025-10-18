@@ -86,10 +86,10 @@
 	// Common cards get a gray gem with no glow
 	// Rare/Epic/Legendary get colored gems with CSS drop-shadow glow effects
 	const rarityColors = {
-		common: { color: '#9ca3af', glow: false },      // Gray, no glow
-		rare: { color: '#3b82f6', glow: true },         // Blue with glow
-		epic: { color: '#a855f7', glow: true },         // Purple with glow
-		legendary: { color: '#f59e0b', glow: true }     // Gold/orange with glow
+		common: { color: '#9ca3af', glow: false }, // Gray, no glow
+		rare: { color: '#3b82f6', glow: true }, // Blue with glow
+		epic: { color: '#a855f7', glow: true }, // Purple with glow
+		legendary: { color: '#f59e0b', glow: true } // Gold/orange with glow
 	};
 
 	// Get rarity display info for this card, defaulting to common if rarity not set
@@ -112,7 +112,9 @@
 	let active = $state(false);
 	let interacting = $state(false);
 	let firstPop = $state(true);
-	let isVisible = $state(typeof document !== 'undefined' ? document.visibilityState === 'visible' : true);
+	let isVisible = $state(
+		typeof document !== 'undefined' ? document.visibilityState === 'visible' : true
+	);
 
 	// Spring animation settings
 	const springInteractSettings = { stiffness: 0.066, damping: 0.25 };
@@ -392,7 +394,10 @@
 	}
 
 	// Handle gyroscope orientation
-	function orientate(e: { absolute: { alpha: number; beta: number; gamma: number }; relative: { alpha: number; beta: number; gamma: number } }) {
+	function orientate(e: {
+		absolute: { alpha: number; beta: number; gamma: number };
+		relative: { alpha: number; beta: number; gamma: number };
+	}) {
 		const x = e.relative.gamma;
 		const y = e.relative.beta;
 		const limit = { x: 16, y: 18 };
@@ -418,7 +423,6 @@
 			}
 		);
 	}
-
 
 	// Watch for active card changes
 	$effect(() => {
@@ -461,7 +465,8 @@
 		--pointer-y: ${$springGlare.y}%;
 		--pointer-from-center: ${clamp(
 			Math.sqrt(
-				($springGlare.y - 50) * ($springGlare.y - 50) + ($springGlare.x - 50) * ($springGlare.x - 50)
+				($springGlare.y - 50) * ($springGlare.y - 50) +
+					($springGlare.x - 50) * ($springGlare.x - 50)
 			) / 50,
 			0,
 			1
@@ -543,43 +548,59 @@
 		>
 			<!-- Card Back (Luxury Gold Design matching VipCard) -->
 			<div class="holo-card__back">
-				<div class="w-full h-full bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 relative rounded-[2.5%/1.8%] overflow-hidden">
+				<div
+					class="relative h-full w-full overflow-hidden rounded-[2.5%/1.8%] bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600"
+				>
 					<!-- Geometric Pattern Overlay -->
-					<div class="absolute inset-0 opacity-20" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.3) 35px, rgba(255,255,255,.3) 70px);"></div>
+					<div
+						class="absolute inset-0 opacity-20"
+						style="background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.3) 35px, rgba(255,255,255,.3) 70px);"
+					></div>
 
 					<!-- Radial Gradient Shine -->
-					<div class="absolute inset-0" style="background: radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, transparent 70%);"></div>
+					<div
+						class="absolute inset-0"
+						style="background: radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, transparent 70%);"
+					></div>
 
 					<!-- Center VIP Logo -->
 					<div class="absolute inset-0 flex flex-col items-center justify-center text-white">
 						<div class="text-center">
-							<div class="text-8xl font-black tracking-wider mb-4" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.3);">
+							<div
+								class="mb-4 text-8xl font-black tracking-wider"
+								style="text-shadow: 2px 2px 8px rgba(0,0,0,0.3);"
+							>
 								VIP
 							</div>
-							<div class="text-lg font-bold tracking-widest" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.3);">
+							<div
+								class="text-lg font-bold tracking-widest"
+								style="text-shadow: 1px 1px 4px rgba(0,0,0,0.3);"
+							>
 								CARTE PRIVILÈGE
 							</div>
-							<div class="mt-6 w-24 h-1.5 bg-white/50 mx-auto rounded-full"></div>
+							<div class="mx-auto mt-6 h-1.5 w-24 rounded-full bg-white/50"></div>
 						</div>
 					</div>
 
 					<!-- Corner Decorations -->
-					<div class="absolute top-6 left-6 w-12 h-12 border-t-2 border-l-2 border-white/60 rounded-tl-lg"></div>
-					<div class="absolute top-6 right-6 w-12 h-12 border-t-2 border-r-2 border-white/60 rounded-tr-lg"></div>
-					<div class="absolute bottom-6 left-6 w-12 h-12 border-b-2 border-l-2 border-white/60 rounded-bl-lg"></div>
-					<div class="absolute bottom-6 right-6 w-12 h-12 border-b-2 border-r-2 border-white/60 rounded-br-lg"></div>
+					<div
+						class="absolute top-6 left-6 h-12 w-12 rounded-tl-lg border-t-2 border-l-2 border-white/60"
+					></div>
+					<div
+						class="absolute top-6 right-6 h-12 w-12 rounded-tr-lg border-t-2 border-r-2 border-white/60"
+					></div>
+					<div
+						class="absolute bottom-6 left-6 h-12 w-12 rounded-bl-lg border-b-2 border-l-2 border-white/60"
+					></div>
+					<div
+						class="absolute right-6 bottom-6 h-12 w-12 rounded-br-lg border-r-2 border-b-2 border-white/60"
+					></div>
 				</div>
 			</div>
 
 			<!-- Card Front -->
 			<div class="holo-card__front" style={staticStyles}>
-				<img
-					src={card.imagePath}
-					alt={card.name}
-					loading="lazy"
-					width="660"
-					height="921"
-				/>
+				<img src={card.imagePath} alt={card.name} loading="lazy" width="660" height="921" />
 				<div class="holo-card__shine"></div>
 				<div class="holo-card__glare"></div>
 

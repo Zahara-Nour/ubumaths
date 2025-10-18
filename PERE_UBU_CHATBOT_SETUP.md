@@ -7,6 +7,7 @@ Ce guide vous explique comment configurer le chatbot Père Ubu dans votre applic
 Le Père Ubu est un chatbot IA avec la personnalité absurde et pataphysique du personnage créé par Alfred Jarry, adapté pour enseigner les mathématiques. Il utilise l'API Groq (gratuite) pour générer des réponses intelligentes avec un ton unique.
 
 **Caractéristiques :**
+
 - 👑 Personnalité absurde mais bienveillante
 - 🎓 Explications mathématiques correctes avec des métaphores loufoques
 - 💬 Expressions typiques : "Cornegidouille !", "Par ma chandelle verte !"
@@ -93,6 +94,7 @@ http://localhost:5173/pere-ubu
 ```
 
 En production :
+
 ```
 https://votre-domaine.com/pere-ubu
 ```
@@ -121,12 +123,12 @@ https://votre-domaine.com/pere-ubu
 
 ```typescript
 export const personalities = {
-  pereUbu: {
-    systemPrompt: `Tu es le Père Ubu...`, // Modifiez le prompt ici
-    name: 'Père Ubu',
-    avatar: '👑', // Changez l'emoji
-    description: '...'
-  }
+	pereUbu: {
+		systemPrompt: `Tu es le Père Ubu...`, // Modifiez le prompt ici
+		name: 'Père Ubu',
+		avatar: '👑', // Changez l'emoji
+		description: '...'
+	}
 };
 ```
 
@@ -136,15 +138,17 @@ Vous pouvez créer plusieurs personnalités dans le même fichier :
 
 ```typescript
 export const personalities = {
-  pereUbu: { /* ... */ },
+	pereUbu: {
+		/* ... */
+	},
 
-  // Nouvelle personnalité
-  mereUbu: {
-    systemPrompt: `Tu es la Mère Ubu...`,
-    name: 'Mère Ubu',
-    avatar: '👸',
-    description: 'La Mère Ubu, pragmatique et rusée'
-  }
+	// Nouvelle personnalité
+	mereUbu: {
+		systemPrompt: `Tu es la Mère Ubu...`,
+		name: 'Mère Ubu',
+		avatar: '👸',
+		description: 'La Mère Ubu, pragmatique et rusée'
+	}
 };
 ```
 
@@ -174,6 +178,7 @@ Le composant utilise Shadcn UI avec Tailwind CSS. Modifiez les classes dans [src
 Le chatbot **détecte automatiquement** quand un message contient des images et utilise le modèle vision de Groq.
 
 **Limites d'images :**
+
 - **5 images maximum** par message
 - **Fichiers uploadés** (base64) : 4 MB maximum par image
 - **URLs d'images** : 20 MB maximum par image
@@ -195,6 +200,7 @@ Le chatbot **détecte automatiquement** quand un message contient des images et 
    - Ajoutez du texte (optionnel) et envoyez
 
 **Validation automatique :**
+
 - ⚠️ Avertissement si le fichier est trop volumineux
 - ⚠️ Avertissement si la résolution est trop élevée
 - ⚠️ Erreur si le format n'est pas supporté
@@ -212,13 +218,13 @@ Le chatbot **détecte automatiquement** quand un message contient des images et 
 // - meta-llama/llama-4-scout-17b-16e-instruct (vision)
 
 body: JSON.stringify({
-  model,                 // Détecté automatiquement selon le contenu
-  messages: messages,
-  temperature: 0.8,      // 0.0-2.0 (plus élevé = plus créatif)
-  max_tokens: 1000,      // Nombre max de tokens dans la réponse
-  top_p: 1,              // Diversité de l'échantillonnage
-  stream: false          // true pour streaming temps réel
-})
+	model, // Détecté automatiquement selon le contenu
+	messages: messages,
+	temperature: 0.8, // 0.0-2.0 (plus élevé = plus créatif)
+	max_tokens: 1000, // Nombre max de tokens dans la réponse
+	top_p: 1, // Diversité de l'échantillonnage
+	stream: false // true pour streaming temps réel
+});
 ```
 
 ### Gestion de la mémoire contextuelle
@@ -227,9 +233,9 @@ Le composant garde les **10 derniers messages** pour le contexte :
 
 ```typescript
 messages: [
-  { role: 'system', content: personality.systemPrompt },
-  ...messages.slice(-10) // Ajustez ce nombre
-]
+	{ role: 'system', content: personality.systemPrompt },
+	...messages.slice(-10) // Ajustez ce nombre
+];
 ```
 
 ## 🛡️ Sécurité et Confidentialité
@@ -253,6 +259,7 @@ messages: [
 ### Problème : "API key not configured"
 
 **Solution** :
+
 1. Vérifiez que `GROQ_API_KEY` est défini dans `.env`
 2. Redémarrez le serveur de développement
 3. Vérifiez que la clé commence par `gsk_`
@@ -260,11 +267,13 @@ messages: [
 ### Problème : "Service temporairement indisponible"
 
 **Causes possibles** :
+
 - Clé API invalide ou expirée
 - Quota gratuit dépassé
 - Problème réseau avec l'API Groq
 
 **Solutions** :
+
 1. Vérifiez votre clé sur [console.groq.com](https://console.groq.com)
 2. Consultez votre usage et limites
 3. Attendez quelques minutes et réessayez
@@ -272,6 +281,7 @@ messages: [
 ### Problème : Les messages ne s'affichent pas
 
 **Solution** :
+
 1. Ouvrez la console du navigateur (F12)
 2. Vérifiez les erreurs JavaScript
 3. Vérifiez que localStorage est activé dans votre navigateur
@@ -279,11 +289,13 @@ messages: [
 ### Problème : L'IA répond lentement
 
 **Causes** :
+
 - Charge du serveur Groq
 - Connexion internet lente
 - Réponses très longues
 
 **Solutions** :
+
 - Réduisez `max_tokens` dans l'API
 - Utilisez un modèle plus rapide (mais moins performant)
 
@@ -296,9 +308,10 @@ messages: [
 
 ## 🎭 À propos du Père Ubu
 
-Le Père Ubu est un personnage créé par **Alfred Jarry** en 1896 dans la pièce *Ubu Roi*. C'est une figure emblématique du théâtre de l'absurde et de la pataphysique.
+Le Père Ubu est un personnage créé par **Alfred Jarry** en 1896 dans la pièce _Ubu Roi_. C'est une figure emblématique du théâtre de l'absurde et de la pataphysique.
 
 **Dans cette version éducative** :
+
 - ✅ Humour absurde et surréaliste
 - ✅ Expressions loufoques mais inoffensives
 - ✅ Pédagogie mathématique sérieuse
@@ -328,11 +341,13 @@ Le chatbot Père Ubu supporte maintenant le **rendu LaTeX en temps réel** ! Les
 **Exemples de rendu :**
 
 Entrée du Père Ubu :
+
 ```
 "Cornegidouille ! La formule $$a^2 + b^2 = c^2$$ est fondamentale !"
 ```
 
 Ce que l'utilisateur voit :
+
 - "Cornegidouille ! La formule " (texte normal)
 - **a² + b² = c²** (MathLive rendu)
 - " est fondamentale !" (texte normal)

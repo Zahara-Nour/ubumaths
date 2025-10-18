@@ -7,6 +7,7 @@ All notable changes to the Navadra game integration will be documented in this f
 ### Fixed - 2025-10-17
 
 #### Unit Test Failures
+
 - **Issue**: 3 test suites failing with 2 failed tests out of 88 total
 - **Root Causes & Fixes**:
   1. **Syntax Error**: Curly quotes in test descriptions replaced with straight quotes
@@ -24,6 +25,7 @@ All notable changes to the Navadra game integration will be documented in this f
 - **Impact**: Test suite fully operational for CI/CD integration
 
 #### Victory Panel Rewards Display
+
 - **Issue**: XP, prestige, and pyrs rewards were displaying as 0 after defeating monsters
 - **Cause**: Incorrect parsing of nested PostgreSQL array format in server response
 - **Fix**: Updated client-side parsing logic to properly decode nested reward mappings
@@ -34,6 +36,7 @@ All notable changes to the Navadra game integration will be documented in this f
 ### Added - 2025-10-17
 
 #### Debug Monster Feature
+
 - **Purpose**: Enable rapid testing of victory conditions and reward display
 - **Implementation**: New `spawnDebugMonster` server action
 - **Monster Stats**:
@@ -50,12 +53,14 @@ All notable changes to the Navadra game integration will be documented in this f
 ### Documentation - 2025-10-17
 
 #### Updated Documentation Files
+
 - `DATABASE_SCHEMA.md`: Added Debug Features section with victory panel response format
 - `NAVADRA_IMPLEMENTATION_COMPLETE.md`: Added Recent Fixes & Improvements section
 
 ## [1.0.0] - 2025-10-15
 
 ### Added
+
 - Complete Navadra game integration (Phase 1)
 - 14 database migration files
 - Full combat system with turn-based mechanics
@@ -76,6 +81,7 @@ All notable changes to the Navadra game integration will be documented in this f
 This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
 ### Categories
+
 - **Added**: New features
 - **Changed**: Changes to existing functionality
 - **Deprecated**: Soon-to-be removed features

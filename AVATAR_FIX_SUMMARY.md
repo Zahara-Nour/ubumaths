@@ -1,19 +1,23 @@
 # Avatar Display Fix - Summary
 
 ## Problem
+
 Google OAuth authenticated users (teachers and students) were not seeing their profile pictures in the application header.
 
 ## Root Cause
+
 **Google OAuth stores user profile pictures in the `picture` field, not `avatar_url`.**
 
 The original implementation only checked for `user_metadata.avatar_url`, which Google doesn't use. This caused all Google-authenticated users to see fallback avatars instead of their actual profile pictures.
 
 ## Solution Overview
+
 Updated the application to check both `picture` (Google's standard) and `avatar_url` (other providers) when extracting and saving user avatars.
 
 ## Files Modified
 
 ### 1. Database Migration
+
 **File:** `supabase/migrations/061_fix_google_avatar_picture_field.sql`
 
 - Updated `handle_new_user()` trigger to extract avatar from both fields
@@ -21,6 +25,7 @@ Updated the application to check both `picture` (Google's standard) and `avatar_
 - Updates existing profiles without avatars on subsequent logins
 
 ### 2. OAuth Callback Handler
+
 **File:** `src/routes/(public)/auth/callback/+server.ts`
 
 - Extracts `picture` or `avatar_url` when creating profiles
@@ -28,6 +33,7 @@ Updated the application to check both `picture` (Google's standard) and `avatar_
 - Handles edge case where users logged in before avatar saving was implemented
 
 ### 3. Header Component
+
 **File:** `src/lib/components/Header.svelte`
 
 - Updated `getAvatarSrc()` function with comprehensive fallback chain
@@ -35,7 +41,9 @@ Updated the application to check both `picture` (Google's standard) and `avatar_
 - Provides immediate visual feedback even before database updates
 
 ### 4. Debug Page
+
 **Files:**
+
 - `src/routes/(protected)/debug-avatar/+page.server.ts`
 - `src/routes/(protected)/debug-avatar/+page.svelte`
 
@@ -45,6 +53,7 @@ Updated the application to check both `picture` (Google's standard) and `avatar_
 - Helps diagnose avatar issues for specific users
 
 ### 5. Documentation
+
 **File:** `CLAUDE.md`
 
 - Added new section: "Google OAuth and Avatar Management"
@@ -66,12 +75,14 @@ The application now uses this priority order for avatar display:
 ## How It Works
 
 ### For New Users
+
 1. User authenticates with Google OAuth
 2. `handle_new_user()` trigger extracts avatar from `picture` field
 3. Avatar URL is saved to `profiles.avatar_url` in database
 4. Header component displays the Google profile picture
 
 ### For Existing Users
+
 1. User logs in again after the fix was deployed
 2. OAuth callback handler checks if profile has an avatar
 3. If not, it updates `profiles.avatar_url` with Google picture URL
@@ -80,13 +91,16 @@ The application now uses this priority order for avatar display:
 ## Testing
 
 ### To Verify Avatar Fix
+
 1. Log out of the application
 2. Log back in with Google OAuth
 3. Avatar should display in the header
 4. Visit `/debug-avatar` to see all avatar data
 
 ### Debug Page Features
+
 The `/debug-avatar` page shows:
+
 - Current avatar display with all fallback stages
 - Avatar source URL being used
 - Full user object and metadata

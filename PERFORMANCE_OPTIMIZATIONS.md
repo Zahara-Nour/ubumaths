@@ -19,6 +19,7 @@ The dev server was taking ~10 seconds to display the page on first load, causing
 ### 1. Vite Configuration Enhancements ([vite.config.ts](vite.config.ts))
 
 #### Dependency Pre-bundling
+
 ```typescript
 optimizeDeps: {
   include: [
@@ -36,20 +37,22 @@ optimizeDeps: {
 **Why:** Common dependencies are now pre-bundled by Vite on first run, creating an optimized cache that speeds up subsequent loads.
 
 #### Automatic Code Splitting (Vercel Adapter)
+
 ```typescript
 build: {
-  chunkSizeWarningLimit: 1000
+	chunkSizeWarningLimit: 1000;
 }
 ```
 
 **Why:** The Vercel adapter automatically handles code splitting and marks packages as external for SSR optimization. Manual chunking is disabled to avoid conflicts. SvelteKit still performs automatic route-based splitting.
 
 #### Server Configuration
+
 ```typescript
 server: {
-  fs: {
-    allow: ['..'] // Allow serving files from node_modules
-  }
+	fs: {
+		allow: ['..']; // Allow serving files from node_modules
+	}
 }
 ```
 
@@ -58,6 +61,7 @@ server: {
 ### 2. Font Loading Strategy
 
 **Before:**
+
 ```typescript
 // In +layout.svelte <script>
 import '@fontsource/inter/400.css';
@@ -66,12 +70,14 @@ import '@fontsource/inter/500.css';
 ```
 
 **After:**
+
 ```typescript
 // Separate fonts.css file
 import '../fonts.css';
 ```
 
 **Why:**
+
 - Consolidates font imports into a single file
 - Allows Vite to better optimize font loading
 - Reduces module graph complexity
@@ -84,14 +90,15 @@ import '../fonts.css';
 ```svelte
 <!-- In dashboard/+layout.svelte -->
 <svelte:head>
-  {#if typeof document !== 'undefined'}
-    <link rel="stylesheet" href="/css/holo-cards/base.css" />
-    <!-- ... other holo CSS files -->
-  {/if}
+	{#if typeof document !== 'undefined'}
+		<link rel="stylesheet" href="/css/holo-cards/base.css" />
+		<!-- ... other holo CSS files -->
+	{/if}
 </svelte:head>
 ```
 
 **Why:**
+
 - 6 CSS files (25KB total) only load for dashboard routes
 - Public routes (login, games, etc.) load faster
 - Browser caches stylesheets after first dashboard visit
@@ -101,11 +108,13 @@ import '../fonts.css';
 **Vite Cache Location:** `node_modules/.vite/`
 
 The optimized dependencies are cached here after first build. To clear cache:
+
 ```bash
 rm -rf node_modules/.vite
 ```
 
 **When to clear cache:**
+
 - After installing/updating dependencies
 - After modifying `vite.config.ts` optimizeDeps settings
 - If experiencing build issues
@@ -114,28 +123,29 @@ rm -rf node_modules/.vite
 
 ### Phase 1 Results (Dev Server Optimization)
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| First dev server start | ~10s | ~1.7s | **83% faster** |
-| Subsequent starts (with cache) | ~8s | ~2-3s | **60% faster** |
-| Public page initial load | ~5s | ~2-3s | **40% faster** |
-| Dashboard page initial load | ~6s | ~3-4s | **33% faster** |
-| Hot module reload (HMR) | ~500ms | ~200ms | **60% faster** |
+| Metric                         | Before | After  | Improvement    |
+| ------------------------------ | ------ | ------ | -------------- |
+| First dev server start         | ~10s   | ~1.7s  | **83% faster** |
+| Subsequent starts (with cache) | ~8s    | ~2-3s  | **60% faster** |
+| Public page initial load       | ~5s    | ~2-3s  | **40% faster** |
+| Dashboard page initial load    | ~6s    | ~3-4s  | **33% faster** |
+| Hot module reload (HMR)        | ~500ms | ~200ms | **60% faster** |
 
 ### Phase 2 Results (Database & Navigation)
 
-| Metric | Before | After Phase 2 | Improvement |
-|--------|--------|---------------|-------------|
-| Dashboard load (teacher with 3 classes) | 7 queries | 1 query | **85% reduction** |
-| Rewards page load | 7 queries | 1 query | **85% reduction** |
-| Database debug page load | 16 queries | 5 queries | **68% reduction** |
-| Dashboard initial load time | ~3-4s | ~1-2s | **50% faster** |
-| Database debug page load time | ~1-2s | ~300-500ms | **70% faster** |
-| Navigation between dashboard pages | ~500ms | ~50ms (instant feel) | **90% faster** |
-| Static page loads (demo, games) | ~1-2s | ~100ms (prerendered) | **90% faster** |
-| VIP card images initial load | 26 × 50KB = 1.3MB | Lazy loaded | Bandwidth saved |
+| Metric                                  | Before            | After Phase 2        | Improvement       |
+| --------------------------------------- | ----------------- | -------------------- | ----------------- |
+| Dashboard load (teacher with 3 classes) | 7 queries         | 1 query              | **85% reduction** |
+| Rewards page load                       | 7 queries         | 1 query              | **85% reduction** |
+| Database debug page load                | 16 queries        | 5 queries            | **68% reduction** |
+| Dashboard initial load time             | ~3-4s             | ~1-2s                | **50% faster**    |
+| Database debug page load time           | ~1-2s             | ~300-500ms           | **70% faster**    |
+| Navigation between dashboard pages      | ~500ms            | ~50ms (instant feel) | **90% faster**    |
+| Static page loads (demo, games)         | ~1-2s             | ~100ms (prerendered) | **90% faster**    |
+| VIP card images initial load            | 26 × 50KB = 1.3MB | Lazy loaded          | Bandwidth saved   |
 
 **Overall Impact (Combined Phases):**
+
 - **Initial page load:** 10s → 1-2s (80-90% faster)
 - **Dashboard navigation:** 500ms → instant feel
 - **Database queries:** 85% fewer queries
@@ -146,11 +156,13 @@ rm -rf node_modules/.vite
 To measure performance improvements:
 
 1. **Clear Vite cache:**
+
    ```bash
    rm -rf node_modules/.vite
    ```
 
 2. **Start dev server and measure:**
+
    ```bash
    time pnpm dev
    ```
@@ -163,30 +175,36 @@ To measure performance improvements:
 ## File Changes Summary
 
 ### Phase 1 (Dev Server)
+
 **Modified:**
+
 - [vite.config.ts](vite.config.ts) - Added optimizeDeps, removed manual chunking (conflicts with Vercel adapter)
 - [src/routes/+layout.svelte](src/routes/+layout.svelte) - Moved fonts to separate file
-- [src/routes/(protected)/dashboard/+layout.svelte](src/routes/(protected)/dashboard/+layout.svelte) - Conditional CSS loading
+- [src/routes/(protected)/dashboard/+layout.svelte](<src/routes/(protected)/dashboard/+layout.svelte>) - Conditional CSS loading
 
 **New:**
+
 - [src/fonts.css](src/fonts.css) - Consolidated font imports
 
 ### Phase 2 (Database & Navigation)
+
 **Modified:**
-- [src/routes/(protected)/dashboard/+layout.server.ts](src/routes/(protected)/dashboard/+layout.server.ts) - N+1 query optimization
-- [src/routes/(protected)/dashboard/teacher/rewards/+page.server.ts](src/routes/(protected)/dashboard/teacher/rewards/+page.server.ts) - N+1 query optimization
+
+- [src/routes/(protected)/dashboard/+layout.server.ts](<src/routes/(protected)/dashboard/+layout.server.ts>) - N+1 query optimization
+- [src/routes/(protected)/dashboard/teacher/rewards/+page.server.ts](<src/routes/(protected)/dashboard/teacher/rewards/+page.server.ts>) - N+1 query optimization
 - [src/lib/components/VipCard.svelte](src/lib/components/VipCard.svelte) - Lazy loading
 - [src/lib/components/Sidebar.svelte](src/lib/components/Sidebar.svelte) - Prefetch hints
-- [src/routes/(protected)/dashboard/TeacherDashboard.svelte](src/routes/(protected)/dashboard/TeacherDashboard.svelte) - Prefetch hints
+- [src/routes/(protected)/dashboard/TeacherDashboard.svelte](<src/routes/(protected)/dashboard/TeacherDashboard.svelte>) - Prefetch hints
 - [src/app.html](src/app.html) - Resource hints (preconnect, dns-prefetch)
 - [src/lib/types/vip-card.ts](src/lib/types/vip-card.ts) - WebP image paths
 
 **New:**
+
 - [supabase/migrations/067_optimize_teacher_dashboard_query.sql](supabase/migrations/067_optimize_teacher_dashboard_query.sql) - RPC function
 - [supabase/migrations/068_optimize_rewards_page_query.sql](supabase/migrations/068_optimize_rewards_page_query.sql) - RPC function
-- [src/routes/(public)/demo/+page.ts](src/routes/(public)/demo/+page.ts) - Prerendering
-- [src/routes/(public)/games/mathemo/+page.ts](src/routes/(public)/games/mathemo/+page.ts) - Prerendering
-- [src/routes/(public)/demo/vip-cards-demo/+page.ts](src/routes/(public)/demo/vip-cards-demo/+page.ts) - Prerendering
+- [src/routes/(public)/demo/+page.ts](<src/routes/(public)/demo/+page.ts>) - Prerendering
+- [src/routes/(public)/games/mathemo/+page.ts](<src/routes/(public)/games/mathemo/+page.ts>) - Prerendering
+- [src/routes/(public)/demo/vip-cards-demo/+page.ts](<src/routes/(public)/demo/vip-cards-demo/+page.ts>) - Prerendering
 
 ## Phase 2 Optimizations (2025-10-18)
 
@@ -195,20 +213,23 @@ To measure performance improvements:
 #### N+1 Query Elimination
 
 **Problem:** Dashboard and rewards pages were making multiple sequential queries:
+
 - Dashboard: 1 + 2N queries (classes + student counts + schedules per class)
 - Rewards: 1 + 2N queries (classes + member IDs + student profiles)
 
 **Solution:** Created optimized RPC functions with JOIN and aggregation
 
 **Files Changed:**
-- [src/routes/(protected)/dashboard/+layout.server.ts](src/routes/(protected)/dashboard/+layout.server.ts) - Uses `get_teacher_classes_with_data()`
-- [src/routes/(protected)/dashboard/teacher/rewards/+page.server.ts](src/routes/(protected)/dashboard/teacher/rewards/+page.server.ts) - Uses `get_teacher_classes_with_students()`
-- [src/routes/(protected)/dashboard/admin/debug/database/+page.server.ts](src/routes/(protected)/dashboard/admin/debug/database/+page.server.ts) - Uses `get_database_stats()`
+
+- [src/routes/(protected)/dashboard/+layout.server.ts](<src/routes/(protected)/dashboard/+layout.server.ts>) - Uses `get_teacher_classes_with_data()`
+- [src/routes/(protected)/dashboard/teacher/rewards/+page.server.ts](<src/routes/(protected)/dashboard/teacher/rewards/+page.server.ts>) - Uses `get_teacher_classes_with_students()`
+- [src/routes/(protected)/dashboard/admin/debug/database/+page.server.ts](<src/routes/(protected)/dashboard/admin/debug/database/+page.server.ts>) - Uses `get_database_stats()`
 - [supabase/migrations/067_optimize_teacher_dashboard_query.sql](supabase/migrations/067_optimize_teacher_dashboard_query.sql) - RPC function for dashboard
 - [supabase/migrations/068_optimize_rewards_page_query.sql](supabase/migrations/068_optimize_rewards_page_query.sql) - RPC function for rewards
 - [supabase/migrations/069_optimize_database_debug_queries.sql](supabase/migrations/069_optimize_database_debug_queries.sql) - RPC function for database debug page
 
 **Impact:**
+
 - Dashboard: 7 queries → 1 query (85% reduction)
 - Rewards: 7 queries → 1 query (85% reduction)
 - Database debug: 16 queries → 5 queries (68% reduction)
@@ -216,6 +237,7 @@ To measure performance improvements:
 ### 6. Resource Hints & Preconnect
 
 **Added to [src/app.html](src/app.html):**
+
 ```html
 <!-- Preconnect to Supabase for faster auth/API requests -->
 <link rel="preconnect" href="https://umamathsprod.supabase.co" crossorigin />
@@ -227,6 +249,7 @@ To measure performance improvements:
 ### 7. Image Lazy Loading
 
 **Added `loading="lazy"` to:**
+
 - [src/lib/components/VipCard.svelte](src/lib/components/VipCard.svelte) - VIP card images
 - [src/lib/components/VipCardHolo.svelte](src/lib/components/VipCardHolo.svelte) - Holographic cards (already had it)
 
@@ -234,6 +257,7 @@ To measure performance improvements:
 
 **WebP Conversion (Optional):**
 To reduce image size by ~65% (1.5MB → 520KB):
+
 ```bash
 cd static/images/vip-cards
 for img in *.jpg; do magick "$img" -quality 80 "${img%.jpg}.webp"; done
@@ -244,28 +268,32 @@ Then update image paths in `$lib/types/vip-card.ts` to use `.webp` instead of `.
 ### 8. Static Page Prerendering
 
 **Pages Prerendered:**
-- [src/routes/(public)/demo/+page.ts](src/routes/(public)/demo/+page.ts) - Demo hub
-- [src/routes/(public)/games/mathemo/+page.ts](src/routes/(public)/games/mathemo/+page.ts) - Mathémo game
-- [src/routes/(public)/demo/vip-cards-demo/+page.ts](src/routes/(public)/demo/vip-cards-demo/+page.ts) - VIP cards showcase
+
+- [src/routes/(public)/demo/+page.ts](<src/routes/(public)/demo/+page.ts>) - Demo hub
+- [src/routes/(public)/games/mathemo/+page.ts](<src/routes/(public)/games/mathemo/+page.ts>) - Mathémo game
+- [src/routes/(public)/demo/vip-cards-demo/+page.ts](<src/routes/(public)/demo/vip-cards-demo/+page.ts>) - VIP cards showcase
 
 **Impact:** Instant load for static pages (HTML pre-generated at build time)
 
 ### 9. Navigation Prefetching
 
 **Added `data-sveltekit-preload-data="tap"` to:**
+
 - [src/lib/components/Sidebar.svelte](src/lib/components/Sidebar.svelte) - All sidebar navigation links
-- [src/routes/(protected)/dashboard/TeacherDashboard.svelte](src/routes/(protected)/dashboard/TeacherDashboard.svelte) - "Voir Mes Classes" link
+- [src/routes/(protected)/dashboard/TeacherDashboard.svelte](<src/routes/(protected)/dashboard/TeacherDashboard.svelte>) - "Voir Mes Classes" link
 
 **Impact:** Instant-feeling navigation (data preloaded on tap/hover)
 
 ## Additional Optimizations (Future)
 
 ### Short-term (Low-hanging fruit)
+
 1. **Lazy load TipTap editor** - Only load rich text editor when needed
 2. **Lazy load game components** - Dynamic imports for Trio, Mathémo, Geometry
 3. **Font subsetting** - Only load Latin characters (current setup already does this)
 
 ### Medium-term
+
 1. **Service Worker** - Cache static assets offline
 2. **CDN for static files** - Serve images/fonts from CDN
 3. **Bundle analyzer** - Visualize bundle sizes and identify bloat
@@ -274,6 +302,7 @@ Then update image paths in `$lib/types/vip-card.ts` to use `.webp` instead of `.
    ```
 
 ### Long-term
+
 1. **Route-based code splitting** - Automatically split by route group
 2. **SSR optimization** - Cache rendered pages with stale-while-revalidate
 3. **Database query optimization** - Add indexes, reduce N+1 queries
@@ -281,6 +310,7 @@ Then update image paths in `$lib/types/vip-card.ts` to use `.webp` instead of `.
 ## Best Practices
 
 ### DO
+
 ✅ Clear Vite cache after dependency changes
 ✅ Use `optimizeDeps.include` for commonly used libraries
 ✅ Split large vendor bundles with `manualChunks`
@@ -289,6 +319,7 @@ Then update image paths in `$lib/types/vip-card.ts` to use `.webp` instead of `.
 ✅ Profile with browser DevTools before/after changes
 
 ### DON'T
+
 ❌ Import all font weights globally (use only what's needed)
 ❌ Load heavy CSS/JS on every route
 ❌ Ignore Vite's dependency pre-bundling warnings
@@ -298,6 +329,7 @@ Then update image paths in `$lib/types/vip-card.ts` to use `.webp` instead of `.
 ## Monitoring
 
 ### Key Metrics to Track
+
 1. **Time to First Byte (TTFB)** - Server response time
 2. **First Contentful Paint (FCP)** - When content appears
 3. **Largest Contentful Paint (LCP)** - Main content rendered
@@ -305,6 +337,7 @@ Then update image paths in `$lib/types/vip-card.ts` to use `.webp` instead of `.
 5. **Total Blocking Time (TBT)** - Main thread blocking time
 
 ### Tools
+
 - Chrome DevTools → Performance tab
 - Lighthouse CI (for production builds)
 - `pnpm build && pnpm preview` to test production performance
@@ -312,21 +345,27 @@ Then update image paths in `$lib/types/vip-card.ts` to use `.webp` instead of `.
 ## Troubleshooting
 
 ### Issue: Dev server still slow after optimizations
+
 **Solution:** Clear Vite cache and restart
+
 ```bash
 rm -rf node_modules/.vite && pnpm dev
 ```
 
 ### Issue: Fonts not loading
+
 **Solution:** Check browser console for 404 errors, verify `@fontsource` packages installed
+
 ```bash
 pnpm add @fontsource/inter @fontsource/lora
 ```
 
 ### Issue: CSS not applying on dashboard
+
 **Solution:** Hard refresh browser cache (Cmd+Shift+R)
 
 ### Issue: Build fails with "circular dependency" warnings
+
 **Solution:** Check `manualChunks` configuration doesn't create circular references
 
 ## References
@@ -345,6 +384,7 @@ pnpm add @fontsource/inter @fontsource/lora
 Initial optimization plans included manual code splitting for vendor libraries. However, the Vercel adapter marks certain packages (Supabase, TipTap) as external for SSR, which conflicts with manual chunking.
 
 **Solution:** Removed manual chunking and rely on:
+
 1. **Automatic route-based splitting** - SvelteKit splits each route automatically
 2. **Vercel adapter optimization** - Platform-specific bundle optimization
 3. **Dynamic imports** - Any `import()` statements create separate chunks
@@ -361,6 +401,7 @@ Initial optimization plans included manual code splitting for vendor libraries. 
 **Problem:** The admin database debug page (`/dashboard/admin/debug/database`) was making 16 separate database queries on page load, causing slow performance (1-2 seconds).
 
 **Root Cause Analysis:**
+
 - 10 separate count queries (users, students, teachers, admins, classes, schools, etc.)
 - 3 unused queries (class members count RPC, orphaned records - fetched but never displayed)
 - 3 data integrity checks
@@ -371,14 +412,17 @@ Initial optimization plans included manual code splitting for vendor libraries. 
 **Migration:** [supabase/migrations/069_optimize_database_debug_queries.sql](supabase/migrations/069_optimize_database_debug_queries.sql)
 
 **Files Changed:**
-- [src/routes/(protected)/dashboard/admin/debug/database/+page.server.ts](src/routes/(protected)/dashboard/admin/debug/database/+page.server.ts) - Replaced 10 count queries with 1 RPC call, removed 3 unused queries
+
+- [src/routes/(protected)/dashboard/admin/debug/database/+page.server.ts](<src/routes/(protected)/dashboard/admin/debug/database/+page.server.ts>) - Replaced 10 count queries with 1 RPC call, removed 3 unused queries
 
 **Impact:**
+
 - **Queries:** 16 → 5 (68% reduction)
 - **Page load time:** ~1-2s → ~300-500ms (70% faster)
 - **Reduced database load:** Single aggregated query vs 10 sequential queries
 
 **Performance Breakdown:**
+
 ```
 Before:
 1. Total users count

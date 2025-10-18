@@ -92,26 +92,26 @@
 	<!-- Student sees: assignments, progress, classes, mastery level -->
 	<StudentDashboard {data} />
 
-<!-- TEACHER DASHBOARD -->
+	<!-- TEACHER DASHBOARD -->
 {:else if data.profile.role === 'teacher'}
 	<!-- Teacher sees: their classes, students, assignments, quick actions -->
 	<TeacherDashboard {data} />
 
-<!-- ADMIN DASHBOARD -->
+	<!-- ADMIN DASHBOARD -->
 {:else if data.profile.role === 'admin'}
 	<!-- Admin sees: system stats, user management, platform settings -->
 	<AdminDashboard {data} />
 
-<!-- ERROR STATE: Unknown role -->
+	<!-- ERROR STATE: Unknown role -->
 {:else}
 	<!-- This should never happen if database constraints are correct -->
 	<!-- If it does, it indicates a data integrity issue -->
-	<div class="bg-error-100-900 border border-error-200-800 rounded-lg p-6">
-		<h2 class="text-lg font-semibold text-error-900-50">Unknown Role</h2>
+	<div class="bg-error-100-900 border-error-200-800 rounded-lg border p-6">
+		<h2 class="text-error-900-50 text-lg font-semibold">Unknown Role</h2>
 		<p class="text-error-700-300 mt-2">
 			Your account has an unrecognized role:
-			<code class="font-mono bg-error-200-800 px-2 py-1 rounded">{data.profile.role}</code>
+			<code class="bg-error-200-800 rounded px-2 py-1 font-mono">{data.profile.role}</code>
 		</p>
-		<p class="text-error-600-400 text-sm mt-2">Please contact an administrator.</p>
+		<p class="text-error-600-400 mt-2 text-sm">Please contact an administrator.</p>
 	</div>
 {/if}

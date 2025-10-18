@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Home, BookOpen, PenTool, Library, Gamepad2 } from 'lucide-svelte';
+	import { Home, Gamepad2 } from 'lucide-svelte';
 
 	// Default navigation items
 	let {
@@ -9,7 +9,7 @@
 			{ label: 'Jeux', href: '/games', icon: Gamepad2 }
 		]
 	}: {
-		items?: Array<{ label: string; href: string; icon: any }>;
+		items?: Array<{ label: string; href: string; icon: typeof import('lucide-svelte').LucideIcon }>;
 	} = $props();
 
 	// Check if a link is active
@@ -21,7 +21,7 @@
 <!-- RAIL SIDEBAR - Vertical icon navigation (Claude AI style) -->
 <aside class="hidden w-20 border-r border-border bg-card/50 shadow-sm lg:block dark:bg-card">
 	<nav class="flex flex-col items-center gap-1 py-4">
-		{#each items as item}
+		{#each items as item (item.href)}
 			<a
 				href={item.href}
 				data-sveltekit-preload-data="tap"

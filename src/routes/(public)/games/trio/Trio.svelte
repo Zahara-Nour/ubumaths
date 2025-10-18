@@ -23,19 +23,19 @@
 
 	// Type Definitions
 	type Cell = {
-		n: number;       // Number displayed (1-9)
-		status: string;  // 'selected', 'selected-third', 'not_available', or ''
+		n: number; // Number displayed (1-9)
+		status: string; // 'selected', 'selected-third', 'not_available', or ''
 	};
 
 	type Position = {
-		i: number;  // Row index
-		j: number;  // Column index
+		i: number; // Row index
+		j: number; // Column index
 	};
 
 	type Grid = Cell[][];
 	type Target = {
-		op: string;           // Operation: '+' or '-'
-		value: number;        // Target value to match
+		op: string; // Operation: '+' or '-'
+		value: number; // Target value to match
 		positions: Position[]; // The 3 cells that form the solution
 	};
 
@@ -45,7 +45,7 @@
 	const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // Column labels
 
 	// State Variables
-	let grid: Grid = $state([]);  // The game grid (size × size)
+	let grid: Grid = $state([]); // The game grid (size × size)
 
 	// Array to track used target values (prevents duplicates across games)
 	// IMPORTANT: Cleared in changeGrid() to prevent infinite loops
@@ -57,11 +57,11 @@
 		value: -1
 	});
 
-	let result: number | null = $state(null);  // Current equation result
-	let op = $state('+');                       // User's selected operation
-	let win = $state(false);                    // Whether player has won
-	let selecteds: Position[] = $state([]);     // Currently selected cells (max 3)
-	let gridSize = $state(size);                // Current grid dimensions
+	let result: number | null = $state(null); // Current equation result
+	let op = $state('+'); // User's selected operation
+	let win = $state(false); // Whether player has won
+	let selecteds: Position[] = $state([]); // Currently selected cells (max 3)
+	let gridSize = $state(size); // Current grid dimensions
 
 	/**
 	 * Derived State - Dynamic grid columns
@@ -529,20 +529,20 @@
 			style="grid-template-columns: {gridTemplateColumns}"
 		>
 			<div></div>
-			{#each grid as _, i}
+			{#each grid as _, i (i)}
 				<div
 					class="flex h-12 w-12 items-center justify-center text-2xl md:h-16 md:w-16 md:text-3xl"
 				>
 					{letters[i]}
 				</div>
 			{/each}
-			{#each grid as row, i}
+			{#each grid as row, i (i)}
 				<div
 					class="flex h-12 w-12 items-center justify-center text-2xl md:h-16 md:w-16 md:text-3xl"
 				>
 					{i + 1}
 				</div>
-				{#each row as cell, j}
+				{#each row as cell, j (`${i}-${j}`)}
 					<Tile n={cell.n} onclick={() => handleClick(i, j)} status={cell.status} />
 				{/each}
 			{/each}

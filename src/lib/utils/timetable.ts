@@ -140,9 +140,7 @@ export function findMatchingPeriod(
 ): SchoolPeriod | undefined {
 	if (!timetable || !timetable.periods) return undefined;
 
-	return timetable.periods.find(
-		(p) => p.start_time === startTime && p.end_time === endTime
-	);
+	return timetable.periods.find((p) => p.start_time === startTime && p.end_time === endTime);
 }
 
 /**

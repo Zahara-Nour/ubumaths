@@ -28,9 +28,7 @@
 
 	// Derived state - filter classes by selected school
 	let filteredClasses = $derived(
-		selectedSchool
-			? data.classes.filter((c) => c.school_id === selectedSchool)
-			: data.classes
+		selectedSchool ? data.classes.filter((c) => c.school_id === selectedSchool) : data.classes
 	);
 
 	// Get teacher display name
@@ -122,55 +120,55 @@
 	</div>
 
 	<!-- School Filter -->
-	<div class="bg-card rounded-lg shadow border border-border p-4">
-		<label for="school-filter" class="block text-sm font-medium text-foreground mb-2">
+	<div class="rounded-lg border border-border bg-card p-4 shadow">
+		<label for="school-filter" class="mb-2 block text-sm font-medium text-foreground">
 			Filtrer par école
 		</label>
 		<select
 			id="school-filter"
 			bind:value={selectedSchool}
-			class="w-full max-w-md px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+			class="w-full max-w-md rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 		>
 			<option value="">Toutes les écoles</option>
-			{#each data.schools as school}
+			{#each data.schools as school (school.id)}
 				<option value={school.id}>{school.name}</option>
 			{/each}
 		</select>
 	</div>
 
 	<!-- Classes Table -->
-	<div class="bg-card rounded-lg shadow border border-border overflow-hidden">
+	<div class="overflow-hidden rounded-lg border border-border bg-card shadow">
 		<div class="overflow-x-auto">
 			<table class="w-full">
-				<thead class="bg-muted border-b border-border">
+				<thead class="border-b border-border bg-muted">
 					<tr>
 						<th
-							class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider"
+							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>
 							Nom de la Classe
 						</th>
 						<th
-							class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider"
+							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>
 							Code d'Accès
 						</th>
 						<th
-							class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider"
+							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>
 							Enseignant
 						</th>
 						<th
-							class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider"
+							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>
 							Étudiants
 						</th>
 						<th
-							class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider"
+							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>
 							Statut
 						</th>
 						<th
-							class="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider"
+							class="px-6 py-3 text-right text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>
 							Actions
 						</th>
@@ -178,30 +176,30 @@
 				</thead>
 				<tbody class="divide-y divide-border">
 					{#each filteredClasses as classItem (classItem.id)}
-						<tr class="hover:bg-muted/50 transition-colors">
+						<tr class="transition-colors hover:bg-muted/50">
 							<td class="px-6 py-4">
 								<div class="text-sm font-medium text-foreground">{classItem.name}</div>
 								{#if classItem.description}
-									<div class="text-xs text-muted-foreground mt-1">{classItem.description}</div>
+									<div class="mt-1 text-xs text-muted-foreground">{classItem.description}</div>
 								{/if}
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap">
 								<div class="flex items-center gap-2">
 									<code
-										class="text-sm font-mono bg-muted px-2 py-1 rounded border border-border text-foreground"
+										class="rounded border border-border bg-muted px-2 py-1 font-mono text-sm text-foreground"
 									>
 										{classItem.join_code}
 									</code>
 									<button
 										type="button"
 										onclick={() => copyJoinCode(classItem.join_code)}
-										class="text-muted-foreground hover:text-foreground transition-colors"
+										class="text-muted-foreground transition-colors hover:text-foreground"
 										title="Copier le code"
 									>
 										{#if copiedCode === classItem.join_code}
-											<Check class="w-4 h-4 text-green-600" />
+											<Check class="h-4 w-4 text-green-600" />
 										{:else}
-											<Copy class="w-4 h-4" />
+											<Copy class="h-4 w-4" />
 										{/if}
 									</button>
 								</div>
@@ -225,7 +223,7 @@
 									</Badge>
 								{/if}
 							</td>
-							<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+							<td class="space-x-2 px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
 								<Button variant="ghost" size="sm" onclick={() => openEditModal(classItem)}>
 									Modifier
 								</Button>
@@ -239,7 +237,8 @@
 												if (result.type === 'success') {
 													toaster.success('Classe désactivée avec succès');
 												} else if (result.type === 'failure') {
-													const message = (result.data as any)?.message || 'Erreur lors de la désactivation';
+													const message =
+														(result.data as any)?.message || 'Erreur lors de la désactivation';
 													toaster.error(message);
 												}
 											};
@@ -294,20 +293,20 @@
 		role="dialog"
 		aria-modal="true"
 	>
-		<div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 sm:p-0">
+		<div class="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 sm:p-0">
 			<!-- Background overlay -->
 			<div
-				class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+				class="bg-opacity-50 fixed inset-0 bg-black transition-opacity"
 				aria-hidden="true"
 				onclick={closeModal}
 			></div>
 
 			<!-- Modal panel -->
 			<div
-				class="relative inline-block align-middle bg-card rounded-lg text-left overflow-visible shadow-xl transform transition-all sm:my-8 sm:max-w-2xl sm:w-full border border-border"
+				class="relative inline-block transform overflow-visible rounded-lg border border-border bg-card text-left align-middle shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl"
 			>
 				<!-- Modal Header -->
-				<div class="bg-card px-6 pt-6 pb-4 border-b border-border">
+				<div class="border-b border-border bg-card px-6 pt-6 pb-4">
 					<h3 class="text-lg font-medium text-foreground" id="modal-title">
 						{editingClass ? 'Modifier la Classe' : 'Ajouter une Classe'}
 					</h3>
@@ -342,7 +341,7 @@
 						<div class="space-y-4">
 							<!-- Class Name -->
 							<div>
-								<label for="name" class="block text-sm font-medium text-foreground mb-1">
+								<label for="name" class="mb-1 block text-sm font-medium text-foreground">
 									Nom de la Classe *
 								</label>
 								<Input
@@ -357,7 +356,7 @@
 
 							<!-- Description -->
 							<div>
-								<label for="description" class="block text-sm font-medium text-foreground mb-1">
+								<label for="description" class="mb-1 block text-sm font-medium text-foreground">
 									Description
 								</label>
 								<Textarea
@@ -371,17 +370,17 @@
 
 							<!-- School -->
 							<div>
-								<label for="school_id" class="block text-sm font-medium text-foreground mb-1">
+								<label for="school_id" class="mb-1 block text-sm font-medium text-foreground">
 									École
 								</label>
 								<select
 									id="school_id"
 									name="school_id"
 									bind:value={formData.school_id}
-									class="w-full px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+									class="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 								>
 									<option value="">Aucune école</option>
-									{#each data.schools as school}
+									{#each data.schools as school (school.id)}
 										<option value={school.id}>{school.name}</option>
 									{/each}
 								</select>
@@ -389,7 +388,7 @@
 
 							<!-- Teacher -->
 							<div>
-								<label for="teacher_id" class="block text-sm font-medium text-foreground mb-1">
+								<label for="teacher_id" class="mb-1 block text-sm font-medium text-foreground">
 									Enseignant *
 								</label>
 								<select
@@ -397,10 +396,10 @@
 									name="teacher_id"
 									bind:value={formData.teacher_id}
 									required
-									class="w-full px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+									class="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 								>
 									<option value="">Sélectionner un enseignant</option>
-									{#each availableTeachers as teacher}
+									{#each availableTeachers as teacher (teacher.id)}
 										<option value={teacher.id}>
 											{#if teacher.firstname && teacher.lastname}
 												{teacher.firstname}
@@ -412,11 +411,12 @@
 									{/each}
 								</select>
 								{#if formData.school_id && availableTeachers.length === 0}
-									<p class="text-xs text-muted-foreground mt-1">
-										Aucun enseignant disponible pour cette école. Veuillez d'abord assigner des enseignants à cette école.
+									<p class="mt-1 text-xs text-muted-foreground">
+										Aucun enseignant disponible pour cette école. Veuillez d'abord assigner des
+										enseignants à cette école.
 									</p>
 								{:else if !formData.school_id}
-									<p class="text-xs text-muted-foreground mt-1">
+									<p class="mt-1 text-xs text-muted-foreground">
 										Sélectionnez d'abord une école pour voir les enseignants disponibles.
 									</p>
 								{/if}
@@ -424,7 +424,7 @@
 
 							<!-- Join Code -->
 							<div>
-								<div class="flex items-center justify-between mb-1">
+								<div class="mb-1 flex items-center justify-between">
 									<label for="join_code" class="block text-sm font-medium text-foreground">
 										Code d'Accès
 									</label>
@@ -440,7 +440,9 @@
 								</div>
 
 								{#if autoGenerateCode && !editingClass}
-									<div class="text-sm text-muted-foreground bg-muted px-3 py-2 rounded border border-border">
+									<div
+										class="rounded border border-border bg-muted px-3 py-2 text-sm text-muted-foreground"
+									>
 										Le code sera généré automatiquement
 									</div>
 								{:else}
@@ -451,10 +453,10 @@
 										bind:value={formData.join_code}
 										placeholder="Ex: MATH6A"
 										maxlength="10"
-										class="font-mono w-full px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+										class="w-full rounded-lg border border-border bg-background px-3 py-2 font-mono text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 										required={!autoGenerateCode}
 									/>
-									<p class="text-xs text-muted-foreground mt-1">
+									<p class="mt-1 text-xs text-muted-foreground">
 										Le code doit être unique (6-10 caractères recommandés)
 									</p>
 								{/if}
@@ -479,8 +481,8 @@
 						</div>
 					</div>
 
-					<div class="bg-muted px-6 py-3 flex justify-end gap-2">
-						<Button type="button" variant="outline" onclick={closeModal}> Annuler </Button>
+					<div class="flex justify-end gap-2 bg-muted px-6 py-3">
+						<Button type="button" variant="outline" onclick={closeModal}>Annuler</Button>
 						<Button type="submit">
 							{editingClass ? 'Mettre à jour' : 'Créer'}
 						</Button>

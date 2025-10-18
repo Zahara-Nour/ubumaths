@@ -30,22 +30,21 @@
 
 <div class="space-y-6">
 	<!-- Documentation -->
-	<div class="mb-8 p-6 bg-muted/50 rounded-lg border border-border">
-		<h2 class="text-lg font-semibold mb-3">About This Page</h2>
-		<p class="text-sm text-muted-foreground mb-4">
+	<div class="mb-8 rounded-lg border border-border bg-muted/50 p-6">
+		<h2 class="mb-3 text-lg font-semibold">About This Page</h2>
+		<p class="mb-4 text-sm text-muted-foreground">
 			This debug page helps troubleshoot avatar display issues for users authenticated via Google
 			OAuth. It shows all available avatar data sources and the fallback chain.
 		</p>
 
 		<div class="space-y-2 text-sm">
 			<p class="font-semibold">Avatar Priority Order:</p>
-			<ol class="list-decimal list-inside space-y-1 text-muted-foreground ml-2">
+			<ol class="ml-2 list-inside list-decimal space-y-1 text-muted-foreground">
 				<li>
 					<strong>profile.avatar_url</strong> - Stored in database (saved from OAuth on login)
 				</li>
 				<li>
-					<strong>user_metadata.picture</strong> - Google OAuth session data (Google's standard
-					field)
+					<strong>user_metadata.picture</strong> - Google OAuth session data (Google's standard field)
 				</li>
 				<li>
 					<strong>user_metadata.avatar_url</strong> - Other OAuth providers (fallback field)
@@ -57,11 +56,11 @@
 			</ol>
 		</div>
 
-		<div class="mt-4 p-3 bg-background rounded border border-border">
-			<p class="text-xs font-mono">
+		<div class="mt-4 rounded border border-border bg-background p-3">
+			<p class="font-mono text-xs">
 				<strong>Important:</strong> Google OAuth stores profile pictures in the
-				<code class="bg-muted px-1 rounded">picture</code> field, NOT
-				<code class="bg-muted px-1 rounded">avatar_url</code>. If avatars aren't displaying, check
+				<code class="rounded bg-muted px-1">picture</code> field, NOT
+				<code class="rounded bg-muted px-1">avatar_url</code>. If avatars aren't displaying, check
 				that the OAuth callback and database trigger are extracting from the correct field.
 			</p>
 		</div>
@@ -69,8 +68,8 @@
 
 	<div class="space-y-6">
 		<!-- Avatar Display -->
-		<div class="border border-border rounded-lg p-6 bg-card">
-			<h2 class="text-xl font-semibold mb-4">Avatar Display</h2>
+		<div class="rounded-lg border border-border bg-card p-6">
+			<h2 class="mb-4 text-xl font-semibold">Avatar Display</h2>
 			<Avatar.Root class="h-20 w-20">
 				<Avatar.Image src={getAvatarSrc()} alt={data.user?.email || 'User'} />
 				<Avatar.Fallback>
@@ -82,15 +81,15 @@
 		</div>
 
 		<!-- Avatar Source -->
-		<div class="border border-border rounded-lg p-6 bg-card">
-			<h2 class="text-xl font-semibold mb-4">Avatar Source URL</h2>
+		<div class="rounded-lg border border-border bg-card p-6">
+			<h2 class="mb-4 text-xl font-semibold">Avatar Source URL</h2>
 			<p class="font-mono text-sm break-all">{getAvatarSrc() || '(empty)'}</p>
 		</div>
 
 		<!-- User Data -->
-		<div class="border border-border rounded-lg p-6 bg-card">
-			<h2 class="text-xl font-semibold mb-4">User Data</h2>
-			<pre class="text-xs overflow-auto bg-muted p-4 rounded">{JSON.stringify(
+		<div class="rounded-lg border border-border bg-card p-6">
+			<h2 class="mb-4 text-xl font-semibold">User Data</h2>
+			<pre class="overflow-auto rounded bg-muted p-4 text-xs">{JSON.stringify(
 					data.user,
 					null,
 					2
@@ -98,9 +97,9 @@
 		</div>
 
 		<!-- User Metadata -->
-		<div class="border border-border rounded-lg p-6 bg-card">
-			<h2 class="text-xl font-semibold mb-4">User Metadata</h2>
-			<pre class="text-xs overflow-auto bg-muted p-4 rounded">{JSON.stringify(
+		<div class="rounded-lg border border-border bg-card p-6">
+			<h2 class="mb-4 text-xl font-semibold">User Metadata</h2>
+			<pre class="overflow-auto rounded bg-muted p-4 text-xs">{JSON.stringify(
 					data.userMetadata,
 					null,
 					2
@@ -108,9 +107,9 @@
 		</div>
 
 		<!-- Profile Data -->
-		<div class="border border-border rounded-lg p-6 bg-card">
-			<h2 class="text-xl font-semibold mb-4">Profile Data</h2>
-			<pre class="text-xs overflow-auto bg-muted p-4 rounded">{JSON.stringify(
+		<div class="rounded-lg border border-border bg-card p-6">
+			<h2 class="mb-4 text-xl font-semibold">Profile Data</h2>
+			<pre class="overflow-auto rounded bg-muted p-4 text-xs">{JSON.stringify(
 					data.profile,
 					null,
 					2
@@ -118,8 +117,8 @@
 		</div>
 
 		<!-- Specific Checks -->
-		<div class="border border-border rounded-lg p-6 bg-card">
-			<h2 class="text-xl font-semibold mb-4">Specific Checks</h2>
+		<div class="rounded-lg border border-border bg-card p-6">
+			<h2 class="mb-4 text-xl font-semibold">Specific Checks</h2>
 			<ul class="space-y-2">
 				<li>
 					<strong>profile.avatar_url:</strong>
@@ -145,16 +144,18 @@
 		</div>
 
 		<!-- Troubleshooting Tips -->
-		<div class="border border-border rounded-lg p-6 bg-card">
-			<h2 class="text-xl font-semibold mb-4">Troubleshooting Tips</h2>
+		<div class="rounded-lg border border-border bg-card p-6">
+			<h2 class="mb-4 text-xl font-semibold">Troubleshooting Tips</h2>
 			<div class="space-y-3 text-sm">
 				<div>
-					<p class="font-semibold mb-1">Avatar not displaying?</p>
-					<ol class="list-decimal list-inside text-muted-foreground space-y-1 ml-2">
+					<p class="mb-1 font-semibold">Avatar not displaying?</p>
+					<ol class="ml-2 list-inside list-decimal space-y-1 text-muted-foreground">
 						<li>Log out and log back in to trigger avatar save</li>
-						<li>Check if <code class="bg-muted px-1 rounded">user_metadata.picture</code> exists</li>
 						<li>
-							Verify migration 061 is applied: <code class="bg-muted px-1 rounded"
+							Check if <code class="rounded bg-muted px-1">user_metadata.picture</code> exists
+						</li>
+						<li>
+							Verify migration 061 is applied: <code class="rounded bg-muted px-1"
 								>pnpm db:migrate</code
 							>
 						</li>
@@ -163,25 +164,25 @@
 				</div>
 
 				<div>
-					<p class="font-semibold mb-1">Related Files:</p>
-					<ul class="list-disc list-inside text-muted-foreground space-y-1 ml-2">
+					<p class="mb-1 font-semibold">Related Files:</p>
+					<ul class="ml-2 list-inside list-disc space-y-1 text-muted-foreground">
 						<li>
-							<code class="bg-muted px-1 rounded text-xs"
+							<code class="rounded bg-muted px-1 text-xs"
 								>src/routes/(public)/auth/callback/+server.ts</code
 							> - OAuth callback handler
 						</li>
 						<li>
-							<code class="bg-muted px-1 rounded text-xs">src/lib/components/Header.svelte</code> -
-							Avatar display logic
+							<code class="rounded bg-muted px-1 text-xs">src/lib/components/Header.svelte</code> - Avatar
+							display logic
 						</li>
 						<li>
-							<code class="bg-muted px-1 rounded text-xs"
+							<code class="rounded bg-muted px-1 text-xs"
 								>supabase/migrations/061_fix_google_avatar_picture_field.sql</code
 							> - Database trigger
 						</li>
 						<li>
-							<code class="bg-muted px-1 rounded text-xs">src/lib/utils/avatar.ts</code> - Avatar
-							utility functions
+							<code class="rounded bg-muted px-1 text-xs">src/lib/utils/avatar.ts</code> - Avatar utility
+							functions
 						</li>
 					</ul>
 				</div>

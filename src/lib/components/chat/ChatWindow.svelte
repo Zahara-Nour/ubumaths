@@ -116,7 +116,7 @@
 			// Check for upload failures
 			const failures = uploadResults.filter((r) => !r.success);
 			if (failures.length > 0) {
-				failures.forEach((f) => toaster.error(f.error || 'Erreur d\'upload'));
+				failures.forEach((f) => toaster.error(f.error || "Erreur d'upload"));
 				return;
 			}
 
@@ -360,7 +360,7 @@
 				<!-- Composer Area -->
 				<ChatComposer
 					conversationId={chatStore.activeConversationId}
-					isTeacher={isTeacher}
+					{isTeacher}
 					onSend={handleSendMessage}
 					onTyping={handleTyping}
 				/>

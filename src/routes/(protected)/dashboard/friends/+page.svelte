@@ -36,9 +36,7 @@
 	<!-- Header -->
 	<div class="mb-6">
 		<h1 class="text-3xl font-bold">Amis</h1>
-		<p class="mt-1 text-muted-foreground">
-			Gérez vos amis et restez connecté avec vos camarades
-		</p>
+		<p class="mt-1 text-muted-foreground">Gérez vos amis et restez connecté avec vos camarades</p>
 	</div>
 
 	<!-- Connection Status -->

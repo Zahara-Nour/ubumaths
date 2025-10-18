@@ -30,7 +30,7 @@
 	<h3 class="text-lg font-bold text-foreground">Choisis ton sort</h3>
 
 	<div class="grid grid-cols-2 gap-3 md:grid-cols-5">
-		{#each spells as spell}
+		{#each spells as spell (spell.spell_num)}
 			<button
 				class="spell-card group relative overflow-hidden rounded-lg border-2 bg-card p-3 text-left transition-all hover:scale-105 hover:shadow-md {selectedSpellNum ===
 				spell.spell_num
@@ -69,7 +69,9 @@
 
 				<!-- Selected Badge -->
 				{#if selectedSpellNum === spell.spell_num}
-					<div class="absolute right-1 top-1 rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground">
+					<div
+						class="absolute top-1 right-1 rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground"
+					>
 						✓
 					</div>
 				{/if}

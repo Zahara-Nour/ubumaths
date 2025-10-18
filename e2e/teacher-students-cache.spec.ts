@@ -9,7 +9,7 @@
  * Date: 2025-10-17
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 // ============================================================================
 // TEST CONFIGURATION
@@ -26,7 +26,7 @@ const TEACHER_PASSWORD = process.env.TEST_TEACHER_PASSWORD || 'test-password';
 /**
  * Login as teacher and navigate to dashboard
  */
-async function loginAsTeacher(page: any) {
+async function loginAsTeacher(page: Page) {
 	await page.goto('/login');
 
 	// Fill in credentials
@@ -76,7 +76,9 @@ test.describe('Teacher Students Cache E2E', () => {
 		await expect(page.locator('[role="dialog"]')).toBeVisible();
 
 		// Should show loading spinner initially
-		const loadingSpinner = page.locator('[data-testid="loading"]').or(page.locator('.animate-spin'));
+		const loadingSpinner = page
+			.locator('[data-testid="loading"]')
+			.or(page.locator('.animate-spin'));
 		await expect(loadingSpinner).toBeVisible({ timeout: 2000 });
 
 		// Wait for wheel to load
@@ -99,9 +101,9 @@ test.describe('Teacher Students Cache E2E', () => {
 		await expect(page.locator('.wheel-container')).toBeVisible({ timeout: 5000 });
 
 		// Close modal
-		const closeButton = page.locator('[role="dialog"] button[aria-label="Close"]').or(
-			page.locator('[role="dialog"] button:has-text("×")')
-		);
+		const closeButton = page
+			.locator('[role="dialog"] button[aria-label="Close"]')
+			.or(page.locator('[role="dialog"] button:has-text("×")'));
 		await closeButton.click();
 
 		// Wait for modal to close
@@ -117,7 +119,9 @@ test.describe('Teacher Students Cache E2E', () => {
 		expect(secondOpenTime).toBeLessThan(500);
 
 		// No loading spinner should be visible
-		const loadingSpinner = page.locator('[data-testid="loading"]').or(page.locator('.animate-spin'));
+		const loadingSpinner = page
+			.locator('[data-testid="loading"]')
+			.or(page.locator('.animate-spin'));
 		await expect(loadingSpinner).not.toBeVisible();
 	});
 
@@ -148,7 +152,9 @@ test.describe('Teacher Students Cache E2E', () => {
 		await wheelButton.click();
 
 		// Should show loading (cache was invalidated)
-		const loadingSpinner = page.locator('[data-testid="loading"]').or(page.locator('.animate-spin'));
+		const loadingSpinner = page
+			.locator('[data-testid="loading"]')
+			.or(page.locator('.animate-spin'));
 		await expect(loadingSpinner).toBeVisible({ timeout: 2000 });
 
 		// Wait for reload
@@ -193,7 +199,9 @@ test.describe('Teacher Students Cache E2E', () => {
 		await wheelButton.click();
 
 		// Should show loading (cache was cleared)
-		const loadingSpinner = page.locator('[data-testid="loading"]').or(page.locator('.animate-spin'));
+		const loadingSpinner = page
+			.locator('[data-testid="loading"]')
+			.or(page.locator('.animate-spin'));
 		await expect(loadingSpinner).toBeVisible({ timeout: 2000 });
 	});
 
@@ -206,12 +214,9 @@ test.describe('Teacher Students Cache E2E', () => {
 		await expect(page.locator('h1')).toContainText('Dashboard');
 
 		// Find class selector dropdown
-		const classSelect = page.locator('select[name="class"]').or(
-			page.locator('[data-testid="class-selector"]')
-		);
-
-		// Get current class
-		const currentClass = await classSelect.inputValue();
+		const classSelect = page
+			.locator('select[name="class"]')
+			.or(page.locator('[data-testid="class-selector"]'));
 
 		// Switch to another class
 		const options = await classSelect.locator('option').all();

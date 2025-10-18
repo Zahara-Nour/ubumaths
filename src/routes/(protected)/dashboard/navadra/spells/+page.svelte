@@ -40,14 +40,10 @@
 	<!-- Header -->
 	<div class="mb-8">
 		<div class="mb-4">
-			<Button href="/dashboard/navadra" variant="ghost" class="gap-2">
-				← Retour au hub
-			</Button>
+			<Button href="/dashboard/navadra" variant="ghost" class="gap-2">← Retour au hub</Button>
 		</div>
 		<h1 class="mb-2 text-4xl font-bold text-foreground">📖 Grimoire</h1>
-		<p class="text-lg text-muted-foreground">
-			Gère tes sorts et crée des decks pour le combat.
-		</p>
+		<p class="text-lg text-muted-foreground">Gère tes sorts et crée des decks pour le combat.</p>
 	</div>
 
 	<!-- Stats Summary -->
@@ -113,18 +109,14 @@
 									<div class="flex gap-0.5">
 										{#each Array(5) as _, i}
 											<div
-												class="h-2 w-2 rounded-full {i < spell.level
-													? 'bg-primary'
-													: 'bg-muted'}"
+												class="h-2 w-2 rounded-full {i < spell.level ? 'bg-primary' : 'bg-muted'}"
 											></div>
 										{/each}
 									</div>
 								</div>
 
 								{#if spell.level < 5}
-									<Button variant="outline" size="sm" class="w-full" disabled>
-										Améliorer
-									</Button>
+									<Button variant="outline" size="sm" class="w-full" disabled>Améliorer</Button>
 								{:else}
 									<div class="text-xs font-medium text-green-600">MAX</div>
 								{/if}
@@ -144,9 +136,7 @@
 			<p class="mb-6 text-muted-foreground">
 				Combats des monstres pour débloquer de nouveaux sorts !
 			</p>
-			<Button href="/dashboard/navadra/combat" size="lg">
-				Commencer un combat
-			</Button>
+			<Button href="/dashboard/navadra/combat" size="lg">Commencer un combat</Button>
 		</div>
 	{/if}
 
@@ -154,7 +144,8 @@
 	<div class="mt-12 rounded-lg border border-border bg-card p-6">
 		<h2 class="mb-4 text-xl font-bold text-card-foreground">⚡ Decks de combat</h2>
 		<p class="text-muted-foreground">
-			La gestion des decks sera disponible prochainement. Pour l'instant, tes 10 premiers sorts sont utilisés automatiquement en combat.
+			La gestion des decks sera disponible prochainement. Pour l'instant, tes 10 premiers sorts sont
+			utilisés automatiquement en combat.
 		</p>
 	</div>
 </div>

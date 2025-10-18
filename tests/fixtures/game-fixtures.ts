@@ -326,15 +326,11 @@ export function createMockSupabaseClient() {
 			select: (columns: string = '*') => ({
 				eq: (column: string, value: any) => ({
 					single: async () => {
-						const data = (mockData as any)[table]?.find(
-							(item: any) => item[column] === value
-						);
+						const data = (mockData as any)[table]?.find((item: any) => item[column] === value);
 						return { data, error: null };
 					},
 					maybeSingle: async () => {
-						const data = (mockData as any)[table]?.find(
-							(item: any) => item[column] === value
-						);
+						const data = (mockData as any)[table]?.find((item: any) => item[column] === value);
 						return { data, error: null };
 					}
 				}),

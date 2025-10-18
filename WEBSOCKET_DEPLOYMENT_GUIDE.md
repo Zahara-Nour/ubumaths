@@ -40,6 +40,7 @@ Your SvelteKit app on Vercel connects to an **external WebSocket service** for r
 ## Option 1: Railway (Recommended - Easiest)
 
 **Why Railway:**
+
 - ✅ Simplest deployment (push code, auto-deploy)
 - ✅ Free tier: $5 credit/month (enough for development)
 - ✅ Automatic HTTPS/WSS certificates
@@ -58,23 +59,25 @@ cd websocket-server
 ```
 
 **File: `package.json`**
+
 ```json
 {
-  "name": "ubumaths-websocket-server",
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "ws": "^8.18.3",
-    "@supabase/supabase-js": "^2.74.0",
-    "dotenv": "^17.2.3"
-  }
+	"name": "ubumaths-websocket-server",
+	"version": "1.0.0",
+	"type": "module",
+	"scripts": {
+		"start": "node server.js"
+	},
+	"dependencies": {
+		"ws": "^8.18.3",
+		"@supabase/supabase-js": "^2.74.0",
+		"dotenv": "^17.2.3"
+	}
 }
 ```
 
 **File: `server.js`**
+
 ```javascript
 import { WebSocketServer } from 'ws';
 import { createClient } from '@supabase/supabase-js';
@@ -239,6 +242,7 @@ console.log(`WebSocket server running on port ${PORT}`);
 ```
 
 **File: `.env.example`**
+
 ```env
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
@@ -246,6 +250,7 @@ PORT=3001
 ```
 
 **File: `.gitignore`**
+
 ```
 node_modules/
 .env
@@ -262,6 +267,7 @@ node_modules/
 **Option A: Deploy from GitHub (Recommended)**
 
 1. **Push code to GitHub:**
+
    ```bash
    git init
    git add .
@@ -279,6 +285,7 @@ node_modules/
 **Option B: Deploy via CLI**
 
 1. **Install Railway CLI:**
+
    ```bash
    npm install -g @railway/cli
    ```
@@ -305,11 +312,13 @@ node_modules/
 #### 5. Get Your WebSocket URL
 
 Railway provides a public URL automatically:
+
 - Go to "Settings" tab
 - Click "Generate Domain"
 - You'll get: `ubumaths-websocket-production.up.railway.app`
 
 **Your WebSocket URLs:**
+
 - HTTP: `https://ubumaths-websocket-production.up.railway.app`
 - WebSocket: `wss://ubumaths-websocket-production.up.railway.app`
 
@@ -324,9 +333,7 @@ import { browser } from '$app/environment';
 import { PUBLIC_WS_URL } from '$env/static/public';
 
 // Use environment variable for flexibility
-const WS_URL = browser && PUBLIC_WS_URL
-  ? PUBLIC_WS_URL
-  : 'ws://localhost:3001';
+const WS_URL = browser && PUBLIC_WS_URL ? PUBLIC_WS_URL : 'ws://localhost:3001';
 ```
 
 **File: `.env` (in your main SvelteKit project)**
@@ -348,6 +355,7 @@ vercel --prod
 ```
 
 Make sure to add `PUBLIC_WS_URL` environment variable in Vercel dashboard:
+
 1. Project Settings → Environment Variables
 2. Add: `PUBLIC_WS_URL = wss://ubumaths-websocket-production.up.railway.app`
 
@@ -361,12 +369,14 @@ Make sure to add `PUBLIC_WS_URL` environment variable in Vercel dashboard:
 ### Railway Pricing
 
 **Free Tier (Hobby Plan):**
+
 - $5 credit per month
 - Usage-based billing after credits
 - ~550 hours of uptime per month (free tier)
 - Perfect for development/small projects
 
 **Pro Plan ($20/month):**
+
 - Unlimited projects
 - Priority support
 - Team features
@@ -376,6 +386,7 @@ Make sure to add `PUBLIC_WS_URL` environment variable in Vercel dashboard:
 ## Option 2: Render (Good Free Tier)
 
 **Why Render:**
+
 - ✅ Generous free tier (750 hours/month)
 - ✅ Automatic SSL/TLS
 - ✅ Simple deployment
@@ -413,6 +424,7 @@ Use the same standalone server code from Option 1 above.
 #### 4. Add Environment Variables
 
 In Render dashboard → Environment:
+
 ```
 SUPABASE_URL = https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY = your-service-role-key
@@ -424,11 +436,13 @@ PORT = 3001
 Click "Create Web Service" → Render automatically deploys
 
 Your WebSocket URL will be:
+
 - `wss://ubumaths-websocket.onrender.com`
 
 #### 6. Update SvelteKit App
 
 Same as Railway (Step 6), but use Render URL:
+
 ```env
 PUBLIC_WS_URL=wss://ubumaths-websocket.onrender.com
 ```
@@ -446,14 +460,14 @@ import http from 'http';
 
 // Create HTTP server for health checks
 const httpServer = http.createServer((req, res) => {
-  if (req.url === '/health') {
-    res.writeHead(200);
-    res.end('OK');
-  }
+	if (req.url === '/health') {
+		res.writeHead(200);
+		res.end('OK');
+	}
 });
 
 httpServer.listen(3001, () => {
-  console.log('HTTP health check on port 3001');
+	console.log('HTTP health check on port 3001');
 });
 
 // Attach WebSocket to same port
@@ -465,12 +479,14 @@ Then use a service like **UptimeRobot** (free) to ping `https://ubumaths-websock
 ### Render Pricing
 
 **Free Tier:**
+
 - 750 hours/month
 - Spins down after 15 min inactivity
 - 500 MB RAM
 - Free SSL
 
 **Starter Plan ($7/month per service):**
+
 - Always on (no spin down)
 - 512 MB RAM
 - Perfect for production
@@ -480,6 +496,7 @@ Then use a service like **UptimeRobot** (free) to ping `https://ubumaths-websock
 ## Option 3: DigitalOcean App Platform (Most Control)
 
 **Why DigitalOcean:**
+
 - ✅ More control and predictability
 - ✅ No cold starts
 - ✅ Simple pricing ($5/month fixed)
@@ -514,6 +531,7 @@ Same standalone server as Option 1.
 #### 4. Add Environment Variables
 
 Under "Environment Variables":
+
 ```
 SUPABASE_URL = https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY = your-service-role-key
@@ -525,11 +543,13 @@ PORT = 3001
 Click "Create Resources" → DigitalOcean deploys
 
 Your URL will be:
+
 - `wss://ubumaths-websocket-xxxxx.ondigitalocean.app`
 
 #### 6. Update SvelteKit App
 
 Same as Railway, but use DO URL:
+
 ```env
 PUBLIC_WS_URL=wss://ubumaths-websocket-xxxxx.ondigitalocean.app
 ```
@@ -537,6 +557,7 @@ PUBLIC_WS_URL=wss://ubumaths-websocket-xxxxx.ondigitalocean.app
 ### DigitalOcean Pricing
 
 **Basic Plan ($5/month):**
+
 - 512 MB RAM
 - Always on
 - 1 vCPU
@@ -617,36 +638,40 @@ export const presenceManager = new PresenceManager();
 
 ## Comparison Table
 
-| Service | Cost | Free Tier | Cold Starts | SSL/TLS | Complexity |
-|---------|------|-----------|-------------|---------|------------|
-| **Railway** | $5 credit/mo | ✅ Yes | ❌ No | ✅ Auto | ⭐ Easy |
-| **Render** | Free / $7+/mo | ✅ 750hr/mo | ✅ Yes (free) | ✅ Auto | ⭐ Easy |
-| **DigitalOcean** | $5/mo | ❌ No | ❌ No | ✅ Auto | ⭐⭐ Medium |
-| **Supabase Realtime** | Included | ✅ Yes | N/A | ✅ Auto | ⭐⭐ Medium |
+| Service               | Cost          | Free Tier   | Cold Starts   | SSL/TLS | Complexity  |
+| --------------------- | ------------- | ----------- | ------------- | ------- | ----------- |
+| **Railway**           | $5 credit/mo  | ✅ Yes      | ❌ No         | ✅ Auto | ⭐ Easy     |
+| **Render**            | Free / $7+/mo | ✅ 750hr/mo | ✅ Yes (free) | ✅ Auto | ⭐ Easy     |
+| **DigitalOcean**      | $5/mo         | ❌ No       | ❌ No         | ✅ Auto | ⭐⭐ Medium |
+| **Supabase Realtime** | Included      | ✅ Yes      | N/A           | ✅ Auto | ⭐⭐ Medium |
 
 ---
 
 ## Recommended Setup
 
 ### For Development:
+
 ```
 Local WebSocket server (ws://localhost:3001)
 Local SvelteKit (http://localhost:5173)
 ```
 
 ### For Production (Small/Medium):
+
 ```
 Railway WebSocket server (wss://...)  ← Recommended
 Vercel SvelteKit app (https://...)
 ```
 
 ### For Production (High Traffic):
+
 ```
 DigitalOcean WebSocket server ($5/mo)
 Vercel SvelteKit app
 ```
 
 ### For Simplest Setup:
+
 ```
 Supabase Realtime (replace WebSocket entirely)
 Vercel SvelteKit app
@@ -677,6 +702,7 @@ wscat -c wss://your-websocket-server.railway.app
 ### 2. Test from Browser
 
 Open your production app and check browser console:
+
 ```javascript
 // Should see:
 WebSocket connected
@@ -697,11 +723,13 @@ WebSocket authentication successful
 ### WebSocket Connection Failed
 
 **Check:**
+
 1. Is WebSocket server running? Check Railway/Render logs
 2. Is `PUBLIC_WS_URL` set correctly in Vercel?
 3. Firewall blocking WSS? Try from different network
 
 **Debug:**
+
 ```bash
 # Check if server is reachable
 curl https://your-websocket-server.railway.app/health
@@ -717,13 +745,13 @@ If you get CORS errors, you likely don't need to add CORS headers for WebSocket 
 ```javascript
 // Add to server.js (if needed for HTTP health checks)
 const httpServer = http.createServer((req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
 
-  if (req.url === '/health') {
-    res.writeHead(200);
-    res.end('OK');
-  }
+	if (req.url === '/health') {
+		res.writeHead(200);
+		res.end('OK');
+	}
 });
 ```
 

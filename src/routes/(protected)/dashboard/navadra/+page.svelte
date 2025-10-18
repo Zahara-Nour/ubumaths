@@ -84,9 +84,7 @@
 			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
 		>
 			<div class="mb-4 text-5xl">📖</div>
-			<h3 class="mb-2 text-xl font-bold text-card-foreground group-hover:text-primary">
-				Grimoire
-			</h3>
+			<h3 class="mb-2 text-xl font-bold text-card-foreground group-hover:text-primary">Grimoire</h3>
 			<p class="text-sm text-muted-foreground">
 				Gérez vos sorts et créez des decks pour le combat. ({stats.totalSpells} sorts)
 			</p>
@@ -98,12 +96,8 @@
 			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
 		>
 			<div class="mb-4 text-5xl">🏆</div>
-			<h3 class="mb-2 text-xl font-bold text-card-foreground group-hover:text-primary">
-				Succès
-			</h3>
-			<p class="text-sm text-muted-foreground">
-				Consultez vos succès et vos progrès dans le jeu.
-			</p>
+			<h3 class="mb-2 text-xl font-bold text-card-foreground group-hover:text-primary">Succès</h3>
+			<p class="text-sm text-muted-foreground">Consultez vos succès et vos progrès dans le jeu.</p>
 		</a>
 
 		<!-- Leaderboard Card -->
@@ -115,9 +109,7 @@
 			<h3 class="mb-2 text-xl font-bold text-card-foreground group-hover:text-primary">
 				Classement
 			</h3>
-			<p class="text-sm text-muted-foreground">
-				Comparez vos scores avec les autres joueurs.
-			</p>
+			<p class="text-sm text-muted-foreground">Comparez vos scores avec les autres joueurs.</p>
 		</a>
 
 		<!-- Profile Card -->
@@ -126,9 +118,7 @@
 			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
 		>
 			<div class="mb-4 text-5xl">👤</div>
-			<h3 class="mb-2 text-xl font-bold text-card-foreground group-hover:text-primary">
-				Profil
-			</h3>
+			<h3 class="mb-2 text-xl font-bold text-card-foreground group-hover:text-primary">Profil</h3>
 			<p class="text-sm text-muted-foreground">
 				Consultez votre profil de joueur et vos statistiques détaillées.
 			</p>

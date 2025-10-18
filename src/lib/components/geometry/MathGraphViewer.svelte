@@ -102,11 +102,15 @@
 	{:else if error}
 		<div class="error-container" style="width: {width}px; height: {height}px;">
 			<div class="error-icon">⚠️</div>
-			<p class="text-destructive font-semibold">Erreur de chargement</p>
-			<p class="text-muted-foreground text-sm">{error}</p>
+			<p class="font-semibold text-destructive">Erreur de chargement</p>
+			<p class="text-sm text-muted-foreground">{error}</p>
 		</div>
 	{:else}
-		<div bind:this={container} class="mathgraph-container" style="width: {width}px; height: {height}px;"></div>
+		<div
+			bind:this={container}
+			class="mathgraph-container"
+			style="width: {width}px; height: {height}px;"
+		></div>
 	{/if}
 </div>
 
@@ -157,7 +161,8 @@
 
 	/* Grid styling */
 	.mathgraph-viewer.grid-visible :global(svg) {
-		background-image: linear-gradient(hsl(var(--border)) 1px, transparent 1px),
+		background-image:
+			linear-gradient(hsl(var(--border)) 1px, transparent 1px),
 			linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px);
 		background-size: 20px 20px;
 	}

@@ -55,7 +55,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
 	import { getDayName } from '$lib/utils/schedule';
-	import { formatPeriodDisplay, getPeriod } from '$lib/utils/timetable';
+	import { formatPeriodDisplay } from '$lib/utils/timetable';
 	import { Trash2 } from 'lucide-svelte';
 
 	export interface ScheduleFormData {
@@ -80,7 +80,16 @@
 		onDelete?: () => void;
 	}
 
-	let { open = $bindable(), mode, entry, defaultDay = 0, periods, onClose, onSave, onDelete }: Props = $props();
+	let {
+		open = $bindable(),
+		mode,
+		entry,
+		defaultDay = 0,
+		periods,
+		onClose,
+		onSave,
+		onDelete
+	}: Props = $props();
 
 	// Form state - stores current values for all form fields
 	let formData = $state<ScheduleFormData>({
@@ -156,7 +165,7 @@
 	}
 
 	// Day options for select
-	const dayOptions = [0, 1, 2, 3, 4].map(day => ({
+	const dayOptions = [0, 1, 2, 3, 4].map((day) => ({
 		value: day,
 		label: getDayName(day)
 	}));
@@ -170,16 +179,18 @@
 	);
 
 	// Get selected day option
-	let selectedDay = $derived(dayOptions.find(opt => opt.value === formData.day_of_week));
+	let selectedDay = $derived(dayOptions.find((opt) => opt.value === formData.day_of_week));
 
 	// Get selected period option
-	let selectedPeriod = $derived(periodOptions.find(opt => opt.value === formData.period_number));
+	let selectedPeriod = $derived(periodOptions.find((opt) => opt.value === formData.period_number));
 
 	// Modal title based on mode
 	const modalTitle = $derived(
-		mode === 'create' ? 'Ajouter un Créneau' :
-		mode === 'edit' ? 'Modifier le Créneau' :
-		'Détails du Créneau'
+		mode === 'create'
+			? 'Ajouter un Créneau'
+			: mode === 'edit'
+				? 'Modifier le Créneau'
+				: 'Détails du Créneau'
 	);
 
 	const readonly = $derived(mode === 'view');
@@ -191,10 +202,16 @@
 			<Dialog.Title>{modalTitle}</Dialog.Title>
 		</Dialog.Header>
 
-		<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-4">
+		<form
+			onsubmit={(e) => {
+				e.preventDefault();
+				handleSubmit();
+			}}
+			class="space-y-4"
+		>
 			<!-- Day of Week -->
 			<div>
-				<label class="text-sm font-medium text-foreground mb-2 block">
+				<label class="mb-2 block text-sm font-medium text-foreground">
 					Jour <span class="text-destructive">*</span>
 				</label>
 				<Select.Root
@@ -217,12 +234,13 @@
 
 			<!-- Period Selection -->
 			<div>
-				<label class="text-sm font-medium text-foreground mb-2 block">
+				<label class="mb-2 block text-sm font-medium text-foreground">
 					Période <span class="text-destructive">*</span>
 				</label>
 				{#if periods.length === 0}
-					<div class="text-sm text-destructive p-3 bg-destructive/10 rounded-md">
-						Aucune période définie pour cette école. Contactez l'administrateur pour configurer l'emploi du temps.
+					<div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+						Aucune période définie pour cette école. Contactez l'administrateur pour configurer
+						l'emploi du temps.
 					</div>
 				{:else}
 					<Select.Root
@@ -246,7 +264,7 @@
 
 			<!-- Subject -->
 			<div>
-				<label for="subject" class="text-sm font-medium text-foreground mb-2 block">
+				<label for="subject" class="mb-2 block text-sm font-medium text-foreground">
 					Matière
 				</label>
 				<Input
@@ -260,9 +278,7 @@
 
 			<!-- Room -->
 			<div>
-				<label for="room" class="text-sm font-medium text-foreground mb-2 block">
-					Salle
-				</label>
+				<label for="room" class="mb-2 block text-sm font-medium text-foreground"> Salle </label>
 				<Input
 					id="room"
 					type="text"
@@ -274,9 +290,7 @@
 
 			<!-- Notes -->
 			<div>
-				<label for="notes" class="text-sm font-medium text-foreground mb-2 block">
-					Notes
-				</label>
+				<label for="notes" class="mb-2 block text-sm font-medium text-foreground"> Notes </label>
 				<Textarea
 					id="notes"
 					bind:value={formData.notes}
@@ -291,7 +305,7 @@
 				<!-- Delete Button (left side, edit mode only) -->
 				{#if mode === 'edit' && onDelete}
 					<Button type="button" variant="destructive" onclick={handleDelete} class="gap-2">
-						<Trash2 class="w-4 h-4" />
+						<Trash2 class="h-4 w-4" />
 						Supprimer
 					</Button>
 				{:else}

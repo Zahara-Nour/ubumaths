@@ -88,7 +88,9 @@ export function getStudentCardCounts(vipCards: StudentVipCards): Map<string, num
  * Get all unique cards owned by student with their counts and details.
  * Returns array of cards with count property.
  */
-export function getStudentCardsWithCounts(vipCards: StudentVipCards): Array<VipCard & { count: number; instances: VipCardInstance[] }> {
+export function getStudentCardsWithCounts(
+	vipCards: StudentVipCards
+): Array<VipCard & { count: number; instances: VipCardInstance[] }> {
 	const counts = getStudentCardCounts(vipCards);
 	const cardsWithCounts: Array<VipCard & { count: number; instances: VipCardInstance[] }> = [];
 
@@ -171,10 +173,7 @@ export function addCardToStudentCollection(
  * This is used client-side for optimistic updates.
  * Server-side usage is handled by RPC function.
  */
-export function markCardAsUsed(
-	vipCards: StudentVipCards,
-	cardId: string
-): StudentVipCards | null {
+export function markCardAsUsed(vipCards: StudentVipCards, cardId: string): StudentVipCards | null {
 	// Find the oldest unused instance of this card
 	let oldestInstanceId: string | null = null;
 	let oldestDate: string | null = null;

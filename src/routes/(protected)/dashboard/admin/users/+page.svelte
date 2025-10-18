@@ -107,9 +107,7 @@
 		isSearching = true;
 		searchTimeout = setTimeout(async () => {
 			try {
-				const response = await fetch(
-					`/api/admin/search-users?q=${encodeURIComponent(searchTerm)}`
-				);
+				const response = await fetch(`/api/admin/search-users?q=${encodeURIComponent(searchTerm)}`);
 				const result = await response.json();
 
 				if (result.users) {
@@ -293,7 +291,6 @@
 			console.error('Add class error:', err);
 		}
 	}
-
 </script>
 
 <div class="space-y-6">
@@ -311,370 +308,373 @@
 
 	<!-- CARD LAYOUT -->
 	<div class="mt-6">
-			<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-				<!-- Left Panel: Search & Browse -->
-				<div class="lg:col-span-1 space-y-4">
-					<!-- Search -->
-					<Card.Root>
-						<Card.Header>
-							<Card.Title>Rechercher un utilisateur</Card.Title>
-						</Card.Header>
-						<Card.Content>
-							<Label for="search-input">Email, Prénom ou Nom (min 3 caractères)</Label>
-							<Input
-								id="search-input"
-								type="text"
-								placeholder="Rechercher..."
-								bind:value={searchTerm}
-								oninput={handleSearchInput}
-							/>
-							{#if isSearching}
-								<p class="text-sm text-muted-foreground mt-2">Recherche en cours...</p>
-							{/if}
-						</Card.Content>
-					</Card.Root>
+		<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+			<!-- Left Panel: Search & Browse -->
+			<div class="space-y-4 lg:col-span-1">
+				<!-- Search -->
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Rechercher un utilisateur</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<Label for="search-input">Email, Prénom ou Nom (min 3 caractères)</Label>
+						<Input
+							id="search-input"
+							type="text"
+							placeholder="Rechercher..."
+							bind:value={searchTerm}
+							oninput={handleSearchInput}
+						/>
+						{#if isSearching}
+							<p class="mt-2 text-sm text-muted-foreground">Recherche en cours...</p>
+						{/if}
+					</Card.Content>
+				</Card.Root>
 
-					<!-- Browse by Class -->
+				<!-- Browse by Class -->
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Parcourir par classe</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<select
+							bind:value={selectedClassFilter}
+							onchange={() => handleClassFilter(selectedClassFilter)}
+							class="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
+						>
+							<option value="">Sélectionner une classe</option>
+							{#each data.classes as classItem}
+								<option value={classItem.id}>{classItem.name}</option>
+							{/each}
+						</select>
+						{#if isSearchingClass}
+							<p class="mt-2 text-sm text-muted-foreground">Chargement...</p>
+						{/if}
+					</Card.Content>
+				</Card.Root>
+
+				<!-- Search Results List -->
+				{#if searchResults.length > 0 || classResults.length > 0}
 					<Card.Root>
 						<Card.Header>
-							<Card.Title>Parcourir par classe</Card.Title>
+							<Card.Title>
+								{#if searchResults.length > 0}
+									Résultats de recherche ({searchResults.length})
+								{:else if classResults.length > 0}
+									{@const className =
+										data.classes.find((c) => c.id === selectedClassFilter)?.name || 'Classe'}
+									Étudiants de {className} ({classResults.length})
+								{/if}
+							</Card.Title>
 						</Card.Header>
 						<Card.Content>
-							<select
-								bind:value={selectedClassFilter}
-								onchange={() => handleClassFilter(selectedClassFilter)}
-								class="w-full px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-							>
-								<option value="">Sélectionner une classe</option>
-								{#each data.classes as classItem}
-									<option value={classItem.id}>{classItem.name}</option>
+							<div class="max-h-96 space-y-2 overflow-y-auto">
+								{#each searchResults.length > 0 ? searchResults : classResults as user}
+									<button
+										type="button"
+										onclick={() => selectUser(user)}
+										class="w-full rounded-lg border border-border p-3 text-left transition-colors hover:bg-muted {selectedUser?.id ===
+										user.id
+											? 'border-primary bg-primary/10'
+											: ''}"
+									>
+										<div class="flex items-center gap-3">
+											<Avatar.Root class="h-10 w-10">
+												<Avatar.Image
+													src={user.avatar_url || getAvatarFallback(user.role, user.gender)}
+													alt={getFullName(user)}
+												/>
+												<Avatar.Fallback
+													>{getAvatarInitials(user.firstname, user.lastname)}</Avatar.Fallback
+												>
+											</Avatar.Root>
+											<div class="min-w-0 flex-1">
+												<p class="truncate text-sm font-medium text-foreground">
+													{getFullName(user)}
+												</p>
+												<p class="truncate text-xs text-muted-foreground">{user.email}</p>
+											</div>
+											<Badge class={getRoleBadgeClass(user.role)}>{user.role}</Badge>
+										</div>
+									</button>
 								{/each}
-							</select>
-							{#if isSearchingClass}
-								<p class="text-sm text-muted-foreground mt-2">Chargement...</p>
-							{/if}
+							</div>
 						</Card.Content>
 					</Card.Root>
-
-					<!-- Search Results List -->
-					{#if searchResults.length > 0 || classResults.length > 0}
-						<Card.Root>
-							<Card.Header>
-								<Card.Title>
-									{#if searchResults.length > 0}
-										Résultats de recherche ({searchResults.length})
-									{:else if classResults.length > 0}
-										{@const className = data.classes.find((c) => c.id === selectedClassFilter)?.name || 'Classe'}
-										Étudiants de {className} ({classResults.length})
-									{/if}
-								</Card.Title>
-							</Card.Header>
-							<Card.Content>
-								<div class="space-y-2 max-h-96 overflow-y-auto">
-									{#each searchResults.length > 0 ? searchResults : classResults as user}
-										<button
-											type="button"
-											onclick={() => selectUser(user)}
-											class="w-full text-left p-3 rounded-lg border border-border hover:bg-muted transition-colors {selectedUser?.id ===
-											user.id
-												? 'bg-primary/10 border-primary'
-												: ''}"
-										>
-											<div class="flex items-center gap-3">
-												<Avatar.Root class="h-10 w-10">
-													<Avatar.Image
-														src={user.avatar_url || getAvatarFallback(user.role, user.gender)}
-														alt={getFullName(user)}
-													/>
-													<Avatar.Fallback>{getAvatarInitials(user.firstname, user.lastname)}</Avatar.Fallback>
-												</Avatar.Root>
-												<div class="flex-1 min-w-0">
-													<p class="text-sm font-medium text-foreground truncate">
-														{getFullName(user)}
-													</p>
-													<p class="text-xs text-muted-foreground truncate">{user.email}</p>
-												</div>
-												<Badge class={getRoleBadgeClass(user.role)}>{user.role}</Badge>
-											</div>
-										</button>
-									{/each}
-								</div>
-							</Card.Content>
-						</Card.Root>
-					{:else if searchTerm.length >= 3 && !isSearching}
-						<Card.Root>
-							<Card.Content class="py-6 text-center">
-								<p class="text-sm text-muted-foreground">Aucun résultat trouvé</p>
-							</Card.Content>
-						</Card.Root>
-					{/if}
-				</div>
-
-				<!-- Right Panel: User Profile Card -->
-				<div class="lg:col-span-2">
-					{#if selectedUser}
-						<Card.Root>
-							<Card.Header>
-								<div class="flex items-center justify-between">
-									<Card.Title>Profil de l'utilisateur</Card.Title>
-									{#if !isEditing}
-										<Button onclick={startEdit} size="sm">Modifier</Button>
-									{:else}
-										<div class="flex gap-2">
-											<Button type="button" variant="outline" size="sm" onclick={cancelEdit}>
-												Annuler
-											</Button>
-										</div>
-									{/if}
-								</div>
-							</Card.Header>
-							<Card.Content class="space-y-6">
-								<!-- Avatar -->
-								<div class="flex items-center gap-4">
-									<Avatar.Root class="h-20 w-20">
-										<Avatar.Image
-											src={(isEditing ? editedUser.avatar_url : selectedUser.avatar_url) ||
-												getAvatarFallback(
-													isEditing ? editedUser.role : selectedUser.role,
-													isEditing ? editedUser.gender : selectedUser.gender
-												)}
-											alt={getFullName(isEditing ? editedUser : selectedUser)}
-										/>
-										<Avatar.Fallback class="text-2xl">
-											{getAvatarInitials(
-												isEditing ? editedUser.firstname : selectedUser.firstname,
-												isEditing ? editedUser.lastname : selectedUser.lastname
-											)}
-										</Avatar.Fallback>
-									</Avatar.Root>
-									<div class="flex-1">
-										{#if isEditing}
-											<Label for="avatar-url">URL de l'avatar</Label>
-											<Input id="avatar-url" type="url" bind:value={editedUser.avatar_url} />
-										{:else}
-											<h3 class="text-xl font-semibold">{getFullName(selectedUser)}</h3>
-											<p class="text-sm text-muted-foreground">{selectedUser.email}</p>
-										{/if}
-									</div>
-								</div>
-
-								<Separator />
-
-								<!-- Profile Form -->
-								<form
-									method="POST"
-									action="?/update_profile"
-									use:enhance={() => {
-										return async ({ result, update }) => {
-											await update();
-											if (result.type === 'success' && result.data?.profile) {
-												// Use the profile returned from the server (includes school relation)
-												selectedUser = result.data.profile;
-												editedUser = { ...selectedUser };
-
-												// Update in searchResults if present
-												const searchIndex = searchResults.findIndex((u) => u.id === selectedUser.id);
-												if (searchIndex !== -1) {
-													searchResults[searchIndex] = { ...selectedUser };
-												}
-
-												// Update in classResults if present
-												const classIndex = classResults.findIndex((u) => u.id === selectedUser.id);
-												if (classIndex !== -1) {
-													classResults[classIndex] = { ...selectedUser };
-												}
-
-												isEditing = false;
-											} else if (result.type === 'success') {
-												// Fallback if profile not returned
-												selectedUser = { ...selectedUser, ...editedUser };
-												isEditing = false;
-											}
-										};
-									}}
-								>
-									<input type="hidden" name="user_id" value={selectedUser.id} />
-
-									<div class="space-y-4">
-										<!-- Personal Info -->
-										<div class="grid grid-cols-2 gap-4">
-											<div>
-												<Label for="firstname">Prénom</Label>
-												{#if isEditing}
-													<Input
-														id="firstname"
-														name="firstname"
-														type="text"
-														bind:value={editedUser.firstname}
-													/>
-												{:else}
-													<p class="text-sm mt-1">{selectedUser.firstname || '—'}</p>
-												{/if}
-											</div>
-
-											<div>
-												<Label for="lastname">Nom</Label>
-												{#if isEditing}
-													<Input
-														id="lastname"
-														name="lastname"
-														type="text"
-														bind:value={editedUser.lastname}
-													/>
-												{:else}
-													<p class="text-sm mt-1">{selectedUser.lastname || '—'}</p>
-												{/if}
-											</div>
-										</div>
-
-										<div>
-											<Label for="email">Email</Label>
-											{#if isEditing}
-												<Input id="email" name="email" type="email" bind:value={editedUser.email} />
-											{:else}
-												<p class="text-sm mt-1">{selectedUser.email}</p>
-											{/if}
-										</div>
-
-										<!-- Gender -->
-										<div>
-											<Label for="gender">Genre</Label>
-											{#if isEditing}
-												<select
-													id="gender"
-													name="gender"
-													bind:value={editedUser.gender}
-													class="w-full px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-												>
-													<option value="">Non spécifié</option>
-													<option value="boy">Garçon</option>
-													<option value="girl">Fille</option>
-												</select>
-											{:else}
-												<p class="text-sm mt-1">
-													{#if selectedUser.gender === 'boy'}
-														Garçon
-													{:else if selectedUser.gender === 'girl'}
-														Fille
-													{:else}
-														Non spécifié
-													{/if}
-												</p>
-											{/if}
-										</div>
-
-										<!-- Role -->
-										<div>
-											<Label for="role">Rôle</Label>
-											{#if isEditing}
-												<select
-													id="role"
-													name="role"
-													bind:value={editedUser.role}
-													class="w-full px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-												>
-													<option value="student">Student</option>
-													<option value="teacher">Teacher</option>
-													<option value="admin">Admin</option>
-												</select>
-											{:else}
-												<Badge class={getRoleBadgeClass(selectedUser.role) + ' mt-1'}>
-													{selectedUser.role}
-												</Badge>
-											{/if}
-										</div>
-
-										<!-- School -->
-										<div>
-											<Label for="school">École</Label>
-											{#if isEditing}
-												<select
-													id="school"
-													name="school_id"
-													bind:value={editedUser.school_id}
-													class="w-full px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-												>
-													<option value="">Aucune école</option>
-													{#each data.schools as school}
-														<option value={school.id}>{school.name}</option>
-													{/each}
-												</select>
-											{:else}
-												<p class="text-sm mt-1">
-													{selectedUser.schools?.name || '—'}
-												</p>
-											{/if}
-										</div>
-
-										<!-- Classes -->
-										<div>
-											<Label>Classes</Label>
-											<div class="flex flex-wrap gap-2 mt-2">
-												{#if selectedUser.class_ids && selectedUser.class_ids.length > 0}
-													{#each selectedUser.class_ids as classId}
-														{@const className = data.classes.find((c) => c.id === classId)?.name}
-														<Badge variant="outline" class="flex items-center gap-1">
-															{className || 'Unknown'}
-															{#if isEditing}
-																<button
-																	type="button"
-																	onclick={() => removeClass(classId)}
-																	class="ml-1 hover:text-destructive"
-																>
-																	×
-																</button>
-															{/if}
-														</Badge>
-													{/each}
-												{:else}
-													<p class="text-sm text-muted-foreground">Aucune classe</p>
-												{/if}
-											</div>
-
-											{#if isEditing}
-												<div class="mt-2">
-													<div class="flex gap-2">
-														<select
-															bind:value={classToAdd}
-															class="flex-1 px-3 py-2 border border-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-														>
-															<option value="">Ajouter une classe</option>
-															{#each data.classes.filter((c) => !selectedUser.class_ids?.includes(c.id)) as classItem}
-																<option value={classItem.id}>{classItem.name}</option>
-															{/each}
-														</select>
-														<Button
-															type="button"
-															size="sm"
-															onclick={addClassToUser}
-															disabled={!classToAdd}
-														>
-															Ajouter
-														</Button>
-													</div>
-												</div>
-											{/if}
-										</div>
-
-										{#if isEditing}
-											<div class="flex justify-end pt-4">
-												<Button type="submit">Enregistrer les modifications</Button>
-											</div>
-										{/if}
-									</div>
-								</form>
-							</Card.Content>
-						</Card.Root>
-					{:else}
-						<Card.Root>
-							<Card.Content class="py-12 text-center">
-								<p class="text-muted-foreground">
-									Recherchez un utilisateur ou sélectionnez une classe pour commencer
-								</p>
-							</Card.Content>
-						</Card.Root>
-					{/if}
-				</div>
+				{:else if searchTerm.length >= 3 && !isSearching}
+					<Card.Root>
+						<Card.Content class="py-6 text-center">
+							<p class="text-sm text-muted-foreground">Aucun résultat trouvé</p>
+						</Card.Content>
+					</Card.Root>
+				{/if}
 			</div>
+
+			<!-- Right Panel: User Profile Card -->
+			<div class="lg:col-span-2">
+				{#if selectedUser}
+					<Card.Root>
+						<Card.Header>
+							<div class="flex items-center justify-between">
+								<Card.Title>Profil de l'utilisateur</Card.Title>
+								{#if !isEditing}
+									<Button onclick={startEdit} size="sm">Modifier</Button>
+								{:else}
+									<div class="flex gap-2">
+										<Button type="button" variant="outline" size="sm" onclick={cancelEdit}>
+											Annuler
+										</Button>
+									</div>
+								{/if}
+							</div>
+						</Card.Header>
+						<Card.Content class="space-y-6">
+							<!-- Avatar -->
+							<div class="flex items-center gap-4">
+								<Avatar.Root class="h-20 w-20">
+									<Avatar.Image
+										src={(isEditing ? editedUser.avatar_url : selectedUser.avatar_url) ||
+											getAvatarFallback(
+												isEditing ? editedUser.role : selectedUser.role,
+												isEditing ? editedUser.gender : selectedUser.gender
+											)}
+										alt={getFullName(isEditing ? editedUser : selectedUser)}
+									/>
+									<Avatar.Fallback class="text-2xl">
+										{getAvatarInitials(
+											isEditing ? editedUser.firstname : selectedUser.firstname,
+											isEditing ? editedUser.lastname : selectedUser.lastname
+										)}
+									</Avatar.Fallback>
+								</Avatar.Root>
+								<div class="flex-1">
+									{#if isEditing}
+										<Label for="avatar-url">URL de l'avatar</Label>
+										<Input id="avatar-url" type="url" bind:value={editedUser.avatar_url} />
+									{:else}
+										<h3 class="text-xl font-semibold">{getFullName(selectedUser)}</h3>
+										<p class="text-sm text-muted-foreground">{selectedUser.email}</p>
+									{/if}
+								</div>
+							</div>
+
+							<Separator />
+
+							<!-- Profile Form -->
+							<form
+								method="POST"
+								action="?/update_profile"
+								use:enhance={() => {
+									return async ({ result, update }) => {
+										await update();
+										if (result.type === 'success' && result.data?.profile) {
+											// Use the profile returned from the server (includes school relation)
+											selectedUser = result.data.profile;
+											editedUser = { ...selectedUser };
+
+											// Update in searchResults if present
+											const searchIndex = searchResults.findIndex((u) => u.id === selectedUser.id);
+											if (searchIndex !== -1) {
+												searchResults[searchIndex] = { ...selectedUser };
+											}
+
+											// Update in classResults if present
+											const classIndex = classResults.findIndex((u) => u.id === selectedUser.id);
+											if (classIndex !== -1) {
+												classResults[classIndex] = { ...selectedUser };
+											}
+
+											isEditing = false;
+										} else if (result.type === 'success') {
+											// Fallback if profile not returned
+											selectedUser = { ...selectedUser, ...editedUser };
+											isEditing = false;
+										}
+									};
+								}}
+							>
+								<input type="hidden" name="user_id" value={selectedUser.id} />
+
+								<div class="space-y-4">
+									<!-- Personal Info -->
+									<div class="grid grid-cols-2 gap-4">
+										<div>
+											<Label for="firstname">Prénom</Label>
+											{#if isEditing}
+												<Input
+													id="firstname"
+													name="firstname"
+													type="text"
+													bind:value={editedUser.firstname}
+												/>
+											{:else}
+												<p class="mt-1 text-sm">{selectedUser.firstname || '—'}</p>
+											{/if}
+										</div>
+
+										<div>
+											<Label for="lastname">Nom</Label>
+											{#if isEditing}
+												<Input
+													id="lastname"
+													name="lastname"
+													type="text"
+													bind:value={editedUser.lastname}
+												/>
+											{:else}
+												<p class="mt-1 text-sm">{selectedUser.lastname || '—'}</p>
+											{/if}
+										</div>
+									</div>
+
+									<div>
+										<Label for="email">Email</Label>
+										{#if isEditing}
+											<Input id="email" name="email" type="email" bind:value={editedUser.email} />
+										{:else}
+											<p class="mt-1 text-sm">{selectedUser.email}</p>
+										{/if}
+									</div>
+
+									<!-- Gender -->
+									<div>
+										<Label for="gender">Genre</Label>
+										{#if isEditing}
+											<select
+												id="gender"
+												name="gender"
+												bind:value={editedUser.gender}
+												class="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
+											>
+												<option value="">Non spécifié</option>
+												<option value="boy">Garçon</option>
+												<option value="girl">Fille</option>
+											</select>
+										{:else}
+											<p class="mt-1 text-sm">
+												{#if selectedUser.gender === 'boy'}
+													Garçon
+												{:else if selectedUser.gender === 'girl'}
+													Fille
+												{:else}
+													Non spécifié
+												{/if}
+											</p>
+										{/if}
+									</div>
+
+									<!-- Role -->
+									<div>
+										<Label for="role">Rôle</Label>
+										{#if isEditing}
+											<select
+												id="role"
+												name="role"
+												bind:value={editedUser.role}
+												class="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
+											>
+												<option value="student">Student</option>
+												<option value="teacher">Teacher</option>
+												<option value="admin">Admin</option>
+											</select>
+										{:else}
+											<Badge class={getRoleBadgeClass(selectedUser.role) + ' mt-1'}>
+												{selectedUser.role}
+											</Badge>
+										{/if}
+									</div>
+
+									<!-- School -->
+									<div>
+										<Label for="school">École</Label>
+										{#if isEditing}
+											<select
+												id="school"
+												name="school_id"
+												bind:value={editedUser.school_id}
+												class="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
+											>
+												<option value="">Aucune école</option>
+												{#each data.schools as school}
+													<option value={school.id}>{school.name}</option>
+												{/each}
+											</select>
+										{:else}
+											<p class="mt-1 text-sm">
+												{selectedUser.schools?.name || '—'}
+											</p>
+										{/if}
+									</div>
+
+									<!-- Classes -->
+									<div>
+										<Label>Classes</Label>
+										<div class="mt-2 flex flex-wrap gap-2">
+											{#if selectedUser.class_ids && selectedUser.class_ids.length > 0}
+												{#each selectedUser.class_ids as classId}
+													{@const className = data.classes.find((c) => c.id === classId)?.name}
+													<Badge variant="outline" class="flex items-center gap-1">
+														{className || 'Unknown'}
+														{#if isEditing}
+															<button
+																type="button"
+																onclick={() => removeClass(classId)}
+																class="ml-1 hover:text-destructive"
+															>
+																×
+															</button>
+														{/if}
+													</Badge>
+												{/each}
+											{:else}
+												<p class="text-sm text-muted-foreground">Aucune classe</p>
+											{/if}
+										</div>
+
+										{#if isEditing}
+											<div class="mt-2">
+												<div class="flex gap-2">
+													<select
+														bind:value={classToAdd}
+														class="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
+													>
+														<option value="">Ajouter une classe</option>
+														{#each data.classes.filter((c) => !selectedUser.class_ids?.includes(c.id)) as classItem}
+															<option value={classItem.id}>{classItem.name}</option>
+														{/each}
+													</select>
+													<Button
+														type="button"
+														size="sm"
+														onclick={addClassToUser}
+														disabled={!classToAdd}
+													>
+														Ajouter
+													</Button>
+												</div>
+											</div>
+										{/if}
+									</div>
+
+									{#if isEditing}
+										<div class="flex justify-end pt-4">
+											<Button type="submit">Enregistrer les modifications</Button>
+										</div>
+									{/if}
+								</div>
+							</form>
+						</Card.Content>
+					</Card.Root>
+				{:else}
+					<Card.Root>
+						<Card.Content class="py-12 text-center">
+							<p class="text-muted-foreground">
+								Recherchez un utilisateur ou sélectionnez une classe pour commencer
+							</p>
+						</Card.Content>
+					</Card.Root>
+				{/if}
+			</div>
+		</div>
 	</div>
 </div>

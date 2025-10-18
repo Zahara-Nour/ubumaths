@@ -19,7 +19,9 @@
 
 	// Sort attempts by date (most recent first)
 	const sortedAttempts = $derived(
-		[...attempts].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+		[...attempts].sort(
+			(a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+		)
 	);
 
 	// Calculate statistics
@@ -65,7 +67,13 @@
 				</div>
 				<div class="flex items-center gap-2 text-lg font-bold {trend.color}">
 					<span>{trend.icon}</span>
-					<span>{trend.trend === 'improving' ? 'En progression' : trend.trend === 'declining' ? 'En baisse' : 'Stable'}</span>
+					<span
+						>{trend.trend === 'improving'
+							? 'En progression'
+							: trend.trend === 'declining'
+								? 'En baisse'
+								: 'Stable'}</span
+					>
 				</div>
 			</div>
 		</Card.Header>
@@ -112,12 +120,14 @@
 					{@const trendIcon = getAttemptTrend(attempt, index)}
 					{@const trendColor = getTrendColor(attempt, index)}
 
-					<div class="rounded-lg border p-4 hover:bg-muted/50 transition-colors">
+					<div class="rounded-lg border p-4 transition-colors hover:bg-muted/50">
 						<div class="flex items-center justify-between">
 							<!-- Left: Attempt Info -->
 							<div class="flex items-center gap-4">
 								<!-- Attempt Number -->
-								<div class="flex h-12 w-12 items-center justify-center rounded-full {scoreColor.bg}">
+								<div
+									class="flex h-12 w-12 items-center justify-center rounded-full {scoreColor.bg}"
+								>
 									<span class="text-lg font-bold {scoreColor.text}">
 										#{attempt.attempts_count}
 									</span>
@@ -157,9 +167,7 @@
 										{/if}
 
 										{#if attempt.is_complete}
-											<div class="text-green-600 dark:text-green-400">
-												✓ Terminé
-											</div>
+											<div class="text-green-600 dark:text-green-400">✓ Terminé</div>
 										{/if}
 									</div>
 								</div>

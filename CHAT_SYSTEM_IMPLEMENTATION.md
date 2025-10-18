@@ -7,6 +7,7 @@ A complete group chat system with real-time messaging, rich text support (includ
 ### ✅ Completed Components
 
 #### 1. **Database Schema** (7 migrations: 036-042)
+
 - ✅ `conversations` - Group chats (class rooms) and 1-on-1 chats
 - ✅ `conversation_participants` - Many-to-many relationship
 - ✅ `messages` - Rich text messages (TipTap JSON format)
@@ -15,6 +16,7 @@ A complete group chat system with real-time messaging, rich text support (includ
 - ✅ `message_reports` - User reporting system
 
 **Key Features:**
+
 - Auto-creates class chat rooms when classes are created
 - Auto-adds students to class chats when they join a class
 - Profanity detection (basic SQL-based, enhanced server-side planned)
@@ -23,6 +25,7 @@ A complete group chat system with real-time messaging, rich text support (includ
 - Complete RLS policies for security
 
 #### 2. **WebSocket Server** (`src/lib/server/websocket-server.ts`)
+
 - ✅ Real-time message delivery
 - ✅ Typing indicators
 - ✅ Read receipts
@@ -30,6 +33,7 @@ A complete group chat system with real-time messaging, rich text support (includ
 - ✅ Message handlers for all chat events
 
 #### 3. **Chat Store** (`src/lib/stores/chat.svelte.ts`)
+
 - ✅ Svelte 5 runes-based state management
 - ✅ Conversations management
 - ✅ Messages management with pagination
@@ -39,6 +43,7 @@ A complete group chat system with real-time messaging, rich text support (includ
 - ✅ All CRUD operations
 
 #### 4. **UI Components** (`src/lib/components/chat/`)
+
 - ✅ **ChatConversationList.svelte** - Sidebar with conversations
   - Search/filter conversations
   - Unread badges
@@ -71,11 +76,14 @@ A complete group chat system with real-time messaging, rich text support (includ
 ## 🚧 Remaining Tasks
 
 ### 1. File Upload Implementation
+
 **Status:** Component ready, needs Supabase Storage integration
 
 **What to do:**
+
 1. Create Supabase Storage bucket named `chat-attachments`
 2. Configure bucket RLS policies:
+
    ```sql
    -- Allow authenticated teachers to upload
    CREATE POLICY "Teachers can upload files"
@@ -103,34 +111,37 @@ A complete group chat system with real-time messaging, rich text support (includ
    ```
 
 3. Implement upload function in `ChatComposer.svelte`:
+
    ```typescript
    async function uploadFile(file: File, messageId: string): Promise<string> {
-     const path = `${conversationId}/${messageId}/${file.name}`;
+   	const path = `${conversationId}/${messageId}/${file.name}`;
 
-     const { data, error } = await supabase.storage
-       .from('chat-attachments')
-       .upload(path, file);
+   	const { data, error } = await supabase.storage.from('chat-attachments').upload(path, file);
 
-     if (error) throw error;
+   	if (error) throw error;
 
-     const { data: { publicUrl } } = supabase.storage
-       .from('chat-attachments')
-       .getPublicUrl(path);
+   	const {
+   		data: { publicUrl }
+   	} = supabase.storage.from('chat-attachments').getPublicUrl(path);
 
-     return publicUrl;
+   	return publicUrl;
    }
    ```
 
 ### 2. Profanity Filter (Server-Side)
+
 **Status:** Basic SQL check implemented, needs enhancement
 
 **What to do:**
+
 1. Install `bad-words` library:
+
    ```bash
    pnpm add bad-words
    ```
 
 2. Create profanity filter utility (`src/lib/server/profanity-filter.ts`):
+
    ```typescript
    import Filter from 'bad-words';
 
@@ -140,89 +151,96 @@ A complete group chat system with real-time messaging, rich text support (includ
    filter.addWords(...['list', 'of', 'french', 'bad', 'words']);
 
    export function checkProfanity(text: string): {
-     isProfane: boolean;
-     cleanedText: string;
+   	isProfane: boolean;
+   	cleanedText: string;
    } {
-     const isProfane = filter.isProfane(text);
-     const cleanedText = filter.clean(text);
+   	const isProfane = filter.isProfane(text);
+   	const cleanedText = filter.clean(text);
 
-     return { isProfane, cleanedText };
+   	return { isProfane, cleanedText };
    }
    ```
 
 3. Use in API route when creating messages
 
 ### 3. Create Chat Routes
+
 **Status:** Components ready, needs routing
 
 **What to do:**
 
 Create route: `src/routes/(protected)/dashboard/chat/+page.svelte`
+
 ```svelte
 <script lang="ts">
-  import ChatWindow from '$lib/components/chat/ChatWindow.svelte';
-  import { page } from '$app/stores';
+	import ChatWindow from '$lib/components/chat/ChatWindow.svelte';
+	import { page } from '$app/stores';
 
-  let { data } = $props();
+	let { data } = $props();
 </script>
 
 <div class="h-screen">
-  <ChatWindow
-    userId={data.session.user.id}
-    isTeacher={data.profile.role === 'teacher' || data.profile.role === 'admin'}
-    supabase={data.supabase}
-  />
+	<ChatWindow
+		userId={data.session.user.id}
+		isTeacher={data.profile.role === 'teacher' || data.profile.role === 'admin'}
+		supabase={data.supabase}
+	/>
 </div>
 ```
 
 Create server load: `src/routes/(protected)/dashboard/chat/+page.server.ts`
+
 ```typescript
 export async function load({ locals }) {
-  // Verify user is authenticated
-  if (!locals.session) {
-    redirect(303, '/auth/login');
-  }
+	// Verify user is authenticated
+	if (!locals.session) {
+		redirect(303, '/auth/login');
+	}
 
-  return {
-    session: locals.session,
-    profile: locals.profile
-  };
+	return {
+		session: locals.session,
+		profile: locals.profile
+	};
 }
 ```
 
 ### 4. Report Message Dialog
+
 **Status:** Function ready, needs UI
 
 **What to do:**
 
 Create `src/lib/components/chat/ReportMessageDialog.svelte`:
+
 ```svelte
 <script lang="ts">
-  import * as Dialog from '$lib/components/ui/dialog';
-  import { Button } from '$lib/components/ui/button';
-  import { Textarea } from '$lib/components/ui/textarea';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { Button } from '$lib/components/ui/button';
+	import { Textarea } from '$lib/components/ui/textarea';
 
-  // Props & logic for report form
-  // - Reason selection (radio buttons)
-  // - Optional details textarea
-  // - Submit to chatStore.reportMessage()
+	// Props & logic for report form
+	// - Reason selection (radio buttons)
+	// - Optional details textarea
+	// - Submit to chatStore.reportMessage()
 </script>
 ```
 
 Integrate into ChatMessageList message actions menu.
 
 ### 5. Friend Selection for New Chat
+
 **Status:** Function ready, needs UI
 
 **What to do:**
 
 Create `src/lib/components/chat/NewChatDialog.svelte`:
+
 ```svelte
 <script lang="ts">
-  import * as Dialog from '$lib/components/ui/dialog';
-  // Load user's friends from friendships table
-  // Display list with avatars
-  // On select, call chatStore.create1on1Chat(friendId)
+	import * as Dialog from '$lib/components/ui/dialog';
+	// Load user's friends from friendships table
+	// Display list with avatars
+	// On select, call chatStore.create1on1Chat(friendId)
 </script>
 ```
 
@@ -231,16 +249,19 @@ Create `src/lib/components/chat/NewChatDialog.svelte`:
 ## 📋 Testing Checklist
 
 ### Database Setup
+
 - [ ] Migrations applied: `pnpm db:migrate`
 - [ ] Supabase Storage bucket created: `chat-attachments`
 - [ ] Bucket policies configured
 
 ### Local Development
+
 - [ ] SvelteKit dev server running: `pnpm dev`
 - [ ] WebSocket server running: `pnpm ws:dev`
 - [ ] Navigate to `/dashboard/chat`
 
 ### Feature Tests
+
 - [ ] **Conversations List**
   - [ ] Shows all user's conversations
   - [ ] Search/filter works
@@ -297,12 +318,16 @@ Create `src/lib/components/chat/NewChatDialog.svelte`:
 ## 🔧 Configuration
 
 ### Environment Variables
+
 Already configured in your `.env` file:
+
 - `PUBLIC_SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 ### Supabase Storage Bucket
+
 Run this SQL in Supabase SQL Editor:
+
 ```sql
 -- Create storage bucket
 INSERT INTO storage.buckets (id, name, public)
@@ -316,16 +341,19 @@ Then apply RLS policies (see "File Upload Implementation" above).
 ## 🚀 Deployment Notes
 
 ### WebSocket Server Deployment
+
 The WebSocket server needs to be deployed separately from the main SvelteKit app.
 
 **Recommended:** Deploy to Railway (see `WEBSOCKET_DEPLOYMENT_GUIDE.md`)
 
 **Environment Variables for WebSocket Server:**
+
 - `PUBLIC_SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `PORT=3001`
 
 ### Main App Deployment
+
 Deploys to Vercel as usual. No changes needed.
 
 ---
@@ -397,24 +425,28 @@ Deploys to Vercel as usual. No changes needed.
 ## 🎓 Key Learnings & Best Practices
 
 ### 1. **Svelte 5 Runes**
+
 - Use `$state` for reactive variables
 - Use `$derived` for computed values
 - Use `$effect` for side effects (WebSocket subscriptions)
 - Props with `$props()` destructuring
 
 ### 2. **Real-Time Architecture**
+
 - WebSocket for instant delivery
 - Optimistic UI for better UX
 - Always validate on server-side
 - Broadcast only to relevant users
 
 ### 3. **Security**
+
 - RLS policies on all tables
 - Server-side validation for permissions
 - Teachers-only file uploads enforced in DB
 - Profanity filtering on message creation
 
 ### 4. **Performance**
+
 - Cursor-based pagination for messages
 - Denormalized `last_message` on conversations
 - Indexed queries for fast lookups
@@ -457,6 +489,7 @@ Deploys to Vercel as usual. No changes needed.
 ## 📞 Support
 
 For issues or questions:
+
 1. Check this documentation
 2. Review `WEBSOCKET_ARCHITECTURE.md`
 3. Check browser console for errors

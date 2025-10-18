@@ -17,10 +17,11 @@ The application had **three conflicting systems** trying to manage the theme:
 Tailwind CSS 4's `light-dark()` function requires the `color-scheme` CSS property to be set dynamically. The function syntax:
 
 ```css
---color-background: light-dark(#FAFAFA, #0F0F0F);
+--color-background: light-dark(#fafafa, #0f0f0f);
 ```
 
 This returns:
+
 - **First value** (`#FAFAFA`) when `color-scheme: light`
 - **Second value** (`#0F0F0F`) when `color-scheme: dark`
 
@@ -31,16 +32,17 @@ This returns:
 ### 1. Updated `theme.svelte.ts`
 
 Modified the theme store to:
+
 - Watch for `.dark` class changes (set by mode-watcher)
 - **Sync the `color-scheme` CSS property** whenever `.dark` class changes
 - Use mode-watcher's `toggleMode()` function for consistency
 
 ```typescript
 function syncColorScheme() {
-  const isDark = document.documentElement.classList.contains('dark');
-  // This line is CRITICAL - it triggers light-dark() to update
-  document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
-  dark = isDark;
+	const isDark = document.documentElement.classList.contains('dark');
+	// This line is CRITICAL - it triggers light-dark() to update
+	document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+	dark = isDark;
 }
 ```
 
@@ -51,7 +53,7 @@ Removed the static `color-scheme: light dark;` declaration:
 ```css
 /* BEFORE - Caused conflict */
 html {
-  color-scheme: light dark;
+	color-scheme: light dark;
 }
 
 /* AFTER - Now controlled by JavaScript */
@@ -69,6 +71,7 @@ Set proper configuration:
 ```
 
 This allows mode-watcher to:
+
 - Track system preference changes
 - Start with system default
 - Respect user's manual overrides via localStorage
@@ -128,6 +131,7 @@ To test the theme system:
 ## Browser Compatibility
 
 The `light-dark()` CSS function is supported in:
+
 - Chrome/Edge 123+
 - Firefox 120+
 - Safari 17.5+

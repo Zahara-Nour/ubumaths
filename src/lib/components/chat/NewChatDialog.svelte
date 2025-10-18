@@ -137,8 +137,7 @@
 
 		const query = searchQuery.toLowerCase();
 		return friends.filter(
-			(f) =>
-				f.firstname.toLowerCase().includes(query) || f.lastname.toLowerCase().includes(query)
+			(f) => f.firstname.toLowerCase().includes(query) || f.lastname.toLowerCase().includes(query)
 		);
 	});
 
@@ -169,7 +168,7 @@
 	});
 </script>
 
-<Dialog.Root {open} onOpenChange={onOpenChange}>
+<Dialog.Root {open} {onOpenChange}>
 	<Dialog.Content class="max-w-md">
 		<Dialog.Header>
 			<Dialog.Title>Nouvelle conversation</Dialog.Title>
@@ -180,13 +179,8 @@
 
 		<!-- Search Bar -->
 		<div class="relative mb-4">
-			<Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-			<Input
-				type="text"
-				placeholder="Rechercher un ami..."
-				bind:value={searchQuery}
-				class="pl-9"
-			/>
+			<Search class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+			<Input type="text" placeholder="Rechercher un ami..." bind:value={searchQuery} class="pl-9" />
 		</div>
 
 		<!-- Friends List -->
@@ -229,7 +223,7 @@
 									</Avatar.Fallback>
 								</Avatar.Root>
 
-								<div class="absolute -bottom-1 -right-1">
+								<div class="absolute -right-1 -bottom-1">
 									<OnlineStatus userId={friend.id} size="sm" />
 								</div>
 							</div>

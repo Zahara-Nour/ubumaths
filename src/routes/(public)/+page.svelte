@@ -4,7 +4,9 @@
 <div
 	class="container mx-auto flex h-full flex-col items-center justify-center space-y-20 p-4 text-center"
 >
-	<h1 class="text-4xl font-bold mb-8">Les maths de la chandelle <span class="text-primary">verte</span></h1>
+	<h1 class="mb-8 text-4xl font-bold">
+		Les maths de la chandelle <span class="text-primary">verte</span>
+	</h1>
 
 	<figure>
 		<div class="img-bg"></div>
@@ -187,7 +189,7 @@
 		@apply h-60 w-60;
 	}
 	.img-bg {
-		@apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full blur-[50px] transition-all;
+		@apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full blur-[50px] transition-all;
 		animation:
 			pulse 5s cubic-bezier(0, 0, 0, 0.5) infinite,
 			glow 5s linear infinite;

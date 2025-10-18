@@ -11,9 +11,7 @@
 	}
 
 	function getStatusColor(success: boolean): string {
-		return success
-			? 'text-green-600 dark:text-green-400'
-			: 'text-red-600 dark:text-red-400';
+		return success ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
 	}
 
 	function getStatusBadge(success: boolean): string {
@@ -36,7 +34,6 @@
 </script>
 
 <div class="space-y-6">
-
 	<!-- Summary Card -->
 	<Card.Root>
 		<Card.Header>
@@ -44,7 +41,7 @@
 			<Card.Description>Overview of RLS policy tests</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+			<div class="grid grid-cols-2 gap-6 md:grid-cols-4">
 				<div class="space-y-1">
 					<p class="text-sm text-muted-foreground">Total Tests</p>
 					<p class="text-3xl font-bold">{data.summary.total}</p>
@@ -70,18 +67,20 @@
 	</Card.Root>
 
 	<!-- Important Note -->
-	<div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg flex items-start gap-3">
-		<AlertCircle class="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+	<div
+		class="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20"
+	>
+		<AlertCircle class="mt-0.5 h-5 w-5 text-blue-600 dark:text-blue-400" />
 		<div class="flex-1">
 			<p class="text-sm font-medium text-blue-900 dark:text-blue-100">Note</p>
-			<p class="text-sm text-blue-800 dark:text-blue-200 mt-1">
+			<p class="mt-1 text-sm text-blue-800 dark:text-blue-200">
 				{data.note}
 			</p>
 		</div>
 	</div>
 
 	<!-- Tests by Table -->
-	{#each Object.entries(testsByTable()) as [table, tests]}
+	{#each Object.entries(testsByTable()) as [table, tests] (table)}
 		{@const passed = tests.filter((t) => t.success).length}
 		{@const total = tests.length}
 		<Card.Root>
@@ -97,29 +96,27 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="space-y-3">
-					{#each tests as test}
+					{#each tests as test (`${test.table}-${test.operation}-${test.role}`)}
 						{@const StatusIcon = getStatusIcon(test.success)}
 						<div
-							class="flex items-start justify-between p-3 rounded-lg border {test.success
-								? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800'
-								: 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800'}"
+							class="flex items-start justify-between rounded-lg border p-3 {test.success
+								? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/10'
+								: 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/10'}"
 						>
-							<div class="flex items-start gap-3 flex-1">
-								<StatusIcon
-									class="h-5 w-5 {getStatusColor(test.success)} mt-0.5"
-								/>
+							<div class="flex flex-1 items-start gap-3">
+								<StatusIcon class="h-5 w-5 {getStatusColor(test.success)} mt-0.5" />
 								<div class="flex-1">
-									<div class="flex items-center gap-2 mb-1">
+									<div class="mb-1 flex items-center gap-2">
 										<span class="font-mono text-sm font-medium">{test.operation}</span>
 										<Badge variant="outline" class="text-xs">{test.role}</Badge>
 									</div>
 									{#if test.error}
-										<p class="text-xs text-red-700 dark:text-red-300 font-mono mt-1">
+										<p class="mt-1 font-mono text-xs text-red-700 dark:text-red-300">
 											Error: {test.error}
 										</p>
 									{/if}
 									{#if test.rowCount !== undefined}
-										<p class="text-xs text-muted-foreground mt-1">
+										<p class="mt-1 text-xs text-muted-foreground">
 											Row count: {test.rowCount}
 										</p>
 									{/if}
@@ -145,8 +142,8 @@
 			<div class="space-y-4">
 				<!-- Admin -->
 				<div>
-					<h3 class="font-semibold text-sm mb-2">Admin</h3>
-					<ul class="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
+					<h3 class="mb-2 text-sm font-semibold">Admin</h3>
+					<ul class="ml-4 list-disc space-y-1 text-sm text-muted-foreground">
 						<li>Full access to all tables (SELECT/INSERT/UPDATE/DELETE)</li>
 						<li>Can view and modify all profiles</li>
 						<li>Can manage schools, classes, and pending students</li>
@@ -158,8 +155,8 @@
 
 				<!-- Teacher -->
 				<div>
-					<h3 class="font-semibold text-sm mb-2">Teacher</h3>
-					<ul class="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
+					<h3 class="mb-2 text-sm font-semibold">Teacher</h3>
+					<ul class="ml-4 list-disc space-y-1 text-sm text-muted-foreground">
 						<li>Can view and update own profile</li>
 						<li>Can view all schools (read-only)</li>
 						<li>Can create and manage own classes</li>
@@ -172,8 +169,8 @@
 
 				<!-- Student -->
 				<div>
-					<h3 class="font-semibold text-sm mb-2">Student</h3>
-					<ul class="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
+					<h3 class="mb-2 text-sm font-semibold">Student</h3>
+					<ul class="ml-4 list-disc space-y-1 text-sm text-muted-foreground">
 						<li>Can view and update own profile (limited fields)</li>
 						<li>Can view schools (read-only)</li>
 						<li>Can view classes they belong to</li>
@@ -193,17 +190,15 @@
 		</Card.Header>
 		<Card.Content>
 			<div class="space-y-3 text-sm">
-				<p>
-					To test student or teacher policies, you need to authenticate as those roles:
-				</p>
-				<ol class="list-decimal list-inside space-y-2 text-muted-foreground ml-2">
+				<p>To test student or teacher policies, you need to authenticate as those roles:</p>
+				<ol class="ml-2 list-inside list-decimal space-y-2 text-muted-foreground">
 					<li>Create test accounts for student and teacher roles</li>
 					<li>Log in as the test user</li>
 					<li>Try accessing different pages and performing operations</li>
 					<li>Check browser console for any RLS policy violations</li>
 					<li>Verify that users can only access data they should have access to</li>
 				</ol>
-				<div class="mt-4 p-3 bg-muted/50 rounded border border-border">
+				<div class="mt-4 rounded border border-border bg-muted/50 p-3">
 					<p class="font-mono text-xs">
 						Example: A student should NOT be able to view profiles of students in other classes
 						they're not a member of.

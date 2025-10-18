@@ -170,7 +170,10 @@ export interface Database {
 			};
 			pending_students: {
 				Row: PendingStudent;
-				Insert: Omit<PendingStudent, 'id' | 'is_activated' | 'activated_at' | 'created_at' | 'updated_at'> & {
+				Insert: Omit<
+					PendingStudent,
+					'id' | 'is_activated' | 'activated_at' | 'created_at' | 'updated_at'
+				> & {
 					id?: string;
 					is_activated?: boolean;
 					activated_at?: string | null;

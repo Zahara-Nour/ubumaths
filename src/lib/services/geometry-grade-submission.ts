@@ -131,7 +131,8 @@ export async function submitGrade(
 			time_spent_seconds: options.timeSpent ?? 0,
 			active_time_seconds: options.activeTime ?? options.timeSpent ?? 0,
 			is_complete: options.isComplete ?? options.gradeResult.passed,
-			completed_at: options.isComplete || options.gradeResult.passed ? new Date().toISOString() : null
+			completed_at:
+				options.isComplete || options.gradeResult.passed ? new Date().toISOString() : null
 		};
 
 		// Add figure to history if provided

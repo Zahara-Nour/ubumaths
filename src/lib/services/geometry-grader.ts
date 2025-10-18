@@ -302,7 +302,7 @@ export function calculateGrade(
 
 	// Step 1: Start with the raw score from validation
 	// This is what the student earned based on correctness alone
-	let rawScore = validationResults.score;
+	const rawScore = validationResults.score;
 	const maxScore = validationResults.maxScore || criteria.maxScore;
 
 	// Step 2: Calculate all penalties
@@ -322,8 +322,7 @@ export function calculateGrade(
 	const attemptPenalty = calculateAttemptPenalty(attemptNumber, maxScore);
 
 	// Sum all penalty points (not percentages - already converted to points)
-	const totalPenaltyPoints =
-		hintPenalty.totalPenalty + timePenalty.penalty + attemptPenalty;
+	const totalPenaltyPoints = hintPenalty.totalPenalty + timePenalty.penalty + attemptPenalty;
 
 	// Step 3: Apply penalties to get final score
 	// Ensure score never goes below 0

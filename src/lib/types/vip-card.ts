@@ -101,7 +101,7 @@ export const VIP_CARDS: VipCard[] = [
 	{
 		id: 'tranquilou',
 		name: 'Tranquilou',
-		description: 'Repos exceptionnel - pas d\'interrogation surprise',
+		description: "Repos exceptionnel - pas d'interrogation surprise",
 		imagePath: '/images/vip-cards/tranquilou1@0.5x.webp',
 		category: 'privilege',
 		rarity: 'rare'
@@ -141,7 +141,7 @@ export const VIP_CARDS: VipCard[] = [
 	{
 		id: 'captain',
 		name: 'Capitaine',
-		description: 'Devient capitaine d\'équipe pour un projet',
+		description: "Devient capitaine d'équipe pour un projet",
 		imagePath: '/images/vip-cards/captain1@0.5x.webp',
 		category: 'social',
 		rarity: 'common'
@@ -157,7 +157,7 @@ export const VIP_CARDS: VipCard[] = [
 	{
 		id: 'fame',
 		name: 'Célébrité',
-		description: 'Ta photo sur le tableau d\'honneur',
+		description: "Ta photo sur le tableau d'honneur",
 		imagePath: '/images/vip-cards/fame1@0.5x.webp',
 		category: 'social',
 		rarity: 'epic'

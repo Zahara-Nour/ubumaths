@@ -9,6 +9,7 @@
 ## Table of Contents
 
 ### Part 1: Database Schema
+
 1. [Database Overview](#database-overview)
 2. [Table Schemas](#table-schemas)
 3. [Row Level Security (RLS)](#row-level-security-rls)
@@ -16,11 +17,13 @@
 5. [Query Examples](#query-examples)
 
 ### Part 2: Core Services
+
 6. [MathGraph32 API Service](#mathgraph32-api-service)
 7. [Validation Engine](#validation-engine)
 8. [Figure Generator](#figure-generator)
 
 ### Part 3: Exercise Components
+
 9. [Component Architecture](#component-architecture)
 10. [ViewExploreExercise](#viewexploreexercise)
 11. [MeasurementExercise](#measurementexercise)
@@ -29,12 +32,14 @@
 14. [GeometryExerciseWrapper](#geometryexercisewrapper)
 
 ### Part 4: Grading System
+
 15. [Grading Service](#grading-service)
 16. [Grade Utilities](#grade-utilities)
 17. [Grade Submission](#grade-submission)
 18. [Grading Components](#grading-components)
 
 ### Part 5: Integration
+
 19. [Rewards System Integration](#rewards-system-integration)
 20. [Creating Custom Exercise Types](#creating-custom-exercise-types)
 21. [Adding Custom Validators](#adding-custom-validators)
@@ -135,32 +140,32 @@ CREATE INDEX idx_geometry_exercises_public ON geometry_exercises(is_public) WHER
 
 ```typescript
 export interface GeometryExercise {
-    id: string;
-    created_at: string;
-    updated_at: string;
-    created_by: string;
-    title: string;
-    description?: string;
-    instructions?: string;
-    exercise_type: ExerciseType;
-    difficulty_level?: DifficultyLevel;
-    base_figure: string;
-    solution_figure?: string;
-    validation_mode: ValidationMode;
-    validation_config: ValidationConfig;
-    randomization_params?: RandomizationParams;
-    display_grid: boolean;
-    display_axes: boolean;
-    display_measures: boolean;
-    tools_allowed?: MathGraphTool[];
-    max_score: number;
-    passing_score?: number;
-    grading_rubric?: GradingRubric;
-    time_limit_minutes?: number;
-    learning_objectives?: string[];
-    tags?: string[];
-    is_public: boolean;
-    is_template: boolean;
+	id: string;
+	created_at: string;
+	updated_at: string;
+	created_by: string;
+	title: string;
+	description?: string;
+	instructions?: string;
+	exercise_type: ExerciseType;
+	difficulty_level?: DifficultyLevel;
+	base_figure: string;
+	solution_figure?: string;
+	validation_mode: ValidationMode;
+	validation_config: ValidationConfig;
+	randomization_params?: RandomizationParams;
+	display_grid: boolean;
+	display_axes: boolean;
+	display_measures: boolean;
+	tools_allowed?: MathGraphTool[];
+	max_score: number;
+	passing_score?: number;
+	grading_rubric?: GradingRubric;
+	time_limit_minutes?: number;
+	learning_objectives?: string[];
+	tags?: string[];
+	is_public: boolean;
+	is_template: boolean;
 }
 
 export type ExerciseType = 'view' | 'explore' | 'measure' | 'construct' | 'proof';
@@ -196,15 +201,15 @@ CREATE INDEX idx_geometry_steps_exercise ON geometry_exercise_steps(exercise_id)
 
 ```typescript
 export interface GeometryExerciseStep {
-    id: string;
-    exercise_id: string;
-    step_number: number;
-    title: string;
-    description?: string;
-    validation_criteria: ValidationConfig;
-    hint_text?: string;
-    max_score: number;
-    is_required: boolean;
+	id: string;
+	exercise_id: string;
+	step_number: number;
+	title: string;
+	description?: string;
+	validation_criteria: ValidationConfig;
+	hint_text?: string;
+	max_score: number;
+	is_required: boolean;
 }
 ```
 
@@ -212,19 +217,19 @@ export interface GeometryExerciseStep {
 
 ```json
 {
-    "step_number": 1,
-    "title": "Créer le point milieu M",
-    "validation_criteria": {
-        "requiredObjects": ["point_M"],
-        "validateMidpoint": {
-            "pointTag": "point_M",
-            "point1Tag": "A",
-            "point2Tag": "B",
-            "tolerance": 2
-        }
-    },
-    "hint_text": "Utilisez l'outil milieu sur le segment AB",
-    "max_score": 10
+	"step_number": 1,
+	"title": "Créer le point milieu M",
+	"validation_criteria": {
+		"requiredObjects": ["point_M"],
+		"validateMidpoint": {
+			"pointTag": "point_M",
+			"point1Tag": "A",
+			"point2Tag": "B",
+			"tolerance": 2
+		}
+	},
+	"hint_text": "Utilisez l'outil milieu sur le segment AB",
+	"max_score": 10
 }
 ```
 
@@ -286,31 +291,31 @@ CREATE INDEX idx_geometry_attempts_complete ON geometry_exercise_attempts(is_com
 
 ```typescript
 export interface GeometryExerciseAttempt {
-    id: string;
-    created_at: string;
-    updated_at: string;
-    exercise_id: string;
-    student_id: string;
-    attempts_count: number;
-    current_figure_state: string;
-    figure_history: FigureHistoryEntry[];
-    student_answer?: any;
-    validation_results?: ValidationResults;
-    score_earned: number;
-    max_score_possible: number;
-    hints_used: number;
-    hint_penalty: number;
-    time_spent_seconds: number;
-    active_time_seconds: number;
-    is_complete: boolean;
-    completed_at?: string;
-    last_saved_at: string;
+	id: string;
+	created_at: string;
+	updated_at: string;
+	exercise_id: string;
+	student_id: string;
+	attempts_count: number;
+	current_figure_state: string;
+	figure_history: FigureHistoryEntry[];
+	student_answer?: any;
+	validation_results?: ValidationResults;
+	score_earned: number;
+	max_score_possible: number;
+	hints_used: number;
+	hint_penalty: number;
+	time_spent_seconds: number;
+	active_time_seconds: number;
+	is_complete: boolean;
+	completed_at?: string;
+	last_saved_at: string;
 }
 
 export interface FigureHistoryEntry {
-    timestamp: string;
-    figureState: string;
-    score?: number;
+	timestamp: string;
+	figureState: string;
+	score?: number;
 }
 ```
 
@@ -344,17 +349,17 @@ CREATE INDEX idx_geometry_templates_public ON geometry_templates(is_public) WHER
 
 ```typescript
 export interface GeometryTemplate {
-    id: string;
-    created_at: string;
-    updated_at: string;
-    created_by: string;
-    name: string;
-    description?: string;
-    category?: string;
-    figure_template: string;
-    randomization_config?: RandomizationParams;
-    is_public: boolean;
-    usage_count: number;
+	id: string;
+	created_at: string;
+	updated_at: string;
+	created_by: string;
+	name: string;
+	description?: string;
+	category?: string;
+	figure_template: string;
+	randomization_config?: RandomizationParams;
+	is_public: boolean;
+	usage_count: number;
 }
 ```
 
@@ -382,19 +387,20 @@ CREATE INDEX idx_geometry_hints_exercise ON geometry_hints(exercise_id);
 
 ```typescript
 export interface GeometryHint {
-    id: string;
-    exercise_id: string;
-    hint_level: HintLevel;
-    hint_text: string;
-    trigger_condition?: any;
-    score_penalty: number;
-    display_order: number;
+	id: string;
+	exercise_id: string;
+	hint_level: HintLevel;
+	hint_text: string;
+	trigger_condition?: any;
+	score_penalty: number;
+	display_order: number;
 }
 
 export type HintLevel = 'general' | 'specific' | 'step_by_step';
 ```
 
 **Hint Levels:**
+
 - **General** (0% penalty): Broad guidance, no penalty
 - **Specific** (5% penalty): Targeted help
 - **Step-by-step** (10% penalty): Detailed solution steps
@@ -436,16 +442,16 @@ CREATE INDEX idx_geometry_assignments_student ON geometry_assignments(student_id
 
 ```typescript
 export interface GeometryAssignment {
-    id: string;
-    created_at: string;
-    exercise_id: string;
-    assigned_by: string;
-    class_id?: string;
-    student_id?: string;
-    assigned_at: string;
-    due_date?: string;
-    max_attempts?: number;
-    require_completion: boolean;
+	id: string;
+	created_at: string;
+	exercise_id: string;
+	assigned_by: string;
+	class_id?: string;
+	student_id?: string;
+	assigned_at: string;
+	due_date?: string;
+	max_attempts?: number;
+	require_completion: boolean;
 }
 ```
 
@@ -719,17 +725,14 @@ $$ LANGUAGE plpgsql;
 
 ```typescript
 // Get all assigned exercises for current user
-const { data: exercises, error } = await supabase
-    .from('geometry_exercises')
-    .select(`
+const { data: exercises, error } = await supabase.from('geometry_exercises').select(`
         *,
         geometry_assignments!inner(
             id,
             due_date,
             max_attempts
         )
-    `)
-    .or(`
+    `).or(`
         geometry_assignments.student_id.eq.${userId},
         geometry_assignments.class_id.in.(${classIds.join(',')})
     `);
@@ -739,38 +742,41 @@ const { data: exercises, error } = await supabase
 
 ```typescript
 const { data: bestAttempt } = await supabase
-    .from('geometry_exercise_attempts')
-    .select('*')
-    .eq('exercise_id', exerciseId)
-    .eq('student_id', studentId)
-    .order('score_earned', { ascending: false })
-    .limit(1)
-    .single();
+	.from('geometry_exercise_attempts')
+	.select('*')
+	.eq('exercise_id', exerciseId)
+	.eq('student_id', studentId)
+	.order('score_earned', { ascending: false })
+	.limit(1)
+	.single();
 ```
 
 #### Example 3: Get all attempts with student info (teacher view)
 
 ```typescript
 const { data: attempts } = await supabase
-    .from('geometry_exercise_attempts')
-    .select(`
+	.from('geometry_exercise_attempts')
+	.select(
+		`
         *,
         profiles:student_id (
             firstname,
             lastname,
             avatar_url
         )
-    `)
-    .eq('exercise_id', exerciseId)
-    .order('created_at', { ascending: false });
+    `
+	)
+	.eq('exercise_id', exerciseId)
+	.order('created_at', { ascending: false });
 ```
 
 #### Example 4: Get exercise with hints
 
 ```typescript
 const { data: exercise } = await supabase
-    .from('geometry_exercises')
-    .select(`
+	.from('geometry_exercises')
+	.select(
+		`
         *,
         geometry_hints (
             id,
@@ -779,9 +785,10 @@ const { data: exercise } = await supabase
             score_penalty,
             display_order
         )
-    `)
-    .eq('id', exerciseId)
-    .single();
+    `
+	)
+	.eq('id', exerciseId)
+	.single();
 
 // Hints are automatically ordered by display_order
 ```
@@ -791,48 +798,50 @@ const { data: exercise } = await supabase
 ```typescript
 // 1. Create exercise
 const { data: exercise, error: exerciseError } = await supabase
-    .from('geometry_exercises')
-    .insert({
-        title: 'Construct Perpendicular Bisector',
-        exercise_type: 'construct',
-        validation_mode: 'step_by_step',
-        base_figure: baseFigureBase64,
-        // ... other fields
-    })
-    .select()
-    .single();
+	.from('geometry_exercises')
+	.insert({
+		title: 'Construct Perpendicular Bisector',
+		exercise_type: 'construct',
+		validation_mode: 'step_by_step',
+		base_figure: baseFigureBase64
+		// ... other fields
+	})
+	.select()
+	.single();
 
 // 2. Create steps
 const steps = [
-    {
-        exercise_id: exercise.id,
-        step_number: 1,
-        title: 'Create midpoint M',
-        validation_criteria: { /* ... */ },
-        max_score: 10
-    },
-    {
-        exercise_id: exercise.id,
-        step_number: 2,
-        title: 'Create perpendicular line',
-        validation_criteria: { /* ... */ },
-        max_score: 15
-    }
+	{
+		exercise_id: exercise.id,
+		step_number: 1,
+		title: 'Create midpoint M',
+		validation_criteria: {
+			/* ... */
+		},
+		max_score: 10
+	},
+	{
+		exercise_id: exercise.id,
+		step_number: 2,
+		title: 'Create perpendicular line',
+		validation_criteria: {
+			/* ... */
+		},
+		max_score: 15
+	}
 ];
 
-const { error: stepsError } = await supabase
-    .from('geometry_exercise_steps')
-    .insert(steps);
+const { error: stepsError } = await supabase.from('geometry_exercise_steps').insert(steps);
 ```
 
 #### Example 6: Get student progress
 
 ```typescript
 const { data: progress } = await supabase
-    .rpc('get_geometry_progress', {
-        p_student_id: studentId
-    })
-    .single();
+	.rpc('get_geometry_progress', {
+		p_student_id: studentId
+	})
+	.single();
 
 console.log(`
     Assigned: ${progress.total_assigned}
@@ -846,10 +855,10 @@ console.log(`
 
 ```typescript
 const { data: stats } = await supabase
-    .rpc('get_class_geometry_stats', {
-        p_class_id: classId
-    })
-    .single();
+	.rpc('get_class_geometry_stats', {
+		p_class_id: classId
+	})
+	.single();
 
 console.log(`
     Students: ${stats.total_students}
@@ -873,48 +882,42 @@ console.log(`
 
 ```typescript
 export class MathGraphService {
-    private static instance: MathGraphService;
-    private loadingPromise: Promise<void> | null = null;
-    private activeApps: Map<string, MathGraphApp> = new Map();
+	private static instance: MathGraphService;
+	private loadingPromise: Promise<void> | null = null;
+	private activeApps: Map<string, MathGraphApp> = new Map();
 
-    /**
-     * Get singleton instance
-     */
-    static getInstance(): MathGraphService {
-        if (!MathGraphService.instance) {
-            MathGraphService.instance = new MathGraphService();
-        }
-        return MathGraphService.instance;
-    }
+	/**
+	 * Get singleton instance
+	 */
+	static getInstance(): MathGraphService {
+		if (!MathGraphService.instance) {
+			MathGraphService.instance = new MathGraphService();
+		}
+		return MathGraphService.instance;
+	}
 
-    /**
-     * Load MathGraph32 from CDN
-     * @param useDevelopmentCDN - Use dev.mathgraph32.org instead of production
-     * @returns Promise that resolves when library is loaded
-     */
-    async loadMathGraph(useDevelopmentCDN = false): Promise<void>;
+	/**
+	 * Load MathGraph32 from CDN
+	 * @param useDevelopmentCDN - Use dev.mathgraph32.org instead of production
+	 * @returns Promise that resolves when library is loaded
+	 */
+	async loadMathGraph(useDevelopmentCDN = false): Promise<void>;
 
-    /**
-     * Initialize a read-only player
-     * @param container - HTML element container
-     * @param options - Player configuration options
-     * @returns Promise resolving to MathGraphApp instance
-     */
-    async initializePlayer(
-        container: HTMLElement,
-        options: PlayerOptions
-    ): Promise<MathGraphApp>;
+	/**
+	 * Initialize a read-only player
+	 * @param container - HTML element container
+	 * @param options - Player configuration options
+	 * @returns Promise resolving to MathGraphApp instance
+	 */
+	async initializePlayer(container: HTMLElement, options: PlayerOptions): Promise<MathGraphApp>;
 
-    /**
-     * Initialize an editable editor
-     * @param container - HTML element container
-     * @param options - Editor configuration options
-     * @returns Promise resolving to MathGraphApp instance
-     */
-    async initializeEditor(
-        container: HTMLElement,
-        options: EditorOptions
-    ): Promise<MathGraphApp>;
+	/**
+	 * Initialize an editable editor
+	 * @param container - HTML element container
+	 * @param options - Editor configuration options
+	 * @returns Promise resolving to MathGraphApp instance
+	 */
+	async initializeEditor(container: HTMLElement, options: EditorOptions): Promise<MathGraphApp>;
 }
 ```
 
@@ -922,18 +925,18 @@ export class MathGraphService {
 
 ```typescript
 export interface PlayerOptions {
-    width: number;
-    height: number;
-    figure: string;              // Base64 encoded figure
-    svgId?: string;
-    level?: number;              // Display level 0-4
-    interactive?: boolean;       // Allow dragging
-    displayAxes?: boolean;
-    displayMeasures?: boolean;
+	width: number;
+	height: number;
+	figure: string; // Base64 encoded figure
+	svgId?: string;
+	level?: number; // Display level 0-4
+	interactive?: boolean; // Allow dragging
+	displayAxes?: boolean;
+	displayMeasures?: boolean;
 }
 
 export interface EditorOptions extends PlayerOptions {
-    toolsAllowed?: string[];     // Restrict tools
+	toolsAllowed?: string[]; // Restrict tools
 }
 ```
 
@@ -949,20 +952,20 @@ await service.loadMathGraph();
 
 // Initialize player
 const app = await service.initializePlayer(container, {
-    width: 800,
-    height: 600,
-    figure: baseFigureBase64,
-    interactive: true,
-    displayAxes: false
+	width: 800,
+	height: 600,
+	figure: baseFigureBase64,
+	interactive: true,
+	displayAxes: false
 });
 
 // Use app
 app.addPointXY({
-    tag: 'A',
-    name: 'A',
-    x: 100,
-    y: 100,
-    visible: true
+	tag: 'A',
+	name: 'A',
+	x: 100,
+	y: 100,
+	visible: true
 });
 ```
 
@@ -984,8 +987,8 @@ app.addPointXY({
  * @returns Validation results with score, errors, warnings, feedback
  */
 export async function validateExercise(
-    app: MathGraphApp,
-    exercise: GeometryExercise
+	app: MathGraphApp,
+	exercise: GeometryExercise
 ): Promise<ValidationResults>;
 ```
 
@@ -993,16 +996,16 @@ export async function validateExercise(
 
 ```typescript
 export interface ValidationResults {
-    isValid: boolean;
-    score: number;
-    maxScore: number;
-    errors: string[];
-    warnings: string[];
-    feedback: string[];
-    measurements: Record<string, number>;
-    objectsCreated: string[];
-    objectsMissing: string[];
-    objectsIncorrect: string[];
+	isValid: boolean;
+	score: number;
+	maxScore: number;
+	errors: string[];
+	warnings: string[];
+	feedback: string[];
+	measurements: Record<string, number>;
+	objectsCreated: string[];
+	objectsMissing: string[];
+	objectsIncorrect: string[];
 }
 ```
 
@@ -1014,20 +1017,17 @@ export interface ValidationResults {
 /**
  * Check if a point exists by tag
  */
-export function validatePointExists(
-    app: MathGraphApp,
-    pointTag: string
-): boolean;
+export function validatePointExists(app: MathGraphApp, pointTag: string): boolean;
 
 /**
  * Check if a point is on a line
  * @param tolerance - Distance tolerance in pixels (default: 2)
  */
 export function validatePointOnLine(
-    app: MathGraphApp,
-    pointTag: string,
-    lineTag: string,
-    tolerance?: number
+	app: MathGraphApp,
+	pointTag: string,
+	lineTag: string,
+	tolerance?: number
 ): boolean;
 
 /**
@@ -1035,10 +1035,10 @@ export function validatePointOnLine(
  * @param tolerance - Distance tolerance in pixels (default: 2)
  */
 export function validatePointOnCircle(
-    app: MathGraphApp,
-    pointTag: string,
-    circleTag: string,
-    tolerance?: number
+	app: MathGraphApp,
+	pointTag: string,
+	circleTag: string,
+	tolerance?: number
 ): boolean;
 
 /**
@@ -1046,11 +1046,11 @@ export function validatePointOnCircle(
  * @param tolerance - Distance tolerance in pixels (default: 2)
  */
 export function validatePointIsMidpoint(
-    app: MathGraphApp,
-    midpointTag: string,
-    point1Tag: string,
-    point2Tag: string,
-    tolerance?: number
+	app: MathGraphApp,
+	midpointTag: string,
+	point1Tag: string,
+	point2Tag: string,
+	tolerance?: number
 ): boolean;
 
 /**
@@ -1058,11 +1058,11 @@ export function validatePointIsMidpoint(
  * @param tolerance - Coordinate tolerance in pixels (default: 5)
  */
 export function validatePointCoordinates(
-    app: MathGraphApp,
-    pointTag: string,
-    expectedX: number,
-    expectedY: number,
-    tolerance?: number
+	app: MathGraphApp,
+	pointTag: string,
+	expectedX: number,
+	expectedY: number,
+	tolerance?: number
 ): boolean;
 ```
 
@@ -1074,10 +1074,10 @@ export function validatePointCoordinates(
  * @param angleTolerance - Angle tolerance in degrees (default: 2)
  */
 export function validateLinesParallel(
-    app: MathGraphApp,
-    line1Tag: string,
-    line2Tag: string,
-    angleTolerance?: number
+	app: MathGraphApp,
+	line1Tag: string,
+	line2Tag: string,
+	angleTolerance?: number
 ): boolean;
 
 /**
@@ -1085,10 +1085,10 @@ export function validateLinesParallel(
  * @param angleTolerance - Angle tolerance in degrees (default: 2)
  */
 export function validateLinesPerpendicular(
-    app: MathGraphApp,
-    line1Tag: string,
-    line2Tag: string,
-    angleTolerance?: number
+	app: MathGraphApp,
+	line1Tag: string,
+	line2Tag: string,
+	angleTolerance?: number
 ): boolean;
 
 /**
@@ -1096,21 +1096,21 @@ export function validateLinesPerpendicular(
  * @param tolerance - Distance tolerance in pixels (default: 2)
  */
 export function validateLinePassesThroughPoints(
-    app: MathGraphApp,
-    lineTag: string,
-    pointTags: string[],
-    tolerance?: number
+	app: MathGraphApp,
+	lineTag: string,
+	pointTags: string[],
+	tolerance?: number
 ): boolean;
 
 /**
  * Check if a line is the perpendicular bisector of a segment
  */
 export function validateLineBisector(
-    app: MathGraphApp,
-    lineTag: string,
-    point1Tag: string,
-    point2Tag: string,
-    tolerance?: number
+	app: MathGraphApp,
+	lineTag: string,
+	point1Tag: string,
+	point2Tag: string,
+	tolerance?: number
 ): boolean;
 ```
 
@@ -1122,10 +1122,10 @@ export function validateLineBisector(
  * @param tolerance - Radius tolerance in pixels (default: 2)
  */
 export function validateCircleRadius(
-    app: MathGraphApp,
-    circleTag: string,
-    expectedRadius: number,
-    tolerance?: number
+	app: MathGraphApp,
+	circleTag: string,
+	expectedRadius: number,
+	tolerance?: number
 ): boolean;
 
 /**
@@ -1133,19 +1133,19 @@ export function validateCircleRadius(
  * @param tolerance - Distance tolerance in pixels (default: 2)
  */
 export function validateCircleCenter(
-    app: MathGraphApp,
-    circleTag: string,
-    centerTag: string,
-    tolerance?: number
+	app: MathGraphApp,
+	circleTag: string,
+	centerTag: string,
+	tolerance?: number
 ): boolean;
 
 /**
  * Check if two circles intersect
  */
 export function validateCirclesIntersect(
-    app: MathGraphApp,
-    circle1Tag: string,
-    circle2Tag: string
+	app: MathGraphApp,
+	circle1Tag: string,
+	circle2Tag: string
 ): boolean;
 ```
 
@@ -1157,10 +1157,10 @@ export function validateCirclesIntersect(
  * @returns Angle in degrees (0-360) or null if points don't exist
  */
 export function measureAngle(
-    app: MathGraphApp,
-    point1Tag: string,
-    vertexTag: string,
-    point2Tag: string
+	app: MathGraphApp,
+	point1Tag: string,
+	vertexTag: string,
+	point2Tag: string
 ): number | null;
 
 /**
@@ -1168,33 +1168,33 @@ export function measureAngle(
  * @param tolerance - Angle tolerance in degrees (default: 2)
  */
 export function validateAngleMeasure(
-    app: MathGraphApp,
-    point1Tag: string,
-    vertexTag: string,
-    point2Tag: string,
-    expectedAngle: number,
-    tolerance?: number
+	app: MathGraphApp,
+	point1Tag: string,
+	vertexTag: string,
+	point2Tag: string,
+	expectedAngle: number,
+	tolerance?: number
 ): boolean;
 
 /**
  * Check if an angle is a right angle (90°)
  */
 export function validateRightAngle(
-    app: MathGraphApp,
-    point1Tag: string,
-    vertexTag: string,
-    point2Tag: string,
-    tolerance?: number
+	app: MathGraphApp,
+	point1Tag: string,
+	vertexTag: string,
+	point2Tag: string,
+	tolerance?: number
 ): boolean;
 
 /**
  * Check if two angles are equal
  */
 export function validateAnglesEqual(
-    app: MathGraphApp,
-    angle1: [string, string, string],
-    angle2: [string, string, string],
-    tolerance?: number
+	app: MathGraphApp,
+	angle1: [string, string, string],
+	angle2: [string, string, string],
+	tolerance?: number
 ): boolean;
 ```
 
@@ -1206,21 +1206,21 @@ export function validateAnglesEqual(
  * @param tolerance - Distance tolerance as percentage (default: 2%)
  */
 export function validateDistance(
-    app: MathGraphApp,
-    point1Tag: string,
-    point2Tag: string,
-    expectedDistance: number,
-    tolerance?: number
+	app: MathGraphApp,
+	point1Tag: string,
+	point2Tag: string,
+	expectedDistance: number,
+	tolerance?: number
 ): boolean;
 
 /**
  * Check if two segments have equal length
  */
 export function validateSegmentsEqual(
-    app: MathGraphApp,
-    segment1: [string, string],
-    segment2: [string, string],
-    tolerance?: number
+	app: MathGraphApp,
+	segment1: [string, string],
+	segment2: [string, string],
+	tolerance?: number
 ): boolean;
 ```
 
@@ -1231,43 +1231,43 @@ export function validateSegmentsEqual(
  * Check if three points form a valid triangle
  */
 export function validateTriangle(
-    app: MathGraphApp,
-    point1Tag: string,
-    point2Tag: string,
-    point3Tag: string
+	app: MathGraphApp,
+	point1Tag: string,
+	point2Tag: string,
+	point3Tag: string
 ): boolean;
 
 /**
  * Check if a triangle is isosceles
  */
 export function validateIsoscelesTriangle(
-    app: MathGraphApp,
-    point1Tag: string,
-    point2Tag: string,
-    point3Tag: string,
-    tolerance?: number
+	app: MathGraphApp,
+	point1Tag: string,
+	point2Tag: string,
+	point3Tag: string,
+	tolerance?: number
 ): boolean;
 
 /**
  * Check if a triangle is equilateral
  */
 export function validateEquilateralTriangle(
-    app: MathGraphApp,
-    point1Tag: string,
-    point2Tag: string,
-    point3Tag: string,
-    tolerance?: number
+	app: MathGraphApp,
+	point1Tag: string,
+	point2Tag: string,
+	point3Tag: string,
+	tolerance?: number
 ): boolean;
 
 /**
  * Check if a triangle is right-angled
  */
 export function validateRightTriangle(
-    app: MathGraphApp,
-    point1Tag: string,
-    point2Tag: string,
-    point3Tag: string,
-    tolerance?: number
+	app: MathGraphApp,
+	point1Tag: string,
+	point2Tag: string,
+	point3Tag: string,
+	tolerance?: number
 ): boolean;
 ```
 
@@ -1277,27 +1277,27 @@ export function validateRightTriangle(
 import { validateExercise } from '$lib/services/geometry-validator';
 
 const exercise: GeometryExercise = {
-    // ... exercise definition
-    validation_config: {
-        requiredObjects: ['point_M', 'line_perpendicular'],
-        checkPerpendicular: ['line_AB', 'line_perpendicular'],
-        checkMidpoint: {
-            midpointTag: 'point_M',
-            point1Tag: 'A',
-            point2Tag: 'B'
-        },
-        tolerance: 2
-    }
+	// ... exercise definition
+	validation_config: {
+		requiredObjects: ['point_M', 'line_perpendicular'],
+		checkPerpendicular: ['line_AB', 'line_perpendicular'],
+		checkMidpoint: {
+			midpointTag: 'point_M',
+			point1Tag: 'A',
+			point2Tag: 'B'
+		},
+		tolerance: 2
+	}
 };
 
 const results = await validateExercise(mathGraphApp, exercise);
 
 if (results.isValid) {
-    console.log('✓ Construction is correct!');
-    console.log(`Score: ${results.score}/${results.maxScore}`);
+	console.log('✓ Construction is correct!');
+	console.log(`Score: ${results.score}/${results.maxScore}`);
 } else {
-    console.log('✗ Construction has errors:');
-    results.errors.forEach(error => console.log(`  - ${error}`));
+	console.log('✗ Construction has errors:');
+	results.errors.forEach((error) => console.log(`  - ${error}`));
 }
 ```
 
@@ -1319,8 +1319,8 @@ if (results.isValid) {
  * @returns Generated figure data with metadata
  */
 export async function generateRandomTriangle(
-    app: MathGraphApp,
-    constraints?: TriangleConstraints
+	app: MathGraphApp,
+	constraints?: TriangleConstraints
 ): Promise<GeneratedFigure>;
 
 /**
@@ -1330,8 +1330,8 @@ export async function generateRandomTriangle(
  * @returns Generated figure data with metadata
  */
 export async function generateCircleConfiguration(
-    app: MathGraphApp,
-    config: CircleConfiguration
+	app: MathGraphApp,
+	config: CircleConfiguration
 ): Promise<GeneratedFigure>;
 
 /**
@@ -1341,8 +1341,8 @@ export async function generateCircleConfiguration(
  * @returns Generated figure data with metadata
  */
 export async function generateTransformationProblem(
-    app: MathGraphApp,
-    problem: TransformationProblem
+	app: MathGraphApp,
+	problem: TransformationProblem
 ): Promise<GeneratedFigure>;
 
 /**
@@ -1352,8 +1352,8 @@ export async function generateTransformationProblem(
  * @returns Generated figure data with metadata
  */
 export async function generateAngleProblem(
-    app: MathGraphApp,
-    problem: AngleProblem
+	app: MathGraphApp,
+	problem: AngleProblem
 ): Promise<GeneratedFigure>;
 
 /**
@@ -1364,9 +1364,9 @@ export async function generateAngleProblem(
  * @returns Generated figure with applied randomization
  */
 export async function applyRandomization(
-    app: MathGraphApp,
-    templateFigure: string,
-    params: RandomizationParams
+	app: MathGraphApp,
+	templateFigure: string,
+	params: RandomizationParams
 ): Promise<GeneratedFigure>;
 ```
 
@@ -1374,55 +1374,59 @@ export async function applyRandomization(
 
 ```typescript
 export interface TriangleConstraints {
-    type?: 'scalene' | 'isosceles' | 'equilateral' | 'right' | 'acute' | 'obtuse';
-    minSideLength?: number;
-    maxSideLength?: number;
-    fixedSideLength?: number;
-    fixedAngle?: number;
-    pointLabels?: [string, string, string];
+	type?: 'scalene' | 'isosceles' | 'equilateral' | 'right' | 'acute' | 'obtuse';
+	minSideLength?: number;
+	maxSideLength?: number;
+	fixedSideLength?: number;
+	fixedAngle?: number;
+	pointLabels?: [string, string, string];
 }
 
 export interface CircleConfiguration {
-    type: 'single' | 'two-intersecting' | 'two-tangent-external' |
-          'two-tangent-internal' | 'concentric' | 'inscribed-triangle' |
-          'circumscribed-triangle';
-    minRadius?: number;
-    maxRadius?: number;
-    centerLabels?: string[];
-    pointLabels?: string[];
+	type:
+		| 'single'
+		| 'two-intersecting'
+		| 'two-tangent-external'
+		| 'two-tangent-internal'
+		| 'concentric'
+		| 'inscribed-triangle'
+		| 'circumscribed-triangle';
+	minRadius?: number;
+	maxRadius?: number;
+	centerLabels?: string[];
+	pointLabels?: string[];
 }
 
 export interface TransformationProblem {
-    type: 'translation' | 'rotation' | 'reflection' | 'homothety';
-    sourceShape: 'point' | 'segment' | 'triangle' | 'quadrilateral';
-    includeGrid?: boolean;
-    showConstruction?: boolean;
+	type: 'translation' | 'rotation' | 'reflection' | 'homothety';
+	sourceShape: 'point' | 'segment' | 'triangle' | 'quadrilateral';
+	includeGrid?: boolean;
+	showConstruction?: boolean;
 }
 
 export interface AngleProblem {
-    difficulty: 'easy' | 'medium' | 'hard';
-    type: 'measure' | 'construct' | 'complementary' | 'supplementary' |
-          'vertical' | 'parallel-lines';
-    targetAngle?: number;
-    includeProtractor?: boolean;
+	difficulty: 'easy' | 'medium' | 'hard';
+	type: 'measure' | 'construct' | 'complementary' | 'supplementary' | 'vertical' | 'parallel-lines';
+	targetAngle?: number;
+	includeProtractor?: boolean;
 }
 
 export interface GeneratedFigure {
-    figureBase64: string;
-    metadata: {
-        objects: string[];
-        measurements: Record<string, number>;
-        correctAnswers?: Record<string, number | string>;
-        randomizationSeed?: string;
-    };
+	figureBase64: string;
+	metadata: {
+		objects: string[];
+		measurements: Record<string, number>;
+		correctAnswers?: Record<string, number | string>;
+		randomizationSeed?: string;
+	};
 }
 
 export interface RandomizationParams {
-    [objectTag: string]: {
-        x?: string;  // e.g., "random(0, 100)"
-        y?: string;
-        [key: string]: any;
-    };
+	[objectTag: string]: {
+		x?: string; // e.g., "random(0, 100)"
+		y?: string;
+		[key: string]: any;
+	};
 }
 ```
 
@@ -1434,10 +1438,10 @@ export interface RandomizationParams {
 import { generateRandomTriangle } from '$lib/services/geometry-generator';
 
 const figure = await generateRandomTriangle(app, {
-    type: 'right',
-    minSideLength: 50,
-    maxSideLength: 150,
-    pointLabels: ['A', 'B', 'C']
+	type: 'right',
+	minSideLength: 50,
+	maxSideLength: 150,
+	pointLabels: ['A', 'B', 'C']
 });
 
 console.log('Generated triangle:', figure.metadata.measurements);
@@ -1445,10 +1449,10 @@ console.log('Generated triangle:', figure.metadata.measurements);
 
 // Save figure
 await saveExercise({
-    base_figure: figure.figureBase64,
-    validation_config: {
-        expectedMeasurements: figure.metadata.measurements
-    }
+	base_figure: figure.figureBase64,
+	validation_config: {
+		expectedMeasurements: figure.metadata.measurements
+	}
 });
 ```
 
@@ -1456,9 +1460,9 @@ await saveExercise({
 
 ```typescript
 const figure = await generateCircleConfiguration(app, {
-    type: 'inscribed-triangle',
-    minRadius: 60,
-    maxRadius: 120
+	type: 'inscribed-triangle',
+	minRadius: 60,
+	maxRadius: 120
 });
 
 console.log('Circumradius:', figure.metadata.measurements.circumradius);
@@ -1468,21 +1472,17 @@ console.log('Circumradius:', figure.metadata.measurements.circumradius);
 
 ```typescript
 const randomizationParams: RandomizationParams = {
-    'point_A': {
-        x: 'random(100, 300)',
-        y: 'random(100, 300)'
-    },
-    'point_B': {
-        x: 'random(400, 600)',
-        y: 'random(100, 300)'
-    }
+	point_A: {
+		x: 'random(100, 300)',
+		y: 'random(100, 300)'
+	},
+	point_B: {
+		x: 'random(400, 600)',
+		y: 'random(100, 300)'
+	}
 };
 
-const figure = await applyRandomization(
-    app,
-    templateFigure,
-    randomizationParams
-);
+const figure = await applyRandomization(app, templateFigure, randomizationParams);
 
 // Each student gets a unique version!
 ```
@@ -1511,10 +1511,10 @@ All exercise components follow a consistent pattern:
 
 ```typescript
 interface Props {
-    exercise: GeometryExercise;
-    attempt?: GeometryExerciseAttempt | null;
-    onComplete?: () => void;
-    onSave?: (data: { viewTime: number; interactionCount: number }) => void;
+	exercise: GeometryExercise;
+	attempt?: GeometryExerciseAttempt | null;
+	onComplete?: () => void;
+	onSave?: (data: { viewTime: number; interactionCount: number }) => void;
 }
 ```
 
@@ -1533,17 +1533,17 @@ interface Props {
 
 ```svelte
 <script>
-    import { ViewExploreExercise } from '$lib/components/geometry/exercises';
+	import { ViewExploreExercise } from '$lib/components/geometry/exercises';
 
-    let exercise: GeometryExercise = {
-        // ... exercise definition
-    };
+	let exercise: GeometryExercise = {
+		// ... exercise definition
+	};
 </script>
 
 <ViewExploreExercise
-    {exercise}
-    onComplete={() => console.log('Completed!')}
-    onSave={(data) => console.log('Saved:', data)}
+	{exercise}
+	onComplete={() => console.log('Completed!')}
+	onSave={(data) => console.log('Saved:', data)}
 />
 ```
 
@@ -1559,10 +1559,10 @@ interface Props {
 
 ```typescript
 interface Props {
-    exercise: GeometryExercise;
-    attempt?: GeometryExerciseAttempt | null;
-    onValidate?: (results: ValidationResults) => void;
-    onSave?: (data: { answers: Record<string, number>; attempts: number }) => void;
+	exercise: GeometryExercise;
+	attempt?: GeometryExerciseAttempt | null;
+	onValidate?: (results: ValidationResults) => void;
+	onSave?: (data: { answers: Record<string, number>; attempts: number }) => void;
 }
 ```
 
@@ -1582,16 +1582,16 @@ interface Props {
 
 ```typescript
 const exercise: GeometryExercise = {
-    validation_config: {
-        expectedMeasurements: {
-            'angle_ABC': 45,      // Angle in degrees
-            'distance_AB': 120,   // Distance in pixels
-            'radius_O': 50,       // Radius in pixels
-            'area_triangle': 3000, // Area in pixels²
-            'perimeter_ABC': 340  // Perimeter in pixels
-        },
-        tolerance: 2  // ±2° for angles, ±2% for distances
-    }
+	validation_config: {
+		expectedMeasurements: {
+			angle_ABC: 45, // Angle in degrees
+			distance_AB: 120, // Distance in pixels
+			radius_O: 50, // Radius in pixels
+			area_triangle: 3000, // Area in pixels²
+			perimeter_ABC: 340 // Perimeter in pixels
+		},
+		tolerance: 2 // ±2° for angles, ±2% for distances
+	}
 };
 ```
 
@@ -1599,19 +1599,16 @@ const exercise: GeometryExercise = {
 
 ```svelte
 <script>
-    import { MeasurementExercise } from '$lib/components/geometry/exercises';
+	import { MeasurementExercise } from '$lib/components/geometry/exercises';
 
-    function handleValidation(results: ValidationResults) {
-        if (results.isValid) {
-            awardGidouilles(studentId, 10);
-        }
-    }
+	function handleValidation(results: ValidationResults) {
+		if (results.isValid) {
+			awardGidouilles(studentId, 10);
+		}
+	}
 </script>
 
-<MeasurementExercise
-    {exercise}
-    onValidate={handleValidation}
-/>
+<MeasurementExercise {exercise} onValidate={handleValidation} />
 ```
 
 ---
@@ -1626,16 +1623,16 @@ const exercise: GeometryExercise = {
 
 ```typescript
 interface Props {
-    exercise: GeometryExercise;
-    attempt?: GeometryExerciseAttempt | null;
-    hints?: GeometryHint[];
-    onValidate?: (results: ValidationResults) => void;
-    onSave?: (data: {
-        figureState: string;
-        attempts: number;
-        hintsUsed: number;
-        hintPenalty: number;
-    }) => void;
+	exercise: GeometryExercise;
+	attempt?: GeometryExerciseAttempt | null;
+	hints?: GeometryHint[];
+	onValidate?: (results: ValidationResults) => void;
+	onSave?: (data: {
+		figureState: string;
+		attempts: number;
+		hintsUsed: number;
+		hintPenalty: number;
+	}) => void;
 }
 ```
 
@@ -1664,28 +1661,28 @@ Three hint levels with penalties:
 
 ```svelte
 <script>
-    import { ConstructionExercise } from '$lib/components/geometry/exercises';
+	import { ConstructionExercise } from '$lib/components/geometry/exercises';
 
-    const hints: GeometryHint[] = [
-        {
-            id: 'hint1',
-            hint_level: 'general',
-            hint_text: 'Utilisez l\'outil perpendiculaire.',
-            score_penalty: 0
-        },
-        {
-            id: 'hint2',
-            hint_level: 'specific',
-            hint_text: 'Sélectionnez d\'abord la droite (AB), puis le point C.',
-            score_penalty: 5
-        }
-    ];
+	const hints: GeometryHint[] = [
+		{
+			id: 'hint1',
+			hint_level: 'general',
+			hint_text: "Utilisez l'outil perpendiculaire.",
+			score_penalty: 0
+		},
+		{
+			id: 'hint2',
+			hint_level: 'specific',
+			hint_text: "Sélectionnez d'abord la droite (AB), puis le point C.",
+			score_penalty: 5
+		}
+	];
 </script>
 
 <ConstructionExercise
-    {exercise}
-    {hints}
-    onValidate={(results) => console.log('Score:', results.score)}
+	{exercise}
+	{hints}
+	onValidate={(results) => console.log('Score:', results.score)}
 />
 ```
 
@@ -1701,16 +1698,16 @@ Three hint levels with penalties:
 
 ```typescript
 interface Props {
-    exercise: GeometryExercise;
-    attempt?: GeometryExerciseAttempt | null;
-    onValidate?: (results: ValidationResults) => void;
-    onSave?: (data: { steps: ProofStep[]; attempts: number }) => void;
+	exercise: GeometryExercise;
+	attempt?: GeometryExerciseAttempt | null;
+	onValidate?: (results: ValidationResults) => void;
+	onSave?: (data: { steps: ProofStep[]; attempts: number }) => void;
 }
 
 interface ProofStep {
-    id: string;
-    statement: string;
-    justification: string;
+	id: string;
+	statement: string;
+	justification: string;
 }
 ```
 
@@ -1731,20 +1728,20 @@ interface ProofStep {
 
 ```typescript
 const commonJustifications = [
-    'Définition',
-    'Propriété des angles opposés par le sommet',
-    'Propriété des angles alternes-internes',
-    'Propriété des angles correspondants',
-    'Somme des angles d\'un triangle',
-    'Théorème de Pythagore',
-    'Réciproque du théorème de Pythagore',
-    'Propriété de la médiatrice',
-    'Propriété de la bissectrice',
-    'Propriété du cercle',
-    'Propriété du parallélogramme',
-    'Théorème de Thalès',
-    'Réciproque du théorème de Thalès',
-    'Autre'
+	'Définition',
+	'Propriété des angles opposés par le sommet',
+	'Propriété des angles alternes-internes',
+	'Propriété des angles correspondants',
+	"Somme des angles d'un triangle",
+	'Théorème de Pythagore',
+	'Réciproque du théorème de Pythagore',
+	'Propriété de la médiatrice',
+	'Propriété de la bissectrice',
+	'Propriété du cercle',
+	'Propriété du parallélogramme',
+	'Théorème de Thalès',
+	'Réciproque du théorème de Thalès',
+	'Autre'
 ];
 ```
 
@@ -1752,22 +1749,22 @@ const commonJustifications = [
 
 ```typescript
 const exercise: GeometryExercise = {
-    validation_config: {
-        expectedProofSteps: [
-            {
-                statement: 'AB = AC (hypothèse)',
-                justification: 'Définition'
-            },
-            {
-                statement: 'Les angles ABC et ACB sont égaux',
-                justification: 'Propriété du triangle isocèle'
-            },
-            {
-                statement: 'Donc le triangle ABC est isocèle en A',
-                justification: 'Définition du triangle isocèle'
-            }
-        ]
-    }
+	validation_config: {
+		expectedProofSteps: [
+			{
+				statement: 'AB = AC (hypothèse)',
+				justification: 'Définition'
+			},
+			{
+				statement: 'Les angles ABC et ACB sont égaux',
+				justification: 'Propriété du triangle isocèle'
+			},
+			{
+				statement: 'Donc le triangle ABC est isocèle en A',
+				justification: 'Définition du triangle isocèle'
+			}
+		]
+	}
 };
 ```
 
@@ -1775,18 +1772,18 @@ const exercise: GeometryExercise = {
 
 ```svelte
 <script>
-    import { ProofExercise } from '$lib/components/geometry/exercises';
+	import { ProofExercise } from '$lib/components/geometry/exercises';
 </script>
 
 <ProofExercise
-    {exercise}
-    onValidate={(results) => {
-        if (results.isValid) {
-            console.log('Proof is correct!');
-        } else if (results.warnings.includes('manual review')) {
-            console.log('Requires teacher review');
-        }
-    }}
+	{exercise}
+	onValidate={(results) => {
+		if (results.isValid) {
+			console.log('Proof is correct!');
+		} else if (results.warnings.includes('manual review')) {
+			console.log('Requires teacher review');
+		}
+	}}
 />
 ```
 
@@ -1802,12 +1799,12 @@ const exercise: GeometryExercise = {
 
 ```typescript
 interface Props {
-    exercise: GeometryExercise;
-    attempt?: GeometryExerciseAttempt | null;
-    hints?: GeometryHint[];
-    onValidate?: (results: ValidationResults) => void;
-    onSave?: (data: any) => void;
-    onComplete?: () => void;
+	exercise: GeometryExercise;
+	attempt?: GeometryExerciseAttempt | null;
+	hints?: GeometryHint[];
+	onValidate?: (results: ValidationResults) => void;
+	onSave?: (data: any) => void;
+	onComplete?: () => void;
 }
 ```
 
@@ -1815,19 +1812,19 @@ interface Props {
 
 ```typescript
 const ExerciseComponent = $derived(() => {
-    switch (exercise.exercise_type) {
-        case 'view':
-        case 'explore':
-            return ViewExploreExercise;
-        case 'measure':
-            return MeasurementExercise;
-        case 'construct':
-            return ConstructionExercise;
-        case 'proof':
-            return ProofExercise;
-        default:
-            return null;
-    }
+	switch (exercise.exercise_type) {
+		case 'view':
+		case 'explore':
+			return ViewExploreExercise;
+		case 'measure':
+			return MeasurementExercise;
+		case 'construct':
+			return ConstructionExercise;
+		case 'proof':
+			return ProofExercise;
+		default:
+			return null;
+	}
 });
 ```
 
@@ -1835,21 +1832,21 @@ const ExerciseComponent = $derived(() => {
 
 ```svelte
 <script>
-    import { GeometryExerciseWrapper } from '$lib/components/geometry';
+	import { GeometryExerciseWrapper } from '$lib/components/geometry';
 
-    // Just pass the exercise - wrapper handles type selection
-    let exercise: GeometryExercise = {
-        exercise_type: 'construct',  // Wrapper loads ConstructionExercise
-        // ... other fields
-    };
+	// Just pass the exercise - wrapper handles type selection
+	let exercise: GeometryExercise = {
+		exercise_type: 'construct' // Wrapper loads ConstructionExercise
+		// ... other fields
+	};
 </script>
 
 <GeometryExerciseWrapper
-    {exercise}
-    {attempt}
-    {hints}
-    onValidate={(results) => handleValidation(results)}
-    onSave={(data) => saveToDatabase(data)}
+	{exercise}
+	{attempt}
+	{hints}
+	onValidate={(results) => handleValidation(results)}
+	onSave={(data) => saveToDatabase(data)}
 />
 ```
 
@@ -1874,13 +1871,13 @@ const ExerciseComponent = $derived(() => {
  * @returns Complete grade result with penalties
  */
 export function calculateGrade(
-    exercise: GeometryExercise,
-    validationResults: ValidationResults,
-    options?: {
-        hintsUsed?: Array<{ level: HintLevel; penalty: number }>;
-        timeSpent?: number;
-        attemptNumber?: number;
-    }
+	exercise: GeometryExercise,
+	validationResults: ValidationResults,
+	options?: {
+		hintsUsed?: Array<{ level: HintLevel; penalty: number }>;
+		timeSpent?: number;
+		attemptNumber?: number;
+	}
 ): GradeResult;
 ```
 
@@ -1888,19 +1885,19 @@ export function calculateGrade(
 
 ```typescript
 export interface GradeResult {
-    rawScore: number;          // Score before penalties
-    finalScore: number;        // Score after all penalties
-    maxScore: number;
-    percentage: number;        // 0-100
-    passed: boolean;
-    grade: string;             // A, B, C, D, F
-    penalties: {
-        hints?: HintPenalty;
-        time?: TimePenalty;
-        attempts?: number;
-        total: number;
-    };
-    feedback: string[];
+	rawScore: number; // Score before penalties
+	finalScore: number; // Score after all penalties
+	maxScore: number;
+	percentage: number; // 0-100
+	passed: boolean;
+	grade: string; // A, B, C, D, F
+	penalties: {
+		hints?: HintPenalty;
+		time?: TimePenalty;
+		attempts?: number;
+		total: number;
+	};
+	feedback: string[];
 }
 ```
 
@@ -1912,8 +1909,8 @@ export interface GradeResult {
  * @returns Total penalty in points
  */
 export function calculateHintPenalty(
-    hintsUsed: Array<{ level: HintLevel; penalty: number }>,
-    maxScore: number
+	hintsUsed: Array<{ level: HintLevel; penalty: number }>,
+	maxScore: number
 ): HintPenalty;
 
 /**
@@ -1921,19 +1918,16 @@ export function calculateHintPenalty(
  * @returns Time penalty in points
  */
 export function calculateTimePenalty(
-    timeSpent: number | undefined,
-    timeLimit: number | undefined,
-    maxScore: number
+	timeSpent: number | undefined,
+	timeLimit: number | undefined,
+	maxScore: number
 ): TimePenalty;
 
 /**
  * Calculate attempt penalty (2% per attempt, max 10%)
  * @returns Attempt penalty in points
  */
-export function calculateAttemptPenalty(
-    attemptNumber: number,
-    maxScore: number
-): number;
+export function calculateAttemptPenalty(attemptNumber: number, maxScore: number): number;
 ```
 
 #### Scoring Functions
@@ -1948,23 +1942,19 @@ export function getLetterGrade(percentage: number): string;
 /**
  * Calculate correctness score (0-100)
  */
-export function calculateCorrectnessScore(
-    validationResults: ValidationResults
-): number;
+export function calculateCorrectnessScore(validationResults: ValidationResults): number;
 
 /**
  * Calculate completeness score (0-100)
  */
-export function calculateCompletenessScore(
-    validationResults: ValidationResults
-): number;
+export function calculateCompletenessScore(validationResults: ValidationResults): number;
 
 /**
  * Calculate efficiency score (0-100)
  */
 export function calculateEfficiencyScore(
-    validationResults: ValidationResults,
-    expectedObjectCount: number
+	validationResults: ValidationResults,
+	expectedObjectCount: number
 ): number;
 
 /**
@@ -1972,12 +1962,12 @@ export function calculateEfficiencyScore(
  * Default: Correctness 70%, Completeness 20%, Efficiency 10%
  */
 export function calculateWeightedScore(
-    scores: {
-        correctness: number;
-        completeness: number;
-        efficiency: number;
-    },
-    rubric?: GradingRubric
+	scores: {
+		correctness: number;
+		completeness: number;
+		efficiency: number;
+	},
+	rubric?: GradingRubric
 ): number;
 ```
 
@@ -1988,18 +1978,14 @@ import { GeometryGrader } from '$lib/services/geometry-grader';
 
 const validationResults = await validateExercise(app, exercise);
 
-const gradeResult = GeometryGrader.calculateGrade(
-    exercise,
-    validationResults,
-    {
-        hintsUsed: [
-            { level: 'specific', penalty: 5 },
-            { level: 'step_by_step', penalty: 10 }
-        ],
-        timeSpent: 600,  // 10 minutes
-        attemptNumber: 2
-    }
-);
+const gradeResult = GeometryGrader.calculateGrade(exercise, validationResults, {
+	hintsUsed: [
+		{ level: 'specific', penalty: 5 },
+		{ level: 'step_by_step', penalty: 10 }
+	],
+	timeSpent: 600, // 10 minutes
+	attemptNumber: 2
+});
 
 console.log(`
     Raw Score: ${gradeResult.rawScore}/${gradeResult.maxScore}
@@ -2021,11 +2007,11 @@ console.log(`
 #### Formatting Functions
 
 ```typescript
-export function formatScore(score: number, maxScore: number): string;  // "85/100"
-export function formatPercentage(percentage: number, decimals?: number): string;  // "85%"
-export function formatTime(seconds: number): string;  // "5m 30s"
-export function formatTimeMMSS(seconds: number): string;  // "05:30"
-export function formatDate(date: string | Date): string;  // "16 janvier 2025, 14:30"
+export function formatScore(score: number, maxScore: number): string; // "85/100"
+export function formatPercentage(percentage: number, decimals?: number): string; // "85%"
+export function formatTime(seconds: number): string; // "5m 30s"
+export function formatTimeMMSS(seconds: number): string; // "05:30"
+export function formatDate(date: string | Date): string; // "16 janvier 2025, 14:30"
 ```
 
 #### Color Coding
@@ -2036,9 +2022,9 @@ export function formatDate(date: string | Date): string;  // "16 janvier 2025, 1
  * @returns { text, bg, border } class names
  */
 export function getScoreColor(percentage: number): {
-    text: string;
-    bg: string;
-    border: string;
+	text: string;
+	bg: string;
+	border: string;
 };
 
 /**
@@ -2053,30 +2039,28 @@ export function getLetterGradeColor(grade: string): string;
 /**
  * Calculate statistics from multiple attempts
  */
-export function calculateAttemptStatistics(
-    attempts: GeometryExerciseAttempt[]
-): {
-    count: number;
-    average: number;
-    best: number;
-    worst: number;
-    median: number;
-    standardDeviation: number;
+export function calculateAttemptStatistics(attempts: GeometryExerciseAttempt[]): {
+	count: number;
+	average: number;
+	best: number;
+	worst: number;
+	median: number;
+	standardDeviation: number;
 };
 
 /**
  * Calculate class-wide statistics
  */
 export function calculateClassStatistics(
-    allAttempts: GeometryExerciseAttempt[],
-    exercise: GeometryExercise
+	allAttempts: GeometryExerciseAttempt[],
+	exercise: GeometryExercise
 ): {
-    totalStudents: number;
-    completedStudents: number;
-    averageScore: number;
-    passRate: number;
-    averageAttempts: number;
-    averageTime: number;
+	totalStudents: number;
+	completedStudents: number;
+	averageScore: number;
+	passRate: number;
+	averageAttempts: number;
+	averageTime: number;
 };
 ```
 
@@ -2087,12 +2071,12 @@ export function calculateClassStatistics(
  * Calculate student rank in class
  */
 export function calculateRank(
-    studentScore: number,
-    allScores: number[]
+	studentScore: number,
+	allScores: number[]
 ): {
-    rank: number;
-    total: number;
-    percentile: number;
+	rank: number;
+	total: number;
+	percentile: number;
 };
 
 /**
@@ -2100,9 +2084,9 @@ export function calculateRank(
  * Top 10%, Top 25%, Top 50%, or "En progression"
  */
 export function getRankingTier(percentile: number): {
-    tier: string;
-    color: string;
-    icon: string;
+	tier: string;
+	color: string;
+	icon: string;
 };
 ```
 
@@ -2120,20 +2104,20 @@ export function getRankingTier(percentile: number): {
  * - independent: 80%+ without hints
  */
 export function checkAchievements(
-    attempt: GeometryExerciseAttempt,
-    exercise: GeometryExercise
+	attempt: GeometryExerciseAttempt,
+	exercise: GeometryExercise
 ): {
-    earned: string[];
-    descriptions: Record<string, string>;
+	earned: string[];
+	descriptions: Record<string, string>;
 };
 
 /**
  * Get achievement display info
  */
 export function getAchievementDisplay(achievement: string): {
-    icon: string;
-    color: string;
-    name: string;
+	icon: string;
+	color: string;
+	name: string;
 };
 ```
 
@@ -2152,50 +2136,50 @@ export function getAchievementDisplay(achievement: string): {
  * Submit a new graded attempt
  */
 export async function submitGrade(
-    supabase: SupabaseClient,
-    exercise: GeometryExercise,
-    options: SubmitGradeOptions
+	supabase: SupabaseClient,
+	exercise: GeometryExercise,
+	options: SubmitGradeOptions
 ): Promise<GradeSubmissionResult>;
 
 /**
  * Update existing attempt (auto-save)
  */
 export async function updateAttempt(
-    supabase: SupabaseClient,
-    options: UpdateAttemptOptions
+	supabase: SupabaseClient,
+	options: UpdateAttemptOptions
 ): Promise<GradeSubmissionResult>;
 
 /**
  * Get or create current attempt for student
  */
 export async function getOrCreateAttempt(
-    supabase: SupabaseClient,
-    exerciseId: string,
-    studentId: string
+	supabase: SupabaseClient,
+	exerciseId: string,
+	studentId: string
 ): Promise<{ attempt: GeometryExerciseAttempt | null; error?: string }>;
 
 /**
  * Mark attempt as complete
  */
 export async function markAttemptComplete(
-    supabase: SupabaseClient,
-    attemptId: string
+	supabase: SupabaseClient,
+	attemptId: string
 ): Promise<GradeSubmissionResult>;
 
 /**
  * Reset attempt for retry
  */
 export async function resetAttempt(
-    supabase: SupabaseClient,
-    attemptId: string
+	supabase: SupabaseClient,
+	attemptId: string
 ): Promise<GradeSubmissionResult>;
 
 /**
  * Delete attempt
  */
 export async function deleteAttempt(
-    supabase: SupabaseClient,
-    attemptId: string
+	supabase: SupabaseClient,
+	attemptId: string
 ): Promise<GradeSubmissionResult>;
 ```
 
@@ -2206,44 +2190,44 @@ export async function deleteAttempt(
  * Get all attempts for a student
  */
 export async function getStudentAttempts(
-    supabase: SupabaseClient,
-    exerciseId: string,
-    studentId: string
+	supabase: SupabaseClient,
+	exerciseId: string,
+	studentId: string
 ): Promise<{ attempts: GeometryExerciseAttempt[]; error?: string }>;
 
 /**
  * Get best attempt for a student
  */
 export async function getBestAttempt(
-    supabase: SupabaseClient,
-    exerciseId: string,
-    studentId: string
+	supabase: SupabaseClient,
+	exerciseId: string,
+	studentId: string
 ): Promise<{ attempt: GeometryExerciseAttempt | null; error?: string }>;
 
 /**
  * Get all attempts for an exercise (teacher view)
  */
 export async function getAllExerciseAttempts(
-    supabase: SupabaseClient,
-    exerciseId: string
+	supabase: SupabaseClient,
+	exerciseId: string
 ): Promise<{ attempts: GeometryExerciseAttempt[]; error?: string }>;
 
 /**
  * Get student progress summary
  */
 export async function getStudentProgress(
-    supabase: SupabaseClient,
-    exerciseId: string,
-    studentId: string
+	supabase: SupabaseClient,
+	exerciseId: string,
+	studentId: string
 ): Promise<{
-    progress: {
-        totalAttempts: number;
-        completedAttempts: number;
-        bestScore: number;
-        averageScore: number;
-        latestAttempt: GeometryExerciseAttempt | null;
-    } | null;
-    error?: string;
+	progress: {
+		totalAttempts: number;
+		completedAttempts: number;
+		bestScore: number;
+		averageScore: number;
+		latestAttempt: GeometryExerciseAttempt | null;
+	} | null;
+	error?: string;
 }>;
 ```
 
@@ -2254,26 +2238,22 @@ import { GradeSubmission } from '$lib/services/geometry-grade-submission';
 
 // Submit grade
 const result = await GradeSubmission.submitGrade(supabase, exercise, {
-    exerciseId: exercise.id,
-    studentId: user.id,
-    validationResults,
-    gradeResult,
-    figureState: currentFigure,
-    hintsUsed: 2,
-    timeSpent: 480,
-    isComplete: true
+	exerciseId: exercise.id,
+	studentId: user.id,
+	validationResults,
+	gradeResult,
+	figureState: currentFigure,
+	hintsUsed: 2,
+	timeSpent: 480,
+	isComplete: true
 });
 
 if (result.success) {
-    console.log('Grade submitted:', result.attemptId);
+	console.log('Grade submitted:', result.attemptId);
 }
 
 // Get student progress
-const { progress } = await GradeSubmission.getStudentProgress(
-    supabase,
-    exerciseId,
-    studentId
-);
+const { progress } = await GradeSubmission.getStudentProgress(supabase, exerciseId, studentId);
 
 console.log(`Attempts: ${progress.totalAttempts}, Best: ${progress.bestScore}`);
 ```
@@ -2292,13 +2272,14 @@ console.log(`Attempts: ${progress.totalAttempts}, Best: ${progress.bestScore}`);
 
 ```typescript
 interface Props {
-    gradeResult: GradeResult;
-    showDetails?: boolean;      // Default: true
-    showPenalties?: boolean;    // Default: true
+	gradeResult: GradeResult;
+	showDetails?: boolean; // Default: true
+	showPenalties?: boolean; // Default: true
 }
 ```
 
 **Features:**
+
 - Large letter grade badge (A-F)
 - Color-coded by performance
 - Score and percentage
@@ -2311,7 +2292,7 @@ interface Props {
 
 ```svelte
 <script>
-    import { GradeDisplay } from '$lib/components/geometry/grading';
+	import { GradeDisplay } from '$lib/components/geometry/grading';
 </script>
 
 <GradeDisplay {gradeResult} />
@@ -2329,13 +2310,14 @@ interface Props {
 
 ```typescript
 interface Props {
-    attempts: GeometryExerciseAttempt[];
-    maxScore: number;
-    onViewAttempt?: (attempt: GeometryExerciseAttempt) => void;
+	attempts: GeometryExerciseAttempt[];
+	maxScore: number;
+	onViewAttempt?: (attempt: GeometryExerciseAttempt) => void;
 }
 ```
 
 **Features:**
+
 - Statistics summary (best, average, median, worst)
 - Overall trend (improving/declining/stable)
 - Attempt list with cards
@@ -2347,18 +2329,14 @@ interface Props {
 
 ```svelte
 <script>
-    import { AttemptHistory } from '$lib/components/geometry/grading';
+	import { AttemptHistory } from '$lib/components/geometry/grading';
 
-    function viewAttempt(attempt) {
-        // Load and display attempt details
-    }
+	function viewAttempt(attempt) {
+		// Load and display attempt details
+	}
 </script>
 
-<AttemptHistory
-    {attempts}
-    maxScore={exercise.max_score}
-    onViewAttempt={viewAttempt}
-/>
+<AttemptHistory {attempts} maxScore={exercise.max_score} onViewAttempt={viewAttempt} />
 ```
 
 ---
@@ -2373,45 +2351,45 @@ interface Props {
 import { GeometryGrader, GradeUtils } from '$lib/services/geometry-grader';
 
 async function handleExerciseCompletion(
-    supabase: SupabaseClient,
-    studentId: string,
-    exercise: GeometryExercise,
-    gradeResult: GradeResult,
-    attempt: GeometryExerciseAttempt
+	supabase: SupabaseClient,
+	studentId: string,
+	exercise: GeometryExercise,
+	gradeResult: GradeResult,
+	attempt: GeometryExerciseAttempt
 ) {
-    // 1. Base gidouilles (10 per 10 points)
-    const baseGidouilles = Math.floor(gradeResult.finalScore / 10);
-    await awardGidouilles(supabase, studentId, baseGidouilles, `Exercise: ${exercise.title}`);
+	// 1. Base gidouilles (10 per 10 points)
+	const baseGidouilles = Math.floor(gradeResult.finalScore / 10);
+	await awardGidouilles(supabase, studentId, baseGidouilles, `Exercise: ${exercise.title}`);
 
-    // 2. Check achievements
-    const { earned, descriptions } = GradeUtils.checkAchievements(attempt, exercise);
+	// 2. Check achievements
+	const { earned, descriptions } = GradeUtils.checkAchievements(attempt, exercise);
 
-    for (const achievement of earned) {
-        if (achievement === 'perfect') {
-            // Perfect score! Award legendary VIP card + bonus gidouilles
-            await awardGidouilles(supabase, studentId, 100, 'Perfect Score Achievement!');
-            await awardVIPCard(supabase, studentId, 'legendary');
-        } else if (achievement === 'speedster') {
-            // Speed achievement
-            await awardGidouilles(supabase, studentId, 50, 'Speed Achievement!');
-        } else if (achievement === 'first_try') {
-            // First try success
-            await awardGidouilles(supabase, studentId, 30, 'First Try Success!');
-        }
-    }
+	for (const achievement of earned) {
+		if (achievement === 'perfect') {
+			// Perfect score! Award legendary VIP card + bonus gidouilles
+			await awardGidouilles(supabase, studentId, 100, 'Perfect Score Achievement!');
+			await awardVIPCard(supabase, studentId, 'legendary');
+		} else if (achievement === 'speedster') {
+			// Speed achievement
+			await awardGidouilles(supabase, studentId, 50, 'Speed Achievement!');
+		} else if (achievement === 'first_try') {
+			// First try success
+			await awardGidouilles(supabase, studentId, 30, 'First Try Success!');
+		}
+	}
 
-    // 3. Ranking bonuses
-    const { attempts } = await GradeSubmission.getAllExerciseAttempts(supabase, exercise.id);
-    const allScores = attempts.map(a => a.score_earned ?? 0);
-    const { percentile } = GradeUtils.calculateRank(gradeResult.finalScore, allScores);
+	// 3. Ranking bonuses
+	const { attempts } = await GradeSubmission.getAllExerciseAttempts(supabase, exercise.id);
+	const allScores = attempts.map((a) => a.score_earned ?? 0);
+	const { percentile } = GradeUtils.calculateRank(gradeResult.finalScore, allScores);
 
-    if (percentile >= 90) {
-        // Top 10%
-        await awardGidouilles(supabase, studentId, 20, 'Top 10% Ranking!');
-    } else if (percentile >= 75) {
-        // Top 25%
-        await awardGidouilles(supabase, studentId, 10, 'Top 25% Ranking!');
-    }
+	if (percentile >= 90) {
+		// Top 10%
+		await awardGidouilles(supabase, studentId, 20, 'Top 10% Ranking!');
+	} else if (percentile >= 75) {
+		// Top 25%
+		await awardGidouilles(supabase, studentId, 10, 'Top 25% Ranking!');
+	}
 }
 ```
 
@@ -2436,7 +2414,13 @@ CHECK (exercise_type IN ('view', 'explore', 'measure', 'construct', 'proof', 'tr
 
 ```typescript
 // In src/lib/types/geometry.ts
-export type ExerciseType = 'view' | 'explore' | 'measure' | 'construct' | 'proof' | 'transformation';
+export type ExerciseType =
+	| 'view'
+	| 'explore'
+	| 'measure'
+	| 'construct'
+	| 'proof'
+	| 'transformation';
 ```
 
 3. **Create component:**
@@ -2444,20 +2428,20 @@ export type ExerciseType = 'view' | 'explore' | 'measure' | 'construct' | 'proof
 ```svelte
 <!-- src/lib/components/geometry/exercises/TransformationExercise.svelte -->
 <script lang="ts">
-    import type { GeometryExercise, ValidationResults } from '$lib/types/geometry';
+	import type { GeometryExercise, ValidationResults } from '$lib/types/geometry';
 
-    interface Props {
-        exercise: GeometryExercise;
-        onValidate?: (results: ValidationResults) => void;
-    }
+	interface Props {
+		exercise: GeometryExercise;
+		onValidate?: (results: ValidationResults) => void;
+	}
 
-    let { exercise, onValidate }: Props = $props();
+	let { exercise, onValidate }: Props = $props();
 
-    // Your transformation exercise logic
+	// Your transformation exercise logic
 </script>
 
 <div class="transformation-exercise">
-    <!-- Your UI -->
+	<!-- Your UI -->
 </div>
 ```
 
@@ -2468,13 +2452,13 @@ export type ExerciseType = 'view' | 'explore' | 'measure' | 'construct' | 'proof
 import TransformationExercise from './exercises/TransformationExercise.svelte';
 
 const ExerciseComponent = $derived(() => {
-    switch (exercise.exercise_type) {
-        // ... existing cases
-        case 'transformation':
-            return TransformationExercise;
-        default:
-            return null;
-    }
+	switch (exercise.exercise_type) {
+		// ... existing cases
+		case 'transformation':
+			return TransformationExercise;
+		default:
+			return null;
+	}
 });
 ```
 
@@ -2493,29 +2477,26 @@ const ExerciseComponent = $derived(() => {
  * @param polygonTag - Tag of the polygon
  * @returns true if polygon is convex
  */
-export function validateConvexPolygon(
-    app: MathGraphApp,
-    polygonTag: string
-): boolean {
-    const polygon = app.getObjectByTag(polygonTag);
-    if (!polygon || polygon.type !== 'polygon') return false;
+export function validateConvexPolygon(app: MathGraphApp, polygonTag: string): boolean {
+	const polygon = app.getObjectByTag(polygonTag);
+	if (!polygon || polygon.type !== 'polygon') return false;
 
-    const points = polygon.points;  // Array of points
-    if (points.length < 3) return false;
+	const points = polygon.points; // Array of points
+	if (points.length < 3) return false;
 
-    // Check if all interior angles < 180°
-    for (let i = 0; i < points.length; i++) {
-        const prev = points[(i - 1 + points.length) % points.length];
-        const curr = points[i];
-        const next = points[(i + 1) % points.length];
+	// Check if all interior angles < 180°
+	for (let i = 0; i < points.length; i++) {
+		const prev = points[(i - 1 + points.length) % points.length];
+		const curr = points[i];
+		const next = points[(i + 1) % points.length];
 
-        const angle = measureAngle(app, prev.tag, curr.tag, next.tag);
-        if (angle === null || angle >= 180) {
-            return false;
-        }
-    }
+		const angle = measureAngle(app, prev.tag, curr.tag, next.tag);
+		if (angle === null || angle >= 180) {
+			return false;
+		}
+	}
 
-    return true;
+	return true;
 }
 ```
 
@@ -2523,11 +2504,11 @@ export function validateConvexPolygon(
 
 ```typescript
 const exercise: GeometryExercise = {
-    validation_config: {
-        validateConvexPolygon: {
-            polygonTag: 'student_polygon'
-        }
-    }
+	validation_config: {
+		validateConvexPolygon: {
+			polygonTag: 'student_polygon'
+		}
+	}
 };
 ```
 
@@ -2535,24 +2516,21 @@ const exercise: GeometryExercise = {
 
 ```typescript
 export async function validateExercise(
-    app: MathGraphApp,
-    exercise: GeometryExercise
+	app: MathGraphApp,
+	exercise: GeometryExercise
 ): Promise<ValidationResults> {
-    // ... existing validation
+	// ... existing validation
 
-    // Add custom validation
-    if (config.validateConvexPolygon) {
-        const isConvex = validateConvexPolygon(
-            app,
-            config.validateConvexPolygon.polygonTag
-        );
+	// Add custom validation
+	if (config.validateConvexPolygon) {
+		const isConvex = validateConvexPolygon(app, config.validateConvexPolygon.polygonTag);
 
-        if (!isConvex) {
-            results.errors.push('Le polygone doit être convexe');
-        }
-    }
+		if (!isConvex) {
+			results.errors.push('Le polygone doit être convexe');
+		}
+	}
 
-    return results;
+	return results;
 }
 ```
 
@@ -2566,10 +2544,10 @@ export async function validateExercise(
 
 ```typescript
 const customRubric: GradingRubric = {
-    correctness: 0.5,   // 50%
-    completeness: 0.3,  // 30%
-    efficiency: 0.1,    // 10%
-    elegance: 0.1       // 10% (NEW)
+	correctness: 0.5, // 50%
+	completeness: 0.3, // 30%
+	efficiency: 0.1, // 10%
+	elegance: 0.1 // 10% (NEW)
 };
 ```
 
@@ -2577,22 +2555,22 @@ const customRubric: GradingRubric = {
 
 ```typescript
 function calculateEleganceScore(
-    validationResults: ValidationResults,
-    expectedObjectCount: number
+	validationResults: ValidationResults,
+	expectedObjectCount: number
 ): number {
-    const actualCount = validationResults.objectsCreated.length;
+	const actualCount = validationResults.objectsCreated.length;
 
-    // Perfect elegance if using exactly expected number
-    if (actualCount === expectedObjectCount) return 100;
+	// Perfect elegance if using exactly expected number
+	if (actualCount === expectedObjectCount) return 100;
 
-    // Penalize for using extra objects
-    if (actualCount > expectedObjectCount) {
-        const extraObjects = actualCount - expectedObjectCount;
-        return Math.max(0, 100 - (extraObjects * 10));
-    }
+	// Penalize for using extra objects
+	if (actualCount > expectedObjectCount) {
+		const extraObjects = actualCount - expectedObjectCount;
+		return Math.max(0, 100 - extraObjects * 10);
+	}
 
-    // Incomplete
-    return 0;
+	// Incomplete
+	return 0;
 }
 ```
 
@@ -2600,10 +2578,10 @@ function calculateEleganceScore(
 
 ```typescript
 const scores = {
-    correctness: calculateCorrectnessScore(validationResults),
-    completeness: calculateCompletenessScore(validationResults),
-    efficiency: calculateEfficiencyScore(validationResults, 5),
-    elegance: calculateEleganceScore(validationResults, 5)
+	correctness: calculateCorrectnessScore(validationResults),
+	completeness: calculateCompletenessScore(validationResults),
+	efficiency: calculateEfficiencyScore(validationResults, 5),
+	elegance: calculateEleganceScore(validationResults, 5)
 };
 
 const rawScore = calculateWeightedScore(scores, customRubric);
@@ -2621,6 +2599,7 @@ This comprehensive API documentation covers all aspects of the Geometry Exercise
 - **Integration:** Rewards, custom types, custom validators, custom grading
 
 For French documentation see:
+
 - **GEOMETRY_TEACHER_GUIDE.md** - Guide for teachers
 - **GEOMETRY_STUDENT_GUIDE.md** - Guide for students
 - **MATHGRAPH32_API_GUIDE.md** - Detailed MathGraph32 API

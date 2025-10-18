@@ -49,14 +49,7 @@
 
 <script lang="ts">
 	import type { ClassSchedule, SchoolPeriod } from '$lib/types/database';
-	import {
-		getDayName,
-		findScheduleAtSlot,
-		calculateSlotSpan,
-		isScheduleStart,
-		formatScheduleDisplay,
-		formatTimeDisplay
-	} from '$lib/utils/schedule';
+	import { getDayName, formatScheduleDisplay, formatTimeDisplay } from '$lib/utils/schedule';
 	import { formatPeriodName, formatPeriodTimes } from '$lib/utils/timetable';
 
 	interface Props {
@@ -114,8 +107,8 @@
 	 * Counts how many consecutive periods from start_time to end_time
 	 */
 	function calculatePeriodSpan(entry: ClassSchedule): number {
-		const startPeriodIndex = periods.findIndex(p => p.start_time === entry.start_time);
-		const endPeriodIndex = periods.findIndex(p => p.end_time === entry.end_time);
+		const startPeriodIndex = periods.findIndex((p) => p.start_time === entry.start_time);
+		const endPeriodIndex = periods.findIndex((p) => p.end_time === entry.end_time);
 
 		if (startPeriodIndex === -1 || endPeriodIndex === -1) {
 			// Fallback: if period not found, return 1
@@ -130,10 +123,9 @@
 	 * Returns true if this cell is part of a multi-period entry that started in a previous row
 	 */
 	function shouldSkipCell(day: number, period: SchoolPeriod): boolean {
-		const entry = schedules.find(s =>
-			s.day_of_week === day &&
-			s.start_time <= period.start_time &&
-			s.end_time > period.start_time
+		const entry = schedules.find(
+			(s) =>
+				s.day_of_week === day && s.start_time <= period.start_time && s.end_time > period.start_time
 		);
 		if (!entry) return false;
 		// Skip if there's an entry but it doesn't start at this period
@@ -145,21 +137,18 @@
 	 * Returns the entry only if it starts at this period
 	 */
 	function getEntryToRender(day: number, period: SchoolPeriod): ClassSchedule | undefined {
-		return schedules.find(s =>
-			s.day_of_week === day &&
-			s.start_time === period.start_time
-		);
+		return schedules.find((s) => s.day_of_week === day && s.start_time === period.start_time);
 	}
 </script>
 
-<div class="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+<div class="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
 	{#if periods.length === 0}
 		<!-- No Timetable Configured -->
 		<div class="p-8 text-center">
 			<p class="text-muted-foreground">
 				Aucune période n'est définie dans l'emploi du temps de l'école.
 			</p>
-			<p class="text-sm text-muted-foreground mt-2">
+			<p class="mt-2 text-sm text-muted-foreground">
 				Contactez l'administrateur pour configurer les périodes.
 			</p>
 		</div>
@@ -167,111 +156,115 @@
 		<!-- Schedule Grid -->
 		<div class="overflow-x-auto">
 			<table class="w-full border-collapse">
-			<!-- Header Row: Day Names -->
-			<thead>
-				<tr class="bg-muted/50">
-					<th class="border border-border p-2 w-20 text-xs font-semibold text-muted-foreground">
-						Heure
-					</th>
-					{#each days as day}
-						<th class="border border-border p-3 text-sm font-semibold text-foreground min-w-[120px]">
-							{getDayName(day)}
+				<!-- Header Row: Day Names -->
+				<thead>
+					<tr class="bg-muted/50">
+						<th class="w-20 border border-border p-2 text-xs font-semibold text-muted-foreground">
+							Heure
 						</th>
-					{/each}
-				</tr>
-			</thead>
-
-			<!-- Body: Time Slots (Periods) -->
-			<tbody>
-				{#each timeSlots as slot, index}
-					<!-- Break Row (if there's a gap between periods) -->
-					{#if hasBreakBefore(slot.period, index)}
-						{@const previousPeriod = periods[index - 1]}
-						{@const breakDuration = getBreakDuration(previousPeriod.end_time, slot.period.start_time)}
-						<tr class="bg-yellow-50/50">
-							<td
-								colspan="6"
-								class="border border-yellow-200 p-2 text-center bg-yellow-50"
+						{#each days as day (day)}
+							<th
+								class="min-w-[120px] border border-border p-3 text-sm font-semibold text-foreground"
 							>
-								<div class="flex items-center justify-center gap-2 text-xs text-yellow-700">
-									<span class="font-medium">☕ Pause</span>
-									<span class="text-yellow-600">
-										({formatTimeDisplay(previousPeriod.end_time)} - {formatTimeDisplay(slot.period.start_time)})
-									</span>
-									<span class="text-yellow-600/70">
-										• {breakDuration} min
-									</span>
-								</div>
-							</td>
-						</tr>
-					{/if}
-
-					<!-- Period Row -->
-					<tr>
-						<!-- Time Column (Period Name + Times) -->
-						<td
-							class="border border-border p-2 text-xs bg-muted/30"
-						>
-							<div class="font-medium text-muted-foreground">{slot.display}</div>
-							<div class="text-[10px] text-muted-foreground/70 mt-0.5">
-								{formatPeriodTimes(slot.period)}
-							</div>
-						</td>
-
-						<!-- Day Columns -->
-						{#each days as day}
-							{@const entry = getEntryToRender(day, slot.period)}
-							{@const shouldSkip = shouldSkipCell(day, slot.period)}
-
-							{#if !shouldSkip}
-								{#if entry}
-									{@const rowspan = calculatePeriodSpan(entry)}
-									{@const isOptimistic = entry.id.startsWith('temp-')}
-									<td
-										rowspan={rowspan}
-										class="border border-border p-2 cursor-pointer transition-all {isOptimistic
-											? 'bg-primary/5 animate-pulse'
-											: 'bg-primary/10 hover:bg-primary/20'} {readonly ? '' : 'hover:shadow-md'}"
-										onclick={() => handleCellClick(day, slot.time, entry)}
-									>
-										<div class="flex items-center gap-1">
-											<div class="text-sm font-medium text-primary">
-												{formatScheduleDisplay(entry)}
-											</div>
-											{#if isOptimistic}
-												<div
-													class="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin"
-													title="Enregistrement en cours..."
-												></div>
-											{/if}
-										</div>
-										<div class="text-xs text-muted-foreground mt-1">
-											{formatTimeDisplay(entry.start_time)} - {formatTimeDisplay(entry.end_time)}
-										</div>
-										{#if entry.notes}
-											<div class="text-xs text-muted-foreground italic mt-1 truncate">
-												{entry.notes}
-											</div>
-										{/if}
-									</td>
-								{:else}
-									<td
-										class="border border-border p-2 cursor-pointer transition-colors hover:bg-green-50 {readonly
-											? ''
-											: 'hover:shadow-sm hover:border-green-200'}"
-										onclick={() => handleCellClick(day, slot.time)}
-										title="Cliquez pour ajouter un créneau Maths"
-									>
-										<div class="text-xs text-green-600 text-center opacity-0 hover:opacity-100 transition-opacity font-medium">
-											+ Maths
-										</div>
-									</td>
-								{/if}
-							{/if}
+								{getDayName(day)}
+							</th>
 						{/each}
 					</tr>
-				{/each}
-			</tbody>
+				</thead>
+
+				<!-- Body: Time Slots (Periods) -->
+				<tbody>
+					{#each timeSlots as slot, index (slot.period.id)}
+						<!-- Break Row (if there's a gap between periods) -->
+						{#if hasBreakBefore(slot.period, index)}
+							{@const previousPeriod = periods[index - 1]}
+							{@const breakDuration = getBreakDuration(
+								previousPeriod.end_time,
+								slot.period.start_time
+							)}
+							<tr class="bg-yellow-50/50">
+								<td colspan="6" class="border border-yellow-200 bg-yellow-50 p-2 text-center">
+									<div class="flex items-center justify-center gap-2 text-xs text-yellow-700">
+										<span class="font-medium">☕ Pause</span>
+										<span class="text-yellow-600">
+											({formatTimeDisplay(previousPeriod.end_time)} - {formatTimeDisplay(
+												slot.period.start_time
+											)})
+										</span>
+										<span class="text-yellow-600/70">
+											• {breakDuration} min
+										</span>
+									</div>
+								</td>
+							</tr>
+						{/if}
+
+						<!-- Period Row -->
+						<tr>
+							<!-- Time Column (Period Name + Times) -->
+							<td class="border border-border bg-muted/30 p-2 text-xs">
+								<div class="font-medium text-muted-foreground">{slot.display}</div>
+								<div class="mt-0.5 text-[10px] text-muted-foreground/70">
+									{formatPeriodTimes(slot.period)}
+								</div>
+							</td>
+
+							<!-- Day Columns -->
+							{#each days as day (day)}
+								{@const entry = getEntryToRender(day, slot.period)}
+								{@const shouldSkip = shouldSkipCell(day, slot.period)}
+
+								{#if !shouldSkip}
+									{#if entry}
+										{@const rowspan = calculatePeriodSpan(entry)}
+										{@const isOptimistic = entry.id.startsWith('temp-')}
+										<td
+											{rowspan}
+											class="cursor-pointer border border-border p-2 transition-all {isOptimistic
+												? 'animate-pulse bg-primary/5'
+												: 'bg-primary/10 hover:bg-primary/20'} {readonly ? '' : 'hover:shadow-md'}"
+											onclick={() => handleCellClick(day, slot.time, entry)}
+										>
+											<div class="flex items-center gap-1">
+												<div class="text-sm font-medium text-primary">
+													{formatScheduleDisplay(entry)}
+												</div>
+												{#if isOptimistic}
+													<div
+														class="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent"
+														title="Enregistrement en cours..."
+													></div>
+												{/if}
+											</div>
+											<div class="mt-1 text-xs text-muted-foreground">
+												{formatTimeDisplay(entry.start_time)} - {formatTimeDisplay(entry.end_time)}
+											</div>
+											{#if entry.notes}
+												<div class="mt-1 truncate text-xs text-muted-foreground italic">
+													{entry.notes}
+												</div>
+											{/if}
+										</td>
+									{:else}
+										<td
+											class="cursor-pointer border border-border p-2 transition-colors hover:bg-green-50 {readonly
+												? ''
+												: 'hover:border-green-200 hover:shadow-sm'}"
+											onclick={() => handleCellClick(day, slot.time)}
+											title="Cliquez pour ajouter un créneau Maths"
+										>
+											<div
+												class="text-center text-xs font-medium text-green-600 opacity-0 transition-opacity hover:opacity-100"
+											>
+												+ Maths
+											</div>
+										</td>
+									{/if}
+								{/if}
+							{/each}
+						</tr>
+					{/each}
+				</tbody>
 			</table>
 		</div>
 
@@ -282,7 +275,7 @@
 					Aucun créneau d'emploi du temps défini pour cette classe.
 				</p>
 				{#if !readonly}
-					<p class="text-sm text-muted-foreground mt-2">
+					<p class="mt-2 text-sm text-muted-foreground">
 						Cliquez sur "Modifier l'Emploi du Temps" pour ajouter des créneaux.
 					</p>
 				{/if}

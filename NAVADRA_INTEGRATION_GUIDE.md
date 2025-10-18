@@ -42,30 +42,34 @@ Integrate the **complete Navadra educational math game** into UbuMaths, transfor
 
 ### Key Metrics
 
-| Metric | Original Navadra | Target UbuMaths Integration |
-|--------|------------------|------------------------------|
-| **Codebase** | ~5,380 lines PHP + 20,944 lines JS | Rewritten in TypeScript/Svelte 5 |
-| **Challenges** | 464 JSON files (~4 elements × ~120 types) | All ported, stored in Supabase |
-| **Assets** | 90MB images + 25MB sounds | Optimized, hosted in Supabase Storage |
-| **Database** | MySQL (~15 tables) | PostgreSQL via Supabase (~12 new tables) |
-| **Auth System** | Custom PHP sessions | UbuMaths Supabase Auth |
-| **Real-time** | Ratchet WebSocket server | Existing UbuMaths WebSocket (already implemented) |
+| Metric          | Original Navadra                          | Target UbuMaths Integration                       |
+| --------------- | ----------------------------------------- | ------------------------------------------------- |
+| **Codebase**    | ~5,380 lines PHP + 20,944 lines JS        | Rewritten in TypeScript/Svelte 5                  |
+| **Challenges**  | 464 JSON files (~4 elements × ~120 types) | All ported, stored in Supabase                    |
+| **Assets**      | 90MB images + 25MB sounds                 | Optimized, hosted in Supabase Storage             |
+| **Database**    | MySQL (~15 tables)                        | PostgreSQL via Supabase (~12 new tables)          |
+| **Auth System** | Custom PHP sessions                       | UbuMaths Supabase Auth                            |
+| **Real-time**   | Ratchet WebSocket server                  | Existing UbuMaths WebSocket (already implemented) |
 
 ### Implementation Timeline Estimate
 
 **Phase 1 (Priority)**: Solo Combat + Challenges
+
 - **Estimated**: 8-12 weeks
 - **Deliverable**: Students can play solo combat with math challenges
 
 **Phase 2**: RPG Progression System
+
 - **Estimated**: 4-6 weeks
 - **Deliverable**: Levels, XP, spell unlocking, achievements
 
 **Phase 3**: Multiplayer & Social Features
+
 - **Estimated**: 4-5 weeks
 - **Deliverable**: Friend invites, team combat, leaderboards
 
 **Phase 4**: Teacher Tools & Analytics
+
 - **Estimated**: 3-4 weeks
 - **Deliverable**: Progress dashboards, difficulty management
 
@@ -132,6 +136,7 @@ src/routes/
 ```
 
 **Why?**
+
 - Leverages existing `(protected)` auth layer
 - Fullscreen layout isolated in `navadra/+layout.svelte`
 - URL structure: `/dashboard/navadra/combat/123`
@@ -152,6 +157,7 @@ $lib/stores/game/
 ```
 
 **Why?**
+
 - Svelte 5 runes provide reactive, type-safe state
 - Existing WebSocket store already handles real-time communication
 - Can persist state to localStorage for "save progress on exit"
@@ -237,6 +243,7 @@ CREATE INDEX idx_game_players_prestige ON game_players(prestige DESC);
 ```
 
 **Integration with `profiles`**:
+
 - XP from game feeds into gidouilles: `gidouilles += (xp_gained / 10)`
 - Combat victories give bonus gidouilles: `+5 per win`
 
@@ -269,6 +276,7 @@ CREATE INDEX idx_game_spells_element ON game_spells(element);
 ```
 
 **Spell System**:
+
 - Each spell has 5 upgrade levels
 - Upgrading costs element-specific Pyrs
 - Players choose 10 spells for their "deck" before combat
@@ -314,6 +322,7 @@ CREATE INDEX idx_game_monsters_is_dead ON game_monsters(is_dead);
 ```
 
 **Monster Generation**:
+
 - Monsters are generated dynamically when combat starts
 - Teachers can spawn specific monsters for their classes
 - Legendary monsters are rare and give massive rewards
@@ -365,22 +374,23 @@ CREATE INDEX idx_game_combats_started_at ON game_combats(started_at DESC);
 ```
 
 **Combat Flow Structure** (JSONB):
+
 ```typescript
 type CombatFlow = Array<{
-  round: number;
-  turn: number;
-  player_id: string;
-  action: 'spell' | 'challenge' | 'monster_attack' | 'heal';
-  spell_num?: number;
-  challenge_result?: {
-    challenge_id: string;
-    success: boolean;
-    time_taken: number;
-  };
-  damage_dealt?: number;
-  healing_done?: number;
-  critical?: boolean;
-  timestamp: string;
+	round: number;
+	turn: number;
+	player_id: string;
+	action: 'spell' | 'challenge' | 'monster_attack' | 'heal';
+	spell_num?: number;
+	challenge_result?: {
+		challenge_id: string;
+		success: boolean;
+		time_taken: number;
+	};
+	damage_dealt?: number;
+	healing_done?: number;
+	critical?: boolean;
+	timestamp: string;
 }>;
 ```
 
@@ -427,6 +437,7 @@ CREATE INDEX idx_game_challenges_slug ON game_challenges(slug);
 ```
 
 **Challenge Import**:
+
 - All 464 JSON files will be parsed and inserted into this table
 - Original file structure preserved in JSONB columns
 - Enables future teacher-created custom challenges
@@ -461,6 +472,7 @@ CREATE INDEX idx_game_challenge_attempts_attempted_at ON game_challenge_attempts
 ```
 
 **Teacher Analytics**:
+
 - Teachers can query this table to see:
   - Which challenges students struggle with
   - Average time per challenge type
@@ -497,6 +509,7 @@ CREATE INDEX idx_game_achievements_category ON game_achievements(category);
 ```
 
 **Achievements** (100 total from original, examples):
+
 - "Fire Apprentice" - Defeat 5 Fire monsters
 - "Berseker" - Win without using heal spells
 - "Super Saiyan" - Win by succeeding every challenge
@@ -553,6 +566,7 @@ CREATE INDEX idx_game_leaderboards_prestige ON game_leaderboards(season_identifi
 ```
 
 **Leaderboard System**:
+
 - Resets monthly (like original)
 - Top 10 students get bonus gidouilles
 - Class-specific leaderboards available for teachers
@@ -591,6 +605,7 @@ CREATE INDEX idx_game_timeslots_active ON game_timeslots(is_active);
 ```
 
 **Teacher Use Case**:
+
 - Teacher creates timeslot: "Geometry Week"
 - Assigns specific geometry challenges
 - Students in that class see boosted rewards for those challenges during the time window
@@ -619,6 +634,7 @@ CREATE INDEX idx_game_spell_decks_active ON game_spell_decks(user_id, is_active)
 ```
 
 **Spell Deck System**:
+
 - Players choose 10 spells before combat
 - Can save multiple deck presets
 - Only active deck is used in combat
@@ -653,6 +669,7 @@ CREATE INDEX idx_game_class_settings_class_id ON game_class_settings(class_id);
 ```
 
 **Teacher Control**:
+
 - Adjust difficulty per class
 - Give struggling classes more time per challenge
 - Scale rewards for advanced classes
@@ -724,6 +741,7 @@ CREATE POLICY "Admins can view all game profiles"
 ```
 
 **RLS Policy Pattern for All Tables**:
+
 1. Users can manage their own data
 2. Teachers can view (not modify) their students' data
 3. Admins have full access
@@ -859,104 +877,104 @@ src/routes/(protected)/dashboard/navadra/
 import { type GamePlayer } from '$lib/types/game';
 
 class PlayerStore {
-  private _player = $state<GamePlayer | null>(null);
+	private _player = $state<GamePlayer | null>(null);
 
-  get player() {
-    return this._player;
-  }
+	get player() {
+		return this._player;
+	}
 
-  set player(value: GamePlayer | null) {
-    this._player = value;
-    // Auto-save to localStorage for persistence
-    if (value) {
-      localStorage.setItem('game_player', JSON.stringify(value));
-    }
-  }
+	set player(value: GamePlayer | null) {
+		this._player = value;
+		// Auto-save to localStorage for persistence
+		if (value) {
+			localStorage.setItem('game_player', JSON.stringify(value));
+		}
+	}
 
-  // Derived values
-  get level() {
-    return this._player?.level ?? 1;
-  }
+	// Derived values
+	get level() {
+		return this._player?.level ?? 1;
+	}
 
-  get xp() {
-    return this._player?.xp ?? 0;
-  }
+	get xp() {
+		return this._player?.xp ?? 0;
+	}
 
-  get xpForNextLevel() {
-    return this.level * 1000; // Example formula
-  }
+	get xpForNextLevel() {
+		return this.level * 1000; // Example formula
+	}
 
-  get xpProgress() {
-    return (this.xp / this.xpForNextLevel) * 100;
-  }
+	get xpProgress() {
+		return (this.xp / this.xpForNextLevel) * 100;
+	}
 
-  get totalPyrs() {
-    if (!this._player) return 0;
-    return (
-      this._player.pyrs_fire +
-      this._player.pyrs_water +
-      this._player.pyrs_earth +
-      this._player.pyrs_wind
-    );
-  }
+	get totalPyrs() {
+		if (!this._player) return 0;
+		return (
+			this._player.pyrs_fire +
+			this._player.pyrs_water +
+			this._player.pyrs_earth +
+			this._player.pyrs_wind
+		);
+	}
 
-  // Methods
-  gainXP(amount: number) {
-    if (!this._player) return;
+	// Methods
+	gainXP(amount: number) {
+		if (!this._player) return;
 
-    this._player.xp += amount;
+		this._player.xp += amount;
 
-    // Check for level up
-    while (this._player.xp >= this.xpForNextLevel) {
-      this._player.xp -= this.xpForNextLevel;
-      this._player.level += 1;
-      // Trigger level up event
-      this.onLevelUp();
-    }
+		// Check for level up
+		while (this._player.xp >= this.xpForNextLevel) {
+			this._player.xp -= this.xpForNextLevel;
+			this._player.level += 1;
+			// Trigger level up event
+			this.onLevelUp();
+		}
 
-    this.player = this._player; // Trigger save
-  }
+		this.player = this._player; // Trigger save
+	}
 
-  gainPyrs(element: string, amount: number) {
-    if (!this._player) return;
+	gainPyrs(element: string, amount: number) {
+		if (!this._player) return;
 
-    switch (element) {
-      case 'fire':
-        this._player.pyrs_fire += amount;
-        break;
-      case 'water':
-        this._player.pyrs_water += amount;
-        break;
-      case 'earth':
-        this._player.pyrs_earth += amount;
-        break;
-      case 'wind':
-        this._player.pyrs_wind += amount;
-        break;
-    }
+		switch (element) {
+			case 'fire':
+				this._player.pyrs_fire += amount;
+				break;
+			case 'water':
+				this._player.pyrs_water += amount;
+				break;
+			case 'earth':
+				this._player.pyrs_earth += amount;
+				break;
+			case 'wind':
+				this._player.pyrs_wind += amount;
+				break;
+		}
 
-    this.player = this._player; // Trigger save
-  }
+		this.player = this._player; // Trigger save
+	}
 
-  private onLevelUp() {
-    // Show level up modal
-    // Unlock new spells
-    // Convert XP to gidouilles
-  }
+	private onLevelUp() {
+		// Show level up modal
+		// Unlock new spells
+		// Convert XP to gidouilles
+	}
 
-  // Persistence
-  loadFromLocalStorage() {
-    const saved = localStorage.getItem('game_player');
-    if (saved) {
-      this._player = JSON.parse(saved);
-    }
-  }
+	// Persistence
+	loadFromLocalStorage() {
+		const saved = localStorage.getItem('game_player');
+		if (saved) {
+			this._player = JSON.parse(saved);
+		}
+	}
 
-  async syncWithServer() {
-    // Fetch latest data from server
-    // Merge with local state
-    // Resolve conflicts (server wins)
-  }
+	async syncWithServer() {
+		// Fetch latest data from server
+		// Merge with local state
+		// Resolve conflicts (server wins)
+	}
 }
 
 export const playerStore = new PlayerStore();
@@ -1035,59 +1053,59 @@ The challenge system is the most complex part. Here's how to structure it:
 
 ```svelte
 <script lang="ts">
-  import { type Challenge } from '$lib/types/game';
-  import ChallengeInput from './ChallengeInput.svelte';
-  import ChallengeGeometry from './ChallengeGeometry.svelte';
-  import ChallengeTimer from './ChallengeTimer.svelte';
-  import { challengeStore } from '$lib/stores/game/challenge.svelte';
+	import { type Challenge } from '$lib/types/game';
+	import ChallengeInput from './ChallengeInput.svelte';
+	import ChallengeGeometry from './ChallengeGeometry.svelte';
+	import ChallengeTimer from './ChallengeTimer.svelte';
+	import { challengeStore } from '$lib/stores/game/challenge.svelte';
 
-  let { challenge }: { challenge: Challenge } = $props();
+	let { challenge }: { challenge: Challenge } = $props();
 
-  // Generate challenge instance (randomize variables)
-  let instance = $derived(generateChallengeInstance(challenge));
+	// Generate challenge instance (randomize variables)
+	let instance = $derived(generateChallengeInstance(challenge));
 
-  // Timer
-  let timeRemaining = $state(challenge.timer);
+	// Timer
+	let timeRemaining = $state(challenge.timer);
 
-  // Answer submission
-  async function handleSubmit(answer: any) {
-    const success = evaluateAnswer(answer, instance.correct_answer);
+	// Answer submission
+	async function handleSubmit(answer: any) {
+		const success = evaluateAnswer(answer, instance.correct_answer);
 
-    await challengeStore.submitAttempt({
-      challenge_id: challenge.id,
-      success,
-      answer_given: answer,
-      time_taken: challenge.timer - timeRemaining,
-      challenge_instance: instance
-    });
+		await challengeStore.submitAttempt({
+			challenge_id: challenge.id,
+			success,
+			answer_given: answer,
+			time_taken: challenge.timer - timeRemaining,
+			challenge_instance: instance
+		});
 
-    // Trigger callback (return to combat or show results)
-    if (success) {
-      onSuccess();
-    } else {
-      onFailure();
-    }
-  }
+		// Trigger callback (return to combat or show results)
+		if (success) {
+			onSuccess();
+		} else {
+			onFailure();
+		}
+	}
 </script>
 
 <div class="challenge-container">
-  <ChallengeTimer bind:timeRemaining onTimeout={handleTimeout} />
+	<ChallengeTimer bind:timeRemaining onTimeout={handleTimeout} />
 
-  <div class="challenge-question">
-    {@html interpolateQuestion(challenge.question, instance.variables)}
-  </div>
+	<div class="challenge-question">
+		{@html interpolateQuestion(challenge.question, instance.variables)}
+	</div>
 
-  {#if challenge.challenge_type === 'geometry'}
-    <ChallengeGeometry {instance} {onSubmit} />
-  {:else if challenge.challenge_type === 'table'}
-    <ChallengeTable {instance} {onSubmit} />
-  {:else}
-    <ChallengeInput {instance} {onSubmit} />
-  {/if}
+	{#if challenge.challenge_type === 'geometry'}
+		<ChallengeGeometry {instance} {onSubmit} />
+	{:else if challenge.challenge_type === 'table'}
+		<ChallengeTable {instance} {onSubmit} />
+	{:else}
+		<ChallengeInput {instance} {onSubmit} />
+	{/if}
 
-  {#if challenge.hint}
-    <button onclick={showHint}>Afficher l'indice</button>
-  {/if}
+	{#if challenge.hint}
+		<button onclick={showHint}>Afficher l'indice</button>
+	{/if}
 </div>
 ```
 
@@ -1104,56 +1122,57 @@ const math = create(all);
 
 // Add custom functions
 math.import({
-  randomInt: (min: number, max: number) => Math.floor(Math.random() * (max - min)) + min,
-  pickRandom: (arr: any[]) => arr[Math.floor(Math.random() * arr.length)],
-  different: (arr1: any[], ...otherArrays: any[][]) => {
-    // Logic to ensure arr1 is different from all other arrays
-  }
-  // ... other custom functions
+	randomInt: (min: number, max: number) => Math.floor(Math.random() * (max - min)) + min,
+	pickRandom: (arr: any[]) => arr[Math.floor(Math.random() * arr.length)],
+	different: (arr1: any[], ...otherArrays: any[][]) => {
+		// Logic to ensure arr1 is different from all other arrays
+	}
+	// ... other custom functions
 });
 
 export function generateChallengeInstance(challenge: Challenge) {
-  const variables: Record<string, any> = {};
-  const expressions: Record<string, string> = {};
+	const variables: Record<string, any> = {};
+	const expressions: Record<string, string> = {};
 
-  // Sort variables by dependency order
-  const sortedVars = topologicalSort(challenge.variables);
+	// Sort variables by dependency order
+	const sortedVars = topologicalSort(challenge.variables);
 
-  // Evaluate each variable
-  for (const [varName, varDef] of Object.entries(sortedVars)) {
-    if (varDef.value) {
-      // Evaluate with Math.js
-      const evaluated = evaluateWithContext(varDef.value, variables);
-      variables[varName] = evaluated;
-    } else if (varDef.expression) {
-      // Store expression (don't evaluate)
-      expressions[varName] = interpolateExpression(varDef.expression, variables);
-    }
-  }
+	// Evaluate each variable
+	for (const [varName, varDef] of Object.entries(sortedVars)) {
+		if (varDef.value) {
+			// Evaluate with Math.js
+			const evaluated = evaluateWithContext(varDef.value, variables);
+			variables[varName] = evaluated;
+		} else if (varDef.expression) {
+			// Store expression (don't evaluate)
+			expressions[varName] = interpolateExpression(varDef.expression, variables);
+		}
+	}
 
-  return {
-    variables,
-    expressions,
-    correct_answer: evaluateAnswer(challenge.answer, variables)
-  };
+	return {
+		variables,
+		expressions,
+		correct_answer: evaluateAnswer(challenge.answer, variables)
+	};
 }
 
 function evaluateWithContext(expr: string, context: Record<string, any>) {
-  // Replace variable references {varName} with actual values
-  const interpolated = expr.replace(/\{(\w+)\}/g, (_, varName) => {
-    return context[varName] ?? varName;
-  });
+	// Replace variable references {varName} with actual values
+	const interpolated = expr.replace(/\{(\w+)\}/g, (_, varName) => {
+		return context[varName] ?? varName;
+	});
 
-  try {
-    return math.evaluate(interpolated, context);
-  } catch (error) {
-    console.error('Failed to evaluate expression:', expr, error);
-    return null;
-  }
+	try {
+		return math.evaluate(interpolated, context);
+	} catch (error) {
+		console.error('Failed to evaluate expression:', expr, error);
+		return null;
+	}
 }
 ```
 
 **Challenge**: This is **complex** and will require significant effort to port. The original `challenge.js` is 132KB and handles:
+
 - Variable generation with Math.js
 - Geometry rendering with JSXGraph
 - Drag-and-drop interfaces
@@ -1161,6 +1180,7 @@ function evaluateWithContext(expr: string, context: Record<string, any>) {
 - Answer validation
 
 **Recommendation**: Port incrementally by challenge type:
+
 1. Start with simple numeric challenges (type 1-3)
 2. Add table/chart challenges (type 4-6)
 3. Finally tackle geometry challenges (type 7-10)
@@ -1372,43 +1392,47 @@ import type { WebSocket } from 'ws';
 import type { WebSocketMessage } from '$lib/types/websocket';
 
 export function handleGameCombatMessage(ws: WebSocket, message: WebSocketMessage) {
-  switch (message.type) {
-    case 'game:combat:join':
-      handleCombatJoin(ws, message);
-      break;
-    case 'game:combat:ready':
-      handlePlayerReady(ws, message);
-      break;
-    case 'game:combat:turn':
-      handleTurnUpdate(ws, message);
-      break;
-    case 'game:combat:spell':
-      handleSpellCast(ws, message);
-      break;
-  }
+	switch (message.type) {
+		case 'game:combat:join':
+			handleCombatJoin(ws, message);
+			break;
+		case 'game:combat:ready':
+			handlePlayerReady(ws, message);
+			break;
+		case 'game:combat:turn':
+			handleTurnUpdate(ws, message);
+			break;
+		case 'game:combat:spell':
+			handleSpellCast(ws, message);
+			break;
+	}
 }
 
 function handleCombatJoin(ws: WebSocket, message: WebSocketMessage) {
-  const { combat_id, user_id } = message.payload;
+	const { combat_id, user_id } = message.payload;
 
-  // Add user to combat room
-  joinRoom(ws, `combat:${combat_id}`);
+	// Add user to combat room
+	joinRoom(ws, `combat:${combat_id}`);
 
-  // Broadcast to other players
-  broadcastToRoom(`combat:${combat_id}`, {
-    type: 'game:combat:player_joined',
-    payload: { user_id }
-  }, ws);
+	// Broadcast to other players
+	broadcastToRoom(
+		`combat:${combat_id}`,
+		{
+			type: 'game:combat:player_joined',
+			payload: { user_id }
+		},
+		ws
+	);
 }
 
 function handleTurnUpdate(ws: WebSocket, message: WebSocketMessage) {
-  const { combat_id, turn_data } = message.payload;
+	const { combat_id, turn_data } = message.payload;
 
-  // Broadcast turn result to all participants
-  broadcastToRoom(`combat:${combat_id}`, {
-    type: 'game:combat:turn_completed',
-    payload: turn_data
-  });
+	// Broadcast turn result to all participants
+	broadcastToRoom(`combat:${combat_id}`, {
+		type: 'game:combat:turn_completed',
+		payload: turn_data
+	});
 }
 ```
 
@@ -1420,13 +1444,13 @@ function handleTurnUpdate(ws: WebSocket, message: WebSocketMessage) {
 
 ### Assets to Migrate
 
-| Asset Type | Original Location | Size | Target Location |
-|------------|-------------------|------|-----------------|
-| Monster images | `webroot/img/monstres/` | ~40MB | Supabase Storage: `game-assets/monsters/` |
-| Spell icons | `webroot/img/spells/` | ~10MB | Supabase Storage: `game-assets/spells/` |
-| Character avatars | `webroot/img/personnages/` | ~5MB | Supabase Storage: `game-assets/characters/` |
-| Sound effects | `webroot/sons/` | 25MB | Supabase Storage: `game-assets/sounds/` |
-| UI elements | `webroot/img/icones/` | ~10MB | `static/game/ui/` (public) |
+| Asset Type        | Original Location          | Size  | Target Location                             |
+| ----------------- | -------------------------- | ----- | ------------------------------------------- |
+| Monster images    | `webroot/img/monstres/`    | ~40MB | Supabase Storage: `game-assets/monsters/`   |
+| Spell icons       | `webroot/img/spells/`      | ~10MB | Supabase Storage: `game-assets/spells/`     |
+| Character avatars | `webroot/img/personnages/` | ~5MB  | Supabase Storage: `game-assets/characters/` |
+| Sound effects     | `webroot/sons/`            | 25MB  | Supabase Storage: `game-assets/sounds/`     |
+| UI elements       | `webroot/img/icones/`      | ~10MB | `static/game/ui/` (public)                  |
 
 ### Migration Script
 
@@ -1441,8 +1465,8 @@ import path from 'path';
 import { glob } from 'glob';
 
 const supabase = createClient(
-  process.env.PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+	process.env.PUBLIC_SUPABASE_URL!,
+	process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 const NAVADRA_ROOT = '/Users/david/Coding/js/ubumaths/extern/navadra-jeu/webroot';
@@ -1450,81 +1474,80 @@ const ASSETS_DIR = path.join(NAVADRA_ROOT, 'img');
 const SOUNDS_DIR = path.join(NAVADRA_ROOT, 'sons');
 
 async function createStorageBucket() {
-  const { data, error } = await supabase.storage.createBucket('game-assets', {
-    public: true,
-    fileSizeLimit: 10 * 1024 * 1024, // 10MB per file
-    allowedMimeTypes: ['image/png', 'image/jpeg', 'image/webp', 'audio/mpeg', 'audio/ogg']
-  });
+	const { data, error } = await supabase.storage.createBucket('game-assets', {
+		public: true,
+		fileSizeLimit: 10 * 1024 * 1024, // 10MB per file
+		allowedMimeTypes: ['image/png', 'image/jpeg', 'image/webp', 'audio/mpeg', 'audio/ogg']
+	});
 
-  if (error && !error.message.includes('already exists')) {
-    console.error('Failed to create bucket:', error);
-  } else {
-    console.log('✓ Storage bucket created');
-  }
+	if (error && !error.message.includes('already exists')) {
+		console.error('Failed to create bucket:', error);
+	} else {
+		console.log('✓ Storage bucket created');
+	}
 }
 
 async function uploadAssets(category: string, sourceDir: string) {
-  const files = await glob(`${sourceDir}/**/*.{png,jpg,jpeg,webp,mp3,ogg}`);
+	const files = await glob(`${sourceDir}/**/*.{png,jpg,jpeg,webp,mp3,ogg}`);
 
-  console.log(`Uploading ${files.length} files from ${category}...`);
+	console.log(`Uploading ${files.length} files from ${category}...`);
 
-  let successCount = 0;
-  let errorCount = 0;
+	let successCount = 0;
+	let errorCount = 0;
 
-  for (const filePath of files) {
-    const relativePath = path.relative(NAVADRA_ROOT, filePath);
-    const targetPath = `${category}/${relativePath}`;
+	for (const filePath of files) {
+		const relativePath = path.relative(NAVADRA_ROOT, filePath);
+		const targetPath = `${category}/${relativePath}`;
 
-    const fileContent = fs.readFileSync(filePath);
+		const fileContent = fs.readFileSync(filePath);
 
-    const { error } = await supabase.storage
-      .from('game-assets')
-      .upload(targetPath, fileContent, {
-        contentType: getContentType(filePath),
-        upsert: true
-      });
+		const { error } = await supabase.storage.from('game-assets').upload(targetPath, fileContent, {
+			contentType: getContentType(filePath),
+			upsert: true
+		});
 
-    if (error) {
-      console.error(`✗ Failed to upload ${targetPath}:`, error.message);
-      errorCount++;
-    } else {
-      successCount++;
-    }
-  }
+		if (error) {
+			console.error(`✗ Failed to upload ${targetPath}:`, error.message);
+			errorCount++;
+		} else {
+			successCount++;
+		}
+	}
 
-  console.log(`✓ Uploaded ${successCount} files (${errorCount} errors)`);
+	console.log(`✓ Uploaded ${successCount} files (${errorCount} errors)`);
 }
 
 function getContentType(filePath: string): string {
-  const ext = path.extname(filePath).toLowerCase();
-  const mimeTypes: Record<string, string> = {
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.webp': 'image/webp',
-    '.mp3': 'audio/mpeg',
-    '.ogg': 'audio/ogg'
-  };
-  return mimeTypes[ext] || 'application/octet-stream';
+	const ext = path.extname(filePath).toLowerCase();
+	const mimeTypes: Record<string, string> = {
+		'.png': 'image/png',
+		'.jpg': 'image/jpeg',
+		'.jpeg': 'image/jpeg',
+		'.webp': 'image/webp',
+		'.mp3': 'audio/mpeg',
+		'.ogg': 'audio/ogg'
+	};
+	return mimeTypes[ext] || 'application/octet-stream';
 }
 
 async function main() {
-  console.log('Starting Navadra asset migration...\n');
+	console.log('Starting Navadra asset migration...\n');
 
-  await createStorageBucket();
+	await createStorageBucket();
 
-  await uploadAssets('monsters', path.join(ASSETS_DIR, 'monstres'));
-  await uploadAssets('spells', path.join(ASSETS_DIR, 'spells'));
-  await uploadAssets('characters', path.join(ASSETS_DIR, 'personnages'));
-  await uploadAssets('sounds', SOUNDS_DIR);
+	await uploadAssets('monsters', path.join(ASSETS_DIR, 'monstres'));
+	await uploadAssets('spells', path.join(ASSETS_DIR, 'spells'));
+	await uploadAssets('characters', path.join(ASSETS_DIR, 'personnages'));
+	await uploadAssets('sounds', SOUNDS_DIR);
 
-  console.log('\n✓ Asset migration complete!');
+	console.log('\n✓ Asset migration complete!');
 }
 
 main().catch(console.error);
 ```
 
 **Run migration**:
+
 ```bash
 npx tsx scripts/migrate-navadra-assets.ts
 ```
@@ -1538,8 +1561,11 @@ Create a helper to generate Supabase Storage URLs:
 ```typescript
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 
-export function getGameAssetUrl(category: 'monsters' | 'spells' | 'characters' | 'sounds', filename: string): string {
-  return `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/game-assets/${category}/${filename}`;
+export function getGameAssetUrl(
+	category: 'monsters' | 'spells' | 'characters' | 'sounds',
+	filename: string
+): string {
+	return `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/game-assets/${category}/${filename}`;
 }
 
 // Examples:
@@ -1564,68 +1590,67 @@ import path from 'path';
 import { glob } from 'glob';
 
 const supabase = createClient(
-  process.env.PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+	process.env.PUBLIC_SUPABASE_URL!,
+	process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 const CHALLENGES_DIR = '/Users/david/Coding/js/ubumaths/extern/navadra-jeu/generators/challenges';
 
 async function importChallenges() {
-  const files = await glob(`${CHALLENGES_DIR}/**/*.json`);
+	const files = await glob(`${CHALLENGES_DIR}/**/*.json`);
 
-  console.log(`Found ${files.length} challenge files`);
+	console.log(`Found ${files.length} challenge files`);
 
-  const challenges = [];
+	const challenges = [];
 
-  for (const filePath of files) {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const challenge = JSON.parse(content);
+	for (const filePath of files) {
+		const content = fs.readFileSync(filePath, 'utf-8');
+		const challenge = JSON.parse(content);
 
-    // Parse metadata from file path
-    // e.g., challenges/water/tables/1/water_tables_1_1.json
-    const relativePath = path.relative(CHALLENGES_DIR, filePath);
-    const pathParts = relativePath.split(path.sep);
+		// Parse metadata from file path
+		// e.g., challenges/water/tables/1/water_tables_1_1.json
+		const relativePath = path.relative(CHALLENGES_DIR, filePath);
+		const pathParts = relativePath.split(path.sep);
 
-    const element = pathParts[0]; // 'water', 'fire', 'earth', 'wind', 'base'
-    const category = pathParts[1]; // 'tables', 'fractions', etc.
-    const difficulty = parseInt(pathParts[2]) || 1; // '1', '2', etc.
-    const filename = path.basename(filePath, '.json');
+		const element = pathParts[0]; // 'water', 'fire', 'earth', 'wind', 'base'
+		const category = pathParts[1]; // 'tables', 'fractions', etc.
+		const difficulty = parseInt(pathParts[2]) || 1; // '1', '2', etc.
+		const filename = path.basename(filePath, '.json');
 
-    challenges.push({
-      slug: filename,
-      element,
-      category,
-      difficulty,
-      timer: challenge.timer,
-      challenge_type: challenge.type,
-      question: challenge.question,
-      view_config: challenge.view || {},
-      variables: challenge.var || {},
-      answer: challenge.answer,
-      hint: challenge.hint || null,
-      show_answer: challenge.showAnswer || null,
-      is_active: true
-    });
-  }
+		challenges.push({
+			slug: filename,
+			element,
+			category,
+			difficulty,
+			timer: challenge.timer,
+			challenge_type: challenge.type,
+			question: challenge.question,
+			view_config: challenge.view || {},
+			variables: challenge.var || {},
+			answer: challenge.answer,
+			hint: challenge.hint || null,
+			show_answer: challenge.showAnswer || null,
+			is_active: true
+		});
+	}
 
-  console.log(`Importing ${challenges.length} challenges...`);
+	console.log(`Importing ${challenges.length} challenges...`);
 
-  // Batch insert
-  const { data, error } = await supabase
-    .from('game_challenges')
-    .insert(challenges);
+	// Batch insert
+	const { data, error } = await supabase.from('game_challenges').insert(challenges);
 
-  if (error) {
-    console.error('Import failed:', error);
-  } else {
-    console.log(`✓ Successfully imported ${challenges.length} challenges`);
-  }
+	if (error) {
+		console.error('Import failed:', error);
+	} else {
+		console.log(`✓ Successfully imported ${challenges.length} challenges`);
+	}
 }
 
 importChallenges().catch(console.error);
 ```
 
 **Run import**:
+
 ```bash
 npx tsx scripts/import-navadra-challenges.ts
 ```
@@ -1640,57 +1665,58 @@ When a player casts a spell in combat, the system needs to select an appropriate
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export async function selectChallenge(
-  supabase: SupabaseClient,
-  userId: string,
-  spellElement: string,
-  playerLevel: number,
-  classSettings?: {
-    base_difficulty: number;
-    challenge_timer_multiplier: number;
-  }
+	supabase: SupabaseClient,
+	userId: string,
+	spellElement: string,
+	playerLevel: number,
+	classSettings?: {
+		base_difficulty: number;
+		challenge_timer_multiplier: number;
+	}
 ): Promise<string> {
-  // Determine difficulty based on player level and class settings
-  const baseDifficulty = classSettings?.base_difficulty ?? 3;
-  const levelDifficulty = Math.min(5, Math.floor(playerLevel / 10) + 1);
-  const targetDifficulty = Math.min(5, Math.max(1,
-    Math.round((baseDifficulty + levelDifficulty) / 2)
-  ));
+	// Determine difficulty based on player level and class settings
+	const baseDifficulty = classSettings?.base_difficulty ?? 3;
+	const levelDifficulty = Math.min(5, Math.floor(playerLevel / 10) + 1);
+	const targetDifficulty = Math.min(
+		5,
+		Math.max(1, Math.round((baseDifficulty + levelDifficulty) / 2))
+	);
 
-  // Fetch player's challenge history for this element
-  const { data: recentAttempts } = await supabase
-    .from('game_challenge_attempts')
-    .select('challenge_id')
-    .eq('user_id', userId)
-    .order('attempted_at', { ascending: false })
-    .limit(20);
+	// Fetch player's challenge history for this element
+	const { data: recentAttempts } = await supabase
+		.from('game_challenge_attempts')
+		.select('challenge_id')
+		.eq('user_id', userId)
+		.order('attempted_at', { ascending: false })
+		.limit(20);
 
-  const recentChallengeIds = recentAttempts?.map(a => a.challenge_id) || [];
+	const recentChallengeIds = recentAttempts?.map((a) => a.challenge_id) || [];
 
-  // Select random challenge matching criteria
-  // Exclude recently attempted challenges for variety
-  const { data: challenges } = await supabase
-    .from('game_challenges')
-    .select('id')
-    .eq('element', spellElement)
-    .eq('difficulty', targetDifficulty)
-    .eq('is_active', true)
-    .not('id', 'in', `(${recentChallengeIds.join(',')})`)
-    .limit(10);
+	// Select random challenge matching criteria
+	// Exclude recently attempted challenges for variety
+	const { data: challenges } = await supabase
+		.from('game_challenges')
+		.select('id')
+		.eq('element', spellElement)
+		.eq('difficulty', targetDifficulty)
+		.eq('is_active', true)
+		.not('id', 'in', `(${recentChallengeIds.join(',')})`)
+		.limit(10);
 
-  if (!challenges || challenges.length === 0) {
-    // Fallback: select any challenge for this element
-    const { data: fallbackChallenges } = await supabase
-      .from('game_challenges')
-      .select('id')
-      .eq('element', spellElement)
-      .eq('is_active', true)
-      .limit(10);
+	if (!challenges || challenges.length === 0) {
+		// Fallback: select any challenge for this element
+		const { data: fallbackChallenges } = await supabase
+			.from('game_challenges')
+			.select('id')
+			.eq('element', spellElement)
+			.eq('is_active', true)
+			.limit(10);
 
-    return fallbackChallenges![Math.floor(Math.random() * fallbackChallenges!.length)].id;
-  }
+		return fallbackChallenges![Math.floor(Math.random() * fallbackChallenges!.length)].id;
+	}
 
-  // Return random challenge from selection
-  return challenges[Math.floor(Math.random() * challenges.length)].id;
+	// Return random challenge from selection
+	return challenges[Math.floor(Math.random() * challenges.length)].id;
 }
 ```
 
@@ -1910,47 +1936,45 @@ Based on the original Navadra combat system:
 
 ```typescript
 function calculateDamage(
-  spell: Spell,
-  effectiveness: number, // 0-1 based on challenge performance
-  combat: Combat
+	spell: Spell,
+	effectiveness: number, // 0-1 based on challenge performance
+	combat: Combat
 ): number {
-  // Base damage from spell power
-  const baseDamage = spell.power;
+	// Base damage from spell power
+	const baseDamage = spell.power;
 
-  // Player level bonus
-  const playerLevel = combat.player_snapshots[playerId].level;
-  const levelBonus = 1 + (playerLevel * 0.05); // +5% per level
+	// Player level bonus
+	const playerLevel = combat.player_snapshots[playerId].level;
+	const levelBonus = 1 + playerLevel * 0.05; // +5% per level
 
-  // Effectiveness multiplier (0.5 for failed challenge, 1.0 for success)
-  const effectivenessMultiplier = effectiveness;
+	// Effectiveness multiplier (0.5 for failed challenge, 1.0 for success)
+	const effectivenessMultiplier = effectiveness;
 
-  // Element affinity bonus (if spell element matches monster weakness)
-  const elementBonus = getElementAdvantage(spell.element, combat.monster_snapshot.element);
+	// Element affinity bonus (if spell element matches monster weakness)
+	const elementBonus = getElementAdvantage(spell.element, combat.monster_snapshot.element);
 
-  // Final damage calculation
-  const damage = Math.floor(
-    baseDamage * levelBonus * effectivenessMultiplier * elementBonus
-  );
+	// Final damage calculation
+	const damage = Math.floor(baseDamage * levelBonus * effectivenessMultiplier * elementBonus);
 
-  return damage;
+	return damage;
 }
 
 function getElementAdvantage(spellElement: string, monsterElement: string): number {
-  // Rock-paper-scissors element system
-  const advantages: Record<string, string> = {
-    fire: 'earth',
-    earth: 'wind',
-    wind: 'water',
-    water: 'fire'
-  };
+	// Rock-paper-scissors element system
+	const advantages: Record<string, string> = {
+		fire: 'earth',
+		earth: 'wind',
+		wind: 'water',
+		water: 'fire'
+	};
 
-  if (advantages[spellElement] === monsterElement) {
-    return 1.5; // 50% bonus damage
-  } else if (advantages[monsterElement] === spellElement) {
-    return 0.75; // 25% penalty
-  }
+	if (advantages[spellElement] === monsterElement) {
+		return 1.5; // 50% bonus damage
+	} else if (advantages[monsterElement] === spellElement) {
+		return 0.75; // 25% penalty
+	}
 
-  return 1.0; // Neutral
+	return 1.0; // Neutral
 }
 ```
 
@@ -1969,16 +1993,18 @@ For multiplayer combat invitations, we use the existing `friendships` table:
 ```typescript
 // Fetch player's friends for combat invitations
 async function fetchFriendsForInvite(userId: string) {
-  const { data } = await supabase
-    .from('friendships')
-    .select(`
+	const { data } = await supabase
+		.from('friendships')
+		.select(
+			`
       *,
       friend:profiles!addressee_id(id, firstname, lastname, avatar_url)
-    `)
-    .eq('requester_id', userId)
-    .eq('status', 'accepted');
+    `
+		)
+		.eq('requester_id', userId)
+		.eq('status', 'accepted');
 
-  return data;
+	return data;
 }
 ```
 
@@ -2004,16 +2030,16 @@ When students win combats, XP is converted to gidouilles:
 
 ```typescript
 async function awardGidouilles(userId: string, amount: number) {
-  // Update profiles table
-  await supabase
-    .from('profiles')
-    .update({
-      gidouilles: supabase.raw(`gidouilles + ${amount}`)
-    })
-    .eq('id', userId);
+	// Update profiles table
+	await supabase
+		.from('profiles')
+		.update({
+			gidouilles: supabase.raw(`gidouilles + ${amount}`)
+		})
+		.eq('id', userId);
 
-  // Show toast notification
-  toaster.success(`+${amount} gidouilles gagnées !`);
+	// Show toast notification
+	toaster.success(`+${amount} gidouilles gagnées !`);
 }
 ```
 
@@ -2026,21 +2052,23 @@ Add game stats to existing teacher dashboard:
 ```typescript
 // Add game progress to existing student data
 const { data: gameProgress } = await supabase
-  .from('game_players')
-  .select(`
+	.from('game_players')
+	.select(
+		`
     *,
     spells_count:game_spells(count),
     combats_won,
     combats_lost,
     total_combats
-  `)
-  .eq('user_id', studentId)
-  .single();
+  `
+	)
+	.eq('user_id', studentId)
+	.single();
 
 return {
-  student,
-  gameProgress, // NEW: Add to existing data
-  // ... existing fields
+	student,
+	gameProgress // NEW: Add to existing data
+	// ... existing fields
 };
 ```
 
@@ -2052,22 +2080,20 @@ Add game entry point to student dashboard:
 
 ```svelte
 {#if profile.role === 'student'}
-  <div class="game-entry-card">
-    <h3>Navadra - Le Jeu</h3>
-    <p>Apprends les maths en combattant des monstres !</p>
-    <a href="/dashboard/navadra">
-      <Button variant="default" size="lg">
-        Jouer maintenant
-      </Button>
-    </a>
+	<div class="game-entry-card">
+		<h3>Navadra - Le Jeu</h3>
+		<p>Apprends les maths en combattant des monstres !</p>
+		<a href="/dashboard/navadra">
+			<Button variant="default" size="lg">Jouer maintenant</Button>
+		</a>
 
-    {#if gamePlayer}
-      <div class="game-stats-preview">
-        <span>Niveau {gamePlayer.level}</span>
-        <span>{gamePlayer.combats_won} victoires</span>
-      </div>
-    {/if}
-  </div>
+		{#if gamePlayer}
+			<div class="game-stats-preview">
+				<span>Niveau {gamePlayer.level}</span>
+				<span>{gamePlayer.combats_won} victoires</span>
+			</div>
+		{/if}
+	</div>
 {/if}
 ```
 
@@ -2083,36 +2109,42 @@ Add game entry point to student dashboard:
 #### Milestones
 
 **Milestone 1.1: Database Setup** (Week 1)
+
 - [ ] Create all 12 database tables
 - [ ] Write migration files
 - [ ] Set up RLS policies
 - [ ] Test database with sample data
 
 **Milestone 1.2: Asset Migration** (Week 1-2)
+
 - [ ] Set up Supabase Storage bucket
 - [ ] Run asset migration script
 - [ ] Optimize images (convert to WebP)
 - [ ] Create asset URL helpers
 
 **Milestone 1.3: Challenge Import** (Week 2)
+
 - [ ] Write challenge import script
 - [ ] Import all 464 challenges
 - [ ] Verify data integrity
 - [ ] Create challenge selection algorithm
 
 **Milestone 1.4: Game Layout & Routes** (Week 2-3)
+
 - [ ] Create fullscreen game layout
 - [ ] Set up route structure
 - [ ] Build game header (XP, level, pyrs)
 - [ ] Implement exit button with progress save
 
 **Milestone 1.5: Player Profile System** (Week 3-4)
+
 - [ ] Create `game_players` table integration
 - [ ] Build player profile page
 - [ ] Implement XP/level system
 - [ ] Create element pyrs display
 
 **Milestone 1.6: Challenge System (Numeric)** (Week 4-6)
+
 - [ ] Port challenge variable evaluation logic
 - [ ] Build challenge container component
 - [ ] Implement numeric input challenges (types 1-3)
@@ -2120,6 +2152,7 @@ Add game entry point to student dashboard:
 - [ ] Build hint system
 
 **Milestone 1.7: Combat System (Solo)** (Week 6-8)
+
 - [ ] Build monster generation system
 - [ ] Create combat arena UI
 - [ ] Implement turn-based flow
@@ -2127,18 +2160,21 @@ Add game entry point to student dashboard:
 - [ ] Connect challenges to combat
 
 **Milestone 1.8: Spell System** (Week 8-9)
+
 - [ ] Create spell database + seed data
 - [ ] Build spell collection UI
 - [ ] Implement spell deck builder
 - [ ] Add spell upgrade system
 
 **Milestone 1.9: Combat Resolution** (Week 9-10)
+
 - [ ] Implement damage calculations
 - [ ] Add victory/defeat logic
 - [ ] Build reward distribution
 - [ ] Integrate gidouilles conversion
 
 **Milestone 1.10: Polish & Testing** (Week 10-12)
+
 - [ ] Add animations
 - [ ] Implement sound effects
 - [ ] Test all challenge types (numeric)
@@ -2146,6 +2182,7 @@ Add game entry point to student dashboard:
 - [ ] Write documentation
 
 **Phase 1 Deliverables**:
+
 - ✅ Students can create game profile
 - ✅ Students can fight solo monsters
 - ✅ Students solve numeric challenges (not geometry yet)
@@ -2164,30 +2201,35 @@ Add game entry point to student dashboard:
 #### Milestones
 
 **Milestone 2.1: Achievement System** (Week 1-2)
+
 - [ ] Import achievement definitions
 - [ ] Build achievement tracking logic
 - [ ] Create achievement UI
 - [ ] Add achievement notifications
 
 **Milestone 2.2: Leaderboard System** (Week 2-3)
+
 - [ ] Implement seasonal rankings
 - [ ] Build leaderboard UI
 - [ ] Add class leaderboards
 - [ ] Create reward distribution
 
 **Milestone 2.3: Advanced Challenge Types** (Week 3-5)
+
 - [ ] Port table/chart challenges
 - [ ] Port graph challenges
 - [ ] Add drag-and-drop challenges
 - [ ] Test all challenge types
 
 **Milestone 2.4: Tutorial System** (Week 5-6)
+
 - [ ] Build tutorial flow
 - [ ] Create guided combat
 - [ ] Add help bubbles
 - [ ] Test first-time experience
 
 **Phase 2 Deliverables**:
+
 - ✅ Full achievement system
 - ✅ Monthly leaderboards
 - ✅ All challenge types working (except geometry)
@@ -2203,28 +2245,33 @@ Add game entry point to student dashboard:
 #### Milestones
 
 **Milestone 3.1: Multiplayer Combat** (Week 1-2)
+
 - [ ] Build combat invitation system
 - [ ] Create lobby/waiting room
 - [ ] Implement turn coordination
 - [ ] Add WebSocket synchronization
 
 **Milestone 3.2: Friend Integration** (Week 2-3)
+
 - [ ] Connect to existing friend system
 - [ ] Build friend invitation UI
 - [ ] Add friend search for game
 - [ ] Test multiplayer combat
 
 **Milestone 3.3: Chat Integration** (Week 3-4)
+
 - [ ] Add combat chat channel
 - [ ] Implement combat notifications
 - [ ] Build combat history sharing
 
 **Milestone 3.4: Polish & Testing** (Week 4-5)
+
 - [ ] Test multiplayer synchronization
 - [ ] Fix edge cases
 - [ ] Optimize WebSocket usage
 
 **Phase 3 Deliverables**:
+
 - ✅ Students can invite friends to combat
 - ✅ 2-4 player team combat works
 - ✅ Real-time combat synchronization
@@ -2240,30 +2287,35 @@ Add game entry point to student dashboard:
 #### Milestones
 
 **Milestone 4.1: Teacher Dashboard** (Week 1-2)
+
 - [ ] Add game stats to student profiles
 - [ ] Build class game progress view
 - [ ] Create challenge analytics
 - [ ] Add combat history view
 
 **Milestone 4.2: Difficulty Management** (Week 2-3)
+
 - [ ] Build class settings UI
 - [ ] Implement difficulty scaling
 - [ ] Add timer adjustments
 - [ ] Test difficulty variations
 
 **Milestone 4.3: Timeslot System** (Week 3)
+
 - [ ] Build timeslot creator
 - [ ] Implement challenge scheduling
 - [ ] Add reward boosting
 - [ ] Test timeslot logic
 
 **Milestone 4.4: Reports & Analytics** (Week 3-4)
+
 - [ ] Build challenge success reports
 - [ ] Add element proficiency charts
 - [ ] Create combat performance metrics
 - [ ] Export data functionality
 
 **Phase 4 Deliverables**:
+
 - ✅ Teachers can view student game progress
 - ✅ Teachers can adjust difficulty per class
 - ✅ Teachers can schedule challenges
@@ -2278,6 +2330,7 @@ Add game entry point to student dashboard:
 **Problem**: The original `challenge.js` is 132KB of jQuery-heavy code.
 
 **Solution**:
+
 1. **Incremental Port**: Start with simple challenge types (numeric input)
 2. **Use vanilla JS where possible**: Modern DOM APIs replace most jQuery
 3. **Svelte reactivity**: Replace jQuery DOM manipulation with Svelte bindings
@@ -2306,38 +2359,42 @@ $(".submit-button").on("click", function() { /* ... */ });
 **Solution**: Evaluate alternatives
 
 **Option A: Port JSXGraph**
+
 - **Pros**: Already familiar, 464 challenges designed for it
 - **Cons**: jQuery dependency, not maintained actively
 
 **Option B: Use GeoGebra API**
+
 - **Pros**: Modern, well-maintained, powerful
 - **Cons**: Requires rewriting all geometry challenges
 
 **Option C: Use Mafs (React library)**
+
 - **Pros**: React-based (can be wrapped in Svelte), modern
 - **Cons**: React dependency, limited compared to JSXGraph
 
 **Recommendation**: **Option A initially**, then migrate to Option B in Phase 2.
 
 **Implementation**:
+
 ```svelte
 <!-- ChallengeGeometry.svelte -->
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import JSXGraph from 'jsxgraph'; // Port to ESM if needed
+	import { onMount } from 'svelte';
+	import JSXGraph from 'jsxgraph'; // Port to ESM if needed
 
-  let boardElement: HTMLDivElement;
-  let board: any;
+	let boardElement: HTMLDivElement;
+	let board: any;
 
-  onMount(() => {
-    board = JSXGraph.initBoard(boardElement, {
-      boundingbox: [-10, 10, 10, -10],
-      axis: true
-    });
+	onMount(() => {
+		board = JSXGraph.initBoard(boardElement, {
+			boundingbox: [-10, 10, 10, -10],
+			axis: true
+		});
 
-    // Create geometric objects from challenge definition
-    // ...
-  });
+		// Create geometric objects from challenge definition
+		// ...
+	});
 </script>
 
 <div bind:this={boardElement} class="geometry-board"></div>
@@ -2352,12 +2409,14 @@ $(".submit-button").on("click", function() { /* ... */ });
 **Solution**: Use existing WebSocket system with combat-specific channels
 
 **Architecture**:
+
 1. Players join combat room: `combat:${combatId}`
 2. Server broadcasts turn updates to all participants
 3. Client optimistically updates UI, then reconciles with server state
 4. Use combat_flow JSONB as source of truth
 
 **Edge Cases**:
+
 - **Player disconnects mid-combat**: Auto-forfeit after 2 minutes
 - **Network lag**: Show loading state, queue actions
 - **Concurrent actions**: Server-side turn order enforcement
@@ -2369,6 +2428,7 @@ $(".submit-button").on("click", function() { /* ... */ });
 **Problem**: With many students playing simultaneously, database queries could slow down.
 
 **Solutions**:
+
 1. **Indexes**: Already planned on key columns (user_id, combat_id, etc.)
 2. **JSONB Queries**: Use GIN indexes for combat_flow searches
 3. **Caching**: Cache challenge definitions (rarely change)
@@ -2379,19 +2439,19 @@ $(".submit-button").on("click", function() { /* ... */ });
 ```typescript
 // +layout.server.ts
 export const load: LayoutServerLoad = async ({ locals: { supabase } }) => {
-  // Cache challenges for 1 hour
-  const { data: challenges } = await supabase
-    .from('game_challenges')
-    .select('*')
-    .eq('is_active', true);
+	// Cache challenges for 1 hour
+	const { data: challenges } = await supabase
+		.from('game_challenges')
+		.select('*')
+		.eq('is_active', true);
 
-  return {
-    challenges, // Available to all child routes
-    // Set cache header
-    headers: {
-      'Cache-Control': 'public, max-age=3600'
-    }
-  };
+	return {
+		challenges, // Available to all child routes
+		// Set cache header
+		headers: {
+			'Cache-Control': 'public, max-age=3600'
+		}
+	};
 };
 ```
 
@@ -2404,6 +2464,7 @@ export const load: LayoutServerLoad = async ({ locals: { supabase } }) => {
 **Solution**: Responsive design from day one
 
 **Key Considerations**:
+
 1. **Touch-friendly**: Large buttons, no hover-only interactions
 2. **Geometry challenges**: May require landscape orientation
 3. **Keyboard input**: MathLive works well on mobile
@@ -2413,24 +2474,24 @@ export const load: LayoutServerLoad = async ({ locals: { supabase } }) => {
 
 ```svelte
 <div class="combat-arena">
-  <!-- Stack vertically on mobile, side-by-side on desktop -->
-  <div class="player-panel">...</div>
-  <div class="monster-panel">...</div>
+	<!-- Stack vertically on mobile, side-by-side on desktop -->
+	<div class="player-panel">...</div>
+	<div class="monster-panel">...</div>
 </div>
 
 <style>
-  .combat-arena {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
+	.combat-arena {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
 
-  @media (min-width: 768px) {
-    .combat-arena {
-      flex-direction: row;
-      justify-content: space-between;
-    }
-  }
+	@media (min-width: 768px) {
+		.combat-arena {
+			flex-direction: row;
+			justify-content: space-between;
+		}
+	}
 </style>
 ```
 
@@ -2464,16 +2525,16 @@ const correct = evaluateChallenge(challenge, answer_given, challenge_instance);
 ```typescript
 // Server action
 export const actions = {
-  completeChallenge: async ({ request }) => {
-    // Client sends challenge result
-    const { success, time_taken } = await request.formData();
+	completeChallenge: async ({ request }) => {
+		// Client sends challenge result
+		const { success, time_taken } = await request.formData();
 
-    // SERVER calculates damage (client cannot fake)
-    const damage = calculateDamage(spell, success, time_taken);
+		// SERVER calculates damage (client cannot fake)
+		const damage = calculateDamage(spell, success, time_taken);
 
-    // Update database
-    // ...
-  }
+		// Update database
+		// ...
+	}
 };
 ```
 
@@ -2487,13 +2548,14 @@ export const actions = {
 // Check last attempt timestamp
 const lastAttempt = await getLastAttempt(userId);
 if (Date.now() - lastAttempt < 1000) {
-  return fail(429, { error: 'Too many attempts' });
+	return fail(429, { error: 'Too many attempts' });
 }
 ```
 
 #### 4. **RLS Policies**
 
 All game tables have RLS enabled to prevent:
+
 - Students viewing other students' data (except leaderboards)
 - Students modifying game state directly
 - Unauthorized combat participation
@@ -2522,11 +2584,11 @@ Preload next challenge while current one is active.
 
 ```typescript
 onMount(() => {
-  // Preload likely next challenges
-  const nextChallenges = predictNextChallenges(playerElement);
-  nextChallenges.forEach(challenge => {
-    preloadChallenge(challenge.id);
-  });
+	// Preload likely next challenges
+	const nextChallenges = predictNextChallenges(playerElement);
+	nextChallenges.forEach((challenge) => {
+		preloadChallenge(challenge.id);
+	});
 });
 ```
 
@@ -2537,7 +2599,7 @@ Avoid flooding WebSocket with updates.
 ```typescript
 // Throttle combat updates to 1 per second
 const throttledUpdate = throttle((update) => {
-  websocket.send({ type: 'game:combat:update', payload: update });
+	websocket.send({ type: 'game:combat:update', payload: update });
 }, 1000);
 ```
 
@@ -2547,16 +2609,13 @@ Use JOINs efficiently and select only needed columns.
 
 ```typescript
 // ❌ BAD: Fetch everything
-const { data } = await supabase
-  .from('game_combats')
-  .select('*')
-  .eq('id', combatId);
+const { data } = await supabase.from('game_combats').select('*').eq('id', combatId);
 
 // ✅ GOOD: Fetch only what's needed
 const { data } = await supabase
-  .from('game_combats')
-  .select('id, status, current_round, monster_endurance_remaining')
-  .eq('id', combatId);
+	.from('game_combats')
+	.select('id, status, current_round, monster_endurance_remaining')
+	.eq('id', combatId);
 ```
 
 ---
@@ -2573,31 +2632,31 @@ import { describe, it, expect } from 'vitest';
 import { generateChallengeInstance } from './challenge-variables';
 
 describe('Challenge Variable Generation', () => {
-  it('should evaluate numeric variables', () => {
-    const challenge = {
-      variables: {
-        a: { type: 'number', value: 'randomInt(1, 10)' }
-      }
-    };
+	it('should evaluate numeric variables', () => {
+		const challenge = {
+			variables: {
+				a: { type: 'number', value: 'randomInt(1, 10)' }
+			}
+		};
 
-    const instance = generateChallengeInstance(challenge);
+		const instance = generateChallengeInstance(challenge);
 
-    expect(instance.variables.a).toBeGreaterThanOrEqual(1);
-    expect(instance.variables.a).toBeLessThan(10);
-  });
+		expect(instance.variables.a).toBeGreaterThanOrEqual(1);
+		expect(instance.variables.a).toBeLessThan(10);
+	});
 
-  it('should handle variable dependencies', () => {
-    const challenge = {
-      variables: {
-        a: { type: 'number', value: '5' },
-        b: { type: 'number', value: '{a} * 2' }
-      }
-    };
+	it('should handle variable dependencies', () => {
+		const challenge = {
+			variables: {
+				a: { type: 'number', value: '5' },
+				b: { type: 'number', value: '{a} * 2' }
+			}
+		};
 
-    const instance = generateChallengeInstance(challenge);
+		const instance = generateChallengeInstance(challenge);
 
-    expect(instance.variables.b).toBe(10);
-  });
+		expect(instance.variables.b).toBe(10);
+	});
 });
 ```
 
@@ -2610,26 +2669,26 @@ Test combat flow end-to-end:
 import { test, expect } from '@playwright/test';
 
 test('complete combat flow', async ({ page }) => {
-  await page.goto('/dashboard/navadra/combat');
+	await page.goto('/dashboard/navadra/combat');
 
-  // Start combat
-  await page.click('button:has-text("Combattre")');
+	// Start combat
+	await page.click('button:has-text("Combattre")');
 
-  // Select spell
-  await page.click('[data-spell="1"]');
+	// Select spell
+	await page.click('[data-spell="1"]');
 
-  // Solve challenge
-  await page.fill('input[name="answer"]', '42');
-  await page.click('button:has-text("Valider")');
+	// Solve challenge
+	await page.fill('input[name="answer"]', '42');
+	await page.click('button:has-text("Valider")');
 
-  // Verify damage applied
-  await expect(page.locator('.monster-hp')).toContainText('80/100');
+	// Verify damage applied
+	await expect(page.locator('.monster-hp')).toContainText('80/100');
 
-  // Continue until victory
-  // ...
+	// Continue until victory
+	// ...
 
-  // Verify rewards
-  await expect(page.locator('.xp-gained')).toBeVisible();
+	// Verify rewards
+	await expect(page.locator('.xp-gained')).toBeVisible();
 });
 ```
 
@@ -2639,11 +2698,11 @@ Verify teachers can view student progress:
 
 ```typescript
 test('teacher views student game progress', async ({ page }) => {
-  await page.goto('/dashboard/teacher/students/student-id');
+	await page.goto('/dashboard/teacher/students/student-id');
 
-  // Check game stats visible
-  await expect(page.locator('.game-progress')).toBeVisible();
-  await expect(page.locator('.game-level')).toContainText('Niveau 5');
+	// Check game stats visible
+	await expect(page.locator('.game-progress')).toBeVisible();
+	await expect(page.locator('.game-level')).toContainText('Niveau 5');
 });
 ```
 
@@ -2654,6 +2713,7 @@ test('teacher views student game progress', async ({ page }) => {
 ### Pre-Deployment Checklist
 
 **Database**:
+
 - [ ] Run all migrations on production
 - [ ] Verify RLS policies
 - [ ] Import challenges
@@ -2661,18 +2721,21 @@ test('teacher views student game progress', async ({ page }) => {
 - [ ] Seed spell definitions
 
 **Assets**:
+
 - [ ] Upload all assets to Supabase Storage
 - [ ] Verify public access
 - [ ] Test asset URLs
 - [ ] Optimize images (WebP conversion)
 
 **Configuration**:
+
 - [ ] Set environment variables
 - [ ] Configure WebSocket server
 - [ ] Set up error tracking (Sentry)
 - [ ] Enable rate limiting
 
 **Testing**:
+
 - [ ] Run full test suite
 - [ ] Test on staging environment
 - [ ] Verify mobile responsiveness
@@ -2683,16 +2746,19 @@ test('teacher views student game progress', async ({ page }) => {
 ### Rollout Strategy
 
 **Phase 1 Launch**: Soft launch to 1-2 classes
+
 - Monitor for bugs
 - Gather feedback
 - Iterate quickly
 
 **Phase 2 Launch**: Expand to all classes
+
 - Announce to students
 - Provide tutorial
 - Monitor performance
 
 **Post-Launch**:
+
 - Weekly analytics review
 - Bi-weekly bug fixes
 - Monthly feature additions
@@ -2704,6 +2770,7 @@ test('teacher views student game progress', async ({ page }) => {
 This guide provides a complete roadmap for integrating the full Navadra game into UbuMaths. The implementation is ambitious but achievable with the phased approach outlined above.
 
 **Key Success Factors**:
+
 1. **Start with Phase 1**: Solo combat is the foundation
 2. **Port incrementally**: Don't try to port everything at once
 3. **Test continuously**: Catch bugs early
@@ -2711,6 +2778,7 @@ This guide provides a complete roadmap for integrating the full Navadra game int
 5. **Be patient**: This is a 5-7 month project
 
 **Next Steps**:
+
 1. Review this guide with the team
 2. Set up development environment
 3. Begin Phase 1, Milestone 1.1 (Database Setup)

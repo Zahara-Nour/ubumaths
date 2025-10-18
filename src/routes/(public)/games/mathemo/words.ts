@@ -9,7 +9,7 @@
  * - 4ème/3ème: Algebra, equations, functions, statistics
  * - 2nde/1ère/Tale: Advanced functions, calculus, derivatives, integrals
  */
-import type { WordLists, Difficulty } from './types'
+import type { WordLists, Difficulty } from './types';
 
 export const WORD_LISTS: WordLists = {
 	'6ème': [
@@ -97,7 +97,7 @@ export const WORD_LISTS: WordLists = {
 		'unite',
 		'valeur',
 		'vitesse',
-		'volume',
+		'volume'
 	],
 	'5ème': [
 		// Adding relative numbers, fractions, basic algebra (7th grade)
@@ -198,7 +198,7 @@ export const WORD_LISTS: WordLists = {
 		'symetrique',
 		'trapeze',
 		'trigonometrie',
-		'vecteur',
+		'vecteur'
 	],
 	'4ème': [
 		// Introducing algebra, equations, Thales (8th grade)
@@ -268,7 +268,7 @@ export const WORD_LISTS: WordLists = {
 		'terme',
 		'thales',
 		'theoreme',
-		'translation',
+		'translation'
 	],
 	'3ème': [
 		// Advanced algebra, trigonometry, Pythagoras (9th grade - end of middle school)
@@ -288,7 +288,7 @@ export const WORD_LISTS: WordLists = {
 		'integrer',
 		'limite',
 		'logarithme',
-		'primitive',
+		'primitive'
 	],
 	'2nde': [
 		// High school start: functions, sequences, statistics (10th grade)
@@ -302,7 +302,7 @@ export const WORD_LISTS: WordLists = {
 		'probabilite',
 		'serie',
 		'statistique',
-		'suite',
+		'suite'
 	],
 	'1ère': [
 		// Derivatives, limits, trigonometry (11th grade)
@@ -314,7 +314,7 @@ export const WORD_LISTS: WordLists = {
 		'primitive',
 		'sinus',
 		'cosinus',
-		'tangente',
+		'tangente'
 	],
 	Tale: [
 		// Final year: integrals, advanced calculus (12th grade)
@@ -327,18 +327,18 @@ export const WORD_LISTS: WordLists = {
 		'limite',
 		'logarithme',
 		'primitive',
-		'serie',
-	],
-}
+		'serie'
+	]
+};
 
 /**
  * Pre-computed set of all words across all difficulty levels
  * Used for fast O(1) validation during gameplay
  */
-const allWordsSet = new Set<string>()
+const allWordsSet = new Set<string>();
 Object.values(WORD_LISTS).forEach((words) => {
-	words.forEach((word) => allWordsSet.add(word))
-})
+	words.forEach((word) => allWordsSet.add(word));
+});
 
 /**
  * Get all allowed words for a specific difficulty level
@@ -346,7 +346,7 @@ Object.values(WORD_LISTS).forEach((words) => {
  * @returns Set of valid words for that difficulty
  */
 export function getAllowedWords(difficulty: Difficulty): Set<string> {
-	return new Set(WORD_LISTS[difficulty])
+	return new Set(WORD_LISTS[difficulty]);
 }
 
 /**
@@ -356,7 +356,7 @@ export function getAllowedWords(difficulty: Difficulty): Set<string> {
  * @returns true if word exists in any difficulty level
  */
 export function isValidWord(word: string): boolean {
-	return allWordsSet.has(word)
+	return allWordsSet.has(word);
 }
 
 /**
@@ -366,8 +366,8 @@ export function isValidWord(word: string): boolean {
  * @returns A random mathematical term appropriate for that level
  */
 export function getRandomWord(difficulty: Difficulty): string {
-	const words = WORD_LISTS[difficulty]
-	return words[Math.floor(Math.random() * words.length)]
+	const words = WORD_LISTS[difficulty];
+	return words[Math.floor(Math.random() * words.length)];
 }
 
 /**
@@ -387,5 +387,5 @@ export function normalizeString(str: string): string {
 	return str
 		.normalize('NFD') // Decompose accented characters (è → e + ̀)
 		.replace(/[\u0300-\u036f]/g, '') // Remove diacritic marks
-		.toLowerCase()
+		.toLowerCase();
 }

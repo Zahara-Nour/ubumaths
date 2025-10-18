@@ -45,8 +45,8 @@
 	let urlError = $derived($page.url.searchParams.get('error'));
 </script>
 
-<div class="min-h-screen flex items-center justify-center bg-background px-4">
-	<Card.Root class="max-w-md w-full">
+<div class="flex min-h-screen items-center justify-center bg-background px-4">
+	<Card.Root class="w-full max-w-md">
 		<Card.Header>
 			<Card.Title class="text-center text-3xl">Connexion à votre compte</Card.Title>
 		</Card.Header>
@@ -69,12 +69,12 @@
 				<!-- Google Sign In Tab -->
 				<Tabs.Content value="google" class="space-y-4">
 					<form method="POST" action="?/googleSignIn" use:enhance class="space-y-4">
-						<p class="text-sm text-muted-foreground text-center">
+						<p class="text-center text-sm text-muted-foreground">
 							Connectez-vous avec votre compte Google Voltaire Doha (@voltairedoha.com)
 						</p>
 
 						<Button type="submit" variant="outline" class="w-full gap-3">
-							<svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<svg class="h-5 w-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 								<path
 									d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
 									fill="#4285F4"
@@ -145,7 +145,7 @@
 						<!-- Sign up link -->
 						<p class="text-center text-sm text-muted-foreground">
 							Vous n'avez pas de compte ?
-							<a href="/signup" class="text-primary hover:underline font-medium">S'inscrire</a>
+							<a href="/signup" class="font-medium text-primary hover:underline">S'inscrire</a>
 						</p>
 					</form>
 				</Tabs.Content>

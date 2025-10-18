@@ -36,7 +36,9 @@
 
 <div class="monster-panel rounded-lg border border-border bg-card p-4">
 	<!-- Monster Image -->
-	<div class="mb-3 aspect-video overflow-hidden rounded-md bg-muted flex items-center justify-center">
+	<div
+		class="mb-3 flex aspect-video items-center justify-center overflow-hidden rounded-md bg-muted"
+	>
 		{#if imageError}
 			<div class="text-6xl">{elementEmojis[monster.element]}</div>
 		{:else}
@@ -44,7 +46,7 @@
 				src={imageUrl}
 				alt={monster.name}
 				class="h-full w-full object-cover"
-				onerror={() => imageError = true}
+				onerror={() => (imageError = true)}
 			/>
 		{/if}
 	</div>

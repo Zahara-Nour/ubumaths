@@ -28,9 +28,12 @@ test.describe('Error Scenarios & Edge Cases', () => {
 
 			// Verify error message displayed
 			await expect(page.locator('.error-message')).toBeVisible();
-			await expect(page.locator('.error-message')).toContainText(
-				'réseau' || 'connexion' || 'erreur'
-			);
+			const errorText = await page.locator('.error-message').textContent();
+			expect(
+				errorText?.includes('réseau') ||
+					errorText?.includes('connexion') ||
+					errorText?.includes('erreur')
+			).toBe(true);
 
 			// Restore network
 			await context.setOffline(false);
@@ -131,9 +134,7 @@ test.describe('Error Scenarios & Edge Cases', () => {
 			const submitButton = page.locator('button:has-text("Valider")');
 
 			// Submit button should be disabled or error shown
-			expect(
-				(await validationError.isVisible()) || (await submitButton.isDisabled())
-			).toBe(true);
+			expect((await validationError.isVisible()) || (await submitButton.isDisabled())).toBe(true);
 		});
 
 		test('handle special characters in answer', async ({ page }) => {
@@ -278,9 +279,7 @@ test.describe('Error Scenarios & Edge Cases', () => {
 			const combatArena = page.locator('.combat-arena');
 			const challengeContainer = page.locator('.challenge-container');
 
-			expect((await combatArena.isVisible()) || (await challengeContainer.isVisible())).toBe(
-				true
-			);
+			expect((await combatArena.isVisible()) || (await challengeContainer.isVisible())).toBe(true);
 		});
 
 		test('handle browser forward button', async ({ page }) => {

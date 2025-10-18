@@ -46,8 +46,8 @@
 	let showStrength = $derived(password.length > 0);
 </script>
 
-<div class="min-h-screen flex items-center justify-center bg-background px-4">
-	<Card.Root class="max-w-md w-full">
+<div class="flex min-h-screen items-center justify-center bg-background px-4">
+	<Card.Root class="w-full max-w-md">
 		<Card.Header>
 			<Card.Title class="text-center text-3xl">Créer votre compte</Card.Title>
 		</Card.Header>
@@ -81,7 +81,7 @@
 						<!-- Password Strength Indicator -->
 						<div class="mt-2 space-y-2">
 							<!-- Progress bar -->
-							<div class="w-full bg-muted rounded-full h-2">
+							<div class="h-2 w-full rounded-full bg-muted">
 								<div
 									class="{getStrengthBarColor(
 										passwordStrength.strength
@@ -96,7 +96,7 @@
 							</p>
 
 							<!-- Requirements checklist -->
-							<div class="text-xs space-y-1 text-muted-foreground">
+							<div class="space-y-1 text-xs text-muted-foreground">
 								<div class="flex items-center gap-2">
 									<span class={passwordStrength.requirements.minLength ? 'text-green-600' : ''}>
 										{passwordStrength.requirements.minLength ? '✓' : '○'} Au moins 8 caractères
@@ -150,7 +150,9 @@
 				{/if}
 
 				{#if form?.success && form?.message}
-					<Alert.Root class="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+					<Alert.Root
+						class="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20"
+					>
 						<Alert.Description class="text-green-600 dark:text-green-400">
 							{form.message}
 						</Alert.Description>
@@ -161,7 +163,7 @@
 
 				<p class="text-center text-sm text-muted-foreground">
 					Vous avez déjà un compte ?
-					<a href="/auth/login" class="text-primary hover:underline font-medium">Se connecter</a>
+					<a href="/auth/login" class="font-medium text-primary hover:underline">Se connecter</a>
 				</p>
 			</form>
 		</Card.Content>

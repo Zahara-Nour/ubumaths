@@ -55,14 +55,7 @@
 	{#if ExerciseComponent()}
 		<!-- Svelte 5: Components are dynamic by default -->
 		{@const Component = ExerciseComponent()}
-		<Component
-			{exercise}
-			{attempt}
-			{hints}
-			{onValidate}
-			{onSave}
-			{onComplete}
-		/>
+		<Component {exercise} {attempt} {hints} {onValidate} {onSave} {onComplete} />
 	{:else}
 		<!-- Unknown exercise type -->
 		<Card.Root class="border-destructive">

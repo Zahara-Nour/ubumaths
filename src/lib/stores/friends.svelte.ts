@@ -297,8 +297,7 @@ class FriendsManager {
 			// Create friendship status map
 			const friendshipMap = new Map<string, 'pending' | 'accepted' | 'rejected'>();
 			existingFriendships?.forEach((f) => {
-				const friendId =
-					f.requester_id === this.currentUserId ? f.addressee_id : f.requester_id;
+				const friendId = f.requester_id === this.currentUserId ? f.addressee_id : f.requester_id;
 				friendshipMap.set(friendId, f.status);
 			});
 

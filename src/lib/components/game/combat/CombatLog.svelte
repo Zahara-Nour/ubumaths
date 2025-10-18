@@ -9,23 +9,27 @@
 	let { turns, maxHeight = '300px' }: Props = $props();
 
 	function getActionIcon(action: string): string {
-		return {
-			spell: '⚔️',
-			heal: '💚',
-			monster_attack: '👹',
-			challenge: '📝'
-		}[action] || '•';
+		return (
+			{
+				spell: '⚔️',
+				heal: '💚',
+				monster_attack: '👹',
+				challenge: '📝'
+			}[action] || '•'
+		);
 	}
 
 	function getActionColor(action: string, critical?: boolean): string {
 		if (critical) return 'text-yellow-500';
 
-		return {
-			spell: 'text-primary',
-			heal: 'text-green-500',
-			monster_attack: 'text-destructive',
-			challenge: 'text-blue-500'
-		}[action] || 'text-foreground';
+		return (
+			{
+				spell: 'text-primary',
+				heal: 'text-green-500',
+				monster_attack: 'text-destructive',
+				challenge: 'text-blue-500'
+			}[action] || 'text-foreground'
+		);
 	}
 
 	function formatTurnMessage(turn: CombatTurn): string {

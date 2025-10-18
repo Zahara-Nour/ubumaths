@@ -57,7 +57,7 @@
 
 	// Selected school for import
 	let selectedSchoolId = $state<string>('');
-	let selectedSchool = $derived(data.schools.find(s => s.id === selectedSchoolId));
+	let selectedSchool = $derived(data.schools.find((s) => s.id === selectedSchoolId));
 
 	// Class code mapping (join_code -> class_id)
 	let classCodeMap = $derived.by(() => {
@@ -105,9 +105,7 @@
 				lastname: lastname.trim(),
 				grade: grade.trim() || null,
 				gender: gender === 'boy' || gender === 'girl' ? gender : null,
-				class_codes: classCodes
-					.map((c) => c.trim().toUpperCase())
-					.filter((c) => c.length > 0) // Remove empty codes
+				class_codes: classCodes.map((c) => c.trim().toUpperCase()).filter((c) => c.length > 0) // Remove empty codes
 			};
 		});
 
@@ -192,9 +190,7 @@
 				toaster.error(`${validation.invalidEmails} email(s) invalide(s) détecté(s)`);
 			}
 			if (validation.invalidClassCodes.length > 0) {
-				toaster.error(
-					`Code(s) de classe invalide(s): ${validation.invalidClassCodes.join(', ')}`
-				);
+				toaster.error(`Code(s) de classe invalide(s): ${validation.invalidClassCodes.join(', ')}`);
 			}
 			return;
 		}
@@ -312,7 +308,7 @@
 	}
 </script>
 
-<div class="container mx-auto p-6 space-y-8">
+<div class="container mx-auto space-y-8 p-6">
 	<div class="space-y-2">
 		<h1 class="text-3xl font-bold">Importer des élèves</h1>
 		<p class="text-muted-foreground">
@@ -336,10 +332,10 @@
 				<select
 					id="school"
 					bind:value={selectedSchoolId}
-					class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+					class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 				>
 					<option value="">Sélectionner une école</option>
-					{#each data.schools as school}
+					{#each data.schools as school (school.id)}
 						<option value={school.id}>{school.name}</option>
 					{/each}
 				</select>
@@ -374,12 +370,12 @@
 								id="drop-zone"
 								bind:value={pasteText}
 								placeholder="✍️ Tapez ou collez vos données ici&#10;📋 Copiez-collez (Ctrl+V) depuis Excel/Google Sheets&#10;📁 Ou glissez-déposez un fichier CSV&#10;&#10;Format: email, prénom, nom, niveau, genre, code_classe1, code_classe2, ...&#10;&#10;Exemple:&#10;alice@school.com, Alice, Dupont, 6ème, girl, MATH6A&#10;bob@school.com, Bob, Martin, 6ème, boy, MATH6A, MATH6B"
-								class="min-h-[200px] font-mono text-sm cursor-text border-0 focus:ring-0 focus-visible:ring-0 bg-transparent resize-none"
+								class="min-h-[200px] cursor-text resize-none border-0 bg-transparent font-mono text-sm focus:ring-0 focus-visible:ring-0"
 								disabled={isProcessing}
 							/>
 							{#if isDragging}
 								<div
-									class="absolute inset-0 flex items-center justify-center bg-primary/10 rounded-lg pointer-events-none"
+									class="pointer-events-none absolute inset-0 flex items-center justify-center rounded-lg bg-primary/10"
 								>
 									<p class="text-lg font-semibold text-primary">📁 Déposez le fichier CSV ici</p>
 								</div>
@@ -413,9 +409,9 @@
 					<Separator />
 					<div class="space-y-2">
 						<h3 class="font-semibold">Aperçu ({csvPreview.length} élèves)</h3>
-						<div class="max-h-96 overflow-y-auto border rounded-md">
+						<div class="max-h-96 overflow-y-auto rounded-md border">
 							<table class="w-full text-sm">
-								<thead class="bg-muted sticky top-0">
+								<thead class="sticky top-0 bg-muted">
 									<tr>
 										<th class="p-2 text-left">Email</th>
 										<th class="p-2 text-left">Prénom</th>
@@ -426,7 +422,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									{#each csvPreview as student}
+									{#each csvPreview as student (student.email)}
 										<tr class="border-t hover:bg-muted/50">
 											<td class="p-2">{student.email}</td>
 											<td class="p-2">{student.firstname}</td>
@@ -436,7 +432,7 @@
 											<td class="p-2">
 												{#if student.class_codes.length > 0}
 													<div class="flex flex-wrap gap-1">
-														{#each student.class_codes as code}
+														{#each student.class_codes as code (code)}
 															<Badge variant="outline" class="text-xs">{code}</Badge>
 														{/each}
 													</div>
@@ -477,9 +473,7 @@
 							<Button type="submit" disabled={isProcessing}>
 								{isProcessing ? 'Importation...' : 'Importer les élèves'}
 							</Button>
-							<Button type="button" variant="outline" onclick={handleClearPreview}>
-								Annuler
-							</Button>
+							<Button type="button" variant="outline" onclick={handleClearPreview}>Annuler</Button>
 						</div>
 					</form>
 				</div>
@@ -495,15 +489,15 @@
 		</Card.Header>
 		<Card.Content>
 			{#if data.classes.length === 0}
-				<p class="text-muted-foreground text-center py-4">Aucune classe disponible</p>
+				<p class="py-4 text-center text-muted-foreground">Aucune classe disponible</p>
 			{:else}
-				<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-					{#each data.classes as classItem}
-						<div class="flex items-center justify-between p-3 border rounded-md">
+				<div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+					{#each data.classes as classItem (classItem.id)}
+						<div class="flex items-center justify-between rounded-md border p-3">
 							<div class="space-y-1">
-								<div class="font-medium text-sm">{classItem.name}</div>
-								<code
-									class="text-xs bg-muted px-2 py-1 rounded font-mono">{classItem.join_code}</code
+								<div class="text-sm font-medium">{classItem.name}</div>
+								<code class="rounded bg-muted px-2 py-1 font-mono text-xs"
+									>{classItem.join_code}</code
 								>
 							</div>
 						</div>
@@ -523,11 +517,11 @@
 		</Card.Header>
 		<Card.Content>
 			{#if data.pendingStudents.length === 0}
-				<p class="text-muted-foreground text-center py-8">Aucun élève en attente</p>
+				<p class="py-8 text-center text-muted-foreground">Aucun élève en attente</p>
 			{:else}
 				<div class="space-y-2">
-					{#each data.pendingStudents as student}
-						<div class="flex items-center justify-between p-3 border rounded-md">
+					{#each data.pendingStudents as student (student.email)}
+						<div class="flex items-center justify-between rounded-md border p-3">
 							<div class="space-y-1">
 								<div class="font-medium">
 									{student.firstname}
@@ -543,7 +537,9 @@
 										</Badge>
 									{/if}
 									{#if student.class_ids && student.class_ids.length > 0}
-										{#each getClassNamesFromCodes(student.class_ids.map((id: string) => data.classes.find((c) => c.id === id)?.join_code || '').filter((c: string) => c)) as className}
+										{#each getClassNamesFromCodes(student.class_ids
+												.map((id: string) => data.classes.find((c) => c.id === id)?.join_code || '')
+												.filter((c: string) => c)) as className (className)}
 											<Badge variant="secondary" class="text-xs">
 												{className}
 											</Badge>
@@ -569,11 +565,11 @@
 		</Card.Header>
 		<Card.Content>
 			{#if data.activatedStudents.length === 0}
-				<p class="text-muted-foreground text-center py-8">Aucun élève activé</p>
+				<p class="py-8 text-center text-muted-foreground">Aucun élève activé</p>
 			{:else}
 				<div class="space-y-2">
-					{#each data.activatedStudents as student}
-						<div class="flex items-center justify-between p-3 border rounded-md">
+					{#each data.activatedStudents as student (student.email)}
+						<div class="flex items-center justify-between rounded-md border p-3">
 							<div class="space-y-1">
 								<div class="font-medium">
 									{student.firstname}
@@ -589,7 +585,9 @@
 										</Badge>
 									{/if}
 									{#if student.class_ids && student.class_ids.length > 0}
-										{#each getClassNamesFromCodes(student.class_ids.map((id: string) => data.classes.find((c) => c.id === id)?.join_code || '').filter((c: string) => c)) as className}
+										{#each getClassNamesFromCodes(student.class_ids
+												.map((id: string) => data.classes.find((c) => c.id === id)?.join_code || '')
+												.filter((c: string) => c)) as className (className)}
 											<Badge variant="secondary" class="text-xs">
 												{className}
 											</Badge>
@@ -599,7 +597,7 @@
 							</div>
 							<div class="text-right">
 								<Badge class={getStatusBadgeClass(student.is_activated)}>Activé</Badge>
-								<div class="text-xs text-muted-foreground mt-1">
+								<div class="mt-1 text-xs text-muted-foreground">
 									{formatDate(student.activated_at)}
 								</div>
 							</div>

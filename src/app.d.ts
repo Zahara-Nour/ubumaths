@@ -20,6 +20,7 @@ declare global {
 	}
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare namespace svelteHTML {
 	interface IntrinsicElements {
 		'math-field': MathfieldElementAttributes;

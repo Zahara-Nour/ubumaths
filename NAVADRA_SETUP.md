@@ -30,6 +30,7 @@ pnpm db:migrate
 This creates all 12 game tables with RLS policies and triggers.
 
 **Verify migration success:**
+
 ```bash
 pnpm db:status
 ```
@@ -90,6 +91,7 @@ INSERT INTO game_spells (user_id, spell_num, level, element, power, type) VALUES
 Go to: `http://localhost:5173/dashboard/navadra`
 
 You should see:
+
 - Your player stats (level, XP, prestige)
 - Navigation cards (Combat, Grimoire, Succès, etc.)
 - Tutorial progress indicator
@@ -99,6 +101,7 @@ You should see:
 Go to: `http://localhost:5173/dashboard/navadra/spells`
 
 You should see:
+
 - Your unlocked spells grouped by element
 - Spell power, level, and type
 - Total pyrs per element
@@ -110,6 +113,7 @@ Go to: `http://localhost:5173/dashboard/navadra/combat`
 Click **"Commencer un combat"**
 
 This will:
+
 1. Generate a random monster based on your level
 2. Create a combat instance
 3. Redirect you to the combat arena
@@ -183,6 +187,7 @@ In the combat arena:
 **Cause**: Challenges not imported
 
 **Fix**:
+
 ```bash
 pnpm game:import-challenges
 ```
@@ -198,6 +203,7 @@ pnpm game:import-challenges
 **Cause**: Assets not uploaded to Supabase Storage
 
 **Fix**: Either:
+
 1. Run `pnpm game:migrate-assets` (requires original Navadra assets)
 2. Update monster `img_url` to use placeholder images
 3. Comment out the image in `MonsterPanel.svelte` temporarily
@@ -207,6 +213,7 @@ pnpm game:import-challenges
 **Cause**: Missing permissions or existing tables
 
 **Fix**:
+
 ```bash
 # Check Supabase connection
 pnpm db:link
@@ -220,6 +227,7 @@ pnpm db:migrate
 **Cause**: User not authenticated or policy mismatch
 
 **Fix**: Check that:
+
 1. You're logged in as a student user
 2. Game profile was created (check `game_players` table)
 3. RLS policies allow `auth.uid()` to access data
@@ -291,6 +299,7 @@ Shows your recent challenge attempts with success/failure.
 ### Hot Reload
 
 The dev server watches for file changes:
+
 ```bash
 pnpm dev
 ```
@@ -298,6 +307,7 @@ pnpm dev
 ### Type Checking
 
 Run type checks:
+
 ```bash
 pnpm check
 ```
@@ -305,6 +315,7 @@ pnpm check
 ### Build Test
 
 Test production build:
+
 ```bash
 pnpm build
 pnpm preview
@@ -327,6 +338,7 @@ TRUNCATE game_combats, game_spells, game_players,
 ### Priority 1: Spell Unlocking System
 
 Currently, spells must be manually inserted. Next steps:
+
 1. Create starter spell unlock on first game load
 2. Add spell unlock rewards from combat victories
 3. Create spell unlock modal/celebration
@@ -334,6 +346,7 @@ Currently, spells must be manually inserted. Next steps:
 ### Priority 2: Deck Builder
 
 Currently, first 10 spells are used automatically. Add:
+
 1. Deck creation UI
 2. Spell selection (choose 10 from collection)
 3. Multiple deck support
@@ -342,6 +355,7 @@ Currently, first 10 spells are used automatically. Add:
 ### Priority 3: More Challenge Types
 
 Currently supports only numeric input. Add:
+
 1. Multiple choice challenges
 2. Drag-and-drop challenges
 3. Geometry challenges (with JSXGraph)
@@ -350,6 +364,7 @@ Currently supports only numeric input. Add:
 ### Priority 4: Monster Variety
 
 Currently uses placeholder monster data. Add:
+
 1. Monster name generator
 2. Monster image mapping
 3. More monster categories
@@ -388,6 +403,7 @@ Currently uses placeholder monster data. Add:
 ### Debug Mode
 
 Add to your challenge components:
+
 ```svelte
 <pre>{JSON.stringify(challengeInstance, null, 2)}</pre>
 ```

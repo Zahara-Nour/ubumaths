@@ -191,9 +191,7 @@ describe('Challenge Variable System', () => {
 					a: { value: '10' },
 					b: { value: '5' }
 				},
-				answer: [
-					{ determined: true, choice: '{a} - {b}' }
-				]
+				answer: [{ determined: true, choice: '{a} - {b}' }]
 			};
 
 			const instance = generateChallengeInstance(challenge);
@@ -304,8 +302,30 @@ describe('Challenge Variable System', () => {
 		});
 
 		it('should handle nested array validation', () => {
-			expect(validateAnswer([[1, 2], [3, 4]], [[1, 2], [3, 4]])).toBe(true);
-			expect(validateAnswer([[1, 2], [3, 4]], [[1, 2], [3, 5]])).toBe(false);
+			expect(
+				validateAnswer(
+					[
+						[1, 2],
+						[3, 4]
+					],
+					[
+						[1, 2],
+						[3, 4]
+					]
+				)
+			).toBe(true);
+			expect(
+				validateAnswer(
+					[
+						[1, 2],
+						[3, 4]
+					],
+					[
+						[1, 2],
+						[3, 5]
+					]
+				)
+			).toBe(false);
 		});
 
 		it('should parse numeric strings', () => {

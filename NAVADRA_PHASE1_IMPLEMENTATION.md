@@ -13,6 +13,7 @@
 Created 14 migration files with complete database schema:
 
 #### Core Tables (12 tables)
+
 - **044_create_game_players_table.sql** - Player game profiles
 - **045_create_game_spells_table.sql** - Spell collection
 - **046_create_game_monsters_table.sql** - Monster instances
@@ -27,6 +28,7 @@ Created 14 migration files with complete database schema:
 - **055_create_game_class_settings_table.sql** - Class-level configuration
 
 #### Security & Automation
+
 - **056_add_game_rls_policies.sql** - Complete RLS policies for all tables
 - **057_add_game_triggers_and_functions.sql** - Triggers for:
   - Auto-create game profile on user creation
@@ -41,6 +43,7 @@ Created 14 migration files with complete database schema:
 **File**: `src/lib/types/game.ts`
 
 Complete TypeScript interfaces for:
+
 - GamePlayer, GameSpell, GameMonster, GameCombat
 - GameChallenge, ChallengeInstance, ChallengeVariables
 - GameAchievement, GameLeaderboard, GameTimeslot
@@ -52,12 +55,14 @@ Complete TypeScript interfaces for:
 Created 4 reactive stores using Svelte 5 runes:
 
 #### `src/lib/stores/game/player.svelte.ts`
+
 - Player stats management (level, XP, prestige, pyrs)
 - Derived values (XP progress, win rate, total pyrs)
 - Methods: gainXP(), gainPyrs(), spendPyrs(), advanceTutorial()
 - LocalStorage persistence
 
 #### `src/lib/stores/game/combat.svelte.ts`
+
 - Combat state management
 - Monster HP tracking
 - Spell selection
@@ -65,12 +70,14 @@ Created 4 reactive stores using Svelte 5 runes:
 - Victory/defeat tracking
 
 #### `src/lib/stores/game/challenge.svelte.ts`
+
 - Challenge state management
 - Timer tracking
 - Answer submission
 - Success/failure tracking
 
 #### `src/lib/stores/game/spells.svelte.ts`
+
 - Spell collection management
 - Deck management
 - Spell queries by element/id/num
@@ -87,6 +94,7 @@ src/routes/(protected)/dashboard/navadra/
 ```
 
 **Features**:
+
 - Fullscreen game container (exits back to dashboard)
 - Game header with level, XP bar, prestige, element pyrs
 - Game hub with player stats and navigation cards
@@ -95,13 +103,16 @@ src/routes/(protected)/dashboard/navadra/
 ### 5. Utility Functions ✅
 
 #### `src/lib/utils/game/assets.ts`
+
 - `getGameAssetUrl()` - Generate Supabase Storage URLs
 - `getMonsterImageUrl()` - Monster image helper
 - `getSpellIconUrl()` - Spell icon helper
 - `preloadImage()` / `preloadImages()` - Asset preloading
 
 #### `src/lib/utils/game/combat.ts`
+
 Combat calculation functions:
+
 - `calculateDamage()` - Spell damage with element advantages
 - `calculateHealing()` - Heal spell calculations
 - `calculateMonsterDamage()` - Monster attack damage
@@ -114,7 +125,9 @@ Combat calculation functions:
 - `generateRandomMonster()` - Random monster generation
 
 #### `src/lib/utils/game/challenge-variables.ts`
+
 Challenge system (ported from original):
+
 - `generateChallengeInstance()` - Generate randomized challenge
 - `evaluateWithContext()` - Math.js expression evaluation
 - `interpolateQuestion()` - Inject variables into question HTML
@@ -127,14 +140,18 @@ Challenge system (ported from original):
 ### 6. Migration Scripts ✅
 
 #### `scripts/setup-game-assets.sh`
+
 Copy game assets to static folder for local serving:
+
 - Creates `static/game/` directories
 - Copies monsters, spells, characters, UI, sounds
 - Progress indicators and asset counting
 - Simple bash script (no Supabase Storage needed)
 
 #### `scripts/import-navadra-challenges.ts`
+
 Import 464 JSON challenges to database:
+
 - Parses challenge JSON files
 - Extracts metadata from file paths
 - Batch inserts into game_challenges table
@@ -143,6 +160,7 @@ Import 464 JSON challenges to database:
 ### 7. Dependencies ✅
 
 Installed required packages:
+
 - **mathjs** (15.0.0) - For challenge variable evaluation
 
 ---
@@ -152,6 +170,7 @@ Installed required packages:
 ### Immediate Actions
 
 #### 1. Apply Database Migrations
+
 ```bash
 pnpm db:migrate
 ```
@@ -161,11 +180,13 @@ This will create all 12 game tables with RLS policies and triggers.
 #### 2. Import Game Data
 
 **Setup game assets** (copy to static folder):
+
 ```bash
 pnpm game:setup-assets
 ```
 
 **Import challenges**:
+
 ```bash
 pnpm game:import-challenges
 ```
@@ -175,6 +196,7 @@ Note: You'll need `SUPABASE_SERVICE_ROLE_KEY` in your `.env` file for importing 
 ### Remaining Milestones
 
 #### Milestone 1.5: Player Profile System (Week 3-4)
+
 - [x] Game profile route structure
 - [x] Player stats display
 - [ ] Profile detail page (`/dashboard/navadra/profile/+page.svelte`)
@@ -182,6 +204,7 @@ Note: You'll need `SUPABASE_SERVICE_ROLE_KEY` in your `.env` file for importing 
 - [ ] XP/Prestige history
 
 #### Milestone 1.6: Challenge System - Numeric (Week 4-6)
+
 - [x] Challenge variable evaluation
 - [ ] Challenge container component (`ChallengeContainer.svelte`)
 - [ ] Challenge timer component (`ChallengeTimer.svelte`)
@@ -190,6 +213,7 @@ Note: You'll need `SUPABASE_SERVICE_ROLE_KEY` in your `.env` file for importing 
 - [ ] Hint system
 
 #### Milestone 1.7: Combat System - Solo (Week 6-8)
+
 - [ ] Monster generation and selection
 - [ ] Combat arena UI (`CombatArena.svelte`)
 - [ ] Player/Monster panels with HP bars
@@ -198,6 +222,7 @@ Note: You'll need `SUPABASE_SERVICE_ROLE_KEY` in your `.env` file for importing 
 - [ ] Turn-based flow implementation
 
 #### Milestone 1.8: Spell System (Week 8-9)
+
 - [ ] Seed initial spell definitions
 - [ ] Spell collection page (`/dashboard/navadra/spells/+page.svelte`)
 - [ ] Spell card component
@@ -205,6 +230,7 @@ Note: You'll need `SUPABASE_SERVICE_ROLE_KEY` in your `.env` file for importing 
 - [ ] Spell upgrade interface
 
 #### Milestone 1.9: Combat Resolution (Week 9-10)
+
 - [ ] Combat server actions (in `combat/[combatId]/+page.server.ts`)
 - [ ] Victory/defeat screens
 - [ ] Reward distribution
@@ -212,6 +238,7 @@ Note: You'll need `SUPABASE_SERVICE_ROLE_KEY` in your `.env` file for importing 
 - [ ] Achievement progress updates
 
 #### Milestone 1.10: Polish & Testing (Week 10-12)
+
 - [ ] Sound effects integration
 - [ ] Animations (spell casting, damage, etc.)
 - [ ] Monster defeat animations
@@ -286,28 +313,34 @@ supabase/
 ## 🎯 Key Design Decisions
 
 ### 1. Svelte 5 Runes over Stores
+
 - Used `$state`, `$derived`, `$effect` for reactivity
 - Simpler API, better performance
 - Type-safe by default
 
 ### 2. Server-First Data Flow
+
 - All game data loaded via `+layout.server.ts`
 - Server actions for mutations
 - Client stores sync with server state
 
 ### 3. Fullscreen Game Experience
+
 - Dedicated layout isolates game from main app
 - Exit button returns to dashboard
 - All game features in one route group
 
 ### 4. Element System (Rock-Paper-Scissors)
+
 ```
 Fire > Earth > Wind > Water > Fire
 ```
+
 - 50% damage bonus for advantage
 - 25% damage penalty for disadvantage
 
 ### 5. Reward Integration
+
 - XP → Gidouilles (10:1 ratio)
 - +5 bonus gidouilles per combat victory
 - Automatic conversion via database triggers
@@ -327,12 +360,14 @@ Fire > Earth > Wind > Water > Fire
 ## 🔒 Security Features
 
 ### Row Level Security (RLS)
+
 - Students can only view/modify their own data
 - Teachers can view their students' game data
 - Admins have full access
 - Combat participants can view shared combat data
 
 ### Server-Side Validation
+
 - All damage calculations on server
 - Challenge answers validated server-side
 - XP/prestige/pyrs awarded by server triggers
@@ -343,11 +378,13 @@ Fire > Earth > Wind > Water > Fire
 ## 🚀 Performance Optimizations
 
 ### Database
+
 - Indexes on frequently queried columns
 - GIN indexes for JSONB combat_flow
 - Denormalized stats in game_players
 
 ### Frontend
+
 - LocalStorage for player state persistence
 - Lazy loading for game assets
 - Derived values computed reactively
@@ -358,17 +395,21 @@ Fire > Earth > Wind > Water > Fire
 ## 📚 Resources
 
 ### Documentation
+
 - **Original Guide**: `/NAVADRA_INTEGRATION_GUIDE.md`
 - **Original Navadra**: `/extern/navadra-jeu/CLAUDE.md`
 - **Database Schema**: See migration files
 
 ### Testing
+
 Run type checking:
+
 ```bash
 pnpm check
 ```
 
 Run build:
+
 ```bash
 pnpm build
 ```
@@ -414,6 +455,7 @@ pnpm build
 ## 📞 Support
 
 If you encounter issues:
+
 1. Check migration was successful: `pnpm db:status`
 2. Verify environment variables are set
 3. Check Supabase logs in dashboard

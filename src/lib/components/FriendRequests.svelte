@@ -14,7 +14,7 @@
 		if (success) {
 			toaster.success(`Demande d'ami acceptée (${friendName})`);
 		} else {
-			toaster.error('Impossible d\'accepter la demande');
+			toaster.error("Impossible d'accepter la demande");
 		}
 	}
 
@@ -33,7 +33,7 @@
 			if (success) {
 				toaster.info('Demande annulée');
 			} else {
-				toaster.error('Impossible d\'annuler la demande');
+				toaster.error("Impossible d'annuler la demande");
 			}
 		}
 	}

@@ -16,78 +16,81 @@ The MathGraph32 API documentation has been **completely updated** based on the o
 
 The following methods were documented incorrectly and have been fixed:
 
-| ❌ Previous (Incorrect) | ✅ Correct (Official API) | Usage |
-|------------------------|--------------------------|-------|
-| `addPerpBisector()` | `addLineMedAB()` | Perpendicular bisector (médiatrice) |
-| `addCircle()` | `addCircleOA()` | Circle by center point and radius point |
-| `addCircleRadius()` | `addCircleOr()` | Circle by center and radius value |
-| `addIntersectionLL()` | `addIntLineLine()` | Intersection of two lines |
-| `addIntersectionLC()` | `addIntLineCircle()` | Intersection of line and circle |
-| `addIntersectionCC()` | `addIntCircleCircle()` | Intersection of two circles |
-| `getObjectByTag()` | `getElement()` | Get object by tag identifier |
-| `getPointByName()` | `getElement()` | Get object by tag identifier |
-| `getFig()` | `getBase64Code()` | Export figure as base64 |
-| `updateFigDisplay()` | `reDisplay()` | Refresh figure display |
+| ❌ Previous (Incorrect) | ✅ Correct (Official API) | Usage                                   |
+| ----------------------- | ------------------------- | --------------------------------------- |
+| `addPerpBisector()`     | `addLineMedAB()`          | Perpendicular bisector (médiatrice)     |
+| `addCircle()`           | `addCircleOA()`           | Circle by center point and radius point |
+| `addCircleRadius()`     | `addCircleOr()`           | Circle by center and radius value       |
+| `addIntersectionLL()`   | `addIntLineLine()`        | Intersection of two lines               |
+| `addIntersectionLC()`   | `addIntLineCircle()`      | Intersection of line and circle         |
+| `addIntersectionCC()`   | `addIntCircleCircle()`    | Intersection of two circles             |
+| `getObjectByTag()`      | `getElement()`            | Get object by tag identifier            |
+| `getPointByName()`      | `getElement()`            | Get object by tag identifier            |
+| `getFig()`              | `getBase64Code()`         | Export figure as base64                 |
+| `updateFigDisplay()`    | `reDisplay()`             | Refresh figure display                  |
 
 ### Parameter Structure Changes
 
 Some methods use different parameter names:
 
 **Perpendicular Bisector:**
+
 ```javascript
 // ❌ Old (incorrect)
 app.addPerpBisector({
-    tag: 'bisector',
-    tagPoint1: 'A',
-    tagPoint2: 'B'
+	tag: 'bisector',
+	tagPoint1: 'A',
+	tagPoint2: 'B'
 });
 
 // ✅ New (correct)
 app.addLineMedAB({
-    a: 'A',          // Note: 'a' and 'b', not 'tagPoint1/tagPoint2'
-    b: 'B',
-    name: 'd',
-    tag: 'bisector'
+	a: 'A', // Note: 'a' and 'b', not 'tagPoint1/tagPoint2'
+	b: 'B',
+	name: 'd',
+	tag: 'bisector'
 });
 ```
 
 **Circles:**
+
 ```javascript
 // ❌ Old (incorrect)
 app.addCircle({
-    tag: 'circle_O',
-    tagCenter: 'O',
-    tagRadius: 'A'
+	tag: 'circle_O',
+	tagCenter: 'O',
+	tagRadius: 'A'
 });
 
 // ✅ New (correct)
 app.addCircleOA({
-    o: 'O',          // Note: 'o' and 'a', not 'tagCenter/tagRadius'
-    a: 'A',
-    name: 'c',
-    tag: 'circle_O'
+	o: 'O', // Note: 'o' and 'a', not 'tagCenter/tagRadius'
+	a: 'A',
+	name: 'c',
+	tag: 'circle_O'
 });
 ```
 
 **Intersections:**
+
 ```javascript
 // ❌ Old (incorrect)
 app.addIntersectionLC({
-    tag: 'I',
-    tagLine: 'line_AB',
-    tagCircle: 'circle_O',
-    which: 1
+	tag: 'I',
+	tagLine: 'line_AB',
+	tagCircle: 'circle_O',
+	which: 1
 });
 
 // ✅ New (correct)
 // Note: Creates BOTH intersection points automatically
 app.addIntLineCircle({
-    d: 'line_AB',     // Note: 'd' and 'c', not 'tagLine/tagCircle'
-    c: 'circle_O',
-    name: 'I1',       // First point
-    name2: 'I2',      // Second point
-    tag: 'int1',
-    tag2: 'int2'
+	d: 'line_AB', // Note: 'd' and 'c', not 'tagLine/tagCircle'
+	c: 'circle_O',
+	name: 'I1', // First point
+	name2: 'I2', // Second point
+	tag: 'int1',
+	tag2: 'int2'
 });
 ```
 
@@ -96,6 +99,7 @@ app.addIntLineCircle({
 The update added **60+ methods** that were previously undocumented:
 
 ### Arcs (6 methods)
+
 - `addArcOAB()` - Arc from point A to B
 - `addArcOAx()` - Arc with angular opening
 - `addArcDirectOAB()` - Direct arc
@@ -104,6 +108,7 @@ The update added **60+ methods** that were previously undocumented:
 - `addArcMajorOAx()` - Major arc with angle
 
 ### Advanced Lines (4 methods)
+
 - `addLineBisAOB()` - Angle bisector
 - `addLineHor()` - Horizontal line
 - `addLineVer()` - Vertical line
@@ -111,6 +116,7 @@ The update added **60+ methods** that were previously undocumented:
 - `addBrokenLine()` - Polyline
 
 ### Transformations (7 methods)
+
 - `addRotation()` - Rotation transformation
 - `addDilation()` - Dilation/Homothety
 - `addTranslation()` - Translation by vector
@@ -120,6 +126,7 @@ The update added **60+ methods** that were previously undocumented:
 - `addSimilitude()` - Similarity transformation
 
 ### Transformed Points (6 methods)
+
 - `addImPointRotation()` - Point image by rotation
 - `addImPointDilation()` - Point image by dilation
 - `addImPointTranslation()` - Point image by translation
@@ -128,19 +135,23 @@ The update added **60+ methods** that were previously undocumented:
 - `addImPointSymCent()` - Point image by central symmetry
 
 ### Transformed Objects (2 methods)
+
 - `addLineIm()` - Line image by transformation
 - `addCircleIm()` - Circle image by transformation
 
 ### Points on Objects (2 methods)
+
 - `addLinkedPointLine()` - Point linked to line
 - `addLinkedPointCircle()` - Point linked to circle
 
 ### Surfaces (3 methods)
+
 - `addSurface()` - Generic surface
 - `addSurfacePoly()` - Filled polygon
 - `addSurfaceCircle()` - Filled circle
 
 ### Measurements (9 methods)
+
 - `addLengthMeasure()` - Length measurement
 - `addXMeasure()` - X coordinate measure
 - `addYMeasure()` - Y coordinate measure
@@ -152,17 +163,20 @@ The update added **60+ methods** that were previously undocumented:
 - `addDerivative()` - Derivative
 
 ### Text & Labels (4 methods)
+
 - `addText()` - Static text
 - `addLinkedText()` - Text linked to object
 - `addLatex()` - LaTeX formula
 - `addLinkedLatex()` - LaTeX linked to object
 
 ### Interactive Elements (3 methods)
+
 - `addActionButton()` - Action button
 - `addTimerButton()` - Timer button
 - `addZoomButtons()` - Zoom controls
 
 ### Utility Methods (14 methods)
+
 - `getBase64Code()` - Export figure
 - `getFigDim()` - Get dimensions
 - `getValue()` - Get calculation value
@@ -179,25 +193,32 @@ The update added **60+ methods** that were previously undocumented:
 - `giveFormulaTo()` - Give formula to object
 
 ### Event Listeners (2 methods)
+
 - `addEltListener()` - Element event listener
 - `addSvgListener()` - SVG document listener
 
 ## Impact on Existing Code
 
 ### High Impact Changes
+
 Code using these methods **will break** and must be updated:
+
 - `addPerpBisector()` → `addLineMedAB()`
 - `addCircle()` / `addCircleRadius()` → `addCircleOA()` / `addCircleOr()`
 - `addIntersectionLL()` / `addIntersectionLC()` → `addIntLineLine()` / `addIntLineCircle()`
 - `getObjectByTag()` → `getElement()`
 
 ### Medium Impact Changes
+
 Code may work but should be updated for consistency:
+
 - `getFig()` → `getBase64Code()`
 - `updateFigDisplay()` → `reDisplay()`
 
 ### Files to Check
+
 Search the codebase for these patterns:
+
 ```bash
 # Find old method names
 grep -r "addPerpBisector\|addCircleRadius\|addIntersectionLL\|addIntersectionLC\|getObjectByTag" src/
@@ -206,16 +227,21 @@ grep -r "addPerpBisector\|addCircleRadius\|addIntersectionLL\|addIntersectionLC\
 ## Migration Guide
 
 ### Step 1: Update Method Names
+
 Replace all incorrect method names with correct ones.
 
 ### Step 2: Update Parameter Names
+
 Change parameter names to match official API (e.g., `tagCenter` → `o`, `tagLine` → `d`).
 
 ### Step 3: Handle Return Values
+
 Some methods return different types:
+
 - `addIntLineCircle()` returns **array of 2 points** (not single point with `which` parameter)
 
 ### Step 4: Test Thoroughly
+
 All geometric construction code should be tested after migration.
 
 ## Updated Documentation Files
@@ -242,6 +268,7 @@ All geometric construction code should be tested after migration.
 ## Testing Checklist
 
 After migration, test:
+
 - [ ] Point creation (all types)
 - [ ] Line creation (all types including perpendicular bisector)
 - [ ] Circle creation (both methods)

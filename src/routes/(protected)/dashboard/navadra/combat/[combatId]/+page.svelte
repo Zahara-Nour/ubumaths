@@ -53,7 +53,11 @@
 
 	async function handleChallengeSubmit(answer: any, timeTaken: number) {
 		console.log('[handleChallengeSubmit] Called with:', { answer, timeTaken });
-		console.log('[handleChallengeSubmit] State:', { activeChallenge, selectedSpellNum, challengeInstance });
+		console.log('[handleChallengeSubmit] State:', {
+			activeChallenge,
+			selectedSpellNum,
+			challengeInstance
+		});
 
 		if (!activeChallenge || !selectedSpellNum) {
 			console.log('[handleChallengeSubmit] Missing activeChallenge or selectedSpellNum, returning');
@@ -98,7 +102,10 @@
 
 			if (response.ok) {
 				const result = await response.json();
-				console.log('[handleChallengeSubmit] Full server response:', JSON.stringify(result, null, 2));
+				console.log(
+					'[handleChallengeSubmit] Full server response:',
+					JSON.stringify(result, null, 2)
+				);
 
 				// SvelteKit action responses wrap data in a specific structure
 				// result.data contains the server action return value
@@ -139,47 +146,47 @@
 						const challengeSuccessIdx = columnIndices?.challengeSuccess ?? 1;
 						success = challengeSuccessIdx === 1;
 
-					const damageDealtIdx = columnIndices?.damageDealt ?? 2;
-					damageDealt = parsed[damageDealtIdx] ?? 0;
+						const damageDealtIdx = columnIndices?.damageDealt ?? 2;
+						damageDealt = parsed[damageDealtIdx] ?? 0;
 
-					const victoryIdx = columnIndices?.victory ?? 3;
-					isVictory = parsed[victoryIdx] === true;
+						const victoryIdx = columnIndices?.victory ?? 3;
+						isVictory = parsed[victoryIdx] === true;
 
-					// Extract rewards - the rewards field contains ANOTHER mapping object
-					// that tells us where to find the actual XP, prestige, pyrs values
-					let rewardsData = null;
-					if (isVictory && columnIndices?.rewards !== undefined) {
-						const rewardsMapping = parsed[columnIndices.rewards];
-						console.log('[handleChallengeSubmit] Rewards mapping:', rewardsMapping);
+						// Extract rewards - the rewards field contains ANOTHER mapping object
+						// that tells us where to find the actual XP, prestige, pyrs values
+						let rewardsData = null;
+						if (isVictory && columnIndices?.rewards !== undefined) {
+							const rewardsMapping = parsed[columnIndices.rewards];
+							console.log('[handleChallengeSubmit] Rewards mapping:', rewardsMapping);
 
-						if (rewardsMapping && typeof rewardsMapping === 'object') {
-							// Use the rewards mapping to extract actual values
-							rewardsData = {
-								xp: parsed[rewardsMapping.xp] ?? 0,
-								prestige: parsed[rewardsMapping.prestige] ?? 0,
-								pyrs: parsed[rewardsMapping.pyrs] ?? 0,
-								element: parsed[rewardsMapping.element] ?? ''
-							};
-							console.log('[handleChallengeSubmit] Extracted rewards:', rewardsData);
+							if (rewardsMapping && typeof rewardsMapping === 'object') {
+								// Use the rewards mapping to extract actual values
+								rewardsData = {
+									xp: parsed[rewardsMapping.xp] ?? 0,
+									prestige: parsed[rewardsMapping.prestige] ?? 0,
+									pyrs: parsed[rewardsMapping.pyrs] ?? 0,
+									element: parsed[rewardsMapping.element] ?? ''
+								};
+								console.log('[handleChallengeSubmit] Extracted rewards:', rewardsData);
+							}
 						}
-					}
 
-					// Store serverData for rewards access
-					serverData = {
-						success: parsed[1],
-						damageDealt: parsed[damageDealtIdx],
-						challengeSuccess: success,
-						victory: isVictory,
-						rewards: rewardsData
-					};
+						// Store serverData for rewards access
+						serverData = {
+							success: parsed[1],
+							damageDealt: parsed[damageDealtIdx],
+							challengeSuccess: success,
+							victory: isVictory,
+							rewards: rewardsData
+						};
 
-					console.log('[handleChallengeSubmit] Extracted values:', {
-						success,
-						damageDealt,
-						isVictory,
-						challengeSuccessIdx,
-						rewards: serverData.rewards
-					});
+						console.log('[handleChallengeSubmit] Extracted values:', {
+							success,
+							damageDealt,
+							isVictory,
+							challengeSuccessIdx,
+							rewards: serverData.rewards
+						});
 					} else {
 						// Fallback
 						serverData = Array.isArray(parsed) ? parsed[0] : parsed;
@@ -251,7 +258,7 @@
 </script>
 
 <!-- DEBUG: Template state -->
-<div class="fixed left-0 top-0 z-50 bg-black p-2 text-xs text-white opacity-75">
+<div class="fixed top-0 left-0 z-50 bg-black p-2 text-xs text-white opacity-75">
 	<div>currentView: {currentView}</div>
 	<div>victory: {victory}</div>
 	<div>rewards: {rewards ? JSON.stringify(rewards) : 'null'}</div>
@@ -265,7 +272,9 @@
 	{#if currentView === 'victory'}
 		<!-- Victory Screen -->
 		<div class="victory-screen mx-auto max-w-4xl p-8">
-			<div class="space-y-6 rounded-lg border-2 border-yellow-500 bg-gradient-to-br from-yellow-50 to-orange-50 p-8 text-center dark:from-yellow-950/20 dark:to-orange-950/20">
+			<div
+				class="space-y-6 rounded-lg border-2 border-yellow-500 bg-gradient-to-br from-yellow-50 to-orange-50 p-8 text-center dark:from-yellow-950/20 dark:to-orange-950/20"
+			>
 				<div class="text-8xl">🏆</div>
 
 				<h1 class="text-4xl font-bold text-yellow-600 dark:text-yellow-400">VICTOIRE !</h1>
@@ -316,92 +325,83 @@
 				timeTaken={challengeResult.timeTaken}
 			/>
 
-			<Button onclick={handleChallengeContinue} size="lg" class="mt-6 w-full">
-				Continuer
-			</Button>
+			<Button onclick={handleChallengeContinue} size="lg" class="mt-6 w-full">Continuer</Button>
 		</div>
 	{:else if currentView === 'challenge'}
 		<!-- Active Challenge -->
 		<div class="mx-auto max-w-4xl p-8">
-			<ChallengeContainer
-				instance={challengeInstance}
-				onsubmit={handleChallengeSubmit}
-			/>
+			<ChallengeContainer instance={challengeInstance} onsubmit={handleChallengeSubmit} />
 		</div>
 	{:else}
-	<!-- Combat Arena -->
-	<div class="combat-arena mx-auto max-w-7xl p-8">
-		<div class="grid gap-6 lg:grid-cols-3">
-			<!-- Left: Player Panel + Log -->
-			<div class="space-y-6">
-				<PlayerPanel
-					playerName="{data.gamePlayer.user_id}"
-					level={data.gamePlayer.level}
-					currentHP={playerCurrentHP}
-					maxHP={playerMaxHP}
-				/>
-
-				<CombatLog turns={data.combat.combat_flow || []} />
-			</div>
-
-			<!-- Center: Monster Panel -->
-			<div>
-				<MonsterPanel
-					monster={data.monster}
-					currentHP={data.combat.monster_endurance_remaining || data.monster.max_endurance}
-				/>
-			</div>
-
-			<!-- Right: Actions -->
-			<div class="space-y-6">
-				<!-- Combat Info -->
-				<div class="rounded-lg border border-border bg-card p-4">
-					<h3 class="mb-2 font-bold text-card-foreground">Combat</h3>
-					<div class="space-y-1 text-sm">
-						<div class="flex justify-between">
-							<span class="text-muted-foreground">Round :</span>
-							<span class="font-medium">{data.combat.current_round}</span>
-						</div>
-						<div class="flex justify-between">
-							<span class="text-muted-foreground">Tour :</span>
-							<span class="font-medium">{data.combat.current_turn}</span>
-						</div>
-					</div>
-					<div class="mt-4 border-t border-border pt-4">
-						<Button href="/dashboard/navadra" variant="ghost" size="sm" class="w-full gap-2">
-							← Abandonner le combat
-						</Button>
-					</div>
-				</div>
-
-				<!-- Spell Selection -->
-				{#if data.playerSpells.length > 0}
-					<SpellSelector
-						spells={data.playerSpells}
-						{selectedSpellNum}
-						onselect={handleSpellSelect}
+		<!-- Combat Arena -->
+		<div class="combat-arena mx-auto max-w-7xl p-8">
+			<div class="grid gap-6 lg:grid-cols-3">
+				<!-- Left: Player Panel + Log -->
+				<div class="space-y-6">
+					<PlayerPanel
+						playerName={data.gamePlayer.user_id}
+						level={data.gamePlayer.level}
+						currentHP={playerCurrentHP}
+						maxHP={playerMaxHP}
 					/>
 
-					{#if selectedSpellNum !== null}
-						<form method="POST" action="?/selectSpell" use:enhance>
-							<input type="hidden" name="spell_num" value={selectedSpellNum} />
-							<Button type="submit" size="lg" class="w-full">
-								Lancer le sort !
+					<CombatLog turns={data.combat.combat_flow || []} />
+				</div>
+
+				<!-- Center: Monster Panel -->
+				<div>
+					<MonsterPanel
+						monster={data.monster}
+						currentHP={data.combat.monster_endurance_remaining || data.monster.max_endurance}
+					/>
+				</div>
+
+				<!-- Right: Actions -->
+				<div class="space-y-6">
+					<!-- Combat Info -->
+					<div class="rounded-lg border border-border bg-card p-4">
+						<h3 class="mb-2 font-bold text-card-foreground">Combat</h3>
+						<div class="space-y-1 text-sm">
+							<div class="flex justify-between">
+								<span class="text-muted-foreground">Round :</span>
+								<span class="font-medium">{data.combat.current_round}</span>
+							</div>
+							<div class="flex justify-between">
+								<span class="text-muted-foreground">Tour :</span>
+								<span class="font-medium">{data.combat.current_turn}</span>
+							</div>
+						</div>
+						<div class="mt-4 border-t border-border pt-4">
+							<Button href="/dashboard/navadra" variant="ghost" size="sm" class="w-full gap-2">
+								← Abandonner le combat
 							</Button>
-						</form>
-					{/if}
-				{:else}
-					<div class="rounded-lg border border-border bg-card p-6 text-center">
-						<p class="text-muted-foreground">
-							Tu n'as pas de sorts ! Visite le grimoire pour en débloquer.
-						</p>
-						<Button href="/dashboard/navadra/spells" class="mt-4">
-							Aller au grimoire
-						</Button>
+						</div>
 					</div>
-				{/if}
+
+					<!-- Spell Selection -->
+					{#if data.playerSpells.length > 0}
+						<SpellSelector
+							spells={data.playerSpells}
+							{selectedSpellNum}
+							onselect={handleSpellSelect}
+						/>
+
+						{#if selectedSpellNum !== null}
+							<form method="POST" action="?/selectSpell" use:enhance>
+								<input type="hidden" name="spell_num" value={selectedSpellNum} />
+								<Button type="submit" size="lg" class="w-full">Lancer le sort !</Button>
+							</form>
+						{/if}
+					{:else}
+						<div class="rounded-lg border border-border bg-card p-6 text-center">
+							<p class="text-muted-foreground">
+								Tu n'as pas de sorts ! Visite le grimoire pour en débloquer.
+							</p>
+							<Button href="/dashboard/navadra/spells" class="mt-4">Aller au grimoire</Button>
+						</div>
+					{/if}
+				</div>
 			</div>
 		</div>
-	</div>
 	{/if}
 {/key}

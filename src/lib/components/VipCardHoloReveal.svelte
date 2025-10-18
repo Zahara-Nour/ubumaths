@@ -42,7 +42,7 @@
 
 	let {
 		card,
-		studentName = 'Élève',
+		studentName = 'Élève', // eslint-disable-line @typescript-eslint/no-unused-vars
 		loading = true,
 		confirmed = false,
 		onComplete
@@ -189,7 +189,7 @@
 	<div class="relative z-10 flex w-full max-w-7xl flex-col items-center gap-6">
 		<!-- Sparkles Background -->
 		<div class="pointer-events-none absolute inset-0 overflow-hidden">
-			{#each sparkles as sparkle}
+			{#each sparkles as sparkle, i (i)}
 				<div
 					class="animate-sparkle absolute h-2 w-2 rounded-full bg-yellow-300"
 					style="
@@ -255,7 +255,7 @@
 		<!-- Confetti -->
 		{#if confettiActive}
 			<div class="pointer-events-none absolute inset-0 overflow-hidden">
-				{#each confetti as piece}
+				{#each confetti as piece, i (i)}
 					<div
 						class="animate-confetti absolute h-3 w-3 rounded-sm"
 						style="

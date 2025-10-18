@@ -164,15 +164,11 @@ describe('TeacherStudentsCacheStore', () => {
 
 		it('should fetch full data when full=true', async () => {
 			const scenario = getFullDataScenario();
-			mockFetch.mockResolvedValueOnce(
-				mockFetchResponse(mockApiResponse(scenario.students, true))
-			);
+			mockFetch.mockResolvedValueOnce(mockFetchResponse(mockApiResponse(scenario.students, true)));
 
 			await cache.getStudents(scenario.classId, true);
 
-			expect(mockFetch).toHaveBeenCalledWith(
-				`/api/classes/${scenario.classId}/students?full=true`
-			);
+			expect(mockFetch).toHaveBeenCalledWith(`/api/classes/${scenario.classId}/students?full=true`);
 		});
 
 		it('should use cached minimal data when requesting minimal again', async () => {
@@ -203,18 +199,14 @@ describe('TeacherStudentsCacheStore', () => {
 			);
 			await cache.getStudents(scenario.classId, true);
 
-			expect(mockFetch).toHaveBeenCalledWith(
-				`/api/classes/${scenario.classId}/students?full=true`
-			);
+			expect(mockFetch).toHaveBeenCalledWith(`/api/classes/${scenario.classId}/students?full=true`);
 		});
 
 		it('should return cached full data for both minimal and full requests', async () => {
 			const scenario = getFullDataScenario();
 
 			// First fetch: full data
-			mockFetch.mockResolvedValueOnce(
-				mockFetchResponse(mockApiResponse(scenario.students, true))
-			);
+			mockFetch.mockResolvedValueOnce(mockFetchResponse(mockApiResponse(scenario.students, true)));
 			await cache.getStudents(scenario.classId, true);
 
 			mockFetch.mockClear();
@@ -232,9 +224,7 @@ describe('TeacherStudentsCacheStore', () => {
 
 		it('should preserve full data fields when cached', async () => {
 			const scenario = getFullDataScenario();
-			mockFetch.mockResolvedValueOnce(
-				mockFetchResponse(mockApiResponse(scenario.students, true))
-			);
+			mockFetch.mockResolvedValueOnce(mockFetchResponse(mockApiResponse(scenario.students, true)));
 
 			const students = (await cache.getStudents(scenario.classId, true)) as CachedStudentFull[];
 
@@ -533,17 +523,13 @@ describe('TeacherStudentsCacheStore', () => {
 
 		it('should preload full data when requested', async () => {
 			const scenario = getFullDataScenario();
-			mockFetch.mockResolvedValueOnce(
-				mockFetchResponse(mockApiResponse(scenario.students, true))
-			);
+			mockFetch.mockResolvedValueOnce(mockFetchResponse(mockApiResponse(scenario.students, true)));
 
 			cache.preload(scenario.classId, true);
 
 			await new Promise((resolve) => setTimeout(resolve, 50));
 
-			expect(mockFetch).toHaveBeenCalledWith(
-				`/api/classes/${scenario.classId}/students?full=true`
-			);
+			expect(mockFetch).toHaveBeenCalledWith(`/api/classes/${scenario.classId}/students?full=true`);
 		});
 
 		it('should not throw on preload failure', async () => {
@@ -577,9 +563,7 @@ describe('TeacherStudentsCacheStore', () => {
 
 			await new Promise((resolve) => setTimeout(resolve, 50));
 
-			expect(mockFetch).toHaveBeenCalledWith(
-				`/api/classes/${scenario.classId}/students?full=true`
-			);
+			expect(mockFetch).toHaveBeenCalledWith(`/api/classes/${scenario.classId}/students?full=true`);
 		});
 	});
 

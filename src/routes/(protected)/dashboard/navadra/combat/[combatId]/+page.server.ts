@@ -22,10 +22,12 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 	// Fetch combat with monster data
 	const { data: combat, error: combatError } = await supabase
 		.from('game_combats')
-		.select(`
+		.select(
+			`
 			*,
 			monster:game_monsters(*)
-		`)
+		`
+		)
 		.eq('id', combatId)
 		.single();
 
@@ -50,10 +52,12 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 	// Fetch player's spells (from active deck)
 	const { data: activeDeck } = await supabase
 		.from('game_spell_decks')
-		.select(`
+		.select(
+			`
 			*,
 			spells:game_spells(*)
-		`)
+		`
+		)
 		.eq('user_id', user.id)
 		.eq('is_active', true)
 		.single();
@@ -221,11 +225,14 @@ export const actions: Actions = {
 					combat.monster.element,
 					1.0, // Full effectiveness on correct answer
 					0 // No combo meter for now
-			  )
+				)
 			: 0; // No damage on wrong answer
 
 		// Update monster HP
-		const newMonsterHP = Math.max(0, (combat.monster_endurance_remaining || combat.monster.max_endurance) - damage);
+		const newMonsterHP = Math.max(
+			0,
+			(combat.monster_endurance_remaining || combat.monster.max_endurance) - damage
+		);
 
 		// Create combat turn
 		const newTurn = {

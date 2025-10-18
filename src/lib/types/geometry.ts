@@ -12,7 +12,13 @@ export type ValidationMode = 'automatic' | 'step_by_step' | 'teacher_review' | '
 export type GradeLevel = 'elementary' | 'middle' | 'high' | 'advanced';
 export type AttemptStatus = 'in_progress' | 'submitted' | 'graded' | 'abandoned';
 export type HintLevel = 'general' | 'specific' | 'step_by_step';
-export type TemplateType = 'triangle' | 'circle' | 'transformation' | 'angle' | 'polygon' | 'custom';
+export type TemplateType =
+	| 'triangle'
+	| 'circle'
+	| 'transformation'
+	| 'angle'
+	| 'polygon'
+	| 'custom';
 
 // MathGraph32 tool types
 export type MathGraphTool =
@@ -57,7 +63,19 @@ export type PointStyle =
 	| '.';
 
 // Line style options
-export type LineStyle = 'line' | '-' | 'dot' | '.' | 'dashdash' | '--' | 'dashdotdot' | '-..' | 'dashdotdotdot' | '-...' | 'dashdashdash' | '---';
+export type LineStyle =
+	| 'line'
+	| '-'
+	| 'dot'
+	| '.'
+	| 'dashdash'
+	| '--'
+	| 'dashdotdot'
+	| '-..'
+	| 'dashdotdotdot'
+	| '-...'
+	| 'dashdashdash'
+	| '---';
 
 // Fill style options
 export type FillStyle = 'transp' | 'fill' | 'vert' | 'hor' | '/' | '\\';

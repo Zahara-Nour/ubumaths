@@ -44,7 +44,7 @@
 			figureContainer.appendChild(canvas);
 
 			// Wait a tick for DOM to update
-			await new Promise(resolve => setTimeout(resolve, 10));
+			await new Promise((resolve) => setTimeout(resolve, 10));
 
 			// Create new MathGraph32 application using the service
 			const service = MathGraphService.getInstance();
@@ -207,7 +207,7 @@ app.updateFigDisplay();
 			figureContainer.appendChild(canvas);
 
 			// Wait a tick for DOM to update
-			await new Promise(resolve => setTimeout(resolve, 10));
+			await new Promise((resolve) => setTimeout(resolve, 10));
 
 			const service = MathGraphService.getInstance();
 			const app = await service.initializeEditor(canvas, {
@@ -315,7 +315,7 @@ app.updateFigDisplay();
 			figureContainer.appendChild(canvas);
 
 			// Wait a tick for DOM to update
-			await new Promise(resolve => setTimeout(resolve, 10));
+			await new Promise((resolve) => setTimeout(resolve, 10));
 
 			const service = MathGraphService.getInstance();
 			const app = await service.initializeEditor(canvas, {
@@ -653,7 +653,8 @@ await supabase
 		<Card.Header>
 			<Card.Title>MathGraph32 Wrapper - Live Examples</Card.Title>
 			<Card.Description>
-				Interactive examples showing how to use the MathGraph32 TypeScript wrapper for creating geometry exercises.
+				Interactive examples showing how to use the MathGraph32 TypeScript wrapper for creating
+				geometry exercises.
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
@@ -679,15 +680,11 @@ await supabase
 								<Button onclick={createTriangleExample} variant="default">
 									🔺 Create Triangle
 								</Button>
-								<Button onclick={createCircleExample} variant="default">
-									⭕ Create Circle
-								</Button>
+								<Button onclick={createCircleExample} variant="default">⭕ Create Circle</Button>
 								<Button onclick={createPerpendicularBisectorExample} variant="default">
 									📐 Perpendicular Bisector
 								</Button>
-								<Button onclick={exportFigureExample} variant="outline">
-									📦 Export Figure
-								</Button>
+								<Button onclick={exportFigureExample} variant="outline">📦 Export Figure</Button>
 							</div>
 
 							<!-- Figure Display Area with Fullscreen -->
@@ -696,17 +693,22 @@ await supabase
 								<MathGraphFullscreen
 									bind:container={figureContainer}
 									onFullscreenChange={(isFullscreen) => {
-										toaster.info(isFullscreen ? 'Entered fullscreen mode' : 'Exited fullscreen mode');
+										toaster.info(
+											isFullscreen ? 'Entered fullscreen mode' : 'Exited fullscreen mode'
+										);
 									}}
 								>
-									<div class="mb-4 min-h-[400px] rounded border border-dashed border-border bg-muted/20">
+									<div
+										class="mb-4 min-h-[400px] rounded border border-dashed border-border bg-muted/20"
+									>
 										<div class="flex h-[400px] items-center justify-center text-muted-foreground">
 											Click a button above to create a figure
 										</div>
 									</div>
 								</MathGraphFullscreen>
-								<p class="text-muted-foreground mt-2 text-xs">
-									💡 Press <kbd class="rounded bg-muted px-1 py-0.5 text-xs font-semibold">F</kbd> or click the fullscreen icon to toggle fullscreen mode
+								<p class="mt-2 text-xs text-muted-foreground">
+									💡 Press <kbd class="rounded bg-muted px-1 py-0.5 text-xs font-semibold">F</kbd> or
+									click the fullscreen icon to toggle fullscreen mode
 								</p>
 							</div>
 
@@ -714,7 +716,7 @@ await supabase
 							{#if exampleOutput}
 								<div class="rounded-lg border border-border bg-muted/50 p-4">
 									<h3 class="mb-2 font-semibold">Output:</h3>
-									<pre class="whitespace-pre-wrap text-sm font-mono">{exampleOutput}</pre>
+									<pre class="font-mono text-sm whitespace-pre-wrap">{exampleOutput}</pre>
 								</div>
 							{/if}
 						</div>
@@ -729,7 +731,7 @@ await supabase
 
 							{#if currentExample === 'validation' && exampleOutput}
 								<div class="rounded-lg border border-border bg-muted/50 p-4">
-									<pre class="whitespace-pre-wrap text-sm font-mono">{exampleOutput}</pre>
+									<pre class="font-mono text-sm whitespace-pre-wrap">{exampleOutput}</pre>
 								</div>
 							{/if}
 
@@ -741,7 +743,7 @@ await supabase
 									<div class="grid gap-2 md:grid-cols-2">
 										<div class="rounded border p-2">
 											<strong>Point Validators</strong>
-											<ul class="text-muted-foreground ml-4 mt-1 list-disc text-xs">
+											<ul class="mt-1 ml-4 list-disc text-xs text-muted-foreground">
 												<li>validatePointExists</li>
 												<li>validatePointOnLine</li>
 												<li>validatePointOnCircle</li>
@@ -750,7 +752,7 @@ await supabase
 										</div>
 										<div class="rounded border p-2">
 											<strong>Line Validators</strong>
-											<ul class="text-muted-foreground ml-4 mt-1 list-disc text-xs">
+											<ul class="mt-1 ml-4 list-disc text-xs text-muted-foreground">
 												<li>validateLinesParallel</li>
 												<li>validateLinesPerpendicular</li>
 												<li>validateLineExists</li>
@@ -758,7 +760,7 @@ await supabase
 										</div>
 										<div class="rounded border p-2">
 											<strong>Angle Validators</strong>
-											<ul class="text-muted-foreground ml-4 mt-1 list-disc text-xs">
+											<ul class="mt-1 ml-4 list-disc text-xs text-muted-foreground">
 												<li>validateAngleMeasure</li>
 												<li>validateAngleEquals</li>
 												<li>validateRightAngle</li>
@@ -766,14 +768,14 @@ await supabase
 										</div>
 										<div class="rounded border p-2">
 											<strong>Distance Validators</strong>
-											<ul class="text-muted-foreground ml-4 mt-1 list-disc text-xs">
+											<ul class="mt-1 ml-4 list-disc text-xs text-muted-foreground">
 												<li>validateDistance</li>
 												<li>validateSegmentLength</li>
 												<li>validateCircleRadius</li>
 											</ul>
 										</div>
 									</div>
-									<p class="text-muted-foreground mt-4 text-xs">
+									<p class="mt-4 text-xs text-muted-foreground">
 										See <strong>GEOMETRY_API_DOCS.md</strong> for complete list and parameters.
 									</p>
 								</Card.Content>
@@ -790,7 +792,7 @@ await supabase
 
 							{#if currentExample === 'randomization' && exampleOutput}
 								<div class="rounded-lg border border-border bg-muted/50 p-4">
-									<pre class="whitespace-pre-wrap text-sm font-mono">{exampleOutput}</pre>
+									<pre class="font-mono text-sm whitespace-pre-wrap">{exampleOutput}</pre>
 								</div>
 							{/if}
 
@@ -803,44 +805,44 @@ await supabase
 										<a
 											href="/MATHGRAPH32_API_GUIDE.md"
 											target="_blank"
-											class="text-primary hover:underline block"
+											class="block text-primary hover:underline"
 										>
 											📘 MATHGRAPH32_API_GUIDE.md
 										</a>
-										<p class="text-muted-foreground text-xs">
+										<p class="text-xs text-muted-foreground">
 											Complete guide with singleton pattern, common pitfalls, and 6 examples
 										</p>
 
 										<a
 											href="/GEOMETRY_API_DOCS.md"
 											target="_blank"
-											class="text-primary hover:underline block mt-3"
+											class="mt-3 block text-primary hover:underline"
 										>
 											📗 GEOMETRY_API_DOCS.md
 										</a>
-										<p class="text-muted-foreground text-xs">
+										<p class="text-xs text-muted-foreground">
 											Full API reference with all validators and services
 										</p>
 
 										<a
 											href="/GEOMETRY_EXAMPLES.md"
 											target="_blank"
-											class="text-primary hover:underline block mt-3"
+											class="mt-3 block text-primary hover:underline"
 										>
 											📙 GEOMETRY_EXAMPLES.md
 										</a>
-										<p class="text-muted-foreground text-xs">
+										<p class="text-xs text-muted-foreground">
 											12 complete exercise examples with full configurations
 										</p>
 
 										<a
 											href="/demo/geometry"
 											target="_blank"
-											class="text-primary hover:underline block mt-3"
+											class="mt-3 block text-primary hover:underline"
 										>
 											🎨 Demo Page
 										</a>
-										<p class="text-muted-foreground text-xs">
+										<p class="text-xs text-muted-foreground">
 											Interactive showcase of all geometry features
 										</p>
 									</Card.Content>
@@ -853,28 +855,28 @@ await supabase
 									<Card.Content class="space-y-2 text-sm">
 										<div class="rounded bg-muted p-2">
 											<strong class="text-xs">💡 Always use the singleton:</strong>
-											<code class="text-muted-foreground mt-1 block text-xs">
+											<code class="mt-1 block text-xs text-muted-foreground">
 												const service = MathGraphService.getInstance();
 											</code>
 										</div>
 
 										<div class="rounded bg-muted p-2">
 											<strong class="text-xs">💡 Wait for loading:</strong>
-											<code class="text-muted-foreground mt-1 block text-xs">
+											<code class="mt-1 block text-xs text-muted-foreground">
 												await service.loadMathGraph();
 											</code>
 										</div>
 
 										<div class="rounded bg-muted p-2">
 											<strong class="text-xs">💡 Always call display():</strong>
-											<code class="text-muted-foreground mt-1 block text-xs">
+											<code class="mt-1 block text-xs text-muted-foreground">
 												app.display(); // Render the figure
 											</code>
 										</div>
 
 										<div class="rounded bg-muted p-2">
 											<strong class="text-xs">💡 Use tolerance in validation:</strong>
-											<code class="text-muted-foreground mt-1 block text-xs">
+											<code class="mt-1 block text-xs text-muted-foreground">
 												validateAngleMeasure(app, 'angle_A', 90, 2);
 											</code>
 										</div>

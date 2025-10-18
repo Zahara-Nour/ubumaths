@@ -145,13 +145,8 @@
 
 		<!-- Search Bar -->
 		<div class="relative">
-			<Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-			<Input
-				type="text"
-				placeholder="Rechercher..."
-				bind:value={searchQuery}
-				class="pl-9"
-			/>
+			<Search class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+			<Input type="text" placeholder="Rechercher..." bind:value={searchQuery} class="pl-9" />
 		</div>
 	</div>
 
@@ -191,7 +186,7 @@
 
 							<!-- Online status for 1-on-1 chats -->
 							{#if !conversation.is_group && conversation.other_user_id}
-								<div class="absolute bottom-0 right-0">
+								<div class="absolute right-0 bottom-0">
 									<OnlineStatus userId={conversation.other_user_id} size="sm" />
 								</div>
 							{/if}
@@ -199,7 +194,7 @@
 							<!-- Group chat indicator -->
 							{#if conversation.is_group}
 								<div
-									class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-muted text-muted-foreground"
+									class="absolute -right-1 -bottom-1 flex h-5 w-5 items-center justify-center rounded-full bg-muted text-muted-foreground"
 								>
 									<Users class="h-3 w-3" />
 								</div>
@@ -233,8 +228,7 @@
 							<!-- Group chat participant count -->
 							{#if conversation.is_group}
 								<p class="mt-1 text-xs text-muted-foreground">
-									{conversation.participant_count} participant{conversation.participant_count >
-									1
+									{conversation.participant_count} participant{conversation.participant_count > 1
 										? 's'
 										: ''}
 								</p>

@@ -30,7 +30,6 @@
 </script>
 
 <div class="space-y-6">
-
 	<!-- Data Counts Overview -->
 	<Card.Root>
 		<Card.Header>
@@ -38,7 +37,7 @@
 			<Card.Description>Total counts across all tables</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+			<div class="grid grid-cols-2 gap-6 md:grid-cols-4">
 				<div class="space-y-1">
 					<p class="text-sm text-muted-foreground">Total Users</p>
 					<p class="text-3xl font-bold">{data.counts.totalUsers}</p>
@@ -108,11 +107,11 @@
 			{#if data.pendingStudents.notActivated.length > 0}
 				<Separator />
 				<div>
-					<h3 class="text-sm font-semibold mb-2">Students Not Yet Activated (Top 10)</h3>
+					<h3 class="mb-2 text-sm font-semibold">Students Not Yet Activated (Top 10)</h3>
 					<div class="space-y-2">
-						{#each data.pendingStudents.notActivated as student}
+						{#each data.pendingStudents.notActivated as student (student.email)}
 							<div
-								class="flex items-center justify-between text-sm p-2 rounded bg-muted/50 border border-border"
+								class="flex items-center justify-between rounded border border-border bg-muted/50 p-2 text-sm"
 							>
 								<div class="flex-1">
 									<p class="font-medium">
@@ -141,15 +140,15 @@
 		<Card.Content class="space-y-6">
 			<!-- Missing Names -->
 			<div>
-				<div class="flex items-center justify-between mb-2">
+				<div class="mb-2 flex items-center justify-between">
 					<h3 class="text-sm font-semibold">Missing First/Last Name</h3>
 					<Badge variant="outline">{data.integrity.missingNames.length} found</Badge>
 				</div>
 				{#if data.integrity.missingNames.length > 0}
 					<div class="space-y-2">
-						{#each data.integrity.missingNames as profile}
+						{#each data.integrity.missingNames as profile (profile.email)}
 							<div
-								class="flex items-center justify-between text-sm p-2 rounded bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800"
+								class="flex items-center justify-between rounded border border-yellow-200 bg-yellow-50 p-2 text-sm dark:border-yellow-800 dark:bg-yellow-900/20"
 							>
 								<div>
 									<p class="font-medium">{profile.email}</p>
@@ -171,15 +170,15 @@
 
 			<!-- Missing School -->
 			<div>
-				<div class="flex items-center justify-between mb-2">
+				<div class="mb-2 flex items-center justify-between">
 					<h3 class="text-sm font-semibold">Missing School Assignment</h3>
 					<Badge variant="outline">{data.integrity.missingSchool.length} found</Badge>
 				</div>
 				{#if data.integrity.missingSchool.length > 0}
 					<div class="space-y-2">
-						{#each data.integrity.missingSchool as profile}
+						{#each data.integrity.missingSchool as profile (profile.email)}
 							<div
-								class="flex items-center justify-between text-sm p-2 rounded bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800"
+								class="flex items-center justify-between rounded border border-yellow-200 bg-yellow-50 p-2 text-sm dark:border-yellow-800 dark:bg-yellow-900/20"
 							>
 								<p class="font-medium">{profile.email}</p>
 								<Badge class={getRoleBadgeClass(profile.role)}>{profile.role}</Badge>
@@ -195,15 +194,15 @@
 
 			<!-- Students Without Classes -->
 			<div>
-				<div class="flex items-center justify-between mb-2">
+				<div class="mb-2 flex items-center justify-between">
 					<h3 class="text-sm font-semibold">Students Without Classes</h3>
 					<Badge variant="outline">{data.integrity.noClasses.length} found</Badge>
 				</div>
 				{#if data.integrity.noClasses.length > 0}
 					<div class="space-y-2">
-						{#each data.integrity.noClasses as profile}
+						{#each data.integrity.noClasses as profile (profile.email)}
 							<div
-								class="flex items-center justify-between text-sm p-2 rounded bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800"
+								class="flex items-center justify-between rounded border border-yellow-200 bg-yellow-50 p-2 text-sm dark:border-yellow-800 dark:bg-yellow-900/20"
 							>
 								<p class="font-medium">{profile.email}</p>
 								<Badge class={getRoleBadgeClass(profile.role)}>{profile.role}</Badge>
@@ -226,9 +225,9 @@
 		<Card.Content>
 			{#if data.recentSignups.length > 0}
 				<div class="space-y-2">
-					{#each data.recentSignups as signup}
+					{#each data.recentSignups as signup (signup.email)}
 						<div
-							class="flex items-center justify-between text-sm p-3 rounded bg-muted/50 border border-border"
+							class="flex items-center justify-between rounded border border-border bg-muted/50 p-3 text-sm"
 						>
 							<div class="flex-1">
 								<p class="font-medium">
@@ -251,7 +250,9 @@
 	</Card.Root>
 
 	<!-- Privacy Notice -->
-	<div class="text-xs text-muted-foreground text-center p-4 bg-muted/30 rounded-lg border border-border">
+	<div
+		class="rounded-lg border border-border bg-muted/30 p-4 text-center text-xs text-muted-foreground"
+	>
 		🔒 Email addresses are redacted for privacy (showing first 3 characters only)
 	</div>
 </div>

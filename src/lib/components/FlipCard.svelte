@@ -3,7 +3,6 @@
 		flipped = $bindable(false),
 		front = $bindable(),
 		back = $bindable(),
-		duration = 600,
 		class: className = ''
 	} = $props();
 

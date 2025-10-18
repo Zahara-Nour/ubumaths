@@ -74,7 +74,6 @@
 	```
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import confetti from 'canvas-confetti';
 
 	/**
@@ -170,7 +169,7 @@
 		secondaryColor = '#3a507e',
 		accentColor = '#788bb2',
 		addJokerIfOdd = false,
-		spinDuration = 4,
+		spinDuration = 4, // Prop defined but duration is hardcoded in CSS (4s)
 		showConfetti = true,
 		confettiZIndex = 0,
 		gidouilleReward,
@@ -188,6 +187,7 @@
 	let isSpinning = $state(false);
 
 	/** Whether the wheel has been spun at least once (for winner display) */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let hasSpun = $state(false);
 
 	/** Currently selected student (winner) - displayed below the wheel */
@@ -223,6 +223,7 @@
 	});
 
 	/** Angle in degrees per slice (e.g., 45° for 8 students) */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let sliceAngle = $derived(360 / wheelData().length);
 
 	/**
@@ -240,6 +241,7 @@
 	 * Currently returns same colors for all slices (not used)
 	 * Kept for potential future customization per slice
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const getSliceColor = (index: number): string => {
 		const colors = [primaryColor, secondaryColor, accentColor];
 		return colors[index % colors.length];
@@ -436,6 +438,7 @@
 	 * Currently unused (kept for potential future use)
 	 * Note: The wheel now spins continuously without needing reset
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const reset = () => {
 		angle = 0;
 		hasSpun = false;
@@ -453,7 +456,9 @@
 			class:blur-wheel={isSpinning}
 			height="{2 * wheelRadius + 3}em"
 			width="{2 * wheelRadius + 3}em"
-			style="transform: rotate(-{angle + 90}deg); transition: {isSpinning ? 'all 4s ease-out' : 'none'};"
+			style="transform: rotate(-{angle + 90}deg); transition: {isSpinning
+				? 'all 4s ease-out'
+				: 'none'};"
 		>
 			<!-- Filters for shadows -->
 			<defs>
@@ -507,7 +512,7 @@
 			<!-- Yellow decorative dots around perimeter -->
 			{#each Array(wheelData().length * 3)
 				.fill(0)
-				.map((_, i) => i) as i}
+				.map((_, i) => i) as i (i)}
 				<circle
 					r="0.1em"
 					cx="{2 * wheelRadius + 0.5}em"
@@ -521,7 +526,7 @@
 			{/each}
 
 			<!-- Student names -->
-			{#each wheelData() as name, i}
+			{#each wheelData() as name, i (i)}
 				<text
 					fill={getTextColor(i)}
 					font-weight="bold"
@@ -539,7 +544,7 @@
 		</svg>
 
 		<!-- Marker/Pointer at top -->
-		<span class="absolute left-1/2 top-0" style="translate: -50% 0;">
+		<span class="absolute top-0 left-1/2" style="translate: -50% 0;">
 			<svg width="60" height="80" viewBox="0 0 60 80">
 				<defs>
 					<linearGradient id="markerGradient" x1="0%" y1="0%" x2="0%" y2="100%">

@@ -9,6 +9,7 @@ The holographic Pokemon card effects have been successfully integrated into your
 **Demo Page:** http://localhost:5173/vip-cards-demo
 
 **Start Server:**
+
 ```bash
 cd /Users/david/Coding/js/ubumaths
 pnpm dev
@@ -17,9 +18,11 @@ pnpm dev
 ## 📦 What Was Delivered
 
 ### 1. Holographic Card Component
+
 **Location:** `src/lib/components/VipCardHolo.svelte`
 
 **Features:**
+
 - ✅ Interactive 3D mouse tracking
 - ✅ Click-to-expand full-screen view
 - ✅ Mobile gyroscope support
@@ -34,9 +37,11 @@ pnpm dev
 - ✅ **Configurable props** - Enable/disable any feature independently
 
 ### 2. Demo Pages
+
 **Main Gallery Route:** `/vip-cards-demo`
 
 **Contents:**
+
 - All 26 VIP cards organized by rarity
 - Interactive showcase card with auto-rotation
 - Rarity legend explaining each effect
@@ -47,6 +52,7 @@ pnpm dev
 **Examples Route:** `/vip-cards-demo/examples`
 
 **Contains 12 configuration examples:**
+
 1. Full Effects (Default)
 2. 3D Only (No Popover)
 3. Static with Holo Effect
@@ -64,12 +70,12 @@ Each example includes flip button and complete props reference table.
 
 ### 3. Rarity-Based Effects
 
-| Rarity | Effect | Description | Cards |
-|--------|--------|-------------|-------|
-| ✨ **Légendaire** | Secret Rare (Gold) | Shimmering gold with glitter layers | 2 |
-| 💎 **Épique** | Rainbow Holo | Intense glitter with pastel rainbow | 5 |
-| ⭐ **Rare** | Cosmos Holo | Galaxy background with rainbow | 10 |
-| 🎴 **Commune** | Regular Holo | Classic vertical beam pattern | 9 |
+| Rarity            | Effect             | Description                         | Cards |
+| ----------------- | ------------------ | ----------------------------------- | ----- |
+| ✨ **Légendaire** | Secret Rare (Gold) | Shimmering gold with glitter layers | 2     |
+| 💎 **Épique**     | Rainbow Holo       | Intense glitter with pastel rainbow | 5     |
+| ⭐ **Rare**       | Cosmos Holo        | Galaxy background with rainbow      | 10    |
+| 🎴 **Commune**    | Regular Holo       | Classic vertical beam pattern       | 9     |
 
 ### 4. Complete File Structure
 
@@ -101,8 +107,8 @@ static/
 
 ```svelte
 <script>
-import VipCardHolo from '$lib/components/VipCardHolo.svelte';
-import { VIP_CARDS } from '$lib/types/vip-card';
+	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
+	import { VIP_CARDS } from '$lib/types/vip-card';
 </script>
 
 <VipCardHolo card={VIP_CARDS[0]} />
@@ -111,51 +117,51 @@ import { VIP_CARDS } from '$lib/types/vip-card';
 ### With Count Badge
 
 ```svelte
-<VipCardHolo card={card} count={3} />
+<VipCardHolo {card} count={3} />
 ```
 
 ### Showcase Mode
 
 ```svelte
-<VipCardHolo card={card} showcase={true} />
+<VipCardHolo {card} showcase={true} />
 ```
 
 ### With Description Overlay
 
 ```svelte
-<VipCardHolo card={card} enableDescriptionOverlay={true} />
+<VipCardHolo {card} enableDescriptionOverlay={true} />
 ```
 
 ### With Rarity Indicator
 
 ```svelte
-<VipCardHolo card={card} enableRarityIndicator={true} />
+<VipCardHolo {card} enableRarityIndicator={true} />
 ```
 
 ### Card Flip Control
 
 ```svelte
 <script>
-  let showBack = $state(false);
+	let showBack = $state(false);
 </script>
 
-<VipCardHolo card={card} showBack={showBack} />
-<button onclick={() => showBack = !showBack}>Flip Card</button>
+<VipCardHolo {card} {showBack} />
+<button onclick={() => (showBack = !showBack)}>Flip Card</button>
 ```
 
 ### Fully Customized
 
 ```svelte
 <VipCardHolo
-  card={card}
-  count={5}
-  enable3d={true}
-  enablePopover={false}
-  enableGyroscope={true}
-  enableHoloEffect={true}
-  enableDescriptionOverlay={true}
-  enableRarityIndicator={true}
-  showBack={false}
+	{card}
+	count={5}
+	enable3d={true}
+	enablePopover={false}
+	enableGyroscope={true}
+	enableHoloEffect={true}
+	enableDescriptionOverlay={true}
+	enableRarityIndicator={true}
+	showBack={false}
 />
 ```
 
@@ -163,32 +169,33 @@ import { VIP_CARDS } from '$lib/types/vip-card';
 
 ```svelte
 <div class="grid grid-cols-3 gap-8">
-  {#each VIP_CARDS as card}
-    <VipCardHolo {card} />
-  {/each}
+	{#each VIP_CARDS as card}
+		<VipCardHolo {card} />
+	{/each}
 </div>
 ```
 
 ## 📝 Complete Props Reference
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `card` | VipCard | required | The VIP card data object |
-| `count` | number | 1 | Display count badge (if > 1) |
-| `showcase` | boolean | false | Enable auto-rotation animation |
-| `enable3d` | boolean | true | Enable 3D mouse/touch tracking |
-| `enablePopover` | boolean | true | Enable click-to-expand feature |
-| `enableGyroscope` | boolean | true | Enable mobile gyroscope tilt |
-| `enableHoloEffect` | boolean | true | Enable holographic shine effect |
-| `showBack` | boolean | false | Show card back instead of front |
-| `enableDescriptionOverlay` | boolean | false | Show gradient overlay with description on hover |
-| `enableRarityIndicator` | boolean | false | Show gem icon in top-left with rarity color and glow |
+| Prop                       | Type    | Default  | Description                                          |
+| -------------------------- | ------- | -------- | ---------------------------------------------------- |
+| `card`                     | VipCard | required | The VIP card data object                             |
+| `count`                    | number  | 1        | Display count badge (if > 1)                         |
+| `showcase`                 | boolean | false    | Enable auto-rotation animation                       |
+| `enable3d`                 | boolean | true     | Enable 3D mouse/touch tracking                       |
+| `enablePopover`            | boolean | true     | Enable click-to-expand feature                       |
+| `enableGyroscope`          | boolean | true     | Enable mobile gyroscope tilt                         |
+| `enableHoloEffect`         | boolean | true     | Enable holographic shine effect                      |
+| `showBack`                 | boolean | false    | Show card back instead of front                      |
+| `enableDescriptionOverlay` | boolean | false    | Show gradient overlay with description on hover      |
+| `enableRarityIndicator`    | boolean | false    | Show gem icon in top-left with rarity color and glow |
 
 ## 🎨 Customization
 
 ### Change Effect for a Rarity
 
 Edit the corresponding CSS file in `static/css/holo-cards/`:
+
 - `regular-holo.css` - Common cards
 - `cosmos-holo.css` - Rare cards
 - `rainbow-holo.css` - Epic cards
@@ -197,48 +204,56 @@ Edit the corresponding CSS file in `static/css/holo-cards/`:
 ### Adjust Animation Speed
 
 In `VipCardHolo.svelte`, modify spring settings:
+
 ```typescript
 const springInteractSettings = {
-  stiffness: 0.066,  // Lower = slower
-  damping: 0.25      // Higher = less bouncy
+	stiffness: 0.066, // Lower = slower
+	damping: 0.25 // Higher = less bouncy
 };
 ```
 
 ### Change Card Aspect Ratio
 
 In `static/css/holo-cards/base.css`:
+
 ```css
 :root {
-  --card-aspect: 0.718;  /* Change this value */
+	--card-aspect: 0.718; /* Change this value */
 }
 ```
 
 ## 🔧 Technical Details
 
 ### Svelte 5 Migration
+
 The component was fully migrated from Svelte 3 to Svelte 5:
+
 - `export let` → `$props()`
 - `$: reactive` → `$derived` and `$effect`
 - Stores → Svelte 5 runes
 - Fixed `$` prefix issues
 
 ### Performance
+
 - Hardware-accelerated with `translate3d()`
 - GPU-optimized CSS transforms
 - Spring-based animations
 - Efficient event handling
 
 ### Browser Support
+
 - **Full Support:** Chrome/Edge 90+, Firefox 88+, Safari 14+
 - **Partial:** Older browsers (no gyroscope, basic 3D)
 
 ## 📚 Documentation
 
 ### Main Documentation
+
 **File:** `CLAUDE.md`
 **Section:** "Holographic VIP Cards System"
 
 Complete reference including:
+
 - Architecture overview
 - Component API
 - CSS architecture
@@ -247,6 +262,7 @@ Complete reference including:
 - Troubleshooting guide
 
 ### Integration Notes
+
 **File:** `pokemon-cards-css/INTEGRATION_COMPLETE.md`
 
 Details about the migration process and credits.
@@ -254,16 +270,19 @@ Details about the migration process and credits.
 ## 🐛 Troubleshooting
 
 ### Cards not showing effects?
+
 1. Check CSS files are loaded in layout
 2. Verify image paths are correct
 3. Check browser console for errors
 
 ### Poor performance?
+
 1. Reduce number of visible cards
 2. Use pagination/virtual scrolling
 3. Consider `VipCard` for lists, `VipCardHolo` for showcases
 
 ### Gyroscope not working on mobile?
+
 1. Must be HTTPS (or localhost)
 2. User needs to grant permission
 3. Check browser compatibility
@@ -299,7 +318,9 @@ Details about the migration process and credits.
 ## 🎯 Advanced Features
 
 ### Count Badge System
+
 The count badge displays when a student has multiple copies of the same card:
+
 - Automatically shown when `count > 1`
 - Positioned in top-right corner with 10px offset
 - **Counter-scaling**: Uses `scale(calc(1 / var(--card-scale)))` to maintain visual size during popover zoom
@@ -308,7 +329,9 @@ The count badge displays when a student has multiple copies of the same card:
 - Hidden on card back via `backface-visibility: hidden`
 
 ### Description Overlay
+
 Hover-activated gradient overlay showing card information:
+
 - **Dual gradient design**: Dark at top (for title) and bottom (for description), transparent in middle
 - Title positioned at top, description at bottom
 - Multi-layered text shadows for maximum readability against any card artwork
@@ -316,7 +339,9 @@ Hover-activated gradient overlay showing card information:
 - Only shown when `enableDescriptionOverlay={true}`
 
 ### Rarity Gem Indicator
+
 Visual rarity indicator with SVG gem icon:
+
 - Positioned in top-left corner (opposite count badge)
 - **Color-coded by rarity:**
   - Common: Gray (#9ca3af) - no glow
@@ -328,7 +353,9 @@ Visual rarity indicator with SVG gem icon:
 - 32×32px size with custom faceted gem SVG design
 
 ### Card Flip System
+
 Smooth 180° rotation to show card back:
+
 - Controlled via `showBack` boolean prop
 - **CSS transition**: 0.6s ease-in-out for flip animation
 - **Smart interaction**: Transition disabled during mouse tracking for smooth 3D tilt
@@ -336,7 +363,9 @@ Smooth 180° rotation to show card back:
 - Both badges hide on back via `backface-visibility: hidden`
 
 ### Performance Optimizations
+
 All badge/overlay elements use:
+
 - **Transform-only animations** (no layout reflows)
 - **Hardware acceleration** via `translate3d()` and `translateZ()`
 - **Conditional transitions** (disabled during interaction, enabled for flip)
@@ -346,6 +375,7 @@ All badge/overlay elements use:
 ## ✅ Testing Checklist
 
 All features verified:
+
 - [x] Server runs without errors
 - [x] Demo pages load correctly (gallery + examples)
 - [x] All 26 cards display with correct images
@@ -365,11 +395,13 @@ All features verified:
 ## 🙏 Credits
 
 **Original Effect System:**
+
 - Project: [Pokemon Cards CSS](https://github.com/simeydotme/pokemon-cards-css)
 - Author: @simeydotme
 - License: MIT
 
 **Integration:**
+
 - Migrated and adapted for UbuMaths
 - Svelte 3 → Svelte 5 conversion
 - VIP card system integration
@@ -381,6 +413,7 @@ All features verified:
 Your students are going to love these interactive holographic effects. The cards look amazing and provide an engaging reward experience.
 
 **Questions?** Check the documentation in `CLAUDE.md` or the demo pages:
+
 - Main gallery: http://localhost:5173/vip-cards-demo
 - Examples: http://localhost:5173/vip-cards-demo/examples
 
@@ -394,61 +427,51 @@ Your students are going to love these interactive holographic effects. The cards
 ### Essential Props Combinations
 
 #### For Student Collection Display
+
 ```svelte
-<VipCardHolo
-  card={card}
-  count={studentCardCount}
-  enableRarityIndicator={true}
-/>
+<VipCardHolo {card} count={studentCardCount} enableRarityIndicator={true} />
 ```
 
 #### For Teacher Preview/Selection
+
 ```svelte
-<VipCardHolo
-  card={card}
-  enableDescriptionOverlay={true}
-  enableRarityIndicator={true}
-/>
+<VipCardHolo {card} enableDescriptionOverlay={true} enableRarityIndicator={true} />
 ```
 
 #### For Showcase/Presentation
+
 ```svelte
-<VipCardHolo
-  card={card}
-  showcase={true}
-  enableRarityIndicator={true}
-/>
+<VipCardHolo {card} showcase={true} enableRarityIndicator={true} />
 ```
 
 #### For Static Display (Performance)
+
 ```svelte
-<VipCardHolo
-  card={card}
-  enable3d={false}
-  enablePopover={false}
-  enableGyroscope={false}
-/>
+<VipCardHolo {card} enable3d={false} enablePopover={false} enableGyroscope={false} />
 ```
 
 ### CSS Customization Quick Tips
 
 **Adjust card size:**
+
 ```css
 .holo-card {
-  --card-size: 300px; /* Default: 260px */
+	--card-size: 300px; /* Default: 260px */
 }
 ```
 
 **Change animation speed:**
+
 ```typescript
 // In VipCardHolo.svelte
 const springInteractSettings = {
-  stiffness: 0.1,   // Higher = faster
-  damping: 0.3      // Higher = less bouncy
+	stiffness: 0.1, // Higher = faster
+	damping: 0.3 // Higher = less bouncy
 };
 ```
 
 **Customize gem colors:**
+
 ```typescript
 // In VipCardHolo.svelte, rarityColors object
 legendary: { color: '#your-color', glow: true }
@@ -457,23 +480,25 @@ legendary: { color: '#your-color', glow: true }
 ### Performance Tips
 
 ✅ **Do:**
+
 - Use `VipCardHolo` for featured cards and showcases
 - Enable only needed features via props
 - Use pagination for large collections
 - Lazy load cards outside viewport
 
 ❌ **Avoid:**
+
 - Rendering 50+ cards with full effects simultaneously
 - Nesting cards inside heavily animated containers
 - Using both showcase mode and popover on same card
 
 ### Browser Compatibility
 
-| Feature | Chrome | Firefox | Safari | Edge |
-|---------|--------|---------|--------|------|
-| 3D Tilt | ✅ 90+ | ✅ 88+ | ✅ 14+ | ✅ 90+ |
-| Popover | ✅ 90+ | ✅ 88+ | ✅ 14+ | ✅ 90+ |
-| Gyroscope | ✅ HTTPS | ✅ HTTPS | ✅ iOS 13+ | ✅ HTTPS |
-| Holo Effects | ✅ All | ✅ All | ✅ All | ✅ All |
+| Feature      | Chrome   | Firefox  | Safari     | Edge     |
+| ------------ | -------- | -------- | ---------- | -------- |
+| 3D Tilt      | ✅ 90+   | ✅ 88+   | ✅ 14+     | ✅ 90+   |
+| Popover      | ✅ 90+   | ✅ 88+   | ✅ 14+     | ✅ 90+   |
+| Gyroscope    | ✅ HTTPS | ✅ HTTPS | ✅ iOS 13+ | ✅ HTTPS |
+| Holo Effects | ✅ All   | ✅ All   | ✅ All     | ✅ All   |
 
 **Note:** Gyroscope requires HTTPS (or localhost) and user permission.

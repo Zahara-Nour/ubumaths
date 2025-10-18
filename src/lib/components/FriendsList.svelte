@@ -31,13 +31,8 @@
 <div class="space-y-4">
 	<!-- Search Bar -->
 	<div class="relative">
-		<Search class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-		<Input
-			type="text"
-			placeholder="Rechercher un ami..."
-			bind:value={searchQuery}
-			class="pl-10"
-		/>
+		<Search class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+		<Input type="text" placeholder="Rechercher un ami..." bind:value={searchQuery} class="pl-10" />
 	</div>
 
 	<!-- Friends List -->
@@ -45,7 +40,7 @@
 		<div class="py-12 text-center">
 			<User class="mx-auto size-12 text-muted-foreground" />
 			<p class="mt-4 text-sm text-muted-foreground">
-				{searchQuery ? 'Aucun ami trouvé' : 'Vous n\'avez pas encore d\'amis'}
+				{searchQuery ? 'Aucun ami trouvé' : "Vous n'avez pas encore d'amis"}
 			</p>
 		</div>
 	{:else}
@@ -58,7 +53,10 @@
 						<!-- Avatar -->
 						<Avatar.Root class="size-10">
 							{#if friend.friend_profile.avatar_url}
-								<Avatar.Image src={friend.friend_profile.avatar_url} alt={friendsManager.getDisplayName(friend)} />
+								<Avatar.Image
+									src={friend.friend_profile.avatar_url}
+									alt={friendsManager.getDisplayName(friend)}
+								/>
 							{/if}
 							<Avatar.Fallback>
 								{friendsManager.getDisplayName(friend).charAt(0).toUpperCase()}
@@ -90,15 +88,17 @@
 						</DropdownMenu.Trigger>
 						<DropdownMenu.Content align="end">
 							<DropdownMenu.Item>
-								<a href="/dashboard/profile/{friend.friend_profile.id}" class="flex w-full items-center">
+								<a
+									href="/dashboard/profile/{friend.friend_profile.id}"
+									class="flex w-full items-center"
+								>
 									Voir le profil
 								</a>
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item
 								class="text-destructive"
-								onclick={() =>
-									handleUnfriend(friend.id, friendsManager.getDisplayName(friend))}
+								onclick={() => handleUnfriend(friend.id, friendsManager.getDisplayName(friend))}
 							>
 								Retirer des amis
 							</DropdownMenu.Item>

@@ -198,14 +198,14 @@
 	<!-- Header -->
 	<div class="flex items-center justify-between">
 		<div>
-			<div class="flex items-center gap-2 mb-2">
+			<div class="mb-2 flex items-center gap-2">
 				<Button variant="ghost" size="sm" onclick={handleGoBack} class="gap-2">
-					<ArrowLeft class="w-4 h-4" />
+					<ArrowLeft class="h-4 w-4" />
 					Retour
 				</Button>
 			</div>
 			<h1 class="text-3xl font-bold text-foreground">Emploi du Temps de l'École</h1>
-			<p class="text-muted-foreground mt-2">
+			<p class="mt-2 text-muted-foreground">
 				{data.school.name}
 			</p>
 		</div>
@@ -213,50 +213,50 @@
 		<div class="flex gap-2">
 			<Button variant="outline" onclick={handleLoadDefault}>Charger Modèle de Base</Button>
 			<Button onclick={handleAddPeriod} class="gap-2">
-				<Plus class="w-4 h-4" />
+				<Plus class="h-4 w-4" />
 				Ajouter Période
 			</Button>
 		</div>
 	</div>
 
 	<!-- Info Banner -->
-	<div class="bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4">
+	<div class="rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-800">
 		<p class="text-sm">
 			<strong>Information:</strong> Les périodes définies ici seront utilisées par tous les enseignants
-			lors de la création de leurs emplois du temps de classe. Les périodes doivent être identiques
-			pour tous les jours de la semaine.
+			lors de la création de leurs emplois du temps de classe. Les périodes doivent être identiques pour
+			tous les jours de la semaine.
 		</p>
 	</div>
 
 	<!-- Periods Table -->
-	<div class="bg-card rounded-lg shadow border border-border overflow-hidden">
+	<div class="overflow-hidden rounded-lg border border-border bg-card shadow">
 		{#if sortedPeriods.length > 0}
 			<div class="overflow-x-auto">
 				<table class="w-full">
-					<thead class="bg-muted border-b border-border">
+					<thead class="border-b border-border bg-muted">
 						<tr>
 							<th
-								class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider"
+								class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 							>
 								Numéro
 							</th>
 							<th
-								class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider"
+								class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 							>
 								Nom
 							</th>
 							<th
-								class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider"
+								class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 							>
 								Horaires
 							</th>
 							<th
-								class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider"
+								class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 							>
 								Durée
 							</th>
 							<th
-								class="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider"
+								class="px-6 py-3 text-right text-xs font-medium tracking-wider text-muted-foreground uppercase"
 							>
 								Actions
 							</th>
@@ -269,7 +269,7 @@
 									new Date(`2000-01-01T${period.start_time}`).getTime()) /
 								1000 /
 								60}
-							<tr class="hover:bg-muted/50 transition-colors">
+							<tr class="transition-colors hover:bg-muted/50">
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div class="text-sm font-medium text-foreground">Période {period.number}</div>
 								</td>
@@ -286,7 +286,7 @@
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div class="text-sm text-muted-foreground">{duration} min</div>
 								</td>
-								<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+								<td class="space-x-2 px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
 									<Button
 										variant="ghost"
 										size="sm"
@@ -294,7 +294,7 @@
 										disabled={index === 0}
 										class="gap-1"
 									>
-										<MoveUp class="w-3 h-3" />
+										<MoveUp class="h-3 w-3" />
 									</Button>
 									<Button
 										variant="ghost"
@@ -303,10 +303,10 @@
 										disabled={index === sortedPeriods.length - 1}
 										class="gap-1"
 									>
-										<MoveDown class="w-3 h-3" />
+										<MoveDown class="h-3 w-3" />
 									</Button>
 									<Button variant="ghost" size="sm" onclick={() => handleEditPeriod(period)}>
-										<Pencil class="w-4 h-4" />
+										<Pencil class="h-4 w-4" />
 									</Button>
 									<Button
 										variant="ghost"
@@ -314,7 +314,7 @@
 										onclick={() => handleDeletePeriod(period.number)}
 										class="text-destructive hover:text-destructive"
 									>
-										<Trash2 class="w-4 h-4" />
+										<Trash2 class="h-4 w-4" />
 									</Button>
 								</td>
 							</tr>
@@ -324,17 +324,17 @@
 			</div>
 
 			<!-- Save Button -->
-			<div class="bg-muted px-6 py-4 border-t border-border flex justify-end">
+			<div class="flex justify-end border-t border-border bg-muted px-6 py-4">
 				<Button onclick={handleSaveTimetable}>Enregistrer l'Emploi du Temps</Button>
 			</div>
 		{:else}
 			<!-- Empty State -->
 			<div class="p-12 text-center">
-				<h3 class="text-lg font-semibold text-foreground mb-2">Aucune période définie</h3>
-				<p class="text-muted-foreground mb-4">
+				<h3 class="mb-2 text-lg font-semibold text-foreground">Aucune période définie</h3>
+				<p class="mb-4 text-muted-foreground">
 					Commencez par ajouter des périodes ou chargez le modèle de base.
 				</p>
-				<div class="flex gap-2 justify-center">
+				<div class="flex justify-center gap-2">
 					<Button variant="outline" onclick={handleLoadDefault}>Charger Modèle de Base</Button>
 					<Button onclick={handleAddPeriod}>Ajouter Première Période</Button>
 				</div>
@@ -351,20 +351,20 @@
 		role="dialog"
 		aria-modal="true"
 	>
-		<div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 sm:p-0">
+		<div class="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 sm:p-0">
 			<!-- Background overlay -->
 			<div
-				class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+				class="bg-opacity-50 fixed inset-0 bg-black transition-opacity"
 				aria-hidden="true"
 				onclick={() => (showModal = false)}
 			></div>
 
 			<!-- Modal panel -->
 			<div
-				class="relative inline-block align-middle bg-card rounded-lg text-left overflow-visible shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full border border-border"
+				class="relative inline-block transform overflow-visible rounded-lg border border-border bg-card text-left align-middle shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
 			>
 				<!-- Modal Header -->
-				<div class="bg-card px-6 pt-6 pb-4 border-b border-border">
+				<div class="border-b border-border bg-card px-6 pt-6 pb-4">
 					<h3 class="text-lg font-medium text-foreground" id="modal-title">
 						{modalMode === 'create' ? 'Ajouter une Période' : 'Modifier la Période'}
 					</h3>
@@ -381,7 +381,7 @@
 					<div class="space-y-4">
 						<!-- Period Number (disabled in edit mode) -->
 						<div>
-							<label for="number" class="block text-sm font-medium text-foreground mb-1">
+							<label for="number" class="mb-1 block text-sm font-medium text-foreground">
 								Numéro de Période
 							</label>
 							<Input
@@ -396,7 +396,7 @@
 
 						<!-- Period Name (optional) -->
 						<div>
-							<label for="name" class="block text-sm font-medium text-foreground mb-1">
+							<label for="name" class="mb-1 block text-sm font-medium text-foreground">
 								Nom (optionnel)
 							</label>
 							<Input
@@ -410,14 +410,14 @@
 						<!-- Time Range -->
 						<div class="grid grid-cols-2 gap-4">
 							<div>
-								<label for="start_time" class="block text-sm font-medium text-foreground mb-1">
+								<label for="start_time" class="mb-1 block text-sm font-medium text-foreground">
 									Heure de Début *
 								</label>
 								<Input type="time" id="start_time" bind:value={formData.start_time} required />
 							</div>
 
 							<div>
-								<label for="end_time" class="block text-sm font-medium text-foreground mb-1">
+								<label for="end_time" class="mb-1 block text-sm font-medium text-foreground">
 									Heure de Fin *
 								</label>
 								<Input type="time" id="end_time" bind:value={formData.end_time} required />
@@ -426,7 +426,7 @@
 					</div>
 
 					<!-- Modal Footer -->
-					<div class="flex justify-between items-center mt-6">
+					<div class="mt-6 flex items-center justify-between">
 						<!-- Delete button (edit mode only) -->
 						{#if modalMode === 'edit' && editingPeriod}
 							<Button
@@ -435,7 +435,7 @@
 								onclick={() => handleDeletePeriod(editingPeriod.number)}
 								class="gap-2"
 							>
-								<Trash2 class="w-4 h-4" />
+								<Trash2 class="h-4 w-4" />
 								Supprimer
 							</Button>
 						{:else}

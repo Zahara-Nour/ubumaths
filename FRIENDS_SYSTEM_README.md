@@ -5,7 +5,9 @@ A complete mutual friendship system with real-time presence tracking for UbuMath
 ## 📚 Documentation Index
 
 ### 1. [FRIENDS_SYSTEM_SETUP.md](FRIENDS_SYSTEM_SETUP.md) - **START HERE**
+
 Your main setup guide covering:
+
 - What was implemented
 - Step-by-step local setup instructions
 - Testing the system
@@ -13,7 +15,9 @@ Your main setup guide covering:
 - Troubleshooting common issues
 
 ### 2. [WEBSOCKET_DEPLOYMENT_GUIDE.md](WEBSOCKET_DEPLOYMENT_GUIDE.md) - **Production Deployment**
+
 Detailed deployment instructions for production:
+
 - **Why Vercel can't host WebSocket servers**
 - Railway deployment (recommended, easiest)
 - Render deployment (good free tier)
@@ -22,7 +26,9 @@ Detailed deployment instructions for production:
 - Complete code examples for each option
 
 ### 3. [WEBSOCKET_ARCHITECTURE.md](WEBSOCKET_ARCHITECTURE.md) - **Technical Deep Dive**
+
 Complete technical documentation:
+
 - Architecture overview with diagrams
 - WebSocket message protocol
 - Client/server implementation details
@@ -32,7 +38,9 @@ Complete technical documentation:
 - Future enhancements (chat, gifting)
 
 ### 4. [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md) - **Database Reference**
+
 Database schema documentation (updated sections):
+
 - `friendships` table schema
 - `user_presence` table schema
 - RLS policies
@@ -58,10 +66,12 @@ pnpm ws:dev
 ### Production Deployment
 
 **Main App (Vercel):**
+
 - Your SvelteKit app deploys to Vercel normally
 - No changes needed
 
 **WebSocket Server (Railway - Recommended):**
+
 - Extract WebSocket server as standalone app
 - Deploy to Railway (free tier)
 - Takes 10 minutes
@@ -71,6 +81,7 @@ pnpm ws:dev
 ## 🎯 Features Implemented
 
 ### Core Friendship Features
+
 - ✅ Send friend requests with types (classmate/mentor)
 - ✅ Accept/reject/cancel requests
 - ✅ Unfriend users
@@ -78,6 +89,7 @@ pnpm ws:dev
 - ✅ View friends list with filters
 
 ### Real-Time Presence
+
 - ✅ WebSocket-based online/offline tracking
 - ✅ 60-second heartbeat system
 - ✅ Green dot for online, gray for offline
@@ -85,6 +97,7 @@ pnpm ws:dev
 - ✅ Automatic reconnection with exponential backoff
 
 ### Teacher Moderation
+
 - ✅ View all student friendships
 - ✅ Filter by class
 - ✅ Search by student name
@@ -92,6 +105,7 @@ pnpm ws:dev
 - ✅ Statistics dashboard
 
 ### UI Components
+
 - ✅ 3-tab interface (Friends, Requests, Add Friend)
 - ✅ Real-time status indicators
 - ✅ Avatar with fallback
@@ -101,30 +115,36 @@ pnpm ws:dev
 ## 📦 Files Created
 
 ### Database (2 files)
+
 - `supabase/migrations/034_create_friendships_table.sql`
 - `supabase/migrations/035_create_user_presence_table.sql`
 
 ### WebSocket System (3 files)
+
 - `src/lib/server/websocket-server.ts` - Server
 - `src/lib/stores/websocket.svelte.ts` - Client manager
 - `src/lib/stores/friends.svelte.ts` - Friends operations
 
 ### UI Components (4 files)
+
 - `src/lib/components/OnlineStatus.svelte`
 - `src/lib/components/FriendsList.svelte`
 - `src/lib/components/FriendRequests.svelte`
 - `src/lib/components/AddFriend.svelte`
 
 ### Routes (4 files)
+
 - `src/routes/(protected)/dashboard/friends/+page.svelte`
 - `src/routes/(protected)/dashboard/friends/+page.server.ts`
 - `src/routes/(protected)/dashboard/admin/friendships/+page.svelte`
 - `src/routes/(protected)/dashboard/admin/friendships/+page.server.ts`
 
 ### Types (1 file)
+
 - `src/lib/types/database.ts` - Updated with friendship types
 
 ### Documentation (4 files)
+
 - `FRIENDS_SYSTEM_SETUP.md` - Setup guide
 - `WEBSOCKET_DEPLOYMENT_GUIDE.md` - Deployment guide
 - `WEBSOCKET_ARCHITECTURE.md` - Technical docs
@@ -205,16 +225,19 @@ Browser                 WebSocket Server           Database
 ## 🎓 Learning Resources
 
 ### Understanding WebSocket
+
 - Why we need WebSocket for real-time features
 - How heartbeat keeps connections alive
 - Message protocol (auth, heartbeat, presence_update)
 
 ### Understanding RLS Policies
+
 - Friends can only see each other's presence
 - Teachers can moderate all friendships
 - Privacy-first design
 
 ### Understanding Svelte 5 Runes
+
 - `$state` for reactive data
 - `$derived` for computed values
 - `$effect` for side effects (WebSocket connections)
@@ -224,18 +247,21 @@ Browser                 WebSocket Server           Database
 The system is architected to support these features:
 
 ### Chat System (Planned)
+
 - Real-time messaging between friends
 - Typing indicators
 - Read receipts
 - Message history
 
 ### Gifting System (Planned)
+
 - Send gidouilles to friends
 - Exchange VIP cards
 - Gift notifications
 - Transaction history
 
 ### Group Features (Possible)
+
 - Friend groups/circles
 - Group chats
 - Shared achievements
@@ -243,11 +269,13 @@ The system is architected to support these features:
 ## 📊 Performance Notes
 
 ### Current Capacity
+
 - **100-1000 concurrent WebSocket connections** (single server)
 - **~0.017 writes/second per user** (60s heartbeat)
 - **Minimal database load** (presence table is lightweight)
 
 ### Scalability Options
+
 - Increase heartbeat interval (60s → 120s)
 - Add Redis for presence caching
 - Horizontal scaling with multiple WebSocket servers
@@ -256,13 +284,16 @@ The system is architected to support these features:
 ## 🐛 Common Issues
 
 ### "WebSocket connection failed"
+
 → See [FRIENDS_SYSTEM_SETUP.md](FRIENDS_SYSTEM_SETUP.md#troubleshooting) - Troubleshooting section
 
 ### "Friends show as offline when online"
+
 → Check WebSocket connection status
 → Verify friendship is accepted (status = 'accepted')
 
 ### "Can't deploy to Vercel"
+
 → WebSocket server needs separate deployment
 → See [WEBSOCKET_DEPLOYMENT_GUIDE.md](WEBSOCKET_DEPLOYMENT_GUIDE.md)
 
@@ -294,6 +325,7 @@ If you encounter issues:
 The friend system is complete and ready to use. Follow the setup guide to get started, then deploy to production when ready.
 
 **Next Steps:**
+
 1. Read [FRIENDS_SYSTEM_SETUP.md](FRIENDS_SYSTEM_SETUP.md)
 2. Run `pnpm db:migrate`
 3. Start both servers

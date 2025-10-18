@@ -146,11 +146,15 @@ UI shows login button
 
 ```typescript
 // ❌ INSECURE - Don't do this
-const { data: { session } } = await supabase.auth.getSession();
+const {
+	data: { session }
+} = await supabase.auth.getSession();
 // This reads from cookies without verification!
 
 // ✅ SECURE - Do this instead
-const { data: { user } } = await supabase.auth.getUser();
+const {
+	data: { user }
+} = await supabase.auth.getUser();
 // This verifies with Supabase's auth server
 ```
 
@@ -165,12 +169,14 @@ const { data: { user } } = await supabase.auth.getUser();
 ### Why Server-Side Login/Logout?
 
 **The Problem:**
+
 - Browser Supabase client uses localStorage
 - Server Supabase client uses cookies
 - When you login/logout in the browser, cookies don't get updated
 - Server still sees old session → UI doesn't update ❌
 
 **The Solution:**
+
 - Login/logout through **server endpoints**
 - Server manages cookies properly
 - Browser and server stay synchronized
@@ -233,29 +239,39 @@ UI updates automatically (Svelte 5 reactivity)
 ## File Responsibilities
 
 ### 1. src/hooks.server.ts
+
 **Role**: Server hook that runs on every request
+
 - Creates Supabase server client
 - Manages cookie reading/writing
 - Provides `safeGetSession()` for secure auth verification
 
 ### 2. src/lib/server/supabase.ts
+
 **Role**: Exports the server hook
+
 - Contains detailed security documentation
 - Implements the getUser() → getSession() pattern
 
 ### 3. src/routes/+layout.server.ts
+
 **Role**: Server-side data loading
+
 - Calls `safeGetSession()` to get verified auth data
 - Returns session, user, and cookies to client
 
 ### 4. src/routes/+layout.ts
+
 **Role**: Client-side setup and reactivity
+
 - Creates Supabase client for browser
 - Sets up auth state change listener
 - Manages reactive updates via invalidate()
 
 ### 5. src/routes/(public)/login/+page.server.ts
+
 **Role**: Server-side login actions
+
 - Handles **Google OAuth** sign-in (`?/googleSignIn` action)
   - Initiates OAuth flow with Google provider
   - Redirects to Google consent screen
@@ -265,7 +281,9 @@ UI updates automatically (Svelte 5 reactivity)
 - Redirects on success
 
 ### 6. src/routes/(public)/login/+page.svelte
+
 **Role**: Login form UI with tab switcher
+
 - **Tab 1: Google Sign In** (default)
   - Single button with Google branding
   - POSTs to `?/googleSignIn` action
@@ -276,7 +294,9 @@ UI updates automatically (Svelte 5 reactivity)
 - Uses SvelteKit form actions (`use:enhance`)
 
 ### 7. src/routes/(public)/auth/callback/+server.ts
+
 **Role**: OAuth callback handler
+
 - Handles redirect from Google after authentication
 - Exchanges authorization code for session
 - Validates email domain (@voltairedoha.com)
@@ -284,14 +304,18 @@ UI updates automatically (Svelte 5 reactivity)
 - Redirects to original page
 
 ### 8. src/routes/auth/logout/+server.ts
+
 **Role**: Server-side logout endpoint
+
 - Handles logout POST request
 - Calls `signOut()` on server
 - Clears auth cookies
 - Redirects to home
 
 ### 8. src/lib/components/Header.svelte
+
 **Role**: UI display
+
 - Receives verified session/user props
 - Displays login/logout UI based on auth state
 - Submits form to `/auth/logout` for logout
@@ -303,10 +327,10 @@ UI updates automatically (Svelte 5 reactivity)
 ```typescript
 // In any component that receives session prop
 if (session) {
-  // User is logged in
-  console.log('User email:', session.user.email);
+	// User is logged in
+	console.log('User email:', session.user.email);
 } else {
-  // User is logged out
+	// User is logged out
 }
 ```
 
@@ -314,27 +338,25 @@ if (session) {
 
 ```typescript
 // The user object contains:
-user.id              // User's unique ID
-user.email           // User's email
-user.user_metadata   // Custom metadata (e.g., avatar_url)
+user.id; // User's unique ID
+user.email; // User's email
+user.user_metadata; // Custom metadata (e.g., avatar_url)
 ```
 
 ### Making Authenticated Requests
 
 ```typescript
 // The supabase client is automatically authenticated
-const { data, error } = await supabase
-  .from('your_table')
-  .select('*');
+const { data, error } = await supabase.from('your_table').select('*');
 ```
 
 ### Logging Out
 
 ```typescript
 async function logout() {
-  await supabase.auth.signOut();     // Clear session
-  await invalidate('supabase:auth'); // Trigger verification
-  goto('/');                         // Navigate home
+	await supabase.auth.signOut(); // Clear session
+	await invalidate('supabase:auth'); // Trigger verification
+	goto('/'); // Navigate home
 }
 ```
 
@@ -353,6 +375,7 @@ SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET=your-google-client-secret
 ```
 
 **Notes**:
+
 - `PUBLIC_*` variables are safe to expose in the browser
 - Google Client ID and Secret obtained from Google Cloud Console
 - Configure OAuth redirect URLs in both Google Console and Supabase Dashboard
@@ -372,6 +395,7 @@ SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET=your-google-client-secret
 ### Check Auth State
 
 Look for these console logs:
+
 ```
 [Supabase] Creating server client...
 [Supabase] Checking and verifying session...

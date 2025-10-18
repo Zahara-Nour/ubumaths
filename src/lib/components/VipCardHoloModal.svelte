@@ -103,22 +103,26 @@
 		<!-- Content Container -->
 		<div
 			class={cn(
-				'relative z-10 flex flex-col items-center gap-6 max-w-4xl w-full transition-all duration-500',
+				'relative z-10 flex w-full max-w-4xl flex-col items-center gap-6 transition-all duration-500',
 				mounted ? 'translate-y-0 scale-100' : 'translate-y-10 scale-95'
 			)}
 			onclick={(e) => e.stopPropagation()}
 		>
 			<!-- Card Name and Badges -->
-			<div class="text-center space-y-3">
-				<div class="flex items-center justify-center gap-3 flex-wrap">
+			<div class="space-y-3 text-center">
+				<div class="flex flex-wrap items-center justify-center gap-3">
 					<!-- Rarity Badge -->
-					<Badge class={cn('font-semibold shadow-lg text-base px-4 py-1', getRarityColor(card.rarity))}>
+					<Badge
+						class={cn('px-4 py-1 text-base font-semibold shadow-lg', getRarityColor(card.rarity))}
+					>
 						{getRarityLabel(card.rarity)}
 					</Badge>
 
 					<!-- Count Badge (if > 1) -->
 					{#if count > 1}
-						<Badge class="font-bold shadow-lg bg-primary text-primary-foreground text-base px-4 py-1">
+						<Badge
+							class="bg-primary px-4 py-1 text-base font-bold text-primary-foreground shadow-lg"
+						>
 							×{count}
 						</Badge>
 					{/if}
@@ -126,12 +130,12 @@
 
 				<h2
 					id="holo-card-title"
-					class="text-4xl md:text-5xl font-black text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.5)]"
+					class="text-4xl font-black text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.5)] md:text-5xl"
 				>
 					{card.name}
 				</h2>
 
-				<p class="text-lg md:text-xl text-white/90 max-w-2xl drop-shadow-md">
+				<p class="max-w-2xl text-lg text-white/90 drop-shadow-md md:text-xl">
 					{card.description}
 				</p>
 			</div>
@@ -143,7 +147,7 @@
 
 			<!-- Category Badge -->
 			<div class="flex items-center gap-2">
-				<Badge variant="outline" class="text-white border-white/30 text-sm px-3 py-1">
+				<Badge variant="outline" class="border-white/30 px-3 py-1 text-sm text-white">
 					{#if card.category === 'bonus'}
 						🎁 Bonus
 					{:else if card.category === 'privilege'}
@@ -157,9 +161,7 @@
 			</div>
 
 			<!-- Dismiss Hint -->
-			<p class="text-sm text-white/60 mt-4">
-				Cliquez n'importe où pour fermer
-			</p>
+			<p class="mt-4 text-sm text-white/60">Cliquez n'importe où pour fermer</p>
 		</div>
 	</div>
 {/if}

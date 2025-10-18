@@ -19,7 +19,7 @@ const spellDefinitions = [
 	{ num: 5, element: 'fire', type: 'attack', basePower: 120, name: 'Tempête de Feu' },
 
 	// Water spells (6-10)
-	{ num: 6, element: 'water', type: 'attack', basePower: 30, name: 'Jet d\'Eau' },
+	{ num: 6, element: 'water', type: 'attack', basePower: 30, name: "Jet d'Eau" },
 	{ num: 7, element: 'water', type: 'attack', basePower: 50, name: 'Vague' },
 	{ num: 8, element: 'water', type: 'heal', basePower: 40, name: 'Soin Aquatique' },
 	{ num: 9, element: 'water', type: 'attack', basePower: 70, name: 'Tsunami' },

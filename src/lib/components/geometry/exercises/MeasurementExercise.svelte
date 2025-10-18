@@ -107,7 +107,11 @@
 	function getMeasurementUnit(key: string): string {
 		if (key.startsWith('angle_')) {
 			return '°';
-		} else if (key.startsWith('distance_') || key.startsWith('radius_') || key.startsWith('perimeter_')) {
+		} else if (
+			key.startsWith('distance_') ||
+			key.startsWith('radius_') ||
+			key.startsWith('perimeter_')
+		) {
 			return 'unités';
 		} else if (key.startsWith('area_')) {
 			return 'unités²';
@@ -228,10 +232,9 @@
 		const diff = Math.abs(studentAnswer - question.expectedValue);
 
 		// For angles, use angle tolerance; for distances, use distance tolerance
-		const isCorrect =
-			questionId.startsWith('angle_')
-				? diff <= tolerance
-				: diff <= (tolerance / 100) * question.expectedValue;
+		const isCorrect = questionId.startsWith('angle_')
+			? diff <= tolerance
+			: diff <= (tolerance / 100) * question.expectedValue;
 
 		return isCorrect ? 'correct' : 'incorrect';
 	}
@@ -339,9 +342,7 @@
 							</div>
 
 							{#if hasSubmitted && status === 'incorrect'}
-								<p class="text-sm text-red-600 dark:text-red-400">
-									Réponse incorrecte. Réessayez!
-								</p>
+								<p class="text-sm text-red-600 dark:text-red-400">Réponse incorrecte. Réessayez!</p>
 							{/if}
 						</div>
 					</div>

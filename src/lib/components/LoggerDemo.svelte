@@ -61,52 +61,54 @@
 	defaultLogger.info('LoggerDemo component initialized');
 </script>
 
-<div class="p-6 space-y-6 max-w-4xl mx-auto">
+<div class="mx-auto max-w-4xl space-y-6 p-6">
 	<div>
-		<h2 class="text-3xl font-bold mb-2">Logger System Demo</h2>
+		<h2 class="mb-2 text-3xl font-bold">Logger System Demo</h2>
 		<p class="text-gray-600 dark:text-gray-400">
 			Open your browser console (F12) to see colored log output. Check the
-			<code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">[LoggerDemo.svelte]</code>
+			<code class="rounded bg-gray-100 px-2 py-1 dark:bg-gray-800">[LoggerDemo.svelte]</code>
 			prefix on messages.
 		</p>
-		<p class="text-sm text-gray-500 dark:text-gray-500 mt-2">
+		<p class="mt-2 text-sm text-gray-500 dark:text-gray-500">
 			💡 In production mode, all logs are automatically disabled.
 		</p>
 	</div>
 
-	<div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-		<h3 class="text-xl font-semibold mb-3">Log Level Colors</h3>
-		<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+	<div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+		<h3 class="mb-3 text-xl font-semibold">Log Level Colors</h3>
+		<div class="grid grid-cols-2 gap-3 md:grid-cols-4">
 			<div class="flex items-center space-x-2">
-				<div class="w-4 h-4 bg-gray-400 rounded"></div>
+				<div class="h-4 w-4 rounded bg-gray-400"></div>
 				<span class="text-sm">Trace (normal)</span>
 			</div>
 			<div class="flex items-center space-x-2">
-				<div class="w-4 h-4 bg-blue-500 rounded"></div>
+				<div class="h-4 w-4 rounded bg-blue-500"></div>
 				<span class="text-sm">Info (blue)</span>
 			</div>
 			<div class="flex items-center space-x-2">
-				<div class="w-4 h-4 bg-orange-500 rounded"></div>
+				<div class="h-4 w-4 rounded bg-orange-500"></div>
 				<span class="text-sm">Warn (orange)</span>
 			</div>
 			<div class="flex items-center space-x-2">
-				<div class="w-4 h-4 bg-red-500 rounded"></div>
+				<div class="h-4 w-4 rounded bg-red-500"></div>
 				<span class="text-sm">Error (red)</span>
 			</div>
 		</div>
 	</div>
 
-	<div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-		<h3 class="text-xl font-semibold mb-3">Threshold Levels</h3>
-		<p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+	<div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+		<h3 class="mb-3 text-xl font-semibold">Threshold Levels</h3>
+		<p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
 			The threshold determines which messages are displayed:
-			<code class="bg-gray-100 dark:bg-gray-800 px-1 rounded">trace &lt; info &lt; warn &lt; error</code>
+			<code class="rounded bg-gray-100 px-1 dark:bg-gray-800"
+				>trace &lt; info &lt; warn &lt; error</code
+			>
 		</p>
 
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+		<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
 			<button
 				onclick={testDefaultThreshold}
-				class="px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-left"
+				class="rounded-lg bg-blue-500 px-4 py-3 text-left text-white transition hover:bg-blue-600"
 			>
 				<div class="font-semibold">Default (info)</div>
 				<div class="text-xs opacity-90">Shows: info, warn, error</div>
@@ -114,7 +116,7 @@
 
 			<button
 				onclick={testTraceThreshold}
-				class="px-4 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition text-left"
+				class="rounded-lg bg-gray-500 px-4 py-3 text-left text-white transition hover:bg-gray-600"
 			>
 				<div class="font-semibold">Debug (trace)</div>
 				<div class="text-xs opacity-90">Shows: all messages</div>
@@ -122,7 +124,7 @@
 
 			<button
 				onclick={testWarnThreshold}
-				class="px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition text-left"
+				class="rounded-lg bg-orange-500 px-4 py-3 text-left text-white transition hover:bg-orange-600"
 			>
 				<div class="font-semibold">Warnings (warn)</div>
 				<div class="text-xs opacity-90">Shows: warn, error</div>
@@ -130,7 +132,7 @@
 
 			<button
 				onclick={testErrorThreshold}
-				class="px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-left"
+				class="rounded-lg bg-red-500 px-4 py-3 text-left text-white transition hover:bg-red-600"
 			>
 				<div class="font-semibold">Errors Only (error)</div>
 				<div class="text-xs opacity-90">Shows: error only</div>
@@ -138,29 +140,31 @@
 		</div>
 	</div>
 
-	<div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-		<h3 class="text-xl font-semibold mb-3">Advanced Usage</h3>
+	<div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+		<h3 class="mb-3 text-xl font-semibold">Advanced Usage</h3>
 		<div class="flex flex-wrap gap-3">
 			<button
 				onclick={testWithData}
-				class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+				class="rounded-lg bg-green-500 px-4 py-2 text-white transition hover:bg-green-600"
 			>
 				Log with Object Data
 			</button>
 
 			<button
 				onclick={simulateError}
-				class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+				class="rounded-lg bg-red-600 px-4 py-2 text-white transition hover:bg-red-700"
 			>
 				Simulate Error with Stack Trace
 			</button>
 		</div>
 	</div>
 
-	<div class="border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950 rounded-lg p-4">
-		<h3 class="text-lg font-semibold mb-2">Usage Example</h3>
-		<pre
-			class="text-sm bg-gray-900 text-gray-100 p-3 rounded overflow-x-auto"><code>import {'{ createLogger }'} from '$lib/utils/logger';
+	<div
+		class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950"
+	>
+		<h3 class="mb-2 text-lg font-semibold">Usage Example</h3>
+		<pre class="overflow-x-auto rounded bg-gray-900 p-3 text-sm text-gray-100"><code
+				>import {'{ createLogger }'} from '$lib/utils/logger';
 
 // Default threshold (info)
 const logger = createLogger('MyComponent.svelte');
@@ -171,6 +175,7 @@ const debugLogger = createLogger('Debug.svelte', 'trace');
 logger.trace('Not displayed'); // Suppressed
 logger.info('Displayed');      // ✅
 logger.warn('Warning!');        // ✅
-logger.error('Error!');         // ✅</code></pre>
+logger.error('Error!');         // ✅</code
+			></pre>
 	</div>
 </div>

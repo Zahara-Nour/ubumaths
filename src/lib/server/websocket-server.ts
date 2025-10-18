@@ -153,7 +153,7 @@ async function verifyToken(token: string): Promise<string | null> {
 // Handle WebSocket connection
 async function handleConnection(ws: WebSocket): Promise<void> {
 	let userId: string | null = null;
-	let heartbeatInterval: NodeJS.Timeout | null = null;
+	const heartbeatInterval: NodeJS.Timeout | null = null;
 
 	ws.on('message', async (data: Buffer) => {
 		try {
@@ -207,9 +207,7 @@ async function handleConnection(ws: WebSocket): Promise<void> {
 				case 'chat_message': {
 					// Broadcast new message to conversation participants
 					if (!userId || !message.conversationId || !message.messageId) {
-						ws.send(
-							JSON.stringify({ type: 'error', message: 'Invalid chat message payload' })
-						);
+						ws.send(JSON.stringify({ type: 'error', message: 'Invalid chat message payload' }));
 						return;
 					}
 

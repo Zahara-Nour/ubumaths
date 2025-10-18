@@ -406,7 +406,9 @@ export class MathGraphService {
 				container.dataset.fullscreenListener = 'true';
 			}
 		} catch (error) {
-			throw new Error(`Failed to enter fullscreen: ${error instanceof Error ? error.message : 'Unknown error'}`);
+			throw new Error(
+				`Failed to enter fullscreen: ${error instanceof Error ? error.message : 'Unknown error'}`
+			);
 		}
 	}
 
@@ -555,7 +557,8 @@ export class MathGraphHelpers {
 			else if (className?.includes('Cercle') || className?.includes('Circle')) counts.circles++;
 			else if (className?.includes('Segment')) counts.segments++;
 			else if (className?.includes('Polygone') || className?.includes('Polygon')) counts.polygons++;
-			else if (className?.includes('Mesure') || className?.includes('Measure')) counts.measurements++;
+			else if (className?.includes('Mesure') || className?.includes('Measure'))
+				counts.measurements++;
 			else if (className?.includes('Calcul') || className?.includes('Calc')) counts.calculations++;
 			else counts.other++;
 		}
@@ -566,7 +569,9 @@ export class MathGraphHelpers {
 	/**
 	 * Get all points in the figure
 	 */
-	static getAllPoints(app: MathGraphApp): Array<{ name: string; x: number; y: number; tag?: string }> {
+	static getAllPoints(
+		app: MathGraphApp
+	): Array<{ name: string; x: number; y: number; tag?: string }> {
 		const list = app.listApi;
 		const points: Array<{ name: string; x: number; y: number; tag?: string }> = [];
 
@@ -631,10 +636,7 @@ export class MathGraphHelpers {
 	/**
 	 * Calculate distance between two points
 	 */
-	static calculateDistance(
-		p1: { x: number; y: number },
-		p2: { x: number; y: number }
-	): number {
+	static calculateDistance(p1: { x: number; y: number }, p2: { x: number; y: number }): number {
 		const dx = p2.x - p1.x;
 		const dy = p2.y - p1.y;
 		return Math.sqrt(dx * dx + dy * dy);
@@ -682,8 +684,10 @@ export class MathGraphHelpers {
 
 		if (length === 0) return false;
 
-		const distance =
-			Math.abs((dy * point.x - dx * point.y + linePoint2.x * linePoint1.y - linePoint2.y * linePoint1.x) / length);
+		const distance = Math.abs(
+			(dy * point.x - dx * point.y + linePoint2.x * linePoint1.y - linePoint2.y * linePoint1.x) /
+				length
+		);
 
 		return distance <= tolerance;
 	}
@@ -729,7 +733,9 @@ export class MathGraphHelpers {
 		while (angleDiff > 180) angleDiff = 360 - angleDiff;
 
 		// Check if 90° or 270°
-		return Math.abs(angleDiff - 90) <= angleTolerance || Math.abs(angleDiff - 270) <= angleTolerance;
+		return (
+			Math.abs(angleDiff - 90) <= angleTolerance || Math.abs(angleDiff - 270) <= angleTolerance
+		);
 	}
 }
 

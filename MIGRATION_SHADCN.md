@@ -12,10 +12,12 @@ Successfully migrated the entire UbuMaths application from Skeleton UI v3 to Sha
 ### 1. Dependencies
 
 **Removed:**
+
 - `@skeletonlabs/skeleton` (v3.2.2)
 - `@skeletonlabs/skeleton-svelte` (v1.5.3)
 
 **Added:**
+
 - `shadcn-svelte` (v1.0.8) - CLI for component installation
 - `bits-ui` (v2.11.5) - Headless component primitives
 - `lucide-svelte` (v0.545.0) - Icon library
@@ -42,6 +44,7 @@ Located in `src/lib/components/ui/`:
 ### 3. File Changes
 
 #### Modified Files (Core Components)
+
 - `src/app.css` - Complete rewrite with Shadcn theme system
 - `src/routes/+layout.svelte` - Replaced Skeleton Toaster with Sonner
 - `src/lib/components/Header.svelte` - Complete rewrite using Shadcn components
@@ -50,6 +53,7 @@ Located in `src/lib/components/ui/`:
 - `src/lib/stores/fontSize.svelte.ts` - Updated to use `--font-scale` variable
 
 #### Modified Files (Pages)
+
 - `src/routes/(public)/+page.svelte`
 - `src/routes/(public)/login/+page.svelte`
 - `src/routes/(protected)/dashboard/+layout.svelte`
@@ -59,21 +63,25 @@ Located in `src/lib/components/ui/`:
 - `src/routes/(protected)/dashboard/AdminDashboard.svelte`
 
 #### Modified Files (Components)
+
 - `src/lib/components/ToastDemo.svelte`
 - `src/lib/components/LoadingTable.svelte`
 
 #### New Files
+
 - `components.json` - Shadcn-svelte configuration
 - `src/lib/utils.ts` - Utility functions (cn, flyAndScale, type helpers)
 - `src/lib/components/ui/**/*` - All Shadcn components (41 files)
 
 #### Documentation Updates
+
 - `CLAUDE.md` - Complete Shadcn-svelte documentation
 - `MIGRATION_SHADCN.md` - This file
 
 ### 4. CSS Theme System
 
 #### Before (Skeleton UI)
+
 ```css
 /* Numeric color variants */
 .surface-100-900  /* Light: 100, Dark: 900 */
@@ -86,6 +94,7 @@ Located in `src/lib/components/ui/`:
 ```
 
 #### After (Shadcn)
+
 ```css
 /* Semantic CSS variables */
 --background: 0 0% 100%;
@@ -104,28 +113,29 @@ Located in `src/lib/components/ui/`:
 
 ### 5. Class Name Mapping Guide
 
-| Skeleton UI | Shadcn-svelte |
-|------------|---------------|
-| `surface-*` | `background`, `card`, `muted` |
-| `text-surface-*` | `text-foreground`, `text-muted-foreground` |
-| `border-surface-*` | `border-border` |
-| `bg-surface-100-900` | `bg-card` |
-| `bg-surface-50-950` | `bg-background` |
-| `bg-surface-200-800` | `bg-muted` |
-| `text-on-surface-token` | `text-foreground` |
-| `variant-filled-primary` | `<Button>` (default) |
-| `variant-filled-secondary` | `<Button variant="secondary">` |
-| `variant-ghost-*` | `<Button variant="ghost">` |
-| `btn btn-sm` | `<Button size="sm">` |
-| `btn-icon` | `<Button size="icon">` |
-| `card` class | `bg-card text-card-foreground border` |
-| `input` class | `<Input>` component |
-| `textarea` class | `<Textarea>` component |
-| `select` class | `<Select>` components |
+| Skeleton UI                | Shadcn-svelte                              |
+| -------------------------- | ------------------------------------------ |
+| `surface-*`                | `background`, `card`, `muted`              |
+| `text-surface-*`           | `text-foreground`, `text-muted-foreground` |
+| `border-surface-*`         | `border-border`                            |
+| `bg-surface-100-900`       | `bg-card`                                  |
+| `bg-surface-50-950`        | `bg-background`                            |
+| `bg-surface-200-800`       | `bg-muted`                                 |
+| `text-on-surface-token`    | `text-foreground`                          |
+| `variant-filled-primary`   | `<Button>` (default)                       |
+| `variant-filled-secondary` | `<Button variant="secondary">`             |
+| `variant-ghost-*`          | `<Button variant="ghost">`                 |
+| `btn btn-sm`               | `<Button size="sm">`                       |
+| `btn-icon`                 | `<Button size="icon">`                     |
+| `card` class               | `bg-card text-card-foreground border`      |
+| `input` class              | `<Input>` component                        |
+| `textarea` class           | `<Textarea>` component                     |
+| `select` class             | `<Select>` components                      |
 
 ### 6. Component Migration Examples
 
 #### Button
+
 ```svelte
 <!-- Before (Skeleton) -->
 <button class="btn variant-filled-primary">Click me</button>
@@ -137,6 +147,7 @@ Located in `src/lib/components/ui/`:
 ```
 
 #### Form Inputs
+
 ```svelte
 <!-- Before (Skeleton) -->
 <input type="text" class="input" placeholder="Enter text" />
@@ -148,39 +159,42 @@ Located in `src/lib/components/ui/`:
 ```
 
 #### Dropdown Menu
+
 ```svelte
 <!-- Before (Skeleton) -->
 <Popover>
-  {#snippet trigger()}
-    <button>Open</button>
-  {/snippet}
-  {#snippet content()}
-    <div>Content</div>
-  {/snippet}
+	{#snippet trigger()}
+		<button>Open</button>
+	{/snippet}
+	{#snippet content()}
+		<div>Content</div>
+	{/snippet}
 </Popover>
 
 <!-- After (Shadcn) -->
 <DropdownMenu.Root>
-  <DropdownMenu.Trigger class="cursor-pointer">Open</DropdownMenu.Trigger>
-  <DropdownMenu.Content>
-    <DropdownMenu.Item>Item 1</DropdownMenu.Item>
-  </DropdownMenu.Content>
+	<DropdownMenu.Trigger class="cursor-pointer">Open</DropdownMenu.Trigger>
+	<DropdownMenu.Content>
+		<DropdownMenu.Item>Item 1</DropdownMenu.Item>
+	</DropdownMenu.Content>
 </DropdownMenu.Root>
 ```
 
 #### Avatar
+
 ```svelte
 <!-- Before (Skeleton) -->
 <Avatar src="/avatar.jpg" size="w-10 h-10">JD</Avatar>
 
 <!-- After (Shadcn) -->
 <Avatar.Root class="h-10 w-10">
-  <Avatar.Image src="/avatar.jpg" alt="User" />
-  <Avatar.Fallback>JD</Avatar.Fallback>
+	<Avatar.Image src="/avatar.jpg" alt="User" />
+	<Avatar.Fallback>JD</Avatar.Fallback>
 </Avatar.Root>
 ```
 
 #### Toast Notifications
+
 ```svelte
 <!-- Before (Skeleton) -->
 <script>
@@ -203,36 +217,41 @@ Located in `src/lib/components/ui/`:
 ## Important Gotchas & Fixes
 
 ### 1. Event Handlers (Svelte 5)
+
 ❌ **Wrong:** `on:click`
 ✅ **Correct:** `onclick`
 
 All event handlers in Svelte 5 use lowercase: `onclick`, `onsubmit`, `onchange`
 
 ### 2. Dropdown Menu Navigation
+
 ❌ **Wrong:** `<DropdownMenu.Item href="/dashboard">`
 ✅ **Correct:**
+
 ```svelte
 <DropdownMenu.Item>
-  <a href="/dashboard" class="flex items-center w-full">
-    Dashboard
-  </a>
+	<a href="/dashboard" class="flex w-full items-center"> Dashboard </a>
 </DropdownMenu.Item>
 ```
 
 ### 3. Cursor Pointer
+
 - Button component now includes `cursor-pointer` in base styles
 - Dropdown triggers need manual `class="cursor-pointer"`
 - Dropdown menu items changed from `cursor-default` to `cursor-pointer`
 
 ### 4. Tailwind CSS 4 Compatibility
+
 Cannot use `@apply` with CSS variables directly:
 
 ❌ **Wrong:**
+
 ```css
 @apply border-border;
 ```
 
 ✅ **Correct:**
+
 ```css
 border-color: hsl(var(--border));
 ```
@@ -240,12 +259,14 @@ border-color: hsl(var(--border));
 ## Font Scaling System
 
 ### Before (Skeleton)
+
 ```typescript
 // Used --text-scaling variable
 document.documentElement.style.setProperty('--text-scaling', scale.toString());
 ```
 
 ### After (CSS-based)
+
 ```typescript
 // Uses --font-scale with calc() in CSS
 document.documentElement.style.setProperty('--font-scale', scale.toString());
@@ -254,7 +275,7 @@ document.documentElement.style.setProperty('--font-scale', scale.toString());
 ```css
 /* In app.css */
 main h1 {
-  font-size: calc(2.25rem * var(--font-scale)) !important;
+	font-size: calc(2.25rem * var(--font-scale)) !important;
 }
 ```
 
@@ -263,10 +284,12 @@ main h1 {
 Both Skeleton and Shadcn use the `.dark` class approach, but with different color systems:
 
 ### Skeleton UI
+
 - Numeric variants: `surface-100-900` (light value / dark value)
 - Framework-specific color tokens
 
 ### Shadcn
+
 - Semantic CSS variables: `--background`, `--foreground`, `--primary`
 - Same variable names for light and dark, values change in `.dark` class
 - More maintainable and easier to customize

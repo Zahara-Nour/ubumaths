@@ -18,7 +18,9 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
 	const { data: users, error: searchError } = await supabase
 		.from('profiles')
 		.select('*, schools(name), class_members(class_id)')
-		.or(`email.ilike.%${searchTerm}%,firstname.ilike.%${searchTerm}%,lastname.ilike.%${searchTerm}%`)
+		.or(
+			`email.ilike.%${searchTerm}%,firstname.ilike.%${searchTerm}%,lastname.ilike.%${searchTerm}%`
+		)
 		.order('lastname', { ascending: true })
 		.order('firstname', { ascending: true })
 		.limit(50);

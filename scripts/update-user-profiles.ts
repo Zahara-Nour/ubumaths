@@ -35,28 +35,128 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
  * Common French boy names for gender guessing
  */
 const boyNames = new Set([
-	'jean', 'pierre', 'louis', 'jacques', 'claude', 'michel', 'paul', 'andré',
-	'marc', 'nicolas', 'thomas', 'david', 'julien', 'antoine', 'maxime', 'alexandre',
-	'françois', 'laurent', 'olivier', 'vincent', 'stéphane', 'benjamin', 'lucas',
-	'gabriel', 'mathis', 'hugo', 'théo', 'léo', 'raphael', 'nathan', 'arthur',
-	'baptiste', 'clément', 'romain', 'simon', 'matthieu', 'adrien', 'florian',
-	'quentin', 'jordan', 'yann', 'loïc', 'anthony', 'kévin', 'dylan', 'enzo',
-	'yanis', 'maxence', 'morgan', 'evan', 'tom', 'adam', 'noah', 'liam', 'victor',
-	'd', 'prof', 'monsieur', 'm'
+	'jean',
+	'pierre',
+	'louis',
+	'jacques',
+	'claude',
+	'michel',
+	'paul',
+	'andré',
+	'marc',
+	'nicolas',
+	'thomas',
+	'david',
+	'julien',
+	'antoine',
+	'maxime',
+	'alexandre',
+	'françois',
+	'laurent',
+	'olivier',
+	'vincent',
+	'stéphane',
+	'benjamin',
+	'lucas',
+	'gabriel',
+	'mathis',
+	'hugo',
+	'théo',
+	'léo',
+	'raphael',
+	'nathan',
+	'arthur',
+	'baptiste',
+	'clément',
+	'romain',
+	'simon',
+	'matthieu',
+	'adrien',
+	'florian',
+	'quentin',
+	'jordan',
+	'yann',
+	'loïc',
+	'anthony',
+	'kévin',
+	'dylan',
+	'enzo',
+	'yanis',
+	'maxence',
+	'morgan',
+	'evan',
+	'tom',
+	'adam',
+	'noah',
+	'liam',
+	'victor',
+	'd',
+	'prof',
+	'monsieur',
+	'm'
 ]);
 
 /**
  * Common French girl names for gender guessing
  */
 const girlNames = new Set([
-	'marie', 'jeanne', 'louise', 'sophie', 'catherine', 'isabelle', 'nathalie',
-	'sylvie', 'christine', 'françoise', 'martine', 'monique', 'jacqueline', 'claire',
-	'valérie', 'sandrine', 'céline', 'laurence', 'caroline', 'stéphanie', 'émilie',
-	'julie', 'laura', 'sarah', 'chloé', 'camille', 'léa', 'manon', 'océane',
-	'mathilde', 'clara', 'emma', 'jade', 'alice', 'lola', 'zoé', 'inès', 'lisa',
-	'lucie', 'anaïs', 'pauline', 'marine', 'elisa', 'margaux', 'amélie', 'charlotte',
-	'juliette', 'morgane', 'marion', 'clémence', 'mélanie', 'aurélie', 'laure',
-	'mme', 'madame', 'prof', 'professeur'
+	'marie',
+	'jeanne',
+	'louise',
+	'sophie',
+	'catherine',
+	'isabelle',
+	'nathalie',
+	'sylvie',
+	'christine',
+	'françoise',
+	'martine',
+	'monique',
+	'jacqueline',
+	'claire',
+	'valérie',
+	'sandrine',
+	'céline',
+	'laurence',
+	'caroline',
+	'stéphanie',
+	'émilie',
+	'julie',
+	'laura',
+	'sarah',
+	'chloé',
+	'camille',
+	'léa',
+	'manon',
+	'océane',
+	'mathilde',
+	'clara',
+	'emma',
+	'jade',
+	'alice',
+	'lola',
+	'zoé',
+	'inès',
+	'lisa',
+	'lucie',
+	'anaïs',
+	'pauline',
+	'marine',
+	'elisa',
+	'margaux',
+	'amélie',
+	'charlotte',
+	'juliette',
+	'morgane',
+	'marion',
+	'clémence',
+	'mélanie',
+	'aurélie',
+	'laure',
+	'mme',
+	'madame',
+	'prof',
+	'professeur'
 ]);
 
 /**
@@ -90,7 +190,7 @@ function parseEmail(email: string): { firstname: string; lastname: string } {
 	const cleaned = localPart.replace(/[0-9_]/g, '');
 
 	// Split by dots or hyphens
-	const parts = cleaned.split(/[.-]+/).filter(p => p.length > 0);
+	const parts = cleaned.split(/[.-]+/).filter((p) => p.length > 0);
 
 	if (parts.length === 0) {
 		return { firstname: '', lastname: '' };
@@ -170,7 +270,9 @@ async function updateProfiles() {
 		let needsUpdate = false;
 
 		console.log(`\n📧 ${profile.email} (${profile.role})`);
-		console.log(`   Current: firstname="${profile.firstname}", lastname="${profile.lastname}", gender="${profile.gender}"`);
+		console.log(
+			`   Current: firstname="${profile.firstname}", lastname="${profile.lastname}", gender="${profile.gender}"`
+		);
 
 		// Guess firstname/lastname if missing
 		if (!profile.firstname || !profile.lastname) {

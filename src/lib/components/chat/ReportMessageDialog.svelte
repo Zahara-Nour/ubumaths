@@ -98,7 +98,7 @@
 	});
 </script>
 
-<Dialog.Root {open} onOpenChange={onOpenChange}>
+<Dialog.Root {open} {onOpenChange}>
 	<Dialog.Content class="max-w-lg">
 		<Dialog.Header>
 			<div class="flex items-center gap-2">
@@ -114,7 +114,13 @@
 			</div>
 		</Dialog.Header>
 
-		<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-6">
+		<form
+			onsubmit={(e) => {
+				e.preventDefault();
+				handleSubmit();
+			}}
+			class="space-y-6"
+		>
 			<!-- Warning Notice -->
 			<div class="flex gap-3 rounded-lg bg-muted p-3">
 				<AlertTriangle class="h-5 w-5 flex-shrink-0 text-muted-foreground" />
@@ -133,7 +139,9 @@
 				<Label>Raison du signalement *</Label>
 				<RadioGroup.Root bind:value={selectedReason}>
 					{#each reportReasons as reason}
-						<div class="flex items-start space-x-3 rounded-lg border p-3 transition-colors hover:bg-accent">
+						<div
+							class="flex items-start space-x-3 rounded-lg border p-3 transition-colors hover:bg-accent"
+						>
 							<RadioGroup.Item value={reason.value} id={reason.value} class="mt-1" />
 							<Label for={reason.value} class="flex-1 cursor-pointer">
 								<p class="font-semibold">{reason.label}</p>

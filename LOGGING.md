@@ -5,6 +5,7 @@ The UbuMaths application includes a comprehensive logging system designed for ef
 ## Overview
 
 The logging system provides:
+
 - **Standardized severity levels** for categorizing log messages
 - **Color-coded output** for easy visual scanning
 - **Threshold filtering** to control log verbosity
@@ -27,12 +28,12 @@ logger.error('Operation failed', error);
 
 The logging system uses four hierarchical severity levels:
 
-| Level   | Numeric Value | Color  | Use Case                                    |
-|---------|---------------|--------|---------------------------------------------|
-| `trace` | 0             | Normal | Detailed debugging information              |
-| `info`  | 1             | Blue   | General informational messages              |
-| `warn`  | 2             | Orange | Potentially problematic situations          |
-| `error` | 3             | Red    | Error events that need immediate attention  |
+| Level   | Numeric Value | Color  | Use Case                                   |
+| ------- | ------------- | ------ | ------------------------------------------ |
+| `trace` | 0             | Normal | Detailed debugging information             |
+| `info`  | 1             | Blue   | General informational messages             |
+| `warn`  | 2             | Orange | Potentially problematic situations         |
+| `error` | 3             | Red    | Error events that need immediate attention |
 
 ### Level Hierarchy
 
@@ -73,20 +74,20 @@ The threshold parameter sets the minimum log level that will be displayed:
 ```typescript
 const logger = createLogger('Example.ts', 'info');
 
-logger.trace('This will NOT be displayed');  // Suppressed (below threshold)
-logger.info('This WILL be displayed');       // ✅ Displayed
-logger.warn('This WILL be displayed');       // ✅ Displayed
-logger.error('This WILL be displayed');      // ✅ Displayed
+logger.trace('This will NOT be displayed'); // Suppressed (below threshold)
+logger.info('This WILL be displayed'); // ✅ Displayed
+logger.warn('This WILL be displayed'); // ✅ Displayed
+logger.error('This WILL be displayed'); // ✅ Displayed
 ```
 
 ### Common Threshold Configurations
 
-| Threshold | Shows                  | Use Case                           |
-|-----------|------------------------|------------------------------------|
-| `trace`   | All messages           | Deep debugging sessions            |
-| `info`    | info, warn, error      | **Default** - normal development   |
-| `warn`    | warn, error            | Production-like debugging          |
-| `error`   | error only             | Critical issues only               |
+| Threshold | Shows             | Use Case                         |
+| --------- | ----------------- | -------------------------------- |
+| `trace`   | All messages      | Deep debugging sessions          |
+| `info`    | info, warn, error | **Default** - normal development |
+| `warn`    | warn, error       | Production-like debugging        |
+| `error`   | error only        | Critical issues only             |
 
 ## Output Formats
 
@@ -100,6 +101,7 @@ In the browser, logs appear with CSS-styled colored prefixes:
 ```
 
 **Colors:**
+
 - 🔴 Red for errors
 - 🟠 Orange for warnings
 - 🔵 Blue for info
@@ -155,20 +157,20 @@ import { createLogger } from '$lib/utils/logger';
 const logger = createLogger('api-handler.ts', 'trace');
 
 export async function handleRequest(request: Request) {
-  logger.info('Received request', {
-    method: request.method,
-    url: request.url
-  });
+	logger.info('Received request', {
+		method: request.method,
+		url: request.url
+	});
 
-  try {
-    logger.trace('Processing request...');
-    const result = await processRequest(request);
-    logger.trace('Request processed successfully', result);
-    return result;
-  } catch (err) {
-    logger.error('Request processing failed', err);
-    throw err;
-  }
+	try {
+		logger.trace('Processing request...');
+		const result = await processRequest(request);
+		logger.trace('Request processed successfully', result);
+		return result;
+	} catch (err) {
+		logger.error('Request processing failed', err);
+		throw err;
+	}
 }
 ```
 
@@ -178,23 +180,23 @@ export async function handleRequest(request: Request) {
 import { createLogger } from '$lib/utils/logger';
 
 export class DataService {
-  private logger = createLogger('DataService.ts', 'warn');
+	private logger = createLogger('DataService.ts', 'warn');
 
-  async fetchData(id: string) {
-    this.logger.info('Fetching data', { id }); // Suppressed (below warn threshold)
+	async fetchData(id: string) {
+		this.logger.info('Fetching data', { id }); // Suppressed (below warn threshold)
 
-    if (!id) {
-      this.logger.warn('No ID provided, using default');
-      id = 'default';
-    }
+		if (!id) {
+			this.logger.warn('No ID provided, using default');
+			id = 'default';
+		}
 
-    try {
-      return await this.loadFromDatabase(id);
-    } catch (err) {
-      this.logger.error('Database query failed', err);
-      throw err;
-    }
-  }
+		try {
+			return await this.loadFromDatabase(id);
+		} catch (err) {
+			this.logger.error('Database query failed', err);
+			throw err;
+		}
+	}
 }
 ```
 
@@ -205,16 +207,16 @@ const logger = createLogger('Analytics.ts');
 
 // Log with multiple arguments
 logger.info('User action', 'button-click', {
-  buttonId: 'submit',
-  timestamp: new Date(),
-  userId: 123
+	buttonId: 'submit',
+	timestamp: new Date(),
+	userId: 123
 });
 
 // Log complex objects
 logger.trace('State update', {
-  before: { count: 0 },
-  after: { count: 1 },
-  diff: { count: +1 }
+	before: { count: 0 },
+	after: { count: 1 },
+	diff: { count: +1 }
 });
 ```
 
@@ -227,13 +229,14 @@ In production mode (`dev === false`), all logger methods become no-op functions:
 const logger = createLogger('MyComponent.svelte');
 
 // These calls have zero runtime overhead in production
-logger.trace('...');  // No-op
-logger.info('...');   // No-op
-logger.warn('...');   // No-op
-logger.error('...');  // No-op
+logger.trace('...'); // No-op
+logger.info('...'); // No-op
+logger.warn('...'); // No-op
+logger.error('...'); // No-op
 ```
 
 **Benefits:**
+
 - ✅ Zero performance impact
 - ✅ No log output in production
 - ✅ No need to remove logging code
@@ -261,14 +264,14 @@ Choose the right level for each message:
 
 ```typescript
 // ✅ Good usage
-logger.trace('Loop iteration', { i: 5 });        // Detailed debugging
+logger.trace('Loop iteration', { i: 5 }); // Detailed debugging
 logger.info('User logged in', { userId: 123 }); // Important events
-logger.warn('Deprecated API used');              // Potential issues
+logger.warn('Deprecated API used'); // Potential issues
 logger.error('Database connection failed', err); // Actual errors
 
 // ❌ Poor usage
-logger.error('User clicked button');  // Not an error
-logger.trace('Critical security breach');  // Too low for critical issues
+logger.error('User clicked button'); // Not an error
+logger.trace('Critical security breach'); // Too low for critical issues
 ```
 
 ### 3. Meaningful Messages
@@ -310,11 +313,11 @@ Include relevant context in log messages:
 ```typescript
 // ✅ Good - structured and searchable
 logger.info('API request completed', {
-  endpoint: '/api/users',
-  method: 'GET',
-  statusCode: 200,
-  duration: 145,
-  userId: 123
+	endpoint: '/api/users',
+	method: 'GET',
+	statusCode: 200,
+	duration: 145,
+	userId: 123
 });
 
 // ❌ Poor - harder to parse
@@ -358,6 +361,7 @@ export type Logger = ReturnType<typeof createLogger>;
 **Problem:** No logs are showing up in the console.
 
 **Solutions:**
+
 1. Check that you're in development mode (`dev === true`)
 2. Verify the threshold is not too high (e.g., set to `'error'` when logging `info`)
 3. Check browser console filters (don't filter out `log`, `info`, `warn`, `error`)
@@ -367,6 +371,7 @@ export type Logger = ReturnType<typeof createLogger>;
 **Problem:** Server logs don't have timestamps.
 
 **Solutions:**
+
 1. Timestamps only appear in server-side (terminal) output, not browser console
 2. Verify you're checking the VSCode terminal, not the browser
 
@@ -375,11 +380,12 @@ export type Logger = ReturnType<typeof createLogger>;
 **Problem:** Logs appear without colors.
 
 **Solutions:**
+
 1. **Browser:** Check that your browser's console supports CSS styling
 2. **Terminal:** Ensure your terminal supports ANSI color codes
 3. Some terminals may need color support enabled in settings
 
-## Migration from console.*
+## Migration from console.\*
 
 If you're migrating existing code, replace console calls with the logger:
 

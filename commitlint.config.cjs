@@ -34,17 +34,17 @@ module.exports = {
 			2,
 			'always',
 			[
-				'feat',     // New feature
-				'fix',      // Bug fix
-				'docs',     // Documentation
-				'style',    // Formatting, missing semi colons, etc.
+				'feat', // New feature
+				'fix', // Bug fix
+				'docs', // Documentation
+				'style', // Formatting, missing semi colons, etc.
 				'refactor', // Code restructuring
-				'perf',     // Performance improvements
-				'test',     // Adding tests
-				'build',    // Build system changes
-				'ci',       // CI/CD changes
-				'chore',    // Maintenance tasks
-				'revert'    // Revert previous commit
+				'perf', // Performance improvements
+				'test', // Adding tests
+				'build', // Build system changes
+				'ci', // CI/CD changes
+				'chore', // Maintenance tasks
+				'revert' // Revert previous commit
 			]
 		],
 		'type-case': [2, 'always', 'lower-case'],

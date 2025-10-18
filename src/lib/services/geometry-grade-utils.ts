@@ -453,7 +453,10 @@ export function getRankingTier(percentile: number): {
 /**
  * Check for achievements based on performance
  */
-export function checkAchievements(attempt: GeometryExerciseAttempt, exercise: GeometryExercise): {
+export function checkAchievements(
+	attempt: GeometryExerciseAttempt,
+	exercise: GeometryExercise
+): {
 	earned: string[];
 	descriptions: Record<string, string>;
 } {

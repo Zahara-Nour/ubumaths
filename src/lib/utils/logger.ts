@@ -85,12 +85,7 @@ function formatMessage(
 
 	if (isBrowser) {
 		// Browser console with CSS styling (no timestamp in browser)
-		console[level === 'trace' ? 'log' : level](
-			`%c${prefix}`,
-			COLORS[level].css,
-			message,
-			...args
-		);
+		console[level === 'trace' ? 'log' : level](`%c${prefix}`, COLORS[level].css, message, ...args);
 	} else {
 		// Terminal with ANSI codes (with timestamp on server)
 		const timestamp = formatTimestamp();

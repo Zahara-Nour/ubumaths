@@ -63,8 +63,6 @@
 
 	<!-- Continue Button -->
 	{#if oncontinue}
-		<Button onclick={oncontinue} size="lg" class="w-full">
-			Continuer
-		</Button>
+		<Button onclick={oncontinue} size="lg" class="w-full">Continuer</Button>
 	{/if}
 </div>

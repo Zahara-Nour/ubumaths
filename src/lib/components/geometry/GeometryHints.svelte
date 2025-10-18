@@ -93,7 +93,7 @@
 
 <div class="geometry-hints">
 	<div class="hints-header">
-		<h3 class="font-semibold text-lg">Indices disponibles</h3>
+		<h3 class="text-lg font-semibold">Indices disponibles</h3>
 		<p class="text-sm text-muted-foreground">Utilise les indices si tu es bloqué</p>
 	</div>
 
@@ -146,7 +146,8 @@
 
 		<div class="hints-footer">
 			<p class="text-xs text-muted-foreground">
-				💡 Les indices généraux sont gratuits. Les indices spécifiques et solutions réduisent ton score.
+				💡 Les indices généraux sont gratuits. Les indices spécifiques et solutions réduisent ton
+				score.
 			</p>
 		</div>
 	{/if}

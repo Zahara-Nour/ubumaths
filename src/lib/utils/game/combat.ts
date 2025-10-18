@@ -84,7 +84,10 @@ export function calculateMonsterDamage(monster: GameMonster, playerLevel: number
  * Rock-paper-scissors system:
  * Fire > Earth > Wind > Water > Fire
  */
-export function getElementAdvantage(spellElement: GameElement, monsterElement: GameElement): number {
+export function getElementAdvantage(
+	spellElement: GameElement,
+	monsterElement: GameElement
+): number {
 	const advantages: Record<GameElement, GameElement> = {
 		fire: 'earth',
 		earth: 'wind',

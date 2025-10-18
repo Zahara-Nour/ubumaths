@@ -65,11 +65,11 @@ Statistiques et récompenses
 
 ### Rôles et permissions
 
-| Rôle | Permissions |
-|------|-------------|
+| Rôle           | Permissions                                                                 |
+| -------------- | --------------------------------------------------------------------------- |
 | **Enseignant** | Créer, modifier, supprimer ses exercices / Voir les résultats de ses élèves |
-| **Élève** | Voir les exercices assignés / Soumettre des réponses / Voir son historique |
-| **Admin** | Toutes les permissions + gérer les templates publics |
+| **Élève**      | Voir les exercices assignés / Soumettre des réponses / Voir son historique  |
+| **Admin**      | Toutes les permissions + gérer les templates publics                        |
 
 ---
 
@@ -80,6 +80,7 @@ Statistiques et récompenses
 **Objectif:** Les élèves explorent une construction géométrique en déplaçant des points.
 
 **Cas d'usage:**
+
 - Découvrir des propriétés géométriques
 - Observer des relations entre objets
 - Comprendre des théorèmes visuellement
@@ -89,16 +90,18 @@ Statistiques et récompenses
 **Notation:** Marqué comme terminé (pas de note automatique)
 
 **Avantages:**
+
 - ✅ Facile à créer
 - ✅ Idéal pour introduire un concept
 - ✅ Pas de correction à faire
 
 **Configuration minimale:**
+
 ```json
 {
-  "type": "view",
-  "figure_de_base": "[figure MathGraph32]",
-  "instructions": "Déplacez les sommets du triangle et observez le cercle circonscrit."
+	"type": "view",
+	"figure_de_base": "[figure MathGraph32]",
+	"instructions": "Déplacez les sommets du triangle et observez le cercle circonscrit."
 }
 ```
 
@@ -109,6 +112,7 @@ Statistiques et récompenses
 **Objectif:** Les élèves mesurent des éléments géométriques et saisissent leurs réponses.
 
 **Cas d'usage:**
+
 - Mesurer des angles
 - Mesurer des distances
 - Calculer des aires et périmètres
@@ -118,27 +122,30 @@ Statistiques et récompenses
 **Notation:** Automatique avec tolérance configurable
 
 **Avantages:**
+
 - ✅ Correction automatique
 - ✅ Tolérance paramétrable
 - ✅ Feedback immédiat
 - ✅ Plusieurs questions par exercice
 
 **Configuration:**
+
 ```json
 {
-  "type": "measure",
-  "validation_config": {
-    "expectedMeasurements": {
-      "angle_ABC": 45,
-      "distance_AB": 120,
-      "aire_triangle": 3600
-    },
-    "tolerance": 2
-  }
+	"type": "measure",
+	"validation_config": {
+		"expectedMeasurements": {
+			"angle_ABC": 45,
+			"distance_AB": 120,
+			"aire_triangle": 3600
+		},
+		"tolerance": 2
+	}
 }
 ```
 
 **Types de mesures supportées:**
+
 - `angle_[points]` → Angles en degrés (ex: `angle_ABC`)
 - `distance_[points]` → Distances en unités (ex: `distance_AB`)
 - `radius_[centre]` → Rayons de cercles (ex: `radius_O`)
@@ -152,6 +159,7 @@ Statistiques et récompenses
 **Objectif:** Les élèves construisent une figure géométrique à partir de consignes.
 
 **Cas d'usage:**
+
 - Construire une médiatrice
 - Construire une perpendiculaire
 - Construire un triangle équilatéral
@@ -162,31 +170,34 @@ Statistiques et récompenses
 **Notation:** Automatique avec validation géométrique
 
 **Avantages:**
+
 - ✅ Validation géométrique précise
 - ✅ Indices progressifs disponibles
 - ✅ Sauvegarde automatique
 - ✅ Historique des tentatives
 
 **Configuration:**
+
 ```json
 {
-  "type": "construct",
-  "validation_mode": "automatic",
-  "validation_config": {
-    "requiredObjects": ["point_M", "line_mediatrice"],
-    "checkMidpoint": {
-      "midpointTag": "point_M",
-      "point1Tag": "A",
-      "point2Tag": "B",
-      "tolerance": 2
-    },
-    "checkPerpendicular": ["line_AB", "line_mediatrice"]
-  },
-  "tools_allowed": ["point", "line", "perpendicular", "midpoint"]
+	"type": "construct",
+	"validation_mode": "automatic",
+	"validation_config": {
+		"requiredObjects": ["point_M", "line_mediatrice"],
+		"checkMidpoint": {
+			"midpointTag": "point_M",
+			"point1Tag": "A",
+			"point2Tag": "B",
+			"tolerance": 2
+		},
+		"checkPerpendicular": ["line_AB", "line_mediatrice"]
+	},
+	"tools_allowed": ["point", "line", "perpendicular", "midpoint"]
 }
 ```
 
 **Outils disponibles:**
+
 - `point` - Créer des points libres
 - `line` - Créer des droites
 - `segment` - Créer des segments
@@ -205,6 +216,7 @@ Statistiques et récompenses
 **Objectif:** Les élèves rédigent une démonstration géométrique étape par étape.
 
 **Cas d'usage:**
+
 - Prouver qu'un triangle est isocèle
 - Démontrer le théorème de Pythagore
 - Prouver des propriétés de parallèles
@@ -214,36 +226,39 @@ Statistiques et récompenses
 **Notation:** Automatique (si étapes attendues fournies) ou revue manuelle
 
 **Avantages:**
+
 - ✅ Structure la pensée mathématique
 - ✅ Justifications prédéfinies disponibles
 - ✅ Possibilité de validation automatique
 - ✅ Revue manuelle si nécessaire
 
 **Configuration:**
+
 ```json
 {
-  "type": "proof",
-  "validation_mode": "automatic",
-  "validation_config": {
-    "expectedProofSteps": [
-      {
-        "statement": "AB = AC (hypothèse)",
-        "justification": "Définition"
-      },
-      {
-        "statement": "Les angles ABC et ACB sont égaux",
-        "justification": "Propriété du triangle isocèle"
-      },
-      {
-        "statement": "Donc le triangle ABC est isocèle en A",
-        "justification": "Définition du triangle isocèle"
-      }
-    ]
-  }
+	"type": "proof",
+	"validation_mode": "automatic",
+	"validation_config": {
+		"expectedProofSteps": [
+			{
+				"statement": "AB = AC (hypothèse)",
+				"justification": "Définition"
+			},
+			{
+				"statement": "Les angles ABC et ACB sont égaux",
+				"justification": "Propriété du triangle isocèle"
+			},
+			{
+				"statement": "Donc le triangle ABC est isocèle en A",
+				"justification": "Définition du triangle isocèle"
+			}
+		]
+	}
 }
 ```
 
 **Justifications disponibles:**
+
 - Définition
 - Propriété des angles opposés par le sommet
 - Propriété des angles alternes-internes
@@ -270,6 +285,7 @@ Cette section présente des exemples complets et prêts à l'emploi pour chaque 
 **Objectif pédagogique:** Construire la perpendiculaire au milieu d'un segment.
 
 **Consignes pour l'élève:**
+
 ```
 On donne un segment [AB]. Construisez sa médiatrice, c'est-à-dire la droite
 perpendiculaire à [AB] passant par son milieu.
@@ -280,6 +296,7 @@ perpendiculaire à [AB] passant par son milieu.
 ```
 
 **Configuration SQL complète:**
+
 ```sql
 INSERT INTO geometry_exercises (
     created_by,
@@ -345,6 +362,7 @@ INSERT INTO geometry_exercises (
 ```
 
 **Indices suggérés:**
+
 ```sql
 -- Indice général (gratuit)
 INSERT INTO geometry_hints (exercise_id, hint_level, hint_text, score_penalty)
@@ -377,6 +395,7 @@ VALUES (
 ```
 
 **Validation automatique:** Le système vérifie que:
+
 - Point M est bien le milieu de [AB] (tolérance ±2 pixels)
 - La droite "mediatrice" est perpendiculaire à [AB] (tolérance ±2°)
 - Le point M est sur la droite "mediatrice"
@@ -388,12 +407,14 @@ VALUES (
 **Objectif pédagogique:** Mesurer les angles et vérifier la somme.
 
 **Consignes pour l'élève:**
+
 ```
 On donne un triangle ABC rectangle en A.
 Mesurez les trois angles du triangle et vérifiez que leur somme fait bien 180°.
 ```
 
 **Configuration SQL complète:**
+
 ```sql
 INSERT INTO geometry_exercises (
     created_by,
@@ -472,6 +493,7 @@ INSERT INTO geometry_exercises (
 ```
 
 **Critères de validation:**
+
 - Angle A = 90° ± 2° (33 points)
 - Angle B mesuré correctement ± 2° (33 points)
 - Angle C mesuré correctement ± 2° (34 points)
@@ -484,6 +506,7 @@ INSERT INTO geometry_exercises (
 **Objectif pédagogique:** Observer la position du centre selon le type de triangle.
 
 **Consignes pour l'élève:**
+
 ```
 On donne un triangle ABC avec son cercle circonscrit (passant par les trois sommets).
 
@@ -494,6 +517,7 @@ Questions à observer en déplaçant les points:
 ```
 
 **Configuration SQL complète:**
+
 ```sql
 INSERT INTO geometry_exercises (
     created_by,
@@ -543,6 +567,7 @@ INSERT INTO geometry_exercises (
 **Objectif pédagogique:** Démontrer que deux angles opposés par le sommet sont égaux.
 
 **Consignes pour l'élève:**
+
 ```
 On donne deux droites (d1) et (d2) qui se coupent en O.
 Démontrez que les angles α et β opposés par le sommet sont égaux.
@@ -551,6 +576,7 @@ Complétez la démonstration en choisissant les bonnes justifications.
 ```
 
 **Configuration SQL complète:**
+
 ```sql
 INSERT INTO geometry_exercises (
     created_by,
@@ -638,6 +664,7 @@ INSERT INTO geometry_exercises (
 ```
 
 **Validation automatique:** Le système vérifie que:
+
 - Les 6 étapes sont présentes
 - Chaque étape a la bonne justification
 - Les étapes sont dans le bon ordre logique
@@ -650,12 +677,14 @@ INSERT INTO geometry_exercises (
 **Objectif pédagogique:** Construire un triangle isocèle à partir de conditions variables.
 
 **Consignes pour l'élève:**
+
 ```
 On donne un segment [AB] et une longueur r.
 Construisez le point C tel que le triangle ABC soit isocèle en A avec AC = BC = r.
 ```
 
 **Configuration SQL avec randomisation:**
+
 ```sql
 INSERT INTO geometry_exercises (
     created_by,
@@ -729,11 +758,13 @@ INSERT INTO geometry_exercises (
 ```
 
 **Randomisation:** À chaque nouvelle tentative:
+
 - La position de B varie entre x=400 et x=500
 - Le rayon r varie entre 100 et 200 pixels
 - Génération automatique de la figure de départ
 
 **Validation:** Le système vérifie que:
+
 - Point C existe
 - AC = r (la longueur aléatoire générée) ± 5 pixels
 - BC = r ± 5 pixels
@@ -746,12 +777,14 @@ INSERT INTO geometry_exercises (
 **Objectif pédagogique:** Construire le cercle inscrit d'un triangle en plusieurs étapes validées.
 
 **Consignes pour l'élève:**
+
 ```
 On donne un triangle ABC.
 Construisez son cercle inscrit (tangent aux trois côtés) en suivant les étapes.
 ```
 
 **Configuration SQL avec étapes:**
+
 ```sql
 -- Exercice principal
 INSERT INTO geometry_exercises (
@@ -947,14 +980,14 @@ INSERT INTO geometry_exercise_steps (
 
 ### Récapitulatif des exemples
 
-| Type | Titre | Difficulté | Temps | Points clés |
-|------|-------|-----------|-------|-------------|
-| Construction | Médiatrice | Facile | 15 min | 3 validations, 3 indices |
-| Mesure | Triangle rectangle | Facile | 10 min | 3 mesures + vérification somme |
-| Exploration | Cercle circonscrit | Facile | - | Auto-évaluation, observation |
-| Démonstration | Angles opposés | Moyen | 20 min | 6 étapes de preuve |
-| Construction | Triangle isocèle | Moyen | 15 min | Randomisation active |
-| Construction | Cercle inscrit | Difficile | 30 min | 5 étapes validées |
+| Type          | Titre              | Difficulté | Temps  | Points clés                    |
+| ------------- | ------------------ | ---------- | ------ | ------------------------------ |
+| Construction  | Médiatrice         | Facile     | 15 min | 3 validations, 3 indices       |
+| Mesure        | Triangle rectangle | Facile     | 10 min | 3 mesures + vérification somme |
+| Exploration   | Cercle circonscrit | Facile     | -      | Auto-évaluation, observation   |
+| Démonstration | Angles opposés     | Moyen      | 20 min | 6 étapes de preuve             |
+| Construction  | Triangle isocèle   | Moyen      | 15 min | Randomisation active           |
+| Construction  | Cercle inscrit     | Difficile  | 30 min | 5 étapes validées              |
 
 ---
 
@@ -1056,108 +1089,117 @@ VALUES (
 
 ```json
 {
-  "expectedMeasurements": {
-    "angle_ABC": 60,
-    "distance_AB": 100,
-    "radius_O": 50
-  },
-  "tolerance": 2
+	"expectedMeasurements": {
+		"angle_ABC": 60,
+		"distance_AB": 100,
+		"radius_O": 50
+	},
+	"tolerance": 2
 }
 ```
 
 **Tolérance:**
+
 - Pour les angles : ±2° par défaut
 - Pour les distances : ±2% de la valeur attendue par défaut
 
 #### Pour les exercices de Construction
 
 **Objets requis:**
+
 ```json
 {
-  "requiredObjects": ["point_M", "line_perpendiculaire"]
+	"requiredObjects": ["point_M", "line_perpendiculaire"]
 }
 ```
 
 **Validation de point milieu:**
+
 ```json
 {
-  "checkMidpoint": {
-    "midpointTag": "point_M",
-    "point1Tag": "A",
-    "point2Tag": "B",
-    "tolerance": 2
-  }
+	"checkMidpoint": {
+		"midpointTag": "point_M",
+		"point1Tag": "A",
+		"point2Tag": "B",
+		"tolerance": 2
+	}
 }
 ```
 
 **Validation de perpendicularité:**
+
 ```json
 {
-  "checkPerpendicular": ["line_AB", "line_CD"],
-  "angleTolerance": 2
+	"checkPerpendicular": ["line_AB", "line_CD"],
+	"angleTolerance": 2
 }
 ```
 
 **Validation de parallélisme:**
+
 ```json
 {
-  "checkParallel": ["line_AB", "line_CD"],
-  "angleTolerance": 2
+	"checkParallel": ["line_AB", "line_CD"],
+	"angleTolerance": 2
 }
 ```
 
 **Validation de cercle:**
+
 ```json
 {
-  "checkCircle": {
-    "circleTag": "circle_O",
-    "centerTag": "O",
-    "radiusTag": "A",
-    "tolerance": 2
-  }
+	"checkCircle": {
+		"circleTag": "circle_O",
+		"centerTag": "O",
+		"radiusTag": "A",
+		"tolerance": 2
+	}
 }
 ```
 
 **Validation d'angle:**
+
 ```json
 {
-  "checkAngle": {
-    "point1Tag": "A",
-    "vertexTag": "B",
-    "point2Tag": "C",
-    "expectedAngle": 90,
-    "tolerance": 2
-  }
+	"checkAngle": {
+		"point1Tag": "A",
+		"vertexTag": "B",
+		"point2Tag": "C",
+		"expectedAngle": 90,
+		"tolerance": 2
+	}
 }
 ```
 
 **Validation de distance:**
+
 ```json
 {
-  "checkDistance": {
-    "point1Tag": "A",
-    "point2Tag": "B",
-    "expectedDistance": 100,
-    "tolerance": 2
-  }
+	"checkDistance": {
+		"point1Tag": "A",
+		"point2Tag": "B",
+		"expectedDistance": 100,
+		"tolerance": 2
+	}
 }
 ```
 
 #### Pour les exercices de Démonstration
 
 **Étapes attendues (optionnel):**
+
 ```json
 {
-  "expectedProofSteps": [
-    {
-      "statement": "AB = AC (hypothèse)",
-      "justification": "Définition"
-    },
-    {
-      "statement": "Les angles ABC et ACB sont égaux",
-      "justification": "Propriété du triangle isocèle"
-    }
-  ]
+	"expectedProofSteps": [
+		{
+			"statement": "AB = AC (hypothèse)",
+			"justification": "Définition"
+		},
+		{
+			"statement": "Les angles ABC et ACB sont égaux",
+			"justification": "Propriété du triangle isocèle"
+		}
+	]
 }
 ```
 
@@ -1200,25 +1242,26 @@ Le système calcule automatiquement une note basée sur:
 
 ### Lettres et pourcentages
 
-| Note | Pourcentage | Signification |
-|------|-------------|---------------|
-| **A** | 90-100% | Excellent |
-| **B** | 80-89% | Très bien |
-| **C** | 70-79% | Bien |
-| **D** | 60-69% | Satisfaisant |
-| **F** | 0-59% | Insuffisant |
+| Note  | Pourcentage | Signification |
+| ----- | ----------- | ------------- |
+| **A** | 90-100%     | Excellent     |
+| **B** | 80-89%      | Très bien     |
+| **C** | 70-79%      | Bien          |
+| **D** | 60-69%      | Satisfaisant  |
+| **F** | 0-59%       | Insuffisant   |
 
 ### Types de pénalités
 
 #### 1. Pénalité pour indices
 
-| Niveau d'indice | Pénalité |
-|----------------|----------|
-| Général | 0% (gratuit) |
-| Spécifique | -5% |
-| Étape par étape | -10% |
+| Niveau d'indice | Pénalité     |
+| --------------- | ------------ |
+| Général         | 0% (gratuit) |
+| Spécifique      | -5%          |
+| Étape par étape | -10%         |
 
 **Exemple:**
+
 - Score brut: 85/100
 - Indices utilisés: 1 spécifique + 1 étape par étape
 - Pénalité: 15 points (5 + 10)
@@ -1232,6 +1275,7 @@ Si vous définissez un `time_limit_minutes`:
 - **Maximum 20% de pénalité**
 
 **Exemple:**
+
 - Limite: 10 minutes
 - Temps réel: 15 minutes
 - Dépassement: 5 minutes
@@ -1243,6 +1287,7 @@ Si vous définissez un `time_limit_minutes`:
 - **Maximum 10% de pénalité**
 
 **Exemple:**
+
 - 1ère tentative: 0%
 - 2ème tentative: -2%
 - 3ème tentative: -4%
@@ -1253,17 +1298,18 @@ Si vous définissez un `time_limit_minutes`:
 
 ```json
 {
-  "max_score": 100,
-  "passing_score": 50,
-  "grading_rubric": {
-    "correctness": 0.7,    // 70% - Réponses correctes
-    "completeness": 0.2,   // 20% - Objets créés
-    "efficiency": 0.1      // 10% - Nombre d'objets minimal
-  }
+	"max_score": 100,
+	"passing_score": 50,
+	"grading_rubric": {
+		"correctness": 0.7, // 70% - Réponses correctes
+		"completeness": 0.2, // 20% - Objets créés
+		"efficiency": 0.1 // 10% - Nombre d'objets minimal
+	}
 }
 ```
 
 **Rubrique par défaut:**
+
 - Exactitude: 70%
 - Complétude: 20%
 - Efficacité: 10%
@@ -1281,6 +1327,7 @@ Vous pouvez personnaliser ces pourcentages selon vos priorités pédagogiques.
 **Objectif:** Orienter sans donner la solution
 
 **Exemples:**
+
 - "Pensez aux propriétés de la médiatrice."
 - "Quelle est la définition d'une perpendiculaire ?"
 - "Rappel : La somme des angles d'un triangle vaut 180°."
@@ -1290,6 +1337,7 @@ Vous pouvez personnaliser ces pourcentages selon vos priorités pédagogiques.
 **Objectif:** Donner une indication plus précise
 
 **Exemples:**
+
 - "La médiatrice passe par le milieu du segment."
 - "Utilisez l'outil 'perpendiculaire' sur la droite (AB)."
 - "Mesurez d'abord l'angle ABC, puis calculez l'angle complémentaire."
@@ -1299,6 +1347,7 @@ Vous pouvez personnaliser ces pourcentages selon vos priorités pédagogiques.
 **Objectif:** Guider complètement
 
 **Exemples:**
+
 - "Étape 1: Créez le point milieu M du segment [AB]. Étape 2: Tracez la perpendiculaire à (AB) passant par M."
 - "1. Utilisez l'outil 'point' pour placer M au milieu de [AB]. 2. Sélectionnez l'outil 'perpendiculaire'. 3. Cliquez sur (AB) puis sur M."
 
@@ -1307,12 +1356,14 @@ Vous pouvez personnaliser ces pourcentages selon vos priorités pédagogiques.
 **Bonnes pratiques:**
 
 ✅ **DO:**
+
 - Commencez par des indices généraux
 - Augmentez progressivement la précision
 - Utilisez un vocabulaire adapté au niveau
 - Référencez le cours si nécessaire
 
 ❌ **DON'T:**
+
 - Ne donnez pas directement la réponse dans un indice général
 - N'utilisez pas de jargon trop technique
 - Ne créez pas trop d'indices (3-5 suffisent)
@@ -1357,32 +1408,34 @@ Définissez des paramètres aléatoires dans `randomization_params`:
 
 ```json
 {
-  "randomization_params": {
-    "point_A": {
-      "x": "random(100, 300)",
-      "y": "random(100, 300)"
-    },
-    "point_B": {
-      "x": "random(400, 600)",
-      "y": "random(100, 300)"
-    },
-    "rayon_cercle": "random(50, 150)"
-  }
+	"randomization_params": {
+		"point_A": {
+			"x": "random(100, 300)",
+			"y": "random(100, 300)"
+		},
+		"point_B": {
+			"x": "random(400, 600)",
+			"y": "random(100, 300)"
+		},
+		"rayon_cercle": "random(50, 150)"
+	}
 }
 ```
 
 **Syntaxe:**
+
 - `random(min, max)` - Nombre aléatoire entre min et max
 - Les coordonnées sont en pixels
 
 **Exemple:** Triangle aléatoire
+
 ```json
 {
-  "randomization_params": {
-    "A": { "x": "random(100, 200)", "y": "random(100, 200)" },
-    "B": { "x": "random(300, 400)", "y": "random(100, 200)" },
-    "C": { "x": "random(200, 300)", "y": "random(300, 400)" }
-  }
+	"randomization_params": {
+		"A": { "x": "random(100, 200)", "y": "random(100, 200)" },
+		"B": { "x": "random(300, 400)", "y": "random(100, 200)" },
+		"C": { "x": "random(200, 300)", "y": "random(300, 400)" }
+	}
 }
 ```
 
@@ -1391,33 +1444,36 @@ Définissez des paramètres aléatoires dans `randomization_params`:
 Utilisez les fonctions de génération (via l'API):
 
 **Triangle aléatoire:**
+
 ```typescript
 const figure = await generateRandomTriangle(app, {
-    type: 'right',           // Type: scalene, isosceles, equilateral, right
-    minSideLength: 50,
-    maxSideLength: 150,
-    pointLabels: ['A', 'B', 'C']
+	type: 'right', // Type: scalene, isosceles, equilateral, right
+	minSideLength: 50,
+	maxSideLength: 150,
+	pointLabels: ['A', 'B', 'C']
 });
 
 // Sauvegarder
 await saveExercise({
-    base_figure: figure.figureBase64,
-    validation_config: {
-        expectedMeasurements: figure.metadata.measurements
-    }
+	base_figure: figure.figureBase64,
+	validation_config: {
+		expectedMeasurements: figure.metadata.measurements
+	}
 });
 ```
 
 **Configuration de cercles:**
+
 ```typescript
 const figure = await generateCircleConfiguration(app, {
-    type: 'inscribed-triangle',  // Type de configuration
-    minRadius: 60,
-    maxRadius: 120
+	type: 'inscribed-triangle', // Type de configuration
+	minRadius: 60,
+	maxRadius: 120
 });
 ```
 
 **Types de configurations disponibles:**
+
 - `single` - Un cercle simple
 - `two-intersecting` - Deux cercles sécants
 - `two-tangent-external` - Deux cercles tangents extérieurement
@@ -1453,6 +1509,7 @@ INSERT INTO geometry_templates (
 ```
 
 **Avantages des templates:**
+
 - Réutilisables pour plusieurs exercices
 - Partageables entre enseignants (`is_public: true`)
 - Compteur d'utilisation automatique
@@ -1501,11 +1558,13 @@ INSERT INTO geometry_assignments (
 ### Configuration des assignments
 
 **Champs disponibles:**
+
 - `due_date` - Date limite (optionnel)
 - `max_attempts` - Nombre maximum de tentatives (optionnel, illimité si null)
 - `require_completion` - Exercice obligatoire (true/false)
 
 **Bonnes pratiques:**
+
 - Assignez 1 semaine avant la date limite pour laisser le temps
 - Limitez les tentatives pour les contrôles (3-5)
 - Laissez illimité pour les exercices d'entraînement
@@ -1524,6 +1583,7 @@ SELECT * FROM get_class_geometry_stats('[class_id]');
 ```
 
 **Résultat:**
+
 - `total_students` - Nombre d'élèves dans la classe
 - `total_exercises` - Nombre d'exercices assignés
 - `average_completion_rate` - Taux de complétion moyen (%)
@@ -1585,14 +1645,17 @@ LIMIT 10;
 #### 1. Instructions claires
 
 ✅ **Bon exemple:**
+
 > "Construisez la médiatrice du segment [AB]. La médiatrice est la droite perpendiculaire à [AB] passant par son milieu M."
 
 ❌ **Mauvais exemple:**
+
 > "Faites l'exercice."
 
 #### 2. Progression pédagogique
 
 **Commencez simple:**
+
 1. Exploration (view) - Découvrir le concept
 2. Mesure (measure) - Observer les propriétés
 3. Construction (construct) - Appliquer
@@ -1608,10 +1671,12 @@ LIMIT 10;
 #### 3. Tolérance raisonnable
 
 **Pour les mesures:**
+
 - Angles: ±2° (précision suffisante avec les outils de mesure)
 - Distances: ±2-5% (selon la précision requise)
 
 **Pour les constructions:**
+
 - Points: ±2-5 pixels
 - Angles de perpendicularité/parallélisme: ±2°
 
@@ -1621,17 +1686,18 @@ Définissez toujours les `learning_objectives`:
 
 ```json
 {
-  "learning_objectives": [
-    "Savoir construire une médiatrice avec les outils de géométrie",
-    "Comprendre la propriété d'équidistance de la médiatrice",
-    "Appliquer la définition de perpendiculaire"
-  ]
+	"learning_objectives": [
+		"Savoir construire une médiatrice avec les outils de géométrie",
+		"Comprendre la propriété d'équidistance de la médiatrice",
+		"Appliquer la définition de perpendiculaire"
+	]
 }
 ```
 
 #### 5. Temps adapté
 
 **Recommandations:**
+
 - Exploration: Pas de limite (ou 10-15 min)
 - Mesure: 5-10 minutes
 - Construction simple: 10-15 minutes
@@ -1643,11 +1709,13 @@ Définissez toujours les `learning_objectives`:
 #### Quand créer des indices ?
 
 ✅ **Créez des indices pour:**
+
 - Exercices de construction complexes
 - Nouveaux concepts
 - Exercices d'entraînement
 
 ❌ **Pas d'indices pour:**
+
 - Évaluations notées
 - Exercices très simples
 - Exercices de révision de concepts maîtrisés
@@ -1655,16 +1723,19 @@ Définissez toujours les `learning_objectives`:
 #### Stratégie d'indices en 3 niveaux
 
 **Niveau 1 (gratuit):**
+
 - Rappel de définition
 - Référence au cours
 - Question guidante
 
 **Niveau 2 (-5%):**
+
 - Indication sur la méthode
 - Premier pas de la solution
 - Astuce technique
 
 **Niveau 3 (-10%):**
+
 - Solution complète étape par étape
 - Utilisation exacte des outils
 - Pas à pas détaillé
@@ -1674,12 +1745,14 @@ Définissez toujours les `learning_objectives`:
 #### Quand randomiser ?
 
 ✅ **Randomisation recommandée:**
+
 - Exercices d'entraînement répétés
 - Contrôles en classe (éviter la copie)
 - Exercices de révision
 - Exercices à faire à la maison
 
 ❌ **Pas de randomisation:**
+
 - Première découverte d'un concept (utiliser un exemple précis)
 - Exercices avec une figure historique ou remarquable
 - Démonstrations nécessitant des valeurs spécifiques
@@ -1688,33 +1761,36 @@ Définissez toujours les `learning_objectives`:
 
 **Niveau 1 - Facile:**
 Randomiser seulement les positions, garder les propriétés:
+
 ```json
 {
-  "A": {"x": "random(100, 200)", "y": "200"},
-  "B": {"x": "random(400, 500)", "y": "200"}
+	"A": { "x": "random(100, 200)", "y": "200" },
+	"B": { "x": "random(400, 500)", "y": "200" }
 }
 ```
 
 **Niveau 2 - Moyen:**
 Randomiser les positions et certaines mesures:
+
 ```json
 {
-  "A": {"x": "random(100, 300)", "y": "random(100, 300)"},
-  "B": {"x": "random(400, 600)", "y": "random(100, 300)"},
-  "rayon": "random(50, 100)"
+	"A": { "x": "random(100, 300)", "y": "random(100, 300)" },
+	"B": { "x": "random(400, 600)", "y": "random(100, 300)" },
+	"rayon": "random(50, 100)"
 }
 ```
 
 **Niveau 3 - Difficile:**
 Randomisation complète avec différents types de figures:
+
 ```typescript
 const types = ['scalene', 'isosceles', 'right'];
 const randomType = types[Math.floor(Math.random() * types.length)];
 
 const figure = await generateRandomTriangle(app, {
-    type: randomType,
-    minSideLength: 50,
-    maxSideLength: 150
+	type: randomType,
+	minSideLength: 50,
+	maxSideLength: 150
 });
 ```
 
@@ -1771,6 +1847,7 @@ R: Automatiquement selon le score final (1 gidouille pour 10 points) + bonus pou
 
 **Q: Quels sont les succès disponibles ?**
 R:
+
 - 🏆 Score parfait (100% sans indice)
 - ⚡ Rapidité (moins de 50% du temps limite)
 - 🎯 Premier essai (80%+ dès la 1ère tentative)
@@ -1808,6 +1885,7 @@ R: Oui, les élèves bénéficient d'une sauvegarde automatique toutes les 30 se
 ### Page de démonstration
 
 Visitez `/demo/geometry` pour:
+
 - Voir des exemples interactifs
 - Tester les différents types d'exercices
 - Comprendre la validation
@@ -1831,6 +1909,7 @@ Visitez `/demo/geometry` pour:
 Le système d'exercices de géométrie d'UbuMaths vous permet de créer des exercices interactifs riches et engageants pour vos élèves. Avec la correction automatique, les indices progressifs et les statistiques détaillées, vous pouvez vous concentrer sur l'essentiel : l'enseignement.
 
 **Commencez simplement:**
+
 1. Créez un premier exercice d'exploration
 2. Ajoutez un exercice de mesure avec 2-3 questions
 3. Créez une construction simple avec validation

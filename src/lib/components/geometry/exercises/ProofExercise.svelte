@@ -48,7 +48,7 @@
 		'Propriété des angles opposés par le sommet',
 		'Propriété des angles alternes-internes',
 		'Propriété des angles correspondants',
-		'Somme des angles d\'un triangle',
+		"Somme des angles d'un triangle",
 		'Théorème de Pythagore',
 		'Réciproque du théorème de Pythagore',
 		'Propriété de la médiatrice',
@@ -162,7 +162,9 @@
 		}
 
 		// Check if all steps are filled
-		const emptySteps = proofSteps.filter((step) => !step.statement.trim() || !step.justification.trim());
+		const emptySteps = proofSteps.filter(
+			(step) => !step.statement.trim() || !step.justification.trim()
+		);
 		if (emptySteps.length > 0) {
 			toaster.warning('Veuillez compléter toutes les étapes de la démonstration');
 			return;
@@ -174,7 +176,9 @@
 		try {
 			// For proof exercises, validation is typically manual or based on expected steps
 			// Here we'll do a basic validation against expected proof steps if configured
-			const expectedSteps = exercise.validation_config?.expectedProofSteps as ProofStep[] | undefined;
+			const expectedSteps = exercise.validation_config?.expectedProofSteps as
+				| ProofStep[]
+				| undefined;
 
 			if (expectedSteps && Array.isArray(expectedSteps)) {
 				// Validate against expected steps
@@ -185,9 +189,7 @@
 
 				// Check number of steps
 				if (proofSteps.length !== expectedSteps.length) {
-					feedback.push(
-						`Nombre d'étapes: ${proofSteps.length} (attendu: ${expectedSteps.length})`
-					);
+					feedback.push(`Nombre d'étapes: ${proofSteps.length} (attendu: ${expectedSteps.length})`);
 				}
 
 				// Compare each step
@@ -196,9 +198,8 @@
 					const expectedStep = expectedSteps[i];
 
 					// Check statement (fuzzy match)
-					const statementMatch = studentStep.statement
-						.toLowerCase()
-						.includes(expectedStep.statement.toLowerCase()) ||
+					const statementMatch =
+						studentStep.statement.toLowerCase().includes(expectedStep.statement.toLowerCase()) ||
 						expectedStep.statement.toLowerCase().includes(studentStep.statement.toLowerCase());
 
 					// Check justification
@@ -406,9 +407,7 @@
 
 					<!-- Statement -->
 					<div class="space-y-2">
-						<label for="statement-{step.id}" class="text-sm font-medium">
-							Affirmation
-						</label>
+						<label for="statement-{step.id}" class="text-sm font-medium"> Affirmation </label>
 						<Textarea
 							id="statement-{step.id}"
 							placeholder="Exemple: Les droites (AB) et (CD) sont parallèles"
@@ -421,9 +420,7 @@
 
 					<!-- Justification -->
 					<div class="space-y-2">
-						<label for="justification-{step.id}" class="text-sm font-medium">
-							Justification
-						</label>
+						<label for="justification-{step.id}" class="text-sm font-medium"> Justification </label>
 						<Select.Root
 							selected={{ value: step.justification, label: step.justification || 'Choisir...' }}
 							onSelectedChange={(selected) => {

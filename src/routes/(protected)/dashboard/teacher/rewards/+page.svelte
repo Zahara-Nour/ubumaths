@@ -143,12 +143,19 @@
 	// Key: "student-{id}" or "class-{id}"
 	// Value: { timeoutId: timer ID, accumulatedDelta: sum of all pending changes }
 	// Example: Click +1 three times = { timeoutId: 123, accumulatedDelta: 3 }
-	let pendingSubmissions = $state<Record<string, { timeoutId: number; accumulatedDelta: number }>>({});
+	let pendingSubmissions = $state<Record<string, { timeoutId: number; accumulatedDelta: number }>>(
+		{}
+	);
 
 	// VIP card states
 	let vipModalOpen = $state(false);
 	let selectedStudentForVipModal = $state<{ id: string; name: string; vipCards: any } | null>(null);
-	let revealingCard = $state<{ card: any; studentName: string; loading: boolean; confirmed: boolean } | null>(null); // Tracks card reveal state with loading/confirmed
+	let revealingCard = $state<{
+		card: any;
+		studentName: string;
+		loading: boolean;
+		confirmed: boolean;
+	} | null>(null); // Tracks card reveal state with loading/confirmed
 	let lastProcessedCardId = $state<string | null>(null); // Tracks last processed cardId to prevent duplicates and infinite loops
 
 	// Initialize deltas to 1 for each student and class
@@ -228,7 +235,11 @@
 	 * @param delta - The change amount (positive or negative)
 	 * @param currentValue - The current gidouilles count (may be optimistic)
 	 */
-	function updateStudentGidouillesOptimistic(studentId: string, delta: number, currentValue: number) {
+	function updateStudentGidouillesOptimistic(
+		studentId: string,
+		delta: number,
+		currentValue: number
+	) {
 		const newValue = Math.max(0, currentValue + delta);
 		optimisticGidouilles[studentId] = newValue;
 	}
@@ -243,9 +254,9 @@
 	 * @param delta - The change amount to apply to each student
 	 */
 	function updateClassGidouillesOptimistic(classId: string, delta: number) {
-		const classItem = data.classes.find(c => c.id === classId);
+		const classItem = data.classes.find((c) => c.id === classId);
 		if (classItem) {
-			classItem.students.forEach(student => {
+			classItem.students.forEach((student) => {
 				const currentValue = getStudentGidouilles(student.id, student.gidouilles);
 				const newValue = Math.max(0, currentValue + delta);
 				optimisticGidouilles[student.id] = newValue;
@@ -290,7 +301,12 @@
 	 * @param currentValue - The current gidouilles count (may be optimistic)
 	 * @param studentName - The student's first name for the success toast
 	 */
-	function debouncedUpdateStudent(studentId: string, delta: number, currentValue: number, studentName: string) {
+	function debouncedUpdateStudent(
+		studentId: string,
+		delta: number,
+		currentValue: number,
+		studentName: string
+	) {
 		const key = `student-${studentId}`;
 
 		// STEP 1: Apply optimistic update immediately for instant UI feedback
@@ -333,12 +349,16 @@
 					setTimeout(() => {
 						invalidateAll(); // Fetch fresh data from server
 						// Invalidate cache for this class (student's gidouilles changed)
-						const classId = data.classes.find(c => c.students.some(s => s.id === studentId))?.id;
+						const classId = data.classes.find((c) =>
+							c.students.some((s) => s.id === studentId)
+						)?.id;
 						if (classId) {
 							teacherStudentsCache.invalidate(classId);
 						}
 						// Show success toast with accumulated delta and student name
-						toaster.success(`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} (${studentName})`);
+						toaster.success(
+							`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} (${studentName})`
+						);
 					}, 100);
 				} else {
 					// ERROR: Server returned error status
@@ -408,25 +428,27 @@
 
 				if (response.ok) {
 					// SUCCESS: All students updated in database
-					const classItem = data.classes.find(c => c.id === classId);
+					const classItem = data.classes.find((c) => c.id === classId);
 					const studentCount = classItem?.students.length || 0;
 					setTimeout(() => {
 						invalidateAll(); // Refresh all student data
 						// Invalidate cache for this class (all students' gidouilles changed)
 						teacherStudentsCache.invalidate(classId);
 						// Show success toast with student count
-						toaster.success(`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} pour ${studentCount} élève${studentCount > 1 ? 's' : ''}`);
+						toaster.success(
+							`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} pour ${studentCount} élève${studentCount > 1 ? 's' : ''}`
+						);
 					}, 100);
 				} else {
 					// ERROR: Rollback all students in the class
-					const classItem = data.classes.find(c => c.id === classId);
-					classItem?.students.forEach(student => clearOptimisticOverride(student.id));
+					const classItem = data.classes.find((c) => c.id === classId);
+					classItem?.students.forEach((student) => clearOptimisticOverride(student.id));
 					toaster.error('Échec de la mise à jour de la classe');
 				}
 			} catch (error) {
 				// NETWORK ERROR: Rollback all students
-				const classItem = data.classes.find(c => c.id === classId);
-				classItem?.students.forEach(student => clearOptimisticOverride(student.id));
+				const classItem = data.classes.find((c) => c.id === classId);
+				classItem?.students.forEach((student) => clearOptimisticOverride(student.id));
 				toaster.error('Erreur réseau');
 			}
 		}, 500) as unknown as number;
@@ -497,7 +519,7 @@
 
 		// Invalidate cache for all classes (VIP cards changed)
 		// We invalidate all because we don't know which class the student belongs to here
-		data.classes.forEach(c => teacherStudentsCache.invalidate(c.id));
+		data.classes.forEach((c) => teacherStudentsCache.invalidate(c.id));
 	}
 </script>
 
@@ -510,9 +532,9 @@
 	<!-- MAIN CONTENT -->
 	{#if data.classes.length === 0}
 		<!-- Pas de classes -->
-		<div class="bg-card border border-border rounded-lg p-12 text-center">
-			<img src={gidouilleImg} alt="Gidouille" class="w-16 h-16 mx-auto mb-4 opacity-50" />
-			<h2 class="text-xl font-semibold text-foreground mb-2">Aucune classe trouvée</h2>
+		<div class="rounded-lg border border-border bg-card p-12 text-center">
+			<img src={gidouilleImg} alt="Gidouille" class="mx-auto mb-4 h-16 w-16 opacity-50" />
+			<h2 class="mb-2 text-xl font-semibold text-foreground">Aucune classe trouvée</h2>
 			<p class="text-muted-foreground">
 				Vous devez d'abord créer des classes pour gérer les récompenses de vos élèves.
 			</p>
@@ -521,7 +543,7 @@
 		<!-- TABS PAR CLASSE -->
 		<Tabs.Root bind:value={selectedClassId} class="w-full">
 			<Tabs.List class="mb-6">
-				{#each data.classes as classItem}
+				{#each data.classes as classItem (classItem.id)}
 					<Tabs.Trigger value={classItem.id}>
 						{classItem.name}
 					</Tabs.Trigger>
@@ -529,18 +551,16 @@
 			</Tabs.List>
 
 			{#each data.classes as classItem}
-				<Tabs.Content value={classItem.id} class="space-y-6 mt-0">
+				<Tabs.Content value={classItem.id} class="mt-0 space-y-6">
 					<!-- CONTRÔLES AU NIVEAU CLASSE -->
-					<div class="bg-card border border-border rounded-lg p-6">
-						<h3 class="text-lg font-semibold text-foreground mb-4">
-							Actions pour toute la classe
-						</h3>
+					<div class="rounded-lg border border-border bg-card p-6">
+						<h3 class="mb-4 text-lg font-semibold text-foreground">Actions pour toute la classe</h3>
 						<div class="flex items-end gap-3">
 							<div class="flex items-center gap-2">
 								<!-- Bouton pour enlever (debounced) -->
 								<Button
 									variant="default"
-									class="w-10 h-10 p-0"
+									class="h-10 w-10 p-0"
 									onclick={() => {
 										const delta = -classDeltas[classItem.id];
 										debouncedUpdateClass(classItem.id, delta);
@@ -551,7 +571,10 @@
 
 								<!-- Input pour le nombre de gidouilles -->
 								<div class="w-16">
-									<label for="class-delta-{classItem.id}" class="text-sm text-muted-foreground mb-2 block text-center">
+									<label
+										for="class-delta-{classItem.id}"
+										class="mb-2 block text-center text-sm text-muted-foreground"
+									>
 										Nombre
 									</label>
 									<Input
@@ -567,7 +590,7 @@
 								<!-- Bouton pour ajouter (debounced) -->
 								<Button
 									variant="default"
-									class="w-10 h-10 p-0"
+									class="h-10 w-10 p-0"
 									onclick={() => {
 										const delta = classDeltas[classItem.id];
 										debouncedUpdateClass(classItem.id, delta);
@@ -585,54 +608,56 @@
 
 					<!-- LISTE DES ÉLÈVES -->
 					{#if classItem.students.length === 0}
-						<div class="bg-card border border-border rounded-lg p-12 text-center">
+						<div class="rounded-lg border border-border bg-card p-12 text-center">
 							<p class="text-muted-foreground">Aucun élève dans cette classe</p>
 						</div>
 					{:else}
-						<div class="bg-card border border-border rounded-lg overflow-hidden">
-							<div class="px-6 py-4 border-b border-border bg-muted/30">
+						<div class="overflow-hidden rounded-lg border border-border bg-card">
+							<div class="border-b border-border bg-muted/30 px-6 py-4">
 								<h3 class="text-lg font-semibold text-foreground">
 									Élèves ({classItem.students.length})
 								</h3>
 							</div>
 
 							<div class="divide-y divide-border">
-								{#each classItem.students as student}
-									<div class="px-6 py-4 flex items-center gap-6">
+								{#each classItem.students as student (student.id)}
+									<div class="flex items-center gap-6 px-6 py-4">
 										<!-- AVATAR -->
-										<Avatar.Root class="w-12 h-12 flex-shrink-0">
+										<Avatar.Root class="h-12 w-12 flex-shrink-0">
 											<Avatar.Image
-												src={student.avatar_url || getAvatarFallback(student.role || 'student', student.gender)}
+												src={student.avatar_url ||
+													getAvatarFallback(student.role || 'student', student.gender)}
 												alt={getFullName(student.firstname, student.lastname, student.full_name)}
 											/>
-											<Avatar.Fallback class="bg-primary/10 text-primary font-semibold">
+											<Avatar.Fallback class="bg-primary/10 font-semibold text-primary">
 												{getAvatarInitials(student.firstname, student.lastname)}
 											</Avatar.Fallback>
 										</Avatar.Root>
 
 										<!-- NOM DE L'ÉLÈVE -->
-										<div class="flex-1 min-w-0">
-											<p class="font-medium text-foreground truncate">
+										<div class="min-w-0 flex-1">
+											<p class="truncate font-medium text-foreground">
 												{getFullName(student.firstname, student.lastname, student.full_name)}
 											</p>
 										</div>
 
 										<!-- GIDOUILLES ACTUELLES -->
-										<div class="flex items-center gap-2 w-32 justify-end">
-											<img src={gidouilleImg} alt="Gidouille" class="w-6 h-6 flex-shrink-0" />
+										<div class="flex w-32 items-center justify-end gap-2">
+											<img src={gidouilleImg} alt="Gidouille" class="h-6 w-6 flex-shrink-0" />
 											<span class="text-2xl font-bold text-foreground tabular-nums">
 												{getStudentGidouilles(student.id, student.gidouilles)}
 											</span>
 										</div>
 
 										<!-- BOUTONS +/- AVEC INPUT AU MILIEU -->
-										<div class="flex items-center gap-2 flex-shrink-0">
+										<div class="flex flex-shrink-0 items-center gap-2">
 											<!-- Bouton pour enlever (debounced) -->
 											<Button
 												size="sm"
 												variant="default"
-												class="w-10 h-10 p-0"
-												disabled={getStudentGidouilles(student.id, student.gidouilles) < studentDeltas[student.id]}
+												class="h-10 w-10 p-0"
+												disabled={getStudentGidouilles(student.id, student.gidouilles) <
+													studentDeltas[student.id]}
 												onclick={() => {
 													const delta = -studentDeltas[student.id];
 													const currentValue = getStudentGidouilles(student.id, student.gidouilles);
@@ -651,7 +676,7 @@
 													min="1"
 													max="9"
 													bind:value={studentDeltas[student.id]}
-													class="w-full text-center h-10"
+													class="h-10 w-full text-center"
 												/>
 											</div>
 
@@ -659,7 +684,7 @@
 											<Button
 												size="sm"
 												variant="default"
-												class="w-10 h-10 p-0"
+												class="h-10 w-10 p-0"
 												onclick={() => {
 													const delta = studentDeltas[student.id];
 													const currentValue = getStudentGidouilles(student.id, student.gidouilles);
@@ -673,10 +698,10 @@
 										</div>
 
 										<!-- SÉPARATEUR VERTICAL -->
-										<div class="h-10 w-px bg-border mx-2"></div>
+										<div class="mx-2 h-10 w-px bg-border"></div>
 
 										<!-- BOUTONS CARTES VIP -->
-										<div class="flex items-center gap-2 flex-shrink-0">
+										<div class="flex flex-shrink-0 items-center gap-2">
 											<!-- Bouton Voir Cartes VIP -->
 											<Button
 												size="sm"
@@ -684,7 +709,7 @@
 												class="gap-1"
 												onclick={() => openVipModal(student)}
 											>
-												<Eye class="w-4 h-4" />
+												<Eye class="h-4 w-4" />
 												<span class="hidden sm:inline">Voir Cartes</span>
 											</Button>
 
@@ -694,7 +719,11 @@
 												action="?/awardVipCard"
 												use:enhance={() => {
 													// Save student name for reveal animation
-													const studentName = getFullName(student.firstname, student.lastname, student.full_name);
+													const studentName = getFullName(
+														student.firstname,
+														student.lastname,
+														student.full_name
+													);
 
 													// Initialize reveal modal with loading state (back of card, shaking)
 													revealingCard = {
@@ -728,15 +757,23 @@
 													size="sm"
 													variant="default"
 													class="gap-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-													disabled={!canAffordVipCard(getStudentGidouilles(student.id, student.gidouilles)) || revealingCard !== null}
+													disabled={!canAffordVipCard(
+														getStudentGidouilles(student.id, student.gidouilles)
+													) || revealingCard !== null}
 												>
 													{#if revealingCard !== null}
-														<Loader2 class="w-4 h-4 animate-spin" />
+														<Loader2 class="h-4 w-4 animate-spin" />
 														<span class="hidden sm:inline">Attribution...</span>
 													{:else}
-														<Sparkles class="w-4 h-4" />
+														<Sparkles class="h-4 w-4" />
 														<span class="hidden sm:inline">Carte VIP</span>
-														<span class="text-xs opacity-80">(3 <img src={gidouilleImg} alt="gidouille" class="inline w-3 h-3" />)</span>
+														<span class="text-xs opacity-80"
+															>(3 <img
+																src={gidouilleImg}
+																alt="gidouille"
+																class="inline h-3 w-3"
+															/>)</span
+														>
 													{/if}
 												</Button>
 											</form>

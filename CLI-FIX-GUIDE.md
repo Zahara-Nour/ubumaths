@@ -27,11 +27,13 @@ supabase link --project-ref YOUR_PROJECT_REF
 ```
 
 **Finding your project ref:**
+
 - Go to your Supabase dashboard
 - URL looks like: `https://app.supabase.com/project/aqtijumsgfufoztohdua`
 - Your project ref is: `aqtijumsgfufoztohdua`
 
 You can also find it in your `.env`:
+
 ```bash
 # Extract from PUBLIC_SUPABASE_URL
 grep PUBLIC_SUPABASE_URL .env
@@ -39,6 +41,7 @@ grep PUBLIC_SUPABASE_URL .env
 ```
 
 **Link command:**
+
 ```bash
 supabase link --project-ref aqtijumsgfufoztohdua
 ```
@@ -57,6 +60,7 @@ supabase db push
 ```
 
 **What this does:**
+
 - ✅ Creates the automatic profile trigger (migration 004)
 - ✅ Fixes all existing users without profiles (migration 005)
 - ✅ Future signups will automatically create profiles
@@ -110,6 +114,7 @@ LEFT JOIN public.profiles p ON u.id = p.id;
 ```
 
 **Expected output:**
+
 ```
  missing_profiles | users_with_profiles | total_users
 ------------------+--------------------+-------------
@@ -127,6 +132,7 @@ We also created an interactive script:
 ```
 
 This script will:
+
 1. Check if Supabase CLI is installed
 2. Verify you're linked to a project
 3. Give you options to fix the issue
@@ -233,13 +239,14 @@ We added these scripts to `package.json`:
 
 ```json
 {
-  "db:migrate": "Run all pending migrations",
-  "db:fix-profiles": "Fix existing users without profiles",
-  "db:status": "Check how many users are missing profiles"
+	"db:migrate": "Run all pending migrations",
+	"db:fix-profiles": "Fix existing users without profiles",
+	"db:status": "Check how many users are missing profiles"
 }
 ```
 
 **Usage:**
+
 ```bash
 pnpm run db:migrate       # Run all migrations
 pnpm run db:fix-profiles  # Fix existing users
@@ -257,6 +264,7 @@ pnpm run db:status
 ```
 
 **Without CLI (use dashboard):**
+
 - Open SQL Editor in Supabase dashboard
 - Run the SQL from `005_fix_existing_users.sql`
 

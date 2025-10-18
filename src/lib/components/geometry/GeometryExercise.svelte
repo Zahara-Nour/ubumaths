@@ -42,7 +42,9 @@
 	let autoSaveInterval: number | null = null;
 
 	// Derived states
-	const isEditable = $derived(exercise.exercise_type !== 'view' && exercise.exercise_type !== 'explore');
+	const isEditable = $derived(
+		exercise.exercise_type !== 'view' && exercise.exercise_type !== 'explore'
+	);
 	const hasSteps = $derived(exercise.validation_mode === 'step_by_step');
 	const canSubmit = $derived(mathGraphApp !== null && !isValidating);
 
@@ -229,7 +231,13 @@
 				bind:this={editorRef}
 				figure={attempt?.current_figure_state || exercise.initial_figure || ''}
 				width={exercise.tools_allowed?.length ? 800 : 850}
-				level={exercise.grade_level === 'elementary' ? 0 : exercise.grade_level === 'middle' ? 1 : exercise.grade_level === 'high' ? 2 : 3}
+				level={exercise.grade_level === 'elementary'
+					? 0
+					: exercise.grade_level === 'middle'
+						? 1
+						: exercise.grade_level === 'high'
+							? 2
+							: 3}
 				allowedTools={exercise.tools_allowed}
 				gridVisible={exercise.grid_visible}
 				axisVisible={exercise.axis_visible}
@@ -241,7 +249,13 @@
 			<MathGraphViewer
 				figure={exercise.initial_figure || ''}
 				width={850}
-				level={exercise.grade_level === 'elementary' ? 0 : exercise.grade_level === 'middle' ? 1 : exercise.grade_level === 'high' ? 2 : 3}
+				level={exercise.grade_level === 'elementary'
+					? 0
+					: exercise.grade_level === 'middle'
+						? 1
+						: exercise.grade_level === 'high'
+							? 2
+							: 3}
 				interactive={exercise.exercise_type === 'explore'}
 				displayMeasures={exercise.measurements_visible}
 				gridVisible={exercise.grid_visible}
@@ -258,11 +272,7 @@
 
 	<!-- Hints Section -->
 	{#if showHints}
-		<GeometryHints
-			exerciseId={exercise.id}
-			currentStep={currentStep}
-			onHintUsed={handleHintRequested}
-		/>
+		<GeometryHints exerciseId={exercise.id} {currentStep} onHintUsed={handleHintRequested} />
 	{/if}
 
 	<!-- Action Buttons -->
@@ -276,9 +286,7 @@
 				{isValidating ? 'Validation...' : 'Valider'}
 			</Button>
 
-			<Button onclick={handleSubmit} disabled={!canSubmit || isValidating}>
-				Soumettre
-			</Button>
+			<Button onclick={handleSubmit} disabled={!canSubmit || isValidating}>Soumettre</Button>
 		{/if}
 	</div>
 </div>

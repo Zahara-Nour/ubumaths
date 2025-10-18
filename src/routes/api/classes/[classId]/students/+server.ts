@@ -19,7 +19,11 @@ import type { RequestHandler } from './$types';
  * RETURNS:
  * Array of students with fields based on 'full' parameter
  */
-export const GET: RequestHandler = async ({ params, url, locals: { safeGetSession, supabase } }) => {
+export const GET: RequestHandler = async ({
+	params,
+	url,
+	locals: { safeGetSession, supabase }
+}) => {
 	const { user } = await safeGetSession();
 
 	if (!user) {

@@ -42,6 +42,7 @@ The WebSocket system provides **real-time online/offline presence tracking** for
 **Port**: 3001 (standalone server, separate from SvelteKit)
 
 **Responsibilities**:
+
 - Maintain active WebSocket connections (Map<user_id, WebSocket>)
 - Authenticate users via JWT token validation
 - Handle heartbeat messages (update `last_heartbeat`)
@@ -110,6 +111,7 @@ Every 60 seconds, server calls `cleanup_stale_presence()` RPC to mark users offl
 **Type**: Svelte 5 rune-based class with `$state`
 
 **Responsibilities**:
+
 - Establish and maintain WebSocket connection
 - Send heartbeat every 60 seconds
 - Handle incoming presence updates
@@ -119,8 +121,8 @@ Every 60 seconds, server calls `cleanup_stale_presence()` RPC to mark users offl
 **Key Properties**:
 
 ```typescript
-friendsPresence: Map<string, 'online' | 'offline'>  // Reactive state
-connectionStatus: 'connected' | 'disconnected' | 'connecting'
+friendsPresence: Map<string, 'online' | 'offline'>; // Reactive state
+connectionStatus: 'connected' | 'disconnected' | 'connecting';
 ```
 
 **Key Methods**:
@@ -145,6 +147,7 @@ getFriendPresence(friendId: string): 'online' | 'offline'
 **Type**: Svelte 5 rune-based class with `$state`
 
 **Responsibilities**:
+
 - Load friendships from Supabase
 - Send/accept/reject/cancel friend requests
 - Unfriend users
@@ -182,11 +185,13 @@ getDisplayName(friend: FriendshipWithProfile): string
 Simple status indicator badge component.
 
 **Props**:
+
 - `status: 'online' | 'offline'`
 - `showLabel?: boolean` (default: false)
 - `size?: 'sm' | 'md' | 'lg'` (default: 'md')
 
 **Appearance**:
+
 - Green pulsing dot for online
 - Gray dot for offline
 - Optional label text
@@ -196,6 +201,7 @@ Simple status indicator badge component.
 Displays accepted friends with online status.
 
 **Features**:
+
 - Search bar to filter friends by name
 - Avatar with fallback initial
 - Online/offline status indicator
@@ -207,6 +213,7 @@ Displays accepted friends with online status.
 Shows pending incoming and sent friend requests.
 
 **Features**:
+
 - **Incoming section**: Accept/Reject buttons
 - **Sent section**: Cancel button with status label
 - Empty states with helpful icons
@@ -216,6 +223,7 @@ Shows pending incoming and sent friend requests.
 Search for users and send friend requests.
 
 **Features**:
+
 - Search input (min 2 characters)
 - Friendship type selector (Camarade/Mentor)
 - Search results with status badges:
@@ -231,17 +239,21 @@ Search for users and send friend requests.
 Main friends page with 3 tabs:
 
 **Tab 1: Mes amis** (`FriendsList.svelte`)
+
 - Shows accepted friendships
 - Badge count of total friends
 
 **Tab 2: Demandes** (`FriendRequests.svelte`)
+
 - Shows incoming and sent requests
 - Red badge count of incoming requests
 
 **Tab 3: Ajouter** (`AddFriend.svelte`)
+
 - Search and send friend requests
 
 **Connection Status Banner**:
+
 - Shows warning if WebSocket is disconnected
 - "Connexion au serveur de présence..." (connecting)
 - "Déconnecté du serveur de présence..." (disconnected)
@@ -251,6 +263,7 @@ Main friends page with 3 tabs:
 Teacher moderation page (teachers & admins only).
 
 **Features**:
+
 - View all student friendships
 - Stats cards: Active, Pending, Total
 - Filter by class or search by name
@@ -271,6 +284,7 @@ Teacher moderation page (teachers & admins only).
 **Used by**: WebSocket server to find who to broadcast presence updates to
 
 **SQL**:
+
 ```sql
 SELECT CASE
   WHEN requester_id = p_user_id THEN addressee_id
@@ -290,6 +304,7 @@ AND (requester_id = p_user_id OR addressee_id = p_user_id)
 **Used by**: WebSocket server on connect/disconnect/heartbeat
 
 **SQL**:
+
 ```sql
 INSERT INTO user_presence (user_id, status, last_heartbeat, updated_at)
 VALUES (p_user_id, p_status, now(), now())
@@ -309,6 +324,7 @@ DO UPDATE SET
 **Called by**: WebSocket server every 60 seconds
 
 **SQL**:
+
 ```sql
 UPDATE user_presence
 SET status = 'offline', updated_at = now()
@@ -325,9 +341,9 @@ AND last_heartbeat < now() - interval '2 minutes'
 3. User navigates to `/dashboard/friends`
 4. Page component calls:
    ```typescript
-   friendsManager.init(supabase, userId)
-   await friendsManager.loadFriendships()
-   websocketManager.connect(userId, session.access_token)
+   friendsManager.init(supabase, userId);
+   await friendsManager.loadFriendships();
+   websocketManager.connect(userId, session.access_token);
    ```
 5. WebSocket authenticates and marks user online
 6. Friends see presence update instantly
@@ -357,14 +373,14 @@ AND last_heartbeat < now() - interval '2 minutes'
 3. Server sends to userB and userC:
    ```json
    {
-     "type": "presence_update",
-     "userId": "userA-id",
-     "status": "online"
+   	"type": "presence_update",
+   	"userId": "userA-id",
+   	"status": "online"
    }
    ```
 4. Client receives message and updates:
    ```typescript
-   websocketManager.friendsPresence.set(message.userId, message.status)
+   websocketManager.friendsPresence.set(message.userId, message.status);
    ```
 5. UI automatically re-renders with green online indicator
 
@@ -415,10 +431,12 @@ AND last_heartbeat < now() - interval '2 minutes'
 ### Scalability
 
 **Current architecture (single-server)**:
+
 - Suitable for: 100-1000 concurrent connections
 - Limitation: All connections on one Node.js process
 
 **Future improvements** (if needed):
+
 - Redis pub/sub for multi-server presence sharing
 - Sticky sessions or shared state store
 - Horizontal scaling with load balancer
@@ -428,10 +446,12 @@ AND last_heartbeat < now() - interval '2 minutes'
 ### Development
 
 **Two servers needed**:
+
 1. SvelteKit dev server: `pnpm dev` (port 5173)
 2. WebSocket server: `pnpm ws:dev` (port 3001)
 
 **Terminal setup**:
+
 ```bash
 # Terminal 1
 pnpm dev
@@ -447,16 +467,19 @@ pnpm ws:dev
 **Options**:
 
 **Option 1: External WebSocket Service** (Recommended)
+
 - Deploy WebSocket server separately (e.g., Railway, Render, DigitalOcean)
 - Update `WS_URL` in `websocket.svelte.ts` to point to external server
 - Configure CORS and authentication
 
 **Option 2: Supabase Realtime** (Alternative)
+
 - Replace WebSocket with Supabase Realtime channels
 - Use `supabase.channel('presence')` for presence tracking
 - Simpler deployment but less control
 
 **Option 3: Polling Fallback** (Degraded UX)
+
 - Disable WebSocket on production
 - Poll `user_presence` table every 30-60 seconds
 - Higher latency but no WebSocket infrastructure needed
@@ -464,12 +487,14 @@ pnpm ws:dev
 ### Environment Variables
 
 **WebSocket Server**:
+
 ```env
 PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=xxx  # Secret key for server-side operations
 ```
 
 **Client**:
+
 ```env
 WS_URL=ws://localhost:3001  # Development
 # or
@@ -517,6 +542,7 @@ wscat -c ws://localhost:3001
 The WebSocket infrastructure is designed to support future chat features:
 
 **New message types**:
+
 ```typescript
 {
   type: 'chat_message',
@@ -534,6 +560,7 @@ The WebSocket infrastructure is designed to support future chat features:
 ```
 
 **Database additions** (not implemented yet):
+
 ```sql
 CREATE TABLE messages (
   id UUID PRIMARY KEY,
@@ -550,6 +577,7 @@ CREATE TABLE messages (
 Send gidouilles and VIP cards to friends:
 
 **New message types**:
+
 ```typescript
 {
   type: 'gift_notification',
@@ -561,6 +589,7 @@ Send gidouilles and VIP cards to friends:
 ```
 
 **Database additions** (not implemented yet):
+
 ```sql
 CREATE TABLE gift_transactions (
   id UUID PRIMARY KEY,
@@ -581,6 +610,7 @@ CREATE TABLE gift_transactions (
 **Symptom**: Connection status stuck on "connecting" or "disconnected"
 
 **Causes**:
+
 - WebSocket server not running → Run `pnpm ws:dev`
 - Wrong port → Check `WS_URL` in `websocket.svelte.ts`
 - Firewall blocking port 3001 → Allow port in firewall/router
@@ -590,6 +620,7 @@ CREATE TABLE gift_transactions (
 **Symptom**: Friends show as offline even though they're online
 
 **Causes**:
+
 - Heartbeat not sending → Check browser console for errors
 - Stale data in DB → Manually run `SELECT cleanup_stale_presence()`
 - RLS policy blocking → Ensure users are actually friends (status='accepted')
@@ -599,6 +630,7 @@ CREATE TABLE gift_transactions (
 **Symptom**: Rapid connect/disconnect cycles
 
 **Causes**:
+
 - Invalid JWT token → Refresh session token
 - Server crashing → Check WebSocket server logs for errors
 - Network instability → Check network connection
@@ -606,6 +638,7 @@ CREATE TABLE gift_transactions (
 ## Summary
 
 The WebSocket architecture provides a **scalable, privacy-focused real-time presence system** that:
+
 - ✅ Updates friends' online status instantly
 - ✅ Uses minimal database writes (60s heartbeat)
 - ✅ Respects privacy (friends-only visibility)
@@ -613,6 +646,7 @@ The WebSocket architecture provides a **scalable, privacy-focused real-time pres
 - ✅ Foundation for future chat and gifting features
 
 For development, simply run both servers:
+
 ```bash
 pnpm dev      # SvelteKit (port 5173)
 pnpm ws:dev   # WebSocket (port 3001)

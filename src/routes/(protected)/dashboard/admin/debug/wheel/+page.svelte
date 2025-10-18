@@ -141,16 +141,20 @@
 
 		// Generate complete Svelte component code
 		// Note: Using string concatenation to avoid Svelte parsing <script> tags
-		return `<` + `script>
+		return (
+			`<` +
+			`script>
   import Wheel from '$lib/components/Wheel.svelte';
 
   const students = ${studentsCode};
-</` + `script>
+</` +
+			`script>
 
 <Wheel
   ${props.join('\n  ')}
   onWinner={(student) => console.log('Winner:', student)}
-/>`;
+/>`
+		);
 	});
 
 	// Copy generated code to clipboard using Clipboard API
@@ -223,9 +227,13 @@
 				<li><strong>wheelRadius</strong>: Size of wheel in em units (default: 18)</li>
 				<li><strong>primaryColor</strong>: Main wheel color (default: #e7c9de pink)</li>
 				<li><strong>secondaryColor</strong>: Alternating slice color (default: #3a507e blue)</li>
-				<li><strong>accentColor</strong>: Outer ring and center color (default: #788bb2 gray-blue)</li>
+				<li>
+					<strong>accentColor</strong>: Outer ring and center color (default: #788bb2 gray-blue)
+				</li>
 				<li><strong>spinDuration</strong>: Animation duration in seconds (default: 4)</li>
-				<li><strong>addJokerIfOdd</strong>: Add "Joker" when student count is odd (default: false)</li>
+				<li>
+					<strong>addJokerIfOdd</strong>: Add "Joker" when student count is odd (default: false)
+				</li>
 				<li><strong>showConfetti</strong>: Show confetti on winner selection (default: true)</li>
 				<li><strong>gidouilleReward</strong>: Optional reward amount (default: 0)</li>
 			</ul>
@@ -271,7 +279,8 @@
 				</div>
 
 				<div>
-					<label for="secondary-color" class="mb-2 block text-sm font-medium">Secondary Color</label>
+					<label for="secondary-color" class="mb-2 block text-sm font-medium">Secondary Color</label
+					>
 					<div class="flex gap-2">
 						<input
 							id="secondary-color"
@@ -419,7 +428,6 @@
 				Copy Code
 			</Button>
 		</div>
-		<pre
-			class="overflow-auto rounded bg-muted p-4 text-xs"><code>{generateCode()}</code></pre>
+		<pre class="overflow-auto rounded bg-muted p-4 text-xs"><code>{generateCode()}</code></pre>
 	</div>
 </div>

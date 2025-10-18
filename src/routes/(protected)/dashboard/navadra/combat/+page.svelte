@@ -13,9 +13,7 @@
 	<!-- Header -->
 	<div class="mb-8">
 		<div class="mb-4">
-			<Button href="/dashboard/navadra" variant="ghost" class="gap-2">
-				← Retour au hub
-			</Button>
+			<Button href="/dashboard/navadra" variant="ghost" class="gap-2">← Retour au hub</Button>
 		</div>
 		<h1 class="mb-2 text-4xl font-bold text-foreground">Choisis ton adversaire</h1>
 		<p class="text-lg text-muted-foreground">
@@ -30,13 +28,17 @@
 			Commence un combat contre un monstre aléatoire adapté à ton niveau.
 		</p>
 
-		<form method="POST" action="?/startCombat" use:enhance={() => {
-			loading = true;
-			return async ({ update }) => {
-				await update();
-				loading = false;
-			};
-		}}>
+		<form
+			method="POST"
+			action="?/startCombat"
+			use:enhance={() => {
+				loading = true;
+				return async ({ update }) => {
+					await update();
+					loading = false;
+				};
+			}}
+		>
 			<Button type="submit" size="lg" disabled={loading}>
 				{loading ? 'Génération...' : '⚔️ Commencer un combat'}
 			</Button>
@@ -50,14 +52,24 @@
 			Affronte un monstre de test avec seulement 1 PV pour tester rapidement la victoire.
 		</p>
 
-		<form method="POST" action="?/spawnDebugMonster" use:enhance={() => {
-			loading = true;
-			return async ({ update }) => {
-				await update();
-				loading = false;
-			};
-		}}>
-			<Button type="submit" size="lg" variant="outline" disabled={loading} class="border-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-900/30">
+		<form
+			method="POST"
+			action="?/spawnDebugMonster"
+			use:enhance={() => {
+				loading = true;
+				return async ({ update }) => {
+					await update();
+					loading = false;
+				};
+			}}
+		>
+			<Button
+				type="submit"
+				size="lg"
+				variant="outline"
+				disabled={loading}
+				class="border-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-900/30"
+			>
 				{loading ? 'Création...' : '🐛 Combattre un monstre DEBUG (1 PV)'}
 			</Button>
 		</form>
@@ -70,13 +82,17 @@
 
 			<div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
 				{#each data.availableMonsters as monster}
-					<form method="POST" action="?/startCombat" use:enhance={() => {
-						loading = true;
-						return async ({ update }) => {
-							await update();
-							loading = false;
-						};
-					}}>
+					<form
+						method="POST"
+						action="?/startCombat"
+						use:enhance={() => {
+							loading = true;
+							return async ({ update }) => {
+								await update();
+								loading = false;
+							};
+						}}
+					>
 						<input type="hidden" name="monster_id" value={monster.id} />
 						<MonsterCard {monster} onclick={() => {}} selectable={true} />
 					</form>

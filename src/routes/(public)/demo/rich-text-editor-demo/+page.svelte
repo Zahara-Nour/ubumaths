@@ -116,7 +116,7 @@
 <div class="container mx-auto max-w-5xl p-4">
 	<!-- Header -->
 	<div class="mb-6">
-		<h1 class="text-3xl font-bold text-foreground mb-2">Éditeur de texte enrichi</h1>
+		<h1 class="mb-2 text-3xl font-bold text-foreground">Éditeur de texte enrichi</h1>
 		<p class="text-muted-foreground">
 			Démo d'un éditeur avec support des formules mathématiques interactives (MathLive + TipTap)
 		</p>
@@ -125,12 +125,19 @@
 	<Separator class="mb-6" />
 
 	<!-- Instructions -->
-	<div class="mb-6 p-4 bg-card border border-border rounded-lg">
-		<h2 class="font-semibold text-lg mb-2">Comment utiliser :</h2>
-		<ul class="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-			<li>Utilisez les boutons <strong>Gras</strong> et <strong>Italique</strong> pour formater le texte</li>
+	<div class="mb-6 rounded-lg border border-border bg-card p-4">
+		<h2 class="mb-2 text-lg font-semibold">Comment utiliser :</h2>
+		<ul class="list-inside list-disc space-y-1 text-sm text-muted-foreground">
+			<li>
+				Utilisez les boutons <strong>Gras</strong> et <strong>Italique</strong> pour formater le texte
+			</li>
 			<li>Cliquez sur <strong>Formule</strong> pour insérer des formules mathématiques</li>
-			<li><strong>Nouveau :</strong> Tapez <code class="px-1 py-0.5 bg-muted rounded">$$formule$$</code> pour créer automatiquement une formule (ex: <code class="px-1 py-0.5 bg-muted rounded">$$x^2+y^2$$</code>)</li>
+			<li>
+				<strong>Nouveau :</strong> Tapez
+				<code class="rounded bg-muted px-1 py-0.5">$$formule$$</code>
+				pour créer automatiquement une formule (ex:
+				<code class="rounded bg-muted px-1 py-0.5">$$x^2+y^2$$</code>)
+			</li>
 			<li>Les formules en ligne s'insèrent dans le texte</li>
 			<li>Les blocs de formule sont centrés et plus grands</li>
 			<li>Cliquez sur une formule pour l'éditer avec MathLive</li>
@@ -138,16 +145,15 @@
 	</div>
 
 	<!-- Chat container -->
-	<div class="flex flex-col h-[600px] border border-border rounded-lg bg-card overflow-hidden">
+	<div class="flex h-[600px] flex-col overflow-hidden rounded-lg border border-border bg-card">
 		<!-- Messages area -->
-		<div
-			bind:this={messagesContainer}
-			class="flex-1 overflow-y-auto p-4 space-y-4 bg-muted/30"
-		>
+		<div bind:this={messagesContainer} class="flex-1 space-y-4 overflow-y-auto bg-muted/30 p-4">
 			{#if messages.length === 0}
-				<div class="text-center text-muted-foreground py-12">
+				<div class="py-12 text-center text-muted-foreground">
 					<p class="text-lg">Aucun message pour le moment</p>
-					<p class="text-sm mt-2">Envoyez votre premier message avec des formules mathématiques !</p>
+					<p class="mt-2 text-sm">
+						Envoyez votre premier message avec des formules mathématiques !
+					</p>
 				</div>
 			{:else}
 				{#each messages as message (message.id)}
@@ -164,13 +170,13 @@
 						</div>
 
 						<!-- Message content -->
-						<div class="flex-1 min-w-0">
-							<div class="flex items-baseline gap-2 mb-1">
+						<div class="min-w-0 flex-1">
+							<div class="mb-1 flex items-baseline gap-2">
 								<span class="font-semibold text-foreground">{message.author}</span>
 								<span class="text-xs text-muted-foreground">{formatTime(message.timestamp)}</span>
 							</div>
 
-							<div class="bg-card rounded-lg p-3 border border-border shadow-sm">
+							<div class="rounded-lg border border-border bg-card p-3 shadow-sm">
 								<RichTextDisplay content={message.content} />
 							</div>
 						</div>
@@ -180,19 +186,20 @@
 		</div>
 
 		<!-- Editor area -->
-		<div class="border-t border-border p-4 bg-background">
+		<div class="border-t border-border bg-background p-4">
 			<RichTextEditor onSend={handleSendMessage} />
-			<p class="text-xs text-muted-foreground mt-2 text-center">
-				💡 Tapez <code class="px-1 py-0.5 bg-muted rounded">$$x^2$$</code> ou utilisez le bouton "Formule" pour insérer des mathématiques
+			<p class="mt-2 text-center text-xs text-muted-foreground">
+				💡 Tapez <code class="rounded bg-muted px-1 py-0.5">$$x^2$$</code> ou utilisez le bouton "Formule"
+				pour insérer des mathématiques
 			</p>
 		</div>
 	</div>
 
 	<!-- Features showcase -->
-	<div class="mt-8 grid md:grid-cols-2 gap-4">
-		<div class="p-4 bg-card border border-border rounded-lg">
-			<h3 class="font-semibold mb-2">✨ Fonctionnalités</h3>
-			<ul class="text-sm text-muted-foreground space-y-1">
+	<div class="mt-8 grid gap-4 md:grid-cols-2">
+		<div class="rounded-lg border border-border bg-card p-4">
+			<h3 class="mb-2 font-semibold">✨ Fonctionnalités</h3>
+			<ul class="space-y-1 text-sm text-muted-foreground">
 				<li>• Édition de texte enrichi (gras, italique)</li>
 				<li>• Formules mathématiques interactives</li>
 				<li>• Support LaTeX complet via MathLive</li>
@@ -201,9 +208,9 @@
 			</ul>
 		</div>
 
-		<div class="p-4 bg-card border border-border rounded-lg">
-			<h3 class="font-semibold mb-2">🔧 Technologies</h3>
-			<ul class="text-sm text-muted-foreground space-y-1">
+		<div class="rounded-lg border border-border bg-card p-4">
+			<h3 class="mb-2 font-semibold">🔧 Technologies</h3>
+			<ul class="space-y-1 text-sm text-muted-foreground">
 				<li>• <strong>Svelte 5</strong> - Framework réactif</li>
 				<li>• <strong>TipTap</strong> - Éditeur de texte riche</li>
 				<li>• <strong>MathLive</strong> - Éditeur mathématique</li>

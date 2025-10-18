@@ -75,10 +75,12 @@
 			<div class="example-code">
 				<h3>🎯 3D Only (No Popover)</h3>
 				<p>Interactive 3D tilt without click-to-expand functionality</p>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;card&#125;
   enablePopover=&#123;false&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<ul class="features-list">
 					<li>✅ 3D mouse tracking</li>
 					<li>❌ Click to expand</li>
@@ -96,16 +98,23 @@
 		<!-- 3. Static with Holo Effect -->
 		<section class="example-card">
 			<div class="example-demo">
-				<VipCardHolo card={exampleCard} enable3d={false} enablePopover={false} showBack={showBack3} />
+				<VipCardHolo
+					card={exampleCard}
+					enable3d={false}
+					enablePopover={false}
+					showBack={showBack3}
+				/>
 			</div>
 			<div class="example-code">
 				<h3>✨ Static with Holo Effect</h3>
 				<p>Just the beautiful holographic shine, no 3D or popover</p>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;card&#125;
   enable3d=&#123;false&#125;
   enablePopover=&#123;false&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<ul class="features-list">
 					<li>❌ 3D mouse tracking</li>
 					<li>❌ Click to expand</li>
@@ -123,16 +132,23 @@
 		<!-- 4. 3D Only (No Holo) -->
 		<section class="example-card">
 			<div class="example-demo">
-				<VipCardHolo card={exampleCard} enableHoloEffect={false} enablePopover={false} showBack={showBack4} />
+				<VipCardHolo
+					card={exampleCard}
+					enableHoloEffect={false}
+					enablePopover={false}
+					showBack={showBack4}
+				/>
 			</div>
 			<div class="example-code">
 				<h3>🎮 3D Only (No Holo)</h3>
 				<p>Interactive 3D tilt without the holographic effect</p>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;card&#125;
   enableHoloEffect=&#123;false&#125;
   enablePopover=&#123;false&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<ul class="features-list">
 					<li>✅ 3D mouse tracking</li>
 					<li>❌ Click to expand</li>
@@ -161,12 +177,14 @@
 			<div class="example-code">
 				<h3>🔍 Popover Only</h3>
 				<p>Static card with click-to-expand feature</p>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;card&#125;
   enable3d=&#123;false&#125;
   enableGyroscope=&#123;false&#125;
   enableHoloEffect=&#123;false&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<ul class="features-list">
 					<li>❌ 3D mouse tracking</li>
 					<li>✅ Click to expand</li>
@@ -196,13 +214,15 @@
 			<div class="example-code">
 				<h3>🖼️ Completely Static</h3>
 				<p>Just a plain image, all effects disabled</p>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;card&#125;
   enable3d=&#123;false&#125;
   enablePopover=&#123;false&#125;
   enableGyroscope=&#123;false&#125;
   enableHoloEffect=&#123;false&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<ul class="features-list">
 					<li>❌ 3D mouse tracking</li>
 					<li>❌ Click to expand</li>
@@ -225,10 +245,12 @@
 			<div class="example-code">
 				<h3>🔢 With Count Badge</h3>
 				<p>Show quantity when student has multiple copies</p>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;card&#125;
   count=&#123;5&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<ul class="features-list">
 					<li>✅ 3D mouse tracking</li>
 					<li>✅ Click to expand</li>
@@ -254,10 +276,12 @@
 			<div class="example-code">
 				<h3>🎭 Showcase Mode</h3>
 				<p>Auto-rotating animation for presentations (starts 2s after mount, runs for 4s)</p>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;card&#125;
   showcase=&#123;true&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<ul class="features-list">
 					<li>✅ 3D mouse tracking</li>
 					<li>✅ Click to expand</li>
@@ -288,13 +312,15 @@
 			<div class="example-code">
 				<h3>🔄 Card Flip Control</h3>
 				<p>Control which side of the card is visible (front or back)</p>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;card&#125;
   showBack=&#123;{showBack9}&#125;
   enable3d=&#123;false&#125;
   enablePopover=&#123;false&#125;
   enableHoloEffect=&#123;false&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<ul class="features-list">
 					<li>❌ 3D mouse tracking</li>
 					<li>❌ Click to expand</li>
@@ -306,7 +332,9 @@
 					<Button onclick={() => (showBack9 = !showBack9)} variant="outline">
 						{showBack9 ? '👁️ Show Front' : '🔙 Show Back'}
 					</Button>
-					<p class="current-side">Currently showing: <strong>{showBack9 ? 'Back' : 'Front'}</strong></p>
+					<p class="current-side">
+						Currently showing: <strong>{showBack9 ? 'Back' : 'Front'}</strong>
+					</p>
 				</div>
 			</div>
 		</section>
@@ -319,10 +347,12 @@
 			<div class="example-code">
 				<h3>📝 Description Overlay</h3>
 				<p>Hover to reveal card name and description with gradient overlay</p>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;card&#125;
   enableDescriptionOverlay=&#123;true&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<ul class="features-list">
 					<li>✅ 3D mouse tracking</li>
 					<li>✅ Click to expand</li>
@@ -346,10 +376,12 @@
 			<div class="example-code">
 				<h3>💎 Rarity Indicator</h3>
 				<p>Gem icon in top-left corner showing card rarity with colored glow</p>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;card&#125;
   enableRarityIndicator=&#123;true&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<ul class="features-list">
 					<li>✅ 3D mouse tracking</li>
 					<li>✅ Click to expand</li>
@@ -383,7 +415,8 @@
 			<div class="example-code">
 				<h3>🎯 All Features Enabled</h3>
 				<p>Complete experience with all features active</p>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;card&#125;
   count=&#123;3&#125;
   enable3d=&#123;true&#125;
@@ -392,7 +425,8 @@
   enableHoloEffect=&#123;true&#125;
   enableDescriptionOverlay=&#123;true&#125;
   enableRarityIndicator=&#123;true&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<ul class="features-list">
 					<li>✅ 3D mouse tracking</li>
 					<li>✅ Click to expand</li>
@@ -497,38 +531,46 @@
 		<div class="use-cases-grid">
 			<div class="use-case">
 				<h3>📱 Student Dashboard</h3>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;card&#125;
   count=&#123;card.count&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<p>Full interactive experience with count badges</p>
 			</div>
 
 			<div class="use-case">
 				<h3>📋 Compact List View</h3>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;card&#125;
   enable3d=&#123;false&#125;
   enablePopover=&#123;false&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<p>Static cards with holographic shine only</p>
 			</div>
 
 			<div class="use-case">
 				<h3>🎁 Reward Reveal</h3>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;newCard&#125;
   showcase=&#123;true&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<p>Animated showcase for new card reveals</p>
 			</div>
 
 			<div class="use-case">
 				<h3>🛒 Shop Preview</h3>
-				<pre><code>&lt;VipCardHolo
+				<pre><code
+						>&lt;VipCardHolo
   card=&#123;card&#125;
   enablePopover=&#123;false&#125;
-/&gt;</code></pre>
+/&gt;</code
+					></pre>
 				<p>Interactive 3D preview without popover</p>
 			</div>
 		</div>

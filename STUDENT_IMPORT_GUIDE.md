@@ -26,10 +26,10 @@ marie.martin@school.com,Marie,Martin,5ème,girl,MATH5A,MATH5B
 
 1. Préparez vos données dans Excel ou Google Sheets :
 
-   | Email | Prénom | Nom | Niveau | Genre | Classe 1 | Classe 2 | Classe 3 |
-   |-------|--------|-----|--------|-------|----------|----------|----------|
-   | jean.dupont@school.com | Jean | Dupont | 6ème | boy | MATH6A | | |
-   | marie.martin@school.com | Marie | Martin | 5ème | girl | MATH5A | MATH5B | |
+   | Email                   | Prénom | Nom    | Niveau | Genre | Classe 1 | Classe 2 | Classe 3 |
+   | ----------------------- | ------ | ------ | ------ | ----- | -------- | -------- | -------- |
+   | jean.dupont@school.com  | Jean   | Dupont | 6ème   | boy   | MATH6A   |          |          |
+   | marie.martin@school.com | Marie  | Martin | 5ème   | girl  | MATH5A   | MATH5B   |          |
 
 2. Sélectionnez les lignes (incluant ou non l'en-tête)
 3. Copiez (Ctrl+C ou Cmd+C)
@@ -37,6 +37,7 @@ marie.martin@school.com,Marie,Martin,5ème,girl,MATH5A,MATH5B
 5. Collez (Ctrl+V ou Cmd+V) directement dans la zone de texte
 
 **Colonnes requises :**
+
 - `email` : L'adresse email Google de l'élève (OBLIGATOIRE - doit correspondre exactement au compte Google)
 - `firstname` : Prénom de l'élève (OBLIGATOIRE)
 - `lastname` : Nom de famille de l'élève (OBLIGATOIRE)
@@ -49,22 +50,26 @@ marie.martin@school.com,Marie,Martin,5ème,girl,MATH5A,MATH5B
 ⚠️ **Vous NE POUVEZ PAS inventer des codes de classe**. Les codes doivent correspondre aux **codes d'accès (join codes)** de classes déjà créées dans le système.
 
 **Comment obtenir les codes de classe valides :**
+
 1. Les classes doivent d'abord être créées par un enseignant
 2. Chaque classe se voit attribuer un code d'accès unique (ex: MATH6A, PHYS5B)
 3. Consultez la section "Codes de classe disponibles" sur la page d'importation
 4. Utilisez EXACTEMENT ces codes dans votre import
 
 **Validation automatique :**
+
 - Le système vérifie que chaque code existe
 - Les codes invalides sont rejetés avec un message d'erreur AVANT l'import
 - Exemple d'erreur : "Code(s) de classe invalide(s): INVALID1, INVALID2"
 
 **Si aucune classe n'existe encore :**
+
 1. Créez d'abord les classes (en tant qu'enseignant)
 2. Notez les codes d'accès générés
 3. Puis importez les élèves avec ces codes
 
 **Autres points importants :**
+
 - L'email doit correspondre EXACTEMENT au compte Google que l'élève utilisera pour se connecter
 - Vous pouvez spécifier autant de classes que nécessaire (colonnes supplémentaires)
 - La page d'importation affiche la liste complète des codes de classe disponibles
@@ -81,6 +86,7 @@ marie.martin@school.com,Marie,Martin,5ème,girl,MATH5A,MATH5B
 6. Cliquez sur "Importer les élèves"
 
 **Validation automatique :**
+
 - Les emails invalides sont rejetés
 - Les codes de classe inexistants sont signalés
 - Les erreurs sont affichées clairement avant l'importation
@@ -142,6 +148,7 @@ pnpm db:migrate
 ```
 
 Cela appliquera :
+
 - `026_create_pending_students_table.sql` : Création de la table
 - `027_update_handle_new_user_trigger.sql` : Mise à jour du trigger (version 1)
 - `028_add_class_ids_to_pending_students.sql` : Ajout du champ class_ids
@@ -150,6 +157,7 @@ Cela appliquera :
 ### Structure de la base de données
 
 **Table `pending_students` :**
+
 - Stocke les données des élèves avant leur première connexion
 - `email` doit être UNIQUE
 - `class_ids` : Array de UUIDs des classes auxquelles l'élève sera inscrit
@@ -157,6 +165,7 @@ Cela appliquera :
 - Policies RLS : admin uniquement
 
 **Trigger `handle_new_user()` :**
+
 - S'exécute automatiquement après création d'un utilisateur dans `auth.users`
 - Cherche l'email dans `pending_students`
 - Crée le profil avec les bonnes données
@@ -166,12 +175,15 @@ Cela appliquera :
 ## Gestion des erreurs
 
 ### Email en doublon
+
 Si vous essayez d'importer un email déjà présent, vous recevrez une erreur. Supprimez d'abord l'ancien avant de réimporter.
 
 ### Email invalide
+
 Le système vérifie que chaque email contient un "@". Les emails invalides sont rejetés avant l'importation.
 
 ### École manquante
+
 Vous devez sélectionner une école avant de pouvoir importer.
 
 ### Code de classe invalide
@@ -181,23 +193,25 @@ Vous devez sélectionner une école avant de pouvoir importer.
 **Cause :** Vous avez utilisé un code de classe qui n'existe pas dans le système.
 
 **Solution :**
+
 1. Consultez la section "Codes de classe disponibles" sur la page d'importation
 2. Vérifiez que vous utilisez EXACTEMENT les codes affichés (sensible à la casse)
 3. Si la classe n'existe pas, créez-la d'abord (en tant qu'enseignant)
 4. Vous ne pouvez PAS inventer vos propres codes - ils sont générés automatiquement par le système
 
 ### Email ne correspond pas
+
 Si un élève se connecte avec un email différent de celui pré-rempli, il obtiendra un profil par défaut (sans les données pré-remplies ni les classes). Assurez-vous que les emails correspondent exactement.
 
 ## Exemple complet
 
 ### Préparation dans Google Sheets
 
-| Email | Prénom | Nom | Niveau | Genre | MATH6A | MATH6B |
-|-------|--------|-----|--------|-------|--------|--------|
-| alice.bernard@voltaire.com | Alice | Bernard | 6ème | girl | MATH6A | |
-| bob.charles@voltaire.com | Bob | Charles | 6ème | boy | MATH6A | |
-| claire.dubois@voltaire.com | Claire | Dubois | 5ème | girl | MATH5A | MATH5B |
+| Email                      | Prénom | Nom     | Niveau | Genre | MATH6A | MATH6B |
+| -------------------------- | ------ | ------- | ------ | ----- | ------ | ------ |
+| alice.bernard@voltaire.com | Alice  | Bernard | 6ème   | girl  | MATH6A |        |
+| bob.charles@voltaire.com   | Bob    | Charles | 6ème   | boy   | MATH6A |        |
+| claire.dubois@voltaire.com | Claire | Dubois  | 5ème   | girl  | MATH5A | MATH5B |
 
 ### Importation
 
@@ -217,6 +231,7 @@ Si un élève se connecte avec un email différent de celui pré-rempli, il obti
 ### Résultat après première connexion
 
 **Alice se connecte avec alice.bernard@voltaire.com :**
+
 - ✅ Profil créé avec prénom "Alice" et nom "Bernard"
 - ✅ École "Lycée Franco-Qatari Voltaire" assignée
 - ✅ Niveau "6ème" assigné
@@ -226,6 +241,7 @@ Si un élève se connecte avec un email différent de celui pré-rempli, il obti
 - ✅ Prête à utiliser l'application immédiatement
 
 **Claire se connecte avec claire.dubois@voltaire.com :**
+
 - ✅ **Automatiquement inscrite dans MATH5A ET MATH5B**
 - ✅ Peut voir les deux classes dans son tableau de bord
 
@@ -252,6 +268,7 @@ Si un élève se connecte avec un email différent de celui pré-rempli, il obti
 ## Support
 
 Pour toute question ou problème :
+
 1. Vérifiez les logs dans la console Supabase
 2. Assurez-vous que les migrations sont appliquées (`pnpm db:migrate`)
 3. Vérifiez que l'utilisateur admin a bien le rôle "admin" dans la table `profiles`

@@ -17,8 +17,8 @@
 	let { form }: { form: ActionData } = $props();
 </script>
 
-<div class="min-h-screen flex items-center justify-center bg-background px-4">
-	<Card.Root class="max-w-md w-full">
+<div class="flex min-h-screen items-center justify-center bg-background px-4">
+	<Card.Root class="w-full max-w-md">
 		<Card.Header>
 			<Card.Title class="text-center text-3xl">Reset your password</Card.Title>
 			<Card.Description class="text-center">
@@ -47,7 +47,9 @@
 				{/if}
 
 				{#if form?.success && form?.message}
-					<Alert.Root class="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+					<Alert.Root
+						class="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20"
+					>
 						<Alert.Description class="text-green-600 dark:text-green-400">
 							{form.message}
 						</Alert.Description>
@@ -56,13 +58,13 @@
 
 				<Button type="submit" class="w-full">Send reset link</Button>
 
-				<div class="text-center text-sm space-y-2">
+				<div class="space-y-2 text-center text-sm">
 					<div>
-						<a href="/auth/login" class="text-primary hover:underline font-medium">Back to login</a>
+						<a href="/auth/login" class="font-medium text-primary hover:underline">Back to login</a>
 					</div>
 					<div class="text-muted-foreground">
 						Don't have an account?
-						<a href="/signup" class="text-primary hover:underline font-medium">Sign up</a>
+						<a href="/signup" class="font-medium text-primary hover:underline">Sign up</a>
 					</div>
 				</div>
 			</form>

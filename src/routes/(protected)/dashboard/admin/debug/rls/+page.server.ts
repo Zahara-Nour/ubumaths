@@ -56,10 +56,11 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	// Test SELECT access for current user (admin)
 	for (const table of tables) {
 		try {
-			const { data, error: queryError, count } = await supabase
-				.from(table)
-				.select('*', { count: 'exact', head: true })
-				.limit(1);
+			const {
+				data,
+				error: queryError,
+				count
+			} = await supabase.from(table).select('*', { count: 'exact', head: true }).limit(1);
 
 			tests.push({
 				table,
@@ -83,10 +84,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	// Test specific RLS scenarios
 	// 1. Can admin view all profiles?
 	try {
-		const { data, error: queryError } = await supabase
-			.from('profiles')
-			.select('id')
-			.limit(5);
+		const { data, error: queryError } = await supabase.from('profiles').select('id').limit(5);
 
 		tests.push({
 			table: 'profiles',
@@ -108,10 +106,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 
 	// 2. Can admin view all classes?
 	try {
-		const { data, error: queryError } = await supabase
-			.from('classes')
-			.select('id')
-			.limit(5);
+		const { data, error: queryError } = await supabase.from('classes').select('id').limit(5);
 
 		tests.push({
 			table: 'classes',
@@ -158,10 +153,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 
 	// 4. Can admin view friendships?
 	try {
-		const { data, error: queryError } = await supabase
-			.from('friendships')
-			.select('id')
-			.limit(5);
+		const { data, error: queryError } = await supabase.from('friendships').select('id').limit(5);
 
 		tests.push({
 			table: 'friendships',

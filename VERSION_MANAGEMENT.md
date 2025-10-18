@@ -19,11 +19,13 @@ This project uses automated version management with Husky git hooks and Conventi
 ## 🎯 Overview
 
 The project uses:
+
 - **Husky**: Git hooks manager
 - **Commitlint**: Enforce conventional commit messages
 - **Standard-version**: Automatic versioning and CHANGELOG generation
 
 **Branch Restrictions:**
+
 - Hooks **only run on `main` branch**
 - Feature branches are unrestricted for faster development
 - Quality gates enforce standards before merging to main
@@ -34,12 +36,13 @@ The project uses:
 
 **Reality:** Husky does NOT bump versions - it only validates commits!
 
-| Tool | When it Runs | What it Does | Version Changes? |
-|------|-------------|--------------|------------------|
-| **Husky** | Every commit on main | Validates format & linting | ❌ No |
-| **pnpm release** | When YOU run it | Bumps version, tags, CHANGELOG | ✅ Yes |
+| Tool             | When it Runs         | What it Does                   | Version Changes? |
+| ---------------- | -------------------- | ------------------------------ | ---------------- |
+| **Husky**        | Every commit on main | Validates format & linting     | ❌ No            |
+| **pnpm release** | When YOU run it      | Bumps version, tags, CHANGELOG | ✅ Yes           |
 
 **The workflow:**
+
 ```bash
 # Step 1: Make commits (Husky validates)
 git commit -m "feat: add feature"  # ✅ Validated, but version stays 0.0.2
@@ -51,11 +54,13 @@ git push --follow-tags origin main # ✅ Deploys version 0.1.0
 ```
 
 **Why two separate steps?**
+
 1. **Control:** You decide WHEN to release (not on every commit)
 2. **Meaningful versions:** One version for multiple related commits
 3. **Grouped CHANGELOG:** All commits grouped by type in one release
 
 **Example timeline:**
+
 ```
 Day 1: git commit "feat: add dashboard"   → Version: 0.0.2 (no change)
 Day 2: git commit "fix: resolve bug"      → Version: 0.0.2 (no change)
@@ -117,6 +122,7 @@ git push --follow-tags origin main
 ### What are Git Hooks?
 
 Git hooks are **scripts that run automatically** at specific points in the git workflow. They can:
+
 - ✅ Validate commit messages
 - ✅ Run tests before commits
 - ✅ Enforce code quality
@@ -136,8 +142,10 @@ Git hooks are **scripts that run automatically** at specific points in the git w
 This project has **2 active hooks** that only run on the `main` branch:
 
 #### 1. **pre-commit** Hook
+
 **When:** Before commit is created
 **What it does:**
+
 - ✅ Runs `pnpm lint` (Prettier + ESLint)
 - ✅ Blocks commit if linting fails
 - ⏭️ Tests are commented out (enable if needed)
@@ -145,8 +153,10 @@ This project has **2 active hooks** that only run on the `main` branch:
 **Location:** `.husky/pre-commit`
 
 #### 2. **commit-msg** Hook
+
 **When:** After you write commit message, before commit is saved
 **What it does:**
+
 - ✅ Validates commit message format
 - ✅ Ensures conventional commits syntax
 - ✅ Blocks commit if format is invalid
@@ -169,6 +179,7 @@ fi
 ```
 
 **Result:**
+
 - ✅ **On `main` branch:** Hooks run and enforce quality
 - ✅ **On other branches:** Hooks skip for faster development
 
@@ -210,19 +221,19 @@ All commits on the `main` branch must follow [Conventional Commits](https://www.
 
 ### Valid Types
 
-| Type | Description | Version Bump | Visible in CHANGELOG |
-|------|-------------|--------------|---------------------|
-| **feat** | New feature | Minor (0.x.0) | ✅ Yes |
-| **fix** | Bug fix | Patch (0.0.x) | ✅ Yes |
-| **perf** | Performance improvement | Patch (0.0.x) | ✅ Yes |
-| **docs** | Documentation only | - | ✅ Yes |
-| **style** | Code style (formatting, etc.) | - | ❌ Hidden |
-| **refactor** | Code restructuring | - | ❌ Hidden |
-| **test** | Adding/updating tests | - | ❌ Hidden |
-| **build** | Build system changes | - | ❌ Hidden |
-| **ci** | CI/CD changes | - | ❌ Hidden |
-| **chore** | Maintenance tasks | - | ❌ Hidden |
-| **revert** | Revert previous commit | - | ✅ Yes |
+| Type         | Description                   | Version Bump  | Visible in CHANGELOG |
+| ------------ | ----------------------------- | ------------- | -------------------- |
+| **feat**     | New feature                   | Minor (0.x.0) | ✅ Yes               |
+| **fix**      | Bug fix                       | Patch (0.0.x) | ✅ Yes               |
+| **perf**     | Performance improvement       | Patch (0.0.x) | ✅ Yes               |
+| **docs**     | Documentation only            | -             | ✅ Yes               |
+| **style**    | Code style (formatting, etc.) | -             | ❌ Hidden            |
+| **refactor** | Code restructuring            | -             | ❌ Hidden            |
+| **test**     | Adding/updating tests         | -             | ❌ Hidden            |
+| **build**    | Build system changes          | -             | ❌ Hidden            |
+| **ci**       | CI/CD changes                 | -             | ❌ Hidden            |
+| **chore**    | Maintenance tasks             | -             | ❌ Hidden            |
+| **revert**   | Revert previous commit        | -             | ✅ Yes               |
 
 ### Breaking Changes
 
@@ -243,6 +254,7 @@ This triggers a **major** version bump (x.0.0).
 ### Examples
 
 **✅ Valid Commits:**
+
 ```bash
 feat: add dark mode toggle
 fix: resolve navigation bug on mobile
@@ -252,6 +264,7 @@ feat(auth)!: migrate to OAuth 2.0
 ```
 
 **❌ Invalid Commits:**
+
 ```bash
 Added dark mode           # Missing type prefix
 feature: dark mode        # Wrong type (should be "feat")
@@ -319,6 +332,7 @@ git push --follow-tags origin main
 Git tags are **permanent markers** that point to specific commits in your history. They're used to mark important points like releases.
 
 **In this project:**
+
 - Tags mark version releases (e.g., `v0.0.2`, `v0.1.0`, `v1.0.0`)
 - Created automatically by `standard-version`
 - Must be pushed manually to remote
@@ -326,6 +340,7 @@ Git tags are **permanent markers** that point to specific commits in your histor
 ### Tag Format
 
 All version tags follow this format:
+
 ```
 v<major>.<minor>.<patch>
 
@@ -362,11 +377,13 @@ git show v0.0.2
 ### Understanding Tag Types
 
 **Lightweight Tags** (NOT used in this project):
+
 ```bash
 git tag v1.0.0  # Just a pointer to a commit
 ```
 
 **Annotated Tags** (used by standard-version):
+
 ```bash
 git tag -a v1.0.0 -m "Release 1.0.0"  # Contains metadata
 ```
@@ -389,6 +406,7 @@ git push --tags origin main
 ```
 
 **Why `--follow-tags`?**
+
 - Only pushes **annotated tags** (created by standard-version)
 - Safer than `--tags` (which pushes ALL tags, including experimental ones)
 - Recommended for this workflow
@@ -453,12 +471,14 @@ git push origin --delete v0.1.0
 ### Tag Troubleshooting
 
 **Problem:** Tag already exists
+
 ```bash
 $ pnpm release
 ✖ fatal: tag 'v0.1.0' already exists
 ```
 
 **Solution:**
+
 ```bash
 # Check if tag is correct
 git show v0.1.0
@@ -469,11 +489,13 @@ pnpm release
 ```
 
 **Problem:** Forgot to push tags
+
 ```bash
 $ git push origin main  # Tags not pushed!
 ```
 
 **Solution:**
+
 ```bash
 # Push tags separately
 git push --tags origin main
@@ -639,6 +661,7 @@ git push --follow-tags origin main
 ### Main Branch Protection
 
 **Rules for `main` branch:**
+
 - ✅ All commits must pass linting
 - ✅ All commits must follow conventional format
 - ✅ Direct pushes allowed (for small teams)
@@ -648,6 +671,7 @@ git push --follow-tags origin main
 ### Feature Branch Naming
 
 **Recommended conventions:**
+
 ```
 feature/   → New features (feature/user-auth)
 fix/       → Bug fixes (fix/login-timeout)
@@ -658,6 +682,7 @@ chore/     → Maintenance (chore/update-deps)
 ```
 
 **Example:**
+
 ```bash
 git checkout -b feature/dark-mode
 git checkout -b fix/navigation-bug
@@ -685,6 +710,7 @@ git commit -m "feat: add big feature"
 ### Working with Team Members
 
 **Pull Request Workflow:**
+
 1. Create feature branch
 2. Push to remote: `git push origin feature/my-feature`
 3. Open Pull Request on GitHub/GitLab
@@ -693,6 +719,7 @@ git commit -m "feat: add big feature"
 6. Delete feature branch
 
 **Git command alternative:**
+
 ```bash
 # After PR approved
 git checkout main
@@ -720,6 +747,7 @@ Runs before commit is created (only on `main` branch):
    - Runs `pnpm test:unit --run`
 
 **Bypass (not recommended):**
+
 ```bash
 git commit --no-verify -m "emergency fix"
 ```
@@ -867,6 +895,7 @@ pnpm release         # Regenerates CHANGELOG from commits
 **Detailed explanation:**
 
 **Husky's role (Quality Gate):**
+
 ```bash
 git commit -m "feat: add feature"
 # ↓ Husky runs
@@ -879,6 +908,7 @@ git commit -m "feat: add feature"
 ```
 
 **pnpm release's role (Release Manager):**
+
 ```bash
 pnpm release
 # ↓ Standard-version runs
@@ -893,6 +923,7 @@ pnpm release
 **Why separate steps?**
 
 **1. Control over releases:**
+
 ```bash
 # Week of development:
 Day 1: git commit "feat: add dashboard"    # Version: 0.0.2 (no change)
@@ -915,6 +946,7 @@ pnpm release                                # Version: 0.1.0 (ONE bump!)
 ```
 
 **2. Without `pnpm release` (automatic on every commit):**
+
 ```bash
 Day 1: commit → v0.0.2 (one commit, one version)
 Day 2: commit → v0.0.3 (one commit, one version)
@@ -927,6 +959,7 @@ Day 4: commit → v0.0.5 (one commit, one version)
 ```
 
 **3. With `pnpm release` (manual control):**
+
 ```bash
 Week 1: Multiple commits → ONE release → v0.1.0
 Week 2: Multiple commits → ONE release → v0.1.1
@@ -938,6 +971,7 @@ Week 3: Multiple commits → ONE release → v0.2.0
 ```
 
 **Think of it like this:**
+
 - **Husky = Security Guard** - "Is this commit allowed in?"
 - **pnpm release = Shipping Manager** - "Package everything up and ship it!"
 
@@ -946,12 +980,14 @@ Week 3: Multiple commits → ONE release → v0.2.0
 **Technically yes, but NOT recommended!**
 
 You could add to `.husky/post-commit`:
+
 ```bash
 pnpm release
 git push --follow-tags origin main
 ```
 
 **But this would cause:**
+
 - ❌ Version bump on EVERY commit
 - ❌ New git tag on EVERY commit
 - ❌ CHANGELOG entry for EVERY commit
@@ -960,6 +996,7 @@ git push --follow-tags origin main
 - ❌ Slow commits (release takes time)
 
 **Recommended approach:**
+
 - Commit freely during development
 - Run `pnpm release` when ready to deploy
 - You control when versions are created
@@ -969,6 +1006,7 @@ git push --follow-tags origin main
 **It depends on your workflow:**
 
 **Daily/Weekly deployments:**
+
 ```bash
 # End of week
 pnpm release
@@ -976,6 +1014,7 @@ git push --follow-tags origin main
 ```
 
 **Feature-based releases:**
+
 ```bash
 # After completing a feature
 git commit -m "feat: complete user authentication"
@@ -984,6 +1023,7 @@ git push --follow-tags origin main
 ```
 
 **Sprint-based releases:**
+
 ```bash
 # End of 2-week sprint
 pnpm release  # Bumps based on all sprint commits
@@ -991,6 +1031,7 @@ git push --follow-tags origin main
 ```
 
 **Hotfix releases:**
+
 ```bash
 # Immediately after critical fix
 git commit -m "fix: security vulnerability"
@@ -1003,12 +1044,14 @@ git push --follow-tags origin main
 **Nothing breaks!** Your commits are still valid and pushed to `main`.
 
 **But:**
+
 - ❌ Version number stays the same (e.g., 0.0.2)
 - ❌ No git tag created for this work
 - ❌ CHANGELOG not updated
 - ❌ App still displays old version
 
 **To fix:**
+
 ```bash
 # Just run release when you remember
 pnpm release
@@ -1022,6 +1065,7 @@ git push --follow-tags origin main
 **Not recommended!** If you manually change version in `package.json`:
 
 **What you'd have to do manually:**
+
 1. Edit `package.json` version
 2. Update `CHANGELOG.md` with all changes
 3. Create git commit
@@ -1029,6 +1073,7 @@ git push --follow-tags origin main
 5. Ensure tag points to correct commit
 
 **What `pnpm release` does automatically:**
+
 1. ✅ Analyzes commits since last tag
 2. ✅ Determines correct version bump
 3. ✅ Updates `package.json`
@@ -1038,6 +1083,7 @@ git push --follow-tags origin main
 7. ✅ All in one command!
 
 **Example of manual approach (error-prone):**
+
 ```bash
 # Edit package.json: "version": "0.1.0"
 # Edit CHANGELOG.md manually (might miss commits)
@@ -1048,6 +1094,7 @@ git push --follow-tags origin main
 ```
 
 **With pnpm release (safe):**
+
 ```bash
 pnpm release  # Does everything correctly
 git push --follow-tags origin main
@@ -1056,6 +1103,7 @@ git push --follow-tags origin main
 ### What if I make a mistake in the version bump?
 
 **If you haven't pushed yet:**
+
 ```bash
 # Delete the tag
 git tag -d v0.1.0
@@ -1068,6 +1116,7 @@ pnpm release
 ```
 
 **If you already pushed:**
+
 ```bash
 # 1. Delete remote tag
 git push origin --delete v0.1.0
@@ -1085,20 +1134,21 @@ git push --follow-tags origin main
 ```
 
 ⚠️ **Warning:** Force pushing to `main` can cause issues for team members. Only do this if:
+
 - You're the only one working on the project, OR
 - You coordinate with your team first
 
 ### Summary: Husky vs pnpm release
 
-| Aspect | Husky | pnpm release |
-|--------|-------|--------------|
-| **Runs when** | Every commit on main | When YOU run it |
-| **Purpose** | Validate quality | Create release |
-| **Changes version** | ❌ No | ✅ Yes |
-| **Creates tags** | ❌ No | ✅ Yes |
-| **Updates CHANGELOG** | ❌ No | ✅ Yes |
-| **Can skip** | Yes (--no-verify) | No (required for releases) |
-| **Frequency** | Every commit | When deploying |
+| Aspect                | Husky                | pnpm release               |
+| --------------------- | -------------------- | -------------------------- |
+| **Runs when**         | Every commit on main | When YOU run it            |
+| **Purpose**           | Validate quality     | Create release             |
+| **Changes version**   | ❌ No                | ✅ Yes                     |
+| **Creates tags**      | ❌ No                | ✅ Yes                     |
+| **Updates CHANGELOG** | ❌ No                | ✅ Yes                     |
+| **Can skip**          | Yes (--no-verify)    | No (required for releases) |
+| **Frequency**         | Every commit         | When deploying             |
 
 ## 📖 Additional Resources
 

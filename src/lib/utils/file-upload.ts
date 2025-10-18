@@ -86,7 +86,7 @@ export async function uploadChatAttachment(
 		console.error('Exception during file upload:', error);
 		return {
 			success: false,
-			error: 'Erreur inattendue lors de l\'upload'
+			error: "Erreur inattendue lors de l'upload"
 		};
 	}
 }

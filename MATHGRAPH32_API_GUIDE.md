@@ -1,7 +1,7 @@
 # MathGraph32 API - Complete Developer Guide
 
 **Version:** 9.7.2
-**Last Updated:** 2025-01-16 *(Major Update with Official API)*
+**Last Updated:** 2025-01-16 _(Major Update with Official API)_
 **Language:** English (for developers)
 **Official API Documentation:** https://www.mathgraph32.org/documentation/full/MtgApi.html
 
@@ -61,55 +61,55 @@
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>MathGraph32 Example</title>
-</head>
-<body>
-    <!-- Container for the figure -->
-    <div id="mathgraph-container" style="width: 800px; height: 600px;"></div>
+	<head>
+		<meta charset="UTF-8" />
+		<title>MathGraph32 Example</title>
+	</head>
+	<body>
+		<!-- Container for the figure -->
+		<div id="mathgraph-container" style="width: 800px; height: 600px;"></div>
 
-    <!-- Load MathGraph32 from CDN -->
-    <script src="https://www.mathgraph32.org/js/mtgLoad/mtgLoad.min.js"></script>
+		<!-- Load MathGraph32 from CDN -->
+		<script src="https://www.mathgraph32.org/js/mtgLoad/mtgLoad.min.js"></script>
 
-    <script>
-        // Wait for DOM to be ready
-        document.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById('mathgraph-container');
+		<script>
+			// Wait for DOM to be ready
+			document.addEventListener('DOMContentLoaded', () => {
+				const container = document.getElementById('mathgraph-container');
 
-            // Initialize MathGraph32
-            window.mtgLoad(
-                container,
-                { width: 800, height: 600 }, // SVG options
-                { loadApi: true },           // Enable JavaScript API
-                (error, app) => {
-                    if (error) {
-                        console.error('MathGraph32 load error:', error);
-                        return;
-                    }
+				// Initialize MathGraph32
+				window.mtgLoad(
+					container,
+					{ width: 800, height: 600 }, // SVG options
+					{ loadApi: true }, // Enable JavaScript API
+					(error, app) => {
+						if (error) {
+							console.error('MathGraph32 load error:', error);
+							return;
+						}
 
-                    console.log('MathGraph32 loaded successfully!');
-                    console.log('App object:', app);
+						console.log('MathGraph32 loaded successfully!');
+						console.log('App object:', app);
 
-                    // Now you can use the API
-                    createSimpleFigure(app);
-                }
-            );
-        });
+						// Now you can use the API
+						createSimpleFigure(app);
+					}
+				);
+			});
 
-        function createSimpleFigure(app) {
-            // Example: Create a simple point
-            app.addPointXY({
-                tag: 'A',
-                name: 'A',
-                x: 100,
-                y: 100,
-                visible: true,
-                labelVisible: true
-            });
-        }
-    </script>
-</body>
+			function createSimpleFigure(app) {
+				// Example: Create a simple point
+				app.addPointXY({
+					tag: 'A',
+					name: 'A',
+					x: 100,
+					y: 100,
+					visible: true,
+					labelVisible: true
+				});
+			}
+		</script>
+	</body>
 </html>
 ```
 
@@ -118,79 +118,76 @@
 ```typescript
 // src/lib/services/mathgraph-api.ts
 export class MathGraphService {
-    private static instance: MathGraphService;
-    private loadingPromise: Promise<void> | null = null;
+	private static instance: MathGraphService;
+	private loadingPromise: Promise<void> | null = null;
 
-    static getInstance(): MathGraphService {
-        if (!MathGraphService.instance) {
-            MathGraphService.instance = new MathGraphService();
-        }
-        return MathGraphService.instance;
-    }
+	static getInstance(): MathGraphService {
+		if (!MathGraphService.instance) {
+			MathGraphService.instance = new MathGraphService();
+		}
+		return MathGraphService.instance;
+	}
 
-    async loadMathGraph(useDevelopmentCDN = false): Promise<void> {
-        if (this.loadingPromise) {
-            return this.loadingPromise;
-        }
+	async loadMathGraph(useDevelopmentCDN = false): Promise<void> {
+		if (this.loadingPromise) {
+			return this.loadingPromise;
+		}
 
-        this.loadingPromise = new Promise((resolve, reject) => {
-            if (typeof window === 'undefined') {
-                reject(new Error('MathGraph32 can only be loaded in browser'));
-                return;
-            }
+		this.loadingPromise = new Promise((resolve, reject) => {
+			if (typeof window === 'undefined') {
+				reject(new Error('MathGraph32 can only be loaded in browser'));
+				return;
+			}
 
-            if (window.mtgLoad) {
-                resolve();
-                return;
-            }
+			if (window.mtgLoad) {
+				resolve();
+				return;
+			}
 
-            const cdnBase = useDevelopmentCDN
-                ? 'https://dev.mathgraph32.org/js/mtgLoad/'
-                : 'https://www.mathgraph32.org/js/mtgLoad/';
+			const cdnBase = useDevelopmentCDN
+				? 'https://dev.mathgraph32.org/js/mtgLoad/'
+				: 'https://www.mathgraph32.org/js/mtgLoad/';
 
-            const script = document.createElement('script');
-            script.src = `${cdnBase}mtgLoad.min.js`;
-            script.async = true;
+			const script = document.createElement('script');
+			script.src = `${cdnBase}mtgLoad.min.js`;
+			script.async = true;
 
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error('Failed to load MathGraph32'));
+			script.onload = () => resolve();
+			script.onerror = () => reject(new Error('Failed to load MathGraph32'));
 
-            document.head.appendChild(script);
-        });
+			document.head.appendChild(script);
+		});
 
-        return this.loadingPromise;
-    }
+		return this.loadingPromise;
+	}
 
-    async initializePlayer(
-        container: HTMLElement,
-        options: PlayerOptions
-    ): Promise<MathGraphApp> {
-        await this.loadMathGraph();
+	async initializePlayer(container: HTMLElement, options: PlayerOptions): Promise<MathGraphApp> {
+		await this.loadMathGraph();
 
-        return new Promise((resolve, reject) => {
-            const svgOptions = {
-                width: options.width,
-                height: options.height,
-                svgId: options.svgId || 'mtg-svg'
-            };
+		return new Promise((resolve, reject) => {
+			const svgOptions = {
+				width: options.width,
+				height: options.height,
+				svgId: options.svgId || 'mtg-svg'
+			};
 
-            const mtgOptions = {
-                fig: options.figure,
-                level: options.level || 3,
-                interactif: options.interactive ?? true,
-                repereAff: options.displayAxes ?? false,
-                displayMeasures: options.displayMeasures ?? false
-            };
+			const mtgOptions = {
+				fig: options.figure,
+				level: options.level || 3,
+				interactif: options.interactive ?? true,
+				repereAff: options.displayAxes ?? false,
+				displayMeasures: options.displayMeasures ?? false
+			};
 
-            window.mtgLoad!(container, svgOptions, mtgOptions, (error, app) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(app);
-                }
-            });
-        });
-    }
+			window.mtgLoad!(container, svgOptions, mtgOptions, (error, app) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(app);
+				}
+			});
+		});
+	}
 }
 ```
 
@@ -227,23 +224,24 @@ Every object created in MathGraph32 is stored in the `listApi`.
 
 ```typescript
 interface MathGraphObjectList {
-    longueur(): number;              // Number of objects in the list
-    get(index: number): any;         // Get object by index (0-based)
+	longueur(): number; // Number of objects in the list
+	get(index: number): any; // Get object by index (0-based)
 }
 ```
 
 ### 3. Tags vs Names
 
 **Important distinction:**
+
 - **Tag:** Internal unique identifier (used in API calls)
 - **Name:** Display label shown on the figure
 
 ```javascript
 app.addPointXY({
-    tag: 'point_A',      // Used in code: app.getObjectByTag('point_A')
-    name: 'A',           // Displayed on figure as "A"
-    x: 100,
-    y: 100
+	tag: 'point_A', // Used in code: app.getObjectByTag('point_A')
+	name: 'A', // Displayed on figure as "A"
+	x: 100,
+	y: 100
 });
 ```
 
@@ -253,17 +251,17 @@ app.addPointXY({
 
 MathGraph32 has many object types. Here are the most common:
 
-| Type | Description | Example |
-|------|-------------|---------|
-| `point` | Free point, point on object, midpoint, etc. | Point A at (100, 100) |
-| `line` | Line, ray, segment, parallel, perpendicular | Line AB |
-| `circle` | Circle by center and radius point | Circle with center O and radius A |
-| `polygon` | Triangle, rectangle, regular polygon | Triangle ABC |
-| `angle` | Angle mark with arc | Angle ABC |
-| `measure` | Length, angle measure, calculation | Length of AB |
-| `text` | Label or comment | "This is a triangle" |
-| `vector` | Directed segment | Vector from A to B |
-| `transformation` | Translation, rotation, reflection, etc. | Rotation of 90° |
+| Type             | Description                                 | Example                           |
+| ---------------- | ------------------------------------------- | --------------------------------- |
+| `point`          | Free point, point on object, midpoint, etc. | Point A at (100, 100)             |
+| `line`           | Line, ray, segment, parallel, perpendicular | Line AB                           |
+| `circle`         | Circle by center and radius point           | Circle with center O and radius A |
+| `polygon`        | Triangle, rectangle, regular polygon        | Triangle ABC                      |
+| `angle`          | Angle mark with arc                         | Angle ABC                         |
+| `measure`        | Length, angle measure, calculation          | Length of AB                      |
+| `text`           | Label or comment                            | "This is a triangle"              |
+| `vector`         | Directed segment                            | Vector from A to B                |
+| `transformation` | Translation, rotation, reflection, etc.     | Rotation of 90°                   |
 
 ---
 
@@ -278,44 +276,44 @@ MathGraph32 has many object types. Here are the most common:
 ```typescript
 // Singleton service
 export class MathGraphService {
-    private static instance: MathGraphService;
-    private loadingPromise: Promise<void> | null = null;
+	private static instance: MathGraphService;
+	private loadingPromise: Promise<void> | null = null;
 
-    static getInstance(): MathGraphService {
-        if (!MathGraphService.instance) {
-            MathGraphService.instance = new MathGraphService();
-        }
-        return MathGraphService.instance;
-    }
+	static getInstance(): MathGraphService {
+		if (!MathGraphService.instance) {
+			MathGraphService.instance = new MathGraphService();
+		}
+		return MathGraphService.instance;
+	}
 
-    async loadMathGraph(): Promise<void> {
-        // Return existing promise if already loading
-        if (this.loadingPromise) {
-            return this.loadingPromise;
-        }
+	async loadMathGraph(): Promise<void> {
+		// Return existing promise if already loading
+		if (this.loadingPromise) {
+			return this.loadingPromise;
+		}
 
-        // Check if already loaded
-        if (typeof window !== 'undefined' && window.mtgLoad) {
-            return Promise.resolve();
-        }
+		// Check if already loaded
+		if (typeof window !== 'undefined' && window.mtgLoad) {
+			return Promise.resolve();
+		}
 
-        // Create new loading promise
-        this.loadingPromise = new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = 'https://www.mathgraph32.org/js/mtgLoad/mtgLoad.min.js';
-            script.async = true;
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error('Failed to load MathGraph32'));
-            document.head.appendChild(script);
-        });
+		// Create new loading promise
+		this.loadingPromise = new Promise((resolve, reject) => {
+			const script = document.createElement('script');
+			script.src = 'https://www.mathgraph32.org/js/mtgLoad/mtgLoad.min.js';
+			script.async = true;
+			script.onload = () => resolve();
+			script.onerror = () => reject(new Error('Failed to load MathGraph32'));
+			document.head.appendChild(script);
+		});
 
-        return this.loadingPromise;
-    }
+		return this.loadingPromise;
+	}
 }
 
 // Usage
 const service = MathGraphService.getInstance();
-await service.loadMathGraph();  // Safe to call multiple times
+await service.loadMathGraph(); // Safe to call multiple times
 ```
 
 ### Initialization Callback Pattern
@@ -324,13 +322,13 @@ MathGraph32 uses an **error-first callback** pattern:
 
 ```javascript
 window.mtgLoad(container, svgOptions, mtgOptions, (error, app) => {
-    if (error) {
-        console.error('Initialization failed:', error);
-        return;
-    }
+	if (error) {
+		console.error('Initialization failed:', error);
+		return;
+	}
 
-    // Success! Use app object
-    console.log('MathGraph32 ready:', app);
+	// Success! Use app object
+	console.log('MathGraph32 ready:', app);
 });
 ```
 
@@ -338,23 +336,23 @@ window.mtgLoad(container, svgOptions, mtgOptions, (error, app) => {
 
 ```typescript
 function initializePlayer(container: HTMLElement): Promise<MathGraphApp> {
-    return new Promise((resolve, reject) => {
-        window.mtgLoad(container, svgOptions, mtgOptions, (error, app) => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(app);
-            }
-        });
-    });
+	return new Promise((resolve, reject) => {
+		window.mtgLoad(container, svgOptions, mtgOptions, (error, app) => {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(app);
+			}
+		});
+	});
 }
 
 // Usage with async/await
 try {
-    const app = await initializePlayer(container);
-    // Use app
+	const app = await initializePlayer(container);
+	// Use app
 } catch (error) {
-    console.error('Failed to initialize:', error);
+	console.error('Failed to initialize:', error);
 }
 ```
 
@@ -370,16 +368,17 @@ MathGraph32 can run in two modes:
 
 ```javascript
 const mtgOptions = {
-    fig: base64FigureString,     // Pre-made figure
-    level: 3,                    // Display level (0-4)
-    interactif: true,            // Allow dragging
-    repereAff: false,            // Hide axes
-    displayMeasures: false,      // Hide measurements
-    loadApi: false               // No API access needed (lighter)
+	fig: base64FigureString, // Pre-made figure
+	level: 3, // Display level (0-4)
+	interactif: true, // Allow dragging
+	repereAff: false, // Hide axes
+	displayMeasures: false, // Hide measurements
+	loadApi: false // No API access needed (lighter)
 };
 ```
 
 **Characteristics:**
+
 - ✅ Faster loading (no API overhead)
 - ✅ Smaller memory footprint
 - ✅ Perfect for exploration exercises
@@ -392,16 +391,17 @@ const mtgOptions = {
 
 ```javascript
 const mtgOptions = {
-    fig: '',                     // Start with empty figure (or base template)
-    level: 3,
-    interactif: true,
-    repereAff: true,            // Show axes for construction
-    displayMeasures: true,      // Show measurements
-    loadApi: true               // ⭐ Enable full JavaScript API
+	fig: '', // Start with empty figure (or base template)
+	level: 3,
+	interactif: true,
+	repereAff: true, // Show axes for construction
+	displayMeasures: true, // Show measurements
+	loadApi: true // ⭐ Enable full JavaScript API
 };
 ```
 
 **Characteristics:**
+
 - ✅ Full programmatic control
 - ✅ Create/modify/delete objects
 - ✅ Access object properties
@@ -421,14 +421,14 @@ const mtgOptions = {
 
 ```javascript
 app.addPointXY({
-    tag: 'A',              // Unique identifier
-    name: 'A',             // Display name
-    x: 100,                // X coordinate (pixels)
-    y: 150,                // Y coordinate (pixels)
-    visible: true,         // Show the point
-    labelVisible: true,    // Show the label "A"
-    color: 'red',          // Optional: color (default: black)
-    pointSize: 2           // Optional: size (1-5, default: 2)
+	tag: 'A', // Unique identifier
+	name: 'A', // Display name
+	x: 100, // X coordinate (pixels)
+	y: 150, // Y coordinate (pixels)
+	visible: true, // Show the point
+	labelVisible: true, // Show the label "A"
+	color: 'red', // Optional: color (default: black)
+	pointSize: 2 // Optional: size (1-5, default: 2)
 });
 ```
 
@@ -436,12 +436,12 @@ app.addPointXY({
 
 ```javascript
 app.addPointOnLine({
-    tag: 'M',
-    name: 'M',
-    tagLine: 'line_AB',    // Tag of the line
-    abscissa: 0.5,         // Position on line (0-1 for segments)
-    visible: true,
-    labelVisible: true
+	tag: 'M',
+	name: 'M',
+	tagLine: 'line_AB', // Tag of the line
+	abscissa: 0.5, // Position on line (0-1 for segments)
+	visible: true,
+	labelVisible: true
 });
 ```
 
@@ -449,12 +449,12 @@ app.addPointOnLine({
 
 ```javascript
 app.addMidpoint({
-    tag: 'M',
-    name: 'M',
-    tagPoint1: 'A',        // First point
-    tagPoint2: 'B',        // Second point
-    visible: true,
-    labelVisible: true
+	tag: 'M',
+	name: 'M',
+	tagPoint1: 'A', // First point
+	tagPoint2: 'B', // Second point
+	visible: true,
+	labelVisible: true
 });
 ```
 
@@ -463,12 +463,12 @@ app.addMidpoint({
 ```javascript
 // OFFICIAL API METHOD: addIntLineLine (not addIntersectionLL)
 app.addIntLineLine({
-    d: 'line1',           // First line (tag or object)
-    dd: 'line2',          // Second line (tag or object)
-    name: 'I',            // Optional: name for display
-    color: 'black',
-    pointStyle: 1,
-    tag: 'intersection_I' // Optional: tag for identification
+	d: 'line1', // First line (tag or object)
+	dd: 'line2', // Second line (tag or object)
+	name: 'I', // Optional: name for display
+	color: 'black',
+	pointStyle: 1,
+	tag: 'intersection_I' // Optional: tag for identification
 });
 
 // Alternative syntaxes:
@@ -483,14 +483,14 @@ app.addIntLineLine({
 // OFFICIAL API METHOD: addIntLineCircle (not addIntersectionLC)
 // Returns array of TWO points [point1, point2]
 app.addIntLineCircle({
-    d: 'line_AB',         // Line (tag or object)
-    c: 'circle_O',        // Circle (tag or object)
-    name: 'I1',           // Name for first intersection point
-    name2: 'I2',          // Name for second intersection point
-    color: 'red',
-    pointStyle: 1,
-    tag: 'int1',          // Optional: tag for first point
-    tag2: 'int2'          // Optional: tag for second point
+	d: 'line_AB', // Line (tag or object)
+	c: 'circle_O', // Circle (tag or object)
+	name: 'I1', // Name for first intersection point
+	name2: 'I2', // Name for second intersection point
+	color: 'red',
+	pointStyle: 1,
+	tag: 'int1', // Optional: tag for first point
+	tag2: 'int2' // Optional: tag for second point
 });
 
 // Alternative syntaxes:
@@ -508,12 +508,12 @@ app.addIntLineCircle({
 
 ```javascript
 app.addLineAB({
-    tag: 'line_AB',
-    tagPoint1: 'A',
-    tagPoint2: 'B',
-    visible: true,
-    color: 'blue',
-    lineStyle: 'solid'     // 'solid', 'dashed', 'dotted'
+	tag: 'line_AB',
+	tagPoint1: 'A',
+	tagPoint2: 'B',
+	visible: true,
+	color: 'blue',
+	lineStyle: 'solid' // 'solid', 'dashed', 'dotted'
 });
 ```
 
@@ -521,11 +521,11 @@ app.addLineAB({
 
 ```javascript
 app.addSegment({
-    tag: 'seg_AB',
-    tagPoint1: 'A',
-    tagPoint2: 'B',
-    visible: true,
-    color: 'green'
+	tag: 'seg_AB',
+	tagPoint1: 'A',
+	tagPoint2: 'B',
+	visible: true,
+	color: 'green'
 });
 ```
 
@@ -533,10 +533,10 @@ app.addSegment({
 
 ```javascript
 app.addRay({
-    tag: 'ray_AB',
-    tagOrigin: 'A',        // Starting point
-    tagPoint: 'B',         // Point on the ray
-    visible: true
+	tag: 'ray_AB',
+	tagOrigin: 'A', // Starting point
+	tagPoint: 'B', // Point on the ray
+	visible: true
 });
 ```
 
@@ -544,11 +544,11 @@ app.addRay({
 
 ```javascript
 app.addLinePar({
-    tag: 'parallel',
-    tagLine: 'line_AB',    // Line to be parallel to
-    tagPoint: 'C',         // Point through which parallel passes
-    visible: true,
-    color: 'purple'
+	tag: 'parallel',
+	tagLine: 'line_AB', // Line to be parallel to
+	tagPoint: 'C', // Point through which parallel passes
+	visible: true,
+	color: 'purple'
 });
 ```
 
@@ -557,11 +557,11 @@ app.addLinePar({
 ```javascript
 // OFFICIAL API METHOD: addLinePerp
 app.addLinePerp({
-    tag: 'perpendicular',
-    a: 'C',                // Point through which perpendicular passes
-    d: 'line_AB',          // Line to be perpendicular to
-    visible: true,
-    color: 'orange'
+	tag: 'perpendicular',
+	a: 'C', // Point through which perpendicular passes
+	d: 'line_AB', // Line to be perpendicular to
+	visible: true,
+	color: 'orange'
 });
 
 // Alternative syntaxes:
@@ -575,13 +575,13 @@ app.addLinePerp({
 ```javascript
 // OFFICIAL API METHOD: addLineMedAB (not addPerpBisector)
 app.addLineMedAB({
-    a: 'A',              // First point (or use tag: 'A')
-    b: 'B',              // Second point (or use tag: 'B')
-    name: 'd',           // Optional: name for display
-    color: 'cyan',
-    lineStyle: 'solid',
-    thickness: 1,
-    tag: 'bisector'      // Optional: tag for identification
+	a: 'A', // First point (or use tag: 'A')
+	b: 'B', // Second point (or use tag: 'B')
+	name: 'd', // Optional: name for display
+	color: 'cyan',
+	lineStyle: 'solid',
+	thickness: 1,
+	tag: 'bisector' // Optional: tag for identification
 });
 
 // Alternative syntaxes also supported:
@@ -597,15 +597,15 @@ app.addLineMedAB({
 ```javascript
 // OFFICIAL API METHOD: addCircleOA (not addCircle)
 app.addCircleOA({
-    o: 'O',              // Center point (tag or object)
-    a: 'A',              // Point on circle that defines radius
-    name: 'c',           // Optional: name for display
-    color: 'red',
-    lineStyle: 'solid',
-    thickness: 1,
-    opacity: 1,
-    hidden: false,
-    tag: 'circle_O'      // Optional: tag for identification
+	o: 'O', // Center point (tag or object)
+	a: 'A', // Point on circle that defines radius
+	name: 'c', // Optional: name for display
+	color: 'red',
+	lineStyle: 'solid',
+	thickness: 1,
+	opacity: 1,
+	hidden: false,
+	tag: 'circle_O' // Optional: tag for identification
 });
 
 // Alternative syntaxes:
@@ -619,13 +619,13 @@ app.addCircleOA({
 ```javascript
 // OFFICIAL API METHOD: addCircleOr (not addCircleRadius)
 app.addCircleOr({
-    o: 'O',              // Center point (tag or object)
-    r: 50,               // Radius value (number or calculation object)
-    name: 'c',           // Optional: name for display
-    color: 'blue',
-    lineStyle: 'solid',
-    thickness: 1,
-    tag: 'circle_fixed'  // Optional: tag for identification
+	o: 'O', // Center point (tag or object)
+	r: 50, // Radius value (number or calculation object)
+	name: 'c', // Optional: name for display
+	color: 'blue',
+	lineStyle: 'solid',
+	thickness: 1,
+	tag: 'circle_fixed' // Optional: tag for identification
 });
 
 // Alternative syntaxes:
@@ -638,12 +638,12 @@ app.addCircleOr({
 
 ```javascript
 app.addCircle3Points({
-    tag: 'circumcircle',
-    tagPoint1: 'A',
-    tagPoint2: 'B',
-    tagPoint3: 'C',
-    visible: true,
-    color: 'blue'
+	tag: 'circumcircle',
+	tagPoint1: 'A',
+	tagPoint2: 'B',
+	tagPoint3: 'C',
+	visible: true,
+	color: 'blue'
 });
 ```
 
@@ -653,12 +653,12 @@ app.addCircle3Points({
 
 ```javascript
 app.addPolygon({
-    tag: 'triangle_ABC',
-    tagPoints: ['A', 'B', 'C'],
-    visible: true,
-    color: 'green',
-    fillColor: 'rgba(0, 255, 0, 0.2)',
-    filled: true
+	tag: 'triangle_ABC',
+	tagPoints: ['A', 'B', 'C'],
+	visible: true,
+	color: 'green',
+	fillColor: 'rgba(0, 255, 0, 0.2)',
+	filled: true
 });
 ```
 
@@ -666,12 +666,12 @@ app.addPolygon({
 
 ```javascript
 app.addRegularPolygon({
-    tag: 'hexagon',
-    tagCenter: 'O',
-    tagFirstVertex: 'A',
-    sides: 6,              // Number of sides
-    visible: true,
-    color: 'purple'
+	tag: 'hexagon',
+	tagCenter: 'O',
+	tagFirstVertex: 'A',
+	sides: 6, // Number of sides
+	visible: true,
+	color: 'purple'
 });
 ```
 
@@ -682,14 +682,14 @@ app.addRegularPolygon({
 ```javascript
 // OFFICIAL API METHOD: addAngleMark
 app.addAngleMark({
-    tag: 'angle_ABC',
-    a: 'A',                // First ray point
-    o: 'B',                // Vertex
-    b: 'C',                // Second ray point
-    visible: true,
-    color: 'red',
-    r: 20,                 // Arc radius in pixels
-    markType: 'arc'        // 'arc', 'rightAngle', 'double', 'triple'
+	tag: 'angle_ABC',
+	a: 'A', // First ray point
+	o: 'B', // Vertex
+	b: 'C', // Second ray point
+	visible: true,
+	color: 'red',
+	r: 20, // Arc radius in pixels
+	markType: 'arc' // 'arc', 'rightAngle', 'double', 'triple'
 });
 
 // Alternative syntaxes:
@@ -701,13 +701,13 @@ app.addAngleMark({
 
 ```javascript
 app.addAngleMark({
-    tag: 'right_angle',
-    a: 'A',                // First ray point
-    o: 'B',                // Vertex
-    b: 'C',                // Second ray point
-    visible: true,
-    markType: 'rightAngle',
-    r: 15                  // Arc radius in pixels
+	tag: 'right_angle',
+	a: 'A', // First ray point
+	o: 'B', // Vertex
+	b: 'C', // Second ray point
+	visible: true,
+	markType: 'rightAngle',
+	r: 15 // Arc radius in pixels
 });
 ```
 
@@ -717,13 +717,13 @@ app.addAngleMark({
 
 ```javascript
 app.addCalculation({
-    tag: 'dist_AB',
-    name: 'd',
-    formula: 'distance(A, B)',  // Built-in distance function
-    visible: true,
-    x: 200,                     // Label position
-    y: 50,
-    decimals: 2                 // Number of decimal places
+	tag: 'dist_AB',
+	name: 'd',
+	formula: 'distance(A, B)', // Built-in distance function
+	visible: true,
+	x: 200, // Label position
+	y: 50,
+	decimals: 2 // Number of decimal places
 });
 ```
 
@@ -731,13 +731,13 @@ app.addCalculation({
 
 ```javascript
 app.addCalculation({
-    tag: 'angle_measure',
-    name: 'α',
-    formula: 'angle(A, B, C)',  // Returns angle in degrees
-    visible: true,
-    x: 150,
-    y: 100,
-    decimals: 1
+	tag: 'angle_measure',
+	name: 'α',
+	formula: 'angle(A, B, C)', // Returns angle in degrees
+	visible: true,
+	x: 150,
+	y: 100,
+	decimals: 1
 });
 ```
 
@@ -750,27 +750,27 @@ The official MathGraph32 API includes **95+ methods**. Below are additional meth
 ```javascript
 // Arc from point A to B, center O
 app.addArcOAB({
-    o: 'O',              // Center
-    a: 'A',              // Start point
-    b: 'B',              // End point
-    name: 'arc1',
-    color: 'blue',
-    lineStyle: 'solid',
-    thickness: 1
+	o: 'O', // Center
+	a: 'A', // Start point
+	b: 'B', // End point
+	name: 'arc1',
+	color: 'blue',
+	lineStyle: 'solid',
+	thickness: 1
 });
 
 // Arc with angular opening x
 app.addArcOAx({
-    o: 'O',              // Center
-    a: 'A',              // Start point
-    x: Math.PI/2,        // Angular opening (radians)
-    name: 'arc2'
+	o: 'O', // Center
+	a: 'A', // Start point
+	x: Math.PI / 2, // Angular opening (radians)
+	name: 'arc2'
 });
 
 // Direct/Indirect arcs
-app.addArcDirectOAB(options);    // Direct arc (shorter)
-app.addArcIndirectOAB(options);  // Indirect arc (longer)
-app.addArcMajorOAB(options);     // Major arc (>180°)
+app.addArcDirectOAB(options); // Direct arc (shorter)
+app.addArcIndirectOAB(options); // Indirect arc (longer)
+app.addArcMajorOAB(options); // Major arc (>180°)
 ```
 
 #### Advanced Lines
@@ -778,11 +778,11 @@ app.addArcMajorOAB(options);     // Major arc (>180°)
 ```javascript
 // Angle bisector (bissectrice)
 app.addLineBisAOB({
-    a: 'A',              // First point
-    o: 'O',              // Vertex
-    b: 'B',              // Second point
-    name: 'bis',
-    color: 'purple'
+	a: 'A', // First point
+	o: 'O', // Vertex
+	b: 'B', // Second point
+	name: 'bis',
+	color: 'purple'
 });
 
 // Horizontal/Vertical lines
@@ -791,16 +791,16 @@ app.addLineVer({ x: 200, name: 'v1' });
 
 // Line with specific angle
 app.addLineAx({
-    a: 'A',              // Point on line
-    x: Math.PI/4,        // Angle (radians)
-    name: 'd'
+	a: 'A', // Point on line
+	x: Math.PI / 4, // Angle (radians)
+	name: 'd'
 });
 
 // Broken line (polyline)
 app.addBrokenLine({
-    points: ['A', 'B', 'C', 'D'],  // Array of point tags
-    color: 'green',
-    lineStyle: 'solid'
+	points: ['A', 'B', 'C', 'D'], // Array of point tags
+	color: 'green',
+	lineStyle: 'solid'
 });
 ```
 
@@ -809,34 +809,34 @@ app.addBrokenLine({
 ```javascript
 // Create transformation objects
 const rotation = app.addRotation({
-    o: 'O',              // Center of rotation
-    x: Math.PI/2         // Angle (radians)
+	o: 'O', // Center of rotation
+	x: Math.PI / 2 // Angle (radians)
 });
 
 const dilation = app.addDilation({
-    o: 'O',              // Center of dilation
-    x: 2                 // Ratio
+	o: 'O', // Center of dilation
+	x: 2 // Ratio
 });
 
 const translation = app.addTranslation({
-    u: 'vec_AB'          // Translation vector
+	u: 'vec_AB' // Translation vector
 });
 
 // Or translation by coordinates
 const translationXY = app.addTranslationxy({
-    x: 50,
-    y: 30
+	x: 50,
+	y: 30
 });
 
 // Symmetries
-const symAx = app.addSymAx({ d: 'line_d' });     // Axial symmetry
-const symCent = app.addSymCent({ o: 'O' });      // Central symmetry
+const symAx = app.addSymAx({ d: 'line_d' }); // Axial symmetry
+const symCent = app.addSymCent({ o: 'O' }); // Central symmetry
 
 // Similarity transformation
 const similitude = app.addSimilitude({
-    o: 'O',              // Center
-    x: 1.5,              // Ratio
-    y: Math.PI/6         // Angle
+	o: 'O', // Center
+	x: 1.5, // Ratio
+	y: Math.PI / 6 // Angle
 });
 ```
 
@@ -845,17 +845,17 @@ const similitude = app.addSimilitude({
 ```javascript
 // Image of point by transformations
 app.addImPointRotation({
-    m: 'A',              // Original point
-    transf: rotation,    // Transformation object
-    name: 'A\'',
-    color: 'red'
+	m: 'A', // Original point
+	transf: rotation, // Transformation object
+	name: "A'",
+	color: 'red'
 });
 
-app.addImPointDilation({ m: 'A', transf: dilation, name: 'A\'' });
-app.addImPointTranslation({ m: 'A', transf: translation, name: 'A\'' });
-app.addImPointTranslationxy({ m: 'A', x: 50, y: 30, name: 'A\'' });
-app.addImPointSymAx({ m: 'A', d: 'line_d', name: 'A\'' });
-app.addImPointSymCent({ m: 'A', o: 'O', name: 'A\'' });
+app.addImPointDilation({ m: 'A', transf: dilation, name: "A'" });
+app.addImPointTranslation({ m: 'A', transf: translation, name: "A'" });
+app.addImPointTranslationxy({ m: 'A', x: 50, y: 30, name: "A'" });
+app.addImPointSymAx({ m: 'A', d: 'line_d', name: "A'" });
+app.addImPointSymCent({ m: 'A', o: 'O', name: "A'" });
 
 // Image of entire objects
 app.addLineIm({ d: 'line', transf: rotation });
@@ -867,11 +867,11 @@ app.addCircleIm({ c: 'circle', transf: dilation });
 ```javascript
 // Intersection of two circles (creates 2 points)
 app.addIntCircleCircle({
-    c: 'circle1',        // First circle
-    cc: 'circle2',       // Second circle
-    name: 'I1',          // First intersection point
-    name2: 'I2',         // Second intersection point
-    color: 'orange'
+	c: 'circle1', // First circle
+	cc: 'circle2', // Second circle
+	name: 'I1', // First intersection point
+	name2: 'I2', // Second intersection point
+	color: 'orange'
 });
 ```
 
@@ -880,18 +880,18 @@ app.addIntCircleCircle({
 ```javascript
 // Point linked to a line
 app.addLinkedPointLine({
-    d: 'line_AB',        // Line
-    x: 0.5,              // Parameter (0-1 for segment)
-    name: 'M',
-    color: 'blue'
+	d: 'line_AB', // Line
+	x: 0.5, // Parameter (0-1 for segment)
+	name: 'M',
+	color: 'blue'
 });
 
 // Point linked to a circle
 app.addLinkedPointCircle({
-    c: 'circle_O',       // Circle
-    x: Math.PI/4,        // Angle parameter (radians)
-    name: 'M',
-    color: 'blue'
+	c: 'circle_O', // Circle
+	x: Math.PI / 4, // Angle parameter (radians)
+	name: 'M',
+	color: 'blue'
 });
 ```
 
@@ -900,16 +900,16 @@ app.addLinkedPointCircle({
 ```javascript
 // Filled polygon
 app.addSurfacePoly({
-    points: ['A', 'B', 'C'],
-    color: 'rgba(255, 0, 0, 0.3)',
-    opacity: 0.3
+	points: ['A', 'B', 'C'],
+	color: 'rgba(255, 0, 0, 0.3)',
+	opacity: 0.3
 });
 
 // Filled circle
 app.addSurfaceCircle({
-    c: 'circle_O',
-    color: 'rgba(0, 0, 255, 0.2)',
-    opacity: 0.2
+	c: 'circle_O',
+	color: 'rgba(0, 0, 255, 0.2)',
+	opacity: 0.2
 });
 ```
 
@@ -918,9 +918,9 @@ app.addSurfaceCircle({
 ```javascript
 // Length measurement
 app.addLengthMeasure({
-    a: 'A',
-    b: 'B',
-    nameCalc: 'length_AB'
+	a: 'A',
+	b: 'B',
+	nameCalc: 'length_AB'
 });
 
 // Coordinate measurements
@@ -930,20 +930,20 @@ app.addAbsMeasure({ b: 'B', o: 'O', a: 'A', nameCalc: 'abs' });
 
 // Complex calculations
 app.addCalc({
-    formula: 'sqrt(x_A^2 + y_A^2)',
-    nameCalc: 'distance'
+	formula: 'sqrt(x_A^2 + y_A^2)',
+	nameCalc: 'distance'
 });
 
 // Function
 app.addFunc({
-    formula: 'x^2 + 2*x + 1',
-    nameCalc: 'f'
+	formula: 'x^2 + 2*x + 1',
+	nameCalc: 'f'
 });
 
 // Derivative
 app.addDerivative({
-    func: 'f',
-    nameCalc: 'f_prime'
+	func: 'f',
+	nameCalc: 'f_prime'
 });
 ```
 
@@ -952,34 +952,34 @@ app.addDerivative({
 ```javascript
 // Static text
 app.addText({
-    text: 'This is a triangle',
-    x: 100,
-    y: 50,
-    color: 'black',
-    fontSize: 14
+	text: 'This is a triangle',
+	x: 100,
+	y: 50,
+	color: 'black',
+	fontSize: 14
 });
 
 // Text linked to object
 app.addLinkedText({
-    elt: 'point_A',
-    text: 'Point A',
-    offsetX: 10,
-    offsetY: -10
+	elt: 'point_A',
+	text: 'Point A',
+	offsetX: 10,
+	offsetY: -10
 });
 
 // LaTeX formula
 app.addLatex({
-    latex: '\\frac{a}{b} = \\frac{c}{d}',
-    x: 200,
-    y: 100
+	latex: '\\frac{a}{b} = \\frac{c}{d}',
+	x: 200,
+	y: 100
 });
 
 // Linked LaTeX
 app.addLinkedLatex({
-    elt: 'calc_result',
-    latex: 'Result = {val}',
-    offsetX: 0,
-    offsetY: 20
+	elt: 'calc_result',
+	latex: 'Result = {val}',
+	offsetX: 0,
+	offsetY: 20
 });
 ```
 
@@ -988,26 +988,26 @@ app.addLinkedLatex({
 ```javascript
 // Action button
 app.addActionButton({
-    x: 10,
-    y: 10,
-    width: 80,
-    height: 30,
-    label: 'Reset',
-    action: 'resetFigure()'  // JavaScript action
+	x: 10,
+	y: 10,
+	width: 80,
+	height: 30,
+	label: 'Reset',
+	action: 'resetFigure()' // JavaScript action
 });
 
 // Timer button
 app.addTimerButton({
-    x: 100,
-    y: 10,
-    width: 60,
-    height: 30
+	x: 100,
+	y: 10,
+	width: 60,
+	height: 30
 });
 
 // Zoom buttons
 app.addZoomButtons({
-    x: 10,
-    y: 50
+	x: 10,
+	y: 50
 });
 ```
 
@@ -1018,13 +1018,13 @@ app.addZoomButtons({
 const figureData = app.getBase64Code();
 
 // Get figure dimensions
-const dimensions = app.getFigDim();  // Returns {width, height}
+const dimensions = app.getFigDim(); // Returns {width, height}
 
 // Get value of calculation
 const value = app.getValue('calc_name');
 
 // Get point position
-const pos = app.getPointPosition({ m: 'A' });  // Returns {x, y}
+const pos = app.getPointPosition({ m: 'A' }); // Returns {x, y}
 
 // Fix point (make immovable)
 app.fixPoint({ m: 'A', fixed: true });
@@ -1043,7 +1043,7 @@ app.reDisplay();
 app.recalculate();
 
 // Activate trace mode
-app.activateTraceMode(true);  // or false to deactivate
+app.activateTraceMode(true); // or false to deactivate
 ```
 
 #### Event Listeners
@@ -1051,15 +1051,15 @@ app.activateTraceMode(true);  // or false to deactivate
 ```javascript
 // Listen to element events
 app.addEltListener({
-    elt: 'point_A',
-    eventType: 'mousedown',  // or 'mouseup', 'mousemove', etc.
-    action: 'handlePointClick()'
+	elt: 'point_A',
+	eventType: 'mousedown', // or 'mouseup', 'mousemove', etc.
+	action: 'handlePointClick()'
 });
 
 // Listen to SVG document events
 app.addSvgListener({
-    eventType: 'mousedown',
-    action: 'handleBackgroundClick()'
+	eventType: 'mousedown',
+	action: 'handleBackgroundClick()'
 });
 ```
 
@@ -1073,7 +1073,7 @@ app.addSvgListener({
 
 ```javascript
 // OFFICIAL API METHOD: getElement (not getObjectByTag)
-const point = app.getElement('A');  // Get by tag
+const point = app.getElement('A'); // Get by tag
 
 // Alternative syntax (string parameter):
 // const point = app.getElement(elementTag);
@@ -1094,17 +1094,17 @@ const count = app.listApi.longueur();
 const point = app.getObjectByTag('A');
 
 // Properties
-console.log(point.x);         // X coordinate (pixels)
-console.log(point.y);         // Y coordinate (pixels)
-console.log(point.nom);       // Name ('A')
-console.log(point.existe);    // true if point exists, false if deleted
-console.log(point.visible);   // true if visible
-console.log(point.marque);    // Point mark style
-console.log(point.couleur);   // Color
+console.log(point.x); // X coordinate (pixels)
+console.log(point.y); // Y coordinate (pixels)
+console.log(point.nom); // Name ('A')
+console.log(point.existe); // true if point exists, false if deleted
+console.log(point.visible); // true if visible
+console.log(point.marque); // Point mark style
+console.log(point.couleur); // Color
 
 // Methods
-point.setCoordinates(newX, newY);  // Move point
-point.setVisible(true/false);      // Show/hide
+point.setCoordinates(newX, newY); // Move point
+point.setVisible(true / false); // Show/hide
 ```
 
 ### Line Properties
@@ -1113,11 +1113,11 @@ point.setVisible(true/false);      // Show/hide
 const line = app.getObjectByTag('line_AB');
 
 // Properties
-console.log(line.point1);     // First point object
-console.log(line.point2);     // Second point object
-console.log(line.visible);    // Visibility
-console.log(line.couleur);    // Color
-console.log(line.style);      // Line style ('solid', 'dashed', 'dotted')
+console.log(line.point1); // First point object
+console.log(line.point2); // Second point object
+console.log(line.visible); // Visibility
+console.log(line.couleur); // Color
+console.log(line.style); // Line style ('solid', 'dashed', 'dotted')
 ```
 
 ### Circle Properties
@@ -1126,10 +1126,10 @@ console.log(line.style);      // Line style ('solid', 'dashed', 'dotted')
 const circle = app.getObjectByTag('circle_O');
 
 // Properties
-console.log(circle.centre);   // Center point object
-console.log(circle.rayon);    // Radius (number or point object)
-console.log(circle.visible);  // Visibility
-console.log(circle.couleur);  // Color
+console.log(circle.centre); // Center point object
+console.log(circle.rayon); // Radius (number or point object)
+console.log(circle.visible); // Visibility
+console.log(circle.couleur); // Color
 ```
 
 ---
@@ -1184,7 +1184,7 @@ app.addPointXY({ tag: 'B', name: 'B', x: 500, y: 100, visible: true });
 app1.addPointXY({ tag: 'A', name: 'A', x: 2, y: 2 });
 
 // Instance 2: Circle example
-app2.addPointXY({ tag: 'O', name: 'O', x: 5, y: 5 });  // ✅ OK - different name
+app2.addPointXY({ tag: 'O', name: 'O', x: 5, y: 5 }); // ✅ OK - different name
 app2.addPointXY({ tag: 'A2', name: 'A', x: 6, y: 6 }); // ❌ ERROR - "the name A is already used"
 ```
 
@@ -1197,16 +1197,17 @@ app1.addPointXY({ tag: 'triangleB', name: 'B', x: 8, y: 2 });
 app1.addPointXY({ tag: 'triangleC', name: 'C', x: 5, y: 7 });
 
 // Circle example
-app2.addPointXY({ tag: 'circleO', name: 'O₁', x: 5, y: 5 });  // Use O₁ instead of O
+app2.addPointXY({ tag: 'circleO', name: 'O₁', x: 5, y: 5 }); // Use O₁ instead of O
 app2.addPointXY({ tag: 'circleP', name: 'P', x: 7, y: 5 });
 
 // Bisector example
 app3.addPointXY({ tag: 'bisectorD', name: 'D', x: 2, y: 5 });
 app3.addPointXY({ tag: 'bisectorE', name: 'E', x: 8, y: 5 });
-app3.addPointXY({ tag: 'bisectorM', name: 'M₁', x: 5, y: 5 });  // Use M₁ instead of M
+app3.addPointXY({ tag: 'bisectorM', name: 'M₁', x: 5, y: 5 }); // Use M₁ instead of M
 ```
 
 **Best Practice:** When creating multiple geometry examples on the same page:
+
 - Use **distinct display names** (A, B, C for triangle; O₁, P for circle; D, E, M₁ for bisector)
 - Use **prefixed tags** (`triangleA`, `circleO`, `bisectorD`) for programmatic access
 
@@ -1216,12 +1217,13 @@ Enable axes to show a mathematical coordinate system:
 
 ```javascript
 const mtgOptions = {
-    repereAff: true,       // Show axes
-    // ... other options
+	repereAff: true // Show axes
+	// ... other options
 };
 ```
 
 When axes are enabled:
+
 - Origin is at a defined point (usually center of canvas)
 - Units can be configured
 - Grid lines show unit divisions
@@ -1239,24 +1241,24 @@ const app = await initializePlayer(container);
 
 // Listen for mouse events on the SVG
 app.svgApi.addEventListener('mousedown', (e) => {
-    console.log('Mouse down at:', e.clientX, e.clientY);
+	console.log('Mouse down at:', e.clientX, e.clientY);
 });
 
 app.svgApi.addEventListener('mouseup', (e) => {
-    console.log('Mouse up');
+	console.log('Mouse up');
 });
 
 app.svgApi.addEventListener('mousemove', (e) => {
-    console.log('Mouse move');
+	console.log('Mouse move');
 });
 
 // Touch events for mobile
 app.svgApi.addEventListener('touchstart', (e) => {
-    console.log('Touch start');
+	console.log('Touch start');
 });
 
 app.svgApi.addEventListener('touchend', (e) => {
-    console.log('Touch end');
+	console.log('Touch end');
 });
 ```
 
@@ -1268,14 +1270,14 @@ To detect when a figure changes (e.g., user drags a point):
 let lastObjectCount = app.listApi.longueur();
 
 const changeDetectionInterval = setInterval(() => {
-    const currentObjectCount = app.listApi.longueur();
+	const currentObjectCount = app.listApi.longueur();
 
-    if (currentObjectCount !== lastObjectCount) {
-        console.log('Figure changed! Objects:', currentObjectCount);
-        lastObjectCount = currentObjectCount;
-        onFigureChange();  // Your callback
-    }
-}, 500);  // Check every 500ms
+	if (currentObjectCount !== lastObjectCount) {
+		console.log('Figure changed! Objects:', currentObjectCount);
+		lastObjectCount = currentObjectCount;
+		onFigureChange(); // Your callback
+	}
+}, 500); // Check every 500ms
 
 // Clean up
 // clearInterval(changeDetectionInterval);
@@ -1289,27 +1291,27 @@ Track specific object positions:
 let lastPositions = new Map();
 
 function trackPointPositions() {
-    const count = app.listApi.longueur();
+	const count = app.listApi.longueur();
 
-    for (let i = 0; i < count; i++) {
-        const obj = app.listApi.get(i);
+	for (let i = 0; i < count; i++) {
+		const obj = app.listApi.get(i);
 
-        if (obj.type === 'point') {
-            const key = obj.tag || `point_${i}`;
-            const currentPos = { x: obj.x, y: obj.y };
-            const lastPos = lastPositions.get(key);
+		if (obj.type === 'point') {
+			const key = obj.tag || `point_${i}`;
+			const currentPos = { x: obj.x, y: obj.y };
+			const lastPos = lastPositions.get(key);
 
-            if (!lastPos || lastPos.x !== currentPos.x || lastPos.y !== currentPos.y) {
-                console.log(`Point ${key} moved to:`, currentPos);
-                lastPositions.set(key, currentPos);
-                onPointMoved(obj);  // Your callback
-            }
-        }
-    }
+			if (!lastPos || lastPos.x !== currentPos.x || lastPos.y !== currentPos.y) {
+				console.log(`Point ${key} moved to:`, currentPos);
+				lastPositions.set(key, currentPos);
+				onPointMoved(obj); // Your callback
+			}
+		}
+	}
 }
 
 // Poll for changes
-setInterval(trackPointPositions, 200);  // Every 200ms
+setInterval(trackPointPositions, 200); // Every 200ms
 ```
 
 ---
@@ -1345,18 +1347,18 @@ const originalFigure = await app.getFig();
 
 const newContainer = document.getElementById('modified-figure');
 const newApp = await initializeEditor(newContainer, {
-    figure: originalFigure,
-    width: 800,
-    height: 600
+	figure: originalFigure,
+	width: 800,
+	height: 600
 });
 
 // Add new objects to the cloned figure
 newApp.addPointXY({
-    tag: 'newPoint',
-    name: 'P',
-    x: 200,
-    y: 200,
-    visible: true
+	tag: 'newPoint',
+	name: 'P',
+	x: 200,
+	y: 200,
+	visible: true
 });
 
 // Export modified figure
@@ -1368,12 +1370,12 @@ const modifiedFigure = await newApp.getFig();
 ```javascript
 // Change color based on condition
 function updatePointColor(app, pointTag, condition) {
-    const point = app.getObjectByTag(pointTag);
+	const point = app.getObjectByTag(pointTag);
 
-    if (point) {
-        point.couleur = condition ? 'green' : 'red';
-        app.updateFigDisplay();  // Redraw to show color change
-    }
+	if (point) {
+		point.couleur = condition ? 'green' : 'red';
+		app.updateFigDisplay(); // Redraw to show color change
+	}
 }
 
 // Usage
@@ -1385,26 +1387,26 @@ updatePointColor(app, 'studentPoint', isCorrect);
 
 ```javascript
 function animatePointAlongLine(app, pointTag, startX, endX, duration) {
-    const point = app.getObjectByTag(pointTag);
-    if (!point) return;
+	const point = app.getObjectByTag(pointTag);
+	if (!point) return;
 
-    const startTime = Date.now();
-    const deltaX = endX - startX;
+	const startTime = Date.now();
+	const deltaX = endX - startX;
 
-    function animate() {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / duration, 1);
+	function animate() {
+		const elapsed = Date.now() - startTime;
+		const progress = Math.min(elapsed / duration, 1);
 
-        const currentX = startX + deltaX * progress;
-        point.setCoordinates(currentX, point.y);
-        app.updateFigDisplay();
+		const currentX = startX + deltaX * progress;
+		point.setCoordinates(currentX, point.y);
+		app.updateFigDisplay();
 
-        if (progress < 1) {
-            requestAnimationFrame(animate);
-        }
-    }
+		if (progress < 1) {
+			requestAnimationFrame(animate);
+		}
+	}
 
-    animate();
+	animate();
 }
 
 // Usage: Move point from x=100 to x=300 over 2 seconds
@@ -1415,49 +1417,49 @@ animatePointAlongLine(app, 'P', 100, 300, 2000);
 
 ```javascript
 function createRegularPolygon(app, centerX, centerY, radius, sides) {
-    const angleStep = (2 * Math.PI) / sides;
-    const pointTags = [];
+	const angleStep = (2 * Math.PI) / sides;
+	const pointTags = [];
 
-    // Create vertices
-    for (let i = 0; i < sides; i++) {
-        const angle = i * angleStep;
-        const x = centerX + radius * Math.cos(angle);
-        const y = centerY + radius * Math.sin(angle);
+	// Create vertices
+	for (let i = 0; i < sides; i++) {
+		const angle = i * angleStep;
+		const x = centerX + radius * Math.cos(angle);
+		const y = centerY + radius * Math.sin(angle);
 
-        const tag = `vertex_${i}`;
-        app.addPointXY({
-            tag,
-            name: String.fromCharCode(65 + i),  // A, B, C, ...
-            x,
-            y,
-            visible: true,
-            labelVisible: true
-        });
+		const tag = `vertex_${i}`;
+		app.addPointXY({
+			tag,
+			name: String.fromCharCode(65 + i), // A, B, C, ...
+			x,
+			y,
+			visible: true,
+			labelVisible: true
+		});
 
-        pointTags.push(tag);
-    }
+		pointTags.push(tag);
+	}
 
-    // Create polygon
-    app.addPolygon({
-        tag: 'polygon',
-        tagPoints: pointTags,
-        visible: true,
-        color: 'blue',
-        fillColor: 'rgba(0, 0, 255, 0.2)',
-        filled: true
-    });
+	// Create polygon
+	app.addPolygon({
+		tag: 'polygon',
+		tagPoints: pointTags,
+		visible: true,
+		color: 'blue',
+		fillColor: 'rgba(0, 0, 255, 0.2)',
+		filled: true
+	});
 
-    // Create sides
-    for (let i = 0; i < sides; i++) {
-        const nextIndex = (i + 1) % sides;
-        app.addSegment({
-            tag: `side_${i}`,
-            tagPoint1: pointTags[i],
-            tagPoint2: pointTags[nextIndex],
-            visible: true,
-            color: 'blue'
-        });
-    }
+	// Create sides
+	for (let i = 0; i < sides; i++) {
+		const nextIndex = (i + 1) % sides;
+		app.addSegment({
+			tag: `side_${i}`,
+			tagPoint1: pointTags[i],
+			tagPoint2: pointTags[nextIndex],
+			visible: true,
+			color: 'blue'
+		});
+	}
 }
 
 // Usage: Create hexagon
@@ -1478,7 +1480,7 @@ const container = document.getElementById('mathgraph-container');
 
 // Enter fullscreen
 await service.requestFullscreen(container, (width, height) => {
-  console.log(`Canvas resized to: ${width}x${height}`);
+	console.log(`Canvas resized to: ${width}x${height}`);
 });
 
 // Exit fullscreen
@@ -1495,56 +1497,63 @@ const isFullscreen = service.isFullscreen(container);
 
 ```svelte
 <script lang="ts">
-  import MathGraphFullscreen from '$lib/components/MathGraphFullscreen.svelte';
-  import { MathGraphService } from '$lib/services/mathgraph-api';
+	import MathGraphFullscreen from '$lib/components/MathGraphFullscreen.svelte';
+	import { MathGraphService } from '$lib/services/mathgraph-api';
 
-  let canvasContainer: HTMLElement;
-  let app;
+	let canvasContainer: HTMLElement;
+	let app;
 
-  async function createFigure() {
-    const service = MathGraphService.getInstance();
-    app = await service.initializeEditor(canvasContainer, {
-      width: 800,
-      height: 600,
-      level: 1
-    });
+	async function createFigure() {
+		const service = MathGraphService.getInstance();
+		app = await service.initializeEditor(canvasContainer, {
+			width: 800,
+			height: 600,
+			level: 1
+		});
 
-    // Create your figure using English API
-    app.addPointXY({
-      tag: 'pointA', name: 'A',
-      x: 100, y: 100,
-      visible: true, labelVisible: true
-    });
+		// Create your figure using English API
+		app.addPointXY({
+			tag: 'pointA',
+			name: 'A',
+			x: 100,
+			y: 100,
+			visible: true,
+			labelVisible: true
+		});
 
-    app.addPointXY({
-      tag: 'pointB', name: 'B',
-      x: 500, y: 100,
-      visible: true, labelVisible: true
-    });
+		app.addPointXY({
+			tag: 'pointB',
+			name: 'B',
+			x: 500,
+			y: 100,
+			visible: true,
+			labelVisible: true
+		});
 
-    app.addSegment({
-      tag: 'segAB',
-      tagPoint1: 'pointA',
-      tagPoint2: 'pointB',
-      visible: true,
-      color: 'blue'
-    });
+		app.addSegment({
+			tag: 'segAB',
+			tagPoint1: 'pointA',
+			tagPoint2: 'pointB',
+			visible: true,
+			color: 'blue'
+		});
 
-    app.updateFigDisplay();
-  }
+		app.updateFigDisplay();
+	}
 </script>
 
 <MathGraphFullscreen
-  bind:container={canvasContainer}
-  onFullscreenChange={(isFullscreen) => {
-    console.log('Fullscreen:', isFullscreen);
-  }}
+	bind:container={canvasContainer}
+	onFullscreenChange={(isFullscreen) => {
+		console.log('Fullscreen:', isFullscreen);
+	}}
 >
-  <Button onclick={createFigure}>Create Figure</Button>
+	<Button onclick={createFigure}>Create Figure</Button>
 </MathGraphFullscreen>
 ```
 
 **Features:**
+
 - ✅ **Fullscreen toggle button** with icon (Maximize/Minimize)
 - ✅ **Keyboard shortcuts** - Press `F` or `F11` to toggle fullscreen
 - ✅ **Escape to exit** - Press `Escape` to exit fullscreen mode
@@ -1552,12 +1561,14 @@ const isFullscreen = service.isFullscreen(container);
 - ✅ **Maintains state** - Figure remains intact during fullscreen transitions
 
 **Props:**
+
 - `container` (bindable) - HTMLElement reference for the canvas
 - `showButton` (optional) - Show/hide fullscreen button (default: `true`)
 - `buttonPosition` (optional) - Position: `'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'` (default: `'bottom-right'`)
 - `onFullscreenChange` (optional) - Callback when fullscreen state changes
 
 **Keyboard Shortcuts:**
+
 - `F` or `F11` - Toggle fullscreen
 - `Escape` - Exit fullscreen
 
@@ -1568,24 +1579,25 @@ const service = MathGraphService.getInstance();
 
 // Request fullscreen with resize callback
 await service.requestFullscreen(container, (width, height) => {
-  // Reinitialize canvas with new dimensions
-  console.log(`Fullscreen dimensions: ${width}x${height}`);
+	// Reinitialize canvas with new dimensions
+	console.log(`Fullscreen dimensions: ${width}x${height}`);
 
-  // Optionally recreate figure at new size
-  // Note: MathGraph32 handles scaling automatically in most cases
+	// Optionally recreate figure at new size
+	// Note: MathGraph32 handles scaling automatically in most cases
 });
 
 // Listen for fullscreen changes manually
 document.addEventListener('fullscreenchange', () => {
-  if (document.fullscreenElement) {
-    console.log('Entered fullscreen');
-  } else {
-    console.log('Exited fullscreen');
-  }
+	if (document.fullscreenElement) {
+		console.log('Entered fullscreen');
+	} else {
+		console.log('Exited fullscreen');
+	}
 });
 ```
 
 **Browser Compatibility:**
+
 - ✅ Chrome/Edge 90+
 - ✅ Firefox 88+
 - ✅ Safari 14+
@@ -1615,12 +1627,12 @@ Use the correct official API method names:
 
 ```javascript
 // ✅ CORRECT - Official API methods
-app.addLineMedAB({ a: 'A', b: 'B' });          // Perpendicular bisector
-app.addCircleOA({ o: 'O', a: 'A' });           // Circle by center and point
-app.addCircleOr({ o: 'O', r: 50 });            // Circle by center and radius
+app.addLineMedAB({ a: 'A', b: 'B' }); // Perpendicular bisector
+app.addCircleOA({ o: 'O', a: 'A' }); // Circle by center and point
+app.addCircleOr({ o: 'O', r: 50 }); // Circle by center and radius
 app.addIntLineLine({ d: 'line1', dd: 'line2' }); // Line-line intersection
 app.addIntLineCircle({ d: 'line', c: 'circle' }); // Line-circle intersection
-app.getElement('A');                            // Get object by tag
+app.getElement('A'); // Get object by tag
 ```
 
 **Key Name Changes:**
@@ -1641,6 +1653,7 @@ app.getElement('A');                            // Get object by tag
 ### Pitfall 2: Accessing API Before loadApi: true
 
 **Problem:**
+
 ```javascript
 const mtgOptions = {
     loadApi: false  // ❌ API disabled
@@ -1652,38 +1665,43 @@ window.mtgLoad(container, svgOptions, mtgOptions, (error, app) => {
 ```
 
 **Solution:**
+
 ```javascript
 const mtgOptions = {
-    loadApi: true  // ✅ Enable API
+	loadApi: true // ✅ Enable API
 };
 ```
 
 ### Pitfall 2: Using Names Instead of Tags
 
 **Problem:**
+
 ```javascript
 app.addPointXY({ tag: 'point1', name: 'A', x: 100, y: 100 });
 app.addPointXY({ tag: 'point2', name: 'A', x: 200, y: 200 });
 
-const point = app.getPointByName('A');  // ❌ Which A? Ambiguous!
+const point = app.getPointByName('A'); // ❌ Which A? Ambiguous!
 ```
 
 **Solution:**
+
 ```javascript
 // Use unique tags
-const point1 = app.getObjectByTag('point1');  // ✅ Unambiguous
-const point2 = app.getObjectByTag('point2');  // ✅ Clear
+const point1 = app.getObjectByTag('point1'); // ✅ Unambiguous
+const point2 = app.getObjectByTag('point2'); // ✅ Clear
 ```
 
 ### Pitfall 3: Not Awaiting Async Methods
 
 **Problem:**
+
 ```javascript
 app.setFig({ fig: newFigure });
 app.addPointXY(...);  // ❌ May execute before setFig completes!
 ```
 
 **Solution:**
+
 ```javascript
 await app.setFig({ fig: newFigure });
 app.addPointXY(...);  // ✅ Waits for setFig to finish
@@ -1692,22 +1710,25 @@ app.addPointXY(...);  // ✅ Waits for setFig to finish
 ### Pitfall 4: Forgetting to Refresh After Changes
 
 **Problem:**
+
 ```javascript
 const point = app.getObjectByTag('A');
-point.couleur = 'red';  // Change color
+point.couleur = 'red'; // Change color
 // ❌ Screen doesn't update!
 ```
 
 **Solution:**
+
 ```javascript
 const point = app.getObjectByTag('A');
 point.couleur = 'red';
-app.updateFigDisplay();  // ✅ Redraw to show changes
+app.updateFigDisplay(); // ✅ Redraw to show changes
 ```
 
 ### Pitfall 5: Creating Dependent Objects Before Dependencies
 
 **Problem:**
+
 ```javascript
 // ❌ Line created before points exist
 app.addLineAB({ tag: 'line', tagPoint1: 'A', tagPoint2: 'B' });
@@ -1716,6 +1737,7 @@ app.addPointXY({ tag: 'B', ... });
 ```
 
 **Solution:**
+
 ```javascript
 // ✅ Create dependencies first
 app.addPointXY({ tag: 'A', name: 'A', x: 100, y: 100 });
@@ -1726,6 +1748,7 @@ app.addLineAB({ tag: 'line', tagPoint1: 'A', tagPoint2: 'B' });
 ### Pitfall 6: Coordinate System Confusion
 
 **Problem:**
+
 ```javascript
 // Using pixel coordinates instead of MathGraph32's coordinate system
 app.addPointXY({ tag: 'A', name: 'A', x: 100, y: 100, visible: true });
@@ -1734,31 +1757,34 @@ app.addPointXY({ tag: 'B', name: 'B', x: 500, y: 100, visible: true });
 ```
 
 **Solution:**
+
 ```javascript
 // Use MathGraph32's coordinate system (typically -10 to +10)
 // For centered, visible objects, use 2-8 range
-app.addPointXY({ tag: 'A', name: 'A', x: 2, y: 2, visible: true });  // ✅ Visible
-app.addPointXY({ tag: 'B', name: 'B', x: 8, y: 2, visible: true });  // ✅ Visible
+app.addPointXY({ tag: 'A', name: 'A', x: 2, y: 2, visible: true }); // ✅ Visible
+app.addPointXY({ tag: 'B', name: 'B', x: 8, y: 2, visible: true }); // ✅ Visible
 
 // Note: Y increases upward in MathGraph32 (mathematical convention)
-app.addPointXY({ tag: 'top', name: 'Top', x: 5, y: 7 });      // Higher on screen
+app.addPointXY({ tag: 'top', name: 'Top', x: 5, y: 7 }); // Higher on screen
 app.addPointXY({ tag: 'bottom', name: 'Bottom', x: 5, y: 2 }); // Lower on screen
 ```
 
 ### Pitfall 7: Name Conflicts Across Instances
 
 **Problem:**
+
 ```javascript
 // Creating multiple instances with duplicate point names
 // Instance 1: Triangle
 app1.addPointXY({ tag: 'A', name: 'A', x: 2, y: 2 });
 
 // Instance 2: Circle
-app2.addPointXY({ tag: 'O', name: 'O', x: 5, y: 5 });  // ✅ OK
-app2.addPointXY({ tag: 'A_circle', name: 'A', x: 7, y: 5 });  // ❌ Error: "the name A is already used"
+app2.addPointXY({ tag: 'O', name: 'O', x: 5, y: 5 }); // ✅ OK
+app2.addPointXY({ tag: 'A_circle', name: 'A', x: 7, y: 5 }); // ❌ Error: "the name A is already used"
 ```
 
 **Solution:**
+
 ```javascript
 // Use unique display names across all instances on the same page
 // Triangle example
@@ -1767,13 +1793,13 @@ app1.addPointXY({ tag: 'triangleB', name: 'B', x: 8, y: 2 });
 app1.addPointXY({ tag: 'triangleC', name: 'C', x: 5, y: 7 });
 
 // Circle example - use subscript numbers to differentiate
-app2.addPointXY({ tag: 'circleO', name: 'O₁', x: 5, y: 5 });  // ✅ Unique name
+app2.addPointXY({ tag: 'circleO', name: 'O₁', x: 5, y: 5 }); // ✅ Unique name
 app2.addPointXY({ tag: 'circleP', name: 'P', x: 7, y: 5 });
 
 // Bisector example
 app3.addPointXY({ tag: 'bisectorD', name: 'D', x: 2, y: 5 });
 app3.addPointXY({ tag: 'bisectorE', name: 'E', x: 8, y: 5 });
-app3.addPointXY({ tag: 'bisectorM', name: 'M₁', x: 5, y: 5 });  // ✅ Unique name
+app3.addPointXY({ tag: 'bisectorM', name: 'M₁', x: 5, y: 5 }); // ✅ Unique name
 ```
 
 **Key Insight:** MathGraph32 maintains a global namespace for point names across ALL instances. Always use unique display names when you have multiple MathGraph32 canvases on the same page.
@@ -1781,6 +1807,7 @@ app3.addPointXY({ tag: 'bisectorM', name: 'M₁', x: 5, y: 5 });  // ✅ Unique 
 ### Pitfall 8: Memory Leaks with Multiple Instances
 
 **Problem:**
+
 ```javascript
 // Creating multiple instances without cleanup
 for (let i = 0; i < 10; i++) {
@@ -1790,32 +1817,33 @@ for (let i = 0; i < 10; i++) {
 ```
 
 **Solution:**
+
 ```javascript
 // Track and clean up instances
 const instances = [];
 
 function createInstance(container) {
-    return new Promise((resolve) => {
-        window.mtgLoad(container, svgOptions, mtgOptions, (error, app) => {
-            instances.push(app);
-            resolve(app);
-        });
-    });
+	return new Promise((resolve) => {
+		window.mtgLoad(container, svgOptions, mtgOptions, (error, app) => {
+			instances.push(app);
+			resolve(app);
+		});
+	});
 }
 
 function cleanupInstances() {
-    instances.forEach(app => {
-        // Remove SVG from DOM
-        if (app.svgApi && app.svgApi.parentNode) {
-            app.svgApi.parentNode.removeChild(app.svgApi);
-        }
-    });
-    instances.length = 0;
+	instances.forEach((app) => {
+		// Remove SVG from DOM
+		if (app.svgApi && app.svgApi.parentNode) {
+			app.svgApi.parentNode.removeChild(app.svgApi);
+		}
+	});
+	instances.length = 0;
 }
 
 // Clean up when done
 onDestroy(() => {
-    cleanupInstances();
+	cleanupInstances();
 });
 ```
 
@@ -1827,26 +1855,26 @@ onDestroy(() => {
 
 ```javascript
 async function createTriangle(app) {
-    // Create three points using MathGraph32 coordinate system (2-8 range)
-    app.addPointXY({ tag: 'A', name: 'A', x: 2, y: 2, visible: true, nameVisible: true });
-    app.addPointXY({ tag: 'B', name: 'B', x: 8, y: 2, visible: true, nameVisible: true });
-    app.addPointXY({ tag: 'C', name: 'C', x: 5, y: 7, visible: true, nameVisible: true });
+	// Create three points using MathGraph32 coordinate system (2-8 range)
+	app.addPointXY({ tag: 'A', name: 'A', x: 2, y: 2, visible: true, nameVisible: true });
+	app.addPointXY({ tag: 'B', name: 'B', x: 8, y: 2, visible: true, nameVisible: true });
+	app.addPointXY({ tag: 'C', name: 'C', x: 5, y: 7, visible: true, nameVisible: true });
 
-    // Create sides
-    app.addSegment({ tag: 'AB', tagPoint1: 'A', tagPoint2: 'B', visible: true, color: 'blue' });
-    app.addSegment({ tag: 'BC', tagPoint1: 'B', tagPoint2: 'C', visible: true, color: 'blue' });
-    app.addSegment({ tag: 'CA', tagPoint1: 'C', tagPoint2: 'A', visible: true, color: 'blue' });
+	// Create sides
+	app.addSegment({ tag: 'AB', tagPoint1: 'A', tagPoint2: 'B', visible: true, color: 'blue' });
+	app.addSegment({ tag: 'BC', tagPoint1: 'B', tagPoint2: 'C', visible: true, color: 'blue' });
+	app.addSegment({ tag: 'CA', tagPoint1: 'C', tagPoint2: 'A', visible: true, color: 'blue' });
 
-    // Create polygon (for fill)
-    app.addPolygon({
-        tag: 'triangle',
-        tagPoints: ['A', 'B', 'C'],
-        visible: true,
-        fillColor: 'rgba(0, 0, 255, 0.1)',
-        filled: true
-    });
+	// Create polygon (for fill)
+	app.addPolygon({
+		tag: 'triangle',
+		tagPoints: ['A', 'B', 'C'],
+		visible: true,
+		fillColor: 'rgba(0, 0, 255, 0.1)',
+		filled: true
+	});
 
-    app.reDisplay();  // Use official method reDisplay()
+	app.reDisplay(); // Use official method reDisplay()
 }
 ```
 
@@ -1854,26 +1882,26 @@ async function createTriangle(app) {
 
 ```javascript
 async function createTriangleWithCircumcircle(app) {
-    // Create triangle using correct coordinate system
-    app.addPointXY({ tag: 'A', name: 'A', x: 2, y: 2, visible: true, nameVisible: true });
-    app.addPointXY({ tag: 'B', name: 'B', x: 8, y: 2, visible: true, nameVisible: true });
-    app.addPointXY({ tag: 'C', name: 'C', x: 5, y: 7, visible: true, nameVisible: true });
+	// Create triangle using correct coordinate system
+	app.addPointXY({ tag: 'A', name: 'A', x: 2, y: 2, visible: true, nameVisible: true });
+	app.addPointXY({ tag: 'B', name: 'B', x: 8, y: 2, visible: true, nameVisible: true });
+	app.addPointXY({ tag: 'C', name: 'C', x: 5, y: 7, visible: true, nameVisible: true });
 
-    app.addSegment({ tag: 'AB', tagPoint1: 'A', tagPoint2: 'B', visible: true });
-    app.addSegment({ tag: 'BC', tagPoint1: 'B', tagPoint2: 'C', visible: true });
-    app.addSegment({ tag: 'CA', tagPoint1: 'C', tagPoint2: 'A', visible: true });
+	app.addSegment({ tag: 'AB', tagPoint1: 'A', tagPoint2: 'B', visible: true });
+	app.addSegment({ tag: 'BC', tagPoint1: 'B', tagPoint2: 'C', visible: true });
+	app.addSegment({ tag: 'CA', tagPoint1: 'C', tagPoint2: 'A', visible: true });
 
-    // Create circumcircle (circle through three points)
-    app.addCircle3Points({
-        tag: 'circumcircle',
-        tagPoint1: 'A',
-        tagPoint2: 'B',
-        tagPoint3: 'C',
-        visible: true,
-        color: 'red'
-    });
+	// Create circumcircle (circle through three points)
+	app.addCircle3Points({
+		tag: 'circumcircle',
+		tagPoint1: 'A',
+		tagPoint2: 'B',
+		tagPoint3: 'C',
+		visible: true,
+		color: 'red'
+	});
 
-    app.reDisplay();
+	app.reDisplay();
 }
 ```
 
@@ -1881,34 +1909,34 @@ async function createTriangleWithCircumcircle(app) {
 
 ```javascript
 async function createPerpendicularBisector(app) {
-    // Create segment DE using correct coordinate system
-    app.addPointXY({ tag: 'D', name: 'D', x: 2, y: 5, visible: true, nameVisible: true });
-    app.addPointXY({ tag: 'E', name: 'E', x: 8, y: 5, visible: true, nameVisible: true });
-    app.addSegment({ tag: 'segDE', tagPoint1: 'D', tagPoint2: 'E', visible: true, color: 'blue' });
+	// Create segment DE using correct coordinate system
+	app.addPointXY({ tag: 'D', name: 'D', x: 2, y: 5, visible: true, nameVisible: true });
+	app.addPointXY({ tag: 'E', name: 'E', x: 8, y: 5, visible: true, nameVisible: true });
+	app.addSegment({ tag: 'segDE', tagPoint1: 'D', tagPoint2: 'E', visible: true, color: 'blue' });
 
-    // Create midpoint
-    app.addMidpoint({ a: 'D', b: 'E', name: 'M', color: 'black', tag: 'midpointM' });
+	// Create midpoint
+	app.addMidpoint({ a: 'D', b: 'E', name: 'M', color: 'black', tag: 'midpointM' });
 
-    // Create perpendicular bisector (médiatrice)
-    // OFFICIAL API: addLineMedAB (not addPerpBisector)
-    app.addLineMedAB({
-        a: 'D',
-        b: 'E',
-        name: 'd',
-        color: 'red',
-        lineStyle: 'solid',
-        tag: 'bisector'
-    });
+	// Create perpendicular bisector (médiatrice)
+	// OFFICIAL API: addLineMedAB (not addPerpBisector)
+	app.addLineMedAB({
+		a: 'D',
+		b: 'E',
+		name: 'd',
+		color: 'red',
+		lineStyle: 'solid',
+		tag: 'bisector'
+	});
 
-    // Alternative: Create perpendicular line through midpoint
-    // app.addLinePerp({
-    //     tag: 'perpendicular',
-    //     a: 'midpointM',  // Point the line goes through
-    //     d: 'segDE',      // Line to be perpendicular to
-    //     color: 'red'
-    // });
+	// Alternative: Create perpendicular line through midpoint
+	// app.addLinePerp({
+	//     tag: 'perpendicular',
+	//     a: 'midpointM',  // Point the line goes through
+	//     d: 'segDE',      // Line to be perpendicular to
+	//     color: 'red'
+	// });
 
-    app.reDisplay();  // Official method is reDisplay()
+	app.reDisplay(); // Official method is reDisplay()
 }
 ```
 
@@ -1916,23 +1944,29 @@ async function createPerpendicularBisector(app) {
 
 ```javascript
 async function createParallelLinesWithTransversal(app) {
-    // Create first line (AB) using correct coordinate system
-    app.addPointXY({ tag: 'A', name: 'A', x: 1, y: 3, visible: true, nameVisible: true });
-    app.addPointXY({ tag: 'B', name: 'B', x: 9, y: 3, visible: true, nameVisible: true });
-    app.addLineAB({ tag: 'line1', tagPoint1: 'A', tagPoint2: 'B', visible: true, color: 'blue' });
+	// Create first line (AB) using correct coordinate system
+	app.addPointXY({ tag: 'A', name: 'A', x: 1, y: 3, visible: true, nameVisible: true });
+	app.addPointXY({ tag: 'B', name: 'B', x: 9, y: 3, visible: true, nameVisible: true });
+	app.addLineAB({ tag: 'line1', tagPoint1: 'A', tagPoint2: 'B', visible: true, color: 'blue' });
 
-    // Create point C for parallel line
-    app.addPointXY({ tag: 'C', name: 'C', x: 2, y: 7, visible: true, nameVisible: true });
+	// Create point C for parallel line
+	app.addPointXY({ tag: 'C', name: 'C', x: 2, y: 7, visible: true, nameVisible: true });
 
-    // Create parallel line through C
-    app.addLinePar({ tag: 'line2', tagLine: 'line1', tagPoint: 'C', visible: true, color: 'blue' });
+	// Create parallel line through C
+	app.addLinePar({ tag: 'line2', tagLine: 'line1', tagPoint: 'C', visible: true, color: 'blue' });
 
-    // Create transversal
-    app.addPointXY({ tag: 'D', name: 'D', x: 4, y: 1, visible: true, nameVisible: true });
-    app.addPointXY({ tag: 'E', name: 'E', x: 6, y: 9, visible: true, nameVisible: true });
-    app.addLineAB({ tag: 'transversal', tagPoint1: 'D', tagPoint2: 'E', visible: true, color: 'red' });
+	// Create transversal
+	app.addPointXY({ tag: 'D', name: 'D', x: 4, y: 1, visible: true, nameVisible: true });
+	app.addPointXY({ tag: 'E', name: 'E', x: 6, y: 9, visible: true, nameVisible: true });
+	app.addLineAB({
+		tag: 'transversal',
+		tagPoint1: 'D',
+		tagPoint2: 'E',
+		visible: true,
+		color: 'red'
+	});
 
-    app.reDisplay();
+	app.reDisplay();
 }
 ```
 
@@ -1940,51 +1974,51 @@ async function createParallelLinesWithTransversal(app) {
 
 ```javascript
 async function validatePerpendicularConstruction(app) {
-    // Expected: Student should create a perpendicular line to AB through C
+	// Expected: Student should create a perpendicular line to AB through C
 
-    // Check if perpendicular line exists
-    const lineCount = app.listApi.longueur();
-    let perpendicularFound = false;
+	// Check if perpendicular line exists
+	const lineCount = app.listApi.longueur();
+	let perpendicularFound = false;
 
-    for (let i = 0; i < lineCount; i++) {
-        const obj = app.listApi.get(i);
+	for (let i = 0; i < lineCount; i++) {
+		const obj = app.listApi.get(i);
 
-        if (obj.type === 'line') {
-            const line1 = app.getObjectByTag('line_AB');
-            const pointC = app.getObjectByTag('C');
+		if (obj.type === 'line') {
+			const line1 = app.getObjectByTag('line_AB');
+			const pointC = app.getObjectByTag('C');
 
-            // Check if this line passes through C
-            const passesThrough = checkLinePassesThrough(obj, pointC);
+			// Check if this line passes through C
+			const passesThrough = checkLinePassesThrough(obj, pointC);
 
-            // Check if this line is perpendicular to AB
-            const isPerpendicular = checkLinesPerpendicular(obj, line1);
+			// Check if this line is perpendicular to AB
+			const isPerpendicular = checkLinesPerpendicular(obj, line1);
 
-            if (passesThrough && isPerpendicular) {
-                perpendicularFound = true;
-                break;
-            }
-        }
-    }
+			if (passesThrough && isPerpendicular) {
+				perpendicularFound = true;
+				break;
+			}
+		}
+	}
 
-    return {
-        isValid: perpendicularFound,
-        feedback: perpendicularFound
-            ? 'Excellent! La perpendiculaire est correcte.'
-            : 'La perpendiculaire n\'est pas correcte. Vérifiez qu\'elle passe par C et qu\'elle est bien perpendiculaire à AB.'
-    };
+	return {
+		isValid: perpendicularFound,
+		feedback: perpendicularFound
+			? 'Excellent! La perpendiculaire est correcte.'
+			: "La perpendiculaire n'est pas correcte. Vérifiez qu'elle passe par C et qu'elle est bien perpendiculaire à AB."
+	};
 }
 
 // Helper functions
 function checkLinePassesThrough(line, point, tolerance = 5) {
-    // Calculate distance from point to line
-    // (Simplified - actual implementation would use proper geometry)
-    return true; // Placeholder
+	// Calculate distance from point to line
+	// (Simplified - actual implementation would use proper geometry)
+	return true; // Placeholder
 }
 
 function checkLinesPerpendicular(line1, line2, angleTolerance = 2) {
-    // Calculate angle between lines
-    // Check if angle is 90° ± tolerance
-    return true; // Placeholder
+	// Calculate angle between lines
+	// Check if angle is 90° ± tolerance
+	return true; // Placeholder
 }
 ```
 
@@ -1992,40 +2026,41 @@ function checkLinesPerpendicular(line1, line2, angleTolerance = 2) {
 
 ```javascript
 async function generateRandomTriangle(app) {
-    // Generate random coordinates within MathGraph32's coordinate system
-    // Use 2-8 range for visibility
-    const minCoord = 2, maxCoord = 8;
+	// Generate random coordinates within MathGraph32's coordinate system
+	// Use 2-8 range for visibility
+	const minCoord = 2,
+		maxCoord = 8;
 
-    const randomCoord = () => Math.random() * (maxCoord - minCoord) + minCoord;
+	const randomCoord = () => Math.random() * (maxCoord - minCoord) + minCoord;
 
-    // Create random triangle
-    const A = { x: randomCoord(), y: randomCoord() };
-    const B = { x: randomCoord(), y: randomCoord() };
-    const C = { x: randomCoord(), y: randomCoord() };
+	// Create random triangle
+	const A = { x: randomCoord(), y: randomCoord() };
+	const B = { x: randomCoord(), y: randomCoord() };
+	const C = { x: randomCoord(), y: randomCoord() };
 
-    app.addPointXY({ tag: 'A', name: 'A', x: A.x, y: A.y, visible: true, nameVisible: true });
-    app.addPointXY({ tag: 'B', name: 'B', x: B.x, y: B.y, visible: true, nameVisible: true });
-    app.addPointXY({ tag: 'C', name: 'C', x: C.x, y: C.y, visible: true, nameVisible: true });
+	app.addPointXY({ tag: 'A', name: 'A', x: A.x, y: A.y, visible: true, nameVisible: true });
+	app.addPointXY({ tag: 'B', name: 'B', x: B.x, y: B.y, visible: true, nameVisible: true });
+	app.addPointXY({ tag: 'C', name: 'C', x: C.x, y: C.y, visible: true, nameVisible: true });
 
-    app.addSegment({ tag: 'AB', tagPoint1: 'A', tagPoint2: 'B', visible: true });
-    app.addSegment({ tag: 'BC', tagPoint1: 'B', tagPoint2: 'C', visible: true });
-    app.addSegment({ tag: 'CA', tagPoint1: 'C', tagPoint2: 'A', visible: true });
+	app.addSegment({ tag: 'AB', tagPoint1: 'A', tagPoint2: 'B', visible: true });
+	app.addSegment({ tag: 'BC', tagPoint1: 'B', tagPoint2: 'C', visible: true });
+	app.addSegment({ tag: 'CA', tagPoint1: 'C', tagPoint2: 'A', visible: true });
 
-    // Calculate and store expected measurements
-    const distAB = Math.sqrt(Math.pow(B.x - A.x, 2) + Math.pow(B.y - A.y, 2));
-    const distBC = Math.sqrt(Math.pow(C.x - B.x, 2) + Math.pow(C.y - B.y, 2));
-    const distCA = Math.sqrt(Math.pow(A.x - C.x, 2) + Math.pow(A.y - C.y, 2));
+	// Calculate and store expected measurements
+	const distAB = Math.sqrt(Math.pow(B.x - A.x, 2) + Math.pow(B.y - A.y, 2));
+	const distBC = Math.sqrt(Math.pow(C.x - B.x, 2) + Math.pow(C.y - B.y, 2));
+	const distCA = Math.sqrt(Math.pow(A.x - C.x, 2) + Math.pow(A.y - C.y, 2));
 
-    app.reDisplay();
+	app.reDisplay();
 
-    return {
-        figureBase64: await app.getBase64Code(),  // Official method
-        expectedMeasurements: {
-            AB: distAB,
-            BC: distBC,
-            CA: distCA
-        }
-    };
+	return {
+		figureBase64: await app.getBase64Code(), // Official method
+		expectedMeasurements: {
+			AB: distAB,
+			BC: distBC,
+			CA: distCA
+		}
+	};
 }
 ```
 
@@ -2054,6 +2089,7 @@ MathGraph32 is a powerful tool for creating interactive geometric constructions.
 ### Getting Help
 
 If you encounter issues:
+
 1. Check this guide first (especially Common Pitfalls section)
 2. Review the complete code examples
 3. Consult the GEOMETRY_API_DOCS.md for integration examples

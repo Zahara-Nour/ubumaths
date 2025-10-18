@@ -40,12 +40,11 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
-	import type { Session, User, SupabaseClient } from '@supabase/supabase-js';
+	import type { Session, User } from '@supabase/supabase-js';
 	import type { Profile } from '$lib/types/database';
 	import {
 		Menu,
 		X,
-		Home,
 		LogIn,
 		LogOut,
 		LayoutDashboard,
@@ -96,7 +95,6 @@
 		session = null,
 		user = null,
 		profile = null,
-		supabase,
 		sidebarItems = [
 			{ label: 'Accueil', href: '/', icon: '🏠' },
 			{ label: 'Jeux', href: '/games', icon: '🎮' }
@@ -106,7 +104,6 @@
 		session?: Session | null; // Verified session from server
 		user?: User | null; // Verified user from server
 		profile?: Profile | null; // User profile from database
-		supabase?: SupabaseClient; // Client for making auth requests
 		sidebarItems?: Array<{ label: string; href: string; icon?: string }>;
 	} = $props();
 
@@ -198,7 +195,7 @@
 				<DropdownMenu.Content align="start" class="w-64">
 					<DropdownMenu.Label>Navigation</DropdownMenu.Label>
 					<DropdownMenu.Separator />
-					{#each sidebarItems as item}
+					{#each sidebarItems as item (item.href)}
 						<DropdownMenu.Item>
 							<a href={item.href} class="flex w-full items-center" onclick={closeMobileMenu}>
 								{#if item.icon}

@@ -45,7 +45,7 @@
 			// Refresh search results to update status
 			searchResults = await friendsManager.searchUsers(searchQuery);
 		} else {
-			toaster.error('Impossible d\'envoyer la demande');
+			toaster.error("Impossible d'envoyer la demande");
 		}
 	}
 
@@ -92,7 +92,7 @@
 	<div class="space-y-3">
 		<div class="flex gap-2">
 			<div class="relative flex-1">
-				<Search class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+				<Search class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
 				<Input
 					type="text"
 					placeholder="Rechercher par nom..."
@@ -110,7 +110,10 @@
 		<div class="flex items-center gap-3">
 			<label for="friendship-type" class="text-sm font-medium">Type de relation :</label>
 			<Select.Root
-				selected={{ value: selectedFriendshipType, label: selectedFriendshipType === 'classmate' ? 'Camarade' : 'Mentor' }}
+				selected={{
+					value: selectedFriendshipType,
+					label: selectedFriendshipType === 'classmate' ? 'Camarade' : 'Mentor'
+				}}
 				onSelectedChange={(v) => {
 					if (v) selectedFriendshipType = v.value as FriendshipType;
 				}}
@@ -159,7 +162,9 @@
 					<div>
 						{#if user.friendship_status}
 							{@const badge = getStatusBadge(user.friendship_status)}
-							<div class="flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium {badge.class}">
+							<div
+								class="flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium {badge.class}"
+							>
 								{#if badge.icon}
 									<!-- Svelte 5: Components are dynamic by default -->
 									<badge.icon class="size-4" />
@@ -167,10 +172,7 @@
 								{badge.label}
 							</div>
 						{:else}
-							<Button
-								size="sm"
-								onclick={() => handleSendRequest(user.id, getDisplayName(user))}
-							>
+							<Button size="sm" onclick={() => handleSendRequest(user.id, getDisplayName(user))}>
 								<UserPlus class="mr-1 size-4" />
 								Ajouter
 							</Button>

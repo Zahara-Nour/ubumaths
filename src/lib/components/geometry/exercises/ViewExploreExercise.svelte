@@ -3,7 +3,11 @@
   Allows students to view pre-made constructions and explore by dragging points
 -->
 <script lang="ts">
-	import type { GeometryExercise, GeometryExerciseAttempt, MathGraphApp } from '$lib/types/geometry';
+	import type {
+		GeometryExercise,
+		GeometryExerciseAttempt,
+		MathGraphApp
+	} from '$lib/types/geometry';
 	import MathGraphViewer from '../MathGraphViewer.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';

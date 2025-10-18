@@ -13,6 +13,7 @@ This document explains where to find examples and documentation for using the Ma
 **Access:** Admin users only
 
 **Features:**
+
 - ✅ **Live interactive examples** - Click buttons to create figures in real-time
 - ✅ **Copy-paste ready code** - All examples show the actual TypeScript code used
 - ✅ **3 tabbed sections:**
@@ -21,6 +22,7 @@ This document explains where to find examples and documentation for using the Ma
   - **Advanced:** Randomization examples and resources
 
 **Examples Available:**
+
 1. **Create Triangle** - Basic triangle with 3 points and segments (**with fullscreen support** 🆕)
 2. **Create Circle** - Circle with center and radius point (**with fullscreen support** 🆕)
 3. **Perpendicular Bisector** - Classic construction exercise (**with fullscreen support** 🆕)
@@ -32,6 +34,7 @@ This document explains where to find examples and documentation for using the Ma
 All interactive examples now support fullscreen viewing! Use the fullscreen button in the top-right corner or press **F** to toggle fullscreen mode.
 
 **How to Access:**
+
 1. Log in as admin user
 2. Go to Dashboard
 3. Navigate to Admin Debug section
@@ -48,6 +51,7 @@ All interactive examples now support fullscreen viewing! Use the fullscreen butt
 **Best for:** Understanding the MathGraph32 API fundamentals
 
 **Contents:**
+
 - CDN loading with singleton pattern
 - Player vs Editor modes
 - Object creation API (points, lines, circles, etc.)
@@ -57,6 +61,7 @@ All interactive examples now support fullscreen viewing! Use the fullscreen butt
 - **6 complete code examples**
 
 **Key Sections:**
+
 ```markdown
 1. Introduction
 2. Getting Started
@@ -77,6 +82,7 @@ All interactive examples now support fullscreen viewing! Use the fullscreen butt
 **Best for:** Complete technical reference
 
 **Contents:**
+
 - Database schema (6 tables with full SQL)
 - TypeScript interfaces and types
 - **30+ validators documented** with function signatures
@@ -85,6 +91,7 @@ All interactive examples now support fullscreen viewing! Use the fullscreen butt
 - Integration examples
 
 **MathGraph32-Specific Sections:**
+
 - Validation engine (uses MathGraph32 app instance)
 - Figure generator (creates MathGraph32 figures programmatically)
 - Service APIs (mathgraph-api.ts wrapper)
@@ -100,6 +107,7 @@ All interactive examples now support fullscreen viewing! Use the fullscreen butt
 **New Section Added:** "Exemples Complets d'Exercices"
 
 **6 Complete Examples:**
+
 1. **Construction - Médiatrice** (Facile)
    - Complete SQL with validation config
    - 3-level hints system
@@ -125,6 +133,7 @@ All interactive examples now support fullscreen viewing! Use the fullscreen butt
    - Complete bissectrice construction
 
 Each example includes:
+
 - ✅ Student instructions (French)
 - ✅ Complete SQL INSERT statements
 - ✅ Validation configuration
@@ -142,6 +151,7 @@ Each example includes:
 **Structure:** 3 examples per difficulty × 4 exercise types
 
 **Each Example Includes:**
+
 - Full JSON configuration
 - TypeScript component usage code
 - **MathGraph32 figure generation code**
@@ -150,6 +160,7 @@ Each example includes:
 - Expected student workflow
 
 **Examples:**
+
 - Easy: Triangle basics, circle basics, simple constructions
 - Medium: Angle bisector, Thales theorem, inscribed circle
 - Hard: Geometric locus, complex proofs, multi-step constructions
@@ -163,12 +174,14 @@ Each example includes:
 **Access:** Public (no authentication required)
 
 **Features:**
+
 - 5 tabbed sections (Overview, Features, Examples, Grading, Documentation)
 - All 12 exercise examples listed
 - Links to all documentation
 - Complete system showcase
 
 **MathGraph32 References:**
+
 - Overview tab mentions MathGraph32
 - Features tab shows 10 construction tools
 - Examples tab shows 12 exercises
@@ -183,13 +196,15 @@ Each example includes:
 **Location:** `/src/lib/services/mathgraph-api.ts`
 
 **Contents:**
+
 - Singleton pattern implementation
 - CDN loading logic
 - Helper functions
 - **JSDoc with usage examples**
 
 **Example from JSDoc:**
-```typescript
+
+````typescript
 /**
  * @example Loading MathGraph32
  * ```typescript
@@ -205,7 +220,7 @@ Each example includes:
  * });
  * ```
  */
-```
+````
 
 ---
 
@@ -234,22 +249,28 @@ Each example includes:
 ## 🎯 Example Use Cases
 
 ### "I want to create a simple triangle exercise"
+
 → Go to: **GEOMETRY_TEACHER_GUIDE.md** → "Exemples Complets" → Example 2 (Triangle rectangle)
 
 ### "I need to understand the MathGraph32 API"
+
 → Go to: **MATHGRAPH32_API_GUIDE.md** → Complete guide with pitfalls
 
 ### "I want to see working code I can run"
+
 → Go to: **`/dashboard/admin/debug/mathgraph`** → Live interactive examples
 
 ### "I need validation examples"
+
 → Go to: **`/dashboard/admin/debug/mathgraph`** → Validation tab
 
 ### "I want to implement randomization"
+
 → Go to: **GEOMETRY_TEACHER_GUIDE.md** → Example 5 (Triangle isocèle)
 → Or: **`/dashboard/admin/debug/mathgraph`** → Advanced tab
 
 ### "I need all 30+ validators documented"
+
 → Go to: **GEOMETRY_API_DOCS.md** → Validation section
 
 ---
@@ -276,15 +297,15 @@ Each example includes:
 
 ## 📊 Summary Table
 
-| Resource | Type | Audience | MathGraph32 Content | Best For |
-|----------|------|----------|---------------------|----------|
-| `/dashboard/admin/debug/mathgraph` | Interactive | Developers | 6 live examples | Testing code |
-| MATHGRAPH32_API_GUIDE.md | Documentation | Developers | Complete API guide | Learning API |
-| GEOMETRY_API_DOCS.md | Documentation | Developers | Full reference | Technical details |
-| GEOMETRY_TEACHER_GUIDE.md | Documentation | Teachers | 6 SQL examples | Creating exercises |
-| GEOMETRY_EXAMPLES.md | Documentation | All | 12 complete examples | Real-world usage |
-| `/demo/geometry` | Interactive | All | System showcase | Understanding system |
-| mathgraph-api.ts | Code | Developers | Implementation | Understanding internals |
+| Resource                           | Type          | Audience   | MathGraph32 Content  | Best For                |
+| ---------------------------------- | ------------- | ---------- | -------------------- | ----------------------- |
+| `/dashboard/admin/debug/mathgraph` | Interactive   | Developers | 6 live examples      | Testing code            |
+| MATHGRAPH32_API_GUIDE.md           | Documentation | Developers | Complete API guide   | Learning API            |
+| GEOMETRY_API_DOCS.md               | Documentation | Developers | Full reference       | Technical details       |
+| GEOMETRY_TEACHER_GUIDE.md          | Documentation | Teachers   | 6 SQL examples       | Creating exercises      |
+| GEOMETRY_EXAMPLES.md               | Documentation | All        | 12 complete examples | Real-world usage        |
+| `/demo/geometry`                   | Interactive   | All        | System showcase      | Understanding system    |
+| mathgraph-api.ts                   | Code          | Developers | Implementation       | Understanding internals |
 
 ---
 

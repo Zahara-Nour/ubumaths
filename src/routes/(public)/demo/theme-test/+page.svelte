@@ -27,7 +27,7 @@
 </script>
 
 <div class="min-h-screen bg-background p-8">
-	<div class="max-w-6xl mx-auto space-y-12">
+	<div class="mx-auto max-w-6xl space-y-12">
 		<!-- Header -->
 		<div class="space-y-4">
 			<h1 class="text-4xl font-bold">Référence des Composants Shadcn</h1>
@@ -36,9 +36,7 @@
 			</p>
 
 			<div class="flex items-center gap-4">
-				<Button onclick={() => theme.toggle()} variant="outline">
-					Basculer le thème
-				</Button>
+				<Button onclick={() => theme.toggle()} variant="outline">Basculer le thème</Button>
 				<span class="text-sm text-muted-foreground">
 					Testez les composants dans les deux modes
 				</span>
@@ -56,14 +54,14 @@
 				</p>
 			</div>
 
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+			<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 				<Card.Root>
 					<Card.Header>
 						<Card.Title>Background</Card.Title>
 						<Card.Description>Couleur de fond principale de l'application</Card.Description>
 					</Card.Header>
 					<Card.Content>
-						<div class="p-8 bg-background border border-border rounded-lg">
+						<div class="rounded-lg border border-border bg-background p-8">
 							<p class="text-foreground">Texte sur background</p>
 							<code class="text-xs text-muted-foreground">bg-background</code>
 						</div>
@@ -78,7 +76,7 @@
 						</Card.Description>
 					</Card.Header>
 					<Card.Content>
-						<div class="p-8 bg-card border border-border rounded-lg">
+						<div class="rounded-lg border border-border bg-card p-8">
 							<p class="text-card-foreground">Texte sur card</p>
 							<code class="text-xs text-muted-foreground">bg-card</code>
 						</div>
@@ -93,7 +91,7 @@
 						</Card.Description>
 					</Card.Header>
 					<Card.Content>
-						<div class="p-8 bg-muted rounded-lg">
+						<div class="rounded-lg bg-muted p-8">
 							<p class="text-muted-foreground">Texte atténué</p>
 							<code class="text-xs text-muted-foreground">bg-muted</code>
 						</div>
@@ -108,7 +106,7 @@
 						</Card.Description>
 					</Card.Header>
 					<Card.Content>
-						<div class="p-8 bg-primary text-primary-foreground rounded-lg">
+						<div class="rounded-lg bg-primary p-8 text-primary-foreground">
 							<p class="font-semibold">Action principale</p>
 							<code class="text-xs opacity-80">bg-primary</code>
 						</div>
@@ -123,7 +121,7 @@
 						</Card.Description>
 					</Card.Header>
 					<Card.Content>
-						<div class="p-8 bg-secondary text-secondary-foreground rounded-lg">
+						<div class="rounded-lg bg-secondary p-8 text-secondary-foreground">
 							<p class="font-semibold">Action secondaire</p>
 							<code class="text-xs text-muted-foreground">bg-secondary</code>
 						</div>
@@ -138,7 +136,7 @@
 						</Card.Description>
 					</Card.Header>
 					<Card.Content>
-						<div class="p-8 bg-destructive text-destructive-foreground rounded-lg">
+						<div class="rounded-lg bg-destructive p-8 text-destructive-foreground">
 							<p class="font-semibold">Action destructive</p>
 							<code class="text-xs opacity-80">bg-destructive</code>
 						</div>
@@ -153,7 +151,7 @@
 						</Card.Description>
 					</Card.Header>
 					<Card.Content>
-						<div class="p-8 bg-accent text-accent-foreground rounded-lg">
+						<div class="rounded-lg bg-accent p-8 text-accent-foreground">
 							<p class="font-semibold">Accent</p>
 							<code class="text-xs text-muted-foreground">bg-accent</code>
 						</div>
@@ -166,7 +164,7 @@
 						<Card.Description>Couleur pour les bordures et séparateurs visuels</Card.Description>
 					</Card.Header>
 					<Card.Content>
-						<div class="p-8 border-4 border-border rounded-lg">
+						<div class="rounded-lg border-4 border-border p-8">
 							<p class="text-foreground">Bordure</p>
 							<code class="text-xs text-muted-foreground">border-border</code>
 						</div>
@@ -176,10 +174,12 @@
 				<Card.Root>
 					<Card.Header>
 						<Card.Title>Ring</Card.Title>
-						<Card.Description>Couleur pour l'anneau de focus (accessibilité clavier)</Card.Description>
+						<Card.Description
+							>Couleur pour l'anneau de focus (accessibilité clavier)</Card.Description
+						>
 					</Card.Header>
 					<Card.Content>
-						<div class="p-8 rounded-lg ring-4 ring-ring ring-offset-2 ring-offset-background">
+						<div class="rounded-lg p-8 ring-4 ring-ring ring-offset-2 ring-offset-background">
 							<p class="text-foreground">Focus ring</p>
 							<code class="text-xs text-muted-foreground">ring-ring</code>
 						</div>
@@ -199,7 +199,7 @@
 				</p>
 			</div>
 
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<Card.Root>
 					<Card.Header>
 						<Card.Title>Variants</Card.Title>
@@ -281,7 +281,7 @@
 				<p class="text-muted-foreground">Inputs, labels, et autres éléments de formulaire</p>
 			</div>
 
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<Card.Root>
 					<Card.Header>
 						<Card.Title>Input & Label</Card.Title>
@@ -321,9 +321,7 @@
 					<Card.Content class="space-y-4">
 						<div class="flex items-center gap-2">
 							<Checkbox id="terms" bind:checked={checkboxChecked} />
-							<Label for="terms" class="cursor-pointer">
-								J'accepte les termes et conditions
-							</Label>
+							<Label for="terms" class="cursor-pointer">J'accepte les termes et conditions</Label>
 						</div>
 						<div class="flex items-center gap-2">
 							<Switch id="notifications" bind:checked={switchChecked} />
@@ -340,9 +338,7 @@
 					</Card.Header>
 					<Card.Content>
 						<Select.Root>
-							<Select.Trigger class="w-full">
-								Choisissez une option
-							</Select.Trigger>
+							<Select.Trigger class="w-full">Choisissez une option</Select.Trigger>
 							<Select.Content>
 								<Select.Item value="option1">Option 1</Select.Item>
 								<Select.Item value="option2">Option 2</Select.Item>
@@ -420,7 +416,7 @@
 				<p class="text-muted-foreground">Conteneurs pour organiser le contenu</p>
 			</div>
 
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+			<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
 				<Card.Root>
 					<Card.Header>
 						<Card.Title>Card Simple</Card.Title>
@@ -617,7 +613,7 @@
 			</div>
 
 			<Card.Root>
-				<Card.Content class="pt-6 space-y-4">
+				<Card.Content class="space-y-4 pt-6">
 					<div>
 						<p class="text-sm">Section 1</p>
 						<Separator class="my-4" />

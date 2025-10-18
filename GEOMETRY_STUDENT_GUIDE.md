@@ -24,6 +24,7 @@ Les exercices de géométrie interactifs te permettent de pratiquer la géométr
 ### Qu'est-ce que MathGraph32 ?
 
 MathGraph32 est un logiciel de géométrie dynamique qui te permet de :
+
 - **Créer** des figures géométriques précises
 - **Manipuler** des points et observer les changements
 - **Mesurer** des longueurs, angles et aires
@@ -92,12 +93,14 @@ MathGraph32 est un logiciel de géométrie dynamique qui te permet de :
 **But :** Observer et comprendre des propriétés géométriques
 
 **Comment ça marche :**
+
 - Une figure est déjà construite pour toi
 - Tu peux déplacer certains points
 - Observe ce qui change et ce qui reste constant
 - Réponds aux questions posées
 
 **Exemple :**
+
 ```
 📋 Exercice : Triangle et cercle circonscrit
 📝 Instructions : Déplace les sommets du triangle et observe
@@ -109,6 +112,7 @@ Questions :
 ```
 
 **Compétences développées :**
+
 - 👁️ Observation des invariants
 - 🧠 Formulation de conjectures
 - 📊 Analyse de cas particuliers
@@ -118,11 +122,13 @@ Questions :
 **But :** Effectuer des mesures précises et calculer des grandeurs
 
 **Comment ça marche :**
+
 - Une figure est présentée
 - Tu dois créer des mesures (longueurs, angles, aires)
 - Les mesures doivent correspondre aux valeurs attendues (avec tolérance)
 
 **Exemple :**
+
 ```
 📋 Exercice : Mesures dans un triangle rectangle
 📝 Instructions : Le triangle ABC est rectangle en B.
@@ -139,12 +145,14 @@ Tolérance : ±2° pour les angles, ±3 mm pour les longueurs
 ```
 
 **Outils disponibles :**
+
 - 📏 Mesure de distance (entre 2 points)
 - 📐 Mesure d'angle (3 points)
 - 📊 Calcul d'aire (polygone)
 - 📈 Calcul de périmètre
 
 **Compétences développées :**
+
 - 🎯 Précision des mesures
 - 🧮 Vérification de relations métriques
 - 📐 Utilisation d'outils de mesure
@@ -154,11 +162,13 @@ Tolérance : ±2° pour les angles, ±3 mm pour les longueurs
 **But :** Construire une figure géométrique avec des outils
 
 **Comment ça marche :**
+
 - On te donne une figure de départ (souvent des points)
 - Tu dois construire des objets géométriques spécifiques
 - La construction est validée automatiquement
 
 **Exemple :**
+
 ```
 📋 Exercice : Médiatrice d'un segment
 📝 Instructions : Construis la médiatrice du segment [AB].
@@ -177,20 +187,21 @@ Validation automatique :
 
 **10 Outils de Construction :**
 
-| Outil | Description | Exemple d'utilisation |
-|-------|-------------|----------------------|
-| 📍 **Point** | Créer un point libre | Place un point M quelconque |
-| 📏 **Droite** | Tracer une droite entre 2 points | Trace la droite (AB) |
-| 〰️ **Segment** | Tracer un segment entre 2 points | Trace le segment [BC] |
-| 🌙 **Cercle** | Créer un cercle (centre + rayon) | Cercle de centre A passant par B |
-| ⊥ **Perpendiculaire** | Droite perpendiculaire | Perpendiculaire à (AB) passant par C |
-| ∥ **Parallèle** | Droite parallèle | Parallèle à (AB) passant par C |
-| 🎯 **Milieu** | Point milieu d'un segment | Milieu M de [AB] |
-| ∠ **Bissectrice** | Bissectrice d'un angle | Bissectrice de l'angle ABC |
-| 🎪 **Médiatrice** | Médiatrice d'un segment | Médiatrice de [AB] |
-| 🔺 **Polygone** | Créer un polygone | Triangle ABC |
+| Outil                 | Description                      | Exemple d'utilisation                |
+| --------------------- | -------------------------------- | ------------------------------------ |
+| 📍 **Point**          | Créer un point libre             | Place un point M quelconque          |
+| 📏 **Droite**         | Tracer une droite entre 2 points | Trace la droite (AB)                 |
+| 〰️ **Segment**        | Tracer un segment entre 2 points | Trace le segment [BC]                |
+| 🌙 **Cercle**         | Créer un cercle (centre + rayon) | Cercle de centre A passant par B     |
+| ⊥ **Perpendiculaire** | Droite perpendiculaire           | Perpendiculaire à (AB) passant par C |
+| ∥ **Parallèle**       | Droite parallèle                 | Parallèle à (AB) passant par C       |
+| 🎯 **Milieu**         | Point milieu d'un segment        | Milieu M de [AB]                     |
+| ∠ **Bissectrice**     | Bissectrice d'un angle           | Bissectrice de l'angle ABC           |
+| 🎪 **Médiatrice**     | Médiatrice d'un segment          | Médiatrice de [AB]                   |
+| 🔺 **Polygone**       | Créer un polygone                | Triangle ABC                         |
 
 **Compétences développées :**
+
 - 🛠️ Maîtrise des outils de construction
 - 🧩 Décomposition d'une construction complexe
 - ✅ Rigueur géométrique
@@ -200,11 +211,13 @@ Validation automatique :
 **But :** Démontrer une propriété géométrique étape par étape
 
 **Comment ça marche :**
+
 - Une figure et une propriété à démontrer sont présentées
 - Tu dois écrire les étapes de la démonstration
 - Chaque étape doit être justifiée par une propriété ou un théorème
 
 **Exemple :**
+
 ```
 📋 Exercice : Angles opposés par le sommet
 📝 Propriété à démontrer : Les angles ∠AOB et ∠COD sont égaux
@@ -242,6 +255,7 @@ Ta démonstration :
 14. **Cercle circonscrit** - Les sommets d'un triangle sont sur un cercle
 
 **Compétences développées :**
+
 - 🧠 Raisonnement logique
 - 📖 Connaissance des propriétés et théorèmes
 - ✍️ Rédaction rigoureuse
@@ -288,6 +302,7 @@ Ta démonstration :
    - Le point est automatiquement placé à l'intersection
 
 **Exemple pratique :**
+
 ```
 Exercice : Place un point M à égale distance de A et B
 
@@ -300,12 +315,14 @@ Exercice : Place un point M à égale distance de A et B
 ### Tracer une Droite ou un Segment
 
 **Droite (📏) :**
+
 - Sélectionne l'outil Droite
 - Clique sur le premier point
 - Clique sur le deuxième point
 - La droite se prolonge à l'infini
 
 **Segment (〰️) :**
+
 - Sélectionne l'outil Segment
 - Clique sur le premier point
 - Clique sur le deuxième point
@@ -333,6 +350,7 @@ Exercice : Place un point M à égale distance de A et B
    - Le cercle passe par ces 3 points
 
 **Exemple pratique :**
+
 ```
 Exercice : Construis un cercle de centre O et de rayon 50 mm
 
@@ -480,17 +498,17 @@ Utilise les barres de défilement sur les côtés
 
 ### Raccourcis Clavier Utiles
 
-| Touche | Action |
-|--------|--------|
-| **Espace + Drag** | Déplacer la vue |
-| **Ctrl + Z** | Annuler |
-| **Ctrl + Y** | Rétablir |
-| **Suppr** | Supprimer la sélection |
-| **Échap** | Désélectionner |
-| **P** | Outil Point |
-| **L** | Outil Droite |
-| **S** | Outil Segment |
-| **C** | Outil Cercle |
+| Touche            | Action                 |
+| ----------------- | ---------------------- |
+| **Espace + Drag** | Déplacer la vue        |
+| **Ctrl + Z**      | Annuler                |
+| **Ctrl + Y**      | Rétablir               |
+| **Suppr**         | Supprimer la sélection |
+| **Échap**         | Désélectionner         |
+| **P**             | Outil Point            |
+| **L**             | Outil Droite           |
+| **S**             | Outil Segment          |
+| **C**             | Outil Cercle           |
 
 ---
 
@@ -501,12 +519,12 @@ Utilise les barres de défilement sur les côtés
 Ta note finale est calculée en pourcentage (0-100%) et convertie en lettre :
 
 | Lettre | Pourcentage | Signification | Emoji |
-|--------|-------------|---------------|-------|
-| **A** | 90-100% | Excellent | 🏆 |
-| **B** | 80-89% | Très bien | 🌟 |
-| **C** | 70-79% | Bien | ✅ |
-| **D** | 60-69% | Satisfaisant | 👍 |
-| **F** | 0-59% | Insuffisant | 📚 |
+| ------ | ----------- | ------------- | ----- |
+| **A**  | 90-100%     | Excellent     | 🏆    |
+| **B**  | 80-89%      | Très bien     | 🌟    |
+| **C**  | 70-79%      | Bien          | ✅    |
+| **D**  | 60-69%      | Satisfaisant  | 👍    |
+| **F**  | 0-59%       | Insuffisant   | 📚    |
 
 **Score de passage :** La plupart des exercices requièrent un minimum de **50%** pour être considérés comme réussis.
 
@@ -587,6 +605,7 @@ Après validation, tu verras un écran de résultats comme ceci :
 ```
 
 **Couleurs de la barre :**
+
 - 🟢 Vert (90-100%) : Excellent
 - 🔵 Bleu (80-89%) : Très bien
 - 🟡 Jaune (60-79%) : Bien / Satisfaisant
@@ -606,6 +625,7 @@ Chaque exercice peut proposer jusqu'à **3 indices** de difficulté croissante. 
 **Contenu :** Rappel de la propriété ou du concept principal
 
 **Exemple (Médiatrice) :**
+
 ```
 💡 Indice Général (gratuit)
 
@@ -624,6 +644,7 @@ Rappel : Tous les points de la médiatrice sont équidistants
 **Contenu :** Suggestion d'étape ou d'outil à utiliser
 
 **Exemple (Médiatrice) :**
+
 ```
 💡 Indice Spécifique (-5 points)
 
@@ -643,6 +664,7 @@ Pour construire la médiatrice de [AB] :
 **Contenu :** Instructions détaillées étape par étape
 
 **Exemple (Médiatrice) :**
+
 ```
 💡 Indice Pas-à-Pas (-10 points)
 
@@ -703,6 +725,7 @@ Pénalité : 7 × 1% = -7 points
 ```
 
 **Temps total affiché :**
+
 ```
 ┌────────────────────────────┐
 │ ⏱️ Temps écoulé : 22:34    │
@@ -719,14 +742,14 @@ Chaque tentative après la première te coûte **-2%** (maximum **-10%**, soit 5
 
 **Tableau des Pénalités :**
 
-| Tentative | Pénalité |
-|-----------|----------|
-| 1ère | 0% |
-| 2ème | -2% |
-| 3ème | -4% |
-| 4ème | -6% |
-| 5ème | -8% |
-| 6ème+ | -10% (max) |
+| Tentative | Pénalité   |
+| --------- | ---------- |
+| 1ère      | 0%         |
+| 2ème      | -2%        |
+| 3ème      | -4%        |
+| 4ème      | -6%        |
+| 5ème      | -8%        |
+| 6ème+     | -10% (max) |
 
 **Exemple :**
 
@@ -823,6 +846,7 @@ Exercice difficile, score 95/100 :
 **Récompense :** +20 gidouilles bonus
 
 **Message :**
+
 ```
 🏆 SUCCÈS DÉBLOQUÉ : PARFAIT !
 
@@ -839,6 +863,7 @@ C'est un sans-faute absolu !
 **Récompense :** +10 gidouilles bonus
 
 **Exemple :**
+
 ```
 Limite de temps : 20 minutes
 Ton temps : 8 minutes ✅
@@ -858,6 +883,7 @@ bien en-dessous de la limite de 20 minutes !
 **Récompense :** +15 gidouilles bonus
 
 **Message :**
+
 ```
 🎯 SUCCÈS DÉBLOQUÉ : PREMIER ESSAI !
 
@@ -874,6 +900,7 @@ Excellente préparation !
 **Récompense :** +10 gidouilles bonus
 
 **Message :**
+
 ```
 💪 SUCCÈS DÉBLOQUÉ : PERSÉVÉRANT !
 
@@ -890,6 +917,7 @@ La persévérance paye toujours !
 **Récompense :** +10 gidouilles bonus
 
 **Message :**
+
 ```
 🌟 SUCCÈS DÉBLOQUÉ : AUTONOME !
 
@@ -929,12 +957,12 @@ Les gidouilles servent à acheter des **cartes VIP** dans le magasin !
 
 **Cartes disponibles :**
 
-| Rareté | Coût | Avantages |
-|--------|------|-----------|
-| **Commune** ⚪ | 50-100 🪙 | +2% bonus sur tous les exercices |
-| **Rare** 🔵 | 150-300 🪙 | +5% bonus + 1 indice gratuit par jour |
-| **Épique** 🟣 | 400-600 🪙 | +10% bonus + 2 indices gratuits par jour |
-| **Légendaire** 🟡 | 1000+ 🪙 | +15% bonus + indices illimités |
+| Rareté            | Coût       | Avantages                                |
+| ----------------- | ---------- | ---------------------------------------- |
+| **Commune** ⚪    | 50-100 🪙  | +2% bonus sur tous les exercices         |
+| **Rare** 🔵       | 150-300 🪙 | +5% bonus + 1 indice gratuit par jour    |
+| **Épique** 🟣     | 400-600 🪙 | +10% bonus + 2 indices gratuits par jour |
+| **Légendaire** 🟡 | 1000+ 🪙   | +15% bonus + indices illimités           |
 
 **💡 Stratégie :** Économise tes gidouilles pour acheter des cartes rares qui t'aideront sur le long terme !
 
@@ -1027,12 +1055,12 @@ Tracer directement une droite perpendiculaire au hasard
 
 **Pour chaque type de construction, il y a un outil approprié :**
 
-| Construction | Outil à utiliser | ❌ Évite |
-|--------------|------------------|----------|
-| Milieu d'un segment | 🎯 Milieu | Placer un point "à l'œil" |
-| Perpendiculaire | ⊥ Perpendiculaire | Tracer une droite "à peu près perpendiculaire" |
-| Parallèle | ∥ Parallèle | Tracer une droite "qui semble parallèle" |
-| Cercle de rayon précis | 🌙 Cercle (avec rayon) | Ajuster visuellement |
+| Construction           | Outil à utiliser       | ❌ Évite                                       |
+| ---------------------- | ---------------------- | ---------------------------------------------- |
+| Milieu d'un segment    | 🎯 Milieu              | Placer un point "à l'œil"                      |
+| Perpendiculaire        | ⊥ Perpendiculaire      | Tracer une droite "à peu près perpendiculaire" |
+| Parallèle              | ∥ Parallèle            | Tracer une droite "qui semble parallèle"       |
+| Cercle de rayon précis | 🌙 Cercle (avec rayon) | Ajuster visuellement                           |
 
 **💡 Règle d'or :** Utilise toujours les outils de construction géométrique plutôt que de placer les objets "à l'œil".
 
@@ -1081,6 +1109,7 @@ Construction en 3 étapes :
 ```
 
 **Exemple :**
+
 ```
 Question : "Le centre du cercle circonscrit est-il toujours
             à l'intérieur du triangle ?"
@@ -1279,6 +1308,7 @@ Progression : 📈 +27% depuis la 1ère tentative !
 ```
 
 **💡 Utilise cet historique pour :**
+
 - Voir ta progression
 - Comprendre tes erreurs passées
 - Te motiver à t'améliorer
@@ -1328,6 +1358,7 @@ Progression : 📈 +27% depuis la 1ère tentative !
 **Causes possibles :**
 
 1. **Tolérance dépassée**
+
    ```
    Attendu : Angle = 45°
    Ton angle : 47.3°
@@ -1336,6 +1367,7 @@ Progression : 📈 +27% depuis la 1ère tentative !
    ```
 
 2. **Mauvais objet mesuré**
+
    ```
    Attendu : Distance AB
    Tu as mesuré : Distance AC
@@ -1428,11 +1460,13 @@ Causes possibles :
 #### Comment Bien Formuler une Question
 
 ❌ **Mauvaise question :**
+
 ```
 "Ça marche pas, aidez-moi"
 ```
 
 ✅ **Bonne question :**
+
 ```
 "Bonjour,
 
@@ -1448,6 +1482,7 @@ Merci !"
 ```
 
 **Informations utiles à fournir :**
+
 - Titre de l'exercice
 - Ce que tu as fait (étapes)
 - Le message d'erreur exact
@@ -1478,6 +1513,7 @@ Merci !"
 #### Q3 : Puis-je faire les exercices dans l'ordre que je veux ?
 
 **R :** Certains exercices peuvent avoir des **prérequis** (exercices à faire avant). Dans ce cas, tu verras un message :
+
 ```
 🔒 Exercice verrouillé
 
@@ -1519,6 +1555,7 @@ Puis tu pourras accéder à cet exercice.
 **Score final :** Score brut **moins** les pénalités (indices, temps, tentatives)
 
 **Exemple :**
+
 ```
 Score brut : 95 / 100 (ta construction est excellente)
 Pénalités : -12 (tu as utilisé un indice et dépassé le temps)
@@ -1541,6 +1578,7 @@ Pourcentage : 78 / 100 × 100 = 78%
 #### Q7 : Quelle est la note minimale pour réussir ?
 
 **R :** En général, il faut **50%** pour considérer l'exercice comme réussi. Mais :
+
 - Certains exercices peuvent avoir un seuil plus élevé (ex: 60% ou 70%)
 - Pour avoir des gidouilles, tu dois au moins atteindre le seuil de réussite
 - Pour débloquer certains succès, il faut 80% minimum
@@ -1575,6 +1613,7 @@ Tu peux même **revoir ta figure** de chaque tentative en cliquant sur le bouton
 **R :** **Oui**, la pénalité d'indice s'applique à **cette tentative**.
 
 Si tu réessaies l'exercice (nouvelle tentative), tu repars à zéro :
+
 - Aucun indice utilisé
 - Aucune pénalité d'indice
 - Tu peux essayer de réussir sans indices cette fois !
@@ -1595,12 +1634,12 @@ Si tu réessaies l'exercice (nouvelle tentative), tu repars à zéro :
 
 **R :** Ça dépend de la rareté :
 
-| Rareté | Coût moyen | Nombre d'exercices moyens nécessaires |
-|--------|------------|--------------------------------------|
-| Commune ⚪ | 50-100 🪙 | 5-10 exercices moyens |
-| Rare 🔵 | 150-300 🪙 | 15-30 exercices moyens |
-| Épique 🟣 | 400-600 🪙 | 40-60 exercices moyens |
-| Légendaire 🟡 | 1000+ 🪙 | 100+ exercices moyens |
+| Rareté        | Coût moyen | Nombre d'exercices moyens nécessaires |
+| ------------- | ---------- | ------------------------------------- |
+| Commune ⚪    | 50-100 🪙  | 5-10 exercices moyens                 |
+| Rare 🔵       | 150-300 🪙 | 15-30 exercices moyens                |
+| Épique 🟣     | 400-600 🪙 | 40-60 exercices moyens                |
+| Légendaire 🟡 | 1000+ 🪙   | 100+ exercices moyens                 |
 
 **Conseil :** Concentre-toi sur les exercices difficiles (★★★) qui rapportent plus de gidouilles !
 
@@ -1611,6 +1650,7 @@ Si tu réessaies l'exercice (nouvelle tentative), tu repars à zéro :
 Les **succès eux-mêmes** sont affichés sur ton profil pour montrer tes accomplissements, mais ils ne donnent pas de bonus permanent sur les exercices suivants.
 
 **Exception :** Les **cartes VIP** achetées avec les gidouilles donnent des bonus permanents :
+
 - +2% à +15% sur tous les exercices
 - Indices gratuits par jour
 
@@ -1623,6 +1663,7 @@ Les **succès eux-mêmes** sont affichés sur ton profil pour montrer tes accomp
 3. **Vitesse :** Sois rapide pour débloquer ⚡ Speedster
 
 **Le classement prend en compte :**
+
 - Nombre total de gidouilles
 - Nombre de succès débloqués
 - Score moyen sur tous les exercices
@@ -1633,12 +1674,14 @@ Les **succès eux-mêmes** sont affichés sur ton profil pour montrer tes accomp
 #### Q15 : Quel navigateur dois-je utiliser ?
 
 **R :** MathGraph32 fonctionne sur :
+
 - ✅ Chrome (recommandé)
 - ✅ Firefox
 - ✅ Edge
 - ✅ Safari (macOS/iOS)
 
 **⚠️ Non supporté :**
+
 - ❌ Internet Explorer (obsolète)
 
 #### Q16 : Puis-je utiliser MathGraph32 sur mobile/tablette ?
@@ -1646,9 +1689,11 @@ Les **succès eux-mêmes** sont affichés sur ton profil pour montrer tes accomp
 **R :** **Oui**, mais avec quelques limitations :
 
 **Tablette (≥ 10 pouces) :** ✅ Fonctionne bien
+
 - Utilise un stylet pour plus de précision
 
 **Smartphone :** ⚠️ Possible mais difficile
+
 - Écran petit = constructions compliquées
 - Privilégie les exercices d'exploration (moins de constructions)
 
@@ -1657,6 +1702,7 @@ Les **succès eux-mêmes** sont affichés sur ton profil pour montrer tes accomp
 #### Q17 : Est-ce que mes données sont sauvegardées si je change d'appareil ?
 
 **R :** **Oui !** Tout est sauvegardé en ligne :
+
 - Tes scores
 - Tes tentatives
 - Tes gidouilles
@@ -1668,6 +1714,7 @@ Tu peux te connecter depuis n'importe quel appareil et retrouver ta progression.
 #### Q18 : Puis-je travailler hors ligne ?
 
 **R :** **Non**, les exercices nécessitent une connexion Internet pour :
+
 - Charger MathGraph32
 - Sauvegarder ta progression
 - Valider tes réponses

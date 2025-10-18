@@ -207,7 +207,9 @@ export function formatScheduleDisplay(schedule: ClassSchedule): string {
 	}
 
 	if (parts.length === 0) {
-		parts.push(`${formatTimeDisplay(schedule.start_time)} - ${formatTimeDisplay(schedule.end_time)}`);
+		parts.push(
+			`${formatTimeDisplay(schedule.start_time)} - ${formatTimeDisplay(schedule.end_time)}`
+		);
 	}
 
 	return parts.join(' • ');

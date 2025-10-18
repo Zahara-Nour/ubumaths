@@ -57,6 +57,7 @@ User → /dashboard
 ### Student Role (`'student'`)
 
 **Capabilities:**
+
 - View pending assignments
 - Track points and mastery levels
 - See enrolled classes
@@ -64,6 +65,7 @@ User → /dashboard
 - Complete assignments
 
 **Dashboard Features:**
+
 - Assignments due counter
 - Total points earned
 - Mastery level percentage
@@ -73,6 +75,7 @@ User → /dashboard
 ### Teacher Role (`'teacher'`)
 
 **Capabilities:**
+
 - Create and manage classes
 - Add students to classes
 - Create custom exercises
@@ -81,6 +84,7 @@ User → /dashboard
 - Track class performance
 
 **Dashboard Features:**
+
 - Total classes count
 - Total students across all classes
 - Active assignments counter
@@ -92,6 +96,7 @@ User → /dashboard
 ### Admin Role (`'admin'`)
 
 **Capabilities:**
+
 - Full system access
 - User management (CRUD operations)
 - Role assignment
@@ -101,6 +106,7 @@ User → /dashboard
 - Audit log access
 
 **Dashboard Features:**
+
 - Total users (with weekly trend)
 - Active classes count
 - Total exercises count
@@ -136,20 +142,21 @@ src/
 
 ```typescript
 export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
-  // Get authenticated user session
-  const { user } = await safeGetSession();
+	// Get authenticated user session
+	const { user } = await safeGetSession();
 
-  // Redirect to login if not authenticated
-  requireAuth(user);
+	// Redirect to login if not authenticated
+	requireAuth(user);
 
-  // Fetch profile with role from database
-  const profile = await getUserProfile(supabase, user!.id);
+	// Fetch profile with role from database
+	const profile = await getUserProfile(supabase, user!.id);
 
-  return { profile };
+	return { profile };
 };
 ```
 
 **What happens:**
+
 - Runs on **every request** to `/dashboard/*`
 - Verifies user is authenticated via Supabase
 - Fetches profile from `profiles` table
@@ -159,21 +166,22 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
 
 ```svelte
 <script lang="ts">
-  let { data, children } = $props();
+	let { data, children } = $props();
 </script>
 
 <header>
-  <h1>Dashboard</h1>
-  <p>Role: {data.profile.role}</p>
-  <span>{data.profile.email}</span>
+	<h1>Dashboard</h1>
+	<p>Role: {data.profile.role}</p>
+	<span>{data.profile.email}</span>
 </header>
 
 <main>
-  {@render children()}
+	{@render children()}
 </main>
 ```
 
 **What happens:**
+
 - Receives `data.profile` from server load
 - Displays common header with user info
 - Renders child routes via `{@render children()}`
@@ -182,15 +190,16 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
 
 ```svelte
 {#if data.profile.role === 'student'}
-  <StudentDashboard {data} />
+	<StudentDashboard {data} />
 {:else if data.profile.role === 'teacher'}
-  <TeacherDashboard {data} />
+	<TeacherDashboard {data} />
 {:else if data.profile.role === 'admin'}
-  <AdminDashboard {data} />
+	<AdminDashboard {data} />
 {/if}
 ```
 
 **What happens:**
+
 - Checks `data.profile.role` from database
 - Renders appropriate dashboard component
 - Passes data to component as prop
@@ -201,15 +210,15 @@ Each dashboard component receives the full `data` object:
 
 ```svelte
 <script lang="ts">
-  import type { PageData } from './$types';
+	import type { PageData } from './$types';
 
-  let { data }: { data: PageData } = $props();
+	let { data }: { data: PageData } = $props();
 
-  // Access user info:
-  // - data.profile.id
-  // - data.profile.email
-  // - data.profile.full_name
-  // - data.profile.role
+	// Access user info:
+	// - data.profile.id
+	// - data.profile.email
+	// - data.profile.full_name
+	// - data.profile.role
 </script>
 ```
 
@@ -222,9 +231,9 @@ Each dashboard component receives the full `data` object:
 
 ```typescript
 export function requireAuth(user: { id: string } | null) {
-  if (!user) {
-    throw redirect(303, '/login');
-  }
+	if (!user) {
+		throw redirect(303, '/login');
+	}
 }
 ```
 
@@ -235,6 +244,7 @@ export function requireAuth(user: { id: string } | null) {
 
 **Location**: `src/lib/server/auth.ts`
 **Functions**:
+
 - `requireRole(profile, allowedRoles)` - Enforces role access (throws 403)
 - `hasRole(profile, role)` - Checks role (returns boolean)
 - `hasAnyRole(profile, roles)` - Checks multiple roles (returns boolean)
@@ -244,12 +254,12 @@ export function requireAuth(user: { id: string } | null) {
 ```typescript
 // In /dashboard/classes/+page.server.ts
 export const load: PageServerLoad = async ({ parent }) => {
-  const { profile } = await parent();
+	const { profile } = await parent();
 
-  // Only teachers can access this page
-  requireRole(profile, 'teacher');
+	// Only teachers can access this page
+	requireRole(profile, 'teacher');
 
-  // Fetch teacher's classes...
+	// Fetch teacher's classes...
 };
 ```
 
@@ -269,6 +279,7 @@ CREATE TABLE profiles (
 ```
 
 **Key Points:**
+
 - Role is **stored in database**, not in JWT or cookies
 - Role is **validated server-side** on every request
 - TypeScript type: `UserRole = 'student' | 'teacher' | 'admin'`
@@ -307,19 +318,16 @@ import type { PageServerLoad } from './$types';
 import { requireRole } from '$lib/server/auth';
 
 export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
-  // Get profile from parent layout
-  const { profile } = await parent();
+	// Get profile from parent layout
+	const { profile } = await parent();
 
-  // Enforce teacher-only access (throws 403 for non-teachers)
-  requireRole(profile, 'teacher');
+	// Enforce teacher-only access (throws 403 for non-teachers)
+	requireRole(profile, 'teacher');
 
-  // Fetch this teacher's classes
-  const { data: classes } = await supabase
-    .from('classes')
-    .select('*')
-    .eq('teacher_id', profile.id);
+	// Fetch this teacher's classes
+	const { data: classes } = await supabase.from('classes').select('*').eq('teacher_id', profile.id);
 
-  return { classes };
+	return { classes };
 };
 ```
 
@@ -329,9 +337,9 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 <!-- File: src/routes/dashboard/exercises/[id]/+page.svelte -->
 
 <script lang="ts">
-  import { hasAnyRole } from '$lib/server/auth';
+	import { hasAnyRole } from '$lib/server/auth';
 
-  let { data } = $props();
+	let { data } = $props();
 </script>
 
 <!-- All roles see the exercise -->
@@ -340,15 +348,15 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 
 <!-- Only teachers and admins see edit button -->
 {#if hasAnyRole(data.profile, ['teacher', 'admin'])}
-  <button>Edit Exercise</button>
+	<button>Edit Exercise</button>
 {/if}
 
 <!-- Only students see attempt history -->
 {#if hasRole(data.profile, 'student')}
-  <div class="attempts">
-    <h2>Your Attempts</h2>
-    <!-- ... -->
-  </div>
+	<div class="attempts">
+		<h2>Your Attempts</h2>
+		<!-- ... -->
+	</div>
 {/if}
 ```
 
@@ -379,13 +387,13 @@ CHECK (role IN ('student', 'teacher', 'admin', 'parent'));
 ```svelte
 <!-- File: src/routes/dashboard/ParentDashboard.svelte -->
 <script lang="ts">
-  import type { PageData } from './$types';
-  let { data }: { data: PageData } = $props();
+	import type { PageData } from './$types';
+	let { data }: { data: PageData } = $props();
 </script>
 
 <div>
-  <h2>Parent Dashboard</h2>
-  <!-- Parent-specific content -->
+	<h2>Parent Dashboard</h2>
+	<!-- Parent-specific content -->
 </div>
 ```
 
@@ -394,13 +402,13 @@ CHECK (role IN ('student', 'teacher', 'admin', 'parent'));
 ```svelte
 <!-- File: src/routes/dashboard/+page.svelte -->
 {#if data.profile.role === 'student'}
-  <StudentDashboard {data} />
+	<StudentDashboard {data} />
 {:else if data.profile.role === 'teacher'}
-  <TeacherDashboard {data} />
+	<TeacherDashboard {data} />
 {:else if data.profile.role === 'admin'}
-  <AdminDashboard {data} />
+	<AdminDashboard {data} />
 {:else if data.profile.role === 'parent'}
-  <ParentDashboard {data} />
+	<ParentDashboard {data} />
 {/if}
 ```
 
@@ -423,9 +431,9 @@ Each route's `+page.server.ts` enforces role access:
 
 ```typescript
 export const load: PageServerLoad = async ({ parent }) => {
-  const { profile } = await parent();
-  requireRole(profile, 'teacher'); // or 'admin', or 'student'
-  // ... fetch data
+	const { profile } = await parent();
+	requireRole(profile, 'teacher'); // or 'admin', or 'student'
+	// ... fetch data
 };
 ```
 
@@ -522,6 +530,7 @@ The role-based dashboard system provides:
 - ✅ Clear separation of concerns
 
 All dashboard routes use the pattern:
+
 1. Authenticate user
 2. Fetch profile with role
 3. Route to role-specific component

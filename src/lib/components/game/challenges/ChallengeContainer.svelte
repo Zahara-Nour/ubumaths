@@ -21,7 +21,9 @@
 	let hintVisible = $state(false);
 
 	// Interpolated question HTML
-	const questionHtml = $derived(interpolateQuestion(instance.challenge.question, instance.variables));
+	const questionHtml = $derived(
+		interpolateQuestion(instance.challenge.question, instance.variables)
+	);
 
 	// Time taken calculation
 	const timeTaken = $derived(instance.challenge.timer - timeRemaining);
@@ -54,7 +56,9 @@
 	}
 </script>
 
-<div class="challenge-container mx-auto max-w-3xl space-y-6 rounded-lg border border-border bg-card p-6">
+<div
+	class="challenge-container mx-auto max-w-3xl space-y-6 rounded-lg border border-border bg-card p-6"
+>
 	<!-- Timer -->
 	<ChallengeTimer
 		bind:timeRemaining
@@ -65,7 +69,7 @@
 
 	<!-- Challenge Question -->
 	<div class="challenge-question rounded-md bg-muted p-6">
-		<div class="prose prose-sm dark:prose-invert max-w-none">
+		<div class="prose prose-sm max-w-none dark:prose-invert">
 			{@html questionHtml}
 		</div>
 	</div>
@@ -79,16 +83,12 @@
 	{#if showHint && instance.challenge.hint}
 		<div class="hint-section">
 			{#if !hintVisible}
-				<Button onclick={toggleHint} variant="outline" size="sm">
-					💡 Afficher l'indice
-				</Button>
+				<Button onclick={toggleHint} variant="outline" size="sm">💡 Afficher l'indice</Button>
 			{:else}
 				<div class="space-y-2">
 					<div class="flex items-center justify-between">
 						<span class="text-sm font-medium">Indice :</span>
-						<Button onclick={toggleHint} variant="ghost" size="sm">
-							Masquer
-						</Button>
+						<Button onclick={toggleHint} variant="ghost" size="sm">Masquer</Button>
 					</div>
 					<div class="rounded-md border border-border bg-muted/50 p-4 text-sm">
 						{@html instance.challenge.hint}

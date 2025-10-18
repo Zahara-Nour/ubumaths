@@ -281,10 +281,7 @@
 <!-- Fullscreen Wrapper -->
 <div
 	bind:this={wrapperElement}
-	class={cn(
-		'mathgraph-fullscreen-wrapper relative',
-		isFullscreen ? 'bg-background' : ''
-	)}
+	class={cn('mathgraph-fullscreen-wrapper relative', isFullscreen ? 'bg-background' : '')}
 >
 	<!-- Fullscreen Toggle Button -->
 	{#if showButton}
@@ -292,9 +289,11 @@
 			onclick={toggleFullscreen}
 			class={cn(
 				getButtonPositionClasses(),
-				'rounded-md bg-primary px-3 py-2 text-primary-foreground shadow-lg transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+				'rounded-md bg-primary px-3 py-2 text-primary-foreground shadow-lg transition-all hover:bg-primary/90 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none'
 			)}
-			title={isFullscreen ? 'Quitter le plein écran (F ou Échap)' : 'Passer en plein écran (F ou F11)'}
+			title={isFullscreen
+				? 'Quitter le plein écran (F ou Échap)'
+				: 'Passer en plein écran (F ou F11)'}
 			aria-label={isFullscreen ? 'Quitter le plein écran' : 'Passer en plein écran'}
 		>
 			{#if isFullscreen}
@@ -306,10 +305,7 @@
 	{/if}
 
 	<!-- Canvas Container -->
-	<div
-		bind:this={container}
-		class="mathgraph-canvas-container"
-	>
+	<div bind:this={container} class="mathgraph-canvas-container">
 		{@render children?.()}
 	</div>
 </div>

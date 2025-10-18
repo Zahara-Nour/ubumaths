@@ -89,6 +89,7 @@ npx supabase stop
 ### Prerequisites
 
 Before running tests for the first time:
+
 1. **Install dependencies**: `pnpm install`
 2. **Install Playwright browsers**: `npx playwright install --with-deps`
 3. **Docker installed** (required for local Supabase)
@@ -99,6 +100,7 @@ Before running tests for the first time:
 Local Supabase is a **complete local database stack** running on your machine, NOT a client for remote Supabase.
 
 When you run `npx supabase start`, it spins up:
+
 - **PostgreSQL Database** - Real Postgres on `localhost:54322`
 - **PostgREST API** - REST API on `localhost:54321`
 - **GoTrue Auth** - Authentication service
@@ -107,6 +109,7 @@ When you run `npx supabase start`, it spins up:
 - **Studio Dashboard** - Web UI on `http://localhost:54323`
 
 **Key Points:**
+
 - ✅ **Completely isolated** - No connection to production Supabase
 - ✅ **Uses Docker** - Runs all services in containers
 - ✅ **Disposable** - Data resets when you stop/restart
@@ -114,6 +117,7 @@ When you run `npx supabase start`, it spins up:
 - ✅ **Fast & safe** - No network latency, won't affect production
 
 **Useful Commands:**
+
 ```bash
 # Check local Supabase status
 npx supabase status
@@ -145,6 +149,7 @@ pnpm test:unit -- challenge        # runs challenge-variables.test.ts
 ### E2E Tests
 
 **Prerequisites:**
+
 1. Local Supabase running: `npx supabase start`
 2. Test data seeded: `npx tsx tests/seed-test-data.ts`
 
@@ -166,6 +171,7 @@ pnpm test:e2e -- --project=firefox
 ```
 
 **Cleanup after tests:**
+
 ```bash
 npx tsx tests/cleanup-test-data.ts
 ```
@@ -196,6 +202,7 @@ npx playwright show-report
 ### CI/CD (GitHub Actions)
 
 Tests run automatically on:
+
 - Push to `main` or `develop` branches
 - Pull requests to `main` or `develop`
 
@@ -206,30 +213,31 @@ View results in GitHub Actions tab of your repository.
 ## Test Fixtures
 
 ### Location
+
 `tests/fixtures/game-fixtures.ts`
 
 ### Factory Functions
 
 ```typescript
 import {
-  createTestPlayer,
-  createTestMonster,
-  createTestChallenge,
-  createTestCombat,
-  createTestSpell
+	createTestPlayer,
+	createTestMonster,
+	createTestChallenge,
+	createTestCombat,
+	createTestSpell
 } from '../tests/fixtures/game-fixtures';
 
 // Create test player with overrides
 const player = createTestPlayer({
-  level: 10,
-  xp: 5000,
-  pyrs_fire: 200
+	level: 10,
+	xp: 5000,
+	pyrs_fire: 200
 });
 
 // Create test monster (category: common, elite, legendary)
 const monster = createTestMonster('legendary', {
-  element: 'fire',
-  level: 20
+	element: 'fire',
+	level: 20
 });
 
 // Create test challenge (type: addition, subtraction, multiplication)
@@ -260,11 +268,11 @@ For deterministic tests:
 import { seedRandom, resetRandom } from '../tests/fixtures/game-fixtures';
 
 beforeEach(() => {
-  seedRandom(12345); // Reproducible RNG
+	seedRandom(12345); // Reproducible RNG
 });
 
 afterEach(() => {
-  resetRandom(); // Restore native Math.random
+	resetRandom(); // Restore native Math.random
 });
 ```
 
@@ -289,6 +297,7 @@ Tests all combat calculation functions with **100% coverage goal**:
 - ✅ `generateRandomMonster()` - Monster generation with deterministic RNG
 
 **Run tests:**
+
 ```bash
 pnpm test:unit -- combat
 ```
@@ -306,11 +315,13 @@ Tests challenge generation and validation with **100% coverage goal**:
 - ✅ Edge cases: circular dependencies, division by zero, missing variables
 
 **Simple Challenge Types (Prioritized):**
+
 - ✅ Addition challenges
 - ✅ Subtraction challenges
 - ✅ Multiplication challenges
 
 **Run tests:**
+
 ```bash
 pnpm test:unit -- challenge
 ```
@@ -332,6 +343,7 @@ Tests complete combat experience:
 - ✅ **Element advantage**: Damage bonuses for elemental matchups
 
 **Run tests:**
+
 ```bash
 pnpm test:e2e -- combat-flow
 ```
@@ -349,6 +361,7 @@ Tests challenge UI and validation:
 - ✅ **Challenge history**: Attempt tracking
 
 **Run tests:**
+
 ```bash
 pnpm test:e2e -- challenge-types
 ```
@@ -374,6 +387,7 @@ pnpm test:e2e -- spell
 **Script**: `tests/seed-test-data.ts`
 
 Seeds test data into local Supabase:
+
 - 7 test monsters (common, elite, legendary + all elements)
 - 7 test challenges (addition, subtraction, multiplication at various difficulties)
 - 4 test spells (fire, water, earth, wind)
@@ -381,6 +395,7 @@ Seeds test data into local Supabase:
 - 1 active spell deck
 
 **Environment Variables** (`.env.test` or shell):
+
 ```bash
 PUBLIC_SUPABASE_URL=http://localhost:54321
 SUPABASE_SERVICE_ROLE_KEY=your-service-key
@@ -389,6 +404,7 @@ TEST_TEACHER_ID=uuid-of-test-teacher
 ```
 
 **Run seeding:**
+
 ```bash
 npx tsx tests/seed-test-data.ts
 ```
@@ -400,6 +416,7 @@ npx tsx tests/seed-test-data.ts
 Removes test combat sessions and resets player progress while preserving reusable data (monsters, challenges).
 
 **Run cleanup:**
+
 ```bash
 npx tsx tests/cleanup-test-data.ts
 ```
@@ -407,11 +424,13 @@ npx tsx tests/cleanup-test-data.ts
 ### Test Data Lifecycle
 
 **Before Test Suite:**
+
 1. Start local Supabase: `npx supabase start`
 2. Run seed script: `npx tsx tests/seed-test-data.ts`
 3. Run e2e tests: `pnpm test:e2e`
 
 **After Test Suite:**
+
 1. Run cleanup script: `npx tsx tests/cleanup-test-data.ts`
 
 **Note**: Monsters and challenges are preserved across test runs for performance.
@@ -479,9 +498,9 @@ Add to `package.json`:
 
 ```json
 {
-  "scripts": {
-    "precommit": "pnpm test:unit -- --run"
-  }
+	"scripts": {
+		"precommit": "pnpm test:unit -- --run"
+	}
 }
 ```
 
@@ -513,6 +532,7 @@ afterEach(() => resetRandom());
 **Problem**: Selectors don't match actual DOM structure.
 
 **Solution**:
+
 1. Verify component structure: `await page.pause()` to debug
 2. Use data attributes: `data-testid="combat-arena"`
 3. Check timing: Add `await expect(element).toBeVisible()` before interactions
@@ -522,6 +542,7 @@ afterEach(() => resetRandom());
 **Problem**: E2E tests can't connect to Supabase.
 
 **Solution**:
+
 1. Check Supabase is running: `npx supabase status`
 2. Verify environment variables: `PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
 3. Check firewall/ports: Port 54321 should be accessible
@@ -531,6 +552,7 @@ afterEach(() => resetRandom());
 **Problem**: Different environment between local and CI.
 
 **Solution**:
+
 1. Ensure CI uses same Node version: Check `.nvmrc`
 2. Install all dependencies: `pnpm install --frozen-lockfile`
 3. Use local Supabase in CI: Add Supabase setup step
@@ -540,6 +562,7 @@ afterEach(() => resetRandom());
 **Problem**: `validateAnswer()` rejects correct answers.
 
 **Solution**:
+
 1. Check tolerance: Default is 0.01 for numeric answers
 2. Verify type matching: String vs Number comparison
 3. Log debug info: Console.log in `validateAnswer()` function
@@ -549,22 +572,26 @@ afterEach(() => resetRandom());
 ## Next Steps
 
 ### Week 1: Foundation ✅
+
 - [x] Create test fixtures and factories
 - [x] Write unit tests for combat calculations
 - [x] Write unit tests for challenge variable system
 
 ### Week 2: E2E Critical Path ✅
+
 - [x] Set up test data seeding
 - [x] Write combat flow e2e tests
 - [x] Write challenge types e2e tests
 
 ### Week 3: Error Scenarios 🔄
+
 - [ ] Add network error tests
 - [ ] Add concurrent action tests
 - [ ] Add browser state recovery tests
 - [ ] Add edge case tests
 
 ### Week 4: CI/CD & Documentation ⏳
+
 - [ ] Set up GitHub Actions workflow
 - [ ] Add pre-commit hooks
 - [ ] Generate coverage reports

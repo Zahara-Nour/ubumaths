@@ -22,14 +22,14 @@
 	let { studentCount, onEditSchedule }: Props = $props();
 </script>
 
-<div class="bg-card rounded-lg border border-border shadow-sm p-6">
+<div class="rounded-lg border border-border bg-card p-6 shadow-sm">
 	<div class="flex items-center justify-between">
 		<!-- Stats Section -->
 		<div class="flex items-center gap-6">
 			<!-- Student Count -->
 			<div class="flex items-center gap-3">
-				<div class="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10">
-					<Users class="w-6 h-6 text-primary" />
+				<div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+					<Users class="h-6 w-6 text-primary" />
 				</div>
 				<div>
 					<p class="text-sm font-medium text-muted-foreground">Élèves</p>
@@ -53,7 +53,7 @@
 
 		<!-- Edit Schedule Button -->
 		<Button onclick={onEditSchedule} class="gap-2">
-			<CalendarClock class="w-4 h-4" />
+			<CalendarClock class="h-4 w-4" />
 			Modifier l'Emploi du Temps
 		</Button>
 	</div>

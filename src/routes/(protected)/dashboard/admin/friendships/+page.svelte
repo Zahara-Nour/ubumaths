@@ -123,12 +123,23 @@
 	<!-- Filters -->
 	<div class="mb-4 flex flex-col gap-3 md:flex-row">
 		<div class="relative flex-1">
-			<Search class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-			<Input type="text" placeholder="Rechercher par nom..." bind:value={searchQuery} class="pl-10" />
+			<Search class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+			<Input
+				type="text"
+				placeholder="Rechercher par nom..."
+				bind:value={searchQuery}
+				class="pl-10"
+			/>
 		</div>
 
 		<Select.Root
-			selected={{ value: selectedClass, label: selectedClass === 'all' ? 'Toutes les classes' : data.classes.find(c => c.id === selectedClass)?.name || 'Toutes les classes' }}
+			selected={{
+				value: selectedClass,
+				label:
+					selectedClass === 'all'
+						? 'Toutes les classes'
+						: data.classes.find((c) => c.id === selectedClass)?.name || 'Toutes les classes'
+			}}
 			onSelectedChange={(v) => {
 				if (v) selectedClass = v.value;
 			}}
@@ -138,7 +149,7 @@
 			</Select.Trigger>
 			<Select.Content>
 				<Select.Item value="all">Toutes les classes</Select.Item>
-				{#each data.classes as classItem}
+				{#each data.classes as classItem (classItem.id)}
 					<Select.Item value={classItem.id}>{classItem.name}</Select.Item>
 				{/each}
 			</Select.Content>
@@ -222,7 +233,7 @@
 									toaster.success('Amitié supprimée');
 									await invalidateAll();
 								} else {
-									toaster.error('Impossible de supprimer l\'amitié');
+									toaster.error("Impossible de supprimer l'amitié");
 								}
 								deletingFriendshipId = null;
 							};

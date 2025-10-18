@@ -3,6 +3,7 @@
 ## Overview
 
 Phase 4 implements a comprehensive auto-grading system for geometry exercises with:
+
 - Automatic score calculation with penalties
 - Letter grades (A-F) based on percentage
 - Detailed feedback generation
@@ -60,6 +61,7 @@ Phase 4 implements a comprehensive auto-grading system for geometry exercises wi
 **Main Function:** `calculateGrade(exercise, validationResults, options)`
 
 **Returns:** `GradeResult`
+
 ```typescript
 {
   rawScore: number;          // Score before penalties
@@ -81,42 +83,46 @@ Phase 4 implements a comprehensive auto-grading system for geometry exercises wi
 ### 2. Penalty System
 
 **Hint Penalties:**
+
 - General hints: **0%** (free)
 - Specific hints: **-5%**
 - Step-by-step hints: **-10%**
 
 **Time Penalties:**
+
 - **1% per minute** overtime
 - **Maximum 20%** penalty
 
 **Attempt Penalties:**
+
 - **2% per additional attempt**
 - **Maximum 10%** penalty
 
 ### 3. Letter Grades
 
 | Grade | Percentage Range |
-|-------|-----------------|
-| **A** | 90-100% |
-| **B** | 80-89% |
-| **C** | 70-79% |
-| **D** | 60-69% |
-| **F** | 0-59% |
+| ----- | ---------------- |
+| **A** | 90-100%          |
+| **B** | 80-89%           |
+| **C** | 70-79%           |
+| **D** | 60-69%           |
+| **F** | 0-59%            |
 
 ### 4. Performance Tiers
 
-| Tier | Percentage | Color | Message |
-|------|-----------|-------|---------|
-| **Excellent** | 90-100% | Green | Vous maîtrisez parfaitement cette notion! |
-| **Très bien** | 80-89% | Blue | Très bonne compréhension! |
-| **Bien** | 70-79% | Cyan | Bonne compréhension, continuez! |
-| **Satisfaisant** | 60-69% | Yellow | Compréhension acceptable, mais peut être améliorée |
-| **Passable** | 50-59% | Orange | Notion acquise mais nécessite plus de pratique |
-| **Insuffisant** | 0-49% | Red | Cette notion nécessite davantage de travail |
+| Tier             | Percentage | Color  | Message                                            |
+| ---------------- | ---------- | ------ | -------------------------------------------------- |
+| **Excellent**    | 90-100%    | Green  | Vous maîtrisez parfaitement cette notion!          |
+| **Très bien**    | 80-89%     | Blue   | Très bonne compréhension!                          |
+| **Bien**         | 70-79%     | Cyan   | Bonne compréhension, continuez!                    |
+| **Satisfaisant** | 60-69%     | Yellow | Compréhension acceptable, mais peut être améliorée |
+| **Passable**     | 50-59%     | Orange | Notion acquise mais nécessite plus de pratique     |
+| **Insuffisant**  | 0-49%      | Red    | Cette notion nécessite davantage de travail        |
 
 ### 5. Partial Credit
 
 For construction exercises:
+
 - Points per correct object
 - Points per correct measurement
 - Points per correct step
@@ -125,6 +131,7 @@ For construction exercises:
 ### 6. Weighted Scoring
 
 **Default Rubric:**
+
 - **Correctness:** 70%
 - **Completeness:** 20%
 - **Efficiency:** 10%
@@ -137,13 +144,13 @@ Can be customized per exercise.
 
 ### 5 Achievements Available
 
-| Achievement | Icon | Criteria | Description |
-|------------|------|----------|-------------|
-| **Perfect** | 🏆 | 100% score without hints | Score parfait sans indice! |
-| **Speedster** | ⚡ | Completed in <50% of time limit | Complété en moins de la moitié du temps! |
-| **First Try** | 🎯 | 80%+ on first attempt | Réussi du premier coup! |
-| **Persistent** | 💪 | 80%+ after 5+ attempts | Persévérance récompensée! |
-| **Independent** | 🌟 | 80%+ without hints | Résolu sans aide! |
+| Achievement     | Icon | Criteria                        | Description                              |
+| --------------- | ---- | ------------------------------- | ---------------------------------------- |
+| **Perfect**     | 🏆   | 100% score without hints        | Score parfait sans indice!               |
+| **Speedster**   | ⚡   | Completed in <50% of time limit | Complété en moins de la moitié du temps! |
+| **First Try**   | 🎯   | 80%+ on first attempt           | Réussi du premier coup!                  |
+| **Persistent**  | 💪   | 80%+ after 5+ attempts          | Persévérance récompensée!                |
+| **Independent** | 🌟   | 80%+ without hints              | Résolu sans aide!                        |
 
 ---
 
@@ -154,6 +161,7 @@ Can be customized per exercise.
 **Function:** `calculateAttemptStatistics(attempts)`
 
 **Returns:**
+
 - Count
 - Average score
 - Best score
@@ -166,6 +174,7 @@ Can be customized per exercise.
 **Function:** `calculateClassStatistics(allAttempts, exercise)`
 
 **Returns:**
+
 - Total students
 - Completed students
 - Average score
@@ -178,11 +187,13 @@ Can be customized per exercise.
 **Function:** `calculateRank(studentScore, allScores)`
 
 **Returns:**
+
 - Rank (1-indexed)
 - Total students
 - Percentile
 
 **Ranking Tiers:**
+
 - 🏆 **Top 10%** (Yellow)
 - ⭐ **Top 25%** (Blue)
 - ✓ **Top 50%** (Green)
@@ -193,6 +204,7 @@ Can be customized per exercise.
 **Function:** `getTrend(attempts)`
 
 **Analyzes last 3 attempts:**
+
 - **↗ Improving** (Green) - Each score >= previous
 - **↘ Declining** (Red) - Each score <= previous
 - **→ Stable** (Muted) - Mixed results
@@ -206,6 +218,7 @@ Can be customized per exercise.
 **Function:** `submitGrade(supabase, exercise, options)`
 
 **Creates new attempt with:**
+
 - Auto-incremented attempt count
 - Figure state and history
 - Validation results
@@ -219,6 +232,7 @@ Can be customized per exercise.
 **Function:** `updateAttempt(supabase, options)`
 
 **Updates existing attempt:**
+
 - Current figure state
 - Figure history (timestamped snapshots)
 - Student answers
@@ -228,6 +242,7 @@ Can be customized per exercise.
 ### Query Functions
 
 **Available Queries:**
+
 - `getOrCreateAttempt()` - Get current or create new
 - `getStudentAttempts()` - All attempts for student
 - `getBestAttempt()` - Best scoring attempt
@@ -246,6 +261,7 @@ Can be customized per exercise.
 **Purpose:** Display grade with visual feedback
 
 **Features:**
+
 - ✅ Large letter grade badge (A-F)
 - ✅ Color-coded by performance (green to red)
 - ✅ Score display (final/max) with percentage
@@ -260,6 +276,7 @@ Can be customized per exercise.
 - ✅ Detailed feedback list
 
 **Props:**
+
 ```typescript
 {
   gradeResult: GradeResult;
@@ -269,12 +286,9 @@ Can be customized per exercise.
 ```
 
 **Usage:**
+
 ```svelte
-<GradeDisplay
-  {gradeResult}
-  showDetails={true}
-  showPenalties={true}
-/>
+<GradeDisplay {gradeResult} showDetails={true} showPenalties={true} />
 ```
 
 ---
@@ -284,6 +298,7 @@ Can be customized per exercise.
 **Purpose:** Show attempt history with trends
 
 **Features:**
+
 - ✅ Statistics summary card:
   - Total attempts count
   - Overall trend (↗/↘/→)
@@ -300,6 +315,7 @@ Can be customized per exercise.
   - View button (optional)
 
 **Props:**
+
 ```typescript
 {
   attempts: GeometryExerciseAttempt[];
@@ -309,11 +325,12 @@ Can be customized per exercise.
 ```
 
 **Usage:**
+
 ```svelte
 <AttemptHistory
-  {attempts}
-  maxScore={exercise.max_score}
-  onViewAttempt={(attempt) => viewDetails(attempt)}
+	{attempts}
+	maxScore={exercise.max_score}
+	onViewAttempt={(attempt) => viewDetails(attempt)}
 />
 ```
 
@@ -325,14 +342,14 @@ Can be customized per exercise.
 
 Function: `getScoreColor(percentage)`
 
-| Percentage | Text Color | Background | Border |
-|-----------|-----------|------------|--------|
-| 90-100% | green-600 | green-100 | green-500 |
-| 80-89% | blue-600 | blue-100 | blue-500 |
-| 70-79% | cyan-600 | cyan-100 | cyan-500 |
-| 60-69% | yellow-600 | yellow-100 | yellow-500 |
-| 50-59% | orange-600 | orange-100 | orange-500 |
-| 0-49% | red-600 | red-100 | red-500 |
+| Percentage | Text Color | Background | Border     |
+| ---------- | ---------- | ---------- | ---------- |
+| 90-100%    | green-600  | green-100  | green-500  |
+| 80-89%     | blue-600   | blue-100   | blue-500   |
+| 70-79%     | cyan-600   | cyan-100   | cyan-500   |
+| 60-69%     | yellow-600 | yellow-100 | yellow-500 |
+| 50-59%     | orange-600 | orange-100 | orange-500 |
+| 0-49%      | red-600    | red-100    | red-500    |
 
 All colors have dark mode variants (e.g., `dark:text-green-400`).
 
@@ -350,28 +367,24 @@ import { GradeSubmission } from '$lib/services/geometry-grade-submission';
 const validationResults = await validateExercise(app, exercise);
 
 // Calculate grade
-const gradeResult = GeometryGrader.calculateGrade(
-  exercise,
-  validationResults,
-  {
-    timeSpent: 300,  // 5 minutes
-    attemptNumber: 1
-  }
-);
+const gradeResult = GeometryGrader.calculateGrade(exercise, validationResults, {
+	timeSpent: 300, // 5 minutes
+	attemptNumber: 1
+});
 
 // Submit to database
 const result = await GradeSubmission.submitGrade(supabase, exercise, {
-  exerciseId: exercise.id,
-  studentId: user.id,
-  validationResults,
-  gradeResult,
-  studentAnswer: studentAnswers,
-  timeSpent: 300,
-  isComplete: true
+	exerciseId: exercise.id,
+	studentId: user.id,
+	validationResults,
+	gradeResult,
+	studentAnswer: studentAnswers,
+	timeSpent: 300,
+	isComplete: true
 });
 
 if (result.success) {
-  console.log('Grade submitted:', result.attemptId);
+	console.log('Grade submitted:', result.attemptId);
 }
 ```
 
@@ -380,19 +393,15 @@ if (result.success) {
 ```typescript
 // Student used 2 hints
 const hintsUsed = [
-  { level: 'specific', penalty: 5 },
-  { level: 'step_by_step', penalty: 10 }
+	{ level: 'specific', penalty: 5 },
+	{ level: 'step_by_step', penalty: 10 }
 ];
 
-const gradeResult = GeometryGrader.calculateGrade(
-  exercise,
-  validationResults,
-  {
-    hintsUsed,
-    timeSpent: 600,  // 10 minutes
-    attemptNumber: 3  // Third attempt
-  }
-);
+const gradeResult = GeometryGrader.calculateGrade(exercise, validationResults, {
+	hintsUsed,
+	timeSpent: 600, // 10 minutes
+	attemptNumber: 3 // Third attempt
+});
 
 // Result:
 // - rawScore: 85/100
@@ -406,21 +415,21 @@ const gradeResult = GeometryGrader.calculateGrade(
 
 ```svelte
 <script>
-  import { GradeDisplay, AttemptHistory } from '$lib/components/geometry/grading';
-  import { GradeSubmission } from '$lib/services/geometry-grade-submission';
+	import { GradeDisplay, AttemptHistory } from '$lib/components/geometry/grading';
+	import { GradeSubmission } from '$lib/services/geometry-grade-submission';
 
-  let gradeResult: GradeResult;
-  let attempts: GeometryExerciseAttempt[] = [];
+	let gradeResult: GradeResult;
+	let attempts: GeometryExerciseAttempt[] = [];
 
-  onMount(async () => {
-    // Load attempts
-    const { attempts: studentAttempts } = await GradeSubmission.getStudentAttempts(
-      supabase,
-      exerciseId,
-      studentId
-    );
-    attempts = studentAttempts;
-  });
+	onMount(async () => {
+		// Load attempts
+		const { attempts: studentAttempts } = await GradeSubmission.getStudentAttempts(
+			supabase,
+			exerciseId,
+			studentId
+		);
+		attempts = studentAttempts;
+	});
 </script>
 
 <!-- Show latest grade -->
@@ -428,12 +437,12 @@ const gradeResult = GeometryGrader.calculateGrade(
 
 <!-- Show attempt history -->
 <AttemptHistory
-  {attempts}
-  maxScore={exercise.max_score}
-  onViewAttempt={(attempt) => {
-    // Load and display this attempt
-    console.log('Viewing attempt:', attempt);
-  }}
+	{attempts}
+	maxScore={exercise.max_score}
+	onViewAttempt={(attempt) => {
+		// Load and display this attempt
+		console.log('Viewing attempt:', attempt);
+	}}
 />
 ```
 
@@ -444,14 +453,14 @@ import { GradeUtils } from '$lib/services/geometry-grade-utils';
 
 const { earned, descriptions } = GradeUtils.checkAchievements(attempt, exercise);
 
-earned.forEach(achievementId => {
-  const achievement = GradeUtils.getAchievementDisplay(achievementId);
-  console.log(`${achievement.icon} ${achievement.name}: ${descriptions[achievementId]}`);
+earned.forEach((achievementId) => {
+	const achievement = GradeUtils.getAchievementDisplay(achievementId);
+	console.log(`${achievement.icon} ${achievement.name}: ${descriptions[achievementId]}`);
 
-  // Award rewards based on achievement
-  if (achievementId === 'perfect') {
-    // Award VIP card or special gidouilles
-  }
+	// Award rewards based on achievement
+	if (achievementId === 'perfect') {
+		// Award VIP card or special gidouilles
+	}
 });
 ```
 
@@ -462,10 +471,7 @@ import { GradeSubmission } from '$lib/services/geometry-grade-submission';
 import { GradeUtils } from '$lib/services/geometry-grade-utils';
 
 // Get all attempts for this exercise
-const { attempts } = await GradeSubmission.getAllExerciseAttempts(
-  supabase,
-  exerciseId
-);
+const { attempts } = await GradeSubmission.getAllExerciseAttempts(supabase, exerciseId);
 
 // Calculate class statistics
 const stats = GradeUtils.calculateClassStatistics(attempts, exercise);
@@ -485,7 +491,7 @@ console.log(`
 
 ```typescript
 // Get all student scores for this exercise
-const allScores = attempts.map(a => a.score_earned ?? 0);
+const allScores = attempts.map((a) => a.score_earned ?? 0);
 const studentScore = myAttempt.score_earned ?? 0;
 
 // Calculate rank
@@ -512,44 +518,40 @@ The grading system integrates seamlessly with exercise components:
 ```svelte
 <!-- In ConstructionExercise.svelte or MeasurementExercise.svelte -->
 <script>
-  import { GeometryGrader } from '$lib/services/geometry-grader';
-  import { GradeSubmission } from '$lib/services/geometry-grade-submission';
-  import { GradeDisplay } from '$lib/components/geometry/grading';
+	import { GeometryGrader } from '$lib/services/geometry-grader';
+	import { GradeSubmission } from '$lib/services/geometry-grade-submission';
+	import { GradeDisplay } from '$lib/components/geometry/grading';
 
-  async function handleValidate() {
-    // 1. Validate construction
-    const validationResults = await validateExercise(mathGraphApp, exercise);
+	async function handleValidate() {
+		// 1. Validate construction
+		const validationResults = await validateExercise(mathGraphApp, exercise);
 
-    // 2. Calculate grade
-    const gradeResult = GeometryGrader.calculateGrade(
-      exercise,
-      validationResults,
-      {
-        hintsUsed: hintsUsedArray,
-        timeSpent,
-        attemptNumber: attemptCount
-      }
-    );
+		// 2. Calculate grade
+		const gradeResult = GeometryGrader.calculateGrade(exercise, validationResults, {
+			hintsUsed: hintsUsedArray,
+			timeSpent,
+			attemptNumber: attemptCount
+		});
 
-    // 3. Submit grade
-    await GradeSubmission.submitGrade(supabase, exercise, {
-      exerciseId: exercise.id,
-      studentId: user.id,
-      validationResults,
-      gradeResult,
-      figureState: currentFigure,
-      hintsUsed: hintsUsedArray.length,
-      timeSpent,
-      isComplete: gradeResult.passed
-    });
+		// 3. Submit grade
+		await GradeSubmission.submitGrade(supabase, exercise, {
+			exerciseId: exercise.id,
+			studentId: user.id,
+			validationResults,
+			gradeResult,
+			figureState: currentFigure,
+			hintsUsed: hintsUsedArray.length,
+			timeSpent,
+			isComplete: gradeResult.passed
+		});
 
-    // 4. Display grade
-    displayedGrade = gradeResult;
-  }
+		// 4. Display grade
+		displayedGrade = gradeResult;
+	}
 </script>
 
 {#if displayedGrade}
-  <GradeDisplay gradeResult={displayedGrade} />
+	<GradeDisplay gradeResult={displayedGrade} />
 {/if}
 ```
 
@@ -560,14 +562,14 @@ The grading system integrates seamlessly with exercise components:
 const { earned } = GradeUtils.checkAchievements(attempt, exercise);
 
 if (earned.includes('perfect')) {
-  // Award 100 gidouilles + VIP card
-  await awardGidouilles(studentId, 100, 'Perfect score achievement');
-  await awardVIPCard(studentId, 'legendary');
+	// Award 100 gidouilles + VIP card
+	await awardGidouilles(studentId, 100, 'Perfect score achievement');
+	await awardVIPCard(studentId, 'legendary');
 }
 
 if (earned.includes('speedster')) {
-  // Award 50 gidouilles
-  await awardGidouilles(studentId, 50, 'Speed achievement');
+	// Award 50 gidouilles
+	await awardGidouilles(studentId, 50, 'Speed achievement');
 }
 
 // Base gidouilles based on grade
@@ -608,6 +610,7 @@ await awardGidouilles(studentId, gidouillesEarned, `Exercise: ${exercise.title}`
 ## Performance Considerations
 
 **Optimizations:**
+
 - Database queries use indexes on `exercise_id` and `student_id`
 - Figure history stored as JSONB for efficient queries
 - Statistics calculated on-demand (not stored)
@@ -615,6 +618,7 @@ await awardGidouilles(studentId, gidouillesEarned, `Exercise: ${exercise.title}`
 - Attempt list sorted at database level
 
 **Caching Strategy (Future Enhancement):**
+
 - Cache class statistics for 5 minutes
 - Cache student best score
 - Invalidate on new submission
@@ -626,6 +630,7 @@ await awardGidouilles(studentId, gidouillesEarned, `Exercise: ${exercise.title}`
 **Phase 4 Complete! ✅**
 
 **Achievements:**
+
 - ✅ 3 comprehensive services (~1,550 lines)
 - ✅ 2 polished UI components (~350 lines)
 - ✅ Letter grades (A-F)
@@ -644,6 +649,7 @@ await awardGidouilles(studentId, gidouillesEarned, `Exercise: ${exercise.title}`
 ## Next Steps
 
 **Phase 5 Preview:**
+
 - ✅ Figure history (already implemented)
 - ✅ Auto-save (already implemented)
 - ⏳ Restore previous attempt
@@ -652,6 +658,7 @@ await awardGidouilles(studentId, gidouillesEarned, `Exercise: ${exercise.title}`
 - ⏳ Rollback to previous version
 
 **Phase 6 and Beyond:**
+
 - Hints system integration
 - Teacher exercise creation tools
 - Student interface pages

@@ -209,11 +209,13 @@ src/routes/dashboard/
 ## Quick Reference
 
 ### Access Dashboard
+
 - URL: `http://localhost:5173/dashboard`
 - Requires: Authentication
 - Shows: Role-based view (Student/Teacher/Admin)
 
 ### Change User Role
+
 ```sql
 UPDATE public.profiles
 SET role = 'teacher'  -- or 'student', 'admin'
@@ -221,6 +223,7 @@ WHERE email = 'user@example.com';
 ```
 
 ### View User Roles
+
 ```sql
 SELECT email, role, created_at
 FROM public.profiles
@@ -228,6 +231,7 @@ ORDER BY created_at DESC;
 ```
 
 ### Create Manual Profile
+
 ```sql
 INSERT INTO public.profiles (id, email, full_name, role)
 VALUES (
@@ -240,12 +244,12 @@ VALUES (
 
 ## Troubleshooting Quick Links
 
-| Error | Fix |
-|-------|-----|
-| "Profile not found" | Run `fix-missing-profile.sql` |
-| "403 Forbidden" | Check user role matches route requirements |
-| "Redirect to login" | Clear cookies, verify authentication |
-| TypeScript errors | Run `pnpm run check` |
+| Error               | Fix                                        |
+| ------------------- | ------------------------------------------ |
+| "Profile not found" | Run `fix-missing-profile.sql`              |
+| "403 Forbidden"     | Check user role matches route requirements |
+| "Redirect to login" | Clear cookies, verify authentication       |
+| TypeScript errors   | Run `pnpm run check`                       |
 
 ---
 

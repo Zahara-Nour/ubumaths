@@ -5,14 +5,17 @@ This guide helps you resolve common issues with the role-based dashboard system.
 ## Error: "Profile not found for authenticated user"
 
 ### Symptoms
+
 - User can log in successfully
 - Accessing `/dashboard` shows 500 error
 - Console shows: `Profile not found for user: <uuid>`
 
 ### Root Cause
+
 The user exists in `auth.users` table but has no corresponding record in `public.profiles` table.
 
 ### Why This Happens
+
 1. **User signed up before trigger was created**: If users signed up before the database trigger was set up, their profiles weren't created automatically
 2. **Trigger not installed**: The automatic profile creation trigger hasn't been run
 3. **Manual deletion**: Someone manually deleted the profile record
@@ -124,11 +127,13 @@ WHERE email = 'admin@school.com';
 ## Error: 403 Forbidden on Dashboard Sub-Routes
 
 ### Symptoms
+
 - Main `/dashboard` works fine
 - Accessing `/dashboard/classes` shows 403 error
 - Error message: "Access denied: This page requires teacher role"
 
 ### Root Cause
+
 User's role doesn't have permission for that route.
 
 ### Solution
@@ -138,10 +143,11 @@ User's role doesn't have permission for that route.
 Look at the route's `+page.server.ts`:
 
 ```typescript
-requireRole(profile, 'teacher');  // This route requires teacher role
+requireRole(profile, 'teacher'); // This route requires teacher role
 ```
 
 **Fix:**
+
 1. Verify this is the correct restriction
 2. If user should have access, update their role in database
 3. If restriction is wrong, update the `requireRole()` call
@@ -149,11 +155,13 @@ requireRole(profile, 'teacher');  // This route requires teacher role
 ## Error: Redirect Loop to Login
 
 ### Symptoms
+
 - User logs in successfully
 - Immediately redirected back to login
 - Infinite redirect loop
 
 ### Root Cause
+
 Session cookies not being set properly.
 
 ### Solution
@@ -166,15 +174,18 @@ Session cookies not being set properly.
 ## Error: Wrong Dashboard Showing
 
 ### Symptoms
+
 - User is a teacher but sees student dashboard
 - Role displayed in header doesn't match database
 
 ### Root Cause
+
 Cached data or stale session.
 
 ### Solution
 
 1. **Check database role:**
+
    ```sql
    SELECT email, role FROM public.profiles
    WHERE email = 'user@example.com';
@@ -242,6 +253,7 @@ CHECK (role IN ('student', 'teacher', 'admin'));
 **Error**: `Property 'profile' does not exist on type 'PageData'`
 
 **Fix**: Run SvelteKit type generation:
+
 ```bash
 pnpm run check
 ```
@@ -251,6 +263,7 @@ pnpm run check
 **Issue**: Changes not reflecting in browser
 
 **Fix**:
+
 1. Stop dev server
 2. Delete `.svelte-kit` folder
 3. Restart: `pnpm dev`
@@ -298,6 +311,7 @@ WHERE role = 'admin';
 ```
 
 Expected output:
+
 - Total Users = Users with Profiles (no missing profiles)
 - Missing Profiles = 0
 

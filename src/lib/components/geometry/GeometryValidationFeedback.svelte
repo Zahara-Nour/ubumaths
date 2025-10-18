@@ -54,7 +54,7 @@
 		<div class="feedback-section errors">
 			<h4 class="section-title">❌ Erreurs à corriger:</h4>
 			<ul class="feedback-list">
-				{#each results.errors as error}
+				{#each results.errors as error, i (`error-${i}`)}
 					<li class="feedback-item error">
 						<span class="item-code">{error.code}:</span>
 						<span class="item-message">{error.message}</span>
@@ -75,7 +75,7 @@
 		<div class="feedback-section warnings">
 			<h4 class="section-title">⚠️ Avertissements:</h4>
 			<ul class="feedback-list">
-				{#each results.warnings as warning}
+				{#each results.warnings as warning, i (`warning-${i}`)}
 					<li class="feedback-item warning">
 						<span class="item-code">{warning.code}:</span>
 						<span class="item-message">{warning.message}</span>
@@ -94,7 +94,7 @@
 		<div class="feedback-section general">
 			<h4 class="section-title">📝 Commentaires:</h4>
 			<ul class="feedback-list">
-				{#each results.feedback as comment}
+				{#each results.feedback as comment, i (i)}
 					<li class="feedback-item general">{comment}</li>
 				{/each}
 			</ul>
@@ -106,7 +106,7 @@
 		<div class="feedback-section measurements">
 			<h4 class="section-title">📐 Mesures détectées:</h4>
 			<div class="measurements-grid">
-				{#each Object.entries(results.measurements) as [name, value]}
+				{#each Object.entries(results.measurements) as [name, value] (name)}
 					<div class="measurement-item">
 						<span class="measurement-name">{name}:</span>
 						<span class="measurement-value">{value.toFixed(2)}</span>
@@ -121,7 +121,7 @@
 		<div class="feedback-section objects">
 			<h4 class="section-title">✓ Objets créés:</h4>
 			<div class="objects-list">
-				{#each results.objectsCreated as obj}
+				{#each results.objectsCreated as obj (obj)}
 					<span class="object-tag created">{obj}</span>
 				{/each}
 			</div>
@@ -132,7 +132,7 @@
 		<div class="feedback-section objects">
 			<h4 class="section-title">⚠️ Objets manquants:</h4>
 			<div class="objects-list">
-				{#each results.objectsMissing as obj}
+				{#each results.objectsMissing as obj (obj)}
 					<span class="object-tag missing">{obj}</span>
 				{/each}
 			</div>
@@ -143,7 +143,7 @@
 		<div class="feedback-section objects">
 			<h4 class="section-title">❌ Objets incorrects:</h4>
 			<div class="objects-list">
-				{#each results.objectsIncorrect as obj}
+				{#each results.objectsIncorrect as obj (obj)}
 					<span class="object-tag incorrect">{obj}</span>
 				{/each}
 			</div>

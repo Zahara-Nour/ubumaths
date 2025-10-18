@@ -32,7 +32,9 @@
 <!-- Fullscreen game container -->
 <div class="game-container fixed inset-0 z-50 bg-background">
 	<!-- Game Header -->
-	<header class="game-header flex items-center justify-between border-b border-border bg-card px-4 py-2">
+	<header
+		class="game-header flex items-center justify-between border-b border-border bg-card px-4 py-2"
+	>
 		<!-- Left: Game Title -->
 		<div class="flex items-center gap-2">
 			<h1 class="text-xl font-bold text-foreground">Navadra</h1>
