@@ -2598,6 +2598,337 @@ do {
 
 ---
 
+## Mathémo Game
+
+Mathémo is a Wordle-style educational game for learning French mathematical vocabulary. Players guess math terms appropriate to their grade level with accent-normalized input and cross-difficulty validation.
+
+### Overview
+
+**Location:** `/games/mathemo`
+**Access:** Public (no authentication required)
+**Type:** Client-side game with localStorage persistence
+
+**Key Features:**
+- 7 difficulty levels (French grades: 6ème → Tale)
+- 270+ mathematical terms organized by educational level
+- Accent normalization ("algebre" matches "algèbre")
+- Adjustable attempts (3-10)
+- Cross-level validation (permissive word acceptance)
+- Font scaling integration
+- Physical + on-screen keyboard support
+- Confetti celebration on win
+
+### File Structure
+
+```
+src/routes/(public)/games/mathemo/
+├── types.ts                  # TypeScript type definitions
+├── words.ts                  # 270+ words organized by grade level
+├── game.svelte.ts           # Game logic (Svelte 5 runes)
+├── reduced-motion.svelte.ts # Accessibility store
+└── +page.svelte             # Main UI component
+```
+
+### Core Architecture
+
+#### 1. Type Definitions (`types.ts`)
+
+**Difficulty Levels:**
+```typescript
+type Difficulty = '6ème' | '5ème' | '4ème' | '3ème' | '2nde' | '1ère' | 'Tale'
+```
+
+**Feedback Types:**
+```typescript
+type FeedbackType =
+  | 'x'  // Exact match (correct position)
+  | 'c'  // Close match (wrong position)
+  | '_'  // Missing (not in word)
+```
+
+**Game State:**
+```typescript
+interface GameState {
+  answer: string              // Target word
+  guesses: string[]           // All guesses (including empty)
+  answers: string[]           // Feedback for each guess
+  correctLetters: string[]    // Revealed letters
+  maxAttempts: number         // 3-10
+  difficulty: Difficulty      // Current level
+  currentRow: number          // 0-indexed
+}
+```
+
+#### 2. Word Lists (`words.ts`)
+
+**Organization:**
+- **6ème** (82 words): Basic arithmetic, fractions, geometry
+- **5ème** (66 words): Decimals, percentages, triangles
+- **4ème** (56 words): Pythagorean theorem, proportions
+- **3ème** (39 words): Functions, equations, probability
+- **2nde** (11 words): Polynomials, sequences
+- **1ère** (9 words): Derivatives, trigonometry
+- **Tale** (9 words): Integrals, limits
+
+**Key Functions:**
+```typescript
+// Get random word from difficulty level
+getRandomWord(difficulty: Difficulty): string
+
+// Validate word across ALL levels (permissive)
+isValidWord(word: string): boolean
+
+// Normalize accents for comparison
+normalizeString(str: string): string
+// "algèbre" → "algebre"
+// "équation" → "equation"
+```
+
+**Normalization Algorithm:**
+```typescript
+str.normalize('NFD')              // Decompose: è → e + ̀
+   .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+   .toLowerCase()                 // Lowercase
+```
+
+#### 3. Game Logic (`game.svelte.ts`)
+
+**Reactive State (Svelte 5 Runes):**
+```typescript
+class MathemoGame {
+  answer = $state('')
+  guesses = $state<string[]>([])
+  answers = $state<string[]>([])
+  correctLetters = $state<string[]>([])
+  maxAttempts = $state(6)
+  difficulty = $state<Difficulty>('6ème')
+  currentRow = $state(0)
+}
+```
+
+**Key Methods:**
+
+1. **`startNewGame(difficulty, maxAttempts)`**
+   - Selects random word from difficulty level
+   - Initializes empty guesses array
+   - Saves to localStorage
+
+2. **`updateGuess(key)`**
+   - Handles typing/backspace
+   - Restricts to target word length
+   - Auto-saves after each keystroke
+
+3. **`enterGuess()`**
+   - Validates word (permissive cross-level)
+   - Rejects words longer than target
+   - Pads shorter words for feedback calculation
+   - Returns `true` if valid, `false` if invalid
+
+4. **`calculateFeedback(letters)`**
+   - **Two-pass algorithm** (Wordle standard):
+     1. First pass: Find exact matches ('x')
+     2. Second pass: Find close matches ('c')
+   - Handles duplicate letters correctly
+   - Uses accent normalization
+
+**Validation Rules:**
+- ✅ Accept words from ANY difficulty level
+- ✅ Accept words shorter than target (padded with empty strings)
+- ❌ Reject words longer than target
+- ✅ Normalize accents before comparison
+
+**localStorage Persistence:**
+```typescript
+// Auto-save after every state change
+saveToLocalStorage()
+
+// Auto-restore on page load
+loadFromLocalStorage()
+
+// Clear and restart
+clearSaved()
+```
+
+#### 4. Main UI (`+page.svelte`)
+
+**Derived State:**
+```typescript
+let won = $derived(game.hasWon())
+let lost = $derived(game.hasLost())
+let gameOver = $derived(game.isGameOver())
+let canSubmit = $derived(currentGuess.length > 0)
+```
+
+**Keyboard State Maps:**
+```typescript
+// CSS classes for keyboard styling
+let classnames = $derived.by(() => {
+  // 'exact' | 'close' | 'missing'
+})
+
+// Accessibility descriptions
+let description = $derived.by(() => {
+  // 'correct' | 'present' | 'absent'
+})
+```
+
+**Event Handlers:**
+- `handleKeyClick(key)` - On-screen keyboard
+- `handleKeydown(event)` - Physical keyboard (Enter, Backspace, A-Z)
+- `handleDifficultyChange(selected)` - Difficulty dropdown
+- `handleAdjustAttempts(delta)` - +/- buttons
+- `handleRestart()` - Clear and restart
+
+### Visual Design
+
+#### Color Scheme
+
+| State | Light Mode | Dark Mode | Description |
+|-------|------------|-----------|-------------|
+| **Default** | `#e8e8e8` | `#2a2a2a` | Neutral cell background |
+| **Exact** | `#5b8def` | `#4a7bd8` | Correct letter, correct position (blue) |
+| **Close** | Border `#5b8def` | Border `#4a7bd8` | Correct letter, wrong position (blue border) |
+| **Missing** | `#c0c0c0` | `#404040` | Letter not in word (gray) |
+
+#### Font Scaling Integration
+
+All sizes scale with `var(--font-scale)` for accessibility:
+```css
+font-size: calc(2rem * var(--font-scale));
+border: calc(3px * var(--font-scale)) solid #5b8def;
+margin: calc(2rem * var(--font-scale)) 0;
+```
+
+#### Animations
+
+1. **Wiggle** (invalid word):
+   ```css
+   .grid.bad-guess .row.current {
+     animation: wiggle 0.5s;
+   }
+   ```
+
+2. **Blinking cursor** (selected cell):
+   ```css
+   .selected {
+     border: calc(3px * var(--font-scale)) solid #f95454;
+     animation: blinking 1.5s infinite;
+   }
+   ```
+
+3. **Confetti** (on win):
+   ```svelte
+   use:confetti={{
+     particleCount: reducedMotion ? 0 : undefined,
+     colors: ['#ff3e00', '#40b3ff', '#676778']
+   }}
+   ```
+
+### Game Flow
+
+1. **Initialization**
+   - Check localStorage for saved game
+   - If found, restore state
+   - Otherwise, start new game at '6ème'
+
+2. **Gameplay Loop**
+   - Player types letters (up to target word length)
+   - Press Enter to submit
+   - Invalid word triggers wiggle animation
+   - Valid word shows feedback and advances row
+   - Repeat until win/loss
+
+3. **Win Condition**
+   - All letters marked as 'x' (exact)
+   - Confetti celebration
+   - Show congratulations message
+   - Display restart button
+
+4. **Loss Condition**
+   - Used all attempts without winning
+   - Reveal answer (clue letters)
+   - Display restart button
+
+### Controls
+
+**During Game:**
+- Difficulty selector (dropdown)
+- Attempts adjuster (+/- buttons, range 3-10)
+- Physical keyboard (Enter, Backspace, A-Z)
+- On-screen keyboard (QWERTY layout)
+
+**After Game:**
+- Restart button (clears localStorage, starts fresh)
+
+### Best Practices
+
+**DO:**
+- Use accent normalization for all comparisons
+- Accept shorter words (pad with empty strings)
+- Reject longer words than target
+- Save to localStorage after every state change
+- Use two-pass algorithm for feedback calculation
+- Scale all sizes with `var(--font-scale)`
+
+**DON'T:**
+- Hard-code word lists (use `getRandomWord()`)
+- Modify game state without `saveToLocalStorage()`
+- Skip accent normalization in validation
+- Use Tailwind for dynamic grid columns (use inline CSS)
+- Modify feedback calculation algorithm (proven Wordle standard)
+
+### Debugging Tips
+
+**Common Issues:**
+
+1. **Words not validating:**
+   - Check `normalizeString()` is called on both sides
+   - Verify word exists in `words.ts`
+   - Check cross-level validation is working
+
+2. **Grid not displaying:**
+   - Ensure `--grid-size` CSS variable is set
+   - Use inline `style` not Tailwind for dynamic columns
+
+3. **localStorage not persisting:**
+   - Check `browser` environment guard
+   - Verify JSON serialization is working
+   - Look for `STORAGE_KEY` conflicts
+
+4. **Feedback incorrect:**
+   - Verify two-pass algorithm (exact first, then close)
+   - Check duplicate letter handling
+   - Ensure accent normalization in comparison
+
+### Performance
+
+- **Lightweight:** ~15KB total (including 270+ words)
+- **Fast validation:** O(1) lookup via pre-computed Set
+- **Efficient rendering:** Svelte 5 runes minimize re-renders
+- **Small localStorage:** ~500 bytes per saved game
+- **No server calls:** 100% client-side
+
+### Accessibility
+
+- **Screen reader support:** `aria-label` on keyboard buttons
+- **Reduced motion:** Respects `prefers-reduced-motion` for animations
+- **Font scaling:** Integrates with app's `--font-scale` system
+- **Keyboard navigation:** Full keyboard support
+- **Color contrast:** WCAG AA compliant (blue on white, blue border)
+
+### Future Enhancements
+
+Potential improvements:
+- Daily challenge mode (same word for all players)
+- Statistics tracking (win rate, streak)
+- Share results (emoji grid like Wordle)
+- Multiplayer mode (compete with classmates)
+- Hints system (definition, category)
+- Time-based challenges
+- Custom word lists (teacher-created)
+
+---
+
 ## Trio Game
 
 The Trio Game is a math puzzle game where players select 3 aligned numbers from a grid to match a target equation: `a × b ± c = target`.

@@ -70,8 +70,15 @@
 			color: 'from-orange-500 to-red-500'
 		},
 		{
-			title: 'Jeux',
-			description: 'Jeux mathématiques interactifs (Trio, etc.)',
+			title: 'Mathémo',
+			description: 'Wordle mathématique avec termes français par niveau (6ème-Tale)',
+			href: '/games/mathemo',
+			icon: Gamepad2,
+			color: 'from-rose-500 to-pink-500'
+		},
+		{
+			title: 'Trio',
+			description: 'Jeu mathématique: alignez 3 nombres pour résoudre l\'équation',
 			href: '/games/trio',
 			icon: Gamepad2,
 			color: 'from-indigo-500 to-purple-500'

@@ -14,6 +14,9 @@ importers:
       '@fontsource/lora':
         specifier: ^5.2.8
         version: 5.2.8
+      '@neoconfetti/svelte':
+        specifier: ^2.2.2
+        version: 2.2.2(svelte@5.39.9)
       '@supabase/ssr':
         specifier: ^0.7.0
         version: 0.7.0(@supabase/supabase-js@2.74.0)
@@ -498,6 +501,11 @@ packages:
     resolution: {integrity: sha512-llMXd39jtP0HpQLVI37Bf1m2ADlEb35GYSh1SDSLsBhR+5iCxiNGlT31yqbNtVHygHAtMy6dWFERpU2JgufhPg==}
     engines: {node: '>=18'}
     hasBin: true
+
+  '@neoconfetti/svelte@2.2.2':
+    resolution: {integrity: sha512-E7xCFVEEm5Ctnj2udTJy1b9oaTvjz1zi1mYdEtE8rB5BVwq6kHisosDS+zdWN5PMfEMjtbsOV9Cl6tsNSAD1sA==}
+    peerDependencies:
+      svelte: ^3.0.0 || ^4.0.0 || ^5.0.0
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -2822,6 +2830,10 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
+
+  '@neoconfetti/svelte@2.2.2(svelte@5.39.9)':
+    dependencies:
+      svelte: 5.39.9
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
