@@ -28,6 +28,7 @@
 	import type { LayoutData } from './$types';
 	import { Toaster } from 'svelte-sonner';
 	import { ModeWatcher } from 'mode-watcher';
+	import { getVersion } from '$lib/utils/version';
 
 	let { children, data }: { children: any; data: LayoutData } = $props();
 
@@ -91,8 +92,9 @@
 	<!-- Footer - only show on non-dashboard routes -->
 	{#if !isDashboardRoute}
 		<footer class="border-t border-border bg-background py-4">
-			<div class="container mx-auto px-4 text-center text-sm text-muted-foreground">
+			<div class="container mx-auto px-4 flex justify-between items-center text-sm text-muted-foreground">
 				<p>&copy; {new Date().getFullYear()} UbuMaths. Tous droits réservés.</p>
+				<p class="text-xs">{getVersion()}</p>
 			</div>
 		</footer>
 	{/if}

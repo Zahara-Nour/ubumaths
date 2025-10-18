@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+# Get current branch
+BRANCH=$(git branch --show-current)
+
+# Only enforce commit message format on main branch
+if [ "$BRANCH" = "main" ]; then
+  echo "🔍 Validating commit message on main branch..."
+  npx --no -- commitlint --edit ${1}
+else
+  echo "ℹ️  Skipping commit message validation (not on main branch)"
+fi

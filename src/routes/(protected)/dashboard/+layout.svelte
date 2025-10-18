@@ -70,18 +70,14 @@
 
 	// Navigation links based on role
 	const getNavLinks = (role: string) => {
-		const commonLinks = [
-			{ href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }
-		];
+		const commonLinks = [{ href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }];
 
 		if (role === 'student') {
 			return [
 				...commonLinks,
 				{ href: '/dashboard/friends', label: 'Amis', icon: Users },
 				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
-				{ href: '/dashboard/assignments', label: 'Assignments', icon: ClipboardList },
-				{ href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap },
-				{ href: '/dashboard/progress', label: 'Progress', icon: TrendingUp }
+				{ href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap }
 			];
 		} else if (role === 'teacher') {
 			return [
@@ -90,7 +86,6 @@
 				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
 				{ href: '/dashboard/teacher/classes', label: 'Classes', icon: GraduationCap },
 				{ href: '/dashboard/students', label: 'Students', icon: Users },
-				{ href: '/dashboard/assignments', label: 'Assignments', icon: ClipboardList },
 				{ href: '/dashboard/teacher/rewards', label: 'Rewards', icon: Gift }
 			];
 		} else if (role === 'admin') {
@@ -100,7 +95,7 @@
 				{ href: '/dashboard/admin/users', label: 'Users', icon: Users },
 				{ href: '/dashboard/admin/classes', label: 'Classes', icon: GraduationCap },
 				{ href: '/dashboard/admin/debug/database', label: 'Debug', icon: Bug },
-				{ href: '/dashboard/settings', label: 'Settings', icon: Settings }
+				{ href: '/dashboard/admin/settings', label: 'Settings', icon: Settings }
 			];
 		}
 		return commonLinks;
@@ -206,35 +201,40 @@
 <div class="min-h-screen bg-background">
 	<!-- DASHBOARD HEADER (shared across all dashboard pages) -->
 	<header class="border-b shadow-sm {getRoleHeaderColor(data.profile.role)}">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+		<div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
 			<div class="flex items-center justify-between">
 				<!-- Left side: Gidouille, Welcome message, and Avatar -->
 				<div class="flex items-center gap-4">
 					<!-- Gidouille - links to home -->
-					<a href="/" class="hover:opacity-80 transition-opacity" aria-label="Back to home">
+					<a href="/" class="transition-opacity hover:opacity-80" aria-label="Back to home">
 						<img src={gidouille} alt="Gidouille" class="h-16 w-16" />
 					</a>
 
 					<!-- Welcome message -->
 					<div>
-						<h1 class="text-2xl font-bold text-foreground tracking-tight">
+						<h1 class="text-2xl font-bold tracking-tight text-foreground">
 							Welcome, {data.profile.firstname || data.profile.full_name || 'User'}!
 						</h1>
 						<!-- Display user's role (student/teacher/admin) -->
-						<p class="text-sm text-muted-foreground mt-1">
-							<span class="capitalize font-medium">{data.profile.role}</span> Dashboard
+						<p class="mt-1 text-sm text-muted-foreground">
+							<span class="font-medium capitalize">{data.profile.role}</span> Dashboard
 						</p>
 					</div>
 
 					<!-- User Avatar (larger) -->
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger
-							class="cursor-pointer relative h-16 w-16 rounded-full hover:ring-2 hover:ring-ring transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+							class="relative h-16 w-16 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 						>
 							<Avatar.Root class="h-16 w-16">
 								<Avatar.Image src={getAvatarSrc()} alt={data.profile.email || 'User'} />
 								<Avatar.Fallback class="text-xl">
-									{getAvatarInitials(data.profile?.firstname ?? null, data.profile?.lastname ?? null) || data.profile.email?.charAt(0).toUpperCase() || '?'}
+									{getAvatarInitials(
+										data.profile?.firstname ?? null,
+										data.profile?.lastname ?? null
+									) ||
+										data.profile.email?.charAt(0).toUpperCase() ||
+										'?'}
 								</Avatar.Fallback>
 							</Avatar.Root>
 						</DropdownMenu.Trigger>
@@ -311,19 +311,21 @@
 
 	<div class="flex h-[calc(100vh-73px)]">
 		<!-- RAIL SIDEBAR - Vertical icon navigation (Claude AI style) -->
-		<div class="bg-card/50 dark:bg-card border-r border-border w-20 shadow-sm">
+		<div class="w-20 border-r border-border bg-card/50 shadow-sm dark:bg-card">
 			<nav class="flex flex-col items-center gap-1 py-4">
 				{#each getNavLinks(data.profile.role) as link}
 					<a
 						href={link.href}
-						class="flex flex-col items-center gap-1 px-2 py-3 rounded-lg transition-all duration-300 w-16 group {isActive(link.href)
+						class="group flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
+							link.href
+						)
 							? 'bg-primary/10 text-primary'
 							: 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}"
 						title={link.label}
 					>
 						<!-- Svelte 5: Components are dynamic by default -->
-						<link.icon class="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
-						<span class="text-xs text-center leading-tight font-medium">{link.label}</span>
+						<link.icon class="h-6 w-6 transition-transform duration-300 group-hover:scale-110" />
+						<span class="text-center text-xs leading-tight font-medium">{link.label}</span>
 					</a>
 				{/each}
 			</nav>
@@ -333,8 +335,8 @@
 		<!-- This is where child routes are rendered -->
 		<!-- For /dashboard, this renders +page.svelte which shows role-specific dashboards -->
 		<!-- For /dashboard/classes, this would render classes/+page.svelte, etc. -->
-		<main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-background">
-			<div class="max-w-7xl mx-auto">
+		<main class="flex-1 overflow-y-auto bg-background p-4 sm:p-6 lg:p-8">
+			<div class="mx-auto max-w-7xl">
 				{@render children()}
 			</div>
 		</main>

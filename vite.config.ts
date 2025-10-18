@@ -1,6 +1,11 @@
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { readFileSync } from 'fs';
+
+// Read version from package.json at build time
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
+const APP_VERSION = pkg.version;
 
 /**
  * Vite Configuration with Performance Optimizations
@@ -16,6 +21,15 @@ import { sveltekit } from '@sveltejs/kit/vite';
  */
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
+
+	/**
+	 * Environment Variables
+	 * ---------------------
+	 * Define app version from package.json to be available in the app
+	 */
+	define: {
+		__APP_VERSION__: JSON.stringify(APP_VERSION)
+	},
 
 	/**
 	 * Development Server Configuration

@@ -42,7 +42,22 @@
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import type { Session, User, SupabaseClient } from '@supabase/supabase-js';
 	import type { Profile } from '$lib/types/database';
-	import { Menu, X, Home, LogIn, LogOut, LayoutDashboard, Sun, Moon, Minus, Plus, Maximize, Minimize, Users, MessageCircle } from 'lucide-svelte';
+	import {
+		Menu,
+		X,
+		Home,
+		LogIn,
+		LogOut,
+		LayoutDashboard,
+		Sun,
+		Moon,
+		Minus,
+		Plus,
+		Maximize,
+		Minimize,
+		Users,
+		MessageCircle
+	} from 'lucide-svelte';
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 
@@ -84,9 +99,6 @@
 		supabase,
 		sidebarItems = [
 			{ label: 'Accueil', href: '/', icon: '🏠' },
-			{ label: 'Exercices', href: '/exercises', icon: '📝' },
-			{ label: 'Pratique', href: '/practice', icon: '✏️' },
-			{ label: 'Ressources', href: '/resources', icon: '📚' },
 			{ label: 'Jeux', href: '/games', icon: '🎮' }
 		]
 	}: {
@@ -169,12 +181,12 @@
 </script>
 
 <header class="border-b border-border bg-background shadow-sm">
-	<div class="flex h-16 items-center px-4 gap-4">
+	<div class="flex h-16 items-center gap-4 px-4">
 		<!-- Hamburger menu - visible only on mobile (lg:hidden) -->
 		<div class="lg:hidden">
 			<DropdownMenu.Root bind:open={mobileMenuOpen}>
 				<DropdownMenu.Trigger
-					class="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 w-9"
+					class="inline-flex h-9 w-9 cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
 				>
 					{#if mobileMenuOpen}
 						<X class="h-6 w-6" />
@@ -188,7 +200,7 @@
 					<DropdownMenu.Separator />
 					{#each sidebarItems as item}
 						<DropdownMenu.Item>
-							<a href={item.href} class="flex items-center w-full" onclick={closeMobileMenu}>
+							<a href={item.href} class="flex w-full items-center" onclick={closeMobileMenu}>
 								{#if item.icon}
 									<span class="mr-2">{item.icon}</span>
 								{/if}
@@ -201,9 +213,9 @@
 		</div>
 
 		<!-- Title with Gidouille - links to home -->
-		<a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+		<a href="/" class="flex items-center gap-3 transition-opacity hover:opacity-80">
 			<img src={gidouille} alt="Gidouille" class="h-10 w-10" />
-			<h1 class="text-2xl font-bold text-foreground tracking-tight">{title}</h1>
+			<h1 class="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
 		</a>
 
 		<!-- Spacer -->
@@ -211,18 +223,19 @@
 
 		<!-- Navigation -->
 		<nav class="flex items-center gap-2">
-
 			<!-- Auth section -->
 			{#if session}
 				<div class="border-l pl-2">
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger
-							class="cursor-pointer relative h-10 w-10 rounded-full hover:ring-2 hover:ring-ring transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+							class="relative h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 						>
 							<Avatar.Root class="h-10 w-10">
 								<Avatar.Image src={getAvatarSrc()} alt={user?.email || 'User'} />
 								<Avatar.Fallback>
-									{getAvatarInitials(profile?.firstname ?? null, profile?.lastname ?? null) || user?.email?.charAt(0).toUpperCase() || '?'}
+									{getAvatarInitials(profile?.firstname ?? null, profile?.lastname ?? null) ||
+										user?.email?.charAt(0).toUpperCase() ||
+										'?'}
 								</Avatar.Fallback>
 							</Avatar.Root>
 						</DropdownMenu.Trigger>
@@ -230,19 +243,19 @@
 							<DropdownMenu.Label>{user?.email}</DropdownMenu.Label>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Item>
-								<a href="/dashboard" class="flex items-center w-full">
+								<a href="/dashboard" class="flex w-full items-center">
 									<LayoutDashboard class="mr-2 h-4 w-4" />
 									Tableau de bord
 								</a>
 							</DropdownMenu.Item>
 							<DropdownMenu.Item>
-								<a href="/dashboard/friends" class="flex items-center w-full">
+								<a href="/dashboard/friends" class="flex w-full items-center">
 									<Users class="mr-2 h-4 w-4" />
 									Amis
 								</a>
 							</DropdownMenu.Item>
 							<DropdownMenu.Item>
-								<a href="/dashboard/chat" class="flex items-center w-full">
+								<a href="/dashboard/chat" class="flex w-full items-center">
 									<MessageCircle class="mr-2 h-4 w-4" />
 									Chat
 								</a>
@@ -257,7 +270,7 @@
 				</div>
 			{:else}
 				<Button href="/auth/login" size="sm" variant="default">
-					<LogIn class="h-4 w-4 mr-2" />
+					<LogIn class="mr-2 h-4 w-4" />
 					Connexion
 				</Button>
 			{/if}
