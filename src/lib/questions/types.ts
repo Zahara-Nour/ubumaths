@@ -203,6 +203,20 @@ export interface QuestionTemplate {
   /** Applicable grade levels */
   grades: GradeLevel[];
 
+  // ---- Categorization ----
+
+  /** Question theme (e.g., Algèbre, Géométrie) - independent from grades */
+  theme: string;
+
+  /** Question domain within theme (e.g., Équations, Polynômes) */
+  domain: string;
+
+  /** Optional subdomain for finer categorization (e.g., Linéaires, Quadratiques) */
+  subdomain?: string;
+
+  /** Difficulty level as positive integer (no max) - independent from grades */
+  level: number;
+
   /** Time limit in seconds (optional) */
   delay?: number;
 
@@ -286,6 +300,10 @@ export interface QuestionInstance {
   options?: QuestionTemplate['options'];
   precision?: PrecisionType;
   grades: GradeLevel[];
+  theme: string;
+  domain: string;
+  subdomain?: string;
+  level: number;
   delay?: number;
   correction?: ContentField[];
 

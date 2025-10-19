@@ -20,7 +20,7 @@
 	import type { QuestionInstance } from '$lib/questions/types';
 	import QuestionDisplay from '$lib/components/questions/QuestionDisplay.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Card } from '$lib/components/ui/card';
+	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
@@ -84,13 +84,13 @@
 			// Use custom seed if provided, otherwise use state seed
 			const seedParam = customSeed !== undefined ? customSeed : seed;
 
-			// Build API URL with optional seed query param
-			const url =
-				seedParam !== undefined
-					? `/api/questions/generate/${templateId}?seed=${seedParam}`
-					: `/api/questions/generate/${templateId}`;
+			// Call POST endpoint with seed in body
+			const response = await fetch(`/api/questions/generate/${templateId}`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(seedParam !== undefined ? { seed: seedParam } : {})
+			});
 
-			const response = await fetch(url);
 			const result = await response.json();
 
 			if (response.ok && result.success) {

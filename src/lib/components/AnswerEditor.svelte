@@ -26,7 +26,6 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
-	import * as Select from '$lib/components/ui/select';
 	import { Button } from '$lib/components/ui/button';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Badge } from '$lib/components/ui/badge';
@@ -136,7 +135,7 @@
 					<Input
 						id="answer"
 						bind:value={answer}
-						placeholder="Ex: {@:a} + {@:b}, {eval:2^3}, 42"
+						placeholder={'Ex: {@:a} + {@:b}, {eval:2^3}, 42'}
 						class="font-mono"
 					/>
 					<p class="text-xs text-muted-foreground">
@@ -163,23 +162,15 @@
 			<Card.Content class="space-y-4">
 				<div class="space-y-2">
 					<Label for="transform-type">Type de transformation</Label>
-					<Select.Root
-						selected={transformType ? { value: transformType, label: TRANSFORM_TYPES.find(t => t.value === transformType)?.label || transformType } : undefined}
-						onSelectedChange={(selected) => {
-							if (selected) {
-								transformType = selected.value;
-							}
-						}}
+					<select
+						id="transform-type"
+						bind:value={transformType}
+						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 					>
-						<Select.Trigger id="transform-type">
-							<Select.Value placeholder="Sélectionner une transformation" />
-						</Select.Trigger>
-						<Select.Content>
-							{#each TRANSFORM_TYPES as type}
-								<Select.Item value={type.value}>{type.label}</Select.Item>
-							{/each}
-						</Select.Content>
-					</Select.Root>
+						{#each TRANSFORM_TYPES as type}
+							<option value={type.value}>{type.label}</option>
+						{/each}
+					</select>
 				</div>
 
 				<div class="space-y-2">

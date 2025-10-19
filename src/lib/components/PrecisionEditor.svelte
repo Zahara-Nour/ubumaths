@@ -19,7 +19,6 @@
 	import type { PrecisionType } from '$lib/questions/types';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
-	import * as Select from '$lib/components/ui/select';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 
@@ -42,11 +41,6 @@
 		{ value: 'magnitude', label: 'Ordre de grandeur', description: 'Arrondi à la puissance de 10' },
 		{ value: 'tolerance', label: 'Tolérance', description: 'Marge d\'erreur absolue ou relative' }
 	];
-
-	// Get current type label
-	function getTypeLabel(type: string): string {
-		return PRECISION_TYPES.find((t) => t.value === type)?.label || type;
-	}
 
 	// Handle type change
 	function handleTypeChange(newType: string) {
@@ -81,28 +75,18 @@
 		<!-- Precision type selector -->
 		<div class="space-y-2">
 			<Label for="precision-type">Type de précision</Label>
-			<Select.Root
-				selected={{ value: precision.type, label: getTypeLabel(precision.type) }}
-				onSelectedChange={(selected) => {
-					if (selected) {
-						handleTypeChange(selected.value);
-					}
-				}}
+			<select
+				id="precision-type"
+				value={precision.type}
+				onchange={(e) => handleTypeChange(e.currentTarget.value)}
+				class="flex h-auto w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 			>
-				<Select.Trigger id="precision-type">
-					<Select.Value />
-				</Select.Trigger>
-				<Select.Content>
-					{#each PRECISION_TYPES as type}
-						<Select.Item value={type.value}>
-							<div>
-								<div class="font-medium">{type.label}</div>
-								<div class="text-xs text-muted-foreground">{type.description}</div>
-							</div>
-						</Select.Item>
-					{/each}
-				</Select.Content>
-			</Select.Root>
+				{#each PRECISION_TYPES as type}
+					<option value={type.value}>
+						{type.label} - {type.description}
+					</option>
+				{/each}
+			</select>
 		</div>
 
 		<!-- Type-specific configuration -->
@@ -158,32 +142,14 @@
 			<div class="space-y-4">
 				<div class="space-y-2">
 					<Label for="tolerance-mode">Mode de tolérance</Label>
-					<Select.Root
-						selected={{ value: precision.mode, label: precision.mode === 'absolute' ? 'Absolue' : 'Relative' }}
-						onSelectedChange={(selected) => {
-							if (selected && precision.type === 'tolerance') {
-								precision.mode = selected.value as 'absolute' | 'relative';
-							}
-						}}
+					<select
+						id="tolerance-mode"
+						bind:value={precision.mode}
+						class="flex h-auto w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 					>
-						<Select.Trigger id="tolerance-mode">
-							<Select.Value />
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Item value="absolute">
-								<div>
-									<div class="font-medium">Absolue</div>
-									<div class="text-xs text-muted-foreground">±valeur fixe</div>
-								</div>
-							</Select.Item>
-							<Select.Item value="relative">
-								<div>
-									<div class="font-medium">Relative</div>
-									<div class="text-xs text-muted-foreground">±pourcentage</div>
-								</div>
-							</Select.Item>
-						</Select.Content>
-					</Select.Root>
+						<option value="absolute">Absolue - ±valeur fixe</option>
+						<option value="relative">Relative - ±pourcentage</option>
+					</select>
 				</div>
 
 				<div class="space-y-2">

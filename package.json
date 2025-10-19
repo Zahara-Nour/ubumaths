@@ -80,6 +80,7 @@
 		]
 	},
 	"dependencies": {
+		"@cortex-js/compute-engine": "^0.30.2",
 		"@fontsource/inter": "^5.2.8",
 		"@fontsource/lora": "^5.2.8",
 		"@neoconfetti/svelte": "^2.2.2",

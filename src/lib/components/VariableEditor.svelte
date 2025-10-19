@@ -207,7 +207,7 @@
 									<Input
 										id="var-expression-{index}"
 										bind:value={variable.expression}
-										placeholder="Ex: {#:1-10}, {@:min}+5, {eval:2^3}"
+										placeholder={'Ex: {#:1-10}, {@:min}+5, {eval:2^3}'}
 									/>
 								</div>
 

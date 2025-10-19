@@ -41,6 +41,19 @@ export function validateTemplate(template: QuestionTemplate): string[] {
     errors.push('Missing required field: grades');
   }
 
+  // Categorization fields
+  if (!template.theme || template.theme.trim() === '') {
+    errors.push('Missing required field: theme');
+  }
+
+  if (!template.domain || template.domain.trim() === '') {
+    errors.push('Missing required field: domain');
+  }
+
+  if (!template.level || template.level <= 0) {
+    errors.push('level must be a positive integer');
+  }
+
   // Type-specific validation
   switch (template.type) {
     case 'algebraic_transform':
@@ -105,8 +118,8 @@ export function validateTemplate(template: QuestionTemplate): string[] {
     }
   }
 
-  // Validate correction fields (if present)
-  if (template.correction) {
+  // Validate correction fields (if present and not empty array)
+  if (template.correction && template.correction.length > 0) {
     for (const field of template.correction) {
       if (field.type === 'text' && !field.content) {
         errors.push('Correction text field cannot be empty');

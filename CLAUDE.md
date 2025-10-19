@@ -54,6 +54,25 @@ pnpm release:minor    # Force minor version bump (0.x.0)
 pnpm release:major    # Force major version bump (x.0.0)
 ```
 
+### Development Server Ports
+
+**IMPORTANT:** When debugging or starting dev servers for testing purposes:
+
+- **Port 5173**: Reserved for the user's main development server (DO NOT USE)
+- **Port 5175**: Use this port for Claude's debugging and testing purposes
+
+**When Claude needs to start a dev server:**
+
+```bash
+# ❌ WRONG - Interferes with user's main server
+pnpm dev
+
+# ✅ CORRECT - Use port 5175 for debugging
+pnpm dev -- --port 5175
+```
+
+**Rationale:** The user maintains their own dev server on port 5173 for active development. Claude should always use port 5175 when testing, debugging, or verifying fixes to avoid port conflicts and SSR cache issues.
+
 ## Code Quality & Linting
 
 The project uses **Prettier** for code formatting and **ESLint** for code quality checks.
@@ -3430,6 +3449,7 @@ The system allows admins to create question templates that generate infinite var
 - **Mathematical evaluation** via MathLive Compute Engine
 - **6 question types** (numerical, algebraic, fill-in-blanks, QCM)
 - **Grade-level targeting** (CP → Tale + STMG)
+- **Categorization system** (theme, domain, subdomain, difficulty level)
 
 ### Architecture
 
@@ -3812,6 +3832,221 @@ simplifyExpression(latex: string): string
 - Hardcode values that should be random
 - Skip validation warnings
 - Make exclusion lists too restrictive (may fail to generate)
+
+### Question Categorization System
+
+The Question Bank includes a comprehensive categorization system independent from grade levels, allowing fine-grained organization and filtering of questions.
+
+#### Overview
+
+**Database Fields**:
+- `theme` (TEXT, required) - Broad subject area (e.g., "Algèbre", "Géométrie")
+- `domain` (TEXT, required) - Specific topic within theme (e.g., "Équations", "Triangles")
+- `subdomain` (TEXT, nullable) - Optional sub-topic (e.g., "Linéaires", "Quadratiques")
+- `level` (INTEGER, required) - Difficulty level as positive integer (1=easy, higher=harder, no max)
+
+**Migrations**:
+- `072_add_question_categories.sql` - Adds category columns with indexes
+- `073_update_seed_question_categories.sql` - Updates existing questions with placeholder values
+
+#### Key Features
+
+**Independent from Grades**:
+- Categories are completely separate from the `grades` field
+- A question can be "Algèbre/Équations/Linéaires/Level 2" and applicable to grades ["6", "5", "4"]
+- Grades = *who* should see it; Categories = *what* it teaches and *how hard* it is
+
+**Hybrid Category Management**:
+- Categories start empty (admins add as needed)
+- "Add new" option in form dropdowns creates categories on-the-fly
+- Categories extracted dynamically from existing questions for filter dropdowns
+- No separate category management UI needed
+
+**Filtering System**:
+- Filter by theme, domain, subdomain (exact match)
+- Filter by level range (min/max)
+- Filters work alongside type, grades, and search
+- All filters stored in URL params (shareable, bookmarkable)
+
+#### Admin Interface
+
+**Category Selector Component** ([src/lib/components/CategorySelector.svelte](src/lib/components/CategorySelector.svelte)):
+- Native `<select>` with Shadcn styling
+- "➕ Ajouter..." option opens modal dialog
+- Modal validates against duplicates
+- Keyboard support (Enter to submit)
+- Used for theme, domain, and subdomain fields
+
+**Question Form** ([src/lib/components/QuestionTemplateForm.svelte](src/lib/components/QuestionTemplateForm.svelte:205-270)):
+```svelte
+<!-- Categorization Card -->
+<Card.Root>
+  <Card.Header>
+    <Card.Title>Catégorisation</Card.Title>
+  </Card.Header>
+  <Card.Content>
+    <CategorySelector
+      label="Thème"
+      bind:value={theme}
+      options={themeOptions}
+      required={true}
+      onValueChange={(val) => (theme = val)}
+      onAddNew={handleAddTheme}
+    />
+
+    <CategorySelector label="Domaine" ... />
+    <CategorySelector label="Sous-domaine (optionnel)" ... />
+
+    <Input
+      type="number"
+      min="1"
+      bind:value={level}
+      placeholder="1, 2, 3..."
+    />
+  </Card.Content>
+</Card.Root>
+```
+
+**Questions List Page** ([src/routes/(protected)/dashboard/admin/questions/+page.svelte](src/routes/(protected)/dashboard/admin/questions/+page.svelte:541-605)):
+- Filter row with 4 category dropdowns
+- Theme, Domain, Subdomain filters (populated from existing questions)
+- Level range filter (min/max number inputs)
+- Categories displayed in both card and table views
+
+#### API Integration
+
+**Server-Side Filtering** ([+page.server.ts](src/routes/(protected)/dashboard/admin/questions/+page.server.ts:50-142)):
+```typescript
+// Parse category filters from URL params
+const themeFilter = url.searchParams.get('theme');
+const domainFilter = url.searchParams.get('domain');
+const subdomainFilter = url.searchParams.get('subdomain');
+const minLevelFilter = url.searchParams.get('minLevel');
+const maxLevelFilter = url.searchParams.get('maxLevel');
+
+// Apply filters
+if (themeFilter) query = query.eq('theme', themeFilter);
+if (domainFilter) query = query.eq('domain', domainFilter);
+if (subdomainFilter) query = query.eq('subdomain', subdomainFilter);
+if (minLevel) query = query.gte('level', minLevel);
+if (maxLevel) query = query.lte('level', maxLevel);
+
+// Extract unique categories for dropdowns
+const { data: allTemplates } = await supabase
+  .from('question_templates')
+  .select('theme, domain, subdomain');
+
+const themes = new Set<string>();
+// ... populate sets from templates
+return { templates, categories: { themes, domains, subdomains } };
+```
+
+**API Endpoints** ([src/routes/api/questions/templates/](src/routes/api/questions/templates/)):
+
+POST `/api/questions/templates` - Create template:
+```typescript
+.insert({
+  type: templateData.type,
+  statement: templateData.statement,
+  // ... other fields
+  theme: templateData.theme,
+  domain: templateData.domain,
+  subdomain: templateData.subdomain || null,
+  level: templateData.level,
+  created_by: user.id
+})
+```
+
+PUT `/api/questions/templates/[id]` - Update template:
+```typescript
+.update({
+  // ... all fields including:
+  theme: templateData.theme,
+  domain: templateData.domain,
+  subdomain: templateData.subdomain || null,
+  level: templateData.level
+})
+```
+
+#### Validation
+
+**Required Fields** ([src/lib/questions/validators/template-validator.ts](src/lib/questions/validators/template-validator.ts:44-56)):
+```typescript
+if (!template.theme || template.theme.trim() === '') {
+  errors.push('Missing required field: theme');
+}
+
+if (!template.domain || template.domain.trim() === '') {
+  errors.push('Missing required field: domain');
+}
+
+if (!template.level || template.level <= 0) {
+  errors.push('level must be a positive integer');
+}
+
+// subdomain is optional (no validation)
+```
+
+#### Display
+
+**Card View** ([QuestionTemplateCard.svelte](src/lib/components/QuestionTemplateCard.svelte:108-128)):
+```svelte
+<div class="space-y-1">
+  <div><span class="font-medium">Thème:</span> {template.theme}</div>
+  <div><span class="font-medium">Domaine:</span> {template.domain}</div>
+  {#if template.subdomain}
+    <div><span class="font-medium">Sous-domaine:</span> {template.subdomain}</div>
+  {/if}
+  <div>
+    <span class="font-medium">Niveau:</span>
+    <Badge variant="secondary">{template.level}</Badge>
+  </div>
+</div>
+```
+
+**Table View** (Questions list page):
+```svelte
+<td class="px-4 py-3">
+  <div class="space-y-1 text-xs">
+    <div><span class="font-medium">Thème:</span> {template.theme}</div>
+    <div><span class="font-medium">Domaine:</span> {template.domain}</div>
+    {#if template.subdomain}
+      <div><span class="font-medium">Sous-dom:</span> {template.subdomain}</div>
+    {/if}
+    <div><span class="font-medium">Niveau:</span> {template.level}</div>
+  </div>
+</td>
+```
+
+#### Best Practices
+
+**DO**:
+- Use descriptive category names (e.g., "Algèbre" not "A", "Équations linéaires" not "EL")
+- Add categories during question creation (easier than bulk editing later)
+- Use subdomain for fine-grained organization (optional but helpful)
+- Use consistent level scaling (e.g., 1-3 for basics, 4-6 for intermediate, 7-10 for advanced)
+- Filter by categories when searching for specific question types
+
+**DON'T**:
+- Create duplicate categories with different capitalization
+- Use categories as a replacement for grades (they're complementary)
+- Leave theme/domain empty (required fields, form validation prevents this)
+- Use negative or zero levels (validation prevents this)
+
+#### Migration Notes
+
+**Existing Questions**:
+- All questions created before categorization have default values:
+  - `theme: "Non catégorisé"`
+  - `domain: "Non catégorisé"`
+  - `subdomain: NULL`
+  - `level: 1`
+- Admins should manually categorize these questions for better organization
+
+**Performance**:
+- Indexed columns for fast filtering
+- Category extraction query is separate from main template query
+- Dropdown options cached client-side during page session
 
 ### Future Enhancements
 

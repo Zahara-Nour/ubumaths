@@ -10,7 +10,8 @@
 		{ href: '/dashboard/admin/debug/rls', label: 'RLS Policies' },
 		{ href: '/dashboard/admin/debug/avatar', label: 'Avatar' },
 		{ href: '/dashboard/admin/debug/mathgraph', label: 'MathGraph32' },
-		{ href: '/dashboard/admin/debug/wheel', label: 'Wheel' }
+		{ href: '/dashboard/admin/debug/wheel', label: 'Wheel' },
+		{ href: '/dashboard/admin/debug/question-display', label: 'QuestionDisplay' }
 	];
 
 	function isActivePage(href: string): boolean {

@@ -49,6 +49,13 @@
 			color: 'from-blue-500 to-cyan-500'
 		},
 		{
+			title: 'QuestionDisplay Component',
+			description: 'Affichage de questions mathématiques avec modes flashcard et interactif',
+			href: '/demo/question-display-demo',
+			icon: Presentation,
+			color: 'from-teal-500 to-green-500'
+		},
+		{
 			title: 'Géométrie Interactive',
 			description: 'Outils et visualisations de géométrie mathématique',
 			href: '/demo/geometry',

@@ -5,21 +5,43 @@
 	 *
 	 * Features:
 	 * - List all question templates with pagination
-	 * - Filter by type and grade level
-	 * - Search by text (client-side)
+	 * - Server-side sorting (Created date, Last updated date, Question type)
+	 * - Server-side full-text search with PostgreSQL (French config)
+	 * - Filter by type and grade level (multi-select)
+	 * - Debounced search input (500ms delay)
+	 * - View mode toggle (Table / Card grid)
+	 * - localStorage persistence for view mode
+	 * - URL query parameters for shareable filtered views
 	 * - Actions: View, Edit, Duplicate, Delete
 	 * - Preview modal for generated instances
+	 *
+	 * Performance Optimizations:
+	 * - All filtering done server-side (0ms client-side processing)
+	 * - Debounced search prevents excessive API calls
+	 * - localStorage reduces re-fetching view preferences
+	 * - Card/table view persisted across sessions
+	 *
+	 * Data Flow:
+	 * 1. User changes filter/sort → Update local state
+	 * 2. applyFilters() → Build URL query params
+	 * 3. goto() → Navigate with params
+	 * 4. +page.server.ts load() → Process query params
+	 * 5. Supabase query → Return filtered/sorted data
+	 * 6. Component re-renders with new data
 	 */
 
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import * as Select from '$lib/components/ui/select';
+	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import GradeMultiSelect from '$lib/components/GradeMultiSelect.svelte';
+	import QuestionTemplateCard from '$lib/components/QuestionTemplateCard.svelte';
 	import {
 		Plus,
 		Eye,
@@ -28,19 +50,47 @@
 		Trash2,
 		ChevronLeft,
 		ChevronRight,
-		Search
+		Search,
+		LayoutGrid,
+		List,
+		ArrowUpDown,
+		ArrowUp,
+		ArrowDown,
+		Loader2
 	} from 'lucide-svelte';
 	import type { QuestionTemplate, QuestionType, GradeLevel } from '$lib/questions/types';
 
 	let { data }: { data: PageData } = $props();
 
-	// Local state
-	let searchTerm = $state('');
-	let selectedType = $state<string>(data.filters.type || 'all');
-	let selectedGrades = $state<string>(data.filters.grades || '');
-	let deleteConfirmOpen = $state(false);
-	let templateToDelete = $state<string | null>(null);
-	let isDeleting = $state(false);
+	/**
+	 * Local state (Svelte 5 runes)
+	 *
+	 * All state is initialized from URL query parameters (data.filters)
+	 * to ensure consistency when navigating with filtered URLs.
+	 */
+	let searchTerm = $state(data.filters.search || ''); // Current search term
+	let selectedType = $state<string>(data.filters.type || 'all'); // Filter by question type
+	let selectedGradesList = $state<string[]>(
+		// Filter by grade levels (comma-separated in URL)
+		data.filters.grades ? data.filters.grades.split(',').map((g) => g.trim()) : []
+	);
+	let selectedTheme = $state<string>(data.filters.theme || 'all'); // Filter by theme
+	let selectedDomain = $state<string>(data.filters.domain || 'all'); // Filter by domain
+	let selectedSubdomain = $state<string>(data.filters.subdomain || 'all'); // Filter by subdomain
+	let minLevel = $state<number | undefined>(
+		data.filters.minLevel ? parseInt(data.filters.minLevel) : undefined
+	); // Minimum difficulty level
+	let maxLevel = $state<number | undefined>(
+		data.filters.maxLevel ? parseInt(data.filters.maxLevel) : undefined
+	); // Maximum difficulty level
+	let sortField = $state<string>(data.sort || 'created_at'); // Sort column
+	let sortOrder = $state<'asc' | 'desc'>(data.order === 'asc' ? 'asc' : 'desc'); // Sort direction
+	let viewMode = $state<'table' | 'card'>('table'); // Display mode (persisted in localStorage)
+	let deleteConfirmOpen = $state(false); // Delete dialog state
+	let templateToDelete = $state<string | null>(null); // Template ID to delete
+	let isDeleting = $state(false); // Deletion in progress
+	let isSearching = $state(false); // Search API call in progress
+	let searchDebounceTimer: number; // Timeout ID for debounced search
 
 	// Question types for filter
 	const questionTypes: { value: string; label: string }[] = [
@@ -69,26 +119,41 @@
 		{ value: 'SPE_T', label: 'Tale Spé' }
 	];
 
-	// Filtered templates (client-side search)
-	let filteredTemplates = $derived(
-		data.templates.filter((template) => {
-			if (!searchTerm) return true;
-			const search = searchTerm.toLowerCase();
-
-			// Search in statement content
-			const statementText = template.statement
-				.filter((s: any) => s.type === 'text')
-				.map((s: any) => s.content)
-				.join(' ')
-				.toLowerCase();
-
-			return statementText.includes(search);
-		})
-	);
+	// Sort field options
+	const sortFields = [
+		{ value: 'created_at', label: 'Date de création' },
+		{ value: 'updated_at', label: 'Dernière modification' },
+		{ value: 'type', label: 'Type de question' }
+	];
 
 	// Pagination info
 	let totalPages = $derived(Math.ceil(data.total / data.limit));
 	let currentPage = $derived(data.page);
+
+	/**
+	 * localStorage persistence for view mode
+	 *
+	 * Load saved view mode on mount (client-side only)
+	 * Guards with `browser` check to prevent SSR issues
+	 */
+	if (browser) {
+		const savedViewMode = localStorage.getItem('questionsViewMode');
+		if (savedViewMode === 'table' || savedViewMode === 'card') {
+			viewMode = savedViewMode;
+		}
+	}
+
+	/**
+	 * Auto-save view mode to localStorage when it changes
+	 *
+	 * Uses Svelte 5 $effect rune to react to viewMode changes
+	 * Ensures preference persists across sessions
+	 */
+	$effect(() => {
+		if (browser) {
+			localStorage.setItem('questionsViewMode', viewMode);
+		}
+	});
 
 	/**
 	 * Get display label for question type
@@ -132,7 +197,98 @@
 	}
 
 	/**
+	 * Debounced search handler
+	 *
+	 * Delays search API call by 500ms to prevent excessive requests
+	 * while user is still typing. Clears previous timer on each keystroke.
+	 *
+	 * Flow:
+	 * 1. User types → Update searchTerm → Show loading spinner
+	 * 2. Clear previous timer (if any)
+	 * 3. Start new 500ms timer
+	 * 4. When timer fires → Call applyFilters() → Server-side search
+	 * 5. Hide loading spinner
+	 *
+	 * Performance: For "mathematics", prevents 11 API calls down to 1
+	 */
+	function handleSearchInput(value: string) {
+		searchTerm = value;
+		isSearching = true;
+
+		// Clear existing timer
+		if (searchDebounceTimer) {
+			clearTimeout(searchDebounceTimer);
+		}
+
+		// Set new timer (500ms delay)
+		searchDebounceTimer = setTimeout(() => {
+			applyFilters();
+			isSearching = false;
+		}, 500) as unknown as number;
+	}
+
+	/**
+	 * Handle sort column click
+	 *
+	 * Clicking a column header toggles sort order if already sorted by that field,
+	 * or sets sort to that field with descending order (most recent first).
+	 *
+	 * Example:
+	 * - Click "Créé le" (not sorted) → Sort by created_at DESC
+	 * - Click "Créé le" again → Toggle to ASC
+	 * - Click "Type" → Switch to type DESC
+	 */
+	function handleSort(field: string) {
+		// Toggle order if same field, otherwise default to desc
+		if (sortField === field) {
+			sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+		} else {
+			sortField = field;
+			sortOrder = 'desc';
+		}
+		applyFilters();
+	}
+
+	/**
+	 * Get sort icon for table header
+	 *
+	 * Returns:
+	 * - ArrowUpDown: Column not currently sorted (default state)
+	 * - ArrowUp: Sorted ascending (A→Z, oldest first)
+	 * - ArrowDown: Sorted descending (Z→A, newest first)
+	 */
+	function getSortIcon(field: string) {
+		if (sortField !== field) return ArrowUpDown;
+		return sortOrder === 'asc' ? ArrowUp : ArrowDown;
+	}
+
+	/**
+	 * Toggle view mode (table/card)
+	 */
+	function toggleViewMode() {
+		viewMode = viewMode === 'table' ? 'card' : 'table';
+	}
+
+	/**
 	 * Apply filters (navigates with query params)
+	 *
+	 * Builds URL query string from current filter/sort state and navigates.
+	 * This triggers +page.server.ts load() function with updated params.
+	 *
+	 * Query Parameter Format:
+	 * - type: Question type ('numerical_exact', 'algebraic_transform', etc.)
+	 * - grades: Comma-separated grade levels ('6,5,4')
+	 * - search: Full-text search term
+	 * - sort: Sort field ('created_at', 'updated_at', 'type')
+	 * - order: Sort direction ('asc' or 'desc')
+	 *
+	 * Example URL:
+	 * /dashboard/admin/questions?type=numerical_exact&grades=6,5&search=fraction&sort=created_at&order=desc
+	 *
+	 * Benefits:
+	 * - Shareable URLs (send link to colleague with filters applied)
+	 * - Bookmarkable (save frequently-used filter combinations)
+	 * - Browser history (back button restores previous filter state)
 	 */
 	function applyFilters() {
 		const params = new URLSearchParams();
@@ -141,8 +297,40 @@
 			params.set('type', selectedType);
 		}
 
-		if (selectedGrades) {
-			params.set('grades', selectedGrades);
+		if (selectedGradesList.length > 0) {
+			params.set('grades', selectedGradesList.join(','));
+		}
+
+		if (selectedTheme && selectedTheme !== 'all') {
+			params.set('theme', selectedTheme);
+		}
+
+		if (selectedDomain && selectedDomain !== 'all') {
+			params.set('domain', selectedDomain);
+		}
+
+		if (selectedSubdomain && selectedSubdomain !== 'all') {
+			params.set('subdomain', selectedSubdomain);
+		}
+
+		if (minLevel !== undefined && minLevel > 0) {
+			params.set('minLevel', minLevel.toString());
+		}
+
+		if (maxLevel !== undefined && maxLevel > 0) {
+			params.set('maxLevel', maxLevel.toString());
+		}
+
+		if (searchTerm) {
+			params.set('search', searchTerm);
+		}
+
+		if (sortField) {
+			params.set('sort', sortField);
+		}
+
+		if (sortOrder) {
+			params.set('order', sortOrder);
 		}
 
 		goto(`/dashboard/admin/questions?${params.toString()}`);
@@ -153,8 +341,15 @@
 	 */
 	function clearFilters() {
 		selectedType = 'all';
-		selectedGrades = '';
+		selectedGradesList = [];
+		selectedTheme = 'all';
+		selectedDomain = 'all';
+		selectedSubdomain = 'all';
+		minLevel = undefined;
+		maxLevel = undefined;
 		searchTerm = '';
+		sortField = 'created_at';
+		sortOrder = 'desc';
 		goto('/dashboard/admin/questions');
 	}
 
@@ -281,57 +476,173 @@
 			<h1 class="text-3xl font-bold">Banque de Questions</h1>
 			<p class="text-muted-foreground">Gérer les templates de questions mathématiques</p>
 		</div>
-		<Button onclick={handleCreate} class="gap-2">
-			<Plus class="h-4 w-4" />
-			Nouvelle Question
-		</Button>
+		<div class="flex gap-2">
+			<!-- View Toggle -->
+			<Button onclick={toggleViewMode} variant="outline" size="icon" title={viewMode === 'table' ? 'Vue en cartes' : 'Vue en tableau'}>
+				{#if viewMode === 'table'}
+					<LayoutGrid class="h-4 w-4" />
+				{:else}
+					<List class="h-4 w-4" />
+				{/if}
+			</Button>
+			<!-- Create Button -->
+			<Button onclick={handleCreate} class="gap-2">
+				<Plus class="h-4 w-4" />
+				Nouvelle Question
+			</Button>
+		</div>
 	</div>
 
 	<!-- Filters Card -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Filtres</Card.Title>
+			<Card.Title>Filtres et Tri</Card.Title>
 		</Card.Header>
 		<Card.Content>
+			<!-- First row: Type, Grades, Search -->
 			<div class="grid gap-4 md:grid-cols-3">
 				<!-- Type filter -->
 				<div class="space-y-2">
-					<label class="text-sm font-medium">Type de question</label>
-					<Select.Root
-						selected={{ value: selectedType, label: getTypeLabel(selectedType) }}
-						onSelectedChange={(v) => {
-							if (v) selectedType = v.value;
-						}}
+					<Label class="text-sm font-medium">Type de question</Label>
+					<select
+						bind:value={selectedType}
+						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 					>
-						<Select.Trigger>
-							<Select.Value placeholder="Tous les types" />
-						</Select.Trigger>
-						<Select.Content>
-							{#each questionTypes as type}
-								<Select.Item value={type.value}>{type.label}</Select.Item>
-							{/each}
-						</Select.Content>
-					</Select.Root>
+						{#each questionTypes as type}
+							<option value={type.value}>{type.label}</option>
+						{/each}
+					</select>
+				</div>
+
+				<!-- Grade filter -->
+				<div class="space-y-2">
+					<Label class="text-sm font-medium">Niveaux scolaires</Label>
+					<GradeMultiSelect bind:selectedGrades={selectedGradesList} grades={gradeLevels} />
 				</div>
 
 				<!-- Search -->
 				<div class="space-y-2">
-					<label class="text-sm font-medium">Recherche</label>
+					<Label class="text-sm font-medium">Recherche</Label>
 					<div class="relative">
 						<Search class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+						{#if isSearching}
+							<Loader2 class="absolute right-2 top-2.5 h-4 w-4 animate-spin text-muted-foreground" />
+						{/if}
 						<Input
-							bind:value={searchTerm}
+							value={searchTerm}
+							oninput={(e) => handleSearchInput(e.currentTarget.value)}
 							placeholder="Rechercher dans les énoncés..."
-							class="pl-8"
+							class="pl-8 pr-8"
 						/>
 					</div>
 				</div>
+			</div>
 
-				<!-- Actions -->
-				<div class="flex items-end gap-2">
-					<Button onclick={applyFilters} variant="default">Appliquer</Button>
-					<Button onclick={clearFilters} variant="outline">Réinitialiser</Button>
+			<!-- Second row: Category filters -->
+			<div class="mt-4 grid gap-4 md:grid-cols-4">
+				<!-- Theme filter -->
+				<div class="space-y-2">
+					<Label class="text-sm font-medium">Thème</Label>
+					<select
+						bind:value={selectedTheme}
+						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+					>
+						<option value="all">Tous les thèmes</option>
+						{#each data.categories.themes as theme}
+							<option value={theme}>{theme}</option>
+						{/each}
+					</select>
 				</div>
+
+				<!-- Domain filter -->
+				<div class="space-y-2">
+					<Label class="text-sm font-medium">Domaine</Label>
+					<select
+						bind:value={selectedDomain}
+						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+					>
+						<option value="all">Tous les domaines</option>
+						{#each data.categories.domains as domain}
+							<option value={domain}>{domain}</option>
+						{/each}
+					</select>
+				</div>
+
+				<!-- Subdomain filter -->
+				<div class="space-y-2">
+					<Label class="text-sm font-medium">Sous-domaine</Label>
+					<select
+						bind:value={selectedSubdomain}
+						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+					>
+						<option value="all">Tous les sous-domaines</option>
+						{#each data.categories.subdomains as subdomain}
+							<option value={subdomain}>{subdomain}</option>
+						{/each}
+					</select>
+				</div>
+
+				<!-- Level range filter -->
+				<div class="space-y-2">
+					<Label class="text-sm font-medium">Niveau de difficulté</Label>
+					<div class="flex gap-2">
+						<Input
+							type="number"
+							min="1"
+							bind:value={minLevel}
+							placeholder="Min"
+							class="w-1/2"
+						/>
+						<Input
+							type="number"
+							min="1"
+							bind:value={maxLevel}
+							placeholder="Max"
+							class="w-1/2"
+						/>
+					</div>
+				</div>
+			</div>
+
+			<!-- Third row: Sort filter -->
+			<div class="mt-4 grid gap-4 md:grid-cols-2">
+				<!-- Sort filter -->
+				<div class="space-y-2">
+					<Label class="text-sm font-medium">Trier par</Label>
+					<div class="flex gap-2">
+						<select
+							bind:value={sortField}
+							class="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+						>
+							{#each sortFields as field}
+								<option value={field.value}>{field.label}</option>
+							{/each}
+						</select>
+						<Button
+							onclick={() => {
+								sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+								applyFilters();
+							}}
+							variant="outline"
+							size="icon"
+							title={sortOrder === 'asc' ? 'Croissant' : 'Décroissant'}
+						>
+							{#if sortOrder === 'asc'}
+								<ArrowUp class="h-4 w-4" />
+							{:else}
+								<ArrowDown class="h-4 w-4" />
+							{/if}
+						</Button>
+					</div>
+				</div>
+
+				<div></div>
+			</div>
+
+			<!-- Actions row -->
+			<div class="mt-4 flex gap-2">
+				<Button onclick={applyFilters} variant="default">Appliquer les filtres</Button>
+				<Button onclick={clearFilters} variant="outline">Réinitialiser</Button>
 			</div>
 		</Card.Content>
 	</Card.Root>
@@ -339,39 +650,57 @@
 	<!-- Results info -->
 	<div class="flex items-center justify-between text-sm text-muted-foreground">
 		<span>
-			{filteredTemplates.length} template{filteredTemplates.length > 1 ? 's' : ''} trouvé{filteredTemplates.length >
-			1
-				? 's'
-				: ''}
+			{data.total} template{data.total > 1 ? 's' : ''} trouvé{data.total > 1 ? 's' : ''}
 		</span>
 		<span>
 			Page {currentPage} sur {totalPages}
 		</span>
 	</div>
 
-	<!-- Templates Table -->
-	<Card.Root>
-		<Card.Content class="p-0">
-			<div class="overflow-x-auto">
-				<table class="w-full">
-					<thead class="border-b bg-muted/50">
-						<tr>
-							<th class="px-4 py-3 text-left text-sm font-medium">Type</th>
-							<th class="px-4 py-3 text-left text-sm font-medium">Énoncé</th>
-							<th class="px-4 py-3 text-left text-sm font-medium">Niveaux</th>
-							<th class="px-4 py-3 text-left text-sm font-medium">Créé le</th>
-							<th class="px-4 py-3 text-right text-sm font-medium">Actions</th>
-						</tr>
-					</thead>
-					<tbody class="divide-y">
-						{#if filteredTemplates.length === 0}
+	<!-- Templates Display (Table or Card view) -->
+	{#if viewMode === 'table'}
+		<!-- Table View -->
+		<Card.Root>
+			<Card.Content class="p-0">
+				<div class="overflow-x-auto">
+					<table class="w-full">
+						<thead class="border-b bg-muted/50">
 							<tr>
-								<td colspan="5" class="px-4 py-8 text-center text-muted-foreground">
-									Aucun template trouvé
-								</td>
+								<!-- Sortable Type header -->
+								<th class="px-4 py-3 text-left text-sm font-medium">
+									<button
+										onclick={() => handleSort('type')}
+										class="flex items-center gap-1 hover:text-foreground"
+									>
+										Type
+										<svelte:component this={getSortIcon('type')} class="h-4 w-4" />
+									</button>
+								</th>
+								<th class="px-4 py-3 text-left text-sm font-medium">Énoncé</th>
+								<th class="px-4 py-3 text-left text-sm font-medium">Catégories</th>
+								<th class="px-4 py-3 text-left text-sm font-medium">Niveaux</th>
+								<!-- Sortable Created date header -->
+								<th class="px-4 py-3 text-left text-sm font-medium">
+									<button
+										onclick={() => handleSort('created_at')}
+										class="flex items-center gap-1 hover:text-foreground"
+									>
+										Créé le
+										<svelte:component this={getSortIcon('created_at')} class="h-4 w-4" />
+									</button>
+								</th>
+								<th class="px-4 py-3 text-right text-sm font-medium">Actions</th>
 							</tr>
-						{:else}
-							{#each filteredTemplates as template (template.id)}
+						</thead>
+						<tbody class="divide-y">
+							{#if data.templates.length === 0}
+								<tr>
+									<td colspan="6" class="px-4 py-8 text-center text-muted-foreground">
+										Aucun template trouvé
+									</td>
+								</tr>
+							{:else}
+								{#each data.templates as template (template.id)}
 								<tr class="hover:bg-muted/30">
 									<!-- Type -->
 									<td class="px-4 py-3">
@@ -384,6 +713,18 @@
 									<td class="px-4 py-3">
 										<div class="max-w-md">
 											<p class="truncate text-sm">{getStatementPreview(template.statement)}</p>
+										</div>
+									</td>
+
+									<!-- Categories -->
+									<td class="px-4 py-3">
+										<div class="space-y-1 text-xs">
+											<div><span class="font-medium">Thème:</span> {template.theme}</div>
+											<div><span class="font-medium">Domaine:</span> {template.domain}</div>
+											{#if template.subdomain}
+												<div><span class="font-medium">Sous-dom:</span> {template.subdomain}</div>
+											{/if}
+											<div><span class="font-medium">Niveau:</span> {template.level}</div>
 										</div>
 									</td>
 
@@ -445,11 +786,33 @@
 								</tr>
 							{/each}
 						{/if}
-					</tbody>
-				</table>
+						</tbody>
+					</table>
+				</div>
+			</Card.Content>
+		</Card.Root>
+	{:else}
+		<!-- Card Grid View -->
+		{#if data.templates.length === 0}
+			<Card.Root>
+				<Card.Content class="py-12 text-center">
+					<p class="text-muted-foreground">Aucun template trouvé</p>
+				</Card.Content>
+			</Card.Root>
+		{:else}
+			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+				{#each data.templates as template (template.id)}
+					<QuestionTemplateCard
+						{template}
+						onPreview={handlePreview}
+						onEdit={handleEdit}
+						onDuplicate={handleDuplicate}
+						onDelete={handleDeleteClick}
+					/>
+				{/each}
 			</div>
-		</Card.Content>
-	</Card.Root>
+		{/if}
+	{/if}
 
 	<!-- Pagination -->
 	{#if totalPages > 1}

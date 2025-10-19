@@ -34,7 +34,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import * as Select from '$lib/components/ui/select';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
@@ -44,6 +43,7 @@
 	import PrecisionEditor from './PrecisionEditor.svelte';
 	import QuestionPreview from './QuestionPreview.svelte';
 	import JsonViewer from './JsonViewer.svelte';
+	import CategorySelector from './CategorySelector.svelte';
 	import { Save, X } from 'lucide-svelte';
 
 	interface Props {
@@ -64,6 +64,17 @@
 	let delay = $state<number | undefined>(template?.delay);
 	let correction = $state<ContentField[] | undefined>(template?.correction);
 	let precision = $state<PrecisionType>(template?.precision || { type: 'none' });
+
+	// Categorization fields
+	let theme = $state<string>(template?.theme || '');
+	let domain = $state<string>(template?.domain || '');
+	let subdomain = $state<string | undefined>(template?.subdomain);
+	let level = $state<number>(template?.level || 1);
+
+	// Category options (extracted from existing questions)
+	let themeOptions = $state<string[]>([]);
+	let domainOptions = $state<string[]>([]);
+	let subdomainOptions = $state<string[]>([]);
 
 	// Type-specific fields
 	let transformType = $state<string | undefined>(template?.transform_type);
@@ -88,11 +99,6 @@
 		{ value: 'multiple_choice', label: 'QCM' }
 	];
 
-	// Get label for question type
-	function getTypeLabel(type: QuestionType): string {
-		return QUESTION_TYPES.find((t) => t.value === type)?.label || type;
-	}
-
 	// Handle grade toggle
 	function toggleGrade(grade: GradeLevel) {
 		if (grades.includes(grade)) {
@@ -102,16 +108,44 @@
 		}
 	}
 
+	// Handle category changes
+	function handleAddTheme(newTheme: string) {
+		if (!themeOptions.includes(newTheme)) {
+			themeOptions = [...themeOptions, newTheme];
+		}
+	}
+
+	function handleAddDomain(newDomain: string) {
+		if (!domainOptions.includes(newDomain)) {
+			domainOptions = [...domainOptions, newDomain];
+		}
+	}
+
+	function handleAddSubdomain(newSubdomain: string) {
+		if (!subdomainOptions.includes(newSubdomain)) {
+			subdomainOptions = [...subdomainOptions, newSubdomain];
+		}
+	}
+
 	// Build template object
 	function buildTemplate(): Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'> {
+		// Filter out empty correction fields
+		const filteredCorrection = correction?.filter(
+			(field) => (field.type === 'text' && field.content.trim() !== '') || (field.type === 'image' && field.url)
+		);
+
 		const base = {
 			type: questionType,
 			statement,
 			variables: variables.length > 0 ? variables : undefined,
 			answer,
 			grades,
+			theme,
+			domain,
+			subdomain,
+			level,
 			delay,
-			correction: correction && correction.length > 0 ? correction : undefined,
+			correction: filteredCorrection && filteredCorrection.length > 0 ? filteredCorrection : undefined,
 			precision: questionType.startsWith('numerical') ? precision : undefined
 		};
 
@@ -138,6 +172,9 @@
 		statement.length > 0 &&
 		statement.some((s) => s.type === 'text' && s.content.trim().length > 0) &&
 		grades.length > 0 &&
+		theme.trim().length > 0 &&
+		domain.trim().length > 0 &&
+		level > 0 &&
 		(typeof answer === 'string' ? answer.trim().length > 0 : answer.length > 0)
 	);
 </script>
@@ -147,23 +184,15 @@
 	<div class="grid gap-4 md:grid-cols-2">
 		<div class="space-y-2">
 			<Label for="question-type">Type de question</Label>
-			<Select.Root
-				selected={{ value: questionType, label: getTypeLabel(questionType) }}
-				onSelectedChange={(selected) => {
-					if (selected) {
-						questionType = selected.value as QuestionType;
-					}
-				}}
+			<select
+				id="question-type"
+				bind:value={questionType}
+				class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 			>
-				<Select.Trigger id="question-type">
-					<Select.Value placeholder="Sélectionner un type" />
-				</Select.Trigger>
-				<Select.Content>
-					{#each QUESTION_TYPES as type}
-						<Select.Item value={type.value}>{type.label}</Select.Item>
-					{/each}
-				</Select.Content>
-			</Select.Root>
+				{#each QUESTION_TYPES as type}
+					<option value={type.value}>{type.label}</option>
+				{/each}
+			</select>
 		</div>
 
 		<div class="space-y-2">
@@ -177,6 +206,83 @@
 			/>
 		</div>
 	</div>
+
+	<!-- Categorization Fields -->
+	<!--
+		Category system allows organizing questions by:
+		- Theme: Broad subject area (e.g., "Algèbre", "Géométrie") [required]
+		- Domain: Specific topic within theme (e.g., "Équations", "Polynômes") [required]
+		- Subdomain: Optional sub-topic (e.g., "Linéaires", "Quadratiques") [optional]
+		- Level: Difficulty as positive integer (1=easy, higher=harder) [required]
+
+		These fields are independent from grade levels (grades field).
+		Admins can add new categories on-the-fly via CategorySelector modals.
+	-->
+	<Card.Root>
+		<Card.Header>
+			<Card.Title>Catégorisation</Card.Title>
+			<Card.Description>
+				Classez la question par thème, domaine et niveau de difficulté (indépendants des niveaux scolaires)
+			</Card.Description>
+		</Card.Header>
+		<Card.Content class="space-y-4">
+			<div class="grid gap-4 md:grid-cols-2">
+				<!-- Theme (Required) -->
+				<CategorySelector
+					label="Thème"
+					bind:value={theme}
+					options={themeOptions}
+					placeholder="Ex: Algèbre, Géométrie..."
+					required={true}
+					onValueChange={(val) => (theme = val)}
+					onAddNew={handleAddTheme}
+				/>
+
+				<!-- Domain (Required) -->
+				<CategorySelector
+					label="Domaine"
+					bind:value={domain}
+					options={domainOptions}
+					placeholder="Ex: Équations, Polynômes..."
+					required={true}
+					onValueChange={(val) => (domain = val)}
+					onAddNew={handleAddDomain}
+				/>
+			</div>
+
+			<div class="grid gap-4 md:grid-cols-2">
+				<!-- Subdomain (Optional) -->
+				<CategorySelector
+					label="Sous-domaine (optionnel)"
+					bind:value={subdomain}
+					options={subdomainOptions}
+					placeholder="Ex: Linéaires, Quadratiques..."
+					required={false}
+					onValueChange={(val) => (subdomain = val || undefined)}
+					onAddNew={handleAddSubdomain}
+				/>
+
+				<!-- Difficulty Level (Required, positive integer, no max) -->
+				<div class="space-y-2">
+					<Label for="level">
+						Niveau de difficulté
+						<span class="text-destructive">*</span>
+					</Label>
+					<Input
+						id="level"
+						type="number"
+						min="1"
+						bind:value={level}
+						placeholder="1, 2, 3..."
+						required
+					/>
+					<p class="text-xs text-muted-foreground">
+						Entier positif sans maximum (1 = facile, valeurs plus élevées = plus difficile)
+					</p>
+				</div>
+			</div>
+		</Card.Content>
+	</Card.Root>
 
 	<!-- Grade Levels -->
 	<div class="space-y-2">

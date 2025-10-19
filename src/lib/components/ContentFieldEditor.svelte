@@ -26,7 +26,6 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
-	import * as Select from '$lib/components/ui/select';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Plus, Trash2, ArrowUp, ArrowDown, Image, Type } from 'lucide-svelte';
 
@@ -112,32 +111,15 @@
 								<!-- Field type selector -->
 								<div class="flex items-center gap-3">
 									<Label for="field-type-{index}">Type</Label>
-									<Select.Root
-										selected={{ value: field.type, label: field.type === 'text' ? 'Texte' : 'Image' }}
-										onSelectedChange={(selected) => {
-											if (selected) {
-												changeFieldType(index, selected.value as 'text' | 'image');
-											}
-										}}
+									<select
+										id="field-type-{index}"
+										value={field.type}
+										onchange={(e) => changeFieldType(index, e.currentTarget.value as 'text' | 'image')}
+										class="flex h-10 w-40 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 									>
-										<Select.Trigger id="field-type-{index}" class="w-40">
-											<Select.Value />
-										</Select.Trigger>
-										<Select.Content>
-											<Select.Item value="text">
-												<div class="flex items-center gap-2">
-													<Type class="h-4 w-4" />
-													Texte
-												</div>
-											</Select.Item>
-											<Select.Item value="image">
-												<div class="flex items-center gap-2">
-													<Image class="h-4 w-4" />
-													Image
-												</div>
-											</Select.Item>
-										</Select.Content>
-									</Select.Root>
+										<option value="text">📝 Texte</option>
+										<option value="image">🖼️ Image</option>
+									</select>
 									<Badge variant="outline">#{index + 1}</Badge>
 								</div>
 
@@ -148,7 +130,7 @@
 										<Textarea
 											id="field-content-{index}"
 											bind:value={field.content}
-											placeholder="Ex: Calculer {@:a} + {@:b} = {eval:{@:a}+{@:b}}"
+											placeholder={'Ex: Calculer {@:a} + {@:b} = {eval:{@:a}+{@:b}}'}
 											rows={3}
 											class="font-mono text-sm"
 										/>

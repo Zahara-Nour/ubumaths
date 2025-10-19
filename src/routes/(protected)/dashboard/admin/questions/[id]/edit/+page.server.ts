@@ -15,8 +15,8 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ params, locals, parent }) => {
-	const { supabase, profile } = await parent();
+export const load: PageServerLoad = async ({ params, locals: { supabase }, parent }) => {
+	const { profile } = await parent();
 
 	// Check admin role
 	if (profile.role !== 'admin') {

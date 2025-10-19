@@ -118,6 +118,15 @@ export const PUT: RequestHandler = async ({ params, request, locals: { safeGetSe
         answer: templateData.answer,
         precision: templateData.precision || { type: 'none' },
         grades: templateData.grades,
+        // Categorization fields (independent from grades)
+        // - theme: Broad subject area (e.g., "Algèbre", "Géométrie") [required]
+        // - domain: Specific topic (e.g., "Équations", "Triangles") [required]
+        // - subdomain: Optional sub-topic (e.g., "Linéaires") [nullable]
+        // - level: Difficulty (positive integer, 1=easy, higher=harder) [required]
+        theme: templateData.theme,
+        domain: templateData.domain,
+        subdomain: templateData.subdomain || null,
+        level: templateData.level,
         delay: templateData.delay || null,
         correction: templateData.correction || null,
         transform_type: templateData.transform_type || null,
