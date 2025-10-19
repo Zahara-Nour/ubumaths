@@ -1,0 +1,292 @@
+<!--
+	Question Template Form Component
+	=================================
+
+	Main orchestrator for creating/editing question templates.
+
+	FEATURES:
+	- Type selection (numerical, algebraic, fill-in-blanks, QCM)
+	- Dynamic form fields based on question type
+	- Variable editor with syntax helpers
+	- Content field editor for statement/correction
+	- Answer editor (varies by type)
+	- Precision configuration (for numerical questions)
+	- Grade level multi-select
+	- Live preview of generated instances
+	- JSON viewer for debugging
+
+	PROPS:
+	- template?: QuestionTemplate (for editing)
+	- onSave: (template) => void
+	- onCancel: () => void
+	- isSubmitting: boolean
+-->
+
+<script lang="ts">
+	import type {
+		QuestionTemplate,
+		QuestionType,
+		GradeLevel,
+		QuestionVariable,
+		ContentField,
+		PrecisionType
+	} from '$lib/questions/types';
+	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
+	import * as Select from '$lib/components/ui/select';
+	import * as Card from '$lib/components/ui/card';
+	import * as Tabs from '$lib/components/ui/tabs';
+	import { Badge } from '$lib/components/ui/badge';
+	import VariableEditor from './VariableEditor.svelte';
+	import ContentFieldEditor from './ContentFieldEditor.svelte';
+	import AnswerEditor from './AnswerEditor.svelte';
+	import PrecisionEditor from './PrecisionEditor.svelte';
+	import QuestionPreview from './QuestionPreview.svelte';
+	import JsonViewer from './JsonViewer.svelte';
+	import { Save, X } from 'lucide-svelte';
+
+	interface Props {
+		template?: QuestionTemplate;
+		onSave: (template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>) => void;
+		onCancel: () => void;
+		isSubmitting: boolean;
+	}
+
+	let { template, onSave, onCancel, isSubmitting }: Props = $props();
+
+	// Form state
+	let questionType = $state<QuestionType>(template?.type || 'numerical_exact');
+	let statement = $state<ContentField[]>(template?.statement || [{ type: 'text', content: '' }]);
+	let variables = $state<QuestionVariable[]>(template?.variables || []);
+	let answer = $state<string | string[]>(template?.answer || '');
+	let grades = $state<GradeLevel[]>(template?.grades || []);
+	let delay = $state<number | undefined>(template?.delay);
+	let correction = $state<ContentField[] | undefined>(template?.correction);
+	let precision = $state<PrecisionType>(template?.precision || { type: 'none' });
+
+	// Type-specific fields
+	let transformType = $state<string | undefined>(template?.transform_type);
+	let blanks = $state<number[] | undefined>(template?.blanks);
+	let choices = $state<string[] | undefined>(template?.choices);
+	let multipleAnswers = $state<boolean | undefined>(template?.multiple_answers);
+
+	// Available grade levels
+	const GRADE_LEVELS: GradeLevel[] = [
+		'CP', 'CE1', 'CE2', 'CM1', 'CM2',
+		'6', '5', '4', '3', '2',
+		'SPE_1', 'SPE_T', 'T_EXP', 'T_COMP', 'STMG'
+	];
+
+	// Question type options
+	const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
+		{ value: 'numerical_exact', label: 'Numérique (exact)' },
+		{ value: 'numerical_decimal', label: 'Numérique (décimal)' },
+		{ value: 'numerical_rounded', label: 'Numérique (arrondi)' },
+		{ value: 'algebraic_transform', label: 'Transformation algébrique' },
+		{ value: 'fill_in_blanks', label: 'Texte à trous' },
+		{ value: 'multiple_choice', label: 'QCM' }
+	];
+
+	// Get label for question type
+	function getTypeLabel(type: QuestionType): string {
+		return QUESTION_TYPES.find((t) => t.value === type)?.label || type;
+	}
+
+	// Handle grade toggle
+	function toggleGrade(grade: GradeLevel) {
+		if (grades.includes(grade)) {
+			grades = grades.filter((g) => g !== grade);
+		} else {
+			grades = [...grades, grade];
+		}
+	}
+
+	// Build template object
+	function buildTemplate(): Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'> {
+		const base = {
+			type: questionType,
+			statement,
+			variables: variables.length > 0 ? variables : undefined,
+			answer,
+			grades,
+			delay,
+			correction: correction && correction.length > 0 ? correction : undefined,
+			precision: questionType.startsWith('numerical') ? precision : undefined
+		};
+
+		// Add type-specific fields
+		if (questionType === 'algebraic_transform') {
+			return { ...base, transform_type: transformType };
+		} else if (questionType === 'fill_in_blanks') {
+			return { ...base, blanks };
+		} else if (questionType === 'multiple_choice') {
+			return { ...base, choices, multiple_answers: multipleAnswers };
+		}
+
+		return base;
+	}
+
+	// Handle save
+	function handleSave() {
+		const templateData = buildTemplate();
+		onSave(templateData);
+	}
+
+	// Validate form
+	let isValid = $derived(
+		statement.length > 0 &&
+		statement.some((s) => s.type === 'text' && s.content.trim().length > 0) &&
+		grades.length > 0 &&
+		(typeof answer === 'string' ? answer.trim().length > 0 : answer.length > 0)
+	);
+</script>
+
+<div class="space-y-6">
+	<!-- Type Selection -->
+	<div class="grid gap-4 md:grid-cols-2">
+		<div class="space-y-2">
+			<Label for="question-type">Type de question</Label>
+			<Select.Root
+				selected={{ value: questionType, label: getTypeLabel(questionType) }}
+				onSelectedChange={(selected) => {
+					if (selected) {
+						questionType = selected.value as QuestionType;
+					}
+				}}
+			>
+				<Select.Trigger id="question-type">
+					<Select.Value placeholder="Sélectionner un type" />
+				</Select.Trigger>
+				<Select.Content>
+					{#each QUESTION_TYPES as type}
+						<Select.Item value={type.value}>{type.label}</Select.Item>
+					{/each}
+				</Select.Content>
+			</Select.Root>
+		</div>
+
+		<div class="space-y-2">
+			<Label for="delay">Délai (secondes, optionnel)</Label>
+			<Input
+				id="delay"
+				type="number"
+				min="0"
+				bind:value={delay}
+				placeholder="Ex: 60"
+			/>
+		</div>
+	</div>
+
+	<!-- Grade Levels -->
+	<div class="space-y-2">
+		<Label>Niveaux scolaires</Label>
+		<div class="flex flex-wrap gap-2">
+			{#each GRADE_LEVELS as grade}
+				<Badge
+					class={grades.includes(grade)
+						? 'cursor-pointer bg-primary text-primary-foreground hover:bg-primary/80'
+						: 'cursor-pointer bg-muted text-muted-foreground hover:bg-muted/80'}
+					onclick={() => toggleGrade(grade)}
+				>
+					{grade}
+				</Badge>
+			{/each}
+		</div>
+		{#if grades.length === 0}
+			<p class="text-sm text-destructive">Sélectionnez au moins un niveau</p>
+		{/if}
+	</div>
+
+	<!-- Tabbed Interface -->
+	<Tabs.Root value="statement">
+		<Tabs.List class="grid w-full grid-cols-5">
+			<Tabs.Trigger value="statement">Énoncé</Tabs.Trigger>
+			<Tabs.Trigger value="variables">Variables</Tabs.Trigger>
+			<Tabs.Trigger value="answer">Réponse</Tabs.Trigger>
+			<Tabs.Trigger value="preview">Aperçu</Tabs.Trigger>
+			<Tabs.Trigger value="json">JSON</Tabs.Trigger>
+		</Tabs.List>
+
+		<!-- Statement Tab -->
+		<Tabs.Content value="statement" class="space-y-4">
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>Énoncé de la question</Card.Title>
+					<Card.Description>
+						Utilisez la syntaxe <code>&#123;@:nom&#125;</code> pour les variables,
+						<code>&#123;#:min-max&#125;</code> pour les nombres aléatoires,
+						et <code>&#123;eval:expression&#125;</code> pour les calculs.
+					</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<ContentFieldEditor bind:fields={statement} />
+				</Card.Content>
+			</Card.Root>
+
+			<!-- Optional Correction -->
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>Correction (optionnelle)</Card.Title>
+					<Card.Description>
+						Explication détaillée de la solution
+					</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<ContentFieldEditor bind:fields={correction} />
+				</Card.Content>
+			</Card.Root>
+		</Tabs.Content>
+
+		<!-- Variables Tab -->
+		<Tabs.Content value="variables">
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>Variables</Card.Title>
+					<Card.Description>
+						Définissez des variables réutilisables dans l'énoncé et la réponse.
+						Les variables sont résolues dans l'ordre de déclaration.
+					</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<VariableEditor bind:variables />
+				</Card.Content>
+			</Card.Root>
+		</Tabs.Content>
+
+		<!-- Answer Tab -->
+		<Tabs.Content value="answer" class="space-y-4">
+			<AnswerEditor
+				{questionType}
+				bind:answer
+				bind:precision
+				bind:transformType
+				bind:blanks
+				bind:choices
+				bind:multipleAnswers
+			/>
+		</Tabs.Content>
+
+		<!-- Preview Tab -->
+		<Tabs.Content value="preview">
+			<QuestionPreview template={buildTemplate()} />
+		</Tabs.Content>
+
+		<!-- JSON Tab -->
+		<Tabs.Content value="json">
+			<JsonViewer data={buildTemplate()} />
+		</Tabs.Content>
+	</Tabs.Root>
+
+	<!-- Action Buttons -->
+	<div class="flex justify-end gap-3">
+		<Button variant="outline" onclick={onCancel} disabled={isSubmitting}>
+			<X class="mr-2 h-4 w-4" />
+			Annuler
+		</Button>
+		<Button onclick={handleSave} disabled={!isValid || isSubmitting}>
+			<Save class="mr-2 h-4 w-4" />
+			{isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
+		</Button>
+	</div>
+</div>

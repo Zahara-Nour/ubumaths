@@ -3415,4 +3415,425 @@ The game has been tested for:
 
 ---
 
+## Question Bank System
+
+The Question Bank System provides a comprehensive framework for creating mathematical flashcard questions with variables, random number generation, and mathematical evaluation.
+
+### Overview
+
+**Location**: `/dashboard/admin/questions` (admin only)
+**Status**: Fully implemented (Backend + API + Admin Interface)
+
+The system allows admins to create question templates that generate infinite variations using:
+- **Variables** with dependency resolution
+- **Random number generation** with exclusions
+- **Mathematical evaluation** via MathLive Compute Engine
+- **6 question types** (numerical, algebraic, fill-in-blanks, QCM)
+- **Grade-level targeting** (CP → Tale + STMG)
+
+### Architecture
+
+#### Core Files (17 backend files)
+
+```
+src/lib/questions/
+├── types.ts                          # Complete type system (270+ lines)
+├── parser/
+│   ├── tokenizer.ts                  # Extract {@:}, {#:}, {eval:} tokens
+│   ├── random-parser.ts              # Parse random expressions
+│   ├── variable-parser.ts            # Extract variable references
+│   └── eval-parser.ts                # Extract evaluation expressions
+├── generator/
+│   ├── instance-generator.ts         # Main orchestrator
+│   ├── variable-resolver.ts          # Resolve variables in order
+│   ├── random-generator.ts           # Generate random numbers
+│   ├── content-resolver.ts           # Resolve content fields
+│   └── choice-shuffler.ts            # Shuffle QCM choices
+├── validators/
+│   ├── template-validator.ts         # Validate template structure
+│   └── circular-dependency.ts        # Detect circular references (DFS)
+└── compute-engine/
+    └── wrapper.ts                    # MathLive integration
+```
+
+#### Database & API
+
+**Migration**: `supabase/migrations/070_create_question_templates.sql`
+**Seed Data**: `supabase/migrations/071_seed_question_templates.sql` (10 examples)
+
+**API Endpoints**:
+- `GET /api/questions/templates` - List with filters (type, grades, pagination)
+- `POST /api/questions/templates` - Create new template (admin only)
+- `GET /api/questions/templates/[id]` - Get single template
+- `PUT /api/questions/templates/[id]` - Update template (admin only)
+- `DELETE /api/questions/templates/[id]` - Delete template (admin only)
+- `POST /api/questions/generate/[id]` - Generate instance with optional seed
+
+#### Admin Interface (10 frontend files)
+
+**Pages**:
+- `/dashboard/admin/questions` - List all templates
+- `/dashboard/admin/questions/create` - Create new template
+- `/dashboard/admin/questions/[id]/edit` - Edit existing template
+
+**Components**:
+- `QuestionTemplateForm.svelte` - Main form orchestrator with tabs
+- `VariableEditor.svelte` - Variable management with syntax helpers
+- `ContentFieldEditor.svelte` - Multi-field text/image editor
+- `AnswerEditor.svelte` - Type-specific answer configuration
+- `PrecisionEditor.svelte` - Numerical precision settings
+- `QuestionPreview.svelte` - Live instance preview
+- `JsonViewer.svelte` - JSON debug viewer
+
+### Question Types
+
+#### 1. Numerical (Exact, Decimal, Rounded)
+
+**Example Template**:
+```typescript
+{
+  type: 'numerical_exact',
+  statement: [
+    { type: 'text', content: 'Calculate $$\\frac{{@:num}}{{@:den}}$$' }
+  ],
+  variables: [
+    { name: 'gcd', expression: '{#:2-5}' },
+    { name: 'a', expression: '{#:2-9}' },
+    { name: 'b', expression: '{#:2-9!{@:a}}' },
+    { name: 'num', expression: '{eval:{@:a}*{@:gcd}}' },
+    { name: 'den', expression: '{eval:{@:b}*{@:gcd}}' }
+  ],
+  answer: '{eval:{@:num}/{@:den}}',
+  precision: { type: 'decimal', digits: 2 },
+  grades: ['6', '5']
+}
+```
+
+**Precision Types**:
+- `none` - Exact match only
+- `decimal` - Fixed decimal places (e.g., 2 decimals)
+- `significant` - Significant figures (e.g., 3 sig figs)
+- `magnitude` - Order of magnitude (e.g., nearest 10)
+- `tolerance` - Absolute (±value) or relative (±percentage)
+
+#### 2. Algebraic Transform
+
+**Example**:
+```typescript
+{
+  type: 'algebraic_transform',
+  statement: [{ type: 'text', content: 'Factor: $$x^2 - {@:c}$$' }],
+  variables: [
+    { name: 'a', expression: '{#:2-9}' },
+    { name: 'c', expression: '{eval:{@:a}^2}' }
+  ],
+  answer: '(x-{@:a})(x+{@:a})',
+  transform_type: 'factor',
+  grades: ['3', '2']
+}
+```
+
+**Transform Types**: `simplify`, `expand`, `factor`, `solve`, `canonical`
+
+#### 3. Fill-in-Blanks
+
+**Example**:
+```typescript
+{
+  type: 'fill_in_blanks',
+  statement: [
+    { type: 'text', content: 'If the sides are {@:a} and {@:b}, the hypotenuse is ____ using the ____ theorem.' }
+  ],
+  variables: [
+    { name: 'a', expression: '{#:3-9}' },
+    { name: 'b', expression: '{#:3-9!{@:a}}' },
+    { name: 'c', expression: '{eval:sqrt({@:a}^2+{@:b}^2)}' }
+  ],
+  answer: ['{@:c}', 'Pythagorean'],
+  blanks: [0, 1],
+  grades: ['4', '3']
+}
+```
+
+#### 4. Multiple Choice
+
+**Example**:
+```typescript
+{
+  type: 'multiple_choice',
+  statement: [
+    { type: 'text', content: 'Solve: $${@:a}x + {@:b} = {@:c}$$' }
+  ],
+  variables: [
+    { name: 'a', expression: '{#:2-9}' },
+    { name: 'b', expression: '{#:-20-20!0}' },
+    { name: 'c', expression: '{#:-20-20!{@:b}}' },
+    { name: 'solution', expression: '{eval:({@:c}-{@:b})/{@:a}}' },
+    { name: 'wrong1', expression: '{eval:({@:c}+{@:b})/{@:a}}' }
+  ],
+  answer: '0',  // Index of correct choice
+  choices: ['x = {@:solution}', 'x = {@:wrong1}', ...],
+  multiple_answers: false,
+  grades: ['3', '2']
+}
+```
+
+### Syntax Reference
+
+#### Variable References: `{@:varName}`
+
+```typescript
+// Reference previously defined variables
+{ name: 'a', expression: '{#:1-10}' },
+{ name: 'b', expression: '{@:a} + 5' }  // b = a + 5
+```
+
+#### Random Numbers: `{#:...}`
+
+**Integer Range**:
+```typescript
+{#:1-10}           // Random integer from 1 to 10
+{#:{@:min}-{@:max}}  // Variable bounds
+```
+
+**Decimal by Range**:
+```typescript
+{#:0.5-9.99:0.01}  // Random decimal with step
+{#:1.5-10.5:0.5}   // Step of 0.5
+```
+
+**Decimal by Digits**:
+```typescript
+{#:2.3}            // 2 digits before, 3 after decimal
+{#:{@:before}.{@:after}}  // Variable digits
+```
+
+**With Exclusions**:
+```typescript
+{#:1-50!5}         // Exclude 5
+{#:1-50!5,7-9}     // Exclude 5, 7, 8, 9
+{#:1-100!{@:a},{@:b}-{@:c}}  // Exclude variables and ranges
+```
+
+#### Mathematical Evaluation: `{eval:expression}`
+
+```typescript
+{eval:2+3}         // Returns "5"
+{eval:{@:a}^2}     // Square of variable a
+{eval:sqrt({@:a}^2+{@:b}^2)}  // Pythagorean theorem
+{eval:({@:c}-{@:b})/{@:a}}    // Complex expression
+```
+
+### Variable Resolution Pipeline
+
+Variables are resolved in **declaration order** through a **three-stage pipeline**:
+
+1. **Replace `{@:}` references** with previously resolved values
+2. **Generate `{#:}` random numbers** (using resolved variables in bounds)
+3. **Evaluate `{eval:}` expressions** with MathLive Compute Engine
+
+**Example**:
+```typescript
+[
+  { name: 'min', expression: '5' },                    // Stage 1: min = 5
+  { name: 'max', expression: '10' },                   // Stage 1: max = 10
+  { name: 'a', expression: '{#:{@:min}-{@:max}}' },    // Stage 2: a = random(5, 10)
+  { name: 'b', expression: '{#:1-20!{@:a}}' },         // Stage 2: b = random(1, 20) excluding a
+  { name: 'sum', expression: '{eval:{@:a}+{@:b}}' }    // Stage 3: sum = a + b (evaluated)
+]
+```
+
+### Validation
+
+**Client-Side** (in admin form):
+- Statement must have at least one non-empty text field
+- At least one grade level selected
+- Answer must not be empty
+- Variable names must be alphanumeric + underscore
+- No duplicate variable names
+
+**Server-Side** (API + Generator):
+- Template structure validation
+- Circular dependency detection (DFS algorithm)
+- min < max validation (after variable resolution)
+- Type-specific field validation
+- Exclusion list validation
+
+**Circular Dependency Detection**:
+```typescript
+// ❌ ERROR: Circular reference
+[
+  { name: 'a', expression: '{@:b}' },
+  { name: 'b', expression: '{@:a}' }
+]
+// Error: "Circular reference detected: a -> b -> a"
+
+// ✅ OK: Sequential dependency
+[
+  { name: 'a', expression: '{#:1-10}' },
+  { name: 'b', expression: '{@:a} + 5' },
+  { name: 'c', expression: '{@:b} * 2' }
+]
+```
+
+### Admin Workflow
+
+#### Creating a Question
+
+1. Navigate to `/dashboard/admin/questions`
+2. Click "Créer une question"
+3. Fill in form tabs:
+   - **Type & Grades**: Select question type and target levels
+   - **Statement**: Add text/image fields with LaTeX/variables
+   - **Variables**: Define variables with syntax helpers
+   - **Answer**: Configure answer (type-specific editor)
+   - **Preview**: See generated instances with different seeds
+   - **JSON**: Debug raw template structure
+4. Click "Enregistrer" to save
+
+#### Editing a Question
+
+1. Click Edit button (pencil icon) on question row
+2. Form pre-populated with existing data
+3. Make changes in any tab
+4. Preview updates automatically
+5. Click "Enregistrer" to update
+
+#### Duplicating a Question
+
+1. Click Duplicate button (copy icon)
+2. Creates copy with new ID
+3. Edit duplicate as needed
+
+### Example Templates
+
+See `supabase/migrations/071_seed_question_templates.sql` for 10 complete examples demonstrating:
+- Simple fraction addition (numerical exact)
+- Decimal operations (numerical decimal)
+- Area calculations (numerical rounded)
+- Algebraic factorization (algebraic transform)
+- Pythagorean theorem (fill-in-blanks)
+- Equation solving (multiple choice)
+- Quadratic formula with discriminant
+- Percentage calculations
+- Fraction simplification with GCD
+- Multiple correct answers (QCM)
+
+### Integration with MathLive
+
+The Question Bank System uses **MathLive's Compute Engine** for:
+- Evaluating `{eval:}` expressions
+- Simplifying algebraic expressions
+- Checking equivalence for algebraic transforms
+- Numerical calculations with proper precision
+
+**Wrapper Functions** ([compute-engine/wrapper.ts](src/lib/questions/compute-engine/wrapper.ts)):
+```typescript
+// Evaluate LaTeX expression to number or symbolic result
+evaluateExpression(latex: string): number | string
+
+// Check if two LaTeX expressions are algebraically equivalent
+areEquivalent(latex1: string, latex2: string): boolean
+
+// Simplify LaTeX expression
+simplifyExpression(latex: string): string
+```
+
+### Performance Considerations
+
+**Random Generation**:
+- Seeded random for reproducibility
+- Exclusion list limited to 10,000 attempts
+- Float precision: `toFixed(10)` to avoid errors
+
+**Database**:
+- JSONB fields for flexible template storage
+- GIN index on `grades` array for fast filtering
+- Pagination (default 50, max 100 per page)
+
+**Frontend**:
+- Preview auto-updates on template change
+- Lazy-load components in tabs
+- Client-side search for quick filtering
+
+### Testing
+
+**Unit Tests** (pending):
+- Parser tests (tokenizer, random, variable, eval)
+- Generator tests (random, variables, content, choices, instance)
+- Validator tests (template, circular dependency)
+
+**API Tests** (pending):
+- Template CRUD operations
+- Instance generation
+- Validation error handling
+
+**E2E Tests** (pending):
+- Create question workflow
+- Edit question workflow
+- Generate and preview instances
+
+### Troubleshooting
+
+**Common Issues**:
+
+1. **"Circular reference detected"**
+   - **Cause**: Variable references itself directly or indirectly
+   - **Fix**: Review variable dependency chain, ensure sequential resolution
+
+2. **"Invalid range: min must be less than max"**
+   - **Cause**: After variable resolution, min >= max
+   - **Fix**: Check variable values, adjust expressions or exclusions
+
+3. **"Variable not found or not yet resolved"**
+   - **Cause**: Referencing variable that comes later in declaration order
+   - **Fix**: Reorder variables (dependency must come before reference)
+
+4. **Preview shows errors but form looks correct**
+   - **Cause**: Syntax error in expression (e.g., unclosed braces)
+   - **Fix**: Check for matching `{` and `}` in all expressions
+
+5. **Generated instances are always the same**
+   - **Cause**: Using same seed
+   - **Fix**: Click "Régénérer" button to generate with new random seed
+
+### Best Practices
+
+**DO**:
+- Define variables in dependency order (dependencies first)
+- Use descriptive variable names (`radius`, `coefficient`, etc.)
+- Add corrections to help students understand solutions
+- Test templates with Preview before saving
+- Use exclusions to avoid degenerate cases (e.g., division by zero)
+
+**DON'T**:
+- Create circular dependencies
+- Use forward references (referencing variables defined later)
+- Hardcode values that should be random
+- Skip validation warnings
+- Make exclusion lists too restrictive (may fail to generate)
+
+### Future Enhancements
+
+Potential improvements for the Question Bank System:
+
+- **Student Interface**: Display and answer questions (not just admin creation)
+- **Flashcard Mode**: Spaced repetition algorithm
+- **Statistics**: Track question difficulty, answer rates
+- **Image Upload**: Supabase Storage integration for diagrams
+- **LaTeX Rendering**: MathLive rendering in preview (currently raw LaTeX)
+- **Export/Import**: JSON export for sharing templates
+- **Bulk Operations**: Multi-select delete, duplicate
+- **Question Sets**: Group related questions into assignments
+- **Auto-grading**: Automatic evaluation of student responses
+
+### Documentation Files
+
+- **[QUESTIONS_IMPLEMENTATION_STATUS.md](QUESTIONS_IMPLEMENTATION_STATUS.md)** - Implementation progress and file inventory
+- **[QUESTIONS_ADMIN_INTERFACE.md](QUESTIONS_ADMIN_INTERFACE.md)** - Admin interface documentation
+- **[QUESTIONS_SYNTAX_GUIDE.md](QUESTIONS_SYNTAX_GUIDE.md)** - Complete syntax reference
+- **[src/lib/questions/README.md](src/lib/questions/README.md)** - Developer documentation
+
+---
+
 **Remember:** Svelte 5 and SvelteKit 2 are designed to be simpler and more intuitive. When in doubt, prefer explicit, straightforward code over clever tricks.
