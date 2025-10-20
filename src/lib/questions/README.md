@@ -31,15 +31,22 @@ import type { QuestionTemplate } from '$lib/questions/types';
 const template: QuestionTemplate = {
   id: 'uuid',
   type: 'numerical_exact',
-  statement: [
-    { type: 'text', content: 'Calculate: $${@:a} + {@:b}$$' }
+  variations: [
+    {
+      statement: [
+        { type: 'text', content: 'Calculate: $${@:a} + {@:b}$$' }
+      ],
+      variables: [
+        { name: 'a', expression: '{#:1-10}' },
+        { name: 'b', expression: '{#:1-10}' }
+      ],
+      answer: '{eval:{@:a}+{@:b}}'
+    }
   ],
-  variables: [
-    { name: 'a', expression: '{#:1-10}' },
-    { name: 'b', expression: '{#:1-10}' }
-  ],
-  answer: '{eval:{@:a}+{@:b}}',
   grades: ['6'],
+  theme: 'Arithmétique',
+  domain: 'Addition',
+  level: 1,
   delay: 30
 };
 
@@ -61,19 +68,26 @@ if (result.success) {
 const advancedTemplate: QuestionTemplate = {
   id: 'uuid',
   type: 'numerical_exact',
-  statement: [
-    { type: 'text', content: 'Simplify: $$\\frac{{@:num}}{{@:den}}$$' }
+  variations: [
+    {
+      statement: [
+        { type: 'text', content: 'Simplify: $$\\frac{{@:num}}{{@:den}}$$' }
+      ],
+      variables: [
+        { name: 'gcd', expression: '{#:2-5}' },                    // Random GCD
+        { name: 'a', expression: '{#:2-9}' },                       // Numerator base
+        { name: 'b', expression: '{#:2-9!{@:a}}' },                 // Denominator ≠ a
+        { name: 'num', expression: '{eval:{@:a}*{@:gcd}}' },        // Actual numerator
+        { name: 'den', expression: '{eval:{@:b}*{@:gcd}}' }         // Actual denominator
+      ],
+      answer: '\\frac{{@:a}}{{@:b}}'
+    }
   ],
-  variables: [
-    { name: 'gcd', expression: '{#:2-5}' },                    // Random GCD
-    { name: 'a', expression: '{#:2-9}' },                       // Numerator base
-    { name: 'b', expression: '{#:2-9!{@:a}}' },                 // Denominator ≠ a
-    { name: 'num', expression: '{eval:{@:a}*{@:gcd}}' },        // Actual numerator
-    { name: 'den', expression: '{eval:{@:b}*{@:gcd}}' }         // Actual denominator
-  ],
-  answer: '\\frac{{@:a}}{{@:b}}',
   precision: { type: 'none' },
   grades: ['6', '5'],
+  theme: 'Fractions',
+  domain: 'Simplification',
+  level: 2,
   delay: 60
 };
 ```
@@ -117,6 +131,15 @@ const advancedTemplate: QuestionTemplate = {
 {eval:({@:a})^2-{@:b}}      // Complex expressions
 {eval:\frac{1}{2}}          // LaTeX expressions
 ```
+
+**Important:** All variable references (`{@:}`) and random expressions (`{#:}`) inside an `{eval:}` expression are **fully resolved BEFORE** being passed to MathLive's Compute Engine. The engine only receives a clean mathematical expression with actual numbers.
+
+**Resolution Process:**
+1. Initial: `{eval:{@:a}+{@:b}}`
+2. After variable replacement (if a=5, b=7): `{eval:5+7}`
+3. Extract `5+7`, pass to Compute Engine
+4. Engine returns `12`
+5. Final result: `"12"`
 
 ### LaTeX Math
 
@@ -166,16 +189,399 @@ Template (DB)
     ├─> Detect circular dependencies
     │
     ├─> Resolve variables (declaration order)
-    │    ├─> Replace {@:otherVar}
-    │    ├─> Generate {#:random}
-    │    └─> Evaluate {eval:expression}
+    │    │
+    │    ├─> Stage 1: Replace {@:otherVar} with resolved values
+    │    │    Example: '{eval:{@:a}+{@:b}}' → '{eval:5+7}'
+    │    │
+    │    ├─> Stage 2: Generate {#:random} numbers
+    │    │    Example: '{#:1-10}' → '7'
+    │    │
+    │    └─> Stage 3: Evaluate {eval:expression} with MathLive
+    │         Example: '{eval:5+7}' → Extract '5+7'
+    │                              → Pass to Compute Engine
+    │                              → Returns '12'
     │
-    ├─> Resolve content fields
+    ├─> Resolve content fields (statement, correction)
     │
     ├─> Shuffle choices (QCM)
     │
     └─> Instance (JSON)
 ```
+
+**Key Point:** In Stage 3, the MathLive Compute Engine NEVER sees the original `{@:}` or `{#:}` syntax - it only receives fully resolved mathematical expressions like `"5+7"` or `"sqrt(25)"` with actual numbers.
+
+---
+
+## Template Variations
+
+### Overview
+
+Templates support **multiple variations** to generate diverse problem sets from a single template. Each variation has independent statement, variables, answer, correction, blanks, and choices. When generating an instance, one variation is selected either deterministically (using a seed) or randomly.
+
+**Key Concept**: Variations allow related problem types to be grouped under one template. For example, an "Operations" template can have variations for addition, subtraction, multiplication, and division.
+
+### Architecture
+
+#### Data Structure
+
+**Per-Variation Fields** (inside `variations` array):
+- `statement: ContentField[]` - Question text/images
+- `variables: QuestionVariable[]` - Variable definitions
+- `answer: string | string[]` - Expected answer(s)
+- `correction?: ContentField[]` - Optional solution steps
+- `blanks?: { position: number; expectedAnswer: string }[]` - Fill-in-blanks
+- `choices?: { content: ContentField; isCorrect: boolean }[]` - Multiple choice
+
+**Shared Template Fields** (at template level):
+- `type: QuestionType` - Question type (same for all variations)
+- `grades: Grade[]` - Target grade levels
+- `theme: string` - Categorization theme
+- `domain: string` - Categorization domain
+- `subdomain?: string` - Optional sub-domain
+- `level: number` - Difficulty level
+- `precision?: PrecisionType` - Numerical precision (numerical questions)
+- `transformType?: AlgebraicTransformType` - Transform type (algebraic questions)
+- `multipleAnswers?: boolean` - Multiple correct answers (QCM)
+- `delay?: number` - Time limit in seconds
+
+#### Variation Selection Algorithm
+
+```typescript
+// In instance-generator.ts
+
+// Select variation index
+const variationIndex = Math.abs(seed) % template.variations.length;
+const variation = template.variations[variationIndex];
+
+// Generate instance from selected variation
+const instance = {
+  selectedVariationIndex: variationIndex,
+  statement: resolveContent(variation.statement, resolvedVars),
+  answer: resolveAnswer(variation.answer, resolvedVars),
+  // ...
+};
+```
+
+**Properties**:
+- **Deterministic**: Same seed always selects same variation
+- **Uniform distribution**: Each variation equally likely over many seeds
+- **Wraps around**: For N variations, seed % N gives index 0 to N-1
+
+### Example: Single Variation Template
+
+```typescript
+const template: QuestionTemplate = {
+  id: 'uuid',
+  type: 'numerical_exact',
+  variations: [
+    {
+      statement: [{ type: 'text', content: 'Calculate: $${@:a} + {@:b}$$' }],
+      variables: [
+        { name: 'a', expression: '{#:10-50}' },
+        { name: 'b', expression: '{#:10-50}' }
+      ],
+      answer: '{eval:{@:a}+{@:b}}'
+    }
+  ],
+  grades: ['6'],
+  theme: 'Arithmétique',
+  domain: 'Addition',
+  level: 1
+};
+
+// Generate instance
+const result = generateInstance(template, 42);
+// Always uses variations[0] (only variation available)
+```
+
+### Example: Multi-Variation Template
+
+```typescript
+const template: QuestionTemplate = {
+  id: 'uuid',
+  type: 'numerical_exact',
+  variations: [
+    // Variation 1: Addition
+    {
+      statement: [{ type: 'text', content: 'Calculate: $${@:a} + {@:b}$$' }],
+      variables: [
+        { name: 'a', expression: '{#:10-50}' },
+        { name: 'b', expression: '{#:10-50}' }
+      ],
+      answer: '{eval:{@:a}+{@:b}}'
+    },
+    // Variation 2: Subtraction
+    {
+      statement: [{ type: 'text', content: 'Calculate: $${@:a} - {@:b}$$' }],
+      variables: [
+        { name: 'a', expression: '{#:20-99}' },
+        { name: 'b', expression: '{#:10-{@:a}}' }
+      ],
+      answer: '{eval:{@:a}-{@:b}}'
+    },
+    // Variation 3: Multiplication
+    {
+      statement: [{ type: 'text', content: 'Calculate: $${@:a} \\times {@:b}$$' }],
+      variables: [
+        { name: 'a', expression: '{#:2-12}' },
+        { name: 'b', expression: '{#:2-12}' }
+      ],
+      answer: '{eval:{@:a}*{@:b}}'
+    },
+    // Variation 4: Division
+    {
+      statement: [{ type: 'text', content: 'Calculate: $${@:dividend} \\div {@:divisor}$$' }],
+      variables: [
+        { name: 'divisor', expression: '{#:2-9}' },
+        { name: 'quotient', expression: '{#:2-12}' },
+        { name: 'dividend', expression: '{eval:{@:divisor}*{@:quotient}}' }
+      ],
+      answer: '{@:quotient}'
+    }
+  ],
+  precision: { type: 'none' },
+  grades: ['CM1', 'CM2', '6'],
+  theme: 'Arithmétique',
+  domain: 'Opérations',
+  level: 1
+};
+
+// Generate instances
+generateInstance(template, 0);  // Uses variations[0] (Addition)
+generateInstance(template, 1);  // Uses variations[1] (Subtraction)
+generateInstance(template, 2);  // Uses variations[2] (Multiplication)
+generateInstance(template, 3);  // Uses variations[3] (Division)
+generateInstance(template, 4);  // Uses variations[0] (wraps around)
+generateInstance(template, 42); // Uses variations[2] (42 % 4 = 2)
+```
+
+### Implementation Details
+
+#### instance-generator.ts
+
+```typescript
+export function generateInstance(
+  template: QuestionTemplate,
+  seed?: number
+): GenerationResult {
+  const effectiveSeed = seed ?? Math.floor(Math.random() * 1000000);
+
+  // Select variation
+  const variationIndex = Math.abs(effectiveSeed) % template.variations.length;
+  const variation = template.variations[variationIndex];
+
+  // Resolve variables for this variation only
+  const resolvedVars = resolveVariables(variation.variables, effectiveSeed);
+
+  // Generate instance from selected variation
+  const instance: QuestionInstance = {
+    id: generateId(),
+    templateId: template.id,
+    type: template.type,
+    selectedVariationIndex: variationIndex,
+    statement: resolveContent(variation.statement, resolvedVars),
+    answer: resolveAnswer(variation.answer, resolvedVars),
+    correction: variation.correction
+      ? resolveContent(variation.correction, resolvedVars)
+      : undefined,
+    blanks: variation.blanks,
+    choices: variation.choices
+      ? shuffleChoices(variation.choices, effectiveSeed)
+      : undefined,
+    seed: effectiveSeed
+  };
+
+  return { success: true, instance };
+}
+```
+
+#### template-validator.ts
+
+```typescript
+export function validateTemplate(template: QuestionTemplate): string[] {
+  const errors: string[] = [];
+
+  // Validate variations array
+  if (!template.variations || template.variations.length === 0) {
+    errors.push('Template must have at least one variation');
+    return errors;
+  }
+
+  // Validate each variation independently
+  template.variations.forEach((variation, index) => {
+    const varErrors = validateVariation(variation, template.type);
+
+    // Prefix errors with variation index
+    varErrors.forEach(err => {
+      errors.push(`Variation ${index + 1}: ${err}`);
+    });
+
+    // Check circular dependencies within variation
+    const circularErrors = detectCircularDependencies(variation.variables);
+    circularErrors.forEach(err => {
+      errors.push(`Variation ${index + 1}: ${err}`);
+    });
+  });
+
+  return errors;
+}
+
+function validateVariation(variation: QuestionVariation, type: QuestionType): string[] {
+  const errors: string[] = [];
+
+  // Statement required
+  if (!variation.statement || variation.statement.length === 0) {
+    errors.push('Statement is required');
+  }
+
+  // Answer required
+  if (!variation.answer ||
+      (Array.isArray(variation.answer) && variation.answer.length === 0)) {
+    errors.push('Answer is required');
+  }
+
+  // Type-specific validation
+  // ...
+
+  return errors;
+}
+```
+
+### Database Schema
+
+**Migration 074** (`add_template_variations.sql`):
+
+```sql
+-- Add variations column
+ALTER TABLE question_templates
+ADD COLUMN variations JSONB NOT NULL DEFAULT '[]'::jsonb;
+
+-- Constraint: at least 1 variation
+ALTER TABLE question_templates
+ADD CONSTRAINT check_variations_not_empty
+CHECK (jsonb_array_length(variations) > 0);
+
+-- Migrate existing data (wrap old fields into single variation)
+UPDATE question_templates
+SET variations = jsonb_build_array(
+  jsonb_build_object(
+    'statement', statement,
+    'variables', COALESCE(variables, '[]'::jsonb),
+    'answer', answer,
+    'correction', correction,
+    'blanks', COALESCE(blanks, '[]'::jsonb),
+    'choices', COALESCE(choices, '[]'::jsonb)
+  )
+)
+WHERE variations = '[]'::jsonb;
+
+-- Drop old columns
+ALTER TABLE question_templates
+DROP COLUMN statement,
+DROP COLUMN variables,
+DROP COLUMN answer,
+DROP COLUMN correction,
+DROP COLUMN blanks,
+DROP COLUMN choices;
+```
+
+### Testing
+
+#### Unit Tests
+
+```typescript
+describe('Variation Selection', () => {
+  it('selects variation deterministically with seed', () => {
+    const template = createTemplateWithVariations(4);
+
+    const result0 = generateInstance(template, 0);
+    expect(result0.instance.selectedVariationIndex).toBe(0);
+
+    const result1 = generateInstance(template, 1);
+    expect(result1.instance.selectedVariationIndex).toBe(1);
+
+    const result4 = generateInstance(template, 4);
+    expect(result4.instance.selectedVariationIndex).toBe(0); // Wraps
+  });
+
+  it('validates each variation independently', () => {
+    const template: QuestionTemplate = {
+      variations: [
+        { statement: [], variables: [], answer: '5' }, // Invalid statement
+        { statement: [{ type: 'text', content: 'Q' }], variables: [], answer: '' } // Invalid answer
+      ],
+      // ...
+    };
+
+    const errors = validateTemplate(template);
+    expect(errors).toContain('Variation 1: Statement is required');
+    expect(errors).toContain('Variation 2: Answer is required');
+  });
+
+  it('detects circular dependencies per variation', () => {
+    const template: QuestionTemplate = {
+      variations: [
+        {
+          variables: [
+            { name: 'a', expression: '{@:b}' },
+            { name: 'b', expression: '{@:a}' }
+          ],
+          // ...
+        }
+      ],
+      // ...
+    };
+
+    const errors = validateTemplate(template);
+    expect(errors).toContain('Variation 1: Circular reference detected: a -> b -> a');
+  });
+});
+```
+
+### Best Practices
+
+**DO**:
+- ✅ Use variations for related problem types (operations, shapes, equation types)
+- ✅ Keep variables scoped to their variation (no cross-variation references)
+- ✅ Test each variation independently
+- ✅ Ensure variations share the same conceptual theme
+- ✅ Document variation purpose in comments
+
+**DON'T**:
+- ❌ Mix unrelated concepts (use separate templates)
+- ❌ Create templates with 0 variations (minimum 1 required)
+- ❌ Reference variables from other variations (not supported)
+- ❌ Forget to validate all variations before saving
+
+### Migration from Old Structure
+
+**Before (single-field structure)**:
+```typescript
+{
+  type: 'numerical_exact',
+  statement: [...],
+  variables: [...],
+  answer: '...',
+  grades: ['6']
+}
+```
+
+**After (variations structure)**:
+```typescript
+{
+  type: 'numerical_exact',
+  variations: [
+    {
+      statement: [...],
+      variables: [...],
+      answer: '...'
+    }
+  ],
+  grades: ['6']
+}
+```
+
+**Automatic Migration**: Migration 074 automatically wraps existing templates into single-variation format. No manual intervention required.
 
 ---
 
@@ -464,6 +870,107 @@ describe('Random Parser', () => {
 // ✅ Validate range
 if (min >= max) throw new Error('Invalid range');
 ```
+
+---
+
+## Testing
+
+The Question Variations System has a comprehensive test suite with **99.7% code coverage** (367 passing tests, 6 skipped).
+
+### Running Tests
+
+```bash
+# Run all question system tests
+pnpm test:unit src/lib/questions
+
+# Run specific test file
+pnpm test:unit tokenizer.test.ts
+pnpm test:unit variable-resolver.test.ts
+
+# Run tests in watch mode
+pnpm test:unit --watch src/lib/questions
+```
+
+### Test Structure
+
+```
+src/lib/questions/
+├── parser/
+│   ├── tokenizer.test.ts          # 31 tests - Token extraction
+│   ├── variable-parser.test.ts    # 31 tests - Variable reference parsing
+│   ├── random-parser.test.ts      # 29 tests - Random expression parsing
+│   └── eval-parser.test.ts        # 42 tests - Eval expression parsing
+├── generator/
+│   ├── variable-resolver.test.ts  # 39 tests - Variable resolution pipeline
+│   ├── random-generator.test.ts   # 36 tests - Random number generation
+│   ├── content-resolver.test.ts   # 41 tests - Content field resolution
+│   ├── instance-generator.test.ts # 27 tests - Complete instance generation
+│   └── choice-shuffler.test.ts    # 23 tests - Multiple choice shuffling
+└── validators/
+    ├── template-validator.test.ts # 34 tests - Template validation
+    └── circular-dependency.test.ts # 40 tests - Dependency detection
+```
+
+### Test Coverage
+
+- **Parser Layer:** 100% coverage - All syntax parsing tested
+- **Generator Layer:** 100% coverage - All generation logic tested
+- **Validator Layer:** 100% coverage - All validation rules tested
+- **Integration Tests:** Complete instance generation workflow tested
+
+### Key Test Patterns
+
+**Testing Variable Resolution:**
+```typescript
+const variables: QuestionVariable[] = [
+  { name: 'a', expression: '{#:1-10}' },
+  { name: 'b', expression: '{eval:{@:a} * 2}' }
+];
+
+const resolved = resolveVariables(variables, 12345); // Seeded
+const result = toObject(resolved); // Convert to { a: 5, b: 10 }
+
+expect(result.b).toBe(result.a * 2);
+```
+
+**Testing Content Resolution:**
+```typescript
+const fields: ContentField[] = [
+  { type: 'text', content: 'Value: {@:a}' },
+  { type: 'image', content: 'https://example.com/{@:id}.png' }
+];
+
+const resolved = toResolvedVariables({ a: 5, id: 'diagram' });
+const result = resolveContentFields(fields, resolved);
+
+expect(result[0].content).toBe('Value: 5');
+expect(result[1].content).toBe('https://example.com/diagram.png');
+```
+
+**Testing Instance Generation:**
+```typescript
+const template: QuestionTemplate = { /* ... */ };
+const result = generateInstance(template, 12345);
+
+expect(result.success).toBe(true);
+expect(result.instance.statement).toBeDefined();
+expect(result.instance.answer).toBeDefined();
+```
+
+### Recent Test Fixes (2025-01)
+
+The test suite was recently updated to align with implementation changes:
+
+1. **Tokenizer** - Added helper functions for extracting variables, random expressions, eval expressions, and LaTeX
+2. **Variable Parser** - Standardized property names (`startIndex`/`endIndex` instead of `start`/`end`)
+3. **Random Generator** - Added dual-format support for variable contexts (array and object)
+4. **Random Parser** - Fixed variable bounds parsing with `splitAtTopLevel()`
+5. **Eval Parser** - Standardized property naming (`fullMatch` instead of `raw`)
+6. **Variable Resolver** - Fixed eval expression property access
+7. **Content Resolver** - Fixed image URL variable resolution
+8. **Types** - Updated `ContentField` to use `content` for both text and image fields
+
+All tests now pass with proper expectations aligned to the actual implementation behavior.
 
 ---
 

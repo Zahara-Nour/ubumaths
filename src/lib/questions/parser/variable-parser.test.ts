@@ -90,13 +90,13 @@ describe('extractVariableReferences', () => {
 			name: 'a',
 			fullMatch: '{@:a}',
 			startIndex: 10,
-			endIndex: 16
+			endIndex: 15
 		});
 		expect(result[1]).toEqual({
 			name: 'b',
 			fullMatch: '{@:b}',
-			startIndex: 19,
-			endIndex: 25
+			startIndex: 18,
+			endIndex: 23
 		});
 	});
 

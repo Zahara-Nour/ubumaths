@@ -11,10 +11,10 @@
  * Variable reference
  */
 export interface VariableRef {
-  name: string;       // Variable name
-  fullMatch: string;  // Full match including {@: and }
-  start: number;      // Start index in original string
-  end: number;        // End index
+  name: string;          // Variable name
+  fullMatch: string;     // Full match including {@: and }
+  startIndex: number;    // Start index in original string
+  endIndex: number;      // End index
 }
 
 /**
@@ -27,8 +27,8 @@ export interface VariableRef {
  * ```typescript
  * const refs = extractVariableReferences('Calculate {@:a} + {@:b}');
  * // Returns: [
- * //   { name: 'a', fullMatch: '{@:a}', start: 10, end: 15 },
- * //   { name: 'b', fullMatch: '{@:b}', start: 18, end: 23 }
+ * //   { name: 'a', fullMatch: '{@:a}', startIndex: 10, endIndex: 16 },
+ * //   { name: 'b', fullMatch: '{@:b}', startIndex: 19, endIndex: 25 }
  * // ]
  * ```
  */
@@ -41,8 +41,8 @@ export function extractVariableReferences(text: string): VariableRef[] {
     refs.push({
       name: match[1],
       fullMatch: match[0],
-      start: match.index,
-      end: match.index + match[0].length
+      startIndex: match.index,
+      endIndex: match.index + match[0].length
     });
   }
 
@@ -60,19 +60,18 @@ export function hasVariableReferences(text: string): boolean {
 }
 
 /**
- * Get unique variable names from a string
+ * Get all variable names from a string (including duplicates)
  *
  * @param text - Template string
- * @returns Array of unique variable names
+ * @returns Array of variable names (may include duplicates)
  *
  * @example
  * ```typescript
  * getVariableNames('Calculate {@:a} + {@:a} - {@:b}');
- * // Returns: ['a', 'b']
+ * // Returns: ['a', 'a', 'b']
  * ```
  */
 export function getVariableNames(text: string): string[] {
   const refs = extractVariableReferences(text);
-  const uniqueNames = new Set(refs.map((ref) => ref.name));
-  return Array.from(uniqueNames);
+  return refs.map((ref) => ref.name);
 }

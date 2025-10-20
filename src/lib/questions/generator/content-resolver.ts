@@ -15,7 +15,7 @@ import { resolveVariableExpression } from './variable-resolver';
  * Resolve a single content field
  *
  * - Text fields: Resolves variables, random expressions, and eval expressions
- * - Image fields: Returns as-is
+ * - Image fields: Resolves variables in URLs
  *
  * @param field - Content field to resolve
  * @param resolvedVariables - Already resolved variables
@@ -27,12 +27,7 @@ export function resolveContentField(
   resolvedVariables: ResolvedVariable[],
   seed?: number
 ): ContentField {
-  if (field.type === 'image') {
-    // Images don't need resolution
-    return field;
-  }
-
-  // Resolve text content
+  // Resolve content for both text and image fields (image URLs may contain variables)
   const resolvedContent = resolveVariableExpression(
     field.content,
     resolvedVariables,
@@ -40,7 +35,7 @@ export function resolveContentField(
   );
 
   return {
-    type: 'text',
+    type: field.type,
     content: resolvedContent
   };
 }

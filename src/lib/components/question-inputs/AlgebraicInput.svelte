@@ -7,9 +7,12 @@
 
 	Props:
 	- value: Current answer value (bindable)
-	- disabled: Whether input is disabled
+	- disabled: Whether input is disabled (controls readonly attribute)
 	- placeholder: Placeholder text
 	- onSubmit: Callback when Enter is pressed
+
+	IMPORTANT: Uses 'readonly' attribute (not 'read-only') for MathLive compatibility.
+	MathLive's <math-field> element follows HTML standard attribute naming.
 -->
 
 <script lang="ts">
@@ -39,9 +42,15 @@
 </script>
 
 <div class="algebraic-input-container">
+	<!--
+		MathField with readonly control
+		- readonly={disabled}: Uses HTML standard 'readonly' attribute (NOT 'read-only')
+		- virtual-keyboard-mode="manual": User controls when to show virtual keyboard
+		- smart-mode: Enables intelligent mode switching (text/math)
+	-->
 	<MathField
 		bind:value
-		read-only={disabled}
+		readonly={disabled}
 		virtual-keyboard-mode="manual"
 		smart-mode
 		class="algebraic-input-field"
@@ -81,7 +90,7 @@
 		box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
 	}
 
-	:global(.algebraic-input-field[read-only]) {
+	:global(.algebraic-input-field[readonly]) {
 		opacity: 0.5;
 		cursor: not-allowed;
 		background: hsl(var(--muted));

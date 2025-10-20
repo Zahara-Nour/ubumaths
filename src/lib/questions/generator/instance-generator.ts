@@ -63,8 +63,14 @@ export function generateInstance(
       };
     }
 
-    // 2. Detect circular dependencies
-    const circularErrors = detectCircularDependencies(template.variables);
+    // 2. Select a variation (random or based on seed)
+    const variationIndex = seed !== undefined
+      ? Math.abs(seed) % template.variations.length
+      : Math.floor(Math.random() * template.variations.length);
+    const selectedVariation = template.variations[variationIndex];
+
+    // 3. Detect circular dependencies in selected variation
+    const circularErrors = detectCircularDependencies(selectedVariation.variables);
     if (circularErrors.length > 0) {
       return {
         success: false,
@@ -72,34 +78,34 @@ export function generateInstance(
       };
     }
 
-    // 3. Resolve variables in declaration order
-    const resolvedVariables = resolveVariables(template.variables, seed);
+    // 4. Resolve variables in declaration order
+    const resolvedVariables = resolveVariables(selectedVariation.variables, seed);
 
-    // 4. Resolve content fields
+    // 5. Resolve content fields from selected variation
     const resolvedStatement = resolveContentFields(
-      template.statement,
+      selectedVariation.statement,
       resolvedVariables,
       seed
     );
 
     const resolvedAnswer = resolveAnswer(
-      template.answer,
+      selectedVariation.answer,
       resolvedVariables,
       seed
     );
 
-    const resolvedCorrection = template.correction
-      ? resolveContentFields(template.correction, resolvedVariables, seed)
+    const resolvedCorrection = selectedVariation.correction
+      ? resolveContentFields(selectedVariation.correction, resolvedVariables, seed)
       : undefined;
 
-    // 5. Resolve type-specific fields
+    // 6. Resolve type-specific fields from selected variation
     let resolvedChoices;
     let shuffledChoices;
     let resolvedBlanks;
 
-    if (template.type === 'multiple_choice' && template.choices) {
+    if (template.type === 'multiple_choice' && selectedVariation.choices) {
       // Resolve choice content
-      resolvedChoices = template.choices.map((choice) => ({
+      resolvedChoices = selectedVariation.choices.map((choice) => ({
         content: resolveContentFields([choice.content], resolvedVariables, seed)[0],
         isCorrect: choice.isCorrect
       }));
@@ -108,8 +114,8 @@ export function generateInstance(
       shuffledChoices = shuffleChoices(resolvedChoices, seed);
     }
 
-    if (template.type === 'fill_in_blanks' && template.blanks) {
-      resolvedBlanks = template.blanks.map((blank) => ({
+    if (template.type === 'fill_in_blanks' && selectedVariation.blanks) {
+      resolvedBlanks = selectedVariation.blanks.map((blank) => ({
         position: blank.position,
         expectedAnswer: resolveExpression(
           blank.expectedAnswer,
@@ -119,7 +125,7 @@ export function generateInstance(
       }));
     }
 
-    // 6. Construct instance
+    // 7. Construct instance
     const instance: QuestionInstance = {
       templateId: template.id,
       type: template.type,
@@ -141,7 +147,8 @@ export function generateInstance(
       shuffledChoices,
       multipleAnswers: template.multipleAnswers,
       generatedAt: new Date().toISOString(),
-      seed
+      seed,
+      selectedVariationIndex: variationIndex
     };
 
     return {

@@ -79,7 +79,7 @@ export function resolveVariableExpression(
   for (const evalExpr of evalExpressions) {
     try {
       const evaluatedValue = evaluateExpression(evalExpr.expression);
-      result = result.replace(evalExpr.raw, String(evaluatedValue));
+      result = result.replace(evalExpr.fullMatch, String(evaluatedValue));
     } catch (error) {
       throw new Error(
         `Failed to evaluate expression "${evalExpr.expression}": ${error instanceof Error ? error.message : String(error)}`

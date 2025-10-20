@@ -136,13 +136,22 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
       );
     }
 
-    // Detect circular dependencies
-    const circularErrors = detectCircularDependencies(templateData.variables);
-    if (circularErrors.length > 0) {
+    // Detect circular dependencies in each variation
+    const allCircularErrors: string[] = [];
+    if (templateData.variations) {
+      templateData.variations.forEach((variation, index) => {
+        const circularErrors = detectCircularDependencies(variation.variables);
+        if (circularErrors.length > 0) {
+          allCircularErrors.push(...circularErrors.map(err => `Variation ${index + 1}: ${err}`));
+        }
+      });
+    }
+
+    if (allCircularErrors.length > 0) {
       return json(
         {
           success: false,
-          errors: circularErrors
+          errors: allCircularErrors
         },
         { status: 400 }
       );
@@ -153,10 +162,9 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
       .from('question_templates')
       .insert({
         type: templateData.type,
-        statement: templateData.statement,
-        variables: templateData.variables || [],
-        answer: templateData.answer,
+        variations: templateData.variations,
         precision: templateData.precision || { type: 'none' },
+        options: templateData.options || null,
         grades: templateData.grades,
         // Categorization fields (independent from grades)
         // - theme: Broad subject area (e.g., "Algèbre", "Géométrie") [required]
@@ -168,11 +176,8 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
         subdomain: templateData.subdomain || null,
         level: templateData.level,
         delay: templateData.delay || null,
-        correction: templateData.correction || null,
-        transform_type: templateData.transform_type || null,
-        blanks: templateData.blanks || null,
-        choices: templateData.choices || null,
-        multiple_answers: templateData.multiple_answers ?? null,
+        transform_type: templateData.transformType || null,
+        multiple_answers: templateData.multipleAnswers ?? null,
         created_by: user.id
       })
       .select()

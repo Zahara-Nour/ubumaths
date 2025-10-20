@@ -14,22 +14,40 @@
 import type { RandomSpec, NumberOrVariable, ResolvedVariable } from '../types';
 
 /**
+ * Variable context - can be array or object
+ */
+export type VariableContext = ResolvedVariable[] | Record<string, number | string>;
+
+/**
  * Resolve a NumberOrVariable to an actual number
  *
  * @param value - Number or variable reference
- * @param resolvedVariables - Already resolved variables
+ * @param resolvedVariables - Already resolved variables (array or object)
  * @returns Resolved number
  * @throws Error if variable not found or not numeric
  */
 export function resolveNumberOrVariable(
   value: NumberOrVariable,
-  resolvedVariables: ResolvedVariable[]
+  resolvedVariables: VariableContext
 ): number {
   if (typeof value === 'number') {
     return value;
   }
 
-  // Resolve variable
+  // Handle object format (for tests)
+  if (!Array.isArray(resolvedVariables)) {
+    const varValue = resolvedVariables[value.name];
+    if (varValue === undefined) {
+      throw new Error(`Variable "${value.name}" not found or not yet resolved`);
+    }
+    const num = typeof varValue === 'number' ? varValue : parseFloat(varValue);
+    if (isNaN(num)) {
+      throw new Error(`Variable "${value.name}" does not resolve to a number: ${varValue}`);
+    }
+    return num;
+  }
+
+  // Handle array format (production)
   const variable = resolvedVariables.find((v) => v.name === value.name);
   if (!variable) {
     throw new Error(`Variable "${value.name}" not found or not yet resolved`);
@@ -67,7 +85,7 @@ export function resolveNumberOrVariable(
  */
 export function generateRandomNumber(
   spec: RandomSpec,
-  resolvedVariables: ResolvedVariable[],
+  resolvedVariables: VariableContext,
   seed?: number
 ): number {
   // 1. Resolve variables in bounds/digits
@@ -80,9 +98,9 @@ export function generateRandomNumber(
     min = spec.min !== undefined ? resolveNumberOrVariable(spec.min, resolvedVariables) : undefined;
     max = spec.max !== undefined ? resolveNumberOrVariable(spec.max, resolvedVariables) : undefined;
 
-    // Validate min < max
-    if (min !== undefined && max !== undefined && min >= max) {
-      throw new Error(`Invalid range: min (${min}) must be less than max (${max})`);
+    // Validate min <= max (allow single value ranges)
+    if (min !== undefined && max !== undefined && min > max) {
+      throw new Error(`Invalid range: min (${min}) must be less than or equal to max (${max})`);
     }
   }
 
@@ -102,6 +120,13 @@ export function generateRandomNumber(
     }
     if (digitsAfter !== undefined && (!Number.isInteger(digitsAfter) || digitsAfter < 0)) {
       throw new Error(`digitsAfter must be a non-negative integer, got ${digitsAfter}`);
+    }
+  }
+
+  // Validate step for decimal ranges
+  if (spec.type === 'decimal' && spec.step !== undefined) {
+    if (spec.step <= 0) {
+      throw new Error(`Step must be positive, got ${spec.step}`);
     }
   }
 
@@ -134,11 +159,21 @@ export function generateRandomNumber(
         }
       }
     } else if (exclusion.type === 'variable') {
-      const variable = resolvedVariables.find((v) => v.name === exclusion.name);
-      if (!variable) {
-        throw new Error(`Variable "${exclusion.name}" not found in exclusions`);
+      // Handle both array and object formats
+      let value: number;
+      if (Array.isArray(resolvedVariables)) {
+        const variable = resolvedVariables.find((v) => v.name === exclusion.name);
+        if (!variable) {
+          throw new Error(`Variable "${exclusion.name}" not found in exclusions`);
+        }
+        value = parseFloat(variable.value);
+      } else {
+        const varValue = resolvedVariables[exclusion.name];
+        if (varValue === undefined) {
+          throw new Error(`Variable "${exclusion.name}" not found in exclusions`);
+        }
+        value = typeof varValue === 'number' ? varValue : parseFloat(varValue);
       }
-      const value = parseFloat(variable.value);
       if (!isNaN(value)) {
         excludedValues.add(value);
       }

@@ -32,10 +32,10 @@
 	import { Plus, Trash2, ArrowUp, ArrowDown, HelpCircle } from 'lucide-svelte';
 
 	interface Props {
-		variables: QuestionVariable[];
+		variables?: QuestionVariable[];
 	}
 
-	let { variables = $bindable() }: Props = $props();
+	let { variables = $bindable([]) }: Props = $props();
 
 	// Add new variable
 	function addVariable() {

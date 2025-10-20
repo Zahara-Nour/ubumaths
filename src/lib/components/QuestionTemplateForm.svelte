@@ -25,6 +25,7 @@
 <script lang="ts">
 	import type {
 		QuestionTemplate,
+		QuestionVariation,
 		QuestionType,
 		GradeLevel,
 		QuestionVariable,
@@ -44,7 +45,7 @@
 	import QuestionPreview from './QuestionPreview.svelte';
 	import JsonViewer from './JsonViewer.svelte';
 	import CategorySelector from './CategorySelector.svelte';
-	import { Save, X } from 'lucide-svelte';
+	import { Save, X, Plus, Trash2 } from 'lucide-svelte';
 
 	interface Props {
 		template?: QuestionTemplate;
@@ -55,17 +56,13 @@
 
 	let { template, onSave, onCancel, isSubmitting }: Props = $props();
 
-	// Form state
+	// Shared configuration state
 	let questionType = $state<QuestionType>(template?.type || 'numerical_exact');
-	let statement = $state<ContentField[]>(template?.statement || [{ type: 'text', content: '' }]);
-	let variables = $state<QuestionVariable[]>(template?.variables || []);
-	let answer = $state<string | string[]>(template?.answer || '');
 	let grades = $state<GradeLevel[]>(template?.grades || []);
 	let delay = $state<number | undefined>(template?.delay);
-	let correction = $state<ContentField[] | undefined>(template?.correction);
 	let precision = $state<PrecisionType>(template?.precision || { type: 'none' });
 
-	// Categorization fields
+	// Categorization fields (shared)
 	let theme = $state<string>(template?.theme || '');
 	let domain = $state<string>(template?.domain || '');
 	let subdomain = $state<string | undefined>(template?.subdomain);
@@ -76,11 +73,30 @@
 	let domainOptions = $state<string[]>([]);
 	let subdomainOptions = $state<string[]>([]);
 
-	// Type-specific fields
-	let transformType = $state<string | undefined>(template?.transform_type);
-	let blanks = $state<number[] | undefined>(template?.blanks);
-	let choices = $state<string[] | undefined>(template?.choices);
-	let multipleAnswers = $state<boolean | undefined>(template?.multiple_answers);
+	// Type-specific fields (shared)
+	let transformType = $state<'factor' | 'expand' | 'simplify' | 'solve' | undefined>(template?.transformType);
+	let multipleAnswers = $state<boolean | undefined>(template?.multipleAnswers);
+
+	// Variations state (NEW)
+	let variations = $state<QuestionVariation[]>(
+		template?.variations.map(v => ({
+			...v,
+			variables: v.variables || [],
+			blanks: v.blanks || [],
+			choices: v.choices || []
+		})) || [
+			{
+				statement: [{ type: 'text', content: '' }],
+				variables: [],
+				answer: '',
+				blanks: [],
+				choices: []
+			}
+		]
+	);
+
+	// Current variation index for editing
+	let currentVariationIndex = $state(0);
 
 	// Available grade levels
 	const GRADE_LEVELS: GradeLevel[] = [
@@ -127,35 +143,64 @@
 		}
 	}
 
+	// Variation management
+	function addVariation() {
+		variations = [
+			...variations,
+			{
+				statement: [{ type: 'text', content: '' }],
+				variables: [],
+				answer: '',
+				blanks: [],
+				choices: []
+			}
+		];
+		currentVariationIndex = variations.length - 1;
+	}
+
+	function removeVariation(index: number) {
+		if (variations.length <= 1) return; // Must have at least 1 variation
+		variations = variations.filter((_, i) => i !== index);
+		if (currentVariationIndex >= variations.length) {
+			currentVariationIndex = variations.length - 1;
+		}
+	}
+
+	function selectVariation(index: number) {
+		currentVariationIndex = index;
+	}
+
 	// Build template object
 	function buildTemplate(): Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'> {
-		// Filter out empty correction fields
-		const filteredCorrection = correction?.filter(
-			(field) => (field.type === 'text' && field.content.trim() !== '') || (field.type === 'image' && field.url)
-		);
+		// Filter empty correction fields from each variation
+		const cleanedVariations = variations.map((variation) => {
+			const filteredCorrection = variation.correction?.filter(
+				(field) => (field.type === 'text' && field.content.trim() !== '') || (field.type === 'image' && field.url)
+			);
+
+			return {
+				...variation,
+				correction: filteredCorrection && filteredCorrection.length > 0 ? filteredCorrection : undefined
+			};
+		});
 
 		const base = {
 			type: questionType,
-			statement,
-			variables: variables.length > 0 ? variables : undefined,
-			answer,
+			variations: cleanedVariations,
 			grades,
 			theme,
 			domain,
 			subdomain,
 			level,
 			delay,
-			correction: filteredCorrection && filteredCorrection.length > 0 ? filteredCorrection : undefined,
 			precision: questionType.startsWith('numerical') ? precision : undefined
 		};
 
-		// Add type-specific fields
+		// Add type-specific shared fields
 		if (questionType === 'algebraic_transform') {
-			return { ...base, transform_type: transformType };
-		} else if (questionType === 'fill_in_blanks') {
-			return { ...base, blanks };
+			return { ...base, transformType };
 		} else if (questionType === 'multiple_choice') {
-			return { ...base, choices, multiple_answers: multipleAnswers };
+			return { ...base, multipleAnswers };
 		}
 
 		return base;
@@ -169,13 +214,16 @@
 
 	// Validate form
 	let isValid = $derived(
-		statement.length > 0 &&
-		statement.some((s) => s.type === 'text' && s.content.trim().length > 0) &&
+		variations.length > 0 &&
+		variations.every((v) =>
+			v.statement.length > 0 &&
+			v.statement.some((s) => s.type === 'text' && s.content.trim().length > 0) &&
+			(typeof v.answer === 'string' ? v.answer.trim().length > 0 : v.answer.length > 0)
+		) &&
 		grades.length > 0 &&
 		theme.trim().length > 0 &&
 		domain.trim().length > 0 &&
-		level > 0 &&
-		(typeof answer === 'string' ? answer.trim().length > 0 : answer.length > 0)
+		level > 0
 	);
 </script>
 
@@ -254,7 +302,7 @@
 				<!-- Subdomain (Optional) -->
 				<CategorySelector
 					label="Sous-domaine (optionnel)"
-					bind:value={subdomain}
+					value={subdomain || ''}
 					options={subdomainOptions}
 					placeholder="Ex: Linéaires, Quadratiques..."
 					required={false}
@@ -304,81 +352,127 @@
 		{/if}
 	</div>
 
-	<!-- Tabbed Interface -->
-	<Tabs.Root value="statement">
-		<Tabs.List class="grid w-full grid-cols-5">
-			<Tabs.Trigger value="statement">Énoncé</Tabs.Trigger>
-			<Tabs.Trigger value="variables">Variables</Tabs.Trigger>
-			<Tabs.Trigger value="answer">Réponse</Tabs.Trigger>
+	<!-- Variations Management -->
+	<Card.Root>
+		<Card.Header>
+			<div class="flex items-center justify-between">
+				<div>
+					<Card.Title>Variations de la question</Card.Title>
+					<Card.Description>
+						Créez plusieurs variations. Une variation sera choisie aléatoirement lors de la génération.
+					</Card.Description>
+				</div>
+				<Button onclick={addVariation} variant="outline" size="sm" type="button">
+					<Plus class="mr-2 h-4 w-4" />
+					Ajouter une variation
+				</Button>
+			</div>
+		</Card.Header>
+		<Card.Content class="space-y-4">
+			<!-- Variation Tabs -->
+			<div class="flex gap-2 border-b">
+				{#each variations as _, index}
+					<div class="flex items-center">
+						<button
+							type="button"
+							class="flex items-center gap-2 px-4 py-2 border-b-2 transition-colors {currentVariationIndex === index
+								? 'border-primary text-primary'
+								: 'border-transparent text-muted-foreground hover:text-foreground'}"
+							onclick={() => selectVariation(index)}
+						>
+							Variation {index + 1}
+						</button>
+						{#if variations.length > 1}
+							<button
+								type="button"
+								onclick={() => removeVariation(index)}
+								class="ml-1 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+								title="Supprimer cette variation"
+							>
+								<Trash2 class="h-3 w-3" />
+							</button>
+						{/if}
+					</div>
+				{/each}
+			</div>
+
+			<!-- Current Variation Content -->
+			{#each variations as variation, index}
+				{#if currentVariationIndex === index}
+					<div class="space-y-6 pt-4">
+						<!-- Statement -->
+						<Card.Root>
+							<Card.Header>
+								<Card.Title>Énoncé <span class="text-destructive">*</span></Card.Title>
+								<Card.Description>
+									Utilisez <code>&#123;@:nom&#125;</code> pour les variables,
+									<code>&#123;#:min-max&#125;</code> pour les nombres aléatoires,
+									et <code>&#123;eval:expression&#125;</code> pour les calculs.
+								</Card.Description>
+							</Card.Header>
+							<Card.Content>
+								<ContentFieldEditor bind:fields={variation.statement} />
+							</Card.Content>
+						</Card.Root>
+
+						<!-- Variables -->
+						<Card.Root>
+							<Card.Header>
+								<Card.Title>Variables</Card.Title>
+								<Card.Description>
+									Définissez des variables réutilisables. Elles sont résolues dans l'ordre de déclaration.
+								</Card.Description>
+							</Card.Header>
+							<Card.Content>
+								<VariableEditor bind:variables={variation.variables} />
+							</Card.Content>
+						</Card.Root>
+
+						<!-- Answer -->
+						<Card.Root>
+							<Card.Header>
+								<Card.Title>Réponse <span class="text-destructive">*</span></Card.Title>
+							</Card.Header>
+							<Card.Content>
+								<AnswerEditor
+									{questionType}
+									bind:answer={variation.answer}
+									{precision}
+									{transformType}
+									bind:blanks={variation.blanks}
+									bind:choices={variation.choices}
+									{multipleAnswers}
+								/>
+							</Card.Content>
+						</Card.Root>
+
+						<!-- Correction (optional) -->
+						<Card.Root>
+							<Card.Header>
+								<Card.Title>Correction (optionnelle)</Card.Title>
+								<Card.Description>Explication détaillée de la solution</Card.Description>
+							</Card.Header>
+							<Card.Content>
+								<ContentFieldEditor bind:fields={variation.correction} />
+							</Card.Content>
+						</Card.Root>
+					</div>
+				{/if}
+			{/each}
+		</Card.Content>
+	</Card.Root>
+
+	<!-- Preview & JSON -->
+	<Tabs.Root value="preview">
+		<Tabs.List class="grid w-full grid-cols-2">
 			<Tabs.Trigger value="preview">Aperçu</Tabs.Trigger>
 			<Tabs.Trigger value="json">JSON</Tabs.Trigger>
 		</Tabs.List>
 
-		<!-- Statement Tab -->
-		<Tabs.Content value="statement" class="space-y-4">
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Énoncé de la question</Card.Title>
-					<Card.Description>
-						Utilisez la syntaxe <code>&#123;@:nom&#125;</code> pour les variables,
-						<code>&#123;#:min-max&#125;</code> pour les nombres aléatoires,
-						et <code>&#123;eval:expression&#125;</code> pour les calculs.
-					</Card.Description>
-				</Card.Header>
-				<Card.Content>
-					<ContentFieldEditor bind:fields={statement} />
-				</Card.Content>
-			</Card.Root>
-
-			<!-- Optional Correction -->
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Correction (optionnelle)</Card.Title>
-					<Card.Description>
-						Explication détaillée de la solution
-					</Card.Description>
-				</Card.Header>
-				<Card.Content>
-					<ContentFieldEditor bind:fields={correction} />
-				</Card.Content>
-			</Card.Root>
-		</Tabs.Content>
-
-		<!-- Variables Tab -->
-		<Tabs.Content value="variables">
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Variables</Card.Title>
-					<Card.Description>
-						Définissez des variables réutilisables dans l'énoncé et la réponse.
-						Les variables sont résolues dans l'ordre de déclaration.
-					</Card.Description>
-				</Card.Header>
-				<Card.Content>
-					<VariableEditor bind:variables />
-				</Card.Content>
-			</Card.Root>
-		</Tabs.Content>
-
-		<!-- Answer Tab -->
-		<Tabs.Content value="answer" class="space-y-4">
-			<AnswerEditor
-				{questionType}
-				bind:answer
-				bind:precision
-				bind:transformType
-				bind:blanks
-				bind:choices
-				bind:multipleAnswers
-			/>
-		</Tabs.Content>
-
-		<!-- Preview Tab -->
 		<Tabs.Content value="preview">
 			<QuestionPreview template={buildTemplate()} />
 		</Tabs.Content>
 
-		<!-- JSON Tab -->
 		<Tabs.Content value="json">
 			<JsonViewer data={buildTemplate()} />
 		</Tabs.Content>

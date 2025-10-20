@@ -3,6 +3,7 @@
  * ====================================
  *
  * Tests for detecting circular variable dependencies using DFS algorithm.
+ * Updated to match current API: detectCircularDependencies returns string[]
  */
 
 import { describe, it, expect } from 'vitest';
@@ -15,18 +16,15 @@ describe('detectCircularDependencies - No Dependencies', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
-		expect(result.cycle).toBeUndefined();
+		expect(result).toEqual([]);
 	});
 
 	it('should pass with single variable (no reference)', () => {
-		const variables: QuestionVariable[] = [
-			{ name: 'a', expression: '{#:1-10}' }
-		];
+		const variables: QuestionVariable[] = [{ name: 'a', expression: '{#:1-10}' }];
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should pass with independent variables', () => {
@@ -38,7 +36,7 @@ describe('detectCircularDependencies - No Dependencies', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should pass with literal values', () => {
@@ -50,7 +48,7 @@ describe('detectCircularDependencies - No Dependencies', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 });
 
@@ -63,7 +61,7 @@ describe('detectCircularDependencies - Valid Dependencies', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should pass with chain: a → b → c', () => {
@@ -75,7 +73,7 @@ describe('detectCircularDependencies - Valid Dependencies', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should pass with multiple chains', () => {
@@ -88,7 +86,7 @@ describe('detectCircularDependencies - Valid Dependencies', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should pass with variable in eval', () => {
@@ -99,7 +97,7 @@ describe('detectCircularDependencies - Valid Dependencies', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should pass with variable in random bounds', () => {
@@ -111,7 +109,7 @@ describe('detectCircularDependencies - Valid Dependencies', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should pass with multiple variables in one expression', () => {
@@ -123,7 +121,7 @@ describe('detectCircularDependencies - Valid Dependencies', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should pass with deep chain: a → b → c → d → e', () => {
@@ -137,20 +135,19 @@ describe('detectCircularDependencies - Valid Dependencies', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 });
 
 describe('detectCircularDependencies - Direct Cycles', () => {
 	it('should detect self-reference: a → a', () => {
-		const variables: QuestionVariable[] = [
-			{ name: 'a', expression: '{@:a}' }
-		];
+		const variables: QuestionVariable[] = [{ name: 'a', expression: '{@:a}' }];
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
-		expect(result.cycle).toEqual(['a', 'a']);
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
+		expect(result[0]).toContain('a');
 	});
 
 	it('should detect two-way cycle: a → b → a', () => {
@@ -161,9 +158,8 @@ describe('detectCircularDependencies - Direct Cycles', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
-		expect(result.cycle).toBeDefined();
-		expect(result.cycle!.length).toBeGreaterThanOrEqual(3);
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 	});
 
 	it('should detect three-way cycle: a → b → c → a', () => {
@@ -175,8 +171,8 @@ describe('detectCircularDependencies - Direct Cycles', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
-		expect(result.cycle).toBeDefined();
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 	});
 
 	it('should detect four-way cycle: a → b → c → d → a', () => {
@@ -189,8 +185,8 @@ describe('detectCircularDependencies - Direct Cycles', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
-		expect(result.cycle).toBeDefined();
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 	});
 });
 
@@ -203,7 +199,8 @@ describe('detectCircularDependencies - Complex Cycles', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 	});
 
 	it('should detect cycle in random bounds', () => {
@@ -214,7 +211,8 @@ describe('detectCircularDependencies - Complex Cycles', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 	});
 
 	it('should detect cycle with multiple references in one expression', () => {
@@ -226,7 +224,8 @@ describe('detectCircularDependencies - Complex Cycles', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 	});
 
 	it('should detect cycle in mixed environment', () => {
@@ -239,9 +238,10 @@ describe('detectCircularDependencies - Complex Cycles', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 		// Cycle should be between c and d
-		expect(result.cycle).toBeDefined();
+		expect(result[0]).toMatch(/c.*d|d.*c/);
 	});
 
 	it('should detect cycle with long chain before it', () => {
@@ -255,7 +255,8 @@ describe('detectCircularDependencies - Complex Cycles', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 	});
 });
 
@@ -269,7 +270,8 @@ describe('detectCircularDependencies - Indirect Cycles', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 	});
 
 	it('should detect cycle in diamond pattern', () => {
@@ -282,7 +284,8 @@ describe('detectCircularDependencies - Indirect Cycles', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 	});
 
 	it('should detect cycle when variable references multiple variables that form cycle', () => {
@@ -295,7 +298,8 @@ describe('detectCircularDependencies - Indirect Cycles', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 	});
 });
 
@@ -310,7 +314,7 @@ describe('detectCircularDependencies - Real-World Examples', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should pass valid GCD simplification variables', () => {
@@ -325,7 +329,7 @@ describe('detectCircularDependencies - Real-World Examples', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should pass valid quadratic equation variables', () => {
@@ -338,7 +342,7 @@ describe('detectCircularDependencies - Real-World Examples', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should pass valid percentage calculation variables', () => {
@@ -351,7 +355,7 @@ describe('detectCircularDependencies - Real-World Examples', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 });
 
@@ -364,7 +368,7 @@ describe('detectCircularDependencies - Edge Cases', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should detect cycle in exclusion reference', () => {
@@ -375,7 +379,8 @@ describe('detectCircularDependencies - Edge Cases', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 	});
 
 	it('should handle variable with multiple references to same variable', () => {
@@ -386,17 +391,15 @@ describe('detectCircularDependencies - Edge Cases', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should handle empty expression', () => {
-		const variables: QuestionVariable[] = [
-			{ name: 'a', expression: '' }
-		];
+		const variables: QuestionVariable[] = [{ name: 'a', expression: '' }];
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should handle expression with no variable references', () => {
@@ -406,7 +409,7 @@ describe('detectCircularDependencies - Edge Cases', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should handle very long chain without cycle', () => {
@@ -417,7 +420,7 @@ describe('detectCircularDependencies - Edge Cases', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should handle cycle at end of long chain', () => {
@@ -433,7 +436,7 @@ describe('detectCircularDependencies - Edge Cases', () => {
 		const result = detectCircularDependencies(variables);
 
 		// Should pass - f depends on c but c doesn't depend on f
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should detect cycle created by adding last variable', () => {
@@ -448,7 +451,7 @@ describe('detectCircularDependencies - Edge Cases', () => {
 		const result = detectCircularDependencies(variables);
 
 		// Should pass - all depend on a, but a doesn't depend on anything
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should detect actual cycle in long chain', () => {
@@ -463,7 +466,7 @@ describe('detectCircularDependencies - Edge Cases', () => {
 		const result = detectCircularDependencies(variables);
 
 		// Should pass - e depends on b, but b doesn't depend on e
-		expect(result.hasCircularDependency).toBe(false);
+		expect(result).toEqual([]);
 	});
 
 	it('should detect cycle when last variable closes loop', () => {
@@ -477,7 +480,8 @@ describe('detectCircularDependencies - Edge Cases', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 	});
 });
 
@@ -490,15 +494,11 @@ describe('detectCircularDependencies - Cycle Path Accuracy', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
-		expect(result.cycle).toBeDefined();
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 
 		// Cycle should show a → b → a or b → a → b
-		const cycleStr = result.cycle!.join(' → ');
-		expect(
-			cycleStr === 'a → b → a' ||
-			cycleStr === 'b → a → b'
-		).toBe(true);
+		expect(result[0]).toMatch(/a.*b.*a|b.*a.*b/);
 	});
 
 	it('should return accurate cycle path for triangle', () => {
@@ -510,9 +510,12 @@ describe('detectCircularDependencies - Cycle Path Accuracy', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
-		expect(result.cycle).toBeDefined();
-		expect(result.cycle!.length).toBe(4); // a → b → c → a
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
+		// Should contain all three variables
+		expect(result[0]).toContain('a');
+		expect(result[0]).toContain('b');
+		expect(result[0]).toContain('c');
 	});
 
 	it('should return first cycle found when multiple cycles exist', () => {
@@ -525,8 +528,8 @@ describe('detectCircularDependencies - Cycle Path Accuracy', () => {
 
 		const result = detectCircularDependencies(variables);
 
-		expect(result.hasCircularDependency).toBe(true);
-		expect(result.cycle).toBeDefined();
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toContain('Circular reference');
 		// Should find one of the two cycles
 	});
 });

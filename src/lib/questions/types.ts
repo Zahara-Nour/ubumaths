@@ -69,7 +69,7 @@ export type ContentField =
     }
   | {
       type: 'image';
-      url: string;      // Supabase Storage URL
+      content: string;  // Image URL (may contain variables like {@:imageId})
       alt?: string;     // Alt text for accessibility
     };
 
@@ -148,24 +148,31 @@ export interface QuestionVariable {
 }
 
 // ============================================================================
-// QUESTION TEMPLATE (stored in database)
+// QUESTION VARIATIONS
 // ============================================================================
 
 /**
- * Question template stored in database
+ * A single variation of a question template
  *
- * Templates are parsed to generate question instances with
- * randomized values and resolved variables.
+ * Templates can have multiple variations, and one is randomly selected
+ * during instance generation. Each variation contains its own statement,
+ * variables, answer, and correction.
+ *
+ * @example Simple numerical question with 2 variations
+ * {
+ *   variations: [
+ *     {
+ *       statement: [{ type: 'text', content: 'Calculate $$2 + 3$$' }],
+ *       answer: '5'
+ *     },
+ *     {
+ *       statement: [{ type: 'text', content: 'Calculate $$7 - 4$$' }],
+ *       answer: '3'
+ *     }
+ *   ]
+ * }
  */
-export interface QuestionTemplate {
-  /** Unique identifier (UUID) */
-  id: string;
-
-  /** Type of question */
-  type: QuestionType;
-
-  // ---- Core Content ----
-
+export interface QuestionVariation {
   /** Question statement (can contain text and images) */
   statement: ContentField[];
 
@@ -175,7 +182,61 @@ export interface QuestionTemplate {
   /** Expected answer(s) - can contain {@:var}, {#:...}, {eval:...} */
   answer: string | string[];
 
-  // ---- Validation Options ----
+  /** Detailed correction/explanation (optional) */
+  correction?: ContentField[];
+
+  // ---- Type-specific Fields (per-variation) ----
+
+  /** Blank positions and answers (for fill_in_blanks) */
+  blanks?: {
+    /** Position in statement */
+    position: number;
+
+    /** Expected answer (can contain {@:var}) */
+    expectedAnswer: string;
+  }[];
+
+  /** Choices for multiple choice */
+  choices?: {
+    /** Choice content (text or image, can contain {@:var}, {#:...}) */
+    content: ContentField;
+
+    /** Whether this choice is correct */
+    isCorrect: boolean;
+  }[];
+}
+
+// ============================================================================
+// QUESTION TEMPLATE (stored in database)
+// ============================================================================
+
+/**
+ * Question template stored in database
+ *
+ * Templates are parsed to generate question instances with
+ * randomized values and resolved variables.
+ *
+ * Templates support multiple variations - one is randomly selected
+ * during instance generation.
+ */
+export interface QuestionTemplate {
+  /** Unique identifier (UUID) */
+  id: string;
+
+  /** Type of question */
+  type: QuestionType;
+
+  // ---- Variations ----
+
+  /**
+   * Array of question variations (minimum 1 required)
+   *
+   * During instance generation, one variation is randomly selected.
+   * Each variation has its own statement, variables, answer, and correction.
+   */
+  variations: QuestionVariation[];
+
+  // ---- Validation Options (shared across all variations) ----
 
   /** Validation options for multiple acceptable answers */
   options?: {
@@ -195,10 +256,10 @@ export interface QuestionTemplate {
     validatorParams?: Record<string, unknown>;
   };
 
-  /** Precision for numerical answers */
+  /** Precision for numerical answers (shared across all variations) */
   precision?: PrecisionType;
 
-  // ---- Metadata ----
+  // ---- Metadata (shared across all variations) ----
 
   /** Applicable grade levels */
   grades: GradeLevel[];
@@ -220,31 +281,10 @@ export interface QuestionTemplate {
   /** Time limit in seconds (optional) */
   delay?: number;
 
-  /** Detailed correction/explanation (optional) */
-  correction?: ContentField[];
-
-  // ---- Type-specific Fields ----
+  // ---- Type-specific Configuration (shared across all variations) ----
 
   /** Type of algebraic transformation (for algebraic_transform) */
   transformType?: AlgebraicTransformType;
-
-  /** Blank positions and answers (for fill_in_blanks) */
-  blanks?: {
-    /** Position in statement */
-    position: number;
-
-    /** Expected answer (can contain {@:var}) */
-    expectedAnswer: string;
-  }[];
-
-  /** Choices for multiple choice */
-  choices?: {
-    /** Choice content (text or image, can contain {@:var}, {#:...}) */
-    content: ContentField;
-
-    /** Whether this choice is correct */
-    isCorrect: boolean;
-  }[];
 
   /** Whether multiple answers are allowed (for multiple_choice) */
   multipleAnswers?: boolean;
@@ -336,6 +376,9 @@ export interface QuestionInstance {
 
   /** Random seed for reproducibility (optional) */
   seed?: number;
+
+  /** Index of selected variation from template (for debugging) */
+  selectedVariationIndex?: number;
 }
 
 // ============================================================================

@@ -16,11 +16,13 @@
 -->
 
 <script lang="ts">
-	import type { QuestionTemplate, QuestionInstance } from '$lib/questions/types';
+	import type { QuestionTemplate, QuestionInstance, ContentField } from '$lib/questions/types';
 	import { generateInstance } from '$lib/questions/generator/instance-generator';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
+	import { Label } from '$lib/components/ui/label';
+	import * as Select from '$lib/components/ui/select';
 	import { AlertCircle, RefreshCw, Check, X } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
@@ -35,6 +37,10 @@
 	let isGenerating = $state(false);
 	let seed = $state(Math.floor(Math.random() * 1000000));
 	let mathLiveLoaded = $state(false);
+	let selectedVariationIndex = $state<number | 'random'>(0);
+
+	// Derived: Number of variations in template
+	let variationCount = $derived(template.variations?.length || 1);
 
 	// Generate instance
 	function generate() {
@@ -45,12 +51,20 @@
 		// Small delay for visual feedback
 		setTimeout(() => {
 			try {
-				const result = generateInstance(template as QuestionTemplate, seed);
+				// Calculate effective seed based on variation selection
+				let effectiveSeed = seed;
+				if (selectedVariationIndex !== 'random' && variationCount > 1) {
+					// Use seed that guarantees this specific variation will be selected
+					// Formula: seed = variationIndex + (variationCount * N) for any N
+					effectiveSeed = selectedVariationIndex + (variationCount * Math.floor(seed / variationCount));
+				}
 
-				if (result.success && result.instance) {
+				const result = generateInstance(template as QuestionTemplate, effectiveSeed);
+
+				if (result.success) {
 					instance = result.instance;
 				} else {
-					errors = result.errors || ['Erreur inconnue'];
+					errors = result.errors;
 				}
 			} catch (error) {
 				errors = [error instanceof Error ? error.message : 'Erreur de génération'];
@@ -63,6 +77,16 @@
 	// Regenerate with new seed
 	function regenerate() {
 		seed = Math.floor(Math.random() * 1000000);
+		generate();
+	}
+
+	// Handle variation selection change
+	function handleVariationChange(value: string) {
+		if (value === 'random') {
+			selectedVariationIndex = 'random';
+		} else {
+			selectedVariationIndex = parseInt(value);
+		}
 		generate();
 	}
 
@@ -91,13 +115,13 @@
 	});
 
 	// Render content fields
-	function renderContent(fields: { type: 'text' | 'image'; content: string }[]): string {
+	function renderContent(fields: ContentField[]): string {
 		return fields
 			.map((field) => {
 				if (field.type === 'text') {
 					return field.content;
 				} else {
-					return `[Image: ${field.content}]`;
+					return `[Image: ${field.url}]`;
 				}
 			})
 			.join(' ');
@@ -106,17 +130,39 @@
 
 <Card.Root>
 	<Card.Header>
-		<div class="flex items-center justify-between">
-			<div>
-				<Card.Title>Aperçu de la question</Card.Title>
-				<Card.Description>
-					Instance générée avec graine : <code class="rounded bg-muted px-1">{seed}</code>
-				</Card.Description>
+		<div class="space-y-4">
+			<div class="flex items-center justify-between">
+				<div>
+					<Card.Title>Aperçu de la question</Card.Title>
+					<Card.Description>
+						Instance générée avec graine : <code class="rounded bg-muted px-1">{seed}</code>
+					</Card.Description>
+				</div>
+				<Button onclick={regenerate} disabled={isGenerating} class="gap-2">
+					<RefreshCw class="h-4 w-4" />
+					Régénérer
+				</Button>
 			</div>
-			<Button onclick={regenerate} disabled={isGenerating} class="gap-2">
-				<RefreshCw class="h-4 w-4" />
-				Régénérer
-			</Button>
+
+			<!-- Variation Selector (only show if multiple variations) -->
+			{#if variationCount > 1}
+				<div class="flex items-center gap-4">
+					<Label for="variation-select" class="text-sm font-medium">
+						Variation à prévisualiser:
+					</Label>
+					<select
+						id="variation-select"
+						value={selectedVariationIndex === 'random' ? 'random' : String(selectedVariationIndex)}
+						onchange={(e) => handleVariationChange(e.currentTarget.value)}
+						class="flex h-9 w-64 rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+					>
+						<option value="random">Aléatoire (selon la graine)</option>
+						{#each Array(variationCount) as _, index}
+							<option value={String(index)}>Variation {index + 1}</option>
+						{/each}
+					</select>
+				</div>
+			{/if}
 		</div>
 	</Card.Header>
 	<Card.Content>
@@ -144,10 +190,17 @@
 			</div>
 		{:else if instance}
 			<div class="space-y-6">
-				<!-- Success indicator -->
-				<div class="flex items-center gap-2 text-green-600">
-					<Check class="h-5 w-5" />
-					<span class="font-semibold">Instance générée avec succès</span>
+				<!-- Success indicator with variation info -->
+				<div class="flex items-center justify-between">
+					<div class="flex items-center gap-2 text-green-600">
+						<Check class="h-5 w-5" />
+						<span class="font-semibold">Instance générée avec succès</span>
+					</div>
+					{#if instance.selectedVariationIndex !== undefined && variationCount > 1}
+						<Badge variant="secondary" class="gap-1">
+							Variation {instance.selectedVariationIndex + 1} / {variationCount}
+						</Badge>
+					{/if}
 				</div>
 
 				<!-- Statement -->

@@ -7,13 +7,15 @@
  * @module questions/validators/template-validator
  */
 
-import type { QuestionTemplate } from '../types';
+import type { QuestionTemplate, QuestionVariation } from '../types';
 
 /**
  * Validate a question template
  *
  * Checks:
  * - Required fields are present
+ * - Variations array has at least 1 element
+ * - Each variation is valid
  * - Type-specific fields are valid
  * - Syntax of special expressions
  * - Field consistency
@@ -29,17 +31,22 @@ export function validateTemplate(template: QuestionTemplate): string[] {
     errors.push('Missing required field: type');
   }
 
-  if (!template.statement || template.statement.length === 0) {
-    errors.push('Missing required field: statement');
-  }
-
-  if (!template.answer) {
-    errors.push('Missing required field: answer');
-  }
-
   if (!template.grades || template.grades.length === 0) {
     errors.push('Missing required field: grades');
   }
+
+  // Validate variations array
+  if (!template.variations || template.variations.length === 0) {
+    errors.push('Missing required field: variations (at least 1 variation required)');
+    // Cannot continue validation without variations
+    return errors;
+  }
+
+  // Validate each variation
+  template.variations.forEach((variation, index) => {
+    const variationErrors = validateVariation(variation, template.type, index);
+    errors.push(...variationErrors);
+  });
 
   // Categorization fields
   if (!template.theme || template.theme.trim() === '') {
@@ -54,31 +61,11 @@ export function validateTemplate(template: QuestionTemplate): string[] {
     errors.push('level must be a positive integer');
   }
 
-  // Type-specific validation
+  // Type-specific validation (shared config)
   switch (template.type) {
     case 'algebraic_transform':
       if (!template.transformType) {
         errors.push('algebraic_transform requires transformType');
-      }
-      break;
-
-    case 'fill_in_blanks':
-      if (!template.blanks || template.blanks.length === 0) {
-        errors.push('fill_in_blanks requires at least one blank');
-      }
-      break;
-
-    case 'multiple_choice':
-      if (!template.choices || template.choices.length < 2) {
-        errors.push('multiple_choice requires at least 2 choices');
-      }
-
-      // Check that at least one choice is correct
-      if (template.choices) {
-        const hasCorrect = template.choices.some((choice) => choice.isCorrect);
-        if (!hasCorrect) {
-          errors.push('multiple_choice requires at least one correct choice');
-        }
       }
       break;
   }
@@ -108,44 +95,95 @@ export function validateTemplate(template: QuestionTemplate): string[] {
     }
   }
 
-  // Validate content fields
-  for (const field of template.statement) {
-    if (field.type === 'text' && !field.content) {
-      errors.push('Text content field cannot be empty');
-    }
-    if (field.type === 'image' && !field.url) {
-      errors.push('Image field requires url');
-    }
-  }
+  return errors;
+}
 
-  // Validate correction fields (if present and not empty array)
-  if (template.correction && template.correction.length > 0) {
-    for (const field of template.correction) {
+/**
+ * Validate a single question variation
+ *
+ * @param variation - Variation to validate
+ * @param questionType - Question type from template
+ * @param index - Variation index (for error messages)
+ * @returns Array of error messages
+ */
+function validateVariation(
+  variation: QuestionVariation,
+  questionType: string,
+  index: number
+): string[] {
+  const errors: string[] = [];
+  const prefix = `Variation ${index + 1}:`;
+
+  // Validate statement
+  if (!variation.statement || variation.statement.length === 0) {
+    errors.push(`${prefix} Missing required field: statement`);
+  } else {
+    for (const field of variation.statement) {
       if (field.type === 'text' && !field.content) {
-        errors.push('Correction text field cannot be empty');
+        errors.push(`${prefix} Text content field cannot be empty`);
       }
       if (field.type === 'image' && !field.url) {
-        errors.push('Correction image field requires url');
+        errors.push(`${prefix} Image field requires url`);
       }
     }
   }
 
-  // Validate variable names (no duplicates)
-  if (template.variables) {
+  // Validate answer
+  if (!variation.answer) {
+    errors.push(`${prefix} Missing required field: answer`);
+  }
+
+  // Validate correction fields (if present)
+  if (variation.correction && variation.correction.length > 0) {
+    for (const field of variation.correction) {
+      if (field.type === 'text' && !field.content) {
+        errors.push(`${prefix} Correction text field cannot be empty`);
+      }
+      if (field.type === 'image' && !field.url) {
+        errors.push(`${prefix} Correction image field requires url`);
+      }
+    }
+  }
+
+  // Validate variable names (no duplicates within variation)
+  if (variation.variables) {
     const varNames = new Set<string>();
-    for (const variable of template.variables) {
+    for (const variable of variation.variables) {
       if (!variable.name) {
-        errors.push('Variable must have a name');
+        errors.push(`${prefix} Variable must have a name`);
       } else if (varNames.has(variable.name)) {
-        errors.push(`Duplicate variable name: ${variable.name}`);
+        errors.push(`${prefix} Duplicate variable name: ${variable.name}`);
       } else {
         varNames.add(variable.name);
       }
 
       if (!variable.expression) {
-        errors.push(`Variable "${variable.name}" must have an expression`);
+        errors.push(`${prefix} Variable "${variable.name}" must have an expression`);
       }
     }
+  }
+
+  // Type-specific validation (per-variation)
+  switch (questionType) {
+    case 'fill_in_blanks':
+      if (!variation.blanks || variation.blanks.length === 0) {
+        errors.push(`${prefix} fill_in_blanks requires at least one blank`);
+      }
+      break;
+
+    case 'multiple_choice':
+      if (!variation.choices || variation.choices.length < 2) {
+        errors.push(`${prefix} multiple_choice requires at least 2 choices`);
+      }
+
+      // Check that at least one choice is correct
+      if (variation.choices) {
+        const hasCorrect = variation.choices.some((choice) => choice.isCorrect);
+        if (!hasCorrect) {
+          errors.push(`${prefix} multiple_choice requires at least one correct choice`);
+        }
+      }
+      break;
   }
 
   return errors;

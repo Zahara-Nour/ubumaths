@@ -7,21 +7,23 @@
 	QUESTION TYPES:
 	- numerical_exact/decimal/rounded: Single LaTeX expression + precision
 	- algebraic_transform: LaTeX expression + transform type
-	- fill_in_blanks: Array of answers + blank positions
-	- multiple_choice: Array of choices + correct answer(s)
+	- fill_in_blanks: Complex blanks with positions and expected answers
+	- multiple_choice: Complex choices with content fields and isCorrect flags
 
 	PROPS:
 	- questionType: QuestionType
-	- answer: string | string[] (bindable)
+	- answer: string | string[] (bindable) - NOT used for QCM (uses isCorrect instead)
 	- precision: PrecisionType (bindable, for numerical)
 	- transformType: string (bindable, for algebraic)
-	- blanks: number[] (bindable, for fill-in-blanks)
-	- choices: string[] (bindable, for QCM)
+	- blanks: { position: number; expectedAnswer: string }[] (bindable, for fill-in-blanks)
+	- choices: { content: ContentField; isCorrect: boolean }[] (bindable, for QCM)
 	- multipleAnswers: boolean (bindable, for QCM)
+
+	UPDATED: Refactored to work with QuestionVariation types (complex blanks/choices)
 -->
 
 <script lang="ts">
-	import type { QuestionType, PrecisionType } from '$lib/questions/types';
+	import type { QuestionType, PrecisionType, ContentField } from '$lib/questions/types';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
@@ -30,6 +32,7 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Badge } from '$lib/components/ui/badge';
 	import PrecisionEditor from './PrecisionEditor.svelte';
+	import ContentFieldEditor from './ContentFieldEditor.svelte';
 	import { Plus, Trash2 } from 'lucide-svelte';
 
 	interface Props {
@@ -37,8 +40,8 @@
 		answer: string | string[];
 		precision?: PrecisionType;
 		transformType?: string;
-		blanks?: number[];
-		choices?: string[];
+		blanks?: { position: number; expectedAnswer: string }[];
+		choices?: { content: ContentField; isCorrect: boolean }[];
 		multipleAnswers?: boolean;
 	}
 
@@ -47,8 +50,8 @@
 		answer = $bindable(),
 		precision = $bindable(),
 		transformType = $bindable(),
-		blanks = $bindable(),
-		choices = $bindable(),
+		blanks = $bindable([]),
+		choices = $bindable([]),
 		multipleAnswers = $bindable()
 	}: Props = $props();
 
@@ -65,9 +68,15 @@
 	$effect(() => {
 		if (questionType === 'multiple_choice') {
 			if (!choices || choices.length === 0) {
-				choices = ['', '', '', ''];
+				choices = [
+					{ content: { type: 'text', content: '' }, isCorrect: true },
+					{ content: { type: 'text', content: '' }, isCorrect: false },
+					{ content: { type: 'text', content: '' }, isCorrect: false },
+					{ content: { type: 'text', content: '' }, isCorrect: false }
+				];
 			}
-			if (typeof answer !== 'string') {
+			// answer is managed separately (index or indices of correct choices)
+			if (typeof answer !== 'string' && !Array.isArray(answer)) {
 				answer = '0'; // Default to first choice
 			}
 		} else if (questionType === 'fill_in_blanks') {
@@ -75,7 +84,7 @@
 				answer = [''];
 			}
 			if (!blanks || blanks.length === 0) {
-				blanks = [0];
+				blanks = [{ position: 0, expectedAnswer: '' }];
 			}
 		} else {
 			// Numerical or algebraic - single string answer
@@ -87,35 +96,56 @@
 
 	// QCM: Add choice
 	function addChoice() {
-		if (!choices) choices = [];
-		choices = [...choices, ''];
+		choices = [...choices, { content: { type: 'text', content: '' }, isCorrect: false }];
 	}
 
 	// QCM: Remove choice
 	function removeChoice(index: number) {
-		if (!choices) return;
 		choices = choices.filter((_, i) => i !== index);
-		// Adjust answer if it was the removed choice
-		if (multipleAnswers && Array.isArray(answer)) {
-			answer = answer.filter((a) => parseInt(a) !== index);
-		} else if (typeof answer === 'string' && parseInt(answer) === index) {
-			answer = '0';
+
+		// Update isCorrect flags if we're removing a correct choice
+		const removedChoice = choices[index];
+		if (removedChoice?.isCorrect) {
+			// If there are no more correct choices, mark the first one as correct
+			const hasCorrectChoice = choices.some(c => c.isCorrect);
+			if (!hasCorrectChoice && choices.length > 0) {
+				choices[0].isCorrect = true;
+			}
 		}
+
+		// Note: answer field is not used with new structure (isCorrect flag on each choice)
+	}
+
+	// QCM: Toggle choice correctness
+	function toggleChoiceCorrect(index: number) {
+		if (multipleAnswers) {
+			// Multiple answers: toggle this choice
+			choices[index].isCorrect = !choices[index].isCorrect;
+		} else {
+			// Single answer: uncheck all, then check this one
+			choices = choices.map((c, i) => ({
+				...c,
+				isCorrect: i === index
+			}));
+		}
+		choices = [...choices]; // Trigger reactivity
 	}
 
 	// Fill-in-blanks: Add blank
 	function addBlank() {
 		if (!Array.isArray(answer)) answer = [];
-		if (!blanks) blanks = [];
 		answer = [...answer, ''];
-		blanks = [...blanks, answer.length - 1];
+		blanks = [...blanks, { position: blanks.length, expectedAnswer: '' }];
 	}
 
 	// Fill-in-blanks: Remove blank
 	function removeBlank(index: number) {
-		if (!Array.isArray(answer) || !blanks) return;
+		if (!Array.isArray(answer)) return;
 		answer = answer.filter((_, i) => i !== index);
-		blanks = blanks.filter((_, i) => i !== index).map((b, i) => i);
+		blanks = blanks.filter((_, i) => i !== index).map((b, i) => ({
+			position: i,
+			expectedAnswer: b.expectedAnswer
+		}));
 	}
 </script>
 
@@ -196,29 +226,49 @@
 			<Card.Header>
 				<Card.Title>Texte à trous</Card.Title>
 				<Card.Description>
-					Définissez les réponses pour chaque trou
+					Définissez les positions et réponses pour chaque trou
 				</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-4">
-				{#if Array.isArray(answer) && blanks}
-					{#each answer as blank, index}
+				{#if blanks}
+					{#each blanks as blank, index}
 						<div class="flex gap-3">
 							<div class="flex-1 space-y-2">
 								<Label for="blank-{index}">
 									Trou #{index + 1}
-									<Badge variant="outline" class="ml-2">Position {blanks[index]}</Badge>
 								</Label>
-								<Input
-									id="blank-{index}"
-									bind:value={answer[index]}
-									placeholder="Réponse attendue"
-								/>
+								<div class="grid grid-cols-2 gap-2">
+									<div class="space-y-2">
+										<Label for="blank-position-{index}" class="text-xs text-muted-foreground">
+											Position
+										</Label>
+										<Input
+											id="blank-position-{index}"
+											type="number"
+											min="0"
+											bind:value={blank.position}
+											placeholder="0"
+											class="font-mono"
+										/>
+									</div>
+									<div class="space-y-2">
+										<Label for="blank-answer-{index}" class="text-xs text-muted-foreground">
+											Réponse attendue
+										</Label>
+										<Input
+											id="blank-answer-{index}"
+											bind:value={blank.expectedAnswer}
+											placeholder={'Ex: {@:var}, {eval:...}'}
+											class="font-mono"
+										/>
+									</div>
+								</div>
 							</div>
 							<Button
 								variant="destructive"
 								size="icon"
 								onclick={() => removeBlank(index)}
-								disabled={answer.length === 1}
+								disabled={blanks.length === 1}
 								class="mt-8"
 							>
 								<Trash2 class="h-4 w-4" />
@@ -233,7 +283,7 @@
 				</Button>
 
 				<p class="text-xs text-muted-foreground">
-					Les positions des trous seront automatiquement ajustées dans l'énoncé
+					La position indique l'index du champ dans l'énoncé où insérer le trou (0 = début)
 				</p>
 			</Card.Content>
 		</Card.Root>
@@ -245,7 +295,7 @@
 			<Card.Header>
 				<Card.Title>Questionnaire à choix multiples</Card.Title>
 				<Card.Description>
-					Définissez les choix possibles et la/les bonne(s) réponse(s)
+					Définissez les choix possibles et indiquez la/les bonne(s) réponse(s)
 				</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-4">
@@ -256,8 +306,14 @@
 						checked={multipleAnswers}
 						onCheckedChange={(checked) => {
 							multipleAnswers = checked as boolean;
-							// Reset answer when switching modes
-							answer = multipleAnswers ? [] : '0';
+							// When switching to single answer mode, keep only first correct choice
+							if (!multipleAnswers) {
+								const firstCorrectIndex = choices.findIndex(c => c.isCorrect);
+								choices = choices.map((c, i) => ({
+									...c,
+									isCorrect: i === (firstCorrectIndex >= 0 ? firstCorrectIndex : 0)
+								}));
+							}
 						}}
 					/>
 					<Label for="multiple-answers">Autoriser plusieurs réponses correctes</Label>
@@ -272,25 +328,16 @@
 								<div class="flex items-center pt-8">
 									{#if multipleAnswers}
 										<Checkbox
-											checked={Array.isArray(answer) && answer.includes(String(index))}
-											onCheckedChange={(checked) => {
-												if (!Array.isArray(answer)) answer = [];
-												if (checked) {
-													answer = [...answer, String(index)];
-												} else {
-													answer = answer.filter((a) => a !== String(index));
-												}
-											}}
+											checked={choice.isCorrect}
+											onCheckedChange={() => toggleChoiceCorrect(index)}
 										/>
 									{:else}
 										<input
 											type="radio"
 											name="correct-answer"
 											value={index}
-											checked={typeof answer === 'string' && answer === String(index)}
-											onchange={() => {
-												answer = String(index);
-											}}
+											checked={choice.isCorrect}
+											onchange={() => toggleChoiceCorrect(index)}
 											class="h-4 w-4"
 										/>
 									{/if}
@@ -300,16 +347,24 @@
 								<div class="flex-1 space-y-2">
 									<Label for="choice-{index}">
 										Choix {String.fromCharCode(65 + index)}
-										{#if (multipleAnswers && Array.isArray(answer) && answer.includes(String(index))) || (!multipleAnswers && typeof answer === 'string' && answer === String(index))}
+										{#if choice.isCorrect}
 											<Badge class="ml-2">Correct</Badge>
 										{/if}
 									</Label>
-									<Input
-										id="choice-{index}"
-										bind:value={choices[index]}
-										placeholder="Contenu du choix (LaTeX supporté)"
-										class="font-mono"
-									/>
+									<!-- Choice content (text only for now - image support would need wrapper) -->
+									{#if choice.content.type === 'text'}
+										<Input
+											id="choice-{index}"
+											bind:value={choice.content.content}
+											placeholder={'Contenu du choix (LaTeX, {@:var}, {#:...} supportés)'}
+											class="font-mono"
+										/>
+									{:else}
+										<p class="text-xs text-muted-foreground">
+											Note: Image choices are not yet fully supported in the editor.
+											Type: {choice.content.type}
+										</p>
+									{/if}
 								</div>
 
 								<!-- Delete button -->
@@ -319,6 +374,7 @@
 									onclick={() => removeChoice(index)}
 									disabled={choices.length <= 2}
 									class="mt-8"
+									type="button"
 								>
 									<Trash2 class="h-4 w-4" />
 								</Button>
@@ -327,7 +383,7 @@
 					</div>
 				{/if}
 
-				<Button onclick={addChoice} class="w-full gap-2" variant="outline">
+				<Button onclick={addChoice} class="w-full gap-2" variant="outline" type="button">
 					<Plus class="h-4 w-4" />
 					Ajouter un choix
 				</Button>

@@ -16,8 +16,8 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Input } from '$lib/components/ui/input';
-	import * as Select from '$lib/components/ui/select';
 	import { RefreshCw, Copy, Check } from 'lucide-svelte';
+	import { browser } from '$app/environment';
 
 	// ============================================================================
 	// STATE MANAGEMENT
@@ -249,26 +249,17 @@
 			<!-- Question Type Selector -->
 			<div class="space-y-2">
 				<label class="text-sm font-medium">Question Type</label>
-				<Select.Root
-					selected={{ value: selectedQuestionType, label: selectedQuestionType }}
-					onSelectedChange={(v) => {
-						if (v) {
-							selectedQuestionType = v.value;
-							changeQuestion();
-						}
-					}}
+				<select
+					bind:value={selectedQuestionType}
+					onchange={() => changeQuestion()}
+					class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 				>
-					<Select.Trigger class="w-full">
-						<Select.Value placeholder="Select question type" />
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Item value="numerical_exact">Numerical (Exact)</Select.Item>
-						<Select.Item value="numerical_decimal">Numerical (Decimal)</Select.Item>
-						<Select.Item value="algebraic_transform">Algebraic Transform</Select.Item>
-						<Select.Item value="fill_in_blanks">Fill-in-Blanks</Select.Item>
-						<Select.Item value="multiple_choice">Multiple Choice (QCM)</Select.Item>
-					</Select.Content>
-				</Select.Root>
+					<option value="numerical_exact">Numerical (Exact)</option>
+					<option value="numerical_decimal">Numerical (Decimal)</option>
+					<option value="algebraic_transform">Algebraic Transform</option>
+					<option value="fill_in_blanks">Fill-in-Blanks</option>
+					<option value="multiple_choice">Multiple Choice (QCM)</option>
+				</select>
 			</div>
 
 			<div class="grid grid-cols-2 gap-4">
@@ -302,21 +293,14 @@
 				<!-- Size -->
 				<div class="space-y-2">
 					<label class="text-sm font-medium">Size</label>
-					<Select.Root
-						selected={{ value: size, label: size.toUpperCase() }}
-						onSelectedChange={(v) => {
-							if (v) size = v.value as 'sm' | 'md' | 'lg';
-						}}
+					<select
+						bind:value={size}
+						class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 					>
-						<Select.Trigger>
-							<Select.Value placeholder="Select size" />
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Item value="sm">Small</Select.Item>
-							<Select.Item value="md">Medium</Select.Item>
-							<Select.Item value="lg">Large</Select.Item>
-						</Select.Content>
-					</Select.Root>
+						<option value="sm">Small</option>
+						<option value="md">Medium</option>
+						<option value="lg">Large</option>
+					</select>
 				</div>
 			</div>
 
@@ -647,16 +631,18 @@
 			<div class="grid grid-cols-2 gap-4 text-sm">
 				<div>
 					<span class="font-medium">User Agent:</span>
-					<code class="ml-2 text-xs">{navigator.userAgent}</code>
+					<code class="ml-2 text-xs">{browser ? navigator.userAgent : 'SSR - Not available'}</code>
 				</div>
 				<div>
 					<span class="font-medium">Viewport:</span>
-					<code class="ml-2">{window.innerWidth}×{window.innerHeight}px</code>
+					<code class="ml-2"
+						>{browser ? `${window.innerWidth}×${window.innerHeight}px` : 'SSR - Not available'}</code
+					>
 				</div>
 				<div>
 					<span class="font-medium">ResizeObserver Support:</span>
-					<Badge variant={'ResizeObserver' in window ? 'default' : 'destructive'}>
-						{'ResizeObserver' in window ? 'Yes ✓' : 'No ✗'}
+					<Badge variant={browser && 'ResizeObserver' in window ? 'default' : 'destructive'}>
+						{browser && 'ResizeObserver' in window ? 'Yes ✓' : 'No ✗'}
 					</Badge>
 				</div>
 				<div>

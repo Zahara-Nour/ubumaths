@@ -61,6 +61,13 @@ All components have been successfully implemented and the build passes without e
 | `multiple_choice`      | MultipleChoiceInput  | Buttons/images, single/multiple selection  |
 | Ordering (future)      | OrderingInput        | Drag-and-drop reordering                   |
 
+**MathLive Integration:**
+- Uses `readonly` attribute (NOT `read-only`) for editable control
+- `virtual-keyboard-mode="manual"` - User controls keyboard display
+- `smart-mode` enabled - Intelligent text/math mode switching
+- Enter key submits answer when not disabled
+- Styled with Shadcn theme variables for consistent appearance
+
 ### ✅ Answer Validation
 
 **Numerical Validation:**
@@ -500,6 +507,9 @@ See [QUESTION_DISPLAY_DEBUG.md](QUESTION_DISPLAY_DEBUG.md) for complete document
 
 ### Common Issues
 
+**Issue:** MathField inputs not editable
+**Solution:** The `readonly` attribute must be used (NOT `read-only`). MathLive's `<math-field>` element follows HTML standard attribute naming. Ensure `readonly={disabled}` is set correctly in NumericalInput and AlgebraicInput components.
+
 **Issue:** MathLive not rendering LaTeX
 **Solution:** Ensure MathLive is imported globally in `app.html`
 
@@ -517,6 +527,12 @@ See [QUESTION_DISPLAY_DEBUG.md](QUESTION_DISPLAY_DEBUG.md) for complete document
 
 **Issue:** Confetti not showing
 **Solution:** Check `showConfetti={true}` and `canvas-confetti` is installed
+
+**Issue:** Debug page SSR errors with Select components
+**Solution:** Use native HTML `<select>` elements instead of Shadcn Select for better SSR compatibility
+
+**Issue:** Debug page `window is not defined` error
+**Solution:** Guard browser-only APIs with `browser` check from `$app/environment`: `browser ? window.innerWidth : 'SSR'`
 
 ---
 

@@ -49,7 +49,7 @@ export function tokenize(text: string): Token[] {
   let i = 0;
 
   while (i < text.length) {
-    // Check for LaTeX: $$...$$
+    // Check for display LaTeX: $$...$$
     if (text.substring(i, i + 2) === '$$') {
       const end = text.indexOf('$$', i + 2);
       if (end !== -1) {
@@ -63,6 +63,24 @@ export function tokenize(text: string): Token[] {
           end: end + 2
         });
         i = end + 2;
+        continue;
+      }
+    }
+
+    // Check for inline LaTeX: $...$
+    if (text[i] === '$' && text[i + 1] !== '$') {
+      const end = text.indexOf('$', i + 1);
+      if (end !== -1) {
+        const fullValue = text.substring(i, end + 1);
+        const content = text.substring(i + 1, end);
+        tokens.push({
+          type: 'latex',
+          value: fullValue,
+          content,
+          start: i,
+          end: end + 1
+        });
+        i = end + 1;
         continue;
       }
     }
@@ -155,4 +173,100 @@ function extractBracedToken(text: string, start: number): { token: Token | null;
 export function findTokensByType(text: string, type: TokenType): Token[] {
   const allTokens = tokenize(text);
   return allTokens.filter((token) => token.type === type);
+}
+
+/**
+ * Helper type for variable reference
+ */
+export interface VariableReference {
+  name: string;
+  fullMatch: string;
+}
+
+/**
+ * Find all variable references in text (including inside LaTeX)
+ *
+ * @param text - Template string
+ * @returns Array of variable references with name and full match
+ */
+export function findVariableReferences(text: string): VariableReference[] {
+  const allTokens = tokenize(text);
+  const results: VariableReference[] = [];
+
+  for (const token of allTokens) {
+    if (token.type === 'variable') {
+      results.push({
+        name: token.content,
+        fullMatch: token.value
+      });
+    } else if (token.type === 'latex') {
+      // Recursively find variables inside LaTeX
+      const innerVars = findVariableReferences(token.content);
+      results.push(...innerVars);
+    } else if (token.type === 'random' || token.type === 'eval') {
+      // Recursively find variables inside random/eval expressions
+      const innerVars = findVariableReferences(token.content);
+      results.push(...innerVars);
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Find all random expressions in text
+ *
+ * @param text - Template string
+ * @returns Array of random expression strings (full match including {#:...})
+ */
+export function findRandomExpressions(text: string): string[] {
+  const tokens = findTokensByType(text, 'random');
+  return tokens.map(token => token.value);
+}
+
+/**
+ * Helper type for eval expression
+ */
+export interface EvalExpression {
+  expression: string;
+  raw: string;
+}
+
+/**
+ * Find all eval expressions in text
+ *
+ * @param text - Template string
+ * @returns Array of eval expressions with expression and raw
+ */
+export function findEvalExpressions(text: string): EvalExpression[] {
+  const tokens = findTokensByType(text, 'eval');
+  return tokens.map(token => ({
+    expression: token.content,
+    raw: token.value
+  }));
+}
+
+/**
+ * Helper type for LaTeX expression
+ */
+export interface LatexExpression {
+  latex: string;
+  raw: string;
+  isDisplay: boolean;
+}
+
+/**
+ * Find all LaTeX expressions in text
+ *
+ * @param text - Template string
+ * @returns Array of LaTeX expressions with latex content, raw, and display type
+ */
+export function findLatexExpressions(text: string): LatexExpression[] {
+  const tokens = findTokensByType(text, 'latex');
+  return tokens.map(token => ({
+    latex: token.content,
+    raw: token.value,
+    // Display LaTeX uses $$, inline uses $
+    isDisplay: token.value.startsWith('$$')
+  }));
 }

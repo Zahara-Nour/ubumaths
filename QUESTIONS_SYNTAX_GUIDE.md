@@ -107,6 +107,50 @@ Calculate {@:a}^2           → LaTeX with variable
 - Variables (after substitution)
 - Parentheses for grouping
 
+### How `{eval:}` Works - Resolution Process
+
+**IMPORTANT:** All variable references (`{@:}`) and random expressions (`{#:}`) inside an `{eval:}` expression are **fully resolved BEFORE** being passed to MathLive's Compute Engine. The engine only receives a clean mathematical expression with actual numbers.
+
+**Three-Stage Pipeline:**
+
+1. **Stage 1 - Replace Variable References:**
+   ```typescript
+   // Replace all {@:varName} with their resolved values
+   '{eval:{@:a}+{@:b}}' → '{eval:5+7}' (if a=5, b=7)
+   ```
+
+2. **Stage 2 - Generate Random Numbers:**
+   ```typescript
+   // Generate random numbers and replace {#:...} expressions
+   '{eval:{#:1-10}*2}' → '{eval:7*2}' (if random=7)
+   ```
+
+3. **Stage 3 - Evaluate with MathLive:**
+   ```typescript
+   // Extract expression, evaluate, replace with result
+   '{eval:5+7}' → Extract '5+7' → Compute Engine → '12'
+   ```
+
+**Complete Example:**
+
+Given this variable definition:
+```typescript
+{ name: 'sum', expression: '{eval:{@:a}+{@:b}}' }
+```
+
+If `a = 5` and `b = 7`, the resolution process is:
+
+1. **Initial:** `{eval:{@:a}+{@:b}}`
+2. **After variable replacement:** `{eval:5+7}`
+3. **After eval processing:**
+   - Extract `5+7` from `{eval:5+7}`
+   - Pass `"5+7"` to MathLive's Compute Engine
+   - Engine returns `12`
+   - Replace entire `{eval:5+7}` with `"12"`
+4. **Final result:** `"12"`
+
+**Key Point:** The Compute Engine NEVER sees the original `{@:a}` or `{#:...}` syntax - it only receives pure mathematical expressions like `"5+7"` or `"sqrt(25)"` with actual numbers.
+
 ---
 
 ## LaTeX Expressions
@@ -313,6 +357,184 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
   // Δ = b² - 4ac
 }
 ```
+
+---
+
+## Template Variations
+
+**Purpose:** Allow a single template to generate multiple types of related problems.
+
+### Overview
+
+Templates can have **multiple variations**, each with its own:
+- Statement
+- Variables
+- Answer
+- Correction
+- Blanks (for fill-in-blanks)
+- Choices (for multiple choice)
+
+When generating a question instance, one variation is selected either:
+- **Deterministically** using a seed: `Math.abs(seed) % variations.length`
+- **Randomly** if no seed is provided
+
+### Basic Example
+
+**Single Variation Template** (Old Style):
+```typescript
+{
+  type: 'numerical_exact',
+  statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+  variables: [
+    { name: 'a', expression: '{#:1-10}' },
+    { name: 'b', expression: '{#:1-10}' }
+  ],
+  answer: '{eval:{@:a}+{@:b}}',
+  grades: ['6']
+}
+```
+
+**Multi-Variation Template** (New Style):
+```typescript
+{
+  type: 'numerical_exact',
+  variations: [
+    {
+      statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+      variables: [
+        { name: 'a', expression: '{#:1-10}' },
+        { name: 'b', expression: '{#:1-10}' }
+      ],
+      answer: '{eval:{@:a}+{@:b}}'
+    },
+    {
+      statement: [{ type: 'text', content: 'Calculate {@:a} - {@:b}' }],
+      variables: [
+        { name: 'a', expression: '{#:10-20}' },
+        { name: 'b', expression: '{#:1-{@:a}}' }
+      ],
+      answer: '{eval:{@:a}-{@:b}}'
+    }
+  ],
+  grades: ['6']
+}
+```
+
+### Advanced Example: Operations Template
+
+**4 Variations** (addition, subtraction, multiplication, division):
+```typescript
+{
+  type: 'numerical_exact',
+  variations: [
+    {
+      statement: [{ type: 'text', content: 'Calculate: $${@:a} + {@:b}$$' }],
+      variables: [
+        { name: 'a', expression: '{#:10-50}' },
+        { name: 'b', expression: '{#:10-50}' }
+      ],
+      answer: '{eval:{@:a}+{@:b}}'
+    },
+    {
+      statement: [{ type: 'text', content: 'Calculate: $${@:a} - {@:b}$$' }],
+      variables: [
+        { name: 'a', expression: '{#:20-99}' },
+        { name: 'b', expression: '{#:10-{@:a}}' }
+      ],
+      answer: '{eval:{@:a}-{@:b}}'
+    },
+    {
+      statement: [{ type: 'text', content: 'Calculate: $${@:a} \\times {@:b}$$' }],
+      variables: [
+        { name: 'a', expression: '{#:2-12}' },
+        { name: 'b', expression: '{#:2-12}' }
+      ],
+      answer: '{eval:{@:a}*{@:b}}'
+    },
+    {
+      statement: [{ type: 'text', content: 'Calculate: $${@:dividend} \\div {@:divisor}$$' }],
+      variables: [
+        { name: 'divisor', expression: '{#:2-9}' },
+        { name: 'quotient', expression: '{#:2-12}' },
+        { name: 'dividend', expression: '{eval:{@:divisor}*{@:quotient}}' }
+      ],
+      answer: '{@:quotient}'
+    }
+  ],
+  precision: { type: 'none' },
+  grades: ['CM1', 'CM2', '6'],
+  theme: 'Arithmétique',
+  domain: 'Opérations',
+  level: 1
+}
+```
+
+### Variation Selection
+
+**With Seed** (Deterministic):
+```typescript
+// Template with 4 variations
+seed = 0  → Variation 1 (index 0)
+seed = 1  → Variation 2 (index 1)
+seed = 2  → Variation 3 (index 2)
+seed = 3  → Variation 4 (index 3)
+seed = 4  → Variation 1 (index 0)  // Wraps around
+seed = 100 → Variation 1 (100 % 4 = 0)
+```
+
+**Without Seed** (Random):
+```typescript
+// Generates random seed internally
+// Different variation on each call
+```
+
+### Per-Variation vs Shared Fields
+
+**Per-Variation** (inside each variation):
+- `statement` - Question text/images
+- `variables` - Variable definitions
+- `answer` - Expected answer
+- `correction` - Optional correction steps
+- `blanks` - For fill-in-blanks (position + expectedAnswer)
+- `choices` - For multiple choice (content + isCorrect)
+
+**Shared** (at template level):
+- `type` - Question type
+- `grades` - Target grade levels
+- `theme`, `domain`, `subdomain` - Categorization
+- `level` - Difficulty
+- `precision` - Numerical precision (numerical questions)
+- `transformType` - Transform type (algebraic questions)
+- `multipleAnswers` - Allow multiple correct answers (QCM)
+- `delay` - Time limit in seconds
+
+### Best Practices
+
+✅ **DO:**
+- Use variations for related problem types (addition/subtraction, different shapes, etc.)
+- Keep variations within the same conceptual theme
+- Test each variation in preview before saving
+- Add corrections to help students understand
+
+❌ **DON'T:**
+- Mix completely unrelated concepts (make separate templates instead)
+- Create templates with 0 variations (minimum 1 required)
+- Duplicate identical variations (just use 1)
+- Mix per-variation fields at template level
+
+### Example Use Cases
+
+**Good Variations** (related concepts):
+- Arithmetic: Addition, subtraction, multiplication, division
+- Fractions: Addition, subtraction, simplification
+- Geometry: Rectangle, triangle, circle areas
+- Equations: Linear, quadratic, cubic
+- Factorization: Common factor, difference of squares, trinomial
+
+**Bad Variations** (unrelated):
+- ❌ Variation 1: Arithmetic addition, Variation 2: Pythagorean theorem
+- ❌ Variation 1: Fraction simplification, Variation 2: Probability
+- ❌ Variation 1: Algebra factorization, Variation 2: Geometry angles
 
 ---
 

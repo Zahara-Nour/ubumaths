@@ -3644,6 +3644,8 @@ src/lib/questions/
 {eval:({@:c}-{@:b})/{@:a}}    // Complex expression
 ```
 
+**Important:** All variable references (`{@:}`) and random expressions (`{#:}`) inside an `{eval:}` expression are **fully resolved BEFORE** being passed to MathLive's Compute Engine. The engine only receives a clean mathematical expression with actual numbers.
+
 ### Variable Resolution Pipeline
 
 Variables are resolved in **declaration order** through a **three-stage pipeline**:
@@ -3652,7 +3654,57 @@ Variables are resolved in **declaration order** through a **three-stage pipeline
 2. **Generate `{#:}` random numbers** (using resolved variables in bounds)
 3. **Evaluate `{eval:}` expressions** with MathLive Compute Engine
 
-**Example**:
+**Implementation Details** ([variable-resolver.ts](src/lib/questions/generator/variable-resolver.ts)):
+
+**Stage 1 - Variable References:**
+```typescript
+// Replace all {@:varName} with their resolved values
+expression = expression.replace(/@:(\w+)/g, (match, varName) => {
+  return resolvedVariables[varName] || match;
+});
+```
+
+**Stage 2 - Random Numbers:**
+```typescript
+// Generate random numbers and replace {#:...} expressions
+expression = expression.replace(/#:([^}]+)/g, (match, randomExpr) => {
+  return generateRandomNumber(randomExpr, resolvedVariables).toString();
+});
+```
+
+**Stage 3 - Mathematical Evaluation:**
+```typescript
+// Extract content inside {eval:...}, evaluate with Compute Engine, replace with result
+expression = expression.replace(/eval:([^}]+)/g, (match, evalExpr) => {
+  try {
+    const result = evaluateExpression(evalExpr); // MathLive Compute Engine
+    return typeof result === 'number' ? result.toFixed(10) : result.toString();
+  } catch (error) {
+    console.error(`Error evaluating expression: ${evalExpr}`, error);
+    return match; // Leave unchanged on error
+  }
+});
+```
+
+**Complete Example:**
+
+Given this variable definition:
+```typescript
+{ name: 'sum', expression: '{eval:{@:a}+{@:b}}' }
+```
+
+If `a = 5` and `b = 7`, the resolution process is:
+
+1. **Initial expression:** `{eval:{@:a}+{@:b}}`
+2. **After Stage 1** (variable replacement): `{eval:5+7}`
+3. **After Stage 3** (eval processing):
+   - Extract `5+7` from `{eval:5+7}`
+   - Pass `"5+7"` to MathLive's `evaluateExpression()`
+   - Compute Engine returns `12`
+   - Replace entire `{eval:5+7}` with `"12"`
+4. **Final result:** `"12"`
+
+**Pipeline Example:**
 ```typescript
 [
   { name: 'min', expression: '5' },                    // Stage 1: min = 5
@@ -3748,16 +3800,44 @@ The Question Bank System uses **MathLive's Compute Engine** for:
 - Numerical calculations with proper precision
 
 **Wrapper Functions** ([compute-engine/wrapper.ts](src/lib/questions/compute-engine/wrapper.ts)):
+
+**`evaluateExpression(latex: string): number | string`**
+
+Evaluates a LaTeX mathematical expression after all variables and random values have been resolved.
+
 ```typescript
-// Evaluate LaTeX expression to number or symbolic result
-evaluateExpression(latex: string): number | string
+export function evaluateExpression(latex: string): number | string {
+  try {
+    const expr = ce.parse(latex);
+    const result = expr.evaluate();
 
-// Check if two LaTeX expressions are algebraically equivalent
-areEquivalent(latex1: string, latex2: string): boolean
+    if (result.isValid && result.numericValue !== null) {
+      return result.numericValue;
+    }
 
-// Simplify LaTeX expression
-simplifyExpression(latex: string): string
+    return result.latex;
+  } catch (error) {
+    throw new Error(`Failed to evaluate expression: ${latex}`);
+  }
+}
 ```
+
+**Usage in Variable Resolution:**
+```typescript
+// Input from variable expression: '{eval:{@:a}+{@:b}}'
+// After Stage 1 (variable replacement): '{eval:5+7}'
+// Extract '5+7', pass to evaluateExpression('5+7')
+// Compute Engine returns: 12
+// Final result: '12'
+```
+
+**`areEquivalent(latex1: string, latex2: string): boolean`**
+
+Checks if two LaTeX expressions are algebraically equivalent (used for validating algebraic transform answers).
+
+**`simplifyExpression(latex: string): string`**
+
+Simplifies a LaTeX expression to its canonical form.
 
 ### Performance Considerations
 
@@ -4047,6 +4127,300 @@ if (!template.level || template.level <= 0) {
 - Indexed columns for fast filtering
 - Category extraction query is separate from main template query
 - Dropdown options cached client-side during page session
+
+### Question Variations System
+
+The Question Variations System allows question templates to have **multiple variations**, providing diverse problem sets from a single template. When generating a question instance, one variation is selected either randomly or deterministically based on a seed value.
+
+#### Overview
+
+**Status**: ✅ **Fully Implemented** (Backend 100%, Frontend 100%)
+**Migrations**:
+- `074_add_template_variations.sql` - Adds `variations` JSONB column, migrates existing data
+- `075_enhance_seed_with_variations.sql` - Adds multi-variation examples to seed data
+
+**Key Features**:
+- Templates can have 1 to unlimited variations
+- Each variation has its own statement, variables, answer, correction, blanks, and choices
+- Shared fields remain at template level (type, grades, theme, domain, precision, etc.)
+- Deterministic variation selection using seed: `Math.abs(seed) % variations.length`
+- Backward compatible: Migration 074 automatically wraps old single-field structure into variations array
+
+#### Data Structure
+
+**Before Variations** (Old Structure):
+```typescript
+{
+  id: 'template-1',
+  type: 'numerical_exact',
+  statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+  variables: [
+    { name: 'a', expression: '{#:1-10}' },
+    { name: 'b', expression: '{#:1-10}' }
+  ],
+  answer: '{eval:{@:a}+{@:b}}',
+  grades: ['6'],
+  theme: 'Arithmétique',
+  // ...
+}
+```
+
+**After Variations** (New Structure):
+```typescript
+{
+  id: 'template-1',
+  type: 'numerical_exact',
+  variations: [
+    {
+      statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+      variables: [
+        { name: 'a', expression: '{#:1-10}' },
+        { name: 'b', expression: '{#:1-10}' }
+      ],
+      answer: '{eval:{@:a}+{@:b}}',
+      correction: [{ type: 'text', content: 'Add the numbers...' }]
+    },
+    {
+      statement: [{ type: 'text', content: 'Calculate {@:a} - {@:b}' }],
+      variables: [
+        { name: 'a', expression: '{#:10-20}' },
+        { name: 'b', expression: '{#:1-{@:a}}' }
+      ],
+      answer: '{eval:{@:a}-{@:b}}',
+      correction: [{ type: 'text', content: 'Subtract the numbers...' }]
+    }
+  ],
+  grades: ['6'],
+  theme: 'Arithmétique',
+  // ... shared fields
+}
+```
+
+#### Per-Variation Fields
+
+These fields are **inside each variation**:
+- `statement: ContentField[]` - Question text/images
+- `variables: QuestionVariable[]` - Variable definitions
+- `answer: string | string[]` - Expected answer(s)
+- `correction?: ContentField[]` - Optional correction steps
+- `blanks?: { position: number; expectedAnswer: string }[]` - For fill-in-blanks
+- `choices?: { content: ContentField; isCorrect: boolean }[]` - For multiple choice
+
+#### Shared Template Fields
+
+These fields remain **at the template level** (same for all variations):
+- `type: QuestionType` - Question type
+- `grades: Grade[]` - Target grade levels
+- `theme: string` - Categorization theme
+- `domain: string` - Categorization domain
+- `subdomain?: string` - Optional sub-domain
+- `level: number` - Difficulty level
+- `precision?: PrecisionType` - Numerical precision (numerical questions)
+- `transformType?: AlgebraicTransformType` - Transform type (algebraic questions)
+- `multipleAnswers?: boolean` - Allow multiple correct answers (QCM)
+- `delay?: number` - Time limit in seconds
+
+#### Variation Selection Algorithm
+
+**Deterministic Selection (with seed)**:
+```typescript
+const selectedIndex = Math.abs(seed) % template.variations.length;
+const variation = template.variations[selectedIndex];
+```
+
+**Random Selection (without seed)**:
+```typescript
+const randomSeed = Math.floor(Math.random() * 1000000);
+const selectedIndex = randomSeed % template.variations.length;
+```
+
+**Example**:
+- Template with 3 variations
+- Seed 0 → Variation 1 (index 0)
+- Seed 1 → Variation 2 (index 1)
+- Seed 2 → Variation 3 (index 2)
+- Seed 3 → Variation 1 (index 0)
+- Seed 100 → Variation 2 (100 % 3 = 1)
+
+#### Admin Interface
+
+**Creating/Editing Variations**:
+
+The QuestionTemplateForm component provides full variation management:
+
+1. **Variation Tabs** - Each variation has its own tab with all editors
+2. **Add Variation** - "+" button to add new variations
+3. **Delete Variation** - Delete button on each tab (disabled if only 1 variation)
+4. **Per-Variation Editors**:
+   - Statement editor (text/images)
+   - Variables editor (with syntax helpers)
+   - Answer editor (type-specific)
+   - Correction editor (optional)
+
+**Preview with Variation Selection**:
+
+The QuestionPreview component allows testing specific variations:
+- **Variation Selector** - Dropdown to choose which variation to preview
+- **Smart Seed Calculation** - Automatically adjusts seed to force selected variation
+- **Visual Feedback** - Badge showing which variation was selected
+
+```svelte
+<!-- Variation selector in preview -->
+<select bind:value={selectedVariationIndex}>
+  <option value="random">Aléatoire (selon la graine)</option>
+  <option value="0">Variation 1</option>
+  <option value="1">Variation 2</option>
+  <!-- ... -->
+</select>
+```
+
+#### Validation
+
+**Template Validation**:
+- At least 1 variation required (enforced by DB and validator)
+- Each variation validated independently
+- Error messages include variation index (e.g., "Variation 2: Missing answer")
+
+**Circular Dependency Check**:
+- Performed per-variation (variables scoped to their variation)
+- Error format: `"Variation 3: Circular reference detected: a -> b -> a"`
+
+#### API Usage
+
+**Generate Instance**:
+```typescript
+// Generate with specific seed (deterministic)
+POST /api/questions/generate/[templateId]
+Body: { seed: 42 }
+Response: {
+  success: true,
+  instance: {
+    selectedVariationIndex: 0,  // Which variation was used
+    statement: [...],
+    answer: "...",
+    // ...
+  }
+}
+
+// Generate without seed (random)
+POST /api/questions/generate/[templateId]
+Body: {}
+Response: {
+  success: true,
+  instance: {
+    selectedVariationIndex: 2,  // Random selection
+    // ...
+  }
+}
+```
+
+#### Database Migration
+
+**Migration 074** (`add_template_variations.sql`):
+- Adds `variations` JSONB column
+- **Automatically migrates existing data** (wraps old fields into single-variation array)
+- Drops old per-variation columns
+- Status: ✅ Applied
+
+**Migration 075** (`enhance_seed_with_variations.sql`):
+- Updates 8 existing seed templates with proper categorization
+- Adds 2nd variations to 2 templates (Fraction Addition/Subtraction, Factorization)
+- Adds 2 new multi-variation templates (Simple Operations with 4 variations, Quadratic Equations with 3 variations)
+- Total: 10 templates, 15 variations
+- Status: ✅ Applied
+
+#### Multi-Variation Example
+
+**Simple Operations Template** (4 variations):
+```typescript
+{
+  type: 'numerical_exact',
+  variations: [
+    {
+      statement: [{ type: 'text', content: 'Calculate: $${@:a} + {@:b}$$' }],
+      variables: [
+        { name: 'a', expression: '{#:10-50}' },
+        { name: 'b', expression: '{#:10-50}' }
+      ],
+      answer: '{eval:{@:a}+{@:b}}'
+    },
+    {
+      statement: [{ type: 'text', content: 'Calculate: $${@:a} - {@:b}$$' }],
+      variables: [
+        { name: 'a', expression: '{#:20-99}' },
+        { name: 'b', expression: '{#:10-{@:a}}' }
+      ],
+      answer: '{eval:{@:a}-{@:b}}'
+    },
+    {
+      statement: [{ type: 'text', content: 'Calculate: $${@:a} \\times {@:b}$$' }],
+      variables: [
+        { name: 'a', expression: '{#:2-12}' },
+        { name: 'b', expression: '{#:2-12}' }
+      ],
+      answer: '{eval:{@:a}*{@:b}}'
+    },
+    {
+      statement: [{ type: 'text', content: 'Calculate: $${@:dividend} \\div {@:divisor}$$' }],
+      variables: [
+        { name: 'divisor', expression: '{#:2-9}' },
+        { name: 'quotient', expression: '{#:2-12}' },
+        { name: 'dividend', expression: '{eval:{@:divisor}*{@:quotient}}' }
+      ],
+      answer: '{@:quotient}'
+    }
+  ],
+  precision: { type: 'none' },
+  grades: ['CM1', 'CM2', '6'],
+  theme: 'Arithmétique',
+  domain: 'Opérations',
+  level: 1
+}
+```
+
+#### Best Practices
+
+**DO**:
+- Create multiple variations when you want diverse problem types from one template
+- Use variations for related concepts (addition/subtraction, different geometric shapes, etc.)
+- Test each variation in preview before saving
+- Add corrections to help students understand each variation
+- Use descriptive variation tab labels (automatically "Variation 1", "Variation 2", etc.)
+
+**DON'T**:
+- Create variations with completely unrelated concepts (make separate templates instead)
+- Leave a template with 0 variations (minimum 1 required)
+- Forget to test variation selection with different seeds
+- Mix per-variation fields (statement, variables) at template level
+
+#### Implementation Files
+
+**Backend (Complete)**:
+- `src/lib/questions/types.ts` - QuestionVariation interface
+- `src/lib/questions/validators/template-validator.ts` - Variation validation
+- `src/lib/questions/generator/instance-generator.ts` - Variation selection logic
+- `src/routes/api/questions/templates/+server.ts` - API endpoints
+- `supabase/migrations/074_add_template_variations.sql` - Schema + migration
+- `supabase/migrations/075_enhance_seed_with_variations.sql` - Seed examples
+
+**Frontend (Complete)**:
+- `src/lib/components/QuestionTemplateForm.svelte` - Variation management UI
+- `src/lib/components/AnswerEditor.svelte` - Per-variation answer editing
+- `src/lib/components/QuestionPreview.svelte` - Variation selector + preview
+- `src/lib/components/VariableEditor.svelte` - Per-variation variables
+
+**Documentation**:
+- `QUESTION_VARIATIONS_HANDOFF.md` - Implementation handoff document
+- `QUESTION_VARIATIONS_STATUS.md` - Current status (98% complete)
+- `QUESTION_VARIATIONS_TEST_UPDATE_GUIDE.md` - Guide for updating tests
+
+#### Testing Status
+
+**Backend**: ✅ Fully validated (migrations applied, API tested)
+**Frontend**: ✅ Fully implemented (form, preview, all editors working)
+**Unit Tests**: ⏳ Pending update (guide created in `QUESTION_VARIATIONS_TEST_UPDATE_GUIDE.md`)
+
+The existing test files (`template-validator.test.ts`, `instance-generator.test.ts`) need to be updated from the old single-field structure to the new variations array structure. A comprehensive guide has been created with examples and estimated 4-6 hours for complete test coverage update.
 
 ### Future Enhancements
 

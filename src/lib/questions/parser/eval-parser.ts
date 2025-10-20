@@ -11,10 +11,10 @@
  * Evaluation expression
  */
 export interface EvalExpr {
-  expression: string;  // Expression to evaluate
-  raw: string;         // Full match including {eval: and }
-  start: number;       // Start index in original string
-  end: number;         // End index
+  expression: string;     // Expression to evaluate
+  fullMatch: string;      // Full match including {eval: and }
+  startIndex: number;     // Start index in original string
+  endIndex: number;       // End index
 }
 
 /**
@@ -27,8 +27,8 @@ export interface EvalExpr {
  * ```typescript
  * const exprs = extractEvalExpressions('Answer: {eval:3+4} or {eval:{@:a}^2}');
  * // Returns: [
- * //   { expression: '3+4', raw: '{eval:3+4}', start: 8, end: 19 },
- * //   { expression: '{@:a}^2', raw: '{eval:{@:a}^2}', start: 23, end: 38 }
+ * //   { expression: '3+4', fullMatch: '{eval:3+4}', startIndex: 8, endIndex: 19 },
+ * //   { expression: '{@:a}^2', fullMatch: '{eval:{@:a}^2}', startIndex: 23, endIndex: 38 }
  * // ]
  * ```
  */
@@ -50,14 +50,14 @@ export function extractEvalExpressions(text: string): EvalExpr[] {
       }
 
       if (braceCount === 0) {
-        const raw = text.substring(i, j);
+        const fullMatch = text.substring(i, j);
         const expression = text.substring(i + 6, j - 1);
 
         exprs.push({
           expression,
-          raw,
-          start: i,
-          end: j
+          fullMatch,
+          startIndex: i,
+          endIndex: j
         });
 
         i = j;

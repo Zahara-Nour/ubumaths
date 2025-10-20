@@ -103,10 +103,8 @@ function parseDecimalByDigits(spec: string): RandomSpec {
  * Parse range format: {#:1-10} or {#:{@:min}-{@:max}} or {#:0.5-9.99:0.01}
  */
 function parseRange(spec: string): RandomSpec {
-  // Check for step notation
-  const parts = spec.split(':');
-  const rangeSpec = parts[0];
-  const stepStr = parts[1];
+  // Check for step notation (split at top level to avoid splitting inside {@:})
+  const [rangeSpec, stepStr] = splitAtTopLevel(spec, ':');
 
   // Parse min-max
   const { min, max } = parseMinMax(rangeSpec);
@@ -114,11 +112,14 @@ function parseRange(spec: string): RandomSpec {
   // Determine if decimal or integer
   const isDecimal = stepStr !== undefined || isNumberOrVariableDecimal(min) || isNumberOrVariableDecimal(max);
 
+  // Add default step for decimal ranges without explicit step
+  const step = stepStr ? parseFloat(stepStr) : (isDecimal ? 0.01 : undefined);
+
   return {
     type: isDecimal ? 'decimal' : 'integer',
     min,
     max,
-    step: stepStr ? parseFloat(stepStr) : undefined,
+    step,
     exclusions: []
   };
 }
@@ -161,7 +162,8 @@ function parseMinMax(rangeSpec: string): { min: NumberOrVariable; max: NumberOrV
     }
 
     // Check if this is a separator dash (not a negative sign)
-    if (char === '-' && !inVariable && i > 0) {
+    // Only treat as separator if we haven't found one yet
+    if (char === '-' && !inVariable && i > 0 && !foundSeparator) {
       // This is the separator
       foundSeparator = true;
       continue;
@@ -223,14 +225,21 @@ function parseExclusions(spec: string): Exclusion[] {
     const trimmed = part.trim();
 
     // Variable reference: {@:name}
-    if (trimmed.startsWith('{@:') && trimmed.endsWith('}')) {
+    if (trimmed.startsWith('{@:') && trimmed.endsWith('}') && !trimmed.includes('-')) {
       const varName = trimmed.slice(3, -1);
       exclusions.push({ type: 'variable', name: varName });
     }
-    // Range: 5-7 or {@:a}-{@:b}
-    else if (trimmed.includes('-') && !trimmed.startsWith('-')) {
-      const { min, max } = parseMinMax(trimmed);
-      exclusions.push({ type: 'range', min, max });
+    // Range: detect by trying to parse as range
+    // This handles: 5-7, -10--5, {@:a}-{@:b}, -10-20
+    else if (trimmed.includes('-')) {
+      try {
+        const { min, max } = parseMinMax(trimmed);
+        exclusions.push({ type: 'range', min, max });
+      } catch {
+        // If parseMinMax fails, treat as single value
+        const value = parseNumberOrVariable(trimmed);
+        exclusions.push({ type: 'value', value });
+      }
     }
     // Single value: 5 or -3
     else {
