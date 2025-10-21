@@ -42,6 +42,8 @@
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
+	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import GradeMultiSelect from '$lib/components/GradeMultiSelect.svelte';
 	import QuestionTemplateCard from '$lib/components/QuestionTemplateCard.svelte';
 	import {
@@ -409,6 +411,10 @@
 			const result = await createResponse.json();
 
 			if (result.success) {
+				// Invalidate caches to force refresh
+				questionCategoriesCache.invalidate();
+				questionTemplatesCache.invalidate();
+
 				toaster.success('Template dupliqué avec succès');
 				// Refresh page
 				goto('/dashboard/admin/questions', { invalidateAll: true });
@@ -446,6 +452,10 @@
 			const result = await response.json();
 
 			if (result.success) {
+				// Invalidate caches to force refresh
+				questionCategoriesCache.invalidate();
+				questionTemplatesCache.invalidate();
+
 				toaster.success('Template supprimé avec succès');
 				deleteConfirmOpen = false;
 				templateToDelete = null;

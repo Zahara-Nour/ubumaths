@@ -300,6 +300,251 @@ $effect(() => {
 - `Accordion.Content` : Retrait de `bg-card` (hérité du parent)
 - `Accordion.Item` : Suppression `border-b` avec `!border-b-0`
 
+## Cache des Templates de Questions
+
+### Architecture
+
+Le système utilise un **cache client-side** pour optimiser les performances et permettre un **fonctionnement offline** partiel.
+
+**Store** : `questionTemplates.svelte.ts`
+**API** : `/api/questions/templates/all`
+
+### Stratégie de chargement (par priorité)
+
+1. **Server-Side Rendering (SSR)** - Premier chargement
+   - `+page.server.ts` charge les templates depuis Supabase
+   - Hydratation du cache avec `initializeFromServer()`
+2. **Cache client** - Navigations suivantes
+   - Le cache persiste en mémoire pendant toute la session
+   - Aucun TTL - valide jusqu'à invalidation explicite
+3. **API fetch** - Fallback uniquement
+   - Uniquement si cache vide ET server load a échoué
+   - Un seul essai - évite les fetch en boucle si offline
+
+### Comportement Offline
+
+**Scénario** : WiFi coupé après avoir chargé la page
+
+✅ **Fonctionne** :
+
+- Test continu avec le cache en mémoire
+- Navigation entre questions
+- Génération d'instances depuis les templates cachés
+- Timer et affichage des questions (tout le code client)
+
+❌ **Ne fonctionne pas** :
+
+- Refresh de la page (pas de service worker)
+- Sauvegarde des résultats en base de données
+- Rechargement des templates (le server load échoue)
+
+⚠️ **IMPORTANT - Première visite** :
+
+**Il faut charger la page test AVEC une connexion Internet la première fois** :
+
+1. ✅ Connecté → Ouvrir `/automaths/panier` → Démarrer le test
+2. ✅ Les templates sont chargés et mis en cache
+3. ✅ Maintenant vous pouvez couper le WiFi
+4. ✅ Le test continue avec le cache
+
+Si vous coupez le WiFi AVANT de charger `/automaths/test`, vous verrez :
+
+```
+Error: Aucun template disponible.
+Veuillez vous reconnecter à Internet et recharger la page.
+```
+
+C'est normal - le cache ne peut pas se remplir si la connexion est coupée dès le départ.
+
+⚠️ **Erreurs attendues dans la console** :
+
+Quand vous êtes offline, vous verrez des erreurs réseau dans la console :
+
+```
+POST https://aqtijumsgfufoztohdua.supabase.co/auth/v1/token?grant_type=refresh_token
+net::ERR_INTERNET_DISCONNECTED
+```
+
+**C'est normal et ne casse rien** :
+
+- Ces erreurs viennent du client Supabase qui essaie de rafraîchir le token d'authentification
+- C'est un comportement **essentiel** quand on est online (maintient la session active)
+- Ces erreurs sont loggées par le navigateur lui-même (pas notre code)
+- Le test continue de fonctionner normalement avec le cache
+- Lorsque la connexion revient, le refresh fonctionnera à nouveau automatiquement
+
+**Pourquoi on ne peut pas les supprimer** :
+
+- Désactiver l'auto-refresh casserait l'UX quand online (sessions expirées)
+- Implémenter un service worker offline complet est hors scope pour le MVP
+- Les erreurs réseau du navigateur sont normales et informatives pour le développeur
+
+**Protection contre les erreurs en boucle** :
+
+```typescript
+// Store: skip fetch si erreur déjà présente
+if (!force && this.cache.error) {
+	console.log('[Templates Cache] Skipping fetch due to previous error (likely offline)');
+	return;
+}
+```
+
+**Logs améliorés** :
+
+```typescript
+// API: logs concis pour erreurs réseau
+if (errorMessage.includes('fetch failed') || errorMessage.includes('network')) {
+	console.error('[Templates API] Network error - likely offline');
+}
+```
+
+### Invalidation du cache
+
+**Quand invalider** :
+
+- Après création/modification/suppression d'un template (admin)
+- Après changement de statut (draft → published)
+
+**Comment** :
+
+```typescript
+import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+
+// Marquer comme invalide (refetch au prochain accès)
+questionTemplatesCache.invalidate();
+
+// Ou vider complètement
+questionTemplatesCache.clear();
+```
+
+### Méthodes utiles
+
+```typescript
+// Récupérer tous les templates
+const templates = questionTemplatesCache.templates;
+
+// Filtrer par catégorie complète
+const filtered = questionTemplatesCache.getTemplatesByCategory({
+	theme: 'Algèbre',
+	domain: 'Équations',
+	subdomain: null,
+	level: 1
+});
+
+// Trouver par ID
+const template = questionTemplatesCache.getTemplateById('abc-123');
+
+// Obtenir la hiérarchie
+const themes = questionTemplatesCache.getThemes();
+const domains = questionTemplatesCache.getDomains('Algèbre');
+const subdomains = questionTemplatesCache.getSubdomains('Algèbre', 'Équations');
+```
+
+## Système de Test (Modes d'utilisation)
+
+### Architecture
+
+Le système propose 3 modes de test :
+
+1. **Display** (Mode Révision) - Diaporama pour mémorisation sans scoring
+2. **Interactive** (Mode Quiz) - Validation des réponses avec scoring
+3. **Course** (Course aux nombres) - Toutes les questions affichées simultanément avec limite de temps
+
+### Mode Display - Fonctionnalités
+
+#### Interface
+
+- **Timer circulaire** : Compte à rebours visuel avec animations
+- **Questions une par une** : Navigation automatique après expiration du timer
+- **Contrôles pause/play** : Bouton FAB (Floating Action Button) en bas à droite
+- **Barre de progression** : "Question X sur Y" dans l'en-tête
+
+#### Ajustement dynamique des délais ⏱️
+
+Le mode Display permet d'**ajuster en temps réel** le délai d'affichage par type de question :
+
+**Interface** :
+
+- Deux boutons FAB circulaires à gauche du timer
+- **[−]** : Réduit le délai de 5 secondes
+- **[+]** : Augmente le délai de 5 secondes
+
+**Comportement** :
+
+1. **Ajustement immédiat** : Le delta s'ajoute/soustrait au timer actuel
+   - Ex: Timer affiche 15s, vous cliquez [+] → Timer passe à 20s instantanément
+2. **Persistance par type** : L'ajustement s'applique à toutes les questions du même type
+   - Type identifié par : `theme|domain|subdomain|level`
+   - Ex: Ajuster "Calcul Mental / Addition / CE2" n'affecte pas "Calcul Mental / Multiplication / CE2"
+3. **Limite minimum** : 5 secondes (bouton [−] désactivé si atteint)
+4. **Limite maximum** : Aucune (mais part de la base configurée dans le panier)
+
+**Architecture technique** :
+
+```typescript
+// TestDisplay.svelte
+delayAdjustments: Record<string, number>; // Ajustements par catégorie
+currentCategoryAdjustment: number; // Ajustement de la catégorie active
+
+// TestTimer.svelte
+durationAdjustment: number; // Delta à ajouter/soustraire du temps restant
+```
+
+**Exemple d'usage** :
+
+```
+Question 1 (Addition CE2) : 20s de base
+  → Clic [+] à 15s restantes
+  → Timer passe à 20s
+  → Ajustement mémorisé : +5s
+
+Question 2 (Addition CE2) : Démarre à 25s (20 + 5)
+Question 3 (Multiplication CE2) : Démarre à 20s (non affectée)
+Question 4 (Addition CE2) : Démarre à 25s (ajustement appliqué)
+```
+
+#### Navigation post-test
+
+À la fin du test, l'utilisateur choisit :
+
+- **Revoir tout** : Affichage de toutes les questions (énoncés uniquement) sur une page
+- **Voir corrections** : Affichage des énoncés + réponses + explications
+
+### Génération des instances
+
+**Lors du lancement du test** (`/automaths/test`) :
+
+1. Récupération des `CartItem[]` via URL params
+2. Pour chaque catégorie :
+   - Filtrage des templates correspondants
+   - Génération de N instances (N = quantity)
+   - Sélection aléatoire du template si plusieurs matchs
+3. Création de la session `TestSession`
+
+**Structure** :
+
+```typescript
+interface TestSession {
+	mode: TestMode;
+	categories: CartItem[];
+	instances: QuestionInstance[];
+	userAnswers: Map<number, AnswerData>;
+	startTime: number;
+	timeLimit?: number;
+	currentQuestionIndex: number;
+	isPaused: boolean;
+}
+```
+
+### Sauvegarde des résultats
+
+**Modes Interactive et Course** : Sauvegarde en base de données
+
+- Table `test_sessions` : Métadonnées de session (score, durée, etc.)
+- Table `test_answers` : Détail des réponses individuelles
+
+**Mode Display** : Pas de sauvegarde (mode révision sans scoring)
+
 ## Fonctionnalités futures (MVP+)
 
 ### 1. Export PDF

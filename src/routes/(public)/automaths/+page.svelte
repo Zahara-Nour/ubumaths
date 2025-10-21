@@ -4,9 +4,17 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import QuestionPreviewCard from '$lib/components/QuestionPreviewCard.svelte';
 	import CartFloatingButton from '$lib/components/CartFloatingButton.svelte';
+	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	// Initialize cache with server-loaded templates (SSR support)
+	$effect(() => {
+		if (data.templates && data.templates.length > 0) {
+			questionTemplatesCache.initializeFromServer(data.templates);
+		}
+	});
 
 	// Selected theme (starts as first theme if available)
 	let selectedTheme = $state<string | undefined>(undefined);
@@ -128,13 +136,18 @@
 							</p>
 						{:else}
 							<!-- Subdomain accordions -->
-							<Accordion.Root class="space-y-4" multiple>
+							<Accordion.Root
+								type="multiple"
+								class="space-y-4 rounded-lg border-border bg-background"
+							>
 								{#each availableSubdomains as subdomainGroup}
 									<Accordion.Item
 										value={subdomainGroup.subdomain || 'general'}
-										class="rounded-lg border !border-b-0 border-border bg-card"
+										class="rounded-lg border !border-b-0 bg-background"
 									>
-										<Accordion.Trigger class="px-4 hover:bg-muted/50 hover:no-underline">
+										<Accordion.Trigger
+											class="bg-background px-4 hover:bg-muted/50 hover:no-underline"
+										>
 											<div class="flex w-full items-center justify-between pr-4">
 												<div class="flex items-center gap-3">
 													<span class="font-medium text-foreground">
@@ -143,7 +156,7 @@
 												</div>
 											</div>
 										</Accordion.Trigger>
-										<Accordion.Content class="px-4 pt-2 pb-4">
+										<Accordion.Content class="bg-background px-4 pt-2 pb-4">
 											<!-- Questions gallery -->
 											<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 												{#each subdomainGroup.questions as question}

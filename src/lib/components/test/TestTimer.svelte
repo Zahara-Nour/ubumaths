@@ -1,21 +1,42 @@
 <!--
 	TestTimer Component
 	===================
-	Circular countdown timer with progress visualization
+	Circular timer with smooth progress visualization and warning effects
+
+	Modes:
+	- countdown: Count down from duration to 0 (with warning effects)
+	- stopwatch: Count up from 0 (no limit, blue color)
 
 	Features:
-	- Circular SVG progress indicator
-	- Time display (MM:SS format)
-	- Color changes based on remaining time (green → yellow → red)
+	- Circular SVG progress indicator with thick stroke
+	- Time display in seconds (using Pacifico font, black text on white background)
+	- Countdown mode: Continuous color gradient based on progress (green → yellow → orange → red)
+	- Stopwatch mode: Static blue/primary color
+	- Smooth millisecond-precision animation (60fps via requestAnimationFrame)
+	- Warning effects (countdown only) when ≤5 seconds remaining:
+	  * Progress bar pulse animation (scale 1.08) at each second
+	  * Ripple effect with thick fading border emanating from progress bar
+	- White circular background fill
 	- Pause support
-	- Auto-completes when time reaches 0
+	- Auto-completes when time reaches 0 (countdown only)
+	- Dynamic duration adjustment: Add/subtract time from running timer without reset
 
 	Props:
-	- duration: number - Total duration in seconds
-	- isPaused: boolean - Pause state
-	- size: 'sm' | 'md' | 'lg' - Timer size
-	- onComplete: () => void - Callback when timer reaches 0
-	- onTick: (remaining: number) => void - Optional callback every second
+	- mode: 'countdown' | 'stopwatch' - Timer mode (default: 'countdown')
+	- duration: number - Total duration in seconds (countdown only)
+	- isPaused: boolean - Pause state (default: false)
+	- size: 'sm' | 'md' | 'lg' - Timer size (default: 'md')
+	- onComplete: () => void - Callback when timer reaches 0 (countdown only)
+	- onTick: (value: number) => void - Optional callback every second (remaining for countdown, elapsed for stopwatch)
+	- durationAdjustment: number - Delta to add/subtract from remaining time (countdown only, default: 0)
+
+	Technical Details:
+	- Display uses Math.ceil() for countdown, Math.floor() for stopwatch
+	- Progress bar uses raw time for smooth animation
+	- Stopwatch mode shows elapsed time with format: <60s shows seconds, ≥60s shows MM:SS
+	- Ripple starts at exact edge of pulsed progress bar (calculated dynamically)
+	- Each ripple is uniquely keyed to ensure full animation completion
+	- High z-index (50) ensures visibility over other elements
 -->
 
 <script lang="ts">
@@ -23,45 +44,75 @@
 	import { cn } from '$lib/utils';
 
 	interface Props {
-		duration: number;
+		mode?: 'countdown' | 'stopwatch';
+		duration?: number;
 		isPaused?: boolean;
 		size?: 'sm' | 'md' | 'lg';
 		onComplete?: () => void;
-		onTick?: (remaining: number) => void;
+		onTick?: (value: number) => void;
+		durationAdjustment?: number; // Delta to add/subtract from remaining time (countdown only)
+		startTime?: number; // Start timestamp for stopwatch mode
 	}
 
-	let { duration, isPaused = false, size = 'md', onComplete, onTick }: Props = $props();
+	let {
+		mode = 'countdown',
+		duration = 0,
+		isPaused = false,
+		size = 'md',
+		onComplete,
+		onTick,
+		durationAdjustment = 0,
+		startTime
+	}: Props = $props();
 
 	// State
 	let remaining = $state(duration);
+	let elapsed = $state(0); // For stopwatch mode
 	let initialDuration = $state(duration); // Store initial duration for progress calculation
 	let animationFrame = $state<number | null>(null);
 	let hasCompleted = $state(false);
 	let lastTimestamp = $state<number | null>(null);
+	let triggerPulse = $state(false); // Trigger pulse animation once per second (countdown only)
+	let rippleKey = $state(0); // Unique key for each ripple to force re-animation
 
 	// Derived values
-	let progress = $derived((remaining / initialDuration) * 100);
-	let minutes = $derived(Math.floor(remaining / 60));
-	let seconds = $derived(Math.floor(remaining % 60));
-	let timeDisplay = $derived(
-		`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-	);
+	let displayValue = $derived.by(() => {
+		if (mode === 'countdown') {
+			return Math.ceil(remaining); // Rounds up so timer shows 1 second until truly at 0
+		} else {
+			const elapsedSeconds = Math.floor(elapsed);
+			return elapsedSeconds;
+		}
+	});
 
-	// Color based on remaining time percentage
-	let colorClass = $derived(
-		progress > 50
-			? 'text-green-600 dark:text-green-500'
-			: progress > 20
-				? 'text-yellow-600 dark:text-yellow-500'
-				: 'text-red-600 dark:text-red-500'
-	);
+	let progress = $derived.by(() => {
+		if (mode === 'countdown') {
+			return Math.max(0, Math.min(100, (remaining / initialDuration) * 100));
+		} else {
+			// Stopwatch shows 25% progress (static)
+			return 25;
+		}
+	});
 
-	let strokeColor = $derived(
-		progress > 50
-			? 'stroke-green-600 dark:stroke-green-500'
-			: progress > 20
-				? 'stroke-yellow-600 dark:stroke-yellow-500'
-				: 'stroke-red-600 dark:stroke-red-500'
+	let timeDisplay = $derived.by(() => {
+		if (mode === 'countdown') {
+			return displayValue.toString();
+		} else {
+			// Format: <60s shows seconds, ≥60s shows MM:SS
+			const seconds = displayValue;
+			if (seconds < 60) {
+				return seconds.toString();
+			}
+			const mins = Math.floor(seconds / 60);
+			const secs = seconds % 60;
+			return `${mins}:${secs.toString().padStart(2, '0')}`;
+		}
+	});
+
+	// Color: countdown uses gradient, stopwatch uses primary color
+	let hueValue = $derived(Math.max(0, Math.min(120, (progress / 100) * 120)));
+	let strokeColorStyle = $derived(
+		mode === 'countdown' ? `hsl(${hueValue}, 80%, 50%)` : 'hsl(var(--primary))'
 	);
 
 	// Size configurations
@@ -69,22 +120,22 @@
 		sm: {
 			containerSize: 'h-16 w-16',
 			svgSize: 64,
-			strokeWidth: 4,
-			textSize: 'text-xs',
+			strokeWidth: 6,
+			textSize: 'text-lg',
 			radius: 28
 		},
 		md: {
 			containerSize: 'h-32 w-32',
 			svgSize: 128,
-			strokeWidth: 8,
-			textSize: 'text-xl',
-			radius: 56
+			strokeWidth: 16,
+			textSize: 'text-4xl',
+			radius: 48
 		},
 		lg: {
 			containerSize: 'h-48 w-48',
 			svgSize: 192,
-			strokeWidth: 12,
-			textSize: 'text-3xl',
+			strokeWidth: 18,
+			textSize: 'text-6xl',
 			radius: 84
 		}
 	};
@@ -93,36 +144,75 @@
 	const circumference = $derived(2 * Math.PI * config.radius);
 	const strokeDashoffset = $derived(circumference - (progress / 100) * circumference);
 
+	// Calculate ripple initial scale to start exactly at the pulsed progress bar edge
+	// Outer radius of progress bar = radius + strokeWidth/2
+	// When pulsed at 1.08, outer radius = (radius + strokeWidth/2) * 1.08
+	// Ripple container radius = svgSize / 2
+	const rippleInitialScale = $derived(
+		((config.radius + config.strokeWidth / 2) * 1.08) / (config.svgSize / 2)
+	);
+
 	/**
 	 * Update timer
 	 */
 	function updateTimer(timestamp: number) {
 		// Skip if paused or completed
-		if (isPaused || hasCompleted) {
+		if (isPaused || (mode === 'countdown' && hasCompleted)) {
 			lastTimestamp = null;
+			return;
+		}
+
+		// Initialize lastTimestamp on first frame
+		if (!lastTimestamp) {
+			lastTimestamp = timestamp;
+			animationFrame = requestAnimationFrame(updateTimer);
 			return;
 		}
 
 		// Calculate delta time
-		const deltaTime = lastTimestamp ? (timestamp - lastTimestamp) / 1000 : 0;
+		const deltaTime = (timestamp - lastTimestamp) / 1000;
 		lastTimestamp = timestamp;
 
-		// Update remaining time
-		const newRemaining = Math.max(0, remaining - deltaTime);
+		if (mode === 'countdown') {
+			// Update remaining time
+			const newRemaining = Math.max(0, remaining - deltaTime);
 
-		// Check if we crossed a second boundary
-		if (Math.floor(newRemaining) < Math.floor(remaining)) {
-			onTick?.(Math.floor(newRemaining));
-		}
+			// Check if we crossed a second boundary
+			if (Math.floor(newRemaining) < Math.floor(remaining)) {
+				onTick?.(Math.floor(newRemaining));
+				// Trigger pulse effect when 5 seconds or less
+				if (newRemaining <= 5 && newRemaining > 0) {
+					triggerPulse = true;
+					rippleKey++; // Increment key to force new ripple animation
+				}
+			}
 
-		remaining = newRemaining;
+			// Stop pulse effect when no longer in warning zone
+			if (newRemaining > 5 || newRemaining <= 0) {
+				triggerPulse = false;
+			}
 
-		// Check completion
-		if (remaining <= 0 && !hasCompleted) {
-			hasCompleted = true;
-			lastTimestamp = null;
-			onComplete?.();
-			return;
+			remaining = newRemaining;
+
+			// Check completion
+			if (remaining <= 0) {
+				if (!hasCompleted) {
+					hasCompleted = true;
+					lastTimestamp = null;
+					onComplete?.();
+				}
+				return;
+			}
+		} else {
+			// Stopwatch mode: count up
+			const newElapsed = elapsed + deltaTime;
+
+			// Check if we crossed a second boundary
+			if (Math.floor(newElapsed) > Math.floor(elapsed)) {
+				onTick?.(Math.floor(newElapsed));
+			}
+
+			elapsed = newElapsed;
 		}
 
 		// Continue animation
@@ -140,11 +230,15 @@
 	}
 
 	/**
-	 * Reset timer when duration changes
+	 * Reset timer when duration or startTime changes
 	 */
 	$effect(() => {
-		// Track duration changes
-		duration;
+		// Track changes
+		if (mode === 'countdown') {
+			duration;
+		} else {
+			startTime;
+		}
 
 		// Update state without tracking
 		untrack(() => {
@@ -154,11 +248,19 @@
 				animationFrame = null;
 			}
 
-			// Reset state
-			initialDuration = duration; // Update initial duration for new timer
-			remaining = duration;
-			lastTimestamp = null;
-			hasCompleted = false;
+			if (mode === 'countdown') {
+				// Reset countdown state
+				const adjustedDuration = Math.max(1, duration + durationAdjustment);
+				initialDuration = adjustedDuration;
+				remaining = adjustedDuration;
+				lastTimestamp = null;
+				hasCompleted = false;
+				lastAdjustment = durationAdjustment;
+			} else {
+				// Reset stopwatch state
+				elapsed = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+				lastTimestamp = null;
+			}
 
 			// Restart if not paused
 			if (!isPaused) {
@@ -192,6 +294,38 @@
 	});
 
 	/**
+	 * Handle duration adjustment (add/subtract time from current remaining) - countdown only
+	 */
+	let lastAdjustment = $state(0);
+	$effect(() => {
+		if (mode !== 'countdown') return;
+
+		// Track adjustment changes
+		const currentAdjustment = durationAdjustment;
+
+		untrack(() => {
+			// Calculate delta from last adjustment
+			const delta = currentAdjustment - lastAdjustment;
+
+			if (delta !== 0 && !hasCompleted) {
+				// Add delta to remaining time (can be negative)
+				remaining = Math.max(0, remaining + delta);
+
+				// Also update initial duration proportionally to maintain progress accuracy
+				initialDuration = Math.max(1, initialDuration + delta);
+
+				// If we went to 0, complete the timer
+				if (remaining <= 0 && !hasCompleted) {
+					hasCompleted = true;
+					onComplete?.();
+				}
+			}
+
+			lastAdjustment = currentAdjustment;
+		});
+	});
+
+	/**
 	 * Cleanup on unmount
 	 */
 	onMount(() => {
@@ -210,43 +344,70 @@
 	});
 </script>
 
-<div class="timer-container flex flex-col items-center justify-center">
+<div class="timer-container flex flex-col items-center justify-center" style="z-index: 50;">
 	<!-- SVG Circular Progress -->
-	<div class={cn('relative', config.containerSize)}>
+	<div class={cn('relative', config.containerSize)} style="overflow: visible;">
+		<!-- Ripple effect (countdown only, triggers once per second when <= 5s) -->
+		{#if mode === 'countdown' && triggerPulse}
+			{#key rippleKey}
+				<div class="ripple-container absolute inset-0 flex items-center justify-center">
+					<div class="ripple" style="--ripple-initial-scale: {rippleInitialScale};"></div>
+				</div>
+			{/key}
+		{/if}
+
 		<svg
 			class="-rotate-90 transform"
 			width={config.svgSize}
 			height={config.svgSize}
 			viewBox="0 0 {config.svgSize} {config.svgSize}"
+			style="overflow: visible;"
 		>
-			<!-- Background circle -->
-			<circle
-				cx={config.svgSize / 2}
-				cy={config.svgSize / 2}
-				r={config.radius}
-				stroke="currentColor"
-				stroke-width={config.strokeWidth}
-				fill="none"
-				class="text-muted opacity-20"
-			/>
+			{#key mode === 'countdown' && triggerPulse ? rippleKey : 0}
+				<!-- White background fill -->
+				<circle
+					cx={config.svgSize / 2}
+					cy={config.svgSize / 2}
+					r={config.radius + config.strokeWidth / 2}
+					fill="white"
+					class={mode === 'countdown' && triggerPulse ? 'progress-pulse' : ''}
+				/>
 
-			<!-- Progress circle -->
-			<circle
-				cx={config.svgSize / 2}
-				cy={config.svgSize / 2}
-				r={config.radius}
-				stroke="currentColor"
-				stroke-width={config.strokeWidth}
-				fill="none"
-				stroke-linecap="round"
-				class={cn('transition-all duration-300', strokeColor)}
-				style="stroke-dasharray: {circumference}; stroke-dashoffset: {strokeDashoffset};"
-			/>
+				<!-- Background circle -->
+				<circle
+					cx={config.svgSize / 2}
+					cy={config.svgSize / 2}
+					r={config.radius}
+					stroke="currentColor"
+					stroke-width={config.strokeWidth}
+					fill="none"
+					class={cn(
+						'text-muted opacity-20',
+						mode === 'countdown' && triggerPulse ? 'progress-pulse' : ''
+					)}
+				/>
+
+				<!-- Progress circle -->
+				<circle
+					cx={config.svgSize / 2}
+					cy={config.svgSize / 2}
+					r={config.radius}
+					stroke={strokeColorStyle}
+					stroke-width={config.strokeWidth}
+					fill="none"
+					stroke-linecap="round"
+					class={mode === 'countdown' && triggerPulse ? 'progress-pulse' : ''}
+					style="stroke-dasharray: {circumference}; stroke-dashoffset: {strokeDashoffset}; transition: stroke-dashoffset 0.1s linear, stroke 0.3s ease;"
+				/>
+			{/key}
 		</svg>
 
 		<!-- Time display (centered) -->
-		<div class="absolute inset-0 flex items-center justify-center">
-			<span class={cn('font-mono font-bold tabular-nums', config.textSize, colorClass)}>
+		<div class="absolute inset-0 z-10 flex items-center justify-center">
+			<span
+				class={cn('font-bold', config.textSize)}
+				style="color: black; font-family: 'Pacifico', cursive;"
+			>
 				{timeDisplay}
 			</span>
 		</div>
@@ -261,5 +422,64 @@
 <style>
 	.timer-container {
 		user-select: none;
+	}
+
+	/* Ripple effect container */
+	.ripple-container {
+		pointer-events: none;
+		z-index: 0;
+	}
+
+	/* Ripple circle with thick fading border */
+	.ripple {
+		position: absolute;
+		border-radius: 50%;
+		width: 100%;
+		height: 100%;
+		/* Thick border with gradient fade using box-shadow */
+		box-shadow:
+			0 0 0 3px rgba(239, 68, 68, 0.9),
+			0 0 0 6px rgba(239, 68, 68, 0.7),
+			0 0 0 10px rgba(239, 68, 68, 0.5),
+			0 0 0 14px rgba(239, 68, 68, 0.3),
+			0 0 0 18px rgba(239, 68, 68, 0.15),
+			0 0 0 22px rgba(239, 68, 68, 0.05);
+		animation: ripple 1.5s ease-out;
+	}
+
+	@keyframes ripple {
+		0% {
+			transform: scale(var(--ripple-initial-scale, 1.08));
+			opacity: 0;
+		}
+		15% {
+			opacity: 1;
+		}
+		85% {
+			opacity: 0.6;
+		}
+		100% {
+			transform: scale(1.6);
+			opacity: 0;
+		}
+	}
+
+	/* Pulse animation for progress circle - scale only, no glow */
+	.progress-pulse {
+		animation: progressPulse 0.4s ease-out;
+		transform-origin: center;
+		transform-box: fill-box;
+	}
+
+	@keyframes progressPulse {
+		0% {
+			transform: scale(1);
+		}
+		50% {
+			transform: scale(1.08);
+		}
+		100% {
+			transform: scale(1);
+		}
 	}
 </style>

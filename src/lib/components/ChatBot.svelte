@@ -141,9 +141,9 @@
 	}
 
 	// Refs for DOM elements
-	let messagesContainer: HTMLDivElement;
-	let textareaElement: HTMLTextAreaElement;
-	let fileInputElement: HTMLInputElement;
+	let messagesContainer: HTMLDivElement | undefined;
+	let textareaElement: HTMLTextAreaElement | undefined;
+	let fileInputElement: HTMLInputElement | undefined;
 
 	// Constants for image validation
 	const MAX_FILE_SIZE_MB = 4; // 4MB for base64
@@ -483,8 +483,10 @@
 	// Auto-resize textarea
 	function handleInput(e: Event) {
 		const target = e.target as HTMLTextAreaElement;
-		target.style.height = 'auto';
-		target.style.height = target.scrollHeight + 'px';
+		if (target && target.style) {
+			target.style.height = 'auto';
+			target.style.height = target.scrollHeight + 'px';
+		}
 	}
 </script>
 
@@ -494,8 +496,18 @@
 		class="flex items-center gap-3 rounded-t-lg border-b border-border p-4 text-primary-foreground"
 	>
 		<div class="flex-1">
-			<h2 class="text-xl font-semibold">{personality.name}</h2>
-			<p class="text-sm opacity-90">{personality.description}</p>
+			<h2
+				class="font-semibold"
+				style="font-size: calc(1.25rem * var(--font-scale)); line-height: calc(1.75rem * var(--font-scale));"
+			>
+				{personality.name}
+			</h2>
+			<p
+				class="opacity-90"
+				style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
+			>
+				{personality.description}
+			</p>
 		</div>
 		<Button
 			variant="ghost"
@@ -520,10 +532,18 @@
 				<div class="space-y-4">
 					<div class="text-6xl">{personality.avatar}</div>
 					<div class="text-muted-foreground">
-						<p class="text-lg font-medium">
+						<p
+							class="font-medium"
+							style="font-size: calc(1.125rem * var(--font-scale)); line-height: calc(1.75rem * var(--font-scale));"
+						>
 							Cornegidouille ! Bienvenue dans ma salle de classe pataphysique !
 						</p>
-						<p class="mt-1 text-sm">Posez-moi vos questions mathématiques... si vous l'osez !</p>
+						<p
+							class="mt-1"
+							style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
+						>
+							Posez-moi vos questions mathématiques... si vous l'osez !
+						</p>
 					</div>
 				</div>
 			</div>
@@ -572,7 +592,10 @@
 
 					<!-- Display text content -->
 					{#if getMessageText(message.content)}
-						<div class="text-sm leading-relaxed break-words">
+						<div
+							class="leading-relaxed break-words"
+							style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
+						>
 							{#if message.role === 'assistant'}
 								<!--
 									Assistant messages: render with MathDisplay for LaTeX support
@@ -600,9 +623,10 @@
 					{/if}
 
 					<div
-						class="text-right text-xs {message.role === 'user'
+						class="text-right {message.role === 'user'
 							? 'text-primary-foreground/70'
 							: 'text-muted-foreground'}"
+						style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
 					>
 						{new Date(message.timestamp).toLocaleTimeString('fr-FR', {
 							hour: '2-digit',
@@ -647,7 +671,11 @@
 								style="animation-delay: 0.4s"
 							></span>
 						</div>
-						<span class="text-sm text-muted-foreground">Le Père Ubu réfléchit...</span>
+						<span
+							class="text-muted-foreground"
+							style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
+							>Le Père Ubu réfléchit...</span
+						>
 					</div>
 				</div>
 			</div>
@@ -756,6 +784,7 @@
 				onkeydown={handleKeydown}
 				oninput={handleInput}
 				class="max-h-[200px] min-h-[128px] resize-none"
+				style="font-size: calc(1rem * var(--font-scale)); line-height: calc(1.5rem * var(--font-scale));"
 				rows={1}
 			/>
 			<Button
@@ -770,7 +799,10 @@
 
 		<!-- Image count indicator -->
 		{#if attachedImages.length > 0}
-			<div class="mt-2 text-xs text-muted-foreground">
+			<div
+				class="mt-2 text-muted-foreground"
+				style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
+			>
 				{attachedImages.length} / {MAX_IMAGES} image{attachedImages.length > 1 ? 's' : ''} jointe{attachedImages.length >
 				1
 					? 's'

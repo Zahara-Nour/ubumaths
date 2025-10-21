@@ -44,7 +44,8 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 
 	if (!templates || templates.length === 0) {
 		return {
-			hierarchy: []
+			hierarchy: [],
+			templates: [] // Empty array for cache initialization
 		};
 	}
 
@@ -115,6 +116,7 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 	return {
 		hierarchy,
 		themes,
-		totalQuestions: questionsWithPreviews.length
+		totalQuestions: questionsWithPreviews.length,
+		templates: templates as QuestionTemplate[] // Raw templates for cache initialization
 	};
 };

@@ -5,9 +5,11 @@
 
 	Features:
 	- Display questions one by one using QuestionDisplay (interactive mode)
+	- Countdown timer per question (from CartItem.delay)
 	- User answers and validates
 	- No correction shown immediately (stored for later)
-	- Auto-advance to next question after validation (1s delay for feedback)
+	- Auto-advance to next question after validation (300ms delay)
+	- If timer expires before answer: marks as incorrect and advances
 	- At the end: show TestResults with score and corrections
 
 	Props:
@@ -18,12 +20,14 @@
 
 <script lang="ts">
 	import type { TestSession, TestResult, TestAnswerResult } from '$lib/types/test';
-	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
+	import type { AnswerData } from '$lib/types/question-display';
 	import QuestionDisplay from '$lib/components/QuestionDisplay.svelte';
 	import TestResults from './TestResults.svelte';
+	import TestTimer from './TestTimer.svelte';
 	import { Progress } from '$lib/components/ui/progress';
 	import { Button } from '$lib/components/ui/button';
 	import { ArrowLeft } from 'lucide-svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	interface Props {
 		session: TestSession;
@@ -35,12 +39,26 @@
 
 	// State
 	let currentIndex = $state(0);
-	let answers = $state<Map<number, AnswerData>>(new Map());
+	let answers = new SvelteMap<number, AnswerData>();
 	let isCompleted = $state(false);
 	let testResult = $state<TestResult | null>(null);
+	let timerKey = $state(0); // Key to force timer remount when question changes
+
+	// Build a map of instance index to BASE delay (without adjustments)
+	// Each CartItem may have multiple instances (quantity > 1)
+	let instanceBaseDelays = $derived.by(() => {
+		const delays: number[] = [];
+		for (const item of session.categories) {
+			for (let i = 0; i < item.quantity; i++) {
+				delays.push(item.delay);
+			}
+		}
+		return delays;
+	});
 
 	// Derived
 	let currentInstance = $derived(session.instances[currentIndex]);
+	let currentDelay = $derived(instanceBaseDelays[currentIndex] || 20);
 	let progressPercentage = $derived(((currentIndex + 1) / session.instances.length) * 100);
 	let isLastQuestion = $derived(currentIndex === session.instances.length - 1);
 
@@ -51,16 +69,43 @@
 		// Store answer
 		answers.set(currentIndex, answerData);
 
-		// Advance to next question after a short delay (for visual feedback)
+		// Advance to next question after a short delay (smooth transition)
 		setTimeout(() => {
-			if (isLastQuestion) {
-				// Test completed - calculate results
-				completeTest();
-			} else {
-				// Move to next question
-				currentIndex += 1;
-			}
-		}, 1000);
+			advanceToNextQuestion();
+		}, 300);
+	}
+
+	/**
+	 * Handle timer completion - time expired without answer
+	 */
+	function handleTimerComplete() {
+		// Mark question as unanswered (time expired)
+		if (!answers.has(currentIndex)) {
+			answers.set(currentIndex, {
+				value: '',
+				isCorrect: false,
+				timeSpent: currentDelay,
+				attempts: 0,
+				submittedAt: new Date().toISOString()
+			});
+		}
+
+		// Advance to next question
+		advanceToNextQuestion();
+	}
+
+	/**
+	 * Advance to next question or complete test
+	 */
+	function advanceToNextQuestion() {
+		if (isLastQuestion) {
+			// Test completed - calculate results
+			completeTest();
+		} else {
+			// Move to next question
+			currentIndex += 1;
+			timerKey += 1; // Force timer remount
+		}
 	}
 
 	/**
@@ -116,10 +161,11 @@
 	function handleRestart() {
 		// Reset state
 		currentIndex = 0;
-		answers = new Map();
+		answers.clear();
 		isCompleted = false;
 		testResult = null;
 		session.startTime = Date.now();
+		timerKey = 0;
 	}
 </script>
 
@@ -140,6 +186,11 @@
 						</p>
 					</div>
 				</div>
+
+				<!-- Countdown Timer -->
+				{#key timerKey}
+					<TestTimer duration={currentDelay} size="md" onComplete={handleTimerComplete} />
+				{/key}
 			</div>
 
 			<!-- Progress bar -->
@@ -147,14 +198,17 @@
 		</div>
 
 		<!-- Question Display -->
-		<QuestionDisplay
-			mode="interactive"
-			instance={currentInstance}
-			onAnswerSubmit={handleAnswerSubmit}
-			size="lg"
-			showConfetti={false}
-			allowMultipleAttempts={false}
-		/>
+		{#key currentIndex}
+			<QuestionDisplay
+				mode="interactive"
+				instance={currentInstance}
+				onAnswerSubmit={handleAnswerSubmit}
+				size="lg"
+				showConfetti={false}
+				showValidationFeedback={false}
+				allowMultipleAttempts={false}
+			/>
+		{/key}
 	</div>
 {:else if testResult}
 	<!-- Show results -->

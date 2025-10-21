@@ -55,6 +55,7 @@
 		size?: 'sm' | 'md' | 'lg';
 		showCorrectionOnWrong?: boolean;
 		showConfetti?: boolean;
+		showValidationFeedback?: boolean;
 		allowMultipleAttempts?: boolean;
 		maxAttempts?: number;
 	}
@@ -69,6 +70,7 @@
 		size = 'md',
 		showCorrectionOnWrong = false,
 		showConfetti = true,
+		showValidationFeedback = true,
 		allowMultipleAttempts = true,
 		maxAttempts = 0
 	}: Props = $props();
@@ -118,7 +120,7 @@
 
 	const isScrollable = $derived(Math.max(frontHeight, backHeight) > maxViewportHeight);
 
-	const canFlip = $derived(mode === 'flashcard' || (mode === 'interactive' && isSubmitted));
+	const canFlip = $derived(mode === 'flashcard');
 
 	const canSubmit = $derived(mode === 'interactive' && !isSubmitted && hasValidInput());
 
@@ -440,18 +442,15 @@
 
 								<!-- Submit Button -->
 								{#if !isSubmitted}
-									<Button
-										onclick={handleSubmit}
-										disabled={!canSubmit || isSubmitting}
-										class="mt-4 w-full"
-										size="lg"
-									>
-										{isSubmitting ? 'Validation...' : 'Valider'}
-									</Button>
+									<div class="mt-4 flex justify-center">
+										<Button onclick={handleSubmit} disabled={!canSubmit || isSubmitting} size="lg">
+											{isSubmitting ? 'Validation...' : 'Valider'}
+										</Button>
+									</div>
 								{/if}
 
 								<!-- Validation Result -->
-								{#if isSubmitted}
+								{#if isSubmitted && showValidationFeedback}
 									<div
 										class={cn(
 											'mt-4 flex items-center gap-3 rounded-lg border-2 p-4',
@@ -488,16 +487,18 @@
 					</Card.Content>
 				</Card.Root>
 
-				<!-- Flip Button -->
-				<button
-					class="flip-button"
-					onclick={handleFlip}
-					disabled={!canFlip}
-					aria-label={isFlipped ? 'Retour à la question' : 'Voir la correction'}
-					title={isFlipped ? 'Retour à la question' : 'Voir la correction'}
-				>
-					<RotateCw class="h-5 w-5" />
-				</button>
+				<!-- Flip Button (only in flashcard mode) -->
+				{#if mode === 'flashcard'}
+					<button
+						class="flip-button"
+						onclick={handleFlip}
+						disabled={!canFlip}
+						aria-label={isFlipped ? 'Retour à la question' : 'Voir la correction'}
+						title={isFlipped ? 'Retour à la question' : 'Voir la correction'}
+					>
+						<RotateCw class="h-5 w-5" />
+					</button>
+				{/if}
 			</div>
 
 			<!-- ===================== BACK FACE ===================== -->
@@ -584,15 +585,17 @@
 					</Card.Content>
 				</Card.Root>
 
-				<!-- Flip Button (Back) -->
-				<button
-					class="flip-button"
-					onclick={handleFlip}
-					aria-label="Retour à la question"
-					title="Retour à la question"
-				>
-					<RotateCw class="h-5 w-5" />
-				</button>
+				<!-- Flip Button (Back - only in flashcard mode) -->
+				{#if mode === 'flashcard'}
+					<button
+						class="flip-button"
+						onclick={handleFlip}
+						aria-label="Retour à la question"
+						title="Retour à la question"
+					>
+						<RotateCw class="h-5 w-5" />
+					</button>
+				{/if}
 			</div>
 		</div>
 	</div>

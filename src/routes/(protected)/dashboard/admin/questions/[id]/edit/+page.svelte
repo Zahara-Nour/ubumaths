@@ -30,6 +30,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { ArrowLeft } from 'lucide-svelte';
+	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
+	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -50,6 +52,10 @@
 			const result = await response.json();
 
 			if (result.success) {
+				// Invalidate caches to force refresh
+				questionCategoriesCache.invalidate();
+				questionTemplatesCache.invalidate();
+
 				toaster.success('Question mise à jour avec succès');
 				goto('/dashboard/admin/questions');
 			} else {

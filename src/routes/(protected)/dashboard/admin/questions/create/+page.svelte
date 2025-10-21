@@ -28,6 +28,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { ArrowLeft } from 'lucide-svelte';
 	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
+	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 
 	let isSubmitting = $state(false);
 
@@ -48,6 +49,7 @@
 			if (result.success) {
 				// Invalidate category cache to force refresh
 				questionCategoriesCache.invalidate();
+				questionTemplatesCache.invalidate();
 
 				// Check if level was auto-adjusted
 				if (result.levelAdjusted) {

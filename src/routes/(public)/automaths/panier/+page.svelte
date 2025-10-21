@@ -4,6 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { ShoppingCart, Trash2, ArrowLeft, FileDown, Rocket, Share2 } from 'lucide-svelte';
 	import { questionCart } from '$lib/stores/questionCart.svelte';
+	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import CartQuestionCard from '$lib/components/CartQuestionCard.svelte';
 	import TestModeDialog from '$lib/components/test/TestModeDialog.svelte';
 	import { generateInstance } from '$lib/questions/generator/instance-generator';
@@ -12,6 +13,19 @@
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	// Initialize cache with server-loaded templates (SSR support)
+	// Or fetch from API if server load failed (e.g., offline after navigation)
+	$effect(() => {
+		if (data.templates && data.templates.length > 0) {
+			questionTemplatesCache.initializeFromServer(data.templates);
+		} else if (questionTemplatesCache.isEmpty) {
+			// Try to fetch from API if cache is empty and server load failed
+			questionTemplatesCache.fetchTemplates().catch((err) => {
+				console.error('Failed to fetch templates for cache:', err);
+			});
+		}
+	});
 
 	// Reactive cart state
 	let cartItems = $derived(questionCart.allItems);
@@ -27,8 +41,14 @@
 	 */
 	let cartItemsWithInstances = $derived(
 		cartItems.map((item) => {
+			// Use cache if available, fallback to data.templates
+			const templates =
+				questionTemplatesCache.templates.length > 0
+					? questionTemplatesCache.templates
+					: data.templates;
+
 			// Find all templates matching this category
-			const matchingTemplates = data.templates.filter(
+			const matchingTemplates = templates.filter(
 				(t) =>
 					t.theme === item.category.theme &&
 					t.domain === item.category.domain &&

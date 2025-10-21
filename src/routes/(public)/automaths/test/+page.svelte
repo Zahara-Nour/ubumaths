@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { generateInstance } from '$lib/questions/generator/instance-generator';
+	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import type { PageData } from './$types';
 	import type { CartItem } from '$lib/stores/questionCart.svelte';
 	import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
@@ -58,8 +59,18 @@
 			const instances: QuestionInstance[] = [];
 
 			for (const cartItem of categories) {
-				// Find matching templates for this category
-				const matchingTemplates = data.templates.filter(
+				// Find matching templates from cache (or fallback to data.templates)
+				const usingCache = questionTemplatesCache.templates.length > 0;
+				const templates = usingCache ? questionTemplatesCache.templates : data.templates;
+
+				// If we have no templates at all (offline + no cache), fail early
+				if (templates.length === 0) {
+					throw new Error(
+						'Aucun template disponible. Veuillez vous reconnecter à Internet et recharger la page.'
+					);
+				}
+
+				const matchingTemplates = templates.filter(
 					(t) =>
 						t.theme === cartItem.category.theme &&
 						t.domain === cartItem.category.domain &&
@@ -69,10 +80,20 @@
 
 				if (matchingTemplates.length === 0) {
 					console.warn(
-						`No templates found for category: ${cartItem.category.theme}/${cartItem.category.domain}`
+						`No templates found for category: ${cartItem.category.theme}/${cartItem.category.domain}/${cartItem.category.subdomain || 'null'} (level ${cartItem.category.level})`
+					);
+					console.warn(`Available templates count: ${templates.length}`);
+					console.warn(
+						`Searching in:`,
+						templates.map((t) => `${t.theme}/${t.domain}/${t.subdomain || 'null'} (L${t.level})`)
 					);
 					continue;
 				}
+
+				// Log success when templates are found
+				console.log(
+					`✓ Found ${matchingTemplates.length} template(s) for ${cartItem.category.theme}/${cartItem.category.domain}/${cartItem.category.subdomain || 'null'} (level ${cartItem.category.level}) - Source: ${usingCache ? 'cache' : 'server data'}`
+				);
 
 				// Generate required quantity of instances
 				for (let i = 0; i < cartItem.quantity; i++) {
@@ -158,7 +179,27 @@
 	}
 
 	// Initialize on mount
-	onMount(() => {
+	onMount(async () => {
+		// Initialize cache with server-loaded templates (SSR support)
+		// Priority: server data > existing cache > API fetch (only if necessary)
+
+		// First: use server-loaded templates (from SSR)
+		if (data.templates && data.templates.length > 0) {
+			questionTemplatesCache.initializeFromServer(data.templates);
+		}
+		// Second: only fetch from API if cache is completely empty AND server didn't load data
+		// This prevents fetch loops when offline
+		else if (questionTemplatesCache.isEmpty && !questionTemplatesCache.error) {
+			// Wait for fetch to complete before initializing test
+			// This ensures templates are available (or error is set)
+			await questionTemplatesCache.fetchTemplates();
+		}
+
+		// Initialize test after cache is ready
+		// At this point, either:
+		// - data.templates was loaded (SSR)
+		// - cache already had templates
+		// - fetchTemplates() completed (success or error)
 		initializeTest();
 	});
 </script>

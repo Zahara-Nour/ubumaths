@@ -5,9 +5,14 @@
 
 	Features:
 	- Questions display one by one with countdown based on delay
-	- Pause/Play controls (FAB style)
+	- Pause/Play controls (FAB style in bottom-right)
 	- Progress bar showing current question number
 	- Auto-advance to next question when timer completes
+	- Dynamic delay adjustment (FAB buttons near timer):
+	  * [+] button: Add 5 seconds to current timer and all future questions of same type
+	  * [-] button: Subtract 5 seconds from current timer and all future questions of same type
+	  * Adjustments are persisted per question category (theme/domain/subdomain/level)
+	  * Minimum delay: 5 seconds ([-] button disabled when reached)
 	- At the end: choice to review all questions or see corrections
 
 	Props:
@@ -16,15 +21,13 @@
 -->
 
 <script lang="ts">
-	import type { TestSession, TestAnswerResult } from '$lib/types/test';
+	import type { TestSession } from '$lib/types/test';
 	import type { CartItem } from '$lib/stores/questionCart.svelte';
 	import TestTimer from './TestTimer.svelte';
 	import MathDisplay from '$lib/components/MathDisplay.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { Progress } from '$lib/components/ui/progress';
-	import { Pause, Play, ArrowLeft, Eye, BookOpen } from 'lucide-svelte';
-	import { cn } from '$lib/utils';
+	import { Pause, Play, ArrowLeft, Eye, BookOpen, Plus, Minus } from 'lucide-svelte';
 
 	interface Props {
 		session: TestSession;
@@ -38,11 +41,32 @@
 	let isPaused = $state(false);
 	let isCompleted = $state(false);
 	let showReviewMode = $state<'all' | 'corrections' | null>(null);
-	let timerKey = $state(0); // Key to force timer remount
+	let timerKey = $state(0); // Key to force timer remount when question changes
+	let delayAdjustments = $state<Record<string, number>>({}); // Adjustments per category type
+	let currentCategoryAdjustment = $state(0); // Current adjustment for active category
 
-	// Build a map of instance index to delay
+	/**
+	 * Generate a unique key for a category type
+	 */
+	function getCategoryKey(category: CartItem['category']): string {
+		return `${category.theme}|${category.domain}|${category.subdomain || 'null'}|${category.level}`;
+	}
+
+	// Build a map of instance index to category item
+	// This allows us to track which category each instance belongs to
+	let instanceCategories = $derived.by(() => {
+		const categories: CartItem[] = [];
+		for (const item of session.categories) {
+			for (let i = 0; i < item.quantity; i++) {
+				categories.push(item);
+			}
+		}
+		return categories;
+	});
+
+	// Build a map of instance index to BASE delay (without adjustments)
 	// Each CartItem may have multiple instances (quantity > 1)
-	let instanceDelays = $derived(() => {
+	let instanceBaseDelays = $derived.by(() => {
 		const delays: number[] = [];
 		for (const item of session.categories) {
 			for (let i = 0; i < item.quantity; i++) {
@@ -54,8 +78,17 @@
 
 	// Derived values
 	let currentInstance = $derived(session.instances[currentIndex]);
-	let currentDelay = $derived(instanceDelays()[currentIndex] || 20);
-	let progressPercentage = $derived(((currentIndex + 1) / session.instances.length) * 100);
+	let currentBaseDelay = $derived(instanceBaseDelays[currentIndex] || 20);
+	let currentCategoryKey = $derived.by(() => {
+		const category = instanceCategories[currentIndex];
+		return category ? getCategoryKey(category.category) : '';
+	});
+
+	// Update current category adjustment when category changes
+	$effect(() => {
+		const categoryKey = currentCategoryKey;
+		currentCategoryAdjustment = delayAdjustments[categoryKey] || 0;
+	});
 
 	/**
 	 * Handle timer completion - advance to next question
@@ -97,6 +130,34 @@
 	function handleBackToQuestions() {
 		showReviewMode = null;
 	}
+
+	/**
+	 * Increase delay for current question type (adds 5s to current timer)
+	 */
+	function handleIncreaseDelay() {
+		const categoryKey = currentCategoryKey;
+		if (categoryKey) {
+			delayAdjustments[categoryKey] = (delayAdjustments[categoryKey] || 0) + 5;
+			// The $effect will automatically update currentCategoryAdjustment
+		}
+	}
+
+	/**
+	 * Decrease delay for current question type (subtracts 5s from current timer)
+	 */
+	function handleDecreaseDelay() {
+		const categoryKey = currentCategoryKey;
+		if (categoryKey) {
+			const currentAdjustment = delayAdjustments[categoryKey] || 0;
+			const newDelay = currentBaseDelay + currentAdjustment - 5;
+
+			// Only decrease if new delay would be at least 5 seconds
+			if (newDelay >= 5) {
+				delayAdjustments[categoryKey] = currentAdjustment - 5;
+				// The $effect will automatically update currentCategoryAdjustment
+			}
+		}
+	}
 </script>
 
 {#if !isCompleted && !showReviewMode}
@@ -117,19 +178,44 @@
 					</div>
 				</div>
 
-				<!-- Timer - key ensures remount when question changes -->
-				{#key timerKey}
-					<TestTimer
-						duration={currentDelay}
-						{isPaused}
-						size="md"
-						onComplete={handleTimerComplete}
-					/>
-				{/key}
-			</div>
+				<div class="flex items-center gap-4">
+					<!-- Delay adjustment FABs with current delay display -->
+					<div class="flex flex-col items-center gap-1">
+						<div class="flex gap-2">
+							<button
+								onclick={handleDecreaseDelay}
+								class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground shadow-md transition-all hover:scale-110 hover:shadow-lg disabled:opacity-50 disabled:hover:scale-100"
+								aria-label="Réduire le délai de 5 secondes"
+								disabled={currentBaseDelay + currentCategoryAdjustment - 5 < 5}
+							>
+								<Minus class="h-5 w-5" />
+							</button>
+							<button
+								onclick={handleIncreaseDelay}
+								class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground shadow-md transition-all hover:scale-110 hover:shadow-lg"
+								aria-label="Augmenter le délai de 5 secondes"
+							>
+								<Plus class="h-5 w-5" />
+							</button>
+						</div>
+						<!-- Current delay display -->
+						<div class="text-xs font-medium text-muted-foreground">
+							{currentBaseDelay + currentCategoryAdjustment}s
+						</div>
+					</div>
 
-			<!-- Progress bar -->
-			<Progress value={progressPercentage} class="h-2" />
+					<!-- Timer - key ensures remount when question changes -->
+					{#key timerKey}
+						<TestTimer
+							duration={currentBaseDelay}
+							{isPaused}
+							size="md"
+							onComplete={handleTimerComplete}
+							durationAdjustment={currentCategoryAdjustment}
+						/>
+					{/key}
+				</div>
+			</div>
 		</div>
 
 		<!-- Question card -->
@@ -146,7 +232,7 @@
 							<MathDisplay text={field.content} />
 						{:else if field.type === 'image'}
 							<img
-								src={field.url}
+								src={field.content}
 								alt={field.alt || 'Question image'}
 								class="my-4 max-w-full rounded-lg"
 							/>
@@ -159,7 +245,9 @@
 					{#if isPaused}
 						Le minuteur est en pause
 					{:else}
-						Question suivante dans <span class="font-semibold">{currentDelay}</span> secondes
+						Question suivante dans <span class="font-semibold"
+							>{currentBaseDelay + currentCategoryAdjustment}</span
+						> secondes
 					{/if}
 				</p>
 			</Card.Content>
@@ -183,9 +271,6 @@
 	<div class="mx-auto max-w-2xl space-y-6">
 		<div class="text-center">
 			<h1 class="text-3xl font-bold">Test terminé !</h1>
-			<p class="mt-2 text-muted-foreground">
-				Vous avez parcouru les {session.instances.length} questions.
-			</p>
 		</div>
 
 		<div class="grid gap-4 sm:grid-cols-2">
@@ -202,11 +287,6 @@
 							<Card.Title>Revoir tout</Card.Title>
 						</div>
 					</Card.Header>
-					<Card.Content>
-						<p class="text-sm text-muted-foreground">
-							Parcourez toutes les questions (énoncés uniquement) sur une seule page.
-						</p>
-					</Card.Content>
 				</Card.Root>
 			</button>
 
@@ -223,11 +303,6 @@
 							<Card.Title>Voir corrections</Card.Title>
 						</div>
 					</Card.Header>
-					<Card.Content>
-						<p class="text-sm text-muted-foreground">
-							Affichez les réponses et explications détaillées pour chaque question.
-						</p>
-					</Card.Content>
 				</Card.Root>
 			</button>
 		</div>
@@ -267,7 +342,7 @@
 									<MathDisplay text={field.content} />
 								{:else if field.type === 'image'}
 									<img
-										src={field.url}
+										src={field.content}
 										alt={field.alt || 'Question image'}
 										class="my-4 max-w-full rounded-lg"
 									/>
@@ -314,7 +389,7 @@
 										<MathDisplay text={field.content} />
 									{:else if field.type === 'image'}
 										<img
-											src={field.url}
+											src={field.content}
 											alt={field.alt || 'Question image'}
 											class="my-4 max-w-full rounded-lg"
 										/>
@@ -349,7 +424,7 @@
 											<MathDisplay text={field.content} />
 										{:else if field.type === 'image'}
 											<img
-												src={field.url}
+												src={field.content}
 												alt={field.alt || 'Correction image'}
 												class="my-2 max-w-full rounded-lg"
 											/>
