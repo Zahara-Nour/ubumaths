@@ -147,7 +147,7 @@
 			correct: isCorrect,
 			feedback: isCorrect
 				? 'Excellente réponse ! 🎉'
-				: 'Ce n\'est pas la bonne réponse. Consultez la correction.'
+				: "Ce n'est pas la bonne réponse. Consultez la correction."
 		};
 	}
 
@@ -231,9 +231,7 @@ TEMPLATE - PAGE LAYOUT
 	<Card.Root>
 		<Card.Header>
 			<Card.Title>Paramètres de Test</Card.Title>
-			<Card.Description>
-				Personnalisez l'instance et testez différents scénarios
-			</Card.Description>
+			<Card.Description>Personnalisez l'instance et testez différents scénarios</Card.Description>
 		</Card.Header>
 		<Card.Content class="space-y-6">
 			<!-- Generation Controls: Seed input and regenerate buttons -->
@@ -248,11 +246,7 @@ TEMPLATE - PAGE LAYOUT
 							placeholder="Aléatoire"
 							class="flex-1"
 						/>
-						<Button
-							variant="outline"
-							onclick={() => generateInstance()}
-							disabled={isLoading}
-						>
+						<Button variant="outline" onclick={() => generateInstance()} disabled={isLoading}>
 							{#if isLoading}
 								<Loader2 class="h-4 w-4 animate-spin" />
 							{:else}
@@ -260,9 +254,7 @@ TEMPLATE - PAGE LAYOUT
 							{/if}
 						</Button>
 					</div>
-					<p class="text-xs text-muted-foreground">
-						Même seed = même instance (reproductible)
-					</p>
+					<p class="text-xs text-muted-foreground">Même seed = même instance (reproductible)</p>
 				</div>
 
 				<div class="flex items-end">
@@ -280,17 +272,13 @@ TEMPLATE - PAGE LAYOUT
 				<div class="grid gap-4 md:grid-cols-2">
 					<!-- Show Correction Toggle -->
 					<div class="flex items-center justify-between space-x-2">
-						<Label for="correction" class="cursor-pointer">
-							Afficher la correction
-						</Label>
+						<Label for="correction" class="cursor-pointer">Afficher la correction</Label>
 						<Switch id="correction" bind:checked={showCorrection} />
 					</div>
 
 					<!-- Readonly Mode Toggle -->
 					<div class="flex items-center justify-between space-x-2">
-						<Label for="readonly" class="cursor-pointer">
-							Mode lecture seule
-						</Label>
+						<Label for="readonly" class="cursor-pointer">Mode lecture seule</Label>
 						<Switch id="readonly" bind:checked={readonly} />
 					</div>
 				</div>
@@ -298,9 +286,7 @@ TEMPLATE - PAGE LAYOUT
 				<!-- Timer Options -->
 				<div class="space-y-3">
 					<div class="flex items-center justify-between space-x-2">
-						<Label for="timer" class="cursor-pointer">
-							Activer le timer
-						</Label>
+						<Label for="timer" class="cursor-pointer">Activer le timer</Label>
 						<Switch id="timer" bind:checked={enableTimer} />
 					</div>
 

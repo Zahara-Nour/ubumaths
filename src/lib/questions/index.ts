@@ -11,77 +11,50 @@
 export type * from './types';
 
 // Parsers
-export {
-  tokenize,
-  findTokensByType,
-  type Token,
-  type TokenType
-} from './parser/tokenizer';
+export { tokenize, findTokensByType, type Token, type TokenType } from './parser/tokenizer';
+
+export { parseRandomExpression, parseNumberOrVariable } from './parser/random-parser';
 
 export {
-  parseRandomExpression,
-  parseNumberOrVariable
-} from './parser/random-parser';
-
-export {
-  extractVariableReferences,
-  hasVariableReferences,
-  getVariableNames,
-  type VariableRef
+	extractVariableReferences,
+	hasVariableReferences,
+	getVariableNames,
+	type VariableRef
 } from './parser/variable-parser';
 
-export {
-  extractEvalExpressions,
-  hasEvalExpressions,
-  type EvalExpr
-} from './parser/eval-parser';
+export { extractEvalExpressions, hasEvalExpressions, type EvalExpr } from './parser/eval-parser';
 
 // Generators
-export {
-  generateInstance,
-  generateMultipleInstances
-} from './generator/instance-generator';
+export { generateInstance, generateMultipleInstances } from './generator/instance-generator';
+
+export { resolveVariables, resolveVariableExpression } from './generator/variable-resolver';
 
 export {
-  resolveVariables,
-  resolveVariableExpression
-} from './generator/variable-resolver';
-
-export {
-  generateRandomNumber,
-  randomInt,
-  randomDecimalByDigits,
-  randomDecimalByRange,
-  resolveNumberOrVariable
+	generateRandomNumber,
+	randomInt,
+	randomDecimalByDigits,
+	randomDecimalByRange,
+	resolveNumberOrVariable
 } from './generator/random-generator';
 
 export {
-  resolveContentField,
-  resolveContentFields,
-  resolveExpression,
-  resolveAnswer
+	resolveContentField,
+	resolveContentFields,
+	resolveExpression,
+	resolveAnswer
 } from './generator/content-resolver';
 
-export {
-  shuffleChoices,
-  type ShuffledChoice
-} from './generator/choice-shuffler';
+export { shuffleChoices, type ShuffledChoice } from './generator/choice-shuffler';
 
 // Validators
-export {
-  validateTemplate,
-  isValidTemplate
-} from './validators/template-validator';
+export { validateTemplate, isValidTemplate } from './validators/template-validator';
 
-export {
-  detectCircularDependencies,
-  hasCircularReference
-} from './validators/circular-dependency';
+export { detectCircularDependencies, hasCircularReference } from './validators/circular-dependency';
 
 // Compute Engine
 export {
-  evaluateExpression,
-  simplifyExpression,
-  areEquivalent,
-  isValidLatex
+	evaluateExpression,
+	simplifyExpression,
+	areEquivalent,
+	isValidLatex
 } from './compute-engine/wrapper';

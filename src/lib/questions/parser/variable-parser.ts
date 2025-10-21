@@ -11,10 +11,10 @@
  * Variable reference
  */
 export interface VariableRef {
-  name: string;          // Variable name
-  fullMatch: string;     // Full match including {@: and }
-  startIndex: number;    // Start index in original string
-  endIndex: number;      // End index
+	name: string; // Variable name
+	fullMatch: string; // Full match including {@: and }
+	startIndex: number; // Start index in original string
+	endIndex: number; // End index
 }
 
 /**
@@ -33,20 +33,20 @@ export interface VariableRef {
  * ```
  */
 export function extractVariableReferences(text: string): VariableRef[] {
-  const refs: VariableRef[] = [];
-  const regex = /\{@:(\w+)\}/g;
-  let match: RegExpExecArray | null;
+	const refs: VariableRef[] = [];
+	const regex = /\{@:(\w+)\}/g;
+	let match: RegExpExecArray | null;
 
-  while ((match = regex.exec(text)) !== null) {
-    refs.push({
-      name: match[1],
-      fullMatch: match[0],
-      startIndex: match.index,
-      endIndex: match.index + match[0].length
-    });
-  }
+	while ((match = regex.exec(text)) !== null) {
+		refs.push({
+			name: match[1],
+			fullMatch: match[0],
+			startIndex: match.index,
+			endIndex: match.index + match[0].length
+		});
+	}
 
-  return refs;
+	return refs;
 }
 
 /**
@@ -56,7 +56,7 @@ export function extractVariableReferences(text: string): VariableRef[] {
  * @returns True if contains {@:...} references
  */
 export function hasVariableReferences(text: string): boolean {
-  return /\{@:\w+\}/.test(text);
+	return /\{@:\w+\}/.test(text);
 }
 
 /**
@@ -72,6 +72,6 @@ export function hasVariableReferences(text: string): boolean {
  * ```
  */
 export function getVariableNames(text: string): string[] {
-  const refs = extractVariableReferences(text);
-  return refs.map((ref) => ref.name);
+	const refs = extractVariableReferences(text);
+	return refs.map((ref) => ref.name);
 }

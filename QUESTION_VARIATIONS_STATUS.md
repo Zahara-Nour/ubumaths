@@ -3,6 +3,7 @@
 ## ✅ Completed
 
 ### Backend (100% Complete)
+
 1. **Type Definitions** (`src/lib/questions/types.ts`)
    - Created `QuestionVariation` interface with all per-variation fields
    - Refactored `QuestionTemplate` to use `variations: QuestionVariation[]`
@@ -51,7 +52,7 @@
    - Default value: empty array
    - **Status**: Compatible with variations
 
-3. **AnswerEditor.svelte** ✅ *(Refactored 2025-10-19)*
+3. **AnswerEditor.svelte** ✅ _(Refactored 2025-10-19)_
    - Props updated to accept complex blanks/choices structures
    - Fill-in-blanks: Now uses `{ position: number; expectedAnswer: string }[]`
    - Multiple choice: Now uses `{ content: ContentField; isCorrect: boolean }[]`
@@ -65,12 +66,13 @@
 ## ✅ All Question Types Now Supported
 
 **Impact**:
+
 - ✅ Numerical questions: **Work correctly**
 - ✅ Algebraic transform: **Work correctly**
 - ✅ Fill-in-blanks: **Now fully working** (position + expectedAnswer editing)
 - ✅ Multiple choice: **Now fully working** (content + isCorrect editing)
 
-4. **QuestionPreview.svelte** ✅ *(Updated 2025-10-19)*
+4. **QuestionPreview.svelte** ✅ _(Updated 2025-10-19)_
    - Variation selector dropdown added (only shows if multiple variations)
    - Supports "Aléatoire" mode (random based on seed) and specific variation selection
    - Displays selected variation badge (e.g., "Variation 2 / 3")
@@ -105,6 +107,7 @@
 ## 🧪 Testing Checklist
 
 ### Backend Tests
+
 - [x] Migration 074 runs successfully
 - [x] Migration 075 runs successfully
 - [x] Seed data creates multi-variation templates
@@ -115,6 +118,7 @@
 - [ ] Unit tests for instance generator
 
 ### Frontend Tests
+
 - [x] QuestionTemplateForm compiles without errors
 - [ ] Can add new variation
 - [ ] Can remove variation (blocked at 1 minimum)
@@ -132,6 +136,7 @@
 ## 📝 Notes
 
 ### Type Fixes Applied
+
 1. **transformType**: Changed from `string | undefined` to explicit union `'factor' | 'expand' | 'simplify' | 'solve' | undefined` (removed 'canonical' as it's not in AlgebraicTransformType)
 
 2. **subdomain**: Changed from `bind:value={subdomain}` to `value={subdomain || ''}` in CategorySelector to handle undefined
@@ -141,6 +146,7 @@
 4. **variation.variables**: Initialize as empty array in `addVariation()` and when loading template
 
 ### Design Decisions
+
 - **Minimum 1 variation**: Enforced at database level and UI level
 - **Variation selection**: Deterministic with seed using modulo operator
 - **Shared vs per-variation**: Precision, transformType, multipleAnswers are shared; statement, variables, answer, correction, blanks, choices are per-variation
@@ -155,20 +161,20 @@
 
 ## 📊 Progress Summary
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| Backend Types | ✅ Complete | QuestionVariation, QuestionTemplate updated |
-| Database Schema | ✅ Complete | Migration 074 + 075 applied |
-| Validators | ✅ Complete | Validates all variations |
-| Instance Generator | ✅ Complete | Selects and resolves variations |
-| API Endpoints | ✅ Complete | CRUD operations with variations |
-| Seed Data | ✅ Complete | 10 examples with multi-variation templates |
-| QuestionTemplateForm | ✅ Complete | No type errors, variation management UI |
-| VariableEditor | ✅ Complete | Accepts optional variables |
-| AnswerEditor | ✅ Complete | **Refactored** - supports complex blanks/choices |
-| QuestionPreview | ✅ Complete | **Updated** - variation selector with smart seed calc |
-| Unit Tests | ⏳ Pending | Validators and generator tests (guide created) |
-| Documentation | ✅ Complete | All 4 docs updated with variations |
+| Component            | Status      | Notes                                                 |
+| -------------------- | ----------- | ----------------------------------------------------- |
+| Backend Types        | ✅ Complete | QuestionVariation, QuestionTemplate updated           |
+| Database Schema      | ✅ Complete | Migration 074 + 075 applied                           |
+| Validators           | ✅ Complete | Validates all variations                              |
+| Instance Generator   | ✅ Complete | Selects and resolves variations                       |
+| API Endpoints        | ✅ Complete | CRUD operations with variations                       |
+| Seed Data            | ✅ Complete | 10 examples with multi-variation templates            |
+| QuestionTemplateForm | ✅ Complete | No type errors, variation management UI               |
+| VariableEditor       | ✅ Complete | Accepts optional variables                            |
+| AnswerEditor         | ✅ Complete | **Refactored** - supports complex blanks/choices      |
+| QuestionPreview      | ✅ Complete | **Updated** - variation selector with smart seed calc |
+| Unit Tests           | ⏳ Pending  | Validators and generator tests (guide created)        |
+| Documentation        | ✅ Complete | All 4 docs updated with variations                    |
 
 **Overall Progress**: ~99% complete
 **Critical Path**: Unit tests only (non-blocking for usage)

@@ -35,11 +35,19 @@
 
 	// Precision type options
 	const PRECISION_TYPES = [
-		{ value: 'none', label: 'Aucune (valeur exacte)', description: 'La réponse doit être exactement égale' },
+		{
+			value: 'none',
+			label: 'Aucune (valeur exacte)',
+			description: 'La réponse doit être exactement égale'
+		},
 		{ value: 'decimal', label: 'Décimales', description: 'Nombre de décimales fixe' },
-		{ value: 'significant', label: 'Chiffres significatifs', description: 'Nombre de chiffres significatifs' },
+		{
+			value: 'significant',
+			label: 'Chiffres significatifs',
+			description: 'Nombre de chiffres significatifs'
+		},
 		{ value: 'magnitude', label: 'Ordre de grandeur', description: 'Arrondi à la puissance de 10' },
-		{ value: 'tolerance', label: 'Tolérance', description: 'Marge d\'erreur absolue ou relative' }
+		{ value: 'tolerance', label: 'Tolérance', description: "Marge d'erreur absolue ou relative" }
 	];
 
 	// Handle type change
@@ -79,7 +87,7 @@
 				id="precision-type"
 				value={precision.type}
 				onchange={(e) => handleTypeChange(e.currentTarget.value)}
-				class="flex h-auto w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+				class="flex h-auto w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				{#each PRECISION_TYPES as type}
 					<option value={type.value}>
@@ -93,16 +101,8 @@
 		{#if precision.type === 'decimal'}
 			<div class="space-y-2">
 				<Label for="decimal-digits">Nombre de décimales</Label>
-				<Input
-					id="decimal-digits"
-					type="number"
-					min="0"
-					max="10"
-					bind:value={precision.digits}
-				/>
-				<p class="text-xs text-muted-foreground">
-					Exemple : 2 décimales → 3.14 accepté pour π
-				</p>
+				<Input id="decimal-digits" type="number" min="0" max="10" bind:value={precision.digits} />
+				<p class="text-xs text-muted-foreground">Exemple : 2 décimales → 3.14 accepté pour π</p>
 			</div>
 		{/if}
 
@@ -132,9 +132,7 @@
 					max="10"
 					bind:value={precision.digits}
 				/>
-				<p class="text-xs text-muted-foreground">
-					Exemple : 1 (dizaines) → 310 accepté pour 314
-				</p>
+				<p class="text-xs text-muted-foreground">Exemple : 1 (dizaines) → 310 accepté pour 314</p>
 			</div>
 		{/if}
 
@@ -145,7 +143,7 @@
 					<select
 						id="tolerance-mode"
 						bind:value={precision.mode}
-						class="flex h-auto w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+						class="flex h-auto w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						<option value="absolute">Absolue - ±valeur fixe</option>
 						<option value="relative">Relative - ±pourcentage</option>
@@ -181,8 +179,8 @@
 
 		{#if precision.type === 'none'}
 			<p class="text-sm text-muted-foreground">
-				La réponse de l'élève doit être exactement égale à la réponse attendue.
-				Aucune tolérance n'est accordée.
+				La réponse de l'élève doit être exactement égale à la réponse attendue. Aucune tolérance
+				n'est accordée.
 			</p>
 		{/if}
 	</Card.Content>

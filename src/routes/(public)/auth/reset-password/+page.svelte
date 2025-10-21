@@ -61,11 +61,14 @@
 
 				<div class="space-y-2 text-center text-sm">
 					<div>
-						<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline">Back to login</a>
+						<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline"
+							>Back to login</a
+						>
 					</div>
 					<div class="text-muted-foreground">
 						Don't have an account?
-						<a href={resolve('/signup')} class="font-medium text-primary hover:underline">Sign up</a>
+						<a href={resolve('/signup')} class="font-medium text-primary hover:underline">Sign up</a
+						>
 					</div>
 				</div>
 			</form>

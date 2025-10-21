@@ -93,7 +93,7 @@
 					disabled && 'disabled'
 				)}
 				onclick={() => toggleChoice(i)}
-				disabled={disabled}
+				{disabled}
 			>
 				<!-- Choice letter badge -->
 				<span class="choice-letter">{getChoiceLetter(i)}</span>

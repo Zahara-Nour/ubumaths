@@ -29,12 +29,14 @@ All components have been successfully implemented and the build passes without e
 ### ✅ Two Display Modes
 
 **Flashcard Mode:**
+
 - View-only, no answer input
 - Flip button always active
 - Shows question on front, answer/correction on back
 - Perfect for study/review
 
 **Interactive Mode:**
+
 - Answer input with validation
 - Flip button activates after submission
 - Shows user answer vs. correct answer comparison
@@ -51,17 +53,18 @@ All components have been successfully implemented and the build passes without e
 
 ### ✅ Type-Specific Answer Inputs
 
-| Question Type          | Input Component      | Features                                   |
-| ---------------------- | -------------------- | ------------------------------------------ |
-| `numerical_exact`      | NumericalInput       | Editable MathField, Enter to submit       |
-| `numerical_decimal`    | NumericalInput       | Precision validation                       |
-| `numerical_rounded`    | NumericalInput       | Rounding validation                        |
-| `algebraic_transform`  | AlgebraicInput       | MathField with equivalence checking        |
-| `fill_in_blanks`       | FillBlanksInput      | Inline MathFields at blank positions       |
-| `multiple_choice`      | MultipleChoiceInput  | Buttons/images, single/multiple selection  |
-| Ordering (future)      | OrderingInput        | Drag-and-drop reordering                   |
+| Question Type         | Input Component     | Features                                  |
+| --------------------- | ------------------- | ----------------------------------------- |
+| `numerical_exact`     | NumericalInput      | Editable MathField, Enter to submit       |
+| `numerical_decimal`   | NumericalInput      | Precision validation                      |
+| `numerical_rounded`   | NumericalInput      | Rounding validation                       |
+| `algebraic_transform` | AlgebraicInput      | MathField with equivalence checking       |
+| `fill_in_blanks`      | FillBlanksInput     | Inline MathFields at blank positions      |
+| `multiple_choice`     | MultipleChoiceInput | Buttons/images, single/multiple selection |
+| Ordering (future)     | OrderingInput       | Drag-and-drop reordering                  |
 
 **MathLive Integration:**
+
 - Uses `readonly` attribute (NOT `read-only`) for editable control
 - `virtual-keyboard-mode="manual"` - User controls keyboard display
 - `smart-mode` enabled - Intelligent text/math mode switching
@@ -71,6 +74,7 @@ All components have been successfully implemented and the build passes without e
 ### ✅ Answer Validation
 
 **Numerical Validation:**
+
 - Exact match (no precision)
 - Decimal places (e.g., 2 decimals)
 - Significant figures (e.g., 3 sig figs)
@@ -78,32 +82,38 @@ All components have been successfully implemented and the build passes without e
 - Tolerance (absolute ±0.01 or relative ±1%)
 
 **Algebraic Validation:**
+
 - Equivalence checking via MathLive Compute Engine
 - Accepts different forms (e.g., `(x-3)(x+3)` = `x^2-9`)
 
 **Fill-in-Blanks Validation:**
+
 - Per-blank validation with visual indicators
 - Algebraic equivalence or case-insensitive string match
 
 **Multiple Choice Validation:**
+
 - Single or multiple answer support
 - Highlights correct/incorrect choices after submission
 
 ### ✅ Visual Feedback
 
 **Correct Answer:**
+
 - Green border and background
 - Check icon (✓)
 - Confetti animation (configurable)
 - Success message
 
 **Incorrect Answer:**
+
 - Red border and background
 - X icon (✗)
 - Error message with feedback
 - Optional auto-flip to correction
 
 **Theme Support:**
+
 - Light and dark mode
 - Semantic color variables
 - Font scaling integration (`var(--font-scale)`)
@@ -111,6 +121,7 @@ All components have been successfully implemented and the build passes without e
 ### ✅ Statistics Tracking
 
 Automatically tracks:
+
 - **Time spent** (in seconds)
 - **Attempts count**
 - **Answer history** (all submissions)
@@ -118,6 +129,7 @@ Automatically tracks:
 - **Timestamp** (ISO 8601)
 
 Emits via callbacks:
+
 - `onAnswerSubmit(AnswerData)` - After each submission
 - `onComplete(QuestionStats)` - When question is finished
 - `onFlip(boolean)` - When card is flipped
@@ -125,16 +137,19 @@ Emits via callbacks:
 ### ✅ MathLive Integration
 
 **Statement Rendering:**
+
 - Uses `MathDisplay` component
 - Parses `$$...$$` LaTeX expressions
 - Read-only math fields
 
 **Answer Input:**
+
 - Uses `MathField` component
 - Editable with virtual keyboard
 - Smart mode for natural typing
 
 **Correction Display:**
+
 - Highlights differences
 - Side-by-side comparison
 - Step-by-step solutions
@@ -147,46 +162,45 @@ Emits via callbacks:
 
 ```svelte
 <script>
-  import QuestionDisplay from '$lib/components/QuestionDisplay.svelte';
-  import { generateInstance } from '$lib/questions/generator/instance-generator';
+	import QuestionDisplay from '$lib/components/QuestionDisplay.svelte';
+	import { generateInstance } from '$lib/questions/generator/instance-generator';
 
-  const template = { /* QuestionTemplate */ };
-  const instance = generateInstance(template, 12345).instance;
+	const template = {
+		/* QuestionTemplate */
+	};
+	const instance = generateInstance(template, 12345).instance;
 </script>
 
-<QuestionDisplay
-  mode="flashcard"
-  {instance}
-/>
+<QuestionDisplay mode="flashcard" {instance} />
 ```
 
 ### Example 2: Interactive Mode with Callbacks
 
 ```svelte
 <script>
-  import QuestionDisplay from '$lib/components/QuestionDisplay.svelte';
+	import QuestionDisplay from '$lib/components/QuestionDisplay.svelte';
 
-  function handleAnswerSubmit(answer: AnswerData) {
-    console.log('Answer submitted:', answer);
-    if (answer.isCorrect) {
-      toaster.success(`Correct! Time: ${answer.timeSpent}s`);
-    }
-  }
+	function handleAnswerSubmit(answer: AnswerData) {
+		console.log('Answer submitted:', answer);
+		if (answer.isCorrect) {
+			toaster.success(`Correct! Time: ${answer.timeSpent}s`);
+		}
+	}
 
-  function handleComplete(stats: QuestionStats) {
-    console.log('Completed:', stats);
-    // Save stats to database, update progress, etc.
-  }
+	function handleComplete(stats: QuestionStats) {
+		console.log('Completed:', stats);
+		// Save stats to database, update progress, etc.
+	}
 </script>
 
 <QuestionDisplay
-  mode="interactive"
-  {instance}
-  onAnswerSubmit={handleAnswerSubmit}
-  onComplete={handleComplete}
-  showConfetti={true}
-  allowMultipleAttempts={true}
-  maxAttempts={3}
+	mode="interactive"
+	{instance}
+	onAnswerSubmit={handleAnswerSubmit}
+	onComplete={handleComplete}
+	showConfetti={true}
+	allowMultipleAttempts={true}
+	maxAttempts={3}
 />
 ```
 
@@ -194,17 +208,17 @@ Emits via callbacks:
 
 ```svelte
 <QuestionDisplay
-  mode="interactive"
-  {instance}
-  size="lg"
-  showCorrectionOnWrong={true}
-  showConfetti={true}
-  allowMultipleAttempts={true}
-  maxAttempts={5}
-  onAnswerSubmit={(answer) => console.log(answer)}
-  onAnswerChange={(value) => console.log('Typing:', value)}
-  onComplete={(stats) => saveStats(stats)}
-  onFlip={(isFlipped) => console.log('Flipped:', isFlipped)}
+	mode="interactive"
+	{instance}
+	size="lg"
+	showCorrectionOnWrong={true}
+	showConfetti={true}
+	allowMultipleAttempts={true}
+	maxAttempts={5}
+	onAnswerSubmit={(answer) => console.log(answer)}
+	onAnswerChange={(value) => console.log('Typing:', value)}
+	onComplete={(stats) => saveStats(stats)}
+	onFlip={(isFlipped) => console.log('Flipped:', isFlipped)}
 />
 ```
 
@@ -214,22 +228,22 @@ Emits via callbacks:
 
 ```typescript
 interface QuestionDisplayProps {
-  // Required
-  mode: 'flashcard' | 'interactive';
-  instance: QuestionInstance;
+	// Required
+	mode: 'flashcard' | 'interactive';
+	instance: QuestionInstance;
 
-  // Callbacks
-  onAnswerSubmit?: (answer: AnswerData) => void;
-  onAnswerChange?: (value: string | string[]) => void;
-  onComplete?: (stats: QuestionStats) => void;
-  onFlip?: (isFlipped: boolean) => void;
+	// Callbacks
+	onAnswerSubmit?: (answer: AnswerData) => void;
+	onAnswerChange?: (value: string | string[]) => void;
+	onComplete?: (stats: QuestionStats) => void;
+	onFlip?: (isFlipped: boolean) => void;
 
-  // Customization
-  size?: 'sm' | 'md' | 'lg';                    // Default: 'md'
-  showCorrectionOnWrong?: boolean;              // Default: false
-  showConfetti?: boolean;                       // Default: true
-  allowMultipleAttempts?: boolean;              // Default: true
-  maxAttempts?: number;                         // Default: 0 (unlimited)
+	// Customization
+	size?: 'sm' | 'md' | 'lg'; // Default: 'md'
+	showCorrectionOnWrong?: boolean; // Default: false
+	showConfetti?: boolean; // Default: true
+	allowMultipleAttempts?: boolean; // Default: true
+	maxAttempts?: number; // Default: 0 (unlimited)
 }
 ```
 
@@ -241,11 +255,11 @@ interface QuestionDisplayProps {
 
 ```typescript
 interface AnswerData {
-  value: string | string[] | number | number[];  // User's answer
-  isCorrect: boolean;                            // Validation result
-  timeSpent: number;                             // Seconds since start
-  attempts: number;                              // Attempt count (1-indexed)
-  submittedAt: string;                           // ISO timestamp
+	value: string | string[] | number | number[]; // User's answer
+	isCorrect: boolean; // Validation result
+	timeSpent: number; // Seconds since start
+	attempts: number; // Attempt count (1-indexed)
+	submittedAt: string; // ISO timestamp
 }
 ```
 
@@ -253,13 +267,13 @@ interface AnswerData {
 
 ```typescript
 interface QuestionStats {
-  templateId: string;                   // Template ID
-  timeSpent: number;                    // Total time (seconds)
-  attempts: number;                     // Total attempts
-  isCorrect: boolean;                   // Final result
-  firstAttemptCorrect: boolean;         // Got it right first time
-  answeredAt: string;                   // ISO timestamp
-  answerHistory: AnswerData[];          // All attempts
+	templateId: string; // Template ID
+	timeSpent: number; // Total time (seconds)
+	attempts: number; // Total attempts
+	isCorrect: boolean; // Final result
+	firstAttemptCorrect: boolean; // Got it right first time
+	answeredAt: string; // ISO timestamp
+	answerHistory: AnswerData[]; // All attempts
 }
 ```
 
@@ -315,30 +329,30 @@ The QuestionDisplay component is designed to work with the Question Bank System:
 ```typescript
 // 1. Get template from database
 const template = await supabase
-  .from('question_templates')
-  .select('*')
-  .eq('id', templateId)
-  .single();
+	.from('question_templates')
+	.select('*')
+	.eq('id', templateId)
+	.single();
 
 // 2. Generate instance
 const result = generateInstance(template.data, Math.random() * 1000000);
 
 if (result.success) {
-  // 3. Display in QuestionDisplay component
-  const instance = result.instance;
+	// 3. Display in QuestionDisplay component
+	const instance = result.instance;
 
-  // 4. Handle completion
-  function handleComplete(stats: QuestionStats) {
-    // Save to database
-    await supabase.from('question_attempts').insert({
-      student_id: userId,
-      template_id: stats.templateId,
-      time_spent: stats.timeSpent,
-      attempts: stats.attempts,
-      is_correct: stats.isCorrect,
-      answer_history: stats.answerHistory
-    });
-  }
+	// 4. Handle completion
+	function handleComplete(stats: QuestionStats) {
+		// Save to database
+		await supabase.from('question_attempts').insert({
+			student_id: userId,
+			template_id: stats.templateId,
+			time_spent: stats.timeSpent,
+			attempts: stats.attempts,
+			is_correct: stats.isCorrect,
+			answer_history: stats.answerHistory
+		});
+	}
 }
 ```
 
@@ -442,12 +456,14 @@ Potential improvements:
 The QuestionDisplay component uses **ResizeObserver** for dynamic height measurement, ensuring both front and back faces have the same height:
 
 **Why ResizeObserver?**
+
 - Native browser API (better performance than polling or mutation observers)
 - Automatically tracks content size changes (no manual measurement needed)
 - Avoids layout thrashing (batches measurements efficiently)
 - Works with dynamic content (LaTeX rendering, images loading, etc.)
 
 **Implementation:**
+
 ```typescript
 // Bind elements for measurement
 let frontElement: HTMLElement | null = null;
@@ -455,31 +471,32 @@ let backElement: HTMLElement | null = null;
 
 // Observe both faces
 $effect(() => {
-  if (!frontElement || !backElement) return;
+	if (!frontElement || !backElement) return;
 
-  const observer = new ResizeObserver((entries) => {
-    for (const entry of entries) {
-      if (entry.target === frontElement) {
-        frontHeight = entry.contentRect.height;
-      } else if (entry.target === backElement) {
-        backHeight = entry.contentRect.height;
-      }
-    }
-  });
+	const observer = new ResizeObserver((entries) => {
+		for (const entry of entries) {
+			if (entry.target === frontElement) {
+				frontHeight = entry.contentRect.height;
+			} else if (entry.target === backElement) {
+				backHeight = entry.contentRect.height;
+			}
+		}
+	});
 
-  observer.observe(frontElement);
-  observer.observe(backElement);
+	observer.observe(frontElement);
+	observer.observe(backElement);
 
-  return () => observer.disconnect(); // Cleanup on unmount
+	return () => observer.disconnect(); // Cleanup on unmount
 });
 
 // Calculate final height (max of both, constrained by viewport)
 const currentHeight = $derived(
-  Math.min(Math.max(frontHeight, backHeight), maxViewportHeight || 10000)
+	Math.min(Math.max(frontHeight, backHeight), maxViewportHeight || 10000)
 );
 ```
 
 **Benefits:**
+
 - No hidden measuring containers needed (simpler DOM structure)
 - Reactive to content changes (MathLive rendering, image loading)
 - Automatic cleanup prevents memory leaks
@@ -496,6 +513,7 @@ For comprehensive debugging with real-time state inspection, use the **Admin Deb
 **URL:** `/dashboard/admin/debug/question-display`
 
 The debug page provides:
+
 - 5 sample questions (all question types)
 - Real-time event logging (submissions, changes, flips)
 - Full state inspection (instance data, validation results)

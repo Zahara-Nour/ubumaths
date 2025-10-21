@@ -11,6 +11,7 @@ Comprehensive debugging interface for the QuestionDisplay component with real-ti
 ## Overview
 
 The debug page provides:
+
 - ✅ **Live component preview** with configurable props
 - ✅ **Real-time event logging** (submissions, changes, flips)
 - ✅ **State inspection** (instance data, validation results, statistics)
@@ -23,6 +24,7 @@ The debug page provides:
 ### 1. Configuration Panel
 
 **Question Type Selector:**
+
 - Numerical (Exact) - Simple fraction division
 - Numerical (Decimal) - Division with 2 decimal precision
 - Algebraic Transform - Factorization example
@@ -30,21 +32,25 @@ The debug page provides:
 - Multiple Choice (QCM) - Linear equation solving
 
 **Mode Toggle:**
+
 - **Flashcard:** View-only, flip button always active
 - **Interactive:** Answer required, validation on submit
 
 **Size Options:**
+
 - Small (`max-w-md`)
 - Medium (`max-w-2xl`) - Default
 - Large (`max-w-4xl`)
 
 **Behavior Toggles:**
+
 - Auto-flip on wrong answer
 - Show confetti on correct answer
 - Allow multiple attempts
 - Max attempts (0 = unlimited)
 
 **Actions:**
+
 - Reset Logs - Clear all event logs
 
 ### 2. Component Preview
@@ -56,11 +62,13 @@ Live QuestionDisplay component with all configured props applied. Fully function
 #### Tab 1: Instance
 
 **Question Instance JSON:**
+
 - Complete `QuestionInstance` object
 - Copy to clipboard button
 - Syntax-highlighted pre-formatted JSON
 
 **Instance Metadata:**
+
 - Template ID
 - Question Type
 - Grade Levels
@@ -69,6 +77,7 @@ Live QuestionDisplay component with all configured props applied. Fully function
 #### Tab 2: Submissions
 
 **Answer Submission Log:**
+
 - Chronological list of all submitted answers
 - For each submission:
   - Attempt number
@@ -83,6 +92,7 @@ Live QuestionDisplay component with all configured props applied. Fully function
 #### Tab 3: Changes
 
 **Real-time Answer Change Log:**
+
 - Every keystroke/change captured
 - Format: `[timestamp] "value"`
 - Scrollable pre-formatted output
@@ -92,6 +102,7 @@ Live QuestionDisplay component with all configured props applied. Fully function
 #### Tab 4: Flips
 
 **Flip Event Log:**
+
 - Each flip event with:
   - Flip number
   - Timestamp (ISO 8601)
@@ -102,6 +113,7 @@ Live QuestionDisplay component with all configured props applied. Fully function
 #### Tab 5: Statistics
 
 **Completion Statistics:**
+
 - Appears after question completion (correct answer or max attempts)
 - Four metric cards:
   - **Time Spent:** Total seconds
@@ -115,6 +127,7 @@ Live QuestionDisplay component with all configured props applied. Fully function
 ### 4. Environment Information
 
 **Browser & Runtime Details:**
+
 - User Agent string
 - Viewport dimensions (width×height)
 - ResizeObserver support status (✓/✗)
@@ -123,6 +136,7 @@ Live QuestionDisplay component with all configured props applied. Fully function
 ## Sample Questions
 
 ### 1. Numerical (Exact)
+
 ```
 Calculate: 15/3
 Answer: 5
@@ -130,6 +144,7 @@ Correction: To divide 15 by 3, we find how many times 3 goes into 15. The answer
 ```
 
 ### 2. Numerical (Decimal)
+
 ```
 Calculate with 2 decimals: 22/7
 Answer: 3.14
@@ -138,6 +153,7 @@ Correction: The division 22 ÷ 7 ≈ 3.142857... Rounded to 2 decimals, the answ
 ```
 
 ### 3. Algebraic Transform
+
 ```
 Factor: x² - 9
 Answer: (x-3)(x+3)
@@ -146,6 +162,7 @@ Correction: We recognize a difference of squares: a² - b² = (a-b)(a+b). Here, 
 ```
 
 ### 4. Fill-in-Blanks
+
 ```
 If the sides are 3 and 4, the hypotenuse is ____ according to the ____ theorem.
 Answers: ["5", "Pythagore"]
@@ -154,6 +171,7 @@ Correction: The Pythagorean theorem states that c² = a² + b². So c = √(3² 
 ```
 
 ### 5. Multiple Choice (QCM)
+
 ```
 Solve: 2x + 5 = 13
 Choices:
@@ -216,11 +234,13 @@ Correction: We solve: 2x + 5 = 13 ⇒ 2x = 13 - 5 ⇒ 2x = 8 ⇒ x = 4.
 ### Component Not Visible
 
 **Check:**
+
 - Environment Info shows ResizeObserver support: Yes ✓
 - Browser console for errors
 - Viewport dimensions are reasonable (not 0×0)
 
 **Try:**
+
 - Hard refresh (Ctrl+Shift+R / Cmd+Shift+R)
 - Clear browser cache
 - Check different size settings (sm/md/lg)
@@ -228,22 +248,26 @@ Correction: We solve: 2x + 5 = 13 ⇒ 2x = 13 - 5 ⇒ 2x = 8 ⇒ x = 4.
 ### Height Not Equalizing
 
 **Check:**
+
 - "Instance" tab → Copy JSON → Verify statement and correction are not empty
 - Monitor browser DevTools → Elements → Inspect `.flip-face` elements
 - Check both front and back have rendered content
 
 **Try:**
+
 - Switch between questions to trigger re-measurement
 - Resize browser window to trigger ResizeObserver
 
 ### Validation Always Incorrect
 
 **Check:**
+
 - "Instance" tab → Answer format (String vs Array)
 - "Submissions" tab → Compare submitted value with expected answer
 - Copy submission JSON and manually compare values
 
 **Try:**
+
 - Different question types to isolate issue
 - Check precision settings for numerical questions
 - Verify algebraic equivalence (e.g., "x+3" vs "3+x")
@@ -251,11 +275,13 @@ Correction: We solve: 2x + 5 = 13 ⇒ 2x = 13 - 5 ⇒ 2x = 8 ⇒ x = 4.
 ### Confetti Not Showing
 
 **Check:**
+
 - "Show confetti on correct" is enabled
 - Browser console for `canvas-confetti` errors
 - Answer is actually correct (check "Submissions" tab)
 
 **Try:**
+
 - Submit correct answer again
 - Check browser blocks canvas rendering
 - Disable browser extensions
@@ -263,11 +289,13 @@ Correction: We solve: 2x + 5 = 13 ⇒ 2x = 13 - 5 ⇒ 2x = 8 ⇒ x = 4.
 ### Events Not Logging
 
 **Check:**
+
 - Browser console for errors
 - Callbacks are firing (add console.log in component)
 - Not accidentally clicking "Reset Logs"
 
 **Try:**
+
 - Switch question type to reset state
 - Hard refresh page
 - Check browser console for JavaScript errors
@@ -318,17 +346,20 @@ Correction: We solve: 2x + 5 = 13 ⇒ 2x = 13 - 5 ⇒ 2x = 8 ⇒ x = 4.
 ## Browser Compatibility
 
 **Fully Supported:**
+
 - Chrome/Edge 90+
 - Firefox 88+
 - Safari 14+
 
 **Required Features:**
+
 - ResizeObserver API (auto-height measurement)
 - CSS 3D Transforms (flip animation)
 - Canvas API (confetti)
 - ES2020+ JavaScript (for Svelte 5 runes)
 
 **Fallback Behavior:**
+
 - If ResizeObserver not supported: Component uses auto height (may not equalize perfectly)
 - If canvas-confetti fails: No confetti, but functionality intact
 
@@ -355,6 +386,7 @@ Before reporting issues, verify:
 - ✅ Flip animation is smooth (no jank)
 
 If all checks pass but issue persists, capture:
+
 1. Screenshot of component preview
 2. JSON from "Instance" tab
 3. JSON from "Submissions" tab (if relevant)

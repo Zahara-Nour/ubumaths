@@ -380,9 +380,7 @@ describe('generateInstance - Complex Variable Resolution', () => {
 			type: 'numerical_exact',
 			variations: [
 				{
-					statement: [
-						{ type: 'text', content: 'Simplifier: $$\\frac{{@:num}}{{@:den}}$$' }
-					],
+					statement: [{ type: 'text', content: 'Simplifier: $$\\frac{{@:num}}{{@:den}}$$' }],
 					variables: [
 						{ name: 'gcd', expression: '{#:2-5}' },
 						{ name: 'a', expression: '{#:2-9}' },
@@ -519,9 +517,7 @@ describe('generateInstance - Content Resolution', () => {
 		const a = getVarValue(result.instance!.resolvedVariables, 'a');
 		const b = getVarValue(result.instance!.resolvedVariables, 'b');
 		const sum = a + b;
-		expect(result.instance!.correction![0].content).toBe(
-			`The answer is ${a} + ${b} = ${sum}`
-		);
+		expect(result.instance!.correction![0].content).toBe(`The answer is ${a} + ${b} = ${sum}`);
 	});
 });
 
@@ -1021,6 +1017,8 @@ describe('generateInstance - Variation Selection', () => {
 
 		expect(result.success).toBe(false);
 		expect(result.errors).toBeDefined();
-		expect(result.errors!.some((e) => e.includes('Variation 2') || e.includes('variation 1'))).toBe(true);
+		expect(result.errors!.some((e) => e.includes('Variation 2') || e.includes('variation 1'))).toBe(
+			true
+		);
 	});
 });

@@ -9,6 +9,7 @@
 The Question Bank List page (`/dashboard/admin/questions`) now features a comprehensive sorting and filtering system with server-side processing, debounced search, and persistent user preferences.
 
 **Key Features:**
+
 - ✅ Server-side sorting (Created date, Last updated date, Question type)
 - ✅ Server-side full-text search (PostgreSQL with French config)
 - ✅ Multi-select grade filter with count badge
@@ -97,52 +98,52 @@ The Question Bank List page (`/dashboard/admin/questions`) now features a compre
 
 ```typescript
 export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
-  // Parse query parameters
-  const typeFilter = url.searchParams.get('type');
-  const gradesFilter = url.searchParams.get('grades');
-  const searchFilter = url.searchParams.get('search');
-  const sortField = url.searchParams.get('sort') || 'created_at';
-  const sortOrder = url.searchParams.get('order') || 'desc';
-  const page = parseInt(url.searchParams.get('page') || '1');
+	// Parse query parameters
+	const typeFilter = url.searchParams.get('type');
+	const gradesFilter = url.searchParams.get('grades');
+	const searchFilter = url.searchParams.get('search');
+	const sortField = url.searchParams.get('sort') || 'created_at';
+	const sortOrder = url.searchParams.get('order') || 'desc';
+	const page = parseInt(url.searchParams.get('page') || '1');
 
-  // Validate sort field (CRITICAL SECURITY)
-  const validSortFields = ['created_at', 'updated_at', 'type'];
-  const actualSortField = validSortFields.includes(sortField) ? sortField : 'created_at';
+	// Validate sort field (CRITICAL SECURITY)
+	const validSortFields = ['created_at', 'updated_at', 'type'];
+	const actualSortField = validSortFields.includes(sortField) ? sortField : 'created_at';
 
-  // Build Supabase query
-  let query = supabase.from('question_templates').select('*', { count: 'exact' });
+	// Build Supabase query
+	let query = supabase.from('question_templates').select('*', { count: 'exact' });
 
-  if (typeFilter) {
-    query = query.eq('type', typeFilter);
-  }
+	if (typeFilter) {
+		query = query.eq('type', typeFilter);
+	}
 
-  if (gradesFilter) {
-    const grades = gradesFilter.split(',').map(g => g.trim());
-    query = query.overlaps('grades', grades);
-  }
+	if (gradesFilter) {
+		const grades = gradesFilter.split(',').map((g) => g.trim());
+		query = query.overlaps('grades', grades);
+	}
 
-  if (searchFilter) {
-    query = query.textSearch('statement', searchFilter, {
-      type: 'websearch',
-      config: 'french'
-    });
-  }
+	if (searchFilter) {
+		query = query.textSearch('statement', searchFilter, {
+			type: 'websearch',
+			config: 'french'
+		});
+	}
 
-  query = query
-    .range(offset, offset + limit - 1)
-    .order(actualSortField, { ascending: actualSortOrder === 'asc' });
+	query = query
+		.range(offset, offset + limit - 1)
+		.order(actualSortField, { ascending: actualSortOrder === 'asc' });
 
-  const { data: templates, count } = await query;
+	const { data: templates, count } = await query;
 
-  return {
-    templates: templates || [],
-    total: count || 0,
-    page,
-    limit,
-    sort: actualSortField,
-    order: sortOrder,
-    filters: { type: typeFilter, grades: gradesFilter, search: searchFilter }
-  };
+	return {
+		templates: templates || [],
+		total: count || 0,
+		page,
+		limit,
+		sort: actualSortField,
+		order: sortOrder,
+		filters: { type: typeFilter, grades: gradesFilter, search: searchFilter }
+	};
 };
 ```
 
@@ -160,7 +161,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
 let searchTerm = $state(data.filters.search || '');
 let selectedType = $state<string>(data.filters.type || 'all');
 let selectedGradesList = $state<string[]>(
-  data.filters.grades ? data.filters.grades.split(',').map(g => g.trim()) : []
+	data.filters.grades ? data.filters.grades.split(',').map((g) => g.trim()) : []
 );
 let sortField = $state<string>(data.sort || 'created_at');
 let sortOrder = $state<'asc' | 'desc'>(data.order === 'asc' ? 'asc' : 'desc');
@@ -174,35 +175,35 @@ let searchDebounceTimer: number;
 ```typescript
 // Debounced search (500ms delay)
 function handleSearchInput(value: string) {
-  searchTerm = value;
-  isSearching = true;
-  if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
-  searchDebounceTimer = setTimeout(() => {
-    applyFilters();
-    isSearching = false;
-  }, 500) as unknown as number;
+	searchTerm = value;
+	isSearching = true;
+	if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+	searchDebounceTimer = setTimeout(() => {
+		applyFilters();
+		isSearching = false;
+	}, 500) as unknown as number;
 }
 
 // Sort column click handler
 function handleSort(field: string) {
-  if (sortField === field) {
-    sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-  } else {
-    sortField = field;
-    sortOrder = 'desc';
-  }
-  applyFilters();
+	if (sortField === field) {
+		sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+	} else {
+		sortField = field;
+		sortOrder = 'desc';
+	}
+	applyFilters();
 }
 
 // Build URL query params and navigate
 function applyFilters() {
-  const params = new URLSearchParams();
-  if (selectedType && selectedType !== 'all') params.set('type', selectedType);
-  if (selectedGradesList.length > 0) params.set('grades', selectedGradesList.join(','));
-  if (searchTerm) params.set('search', searchTerm);
-  if (sortField) params.set('sort', sortField);
-  if (sortOrder) params.set('order', sortOrder);
-  goto(`/dashboard/admin/questions?${params.toString()}`);
+	const params = new URLSearchParams();
+	if (selectedType && selectedType !== 'all') params.set('type', selectedType);
+	if (selectedGradesList.length > 0) params.set('grades', selectedGradesList.join(','));
+	if (searchTerm) params.set('search', searchTerm);
+	if (sortField) params.set('sort', sortField);
+	if (sortOrder) params.set('order', sortOrder);
+	goto(`/dashboard/admin/questions?${params.toString()}`);
 }
 ```
 
@@ -215,6 +216,7 @@ function applyFilters() {
 **Purpose:** Reusable multi-select dropdown for grade levels
 
 **Why Native Select?**
+
 - ✅ No Svelte 5 hydration errors (simple HTML element)
 - ✅ Better accessibility (native browser semantics)
 - ✅ Smaller bundle (no Popover, Button, Badge imports)
@@ -224,39 +226,46 @@ function applyFilters() {
 
 ```svelte
 <script lang="ts">
-  interface Props {
-    selectedGrades: string[];
-    grades: { value: string; label: string }[];
-    placeholder?: string;
-  }
+	interface Props {
+		selectedGrades: string[];
+		grades: { value: string; label: string }[];
+		placeholder?: string;
+	}
 
-  let { selectedGrades = $bindable(), grades, placeholder = 'Sélectionner des niveaux' }: Props = $props();
+	let {
+		selectedGrades = $bindable(),
+		grades,
+		placeholder = 'Sélectionner des niveaux'
+	}: Props = $props();
 
-  function handleChange(event: Event) {
-    const select = event.target as HTMLSelectElement;
-    const selected = Array.from(select.selectedOptions).map(option => option.value);
-    selectedGrades = selected;
-  }
+	function handleChange(event: Event) {
+		const select = event.target as HTMLSelectElement;
+		const selected = Array.from(select.selectedOptions).map((option) => option.value);
+		selectedGrades = selected;
+	}
 </script>
 
 <div class="relative">
-  <select
-    multiple
-    onchange={handleChange}
-    class="flex min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-    style="height: auto; max-height: 200px;"
-  >
-    {#each grades as grade}
-      <option value={grade.value} selected={selectedGrades.includes(grade.value)}>
-        {grade.label}
-      </option>
-    {/each}
-  </select>
-  {#if selectedGrades.length > 0}
-    <div class="mt-1 text-xs text-muted-foreground">
-      {selectedGrades.length} niveau{selectedGrades.length > 1 ? 'x' : ''} sélectionné{selectedGrades.length > 1 ? 's' : ''}
-    </div>
-  {/if}
+	<select
+		multiple
+		onchange={handleChange}
+		class="flex min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+		style="height: auto; max-height: 200px;"
+	>
+		{#each grades as grade}
+			<option value={grade.value} selected={selectedGrades.includes(grade.value)}>
+				{grade.label}
+			</option>
+		{/each}
+	</select>
+	{#if selectedGrades.length > 0}
+		<div class="mt-1 text-xs text-muted-foreground">
+			{selectedGrades.length} niveau{selectedGrades.length > 1 ? 'x' : ''} sélectionné{selectedGrades.length >
+			1
+				? 's'
+				: ''}
+		</div>
+	{/if}
 </div>
 ```
 
@@ -269,6 +278,7 @@ function applyFilters() {
 **Purpose:** Card view alternative to table row
 
 **Features:**
+
 - Type badge with color-coding
 - Statement preview (first 150 characters)
 - Grade badges (first 4 + count)
@@ -279,11 +289,11 @@ function applyFilters() {
 
 ```svelte
 <QuestionTemplateCard
-  {template}
-  onPreview={handlePreview}
-  onEdit={handleEdit}
-  onDuplicate={handleDuplicate}
-  onDelete={handleDeleteClick}
+	{template}
+	onPreview={handlePreview}
+	onEdit={handleEdit}
+	onDuplicate={handleDuplicate}
+	onDelete={handleDeleteClick}
 />
 ```
 
@@ -294,15 +304,18 @@ function applyFilters() {
 ### 1. Server-Side Sorting
 
 **Available Fields:**
+
 - `created_at` - Date created (default, DESC)
 - `updated_at` - Last modification date
 - `type` - Question type (alphabetical)
 
 **Security:**
+
 - Sort field validated against whitelist (prevents SQL injection)
 - Invalid fields fallback to `created_at`
 
 **UX:**
+
 - Click column header to sort
 - Click again to toggle ascending/descending
 - Visual indicator (ArrowUp/ArrowDown/ArrowUpDown icons)
@@ -312,16 +325,19 @@ function applyFilters() {
 ### 2. Server-Side Full-Text Search
 
 **Implementation:**
+
 - PostgreSQL `textSearch` with French language config
 - Searches in statement JSONB array content
 - Websearch syntax (supports "exact phrases", OR, AND)
 
 **Features:**
+
 - French stemming: "chercher" matches "cherch", "cherché", "cherchent"
 - Case-insensitive
 - Accent-insensitive (depending on PostgreSQL collation)
 
 **Examples:**
+
 - `fraction` → Matches "fractions", "Fraction", "fractionnaire"
 - `aire triangle` → Matches "aire d'un triangle"
 - `pythagore OR théorème` → Matches documents with either term
@@ -335,6 +351,7 @@ function applyFilters() {
 **Solution:** 500ms debounce timer
 
 **Flow:**
+
 1. User types → Update `searchTerm` → Show loading spinner
 2. Clear previous timer (if any)
 3. Start new 500ms timer
@@ -342,6 +359,7 @@ function applyFilters() {
 5. Hide loading spinner
 
 **Performance:**
+
 - "mathematics" (11 characters) → 1 API call instead of 11
 - User must pause typing for 500ms before search executes
 
@@ -352,11 +370,13 @@ function applyFilters() {
 **Component:** `GradeMultiSelect.svelte`
 
 **Features:**
+
 - Native HTML `<select multiple>` element
 - Badge count below dropdown (e.g., "3 niveaux sélectionnés")
 - Persists to URL query params
 
 **Why Native?**
+
 - Previous Popover-based implementation caused Svelte 5 hydration errors
 - Native select is more reliable and accessible
 
@@ -365,15 +385,18 @@ function applyFilters() {
 ### 5. View Mode Toggle
 
 **Options:**
+
 - **Table View** - Sortable columns, compact rows
 - **Card Grid View** - Responsive grid (2-4 columns)
 
 **Persistence:**
+
 - Saved to `localStorage` as `questionsViewMode`
 - Restored on page load (client-side only)
 - Survives browser restarts
 
 **Toggle Button:**
+
 - Table view → Shows `LayoutGrid` icon (switch to cards)
 - Card view → Shows `List` icon (switch to table)
 
@@ -382,11 +405,13 @@ function applyFilters() {
 ### 6. URL Query Parameters
 
 **Format:**
+
 ```
 /dashboard/admin/questions?type=numerical_exact&grades=6,5&search=fraction&sort=created_at&order=desc&page=2
 ```
 
 **Parameters:**
+
 - `type` - Question type filter
 - `grades` - Comma-separated grade levels
 - `search` - Full-text search term
@@ -395,6 +420,7 @@ function applyFilters() {
 - `page` - Current page number
 
 **Benefits:**
+
 - **Shareable** - Send link to colleague with filters applied
 - **Bookmarkable** - Save frequently-used filter combinations
 - **Browser history** - Back button restores previous filter state
@@ -408,12 +434,14 @@ function applyFilters() {
 All filtering, searching, and sorting happens on the database server. The client only receives already-processed data.
 
 **Before (Client-Side):**
+
 - Load all 500+ templates
 - Filter in JavaScript
 - Sort in JavaScript
 - Slow for large datasets
 
 **After (Server-Side):**
+
 - Database query returns only 50 matching templates
 - Instant filtering (database indexes)
 - Fast pagination
@@ -425,11 +453,13 @@ All filtering, searching, and sorting happens on the database server. The client
 **Scenario:** User types "mathematics" (11 characters)
 
 **Before (No Debounce):**
+
 - 11 API calls: "m", "ma", "mat", "math", ..., "mathematics"
 - Network congestion
 - Server load
 
 **After (500ms Debounce):**
+
 - 1 API call: "mathematics"
 - User pauses typing → Search fires
 - 90% reduction in server load
@@ -441,10 +471,12 @@ All filtering, searching, and sorting happens on the database server. The client
 **Scenario:** User switches between table and card view 20 times
 
 **Before (No Persistence):**
+
 - Resets to table view on every page load
 - User must toggle back to card view
 
 **After (localStorage):**
+
 - Preference saved to browser
 - Restores last-used view mode
 - Better UX
@@ -479,19 +511,19 @@ All code is extensively documented with:
  * Performance: For "mathematics", prevents 11 API calls down to 1
  */
 function handleSearchInput(value: string) {
-  searchTerm = value;
-  isSearching = true;
+	searchTerm = value;
+	isSearching = true;
 
-  // Clear existing timer
-  if (searchDebounceTimer) {
-    clearTimeout(searchDebounceTimer);
-  }
+	// Clear existing timer
+	if (searchDebounceTimer) {
+		clearTimeout(searchDebounceTimer);
+	}
 
-  // Set new timer (500ms delay)
-  searchDebounceTimer = setTimeout(() => {
-    applyFilters();
-    isSearching = false;
-  }, 500) as unknown as number;
+	// Set new timer (500ms delay)
+	searchDebounceTimer = setTimeout(() => {
+		applyFilters();
+		isSearching = false;
+	}, 500) as unknown as number;
 }
 ```
 
@@ -500,35 +532,41 @@ function handleSearchInput(value: string) {
 ## Testing Checklist
 
 ### Sorting
+
 - [ ] Click "Créé le" → Sort by created_at DESC
 - [ ] Click "Créé le" again → Toggle to ASC
 - [ ] Click "Type" → Sort by type DESC
 - [ ] Sort indicator icon updates correctly
 
 ### Filtering
+
 - [ ] Select type → Filter by question type
 - [ ] Select grades → Filter by grade levels (multi-select)
 - [ ] Select "Tous les types" → Show all types
 - [ ] Clear all filters → Reset to default view
 
 ### Search
+
 - [ ] Type "fraction" → Wait 500ms → Search fires
 - [ ] Type quickly → Only last search fires (debounced)
 - [ ] Loading spinner shows during search
 - [ ] French stemming works ("fraction" matches "fractions")
 
 ### View Toggle
+
 - [ ] Click toggle button → Switch to card view
 - [ ] Click again → Switch back to table view
 - [ ] Reload page → View mode persists (localStorage)
 
 ### URL Parameters
+
 - [ ] Apply filters → URL updates with query params
 - [ ] Copy URL → Paste in new tab → Same filters applied
 - [ ] Bookmark filtered URL → Reopen → Filters restored
 - [ ] Back button → Previous filter state restored
 
 ### Pagination
+
 - [ ] Navigate to page 2 → Correct templates shown
 - [ ] URL includes `?page=2`
 - [ ] Total count displayed correctly
@@ -539,23 +577,27 @@ function handleSearchInput(value: string) {
 ## Troubleshooting
 
 ### Search not working
+
 1. Check PostgreSQL full-text search index exists
 2. Verify `textSearch` config is `'french'`
 3. Check browser console for errors
 4. Test with simple search term (e.g., "test")
 
 ### Sort not working
+
 1. Verify sort field is in `validSortFields` whitelist
 2. Check console for errors
 3. Test with default sort (created_at)
 
 ### View mode not persisting
+
 1. Check `browser` guard is present
 2. Verify localStorage is enabled in browser
 3. Check for localStorage quota errors
 4. Test with simple localStorage set/get
 
 ### Hydration errors (GradeMultiSelect)
+
 1. Ensure using native `<select multiple>` (NOT Popover)
 2. Check for `asChild let:builder` patterns (causes hydration issues)
 3. Verify component is wrapped with `browser` guard if needed

@@ -164,7 +164,9 @@
 
 				<p class="text-center text-sm text-muted-foreground">
 					Vous avez déjà un compte ?
-					<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline">Se connecter</a>
+					<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline"
+						>Se connecter</a
+					>
 				</p>
 			</form>
 		</Card.Content>

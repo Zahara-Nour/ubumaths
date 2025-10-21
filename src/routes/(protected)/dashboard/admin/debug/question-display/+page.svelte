@@ -116,7 +116,7 @@
 			statement: [
 				{
 					type: 'text',
-					content: 'Si les côtés sont 3 et 4, l\'hypoténuse est ____ selon le théorème de ____.'
+					content: "Si les côtés sont 3 et 4, l'hypoténuse est ____ selon le théorème de ____."
 				}
 			],
 			answer: ['5', 'Pythagore'],
@@ -252,7 +252,7 @@
 				<select
 					bind:value={selectedQuestionType}
 					onchange={() => changeQuestion()}
-					class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+					class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 				>
 					<option value="numerical_exact">Numerical (Exact)</option>
 					<option value="numerical_decimal">Numerical (Decimal)</option>
@@ -295,7 +295,7 @@
 					<label class="text-sm font-medium">Size</label>
 					<select
 						bind:value={size}
-						class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+						class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 					>
 						<option value="sm">Small</option>
 						<option value="md">Medium</option>
@@ -396,8 +396,7 @@
 							</Button>
 						</div>
 						<div class="rounded-lg border bg-muted/50 p-4">
-							<pre
-								class="overflow-auto text-xs"><code>{instanceJSON}</code></pre>
+							<pre class="overflow-auto text-xs"><code>{instanceJSON}</code></pre>
 						</div>
 					</div>
 
@@ -599,9 +598,7 @@
 										<Card.Title class="text-sm">First Attempt</Card.Title>
 									</Card.Header>
 									<Card.Content>
-										<Badge
-											variant={completionStats.firstAttemptCorrect ? 'default' : 'secondary'}
-										>
+										<Badge variant={completionStats.firstAttemptCorrect ? 'default' : 'secondary'}>
 											{completionStats.firstAttemptCorrect ? 'Correct ✓' : 'Incorrect ✗'}
 										</Badge>
 									</Card.Content>
@@ -636,7 +633,9 @@
 				<div>
 					<span class="font-medium">Viewport:</span>
 					<code class="ml-2"
-						>{browser ? `${window.innerWidth}×${window.innerHeight}px` : 'SSR - Not available'}</code
+						>{browser
+							? `${window.innerWidth}×${window.innerHeight}px`
+							: 'SSR - Not available'}</code
 					>
 				</div>
 				<div>

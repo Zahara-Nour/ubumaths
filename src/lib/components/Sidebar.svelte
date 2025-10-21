@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Home, Gamepad2 } from 'lucide-svelte';
+	import { Home, Gamepad2, Calculator } from 'lucide-svelte';
 	import { resolve } from '$app/paths';
 
 	// Default navigation items
 	let {
 		items = [
 			{ label: 'Accueil', href: '/', icon: Home },
-			{ label: 'Jeux', href: '/games', icon: Gamepad2 }
+			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
+			{ label: 'Automaths', href: '/automaths', icon: Calculator }
 		]
 	}: {
 		items?: Array<{ label: string; href: string; icon: typeof import('lucide-svelte').LucideIcon }>;

@@ -40,13 +40,7 @@
 		timer?: number;
 	}
 
-	let {
-		instance,
-		onSubmit,
-		showCorrection = false,
-		readonly = false,
-		timer
-	}: Props = $props();
+	let { instance, onSubmit, showCorrection = false, readonly = false, timer }: Props = $props();
 
 	// ===========================
 	// STATE MANAGEMENT
@@ -261,7 +255,7 @@ TEMPLATE - MAIN CARD STRUCTURE
 	<Card.Content class="space-y-6">
 		<!-- Question Statement (rendered as HTML with LaTeX support) -->
 		<div class="space-y-3">
-			<div class="prose prose-lg dark:prose-invert max-w-none">
+			<div class="prose prose-lg max-w-none dark:prose-invert">
 				{@html renderContent(instance.statement)}
 			</div>
 		</div>
@@ -390,7 +384,9 @@ TEMPLATE - MAIN CARD STRUCTURE
 				<div class="pt-4">
 					<Button
 						onclick={handleSubmit}
-						disabled={isSubmitting || !studentAnswer || (Array.isArray(studentAnswer) && studentAnswer.every((a) => !a))}
+						disabled={isSubmitting ||
+							!studentAnswer ||
+							(Array.isArray(studentAnswer) && studentAnswer.every((a) => !a))}
 						class="w-full gap-2 text-lg"
 						size="lg"
 					>
@@ -414,24 +410,16 @@ TEMPLATE - MAIN CARD STRUCTURE
 							<Check class="h-6 w-6" />
 						</div>
 						<div>
-							<h3 class="text-xl font-bold text-green-700 dark:text-green-400">
-								Correct !
-							</h3>
-							<p class="text-green-600 dark:text-green-300">
-								Excellente réponse !
-							</p>
+							<h3 class="text-xl font-bold text-green-700 dark:text-green-400">Correct !</h3>
+							<p class="text-green-600 dark:text-green-300">Excellente réponse !</p>
 						</div>
 					{:else}
 						<div class="rounded-full bg-destructive p-2 text-destructive-foreground">
 							<X class="h-6 w-6" />
 						</div>
 						<div>
-							<h3 class="text-xl font-bold text-destructive">
-								Incorrect
-							</h3>
-							<p class="text-destructive/80">
-								Essayez à nouveau ou consultez la correction
-							</p>
+							<h3 class="text-xl font-bold text-destructive">Incorrect</h3>
+							<p class="text-destructive/80">Essayez à nouveau ou consultez la correction</p>
 						</div>
 					{/if}
 				</div>
@@ -446,7 +434,7 @@ TEMPLATE - MAIN CARD STRUCTURE
 				{#if !isCorrect && showCorrection && instance.correction}
 					<div class="space-y-2 border-t pt-4">
 						<h4 class="font-semibold">Correction</h4>
-						<div class="prose prose-sm dark:prose-invert max-w-none">
+						<div class="prose prose-sm max-w-none dark:prose-invert">
 							{@html renderContent(instance.correction)}
 						</div>
 					</div>
@@ -458,7 +446,7 @@ TEMPLATE - MAIN CARD STRUCTURE
 		{#if readonly}
 			<div class="rounded-lg border-2 border-muted bg-muted/30 p-6">
 				<h3 class="mb-3 font-semibold">Réponse attendue</h3>
-				<div class="text-lg font-mono">
+				<div class="font-mono text-lg">
 					<!-- Array answers (fill-in-blanks, multiple choice) -->
 					{#if Array.isArray(instance.answer)}
 						<ul class="space-y-1">

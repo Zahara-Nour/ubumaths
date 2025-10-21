@@ -11,10 +11,10 @@
  * Evaluation expression
  */
 export interface EvalExpr {
-  expression: string;     // Expression to evaluate
-  fullMatch: string;      // Full match including {eval: and }
-  startIndex: number;     // Start index in original string
-  endIndex: number;       // End index
+	expression: string; // Expression to evaluate
+	fullMatch: string; // Full match including {eval: and }
+	startIndex: number; // Start index in original string
+	endIndex: number; // End index
 }
 
 /**
@@ -33,42 +33,42 @@ export interface EvalExpr {
  * ```
  */
 export function extractEvalExpressions(text: string): EvalExpr[] {
-  const exprs: EvalExpr[] = [];
-  let i = 0;
+	const exprs: EvalExpr[] = [];
+	let i = 0;
 
-  while (i < text.length) {
-    // Look for {eval:
-    if (text.substring(i, i + 6) === '{eval:') {
-      // Find matching closing brace
-      let braceCount = 1;
-      let j = i + 6;
+	while (i < text.length) {
+		// Look for {eval:
+		if (text.substring(i, i + 6) === '{eval:') {
+			// Find matching closing brace
+			let braceCount = 1;
+			let j = i + 6;
 
-      while (j < text.length && braceCount > 0) {
-        if (text[j] === '{') braceCount++;
-        if (text[j] === '}') braceCount--;
-        j++;
-      }
+			while (j < text.length && braceCount > 0) {
+				if (text[j] === '{') braceCount++;
+				if (text[j] === '}') braceCount--;
+				j++;
+			}
 
-      if (braceCount === 0) {
-        const fullMatch = text.substring(i, j);
-        const expression = text.substring(i + 6, j - 1);
+			if (braceCount === 0) {
+				const fullMatch = text.substring(i, j);
+				const expression = text.substring(i + 6, j - 1);
 
-        exprs.push({
-          expression,
-          fullMatch,
-          startIndex: i,
-          endIndex: j
-        });
+				exprs.push({
+					expression,
+					fullMatch,
+					startIndex: i,
+					endIndex: j
+				});
 
-        i = j;
-        continue;
-      }
-    }
+				i = j;
+				continue;
+			}
+		}
 
-    i++;
-  }
+		i++;
+	}
 
-  return exprs;
+	return exprs;
 }
 
 /**
@@ -78,5 +78,5 @@ export function extractEvalExpressions(text: string): EvalExpr[] {
  * @returns True if contains {eval:...} expressions
  */
 export function hasEvalExpressions(text: string): boolean {
-  return text.includes('{eval:');
+	return text.includes('{eval:');
 }

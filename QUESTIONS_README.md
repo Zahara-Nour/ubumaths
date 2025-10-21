@@ -42,36 +42,36 @@
 
 ### Overview Documents
 
-| Document | Purpose | Audience |
-|----------|---------|----------|
-| [HANDOFF_QUESTION_BANK.md](HANDOFF_QUESTION_BANK.md) | Quick start & handoff | Everyone |
-| [QUESTIONS_FINAL_SUMMARY.md](QUESTIONS_FINAL_SUMMARY.md) | Executive summary | Stakeholders |
-| [QUESTIONS_README.md](QUESTIONS_README.md) | Documentation index (this file) | Everyone |
+| Document                                                 | Purpose                         | Audience     |
+| -------------------------------------------------------- | ------------------------------- | ------------ |
+| [HANDOFF_QUESTION_BANK.md](HANDOFF_QUESTION_BANK.md)     | Quick start & handoff           | Everyone     |
+| [QUESTIONS_FINAL_SUMMARY.md](QUESTIONS_FINAL_SUMMARY.md) | Executive summary               | Stakeholders |
+| [QUESTIONS_README.md](QUESTIONS_README.md)               | Documentation index (this file) | Everyone     |
 
 ### User Guides
 
-| Document | Purpose | Audience |
-|----------|---------|----------|
-| [QUESTIONS_SYNTAX_GUIDE.md](QUESTIONS_SYNTAX_GUIDE.md) | Syntax reference | Admins/Teachers |
-| [QUESTIONS_TESTING_GUIDE.md](QUESTIONS_TESTING_GUIDE.md) | Testing checklist | Testers |
-| [QUESTIONS_ADMIN_INTERFACE.md](QUESTIONS_ADMIN_INTERFACE.md) | UI guide | Admins |
+| Document                                                     | Purpose           | Audience        |
+| ------------------------------------------------------------ | ----------------- | --------------- |
+| [QUESTIONS_SYNTAX_GUIDE.md](QUESTIONS_SYNTAX_GUIDE.md)       | Syntax reference  | Admins/Teachers |
+| [QUESTIONS_TESTING_GUIDE.md](QUESTIONS_TESTING_GUIDE.md)     | Testing checklist | Testers         |
+| [QUESTIONS_ADMIN_INTERFACE.md](QUESTIONS_ADMIN_INTERFACE.md) | UI guide          | Admins          |
 
 ### Technical Documentation
 
-| Document | Purpose | Audience |
-|----------|---------|----------|
-| [QUESTIONS_IMPLEMENTATION_STATUS.md](QUESTIONS_IMPLEMENTATION_STATUS.md) | Progress tracking | Developers |
-| [QUESTIONS_IMPLEMENTATION_COMPLETE.md](QUESTIONS_IMPLEMENTATION_COMPLETE.md) | Deployment guide | DevOps |
-| [QUESTIONS_SESSION_SUMMARY.md](QUESTIONS_SESSION_SUMMARY.md) | Session notes | Developers |
-| [CLAUDE.md](CLAUDE.md) (lines 3418-3838) | Integrated docs | Developers |
+| Document                                                                     | Purpose           | Audience   |
+| ---------------------------------------------------------------------------- | ----------------- | ---------- |
+| [QUESTIONS_IMPLEMENTATION_STATUS.md](QUESTIONS_IMPLEMENTATION_STATUS.md)     | Progress tracking | Developers |
+| [QUESTIONS_IMPLEMENTATION_COMPLETE.md](QUESTIONS_IMPLEMENTATION_COMPLETE.md) | Deployment guide  | DevOps     |
+| [QUESTIONS_SESSION_SUMMARY.md](QUESTIONS_SESSION_SUMMARY.md)                 | Session notes     | Developers |
+| [CLAUDE.md](CLAUDE.md) (lines 3418-3838)                                     | Integrated docs   | Developers |
 
 ### Code Documentation
 
-| Location | Purpose |
-|----------|---------|
-| `src/lib/questions/README.md` | Developer guide |
-| `src/lib/questions/types.ts` | Type definitions (270+ lines) |
-| API route files | Endpoint documentation |
+| Location                      | Purpose                       |
+| ----------------------------- | ----------------------------- |
+| `src/lib/questions/README.md` | Developer guide               |
+| `src/lib/questions/types.ts`  | Type definitions (270+ lines) |
+| API route files               | Endpoint documentation        |
 
 ---
 
@@ -80,21 +80,25 @@
 ### By Role
 
 **For Admins/Teachers**:
+
 1. Start: [HANDOFF_QUESTION_BANK.md](HANDOFF_QUESTION_BANK.md)
 2. Learn: [QUESTIONS_SYNTAX_GUIDE.md](QUESTIONS_SYNTAX_GUIDE.md)
 3. Reference: [QUESTIONS_ADMIN_INTERFACE.md](QUESTIONS_ADMIN_INTERFACE.md)
 
 **For Testers**:
+
 1. Checklist: [QUESTIONS_TESTING_GUIDE.md](QUESTIONS_TESTING_GUIDE.md)
 2. Context: [QUESTIONS_FINAL_SUMMARY.md](QUESTIONS_FINAL_SUMMARY.md)
 
 **For Developers**:
+
 1. Overview: [QUESTIONS_IMPLEMENTATION_COMPLETE.md](QUESTIONS_IMPLEMENTATION_COMPLETE.md)
 2. Status: [QUESTIONS_IMPLEMENTATION_STATUS.md](QUESTIONS_IMPLEMENTATION_STATUS.md)
 3. Code: `src/lib/questions/README.md`
 4. Types: `src/lib/questions/types.ts`
 
 **For Stakeholders**:
+
 1. Summary: [QUESTIONS_FINAL_SUMMARY.md](QUESTIONS_FINAL_SUMMARY.md)
 2. Progress: [QUESTIONS_IMPLEMENTATION_STATUS.md](QUESTIONS_IMPLEMENTATION_STATUS.md)
 
@@ -112,30 +116,36 @@
 ### Key Features
 
 ✅ **6 Question Types**:
+
 - Numerical (exact, decimal, rounded)
 - Algebraic transformations
 - Fill-in-blanks
 - Multiple choice
 
 ✅ **Variable System**:
+
 - Declaration order resolution
 - Circular dependency detection
 - Variables in random expressions
 
 ✅ **Random Generation**:
+
 - Integer and decimal ranges
 - Complex exclusions
 - Seeded for reproducibility
 
 ✅ **Mathematical Evaluation**:
+
 - MathLive Compute Engine integration
 - LaTeX expression support
 - Symbolic results
 
 ✅ **Precision Types** (5):
+
 - None, Decimal, Significant, Magnitude, Tolerance
 
 ✅ **Grade Levels** (15):
+
 - CP → CM2, 6 → 3, 2 → Tale, STMG
 
 ### Syntax Quick Reference
@@ -185,6 +195,7 @@
 ### 📋 Ready for Manual Testing
 
 See [QUESTIONS_TESTING_GUIDE.md](QUESTIONS_TESTING_GUIDE.md) for:
+
 - Complete testing checklist
 - Step-by-step instructions
 - Expected results
@@ -221,6 +232,7 @@ pnpm dev
 ### 3. Create Your First Question
 
 **Simple Example**:
+
 1. Click "Créer une question"
 2. Type: "Numérique (exact)"
 3. Grades: "6", "5"
@@ -230,6 +242,7 @@ pnpm dev
 7. Save
 
 **With Variables**:
+
 1. Statement: `Calculer : $${@:a} + {@:b}$$`
 2. Variables:
    - `a`: `{#:1-10}`
@@ -251,19 +264,23 @@ pnpm dev
 ### Common Issues
 
 **"Questions" link not visible**:
+
 - Ensure logged in as admin
 - Check profile role in database
 
 **Seed templates not showing**:
+
 - Verify migrations: `pnpm db:migrate`
 - Check database connection
 
 **Preview shows errors**:
+
 - Check for circular dependencies
 - Verify variable syntax
 - Ensure min < max in ranges
 
 **TypeScript errors**:
+
 - Run `pnpm check`
 - Note: Errors in existing code (geometry/UI) are unrelated
 
@@ -306,6 +323,7 @@ pnpm dev
 Found an issue or have a suggestion for the documentation?
 
 **Improvement Ideas**:
+
 - Add more examples to syntax guide
 - Create video tutorials
 - Add FAQ section
@@ -344,7 +362,7 @@ The Question Bank System is **fully documented** and **production-ready**.
 
 ---
 
-*Documentation created: January 19, 2025*
-*System status: Production ready*
-*Total guides: 9 comprehensive documents*
-*Coverage: 100% for Phases 1-3*
+_Documentation created: January 19, 2025_
+_System status: Production ready_
+_Total guides: 9 comprehensive documents_
+_Coverage: 100% for Phases 1-3_

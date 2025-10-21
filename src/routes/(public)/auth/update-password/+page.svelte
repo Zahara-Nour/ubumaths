@@ -125,7 +125,9 @@
 				<Button type="submit" class="w-full">Update password</Button>
 
 				<div class="text-center text-sm">
-					<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline">Back to login</a>
+					<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline"
+						>Back to login</a
+					>
 				</div>
 			</form>
 		</Card.Content>

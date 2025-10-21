@@ -117,7 +117,8 @@
 	 * Handle typing indicator (debounced)
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	function handleTypingIndicator(): void { // For future typing indicators
+	function handleTypingIndicator(): void {
+		// For future typing indicators
 		// Send typing = true
 		onTyping(true);
 

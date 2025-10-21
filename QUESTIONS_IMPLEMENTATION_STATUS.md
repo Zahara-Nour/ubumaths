@@ -12,6 +12,7 @@
 **File:** `src/lib/questions/types.ts`
 
 Comprehensive type system with:
+
 - 6 question types (numerical, algebraic, QCM, fill-in-blanks)
 - Support for variables in random expressions: `{#:{@:min}-{@:max}}`
 - Precision types (none, decimal, significant, magnitude, tolerance)
@@ -97,6 +98,7 @@ Exports all public functions and types.
 **File:** `supabase/migrations/070_create_question_templates.sql`
 
 Complete table structure:
+
 - `question_templates` table with JSONB fields
 - Type-specific constraints
 - RLS policies (admins CRUD, teachers read-only)
@@ -120,6 +122,7 @@ Complete table structure:
    - Optional seed parameter for reproducibility
 
 All endpoints include:
+
 - Authentication checks
 - Role-based authorization
 - Validation and error handling
@@ -130,6 +133,7 @@ All endpoints include:
 ## ✅ Completed: Phase 3 - Admin Interface
 
 ### Navigation
+
 - ✅ Added "Questions" link to admin sidebar (icon: BookOpen)
 - ✅ Positioned after Classes, before Debug
 
@@ -206,6 +210,7 @@ All endpoints include:
    - ✅ Character count
 
 ### Features Implemented
+
 - ✅ Real-time form validation
 - ✅ Syntax helper with inline reference
 - ✅ Preview auto-update on template change
@@ -219,17 +224,20 @@ All endpoints include:
 ## 📋 TODO: Phase 4 - Tests & Documentation
 
 ### Unit Tests
+
 - [ ] Parser tests (4 files)
 - [ ] Generator tests (5 files)
 - [ ] Validator tests (2 files)
 - [ ] API endpoint tests (3 files)
 
 ### Seed Data
+
 - [ ] Migration `071_seed_question_templates.sql`
 - [ ] 5 examples per question type
 - [ ] All grade levels represented
 
 ### Documentation
+
 - [ ] `QUESTIONS_SYNTAX.md` - Complete syntax guide
 - [ ] `QUESTIONS_API.md` - API documentation
 - [ ] Update `CLAUDE.md` with Question Bank section
@@ -241,6 +249,7 @@ All endpoints include:
 ### ✅ Created (33 files)
 
 **Backend (17 files):**
+
 - 1 types file
 - 4 parser files
 - 5 generator files
@@ -249,26 +258,31 @@ All endpoints include:
 - 1 index file
 
 **Database & API (4 files):**
+
 - 1 migration
 - 3 API route files (with 6 endpoint handlers)
 
 **Frontend (10 files):**
+
 - 3 pages (list, create, edit)
 - 2 server files (list load, edit load)
 - 7 components
 
 **Documentation (2 files):**
+
 - Implementation status (this file)
 - Admin interface documentation
 
 ### 📋 Remaining (~22 files)
 
 **Tests (15 files):**
+
 - 11 unit test files
 - 3 API test files
 - 1 E2E test file
 
 **Documentation (6 files):**
+
 - Complete syntax guide
 - API documentation
 - CLAUDE.md update
@@ -277,6 +291,7 @@ All endpoints include:
 - Troubleshooting guide
 
 **Seed Data (1 file):**
+
 - Migration with example templates
 
 ---
@@ -330,6 +345,7 @@ Mix of values, ranges, and variables:
 ### ✅ Seeded Random
 
 All random generation supports optional seed for:
+
 - Reproducible instances
 - Testing
 - Debug mode
@@ -359,6 +375,7 @@ All random generation supports optional seed for:
 ```
 
 **Generated Instance:**
+
 - `gcd = 3`, `a = 4`, `b = 7`, `num = 12`, `den = 21`
 - Statement: "Calculate $$\frac{12}{21}$$"
 - Answer: "0.5714..."
@@ -368,6 +385,7 @@ All random generation supports optional seed for:
 ## Next Steps
 
 1. **Push database migration** (after review):
+
    ```bash
    pnpm db:migrate
    ```
@@ -396,6 +414,7 @@ All random generation supports optional seed for:
 ## Notes for Next Session
 
 ### Priority Order
+
 1. Test current backend/API implementation
 2. Create admin list page (simplest)
 3. Create form components (most complex)
@@ -403,6 +422,7 @@ All random generation supports optional seed for:
 5. Write documentation
 
 ### Potential Issues to Watch
+
 - MathLive Compute Engine integration (test with real expressions)
 - Large JSONB fields performance (pagination essential)
 - Image upload to Supabase Storage (bucket creation needed)
@@ -410,6 +430,7 @@ All random generation supports optional seed for:
 - Float precision in random decimal generation
 
 ### Performance Considerations
+
 - Index on `grades` using GIN (already done)
 - Pagination default 50, max 100
 - Cache parsed templates (future optimization)

@@ -999,3 +999,233 @@ const { data: combats } = await supabase
 	.eq('organizer_id', session.user.id)
 	.order('created_at', { ascending: false });
 ```
+
+---
+
+## Question Bank System
+
+### `question_templates`
+
+Stores mathematical question templates with variable support, multiple variations, and categorization.
+
+| Column               | Type        | Description                                                       |
+| -------------------- | ----------- | ----------------------------------------------------------------- |
+| id                   | UUID (PK)   | Template ID                                                       |
+| title                | TEXT        | Template title (supports LaTeX, required)                         |
+| description          | TEXT        | Optional description for documentation and student context        |
+| type                 | TEXT        | Question type (see types below)                                   |
+| variations           | JSONB       | Array of question variations (statement, variables, answer, etc.) |
+| exercise_instruction | TEXT        | Optional exercise-level instruction shared across all variations  |
+| grades               | TEXT[]      | Applicable grade levels (CP, CE1, 6, 5, etc.)                     |
+| theme                | TEXT        | Broad subject area (e.g., "Algèbre", "Géométrie")                 |
+| domain               | TEXT        | Specific topic (e.g., "Équations", "Triangles")                   |
+| subdomain            | TEXT        | Optional sub-topic (e.g., "Linéaires", "Quadratiques")            |
+| level                | INTEGER     | Difficulty level (positive integer, no max)                       |
+| status               | TEXT        | Template status: 'draft' or 'published'                           |
+| delay                | INTEGER     | Time limit in seconds (optional)                                  |
+| precision            | JSONB       | Precision specification for numerical questions                   |
+| transform_type       | TEXT        | Type of algebraic transformation (for algebraic_transform type)   |
+| multiple_answers     | BOOLEAN     | Allow multiple correct answers (for multiple_choice type)         |
+| created_at           | TIMESTAMPTZ | Creation time                                                     |
+| updated_at           | TIMESTAMPTZ | Last update time                                                  |
+| created_by           | UUID (FK)   | References profiles(id)                                           |
+
+#### Question Types
+
+- `numerical_exact`: Exact numerical answer (fractions, integers)
+- `numerical_decimal`: Decimal answer with precision
+- `numerical_rounded`: Rounded answer with rounding rules
+- `algebraic_transform`: Algebraic expression transformation
+- `fill_in_blanks`: Fill-in-the-blank questions
+- `multiple_choice`: Multiple choice questions (QCM)
+
+#### Status Field
+
+Templates have two statuses:
+
+- **`draft`**: Work-in-progress templates
+  - Can be incomplete (missing required fields)
+  - No validation enforced
+  - Can have duplicate categories
+  - Not affected by filters in the questions list
+- **`published`**: Active, complete templates
+  - Full validation enforced
+  - Must have unique category (theme + domain + subdomain + level)
+  - Affected by all filters in the questions list
+  - Used for generating question instances
+
+#### Category Uniqueness
+
+Published templates must have a **unique category combination**:
+
+- **Category** = `theme` + `domain` + `subdomain` + `level`
+- Enforced via partial unique index:
+  ```sql
+  CREATE UNIQUE INDEX idx_question_templates_unique_category
+  ON question_templates(theme, domain, COALESCE(subdomain, ''), level)
+  WHERE status = 'published';
+  ```
+- Draft templates are excluded from this constraint
+- Auto-adjustment: If creating a published template with duplicate category, level is automatically adjusted to max+1
+
+#### Variations Structure
+
+Each template contains one or more variations (stored as JSONB array):
+
+```json
+{
+	"variations": [
+		{
+			"statement": [
+				{ "type": "text", "content": "Calculer {a} + {b}" },
+				{ "type": "image", "url": "https://..." }
+			],
+			"variables": [
+				{
+					"name": "a",
+					"type": "random",
+					"min": 1,
+					"max": 10,
+					"exclude": [5]
+				},
+				{
+					"name": "b",
+					"type": "random",
+					"min": 1,
+					"max": 10
+				},
+				{
+					"name": "result",
+					"type": "eval",
+					"expression": "{a} + {b}"
+				}
+			],
+			"answer": "{result}",
+			"correction": [{ "type": "text", "content": "La somme est {result}" }],
+			"blanks": [], // For fill_in_blanks type
+			"choices": [] // For multiple_choice type
+		}
+	]
+}
+```
+
+#### Indexes
+
+- `idx_question_templates_type`: Filter by question type
+- `idx_question_templates_title`: Regular index for sorting/filtering by title
+- `idx_question_templates_title_search`: GIN index for full-text search on title (French config)
+- `idx_question_templates_grades`: GIN index for grade filtering
+- `idx_question_templates_created_by`: Filter by creator
+- `idx_question_templates_created_at`: Sort by creation date
+- `idx_question_templates_status`: Filter by status
+- `idx_question_templates_theme`: Filter by theme
+- `idx_question_templates_domain`: Filter by domain
+- `idx_question_templates_subdomain`: Filter by subdomain (partial)
+- `idx_question_templates_level`: Filter by level
+- `idx_question_templates_categories`: Composite (theme, domain, level)
+- `idx_question_templates_unique_category`: Unique constraint for published templates
+
+#### RLS Policies
+
+- Teachers and admins can view all templates
+- Only admins can create, update, or delete templates
+
+#### Client-Side Cache
+
+A category cache system prevents duplicate API calls:
+
+- **Store**: `src/lib/stores/questionCategories.svelte.ts`
+- **API**: `GET /api/questions/categories/all`
+- **Cache Duration**: 5 minutes
+- **Usage**: Real-time duplicate detection in question forms
+
+#### Workflow: Draft → Published
+
+1. **Create Draft** (status = 'draft'):
+   - No validation enforced
+   - Can be incomplete
+   - Saved with "Enregistrer brouillon" button
+
+2. **Publish** (status = 'published'):
+   - Full validation enforced (required fields, circular dependencies)
+   - Category uniqueness check
+   - If duplicate category detected:
+     - Show confirmation dialog with suggested level (max + 1)
+     - Auto-adjust level on confirmation
+   - Saved with "Publier" button
+
+3. **Edit Published**:
+   - Full validation maintained
+   - Cannot change category to an existing one
+   - Server returns 400 error if duplicate detected
+
+#### Admin Interface
+
+The questions list (`/dashboard/admin/questions`) has two tabs:
+
+- **Brouillons**: All draft templates
+  - Sorted by modification date (descending)
+  - Always visible
+  - Not affected by filters
+  - Badge: Orange "Brouillon"
+
+- **Publiés**: Published templates
+  - Filterable by: type, grades, theme, domain, subdomain, level range
+  - Sortable by: type, creation date
+  - Paginated (50 per page)
+  - Badge: Green "Publié"
+
+#### Example Queries
+
+```typescript
+// Fetch all published templates with filters
+const { data: templates } = await supabase
+	.from('question_templates')
+	.select('*')
+	.eq('status', 'published')
+	.eq('theme', 'Algèbre')
+	.eq('domain', 'Équations')
+	.gte('level', 1)
+	.lte('level', 5)
+	.overlaps('grades', ['6', '5'])
+	.order('created_at', { ascending: false });
+
+// Fetch all drafts (sorted by modification date)
+const { data: drafts } = await supabase
+	.from('question_templates')
+	.select('*')
+	.eq('status', 'draft')
+	.order('updated_at', { ascending: false });
+
+// Check category uniqueness (published only)
+const { data: existing } = await supabase
+	.from('question_templates')
+	.select('id')
+	.eq('status', 'published')
+	.eq('theme', 'Algèbre')
+	.eq('domain', 'Équations')
+	.is('subdomain', null)
+	.eq('level', 3)
+	.single();
+
+// Get next available level in category
+const { data: maxLevel } = await supabase
+	.from('question_templates')
+	.select('level')
+	.eq('status', 'published')
+	.eq('theme', 'Algèbre')
+	.eq('domain', 'Équations')
+	.is('subdomain', null)
+	.order('level', { ascending: false })
+	.limit(1)
+	.single();
+```
+
+#### Related Documentation
+
+See **[CLAUDE_FEATURES_QUESTION_BANK.md](CLAUDE_FEATURES_QUESTION_BANK.md)** for detailed documentation on:
+
+- Variable resolution system
+- Question types and validation
+- Instance generation
+- Answer checking

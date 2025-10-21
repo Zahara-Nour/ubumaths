@@ -118,13 +118,9 @@
 
 	const isScrollable = $derived(Math.max(frontHeight, backHeight) > maxViewportHeight);
 
-	const canFlip = $derived(
-		mode === 'flashcard' || (mode === 'interactive' && isSubmitted)
-	);
+	const canFlip = $derived(mode === 'flashcard' || (mode === 'interactive' && isSubmitted));
 
-	const canSubmit = $derived(
-		mode === 'interactive' && !isSubmitted && hasValidInput()
-	);
+	const canSubmit = $derived(mode === 'interactive' && !isSubmitted && hasValidInput());
 
 	const hasReachedMaxAttempts = $derived(maxAttempts > 0 && attempts >= maxAttempts);
 
@@ -367,14 +363,15 @@
 		class:flipped={isFlipped}
 		style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'}; perspective: 1000px;"
 	>
-		<div class="flip-inner" class:flipped={isFlipped} style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'};">
+		<div
+			class="flip-inner"
+			class:flipped={isFlipped}
+			style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'};"
+		>
 			<!-- ===================== FRONT FACE ===================== -->
 			<div
 				bind:this={frontElement}
-				class={cn(
-					'flip-face flip-front',
-					isScrollable && 'scrollable'
-				)}
+				class={cn('flip-face flip-front', isScrollable && 'scrollable')}
 				style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'};"
 			>
 				<Card.Root class="h-full">
@@ -506,10 +503,7 @@
 			<!-- ===================== BACK FACE ===================== -->
 			<div
 				bind:this={backElement}
-				class={cn(
-					'flip-face flip-back',
-					isScrollable && 'scrollable'
-				)}
+				class={cn('flip-face flip-back', isScrollable && 'scrollable')}
 				style="height: {currentHeight > 0 ? currentHeight + 'px' : 'auto'};"
 			>
 				<Card.Root class="h-full">

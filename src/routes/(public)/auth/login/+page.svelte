@@ -122,7 +122,10 @@
 						<div class="space-y-2">
 							<div class="flex items-center justify-between">
 								<Label for="password">Mot de passe</Label>
-								<a href={resolve('/auth/reset-password')} class="text-sm text-primary hover:underline">
+								<a
+									href={resolve('/auth/reset-password')}
+									class="text-sm text-primary hover:underline"
+								>
 									Mot de passe oublié ?
 								</a>
 							</div>
@@ -146,7 +149,9 @@
 						<!-- Sign up link -->
 						<p class="text-center text-sm text-muted-foreground">
 							Vous n'avez pas de compte ?
-							<a href={resolve('/signup')} class="font-medium text-primary hover:underline">S'inscrire</a>
+							<a href={resolve('/signup')} class="font-medium text-primary hover:underline"
+								>S'inscrire</a
+							>
 						</p>
 					</form>
 				</Tabs.Content>

@@ -35,7 +35,9 @@
 
 	let isSubmitting = $state(false);
 
-	async function handleSave(template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>) {
+	async function handleSave(
+		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>
+	) {
 		isSubmitting = true;
 
 		try {
@@ -90,13 +92,6 @@
 
 	<!-- Main Form -->
 	<Card.Root>
-		<Card.Header>
-			<Card.Title>Modification du modèle</Card.Title>
-			<Card.Description>
-				Modifiez les champs ci-dessous. Utilisez la syntaxe spéciale pour les variables (<code>&#123;@:nom&#125;</code>),
-				nombres aléatoires (<code>&#123;#:min-max&#125;</code>), et évaluations (<code>&#123;eval:expression&#125;</code>).
-			</Card.Description>
-		</Card.Header>
 		<Card.Content>
 			<QuestionTemplateForm
 				template={data.template}

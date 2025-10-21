@@ -49,122 +49,109 @@ import { shuffleChoices } from './choice-shuffler';
  * }
  * ```
  */
-export function generateInstance(
-  template: QuestionTemplate,
-  seed?: number
-): GenerationResult {
-  try {
-    // 1. Validate template structure
-    const validationErrors = validateTemplate(template);
-    if (validationErrors.length > 0) {
-      return {
-        success: false,
-        errors: validationErrors
-      };
-    }
+export function generateInstance(template: QuestionTemplate, seed?: number): GenerationResult {
+	try {
+		// 1. Validate template structure
+		const validationErrors = validateTemplate(template);
+		if (validationErrors.length > 0) {
+			return {
+				success: false,
+				errors: validationErrors
+			};
+		}
 
-    // 2. Select a variation (random or based on seed)
-    const variationIndex = seed !== undefined
-      ? Math.abs(seed) % template.variations.length
-      : Math.floor(Math.random() * template.variations.length);
-    const selectedVariation = template.variations[variationIndex];
+		// 2. Select a variation (random or based on seed)
+		const variationIndex =
+			seed !== undefined
+				? Math.abs(seed) % template.variations.length
+				: Math.floor(Math.random() * template.variations.length);
+		const selectedVariation = template.variations[variationIndex];
 
-    // 3. Detect circular dependencies in selected variation
-    const circularErrors = detectCircularDependencies(selectedVariation.variables);
-    if (circularErrors.length > 0) {
-      return {
-        success: false,
-        errors: circularErrors
-      };
-    }
+		// 3. Detect circular dependencies in selected variation
+		const circularErrors = detectCircularDependencies(selectedVariation.variables);
+		if (circularErrors.length > 0) {
+			return {
+				success: false,
+				errors: circularErrors
+			};
+		}
 
-    // 4. Resolve variables in declaration order
-    const resolvedVariables = resolveVariables(selectedVariation.variables, seed);
+		// 4. Resolve variables in declaration order
+		const resolvedVariables = resolveVariables(selectedVariation.variables, seed);
 
-    // 5. Resolve content fields from selected variation
-    const resolvedStatement = resolveContentFields(
-      selectedVariation.statement,
-      resolvedVariables,
-      seed
-    );
+		// 5. Resolve content fields from selected variation
+		const resolvedStatement = resolveContentFields(
+			selectedVariation.statement,
+			resolvedVariables,
+			seed
+		);
 
-    const resolvedAnswer = resolveAnswer(
-      selectedVariation.answer,
-      resolvedVariables,
-      seed
-    );
+		const resolvedAnswer = resolveAnswer(selectedVariation.answer, resolvedVariables, seed);
 
-    const resolvedCorrection = selectedVariation.correction
-      ? resolveContentFields(selectedVariation.correction, resolvedVariables, seed)
-      : undefined;
+		const resolvedCorrection = selectedVariation.correction
+			? resolveContentFields(selectedVariation.correction, resolvedVariables, seed)
+			: undefined;
 
-    // 6. Resolve type-specific fields from selected variation
-    let resolvedChoices;
-    let shuffledChoices;
-    let resolvedBlanks;
+		// 6. Resolve type-specific fields from selected variation
+		let resolvedChoices;
+		let shuffledChoices;
+		let resolvedBlanks;
 
-    if (template.type === 'multiple_choice' && selectedVariation.choices) {
-      // Resolve choice content
-      resolvedChoices = selectedVariation.choices.map((choice) => ({
-        content: resolveContentFields([choice.content], resolvedVariables, seed)[0],
-        isCorrect: choice.isCorrect
-      }));
+		if (template.type === 'multiple_choice' && selectedVariation.choices) {
+			// Resolve choice content
+			resolvedChoices = selectedVariation.choices.map((choice) => ({
+				content: resolveContentFields([choice.content], resolvedVariables, seed)[0],
+				isCorrect: choice.isCorrect
+			}));
 
-      // Shuffle choices
-      shuffledChoices = shuffleChoices(resolvedChoices, seed);
-    }
+			// Shuffle choices
+			shuffledChoices = shuffleChoices(resolvedChoices, seed);
+		}
 
-    if (template.type === 'fill_in_blanks' && selectedVariation.blanks) {
-      resolvedBlanks = selectedVariation.blanks.map((blank) => ({
-        position: blank.position,
-        expectedAnswer: resolveExpression(
-          blank.expectedAnswer,
-          resolvedVariables,
-          seed
-        )
-      }));
-    }
+		if (template.type === 'fill_in_blanks' && selectedVariation.blanks) {
+			resolvedBlanks = selectedVariation.blanks.map((blank) => ({
+				position: blank.position,
+				expectedAnswer: resolveExpression(blank.expectedAnswer, resolvedVariables, seed)
+			}));
+		}
 
-    // 7. Construct instance
-    const instance: QuestionInstance = {
-      templateId: template.id,
-      type: template.type,
-      statement: resolvedStatement,
-      resolvedVariables,
-      answer: resolvedAnswer,
-      options: template.options,
-      precision: template.precision,
-      grades: template.grades,
-      theme: template.theme,
-      domain: template.domain,
-      subdomain: template.subdomain,
-      level: template.level,
-      delay: template.delay,
-      correction: resolvedCorrection,
-      transformType: template.transformType,
-      blanks: resolvedBlanks,
-      choices: resolvedChoices,
-      shuffledChoices,
-      multipleAnswers: template.multipleAnswers,
-      generatedAt: new Date().toISOString(),
-      seed,
-      selectedVariationIndex: variationIndex
-    };
+		// 7. Construct instance
+		const instance: QuestionInstance = {
+			templateId: template.id,
+			type: template.type,
+			statement: resolvedStatement,
+			resolvedVariables,
+			answer: resolvedAnswer,
+			exerciseInstruction: template.exerciseInstruction,
+			options: template.options,
+			precision: template.precision,
+			grades: template.grades,
+			theme: template.theme,
+			domain: template.domain,
+			subdomain: template.subdomain,
+			level: template.level,
+			delay: template.delay,
+			correction: resolvedCorrection,
+			transformType: template.transformType,
+			blanks: resolvedBlanks,
+			choices: resolvedChoices,
+			shuffledChoices,
+			multipleAnswers: template.multipleAnswers,
+			generatedAt: new Date().toISOString(),
+			seed,
+			selectedVariationIndex: variationIndex
+		};
 
-    return {
-      success: true,
-      instance
-    };
-  } catch (error) {
-    return {
-      success: false,
-      errors: [
-        error instanceof Error
-          ? error.message
-          : `Unknown error: ${String(error)}`
-      ]
-    };
-  }
+		return {
+			success: true,
+			instance
+		};
+	} catch (error) {
+		return {
+			success: false,
+			errors: [error instanceof Error ? error.message : `Unknown error: ${String(error)}`]
+		};
+	}
 }
 
 /**
@@ -178,16 +165,16 @@ export function generateInstance(
  * @returns Array of generation results
  */
 export function generateMultipleInstances(
-  template: QuestionTemplate,
-  count: number,
-  baseSeed?: number
+	template: QuestionTemplate,
+	count: number,
+	baseSeed?: number
 ): GenerationResult[] {
-  const results: GenerationResult[] = [];
+	const results: GenerationResult[] = [];
 
-  for (let i = 0; i < count; i++) {
-    const seed = baseSeed !== undefined ? baseSeed + i : undefined;
-    results.push(generateInstance(template, seed));
-  }
+	for (let i = 0; i < count; i++) {
+		const seed = baseSeed !== undefined ? baseSeed + i : undefined;
+		results.push(generateInstance(template, seed));
+	}
 
-  return results;
+	return results;
 }

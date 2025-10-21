@@ -7,9 +7,11 @@ All API endpoints for the Question Bank System have been successfully implemente
 ## Implemented Endpoints
 
 ### 1. GET /api/questions/templates
+
 **Description**: List all question templates with optional filters
 
 **Query Parameters**:
+
 - `type`: Filter by question type (numerical_exact, algebraic_transform, etc.)
 - `grades`: Comma-separated grade levels (6, 5, 4, 3, 2, 1, Tale)
 - `limit`: Results per page (default: 50, max: 100)
@@ -24,16 +26,19 @@ All API endpoints for the Question Bank System have been successfully implemente
 ---
 
 ### 2. POST /api/questions/templates
+
 **Description**: Create a new question template
 
 **Request Body**: `QuestionTemplate` (without id, timestamps)
 
 **Validation**:
+
 - ✅ Template structure validation
 - ✅ Circular dependency detection in variables
 - ✅ Type-specific field validation
 
 **Returns**:
+
 - Success (201): `{ success: true, template: QuestionTemplate }`
 - Error (400): `{ success: false, errors: string[] }`
 
@@ -44,6 +49,7 @@ All API endpoints for the Question Bank System have been successfully implemente
 ---
 
 ### 3. GET /api/questions/templates/[id]
+
 **Description**: Get a single template by ID
 
 **Parameters**: `id` (UUID)
@@ -57,6 +63,7 @@ All API endpoints for the Question Bank System have been successfully implemente
 ---
 
 ### 4. PUT /api/questions/templates/[id]
+
 **Description**: Update an existing template
 
 **Parameters**: `id` (UUID)
@@ -64,11 +71,13 @@ All API endpoints for the Question Bank System have been successfully implemente
 **Request Body**: `QuestionTemplate` (partial or complete)
 
 **Validation**:
+
 - ✅ Template structure validation
 - ✅ Circular dependency detection
 - ✅ Template existence check
 
 **Returns**:
+
 - Success (200): `{ success: true, template: QuestionTemplate }`
 - Not found (404): Template doesn't exist
 - Error (400): `{ success: false, errors: string[] }`
@@ -80,14 +89,17 @@ All API endpoints for the Question Bank System have been successfully implemente
 ---
 
 ### 5. DELETE /api/questions/templates/[id]
+
 **Description**: Delete a template
 
 **Parameters**: `id` (UUID)
 
 **Validation**:
+
 - ✅ Template existence check before deletion
 
 **Returns**:
+
 - Success (200): `{ success: true }`
 - Not found (404): Template doesn't exist
 
@@ -98,18 +110,21 @@ All API endpoints for the Question Bank System have been successfully implemente
 ---
 
 ### 6. POST /api/questions/generate/[id]
+
 **Description**: Generate a question instance from a template
 
 **Parameters**: `id` (UUID) - Template ID
 
 **Request Body** (optional):
+
 ```json
 {
-  "seed": 12345  // Optional: For reproducible generation
+	"seed": 12345 // Optional: For reproducible generation
 }
 ```
 
 **Processing**:
+
 - ✅ Fetches template from database
 - ✅ Converts snake_case to camelCase
 - ✅ Calls `generateInstance()` with optional seed
@@ -118,6 +133,7 @@ All API endpoints for the Question Bank System have been successfully implemente
 - ✅ Resolves content fields (statement, correction)
 
 **Returns**:
+
 - Success (200): `{ success: true, instance: QuestionInstance }`
 - Error (400): `{ success: false, errors: string[] }`
 - Not found (404): Template doesn't exist
@@ -135,6 +151,7 @@ All API endpoints for the Question Bank System have been successfully implemente
 The API endpoints handle conversion between database snake_case and TypeScript camelCase:
 
 **Database (snake_case)**:
+
 - `transform_type`
 - `multiple_answers`
 - `created_at`
@@ -142,6 +159,7 @@ The API endpoints handle conversion between database snake_case and TypeScript c
 - `created_by`
 
 **TypeScript (camelCase)**:
+
 - `transformType` (deprecated in favor of snake_case in types)
 - `multipleAnswers` (deprecated)
 - `created_at` (kept as-is)
@@ -172,26 +190,32 @@ When fields are missing in requests, endpoints provide sensible defaults:
 All endpoints follow consistent error patterns:
 
 **400 Bad Request**:
+
 - Template validation errors
 - Circular dependency errors
 - Invalid request body
 
 **401 Unauthorized**:
+
 - No authenticated user
 
 **403 Forbidden**:
+
 - User lacks required role (admin/teacher)
 
 **404 Not Found**:
+
 - Template doesn't exist
 
 **500 Internal Server Error**:
+
 - Database errors
 - Unexpected exceptions
 
 ### Security
 
 **Role-Based Access Control (RBAC)**:
+
 - ✅ GET templates: Teachers + Admins
 - ✅ POST template: Admins only
 - ✅ PUT template: Admins only
@@ -199,6 +223,7 @@ All endpoints follow consistent error patterns:
 - ✅ Generate instance: Teachers + Admins
 
 **Row Level Security (RLS)**:
+
 - Teachers can view all templates (for now)
 - Future: Could limit to own templates or public library
 
@@ -207,6 +232,7 @@ All endpoints follow consistent error patterns:
 ## Testing Checklist
 
 ### ✅ Completed (Code Implementation)
+
 - [x] GET /api/questions/templates
 - [x] POST /api/questions/templates
 - [x] GET /api/questions/templates/[id]
@@ -215,6 +241,7 @@ All endpoints follow consistent error patterns:
 - [x] POST /api/questions/generate/[id]
 
 ### ⏳ Pending (Manual Testing)
+
 - [ ] Test with Postman/Bruno/Insomnia
 - [ ] Verify validation catches all error cases
 - [ ] Test circular dependency detection with complex chains
@@ -225,6 +252,7 @@ All endpoints follow consistent error patterns:
 - [ ] Test filtering by type and grades
 
 ### 🔄 Integration Testing
+
 - [ ] Create template via UI → Verify in database
 - [ ] Edit template → Verify changes persist
 - [ ] Delete template → Verify cascade effects
@@ -262,6 +290,7 @@ All endpoints follow consistent error patterns:
 ## Files Modified
 
 ### API Endpoints
+
 - `src/routes/api/questions/templates/+server.ts`
   - Fixed POST validation and field mapping
   - Added proper status codes (201, 400, 500)
@@ -276,15 +305,18 @@ All endpoints follow consistent error patterns:
   - Added status codes based on success/failure
 
 ### Test Files (11 total)
+
 All test files created but not yet run:
 
 **Parser Tests** (4 files):
+
 - `src/lib/questions/parser/tokenizer.test.ts`
 - `src/lib/questions/parser/random-parser.test.ts`
 - `src/lib/questions/parser/variable-parser.test.ts`
 - `src/lib/questions/parser/eval-parser.test.ts`
 
 **Generator Tests** (5 files):
+
 - `src/lib/questions/generator/random-generator.test.ts`
 - `src/lib/questions/generator/variable-resolver.test.ts`
 - `src/lib/questions/generator/content-resolver.test.ts`
@@ -292,6 +324,7 @@ All test files created but not yet run:
 - `src/lib/questions/generator/instance-generator.test.ts`
 
 **Validator Tests** (2 files):
+
 - `src/lib/questions/validators/template-validator.test.ts`
 - `src/lib/questions/validators/circular-dependency.test.ts`
 
@@ -302,6 +335,7 @@ All test files created but not yet run:
 None! All API endpoints are implemented and TypeScript compiles without errors in the Question Bank code.
 
 **Existing TypeScript Errors** (not related to Question Bank):
+
 - Geometry/MathGraph service type issues
 - These existed before and don't affect Question Bank functionality
 
@@ -319,6 +353,7 @@ Ready for testing!
 ## Documentation
 
 See also:
+
 - `CLAUDE.md` - Complete Question Bank system documentation (lines 3418-3838)
 - `QUESTIONS_IMPLEMENTATION_STATUS.md` - Phase completion status
 - `QUESTIONS_ADMIN_INTERFACE.md` - Admin UI guide

@@ -74,7 +74,8 @@
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	function handleMathGraphChange(app: MathGraphApp) { // For future auto-validation
+	function handleMathGraphChange(app: MathGraphApp) {
+		// For future auto-validation
 		lastActivityTime = Date.now();
 
 		// Auto-validate in real-time for certain exercise types

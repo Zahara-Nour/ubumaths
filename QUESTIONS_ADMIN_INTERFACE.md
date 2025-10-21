@@ -9,9 +9,11 @@ The complete admin interface for managing question templates has been implemente
 ### 1. Pages (3 files)
 
 #### `/dashboard/admin/questions/+page.svelte`
+
 **Purpose**: List all question templates with filters and CRUD actions
 
 **Features**:
+
 - Table view of all templates
 - Type filter (numerical, algebraic, fill-in-blanks, QCM)
 - Client-side search by statement text
@@ -23,18 +25,22 @@ The complete admin interface for managing question templates has been implemente
 **Navigation**: Added to admin sidebar with BookOpen icon
 
 #### `/dashboard/admin/questions/create/+page.svelte`
+
 **Purpose**: Create new question templates
 
 **Features**:
+
 - Form orchestrator component
 - Success/error handling
 - Redirect to list on success
 - Toast notifications
 
 #### `/dashboard/admin/questions/[id]/edit/+page.svelte` + `+page.server.ts`
+
 **Purpose**: Edit existing question templates
 
 **Features**:
+
 - Pre-populated form with existing data
 - Server-side template fetch with validation
 - PUT to API on save
@@ -43,9 +49,11 @@ The complete admin interface for managing question templates has been implemente
 ### 2. Components (7 files)
 
 #### `QuestionTemplateForm.svelte`
+
 **Purpose**: Main form orchestrator
 
 **Features**:
+
 - Type selection (6 question types)
 - Grade level multi-select (badges)
 - Tabbed interface: Statement, Variables, Answer, Preview, JSON
@@ -54,6 +62,7 @@ The complete admin interface for managing question templates has been implemente
 - Save/Cancel buttons with loading states
 
 **Tabs**:
+
 1. **Statement**: ContentFieldEditor for question text + optional correction
 2. **Variables**: VariableEditor with syntax helpers
 3. **Answer**: AnswerEditor (type-specific)
@@ -61,9 +70,11 @@ The complete admin interface for managing question templates has been implemente
 5. **JSON**: Raw JSON output with JsonViewer
 
 #### `VariableEditor.svelte`
+
 **Purpose**: Edit question variables with syntax helpers
 
 **Features**:
+
 - Add/remove/reorder variables (declaration order matters)
 - Variable name validation (alphanumeric + underscore)
 - Duplicate name detection
@@ -72,6 +83,7 @@ The complete admin interface for managing question templates has been implemente
 - Cursor-aware syntax insertion
 
 **Syntax Helper Buttons**:
+
 - `{@:}` - Variable reference
 - `{#:1-10}` - Random integer
 - `{#:0.5-9.99:0.01}` - Random decimal
@@ -79,9 +91,11 @@ The complete admin interface for managing question templates has been implemente
 - `{eval:}` - Mathematical evaluation
 
 #### `ContentFieldEditor.svelte`
+
 **Purpose**: Edit multi-field content (statement, correction)
 
 **Features**:
+
 - Add/remove/reorder fields
 - Text fields (LaTeX support, monospace font)
 - Image fields (URL input with preview)
@@ -89,10 +103,12 @@ The complete admin interface for managing question templates has been implemente
 - Minimum 1 field enforced
 
 **Field Types**:
+
 - **Text**: Textarea with LaTeX/variable syntax
 - **Image**: URL input with live preview (upload to Supabase Storage planned)
 
 #### `AnswerEditor.svelte`
+
 **Purpose**: Dynamic answer editor based on question type
 
 **Type-Specific Editors**:
@@ -118,9 +134,11 @@ The complete admin interface for managing question templates has been implemente
    - Visual "Correct" badge
 
 #### `PrecisionEditor.svelte`
+
 **Purpose**: Configure numerical answer precision
 
 **Precision Types**:
+
 1. **None**: Exact match only
 2. **Decimal**: Fixed decimal places (e.g., 2 decimals)
 3. **Significant**: Significant figures (e.g., 3 sig figs)
@@ -130,9 +148,11 @@ The complete admin interface for managing question templates has been implemente
 **UI**: Card with type selector + type-specific configuration inputs
 
 #### `QuestionPreview.svelte`
+
 **Purpose**: Live preview of generated instances
 
 **Features**:
+
 - Auto-generate on template change
 - Regenerate button with new random seed
 - Display generated statement, variables, answer, choices
@@ -142,6 +162,7 @@ The complete admin interface for managing question templates has been implemente
 - MathLive rendering (planned)
 
 **Display Sections**:
+
 - Statement (rendered content)
 - Resolved variables (name: value pairs)
 - Answer (highlighted in green)
@@ -149,9 +170,11 @@ The complete admin interface for managing question templates has been implemente
 - Correction (if provided)
 
 #### `JsonViewer.svelte`
+
 **Purpose**: Debug JSON viewer
 
 **Features**:
+
 - Pretty-printed JSON (2-space indentation)
 - Copy to clipboard button
 - Character count
@@ -170,6 +193,7 @@ Positioned after Classes, before Debug.
 ## Component Dependencies
 
 All required Shadcn components are already installed:
+
 - ✅ Button
 - ✅ Input
 - ✅ Textarea
@@ -237,6 +261,7 @@ The QuestionTemplateForm provides a tabbed interface for managing variations:
 **Location**: Top of the form, before the main content tabs (Statement, Variables, Answer, etc.)
 
 **Features**:
+
 - Each variation has its own numbered tab ("Variation 1", "Variation 2", etc.)
 - Active variation highlighted
 - **Add button** (+) to create new variations
@@ -244,6 +269,7 @@ The QuestionTemplateForm provides a tabbed interface for managing variations:
 - Delete button disabled if only 1 variation remains (minimum required)
 
 **Visual Layout**:
+
 ```
 ┌───────────────────────────────────────────────────────┐
 │ [Variation 1] [Variation 2] [Variation 3] [➕]        │
@@ -288,6 +314,7 @@ Each variation contains:
 #### Step-by-Step Workflow
 
 **1. Create Template** (Type & Grades Tab):
+
 ```
 - Select question type (e.g., "numerical_exact")
 - Select target grades (e.g., ["CM1", "CM2", "6"])
@@ -295,6 +322,7 @@ Each variation contains:
 ```
 
 **2. Configure First Variation** (Variation 1):
+
 ```
 Statement Tab:
   "Calculate: $${@:a} + {@:b}$$"
@@ -308,6 +336,7 @@ Answer Tab:
 ```
 
 **3. Add Second Variation** (Click + button):
+
 ```
 Statement Tab:
   "Calculate: $${@:a} - {@:b}$$"
@@ -323,6 +352,7 @@ Answer Tab:
 **4. Add Third and Fourth Variations** (Repeat as needed)
 
 **5. Preview Each Variation**:
+
 ```
 Aperçu Tab:
   - Use variation selector dropdown
@@ -332,6 +362,7 @@ Aperçu Tab:
 ```
 
 **6. Save Template**:
+
 ```
 - Click "Enregistrer"
 - All variations saved to database
@@ -375,6 +406,7 @@ Aperçu Tab:
 **Location**: Preview (Aperçu) tab
 
 **Features**:
+
 - **Dropdown menu** to choose variation
   - "Aléatoire (selon la graine)" - Random based on seed
   - "Variation 1" - Force first variation
@@ -384,6 +416,7 @@ Aperçu Tab:
 - **Visual feedback** - Badge showing which variation was selected (e.g., "Variation 2 / 4")
 
 **How It Works**:
+
 ```typescript
 // User selects "Variation 3" in dropdown
 // Seed is 100
@@ -399,6 +432,7 @@ effectiveSeed = 2 + (4 * Math.floor(100 / 4))
 ```
 
 **Testing Workflow**:
+
 1. Set variation selector to "Variation 1"
 2. Click "Régénérer" → Always shows Variation 1
 3. Change selector to "Variation 2"
@@ -408,17 +442,20 @@ effectiveSeed = 2 + (4 * Math.floor(100 / 4))
 ### Validation
 
 **Variation-Specific**:
+
 - At least 1 variation required (minimum)
 - Each variation validated independently
 - Error messages include variation index: "Variation 2: Missing answer"
 
 **Per-Variation Checks**:
+
 - Statement must have at least one non-empty text field
 - Answer must not be empty
 - Variable names must be valid and unique within variation
 - Circular dependency check scoped to variation's variables
 
 **Example Error Messages**:
+
 ```
 ✅ "Validation passed"
 ❌ "Variation 1: Statement must have at least one text field"
@@ -429,6 +466,7 @@ effectiveSeed = 2 + (4 * Math.floor(100 / 4))
 ### Best Practices
 
 **DO**:
+
 - ✅ Create variations for related problem types (addition/subtraction, different shapes, etc.)
 - ✅ Test each variation individually in preview before saving
 - ✅ Use descriptive variable names within each variation
@@ -436,6 +474,7 @@ effectiveSeed = 2 + (4 * Math.floor(100 / 4))
 - ✅ Keep variations within the same conceptual theme
 
 **DON'T**:
+
 - ❌ Mix completely unrelated concepts (make separate templates instead)
 - ❌ Duplicate identical variations (just use 1 variation)
 - ❌ Forget to test all variations before saving
@@ -448,6 +487,7 @@ effectiveSeed = 2 + (4 * Math.floor(100 / 4))
 **Template**: Arithmetic Operations (6ème)
 
 **Variation 1** (Addition):
+
 ```
 Statement: Calculate: $${@:a} + {@:b}$$
 Variables:
@@ -457,6 +497,7 @@ Answer: {eval:{@:a}+{@:b}}
 ```
 
 **Variation 2** (Subtraction):
+
 ```
 Statement: Calculate: $${@:a} - {@:b}$$
 Variables:
@@ -472,6 +513,7 @@ Answer: {eval:{@:a}-{@:b}}
 **Template**: Basic Operations (CM1, CM2, 6ème)
 
 **Variations**:
+
 1. Addition: `a + b`
 2. Subtraction: `a - b`
 3. Multiplication: `a × b`
@@ -484,6 +526,7 @@ Answer: {eval:{@:a}-{@:b}}
 **Template**: Solving Quadratics (3ème, 2nde)
 
 **Variations**:
+
 1. Two distinct roots (Δ > 0)
 2. One double root (Δ = 0)
 3. Difference of squares (special case)
@@ -495,6 +538,7 @@ Answer: {eval:{@:a}-{@:b}}
 #### Database Storage
 
 Templates stored with variations as JSONB:
+
 ```json
 {
   "type": "numerical_exact",
@@ -521,12 +565,14 @@ Templates stored with variations as JSONB:
 #### Variation Selection Algorithm
 
 **Deterministic** (with seed):
+
 ```typescript
 const index = Math.abs(seed) % variations.length;
 const variation = variations[index];
 ```
 
 **Random** (without seed):
+
 ```typescript
 const seed = Math.floor(Math.random() * 1000000);
 const index = seed % variations.length;
@@ -534,6 +580,7 @@ const variation = variations[index];
 ```
 
 **Guarantees**:
+
 - Same seed always selects same variation
 - Distribution is uniform across variations
 - Works with any number of variations (2, 3, 4, 10, etc.)
@@ -541,6 +588,7 @@ const variation = variations[index];
 ## Validation
 
 **Client-Side**:
+
 - Statement must have at least one non-empty text field
 - At least one grade level must be selected
 - Answer must not be empty
@@ -548,6 +596,7 @@ const variation = variations[index];
 - No duplicate variable names
 
 **Server-Side** (via API):
+
 - Template structure validation
 - Circular dependency detection
 - min < max validation (after variable resolution)
@@ -555,12 +604,14 @@ const variation = variations[index];
 ## Error Handling
 
 **Frontend**:
+
 - Toast notifications for success/error
 - Validation errors displayed inline
 - Preview shows generation errors with details
 - 404/403 errors handled with error pages
 
 **Backend**:
+
 - Returns `{ success: false, errors: [...] }` on validation failure
 - Returns `{ success: true, template }` on success
 

@@ -22,14 +22,18 @@
 		placeholder?: string;
 	}
 
-	let { selectedGrades = $bindable(), grades, placeholder = 'Sélectionner des niveaux' }: Props = $props();
+	let {
+		selectedGrades = $bindable(),
+		grades,
+		placeholder = 'Sélectionner des niveaux'
+	}: Props = $props();
 
 	/**
 	 * Handle change event from native select
 	 */
 	function handleChange(event: Event) {
 		const select = event.target as HTMLSelectElement;
-		const selected = Array.from(select.selectedOptions).map(option => option.value);
+		const selected = Array.from(select.selectedOptions).map((option) => option.value);
 		selectedGrades = selected;
 	}
 
@@ -51,7 +55,7 @@
 	<select
 		multiple
 		onchange={handleChange}
-		class="flex min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+		class="flex min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 		style="height: auto; max-height: 200px;"
 	>
 		{#each grades as grade}
@@ -62,7 +66,10 @@
 	</select>
 	{#if selectedGrades.length > 0}
 		<div class="mt-1 text-xs text-muted-foreground">
-			{selectedGrades.length} niveau{selectedGrades.length > 1 ? 'x' : ''} sélectionné{selectedGrades.length > 1 ? 's' : ''}
+			{selectedGrades.length} niveau{selectedGrades.length > 1 ? 'x' : ''} sélectionné{selectedGrades.length >
+			1
+				? 's'
+				: ''}
 		</div>
 	{/if}
 </div>

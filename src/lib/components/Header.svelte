@@ -198,7 +198,11 @@
 					<DropdownMenu.Separator />
 					{#each sidebarItems as item (item.href)}
 						<DropdownMenu.Item>
-							<a href={resolve(item.href)} class="flex w-full items-center" onclick={closeMobileMenu}>
+							<a
+								href={resolve(item.href)}
+								class="flex w-full items-center"
+								onclick={closeMobileMenu}
+							>
 								{#if item.icon}
 									<span class="mr-2">{item.icon}</span>
 								{/if}

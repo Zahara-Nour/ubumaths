@@ -11,6 +11,7 @@ Quick reference for template expression syntax.
 **Usage:** Reference a previously defined variable.
 
 **Examples:**
+
 ```latex
 $${@:a} + {@:b}$$           → Replace with variable values
 {@:max}                     → Use in any expression
@@ -18,6 +19,7 @@ Calculate {@:a}^2           → LaTeX with variable
 ```
 
 **Rules:**
+
 - Variables must be defined before use (declaration order)
 - Variable names: alphanumeric and underscore only
 
@@ -30,6 +32,7 @@ Calculate {@:a}^2           → LaTeX with variable
 **Syntax:** `{#:min-max}`
 
 **Examples:**
+
 ```typescript
 {#:1-10}                    → Random integer 1 to 10
 {#:-5-5}                    → Random integer -5 to 5
@@ -42,6 +45,7 @@ Calculate {@:a}^2           → LaTeX with variable
 **Syntax:** `{#:digitsBefore.digitsAfter}`
 
 **Examples:**
+
 ```typescript
 {#:2.3}                     → 2 digits before, 3 after (e.g., 45.123)
 {#:1.2}                     → 1 before, 2 after (e.g., 7.89)
@@ -54,6 +58,7 @@ Calculate {@:a}^2           → LaTeX with variable
 **Syntax:** `{#:min-max:step}`
 
 **Examples:**
+
 ```typescript
 {#:0.5-9.99:0.01}           → Decimal 0.5 to 9.99 by 0.01
 {#:0-1:0.1}                 → 0, 0.1, 0.2, ..., 1.0
@@ -65,6 +70,7 @@ Calculate {@:a}^2           → LaTeX with variable
 **Syntax:** `{#:base!exclusions}`
 
 **Single Values:**
+
 ```typescript
 {#:1-10!5}                  → 1 to 10 except 5
 {#:1-20!5,7}                → Except 5 and 7
@@ -72,6 +78,7 @@ Calculate {@:a}^2           → LaTeX with variable
 ```
 
 **Ranges:**
+
 ```typescript
 {#:1-20!5-7}                → Except 5, 6, 7
 {#:1-100!10-20,50}          → Except 10-20 and 50
@@ -79,6 +86,7 @@ Calculate {@:a}^2           → LaTeX with variable
 ```
 
 **Mixed:**
+
 ```typescript
 {#:1-50!5,7-9,{@:x}}        → Except 5, 7-9, and variable x
 {#:1-100!{@:a},{@:b}-{@:c}} → Multiple variables
@@ -93,6 +101,7 @@ Calculate {@:a}^2           → LaTeX with variable
 **Usage:** Evaluate mathematical expression using MathLive Compute Engine.
 
 **Examples:**
+
 ```typescript
 {eval:3+4}                  → "7"
 {eval:2^3}                  → "8"
@@ -102,6 +111,7 @@ Calculate {@:a}^2           → LaTeX with variable
 ```
 
 **Supported:**
+
 - Arithmetic: `+`, `-`, `*`, `/`, `^`
 - Functions: `\sqrt{}`, `\frac{}{}`
 - Variables (after substitution)
@@ -114,12 +124,14 @@ Calculate {@:a}^2           → LaTeX with variable
 **Three-Stage Pipeline:**
 
 1. **Stage 1 - Replace Variable References:**
+
    ```typescript
    // Replace all {@:varName} with their resolved values
    '{eval:{@:a}+{@:b}}' → '{eval:5+7}' (if a=5, b=7)
    ```
 
 2. **Stage 2 - Generate Random Numbers:**
+
    ```typescript
    // Generate random numbers and replace {#:...} expressions
    '{eval:{#:1-10}*2}' → '{eval:7*2}' (if random=7)
@@ -134,6 +146,7 @@ Calculate {@:a}^2           → LaTeX with variable
 **Complete Example:**
 
 Given this variable definition:
+
 ```typescript
 { name: 'sum', expression: '{eval:{@:a}+{@:b}}' }
 ```
@@ -160,6 +173,7 @@ If `a = 5` and `b = 7`, the resolution process is:
 **Usage:** Delimit mathematical expressions in text.
 
 **Examples:**
+
 ```latex
 Calculate $$3 + 4$$
 Simplify $$\frac{{@:a}}{{@:b}}$$
@@ -167,6 +181,7 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 ```
 
 **Can contain:**
+
 - Variable references: `{@:varName}`
 - Random numbers: `{#:1-10}`
 - Evaluations: `{eval:...}`
@@ -179,14 +194,12 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 
 ```json
 {
-  "variables": [
-    { "name": "a", "expression": "{#:1-20}" },
-    { "name": "b", "expression": "{#:1-20}" }
-  ],
-  "statement": [
-    { "type": "text", "content": "Calculate: $${@:a} + {@:b}$$" }
-  ],
-  "answer": "{eval:{@:a}+{@:b}}"
+	"variables": [
+		{ "name": "a", "expression": "{#:1-20}" },
+		{ "name": "b", "expression": "{#:1-20}" }
+	],
+	"statement": [{ "type": "text", "content": "Calculate: $${@:a} + {@:b}$$" }],
+	"answer": "{eval:{@:a}+{@:b}}"
 }
 ```
 
@@ -194,15 +207,13 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 
 ```json
 {
-  "variables": [
-    { "name": "maxValue", "expression": "10" },
-    { "name": "a", "expression": "{#:1-{@:maxValue}}" },
-    { "name": "b", "expression": "{#:1-{@:maxValue}}" }
-  ],
-  "statement": [
-    { "type": "text", "content": "Calculate: $${@:a} \\times {@:b}$$" }
-  ],
-  "answer": "{eval:{@:a}*{@:b}}"
+	"variables": [
+		{ "name": "maxValue", "expression": "10" },
+		{ "name": "a", "expression": "{#:1-{@:maxValue}}" },
+		{ "name": "b", "expression": "{#:1-{@:maxValue}}" }
+	],
+	"statement": [{ "type": "text", "content": "Calculate: $${@:a} \\times {@:b}$$" }],
+	"answer": "{eval:{@:a}*{@:b}}"
 }
 ```
 
@@ -210,14 +221,12 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 
 ```json
 {
-  "variables": [
-    { "name": "a", "expression": "{#:1-10}" },
-    { "name": "b", "expression": "{#:1-10!{@:a}}" }
-  ],
-  "statement": [
-    { "type": "text", "content": "Calculate: $${@:a}^2 - {@:b}^2$$" }
-  ],
-  "answer": "{eval:({@:a})^2-({@:b})^2}"
+	"variables": [
+		{ "name": "a", "expression": "{#:1-10}" },
+		{ "name": "b", "expression": "{#:1-10!{@:a}}" }
+	],
+	"statement": [{ "type": "text", "content": "Calculate: $${@:a}^2 - {@:b}^2$$" }],
+	"answer": "{eval:({@:a})^2-({@:b})^2}"
 }
 ```
 
@@ -225,17 +234,15 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 
 ```json
 {
-  "variables": [
-    { "name": "gcd", "expression": "{#:2-5}" },
-    { "name": "a", "expression": "{#:2-9}" },
-    { "name": "b", "expression": "{#:2-9!{@:a}}" },
-    { "name": "num", "expression": "{eval:{@:a}*{@:gcd}}" },
-    { "name": "den", "expression": "{eval:{@:b}*{@:gcd}}" }
-  ],
-  "statement": [
-    { "type": "text", "content": "Simplify: $$\\frac{{@:num}}{{@:den}}$$" }
-  ],
-  "answer": "\\frac{{@:a}}{{@:b}}"
+	"variables": [
+		{ "name": "gcd", "expression": "{#:2-5}" },
+		{ "name": "a", "expression": "{#:2-9}" },
+		{ "name": "b", "expression": "{#:2-9!{@:a}}" },
+		{ "name": "num", "expression": "{eval:{@:a}*{@:gcd}}" },
+		{ "name": "den", "expression": "{eval:{@:b}*{@:gcd}}" }
+	],
+	"statement": [{ "type": "text", "content": "Simplify: $$\\frac{{@:num}}{{@:den}}$$" }],
+	"answer": "\\frac{{@:a}}{{@:b}}"
 }
 ```
 
@@ -243,15 +250,13 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 
 ```json
 {
-  "variables": [
-    { "name": "min", "expression": "0.5" },
-    { "name": "max", "expression": "9.99" },
-    { "name": "value", "expression": "{#:{@:min}-{@:max}:0.01}" }
-  ],
-  "statement": [
-    { "type": "text", "content": "Round $${@:value}$$ to 2 decimal places" }
-  ],
-  "answer": "{eval:round({@:value}, 2)}"
+	"variables": [
+		{ "name": "min", "expression": "0.5" },
+		{ "name": "max", "expression": "9.99" },
+		{ "name": "value", "expression": "{#:{@:min}-{@:max}:0.01}" }
+	],
+	"statement": [{ "type": "text", "content": "Round $${@:value}$$ to 2 decimal places" }],
+	"answer": "{eval:round({@:value}, 2)}"
 }
 ```
 
@@ -260,11 +265,13 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 ## Resolution Order
 
 **Within a variable expression:**
+
 1. `{@:otherVar}` → Replace with resolved value
 2. `{#:...}` → Generate random number
 3. `{eval:...}` → Evaluate expression
 
 **Example flow:**
+
 ```typescript
 // Variable definition
 { name: 'c', expression: '{eval:{@:a}+{#:1-5}}' }
@@ -367,6 +374,7 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 ### Overview
 
 Templates can have **multiple variations**, each with its own:
+
 - Statement
 - Variables
 - Answer
@@ -375,12 +383,14 @@ Templates can have **multiple variations**, each with its own:
 - Choices (for multiple choice)
 
 When generating a question instance, one variation is selected either:
+
 - **Deterministically** using a seed: `Math.abs(seed) % variations.length`
 - **Randomly** if no seed is provided
 
 ### Basic Example
 
 **Single Variation Template** (Old Style):
+
 ```typescript
 {
   type: 'numerical_exact',
@@ -395,6 +405,7 @@ When generating a question instance, one variation is selected either:
 ```
 
 **Multi-Variation Template** (New Style):
+
 ```typescript
 {
   type: 'numerical_exact',
@@ -423,6 +434,7 @@ When generating a question instance, one variation is selected either:
 ### Advanced Example: Operations Template
 
 **4 Variations** (addition, subtraction, multiplication, division):
+
 ```typescript
 {
   type: 'numerical_exact',
@@ -472,6 +484,7 @@ When generating a question instance, one variation is selected either:
 ### Variation Selection
 
 **With Seed** (Deterministic):
+
 ```typescript
 // Template with 4 variations
 seed = 0  → Variation 1 (index 0)
@@ -483,6 +496,7 @@ seed = 100 → Variation 1 (100 % 4 = 0)
 ```
 
 **Without Seed** (Random):
+
 ```typescript
 // Generates random seed internally
 // Different variation on each call
@@ -491,6 +505,7 @@ seed = 100 → Variation 1 (100 % 4 = 0)
 ### Per-Variation vs Shared Fields
 
 **Per-Variation** (inside each variation):
+
 - `statement` - Question text/images
 - `variables` - Variable definitions
 - `answer` - Expected answer
@@ -499,6 +514,7 @@ seed = 100 → Variation 1 (100 % 4 = 0)
 - `choices` - For multiple choice (content + isCorrect)
 
 **Shared** (at template level):
+
 - `type` - Question type
 - `grades` - Target grade levels
 - `theme`, `domain`, `subdomain` - Categorization
@@ -511,12 +527,14 @@ seed = 100 → Variation 1 (100 % 4 = 0)
 ### Best Practices
 
 ✅ **DO:**
+
 - Use variations for related problem types (addition/subtraction, different shapes, etc.)
 - Keep variations within the same conceptual theme
 - Test each variation in preview before saving
 - Add corrections to help students understand
 
 ❌ **DON'T:**
+
 - Mix completely unrelated concepts (make separate templates instead)
 - Create templates with 0 variations (minimum 1 required)
 - Duplicate identical variations (just use 1)
@@ -525,6 +543,7 @@ seed = 100 → Variation 1 (100 % 4 = 0)
 ### Example Use Cases
 
 **Good Variations** (related concepts):
+
 - Arithmetic: Addition, subtraction, multiplication, division
 - Fractions: Addition, subtraction, simplification
 - Geometry: Rectangle, triangle, circle areas
@@ -532,6 +551,7 @@ seed = 100 → Variation 1 (100 % 4 = 0)
 - Factorization: Common factor, difference of squares, trinomial
 
 **Bad Variations** (unrelated):
+
 - ❌ Variation 1: Arithmetic addition, Variation 2: Pythagorean theorem
 - ❌ Variation 1: Fraction simplification, Variation 2: Probability
 - ❌ Variation 1: Algebra factorization, Variation 2: Geometry angles
@@ -540,17 +560,17 @@ seed = 100 → Variation 1 (100 % 4 = 0)
 
 ## Quick Reference Card
 
-| Syntax | Purpose | Example |
-|--------|---------|---------|
-| `{@:name}` | Variable reference | `{@:a}` |
-| `{#:1-10}` | Random integer | `{#:5-15}` |
-| `{#:2.3}` | Random decimal (digits) | `{#:1.2}` |
-| `{#:0.5-9.99:0.01}` | Random decimal (range) | `{#:0-1:0.1}` |
-| `{#:1-10!5}` | Exclude single value | `{#:1-20!10}` |
-| `{#:1-20!5-7}` | Exclude range | `{#:1-50!10-20}` |
-| `{#:1-100!{@:a}}` | Exclude variable | `{#:1-10!{@:x}}` |
-| `{eval:3+4}` | Evaluate expression | `{eval:{@:a}^2}` |
-| `$$...$$` | LaTeX math | `$$\frac{1}{2}$$` |
+| Syntax              | Purpose                 | Example           |
+| ------------------- | ----------------------- | ----------------- |
+| `{@:name}`          | Variable reference      | `{@:a}`           |
+| `{#:1-10}`          | Random integer          | `{#:5-15}`        |
+| `{#:2.3}`           | Random decimal (digits) | `{#:1.2}`         |
+| `{#:0.5-9.99:0.01}` | Random decimal (range)  | `{#:0-1:0.1}`     |
+| `{#:1-10!5}`        | Exclude single value    | `{#:1-20!10}`     |
+| `{#:1-20!5-7}`      | Exclude range           | `{#:1-50!10-20}`  |
+| `{#:1-100!{@:a}}`   | Exclude variable        | `{#:1-10!{@:x}}`  |
+| `{eval:3+4}`        | Evaluate expression     | `{eval:{@:a}^2}`  |
+| `$$...$$`           | LaTeX math              | `$$\frac{1}{2}$$` |
 
 ---
 

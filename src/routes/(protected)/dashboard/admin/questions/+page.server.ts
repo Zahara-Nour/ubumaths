@@ -26,7 +26,11 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase }, parent, url }) => {
+export const load: PageServerLoad = async ({
+	locals: { safeGetSession, supabase },
+	parent,
+	url
+}) => {
 	const { user } = await safeGetSession();
 
 	if (!user) {
@@ -74,14 +78,33 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 
 	try {
 		/**
-		 * Build Supabase query with filters
+		 * Load all draft templates separately (always visible, no filters)
+		 *
+		 * Drafts are shown in their own tab, sorted by last modification date.
+		 * They are not affected by any filters.
+		 */
+		const { data: drafts, error: draftsError } = await supabase
+			.from('question_templates')
+			.select('*')
+			.eq('status', 'draft')
+			.order('updated_at', { ascending: false });
+
+		if (draftsError) {
+			console.error('Error fetching draft templates:', draftsError);
+			throw error(500, 'Failed to load draft templates');
+		}
+
+		/**
+		 * Build Supabase query for published templates with filters
 		 *
 		 * Query builder pattern allows chaining multiple filters.
 		 * count: 'exact' calculates total matching rows for pagination.
+		 * Only published templates are affected by filters.
 		 */
 		let query = supabase
 			.from('question_templates')
-			.select('*', { count: 'exact' });
+			.select('*', { count: 'exact' })
+			.eq('status', 'published');
 
 		/**
 		 * Apply type filter (exact match)
@@ -144,26 +167,23 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 		/**
 		 * Server-side full-text search (PostgreSQL)
 		 *
-		 * Searches in statement JSONB array content using PostgreSQL's
-		 * full-text search with French language configuration.
+		 * NOTE: Text search is temporarily disabled pending creation of proper
+		 * tsvector index on variations JSONB column. Current implementation uses
+		 * client-side filtering as a fallback.
 		 *
-		 * Features:
-		 * - Searches text content fields within statement JSONB
-		 * - French stemming (chercher → cherch)
-		 * - Websearch syntax (supports "exact phrases", OR, AND)
-		 * - Case-insensitive
-		 *
-		 * Example searches:
-		 * - "fraction" → Matches "fractions", "Fraction"
-		 * - "aire triangle" → Matches "aire d'un triangle"
-		 * - "pythagore OR théorème" → Matches either
+		 * TODO: Create migration with:
+		 * - Generated column for text content extraction from variations
+		 * - GIN index on tsvector for fast full-text search
+		 * - French language configuration for stemming
+		 * - Include 'title' field in search (has dedicated GIN index: idx_question_templates_title_search)
 		 */
-		if (searchFilter) {
-			query = query.textSearch('statement', searchFilter, {
-				type: 'websearch',
-				config: 'french'
-			});
-		}
+		// Temporarily disabled - will be re-enabled after proper index is added
+		// if (searchFilter) {
+		// 	query = query.textSearch('variations', searchFilter, {
+		// 		type: 'websearch',
+		// 		config: 'french'
+		// 	});
+		// }
 
 		/**
 		 * Apply pagination and ordering
@@ -209,6 +229,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 		}
 
 		return {
+			drafts: drafts || [],
 			templates: templates || [],
 			total: count || 0,
 			page,

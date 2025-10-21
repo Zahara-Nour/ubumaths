@@ -34,11 +34,7 @@ export function validateAnswer(
 			case 'numerical_exact':
 			case 'numerical_decimal':
 			case 'numerical_rounded':
-				return validateNumerical(
-					userAnswer as string | number,
-					answer as string,
-					precision
-				);
+				return validateNumerical(userAnswer as string | number, answer as string, precision);
 
 			case 'algebraic_transform':
 				return validateAlgebraic(userAnswer as string, answer as string);
@@ -171,9 +167,7 @@ export function validateNumerical(
 		const diff = Math.abs(userNum - correctNum);
 
 		const isCorrect =
-			mode === 'absolute'
-				? diff <= tolerance
-				: diff <= Math.abs(correctNum * tolerance);
+			mode === 'absolute' ? diff <= tolerance : diff <= Math.abs(correctNum * tolerance);
 
 		return {
 			isCorrect,
@@ -233,18 +227,13 @@ function roundToMagnitude(num: number, magnitude: number): number {
  * @param correctAnswer - Correct expression (LaTeX)
  * @returns Validation result
  */
-export function validateAlgebraic(
-	userAnswer: string,
-	correctAnswer: string
-): ValidationResult {
+export function validateAlgebraic(userAnswer: string, correctAnswer: string): ValidationResult {
 	const isCorrect = areEquivalent(userAnswer, correctAnswer);
 
 	return {
 		isCorrect,
 		message: isCorrect ? 'Correct !' : 'Incorrect',
-		feedback: isCorrect
-			? undefined
-			: `Une forme correcte est: $$${correctAnswer}$$`
+		feedback: isCorrect ? undefined : `Une forme correcte est: $$${correctAnswer}$$`
 	};
 }
 
@@ -259,10 +248,7 @@ export function validateAlgebraic(
  * @param correctAnswers - Array of correct answers
  * @returns Validation result
  */
-export function validateBlanks(
-	userAnswers: string[],
-	correctAnswers: string[]
-): ValidationResult {
+export function validateBlanks(userAnswers: string[], correctAnswers: string[]): ValidationResult {
 	if (userAnswers.length !== correctAnswers.length) {
 		return {
 			isCorrect: false,
@@ -287,9 +273,7 @@ export function validateBlanks(
 	});
 
 	const allCorrect = results.every((r) => r.isCorrect);
-	const incorrectIndexes = results
-		.filter((r) => !r.isCorrect)
-		.map((r) => r.index + 1);
+	const incorrectIndexes = results.filter((r) => !r.isCorrect).map((r) => r.index + 1);
 
 	return {
 		isCorrect: allCorrect,
@@ -355,11 +339,7 @@ export function validateChoice(
  * @param epsilon - Tolerance (default: 1e-10)
  * @returns Whether values are approximately equal
  */
-export function approximatelyEqual(
-	a: number,
-	b: number,
-	epsilon: number = 1e-10
-): boolean {
+export function approximatelyEqual(a: number, b: number, epsilon: number = 1e-10): boolean {
 	return Math.abs(a - b) < epsilon;
 }
 

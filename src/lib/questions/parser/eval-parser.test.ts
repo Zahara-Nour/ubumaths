@@ -238,9 +238,7 @@ describe('Complex Expressions', () => {
 		const result = extractEvalExpressions(input);
 
 		expect(result).toHaveLength(1);
-		expect(result[0].expression).toBe(
-			'(-{@:b} + sqrt({@:b}^2 - 4*{@:a}*{@:c}))/(2*{@:a})'
-		);
+		expect(result[0].expression).toBe('(-{@:b} + sqrt({@:b}^2 - 4*{@:a}*{@:c}))/(2*{@:a})');
 	});
 
 	it('should handle distance formula', () => {

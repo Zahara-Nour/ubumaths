@@ -61,23 +61,24 @@ curl "http://localhost:5174/api/questions/templates?limit=10&offset=0" \
 ```
 
 **Expected Response**:
+
 ```json
 {
-  "templates": [
-    {
-      "id": "uuid",
-      "type": "numerical_exact",
-      "statement": [{"type": "text", "content": "..."}],
-      "variables": [],
-      "answer": "42",
-      "precision": {"type": "none"},
-      "grades": ["6"],
-      "created_at": "2025-10-19T...",
-      "updated_at": "2025-10-19T...",
-      "created_by": "uuid"
-    }
-  ],
-  "total": 1
+	"templates": [
+		{
+			"id": "uuid",
+			"type": "numerical_exact",
+			"statement": [{ "type": "text", "content": "..." }],
+			"variables": [],
+			"answer": "42",
+			"precision": { "type": "none" },
+			"grades": ["6"],
+			"created_at": "2025-10-19T...",
+			"updated_at": "2025-10-19T...",
+			"created_by": "uuid"
+		}
+	],
+	"total": 1
 }
 ```
 
@@ -200,6 +201,7 @@ curl -X POST http://localhost:5174/api/questions/templates \
 ```
 
 **Expected Response (Success)**:
+
 ```json
 {
   "success": true,
@@ -217,23 +219,20 @@ curl -X POST http://localhost:5174/api/questions/templates \
 ```
 
 **Expected Response (Validation Error)**:
+
 ```json
 {
-  "success": false,
-  "errors": [
-    "Missing required field: statement",
-    "Missing required field: answer"
-  ]
+	"success": false,
+	"errors": ["Missing required field: statement", "Missing required field: answer"]
 }
 ```
 
 **Expected Response (Circular Dependency)**:
+
 ```json
 {
-  "success": false,
-  "errors": [
-    "Circular reference detected: a -> b -> a"
-  ]
+	"success": false,
+	"errors": ["Circular reference detected: a -> b -> a"]
 }
 ```
 
@@ -248,6 +247,7 @@ curl http://localhost:5174/api/questions/templates/TEMPLATE_ID \
 ```
 
 **Expected Response**:
+
 ```json
 {
   "id": "template-uuid",
@@ -264,6 +264,7 @@ curl http://localhost:5174/api/questions/templates/TEMPLATE_ID \
 ```
 
 **Expected Response (Not Found)**:
+
 ```
 404 Not Found
 Template not found
@@ -305,6 +306,7 @@ curl -X PUT http://localhost:5174/api/questions/templates/TEMPLATE_ID \
 ```
 
 **Expected Response**:
+
 ```json
 {
   "success": true,
@@ -329,13 +331,15 @@ curl -X DELETE http://localhost:5174/api/questions/templates/TEMPLATE_ID \
 ```
 
 **Expected Response**:
+
 ```json
 {
-  "success": true
+	"success": true
 }
 ```
 
 **Expected Response (Not Found)**:
+
 ```
 404 Not Found
 Template not found
@@ -366,37 +370,37 @@ curl -X POST http://localhost:5174/api/questions/generate/TEMPLATE_ID \
 ```
 
 **Expected Response (Success)**:
+
 ```json
 {
-  "success": true,
-  "instance": {
-    "id": "template-uuid",
-    "type": "numerical_exact",
-    "statement": [
-      {
-        "type": "text",
-        "content": "Calculate 7 + 3"  // Variables resolved
-      }
-    ],
-    "answer": 10,  // Evaluated answer
-    "resolvedVariables": {
-      "a": 7,
-      "b": 3
-    },
-    "precision": {"type": "none"},
-    "grades": ["6"],
-    "seed": 12345
-  }
+	"success": true,
+	"instance": {
+		"id": "template-uuid",
+		"type": "numerical_exact",
+		"statement": [
+			{
+				"type": "text",
+				"content": "Calculate 7 + 3" // Variables resolved
+			}
+		],
+		"answer": 10, // Evaluated answer
+		"resolvedVariables": {
+			"a": 7,
+			"b": 3
+		},
+		"precision": { "type": "none" },
+		"grades": ["6"],
+		"seed": 12345
+	}
 }
 ```
 
 **Expected Response (Error)**:
+
 ```json
 {
-  "success": false,
-  "errors": [
-    "Circular reference detected: a -> b -> a"
-  ]
+	"success": false,
+	"errors": ["Circular reference detected: a -> b -> a"]
 }
 ```
 
@@ -528,6 +532,7 @@ Content-Type: application/json
 **Problem**: API returns 401 Unauthorized
 
 **Solution**:
+
 1. Make sure you're logged in at http://localhost:5174/auth/login
 2. Copy session cookie from browser
 3. Include cookie in curl: `-H "Cookie: your_cookie_here"`
@@ -537,6 +542,7 @@ Content-Type: application/json
 **Problem**: API returns 403 Forbidden
 
 **Solution**:
+
 1. Log in with an admin account (not teacher or student)
 2. Check profile role in database: `SELECT role FROM profiles WHERE id = 'your-id'`
 
@@ -545,6 +551,7 @@ Content-Type: application/json
 **Problem**: GET/PUT/DELETE returns 404
 
 **Solution**:
+
 1. Verify template ID exists: `SELECT id FROM question_templates`
 2. Check UUID format is correct (lowercase with hyphens)
 
@@ -553,6 +560,7 @@ Content-Type: application/json
 **Problem**: POST/PUT returns 400 with errors
 
 **Solution**:
+
 1. Read error messages carefully
 2. Check required fields are present (statement, answer, grades)
 3. Verify types match (e.g., answer is string for numerical, array for fill-in-blanks)

@@ -42,7 +42,8 @@ function redactEmail(email: string | null): string {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession }, parent }) => { // supabase for future queries
+export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession }, parent }) => {
+	// supabase for future queries
 	const { session, user } = await safeGetSession();
 
 	if (!user) {

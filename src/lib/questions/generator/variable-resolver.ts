@@ -44,50 +44,50 @@ import { evaluateExpression } from '../compute-engine/wrapper';
  * ```
  */
 export function resolveVariableExpression(
-  expression: string,
-  alreadyResolved: ResolvedVariable[],
-  seed?: number
+	expression: string,
+	alreadyResolved: ResolvedVariable[],
+	seed?: number
 ): string {
-  let result = expression;
+	let result = expression;
 
-  // Step 1: Replace variable references {@:name}
-  const variableRefs = extractVariableReferences(result);
-  for (const ref of variableRefs) {
-    const resolvedVar = alreadyResolved.find((v) => v.name === ref.name);
-    if (!resolvedVar) {
-      throw new Error(`Variable "${ref.name}" not found or not yet resolved`);
-    }
-    result = result.replace(ref.fullMatch, resolvedVar.value);
-  }
+	// Step 1: Replace variable references {@:name}
+	const variableRefs = extractVariableReferences(result);
+	for (const ref of variableRefs) {
+		const resolvedVar = alreadyResolved.find((v) => v.name === ref.name);
+		if (!resolvedVar) {
+			throw new Error(`Variable "${ref.name}" not found or not yet resolved`);
+		}
+		result = result.replace(ref.fullMatch, resolvedVar.value);
+	}
 
-  // Step 2: Generate random numbers {#:...}
-  const randomExpressions = findRandomExpressions(result);
-  for (const randomExpr of randomExpressions) {
-    try {
-      const spec = parseRandomExpression(randomExpr);
-      const generatedValue = generateRandomNumber(spec, alreadyResolved, seed);
-      result = result.replace(randomExpr, String(generatedValue));
-    } catch (error) {
-      throw new Error(
-        `Failed to generate random number in expression "${randomExpr}": ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
-  }
+	// Step 2: Generate random numbers {#:...}
+	const randomExpressions = findRandomExpressions(result);
+	for (const randomExpr of randomExpressions) {
+		try {
+			const spec = parseRandomExpression(randomExpr);
+			const generatedValue = generateRandomNumber(spec, alreadyResolved, seed);
+			result = result.replace(randomExpr, String(generatedValue));
+		} catch (error) {
+			throw new Error(
+				`Failed to generate random number in expression "${randomExpr}": ${error instanceof Error ? error.message : String(error)}`
+			);
+		}
+	}
 
-  // Step 3: Evaluate {eval:...} expressions
-  const evalExpressions = extractEvalExpressions(result);
-  for (const evalExpr of evalExpressions) {
-    try {
-      const evaluatedValue = evaluateExpression(evalExpr.expression);
-      result = result.replace(evalExpr.fullMatch, String(evaluatedValue));
-    } catch (error) {
-      throw new Error(
-        `Failed to evaluate expression "${evalExpr.expression}": ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
-  }
+	// Step 3: Evaluate {eval:...} expressions
+	const evalExpressions = extractEvalExpressions(result);
+	for (const evalExpr of evalExpressions) {
+		try {
+			const evaluatedValue = evaluateExpression(evalExpr.expression);
+			result = result.replace(evalExpr.fullMatch, String(evaluatedValue));
+		} catch (error) {
+			throw new Error(
+				`Failed to evaluate expression "${evalExpr.expression}": ${error instanceof Error ? error.message : String(error)}`
+			);
+		}
+	}
 
-  return result;
+	return result;
 }
 
 /**
@@ -117,35 +117,31 @@ export function resolveVariableExpression(
  * ```
  */
 export function resolveVariables(
-  variables: QuestionVariable[] | undefined,
-  seed?: number
+	variables: QuestionVariable[] | undefined,
+	seed?: number
 ): ResolvedVariable[] {
-  if (!variables || variables.length === 0) {
-    return [];
-  }
+	if (!variables || variables.length === 0) {
+		return [];
+	}
 
-  const resolvedVariables: ResolvedVariable[] = [];
+	const resolvedVariables: ResolvedVariable[] = [];
 
-  for (const variable of variables) {
-    try {
-      const resolvedValue = resolveVariableExpression(
-        variable.expression,
-        resolvedVariables,
-        seed
-      );
+	for (const variable of variables) {
+		try {
+			const resolvedValue = resolveVariableExpression(variable.expression, resolvedVariables, seed);
 
-      resolvedVariables.push({
-        name: variable.name,
-        value: resolvedValue
-      });
-    } catch (error) {
-      throw new Error(
-        `Failed to resolve variable "${variable.name}": ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
-  }
+			resolvedVariables.push({
+				name: variable.name,
+				value: resolvedValue
+			});
+		} catch (error) {
+			throw new Error(
+				`Failed to resolve variable "${variable.name}": ${error instanceof Error ? error.message : String(error)}`
+			);
+		}
+	}
 
-  return resolvedVariables;
+	return resolvedVariables;
 }
 
 /**
@@ -154,29 +150,29 @@ export function resolveVariables(
  * This handles nested braces correctly.
  */
 function findRandomExpressions(text: string): string[] {
-  const expressions: string[] = [];
-  let i = 0;
+	const expressions: string[] = [];
+	let i = 0;
 
-  while (i < text.length) {
-    if (text.substring(i, i + 3) === '{#:') {
-      // Find matching closing brace
-      let braceCount = 1;
-      let j = i + 3;
+	while (i < text.length) {
+		if (text.substring(i, i + 3) === '{#:') {
+			// Find matching closing brace
+			let braceCount = 1;
+			let j = i + 3;
 
-      while (j < text.length && braceCount > 0) {
-        if (text[j] === '{') braceCount++;
-        if (text[j] === '}') braceCount--;
-        j++;
-      }
+			while (j < text.length && braceCount > 0) {
+				if (text[j] === '{') braceCount++;
+				if (text[j] === '}') braceCount--;
+				j++;
+			}
 
-      if (braceCount === 0) {
-        expressions.push(text.substring(i, j));
-        i = j;
-        continue;
-      }
-    }
-    i++;
-  }
+			if (braceCount === 0) {
+				expressions.push(text.substring(i, j));
+				i = j;
+				continue;
+			}
+		}
+		i++;
+	}
 
-  return expressions;
+	return expressions;
 }

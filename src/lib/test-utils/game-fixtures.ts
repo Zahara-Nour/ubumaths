@@ -324,9 +324,11 @@ export function createMockSupabaseClient() {
 	return {
 		from: (table: string) => ({
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			select: (columns: string = '*') => ({ // columns for future filtering
+			select: (columns: string = '*') => ({
+				// columns for future filtering
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				eq: (column: string, value: any) => ({ // column, value for future filtering
+				eq: (column: string, value: any) => ({
+					// column, value for future filtering
 					single: async () => {
 						const data = (mockData as any)[table]?.find((item: any) => item[column] === value);
 						return { data, error: null };
@@ -353,7 +355,8 @@ export function createMockSupabaseClient() {
 			}),
 			update: (values: any) => ({
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				eq: (column: string, value: any) => ({ // column, value for future filtering
+				eq: (column: string, value: any) => ({
+					// column, value for future filtering
 					select: () => ({
 						single: async () => {
 							return { data: { ...values }, error: null };

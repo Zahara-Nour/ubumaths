@@ -27,10 +27,13 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { ArrowLeft } from 'lucide-svelte';
+	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
 
 	let isSubmitting = $state(false);
 
-	async function handleSave(template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>) {
+	async function handleSave(
+		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>
+	) {
 		isSubmitting = true;
 
 		try {
@@ -43,7 +46,17 @@
 			const result = await response.json();
 
 			if (result.success) {
-				toaster.success('Question créée avec succès');
+				// Invalidate category cache to force refresh
+				questionCategoriesCache.invalidate();
+
+				// Check if level was auto-adjusted
+				if (result.levelAdjusted) {
+					toaster.success(
+						`Question créée avec succès. Le niveau a été ajusté à ${result.adjustedLevel} car le niveau ${template.level} existait déjà dans cette catégorie.`
+					);
+				} else {
+					toaster.success('Question créée avec succès');
+				}
 				goto('/dashboard/admin/questions');
 			} else {
 				toaster.error('Erreur lors de la création');
@@ -75,27 +88,15 @@
 				Retour
 			</Button>
 			<div>
-				<h1 class="text-3xl font-bold">Créer une Question</h1>
-				<p class="text-muted-foreground">Créer un nouveau modèle de question avec variables et génération aléatoire</p>
+				<h1 class="text-3xl font-bold">Nouvelle Question</h1>
 			</div>
 		</div>
 	</div>
 
 	<!-- Main Form -->
 	<Card.Root>
-		<Card.Header>
-			<Card.Title>Nouvelle Question</Card.Title>
-			<Card.Description>
-				Remplissez les champs ci-dessous pour créer une question. Utilisez la syntaxe spéciale pour les variables (<code>&#123;@:nom&#125;</code>),
-				nombres aléatoires (<code>&#123;#:min-max&#125;</code>), et évaluations (<code>&#123;eval:expression&#125;</code>).
-			</Card.Description>
-		</Card.Header>
 		<Card.Content>
-			<QuestionTemplateForm
-				onSave={handleSave}
-				onCancel={handleCancel}
-				{isSubmitting}
-			/>
+			<QuestionTemplateForm onSave={handleSave} onCancel={handleCancel} {isSubmitting} />
 		</Card.Content>
 	</Card.Root>
 </div>

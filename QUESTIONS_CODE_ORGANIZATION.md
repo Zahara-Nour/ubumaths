@@ -88,6 +88,7 @@ supabase/migrations/
 ## File Naming Conventions
 
 ### Component Files
+
 - **Format:** `PascalCase.svelte`
 - **Examples:**
   - `QuestionDisplay.svelte` - Student-facing display
@@ -95,12 +96,14 @@ supabase/migrations/
   - `QuestionPreview.svelte` - Admin preview
 
 ### Route Files (SvelteKit)
+
 - **Pages:** `+page.svelte` - UI component
 - **Server:** `+page.server.ts` - Load functions and form actions
 - **Layouts:** `+layout.svelte` - Shared layout wrapper
 - **API:** `+server.ts` - API endpoint handlers
 
 ### Utility Files
+
 - **Format:** `kebab-case.ts`
 - **Examples:**
   - `random-generator.ts`
@@ -108,6 +111,7 @@ supabase/migrations/
   - `circular-dependency.ts`
 
 ### Test Files
+
 - **Unit Tests:** `*.test.ts`
 - **Component Tests:** `*.spec.ts` or `*.svelte.test.ts`
 - **Examples:**
@@ -181,7 +185,7 @@ TEMPLATE
 
 <!-- ========== SECTION NAME ========== -->
 <div>
-  <!-- Inline comments for complex logic -->
+	<!-- Inline comments for complex logic -->
 </div>
 
 <!--
@@ -403,6 +407,7 @@ export type GenerationResult = /* ... */;
 ### Database vs. TypeScript Field Names
 
 **Database (snake_case):**
+
 ```sql
 CREATE TABLE question_templates (
   transform_type TEXT,
@@ -411,22 +416,22 @@ CREATE TABLE question_templates (
 ```
 
 **TypeScript (camelCase):**
+
 ```typescript
 interface QuestionTemplate {
-  transformType?: string;
-  multipleAnswers?: boolean;
+	transformType?: string;
+	multipleAnswers?: boolean;
 }
 ```
 
 **Mapping happens in API endpoints:**
+
 ```typescript
 // Writing to database
-const { data } = await supabase
-  .from('question_templates')
-  .insert({
-    transform_type: templateData.transformType,
-    multiple_answers: templateData.multipleAnswers
-  });
+const { data } = await supabase.from('question_templates').insert({
+	transform_type: templateData.transformType,
+	multiple_answers: templateData.multipleAnswers
+});
 ```
 
 ---
@@ -442,51 +447,49 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ locals, params, url }) => {
-  // 1. Authentication check
-  const user = locals.user;
-  if (!user) {
-    throw error(401, 'Unauthorized');
-  }
+	// 1. Authentication check
+	const user = locals.user;
+	if (!user) {
+		throw error(401, 'Unauthorized');
+	}
 
-  // 2. Extract parameters
-  const id = params.id;
-  const query = url.searchParams.get('param');
+	// 2. Extract parameters
+	const id = params.id;
+	const query = url.searchParams.get('param');
 
-  // 3. Database query
-  const { data, error: dbError } = await supabase
-    .from('table')
-    .select('*')
-    .eq('id', id);
+	// 3. Database query
+	const { data, error: dbError } = await supabase.from('table').select('*').eq('id', id);
 
-  // 4. Error handling
-  if (dbError) {
-    throw error(500, 'Database error');
-  }
+	// 4. Error handling
+	if (dbError) {
+		throw error(500, 'Database error');
+	}
 
-  if (!data) {
-    throw error(404, 'Not found');
-  }
+	if (!data) {
+		throw error(404, 'Not found');
+	}
 
-  // 5. Return response
-  return json({ success: true, data });
+	// 5. Return response
+	return json({ success: true, data });
 };
 ```
 
 ### HTTP Status Codes
 
-| Code | Usage | Example |
-|------|-------|---------|
-| 200 | Success (GET, PUT) | Template retrieved |
-| 201 | Created (POST) | Template created |
-| 400 | Bad Request | Validation failed |
-| 401 | Unauthorized | No auth session |
-| 403 | Forbidden | Wrong permissions |
-| 404 | Not Found | Template doesn't exist |
-| 500 | Server Error | Database failure |
+| Code | Usage              | Example                |
+| ---- | ------------------ | ---------------------- |
+| 200  | Success (GET, PUT) | Template retrieved     |
+| 201  | Created (POST)     | Template created       |
+| 400  | Bad Request        | Validation failed      |
+| 401  | Unauthorized       | No auth session        |
+| 403  | Forbidden          | Wrong permissions      |
+| 404  | Not Found          | Template doesn't exist |
+| 500  | Server Error       | Database failure       |
 
 ### Response Format
 
 **Success:**
+
 ```typescript
 {
   success: true,
@@ -495,6 +498,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 ```
 
 **Error:**
+
 ```typescript
 {
   success: false,
@@ -523,27 +527,28 @@ import { describe, it, expect } from 'vitest';
 import { functionToTest } from './module';
 
 describe('Module Name - Feature Group', () => {
-  describe('functionToTest', () => {
-    it('should handle basic case', () => {
-      const input = 'test';
-      const result = functionToTest(input);
-      expect(result).toBe('expected');
-    });
+	describe('functionToTest', () => {
+		it('should handle basic case', () => {
+			const input = 'test';
+			const result = functionToTest(input);
+			expect(result).toBe('expected');
+		});
 
-    it('should handle edge case', () => {
-      // Test edge cases
-    });
+		it('should handle edge case', () => {
+			// Test edge cases
+		});
 
-    it('should throw on invalid input', () => {
-      expect(() => functionToTest(null)).toThrow();
-    });
-  });
+		it('should throw on invalid input', () => {
+			expect(() => functionToTest(null)).toThrow();
+		});
+	});
 });
 ```
 
 ### Test Coverage
 
 **Current Status:**
+
 - ✅ **Parser tests:** 4 files (100% coverage)
 - ✅ **Generator tests:** 5 files (100% coverage)
 - ✅ **Validator tests:** 2 files (100% coverage)
@@ -571,21 +576,25 @@ Root Directory
 ### When to Update Documentation
 
 **Add to QUESTIONS_API_COMPLETE.md:**
+
 - New API endpoint
 - Changed response format
 - New field in database
 
 **Add to QUESTIONS_CODE_ORGANIZATION.md:**
+
 - New file/module
 - Changed directory structure
 - New coding pattern
 
 **Add to QUESTIONS_UI_TESTING.md:**
+
 - New component
 - New testing scenario
 - Changed UI behavior
 
 **Add to QUESTIONS_QUICK_START.md:**
+
 - New question type
 - Simplified workflow
 - Common pitfall solutions
@@ -627,7 +636,7 @@ Root Directory
  * // result = 'output'
  */
 function myFunction(param1: string, param2?: number): string {
-  // Implementation
+	// Implementation
 }
 ```
 
@@ -781,21 +790,21 @@ $effect(() => {
 
 ### Recommended Limits
 
-| File Type | Soft Limit | Hard Limit | Action if Exceeded |
-|-----------|------------|------------|-------------------|
-| Component | 400 lines | 600 lines | Split into sub-components |
-| Utility | 200 lines | 400 lines | Split into multiple modules |
-| Test file | 300 lines | 500 lines | Group related tests |
-| API endpoint | 150 lines | 250 lines | Extract business logic |
+| File Type    | Soft Limit | Hard Limit | Action if Exceeded          |
+| ------------ | ---------- | ---------- | --------------------------- |
+| Component    | 400 lines  | 600 lines  | Split into sub-components   |
+| Utility      | 200 lines  | 400 lines  | Split into multiple modules |
+| Test file    | 300 lines  | 500 lines  | Group related tests         |
+| API endpoint | 150 lines  | 250 lines  | Extract business logic      |
 
 ### Current File Sizes
 
-| File | Lines | Status |
-|------|-------|--------|
-| `QuestionDisplay.svelte` | 487 | ✅ Acceptable (complex component) |
-| `Preview +page.svelte` | 411 | ✅ Acceptable (page with controls) |
-| `instance-generator.ts` | ~150 | ✅ Good |
-| `tokenizer.test.ts` | 264 | ✅ Good (test file) |
+| File                     | Lines | Status                             |
+| ------------------------ | ----- | ---------------------------------- |
+| `QuestionDisplay.svelte` | 487   | ✅ Acceptable (complex component)  |
+| `Preview +page.svelte`   | 411   | ✅ Acceptable (page with controls) |
+| `instance-generator.ts`  | ~150  | ✅ Good                            |
+| `tokenizer.test.ts`      | 264   | ✅ Good (test file)                |
 
 ---
 
@@ -810,6 +819,7 @@ $effect(() => {
 ### Bundle Size
 
 **Keep track of:**
+
 - QuestionDisplay component (~15KB compiled)
 - API response sizes (<10KB per instance)
 - Total page bundle size (<200KB initial load)
@@ -828,6 +838,7 @@ pnpm build
 ### Input Validation
 
 **Always validate:**
+
 - User input fields
 - URL parameters
 - Form data
@@ -836,13 +847,14 @@ pnpm build
 
 ```typescript
 if (!templateId || typeof templateId !== 'string') {
-  throw error(400, 'Invalid template ID');
+	throw error(400, 'Invalid template ID');
 }
 ```
 
 ### RLS (Row Level Security)
 
 **Database policies enforce:**
+
 - Teachers can only see their own templates
 - Students can only see assigned questions
 - Admins have full access
@@ -890,9 +902,9 @@ console.warn('[Validation] Circular dependency detected:', cycle);
 
 ```svelte
 {#if import.meta.env.DEV}
-  <div class="debug-info">
-    <pre>{JSON.stringify(instance, null, 2)}</pre>
-  </div>
+	<div class="debug-info">
+		<pre>{JSON.stringify(instance, null, 2)}</pre>
+	</div>
 {/if}
 ```
 
@@ -928,6 +940,7 @@ console.warn('[Validation] Circular dependency detected:', cycle);
 ### Common Tasks
 
 **Add new question type:**
+
 1. Update `QuestionType` in `types.ts`
 2. Add parser logic if needed
 3. Add generator logic in `instance-generator.ts`
@@ -937,6 +950,7 @@ console.warn('[Validation] Circular dependency detected:', cycle);
 7. Update documentation
 
 **Add new API endpoint:**
+
 1. Create `+server.ts` file
 2. Add authentication check
 3. Add validation logic
@@ -946,6 +960,7 @@ console.warn('[Validation] Circular dependency detected:', cycle);
 7. Update `QUESTIONS_API_COMPLETE.md`
 
 **Add new component:**
+
 1. Create `.svelte` file
 2. Add header documentation
 3. Define Props interface

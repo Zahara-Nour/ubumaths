@@ -38,6 +38,8 @@
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import * as Tabs from '$lib/components/ui/tabs';
+	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import GradeMultiSelect from '$lib/components/GradeMultiSelect.svelte';
@@ -56,7 +58,8 @@
 		ArrowUpDown,
 		ArrowUp,
 		ArrowDown,
-		Loader2
+		Loader2,
+		ChevronDown
 	} from 'lucide-svelte';
 	import type { QuestionTemplate, QuestionType, GradeLevel } from '$lib/questions/types';
 
@@ -91,6 +94,7 @@
 	let isDeleting = $state(false); // Deletion in progress
 	let isSearching = $state(false); // Search API call in progress
 	let searchDebounceTimer: number; // Timeout ID for debounced search
+	let filtersOpen = $state(true); // Filters section collapsible state
 
 	// Question types for filter
 	const questionTypes: { value: string; label: string }[] = [
@@ -165,28 +169,27 @@
 
 	/**
 	 * Get badge color for question type
+	 * All types use secondary color variant
 	 */
 	function getTypeBadgeClass(type: string): string {
-		switch (type) {
-			case 'numerical_exact':
-			case 'numerical_decimal':
-			case 'numerical_rounded':
-				return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-			case 'algebraic_transform':
-				return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
-			case 'fill_in_blanks':
-				return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-			case 'multiple_choice':
-				return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
-			default:
-				return 'bg-muted text-muted-foreground';
-		}
+		return 'bg-secondary text-secondary-foreground';
 	}
 
 	/**
 	 * Get first text content from statement (for preview)
+	 * Updated to handle variations structure
 	 */
-	function getStatementPreview(statement: any[]): string {
+	function getStatementPreview(template: any): string {
+		// Handle new variations structure
+		if (!template.variations || template.variations.length === 0) {
+			return '(No variations)';
+		}
+
+		const statement = template.variations[0].statement;
+		if (!statement || !Array.isArray(statement)) {
+			return '(No statement)';
+		}
+
 		const textField = statement.find((s) => s.type === 'text');
 		if (!textField) return '(No text content)';
 
@@ -474,11 +477,15 @@
 	<div class="flex items-center justify-between">
 		<div>
 			<h1 class="text-3xl font-bold">Banque de Questions</h1>
-			<p class="text-muted-foreground">Gérer les templates de questions mathématiques</p>
 		</div>
 		<div class="flex gap-2">
 			<!-- View Toggle -->
-			<Button onclick={toggleViewMode} variant="outline" size="icon" title={viewMode === 'table' ? 'Vue en cartes' : 'Vue en tableau'}>
+			<Button
+				onclick={toggleViewMode}
+				variant="outline"
+				size="icon"
+				title={viewMode === 'table' ? 'Vue en cartes' : 'Vue en tableau'}
+			>
 				{#if viewMode === 'table'}
 					<LayoutGrid class="h-4 w-4" />
 				{:else}
@@ -496,352 +503,534 @@
 	<!-- Filters Card -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Filtres et Tri</Card.Title>
+			<Collapsible.Root bind:open={filtersOpen}>
+				<Collapsible.Trigger
+					class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
+				>
+					<Card.Title>Filtres et Tri</Card.Title>
+					<ChevronDown
+						class="h-4 w-4 transition-transform duration-200 {filtersOpen ? 'rotate-180' : ''}"
+					/>
+				</Collapsible.Trigger>
+				<Collapsible.Content>
+					<Card.Content>
+						<!-- First row: Type, Grades, Search -->
+						<div class="grid gap-4 md:grid-cols-3">
+							<!-- Type filter -->
+							<div class="space-y-2">
+								<Label class="text-sm font-medium">Type de question</Label>
+								<select
+									bind:value={selectedType}
+									class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+								>
+									{#each questionTypes as type}
+										<option value={type.value}>{type.label}</option>
+									{/each}
+								</select>
+							</div>
+
+							<!-- Grade filter -->
+							<div class="space-y-2">
+								<Label class="text-sm font-medium">Niveaux scolaires</Label>
+								<GradeMultiSelect bind:selectedGrades={selectedGradesList} grades={gradeLevels} />
+							</div>
+
+							<!-- Search -->
+							<div class="space-y-2">
+								<Label class="text-sm font-medium">Recherche</Label>
+								<div class="relative">
+									<Search class="absolute top-2.5 left-2 h-4 w-4 text-muted-foreground" />
+									{#if isSearching}
+										<Loader2
+											class="absolute top-2.5 right-2 h-4 w-4 animate-spin text-muted-foreground"
+										/>
+									{/if}
+									<Input
+										value={searchTerm}
+										oninput={(e) => handleSearchInput(e.currentTarget.value)}
+										placeholder="Rechercher dans les énoncés..."
+										class="pr-8 pl-8"
+									/>
+								</div>
+							</div>
+						</div>
+
+						<!-- Second row: Category filters -->
+						<div class="mt-4 grid gap-4 md:grid-cols-4">
+							<!-- Theme filter -->
+							<div class="space-y-2">
+								<Label class="text-sm font-medium">Thème</Label>
+								<select
+									bind:value={selectedTheme}
+									class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+								>
+									<option value="all">Tous les thèmes</option>
+									{#each data.categories.themes as theme}
+										<option value={theme}>{theme}</option>
+									{/each}
+								</select>
+							</div>
+
+							<!-- Domain filter -->
+							<div class="space-y-2">
+								<Label class="text-sm font-medium">Domaine</Label>
+								<select
+									bind:value={selectedDomain}
+									class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+								>
+									<option value="all">Tous les domaines</option>
+									{#each data.categories.domains as domain}
+										<option value={domain}>{domain}</option>
+									{/each}
+								</select>
+							</div>
+
+							<!-- Subdomain filter -->
+							<div class="space-y-2">
+								<Label class="text-sm font-medium">Sous-domaine</Label>
+								<select
+									bind:value={selectedSubdomain}
+									class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+								>
+									<option value="all">Tous les sous-domaines</option>
+									{#each data.categories.subdomains as subdomain}
+										<option value={subdomain}>{subdomain}</option>
+									{/each}
+								</select>
+							</div>
+
+							<!-- Level range filter -->
+							<div class="space-y-2">
+								<Label class="text-sm font-medium">Niveau de difficulté</Label>
+								<div class="flex gap-2">
+									<Input
+										type="number"
+										min="1"
+										bind:value={minLevel}
+										placeholder="Min"
+										class="w-1/2"
+									/>
+									<Input
+										type="number"
+										min="1"
+										bind:value={maxLevel}
+										placeholder="Max"
+										class="w-1/2"
+									/>
+								</div>
+							</div>
+						</div>
+
+						<!-- Third row: Sort filter -->
+						<div class="mt-4 grid gap-4 md:grid-cols-2">
+							<!-- Sort filter -->
+							<div class="space-y-2">
+								<Label class="text-sm font-medium">Trier par</Label>
+								<div class="flex gap-2">
+									<select
+										bind:value={sortField}
+										class="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+									>
+										{#each sortFields as field}
+											<option value={field.value}>{field.label}</option>
+										{/each}
+									</select>
+									<Button
+										onclick={() => {
+											sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+											applyFilters();
+										}}
+										variant="outline"
+										size="icon"
+										title={sortOrder === 'asc' ? 'Croissant' : 'Décroissant'}
+									>
+										{#if sortOrder === 'asc'}
+											<ArrowUp class="h-4 w-4" />
+										{:else}
+											<ArrowDown class="h-4 w-4" />
+										{/if}
+									</Button>
+								</div>
+							</div>
+
+							<div></div>
+						</div>
+
+						<!-- Actions row -->
+						<div class="mt-4 flex gap-2">
+							<Button onclick={applyFilters} variant="default">Appliquer les filtres</Button>
+							<Button onclick={clearFilters} variant="outline">Réinitialiser</Button>
+						</div>
+					</Card.Content>
+				</Collapsible.Content>
+			</Collapsible.Root>
 		</Card.Header>
-		<Card.Content>
-			<!-- First row: Type, Grades, Search -->
-			<div class="grid gap-4 md:grid-cols-3">
-				<!-- Type filter -->
-				<div class="space-y-2">
-					<Label class="text-sm font-medium">Type de question</Label>
-					<select
-						bind:value={selectedType}
-						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-					>
-						{#each questionTypes as type}
-							<option value={type.value}>{type.label}</option>
-						{/each}
-					</select>
-				</div>
-
-				<!-- Grade filter -->
-				<div class="space-y-2">
-					<Label class="text-sm font-medium">Niveaux scolaires</Label>
-					<GradeMultiSelect bind:selectedGrades={selectedGradesList} grades={gradeLevels} />
-				</div>
-
-				<!-- Search -->
-				<div class="space-y-2">
-					<Label class="text-sm font-medium">Recherche</Label>
-					<div class="relative">
-						<Search class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-						{#if isSearching}
-							<Loader2 class="absolute right-2 top-2.5 h-4 w-4 animate-spin text-muted-foreground" />
-						{/if}
-						<Input
-							value={searchTerm}
-							oninput={(e) => handleSearchInput(e.currentTarget.value)}
-							placeholder="Rechercher dans les énoncés..."
-							class="pl-8 pr-8"
-						/>
-					</div>
-				</div>
-			</div>
-
-			<!-- Second row: Category filters -->
-			<div class="mt-4 grid gap-4 md:grid-cols-4">
-				<!-- Theme filter -->
-				<div class="space-y-2">
-					<Label class="text-sm font-medium">Thème</Label>
-					<select
-						bind:value={selectedTheme}
-						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-					>
-						<option value="all">Tous les thèmes</option>
-						{#each data.categories.themes as theme}
-							<option value={theme}>{theme}</option>
-						{/each}
-					</select>
-				</div>
-
-				<!-- Domain filter -->
-				<div class="space-y-2">
-					<Label class="text-sm font-medium">Domaine</Label>
-					<select
-						bind:value={selectedDomain}
-						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-					>
-						<option value="all">Tous les domaines</option>
-						{#each data.categories.domains as domain}
-							<option value={domain}>{domain}</option>
-						{/each}
-					</select>
-				</div>
-
-				<!-- Subdomain filter -->
-				<div class="space-y-2">
-					<Label class="text-sm font-medium">Sous-domaine</Label>
-					<select
-						bind:value={selectedSubdomain}
-						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-					>
-						<option value="all">Tous les sous-domaines</option>
-						{#each data.categories.subdomains as subdomain}
-							<option value={subdomain}>{subdomain}</option>
-						{/each}
-					</select>
-				</div>
-
-				<!-- Level range filter -->
-				<div class="space-y-2">
-					<Label class="text-sm font-medium">Niveau de difficulté</Label>
-					<div class="flex gap-2">
-						<Input
-							type="number"
-							min="1"
-							bind:value={minLevel}
-							placeholder="Min"
-							class="w-1/2"
-						/>
-						<Input
-							type="number"
-							min="1"
-							bind:value={maxLevel}
-							placeholder="Max"
-							class="w-1/2"
-						/>
-					</div>
-				</div>
-			</div>
-
-			<!-- Third row: Sort filter -->
-			<div class="mt-4 grid gap-4 md:grid-cols-2">
-				<!-- Sort filter -->
-				<div class="space-y-2">
-					<Label class="text-sm font-medium">Trier par</Label>
-					<div class="flex gap-2">
-						<select
-							bind:value={sortField}
-							class="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-						>
-							{#each sortFields as field}
-								<option value={field.value}>{field.label}</option>
-							{/each}
-						</select>
-						<Button
-							onclick={() => {
-								sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-								applyFilters();
-							}}
-							variant="outline"
-							size="icon"
-							title={sortOrder === 'asc' ? 'Croissant' : 'Décroissant'}
-						>
-							{#if sortOrder === 'asc'}
-								<ArrowUp class="h-4 w-4" />
-							{:else}
-								<ArrowDown class="h-4 w-4" />
-							{/if}
-						</Button>
-					</div>
-				</div>
-
-				<div></div>
-			</div>
-
-			<!-- Actions row -->
-			<div class="mt-4 flex gap-2">
-				<Button onclick={applyFilters} variant="default">Appliquer les filtres</Button>
-				<Button onclick={clearFilters} variant="outline">Réinitialiser</Button>
-			</div>
-		</Card.Content>
 	</Card.Root>
 
-	<!-- Results info -->
-	<div class="flex items-center justify-between text-sm text-muted-foreground">
-		<span>
-			{data.total} template{data.total > 1 ? 's' : ''} trouvé{data.total > 1 ? 's' : ''}
-		</span>
-		<span>
-			Page {currentPage} sur {totalPages}
-		</span>
-	</div>
+	<!-- Tabs: Drafts / Published -->
+	<Tabs.Root value="published" class="space-y-4">
+		<Tabs.List class="grid w-full grid-cols-2">
+			<Tabs.Trigger value="drafts">Brouillons</Tabs.Trigger>
+			<Tabs.Trigger value="published">Publiés</Tabs.Trigger>
+		</Tabs.List>
 
-	<!-- Templates Display (Table or Card view) -->
-	{#if viewMode === 'table'}
-		<!-- Table View -->
-		<Card.Root>
-			<Card.Content class="p-0">
-				<div class="overflow-x-auto">
-					<table class="w-full">
-						<thead class="border-b bg-muted/50">
-							<tr>
-								<!-- Sortable Type header -->
-								<th class="px-4 py-3 text-left text-sm font-medium">
-									<button
-										onclick={() => handleSort('type')}
-										class="flex items-center gap-1 hover:text-foreground"
-									>
-										Type
-										<svelte:component this={getSortIcon('type')} class="h-4 w-4" />
-									</button>
-								</th>
-								<th class="px-4 py-3 text-left text-sm font-medium">Énoncé</th>
-								<th class="px-4 py-3 text-left text-sm font-medium">Catégories</th>
-								<th class="px-4 py-3 text-left text-sm font-medium">Niveaux</th>
-								<!-- Sortable Created date header -->
-								<th class="px-4 py-3 text-left text-sm font-medium">
-									<button
-										onclick={() => handleSort('created_at')}
-										class="flex items-center gap-1 hover:text-foreground"
-									>
-										Créé le
-										<svelte:component this={getSortIcon('created_at')} class="h-4 w-4" />
-									</button>
-								</th>
-								<th class="px-4 py-3 text-right text-sm font-medium">Actions</th>
-							</tr>
-						</thead>
-						<tbody class="divide-y">
-							{#if data.templates.length === 0}
-								<tr>
-									<td colspan="6" class="px-4 py-8 text-center text-muted-foreground">
-										Aucun template trouvé
-									</td>
-								</tr>
-							{:else}
-								{#each data.templates as template (template.id)}
-								<tr class="hover:bg-muted/30">
-									<!-- Type -->
-									<td class="px-4 py-3">
-										<Badge class={getTypeBadgeClass(template.type)}>
-											{getTypeLabel(template.type)}
-										</Badge>
-									</td>
-
-									<!-- Statement preview -->
-									<td class="px-4 py-3">
-										<div class="max-w-md">
-											<p class="truncate text-sm">{getStatementPreview(template.statement)}</p>
-										</div>
-									</td>
-
-									<!-- Categories -->
-									<td class="px-4 py-3">
-										<div class="space-y-1 text-xs">
-											<div><span class="font-medium">Thème:</span> {template.theme}</div>
-											<div><span class="font-medium">Domaine:</span> {template.domain}</div>
-											{#if template.subdomain}
-												<div><span class="font-medium">Sous-dom:</span> {template.subdomain}</div>
-											{/if}
-											<div><span class="font-medium">Niveau:</span> {template.level}</div>
-										</div>
-									</td>
-
-									<!-- Grades -->
-									<td class="px-4 py-3">
-										<div class="flex flex-wrap gap-1">
-											{#each template.grades.slice(0, 3) as grade}
-												<Badge variant="outline" class="text-xs">{grade}</Badge>
-											{/each}
-											{#if template.grades.length > 3}
-												<Badge variant="outline" class="text-xs">+{template.grades.length - 3}</Badge>
-											{/if}
-										</div>
-									</td>
-
-									<!-- Created date -->
-									<td class="px-4 py-3 text-sm text-muted-foreground">
-										{new Date(template.created_at).toLocaleDateString('fr-FR')}
-									</td>
-
-									<!-- Actions -->
-									<td class="px-4 py-3">
-										<div class="flex justify-end gap-2">
-											<Button
-												variant="ghost"
-												size="sm"
-												onclick={() => handlePreview(template.id)}
-												title="Aperçu"
-											>
-												<Eye class="h-4 w-4" />
-											</Button>
-											<Button
-												variant="ghost"
-												size="sm"
-												onclick={() => handleEdit(template.id)}
-												title="Modifier"
-											>
-												<Pencil class="h-4 w-4" />
-											</Button>
-											<Button
-												variant="ghost"
-												size="sm"
-												onclick={() => handleDuplicate(template.id)}
-												title="Dupliquer"
-											>
-												<Copy class="h-4 w-4" />
-											</Button>
-											<Button
-												variant="ghost"
-												size="sm"
-												onclick={() => handleDeleteClick(template.id)}
-												title="Supprimer"
-												class="text-destructive hover:text-destructive"
-											>
-												<Trash2 class="h-4 w-4" />
-											</Button>
-										</div>
-									</td>
-								</tr>
-							{/each}
-						{/if}
-						</tbody>
-					</table>
-				</div>
-			</Card.Content>
-		</Card.Root>
-	{:else}
-		<!-- Card Grid View -->
-		{#if data.templates.length === 0}
-			<Card.Root>
-				<Card.Content class="py-12 text-center">
-					<p class="text-muted-foreground">Aucun template trouvé</p>
-				</Card.Content>
-			</Card.Root>
-		{:else}
-			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-				{#each data.templates as template (template.id)}
-					<QuestionTemplateCard
-						{template}
-						onPreview={handlePreview}
-						onEdit={handleEdit}
-						onDuplicate={handleDuplicate}
-						onDelete={handleDeleteClick}
-					/>
-				{/each}
+		<!-- Drafts Tab -->
+		<Tabs.Content value="drafts" class="space-y-4">
+			<!-- Results info -->
+			<div class="flex items-center justify-between text-sm text-muted-foreground">
+				<span>
+					{data.drafts.length} brouillon{data.drafts.length > 1 ? 's' : ''}
+				</span>
 			</div>
-		{/if}
-	{/if}
 
-	<!-- Pagination -->
-	{#if totalPages > 1}
-		<div class="flex items-center justify-center gap-2">
-			<Button
-				variant="outline"
-				size="sm"
-				disabled={currentPage === 1}
-				onclick={() => goToPage(currentPage - 1)}
-			>
-				<ChevronLeft class="h-4 w-4" />
-				Précédent
-			</Button>
+			<!-- Templates Display (Table or Card view) -->
+			{#if viewMode === 'table'}
+				<!-- Table View -->
+				<Card.Root>
+					<Card.Content class="p-0">
+						<div class="overflow-x-auto">
+							<table class="w-full">
+								<thead class="border-b bg-muted/50">
+									<tr>
+										<!-- Sortable Type header -->
+										<th class="px-4 py-3 text-left text-sm font-medium">
+											<button
+												onclick={() => handleSort('type')}
+												class="flex items-center gap-1 hover:text-foreground"
+											>
+												Type
+												<svelte:component this={getSortIcon('type')} class="h-4 w-4" />
+											</button>
+										</th>
+										<th class="px-4 py-3 text-left text-sm font-medium">Titre</th>
+										<th class="px-4 py-3 text-left text-sm font-medium">Niveaux</th>
+										<!-- Sortable Created date header -->
+										<th class="px-4 py-3 text-left text-sm font-medium">
+											<button
+												onclick={() => handleSort('created_at')}
+												class="flex items-center gap-1 hover:text-foreground"
+											>
+												Créé le
+												<svelte:component this={getSortIcon('created_at')} class="h-4 w-4" />
+											</button>
+										</th>
+										<th class="px-4 py-3 text-right text-sm font-medium">Actions</th>
+									</tr>
+								</thead>
+								<tbody class="divide-y">
+									{#if data.drafts.length === 0}
+										<tr>
+											<td colspan="5" class="px-4 py-8 text-center text-muted-foreground">
+												Aucun brouillon
+											</td>
+										</tr>
+									{:else}
+										{#each data.drafts as template (template.id)}
+											<tr class="hover:bg-muted/30">
+												<!-- Type + Status + Categories -->
+												<td class="px-4 py-3">
+													<div class="flex flex-col gap-1">
+														<Badge class={getTypeBadgeClass(template.type)}>
+															{getTypeLabel(template.type)}
+														</Badge>
+														<Badge
+															class="bg-amber-100 text-amber-900 dark:bg-amber-900 dark:text-amber-100"
+														>
+															Brouillon
+														</Badge>
+														<Badge variant="outline" class="text-xs">{template.theme}</Badge>
+														<Badge variant="outline" class="text-xs">{template.domain}</Badge>
+													</div>
+												</td>
 
-			<span class="text-sm text-muted-foreground">
-				Page {currentPage} / {totalPages}
-			</span>
+												<!-- Title -->
+												<td class="px-4 py-3">
+													<div class="max-w-md">
+														<p class="truncate text-sm">{template.title || '(Sans titre)'}</p>
+													</div>
+												</td>
 
-			<Button
-				variant="outline"
-				size="sm"
-				disabled={currentPage === totalPages}
-				onclick={() => goToPage(currentPage + 1)}
-			>
-				Suivant
-				<ChevronRight class="h-4 w-4" />
-			</Button>
-		</div>
-	{/if}
+												<!-- Grades -->
+												<td class="px-4 py-3">
+													<div class="flex flex-wrap gap-1">
+														{#each template.grades.slice(0, 3) as grade}
+															<Badge variant="outline" class="text-xs">{grade}</Badge>
+														{/each}
+														{#if template.grades.length > 3}
+															<Badge variant="outline" class="text-xs"
+																>+{template.grades.length - 3}</Badge
+															>
+														{/if}
+													</div>
+												</td>
+
+												<!-- Created date -->
+												<td class="px-4 py-3 text-sm text-muted-foreground">
+													{new Date(template.created_at).toLocaleDateString('fr-FR')}
+												</td>
+
+												<!-- Actions -->
+												<td class="px-4 py-3">
+													<div class="flex justify-end gap-2">
+														<Button
+															variant="ghost"
+															size="sm"
+															onclick={() => handlePreview(template.id)}
+															title="Aperçu"
+														>
+															<Eye class="h-4 w-4" />
+														</Button>
+														<Button
+															variant="ghost"
+															size="sm"
+															onclick={() => handleEdit(template.id)}
+															title="Modifier"
+														>
+															<Pencil class="h-4 w-4" />
+														</Button>
+														<Button
+															variant="ghost"
+															size="sm"
+															onclick={() => handleDuplicate(template.id)}
+															title="Dupliquer"
+														>
+															<Copy class="h-4 w-4" />
+														</Button>
+														<Button
+															variant="ghost"
+															size="sm"
+															onclick={() => handleDeleteClick(template.id)}
+															title="Supprimer"
+															class="text-destructive hover:text-destructive"
+														>
+															<Trash2 class="h-4 w-4" />
+														</Button>
+													</div>
+												</td>
+											</tr>
+										{/each}
+									{/if}
+								</tbody>
+							</table>
+						</div>
+					</Card.Content>
+				</Card.Root>
+			{:else}
+				<!-- Card Grid View (Drafts) -->
+				{#if data.drafts.length === 0}
+					<Card.Root>
+						<Card.Content class="py-12 text-center">
+							<p class="text-muted-foreground">Aucun brouillon</p>
+						</Card.Content>
+					</Card.Root>
+				{:else}
+					<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+						{#each data.drafts as template (template.id)}
+							<QuestionTemplateCard
+								{template}
+								onPreview={handlePreview}
+								onEdit={handleEdit}
+								onDuplicate={handleDuplicate}
+								onDelete={handleDeleteClick}
+							/>
+						{/each}
+					</div>
+				{/if}
+			{/if}
+		</Tabs.Content>
+
+		<!-- Published Tab -->
+		<Tabs.Content value="published" class="space-y-4">
+			<!-- Results info -->
+			<div class="flex items-center justify-between text-sm text-muted-foreground">
+				<span>
+					{data.total} template{data.total > 1 ? 's' : ''} trouvé{data.total > 1 ? 's' : ''}
+				</span>
+				<span>
+					Page {currentPage} sur {totalPages}
+				</span>
+			</div>
+
+			<!-- Templates Display (Table or Card view) -->
+			{#if viewMode === 'table'}
+				<!-- Table View -->
+				<Card.Root>
+					<Card.Content class="p-0">
+						<div class="overflow-x-auto">
+							<table class="w-full">
+								<thead class="border-b bg-muted/50">
+									<tr>
+										<!-- Sortable Type header -->
+										<th class="px-4 py-3 text-left text-sm font-medium">
+											<button
+												onclick={() => handleSort('type')}
+												class="flex items-center gap-1 hover:text-foreground"
+											>
+												Type
+												<svelte:component this={getSortIcon('type')} class="h-4 w-4" />
+											</button>
+										</th>
+										<th class="px-4 py-3 text-left text-sm font-medium">Titre</th>
+										<th class="px-4 py-3 text-left text-sm font-medium">Niveaux</th>
+										<!-- Sortable Created date header -->
+										<th class="px-4 py-3 text-left text-sm font-medium">
+											<button
+												onclick={() => handleSort('created_at')}
+												class="flex items-center gap-1 hover:text-foreground"
+											>
+												Créé le
+												<svelte:component this={getSortIcon('created_at')} class="h-4 w-4" />
+											</button>
+										</th>
+										<th class="px-4 py-3 text-right text-sm font-medium">Actions</th>
+									</tr>
+								</thead>
+								<tbody class="divide-y">
+									{#if data.templates.length === 0}
+										<tr>
+											<td colspan="5" class="px-4 py-8 text-center text-muted-foreground">
+												Aucun template trouvé
+											</td>
+										</tr>
+									{:else}
+										{#each data.templates as template (template.id)}
+											<tr class="hover:bg-muted/30">
+												<!-- Type + Categories -->
+												<td class="px-4 py-3">
+													<div class="flex flex-col gap-1">
+														<Badge class={getTypeBadgeClass(template.type)}>
+															{getTypeLabel(template.type)}
+														</Badge>
+														<Badge variant="outline" class="text-xs">{template.theme}</Badge>
+														<Badge variant="outline" class="text-xs">{template.domain}</Badge>
+													</div>
+												</td>
+
+												<!-- Title -->
+												<td class="px-4 py-3">
+													<div class="max-w-md">
+														<p class="truncate text-sm">{template.title || '(Sans titre)'}</p>
+													</div>
+												</td>
+
+												<!-- Grades -->
+												<td class="px-4 py-3">
+													<div class="flex flex-wrap gap-1">
+														{#each template.grades.slice(0, 3) as grade}
+															<Badge variant="outline" class="text-xs">{grade}</Badge>
+														{/each}
+														{#if template.grades.length > 3}
+															<Badge variant="outline" class="text-xs"
+																>+{template.grades.length - 3}</Badge
+															>
+														{/if}
+													</div>
+												</td>
+
+												<!-- Created date -->
+												<td class="px-4 py-3 text-sm text-muted-foreground">
+													{new Date(template.created_at).toLocaleDateString('fr-FR')}
+												</td>
+
+												<!-- Actions -->
+												<td class="px-4 py-3">
+													<div class="flex justify-end gap-2">
+														<Button
+															variant="ghost"
+															size="sm"
+															onclick={() => handlePreview(template.id)}
+															title="Aperçu"
+														>
+															<Eye class="h-4 w-4" />
+														</Button>
+														<Button
+															variant="ghost"
+															size="sm"
+															onclick={() => handleEdit(template.id)}
+															title="Modifier"
+														>
+															<Pencil class="h-4 w-4" />
+														</Button>
+														<Button
+															variant="ghost"
+															size="sm"
+															onclick={() => handleDuplicate(template.id)}
+															title="Dupliquer"
+														>
+															<Copy class="h-4 w-4" />
+														</Button>
+														<Button
+															variant="ghost"
+															size="sm"
+															onclick={() => handleDeleteClick(template.id)}
+															title="Supprimer"
+															class="text-destructive hover:text-destructive"
+														>
+															<Trash2 class="h-4 w-4" />
+														</Button>
+													</div>
+												</td>
+											</tr>
+										{/each}
+									{/if}
+								</tbody>
+							</table>
+						</div>
+					</Card.Content>
+				</Card.Root>
+			{:else}
+				<!-- Card Grid View (Published) -->
+				{#if data.templates.length === 0}
+					<Card.Root>
+						<Card.Content class="py-12 text-center">
+							<p class="text-muted-foreground">Aucun template trouvé</p>
+						</Card.Content>
+					</Card.Root>
+				{:else}
+					<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+						{#each data.templates as template (template.id)}
+							<QuestionTemplateCard
+								{template}
+								onPreview={handlePreview}
+								onEdit={handleEdit}
+								onDuplicate={handleDuplicate}
+								onDelete={handleDeleteClick}
+							/>
+						{/each}
+					</div>
+				{/if}
+			{/if}
+
+			<!-- Pagination -->
+			{#if totalPages > 1}
+				<div class="flex items-center justify-center gap-2">
+					<Button
+						variant="outline"
+						size="sm"
+						disabled={currentPage === 1}
+						onclick={() => goToPage(currentPage - 1)}
+					>
+						<ChevronLeft class="h-4 w-4" />
+						Précédent
+					</Button>
+
+					<span class="text-sm text-muted-foreground">
+						Page {currentPage} / {totalPages}
+					</span>
+
+					<Button
+						variant="outline"
+						size="sm"
+						disabled={currentPage === totalPages}
+						onclick={() => goToPage(currentPage + 1)}
+					>
+						Suivant
+						<ChevronRight class="h-4 w-4" />
+					</Button>
+				</div>
+			{/if}
+		</Tabs.Content>
+	</Tabs.Root>
 </div>
 
 <!-- Delete Confirmation Dialog -->

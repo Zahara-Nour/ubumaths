@@ -24,78 +24,82 @@ import type { QuestionTemplate, QuestionVariation } from '../types';
  * @returns Array of error messages (empty if valid)
  */
 export function validateTemplate(template: QuestionTemplate): string[] {
-  const errors: string[] = [];
+	const errors: string[] = [];
 
-  // Required fields
-  if (!template.type) {
-    errors.push('Missing required field: type');
-  }
+	// Required fields
+	if (!template.type) {
+		errors.push('Missing required field: type');
+	}
 
-  if (!template.grades || template.grades.length === 0) {
-    errors.push('Missing required field: grades');
-  }
+	if (!template.grades || template.grades.length === 0) {
+		errors.push('Missing required field: grades');
+	}
 
-  // Validate variations array
-  if (!template.variations || template.variations.length === 0) {
-    errors.push('Missing required field: variations (at least 1 variation required)');
-    // Cannot continue validation without variations
-    return errors;
-  }
+	// Validate variations array
+	if (!template.variations || template.variations.length === 0) {
+		errors.push('Missing required field: variations (at least 1 variation required)');
+		// Cannot continue validation without variations
+		return errors;
+	}
 
-  // Validate each variation
-  template.variations.forEach((variation, index) => {
-    const variationErrors = validateVariation(variation, template.type, index);
-    errors.push(...variationErrors);
-  });
+	// Validate each variation
+	template.variations.forEach((variation, index) => {
+		const variationErrors = validateVariation(variation, template.type, index);
+		errors.push(...variationErrors);
+	});
 
-  // Categorization fields
-  if (!template.theme || template.theme.trim() === '') {
-    errors.push('Missing required field: theme');
-  }
+	// Categorization fields
+	if (!template.theme || template.theme.trim() === '') {
+		errors.push('Missing required field: theme');
+	}
 
-  if (!template.domain || template.domain.trim() === '') {
-    errors.push('Missing required field: domain');
-  }
+	if (!template.domain || template.domain.trim() === '') {
+		errors.push('Missing required field: domain');
+	}
 
-  if (!template.level || template.level <= 0) {
-    errors.push('level must be a positive integer');
-  }
+	if (!template.level || template.level <= 0) {
+		errors.push('level must be a positive integer');
+	}
 
-  // Type-specific validation (shared config)
-  switch (template.type) {
-    case 'algebraic_transform':
-      if (!template.transformType) {
-        errors.push('algebraic_transform requires transformType');
-      }
-      break;
-  }
+	// Type-specific validation (shared config)
+	switch (template.type) {
+		case 'algebraic_transform':
+			if (!template.transformType) {
+				errors.push('algebraic_transform requires transformType');
+			}
+			break;
+	}
 
-  // Validate delay (if present)
-  if (template.delay !== undefined && template.delay <= 0) {
-    errors.push('delay must be positive');
-  }
+	// Validate delay (if present)
+	if (template.delay !== undefined && template.delay <= 0) {
+		errors.push('delay must be positive');
+	}
 
-  // Validate precision (if present)
-  if (template.precision) {
-    const precision = template.precision;
+	// Validate precision (if present)
+	if (template.precision) {
+		const precision = template.precision;
 
-    if (precision.type === 'decimal' || precision.type === 'significant' || precision.type === 'magnitude') {
-      if (!('digits' in precision) || precision.digits <= 0) {
-        errors.push(`${precision.type} precision requires positive digits`);
-      }
-    }
+		if (
+			precision.type === 'decimal' ||
+			precision.type === 'significant' ||
+			precision.type === 'magnitude'
+		) {
+			if (!('digits' in precision) || precision.digits <= 0) {
+				errors.push(`${precision.type} precision requires positive digits`);
+			}
+		}
 
-    if (precision.type === 'tolerance') {
-      if (!('tolerance' in precision) || precision.tolerance <= 0) {
-        errors.push('tolerance precision requires positive tolerance value');
-      }
-      if (!('mode' in precision)) {
-        errors.push('tolerance precision requires mode (absolute or relative)');
-      }
-    }
-  }
+		if (precision.type === 'tolerance') {
+			if (!('tolerance' in precision) || precision.tolerance <= 0) {
+				errors.push('tolerance precision requires positive tolerance value');
+			}
+			if (!('mode' in precision)) {
+				errors.push('tolerance precision requires mode (absolute or relative)');
+			}
+		}
+	}
 
-  return errors;
+	return errors;
 }
 
 /**
@@ -107,91 +111,91 @@ export function validateTemplate(template: QuestionTemplate): string[] {
  * @returns Array of error messages
  */
 function validateVariation(
-  variation: QuestionVariation,
-  questionType: string,
-  index: number
+	variation: QuestionVariation,
+	questionType: string,
+	index: number
 ): string[] {
-  const errors: string[] = [];
-  const prefix = `Variation ${index + 1}:`;
+	const errors: string[] = [];
+	const prefix = `Variation ${index + 1}:`;
 
-  // Validate statement
-  if (!variation.statement || variation.statement.length === 0) {
-    errors.push(`${prefix} Missing required field: statement`);
-  } else {
-    for (const field of variation.statement) {
-      if (field.type === 'text' && !field.content) {
-        errors.push(`${prefix} Text content field cannot be empty`);
-      }
-      if (field.type === 'image' && !field.url) {
-        errors.push(`${prefix} Image field requires url`);
-      }
-    }
-  }
+	// Validate statement
+	if (!variation.statement || variation.statement.length === 0) {
+		errors.push(`${prefix} Missing required field: statement`);
+	} else {
+		for (const field of variation.statement) {
+			if (field.type === 'text' && !field.content) {
+				errors.push(`${prefix} Text content field cannot be empty`);
+			}
+			if (field.type === 'image' && !field.url) {
+				errors.push(`${prefix} Image field requires url`);
+			}
+		}
+	}
 
-  // Validate answer
-  if (!variation.answer) {
-    errors.push(`${prefix} Missing required field: answer`);
-  }
+	// Validate answer
+	if (!variation.answer) {
+		errors.push(`${prefix} Missing required field: answer`);
+	}
 
-  // Validate correction fields (if present)
-  if (variation.correction && variation.correction.length > 0) {
-    for (const field of variation.correction) {
-      if (field.type === 'text' && !field.content) {
-        errors.push(`${prefix} Correction text field cannot be empty`);
-      }
-      if (field.type === 'image' && !field.url) {
-        errors.push(`${prefix} Correction image field requires url`);
-      }
-    }
-  }
+	// Validate correction fields (if present)
+	if (variation.correction && variation.correction.length > 0) {
+		for (const field of variation.correction) {
+			if (field.type === 'text' && !field.content) {
+				errors.push(`${prefix} Correction text field cannot be empty`);
+			}
+			if (field.type === 'image' && !field.url) {
+				errors.push(`${prefix} Correction image field requires url`);
+			}
+		}
+	}
 
-  // Validate variable names (no duplicates within variation)
-  if (variation.variables) {
-    const varNames = new Set<string>();
-    for (const variable of variation.variables) {
-      if (!variable.name) {
-        errors.push(`${prefix} Variable must have a name`);
-      } else if (varNames.has(variable.name)) {
-        errors.push(`${prefix} Duplicate variable name: ${variable.name}`);
-      } else {
-        varNames.add(variable.name);
-      }
+	// Validate variable names (no duplicates within variation)
+	if (variation.variables) {
+		const varNames = new Set<string>();
+		for (const variable of variation.variables) {
+			if (!variable.name) {
+				errors.push(`${prefix} Variable must have a name`);
+			} else if (varNames.has(variable.name)) {
+				errors.push(`${prefix} Duplicate variable name: ${variable.name}`);
+			} else {
+				varNames.add(variable.name);
+			}
 
-      if (!variable.expression) {
-        errors.push(`${prefix} Variable "${variable.name}" must have an expression`);
-      }
-    }
-  }
+			if (!variable.expression) {
+				errors.push(`${prefix} Variable "${variable.name}" must have an expression`);
+			}
+		}
+	}
 
-  // Type-specific validation (per-variation)
-  switch (questionType) {
-    case 'fill_in_blanks':
-      if (!variation.blanks || variation.blanks.length === 0) {
-        errors.push(`${prefix} fill_in_blanks requires at least one blank`);
-      }
-      break;
+	// Type-specific validation (per-variation)
+	switch (questionType) {
+		case 'fill_in_blanks':
+			if (!variation.blanks || variation.blanks.length === 0) {
+				errors.push(`${prefix} fill_in_blanks requires at least one blank`);
+			}
+			break;
 
-    case 'multiple_choice':
-      if (!variation.choices || variation.choices.length < 2) {
-        errors.push(`${prefix} multiple_choice requires at least 2 choices`);
-      }
+		case 'multiple_choice':
+			if (!variation.choices || variation.choices.length < 2) {
+				errors.push(`${prefix} multiple_choice requires at least 2 choices`);
+			}
 
-      // Check that at least one choice is correct
-      if (variation.choices) {
-        const hasCorrect = variation.choices.some((choice) => choice.isCorrect);
-        if (!hasCorrect) {
-          errors.push(`${prefix} multiple_choice requires at least one correct choice`);
-        }
-      }
-      break;
-  }
+			// Check that at least one choice is correct
+			if (variation.choices) {
+				const hasCorrect = variation.choices.some((choice) => choice.isCorrect);
+				if (!hasCorrect) {
+					errors.push(`${prefix} multiple_choice requires at least one correct choice`);
+				}
+			}
+			break;
+	}
 
-  return errors;
+	return errors;
 }
 
 /**
  * Check if template is valid (no errors)
  */
 export function isValidTemplate(template: QuestionTemplate): boolean {
-  return validateTemplate(template).length === 0;
+	return validateTemplate(template).length === 0;
 }

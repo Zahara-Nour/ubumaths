@@ -15,6 +15,7 @@ Complete guide for testing the Question Bank System UI components.
 ## Admin Interface Testing
 
 ### Questions List Page
+
 **URL:** `/dashboard/admin/questions`
 
 #### Features to Test:
@@ -57,23 +58,25 @@ Complete guide for testing the Question Bank System UI components.
 ## QuestionDisplay Component Testing
 
 ### Component Location
+
 **File:** `src/lib/components/questions/QuestionDisplay.svelte`
 
 ### Props Interface
 
 ```typescript
 interface Props {
-  instance: QuestionInstance;
-  onSubmit?: (answer: any) => Promise<{ correct: boolean; feedback?: string }>;
-  showCorrection?: boolean;
-  readonly?: boolean;
-  timer?: number;
+	instance: QuestionInstance;
+	onSubmit?: (answer: any) => Promise<{ correct: boolean; feedback?: string }>;
+	showCorrection?: boolean;
+	readonly?: boolean;
+	timer?: number;
 }
 ```
 
 ### Features to Test
 
 #### 1. Visual Display
+
 - ✅ Statement renders with LaTeX (if applicable)
 - ✅ Question type badge displays correctly
 - ✅ Grade level badges display
@@ -83,39 +86,46 @@ interface Props {
 #### 2. Input Controls by Type
 
 **Numerical Questions:**
+
 - ✅ Text input accepts numbers
 - ✅ Precision hint displays correctly
 - ✅ Placeholder shows example format
 
 **Algebraic Questions:**
+
 - ✅ Textarea accepts algebraic expressions
 - ✅ Monospace font for better readability
 - ✅ Transform type displays
 
 **Fill-in-Blanks:**
+
 - ✅ Multiple numbered inputs render
 - ✅ Each input has correct label
 - ✅ Inputs bind to array correctly
 
 **QCM Single Answer:**
+
 - ✅ Radio buttons render for each choice
 - ✅ Choices display with letter badges (A, B, C, D)
 - ✅ Only one choice selectable
 - ✅ Hover effects work
 
 **QCM Multiple Answers:**
+
 - ✅ Checkboxes render for each choice
 - ✅ Multiple choices selectable
 - ✅ Instructional text displays
 - ✅ Selection state updates correctly
 
 #### 3. Submit Button
+
 - ✅ Disabled when answer is empty
 - ✅ Shows loading state during submission
 - ✅ Calls onSubmit handler with answer
 - ✅ Updates to feedback state after submission
 
 #### 4. Feedback Display
+
 - ✅ **Correct:**
   - Green border and background
   - Check icon displays
@@ -129,6 +139,7 @@ interface Props {
   - Correction displays (if `showCorrection={true}`)
 
 #### 5. Timer Functionality
+
 - ✅ Timer counts down from initial value
 - ✅ Time displays in MM:SS format
 - ✅ Timer turns red when < 30 seconds
@@ -137,6 +148,7 @@ interface Props {
 - ✅ Timer cleanup on component unmount
 
 #### 6. Readonly Mode
+
 - ✅ Input controls hidden
 - ✅ Correct answer displays in gray box
 - ✅ No submit button
@@ -147,6 +159,7 @@ interface Props {
 ## Preview Demo Page Testing
 
 ### URL Structure
+
 **Pattern:** `/dashboard/admin/questions/[id]/preview`
 
 **Example:** `http://localhost:5174/dashboard/admin/questions/abc123/preview`
@@ -156,12 +169,14 @@ interface Props {
 #### 1. Generation Controls
 
 **Seed Input:**
+
 - ✅ Optional number input
 - ✅ Same seed produces same instance
 - ✅ Empty seed generates random instance
 - ✅ "Générer" button fetches new instance
 
 **Regenerate Button:**
+
 - ✅ Generates random seed automatically
 - ✅ Updates seed input field
 - ✅ Creates new instance
@@ -169,30 +184,36 @@ interface Props {
 #### 2. Display Options
 
 **Show Correction Toggle:**
+
 - ✅ When ON: Correction displays on wrong answer
 - ✅ When OFF: No correction shown
 
 **Readonly Mode Toggle:**
+
 - ✅ When ON: QuestionDisplay shows answer without inputs
 - ✅ When OFF: Normal interactive mode
 
 **Timer Toggle:**
+
 - ✅ When ON: Shows timer seconds input
 - ✅ When OFF: Hides timer input
 - ✅ Timer seconds input respects min (10) and max (600)
 
 #### 3. Debug Info Card
+
 - ✅ Question type displays
 - ✅ Expected answer displays (truncated if long)
 - ✅ Resolved variables display (if any)
 - ✅ All values in monospace font
 
 #### 4. Loading States
+
 - ✅ Spinner shows during generation
 - ✅ "Génération de l'instance..." message
 - ✅ Controls disabled during loading
 
 #### 5. Error Handling
+
 - ✅ Toast error on generation failure
 - ✅ Empty state when no instance
 - ✅ Helpful error messages
@@ -204,21 +225,23 @@ interface Props {
 ### 1. Numerical Exact
 
 **Template Example:**
+
 ```json
 {
-  "type": "numerical_exact",
-  "statement": [{ "type": "text", "content": "Calculate {@:a} + {@:b}" }],
-  "variables": [
-    { "name": "a", "expression": "{#:1-10}" },
-    { "name": "b", "expression": "{#:1-10}" }
-  ],
-  "answer": "{eval:{@:a} + {@:b}}",
-  "precision": { "type": "none" },
-  "grades": ["6"]
+	"type": "numerical_exact",
+	"statement": [{ "type": "text", "content": "Calculate {@:a} + {@:b}" }],
+	"variables": [
+		{ "name": "a", "expression": "{#:1-10}" },
+		{ "name": "b", "expression": "{#:1-10}" }
+	],
+	"answer": "{eval:{@:a} + {@:b}}",
+	"precision": { "type": "none" },
+	"grades": ["6"]
 }
 ```
 
 **Test Steps:**
+
 1. Create template via `/dashboard/admin/questions/create`
 2. Click Preview on template
 3. Verify numbers are different each time (random variables)
@@ -230,20 +253,20 @@ interface Props {
 ### 2. Numerical Decimal
 
 **Template Example:**
+
 ```json
 {
-  "type": "numerical_decimal",
-  "statement": [{ "type": "text", "content": "Round {@:x} to 2 decimal places" }],
-  "variables": [
-    { "name": "x", "expression": "{#:1.0-10.0}" }
-  ],
-  "answer": "{eval:round({@:x}, 2)}",
-  "precision": { "type": "decimal", "digits": 2 },
-  "grades": ["5"]
+	"type": "numerical_decimal",
+	"statement": [{ "type": "text", "content": "Round {@:x} to 2 decimal places" }],
+	"variables": [{ "name": "x", "expression": "{#:1.0-10.0}" }],
+	"answer": "{eval:round({@:x}, 2)}",
+	"precision": { "type": "decimal", "digits": 2 },
+	"grades": ["5"]
 }
 ```
 
 **Test Steps:**
+
 1. Verify precision hint displays "Précision: 2 décimales"
 2. Enter answer with wrong decimal places
 3. Verify validation (mock)
@@ -253,21 +276,23 @@ interface Props {
 ### 3. Algebraic Transform
 
 **Template Example:**
+
 ```json
 {
-  "type": "algebraic_transform",
-  "statement": [{ "type": "text", "content": "Factor: {@:a}x² + {@:b}x" }],
-  "variables": [
-    { "name": "a", "expression": "{#:1-5}" },
-    { "name": "b", "expression": "{#:1-10}" }
-  ],
-  "answer": "x({@:a}x + {@:b})",
-  "transform_type": "factorization",
-  "grades": ["4"]
+	"type": "algebraic_transform",
+	"statement": [{ "type": "text", "content": "Factor: {@:a}x² + {@:b}x" }],
+	"variables": [
+		{ "name": "a", "expression": "{#:1-5}" },
+		{ "name": "b", "expression": "{#:1-10}" }
+	],
+	"answer": "x({@:a}x + {@:b})",
+	"transform_type": "factorization",
+	"grades": ["4"]
 }
 ```
 
 **Test Steps:**
+
 1. Verify textarea renders (not input)
 2. Verify monospace font for math expressions
 3. Verify "Type: factorization" displays
@@ -277,17 +302,19 @@ interface Props {
 ### 4. Fill in the Blanks
 
 **Template Example:**
+
 ```json
 {
-  "type": "fill_in_blanks",
-  "statement": [{ "type": "text", "content": "The square root of 16 is __, and 5² = __" }],
-  "answer": ["4", "25"],
-  "blanks": 2,
-  "grades": ["6"]
+	"type": "fill_in_blanks",
+	"statement": [{ "type": "text", "content": "The square root of 16 is __, and 5² = __" }],
+	"answer": ["4", "25"],
+	"blanks": 2,
+	"grades": ["6"]
 }
 ```
 
 **Test Steps:**
+
 1. Verify 2 numbered inputs render
 2. Verify badge labels "1" and "2"
 3. Fill in first blank only
@@ -299,22 +326,24 @@ interface Props {
 ### 5. Multiple Choice (Single Answer)
 
 **Template Example:**
+
 ```json
 {
-  "type": "multiple_choice",
-  "statement": [{ "type": "text", "content": "Which is the correct answer?" }],
-  "choices": [
-    { "content": "Option A", "isCorrect": false },
-    { "content": "Option B", "isCorrect": true },
-    { "content": "Option C", "isCorrect": false },
-    { "content": "Option D", "isCorrect": false }
-  ],
-  "multiple_answers": false,
-  "grades": ["3"]
+	"type": "multiple_choice",
+	"statement": [{ "type": "text", "content": "Which is the correct answer?" }],
+	"choices": [
+		{ "content": "Option A", "isCorrect": false },
+		{ "content": "Option B", "isCorrect": true },
+		{ "content": "Option C", "isCorrect": false },
+		{ "content": "Option D", "isCorrect": false }
+	],
+	"multiple_answers": false,
+	"grades": ["3"]
 }
 ```
 
 **Test Steps:**
+
 1. Verify radio buttons render
 2. Verify letter badges (A, B, C, D)
 3. Verify only one selectable
@@ -326,22 +355,24 @@ interface Props {
 ### 6. Multiple Choice (Multiple Answers)
 
 **Template Example:**
+
 ```json
 {
-  "type": "multiple_choice",
-  "statement": [{ "type": "text", "content": "Select all prime numbers:" }],
-  "choices": [
-    { "content": "2", "isCorrect": true },
-    { "content": "3", "isCorrect": true },
-    { "content": "4", "isCorrect": false },
-    { "content": "5", "isCorrect": true }
-  ],
-  "multiple_answers": true,
-  "grades": ["6"]
+	"type": "multiple_choice",
+	"statement": [{ "type": "text", "content": "Select all prime numbers:" }],
+	"choices": [
+		{ "content": "2", "isCorrect": true },
+		{ "content": "3", "isCorrect": true },
+		{ "content": "4", "isCorrect": false },
+		{ "content": "5", "isCorrect": true }
+	],
+	"multiple_answers": true,
+	"grades": ["6"]
 }
 ```
 
 **Test Steps:**
+
 1. Verify checkboxes render
 2. Verify instructional text: "Sélectionnez toutes les bonnes réponses"
 3. Select only correct answers (2, 3, 5)
@@ -357,6 +388,7 @@ interface Props {
 ### Complete Flow: Create → Preview → Test
 
 #### Step 1: Create Template
+
 ```bash
 1. Navigate to /dashboard/admin/questions/create
 2. Fill Statement tab: "Calculate {@:a} × {@:b}"
@@ -372,6 +404,7 @@ interface Props {
 ```
 
 #### Step 2: Preview from List
+
 ```bash
 7. Click eye icon on newly created template
 8. Verify preview page loads
@@ -380,6 +413,7 @@ interface Props {
 ```
 
 #### Step 3: Test Interactive Features
+
 ```bash
 11. Toggle "Afficher la correction" ON
 12. Toggle "Activer le timer" ON
@@ -393,6 +427,7 @@ interface Props {
 ```
 
 #### Step 4: Test Readonly Mode
+
 ```bash
 20. Toggle "Mode lecture seule" ON
 21. Verify input disappears
@@ -402,6 +437,7 @@ interface Props {
 ```
 
 #### Step 5: Test Seed Reproducibility
+
 ```bash
 25. Note current seed value in debug info
 26. Copy seed number
@@ -430,6 +466,7 @@ Test on multiple screen sizes:
 - ✅ **Mobile** (375×667)
 
 ### Specific Mobile Tests:
+
 1. Timer visibility on small screens
 2. Radio button tap targets (minimum 44×44px)
 3. Textarea resize on mobile keyboards
@@ -441,18 +478,21 @@ Test on multiple screen sizes:
 ## Accessibility Testing
 
 ### Keyboard Navigation
+
 - ✅ Tab through all interactive elements
 - ✅ Enter submits form
 - ✅ Space toggles checkboxes/radio buttons
 - ✅ Escape closes modals
 
 ### Screen Reader Testing
+
 - ✅ Statement reads correctly
 - ✅ Input labels announced
 - ✅ Button purposes clear
 - ✅ Feedback status announced
 
 ### Color Contrast
+
 - ✅ Green success passes WCAG AA (4.5:1)
 - ✅ Red error passes WCAG AA
 - ✅ Timer red warning visible
@@ -524,16 +564,19 @@ Test on multiple screen sizes:
 ## Automated Testing (Future)
 
 ### Unit Tests (Vitest)
+
 ```bash
 pnpm test:unit QuestionDisplay
 ```
 
 ### E2E Tests (Playwright)
+
 ```bash
 pnpm test:e2e questions
 ```
 
 **Test scenarios to automate:**
+
 - Template CRUD operations
 - Instance generation with seeds
 - Answer submission flow
@@ -545,36 +588,44 @@ pnpm test:e2e questions
 ## Troubleshooting
 
 ### Preview Page Not Loading
+
 **Problem:** Blank page or error
 
 **Solutions:**
+
 1. Check template ID is valid
 2. Verify API endpoint returns 200
 3. Check browser console for errors
 4. Verify instance generation succeeded
 
 ### Timer Not Working
+
 **Problem:** Timer doesn't count down
 
 **Solutions:**
+
 1. Check `timer` prop is number > 0
 2. Verify `setInterval` not blocked
 3. Check console for errors
 4. Try disabling browser extensions
 
 ### Answer Validation Incorrect
+
 **Problem:** Correct answer marked wrong
 
 **Solutions:**
+
 1. This is expected - mock validation only
 2. Check `checkAnswer()` function logic
 3. Verify answer type matches expected (string vs number)
 4. Real validation requires server-side implementation
 
 ### Choices Not Shuffling
+
 **Problem:** Same order every time
 
 **Solutions:**
+
 1. Verify seed is changing on regenerate
 2. Check `shuffledChoices` exists in instance
 3. Check Fisher-Yates implementation

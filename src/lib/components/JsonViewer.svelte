@@ -51,9 +51,7 @@
 		<div class="flex items-center justify-between">
 			<div>
 				<Card.Title>JSON du modèle</Card.Title>
-				<Card.Description>
-					Structure JSON qui sera envoyée à l'API
-				</Card.Description>
+				<Card.Description>Structure JSON qui sera envoyée à l'API</Card.Description>
 			</div>
 			<Button onclick={copyToClipboard} variant="outline" class="gap-2">
 				{#if copied}
@@ -69,8 +67,9 @@
 	<Card.Content>
 		<div class="relative">
 			<pre
-				class="overflow-x-auto rounded-lg border bg-muted p-4 text-xs font-mono leading-relaxed"
-			><code>{formattedJson}</code></pre>
+				class="overflow-x-auto rounded-lg border bg-muted p-4 font-mono text-xs leading-relaxed"><code
+					>{formattedJson}</code
+				></pre>
 		</div>
 
 		<!-- Character count -->

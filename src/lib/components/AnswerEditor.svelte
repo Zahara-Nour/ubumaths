@@ -107,7 +107,7 @@
 		const removedChoice = choices[index];
 		if (removedChoice?.isCorrect) {
 			// If there are no more correct choices, mark the first one as correct
-			const hasCorrectChoice = choices.some(c => c.isCorrect);
+			const hasCorrectChoice = choices.some((c) => c.isCorrect);
 			if (!hasCorrectChoice && choices.length > 0) {
 				choices[0].isCorrect = true;
 			}
@@ -142,10 +142,35 @@
 	function removeBlank(index: number) {
 		if (!Array.isArray(answer)) return;
 		answer = answer.filter((_, i) => i !== index);
-		blanks = blanks.filter((_, i) => i !== index).map((b, i) => ({
-			position: i,
-			expectedAnswer: b.expectedAnswer
-		}));
+		blanks = blanks
+			.filter((_, i) => i !== index)
+			.map((b, i) => ({
+				position: i,
+				expectedAnswer: b.expectedAnswer
+			}));
+	}
+
+	// Insert syntax helper into input/textarea
+	function insertSyntax(
+		elementId: string,
+		syntax: string,
+		updateCallback: (newValue: string) => void
+	) {
+		const element = document.getElementById(elementId) as HTMLInputElement | HTMLTextAreaElement;
+		if (!element) return;
+
+		const start = element.selectionStart || 0;
+		const end = element.selectionEnd || 0;
+		const currentValue = element.value;
+
+		const newValue = currentValue.substring(0, start) + syntax + currentValue.substring(end);
+		updateCallback(newValue);
+
+		// Set cursor after inserted text
+		setTimeout(() => {
+			element.focus();
+			element.setSelectionRange(start + syntax.length, start + syntax.length);
+		}, 0);
 	}
 </script>
 
@@ -155,9 +180,7 @@
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Réponse numérique</Card.Title>
-				<Card.Description>
-					Expression LaTeX à évaluer. Utilisez les variables et la syntaxe spéciale.
-				</Card.Description>
+				<Card.Description></Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-4">
 				<div class="space-y-2">
@@ -168,6 +191,35 @@
 						placeholder={'Ex: {@:a} + {@:b}, {eval:2^3}, 42'}
 						class="font-mono"
 					/>
+
+					<!-- Syntax helper buttons -->
+					<div class="flex flex-wrap gap-2">
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={() => insertSyntax('answer', '{@:}', (v) => (answer = v))}
+							class="text-xs"
+						>
+							Variable
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={() => insertSyntax('answer', '{#:1-10}', (v) => (answer = v))}
+							class="text-xs"
+						>
+							Aléatoire
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={() => insertSyntax('answer', '{eval:}', (v) => (answer = v))}
+							class="text-xs"
+						>
+							Évaluation
+						</Button>
+					</div>
+
 					<p class="text-xs text-muted-foreground">
 						Cette expression sera évaluée pour produire la réponse numérique attendue
 					</p>
@@ -185,9 +237,7 @@
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Transformation algébrique</Card.Title>
-				<Card.Description>
-					Expression LaTeX attendue après transformation
-				</Card.Description>
+				<Card.Description>Expression LaTeX attendue après transformation</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-4">
 				<div class="space-y-2">
@@ -195,7 +245,7 @@
 					<select
 						id="transform-type"
 						bind:value={transformType}
-						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						{#each TRANSFORM_TYPES as type}
 							<option value={type.value}>{type.label}</option>
@@ -212,6 +262,51 @@
 						rows={2}
 						class="font-mono"
 					/>
+
+					<!-- Syntax helper buttons -->
+					<div class="flex flex-wrap gap-2">
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={() => insertSyntax('answer', '{@:}', (v) => (answer = v))}
+							class="text-xs"
+						>
+							Variable
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={() => insertSyntax('answer', '{eval:}', (v) => (answer = v))}
+							class="text-xs"
+						>
+							Évaluation
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={() => insertSyntax('answer', '\\frac{}{}', (v) => (answer = v))}
+							class="text-xs"
+						>
+							Fraction
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={() => insertSyntax('answer', '^{}', (v) => (answer = v))}
+							class="text-xs"
+						>
+							Exposant
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={() => insertSyntax('answer', '_{}', (v) => (answer = v))}
+							class="text-xs"
+						>
+							Indice
+						</Button>
+					</div>
+
 					<p class="text-xs text-muted-foreground">
 						L'équivalence algébrique sera vérifiée avec le Compute Engine
 					</p>
@@ -225,9 +320,7 @@
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Texte à trous</Card.Title>
-				<Card.Description>
-					Définissez les positions et réponses pour chaque trou
-				</Card.Description>
+				<Card.Description>Définissez les positions et réponses pour chaque trou</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-4">
 				{#if blanks}
@@ -261,6 +354,35 @@
 											placeholder={'Ex: {@:var}, {eval:...}'}
 											class="font-mono"
 										/>
+										<!-- Syntax helper buttons -->
+										<div class="flex flex-wrap gap-1">
+											<Button
+												variant="outline"
+												size="sm"
+												onclick={() =>
+													insertSyntax(
+														`blank-answer-${index}`,
+														'{@:}',
+														(v) => (blank.expectedAnswer = v)
+													)}
+												class="h-auto px-2 py-0.5 text-xs"
+											>
+												Variable
+											</Button>
+											<Button
+												variant="outline"
+												size="sm"
+												onclick={() =>
+													insertSyntax(
+														`blank-answer-${index}`,
+														'{eval:}',
+														(v) => (blank.expectedAnswer = v)
+													)}
+												class="h-auto px-2 py-0.5 text-xs"
+											>
+												Éval
+											</Button>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -308,7 +430,7 @@
 							multipleAnswers = checked as boolean;
 							// When switching to single answer mode, keep only first correct choice
 							if (!multipleAnswers) {
-								const firstCorrectIndex = choices.findIndex(c => c.isCorrect);
+								const firstCorrectIndex = choices.findIndex((c) => c.isCorrect);
 								choices = choices.map((c, i) => ({
 									...c,
 									isCorrect: i === (firstCorrectIndex >= 0 ? firstCorrectIndex : 0)
@@ -359,10 +481,52 @@
 											placeholder={'Contenu du choix (LaTeX, {@:var}, {#:...} supportés)'}
 											class="font-mono"
 										/>
+										<!-- Syntax helper buttons -->
+										<div class="flex flex-wrap gap-1">
+											<Button
+												variant="outline"
+												size="sm"
+												onclick={() =>
+													insertSyntax(
+														`choice-${index}`,
+														'{@:}',
+														(v) => (choice.content.content = v)
+													)}
+												class="h-auto px-2 py-0.5 text-xs"
+											>
+												Variable
+											</Button>
+											<Button
+												variant="outline"
+												size="sm"
+												onclick={() =>
+													insertSyntax(
+														`choice-${index}`,
+														'{eval:}',
+														(v) => (choice.content.content = v)
+													)}
+												class="h-auto px-2 py-0.5 text-xs"
+											>
+												Éval
+											</Button>
+											<Button
+												variant="outline"
+												size="sm"
+												onclick={() =>
+													insertSyntax(
+														`choice-${index}`,
+														'\\frac{}{}',
+														(v) => (choice.content.content = v)
+													)}
+												class="h-auto px-2 py-0.5 text-xs"
+											>
+												Frac
+											</Button>
+										</div>
 									{:else}
 										<p class="text-xs text-muted-foreground">
-											Note: Image choices are not yet fully supported in the editor.
-											Type: {choice.content.type}
+											Note: Image choices are not yet fully supported in the editor. Type: {choice
+												.content.type}
 										</p>
 									{/if}
 								</div>

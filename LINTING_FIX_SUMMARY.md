@@ -11,12 +11,14 @@
 ### Question Bank System - Sorting & Filtering Enhancement
 
 **Files Modified:**
+
 1. `src/routes/(protected)/dashboard/admin/questions/+page.server.ts` - Added server-side sorting and search
 2. `src/lib/components/GradeMultiSelect.svelte` - Created reusable multi-select component
 3. `src/lib/components/QuestionTemplateCard.svelte` - Created card view component
 4. `src/routes/(protected)/dashboard/admin/questions/+page.svelte` - Comprehensive UI updates
 
 **Features Implemented:**
+
 - ✅ Server-side sorting (Created date, Last updated date, Question type)
 - ✅ Server-side full-text search with PostgreSQL textSearch (French config)
 - ✅ Multi-select grade filter with badge count
@@ -29,6 +31,7 @@
 - ✅ All Select components replaced with native HTML selects
 
 **Technical Details:**
+
 - Used `$effect()` for localStorage persistence
 - Used `browser` guard for client-side code
 - Implemented proper debouncing with timer cleanup
@@ -83,19 +86,23 @@ All navigation errors addressed (27 fixed, 9 suppressed in button.svelte).
 #### Component Files Fixed (16 files)
 
 **Core Components:**
+
 - ✅ `src/lib/components/LoadingTable.svelte` - Loop variable `_unused`
 - ✅ `src/lib/components/Wheel-Old.svelte` - Loop variable `_unused`
 
 **Chat Components:**
+
 - ✅ `src/lib/components/chat/ChatComposer.svelte` - conversationId, handleTypingIndicator
 - ✅ `src/lib/components/chat/ChatMessageList.svelte` - onMount import
 - ✅ `src/lib/components/chat/NewChatDialog.svelte` - onMount import
 
 **Game Components:**
+
 - ✅ `src/lib/components/game/challenges/ChallengeContainer.svelte` - onMount import
 - ✅ `src/lib/components/game/challenges/ChallengeTimer.svelte` - onMount, onDestroy imports
 
 **Geometry Components:**
+
 - ✅ `src/lib/components/geometry/GeometryExercise.svelte` - activeTime, hasSteps, app parameter
 - ✅ `src/lib/components/geometry/GeometryExerciseWrapper.svelte` - exerciseId, currentStep props
 - ✅ `src/lib/components/geometry/GeometryHints.svelte` - exerciseId, currentStep props
@@ -138,6 +145,7 @@ All navigation errors addressed (27 fixed, 9 suppressed in button.svelte).
 - ✅ `src/routes/(protected)/dashboard/admin/debug/rls/+page.server.ts` - data variable
 
 **Pattern Used:**
+
 ```typescript
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let variable = value; // Explanatory comment for future use
@@ -155,17 +163,17 @@ All suppressions include explanatory comments indicating the variable is kept fo
 
 ### By Error Type (Estimated)
 
-| Error Type                             | Count   | % of Total | Risk to Fix    | Status        |
-| -------------------------------------- | ------- | ---------- | -------------- | ------------- |
-| `@typescript-eslint/no-explicit-any`   | 175     | 65%        | Medium-High    | Deferred      |
-| `@typescript-eslint/no-unused-vars`    | ~11     | 4%         | Low            | Nearly Done   |
-| `svelte/require-each-key`              | 0       | 0%         | ✅ COMPLETE    | ✅ COMPLETE   |
-| `svelte/no-navigation-without-resolve` | 0       | 0%         | ✅ COMPLETE    | ✅ COMPLETE   |
-| `svelte/no-dom-manipulating`           | 1       | <1%        | N/A (Expected) | Intentional   |
-| `svelte/no-at-html-tags`               | 2       | <1%        | Review Needed  | Review Later  |
-| `svelte/prefer-svelte-reactivity`      | 3       | 1%         | Medium         | Review Later  |
-| Other                                  | ~78     | 29%        | Varies         | Review Later  |
-| **Total**                              | **270** | **100%**   |                |               |
+| Error Type                             | Count   | % of Total | Risk to Fix    | Status       |
+| -------------------------------------- | ------- | ---------- | -------------- | ------------ |
+| `@typescript-eslint/no-explicit-any`   | 175     | 65%        | Medium-High    | Deferred     |
+| `@typescript-eslint/no-unused-vars`    | ~11     | 4%         | Low            | Nearly Done  |
+| `svelte/require-each-key`              | 0       | 0%         | ✅ COMPLETE    | ✅ COMPLETE  |
+| `svelte/no-navigation-without-resolve` | 0       | 0%         | ✅ COMPLETE    | ✅ COMPLETE  |
+| `svelte/no-dom-manipulating`           | 1       | <1%        | N/A (Expected) | Intentional  |
+| `svelte/no-at-html-tags`               | 2       | <1%        | Review Needed  | Review Later |
+| `svelte/prefer-svelte-reactivity`      | 3       | 1%         | Medium         | Review Later |
+| Other                                  | ~78     | 29%        | Varies         | Review Later |
+| **Total**                              | **270** | **100%**   |                |              |
 
 ## 🎯 Summary of Major Achievements
 
@@ -185,7 +193,8 @@ All suppressions include explanatory comments indicating the variable is kept fo
 ### 🔍 Remaining Work (~11 unused vars errors)
 
 Approximately 11 error-level unused variable errors remain, primarily:
-- Loop variables (_unused, _unused2) in route pages
+
+- Loop variables (\_unused, \_unused2) in route pages
 - Lifecycle imports (onMount, onDestroy) in remaining components
 - Props and parameters in route pages
 - Error variables in catch blocks
@@ -195,6 +204,7 @@ Approximately 11 error-level unused variable errors remain, primarily:
 ### Total Files Modified: 90+ files
 
 **Categories:**
+
 - Documentation & Config: 3 files
 - Components: 35+ files
 - Services: 6 files
@@ -250,6 +260,7 @@ During the "update docs and comment code" phase, several critical Svelte 5 compi
 **Problem:** Using `<Select.Value placeholder="..." />` component that doesn't exist in shadcn-svelte (differs from React shadcn).
 
 **Error Message:**
+
 ```
 TypeError: __vite_ssr_import_X__.Value is not a function
 ```
@@ -257,10 +268,11 @@ TypeError: __vite_ssr_import_X__.Value is not a function
 **Files Fixed:**
 
 #### A. QuestionTemplateForm.svelte (line 159)
+
 ```svelte
 <!-- BEFORE -->
 <Select.Trigger id="question-type">
-  <Select.Value placeholder="Sélectionner un type" />
+	<Select.Value placeholder="Sélectionner un type" />
 </Select.Trigger>
 
 <!-- AFTER -->
@@ -268,10 +280,11 @@ TypeError: __vite_ssr_import_X__.Value is not a function
 ```
 
 #### B. Questions List Page (line 307)
+
 ```svelte
 <!-- BEFORE -->
 <Select.Trigger>
-  <Select.Value placeholder="Tous les types" />
+	<Select.Value placeholder="Tous les types" />
 </Select.Trigger>
 
 <!-- AFTER -->
@@ -279,10 +292,11 @@ TypeError: __vite_ssr_import_X__.Value is not a function
 ```
 
 #### C. AnswerEditor.svelte (line 175)
+
 ```svelte
 <!-- BEFORE -->
 <Select.Trigger id="transform-type">
-  <Select.Value placeholder="Sélectionner une transformation" />
+	<Select.Value placeholder="Sélectionner une transformation" />
 </Select.Trigger>
 
 <!-- AFTER -->
@@ -290,10 +304,11 @@ TypeError: __vite_ssr_import_X__.Value is not a function
 ```
 
 #### D. ContentFieldEditor.svelte (line 124)
+
 ```svelte
 <!-- BEFORE -->
 <Select.Trigger id="field-type-{index}" class="w-40">
-  <Select.Value />
+	<Select.Value />
 </Select.Trigger>
 
 <!-- AFTER -->
@@ -301,10 +316,11 @@ TypeError: __vite_ssr_import_X__.Value is not a function
 ```
 
 #### E. PrecisionEditor.svelte (line 93)
+
 ```svelte
 <!-- BEFORE -->
 <Select.Trigger id="precision-type">
-  <Select.Value />
+	<Select.Value />
 </Select.Trigger>
 
 <!-- AFTER -->
@@ -312,10 +328,11 @@ TypeError: __vite_ssr_import_X__.Value is not a function
 ```
 
 #### F. PrecisionEditor.svelte (line 168)
+
 ```svelte
 <!-- BEFORE -->
 <Select.Trigger id="tolerance-mode">
-  <Select.Value />
+	<Select.Value />
 </Select.Trigger>
 
 <!-- AFTER -->
@@ -331,6 +348,7 @@ TypeError: __vite_ssr_import_X__.Value is not a function
 **Problem:** Svelte template parser was interpreting `{#:...}`, `{@:...}`, and `{eval:...}` inside plain string attributes as Svelte template syntax.
 
 **Error Messages:**
+
 ```
 {# ...} block cannot be in attribute value
 {@ ...} tag cannot be in attribute value
@@ -339,6 +357,7 @@ TypeError: __vite_ssr_import_X__.Value is not a function
 **Files Fixed:**
 
 #### A. VariableEditor.svelte (line 210)
+
 ```svelte
 <!-- BEFORE -->
 <Input placeholder="Ex: {#:1-10}, {@:min}+5, {eval:2^3}" />
@@ -348,6 +367,7 @@ TypeError: __vite_ssr_import_X__.Value is not a function
 ```
 
 #### B. AnswerEditor.svelte (line 139)
+
 ```svelte
 <!-- BEFORE -->
 <Input placeholder="Ex: {@:a} + {@:b}, {eval:2^3}, 42" />
@@ -357,6 +377,7 @@ TypeError: __vite_ssr_import_X__.Value is not a function
 ```
 
 #### C. ContentFieldEditor.svelte (line 151)
+
 ```svelte
 <!-- BEFORE -->
 <Textarea placeholder="Ex: Calculer {@:a} + {@:b} = {eval:{@:a}+{@:b}}" />
@@ -374,6 +395,7 @@ TypeError: __vite_ssr_import_X__.Value is not a function
 **Problem:** Using destructuring import for multi-part shadcn component.
 
 **Error Message:**
+
 ```
 TypeError: __vite_ssr_import_5__.Card.Root is not a function
 ```
@@ -397,6 +419,7 @@ import * as Card from '$lib/components/ui/card';
 **Problem:** fetch() defaulting to GET method when API expects POST with seed in request body.
 
 **Error Message:**
+
 ```
 405 Method Not Allowed
 SyntaxError: Unexpected token 'G', "GET method not allowed" is not valid JSON
@@ -410,9 +433,9 @@ const response = await fetch(`/api/questions/generate/${templateId}?seed=${seed}
 
 // AFTER
 const response = await fetch(`/api/questions/generate/${templateId}`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(seedParam !== undefined ? { seed: seedParam } : {})
+	method: 'POST',
+	headers: { 'Content-Type': 'application/json' },
+	body: JSON.stringify(seedParam !== undefined ? { seed: seedParam } : {})
 });
 ```
 
@@ -423,12 +446,14 @@ const response = await fetch(`/api/questions/generate/${templateId}`, {
 ## 📊 Impact Summary
 
 **Total Issues Fixed:** 11 critical Svelte compiler errors
+
 - ✅ 6 Select.Value instances
 - ✅ 3 placeholder syntax errors
 - ✅ 1 import pattern fix
 - ✅ 1 HTTP method fix
 
 **Files Modified:** 7 Question Bank System files
+
 - QuestionTemplateForm.svelte
 - Questions List Page (+page.svelte)
 - AnswerEditor.svelte
@@ -472,16 +497,19 @@ import * as Tabs from '$lib/components/ui/tabs';
 ## ✅ Verification
 
 ### Dev Server Status
+
 - ✅ Running cleanly on http://localhost:5173
 - ✅ No compilation errors
 - ✅ HMR (Hot Module Replacement) working correctly
 
 ### Latest HMR Updates (No Errors)
+
 - `8:33:14 AM` - AnswerEditor.svelte ✅
 - `8:46:07 AM` - ContentFieldEditor.svelte ✅
 - `8:46:23 AM` and `8:46:33 AM` - PrecisionEditor.svelte ✅
 
 ### svelte-check Results
+
 ✅ No errors in Question Bank System components
 
 ---
@@ -558,12 +586,14 @@ import * as Tabs from '$lib/components/ui/tabs';
 ```
 
 **Additional Changes:**
+
 - ✅ Removed unused `Select` import
 - ✅ Removed unused `getTypeLabel()` helper function
 - ✅ Applied shadcn input styling to native select element
 - ✅ Used `bind:value` for simpler two-way binding
 
 **Benefits:**
+
 - ✅ More reliable (native browser element)
 - ✅ Better accessibility (native select semantics)
 - ✅ Simpler code (no need for complex state management)
@@ -583,6 +613,7 @@ import * as Tabs from '$lib/components/ui/tabs';
 #### A. AnswerEditor.svelte - Transform Type Selector
 
 **Fixed:** Line 166-180
+
 ```svelte
 <!-- BEFORE -->
 <Select.Root
@@ -620,6 +651,7 @@ import * as Tabs from '$lib/components/ui/tabs';
 #### B. ContentFieldEditor.svelte - Field Type Selector (Text/Image)
 
 **Fixed:** Line 115-138
+
 ```svelte
 <!-- BEFORE -->
 <Select.Root
@@ -667,45 +699,47 @@ import * as Tabs from '$lib/components/ui/tabs';
 #### C. PrecisionEditor.svelte - Precision Type Selector
 
 **Fixed:** Line 84-103
+
 ```svelte
 <!-- BEFORE -->
 <Select.Root
-  selected={{ value: precision.type, label: getTypeLabel(precision.type) }}
-  onSelectedChange={(selected) => {
-    if (selected) {
-      handleTypeChange(selected.value);
-    }
-  }}
+	selected={{ value: precision.type, label: getTypeLabel(precision.type) }}
+	onSelectedChange={(selected) => {
+		if (selected) {
+			handleTypeChange(selected.value);
+		}
+	}}
 >
-  <Select.Trigger id="precision-type" />
-  <Select.Content>
-    {#each PRECISION_TYPES as type}
-      <Select.Item value={type.value}>
-        <div>
-          <div class="font-medium">{type.label}</div>
-          <div class="text-xs text-muted-foreground">{type.description}</div>
-        </div>
-      </Select.Item>
-    {/each}
-  </Select.Content>
+	<Select.Trigger id="precision-type" />
+	<Select.Content>
+		{#each PRECISION_TYPES as type}
+			<Select.Item value={type.value}>
+				<div>
+					<div class="font-medium">{type.label}</div>
+					<div class="text-xs text-muted-foreground">{type.description}</div>
+				</div>
+			</Select.Item>
+		{/each}
+	</Select.Content>
 </Select.Root>
 
 <!-- AFTER -->
 <select
-  id="precision-type"
-  value={precision.type}
-  onchange={(e) => handleTypeChange(e.currentTarget.value)}
-  class="flex h-auto w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+	id="precision-type"
+	value={precision.type}
+	onchange={(e) => handleTypeChange(e.currentTarget.value)}
+	class="flex h-auto w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 >
-  {#each PRECISION_TYPES as type}
-    <option value={type.value}>
-      {type.label} - {type.description}
-    </option>
-  {/each}
+	{#each PRECISION_TYPES as type}
+		<option value={type.value}>
+			{type.label} - {type.description}
+		</option>
+	{/each}
 </select>
 ```
 
 **Cleanup:**
+
 - Removed unused `Select` import
 - Removed unused `getTypeLabel()` helper function
 
@@ -714,6 +748,7 @@ import * as Tabs from '$lib/components/ui/tabs';
 #### D. PrecisionEditor.svelte - Tolerance Mode Selector
 
 **Fixed:** Line 151-174
+
 ```svelte
 <!-- BEFORE -->
 <Select.Root
@@ -757,6 +792,7 @@ import * as Tabs from '$lib/components/ui/tabs';
 ### 📊 Complete Select Component Replacement Summary
 
 **Total Components Fixed:** 5 files
+
 1. ✅ QuestionTemplateForm.svelte - Question type selector
 2. ✅ AnswerEditor.svelte - Transform type selector
 3. ✅ ContentFieldEditor.svelte - Field type selector (text/image)
@@ -764,6 +800,7 @@ import * as Tabs from '$lib/components/ui/tabs';
 5. ✅ PrecisionEditor.svelte - Tolerance mode selector
 
 **Benefits Achieved:**
+
 - ✅ **More reliable** - Native browser elements
 - ✅ **Better performance** - No framework overhead
 - ✅ **Simpler code** - Direct `bind:value` or `onchange` instead of complex callbacks
@@ -772,6 +809,7 @@ import * as Tabs from '$lib/components/ui/tabs';
 - ✅ **Smaller bundle** - No Select component imports needed
 
 **HMR Verification:** All components successfully updated with no errors:
+
 - 9:12:27 AM, 9:12:44 AM - AnswerEditor ✅
 - 9:12:56 AM, 9:13:08 AM - ContentFieldEditor ✅
 - 9:13:19 AM, 9:13:31 AM, 9:13:44 AM, 9:14:01 AM - PrecisionEditor ✅
@@ -813,6 +851,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase }, paren
 **Cause:** Complex component pattern causing SSR/client mismatch
 
 **Error Message:**
+
 ```
 Failed to hydrate.
 HierarchyRequestError: Failed to execute 'appendChild' on 'Node': This node type does not support this method.
@@ -821,71 +860,78 @@ HierarchyRequestError: Failed to execute 'appendChild' on 'Node': This node type
 **File Fixed:** `src/lib/components/GradeMultiSelect.svelte` (complete rewrite)
 
 **BEFORE (Popover-based):**
+
 ```svelte
 <Popover.Root bind:open>
-  <Popover.Trigger asChild let:builder>
-    <Button builders={[builder]} variant="outline" role="combobox">
-      {displayText()}
-      {#if selectedGrades.length > 0}
-        <Badge>{selectedGrades.length}</Badge>
-      {/if}
-    </Button>
-  </Popover.Trigger>
-  <Popover.Content>
-    <div class="space-y-2">
-      <div class="flex gap-2">
-        <Button onclick={selectAll} size="sm">Tout sélectionner</Button>
-        <Button onclick={clearAll} size="sm">Tout désélectionner</Button>
-      </div>
-      {#each grades as grade}
-        <div class="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id={grade.value}
-            checked={selectedGrades.includes(grade.value)}
-            onchange={() => toggleGrade(grade.value)}
-          />
-          <label for={grade.value}>{grade.label}</label>
-        </div>
-      {/each}
-    </div>
-  </Popover.Content>
+	<Popover.Trigger asChild let:builder>
+		<Button builders={[builder]} variant="outline" role="combobox">
+			{displayText()}
+			{#if selectedGrades.length > 0}
+				<Badge>{selectedGrades.length}</Badge>
+			{/if}
+		</Button>
+	</Popover.Trigger>
+	<Popover.Content>
+		<div class="space-y-2">
+			<div class="flex gap-2">
+				<Button onclick={selectAll} size="sm">Tout sélectionner</Button>
+				<Button onclick={clearAll} size="sm">Tout désélectionner</Button>
+			</div>
+			{#each grades as grade}
+				<div class="flex items-center gap-2">
+					<input
+						type="checkbox"
+						id={grade.value}
+						checked={selectedGrades.includes(grade.value)}
+						onchange={() => toggleGrade(grade.value)}
+					/>
+					<label for={grade.value}>{grade.label}</label>
+				</div>
+			{/each}
+		</div>
+	</Popover.Content>
 </Popover.Root>
 ```
 
 **AFTER (Native select multiple):**
+
 ```svelte
 <div class="relative">
-  <select
-    multiple
-    onchange={handleChange}
-    class="flex min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-    style="height: auto; max-height: 200px;"
-  >
-    {#each grades as grade}
-      <option value={grade.value} selected={selectedGrades.includes(grade.value)}>
-        {grade.label}
-      </option>
-    {/each}
-  </select>
-  {#if selectedGrades.length > 0}
-    <div class="mt-1 text-xs text-muted-foreground">
-      {selectedGrades.length} niveau{selectedGrades.length > 1 ? 'x' : ''} sélectionné{selectedGrades.length > 1 ? 's' : ''}
-    </div>
-  {/if}
+	<select
+		multiple
+		onchange={handleChange}
+		class="flex min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+		style="height: auto; max-height: 200px;"
+	>
+		{#each grades as grade}
+			<option value={grade.value} selected={selectedGrades.includes(grade.value)}>
+				{grade.label}
+			</option>
+		{/each}
+	</select>
+	{#if selectedGrades.length > 0}
+		<div class="mt-1 text-xs text-muted-foreground">
+			{selectedGrades.length} niveau{selectedGrades.length > 1 ? 'x' : ''} sélectionné{selectedGrades.length >
+			1
+				? 's'
+				: ''}
+		</div>
+	{/if}
 </div>
 ```
 
 **Simplified Implementation:**
+
 ```typescript
 function handleChange(event: Event) {
-  const select = event.target as HTMLSelectElement;
-  const selected = Array.from(select.selectedOptions).map(option => option.value);
-  selectedGrades = selected;
+	const select = event.target as HTMLSelectElement;
+	const selected = Array.from(select.selectedOptions).map((option) => option.value);
+	selectedGrades = selected;
 }
 ```
 
 **Benefits of Native Select:**
+
 - ✅ **No hydration errors** - Simple HTML element, no SSR mismatch
 - ✅ **Better accessibility** - Native browser multi-select semantics
 - ✅ **Simpler code** - No Popover, Button, or Badge complexity
@@ -895,6 +941,7 @@ function handleChange(event: Event) {
 - ✅ **Mobile-friendly** - Native mobile select UX (pinch zoom, OS keyboard)
 
 **Why the Popover approach failed:**
+
 1. Svelte 5 hydration is stricter than Svelte 4
 2. `asChild let:builder` pattern creates dynamic DOM structure
 3. SSR renders different HTML than client expects
@@ -904,6 +951,7 @@ function handleChange(event: Event) {
 When encountering Svelte 5 hydration errors with complex components (Popover, Dialog with asChild, etc.), prefer native HTML elements for better reliability.
 
 **Related Decisions:**
+
 - This is consistent with our earlier decision to replace all Select components with native `<select>` elements
 - Pattern established: Use native HTML when shadcn component causes issues
 

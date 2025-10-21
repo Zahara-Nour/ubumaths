@@ -57,7 +57,6 @@
 		children,
 		...restProps
 	}: ButtonProps = $props();
-
 </script>
 
 {#if href}

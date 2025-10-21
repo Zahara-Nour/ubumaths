@@ -84,7 +84,8 @@ describe('validateTemplate - Valid Templates', () => {
 					{
 						statement: [{ type: 'text', content: 'Question' }],
 						variables: [],
-						answer: type === 'fill_in_blanks' ? ['answer'] : type === 'multiple_choice' ? '0' : '42',
+						answer:
+							type === 'fill_in_blanks' ? ['answer'] : type === 'multiple_choice' ? '0' : '42',
 						blanks:
 							type === 'fill_in_blanks' ? [{ position: 0, expectedAnswer: 'answer' }] : undefined,
 						choices:

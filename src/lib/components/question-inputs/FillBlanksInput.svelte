@@ -116,9 +116,7 @@
 	<!-- Helper text -->
 	{#if !disabled}
 		<div class="helper-text">
-			<span class="text-xs text-muted-foreground">
-				Remplissez les blancs avec vos réponses
-			</span>
+			<span class="text-xs text-muted-foreground"> Remplissez les blancs avec vos réponses </span>
 		</div>
 	{/if}
 </div>

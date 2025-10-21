@@ -73,9 +73,34 @@
 	}
 
 	/**
-	 * Get first text content from statement (for preview)
+	 * Get display title (with LaTeX support)
 	 */
-	function getStatementPreview(statement: any[]): string {
+	function getDisplayTitle(template: any): string {
+		if (template.title && template.title.trim().length > 0) {
+			// Return title as-is (LaTeX will be rendered by MathLive if needed)
+			return template.title.length > 150
+				? template.title.substring(0, 150) + '...'
+				: template.title;
+		}
+		// Fallback to old behavior for templates without title
+		return getStatementPreview(template);
+	}
+
+	/**
+	 * Get first text content from statement (for fallback preview)
+	 * Used only for templates without title (legacy)
+	 */
+	function getStatementPreview(template: any): string {
+		// Handle new variations structure
+		if (!template.variations || template.variations.length === 0) {
+			return '(No variations)';
+		}
+
+		const statement = template.variations[0].statement;
+		if (!statement || !Array.isArray(statement)) {
+			return '(No statement)';
+		}
+
 		const textField = statement.find((s) => s.type === 'text');
 		if (!textField) return '(No text content)';
 
@@ -98,10 +123,10 @@
 			</span>
 		</div>
 
-		<!-- Statement preview -->
-		<p class="line-clamp-3 text-sm text-muted-foreground">
-			{getStatementPreview(template.statement)}
-		</p>
+		<!-- Title -->
+		<h3 class="line-clamp-2 text-base font-semibold">
+			{getDisplayTitle(template)}
+		</h3>
 	</Card.Header>
 
 	<Card.Content class="space-y-3">
@@ -159,20 +184,10 @@
 				<Pencil class="mr-1 h-4 w-4" />
 				<span class="hidden sm:inline">Modifier</span>
 			</Button>
-			<Button
-				variant="ghost"
-				size="sm"
-				onclick={() => onDuplicate(template.id)}
-				title="Dupliquer"
-			>
+			<Button variant="ghost" size="sm" onclick={() => onDuplicate(template.id)} title="Dupliquer">
 				<Copy class="h-4 w-4" />
 			</Button>
-			<Button
-				variant="ghost"
-				size="sm"
-				onclick={() => onDelete(template.id)}
-				title="Supprimer"
-			>
+			<Button variant="ghost" size="sm" onclick={() => onDelete(template.id)} title="Supprimer">
 				<Trash2 class="h-4 w-4 text-destructive" />
 			</Button>
 		</div>

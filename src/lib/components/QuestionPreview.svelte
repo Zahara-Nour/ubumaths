@@ -25,6 +25,7 @@
 	import * as Select from '$lib/components/ui/select';
 	import { AlertCircle, RefreshCw, Check, X } from 'lucide-svelte';
 	import { onMount } from 'svelte';
+	import QuestionDisplay from '$lib/components/QuestionDisplay.svelte';
 
 	interface Props {
 		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>;
@@ -38,6 +39,12 @@
 	let seed = $state(Math.floor(Math.random() * 1000000));
 	let mathLiveLoaded = $state(false);
 	let selectedVariationIndex = $state<number | 'random'>(0);
+
+	// QuestionDisplay configuration
+	let displayMode = $state<'flashcard' | 'interactive'>('interactive');
+	let displaySize = $state<'sm' | 'md' | 'lg'>('md');
+	let showCorrectionOnWrong = $state(false);
+	let showConfetti = $state(true);
 
 	// Derived: Number of variations in template
 	let variationCount = $derived(template.variations?.length || 1);
@@ -56,7 +63,8 @@
 				if (selectedVariationIndex !== 'random' && variationCount > 1) {
 					// Use seed that guarantees this specific variation will be selected
 					// Formula: seed = variationIndex + (variationCount * N) for any N
-					effectiveSeed = selectedVariationIndex + (variationCount * Math.floor(seed / variationCount));
+					effectiveSeed =
+						selectedVariationIndex + variationCount * Math.floor(seed / variationCount);
 				}
 
 				const result = generateInstance(template as QuestionTemplate, effectiveSeed);
@@ -126,6 +134,18 @@
 			})
 			.join(' ');
 	}
+
+	// Format variable value for display
+	function formatVariableValue(value: unknown): string {
+		if (value === null) return 'null';
+		if (value === undefined) return 'undefined';
+		if (typeof value === 'string') return value;
+		if (typeof value === 'number') return String(value);
+		if (typeof value === 'boolean') return String(value);
+		if (Array.isArray(value)) return JSON.stringify(value);
+		if (typeof value === 'object') return JSON.stringify(value, null, 2);
+		return String(value);
+	}
 </script>
 
 <Card.Root>
@@ -154,7 +174,7 @@
 						id="variation-select"
 						value={selectedVariationIndex === 'random' ? 'random' : String(selectedVariationIndex)}
 						onchange={(e) => handleVariationChange(e.currentTarget.value)}
-						class="flex h-9 w-64 rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+						class="flex h-9 w-64 rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 					>
 						<option value="random">Aléatoire (selon la graine)</option>
 						{#each Array(variationCount) as _, index}
@@ -203,16 +223,102 @@
 					{/if}
 				</div>
 
+				<!-- QuestionDisplay Configuration -->
+				<Card.Root>
+					<Card.Header>
+						<Card.Title class="text-base">Configuration de l'aperçu visuel</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<div class="grid grid-cols-2 gap-4">
+							<!-- Mode -->
+							<div class="space-y-2">
+								<Label class="text-sm font-medium">Mode</Label>
+								<div class="flex gap-2">
+									<Button
+										type="button"
+										variant={displayMode === 'flashcard' ? 'default' : 'outline'}
+										onclick={() => (displayMode = 'flashcard')}
+										size="sm"
+										class="flex-1"
+									>
+										Flashcard
+									</Button>
+									<Button
+										type="button"
+										variant={displayMode === 'interactive' ? 'default' : 'outline'}
+										onclick={() => (displayMode = 'interactive')}
+										size="sm"
+										class="flex-1"
+									>
+										Interactive
+									</Button>
+								</div>
+							</div>
+
+							<!-- Size -->
+							<div class="space-y-2">
+								<Label for="display-size" class="text-sm font-medium">Taille</Label>
+								<select
+									id="display-size"
+									bind:value={displaySize}
+									class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+								>
+									<option value="sm">Petite</option>
+									<option value="md">Moyenne</option>
+									<option value="lg">Grande</option>
+								</select>
+							</div>
+
+							<!-- Options -->
+							<div class="space-y-2">
+								<Label class="text-sm font-medium">Options</Label>
+								<div class="space-y-1">
+									<label class="flex items-center gap-2 text-sm">
+										<input type="checkbox" bind:checked={showCorrectionOnWrong} class="rounded" />
+										Afficher correction si faux
+									</label>
+									<label class="flex items-center gap-2 text-sm">
+										<input type="checkbox" bind:checked={showConfetti} class="rounded" />
+										Confettis si correct
+									</label>
+								</div>
+							</div>
+						</div>
+					</Card.Content>
+				</Card.Root>
+
+				<!-- Visual Preview with QuestionDisplay -->
+				<Card.Root>
+					<Card.Header>
+						<Card.Title class="text-base">Aperçu visuel (tel que vu par l'étudiant)</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<QuestionDisplay
+							mode={displayMode}
+							{instance}
+							size={displaySize}
+							{showCorrectionOnWrong}
+							{showConfetti}
+							allowMultipleAttempts={true}
+							maxAttempts={0}
+						/>
+					</Card.Content>
+				</Card.Root>
+
+				<!-- Technical Details Separator -->
+				<div class="flex items-center gap-2">
+					<div class="h-px flex-1 bg-border"></div>
+					<Badge variant="outline">Détails techniques</Badge>
+					<div class="h-px flex-1 bg-border"></div>
+				</div>
+
 				<!-- Statement -->
 				<div class="space-y-2">
 					<div class="flex items-center gap-2">
 						<Badge variant="outline">Énoncé</Badge>
 						<Badge>{template.type}</Badge>
 					</div>
-					<div
-						class="rounded-lg border bg-card p-4 font-serif text-lg"
-						use:renderLatex
-					>
+					<div class="rounded-lg border bg-card p-4 font-serif text-lg" use:renderLatex>
 						{renderContent(instance.statement)}
 					</div>
 				</div>
@@ -223,9 +329,9 @@
 						<Badge variant="outline">Variables résolues</Badge>
 						<div class="grid gap-2 md:grid-cols-2">
 							{#each Object.entries(instance.resolvedVariables) as [name, value]}
-								<div class="flex items-center gap-2 rounded border bg-muted/50 p-2 text-sm">
-									<code class="font-semibold">{name}:</code>
-									<code>{value}</code>
+								<div class="flex items-start gap-2 rounded border bg-muted/50 p-2 text-sm">
+									<code class="flex-shrink-0 font-semibold">{name}:</code>
+									<code class="break-all">{formatVariableValue(value)}</code>
 								</div>
 							{/each}
 						</div>

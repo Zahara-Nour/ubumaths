@@ -34,35 +34,33 @@ import { getVariableNames } from '../parser/variable-parser';
  * detectCircularDependencies(badVars);  // → ["Circular reference detected: a -> b -> a"]
  * ```
  */
-export function detectCircularDependencies(
-  variables?: QuestionVariable[]
-): string[] {
-  if (!variables || variables.length === 0) {
-    return [];
-  }
+export function detectCircularDependencies(variables?: QuestionVariable[]): string[] {
+	if (!variables || variables.length === 0) {
+		return [];
+	}
 
-  // Build dependency graph: variable -> [dependencies]
-  const graph = new Map<string, string[]>();
+	// Build dependency graph: variable -> [dependencies]
+	const graph = new Map<string, string[]>();
 
-  for (const variable of variables) {
-    const dependencies = getVariableNames(variable.expression);
-    graph.set(variable.name, dependencies);
-  }
+	for (const variable of variables) {
+		const dependencies = getVariableNames(variable.expression);
+		graph.set(variable.name, dependencies);
+	}
 
-  // Detect cycles using DFS
-  const errors: string[] = [];
-  const visited = new Set<string>();
+	// Detect cycles using DFS
+	const errors: string[] = [];
+	const visited = new Set<string>();
 
-  for (const variable of variables) {
-    if (!visited.has(variable.name)) {
-      const cycle = findCycle(variable.name, graph, visited, new Set(), []);
-      if (cycle) {
-        errors.push(`Circular reference detected: ${cycle.join(' -> ')}`);
-      }
-    }
-  }
+	for (const variable of variables) {
+		if (!visited.has(variable.name)) {
+			const cycle = findCycle(variable.name, graph, visited, new Set(), []);
+			if (cycle) {
+				errors.push(`Circular reference detected: ${cycle.join(' -> ')}`);
+			}
+		}
+	}
 
-  return errors;
+	return errors;
 }
 
 /**
@@ -76,37 +74,37 @@ export function detectCircularDependencies(
  * @returns Cycle path if found, null otherwise
  */
 function findCycle(
-  node: string,
-  graph: Map<string, string[]>,
-  visited: Set<string>,
-  recStack: Set<string>,
-  path: string[]
+	node: string,
+	graph: Map<string, string[]>,
+	visited: Set<string>,
+	recStack: Set<string>,
+	path: string[]
 ): string[] | null {
-  visited.add(node);
-  recStack.add(node);
-  path.push(node);
+	visited.add(node);
+	recStack.add(node);
+	path.push(node);
 
-  const neighbors = graph.get(node) || [];
+	const neighbors = graph.get(node) || [];
 
-  for (const neighbor of neighbors) {
-    if (!visited.has(neighbor)) {
-      // Continue DFS
-      const cycle = findCycle(neighbor, graph, visited, recStack, path);
-      if (cycle) {
-        return cycle;
-      }
-    } else if (recStack.has(neighbor)) {
-      // Cycle detected
-      const cycleStart = path.indexOf(neighbor);
-      const cyclePath = path.slice(cycleStart);
-      cyclePath.push(neighbor); // Complete the cycle
-      return cyclePath;
-    }
-  }
+	for (const neighbor of neighbors) {
+		if (!visited.has(neighbor)) {
+			// Continue DFS
+			const cycle = findCycle(neighbor, graph, visited, recStack, path);
+			if (cycle) {
+				return cycle;
+			}
+		} else if (recStack.has(neighbor)) {
+			// Cycle detected
+			const cycleStart = path.indexOf(neighbor);
+			const cyclePath = path.slice(cycleStart);
+			cyclePath.push(neighbor); // Complete the cycle
+			return cyclePath;
+		}
+	}
 
-  recStack.delete(node);
-  path.pop();
-  return null;
+	recStack.delete(node);
+	path.pop();
+	return null;
 }
 
 /**
@@ -116,47 +114,44 @@ function findCycle(
  * @param variables - All variable definitions
  * @returns True if variable has circular reference
  */
-export function hasCircularReference(
-  varName: string,
-  variables: QuestionVariable[]
-): boolean {
-  const graph = new Map<string, string[]>();
+export function hasCircularReference(varName: string, variables: QuestionVariable[]): boolean {
+	const graph = new Map<string, string[]>();
 
-  for (const variable of variables) {
-    const dependencies = getVariableNames(variable.expression);
-    graph.set(variable.name, dependencies);
-  }
+	for (const variable of variables) {
+		const dependencies = getVariableNames(variable.expression);
+		graph.set(variable.name, dependencies);
+	}
 
-  const visited = new Set<string>();
-  const recStack = new Set<string>();
+	const visited = new Set<string>();
+	const recStack = new Set<string>();
 
-  return hasCycleDFS(varName, graph, visited, recStack);
+	return hasCycleDFS(varName, graph, visited, recStack);
 }
 
 /**
  * DFS helper to check for cycles from a specific node
  */
 function hasCycleDFS(
-  node: string,
-  graph: Map<string, string[]>,
-  visited: Set<string>,
-  recStack: Set<string>
+	node: string,
+	graph: Map<string, string[]>,
+	visited: Set<string>,
+	recStack: Set<string>
 ): boolean {
-  visited.add(node);
-  recStack.add(node);
+	visited.add(node);
+	recStack.add(node);
 
-  const neighbors = graph.get(node) || [];
+	const neighbors = graph.get(node) || [];
 
-  for (const neighbor of neighbors) {
-    if (!visited.has(neighbor)) {
-      if (hasCycleDFS(neighbor, graph, visited, recStack)) {
-        return true;
-      }
-    } else if (recStack.has(neighbor)) {
-      return true;
-    }
-  }
+	for (const neighbor of neighbors) {
+		if (!visited.has(neighbor)) {
+			if (hasCycleDFS(neighbor, graph, visited, recStack)) {
+				return true;
+			}
+		} else if (recStack.has(neighbor)) {
+			return true;
+		}
+	}
 
-  recStack.delete(node);
-  return false;
+	recStack.delete(node);
+	return false;
 }

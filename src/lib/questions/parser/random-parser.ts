@@ -51,84 +51,85 @@ import type { RandomSpec, NumberOrVariable, Exclusion } from '../types';
  * ```
  */
 export function parseRandomExpression(expr: string): RandomSpec {
-  // Remove {#: and }
-  if (!expr.startsWith('{#:') || !expr.endsWith('}')) {
-    throw new Error(`Invalid random expression: ${expr}`);
-  }
+	// Remove {#: and }
+	if (!expr.startsWith('{#:') || !expr.endsWith('}')) {
+		throw new Error(`Invalid random expression: ${expr}`);
+	}
 
-  const content = expr.slice(3, -1);
+	const content = expr.slice(3, -1);
 
-  // Split base and exclusions
-  const [baseSpec, exclusionSpec] = splitAtTopLevel(content, '!');
+	// Split base and exclusions
+	const [baseSpec, exclusionSpec] = splitAtTopLevel(content, '!');
 
-  // Parse base specification
-  let spec: RandomSpec;
+	// Parse base specification
+	let spec: RandomSpec;
 
-  // Check if it's a decimal by digits format (contains . but no -)
-  if (baseSpec.includes('.') && !baseSpec.includes('-')) {
-    spec = parseDecimalByDigits(baseSpec);
-  } else {
-    spec = parseRange(baseSpec);
-  }
+	// Check if it's a decimal by digits format (contains . but no -)
+	if (baseSpec.includes('.') && !baseSpec.includes('-')) {
+		spec = parseDecimalByDigits(baseSpec);
+	} else {
+		spec = parseRange(baseSpec);
+	}
 
-  // Parse exclusions if present
-  if (exclusionSpec) {
-    spec.exclusions = parseExclusions(exclusionSpec);
-  } else {
-    spec.exclusions = [];
-  }
+	// Parse exclusions if present
+	if (exclusionSpec) {
+		spec.exclusions = parseExclusions(exclusionSpec);
+	} else {
+		spec.exclusions = [];
+	}
 
-  return spec;
+	return spec;
 }
 
 /**
  * Parse decimal format: {#:2.3} or {#:{@:before}.{@:after}}
  */
 function parseDecimalByDigits(spec: string): RandomSpec {
-  const [beforeStr, afterStr] = spec.split('.');
+	const [beforeStr, afterStr] = spec.split('.');
 
-  if (!beforeStr || !afterStr) {
-    throw new Error(`Invalid decimal specification: ${spec}`);
-  }
+	if (!beforeStr || !afterStr) {
+		throw new Error(`Invalid decimal specification: ${spec}`);
+	}
 
-  return {
-    type: 'decimal',
-    digitsBefore: parseNumberOrVariable(beforeStr),
-    digitsAfter: parseNumberOrVariable(afterStr),
-    exclusions: []
-  };
+	return {
+		type: 'decimal',
+		digitsBefore: parseNumberOrVariable(beforeStr),
+		digitsAfter: parseNumberOrVariable(afterStr),
+		exclusions: []
+	};
 }
 
 /**
  * Parse range format: {#:1-10} or {#:{@:min}-{@:max}} or {#:0.5-9.99:0.01}
  */
 function parseRange(spec: string): RandomSpec {
-  // Check for step notation (split at top level to avoid splitting inside {@:})
-  const [rangeSpec, stepStr] = splitAtTopLevel(spec, ':');
+	// Check for step notation (split at top level to avoid splitting inside {@:})
+	const [rangeSpec, stepStr] = splitAtTopLevel(spec, ':');
 
-  // Parse min-max
-  const { min, max } = parseMinMax(rangeSpec);
+	// Parse min-max
+	const { min, max } = parseMinMax(rangeSpec);
 
-  // Determine if decimal or integer
-  const isDecimal = stepStr !== undefined || isNumberOrVariableDecimal(min) || isNumberOrVariableDecimal(max);
+	// Determine if decimal or integer
+	const isDecimal =
+		stepStr !== undefined || isNumberOrVariableDecimal(min) || isNumberOrVariableDecimal(max);
 
-  // Add default step for decimal ranges without explicit step
-  const step = stepStr ? parseFloat(stepStr) : (isDecimal ? 0.01 : undefined);
+	// Add default step for decimal ranges without explicit step
+	const step = stepStr ? parseFloat(stepStr) : isDecimal ? 0.01 : undefined;
 
-  return {
-    type: isDecimal ? 'decimal' : 'integer',
-    min,
-    max,
-    step,
-    exclusions: []
-  };
+	return {
+		type: isDecimal ? 'decimal' : 'integer',
+		min,
+		max,
+		step,
+		exclusions: []
+	};
 }
 
 /**
  * Check if NumberOrVariable represents a decimal
  */
 function isNumberOrVariableDecimal(val: NumberOrVariable): boolean {
-  return typeof val === 'number' && !Number.isInteger(val);
+	return typeof val === 'number' && !Number.isInteger(val);
 }
 
 /**
@@ -141,50 +142,50 @@ function isNumberOrVariableDecimal(val: NumberOrVariable): boolean {
  * - "1-{@:max}" → min: 1, max: {type:'variable',name:'max'}
  */
 function parseMinMax(rangeSpec: string): { min: NumberOrVariable; max: NumberOrVariable } {
-  let minStr = '';
-  let maxStr = '';
-  let inVariable = false;
-  let braceCount = 0;
-  let foundSeparator = false;
+	let minStr = '';
+	let maxStr = '';
+	let inVariable = false;
+	let braceCount = 0;
+	let foundSeparator = false;
 
-  for (let i = 0; i < rangeSpec.length; i++) {
-    const char = rangeSpec[i];
+	for (let i = 0; i < rangeSpec.length; i++) {
+		const char = rangeSpec[i];
 
-    // Track braces for variables
-    if (char === '{') {
-      braceCount++;
-      inVariable = true;
-    } else if (char === '}') {
-      braceCount--;
-      if (braceCount === 0) {
-        inVariable = false;
-      }
-    }
+		// Track braces for variables
+		if (char === '{') {
+			braceCount++;
+			inVariable = true;
+		} else if (char === '}') {
+			braceCount--;
+			if (braceCount === 0) {
+				inVariable = false;
+			}
+		}
 
-    // Check if this is a separator dash (not a negative sign)
-    // Only treat as separator if we haven't found one yet
-    if (char === '-' && !inVariable && i > 0 && !foundSeparator) {
-      // This is the separator
-      foundSeparator = true;
-      continue;
-    }
+		// Check if this is a separator dash (not a negative sign)
+		// Only treat as separator if we haven't found one yet
+		if (char === '-' && !inVariable && i > 0 && !foundSeparator) {
+			// This is the separator
+			foundSeparator = true;
+			continue;
+		}
 
-    // Append to appropriate part
-    if (!foundSeparator) {
-      minStr += char;
-    } else {
-      maxStr += char;
-    }
-  }
+		// Append to appropriate part
+		if (!foundSeparator) {
+			minStr += char;
+		} else {
+			maxStr += char;
+		}
+	}
 
-  if (!foundSeparator) {
-    throw new Error(`Invalid range specification: ${rangeSpec}`);
-  }
+	if (!foundSeparator) {
+		throw new Error(`Invalid range specification: ${rangeSpec}`);
+	}
 
-  return {
-    min: parseNumberOrVariable(minStr),
-    max: parseNumberOrVariable(maxStr)
-  };
+	return {
+		min: parseNumberOrVariable(minStr),
+		max: parseNumberOrVariable(maxStr)
+	};
 }
 
 /**
@@ -197,58 +198,58 @@ function parseMinMax(rangeSpec: string): { min: NumberOrVariable; max: NumberOrV
  * parseNumberOrVariable('{@:varName}') → { type: 'variable', name: 'varName' }
  */
 export function parseNumberOrVariable(str: string): NumberOrVariable {
-  const trimmed = str.trim();
+	const trimmed = str.trim();
 
-  // Check if it's a variable
-  if (trimmed.startsWith('{@:') && trimmed.endsWith('}')) {
-    const varName = trimmed.slice(3, -1);
-    return { type: 'variable', name: varName };
-  }
+	// Check if it's a variable
+	if (trimmed.startsWith('{@:') && trimmed.endsWith('}')) {
+		const varName = trimmed.slice(3, -1);
+		return { type: 'variable', name: varName };
+	}
 
-  // It's a number
-  const num = parseFloat(trimmed);
-  if (isNaN(num)) {
-    throw new Error(`Invalid number or variable reference: ${str}`);
-  }
+	// It's a number
+	const num = parseFloat(trimmed);
+	if (isNaN(num)) {
+		throw new Error(`Invalid number or variable reference: ${str}`);
+	}
 
-  return num;
+	return num;
 }
 
 /**
  * Parse exclusions: "5,7-9,{@:a},{@:b}-{@:c}"
  */
 function parseExclusions(spec: string): Exclusion[] {
-  const exclusions: Exclusion[] = [];
-  const parts = splitExclusionParts(spec);
+	const exclusions: Exclusion[] = [];
+	const parts = splitExclusionParts(spec);
 
-  for (const part of parts) {
-    const trimmed = part.trim();
+	for (const part of parts) {
+		const trimmed = part.trim();
 
-    // Variable reference: {@:name}
-    if (trimmed.startsWith('{@:') && trimmed.endsWith('}') && !trimmed.includes('-')) {
-      const varName = trimmed.slice(3, -1);
-      exclusions.push({ type: 'variable', name: varName });
-    }
-    // Range: detect by trying to parse as range
-    // This handles: 5-7, -10--5, {@:a}-{@:b}, -10-20
-    else if (trimmed.includes('-')) {
-      try {
-        const { min, max } = parseMinMax(trimmed);
-        exclusions.push({ type: 'range', min, max });
-      } catch {
-        // If parseMinMax fails, treat as single value
-        const value = parseNumberOrVariable(trimmed);
-        exclusions.push({ type: 'value', value });
-      }
-    }
-    // Single value: 5 or -3
-    else {
-      const value = parseNumberOrVariable(trimmed);
-      exclusions.push({ type: 'value', value });
-    }
-  }
+		// Variable reference: {@:name}
+		if (trimmed.startsWith('{@:') && trimmed.endsWith('}') && !trimmed.includes('-')) {
+			const varName = trimmed.slice(3, -1);
+			exclusions.push({ type: 'variable', name: varName });
+		}
+		// Range: detect by trying to parse as range
+		// This handles: 5-7, -10--5, {@:a}-{@:b}, -10-20
+		else if (trimmed.includes('-')) {
+			try {
+				const { min, max } = parseMinMax(trimmed);
+				exclusions.push({ type: 'range', min, max });
+			} catch {
+				// If parseMinMax fails, treat as single value
+				const value = parseNumberOrVariable(trimmed);
+				exclusions.push({ type: 'value', value });
+			}
+		}
+		// Single value: 5 or -3
+		else {
+			const value = parseNumberOrVariable(trimmed);
+			exclusions.push({ type: 'value', value });
+		}
+	}
 
-  return exclusions;
+	return exclusions;
 }
 
 /**
@@ -257,32 +258,32 @@ function parseExclusions(spec: string): Exclusion[] {
  * Example: "5,{@:a},{@:b}-{@:c}" → ["5", "{@:a}", "{@:b}-{@:c}"]
  */
 function splitExclusionParts(spec: string): string[] {
-  const parts: string[] = [];
-  let current = '';
-  let braceCount = 0;
+	const parts: string[] = [];
+	let current = '';
+	let braceCount = 0;
 
-  for (let i = 0; i < spec.length; i++) {
-    const char = spec[i];
+	for (let i = 0; i < spec.length; i++) {
+		const char = spec[i];
 
-    if (char === '{') {
-      braceCount++;
-    } else if (char === '}') {
-      braceCount--;
-    }
+		if (char === '{') {
+			braceCount++;
+		} else if (char === '}') {
+			braceCount--;
+		}
 
-    if (char === ',' && braceCount === 0) {
-      parts.push(current.trim());
-      current = '';
-    } else {
-      current += char;
-    }
-  }
+		if (char === ',' && braceCount === 0) {
+			parts.push(current.trim());
+			current = '';
+		} else {
+			current += char;
+		}
+	}
 
-  if (current) {
-    parts.push(current.trim());
-  }
+	if (current) {
+		parts.push(current.trim());
+	}
 
-  return parts;
+	return parts;
 }
 
 /**
@@ -293,24 +294,24 @@ function splitExclusionParts(spec: string): string[] {
  * splitAtTopLevel('{@:a}-{@:b}!{@:c}', '!') → ['{@:a}-{@:b}', '{@:c}']
  */
 function splitAtTopLevel(str: string, separator: string): [string, string | undefined] {
-  let braceCount = 0;
-  let separatorIndex = -1;
+	let braceCount = 0;
+	let separatorIndex = -1;
 
-  for (let i = 0; i < str.length; i++) {
-    const char = str[i];
+	for (let i = 0; i < str.length; i++) {
+		const char = str[i];
 
-    if (char === '{') braceCount++;
-    if (char === '}') braceCount--;
+		if (char === '{') braceCount++;
+		if (char === '}') braceCount--;
 
-    if (char === separator && braceCount === 0) {
-      separatorIndex = i;
-      break;
-    }
-  }
+		if (char === separator && braceCount === 0) {
+			separatorIndex = i;
+			break;
+		}
+	}
 
-  if (separatorIndex === -1) {
-    return [str, undefined];
-  }
+	if (separatorIndex === -1) {
+		return [str, undefined];
+	}
 
-  return [str.substring(0, separatorIndex), str.substring(separatorIndex + 1)];
+	return [str.substring(0, separatorIndex), str.substring(separatorIndex + 1)];
 }

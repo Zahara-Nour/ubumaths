@@ -27,38 +27,38 @@ export type VariableContext = ResolvedVariable[] | Record<string, number | strin
  * @throws Error if variable not found or not numeric
  */
 export function resolveNumberOrVariable(
-  value: NumberOrVariable,
-  resolvedVariables: VariableContext
+	value: NumberOrVariable,
+	resolvedVariables: VariableContext
 ): number {
-  if (typeof value === 'number') {
-    return value;
-  }
+	if (typeof value === 'number') {
+		return value;
+	}
 
-  // Handle object format (for tests)
-  if (!Array.isArray(resolvedVariables)) {
-    const varValue = resolvedVariables[value.name];
-    if (varValue === undefined) {
-      throw new Error(`Variable "${value.name}" not found or not yet resolved`);
-    }
-    const num = typeof varValue === 'number' ? varValue : parseFloat(varValue);
-    if (isNaN(num)) {
-      throw new Error(`Variable "${value.name}" does not resolve to a number: ${varValue}`);
-    }
-    return num;
-  }
+	// Handle object format (for tests)
+	if (!Array.isArray(resolvedVariables)) {
+		const varValue = resolvedVariables[value.name];
+		if (varValue === undefined) {
+			throw new Error(`Variable "${value.name}" not found or not yet resolved`);
+		}
+		const num = typeof varValue === 'number' ? varValue : parseFloat(varValue);
+		if (isNaN(num)) {
+			throw new Error(`Variable "${value.name}" does not resolve to a number: ${varValue}`);
+		}
+		return num;
+	}
 
-  // Handle array format (production)
-  const variable = resolvedVariables.find((v) => v.name === value.name);
-  if (!variable) {
-    throw new Error(`Variable "${value.name}" not found or not yet resolved`);
-  }
+	// Handle array format (production)
+	const variable = resolvedVariables.find((v) => v.name === value.name);
+	if (!variable) {
+		throw new Error(`Variable "${value.name}" not found or not yet resolved`);
+	}
 
-  const num = parseFloat(variable.value);
-  if (isNaN(num)) {
-    throw new Error(`Variable "${value.name}" does not resolve to a number: ${variable.value}`);
-  }
+	const num = parseFloat(variable.value);
+	if (isNaN(num)) {
+		throw new Error(`Variable "${value.name}" does not resolve to a number: ${variable.value}`);
+	}
 
-  return num;
+	return num;
 }
 
 /**
@@ -84,126 +84,133 @@ export function resolveNumberOrVariable(
  * ```
  */
 export function generateRandomNumber(
-  spec: RandomSpec,
-  resolvedVariables: VariableContext,
-  seed?: number
+	spec: RandomSpec,
+	resolvedVariables: VariableContext,
+	seed?: number
 ): number {
-  // 1. Resolve variables in bounds/digits
-  let min: number | undefined;
-  let max: number | undefined;
-  let digitsBefore: number | undefined;
-  let digitsAfter: number | undefined;
+	// 1. Resolve variables in bounds/digits
+	let min: number | undefined;
+	let max: number | undefined;
+	let digitsBefore: number | undefined;
+	let digitsAfter: number | undefined;
 
-  if (spec.type === 'integer' || (spec.type === 'decimal' && spec.min !== undefined)) {
-    min = spec.min !== undefined ? resolveNumberOrVariable(spec.min, resolvedVariables) : undefined;
-    max = spec.max !== undefined ? resolveNumberOrVariable(spec.max, resolvedVariables) : undefined;
+	if (spec.type === 'integer' || (spec.type === 'decimal' && spec.min !== undefined)) {
+		min = spec.min !== undefined ? resolveNumberOrVariable(spec.min, resolvedVariables) : undefined;
+		max = spec.max !== undefined ? resolveNumberOrVariable(spec.max, resolvedVariables) : undefined;
 
-    // Validate min <= max (allow single value ranges)
-    if (min !== undefined && max !== undefined && min > max) {
-      throw new Error(`Invalid range: min (${min}) must be less than or equal to max (${max})`);
-    }
-  }
+		// Validate min <= max (allow single value ranges)
+		if (min !== undefined && max !== undefined && min > max) {
+			throw new Error(`Invalid range: min (${min}) must be less than or equal to max (${max})`);
+		}
+	}
 
-  if (spec.type === 'decimal' && spec.digitsBefore !== undefined) {
-    digitsBefore =
-      spec.digitsBefore !== undefined
-        ? resolveNumberOrVariable(spec.digitsBefore, resolvedVariables)
-        : undefined;
-    digitsAfter =
-      spec.digitsAfter !== undefined
-        ? resolveNumberOrVariable(spec.digitsAfter, resolvedVariables)
-        : undefined;
+	if (spec.type === 'decimal' && spec.digitsBefore !== undefined) {
+		digitsBefore =
+			spec.digitsBefore !== undefined
+				? resolveNumberOrVariable(spec.digitsBefore, resolvedVariables)
+				: undefined;
+		digitsAfter =
+			spec.digitsAfter !== undefined
+				? resolveNumberOrVariable(spec.digitsAfter, resolvedVariables)
+				: undefined;
 
-    // Validate digits are non-negative integers
-    if (digitsBefore !== undefined && (!Number.isInteger(digitsBefore) || digitsBefore < 0)) {
-      throw new Error(`digitsBefore must be a non-negative integer, got ${digitsBefore}`);
-    }
-    if (digitsAfter !== undefined && (!Number.isInteger(digitsAfter) || digitsAfter < 0)) {
-      throw new Error(`digitsAfter must be a non-negative integer, got ${digitsAfter}`);
-    }
-  }
+		// Validate digits are non-negative integers
+		if (digitsBefore !== undefined && (!Number.isInteger(digitsBefore) || digitsBefore < 0)) {
+			throw new Error(`digitsBefore must be a non-negative integer, got ${digitsBefore}`);
+		}
+		if (digitsAfter !== undefined && (!Number.isInteger(digitsAfter) || digitsAfter < 0)) {
+			throw new Error(`digitsAfter must be a non-negative integer, got ${digitsAfter}`);
+		}
+	}
 
-  // Validate step for decimal ranges
-  if (spec.type === 'decimal' && spec.step !== undefined) {
-    if (spec.step <= 0) {
-      throw new Error(`Step must be positive, got ${spec.step}`);
-    }
-  }
+	// Validate step for decimal ranges
+	if (spec.type === 'decimal' && spec.step !== undefined) {
+		if (spec.step <= 0) {
+			throw new Error(`Step must be positive, got ${spec.step}`);
+		}
+	}
 
-  // 2. Resolve exclusions
-  const excludedValues = new Set<number>();
+	// 2. Resolve exclusions
+	const excludedValues = new Set<number>();
 
-  for (const exclusion of spec.exclusions) {
-    if (exclusion.type === 'value') {
-      const value = resolveNumberOrVariable(exclusion.value, resolvedVariables);
-      excludedValues.add(value);
-    } else if (exclusion.type === 'range') {
-      const excludeMin = resolveNumberOrVariable(exclusion.min, resolvedVariables);
-      const excludeMax = resolveNumberOrVariable(exclusion.max, resolvedVariables);
+	for (const exclusion of spec.exclusions) {
+		if (exclusion.type === 'value') {
+			const value = resolveNumberOrVariable(exclusion.value, resolvedVariables);
+			excludedValues.add(value);
+		} else if (exclusion.type === 'range') {
+			const excludeMin = resolveNumberOrVariable(exclusion.min, resolvedVariables);
+			const excludeMax = resolveNumberOrVariable(exclusion.max, resolvedVariables);
 
-      // Validate exclusion range
-      if (excludeMin >= excludeMax) {
-        throw new Error(`Invalid exclusion range: min (${excludeMin}) must be less than max (${excludeMax})`);
-      }
+			// Validate exclusion range
+			if (excludeMin >= excludeMax) {
+				throw new Error(
+					`Invalid exclusion range: min (${excludeMin}) must be less than max (${excludeMax})`
+				);
+			}
 
-      // Generate all values in range
-      if (spec.type === 'integer') {
-        for (let i = Math.ceil(excludeMin); i <= Math.floor(excludeMax); i++) {
-          excludedValues.add(i);
-        }
-      } else {
-        // For decimals, use step
-        const step = spec.step || 0.01;
-        for (let i = excludeMin; i <= excludeMax; i += step) {
-          excludedValues.add(parseFloat(i.toFixed(10))); // Avoid float errors
-        }
-      }
-    } else if (exclusion.type === 'variable') {
-      // Handle both array and object formats
-      let value: number;
-      if (Array.isArray(resolvedVariables)) {
-        const variable = resolvedVariables.find((v) => v.name === exclusion.name);
-        if (!variable) {
-          throw new Error(`Variable "${exclusion.name}" not found in exclusions`);
-        }
-        value = parseFloat(variable.value);
-      } else {
-        const varValue = resolvedVariables[exclusion.name];
-        if (varValue === undefined) {
-          throw new Error(`Variable "${exclusion.name}" not found in exclusions`);
-        }
-        value = typeof varValue === 'number' ? varValue : parseFloat(varValue);
-      }
-      if (!isNaN(value)) {
-        excludedValues.add(value);
-      }
-    }
-  }
+			// Generate all values in range
+			if (spec.type === 'integer') {
+				for (let i = Math.ceil(excludeMin); i <= Math.floor(excludeMax); i++) {
+					excludedValues.add(i);
+				}
+			} else {
+				// For decimals, use step
+				const step = spec.step || 0.01;
+				for (let i = excludeMin; i <= excludeMax; i += step) {
+					excludedValues.add(parseFloat(i.toFixed(10))); // Avoid float errors
+				}
+			}
+		} else if (exclusion.type === 'variable') {
+			// Handle both array and object formats
+			let value: number;
+			if (Array.isArray(resolvedVariables)) {
+				const variable = resolvedVariables.find((v) => v.name === exclusion.name);
+				if (!variable) {
+					throw new Error(`Variable "${exclusion.name}" not found in exclusions`);
+				}
+				value = parseFloat(variable.value);
+			} else {
+				const varValue = resolvedVariables[exclusion.name];
+				if (varValue === undefined) {
+					throw new Error(`Variable "${exclusion.name}" not found in exclusions`);
+				}
+				value = typeof varValue === 'number' ? varValue : parseFloat(varValue);
+			}
+			if (!isNaN(value)) {
+				excludedValues.add(value);
+			}
+		}
+	}
 
-  // 3. Generate random number
-  let value: number;
-  let attempts = 0;
-  const MAX_ATTEMPTS = 10000;
+	// 3. Generate random number
+	let value: number;
+	let attempts = 0;
+	const MAX_ATTEMPTS = 10000;
 
-  do {
-    if (spec.type === 'integer') {
-      value = randomInt(min!, max!, seed ? seed + attempts : undefined);
-    } else if (digitsBefore !== undefined && digitsAfter !== undefined) {
-      value = randomDecimalByDigits(digitsBefore, digitsAfter, seed ? seed + attempts : undefined);
-    } else {
-      value = randomDecimalByRange(min!, max!, spec.step || 0.01, seed ? seed + attempts : undefined);
-    }
+	do {
+		if (spec.type === 'integer') {
+			value = randomInt(min!, max!, seed ? seed + attempts : undefined);
+		} else if (digitsBefore !== undefined && digitsAfter !== undefined) {
+			value = randomDecimalByDigits(digitsBefore, digitsAfter, seed ? seed + attempts : undefined);
+		} else {
+			value = randomDecimalByRange(
+				min!,
+				max!,
+				spec.step || 0.01,
+				seed ? seed + attempts : undefined
+			);
+		}
 
-    attempts++;
-    if (attempts > MAX_ATTEMPTS) {
-      throw new Error(
-        `Unable to generate random number with given exclusions after ${MAX_ATTEMPTS} attempts. ` +
-          `Range: [${min}, ${max}], Excluded: ${excludedValues.size} values`
-      );
-    }
-  } while (excludedValues.has(value));
+		attempts++;
+		if (attempts > MAX_ATTEMPTS) {
+			throw new Error(
+				`Unable to generate random number with given exclusions after ${MAX_ATTEMPTS} attempts. ` +
+					`Range: [${min}, ${max}], Excluded: ${excludedValues.size} values`
+			);
+		}
+	} while (excludedValues.has(value));
 
-  return value;
+	return value;
 }
 
 /**
@@ -215,8 +222,8 @@ export function generateRandomNumber(
  * @returns Random integer
  */
 export function randomInt(min: number, max: number, seed?: number): number {
-  const random = seed !== undefined ? seededRandom(seed) : Math.random();
-  return Math.floor(random * (max - min + 1)) + min;
+	const random = seed !== undefined ? seededRandom(seed) : Math.random();
+	return Math.floor(random * (max - min + 1)) + min;
 }
 
 /**
@@ -233,20 +240,24 @@ export function randomInt(min: number, max: number, seed?: number): number {
  * randomDecimalByDigits(1, 2)  // Returns e.g., 7.89
  * ```
  */
-export function randomDecimalByDigits(digitsBefore: number, digitsAfter: number, seed?: number): number {
-  const random1 = seed !== undefined ? seededRandom(seed) : Math.random();
-  const random2 = seed !== undefined ? seededRandom(seed + 1) : Math.random();
+export function randomDecimalByDigits(
+	digitsBefore: number,
+	digitsAfter: number,
+	seed?: number
+): number {
+	const random1 = seed !== undefined ? seededRandom(seed) : Math.random();
+	const random2 = seed !== undefined ? seededRandom(seed + 1) : Math.random();
 
-  // Generate digits before decimal point
-  const maxBefore = Math.pow(10, digitsBefore) - 1;
-  const minBefore = digitsBefore > 1 ? Math.pow(10, digitsBefore - 1) : 0;
-  const beforePart = Math.floor(random1 * (maxBefore - minBefore + 1)) + minBefore;
+	// Generate digits before decimal point
+	const maxBefore = Math.pow(10, digitsBefore) - 1;
+	const minBefore = digitsBefore > 1 ? Math.pow(10, digitsBefore - 1) : 0;
+	const beforePart = Math.floor(random1 * (maxBefore - minBefore + 1)) + minBefore;
 
-  // Generate digits after decimal point
-  const afterPart = Math.floor(random2 * Math.pow(10, digitsAfter));
-  const afterStr = afterPart.toString().padStart(digitsAfter, '0');
+	// Generate digits after decimal point
+	const afterPart = Math.floor(random2 * Math.pow(10, digitsAfter));
+	const afterStr = afterPart.toString().padStart(digitsAfter, '0');
 
-  return parseFloat(`${beforePart}.${afterStr}`);
+	return parseFloat(`${beforePart}.${afterStr}`);
 }
 
 /**
@@ -263,11 +274,16 @@ export function randomDecimalByDigits(digitsBefore: number, digitsAfter: number,
  * randomDecimalByRange(0.5, 9.99, 0.01)  // Returns e.g., 5.37
  * ```
  */
-export function randomDecimalByRange(min: number, max: number, step: number, seed?: number): number {
-  const random = seed !== undefined ? seededRandom(seed) : Math.random();
-  const steps = Math.floor((max - min) / step);
-  const selectedStep = Math.floor(random * (steps + 1));
-  return parseFloat((min + selectedStep * step).toFixed(10)); // Avoid float errors
+export function randomDecimalByRange(
+	min: number,
+	max: number,
+	step: number,
+	seed?: number
+): number {
+	const random = seed !== undefined ? seededRandom(seed) : Math.random();
+	const steps = Math.floor((max - min) / step);
+	const selectedStep = Math.floor(random * (steps + 1));
+	return parseFloat((min + selectedStep * step).toFixed(10)); // Avoid float errors
 }
 
 /**
@@ -280,6 +296,6 @@ export function randomDecimalByRange(min: number, max: number, step: number, see
  * @returns Pseudo-random number between 0 and 1
  */
 export function seededRandom(seed: number): number {
-  const x = Math.sin(seed) * 10000;
-  return x - Math.floor(x);
+	const x = Math.sin(seed) * 10000;
+	return x - Math.floor(x);
 }

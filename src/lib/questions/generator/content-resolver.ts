@@ -23,21 +23,17 @@ import { resolveVariableExpression } from './variable-resolver';
  * @returns Resolved content field
  */
 export function resolveContentField(
-  field: ContentField,
-  resolvedVariables: ResolvedVariable[],
-  seed?: number
+	field: ContentField,
+	resolvedVariables: ResolvedVariable[],
+	seed?: number
 ): ContentField {
-  // Resolve content for both text and image fields (image URLs may contain variables)
-  const resolvedContent = resolveVariableExpression(
-    field.content,
-    resolvedVariables,
-    seed
-  );
+	// Resolve content for both text and image fields (image URLs may contain variables)
+	const resolvedContent = resolveVariableExpression(field.content, resolvedVariables, seed);
 
-  return {
-    type: field.type,
-    content: resolvedContent
-  };
+	return {
+		type: field.type,
+		content: resolvedContent
+	};
 }
 
 /**
@@ -49,11 +45,11 @@ export function resolveContentField(
  * @returns Array of resolved content fields
  */
 export function resolveContentFields(
-  fields: ContentField[],
-  resolvedVariables: ResolvedVariable[],
-  seed?: number
+	fields: ContentField[],
+	resolvedVariables: ResolvedVariable[],
+	seed?: number
 ): ContentField[] {
-  return fields.map((field) => resolveContentField(field, resolvedVariables, seed));
+	return fields.map((field) => resolveContentField(field, resolvedVariables, seed));
 }
 
 /**
@@ -65,11 +61,11 @@ export function resolveContentFields(
  * @returns Resolved string
  */
 export function resolveExpression(
-  expression: string,
-  resolvedVariables: ResolvedVariable[],
-  seed?: number
+	expression: string,
+	resolvedVariables: ResolvedVariable[],
+	seed?: number
 ): string {
-  return resolveVariableExpression(expression, resolvedVariables, seed);
+	return resolveVariableExpression(expression, resolvedVariables, seed);
 }
 
 /**
@@ -81,13 +77,13 @@ export function resolveExpression(
  * @returns Resolved answer
  */
 export function resolveAnswer(
-  answer: string | string[],
-  resolvedVariables: ResolvedVariable[],
-  seed?: number
+	answer: string | string[],
+	resolvedVariables: ResolvedVariable[],
+	seed?: number
 ): string | string[] {
-  if (Array.isArray(answer)) {
-    return answer.map((ans) => resolveExpression(ans, resolvedVariables, seed));
-  }
+	if (Array.isArray(answer)) {
+		return answer.map((ans) => resolveExpression(ans, resolvedVariables, seed));
+	}
 
-  return resolveExpression(answer, resolvedVariables, seed);
+	return resolveExpression(answer, resolvedVariables, seed);
 }

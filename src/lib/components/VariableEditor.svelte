@@ -29,13 +29,15 @@
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Plus, Trash2, ArrowUp, ArrowDown, HelpCircle } from 'lucide-svelte';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { Plus, Trash2, ArrowUp, ArrowDown, CircleQuestionMark } from 'lucide-svelte';
 
 	interface Props {
 		variables?: QuestionVariable[];
+		helpDialogOpen?: boolean;
 	}
 
-	let { variables = $bindable([]) }: Props = $props();
+	let { variables = $bindable([]), helpDialogOpen = $bindable(false) }: Props = $props();
 
 	// Add new variable
 	function addVariable() {
@@ -94,43 +96,278 @@
 </script>
 
 <div class="space-y-4">
-	<!-- Syntax Helper Reference -->
-	<Card.Root class="bg-muted/50">
-		<Card.Header>
-			<Card.Title class="flex items-center gap-2 text-base">
-				<HelpCircle class="h-4 w-4" />
-				Aide à la syntaxe
-			</Card.Title>
-		</Card.Header>
-		<Card.Content class="space-y-2 text-sm">
-			<div class="grid gap-2 md:grid-cols-2">
-				<div>
-					<code class="rounded bg-background px-2 py-1">&#123;@:nom&#125;</code>
-					<span class="ml-2 text-muted-foreground">Référence à une variable</span>
-				</div>
-				<div>
-					<code class="rounded bg-background px-2 py-1">&#123;#:1-10&#125;</code>
-					<span class="ml-2 text-muted-foreground">Nombre aléatoire entier</span>
-				</div>
-				<div>
-					<code class="rounded bg-background px-2 py-1">&#123;#:0.5-9.99:0.01&#125;</code>
-					<span class="ml-2 text-muted-foreground">Nombre décimal avec step</span>
-				</div>
-				<div>
-					<code class="rounded bg-background px-2 py-1">&#123;#:2.3&#125;</code>
-					<span class="ml-2 text-muted-foreground">Décimal (2 av., 3 ap.)</span>
-				</div>
-				<div>
-					<code class="rounded bg-background px-2 py-1">&#123;#:1-100!5,10-20&#125;</code>
-					<span class="ml-2 text-muted-foreground">Avec exclusions</span>
-				</div>
-				<div>
-					<code class="rounded bg-background px-2 py-1">&#123;eval:2+3&#125;</code>
-					<span class="ml-2 text-muted-foreground">Évaluation mathématique</span>
-				</div>
+	<!-- Help Dialog -->
+	<Dialog.Root bind:open={helpDialogOpen}>
+		<Dialog.Content class="max-h-[85vh] max-w-3xl overflow-y-auto">
+			<Dialog.Header>
+				<Dialog.Title>Guide des Variables</Dialog.Title>
+				<Dialog.Description>
+					Syntaxe complète pour la création de variables dynamiques dans vos questions
+				</Dialog.Description>
+			</Dialog.Header>
+
+			<div class="space-y-6 py-4">
+				<!-- Introduction -->
+				<section>
+					<h4 class="mb-2 font-semibold">Qu'est-ce qu'une variable ?</h4>
+					<p class="text-sm text-muted-foreground">
+						Les variables permettent de créer des questions dynamiques avec des valeurs aléatoires.
+						Elles sont résolues dans l'ordre de déclaration, ce qui permet à une variable de
+						référencer les variables précédentes.
+					</p>
+				</section>
+
+				<!-- Syntax types -->
+				<section>
+					<h4 class="mb-3 font-semibold">Types de syntaxe</h4>
+
+					<div class="space-y-4">
+						<!-- Variable reference -->
+						<div class="rounded-lg border bg-muted/30 p-4">
+							<div class="mb-2 flex items-center gap-2">
+								<code class="rounded bg-background px-2 py-1 font-mono text-sm"
+									>&#123;@:nom&#125;</code
+								>
+								<span class="text-sm font-medium">Référence à une variable</span>
+							</div>
+							<p class="mb-2 text-sm text-muted-foreground">
+								Insère la valeur d'une variable déclarée précédemment.
+							</p>
+							<div class="rounded bg-background p-3 text-sm">
+								<p class="mb-1 font-medium">Exemple :</p>
+								<div class="space-y-1 font-mono text-xs">
+									<p>
+										<span class="text-muted-foreground">Variable 1 :</span> a =
+										<code>&#123;#:1-10&#125;</code>
+									</p>
+									<p>
+										<span class="text-muted-foreground">Variable 2 :</span> b =
+										<code>&#123;@:a&#125; + 5</code>
+									</p>
+									<p class="text-muted-foreground">→ Si a=3, alors b=8</p>
+								</div>
+							</div>
+						</div>
+
+						<!-- Random integer -->
+						<div class="rounded-lg border bg-muted/30 p-4">
+							<div class="mb-2 flex items-center gap-2">
+								<code class="rounded bg-background px-2 py-1 font-mono text-sm"
+									>&#123;#:min-max&#125;</code
+								>
+								<span class="text-sm font-medium">Nombre aléatoire entier</span>
+							</div>
+							<p class="mb-2 text-sm text-muted-foreground">
+								Génère un nombre entier aléatoire entre min et max (inclus).
+							</p>
+							<div class="rounded bg-background p-3 text-sm">
+								<p class="mb-1 font-medium">Exemples :</p>
+								<div class="space-y-1 font-mono text-xs">
+									<p><code>&#123;#:1-10&#125;</code> → nombre entre 1 et 10</p>
+									<p><code>&#123;#:-5-5&#125;</code> → nombre entre -5 et 5</p>
+									<p>
+										<code>&#123;#:&#123;@:min&#125;-&#123;@:max&#125;&#125;</code> → bornes variables
+									</p>
+								</div>
+							</div>
+						</div>
+
+						<!-- Random decimal -->
+						<div class="rounded-lg border bg-muted/30 p-4">
+							<div class="mb-2 flex items-center gap-2">
+								<code class="rounded bg-background px-2 py-1 font-mono text-sm"
+									>&#123;#:min-max:step&#125;</code
+								>
+								<span class="text-sm font-medium">Nombre décimal avec pas</span>
+							</div>
+							<p class="mb-2 text-sm text-muted-foreground">
+								Génère un nombre décimal aléatoire avec un pas spécifique.
+							</p>
+							<div class="rounded bg-background p-3 text-sm">
+								<p class="mb-1 font-medium">Exemples :</p>
+								<div class="space-y-1 font-mono text-xs">
+									<p><code>&#123;#:0.5-9.99:0.01&#125;</code> → décimal par step de 0.01</p>
+									<p><code>&#123;#:0-100:0.5&#125;</code> → multiple de 0.5</p>
+								</div>
+							</div>
+						</div>
+
+						<!-- Random decimal by digits -->
+						<div class="rounded-lg border bg-muted/30 p-4">
+							<div class="mb-2 flex items-center gap-2">
+								<code class="rounded bg-background px-2 py-1 font-mono text-sm"
+									>&#123;#:avant.après&#125;</code
+								>
+								<span class="text-sm font-medium">Décimal par nombre de chiffres</span>
+							</div>
+							<p class="mb-2 text-sm text-muted-foreground">
+								Génère un décimal avec un nombre spécifique de chiffres avant et après la virgule.
+							</p>
+							<div class="rounded bg-background p-3 text-sm">
+								<p class="mb-1 font-medium">Exemples :</p>
+								<div class="space-y-1 font-mono text-xs">
+									<p><code>&#123;#:2.3&#125;</code> → 2 chiffres avant, 3 après (ex: 45.382)</p>
+									<p><code>&#123;#:1.2&#125;</code> → 1 chiffre avant, 2 après (ex: 7.25)</p>
+								</div>
+							</div>
+						</div>
+
+						<!-- Exclusions -->
+						<div class="rounded-lg border bg-muted/30 p-4">
+							<div class="mb-2 flex items-center gap-2">
+								<code class="rounded bg-background px-2 py-1 font-mono text-sm"
+									>&#123;#:min-max!exclusions&#125;</code
+								>
+								<span class="text-sm font-medium">Nombres avec exclusions</span>
+							</div>
+							<p class="mb-2 text-sm text-muted-foreground">
+								Génère un nombre en excluant certaines valeurs ou plages.
+							</p>
+							<div class="rounded bg-background p-3 text-sm">
+								<p class="mb-1 font-medium">Exemples :</p>
+								<div class="space-y-1 font-mono text-xs">
+									<p><code>&#123;#:1-20!5&#125;</code> → 1 à 20 sauf 5</p>
+									<p><code>&#123;#:1-20!5,7&#125;</code> → exclure 5 et 7</p>
+									<p><code>&#123;#:1-20!5-10&#125;</code> → exclure la plage 5 à 10</p>
+									<p>
+										<code>&#123;#:1-20!&#123;@:a&#125;&#125;</code> → exclure la valeur de la variable
+										a
+									</p>
+									<p>
+										<code>&#123;#:1-100!5,10-20,&#123;@:b&#125;&#125;</code> → exclusions multiples
+									</p>
+								</div>
+							</div>
+						</div>
+
+						<!-- Mathematical evaluation -->
+						<div class="rounded-lg border bg-muted/30 p-4">
+							<div class="mb-2 flex items-center gap-2">
+								<code class="rounded bg-background px-2 py-1 font-mono text-sm"
+									>&#123;eval:expression&#125;</code
+								>
+								<span class="text-sm font-medium">Évaluation mathématique</span>
+							</div>
+							<p class="mb-2 text-sm text-muted-foreground">
+								Évalue une expression mathématique LaTeX et retourne le résultat.
+							</p>
+							<div class="rounded bg-background p-3 text-sm">
+								<p class="mb-1 font-medium">Exemples :</p>
+								<div class="space-y-1 font-mono text-xs">
+									<p><code>&#123;eval:2+3&#125;</code> → 5</p>
+									<p><code>&#123;eval:2^3&#125;</code> → 8</p>
+									<p><code>&#123;eval:\frac&#123;10&#125;&#123;2&#125;&#125;</code> → 5</p>
+									<p>
+										<code>&#123;eval:&#123;@:a&#125;*&#123;@:b&#125;&#125;</code> → produit de a et b
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- Ordre de résolution -->
+				<section>
+					<h4 class="mb-2 font-semibold">Ordre de résolution</h4>
+					<div class="rounded-lg border bg-muted/30 p-4 text-sm">
+						<p class="mb-3 text-muted-foreground">
+							Les variables sont résolues <strong>séquentiellement</strong> dans l'ordre de
+							déclaration. Une variable peut référencer uniquement les variables déclarées
+							<strong>avant</strong> elle.
+						</p>
+						<div class="rounded bg-background p-3">
+							<p class="mb-2 font-medium">Exemple d'ordre valide :</p>
+							<div class="space-y-1 font-mono text-xs">
+								<p class="text-green-600">✓ Variable 1 : min = &#123;#:1-5&#125;</p>
+								<p class="text-green-600">✓ Variable 2 : max = &#123;#:10-20&#125;</p>
+								<p class="text-green-600">
+									✓ Variable 3 : x = &#123;#:&#123;@:min&#125;-&#123;@:max&#125;&#125;
+								</p>
+								<p class="text-green-600">
+									✓ Variable 4 : resultat = &#123;eval:&#123;@:x&#125;*2&#125;
+								</p>
+							</div>
+							<p class="mt-4 mb-2 font-medium">Exemple d'ordre invalide :</p>
+							<div class="space-y-1 font-mono text-xs">
+								<p class="text-destructive">
+									✗ Variable 1 : x = &#123;#:&#123;@:min&#125;-&#123;@:max&#125;&#125;
+								</p>
+								<p class="text-destructive">
+									✗ Variable 2 : min = &#123;#:1-5&#125; ← min n'existe pas encore !
+								</p>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- Utilisation dans les questions -->
+				<section>
+					<h4 class="mb-2 font-semibold">Utilisation dans l'énoncé et la réponse</h4>
+					<div class="rounded-lg border bg-muted/30 p-4 text-sm">
+						<p class="mb-3 text-muted-foreground">
+							Une fois les variables définies, vous pouvez les utiliser dans l'énoncé et la réponse
+							avec la syntaxe <code class="rounded bg-background px-1">&#123;@:nom&#125;</code>.
+						</p>
+						<div class="rounded bg-background p-3">
+							<p class="mb-2 font-medium">Exemple complet :</p>
+							<div class="space-y-2 text-xs">
+								<div>
+									<p class="font-semibold">Variables :</p>
+									<div class="ml-3 space-y-1 font-mono">
+										<p>a = &#123;#:1-10&#125;</p>
+										<p>b = &#123;#:1-10!&#123;@:a&#125;&#125;</p>
+										<p>resultat = &#123;eval:&#123;@:a&#125;+&#123;@:b&#125;&#125;</p>
+									</div>
+								</div>
+								<div>
+									<p class="font-semibold">Énoncé :</p>
+									<p class="ml-3">Calculer $$&#123;@:a&#125; + &#123;@:b&#125;$$</p>
+								</div>
+								<div>
+									<p class="font-semibold">Réponse :</p>
+									<p class="ml-3">&#123;@:resultat&#125;</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- Tips -->
+				<section>
+					<h4 class="mb-2 font-semibold">Conseils</h4>
+					<ul class="space-y-2 text-sm text-muted-foreground">
+						<li class="flex gap-2">
+							<span class="text-primary">•</span>
+							<span
+								>Utilisez des noms de variables explicites (ex: <code>base</code>,
+								<code>exposant</code>)</span
+							>
+						</li>
+						<li class="flex gap-2">
+							<span class="text-primary">•</span>
+							<span
+								>Les variables peuvent contenir du LaTeX (ex: <code
+									>\frac&#123;:a}&#125;&#123;:b}&#125;</code
+								>)</span
+							>
+						</li>
+						<li class="flex gap-2">
+							<span class="text-primary">•</span>
+							<span>Vous pouvez combiner plusieurs syntaxes dans une même expression</span>
+						</li>
+						<li class="flex gap-2">
+							<span class="text-primary">•</span>
+							<span>Utilisez les boutons d'aide rapide sous chaque champ d'expression</span>
+						</li>
+					</ul>
+				</section>
 			</div>
-		</Card.Content>
-	</Card.Root>
+
+			<Dialog.Footer>
+				<Button onclick={() => (helpDialogOpen = false)}>Fermer</Button>
+			</Dialog.Footer>
+		</Dialog.Content>
+	</Dialog.Root>
 
 	<!-- Variable List -->
 	{#if variables.length === 0}
@@ -191,7 +428,8 @@
 									/>
 									{#if variable.name.length > 0 && !isValidVariableName(variable.name)}
 										<p class="text-xs text-destructive">
-											Le nom doit commencer par une lettre et contenir uniquement des lettres, chiffres, et underscores
+											Le nom doit commencer par une lettre et contenir uniquement des lettres,
+											chiffres, et underscores
 										</p>
 									{/if}
 									{#if hasDuplicateName(variable.name, index)}
@@ -257,11 +495,7 @@
 							</div>
 
 							<!-- Delete button -->
-							<Button
-								variant="destructive"
-								size="icon"
-								onclick={() => removeVariable(index)}
-							>
+							<Button variant="destructive" size="icon" onclick={() => removeVariable(index)}>
 								<Trash2 class="h-4 w-4" />
 							</Button>
 						</div>

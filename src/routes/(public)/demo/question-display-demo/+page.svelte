@@ -60,8 +60,7 @@
 		correction: [
 			{
 				type: 'text',
-				content:
-					'Il s\'agit d\'une différence de carrés:\n\n$$x^2 - 9 = x^2 - 3^2 = (x-3)(x+3)$$'
+				content: "Il s'agit d'une différence de carrés:\n\n$$x^2 - 9 = x^2 - 3^2 = (x-3)(x+3)$$"
 			}
 		],
 		generatedAt: new Date().toISOString()
@@ -126,7 +125,7 @@
 			{
 				type: 'text',
 				content:
-					'Le théorème de Pythagore: $$a^2 + b^2 = c^2$$ où $$c$$ est l\'hypoténuse (le côté opposé à l\'angle droit).'
+					"Le théorème de Pythagore: $$a^2 + b^2 = c^2$$ où $$c$$ est l'hypoténuse (le côté opposé à l'angle droit)."
 			}
 		],
 		generatedAt: new Date().toISOString()
@@ -260,7 +259,9 @@
 			<Card.Title>Instructions</Card.Title>
 		</Card.Header>
 		<Card.Content class="space-y-2">
-			<p><strong>Flashcard Mode:</strong> View-only mode. Click the flip button to see the answer.</p>
+			<p>
+				<strong>Flashcard Mode:</strong> View-only mode. Click the flip button to see the answer.
+			</p>
 			<p>
 				<strong>Interactive Mode:</strong> Answer the question and click "Valider" to check. The flip
 				button becomes active after submission.

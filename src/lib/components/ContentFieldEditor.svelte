@@ -75,6 +75,24 @@
 		if (!fields) return;
 		fields[index] = { type: newType, content: '' };
 	}
+
+	// Insert syntax helper into text field
+	function insertSyntax(index: number, syntax: string) {
+		const textarea = document.getElementById(`field-content-${index}`) as HTMLTextAreaElement;
+		if (!textarea || !fields) return;
+
+		const start = textarea.selectionStart || 0;
+		const end = textarea.selectionEnd || 0;
+		const content = fields[index].content;
+
+		fields[index].content = content.substring(0, start) + syntax + content.substring(end);
+
+		// Set cursor after inserted text
+		setTimeout(() => {
+			textarea.focus();
+			textarea.setSelectionRange(start + syntax.length, start + syntax.length);
+		}, 0);
+	}
 </script>
 
 <div class="space-y-4">
@@ -114,8 +132,9 @@
 									<select
 										id="field-type-{index}"
 										value={field.type}
-										onchange={(e) => changeFieldType(index, e.currentTarget.value as 'text' | 'image')}
-										class="flex h-10 w-40 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+										onchange={(e) =>
+											changeFieldType(index, e.currentTarget.value as 'text' | 'image')}
+										class="flex h-10 w-40 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 									>
 										<option value="text">📝 Texte</option>
 										<option value="image">🖼️ Image</option>
@@ -125,8 +144,34 @@
 
 								<!-- Text field -->
 								{#if field.type === 'text'}
-									<div class="space-y-1">
-										<Label for="field-content-{index}">Contenu (LaTeX supporté)</Label>
+									<div class="space-y-2">
+										<Label for="field-content-{index}">Contenu</Label>
+										<div class="flex flex-wrap gap-2">
+											<Button
+												variant="outline"
+												size="sm"
+												onclick={() => insertSyntax(index, '{@:}')}
+												class="text-xs"
+											>
+												Variable
+											</Button>
+											<Button
+												variant="outline"
+												size="sm"
+												onclick={() => insertSyntax(index, '{#:1-10}')}
+												class="text-xs"
+											>
+												Aléatoire
+											</Button>
+											<Button
+												variant="outline"
+												size="sm"
+												onclick={() => insertSyntax(index, '{eval:}')}
+												class="text-xs"
+											>
+												Évaluation
+											</Button>
+										</div>
 										<Textarea
 											id="field-content-{index}"
 											bind:value={field.content}
@@ -134,9 +179,8 @@
 											rows={3}
 											class="font-mono text-sm"
 										/>
-										<p class="text-xs text-muted-foreground">
-											Utilisez la syntaxe LaTeX et les variables/expressions
-										</p>
+
+										<!-- Syntax helper buttons -->
 									</div>
 								{/if}
 
