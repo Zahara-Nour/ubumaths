@@ -39,7 +39,7 @@
 		LayoutDashboard,
 		GraduationCap,
 		Users,
-		// ClipboardList, // Unused - for future features
+		ClipboardList,
 		// TrendingUp, // Unused - for future features
 		School,
 		Settings,
@@ -61,8 +61,11 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
+	import { notificationStore } from '$lib/stores/notifications.svelte';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import gidouille from '$lib/assets/images/gidouille.png';
+	import NotificationBanner from '$lib/components/notifications/NotificationBanner.svelte';
+	import NotificationDropdown from '$lib/components/notifications/NotificationDropdown.svelte';
 
 	// PROPS RECEIVED FROM PARENT LAYOUT SERVER LOAD:
 	// - data: Contains profile from +layout.server.ts
@@ -78,7 +81,8 @@
 				...commonLinks,
 				{ href: '/dashboard/friends', label: 'Amis', icon: Users },
 				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
-				{ href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap }
+				{ href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap },
+				{ href: '/dashboard/student/assessments', label: 'Évaluations', icon: ClipboardList }
 			];
 		} else if (role === 'teacher') {
 			return [
@@ -170,6 +174,15 @@
 		}
 		return '';
 	}
+
+	// Start notification polling when dashboard loads
+	$effect(() => {
+		notificationStore.startPolling(30000); // Poll every 30 seconds
+
+		return () => {
+			notificationStore.stopPolling();
+		};
+	});
 </script>
 
 <svelte:head>
@@ -330,6 +343,9 @@
 						<span class="text-center text-xs leading-tight font-medium">{link.label}</span>
 					</a>
 				{/each}
+
+				<!-- Notification Dropdown -->
+				<NotificationDropdown />
 			</nav>
 		</div>
 
@@ -337,9 +353,15 @@
 		<!-- This is where child routes are rendered -->
 		<!-- For /dashboard, this renders +page.svelte which shows role-specific dashboards -->
 		<!-- For /dashboard/classes, this would render classes/+page.svelte, etc. -->
-		<main class="flex-1 overflow-y-auto bg-background p-4 sm:p-6 lg:p-8">
-			<div class="mx-auto max-w-7xl">
-				{@render children()}
+		<main class="flex-1 overflow-y-auto bg-background">
+			<!-- Notification Banner (sticky at top) -->
+			<NotificationBanner />
+
+			<!-- Main content with padding -->
+			<div class="p-4 sm:p-6 lg:p-8">
+				<div class="mx-auto max-w-7xl">
+					{@render children()}
+				</div>
 			</div>
 		</main>
 	</div>

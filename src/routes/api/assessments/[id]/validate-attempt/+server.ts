@@ -1,0 +1,38 @@
+/**
+ * API Route: /api/assessments/[id]/validate-attempt
+ * POST - Validate if student can start a new attempt
+ */
+
+import { json, error } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import { validateAttempt } from '$lib/server/assessments';
+
+/**
+ * POST /api/assessments/[id]/validate-attempt
+ * Validate if student can attempt an assessment
+ */
+export const POST: RequestHandler = async ({ locals, params }) => {
+	const session = await locals.safeGetSession();
+	if (!session) {
+		throw error(401, 'Unauthorized');
+	}
+
+	const { user } = session;
+	const { id: assignmentId } = params;
+
+	// Only students can validate attempts
+	const { data: profile } = await locals.supabase
+		.from('profiles')
+		.select('role')
+		.eq('id', user.id)
+		.single();
+
+	if (!profile || profile.role !== 'student') {
+		throw error(403, 'Forbidden - Students only');
+	}
+
+	// Validate attempt
+	const validation = await validateAttempt(locals.supabase, assignmentId, user.id);
+
+	return json({ validation });
+};

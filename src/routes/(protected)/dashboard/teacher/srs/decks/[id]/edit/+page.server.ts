@@ -47,6 +47,19 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			throw error(403, 'Cannot edit assigned deck. Assigned decks are read-only.');
 		}
 
+		// Map deck to camelCase
+		const mappedDeck = {
+			id: deck.id,
+			name: deck.name,
+			description: deck.description,
+			ownerId: deck.owner_id,
+			deckType: deck.deck_type,
+			isAssigned: deck.is_assigned,
+			config: deck.config,
+			createdAt: deck.created_at,
+			updatedAt: deck.updated_at
+		};
+
 		// Fetch deck cards
 		const { data: cards, error: cardsError } = await supabase
 			.from('srs_cards')
@@ -58,9 +71,21 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			console.error('Error fetching cards:', cardsError);
 		}
 
+		// Map cards to camelCase
+		const mappedCards = (cards || []).map((card) => ({
+			id: card.id,
+			deckId: card.deck_id,
+			cardType: card.card_type,
+			templateId: card.template_id,
+			frontContent: card.front_content,
+			backContent: card.back_content,
+			createdAt: card.created_at,
+			updatedAt: card.updated_at
+		}));
+
 		return {
-			deck,
-			cards: cards || []
+			deck: mappedDeck,
+			cards: mappedCards
 		};
 	} catch (err) {
 		console.error('Error in edit deck page load:', err);

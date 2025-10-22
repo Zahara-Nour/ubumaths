@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { ShoppingCart, Trash2, ArrowLeft, FileDown, Rocket, Share2 } from 'lucide-svelte';
+	import { ShoppingCart, Trash2, ArrowLeft, FileDown, Rocket, Share2, ClipboardList } from 'lucide-svelte';
 	import { questionCart } from '$lib/stores/questionCart.svelte';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import CartQuestionCard from '$lib/components/CartQuestionCard.svelte';
@@ -13,6 +13,9 @@
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	// Check if user is a teacher
+	let isTeacher = $derived(data.userRole === 'teacher');
 
 	// Initialize cache with server-loaded templates (SSR support)
 	// Or fetch from API if server load failed (e.g., offline after navigation)
@@ -174,6 +177,10 @@
 			'Partage - Fonctionnalité à venir !\n\nCette fonction générera un lien de partage pour cette sélection de questions.'
 		);
 	}
+
+	function handleCreateAssessment() {
+		goto('/dashboard/teacher/assessments/new');
+	}
 </script>
 
 <svelte:head>
@@ -245,8 +252,18 @@
 						catégorie{cartItems.length > 1 ? 's' : ''})
 					</Card.Description>
 				</Card.Header>
-				<Card.Content class="grid gap-4 sm:grid-cols-3">
-					<Button onclick={handleExportPDF} class="h-auto flex-col gap-2 py-6">
+				<Card.Content class="grid gap-4 {isTeacher ? 'sm:grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-3'}">
+					{#if isTeacher}
+						<Button onclick={handleCreateAssessment} class="h-auto flex-col gap-2 py-6" variant="default">
+							<ClipboardList class="h-6 w-6" />
+							<div class="text-center">
+								<div class="font-semibold">Créer une évaluation</div>
+								<div class="text-xs font-normal opacity-80">Pour vos classes</div>
+							</div>
+						</Button>
+					{/if}
+
+					<Button onclick={handleExportPDF} class="h-auto flex-col gap-2 py-6" variant="outline">
 						<FileDown class="h-6 w-6" />
 						<div class="text-center">
 							<div class="font-semibold">Export PDF</div>

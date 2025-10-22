@@ -24,18 +24,73 @@
 	let testSession = $state<TestSession | null>(null);
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
+	let assignmentId = $state<string | null>(null);
+	let assessmentTitle = $state<string | null>(null);
 
 	/**
 	 * Parse URL parameters and initialize test session
 	 */
-	function initializeTest() {
+	async function initializeTest() {
 		try {
 			// Get URL params
 			const url = new URL(page.url);
 			const modeParam = url.searchParams.get('mode');
 			const categoriesParam = url.searchParams.get('categories');
 			const timeParam = url.searchParams.get('time');
+			const assignmentParam = url.searchParams.get('assignment');
 
+			// Handle assignment mode
+			if (assignmentParam) {
+				assignmentId = assignmentParam;
+
+				// Validate assignment and get assessment data
+				const validationResponse = await fetch(`/api/assessments/${assignmentId}/validate-attempt`, {
+					method: 'POST'
+				});
+
+				if (!validationResponse.ok) {
+					throw new Error('Impossible de valider l\'assignment');
+				}
+
+				const { validation } = await validationResponse.json();
+
+				if (!validation.can_attempt) {
+					throw new Error(validation.reason || 'Vous ne pouvez pas commencer cette évaluation');
+				}
+
+				// Get assessment details
+				const assessmentResponse = await fetch(`/api/assessments/${assignmentId}`);
+				if (!assessmentResponse.ok) {
+					throw new Error('Impossible de charger l\'évaluation');
+				}
+
+				const { assessment } = await assessmentResponse.json();
+				assessmentTitle = assessment.title;
+
+				// Use assessment categories and settings
+				const categories = assessment.categories;
+				const mode = 'interactive'; // Assessments are always interactive
+				const timeLimit = assessment.settings.time_limit;
+
+				// Generate instances from assessment categories
+				const instances = await generateInstancesFromCategories(categories);
+
+				testSession = {
+					mode,
+					categories,
+					instances,
+					userAnswers: new Map(),
+					startTime: Date.now(),
+					timeLimit,
+					currentQuestionIndex: 0,
+					isPaused: false
+				};
+
+				isLoading = false;
+				return;
+			}
+
+			// Normal test mode (non-assignment)
 			// Validate mode
 			if (!modeParam || !['display', 'interactive', 'course'].includes(modeParam)) {
 				throw new Error('Mode de test invalide');
@@ -55,10 +110,36 @@
 			// Parse time limit (for course mode)
 			const timeLimit = timeParam ? parseInt(timeParam, 10) : undefined;
 
-			// Generate instances for each category
-			const instances: QuestionInstance[] = [];
+			// Generate instances
+			const instances = await generateInstancesFromCategories(categories);
 
-			for (const cartItem of categories) {
+			// Create test session
+			testSession = {
+				mode,
+				categories,
+				instances,
+				userAnswers: new Map(),
+				startTime: Date.now(),
+				timeLimit,
+				currentQuestionIndex: 0,
+				isPaused: false
+			};
+
+			isLoading = false;
+		} catch (err) {
+			console.error('Error initializing test:', err);
+			error = err instanceof Error ? err.message : 'Erreur inconnue';
+			isLoading = false;
+		}
+	}
+
+	/**
+	 * Generate instances from categories
+	 */
+	async function generateInstancesFromCategories(categories: CartItem[]): Promise<QuestionInstance[]> {
+		const instances: QuestionInstance[] = [];
+
+		for (const cartItem of categories) {
 				// Find matching templates from cache (or fallback to data.templates)
 				const usingCache = questionTemplatesCache.templates.length > 0;
 				const templates = usingCache ? questionTemplatesCache.templates : data.templates;
@@ -114,29 +195,9 @@
 					}
 				}
 			}
-
-			if (instances.length === 0) {
-				throw new Error('Impossible de générer les questions');
-			}
-
-			// Create test session
-			testSession = {
-				mode,
-				categories,
-				instances,
-				userAnswers: new Map(),
-				startTime: Date.now(),
-				timeLimit,
-				currentQuestionIndex: 0,
-				isPaused: false
-			};
-
-			isLoading = false;
-		} catch (err) {
-			console.error('Error initializing test:', err);
-			error = err instanceof Error ? err.message : 'Erreur inconnue';
-			isLoading = false;
 		}
+
+		return instances;
 	}
 
 	/**
@@ -160,7 +221,8 @@
 					},
 					body: JSON.stringify({
 						result,
-						categories: testSession?.categories || []
+						categories: testSession?.categories || [],
+						assignmentId: assignmentId || undefined
 					})
 				});
 
@@ -196,11 +258,7 @@
 		}
 
 		// Initialize test after cache is ready
-		// At this point, either:
-		// - data.templates was loaded (SSR)
-		// - cache already had templates
-		// - fetchTemplates() completed (success or error)
-		initializeTest();
+		await initializeTest();
 	});
 </script>
 
@@ -264,6 +322,8 @@
 				session={testSession}
 				onComplete={handleTestComplete}
 				onBack={handleBackToCart}
+				assignmentId={assignmentId || undefined}
+				assessmentTitle={assessmentTitle || undefined}
 			/>
 		{:else if testSession.mode === 'course'}
 			<!-- Course mode -->

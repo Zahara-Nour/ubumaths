@@ -277,6 +277,7 @@ import { page } from '$app/state'; // NOT $page store
 
 - **[CLAUDE_FEATURES.md](CLAUDE_FEATURES.md)** - Demo pages, VIP cards, cache, schedule, wheel, games
 - **[CLAUDE_FEATURES_QUESTION_BANK.md](CLAUDE_FEATURES_QUESTION_BANK.md)** - Variables, random generation, 6 question types, draft/published workflow
+- **[CLAUDE_FEATURES_ASSESSMENT.md](CLAUDE_FEATURES_ASSESSMENT.md)** - Teacher assessments, graded evaluations, assignment tracking, results dashboard
 
 ---
 

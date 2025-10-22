@@ -52,6 +52,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 		}
 
 		// Get due cards using helper function
+		console.log(`[SRS] Fetching due cards for user ${user.id}, deck ${deckId}`);
 		const { data: dueCards, error: dueCardsError } = await supabase.rpc('get_due_cards_for_deck', {
 			p_user_id: user.id,
 			p_deck_id: deckId
@@ -62,17 +63,23 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 			return json({ error: 'Failed to fetch due cards' }, { status: 500 });
 		}
 
+		console.log(`[SRS] RPC returned ${dueCards?.length || 0} due cards`);
+
 		if (!dueCards || dueCards.length === 0) {
+			console.log('[SRS] No due cards found - returning empty array');
 			return json({ cards: [] });
 		}
 
 		// Process each card to prepare ReviewCard objects
 		const reviewCards: ReviewCard[] = [];
 
+		console.log('[SRS] Processing due cards...');
 		for (const dueCard of dueCards) {
 			try {
+				console.log(`[SRS] Processing card ${dueCard.card_id}, type: ${dueCard.card_type}`);
 				if (dueCard.card_type === 'template') {
 					// Fetch template and generate instance
+					console.log(`[SRS] Fetching template ${dueCard.template_id}`);
 					const { data: template, error: templateError } = await supabase
 						.from('question_templates')
 						.select('*')
@@ -80,18 +87,27 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 						.single();
 
 					if (templateError || !template) {
-						console.error(`Template ${dueCard.template_id} not found for card ${dueCard.card_id}`);
+						console.error(`[SRS] Template ${dueCard.template_id} not found for card ${dueCard.card_id}:`, templateError);
 						continue;
 					}
 
+					console.log(`[SRS] Generating instance for template ${dueCard.template_id}`);
 					// Generate new instance with random seed
-					const instance = generateSRSInstance(template);
+					const result = generateSRSInstance(template);
+
+					if (!result.success || !result.instance) {
+						console.error(
+							`[SRS] Failed to generate instance for template ${dueCard.template_id}:`,
+							result.errors
+						);
+						continue;
+					}
 
 					reviewCards.push({
 						cardId: dueCard.card_id,
 						cardType: 'template',
 						templateId: dueCard.template_id,
-						instance,
+						instance: result.instance,
 						stats: {
 							state: dueCard.state,
 							difficulty: dueCard.difficulty,
@@ -101,6 +117,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 							nextReview: dueCard.next_review
 						}
 					});
+					console.log(`[SRS] ✓ Template card added to review session`);
 				} else {
 					// Custom card - fetch from srs_cards to get content
 					const { data: customCard, error: customCardError } = await supabase
@@ -137,6 +154,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 			}
 		}
 
+		console.log(`[SRS] Returning ${reviewCards.length} review cards to client`);
 		return json({ cards: reviewCards });
 	} catch (error) {
 		console.error('Unexpected error in GET /api/srs/review/due:', error);

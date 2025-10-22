@@ -31,16 +31,31 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			throw error(404, 'Deck not found');
 		}
 
-		// Fetch teacher's students
+		// Map deck to camelCase
+		const mappedDeck = {
+			id: deck.id,
+			name: deck.name,
+			description: deck.description,
+			ownerId: deck.owner_id,
+			deckType: deck.deck_type,
+			isAssigned: deck.is_assigned,
+			config: deck.config,
+			createdAt: deck.created_at,
+			updatedAt: deck.updated_at
+		};
+
+		// Fetch teacher's students (all students in the system for now)
 		const { data: students, error: studentsError } = await supabase
 			.from('profiles')
-			.select('id, first_name, last_name, email')
+			.select('id, firstname, lastname, email, role')
 			.eq('role', 'student')
-			.order('last_name');
+			.order('lastname');
 
 		if (studentsError) {
 			console.error('Error fetching students:', studentsError);
 		}
+
+		console.log('Students found:', students?.length || 0);
 
 		// Fetch teacher's classes
 		const { data: classes, error: classesError } = await supabase
@@ -68,9 +83,17 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			})
 		);
 
+		// Map students to match expected format
+		const mappedStudents = (students || []).map((s) => ({
+			id: s.id,
+			first_name: s.firstname,
+			last_name: s.lastname,
+			email: s.email
+		}));
+
 		return {
-			deck,
-			students: students || [],
+			deck: mappedDeck,
+			students: mappedStudents,
 			classes: classesWithCounts
 		};
 	} catch (err) {

@@ -1229,3 +1229,528 @@ See **[CLAUDE_FEATURES_QUESTION_BANK.md](CLAUDE_FEATURES_QUESTION_BANK.md)** for
 - Question types and validation
 - Instance generation
 - Answer checking
+
+---
+
+## Notification System
+
+### Notification System Tables
+
+The notification system allows teachers and admins to send targeted notifications to users, and automatically generates system notifications for important events (new assignments, rewards, etc.).
+
+#### `notifications`
+
+Stores all notification data with intelligent targeting system.
+
+| Column              | Type                    | Description                                                      |
+| ------------------- | ----------------------- | ---------------------------------------------------------------- |
+| id                  | UUID (PK)               | Notification ID                                                  |
+| created_at          | TIMESTAMPTZ             | Creation timestamp                                               |
+| created_by          | UUID (FK)               | References profiles(id), null for system notifications           |
+| title               | TEXT                    | Notification title                                               |
+| message             | TEXT                    | Rich text HTML content                                           |
+| type                | TEXT                    | 'info', 'alert', 'announcement', or 'reminder'                   |
+| priority            | TEXT                    | 'normal', 'important', or 'urgent' (affects display order)       |
+| action_label        | TEXT                    | Optional action button label (e.g., "Voir le devoir")            |
+| action_url          | TEXT                    | Optional action URL (e.g., "/dashboard/student/devoirs/123")     |
+| target_type         | TEXT                    | 'all', 'role', 'classes', or 'users'                             |
+| target_roles        | TEXT[]                  | Target roles if target_type='role' (e.g., ['student'])           |
+| target_class_ids    | UUID[]                  | Target class IDs if target_type='classes'                        |
+| target_user_ids     | UUID[]                  | Target user IDs if target_type='users'                           |
+| expires_at          | TIMESTAMPTZ             | Expiration date (default: 30 days from creation)                 |
+| deleted_at          | TIMESTAMPTZ             | Soft delete timestamp (by creator or admin)                      |
+| is_system           | BOOLEAN                 | True if created automatically by the system                      |
+| system_event_type   | TEXT                    | Event type for system notifications (see below)                  |
+
+**System Event Types**:
+- `assignment_created`: New assignment posted
+- `resource_added`: New resource shared
+- `reward_earned`: Gidouilles or VIP card earned
+- `badge_unlocked`: New badge unlocked
+- `maintenance_scheduled`: System maintenance announcement
+- `feature_released`: New feature announcement
+
+**Targeting Logic**:
+- `target_type='all'`: All users receive the notification
+- `target_type='role'`: Users with roles in `target_roles` array
+- `target_type='classes'`: Students in classes from `target_class_ids` array
+- `target_type='users'`: Specific users from `target_user_ids` array
+
+**Indexes**:
+```sql
+CREATE INDEX idx_notifications_active ON notifications(created_at DESC)
+  WHERE deleted_at IS NULL AND expires_at > now();
+
+CREATE INDEX idx_notifications_created_by ON notifications(created_by)
+  WHERE deleted_at IS NULL;
+
+CREATE INDEX idx_notifications_target_type ON notifications(target_type)
+  WHERE deleted_at IS NULL AND expires_at > now();
+```
+
+**RLS Policies**:
+
+1. **View Notifications**: Users can view notifications that target them
+   - All users if `target_type='all'`
+   - Users with matching role if `target_type='role'`
+   - Students in target classes if `target_type='classes'`
+   - Directly targeted users if `target_type='users'`
+   - Creators can always see their own notifications
+
+2. **Create Notifications**:
+   - Teachers: Can target their own classes or students
+   - Admins: Can create any notification
+
+3. **Delete (soft delete)**:
+   - Users: Can delete their own notifications
+   - Admins: Can delete any notification
+
+#### `notification_reads`
+
+Tracks which users have read which notifications.
+
+| Column          | Type        | Description                           |
+| --------------- | ----------- | ------------------------------------- |
+| id              | UUID (PK)   | Read record ID                        |
+| notification_id | UUID (FK)   | References notifications(id)          |
+| user_id         | UUID (FK)   | References profiles(id)               |
+| read_at         | TIMESTAMPTZ | When the notification was marked read |
+| created_at      | TIMESTAMPTZ | Record creation timestamp             |
+
+**Unique Constraint**: (notification_id, user_id) - prevents duplicate reads
+
+**Indexes**:
+```sql
+CREATE INDEX idx_notification_reads_user ON notification_reads(user_id, notification_id);
+CREATE INDEX idx_notification_reads_notification ON notification_reads(notification_id);
+```
+
+**RLS Policies**:
+
+1. **View**: Users can view their own read status
+2. **Insert**: Users can mark notifications as read (for themselves only)
+3. **Stats**: Creators and admins can view read statistics for their notifications
+
+#### Notification Lifecycle
+
+1. **Creation**:
+   - Manual: Teacher/admin creates via UI
+   - Automatic: System event triggers notification
+
+2. **Delivery**:
+   - Notifications are not sent to individual users
+   - Each user's unread notifications are computed on-demand via queries
+
+3. **Reading**:
+   - User marks notification as read
+   - Insert into `notification_reads` table
+   - Notification disappears from unread list
+
+4. **Expiration**:
+   - Default: 30 days from creation
+   - Expired notifications are filtered from queries
+   - Cleanup job can hard-delete expired notifications
+
+5. **Deletion**:
+   - Soft delete: `deleted_at` timestamp set
+   - Deleted notifications are filtered from all queries
+   - Hard delete: Optional cleanup after expiration
+
+#### Notification Priority Display
+
+In the banner carousel and dropdown, notifications are sorted by:
+1. Priority (urgent → important → normal)
+2. Creation date (newest first)
+
+#### Example Queries
+
+**Get unread notifications for current user**:
+```typescript
+const { data: notifications } = await supabase
+	.from('notifications')
+	.select(`
+		*,
+		creator:profiles!created_by(firstname, lastname)
+	`)
+	.is('deleted_at', null)
+	.gt('expires_at', new Date().toISOString())
+	.or(
+		`target_type.eq.all,` +
+		`and(target_type.eq.role,target_roles.cs.{${userRole}}),` +
+		`and(target_type.eq.classes,target_class_ids.cs.{${userClassIds.join(',')}}),` +
+		`and(target_type.eq.users,target_user_ids.cs.{${userId}})`
+	)
+	.not('id', 'in', `(
+		SELECT notification_id FROM notification_reads WHERE user_id = '${userId}'
+	)`)
+	.order('priority', { ascending: false }) // urgent first
+	.order('created_at', { ascending: false });
+```
+
+**Mark notification as read**:
+```typescript
+await supabase
+	.from('notification_reads')
+	.insert({
+		notification_id: notificationId,
+		user_id: userId
+	});
+```
+
+**Get read statistics for a notification**:
+```typescript
+// Total potential recipients (example for class-targeted notification)
+const { count: totalCount } = await supabase
+	.from('class_members')
+	.select('*', { count: 'exact', head: true })
+	.in('class_id', targetClassIds);
+
+// Read count
+const { count: readCount } = await supabase
+	.from('notification_reads')
+	.select('*', { count: 'exact', head: true })
+	.eq('notification_id', notificationId);
+
+// Display: "Lu par 18/24"
+```
+
+**Create system notification**:
+```typescript
+await supabase
+	.from('notifications')
+	.insert({
+		title: 'Nouveau devoir assigné',
+		message: `<p>Le professeur ${teacherName} a assigné un nouveau devoir : <strong>${assignmentTitle}</strong></p>`,
+		type: 'info',
+		priority: 'normal',
+		action_label: 'Voir le devoir',
+		action_url: `/dashboard/student/devoirs/${assignmentId}`,
+		target_type: 'classes',
+		target_class_ids: [classId],
+		is_system: true,
+		system_event_type: 'assignment_created'
+	});
+```
+
+#### UI Components
+
+The notification system includes:
+
+1. **NotificationBanner**: Sticky carousel at top of dashboard showing urgent/unread notifications
+2. **NotificationBadge**: Sidebar icon with unread count badge
+3. **NotificationDropdown**: Popover showing recent unread notifications
+4. **NotificationList**: Full page showing all unread notifications
+5. **NotificationForm**: Creation interface for teachers/admins
+6. **NotificationManagement**: Page showing sent notifications with read statistics
+
+#### Automatic Notifications
+
+The system automatically creates notifications for:
+
+| Event                 | Trigger                  | Target              | Priority  |
+| --------------------- | ------------------------ | ------------------- | --------- |
+| Assignment created    | Assignment form action   | Class students      | Normal    |
+| Resource added        | Resource upload          | Class students      | Normal    |
+| Reward earned         | Gidouilles/VIP card award| Individual student  | Normal    |
+| Badge unlocked        | Badge achievement        | Individual student  | Normal    |
+| Maintenance scheduled | Admin manual             | All users           | Important |
+| Feature released      | Admin manual             | All or role-based   | Normal    |
+
+## Assessment System
+
+The assessment system allows teachers to create graded evaluations based on the question cart categories, assign them to classes or individual students, track attempts, and view results.
+
+### Assessment System Tables
+
+#### `assessments`
+
+Teacher-created assessments/evaluations with configurable settings.
+
+| Column        | Type              | Description                                                  |
+| ------------- | ----------------- | ------------------------------------------------------------ |
+| id            | UUID (PK)         | Assessment ID                                                |
+| title         | TEXT              | Assessment title                                             |
+| grade         | TEXT              | Grade level (e.g., '6ème', '5ème', '4ème', '3ème')          |
+| description   | TEXT              | Optional description of the assessment                       |
+| created_by    | UUID (FK)         | Teacher who created the assessment → profiles(id)            |
+| categories    | JSONB             | Array of CartItem objects (same structure as question cart)  |
+| settings      | JSONB             | Assessment settings (see below)                              |
+| status        | TEXT              | 'draft', 'published', or 'archived'                          |
+| created_at    | TIMESTAMPTZ       | Creation timestamp                                           |
+| updated_at    | TIMESTAMPTZ       | Last update timestamp (auto-updated via trigger)             |
+
+**Settings Structure (JSONB)**:
+
+```json
+{
+  "max_attempts": null | number,      // null = unlimited attempts
+  "time_limit": null | number,        // Total time limit in seconds, null = no limit
+  "deadline": null | string,          // ISO timestamp, null = no deadline
+  "shuffle_questions": boolean        // Whether to randomize question order
+}
+```
+
+**Categories Structure (JSONB)**: Same as question cart `CartItem[]`
+
+```typescript
+interface CartItem {
+  category: {
+    theme: string;
+    domain: string;
+    subdomain: string | null;
+    level: string;
+  };
+  quantity: number;  // Number of questions
+  delay: number;     // Time per question (seconds)
+}
+```
+
+#### `assessment_assignments`
+
+Tracks which assessments are assigned to which classes or students.
+
+| Column        | Type        | Description                                               |
+| ------------- | ----------- | --------------------------------------------------------- |
+| id            | UUID (PK)   | Assignment ID                                             |
+| assessment_id | UUID (FK)   | Assessment reference → assessments(id)                    |
+| class_id      | UUID (FK)   | Class assignment → classes(id) (null if student-specific) |
+| student_id    | UUID (FK)   | Student assignment → profiles(id) (null if class-wide)    |
+| assigned_by   | UUID (FK)   | Teacher who made the assignment → profiles(id)            |
+| assigned_at   | TIMESTAMPTZ | Assignment timestamp                                      |
+
+**Constraint**: Must target either a class OR a student, not both or neither:
+
+```sql
+CHECK (
+  (class_id IS NOT NULL AND student_id IS NULL) OR
+  (class_id IS NULL AND student_id IS NOT NULL)
+)
+```
+
+#### `test_sessions` (modified)
+
+Modified to support assessment assignments. Added column:
+
+| Column        | Type      | Description                                                |
+| ------------- | --------- | ---------------------------------------------------------- |
+| assignment_id | UUID (FK) | Reference to assessment assignment (null = free practice)  |
+
+All other columns remain unchanged from the existing test sessions table.
+
+#### `assessment_results` (view)
+
+Aggregated view for teacher dashboard showing best attempt per student for each assignment.
+
+| Column             | Type              | Description                                    |
+| ------------------ | ----------------- | ---------------------------------------------- |
+| assignment_id      | UUID              | Assignment ID                                  |
+| assessment_id      | UUID              | Assessment ID                                  |
+| assessment_title   | TEXT              | Assessment title                               |
+| assessment_grade   | TEXT              | Assessment grade level                         |
+| class_id           | UUID              | Class ID (if assigned to class)                |
+| student_id         | UUID              | Student ID                                     |
+| student_user_id    | UUID              | Student's user ID                              |
+| student_firstname  | TEXT              | Student first name                             |
+| student_lastname   | TEXT              | Student last name                              |
+| class_name         | TEXT              | Class name (if assigned to class)              |
+| best_score         | NUMERIC           | Highest score among all attempts (0-10 scale)  |
+| attempts_count     | INTEGER           | Number of attempts made                        |
+| last_attempt_at    | TIMESTAMPTZ       | Timestamp of most recent attempt               |
+| status             | TEXT              | 'not_started', 'in_progress', 'completed', or 'expired' |
+| total_questions    | INTEGER           | Total number of questions                      |
+
+### Assessment Workflow
+
+#### 1. Creation (Teacher)
+
+1. Teacher adds questions to cart from Automaths (/automaths)
+2. Teacher navigates to "Create Assessment" (/dashboard/teacher/assessments/new)
+3. Three-step wizard:
+   - Step 1: Review selected question categories from cart
+   - Step 2: Configure assessment (title, grade, settings)
+   - Step 3: Review and publish (or save as draft)
+4. Assessment created with status='draft' or 'published'
+
+#### 2. Assignment (Teacher)
+
+1. Only **published** assessments can be assigned
+2. Teacher navigates to assessment detail and clicks "Assign"
+3. Teacher selects classes or individual students
+4. System creates assessment_assignments records
+5. Students in assigned classes can now see the assessment
+
+#### 3. Taking Assessment (Student)
+
+1. Student sees assigned assessment on dashboard (/dashboard/student/assessments)
+2. Student clicks "Commencer" (Start)
+3. System validates:
+   - Deadline not passed
+   - Max attempts not exceeded
+   - Assessment is published
+4. Student is redirected to test page: `/automaths/test?assignment={assignmentId}&mode=interactive`
+5. Test page loads assessment categories and generates questions
+6. Student completes test in interactive mode
+7. Results saved to test_sessions with assignment_id link
+
+#### 4. Viewing Results
+
+**Teachers** (/dashboard/teacher/assessments/{id}/results):
+- Overall statistics (completion rate, average score, etc.)
+- Student-by-student results table
+- Can see all attempts for each student
+
+**Students** (/dashboard/student/assessments/{id}/results):
+- Personal statistics (best score, average, attempts)
+- History of all attempts with scores and timestamps
+- Cannot see other students' results
+
+### Status Logic
+
+**Assessment Status** (stored in `assessments.status`):
+- `draft`: Being created, not yet published, cannot be assigned
+- `published`: Active and can be assigned to students
+- `archived`: No longer active, hidden from default views
+
+**Student Assignment Status** (derived in views/queries):
+- `not_started`: Student has never attempted (attempts_count = 0, deadline not passed)
+- `in_progress`: Student started but hasn't completed any attempt (attempts_count > 0, no completed_at)
+- `completed`: Student completed at least one attempt (has completed_at)
+- `expired`: Deadline passed without any attempts (attempts_count = 0, deadline passed)
+
+### Indexes
+
+Performance indexes for efficient queries:
+
+```sql
+-- Assessments
+CREATE INDEX idx_assessments_created_by ON assessments(created_by);
+CREATE INDEX idx_assessments_grade ON assessments(grade);
+CREATE INDEX idx_assessments_status ON assessments(status);
+CREATE INDEX idx_assessments_created_at ON assessments(created_at DESC);
+
+-- Assignments
+CREATE INDEX idx_assessment_assignments_assessment_id ON assessment_assignments(assessment_id);
+CREATE INDEX idx_assessment_assignments_class_id ON assessment_assignments(class_id) WHERE class_id IS NOT NULL;
+CREATE INDEX idx_assessment_assignments_student_id ON assessment_assignments(student_id) WHERE student_id IS NOT NULL;
+CREATE INDEX idx_assessment_assignments_assigned_by ON assessment_assignments(assigned_by);
+
+-- Test sessions (for assignment lookup)
+CREATE INDEX idx_test_sessions_assignment_id ON test_sessions(assignment_id) WHERE assignment_id IS NOT NULL;
+CREATE INDEX idx_test_sessions_assignment_user ON test_sessions(assignment_id, user_id) WHERE assignment_id IS NOT NULL;
+```
+
+### RLS Policies
+
+#### Assessments
+
+**Teachers**:
+- Can view their own assessments: `created_by = auth.uid()`
+- Can create assessments: `role = 'teacher' AND created_by = auth.uid()`
+- Can update/delete their own assessments
+
+**Students**:
+- Can view published assessments that are assigned to them (directly or via class)
+
+**Admins**:
+- Full access to all assessments
+
+#### Assessment Assignments
+
+**Teachers**:
+- Can view assignments for their assessments
+- Can create assignments for their own assessments and their own classes/students
+- Can delete assignments for their assessments
+
+**Students**:
+- Can view their own assignments (direct or via class membership)
+
+**Admins**:
+- Full access to all assignments
+
+### Server-Side Functions
+
+Core functions in `src/lib/server/assessments.ts`:
+
+**CRUD Operations**:
+- `createAssessment(supabase, data, userId)` - Create new assessment
+- `getAssessment(supabase, assessmentId)` - Get single assessment
+- `getTeacherAssessments(supabase, teacherId, status?)` - Get teacher's assessments
+- `updateAssessment(supabase, assessmentId, data, userId)` - Update assessment
+- `publishAssessment(supabase, assessmentId, userId)` - Publish draft
+- `archiveAssessment(supabase, assessmentId, userId)` - Archive assessment
+
+**Assignment Management**:
+- `assignAssessment(supabase, data, teacherId)` - Assign to classes/students
+- `getAssessmentAssignments(supabase, assessmentId)` - Get all assignments
+- `removeAssignment(supabase, assignmentId, teacherId)` - Remove assignment
+- `getStudentAssignments(supabase, studentId)` - Get student's assigned assessments
+
+**Attempt Validation**:
+- `validateAttempt(supabase, assignmentId, studentId)` - Check if student can start attempt
+
+**Results & Statistics**:
+- `getAssessmentResults(supabase, assessmentId)` - Get all student results
+- `getAssessmentStatistics(supabase, assessmentId)` - Get aggregated stats
+- `getClassStatistics(supabase, assessmentId)` - Get per-class stats
+
+### Example Queries
+
+#### Get student's assigned assessments with attempt stats
+
+```sql
+SELECT
+  aa.*,
+  a.title,
+  a.grade,
+  a.settings,
+  COUNT(ts.id) as attempts_count,
+  MAX(ts.score) as best_score,
+  MAX(ts.completed_at) as last_attempt_at
+FROM assessment_assignments aa
+JOIN assessments a ON a.id = aa.assessment_id
+LEFT JOIN test_sessions ts ON ts.assignment_id = aa.id AND ts.user_id = :student_id
+WHERE a.status = 'published'
+  AND (
+    aa.student_id = :student_id
+    OR aa.class_id IN (
+      SELECT class_id FROM class_members WHERE student_id = :student_id
+    )
+  )
+GROUP BY aa.id, a.id;
+```
+
+#### Get teacher's assessment with assignment count
+
+```sql
+SELECT
+  a.*,
+  COUNT(DISTINCT aa.id) as assignments_count
+FROM assessments a
+LEFT JOIN assessment_assignments aa ON aa.assessment_id = a.id
+WHERE a.created_by = :teacher_id
+GROUP BY a.id
+ORDER BY a.created_at DESC;
+```
+
+#### Get assessment completion statistics
+
+```sql
+SELECT
+  COUNT(*) as total_assigned,
+  COUNT(*) FILTER (WHERE attempts_count = 0) as not_started,
+  COUNT(*) FILTER (WHERE attempts_count > 0 AND last_attempt_at IS NULL) as in_progress,
+  COUNT(*) FILTER (WHERE last_attempt_at IS NOT NULL) as completed,
+  AVG(best_score) FILTER (WHERE best_score IS NOT NULL) as average_score
+FROM assessment_results
+WHERE assessment_id = :assessment_id;
+```
+
+### Related Documentation
+
+- **Migration**: `supabase/migrations/082_create_assessment_system.sql`
+- **Types**: `src/lib/types/assessment.ts`
+- **Server Functions**: `src/lib/server/assessments.ts`
+- **API Routes**: `src/routes/api/assessments/`
+- **Teacher Pages**: `src/routes/(protected)/dashboard/teacher/assessments/`
+- **Student Pages**: `src/routes/(protected)/dashboard/student/assessments/`
+- **Components**: `src/lib/components/assessments/`

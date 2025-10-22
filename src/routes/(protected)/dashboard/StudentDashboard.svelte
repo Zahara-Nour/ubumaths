@@ -53,32 +53,6 @@
 	<!-- Gallery showing all VIP cards (owned and unowned) grouped by rarity -->
 	<VipCardsGallery vipCards={data.profile.vip_cards} />
 
-	<!-- QUICK STATS SECTION -->
-	<!-- Three-column grid showing key student metrics -->
-	<!-- TODO: Replace hardcoded values with real data from database -->
-	<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-		<!-- Stat 1: Pending Assignments -->
-		<div class="rounded-lg bg-card p-6 shadow">
-			<h3 class="text-sm font-medium text-muted-foreground uppercase">Devoirs à Rendre</h3>
-			<!-- TODO: Query assignment_submissions table for incomplete assignments -->
-			<p class="mt-2 text-3xl font-bold text-foreground">5</p>
-		</div>
-
-		<!-- Stat 2: Total Points Earned -->
-		<div class="rounded-lg bg-card p-6 shadow">
-			<h3 class="text-sm font-medium text-muted-foreground uppercase">Points Totaux</h3>
-			<!-- TODO: Sum points from student_progress table -->
-			<p class="mt-2 text-3xl font-bold text-foreground">1,250</p>
-		</div>
-
-		<!-- Stat 3: Overall Mastery Level -->
-		<div class="rounded-lg bg-card p-6 shadow">
-			<h3 class="text-sm font-medium text-muted-foreground uppercase">Niveau de Maîtrise</h3>
-			<!-- TODO: Calculate average mastery_level from student_progress -->
-			<p class="mt-2 text-3xl font-bold text-foreground">78%</p>
-		</div>
-	</div>
-
 	<!-- SRS REVISIONS SECTION -->
 	<!-- Quick access to spaced repetition system -->
 	<div class="rounded-lg bg-card shadow">
@@ -111,34 +85,6 @@
 					<p class="mt-1 text-2xl font-bold">-</p>
 				</div>
 			</div>
-		</div>
-	</div>
-
-	<!-- RECENT ACTIVITY SECTION -->
-	<!-- Shows recent exercise attempts and assignment submissions -->
-	<div class="rounded-lg bg-card shadow">
-		<div class="border-b border-border px-6 py-4">
-			<h3 class="text-lg font-semibold text-foreground">Activité Récente</h3>
-		</div>
-		<div class="p-6">
-			<!-- TODO: Query student_attempts table for recent activity -->
-			<!-- Show: exercise name, result (correct/incorrect), points, timestamp -->
-			<p class="py-8 text-center text-muted-foreground">Aucune activité récente à afficher</p>
-		</div>
-	</div>
-
-	<!-- MY CLASSES SECTION -->
-	<!-- Lists classes the student is enrolled in -->
-	<div class="rounded-lg bg-card shadow">
-		<div class="border-b border-border px-6 py-4">
-			<h3 class="text-lg font-semibold text-foreground">Mes Classes</h3>
-		</div>
-		<div class="p-6">
-			<!-- TODO: Join class_members with classes table to show enrolled classes -->
-			<!-- Show: class name, teacher name, join date, active assignments -->
-			<p class="py-8 text-center text-muted-foreground">
-				Vous n'êtes inscrit à aucune classe pour le moment
-			</p>
 		</div>
 	</div>
 </div>

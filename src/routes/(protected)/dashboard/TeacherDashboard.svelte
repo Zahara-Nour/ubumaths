@@ -434,39 +434,6 @@
 		</div>
 	{/if}
 
-	<!-- QUICK STATS SECTION -->
-	<!-- Four-column grid showing key teacher metrics -->
-	<!-- TODO: Replace hardcoded values with real data from database -->
-	<div class="grid grid-cols-1 gap-6 md:grid-cols-4">
-		<!-- Stat 1: Total Classes -->
-		<div class="rounded-lg bg-card p-6 shadow">
-			<h3 class="text-sm font-medium text-muted-foreground uppercase">Classes Totales</h3>
-			<!-- TODO: Count classes where teacher_id = data.profile.id -->
-			<p class="mt-2 text-3xl font-bold text-foreground">3</p>
-		</div>
-
-		<!-- Stat 2: Total Students (across all classes) -->
-		<div class="rounded-lg bg-card p-6 shadow">
-			<h3 class="text-sm font-medium text-muted-foreground uppercase">Élèves Totaux</h3>
-			<!-- TODO: Count distinct students in class_members for teacher's classes -->
-			<p class="mt-2 text-3xl font-bold text-foreground">87</p>
-		</div>
-
-		<!-- Stat 3: Active Assignments -->
-		<div class="rounded-lg bg-card p-6 shadow">
-			<h3 class="text-sm font-medium text-muted-foreground uppercase">Devoirs Actifs</h3>
-			<!-- TODO: Count assignments where created_by = teacher and is_published = true -->
-			<p class="mt-2 text-3xl font-bold text-foreground">12</p>
-		</div>
-
-		<!-- Stat 4: Submissions Needing Review -->
-		<div class="rounded-lg bg-card p-6 shadow">
-			<h3 class="text-sm font-medium text-muted-foreground uppercase">Révisions en Attente</h3>
-			<!-- TODO: Count unreviewed free-response submissions for teacher's assignments -->
-			<p class="mt-2 text-3xl font-bold text-foreground">24</p>
-		</div>
-	</div>
-
 	<!-- SRS DECKS SECTION -->
 	<!-- Manage SRS flashcard decks for spaced repetition -->
 	<div class="rounded-lg bg-card p-6 shadow">
@@ -483,66 +450,6 @@
 					Gérer les decks
 				</Button>
 			</a>
-		</div>
-	</div>
-
-	<!-- QUICK ACTIONS SECTION -->
-	<!-- Common teacher tasks as quick-access buttons -->
-	<div class="rounded-lg bg-card p-6 shadow">
-		<h3 class="mb-4 text-lg font-semibold text-foreground">Actions Rapides</h3>
-		<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-			<!-- Action 1: Create new assignment -->
-			<Button class="px-4 py-3">
-				Créer un Devoir
-				<!-- TODO: Link to /dashboard/assignments/create -->
-			</Button>
-
-			<!-- Action 2: Create new exercise -->
-			<Button variant="secondary" class="px-4 py-3">
-				Créer un Exercice
-				<!-- TODO: Link to /dashboard/exercises/create -->
-			</Button>
-
-			<!-- Action 3: Add new class -->
-			<Button variant="outline" class="px-4 py-3">
-				Ajouter une Classe
-				<!-- TODO: Link to /dashboard/classes/create -->
-			</Button>
-		</div>
-	</div>
-
-	<!-- MY CLASSES SECTION -->
-	<!-- Lists all classes owned by this teacher -->
-	<div class="rounded-lg bg-card shadow">
-		<div class="border-b border-border px-6 py-4">
-			<h3 class="text-lg font-semibold text-foreground">Mes Classes</h3>
-		</div>
-		<div class="p-6">
-			<!-- Link to classes page with schedules -->
-			<div class="py-8 text-center">
-				<p class="mb-4 text-muted-foreground">Gérez vos classes et leurs emplois du temps</p>
-				<a href="/dashboard/teacher/classes" data-sveltekit-preload-data="tap">
-					<Button>Voir Mes Classes</Button>
-				</a>
-			</div>
-		</div>
-	</div>
-
-	<!-- RECENT SUBMISSIONS SECTION -->
-	<!-- Shows recent student submissions that may need review -->
-	<div class="rounded-lg bg-card shadow">
-		<div class="border-b border-border px-6 py-4">
-			<h3 class="text-lg font-semibold text-foreground">Soumissions Récentes</h3>
-		</div>
-		<div class="p-6">
-			<!-- TODO: Query assignment_submissions for teacher's assignments -->
-			<!-- Join with students and assignments to show: -->
-			<!-- - Student name -->
-			<!-- - Assignment name -->
-			<!-- - Submission date -->
-			<!-- - Score/completion percentage -->
-			<!-- - Link to review submission -->
-			<p class="py-8 text-center text-muted-foreground">Aucune soumission récente à réviser</p>
 		</div>
 	</div>
 </div>

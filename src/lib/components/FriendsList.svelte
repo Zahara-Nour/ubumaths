@@ -81,11 +81,13 @@
 
 					<!-- Actions Menu -->
 					<DropdownMenu.Root>
-						<DropdownMenu.Trigger asChild let:builder>
-							<Button builders={[builder]} variant="ghost" size="icon" class="cursor-pointer">
-								<MoreVertical class="size-4" />
-								<span class="sr-only">Actions</span>
-							</Button>
+						<DropdownMenu.Trigger>
+							{#snippet child({ props })}
+								<Button {...props} variant="ghost" size="icon" class="cursor-pointer">
+									<MoreVertical class="size-4" />
+									<span class="sr-only">Actions</span>
+								</Button>
+							{/snippet}
 						</DropdownMenu.Trigger>
 						<DropdownMenu.Content align="end">
 							<DropdownMenu.Item>

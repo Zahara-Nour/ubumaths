@@ -24,6 +24,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const body = await request.json();
 		const result: TestResult = body.result;
 		const categories: CartItem[] = body.categories;
+		const assignmentId: string | undefined = body.assignmentId;
 
 		// Validate input
 		if (!result || !categories) {
@@ -41,7 +42,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				total_questions: result.totalQuestions,
 				time_spent: result.timeSpent,
 				time_limit: null, // Will be set from categories if needed
-				completed_at: result.completedAt
+				completed_at: result.completedAt,
+				assignment_id: assignmentId || null
 			})
 			.select('id')
 			.single();

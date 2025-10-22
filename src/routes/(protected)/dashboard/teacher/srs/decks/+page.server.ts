@@ -45,7 +45,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 			};
 		}
 
-		// Get stats for each deck
+		// Get stats for each deck and map to camelCase
 		const decksWithStats = await Promise.all(
 			decks.map(async (deck) => {
 				const { data: stats, error: statsError } = await supabase.rpc('get_deck_stats', {
@@ -57,7 +57,15 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 					console.error(`Error fetching stats for deck ${deck.id}:`, statsError);
 					// Return deck without stats on error
 					return {
-						...deck,
+						id: deck.id,
+						name: deck.name,
+						description: deck.description,
+						ownerId: deck.owner_id,
+						deckType: deck.deck_type,
+						isAssigned: deck.is_assigned,
+						config: deck.config,
+						createdAt: deck.created_at,
+						updatedAt: deck.updated_at,
 						stats: {
 							total_cards: 0,
 							due_count: 0,
@@ -77,8 +85,17 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 					review_count: 0
 				};
 
+				// Map snake_case to camelCase
 				return {
-					...deck,
+					id: deck.id,
+					name: deck.name,
+					description: deck.description,
+					ownerId: deck.owner_id,
+					deckType: deck.deck_type,
+					isAssigned: deck.is_assigned,
+					config: deck.config,
+					createdAt: deck.created_at,
+					updatedAt: deck.updated_at,
 					stats: deckStats
 				};
 			})

@@ -34,9 +34,11 @@
 		session: TestSession;
 		onComplete: (result: TestResult) => void;
 		onBack: () => void;
+		assignmentId?: string; // If present, this is a graded assessment
+		assessmentTitle?: string; // Title to display for assignments
 	}
 
-	let { session, onComplete, onBack }: Props = $props();
+	let { session, onComplete, onBack, assignmentId, assessmentTitle }: Props = $props();
 
 	// State
 	let currentIndex = $state(0);
@@ -181,7 +183,13 @@
 						<ArrowLeft class="h-5 w-5" />
 					</Button>
 					<div>
-						<h1 class="text-2xl font-bold">Mode Quiz</h1>
+						<h1 class="text-2xl font-bold">
+							{#if assignmentId && assessmentTitle}
+								Évaluation: {assessmentTitle}
+							{:else}
+								Mode Quiz
+							{/if}
+						</h1>
 						<p class="text-sm text-muted-foreground">
 							Question {currentIndex + 1} sur {session.instances.length}
 						</p>

@@ -220,15 +220,26 @@
 
 									<!-- Actions Menu -->
 									<DropdownMenu.Root>
-										<DropdownMenu.Trigger asChild let:builder>
-											<Button builders={[builder]} variant="ghost" size="sm">
-												<MoreVertical class="h-4 w-4" />
-											</Button>
+										<DropdownMenu.Trigger asChild>
+											{#snippet child({ props })}
+												<Button {...props} variant="ghost" size="sm">
+													<MoreVertical class="h-4 w-4" />
+												</Button>
+											{/snippet}
 										</DropdownMenu.Trigger>
 										<DropdownMenu.Content align="end">
+											{#if deck.isAssigned}
+												<DropdownMenu.Item onclick={() => goto(`/dashboard/teacher/srs/decks/${deck.id}/assignments`)}>
+													<Users class="mr-2 h-4 w-4" />
+													Voir les attributions
+												</DropdownMenu.Item>
+
+												<DropdownMenu.Separator />
+											{/if}
+
 											<DropdownMenu.Item onclick={() => assignDeck(deck.id)}>
 												<Send class="mr-2 h-4 w-4" />
-												Attribuer
+												{deck.isAssigned ? 'Attribuer à nouveau' : 'Attribuer'}
 											</DropdownMenu.Item>
 
 											{#if !deck.isAssigned}

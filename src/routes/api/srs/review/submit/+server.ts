@@ -12,6 +12,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { SubmitReviewRequest, CardStats } from '$lib/srs/types';
 import { FSRS } from '$lib/srs/fsrs';
+import { DEFAULT_FSRS_PARAMS } from '$lib/srs/config';
 
 /**
  * POST /api/srs/review/submit
@@ -43,6 +44,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
 	try {
 		const body = (await request.json()) as SubmitReviewRequest;
+		console.log('[SRS Submit] Received review:', body);
 
 		// Validate required fields
 		if (!body.cardId) {
@@ -58,6 +60,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 		}
 
 		// Get card to determine type and reference
+		console.log('[SRS Submit] Fetching card:', body.cardId);
 		const { data: card, error: cardError } = await supabase
 			.from('srs_cards')
 			.select('*')
@@ -65,8 +68,11 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 			.single();
 
 		if (cardError || !card) {
+			console.error('[SRS Submit] Card not found:', cardError);
 			return json({ error: 'Card not found' }, { status: 404 });
 		}
+
+		console.log('[SRS Submit] Card found:', card.card_type, card.template_id || card.id);
 
 		// Verify card belongs to deck
 		if (card.deck_id !== body.deckId) {
@@ -87,16 +93,19 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
 		// Determine card reference
 		const cardReferenceType = card.card_type as 'template' | 'custom';
-		const cardReferenceId =
-			card.card_type === 'template' ? card.template_id : `custom_${card.id}`;
+		const cardReferenceId = card.card_type === 'template' ? card.template_id : card.id;
 
 		if (!cardReferenceId) {
+			console.error('[SRS Submit] Invalid card reference');
 			return json({ error: 'Invalid card reference' }, { status: 400 });
 		}
+
+		console.log('[SRS Submit] Card reference:', cardReferenceType, cardReferenceId);
 
 		// Get or initialize stats
 		let stats: CardStats;
 
+		console.log('[SRS Submit] Fetching existing stats...');
 		const { data: existingStats, error: statsError } = await supabase
 			.from('srs_card_stats')
 			.select('*')
@@ -105,9 +114,15 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 			.eq('card_reference_id', cardReferenceId)
 			.single();
 
+		if (statsError && statsError.code !== 'PGRST116') {
+			console.error('[SRS Submit] Error fetching stats:', statsError);
+		}
+
 		if (existingStats) {
 			// Convert database format to CardStats
+			console.log('[SRS Submit] Existing stats found');
 			stats = {
+				id: existingStats.id,
 				userId: existingStats.user_id,
 				cardReferenceType: existingStats.card_reference_type,
 				cardReferenceId: existingStats.card_reference_id,
@@ -117,43 +132,56 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 				lastReview: existingStats.last_review,
 				nextReview: existingStats.next_review,
 				totalReviews: existingStats.total_reviews,
-				reviewHistory: existingStats.review_history || []
+				reviewHistory: existingStats.review_history || [],
+				createdAt: existingStats.created_at,
+				updatedAt: existingStats.updated_at
 			};
 		} else {
 			// Initialize new card stats
+			console.log('[SRS Submit] No existing stats, initializing new');
+			const now = new Date().toISOString();
 			stats = {
+				id: crypto.randomUUID(),
 				userId: user.id,
 				cardReferenceType,
 				cardReferenceId,
-				difficulty: 0,
-				stability: 0,
+				difficulty: 5.0,
+				stability: 0.1,
 				state: 'new',
 				lastReview: null,
-				nextReview: new Date().toISOString(),
+				nextReview: now,
 				totalReviews: 0,
-				reviewHistory: []
+				reviewHistory: [],
+				createdAt: now,
+				updatedAt: now
 			};
 		}
 
 		// Use FSRS to calculate new stats
-		const fsrs = new FSRS(deck.config);
+		console.log('[SRS Submit] Calculating new stats with FSRS...');
+		const fsrs = new FSRS(
+			deck.config.parameters || DEFAULT_FSRS_PARAMS,
+			deck.config.desiredRetention || 0.9,
+			deck.config.maximumInterval || 36500
+		);
 		const updatedStats = fsrs.reviewCard(stats, body.grade, body.timeSpent);
+		console.log('[SRS Submit] New stats calculated:', updatedStats.state, updatedStats.nextReview);
 
 		// Upsert stats to database
-		const { error: upsertError } = await supabase
-			.from('srs_card_stats')
-			.upsert({
-				user_id: updatedStats.userId,
-				card_reference_type: updatedStats.cardReferenceType,
-				card_reference_id: updatedStats.cardReferenceId,
-				difficulty: updatedStats.difficulty,
-				stability: updatedStats.stability,
-				state: updatedStats.state,
-				last_review: updatedStats.lastReview,
-				next_review: updatedStats.nextReview,
-				total_reviews: updatedStats.totalReviews,
-				review_history: updatedStats.reviewHistory
-			});
+		console.log('[SRS Submit] Upserting stats to database...');
+		const { error: upsertError } = await supabase.from('srs_card_stats').upsert({
+			id: updatedStats.id, // Include ID to update existing record or create new one
+			user_id: updatedStats.userId,
+			card_reference_type: updatedStats.cardReferenceType,
+			card_reference_id: updatedStats.cardReferenceId,
+			difficulty: updatedStats.difficulty,
+			stability: updatedStats.stability,
+			state: updatedStats.state,
+			last_review: updatedStats.lastReview,
+			next_review: updatedStats.nextReview,
+			total_reviews: updatedStats.totalReviews,
+			review_history: updatedStats.reviewHistory
+		});
 
 		if (upsertError) {
 			console.error('Error upserting card stats:', upsertError);

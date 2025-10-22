@@ -43,6 +43,7 @@ export const WORD_LISTS: WordLists = {
 		'egal',
 		'egalite',
 		'entier',
+		'equerre',
 		'face',
 		'figure',
 		'forme',
