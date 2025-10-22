@@ -25,7 +25,7 @@
 	import * as Select from '$lib/components/ui/select';
 	import { AlertCircle, RefreshCw, Check, X } from 'lucide-svelte';
 	import { onMount } from 'svelte';
-	import QuestionDisplay from '$lib/components/QuestionDisplay.svelte';
+	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 
 	interface Props {
 		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>;
@@ -40,11 +40,10 @@
 	let mathLiveLoaded = $state(false);
 	let selectedVariationIndex = $state<number | 'random'>(0);
 
-	// QuestionDisplay configuration
-	let displayMode = $state<'flashcard' | 'interactive'>('interactive');
+	// FlashCard configuration
+	let interactive = $state<boolean>(true);
 	let displaySize = $state<'sm' | 'md' | 'lg'>('md');
 	let showCorrectionOnWrong = $state(false);
-	let showConfetti = $state(true);
 
 	// Derived: Number of variations in template
 	let variationCount = $derived(template.variations?.length || 1);
@@ -148,7 +147,7 @@
 	}
 </script>
 
-<Card.Root>
+@ <Card.Root>
 	<Card.Header>
 		<div class="space-y-4">
 			<div class="flex items-center justify-between">
@@ -223,7 +222,7 @@
 					{/if}
 				</div>
 
-				<!-- QuestionDisplay Configuration -->
+				<!-- FlashCard Configuration -->
 				<Card.Root>
 					<Card.Header>
 						<Card.Title class="text-base">Configuration de l'aperçu visuel</Card.Title>
@@ -236,17 +235,17 @@
 								<div class="flex gap-2">
 									<Button
 										type="button"
-										variant={displayMode === 'flashcard' ? 'default' : 'outline'}
-										onclick={() => (displayMode = 'flashcard')}
+										variant={!interactive ? 'default' : 'outline'}
+										onclick={() => (interactive = false)}
 										size="sm"
 										class="flex-1"
 									>
-										Flashcard
+										Lecture seule
 									</Button>
 									<Button
 										type="button"
-										variant={displayMode === 'interactive' ? 'default' : 'outline'}
-										onclick={() => (displayMode = 'interactive')}
+										variant={interactive ? 'default' : 'outline'}
+										onclick={() => (interactive = true)}
 										size="sm"
 										class="flex-1"
 									>
@@ -277,29 +276,23 @@
 										<input type="checkbox" bind:checked={showCorrectionOnWrong} class="rounded" />
 										Afficher correction si faux
 									</label>
-									<label class="flex items-center gap-2 text-sm">
-										<input type="checkbox" bind:checked={showConfetti} class="rounded" />
-										Confettis si correct
-									</label>
 								</div>
 							</div>
 						</div>
 					</Card.Content>
 				</Card.Root>
 
-				<!-- Visual Preview with QuestionDisplay -->
+				<!-- Visual Preview with FlashCard -->
 				<Card.Root>
 					<Card.Header>
 						<Card.Title class="text-base">Aperçu visuel (tel que vu par l'étudiant)</Card.Title>
 					</Card.Header>
 					<Card.Content>
-						<QuestionDisplay
-							mode={displayMode}
+						<FlashCard
+							{interactive}
 							{instance}
 							size={displaySize}
 							{showCorrectionOnWrong}
-							{showConfetti}
-							allowMultipleAttempts={true}
 							maxAttempts={0}
 						/>
 					</Card.Content>

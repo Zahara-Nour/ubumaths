@@ -23,6 +23,7 @@ import { checkCategoryUniqueness, getNextAvailableLevel } from '$lib/questions/c
  * Query parameters:
  * - type: QuestionType (filter by question type)
  * - grades: GradeLevel[] (comma-separated, filter by grade)
+ * - status: 'draft' | 'published' (filter by status)
  * - limit: number (default: 50, max: 100)
  * - offset: number (default: 0)
  *
@@ -50,6 +51,7 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
 		// Parse query parameters
 		const typeParam = url.searchParams.get('type');
 		const gradesParam = url.searchParams.get('grades');
+		const statusParam = url.searchParams.get('status');
 		const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 100);
 		const offset = parseInt(url.searchParams.get('offset') || '0');
 
@@ -64,6 +66,10 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
 		if (gradesParam) {
 			const grades = gradesParam.split(',').map((g) => g.trim());
 			query = query.overlaps('grades', grades);
+		}
+
+		if (statusParam) {
+			query = query.eq('status', statusParam);
 		}
 
 		// Apply pagination

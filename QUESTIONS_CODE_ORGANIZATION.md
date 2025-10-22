@@ -52,8 +52,7 @@ src/lib/questions/
     └── circular-dependency.test.ts
 
 src/lib/components/
-├── questions/                       # Question-related components
-│   └── QuestionDisplay.svelte      # Student-facing display (487 lines)
+├── QuestionDisplay.svelte           # Student/admin display (775 lines)
 ├── QuestionTemplateForm.svelte      # 5-tab form orchestrator
 └── QuestionPreview.svelte           # Admin preview with generation
 
@@ -255,91 +254,103 @@ function helperFunction() {
 
 ### QuestionDisplay Component
 
-**File:** `src/lib/components/questions/QuestionDisplay.svelte` (487 lines)
+**File:** `src/lib/components/QuestionDisplay.svelte` (775 lines)
+
+**Purpose:** Universal question display component for both flashcard and interactive modes.
 
 **Sections:**
 
-1. **Header Comment** (lines 1-21)
+1. **Header Comment** (lines 1-22)
    - Component description
    - Features list
    - Props interface
 
-2. **Imports** (lines 23-33)
+2. **Imports** (lines 24-46)
    - Types
    - UI components
+   - Input components
    - Icons
+   - Confetti library
 
-3. **Props & Derived** (lines 35-49)
-   - Props destructuring with defaults
-   - Template ID derived from URL
+3. **Props** (lines 48-76)
+   - Required: `mode`, `instance`
+   - Optional callbacks and configuration
 
-4. **State Management** (lines 51-65)
+4. **State Management** (lines 78-112)
    - Answer state
    - Submission tracking
-   - Feedback state
-   - Timer state
+   - Statistics tracking
+   - Flip state
+   - Height management
 
-5. **Timer Setup** (lines 67-93)
-   - Interval initialization
-   - Countdown logic
-   - Auto-submit
-   - Cleanup effect
+5. **Initialization** (lines 138-186)
+   - Timer start
+   - Height calculation (ResizeObserver)
+   - Type-specific state initialization
 
-6. **Helper Functions** (lines 95-215)
-   - `getInitialAnswer()` - Type-specific defaults
-   - `formatTime()` - MM:SS formatting
-   - `renderContent()` - HTML rendering
-   - `getChoiceLetter()` - A, B, C, D...
+6. **Helper Functions** (lines 188-236)
+   - `hasValidInput()` - Input validation
+   - `getTimeSpent()` - Time tracking
+   - `prepareAnswerValue()` - Type-specific formatting
 
-7. **Event Handlers** (lines 143-181)
-   - `handleSubmit()` - Answer submission
+7. **Event Handlers** (lines 238-347)
+   - `handleSubmit()` - Answer validation
+   - `handleFlip()` - Card flip animation
+   - `completeQuestion()` - Statistics emission
+   - `handleAnswerChange()` - Real-time callbacks
 
-8. **Template** (lines 218-486)
-   - Card header (type badge, grades, timer)
-   - Question statement
-   - Answer inputs (type-specific)
-   - Submit button
-   - Feedback display
-   - Readonly mode
+8. **Template** (lines 360-602)
+   - Flip container (3D transform)
+   - Front face (question + input)
+   - Back face (correction)
+   - Flip button
 
 **Key Design Patterns:**
 
-- **Type-specific rendering:** Separate `{#if}` blocks for each question type
-- **Reactive state:** Uses Svelte 5 `$state` runes
-- **Cleanup:** Timer cleanup in `$effect` return function
-- **Guards:** Early returns in event handlers
-- **Comments:** Section dividers with `=======` markers
+- **Dual mode:** Flashcard (view-only) and Interactive (answer validation)
+- **Client-side validation:** Uses MathLive Compute Engine for sophisticated validation
+- **FlipCard animation:** 3D transforms with height management
+- **Type-specific inputs:** Specialized components for each question type
+- **Statistics tracking:** Time, attempts, answer history
+- **Reactive state:** Uses Svelte 5 `$state` and `$derived` runes
+- **ResizeObserver:** Smooth height transitions during flip
 
 ### Preview Demo Page
 
-**File:** `src/routes/(protected)/dashboard/admin/questions/[id]/preview/+page.svelte` (411 lines)
+**File:** `src/routes/(protected)/dashboard/admin/questions/[id]/preview/+page.svelte`
+
+**Purpose:** Admin testing page for question templates with real instance generation.
 
 **Sections:**
 
-1. **Header Comment** (lines 1-15)
+1. **Header Comment** (lines 1-14)
 2. **Imports** (lines 17-29)
+   - QuestionDisplay from main component path
+   - AnswerData type import
 3. **Props & Derived** (lines 31-36)
-4. **State Management** (lines 38-55)
-5. **Lifecycle** (lines 57-66)
-6. **Event Handlers** (lines 68-201)
+4. **State Management** (lines 38-54)
+   - Instance generation state
+   - Display options (showCorrection, readonly)
+5. **Lifecycle** (lines 56-65)
+6. **Event Handlers** (lines 67-142)
    - `generateInstance()` - API call
    - `handleRegenerate()` - Random seed
-   - `handleSubmit()` - Mock validation
-   - `checkAnswer()` - Simple comparison
+   - `handleAnswerSubmit()` - Toast notifications
    - `handleBack()` - Navigation
-7. **Template** (lines 204-411)
+7. **Template**
    - Page header
-   - Controls card
-   - QuestionDisplay
+   - Controls card (seed, options)
+   - QuestionDisplay component
    - Debug info
 
 **Key Design Patterns:**
 
-- **Mock validation:** Clear TODOs for server-side replacement
+- **Client-side validation:** Uses QuestionDisplay's built-in validation
 - **Seed reproducibility:** Same seed = same instance
-- **Toast feedback:** Success/error messages
+- **Toast feedback:** Success/error messages on answer submission
 - **Loading states:** Spinner during generation
-- **Debug info:** Helpful for testing
+- **Debug info:** Helpful for testing (answer preview, variables)
+- **Mode switching:** Toggle between interactive/flashcard modes
 
 ---
 

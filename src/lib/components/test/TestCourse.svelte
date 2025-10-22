@@ -20,7 +20,7 @@
 <script lang="ts">
 	import type { TestSession, TestResult, TestAnswerResult } from '$lib/types/test';
 	import type { AnswerData } from '$lib/types/question-display';
-	import QuestionDisplay from '$lib/components/QuestionDisplay.svelte';
+	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
 	import TestTimer from './TestTimer.svelte';
 	import TestResults from './TestResults.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -214,13 +214,11 @@
 					<div
 						class={cn('transition-all', answers.has(index) && 'ring-2 ring-primary ring-offset-2')}
 					>
-						<QuestionDisplay
-							mode="interactive"
+						<QuestionCard
+							interactive={true}
 							{instance}
 							onAnswerSubmit={(answerData) => handleAnswerSubmit(index, answerData)}
 							size="sm"
-							showConfetti={false}
-							allowMultipleAttempts={false}
 						/>
 					</div>
 				</div>

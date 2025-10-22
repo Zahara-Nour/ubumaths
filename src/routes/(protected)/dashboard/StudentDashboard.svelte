@@ -36,6 +36,8 @@
 	import type { PageData } from './$types';
 	import GidouilleDisplay from '$lib/components/GidouilleDisplay.svelte';
 	import VipCardsGallery from '$lib/components/VipCardsGallery.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { BookOpen } from 'lucide-svelte';
 
 	// Receive data from parent (+page.svelte)
 	// Contains profile with student's information
@@ -74,6 +76,41 @@
 			<h3 class="text-sm font-medium text-muted-foreground uppercase">Niveau de Maîtrise</h3>
 			<!-- TODO: Calculate average mastery_level from student_progress -->
 			<p class="mt-2 text-3xl font-bold text-foreground">78%</p>
+		</div>
+	</div>
+
+	<!-- SRS REVISIONS SECTION -->
+	<!-- Quick access to spaced repetition system -->
+	<div class="rounded-lg bg-card shadow">
+		<div class="border-b border-border px-6 py-4">
+			<div class="flex items-center justify-between">
+				<h3 class="text-lg font-semibold text-foreground">Révisions Espacées (SRS)</h3>
+				<a href="/dashboard/revisions">
+					<Button size="sm">
+						<BookOpen class="mr-2 h-4 w-4" />
+						Voir mes decks
+					</Button>
+				</a>
+			</div>
+		</div>
+		<div class="p-6">
+			<p class="text-muted-foreground">
+				Système de révision espacée pour mémoriser durablement vos concepts mathématiques.
+			</p>
+			<div class="mt-4 grid gap-3 md:grid-cols-3">
+				<div class="rounded-lg border bg-muted/20 p-4">
+					<p class="text-sm font-medium text-muted-foreground">Decks</p>
+					<p class="mt-1 text-2xl font-bold">-</p>
+				</div>
+				<div class="rounded-lg border bg-primary/10 p-4">
+					<p class="text-sm font-medium text-muted-foreground">À réviser aujourd'hui</p>
+					<p class="mt-1 text-2xl font-bold text-primary">-</p>
+				</div>
+				<div class="rounded-lg border bg-muted/20 p-4">
+					<p class="text-sm font-medium text-muted-foreground">Cartes maîtrisées</p>
+					<p class="mt-1 text-2xl font-bold">-</p>
+				</div>
+			</div>
 		</div>
 	</div>
 

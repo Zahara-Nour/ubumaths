@@ -21,13 +21,14 @@
 <script lang="ts">
 	import type { TestSession, TestResult, TestAnswerResult } from '$lib/types/test';
 	import type { AnswerData } from '$lib/types/question-display';
-	import QuestionDisplay from '$lib/components/QuestionDisplay.svelte';
+	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
 	import TestResults from './TestResults.svelte';
 	import TestTimer from './TestTimer.svelte';
 	import { Progress } from '$lib/components/ui/progress';
 	import { Button } from '$lib/components/ui/button';
 	import { ArrowLeft } from 'lucide-svelte';
 	import { SvelteMap } from 'svelte/reactivity';
+	import { slideFromRight, slideToLeft } from '$lib/transitions/slide-transition';
 
 	interface Props {
 		session: TestSession;
@@ -198,17 +199,18 @@
 		</div>
 
 		<!-- Question Display -->
-		{#key currentIndex}
-			<QuestionDisplay
-				mode="interactive"
-				instance={currentInstance}
-				onAnswerSubmit={handleAnswerSubmit}
-				size="lg"
-				showConfetti={false}
-				showValidationFeedback={false}
-				allowMultipleAttempts={false}
-			/>
-		{/key}
+		<div class="relative min-h-[500px]">
+			{#key currentIndex}
+				<div class="absolute inset-x-0 top-0 w-full" in:slideFromRight out:slideToLeft>
+					<QuestionCard
+						interactive={true}
+						instance={currentInstance}
+						onAnswerSubmit={handleAnswerSubmit}
+						size="lg"
+					/>
+				</div>
+			{/key}
+		</div>
 	</div>
 {:else if testResult}
 	<!-- Show results -->

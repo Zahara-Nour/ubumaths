@@ -1,0 +1,80 @@
+/**
+ * Teacher - Assign SRS Deck (Server)
+ * ===================================
+ *
+ * Load deck, students, and classes for assignment.
+ */
+
+import { error } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
+	const { session, user } = await safeGetSession();
+
+	if (!user || !session) {
+		throw error(401, 'Unauthorized');
+	}
+
+	const { id: deckId } = params;
+
+	try {
+		// Fetch deck details
+		const { data: deck, error: deckError } = await supabase
+			.from('srs_decks')
+			.select('*')
+			.eq('id', deckId)
+			.eq('owner_id', user.id)
+			.single();
+
+		if (deckError || !deck) {
+			console.error('Error fetching deck:', deckError);
+			throw error(404, 'Deck not found');
+		}
+
+		// Fetch teacher's students
+		const { data: students, error: studentsError } = await supabase
+			.from('profiles')
+			.select('id, first_name, last_name, email')
+			.eq('role', 'student')
+			.order('last_name');
+
+		if (studentsError) {
+			console.error('Error fetching students:', studentsError);
+		}
+
+		// Fetch teacher's classes
+		const { data: classes, error: classesError } = await supabase
+			.from('classes')
+			.select('id, name, description')
+			.eq('teacher_id', user.id)
+			.order('name');
+
+		if (classesError) {
+			console.error('Error fetching classes:', classesError);
+		}
+
+		// For each class, count students
+		const classesWithCounts = await Promise.all(
+			(classes || []).map(async (classItem) => {
+				const { count } = await supabase
+					.from('class_members')
+					.select('*', { count: 'exact', head: true })
+					.eq('class_id', classItem.id);
+
+				return {
+					...classItem,
+					student_count: count || 0
+				};
+			})
+		);
+
+		return {
+			deck,
+			students: students || [],
+			classes: classesWithCounts
+		};
+	} catch (err) {
+		console.error('Error in assign page load:', err);
+		throw error(500, 'Internal server error');
+	}
+};

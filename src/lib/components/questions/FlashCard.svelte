@@ -1,24 +1,23 @@
 <!--
-	QuestionDisplay Component
-	=========================
+	FlashCard Component
+	===================
 
-	Displays mathematical questions with interactive answer input or flashcard view.
+	Displays mathematical questions as interactive flashcards.
 	Integrates FlipCard mechanics, MathLive rendering, and answer validation.
 
 	Features:
-	- Two modes: flashcard (view-only) and interactive (answer validation)
+	- Interactive mode (enabled/disabled) for answer validation
 	- FlipCard-based layout with equal heights for front and back
 	- Type-specific answer inputs (numerical, algebraic, QCM, etc.)
 	- Statistics tracking (time spent, attempts)
 	- Visual feedback (correct/incorrect indicators)
-	- Confetti celebration on correct answer
 	- Viewport-constrained height with scrolling
 
 	Props:
-	- mode: 'flashcard' | 'interactive'
+	- interactive: boolean (default: false) - Enable answer validation
 	- instance: QuestionInstance (pre-generated)
 	- Callbacks: onAnswerSubmit, onAnswerChange, onComplete, onFlip
-	- Customization: size, showCorrectionOnWrong, showConfetti, etc.
+	- Customization: size, showCorrectionOnWrong, maxAttempts, etc.
 -->
 
 <script lang="ts">
@@ -35,7 +34,6 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { RotateCw, Check, X, AlertCircle } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
-	import confetti from 'canvas-confetti';
 
 	// Input components
 	import NumericalInput from '$lib/components/question-inputs/NumericalInput.svelte';
@@ -45,8 +43,8 @@
 	import OrderingInput from '$lib/components/question-inputs/OrderingInput.svelte';
 
 	// Props
-	interface Props extends Omit<QuestionDisplayProps, 'instance'> {
-		mode: 'flashcard' | 'interactive';
+	interface Props {
+		interactive?: boolean;
 		instance: QuestionInstance;
 		onAnswerSubmit?: (answer: AnswerData) => void;
 		onAnswerChange?: (value: string | string[]) => void;
@@ -54,14 +52,12 @@
 		onFlip?: (isFlipped: boolean) => void;
 		size?: 'sm' | 'md' | 'lg';
 		showCorrectionOnWrong?: boolean;
-		showConfetti?: boolean;
 		showValidationFeedback?: boolean;
-		allowMultipleAttempts?: boolean;
 		maxAttempts?: number;
 	}
 
 	let {
-		mode,
+		interactive = false,
 		instance,
 		onAnswerSubmit,
 		onAnswerChange,
@@ -69,9 +65,7 @@
 		onFlip,
 		size = 'md',
 		showCorrectionOnWrong = false,
-		showConfetti = true,
 		showValidationFeedback = true,
-		allowMultipleAttempts = true,
 		maxAttempts = 0
 	}: Props = $props();
 
@@ -120,18 +114,11 @@
 
 	const isScrollable = $derived(Math.max(frontHeight, backHeight) > maxViewportHeight);
 
-	const canFlip = $derived(mode === 'flashcard');
-
-	const canSubmit = $derived(mode === 'interactive' && !isSubmitted && hasValidInput());
+	const canSubmit = $derived(interactive && !isSubmitted && hasValidInput());
 
 	const hasReachedMaxAttempts = $derived(maxAttempts > 0 && attempts >= maxAttempts);
 
-	const isInputDisabled = $derived(
-		mode === 'flashcard' ||
-			isSubmitted ||
-			hasReachedMaxAttempts ||
-			(!allowMultipleAttempts && attempts > 0)
-	);
+	const isInputDisabled = $derived(!interactive || isSubmitted || hasReachedMaxAttempts);
 
 	// ============================================================================
 	// INITIALIZATION
@@ -139,7 +126,7 @@
 
 	// Start timer on mount (interactive mode only)
 	$effect(() => {
-		if (mode === 'interactive' && !startTime) {
+		if (interactive && !startTime) {
 			startTime = Date.now();
 		}
 	});
@@ -283,18 +270,6 @@
 			});
 		}
 
-		// Show confetti on correct answer
-		if (isCorrect && showConfetti) {
-			setTimeout(() => {
-				confetti({
-					particleCount: 100,
-					spread: 70,
-					origin: { y: 0.6 },
-					colors: ['#5b8def', '#40b3ff', '#676778']
-				});
-			}, 100);
-		}
-
 		// Auto-flip on wrong answer if configured
 		if (!isCorrect && showCorrectionOnWrong) {
 			setTimeout(() => {
@@ -315,8 +290,6 @@
 	 * Handle flip button click
 	 */
 	function handleFlip() {
-		if (!canFlip) return;
-
 		isFlipped = !isFlipped;
 		onFlip?.(isFlipped);
 	}
@@ -404,7 +377,7 @@
 						</div>
 
 						<!-- Answer Input (Interactive Mode Only) -->
-						{#if mode === 'interactive'}
+						{#if interactive}
 							<div class="answer-section">
 								<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
 
@@ -438,6 +411,20 @@
 										disabled={isInputDisabled}
 										showValidation={isSubmitted}
 									/>
+								{:else if instance.type === 'ordering'}
+									<div
+										class="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-8 text-center"
+									>
+										<AlertCircle class="h-10 w-10 text-muted-foreground" />
+										<div>
+											<p class="font-semibold text-muted-foreground">
+												Type de question "ordering" non implémenté
+											</p>
+											<p class="mt-1 text-sm text-muted-foreground/70">
+												Cette fonctionnalité sera disponible prochainement
+											</p>
+										</div>
+									</div>
 								{/if}
 
 								<!-- Submit Button -->
@@ -476,7 +463,7 @@
 						{/if}
 
 						<!-- Attempts Counter -->
-						{#if mode === 'interactive' && attempts > 0}
+						{#if interactive && attempts > 0}
 							<div class="flex items-center gap-2 text-sm text-muted-foreground">
 								<AlertCircle class="h-4 w-4" />
 								<span>
@@ -487,18 +474,15 @@
 					</Card.Content>
 				</Card.Root>
 
-				<!-- Flip Button (only in flashcard mode) -->
-				{#if mode === 'flashcard'}
-					<button
-						class="flip-button"
-						onclick={handleFlip}
-						disabled={!canFlip}
-						aria-label={isFlipped ? 'Retour à la question' : 'Voir la correction'}
-						title={isFlipped ? 'Retour à la question' : 'Voir la correction'}
-					>
-						<RotateCw class="h-5 w-5" />
-					</button>
-				{/if}
+				<!-- Flip Button -->
+				<button
+					class="flip-button"
+					onclick={handleFlip}
+					aria-label={isFlipped ? 'Retour à la question' : 'Voir la correction'}
+					title={isFlipped ? 'Retour à la question' : 'Voir la correction'}
+				>
+					<RotateCw class="h-5 w-5" />
+				</button>
 			</div>
 
 			<!-- ===================== BACK FACE ===================== -->
@@ -514,7 +498,7 @@
 
 					<Card.Content class="space-y-6">
 						<!-- User Answer (Interactive Mode) -->
-						{#if mode === 'interactive' && isSubmitted}
+						{#if interactive && isSubmitted}
 							<div class="answer-comparison">
 								<h3 class="mb-3 text-lg font-semibold">Votre réponse</h3>
 								<div
@@ -585,17 +569,15 @@
 					</Card.Content>
 				</Card.Root>
 
-				<!-- Flip Button (Back - only in flashcard mode) -->
-				{#if mode === 'flashcard'}
-					<button
-						class="flip-button"
-						onclick={handleFlip}
-						aria-label="Retour à la question"
-						title="Retour à la question"
-					>
-						<RotateCw class="h-5 w-5" />
-					</button>
-				{/if}
+				<!-- Flip Button (Back) -->
+				<button
+					class="flip-button"
+					onclick={handleFlip}
+					aria-label="Retour à la question"
+					title="Retour à la question"
+				>
+					<RotateCw class="h-5 w-5" />
+				</button>
 			</div>
 		</div>
 	</div>

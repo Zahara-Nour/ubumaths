@@ -21,13 +21,15 @@
 -->
 
 <script lang="ts">
-	import type { TestSession } from '$lib/types/test';
+	import type { TestSession, TestAnswerResult } from '$lib/types/test';
 	import type { CartItem } from '$lib/stores/questionCart.svelte';
+	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
+	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
 	import TestTimer from './TestTimer.svelte';
-	import MathDisplay from '$lib/components/MathDisplay.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { Pause, Play, ArrowLeft, Eye, BookOpen, Plus, Minus } from 'lucide-svelte';
+	import { slideFromRight, slideToLeft } from '$lib/transitions/slide-transition';
 
 	interface Props {
 		session: TestSession;
@@ -158,6 +160,21 @@
 			}
 		}
 	}
+
+	/**
+	 * Create TestAnswerResult for display mode (no user answers)
+	 * This allows us to use CorrectionCard in revision mode
+	 */
+	function createAnswerResultForDisplay(index: number): TestAnswerResult {
+		return {
+			index,
+			instance: session.instances[index],
+			userAnswer: undefined, // No user answer in display mode
+			isCorrect: false, // Not applicable in display mode
+			timeSpent: undefined,
+			attempts: undefined
+		};
+	}
 </script>
 
 {#if !isCompleted && !showReviewMode}
@@ -219,39 +236,24 @@
 		</div>
 
 		<!-- Question card -->
-		<Card.Root class="relative">
-			<Card.Header>
-				<Card.Title>Énoncé</Card.Title>
-			</Card.Header>
-
-			<Card.Content class="space-y-4">
-				<!-- Statement -->
-				<div class="rounded-lg border bg-card p-6">
-					{#each currentInstance.statement as field}
-						{#if field.type === 'text'}
-							<MathDisplay text={field.content} />
-						{:else if field.type === 'image'}
-							<img
-								src={field.content}
-								alt={field.alt || 'Question image'}
-								class="my-4 max-w-full rounded-lg"
-							/>
-						{/if}
-					{/each}
+		<div class="relative min-h-[500px]">
+			{#key currentIndex}
+				<div class="absolute inset-x-0 top-0 w-full" in:slideFromRight out:slideToLeft>
+					<QuestionCard interactive={false} instance={currentInstance} size="lg" />
 				</div>
+			{/key}
+		</div>
 
-				<!-- Hint -->
-				<p class="text-center text-sm text-muted-foreground">
-					{#if isPaused}
-						Le minuteur est en pause
-					{:else}
-						Question suivante dans <span class="font-semibold"
-							>{currentBaseDelay + currentCategoryAdjustment}</span
-						> secondes
-					{/if}
-				</p>
-			</Card.Content>
-		</Card.Root>
+		<!-- Hint -->
+		<p class="text-center text-sm text-muted-foreground">
+			{#if isPaused}
+				Le minuteur est en pause
+			{:else}
+				Question suivante dans <span class="font-semibold"
+					>{currentBaseDelay + currentCategoryAdjustment}</span
+				> secondes
+			{/if}
+		</p>
 
 		<!-- Floating Pause/Play button -->
 		<button
@@ -331,26 +333,10 @@
 
 		<div class="space-y-4">
 			{#each session.instances as instance, index}
-				<Card.Root>
-					<Card.Header>
-						<Card.Title>Question {index + 1}</Card.Title>
-					</Card.Header>
-					<Card.Content>
-						<div class="rounded-lg border bg-muted/30 p-4">
-							{#each instance.statement as field}
-								{#if field.type === 'text'}
-									<MathDisplay text={field.content} />
-								{:else if field.type === 'image'}
-									<img
-										src={field.content}
-										alt={field.alt || 'Question image'}
-										class="my-4 max-w-full rounded-lg"
-									/>
-								{/if}
-							{/each}
-						</div>
-					</Card.Content>
-				</Card.Root>
+				<div>
+					<h3 class="mb-2 text-lg font-semibold">Question {index + 1}</h3>
+					<QuestionCard interactive={false} {instance} size="md" />
+				</div>
 			{/each}
 		</div>
 
@@ -373,68 +359,14 @@
 			</div>
 		</div>
 
-		<div class="space-y-6">
+		<!-- Grid of correction cards -->
+		<div class="grid gap-6 lg:grid-cols-2">
 			{#each session.instances as instance, index}
-				<Card.Root>
-					<Card.Header>
-						<Card.Title>Question {index + 1}</Card.Title>
-					</Card.Header>
-					<Card.Content class="space-y-4">
-						<!-- Statement -->
-						<div>
-							<h3 class="mb-2 font-semibold">Énoncé</h3>
-							<div class="rounded-lg border bg-muted/30 p-4">
-								{#each instance.statement as field}
-									{#if field.type === 'text'}
-										<MathDisplay text={field.content} />
-									{:else if field.type === 'image'}
-										<img
-											src={field.content}
-											alt={field.alt || 'Question image'}
-											class="my-4 max-w-full rounded-lg"
-										/>
-									{/if}
-								{/each}
-							</div>
-						</div>
-
-						<!-- Answer -->
-						<div>
-							<h3 class="mb-2 font-semibold">Réponse</h3>
-							<div class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950">
-								{#if Array.isArray(instance.answer)}
-									<ul class="space-y-1">
-										{#each instance.answer as ans}
-											<li><MathDisplay text={String(ans)} /></li>
-										{/each}
-									</ul>
-								{:else}
-									<MathDisplay text={String(instance.answer)} />
-								{/if}
-							</div>
-						</div>
-
-						<!-- Correction -->
-						{#if instance.correction && instance.correction.length > 0}
-							<div>
-								<h3 class="mb-2 font-semibold">Explication</h3>
-								<div class="space-y-2 rounded-lg border bg-muted/50 p-4">
-									{#each instance.correction as field}
-										{#if field.type === 'text'}
-											<MathDisplay text={field.content} />
-										{:else if field.type === 'image'}
-											<img
-												src={field.content}
-												alt={field.alt || 'Correction image'}
-												class="my-2 max-w-full rounded-lg"
-											/>
-										{/if}
-									{/each}
-								</div>
-							</div>
-						{/if}
-					</Card.Content>
-				</Card.Root>
+				<CorrectionCard
+					answerResult={createAnswerResultForDisplay(index)}
+					questionNumber={index + 1}
+					size="md"
+				/>
 			{/each}
 		</div>
 

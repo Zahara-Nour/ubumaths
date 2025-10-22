@@ -67,7 +67,7 @@
 	// UI Components
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Clock, Target } from 'lucide-svelte';
+	import { Clock, Target, BookOpen } from 'lucide-svelte';
 	import Wheel from '$lib/components/Wheel.svelte';
 
 	// Stores & Utilities
@@ -464,6 +464,25 @@
 			<h3 class="text-sm font-medium text-muted-foreground uppercase">Révisions en Attente</h3>
 			<!-- TODO: Count unreviewed free-response submissions for teacher's assignments -->
 			<p class="mt-2 text-3xl font-bold text-foreground">24</p>
+		</div>
+	</div>
+
+	<!-- SRS DECKS SECTION -->
+	<!-- Manage SRS flashcard decks for spaced repetition -->
+	<div class="rounded-lg bg-card p-6 shadow">
+		<div class="flex items-center justify-between">
+			<div>
+				<h3 class="text-lg font-semibold text-foreground">Decks SRS (Révision Espacée)</h3>
+				<p class="mt-1 text-sm text-muted-foreground">
+					Créez et gérez des decks de révision espacée pour vos élèves
+				</p>
+			</div>
+			<a href="/dashboard/teacher/srs/decks">
+				<Button>
+					<BookOpen class="mr-2 h-4 w-4" />
+					Gérer les decks
+				</Button>
+			</a>
 		</div>
 	</div>
 

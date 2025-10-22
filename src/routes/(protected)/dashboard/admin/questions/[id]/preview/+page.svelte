@@ -8,17 +8,17 @@
 	Features:
 	- Load question template by ID
 	- Generate multiple instances (different seeds)
-	- Test answer submission with mock validation
+	- Test answer validation with QuestionDisplay
 	- Toggle correction display
-	- Test timer functionality
-	- Switch between student/readonly modes
+	- Switch between interactive/flashcard modes
 -->
 
 <script lang="ts">
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import type { QuestionInstance } from '$lib/questions/types';
-	import QuestionDisplay from '$lib/components/questions/QuestionDisplay.svelte';
+	import type { AnswerData } from '$lib/types/question-display';
+	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -50,9 +50,7 @@
 
 	// Display options
 	let showCorrection = $state(false); // Show correction on wrong answer
-	let readonly = $state(false); // Display-only mode (no interaction)
-	let enableTimer = $state(false); // Enable countdown timer
-	let timerSeconds = $state(60); // Timer duration (10-600 seconds)
+	let interactive = $state(true); // Interactive mode (answer validation)
 
 	// ===========================
 	// LIFECYCLE
@@ -122,75 +120,19 @@
 	}
 
 	/**
-	 * Mock answer validation (for testing only)
+	 * Handle answer submission from QuestionDisplay
 	 *
-	 * Simulates server-side answer validation with 500ms delay.
-	 * Uses simple comparison logic - REAL validation should be server-side!
+	 * Called after QuestionDisplay validates the answer client-side.
+	 * Shows a toast notification based on the validation result.
 	 *
-	 * TODO: Replace with actual server-side validation endpoint
-	 *
-	 * @param answer - Student's submitted answer (type varies by question)
-	 * @returns Validation result with correct boolean and optional feedback
+	 * @param answerData - Answer data with validation result from QuestionDisplay
 	 */
-	async function handleSubmit(answer: any): Promise<{ correct: boolean; feedback?: string }> {
-		// Simulate server delay (realistic network latency)
-		await new Promise((resolve) => setTimeout(resolve, 500));
-
-		if (!instance) {
-			return { correct: false, feedback: 'Instance introuvable' };
+	function handleAnswerSubmit(answerData: AnswerData) {
+		if (answerData.isCorrect) {
+			toaster.success('Excellente réponse ! 🎉');
+		} else {
+			toaster.error("Ce n'est pas la bonne réponse. Consultez la correction.");
 		}
-
-		// Simple validation (real validation would be on server)
-		const isCorrect = checkAnswer(answer, instance.answer);
-
-		return {
-			correct: isCorrect,
-			feedback: isCorrect
-				? 'Excellente réponse ! 🎉'
-				: "Ce n'est pas la bonne réponse. Consultez la correction."
-		};
-	}
-
-	/**
-	 * Basic answer checking (mock - real validation on server)
-	 *
-	 * Simple comparison logic for testing purposes only.
-	 * Real validation should handle:
-	 * - Numerical precision/tolerance
-	 * - Algebraic equivalence (e.g., "2x+4" vs "2(x+2)")
-	 * - Partial credit
-	 * - Case sensitivity settings
-	 *
-	 * @param studentAnswer - Student's submitted answer
-	 * @param correctAnswer - Expected correct answer from instance
-	 * @returns true if answers match, false otherwise
-	 */
-	function checkAnswer(studentAnswer: any, correctAnswer: any): boolean {
-		// Numerical answers - parse and compare
-		if (typeof correctAnswer === 'number') {
-			return parseFloat(studentAnswer) === correctAnswer;
-		}
-
-		// String answers (algebraic, text) - case-insensitive comparison
-		if (typeof correctAnswer === 'string') {
-			return studentAnswer.trim().toLowerCase() === correctAnswer.toLowerCase();
-		}
-
-		// Array answers (fill-in-blanks, multiple choice) - compare each element
-		if (Array.isArray(correctAnswer)) {
-			if (!Array.isArray(studentAnswer)) return false;
-			if (correctAnswer.length !== studentAnswer.length) return false;
-
-			// Check each element
-			return correctAnswer.every((ans, i) => {
-				if (typeof ans === 'number') {
-					return parseFloat(studentAnswer[i]) === ans;
-				}
-				return studentAnswer[i]?.trim().toLowerCase() === ans?.toLowerCase();
-			});
-		}
-
-		return false;
 	}
 
 	/**
@@ -276,33 +218,11 @@ TEMPLATE - PAGE LAYOUT
 						<Switch id="correction" bind:checked={showCorrection} />
 					</div>
 
-					<!-- Readonly Mode Toggle -->
+					<!-- Interactive Mode Toggle -->
 					<div class="flex items-center justify-between space-x-2">
-						<Label for="readonly" class="cursor-pointer">Mode lecture seule</Label>
-						<Switch id="readonly" bind:checked={readonly} />
+						<Label for="interactive" class="cursor-pointer">Mode interactif</Label>
+						<Switch id="interactive" bind:checked={interactive} />
 					</div>
-				</div>
-
-				<!-- Timer Options -->
-				<div class="space-y-3">
-					<div class="flex items-center justify-between space-x-2">
-						<Label for="timer" class="cursor-pointer">Activer le timer</Label>
-						<Switch id="timer" bind:checked={enableTimer} />
-					</div>
-
-					{#if enableTimer}
-						<div class="space-y-2">
-							<Label for="timer-seconds">Durée (secondes)</Label>
-							<Input
-								id="timer-seconds"
-								type="number"
-								bind:value={timerSeconds}
-								min={10}
-								max={600}
-								class="max-w-xs"
-							/>
-						</div>
-					{/if}
 				</div>
 			</div>
 		</Card.Content>
@@ -319,12 +239,13 @@ TEMPLATE - PAGE LAYOUT
 			</Card.Content>
 		</Card.Root>
 	{:else if instance}
-		<QuestionDisplay
+		<FlashCard
+			{interactive}
 			{instance}
-			onSubmit={handleSubmit}
-			{showCorrection}
-			{readonly}
-			timer={enableTimer ? timerSeconds : undefined}
+			onAnswerSubmit={handleAnswerSubmit}
+			showCorrectionOnWrong={showCorrection}
+			size="lg"
+			maxAttempts={0}
 		/>
 
 		<!-- Debug Info -->

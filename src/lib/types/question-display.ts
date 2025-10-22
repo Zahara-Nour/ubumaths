@@ -1,26 +1,14 @@
 /**
- * Question Display Component - Type Definitions
- * ==============================================
+ * FlashCard Component - Type Definitions
+ * ========================================
  *
- * Type definitions for the QuestionDisplay component, which supports
- * both flashcard mode (view-only) and interactive mode (answer validation).
+ * Type definitions for the FlashCard component, which displays
+ * mathematical questions as interactive flashcards.
  *
  * @module types/question-display
  */
 
 import type { QuestionInstance } from '$lib/questions/types';
-
-// ============================================================================
-// DISPLAY MODES
-// ============================================================================
-
-/**
- * Display mode for QuestionDisplay component
- *
- * - flashcard: View-only mode, no answer validation
- * - interactive: Answer input and validation mode
- */
-export type QuestionDisplayMode = 'flashcard' | 'interactive';
 
 // ============================================================================
 // ANSWER DATA
@@ -86,11 +74,11 @@ export interface QuestionStats {
 // ============================================================================
 
 /**
- * Props for QuestionDisplay component
+ * Props for FlashCard component
  */
 export interface QuestionDisplayProps {
-	/** Display mode (flashcard or interactive) */
-	mode: QuestionDisplayMode;
+	/** Enable interactive mode (answer validation) - default: false */
+	interactive?: boolean;
 
 	/** Pre-generated question instance */
 	instance: QuestionInstance;
@@ -117,11 +105,8 @@ export interface QuestionDisplayProps {
 	/** Auto-show correction after wrong answer (interactive mode) */
 	showCorrectionOnWrong?: boolean;
 
-	/** Show confetti animation on correct answer */
-	showConfetti?: boolean;
-
-	/** Allow multiple attempts (if false, disables input after first submit) */
-	allowMultipleAttempts?: boolean;
+	/** Show validation feedback messages */
+	showValidationFeedback?: boolean;
 
 	/** Maximum number of attempts allowed (0 = unlimited) */
 	maxAttempts?: number;

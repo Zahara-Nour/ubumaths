@@ -18,12 +18,10 @@
 
 <script lang="ts">
 	import type { TestResult } from '$lib/types/test';
-	import MathDisplay from '$lib/components/MathDisplay.svelte';
+	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
 	import * as Card from '$lib/components/ui/card';
-	import * as Accordion from '$lib/components/ui/accordion';
 	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import { ArrowLeft, RotateCw, Check, X, Clock, TrendingUp } from 'lucide-svelte';
+	import { ArrowLeft, RotateCw, Clock, TrendingUp } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 
 	interface Props {
@@ -119,130 +117,21 @@
 	</div>
 
 	<!-- Questions and corrections -->
-	<Card.Root>
-		<Card.Header>
-			<Card.Title>Détail des réponses</Card.Title>
-			<Card.Description>Cliquez sur une question pour voir la correction</Card.Description>
-		</Card.Header>
-		<Card.Content>
-			<Accordion.Root multiple class="w-full">
-				{#each result.answers as answerResult, index}
-					<Accordion.Item value={`question-${index}`}>
-						<Accordion.Trigger class="hover:no-underline">
-							<div class="flex w-full items-center justify-between pr-4 text-left">
-								<span class="font-medium">Question {index + 1}</span>
-								<Badge variant={answerResult.isCorrect ? 'default' : 'destructive'}>
-									{#if answerResult.isCorrect}
-										<Check class="mr-1 h-3 w-3" />
-										Correct
-									{:else}
-										<X class="mr-1 h-3 w-3" />
-										Incorrect
-									{/if}
-								</Badge>
-							</div>
-						</Accordion.Trigger>
-						<Accordion.Content>
-							<div class="space-y-4 pt-4">
-								<!-- Statement -->
-								<div>
-									<h4 class="mb-2 font-semibold">Énoncé</h4>
-									<div class="rounded-lg border bg-muted/30 p-4">
-										{#each answerResult.instance.statement as field}
-											{#if field.type === 'text'}
-												<MathDisplay text={field.content} />
-											{:else if field.type === 'image'}
-												<img
-													src={field.url}
-													alt={field.alt || 'Question image'}
-													class="my-4 max-w-full rounded-lg"
-												/>
-											{/if}
-										{/each}
-									</div>
-								</div>
+	<div>
+		<div class="mb-4">
+			<h2 class="text-2xl font-bold">Détail des réponses</h2>
+			<p class="text-sm text-muted-foreground">
+				Cliquez sur le bouton de rotation pour voir la correction détaillée
+			</p>
+		</div>
 
-								<!-- User answer (if exists) -->
-								{#if answerResult.userAnswer}
-									<div>
-										<h4 class="mb-2 font-semibold">Votre réponse</h4>
-										<div
-											class={cn(
-												'rounded-lg border-2 p-4',
-												answerResult.isCorrect
-													? 'border-green-600 bg-green-100 dark:bg-green-950'
-													: 'border-red-600 bg-red-100 dark:bg-red-950'
-											)}
-										>
-											{#if Array.isArray(answerResult.userAnswer.value)}
-												<ul class="space-y-1">
-													{#each answerResult.userAnswer.value as val}
-														<li><MathDisplay text={String(val)} /></li>
-													{/each}
-												</ul>
-											{:else}
-												<MathDisplay text={String(answerResult.userAnswer.value)} />
-											{/if}
-										</div>
-									</div>
-								{/if}
-
-								<!-- Correct answer -->
-								<div>
-									<h4 class="mb-2 font-semibold">Réponse correcte</h4>
-									<div
-										class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950"
-									>
-										{#if Array.isArray(answerResult.instance.answer)}
-											<ul class="space-y-1">
-												{#each answerResult.instance.answer as ans}
-													<li><MathDisplay text={String(ans)} /></li>
-												{/each}
-											</ul>
-										{:else}
-											<MathDisplay text={String(answerResult.instance.answer)} />
-										{/if}
-									</div>
-								</div>
-
-								<!-- Correction/Explanation -->
-								{#if answerResult.instance.correction && answerResult.instance.correction.length > 0}
-									<div>
-										<h4 class="mb-2 font-semibold">Explication</h4>
-										<div class="space-y-2 rounded-lg border bg-muted/50 p-4">
-											{#each answerResult.instance.correction as field}
-												{#if field.type === 'text'}
-													<MathDisplay text={field.content} />
-												{:else if field.type === 'image'}
-													<img
-														src={field.url}
-														alt={field.alt || 'Correction image'}
-														class="my-2 max-w-full rounded-lg"
-													/>
-												{/if}
-											{/each}
-										</div>
-									</div>
-								{/if}
-
-								<!-- Stats -->
-								{#if answerResult.timeSpent || answerResult.attempts}
-									<div class="flex gap-4 text-sm text-muted-foreground">
-										{#if answerResult.timeSpent}
-											<span>Temps : {answerResult.timeSpent}s</span>
-										{/if}
-										{#if answerResult.attempts}
-											<span>Tentatives : {answerResult.attempts}</span>
-										{/if}
-									</div>
-								{/if}
-							</div>
-						</Accordion.Content>
-					</Accordion.Item>
-				{/each}
-			</Accordion.Root>
-		</Card.Content>
-	</Card.Root>
+		<!-- Grid of correction cards -->
+		<div class="grid gap-6 lg:grid-cols-2">
+			{#each result.answers as answerResult, index}
+				<CorrectionCard {answerResult} questionNumber={index + 1} size="md" />
+			{/each}
+		</div>
+	</div>
 
 	<!-- Actions -->
 	<div class="flex flex-col gap-4 sm:flex-row sm:justify-center">

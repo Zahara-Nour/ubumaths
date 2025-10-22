@@ -6,7 +6,7 @@
 	import { Plus, Check } from 'lucide-svelte';
 	import { questionCart } from '$lib/stores/questionCart.svelte';
 	import MathDisplay from '$lib/components/MathDisplay.svelte';
-	import QuestionDisplay from '$lib/components/QuestionDisplay.svelte';
+	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 
 	let {
@@ -120,9 +120,9 @@
 				</Dialog.Description>
 			</Dialog.Header>
 
-			<!-- Question Display in flashcard mode -->
+			<!-- Question Display in read-only mode -->
 			<div class="mt-4">
-				<QuestionDisplay mode="flashcard" instance={preview} size="lg" />
+				<FlashCard interactive={false} instance={preview} size="lg" />
 			</div>
 
 			<!-- Add to cart button at the bottom -->

@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import QuestionDisplay from '$lib/components/QuestionDisplay.svelte';
+	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { Button } from '$lib/components/ui/button';
@@ -24,13 +24,11 @@
 	// ============================================================================
 
 	// Mode selection
-	let mode = $state<'flashcard' | 'interactive'>('interactive');
+	let interactive = $state<boolean>(true);
 
 	// Component configuration
 	let size = $state<'sm' | 'md' | 'lg'>('md');
 	let showCorrectionOnWrong = $state(false);
-	let showConfetti = $state(true);
-	let allowMultipleAttempts = $state(true);
 	let maxAttempts = $state(0);
 
 	// Debug logs
@@ -268,19 +266,19 @@
 					<label class="text-sm font-medium">Mode</label>
 					<div class="flex gap-2">
 						<Button
-							variant={mode === 'flashcard' ? 'default' : 'outline'}
+							variant={!interactive ? 'default' : 'outline'}
 							onclick={() => {
-								mode = 'flashcard';
+								interactive = false;
 								resetLogs();
 							}}
 							class="flex-1"
 						>
-							Flashcard
+							Lecture seule
 						</Button>
 						<Button
-							variant={mode === 'interactive' ? 'default' : 'outline'}
+							variant={interactive ? 'default' : 'outline'}
 							onclick={() => {
-								mode = 'interactive';
+								interactive = true;
 								resetLogs();
 							}}
 							class="flex-1"
@@ -311,16 +309,6 @@
 					<span class="text-sm">Auto-flip on wrong answer</span>
 				</label>
 
-				<label class="flex items-center gap-2">
-					<input type="checkbox" bind:checked={showConfetti} class="h-4 w-4" />
-					<span class="text-sm">Show confetti on correct</span>
-				</label>
-
-				<label class="flex items-center gap-2">
-					<input type="checkbox" bind:checked={allowMultipleAttempts} class="h-4 w-4" />
-					<span class="text-sm">Allow multiple attempts</span>
-				</label>
-
 				<div class="space-y-1">
 					<label class="text-sm">Max attempts (0 = unlimited)</label>
 					<Input type="number" min="0" bind:value={maxAttempts} class="w-full" />
@@ -340,11 +328,11 @@
 	<Card.Root>
 		<Card.Header>
 			<Card.Title>Component Preview</Card.Title>
-			<Card.Description>Live QuestionDisplay component</Card.Description>
+			<Card.Description>Live FlashCard component</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<QuestionDisplay
-				{mode}
+			<FlashCard
+				{interactive}
 				instance={currentInstance}
 				onAnswerSubmit={handleAnswerSubmit}
 				onAnswerChange={handleAnswerChange}
@@ -352,8 +340,6 @@
 				onFlip={handleFlip}
 				{size}
 				{showCorrectionOnWrong}
-				{showConfetti}
-				{allowMultipleAttempts}
 				{maxAttempts}
 			/>
 		</Card.Content>

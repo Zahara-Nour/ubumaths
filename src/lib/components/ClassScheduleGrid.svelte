@@ -174,7 +174,7 @@
 
 				<!-- Body: Time Slots (Periods) -->
 				<tbody>
-					{#each timeSlots as slot, index (slot.period.id)}
+					{#each timeSlots as slot, index (slot.period.start_time)}
 						<!-- Break Row (if there's a gap between periods) -->
 						{#if hasBreakBefore(slot.period, index)}
 							{@const previousPeriod = periods[index - 1]}

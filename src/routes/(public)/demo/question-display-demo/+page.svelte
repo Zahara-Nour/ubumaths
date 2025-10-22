@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import QuestionDisplay from '$lib/components/QuestionDisplay.svelte';
+	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { Button } from '$lib/components/ui/button';
@@ -133,7 +133,7 @@
 
 	// Demo state
 	let selectedQuestionType = $state<string>('numerical');
-	let selectedMode = $state<'flashcard' | 'interactive'>('interactive');
+	let interactive = $state<boolean>(true);
 
 	// Get current question based on selection
 	const currentQuestion = $derived(
@@ -190,16 +190,16 @@
 				<label class="mb-2 block text-sm font-medium">Display Mode</label>
 				<div class="flex gap-2">
 					<Button
-						variant={selectedMode === 'flashcard' ? 'default' : 'outline'}
-						onclick={() => (selectedMode = 'flashcard')}
+						variant={!interactive ? 'default' : 'outline'}
+						onclick={() => (interactive = false)}
 					>
-						Flashcard Mode
+						Lecture seule
 					</Button>
 					<Button
-						variant={selectedMode === 'interactive' ? 'default' : 'outline'}
-						onclick={() => (selectedMode = 'interactive')}
+						variant={interactive ? 'default' : 'outline'}
+						onclick={() => (interactive = true)}
 					>
-						Interactive Mode
+						Interactive
 					</Button>
 				</div>
 			</div>
@@ -239,15 +239,14 @@
 
 	<!-- Question Display -->
 	<div class="mb-8">
-		{#key `${selectedMode}-${selectedQuestionType}`}
-			<QuestionDisplay
-				mode={selectedMode}
+		{#key `${interactive}-${selectedQuestionType}`}
+			<FlashCard
+				{interactive}
 				instance={currentQuestion}
 				onAnswerSubmit={handleAnswerSubmit}
 				onComplete={handleComplete}
 				onFlip={handleFlip}
-				showConfetti={true}
-				allowMultipleAttempts={true}
+				maxAttempts={0}
 				showCorrectionOnWrong={false}
 			/>
 		{/key}
@@ -260,16 +259,15 @@
 		</Card.Header>
 		<Card.Content class="space-y-2">
 			<p>
-				<strong>Flashcard Mode:</strong> View-only mode. Click the flip button to see the answer.
+				<strong>Lecture seule:</strong> Mode visualisation uniquement. Cliquez sur le bouton flip pour voir la réponse.
 			</p>
 			<p>
-				<strong>Interactive Mode:</strong> Answer the question and click "Valider" to check. The flip
-				button becomes active after submission.
+				<strong>Mode Interactive:</strong> Répondez à la question et cliquez sur "Valider" pour vérifier.
 			</p>
-			<p><strong>Flip Button:</strong> Located in the bottom-right corner (rotate icon).</p>
+			<p><strong>Bouton Flip:</strong> Situé en bas à droite (icône de rotation).</p>
 			<p>
-				<strong>Question Types:</strong> Test different input methods - MathField for numerical/algebraic,
-				buttons for QCM, inline inputs for fill-in-blanks.
+				<strong>Types de questions:</strong> Testez différentes méthodes de saisie - MathField pour numérique/algébrique,
+				boutons pour QCM, saisie en ligne pour remplir les blancs.
 			</p>
 		</Card.Content>
 	</Card.Root>
