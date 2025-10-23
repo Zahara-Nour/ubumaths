@@ -88,7 +88,7 @@ export const actions: Actions = {
 
 		if (setError) {
 			console.error('Error setting riddle of the day:', setError);
-			return fail(500, { message: 'Erreur lors de la définition de l\'énigme du jour' });
+			return fail(500, { message: "Erreur lors de la définition de l'énigme du jour" });
 		}
 
 		return { success: true, message: 'Énigme du jour définie avec succès' };

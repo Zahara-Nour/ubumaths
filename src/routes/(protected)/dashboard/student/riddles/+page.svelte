@@ -25,9 +25,7 @@
 			<Sparkles class="h-8 w-8 text-primary" />
 			Énigmes Mathématiques
 		</h1>
-		<p class="mt-2 text-muted-foreground">
-			Résous l'énigme du jour et gagne des gidouilles !
-		</p>
+		<p class="mt-2 text-muted-foreground">Résous l'énigme du jour et gagne des gidouilles !</p>
 	</div>
 
 	<!-- Riddle of the Day -->
@@ -64,11 +62,7 @@
 			<div class="grid gap-4 md:grid-cols-2">
 				{#each data.assignments as assignment (assignment.id)}
 					{#if assignment.riddle}
-						<RiddleCard
-							riddle={assignment.riddle}
-							mode="display"
-							showActions={true}
-						/>
+						<RiddleCard riddle={assignment.riddle} mode="display" showActions={true} />
 					{/if}
 				{/each}
 			</div>

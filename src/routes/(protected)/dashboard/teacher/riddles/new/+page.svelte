@@ -8,7 +8,6 @@
 	import RiddleForm from '$lib/components/riddles/RiddleForm.svelte';
 	import { goto } from '$app/navigation';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { enhance } from '$app/forms';
 
 	let loading = $state(false);
 
@@ -25,18 +24,43 @@
 		formData.append('answer', JSON.stringify(data.answer));
 		formData.append('status', data.status || 'draft');
 
-		const response = await fetch('', {
-			method: 'POST',
-			body: formData
-		});
+		try {
+			console.log('[RIDDLE CREATE] Sending request...');
+			const response = await fetch('', {
+				method: 'POST',
+				body: formData
+			});
 
-		const result = await response.json();
+			console.log('[RIDDLE CREATE] Response status:', response.status);
+			console.log(
+				'[RIDDLE CREATE] Response headers:',
+				Object.fromEntries(response.headers.entries())
+			);
 
-		if (result.type === 'success') {
-			toaster.success('Énigme créée avec succès');
-			goto('/dashboard/teacher/riddles');
-		} else {
-			toaster.error('Erreur lors de la création de l\'énigme');
+			const text = await response.text();
+			console.log('[RIDDLE CREATE] Raw response:', text);
+
+			let result;
+			try {
+				result = JSON.parse(text);
+				console.log('[RIDDLE CREATE] Parsed result:', result);
+			} catch (e) {
+				console.error('[RIDDLE CREATE] Failed to parse JSON:', e);
+				toaster.error('Erreur: réponse invalide du serveur');
+				loading = false;
+				return;
+			}
+
+			if (result?.success) {
+				toaster.success('Énigme créée avec succès');
+				goto('/dashboard/teacher/riddles');
+			} else {
+				toaster.error(result?.message || "Erreur lors de la création de l'énigme");
+				loading = false;
+			}
+		} catch (error) {
+			console.error('[RIDDLE CREATE] Error creating riddle:', error);
+			toaster.error("Erreur lors de la création de l'énigme");
 			loading = false;
 		}
 	}

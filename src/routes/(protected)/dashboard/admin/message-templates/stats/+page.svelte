@@ -1,3 +1,32 @@
+<script lang="ts" context="module">
+	function generateCSV(stats: any): string {
+		const rows: string[] = [];
+
+		// Header
+		rows.push('Type,Donnée,Valeur');
+
+		// Overview
+		rows.push(`Général,Utilisations totales,${stats.overview.total_uses}`);
+		rows.push(`Général,Templates actifs,${stats.overview.total_templates}`);
+		rows.push(`Général,Taux de complétion,${(stats.overview.completion_rate * 100).toFixed(2)}%`);
+		rows.push(`Général,Utilisateurs uniques,${stats.overview.unique_users}`);
+		rows.push(`Général,Temps moyen (s),${stats.overview.avg_time_to_complete.toFixed(2)}`);
+
+		// Empty line
+		rows.push('');
+		rows.push('Template,Utilisations,Taux de complétion');
+
+		// Top templates
+		if (stats.top_templates) {
+			stats.top_templates.forEach((t: any) => {
+				rows.push(`"${t.title}",${t.usage_count},${(t.completion_rate * 100).toFixed(2)}%`);
+			});
+		}
+
+		return rows.join('\n');
+	}
+</script>
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -95,7 +124,10 @@
 
 		<!-- Time Range Filter -->
 		<Select.Root
-			selected={{ value: timeRange, label: timeRangeOptions.find((o) => o.value === timeRange)?.label || '30 derniers jours' }}
+			selected={{
+				value: timeRange,
+				label: timeRangeOptions.find((o) => o.value === timeRange)?.label || '30 derniers jours'
+			}}
 			onSelectedChange={(v) => {
 				if (v) timeRange = v.value as typeof timeRange;
 			}}
@@ -252,9 +284,7 @@
 							{/each}
 						</div>
 					{:else}
-						<p class="py-8 text-center text-sm text-muted-foreground">
-							Aucune donnée disponible
-						</p>
+						<p class="py-8 text-center text-sm text-muted-foreground">Aucune donnée disponible</p>
 					{/if}
 				</Card.Content>
 			</Card.Root>
@@ -300,9 +330,7 @@
 							{/each}
 						</div>
 					{:else}
-						<p class="py-8 text-center text-sm text-muted-foreground">
-							Aucune activité récente
-						</p>
+						<p class="py-8 text-center text-sm text-muted-foreground">Aucune activité récente</p>
 					{/if}
 				</Card.Content>
 			</Card.Root>
@@ -312,7 +340,9 @@
 				<Card.Root>
 					<Card.Header>
 						<Card.Title>Adoption par les utilisateurs</Card.Title>
-						<Card.Description>Répartition des utilisateurs par fréquence d'utilisation</Card.Description>
+						<Card.Description
+							>Répartition des utilisateurs par fréquence d'utilisation</Card.Description
+						>
 					</Card.Header>
 					<Card.Content>
 						<div class="grid gap-4 md:grid-cols-3">
@@ -370,7 +400,7 @@
 							toaster.success('Statistiques exportées');
 						} catch (error) {
 							console.error('Export error:', error);
-							toaster.error('Erreur lors de l\'export');
+							toaster.error("Erreur lors de l'export");
 						}
 					}}
 				>
@@ -380,36 +410,3 @@
 		</div>
 	{/if}
 </div>
-
-<script lang="ts" context="module">
-	function generateCSV(stats: any): string {
-		const rows: string[] = [];
-
-		// Header
-		rows.push('Type,Donnée,Valeur');
-
-		// Overview
-		rows.push(`Général,Utilisations totales,${stats.overview.total_uses}`);
-		rows.push(`Général,Templates actifs,${stats.overview.total_templates}`);
-		rows.push(`Général,Taux de complétion,${(stats.overview.completion_rate * 100).toFixed(2)}%`);
-		rows.push(`Général,Utilisateurs uniques,${stats.overview.unique_users}`);
-		rows.push(
-			`Général,Temps moyen (s),${stats.overview.avg_time_to_complete.toFixed(2)}`
-		);
-
-		// Empty line
-		rows.push('');
-		rows.push('Template,Utilisations,Taux de complétion');
-
-		// Top templates
-		if (stats.top_templates) {
-			stats.top_templates.forEach((t: any) => {
-				rows.push(
-					`"${t.title}",${t.usage_count},${(t.completion_rate * 100).toFixed(2)}%`
-				);
-			});
-		}
-
-		return rows.join('\n');
-	}
-</script>

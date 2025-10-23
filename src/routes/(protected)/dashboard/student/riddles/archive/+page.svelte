@@ -36,8 +36,7 @@
 
 	function getStatusText(attempt: any) {
 		if (!attempt) return 'Non tentée';
-		if (attempt.is_correct === true)
-			return `Réussie (${attempt.gidouilles_awarded} gidouilles)`;
+		if (attempt.is_correct === true) return `Réussie (${attempt.gidouilles_awarded} gidouilles)`;
 		if (attempt.is_correct === false)
 			return `${attempt.attempt_number} tentative${attempt.attempt_number > 1 ? 's' : ''}`;
 		return 'En attente de validation';
@@ -60,9 +59,7 @@
 			<History class="h-8 w-8 text-primary" />
 			Archive des Énigmes du Jour
 		</h1>
-		<p class="mt-2 text-muted-foreground">
-			Toutes les énigmes du jour passées
-		</p>
+		<p class="mt-2 text-muted-foreground">Toutes les énigmes du jour passées</p>
 	</div>
 
 	<!-- Archive List -->

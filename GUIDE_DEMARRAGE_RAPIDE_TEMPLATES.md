@@ -11,6 +11,7 @@
 Un **template** = un modèle de message pré-rempli qui s'adapte automatiquement.
 
 **Exemple** :
+
 ```
 Vous écrivez une fois :
 "Bonjour {{student_name}}, votre devoir {{assessment_title}} est à rendre le {{due_date | date:short}}"
@@ -26,12 +27,14 @@ Le système envoie :
 ## 🚀 Accès Rapide
 
 ### Admin
+
 ```
 Dashboard → Templates de Messages
 URL: /dashboard/admin/message-templates
 ```
 
 ### Professeur
+
 ```
 Dashboard → Mes Templates de Messages
 URL: /dashboard/teacher/message-templates
@@ -44,6 +47,7 @@ URL: /dashboard/teacher/message-templates
 ### 1. Trouvez le Template
 
 **Méthode rapide** :
+
 - 🔍 Tapez dans la barre de recherche
 - ⭐ Cliquez sur "Favoris uniquement"
 - 🏷️ Cliquez sur un tag
@@ -77,45 +81,49 @@ URL: /dashboard/teacher/message-templates
 
 #### **Champs obligatoires**
 
-| Champ | Exemple |
-|-------|---------|
-| **Titre** | "Rappel rendu devoir" |
-| **Classe** (prof) | "2nde A" |
-| **Type** | "Question sur évaluation" |
-| **Sujet** | "Question sur {{assessment_title}}" |
-| **Corps** | Votre message avec variables |
+| Champ             | Exemple                             |
+| ----------------- | ----------------------------------- |
+| **Titre**         | "Rappel rendu devoir"               |
+| **Classe** (prof) | "2nde A"                            |
+| **Type**          | "Question sur évaluation"           |
+| **Sujet**         | "Question sur {{assessment_title}}" |
+| **Corps**         | Votre message avec variables        |
 
 #### **Champs optionnels**
 
-| Champ | Utilité |
-|-------|---------|
-| **Description** | Note pour vous |
-| **Tags** | Organisation (`urgent`, `rappel`, etc.) |
-| **Actif** | ☑️ = utilisable immédiatement |
+| Champ           | Utilité                                 |
+| --------------- | --------------------------------------- |
+| **Description** | Note pour vous                          |
+| **Tags**        | Organisation (`urgent`, `rappel`, etc.) |
+| **Actif**       | ☑️ = utilisable immédiatement           |
 
 ---
 
 ## 🎨 Variables : Les 10 Plus Utiles
 
 ### 👤 Étudiant
+
 ```
 {{student_name}}             → "Marie Dupont"
 {{student_first_name}}       → "Marie"
 ```
 
 ### 👨‍🏫 Professeur
+
 ```
 {{teacher_name}}             → "M. Martin"
 {{class_name}}               → "2nde A"
 ```
 
 ### 📅 Date & Heure
+
 ```
 {{today_date}}               → "22/10/2025"
 {{today_time}}               → "14:30"
 ```
 
 ### 📊 Évaluation (si type = "Question sur évaluation")
+
 ```
 {{assessment_title}}         → "Devoir Maison #3"
 {{assessment_due_date}}      → "2025-11-15"
@@ -151,7 +159,7 @@ URL: /dashboard/teacher/message-templates
 
 ```html
 {{#if assessment_due_date}}
-  <p>Date limite : {{assessment_due_date | date:long}}</p>
+<p>Date limite : {{assessment_due_date | date:long}}</p>
 {{/if}}
 ```
 
@@ -159,13 +167,14 @@ URL: /dashboard/teacher/message-templates
 
 ```html
 {{#if is_first_time}}
-  <p>Bienvenue ! Première question 😊</p>
+<p>Bienvenue ! Première question 😊</p>
 {{else}}
-  <p>Content de vous revoir !</p>
+<p>Content de vous revoir !</p>
 {{/if}}
 ```
 
 **Syntaxe** :
+
 ```
 {{#if variable}}
   Contenu si vrai
@@ -179,10 +188,12 @@ URL: /dashboard/teacher/message-templates
 ## 🔧 Actions Essentielles
 
 ### ⭐ Favoris
+
 - Cliquez sur ☆ → Devient ⭐
 - Accès rapide via bouton "Favoris uniquement"
 
 ### 📋 Dupliquer
+
 - Cliquez sur icône copier
 - Entrez nouveau titre
 - Template copié dans votre classe
@@ -190,11 +201,13 @@ URL: /dashboard/teacher/message-templates
 **💡 Prof** : Seul moyen de modifier un template système !
 
 ### 📜 Historique (Vos templates uniquement)
+
 - Cliquez sur icône horloge
 - Voir toutes les versions
 - Restaurer une version ancienne
 
 ### ✏️ Modifier / 🗑️ Supprimer
+
 - **Admin** : Tous les templates
 - **Prof** : Uniquement vos templates de classe
 
@@ -203,18 +216,20 @@ URL: /dashboard/teacher/message-templates
 ## 🔍 Recherche & Filtres
 
 ### Barre de Recherche
+
 Cherche dans : titre, description, sujet, corps
 
 ### Filtres Disponibles
 
-| Filtre | Admin | Prof |
-|--------|-------|------|
-| **Scope** | Système / Classe | Système / Mes classes |
-| **Type** | Tous les types | Tous les types |
-| **Tags** | Clic sur tag | Clic sur tag |
-| **Favoris** | Bouton étoile | Bouton étoile |
+| Filtre      | Admin            | Prof                  |
+| ----------- | ---------------- | --------------------- |
+| **Scope**   | Système / Classe | Système / Mes classes |
+| **Type**    | Tous les types   | Tous les types        |
+| **Tags**    | Clic sur tag     | Clic sur tag          |
+| **Favoris** | Bouton étoile    | Bouton étoile         |
 
 ### Combiner les Filtres
+
 ✅ Recherche + Tags + Favoris = Super ciblé !
 
 ---
@@ -222,6 +237,7 @@ Cherche dans : titre, description, sujet, corps
 ## 📊 Statistiques (Admin uniquement)
 
 ### Accès
+
 Cliquez sur [📊 Statistiques] en haut de page
 
 ### Métriques Clés
@@ -241,6 +257,7 @@ Cliquez sur [📊 Statistiques] en haut de page
 ```
 
 ### Export CSV
+
 Bouton en bas de page → Télécharge toutes les stats
 
 ---
@@ -250,6 +267,7 @@ Bouton en bas de page → Télécharge toutes les stats
 ### 🎯 Organisation
 
 #### Tags Cohérents
+
 ```
 Par urgence :    urgent, normal, info
 Par type :       rappel, feedback, question
@@ -257,27 +275,32 @@ Par matière :    maths, physique, français
 ```
 
 #### Nommage Clair
+
 - ✅ "Rappel rendu devoir - Urgent"
 - ❌ "Template 1"
 
 #### 5-10 Favoris Max
+
 Gardez seulement les plus utilisés en favoris.
 
 ### ✍️ Rédaction
 
 #### Utilisez les Prénoms
+
 ```
 ✅ "Bonjour {{student_first_name}},"     (Marie,)
 ❌ "Bonjour {{student_name}},"           (Marie Dupont,)
 ```
 
 #### Conditionnez les Infos Optionnelles
+
 ```
 ✅ {{#if due_date}}Date : {{due_date}}{{/if}}
 ❌ Date : {{due_date}}    (vide si pas de date)
 ```
 
 #### Ajoutez des Emojis (Modération)
+
 ```
 ✅ Bravo !
 📅 Rappel
@@ -296,6 +319,7 @@ Gardez seulement les plus utilisés en favoris.
 ## 🚨 Erreurs Courantes
 
 ### ❌ Variable ne s'affiche pas
+
 ```
 ❌ { variable }              (espaces)
 ❌ {{variable}               (pas de fermeture)
@@ -306,6 +330,7 @@ Gardez seulement les plus utilisés en favoris.
 ```
 
 ### ❌ Condition mal fermée
+
 ```
 ❌ {{#if var}}...{{/end}}
 ❌ {{#if var}}...
@@ -314,6 +339,7 @@ Gardez seulement les plus utilisés en favoris.
 ```
 
 ### ❌ Filtre inconnu
+
 → Cliquez sur [❓ Aide sur les filtres] pour voir la liste
 
 ---
@@ -407,16 +433,19 @@ Merci de votre attention.
 ## 🆘 Besoin d'Aide ?
 
 ### Dans l'Interface
+
 - [❓ Aide sur les filtres] → Tous les filtres avec exemples
 - [# Insérer variable/filtre] → Liste des variables
 - Onglet Prévisualisation → Voir le rendu
 
 ### Documentation Complète
+
 - **Admin** : `GUIDE_UTILISATEUR_ADMIN_TEMPLATES.md`
 - **Professeur** : `GUIDE_UTILISATEUR_PROF_TEMPLATES.md`
 - **Technique** : `MESSAGE_TEMPLATES_GUIDE.md`
 
 ### Support
+
 Contactez votre administrateur ou le support technique.
 
 ---
@@ -424,11 +453,13 @@ Contactez votre administrateur ou le support technique.
 ## 📖 Aller Plus Loin
 
 ### Pour Admins
+
 - Créez 5-10 templates système de base
 - Consultez les stats régulièrement
 - Adaptez selon l'utilisation
 
 ### Pour Profs
+
 - Dupliquez les templates système que vous aimez
 - Personnalisez à votre style
 - Créez vos propres templates pour vos cas spécifiques

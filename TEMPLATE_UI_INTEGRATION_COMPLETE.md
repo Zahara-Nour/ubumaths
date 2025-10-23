@@ -19,6 +19,7 @@ L'intégration complète de toutes les nouvelles fonctionnalités des templates 
 **Lignes**: 768 lignes (vs 460 avant)
 
 #### Fonctionnalités ajoutées:
+
 - ✅ **Recherche full-text** avec icône de loupe
 - ✅ **Filtres avancés**: Scope, Trigger Type, Tags, Favoris
 - ✅ **Favoris**: Icône étoile cliquable sur chaque carte
@@ -35,6 +36,7 @@ L'intégration complète de toutes les nouvelles fonctionnalités des templates 
 - ✅ **Badges de statut**: Scope, Actif/Inactif, Approbation
 
 #### Architecture:
+
 ```typescript
 // Chargement direct avec Supabase
 async function loadTemplates() {
@@ -59,6 +61,7 @@ await fetch('/api/messages/templates/123/duplicate', { method: 'POST', ... });
 **Lignes**: 1036 lignes (vs 460 avant)
 
 #### Fonctionnalités ajoutées:
+
 - ✅ **Toutes les fonctionnalités de la page admin**
 - ✅ **Permissions spécifiques professeur**:
   - Peut voir les templates système mais **pas les modifier**
@@ -70,6 +73,7 @@ await fetch('/api/messages/templates/123/duplicate', { method: 'POST', ... });
 - ✅ **Vérification de propriété** via `canEditTemplate()`
 
 #### Code clé:
+
 ```typescript
 let canEditTemplate = $derived((template: MessageTemplate) => {
   return template.scope === 'class' && template.created_by === currentUserId;
@@ -96,54 +100,62 @@ let canEditTemplate = $derived((template: MessageTemplate) => {
 #### Sections implémentées:
 
 ##### 📈 Métriques générales (4 cartes)
+
 - **Utilisations totales** + nombre de templates actifs
 - **Taux de complétion** (% + ratio complétés/totaux)
 - **Utilisateurs actifs** uniques
 - **Temps moyen** de complétion
 
 ##### 🏆 Top Templates
+
 - Liste des 10 templates les plus utilisés
 - Classement avec badges numérotés
 - Affichage : Titre, Type, Scope, Nb utilisations, Taux complétion
 
 ##### 📊 Utilisation par Trigger Type
+
 - Barres de progression par catégorie
 - Pourcentage et nombre d'utilisations
 - Couleurs avec `bg-primary`
 
 ##### ⏰ Activité Récente
+
 - Dernières utilisations de templates
 - Affichage : Template, Utilisateur, Classe, Date, Statut (Complété/En cours)
 
 ##### 👥 Adoption Utilisateurs
+
 - **Power Users** (10+ utilisations) - Vert
 - **Utilisateurs Réguliers** (3-9) - Bleu
 - **Occasionnels** (1-2) - Gris
 
 ##### 💾 Export CSV
+
 - Bouton d'export des statistiques
 - Génération automatique du CSV avec `generateCSV()`
 - Format: Overview + Top templates
 
 #### Fonctionnalités:
+
 ```typescript
 // Filtre période
 let timeRange = $state<'7d' | '30d' | '90d' | 'all'>('30d');
 
 // Chargement dynamique
 $effect(() => {
-  if (timeRange) {
-    loadStats();
-  }
+	if (timeRange) {
+		loadStats();
+	}
 });
 
 // Export CSV
 function generateCSV(stats: any): string {
-  // Génère CSV avec overview et top templates
+	// Génère CSV avec overview et top templates
 }
 ```
 
 #### Navigation:
+
 - Accessible via bouton "Statistiques" dans page admin
 - Bouton "Retour aux templates" pour revenir
 
@@ -160,6 +172,7 @@ Au lieu d'utiliser un store centralisé, les pages utilisent:
 3. **State local** avec Svelte 5 runes (`$state`, `$derived`, `$effect`)
 
 #### Avantages:
+
 - ✅ **Simplicité**: Pas de layer intermédiaire
 - ✅ **Flexibilité**: Facile d'ajouter de nouvelles features
 - ✅ **Performance**: Pas de synchro store nécessaire
@@ -168,31 +181,31 @@ Au lieu d'utiliser un store centralisé, les pages utilisent:
 ### Composants Réutilisables
 
 #### `VariableAutocomplete.svelte`
+
 ```svelte
-<VariableAutocomplete
-  triggerType={formTriggerType}
-  on:insert={handleVariableInsert}
-/>
+<VariableAutocomplete triggerType={formTriggerType} on:insert={handleVariableInsert} />
 ```
+
 - Popup avec onglets Variables / Filtres
 - Recherche en temps réel
 - Insertion au clic
 
 #### `TagsInput.svelte`
+
 ```svelte
-<TagsInput
-  bind:tags={formTags}
-  suggestions={allTags()}
-/>
+<TagsInput bind:tags={formTags} suggestions={allTags()} />
 ```
+
 - Input avec autocomplétion
 - Max 10 tags
 - Suppression avec X
 
 #### `FiltersHelp.svelte`
+
 ```svelte
 <FiltersHelp />
 ```
+
 - Dialog d'aide sur les 14 filtres
 - Exemples et syntaxe
 - Info sur les conditionnels
@@ -202,13 +215,16 @@ Au lieu d'utiliser un store centralisé, les pages utilisent:
 ## 📦 Fichiers Créés/Modifiés
 
 ### Nouveaux fichiers:
+
 1. ✅ `src/routes/(protected)/dashboard/admin/message-templates/stats/+page.svelte` (400+ lignes)
 
 ### Fichiers modifiés:
+
 1. ✅ `src/routes/(protected)/dashboard/admin/message-templates/+page.svelte` (768 lignes)
 2. ✅ `src/routes/(protected)/dashboard/teacher/message-templates/+page.svelte` (1036 lignes)
 
 ### Fichiers existants (non modifiés):
+
 - `src/lib/components/templates/VariableAutocomplete.svelte` (déjà créé)
 - `src/lib/components/templates/TagsInput.svelte` (déjà créé)
 - `src/lib/components/templates/FiltersHelp.svelte` (déjà créé)
@@ -229,6 +245,7 @@ http://localhost:5173/dashboard/admin/message-templates
 ```
 
 **Tests à effectuer**:
+
 1. ✅ Créer un nouveau template avec tags
 2. ✅ Utiliser VariableAutocomplete pour insérer `{{student_name}}`
 3. ✅ Appliquer un filtre: `{{student_name | uppercase}}`
@@ -252,6 +269,7 @@ http://localhost:5173/dashboard/teacher/message-templates
 ```
 
 **Tests à effectuer**:
+
 1. ✅ Voir les templates système (lecture seule)
 2. ✅ Créer un template de classe
 3. ✅ Modifier uniquement ses propres templates
@@ -268,6 +286,7 @@ http://localhost:5173/dashboard/admin/message-templates/stats
 ```
 
 **Tests à effectuer**:
+
 1. ✅ Voir les 4 métriques générales
 2. ✅ Voir le top 10 des templates
 3. ✅ Voir l'utilisation par trigger type
@@ -282,12 +301,14 @@ http://localhost:5173/dashboard/admin/message-templates/stats
 ## 🔧 API Endpoints Utilisés
 
 ### Endpoints existants (CRUD):
+
 - `GET /api/messages/templates` - Liste templates
 - `POST /api/messages/templates` - Créer template
 - `PATCH /api/messages/templates/[id]` - Mettre à jour
 - `DELETE /api/messages/templates/[id]` - Supprimer
 
 ### Nouveaux endpoints utilisés:
+
 - `GET /api/messages/templates/stats?time_range=30d` - Statistiques
 - `POST /api/messages/templates/favorites` - Ajouter favori
 - `DELETE /api/messages/templates/favorites?template_id=xxx` - Retirer favori
@@ -306,6 +327,7 @@ Le store `messageTemplates.svelte.ts` **n'est plus utilisé** par les pages UI.
 **Action**: Le store est conservé pour compatibilité future mais n'est pas mis à jour avec les nouvelles fonctionnalités.
 
 **Alternative**: Si un composant a besoin de state partagé (ex: message composer), il peut:
+
 1. Utiliser le store existant pour les opérations basiques
 2. Appeler directement les APIs pour les features avancées
 3. Ou implémenter son propre state local
@@ -315,16 +337,19 @@ Le store `messageTemplates.svelte.ts` **n'est plus utilisé** par les pages UI.
 ## 📊 Statistiques d'Implémentation
 
 ### Lignes de code:
+
 - Page admin: **+308 lignes** (460 → 768)
 - Page professeur: **+576 lignes** (460 → 1036)
 - Dashboard stats: **+400 lignes** (nouveau)
 - **Total ajouté**: ~1,284 lignes
 
 ### Composants utilisés:
+
 - 3 composants template existants (VariableAutocomplete, TagsInput, FiltersHelp)
 - 8+ composants Shadcn-svelte (Dialog, Tabs, Select, Badge, etc.)
 
 ### Fonctionnalités intégrées:
+
 - ⭐ Favoris
 - 🏷️ Tags (input + filtrage)
 - 🔍 Recherche full-text
@@ -362,6 +387,7 @@ Toutes les fonctionnalités du système de templates sont maintenant accessibles
 - **Architecture**: Propre, performante, maintenable
 
 **Prochaines étapes possibles** (optionnelles):
+
 1. Tests E2E avec Playwright
 2. Documentation utilisateur (captures d'écran)
 3. Migration des données existantes si nécessaire

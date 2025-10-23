@@ -19,12 +19,16 @@
 -->
 
 <script lang="ts">
-	import type { DbRiddle, CreateRiddleData, RiddleDifficulty, AnswerConfig } from '$lib/types/riddle';
+	import type {
+		DbRiddle,
+		CreateRiddleData,
+		RiddleDifficulty,
+		AnswerConfig
+	} from '$lib/types/riddle';
 	import { getDifficultyLabel, calculateGidouilles } from '$lib/types/riddle';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import * as Select from '$lib/components/ui/select';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import FormRichTextEditor from '$lib/components/rich-text/FormRichTextEditor.svelte';
@@ -106,7 +110,13 @@
 	}
 </script>
 
-<form onsubmit={(e) => {e.preventDefault(); handleSubmit();}} class="space-y-6">
+<form
+	onsubmit={(e) => {
+		e.preventDefault();
+		handleSubmit();
+	}}
+	class="space-y-6"
+>
 	<!-- Header Card -->
 	<Card.Root>
 		<Card.Header>
@@ -156,19 +166,16 @@
 				<!-- Difficulty -->
 				<div class="space-y-2">
 					<Label for="difficulty">Difficulté *</Label>
-					<Select.Root
-						selected={{ value: difficulty, label: getDifficultyLabel(difficulty) }}
-						onSelectedChange={(v) => v && (difficulty = v.value as RiddleDifficulty)}
+					<select
+						id="difficulty"
+						bind:value={difficulty}
+						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+						required
 					>
-						<Select.Trigger id="difficulty">
-							<Select.Value placeholder="Sélectionnez une difficulté" />
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Item value={1}>Facile (1)</Select.Item>
-							<Select.Item value={2}>Moyen (2)</Select.Item>
-							<Select.Item value={3}>Difficile (3)</Select.Item>
-						</Select.Content>
-					</Select.Root>
+						<option value={1}>Facile (1)</option>
+						<option value={2}>Moyen (2)</option>
+						<option value={3}>Difficile (3)</option>
+					</select>
 				</div>
 			</div>
 
@@ -254,10 +261,7 @@
 	</Card.Root>
 
 	<!-- Validation Automatique Card -->
-	<AnswerConfigEditor
-		config={answerConfig}
-		onChange={(config) => (answerConfig = config)}
-	/>
+	<AnswerConfigEditor config={answerConfig} onChange={(config) => (answerConfig = config)} />
 
 	<!-- Status and Actions -->
 	<Card.Root>
@@ -266,18 +270,14 @@
 				<!-- Status -->
 				<div class="space-y-2">
 					<Label for="status">Statut</Label>
-					<Select.Root
-						selected={{ value: status, label: status === 'draft' ? 'Brouillon' : 'Publiée' }}
-						onSelectedChange={(v) => v && (status = v.value as 'draft' | 'published')}
+					<select
+						id="status"
+						bind:value={status}
+						class="flex h-10 w-[200px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 					>
-						<Select.Trigger id="status" class="w-[200px]">
-							<Select.Value />
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Item value="draft">Brouillon</Select.Item>
-							<Select.Item value="published">Publiée</Select.Item>
-						</Select.Content>
-					</Select.Root>
+						<option value="draft">Brouillon</option>
+						<option value="published">Publiée</option>
+					</select>
 				</div>
 
 				<!-- Action Buttons -->
@@ -288,7 +288,7 @@
 					</Button>
 					<Button type="submit" disabled={!isValid || loading}>
 						<Save class="mr-2 h-4 w-4" />
-						{loading ? 'Enregistrement...' : riddle ? 'Enregistrer' : 'Créer l\'énigme'}
+						{loading ? 'Enregistrement...' : riddle ? 'Enregistrer' : "Créer l'énigme"}
 					</Button>
 				</div>
 			</div>

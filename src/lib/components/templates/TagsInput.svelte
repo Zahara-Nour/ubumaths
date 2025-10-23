@@ -83,9 +83,7 @@
 
 		<!-- Suggestions dropdown -->
 		{#if showSuggestions && filteredSuggestions().length > 0}
-			<div
-				class="absolute z-10 mt-1 w-full rounded-md border border-border bg-card shadow-lg"
-			>
+			<div class="absolute z-10 mt-1 w-full rounded-md border border-border bg-card shadow-lg">
 				{#each filteredSuggestions() as suggestion}
 					<button
 						type="button"
@@ -103,7 +101,7 @@
 	{#if tags.length > 0}
 		<div class="flex flex-wrap gap-2">
 			{#each tags as tag (tag)}
-				<Badge variant="secondary" class="gap-1 pl-3 pr-1">
+				<Badge variant="secondary" class="gap-1 pr-1 pl-3">
 					{tag}
 					<button
 						type="button"

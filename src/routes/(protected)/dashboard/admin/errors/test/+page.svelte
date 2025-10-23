@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { captureError, captureValidationError, capturePerformance } from '$lib/utils/errorMonitoring';
+	import {
+		captureError,
+		captureValidationError,
+		capturePerformance
+	} from '$lib/utils/errorMonitoring';
 
 	function testClientError() {
 		throw new Error('Test client-side error');
@@ -53,8 +57,8 @@
 	}
 </script>
 
-<div class="container mx-auto py-8 max-w-4xl">
-	<h1 class="text-3xl font-bold mb-6">Test Error Monitoring System</h1>
+<div class="container mx-auto max-w-4xl py-8">
+	<h1 class="mb-6 text-3xl font-bold">Test Error Monitoring System</h1>
 
 	<div class="space-y-4">
 		<Card.Root>
@@ -63,9 +67,7 @@
 				<Card.Description>Test automatic error capture in the browser</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-2">
-				<Button onclick={testClientError} variant="destructive">
-					Trigger JavaScript Error
-				</Button>
+				<Button onclick={testClientError} variant="destructive">Trigger JavaScript Error</Button>
 				<p class="text-sm text-muted-foreground">
 					This will throw an uncaught error and capture it automatically
 				</p>
@@ -73,9 +75,7 @@
 				<Button onclick={testPromiseRejection} variant="destructive">
 					Trigger Promise Rejection
 				</Button>
-				<p class="text-sm text-muted-foreground">
-					This will create an unhandled promise rejection
-				</p>
+				<p class="text-sm text-muted-foreground">This will create an unhandled promise rejection</p>
 			</Card.Content>
 		</Card.Root>
 
@@ -85,9 +85,7 @@
 				<Card.Description>Test manual error reporting with context</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-2">
-				<Button onclick={testManualCapture}>
-					Capture Error with Context
-				</Button>
+				<Button onclick={testManualCapture}>Capture Error with Context</Button>
 				<p class="text-sm text-muted-foreground">
 					This will capture an error with custom severity and context
 				</p>
@@ -100,12 +98,8 @@
 				<Card.Description>Test form validation error tracking</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-2">
-				<Button onclick={testValidationError}>
-					Capture Validation Error
-				</Button>
-				<p class="text-sm text-muted-foreground">
-					This will capture a form validation error
-				</p>
+				<Button onclick={testValidationError}>Capture Validation Error</Button>
+				<p class="text-sm text-muted-foreground">This will capture a form validation error</p>
 			</Card.Content>
 		</Card.Root>
 
@@ -115,9 +109,7 @@
 				<Card.Description>Test performance issue tracking</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-2">
-				<Button onclick={testPerformanceIssue}>
-					Report Slow Operation
-				</Button>
+				<Button onclick={testPerformanceIssue}>Report Slow Operation</Button>
 				<p class="text-sm text-muted-foreground">
 					This will report a simulated slow operation (5000ms vs 1000ms threshold)
 				</p>
@@ -130,9 +122,7 @@
 				<Card.Description>Test server-side error capture</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-2">
-				<Button onclick={testServerError}>
-					Trigger 404 Error
-				</Button>
+				<Button onclick={testServerError}>Trigger 404 Error</Button>
 				<p class="text-sm text-muted-foreground">
 					This will make a request to a non-existent endpoint
 				</p>
@@ -145,7 +135,7 @@
 			</Card.Header>
 			<Card.Content>
 				<p class="mb-4">After testing, view the captured errors in the dashboard:</p>
-				<Button onclick={() => window.location.href = '/dashboard/admin/errors'}>
+				<Button onclick={() => (window.location.href = '/dashboard/admin/errors')}>
 					Open Error Dashboard
 				</Button>
 			</Card.Content>

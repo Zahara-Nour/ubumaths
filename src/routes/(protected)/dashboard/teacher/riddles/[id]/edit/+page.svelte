@@ -27,18 +27,43 @@
 		body.append('answer', JSON.stringify(formData.answer));
 		body.append('status', formData.status || 'draft');
 
-		const response = await fetch('', {
-			method: 'POST',
-			body
-		});
+		try {
+			console.log('[RIDDLE EDIT] Sending request...');
+			const response = await fetch('', {
+				method: 'POST',
+				body
+			});
 
-		const result = await response.json();
+			console.log('[RIDDLE EDIT] Response status:', response.status);
+			console.log(
+				'[RIDDLE EDIT] Response headers:',
+				Object.fromEntries(response.headers.entries())
+			);
 
-		if (result.type === 'success') {
-			toaster.success('Énigme modifiée avec succès');
-			goto('/dashboard/teacher/riddles');
-		} else {
-			toaster.error('Erreur lors de la modification de l\'énigme');
+			const text = await response.text();
+			console.log('[RIDDLE EDIT] Raw response:', text);
+
+			let result;
+			try {
+				result = JSON.parse(text);
+				console.log('[RIDDLE EDIT] Parsed result:', result);
+			} catch (e) {
+				console.error('[RIDDLE EDIT] Failed to parse JSON:', e);
+				toaster.error('Erreur: réponse invalide du serveur');
+				loading = false;
+				return;
+			}
+
+			if (result?.success) {
+				toaster.success('Énigme modifiée avec succès');
+				goto('/dashboard/teacher/riddles');
+			} else {
+				toaster.error(result?.message || "Erreur lors de la modification de l'énigme");
+				loading = false;
+			}
+		} catch (error) {
+			console.error('[RIDDLE EDIT] Error updating riddle:', error);
+			toaster.error("Erreur lors de la modification de l'énigme");
 			loading = false;
 		}
 	}

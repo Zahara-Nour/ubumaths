@@ -12,8 +12,20 @@
 	import TagsInput from '$lib/components/templates/TagsInput.svelte';
 	import FiltersHelp from '$lib/components/templates/FiltersHelp.svelte';
 	import {
-		Loader2, Plus, Edit, Trash2, Copy, Star, StarOff, History,
-		Eye, EyeOff, ChevronDown, ChevronUp, BarChart3, Search
+		Loader2,
+		Plus,
+		Edit,
+		Trash2,
+		Copy,
+		Star,
+		StarOff,
+		History,
+		Eye,
+		EyeOff,
+		ChevronDown,
+		ChevronUp,
+		BarChart3,
+		Search
 	} from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { MessageTemplate, TriggerType } from '$lib/types/messageTemplates';
@@ -67,8 +79,16 @@
 	];
 
 	const tagSuggestions = [
-		'urgent', 'rappel', 'info', 'important', 'optionnel',
-		'évaluation', 'devoir', 'révision', 'aide', 'notification'
+		'urgent',
+		'rappel',
+		'info',
+		'important',
+		'optionnel',
+		'évaluation',
+		'devoir',
+		'révision',
+		'aide',
+		'notification'
 	];
 
 	// Computed
@@ -86,8 +106,8 @@
 		}
 
 		if (filterTags.length > 0) {
-			result = result.filter((t) =>
-				t.tags && filterTags.every(tag => (t.tags as string[]).includes(tag))
+			result = result.filter(
+				(t) => t.tags && filterTags.every((tag) => (t.tags as string[]).includes(tag))
 			);
 		}
 
@@ -120,10 +140,12 @@
 
 		const { data, error } = await supabase
 			.from('message_templates')
-			.select(`
+			.select(
+				`
 				*,
 				classes:class_id (name)
-			`)
+			`
+			)
 			.order('created_at', { ascending: false });
 
 		if (error) {
@@ -140,12 +162,10 @@
 	}
 
 	async function loadFavorites() {
-		const { data } = await supabase
-			.from('user_favorite_templates')
-			.select('template_id');
+		const { data } = await supabase.from('user_favorite_templates').select('template_id');
 
 		if (data) {
-			favoriteTemplateIds = new Set(data.map(f => f.template_id));
+			favoriteTemplateIds = new Set(data.map((f) => f.template_id));
 		}
 	}
 
@@ -195,7 +215,7 @@
 
 		const variables = getVariablesForTrigger(formTriggerType);
 		const exampleData: Record<string, string> = {};
-		variables.forEach(v => {
+		variables.forEach((v) => {
 			exampleData[v.name] = v.example;
 		});
 
@@ -267,12 +287,10 @@
 				if (error) throw error;
 				toaster.success('Template mis à jour');
 			} else {
-				const { error } = await supabase
-					.from('message_templates')
-					.insert({
-						...templateData,
-						created_by: (await supabase.auth.getUser()).data.user!.id
-					});
+				const { error } = await supabase.from('message_templates').insert({
+					...templateData,
+					created_by: (await supabase.auth.getUser()).data.user!.id
+				});
 
 				if (error) throw error;
 				toaster.success('Template créé');
@@ -293,10 +311,7 @@
 
 		isLoading = true;
 
-		const { error } = await supabase
-			.from('message_templates')
-			.delete()
-			.eq('id', template.id);
+		const { error } = await supabase.from('message_templates').delete().eq('id', template.id);
 
 		isLoading = false;
 
@@ -338,9 +353,12 @@
 
 		try {
 			if (isFavorite) {
-				const response = await fetch(`/api/messages/templates/favorites?template_id=${templateId}`, {
-					method: 'DELETE'
-				});
+				const response = await fetch(
+					`/api/messages/templates/favorites?template_id=${templateId}`,
+					{
+						method: 'DELETE'
+					}
+				);
 				if (!response.ok) throw new Error();
 
 				const newFavorites = new Set(favoriteTemplateIds);
@@ -382,9 +400,7 @@
 	<div class="mb-6 flex items-center justify-between">
 		<div>
 			<h1 class="text-3xl font-bold">Templates de Messages</h1>
-			<p class="text-muted-foreground">
-				Gérez les templates système et de classe
-			</p>
+			<p class="text-muted-foreground">Gérez les templates système et de classe</p>
 		</div>
 		<div class="flex gap-2">
 			<Button variant="outline" onclick={() => goto('/dashboard/admin/message-templates/stats')}>
@@ -402,7 +418,7 @@
 	<div class="mb-6 space-y-4">
 		<!-- Search bar -->
 		<div class="relative">
-			<Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+			<Search class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 			<Input
 				type="text"
 				placeholder="Rechercher dans les templates..."
@@ -449,7 +465,7 @@
 				variant={favoritesOnly ? 'default' : 'outline'}
 				onclick={() => (favoritesOnly = !favoritesOnly)}
 			>
-				<Star class={cn("mr-2 h-4 w-4", favoritesOnly && "fill-current")} />
+				<Star class={cn('mr-2 h-4 w-4', favoritesOnly && 'fill-current')} />
 				Favoris uniquement
 			</Button>
 
@@ -470,8 +486,8 @@
 		</div>
 
 		<!-- Tags filter (if there are templates with tags) -->
-		{#if templates.some(t => t.tags && (t.tags as string[]).length > 0)}
-			{@const allTags = Array.from(new Set(templates.flatMap(t => (t.tags as string[]) || [])))}
+		{#if templates.some((t) => t.tags && (t.tags as string[]).length > 0)}
+			{@const allTags = Array.from(new Set(templates.flatMap((t) => (t.tags as string[]) || [])))}
 			<div class="flex flex-wrap gap-2">
 				{#each allTags as tag}
 					<Badge
@@ -479,7 +495,7 @@
 						class="cursor-pointer"
 						onclick={() => {
 							if (filterTags.includes(tag)) {
-								filterTags = filterTags.filter(t => t !== tag);
+								filterTags = filterTags.filter((t) => t !== tag);
 							} else {
 								filterTags = [...filterTags, tag];
 							}
@@ -547,17 +563,22 @@
 					<div class="mb-3 space-y-1 text-sm">
 						<div class="flex items-center gap-2">
 							<span class="text-muted-foreground">Type:</span>
-							<Badge variant="outline" class="text-xs">{getTriggerTypeLabel(template.trigger_type)}</Badge>
+							<Badge variant="outline" class="text-xs"
+								>{getTriggerTypeLabel(template.trigger_type)}</Badge
+							>
 						</div>
 						<div class="flex items-center gap-2">
 							<span class="text-muted-foreground">Scope:</span>
-							<Badge variant={template.scope === 'system' ? 'default' : 'secondary'} class="text-xs">
+							<Badge
+								variant={template.scope === 'system' ? 'default' : 'secondary'}
+								class="text-xs"
+							>
 								{template.scope === 'system' ? 'Système' : 'Classe'}
 							</Badge>
 						</div>
 						{#if template.tags && (template.tags as string[]).length > 0}
 							<div class="flex flex-wrap gap-1">
-								{#each (template.tags as string[]) as tag}
+								{#each template.tags as string[] as tag}
 									<Badge variant="outline" class="text-xs">{tag}</Badge>
 								{/each}
 							</div>
@@ -704,10 +725,7 @@
 						<div class="flex items-center justify-between">
 							<Label>Corps du message *</Label>
 							<div class="flex gap-2">
-								<VariableAutocomplete
-									{formTriggerType}
-									on:insert={handleVariableInsert}
-								/>
+								<VariableAutocomplete {formTriggerType} on:insert={handleVariableInsert} />
 								<FiltersHelp />
 							</div>
 						</div>
@@ -742,8 +760,8 @@
 						<div class="text-lg font-semibold">{previewHtml.subject || formSubject}</div>
 					</div>
 					<div>
-						<div class="text-sm font-medium text-muted-foreground mb-2">Corps:</div>
-						<div class="prose prose-sm dark:prose-invert max-w-none">
+						<div class="mb-2 text-sm font-medium text-muted-foreground">Corps:</div>
+						<div class="prose prose-sm max-w-none dark:prose-invert">
 							{@html previewHtml.body || formBody}
 						</div>
 					</div>

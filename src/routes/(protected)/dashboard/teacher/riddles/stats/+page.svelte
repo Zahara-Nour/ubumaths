@@ -10,15 +10,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import {
-		BarChart3,
-		Trophy,
-		Users,
-		Target,
-		TrendingUp,
-		FileCheck,
-		User
-	} from 'lucide-svelte';
+	import { BarChart3, Trophy, Users, Target, TrendingUp, FileCheck, User } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -44,9 +36,7 @@
 			<BarChart3 class="h-8 w-8 text-primary" />
 			Statistiques des Énigmes
 		</h1>
-		<p class="mt-2 text-muted-foreground">
-			Vue d'ensemble de vos énigmes et performances élèves
-		</p>
+		<p class="mt-2 text-muted-foreground">Vue d'ensemble de vos énigmes et performances élèves</p>
 	</div>
 
 	<!-- Overview Cards -->
@@ -95,9 +85,7 @@
 					<div>
 						<p class="text-sm font-medium text-muted-foreground">Gidouilles distribuées</p>
 						<p class="mt-1 text-3xl font-bold">{data.overview.totalGidouillesDistributed}</p>
-						<p class="mt-1 text-xs text-muted-foreground">
-							Via vos énigmes
-						</p>
+						<p class="mt-1 text-xs text-muted-foreground">Via vos énigmes</p>
 					</div>
 					<Trophy class="h-12 w-12 text-yellow-500 opacity-20" />
 				</div>
@@ -111,9 +99,7 @@
 					<div>
 						<p class="text-sm font-medium text-muted-foreground">Élèves actifs</p>
 						<p class="mt-1 text-3xl font-bold">{data.topStudents.length}</p>
-						<p class="mt-1 text-xs text-muted-foreground">
-							Ont résolu au moins une énigme
-						</p>
+						<p class="mt-1 text-xs text-muted-foreground">Ont résolu au moins une énigme</p>
 					</div>
 					<Users class="h-12 w-12 text-primary opacity-20" />
 				</div>
@@ -128,9 +114,7 @@
 				<TrendingUp class="h-5 w-5" />
 				Statistiques par énigme
 			</Card.Title>
-			<Card.Description>
-				Taux de réussite et tentatives pour chaque énigme
-			</Card.Description>
+			<Card.Description>Taux de réussite et tentatives pour chaque énigme</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			{#if data.riddleStats.length > 0}
@@ -211,9 +195,7 @@
 				<Trophy class="h-5 w-5" />
 				Top 10 Élèves
 			</Card.Title>
-			<Card.Description>
-				Classement des élèves ayant résolu vos énigmes
-			</Card.Description>
+			<Card.Description>Classement des élèves ayant résolu vos énigmes</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			{#if data.topStudents.length > 0}
@@ -222,7 +204,9 @@
 						<div class="flex items-center justify-between rounded-lg border p-3">
 							<div class="flex items-center gap-3">
 								<!-- Rank Badge -->
-								<div class="flex h-8 w-8 items-center justify-center rounded-full bg-muted font-bold">
+								<div
+									class="flex h-8 w-8 items-center justify-center rounded-full bg-muted font-bold"
+								>
 									{#if index === 0}
 										🥇
 									{:else if index === 1}
@@ -245,7 +229,8 @@
 								<!-- Info -->
 								<div>
 									<p class="font-medium">
-										{studentStat.student.firstname || ''} {studentStat.student.lastname || ''}
+										{studentStat.student.firstname || ''}
+										{studentStat.student.lastname || ''}
 									</p>
 									<p class="text-xs text-muted-foreground">
 										{studentStat.totalSuccess} énigme{studentStat.totalSuccess > 1 ? 's' : ''}

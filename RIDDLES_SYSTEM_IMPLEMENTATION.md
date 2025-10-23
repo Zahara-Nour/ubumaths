@@ -9,9 +9,11 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 ## ✅ Phase 1: Infrastructure de Base (TERMINÉE)
 
 ### 🗄️ Base de Données
+
 **Migration**: `supabase/migrations/099_create_riddles_system.sql`
 
 **Tables créées**:
+
 - ✅ `riddles` - Énigmes créées par professeurs
   - Numérotation auto-incrémentée globale (`riddle_number`)
   - Support rich text (statement + correction)
@@ -35,11 +37,13 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
   - Gidouilles dégressives
 
 **Vues statistiques**:
+
 - ✅ `riddle_stats` - Stats par énigme
 - ✅ `riddle_progress` - Progression élèves + leaderboard
 - ✅ `riddle_student_history` - Historique individuel
 
 **Fonctions RPC**:
+
 - ✅ `get_next_riddle_attempt_number()` - Calcul prochain numéro tentative
 - ✅ `calculate_riddle_gidouilles()` - Formule dégressive
 - ✅ `submit_riddle_attempt()` - Soumission avec attribution gidouilles
@@ -50,6 +54,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **RLS Policies**: ✅ Complètes pour tous les rôles
 
 ### 📐 Types TypeScript
+
 **Fichier**: `src/lib/types/riddle.ts`
 
 - ✅ Types DB: `DbRiddle`, `DbRiddleAttempt`, `DbRiddleAssignment`, etc.
@@ -60,12 +65,14 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 ### 🎨 Composants UI de Base
 
 **RiddleCard** (`src/lib/components/riddles/RiddleCard.svelte`)
+
 - ✅ Mode display (affichage simple)
 - ✅ Mode interactif (Phase 2)
 - ✅ Support correction (visible profs uniquement)
 - ✅ Badges difficulté/genre/statut
 
 **RiddleForm** (`src/lib/components/riddles/RiddleForm.svelte`)
+
 - ✅ Création/édition énigmes
 - ✅ Rich text editors (énoncé + correction)
 - ✅ Upload image
@@ -88,9 +95,11 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 ## ✅ Phase 2: Validation Automatique (TERMINÉE)
 
 ### 🔍 Utilitaire de Validation
+
 **Fichier**: `src/lib/utils/riddle-validator.ts`
 
 **Types supportés**:
+
 - ✅ **Numérique** (`numerical`)
   - Tolérance configurable
   - Validation avec `parseFloat`
@@ -108,6 +117,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
   - Exact match (optionnel)
 
 **Fonctions utilitaires**:
+
 - ✅ `validateRiddleAnswer()` - Validation complète
 - ✅ `isAnswerComplete()` - Vérifier complétude
 - ✅ `sanitizeAnswer()` - Nettoyage réponse
@@ -116,6 +126,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 ### 🎛️ Configuration Validation Automatique
 
 **AnswerConfigEditor** (`src/lib/components/riddles/AnswerConfigEditor.svelte`)
+
 - ✅ Toggle validation automatique/manuelle
 - ✅ Sélection type de réponse
 - ✅ Configuration spécifique par type:
@@ -129,6 +140,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 ### 📝 Inputs Spécialisés
 
 **Composants créés** (`src/lib/components/riddles/inputs/`):
+
 - ✅ `RiddleNumericalInput.svelte` - Input nombre avec validation
 - ✅ `RiddleTextInput.svelte` - Input texte simple
 - ✅ `RiddleQcmInput.svelte` - Choix multiples avec sélection visuelle
@@ -138,6 +150,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 ### 🎮 Mode Interactif RiddleCard
 
 **Fonctionnalités**:
+
 - ✅ Affichage input adapté au type
 - ✅ Validation côté client (temps réel)
 - ✅ Feedback visuel (correct/incorrect/en attente)
@@ -146,6 +159,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 - ✅ Désactivation après soumission
 
 **États gérés**:
+
 - ✅ Réponse par type (numerical, text, qcm, math, manual)
 - ✅ Validation result avec message
 - ✅ Loading state
@@ -156,6 +170,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **Endpoint**: `POST /api/riddles/[id]/submit`
 
 **Fonctionnalités**:
+
 - ✅ Validation réponse côté serveur
 - ✅ Appel RPC `submit_riddle_attempt()`
 - ✅ Attribution gidouilles si correct
@@ -163,6 +178,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 - ✅ Différentiation validation auto/manuelle
 
 **Réponse API**:
+
 ```json
 {
   "success": true,
@@ -187,6 +203,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **Fichier**: `src/lib/server/riddle-messages.ts`
 
 **Fonctions créées**:
+
 - ✅ `createRiddleValidationMessage()` - Envoi message au prof
   - Variables auto-remplies: riddle_number, riddle_title, student_name
   - Lien validation: `/dashboard/teacher/riddles/validations/{attempt_id}`
@@ -205,6 +222,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **Route mise à jour**: `POST /api/riddles/[id]/submit`
 
 **Fonctionnalités ajoutées**:
+
 - ✅ Détection validation manuelle (`answer === null`)
 - ✅ Récupération nom élève
 - ✅ Récupération teacher ID
@@ -216,6 +234,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **Route**: `/dashboard/teacher/riddles/validations`
 
 **Fonctionnalités**:
+
 - ✅ Liste tentatives en attente (`is_correct = NULL`)
 - ✅ Filtrage automatique (énigmes du prof uniquement)
 - ✅ Affichage infos:
@@ -235,6 +254,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **Route**: `/dashboard/teacher/riddles/validations/[id]`
 
 **Sections affichées**:
+
 1. ✅ **Info élève**
    - Avatar grande taille
    - Nom complet
@@ -269,6 +289,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
    - Toasts feedback
 
 **Sécurité**:
+
 - ✅ Vérification tentative = NULL (pas déjà validée)
 - ✅ Vérification ownership énigme
 - ✅ RPC `validate_riddle_attempt()` avec checks serveur
@@ -278,6 +299,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 ### 🔄 Workflow Complet Implémenté
 
 **Flux validation manuelle**:
+
 1. ✅ Élève soumet réponse libre via RiddleManualInput (textarea)
 2. ✅ API crée `riddle_attempt` avec `is_correct = NULL`
 3. ✅ Message automatique envoyé au prof avec lien validation
@@ -302,6 +324,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 ### 📊 Intégration Dashboard Prof
 
 **Lien navigation** (à ajouter au menu):
+
 - Badge notification avec nombre validations en attente
 - Lien direct: `/dashboard/teacher/riddles/validations`
 - Integration dans section Énigmes
@@ -315,6 +338,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **Fichier**: `src/lib/components/riddles/RiddleOfTheDayCard.svelte`
 
 **Fonctionnalités implémentées**:
+
 - ✅ Card prominente avec style gradient et bordure primary
 - ✅ Badge "🌟 Énigme du jour" avec icône Sparkles
 - ✅ Affichage date formatée (français, jour/mois/année)
@@ -330,11 +354,13 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 ### 📄 Page Élève Énigmes
 
 **Routes créées**:
+
 - ✅ `/dashboard/student/riddles` - Page principale avec énigme du jour
 - ✅ `/dashboard/student/riddles/[id]` - Tentative énigme en mode interactif
 - ✅ `/dashboard/student/riddles/archive` - Archive énigmes passées
 
 **Fonctionnalités page principale**:
+
 - ✅ Affichage énigme du jour avec RiddleOfTheDayCard
 - ✅ État vide si aucune énigme du jour
 - ✅ Section énigmes assignées par prof (optionnel)
@@ -342,6 +368,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 - ✅ Navigation vers détail énigme
 
 **Fonctionnalités page détail**:
+
 - ✅ RiddleCard en mode interactif
 - ✅ Soumission réponse avec gestion états
 - ✅ Toasts feedback (succès/erreur/validation manuelle)
@@ -353,6 +380,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **Route**: `/dashboard/teacher/riddles/of-the-day`
 
 **Fonctionnalités implémentées**:
+
 - ✅ Card affichage énigme du jour actuelle
 - ✅ Sélection énigme pour date spécifique
 - ✅ Input date avec date picker natif
@@ -369,6 +397,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **Fichier**: `src/lib/server/riddle-auto-select.ts`
 
 **Algorithme implémenté**:
+
 - ✅ Fonction `autoSelectRiddleOfTheDay(supabase, targetDate)`
 - ✅ Exclusion énigmes utilisées derniers 30 jours
 - ✅ Rotation difficultés (1 → 2 → 3 → 1)
@@ -380,6 +409,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **API Endpoint**: `/api/riddles/auto-select-daily`
 
 **Fonctionnalités**:
+
 - ✅ POST - Déclencher sélection automatique
 - ✅ GET - Vérifier statut énigme du jour
 - ✅ Protection optionnelle par API key
@@ -387,6 +417,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 - ✅ Logs détaillés
 
 **Configuration Cron** (optionnel):
+
 ```bash
 # Vercel Cron (vercel.json)
 {
@@ -408,6 +439,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **Route**: `/dashboard/student/riddles/archive`
 
 **Fonctionnalités implémentées**:
+
 - ✅ Liste toutes énigmes du jour passées (max 100)
 - ✅ Affichage date formatée pour chaque énigme
 - ✅ Badges statut : Non tentée / Réussie / X tentatives / En attente
@@ -419,6 +451,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 - ✅ Cards hover avec shadow
 
 **Logique serveur**:
+
 - ✅ Chargement énigmes passées (< date actuelle)
 - ✅ Jointure avec tentatives élève
 - ✅ Map riddleId → tentative (meilleure tentative)
@@ -433,6 +466,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **Route**: `/dashboard/teacher/riddles/stats`
 
 **Fonctionnalités implémentées**:
+
 - ✅ **Vue d'ensemble** (4 cards métriques):
   - Total énigmes créées (publiées/draft)
   - Validations en attente avec lien direct
@@ -461,6 +495,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **Route**: `/dashboard/student/riddles/leaderboard`
 
 **Fonctionnalités implémentées**:
+
 - ✅ **Podium visuel top 3**:
   - Médailles 🥇🥈🥉 avec tailles différenciées
   - Avatars avec bordures colorées (or/argent/bronze)
@@ -485,6 +520,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **Route**: `/dashboard/student/riddles/history`
 
 **Fonctionnalités implémentées**:
+
 - ✅ **Statistiques résumées** (3 cards):
   - Total énigmes réussies
   - Total gidouilles gagnées
@@ -513,6 +549,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 **Fichier**: `src/lib/utils/riddle-badges.ts`
 
 **Badges implémentés** (système à paliers):
+
 - ✅ **Perfectionniste 🎯** (réussites 1er coup):
   - Bronze: 5 | Argent: 15 | Or: 30 | Platine: 50
 
@@ -527,6 +564,7 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
   - Génération dynamique selon genres
 
 **Affichage**:
+
 - ✅ Section dédiée dans page historique
 - ✅ Badges débloqués avec couleurs de bordure par tier
 - ✅ Badges en cours avec barres de progression
@@ -598,21 +636,25 @@ Système complet de banque d'énigmes mathématiques avec validation automatique
 ### 📋 Récapitulatif Items Optionnels Phase 6
 
 **🎨 UX/Design (3 items)** :
+
 - Animations confettis sur succès
 - Sons feedback succès/échec
 - Loading skeletons au lieu de spinners
 
 **⚡ Performance (4 items)** :
+
 - Cache Redis énigme du jour
 - Pagination liste énigmes (si >100)
 - Lazy loading images
 - Debounce recherche
 
 **♿ Accessibilité (2 items)** :
+
 - ARIA labels avancés
 - Optimisations screen reader complètes
 
 **🧪 Tests (5 items)** :
+
 - Tests unitaires utilitaires
 - Tests intégration API
 - Tests E2E complets
@@ -723,6 +765,7 @@ src/
 ## 🎯 Roadmap Prochaines Sessions
 
 ### Session Précédente (Phase 3) - ✅ TERMINÉE
+
 1. ✅ Créer trigger type `enigma_answer` pour système de messages
 2. ✅ Créer fonction envoi message validation automatique
 3. ✅ Mettre à jour API submit pour créer message si manuel
@@ -732,6 +775,7 @@ src/
 7. ✅ Mettre à jour documentation
 
 ### Session Précédente (Phase 4) - ✅ TERMINÉE
+
 1. ✅ Créer RiddleOfTheDayCard avec style premium
 2. ✅ Créer page élève énigme du jour
 3. ✅ Créer page détail énigme (mode interactif)
@@ -742,6 +786,7 @@ src/
 8. ✅ Mettre à jour documentation
 
 ### Session Précédente (Phase 5) - ✅ TERMINÉE
+
 1. ✅ Créer dashboard stats professeur (vue d'ensemble + table détaillée)
 2. ✅ Créer page leaderboard global (podium + classement)
 3. ✅ Créer page historique personnel élève (stats + filtres)
@@ -750,6 +795,7 @@ src/
 6. ✅ Mettre à jour documentation
 
 ### Session Actuelle (Phase 6) - ✅ TERMINÉE (Éléments essentiels)
+
 1. ✅ Créer guide démarrage rapide complet
 2. ✅ Créer composant navigation RiddleNav
 3. ✅ Documentation UX et accessibilité
@@ -802,12 +848,14 @@ src/
 ## 🚀 Pour Tester Maintenant
 
 ### Phase 1-2 (CRUD + Validation Auto)
+
 1. **Pousser migration**: `pnpm db:migrate`
 2. **Créer une énigme test** en tant que prof
 3. **Tester validation automatique** (numérique, texte, QCM, math)
 4. **Vérifier attribution gidouilles dégressives** (plusieurs tentatives)
 
 ### Phase 3 (Validation Manuelle)
+
 5. **Créer énigme sans validation auto** (désactiver dans le formulaire)
 6. **Soumettre réponse libre** en tant qu'élève (textarea)
 7. **Vérifier message reçu** par le prof avec lien validation
@@ -817,6 +865,7 @@ src/
 11. **Vérifier notification élève** après validation prof
 
 ### Phase 4 (Énigme du Jour) - ✅ NOUVEAU
+
 12. **Définir énigme du jour** (`/dashboard/teacher/riddles/of-the-day`)
     - Sélectionner une énigme published
     - Choisir date (aujourd'hui ou future)
@@ -839,6 +888,7 @@ src/
     - Navigation vers détail
 
 ### Phase 5 (Statistiques & Leaderboard) - ✅ NOUVEAU
+
 17. **Dashboard stats professeur** (`/dashboard/teacher/riddles/stats`)
     - Vérifier vue d'ensemble (4 cards métriques)
     - Consulter table stats par énigme
@@ -857,6 +907,7 @@ src/
     - Vérifier calcul temps réel
 
 ### Vérifications générales
+
 - ✅ Gidouilles dégressives (1ère: ×3, 2ème: ×2, 3ème+: ×1)
 - ✅ Messages automatiques validation manuelle
 - ✅ RLS policies (sécurité multi-tenant)
@@ -874,6 +925,7 @@ src/
 **Statut actuel** : **~97% complété** (100% core fonctionnel + 14 items optionnels)
 
 **Phases complétées** :
+
 - ✅ Phase 1 : Infrastructure de Base (100%)
 - ✅ Phase 2 : Validation Automatique (100%)
 - ✅ Phase 3 : Validation Manuelle (100%)
@@ -882,6 +934,7 @@ src/
 - ✅ Phase 6 : Polish & Optimisations (80% - core complet, 14 items optionnels)
 
 **Documentation** :
+
 - ✅ 7 fichiers (~120 pages)
 - ✅ Guide utilisateur, technique, déploiement
 - ✅ Index navigation complet
@@ -891,21 +944,25 @@ src/
 **Si implémentés, progressera à 100%** :
 
 #### 🎨 UX/Design (3)
+
 1. Animations confettis sur succès
 2. Sons feedback succès/échec
 3. Loading skeletons au lieu de spinners
 
 #### ⚡ Performance (4)
+
 4. Cache Redis énigme du jour
 5. Pagination liste énigmes (si >100)
 6. Lazy loading images
 7. Debounce recherche
 
 #### ♿ Accessibilité (2)
+
 8. ARIA labels avancés
 9. Optimisations screen reader complètes
 
 #### 🧪 Tests (5)
+
 10. Tests unitaires utilitaires (Vitest)
 11. Tests intégration API
 12. Tests E2E complets (Playwright)
@@ -915,18 +972,21 @@ src/
 ### 🚀 Roadmap Post-v1.0
 
 #### v1.1 (Court Terme - ~2 semaines)
+
 - Export CSV historique
 - Graphiques statistiques (charts)
 - Filtres avancés leaderboard
 - Notifications push
 
 #### v1.2 (Moyen Terme - ~1 mois)
+
 - Mode hors-ligne (PWA)
 - Éditeur visuel énoncés
 - Import/Export énigmes JSON
 - Templates énigmes prédéfinis
 
 #### v2.0 (Vision - ~3-6 mois)
+
 - Énigmes collaboratives
 - Duels 1v1 élèves
 - Mode tournoi

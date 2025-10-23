@@ -28,7 +28,11 @@
 		Eye
 	} from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { MessageTemplate, MessageTemplateInput, TriggerType } from '$lib/types/messageTemplates';
+	import type {
+		MessageTemplate,
+		MessageTemplateInput,
+		TriggerType
+	} from '$lib/types/messageTemplates';
 	import { getVariablesForTrigger } from '$lib/templates/templateVariables';
 	import { renderTemplate } from '$lib/templates/templateEngine';
 	import { cn } from '$lib/utils';
@@ -163,7 +167,7 @@
 	async function loadTemplates() {
 		isLoading = true;
 		try {
-				const { data, error } = await supabase
+			const { data, error } = await supabase
 				.from('message_templates')
 				.select(
 					`
@@ -189,9 +193,7 @@
 
 	async function loadFavorites() {
 		try {
-				const { data, error } = await supabase
-				.from('user_favorite_templates')
-				.select('template_id');
+			const { data, error } = await supabase.from('user_favorite_templates').select('template_id');
 
 			if (!error && data) {
 				favoriteTemplateIds = new Set(data.map((f: any) => f.template_id));
@@ -338,7 +340,6 @@
 		isLoading = true;
 
 		try {
-	
 			const templateData: any = {
 				title: formTitle.trim(),
 				description: formDescription.trim() || null,
@@ -398,7 +399,7 @@
 
 		isLoading = true;
 		try {
-				const { error } = await supabase.from('message_templates').delete().eq('id', template.id);
+			const { error } = await supabase.from('message_templates').delete().eq('id', template.id);
 
 			if (error) {
 				console.error('Error deleting template:', error);
@@ -498,7 +499,7 @@
 				const data = await response.json();
 				templateVersions = data.versions || [];
 			} else {
-				toaster.error('Erreur lors du chargement de l\'historique');
+				toaster.error("Erreur lors du chargement de l'historique");
 			}
 		} catch (error) {
 			console.error('Error loading versions:', error);
@@ -603,7 +604,7 @@
 			<div class="flex flex-wrap gap-4">
 				<!-- Search -->
 				<div class="relative w-64">
-					<Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+					<Search class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 					<Input type="text" placeholder="Rechercher..." bind:value={searchQuery} class="pl-9" />
 				</div>
 
@@ -646,7 +647,7 @@
 					variant={filterFavoritesOnly ? 'default' : 'outline'}
 					onclick={() => (filterFavoritesOnly = !filterFavoritesOnly)}
 				>
-					<Star class={cn("mr-2 h-4 w-4", filterFavoritesOnly && "fill-current")} />
+					<Star class={cn('mr-2 h-4 w-4', filterFavoritesOnly && 'fill-current')} />
 					Favoris uniquement
 				</Button>
 			</div>
@@ -688,7 +689,9 @@
 					{@const isFavorite = favoriteTemplateIds.has(template.id)}
 					{@const isOwnTemplate = canEditTemplate(template)}
 					{@const approvalBadge = getApprovalStatusBadge(template.approval_status)}
-					<div class="rounded-lg border border-border bg-card p-4 transition-shadow hover:shadow-md">
+					<div
+						class="rounded-lg border border-border bg-card p-4 transition-shadow hover:shadow-md"
+					>
 						<div class="flex items-start justify-between">
 							<div class="flex-1">
 								<div class="mb-2 flex items-center gap-2">
@@ -724,7 +727,9 @@
 
 									<!-- Active Badge -->
 									{#if !template.is_active}
-										<span class="rounded bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-gray-800">
+										<span
+											class="rounded bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-gray-800"
+										>
 											Inactif
 										</span>
 									{/if}
@@ -778,11 +783,7 @@
 
 							<div class="flex gap-2">
 								<!-- Expand/Collapse -->
-								<Button
-									variant="ghost"
-									size="sm"
-									onclick={() => toggleCardExpanded(template.id)}
-								>
+								<Button variant="ghost" size="sm" onclick={() => toggleCardExpanded(template.id)}>
 									{#if isExpanded}
 										<ChevronUp class="h-4 w-4" />
 									{:else}
@@ -870,7 +871,10 @@
 					<div class="space-y-2">
 						<Label>Classe *</Label>
 						<Select.Root
-							selected={{ value: formClassId || classes[0]?.id, label: classes.find(c => c.id === formClassId)?.name || 'Sélectionnez une classe' }}
+							selected={{
+								value: formClassId || classes[0]?.id,
+								label: classes.find((c) => c.id === formClassId)?.name || 'Sélectionnez une classe'
+							}}
 							onSelectedChange={(v) => {
 								if (v) formClassId = v.value;
 							}}

@@ -49,10 +49,7 @@ export function validateRiddleAnswer(
 /**
  * Validate numerical answer with tolerance
  */
-function validateNumericalAnswer(
-	submittedAnswer: unknown,
-	config: AnswerConfig
-): ValidationResult {
+function validateNumericalAnswer(submittedAnswer: unknown, config: AnswerConfig): ValidationResult {
 	const submitted = parseFloat(String(submittedAnswer));
 	const expected = parseFloat(String(config.value));
 
@@ -150,8 +147,7 @@ function validateQcmAnswer(submittedAnswer: unknown, config: AnswerConfig): Vali
 	const submittedSet = new Set(submittedIndices.map(String));
 
 	const isCorrect =
-		expectedSet.size === submittedSet.size &&
-		[...expectedSet].every((i) => submittedSet.has(i));
+		expectedSet.size === submittedSet.size && [...expectedSet].every((i) => submittedSet.has(i));
 
 	return {
 		isCorrect,

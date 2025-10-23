@@ -43,7 +43,7 @@
 			href: '/dashboard/teacher/riddles/of-the-day',
 			label: 'Énigme du jour',
 			icon: Sparkles,
-			description: 'Gérer l\'énigme quotidienne'
+			description: "Gérer l'énigme quotidienne"
 		},
 		{
 			href: '/dashboard/teacher/riddles/validations',
@@ -64,7 +64,7 @@
 			href: '/dashboard/student/riddles',
 			label: 'Énigme du jour',
 			icon: Sparkles,
-			description: 'Tenter l\'énigme'
+			description: "Tenter l'énigme"
 		},
 		{
 			href: '/dashboard/student/riddles/archive',

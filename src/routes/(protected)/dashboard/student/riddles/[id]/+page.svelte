@@ -30,15 +30,14 @@
 			if (response.ok && result.success) {
 				if (result.isCorrect === true) {
 					toaster.success(
-						result.message || `Bravo ! Tu as gagné ${result.attempt.gidouilles_awarded} gidouilles !`
+						result.message ||
+							`Bravo ! Tu as gagné ${result.attempt.gidouilles_awarded} gidouilles !`
 					);
 				} else if (result.isCorrect === false) {
 					toaster.error(result.message || 'Réponse incorrecte. Réessaye !');
 				} else {
 					// Manual validation
-					toaster.info(
-						result.message || 'Ta réponse a été envoyée au professeur pour validation.'
-					);
+					toaster.info(result.message || 'Ta réponse a été envoyée au professeur pour validation.');
 				}
 
 				// Reload page to show updated attempt

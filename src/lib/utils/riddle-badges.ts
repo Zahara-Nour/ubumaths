@@ -133,9 +133,7 @@ function createTieredBadge(
 	return {
 		id: earnedTier ? `${id}-${earnedTier}` : id,
 		name: earnedTier ? `${name} ${getTierEmoji(earnedTier)}` : name,
-		description: earnedTier
-			? `${description} - Niveau ${getTierLabel(earnedTier)}`
-			: description,
+		description: earnedTier ? `${description} - Niveau ${getTierLabel(earnedTier)}` : description,
 		icon,
 		earned,
 		progress: current,

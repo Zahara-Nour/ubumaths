@@ -84,15 +84,13 @@
 <div class="container mx-auto py-8">
 	<!-- Header -->
 	<div class="mb-8">
-		<h1 class="text-3xl font-bold mb-2">Monitoring des Erreurs</h1>
-		<p class="text-muted-foreground">
-			Surveillance et gestion des erreurs de l'application
-		</p>
+		<h1 class="mb-2 text-3xl font-bold">Monitoring des Erreurs</h1>
+		<p class="text-muted-foreground">Surveillance et gestion des erreurs de l'application</p>
 	</div>
 
 	<!-- Statistics Cards -->
 	{#if data.stats}
-		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+		<div class="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 			<Card.Root>
 				<Card.Header class="pb-2">
 					<Card.Title class="text-sm font-medium text-muted-foreground">Total Erreurs</Card.Title>
@@ -105,9 +103,7 @@
 
 			<Card.Root>
 				<Card.Header class="pb-2">
-					<Card.Title class="text-sm font-medium text-muted-foreground"
-						>Non Résolues</Card.Title
-					>
+					<Card.Title class="text-sm font-medium text-muted-foreground">Non Résolues</Card.Title>
 				</Card.Header>
 				<Card.Content>
 					<div class="text-2xl font-bold text-orange-500">{data.stats.unresolved_errors}</div>
@@ -127,9 +123,7 @@
 
 			<Card.Root>
 				<Card.Header class="pb-2">
-					<Card.Title class="text-sm font-medium text-muted-foreground"
-						>Dernière Heure</Card.Title
-					>
+					<Card.Title class="text-sm font-medium text-muted-foreground">Dernière Heure</Card.Title>
 				</Card.Header>
 				<Card.Content>
 					<div class="text-2xl font-bold">{data.stats.errors_last_hour}</div>
@@ -193,7 +187,15 @@
 				<div class="space-y-2">
 					<label class="text-sm font-medium">Statut</label>
 					<Select.Root
-						selected={{ value: resolvedFilter, label: resolvedFilter === 'true' ? 'Résolues' : resolvedFilter === 'false' ? 'Non résolues' : 'Toutes' }}
+						selected={{
+							value: resolvedFilter,
+							label:
+								resolvedFilter === 'true'
+									? 'Résolues'
+									: resolvedFilter === 'false'
+										? 'Non résolues'
+										: 'Toutes'
+						}}
 						onSelectedChange={(v) => v && (resolvedFilter = v.value)}
 					>
 						<Select.Trigger>
@@ -219,7 +221,7 @@
 				</div>
 			</div>
 
-			<div class="flex gap-2 mt-4">
+			<div class="mt-4 flex gap-2">
 				<Button onclick={applyFilters}>Appliquer</Button>
 				<Button variant="outline" onclick={resetFilters}>Réinitialiser</Button>
 			</div>
@@ -230,22 +232,23 @@
 	<Card.Root>
 		<Card.Header>
 			<Card.Title
-				>Erreurs ({data.count} {#if data.count <= 1}occurrence{:else}occurrences{/if})</Card.Title
+				>Erreurs ({data.count}
+				{#if data.count <= 1}occurrence{:else}occurrences{/if})</Card.Title
 			>
 			<Card.Description>Erreurs dédupliquées triées par fréquence</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			{#if data.occurrences.length === 0}
-				<div class="text-center py-8 text-muted-foreground">
+				<div class="py-8 text-center text-muted-foreground">
 					<p>Aucune erreur trouvée</p>
 				</div>
 			{:else}
 				<div class="space-y-4">
 					{#each data.occurrences as occurrence}
-						<div class="border rounded-lg p-4 hover:bg-accent/50 transition-colors">
-							<div class="flex items-start justify-between mb-2">
+						<div class="rounded-lg border p-4 transition-colors hover:bg-accent/50">
+							<div class="mb-2 flex items-start justify-between">
 								<div class="flex-1">
-									<div class="flex items-center gap-2 mb-2">
+									<div class="mb-2 flex items-center gap-2">
 										<Badge variant={getSeverityVariant(occurrence.severity)}>
 											{occurrence.severity}
 										</Badge>
@@ -257,7 +260,7 @@
 											×{occurrence.occurrence_count}
 										</span>
 									</div>
-									<h3 class="font-medium text-sm mb-1">{occurrence.message}</h3>
+									<h3 class="mb-1 text-sm font-medium">{occurrence.message}</h3>
 									<div class="flex items-center gap-4 text-xs text-muted-foreground">
 										{#if occurrence.url}
 											<span>URL: {occurrence.url}</span>
@@ -269,7 +272,7 @@
 										{/if}
 									</div>
 								</div>
-								<div class="text-right text-xs text-muted-foreground space-y-1">
+								<div class="space-y-1 text-right text-xs text-muted-foreground">
 									<div>Première: {formatDate(occurrence.first_seen)}</div>
 									<div>Dernière: {formatDate(occurrence.last_seen)}</div>
 								</div>

@@ -31,7 +31,7 @@
 
 	// Check if current path matches href
 	function isActive(href: string): boolean {
-		return $page.url.pathname === href || $page.url.pathname.startsWith(href + '/');
+		return page.url.pathname === href || page.url.pathname.startsWith(href + '/');
 	}
 </script>
 
@@ -65,10 +65,15 @@
 
 		<!-- Additional actions -->
 		<div class="mt-6 space-y-1">
-			<Button variant="ghost" class="w-full justify-start gap-2" disabled>
-				<Archive class="h-4 w-4" />
-				<span>Archivés</span>
-			</Button>
+			<a href="/messages/archived" class="block">
+				<Button
+					variant={isActive('/messages/archived') ? 'default' : 'ghost'}
+					class="w-full justify-start gap-2"
+				>
+					<Archive class="h-4 w-4" />
+					<span>Archivés</span>
+				</Button>
+			</a>
 			<Button variant="ghost" class="w-full justify-start gap-2" disabled>
 				<Trash2 class="h-4 w-4" />
 				<span>Corbeille</span>

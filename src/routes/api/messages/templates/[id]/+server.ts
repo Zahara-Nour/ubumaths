@@ -141,7 +141,8 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	// Validate scope and class_id consistency if being updated
 	if (updates.scope !== undefined || updates.class_id !== undefined) {
 		const newScope = updates.scope || existingTemplate.scope;
-		const newClassId = updates.class_id !== undefined ? updates.class_id : existingTemplate.class_id;
+		const newClassId =
+			updates.class_id !== undefined ? updates.class_id : existingTemplate.class_id;
 
 		if (newScope === 'system' && newClassId) {
 			return error(400, 'Un template système ne peut pas avoir de class_id');

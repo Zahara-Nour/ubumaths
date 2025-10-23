@@ -57,9 +57,7 @@
 			});
 
 			if (response.ok) {
-				toaster.success(
-					isCorrect ? 'Réponse validée avec succès' : 'Réponse refusée'
-				);
+				toaster.success(isCorrect ? 'Réponse validée avec succès' : 'Réponse refusée');
 				// Redirect will happen server-side
 			} else {
 				toaster.error('Erreur lors de la validation');
@@ -102,7 +100,8 @@
 				</Avatar.Root>
 				<div class="flex-1">
 					<Card.Title class="text-2xl">
-						{data.attempt.student.firstname || ''} {data.attempt.student.lastname || ''}
+						{data.attempt.student.firstname || ''}
+						{data.attempt.student.lastname || ''}
 					</Card.Title>
 					<Card.Description>
 						Énigme #{data.attempt.riddle.riddle_number}: {data.attempt.riddle.title}
@@ -137,7 +136,7 @@
 			<Card.Title>Énoncé de l'énigme</Card.Title>
 		</Card.Header>
 		<Card.Content>
-			<div class="prose dark:prose-invert max-w-none">
+			<div class="prose max-w-none dark:prose-invert">
 				{@html data.attempt.riddle.statement}
 			</div>
 			{#if data.attempt.riddle.image_url}
@@ -157,13 +156,13 @@
 		</Card.Header>
 		<Card.Content>
 			<div class="rounded-lg bg-blue-50 p-4 dark:bg-blue-950">
-				<div class="prose dark:prose-invert max-w-none whitespace-pre-wrap">
+				<div class="prose max-w-none whitespace-pre-wrap dark:prose-invert">
 					{#if data.attempt.submitted_answer?.value}
 						{typeof data.attempt.submitted_answer.value === 'string'
 							? data.attempt.submitted_answer.value
 							: JSON.stringify(data.attempt.submitted_answer.value, null, 2)}
 					{:else}
-						<span class="italic text-muted-foreground">Aucune réponse fournie</span>
+						<span class="text-muted-foreground italic">Aucune réponse fournie</span>
 					{/if}
 				</div>
 			</div>
@@ -177,7 +176,7 @@
 		</Card.Header>
 		<Card.Content>
 			<div class="rounded-lg bg-primary/5 p-4">
-				<div class="prose dark:prose-invert max-w-none">
+				<div class="prose max-w-none dark:prose-invert">
 					{@html data.attempt.riddle.correction}
 				</div>
 			</div>
@@ -222,12 +221,7 @@
 			<XCircle class="mr-2 h-5 w-5" />
 			{isSubmitting && selectedValidation === false ? 'Refus en cours...' : 'Refuser la réponse'}
 		</Button>
-		<Button
-			onclick={() => handleValidate(true)}
-			size="lg"
-			disabled={isSubmitting}
-			class="flex-1"
-		>
+		<Button onclick={() => handleValidate(true)} size="lg" disabled={isSubmitting} class="flex-1">
 			<CheckCircle2 class="mr-2 h-5 w-5" />
 			{isSubmitting && selectedValidation === true
 				? 'Validation en cours...'

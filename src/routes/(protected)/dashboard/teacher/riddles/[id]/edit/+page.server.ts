@@ -77,11 +77,14 @@ export const actions: Actions = {
 			.eq('created_by', session.user.id);
 
 		if (updateError) {
-			console.error('Error updating riddle:', updateError);
-			return fail(500, { message: 'Erreur lors de la mise à jour de l\'énigme' });
+			console.error('[RIDDLE EDIT SERVER] Error updating riddle:', updateError);
+			return fail(500, { message: "Erreur lors de la mise à jour de l'énigme" });
 		}
 
-		// Redirect to riddles list
-		throw redirect(303, '/dashboard/teacher/riddles');
+		console.log('[RIDDLE EDIT SERVER] Update successful, returning success');
+		// Return success (client will handle navigation)
+		const result = { success: true };
+		console.log('[RIDDLE EDIT SERVER] Returning:', result);
+		return result;
 	}
 };

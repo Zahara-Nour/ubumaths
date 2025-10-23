@@ -104,7 +104,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		}
 
 		console.error('Error adding favorite:', insertError);
-		return error(500, 'Erreur lors de l\'ajout aux favoris');
+		return error(500, "Erreur lors de l'ajout aux favoris");
 	}
 
 	// Log action

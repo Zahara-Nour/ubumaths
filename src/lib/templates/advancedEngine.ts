@@ -256,10 +256,7 @@ export function parseConditionals(template: string): ConditionalBlock[] {
 /**
  * Render conditional blocks
  */
-export function renderConditionals(
-	template: string,
-	data: Record<string, any>
-): string {
+export function renderConditionals(template: string, data: Record<string, any>): string {
 	const regex = /\{\{#if\s+(\w+)\}\}([\s\S]*?)(?:\{\{else\}\}([\s\S]*?))?\{\{\/if\}\}/g;
 
 	return template.replace(regex, (match, variable, ifBlock, elseBlock = '') => {
@@ -279,10 +276,7 @@ export function renderConditionals(
 /**
  * Render template with conditionals and filters
  */
-export function renderAdvancedTemplate(
-	template: string,
-	data: Record<string, any>
-): string {
+export function renderAdvancedTemplate(template: string, data: Record<string, any>): string {
 	let result = template;
 
 	// Step 1: Handle conditional blocks
@@ -410,14 +404,26 @@ export function getAvailableFilters(): Array<{
 	return [
 		{ name: 'uppercase', description: 'Convertir en majuscules', example: '{{name | uppercase}}' },
 		{ name: 'lowercase', description: 'Convertir en minuscules', example: '{{name | lowercase}}' },
-		{ name: 'capitalize', description: 'Première lettre en majuscule', example: '{{name | capitalize}}' },
+		{
+			name: 'capitalize',
+			description: 'Première lettre en majuscule',
+			example: '{{name | capitalize}}'
+		},
 		{ name: 'truncate', description: 'Tronquer le texte', example: '{{text | truncate:50}}' },
 		{ name: 'currency', description: 'Formater en devise', example: '{{price | currency:EUR}}' },
 		{ name: 'number', description: 'Formater nombre', example: '{{count | number}}' },
 		{ name: 'date', description: 'Formater date', example: '{{date | date:short}}' },
 		{ name: 'time', description: 'Formater heure', example: '{{timestamp | time}}' },
-		{ name: 'pluralize', description: 'Pluraliser selon quantité', example: '{{count | pluralize:élève:élèves}}' },
-		{ name: 'default', description: 'Valeur par défaut si vide', example: '{{desc | default:Aucune}}' },
+		{
+			name: 'pluralize',
+			description: 'Pluraliser selon quantité',
+			example: '{{count | pluralize:élève:élèves}}'
+		},
+		{
+			name: 'default',
+			description: 'Valeur par défaut si vide',
+			example: '{{desc | default:Aucune}}'
+		},
 		{ name: 'join', description: 'Joindre tableau', example: '{{tags | join:, }}' },
 		{ name: 'escape', description: 'Échapper HTML', example: '{{html | escape}}' },
 		{ name: 'striptags', description: 'Retirer balises HTML', example: '{{html | striptags}}' },

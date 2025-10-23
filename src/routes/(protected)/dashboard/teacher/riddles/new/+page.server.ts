@@ -63,11 +63,14 @@ export const actions: Actions = {
 			.single();
 
 		if (insertError) {
-			console.error('Error creating riddle:', insertError);
-			return fail(500, { message: 'Erreur lors de la création de l\'énigme' });
+			console.error('[RIDDLE CREATE SERVER] Error creating riddle:', insertError);
+			return fail(500, { message: "Erreur lors de la création de l'énigme" });
 		}
 
-		// Redirect to riddles list
-		throw redirect(303, '/dashboard/teacher/riddles');
+		console.log('[RIDDLE CREATE SERVER] Insert successful, returning success');
+		// Return success (client will handle navigation)
+		const result = { success: true, riddle: newRiddle };
+		console.log('[RIDDLE CREATE SERVER] Returning:', result);
+		return result;
 	}
 };

@@ -21,11 +21,7 @@ import { get } from 'svelte/store';
 // TYPES
 // =====================================================
 
-export type ErrorType =
-	| 'client_js'
-	| 'server_api'
-	| 'validation'
-	| 'performance';
+export type ErrorType = 'client_js' | 'server_api' | 'validation' | 'performance';
 
 export type ErrorSeverity = 'info' | 'warning' | 'error' | 'critical';
 

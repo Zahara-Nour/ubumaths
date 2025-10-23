@@ -2,10 +2,7 @@ import type { RequestHandler } from './$types';
 import type { AnswerConfig } from '$lib/types/riddle';
 import { error, json } from '@sveltejs/kit';
 import { validateRiddleAnswer } from '$lib/utils/riddle-validator';
-import {
-	createRiddleValidationMessage,
-	getRiddleTeacherId
-} from '$lib/server/riddle-messages';
+import { createRiddleValidationMessage, getRiddleTeacherId } from '$lib/server/riddle-messages';
 
 /**
  * Submit riddle attempt

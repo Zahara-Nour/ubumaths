@@ -24,7 +24,7 @@ import { createLogger } from '$lib/utils/logger';
 const logger = createLogger('server/supabase.ts');
 
 export const handle: Handle = async ({ event, resolve }) => {
-	logger.info('Creating server client for URL:', PUBLIC_SUPABASE_URL);
+	logger.trace('Creating server client for URL:', PUBLIC_SUPABASE_URL);
 
 	/**
 	 * Create a Supabase client for this request
@@ -69,7 +69,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	 * @returns {Object} { session, user } - Both verified and safe to use
 	 */
 	event.locals.safeGetSession = async () => {
-		logger.info('Checking and verifying session...');
+		logger.trace('Checking and verifying session...');
 
 		// STEP 1: Verify the user with Supabase's auth server
 		// This is the critical security step - never skip this!

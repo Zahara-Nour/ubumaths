@@ -6,11 +6,7 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
-	import {
-		getDifficultyLabel,
-		getDifficultyColor,
-		type DbRiddle
-	} from '$lib/types/riddle';
+	import { getDifficultyLabel, getDifficultyColor, type DbRiddle } from '$lib/types/riddle';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/input';
@@ -54,9 +50,7 @@
 			<Sparkles class="h-8 w-8 text-primary" />
 			Gestion de l'Énigme du Jour
 		</h1>
-		<p class="mt-2 text-muted-foreground">
-			Définissez l'énigme quotidienne pour tous les élèves
-		</p>
+		<p class="mt-2 text-muted-foreground">Définissez l'énigme quotidienne pour tous les élèves</p>
 	</div>
 
 	<!-- Current Riddle of the Day -->
@@ -84,7 +78,11 @@
 						{formatDate(data.currentRiddle.assignment_date)}
 					</p>
 					<form method="POST" action="?/removeRiddle">
-						<input type="hidden" name="assignment_date" value={data.currentRiddle.assignment_date} />
+						<input
+							type="hidden"
+							name="assignment_date"
+							value={data.currentRiddle.assignment_date}
+						/>
 						<Button type="submit" variant="destructive" size="sm">
 							<Trash2 class="mr-2 h-4 w-4" />
 							Retirer
@@ -165,7 +163,7 @@
 									<Select.Item value={riddle.id} label="#{riddle.riddle_number} - {riddle.title}">
 										<div class="flex items-center gap-2">
 											<span>#{riddle.riddle_number}</span>
-											<Badge class={cn("text-xs", getDifficultyColor(riddle.difficulty))}>
+											<Badge class={cn('text-xs', getDifficultyColor(riddle.difficulty))}>
 												{getDifficultyLabel(riddle.difficulty)}
 											</Badge>
 											<span>{riddle.title}</span>
@@ -182,7 +180,7 @@
 						{@const riddle = getRiddleById(selectedRiddleId)}
 						{#if riddle}
 							<div class="rounded-lg border bg-muted/30 p-4">
-								<p class="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+								<p class="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
 									Aperçu
 								</p>
 								<div class="flex items-center gap-2">

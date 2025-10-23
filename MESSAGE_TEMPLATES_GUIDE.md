@@ -20,6 +20,7 @@ Le système de templates de messagerie permet de créer des modèles de messages
 **`message_templates`** - Stockage des templates
 
 Colonnes clés :
+
 - `title`: Nom du template (max 100 chars)
 - `subject_template`: Sujet avec placeholders
 - `body_template`: Corps du message (HTML avec placeholders)
@@ -41,45 +42,45 @@ Colonnes clés :
 
 ### Variables globales (disponibles partout)
 
-| Variable | Description | Exemple |
-|----------|-------------|---------|
-| `{{student_name}}` | Nom complet étudiant | "Marie Dubois" |
-| `{{student_first_name}}` | Prénom étudiant | "Marie" |
-| `{{teacher_name}}` | Nom du professeur | "M. Martin" |
-| `{{class_name}}` | Nom de la classe | "6ème A" |
-| `{{today_date}}` | Date du jour | "22 octobre 2025" |
-| `{{today_date_short}}` | Date format court | "22/10/2025" |
-| `{{time}}` | Heure actuelle | "14:30" |
-| `{{year}}` | Année scolaire | "2025-2026" |
+| Variable                 | Description          | Exemple           |
+| ------------------------ | -------------------- | ----------------- |
+| `{{student_name}}`       | Nom complet étudiant | "Marie Dubois"    |
+| `{{student_first_name}}` | Prénom étudiant      | "Marie"           |
+| `{{teacher_name}}`       | Nom du professeur    | "M. Martin"       |
+| `{{class_name}}`         | Nom de la classe     | "6ème A"          |
+| `{{today_date}}`         | Date du jour         | "22 octobre 2025" |
+| `{{today_date_short}}`   | Date format court    | "22/10/2025"      |
+| `{{time}}`               | Heure actuelle       | "14:30"           |
+| `{{year}}`               | Année scolaire       | "2025-2026"       |
 
 ### Variables par contexte
 
 #### Assessment (évaluation)
 
-| Variable | Description | User Input? |
-|----------|-------------|-------------|
-| `{{assessment_title}}` | Titre évaluation | Non |
-| `{{assessment_link}}` | Lien vers évaluation | Non |
-| `{{assessment_due_date}}` | Date limite | Non |
-| `{{student_question}}` | Question de l'étudiant | **Oui** |
+| Variable                  | Description            | User Input? |
+| ------------------------- | ---------------------- | ----------- |
+| `{{assessment_title}}`    | Titre évaluation       | Non         |
+| `{{assessment_link}}`     | Lien vers évaluation   | Non         |
+| `{{assessment_due_date}}` | Date limite            | Non         |
+| `{{student_question}}`    | Question de l'étudiant | **Oui**     |
 
 #### SRS (révision espacée)
 
-| Variable | Description | User Input? |
-|----------|-------------|-------------|
-| `{{deck_name}}` | Nom du deck | Non |
-| `{{deck_link}}` | Lien vers deck | Non |
-| `{{card_count}}` | Nombre de cartes | Non |
-| `{{student_message}}` | Message étudiant | **Oui** |
+| Variable              | Description      | User Input? |
+| --------------------- | ---------------- | ----------- |
+| `{{deck_name}}`       | Nom du deck      | Non         |
+| `{{deck_link}}`       | Lien vers deck   | Non         |
+| `{{card_count}}`      | Nombre de cartes | Non         |
+| `{{student_message}}` | Message étudiant | **Oui**     |
 
 #### Enigma (futur)
 
-| Variable | Description | User Input? |
-|----------|-------------|-------------|
-| `{{enigma_number}}` | Numéro énigme | Non |
-| `{{enigma_title}}` | Titre énigme | Non |
-| `{{enigma_link}}` | Lien vers énigme | Non |
-| `{{student_answer}}` | Réponse étudiant | **Oui** |
+| Variable             | Description      | User Input? |
+| -------------------- | ---------------- | ----------- |
+| `{{enigma_number}}`  | Numéro énigme    | Non         |
+| `{{enigma_title}}`   | Titre énigme     | Non         |
+| `{{enigma_link}}`    | Lien vers énigme | Non         |
+| `{{student_answer}}` | Réponse étudiant | **Oui**     |
 
 ## Utilisation
 
@@ -134,6 +135,7 @@ Merci d'avance pour votre aide,
 5. Sauvegarder
 
 **Limitations professeurs :**
+
 - ❌ Ne peuvent pas créer de templates système
 - ❌ Ne peuvent pas modifier les templates système
 - ✅ Peuvent créer des templates pour leurs propres classes
@@ -144,21 +146,25 @@ Merci d'avance pour votre aide,
 Les étudiants utilisent automatiquement les templates via des boutons contextuels :
 
 **Exemple depuis une page assessment :**
+
 ```svelte
-<Button onclick={() => {
-  const params = new URLSearchParams({
-    triggerType: 'assessment_question',
-    recipientId: teacher.id,
-    assessment_title: assessment.title,
-    assessment_link: window.location.href
-  });
-  goto(`/messages/compose?${params}`);
-}}>
-  Poser une question au professeur
+<Button
+	onclick={() => {
+		const params = new URLSearchParams({
+			triggerType: 'assessment_question',
+			recipientId: teacher.id,
+			assessment_title: assessment.title,
+			assessment_link: window.location.href
+		});
+		goto(`/messages/compose?${params}`);
+	}}
+>
+	Poser une question au professeur
 </Button>
 ```
 
 L'étudiant voit alors :
+
 1. Formulaire simplifié
 2. Destinataire pré-rempli
 3. Sujet pré-rempli
@@ -170,15 +176,18 @@ L'étudiant voit alors :
 ### Endpoints disponibles
 
 #### `GET /api/messages/templates`
+
 Liste les templates (filtrés par permissions)
 
 **Query params:**
+
 - `scope`: `system` | `class`
 - `trigger_type`: Type de déclencheur
 - `class_id`: ID de classe
 - `is_active`: `true` | `false`
 
 **Response:**
+
 ```json
 {
   "templates": [...],
@@ -187,39 +196,47 @@ Liste les templates (filtrés par permissions)
 ```
 
 #### `POST /api/messages/templates`
+
 Crée un nouveau template
 
 **Body:**
+
 ```json
 {
-  "title": "Mon template",
-  "description": "Description",
-  "subject_template": "Sujet {{variable}}",
-  "body_template": "<p>Corps avec {{variable}}</p>",
-  "trigger_type": "general",
-  "scope": "class",
-  "class_id": "uuid",
-  "is_active": true
+	"title": "Mon template",
+	"description": "Description",
+	"subject_template": "Sujet {{variable}}",
+	"body_template": "<p>Corps avec {{variable}}</p>",
+	"trigger_type": "general",
+	"scope": "class",
+	"class_id": "uuid",
+	"is_active": true
 }
 ```
 
 #### `GET /api/messages/templates/:id`
+
 Détails d'un template
 
 #### `PATCH /api/messages/templates/:id`
+
 Met à jour un template
 
 #### `DELETE /api/messages/templates/:id`
+
 Supprime un template
 
 #### `GET /api/messages/templates/match`
+
 Trouve le meilleur template pour un contexte
 
 **Query params:**
+
 - `trigger_type` (requis)
 - `class_id` (optionnel)
 
 **Response:**
+
 ```json
 {
   "template": {...},
@@ -228,27 +245,31 @@ Trouve le meilleur template pour un contexte
 ```
 
 #### `POST /api/messages/templates/:id/preview`
+
 Prévisualise un template avec données
 
 **Body:**
+
 ```json
 {
-  "data": {
-    "student_name": "Test User",
-    "assessment_title": "DM #3"
-  }
+	"data": {
+		"student_name": "Test User",
+		"assessment_title": "DM #3"
+	}
 }
 ```
 
 ## Permissions (RLS)
 
 ### Admins
+
 - ✅ Lecture de tous les templates
 - ✅ Création de templates système et classe
 - ✅ Modification de tous les templates
 - ✅ Suppression de tous les templates
 
 ### Professeurs
+
 - ✅ Lecture des templates système (actifs uniquement)
 - ✅ Lecture de leurs propres templates de classe
 - ✅ Création de templates de classe
@@ -258,6 +279,7 @@ Prévisualise un template avec données
 - ❌ Suppression des templates système
 
 ### Étudiants
+
 - ✅ Lecture des templates système actifs
 - ✅ Lecture des templates de leurs classes (actifs uniquement)
 - ❌ Création/modification/suppression de templates
@@ -273,11 +295,9 @@ Le système trouve automatiquement le template approprié selon :
 3. **Status** : Uniquement templates actifs
 
 **Exemple :**
+
 ```typescript
-const template = await messageTemplates.findMatchingTemplate(
-  'assessment_question',
-  classId
-);
+const template = await messageTemplates.findMatchingTemplate('assessment_question', classId);
 // Retourne le template de classe si existe, sinon template système
 ```
 
@@ -287,9 +307,9 @@ Le moteur remplace les placeholders :
 
 ```typescript
 const rendered = renderTemplate(template, {
-  student_name: 'Marie Dubois',
-  assessment_title: 'DM #3',
-  student_question: 'Comment faire l\'exercice 2 ?'
+	student_name: 'Marie Dubois',
+	assessment_title: 'DM #3',
+	student_question: "Comment faire l'exercice 2 ?"
 });
 
 // rendered.subject: "Question sur DM #3"
@@ -301,14 +321,14 @@ const rendered = renderTemplate(template, {
 
 ```typescript
 const validation = validateTemplate({
-  title: 'Mon template',
-  subject_template: 'Sujet {{var}}',
-  body_template: 'Corps avec {{var}}',
-  trigger_type: 'general'
+	title: 'Mon template',
+	subject_template: 'Sujet {{var}}',
+	body_template: 'Corps avec {{var}}',
+	trigger_type: 'general'
 });
 
 if (!validation.valid) {
-  console.log(validation.errors);
+	console.log(validation.errors);
 }
 
 console.log(validation.warnings); // Variables inconnues, etc.
@@ -323,6 +343,7 @@ psql -h localhost -U postgres -d ubumaths -f supabase/seed/default_message_templ
 ```
 
 **Templates créés :**
+
 1. Question sur évaluation
 2. Demande d'aide - SRS
 3. Notification système
@@ -345,31 +366,31 @@ ALTER TABLE message_templates ADD CONSTRAINT message_templates_trigger_type_chec
 
 ```typescript
 export type TriggerType =
-  | 'assessment_question'
-  | 'srs_help'
-  | 'system_notification'
-  | 'enigma_answer'
-  | 'general'
-  | 'NEW_TYPE'; // <-- Ajouter ici
+	| 'assessment_question'
+	| 'srs_help'
+	| 'system_notification'
+	| 'enigma_answer'
+	| 'general'
+	| 'NEW_TYPE'; // <-- Ajouter ici
 ```
 
 3. **Variables** : Définir dans `src/lib/templates/templateVariables.ts`
 
 ```typescript
 export const NEW_TYPE_VARIABLES: TemplateVariable[] = [
-  {
-    name: 'new_variable',
-    label: 'Ma nouvelle variable',
-    example: 'Exemple',
-    required: true,
-    userInput: false
-  }
+	{
+		name: 'new_variable',
+		label: 'Ma nouvelle variable',
+		example: 'Exemple',
+		required: true,
+		userInput: false
+	}
 ];
 
 // Ajouter au registre
 export const VARIABLES_BY_TRIGGER: Record<TriggerType, TemplateVariable[]> = {
-  // ...
-  NEW_TYPE: [...GLOBAL_VARIABLES, ...NEW_TYPE_VARIABLES]
+	// ...
+	NEW_TYPE: [...GLOBAL_VARIABLES, ...NEW_TYPE_VARIABLES]
 };
 ```
 
@@ -377,8 +398,8 @@ export const VARIABLES_BY_TRIGGER: Record<TriggerType, TemplateVariable[]> = {
 
 ```typescript
 const triggerTypeOptions = [
-  // ...
-  { value: 'NEW_TYPE', label: 'Mon nouveau type' }
+	// ...
+	{ value: 'NEW_TYPE', label: 'Mon nouveau type' }
 ];
 ```
 

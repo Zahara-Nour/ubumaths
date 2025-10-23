@@ -32,11 +32,13 @@ pnpm db:migrate
 Après application réussie de la migration :
 
 1. Charger les templates par défaut :
+
    ```bash
    psql -h localhost -U postgres -d ubumaths -f supabase/seed/default_message_templates.sql
    ```
 
 2. Regénérer les types :
+
    ```bash
    npx supabase gen types typescript --local > src/lib/types/database.ts
    ```

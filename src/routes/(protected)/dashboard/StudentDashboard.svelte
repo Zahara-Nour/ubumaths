@@ -34,8 +34,7 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
-	import GidouilleDisplay from '$lib/components/GidouilleDisplay.svelte';
-	import VipCardsGallery from '$lib/components/VipCardsGallery.svelte';
+	import RewardsBlock from '$lib/components/RewardsBlock.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { BookOpen } from 'lucide-svelte';
 
@@ -45,13 +44,13 @@
 </script>
 
 <div class="space-y-6">
-	<!-- GIDOUILLE DISPLAY -->
-	<!-- Fun treasure chest showing student's gidouille balance -->
-	<GidouilleDisplay count={data.profile.gidouilles} />
-
-	<!-- VIP CARDS COLLECTION -->
-	<!-- Gallery showing all VIP cards (owned and unowned) grouped by rarity -->
-	<VipCardsGallery vipCards={data.profile.vip_cards} />
+	<!-- REWARDS BLOCK -->
+	<!-- Summary of rewards: Gidouilles, VIP Cards, and Riddles -->
+	<RewardsBlock
+		gidouilles={data.profile.gidouilles}
+		vipCards={data.profile.vip_cards}
+		riddlesSolved={data.riddlesSolved}
+	/>
 
 	<!-- SRS REVISIONS SECTION -->
 	<!-- Quick access to spaced repetition system -->

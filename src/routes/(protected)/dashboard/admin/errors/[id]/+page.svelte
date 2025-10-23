@@ -64,7 +64,7 @@
 	}
 </script>
 
-<div class="container mx-auto py-8 max-w-6xl">
+<div class="container mx-auto max-w-6xl py-8">
 	<!-- Header -->
 	<div class="mb-6">
 		<Button variant="ghost" onclick={() => goto('/dashboard/admin/errors')}>
@@ -108,16 +108,16 @@
 		<Card.Content class="space-y-4">
 			<!-- Error Message -->
 			<div>
-				<h3 class="font-semibold mb-2">Message</h3>
-				<p class="text-sm bg-muted p-3 rounded">{data.error.message}</p>
+				<h3 class="mb-2 font-semibold">Message</h3>
+				<p class="rounded bg-muted p-3 text-sm">{data.error.message}</p>
 			</div>
 
 			<Separator />
 
 			<!-- Error Details Grid -->
-			<div class="grid md:grid-cols-2 gap-4">
+			<div class="grid gap-4 md:grid-cols-2">
 				<div>
-					<h4 class="font-medium text-sm mb-2">Informations Générales</h4>
+					<h4 class="mb-2 text-sm font-medium">Informations Générales</h4>
 					<dl class="space-y-2 text-sm">
 						<div>
 							<dt class="text-muted-foreground">Date</dt>
@@ -137,7 +137,7 @@
 				</div>
 
 				<div>
-					<h4 class="font-medium text-sm mb-2">Localisation</h4>
+					<h4 class="mb-2 text-sm font-medium">Localisation</h4>
 					<dl class="space-y-2 text-sm">
 						<div>
 							<dt class="text-muted-foreground">URL</dt>
@@ -147,7 +147,9 @@
 							<div>
 								<dt class="text-muted-foreground">Fichier</dt>
 								<dd>
-									{data.error.file_path}{#if data.error.line_number}:{data.error.line_number}{/if}{#if data.error.column_number}:{data.error.column_number}{/if}
+									{data.error.file_path}{#if data.error.line_number}:{data.error
+											.line_number}{/if}{#if data.error.column_number}:{data.error
+											.column_number}{/if}
 								</dd>
 							</div>
 						{/if}
@@ -171,7 +173,7 @@
 			{#if data.error.user_id || data.error.user_role}
 				<Separator />
 				<div>
-					<h4 class="font-medium text-sm mb-2">Contexte Utilisateur</h4>
+					<h4 class="mb-2 text-sm font-medium">Contexte Utilisateur</h4>
 					<dl class="space-y-2 text-sm">
 						{#if data.error.user_id}
 							<div>
@@ -199,8 +201,8 @@
 			{#if data.error.browser_name || data.error.os_name}
 				<Separator />
 				<div>
-					<h4 class="font-medium text-sm mb-2">Environnement</h4>
-					<dl class="grid md:grid-cols-2 gap-2 text-sm">
+					<h4 class="mb-2 text-sm font-medium">Environnement</h4>
+					<dl class="grid gap-2 text-sm md:grid-cols-2">
 						{#if data.error.browser_name}
 							<div>
 								<dt class="text-muted-foreground">Navigateur</dt>
@@ -236,7 +238,7 @@
 			{#if data.error.response_time}
 				<Separator />
 				<div>
-					<h4 class="font-medium text-sm mb-2">Performance</h4>
+					<h4 class="mb-2 text-sm font-medium">Performance</h4>
 					<dl class="space-y-2 text-sm">
 						<div>
 							<dt class="text-muted-foreground">Temps de réponse</dt>
@@ -264,8 +266,7 @@
 				</div>
 			</Card.Header>
 			<Card.Content>
-				<pre
-					class="text-xs bg-muted p-4 rounded overflow-x-auto">{data.error.stack_trace}</pre>
+				<pre class="overflow-x-auto rounded bg-muted p-4 text-xs">{data.error.stack_trace}</pre>
 			</Card.Content>
 		</Card.Root>
 	{/if}
@@ -277,7 +278,7 @@
 				<Card.Title>Contexte Additionnel</Card.Title>
 			</Card.Header>
 			<Card.Content>
-				<pre class="text-xs bg-muted p-4 rounded overflow-x-auto">{JSON.stringify(
+				<pre class="overflow-x-auto rounded bg-muted p-4 text-xs">{JSON.stringify(
 						data.error.context,
 						null,
 						2
@@ -299,7 +300,9 @@
 				</div>
 				<div>
 					<dt class="text-sm text-muted-foreground">Date de résolution</dt>
-					<dd class="text-sm">{data.error.resolved_at ? formatDate(data.error.resolved_at) : 'Inconnue'}</dd>
+					<dd class="text-sm">
+						{data.error.resolved_at ? formatDate(data.error.resolved_at) : 'Inconnue'}
+					</dd>
 				</div>
 				{#if data.error.resolution_notes}
 					<div>
@@ -316,13 +319,17 @@
 				<Card.Description>Ajouter une note et marquer cette erreur comme résolue</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<form method="POST" action="?/resolve" use:enhance={() => {
-					isResolving = true;
-					return async ({ update }) => {
-						await update();
-						isResolving = false;
-					};
-				}}>
+				<form
+					method="POST"
+					action="?/resolve"
+					use:enhance={() => {
+						isResolving = true;
+						return async ({ update }) => {
+							await update();
+							isResolving = false;
+						};
+					}}
+				>
 					<div class="space-y-4">
 						<div>
 							<label for="notes" class="text-sm font-medium">

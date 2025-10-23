@@ -350,9 +350,9 @@ DECLARE
   v_user_role TEXT;
 BEGIN
   -- Get user's role
-  SELECT role INTO v_user_role
+  SELECT profiles.role INTO v_user_role
   FROM profiles
-  WHERE id = p_user_id;
+  WHERE profiles.id = p_user_id;
 
   -- Students can message their teachers
   IF v_user_role = 'student' THEN

@@ -132,7 +132,9 @@
 				answer = textAnswer.trim();
 				break;
 			case 'qcm':
-				answer = riddle.answer?.options?.multipleAnswers ? qcmSelectedIndices : qcmSelectedIndices[0];
+				answer = riddle.answer?.options?.multipleAnswers
+					? qcmSelectedIndices
+					: qcmSelectedIndices[0];
 				break;
 			case 'math':
 				answer = mathAnswer.trim();
@@ -206,7 +208,7 @@
 				<h3 class="mb-3 text-lg font-semibold">Énoncé</h3>
 				<div class="statement-content rounded-lg border bg-card p-4">
 					<!-- Rich text content -->
-					<div class="prose dark:prose-invert max-w-none">
+					<div class="prose max-w-none dark:prose-invert">
 						{@html riddle.statement}
 					</div>
 
@@ -253,7 +255,11 @@
 					<div class="mt-4 flex justify-center">
 						<Button onclick={handleSubmit} disabled={!canSubmit || loading} size="lg">
 							<Send class="mr-2 h-4 w-4" />
-							{loading ? 'Envoi en cours...' : hasAnswer ? 'Valider ma réponse' : 'Demander validation'}
+							{loading
+								? 'Envoi en cours...'
+								: hasAnswer
+									? 'Valider ma réponse'
+									: 'Demander validation'}
 						</Button>
 					</div>
 				</div>
@@ -295,13 +301,13 @@
 
 			<!-- Pending Manual Validation -->
 			{#if isSubmitted && !validationResult}
-				<div class="result-section rounded-lg border-2 border-blue-500 bg-blue-50 p-4 dark:bg-blue-950">
+				<div
+					class="result-section rounded-lg border-2 border-blue-500 bg-blue-50 p-4 dark:bg-blue-950"
+				>
 					<div class="flex items-center gap-3">
 						<Clock class="h-8 w-8 text-blue-600 dark:text-blue-400" />
 						<div>
-							<p class="font-semibold text-blue-700 dark:text-blue-300">
-								En attente de validation
-							</p>
+							<p class="font-semibold text-blue-700 dark:text-blue-300">En attente de validation</p>
 							<p class="text-sm text-blue-600 dark:text-blue-400">
 								Votre professeur validera votre réponse prochainement
 							</p>
@@ -319,7 +325,7 @@
 					<div
 						class="correction-content rounded-lg border border-primary/30 bg-primary/5 p-4 dark:bg-primary/10"
 					>
-						<div class="prose dark:prose-invert max-w-none">
+						<div class="prose max-w-none dark:prose-invert">
 							{@html riddle.correction}
 						</div>
 					</div>

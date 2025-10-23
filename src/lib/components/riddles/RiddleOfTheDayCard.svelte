@@ -6,11 +6,7 @@
 
 <script lang="ts">
 	import type { DbRiddle, DbRiddleAttempt } from '$lib/types/riddle';
-	import {
-		getDifficultyLabel,
-		getDifficultyColor,
-		calculateGidouilles
-	} from '$lib/types/riddle';
+	import { getDifficultyLabel, getDifficultyColor, calculateGidouilles } from '$lib/types/riddle';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
@@ -55,9 +51,7 @@
 						Réussie !
 					</Badge>
 				{:else if isPending}
-					<Badge variant="secondary">
-						En attente de validation
-					</Badge>
+					<Badge variant="secondary">En attente de validation</Badge>
 				{:else if hasFailed && studentAttempt}
 					<Badge variant="outline">
 						{studentAttempt.attempt_number} tentative{studentAttempt.attempt_number > 1 ? 's' : ''}
@@ -90,23 +84,29 @@
 
 		<!-- Riddle Statement (preview) -->
 		<div class="rounded-lg bg-background/50 p-4">
-			<div class="prose dark:prose-invert prose-sm max-w-none line-clamp-3">
+			<div class="prose prose-sm line-clamp-3 max-w-none dark:prose-invert">
 				{@html riddle.statement}
 			</div>
 		</div>
 
 		<!-- Potential Reward -->
 		{#if !isCompleted}
-			<div class="flex items-center justify-center gap-2 rounded-lg bg-yellow-50 p-3 dark:bg-yellow-950">
+			<div
+				class="flex items-center justify-center gap-2 rounded-lg bg-yellow-50 p-3 dark:bg-yellow-950"
+			>
 				<span class="text-sm font-medium">
 					{potentialGidouilles} gidouille{potentialGidouilles > 1 ? 's' : ''} à gagner
 				</span>
 			</div>
 		{:else if studentAttempt}
-			<div class="flex items-center justify-center gap-2 rounded-lg bg-green-50 p-3 dark:bg-green-950">
+			<div
+				class="flex items-center justify-center gap-2 rounded-lg bg-green-50 p-3 dark:bg-green-950"
+			>
 				<Trophy class="h-4 w-4 text-green-600 dark:text-green-400" />
 				<span class="text-sm font-medium text-green-600 dark:text-green-400">
-					{studentAttempt.gidouilles_awarded} gidouille{studentAttempt.gidouilles_awarded > 1 ? 's' : ''} gagnées !
+					{studentAttempt.gidouilles_awarded} gidouille{studentAttempt.gidouilles_awarded > 1
+						? 's'
+						: ''} gagnées !
 				</span>
 			</div>
 		{/if}
@@ -114,29 +114,17 @@
 
 	<Card.Footer class="flex flex-col gap-2 sm:flex-row">
 		{#if !isCompleted}
-			<Button
-				href="/dashboard/student/riddles/{riddle.id}"
-				class="flex-1"
-				size="lg"
-			>
-				{hasFailed || isPending ? 'Réessayer' : 'Tenter l\'énigme'}
+			<Button href="/dashboard/student/riddles/{riddle.id}" class="flex-1" size="lg">
+				{hasFailed || isPending ? 'Réessayer' : "Tenter l'énigme"}
 				<ArrowRight class="ml-2 h-4 w-4" />
 			</Button>
 		{:else}
-			<Button
-				href="/dashboard/student/riddles/{riddle.id}"
-				variant="outline"
-				class="flex-1"
-			>
+			<Button href="/dashboard/student/riddles/{riddle.id}" variant="outline" class="flex-1">
 				Revoir l'énigme
 			</Button>
 		{/if}
 		{#if showArchiveLink}
-			<Button
-				href="/dashboard/student/riddles/archive"
-				variant="ghost"
-				size="lg"
-			>
+			<Button href="/dashboard/student/riddles/archive" variant="ghost" size="lg">
 				<History class="mr-2 h-4 w-4" />
 				Archives
 			</Button>

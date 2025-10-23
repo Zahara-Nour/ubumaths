@@ -25,11 +25,13 @@
 </script>
 
 <Dialog.Root bind:open>
-	<Dialog.Trigger asChild let:builder>
-		<Button builders={[builder]} variant="ghost" size="sm">
-			<HelpCircle class="mr-2 h-4 w-4" />
-			Aide sur les filtres
-		</Button>
+	<Dialog.Trigger>
+		{#snippet child({ props })}
+			<Button {...props} variant="ghost" size="sm">
+				<HelpCircle class="mr-2 h-4 w-4" />
+				Aide sur les filtres
+			</Button>
+		{/snippet}
 	</Dialog.Trigger>
 
 	<Dialog.Content class="max-h-[80vh] max-w-3xl overflow-y-auto">
@@ -49,7 +51,7 @@
 				</code>
 				<p class="mt-2 text-sm text-muted-foreground">
 					Vous pouvez chaîner plusieurs filtres :
-					<code class="font-mono">{'{'}{'{'}}name | uppercase | truncate:20{'}'}{'}'}  </code>
+					<code class="font-mono">{'{'}{'{'}}name | uppercase | truncate:20{'}'}{'}'} </code>
 				</p>
 			</div>
 
@@ -68,7 +70,7 @@
 									<div class="flex-1">
 										<Badge variant="outline" class="mb-1 font-mono">{filter.name}</Badge>
 										<p class="text-sm">{filter.description}</p>
-										<code class="mt-2 block rounded bg-muted p-2 text-xs font-mono">
+										<code class="mt-2 block rounded bg-muted p-2 font-mono text-xs">
 											{filter.example}
 										</code>
 									</div>
@@ -94,7 +96,7 @@
 									<div class="flex-1">
 										<Badge variant="outline" class="mb-1 font-mono">{filter.name}</Badge>
 										<p class="text-sm">{filter.description}</p>
-										<code class="mt-2 block rounded bg-muted p-2 text-xs font-mono">
+										<code class="mt-2 block rounded bg-muted p-2 font-mono text-xs">
 											{filter.example}
 										</code>
 									</div>
@@ -120,7 +122,7 @@
 									<div class="flex-1">
 										<Badge variant="outline" class="mb-1 font-mono">{filter.name}</Badge>
 										<p class="text-sm">{filter.description}</p>
-										<code class="mt-2 block rounded bg-muted p-2 text-xs font-mono">
+										<code class="mt-2 block rounded bg-muted p-2 font-mono text-xs">
 											{filter.example}
 										</code>
 									</div>
@@ -146,7 +148,7 @@
 									<div class="flex-1">
 										<Badge variant="outline" class="mb-1 font-mono">{filter.name}</Badge>
 										<p class="text-sm">{filter.description}</p>
-										<code class="mt-2 block rounded bg-muted p-2 text-xs font-mono">
+										<code class="mt-2 block rounded bg-muted p-2 font-mono text-xs">
 											{filter.example}
 										</code>
 									</div>
@@ -172,7 +174,7 @@
 									<div class="flex-1">
 										<Badge variant="outline" class="mb-1 font-mono">{filter.name}</Badge>
 										<p class="text-sm">{filter.description}</p>
-										<code class="mt-2 block rounded bg-muted p-2 text-xs font-mono">
+										<code class="mt-2 block rounded bg-muted p-2 font-mono text-xs">
 											{filter.example}
 										</code>
 									</div>
@@ -184,19 +186,21 @@
 			</div>
 
 			<!-- Conditionals info -->
-			<div class="rounded-lg border-2 border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/20">
-				<h4 class="mb-2 font-semibold text-blue-900 dark:text-blue-100">
-					💡 Blocs Conditionnels
-				</h4>
+			<div
+				class="rounded-lg border-2 border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/20"
+			>
+				<h4 class="mb-2 font-semibold text-blue-900 dark:text-blue-100">💡 Blocs Conditionnels</h4>
 				<p class="mb-2 text-sm text-blue-800 dark:text-blue-200">
-					Affichez du contenu conditionnellement avec <code class="font-mono">{'{'}{'{'}}#if{'}'}{'}'}...{'{'}{'{'}}  /if{'}'}{'}'}  </code>
+					Affichez du contenu conditionnellement avec <code class="font-mono"
+						>{'{'}{'{'}}#if{'}'}{'}'}...{'{'}{'{'}} /if{'}'}{'}'}
+					</code>
 				</p>
-				<code class="block rounded bg-white p-3 text-xs font-mono dark:bg-gray-900">
+				<code class="block rounded bg-white p-3 font-mono text-xs dark:bg-gray-900">
 					{'{'}{'{'}}#if due_date{'}'}{'}'}<br />
-					&nbsp;&nbsp;Date limite: {'{'}{'{'}}due_date{'}'}{'}'}  <br />
-					{'{'}{'{'}}else{'}'}{'}'}  <br />
+					&nbsp;&nbsp;Date limite: {'{'}{'{'}}due_date{'}'}{'}'} <br />
+					{'{'}{'{'}}else{'}'}{'}'} <br />
 					&nbsp;&nbsp;Pas de date limite<br />
-					{'{'}{'{'}}  /if{'}'}{'}'}
+					{'{'}{'{'}} /if{'}'}{'}'}
 				</code>
 			</div>
 		</div>

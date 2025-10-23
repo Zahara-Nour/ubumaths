@@ -43,14 +43,28 @@
 
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ parent }) => {
+export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
 	// Inherit profile from parent layout (+layout.server.ts)
 	// This contains the user's role which determines the dashboard view
 	const { profile } = await parent();
 
+	// For students, fetch additional stats for rewards block
+	let riddlesSolved = 0;
+	if (profile.role === 'student') {
+		// Get count of successfully solved riddles
+		const { count } = await supabase
+			.from('riddle_attempts')
+			.select('*', { count: 'exact', head: true })
+			.eq('student_id', profile.id)
+			.eq('is_correct', true);
+
+		riddlesSolved = count || 0;
+	}
+
 	// Return profile to the client component
 	// +page.svelte will use profile.role to render the correct dashboard
 	return {
-		profile
+		profile,
+		riddlesSolved
 	};
 };

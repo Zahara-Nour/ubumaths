@@ -217,7 +217,7 @@
 
 		<!-- Title with Gidouille - links to home -->
 		<a href={resolve('/')} class="flex items-center gap-3 transition-opacity hover:opacity-80">
-			<img src={gidouille} alt="Gidouille" class="h-10 w-10" />
+			<img src={gidouille} alt="Gidouille" class="h-8 w-8" />
 			<h1 class="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
 		</a>
 

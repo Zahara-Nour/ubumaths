@@ -54,7 +54,8 @@
 		// Upload, // Unused - for future features
 		Bug,
 		MessageCircle,
-		BookOpen
+		BookOpen,
+		Lightbulb
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -91,6 +92,7 @@
 				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
 				{ href: '/dashboard/teacher/classes', label: 'Classes', icon: GraduationCap },
 				{ href: '/dashboard/students', label: 'Students', icon: Users },
+				{ href: '/dashboard/teacher/riddles', label: 'Énigmes', icon: Lightbulb },
 				{ href: '/dashboard/teacher/rewards', label: 'Rewards', icon: Gift }
 			];
 		} else if (role === 'admin') {
@@ -215,111 +217,106 @@
 <!-- Main dashboard container -->
 <div class="min-h-screen bg-background">
 	<!-- DASHBOARD HEADER (shared across all dashboard pages) -->
-	<header class="border-b shadow-sm {getRoleHeaderColor(data.profile.role)}">
-		<div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-			<div class="flex items-center justify-between">
-				<!-- Left side: Gidouille, Welcome message, and Avatar -->
-				<div class="flex items-center gap-4">
-					<!-- Gidouille - links to home -->
-					<a href="/" class="transition-opacity hover:opacity-80" aria-label="Back to home">
-						<img src={gidouille} alt="Gidouille" class="h-16 w-16" />
-					</a>
+	<header class="border-b border-border shadow-sm {getRoleHeaderColor(data.profile.role)}">
+		<div class="flex h-16 items-center justify-between gap-4 px-4">
+			<!-- Left side: Gidouille, Welcome message, and Avatar -->
+			<div class="flex items-center gap-4">
+				<!-- Gidouille - links to home -->
+				<a href="/" class="transition-opacity hover:opacity-80" aria-label="Back to home">
+					<img src={gidouille} alt="Gidouille" class="h-8 w-8" />
+				</a>
 
-					<!-- Welcome message -->
-					<div>
-						<h1 class="text-2xl font-bold tracking-tight text-foreground">
-							Welcome, {data.profile.firstname || data.profile.full_name || 'User'}!
-						</h1>
-						<!-- Display user's role (student/teacher/admin) -->
-						<p class="mt-1 text-sm text-muted-foreground">
-							<span class="font-medium capitalize">{data.profile.role}</span> Dashboard
-						</p>
-					</div>
-
-					<!-- User Avatar (larger) -->
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger
-							class="relative h-16 w-16 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-						>
-							<Avatar.Root class="h-16 w-16">
-								<Avatar.Image src={getAvatarSrc()} alt={data.profile.email || 'User'} />
-								<Avatar.Fallback class="text-xl">
-									{getAvatarInitials(
-										data.profile?.firstname ?? null,
-										data.profile?.lastname ?? null
-									) ||
-										data.profile.email?.charAt(0).toUpperCase() ||
-										'?'}
-								</Avatar.Fallback>
-							</Avatar.Root>
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Content align="start" class="w-48">
-							<DropdownMenu.Label>{data.profile.email}</DropdownMenu.Label>
-							<DropdownMenu.Separator />
-							<DropdownMenu.Item onclick={handleLogout}>
-								<LogOut class="mr-2 h-4 w-4" />
-								Logout
-							</DropdownMenu.Item>
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
+				<!-- Welcome message -->
+				<div>
+					<h1 class="text-2xl font-bold tracking-tight text-foreground">Dashboard</h1>
 				</div>
+			</div>
 
-				<!-- Right side: Controls -->
-				<div class="flex items-center gap-2">
-					<!-- Font size controls -->
-					<div class="flex items-center gap-1">
-						<Button
-							onclick={() => fontSize.decrease()}
-							disabled={!fontSize.canDecrease}
-							variant="ghost"
-							size="icon-sm"
-							aria-label="Decrease font size"
-							title="Decrease font size"
-						>
-							<Minus class="h-5 w-5" />
-						</Button>
-						<span class="text-sm font-medium">A</span>
-						<Button
-							onclick={() => fontSize.increase()}
-							disabled={!fontSize.canIncrease}
-							variant="ghost"
-							size="icon-sm"
-							aria-label="Increase font size"
-							title="Increase font size"
-						>
-							<Plus class="h-5 w-5" />
-						</Button>
-					</div>
+			<!-- Spacer -->
+			<div class="flex-1"></div>
 
-					<!-- Dark mode toggle -->
+			<!-- Right side: Controls -->
+			<div class="border-l pl-2">
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger
+						class="relative h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+					>
+						<Avatar.Root class="h-10 w-10">
+							<Avatar.Image src={getAvatarSrc()} alt={data.profile.email || 'User'} />
+							<Avatar.Fallback class="text-xl">
+								{getAvatarInitials(
+									data.profile?.firstname ?? null,
+									data.profile?.lastname ?? null
+								) ||
+									data.profile.email?.charAt(0).toUpperCase() ||
+									'?'}
+							</Avatar.Fallback>
+						</Avatar.Root>
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content align="start" class="w-48">
+						<DropdownMenu.Label>{data.profile.email}</DropdownMenu.Label>
+						<DropdownMenu.Separator />
+						<DropdownMenu.Item onclick={handleLogout}>
+							<LogOut class="mr-2 h-4 w-4" />
+							Logout
+						</DropdownMenu.Item>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+			</div>
+			<div class="flex items-center gap-2 border-l">
+				<!-- Font size controls -->
+				<div class="flex items-center gap-1">
 					<Button
-						onclick={() => theme.toggle()}
+						onclick={() => fontSize.decrease()}
+						disabled={!fontSize.canDecrease}
 						variant="ghost"
 						size="icon-sm"
-						aria-label="Toggle dark mode"
+						aria-label="Decrease font size"
+						title="Decrease font size"
 					>
-						{#if theme.dark}
-							<Sun class="h-6 w-6" />
-						{:else}
-							<Moon class="h-6 w-6" />
-						{/if}
+						<Minus class="h-5 w-5" />
 					</Button>
-
-					<!-- Fullscreen toggle -->
+					<span class="text-sm font-medium">A</span>
 					<Button
-						onclick={toggleFullscreen}
+						onclick={() => fontSize.increase()}
+						disabled={!fontSize.canIncrease}
 						variant="ghost"
 						size="icon-sm"
-						aria-label="Toggle fullscreen"
-						title="Toggle fullscreen"
+						aria-label="Increase font size"
+						title="Increase font size"
 					>
-						{#if isFullscreen}
-							<Minimize class="h-6 w-6" />
-						{:else}
-							<Maximize class="h-6 w-6" />
-						{/if}
+						<Plus class="h-5 w-5" />
 					</Button>
 				</div>
+
+				<!-- Dark mode toggle -->
+				<Button
+					onclick={() => theme.toggle()}
+					variant="ghost"
+					size="icon-sm"
+					aria-label="Toggle dark mode"
+				>
+					{#if theme.dark}
+						<Sun class="h-6 w-6" />
+					{:else}
+						<Moon class="h-6 w-6" />
+					{/if}
+				</Button>
+
+				<!-- Fullscreen toggle -->
+				<Button
+					onclick={toggleFullscreen}
+					variant="ghost"
+					size="icon-sm"
+					aria-label="Toggle fullscreen"
+					title="Toggle fullscreen"
+				>
+					{#if isFullscreen}
+						<Minimize class="h-6 w-6" />
+					{:else}
+						<Maximize class="h-6 w-6" />
+					{/if}
+				</Button>
 			</div>
 		</div>
 	</header>

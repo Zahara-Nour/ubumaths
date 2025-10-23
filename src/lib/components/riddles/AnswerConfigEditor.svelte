@@ -204,8 +204,7 @@
 						<Label>Choix de réponses</Label>
 						<div class="flex items-center gap-2">
 							<Switch id="multiple-answers" bind:checked={multipleAnswers} />
-							<Label for="multiple-answers" class="cursor-pointer text-xs"
-								>Réponses multiples</Label
+							<Label for="multiple-answers" class="cursor-pointer text-xs">Réponses multiples</Label
 							>
 						</div>
 					</div>

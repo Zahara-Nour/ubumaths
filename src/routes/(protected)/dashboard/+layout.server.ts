@@ -46,7 +46,7 @@ export const load: LayoutServerLoad = async ({ parent, locals }) => {
 		throw new Error('User or profile missing after authentication - this should never happen');
 	}
 
-	logger.info('Dashboard accessed by:', user.email, 'Role:', profile.role);
+	logger.trace('Dashboard accessed by:', user.email, 'Role:', profile.role);
 
 	/**
 	 * TEACHER-SPECIFIC DATA LOADING

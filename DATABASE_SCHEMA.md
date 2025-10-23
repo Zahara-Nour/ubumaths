@@ -309,41 +309,41 @@ Real-time online/offline status tracked via WebSocket heartbeats.
 
 Comprehensive error logging for application monitoring and debugging.
 
-| Column            | Type        | Description                                         |
-| ----------------- | ----------- | --------------------------------------------------- |
-| id                | UUID (PK)   | Error log ID                                        |
-| error_type        | TEXT        | 'client_js', 'server_api', 'server_load', etc.     |
-| severity          | TEXT        | 'info', 'warning', 'error', 'critical'              |
-| message           | TEXT        | Error message (max 1000 chars)                      |
-| stack_trace       | TEXT        | Full stack trace (sanitized, max 5000 chars)        |
-| error_name        | TEXT        | Error constructor name (TypeError, etc.)            |
-| url               | TEXT        | Page URL or API endpoint                            |
-| file_path         | TEXT        | File where error occurred                           |
-| line_number       | INTEGER     | Line number in file                                 |
-| column_number     | INTEGER     | Column number in file                               |
-| user_id           | UUID (FK)   | References profiles(id)                             |
-| user_role         | TEXT        | 'student', 'teacher', 'admin'                       |
-| session_id        | TEXT        | Session identifier                                  |
-| request_method    | TEXT        | HTTP method (GET, POST, etc.)                       |
-| status_code       | INTEGER     | HTTP status code                                    |
-| request_headers   | JSONB       | Sanitized request headers                           |
-| request_body      | JSONB       | Sanitized request body                              |
-| response_time     | INTEGER     | Response time in milliseconds                       |
-| user_agent        | TEXT        | Browser user agent string                           |
-| browser_name      | TEXT        | Browser name (Chrome, Firefox, etc.)                |
-| browser_version   | TEXT        | Browser version                                     |
-| os_name           | TEXT        | Operating system (Windows, macOS, etc.)             |
-| device_type       | TEXT        | 'mobile', 'tablet', 'desktop'                       |
-| viewport_width    | INTEGER     | Browser viewport width                              |
-| viewport_height   | INTEGER     | Browser viewport height                             |
-| context           | JSONB       | Additional error-specific data (sanitized)          |
-| tags              | TEXT[]      | Tags for categorization                             |
-| resolved          | BOOLEAN     | Whether error has been resolved (default: false)    |
-| resolved_by       | UUID (FK)   | Admin who resolved the error                        |
-| resolved_at       | TIMESTAMPTZ | When error was resolved                             |
-| resolution_notes  | TEXT        | Notes about how error was fixed                     |
-| error_signature   | TEXT        | SHA-256 hash for deduplication (auto-generated)     |
-| created_at        | TIMESTAMPTZ | When error occurred                                 |
+| Column           | Type        | Description                                      |
+| ---------------- | ----------- | ------------------------------------------------ |
+| id               | UUID (PK)   | Error log ID                                     |
+| error_type       | TEXT        | 'client_js', 'server_api', 'server_load', etc.   |
+| severity         | TEXT        | 'info', 'warning', 'error', 'critical'           |
+| message          | TEXT        | Error message (max 1000 chars)                   |
+| stack_trace      | TEXT        | Full stack trace (sanitized, max 5000 chars)     |
+| error_name       | TEXT        | Error constructor name (TypeError, etc.)         |
+| url              | TEXT        | Page URL or API endpoint                         |
+| file_path        | TEXT        | File where error occurred                        |
+| line_number      | INTEGER     | Line number in file                              |
+| column_number    | INTEGER     | Column number in file                            |
+| user_id          | UUID (FK)   | References profiles(id)                          |
+| user_role        | TEXT        | 'student', 'teacher', 'admin'                    |
+| session_id       | TEXT        | Session identifier                               |
+| request_method   | TEXT        | HTTP method (GET, POST, etc.)                    |
+| status_code      | INTEGER     | HTTP status code                                 |
+| request_headers  | JSONB       | Sanitized request headers                        |
+| request_body     | JSONB       | Sanitized request body                           |
+| response_time    | INTEGER     | Response time in milliseconds                    |
+| user_agent       | TEXT        | Browser user agent string                        |
+| browser_name     | TEXT        | Browser name (Chrome, Firefox, etc.)             |
+| browser_version  | TEXT        | Browser version                                  |
+| os_name          | TEXT        | Operating system (Windows, macOS, etc.)          |
+| device_type      | TEXT        | 'mobile', 'tablet', 'desktop'                    |
+| viewport_width   | INTEGER     | Browser viewport width                           |
+| viewport_height  | INTEGER     | Browser viewport height                          |
+| context          | JSONB       | Additional error-specific data (sanitized)       |
+| tags             | TEXT[]      | Tags for categorization                          |
+| resolved         | BOOLEAN     | Whether error has been resolved (default: false) |
+| resolved_by      | UUID (FK)   | Admin who resolved the error                     |
+| resolved_at      | TIMESTAMPTZ | When error was resolved                          |
+| resolution_notes | TEXT        | Notes about how error was fixed                  |
+| error_signature  | TEXT        | SHA-256 hash for deduplication (auto-generated)  |
+| created_at       | TIMESTAMPTZ | When error occurred                              |
 
 **Key Features**:
 
@@ -354,6 +354,7 @@ Comprehensive error logging for application monitoring and debugging.
 - **Service Role Insert**: Error logging bypasses RLS using service role key
 
 **Indexes**:
+
 - `idx_error_logs_created_at` - Time-based queries (DESC)
 - `idx_error_logs_user_id` - User-specific errors (partial, WHERE user_id IS NOT NULL)
 - `idx_error_logs_type_severity` - Filtering by type and severity
@@ -364,10 +365,12 @@ Comprehensive error logging for application monitoring and debugging.
 - `idx_error_logs_session` - Session tracking (partial, WHERE session_id IS NOT NULL)
 
 **Triggers**:
+
 - `trigger_set_error_signature` - Auto-generates error signature before insert
 - `trigger_update_error_occurrence` - Updates occurrence tracking after insert
 
 **RLS Policies**:
+
 - Admins: Full SELECT, INSERT, UPDATE, DELETE access
 - Service Role: INSERT access (for error logging from any context)
 - Students/Teachers: No access
@@ -376,23 +379,23 @@ Comprehensive error logging for application monitoring and debugging.
 
 Tracks frequency and patterns of duplicate errors for efficient monitoring.
 
-| Column             | Type        | Description                                |
-| ------------------ | ----------- | ------------------------------------------ |
-| id                 | UUID (PK)   | Occurrence record ID                       |
-| error_signature    | TEXT UNIQUE | Unique error hash (from error_logs)        |
-| error_type         | TEXT        | Error type (denormalized for filtering)    |
-| severity           | TEXT        | Severity level (denormalized)              |
-| message            | TEXT        | Error message (denormalized)               |
-| url                | TEXT        | URL where error occurred (denormalized)    |
-| file_path          | TEXT        | File path (denormalized)                   |
-| line_number        | INTEGER     | Line number (denormalized)                 |
-| first_seen         | TIMESTAMPTZ | When error first occurred                  |
-| last_seen          | TIMESTAMPTZ | Most recent occurrence                     |
-| occurrence_count   | INTEGER     | Number of times error occurred             |
-| last_error_log_id  | UUID (FK)   | Most recent error_logs entry               |
-| is_resolved        | BOOLEAN     | Whether all instances are resolved         |
-| created_at         | TIMESTAMPTZ | Record creation time                       |
-| updated_at         | TIMESTAMPTZ | Last update time                           |
+| Column            | Type        | Description                             |
+| ----------------- | ----------- | --------------------------------------- |
+| id                | UUID (PK)   | Occurrence record ID                    |
+| error_signature   | TEXT UNIQUE | Unique error hash (from error_logs)     |
+| error_type        | TEXT        | Error type (denormalized for filtering) |
+| severity          | TEXT        | Severity level (denormalized)           |
+| message           | TEXT        | Error message (denormalized)            |
+| url               | TEXT        | URL where error occurred (denormalized) |
+| file_path         | TEXT        | File path (denormalized)                |
+| line_number       | INTEGER     | Line number (denormalized)              |
+| first_seen        | TIMESTAMPTZ | When error first occurred               |
+| last_seen         | TIMESTAMPTZ | Most recent occurrence                  |
+| occurrence_count  | INTEGER     | Number of times error occurred          |
+| last_error_log_id | UUID (FK)   | Most recent error_logs entry            |
+| is_resolved       | BOOLEAN     | Whether all instances are resolved      |
+| created_at        | TIMESTAMPTZ | Record creation time                    |
+| updated_at        | TIMESTAMPTZ | Last update time                        |
 
 **Key Features**:
 
@@ -402,6 +405,7 @@ Tracks frequency and patterns of duplicate errors for efficient monitoring.
 - **Resolution Tracking**: Bulk resolution by signature
 
 **Indexes**:
+
 - `idx_error_occurrences_signature` - Primary lookup
 - `idx_error_occurrences_last_seen` - Recent errors (DESC)
 - `idx_error_occurrences_count` - Most frequent errors (DESC)
@@ -409,9 +413,11 @@ Tracks frequency and patterns of duplicate errors for efficient monitoring.
 - `idx_error_occurrences_type_severity` - Filtering
 
 **Triggers**:
+
 - `trigger_error_occurrences_updated_at` - Auto-updates updated_at timestamp
 
 **RLS Policies**:
+
 - Admins: Full SELECT access
 - Service Role: Full access (for automatic updates)
 - Students/Teachers: No access
@@ -428,6 +434,7 @@ Tracks frequency and patterns of duplicate errors for efficient monitoring.
 **Usage**:
 
 Error monitoring is fully automatic:
+
 - Client-side errors captured via `hooks.client.ts`
 - Server-side errors captured via `hooks.server.ts`
 - Manual capture: `captureError()`, `captureValidationError()`, `capturePerformance()`
@@ -1926,23 +1933,24 @@ Math riddles/enigmas with automatic and manual validation, riddle of the day, de
 
 Mathematical riddles/enigmas created by teachers.
 
-| Column        | Type    | Description                                                         |
-| ------------- | ------- | ------------------------------------------------------------------- |
-| id            | UUID    | Riddle ID                                                           |
-| riddle_number | SERIAL  | Auto-incrementing display number (global, unique)                   |
-| title         | TEXT    | Riddle title                                                        |
-| genre         | TEXT    | Free-form tag (e.g., "Logique", "Géométrie")                       |
-| difficulty    | INTEGER | Difficulty level: 1 (Facile), 2 (Moyen), 3 (Difficile)             |
-| statement     | TEXT    | Problem statement (HTML rich text)                                  |
-| correction    | TEXT    | Solution/explanation (HTML rich text, visible to teachers only)     |
-| image_url     | TEXT    | Optional image URL                                                  |
-| answer        | JSONB   | Optional automatic validation config (null = manual validation)     |
-| created_by    | UUID    | Teacher who created the riddle (FK → profiles)                      |
-| status        | TEXT    | 'draft' or 'published'                                              |
-| created_at    | TSTZ    | Creation timestamp                                                  |
-| updated_at    | TSTZ    | Last update timestamp                                               |
+| Column        | Type    | Description                                                     |
+| ------------- | ------- | --------------------------------------------------------------- |
+| id            | UUID    | Riddle ID                                                       |
+| riddle_number | SERIAL  | Auto-incrementing display number (global, unique)               |
+| title         | TEXT    | Riddle title                                                    |
+| genre         | TEXT    | Free-form tag (e.g., "Logique", "Géométrie")                    |
+| difficulty    | INTEGER | Difficulty level: 1 (Facile), 2 (Moyen), 3 (Difficile)          |
+| statement     | TEXT    | Problem statement (HTML rich text)                              |
+| correction    | TEXT    | Solution/explanation (HTML rich text, visible to teachers only) |
+| image_url     | TEXT    | Optional image URL                                              |
+| answer        | JSONB   | Optional automatic validation config (null = manual validation) |
+| created_by    | UUID    | Teacher who created the riddle (FK → profiles)                  |
+| status        | TEXT    | 'draft' or 'published'                                          |
+| created_at    | TSTZ    | Creation timestamp                                              |
+| updated_at    | TSTZ    | Last update timestamp                                           |
 
 **Answer Structure** (JSONB):
+
 ```json
 {
   "type": "numerical" | "text" | "qcm" | "math",
@@ -1957,12 +1965,14 @@ Mathematical riddles/enigmas created by teachers.
 ```
 
 **Validation Types**:
+
 - `numerical`: Number with tolerance
 - `text`: Text exact match (case insensitive by default)
 - `qcm`: Multiple choice
 - `math`: Mathematical expression
 
 **Status**:
+
 - `draft`: Not yet published, visible only to creator
 - `published`: Active, can be assigned or used as riddle of the day
 
@@ -1987,16 +1997,17 @@ Specific assignments of riddles to classes or students.
 
 Daily riddle accessible to all students (one per day for entire school).
 
-| Column        | Type    | Description                                     |
-| ------------- | ------- | ----------------------------------------------- |
-| id            | UUID    | Record ID                                       |
-| riddle_id     | UUID    | Riddle selected for the day (FK → riddles)      |
-| date          | DATE    | Date (unique - only one riddle per day)         |
-| auto_selected | BOOLEAN | true = automatic rotation, false = manual pick  |
-| selected_by   | UUID    | User who selected (FK → profiles, if manual)    |
-| created_at    | TSTZ    | Creation timestamp                              |
+| Column        | Type    | Description                                    |
+| ------------- | ------- | ---------------------------------------------- |
+| id            | UUID    | Record ID                                      |
+| riddle_id     | UUID    | Riddle selected for the day (FK → riddles)     |
+| date          | DATE    | Date (unique - only one riddle per day)        |
+| auto_selected | BOOLEAN | true = automatic rotation, false = manual pick |
+| selected_by   | UUID    | User who selected (FK → profiles, if manual)   |
+| created_at    | TSTZ    | Creation timestamp                             |
 
 **Selection Methods**:
+
 - **Automatic**: Cron job selects random published riddle, avoiding recent ones
 - **Manual**: Teacher/admin overrides with specific riddle
 
@@ -2006,22 +2017,23 @@ Daily riddle accessible to all students (one per day for entire school).
 
 Student attempts at solving riddles with degressive rewards.
 
-| Column            | Type    | Description                                             |
-| ----------------- | ------- | ------------------------------------------------------- |
-| id                | UUID    | Attempt ID                                              |
-| riddle_id         | UUID    | Riddle being attempted (FK → riddles)                   |
-| student_id        | UUID    | Student making attempt (FK → profiles)                  |
-| attempt_number    | INTEGER | Attempt sequence number (1, 2, 3, ...)                  |
-| submitted_answer  | JSONB   | Student's answer (structure depends on riddle type)     |
-| is_correct        | BOOLEAN | null = awaiting validation, true/false = validated      |
-| validated_by      | UUID    | Teacher who validated (FK → profiles, if manual)        |
-| validated_at      | TSTZ    | Validation timestamp                                    |
-| gidouilles_awarded | INTEGER | Gidouilles earned (calculated with degressive formula)  |
-| created_at        | TSTZ    | Attempt timestamp                                       |
+| Column             | Type    | Description                                            |
+| ------------------ | ------- | ------------------------------------------------------ |
+| id                 | UUID    | Attempt ID                                             |
+| riddle_id          | UUID    | Riddle being attempted (FK → riddles)                  |
+| student_id         | UUID    | Student making attempt (FK → profiles)                 |
+| attempt_number     | INTEGER | Attempt sequence number (1, 2, 3, ...)                 |
+| submitted_answer   | JSONB   | Student's answer (structure depends on riddle type)    |
+| is_correct         | BOOLEAN | null = awaiting validation, true/false = validated     |
+| validated_by       | UUID    | Teacher who validated (FK → profiles, if manual)       |
+| validated_at       | TSTZ    | Validation timestamp                                   |
+| gidouilles_awarded | INTEGER | Gidouilles earned (calculated with degressive formula) |
+| created_at         | TSTZ    | Attempt timestamp                                      |
 
 **Unique Constraint**: (riddle_id, student_id, attempt_number)
 
 **Degressive Rewards Formula**:
+
 ```
 gidouilles = difficulty × multiplier
 
@@ -2037,6 +2049,7 @@ Examples:
 ```
 
 **Validation Flow**:
+
 1. **With `answer` config**: Automatic validation → immediate `is_correct` + gidouilles
 2. **Without `answer`**: Manual validation → `is_correct = NULL` → teacher validates via messaging
 
@@ -2046,40 +2059,40 @@ Examples:
 
 Statistics per riddle for teacher dashboard.
 
-| Column                  | Type    | Description                                      |
-| ----------------------- | ------- | ------------------------------------------------ |
-| riddle_id               | UUID    | Riddle ID                                        |
-| riddle_number           | INTEGER | Display number                                   |
-| title                   | TEXT    | Riddle title                                     |
-| genre                   | TEXT    | Genre tag                                        |
-| difficulty              | INTEGER | Difficulty level                                 |
-| created_by              | UUID    | Creator ID                                       |
-| unique_students         | INTEGER | Number of students who attempted                 |
-| total_attempts          | INTEGER | Total attempts across all students               |
-| avg_attempts_to_success | DECIMAL | Average attempts needed for success              |
-| successful_attempts     | INTEGER | Number of successful attempts                    |
-| success_rate_percent    | DECIMAL | Success rate (0-100%)                            |
-| first_attempts          | INTEGER | Attempts made on 1st try                         |
-| second_attempts         | INTEGER | Attempts made on 2nd try                         |
-| third_plus_attempts     | INTEGER | Attempts made on 3rd+ try                        |
-| pending_validations     | INTEGER | Awaiting manual validation                       |
-| total_gidouilles_awarded | INTEGER | Total gidouilles distributed for this riddle     |
+| Column                   | Type    | Description                                  |
+| ------------------------ | ------- | -------------------------------------------- |
+| riddle_id                | UUID    | Riddle ID                                    |
+| riddle_number            | INTEGER | Display number                               |
+| title                    | TEXT    | Riddle title                                 |
+| genre                    | TEXT    | Genre tag                                    |
+| difficulty               | INTEGER | Difficulty level                             |
+| created_by               | UUID    | Creator ID                                   |
+| unique_students          | INTEGER | Number of students who attempted             |
+| total_attempts           | INTEGER | Total attempts across all students           |
+| avg_attempts_to_success  | DECIMAL | Average attempts needed for success          |
+| successful_attempts      | INTEGER | Number of successful attempts                |
+| success_rate_percent     | DECIMAL | Success rate (0-100%)                        |
+| first_attempts           | INTEGER | Attempts made on 1st try                     |
+| second_attempts          | INTEGER | Attempts made on 2nd try                     |
+| third_plus_attempts      | INTEGER | Attempts made on 3rd+ try                    |
+| pending_validations      | INTEGER | Awaiting manual validation                   |
+| total_gidouilles_awarded | INTEGER | Total gidouilles distributed for this riddle |
 
 #### `riddle_progress`
 
 Student progress and leaderboard data.
 
-| Column            | Type    | Description                              |
-| ----------------- | ------- | ---------------------------------------- |
-| student_id        | UUID    | Student ID                               |
-| firstname         | TEXT    | Student first name                       |
-| lastname          | TEXT    | Student last name                        |
-| avatar_url        | TEXT    | Student avatar                           |
-| riddles_completed | INTEGER | Number of riddles successfully solved    |
-| total_attempts    | INTEGER | Total attempts across all riddles        |
+| Column             | Type    | Description                              |
+| ------------------ | ------- | ---------------------------------------- |
+| student_id         | UUID    | Student ID                               |
+| firstname          | TEXT    | Student first name                       |
+| lastname           | TEXT    | Student last name                        |
+| avatar_url         | TEXT    | Student avatar                           |
+| riddles_completed  | INTEGER | Number of riddles successfully solved    |
+| total_attempts     | INTEGER | Total attempts across all riddles        |
 | riddles_gidouilles | INTEGER | Total gidouilles earned from riddles     |
-| last_success_at   | TSTZ    | Most recent successful attempt           |
-| rank              | INTEGER | Global rank (by riddles_gidouilles DESC) |
+| last_success_at    | TSTZ    | Most recent successful attempt           |
+| rank               | INTEGER | Global rank (by riddles_gidouilles DESC) |
 
 **Used for**: Leaderboard display and student progress tracking.
 
@@ -2087,22 +2100,22 @@ Student progress and leaderboard data.
 
 Individual student riddle history.
 
-| Column                   | Type    | Description                                  |
-| ------------------------ | ------- | -------------------------------------------- |
-| student_id               | UUID    | Student ID                                   |
-| riddle_id                | UUID    | Riddle ID                                    |
-| riddle_number            | INTEGER | Display number                               |
-| riddle_title             | TEXT    | Riddle title                                 |
-| genre                    | TEXT    | Genre tag                                    |
-| difficulty               | INTEGER | Difficulty level                             |
-| first_attempt_number     | INTEGER | Number of first attempt                      |
-| latest_attempt_number    | INTEGER | Number of latest attempt                     |
-| total_attempts           | INTEGER | Total attempts for this riddle               |
-| ever_succeeded           | BOOLEAN | Whether student ever succeeded               |
-| first_success_at         | TSTZ    | Timestamp of first success                   |
-| max_gidouilles_earned    | INTEGER | Maximum gidouilles earned in single attempt  |
-| total_gidouilles_earned  | INTEGER | Total gidouilles earned for this riddle      |
-| last_attempt_at          | TSTZ    | Most recent attempt timestamp                |
+| Column                  | Type    | Description                                 |
+| ----------------------- | ------- | ------------------------------------------- |
+| student_id              | UUID    | Student ID                                  |
+| riddle_id               | UUID    | Riddle ID                                   |
+| riddle_number           | INTEGER | Display number                              |
+| riddle_title            | TEXT    | Riddle title                                |
+| genre                   | TEXT    | Genre tag                                   |
+| difficulty              | INTEGER | Difficulty level                            |
+| first_attempt_number    | INTEGER | Number of first attempt                     |
+| latest_attempt_number   | INTEGER | Number of latest attempt                    |
+| total_attempts          | INTEGER | Total attempts for this riddle              |
+| ever_succeeded          | BOOLEAN | Whether student ever succeeded              |
+| first_success_at        | TSTZ    | Timestamp of first success                  |
+| max_gidouilles_earned   | INTEGER | Maximum gidouilles earned in single attempt |
+| total_gidouilles_earned | INTEGER | Total gidouilles earned for this riddle     |
+| last_attempt_at         | TSTZ    | Most recent attempt timestamp               |
 
 ### Functions
 
@@ -2117,6 +2130,7 @@ Returns the next attempt number for a student on a specific riddle.
 Calculates gidouilles reward using degressive formula.
 
 **Parameters**:
+
 - `p_difficulty`: 1, 2, or 3
 - `p_attempt_number`: 1, 2, 3, ...
 
@@ -2129,6 +2143,7 @@ Calculates gidouilles reward using degressive formula.
 Creates a new attempt record and awards gidouilles if correct.
 
 **Parameters**:
+
 - `p_riddle_id`: UUID
 - `p_student_id`: UUID
 - `p_submitted_answer`: JSONB
@@ -2137,6 +2152,7 @@ Creates a new attempt record and awards gidouilles if correct.
 **Returns**: UUID (attempt_id)
 
 **Side Effects**:
+
 - Creates `riddle_attempts` record
 - Updates `profiles.gidouilles` if correct
 
@@ -2145,6 +2161,7 @@ Creates a new attempt record and awards gidouilles if correct.
 Manual validation by teacher for riddles without automatic validation.
 
 **Parameters**:
+
 - `p_attempt_id`: UUID
 - `p_teacher_id`: UUID
 - `p_is_correct`: BOOLEAN
@@ -2152,6 +2169,7 @@ Manual validation by teacher for riddles without automatic validation.
 **Returns**: BOOLEAN (success)
 
 **Side Effects**:
+
 - Updates `riddle_attempts` (is_correct, validated_by, validated_at, gidouilles_awarded)
 - Updates `profiles.gidouilles` if correct
 
@@ -2160,6 +2178,7 @@ Manual validation by teacher for riddles without automatic validation.
 Gets the riddle of the day for a specific date.
 
 **Parameters**:
+
 - `p_date`: DATE (defaults to today)
 
 **Returns**: UUID (riddle_id) or NULL
@@ -2169,6 +2188,7 @@ Gets the riddle of the day for a specific date.
 Sets or updates the riddle of the day (manual override).
 
 **Parameters**:
+
 - `p_riddle_id`: UUID
 - `p_date`: DATE
 - `p_selected_by`: UUID (teacher/admin)
@@ -2180,21 +2200,25 @@ Sets or updates the riddle of the day (manual override).
 ### RLS Policies
 
 **Riddles**:
+
 - Teachers: CRUD their own riddles
 - Students: SELECT published riddles (assigned OR riddle of the day)
 - Admins: Full access
 
 **Riddle Assignments**:
+
 - Teachers: CRUD assignments for their riddles and students
 - Students: SELECT their own assignments
 - Admins: Full access
 
 **Riddle of the Day**:
+
 - Everyone: SELECT
 - Teachers/Admins: INSERT, UPDATE
 - Admins: DELETE
 
 **Riddle Attempts**:
+
 - Students: INSERT their attempts, SELECT their attempts
 - Teachers: SELECT attempts of their students, UPDATE for validation
 - Admins: Full access

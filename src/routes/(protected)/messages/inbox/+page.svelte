@@ -22,6 +22,7 @@
 
 	let searchQuery = $state('');
 	let selectedIndex = $state(-1);
+	let failedAvatars = $state<Set<string>>(new Set());
 
 	// Load inbox on mount
 	onMount(() => {
@@ -116,6 +117,12 @@
 			await privateMessages.deleteMessage(messageId);
 		}
 	}
+
+	// Handle avatar load error
+	function handleAvatarError(messageId: string) {
+		failedAvatars.add(messageId);
+		failedAvatars = failedAvatars; // Trigger reactivity
+	}
 </script>
 
 <div class="flex h-full flex-col">
@@ -203,17 +210,18 @@
 					>
 						<!-- Avatar -->
 						<div class="flex-shrink-0">
-							{#if message.sender_avatar_url}
+							{#if message.sender_avatar_url && !failedAvatars.has(message.message_id)}
 								<img
 									src={message.sender_avatar_url}
 									alt={message.sender_name}
-									class="h-10 w-10 rounded-full"
+									class="h-10 w-10 rounded-full object-cover"
+									onerror={() => handleAvatarError(message.message_id)}
 								/>
 							{:else}
 								<div
 									class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
 								>
-									{message.sender_name.charAt(0).toUpperCase()}
+									{message.sender_name?.charAt(0)?.toUpperCase() || '?'}
 								</div>
 							{/if}
 						</div>
@@ -284,10 +292,7 @@
 										class="h-8 w-8 p-0"
 									>
 										<Star
-											class={cn(
-												"h-4 w-4",
-												message.is_starred && "fill-yellow-500 text-yellow-500"
-											)}
+											class={cn('h-4 w-4', message.is_starred && 'fill-yellow-500 text-yellow-500')}
 										/>
 									</Button>
 									<Button

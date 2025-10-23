@@ -50,9 +50,7 @@
 			<Trophy class="h-8 w-8 text-primary" />
 			Classement des Énigmes
 		</h1>
-		<p class="mt-2 text-muted-foreground">
-			Qui a résolu le plus d'énigmes ?
-		</p>
+		<p class="mt-2 text-muted-foreground">Qui a résolu le plus d'énigmes ?</p>
 	</div>
 
 	<!-- User Rank Banner -->
@@ -88,7 +86,8 @@
 					</Avatar.Fallback>
 				</Avatar.Root>
 				<p class="mt-2 text-center text-sm font-medium">
-					{data.leaderboard[1].profile.firstname || ''} {data.leaderboard[1].profile.lastname || ''}
+					{data.leaderboard[1].profile.firstname || ''}
+					{data.leaderboard[1].profile.lastname || ''}
 				</p>
 				<p class="text-lg font-bold text-yellow-600 dark:text-yellow-400">
 					{data.leaderboard[1].total_gidouilles_from_riddles}
@@ -108,7 +107,8 @@
 					</Avatar.Fallback>
 				</Avatar.Root>
 				<p class="mt-2 text-center font-bold">
-					{data.leaderboard[0].profile.firstname || ''} {data.leaderboard[0].profile.lastname || ''}
+					{data.leaderboard[0].profile.firstname || ''}
+					{data.leaderboard[0].profile.lastname || ''}
 				</p>
 				<p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
 					{data.leaderboard[0].total_gidouilles_from_riddles}
@@ -128,7 +128,8 @@
 					</Avatar.Fallback>
 				</Avatar.Root>
 				<p class="mt-2 text-center text-sm font-medium">
-					{data.leaderboard[2].profile.firstname || ''} {data.leaderboard[2].profile.lastname || ''}
+					{data.leaderboard[2].profile.firstname || ''}
+					{data.leaderboard[2].profile.lastname || ''}
 				</p>
 				<p class="text-lg font-bold text-yellow-600 dark:text-yellow-400">
 					{data.leaderboard[2].total_gidouilles_from_riddles}
@@ -151,14 +152,16 @@
 					{#each data.leaderboard as entry (entry.student_id)}
 						<div
 							class={cn(
-								"flex items-center justify-between rounded-lg border p-3 transition-colors",
-								isCurrentUser(entry.student_id) && "bg-primary/5 border-primary"
+								'flex items-center justify-between rounded-lg border p-3 transition-colors',
+								isCurrentUser(entry.student_id) && 'border-primary bg-primary/5'
 							)}
 						>
 							<div class="flex items-center gap-3">
 								<!-- Rank -->
 								<div
-									class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-muted text-lg font-bold {getRankColor(entry.rank)}"
+									class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-muted text-lg font-bold {getRankColor(
+										entry.rank
+									)}"
 								>
 									{getRankBadge(entry.rank)}
 								</div>
@@ -174,13 +177,17 @@
 								<!-- Info -->
 								<div>
 									<p class="font-medium">
-										{entry.profile.firstname || ''} {entry.profile.lastname || ''}
+										{entry.profile.firstname || ''}
+										{entry.profile.lastname || ''}
 										{#if isCurrentUser(entry.student_id)}
 											<Badge variant="outline" class="ml-2">Toi</Badge>
 										{/if}
 									</p>
 									<p class="text-sm text-muted-foreground">
-										{entry.riddles_completed} énigme{entry.riddles_completed > 1 ? 's' : ''} réussie{entry.riddles_completed > 1 ? 's' : ''}
+										{entry.riddles_completed} énigme{entry.riddles_completed > 1 ? 's' : ''} réussie{entry.riddles_completed >
+										1
+											? 's'
+											: ''}
 									</p>
 								</div>
 							</div>

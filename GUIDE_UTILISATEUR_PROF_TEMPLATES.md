@@ -30,6 +30,7 @@ Un **template de message** est un modèle pré-rempli qui vous fait gagner du te
 Vous devez envoyer un message à Marie Dupont concernant son devoir :
 
 **Sans template** ⏰ (2-3 minutes) :
+
 ```
 Sujet : Question sur l'évaluation "Devoir Maison #3"
 Corps :
@@ -45,6 +46,7 @@ M. Martin
 ```
 
 **Avec template** ⚡ (10 secondes) :
+
 ```
 1. Sélectionnez le template "Question sur évaluation"
 2. Le système remplit automatiquement :
@@ -58,6 +60,7 @@ M. Martin
 ### Deux Types de Templates
 
 #### 📘 Templates Système
+
 - Créés par les administrateurs
 - **Utilisables par tous les professeurs**
 - Couvrent les cas courants
@@ -65,18 +68,21 @@ M. Martin
 - Badge bleu "Système"
 
 **Exemples** :
+
 - Question sur évaluation
 - Rappel de rendu de devoir
 - Félicitations pour bonne note
 - Réponse à une demande d'aide
 
 #### 📗 Vos Templates de Classe
+
 - **Créés par vous**
 - Spécifiques à vos classes
 - **Vous seul pouvez les modifier**
 - Badge vert "Ma classe"
 
 **Exemples** :
+
 - Message de bienvenue pour votre classe
 - Rappel spécifique à votre méthode de travail
 - Consignes particulières à votre cours
@@ -105,6 +111,7 @@ M. Martin
 ```
 
 **Légende** :
+
 - ⭐/☆ : Ajouter/retirer des favoris
 - 📋 : Dupliquer
 - ⋯ : Expand/Collapse (voir le contenu)
@@ -125,12 +132,15 @@ Les templates système sont créés par les administrateurs et couvrent les beso
 ### Que Pouvez-vous Faire ?
 
 #### ✅ Utiliser
+
 Cliquez sur un template système pour l'utiliser dans votre messagerie.
 
 #### ✅ Ajouter aux Favoris
+
 Cliquez sur l'étoile (☆) pour l'ajouter à vos favoris. Vous y accéderez plus rapidement.
 
 #### ✅ Dupliquer
+
 1. Cliquez sur l'icône **copier** (📋)
 2. Donnez un nouveau titre
 3. Le template est copié **dans votre classe**
@@ -140,11 +150,13 @@ Cliquez sur l'étoile (☆) pour l'ajouter à vos favoris. Vous y accéderez plu
 Vous aimez un template système mais voulez l'adapter à votre style ou à votre classe.
 
 #### ❌ Modifier Directement
+
 Vous ne pouvez pas modifier les templates système. Si vous essayez, un message apparaîtra : _"Vous ne pouvez pas modifier un template système"_.
 
 **Solution** : Dupliquez-le d'abord !
 
 #### ❌ Supprimer
+
 Vous ne pouvez pas supprimer les templates système. Seuls les administrateurs le peuvent.
 
 ---
@@ -154,6 +166,7 @@ Vous ne pouvez pas supprimer les templates système. Seuls les administrateurs l
 ### Quand Créer un Template ?
 
 Créez un template de classe quand :
+
 - ✅ Vous envoyez souvent le même type de message
 - ✅ Vous avez des consignes spécifiques à votre cours
 - ✅ Vous voulez adapter un template système à votre style
@@ -173,49 +186,59 @@ Si le bouton "+ Nouveau template" est grisé, c'est que vous n'avez pas encore d
 ### Étape 2 : Informations de Base
 
 #### **Titre** (obligatoire)
+
 Donnez un nom descriptif à votre template.
 
 **Exemples** :
+
 - ✅ "Rappel exercices - Classe 2nde A"
 - ✅ "Feedback positif - Bon travail"
 - ❌ "Mon template" (trop vague)
 
 #### **Description** (optionnel)
+
 Décrivez quand utiliser ce template.
 
 **Exemple** :
+
 ```
 Template utilisé pour rappeler aux élèves de 2nde A
 de faire leurs exercices avant le cours suivant.
 ```
 
 #### **Classe** (obligatoire)
+
 Sélectionnez la classe pour laquelle vous créez ce template.
 
 **Important** :
+
 - ⚠️ Seul vous (et les admins) pourrez voir ce template
 - ⚠️ Le template ne sera utilisable que pour cette classe
 - 💡 Si vous voulez un template pour plusieurs classes, demandez à un admin de créer un template système
 
 #### **Type de Déclencheur**
+
 Choisissez quand ce template sera utilisé.
 
-| Type | Utilisation |
-|------|-------------|
-| **Message général** | Communication générale |
+| Type                        | Utilisation                          |
+| --------------------------- | ------------------------------------ |
+| **Message général**         | Communication générale               |
 | **Question sur évaluation** | Réponse à une question sur un devoir |
-| **Aide SRS** | Aide sur les cartes de révision |
-| **Notification système** | Alertes automatiques |
+| **Aide SRS**                | Aide sur les cartes de révision      |
+| **Notification système**    | Alertes automatiques                 |
 
 **💡 Conseil** : Choisissez le type le plus approprié. Cela détermine les variables disponibles.
 
 #### **Tags** (optionnel mais recommandé)
+
 Ajoutez des mots-clés pour retrouver facilement votre template.
 
 **Exemples** :
+
 - `rappel`, `exercices`, `urgent`, `feedback`, `positif`
 
 **Comment ajouter un tag** :
+
 1. Tapez le mot dans le champ
 2. Appuyez sur **Entrée**
 3. Le tag est ajouté
@@ -249,6 +272,7 @@ Utilisez l'éditeur de texte enrichi.
 #### 🔧 Outils Disponibles
 
 **Barre d'outils** :
+
 - **Gras**, _Italique_, <u>Souligné</u>
 - Titres (H1, H2, H3)
 - Listes à puces et numérotées
@@ -265,16 +289,19 @@ Utilisez l'éditeur de texte enrichi.
 <p>N'oubliez pas de faire les exercices suivants pour notre prochain cours :</p>
 
 <ul>
-  <li>Exercice 3 page 45</li>
-  <li>Exercice 5 page 46</li>
+	<li>Exercice 3 page 45</li>
+	<li>Exercice 5 page 46</li>
 </ul>
 
-<p>{{#if assessment_due_date}}
-Date limite : <strong>{{assessment_due_date | date:long}}</strong>
-{{/if}}</p>
+<p>
+	{{#if assessment_due_date}} Date limite :
+	<strong>{{assessment_due_date | date:long}}</strong> {{/if}}
+</p>
 
-<p>À bientôt,<br>
-{{teacher_name}}</p>
+<p>
+	À bientôt,<br />
+	{{teacher_name}}
+</p>
 ```
 
 ### Étape 5 : Ajouter des Variables
@@ -284,6 +311,7 @@ Les variables sont remplacées automatiquement par les vraies données.
 #### Comment Insérer une Variable ?
 
 **Méthode 1 : Bouton Assistant** (recommandé)
+
 1. Cliquez sur **"# Insérer variable/filtre"**
 2. Une popup s'ouvre avec toutes les variables disponibles
 3. Utilisez la recherche pour trouver la variable
@@ -295,18 +323,22 @@ Tapez directement `{{nom_variable}}` dans le texte.
 #### Variables les Plus Utiles
 
 ##### 👤 Informations sur l'étudiant
+
 - `{{student_name}}` → "Marie Dupont"
 - `{{student_first_name}}` → "Marie"
 
 ##### 👨‍🏫 Informations sur vous
+
 - `{{teacher_name}}` → "M. Martin"
 - `{{class_name}}` → "2nde A"
 
 ##### 📅 Date et Heure
+
 - `{{today_date}}` → "22/10/2025"
 - `{{today_time}}` → "14:30"
 
 ##### 📊 Évaluations (si Type = "Question sur évaluation")
+
 - `{{assessment_title}}` → "Devoir Maison #3"
 - `{{assessment_due_date}}` → "2025-11-15"
 - `{{student_question}}` → La question de l'étudiant
@@ -326,6 +358,7 @@ Les **filtres** permettent de modifier l'affichage des variables.
 #### Filtres Courants
 
 ##### Mettre en Majuscules / Minuscules
+
 ```
 {{student_name | uppercase}}
 → "MARIE DUPONT"
@@ -338,6 +371,7 @@ Les **filtres** permettent de modifier l'affichage des variables.
 ```
 
 ##### Formater les Dates
+
 ```
 {{assessment_due_date | date:short}}
 → "15/11/2025"
@@ -347,12 +381,14 @@ Les **filtres** permettent de modifier l'affichage des variables.
 ```
 
 ##### Tronquer un Texte Long
+
 ```
 {{description | truncate:50}}
 → "Voici une longue description qui sera tronqu..."
 ```
 
 ##### Valeur par Défaut
+
 ```
 {{optional_field | default:'Non spécifié'}}
 → "Non spécifié" si le champ est vide
@@ -378,9 +414,9 @@ Affichez du contenu seulement si une information existe.
 
 ```html
 {{#if assessment_due_date}}
-  <p>⏰ Date limite : {{assessment_due_date | date:long}}</p>
+<p>⏰ Date limite : {{assessment_due_date | date:long}}</p>
 {{else}}
-  <p>Pas de date limite</p>
+<p>Pas de date limite</p>
 {{/if}}
 ```
 
@@ -388,9 +424,9 @@ Affichez du contenu seulement si une information existe.
 
 ```html
 {{#if is_first_time}}
-  <p>Merci pour votre première question ! 😊</p>
+<p>Merci pour votre première question ! 😊</p>
 {{else}}
-  <p>Merci pour votre question.</p>
+<p>Merci pour votre question.</p>
 {{/if}}
 ```
 
@@ -403,6 +439,7 @@ Avant de sauvegarder, vérifiez le rendu de votre template.
 3. La prévisualisation se met à jour automatiquement (après 0,5 seconde)
 
 **Vérifiez** :
+
 - ✅ Les variables sont bien remplacées
 - ✅ Le formatage est correct
 - ✅ Les filtres fonctionnent
@@ -424,7 +461,9 @@ Avant de sauvegarder, vérifiez le rendu de votre template.
 ### Rechercher un Template
 
 #### 🔍 Barre de Recherche
+
 Tapez n'importe quel mot dans la barre de recherche. La recherche porte sur :
+
 - Titre
 - Description
 - Sujet
@@ -435,18 +474,22 @@ Tapez n'importe quel mot dans la barre de recherche. La recherche porte sur :
 #### 🎯 Filtres
 
 ##### Filtre par Scope
+
 - **Système** : Voir uniquement les templates système
 - **Mes classes** : Voir uniquement vos templates
 
 ##### Filtre par Type
+
 Sélectionnez : Message général, Question sur évaluation, etc.
 
 ##### ⭐ Favoris Uniquement
+
 Cliquez sur **"Favoris uniquement"** pour voir seulement vos templates favoris.
 
 **💡 Pratique** : Mettez en favoris vos 5-10 templates les plus utilisés pour un accès rapide !
 
 ##### 🏷️ Filtre par Tags
+
 Cliquez sur un tag pour filtrer. Cliquez à nouveau pour le désactiver.
 
 ### Actions sur les Templates
@@ -454,10 +497,12 @@ Cliquez sur un tag pour filtrer. Cliquez à nouveau pour le désactiver.
 #### ⭐ Favoris
 
 **Ajouter aux favoris** :
+
 1. Cliquez sur l'étoile vide (☆) à côté du titre
 2. L'étoile devient jaune (⭐)
 
 **Retirer des favoris** :
+
 1. Cliquez sur l'étoile jaune (⭐)
 2. Elle redevient vide (☆)
 
@@ -466,12 +511,14 @@ Cliquez sur un tag pour filtrer. Cliquez à nouveau pour le désactiver.
 #### 📋 Dupliquer
 
 **Tous les templates** (système ou vos templates) :
+
 1. Cliquez sur l'icône **copier** (📋)
 2. Entrez le titre du nouveau template
 3. Sélectionnez la classe (si plusieurs)
 4. Le template est copié **dans votre classe**
 
 **💡 Cas d'usage** :
+
 - Adapter un template système à votre style
 - Créer des variantes d'un de vos templates
 - Créer un template similaire pour une autre classe
@@ -481,6 +528,7 @@ Cliquez sur un tag pour filtrer. Cliquez à nouveau pour le désactiver.
 Chaque fois que vous modifiez un template, le système sauvegarde automatiquement l'ancienne version.
 
 **Voir l'historique** :
+
 1. Cliquez sur l'icône **historique** (⏱️)
 2. Une fenêtre s'ouvre avec toutes les versions précédentes
 3. Chaque version affiche :
@@ -488,6 +536,7 @@ Chaque fois que vous modifiez un template, le système sauvegarde automatiquemen
    - Titre et sujet à ce moment-là
 
 **Restaurer une version** :
+
 1. Cliquez sur **"Restaurer"** pour la version souhaitée
 2. Confirmez la restauration
 3. ⚠️ Attention : Les modifications actuelles seront perdues
@@ -527,18 +576,22 @@ Cliquez sur le **chevron** (⌄) pour voir ou cacher le corps complet du templat
 Une **variable** est un espace réservé qui sera remplacé automatiquement par la vraie information au moment d'envoyer le message.
 
 #### Syntaxe
+
 ```
 {{nom_variable}}
 ```
 
 #### Exemple
+
 Template :
+
 ```
 Bonjour {{student_name}}, votre évaluation {{assessment_title}}
 est à rendre pour le {{assessment_due_date | date:short}}.
 ```
 
 Résultat pour Marie Dupont :
+
 ```
 Bonjour Marie Dupont, votre évaluation Devoir Maison #3
 est à rendre pour le 15/11/2025.
@@ -548,37 +601,40 @@ est à rendre pour le 15/11/2025.
 
 Ces variables fonctionnent dans **tous les types** de templates :
 
-| Variable | Description | Exemple |
-|----------|-------------|---------|
-| `{{student_name}}` | Nom complet | "Marie Dupont" |
-| `{{student_first_name}}` | Prénom | "Marie" |
-| `{{teacher_name}}` | Votre nom | "M. Martin" |
-| `{{class_name}}` | Nom de la classe | "2nde A" |
-| `{{today_date}}` | Date du jour | "22/10/2025" |
-| `{{today_time}}` | Heure actuelle | "14:30" |
+| Variable                 | Description      | Exemple        |
+| ------------------------ | ---------------- | -------------- |
+| `{{student_name}}`       | Nom complet      | "Marie Dupont" |
+| `{{student_first_name}}` | Prénom           | "Marie"        |
+| `{{teacher_name}}`       | Votre nom        | "M. Martin"    |
+| `{{class_name}}`         | Nom de la classe | "2nde A"       |
+| `{{today_date}}`         | Date du jour     | "22/10/2025"   |
+| `{{today_time}}`         | Heure actuelle   | "14:30"        |
 
 ### Variables selon le Type de Déclencheur
 
 #### 📊 "Question sur évaluation"
 
-| Variable | Description | Exemple |
-|----------|-------------|---------|
-| `{{assessment_title}}` | Titre de l'évaluation | "Devoir Maison #3" |
-| `{{assessment_due_date}}` | Date d'échéance | "2025-11-15" |
-| `{{question_number}}` | Numéro de question | "5" |
-| `{{student_question}}` | Question de l'étudiant | "Je ne comprends pas..." |
+| Variable                  | Description            | Exemple                  |
+| ------------------------- | ---------------------- | ------------------------ |
+| `{{assessment_title}}`    | Titre de l'évaluation  | "Devoir Maison #3"       |
+| `{{assessment_due_date}}` | Date d'échéance        | "2025-11-15"             |
+| `{{question_number}}`     | Numéro de question     | "5"                      |
+| `{{student_question}}`    | Question de l'étudiant | "Je ne comprends pas..." |
 
 **Exemple de template** :
+
 ```html
 <p>Bonjour {{student_first_name}},</p>
 
 <p>Merci pour votre question concernant <strong>{{assessment_title}}</strong>.</p>
 
-<p><em>Votre question :</em><br>
-"{{student_question}}"</p>
+<p>
+	<em>Votre question :</em><br />
+	"{{student_question}}"
+</p>
 
 {{#if assessment_due_date}}
-  <p>Rappel : À rendre pour le {{assessment_due_date | date:long}}</p>
+<p>Rappel : À rendre pour le {{assessment_due_date | date:long}}</p>
 {{/if}}
 
 <p>Je reviens vers vous rapidement.</p>
@@ -586,29 +642,31 @@ Ces variables fonctionnent dans **tous les types** de templates :
 
 #### 🎴 "Aide SRS"
 
-| Variable | Description | Exemple |
-|----------|-------------|---------|
-| `{{deck_title}}` | Titre du deck de cartes | "Trigonométrie" |
-| `{{card_question}}` | Question de la carte | "Quelle est la formule..." |
-| `{{help_message}}` | Message d'aide de l'élève | "Je ne comprends pas..." |
+| Variable            | Description               | Exemple                    |
+| ------------------- | ------------------------- | -------------------------- |
+| `{{deck_title}}`    | Titre du deck de cartes   | "Trigonométrie"            |
+| `{{card_question}}` | Question de la carte      | "Quelle est la formule..." |
+| `{{help_message}}`  | Message d'aide de l'élève | "Je ne comprends pas..."   |
 
 #### 🔔 "Notification système"
 
-| Variable | Description | Exemple |
-|----------|-------------|---------|
-| `{{notification_type}}` | Type de notification | "Nouveau devoir" |
-| `{{notification_message}}` | Contenu | "Un nouveau devoir..." |
-| `{{action_url}}` | Lien | "/dashboard/..." |
+| Variable                   | Description          | Exemple                |
+| -------------------------- | -------------------- | ---------------------- |
+| `{{notification_type}}`    | Type de notification | "Nouveau devoir"       |
+| `{{notification_message}}` | Contenu              | "Un nouveau devoir..." |
+| `{{action_url}}`           | Lien                 | "/dashboard/..."       |
 
 ### Filtres Pratiques pour les Profs
 
 #### Filtrer les Noms
+
 ```
 {{student_name | capitalize}}
 → Met une majuscule à chaque mot
 ```
 
 #### Filtrer les Dates
+
 ```
 {{assessment_due_date | date:short}}
 → "15/11/2025"
@@ -618,12 +676,14 @@ Ces variables fonctionnent dans **tous les types** de templates :
 ```
 
 #### Tronquer un Long Texte
+
 ```
 {{student_question | truncate:100}}
 → Limite à 100 caractères + "..."
 ```
 
 #### Valeur par Défaut
+
 ```
 {{optional_info | default:'Non précisé'}}
 → Affiche "Non précisé" si vide
@@ -634,29 +694,34 @@ Ces variables fonctionnent dans **tous les types** de templates :
 #### ✅ Quand une Information peut Manquer
 
 **Mauvais** :
+
 ```html
 <p>Date limite : {{assessment_due_date}}</p>
 ```
+
 Si `assessment_due_date` est vide, ça affiche :
+
 ```
 Date limite :
 ```
 
 **Bon** :
+
 ```html
 {{#if assessment_due_date}}
-  <p>Date limite : {{assessment_due_date | date:long}}</p>
+<p>Date limite : {{assessment_due_date | date:long}}</p>
 {{/if}}
 ```
+
 Si vide, rien ne s'affiche.
 
 #### ✅ Message Différent selon le Contexte
 
 ```html
 {{#if is_first_question}}
-  <p>Bienvenue ! C'est votre première question. 😊</p>
+<p>Bienvenue ! C'est votre première question. 😊</p>
 {{else}}
-  <p>Content de vous revoir !</p>
+<p>Content de vous revoir !</p>
 {{/if}}
 ```
 
@@ -664,7 +729,7 @@ Si vide, rien ne s'affiche.
 
 ```html
 {{#if urgent}}
-  <p class="text-red-600">⚠️ <strong>URGENT</strong></p>
+<p class="text-red-600">⚠️ <strong>URGENT</strong></p>
 {{/if}}
 ```
 
@@ -675,47 +740,60 @@ Si vide, rien ne s'affiche.
 ### 1. Organisez vos Templates
 
 #### Utilisez les Tags
+
 Créez un système de tags cohérent :
+
 - Par urgence : `urgent`, `normal`
 - Par type : `rappel`, `feedback`, `question`
 - Par matière : `maths`, `physique`
 
 #### Favoris pour l'Essentiel
+
 Mettez en favoris vos 5-10 templates les plus utilisés.
 
 #### Nommage Clair
+
 - ✅ "Rappel exercices - 2nde A"
 - ❌ "Mon template 1"
 
 ### 2. Templates Réutilisables
 
 #### Restez Général
+
 Évitez les informations trop spécifiques qui limiteraient la réutilisation.
 
 **Mauvais** :
+
 ```
 Sujet : Rappel exercices pages 45-46
 ```
+
 → Valable seulement pour ces exercices
 
 **Bon** :
+
 ```
 Sujet : Rappel exercices - {{class_name}}
 ```
+
 → Réutilisable pour n'importe quel exercice
 
 #### Utilisez les Variables
+
 Plus vous utilisez de variables, plus le template est flexible.
 
 ### 3. Personnalisez vos Messages
 
 #### Utilisez les Prénoms
+
 ```
 Bonjour {{student_first_name}},
 ```
+
 C'est plus chaleureux que "Bonjour {{student_name}}".
 
 #### Ajoutez des Emojis (avec Modération)
+
 ```
 ✅ Bravo !
 📅 Rappel
@@ -723,7 +801,9 @@ C'est plus chaleureux que "Bonjour {{student_name}}".
 ```
 
 #### Variez les Formules de Politesse
+
 Créez plusieurs versions selon le contexte :
+
 - Formel : "Cordialement,"
 - Amical : "À bientôt !"
 - Encourageant : "Bon travail !"
@@ -738,16 +818,21 @@ Créez plusieurs versions selon le contexte :
 ### 5. Maintenez vos Templates
 
 #### Relisez Régulièrement
+
 Une fois par trimestre, relisez vos templates :
+
 - Sont-ils encore pertinents ?
 - Le ton est-il approprié ?
 - Les informations sont-elles à jour ?
 
 #### Supprimez les Inutilisés
+
 Si vous n'avez pas utilisé un template depuis 6 mois, demandez-vous s'il est encore utile.
 
 #### Dupliquez Avant de Modifier
+
 Si vous voulez tester une nouvelle version :
+
 1. Dupliquez le template
 2. Modifiez la copie
 3. Comparez les deux versions
@@ -762,6 +847,7 @@ Si vous voulez tester une nouvelle version :
 #### Q : Combien de templates puis-je créer ?
 
 **R** : Il n'y a pas de limite. Cependant, pour rester organisé :
+
 - Max 20-30 templates par professeur recommandé
 - Utilisez les tags pour organiser
 - Supprimez les inutilisés
@@ -769,6 +855,7 @@ Si vous voulez tester une nouvelle version :
 #### Q : Puis-je partager mes templates avec un collègue ?
 
 **R** : Pas directement. Solutions :
+
 1. **Demandez à un admin** de transformer votre template en template système
 2. **Partagez le contenu** (copier-coller) et votre collègue recrée le template
 3. **Utilisez la duplication** : Si votre collègue a accès à votre template, il peut le dupliquer
@@ -776,6 +863,7 @@ Si vous voulez tester une nouvelle version :
 #### Q : Je ne vois pas le bouton "Modifier" sur un template, pourquoi ?
 
 **R** : Trois raisons possibles :
+
 1. **C'est un template système** → Seuls les admins peuvent les modifier. Solution : Dupliquez-le !
 2. **C'est le template d'un autre professeur** → Vous ne pouvez modifier que vos propres templates. Solution : Dupliquez-le !
 3. **Problème technique** → Contactez le support
@@ -783,10 +871,12 @@ Si vous voulez tester une nouvelle version :
 #### Q : Comment savoir si un template est le mien ou système ?
 
 **R** : Regardez le badge :
+
 - Badge **bleu "Système"** → Template système
 - Badge **vert avec le nom de la classe** → Votre template
 
 Et regardez les boutons :
+
 - Avec boutons Modifier (✏️) et Supprimer (🗑️) → Votre template
 - Sans ces boutons → Template système
 
@@ -795,6 +885,7 @@ Et regardez les boutons :
 **R** : Non directement. Un template de classe est lié à une seule classe.
 
 **Solutions** :
+
 1. **Créez un template pour chaque classe** (via duplication)
 2. **Demandez à un admin** de créer un template système que toutes vos classes pourront utiliser
 
@@ -811,6 +902,7 @@ Et regardez les boutons :
 #### Q : Une variable ne s'affiche pas, pourquoi ?
 
 **R** : Vérifications :
+
 1. ✅ Syntaxe correcte ? `{{variable}}` (pas d'espace)
 2. ✅ Nom correct ? Vérifiez l'orthographe
 3. ✅ Variable disponible pour ce type ? Certaines variables ne sont disponibles que pour certains types de déclencheurs
@@ -833,6 +925,7 @@ L'ordre compte : les filtres s'appliquent de gauche à droite.
 #### Q : Les templates supportent-ils le HTML ?
 
 **R** : Oui, l'éditeur de texte enrichi génère du HTML. Vous pouvez :
+
 - Utiliser le formatage (gras, italique, etc.)
 - Ajouter des liens
 - Insérer des listes
@@ -845,6 +938,7 @@ L'ordre compte : les filtres s'appliquent de gauche à droite.
 #### Q : Les templates fonctionnent-ils pour les emails ?
 
 **R** : Oui, les templates peuvent être utilisés pour :
+
 - Messages internes de la plateforme
 - Emails envoyés aux étudiants
 - Notifications
@@ -852,6 +946,7 @@ L'ordre compte : les filtres s'appliquent de gauche à droite.
 #### Q : J'ai une erreur "Impossible de générer la prévisualisation", que faire ?
 
 **R** : Vérifiez la syntaxe :
+
 - ✅ `{{variable}}` (correct)
 - ❌ `{ variable }` (espaces)
 - ❌ `{{variable}` (pas de fermeture)
@@ -883,6 +978,7 @@ L'ordre compte : les filtres s'appliquent de gauche à droite.
 ### Exemples de Templates Utiles
 
 #### 1. Rappel Générique
+
 ```
 Titre : Rappel - {{class_name}}
 Sujet : Rappel pour {{class_name}}
@@ -901,6 +997,7 @@ Cordialement,
 ```
 
 #### 2. Félicitations
+
 ```
 Titre : Félicitations - Bon travail
 Sujet : Bravo {{student_first_name}} ! ✨
@@ -916,6 +1013,7 @@ Continuez comme ça ! 💪
 ```
 
 #### 3. Aide Disponible
+
 ```
 Titre : Aide disponible
 Sujet : Je suis là pour vous aider

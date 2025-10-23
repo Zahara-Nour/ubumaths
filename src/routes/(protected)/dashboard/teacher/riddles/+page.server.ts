@@ -11,15 +11,10 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		throw redirect(303, '/login');
 	}
 
-	// Fetch teacher's riddles with stats
+	// Fetch teacher's riddles
 	const { data: riddles, error: riddlesError } = await supabase
 		.from('riddles')
-		.select(
-			`
-			*,
-			riddle_stats!inner(*)
-		`
-		)
+		.select('*')
 		.eq('created_by', session.user.id)
 		.order('riddle_number', { ascending: false });
 
@@ -28,8 +23,24 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		throw error(500, 'Erreur lors du chargement des énigmes');
 	}
 
+	// Fetch stats for these riddles
+	const { data: stats, error: statsError } = await supabase
+		.from('riddle_stats')
+		.select('*')
+		.eq('created_by', session.user.id);
+
+	if (statsError) {
+		console.error('Error fetching riddle stats:', statsError);
+	}
+
+	// Merge riddles with their stats
+	const riddlesWithStats = (riddles || []).map((riddle) => ({
+		...riddle,
+		stats: stats?.find((s) => s.riddle_id === riddle.id)
+	}));
+
 	return {
-		riddles: (riddles as unknown as DbRiddle[]) || []
+		riddles: riddlesWithStats as unknown as DbRiddle[]
 	};
 };
 
@@ -50,7 +61,7 @@ export const actions: Actions = {
 		const riddleId = formData.get('riddle_id')?.toString();
 
 		if (!riddleId) {
-			return fail(400, { message: 'ID de l\'énigme manquant' });
+			return fail(400, { message: "ID de l'énigme manquant" });
 		}
 
 		// Delete riddle (RLS ensures user can only delete their own)
@@ -58,7 +69,7 @@ export const actions: Actions = {
 
 		if (deleteError) {
 			console.error('Error deleting riddle:', deleteError);
-			return fail(500, { message: 'Erreur lors de la suppression de l\'énigme' });
+			return fail(500, { message: "Erreur lors de la suppression de l'énigme" });
 		}
 
 		return { success: true, message: 'Énigme supprimée avec succès' };

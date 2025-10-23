@@ -26,6 +26,7 @@ Guide complet pour utiliser le système d'énigmes mathématiques d'UbuMaths.
 **Route** : `/dashboard/teacher/riddles/new`
 
 #### Étapes :
+
 1. **Informations de base**
    - Titre de l'énigme
    - Genre (tag libre : Algèbre, Géométrie, Logique, etc.)
@@ -53,6 +54,7 @@ Guide complet pour utiliser le système d'énigmes mathématiques d'UbuMaths.
    - **Publié** : Accessible aux élèves
 
 #### Récompenses dégressives automatiques :
+
 - **Difficulté 1** : 3 → 2 → 1 gidouilles (tentatives 1, 2, 3+)
 - **Difficulté 2** : 6 → 4 → 2 gidouilles
 - **Difficulté 3** : 9 → 6 → 3 gidouilles
@@ -64,11 +66,13 @@ Guide complet pour utiliser le système d'énigmes mathématiques d'UbuMaths.
 **Route** : `/dashboard/teacher/riddles/of-the-day`
 
 #### Option A : Sélection manuelle
+
 1. Choisissez une date (aujourd'hui ou future)
 2. Sélectionnez une énigme publiée dans le menu déroulant
 3. Cliquez "Définir comme énigme du jour"
 
 #### Option B : Sélection automatique
+
 - **API Endpoint** : `POST /api/riddles/auto-select-daily`
 - **Algorithme** :
   - Exclut les énigmes des 30 derniers jours
@@ -76,13 +80,16 @@ Guide complet pour utiliser le système d'énigmes mathématiques d'UbuMaths.
   - Sélection aléatoire parmi les éligibles
 
 #### Configuration Cron (optionnel) :
+
 ```json
 // vercel.json
 {
-  "crons": [{
-    "path": "/api/riddles/auto-select-daily",
-    "schedule": "0 0 * * *"
-  }]
+	"crons": [
+		{
+			"path": "/api/riddles/auto-select-daily",
+			"schedule": "0 0 * * *"
+		}
+	]
 }
 ```
 
@@ -93,6 +100,7 @@ Guide complet pour utiliser le système d'énigmes mathématiques d'UbuMaths.
 **Route** : `/dashboard/teacher/riddles/validations`
 
 #### Workflow :
+
 1. **Liste des validations en attente**
    - Vous recevez un message automatique quand un élève soumet
    - Badge compteur sur la page
@@ -119,18 +127,21 @@ Guide complet pour utiliser le système d'énigmes mathématiques d'UbuMaths.
 **Route** : `/dashboard/teacher/riddles/stats`
 
 #### Vue d'ensemble :
+
 - Nombre total d'énigmes créées
 - Validations en attente (avec lien direct)
 - Gidouilles distribuées
 - Élèves actifs
 
 #### Par énigme :
+
 - Taux de réussite avec barre visuelle
 - Tentatives moyennes
 - Gidouilles distribuées
 - Tri par activité
 
 #### Top 10 élèves :
+
 - Podium 🥇🥈🥉
 - Nombre d'énigmes résolues
 - Réussites du premier coup
@@ -145,6 +156,7 @@ Guide complet pour utiliser le système d'énigmes mathématiques d'UbuMaths.
 **Route** : `/dashboard/student/riddles`
 
 #### Énigme du jour :
+
 1. **Card premium** avec l'énigme actuelle
    - Date formatée
    - Badges difficulté et genre
@@ -163,11 +175,13 @@ Guide complet pour utiliser le système d'énigmes mathématiques d'UbuMaths.
    - Rechargement auto après soumission
 
 #### Validation automatique :
+
 - ✅ Correct : Toast vert + gidouilles gagnées
 - ❌ Incorrect : Toast rouge + possibilité réessayer
 - Calcul instantané
 
 #### Validation manuelle :
+
 - ⏳ Message : "Ta réponse a été envoyée au professeur"
 - Notification reçue quand le prof valide
 
@@ -178,26 +192,31 @@ Guide complet pour utiliser le système d'énigmes mathématiques d'UbuMaths.
 **Route** : `/dashboard/student/riddles/history`
 
 #### Statistiques personnelles :
+
 - Total énigmes réussies
 - Total gidouilles gagnées
 - Réussites du premier coup
 
 #### Filtres :
+
 - Par difficulté (Toutes / 1 / 2 / 3)
 - Par genre (Tous / genres disponibles)
 - Application instantanée
 
 #### Liste historique :
+
 - Date de première réussite
 - Nombre de tentatives
 - Gidouilles obtenues
 - Bouton "Revoir l'énigme"
 
 #### Badges achievements 🏅 :
+
 - **Badges débloqués** : Avec couleurs tier (Bronze/Argent/Or/Platine)
 - **En cours** : Avec barres de progression
 
 **4 types de badges** :
+
 - 🎯 **Perfectionniste** : Réussites du 1er coup (5/15/30/50)
 - 💪 **Persévérant** : Après plusieurs tentatives (5/15/30/50)
 - 🔥 **Assidu** : Jours consécutifs (3/7/14/30)
@@ -210,16 +229,19 @@ Guide complet pour utiliser le système d'énigmes mathématiques d'UbuMaths.
 **Route** : `/dashboard/student/riddles/leaderboard`
 
 #### Podium visuel :
+
 - Top 3 avec médailles géantes 🥇🥈🥉
 - Avatars bordés (or/argent/bronze)
 - Scores et nombre d'énigmes
 
 #### Ta position :
+
 - Banner spécial si tu es dans le classement
 - Highlight de ta ligne avec badge "Toi"
 - Affichage de ton rang
 
 #### Classement complet :
+
 - Top 50 élèves
 - Gidouilles totales
 - Nombre d'énigmes résolues
@@ -232,11 +254,11 @@ Guide complet pour utiliser le système d'énigmes mathématiques d'UbuMaths.
 
 Le nombre de gidouilles diminue avec les tentatives :
 
-| Difficulté | 1ère tentative | 2ème tentative | 3ème+ tentatives |
-|------------|----------------|----------------|------------------|
-| 1 (Facile) | 3              | 2              | 1                |
-| 2 (Moyen)  | 6              | 4              | 2                |
-| 3 (Difficile) | 9           | 6              | 3                |
+| Difficulté    | 1ère tentative | 2ème tentative | 3ème+ tentatives |
+| ------------- | -------------- | -------------- | ---------------- |
+| 1 (Facile)    | 3              | 2              | 1                |
+| 2 (Moyen)     | 6              | 4              | 2                |
+| 3 (Difficile) | 9              | 6              | 3                |
 
 **Formule** : `gidouilles = difficulté × multiplicateur`
 
@@ -245,12 +267,14 @@ Le nombre de gidouilles diminue avec les tentatives :
 ### Types de validation
 
 #### Automatique
+
 ✅ Feedback instantané
 ✅ Tentatives illimitées
 ✅ Attribution automatique des gidouilles
 🎯 Idéal pour : calculs, QCM, réponses courtes
 
 #### Manuelle
+
 ✅ Réponses libres complexes
 ✅ Validation par le professeur
 ✅ Feedback personnalisé
@@ -266,6 +290,7 @@ Le nombre de gidouilles diminue avec les tentatives :
 ### Navigation rapide
 
 **Professeurs** :
+
 - `/dashboard/teacher/riddles` - Liste énigmes
 - `/dashboard/teacher/riddles/new` - Créer
 - `/dashboard/teacher/riddles/of-the-day` - Énigme du jour
@@ -273,6 +298,7 @@ Le nombre de gidouilles diminue avec les tentatives :
 - `/dashboard/teacher/riddles/stats` - Statistiques
 
 **Élèves** :
+
 - `/dashboard/student/riddles` - Énigme du jour
 - `/dashboard/student/riddles/archive` - Archives
 - `/dashboard/student/riddles/leaderboard` - Classement
@@ -329,22 +355,26 @@ R : Oui, mais cela supprimera toutes les tentatives associées. Préférez passe
 Le système est **100% fonctionnel** tel quel, mais des améliorations optionnelles sont prévues :
 
 ### 🎯 Version Actuelle (v1.0.0)
+
 - ✅ Toutes fonctionnalités core opérationnelles
 - ⏳ 14 items optionnels (animations, tests automatisés, cache Redis, etc.)
 
 ### 📅 Prochaines Versions
 
 **v1.1 - Court terme** :
+
 - Export CSV historique pour analyse
 - Graphiques statistiques interactifs
 - Filtres avancés leaderboard
 
 **v1.2 - Moyen terme** :
+
 - Mode hors-ligne (PWA)
 - Import/Export énigmes entre professeurs
 - Templates énigmes prédéfinis
 
 **v2.0 - Vision** :
+
 - Énigmes collaboratives multi-joueurs
 - Duels 1v1 entre élèves
 - Mode tournoi avec événements
@@ -357,6 +387,7 @@ Le système est **100% fonctionnel** tel quel, mais des améliorations optionnel
 ## 📞 Support Technique
 
 Pour toute question ou problème :
+
 - Consultez la documentation technique : `RIDDLES_SYSTEM_IMPLEMENTATION.md`
 - Vérifiez les logs serveur pour les erreurs de validation
 - Testez les permissions RLS en cas de problème d'accès

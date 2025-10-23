@@ -62,7 +62,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 	if (insertError) {
 		console.error('Error tracking usage:', insertError);
-		return error(500, 'Erreur lors de l\'enregistrement de l\'utilisation');
+		return error(500, "Erreur lors de l'enregistrement de l'utilisation");
 	}
 
 	// Log usage action
@@ -76,8 +76,11 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		}
 	});
 
-	return json({
-		message: 'Utilisation enregistrée',
-		success: true
-	}, { status: 201 });
+	return json(
+		{
+			message: 'Utilisation enregistrée',
+			success: true
+		},
+		{ status: 201 }
+	);
 };

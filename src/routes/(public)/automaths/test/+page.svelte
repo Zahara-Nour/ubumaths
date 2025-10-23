@@ -44,12 +44,15 @@
 				assignmentId = assignmentParam;
 
 				// Validate assignment and get assessment data
-				const validationResponse = await fetch(`/api/assessments/${assignmentId}/validate-attempt`, {
-					method: 'POST'
-				});
+				const validationResponse = await fetch(
+					`/api/assessments/${assignmentId}/validate-attempt`,
+					{
+						method: 'POST'
+					}
+				);
 
 				if (!validationResponse.ok) {
-					throw new Error('Impossible de valider l\'assignment');
+					throw new Error("Impossible de valider l'assignment");
 				}
 
 				const { validation } = await validationResponse.json();
@@ -61,7 +64,7 @@
 				// Get assessment details
 				const assessmentResponse = await fetch(`/api/assessments/${assignmentId}`);
 				if (!assessmentResponse.ok) {
-					throw new Error('Impossible de charger l\'évaluation');
+					throw new Error("Impossible de charger l'évaluation");
 				}
 
 				const { assessment } = await assessmentResponse.json();
@@ -136,65 +139,67 @@
 	/**
 	 * Generate instances from categories
 	 */
-	async function generateInstancesFromCategories(categories: CartItem[]): Promise<QuestionInstance[]> {
+	async function generateInstancesFromCategories(
+		categories: CartItem[]
+	): Promise<QuestionInstance[]> {
 		const instances: QuestionInstance[] = [];
 
 		for (const cartItem of categories) {
-				// Find matching templates from cache (or fallback to data.templates)
-				const usingCache = questionTemplatesCache.templates.length > 0;
-				const templates = usingCache ? questionTemplatesCache.templates : data.templates;
+			// Find matching templates from cache (or fallback to data.templates)
+			const usingCache = questionTemplatesCache.templates.length > 0;
+			const templates = usingCache ? questionTemplatesCache.templates : data.templates;
 
-				// If we have no templates at all (offline + no cache), fail early
-				if (templates.length === 0) {
-					throw new Error(
-						'Aucun template disponible. Veuillez vous reconnecter à Internet et recharger la page.'
-					);
-				}
-
-				const matchingTemplates = templates.filter(
-					(t) =>
-						t.theme === cartItem.category.theme &&
-						t.domain === cartItem.category.domain &&
-						(t.subdomain || null) === cartItem.category.subdomain &&
-						t.level === cartItem.category.level
+			// If we have no templates at all (offline + no cache), fail early
+			if (templates.length === 0) {
+				throw new Error(
+					'Aucun template disponible. Veuillez vous reconnecter à Internet et recharger la page.'
 				);
+			}
 
-				if (matchingTemplates.length === 0) {
-					console.warn(
-						`No templates found for category: ${cartItem.category.theme}/${cartItem.category.domain}/${cartItem.category.subdomain || 'null'} (level ${cartItem.category.level})`
-					);
-					console.warn(`Available templates count: ${templates.length}`);
-					console.warn(
-						`Searching in:`,
-						templates.map((t) => `${t.theme}/${t.domain}/${t.subdomain || 'null'} (L${t.level})`)
-					);
-					continue;
-				}
+			const matchingTemplates = templates.filter(
+				(t) =>
+					t.theme === cartItem.category.theme &&
+					t.domain === cartItem.category.domain &&
+					(t.subdomain || null) === cartItem.category.subdomain &&
+					t.level === cartItem.category.level
+			);
 
-				// Log success when templates are found
-				console.log(
-					`✓ Found ${matchingTemplates.length} template(s) for ${cartItem.category.theme}/${cartItem.category.domain}/${cartItem.category.subdomain || 'null'} (level ${cartItem.category.level}) - Source: ${usingCache ? 'cache' : 'server data'}`
+			if (matchingTemplates.length === 0) {
+				console.warn(
+					`No templates found for category: ${cartItem.category.theme}/${cartItem.category.domain}/${cartItem.category.subdomain || 'null'} (level ${cartItem.category.level})`
 				);
+				console.warn(`Available templates count: ${templates.length}`);
+				console.warn(
+					`Searching in:`,
+					templates.map((t) => `${t.theme}/${t.domain}/${t.subdomain || 'null'} (L${t.level})`)
+				);
+				continue;
+			}
 
-				// Generate required quantity of instances
-				for (let i = 0; i < cartItem.quantity; i++) {
-					// Randomly select a template
-					const randomTemplate =
-						matchingTemplates[Math.floor(Math.random() * matchingTemplates.length)];
+			// Log success when templates are found
+			console.log(
+				`✓ Found ${matchingTemplates.length} template(s) for ${cartItem.category.theme}/${cartItem.category.domain}/${cartItem.category.subdomain || 'null'} (level ${cartItem.category.level}) - Source: ${usingCache ? 'cache' : 'server data'}`
+			);
 
-					// Generate instance
-					const result = generateInstance(randomTemplate);
+			// Generate required quantity of instances
+			for (let i = 0; i < cartItem.quantity; i++) {
+				// Randomly select a template
+				const randomTemplate =
+					matchingTemplates[Math.floor(Math.random() * matchingTemplates.length)];
 
-					if (result.success && result.instance) {
-						instances.push(result.instance);
-					} else {
-						console.error(
-							`Failed to generate instance for template ${randomTemplate.id}:`,
-							'errors' in result ? result.errors : 'Unknown error'
-						);
-					}
+				// Generate instance
+				const result = generateInstance(randomTemplate);
+
+				if (result.success && result.instance) {
+					instances.push(result.instance);
+				} else {
+					console.error(
+						`Failed to generate instance for template ${randomTemplate.id}:`,
+						'errors' in result ? result.errors : 'Unknown error'
+					);
 				}
 			}
+		}
 
 		return instances;
 	}

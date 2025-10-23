@@ -58,7 +58,7 @@ export async function autoSelectRiddleOfTheDay(
 		let targetDifficulty: RiddleDifficulty = 1;
 		if (lastRiddle?.riddle?.difficulty) {
 			const lastDiff = lastRiddle.riddle.difficulty;
-			targetDifficulty = (lastDiff === 3 ? 1 : (lastDiff + 1)) as RiddleDifficulty;
+			targetDifficulty = (lastDiff === 3 ? 1 : lastDiff + 1) as RiddleDifficulty;
 		}
 
 		// Get eligible riddles
@@ -81,10 +81,7 @@ export async function autoSelectRiddleOfTheDay(
 
 		if (!eligibleRiddles || eligibleRiddles.length === 0) {
 			// Try any difficulty if no riddles available at target difficulty
-			let fallbackQuery = supabase
-				.from('riddles')
-				.select('id')
-				.eq('status', 'published');
+			let fallbackQuery = supabase.from('riddles').select('id').eq('status', 'published');
 
 			if (recentRiddleIds.length > 0) {
 				fallbackQuery = fallbackQuery.not('id', 'in', `(${recentRiddleIds.join(',')})`);
@@ -108,7 +105,7 @@ export async function autoSelectRiddleOfTheDay(
 
 			if (setError) {
 				console.error('Error setting riddle of the day:', setError);
-				return { success: false, error: 'Erreur lors de la définition de l\'énigme' };
+				return { success: false, error: "Erreur lors de la définition de l'énigme" };
 			}
 
 			return { success: true, riddleId: selectedRiddle.id };
@@ -126,7 +123,7 @@ export async function autoSelectRiddleOfTheDay(
 
 		if (setError) {
 			console.error('Error setting riddle of the day:', setError);
-			return { success: false, error: 'Erreur lors de la définition de l\'énigme' };
+			return { success: false, error: "Erreur lors de la définition de l'énigme" };
 		}
 
 		return { success: true, riddleId: selectedRiddle.id };
@@ -159,7 +156,10 @@ export async function checkAndAutoSelectToday(
 	const result = await autoSelectRiddleOfTheDay(supabase, today);
 
 	if (result.success) {
-		return { success: true, message: `Énigme du jour sélectionnée automatiquement: ${result.riddleId}` };
+		return {
+			success: true,
+			message: `Énigme du jour sélectionnée automatiquement: ${result.riddleId}`
+		};
 	} else {
 		return { success: false, message: result.error || 'Échec de la sélection automatique' };
 	}

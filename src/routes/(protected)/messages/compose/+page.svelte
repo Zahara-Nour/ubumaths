@@ -5,7 +5,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import FormRichTextEditor from '$lib/components/rich-text/FormRichTextEditor.svelte';
 	import * as Select from '$lib/components/ui/select';
-	import { Loader2, Send, X, Save, Check, Paperclip, FileIcon, Trash2 } from 'lucide-svelte';
+	import { Loader2, Send, X, Save, Check, Paperclip, FileIcon, Trash2, Reply } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
@@ -27,6 +27,7 @@
 	let replyToMessageId = $state<string | null>(null);
 	let attachments = $state<File[]>([]);
 	let fileInputRef: HTMLInputElement;
+	let failedAvatars = $state<Set<string>>(new Set());
 
 	const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 	const MAX_FILES = 3;
@@ -36,15 +37,15 @@
 		privateMessages.loadRecipients();
 
 		// Check if we're editing an existing draft
-		const draftId = $page.url.searchParams.get('draftId');
+		const draftId = page.url.searchParams.get('draftId');
 		if (draftId) {
 			loadDraft(draftId);
 		}
 
 		// Check if we're replying to a message
-		const replyTo = $page.url.searchParams.get('replyTo');
-		const replySubject = $page.url.searchParams.get('subject');
-		const recipientId = $page.url.searchParams.get('recipientId');
+		const replyTo = page.url.searchParams.get('replyTo');
+		const replySubject = page.url.searchParams.get('subject');
+		const recipientId = page.url.searchParams.get('recipientId');
 
 		if (replyTo && recipientId) {
 			replyToMessageId = replyTo;
@@ -212,7 +213,7 @@
 			// Upload attachments if any
 			if (attachments.length > 0 && messageId) {
 				try {
-							const uploadResults = await uploadMultipleMessageAttachments(
+					const uploadResults = await uploadMultipleMessageAttachments(
 						supabase,
 						attachments,
 						messageId
@@ -271,7 +272,6 @@
 		}>
 	) {
 		try {
-
 			const attachmentRecords = attachmentData.map((att) => ({
 				message_id: messageId,
 				file_name: att.file_name,
@@ -348,6 +348,12 @@
 		if (bytes < 1024) return bytes + ' B';
 		if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
 		return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+	}
+
+	// Handle avatar load error
+	function handleAvatarError(userId: string) {
+		failedAvatars.add(userId);
+		failedAvatars = failedAvatars; // Trigger reactivity
 	}
 </script>
 
@@ -554,20 +560,22 @@
 													disabled={replyToMessageId !== null}
 												/>
 												<div class="flex flex-1 items-center gap-2">
-													{#if recipient.avatar_url}
+													{#if recipient.avatar_url && !failedAvatars.has(recipient.user_id)}
 														<img
 															src={recipient.avatar_url}
 															alt={recipient.full_name}
-															class="h-8 w-8 rounded-full"
+															class="h-8 w-8 rounded-full object-cover"
+															onerror={() => handleAvatarError(recipient.user_id)}
 														/>
 													{:else}
 														<div
 															class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground"
 														>
-															{recipient.full_name.charAt(0).toUpperCase()}
+															{recipient.full_name?.charAt(0)?.toUpperCase() || '?'}
 														</div>
 													{/if}
-													<span class="text-sm font-medium">{recipient.full_name}</span>
+													<span class="text-sm font-medium">{recipient.full_name || 'Inconnu'}</span
+													>
 													<span class="text-xs text-muted-foreground">({recipient.role})</span>
 												</div>
 											</label>

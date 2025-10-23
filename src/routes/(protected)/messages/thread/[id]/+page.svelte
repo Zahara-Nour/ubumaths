@@ -19,7 +19,9 @@
 	import { goto } from '$app/navigation';
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 
-	const threadRootId = $derived($page.params.id);
+	const threadRootId = $derived(page.params.id);
+
+	let failedAvatars = $state<Set<string>>(new Set());
 
 	// Load thread on mount
 	onMount(async () => {
@@ -29,6 +31,12 @@
 	});
 
 	const thread = $derived(privateMessages.currentThread);
+
+	// Handle avatar load error
+	function handleAvatarError(userId: string) {
+		failedAvatars.add(userId);
+		failedAvatars = failedAvatars; // Trigger reactivity
+	}
 
 	// Format date
 	function formatDate(dateStr: string): string {
@@ -132,22 +140,25 @@
 						<div class="mb-4 flex items-start justify-between border-b border-border pb-4">
 							<div class="flex items-start gap-3">
 								<!-- Sender avatar -->
-								{#if message.sender_avatar_url}
+								{#if message.sender_avatar_url && !failedAvatars.has(message.sender_id)}
 									<img
 										src={message.sender_avatar_url}
 										alt={message.sender_name}
-										class="h-10 w-10 rounded-full"
+										class="h-10 w-10 rounded-full object-cover"
+										onerror={() => handleAvatarError(message.sender_id)}
 									/>
 								{:else}
 									<div
 										class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
 									>
-										{message.sender_name.charAt(0).toUpperCase()}
+										{message.sender_name?.charAt(0)?.toUpperCase() || '?'}
 									</div>
 								{/if}
 
 								<div>
-									<div class="font-semibold text-foreground">{message.sender_name}</div>
+									<div class="font-semibold text-foreground">
+										{message.sender_name || 'Expéditeur inconnu'}
+									</div>
 									<div class="text-sm text-muted-foreground">
 										{message.sender_role === 'teacher' ? 'Professeur' : 'Élève'}
 									</div>

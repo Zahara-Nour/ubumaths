@@ -47,11 +47,11 @@
 			<button
 				type="button"
 				onclick={() => handleToggle(index)}
-				disabled={disabled}
+				{disabled}
 				class={cn(
 					'w-full rounded-lg border-2 p-4 text-left transition-all',
 					'hover:border-primary/50 hover:bg-primary/5',
-					'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+					'focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none',
 					selectedIndices.includes(index)
 						? 'border-primary bg-primary/10 font-medium'
 						: 'border-border bg-background',
@@ -71,7 +71,7 @@
 					</div>
 					<div class="flex-1">{choice}</div>
 					{#if multipleAnswers}
-						<Checkbox checked={selectedIndices.includes(index)} disabled={disabled} />
+						<Checkbox checked={selectedIndices.includes(index)} {disabled} />
 					{/if}
 				</div>
 			</button>

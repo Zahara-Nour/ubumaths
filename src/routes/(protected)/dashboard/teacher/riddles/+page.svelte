@@ -74,9 +74,7 @@
 		const result = await response.json();
 
 		if (result.type === 'success') {
-			toaster.success(
-				riddle.status === 'draft' ? 'Énigme publiée' : 'Énigme mise en brouillon'
-			);
+			toaster.success(riddle.status === 'draft' ? 'Énigme publiée' : 'Énigme mise en brouillon');
 			await invalidateAll();
 		} else {
 			toaster.error('Erreur lors de la mise à jour');
@@ -185,19 +183,28 @@
 
 							<!-- Actions Dropdown -->
 							<DropdownMenu.Root>
-								<DropdownMenu.Trigger asChild let:builder>
-									<Button builders={[builder]} variant="ghost" size="icon">
-										<MoreVertical class="h-4 w-4" />
-									</Button>
+								<DropdownMenu.Trigger>
+									{#snippet child({ props })}
+										<Button {...props} variant="ghost" size="icon">
+											<MoreVertical class="h-4 w-4" />
+										</Button>
+									{/snippet}
 								</DropdownMenu.Trigger>
 								<DropdownMenu.Content align="end">
-									<DropdownMenu.Item href="/dashboard/teacher/riddles/{riddle.id}/edit">
-										<Edit class="mr-2 h-4 w-4" />
-										Modifier
+									<DropdownMenu.Item>
+										<a href="/dashboard/teacher/riddles/{riddle.id}/edit" class="flex items-center">
+											<Edit class="mr-2 h-4 w-4" />
+											Modifier
+										</a>
 									</DropdownMenu.Item>
-									<DropdownMenu.Item href="/dashboard/teacher/riddles/{riddle.id}/assign">
-										<Users class="mr-2 h-4 w-4" />
-										Assigner
+									<DropdownMenu.Item>
+										<a
+											href="/dashboard/teacher/riddles/{riddle.id}/assign"
+											class="flex items-center"
+										>
+											<Users class="mr-2 h-4 w-4" />
+											Assigner
+										</a>
 									</DropdownMenu.Item>
 									<DropdownMenu.Item onclick={() => handleToggleStatus(riddle)}>
 										<FileCheck class="mr-2 h-4 w-4" />
@@ -215,7 +222,7 @@
 
 					<Card.Content>
 						<!-- Statement Preview (truncated) -->
-						<div class="prose dark:prose-invert prose-sm max-w-none line-clamp-2">
+						<div class="prose prose-sm line-clamp-2 max-w-none dark:prose-invert">
 							{@html riddle.statement}
 						</div>
 					</Card.Content>

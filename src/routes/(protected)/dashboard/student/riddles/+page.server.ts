@@ -12,9 +12,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	}
 
 	// Get riddle of the day using RPC function
-	const { data: riddleOfTheDay, error: riddleError } = await supabase.rpc(
-		'get_riddle_of_the_day'
-	);
+	const { data: riddleOfTheDay, error: riddleError } = await supabase.rpc('get_riddle_of_the_day');
 
 	if (riddleError) {
 		console.error('Error fetching riddle of the day:', riddleError);

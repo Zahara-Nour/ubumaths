@@ -18,15 +18,15 @@ import type { TemplateVariable, TriggerType } from '$lib/types/messageTemplates'
 export const GLOBAL_VARIABLES: TemplateVariable[] = [
 	{
 		name: 'student_name',
-		label: 'Nom de l\'étudiant',
+		label: "Nom de l'étudiant",
 		example: 'Marie Dubois',
-		description: 'Nom complet de l\'étudiant qui envoie le message'
+		description: "Nom complet de l'étudiant qui envoie le message"
 	},
 	{
 		name: 'student_first_name',
-		label: 'Prénom de l\'étudiant',
+		label: "Prénom de l'étudiant",
 		example: 'Marie',
-		description: 'Prénom de l\'étudiant'
+		description: "Prénom de l'étudiant"
 	},
 	{
 		name: 'teacher_name',
@@ -38,7 +38,7 @@ export const GLOBAL_VARIABLES: TemplateVariable[] = [
 		name: 'class_name',
 		label: 'Nom de la classe',
 		example: '6ème A',
-		description: 'Nom de la classe de l\'étudiant'
+		description: "Nom de la classe de l'étudiant"
 	},
 	{
 		name: 'today_date',
@@ -76,16 +76,16 @@ export const GLOBAL_VARIABLES: TemplateVariable[] = [
 export const ASSESSMENT_VARIABLES: TemplateVariable[] = [
 	{
 		name: 'assessment_title',
-		label: 'Titre de l\'évaluation',
+		label: "Titre de l'évaluation",
 		example: 'Devoir Maison #3',
-		description: 'Titre de l\'évaluation concernée',
+		description: "Titre de l'évaluation concernée",
 		required: true
 	},
 	{
 		name: 'assessment_link',
-		label: 'Lien vers l\'évaluation',
+		label: "Lien vers l'évaluation",
 		example: 'https://ubumaths.com/assessments/123',
-		description: 'URL vers la page de l\'évaluation',
+		description: "URL vers la page de l'évaluation",
 		required: true
 	},
 	{
@@ -96,15 +96,15 @@ export const ASSESSMENT_VARIABLES: TemplateVariable[] = [
 	},
 	{
 		name: 'assessment_type',
-		label: 'Type d\'évaluation',
+		label: "Type d'évaluation",
 		example: 'Devoir Maison',
 		description: 'Type: Devoir Maison, Interrogation, etc.'
 	},
 	{
 		name: 'student_question',
-		label: 'Question de l\'étudiant',
-		example: '[Saisie par l\'étudiant]',
-		description: 'Question ou message de l\'étudiant',
+		label: "Question de l'étudiant",
+		example: "[Saisie par l'étudiant]",
+		description: "Question ou message de l'étudiant",
 		required: true,
 		userInput: true
 	}
@@ -142,9 +142,9 @@ export const SRS_VARIABLES: TemplateVariable[] = [
 	},
 	{
 		name: 'student_message',
-		label: 'Message de l\'étudiant',
-		example: '[Saisie par l\'étudiant]',
-		description: 'Message ou question de l\'étudiant',
+		label: "Message de l'étudiant",
+		example: "[Saisie par l'étudiant]",
+		description: "Message ou question de l'étudiant",
 		required: true,
 		userInput: true
 	}
@@ -156,35 +156,35 @@ export const SRS_VARIABLES: TemplateVariable[] = [
 export const ENIGMA_VARIABLES: TemplateVariable[] = [
 	{
 		name: 'enigma_number',
-		label: 'Numéro de l\'énigme',
+		label: "Numéro de l'énigme",
 		example: '42',
-		description: 'Numéro de l\'énigme',
+		description: "Numéro de l'énigme",
 		required: true
 	},
 	{
 		name: 'enigma_title',
-		label: 'Titre de l\'énigme',
+		label: "Titre de l'énigme",
 		example: 'Le mystère des nombres premiers',
-		description: 'Titre de l\'énigme'
+		description: "Titre de l'énigme"
 	},
 	{
 		name: 'enigma_link',
-		label: 'Lien vers l\'énigme',
+		label: "Lien vers l'énigme",
 		example: 'https://ubumaths.com/enigma/789',
-		description: 'URL vers la page de l\'énigme avec correction',
+		description: "URL vers la page de l'énigme avec correction",
 		required: true
 	},
 	{
 		name: 'enigma_difficulty',
 		label: 'Difficulté',
 		example: 'Difficile',
-		description: 'Niveau de difficulté de l\'énigme'
+		description: "Niveau de difficulté de l'énigme"
 	},
 	{
 		name: 'student_answer',
-		label: 'Réponse de l\'étudiant',
-		example: '[Saisie par l\'étudiant]',
-		description: 'Réponse proposée par l\'étudiant',
+		label: "Réponse de l'étudiant",
+		example: "[Saisie par l'étudiant]",
+		description: "Réponse proposée par l'étudiant",
 		required: true,
 		userInput: true
 	}
@@ -210,9 +210,9 @@ export const NOTIFICATION_VARIABLES: TemplateVariable[] = [
 	},
 	{
 		name: 'notification_link',
-		label: 'Lien d\'action',
+		label: "Lien d'action",
 		example: 'https://ubumaths.com/dashboard',
-		description: 'Lien vers l\'action concernée'
+		description: "Lien vers l'action concernée"
 	},
 	{
 		name: 'notification_type',
@@ -237,7 +237,7 @@ export const GENERAL_VARIABLES: TemplateVariable[] = [
 	{
 		name: 'custom_message',
 		label: 'Message personnalisé',
-		example: '[Saisie par l\'étudiant]',
+		example: "[Saisie par l'étudiant]",
 		description: 'Contenu du message',
 		required: true,
 		userInput: true

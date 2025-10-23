@@ -8,27 +8,30 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 
 ## 📊 Vue d'Ensemble
 
-| Catégorie | Items | Priorité | Estimation |
-|-----------|-------|----------|------------|
-| 🎨 UX/Design | 3 | Moyenne | ~3 jours |
-| ⚡ Performance | 4 | Basse | ~5 jours |
-| ♿ Accessibilité | 2 | Moyenne | ~2 jours |
-| 🧪 Tests | 5 | Haute | ~1 semaine |
-| **Total** | **14** | - | **~3 semaines** |
+| Catégorie        | Items  | Priorité | Estimation      |
+| ---------------- | ------ | -------- | --------------- |
+| 🎨 UX/Design     | 3      | Moyenne  | ~3 jours        |
+| ⚡ Performance   | 4      | Basse    | ~5 jours        |
+| ♿ Accessibilité | 2      | Moyenne  | ~2 jours        |
+| 🧪 Tests         | 5      | Haute    | ~1 semaine      |
+| **Total**        | **14** | -        | **~3 semaines** |
 
 ---
 
 ## 🎨 UX/Design (3 items)
 
 ### 1. Animations Confettis sur Succès
+
 **Description** : Animation célébration quand énigme réussie
 **Librairie** : `canvas-confetti` ou `react-confetti`
 **Implémentation** :
+
 - Trigger dans `RiddleCard.svelte` après validation réussie
 - Animation canvas overlay temporaire
 - Désactivable dans paramètres utilisateur (optionnel)
 
 **Fichiers à modifier** :
+
 - `src/lib/components/riddles/RiddleCard.svelte`
 - `src/routes/api/riddles/[id]/submit/+server.ts` (réponse avec flag)
 
@@ -37,20 +40,24 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 ---
 
 ### 2. Sons Feedback Succès/Échec
+
 **Description** : Son court sur succès/échec validation
 **Format** : MP3/OGG courts (~1s)
 **Implémentation** :
+
 - Audio sprites ou fichiers séparés
 - Jouer via `HTMLAudioElement`
 - Muet par défaut, activable dans settings
 - Respect autoplay policies navigateurs
 
 **Fichiers à créer** :
+
 - `static/sounds/success.mp3`
 - `static/sounds/error.mp3`
 - `src/lib/utils/sound-player.ts`
 
 **Fichiers à modifier** :
+
 - `src/lib/components/riddles/RiddleCard.svelte`
 
 **Estimation** : 0.5 jour
@@ -58,20 +65,24 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 ---
 
 ### 3. Loading Skeletons
+
 **Description** : Squelettes au lieu de spinners pour meilleure UX
 **Librairie** : `svelte-loading-skeleton` ou custom
 **Implémentation** :
+
 - Skeletons pour RiddleCard, leaderboard, stats
 - Animations shimmer CSS
 - Dimensions fixes pour éviter layout shift
 
 **Composants à créer** :
+
 - `src/lib/components/ui/skeleton/` (ou via shadcn-svelte)
   - `RiddleCardSkeleton.svelte`
   - `LeaderboardSkeleton.svelte`
   - `StatsCardSkeleton.svelte`
 
 **Fichiers à modifier** :
+
 - Toutes pages avec loading states
 
 **Estimation** : 1.5 jour
@@ -81,23 +92,28 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 ## ⚡ Performance (4 items)
 
 ### 4. Cache Redis Énigme du Jour
+
 **Description** : Cache l'énigme du jour pour éviter requête DB à chaque visite
 **Stack** : Redis (Upstash ou self-hosted)
 **Implémentation** :
+
 - Cache key : `riddle:daily:{date}`
 - TTL : 24 heures (expire minuit)
 - Invalidation : Sur set/delete énigme du jour
 - Fallback DB si cache miss
 
 **Fichiers à créer** :
+
 - `src/lib/server/redis.ts` (client Redis)
 
 **Fichiers à modifier** :
+
 - `src/routes/(protected)/dashboard/student/riddles/+page.server.ts`
 - `src/routes/api/riddles/auto-select-daily/+server.ts`
 - `src/lib/server/riddle-auto-select.ts`
 
 **Variables env** :
+
 - `REDIS_URL`
 
 **Estimation** : 2 jours
@@ -105,18 +121,22 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 ---
 
 ### 5. Pagination Liste Énigmes
+
 **Description** : Pagination si >100 énigmes dans liste professeur
 **Librairie** : Custom ou `svelte-paginate`
 **Implémentation** :
+
 - Pagination backend (SQL LIMIT/OFFSET)
 - Composant UI pagination (shadcn-svelte)
 - 20 énigmes par page recommandé
 - Navigation page précédente/suivante + numéros pages
 
 **Fichiers à créer** :
+
 - Possiblement `src/lib/components/ui/pagination/` (shadcn-svelte)
 
 **Fichiers à modifier** :
+
 - `src/routes/(protected)/dashboard/teacher/riddles/+page.server.ts`
 - `src/routes/(protected)/dashboard/teacher/riddles/+page.svelte`
 
@@ -125,17 +145,21 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 ---
 
 ### 6. Lazy Loading Images
+
 **Description** : Images énigmes chargées à la demande (intersection observer)
 **Implémentation** :
+
 - Attribut `loading="lazy"` natif
 - OU Intersection Observer custom
 - Placeholder blur/skeleton pendant chargement
 - Fallback si image manquante
 
 **Fichiers à créer** :
+
 - `src/lib/components/ui/LazyImage.svelte` (optionnel)
 
 **Fichiers à modifier** :
+
 - `src/lib/components/riddles/RiddleCard.svelte`
 - `src/lib/components/riddles/RiddleOfTheDayCard.svelte`
 
@@ -144,17 +168,21 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 ---
 
 ### 7. Debounce Recherche
+
 **Description** : Debounce recherche/filtres pour réduire requêtes DB
 **Implémentation** :
+
 - Fonction debounce utilitaire
 - Apply sur inputs recherche/filtres
 - Délai 300-500ms recommandé
 - Indicateur "Recherche en cours..."
 
 **Fichiers à créer** :
+
 - `src/lib/utils/debounce.ts` (si pas déjà existant)
 
 **Fichiers à modifier** :
+
 - `src/routes/(protected)/dashboard/teacher/riddles/+page.svelte` (si recherche ajoutée)
 - `src/routes/(protected)/dashboard/student/riddles/history/+page.svelte` (filtres)
 
@@ -165,9 +193,11 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 ## ♿ Accessibilité (2 items)
 
 ### 8. ARIA Labels Avancés
+
 **Description** : Descriptions détaillées pour tous composants interactifs
 **Guidelines** : WCAG 2.1 Level AA
 **Implémentation** :
+
 - `aria-label` sur tous boutons icônes
 - `aria-describedby` pour hints contextuels
 - `role` appropriés (button, dialog, alert)
@@ -175,6 +205,7 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 - `aria-expanded` pour composants pliables
 
 **Fichiers à modifier** :
+
 - Tous composants UI (RiddleCard, RiddleForm, inputs, buttons)
 - Navigation (RiddleNav)
 - Toasts (toaster)
@@ -184,8 +215,10 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 ---
 
 ### 9. Optimisations Screen Reader
+
 **Description** : Navigation optimale pour lecteurs d'écran
 **Implémentation** :
+
 - Structure sémantique HTML (nav, main, article, section)
 - Skip links ("Aller au contenu")
 - Focus management (dialogs, modals)
@@ -194,6 +227,7 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 - Labels formulaires explicites
 
 **Fichiers à modifier** :
+
 - Layouts principaux (`+layout.svelte`)
 - Tous composants interactifs
 - Forms (RiddleForm, inputs)
@@ -205,6 +239,7 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 ## 🧪 Tests (5 items)
 
 ### 10. Tests Unitaires Utilitaires
+
 **Description** : Tests `riddle-validator.ts` et `riddle-badges.ts` avec Vitest
 **Framework** : Vitest (déjà configuré)
 **Couverture cible** : >80%
@@ -212,6 +247,7 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 **Tests à écrire** :
 
 #### `riddle-validator.test.ts`
+
 - Test validation numérique (avec tolérance)
 - Test validation texte (case sensitive/insensitive)
 - Test validation QCM (choix unique/multiple)
@@ -219,6 +255,7 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 - Test cas limites (null, undefined, types incorrects)
 
 #### `riddle-badges.test.ts`
+
 - Test calcul badges Perfectionniste (tous tiers)
 - Test calcul badges Persévérant
 - Test calcul badges Assidu
@@ -226,6 +263,7 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 - Test progression (earned vs in-progress)
 
 **Fichiers à créer** :
+
 - `src/lib/utils/riddle-validator.test.ts`
 - `src/lib/utils/riddle-badges.test.ts`
 
@@ -236,9 +274,11 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 ---
 
 ### 11. Tests Intégration API
+
 **Description** : Tests endpoints submit/auto-select
 **Framework** : Vitest + Supertest (ou fetch natif)
 **Implémentation** :
+
 - Mock Supabase client
 - Test POST `/api/riddles/[id]/submit`
   - Validation automatique réussie
@@ -253,6 +293,7 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
   - Authentification API key
 
 **Fichiers à créer** :
+
 - `src/routes/api/riddles/[id]/submit/+server.test.ts`
 - `src/routes/api/riddles/auto-select-daily/+server.test.ts`
 
@@ -261,11 +302,13 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 ---
 
 ### 12. Tests E2E Complets
+
 **Description** : Workflow bout-en-bout avec Playwright
 **Framework** : Playwright (déjà configuré)
 **Scénarios** :
 
 #### Workflow Professeur
+
 1. Login comme prof
 2. Créer énigme avec validation auto
 3. Publier énigme
@@ -273,6 +316,7 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 5. Vérifier apparition dans interface élève
 
 #### Workflow Élève
+
 1. Login comme élève
 2. Voir énigme du jour
 3. Tenter avec réponse incorrecte
@@ -283,6 +327,7 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 8. Vérifier leaderboard
 
 #### Workflow Validation Manuelle
+
 1. Prof crée énigme sans validation auto
 2. Élève soumet réponse libre
 3. Prof reçoit notification
@@ -291,6 +336,7 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 6. Vérifier attribution gidouilles
 
 **Fichiers à créer** :
+
 - `e2e/riddles/teacher-workflow.spec.ts`
 - `e2e/riddles/student-workflow.spec.ts`
 - `e2e/riddles/manual-validation.spec.ts`
@@ -302,9 +348,11 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 ---
 
 ### 13. Tests RLS Policies
+
 **Description** : Vérification permissions par rôle
 **Framework** : Vitest + Supabase client
 **Implémentation** :
+
 - Test SELECT riddles (teacher sees own + published, student sees published only)
 - Test INSERT riddles (teacher only)
 - Test UPDATE riddles (owner only)
@@ -313,9 +361,11 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 - Test riddle_of_the_day (all read, teacher write)
 
 **Fichiers à créer** :
+
 - `tests/rls/riddles.test.ts`
 
 **Setup** :
+
 - Mock users (teacher, student, admin)
 - Mock Supabase auth context
 
@@ -324,9 +374,11 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 ---
 
 ### 14. Tests Snapshot Composants
+
 **Description** : Tests snapshot pour détecter régressions UI
 **Framework** : Vitest + @testing-library/svelte
 **Implémentation** :
+
 - Snapshots RiddleCard (différents états)
 - Snapshots RiddleForm
 - Snapshots inputs spécialisés
@@ -334,6 +386,7 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 - Snapshots leaderboard/stats
 
 **Fichiers à créer** :
+
 - `src/lib/components/riddles/RiddleCard.test.ts`
 - `src/lib/components/riddles/RiddleForm.test.ts`
 - `src/lib/components/riddles/inputs/*.test.ts`
@@ -345,6 +398,7 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 ## 🎯 Priorisation Recommandée
 
 ### 🔥 Haute Priorité (Recommandé pour v1.0 final)
+
 1. **Tests E2E complets** (critique pour confiance déploiement)
 2. **Tests unitaires utilitaires** (validation core logic)
 3. **ARIA labels avancés** (accessibilité de base)
@@ -353,6 +407,7 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 **Progression après** : ~99%
 
 ### 🟡 Priorité Moyenne (v1.1)
+
 4. **Animations confettis** (engagement élèves)
 5. **Cache Redis énigme du jour** (performance si forte charge)
 6. **Optimisations screen reader** (accessibilité complète)
@@ -362,6 +417,7 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 **Progression après** : 100%
 
 ### 🔵 Basse Priorité (Nice-to-have)
+
 8. Sons feedback
 9. Loading skeletons
 10. Pagination liste énigmes
@@ -401,21 +457,25 @@ npx shadcn-svelte@latest add skeleton
 ### Phase 6 - Items Optionnels
 
 #### 🎨 UX/Design
+
 - [ ] Animations confettis succès
 - [ ] Sons feedback succès/échec
 - [ ] Loading skeletons
 
 #### ⚡ Performance
+
 - [ ] Cache Redis énigme du jour
 - [ ] Pagination liste énigmes
 - [ ] Lazy loading images
 - [ ] Debounce recherche
 
 #### ♿ Accessibilité
+
 - [ ] ARIA labels avancés
 - [ ] Optimisations screen reader
 
 #### 🧪 Tests
+
 - [ ] Tests unitaires utilitaires
 - [ ] Tests intégration API
 - [ ] Tests E2E complets
@@ -426,18 +486,19 @@ npx shadcn-svelte@latest add skeleton
 
 ## 📊 Impact sur Progression
 
-| Scénario | Items complétés | Progression |
-|----------|----------------|-------------|
-| Actuel | 0/14 | ~97% |
-| Haute priorité | 3/14 | ~99% |
-| Moyenne priorité | 7/14 | 100% |
-| Tout complété | 14/14 | 100% (full polish) |
+| Scénario         | Items complétés | Progression        |
+| ---------------- | --------------- | ------------------ |
+| Actuel           | 0/14            | ~97%               |
+| Haute priorité   | 3/14            | ~99%               |
+| Moyenne priorité | 7/14            | 100%               |
+| Tout complété    | 14/14           | 100% (full polish) |
 
 ---
 
 ## 🚀 Pour Démarrer
 
 ### Option 1 : Tests d'abord (Recommandé)
+
 ```bash
 # 1. Tests E2E
 pnpm add -D playwright
@@ -451,6 +512,7 @@ pnpm test:unit
 ```
 
 ### Option 2 : UX d'abord
+
 ```bash
 # 1. Confettis
 pnpm add canvas-confetti
@@ -462,6 +524,7 @@ pnpm add canvas-confetti
 ```
 
 ### Option 3 : Performance d'abord
+
 ```bash
 # 1. Cache Redis
 pnpm add @upstash/redis
@@ -477,21 +540,25 @@ pnpm add @upstash/redis
 ## 📝 Notes Techniques
 
 ### Confettis
+
 - Déclencher uniquement 1ère réussite (pas à chaque visite)
 - Stocker état dans localStorage ou vérifier attempts
 - Désactiver sur mobile si performance faible
 
 ### Cache Redis
+
 - Considérer coût (Upstash ~$0.20/100K requests)
 - Alternative : Cache in-memory simple si monoserveur
 - Monitoring hit rate
 
 ### Tests E2E
+
 - Utiliser fixtures Playwright pour seed DB
 - Cleanup après chaque test
 - Parallel execution avec isolation
 
 ### Accessibilité
+
 - Tester avec VoiceOver (Mac), NVDA (Windows), JAWS
 - Vérifier navigation clavier uniquement
 - Contraste vérifier avec axe DevTools
@@ -504,4 +571,4 @@ pnpm add @upstash/redis
 
 ---
 
-*💡 Ce fichier sert de référence pour les développeurs souhaitant contribuer aux améliorations optionnelles du système.*
+_💡 Ce fichier sert de référence pour les développeurs souhaitant contribuer aux améliorations optionnelles du système._

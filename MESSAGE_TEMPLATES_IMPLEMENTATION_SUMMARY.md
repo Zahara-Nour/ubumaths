@@ -11,6 +11,7 @@ Le système de templates de messagerie a été entièrement implémenté selon l
 ### **1. Base de Données**
 
 #### Migration
+
 - ✅ `supabase/migrations/097_create_message_templates.sql`
   - Table `message_templates`
   - Function `update_message_template_updated_at()`
@@ -19,6 +20,7 @@ Le système de templates de messagerie a été entièrement implémenté selon l
   - Indexes optimisés
 
 #### Seed Data
+
 - ✅ `supabase/seed/default_message_templates.sql`
   - 5 templates par défaut (4 actifs + 1 futur)
   - Question sur évaluation
@@ -32,6 +34,7 @@ Le système de templates de messagerie a été entièrement implémenté selon l
 ### **2. Types & Core**
 
 #### Types TypeScript
+
 - ✅ `src/lib/types/messageTemplates.ts`
   - `MessageTemplate`, `MessageTemplateInput`
   - `TriggerType`, `TemplateScope`
@@ -40,6 +43,7 @@ Le système de templates de messagerie a été entièrement implémenté selon l
   - Types de validation
 
 #### Variables Registry
+
 - ✅ `src/lib/templates/templateVariables.ts`
   - Variables globales (8 variables)
   - Variables par contexte (assessment, SRS, enigma, etc.)
@@ -47,6 +51,7 @@ Le système de templates de messagerie a été entièrement implémenté selon l
   - Helper functions (getVariablesForTrigger, etc.)
 
 #### Template Engine
+
 - ✅ `src/lib/templates/templateEngine.ts`
   - `renderTemplate()` - Rendu avec placeholders
   - `previewTemplate()` - Prévisualisation
@@ -91,6 +96,7 @@ Le système de templates de messagerie a été entièrement implémenté selon l
 ### **5. Interface Utilisateur**
 
 #### Page Admin
+
 - ✅ `src/routes/(protected)/dashboard/admin/message-templates/+page.svelte`
   - Liste complète des templates
   - Filtres : scope, trigger type, recherche
@@ -101,6 +107,7 @@ Le système de templates de messagerie a été entièrement implémenté selon l
   - Permissions : accès total
 
 #### Page Professeur
+
 - ✅ `src/routes/(protected)/dashboard/teacher/message-templates/+page.svelte`
   - Liste templates système (lecture seule) + templates classe
   - Création templates de classe uniquement
@@ -202,18 +209,21 @@ Suivre le guide détaillé dans `TEMPLATE_INTEGRATION_GUIDE.md` pour :
 Ajouter des boutons dans les pages concernées pour utiliser les templates :
 
 **Exemple - Page Assessment** :
+
 ```svelte
-<Button onclick={() => {
-  const params = new URLSearchParams({
-    triggerType: 'assessment_question',
-    recipientId: teacher.id,
-    assessment_title: assessment.title,
-    assessment_link: `${window.location.origin}/assessments/${assessment.id}`,
-    teacher_name: teacher.full_name
-  });
-  goto(`/messages/compose?${params}`);
-}}>
-  Poser une question au professeur
+<Button
+	onclick={() => {
+		const params = new URLSearchParams({
+			triggerType: 'assessment_question',
+			recipientId: teacher.id,
+			assessment_title: assessment.title,
+			assessment_link: `${window.location.origin}/assessments/${assessment.id}`,
+			teacher_name: teacher.full_name
+		});
+		goto(`/messages/compose?${params}`);
+	}}
+>
+	Poser une question au professeur
 </Button>
 ```
 
@@ -224,17 +234,20 @@ Ajouter des boutons dans les pages concernées pour utiliser les templates :
 ### **Système Complet**
 
 ✅ **Base de données**
+
 - Table avec RLS complexe
 - Functions SQL optimisées
 - Indexes pour performance
 
 ✅ **API REST complète**
+
 - CRUD complet
 - Recherche contextuelle
 - Prévisualisation
 - Filtrage avancé
 
 ✅ **Interface Utilisateur**
+
 - Page admin full-featured
 - Page professeur avec restrictions
 - Formulaires de création/édition
@@ -242,6 +255,7 @@ Ajouter des boutons dans les pages concernées pour utiliser les templates :
 - Insertion variables assistée
 
 ✅ **Moteur de Templates**
+
 - Système de placeholders robuste
 - Validation syntaxe
 - Rendu avec données
@@ -249,12 +263,14 @@ Ajouter des boutons dans les pages concernées pour utiliser les templates :
 - Variables globales
 
 ✅ **Permissions**
+
 - RLS policies granulaires
 - Admins: accès total
 - Profs: templates de classe
 - Étudiants: lecture seule
 
 ✅ **Documentation**
+
 - Guide utilisateur complet
 - Guide développeur
 - API documentation
@@ -265,25 +281,35 @@ Ajouter des boutons dans les pages concernées pour utiliser les templates :
 ## 🎯 Cas d'Usage Supportés
 
 ### **1. Question sur Évaluation**
+
 Étudiant → Professeur
+
 - Context auto-rempli (titre, lien)
 - Étudiant saisit uniquement sa question
 
 ### **2. Demande d'Aide SRS**
+
 Étudiant → Professeur
+
 - Context deck auto-rempli
 - Étudiant saisit son message
 
 ### **3. Notifications Système**
+
 Système → Étudiants/Professeurs
+
 - Notifications automatiques formatées
 
 ### **4. Message Général**
+
 Étudiant/Professeur → Professeur/Admin
+
 - Template flexible pour tout usage
 
 ### **5. Réponse Énigme (Futur)**
+
 Étudiant → Professeur
+
 - Template prêt mais inactif
 - À activer quand feature énigmes implémentée
 
@@ -309,11 +335,13 @@ Système → Étudiants/Professeurs
 
 ✅ **Admins** : Accès complet à tous les templates
 ✅ **Professeurs** :
+
 - Lecture templates système actifs
 - CRUD complet sur leurs templates de classe
 - Pas de modification templates système
 
 ✅ **Étudiants** :
+
 - Lecture templates système actifs
 - Lecture templates de leurs classes actifs
 - Aucune modification
@@ -376,6 +404,7 @@ Système → Étudiants/Professeurs
 ### **Extensibilité**
 
 Le système est conçu pour être facilement extensible :
+
 - Ajouter nouveaux trigger types : 4 étapes (guide fourni)
 - Ajouter nouvelles variables : modification registry
 - Ajouter nouveaux scopes : extension enum + policies

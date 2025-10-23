@@ -27,11 +27,13 @@
 		rows={5}
 		class="resize-none"
 	/>
-	<div class="flex items-start gap-2 rounded-lg bg-blue-50 p-3 text-xs text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+	<div
+		class="flex items-start gap-2 rounded-lg bg-blue-50 p-3 text-xs text-blue-700 dark:bg-blue-950 dark:text-blue-300"
+	>
 		<Info class="mt-0.5 h-4 w-4 shrink-0" />
 		<p>
-			Votre réponse sera envoyée à votre professeur pour validation. Soyez précis et détaillez
-			votre raisonnement.
+			Votre réponse sera envoyée à votre professeur pour validation. Soyez précis et détaillez votre
+			raisonnement.
 		</p>
 	</div>
 </div>

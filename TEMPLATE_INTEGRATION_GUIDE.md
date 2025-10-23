@@ -131,7 +131,9 @@ Envelopper le formulaire existant dans une condition :
 	<!-- Template Mode: Simplified Form -->
 	<div class="mx-auto max-w-4xl space-y-6">
 		<!-- Template Banner -->
-		<div class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/20">
+		<div
+			class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/20"
+		>
 			<div class="flex items-center justify-between">
 				<div>
 					<p class="font-medium text-blue-900 dark:text-blue-100">
@@ -141,9 +143,7 @@ Envelopper le formulaire existant dans une condition :
 						{activeTemplate.description || 'Remplissez les champs ci-dessous'}
 					</p>
 				</div>
-				<Button variant="outline" size="sm" onclick={deactivateTemplate}>
-					Mode libre
-				</Button>
+				<Button variant="outline" size="sm" onclick={deactivateTemplate}>Mode libre</Button>
 			</div>
 		</div>
 
@@ -173,7 +173,8 @@ Envelopper le formulaire existant dans une condition :
 		{#each getUserInputVariables(activeTemplate.trigger_type) as variable}
 			<div class="space-y-2">
 				<Label for={`input-${variable.name}`}>
-					{variable.label} {variable.required ? '*' : ''}
+					{variable.label}
+					{variable.required ? '*' : ''}
 				</Label>
 				{#if variable.name.includes('message') || variable.name.includes('question')}
 					<FormRichTextEditor
@@ -207,7 +208,8 @@ Envelopper le formulaire existant dans une condition :
 			{#if showFullPreview && messageTemplates.renderedTemplate}
 				<div class="rounded-lg border border-border bg-card p-4">
 					<div class="mb-2">
-						<strong>Sujet:</strong> {messageTemplates.renderedTemplate.subject}
+						<strong>Sujet:</strong>
+						{messageTemplates.renderedTemplate.subject}
 					</div>
 					<div class="prose prose-sm dark:prose-invert">
 						{@html messageTemplates.renderedTemplate.body}
@@ -234,7 +236,13 @@ Envelopper le formulaire existant dans une condition :
 	</div>
 {:else}
 	<!-- Normal Mode: Full Form (existing code) -->
-	<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="mx-auto max-w-4xl space-y-6">
+	<form
+		onsubmit={(e) => {
+			e.preventDefault();
+			handleSubmit();
+		}}
+		class="mx-auto max-w-4xl space-y-6"
+	>
 		<!-- Existing form content remains unchanged -->
 	</form>
 {/if}
@@ -268,20 +276,20 @@ async function handleSubmit() {
 
 ```svelte
 <script>
-import { goto } from '$app/navigation';
+	import { goto } from '$app/navigation';
 
-function askQuestionAboutAssessment(assessment, teacher) {
-	const params = new URLSearchParams({
-		triggerType: 'assessment_question',
-		recipientId: teacher.id,
-		// Context data will be auto-filled
-		assessment_title: assessment.title,
-		assessment_link: `${window.location.origin}/assessments/${assessment.id}`,
-		teacher_name: teacher.full_name
-	});
+	function askQuestionAboutAssessment(assessment, teacher) {
+		const params = new URLSearchParams({
+			triggerType: 'assessment_question',
+			recipientId: teacher.id,
+			// Context data will be auto-filled
+			assessment_title: assessment.title,
+			assessment_link: `${window.location.origin}/assessments/${assessment.id}`,
+			teacher_name: teacher.full_name
+		});
 
-	goto(`/messages/compose?${params}`);
-}
+		goto(`/messages/compose?${params}`);
+	}
 </script>
 ```
 
@@ -289,18 +297,18 @@ function askQuestionAboutAssessment(assessment, teacher) {
 
 ```svelte
 <script>
-function askHelpForDeck(deck, teacher) {
-	const params = new URLSearchParams({
-		triggerType: 'srs_help',
-		recipientId: teacher.id,
-		classId: deck.class_id,
-		deck_name: deck.name,
-		deck_link: `${window.location.origin}/srs/decks/${deck.id}`,
-		teacher_name: teacher.full_name
-	});
+	function askHelpForDeck(deck, teacher) {
+		const params = new URLSearchParams({
+			triggerType: 'srs_help',
+			recipientId: teacher.id,
+			classId: deck.class_id,
+			deck_name: deck.name,
+			deck_link: `${window.location.origin}/srs/decks/${deck.id}`,
+			teacher_name: teacher.full_name
+		});
 
-	goto(`/messages/compose?${params}`);
-}
+		goto(`/messages/compose?${params}`);
+	}
 </script>
 ```
 
@@ -319,6 +327,7 @@ function askHelpForDeck(deck, teacher) {
 ## Tests
 
 Après implémentation, tester :
+
 - ✅ Chargement template depuis URL avec `templateId`
 - ✅ Recherche auto template avec `triggerType` + `classId`
 - ✅ Formulaire simplifié avec champs userInput uniquement

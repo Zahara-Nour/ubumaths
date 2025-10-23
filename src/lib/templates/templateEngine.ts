@@ -285,14 +285,14 @@ export function validateTemplate(template: {
 	if (allPlaceholders.length === 0) {
 		warnings.push({
 			field: 'variables',
-			message: 'Aucun placeholder utilisé. Considérez d\'ajouter des variables dynamiques.'
+			message: "Aucun placeholder utilisé. Considérez d'ajouter des variables dynamiques."
 		});
 	}
 
 	// Validate conditional syntax
 	const conditionalValidation = validateConditionals(template.body_template);
 	if (!conditionalValidation.valid) {
-		conditionalValidation.errors.forEach(err => {
+		conditionalValidation.errors.forEach((err) => {
 			errors.push({
 				field: 'body_template',
 				message: err
@@ -303,7 +303,7 @@ export function validateTemplate(template: {
 	// Validate filters
 	const filterValidation = validateFilters(template.body_template);
 	if (!filterValidation.valid) {
-		filterValidation.errors.forEach(err => {
+		filterValidation.errors.forEach((err) => {
 			warnings.push({
 				field: 'body_template',
 				message: err

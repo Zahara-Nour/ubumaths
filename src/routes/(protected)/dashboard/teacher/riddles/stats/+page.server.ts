@@ -81,8 +81,10 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.slice(0, 10);
 
 	// Total gidouilles distributed
-	const totalGidouilles =
-		(studentStats || []).reduce((sum: number, a: any) => sum + (a.gidouilles_awarded || 0), 0);
+	const totalGidouilles = (studentStats || []).reduce(
+		(sum: number, a: any) => sum + (a.gidouilles_awarded || 0),
+		0
+	);
 
 	return {
 		overview: {

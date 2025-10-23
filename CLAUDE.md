@@ -100,9 +100,21 @@ For frequent server updates (counters, quantities), use optimistic updates with 
 **Location**: `src/lib/components/ui/`
 **Docs**: https://www.shadcn-svelte.com/docs
 
-**Available**: Button, Input, Textarea, Select, Dropdown Menu, Avatar, Tabs, Separator
+**Available**: Button, Input, Textarea, ~~Select~~, Dropdown Menu, Avatar, Tabs, Separator
 
 **Add components**: `npx shadcn-svelte@latest add <component-name>`
+
+**⚠️ Important**: **DO NOT use Shadcn Select components** - they cause issues. Use native HTML `<select>` elements instead with Tailwind classes for styling:
+
+```svelte
+<select
+	bind:value={myValue}
+	class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+>
+	<option value="1">Option 1</option>
+	<option value="2">Option 2</option>
+</select>
+```
 
 ### Key Patterns
 

@@ -39,9 +39,7 @@
 			<FileCheck class="h-8 w-8 text-primary" />
 			Validations en attente
 		</h1>
-		<p class="mt-2 text-muted-foreground">
-			Réponses d'élèves nécessitant votre validation
-		</p>
+		<p class="mt-2 text-muted-foreground">Réponses d'élèves nécessitant votre validation</p>
 	</div>
 
 	<!-- Stats Card -->
@@ -66,9 +64,7 @@
 				<FileCheck class="h-16 w-16 text-muted-foreground/50" />
 				<div class="text-center">
 					<h3 class="text-lg font-semibold">Aucune validation en attente</h3>
-					<p class="mt-1 text-sm text-muted-foreground">
-						Toutes les réponses ont été validées !
-					</p>
+					<p class="mt-1 text-sm text-muted-foreground">Toutes les réponses ont été validées !</p>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -88,7 +84,8 @@
 								</Avatar.Root>
 								<div class="flex-1">
 									<Card.Title class="text-lg">
-										{attempt.student.firstname || ''} {attempt.student.lastname || ''}
+										{attempt.student.firstname || ''}
+										{attempt.student.lastname || ''}
 									</Card.Title>
 									<Card.Description>
 										Énigme #{attempt.riddle.riddle_number}: {attempt.riddle.title}
@@ -121,23 +118,23 @@
 							</div>
 							<span>•</span>
 							<div>
-								{calculateGidouilles(attempt.riddle.difficulty, attempt.attempt_number)} gidouilles
-								si validé
+								{calculateGidouilles(attempt.riddle.difficulty, attempt.attempt_number)} gidouilles si
+								validé
 							</div>
 						</div>
 
 						<!-- Student Answer Preview -->
 						<div class="rounded-lg border bg-muted/30 p-4">
-							<p class="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+							<p class="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
 								Réponse de l'élève
 							</p>
-							<div class="prose dark:prose-invert prose-sm max-w-none line-clamp-3">
+							<div class="prose prose-sm line-clamp-3 max-w-none dark:prose-invert">
 								{#if attempt.submitted_answer?.value}
 									{typeof attempt.submitted_answer.value === 'string'
 										? attempt.submitted_answer.value
 										: JSON.stringify(attempt.submitted_answer.value)}
 								{:else}
-									<span class="italic text-muted-foreground">Aucune réponse</span>
+									<span class="text-muted-foreground italic">Aucune réponse</span>
 								{/if}
 							</div>
 						</div>

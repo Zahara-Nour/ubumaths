@@ -21,6 +21,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 ### Phase 1 : Infrastructure de Base
 
 #### Base de Données
+
 - Migration `099_create_riddles_system.sql` complète
 - 4 tables principales : `riddles`, `riddle_assignments`, `riddle_of_the_day`, `riddle_attempts`
 - 3 vues SQL optimisées : `riddle_stats`, `riddle_progress`, `riddle_student_history`
@@ -30,12 +31,14 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 - Index pour performance
 
 #### Types TypeScript
+
 - `src/lib/types/riddle.ts` - Types complets
 - Interfaces : `Riddle`, `RiddleAttempt`, `RiddleOfTheDay`, `RiddleAssignment`
 - Enums : `RiddleDifficulty`, `AnswerType`, `ValidationStatus`
 - Support JSONB pour configurations flexibles
 
 #### Composants UI de Base
+
 - `RiddleCard.svelte` - Affichage énigme avec LaTeX/MathJax
 - `RiddleForm.svelte` - Formulaire création/édition complet
 - Intégration `FormRichTextEditor` pour énoncés riches
@@ -43,6 +46,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 - Système de genres (tags libres)
 
 #### Routes CRUD Professeur
+
 - `/dashboard/teacher/riddles` - Liste énigmes
 - `/dashboard/teacher/riddles/new` - Création
 - `/dashboard/teacher/riddles/[id]/edit` - Édition
@@ -52,6 +56,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 ### Phase 2 : Validation Automatique
 
 #### Système de Validation
+
 - `src/lib/utils/riddle-validator.ts` - Utilitaire validation multi-type
 - Support 4 types de réponse :
   - **Numérique** : Avec tolérance configurable
@@ -60,12 +65,14 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
   - **Expression mathématique** : Évaluation symbolique
 
 #### Configuration Visuelle
+
 - `AnswerConfigEditor.svelte` - Éditeur config validation
 - Interface intuitive par type
 - Preview temps réel
 - Validation formulaire
 
 #### Inputs Spécialisés
+
 - `RiddleNumericalInput.svelte` - Input numérique avec validation
 - `RiddleTextInput.svelte` - Input texte
 - `RiddleQcmInput.svelte` - Radio/checkbox selon mode
@@ -73,12 +80,14 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 - `RiddleManualInput.svelte` - Réponse libre (validation manuelle)
 
 #### Mode Interactif RiddleCard
+
 - Détection type validation automatique
 - Affichage input approprié
 - Soumission via API
 - Feedback immédiat (toast success/error)
 
 #### API Soumission
+
 - `POST /api/riddles/[id]/submit` - Endpoint soumission
 - Validation automatique intégrée
 - Calcul gidouilles dégressives
@@ -88,18 +97,21 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 ### Phase 3 : Validation Manuelle
 
 #### Système de Messages Automatiques
+
 - `src/lib/server/riddle-messages.ts` - Création messages automatiques
 - Notification prof quand réponse à valider
 - Notification élève après validation
 - Intégration système messages existant
 
 #### Intégration API Soumission
+
 - Détection validation manuelle dans endpoint submit
 - Création tentative avec `is_correct: null`
 - Trigger message automatique au prof
 - Badge compteur notifications
 
 #### Pages Validation Professeur
+
 - `/dashboard/teacher/riddles/validations` - Liste en attente
 - `/dashboard/teacher/riddles/validations/[id]` - Détail validation
 - Affichage énoncé + correction + réponse élève
@@ -107,6 +119,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 - Utilisation RPC `validate_riddle_attempt()`
 
 #### Workflow Complet
+
 - 10 étapes bout-en-bout testées
 - Élève soumet → Prof reçoit notif → Prof valide → Élève reçoit notif → Gidouilles attribuées
 - Gestion états : pending → validated → rejected
@@ -114,6 +127,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 ### Phase 4 : Énigme du Jour
 
 #### Composant Premium
+
 - `RiddleOfTheDayCard.svelte` - Card style premium
 - Badge date avec icône calendrier
 - Badges difficulté colorés
@@ -121,18 +135,21 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 - États visuels (completed/pending/failed)
 
 #### Pages Élève
+
 - `/dashboard/student/riddles` - Page principale énigme du jour
 - `/dashboard/student/riddles/[id]` - Page détail/tentative
 - `/dashboard/student/riddles/archive` - Archives énigmes passées (max 100)
 - Mode interactif avec inputs validation
 
 #### Page Gestion Professeur
+
 - `/dashboard/teacher/riddles/of-the-day` - Gestion énigme du jour
 - Sélection manuelle par date
 - Historique 30 dernières
 - Actions : Définir/Supprimer énigme du jour
 
 #### Sélection Automatique
+
 - `src/lib/server/riddle-auto-select.ts` - Algorithme intelligent
 - **Exclusion** : 30 derniers jours
 - **Rotation** : Difficultés 1→2→3→1
@@ -140,6 +157,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 - Fallback si pool vide
 
 #### API & Cron Configuration
+
 - `GET /api/riddles/auto-select-daily` - Vérifier statut
 - `POST /api/riddles/auto-select-daily` - Déclencher sélection auto
 - Authentification optionnelle par API key
@@ -149,6 +167,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 ### Phase 5 : Statistiques & Leaderboard
 
 #### Dashboard Professeur Stats
+
 - `/dashboard/teacher/riddles/stats` - Dashboard complet
 - 4 métriques overview :
   - Total énigmes créées
@@ -163,6 +182,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 - Top 10 élèves avec podium visuel
 
 #### Leaderboard Global Élève
+
 - `/dashboard/student/riddles/leaderboard` - Classement global
 - Podium visuel top 3 (design 2-1-3)
 - Liste complète top 50
@@ -171,6 +191,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 - Colonnes : Position, Avatar, Nom, Énigmes résolues, Gidouilles
 
 #### Historique Personnel Élève
+
 - `/dashboard/student/riddles/history` - Historique détaillé
 - 3 cards statistiques résumées :
   - Total énigmes résolues
@@ -183,6 +204,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 - Section badges achievements
 
 #### Système de Badges & Achievements
+
 - `src/lib/utils/riddle-badges.ts` - Calcul badges temps réel
 - 4 types de badges :
   - **Perfectionniste** : Réussites 1er coup
@@ -200,6 +222,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 ### Phase 6 : Polish & Optimisations
 
 #### Amélioration UX
+
 - Toasts confirmation systématiques
 - États de chargement (loading states)
 - États vides (empty states) avec messages
@@ -207,12 +230,14 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 - Messages d'erreur français explicites
 
 #### Navigation
+
 - `RiddleNav.svelte` - Composant navigation dédié
 - Menu contextuel selon rôle (teacher/student)
 - Active route highlighting
 - Navigation rapide toutes sections
 
 #### Composants & Design
+
 - Cohérence visuelle avec design system
 - Responsive mobile/desktop testé
 - Support dark mode
@@ -221,6 +246,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 - Podiums stylés
 
 #### Optimisations Performance
+
 - Vues SQL pré-calculées (stats, progress, history)
 - Index sur colonnes fréquemment requêtées
 - Limit 50 sur leaderboard
@@ -228,6 +254,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 - Requêtes optimisées (select minimal)
 
 #### Accessibilité
+
 - Labels ARIA sur inputs
 - Structure sémantique HTML
 - Contraste couleurs vérifié
@@ -235,6 +262,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 - Screen reader friendly (basique)
 
 #### Documentation
+
 - **RIDDLES_QUICK_START_GUIDE.md** : Guide utilisateur complet (~15 min)
 - **RIDDLES_SYSTEM_SUMMARY.md** : Résumé exécutif (~10 min)
 - **RIDDLES_SYSTEM_IMPLEMENTATION.md** : Documentation technique (~45 min)
@@ -252,6 +280,7 @@ Release initiale complète du système d'énigmes mathématiques pour UbuMaths.
 ### Base de Données
 
 #### Tables Créées
+
 ```sql
 riddles (id, riddle_number SERIAL, title, statement, difficulty, genres,
          answer_config JSONB, validation_type, created_by, status, timestamps)
@@ -262,6 +291,7 @@ riddle_attempts (id, riddle_id, student_id, attempt_number, submitted_answer,
 ```
 
 #### Vues Créées
+
 ```sql
 riddle_stats - Agrégation statistiques par énigme
 riddle_progress - Leaderboard progression élèves
@@ -269,6 +299,7 @@ riddle_student_history - Historique individuel détaillé
 ```
 
 #### Functions RPC Créées
+
 ```sql
 get_next_riddle_attempt_number(riddle_id, student_id) → integer
 calculate_riddle_gidouilles(difficulty, attempt_number) → integer
@@ -281,6 +312,7 @@ set_riddle_of_the_day(riddle_id, date) → void
 ### Formules Implémentées
 
 #### Gidouilles Dégressives
+
 ```typescript
 gidouilles = difficulty × multiplicateur
 multiplicateur = [3, 2, 1][attempt_number - 1] || 1
@@ -289,13 +321,14 @@ multiplicateur = [3, 2, 1][attempt_number - 1] || 1
 **Table de récompenses** :
 | Difficulté | 1ère | 2ème | 3ème+ |
 |------------|------|------|-------|
-| 1          | 3    | 2    | 1     |
-| 2          | 6    | 4    | 2     |
-| 3          | 9    | 6    | 3     |
+| 1 | 3 | 2 | 1 |
+| 2 | 6 | 4 | 2 |
+| 3 | 9 | 6 | 3 |
 
 #### Rotation Difficultés Auto-Select
+
 ```typescript
-targetDifficulty = ((lastDifficulty || 0) % 3) + 1
+targetDifficulty = ((lastDifficulty || 0) % 3) + 1;
 // 1 → 2 → 3 → 1 → ...
 ```
 
@@ -304,6 +337,7 @@ targetDifficulty = ((lastDifficulty || 0) % 3) + 1
 ## 📁 Fichiers Créés
 
 ### Composants Svelte (11)
+
 ```
 src/lib/components/riddles/
 ├── RiddleCard.svelte
@@ -320,6 +354,7 @@ src/lib/components/riddles/
 ```
 
 ### Utilitaires TypeScript (5)
+
 ```
 src/lib/types/riddle.ts
 src/lib/utils/riddle-validator.ts
@@ -329,6 +364,7 @@ src/lib/server/riddle-auto-select.ts
 ```
 
 ### Routes Professeur (12)
+
 ```
 src/routes/(protected)/dashboard/teacher/riddles/
 ├── +page.svelte
@@ -342,6 +378,7 @@ src/routes/(protected)/dashboard/teacher/riddles/
 ```
 
 ### Routes Élève (10)
+
 ```
 src/routes/(protected)/dashboard/student/riddles/
 ├── +page.svelte
@@ -353,6 +390,7 @@ src/routes/(protected)/dashboard/student/riddles/
 ```
 
 ### API Routes (2)
+
 ```
 src/routes/api/riddles/
 ├── [id]/submit/+server.ts
@@ -360,16 +398,19 @@ src/routes/api/riddles/
 ```
 
 ### Base de Données (1)
+
 ```
 supabase/migrations/099_create_riddles_system.sql
 ```
 
 ### Configuration (1)
+
 ```
 vercel-cron-example.json
 ```
 
 ### Documentation (8)
+
 ```
 RIDDLES_QUICK_START_GUIDE.md
 RIDDLES_SYSTEM_SUMMARY.md
@@ -390,27 +431,32 @@ RIDDLES_CHANGELOG.md
 ### Row Level Security (RLS)
 
 #### Policies Riddles
+
 - **SELECT** : Teachers voient leurs énigmes + published. Students voient published uniquement
 - **INSERT** : Teachers uniquement
 - **UPDATE** : Teachers (owner seulement)
 - **DELETE** : Teachers (owner seulement)
 
 #### Policies Attempts
+
 - **SELECT** : Students voient leurs tentatives. Teachers via join riddles
 - **INSERT** : Students via RPC `submit_riddle_attempt()`
 - **UPDATE** : Teachers via RPC `validate_riddle_attempt()`
 
 #### Policies Riddle of the Day
+
 - **SELECT** : Tous (authentifiés)
 - **INSERT/UPDATE/DELETE** : Teachers uniquement
 
 ### Validation Entrées
+
 - Server-side validation dans actions
 - Type checking TypeScript strict
 - Sanitization réponses élèves
 - Validation configurations JSON
 
 ### API Sécurité
+
 - Authentification Supabase requise
 - API key optionnelle pour cron endpoint
 - Rate limiting Supabase (par défaut)
@@ -421,23 +467,27 @@ RIDDLES_CHANGELOG.md
 ## 🚀 Déploiement
 
 ### Prérequis
+
 - Node.js 18+
 - pnpm
 - Projet Supabase configuré
 - Compte Vercel
 
 ### Migration Base de Données
+
 ```bash
 npx supabase link --project-ref YOUR_REF
 pnpm db:migrate
 ```
 
 ### Types TypeScript
+
 ```bash
 npx supabase gen types typescript --project-id ID > src/lib/types/database.ts
 ```
 
 ### Variables d'Environnement
+
 ```bash
 PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 PUBLIC_SUPABASE_ANON_KEY=xxx
@@ -445,9 +495,11 @@ VITE_RIDDLE_AUTO_SELECT_API_KEY=xxx  # Optionnel
 ```
 
 ### Configuration Cron (Optionnel)
+
 Copier `vercel-cron-example.json` vers `vercel.json` ou configurer GitHub Actions.
 
 ### Build & Déploiement
+
 ```bash
 pnpm build
 vercel --prod
@@ -460,6 +512,7 @@ vercel --prod
 ## 🧪 Tests
 
 ### Tests Manuels Effectués
+
 - ✅ Création énigme (tous types validation)
 - ✅ Édition/suppression énigme
 - ✅ Soumission réponse (auto validation)
@@ -479,6 +532,7 @@ vercel --prod
 - ✅ Dark mode support
 
 ### Tests à Ajouter (Optionnel)
+
 - Tests E2E Playwright complets
 - Tests unitaires utilitaires (validator, badges)
 - Tests intégration API
@@ -491,11 +545,13 @@ vercel --prod
 **Aucun problème bloquant identifié** ✅
 
 ### Limitations Actuelles
+
 - Pagination manquante si >100 énigmes en liste
 - Cache absent pour énigme du jour (peut être ajouté si charge)
 - Tests automatisés absents (optionnel)
 
 ### Optimisations Futures Possibles
+
 - Animations confettis sur succès
 - Sons feedback (optionnel)
 - Graphiques statistiques avancés
@@ -507,6 +563,7 @@ vercel --prod
 ## 📊 Métriques
 
 ### Code
+
 - **~2000 lignes** TypeScript/Svelte créées
 - **~500 lignes** SQL (migration)
 - **~1500 lignes** documentation
@@ -515,12 +572,14 @@ vercel --prod
 - **100%** fonctionnalités core opérationnelles
 
 ### Performance
+
 - Vues SQL optimisées avec index
 - Temps réponse < 100ms (requêtes simples)
 - Temps réponse < 500ms (requêtes complexes/agrégations)
 - Bundle size impact minimal
 
 ### Couverture Fonctionnelle
+
 - **CRUD énigmes** : 100%
 - **Validation auto** : 100% (4 types)
 - **Validation manuelle** : 100%
@@ -535,6 +594,7 @@ vercel --prod
 ## 👥 Rôles
 
 ### Pour Professeurs
+
 - ✅ Créer/éditer/supprimer énigmes
 - ✅ Configurer validation (auto/manuelle)
 - ✅ Définir énigme du jour
@@ -543,6 +603,7 @@ vercel --prod
 - ✅ Voir top 10 élèves
 
 ### Pour Élèves
+
 - ✅ Voir énigme du jour
 - ✅ Tenter énigme (avec inputs adaptés)
 - ✅ Consulter archives
@@ -562,13 +623,16 @@ vercel --prod
 ## 📝 Notes Migration
 
 ### Migration 099
+
 **Fichier** : `supabase/migrations/099_create_riddles_system.sql`
 
 **Pré-requis** :
+
 - Tables existantes : `profiles`, `class_members`, `classes`
 - Extension UUID activée
 
 **Ordre d'exécution** :
+
 1. Création tables
 2. Création triggers
 3. Création vues
@@ -583,6 +647,7 @@ vercel --prod
 ## 🎯 Roadmap Future (Post-v1.0)
 
 ### v1.1 (Court Terme - Optionnel)
+
 - [ ] Tests E2E complets
 - [ ] Animations confettis succès
 - [ ] Cache Redis énigme du jour
@@ -590,6 +655,7 @@ vercel --prod
 - [ ] Analytics détaillées
 
 ### v1.2 (Moyen Terme)
+
 - [ ] Export CSV historique
 - [ ] Graphiques statistiques
 - [ ] Filtres avancés leaderboard
@@ -597,6 +663,7 @@ vercel --prod
 - [ ] Mode hors-ligne (PWA)
 
 ### v2.0 (Long Terme)
+
 - [ ] Énigmes collaboratives
 - [ ] Duels entre élèves
 - [ ] Mode tournoi
@@ -608,6 +675,7 @@ vercel --prod
 ## 📚 Documentation
 
 ### Guides Disponibles
+
 - **RIDDLES_QUICK_START_GUIDE.md** : Guide utilisateur (~15 min)
 - **RIDDLES_SYSTEM_SUMMARY.md** : Résumé exécutif (~10 min)
 - **RIDDLES_SYSTEM_IMPLEMENTATION.md** : Doc technique (~45 min)
@@ -616,6 +684,7 @@ vercel --prod
 - **RIDDLES_DOCS_INDEX.md** : Index navigation (~5 min)
 
 ### Navigation
+
 → Voir **RIDDLES_DOCS_INDEX.md** pour navigation complète par rôle/concept/fichier
 
 ---
@@ -623,6 +692,7 @@ vercel --prod
 ## 🙏 Remerciements
 
 Système développé avec :
+
 - **Svelte 5** (runes) - Framework réactif
 - **SvelteKit** - Meta-framework
 - **Supabase** - Backend & DB
@@ -636,16 +706,19 @@ Système développé avec :
 ## 📞 Support
 
 ### Pour Questions
+
 - Consulter **RIDDLES_DOCS_INDEX.md** pour navigation
 - Lire FAQ dans **RIDDLES_QUICK_START_GUIDE.md**
 - Vérifier **RIDDLES_DEPLOYMENT_GUIDE.md** pour déploiement
 
 ### Pour Bugs
+
 - Vérifier logs Vercel
 - Vérifier logs Supabase
 - Consulter section Troubleshooting du deployment guide
 
 ### Pour Contributions
+
 - Lire **RIDDLES_SYSTEM_IMPLEMENTATION.md** pour architecture
 - Suivre patterns existants
 - Tester localement avant PR

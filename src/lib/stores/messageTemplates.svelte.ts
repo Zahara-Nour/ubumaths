@@ -262,9 +262,7 @@ class MessageTemplatesStore {
 			const data = await response.json();
 
 			// Update in local state
-			this.state.templates = this.state.templates.map((t) =>
-				t.id === id ? data.template : t
-			);
+			this.state.templates = this.state.templates.map((t) => (t.id === id ? data.template : t));
 
 			return data.template;
 		} catch (error) {

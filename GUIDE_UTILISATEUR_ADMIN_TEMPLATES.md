@@ -28,6 +28,7 @@ Un **template de message** est un modèle de message pré-rempli qui permet d'au
 ### Exemple Concret
 
 **Sans template** :
+
 ```
 Sujet : Question sur l'évaluation "Devoir Maison #3"
 Corps :
@@ -38,6 +39,7 @@ qui est à rendre pour le 15/11/2025...
 ```
 
 **Avec template** :
+
 ```
 Sujet : Question sur {{assessment_title}}
 Corps :
@@ -48,6 +50,7 @@ qui est à rendre pour le {{assessment_due_date | date:short}}...
 ```
 
 Le système remplace automatiquement :
+
 - `{{assessment_title}}` → "Devoir Maison #3"
 - `{{student_name}}` → "Marie Dupont"
 - `{{assessment_due_date | date:short}}` → "15/11/2025"
@@ -98,42 +101,50 @@ L'interface est divisée en 3 sections :
 ### Étape 2 : Remplir les Informations de Base
 
 #### **Titre** (obligatoire)
+
 Le nom interne du template. Visible uniquement par vous.
 
 **Exemples** :
+
 - ✅ "Question sur évaluation - Standard"
 - ✅ "Rappel rendu devoir - Urgent"
 - ❌ "Template 1" (trop vague)
 
 #### **Description** (optionnel)
+
 Décrit l'objectif du template.
 
 **Exemple** :
+
 ```
 Template utilisé quand un étudiant a une question
 sur une évaluation en cours.
 ```
 
 #### **Classe** (pour templates de classe uniquement)
+
 Sélectionnez "Aucune (Système)" pour un template utilisable par tous, ou choisissez une classe spécifique.
 
 **💡 Conseil** : Les templates système sont visibles par tous les professeurs.
 
 #### **Type de Déclencheur**
+
 Choisissez le contexte d'utilisation :
 
-| Type | Quand l'utiliser |
-|------|------------------|
-| **Message général** | Communication générale, pas de contexte spécifique |
-| **Question sur évaluation** | Étudiant pose une question sur un devoir/test |
-| **Aide SRS** | Demande d'aide sur les cartes de révision |
-| **Notification système** | Alertes automatiques du système |
-| **Réponse énigme** | Soumission de réponse à une énigme (futur) |
+| Type                        | Quand l'utiliser                                   |
+| --------------------------- | -------------------------------------------------- |
+| **Message général**         | Communication générale, pas de contexte spécifique |
+| **Question sur évaluation** | Étudiant pose une question sur un devoir/test      |
+| **Aide SRS**                | Demande d'aide sur les cartes de révision          |
+| **Notification système**    | Alertes automatiques du système                    |
+| **Réponse énigme**          | Soumission de réponse à une énigme (futur)         |
 
 #### **Tags**
+
 Ajoutez des mots-clés pour organiser vos templates.
 
 **Exemples** :
+
 - `urgent`, `rappel`, `info`, `évaluation`, `aide`, `feedback`
 
 **💡 Astuce** : Utilisez des tags cohérents pour faciliter la recherche.
@@ -161,6 +172,7 @@ Réponse à votre question sur {{topic}}
 Utilisez l'éditeur de texte enrichi pour le contenu du message.
 
 #### 🔧 Outils disponibles :
+
 - **Formatage** : Gras, italique, souligné
 - **Titres** : H1, H2, H3
 - **Listes** : Numérotées ou à puces
@@ -177,14 +189,18 @@ Utilisez l'éditeur de texte enrichi pour le contenu du message.
 <p>Merci pour votre question concernant <strong>{{assessment_title}}</strong>.</p>
 
 {{#if assessment_due_date}}
-  <p>⏰ <strong>Rappel</strong> : Cette évaluation est à rendre
-  pour le {{assessment_due_date | date:long}}.</p>
+<p>
+	⏰ <strong>Rappel</strong> : Cette évaluation est à rendre pour le {{assessment_due_date |
+	date:long}}.
+</p>
 {{/if}}
 
 <p>Je vous répondrai dans les plus brefs délais.</p>
 
-<p>Cordialement,<br>
-{{teacher_name}}</p>
+<p>
+	Cordialement,<br />
+	{{teacher_name}}
+</p>
 ```
 
 ### Étape 5 : Insérer des Variables
@@ -201,6 +217,7 @@ Utilisez l'éditeur de texte enrichi pour le contenu du message.
 Tapez directement `{{nom_variable}}` dans le texte.
 
 **Syntaxe** :
+
 ```
 {{nom_variable}}
 ```
@@ -211,39 +228,39 @@ Les variables disponibles dépendent du **Type de déclencheur** choisi.
 
 ##### 🌍 Variables Globales (disponibles partout)
 
-| Variable | Description | Exemple |
-|----------|-------------|---------|
-| `{{student_name}}` | Nom complet de l'étudiant | "Marie Dupont" |
-| `{{student_first_name}}` | Prénom de l'étudiant | "Marie" |
-| `{{teacher_name}}` | Nom du professeur | "M. Martin" |
-| `{{class_name}}` | Nom de la classe | "2nde A" |
-| `{{today_date}}` | Date d'aujourd'hui | "22/10/2025" |
-| `{{today_time}}` | Heure actuelle | "14:30" |
+| Variable                 | Description               | Exemple        |
+| ------------------------ | ------------------------- | -------------- |
+| `{{student_name}}`       | Nom complet de l'étudiant | "Marie Dupont" |
+| `{{student_first_name}}` | Prénom de l'étudiant      | "Marie"        |
+| `{{teacher_name}}`       | Nom du professeur         | "M. Martin"    |
+| `{{class_name}}`         | Nom de la classe          | "2nde A"       |
+| `{{today_date}}`         | Date d'aujourd'hui        | "22/10/2025"   |
+| `{{today_time}}`         | Heure actuelle            | "14:30"        |
 
 ##### 📊 Variables pour "Question sur évaluation"
 
-| Variable | Description | Exemple |
-|----------|-------------|---------|
-| `{{assessment_title}}` | Titre de l'évaluation | "Devoir Maison #3" |
-| `{{assessment_due_date}}` | Date d'échéance | "2025-11-15" |
-| `{{question_number}}` | Numéro de question | "5" |
-| `{{student_question}}` | Question de l'étudiant | "Je ne comprends pas..." |
+| Variable                  | Description            | Exemple                  |
+| ------------------------- | ---------------------- | ------------------------ |
+| `{{assessment_title}}`    | Titre de l'évaluation  | "Devoir Maison #3"       |
+| `{{assessment_due_date}}` | Date d'échéance        | "2025-11-15"             |
+| `{{question_number}}`     | Numéro de question     | "5"                      |
+| `{{student_question}}`    | Question de l'étudiant | "Je ne comprends pas..." |
 
 ##### 🎴 Variables pour "Aide SRS"
 
-| Variable | Description | Exemple |
-|----------|-------------|---------|
-| `{{deck_title}}` | Titre du deck | "Trigonométrie" |
+| Variable            | Description          | Exemple                    |
+| ------------------- | -------------------- | -------------------------- |
+| `{{deck_title}}`    | Titre du deck        | "Trigonométrie"            |
 | `{{card_question}}` | Question de la carte | "Quelle est la formule..." |
-| `{{help_message}}` | Message d'aide | "J'ai besoin d'aide..." |
+| `{{help_message}}`  | Message d'aide       | "J'ai besoin d'aide..."    |
 
 ##### 🔔 Variables pour "Notification système"
 
-| Variable | Description | Exemple |
-|----------|-------------|---------|
-| `{{notification_type}}` | Type de notification | "Nouveau devoir" |
-| `{{notification_message}}` | Message | "Un nouveau devoir..." |
-| `{{action_url}}` | Lien d'action | "/dashboard/..." |
+| Variable                   | Description          | Exemple                |
+| -------------------------- | -------------------- | ---------------------- |
+| `{{notification_type}}`    | Type de notification | "Nouveau devoir"       |
+| `{{notification_message}}` | Message              | "Un nouveau devoir..." |
+| `{{action_url}}`           | Lien d'action        | "/dashboard/..."       |
 
 ### Étape 6 : Utiliser les Filtres
 
@@ -352,9 +369,9 @@ Les **conditions** permettent d'afficher du contenu uniquement si une variable e
 
 ```html
 {{#if assessment_due_date}}
-  <p>⏰ <strong>Date limite :</strong> {{assessment_due_date | date:long}}</p>
+<p>⏰ <strong>Date limite :</strong> {{assessment_due_date | date:long}}</p>
 {{else}}
-  <p>✨ Pas de date limite (prenez votre temps !)</p>
+<p>✨ Pas de date limite (prenez votre temps !)</p>
 {{/if}}
 ```
 
@@ -362,7 +379,7 @@ Les **conditions** permettent d'afficher du contenu uniquement si une variable e
 
 ```html
 {{#if urgent}}
-  <p class="text-red-600">⚠️ <strong>URGENT - Action requise</strong></p>
+<p class="text-red-600">⚠️ <strong>URGENT - Action requise</strong></p>
 {{/if}}
 ```
 
@@ -370,9 +387,9 @@ Les **conditions** permettent d'afficher du contenu uniquement si une variable e
 
 ```html
 {{#if is_first_time}}
-  <p>Bienvenue ! C'est votre première question.</p>
+<p>Bienvenue ! C'est votre première question.</p>
 {{else}}
-  <p>Content de vous revoir !</p>
+<p>Content de vous revoir !</p>
 {{/if}}
 ```
 
@@ -383,6 +400,7 @@ Les **conditions** permettent d'afficher du contenu uniquement si une variable e
 3. La prévisualisation se met à jour automatiquement (500ms de délai)
 
 **💡 Vérifiez** :
+
 - Les variables sont bien remplacées
 - Les filtres fonctionnent correctement
 - Les conditions s'affichent comme prévu
@@ -403,6 +421,7 @@ Les **conditions** permettent d'afficher du contenu uniquement si une variable e
 #### 🔍 Recherche Textuelle
 
 Tapez dans la barre de recherche en haut à gauche. La recherche porte sur :
+
 - Le titre du template
 - La description
 - Le sujet
@@ -413,18 +432,22 @@ Tapez dans la barre de recherche en haut à gauche. La recherche porte sur :
 #### 🎯 Filtres Avancés
 
 ##### Filtre par Scope
+
 - **Système** : Templates utilisables par tous les professeurs
 - **Classe** : Templates spécifiques à une classe
 
 ##### Filtre par Type de Déclencheur
+
 Sélectionnez le type : Message général, Question sur évaluation, etc.
 
 ##### Filtre par Tags
+
 Cliquez sur un tag pour filtrer. Cliquez à nouveau pour désactiver.
 
 **💡 Astuce** : Vous pouvez combiner plusieurs tags.
 
 ##### ⭐ Favoris Uniquement
+
 Cliquez sur le bouton "Favoris uniquement" pour voir seulement vos templates favoris.
 
 ### Actions sur les Templates
@@ -444,6 +467,7 @@ Cliquez sur le bouton "Favoris uniquement" pour voir seulement vos templates fav
 3. Le template est copié avec toutes ses propriétés
 
 **💡 Cas d'usage** :
+
 - Créer des variantes d'un template existant
 - Adapter un template système pour une classe spécifique
 
@@ -495,22 +519,27 @@ Cliquez sur le chevron (⌄) pour voir le corps complet du template dans la cart
 #### 🎯 Vue d'Ensemble (4 cartes)
 
 ##### 1. Utilisations Totales
+
 - Nombre total de fois que des templates ont été utilisés
 - Nombre de templates actifs
 
 ##### 2. Taux de Complétion
+
 - Pourcentage de templates utilisés et complétés (message envoyé)
 - Ratio complétés/totaux
 
 ##### 3. Utilisateurs Actifs
+
 - Nombre d'utilisateurs uniques ayant utilisé au moins un template
 
 ##### 4. Temps Moyen
+
 - Temps moyen pour remplir un template et l'envoyer
 
 #### 🏆 Top Templates
 
 Liste des 10 templates les plus utilisés avec :
+
 - Titre et type du template
 - Nombre d'utilisations
 - Taux de complétion
@@ -520,6 +549,7 @@ Liste des 10 templates les plus utilisés avec :
 #### 📊 Utilisation par Type de Déclencheur
 
 Graphique en barres montrant la répartition des utilisations par type :
+
 - Message général
 - Question sur évaluation
 - Aide SRS
@@ -528,6 +558,7 @@ Graphique en barres montrant la répartition des utilisations par type :
 #### ⏰ Activité Récente
 
 Liste des dernières utilisations avec :
+
 - Template utilisé
 - Utilisateur
 - Classe
@@ -537,6 +568,7 @@ Liste des dernières utilisations avec :
 #### 👥 Adoption par les Utilisateurs
 
 Répartition des utilisateurs en 3 catégories :
+
 - **Utilisateurs avancés** (10+ utilisations) 🟢
 - **Utilisateurs réguliers** (3-9 utilisations) 🔵
 - **Utilisateurs occasionnels** (1-2 utilisations) ⚪
@@ -546,6 +578,7 @@ Répartition des utilisateurs en 3 catégories :
 ### Filtre par Période
 
 En haut à droite, sélectionnez la période :
+
 - **7 derniers jours**
 - **30 derniers jours** (par défaut)
 - **90 derniers jours**
@@ -556,6 +589,7 @@ En haut à droite, sélectionnez la période :
 Cliquez sur **"Exporter en CSV"** en bas de page pour télécharger toutes les statistiques dans un fichier Excel/CSV.
 
 **Contenu du CSV** :
+
 - Métriques générales
 - Liste des top templates avec leurs statistiques
 
@@ -566,11 +600,13 @@ Cliquez sur **"Exporter en CSV"** en bas de page pour télécharger toutes les s
 ### 1. Nommage des Templates
 
 ✅ **Bon** :
+
 - "Question évaluation - Standard"
 - "Rappel rendu devoir - J-3"
 - "Feedback positif - Bonne note"
 
 ❌ **Mauvais** :
+
 - "Template 1"
 - "Test"
 - "Mon template"
@@ -582,15 +618,19 @@ Cliquez sur **"Exporter en CSV"** en bas de page pour télécharger toutes les s
 Créez un système de tags cohérent :
 
 **Par urgence** :
+
 - `urgent`, `normal`, `info`
 
 **Par type** :
+
 - `question`, `rappel`, `feedback`, `notification`
 
 **Par cible** :
+
 - `étudiant`, `professeur`, `parent`
 
 **Par matière** :
+
 - `maths`, `physique`, `français`
 
 ### 3. Utilisation des Variables
@@ -600,9 +640,7 @@ Créez un système de tags cohérent :
 Utilisez `{{#if}}` pour les champs optionnels :
 
 ```html
-{{#if assessment_due_date}}
-  Date limite : {{assessment_due_date | date:long}}
-{{/if}}
+{{#if assessment_due_date}} Date limite : {{assessment_due_date | date:long}} {{/if}}
 ```
 
 #### ✅ Appliquer le bon filtre
@@ -615,33 +653,34 @@ Utilisez `{{#if}}` pour les champs optionnels :
 #### ❌ Ne pas supposer qu'une variable existe toujours
 
 Mauvais :
+
 ```html
 Votre note : {{score}}%
 ```
 
 Bon :
+
 ```html
-{{#if score}}
-  Votre note : {{score}}%
-{{else}}
-  Note pas encore disponible
-{{/if}}
+{{#if score}} Votre note : {{score}}% {{else}} Note pas encore disponible {{/if}}
 ```
 
 ### 4. Rédaction du Contenu
 
 #### Soyez clair et concis
+
 - Allez droit au but
 - Utilisez des phrases courtes
 - Structurez avec des paragraphes
 
 #### Utilisez le formatage
+
 - **Gras** pour les points importants
 - _Italique_ pour les nuances
 - Listes pour les énumérations
 - Emojis pour humaniser (avec modération)
 
 #### Restez professionnel
+
 - Ton respectueux et bienveillant
 - Grammaire et orthographe impeccables
 - Formules de politesse appropriées
@@ -659,18 +698,23 @@ Avant de déployer un template :
 ### 6. Maintenance
 
 #### Revoyez régulièrement vos templates
+
 - Consultez les statistiques d'utilisation
 - Archivez les templates inutilisés
 - Mettez à jour le contenu obsolète
 
 #### Créez des versions
+
 Avant une modification importante :
+
 1. Dupliquez le template
 2. Modifiez la copie
 3. Testez avant de remplacer l'original
 
 #### Documentez
+
 Utilisez le champ **Description** pour noter :
+
 - L'objectif du template
 - Les cas d'usage
 - Les particularités
@@ -684,6 +728,7 @@ Utilisez le champ **Description** pour noter :
 #### Q : Quelle est la différence entre un template système et un template de classe ?
 
 **R** :
+
 - **Template système** : Créé par les admins, utilisable par tous les professeurs de toutes les classes
 - **Template de classe** : Créé par un professeur ou admin pour une classe spécifique, visible uniquement pour cette classe
 
@@ -718,6 +763,7 @@ Cela met d'abord en minuscule puis capitalise la première lettre.
 #### Q : Que se passe-t-il si une variable n'existe pas ?
 
 **R** :
+
 - Sans condition : Affiche une chaîne vide
 - Avec `{{#if}}` : Le bloc n'est pas affiché
 - Avec filtre `default` : Affiche la valeur par défaut
@@ -731,18 +777,21 @@ Cela met d'abord en minuscule puis capitalise la première lettre.
 #### Q : Combien de templates puis-je créer ?
 
 **R** : Il n'y a pas de limite technique. Cependant, pour rester organisé, nous recommandons :
+
 - Max 50 templates système
 - Archives pour les templates inutilisés
 
 #### Q : Puis-je partager un template avec un autre professeur ?
 
 **R** :
+
 - Templates **système** : Automatiquement visibles par tous
 - Templates **de classe** : Demandez à l'admin de le transformer en template système, ou le professeur peut le dupliquer
 
 #### Q : Comment retrouver rapidement un template ?
 
 **R** : Utilisez :
+
 1. Les **favoris** (⭐) pour vos templates les plus utilisés
 2. La **recherche** textuelle
 3. Les **filtres** par type et tags
@@ -761,11 +810,13 @@ Cela met d'abord en minuscule puis capitalise la première lettre.
 #### Q : Comment améliorer le taux de complétion ?
 
 **R** : Un faible taux de complétion peut indiquer :
+
 - Template trop complexe à remplir
 - Template pas adapté au cas d'usage
 - Trop de variables à saisir manuellement
 
 **Solutions** :
+
 - Simplifiez le template
 - Utilisez plus de variables automatiques
 - Ajoutez des valeurs par défaut avec le filtre `default`
@@ -775,6 +826,7 @@ Cela met d'abord en minuscule puis capitalise la première lettre.
 #### Q : Les templates supportent-ils le HTML ?
 
 **R** : Oui, l'éditeur de texte enrichi génère du HTML. Vous pouvez utiliser :
+
 - Formatage de texte
 - Listes
 - Liens
@@ -794,6 +846,7 @@ Cela met d'abord en minuscule puis capitalise la première lettre.
 #### Q : Les templates fonctionnent-ils avec les emails ?
 
 **R** : Oui, les templates peuvent être utilisés pour :
+
 - Messages internes de la plateforme
 - Emails envoyés aux utilisateurs
 - Notifications
@@ -801,11 +854,13 @@ Cela met d'abord en minuscule puis capitalise la première lettre.
 #### Q : Que se passe-t-il si j'utilise une syntaxe incorrecte ?
 
 **R** :
+
 - L'onglet **Prévisualisation** affichera "Erreur de prévisualisation"
 - Le template ne pourra pas être sauvegardé
 - Vérifiez la syntaxe des variables, filtres et conditions
 
 **Syntaxes valides** :
+
 ```
 {{variable}}              ✅
 {{variable | filtre}}     ✅

@@ -19,8 +19,12 @@ Your error monitoring system is **fully operational** and actively capturing err
 Add this button anywhere in your app:
 
 ```svelte
-<button onclick={() => { throw new Error('Test Error'); }}>
-  Test Error Monitoring
+<button
+	onclick={() => {
+		throw new Error('Test Error');
+	}}
+>
+	Test Error Monitoring
 </button>
 ```
 
@@ -46,6 +50,7 @@ curl -X POST http://localhost:5173/api/errors/log \
 **URL**: `/dashboard/admin/errors`
 
 **Features**:
+
 - 📈 Statistics (total, unresolved, critical, recent)
 - 🔍 Filters (type, severity, status, search)
 - 📋 Error list (deduplicated)
@@ -57,6 +62,7 @@ curl -X POST http://localhost:5173/api/errors/log \
 **URL**: `/dashboard/admin/errors/test`
 
 **Use this to**:
+
 - Trigger test errors
 - Verify system is working
 - Demo error capture
@@ -68,18 +74,21 @@ curl -X POST http://localhost:5173/api/errors/log \
 ### ✅ Automatic Capture (Already Working)
 
 **Client-Side**:
+
 - JavaScript errors (`throw new Error()`)
 - Unhandled promise rejections
 - Syntax errors
 - Reference errors
 
 **Server-Side**:
+
 - API endpoint errors
 - Load function errors
 - Form action errors
 - Slow requests (>3 seconds)
 
 **Context Captured**:
+
 - User ID & role
 - Browser & OS info
 - URL & file location
@@ -89,6 +98,7 @@ curl -X POST http://localhost:5173/api/errors/log \
 ### 🔒 Privacy Protected
 
 Automatically sanitized:
+
 - ❌ Passwords
 - ❌ Tokens & API keys
 - ❌ Session data
@@ -116,14 +126,14 @@ nonExistentVariable.method(); // ReferenceError
 import { captureError } from '$lib/utils/errorMonitoring';
 
 try {
-  await riskyOperation();
+	await riskyOperation();
 } catch (err) {
-  captureError(err, {
-    severity: 'critical',
-    context: { userId, orderId: '123' },
-    tags: ['payment', 'urgent']
-  });
-  // Handle error gracefully
+	captureError(err, {
+		severity: 'critical',
+		context: { userId, orderId: '123' },
+		tags: ['payment', 'urgent']
+	});
+	// Handle error gracefully
 }
 ```
 
@@ -133,7 +143,7 @@ try {
 import { captureValidationError } from '$lib/utils/errorMonitoring';
 
 if (!email) {
-  captureValidationError('email', 'Email is required', formData);
+	captureValidationError('email', 'Email is required', formData);
 }
 ```
 
@@ -148,7 +158,7 @@ const duration = performance.now() - start;
 
 // Only logs if duration > 1000ms
 capturePerformance('heavyOperation', duration, 1000, {
-  recordCount: 5000
+	recordCount: 5000
 });
 ```
 
@@ -162,9 +172,9 @@ capturePerformance('heavyOperation', duration, 1000, {
 
 ```typescript
 const CONFIG = {
-  MAX_ERRORS_PER_MINUTE: 10, // Change this
-  BATCH_SIZE: 5,
-  BATCH_TIMEOUT: 10000
+	MAX_ERRORS_PER_MINUTE: 10, // Change this
+	BATCH_SIZE: 5,
+	BATCH_TIMEOUT: 10000
 };
 ```
 
@@ -173,8 +183,9 @@ const CONFIG = {
 **Location**: `src/hooks.server.ts:22`
 
 ```typescript
-if (responseTime > 3000) { // Change this (milliseconds)
-  // Log slow request
+if (responseTime > 3000) {
+	// Change this (milliseconds)
+	// Log slow request
 }
 ```
 
@@ -184,17 +195,20 @@ if (responseTime > 3000) { // Change this (milliseconds)
 
 ```json
 {
-  "days_old": 90
+	"days_old": 90
 }
 ```
 
 **Cron Job** (optional):
+
 ```json
 {
-  "crons": [{
-    "path": "/api/errors/cleanup",
-    "schedule": "0 2 * * *"
-  }]
+	"crons": [
+		{
+			"path": "/api/errors/cleanup",
+			"schedule": "0 2 * * *"
+		}
+	]
 }
 ```
 
@@ -212,6 +226,7 @@ When a **critical** error occurs:
 ✅ Shows in notification dropdown
 
 **Format**:
+
 ```
 🚨 Erreur Critique Détectée
 
@@ -233,6 +248,7 @@ URL: /api/students
    - Check: `SELECT role FROM profiles WHERE id = 'your-id'`
 
 2. **Check migration was applied**
+
    ```bash
    pnpm db:migrate
    ```
@@ -251,6 +267,7 @@ URL: /api/students
 ### RLS Issues
 
 The system uses **service role key** to bypass RLS, so:
+
 - ✅ Works for authenticated users
 - ✅ Works for unauthenticated users
 - ✅ Works from any context
@@ -262,6 +279,7 @@ The system uses **service role key** to bypass RLS, so:
 For complete details, see: **`ERROR_MONITORING_SYSTEM.md`**
 
 Includes:
+
 - Complete API reference
 - Database schema details
 - Privacy & security
@@ -273,12 +291,14 @@ Includes:
 ## 🎉 You're All Set!
 
 Your error monitoring system is:
+
 - ✅ **Installed** - Database, functions, indexes created
 - ✅ **Configured** - Service role key configured
 - ✅ **Active** - Capturing errors right now
 - ✅ **Tested** - Test error logged successfully
 
 **Next Steps**:
+
 1. Visit: `/dashboard/admin/errors/test`
 2. Click test buttons
 3. View results in: `/dashboard/admin/errors`

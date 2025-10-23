@@ -7,6 +7,7 @@ Guide pas à pas pour déployer le système d'énigmes mathématiques en product
 ## 📋 Prérequis
 
 ### Environnement
+
 - ✅ Node.js 18+ installé
 - ✅ pnpm installé
 - ✅ Projet Supabase configuré
@@ -14,6 +15,7 @@ Guide pas à pas pour déployer le système d'énigmes mathématiques en product
 - ✅ Git repository
 
 ### Vérifications Locales
+
 ```bash
 # Vérifier que le projet build
 pnpm build
@@ -32,11 +34,13 @@ pnpm format
 ### Étape 1.1 : Vérifier la Migration
 
 Le fichier de migration existe déjà :
+
 ```
 supabase/migrations/099_create_riddles_system.sql
 ```
 
 **Contenu** :
+
 - 4 tables (riddles, riddle_attempts, riddle_assignments, riddle_of_the_day)
 - 3 vues (riddle_stats, riddle_progress, riddle_student_history)
 - 6 RPC functions
@@ -67,12 +71,14 @@ npx supabase db push
 5. **Database** → **Policies** → Vérifier les RLS policies
 
 **Tables attendues** :
+
 - ✅ `riddles`
 - ✅ `riddle_attempts`
 - ✅ `riddle_assignments`
 - ✅ `riddle_of_the_day`
 
 **Vues attendues** :
+
 - ✅ `riddle_stats`
 - ✅ `riddle_progress`
 - ✅ `riddle_student_history`
@@ -97,6 +103,7 @@ pnpm check
 ```
 
 **Erreurs possibles** :
+
 - Types manquants dans `database.ts` → Régénérer
 - Import errors → Vérifier les chemins
 
@@ -125,6 +132,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
 Ajouter cette clé à `.env` :
+
 ```
 VITE_RIDDLE_AUTO_SELECT_API_KEY=votre_clé_générée_ici
 ```
@@ -132,6 +140,7 @@ VITE_RIDDLE_AUTO_SELECT_API_KEY=votre_clé_générée_ici
 ### Étape 3.3 : Variables Vercel
 
 Sur Vercel Dashboard :
+
 1. Projet → **Settings** → **Environment Variables**
 2. Ajouter :
    - `PUBLIC_SUPABASE_URL`
@@ -152,16 +161,17 @@ Le cron job permet de sélectionner automatiquement l'énigme du jour chaque nui
 
 ```json
 {
-  "crons": [
-    {
-      "path": "/api/riddles/auto-select-daily",
-      "schedule": "0 0 * * *"
-    }
-  ]
+	"crons": [
+		{
+			"path": "/api/riddles/auto-select-daily",
+			"schedule": "0 0 * * *"
+		}
+	]
 }
 ```
 
 **Schedule** :
+
 - `0 0 * * *` = Tous les jours à minuit (UTC)
 - `0 1 * * *` = Tous les jours à 1h du matin (UTC)
 - `0 6 * * *` = Tous les jours à 6h du matin (UTC)
@@ -206,12 +216,14 @@ jobs:
 ```
 
 **Configuration** :
+
 1. GitHub → Repository → **Settings** → **Secrets**
 2. Ajouter `RIDDLE_API_KEY` avec votre clé
 
 ### Option C : Sélection Manuelle
 
 Si vous ne voulez pas de cron automatique :
+
 1. Aller sur `/dashboard/teacher/riddles/of-the-day`
 2. Sélectionner manuellement l'énigme du jour chaque matin
 3. Déléguer à un enseignant responsable
@@ -223,12 +235,14 @@ Si vous ne voulez pas de cron automatique :
 ### Étape 5.1 : Tests Manuels Critiques
 
 #### Test 1 : Créer une Énigme
+
 1. Se connecter comme professeur
 2. Aller sur `/dashboard/teacher/riddles/new`
 3. Créer une énigme de test avec validation auto
 4. ✅ Publier
 
 #### Test 2 : Énigme du Jour
+
 1. Aller sur `/dashboard/teacher/riddles/of-the-day`
 2. Définir l'énigme créée comme énigme du jour
 3. Se déconnecter et se reconnecter comme élève
@@ -236,6 +250,7 @@ Si vous ne voulez pas de cron automatique :
 5. ✅ Vérifier que l'énigme apparaît
 
 #### Test 3 : Tentative Élève
+
 1. Comme élève, cliquer "Tenter l'énigme"
 2. Soumettre une réponse incorrecte
 3. ✅ Vérifier toast "Réponse incorrecte"
@@ -243,6 +258,7 @@ Si vous ne voulez pas de cron automatique :
 5. ✅ Vérifier toast "Bravo ! Tu as gagné X gidouilles"
 
 #### Test 4 : Validation Manuelle
+
 1. Comme prof, créer énigme sans validation auto
 2. Comme élève, soumettre réponse libre
 3. ✅ Vérifier message reçu par prof
@@ -251,11 +267,13 @@ Si vous ne voulez pas de cron automatique :
 6. Comme élève, vérifier notification reçue
 
 #### Test 5 : Leaderboard
+
 1. Comme élève, aller sur `/dashboard/student/riddles/leaderboard`
 2. ✅ Vérifier affichage classement
 3. ✅ Vérifier sa position
 
 #### Test 6 : Badges
+
 1. Comme élève, aller sur `/dashboard/student/riddles/history`
 2. ✅ Vérifier section badges
 3. ✅ Vérifier barres de progression
@@ -272,6 +290,7 @@ curl -X POST https://votredomaine.com/api/riddles/auto-select-daily \
 ```
 
 **Réponse attendue GET** :
+
 ```json
 {
   "date": "2025-01-22",
@@ -281,10 +300,11 @@ curl -X POST https://votredomaine.com/api/riddles/auto-select-daily \
 ```
 
 **Réponse attendue POST** :
+
 ```json
 {
-  "success": true,
-  "message": "Énigme du jour sélectionnée automatiquement: xxx"
+	"success": true,
+	"message": "Énigme du jour sélectionnée automatiquement: xxx"
 }
 ```
 
@@ -293,6 +313,7 @@ curl -X POST https://votredomaine.com/api/riddles/auto-select-daily \
 ## ✅ 6. Checklist Go-Live
 
 ### Avant le Déploiement
+
 - [ ] Migration DB poussée et vérifiée
 - [ ] Types TypeScript générés
 - [ ] Variables d'environnement configurées
@@ -302,12 +323,14 @@ curl -X POST https://votredomaine.com/api/riddles/auto-select-daily \
 - [ ] Documentation lue par l'équipe
 
 ### Pendant le Déploiement
+
 - [ ] Déployer sur Vercel
 - [ ] Vérifier que le build passe
 - [ ] Tester en production les routes principales
 - [ ] Vérifier les logs (pas d'erreurs)
 
 ### Après le Déploiement
+
 - [ ] Créer 2-3 énigmes de test réelles
 - [ ] Définir première énigme du jour
 - [ ] Inviter quelques utilisateurs test
@@ -321,18 +344,21 @@ curl -X POST https://votredomaine.com/api/riddles/auto-select-daily \
 ### Métriques à Suivre
 
 #### Base de Données
+
 - Nombre d'énigmes créées par jour
 - Nombre de tentatives par jour
 - Taux de réussite moyen par difficulté
 - Temps de réponse des requêtes
 
 #### Engagement
+
 - % élèves qui tentent énigme du jour
 - Nombre moyen de tentatives par énigme
 - Évolution leaderboard (changements top 10)
 - Progression badges
 
 #### Technique
+
 - Erreurs API (logs Vercel)
 - Temps de chargement pages
 - Succès cron job (si activé)
@@ -341,16 +367,19 @@ curl -X POST https://votredomaine.com/api/riddles/auto-select-daily \
 ### Outils Recommandés
 
 **Supabase Dashboard** :
+
 - Table Editor → Voir les données
 - SQL Editor → Requêtes personnalisées
 - Logs → Erreurs et warnings
 
 **Vercel Dashboard** :
+
 - Analytics → Trafic pages
 - Logs → Erreurs runtime
 - Cron Jobs → Exécutions
 
 **Exemple Requête Analytics** :
+
 ```sql
 -- Énigmes les plus populaires
 SELECT
@@ -374,6 +403,7 @@ LIMIT 10;
 **Symptômes** : Erreur lors de `pnpm db:migrate`
 
 **Solutions** :
+
 1. Vérifier connexion Supabase : `npx supabase status`
 2. Vérifier syntaxe SQL de la migration
 3. Vérifier permissions DB
@@ -384,6 +414,7 @@ LIMIT 10;
 **Symptômes** : Erreurs de compilation sur types DB
 
 **Solutions** :
+
 1. Régénérer : `npx supabase gen types typescript ...`
 2. Vérifier que la migration est poussée
 3. Redémarrer TypeScript server dans VSCode
@@ -393,6 +424,7 @@ LIMIT 10;
 **Symptômes** : 403 ou données vides malgré existence
 
 **Solutions** :
+
 1. Vérifier que l'utilisateur est connecté
 2. Vérifier le rôle (teacher/student)
 3. Vérifier les policies dans Supabase Dashboard
@@ -403,6 +435,7 @@ LIMIT 10;
 **Symptômes** : Pas d'énigme auto-sélectionnée
 
 **Solutions** :
+
 1. Vérifier configuration `vercel.json`
 2. Vérifier dans Vercel Dashboard → Cron Jobs
 3. Voir les logs d'exécution
@@ -414,6 +447,7 @@ LIMIT 10;
 **Symptômes** : Section badges vide
 
 **Solutions** :
+
 1. Vérifier que l'élève a des énigmes réussies
 2. Vérifier calcul dans `riddle-badges.ts`
 3. Vérifier console navigateur pour erreurs
@@ -461,6 +495,7 @@ pnpm db:migrate
 ## 📝 10. Post-Déploiement
 
 ### Semaine 1
+
 - [ ] Créer 10-15 énigmes variées
 - [ ] Définir énigme du jour chaque matin (ou activer cron)
 - [ ] Former les enseignants
@@ -468,6 +503,7 @@ pnpm db:migrate
 - [ ] Recueillir feedback initial
 
 ### Semaine 2-4
+
 - [ ] Analyser métriques d'engagement
 - [ ] Ajuster difficultés selon taux réussite
 - [ ] Créer plus d'énigmes si succès
@@ -475,6 +511,7 @@ pnpm db:migrate
 - [ ] Optimiser performances si besoin
 
 ### Mois 2+
+
 - [ ] Évaluer impact pédagogique
 - [ ] Planifier fonctionnalités v1.1
 - [ ] Organiser concours/événements
@@ -485,12 +522,14 @@ pnpm db:migrate
 ## 📞 Support
 
 ### Documentation
+
 - **Guide Utilisateur** : `RIDDLES_QUICK_START_GUIDE.md`
 - **Résumé Système** : `RIDDLES_SYSTEM_SUMMARY.md`
 - **Doc Technique** : `RIDDLES_SYSTEM_IMPLEMENTATION.md`
 - **Index** : `RIDDLES_DOCS_INDEX.md`
 
 ### En Cas de Problème
+
 1. Consulter cette documentation
 2. Vérifier les logs (Vercel + Supabase)
 3. Tester en local avec mêmes données

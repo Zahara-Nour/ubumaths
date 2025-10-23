@@ -192,10 +192,7 @@ function sanitizeErrorData(data: LogErrorData): LogErrorData {
 
 	// Sanitize request headers
 	if (sanitized.request_headers) {
-		sanitized.request_headers = sanitizeObject(sanitized.request_headers) as Record<
-			string,
-			string
-		>;
+		sanitized.request_headers = sanitizeObject(sanitized.request_headers) as Record<string, string>;
 	}
 
 	// Sanitize request body

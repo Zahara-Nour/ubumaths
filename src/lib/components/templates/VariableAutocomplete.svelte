@@ -45,8 +45,7 @@
 		if (!searchQuery) return availableFilters;
 		const query = searchQuery.toLowerCase();
 		return availableFilters.filter(
-			(f) =>
-				f.name.toLowerCase().includes(query) || f.description.toLowerCase().includes(query)
+			(f) => f.name.toLowerCase().includes(query) || f.description.toLowerCase().includes(query)
 		);
 	});
 
@@ -70,22 +69,19 @@
 </script>
 
 <Popover.Root bind:open>
-	<Popover.Trigger asChild let:builder>
-		<Button builders={[builder]} variant="outline" size="sm">
-			<Hash class="mr-2 h-4 w-4" />
-			Insérer variable/filtre
-		</Button>
+	<Popover.Trigger>
+		{#snippet child({ props })}
+			<Button {...props} variant="outline" size="sm">
+				<Hash class="mr-2 h-4 w-4" />
+				Insérer variable/filtre
+			</Button>
+		{/snippet}
 	</Popover.Trigger>
 
 	<Popover.Content class="w-96 p-0" align="start">
 		<!-- Search bar -->
 		<div class="border-b border-border p-3">
-			<Input
-				type="text"
-				placeholder="Rechercher..."
-				bind:value={searchQuery}
-				class="h-9"
-			/>
+			<Input type="text" placeholder="Rechercher..." bind:value={searchQuery} class="h-9" />
 		</div>
 
 		<!-- Tabs -->
@@ -115,9 +111,7 @@
 			{#if activeTab === 'variables'}
 				<!-- Variables list -->
 				{#if filteredVariables().length === 0}
-					<div class="p-8 text-center text-sm text-muted-foreground">
-						Aucune variable trouvée
-					</div>
+					<div class="p-8 text-center text-sm text-muted-foreground">Aucune variable trouvée</div>
 				{:else}
 					<div class="space-y-1">
 						{#each filteredVariables() as variable}
@@ -129,7 +123,7 @@
 								<div class="flex items-start justify-between">
 									<div class="flex-1">
 										<div class="flex items-center gap-2">
-											<code class="text-sm font-mono text-primary">
+											<code class="font-mono text-sm text-primary">
 												{`{{${variable.name}}}`}
 											</code>
 											{#if variable.required}
@@ -157,9 +151,7 @@
 			{:else}
 				<!-- Filters list -->
 				{#if filteredFilters().length === 0}
-					<div class="p-8 text-center text-sm text-muted-foreground">
-						Aucun filtre trouvé
-					</div>
+					<div class="p-8 text-center text-sm text-muted-foreground">Aucun filtre trouvé</div>
 				{:else}
 					<div class="space-y-1">
 						{#each filteredFilters() as filter}
@@ -171,9 +163,9 @@
 								<div class="flex items-start gap-2">
 									<Zap class="mt-0.5 h-4 w-4 text-orange-500" />
 									<div class="flex-1">
-										<code class="text-sm font-mono text-primary">{filter.name}</code>
+										<code class="font-mono text-sm text-primary">{filter.name}</code>
 										<div class="mt-1 text-sm">{filter.description}</div>
-										<div class="mt-1 text-xs text-muted-foreground font-mono">
+										<div class="mt-1 font-mono text-xs text-muted-foreground">
 											{filter.example}
 										</div>
 									</div>

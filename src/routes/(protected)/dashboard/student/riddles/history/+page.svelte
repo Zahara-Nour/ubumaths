@@ -71,9 +71,7 @@
 			<BookOpen class="h-8 w-8 text-primary" />
 			Mon Historique
 		</h1>
-		<p class="mt-2 text-muted-foreground">
-			Toutes les énigmes que tu as résolues
-		</p>
+		<p class="mt-2 text-muted-foreground">Toutes les énigmes que tu as résolues</p>
 	</div>
 
 	<!-- Summary Stats -->
@@ -127,9 +125,7 @@
 					<Trophy class="h-5 w-5" />
 					Mes Badges
 				</Card.Title>
-				<Card.Description>
-					Récompenses débloquées et progrès en cours
-				</Card.Description>
+				<Card.Description>Récompenses débloquées et progrès en cours</Card.Description>
 			</Card.Header>
 			<Card.Content>
 				<!-- Earned Badges -->
@@ -139,7 +135,9 @@
 						<div class="grid gap-3 sm:grid-cols-2">
 							{#each earnedBadges as badge (badge.id)}
 								<div
-									class="flex items-center gap-3 rounded-lg border-2 p-3 {getTierColorClass(badge.tier!)}"
+									class="flex items-center gap-3 rounded-lg border-2 p-3 {getTierColorClass(
+										badge.tier!
+									)}"
 								>
 									<div class="text-3xl">{badge.icon}</div>
 									<div class="flex-1">

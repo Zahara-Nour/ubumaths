@@ -5,16 +5,19 @@ Après avoir appliqué la migration `097_create_message_templates.sql`, vous dev
 ## Étapes
 
 1. Appliquer la migration :
+
 ```bash
 pnpm db:migrate
 ```
 
 2. Regénérer les types (si vous avez la CLI Supabase configurée) :
+
 ```bash
 npx supabase gen types typescript --local > src/lib/types/database.ts
 ```
 
 OU si vous utilisez Supabase hébergé :
+
 ```bash
 npx supabase gen types typescript --project-id YOUR_PROJECT_ID > src/lib/types/database.ts
 ```
@@ -22,6 +25,7 @@ npx supabase gen types typescript --project-id YOUR_PROJECT_ID > src/lib/types/d
 ## Type ajouté
 
 La nouvelle table `message_templates` a été ajoutée avec les colonnes suivantes :
+
 - id (UUID)
 - title (TEXT)
 - description (TEXT, nullable)
