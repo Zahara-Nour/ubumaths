@@ -18,6 +18,7 @@
 	} from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { cn } from '$lib/utils';
 
 	let searchQuery = $state('');
 	let selectedIndex = $state(-1);
@@ -283,9 +284,10 @@
 										class="h-8 w-8 p-0"
 									>
 										<Star
-											class="h-4 w-4"
-											class:fill-yellow-500={message.is_starred}
-											class:text-yellow-500={message.is_starred}
+											class={cn(
+												"h-4 w-4",
+												message.is_starred && "fill-yellow-500 text-yellow-500"
+											)}
 										/>
 									</Button>
 									<Button

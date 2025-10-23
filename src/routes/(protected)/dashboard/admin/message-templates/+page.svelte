@@ -21,6 +21,7 @@
 	import { previewTemplate } from '$lib/templates/templateEngine';
 	import { getSupabase } from '$lib/supabaseClient';
 	import { goto } from '$app/navigation';
+	import { cn } from '$lib/utils';
 
 	// State
 	let isLoading = $state(false);
@@ -452,7 +453,7 @@
 				variant={favoritesOnly ? 'default' : 'outline'}
 				onclick={() => (favoritesOnly = !favoritesOnly)}
 			>
-				<Star class="mr-2 h-4 w-4" class:fill-current={favoritesOnly} />
+				<Star class={cn("mr-2 h-4 w-4", favoritesOnly && "fill-current")} />
 				Favoris uniquement
 			</Button>
 
@@ -474,8 +475,8 @@
 
 		<!-- Tags filter (if there are templates with tags) -->
 		{#if templates.some(t => t.tags && (t.tags as string[]).length > 0)}
+			{@const allTags = Array.from(new Set(templates.flatMap(t => (t.tags as string[]) || [])))}
 			<div class="flex flex-wrap gap-2">
-				{@const allTags = Array.from(new Set(templates.flatMap(t => (t.tags as string[]) || [])))}
 				{#each allTags as tag}
 					<Badge
 						variant={filterTags.includes(tag) ? 'default' : 'outline'}

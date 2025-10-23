@@ -31,6 +31,7 @@
 	import type { MessageTemplate, MessageTemplateInput, TriggerType } from '$lib/types/messageTemplates';
 	import { getVariablesForTrigger } from '$lib/templates/templateVariables';
 	import { renderTemplate } from '$lib/templates/templateEngine';
+	import { cn } from '$lib/utils';
 
 	// State
 	let isLoading = $state(false);
@@ -651,7 +652,7 @@
 					variant={filterFavoritesOnly ? 'default' : 'outline'}
 					onclick={() => (filterFavoritesOnly = !filterFavoritesOnly)}
 				>
-					<Star class="mr-2 h-4 w-4" class:fill-current={filterFavoritesOnly} />
+					<Star class={cn("mr-2 h-4 w-4", filterFavoritesOnly && "fill-current")} />
 					Favoris uniquement
 				</Button>
 			</div>

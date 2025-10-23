@@ -11,6 +11,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Trophy, User, ArrowLeft, Crown } from 'lucide-svelte';
+	import { cn } from '$lib/utils';
 
 	let { data }: { data: PageData } = $props();
 
@@ -149,9 +150,10 @@
 				<div class="space-y-2">
 					{#each data.leaderboard as entry (entry.student_id)}
 						<div
-							class="flex items-center justify-between rounded-lg border p-3 transition-colors"
-							class:bg-primary/5={isCurrentUser(entry.student_id)}
-							class:border-primary={isCurrentUser(entry.student_id)}
+							class={cn(
+								"flex items-center justify-between rounded-lg border p-3 transition-colors",
+								isCurrentUser(entry.student_id) && "bg-primary/5 border-primary"
+							)}
 						>
 							<div class="flex items-center gap-3">
 								<!-- Rank -->

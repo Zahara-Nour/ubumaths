@@ -130,7 +130,7 @@
 									<div class="flex-1">
 										<div class="flex items-center gap-2">
 											<code class="text-sm font-mono text-primary">
-												{{`{{${variable.name}}}`}}
+												{`{{${variable.name}}}`}
 											</code>
 											{#if variable.required}
 												<Badge variant="destructive" class="text-xs">Requis</Badge>
@@ -191,7 +191,7 @@
 				{#if activeTab === 'variables'}
 					💡 Cliquez pour insérer une variable dans votre template
 				{:else}
-					💡 Les filtres modifient l'affichage des variables (ex: {{`{{name | uppercase}}`}})
+					💡 Les filtres modifient l'affichage des variables (ex: {`{{name | uppercase}}`})
 				{/if}
 			</div>
 		</div>

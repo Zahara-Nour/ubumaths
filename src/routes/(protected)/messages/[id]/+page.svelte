@@ -23,6 +23,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
+	import { cn } from '$lib/utils';
 
 	const messageId = $derived($page.params.id);
 
@@ -144,9 +145,10 @@
 				</Button>
 				<Button variant="ghost" size="sm" onclick={toggleStar}>
 					<Star
-						class="h-4 w-4"
-						class:fill-yellow-500={message?.is_starred}
-						class:text-yellow-500={message?.is_starred}
+						class={cn(
+							"h-4 w-4",
+							message?.is_starred && "fill-yellow-500 text-yellow-500"
+						)}
 					/>
 				</Button>
 				<Button variant="ghost" size="sm" onclick={archiveMessage}>

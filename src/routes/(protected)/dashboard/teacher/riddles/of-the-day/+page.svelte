@@ -23,6 +23,7 @@
 	import { format } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { enhance } from '$app/forms';
+	import { cn } from '$lib/utils';
 
 	let { data }: { data: PageData } = $props();
 
@@ -164,7 +165,7 @@
 									<Select.Item value={riddle.id} label="#{riddle.riddle_number} - {riddle.title}">
 										<div class="flex items-center gap-2">
 											<span>#{riddle.riddle_number}</span>
-											<Badge class={getDifficultyColor(riddle.difficulty)} class="text-xs">
+											<Badge class={cn("text-xs", getDifficultyColor(riddle.difficulty))}>
 												{getDifficultyLabel(riddle.difficulty)}
 											</Badge>
 											<span>{riddle.title}</span>
