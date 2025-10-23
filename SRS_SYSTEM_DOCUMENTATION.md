@@ -94,11 +94,13 @@ FSRS utilise un modèle à trois variables :
 ### Formules clés
 
 #### Retrievability
+
 ```
 R = (1 + elapsed_days / (9 × S))^(-0.5)
 ```
 
 #### Interval
+
 ```
 I = 9 × S × (DR^(-2) - 1)
 ```
@@ -107,21 +109,21 @@ où `DR` est le taux de rétention souhaité (par défaut 0.9 ou 90%).
 
 ### États des cartes
 
-| État | Description |
-|------|-------------|
-| `new` | Carte jamais révisée |
-| `learning` | Carte en cours d'apprentissage (< 24h) |
-| `review` | Carte en révision normale |
-| `relearning` | Carte oubliée, en réapprentissage |
+| État         | Description                            |
+| ------------ | -------------------------------------- |
+| `new`        | Carte jamais révisée                   |
+| `learning`   | Carte en cours d'apprentissage (< 24h) |
+| `review`     | Carte en révision normale              |
+| `relearning` | Carte oubliée, en réapprentissage      |
 
 ### Grades de notation
 
-| Grade | Label | Description | Impact |
-|-------|-------|-------------|--------|
-| 1 | Again | Mauvaise réponse | Retour en learning/relearning, intervalle court |
-| 2 | Hard | Réponse difficile | Intervalle réduit (~50%) |
-| 3 | Good | Bonne réponse | Intervalle standard |
-| 4 | Easy | Réponse facile | Intervalle augmenté (~130%) |
+| Grade | Label | Description       | Impact                                          |
+| ----- | ----- | ----------------- | ----------------------------------------------- |
+| 1     | Again | Mauvaise réponse  | Retour en learning/relearning, intervalle court |
+| 2     | Hard  | Réponse difficile | Intervalle réduit (~50%)                        |
+| 3     | Good  | Bonne réponse     | Intervalle standard                             |
+| 4     | Easy  | Réponse facile    | Intervalle augmenté (~130%)                     |
 
 ### Paramètres FSRS
 
@@ -129,12 +131,12 @@ FSRS-6 utilise 21 paramètres optimisés scientifiquement (voir `src/lib/srs/con
 
 #### Profils de rétention
 
-| Profil | Rétention | Usage |
-|--------|-----------|-------|
-| Relaxed | 80% | Apprentissage décontracté |
-| Balanced | 90% | Équilibre rétention/révisions (défaut) |
-| High | 95% | Haute rétention, plus de révisions |
-| Expert | 97% | Maîtrise maximale |
+| Profil   | Rétention | Usage                                  |
+| -------- | --------- | -------------------------------------- |
+| Relaxed  | 80%       | Apprentissage décontracté              |
+| Balanced | 90%       | Équilibre rétention/révisions (défaut) |
+| High     | 95%       | Haute rétention, plus de révisions     |
+| Expert   | 97%       | Maîtrise maximale                      |
 
 ---
 
@@ -143,83 +145,90 @@ FSRS-6 utilise 21 paramètres optimisés scientifiquement (voir `src/lib/srs/con
 ### Tables
 
 #### `srs_decks`
+
 Collection de cartes SRS.
 
-| Colonne | Type | Description |
-|---------|------|-------------|
-| `id` | UUID | Identifiant unique |
-| `name` | TEXT | Nom du deck |
-| `description` | TEXT | Description (optionnel) |
-| `owner_id` | UUID | Propriétaire (FK profiles) |
-| `deck_type` | TEXT | 'official' ou 'personal' |
-| `is_assigned` | BOOLEAN | Si attribué par un prof (read-only) |
-| `config` | JSONB | Configuration FSRS |
-| `created_at` | TIMESTAMP | Date de création |
-| `updated_at` | TIMESTAMP | Dernière modification |
+| Colonne       | Type      | Description                         |
+| ------------- | --------- | ----------------------------------- |
+| `id`          | UUID      | Identifiant unique                  |
+| `name`        | TEXT      | Nom du deck                         |
+| `description` | TEXT      | Description (optionnel)             |
+| `owner_id`    | UUID      | Propriétaire (FK profiles)          |
+| `deck_type`   | TEXT      | 'official' ou 'personal'            |
+| `is_assigned` | BOOLEAN   | Si attribué par un prof (read-only) |
+| `config`      | JSONB     | Configuration FSRS                  |
+| `created_at`  | TIMESTAMP | Date de création                    |
+| `updated_at`  | TIMESTAMP | Dernière modification               |
 
 #### `srs_cards`
+
 Cartes individuelles dans un deck.
 
-| Colonne | Type | Description |
-|---------|------|-------------|
-| `id` | UUID | Identifiant unique |
-| `deck_id` | UUID | Deck parent (FK srs_decks) |
-| `card_type` | TEXT | 'template' ou 'custom' |
-| `template_id` | UUID | ID template (si type=template) |
-| `front_content` | JSONB | Contenu recto (si type=custom) |
-| `back_content` | JSONB | Contenu verso (si type=custom) |
-| `created_at` | TIMESTAMP | Date de création |
+| Colonne         | Type      | Description                    |
+| --------------- | --------- | ------------------------------ |
+| `id`            | UUID      | Identifiant unique             |
+| `deck_id`       | UUID      | Deck parent (FK srs_decks)     |
+| `card_type`     | TEXT      | 'template' ou 'custom'         |
+| `template_id`   | UUID      | ID template (si type=template) |
+| `front_content` | JSONB     | Contenu recto (si type=custom) |
+| `back_content`  | JSONB     | Contenu verso (si type=custom) |
+| `created_at`    | TIMESTAMP | Date de création               |
 
 #### `srs_card_stats`
+
 Statistiques FSRS par utilisateur et référence de carte.
 
-| Colonne | Type | Description |
-|---------|------|-------------|
-| `user_id` | UUID | Utilisateur (FK profiles) |
-| `card_reference_type` | TEXT | 'template' ou 'custom' |
-| `card_reference_id` | TEXT | ID référence (template_id ou custom_{card_id}) |
-| `difficulty` | NUMERIC | Difficulté FSRS |
-| `stability` | NUMERIC | Stabilité FSRS (jours) |
-| `state` | TEXT | État ('new', 'learning', 'review', 'relearning') |
-| `last_review` | TIMESTAMP | Dernière révision |
-| `next_review` | TIMESTAMP | Prochaine révision due |
-| `total_reviews` | INTEGER | Nombre total de révisions |
-| `review_history` | JSONB | Historique des révisions |
-| `updated_at` | TIMESTAMP | Dernière mise à jour |
+| Colonne               | Type      | Description                                      |
+| --------------------- | --------- | ------------------------------------------------ |
+| `user_id`             | UUID      | Utilisateur (FK profiles)                        |
+| `card_reference_type` | TEXT      | 'template' ou 'custom'                           |
+| `card_reference_id`   | TEXT      | ID référence (template*id ou custom*{card_id})   |
+| `difficulty`          | NUMERIC   | Difficulté FSRS                                  |
+| `stability`           | NUMERIC   | Stabilité FSRS (jours)                           |
+| `state`               | TEXT      | État ('new', 'learning', 'review', 'relearning') |
+| `last_review`         | TIMESTAMP | Dernière révision                                |
+| `next_review`         | TIMESTAMP | Prochaine révision due                           |
+| `total_reviews`       | INTEGER   | Nombre total de révisions                        |
+| `review_history`      | JSONB     | Historique des révisions                         |
+| `updated_at`          | TIMESTAMP | Dernière mise à jour                             |
 
 **Clé primaire composite** : `(user_id, card_reference_type, card_reference_id)`
 
 #### `srs_review_sessions`
+
 Sessions de révision.
 
-| Colonne | Type | Description |
-|---------|------|-------------|
-| `id` | UUID | Identifiant unique |
-| `user_id` | UUID | Utilisateur (FK profiles) |
-| `deck_id` | UUID | Deck (FK srs_decks) |
-| `cards_reviewed` | INTEGER | Nombre de cartes révisées |
-| `correct_count` | INTEGER | Nombre de réponses correctes (grade >= 3) |
-| `total_time` | INTEGER | Temps total (secondes) |
-| `created_at` | TIMESTAMP | Date de la session |
+| Colonne          | Type      | Description                               |
+| ---------------- | --------- | ----------------------------------------- |
+| `id`             | UUID      | Identifiant unique                        |
+| `user_id`        | UUID      | Utilisateur (FK profiles)                 |
+| `deck_id`        | UUID      | Deck (FK srs_decks)                       |
+| `cards_reviewed` | INTEGER   | Nombre de cartes révisées                 |
+| `correct_count`  | INTEGER   | Nombre de réponses correctes (grade >= 3) |
+| `total_time`     | INTEGER   | Temps total (secondes)                    |
+| `created_at`     | TIMESTAMP | Date de la session                        |
 
 #### `srs_deck_assignments`
+
 Historique des attributions de decks.
 
-| Colonne | Type | Description |
-|---------|------|-------------|
-| `id` | UUID | Identifiant unique |
-| `source_deck_id` | UUID | Deck source (FK srs_decks) |
-| `assigned_by` | UUID | Professeur (FK profiles) |
-| `assigned_to` | UUID | Élève (FK profiles) |
-| `assignment_type` | TEXT | 'student' ou 'class' |
-| `created_at` | TIMESTAMP | Date d'attribution |
+| Colonne           | Type      | Description                |
+| ----------------- | --------- | -------------------------- |
+| `id`              | UUID      | Identifiant unique         |
+| `source_deck_id`  | UUID      | Deck source (FK srs_decks) |
+| `assigned_by`     | UUID      | Professeur (FK profiles)   |
+| `assigned_to`     | UUID      | Élève (FK profiles)        |
+| `assignment_type` | TEXT      | 'student' ou 'class'       |
+| `created_at`      | TIMESTAMP | Date d'attribution         |
 
 ### Fonctions SQL helpers
 
 #### `get_due_cards_for_deck(user_id, deck_id)`
+
 Retourne toutes les cartes dues pour révision dans un deck.
 
 **Retour** :
+
 - `card_id` : ID de la carte
 - `card_type` : Type ('template' ou 'custom')
 - `template_id` : ID template (si applicable)
@@ -228,9 +237,11 @@ Retourne toutes les cartes dues pour révision dans un deck.
 - `total_reviews`, `last_review`, `next_review`
 
 #### `get_deck_stats(user_id, deck_id)`
+
 Retourne les statistiques d'un deck pour un utilisateur.
 
 **Retour** :
+
 - `total_cards` : Nombre total de cartes
 - `due_count` : Cartes à réviser maintenant
 - `new_count` : Nouvelles cartes
@@ -256,35 +267,39 @@ Toutes les tables ont des politiques RLS activées :
 ### Decks API
 
 #### `GET /api/srs/decks`
+
 Liste tous les decks de l'utilisateur avec statistiques.
 
 **Réponse** :
+
 ```json
 {
-  "decks": [
-    {
-      "id": "uuid",
-      "name": "Équations du second degré",
-      "description": "...",
-      "deckType": "official",
-      "isAssigned": false,
-      "config": { "desiredRetention": 0.9 },
-      "stats": {
-        "total_cards": 25,
-        "due_count": 5,
-        "new_count": 10,
-        "learning_count": 3,
-        "review_count": 7
-      }
-    }
-  ]
+	"decks": [
+		{
+			"id": "uuid",
+			"name": "Équations du second degré",
+			"description": "...",
+			"deckType": "official",
+			"isAssigned": false,
+			"config": { "desiredRetention": 0.9 },
+			"stats": {
+				"total_cards": 25,
+				"due_count": 5,
+				"new_count": 10,
+				"learning_count": 3,
+				"review_count": 7
+			}
+		}
+	]
 }
 ```
 
 #### `POST /api/srs/decks`
+
 Créer un nouveau deck.
 
 **Body** :
+
 ```json
 {
   "name": "Mon Deck",
@@ -300,27 +315,33 @@ Créer un nouveau deck.
 **Réponse** : `{ "deck": { ... } }`
 
 #### `GET /api/srs/decks/[id]`
+
 Détails d'un deck avec stats.
 
 #### `PUT /api/srs/decks/[id]`
+
 Modifier un deck (seulement si `is_assigned = false`).
 
 **Body** :
+
 ```json
 {
-  "name": "Nouveau nom",
-  "description": "...",
-  "config": { "desiredRetention": 0.95 }
+	"name": "Nouveau nom",
+	"description": "...",
+	"config": { "desiredRetention": 0.95 }
 }
 ```
 
 #### `DELETE /api/srs/decks/[id]`
+
 Supprimer un deck (seulement si `is_assigned = false`). Supprime en cascade toutes les cartes.
 
 #### `POST /api/srs/decks/[id]/assign`
+
 Attribuer un deck à des élèves ou classes.
 
 **Body** :
+
 ```json
 {
   "targetType": "student" | "class",
@@ -333,70 +354,83 @@ Attribuer un deck à des élèves ou classes.
 ### Cards API
 
 #### `GET /api/srs/cards?deck_id=X`
+
 Liste toutes les cartes d'un deck.
 
 #### `POST /api/srs/cards`
+
 Ajouter une carte à un deck.
 
 **Body (template card)** :
+
 ```json
 {
-  "deckId": "uuid",
-  "cardType": "template",
-  "templateId": "uuid"
+	"deckId": "uuid",
+	"cardType": "template",
+	"templateId": "uuid"
 }
 ```
 
 **Body (custom card)** :
+
 ```json
 {
-  "deckId": "uuid",
-  "cardType": "custom",
-  "frontContent": [{ "type": "text", "content": "..." }],
-  "backContent": [{ "type": "text", "content": "..." }]
+	"deckId": "uuid",
+	"cardType": "custom",
+	"frontContent": [{ "type": "text", "content": "..." }],
+	"backContent": [{ "type": "text", "content": "..." }]
 }
 ```
 
 #### `GET /api/srs/cards/[id]`
+
 Détails d'une carte.
 
 #### `PUT /api/srs/cards/[id]`
+
 Modifier une carte (seulement custom cards dans decks non-assignés).
 
 #### `DELETE /api/srs/cards/[id]`
+
 Supprimer une carte (seulement dans decks non-assignés).
 
 ### Review API
 
 #### `GET /api/srs/review/due?deck_id=X`
+
 Cartes dues pour révision.
 
 **Réponse** :
+
 ```json
 {
-  "cards": [
-    {
-      "cardId": "uuid",
-      "cardType": "template",
-      "instance": { /* QuestionInstance */ },
-      "stats": {
-        "state": "review",
-        "difficulty": 5.2,
-        "stability": 15.3,
-        "totalReviews": 8,
-        "nextReview": "2024-..."
-      }
-    }
-  ]
+	"cards": [
+		{
+			"cardId": "uuid",
+			"cardType": "template",
+			"instance": {
+				/* QuestionInstance */
+			},
+			"stats": {
+				"state": "review",
+				"difficulty": 5.2,
+				"stability": 15.3,
+				"totalReviews": 8,
+				"nextReview": "2024-..."
+			}
+		}
+	]
 }
 ```
 
 **Note** : Pour les template cards, une nouvelle instance est générée avec un seed aléatoire.
 
 #### `POST /api/srs/review/submit`
+
 Soumettre un résultat de révision.
 
 **Body** :
+
 ```json
 {
   "cardId": "uuid",
@@ -407,20 +441,22 @@ Soumettre un résultat de révision.
 ```
 
 **Réponse** :
+
 ```json
 {
-  "success": true,
-  "stats": {
-    "difficulty": 5.4,
-    "stability": 22.1,
-    "state": "review",
-    "nextReview": "2024-12-01T10:00:00Z",
-    "totalReviews": 9
-  }
+	"success": true,
+	"stats": {
+		"difficulty": 5.4,
+		"stability": 22.1,
+		"state": "review",
+		"nextReview": "2024-12-01T10:00:00Z",
+		"totalReviews": 9
+	}
 }
 ```
 
 **Comportement** :
+
 1. Récupère ou initialise les stats de la carte
 2. Utilise FSRS pour calculer les nouvelles stats
 3. Upsert dans `srs_card_stats`
@@ -435,16 +471,15 @@ Soumettre un résultat de révision.
 Affiche un deck avec ses statistiques.
 
 **Props** :
+
 - `deck` : Objet deck avec stats
 - `onclick` : Callback au clic
 - `showActions` : Afficher le bouton d'action (défaut: true)
 
 **Usage** :
+
 ```svelte
-<DeckCard
-  {deck}
-  onclick={() => startStudy(deck.id)}
-/>
+<DeckCard {deck} onclick={() => startStudy(deck.id)} />
 ```
 
 ### `FSRSButtons.svelte`
@@ -452,18 +487,16 @@ Affiche un deck avec ses statistiques.
 Les 4 boutons de notation FSRS.
 
 **Props** :
+
 - `onGrade` : `(grade: 1 | 2 | 3 | 4) => void`
 - `disabled` : Désactiver les boutons
 - `showIntervals` : Afficher les intervalles estimés
 - `intervals` : `[number, number, number, number]` (jours pour chaque grade)
 
 **Usage** :
+
 ```svelte
-<FSRSButtons
-  onGrade={handleGrade}
-  showIntervals={true}
-  intervals={[0.5, 2, 7, 30]}
-/>
+<FSRSButtons onGrade={handleGrade} showIntervals={true} intervals={[0.5, 2, 7, 30]} />
 ```
 
 **Raccourcis clavier** : Les touches 1-4 permettent de noter rapidement.
@@ -473,11 +506,13 @@ Les 4 boutons de notation FSRS.
 Gère une session de révision complète.
 
 **Props** :
+
 - `deckId` : ID du deck à réviser
 - `onComplete` : `(summary: SessionSummary) => void`
 - `onBack` : Callback pour retour
 
 **Comportement** :
+
 1. Récupère les cartes dues via API
 2. Affiche les cartes une par une avec FlashCard
 3. Montre FSRSButtons après flip
@@ -485,12 +520,9 @@ Gère une session de révision complète.
 5. Affiche un résumé à la fin
 
 **Usage** :
+
 ```svelte
-<ReviewSession
-  {deckId}
-  onComplete={handleComplete}
-  onBack={() => goto('/dashboard/revisions')}
-/>
+<ReviewSession {deckId} onComplete={handleComplete} onBack={() => goto('/dashboard/revisions')} />
 ```
 
 ### `CustomCardEditor.svelte`
@@ -498,22 +530,22 @@ Gère une session de révision complète.
 Éditeur de cartes personnalisées.
 
 **Props** :
+
 - `initialFrontContent` : ContentField[] (pour édition)
 - `initialBackContent` : ContentField[]
 - `onSave` : `(front, back) => Promise<void>`
 - `onCancel` : Callback annulation
 
 **Fonctionnalités** :
+
 - Deux éditeurs rich-text (recto/verso)
 - Aperçu en temps réel
 - Support LaTeX, images, formatage
 
 **Usage** :
+
 ```svelte
-<CustomCardEditor
-  onSave={handleSave}
-  onCancel={() => editing = false}
-/>
+<CustomCardEditor onSave={handleSave} onCancel={() => (editing = false)} />
 ```
 
 ---
@@ -523,11 +555,13 @@ Gère une session de révision complète.
 ### Workflow Élève
 
 #### 1. Accéder aux révisions
+
 1. Navigation : `/dashboard/revisions`
 2. Voir liste des decks (assignés + personnels)
 3. Statistiques : cartes totales, à réviser, etc.
 
 #### 2. Réviser un deck
+
 1. Clic sur un deck
 2. Navigation : `/dashboard/revisions/decks/[id]/study`
 3. ReviewSession charge les cartes dues
@@ -538,6 +572,7 @@ Gère une session de révision complète.
 5. Résumé de session à la fin
 
 #### 3. Créer un deck personnel
+
 1. Clic "Nouveau deck"
 2. Remplir nom, description
 3. Ajouter cartes (template ou custom)
@@ -546,6 +581,7 @@ Gère une session de révision complète.
 ### Workflow Professeur
 
 #### 1. Créer un deck
+
 1. Navigation : `/dashboard/teacher/srs/decks/create`
 2. Remplir informations :
    - Nom, description
@@ -557,6 +593,7 @@ Gère une session de révision complète.
 4. Sauvegarder
 
 #### 2. Attribuer un deck
+
 1. Après création, redirection vers `/dashboard/teacher/srs/decks/[id]/assign`
 2. Sélectionner élèves et/ou classes
 3. Clic "Attribuer"
@@ -567,6 +604,7 @@ Gère une session de révision complète.
    - Enregistre l'attribution
 
 #### 3. Gérer les decks
+
 1. Liste des decks créés
 2. Modifier (si non-assignés)
 3. Supprimer (si non-assignés)
@@ -594,10 +632,10 @@ Définis dans `src/lib/srs/config.ts` :
 
 ```typescript
 export const RETENTION_PROFILES = {
-  relaxed: 0.8,   // 80% rétention
-  balanced: 0.9,  // 90% (défaut)
-  high: 0.95,     // 95%
-  expert: 0.97    // 97%
+	relaxed: 0.8, // 80% rétention
+	balanced: 0.9, // 90% (défaut)
+	high: 0.95, // 95%
+	expert: 0.97 // 97%
 };
 ```
 
@@ -614,6 +652,7 @@ export const RETENTION_PROFILES = {
 ## Future Improvements
 
 ### Phase 1 (Actuelle) ✅
+
 - [x] Backend complet (API, database)
 - [x] Algorithme FSRS-6
 - [x] Pages élèves (liste decks, révision)
@@ -621,6 +660,7 @@ export const RETENTION_PROFILES = {
 - [x] Composants UI
 
 ### Phase 2 (À venir)
+
 - [ ] Import/Export JSON
   - Exporter deck en format JSON
   - Importer deck depuis JSON
@@ -636,6 +676,7 @@ export const RETENTION_PROFILES = {
   - Temps de révision moyen
 
 ### Phase 3 (Future)
+
 - [ ] Optimisation des paramètres FSRS
   - Collecte de données de révision
   - Calcul de paramètres personnalisés
@@ -659,6 +700,7 @@ export const RETENTION_PROFILES = {
   - Leaderboards
 
 ### Améliorations techniques
+
 - [ ] Tests unitaires (Vitest)
 - [ ] Tests E2E (Playwright)
 - [ ] Performance monitoring
@@ -670,18 +712,18 @@ export const RETENTION_PROFILES = {
 
 ## Glossaire
 
-| Terme | Définition |
-|-------|------------|
-| **SRS** | Spaced Repetition System - système de révision espacée |
-| **FSRS** | Free Spaced Repetition Scheduler - algorithme open-source |
-| **DSR** | Difficulty, Stability, Retrievability - modèle à 3 variables |
-| **Deck** | Collection de cartes flashcards |
-| **Card** | Carte flashcard (recto/verso) |
-| **Template card** | Carte basée sur un template de question (régénérée) |
-| **Custom card** | Carte personnalisée (contenu fixe) |
-| **Instance** | Génération concrète d'un template avec valeurs aléatoires |
-| **RLS** | Row Level Security - sécurité au niveau des lignes Postgres |
-| **Grade** | Note de 1-4 pour évaluer la difficulté de rappel |
+| Terme             | Définition                                                   |
+| ----------------- | ------------------------------------------------------------ |
+| **SRS**           | Spaced Repetition System - système de révision espacée       |
+| **FSRS**          | Free Spaced Repetition Scheduler - algorithme open-source    |
+| **DSR**           | Difficulty, Stability, Retrievability - modèle à 3 variables |
+| **Deck**          | Collection de cartes flashcards                              |
+| **Card**          | Carte flashcard (recto/verso)                                |
+| **Template card** | Carte basée sur un template de question (régénérée)          |
+| **Custom card**   | Carte personnalisée (contenu fixe)                           |
+| **Instance**      | Génération concrète d'un template avec valeurs aléatoires    |
+| **RLS**           | Row Level Security - sécurité au niveau des lignes Postgres  |
+| **Grade**         | Note de 1-4 pour évaluer la difficulté de rappel             |
 
 ---
 
@@ -697,6 +739,7 @@ export const RETENTION_PROFILES = {
 ## Maintenance
 
 ### Mise à jour migration database
+
 1. Créer nouvelle migration dans `supabase/migrations/`
 2. Format : `<timestamp>_<description>.sql`
 3. Tester localement
@@ -704,6 +747,7 @@ export const RETENTION_PROFILES = {
 5. Mettre à jour `DATABASE_SCHEMA.md`
 
 ### Modification algorithme FSRS
+
 1. Modifier `src/lib/srs/fsrs.ts`
 2. Ajouter tests unitaires
 3. Tester avec données réelles
@@ -711,6 +755,7 @@ export const RETENTION_PROFILES = {
 5. Considérer migration des stats existantes
 
 ### Ajout de nouvelles fonctionnalités
+
 1. Mettre à jour `types.ts` si nécessaire
 2. Créer migration database si schéma change
 3. Implémenter API endpoints

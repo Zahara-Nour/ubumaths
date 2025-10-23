@@ -86,7 +86,11 @@ export class FSRS {
 	 *
 	 * @returns CardStats with initial FSRS values
 	 */
-	initCard(userId: string, cardReferenceType: 'template' | 'custom', cardReferenceId: string): Omit<CardStats, 'id' | 'createdAt' | 'updatedAt'> {
+	initCard(
+		userId: string,
+		cardReferenceType: 'template' | 'custom',
+		cardReferenceId: string
+	): Omit<CardStats, 'id' | 'createdAt' | 'updatedAt'> {
 		const now = new Date().toISOString();
 
 		return {
@@ -111,7 +115,9 @@ export class FSRS {
 	 * @param card - Card stats
 	 * @returns Retrievability between 0 and 1
 	 */
-	calculateRetrievability(card: CardStats | Omit<CardStats, 'id' | 'createdAt' | 'updatedAt'>): number {
+	calculateRetrievability(
+		card: CardStats | Omit<CardStats, 'id' | 'createdAt' | 'updatedAt'>
+	): number {
 		if (!card.lastReview || card.stability === 0) {
 			return 1; // New card, 100% retrievability
 		}
@@ -220,8 +226,7 @@ export class FSRS {
 	 * @returns Interval in days (rounded to integer)
 	 */
 	calculateInterval(stability: number): number {
-		const interval =
-			9 * stability * (Math.pow(this.desiredRetention, 1 / this.decay) - 1);
+		const interval = 9 * stability * (Math.pow(this.desiredRetention, 1 / this.decay) - 1);
 
 		return Math.max(1, Math.min(this.maxInterval, Math.round(interval)));
 	}

@@ -74,7 +74,8 @@
 
 {#if hasNotifications && currentNotification}
 	<div
-		class="sticky top-0 z-50 border-b {getPriorityColors(currentNotification).border} {getPriorityColors(currentNotification).bg} shadow-sm"
+		class="sticky top-0 z-50 border-b {getPriorityColors(currentNotification)
+			.border} {getPriorityColors(currentNotification).bg} shadow-sm"
 	>
 		<div class="container mx-auto flex items-center justify-between gap-4 px-4 py-3">
 			<!-- Left: Icon + Content -->

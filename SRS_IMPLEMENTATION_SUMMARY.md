@@ -39,12 +39,14 @@ Le système de révision espacée (SRS) basé sur l'algorithme FSRS-6 est mainte
    - Assigné par (professeur) et assigné à (élève/classe)
 
 **RLS Policies** :
+
 - ✅ Utilisateurs ne voient que leurs propres decks
 - ✅ Professeurs peuvent attribuer des decks
 - ✅ Élèves voient les decks attribués
 - ✅ Stats globales partagées entre decks pour même carte
 
 **Triggers** :
+
 - ✅ Auto-création de stats globales lors de la création d'une carte
 - ✅ Mise à jour automatique de `updated_at`
 
@@ -53,6 +55,7 @@ Le système de révision espacée (SRS) basé sur l'algorithme FSRS-6 est mainte
 ### 2. Algorithme FSRS-6
 
 **Fichiers** :
+
 - `src/lib/srs/fsrs-algorithm.ts` - Implémentation FSRS
 - `src/lib/srs/fsrs-types.ts` - Types TypeScript
 - `src/lib/srs/config.ts` - Configuration (profils de rétention)
@@ -60,29 +63,34 @@ Le système de révision espacée (SRS) basé sur l'algorithme FSRS-6 est mainte
 **Fonctionnalités** :
 
 ✅ **Modèle DSR** (Difficulty, Stability, Retrievability)
+
 - Calcul de la difficulté après chaque révision
 - Calcul de la stabilité (intervalle optimal)
 - Calcul de la récupérabilité (probabilité de se souvenir)
 
 ✅ **4 Grades de révision** :
+
 - 1 (Encore) : Mauvaise réponse → intervalle très court
 - 2 (Difficile) : Correct mais dur → intervalle court
 - 3 (Bien) : Bonne réponse → intervalle standard
 - 4 (Facile) : Parfait → intervalle long
 
 ✅ **États de carte** :
+
 - `new` : Jamais révisée
 - `learning` : En apprentissage initial (< 24h)
 - `review` : Révisions normales (graduées)
 - `relearning` : Oubliée, en réapprentissage
 
 ✅ **Profils de rétention** :
+
 - Détendu : 80% (moins de révisions)
 - **Équilibré : 90%** (recommandé)
 - Élevé : 95% (plus de révisions)
 - Expert : 97% (révisions maximales)
 
 ✅ **Calcul de `due_date`** :
+
 - Basé sur la stabilité et la rétention souhaitée
 - Formule : `interval = stability * (desired_retention^(1/decay) - 1)`
 
@@ -117,6 +125,7 @@ Toutes les routes API nécessaires ont été créées :
 - **GET** `/api/srs/assignments?deck_id=X` - Liste des attributions
 
 **Sécurité** :
+
 - ✅ Toutes les routes vérifient l'authentification
 - ✅ Ownership validé (créateur du deck)
 - ✅ RLS enforced au niveau base de données
@@ -128,6 +137,7 @@ Toutes les routes API nécessaires ont été créées :
 #### Composants de Révision
 
 **`ReviewSession.svelte`**
+
 - Gestion complète de session de révision
 - Barre de progression
 - Flip de cartes
@@ -135,12 +145,14 @@ Toutes les routes API nécessaires ont été créées :
 - Résumé de session
 
 **`CustomFlashCard.svelte`**
+
 - Affichage cartes personnalisées
 - Animation flip 3D
 - Gestion hauteur dynamique
 - Support MathLive pour LaTeX
 
 **`FSRSButtons.svelte`**
+
 - 4 boutons de notation (1-4)
 - **Raccourcis clavier** : touches 1, 2, 3, 4
 - Prédiction des intervalles (optionnel)
@@ -148,11 +160,13 @@ Toutes les routes API nécessaires ont été créées :
 #### Composants d'Édition
 
 **`CustomCardEditor.svelte`**
+
 - Éditeur rich-text pour recto/verso
 - Support LaTeX (MathLive)
 - Validation du contenu
 
 **`TemplateSelector.svelte`**
+
 - Sélection de templates depuis la banque
 - Recherche et filtres
 - Multi-sélection
@@ -161,6 +175,7 @@ Toutes les routes API nécessaires ont été créées :
 #### Composants de Gestion
 
 **`DeckStatsCard.svelte`**
+
 - Affichage statistiques d'un deck
 - Cartes totales, dues, maîtrisées
 - Liens actions (réviser, modifier)
@@ -172,24 +187,28 @@ Toutes les routes API nécessaires ont été créées :
 #### Pages Professeur
 
 **`/dashboard/teacher/srs/decks`**
+
 - Liste de tous les decks créés
 - Tabs : Tous / Officiels / Personnels
 - Actions : Créer, Modifier, Attribuer, Supprimer
 - Statistiques par deck
 
 **`/dashboard/teacher/srs/decks/create`**
+
 - Création nouveau deck
 - Configuration FSRS
 - Ajout de cartes personnalisées
 - **Note** : Template selector à intégrer (Phase 2)
 
 **`/dashboard/teacher/srs/decks/[id]/edit`**
+
 - Édition deck existant
 - **Protection** : Impossible si `is_assigned = true`
 - Ajout/suppression de cartes
 - Modification métadonnées
 
 **`/dashboard/teacher/srs/decks/[id]/assign`**
+
 - Attribution à élèves ou classes
 - Sélection multiple
 - Confirmation
@@ -197,17 +216,20 @@ Toutes les routes API nécessaires ont été créées :
 #### Pages Élève
 
 **`/dashboard/revisions`**
+
 - Liste des decks (attribués + personnels)
 - Badge différenciant attribués/personnels
 - Statistiques : total, à réviser, maîtrisées
 - Actions : Réviser, Créer deck personnel
 
 **`/dashboard/revisions/create`**
+
 - Création deck personnel
 - Ajout cartes personnalisées uniquement
 - Configuration rétention
 
 **`/dashboard/revisions/decks/[id]/study`**
+
 - Interface de révision complète
 - Cartes dues uniquement
 - Algorithme FSRS appliqué en temps réel
@@ -218,11 +240,13 @@ Toutes les routes API nécessaires ont été créées :
 ### 6. Intégration aux Dashboards
 
 **`StudentDashboard.svelte`**
+
 - Section SRS ajoutée
 - Statistiques : total decks, à réviser, maîtrisées
 - Lien "Voir mes decks"
 
 **`TeacherDashboard.svelte`**
+
 - Section Decks SRS
 - Nombre de decks créés
 - Lien "Gérer les decks"
@@ -234,6 +258,7 @@ Toutes les routes API nécessaires ont été créées :
 **`src/lib/srs/types.ts`**
 
 Types définis :
+
 - `DeckType` : 'official' | 'personal'
 - `CardType` : 'template' | 'custom'
 - `CardState` : 'new' | 'learning' | 'review' | 'relearning'
@@ -249,12 +274,14 @@ Types définis :
 ### 8. Documentation
 
 **`SRS_SYSTEM_DOCUMENTATION.md`**
+
 - Documentation technique complète
 - Architecture du système
 - Diagrammes de flux
 - Explication algorithme FSRS
 
 **`SRS_QUICK_START.md`**
+
 - Guide utilisateur complet
 - Workflow professeur (créer, attribuer)
 - Workflow élève (réviser)
@@ -262,12 +289,14 @@ Types définis :
 - Troubleshooting
 
 **`SRS_TEST_PLAN.md`**
+
 - Plan de test détaillé
 - Tests bout-en-bout
 - Cas limites
 - Checklist de validation
 
 **`SRS_IMPLEMENTATION_SUMMARY.md`**
+
 - Ce fichier !
 - Vue d'ensemble de l'implémentation
 
@@ -360,6 +389,7 @@ Types définis :
 ### Immédiat
 
 1. **Pousser la migration** :
+
    ```bash
    pnpm db:migrate
    ```
@@ -445,6 +475,7 @@ Types définis :
 Aucun bug critique identifié lors de l'implémentation.
 
 **Notes** :
+
 - TypeScript check montre 656 erreurs, mais **AUCUNE** dans le code SRS
 - Erreurs pré-existantes dans geometry, compute-engine, demos
 - Dev server compile sans erreur
@@ -459,11 +490,13 @@ Aucun bug critique identifié lors de l'implémentation.
 **FSRS** = Free Spaced Repetition Scheduler
 
 **Modèle DSR** :
+
 - **D**ifficulty : Difficulté perçue de la carte
 - **S**tability : Intervalle optimal avant oubli
 - **R**etrievability : Probabilité de se souvenir
 
 **Formule simplifiée** :
+
 ```
 retrievability = (1 + elapsed_time / (9 * stability))^(-1)
 due_date = now + stability * ln(desired_retention) / ln(0.9)
@@ -481,12 +514,12 @@ NEW → LEARNING → REVIEW
 
 ### Grades et Impact
 
-| Grade | Label      | Impact sur Stability        |
-|-------|------------|----------------------------|
-| 1     | Encore     | ↓↓ Très diminuée          |
-| 2     | Difficile  | ↓ Légèrement diminuée     |
-| 3     | Bien       | ↑ Augmentée               |
-| 4     | Facile     | ↑↑ Fortement augmentée    |
+| Grade | Label     | Impact sur Stability   |
+| ----- | --------- | ---------------------- |
+| 1     | Encore    | ↓↓ Très diminuée       |
+| 2     | Difficile | ↓ Légèrement diminuée  |
+| 3     | Bien      | ↑ Augmentée            |
+| 4     | Facile    | ↑↑ Fortement augmentée |
 
 ---
 

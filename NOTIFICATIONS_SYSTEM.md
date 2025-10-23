@@ -17,6 +17,7 @@ Documentation complète du système de notifications.
 ## Vue d'ensemble
 
 Le système de notifications permet :
+
 - **Notifications manuelles** : Professeurs et admins peuvent créer des notifications ciblées
 - **Notifications automatiques** : Le système crée automatiquement des notifications pour certains événements
 - **Banner sticky** : Affiche les notifications non lues en carousel en haut du dashboard
@@ -31,23 +32,27 @@ Le système de notifications permet :
 ### Base de Données
 
 **Tables**:
+
 - `notifications` : Stocke toutes les notifications avec ciblage intelligent
 - `notification_reads` : Suit qui a lu quoi
 
 **Migration**: `supabase/migrations/081_create_notifications_system.sql`
 
 **Types de ciblage**:
+
 - `all` : Tous les utilisateurs
 - `role` : Par rôle (student, teacher, admin)
 - `classes` : Élèves de classes spécifiques
 - `users` : Utilisateurs spécifiques
 
 **Priorités**:
+
 - `normal` : Notification standard
 - `important` : Notification importante (ex: maintenance)
 - `urgent` : Notification urgente (apparaît en premier)
 
 **Types**:
+
 - `info` : Information générale (🔔)
 - `alert` : Alerte (⚠️)
 - `announcement` : Annonce (📢)
@@ -56,6 +61,7 @@ Le système de notifications permet :
 ### Backend
 
 **Fichiers clés**:
+
 - `src/lib/types/notification.ts` : Types TypeScript
 - `src/lib/server/notifications.ts` : Utilitaires serveur (CRUD)
 - `src/lib/server/auto-notifications.ts` : Helpers pour notifications automatiques
@@ -64,6 +70,7 @@ Le système de notifications permet :
 ### Frontend
 
 **Fichiers clés**:
+
 - `src/lib/stores/notifications.svelte.ts` : Store avec polling
 - `src/lib/components/notifications/NotificationBanner.svelte` : Carousel sticky
 - `src/lib/components/notifications/NotificationDropdown.svelte` : Dropdown sidebar
@@ -78,6 +85,7 @@ Le système de notifications permet :
 Affiché en haut du dashboard, au-dessus du contenu principal.
 
 **Caractéristiques**:
+
 - Sticky position (reste visible lors du scroll)
 - Carousel si plusieurs notifications
 - Affiche max 5 notifications
@@ -92,6 +100,7 @@ Affiché en haut du dashboard, au-dessus du contenu principal.
 Icône cloche dans la sidebar avec badge de compteur.
 
 **Caractéristiques**:
+
 - Badge rouge avec nombre (max "9+")
 - Popover au clic
 - Affiche 5 dernières notifications
@@ -105,6 +114,7 @@ Icône cloche dans la sidebar avec badge de compteur.
 Route : `/dashboard/notifications`
 
 **Caractéristiques**:
+
 - Liste complète des notifications non lues
 - Affiche le message HTML complet
 - Boutons d'action si présents
@@ -116,13 +126,14 @@ Route : `/dashboard/notifications`
 Le store polls automatiquement toutes les 30 secondes pour vérifier les nouvelles notifications.
 
 **Implémentation**:
+
 ```typescript
 // Dans dashboard/+layout.svelte
 $effect(() => {
-  notificationStore.startPolling(30000);
-  return () => {
-    notificationStore.stopPolling();
-  };
+	notificationStore.startPolling(30000);
+	return () => {
+		notificationStore.stopPolling();
+	};
 });
 ```
 
@@ -135,10 +146,12 @@ $effect(() => {
 **Route**: `/dashboard/teacher/notifications`
 
 **Permissions**:
+
 - Peut cibler ses propres classes
 - Peut cibler ses propres élèves
 
 **Interface**:
+
 1. Formulaire de création :
    - Type et Priorité
    - Titre et Message (rich text)
@@ -153,18 +166,23 @@ $effect(() => {
    - Bouton supprimer
 
 **Exemple de création**:
+
 ```typescript
 // Form action dans +page.server.ts
-const result = await createNotification(supabase, {
-  title: 'Devoir pour demain',
-  message: '<p>N\'oubliez pas de faire le devoir de maths pages 42-43</p>',
-  type: 'reminder',
-  priority: 'important',
-  target_type: 'classes',
-  target_class_ids: ['class-uuid-1', 'class-uuid-2'],
-  action_label: 'Voir les devoirs',
-  action_url: '/dashboard/student/devoirs'
-}, session.user.id);
+const result = await createNotification(
+	supabase,
+	{
+		title: 'Devoir pour demain',
+		message: "<p>N'oubliez pas de faire le devoir de maths pages 42-43</p>",
+		type: 'reminder',
+		priority: 'important',
+		target_type: 'classes',
+		target_class_ids: ['class-uuid-1', 'class-uuid-2'],
+		action_label: 'Voir les devoirs',
+		action_url: '/dashboard/student/devoirs'
+	},
+	session.user.id
+);
 ```
 
 ### Pour les Admins
@@ -172,6 +190,7 @@ const result = await createNotification(supabase, {
 **Route**: `/dashboard/admin/notifications`
 
 **Permissions**:
+
 - Peut cibler tous les utilisateurs
 - Peut cibler par rôle (admin, teacher, student)
 - Peut cibler des classes
@@ -181,28 +200,38 @@ const result = await createNotification(supabase, {
 Similaire aux professeurs mais avec plus d'options de ciblage.
 
 **Exemple - Notification maintenance**:
+
 ```typescript
-const result = await createNotification(supabase, {
-  title: 'Maintenance programmée',
-  message: '<p>Le site sera indisponible dimanche de 2h à 4h du matin</p>',
-  type: 'alert',
-  priority: 'important',
-  target_type: 'all' // Tous les utilisateurs
-}, session.user.id);
+const result = await createNotification(
+	supabase,
+	{
+		title: 'Maintenance programmée',
+		message: '<p>Le site sera indisponible dimanche de 2h à 4h du matin</p>',
+		type: 'alert',
+		priority: 'important',
+		target_type: 'all' // Tous les utilisateurs
+	},
+	session.user.id
+);
 ```
 
 **Exemple - Nouvelle fonctionnalité pour professeurs**:
+
 ```typescript
-const result = await createNotification(supabase, {
-  title: 'Nouvelle fonctionnalité : Export Excel',
-  message: '<p>Vous pouvez maintenant exporter vos résultats en Excel !</p>',
-  type: 'announcement',
-  priority: 'normal',
-  target_type: 'role',
-  target_roles: ['teacher'],
-  action_label: 'Découvrir',
-  action_url: '/dashboard/teacher/exports'
-}, session.user.id);
+const result = await createNotification(
+	supabase,
+	{
+		title: 'Nouvelle fonctionnalité : Export Excel',
+		message: '<p>Vous pouvez maintenant exporter vos résultats en Excel !</p>',
+		type: 'announcement',
+		priority: 'normal',
+		target_type: 'role',
+		target_roles: ['teacher'],
+		action_label: 'Découvrir',
+		action_url: '/dashboard/teacher/exports'
+	},
+	session.user.id
+);
 ```
 
 ---
@@ -226,14 +255,15 @@ import { notifyNewAssignment } from '$lib/server/auto-notifications';
 
 // Dans votre form action après création du devoir
 await notifyNewAssignment(supabase, {
-  assignmentId: newAssignment.id,
-  assignmentTitle: newAssignment.title,
-  classId: newAssignment.class_id,
-  teacherName: `${profile.firstname} ${profile.lastname}`
+	assignmentId: newAssignment.id,
+	assignmentTitle: newAssignment.title,
+	classId: newAssignment.class_id,
+	teacherName: `${profile.firstname} ${profile.lastname}`
 });
 ```
 
 **Notification créée**:
+
 - Titre : "Nouveau devoir assigné"
 - Message : "[Prof] a assigné un nouveau devoir : [Titre]"
 - Cible : Élèves de la classe
@@ -247,14 +277,15 @@ await notifyNewAssignment(supabase, {
 import { notifyNewResource } from '$lib/server/auto-notifications';
 
 await notifyNewResource(supabase, {
-  resourceId: newResource.id,
-  resourceTitle: newResource.title,
-  classId: newResource.class_id,
-  teacherName: `${profile.firstname} ${profile.lastname}`
+	resourceId: newResource.id,
+	resourceTitle: newResource.title,
+	classId: newResource.class_id,
+	teacherName: `${profile.firstname} ${profile.lastname}`
 });
 ```
 
 **Notification créée**:
+
 - Titre : "Nouvelle ressource disponible"
 - Message : "[Prof] a ajouté une nouvelle ressource : [Titre]"
 - Cible : Élèves de la classe
@@ -268,13 +299,14 @@ await notifyNewResource(supabase, {
 import { notifyRewardEarned } from '$lib/server/auto-notifications';
 
 await notifyRewardEarned(supabase, {
-  studentId: student.id,
-  amount: 50,
-  reason: 'Excellent travail sur le devoir de géométrie !' // optionnel
+	studentId: student.id,
+	amount: 50,
+	reason: 'Excellent travail sur le devoir de géométrie !' // optionnel
 });
 ```
 
 **Notification créée**:
+
 - Titre : "🎉 [X] gidouilles gagnées !"
 - Message : "Vous avez gagné [X] gidouilles ! [raison]"
 - Cible : Élève spécifique
@@ -287,13 +319,14 @@ await notifyRewardEarned(supabase, {
 import { notifyVipCardEarned } from '$lib/server/auto-notifications';
 
 await notifyVipCardEarned(supabase, {
-  studentId: student.id,
-  cardType: 'golden',
-  cardName: 'Carte Dorée de Mathématiques'
+	studentId: student.id,
+	cardType: 'golden',
+	cardName: 'Carte Dorée de Mathématiques'
 });
 ```
 
 **Notification créée**:
+
 - Titre : "✨ Nouvelle carte VIP !"
 - Message : "Félicitations ! Vous avez obtenu une nouvelle carte VIP : [Nom]"
 - Cible : Élève spécifique
@@ -307,13 +340,14 @@ await notifyVipCardEarned(supabase, {
 import { notifyBadgeUnlocked } from '$lib/server/auto-notifications';
 
 await notifyBadgeUnlocked(supabase, {
-  studentId: student.id,
-  badgeName: 'Maître des Équations',
-  badgeDescription: 'Résoudre 100 équations correctement' // optionnel
+	studentId: student.id,
+	badgeName: 'Maître des Équations',
+	badgeDescription: 'Résoudre 100 équations correctement' // optionnel
 });
 ```
 
 **Notification créée**:
+
 - Titre : "🏆 Nouveau badge débloqué !"
 - Message : "Bravo ! Vous avez débloqué le badge [Nom]"
 - Cible : Élève spécifique
@@ -327,9 +361,9 @@ await notifyBadgeUnlocked(supabase, {
 import { notifyMaintenance } from '$lib/server/auto-notifications';
 
 await notifyMaintenance(supabase, {
-  date: 'dimanche 25 octobre à 2h du matin',
-  duration: '2 heures',
-  description: 'Mise à jour de sécurité importante'
+	date: 'dimanche 25 octobre à 2h du matin',
+	duration: '2 heures',
+	description: 'Mise à jour de sécurité importante'
 });
 ```
 
@@ -341,10 +375,10 @@ await notifyMaintenance(supabase, {
 import { notifyFeatureRelease } from '$lib/server/auto-notifications';
 
 await notifyFeatureRelease(supabase, {
-  featureName: 'Mode Sombre',
-  description: 'Vous pouvez maintenant activer le mode sombre dans les paramètres !',
-  targetRoles: ['student', 'teacher'], // optionnel, par défaut = tous
-  actionUrl: '/dashboard/settings' // optionnel
+	featureName: 'Mode Sombre',
+	description: 'Vous pouvez maintenant activer le mode sombre dans les paramètres !',
+	targetRoles: ['student', 'teacher'], // optionnel, par défaut = tous
+	actionUrl: '/dashboard/settings' // optionnel
 });
 ```
 
@@ -361,6 +395,7 @@ Les notifications expirées (> 30 jours) doivent être supprimées régulièreme
 **Méthodes**: GET ou POST
 
 **Utilisation manuelle**:
+
 ```bash
 curl -X POST https://your-domain.com/api/notifications/cleanup
 ```
@@ -371,10 +406,12 @@ Ajouter dans `vercel.json` :
 
 ```json
 {
-  "crons": [{
-    "path": "/api/notifications/cleanup",
-    "schedule": "0 2 * * *"
-  }]
+	"crons": [
+		{
+			"path": "/api/notifications/cleanup",
+			"schedule": "0 2 * * *"
+		}
+	]
 }
 ```
 
@@ -387,23 +424,27 @@ Pour sécuriser l'endpoint avec un secret :
 1. Ajouter `CRON_SECRET` dans vos variables d'environnement Vercel
 
 2. Décommenter dans `+server.ts` :
+
 ```typescript
 const authHeader = request.headers.get('authorization');
 if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-  return json({ error: 'Unauthorized' }, { status: 401 });
+	return json({ error: 'Unauthorized' }, { status: 401 });
 }
 ```
 
 3. Configurer le header dans `vercel.json` :
+
 ```json
 {
-  "crons": [{
-    "path": "/api/notifications/cleanup",
-    "schedule": "0 2 * * *",
-    "headers": {
-      "Authorization": "Bearer YOUR_SECRET"
-    }
-  }]
+	"crons": [
+		{
+			"path": "/api/notifications/cleanup",
+			"schedule": "0 2 * * *",
+			"headers": {
+				"Authorization": "Bearer YOUR_SECRET"
+			}
+		}
+	]
 }
 ```
 
@@ -429,16 +470,16 @@ import { notifyNewAssignment } from '$lib/server/auto-notifications';
 
 // Après création du devoir
 const { data: profile } = await supabase
-  .from('profiles')
-  .select('firstname, lastname')
-  .eq('id', session.user.id)
-  .single();
+	.from('profiles')
+	.select('firstname, lastname')
+	.eq('id', session.user.id)
+	.single();
 
 await notifyNewAssignment(supabase, {
-  assignmentId: newAssignment.id,
-  assignmentTitle: newAssignment.title,
-  classId: newAssignment.class_id,
-  teacherName: profile ? `${profile.firstname} ${profile.lastname}` : 'Votre professeur'
+	assignmentId: newAssignment.id,
+	assignmentTitle: newAssignment.title,
+	classId: newAssignment.class_id,
+	teacherName: profile ? `${profile.firstname} ${profile.lastname}` : 'Votre professeur'
 });
 ```
 
@@ -487,7 +528,7 @@ curl -X GET http://localhost:5175/api/notifications/cleanup
 
 ### Les notifications n'apparaissent pas
 
-- Vérifier le ciblage (target_type et target_*_ids)
+- Vérifier le ciblage (target*type et target*\*\_ids)
 - Vérifier que la notification n'est pas expirée
 - Vérifier que deleted_at est NULL
 - Vérifier les RLS policies
@@ -504,13 +545,13 @@ curl -X GET http://localhost:5175/api/notifications/cleanup
 
 ### Routes
 
-| Route | Méthode | Description |
-|-------|---------|-------------|
-| `/api/notifications/unread` | GET | Liste des notifications non lues |
-| `/api/notifications/unread-count` | GET | Nombre de notifications non lues |
-| `/api/notifications/mark-read` | POST | Marquer une notification comme lue |
-| `/api/notifications/mark-all-read` | POST | Marquer toutes comme lues |
-| `/api/notifications/cleanup` | POST | Supprimer les notifications expirées |
+| Route                              | Méthode | Description                          |
+| ---------------------------------- | ------- | ------------------------------------ |
+| `/api/notifications/unread`        | GET     | Liste des notifications non lues     |
+| `/api/notifications/unread-count`  | GET     | Nombre de notifications non lues     |
+| `/api/notifications/mark-read`     | POST    | Marquer une notification comme lue   |
+| `/api/notifications/mark-all-read` | POST    | Marquer toutes comme lues            |
+| `/api/notifications/cleanup`       | POST    | Supprimer les notifications expirées |
 
 ### Functions Serveur
 

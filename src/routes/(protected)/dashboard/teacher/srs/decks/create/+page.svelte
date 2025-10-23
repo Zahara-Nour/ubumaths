@@ -193,9 +193,7 @@
 		</Button>
 
 		<h1 class="mb-2 text-3xl font-bold">Créer un deck SRS</h1>
-		<p class="text-muted-foreground">
-			Créez un deck de révision espacée pour vos élèves
-		</p>
+		<p class="text-muted-foreground">Créez un deck de révision espacée pour vos élèves</p>
 	</div>
 
 	<!-- Deck Configuration -->
@@ -234,7 +232,7 @@
 						<select
 							id="deck-type"
 							bind:value={deckType}
-							class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+							class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 						>
 							<option value="official">Officiel</option>
 							<option value="personal">Personnel</option>
@@ -256,7 +254,7 @@
 						<select
 							id="retention-profile"
 							bind:value={retentionProfile}
-							class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+							class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 						>
 							<option value="relaxed">Détendu (80%)</option>
 							<option value="balanced">Équilibré (90%)</option>

@@ -260,9 +260,7 @@
 						<!-- Correct Answer -->
 						<div class="correct-answer-section">
 							<h3 class="mb-3 text-lg font-semibold">Réponse correcte</h3>
-							<div
-								class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950"
-							>
+							<div class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950">
 								{#if Array.isArray(answerResult.instance.answer)}
 									<ul class="space-y-1">
 										{#each answerResult.instance.answer as ans}

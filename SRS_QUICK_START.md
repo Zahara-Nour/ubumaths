@@ -13,6 +13,7 @@ pnpm db:migrate
 ### 2. Vérifier la migration
 
 Connectez-vous à votre dashboard Supabase et vérifiez que les tables suivantes ont été créées :
+
 - `srs_decks`
 - `srs_cards`
 - `srs_card_stats`
@@ -84,6 +85,7 @@ Connectez-vous à votre dashboard Supabase et vérifiez que les tables suivantes
 2. Ou allez à `/dashboard/revisions`
 
 Vous verrez :
+
 - **Decks attribués** : envoyés par vos professeurs (🔒 lecture seule)
 - **Decks personnels** : créés par vous-même (✏️ modifiables)
 
@@ -157,21 +159,21 @@ Le système FSRS-6 optimise automatiquement vos révisions :
 
 ### Les 4 états d'une carte
 
-| État | Description | Couleur |
-|------|-------------|---------|
-| 🆕 **New** | Jamais vue | Bleu |
-| 📚 **Learning** | En apprentissage (< 24h) | Orange |
-| ✅ **Review** | En révision normale | Vert |
-| 🔄 **Relearning** | Oubliée, en réapprentissage | Rouge |
+| État              | Description                 | Couleur |
+| ----------------- | --------------------------- | ------- |
+| 🆕 **New**        | Jamais vue                  | Bleu    |
+| 📚 **Learning**   | En apprentissage (< 24h)    | Orange  |
+| ✅ **Review**     | En révision normale         | Vert    |
+| 🔄 **Relearning** | Oubliée, en réapprentissage | Rouge   |
 
 ### Profils de rétention
 
-| Profil | Rétention | Révisions | Recommandé pour |
-|--------|-----------|-----------|-----------------|
-| Détendu | 80% | Moins | Révision occasionnelle |
-| **Équilibré** | **90%** | **Modéré** | **Usage général** ⭐ |
-| Élevé | 95% | Plus | Examens importants |
-| Expert | 97% | Beaucoup | Maîtrise maximale |
+| Profil        | Rétention | Révisions  | Recommandé pour        |
+| ------------- | --------- | ---------- | ---------------------- |
+| Détendu       | 80%       | Moins      | Révision occasionnelle |
+| **Équilibré** | **90%**   | **Modéré** | **Usage général** ⭐   |
+| Élevé         | 95%       | Plus       | Examens importants     |
+| Expert        | 97%       | Beaucoup   | Maîtrise maximale      |
 
 ---
 
@@ -180,11 +182,13 @@ Le système FSRS-6 optimise automatiquement vos révisions :
 ### Pour les élèves
 
 Dans `/dashboard/revisions` :
+
 - **Total decks** : Nombre de decks disponibles
 - **À réviser** : Cartes dues aujourd'hui
 - **Cartes maîtrisées** : Cartes en état "Review"
 
 Dans chaque deck :
+
 - **Total cartes**
 - **Cartes à réviser**
 - **Nouvelles cartes**
@@ -193,6 +197,7 @@ Dans chaque deck :
 ### Pour les professeurs
 
 Dans `/dashboard/teacher/srs/decks` :
+
 - Vue d'ensemble de tous vos decks
 - Statistiques par deck
 - Nombre de decks attribués
@@ -204,18 +209,22 @@ Dans `/dashboard/teacher/srs/decks` :
 ## 🔧 Résolution de problèmes
 
 ### Erreur : "Deck not found"
+
 - Vérifiez que vous êtes propriétaire du deck
 - Si attribué, vérifiez que vous êtes l'élève destinataire
 
 ### Les cartes ne s'affichent pas
+
 - Vérifiez que le deck contient des cartes
 - Rechargez la page
 
 ### Impossible de modifier un deck
+
 - Les decks attribués sont en lecture seule
 - Seul le créateur peut modifier avant attribution
 
 ### Migration échoue
+
 - Vérifiez votre connexion Supabase
 - Vérifiez que les tables n'existent pas déjà
 - Consultez les logs d'erreur
@@ -227,6 +236,7 @@ Dans `/dashboard/teacher/srs/decks` :
 ### Pour créer de bonnes cartes
 
 ✅ **DO** :
+
 - Une idée par carte
 - Questions claires et précises
 - Réponses concises
@@ -234,6 +244,7 @@ Dans `/dashboard/teacher/srs/decks` :
 - Ajoutez des exemples dans la correction
 
 ❌ **DON'T** :
+
 - Cartes trop longues
 - Multiples concepts par carte
 - Questions ambiguës
@@ -242,12 +253,14 @@ Dans `/dashboard/teacher/srs/decks` :
 ### Pour réviser efficacement
 
 ✅ **DO** :
+
 - Révisez TOUS LES JOURS (même 5-10 min)
 - Soyez honnête avec vos notes (1-4)
 - Révisez dans un endroit calme
 - Utilisez les raccourcis clavier (1-4)
 
 ❌ **DON'T** :
+
 - Sauter des jours de révision
 - Toujours noter "Facile" (4)
 - Réviser trop vite sans réfléchir
@@ -256,10 +269,10 @@ Dans `/dashboard/teacher/srs/decks` :
 ### Nombre de cartes recommandé
 
 | Par deck | Par jour (nouveau) |
-|----------|-------------------|
-| 20-50 | 5-10 |
-| 50-100 | 10-20 |
-| 100-200 | 15-30 |
+| -------- | ------------------ |
+| 20-50    | 5-10               |
+| 50-100   | 10-20              |
+| 100-200  | 15-30              |
 
 ⚠️ **Attention** : Plus vous ajoutez de cartes, plus vous aurez de révisions quotidiennes !
 

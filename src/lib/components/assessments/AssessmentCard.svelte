@@ -47,35 +47,21 @@
 		onStart?: () => void;
 	}
 
-	let {
-		assessment,
-		variant,
-		assignmentData,
-		onEdit,
-		onAssign,
-		onViewResults,
-		onStart
-	}: Props = $props();
+	let { assessment, variant, assignmentData, onEdit, onAssign, onViewResults, onStart }: Props =
+		$props();
 
 	// Derived values for student view
 	let attemptsRemaining = $derived(
 		assignmentData && assessment.settings.max_attempts !== null
-			? getAttemptsRemaining(
-					assignmentData.attempts_count,
-					assessment.settings.max_attempts
-				)
+			? getAttemptsRemaining(assignmentData.attempts_count, assessment.settings.max_attempts)
 			: null
 	);
 
 	let deadlineFormatted = $derived(formatDeadline(assessment.settings.deadline));
 
-	let statusColor = $derived(
-		assignmentData ? getStatusColor(assignmentData.status) : ''
-	);
+	let statusColor = $derived(assignmentData ? getStatusColor(assignmentData.status) : '');
 
-	let statusLabel = $derived(
-		assignmentData ? getStatusLabel(assignmentData.status) : ''
-	);
+	let statusLabel = $derived(assignmentData ? getStatusLabel(assignmentData.status) : '');
 
 	// Teacher-specific badges
 	let statusBadgeColor = $derived.by(() => {
@@ -92,13 +78,17 @@
 
 {#if variant === 'teacher'}
 	<!-- Teacher View -->
-	<Card.Root class="hover:shadow-lg transition-shadow">
+	<Card.Root class="transition-shadow hover:shadow-lg">
 		<Card.Header>
 			<div class="flex items-start justify-between">
 				<div class="flex-1">
-					<div class="flex items-center gap-2 mb-2">
+					<div class="mb-2 flex items-center gap-2">
 						<Badge class={statusBadgeColor}>
-							{assessment.status === 'draft' ? 'Brouillon' : assessment.status === 'published' ? 'Publiée' : 'Archivée'}
+							{assessment.status === 'draft'
+								? 'Brouillon'
+								: assessment.status === 'published'
+									? 'Publiée'
+									: 'Archivée'}
 						</Badge>
 						<Badge variant="outline">{assessment.grade}</Badge>
 					</div>
@@ -114,20 +104,30 @@
 			<div class="space-y-2 text-sm text-muted-foreground">
 				<div class="flex items-center gap-2">
 					<FileEdit class="h-4 w-4" />
-					<span>{assessment.categories.length} catégorie{assessment.categories.length > 1 ? 's' : ''}</span>
+					<span
+						>{assessment.categories.length} catégorie{assessment.categories.length > 1
+							? 's'
+							: ''}</span
+					>
 				</div>
 
 				{#if assessment.settings.deadline}
 					<div class="flex items-center gap-2">
 						<Calendar class="h-4 w-4" />
-						<span>Échéance: {new Date(assessment.settings.deadline).toLocaleDateString('fr-FR')}</span>
+						<span
+							>Échéance: {new Date(assessment.settings.deadline).toLocaleDateString('fr-FR')}</span
+						>
 					</div>
 				{/if}
 
 				{#if assessment.settings.max_attempts}
 					<div class="flex items-center gap-2">
 						<AlertCircle class="h-4 w-4" />
-						<span>{assessment.settings.max_attempts} tentative{assessment.settings.max_attempts > 1 ? 's' : ''} max</span>
+						<span
+							>{assessment.settings.max_attempts} tentative{assessment.settings.max_attempts > 1
+								? 's'
+								: ''} max</span
+						>
 					</div>
 				{/if}
 			</div>
@@ -136,7 +136,7 @@
 		<Card.Footer class="flex gap-2">
 			{#if assessment.status === 'draft' && onEdit}
 				<Button variant="outline" size="sm" onclick={onEdit}>
-					<FileEdit class="h-4 w-4 mr-2" />
+					<FileEdit class="mr-2 h-4 w-4" />
 					Modifier
 				</Button>
 			{/if}
@@ -144,14 +144,14 @@
 			{#if assessment.status === 'published'}
 				{#if onAssign}
 					<Button variant="outline" size="sm" onclick={onAssign}>
-						<Users class="h-4 w-4 mr-2" />
+						<Users class="mr-2 h-4 w-4" />
 						Assigner
 					</Button>
 				{/if}
 
 				{#if onViewResults}
 					<Button variant="outline" size="sm" onclick={onViewResults}>
-						<BarChart3 class="h-4 w-4 mr-2" />
+						<BarChart3 class="mr-2 h-4 w-4" />
 						Résultats
 					</Button>
 				{/if}
@@ -160,11 +160,11 @@
 	</Card.Root>
 {:else}
 	<!-- Student View -->
-	<Card.Root class="hover:shadow-lg transition-shadow">
+	<Card.Root class="transition-shadow hover:shadow-lg">
 		<Card.Header>
 			<div class="flex items-start justify-between">
 				<div class="flex-1">
-					<div class="flex items-center gap-2 mb-2">
+					<div class="mb-2 flex items-center gap-2">
 						{#if assignmentData}
 							<Badge class={statusColor}>{statusLabel}</Badge>
 						{/if}
@@ -200,9 +200,15 @@
 					{#if assignmentData}
 						<div class="flex items-center gap-2">
 							<CheckCircle2 class="h-4 w-4" />
-							<span>{assignmentData.attempts_count} tentative{assignmentData.attempts_count > 1 ? 's' : ''}</span>
+							<span
+								>{assignmentData.attempts_count} tentative{assignmentData.attempts_count > 1
+									? 's'
+									: ''}</span
+							>
 							{#if attemptsRemaining !== null}
-								<span class="text-xs">({attemptsRemaining} restante{attemptsRemaining > 1 ? 's' : ''})</span>
+								<span class="text-xs"
+									>({attemptsRemaining} restante{attemptsRemaining > 1 ? 's' : ''})</span
+								>
 							{/if}
 						</div>
 					{/if}
@@ -210,7 +216,12 @@
 					<div class="flex items-center gap-2">
 						<FileEdit class="h-4 w-4" />
 						<span>
-							{assessment.categories.reduce((sum, cat) => sum + cat.quantity, 0)} question{assessment.categories.reduce((sum, cat) => sum + cat.quantity, 0) > 1 ? 's' : ''}
+							{assessment.categories.reduce((sum, cat) => sum + cat.quantity, 0)} question{assessment.categories.reduce(
+								(sum, cat) => sum + cat.quantity,
+								0
+							) > 1
+								? 's'
+								: ''}
 						</span>
 					</div>
 				</div>
@@ -222,20 +233,20 @@
 				{#if assignmentData.status === 'not_started' || assignmentData.status === 'in_progress'}
 					{#if onStart}
 						<Button class="w-full" onclick={onStart}>
-							<Play class="h-4 w-4 mr-2" />
+							<Play class="mr-2 h-4 w-4" />
 							{assignmentData.status === 'not_started' ? 'Commencer' : 'Reprendre'}
 						</Button>
 					{/if}
 				{:else if assignmentData.status === 'completed'}
 					{#if onViewResults}
 						<Button variant="outline" class="w-full" onclick={onViewResults}>
-							<BarChart3 class="h-4 w-4 mr-2" />
+							<BarChart3 class="mr-2 h-4 w-4" />
 							Voir les résultats
 						</Button>
 					{/if}
 				{:else if assignmentData.status === 'expired'}
 					<Button disabled class="w-full">
-						<AlertCircle class="h-4 w-4 mr-2" />
+						<AlertCircle class="mr-2 h-4 w-4" />
 						Expiré
 					</Button>
 				{/if}

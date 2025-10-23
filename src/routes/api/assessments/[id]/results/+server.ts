@@ -5,7 +5,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getAssessmentResults, getAssessmentStatistics, getClassStatistics } from '$lib/server/assessments';
+import {
+	getAssessmentResults,
+	getAssessmentStatistics,
+	getClassStatistics
+} from '$lib/server/assessments';
 
 /**
  * GET /api/assessments/[id]/results

@@ -1,6 +1,10 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { getCreatedNotifications, createNotification, deleteNotification } from '$lib/server/notifications';
+import {
+	getCreatedNotifications,
+	createNotification,
+	deleteNotification
+} from '$lib/server/notifications';
 import type { CreateNotificationData } from '$lib/types/notification';
 
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
@@ -30,25 +34,28 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.order('name');
 
 	// Get students from teacher's classes
-	const classIds = classes?.map(c => c.id) || [];
+	const classIds = classes?.map((c) => c.id) || [];
 	let students: Array<{ id: string; firstname: string; lastname: string; class_id: string }> = [];
 
 	if (classIds.length > 0) {
 		const { data: studentsData } = await supabase
 			.from('class_members')
-			.select(`
+			.select(
+				`
 				student_id,
 				class_id,
 				student:profiles!class_members_student_id_fkey(id, firstname, lastname)
-			`)
+			`
+			)
 			.in('class_id', classIds);
 
-		students = studentsData?.map((cm: any) => ({
-			id: cm.student.id,
-			firstname: cm.student.firstname,
-			lastname: cm.student.lastname,
-			class_id: cm.class_id
-		})) || [];
+		students =
+			studentsData?.map((cm: any) => ({
+				id: cm.student.id,
+				firstname: cm.student.firstname,
+				lastname: cm.student.lastname,
+				class_id: cm.class_id
+			})) || [];
 	}
 
 	// Get teacher's created notifications with stats

@@ -293,16 +293,17 @@ Les modes Display et Interactive utilisent des transitions Svelte personnalisée
 ```svelte
 <!-- Wrapper avec position relative et hauteur minimale -->
 <div class="relative min-h-[500px]">
-  {#key currentIndex}
-    <!-- Carte en position absolue, ancrée en haut -->
-    <div class="absolute inset-x-0 top-0 w-full" in:slideFromRight out:slideToLeft>
-      <QuestionCard ... />
-    </div>
-  {/key}
+	{#key currentIndex}
+		<!-- Carte en position absolue, ancrée en haut -->
+		<div class="absolute inset-x-0 top-0 w-full" in:slideFromRight out:slideToLeft>
+			<QuestionCard ... />
+		</div>
+	{/key}
 </div>
 ```
 
 **Détails clés** :
+
 - Wrapper `relative min-h-[500px]` : Crée un conteneur de référence stable
 - Element `absolute inset-x-0 top-0` : Ancre la carte en haut du wrapper
 - Le `{#key}` force le remontage et déclenche les transitions in/out
@@ -323,6 +324,7 @@ slideToLeft(node, { duration: 500, easing: cubicOut })
 ```
 
 **Avantages** :
+
 - Transitions CSS natives (performances optimales)
 - Aucun layout shift pendant l'animation
 - Compatible avec les timers et contrôles de pause
@@ -479,6 +481,7 @@ Le système utilise trois composants différents selon le contexte :
 #### Pendant le test : QuestionCard
 
 Les tests utilisent **QuestionCard** (pas FlashCard) pour afficher les questions **pendant** le test, car :
+
 - ❌ Aucun feedback visuel (validation silencieuse)
 - ❌ Pas de flip/correction immédiate
 - ✅ Parfait pour les tests (feedback différé)
@@ -486,6 +489,7 @@ Les tests utilisent **QuestionCard** (pas FlashCard) pour afficher les questions
 #### Après le test : CorrectionCard
 
 Les résultats utilisent **CorrectionCard** pour afficher les corrections **après** le test :
+
 - ✅ Flip 3D (face avant : réponses, face arrière : correction)
 - ✅ Comparaison réponse user vs correcte
 - ✅ Énoncé collapsible
@@ -495,20 +499,22 @@ Les résultats utilisent **CorrectionCard** pour afficher les corrections **apr�
 #### Pour l'étude : FlashCard
 
 FlashCard est utilisé dans d'autres contextes (révision, apprentissage) :
+
 - ✅ Interactive avec input
 - ✅ Feedback immédiat
 - ✅ Flip pour voir la correction
 
-| Critère | QuestionCard | CorrectionCard | FlashCard |
-|---------|--------------|----------------|-----------|
-| **Usage** | Tests en cours | Corrections post-test | Étude/révision |
-| **Flip 3D** | ❌ Non | ✅ Oui | ✅ Oui |
-| **Input utilisateur** | ✅ Oui | ❌ Lecture seule | ✅ Oui |
-| **Feedback visuel** | ❌ Aucun | ✅ Comparaison | ✅ Correct/Incorrect |
-| **Feedback timing** | Différé | Après test complet | Immédiat |
-| **Complexité** | ~340 lignes | ~460 lignes | ~750 lignes |
+| Critère               | QuestionCard   | CorrectionCard        | FlashCard            |
+| --------------------- | -------------- | --------------------- | -------------------- |
+| **Usage**             | Tests en cours | Corrections post-test | Étude/révision       |
+| **Flip 3D**           | ❌ Non         | ✅ Oui                | ✅ Oui               |
+| **Input utilisateur** | ✅ Oui         | ❌ Lecture seule      | ✅ Oui               |
+| **Feedback visuel**   | ❌ Aucun       | ✅ Comparaison        | ✅ Correct/Incorrect |
+| **Feedback timing**   | Différé        | Après test complet    | Immédiat             |
+| **Complexité**        | ~340 lignes    | ~460 lignes           | ~750 lignes          |
 
 **Documentation complète** :
+
 - `QUESTION_CARD_COMPONENT.md` - QuestionCard
 - `CORRECTION_CARD_COMPONENT.md` - CorrectionCard
 - `FLASHCARD_COMPONENT.md` - FlashCard
@@ -537,16 +543,19 @@ FlashCard est utilisé dans d'autres contextes (révision, apprentissage) :
 ## 📝 Changelog
 
 ### v1.3.0 (2025-10-22)
+
 - ✨ Ajout de transitions animées entre questions (slide + fade, 500ms)
 - 🎨 Nouveau fichier `slide-transition.ts` avec transitions réutilisables
 - 🐛 Correction du positionnement vertical pendant les transitions
 - 📚 Documentation complète des transitions dans section UI/UX
 
 ### v1.2.0 (2025-10-21)
+
 - 📝 Documentation des composants QuestionCard, CorrectionCard, FlashCard
 - 🔧 Ajout de comparaison détaillée des trois composants
 
 ### v1.0.0 (2025-10-20)
+
 - 🎉 Version initiale avec 3 modes de test (Display, Interactive, Course)
 - 💾 Sauvegarde en base de données (Supabase)
 - 🎨 UI complète avec timers, résultats et corrections

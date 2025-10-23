@@ -123,7 +123,10 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 		}
 
 		if (!body.deckType || !['official', 'personal'].includes(body.deckType)) {
-			return json({ error: 'Invalid deck type. Must be "official" or "personal"' }, { status: 400 });
+			return json(
+				{ error: 'Invalid deck type. Must be "official" or "personal"' },
+				{ status: 400 }
+			);
 		}
 
 		// Build config with defaults
@@ -135,10 +138,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
 		// Validate desiredRetention
 		if (config.desiredRetention < 0.7 || config.desiredRetention > 0.97) {
-			return json(
-				{ error: 'Desired retention must be between 0.7 and 0.97' },
-				{ status: 400 }
-			);
+			return json({ error: 'Desired retention must be between 0.7 and 0.97' }, { status: 400 });
 		}
 
 		// Create deck

@@ -55,7 +55,8 @@
 		Maximize,
 		Minimize,
 		Users,
-		MessageCircle
+		MessageCircle,
+		Mail
 	} from 'lucide-svelte';
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
@@ -260,6 +261,12 @@
 								<a href={resolve('/dashboard/chat')} class="flex w-full items-center">
 									<MessageCircle class="mr-2 h-4 w-4" />
 									Chat
+								</a>
+							</DropdownMenu.Item>
+							<DropdownMenu.Item>
+								<a href={resolve('/messages')} class="flex w-full items-center">
+									<Mail class="mr-2 h-4 w-4" />
+									Messages
 								</a>
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator />

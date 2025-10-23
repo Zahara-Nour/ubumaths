@@ -166,9 +166,7 @@
 		</Button>
 
 		<h1 class="mb-2 text-3xl font-bold">Attribuer un deck</h1>
-		<p class="text-muted-foreground">
-			Sélectionnez les élèves ou classes qui recevront ce deck
-		</p>
+		<p class="text-muted-foreground">Sélectionnez les élèves ou classes qui recevront ce deck</p>
 	</div>
 
 	<!-- Deck Info -->
@@ -218,7 +216,9 @@
 					<div class="flex items-center justify-between">
 						<Card.Title>Sélectionner des élèves</Card.Title>
 						<Button onclick={selectAllStudents} variant="outline" size="sm">
-							{selectedStudents.length === data.students.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+							{selectedStudents.length === data.students.length
+								? 'Tout désélectionner'
+								: 'Tout sélectionner'}
 						</Button>
 					</div>
 					<Card.Description>
@@ -245,7 +245,8 @@
 									/>
 									<div class="flex-1">
 										<p class="font-medium">
-											{student.first_name} {student.last_name}
+											{student.first_name}
+											{student.last_name}
 										</p>
 										{#if student.email}
 											<p class="text-sm text-muted-foreground">{student.email}</p>
@@ -266,7 +267,9 @@
 					<div class="flex items-center justify-between">
 						<Card.Title>Sélectionner des classes</Card.Title>
 						<Button onclick={selectAllClasses} variant="outline" size="sm">
-							{selectedClasses.length === data.classes.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+							{selectedClasses.length === data.classes.length
+								? 'Tout désélectionner'
+								: 'Tout sélectionner'}
 						</Button>
 					</div>
 					<Card.Description>
@@ -298,7 +301,9 @@
 										{/if}
 									</div>
 									<Badge variant="outline">
-										{classItem.student_count || 0} élève{(classItem.student_count || 0) > 1 ? 's' : ''}
+										{classItem.student_count || 0} élève{(classItem.student_count || 0) > 1
+											? 's'
+											: ''}
 									</Badge>
 								</div>
 							{/each}

@@ -7,11 +7,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import {
-	getAssessment,
-	updateAssessment,
-	archiveAssessment
-} from '$lib/server/assessments';
+import { getAssessment, updateAssessment, archiveAssessment } from '$lib/server/assessments';
 import type { UpdateAssessmentData } from '$lib/types/assessment';
 
 /**
@@ -52,7 +48,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.from('assessment_assignments')
 			.select('id')
 			.eq('assessment_id', id)
-			.or(`student_id.eq.${user.id},class_id.in.(${await getStudentClassIds(locals.supabase, user.id)})`)
+			.or(
+				`student_id.eq.${user.id},class_id.in.(${await getStudentClassIds(locals.supabase, user.id)})`
+			)
 			.single();
 
 		if (!assignment || result.data.status !== 'published') {

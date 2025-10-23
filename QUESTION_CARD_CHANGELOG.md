@@ -45,15 +45,16 @@ Created `QuestionCard` component as a simplified alternative to `FlashCard` for 
 
 ```typescript
 interface Props {
-  interactive?: boolean;
-  instance: QuestionInstance;
-  onAnswerSubmit?: (answer: AnswerData) => void;
-  onAnswerChange?: (value: string | string[]) => void;
-  size?: 'sm' | 'md' | 'lg';
+	interactive?: boolean;
+	instance: QuestionInstance;
+	onAnswerSubmit?: (answer: AnswerData) => void;
+	onAnswerChange?: (value: string | string[]) => void;
+	size?: 'sm' | 'md' | 'lg';
 }
 ```
 
 **Removed from FlashCard**:
+
 - `maxAttempts`
 - `showCorrectionOnWrong`
 - `showValidationFeedback`
@@ -67,53 +68,58 @@ interface Props {
 ### TestInteractive.svelte
 
 **Before**:
+
 ```svelte
 <FlashCard
-  interactive={true}
-  instance={currentInstance}
-  onAnswerSubmit={handleAnswerSubmit}
-  size="lg"
-  showValidationFeedback={false}
-  maxAttempts={1}
+	interactive={true}
+	instance={currentInstance}
+	onAnswerSubmit={handleAnswerSubmit}
+	size="lg"
+	showValidationFeedback={false}
+	maxAttempts={1}
 />
 ```
 
 **After**:
+
 ```svelte
 <QuestionCard
-  interactive={true}
-  instance={currentInstance}
-  onAnswerSubmit={handleAnswerSubmit}
-  size="lg"
+	interactive={true}
+	instance={currentInstance}
+	onAnswerSubmit={handleAnswerSubmit}
+	size="lg"
 />
 ```
 
 ### TestCourse.svelte
 
 **Before**:
+
 ```svelte
 <FlashCard
-  interactive={true}
-  {instance}
-  onAnswerSubmit={(answerData) => handleAnswerSubmit(index, answerData)}
-  size="sm"
-  maxAttempts={1}
+	interactive={true}
+	{instance}
+	onAnswerSubmit={(answerData) => handleAnswerSubmit(index, answerData)}
+	size="sm"
+	maxAttempts={1}
 />
 ```
 
 **After**:
+
 ```svelte
 <QuestionCard
-  interactive={true}
-  {instance}
-  onAnswerSubmit={(answerData) => handleAnswerSubmit(index, answerData)}
-  size="sm"
+	interactive={true}
+	{instance}
+	onAnswerSubmit={(answerData) => handleAnswerSubmit(index, answerData)}
+	size="sm"
 />
 ```
 
 ### TestDisplay.svelte
 
 **Before**:
+
 ```svelte
 <!-- Manual question display -->
 <Card.Root>
@@ -133,19 +139,20 @@ interface Props {
 ```
 
 **After**:
+
 ```svelte
 <!-- Slideshow mode -->
 <QuestionCard interactive={false} instance={currentInstance} size="lg" />
 
 <!-- Review all mode -->
 {#each session.instances as instance, index}
-  <QuestionCard interactive={false} {instance} size="md" />
+	<QuestionCard interactive={false} {instance} size="md" />
 {/each}
 
 <!-- Corrections mode -->
 {#each session.instances as instance, index}
-  <QuestionCard interactive={false} {instance} size="md" />
-  <!-- Separate cards for answer/correction -->
+	<QuestionCard interactive={false} {instance} size="md" />
+	<!-- Separate cards for answer/correction -->
 {/each}
 ```
 
@@ -156,6 +163,7 @@ interface Props {
 ### Flip Mechanism
 
 **Removed**:
+
 - 3D flip animation with CSS transforms
 - ResizeObserver for height measurement
 - Front/back face management
@@ -167,6 +175,7 @@ interface Props {
 ### Visual Feedback
 
 **Removed**:
+
 - Green/red border indicators
 - Check ✓ / X ✗ icons
 - Validation message display
@@ -178,6 +187,7 @@ interface Props {
 ### Correction Display
 
 **Removed**:
+
 - Backside with correction content
 - User answer vs correct answer comparison
 - Detailed explanation display on flip
@@ -187,6 +197,7 @@ interface Props {
 ### Multiple Attempts
 
 **Removed**:
+
 - `maxAttempts` prop
 - Attempts counter display
 - `hasReachedMaxAttempts` derived state
@@ -198,13 +209,13 @@ interface Props {
 
 ## 📊 Code Statistics
 
-| Metric | FlashCard | QuestionCard | Change |
-|--------|-----------|--------------|--------|
-| **Lines of code** | ~750 | ~340 | -55% |
-| **State variables** | 15 | 8 | -47% |
-| **Props** | 9 | 5 | -44% |
-| **$effect hooks** | 4 | 2 | -50% |
-| **CSS blocks** | 8 | 2 | -75% |
+| Metric              | FlashCard | QuestionCard | Change |
+| ------------------- | --------- | ------------ | ------ |
+| **Lines of code**   | ~750      | ~340         | -55%   |
+| **State variables** | 15        | 8            | -47%   |
+| **Props**           | 9         | 5            | -44%   |
+| **$effect hooks**   | 4         | 2            | -50%   |
+| **CSS blocks**      | 8         | 2            | -75%   |
 
 **Size reduction**: ~45% smaller codebase while maintaining all essential functionality.
 
@@ -215,27 +226,31 @@ interface Props {
 ### Why Create a Separate Component?
 
 **Option 1**: Add more props to FlashCard to hide features
+
 ```svelte
 <FlashCard
-  showFlipButton={false}
-  showValidationFeedback={false}
-  showCorrection={false}
-  maxAttempts={1}
+	showFlipButton={false}
+	showValidationFeedback={false}
+	showCorrection={false}
+	maxAttempts={1}
 />
 ```
 
 **Problems**:
+
 - Prop explosion (too many boolean flags)
 - Complex conditional logic
 - Difficult to maintain
 - Confusing API for users
 
 **Option 2**: Create specialized QuestionCard ✅ (chosen)
+
 ```svelte
 <QuestionCard interactive={true} {instance} onAnswerSubmit={...} />
 ```
 
 **Benefits**:
+
 - Clear separation of concerns
 - Simpler API (fewer props)
 - Easier to understand and maintain
@@ -244,12 +259,14 @@ interface Props {
 ### Why Not Just Use FlashCard in Read-Only Mode?
 
 FlashCard in read-only mode still includes:
+
 - Flip mechanism (unnecessary complexity)
 - Backside rendering (unused DOM)
 - ResizeObserver (performance overhead)
 - Visual feedback logic (not needed)
 
 QuestionCard removes all of this, resulting in:
+
 - Lighter component (~45% smaller)
 - Faster rendering
 - Clearer intent
@@ -261,6 +278,7 @@ QuestionCard removes all of this, resulting in:
 ### Test Coverage
 
 **Manual testing performed**:
+
 - ✅ Read-only mode displays question correctly
 - ✅ Interactive mode shows input and submit button
 - ✅ Validation happens silently (no visual feedback)
@@ -273,11 +291,13 @@ QuestionCard removes all of this, resulting in:
 - ✅ Theme switching works (light/dark)
 
 **Integration testing**:
+
 - ✅ TestInteractive: Questions display and validate correctly
 - ✅ TestCourse: Grid layout works, answers submit properly
 - ✅ TestDisplay: Slideshow, review, and corrections modes all functional
 
 **Build verification**:
+
 - ✅ `pnpm build` passes without errors
 - ✅ TypeScript compilation successful
 - ✅ No ESLint errors introduced
@@ -313,12 +333,14 @@ QuestionCard removes all of this, resulting in:
 If you were using FlashCard in test scenarios:
 
 **Step 1**: Replace import
+
 ```diff
 - import FlashCard from '$lib/components/questions/FlashCard.svelte';
 + import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
 ```
 
 **Step 2**: Update component usage
+
 ```diff
 - <FlashCard
 + <QuestionCard
@@ -332,6 +354,7 @@ If you were using FlashCard in test scenarios:
 ```
 
 **Step 3**: No callback changes needed
+
 - `onAnswerSubmit` works exactly the same
 - `onAnswerChange` works exactly the same
 - No new callbacks required
@@ -339,12 +362,14 @@ If you were using FlashCard in test scenarios:
 ### When to Use Which Component
 
 **Use QuestionCard when**:
+
 - Building tests/exams
 - Feedback should be delayed
 - No flip/correction needed in component
 - Simpler API preferred
 
 **Use FlashCard when**:
+
 - Building study/review features
 - Immediate feedback desired
 - Flip to correction feature needed
@@ -391,12 +416,14 @@ None identified in initial release.
 ### Shared Code
 
 QuestionCard shares the following with FlashCard:
+
 - All input components (`NumericalInput`, `AlgebraicInput`, etc.)
 - Validation logic (`validateAnswer()`)
 - Type definitions (`QuestionInstance`, `AnswerData`)
 - Styling (Shadcn theme variables)
 
 This ensures:
+
 - Consistent user experience
 - Shared bug fixes
 - No code duplication for inputs
@@ -404,11 +431,13 @@ This ensures:
 ### Performance Impact
 
 **Bundle size**: Minimal increase (~10KB gzipped) due to:
+
 - Shared input components (already bundled)
 - No new dependencies
 - Small component size
 
 **Runtime performance**: Slight improvement due to:
+
 - No ResizeObserver overhead
 - Less DOM elements (no backside)
 - Simpler state management

@@ -71,10 +71,15 @@
 	// Component Props
 	interface Props {
 		value?: string;
+		jsonValue?: any;
 		placeholder?: string;
 	}
 
-	let { value = $bindable(''), placeholder = 'Entrez votre texte...' }: Props = $props();
+	let {
+		value = $bindable(''),
+		jsonValue = $bindable(undefined),
+		placeholder = 'Entrez votre texte...'
+	}: Props = $props();
 
 	// Editor State
 	let editorElement = $state<HTMLElement | null>(null);
@@ -415,6 +420,9 @@
 			onUpdate: ({ editor }) => {
 				// Update value on content change
 				value = editor.getHTML();
+				if (jsonValue !== undefined) {
+					jsonValue = editor.getJSON();
+				}
 				updateFormattingState();
 			},
 			onSelectionUpdate: () => {
@@ -427,6 +435,16 @@
 		return () => {
 			editor?.destroy();
 		};
+	});
+
+	/**
+	 * Update editor content when value prop changes externally
+	 * (e.g., when loading a draft)
+	 */
+	$effect(() => {
+		if (editor && value && editor.getHTML() !== value) {
+			editor.commands.setContent(value);
+		}
 	});
 
 	/**

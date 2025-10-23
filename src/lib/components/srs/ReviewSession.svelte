@@ -205,12 +205,14 @@
 {#if isLoading}
 	<div class="flex min-h-[400px] items-center justify-center">
 		<div class="text-center">
-			<div class="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+			<div
+				class="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"
+			></div>
 			<p class="text-muted-foreground">Chargement des cartes...</p>
 		</div>
 	</div>
 
-<!-- Empty State -->
+	<!-- Empty State -->
 {:else if !isLoading && totalCards === 0 && !sessionComplete}
 	<Card.Root class="mx-auto max-w-2xl">
 		<Card.Header>
@@ -233,7 +235,7 @@
 		</Card.Content>
 	</Card.Root>
 
-<!-- Session Complete -->
+	<!-- Session Complete -->
 {:else if sessionComplete}
 	<Card.Root class="mx-auto max-w-2xl">
 		<Card.Header>
@@ -285,7 +287,7 @@
 		</Card.Content>
 	</Card.Root>
 
-<!-- Active Review -->
+	<!-- Active Review -->
 {:else if currentCard}
 	<div class="review-session mx-auto w-full max-w-4xl">
 		<!-- Progress Header -->

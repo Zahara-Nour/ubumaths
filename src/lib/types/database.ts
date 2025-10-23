@@ -87,6 +87,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "assessment_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
             foreignKeyName: "assessment_assignments_class_id_fkey"
             columns: ["class_id"]
             isOneToOne: false
@@ -106,6 +113,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_assignments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -161,6 +175,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "assessments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
       class_members: {
@@ -203,6 +224,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_members_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -271,6 +299,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "class_schedules_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
       classes: {
@@ -328,6 +363,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -391,6 +433,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "conversation_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
       conversations: {
@@ -453,10 +502,230 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "conversations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
             foreignKeyName: "fk_conversations_last_message"
             columns: ["last_message_id"]
             isOneToOne: false
             referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      error_logs: {
+        Row: {
+          browser_name: string | null
+          browser_version: string | null
+          column_number: number | null
+          context: Json | null
+          created_at: string
+          device_type: string | null
+          error_name: string | null
+          error_signature: string | null
+          error_type: string
+          file_path: string | null
+          id: string
+          line_number: number | null
+          message: string
+          os_name: string | null
+          request_body: Json | null
+          request_headers: Json | null
+          request_method: string | null
+          resolution_notes: string | null
+          resolved: boolean | null
+          resolved_at: string | null
+          resolved_by: string | null
+          response_time: number | null
+          session_id: string | null
+          severity: string
+          stack_trace: string | null
+          status_code: number | null
+          tags: string[] | null
+          url: string
+          user_agent: string | null
+          user_id: string | null
+          user_role: string | null
+          viewport_height: number | null
+          viewport_width: number | null
+        }
+        Insert: {
+          browser_name?: string | null
+          browser_version?: string | null
+          column_number?: number | null
+          context?: Json | null
+          created_at?: string
+          device_type?: string | null
+          error_name?: string | null
+          error_signature?: string | null
+          error_type: string
+          file_path?: string | null
+          id?: string
+          line_number?: number | null
+          message: string
+          os_name?: string | null
+          request_body?: Json | null
+          request_headers?: Json | null
+          request_method?: string | null
+          resolution_notes?: string | null
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          response_time?: number | null
+          session_id?: string | null
+          severity?: string
+          stack_trace?: string | null
+          status_code?: number | null
+          tags?: string[] | null
+          url: string
+          user_agent?: string | null
+          user_id?: string | null
+          user_role?: string | null
+          viewport_height?: number | null
+          viewport_width?: number | null
+        }
+        Update: {
+          browser_name?: string | null
+          browser_version?: string | null
+          column_number?: number | null
+          context?: Json | null
+          created_at?: string
+          device_type?: string | null
+          error_name?: string | null
+          error_signature?: string | null
+          error_type?: string
+          file_path?: string | null
+          id?: string
+          line_number?: number | null
+          message?: string
+          os_name?: string | null
+          request_body?: Json | null
+          request_headers?: Json | null
+          request_method?: string | null
+          resolution_notes?: string | null
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          response_time?: number | null
+          session_id?: string | null
+          severity?: string
+          stack_trace?: string | null
+          status_code?: number | null
+          tags?: string[] | null
+          url?: string
+          user_agent?: string | null
+          user_id?: string | null
+          user_role?: string | null
+          viewport_height?: number | null
+          viewport_width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "error_logs_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "error_logs_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "error_logs_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "error_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "error_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "error_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      error_occurrences: {
+        Row: {
+          created_at: string
+          error_signature: string
+          error_type: string
+          file_path: string | null
+          first_seen: string
+          id: string
+          is_resolved: boolean | null
+          last_error_log_id: string | null
+          last_seen: string
+          line_number: number | null
+          message: string
+          occurrence_count: number
+          severity: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_signature: string
+          error_type: string
+          file_path?: string | null
+          first_seen?: string
+          id?: string
+          is_resolved?: boolean | null
+          last_error_log_id?: string | null
+          last_seen?: string
+          line_number?: number | null
+          message: string
+          occurrence_count?: number
+          severity: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_signature?: string
+          error_type?: string
+          file_path?: string | null
+          first_seen?: string
+          id?: string
+          is_resolved?: boolean | null
+          last_error_log_id?: string | null
+          last_seen?: string
+          line_number?: number | null
+          message?: string
+          occurrence_count?: number
+          severity?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "error_occurrences_last_error_log_id_fkey"
+            columns: ["last_error_log_id"]
+            isOneToOne: false
+            referencedRelation: "error_logs"
             referencedColumns: ["id"]
           },
         ]
@@ -505,6 +774,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "friendships_addressee_id_fkey"
+            columns: ["addressee_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
             foreignKeyName: "friendships_requester_id_fkey"
             columns: ["requester_id"]
             isOneToOne: false
@@ -517,6 +793,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friendships_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -631,6 +914,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "game_challenge_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
       game_challenges: {
@@ -714,6 +1004,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_challenges_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -856,6 +1153,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "game_combats_organizer_id_fkey"
+            columns: ["organizer_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
       game_leaderboards: {
@@ -906,6 +1210,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_leaderboards_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -983,6 +1294,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "game_monsters_defeated_by_fkey"
+            columns: ["defeated_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
             foreignKeyName: "game_monsters_spawned_by_fkey"
             columns: ["spawned_by"]
             isOneToOne: false
@@ -995,6 +1313,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_monsters_spawned_by_fkey"
+            columns: ["spawned_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -1050,6 +1375,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_player_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -1147,6 +1479,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "game_players_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
       game_spell_decks: {
@@ -1191,6 +1530,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_spell_decks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -1248,6 +1594,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_spells_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -1313,6 +1666,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "game_timeslots_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
       geometry_assignments: {
@@ -1377,6 +1737,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "geometry_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
             foreignKeyName: "geometry_assignments_assigned_to_class_fkey"
             columns: ["assigned_to_class"]
             isOneToOne: false
@@ -1396,6 +1763,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "geometry_assignments_assigned_to_student_fkey"
+            columns: ["assigned_to_student"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
           {
             foreignKeyName: "geometry_assignments_exercise_id_fkey"
@@ -1511,6 +1885,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "geometry_exercise_attempts_graded_by_fkey"
+            columns: ["graded_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
             foreignKeyName: "geometry_exercise_attempts_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
@@ -1523,6 +1904,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "geometry_exercise_attempts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -1707,6 +2095,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "geometry_exercises_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
             foreignKeyName: "geometry_exercises_template_id_fkey"
             columns: ["template_id"]
             isOneToOne: false
@@ -1824,6 +2219,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "geometry_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
       message_attachments: {
@@ -1882,6 +2284,318 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "message_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      message_attachments_v2: {
+        Row: {
+          file_name: string
+          file_size: number
+          file_type: string
+          id: string
+          message_id: string
+          public_url: string | null
+          storage_path: string
+          uploaded_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          file_name: string
+          file_size: number
+          file_type: string
+          id?: string
+          message_id: string
+          public_url?: string | null
+          storage_path: string
+          uploaded_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          id?: string
+          message_id?: string
+          public_url?: string | null
+          storage_path?: string
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_attachments_v2_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "private_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_attachments_v2_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "message_attachments_v2_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_attachments_v2_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      message_drafts: {
+        Row: {
+          author_id: string
+          class_id: string | null
+          content: Json | null
+          created_at: string
+          id: string
+          is_group_message: boolean | null
+          last_autosave_at: string | null
+          recipient_ids: string[] | null
+          replying_to_message_id: string | null
+          subject: string | null
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          class_id?: string | null
+          content?: Json | null
+          created_at?: string
+          id?: string
+          is_group_message?: boolean | null
+          last_autosave_at?: string | null
+          recipient_ids?: string[] | null
+          replying_to_message_id?: string | null
+          subject?: string | null
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          class_id?: string | null
+          content?: Json | null
+          created_at?: string
+          id?: string
+          is_group_message?: boolean | null
+          last_autosave_at?: string | null
+          recipient_ids?: string[] | null
+          replying_to_message_id?: string | null
+          subject?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_drafts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "message_drafts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_drafts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "message_drafts_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_drafts_replying_to_message_id_fkey"
+            columns: ["replying_to_message_id"]
+            isOneToOne: false
+            referencedRelation: "private_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_inbox: {
+        Row: {
+          deleted: boolean | null
+          folder_id: string | null
+          id: string
+          is_starred: boolean | null
+          message_id: string
+          read_at: string | null
+          received_at: string
+          recipient_id: string
+          status: string
+        }
+        Insert: {
+          deleted?: boolean | null
+          folder_id?: string | null
+          id?: string
+          is_starred?: boolean | null
+          message_id: string
+          read_at?: string | null
+          received_at?: string
+          recipient_id: string
+          status?: string
+        }
+        Update: {
+          deleted?: boolean | null
+          folder_id?: string | null
+          id?: string
+          is_starred?: boolean | null
+          message_id?: string
+          read_at?: string | null
+          received_at?: string
+          recipient_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_message_inbox_folder"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "user_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_inbox_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "private_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_inbox_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "message_inbox_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_inbox_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      message_moderation_logs: {
+        Row: {
+          action: string
+          class_id: string | null
+          created_at: string
+          id: string
+          message_id: string | null
+          moderator_id: string
+          reason: string | null
+          student_id: string | null
+        }
+        Insert: {
+          action: string
+          class_id?: string | null
+          created_at?: string
+          id?: string
+          message_id?: string | null
+          moderator_id: string
+          reason?: string | null
+          student_id?: string | null
+        }
+        Update: {
+          action?: string
+          class_id?: string | null
+          created_at?: string
+          id?: string
+          message_id?: string | null
+          moderator_id?: string
+          reason?: string | null
+          student_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_moderation_logs_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_moderation_logs_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "private_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_moderation_logs_moderator_id_fkey"
+            columns: ["moderator_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "message_moderation_logs_moderator_id_fkey"
+            columns: ["moderator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_moderation_logs_moderator_id_fkey"
+            columns: ["moderator_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "message_moderation_logs_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "message_moderation_logs_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_moderation_logs_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
       message_reactions: {
@@ -1927,6 +2641,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -1990,6 +2711,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "message_reports_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
             foreignKeyName: "message_reports_reviewed_by_fkey"
             columns: ["reviewed_by"]
             isOneToOne: false
@@ -2002,6 +2730,256 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_reports_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      message_search_index: {
+        Row: {
+          content_tsv: unknown
+          has_attachments: boolean | null
+          message_id: string
+          recipient_count: number | null
+          search_tsv: unknown
+          sender_name: string
+          sender_role: string
+          sent_at: string
+          subject_tsv: unknown
+        }
+        Insert: {
+          content_tsv?: unknown
+          has_attachments?: boolean | null
+          message_id: string
+          recipient_count?: number | null
+          search_tsv?: unknown
+          sender_name: string
+          sender_role: string
+          sent_at: string
+          subject_tsv?: unknown
+        }
+        Update: {
+          content_tsv?: unknown
+          has_attachments?: boolean | null
+          message_id?: string
+          recipient_count?: number | null
+          search_tsv?: unknown
+          sender_name?: string
+          sender_role?: string
+          sent_at?: string
+          subject_tsv?: unknown
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_search_index_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: true
+            referencedRelation: "private_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_template_versions: {
+        Row: {
+          body_template: string
+          change_summary: string | null
+          description: string | null
+          id: string
+          modified_at: string
+          modified_by: string
+          scope: string
+          subject_template: string
+          tags: string[] | null
+          template_id: string
+          title: string
+          trigger_type: string
+          variables: Json | null
+          version_number: number
+        }
+        Insert: {
+          body_template: string
+          change_summary?: string | null
+          description?: string | null
+          id?: string
+          modified_at?: string
+          modified_by: string
+          scope: string
+          subject_template: string
+          tags?: string[] | null
+          template_id: string
+          title: string
+          trigger_type: string
+          variables?: Json | null
+          version_number: number
+        }
+        Update: {
+          body_template?: string
+          change_summary?: string | null
+          description?: string | null
+          id?: string
+          modified_at?: string
+          modified_by?: string
+          scope?: string
+          subject_template?: string
+          tags?: string[] | null
+          template_id?: string
+          title?: string
+          trigger_type?: string
+          variables?: Json | null
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_template_versions_modified_by_fkey"
+            columns: ["modified_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "message_template_versions_modified_by_fkey"
+            columns: ["modified_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_template_versions_modified_by_fkey"
+            columns: ["modified_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "message_template_versions_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_templates: {
+        Row: {
+          approval_status: string | null
+          body_template: string
+          class_id: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          scope: string
+          search_vector: unknown
+          subject_template: string
+          tags: string[] | null
+          title: string
+          trigger_config: Json | null
+          trigger_type: string
+          updated_at: string
+          variables: Json | null
+        }
+        Insert: {
+          approval_status?: string | null
+          body_template: string
+          class_id?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          scope: string
+          search_vector?: unknown
+          subject_template: string
+          tags?: string[] | null
+          title: string
+          trigger_config?: Json | null
+          trigger_type: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Update: {
+          approval_status?: string | null
+          body_template?: string
+          class_id?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          scope?: string
+          search_vector?: unknown
+          subject_template?: string
+          tags?: string[] | null
+          title?: string
+          trigger_config?: Json | null
+          trigger_type?: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_templates_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "message_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "message_templates_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "message_templates_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_templates_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -2074,6 +3052,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
       notification_reads: {
@@ -2119,6 +3104,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_reads_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -2195,6 +3187,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "notifications_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
       pending_students: {
@@ -2246,6 +3245,97 @@ export type Database = {
             columns: ["school_id"]
             isOneToOne: false
             referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      private_messages: {
+        Row: {
+          class_id: string | null
+          content: Json
+          deleted_by_sender: boolean | null
+          edited_at: string | null
+          id: string
+          is_group_message: boolean | null
+          parent_message_id: string | null
+          plain_text: string | null
+          recipient_count: number | null
+          sender_id: string
+          sent_at: string
+          subject: string
+          thread_root_id: string | null
+        }
+        Insert: {
+          class_id?: string | null
+          content: Json
+          deleted_by_sender?: boolean | null
+          edited_at?: string | null
+          id?: string
+          is_group_message?: boolean | null
+          parent_message_id?: string | null
+          plain_text?: string | null
+          recipient_count?: number | null
+          sender_id: string
+          sent_at?: string
+          subject: string
+          thread_root_id?: string | null
+        }
+        Update: {
+          class_id?: string | null
+          content?: Json
+          deleted_by_sender?: boolean | null
+          edited_at?: string | null
+          id?: string
+          is_group_message?: boolean | null
+          parent_message_id?: string | null
+          plain_text?: string | null
+          recipient_count?: number | null
+          sender_id?: string
+          sent_at?: string
+          subject?: string
+          thread_root_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private_messages_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_messages_parent_message_id_fkey"
+            columns: ["parent_message_id"]
+            isOneToOne: false
+            referencedRelation: "private_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "private_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "private_messages_thread_root_id_fkey"
+            columns: ["thread_root_id"]
+            isOneToOne: false
+            referencedRelation: "private_messages"
             referencedColumns: ["id"]
           },
         ]
@@ -2394,6 +3484,333 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "question_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      riddle_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by: string
+          class_id: string | null
+          id: string
+          riddle_id: string
+          student_id: string | null
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by: string
+          class_id?: string | null
+          id?: string
+          riddle_id: string
+          student_id?: string | null
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string
+          class_id?: string | null
+          id?: string
+          riddle_id?: string
+          student_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "riddle_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "riddle_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "riddle_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "riddle_assignments_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "riddle_assignments_riddle_id_fkey"
+            columns: ["riddle_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_stats"
+            referencedColumns: ["riddle_id"]
+          },
+          {
+            foreignKeyName: "riddle_assignments_riddle_id_fkey"
+            columns: ["riddle_id"]
+            isOneToOne: false
+            referencedRelation: "riddles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "riddle_assignments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "riddle_assignments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "riddle_assignments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      riddle_attempts: {
+        Row: {
+          attempt_number: number
+          created_at: string
+          gidouilles_awarded: number
+          id: string
+          is_correct: boolean | null
+          riddle_id: string
+          student_id: string
+          submitted_answer: Json
+          validated_at: string | null
+          validated_by: string | null
+        }
+        Insert: {
+          attempt_number: number
+          created_at?: string
+          gidouilles_awarded?: number
+          id?: string
+          is_correct?: boolean | null
+          riddle_id: string
+          student_id: string
+          submitted_answer: Json
+          validated_at?: string | null
+          validated_by?: string | null
+        }
+        Update: {
+          attempt_number?: number
+          created_at?: string
+          gidouilles_awarded?: number
+          id?: string
+          is_correct?: boolean | null
+          riddle_id?: string
+          student_id?: string
+          submitted_answer?: Json
+          validated_at?: string | null
+          validated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "riddle_attempts_riddle_id_fkey"
+            columns: ["riddle_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_stats"
+            referencedColumns: ["riddle_id"]
+          },
+          {
+            foreignKeyName: "riddle_attempts_riddle_id_fkey"
+            columns: ["riddle_id"]
+            isOneToOne: false
+            referencedRelation: "riddles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "riddle_attempts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "riddle_attempts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "riddle_attempts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "riddle_attempts_validated_by_fkey"
+            columns: ["validated_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "riddle_attempts_validated_by_fkey"
+            columns: ["validated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "riddle_attempts_validated_by_fkey"
+            columns: ["validated_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      riddle_of_the_day: {
+        Row: {
+          auto_selected: boolean
+          created_at: string
+          date: string
+          id: string
+          riddle_id: string
+          selected_by: string | null
+        }
+        Insert: {
+          auto_selected?: boolean
+          created_at?: string
+          date: string
+          id?: string
+          riddle_id: string
+          selected_by?: string | null
+        }
+        Update: {
+          auto_selected?: boolean
+          created_at?: string
+          date?: string
+          id?: string
+          riddle_id?: string
+          selected_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "riddle_of_the_day_riddle_id_fkey"
+            columns: ["riddle_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_stats"
+            referencedColumns: ["riddle_id"]
+          },
+          {
+            foreignKeyName: "riddle_of_the_day_riddle_id_fkey"
+            columns: ["riddle_id"]
+            isOneToOne: false
+            referencedRelation: "riddles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "riddle_of_the_day_selected_by_fkey"
+            columns: ["selected_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "riddle_of_the_day_selected_by_fkey"
+            columns: ["selected_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "riddle_of_the_day_selected_by_fkey"
+            columns: ["selected_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      riddles: {
+        Row: {
+          answer: Json | null
+          correction: string
+          created_at: string
+          created_by: string
+          difficulty: number
+          genre: string | null
+          id: string
+          image_url: string | null
+          riddle_number: number
+          statement: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          answer?: Json | null
+          correction: string
+          created_at?: string
+          created_by: string
+          difficulty: number
+          genre?: string | null
+          id?: string
+          image_url?: string | null
+          riddle_number?: number
+          statement: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: Json | null
+          correction?: string
+          created_at?: string
+          created_by?: string
+          difficulty?: number
+          genre?: string | null
+          id?: string
+          image_url?: string | null
+          riddle_number?: number
+          statement?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "riddles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "riddles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "riddles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
       schools: {
@@ -2496,6 +3913,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "srs_card_stats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
       srs_cards: {
@@ -2587,6 +4011,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "srs_deck_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
             foreignKeyName: "srs_deck_assignments_source_deck_id_fkey"
             columns: ["source_deck_id"]
             isOneToOne: false
@@ -2643,6 +4074,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "srs_decks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -2701,6 +4139,144 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "srs_review_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      template_audit_log: {
+        Row: {
+          action: string
+          changes: Json | null
+          id: string
+          ip_address: unknown
+          metadata: Json | null
+          performed_at: string
+          performed_by: string
+          template_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          changes?: Json | null
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          performed_at?: string
+          performed_by: string
+          template_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          changes?: Json | null
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          performed_at?: string
+          performed_by?: string
+          template_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_audit_log_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "template_audit_log_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "template_audit_log_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "template_audit_log_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      template_usage_stats: {
+        Row: {
+          class_id: string | null
+          completed: boolean | null
+          id: string
+          template_id: string
+          time_to_complete: number | null
+          used_at: string
+          user_id: string
+        }
+        Insert: {
+          class_id?: string | null
+          completed?: boolean | null
+          id?: string
+          template_id: string
+          time_to_complete?: number | null
+          used_at?: string
+          user_id: string
+        }
+        Update: {
+          class_id?: string | null
+          completed?: boolean | null
+          id?: string
+          template_id?: string
+          time_to_complete?: number | null
+          used_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_usage_stats_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "template_usage_stats_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "template_usage_stats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "template_usage_stats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "template_usage_stats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -2805,6 +4381,111 @@ export type Database = {
           },
         ]
       }
+      user_favorite_templates: {
+        Row: {
+          created_at: string
+          template_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          template_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          template_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorite_templates_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favorite_templates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "user_favorite_templates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favorite_templates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      user_folders: {
+        Row: {
+          color: string | null
+          created_at: string
+          icon: string | null
+          id: string
+          message_count: number | null
+          name: string
+          sort_order: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          icon?: string | null
+          id?: string
+          message_count?: number | null
+          name: string
+          sort_order?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          icon?: string | null
+          id?: string
+          message_count?: number | null
+          name?: string
+          sort_order?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_folders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "user_folders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_folders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       user_presence: {
         Row: {
           last_heartbeat: string
@@ -2838,6 +4519,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_presence_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
           },
         ]
       }
@@ -2890,6 +4578,125 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "assessment_assignments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      riddle_progress: {
+        Row: {
+          avatar_url: string | null
+          firstname: string | null
+          last_success_at: string | null
+          lastname: string | null
+          rank: number | null
+          riddles_completed: number | null
+          riddles_gidouilles: number | null
+          student_id: string | null
+          total_attempts: number | null
+        }
+        Relationships: []
+      }
+      riddle_stats: {
+        Row: {
+          avg_attempts_to_success: number | null
+          created_by: string | null
+          difficulty: number | null
+          first_attempts: number | null
+          genre: string | null
+          pending_validations: number | null
+          riddle_id: string | null
+          riddle_number: number | null
+          second_attempts: number | null
+          success_rate_percent: number | null
+          successful_attempts: number | null
+          third_plus_attempts: number | null
+          title: string | null
+          total_attempts: number | null
+          total_gidouilles_awarded: number | null
+          unique_students: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "riddles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "riddles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "riddles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      riddle_student_history: {
+        Row: {
+          difficulty: number | null
+          ever_succeeded: boolean | null
+          first_attempt_number: number | null
+          first_success_at: string | null
+          genre: string | null
+          last_attempt_at: string | null
+          latest_attempt_number: number | null
+          max_gidouilles_earned: number | null
+          riddle_id: string | null
+          riddle_number: number | null
+          riddle_title: string | null
+          student_id: string | null
+          total_attempts: number | null
+          total_gidouilles_earned: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "riddle_attempts_riddle_id_fkey"
+            columns: ["riddle_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_stats"
+            referencedColumns: ["riddle_id"]
+          },
+          {
+            foreignKeyName: "riddle_attempts_riddle_id_fkey"
+            columns: ["riddle_id"]
+            isOneToOne: false
+            referencedRelation: "riddles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "riddle_attempts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_results"
+            referencedColumns: ["student_user_id"]
+          },
+          {
+            foreignKeyName: "riddle_attempts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "riddle_attempts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
       user_conversations_view: {
@@ -2929,6 +4736,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "conversation_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
             foreignKeyName: "conversations_class_id_fkey"
             columns: ["class_id"]
             isOneToOne: false
@@ -2949,41 +4763,65 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "conversations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
         ]
       }
     }
     Functions: {
-      award_random_vip_card: {
-        Args: { p_student_id: string }
-        Returns: string
+      award_random_vip_card: { Args: { p_student_id: string }; Returns: string }
+      calculate_riddle_gidouilles: {
+        Args: { p_attempt_number: number; p_difficulty: number }
+        Returns: number
+      }
+      can_moderate_message: {
+        Args: { message_uuid: string; moderator_uuid: string }
+        Returns: boolean
       }
       can_view_student_profile: {
         Args: { student_profile_id: string }
         Returns: boolean
       }
-      check_profanity_simple: {
-        Args: { p_text: string }
-        Returns: boolean
-      }
-      cleanup_stale_presence: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      check_profanity_simple: { Args: { p_text: string }; Returns: boolean }
+      cleanup_old_errors: { Args: { p_days_old?: number }; Returns: number }
+      cleanup_stale_presence: { Args: never; Returns: undefined }
       create_1on1_chat: {
         Args: { p_user1_id: string; p_user2_id: string }
         Returns: string
       }
-      delete_attachment: {
-        Args: { p_attachment_id: string }
+      delete_attachment: { Args: { p_attachment_id: string }; Returns: string }
+      duplicate_template: {
+        Args: { p_new_title?: string; p_template_id: string; p_user_id: string }
         Returns: string
       }
       extract_plain_text_from_tiptap: {
         Args: { p_content: Json }
         Returns: string
       }
-      generate_join_code: {
-        Args: Record<PropertyKey, never>
+      generate_error_signature: {
+        Args: {
+          p_error_type: string
+          p_file_path: string
+          p_line_number: number
+          p_message: string
+        }
         Returns: string
+      }
+      generate_join_code: { Args: never; Returns: string }
+      get_allowed_recipients: {
+        Args: { p_user_id: string }
+        Returns: {
+          avatar_url: string
+          full_name: string
+          relationship: string
+          role: string
+          user_id: string
+        }[]
       }
       get_best_geometry_score: {
         Args: { p_exercise_id: string; p_student_id: string }
@@ -3004,10 +4842,7 @@ export type Database = {
           user_id: string
         }[]
       }
-      get_database_stats: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      get_database_stats: { Args: never; Returns: Json }
       get_deck_stats: {
         Args: { p_deck_id: string; p_user_id: string }
         Returns: {
@@ -3028,6 +4863,17 @@ export type Database = {
           stability: number
           state: string
           template_id: string
+        }[]
+      }
+      get_error_stats: {
+        Args: { p_hours?: number }
+        Returns: {
+          critical_errors: number
+          errors_last_hour: number
+          most_common_error_type: string
+          total_errors: number
+          unique_errors: number
+          unresolved_errors: number
         }[]
       }
       get_friend_ids: {
@@ -3054,12 +4900,51 @@ export type Database = {
           uploader_lastname: string
         }[]
       }
+      get_message_details: {
+        Args: { p_message_id: string; p_user_id: string }
+        Returns: {
+          attachments: Json
+          content: Json
+          edited_at: string
+          is_group_message: boolean
+          is_starred: boolean
+          message_id: string
+          parent_message_id: string
+          plain_text: string
+          read_at: string
+          recipient_count: number
+          recipients: Json
+          sender_avatar_url: string
+          sender_id: string
+          sender_name: string
+          sender_role: string
+          sent_at: string
+          status: string
+          subject: string
+          thread_root_id: string
+        }[]
+      }
       get_message_reaction_counts: {
         Args: { p_message_id: string }
         Returns: {
           count: number
           emoji: string
           user_reacted: boolean
+        }[]
+      }
+      get_message_thread: {
+        Args: { p_thread_root_id: string; p_user_id: string }
+        Returns: {
+          content: Json
+          edited_at: string
+          level: number
+          message_id: string
+          parent_message_id: string
+          sender_avatar_url: string
+          sender_id: string
+          sender_name: string
+          sent_at: string
+          subject: string
         }[]
       }
       get_messages_paginated: {
@@ -3083,8 +4968,13 @@ export type Database = {
           sender_lastname: string
         }[]
       }
-      get_pending_reports_count: {
-        Args: Record<PropertyKey, never>
+      get_next_riddle_attempt_number: {
+        Args: { p_riddle_id: string; p_student_id: string }
+        Returns: number
+      }
+      get_pending_reports_count: { Args: never; Returns: number }
+      get_private_messages_unread_count: {
+        Args: { p_user_id: string }
         Returns: number
       }
       get_reaction_users: {
@@ -3125,6 +5015,27 @@ export type Database = {
           status: string
         }[]
       }
+      get_riddle_of_the_day: { Args: { p_date?: string }; Returns: string }
+      get_student_teachers: {
+        Args: { student_uuid: string }
+        Returns: {
+          teacher_id: string
+        }[]
+      }
+      get_students_in_class: {
+        Args: { class_uuid: string }
+        Returns: {
+          student_id: string
+        }[]
+      }
+      get_teacher_classes_for_messaging: {
+        Args: { p_teacher_id: string }
+        Returns: {
+          class_id: string
+          class_name: string
+          student_count: number
+        }[]
+      }
       get_teacher_classes_with_data: {
         Args: { p_teacher_id: string }
         Returns: {
@@ -3154,6 +5065,35 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_teacher_students: {
+        Args: { teacher_uuid: string }
+        Returns: {
+          student_id: string
+        }[]
+      }
+      get_template_statistics: {
+        Args: { p_template_id: string }
+        Returns: {
+          avg_time_to_complete: number
+          completion_rate: number
+          last_used_at: string
+          total_usage: number
+          unique_users: number
+        }[]
+      }
+      get_templates_for_context: {
+        Args: { p_class_id?: string; p_trigger_type: string }
+        Returns: {
+          body_template: string
+          description: string
+          id: string
+          scope: string
+          subject_template: string
+          title: string
+          trigger_type: string
+          variables: Json
+        }[]
+      }
       get_unread_count: {
         Args: { p_conversation_id: string; p_user_id: string }
         Returns: number
@@ -3176,21 +5116,68 @@ export type Database = {
           unread_count: number
         }[]
       }
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
+      get_user_frequent_templates: {
+        Args: { p_limit?: number; p_user_id: string }
+        Returns: {
+          last_used: string
+          template_id: string
+          title: string
+          usage_count: number
+        }[]
       }
-      is_class_teacher: {
-        Args: { p_class_id: string }
-        Returns: boolean
+      get_user_inbox: {
+        Args: {
+          p_folder_id?: string
+          p_limit?: number
+          p_offset?: number
+          p_status?: string
+          p_user_id: string
+        }
+        Returns: {
+          attachment_count: number
+          content: Json
+          has_attachments: boolean
+          is_group_message: boolean
+          is_starred: boolean
+          message_id: string
+          plain_text: string
+          read_at: string
+          recipient_count: number
+          sender_avatar_url: string
+          sender_id: string
+          sender_name: string
+          sent_at: string
+          status: string
+          subject: string
+        }[]
       }
-      is_student: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
+      get_user_sent_messages: {
+        Args: { p_limit?: number; p_offset?: number; p_user_id: string }
+        Returns: {
+          content: Json
+          has_attachments: boolean
+          is_group_message: boolean
+          message_id: string
+          plain_text: string
+          recipient_count: number
+          recipients: Json
+          sent_at: string
+          subject: string
+        }[]
       }
-      is_teacher_or_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
+      is_admin: { Args: never; Returns: boolean }
+      is_class_teacher: { Args: { p_class_id: string }; Returns: boolean }
+      is_student: { Args: never; Returns: boolean }
+      is_teacher_or_admin: { Args: never; Returns: boolean }
+      log_template_action: {
+        Args: {
+          p_action: string
+          p_changes?: Json
+          p_metadata?: Json
+          p_performed_by: string
+          p_template_id: string
+        }
+        Returns: string
       }
       mark_conversation_read: {
         Args: {
@@ -3198,6 +5185,14 @@ export type Database = {
           p_message_id?: string
           p_user_id: string
         }
+        Returns: undefined
+      }
+      mark_message_as_read: {
+        Args: { p_message_id: string; p_user_id: string }
+        Returns: undefined
+      }
+      move_message_to_folder: {
+        Args: { p_folder_id: string; p_message_id: string; p_user_id: string }
         Returns: undefined
       }
       promote_user_to_admin: {
@@ -3212,6 +5207,18 @@ export type Database = {
         Args: { p_details?: string; p_message_id: string; p_reason: string }
         Returns: string
       }
+      resolve_error: {
+        Args: { p_error_log_id: string; p_notes: string; p_resolved_by: string }
+        Returns: boolean
+      }
+      resolve_error_by_signature: {
+        Args: {
+          p_error_signature: string
+          p_notes: string
+          p_resolved_by: string
+        }
+        Returns: number
+      }
       review_report: {
         Args: {
           p_delete_message?: boolean
@@ -3221,9 +5228,62 @@ export type Database = {
         }
         Returns: undefined
       }
+      search_private_messages: {
+        Args: {
+          p_date_from?: string
+          p_date_to?: string
+          p_has_attachments?: boolean
+          p_limit?: number
+          p_offset?: number
+          p_query: string
+          p_search_in?: string
+          p_sender_name?: string
+          p_user_id: string
+        }
+        Returns: {
+          has_attachments: boolean
+          is_starred: boolean
+          message_id: string
+          plain_text: string
+          rank: number
+          sender_id: string
+          sender_name: string
+          sent_at: string
+          subject: string
+        }[]
+      }
+      send_private_message: {
+        Args: {
+          p_class_id?: string
+          p_content: Json
+          p_is_group_message?: boolean
+          p_parent_message_id?: string
+          p_recipient_ids: string[]
+          p_sender_id: string
+          p_subject: string
+        }
+        Returns: string
+      }
+      set_riddle_of_the_day: {
+        Args: { p_date: string; p_riddle_id: string; p_selected_by: string }
+        Returns: string
+      }
       soft_delete_message: {
         Args: { p_message_id: string }
         Returns: undefined
+      }
+      submit_riddle_attempt: {
+        Args: {
+          p_is_correct?: boolean
+          p_riddle_id: string
+          p_student_id: string
+          p_submitted_answer: Json
+        }
+        Returns: string
+      }
+      toggle_message_star: {
+        Args: { p_message_id: string; p_user_id: string }
+        Returns: boolean
       }
       toggle_reaction: {
         Args: { p_emoji: string; p_message_id: string }
@@ -3233,8 +5293,25 @@ export type Database = {
         Args: { p_class_id: string; p_delta: number }
         Returns: number
       }
+      update_message_status: {
+        Args: { p_message_id: string; p_status: string; p_user_id: string }
+        Returns: undefined
+      }
       update_student_gidouilles: {
         Args: { p_delta: number; p_student_id: string }
+        Returns: number
+      }
+      upsert_error_occurrence: {
+        Args: {
+          p_error_log_id: string
+          p_error_signature: string
+          p_error_type: string
+          p_file_path: string
+          p_line_number: number
+          p_message: string
+          p_severity: string
+          p_url: string
+        }
         Returns: number
       }
       upsert_user_presence: {
@@ -3251,6 +5328,22 @@ export type Database = {
       }
       validate_attachment_upload: {
         Args: { p_file_size: number; p_message_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      validate_class_message_recipients: {
+        Args: { class_uuid: string; sender_uuid: string }
+        Returns: boolean
+      }
+      validate_message_recipients: {
+        Args: { recipient_uuids: string[]; sender_uuid: string }
+        Returns: boolean
+      }
+      validate_riddle_attempt: {
+        Args: {
+          p_attempt_id: string
+          p_is_correct: boolean
+          p_teacher_id: string
+        }
         Returns: boolean
       }
     }

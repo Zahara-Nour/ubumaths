@@ -43,8 +43,10 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	};
 
 	// Validate that at least one target is specified
-	if ((!data.class_ids || data.class_ids.length === 0) &&
-	    (!data.student_ids || data.student_ids.length === 0)) {
+	if (
+		(!data.class_ids || data.class_ids.length === 0) &&
+		(!data.student_ids || data.student_ids.length === 0)
+	) {
 		throw error(400, 'Must specify at least one class or student');
 	}
 
@@ -67,9 +69,10 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	// Send notification to assigned students
 	if (assessment) {
-		const teacherName = profile.firstname && profile.lastname
-			? `${profile.firstname} ${profile.lastname}`
-			: 'Votre professeur';
+		const teacherName =
+			profile.firstname && profile.lastname
+				? `${profile.firstname} ${profile.lastname}`
+				: 'Votre professeur';
 
 		await notifyNewAssessment(locals.supabase, {
 			assessmentId: assessment.id,

@@ -90,6 +90,7 @@ Bienvenue dans la documentation du système de révision espacée (SRS) d'UbuMat
 **Migration SQL** : [`supabase/migrations/080_create_srs_tables.sql`](supabase/migrations/080_create_srs_tables.sql)
 
 **Tables** :
+
 - `srs_decks` - Decks de révision
 - `srs_cards` - Cartes individuelles
 - `srs_card_stats` - Statistiques FSRS globales
@@ -101,6 +102,7 @@ Bienvenue dans la documentation du système de révision espacée (SRS) d'UbuMat
 ### Algorithme FSRS-6
 
 **Fichiers** :
+
 - `src/lib/srs/fsrs-algorithm.ts` - Implémentation
 - `src/lib/srs/fsrs-types.ts` - Types
 - `src/lib/srs/config.ts` - Configuration
@@ -136,12 +138,14 @@ Bienvenue dans la documentation du système de révision espacée (SRS) d'UbuMat
 ### Pages et Routes
 
 **Pages Professeur** :
+
 - `/dashboard/teacher/srs/decks` - Liste des decks
 - `/dashboard/teacher/srs/decks/create` - Créer un deck
 - `/dashboard/teacher/srs/decks/[id]/edit` - Modifier un deck
 - `/dashboard/teacher/srs/decks/[id]/assign` - Attribuer un deck
 
 **Pages Élève** :
+
 - `/dashboard/revisions` - Liste des decks (attribués + personnels)
 - `/dashboard/revisions/create` - Créer un deck personnel
 - `/dashboard/revisions/decks/[id]/study` - Interface de révision
@@ -154,16 +158,16 @@ Bienvenue dans la documentation du système de révision espacée (SRS) d'UbuMat
 
 ### Je veux...
 
-| Besoin | Document | Section |
-|--------|----------|---------|
-| Créer mon premier deck | [Quick Start](SRS_QUICK_START.md) | Pour les Professeurs |
-| Réviser mes cartes | [Quick Start](SRS_QUICK_START.md) | Pour les Élèves |
-| Comprendre l'algorithme FSRS | [Quick Start](SRS_QUICK_START.md) | Comprendre l'algorithme FSRS |
-| Tester le système | [Test Plan](SRS_TEST_PLAN.md) | Tous les tests |
-| Voir l'architecture technique | [System Doc](SRS_SYSTEM_DOCUMENTATION.md) | Database Schema + Architecture |
-| Ajouter une fonctionnalité | [Implementation Summary](SRS_IMPLEMENTATION_SUMMARY.md) | Phase 2 |
-| Debugger un problème | [Quick Start](SRS_QUICK_START.md) | Résolution de problèmes |
-| Voir les fichiers créés | [Implementation Summary](SRS_IMPLEMENTATION_SUMMARY.md) | Métriques |
+| Besoin                        | Document                                                | Section                        |
+| ----------------------------- | ------------------------------------------------------- | ------------------------------ |
+| Créer mon premier deck        | [Quick Start](SRS_QUICK_START.md)                       | Pour les Professeurs           |
+| Réviser mes cartes            | [Quick Start](SRS_QUICK_START.md)                       | Pour les Élèves                |
+| Comprendre l'algorithme FSRS  | [Quick Start](SRS_QUICK_START.md)                       | Comprendre l'algorithme FSRS   |
+| Tester le système             | [Test Plan](SRS_TEST_PLAN.md)                           | Tous les tests                 |
+| Voir l'architecture technique | [System Doc](SRS_SYSTEM_DOCUMENTATION.md)               | Database Schema + Architecture |
+| Ajouter une fonctionnalité    | [Implementation Summary](SRS_IMPLEMENTATION_SUMMARY.md) | Phase 2                        |
+| Debugger un problème          | [Quick Start](SRS_QUICK_START.md)                       | Résolution de problèmes        |
+| Voir les fichiers créés       | [Implementation Summary](SRS_IMPLEMENTATION_SUMMARY.md) | Métriques                      |
 
 ---
 

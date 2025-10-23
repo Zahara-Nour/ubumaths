@@ -120,7 +120,7 @@
 
 				<!-- Keyboard shortcut hint -->
 				<span
-					class="absolute right-2 top-2 rounded bg-white/20 px-1.5 py-0.5 text-xs font-mono opacity-0 transition-opacity group-hover:opacity-100"
+					class="absolute top-2 right-2 rounded bg-white/20 px-1.5 py-0.5 font-mono text-xs opacity-0 transition-opacity group-hover:opacity-100"
 				>
 					{btn.grade}
 				</span>

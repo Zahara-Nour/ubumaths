@@ -7,26 +7,31 @@ Historique des versions du composant CorrectionCard.
 ## [1.1.0] - 2025-10-21
 
 ### ✨ Ajouté
+
 - **Intégration dans TestDisplay** : Le composant est maintenant utilisé dans le mode révision
   - Grid responsive (2 colonnes desktop, 1 colonne mobile)
   - Support du mode sans réponses utilisateur
   - Fonction helper `createAnswerResultForDisplay()` dans TestDisplay
 
 ### 🔧 Amélioré
+
 - **Affichage conditionnel** : Badge correct/incorrect masqué si `userAnswer === undefined`
 - **Section "Votre réponse"** : Masquée si `userAnswer === undefined`
 - **Type safety** : Ajout de type guard `Array.isArray()` pour `fill_in_blanks`
 
 ### 🐛 Corrigé
+
 - **Images** : Utilisation de `field.content` au lieu de `field.url` (alignement avec le type `ContentField`)
 
 ### 📚 Documentation
+
 - Ajout de l'exemple d'utilisation dans TestDisplay
 - Documentation du mode révision vs mode avec réponses
 - Mise à jour du tableau comparatif avec "Utilisé dans"
 - Ajout de tests manuels pour le mode révision
 
 ### 📁 Fichiers modifiés
+
 - `src/lib/components/questions/CorrectionCard.svelte` (lignes 166-176, 215-258, 204, 322)
 - `src/lib/components/test/TestDisplay.svelte` (lignes 24, 27, 164-177, 343-372)
 - `CORRECTION_CARD_COMPONENT.md` (sections Utilisation, Cas particuliers, Tests)
@@ -39,6 +44,7 @@ Historique des versions du composant CorrectionCard.
 ### 🎉 Version initiale
 
 #### ✨ Fonctionnalités
+
 - **Flip 3D** : Mécanisme de flip similaire à FlashCard
   - Face avant : Énoncé collapsible, réponse user vs correcte
   - Face arrière : Correction détaillée
@@ -70,6 +76,7 @@ Historique des versions du composant CorrectionCard.
 - **Stats** : Temps passé et nombre de tentatives (si disponibles)
 
 #### 🎨 UI/UX
+
 - **Props** :
   - `answerResult: TestAnswerResult` (obligatoire)
   - `questionNumber?: number` (optionnel)
@@ -87,15 +94,18 @@ Historique des versions du composant CorrectionCard.
   - Accessibilité (ARIA labels)
 
 #### 📁 Fichiers créés
+
 - `src/lib/components/questions/CorrectionCard.svelte` (460 lignes)
 - `CORRECTION_CARD_COMPONENT.md` (documentation complète)
 
 #### 🔗 Intégrations
+
 - **TestResults** : Remplacement de l'accordion par grid de CorrectionCard
   - Grid responsive (2 colonnes desktop, 1 colonne mobile)
   - Nettoyage des imports inutiles (Accordion, MathDisplay, Badge, Check, X)
 
 #### 📚 Documentation
+
 - Documentation technique complète (CORRECTION_CARD_COMPONENT.md)
 - Ajout dans DOCS_INDEX.md
 - Mise à jour TEST_FEATURE_DOCUMENTATION.md

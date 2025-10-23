@@ -59,9 +59,7 @@ export async function createNotification(
 					.eq('teacher_id', createdBy);
 
 				const teacherClassIds = teacherClasses?.map((cm) => cm.class_id) || [];
-				const invalidClasses = data.target_class_ids.filter(
-					(id) => !teacherClassIds.includes(id)
-				);
+				const invalidClasses = data.target_class_ids.filter((id) => !teacherClassIds.includes(id));
 
 				if (invalidClasses.length > 0) {
 					return {
@@ -94,8 +92,7 @@ export async function createNotification(
 
 		// Calculate expiration date if not provided
 		const expiresAt =
-			data.expires_at ||
-			new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // +30 days
+			data.expires_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // +30 days
 
 		// Create notification
 		const { data: notification, error: insertError } = await supabase

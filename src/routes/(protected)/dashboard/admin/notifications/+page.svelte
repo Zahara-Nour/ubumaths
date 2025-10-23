@@ -161,7 +161,7 @@
 									</Select.Trigger>
 									<Select.Content>
 										{#each Object.entries(NOTIFICATION_TYPE_LABELS) as [value, label]}
-											<Select.Item value={value}>{label}</Select.Item>
+											<Select.Item {value}>{label}</Select.Item>
 										{/each}
 									</Select.Content>
 								</Select.Root>
@@ -179,7 +179,7 @@
 									</Select.Trigger>
 									<Select.Content>
 										{#each Object.entries(NOTIFICATION_PRIORITY_LABELS) as [value, label]}
-											<Select.Item value={value}>{label}</Select.Item>
+											<Select.Item {value}>{label}</Select.Item>
 										{/each}
 									</Select.Content>
 								</Select.Root>
@@ -227,7 +227,9 @@
 						<!-- Role selection -->
 						{#if targetType === 'role' || targetType === 'users'}
 							<div class="space-y-2">
-								<Label>{targetType === 'role' ? 'Sélectionner les rôles' : 'Filtrer par rôle'}</Label>
+								<Label
+									>{targetType === 'role' ? 'Sélectionner les rôles' : 'Filtrer par rôle'}</Label
+								>
 								<div class="grid gap-2 sm:grid-cols-3">
 									{#each ['admin', 'teacher', 'student'] as role}
 										<label class="flex items-center gap-2 rounded border p-2 hover:bg-muted">
@@ -239,7 +241,12 @@
 											/>
 											<span>{roleLabels[role]}</span>
 											{#if targetType === 'role'}
-												<input type="hidden" name="roles" value={role} disabled={!selectedRoles.includes(role)} />
+												<input
+													type="hidden"
+													name="roles"
+													value={role}
+													disabled={!selectedRoles.includes(role)}
+												/>
 											{/if}
 										</label>
 									{/each}
@@ -262,7 +269,12 @@
 													class="h-4 w-4"
 												/>
 												<span>{cls.name}</span>
-												<input type="hidden" name="classIds" value={cls.id} disabled={!selectedClassIds.includes(cls.id)} />
+												<input
+													type="hidden"
+													name="classIds"
+													value={cls.id}
+													disabled={!selectedClassIds.includes(cls.id)}
+												/>
 											</label>
 										{/each}
 									</div>
@@ -278,7 +290,7 @@
 									{#if availableUsers.length > 0}
 										<div class="grid gap-2 sm:grid-cols-2">
 											{#each availableUsers as user}
-												<label class="flex items-center gap-2 rounded p-2 hover:bg-muted text-sm">
+												<label class="flex items-center gap-2 rounded p-2 text-sm hover:bg-muted">
 													<input
 														type="checkbox"
 														checked={selectedUserIds.includes(user.id)}
@@ -287,11 +299,17 @@
 													/>
 													<div class="flex-1">
 														<div class="font-medium">
-															{user.firstname || ''} {user.lastname || user.email}
+															{user.firstname || ''}
+															{user.lastname || user.email}
 														</div>
 														<div class="text-xs text-muted-foreground">{roleLabels[user.role]}</div>
 													</div>
-													<input type="hidden" name="userIds" value={user.id} disabled={!selectedUserIds.includes(user.id)} />
+													<input
+														type="hidden"
+														name="userIds"
+														value={user.id}
+														disabled={!selectedUserIds.includes(user.id)}
+													/>
 												</label>
 											{/each}
 										</div>

@@ -61,7 +61,7 @@ All components have been successfully implemented and the build passes without e
 | `algebraic_transform` | AlgebraicInput      | MathField with equivalence checking       | ✅ Implemented |
 | `fill_in_blanks`      | FillBlanksInput     | Inline MathFields at blank positions      | ✅ Implemented |
 | `multiple_choice`     | MultipleChoiceInput | Buttons/images, single/multiple selection | ✅ Implemented |
-| `ordering`            | OrderingInput       | Drag-and-drop reordering                  | ⏳ Placeholder  |
+| `ordering`            | OrderingInput       | Drag-and-drop reordering                  | ⏳ Placeholder |
 
 **MathLive Integration:**
 
@@ -322,7 +322,11 @@ The FlashCard component is designed to work with the Question Bank System:
 
 ```typescript
 // 1. Get template from database
-const template = await supabase.from('question_templates').select('*').eq('id', templateId).single();
+const template = await supabase
+	.from('question_templates')
+	.select('*')
+	.eq('id', templateId)
+	.single();
 
 // 2. Generate instance
 const result = generateInstance(template.data, Math.random() * 1000000);
@@ -429,17 +433,10 @@ FlashCard
 
 ```svelte
 <!-- BEFORE (v1.0) -->
-<QuestionDisplay
-  mode="flashcard"
-  showConfetti={true}
-  allowMultipleAttempts={false}
-/>
+<QuestionDisplay mode="flashcard" showConfetti={true} allowMultipleAttempts={false} />
 
 <!-- AFTER (v2.0) -->
-<FlashCard
-  interactive={false}
-  maxAttempts={1}
-/>
+<FlashCard interactive={false} maxAttempts={1} />
 ```
 
 ---

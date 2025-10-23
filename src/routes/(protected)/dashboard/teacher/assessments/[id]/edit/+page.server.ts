@@ -71,7 +71,12 @@ export const actions: Actions = {
 			settings
 		};
 
-		const { error } = await updateAssessment(locals.supabase, params.id, updateData, session.user.id);
+		const { error } = await updateAssessment(
+			locals.supabase,
+			params.id,
+			updateData,
+			session.user.id
+		);
 
 		if (error) {
 			console.error('Failed to update assessment:', error);

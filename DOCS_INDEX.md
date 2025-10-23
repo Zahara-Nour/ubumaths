@@ -8,35 +8,35 @@ Index complet de toute la documentation liée aux composants de questions.
 
 ### 📖 FlashCard Component (v2.0)
 
-| Fichier                                                                     | Description                                 | Cible          |
-| --------------------------------------------------------------------------- | ------------------------------------------- | -------------- |
-| [**FLASHCARD_README.md**](FLASHCARD_README.md)                             | 🏠 Hub central - Commencez ici !            | Tous           |
-| [**FLASHCARD_COMPONENT.md**](FLASHCARD_COMPONENT.md)                       | 📘 Documentation technique complète         | Développeurs   |
-| [**FLASHCARD_MIGRATION_GUIDE.md**](FLASHCARD_MIGRATION_GUIDE.md)           | 🔄 Guide de migration v1 → v2               | Développeurs   |
-| [**FLASHCARD_CHANGELOG.md**](FLASHCARD_CHANGELOG.md)                       | 📝 Historique des versions                  | Tous           |
-| [**FLASHCARD_RELEASE_NOTES.md**](FLASHCARD_RELEASE_NOTES.md)               | 📢 Notes de version 2.0                     | Tous           |
+| Fichier                                                          | Description                         | Cible        |
+| ---------------------------------------------------------------- | ----------------------------------- | ------------ |
+| [**FLASHCARD_README.md**](FLASHCARD_README.md)                   | 🏠 Hub central - Commencez ici !    | Tous         |
+| [**FLASHCARD_COMPONENT.md**](FLASHCARD_COMPONENT.md)             | 📘 Documentation technique complète | Développeurs |
+| [**FLASHCARD_MIGRATION_GUIDE.md**](FLASHCARD_MIGRATION_GUIDE.md) | 🔄 Guide de migration v1 → v2       | Développeurs |
+| [**FLASHCARD_CHANGELOG.md**](FLASHCARD_CHANGELOG.md)             | 📝 Historique des versions          | Tous         |
+| [**FLASHCARD_RELEASE_NOTES.md**](FLASHCARD_RELEASE_NOTES.md)     | 📢 Notes de version 2.0             | Tous         |
 
 ### 📖 QuestionCard Component (v1.0) 🆕
 
-| Fichier                                                                     | Description                                 | Cible          |
-| --------------------------------------------------------------------------- | ------------------------------------------- | -------------- |
-| [**QUESTION_CARD_COMPONENT.md**](QUESTION_CARD_COMPONENT.md)               | 📘 Documentation technique complète         | Développeurs   |
-| [**QUESTION_CARD_CHANGELOG.md**](QUESTION_CARD_CHANGELOG.md)               | 📝 Changelog version 1.0                    | Tous           |
+| Fichier                                                      | Description                         | Cible        |
+| ------------------------------------------------------------ | ----------------------------------- | ------------ |
+| [**QUESTION_CARD_COMPONENT.md**](QUESTION_CARD_COMPONENT.md) | 📘 Documentation technique complète | Développeurs |
+| [**QUESTION_CARD_CHANGELOG.md**](QUESTION_CARD_CHANGELOG.md) | 📝 Changelog version 1.0            | Tous         |
 
 ### 📖 CorrectionCard Component (v1.1) 🆕
 
-| Fichier                                                                     | Description                                 | Cible          |
-| --------------------------------------------------------------------------- | ------------------------------------------- | -------------- |
-| [**CORRECTION_CARD_COMPONENT.md**](CORRECTION_CARD_COMPONENT.md)           | 📘 Documentation technique complète         | Développeurs   |
-| [**CORRECTION_CARD_CHANGELOG.md**](CORRECTION_CARD_CHANGELOG.md)           | 📝 Changelog version 1.0-1.1                | Tous           |
+| Fichier                                                          | Description                         | Cible        |
+| ---------------------------------------------------------------- | ----------------------------------- | ------------ |
+| [**CORRECTION_CARD_COMPONENT.md**](CORRECTION_CARD_COMPONENT.md) | 📘 Documentation technique complète | Développeurs |
+| [**CORRECTION_CARD_CHANGELOG.md**](CORRECTION_CARD_CHANGELOG.md) | 📝 Changelog version 1.0-1.1        | Tous         |
 
 ---
 
 ## 🗃️ Documentation archivée (v1.0)
 
-| Fichier                                                                     | Description                                 | Statut         |
-| --------------------------------------------------------------------------- | ------------------------------------------- | -------------- |
-| [**QUESTION_DISPLAY_COMPONENT_OLD.md**](QUESTION_DISPLAY_COMPONENT_OLD.md) | 📦 Ancienne doc QuestionDisplay (référence) | Obsolète       |
+| Fichier                                                                    | Description                                 | Statut   |
+| -------------------------------------------------------------------------- | ------------------------------------------- | -------- |
+| [**QUESTION_DISPLAY_COMPONENT_OLD.md**](QUESTION_DISPLAY_COMPONENT_OLD.md) | 📦 Ancienne doc QuestionDisplay (référence) | Obsolète |
 
 ---
 
@@ -44,19 +44,19 @@ Index complet de toute la documentation liée aux composants de questions.
 
 ### Tests et Features
 
-| Fichier                                                                     | Description                                 | Composants utilisés          |
-| --------------------------------------------------------------------------- | ------------------------------------------- | ---------------------------- |
-| [**TEST_FEATURE_DOCUMENTATION.md**](TEST_FEATURE_DOCUMENTATION.md)         | Documentation système de tests              | ✅ QuestionCard + CorrectionCard |
-| [**QUESTIONS_CODE_ORGANIZATION.md**](QUESTIONS_CODE_ORGANIZATION.md)       | Organisation du code questions              | ✅ Contexte                  |
-| [**QUESTIONS_UI_COMPLETE.md**](QUESTIONS_UI_COMPLETE.md)                   | UI questions complète                       | ✅ Contexte                  |
-| [**QUESTIONS_UI_TESTING.md**](QUESTIONS_UI_TESTING.md)                     | Tests UI questions                          | ✅ Contexte                  |
+| Fichier                                                              | Description                    | Composants utilisés              |
+| -------------------------------------------------------------------- | ------------------------------ | -------------------------------- |
+| [**TEST_FEATURE_DOCUMENTATION.md**](TEST_FEATURE_DOCUMENTATION.md)   | Documentation système de tests | ✅ QuestionCard + CorrectionCard |
+| [**QUESTIONS_CODE_ORGANIZATION.md**](QUESTIONS_CODE_ORGANIZATION.md) | Organisation du code questions | ✅ Contexte                      |
+| [**QUESTIONS_UI_COMPLETE.md**](QUESTIONS_UI_COMPLETE.md)             | UI questions complète          | ✅ Contexte                      |
+| [**QUESTIONS_UI_TESTING.md**](QUESTIONS_UI_TESTING.md)               | Tests UI questions             | ✅ Contexte                      |
 
 ### Debug et Maintenance
 
-| Fichier                                                                     | Description                                 | Statut         |
-| --------------------------------------------------------------------------- | ------------------------------------------- | -------------- |
-| [**QUESTION_DISPLAY_DEBUG.md**](QUESTION_DISPLAY_DEBUG.md)                 | Documentation page de debug                 | ⚠️ À mettre à jour |
-| [**QUESTION_DISPLAY_DEBUG_FIXES.md**](QUESTION_DISPLAY_DEBUG_FIXES.md)     | Fixes de debug                              | ⚠️ À mettre à jour |
+| Fichier                                                                | Description                 | Statut             |
+| ---------------------------------------------------------------------- | --------------------------- | ------------------ |
+| [**QUESTION_DISPLAY_DEBUG.md**](QUESTION_DISPLAY_DEBUG.md)             | Documentation page de debug | ⚠️ À mettre à jour |
+| [**QUESTION_DISPLAY_DEBUG_FIXES.md**](QUESTION_DISPLAY_DEBUG_FIXES.md) | Fixes de debug              | ⚠️ À mettre à jour |
 
 ---
 
@@ -65,33 +65,43 @@ Index complet de toute la documentation liée aux composants de questions.
 ### Je veux...
 
 #### **Créer un test/examen (sans feedback immédiat)**
+
 → Utilisez **QuestionCard** : [**QUESTION_CARD_COMPONENT.md**](QUESTION_CARD_COMPONENT.md)
 
 #### **Afficher les corrections après un test**
+
 → Utilisez **CorrectionCard** : [**CORRECTION_CARD_COMPONENT.md**](CORRECTION_CARD_COMPONENT.md)
 
 #### **Créer un outil d'étude (avec feedback et correction)**
+
 → Utilisez **FlashCard** : [**FLASHCARD_README.md**](FLASHCARD_README.md)
 
 #### **Comprendre la différence entre les 3 composants**
+
 → Voir tableau comparatif dans [**TEST_FEATURE_DOCUMENTATION.md**](TEST_FEATURE_DOCUMENTATION.md)
 
 #### **Utiliser FlashCard dans mon code**
+
 → Consultez [**FLASHCARD_COMPONENT.md**](FLASHCARD_COMPONENT.md) section "Usage Examples"
 
 #### **Utiliser QuestionCard dans mon code**
+
 → Consultez [**QUESTION_CARD_COMPONENT.md**](QUESTION_CARD_COMPONENT.md) section "Usage Examples"
 
 #### **Migrer depuis QuestionDisplay (v1.0)**
+
 → Suivez [**FLASHCARD_MIGRATION_GUIDE.md**](FLASHCARD_MIGRATION_GUIDE.md)
 
 #### **Comprendre les changements récents**
+
 → Lisez [**FLASHCARD_CHANGELOG.md**](FLASHCARD_CHANGELOG.md) ou [**QUESTION_CARD_CHANGELOG.md**](QUESTION_CARD_CHANGELOG.md)
 
 #### **Débugger un problème**
+
 → Section Troubleshooting dans [**FLASHCARD_COMPONENT.md**](FLASHCARD_COMPONENT.md) ou [**QUESTION_CARD_COMPONENT.md**](QUESTION_CARD_COMPONENT.md)
 
 #### **Comprendre l'intégration avec les tests**
+
 → Consultez [**TEST_FEATURE_DOCUMENTATION.md**](TEST_FEATURE_DOCUMENTATION.md)
 
 ---
@@ -194,12 +204,14 @@ ubumaths/
 ## 🆚 Quel composant choisir ? - Décision rapide
 
 ### Utilisez **QuestionCard** si :
+
 - ✅ Vous construisez un test/examen **en cours**
 - ✅ Le feedback doit être différé (affiché à la fin)
 - ✅ Pas besoin de flip/correction dans le composant
 - ✅ Vous préférez une API simple
 
 ### Utilisez **CorrectionCard** si :
+
 - ✅ Vous affichez des corrections **après** un test
 - ✅ Besoin de flip 3D (réponses → correction détaillée)
 - ✅ Comparaison réponse user vs correcte
@@ -207,6 +219,7 @@ ubumaths/
 - ✅ Lecture seule (pas d'input)
 
 ### Utilisez **FlashCard** si :
+
 - ✅ Vous construisez un outil d'étude/révision **interactif**
 - ✅ Le feedback doit être immédiat
 - ✅ Besoin de flip vers la correction pendant l'apprentissage

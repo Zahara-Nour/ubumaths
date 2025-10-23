@@ -1,6 +1,10 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { getCreatedNotifications, createNotification, deleteNotification } from '$lib/server/notifications';
+import {
+	getCreatedNotifications,
+	createNotification,
+	deleteNotification
+} from '$lib/server/notifications';
 import type { CreateNotificationData } from '$lib/types/notification';
 
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {

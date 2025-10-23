@@ -259,7 +259,8 @@
 		</Card.Header>
 		<Card.Content class="space-y-2">
 			<p>
-				<strong>Lecture seule:</strong> Mode visualisation uniquement. Cliquez sur le bouton flip pour voir la réponse.
+				<strong>Lecture seule:</strong> Mode visualisation uniquement. Cliquez sur le bouton flip pour
+				voir la réponse.
 			</p>
 			<p>
 				<strong>Mode Interactive:</strong> Répondez à la question et cliquez sur "Valider" pour vérifier.

@@ -69,21 +69,14 @@ import FlashCard from '$lib/components/questions/FlashCard.svelte';
 #### Avant (v1.0)
 
 ```svelte
-<QuestionDisplay
-  mode="interactive"
-  {instance}
-  showConfetti={true}
-/>
+<QuestionDisplay mode="interactive" {instance} showConfetti={true} />
 ```
 
 #### Après (v2.0)
 
 ```svelte
 <!-- La prop showConfetti n'existe plus -->
-<FlashCard
-  interactive={true}
-  {instance}
-/>
+<FlashCard interactive={true} {instance} />
 ```
 
 **Note** : Les confetti ont été supprimés pour éviter les distractions, surtout dans les tests.
@@ -94,51 +87,26 @@ import FlashCard from '$lib/components/questions/FlashCard.svelte';
 
 ```svelte
 <!-- Tentatives illimitées -->
-<QuestionDisplay
-  mode="interactive"
-  {instance}
-  allowMultipleAttempts={true}
-/>
+<QuestionDisplay mode="interactive" {instance} allowMultipleAttempts={true} />
 
 <!-- Une seule tentative -->
-<QuestionDisplay
-  mode="interactive"
-  {instance}
-  allowMultipleAttempts={false}
-/>
+<QuestionDisplay mode="interactive" {instance} allowMultipleAttempts={false} />
 
 <!-- Nombre limité de tentatives -->
-<QuestionDisplay
-  mode="interactive"
-  {instance}
-  allowMultipleAttempts={true}
-  maxAttempts={3}
-/>
+<QuestionDisplay mode="interactive" {instance} allowMultipleAttempts={true} maxAttempts={3} />
 ```
 
 #### Après (v2.0)
 
 ```svelte
 <!-- Tentatives illimitées (par défaut) -->
-<FlashCard
-  interactive={true}
-  {instance}
-  maxAttempts={0}
-/>
+<FlashCard interactive={true} {instance} maxAttempts={0} />
 
 <!-- Une seule tentative -->
-<FlashCard
-  interactive={true}
-  {instance}
-  maxAttempts={1}
-/>
+<FlashCard interactive={true} {instance} maxAttempts={1} />
 
 <!-- Nombre limité de tentatives -->
-<FlashCard
-  interactive={true}
-  {instance}
-  maxAttempts={3}
-/>
+<FlashCard interactive={true} {instance} maxAttempts={3} />
 ```
 
 **Note** : `maxAttempts={0}` signifie "illimité" (comportement par défaut).
@@ -151,16 +119,10 @@ import FlashCard from '$lib/components/questions/FlashCard.svelte';
 
 ```svelte
 <!-- AVANT -->
-<QuestionDisplay
-  mode="flashcard"
-  {instance}
-/>
+<QuestionDisplay mode="flashcard" {instance} />
 
 <!-- APRÈS -->
-<FlashCard
-  interactive={false}
-  {instance}
-/>
+<FlashCard interactive={false} {instance} />
 ```
 
 ### Exemple 2 : Mode interactif avec toutes les options
@@ -168,28 +130,28 @@ import FlashCard from '$lib/components/questions/FlashCard.svelte';
 ```svelte
 <!-- AVANT -->
 <QuestionDisplay
-  mode="interactive"
-  {instance}
-  size="lg"
-  showCorrectionOnWrong={true}
-  showConfetti={true}
-  allowMultipleAttempts={true}
-  maxAttempts={3}
-  onAnswerSubmit={handleSubmit}
-  onComplete={handleComplete}
-  onFlip={handleFlip}
+	mode="interactive"
+	{instance}
+	size="lg"
+	showCorrectionOnWrong={true}
+	showConfetti={true}
+	allowMultipleAttempts={true}
+	maxAttempts={3}
+	onAnswerSubmit={handleSubmit}
+	onComplete={handleComplete}
+	onFlip={handleFlip}
 />
 
 <!-- APRÈS -->
 <FlashCard
-  interactive={true}
-  {instance}
-  size="lg"
-  showCorrectionOnWrong={true}
-  maxAttempts={3}
-  onAnswerSubmit={handleSubmit}
-  onComplete={handleComplete}
-  onFlip={handleFlip}
+	interactive={true}
+	{instance}
+	size="lg"
+	showCorrectionOnWrong={true}
+	maxAttempts={3}
+	onAnswerSubmit={handleSubmit}
+	onComplete={handleComplete}
+	onFlip={handleFlip}
 />
 ```
 
@@ -198,21 +160,21 @@ import FlashCard from '$lib/components/questions/FlashCard.svelte';
 ```svelte
 <!-- AVANT -->
 <QuestionDisplay
-  mode="interactive"
-  {instance}
-  showConfetti={false}
-  showValidationFeedback={false}
-  allowMultipleAttempts={false}
-  onAnswerSubmit={handleAnswerSubmit}
+	mode="interactive"
+	{instance}
+	showConfetti={false}
+	showValidationFeedback={false}
+	allowMultipleAttempts={false}
+	onAnswerSubmit={handleAnswerSubmit}
 />
 
 <!-- APRÈS -->
 <FlashCard
-  interactive={true}
-  {instance}
-  showValidationFeedback={false}
-  maxAttempts={1}
-  onAnswerSubmit={handleAnswerSubmit}
+	interactive={true}
+	{instance}
+	showValidationFeedback={false}
+	maxAttempts={1}
+	onAnswerSubmit={handleAnswerSubmit}
 />
 ```
 

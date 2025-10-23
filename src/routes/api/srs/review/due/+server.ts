@@ -87,7 +87,10 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 						.single();
 
 					if (templateError || !template) {
-						console.error(`[SRS] Template ${dueCard.template_id} not found for card ${dueCard.card_id}:`, templateError);
+						console.error(
+							`[SRS] Template ${dueCard.template_id} not found for card ${dueCard.card_id}:`,
+							templateError
+						);
 						continue;
 					}
 

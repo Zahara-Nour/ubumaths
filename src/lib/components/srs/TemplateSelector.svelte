@@ -163,7 +163,7 @@
 	<!-- Search Bar -->
 	<div class="mb-4">
 		<div class="relative">
-			<Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+			<Search class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 			<Input
 				bind:value={searchQuery}
 				placeholder="Rechercher par titre, sujet, niveau..."
@@ -189,7 +189,9 @@
 		{#if isLoading}
 			<!-- Loading State -->
 			<div class="flex flex-col items-center justify-center py-12">
-				<div class="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+				<div
+					class="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"
+				></div>
 				<p class="text-muted-foreground">Chargement des templates...</p>
 			</div>
 		{:else if filteredTemplates.length === 0}
@@ -231,7 +233,7 @@
 							{/if}
 						</div>
 						{#if template.description}
-							<p class="mt-1 text-sm text-muted-foreground line-clamp-2">
+							<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
 								{template.description}
 							</p>
 						{/if}

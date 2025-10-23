@@ -30,19 +30,19 @@
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<!-- Header -->
-	<div class="flex items-center gap-4 mb-8">
+	<div class="mb-8 flex items-center gap-4">
 		<Button variant="ghost" size="icon" onclick={handleBack}>
 			<ArrowLeft class="h-5 w-5" />
 		</Button>
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">{data.assessment.title}</h1>
-			<p class="text-muted-foreground mt-2">Résultats de l'évaluation</p>
+			<p class="mt-2 text-muted-foreground">Résultats de l'évaluation</p>
 		</div>
 	</div>
 
 	<!-- Statistics Cards -->
 	{#if data.statistics}
-		<div class="grid gap-6 md:grid-cols-4 mb-8">
+		<div class="mb-8 grid gap-6 md:grid-cols-4">
 			<Card.Root>
 				<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
 					<Card.Title class="text-sm font-medium">Total Assigné</Card.Title>
@@ -113,10 +113,10 @@
 		</Card.Header>
 		<Card.Content>
 			{#if sortedResults.length === 0}
-				<div class="text-center py-12 text-muted-foreground">
-					<AlertCircle class="mx-auto h-12 w-12 mb-3 opacity-50" />
+				<div class="py-12 text-center text-muted-foreground">
+					<AlertCircle class="mx-auto mb-3 h-12 w-12 opacity-50" />
 					<p>Aucun résultat disponible</p>
-					<p class="text-sm mt-2">Les résultats apparaîtront une fois l'évaluation assignée</p>
+					<p class="mt-2 text-sm">Les résultats apparaîtront une fois l'évaluation assignée</p>
 				</div>
 			{:else}
 				<Table.Root>

@@ -43,9 +43,7 @@
 
 	// Derived stats
 	const totalAssignments = $derived(data.assignments.length);
-	const successfulCopies = $derived(
-		data.assignments.filter((a) => a.studentDeck !== null).length
-	);
+	const successfulCopies = $derived(data.assignments.filter((a) => a.studentDeck !== null).length);
 	const failedCopies = $derived(data.assignments.filter((a) => a.studentDeck === null).length);
 
 	/**
@@ -117,9 +115,7 @@
 		</Button>
 
 		<h1 class="mb-2 text-3xl font-bold">Attributions du deck</h1>
-		<p class="text-muted-foreground">
-			Vérifier quels élèves ont reçu ce deck et leur progression
-		</p>
+		<p class="text-muted-foreground">Vérifier quels élèves ont reçu ce deck et leur progression</p>
 	</div>
 
 	<!-- Deck Info -->
@@ -185,9 +181,8 @@
 		<Card.Header>
 			<Card.Title>Liste des élèves</Card.Title>
 			<Card.Description>
-				{totalAssignments} élève{totalAssignments > 1 ? 's' : ''} {totalAssignments > 1
-					? 'ont'
-					: 'a'} reçu ce deck
+				{totalAssignments} élève{totalAssignments > 1 ? 's' : ''}
+				{totalAssignments > 1 ? 'ont' : 'a'} reçu ce deck
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
@@ -201,13 +196,18 @@
 						<div
 							class={cn(
 								'flex items-center gap-4 rounded-lg border p-4 transition-colors',
-								assignment.studentDeck ? 'border-green-200 bg-green-50/50' : 'border-red-200 bg-red-50/50'
+								assignment.studentDeck
+									? 'border-green-200 bg-green-50/50'
+									: 'border-red-200 bg-red-50/50'
 							)}
 						>
 							<!-- Avatar -->
 							<Avatar.Root class="h-12 w-12">
 								{#if assignment.student?.avatarUrl}
-									<Avatar.Image src={assignment.student.avatarUrl} alt={assignment.student.firstName} />
+									<Avatar.Image
+										src={assignment.student.avatarUrl}
+										alt={assignment.student.firstName}
+									/>
 								{/if}
 								<Avatar.Fallback>
 									{getInitials(assignment.student?.firstName, assignment.student?.lastName)}
@@ -260,7 +260,11 @@
 
 							<!-- Actions -->
 							{#if !assignment.studentDeck}
-								<Button onclick={() => resendDeck(assignment.assignedTo)} variant="outline" size="sm">
+								<Button
+									onclick={() => resendDeck(assignment.assignedTo)}
+									variant="outline"
+									size="sm"
+								>
 									<RefreshCw class="mr-2 h-4 w-4" />
 									Renvoyer
 								</Button>

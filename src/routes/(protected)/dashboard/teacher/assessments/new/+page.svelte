@@ -115,9 +115,7 @@
 			// Clear cart
 			questionCart.clearCart();
 
-			toaster.success(
-				status === 'published' ? 'Évaluation publiée !' : 'Brouillon sauvegardé'
-			);
+			toaster.success(status === 'published' ? 'Évaluation publiée !' : 'Brouillon sauvegardé');
 
 			goto('/dashboard/teacher/assessments');
 		} catch (error) {
@@ -135,24 +133,23 @@
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
 	<!-- Header -->
-	<div class="flex items-center gap-4 mb-8">
+	<div class="mb-8 flex items-center gap-4">
 		<Button variant="ghost" size="icon" onclick={handleBackToList}>
 			<ArrowLeft class="h-5 w-5" />
 		</Button>
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Nouvelle Évaluation</h1>
-			<p class="text-muted-foreground mt-2">Créez une évaluation pour vos classes</p>
+			<p class="mt-2 text-muted-foreground">Créez une évaluation pour vos classes</p>
 		</div>
 	</div>
 
 	<!-- Progress Indicator -->
 	<div class="mb-8">
-		<div class="flex items-center justify-between max-w-md mx-auto">
+		<div class="mx-auto flex max-w-md items-center justify-between">
 			{#each [1, 2, 3] as stepNum}
 				<div class="flex flex-col items-center gap-2">
 					<div
-						class="flex h-10 w-10 items-center justify-center rounded-full border-2 {stepNum <=
-						step
+						class="flex h-10 w-10 items-center justify-center rounded-full border-2 {stepNum <= step
 							? 'border-primary bg-primary text-primary-foreground'
 							: 'border-muted bg-background text-muted-foreground'}"
 					>
@@ -167,7 +164,7 @@
 					</span>
 				</div>
 				{#if stepNum < 3}
-					<div class="flex-1 h-0.5 {stepNum < step ? 'bg-primary' : 'bg-muted'}"></div>
+					<div class="h-0.5 flex-1 {stepNum < step ? 'bg-primary' : 'bg-muted'}"></div>
 				{/if}
 			{/each}
 		</div>
@@ -218,9 +215,7 @@
 					<Button variant="outline" onclick={() => goto('/automaths')}>
 						Ajouter des questions
 					</Button>
-					<Button onclick={handleNextStep}>
-						Suivant
-					</Button>
+					<Button onclick={handleNextStep}>Suivant</Button>
 				</div>
 			{/if}
 		</div>
@@ -231,9 +226,7 @@
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Configuration de l'évaluation</Card.Title>
-				<Card.Description>
-					Définissez les paramètres de votre évaluation
-				</Card.Description>
+				<Card.Description>Définissez les paramètres de votre évaluation</Card.Description>
 			</Card.Header>
 			<Card.Content>
 				<AssessmentConfigForm
@@ -258,7 +251,7 @@
 					<!-- Summary -->
 					<div class="grid gap-4 md:grid-cols-2">
 						<div>
-							<h3 class="font-semibold mb-2">Informations</h3>
+							<h3 class="mb-2 font-semibold">Informations</h3>
 							<dl class="space-y-2 text-sm">
 								<div>
 									<dt class="text-muted-foreground">Titre</dt>
@@ -278,7 +271,7 @@
 						</div>
 
 						<div>
-							<h3 class="font-semibold mb-2">Paramètres</h3>
+							<h3 class="mb-2 font-semibold">Paramètres</h3>
 							<dl class="space-y-2 text-sm">
 								<div>
 									<dt class="text-muted-foreground">Tentatives max</dt>
@@ -314,7 +307,7 @@
 
 					<!-- Questions Summary -->
 					<div>
-						<h3 class="font-semibold mb-2">Questions</h3>
+						<h3 class="mb-2 font-semibold">Questions</h3>
 						<p class="text-sm text-muted-foreground">
 							{cartItems.length} catégorie{cartItems.length > 1 ? 's' : ''} ({questionCart.totalInstances}
 							questions au total)
@@ -329,11 +322,7 @@
 					Retour
 				</Button>
 				<div class="flex gap-3">
-					<Button
-						variant="outline"
-						onclick={() => handlePublish('draft')}
-						disabled={isSubmitting}
-					>
+					<Button variant="outline" onclick={() => handlePublish('draft')} disabled={isSubmitting}>
 						Sauver comme brouillon
 					</Button>
 					<Button onclick={() => handlePublish('published')} disabled={isSubmitting}>

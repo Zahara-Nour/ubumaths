@@ -34,9 +34,7 @@
 
 	// Get students for selected classes
 	const availableStudents = $derived(
-		targetType === 'users'
-			? data.students.filter((s) => selectedClassIds.includes(s.class_id))
-			: []
+		targetType === 'users' ? data.students.filter((s) => selectedClassIds.includes(s.class_id)) : []
 	);
 
 	// Reset form
@@ -142,7 +140,7 @@
 									</Select.Trigger>
 									<Select.Content>
 										{#each Object.entries(NOTIFICATION_TYPE_LABELS) as [value, label]}
-											<Select.Item value={value}>{label}</Select.Item>
+											<Select.Item {value}>{label}</Select.Item>
 										{/each}
 									</Select.Content>
 								</Select.Root>
@@ -160,7 +158,7 @@
 									</Select.Trigger>
 									<Select.Content>
 										{#each Object.entries(NOTIFICATION_PRIORITY_LABELS) as [value, label]}
-											<Select.Item value={value}>{label}</Select.Item>
+											<Select.Item {value}>{label}</Select.Item>
 										{/each}
 									</Select.Content>
 								</Select.Root>
@@ -186,12 +184,7 @@
 							<Label>Destinataires</Label>
 							<div class="flex gap-4">
 								<label class="flex items-center gap-2">
-									<input
-										type="radio"
-										bind:group={targetType}
-										value="classes"
-										class="h-4 w-4"
-									/>
+									<input type="radio" bind:group={targetType} value="classes" class="h-4 w-4" />
 									<span>Classes entières</span>
 								</label>
 								<label class="flex items-center gap-2">
@@ -218,7 +211,12 @@
 										/>
 										<span>{cls.name}</span>
 										{#if targetType === 'classes'}
-											<input type="hidden" name="classIds" value={cls.id} disabled={!selectedClassIds.includes(cls.id)} />
+											<input
+												type="hidden"
+												name="classIds"
+												value={cls.id}
+												disabled={!selectedClassIds.includes(cls.id)}
+											/>
 										{/if}
 									</label>
 								{/each}
@@ -241,7 +239,12 @@
 														class="h-4 w-4"
 													/>
 													<span>{student.firstname} {student.lastname}</span>
-													<input type="hidden" name="userIds" value={student.id} disabled={!selectedUserIds.includes(student.id)} />
+													<input
+														type="hidden"
+														name="userIds"
+														value={student.id}
+														disabled={!selectedUserIds.includes(student.id)}
+													/>
 												</label>
 											{/each}
 										</div>

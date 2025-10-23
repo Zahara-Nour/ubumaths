@@ -9,6 +9,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const MAX_FILE_SIZE = 1048576; // 1MB in bytes
+export const MAX_MESSAGE_FILE_SIZE = 5 * 1024 * 1024; // 5MB for messages
 
 export interface FileUploadResult {
 	success: boolean;
@@ -200,4 +201,89 @@ export function getFileIcon(fileType: string): string {
 		return '📊';
 	if (fileType.startsWith('text/')) return '📃';
 	return '📎';
+}
+
+/**
+ * Upload a file attachment for a private message
+ *
+ * @param supabase - Supabase client
+ * @param file - File to upload
+ * @param messageId - Message ID
+ * @returns Upload result with attachment metadata
+ */
+export async function uploadMessageAttachment(
+	supabase: SupabaseClient,
+	file: File,
+	messageId: string
+): Promise<FileUploadResult> {
+	// Validate file size
+	if (file.size > MAX_MESSAGE_FILE_SIZE) {
+		return {
+			success: false,
+			error: `Le fichier dépasse la limite de 5MB (${Math.round(file.size / (1024 * 1024))}MB)`
+		};
+	}
+
+	// Create storage path: messages/message_id/filename
+	const timestamp = Date.now();
+	const sanitizedFilename = sanitizeFilename(file.name);
+	const storagePath = `messages/${messageId}/${timestamp}_${sanitizedFilename}`;
+
+	try {
+		// Upload to Supabase Storage
+		const { error } = await supabase.storage.from('message-attachments').upload(storagePath, file, {
+			cacheControl: '3600',
+			upsert: false
+		});
+
+		if (error) {
+			console.error('Storage upload error:', error);
+			return {
+				success: false,
+				error: `Erreur d'upload: ${error.message}`
+			};
+		}
+
+		// Get public URL
+		const {
+			data: { publicUrl }
+		} = supabase.storage.from('message-attachments').getPublicUrl(storagePath);
+
+		return {
+			success: true,
+			attachment: {
+				file_name: file.name,
+				file_type: file.type,
+				file_size: file.size,
+				storage_path: storagePath,
+				public_url: publicUrl
+			}
+		};
+	} catch (error) {
+		console.error('Exception during file upload:', error);
+		return {
+			success: false,
+			error: "Erreur inattendue lors de l'upload"
+		};
+	}
+}
+
+/**
+ * Upload multiple message attachments
+ *
+ * @param supabase - Supabase client
+ * @param files - Files to upload
+ * @param messageId - Message ID
+ * @returns Array of upload results
+ */
+export async function uploadMultipleMessageAttachments(
+	supabase: SupabaseClient,
+	files: File[],
+	messageId: string
+): Promise<FileUploadResult[]> {
+	const results = await Promise.all(
+		files.map((file) => uploadMessageAttachment(supabase, file, messageId))
+	);
+
+	return results;
 }

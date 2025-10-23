@@ -146,10 +146,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 			}
 
 			if (template.status !== 'published') {
-				return json(
-					{ error: 'Template must be published for SRS use' },
-					{ status: 400 }
-				);
+				return json({ error: 'Template must be published for SRS use' }, { status: 400 });
 			}
 
 			// Create template card

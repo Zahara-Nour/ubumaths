@@ -194,18 +194,18 @@ http://localhost:5173/dashboard/admin/debug/question-display
 
 ## 📋 Props disponibles
 
-| Prop                     | Type                             | Default | Description                                     |
-| ------------------------ | -------------------------------- | ------- | ----------------------------------------------- |
-| `interactive`            | `boolean`                        | `false` | Active le mode interactif avec validation       |
-| `instance`               | `QuestionInstance`               | -       | **Requis** - Instance de question générée      |
-| `size`                   | `'sm' \| 'md' \| 'lg'`           | `'md'`  | Taille de la carte                              |
-| `maxAttempts`            | `number`                         | `0`     | Nombre max de tentatives (0 = illimité)         |
-| `showCorrectionOnWrong`  | `boolean`                        | `false` | Auto-flip vers la correction si faux            |
-| `showValidationFeedback` | `boolean`                        | `true`  | Affiche les messages de validation              |
-| `onAnswerSubmit`         | `(answer: AnswerData) => void`   | -       | Callback à chaque soumission                    |
-| `onAnswerChange`         | `(value: string[]) => void`      | -       | Callback en temps réel (avant soumission)       |
-| `onComplete`             | `(stats: QuestionStats) => void` | -       | Callback quand la question est terminée         |
-| `onFlip`                 | `(isFlipped: boolean) => void`   | -       | Callback quand la carte est retournée           |
+| Prop                     | Type                             | Default | Description                               |
+| ------------------------ | -------------------------------- | ------- | ----------------------------------------- |
+| `interactive`            | `boolean`                        | `false` | Active le mode interactif avec validation |
+| `instance`               | `QuestionInstance`               | -       | **Requis** - Instance de question générée |
+| `size`                   | `'sm' \| 'md' \| 'lg'`           | `'md'`  | Taille de la carte                        |
+| `maxAttempts`            | `number`                         | `0`     | Nombre max de tentatives (0 = illimité)   |
+| `showCorrectionOnWrong`  | `boolean`                        | `false` | Auto-flip vers la correction si faux      |
+| `showValidationFeedback` | `boolean`                        | `true`  | Affiche les messages de validation        |
+| `onAnswerSubmit`         | `(answer: AnswerData) => void`   | -       | Callback à chaque soumission              |
+| `onAnswerChange`         | `(value: string[]) => void`      | -       | Callback en temps réel (avant soumission) |
+| `onComplete`             | `(stats: QuestionStats) => void` | -       | Callback quand la question est terminée   |
+| `onFlip`                 | `(isFlipped: boolean) => void`   | -       | Callback quand la carte est retournée     |
 
 ---
 

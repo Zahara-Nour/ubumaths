@@ -10,14 +10,14 @@
 
 ## Key Differences from FlashCard
 
-| Feature | FlashCard | QuestionCard |
-|---------|-----------|--------------|
-| **Flip mechanism** | ✅ Yes (front/back with 3D animation) | ❌ No (single-sided card) |
-| **Visual feedback** | ✅ Green/red borders, ✓/✗ icons | ❌ None (silent validation) |
-| **Correction display** | ✅ Shows on backside after flip | ❌ No built-in correction |
-| **Props** | `maxAttempts`, `showCorrectionOnWrong`, `showValidationFeedback`, `onFlip`, `onComplete` | Only essential: `interactive`, `instance`, `onAnswerSubmit`, `onAnswerChange`, `size` |
-| **Use case** | Study/review with immediate feedback | Tests/exams where feedback is delayed |
-| **Complexity** | ~750 lines (flip logic, ResizeObserver, feedback) | ~340 lines (simplified) |
+| Feature                | FlashCard                                                                                | QuestionCard                                                                          |
+| ---------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Flip mechanism**     | ✅ Yes (front/back with 3D animation)                                                    | ❌ No (single-sided card)                                                             |
+| **Visual feedback**    | ✅ Green/red borders, ✓/✗ icons                                                          | ❌ None (silent validation)                                                           |
+| **Correction display** | ✅ Shows on backside after flip                                                          | ❌ No built-in correction                                                             |
+| **Props**              | `maxAttempts`, `showCorrectionOnWrong`, `showValidationFeedback`, `onFlip`, `onComplete` | Only essential: `interactive`, `instance`, `onAnswerSubmit`, `onAnswerChange`, `size` |
+| **Use case**           | Study/review with immediate feedback                                                     | Tests/exams where feedback is delayed                                                 |
+| **Complexity**         | ~750 lines (flip logic, ResizeObserver, feedback)                                        | ~340 lines (simplified)                                                               |
 
 ---
 
@@ -26,12 +26,14 @@
 ### ✅ Two Operation Modes
 
 **Read-only Mode (`interactive={false}`):**
+
 - Display question statement only
 - No answer input
 - No submit button
 - Perfect for review/correction display
 
 **Interactive Mode (`interactive={true}`):**
+
 - Question statement + answer input
 - Submit button (disappears after submission)
 - Silent validation (no visual feedback)
@@ -43,15 +45,15 @@
 
 Reuses all input components from FlashCard:
 
-| Question Type | Input Component | Features |
-|---------------|-----------------|----------|
-| `numerical_exact` | NumericalInput | MathField for numbers |
-| `numerical_decimal` | NumericalInput | Precision validation |
-| `numerical_rounded` | NumericalInput | Rounding validation |
-| `algebraic_transform` | AlgebraicInput | MathField with equivalence checking |
-| `fill_in_blanks` | FillBlanksInput | Inline MathFields at blank positions |
-| `multiple_choice` | MultipleChoiceInput | Buttons/images, single/multiple selection |
-| `ordering` | Placeholder | Not yet implemented |
+| Question Type         | Input Component     | Features                                  |
+| --------------------- | ------------------- | ----------------------------------------- |
+| `numerical_exact`     | NumericalInput      | MathField for numbers                     |
+| `numerical_decimal`   | NumericalInput      | Precision validation                      |
+| `numerical_rounded`   | NumericalInput      | Rounding validation                       |
+| `algebraic_transform` | AlgebraicInput      | MathField with equivalence checking       |
+| `fill_in_blanks`      | FillBlanksInput     | Inline MathFields at blank positions      |
+| `multiple_choice`     | MultipleChoiceInput | Buttons/images, single/multiple selection |
+| `ordering`            | Placeholder         | Not yet implemented                       |
 
 ### ✅ Silent Validation
 
@@ -64,6 +66,7 @@ Reuses all input components from FlashCard:
 ### ✅ Statistics Tracking
 
 Automatically tracks:
+
 - **Time spent** (seconds from mount to submission)
 - **Attempts count** (always 1 in current implementation)
 - **Submission timestamp** (ISO 8601 format)
@@ -72,11 +75,11 @@ Emitted via `AnswerData` object:
 
 ```typescript
 interface AnswerData {
-  value: string | string[] | number | number[];
-  isCorrect: boolean;
-  timeSpent: number;
-  attempts: number;
-  submittedAt: string;
+	value: string | string[] | number | number[];
+	isCorrect: boolean;
+	timeSpent: number;
+	attempts: number;
+	submittedAt: string;
 }
 ```
 
@@ -86,38 +89,43 @@ interface AnswerData {
 
 ```typescript
 interface QuestionCardProps {
-  // Required
-  instance: QuestionInstance;
+	// Required
+	instance: QuestionInstance;
 
-  // Optional
-  interactive?: boolean;  // Default: false (read-only)
-  onAnswerSubmit?: (answer: AnswerData) => void;
-  onAnswerChange?: (value: string | string[]) => void;
-  size?: 'sm' | 'md' | 'lg';  // Default: 'md'
+	// Optional
+	interactive?: boolean; // Default: false (read-only)
+	onAnswerSubmit?: (answer: AnswerData) => void;
+	onAnswerChange?: (value: string | string[]) => void;
+	size?: 'sm' | 'md' | 'lg'; // Default: 'md'
 }
 ```
 
 ### Prop Details
 
 **`instance`** (required)
+
 - Pre-generated question instance from `generateInstance()`
 - Contains statement, answer, correction, and type-specific data
 
 **`interactive`** (optional, default: `false`)
+
 - `false`: Display question only (no input)
 - `true`: Display question + input + submit button
 
 **`onAnswerSubmit`** (optional)
+
 - Called when user submits answer (interactive mode only)
 - Receives `AnswerData` with validation result
 - Parent component should handle this to track answers
 
 **`onAnswerChange`** (optional)
+
 - Called in real-time as user types/selects answer
 - Receives current answer value
 - Useful for auto-save or live validation
 
 **`size`** (optional, default: `'md'`)
+
 - `'sm'`: max-width 448px (28rem)
 - `'md'`: max-width 672px (42rem)
 - `'lg'`: max-width 896px (56rem)
@@ -130,11 +138,13 @@ interface QuestionCardProps {
 
 ```svelte
 <script>
-  import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
-  import { generateInstance } from '$lib/questions/generator/instance-generator';
+	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
+	import { generateInstance } from '$lib/questions/generator/instance-generator';
 
-  const template = { /* QuestionTemplate */ };
-  const instance = generateInstance(template, 12345).instance;
+	const template = {
+		/* QuestionTemplate */
+	};
+	const instance = generateInstance(template, 12345).instance;
 </script>
 
 <QuestionCard interactive={false} {instance} />
@@ -144,26 +154,26 @@ interface QuestionCardProps {
 
 ```svelte
 <script>
-  import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
-  import type { AnswerData } from '$lib/types/question-display';
+	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
+	import type { AnswerData } from '$lib/types/question-display';
 
-  let userAnswers = new Map<number, AnswerData>();
-  let currentIndex = 0;
+	let userAnswers = new Map<number, AnswerData>();
+	let currentIndex = 0;
 
-  function handleAnswerSubmit(answer: AnswerData) {
-    // Store answer silently (no feedback to user)
-    userAnswers.set(currentIndex, answer);
+	function handleAnswerSubmit(answer: AnswerData) {
+		// Store answer silently (no feedback to user)
+		userAnswers.set(currentIndex, answer);
 
-    // Advance to next question
-    currentIndex++;
-  }
+		// Advance to next question
+		currentIndex++;
+	}
 </script>
 
 <QuestionCard
-  interactive={true}
-  instance={questions[currentIndex]}
-  onAnswerSubmit={handleAnswerSubmit}
-  size="lg"
+	interactive={true}
+	instance={questions[currentIndex]}
+	onAnswerSubmit={handleAnswerSubmit}
+	size="lg"
 />
 ```
 
@@ -171,33 +181,33 @@ interface QuestionCardProps {
 
 ```svelte
 <script>
-  import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
+	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
 
-  let currentAnswer = '';
+	let currentAnswer = '';
 
-  function handleAnswerChange(value: string | string[]) {
-    currentAnswer = String(value);
-    console.log('User is typing:', currentAnswer);
+	function handleAnswerChange(value: string | string[]) {
+		currentAnswer = String(value);
+		console.log('User is typing:', currentAnswer);
 
-    // Could trigger auto-save here
-    saveToLocalStorage(currentAnswer);
-  }
+		// Could trigger auto-save here
+		saveToLocalStorage(currentAnswer);
+	}
 
-  function handleAnswerSubmit(answer: AnswerData) {
-    console.log('Final answer submitted:', answer);
-    if (answer.isCorrect) {
-      console.log('✓ Correct!');
-    } else {
-      console.log('✗ Incorrect');
-    }
-  }
+	function handleAnswerSubmit(answer: AnswerData) {
+		console.log('Final answer submitted:', answer);
+		if (answer.isCorrect) {
+			console.log('✓ Correct!');
+		} else {
+			console.log('✗ Incorrect');
+		}
+	}
 </script>
 
 <QuestionCard
-  interactive={true}
-  {instance}
-  onAnswerChange={handleAnswerChange}
-  onAnswerSubmit={handleAnswerSubmit}
+	interactive={true}
+	{instance}
+	onAnswerChange={handleAnswerChange}
+	onAnswerSubmit={handleAnswerSubmit}
 />
 ```
 
@@ -211,10 +221,10 @@ QuestionCard is used in all three test modes:
 
 ```svelte
 <QuestionCard
-  interactive={true}
-  instance={currentInstance}
-  onAnswerSubmit={handleAnswerSubmit}
-  size="lg"
+	interactive={true}
+	instance={currentInstance}
+	onAnswerSubmit={handleAnswerSubmit}
+	size="lg"
 />
 ```
 
@@ -227,10 +237,10 @@ QuestionCard is used in all three test modes:
 
 ```svelte
 <QuestionCard
-  interactive={true}
-  {instance}
-  onAnswerSubmit={(answerData) => handleAnswerSubmit(index, answerData)}
-  size="sm"
+	interactive={true}
+	{instance}
+	onAnswerSubmit={(answerData) => handleAnswerSubmit(index, answerData)}
+	size="sm"
 />
 ```
 
@@ -247,13 +257,13 @@ QuestionCard is used in all three test modes:
 
 <!-- Review all mode: list all questions -->
 {#each session.instances as instance, index}
-  <QuestionCard interactive={false} {instance} size="md" />
+	<QuestionCard interactive={false} {instance} size="md" />
 {/each}
 
 <!-- Corrections mode: questions + answers + explanations -->
 {#each session.instances as instance, index}
-  <QuestionCard interactive={false} {instance} size="md" />
-  <!-- Separate cards for answer and correction -->
+	<QuestionCard interactive={false} {instance} size="md" />
+	<!-- Separate cards for answer and correction -->
 {/each}
 ```
 
@@ -305,14 +315,17 @@ let fillBlankValues = $state<string[]>([]);
 ### Helper Functions
 
 **`hasValidInput(): boolean`**
+
 - Checks if user has entered a valid answer (not empty)
 - Returns `true` if answer can be submitted
 
 **`getTimeSpent(): number`**
+
 - Calculates seconds elapsed since component mount
 - Used for statistics tracking
 
 **`prepareAnswerValue()`**
+
 - Formats answer based on question type
 - Returns proper type for validation
 
@@ -324,12 +337,12 @@ let fillBlankValues = $state<string[]>([]);
 
 ```css
 .question-card-wrapper {
-  font-size: calc(1rem * var(--font-scale, 1));
+	font-size: calc(1rem * var(--font-scale, 1));
 }
 
 .statement-section,
 .answer-section {
-  animation: fadeIn 0.3s ease-in-out;
+	animation: fadeIn 0.3s ease-in-out;
 }
 ```
 
@@ -346,6 +359,7 @@ let fillBlankValues = $state<string[]>([]);
 ### What was removed from FlashCard
 
 **Flip Mechanism:**
+
 ```diff
 - let isFlipped = $state(false);
 - let frontHeight = $state(0);
@@ -361,6 +375,7 @@ let fillBlankValues = $state<string[]>([]);
 ```
 
 **Visual Feedback:**
+
 ```diff
 - {#if isSubmitted && showValidationFeedback}
 -   <div class={cn(
@@ -380,6 +395,7 @@ let fillBlankValues = $state<string[]>([]);
 ```
 
 **Backside/Correction:**
+
 ```diff
 - <div class="flip-face flip-back">
 -   <Card.Root>
@@ -391,6 +407,7 @@ let fillBlankValues = $state<string[]>([]);
 ```
 
 **Props:**
+
 ```diff
 - maxAttempts?: number;
 - showCorrectionOnWrong?: boolean;
@@ -415,12 +432,14 @@ let fillBlankValues = $state<string[]>([]);
 ## Performance
 
 **Optimizations:**
+
 - No ResizeObserver (simpler rendering)
 - No 3D transforms (lighter DOM)
 - No backside rendering (half the markup)
 - Minimal re-renders with Svelte 5 runes
 
 **Bundle Size:**
+
 - QuestionCard: ~340 lines (~45% smaller than FlashCard)
 - Shares input components (no duplication)
 

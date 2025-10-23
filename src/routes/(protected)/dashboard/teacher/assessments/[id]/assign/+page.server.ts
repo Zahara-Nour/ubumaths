@@ -56,10 +56,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.order('name');
 
 	// Get existing assignments
-	const { data: existingAssignments } = await getAssessmentAssignments(
-		locals.supabase,
-		params.id
-	);
+	const { data: existingAssignments } = await getAssessmentAssignments(locals.supabase, params.id);
 
 	// Format classes with student count and assignment status
 	const formattedClasses = (classes || []).map((c: any) => ({
@@ -67,8 +64,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		name: c.name,
 		level: c.level,
 		student_count: c.class_members?.length || 0,
-		is_assigned:
-			existingAssignments?.some((a: any) => a.class_id === c.id) || false
+		is_assigned: existingAssignments?.some((a: any) => a.class_id === c.id) || false
 	}));
 
 	return {
@@ -105,7 +101,7 @@ export const actions: Actions = {
 
 		if (error) {
 			console.error('Failed to assign assessment:', error);
-			return { success: false, error: 'Échec de l\'assignation' };
+			return { success: false, error: "Échec de l'assignation" };
 		}
 
 		return { success: true };
@@ -121,7 +117,7 @@ export const actions: Actions = {
 		const assignmentId = formData.get('assignment_id') as string;
 
 		if (!assignmentId) {
-			return { success: false, error: 'ID d\'assignation manquant' };
+			return { success: false, error: "ID d'assignation manquant" };
 		}
 
 		// Remove the assignment

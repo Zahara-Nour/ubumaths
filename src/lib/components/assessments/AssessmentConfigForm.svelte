@@ -114,7 +114,13 @@
 	});
 </script>
 
-<form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-6">
+<form
+	onsubmit={(e) => {
+		e.preventDefault();
+		handleSubmit();
+	}}
+	class="space-y-6"
+>
 	<!-- Title -->
 	<div class="space-y-2">
 		<Label for="title">Titre *</Label>
@@ -167,18 +173,13 @@
 	</div>
 
 	<!-- Settings Section -->
-	<div class="rounded-lg border p-4 space-y-4">
+	<div class="space-y-4 rounded-lg border p-4">
 		<h3 class="font-semibold">Paramètres</h3>
 
 		<!-- Deadline -->
 		<div class="space-y-2">
 			<Label for="deadline">Date limite (optionnel)</Label>
-			<Input
-				id="deadline"
-				type="datetime-local"
-				bind:value={deadline}
-				min={minDeadline}
-			/>
+			<Input id="deadline" type="datetime-local" bind:value={deadline} min={minDeadline} />
 			<p class="text-xs text-muted-foreground">
 				Si définie, les élèves ne pourront plus commencer après cette date
 			</p>
@@ -198,9 +199,7 @@
 			{#if errors.maxAttempts}
 				<p class="text-sm text-red-500">{errors.maxAttempts}</p>
 			{/if}
-			<p class="text-xs text-muted-foreground">
-				Laisser vide pour des tentatives illimitées
-			</p>
+			<p class="text-xs text-muted-foreground">Laisser vide pour des tentatives illimitées</p>
 		</div>
 
 		<!-- Time Limit -->
@@ -225,18 +224,14 @@
 		<!-- Shuffle Questions -->
 		<div class="flex items-center space-x-2">
 			<Checkbox id="shuffle" bind:checked={shuffleQuestions} />
-			<Label for="shuffle" class="font-normal cursor-pointer">
-				Mélanger l'ordre des questions
-			</Label>
+			<Label for="shuffle" class="cursor-pointer font-normal">Mélanger l'ordre des questions</Label>
 		</div>
 	</div>
 
 	<!-- Actions -->
-	<div class="flex gap-3 justify-end">
+	<div class="flex justify-end gap-3">
 		{#if onCancel}
-			<Button type="button" variant="outline" onclick={onCancel}>
-				Annuler
-			</Button>
+			<Button type="button" variant="outline" onclick={onCancel}>Annuler</Button>
 		{/if}
 		<Button type="submit">
 			{submitLabel}

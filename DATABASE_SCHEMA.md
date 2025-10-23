@@ -1242,27 +1242,28 @@ The notification system allows teachers and admins to send targeted notification
 
 Stores all notification data with intelligent targeting system.
 
-| Column              | Type                    | Description                                                      |
-| ------------------- | ----------------------- | ---------------------------------------------------------------- |
-| id                  | UUID (PK)               | Notification ID                                                  |
-| created_at          | TIMESTAMPTZ             | Creation timestamp                                               |
-| created_by          | UUID (FK)               | References profiles(id), null for system notifications           |
-| title               | TEXT                    | Notification title                                               |
-| message             | TEXT                    | Rich text HTML content                                           |
-| type                | TEXT                    | 'info', 'alert', 'announcement', or 'reminder'                   |
-| priority            | TEXT                    | 'normal', 'important', or 'urgent' (affects display order)       |
-| action_label        | TEXT                    | Optional action button label (e.g., "Voir le devoir")            |
-| action_url          | TEXT                    | Optional action URL (e.g., "/dashboard/student/devoirs/123")     |
-| target_type         | TEXT                    | 'all', 'role', 'classes', or 'users'                             |
-| target_roles        | TEXT[]                  | Target roles if target_type='role' (e.g., ['student'])           |
-| target_class_ids    | UUID[]                  | Target class IDs if target_type='classes'                        |
-| target_user_ids     | UUID[]                  | Target user IDs if target_type='users'                           |
-| expires_at          | TIMESTAMPTZ             | Expiration date (default: 30 days from creation)                 |
-| deleted_at          | TIMESTAMPTZ             | Soft delete timestamp (by creator or admin)                      |
-| is_system           | BOOLEAN                 | True if created automatically by the system                      |
-| system_event_type   | TEXT                    | Event type for system notifications (see below)                  |
+| Column            | Type        | Description                                                  |
+| ----------------- | ----------- | ------------------------------------------------------------ |
+| id                | UUID (PK)   | Notification ID                                              |
+| created_at        | TIMESTAMPTZ | Creation timestamp                                           |
+| created_by        | UUID (FK)   | References profiles(id), null for system notifications       |
+| title             | TEXT        | Notification title                                           |
+| message           | TEXT        | Rich text HTML content                                       |
+| type              | TEXT        | 'info', 'alert', 'announcement', or 'reminder'               |
+| priority          | TEXT        | 'normal', 'important', or 'urgent' (affects display order)   |
+| action_label      | TEXT        | Optional action button label (e.g., "Voir le devoir")        |
+| action_url        | TEXT        | Optional action URL (e.g., "/dashboard/student/devoirs/123") |
+| target_type       | TEXT        | 'all', 'role', 'classes', or 'users'                         |
+| target_roles      | TEXT[]      | Target roles if target_type='role' (e.g., ['student'])       |
+| target_class_ids  | UUID[]      | Target class IDs if target_type='classes'                    |
+| target_user_ids   | UUID[]      | Target user IDs if target_type='users'                       |
+| expires_at        | TIMESTAMPTZ | Expiration date (default: 30 days from creation)             |
+| deleted_at        | TIMESTAMPTZ | Soft delete timestamp (by creator or admin)                  |
+| is_system         | BOOLEAN     | True if created automatically by the system                  |
+| system_event_type | TEXT        | Event type for system notifications (see below)              |
 
 **System Event Types**:
+
 - `assignment_created`: New assignment posted
 - `resource_added`: New resource shared
 - `reward_earned`: Gidouilles or VIP card earned
@@ -1271,12 +1272,14 @@ Stores all notification data with intelligent targeting system.
 - `feature_released`: New feature announcement
 
 **Targeting Logic**:
+
 - `target_type='all'`: All users receive the notification
 - `target_type='role'`: Users with roles in `target_roles` array
 - `target_type='classes'`: Students in classes from `target_class_ids` array
 - `target_type='users'`: Specific users from `target_user_ids` array
 
 **Indexes**:
+
 ```sql
 CREATE INDEX idx_notifications_active ON notifications(created_at DESC)
   WHERE deleted_at IS NULL AND expires_at > now();
@@ -1320,6 +1323,7 @@ Tracks which users have read which notifications.
 **Unique Constraint**: (notification_id, user_id) - prevents duplicate reads
 
 **Indexes**:
+
 ```sql
 CREATE INDEX idx_notification_reads_user ON notification_reads(user_id, notification_id);
 CREATE INDEX idx_notification_reads_notification ON notification_reads(notification_id);
@@ -1359,45 +1363,53 @@ CREATE INDEX idx_notification_reads_notification ON notification_reads(notificat
 #### Notification Priority Display
 
 In the banner carousel and dropdown, notifications are sorted by:
+
 1. Priority (urgent → important → normal)
 2. Creation date (newest first)
 
 #### Example Queries
 
 **Get unread notifications for current user**:
+
 ```typescript
 const { data: notifications } = await supabase
 	.from('notifications')
-	.select(`
+	.select(
+		`
 		*,
 		creator:profiles!created_by(firstname, lastname)
-	`)
+	`
+	)
 	.is('deleted_at', null)
 	.gt('expires_at', new Date().toISOString())
 	.or(
 		`target_type.eq.all,` +
-		`and(target_type.eq.role,target_roles.cs.{${userRole}}),` +
-		`and(target_type.eq.classes,target_class_ids.cs.{${userClassIds.join(',')}}),` +
-		`and(target_type.eq.users,target_user_ids.cs.{${userId}})`
+			`and(target_type.eq.role,target_roles.cs.{${userRole}}),` +
+			`and(target_type.eq.classes,target_class_ids.cs.{${userClassIds.join(',')}}),` +
+			`and(target_type.eq.users,target_user_ids.cs.{${userId}})`
 	)
-	.not('id', 'in', `(
+	.not(
+		'id',
+		'in',
+		`(
 		SELECT notification_id FROM notification_reads WHERE user_id = '${userId}'
-	)`)
+	)`
+	)
 	.order('priority', { ascending: false }) // urgent first
 	.order('created_at', { ascending: false });
 ```
 
 **Mark notification as read**:
+
 ```typescript
-await supabase
-	.from('notification_reads')
-	.insert({
-		notification_id: notificationId,
-		user_id: userId
-	});
+await supabase.from('notification_reads').insert({
+	notification_id: notificationId,
+	user_id: userId
+});
 ```
 
 **Get read statistics for a notification**:
+
 ```typescript
 // Total potential recipients (example for class-targeted notification)
 const { count: totalCount } = await supabase
@@ -1415,21 +1427,20 @@ const { count: readCount } = await supabase
 ```
 
 **Create system notification**:
+
 ```typescript
-await supabase
-	.from('notifications')
-	.insert({
-		title: 'Nouveau devoir assigné',
-		message: `<p>Le professeur ${teacherName} a assigné un nouveau devoir : <strong>${assignmentTitle}</strong></p>`,
-		type: 'info',
-		priority: 'normal',
-		action_label: 'Voir le devoir',
-		action_url: `/dashboard/student/devoirs/${assignmentId}`,
-		target_type: 'classes',
-		target_class_ids: [classId],
-		is_system: true,
-		system_event_type: 'assignment_created'
-	});
+await supabase.from('notifications').insert({
+	title: 'Nouveau devoir assigné',
+	message: `<p>Le professeur ${teacherName} a assigné un nouveau devoir : <strong>${assignmentTitle}</strong></p>`,
+	type: 'info',
+	priority: 'normal',
+	action_label: 'Voir le devoir',
+	action_url: `/dashboard/student/devoirs/${assignmentId}`,
+	target_type: 'classes',
+	target_class_ids: [classId],
+	is_system: true,
+	system_event_type: 'assignment_created'
+});
 ```
 
 #### UI Components
@@ -1447,14 +1458,14 @@ The notification system includes:
 
 The system automatically creates notifications for:
 
-| Event                 | Trigger                  | Target              | Priority  |
-| --------------------- | ------------------------ | ------------------- | --------- |
-| Assignment created    | Assignment form action   | Class students      | Normal    |
-| Resource added        | Resource upload          | Class students      | Normal    |
-| Reward earned         | Gidouilles/VIP card award| Individual student  | Normal    |
-| Badge unlocked        | Badge achievement        | Individual student  | Normal    |
-| Maintenance scheduled | Admin manual             | All users           | Important |
-| Feature released      | Admin manual             | All or role-based   | Normal    |
+| Event                 | Trigger                   | Target             | Priority  |
+| --------------------- | ------------------------- | ------------------ | --------- |
+| Assignment created    | Assignment form action    | Class students     | Normal    |
+| Resource added        | Resource upload           | Class students     | Normal    |
+| Reward earned         | Gidouilles/VIP card award | Individual student | Normal    |
+| Badge unlocked        | Badge achievement         | Individual student | Normal    |
+| Maintenance scheduled | Admin manual              | All users          | Important |
+| Feature released      | Admin manual              | All or role-based  | Normal    |
 
 ## Assessment System
 
@@ -1466,18 +1477,18 @@ The assessment system allows teachers to create graded evaluations based on the 
 
 Teacher-created assessments/evaluations with configurable settings.
 
-| Column        | Type              | Description                                                  |
-| ------------- | ----------------- | ------------------------------------------------------------ |
-| id            | UUID (PK)         | Assessment ID                                                |
-| title         | TEXT              | Assessment title                                             |
-| grade         | TEXT              | Grade level (e.g., '6ème', '5ème', '4ème', '3ème')          |
-| description   | TEXT              | Optional description of the assessment                       |
-| created_by    | UUID (FK)         | Teacher who created the assessment → profiles(id)            |
-| categories    | JSONB             | Array of CartItem objects (same structure as question cart)  |
-| settings      | JSONB             | Assessment settings (see below)                              |
-| status        | TEXT              | 'draft', 'published', or 'archived'                          |
-| created_at    | TIMESTAMPTZ       | Creation timestamp                                           |
-| updated_at    | TIMESTAMPTZ       | Last update timestamp (auto-updated via trigger)             |
+| Column      | Type        | Description                                                 |
+| ----------- | ----------- | ----------------------------------------------------------- |
+| id          | UUID (PK)   | Assessment ID                                               |
+| title       | TEXT        | Assessment title                                            |
+| grade       | TEXT        | Grade level (e.g., '6ème', '5ème', '4ème', '3ème')          |
+| description | TEXT        | Optional description of the assessment                      |
+| created_by  | UUID (FK)   | Teacher who created the assessment → profiles(id)           |
+| categories  | JSONB       | Array of CartItem objects (same structure as question cart) |
+| settings    | JSONB       | Assessment settings (see below)                             |
+| status      | TEXT        | 'draft', 'published', or 'archived'                         |
+| created_at  | TIMESTAMPTZ | Creation timestamp                                          |
+| updated_at  | TIMESTAMPTZ | Last update timestamp (auto-updated via trigger)            |
 
 **Settings Structure (JSONB)**:
 
@@ -1494,14 +1505,14 @@ Teacher-created assessments/evaluations with configurable settings.
 
 ```typescript
 interface CartItem {
-  category: {
-    theme: string;
-    domain: string;
-    subdomain: string | null;
-    level: string;
-  };
-  quantity: number;  // Number of questions
-  delay: number;     // Time per question (seconds)
+	category: {
+		theme: string;
+		domain: string;
+		subdomain: string | null;
+		level: string;
+	};
+	quantity: number; // Number of questions
+	delay: number; // Time per question (seconds)
 }
 ```
 
@@ -1531,9 +1542,9 @@ CHECK (
 
 Modified to support assessment assignments. Added column:
 
-| Column        | Type      | Description                                                |
-| ------------- | --------- | ---------------------------------------------------------- |
-| assignment_id | UUID (FK) | Reference to assessment assignment (null = free practice)  |
+| Column        | Type      | Description                                               |
+| ------------- | --------- | --------------------------------------------------------- |
+| assignment_id | UUID (FK) | Reference to assessment assignment (null = free practice) |
 
 All other columns remain unchanged from the existing test sessions table.
 
@@ -1541,23 +1552,23 @@ All other columns remain unchanged from the existing test sessions table.
 
 Aggregated view for teacher dashboard showing best attempt per student for each assignment.
 
-| Column             | Type              | Description                                    |
-| ------------------ | ----------------- | ---------------------------------------------- |
-| assignment_id      | UUID              | Assignment ID                                  |
-| assessment_id      | UUID              | Assessment ID                                  |
-| assessment_title   | TEXT              | Assessment title                               |
-| assessment_grade   | TEXT              | Assessment grade level                         |
-| class_id           | UUID              | Class ID (if assigned to class)                |
-| student_id         | UUID              | Student ID                                     |
-| student_user_id    | UUID              | Student's user ID                              |
-| student_firstname  | TEXT              | Student first name                             |
-| student_lastname   | TEXT              | Student last name                              |
-| class_name         | TEXT              | Class name (if assigned to class)              |
-| best_score         | NUMERIC           | Highest score among all attempts (0-10 scale)  |
-| attempts_count     | INTEGER           | Number of attempts made                        |
-| last_attempt_at    | TIMESTAMPTZ       | Timestamp of most recent attempt               |
-| status             | TEXT              | 'not_started', 'in_progress', 'completed', or 'expired' |
-| total_questions    | INTEGER           | Total number of questions                      |
+| Column            | Type        | Description                                             |
+| ----------------- | ----------- | ------------------------------------------------------- |
+| assignment_id     | UUID        | Assignment ID                                           |
+| assessment_id     | UUID        | Assessment ID                                           |
+| assessment_title  | TEXT        | Assessment title                                        |
+| assessment_grade  | TEXT        | Assessment grade level                                  |
+| class_id          | UUID        | Class ID (if assigned to class)                         |
+| student_id        | UUID        | Student ID                                              |
+| student_user_id   | UUID        | Student's user ID                                       |
+| student_firstname | TEXT        | Student first name                                      |
+| student_lastname  | TEXT        | Student last name                                       |
+| class_name        | TEXT        | Class name (if assigned to class)                       |
+| best_score        | NUMERIC     | Highest score among all attempts (0-10 scale)           |
+| attempts_count    | INTEGER     | Number of attempts made                                 |
+| last_attempt_at   | TIMESTAMPTZ | Timestamp of most recent attempt                        |
+| status            | TEXT        | 'not_started', 'in_progress', 'completed', or 'expired' |
+| total_questions   | INTEGER     | Total number of questions                               |
 
 ### Assessment Workflow
 
@@ -1595,11 +1606,13 @@ Aggregated view for teacher dashboard showing best attempt per student for each 
 #### 4. Viewing Results
 
 **Teachers** (/dashboard/teacher/assessments/{id}/results):
+
 - Overall statistics (completion rate, average score, etc.)
 - Student-by-student results table
 - Can see all attempts for each student
 
 **Students** (/dashboard/student/assessments/{id}/results):
+
 - Personal statistics (best score, average, attempts)
 - History of all attempts with scores and timestamps
 - Cannot see other students' results
@@ -1607,11 +1620,13 @@ Aggregated view for teacher dashboard showing best attempt per student for each 
 ### Status Logic
 
 **Assessment Status** (stored in `assessments.status`):
+
 - `draft`: Being created, not yet published, cannot be assigned
 - `published`: Active and can be assigned to students
 - `archived`: No longer active, hidden from default views
 
 **Student Assignment Status** (derived in views/queries):
+
 - `not_started`: Student has never attempted (attempts_count = 0, deadline not passed)
 - `in_progress`: Student started but hasn't completed any attempt (attempts_count > 0, no completed_at)
 - `completed`: Student completed at least one attempt (has completed_at)
@@ -1644,27 +1659,33 @@ CREATE INDEX idx_test_sessions_assignment_user ON test_sessions(assignment_id, u
 #### Assessments
 
 **Teachers**:
+
 - Can view their own assessments: `created_by = auth.uid()`
 - Can create assessments: `role = 'teacher' AND created_by = auth.uid()`
 - Can update/delete their own assessments
 
 **Students**:
+
 - Can view published assessments that are assigned to them (directly or via class)
 
 **Admins**:
+
 - Full access to all assessments
 
 #### Assessment Assignments
 
 **Teachers**:
+
 - Can view assignments for their assessments
 - Can create assignments for their own assessments and their own classes/students
 - Can delete assignments for their assessments
 
 **Students**:
+
 - Can view their own assignments (direct or via class membership)
 
 **Admins**:
+
 - Full access to all assignments
 
 ### Server-Side Functions
@@ -1672,6 +1693,7 @@ CREATE INDEX idx_test_sessions_assignment_user ON test_sessions(assignment_id, u
 Core functions in `src/lib/server/assessments.ts`:
 
 **CRUD Operations**:
+
 - `createAssessment(supabase, data, userId)` - Create new assessment
 - `getAssessment(supabase, assessmentId)` - Get single assessment
 - `getTeacherAssessments(supabase, teacherId, status?)` - Get teacher's assessments
@@ -1680,15 +1702,18 @@ Core functions in `src/lib/server/assessments.ts`:
 - `archiveAssessment(supabase, assessmentId, userId)` - Archive assessment
 
 **Assignment Management**:
+
 - `assignAssessment(supabase, data, teacherId)` - Assign to classes/students
 - `getAssessmentAssignments(supabase, assessmentId)` - Get all assignments
 - `removeAssignment(supabase, assignmentId, teacherId)` - Remove assignment
 - `getStudentAssignments(supabase, studentId)` - Get student's assigned assessments
 
 **Attempt Validation**:
+
 - `validateAttempt(supabase, assignmentId, studentId)` - Check if student can start attempt
 
 **Results & Statistics**:
+
 - `getAssessmentResults(supabase, assessmentId)` - Get all student results
 - `getAssessmentStatistics(supabase, assessmentId)` - Get aggregated stats
 - `getClassStatistics(supabase, assessmentId)` - Get per-class stats
@@ -1754,3 +1779,381 @@ WHERE assessment_id = :assessment_id;
 - **Teacher Pages**: `src/routes/(protected)/dashboard/teacher/assessments/`
 - **Student Pages**: `src/routes/(protected)/dashboard/student/assessments/`
 - **Components**: `src/lib/components/assessments/`
+
+---
+
+## Riddles (Énigmes) System
+
+Math riddles/enigmas with automatic and manual validation, riddle of the day, degressive rewards, and leaderboard system.
+
+### Tables
+
+#### `riddles`
+
+Mathematical riddles/enigmas created by teachers.
+
+| Column        | Type    | Description                                                         |
+| ------------- | ------- | ------------------------------------------------------------------- |
+| id            | UUID    | Riddle ID                                                           |
+| riddle_number | SERIAL  | Auto-incrementing display number (global, unique)                   |
+| title         | TEXT    | Riddle title                                                        |
+| genre         | TEXT    | Free-form tag (e.g., "Logique", "Géométrie")                       |
+| difficulty    | INTEGER | Difficulty level: 1 (Facile), 2 (Moyen), 3 (Difficile)             |
+| statement     | TEXT    | Problem statement (HTML rich text)                                  |
+| correction    | TEXT    | Solution/explanation (HTML rich text, visible to teachers only)     |
+| image_url     | TEXT    | Optional image URL                                                  |
+| answer        | JSONB   | Optional automatic validation config (null = manual validation)     |
+| created_by    | UUID    | Teacher who created the riddle (FK → profiles)                      |
+| status        | TEXT    | 'draft' or 'published'                                              |
+| created_at    | TSTZ    | Creation timestamp                                                  |
+| updated_at    | TSTZ    | Last update timestamp                                               |
+
+**Answer Structure** (JSONB):
+```json
+{
+  "type": "numerical" | "text" | "qcm" | "math",
+  "value": <expected answer(s)>,
+  "options": {
+    "tolerance": 0.01,          // For numerical
+    "caseSensitive": false,     // For text
+    "choices": ["A", "B", "C"], // For QCM
+    "exactMatch": true          // For math
+  }
+}
+```
+
+**Validation Types**:
+- `numerical`: Number with tolerance
+- `text`: Text exact match (case insensitive by default)
+- `qcm`: Multiple choice
+- `math`: Mathematical expression
+
+**Status**:
+- `draft`: Not yet published, visible only to creator
+- `published`: Active, can be assigned or used as riddle of the day
+
+#### `riddle_assignments`
+
+Specific assignments of riddles to classes or students.
+
+| Column      | Type | Description                                        |
+| ----------- | ---- | -------------------------------------------------- |
+| id          | UUID | Assignment ID                                      |
+| riddle_id   | UUID | Riddle being assigned (FK → riddles)               |
+| class_id    | UUID | Class assignment (FK → classes, mutually exclusive |
+| student_id  | UUID | Student assignment (FK → profiles, with class_id)  |
+| assigned_by | UUID | Teacher who made assignment (FK → profiles)        |
+| assigned_at | TSTZ | Assignment timestamp                               |
+
+**Constraint**: Must have either `class_id` OR `student_id`, not both or neither.
+
+**Note**: Riddle of the day is accessible to all students without explicit assignment.
+
+#### `riddle_of_the_day`
+
+Daily riddle accessible to all students (one per day for entire school).
+
+| Column        | Type    | Description                                     |
+| ------------- | ------- | ----------------------------------------------- |
+| id            | UUID    | Record ID                                       |
+| riddle_id     | UUID    | Riddle selected for the day (FK → riddles)      |
+| date          | DATE    | Date (unique - only one riddle per day)         |
+| auto_selected | BOOLEAN | true = automatic rotation, false = manual pick  |
+| selected_by   | UUID    | User who selected (FK → profiles, if manual)    |
+| created_at    | TSTZ    | Creation timestamp                              |
+
+**Selection Methods**:
+- **Automatic**: Cron job selects random published riddle, avoiding recent ones
+- **Manual**: Teacher/admin overrides with specific riddle
+
+**Accessibility**: All students can access riddle of the day regardless of class assignments.
+
+#### `riddle_attempts`
+
+Student attempts at solving riddles with degressive rewards.
+
+| Column            | Type    | Description                                             |
+| ----------------- | ------- | ------------------------------------------------------- |
+| id                | UUID    | Attempt ID                                              |
+| riddle_id         | UUID    | Riddle being attempted (FK → riddles)                   |
+| student_id        | UUID    | Student making attempt (FK → profiles)                  |
+| attempt_number    | INTEGER | Attempt sequence number (1, 2, 3, ...)                  |
+| submitted_answer  | JSONB   | Student's answer (structure depends on riddle type)     |
+| is_correct        | BOOLEAN | null = awaiting validation, true/false = validated      |
+| validated_by      | UUID    | Teacher who validated (FK → profiles, if manual)        |
+| validated_at      | TSTZ    | Validation timestamp                                    |
+| gidouilles_awarded | INTEGER | Gidouilles earned (calculated with degressive formula)  |
+| created_at        | TSTZ    | Attempt timestamp                                       |
+
+**Unique Constraint**: (riddle_id, student_id, attempt_number)
+
+**Degressive Rewards Formula**:
+```
+gidouilles = difficulty × multiplier
+
+Multiplier:
+- 1st attempt: 3
+- 2nd attempt: 2
+- 3rd+ attempts: 1
+
+Examples:
+- Difficulty 1: 3 → 2 → 1 gidouilles
+- Difficulty 2: 6 → 4 → 2 gidouilles
+- Difficulty 3: 9 → 6 → 3 gidouilles
+```
+
+**Validation Flow**:
+1. **With `answer` config**: Automatic validation → immediate `is_correct` + gidouilles
+2. **Without `answer`**: Manual validation → `is_correct = NULL` → teacher validates via messaging
+
+### Views
+
+#### `riddle_stats`
+
+Statistics per riddle for teacher dashboard.
+
+| Column                  | Type    | Description                                      |
+| ----------------------- | ------- | ------------------------------------------------ |
+| riddle_id               | UUID    | Riddle ID                                        |
+| riddle_number           | INTEGER | Display number                                   |
+| title                   | TEXT    | Riddle title                                     |
+| genre                   | TEXT    | Genre tag                                        |
+| difficulty              | INTEGER | Difficulty level                                 |
+| created_by              | UUID    | Creator ID                                       |
+| unique_students         | INTEGER | Number of students who attempted                 |
+| total_attempts          | INTEGER | Total attempts across all students               |
+| avg_attempts_to_success | DECIMAL | Average attempts needed for success              |
+| successful_attempts     | INTEGER | Number of successful attempts                    |
+| success_rate_percent    | DECIMAL | Success rate (0-100%)                            |
+| first_attempts          | INTEGER | Attempts made on 1st try                         |
+| second_attempts         | INTEGER | Attempts made on 2nd try                         |
+| third_plus_attempts     | INTEGER | Attempts made on 3rd+ try                        |
+| pending_validations     | INTEGER | Awaiting manual validation                       |
+| total_gidouilles_awarded | INTEGER | Total gidouilles distributed for this riddle     |
+
+#### `riddle_progress`
+
+Student progress and leaderboard data.
+
+| Column            | Type    | Description                              |
+| ----------------- | ------- | ---------------------------------------- |
+| student_id        | UUID    | Student ID                               |
+| firstname         | TEXT    | Student first name                       |
+| lastname          | TEXT    | Student last name                        |
+| avatar_url        | TEXT    | Student avatar                           |
+| riddles_completed | INTEGER | Number of riddles successfully solved    |
+| total_attempts    | INTEGER | Total attempts across all riddles        |
+| riddles_gidouilles | INTEGER | Total gidouilles earned from riddles     |
+| last_success_at   | TSTZ    | Most recent successful attempt           |
+| rank              | INTEGER | Global rank (by riddles_gidouilles DESC) |
+
+**Used for**: Leaderboard display and student progress tracking.
+
+#### `riddle_student_history`
+
+Individual student riddle history.
+
+| Column                   | Type    | Description                                  |
+| ------------------------ | ------- | -------------------------------------------- |
+| student_id               | UUID    | Student ID                                   |
+| riddle_id                | UUID    | Riddle ID                                    |
+| riddle_number            | INTEGER | Display number                               |
+| riddle_title             | TEXT    | Riddle title                                 |
+| genre                    | TEXT    | Genre tag                                    |
+| difficulty               | INTEGER | Difficulty level                             |
+| first_attempt_number     | INTEGER | Number of first attempt                      |
+| latest_attempt_number    | INTEGER | Number of latest attempt                     |
+| total_attempts           | INTEGER | Total attempts for this riddle               |
+| ever_succeeded           | BOOLEAN | Whether student ever succeeded               |
+| first_success_at         | TSTZ    | Timestamp of first success                   |
+| max_gidouilles_earned    | INTEGER | Maximum gidouilles earned in single attempt  |
+| total_gidouilles_earned  | INTEGER | Total gidouilles earned for this riddle      |
+| last_attempt_at          | TSTZ    | Most recent attempt timestamp                |
+
+### Functions
+
+#### `get_next_riddle_attempt_number(p_riddle_id, p_student_id)`
+
+Returns the next attempt number for a student on a specific riddle.
+
+**Returns**: INTEGER (1 for first attempt, 2 for second, etc.)
+
+#### `calculate_riddle_gidouilles(p_difficulty, p_attempt_number)`
+
+Calculates gidouilles reward using degressive formula.
+
+**Parameters**:
+- `p_difficulty`: 1, 2, or 3
+- `p_attempt_number`: 1, 2, 3, ...
+
+**Returns**: INTEGER (gidouilles amount)
+
+**Formula**: `difficulty × multiplier` where multiplier = 3 for 1st, 2 for 2nd, 1 for 3rd+
+
+#### `submit_riddle_attempt(p_riddle_id, p_student_id, p_submitted_answer, p_is_correct)`
+
+Creates a new attempt record and awards gidouilles if correct.
+
+**Parameters**:
+- `p_riddle_id`: UUID
+- `p_student_id`: UUID
+- `p_submitted_answer`: JSONB
+- `p_is_correct`: BOOLEAN or NULL (NULL for manual validation)
+
+**Returns**: UUID (attempt_id)
+
+**Side Effects**:
+- Creates `riddle_attempts` record
+- Updates `profiles.gidouilles` if correct
+
+#### `validate_riddle_attempt(p_attempt_id, p_teacher_id, p_is_correct)`
+
+Manual validation by teacher for riddles without automatic validation.
+
+**Parameters**:
+- `p_attempt_id`: UUID
+- `p_teacher_id`: UUID
+- `p_is_correct`: BOOLEAN
+
+**Returns**: BOOLEAN (success)
+
+**Side Effects**:
+- Updates `riddle_attempts` (is_correct, validated_by, validated_at, gidouilles_awarded)
+- Updates `profiles.gidouilles` if correct
+
+#### `get_riddle_of_the_day(p_date)`
+
+Gets the riddle of the day for a specific date.
+
+**Parameters**:
+- `p_date`: DATE (defaults to today)
+
+**Returns**: UUID (riddle_id) or NULL
+
+#### `set_riddle_of_the_day(p_riddle_id, p_date, p_selected_by)`
+
+Sets or updates the riddle of the day (manual override).
+
+**Parameters**:
+- `p_riddle_id`: UUID
+- `p_date`: DATE
+- `p_selected_by`: UUID (teacher/admin)
+
+**Returns**: UUID (riddle_of_the_day.id)
+
+**Behavior**: Upserts record (updates if date already exists)
+
+### RLS Policies
+
+**Riddles**:
+- Teachers: CRUD their own riddles
+- Students: SELECT published riddles (assigned OR riddle of the day)
+- Admins: Full access
+
+**Riddle Assignments**:
+- Teachers: CRUD assignments for their riddles and students
+- Students: SELECT their own assignments
+- Admins: Full access
+
+**Riddle of the Day**:
+- Everyone: SELECT
+- Teachers/Admins: INSERT, UPDATE
+- Admins: DELETE
+
+**Riddle Attempts**:
+- Students: INSERT their attempts, SELECT their attempts
+- Teachers: SELECT attempts of their students, UPDATE for validation
+- Admins: Full access
+
+### Common Queries
+
+#### Get today's riddle of the day with student's attempt
+
+```sql
+SELECT
+  r.*,
+  rotd.date,
+  ra.id as attempt_id,
+  ra.attempt_number,
+  ra.is_correct,
+  ra.gidouilles_awarded
+FROM riddle_of_the_day rotd
+JOIN riddles r ON r.id = rotd.riddle_id
+LEFT JOIN riddle_attempts ra ON ra.riddle_id = r.id
+  AND ra.student_id = :student_id
+WHERE rotd.date = CURRENT_DATE
+  AND r.status = 'published';
+```
+
+#### Get teacher's riddles with stats
+
+```sql
+SELECT
+  r.*,
+  rs.unique_students,
+  rs.total_attempts,
+  rs.success_rate_percent,
+  rs.pending_validations
+FROM riddles r
+LEFT JOIN riddle_stats rs ON rs.riddle_id = r.id
+WHERE r.created_by = :teacher_id
+ORDER BY r.riddle_number DESC;
+```
+
+#### Get leaderboard (top 10 students)
+
+```sql
+SELECT
+  student_id,
+  firstname,
+  lastname,
+  avatar_url,
+  riddles_completed,
+  riddles_gidouilles,
+  rank
+FROM riddle_progress
+WHERE riddles_completed > 0
+ORDER BY rank ASC
+LIMIT 10;
+```
+
+#### Get pending manual validations for teacher
+
+```sql
+SELECT
+  ra.*,
+  r.title as riddle_title,
+  r.riddle_number,
+  r.correction,
+  p.firstname as student_firstname,
+  p.lastname as student_lastname
+FROM riddle_attempts ra
+JOIN riddles r ON r.id = ra.riddle_id
+JOIN profiles p ON p.id = ra.student_id
+WHERE ra.is_correct IS NULL
+  AND r.created_by = :teacher_id
+ORDER BY ra.created_at ASC;
+```
+
+#### Get student's riddle history
+
+```sql
+SELECT *
+FROM riddle_student_history
+WHERE student_id = :student_id
+ORDER BY last_attempt_at DESC;
+```
+
+### Related Documentation
+
+- **Migration**: `supabase/migrations/099_create_riddles_system.sql`
+- **Types**: `src/lib/types/riddle.ts`
+- **Teacher Pages**: `src/routes/(protected)/dashboard/teacher/riddles/`
+- **Student Pages**: `src/routes/(protected)/dashboard/student/riddles/` (to be implemented)
+- **Components**: `src/lib/components/riddles/`
+- **Features**:
+  - Automatic and manual validation
+  - Degressive rewards system
+  - Riddle of the day
+  - Statistics and leaderboard
+  - Rich text and image support

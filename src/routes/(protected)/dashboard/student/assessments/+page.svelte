@@ -9,9 +9,7 @@
 
 	// Group assignments by status
 	let toDo = $derived(
-		data.assignments.filter(
-			(a) => a.status === 'not_started' || a.status === 'in_progress'
-		)
+		data.assignments.filter((a) => a.status === 'not_started' || a.status === 'in_progress')
 	);
 	let completed = $derived(data.assignments.filter((a) => a.status === 'completed'));
 	let expired = $derived(data.assignments.filter((a) => a.status === 'expired'));
@@ -33,13 +31,13 @@
 	<!-- Header -->
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold tracking-tight">Mes Évaluations</h1>
-		<p class="text-muted-foreground mt-2">Vos évaluations assignées par vos professeurs</p>
+		<p class="mt-2 text-muted-foreground">Vos évaluations assignées par vos professeurs</p>
 	</div>
 
 	<!-- To Do Section -->
 	{#if toDo.length > 0}
 		<section class="mb-12">
-			<h2 class="text-2xl font-semibold mb-4">À faire</h2>
+			<h2 class="mb-4 text-2xl font-semibold">À faire</h2>
 			<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{#each toDo as assignment (assignment.id)}
 					<AssessmentCard
@@ -56,7 +54,7 @@
 	<!-- Completed Section -->
 	{#if completed.length > 0}
 		<section class="mb-12">
-			<h2 class="text-2xl font-semibold mb-4">Terminées</h2>
+			<h2 class="mb-4 text-2xl font-semibold">Terminées</h2>
 			<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{#each completed as assignment (assignment.id)}
 					<AssessmentCard
@@ -73,7 +71,7 @@
 	<!-- Expired Section -->
 	{#if expired.length > 0}
 		<section class="mb-12">
-			<h2 class="text-2xl font-semibold mb-4 text-muted-foreground">Expirées</h2>
+			<h2 class="mb-4 text-2xl font-semibold text-muted-foreground">Expirées</h2>
 			<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{#each expired as assignment (assignment.id)}
 					<AssessmentCard

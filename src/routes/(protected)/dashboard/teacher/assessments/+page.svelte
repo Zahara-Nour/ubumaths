@@ -36,12 +36,10 @@
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<!-- Header -->
-	<div class="flex items-center justify-between mb-8">
+	<div class="mb-8 flex items-center justify-between">
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Mes Évaluations</h1>
-			<p class="text-muted-foreground mt-2">
-				Créez et gérez vos évaluations pour vos classes
-			</p>
+			<p class="mt-2 text-muted-foreground">Créez et gérez vos évaluations pour vos classes</p>
 		</div>
 		<Button onclick={handleCreateNew}>
 			<Plus class="mr-2 h-4 w-4" />
@@ -55,7 +53,7 @@
 			<Tabs.Trigger value="drafts">
 				Brouillons
 				{#if drafts.length > 0}
-					<span class="ml-2 rounded-full bg-yellow-100 dark:bg-yellow-900 px-2 py-0.5 text-xs">
+					<span class="ml-2 rounded-full bg-yellow-100 px-2 py-0.5 text-xs dark:bg-yellow-900">
 						{drafts.length}
 					</span>
 				{/if}
@@ -63,7 +61,7 @@
 			<Tabs.Trigger value="published">
 				Publiées
 				{#if published.length > 0}
-					<span class="ml-2 rounded-full bg-green-100 dark:bg-green-900 px-2 py-0.5 text-xs">
+					<span class="ml-2 rounded-full bg-green-100 px-2 py-0.5 text-xs dark:bg-green-900">
 						{published.length}
 					</span>
 				{/if}
@@ -71,7 +69,7 @@
 			<Tabs.Trigger value="archived">
 				Archivées
 				{#if archived.length > 0}
-					<span class="ml-2 rounded-full bg-gray-100 dark:bg-gray-800 px-2 py-0.5 text-xs">
+					<span class="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-xs dark:bg-gray-800">
 						{archived.length}
 					</span>
 				{/if}
@@ -81,9 +79,9 @@
 		<!-- Drafts Tab -->
 		<Tabs.Content value="drafts" class="space-y-4">
 			{#if drafts.length === 0}
-				<div class="text-center py-12 text-muted-foreground">
+				<div class="py-12 text-center text-muted-foreground">
 					<p>Aucun brouillon</p>
-					<p class="text-sm mt-2">Les évaluations non publiées apparaîtront ici</p>
+					<p class="mt-2 text-sm">Les évaluations non publiées apparaîtront ici</p>
 				</div>
 			{:else}
 				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -101,9 +99,9 @@
 		<!-- Published Tab -->
 		<Tabs.Content value="published" class="space-y-4">
 			{#if published.length === 0}
-				<div class="text-center py-12 text-muted-foreground">
+				<div class="py-12 text-center text-muted-foreground">
 					<p>Aucune évaluation publiée</p>
-					<p class="text-sm mt-2">Créez une évaluation pour commencer</p>
+					<p class="mt-2 text-sm">Créez une évaluation pour commencer</p>
 					<Button onclick={handleCreateNew} class="mt-4">
 						<Plus class="mr-2 h-4 w-4" />
 						Créer une évaluation
@@ -126,7 +124,7 @@
 		<!-- Archived Tab -->
 		<Tabs.Content value="archived" class="space-y-4">
 			{#if archived.length === 0}
-				<div class="text-center py-12 text-muted-foreground">
+				<div class="py-12 text-center text-muted-foreground">
 					<p>Aucune évaluation archivée</p>
 				</div>
 			{:else}

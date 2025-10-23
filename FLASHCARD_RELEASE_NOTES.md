@@ -25,12 +25,7 @@ Le composant **QuestionDisplay** a été refactoré et renommé **FlashCard** av
 ```svelte
 import QuestionDisplay from '$lib/components/questions/QuestionDisplay.svelte';
 
-<QuestionDisplay
-  mode="interactive"
-  {instance}
-  showConfetti={true}
-  allowMultipleAttempts={false}
-/>
+<QuestionDisplay mode="interactive" {instance} showConfetti={true} allowMultipleAttempts={false} />
 ```
 
 ### Après (v2.0)
@@ -38,11 +33,7 @@ import QuestionDisplay from '$lib/components/questions/QuestionDisplay.svelte';
 ```svelte
 import FlashCard from '$lib/components/questions/FlashCard.svelte';
 
-<FlashCard
-  interactive={true}
-  {instance}
-  maxAttempts={1}
-/>
+<FlashCard interactive={true} {instance} maxAttempts={1} />
 ```
 
 ---
@@ -165,7 +156,7 @@ Un placeholder a été ajouté pour le type de question `ordering` :
 
 ## 🐛 Bugs connus
 
-Aucun bug connu pour le moment. 
+Aucun bug connu pour le moment.
 
 Si vous rencontrez un problème :
 

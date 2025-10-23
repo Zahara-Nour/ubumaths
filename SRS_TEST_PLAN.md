@@ -15,6 +15,7 @@ pnpm db:migrate
 ```
 
 **Vérification** : Connectez-vous à Supabase Dashboard et vérifiez que les 5 tables SRS existent :
+
 - ✅ `srs_decks`
 - ✅ `srs_cards`
 - ✅ `srs_card_stats`
@@ -24,6 +25,7 @@ pnpm db:migrate
 ### 2. Comptes de test
 
 Vous aurez besoin de :
+
 - **1 compte professeur** (role = 'teacher')
 - **1 compte élève** (role = 'student')
 
@@ -40,6 +42,7 @@ Vous aurez besoin de :
 5. Vous devriez arriver sur `/dashboard/teacher/srs/decks`
 
 **Résultat attendu** :
+
 - ✅ Page affichée sans erreur
 - ✅ Liste vide de decks ou decks existants
 - ✅ Bouton "Nouveau deck" visible
@@ -57,6 +60,7 @@ Vous aurez besoin de :
 4. Cliquez sur "Créer le deck"
 
 **Résultat attendu** :
+
 - ✅ Toast de succès "Deck créé avec succès"
 - ✅ Redirection vers `/dashboard/teacher/srs/decks`
 - ✅ Deck visible dans la liste
@@ -77,6 +81,7 @@ Vous aurez besoin de :
    - Carte 3 : "Si $\Delta > 0$ ?" → "2 solutions réelles distinctes"
 
 **Résultat attendu** :
+
 - ✅ Chaque carte ajoutée apparaît dans la liste
 - ✅ Badge "Personnalisée" sur chaque carte
 - ✅ Compteur de cartes mis à jour (3 cartes)
@@ -85,6 +90,7 @@ Vous aurez besoin de :
 9. Cliquez sur "Enregistrer les modifications"
 
 **Résultat attendu** :
+
 - ✅ Toast de succès
 - ✅ Retour à la liste des decks
 - ✅ Deck montre "3 cartes"
@@ -104,6 +110,7 @@ Vous aurez besoin de :
 7. Cliquez sur "Attribuer le deck"
 
 **Résultat attendu** :
+
 - ✅ Toast de succès "Deck attribué avec succès"
 - ✅ Badge "Attribué" sur le deck dans la liste
 - ✅ Icône 🔒 pour indiquer lecture seule
@@ -115,6 +122,7 @@ Vous aurez besoin de :
 2. Vérifiez que "Modifier" et "Supprimer" sont absents
 
 **Résultat attendu** :
+
 - ✅ Seule l'option "Attribuer" est disponible
 - ✅ Deck marqué comme lecture seule
 
@@ -132,6 +140,7 @@ Vous aurez besoin de :
 6. Vous devriez arriver sur `/dashboard/revisions`
 
 **Résultat attendu** :
+
 - ✅ Page affichée sans erreur
 - ✅ Deck attribué par le prof visible (badge "Attribué", icône 🔒)
 - ✅ Bouton "Nouveau deck" visible
@@ -152,6 +161,7 @@ Vous aurez besoin de :
 9. Cliquez sur "Créer le deck"
 
 **Résultat attendu** :
+
 - ✅ Toast de succès
 - ✅ Redirection vers `/dashboard/revisions`
 - ✅ Deck personnel visible
@@ -169,6 +179,7 @@ Vous aurez besoin de :
 3. Vous devriez être sur `/dashboard/revisions/decks/[id]/study`
 
 **Résultat attendu** :
+
 - ✅ Interface de révision affichée
 - ✅ Barre de progression : "Carte 1 sur 3"
 - ✅ Carte affichée (recto) : "Quelle est la formule du discriminant ?"
@@ -181,6 +192,7 @@ Vous aurez besoin de :
 3. Cliquez sur le bouton **Flip** (↻)
 
 **Résultat attendu** :
+
 - ✅ Animation de flip 3D
 - ✅ Verso affiché : "$\Delta = b^2 - 4ac$"
 - ✅ 4 boutons de notation apparaissent :
@@ -192,6 +204,7 @@ Vous aurez besoin de :
 4. Cliquez sur "3 - Bien"
 
 **Résultat attendu** :
+
 - ✅ Transition vers la carte 2
 - ✅ Barre de progression : "Carte 2 sur 3"
 - ✅ Compteur "2 restantes"
@@ -202,6 +215,7 @@ Vous aurez besoin de :
 2. Appuyez sur la touche **4** (Facile)
 
 **Résultat attendu** :
+
 - ✅ Carte suivante affichée (carte 3)
 - ✅ Raccourci clavier fonctionne
 
@@ -211,6 +225,7 @@ Vous aurez besoin de :
 2. Une fois toutes les cartes revues
 
 **Résultat attendu** :
+
 - ✅ Page de résumé de session affichée
 - ✅ Statistiques visibles :
   - Cartes revues : 3
@@ -224,6 +239,7 @@ Vous aurez besoin de :
 2. Vérifiez le deck révisé
 
 **Résultat attendu** :
+
 - ✅ "À réviser : 0" (toutes les cartes ont été revues)
 - ✅ "Cartes maîtrisées" ou "En apprentissage" : 3
 - ✅ Prochaine révision : dans X minutes/heures (selon les notes données)
@@ -249,6 +265,7 @@ ORDER BY due_date;
 ```
 
 **Résultat attendu** :
+
 - ✅ Cartes notées "Encore" → `state = 'relearning'` ou `state = 'learning'`
 - ✅ Cartes notées "Difficile" → `stability` faible (< 1 jour)
 - ✅ Cartes notées "Bien" → `stability` moyenne (1-3 jours)
@@ -262,6 +279,7 @@ ORDER BY due_date;
 3. Notez différemment les cartes (ex: "Encore" cette fois)
 
 **Résultat attendu** :
+
 - ✅ Carte notée "Encore" → `stability` diminue
 - ✅ Carte notée "Facile" → `stability` augmente
 - ✅ Algorithme FSRS adapte les intervalles
@@ -276,6 +294,7 @@ ORDER BY due_date;
 2. Essayez de le réviser
 
 **Résultat attendu** :
+
 - ✅ Message "Aucune carte à réviser"
 - ✅ Pas de crash
 
@@ -285,6 +304,7 @@ ORDER BY due_date;
 2. Essayez de modifier le deck attribué
 
 **Résultat attendu** :
+
 - ✅ Erreur 403 "Cannot edit assigned deck"
 - ✅ Ou option "Modifier" désactivée/absente
 
@@ -293,6 +313,7 @@ ORDER BY due_date;
 1. Essayez de supprimer le deck attribué
 
 **Résultat attendu** :
+
 - ✅ Option "Supprimer" absente du menu
 - ✅ Ou erreur si tentative directe
 
@@ -304,6 +325,7 @@ ORDER BY due_date;
 2. Révisez la carte
 
 **Résultat attendu** :
+
 - ✅ LaTeX rendu correctement avec MathLive
 - ✅ Formules affichées proprement
 
@@ -317,6 +339,7 @@ ORDER BY due_date;
 2. Section SRS
 
 **Résultat attendu** :
+
 - ✅ Total decks : 2 (1 attribué + 1 personnel)
 - ✅ À réviser : X cartes (selon les due_date)
 - ✅ Cartes maîtrisées : X
@@ -328,6 +351,7 @@ ORDER BY due_date;
 3. Section SRS Decks
 
 **Résultat attendu** :
+
 - ✅ Nombre de decks créés : 1
 - ✅ Lien "Gérer les decks" fonctionnel
 
@@ -344,11 +368,13 @@ ORDER BY due_date;
 ### 8.2 Responsive design
 
 Testez sur :
+
 - 💻 Desktop (1920x1080)
 - 📱 Mobile (375x667)
 - 📱 Tablet (768x1024)
 
 **Résultat attendu** :
+
 - ✅ Interface adaptée à toutes les tailles
 - ✅ Boutons accessibles
 - ✅ Cartes lisibles
@@ -428,18 +454,18 @@ Testez sur :
 
 À remplir après les tests :
 
-**Date** : __________
-**Testeur** : __________
+**Date** : \***\*\_\_\*\***
+**Testeur** : \***\*\_\_\*\***
 
 ### Résumé
 
-| Catégorie | Tests Réussis | Tests Échoués | Bugs Trouvés |
-|-----------|---------------|---------------|--------------|
-| Création deck | __ / __ | __ / __ | __ |
-| Attribution | __ / __ | __ / __ | __ |
-| Révision | __ / __ | __ / __ | __ |
-| FSRS Algorithm | __ / __ | __ / __ | __ |
-| UI/UX | __ / __ | __ / __ | __ |
+| Catégorie      | Tests Réussis | Tests Échoués | Bugs Trouvés |
+| -------------- | ------------- | ------------- | ------------ |
+| Création deck  | ** / **       | ** / **       | \_\_         |
+| Attribution    | ** / **       | ** / **       | \_\_         |
+| Révision       | ** / **       | ** / **       | \_\_         |
+| FSRS Algorithm | ** / **       | ** / **       | \_\_         |
+| UI/UX          | ** / **       | ** / **       | \_\_         |
 
 ### Bugs Identifiés
 
@@ -450,9 +476,7 @@ Testez sur :
 
 ### Recommandations
 
--
-
----
+- ***
 
 ## 🚀 Phase 2 (Fonctionnalités futures)
 

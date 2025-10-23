@@ -87,7 +87,8 @@
 		<div class="space-y-3">
 			{#each notifications as notification (notification.id)}
 				<div
-					class="group overflow-hidden rounded-lg border {getPriorityColors(notification).border} {getPriorityColors(notification).bg} shadow-sm transition-all hover:shadow-md"
+					class="group overflow-hidden rounded-lg border {getPriorityColors(notification)
+						.border} {getPriorityColors(notification).bg} shadow-sm transition-all hover:shadow-md"
 				>
 					<button
 						type="button"
@@ -118,7 +119,9 @@
 
 									{#if notification.priority !== 'normal'}
 										<span
-											class="rounded-full px-2 py-0.5 text-xs font-medium {getPriorityColors(notification).border} {getPriorityColors(notification).text}"
+											class="rounded-full px-2 py-0.5 text-xs font-medium {getPriorityColors(
+												notification
+											).border} {getPriorityColors(notification).text}"
 										>
 											{NOTIFICATION_PRIORITY_LABELS[notification.priority]}
 										</span>
@@ -136,7 +139,9 @@
 
 								<!-- Message (HTML) -->
 								<div
-									class="prose prose-sm dark:prose-invert max-w-none {getPriorityColors(notification).text}"
+									class="prose prose-sm max-w-none dark:prose-invert {getPriorityColors(
+										notification
+									).text}"
 								>
 									{@html notification.message}
 								</div>

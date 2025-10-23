@@ -51,11 +51,11 @@
 				selectedClassIds = [];
 				await invalidateAll();
 			} else {
-				toaster.error(result.data?.error || 'Échec de l\'assignation');
+				toaster.error(result.data?.error || "Échec de l'assignation");
 			}
 		} catch (error) {
 			console.error('Assignment failed:', error);
-			toaster.error('Échec de l\'assignation');
+			toaster.error("Échec de l'assignation");
 		} finally {
 			isSubmitting = false;
 		}
@@ -94,13 +94,13 @@
 
 <div class="container mx-auto max-w-5xl px-4 py-8">
 	<!-- Header -->
-	<div class="flex items-center gap-4 mb-8">
+	<div class="mb-8 flex items-center gap-4">
 		<Button variant="ghost" size="icon" onclick={handleBack}>
 			<ArrowLeft class="h-5 w-5" />
 		</Button>
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Assigner l'Évaluation</h1>
-			<p class="text-muted-foreground mt-2">{data.assessment.title}</p>
+			<p class="mt-2 text-muted-foreground">{data.assessment.title}</p>
 		</div>
 	</div>
 
@@ -113,15 +113,15 @@
 			</Card.Header>
 			<Card.Content>
 				{#if data.classes.length === 0}
-					<div class="text-center py-12 text-muted-foreground">
-						<Users class="mx-auto h-12 w-12 mb-3 opacity-50" />
+					<div class="py-12 text-center text-muted-foreground">
+						<Users class="mx-auto mb-3 h-12 w-12 opacity-50" />
 						<p>Aucune classe trouvée</p>
 					</div>
 				{:else}
 					<div class="space-y-3">
 						{#each data.classes as classData (classData.id)}
 							<div
-								class="flex items-center justify-between p-4 rounded-lg border hover:bg-accent/50 transition-colors cursor-pointer"
+								class="flex cursor-pointer items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent/50"
 								onclick={() => toggleClass(classData.id)}
 							>
 								<div class="flex items-center gap-4">
@@ -135,7 +135,7 @@
 								</div>
 								{#if classData.is_assigned}
 									<Badge variant="secondary">
-										<Check class="h-3 w-3 mr-1" />
+										<Check class="mr-1 h-3 w-3" />
 										Déjà assignée
 									</Badge>
 								{/if}
@@ -160,42 +160,34 @@
 			<Card.Header>
 				<Card.Title>Assignations Actuelles</Card.Title>
 				<Card.Description>
-					{data.existingAssignments.length} assignation{data.existingAssignments.length > 1 ? 's' : ''}
+					{data.existingAssignments.length} assignation{data.existingAssignments.length > 1
+						? 's'
+						: ''}
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
 				{#if data.existingAssignments.length === 0}
-					<div class="text-center py-12 text-muted-foreground">
+					<div class="py-12 text-center text-muted-foreground">
 						<p>Aucune assignation</p>
-						<p class="text-sm mt-2">Sélectionnez des classes pour commencer</p>
+						<p class="mt-2 text-sm">Sélectionnez des classes pour commencer</p>
 					</div>
 				{:else}
 					<div class="space-y-3">
 						{#each data.existingAssignments as assignment (assignment.id)}
-							<div
-								class="flex items-center justify-between p-4 rounded-lg border bg-accent/20"
-							>
+							<div class="flex items-center justify-between rounded-lg border bg-accent/20 p-4">
 								<div>
 									{#if assignment.class_id}
 										<div class="font-medium">{assignment.class?.name || 'Classe'}</div>
-										<div class="text-sm text-muted-foreground">
-											Classe entière
-										</div>
+										<div class="text-sm text-muted-foreground">Classe entière</div>
 									{:else if assignment.student_id}
 										<div class="font-medium">
 											{assignment.student?.firstname}
 											{assignment.student?.lastname}
 										</div>
-										<div class="text-sm text-muted-foreground">
-											Élève individuel
-										</div>
+										<div class="text-sm text-muted-foreground">Élève individuel</div>
 									{/if}
 								</div>
-								<Button
-									variant="ghost"
-									size="icon"
-									onclick={() => handleUnassign(assignment.id)}
-								>
+								<Button variant="ghost" size="icon" onclick={() => handleUnassign(assignment.id)}>
 									<X class="h-4 w-4" />
 								</Button>
 							</div>

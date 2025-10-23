@@ -60,15 +60,13 @@
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<!-- Header -->
-	<div class="flex items-center gap-4 mb-8">
+	<div class="mb-8 flex items-center gap-4">
 		<Button variant="ghost" size="icon" onclick={handleBack}>
 			<ArrowLeft class="h-5 w-5" />
 		</Button>
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Modifier l'Évaluation</h1>
-			<p class="text-muted-foreground mt-2">
-				Modifiez les paramètres de votre évaluation
-			</p>
+			<p class="mt-2 text-muted-foreground">Modifiez les paramètres de votre évaluation</p>
 		</div>
 	</div>
 

@@ -142,10 +142,7 @@ export const PUT: RequestHandler = async ({
 
 			// Validate desiredRetention
 			if (newConfig.desiredRetention < 0.7 || newConfig.desiredRetention > 0.97) {
-				return json(
-					{ error: 'Desired retention must be between 0.7 and 0.97' },
-					{ status: 400 }
-				);
+				return json({ error: 'Desired retention must be between 0.7 and 0.97' }, { status: 400 });
 			}
 
 			updates.config = newConfig;

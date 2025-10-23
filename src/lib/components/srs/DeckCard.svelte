@@ -144,9 +144,7 @@
 						Réviser maintenant ({dueCount})
 					</Button>
 				{:else}
-					<Button variant="outline" class="flex-1" disabled>
-						Aucune carte à réviser
-					</Button>
+					<Button variant="outline" class="flex-1" disabled>Aucune carte à réviser</Button>
 				{/if}
 			</div>
 		{/if}
@@ -155,7 +153,7 @@
 	<!-- Due Cards Indicator (visual accent) -->
 	{#if hasDueCards}
 		<div
-			class="absolute left-0 top-0 h-full w-1 rounded-l-lg bg-primary transition-all duration-300 group-hover:w-2"
+			class="absolute top-0 left-0 h-full w-1 rounded-l-lg bg-primary transition-all duration-300 group-hover:w-2"
 		></div>
 	{/if}
 </Card.Root>

@@ -166,7 +166,9 @@
 	 */
 	function goBack() {
 		if (hasChanges) {
-			if (!confirm('Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter ?')) {
+			if (
+				!confirm('Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter ?')
+			) {
 				return;
 			}
 		}
@@ -202,7 +204,11 @@
 					<!-- Deck Name -->
 					<div class="space-y-2">
 						<Label for="deck-name">Nom du deck *</Label>
-						<Input id="deck-name" bind:value={deckName} placeholder="Ex: Équations du second degré" />
+						<Input
+							id="deck-name"
+							bind:value={deckName}
+							placeholder="Ex: Équations du second degré"
+						/>
 					</div>
 
 					<!-- Description -->
@@ -335,7 +341,11 @@
 
 		<Button onclick={saveDeck} disabled={!canSave || isSaving || !hasChanges} size="lg">
 			<Save class="mr-2 h-5 w-5" />
-			{isSaving ? 'Enregistrement...' : hasChanges ? 'Enregistrer les modifications' : 'Aucune modification'}
+			{isSaving
+				? 'Enregistrement...'
+				: hasChanges
+					? 'Enregistrer les modifications'
+					: 'Aucune modification'}
 		</Button>
 	</div>
 </div>

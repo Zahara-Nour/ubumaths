@@ -52,10 +52,7 @@ export const POST: RequestHandler = async ({
 			.single();
 
 		if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {
-			return json(
-				{ error: 'Forbidden. Only teachers can assign decks.' },
-				{ status: 403 }
-			);
+			return json({ error: 'Forbidden. Only teachers can assign decks.' }, { status: 403 });
 		}
 
 		// Get source deck
@@ -237,10 +234,7 @@ export const POST: RequestHandler = async ({
 
 		// Mark source deck as assigned if assignment was successful
 		if (results.successCount > 0) {
-			await supabase
-				.from('srs_decks')
-				.update({ is_assigned: true })
-				.eq('id', deckId);
+			await supabase.from('srs_decks').update({ is_assigned: true }).eq('id', deckId);
 		}
 
 		console.log('Assignment complete:', results);

@@ -98,7 +98,9 @@ export function validateTemplateForSRS(template: QuestionTemplate): {
 			errors.push(`Instance generation failed: ${result.errors?.join(', ')}`);
 		}
 	} catch (error) {
-		errors.push(`Instance generation error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+		errors.push(
+			`Instance generation error: ${error instanceof Error ? error.message : 'Unknown error'}`
+		);
 	}
 
 	return {

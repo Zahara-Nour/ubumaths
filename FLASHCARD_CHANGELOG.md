@@ -24,13 +24,11 @@ Cette version introduit une refonte complète du composant avec une API simplifi
 #### API simplifiée
 
 1. **Prop `mode` supprimée**
-
    - **AVANT** : `mode: 'flashcard' | 'interactive'`
    - **APRÈS** : `interactive?: boolean` (default: `false`)
    - **Raison** : Boolean plus simple et plus clair
 
 2. **Prop `showConfetti` supprimée**
-
    - **AVANT** : `showConfetti?: boolean` (default: `true`)
    - **APRÈS** : Prop supprimée, pas de confetti
    - **Raison** : Éviter les distractions dans les tests

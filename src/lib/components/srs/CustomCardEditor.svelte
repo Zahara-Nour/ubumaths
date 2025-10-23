@@ -33,12 +33,7 @@
 		onCancel?: () => void;
 	}
 
-	let {
-		initialFrontContent = [],
-		initialBackContent = [],
-		onSave,
-		onCancel
-	}: Props = $props();
+	let { initialFrontContent = [], initialBackContent = [], onSave, onCancel }: Props = $props();
 
 	// State
 	let frontHTML = $state(contentFieldsToHTML(initialFrontContent));
@@ -149,9 +144,7 @@
 								<MathDisplay text={frontHTML} />
 							</div>
 						{:else}
-							<div class="text-center text-sm text-muted-foreground">
-								Le recto est vide
-							</div>
+							<div class="text-center text-sm text-muted-foreground">Le recto est vide</div>
 						{/if}
 					</Card.Content>
 				</Card.Root>
@@ -167,9 +160,7 @@
 								<MathDisplay text={backHTML} />
 							</div>
 						{:else}
-							<div class="text-center text-sm text-muted-foreground">
-								Le verso est vide
-							</div>
+							<div class="text-center text-sm text-muted-foreground">Le verso est vide</div>
 						{/if}
 					</Card.Content>
 				</Card.Root>
@@ -206,7 +197,9 @@
 
 	<!-- Validation Message -->
 	{#if !canSave}
-		<div class="mt-4 rounded-lg border border-orange-600 bg-orange-100 p-3 text-sm text-orange-900 dark:bg-orange-950 dark:text-orange-200">
+		<div
+			class="mt-4 rounded-lg border border-orange-600 bg-orange-100 p-3 text-sm text-orange-900 dark:bg-orange-950 dark:text-orange-200"
+		>
 			<p>Le recto et le verso doivent contenir du contenu pour créer la carte.</p>
 		</div>
 	{/if}

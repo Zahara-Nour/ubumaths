@@ -229,7 +229,10 @@
 										</DropdownMenu.Trigger>
 										<DropdownMenu.Content align="end">
 											{#if deck.isAssigned}
-												<DropdownMenu.Item onclick={() => goto(`/dashboard/teacher/srs/decks/${deck.id}/assignments`)}>
+												<DropdownMenu.Item
+													onclick={() =>
+														goto(`/dashboard/teacher/srs/decks/${deck.id}/assignments`)}
+												>
 													<Users class="mr-2 h-4 w-4" />
 													Voir les attributions
 												</DropdownMenu.Item>
