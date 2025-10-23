@@ -11,6 +11,7 @@ The database is designed to support a complete math learning platform with:
 - **Classroom Management**: Classes and class memberships
 - **Friend System**: Mutual friendships with request/accept workflow
 - **Real-Time Presence**: WebSocket-based online/offline status
+- **Error Monitoring**: Comprehensive error logging and tracking system (NEW)
 
 ## Entity Relationship Diagram
 
@@ -301,6 +302,139 @@ Real-time online/offline status tracked via WebSocket heartbeats.
 - `upsert_user_presence(user_id, status)` - Update presence (used by WebSocket server)
 - `cleanup_stale_presence()` - Mark offline users with old heartbeats
 - `get_friend_ids(user_id)` - Get list of friend IDs (for presence broadcasting)
+
+### Error Monitoring Tables
+
+#### `error_logs`
+
+Comprehensive error logging for application monitoring and debugging.
+
+| Column            | Type        | Description                                         |
+| ----------------- | ----------- | --------------------------------------------------- |
+| id                | UUID (PK)   | Error log ID                                        |
+| error_type        | TEXT        | 'client_js', 'server_api', 'server_load', etc.     |
+| severity          | TEXT        | 'info', 'warning', 'error', 'critical'              |
+| message           | TEXT        | Error message (max 1000 chars)                      |
+| stack_trace       | TEXT        | Full stack trace (sanitized, max 5000 chars)        |
+| error_name        | TEXT        | Error constructor name (TypeError, etc.)            |
+| url               | TEXT        | Page URL or API endpoint                            |
+| file_path         | TEXT        | File where error occurred                           |
+| line_number       | INTEGER     | Line number in file                                 |
+| column_number     | INTEGER     | Column number in file                               |
+| user_id           | UUID (FK)   | References profiles(id)                             |
+| user_role         | TEXT        | 'student', 'teacher', 'admin'                       |
+| session_id        | TEXT        | Session identifier                                  |
+| request_method    | TEXT        | HTTP method (GET, POST, etc.)                       |
+| status_code       | INTEGER     | HTTP status code                                    |
+| request_headers   | JSONB       | Sanitized request headers                           |
+| request_body      | JSONB       | Sanitized request body                              |
+| response_time     | INTEGER     | Response time in milliseconds                       |
+| user_agent        | TEXT        | Browser user agent string                           |
+| browser_name      | TEXT        | Browser name (Chrome, Firefox, etc.)                |
+| browser_version   | TEXT        | Browser version                                     |
+| os_name           | TEXT        | Operating system (Windows, macOS, etc.)             |
+| device_type       | TEXT        | 'mobile', 'tablet', 'desktop'                       |
+| viewport_width    | INTEGER     | Browser viewport width                              |
+| viewport_height   | INTEGER     | Browser viewport height                             |
+| context           | JSONB       | Additional error-specific data (sanitized)          |
+| tags              | TEXT[]      | Tags for categorization                             |
+| resolved          | BOOLEAN     | Whether error has been resolved (default: false)    |
+| resolved_by       | UUID (FK)   | Admin who resolved the error                        |
+| resolved_at       | TIMESTAMPTZ | When error was resolved                             |
+| resolution_notes  | TEXT        | Notes about how error was fixed                     |
+| error_signature   | TEXT        | SHA-256 hash for deduplication (auto-generated)     |
+| created_at        | TIMESTAMPTZ | When error occurred                                 |
+
+**Key Features**:
+
+- **Automatic Sanitization**: Passwords, tokens, API keys, emails removed from contexts
+- **Privacy Protection**: Student data protected, PII redacted
+- **Error Deduplication**: Automatic signature generation via trigger
+- **Admin-Only Access**: RLS enforced for viewing/resolving
+- **Service Role Insert**: Error logging bypasses RLS using service role key
+
+**Indexes**:
+- `idx_error_logs_created_at` - Time-based queries (DESC)
+- `idx_error_logs_user_id` - User-specific errors (partial, WHERE user_id IS NOT NULL)
+- `idx_error_logs_type_severity` - Filtering by type and severity
+- `idx_error_logs_unresolved` - Active errors dashboard (partial, WHERE resolved = FALSE)
+- `idx_error_logs_resolved` - Resolved errors (partial, WHERE resolved = TRUE)
+- `idx_error_logs_signature` - Deduplication lookups (partial, WHERE error_signature IS NOT NULL)
+- `idx_error_logs_url` - URL-based filtering
+- `idx_error_logs_session` - Session tracking (partial, WHERE session_id IS NOT NULL)
+
+**Triggers**:
+- `trigger_set_error_signature` - Auto-generates error signature before insert
+- `trigger_update_error_occurrence` - Updates occurrence tracking after insert
+
+**RLS Policies**:
+- Admins: Full SELECT, INSERT, UPDATE, DELETE access
+- Service Role: INSERT access (for error logging from any context)
+- Students/Teachers: No access
+
+#### `error_occurrences`
+
+Tracks frequency and patterns of duplicate errors for efficient monitoring.
+
+| Column             | Type        | Description                                |
+| ------------------ | ----------- | ------------------------------------------ |
+| id                 | UUID (PK)   | Occurrence record ID                       |
+| error_signature    | TEXT UNIQUE | Unique error hash (from error_logs)        |
+| error_type         | TEXT        | Error type (denormalized for filtering)    |
+| severity           | TEXT        | Severity level (denormalized)              |
+| message            | TEXT        | Error message (denormalized)               |
+| url                | TEXT        | URL where error occurred (denormalized)    |
+| file_path          | TEXT        | File path (denormalized)                   |
+| line_number        | INTEGER     | Line number (denormalized)                 |
+| first_seen         | TIMESTAMPTZ | When error first occurred                  |
+| last_seen          | TIMESTAMPTZ | Most recent occurrence                     |
+| occurrence_count   | INTEGER     | Number of times error occurred             |
+| last_error_log_id  | UUID (FK)   | Most recent error_logs entry               |
+| is_resolved        | BOOLEAN     | Whether all instances are resolved         |
+| created_at         | TIMESTAMPTZ | Record creation time                       |
+| updated_at         | TIMESTAMPTZ | Last update time                           |
+
+**Key Features**:
+
+- **Automatic Updates**: Incremented via trigger on error_logs insert
+- **Deduplication**: Groups identical errors by signature
+- **Performance**: Reduces dashboard query load
+- **Resolution Tracking**: Bulk resolution by signature
+
+**Indexes**:
+- `idx_error_occurrences_signature` - Primary lookup
+- `idx_error_occurrences_last_seen` - Recent errors (DESC)
+- `idx_error_occurrences_count` - Most frequent errors (DESC)
+- `idx_error_occurrences_unresolved` - Active occurrences (partial, WHERE is_resolved = FALSE)
+- `idx_error_occurrences_type_severity` - Filtering
+
+**Triggers**:
+- `trigger_error_occurrences_updated_at` - Auto-updates updated_at timestamp
+
+**RLS Policies**:
+- Admins: Full SELECT access
+- Service Role: Full access (for automatic updates)
+- Students/Teachers: No access
+
+**Helper Functions**:
+
+- `generate_error_signature(type, message, file, line)` - Creates SHA-256 hash
+- `upsert_error_occurrence(signature, log_id, ...)` - Creates/updates occurrence record
+- `cleanup_old_errors(days_old)` - Removes resolved errors older than N days
+- `get_error_stats(hours)` - Returns error statistics for dashboard
+- `resolve_error(error_log_id, resolved_by, notes)` - Marks error as resolved
+- `resolve_error_by_signature(signature, resolved_by, notes)` - Bulk resolves by signature
+
+**Usage**:
+
+Error monitoring is fully automatic:
+- Client-side errors captured via `hooks.client.ts`
+- Server-side errors captured via `hooks.server.ts`
+- Manual capture: `captureError()`, `captureValidationError()`, `capturePerformance()`
+- Admin dashboard: `/dashboard/admin/errors`
+- Critical errors trigger automatic notifications to admins
+
+**Documentation**: See `ERROR_MONITORING_SYSTEM.md` and `ERROR_MONITORING_QUICK_START.md`
 
 ## Row Level Security (RLS)
 
