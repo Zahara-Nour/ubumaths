@@ -11,7 +11,7 @@
 	import { page } from '$app/state';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { uploadMultipleMessageAttachments } from '$lib/utils/file-upload';
-	import { getSupabase } from '$lib/supabaseClient';
+	import { supabase } from '$lib/supabaseClient';
 
 	let subject = $state('');
 	let content = $state('');
@@ -212,8 +212,7 @@
 			// Upload attachments if any
 			if (attachments.length > 0 && messageId) {
 				try {
-					const supabase = getSupabase();
-					const uploadResults = await uploadMultipleMessageAttachments(
+							const uploadResults = await uploadMultipleMessageAttachments(
 						supabase,
 						attachments,
 						messageId
@@ -272,7 +271,6 @@
 		}>
 	) {
 		try {
-			const supabase = getSupabase();
 
 			const attachmentRecords = attachmentData.map((att) => ({
 				message_id: messageId,

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getSupabase } from '$lib/supabaseClient';
+	import { supabase } from '$lib/supabaseClient';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import * as Select from '$lib/components/ui/select';
@@ -152,7 +152,6 @@
 	});
 
 	async function loadCurrentUser() {
-		const supabase = getSupabase();
 		const {
 			data: { user }
 		} = await supabase.auth.getUser();
@@ -164,8 +163,7 @@
 	async function loadTemplates() {
 		isLoading = true;
 		try {
-			const supabase = getSupabase();
-			const { data, error } = await supabase
+				const { data, error } = await supabase
 				.from('message_templates')
 				.select(
 					`
@@ -191,8 +189,7 @@
 
 	async function loadFavorites() {
 		try {
-			const supabase = getSupabase();
-			const { data, error } = await supabase
+				const { data, error } = await supabase
 				.from('user_favorite_templates')
 				.select('template_id');
 
@@ -205,7 +202,6 @@
 	}
 
 	async function loadClasses() {
-		const supabase = getSupabase();
 		const {
 			data: { user }
 		} = await supabase.auth.getUser();
@@ -342,8 +338,7 @@
 		isLoading = true;
 
 		try {
-			const supabase = getSupabase();
-
+	
 			const templateData: any = {
 				title: formTitle.trim(),
 				description: formDescription.trim() || null,
@@ -403,8 +398,7 @@
 
 		isLoading = true;
 		try {
-			const supabase = getSupabase();
-			const { error } = await supabase.from('message_templates').delete().eq('id', template.id);
+				const { error } = await supabase.from('message_templates').delete().eq('id', template.id);
 
 			if (error) {
 				console.error('Error deleting template:', error);

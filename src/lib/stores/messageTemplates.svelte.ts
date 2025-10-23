@@ -13,7 +13,6 @@ import type {
 	RenderedTemplate
 } from '$lib/types/messageTemplates';
 import { renderTemplate, buildGlobalContext } from '$lib/templates/templateEngine';
-import { getSupabase } from '$lib/supabaseClient';
 
 interface MessageTemplatesState {
 	templates: MessageTemplate[];

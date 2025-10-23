@@ -19,7 +19,7 @@
 	import type { MessageTemplate, TriggerType } from '$lib/types/messageTemplates';
 	import { getVariablesForTrigger } from '$lib/templates/templateVariables';
 	import { previewTemplate } from '$lib/templates/templateEngine';
-	import { getSupabase } from '$lib/supabaseClient';
+	import { supabase } from '$lib/supabaseClient';
 	import { goto } from '$app/navigation';
 	import { cn } from '$lib/utils';
 
@@ -117,7 +117,6 @@
 
 	async function loadTemplates() {
 		isLoading = true;
-		const supabase = getSupabase();
 
 		const { data, error } = await supabase
 			.from('message_templates')
@@ -141,7 +140,6 @@
 	}
 
 	async function loadFavorites() {
-		const supabase = getSupabase();
 		const { data } = await supabase
 			.from('user_favorite_templates')
 			.select('template_id');
@@ -246,7 +244,6 @@
 		}
 
 		isLoading = true;
-		const supabase = getSupabase();
 
 		const templateData = {
 			title: formTitle.trim(),
@@ -295,7 +292,6 @@
 		if (!confirm(`Supprimer "${template.title}" ?`)) return;
 
 		isLoading = true;
-		const supabase = getSupabase();
 
 		const { error } = await supabase
 			.from('message_templates')

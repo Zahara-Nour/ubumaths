@@ -45,11 +45,11 @@
 			<div class="rounded-lg border border-border bg-muted/50 p-4">
 				<h4 class="mb-2 font-semibold">Syntaxe</h4>
 				<code class="block rounded bg-card p-2 font-mono text-sm">
-					{{`{{variable | filter:argument}}`}}
+					{'{'}{'{'}}variable | filter:argument{'}'}{'}'}
 				</code>
 				<p class="mt-2 text-sm text-muted-foreground">
 					Vous pouvez chaîner plusieurs filtres :
-					<code class="font-mono">{{`{{name | uppercase | truncate:20}}`}}</code>
+					<code class="font-mono">{'{'}{'{'}}name | uppercase | truncate:20{'}'}{'}'}  </code>
 				</p>
 			</div>
 
@@ -189,14 +189,14 @@
 					💡 Blocs Conditionnels
 				</h4>
 				<p class="mb-2 text-sm text-blue-800 dark:text-blue-200">
-					Affichez du contenu conditionnellement avec <code class="font-mono">{{`{{#if}}...{{/if}}`}}</code>
+					Affichez du contenu conditionnellement avec <code class="font-mono">{'{'}{'{'}}#if{'}'}{'}'}...{'{'}{'{'}}  /if{'}'}{'}'}  </code>
 				</p>
 				<code class="block rounded bg-white p-3 text-xs font-mono dark:bg-gray-900">
-					{{`{{#if due_date}}`}}<br />
-					&nbsp;&nbsp;Date limite: {{`{{due_date}}`}}<br />
-					{{`{{else}}`}}<br />
+					{'{'}{'{'}}#if due_date{'}'}{'}'}<br />
+					&nbsp;&nbsp;Date limite: {'{'}{'{'}}due_date{'}'}{'}'}  <br />
+					{'{'}{'{'}}else{'}'}{'}'}  <br />
 					&nbsp;&nbsp;Pas de date limite<br />
-					{{`{{/if}}`}}
+					{'{'}{'{'}}  /if{'}'}{'}'}
 				</code>
 			</div>
 		</div>
