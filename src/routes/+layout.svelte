@@ -23,16 +23,25 @@
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { page, navigating } from '$app/state';
+	import { page } from '$app/state';
+	import { navigating } from '$app/stores';
 	import type { LayoutData } from './$types';
 	import { Toaster } from 'svelte-sonner';
 	import { ModeWatcher } from 'mode-watcher';
 	import { getVersion } from '$lib/utils/version';
+	import SkeletonPage from '$lib/components/skeleton/SkeletonPage.svelte';
+	import SkeletonDashboard from '$lib/components/skeleton/SkeletonDashboard.svelte';
+	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
+	import SkeletonForm from '$lib/components/skeleton/SkeletonForm.svelte';
+	import { getSkeletonType } from '$lib/utils/skeleton-detector';
 
 	let { children, data }: { children: any; data: LayoutData } = $props();
 
 	// Check if we're in a dashboard route
 	let isDashboardRoute = $derived(page.url.pathname.startsWith('/dashboard'));
+
+	// Determine which skeleton variant to show based on current route
+	let skeletonType = $derived(getSkeletonType(page.url.pathname));
 
 	// Initialize theme and fontSize stores (ensures DOM updates on mode/size changes)
 	$effect(() => {
@@ -53,7 +62,7 @@
 <ModeWatcher track={true} defaultMode="system" />
 
 <!-- Loading bar that appears during navigation -->
-{#if navigating}
+{#if $navigating}
 	<div class="fixed top-0 right-0 left-0 z-[200] h-1 animate-pulse bg-primary shadow-lg"></div>
 {/if}
 
@@ -82,8 +91,26 @@
 		{/if}
 
 		<!-- Main content -->
-		<main class="flex-1 overflow-y-auto" class:p-6={!isDashboardRoute}>
-			{@render children?.()}
+		<main class="relative flex-1 overflow-y-auto" class:p-6={!isDashboardRoute}>
+			<!-- Always render children so page can load -->
+			<div class:opacity-0={$navigating && !isDashboardRoute} class="transition-opacity duration-200">
+				{@render children?.()}
+			</div>
+
+			<!-- Overlay skeleton during navigation (only for non-dashboard routes) -->
+			{#if $navigating && !isDashboardRoute}
+				<div class="absolute inset-0 bg-background p-6">
+					{#if skeletonType === 'dashboard'}
+						<SkeletonDashboard />
+					{:else if skeletonType === 'list'}
+						<SkeletonList />
+					{:else if skeletonType === 'form'}
+						<SkeletonForm />
+					{:else}
+						<SkeletonPage />
+					{/if}
+				</div>
+			{/if}
 		</main>
 	</div>
 

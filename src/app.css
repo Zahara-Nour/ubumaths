@@ -301,3 +301,58 @@ math-field:focus {
 .math-block-wrapper {
 	display: block;
 }
+
+/*
+ * Skeleton Loader with Shimmer Effect
+ * ====================================
+ *
+ * Modern skeleton loaders with animated shimmer effect for navigation elements.
+ * Used during route transitions to provide visual feedback.
+ *
+ * Features:
+ * - Smooth shimmer animation that flows left-to-right
+ * - Compatible with light and dark modes
+ * - GPU-accelerated with CSS transforms
+ * - Reusable .skeleton class for any element
+ *
+ * Usage:
+ * <div class="skeleton h-6 w-24 rounded"></div>
+ */
+
+/* Shimmer keyframe animation - smooth horizontal wave */
+@keyframes shimmer {
+	0% {
+		transform: translateX(-100%);
+	}
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+/* Base skeleton class - creates container with overflow hidden */
+.skeleton {
+	position: relative;
+	overflow: hidden;
+	background-color: var(--color-muted);
+	border-radius: var(--radius);
+}
+
+/* Shimmer effect - animated gradient overlay */
+.skeleton::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	transform: translateX(-100%);
+	background: linear-gradient(
+		90deg,
+		transparent 0%,
+		light-dark(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1)) 50%,
+		transparent 100%
+	);
+	animation: shimmer 1.5s infinite;
+	/* GPU acceleration for smooth animation */
+	will-change: transform;
+}

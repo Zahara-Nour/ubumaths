@@ -35,6 +35,7 @@
 <script lang="ts">
 	import type { LayoutData } from './$types';
 	import { page } from '$app/state';
+	import { navigating } from '$app/stores';
 	import {
 		LayoutDashboard,
 		GraduationCap,
@@ -68,11 +69,19 @@
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import NotificationBanner from '$lib/components/notifications/NotificationBanner.svelte';
 	import NotificationDropdown from '$lib/components/notifications/NotificationDropdown.svelte';
+	import SkeletonPage from '$lib/components/skeleton/SkeletonPage.svelte';
+	import SkeletonDashboard from '$lib/components/skeleton/SkeletonDashboard.svelte';
+	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
+	import SkeletonForm from '$lib/components/skeleton/SkeletonForm.svelte';
+	import { getSkeletonType } from '$lib/utils/skeleton-detector';
 
 	// PROPS RECEIVED FROM PARENT LAYOUT SERVER LOAD:
 	// - data: Contains profile from +layout.server.ts
 	// - children: The child route component to render (e.g., +page.svelte)
 	let { data, children }: { data: LayoutData; children: any } = $props();
+
+	// Determine which skeleton variant to show based on current route
+	let skeletonType = $derived(getSkeletonType(page.url.pathname));
 
 	// Navigation links based on role
 	const getNavLinks = (role: string) => {
@@ -361,9 +370,29 @@
 			<NotificationBanner />
 
 			<!-- Main content with padding -->
-			<div class="p-4 sm:p-6 lg:p-8">
+			<div class="relative p-4 sm:p-6 lg:p-8">
 				<div class="mx-auto max-w-7xl">
-					{@render children()}
+					<!-- Always render children so page can load -->
+					<div class:opacity-0={$navigating} class="transition-opacity duration-200">
+						{@render children()}
+					</div>
+
+					<!-- Overlay skeleton during navigation -->
+					{#if $navigating}
+						<div class="absolute inset-0 p-4 sm:p-6 lg:p-8 bg-background">
+							<div class="mx-auto max-w-7xl">
+								{#if skeletonType === 'dashboard'}
+									<SkeletonDashboard />
+								{:else if skeletonType === 'list'}
+									<SkeletonList />
+								{:else if skeletonType === 'form'}
+									<SkeletonForm />
+								{:else}
+									<SkeletonPage />
+								{/if}
+							</div>
+						</div>
+					{/if}
 				</div>
 			</div>
 		</main>
