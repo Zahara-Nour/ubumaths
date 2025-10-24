@@ -88,10 +88,20 @@ async function scanCategory(
 		console.error(`Error scanning ${dirPath}:`, error);
 	}
 
-	// Sort: README first, then alphabetically
+	// Sort: README first, then by depth (shallower first), then alphabetically
 	return docs.sort((a, b) => {
-		if (a.path.endsWith('README.md')) return -1;
-		if (b.path.endsWith('README.md')) return 1;
+		// README files always first
+		const aIsReadme = a.path.endsWith('README.md');
+		const bIsReadme = b.path.endsWith('README.md');
+		if (aIsReadme && !bIsReadme) return -1;
+		if (!aIsReadme && bIsReadme) return 1;
+
+		// Then sort by depth (number of slashes)
+		const aDepth = (a.path.match(/\//g) || []).length;
+		const bDepth = (b.path.match(/\//g) || []).length;
+		if (aDepth !== bDepth) return aDepth - bDepth;
+
+		// Finally alphabetically
 		return a.title.localeCompare(b.title);
 	});
 }

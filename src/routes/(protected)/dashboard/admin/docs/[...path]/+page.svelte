@@ -37,7 +37,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.doc.metadata.title} - Documentation | UbuMaths</title>
+	<title>{data.doc?.metadata?.title || 'Documentation'} - Admin | UbuMaths</title>
 	<!-- Highlight.js theme -->
 	<link
 		rel="stylesheet"
@@ -60,8 +60,8 @@
 					{/if}
 				{/each}
 			</nav>
-			<h1 class="text-3xl font-bold">{data.doc.metadata.title}</h1>
-			{#if data.doc.metadata.status}
+			<h1 class="text-3xl font-bold">{data.doc?.metadata?.title || 'Document'}</h1>
+			{#if data.doc?.metadata?.status}
 				<p class="text-sm text-muted-foreground mt-1">
 					Status : {data.doc.metadata.status}
 				</p>
@@ -110,21 +110,29 @@
 							</button>
 
 							{#if expandedCategories.has(category.path)}
-								<div class="ml-6 mt-1 space-y-1">
+								<div class="ml-4 mt-1 space-y-0.5">
 									{#each category.docs as doc}
+										{@const depth = (doc.path.match(/\//g) || []).length}
+										{@const isReadme = doc.path.endsWith('README.md')}
 										<a
 											href={getDocUrl(category.path, doc.path)}
-											class="block p-2 text-sm hover:bg-accent rounded-md {data.currentPath ===
+											style="padding-left: {depth * 0.75 + 0.5}rem"
+											class="block py-1.5 px-2 text-sm hover:bg-accent rounded-md transition-colors {data.currentPath ===
 											`${category.path}/${doc.path}`
-												? 'bg-accent font-medium'
+												? 'bg-accent font-medium text-foreground'
+												: 'text-muted-foreground hover:text-foreground'} {isReadme
+												? 'font-semibold'
 												: ''}"
 										>
-											{doc.title}
-											{#if doc.status}
-												<span class="text-xs text-muted-foreground ml-1">
-													{doc.status}
-												</span>
-											{/if}
+											<span class="flex items-center gap-2">
+												{#if isReadme}
+													<span class="text-xs">📄</span>
+												{/if}
+												<span>{doc.title}</span>
+												{#if doc.status}
+													<span class="text-xs opacity-60">({doc.status})</span>
+												{/if}
+											</span>
 										</a>
 									{/each}
 								</div>
