@@ -26,7 +26,8 @@
 		"ws:dev": "npx tsx src/lib/server/websocket-server.ts",
 		"game:setup-assets": "bash scripts/setup-game-assets.sh",
 		"game:import-challenges": "npx tsx scripts/import-navadra-challenges.ts",
-		"game:seed-spells": "npx tsx scripts/seed-spell-definitions.ts"
+		"game:seed-spells": "npx tsx scripts/seed-spell-definitions.ts",
+		"docs:check-links": "npx tsx scripts/check-doc-links.ts"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^20.1.0",
