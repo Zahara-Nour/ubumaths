@@ -6,11 +6,17 @@
 	Perfect for dashboard pages with metrics and overview.
 -->
 
-<div class="space-y-6 animate-in fade-in duration-300">
+<div
+	class="space-y-6 animate-in fade-in duration-300"
+	role="status"
+	aria-live="polite"
+	aria-label="Chargement du contenu du tableau de bord"
+>
+	<span class="sr-only">Chargement du tableau de bord en cours...</span>
 	<!-- Page header -->
 	<div class="space-y-2">
-		<div class="skeleton h-9 w-64 rounded"></div>
-		<div class="skeleton h-4 w-96 rounded"></div>
+		<div class="skeleton h-9 w-64 max-w-full rounded"></div>
+		<div class="skeleton h-4 w-96 max-w-full rounded"></div>
 	</div>
 
 	<!-- Stats cards grid -->
@@ -22,7 +28,7 @@
 
 	<!-- Main content section -->
 	<div class="space-y-4">
-		<div class="skeleton h-6 w-48 rounded"></div>
+		<div class="skeleton h-6 w-48 max-w-full rounded"></div>
 		<div class="skeleton h-64 w-full rounded-lg"></div>
 	</div>
 
