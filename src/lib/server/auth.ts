@@ -70,20 +70,28 @@ export async function getUserProfile(
 	supabase: SupabaseClient<Database>,
 	userId: string
 ): Promise<Profile | null> {
-	// Query the profiles table for this user's record
-	const { data, error: err } = await supabase
-		.from('profiles')
-		.select('*')
-		.eq('id', userId)
-		.single();
+	try {
+		// Add 3-second timeout to prevent hanging on slow database queries
+		const profilePromise = supabase.from('profiles').select('*').eq('id', userId).single();
 
-	if (err) {
-		logger.error('Error fetching user profile:', err);
+		const timeoutPromise = new Promise<never>((_, reject) =>
+			setTimeout(() => reject(new Error('Profile fetch timeout')), 3000)
+		);
+
+		// Query the profiles table for this user's record (with timeout)
+		const { data, error: err } = await Promise.race([profilePromise, timeoutPromise]);
+
+		if (err) {
+			logger.error('Error fetching user profile:', err);
+			return null;
+		}
+
+		// Return the profile with role information
+		return data;
+	} catch (error) {
+		logger.error('Timeout or error fetching user profile:', error);
 		return null;
 	}
-
-	// Return the profile with role information
-	return data;
 }
 
 /**

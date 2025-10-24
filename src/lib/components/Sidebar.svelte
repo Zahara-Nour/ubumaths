@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { Home, Gamepad2, Calculator } from 'lucide-svelte';
 	import { resolve } from '$app/paths';
 
@@ -16,7 +16,7 @@
 
 	// Check if a link is active
 	function isActive(href: string) {
-		return $page.url.pathname === href;
+		return page.url.pathname === href;
 	}
 </script>
 

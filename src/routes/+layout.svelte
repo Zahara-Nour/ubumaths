@@ -23,8 +23,7 @@
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { page } from '$app/stores';
-	import { navigating } from '$app/stores';
+	import { page, navigating } from '$app/state';
 	import type { LayoutData } from './$types';
 	import { Toaster } from 'svelte-sonner';
 	import { ModeWatcher } from 'mode-watcher';
@@ -33,7 +32,7 @@
 	let { children, data }: { children: any; data: LayoutData } = $props();
 
 	// Check if we're in a dashboard route
-	let isDashboardRoute = $derived($page.url.pathname.startsWith('/dashboard'));
+	let isDashboardRoute = $derived(page.url.pathname.startsWith('/dashboard'));
 
 	// Initialize theme and fontSize stores (ensures DOM updates on mode/size changes)
 	$effect(() => {
@@ -54,7 +53,7 @@
 <ModeWatcher track={true} defaultMode="system" />
 
 <!-- Loading bar that appears during navigation -->
-{#if $navigating}
+{#if navigating}
 	<div class="fixed top-0 right-0 left-0 z-[200] h-1 animate-pulse bg-primary shadow-lg"></div>
 {/if}
 

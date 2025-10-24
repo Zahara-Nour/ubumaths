@@ -34,7 +34,7 @@
 
 <script lang="ts">
 	import type { LayoutData } from './$types';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import {
 		LayoutDashboard,
 		GraduationCap,
@@ -113,9 +113,9 @@
 	function isActive(href: string) {
 		// For debug pages, match any /dashboard/admin/debug/* route
 		if (href === '/dashboard/admin/debug/database') {
-			return $page.url.pathname.startsWith('/dashboard/admin/debug');
+			return page.url.pathname.startsWith('/dashboard/admin/debug');
 		}
-		return $page.url.pathname === href;
+		return page.url.pathname === href;
 	}
 
 	// Get role-specific background color

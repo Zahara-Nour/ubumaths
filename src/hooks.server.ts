@@ -18,23 +18,50 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 		// Track response time for performance monitoring
 		const responseTime = Date.now() - startTime;
 
-		// Log slow requests (> 3 seconds)
-		if (responseTime > 3000) {
-			const session = await event.locals.safeGetSession();
-			const userContext = session?.user?.id
-				? await getUserContext(event.locals.supabase, session.user.id)
-				: {};
+		// Skip logging for static assets and favicon to prevent cascade
+		const isStaticAsset = event.url.pathname.startsWith('/_app/') ||
+			event.url.pathname === '/favicon.ico' ||
+			event.url.pathname.endsWith('.png') ||
+			event.url.pathname.endsWith('.jpg') ||
+			event.url.pathname.endsWith('.svg');
 
-			await logError(event.locals.supabase, {
-				error_type: 'performance',
-				severity: responseTime > 10000 ? 'error' : 'warning',
-				message: `Slow request: ${responseTime}ms`,
-				url: event.url.pathname,
-				request_method: event.request.method,
-				response_time: responseTime,
-				status_code: response.status,
-				...userContext,
-				tags: ['slow_request']
+		// Log slow requests (> 3 seconds) - but non-blocking
+		if (responseTime > 3000 && !isStaticAsset) {
+			// Fire-and-forget to prevent blocking the response
+			// Use Promise without awaiting to avoid slowing down the response
+			Promise.resolve().then(async () => {
+				try {
+					// Add timeout to prevent getUserContext from hanging
+					const getUserContextWithTimeout = async (supabase: any, userId: string) => {
+						const timeoutPromise = new Promise((_, reject) =>
+							setTimeout(() => reject(new Error('Timeout')), 2000)
+						);
+						const contextPromise = getUserContext(supabase, userId);
+						return Promise.race([contextPromise, timeoutPromise]).catch(() => ({}));
+					};
+
+					const session = await event.locals.safeGetSession();
+					const userContext = session?.user?.id
+						? await getUserContextWithTimeout(event.locals.supabase, session.user.id)
+						: {};
+
+					await logError(event.locals.supabase, {
+						error_type: 'performance',
+						severity: responseTime > 10000 ? 'error' : 'warning',
+						message: `Slow request: ${responseTime}ms`,
+						url: event.url.pathname,
+						request_method: event.request.method,
+						response_time: responseTime,
+						status_code: response.status,
+						...userContext,
+						tags: ['slow_request']
+					});
+				} catch (error) {
+					// Silently fail - don't let logging errors break the app
+					if (dev) {
+						console.error('Error logging slow request:', error);
+					}
+				}
 			});
 		}
 
