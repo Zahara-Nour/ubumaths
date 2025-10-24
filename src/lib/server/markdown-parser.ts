@@ -7,8 +7,9 @@ marked.setOptions({
 	breaks: true // Convert \n to <br>
 });
 
-// Custom renderer with syntax highlighting
+// Custom renderer with syntax highlighting and link fixing
 const renderer = new marked.Renderer();
+
 renderer.code = function ({ text, lang }: { text: string; lang?: string }) {
 	if (lang && hljs.getLanguage(lang)) {
 		try {
@@ -20,6 +21,19 @@ renderer.code = function ({ text, lang }: { text: string; lang?: string }) {
 	}
 	const autoHighlighted = hljs.highlightAuto(text).value;
 	return `<pre><code class="hljs">${autoHighlighted}</code></pre>`;
+};
+
+// Fix relative markdown links to absolute doc paths
+renderer.link = function ({ href, title, text }: { href: string; title?: string | null; text: string }) {
+	// Transform relative .md links to absolute doc paths
+	if (href && href.endsWith('.md') && !href.startsWith('http') && !href.startsWith('/')) {
+		// Remove .md extension and prepend /dashboard/admin/docs/
+		const cleanHref = href.replace(/\.md$/, '');
+		href = `/dashboard/admin/docs/${cleanHref}`;
+	}
+
+	const titleAttr = title ? ` title="${title}"` : '';
+	return `<a href="${href}"${titleAttr}>${text}</a>`;
 };
 
 marked.setOptions({ renderer });

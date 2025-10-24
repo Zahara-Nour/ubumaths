@@ -29,7 +29,12 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 	}
 
 	const category = pathSegments[0];
-	const docPath = pathSegments.slice(1).join('/') + '.md';
+	let docPath = pathSegments.slice(1).join('/');
+
+	// Add .md extension if not already present
+	if (!docPath.endsWith('.md')) {
+		docPath += '.md';
+	}
 
 	// Get document content
 	try {
