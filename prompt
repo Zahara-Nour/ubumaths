@@ -1,0 +1,11 @@
+je veux réorganiser toute la documentation de ce projet. Actuellement, il y a beaucoup trop de fichiers .md essentiellement au même endroit avec des noms qui ne sont pas forcément cohérents entre eux.
+Analyse moi tout le projet pour réorganiser toute la documentation :
+- le fichier principal est CLAUDE.md qui doit rester le plus léger possible mais qui doit contenir les informations importantes pour Claude Code et qui va référencer les autres documents. La gestion choisie pour l'écriture de la documentation doit être une priorité dans ce document.
+- Comment utiliser et quoi mettre dans les fichiers CLAUDE/md plus globaux afin que je puisse les utiliser dans d'autres projets ? 
+- Le reste de la documentation doit être dans le repertoire /docs. 
+- je veux hierarchiser la documentation par les différents features implémentés et par des thèmes comme  l'architecture générale, la gestion de la base de données, la façon d'écrire les tests, l'optimisation du site, les choix de codage pour respecter les best practices, les erreurs à ne pas refaire (à mettre surement dans CLAUDE.md).  
+- Je ne veux pas d'informations redondantes. Les informations les plus importantes sont pour les features implémentés : une description détaillée du feature, ou en est l'implémentation et quelles sont les étapes/améliorations futures, ce qu'il reste à faire pour terminer l'installation.
+- la façon de nommer les noms doit être globalemente cohérente. Il y a parfois des fichiers README, est-ce qu'on ne peut pas mettre l'information qu'ils contiennent dans les autres documents spécifiques à l'endroit ou ils sont ? 
+- je veux enfin que cette documentation soit accessible en ligne dans le dashboard admin, formaté correctement en HTML a partir des fichiers .md.
+
+Ultrathink about how to to this. Ask me for clarifications. Make some design proposals.

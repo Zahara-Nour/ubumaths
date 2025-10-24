@@ -1,0 +1,199 @@
+# 📚 UbuMaths Documentation
+
+Documentation complète de la plateforme éducative UbuMaths.
+
+**Dernière mise à jour** : 2025-10-24
+**Statut** : 🟢 Active Development
+
+---
+
+## 🚀 Démarrage rapide
+
+| Pour...                     | Voir                                                |
+| --------------------------- | --------------------------------------------------- |
+| **Démarrer le développement** | [CLAUDE.md](../CLAUDE.md) à la racine            |
+| **Comprendre l'architecture** | [Architecture](#-architecture)                    |
+| **Découvrir les features**    | [Features](#-features-implémentées)               |
+| **Contribuer au projet**      | [Guide de contribution](contributing/README.md)   |
+
+---
+
+## 🎯 Features implémentées
+
+### 📝 Système de questions
+**Status** : ✅ Production | [Documentation →](features/questions/README.md)
+
+Système complet de banque de questions avec variables, génération aléatoire, 6 types de questions.
+
+- [Architecture technique](features/questions/architecture.md)
+- [Système de variables](features/questions/variable-system.md)
+- [Guide de syntaxe](features/questions/syntax-guide.md)
+- [API REST](features/questions/api.md)
+
+### 📊 Évaluations (Assessments)
+**Status** : ✅ Production | [Documentation →](features/assessments/README.md)
+
+Création et gestion d'évaluations par les enseignants, passage par les élèves, correction.
+
+- [Workflow enseignant](features/assessments/teacher-flow.md)
+- [Workflow élève](features/assessments/student-flow.md)
+- [Système de notation](features/assessments/grading.md)
+
+### 🗂️ SRS & Flashcards
+**Status** : ✅ Production | [Documentation →](features/srs-flashcards/README.md)
+
+Système de répétition espacée (FSRS) avec flashcards interactives.
+
+- [Algorithme FSRS](features/srs-flashcards/fsrs-algorithm.md)
+- [Gestion des decks](features/srs-flashcards/deck-management.md)
+- [Composants (FlashCard, QuestionCard, CorrectionCard)](features/srs-flashcards/components.md)
+- [Migration v1→v2](features/srs-flashcards/migration-v1-v2.md)
+
+### 🧩 Système d'énigmes
+**Status** : ✅ Production | [Documentation →](features/riddles/README.md)
+
+Énigmes quotidiennes avec système de badges et récompenses.
+
+- [Démarrage rapide](features/riddles/quick-start.md)
+- [Implémentation](features/riddles/implementation.md)
+- [Déploiement](features/riddles/deployment.md)
+
+### 📐 Géométrie dynamique
+**Status** : ✅ Production | [Documentation →](features/geometry/README.md)
+
+Intégration MathGraph32 pour figures géométriques interactives.
+
+- [Guide élève](features/geometry/student-guide.md)
+- [Guide enseignant](features/geometry/teacher-guide.md)
+- [Documentation API](features/geometry/api-docs.md)
+- [Exemples](features/geometry/examples.md)
+
+### 🎮 Navadra (Combat Math)
+**Status** : 🔄 En cours | [Documentation →](features/navadra/README.md)
+
+Système de combat mathématique gamifié.
+
+- [Guide d'intégration](features/navadra/integration-guide.md)
+- [Guide des assets](features/navadra/assets-guide.md)
+- [Phases d'implémentation](features/navadra/implementation-phases.md)
+
+### 💬 Messagerie privée
+**Status** : ✅ Production | [Documentation →](features/messaging/README.md)
+
+Système de messagerie enseignant-élève avec templates et pièces jointes.
+
+- [Messagerie privée](features/messaging/private-messaging.md)
+- [Templates de messages](features/messaging/message-templates.md)
+- [Pièces jointes](features/messaging/attachments.md)
+
+### 🔔 Notifications
+**Status** : ✅ Production | [Documentation →](features/notifications/README.md)
+
+Système de notifications avec ciblage et priorités.
+
+### 🐛 Monitoring d'erreurs
+**Status** : ✅ Production | [Documentation →](features/error-monitoring/README.md)
+
+Système complet de capture et analyse d'erreurs.
+
+- [Démarrage rapide](features/error-monitoring/quick-start.md)
+- [Architecture système](features/error-monitoring/system.md)
+- [Dashboard admin](features/error-monitoring/dashboard.md)
+
+### 📄 Templates de messages
+**Status** : ✅ Production | [Documentation →](features/templates/README.md)
+
+Templates réutilisables pour la communication.
+
+- [Guide utilisateur admin](features/templates/user-guide-admin.md)
+- [Guide utilisateur enseignant](features/templates/user-guide-teacher.md)
+- [Démarrage rapide](features/templates/quick-start.md)
+
+### 🔐 Authentification
+**Status** : ✅ Production | [Documentation →](features/authentication/README.md)
+
+Système d'authentification avec Google OAuth + email/password.
+
+- [Architecture système](features/authentication/system.md)
+
+---
+
+## 🏗️ Architecture
+
+| Document                                              | Description                          |
+| ----------------------------------------------------- | ------------------------------------ |
+| [Vue d'ensemble](architecture/README.md)              | Architecture générale du projet      |
+| [Structure du projet](architecture/project-structure.md) | Organisation des dossiers et fichiers |
+| [Schéma base de données](architecture/database-schema.md) | Tables, relations, RLS policies     |
+| [Routing](architecture/routing.md)                    | Routes SvelteKit et organisation     |
+| [WebSocket](architecture/websocket.md)                | Architecture temps réel              |
+| [Éditeur rich text](architecture/rich-text-editor.md) | TipTap + MathLive                    |
+| [Performance](architecture/performance.md)            | Optimisations et best practices      |
+
+---
+
+## 📖 Guides pratiques
+
+| Guide                                           | Description                    |
+| ----------------------------------------------- | ------------------------------ |
+| [Vue d'ensemble](guides/README.md)              | Index des guides               |
+| [Import d'élèves](guides/student-import.md)     | Workflow d'import CSV          |
+| [Déploiement](guides/deployment.md)             | Déploiement sur Vercel         |
+| [Dépannage](guides/troubleshooting.md)          | Solutions aux problèmes courants |
+| [Guide de tests](guides/testing-guide.md)       | Comment tester l'application   |
+| [Composants UI](guides/ui-components.md)        | Utilisation Shadcn-svelte      |
+
+---
+
+## 🛠️ Développement
+
+| Document                                                  | Description                     |
+| --------------------------------------------------------- | ------------------------------- |
+| [Vue d'ensemble](development/README.md)                   | Process de développement        |
+| [Git workflow](development/git-workflow.md)               | Workflow Git et branches        |
+| [Gestion de versions](development/version-management.md)  | Releases et versioning          |
+| [Migrations DB](development/database-migrations.md)       | Workflow migrations Supabase    |
+| [Style de code](development/code-style.md)                | Standards et conventions        |
+| [Migration Svelte 5](development/svelte5-migration.md)    | Guide migration runes           |
+
+---
+
+## 🤝 Contribution
+
+| Document                                                         | Description                        |
+| ---------------------------------------------------------------- | ---------------------------------- |
+| [Guide de contribution](contributing/README.md)                  | Comment contribuer                 |
+| [Guide de documentation](contributing/documentation-guide.md)    | ⭐ Comment écrire la documentation |
+| [Implémentation features](contributing/feature-implementation.md) | Process pour nouvelles features    |
+| [Checklist code review](contributing/code-review-checklist.md)  | Points à vérifier                  |
+
+---
+
+## 📦 Archive
+
+Documentation historique et obsolète : [Archive →](archive/README.md)
+
+---
+
+## 🔗 Liens externes
+
+- **Svelte 5** : https://svelte.dev/docs/svelte/overview
+- **SvelteKit** : https://kit.svelte.dev/docs
+- **Shadcn-svelte** : https://www.shadcn-svelte.com/docs
+- **MathLive** : https://cortexjs.io/mathlive/
+- **Supabase** : https://supabase.com/docs
+- **Tailwind CSS** : https://tailwindcss.com/docs
+
+---
+
+## 📊 Statistiques
+
+- **Features en production** : 10
+- **Features en développement** : 1 (Navadra)
+- **Lignes de documentation** : ~10,000+
+- **Dernière mise à jour** : 2025-10-24
+
+---
+
+**Maintenu par** : L'équipe UbuMaths
+**Questions** : Consulter la documentation ou contacter l'équipe

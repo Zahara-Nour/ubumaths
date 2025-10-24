@@ -1,298 +1,242 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code when working with code in this repository.
+Guide essentiel pour Claude Code lors du développement d'UbuMaths.
 
-> **📚 For detailed feature documentation**, see **[CLAUDE_FEATURES.md](CLAUDE_FEATURES.md)**
+> **📚 Documentation complète** : Voir [/docs/README.md](docs/README.md)
 
-## Project Overview
+---
 
-Educational math application for French-speaking students. **Language**: French UI, English code comments.
+## 🎯 Project Overview
 
-**Stack**: Svelte 5 (runes) • TypeScript (strict) • Tailwind CSS 4 • Shadcn-svelte • MathLive • Vercel • pnpm
+Application éducative de mathématiques pour élèves francophones.
 
-## Development Commands
+**Langue** : UI en français, code/comments en anglais
+**Stack** : Svelte 5 (runes) • TypeScript (strict) • Tailwind CSS 4 • Shadcn-svelte • MathLive • Supabase • Vercel • pnpm
+
+---
+
+## 🚀 Quick Start
 
 ```bash
-pnpm dev              # Start dev server
-pnpm build            # Build for production
+pnpm dev              # Démarre le serveur dev
+pnpm build            # Build production
 pnpm check            # Type checking
-pnpm lint             # Check formatting/linting
-pnpm format           # Format code
-pnpm test:unit        # Vitest tests
-pnpm db:migrate       # Push Supabase migrations
-pnpm release          # Create version release
+pnpm lint             # Vérification format/lint
+pnpm format           # Formatage code
+pnpm test:unit        # Tests unitaires (Vitest)
+pnpm db:migrate       # Push migrations Supabase
+pnpm release          # Créer une release (main branch)
 ```
 
-### Development Ports
+### Ports de développement
 
-- **Port 5173**: User's main dev server (DO NOT USE)
-- **Port 5175**: Claude's testing port (ALWAYS USE: `pnpm dev -- --port 5175`)
+- **5173** : Port utilisateur (NE PAS UTILISER)
+- **5175** : Port Claude (TOUJOURS UTILISER : `pnpm dev -- --port 5175`)
 
-## Code Quality
+---
 
-- ✅ All Prettier passing, build succeeds
-- ⚠️ ~280 non-blocking ESLint warnings (complex types, tests)
-- Run `pnpm format` before committing
-- Fix ESLint errors in new code
+## 📊 Code Quality
 
-## Version Management
+- ✅ Prettier passing, build succeeds
+- ⚠️ ~280 ESLint warnings non-bloquants (types complexes, tests)
+- **Avant commit** : `pnpm format`
+- **Nouveau code** : Corriger les ESLint errors
 
-Automated with Husky + Conventional Commits (main branch only).
+---
 
-**Commit format**: `<type>: <subject>` (feat, fix, docs, etc.)
-**Release**: `pnpm release` then `git push --follow-tags origin main`
-
-See: [GIT_WORKFLOW.md](GIT_WORKFLOW.md), [VERSION_MANAGEMENT.md](VERSION_MANAGEMENT.md)
-
-## Testing
-
-- **Client tests** (`*.svelte.test.ts`): Browser environment (Playwright)
-- **Server tests** (`*.test.ts`): Node environment
-- **E2E tests** (`e2e/`): Playwright
-
-## Project Structure
+## 🏗️ Project Structure
 
 ```
 src/
 ├── lib/
-│   ├── components/     # Reusable components
-│   ├── server/         # Server-only utilities
-│   ├── stores/         # Shared state
-│   ├── utils/          # Shared utilities
-│   └── types/          # TypeScript types
+│   ├── components/     # Composants réutilisables
+│   ├── server/         # Utilitaires server-only
+│   ├── stores/         # État partagé
+│   ├── utils/          # Utilitaires partagés
+│   └── types/          # Types TypeScript
 ├── routes/
-│   ├── (app)/          # Route groups
-│   ├── api/            # API routes
+│   ├── (public)/       # Routes publiques
+│   ├── (protected)/    # Routes protégées (auth auto)
+│   ├── api/            # API endpoints
 │   └── +layout.svelte
 └── app.html
 ```
 
-**File ordering**: Imports → Types → Constants → Variables → Functions → Components
-
-## Data Fetching
-
-- Prefer SvelteKit `load` functions for data fetching
-- Prefer SvelteKit form actions for mutations
-
-## Performance Pattern: Optimistic UI + Debouncing
-
-For frequent server updates (counters, quantities), use optimistic updates with debouncing.
-
-**Reference**: `src/routes/(protected)/dashboard/teacher/rewards/+page.svelte`
-
-**Key points**:
-
-- Track optimistic values in `$state<Record<string, number>>({})`
-- Debounce with delta accumulation (500ms recommended)
-- Rollback on error
-- Cleanup on unmount
-
-## Code Style
-
-1. Use early returns
-2. Descriptive names
-3. Prefix event handlers with "handle"
-4. Use `const` where appropriate
-5. DRY principle
-
-## UI Components (Shadcn-svelte)
-
-**Location**: `src/lib/components/ui/`
-**Docs**: https://www.shadcn-svelte.com/docs
-
-**Available**: Button, Input, Textarea, ~~Select~~, Dropdown Menu, Avatar, Tabs, Separator
-
-**Add components**: `npx shadcn-svelte@latest add <component-name>`
-
-**⚠️ Important**: **DO NOT use Shadcn Select components** - they cause issues. Use native HTML `<select>` elements instead with Tailwind classes for styling:
-
-```svelte
-<select
-	bind:value={myValue}
-	class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
->
-	<option value="1">Option 1</option>
-	<option value="2">Option 2</option>
-</select>
-```
-
-### Key Patterns
-
-**Imports**:
-
-```svelte
-import {Button} from '$lib/components/ui/button'; import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-```
-
-**Event handlers**: Use lowercase (`onclick`, NOT `on:click`)
-
-**Dropdown navigation**: Wrap `<a>` inside `DropdownMenu.Item`
-
-**Styling**: Use semantic classes (`bg-background`, `text-foreground`, `border-border`)
-
-**Utility**: `cn()` from `$lib/utils` for conditional classes
-
-### Toast Notifications
-
-```svelte
-import {toaster} from '$lib/stores/toaster.svelte'; toaster.success('Message'); // Also: error, warning,
-info
-```
-
-Config: `<Toaster />` in root layout (top-right, max 5, 12px gaps)
-
-### Rich Text Editor (Forms)
-
-**Component**: `FormRichTextEditor.svelte`
-
-```svelte
-import FormRichTextEditor from '$lib/components/rich-text/FormRichTextEditor.svelte'; let
-description = $state('Initial HTML content');
-<FormRichTextEditor bind:value={description} placeholder="..." />
-```
-
-**Features**: Text formatting, headings, lists, colors, emojis, LaTeX formulas (MathLive), code blocks
-
-**Storage**: HTML string with custom `<math-inline latex="...">` elements
-
-### Theme & Font Scaling
-
-**Dark mode**:
-
-```typescript
-import { theme } from '$lib/stores/theme.svelte';
-theme.toggle(); // or theme.dark
-```
-
-**Font scaling**:
-
-```typescript
-import { fontSize } from '$lib/stores/fontSize.svelte';
-fontSize.increase(); // Also: decrease, reset
-```
-
-## Database (Supabase)
-
-### Migrations Workflow
-
-1. **Claude creates** `.sql` files in `supabase/migrations/` (format: `<timestamp>_<description>.sql`)
-2. **User pushes** via `pnpm db:migrate`
-3. **Update** `src/lib/types/database.ts` and `DATABASE_SCHEMA.md`
-
-**Important**:
-
-- DO NOT make schema changes in Supabase Dashboard
-- Always create timestamped migrations
-- Keep docs synchronized
-
-### Student Import System
-
-- **Normal flow**: Import → Pending students → Login → Auto-enrollment
-- **Edge case**: Login before import → Direct `class_members` insertion
-- **Source of truth**: `class_members` table (NOT `class_ids` array)
-
-### Google OAuth & Avatars
-
-**Domain**: `@voltairedoha.com` only
-
-**Avatar extraction**:
-
-```typescript
-const avatarUrl = user.user_metadata?.picture || user.user_metadata?.avatar_url;
-```
-
-**Priority**: `profile.avatar_url` → `user.user_metadata.picture` → role/gender fallback → initials
-
-**Debug**: `/debug-avatar` page
-
-## Svelte 5 Essentials
-
-### Runes
-
-- `$state(value)` - Reactive state (NOT `let`)
-- `$derived(expr)` - Computed values (NOT `$:`)
-- `$effect(() => {})` - Side effects (NOT `$:`)
-- `$props()` - Component props (NOT `export let`)
-- `$bindable()` - Two-way binding
-
-### Components
-
-- **Dynamic components**: Just `<Component />` (NO `<svelte:component>`)
-- **Snippets**: Replace slots with `{#snippet}` and `{@render}`
-- **Events**: Callback props (NOT `createEventDispatcher`)
-
-### Context
-
-Pass state as function:
-
-```svelte
-setContext('key', () => value); // Correct let value = $derived(getContext('key')()); // Access
-```
-
-### Anti-Patterns
-
-- ❌ Don't use `$:` - use runes
-- ❌ Don't use `export let` - use `$props()`
-- ❌ Don't use `<svelte:component>` - direct reference
-- ❌ Don't mix `$state` with stores
-
-## SvelteKit Patterns
-
-### Routes
-
-- `+page.svelte` - Pages
-- `+layout.svelte` - Layouts
-- `+page.server.js` - Server load/actions
-- `+server.js` - API endpoints
-
-### Data Loading
-
-```javascript
-// +page.server.js
-export async function load({ params, fetch }) {
-	return { data };
-}
-```
-
-Access via `let { data } = $props();`
-
-### Forms
-
-```javascript
-// +page.server.js
-export const actions = {
-	default: async ({ request }) => {
-		const data = await request.formData();
-		// Process...
-		return { success: true };
-	}
-};
-```
-
-Use `use:enhance` for progressive enhancement.
-
-### Navigation
-
-```javascript
-import { goto, invalidate, invalidateAll } from '$app/navigation';
-import { page } from '$app/state'; // NOT $page store
-```
-
-## MCP Tools (Svelte)
-
-1. **list-sections** - Discover docs (use FIRST)
-2. **get-documentation** - Fetch sections (analyze use_cases)
-3. **svelte-autofixer** - Validate code (use BEFORE sending to user)
-4. **playground-link** - Generate playground (ask user first, NOT for project files)
-
-## Feature Documentation
-
-- **[CLAUDE_FEATURES.md](CLAUDE_FEATURES.md)** - Demo pages, VIP cards, cache, schedule, wheel, games
-- **[CLAUDE_FEATURES_QUESTION_BANK.md](CLAUDE_FEATURES_QUESTION_BANK.md)** - Variables, random generation, 6 question types, draft/published workflow
-- **[CLAUDE_FEATURES_ASSESSMENT.md](CLAUDE_FEATURES_ASSESSMENT.md)** - Teacher assessments, graded evaluations, assignment tracking, results dashboard
-- **[ERROR_MONITORING_SYSTEM.md](ERROR_MONITORING_SYSTEM.md)** - Error logging, admin dashboard, critical alerts (🆕 2025-10-23)
-- **[README_DOCS.md](README_DOCS.md)** - Master documentation index (all features)
+**Ordre des fichiers** : Imports → Types → Constants → Variables → Functions → Components
 
 ---
 
-**Remember**: Prefer explicit, straightforward code over clever tricks.
+## ⚠️ Erreurs courantes à éviter
+
+### ❌ DON'T
+
+```svelte
+<!-- Svelte 5 deprecations -->
+<script>
+  export let myProp;  // ❌ Use $props()
+  $: computed = x * 2;  // ❌ Use $derived()
+  $: { /* effect */ }  // ❌ Use $effect()
+</script>
+
+<!-- UI Components -->
+<Select.Root>  <!-- ❌ Shadcn Select buggy -->
+  <Select.Trigger />
+</Select.Root>
+```
+
+### ✅ DO
+
+```svelte
+<script>
+  let { myProp } = $props();  // ✅ Svelte 5 runes
+  let computed = $derived(x * 2);
+  $effect(() => { /* effect */ });
+</script>
+
+<!-- UI Components -->
+<select class="...">  <!-- ✅ Native HTML select -->
+  <option>Option 1</option>
+</select>
+```
+
+---
+
+## 🎨 UI Components (Shadcn-svelte)
+
+**Docs** : https://www.shadcn-svelte.com/docs
+**Location** : `src/lib/components/ui/`
+
+**Disponibles** : Button, Input, Textarea, Dropdown Menu, Avatar, Tabs, Separator
+
+**⚠️ NE PAS utiliser** : Shadcn Select (utiliser `<select>` HTML natif)
+
+**Ajouter un composant** : `npx shadcn-svelte@latest add <component>`
+
+### Patterns importants
+
+```svelte
+<!-- Event handlers -->
+<Button onclick={handleClick}>  <!-- ✅ lowercase -->
+
+<!-- Imports -->
+import { Button } from '$lib/components/ui/button';
+import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+
+<!-- Toast notifications -->
+import { toaster } from '$lib/stores/toaster.svelte';
+toaster.success('Message');  // error, warning, info
+```
+
+---
+
+## 🗃️ Database (Supabase)
+
+### Workflow migrations
+
+1. **Claude crée** `.sql` dans `supabase/migrations/` (format : `<timestamp>_<description>.sql`)
+2. **User push** via `pnpm db:migrate`
+3. **Update** `src/lib/types/database.ts` et `docs/architecture/database-schema.md`
+
+**Important** :
+- NE PAS modifier le schéma dans Supabase Dashboard
+- Toujours créer migrations timestampées
+- Garder la documentation synchronisée
+
+---
+
+## 💾 Svelte 5 Runes
+
+```typescript
+// État réactif
+let count = $state(0);
+
+// Valeurs dérivées
+let doubled = $derived(count * 2);
+
+// Effets de bord
+$effect(() => {
+  console.log(`count is ${count}`);
+});
+
+// Props de composant
+let { title, count = 0 } = $props();
+
+// Props bindables (two-way binding)
+let { value = $bindable() } = $props();
+```
+
+**Anti-patterns** :
+- ❌ `$:` reactive statements → Utiliser `$derived()` ou `$effect()`
+- ❌ `export let` → Utiliser `$props()`
+- ❌ `<svelte:component>` → Référence directe du composant
+
+---
+
+## ⚡ Performance Pattern : Optimistic UI + Debouncing
+
+Pour les updates serveur fréquentes (compteurs, quantités) :
+
+```typescript
+let optimistic = $state<Record<string, number>>({});
+let debounceTimer: ReturnType<typeof setTimeout>;
+
+function handleUpdate(id: string, delta: number) {
+  // 1. Update optimiste immédiat
+  optimistic[id] = (optimistic[id] || 0) + delta;
+
+  // 2. Debounce update serveur
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(async () => {
+    try {
+      await updateServer(id, optimistic[id]);
+      optimistic[id] = 0; // Reset
+    } catch (error) {
+      optimistic[id] = 0; // Rollback on error
+    }
+  }, 500);
+}
+```
+
+**Référence** : `src/routes/(protected)/dashboard/teacher/rewards/+page.svelte`
+
+---
+
+## 📚 Documentation
+
+### Structure complète
+- **Master index** : [docs/README.md](docs/README.md)
+- **Features** : [docs/features/](docs/features/)
+- **Architecture** : [docs/architecture/](docs/architecture/)
+- **Guides** : [docs/guides/](docs/guides/)
+- **Development** : [docs/development/](docs/development/)
+- **Contributing** : [docs/contributing/](docs/contributing/)
+
+### Documentation par feature
+
+| Feature | Documentation |
+|---------|--------------|
+| Questions | [docs/features/questions/](docs/features/questions/) |
+| Assessments | [docs/features/assessments/](docs/features/assessments/) |
+| SRS/Flashcards | [docs/features/srs-flashcards/](docs/features/srs-flashcards/) |
+| Riddles | [docs/features/riddles/](docs/features/riddles/) |
+| Geometry | [docs/features/geometry/](docs/features/geometry/) |
+| Error Monitoring | [docs/features/error-monitoring/](docs/features/error-monitoring/) |
+
+### Documentation technique
+
+- **Database Schema** : [docs/architecture/database-schema.md](docs/architecture/database-schema.md)
+- **Git Workflow** : [docs/development/git-workflow.md](docs/development/git-workflow.md)
+- **Version Management** : [docs/development/version-management.md](docs/development/version-management.md)
+- **Student Import** : [docs/guides/student-import.md](docs/guides/student-import.md)
+
+---
+
+## 🤝 Contribution
+
+Avant de contribuer, lire :
+- [Guide de contribution](docs/contributing/README.md)
+- **[Guide de documentation](docs/contributing/documentation-guide.md)** ⭐
+
+---
+
+**Remember** : Préférer le code explicite et simple plutôt que les astuces clever.
