@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 	// Parse path: /features/questions/README -> category: features, docPath: questions/README.md
 	const pathSegments = params.path.split('/');
 
-	if (pathSegments.length < 2) {
+	if (pathSegments.length < 1) {
 		throw error(400, 'Invalid document path');
 	}
 
