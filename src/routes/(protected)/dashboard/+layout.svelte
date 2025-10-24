@@ -55,7 +55,8 @@
 		Bug,
 		MessageCircle,
 		BookOpen,
-		Lightbulb
+		Lightbulb,
+		FileText
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -102,6 +103,7 @@
 				{ href: '/dashboard/admin/users', label: 'Users', icon: Users },
 				{ href: '/dashboard/admin/classes', label: 'Classes', icon: GraduationCap },
 				{ href: '/dashboard/admin/questions', label: 'Questions', icon: BookOpen },
+				{ href: '/dashboard/admin/docs', label: 'Documentation', icon: FileText },
 				{ href: '/dashboard/admin/debug/database', label: 'Debug', icon: Bug },
 				{ href: '/dashboard/admin/settings', label: 'Settings', icon: Settings }
 			];
@@ -114,6 +116,10 @@
 		// For debug pages, match any /dashboard/admin/debug/* route
 		if (href === '/dashboard/admin/debug/database') {
 			return page.url.pathname.startsWith('/dashboard/admin/debug');
+		}
+		// For docs pages, match any /dashboard/admin/docs/* route
+		if (href === '/dashboard/admin/docs') {
+			return page.url.pathname.startsWith('/dashboard/admin/docs');
 		}
 		return page.url.pathname === href;
 	}
