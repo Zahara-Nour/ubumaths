@@ -29,11 +29,11 @@
 		return `/dashboard/admin/docs/${categoryPath}/${docPath.replace('.md', '')}`;
 	}
 
-	// Add IDs to headers for anchor links
-	const htmlWithIds = data.doc ? addHeaderIds(data.doc.html) : '';
+	// Add IDs to headers for anchor links - REACTIVE to data changes
+	const htmlWithIds = $derived(data.doc ? addHeaderIds(data.doc.html) : '');
 
-	// Generate breadcrumbs
-	const breadcrumbs = data.currentPath ? data.currentPath.split('/') : [];
+	// Generate breadcrumbs - REACTIVE to data changes
+	const breadcrumbs = $derived(data.currentPath ? data.currentPath.split('/') : []);
 </script>
 
 <svelte:head>
