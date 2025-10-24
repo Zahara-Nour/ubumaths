@@ -34,7 +34,7 @@ Bienvenue dans la documentation complète du système d'énigmes mathématiques 
 
 ### 🗄️ Je veux comprendre la **base de données**
 
-→ **[Schéma Base de Données](DATABASE_SCHEMA.md)**
+→ **[Schéma Base de Données](../../../DATABASE_SCHEMA.md)**
 
 - Tables et relations
 - Vues SQL optimisées
@@ -250,7 +250,7 @@ Bienvenue dans la documentation complète du système d'énigmes mathématiques 
 ### Je veux modifier le code
 
 1. Architecture → [Documentation Technique](RIDDLES_SYSTEM_IMPLEMENTATION.md)
-2. Base de données → [Schéma DB](DATABASE_SCHEMA.md)
+2. Base de données → [Schéma DB](../../../DATABASE_SCHEMA.md)
 3. Structure → [Fichiers créés](RIDDLES_SYSTEM_SUMMARY.md#-fichiers-créés)
 
 ### Je veux déployer en production

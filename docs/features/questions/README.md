@@ -1,8 +1,8 @@
 # CLAUDE_FEATURES_QUESTION_BANK.md
 
-> **📖 Core Project Guidelines**: See **[CLAUDE.md](CLAUDE.md)** for project structure, Svelte 5 best practices, and development workflows.
+> **📖 Core Project Guidelines**: See **[CLAUDE.md](../../../CLAUDE.md)** for project structure, Svelte 5 best practices, and development workflows.
 >
-> **📚 Other Features**: See **[CLAUDE_FEATURES.md](CLAUDE_FEATURES.md)** for other feature documentation.
+> **📚 Other Features**: See **[CLAUDE_FEATURES.md](../../../CLAUDE_FEATURES.md)** for other feature documentation.
 
 This file contains detailed documentation for the Question Bank System.
 

@@ -143,7 +143,7 @@ Component A → Component B → Database
 
 ## 🔗 Related
 
-- [Related Feature 1](../other-feature/README.md)
+- [Related Feature 1](../<feature-name>/README.md) (exemple)
 - [Related Architecture](../../architecture/database-schema.md)
 
 ---

@@ -989,7 +989,7 @@ console.warn('[Validation] Circular dependency detected:', cycle);
 - [API Documentation](QUESTIONS_API_COMPLETE.md)
 - [Quick Start Guide](QUESTIONS_QUICK_START.md)
 - [UI Testing Guide](QUESTIONS_UI_TESTING.md)
-- [Database Schema](DATABASE_SCHEMA.md)
+- [Database Schema](../../../DATABASE_SCHEMA.md)
 
 ### External References
 

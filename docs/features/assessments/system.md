@@ -1,6 +1,6 @@
 # CLAUDE_FEATURES_ASSESSMENT.md
 
-> **📖 Core Project Guidelines**: See **[CLAUDE.md](CLAUDE.md)** for project structure, Svelte 5 best practices, and development workflows.
+> **📖 Core Project Guidelines**: See **[CLAUDE.md](../../../CLAUDE.md)** for project structure, Svelte 5 best practices, and development workflows.
 
 This file contains detailed documentation for the **Assessment System** - a comprehensive graded evaluation system that allows teachers to create, assign, and track student assessments based on the question bank.
 
@@ -1098,9 +1098,9 @@ Always check both conditions.
 
 ### Documentation
 
-- **[DATABASE_SCHEMA.md](DATABASE_SCHEMA.md)** - Complete schema documentation
-- **[CLAUDE.md](CLAUDE.md)** - Core project guidelines
-- **[CLAUDE_FEATURES_QUESTION_BANK.md](CLAUDE_FEATURES_QUESTION_BANK.md)** - Question bank system
+- **[DATABASE_SCHEMA.md](../../../DATABASE_SCHEMA.md)** - Complete schema documentation
+- **[CLAUDE.md](../../../CLAUDE.md)** - Core project guidelines
+- **[CLAUDE_FEATURES_QUESTION_BANK.md](../../../CLAUDE_FEATURES_QUESTION_BANK.md)** - Question bank system
 
 ### Implementation Files
 

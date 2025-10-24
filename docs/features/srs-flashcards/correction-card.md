@@ -455,7 +455,7 @@ Affiche un état vide avec style :
 - **[TEST_FEATURE_DOCUMENTATION.md](TEST_FEATURE_DOCUMENTATION.md)** - Système de tests Automaths
 - **[FLASHCARD_COMPONENT.md](FLASHCARD_COMPONENT.md)** - FlashCard (référence flip)
 - **[QUESTION_CARD_COMPONENT.md](QUESTION_CARD_COMPONENT.md)** - QuestionCard (référence rendu)
-- **[CLAUDE_FEATURES_QUESTION_BANK.md](CLAUDE_FEATURES_QUESTION_BANK.md)** - Question Bank System
+- **[CLAUDE_FEATURES_QUESTION_BANK.md](../../../CLAUDE_FEATURES_QUESTION_BANK.md)** - Question Bank System
 
 ---
 

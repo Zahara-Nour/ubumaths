@@ -206,8 +206,8 @@ pnpm test:e2e feature-name
 
 ### Documentation interne
 
-- [Feature liée 1](../other-feature/README.md)
-- [Feature liée 2](../another-feature/README.md)
+- [Feature liée 1](../<other-feature>/README.md) (exemple)
+- [Feature liée 2](../<another-feature>/README.md) (exemple)
 - [Architecture DB](../../architecture/database-schema.md)
 
 ### Ressources externes
