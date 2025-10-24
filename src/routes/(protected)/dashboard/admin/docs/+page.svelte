@@ -106,10 +106,7 @@
 												{#if isReadme}
 													<span class="text-xs">📄</span>
 												{/if}
-												<span>{doc.title}</span>
-												{#if doc.status}
-													<span class="text-xs opacity-60">({doc.status})</span>
-												{/if}
+												<span class="truncate">{doc.title}</span>
 											</span>
 										</a>
 									{/each}

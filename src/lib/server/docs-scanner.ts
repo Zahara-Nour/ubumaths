@@ -114,11 +114,18 @@ function extractQuickMetadata(
 	category: string,
 	path: string
 ): DocumentMetadata {
-	// Extract title (first # heading)
-	const titleMatch = content.match(/^#\s+(.+)$/m);
-	const title = titleMatch
-		? titleMatch[1].replace(/[🎯📝📊🏗️🔧⚙️🚀📖🤝📦🛠️]/g, '').trim()
-		: path.replace('.md', '');
+	// Extract title - prefer ## heading over # if first is a filename
+	const h1Match = content.match(/^#\s+(.+)$/m);
+	const h1Title = h1Match ? h1Match[1].replace(/[🎯📝📊🏗️🔧⚙️🚀📖🤝📦🛠️]/g, '').trim() : null;
+
+	// If H1 looks like a filename (contains .md or _), try to find a better H2
+	let title = h1Title || path.replace('.md', '');
+	if (h1Title && (h1Title.includes('.md') || h1Title.includes('_'))) {
+		const h2Match = content.match(/^##\s+(.+)$/m);
+		if (h2Match) {
+			title = h2Match[1].replace(/[🎯📝📊🏗️🔧⚙️🚀📖🤝📦🛠️]/g, '').trim();
+		}
+	}
 
 	// Extract status
 	const statusMatch = content.match(/\*\*Status\*\*\s*:\s*(.+)/);
