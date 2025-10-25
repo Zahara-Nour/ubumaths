@@ -12,7 +12,7 @@ export interface PrivateMessage {
 	sender_name: string;
 	sender_avatar_url: string | null;
 	subject: string;
-	content: any; // TipTap JSON
+	content: unknown; // TipTap JSON
 	plain_text: string;
 	sent_at: string;
 	read_at: string | null;
@@ -27,7 +27,7 @@ export interface PrivateMessage {
 export interface SentMessage {
 	message_id: string;
 	subject: string;
-	content: any;
+	content: unknown;
 	plain_text: string;
 	sent_at: string;
 	is_group_message: boolean;
@@ -61,7 +61,7 @@ export interface MessageDetails {
 	sender_avatar_url: string | null;
 	sender_role: string;
 	subject: string;
-	content: any;
+	content: unknown;
 	plain_text: string;
 	sent_at: string;
 	edited_at: string | null;
@@ -72,8 +72,8 @@ export interface MessageDetails {
 	read_at: string | null;
 	is_starred: boolean;
 	status: string;
-	attachments: any[] | null;
-	recipients: any[] | null;
+	attachments: unknown[] | null;
+	recipients: unknown[] | null;
 }
 
 class PrivateMessagesStore {
@@ -81,8 +81,8 @@ class PrivateMessagesStore {
 	inbox = $state<PrivateMessage[]>([]);
 	sent = $state<SentMessage[]>([]);
 	currentMessage = $state<MessageDetails | null>(null);
-	currentThread = $state<any[]>([]);
-	drafts = $state<any[]>([]);
+	currentThread = $state<unknown[]>([]);
+	drafts = $state<unknown[]>([]);
 
 	recipients = $state<MessageRecipient[]>([]);
 	classes = $state<TeacherClass[]>([]);
@@ -171,7 +171,7 @@ class PrivateMessagesStore {
 	async sendMessage(params: {
 		recipientIds?: string[];
 		subject: string;
-		content: any;
+		content: unknown;
 		isGroupMessage?: boolean;
 		classId?: string;
 		parentMessageId?: string;
@@ -472,7 +472,7 @@ class PrivateMessagesStore {
 	async saveDraft(params: {
 		id?: string;
 		subject?: string;
-		content?: any;
+		content?: unknown;
 		recipientIds?: string[];
 		isGroupMessage?: boolean;
 		classId?: string;

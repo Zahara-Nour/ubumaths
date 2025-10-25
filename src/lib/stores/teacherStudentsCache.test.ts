@@ -838,7 +838,7 @@ describe('TeacherStudentsCacheStore', () => {
 		it('should handle null/undefined in students array gracefully', async () => {
 			const scenario = getSmallClassScenario();
 			// Mock response with null values (malformed data)
-			const malformedData = { students: [...scenario.students, null, undefined] as any };
+			const malformedData = { students: [...scenario.students, null, undefined] as unknown[] };
 
 			mockFetch.mockResolvedValueOnce(mockFetchResponse(malformedData));
 

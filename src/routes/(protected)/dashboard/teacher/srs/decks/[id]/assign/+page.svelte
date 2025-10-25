@@ -12,11 +12,9 @@
 -->
 
 <script lang="ts">
-	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Label } from '$lib/components/ui/label';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
@@ -26,9 +24,9 @@
 
 	interface Props {
 		data: {
-			deck: any;
-			students: any[];
-			classes: any[];
+			deck: { name: string }; // id available from page.params
+			students: { id: string; firstname: string; lastname: string }[];
+			classes: { id: string; name: string }[];
 		};
 	}
 
@@ -136,7 +134,7 @@
 			}
 
 			toaster.success('Deck attribué avec succès !');
-			goto('/dashboard/teacher/srs/decks');
+			goto('/dashboard/teacher/srs/decks').then(() => {});
 		} catch (error) {
 			console.error('Error assigning deck:', error);
 			toaster.error("Erreur lors de l'attribution du deck");
@@ -149,7 +147,7 @@
 	 * Navigate back
 	 */
 	function goBack() {
-		goto('/dashboard/teacher/srs/decks');
+		goto('/dashboard/teacher/srs/decks').then(() => {});
 	}
 </script>
 
@@ -235,7 +233,7 @@
 						</div>
 					{:else}
 						<div class="space-y-2">
-							{#each data.students as student}
+							{#each data.students as student (student.id)}
 								<div
 									class="flex items-center gap-3 rounded-lg border bg-card p-3 transition-colors hover:bg-accent"
 								>
@@ -286,7 +284,7 @@
 						</div>
 					{:else}
 						<div class="space-y-2">
-							{#each data.classes as classItem}
+							{#each data.classes as classItem (classItem.id)}
 								<div
 									class="flex items-center gap-3 rounded-lg border bg-card p-3 transition-colors hover:bg-accent"
 								>

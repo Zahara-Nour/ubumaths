@@ -32,8 +32,8 @@
 
 	interface Props {
 		data: {
-			deck: any;
-			assignments: any[];
+			deck: { name: string }; // id available from page.params
+			assignments: { id: string; student_id: string; assigned_at: string }[];
 		};
 	}
 
@@ -50,7 +50,7 @@
 	 * Navigate back
 	 */
 	function goBack() {
-		goto('/dashboard/teacher/srs/decks');
+		goto('/dashboard/teacher/srs/decks').then(() => {});
 	}
 
 	/**

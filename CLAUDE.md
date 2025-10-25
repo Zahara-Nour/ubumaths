@@ -38,9 +38,10 @@ pnpm release          # Créer une release (main branch)
 ## 📊 Code Quality
 
 - ✅ Prettier passing, build succeeds
-- ⚠️ ~280 ESLint warnings non-bloquants (types complexes, tests)
+- ✅ **0 ESLint errors** (down from ~853)
+- ⚠️ 24 ESLint warnings non-bloquants (style preferences)
 - **Avant commit** : `pnpm format`
-- **Nouveau code** : Corriger les ESLint errors
+- **Nouveau code** : Maintenir 0 errors, corriger les nouveaux si présents
 
 ---
 
@@ -73,14 +74,17 @@ src/
 ```svelte
 <!-- Svelte 5 deprecations -->
 <script>
-  export let myProp;  // ❌ Use $props()
-  $: computed = x * 2;  // ❌ Use $derived()
-  $: { /* effect */ }  // ❌ Use $effect()
+	export let myProp; // ❌ Use $props()
+	$: computed = x * 2; // ❌ Use $derived()
+	$: {
+		/* effect */
+	} // ❌ Use $effect()
 </script>
 
 <!-- UI Components -->
-<Select.Root>  <!-- ❌ Shadcn Select buggy -->
-  <Select.Trigger />
+<Select.Root>
+	<!-- ❌ Shadcn Select buggy -->
+	<Select.Trigger />
 </Select.Root>
 ```
 
@@ -88,14 +92,17 @@ src/
 
 ```svelte
 <script>
-  let { myProp } = $props();  // ✅ Svelte 5 runes
-  let computed = $derived(x * 2);
-  $effect(() => { /* effect */ });
+	let { myProp } = $props(); // ✅ Svelte 5 runes
+	let computed = $derived(x * 2);
+	$effect(() => {
+		/* effect */
+	});
 </script>
 
 <!-- UI Components -->
-<select class="...">  <!-- ✅ Native HTML select -->
-  <option>Option 1</option>
+<select class="...">
+	<!-- ✅ Native HTML select -->
+	<option>Option 1</option>
 </select>
 ```
 
@@ -138,6 +145,7 @@ toaster.success('Message');  // error, warning, info
 3. **Update** `src/lib/types/database.ts` et `docs/architecture/database-schema.md`
 
 **Important** :
+
 - NE PAS modifier le schéma dans Supabase Dashboard
 - Toujours créer migrations timestampées
 - Garder la documentation synchronisée
@@ -155,7 +163,7 @@ let doubled = $derived(count * 2);
 
 // Effets de bord
 $effect(() => {
-  console.log(`count is ${count}`);
+	console.log(`count is ${count}`);
 });
 
 // Props de composant
@@ -166,6 +174,7 @@ let { value = $bindable() } = $props();
 ```
 
 **Anti-patterns** :
+
 - ❌ `$:` reactive statements → Utiliser `$derived()` ou `$effect()`
 - ❌ `export let` → Utiliser `$props()`
 - ❌ `<svelte:component>` → Référence directe du composant
@@ -181,19 +190,19 @@ let optimistic = $state<Record<string, number>>({});
 let debounceTimer: ReturnType<typeof setTimeout>;
 
 function handleUpdate(id: string, delta: number) {
-  // 1. Update optimiste immédiat
-  optimistic[id] = (optimistic[id] || 0) + delta;
+	// 1. Update optimiste immédiat
+	optimistic[id] = (optimistic[id] || 0) + delta;
 
-  // 2. Debounce update serveur
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(async () => {
-    try {
-      await updateServer(id, optimistic[id]);
-      optimistic[id] = 0; // Reset
-    } catch (error) {
-      optimistic[id] = 0; // Rollback on error
-    }
-  }, 500);
+	// 2. Debounce update serveur
+	clearTimeout(debounceTimer);
+	debounceTimer = setTimeout(async () => {
+		try {
+			await updateServer(id, optimistic[id]);
+			optimistic[id] = 0; // Reset
+		} catch (error) {
+			optimistic[id] = 0; // Rollback on error
+		}
+	}, 500);
 }
 ```
 
@@ -204,6 +213,7 @@ function handleUpdate(id: string, delta: number) {
 ## 📚 Documentation
 
 ### Structure complète
+
 - **Master index** : [docs/README.md](docs/README.md)
 - **Features** : [docs/features/](docs/features/)
 - **Architecture** : [docs/architecture/](docs/architecture/)
@@ -213,13 +223,13 @@ function handleUpdate(id: string, delta: number) {
 
 ### Documentation par feature
 
-| Feature | Documentation |
-|---------|--------------|
-| Questions | [docs/features/questions/](docs/features/questions/) |
-| Assessments | [docs/features/assessments/](docs/features/assessments/) |
-| SRS/Flashcards | [docs/features/srs-flashcards/](docs/features/srs-flashcards/) |
-| Riddles | [docs/features/riddles/](docs/features/riddles/) |
-| Geometry | [docs/features/geometry/](docs/features/geometry/) |
+| Feature          | Documentation                                                      |
+| ---------------- | ------------------------------------------------------------------ |
+| Questions        | [docs/features/questions/](docs/features/questions/)               |
+| Assessments      | [docs/features/assessments/](docs/features/assessments/)           |
+| SRS/Flashcards   | [docs/features/srs-flashcards/](docs/features/srs-flashcards/)     |
+| Riddles          | [docs/features/riddles/](docs/features/riddles/)                   |
+| Geometry         | [docs/features/geometry/](docs/features/geometry/)                 |
 | Error Monitoring | [docs/features/error-monitoring/](docs/features/error-monitoring/) |
 
 ### Documentation technique
@@ -234,6 +244,7 @@ function handleUpdate(id: string, delta: number) {
 ## 🤝 Contribution
 
 Avant de contribuer, lire :
+
 - [Guide de contribution](docs/contributing/README.md)
 - **[Guide de documentation](docs/contributing/documentation-guide.md)** ⭐
 
