@@ -6,7 +6,7 @@
 	Perfect for pages showing lists, tables, or search results.
 -->
 
-<div class="space-y-6 animate-in fade-in duration-300">
+<div class="animate-in fade-in space-y-6 duration-300">
 	<!-- Page header with actions -->
 	<div class="flex items-center justify-between">
 		<div class="space-y-2">
@@ -30,15 +30,15 @@
 		<div class="space-y-4 p-6">
 			<!-- Table header -->
 			<div class="grid grid-cols-5 gap-4">
-				{#each Array(5) as _, i (i)}
+				{#each Array(5) as _unused, i (i)}
 					<div class="skeleton h-4 rounded"></div>
 				{/each}
 			</div>
 
 			<!-- Table rows -->
-			{#each Array(8) as _, i (i)}
+			{#each Array(8) as _unused, i (i)}
 				<div class="grid grid-cols-5 gap-4">
-					{#each Array(5) as _, j (j)}
+					{#each Array(5) as _unused2, j (j)}
 						<div class="skeleton h-8 rounded"></div>
 					{/each}
 				</div>
@@ -50,7 +50,7 @@
 	<div class="flex items-center justify-between">
 		<div class="skeleton h-4 w-32 rounded"></div>
 		<div class="flex gap-2">
-			{#each Array(5) as _, i (i)}
+			{#each Array(5) as _unused, i (i)}
 				<div class="skeleton h-10 w-10 rounded"></div>
 			{/each}
 		</div>

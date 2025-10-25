@@ -240,7 +240,7 @@
 						</Select.Trigger>
 						<Select.Content>
 							<Select.Item value="all" label="Tous">Tous</Select.Item>
-							{#each data.uniqueGenres as genre}
+							{#each data.uniqueGenres as genre (genre)}
 								<Select.Item value={genre} label={genre}>
 									{genre}
 								</Select.Item>

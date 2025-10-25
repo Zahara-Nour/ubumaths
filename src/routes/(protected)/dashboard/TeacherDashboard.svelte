@@ -99,7 +99,10 @@
 	 * Teacher's classes enriched with student count and schedules
 	 * Derived from data.teacherClasses (loaded in +layout.server.ts)
 	 */
-	type ClassWithData = Class & { student_count?: number; schedules?: any[] };
+	type ClassWithData = Class & {
+		student_count?: number;
+		schedules?: { id: string; name: string; starts_at: string; ends_at: string }[];
+	};
 	const classes = $derived<ClassWithData[]>((data.teacherClasses as ClassWithData[]) || []);
 
 	/**
@@ -444,7 +447,7 @@
 					Créez et gérez des decks de révision espacée pour vos élèves
 				</p>
 			</div>
-			<a href="/dashboard/teacher/srs/decks">
+			<a href="/dashboard/teacher/srs/decks" data-sveltekit-preload-data="hover">
 				<Button>
 					<BookOpen class="mr-2 h-4 w-4" />
 					Gérer les decks

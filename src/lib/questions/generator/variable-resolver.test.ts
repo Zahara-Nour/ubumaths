@@ -12,8 +12,8 @@ import type { QuestionVariable, ResolvedVariable } from '../types';
 /**
  * Helper to convert ResolvedVariable[] to object for easier testing
  */
-function toObject(resolved: ResolvedVariable[]): Record<string, any> {
-	const obj: Record<string, any> = {};
+function toObject(resolved: ResolvedVariable[]): Record<string, unknown> {
+	const obj: Record<string, unknown> = {};
 	for (const v of resolved) {
 		// Check if it's a fraction like "8/5"
 		if (v.value.includes('/')) {

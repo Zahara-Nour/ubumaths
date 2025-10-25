@@ -13,12 +13,9 @@
 	import { getAnswerTypeLabel } from '$lib/types/riddle';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
 	import * as Select from '$lib/components/ui/select';
 	import * as Card from '$lib/components/ui/card';
 	import { Switch } from '$lib/components/ui/switch';
-	import { Badge } from '$lib/components/ui/badge';
 	import { Plus, X, CheckCircle2 } from 'lucide-svelte';
 
 	interface Props {
@@ -210,7 +207,7 @@
 					</div>
 
 					<div class="space-y-2">
-						{#each qcmChoices as choice, index}
+						{#each qcmChoices as _choice, index (index)}
 							<div class="flex items-center gap-2">
 								<Button
 									type="button"

@@ -187,7 +187,7 @@ describe('shuffleChoices - Edge Cases', () => {
 			{ content: { type: 'image', url: 'http://example.com/b.png', alt: 'B' }, isCorrect: true }
 		];
 
-		const result = shuffleChoices(choices as any, 77777);
+		const result = shuffleChoices(choices as never, 77777);
 
 		expect(result).toHaveLength(2);
 		expect(result.every((r) => r.content.type === 'image')).toBe(true);
@@ -321,7 +321,7 @@ describe('shuffleChoices - Real-World Scenarios', () => {
 describe('shuffleChoices - Integration with Instance Generator', () => {
 	it('should work with instance generator pattern', () => {
 		// Simulate how instance-generator.ts uses shuffleChoices
-		const templateChoices = [
+		const _templateChoices = [
 			{ content: textField('{@:correct}'), isCorrect: true },
 			{ content: textField('{@:wrong1}'), isCorrect: false },
 			{ content: textField('{@:wrong2}'), isCorrect: false },

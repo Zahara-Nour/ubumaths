@@ -58,7 +58,7 @@
 		<div class="border-b border-border px-6 py-4">
 			<div class="flex items-center justify-between">
 				<h3 class="text-lg font-semibold text-foreground">Révisions Espacées (SRS)</h3>
-				<a href="/dashboard/revisions">
+				<a href="/dashboard/revisions" data-sveltekit-preload-data="hover">
 					<Button size="sm">
 						<BookOpen class="mr-2 h-4 w-4" />
 						Voir mes decks

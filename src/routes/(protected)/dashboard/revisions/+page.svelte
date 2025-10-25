@@ -24,7 +24,7 @@
 
 	interface Props {
 		data: {
-			decks: (Deck & { stats: any })[];
+			decks: (Deck & { stats: { total_cards: number; due_cards: number; new_cards: number } })[];
 		};
 	}
 
@@ -46,7 +46,7 @@
 	 * Navigate to study session
 	 */
 	function startStudy(deckId: string) {
-		goto(`/dashboard/revisions/decks/${deckId}/study`);
+		goto(`/dashboard/revisions/decks/${deckId}/study`).then(() => {});
 	}
 
 	/**
@@ -54,7 +54,7 @@
 	 */
 	function createDeck() {
 		// TODO: Navigate to deck creation page
-		goto('/dashboard/revisions/create');
+		goto('/dashboard/revisions/create').then(() => {});
 	}
 </script>
 

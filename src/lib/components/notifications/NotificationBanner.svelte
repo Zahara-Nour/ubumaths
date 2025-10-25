@@ -50,8 +50,8 @@
 		// Mark as read
 		await notificationStore.markAsRead(currentNotification.id);
 
-		// Navigate to action URL
-		goto(currentNotification.action_url);
+		// Navigate to action URL (using then to handle promise)
+		goto(currentNotification.action_url).then(() => {});
 	}
 
 	// Get priority colors

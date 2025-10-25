@@ -15,11 +15,11 @@
 	let expired = $derived(data.assignments.filter((a) => a.status === 'expired'));
 
 	function handleStart(assignmentId: string) {
-		goto(`/automaths/test?assignment=${assignmentId}&mode=interactive`);
+		goto(`/automaths/test?assignment=${assignmentId}&mode=interactive`).then(() => {});
 	}
 
 	function handleViewResults(assignmentId: string) {
-		goto(`/dashboard/student/assessments/${assignmentId}/results`);
+		goto(`/dashboard/student/assessments/${assignmentId}/results`).then(() => {});
 	}
 </script>
 

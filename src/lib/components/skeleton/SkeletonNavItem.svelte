@@ -32,7 +32,7 @@
 
 	<!-- Label skeleton (text lines) -->
 	<div class="flex w-full flex-col items-center gap-1">
-		{#each Array(labelLines) as _, i (i)}
+		{#each Array(labelLines) as _unused, i (i)}
 			<div
 				class="skeleton h-3 rounded"
 				class:w-full={fullWidth}

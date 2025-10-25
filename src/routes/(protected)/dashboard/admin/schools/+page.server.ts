@@ -149,10 +149,10 @@ export const actions: Actions = {
 			return fail(400, { message: 'No schools data provided' });
 		}
 
-		let schools: any[];
+		let schools: { name: string; address?: string; city?: string; country?: string }[];
 		try {
 			schools = JSON.parse(schoolsJson);
-		} catch (e) {
+		} catch (_e) {
 			return fail(400, { message: 'Invalid schools data' });
 		}
 

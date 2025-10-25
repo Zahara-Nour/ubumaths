@@ -18,8 +18,7 @@ import type {
 import {
 	getVariablesForTrigger,
 	getUserInputVariables,
-	isValidVariable,
-	extractVariableName
+	isValidVariable
 } from './templateVariables';
 import {
 	renderAdvancedTemplate,
@@ -58,7 +57,7 @@ export function renderTemplate(
 	let body: string;
 
 	// Clean data (remove null/undefined)
-	const cleanData: Record<string, any> = {};
+	const cleanData: Record<string, string | number> = {};
 	Object.entries(data).forEach(([key, value]) => {
 		if (value !== null && value !== undefined) {
 			cleanData[key] = value;
@@ -165,7 +164,6 @@ export function createTemplateMatch(
 	template: MessageTemplate,
 	context: TemplateContext
 ): TemplateMatch {
-	const allVariables = getVariablesForTrigger(template.trigger_type);
 	const userInputVars = getUserInputVariables(template.trigger_type);
 
 	// Separate context data (auto-filled) from user input
@@ -271,7 +269,7 @@ export function validateTemplate(template: {
 	// Check for unknown variables
 	const unknownVars = allPlaceholders
 		.map((p) => p.variableName)
-		.filter((name) => !isValidVariable(template.trigger_type as any, name))
+		.filter((name) => !isValidVariable(template.trigger_type as never, name))
 		.filter((name, index, self) => self.indexOf(name) === index); // Unique
 
 	if (unknownVars.length > 0) {

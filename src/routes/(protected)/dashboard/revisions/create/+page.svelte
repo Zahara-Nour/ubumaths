@@ -35,7 +35,9 @@
 	let showCustomCardEditor = $state(false);
 
 	// Cards to add
-	let pendingCards = $state<Array<{ type: 'custom'; data: any }>>([]);
+	let pendingCards = $state<Array<{ type: 'custom'; data: { question: string; answer: string } }>>(
+		[]
+	);
 
 	// Form validation
 	const canSave = $derived(deckName.trim().length > 0);
@@ -96,7 +98,7 @@
 			}
 
 			toaster.success(`Deck "${deck.name}" créé avec succès !`);
-			goto('/dashboard/revisions');
+			goto('/dashboard/revisions').then(() => {});
 		} catch (error) {
 			console.error('Error creating deck:', error);
 			toaster.error('Erreur lors de la création du deck');
@@ -129,7 +131,7 @@
 	 * Navigate back
 	 */
 	function goBack() {
-		goto('/dashboard/revisions');
+		goto('/dashboard/revisions').then(() => {});
 	}
 </script>
 
@@ -257,7 +259,7 @@
 				</div>
 			{:else}
 				<div class="space-y-2">
-					{#each pendingCards as card, i}
+					{#each pendingCards as _card, i (i)}
 						<div class="flex items-center justify-between rounded-lg border bg-card p-3">
 							<div class="flex items-center gap-3">
 								<Badge variant="secondary">Personnalisée</Badge>

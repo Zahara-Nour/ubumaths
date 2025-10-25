@@ -400,7 +400,7 @@
 							<div>
 								<span class="text-sm font-medium">Grades:</span>
 								<div class="ml-2 inline-flex gap-1">
-									{#each currentInstance.grades as grade}
+									{#each currentInstance.grades as grade (grade)}
 										<Badge variant="secondary">{grade}</Badge>
 									{/each}
 								</div>
@@ -443,7 +443,7 @@
 						</div>
 					{:else}
 						<div class="space-y-3">
-							{#each answerSubmitLog as submission, i}
+							{#each answerSubmitLog as submission, i (i)}
 								<div class="rounded-lg border p-4">
 									<div class="mb-2 flex items-center justify-between">
 										<div class="flex items-center gap-2">
@@ -488,7 +488,7 @@
 						</div>
 					{:else}
 						<div class="max-h-96 space-y-1 overflow-auto rounded-lg border bg-muted/50 p-4">
-							{#each answerChangeLog as change}
+							{#each answerChangeLog as change, i (i)}
 								<div class="font-mono text-xs">{change}</div>
 							{/each}
 						</div>
@@ -505,7 +505,7 @@
 						</div>
 					{:else}
 						<div class="space-y-2">
-							{#each flipLog as flip, i}
+							{#each flipLog as flip, i (i)}
 								<div class="flex items-center justify-between rounded-lg border p-3">
 									<div class="flex items-center gap-2">
 										<Badge variant="outline">Flip {i + 1}</Badge>

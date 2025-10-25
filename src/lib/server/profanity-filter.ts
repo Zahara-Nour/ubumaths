@@ -121,14 +121,14 @@ export function removeFromProfanity(words: string[]): void {
  * @param content - TipTap JSON content
  * @returns Plain text string
  */
-export function extractTextFromTipTap(content: any): string {
+export function extractTextFromTipTap(content: unknown): string {
 	if (!content || typeof content !== 'object') {
 		return '';
 	}
 
 	let text = '';
 
-	function traverse(node: any): void {
+	function traverse(node: Record<string, unknown>): void {
 		if (!node) return;
 
 		// If node is a text node, append its text
@@ -153,7 +153,7 @@ export function extractTextFromTipTap(content: any): string {
  * @param content - TipTap JSON content
  * @returns Profanity check result
  */
-export function checkTipTapProfanity(content: any): ProfanityCheckResult {
+export function checkTipTapProfanity(content: unknown): ProfanityCheckResult {
 	const plainText = extractTextFromTipTap(content);
 	return checkProfanity(plainText);
 }

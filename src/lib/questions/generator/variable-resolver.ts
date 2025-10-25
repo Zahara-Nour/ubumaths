@@ -15,7 +15,7 @@
  * @module questions/generator/variable-resolver
  */
 
-import type { QuestionVariable, ResolvedVariable, RandomSpec } from '../types';
+import type { QuestionVariable, ResolvedVariable } from '../types';
 import { extractVariableReferences } from '../parser/variable-parser';
 import { extractEvalExpressions } from '../parser/eval-parser';
 import { parseRandomExpression } from '../parser/random-parser';

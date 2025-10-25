@@ -29,7 +29,7 @@ async function seedMonsters() {
 
 	const monsters = Object.values(TEST_MONSTERS);
 
-	const { data, error } = await supabase.from('game_monsters').upsert(monsters, {
+	const { error } = await supabase.from('game_monsters').upsert(monsters, {
 		onConflict: 'id',
 		ignoreDuplicates: false
 	});
@@ -47,7 +47,7 @@ async function seedChallenges() {
 
 	const challenges = Object.values(TEST_CHALLENGES);
 
-	const { data, error } = await supabase.from('game_challenges').upsert(challenges, {
+	const { error } = await supabase.from('game_challenges').upsert(challenges, {
 		onConflict: 'id',
 		ignoreDuplicates: false
 	});
@@ -77,7 +77,7 @@ async function seedPlayerProfiles() {
 		})
 	];
 
-	const { data, error } = await supabase.from('game_players').upsert(players, {
+	const { error } = await supabase.from('game_players').upsert(players, {
 		onConflict: 'user_id',
 		ignoreDuplicates: false
 	});
@@ -98,7 +98,7 @@ async function seedSpells() {
 		user_id: TEST_USERS.student
 	}));
 
-	const { data, error } = await supabase.from('game_spells').upsert(spells, {
+	const { error } = await supabase.from('game_spells').upsert(spells, {
 		onConflict: 'id',
 		ignoreDuplicates: false
 	});
@@ -124,7 +124,7 @@ async function seedSpellDecks() {
 		is_active: true
 	};
 
-	const { data, error } = await supabase.from('game_spell_decks').upsert([deck], {
+	const { error } = await supabase.from('game_spell_decks').upsert([deck], {
 		onConflict: 'id',
 		ignoreDuplicates: false
 	});

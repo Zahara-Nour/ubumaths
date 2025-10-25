@@ -43,7 +43,7 @@
 		</div>
 
 		<nav class="space-y-1">
-			{#each navItems as item}
+			{#each navItems as item (item.href)}
 				<a href={item.href} class="block">
 					<Button
 						variant={isActive(item.href) ? 'default' : 'ghost'}
@@ -65,7 +65,7 @@
 
 		<!-- Additional actions -->
 		<div class="mt-6 space-y-1">
-			<a href="/messages/archived" class="block">
+			<a href="/messages/archived" data-sveltekit-preload-data="hover" class="block">
 				<Button
 					variant={isActive('/messages/archived') ? 'default' : 'ghost'}
 					class="w-full justify-start gap-2"

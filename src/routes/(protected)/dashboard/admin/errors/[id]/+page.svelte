@@ -67,7 +67,7 @@
 <div class="container mx-auto max-w-6xl py-8">
 	<!-- Header -->
 	<div class="mb-6">
-		<Button variant="ghost" onclick={() => goto('/dashboard/admin/errors')}>
+		<Button variant="ghost" onclick={() => goto('/dashboard/admin/errors').then(() => {})}>
 			← Retour à la liste
 		</Button>
 	</div>

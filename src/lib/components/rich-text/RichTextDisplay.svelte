@@ -55,7 +55,7 @@
 
 	// Component Props (Svelte 5 runes)
 	interface Props {
-		content: any; // TipTap JSON content to display
+		content: unknown; // TipTap JSON content to display
 		class?: string; // Optional CSS classes
 	}
 

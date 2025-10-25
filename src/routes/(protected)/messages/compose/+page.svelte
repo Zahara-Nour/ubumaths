@@ -15,7 +15,7 @@
 
 	let subject = $state('');
 	let content = $state('');
-	let contentJson = $state<any>(null);
+	let contentJson = $state<unknown>(null);
 	let selectedRecipients = $state<string[]>([]);
 	let isGroupMessage = $state(false);
 	let selectedClassId = $state<string | null>(null);
@@ -251,7 +251,7 @@
 			toaster.success('Message envoyé avec succès');
 
 			// Navigate to sent messages
-			goto('/messages/sent');
+			goto('/messages/sent').then(() => {});
 		} catch (error) {
 			console.error('Error sending message:', error);
 			toaster.error("Erreur lors de l'envoi du message");
@@ -399,7 +399,7 @@
 					<Save class="mr-2 h-4 w-4" />
 					Enregistrer brouillon
 				</Button>
-				<Button variant="outline" onclick={() => goto('/messages/inbox')}>
+				<Button variant="outline" onclick={() => goto('/messages/inbox').then(() => {})}>
 					<X class="mr-2 h-4 w-4" />
 					Annuler
 				</Button>
@@ -489,7 +489,7 @@
 									<Select.Value placeholder="Sélectionnez une classe" />
 								</Select.Trigger>
 								<Select.Content>
-									{#each privateMessages.classes as classItem}
+									{#each privateMessages.classes as classItem (classItem.id)}
 										<Select.Item value={classItem.class_id}>
 											{classItem.class_name} ({classItem.student_count} élèves)
 										</Select.Item>
@@ -547,7 +547,7 @@
 									</p>
 								{:else}
 									<div class="space-y-2">
-										{#each privateMessages.recipients as recipient}
+										{#each privateMessages.recipients as recipient (recipient.id)}
 											<label
 												class="flex cursor-pointer items-center gap-3 rounded p-2 transition-colors hover:bg-muted/50"
 												class:pointer-events-none={replyToMessageId}
@@ -650,7 +650,7 @@
 						<!-- Attachments list -->
 						{#if attachments.length > 0}
 							<div class="space-y-2">
-								{#each attachments as file, index}
+								{#each attachments as file, index (index)}
 									<div
 										class="flex items-center justify-between rounded-lg border border-border bg-card p-3"
 									>
@@ -683,7 +683,11 @@
 
 					<!-- Actions -->
 					<div class="flex items-center justify-end gap-3 border-t border-border pt-4">
-						<Button type="button" variant="outline" onclick={() => goto('/messages/inbox')}>
+						<Button
+							type="button"
+							variant="outline"
+							onclick={() => goto('/messages/inbox').then(() => {})}
+						>
 							Annuler
 						</Button>
 						<Button type="submit" disabled={isSending}>

@@ -77,7 +77,7 @@ describe('validateTemplate - Valid Templates', () => {
 		] as const;
 
 		for (const type of types) {
-			const template: any = {
+			const template = {
 				id: `test-${type}`,
 				type,
 				variations: [
@@ -162,7 +162,7 @@ describe('validateTemplate - Valid Templates', () => {
 
 describe('validateTemplate - Required Fields', () => {
 	it('should fail on missing type', () => {
-		const template: any = {
+		const template = {
 			id: 'test',
 			variations: [
 				{
@@ -187,7 +187,7 @@ describe('validateTemplate - Required Fields', () => {
 	});
 
 	it('should fail on missing variations', () => {
-		const template: any = {
+		const template = {
 			id: 'test',
 			type: 'numerical_exact',
 			precision: { type: 'none' },
@@ -206,7 +206,7 @@ describe('validateTemplate - Required Fields', () => {
 	});
 
 	it('should fail on empty variations array', () => {
-		const template: any = {
+		const template = {
 			id: 'test',
 			type: 'numerical_exact',
 			variations: [],
@@ -226,7 +226,7 @@ describe('validateTemplate - Required Fields', () => {
 	});
 
 	it('should fail on missing statement in variation', () => {
-		const template: any = {
+		const template = {
 			id: 'test',
 			type: 'numerical_exact',
 			variations: [
@@ -251,7 +251,7 @@ describe('validateTemplate - Required Fields', () => {
 	});
 
 	it('should fail on missing answer in variation', () => {
-		const template: any = {
+		const template = {
 			id: 'test',
 			type: 'numerical_exact',
 			variations: [
@@ -276,7 +276,7 @@ describe('validateTemplate - Required Fields', () => {
 	});
 
 	it('should fail on missing grades', () => {
-		const template: any = {
+		const template = {
 			id: 'test',
 			type: 'numerical_exact',
 			variations: [
@@ -327,7 +327,7 @@ describe('validateTemplate - Required Fields', () => {
 	});
 
 	it('should fail on missing theme', () => {
-		const template: any = {
+		const template = {
 			id: 'test',
 			type: 'numerical_exact',
 			variations: [
@@ -352,7 +352,7 @@ describe('validateTemplate - Required Fields', () => {
 	});
 
 	it('should fail on missing domain', () => {
-		const template: any = {
+		const template = {
 			id: 'test',
 			type: 'numerical_exact',
 			variations: [
@@ -377,7 +377,7 @@ describe('validateTemplate - Required Fields', () => {
 	});
 
 	it('should fail on missing level', () => {
-		const template: any = {
+		const template = {
 			id: 'test',
 			type: 'numerical_exact',
 			variations: [
@@ -606,7 +606,7 @@ describe('validateTemplate - Variable Validation', () => {
 
 describe('validateTemplate - Type-Specific Validation', () => {
 	it('should fail algebraic_transform without transformType', () => {
-		const template: any = {
+		const template = {
 			id: 'test',
 			type: 'algebraic_transform',
 			variations: [
@@ -644,7 +644,7 @@ describe('validateTemplate - Type-Specific Validation', () => {
 						answer: 'x + 1'
 					}
 				],
-				transformType: transformType as any,
+				transformType: transformType as never,
 				grades: ['3'],
 				theme: 'Test',
 				domain: 'Test',
@@ -660,7 +660,7 @@ describe('validateTemplate - Type-Specific Validation', () => {
 	});
 
 	it('should fail fill_in_blanks without blanks array in variation', () => {
-		const template: any = {
+		const template = {
 			id: 'test',
 			type: 'fill_in_blanks',
 			variations: [
@@ -685,7 +685,7 @@ describe('validateTemplate - Type-Specific Validation', () => {
 	});
 
 	it('should fail multiple_choice without choices in variation', () => {
-		const template: any = {
+		const template = {
 			id: 'test',
 			type: 'multiple_choice',
 			variations: [
@@ -944,7 +944,7 @@ describe('validateTemplate - Edge Cases', () => {
 
 describe('validateTemplate - Multiple Errors', () => {
 	it('should collect multiple validation errors', () => {
-		const template: any = {
+		const template = {
 			id: 'test',
 			type: 'algebraic_transform',
 			variations: [

@@ -25,7 +25,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Progress } from '$lib/components/ui/progress';
-	import { CheckCircle2, XCircle, Trophy, ArrowLeft } from 'lucide-svelte';
+	import { CheckCircle2, Trophy, ArrowLeft } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { ReviewCard } from '$lib/srs/types';
 
@@ -194,7 +194,7 @@
 	/**
 	 * Format time (seconds to mm:ss)
 	 */
-	function formatTime(seconds: number): string {
+	function _formatTime(seconds: number): string {
 		const minutes = Math.floor(seconds / 60);
 		const secs = seconds % 60;
 		return `${minutes}:${secs.toString().padStart(2, '0')}`;

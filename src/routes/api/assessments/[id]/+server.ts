@@ -143,11 +143,14 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 /**
  * Helper: Get student's class IDs
  */
-async function getStudentClassIds(supabase: any, studentId: string): Promise<string> {
+async function getStudentClassIds(
+	supabase: ReturnType<typeof createClient>,
+	studentId: string
+): Promise<string> {
 	const { data } = await supabase
 		.from('class_members')
 		.select('class_id')
 		.eq('student_id', studentId);
 
-	return data?.map((cm: any) => cm.class_id).join(',') || '';
+	return data?.map((cm) => cm.class_id).join(',') || '';
 }

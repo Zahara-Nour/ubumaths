@@ -22,11 +22,7 @@
 
 <script lang="ts">
 	import type { QuestionInstance } from '$lib/questions/types';
-	import type {
-		QuestionDisplayProps,
-		AnswerData,
-		QuestionStats
-	} from '$lib/types/question-display';
+	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
 	import MathDisplay from '$lib/components/MathDisplay.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -40,7 +36,6 @@
 	import AlgebraicInput from '$lib/components/question-inputs/AlgebraicInput.svelte';
 	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
 	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
-	import OrderingInput from '$lib/components/question-inputs/OrderingInput.svelte';
 
 	// Props
 	interface Props {
@@ -101,7 +96,7 @@
 	// Type-specific state
 	let selectedChoices = $state<number[]>([]);
 	let fillBlankValues = $state<string[]>([]);
-	let orderedIndexes = $state<number[]>([]);
+	let _orderedIndexes = $state<number[]>([]);
 	let blankValidationResults = $state<(boolean | null)[]>([]);
 
 	// ============================================================================
@@ -314,7 +309,7 @@
 	/**
 	 * Handle answer change (for real-time callbacks)
 	 */
-	function handleAnswerChange() {
+	function _handleAnswerChange() {
 		const value = prepareAnswerValue();
 		onAnswerChange?.(value as string | string[]);
 	}
@@ -362,7 +357,7 @@
 						<div class="statement-section">
 							<h3 class="mb-3 text-lg font-semibold">Énoncé</h3>
 							<div class="statement-content rounded-lg border bg-card p-4">
-								{#each instance.statement as field}
+								{#each instance.statement as field, i (`${i}-${field.type}`)}
 									{#if field.type === 'text'}
 										<MathDisplay text={field.content} />
 									{:else if field.type === 'image'}
@@ -511,7 +506,7 @@
 								>
 									{#if instance.type === 'fill_in_blanks'}
 										<ul class="space-y-1">
-											{#each fillBlankValues as value, i}
+											{#each fillBlankValues as value, i (i)}
 												<li class="flex items-center gap-2">
 													{blankValidationResults[i] ? '✓' : '✗'}
 													<code>{value}</code>
@@ -520,7 +515,7 @@
 										</ul>
 									{:else if instance.type === 'multiple_choice'}
 										<ul class="space-y-1">
-											{#each selectedChoices as index}
+											{#each selectedChoices as index (index)}
 												<li>{String.fromCharCode(65 + index)}</li>
 											{/each}
 										</ul>
@@ -537,7 +532,7 @@
 							<div class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950">
 								{#if Array.isArray(instance.answer)}
 									<ul class="space-y-1">
-										{#each instance.answer as ans}
+										{#each instance.answer as ans, i (i)}
 											<li><MathDisplay text={String(ans)} /></li>
 										{/each}
 									</ul>
@@ -552,7 +547,7 @@
 							<div class="correction-steps">
 								<h3 class="mb-3 text-lg font-semibold">Explication détaillée</h3>
 								<div class="space-y-3 rounded-lg border bg-muted/50 p-4">
-									{#each instance.correction as field}
+									{#each instance.correction as field, i (`corr-${i}-${field.type}`)}
 										{#if field.type === 'text'}
 											<MathDisplay text={field.content} />
 										{:else if field.type === 'image'}

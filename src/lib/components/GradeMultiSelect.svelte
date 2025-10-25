@@ -19,14 +19,9 @@
 	interface Props {
 		selectedGrades: string[];
 		grades: { value: string; label: string }[];
-		placeholder?: string;
 	}
 
-	let {
-		selectedGrades = $bindable(),
-		grades,
-		placeholder = 'Sélectionner des niveaux'
-	}: Props = $props();
+	let { selectedGrades = $bindable(), grades }: Props = $props();
 
 	/**
 	 * Handle change event from native select
@@ -36,19 +31,6 @@
 		const selected = Array.from(select.selectedOptions).map((option) => option.value);
 		selectedGrades = selected;
 	}
-
-	/**
-	 * Get display text
-	 */
-	let displayText = $derived(() => {
-		if (selectedGrades.length === 0) {
-			return placeholder || 'Sélectionner des niveaux';
-		}
-		if (selectedGrades.length === 1) {
-			return grades.find((g) => g.value === selectedGrades[0])?.label || placeholder;
-		}
-		return `${selectedGrades.length} niveaux sélectionnés`;
-	});
 </script>
 
 <div class="relative">
@@ -58,7 +40,7 @@
 		class="flex min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 		style="height: auto; max-height: 200px;"
 	>
-		{#each grades as grade}
+		{#each grades as grade (grade.value)}
 			<option value={grade.value} selected={selectedGrades.includes(grade.value)}>
 				{grade.label}
 			</option>

@@ -24,7 +24,15 @@ renderer.code = function ({ text, lang }: { text: string; lang?: string }) {
 };
 
 // Fix relative markdown links to absolute doc paths
-renderer.link = function ({ href, title, text }: { href: string; title?: string | null; text: string }) {
+renderer.link = function ({
+	href,
+	title,
+	text
+}: {
+	href: string;
+	title?: string | null;
+	text: string;
+}) {
 	// Transform relative .md links to absolute doc paths
 	if (href && href.endsWith('.md') && !href.startsWith('http') && !href.startsWith('/')) {
 		// Remove .md extension and prepend /dashboard/admin/docs/
@@ -61,10 +69,7 @@ export interface TableOfContentsItem {
 /**
  * Parse markdown content to HTML with metadata extraction
  */
-export async function parseMarkdown(
-	content: string,
-	filePath: string
-): Promise<ParsedDocument> {
+export async function parseMarkdown(content: string, filePath: string): Promise<ParsedDocument> {
 	// Extract metadata from frontmatter or content
 	const metadata = extractMetadata(content, filePath);
 
@@ -87,7 +92,7 @@ export async function parseMarkdown(
 function extractMetadata(content: string, filePath: string): DocumentMetadata {
 	// Extract title (first # heading)
 	const titleMatch = content.match(/^#\s+(.+)$/m);
-	const title = titleMatch ? titleMatch[1].replace(/[🎯📝📊🏗️🔧⚙️🚀]/g, '').trim() : 'Untitled';
+	const title = titleMatch ? titleMatch[1].replace(/\p{Emoji}/gu, '').trim() : 'Untitled';
 
 	// Extract status if present
 	const statusMatch = content.match(/\*\*Status\*\*\s*:\s*(.+)/);
@@ -134,7 +139,7 @@ function generateTableOfContents(content: string): TableOfContentsItem[] {
 	let match;
 	while ((match = headerRegex.exec(content)) !== null) {
 		const level = match[1].length;
-		const text = match[2].replace(/[🎯📝📊🏗️🔧⚙️🚀]/g, '').trim();
+		const text = match[2].replace(/\p{Emoji}/gu, '').trim();
 
 		// Skip level 1 headers (main title)
 		if (level === 1) continue;

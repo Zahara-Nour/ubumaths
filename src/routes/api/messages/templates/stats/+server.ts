@@ -100,14 +100,14 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		};
 
 		// Group by trigger type
-		usageData?.forEach((usage: any) => {
+		usageData?.forEach((usage) => {
 			const triggerType = usage.message_templates.trigger_type;
 			stats.by_trigger_type[triggerType] = (stats.by_trigger_type[triggerType] || 0) + 1;
 		});
 
 		// Get most used templates
 		const templateCounts = new Map<string, { title: string; count: number }>();
-		usageData?.forEach((usage: any) => {
+		usageData?.forEach((usage) => {
 			const templateId = usage.template_id;
 			const title = usage.message_templates.title;
 			const current = templateCounts.get(templateId) || { title, count: 0 };

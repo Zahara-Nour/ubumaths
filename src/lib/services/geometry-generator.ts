@@ -629,9 +629,9 @@ export async function generateCircleConfiguration(
 			});
 
 			// Calculate circumcenter and radius
-			const pointA = MathGraphHelpers.findByTag(app, pointLabels[0]) as any;
-			const pointB = MathGraphHelpers.findByTag(app, pointLabels[1]) as any;
-			const pointC = MathGraphHelpers.findByTag(app, pointLabels[2]) as any;
+			const pointA = MathGraphHelpers.findByTag(app, pointLabels[0]);
+			const pointB = MathGraphHelpers.findByTag(app, pointLabels[1]);
+			const pointC = MathGraphHelpers.findByTag(app, pointLabels[2]);
 
 			const A = { x: pointA?.x ?? 0, y: pointA?.y ?? 0 };
 			const B = { x: pointB?.x ?? 0, y: pointB?.y ?? 0 };

@@ -197,7 +197,7 @@ export function mockApiResponse(
  * Generate mock fetch response object
  */
 export function mockFetchResponse(
-	data: any,
+	data: unknown,
 	options: { ok?: boolean; status?: number; statusText?: string } = {}
 ): Response {
 	const { ok = true, status = 200, statusText = 'OK' } = options;

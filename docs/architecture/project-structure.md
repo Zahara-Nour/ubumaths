@@ -99,6 +99,7 @@ stores/
 ```
 
 Usage :
+
 ```typescript
 import { theme } from '$lib/stores/theme.svelte';
 theme.toggle();
@@ -232,16 +233,14 @@ import type { RequestHandler } from './$types';
 import { json, error } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ locals: { safeGetSession, supabase } }) => {
-  const { user } = await safeGetSession();
-  if (!user) throw error(401, 'Unauthorized');
+	const { user } = await safeGetSession();
+	if (!user) throw error(401, 'Unauthorized');
 
-  const { data, error: err } = await supabase
-    .from('table')
-    .select('*');
+	const { data, error: err } = await supabase.from('table').select('*');
 
-  if (err) throw error(500, err.message);
+	if (err) throw error(500, err.message);
 
-  return json(data);
+	return json(data);
 };
 ```
 
@@ -301,6 +300,7 @@ static/
 ```
 
 Accessible via `/` :
+
 ```html
 <img src="/images/logo.png" alt="Logo" />
 ```
@@ -359,23 +359,23 @@ ubumaths/
 
 ### Files
 
-| Type | Convention | Exemple |
-|------|-----------|---------|
-| Component | PascalCase.svelte | `QuestionCard.svelte` |
-| Route page | +page.svelte | `+page.svelte` |
-| Route layout | +layout.svelte | `+layout.svelte` |
-| API endpoint | +server.ts | `+server.ts` |
-| Utility | camelCase.ts | `questionGenerator.ts` |
-| Type | camelCase.ts | `question.ts` |
-| Test | *.test.ts | `parser.test.ts` |
+| Type         | Convention        | Exemple                |
+| ------------ | ----------------- | ---------------------- |
+| Component    | PascalCase.svelte | `QuestionCard.svelte`  |
+| Route page   | +page.svelte      | `+page.svelte`         |
+| Route layout | +layout.svelte    | `+layout.svelte`       |
+| API endpoint | +server.ts        | `+server.ts`           |
+| Utility      | camelCase.ts      | `questionGenerator.ts` |
+| Type         | camelCase.ts      | `question.ts`          |
+| Test         | \*.test.ts        | `parser.test.ts`       |
 
 ### Folders
 
-| Type | Convention | Exemple |
-|------|-----------|---------|
-| Route | kebab-case | `teacher-dashboard/` |
-| Component | kebab-case | `rich-text/` |
-| Feature | kebab-case | `srs-flashcards/` |
+| Type      | Convention | Exemple              |
+| --------- | ---------- | -------------------- |
+| Route     | kebab-case | `teacher-dashboard/` |
+| Component | kebab-case | `rich-text/`         |
+| Feature   | kebab-case | `srs-flashcards/`    |
 
 ---
 
@@ -457,7 +457,7 @@ import { supabaseAdmin } from '$lib/server/supabase';
 
 // ✅ BON : Utiliser locals
 export const load: PageServerLoad = async ({ locals: { supabase } }) => {
-  // Use locals.supabase (pas $lib/server)
+	// Use locals.supabase (pas $lib/server)
 };
 ```
 

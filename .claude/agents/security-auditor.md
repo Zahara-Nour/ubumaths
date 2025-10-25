@@ -68,6 +68,7 @@ For each security review, you will:
 ## Project-Specific Context
 
 This is an educational platform with:
+
 - **Technology**: SvelteKit, TypeScript, Supabase, Vercel
 - **Authentication**: Google OAuth (@voltairedoha.com domain restriction)
 - **User roles**: Students, teachers, administrators
@@ -144,6 +145,7 @@ Structure your security audit reports as follows:
 ## Self-Verification Checklist
 
 Before completing any audit:
+
 - ✓ Reviewed all user inputs for validation
 - ✓ Checked authorization at every data access point
 - ✓ Verified sensitive data is properly protected
@@ -155,6 +157,7 @@ Before completing any audit:
 ## When to Escalate
 
 If you identify:
+
 - Active exploitation evidence
 - Hardcoded credentials or API keys
 - Publicly exposed sensitive data

@@ -1,5 +1,5 @@
 import type { PageServerLoad, Actions } from './$types';
-import { error, redirect, fail } from '@sveltejs/kit';
+import { redirect, fail } from '@sveltejs/kit';
 
 /**
  * Load riddle of the day management data
@@ -42,7 +42,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 
 	return {
 		currentRiddle: currentRiddle && currentRiddle.length > 0 ? currentRiddle[0] : null,
-		history: (history || []).map((h: any) => ({
+		history: (history || []).map((h) => ({
 			...h,
 			riddle: h.riddle
 		})),

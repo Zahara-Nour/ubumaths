@@ -12,7 +12,6 @@
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { ArrowLeft } from 'lucide-svelte';
 
@@ -169,7 +168,11 @@
 <div class="container mx-auto min-h-screen py-8">
 	<!-- Header -->
 	<div class="mb-8">
-		<a href="/demo" class="mb-4 inline-flex items-center gap-2 text-primary hover:underline">
+		<a
+			href="/demo"
+			data-sveltekit-preload-data="hover"
+			class="mb-4 inline-flex items-center gap-2 text-primary hover:underline"
+		>
 			<ArrowLeft class="h-4 w-4" />
 			Retour aux démos
 		</a>

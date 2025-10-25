@@ -115,10 +115,10 @@ export function parseLatex(text: string): ContentSegment[] {
 
 	// Regex to match $$...$$ patterns
 	// Pattern: \$\$ captures opening $$
-	//          ([^\$]+) captures one or more non-$ characters (the LaTeX)
+	//          ([^$]+) captures one or more non-$ characters (the LaTeX)
 	//          \$\$ captures closing $$
 	// The 'g' flag enables global matching (find all occurrences)
-	const mathRegex = /\$\$([^\$]+)\$\$/g;
+	const mathRegex = /\$\$([^$]+)\$\$/g;
 
 	let lastIndex = 0; // Track position of last processed character
 	let match: RegExpExecArray | null;
@@ -202,5 +202,5 @@ export function parseLatex(text: string): ContentSegment[] {
  */
 export function hasLatex(text: string): boolean {
 	// Same pattern as parseLatex, but using test() instead of exec()
-	return /\$\$[^\$]+\$\$/.test(text);
+	return /\$\$[^$]+\$\$/.test(text);
 }

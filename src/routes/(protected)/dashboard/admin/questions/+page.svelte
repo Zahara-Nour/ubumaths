@@ -63,7 +63,6 @@
 		Loader2,
 		ChevronDown
 	} from 'lucide-svelte';
-	import type { QuestionTemplate, QuestionType, GradeLevel } from '$lib/questions/types';
 
 	let { data }: { data: PageData } = $props();
 
@@ -173,32 +172,8 @@
 	 * Get badge color for question type
 	 * All types use secondary color variant
 	 */
-	function getTypeBadgeClass(type: string): string {
+	function getTypeBadgeClass(_type: string): string {
 		return 'bg-secondary text-secondary-foreground';
-	}
-
-	/**
-	 * Get first text content from statement (for preview)
-	 * Updated to handle variations structure
-	 */
-	function getStatementPreview(template: any): string {
-		// Handle new variations structure
-		if (!template.variations || template.variations.length === 0) {
-			return '(No variations)';
-		}
-
-		const statement = template.variations[0].statement;
-		if (!statement || !Array.isArray(statement)) {
-			return '(No statement)';
-		}
-
-		const textField = statement.find((s) => s.type === 'text');
-		if (!textField) return '(No text content)';
-
-		const content = textField.content;
-		// Remove LaTeX delimiters for preview
-		const cleaned = content.replace(/\$\$/g, '');
-		return cleaned.length > 100 ? cleaned.substring(0, 100) + '...' : cleaned;
 	}
 
 	/**
@@ -355,28 +330,28 @@
 		searchTerm = '';
 		sortField = 'created_at';
 		sortOrder = 'desc';
-		goto('/dashboard/admin/questions');
+		goto('/dashboard/admin/questions').then(() => {});
 	}
 
 	/**
 	 * Navigate to create page
 	 */
 	function handleCreate() {
-		goto('/dashboard/admin/questions/create');
+		goto('/dashboard/admin/questions/create').then(() => {});
 	}
 
 	/**
 	 * Navigate to edit page
 	 */
 	function handleEdit(id: string) {
-		goto(`/dashboard/admin/questions/${id}/edit`);
+		goto(`/dashboard/admin/questions/${id}/edit`).then(() => {});
 	}
 
 	/**
 	 * Navigate to preview page
 	 */
 	function handlePreview(id: string) {
-		goto(`/dashboard/admin/questions/${id}/preview`);
+		goto(`/dashboard/admin/questions/${id}/preview`).then(() => {});
 	}
 
 	/**
@@ -417,7 +392,7 @@
 
 				toaster.success('Template dupliqué avec succès');
 				// Refresh page
-				goto('/dashboard/admin/questions', { invalidateAll: true });
+				goto('/dashboard/admin/questions', { invalidateAll: true }).then(() => {});
 			} else {
 				toaster.error('Erreur lors de la duplication : ' + result.errors.join(', '));
 			}
@@ -460,7 +435,7 @@
 				deleteConfirmOpen = false;
 				templateToDelete = null;
 				// Refresh page
-				goto('/dashboard/admin/questions', { invalidateAll: true });
+				goto('/dashboard/admin/questions', { invalidateAll: true }).then(() => {});
 			} else {
 				toaster.error('Erreur lors de la suppression');
 			}
@@ -533,7 +508,7 @@
 									bind:value={selectedType}
 									class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 								>
-									{#each questionTypes as type}
+									{#each questionTypes as type (type.value)}
 										<option value={type.value}>{type.label}</option>
 									{/each}
 								</select>
@@ -575,7 +550,7 @@
 									class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 								>
 									<option value="all">Tous les thèmes</option>
-									{#each data.categories.themes as theme}
+									{#each data.categories.themes as theme (theme)}
 										<option value={theme}>{theme}</option>
 									{/each}
 								</select>
@@ -589,7 +564,7 @@
 									class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 								>
 									<option value="all">Tous les domaines</option>
-									{#each data.categories.domains as domain}
+									{#each data.categories.domains as domain (domain)}
 										<option value={domain}>{domain}</option>
 									{/each}
 								</select>
@@ -603,7 +578,7 @@
 									class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 								>
 									<option value="all">Tous les sous-domaines</option>
-									{#each data.categories.subdomains as subdomain}
+									{#each data.categories.subdomains as subdomain (subdomain)}
 										<option value={subdomain}>{subdomain}</option>
 									{/each}
 								</select>
@@ -641,7 +616,7 @@
 										bind:value={sortField}
 										class="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 									>
-										{#each sortFields as field}
+										{#each sortFields as field (field.value)}
 											<option value={field.value}>{field.label}</option>
 										{/each}
 									</select>
@@ -763,7 +738,7 @@
 												<!-- Grades -->
 												<td class="px-4 py-3">
 													<div class="flex flex-wrap gap-1">
-														{#each template.grades.slice(0, 3) as grade}
+														{#each template.grades.slice(0, 3) as grade (grade)}
 															<Badge variant="outline" class="text-xs">{grade}</Badge>
 														{/each}
 														{#if template.grades.length > 3}
@@ -926,7 +901,7 @@
 												<!-- Grades -->
 												<td class="px-4 py-3">
 													<div class="flex flex-wrap gap-1">
-														{#each template.grades.slice(0, 3) as grade}
+														{#each template.grades.slice(0, 3) as grade (grade)}
 															<Badge variant="outline" class="text-xs">{grade}</Badge>
 														{/each}
 														{#if template.grades.length > 3}

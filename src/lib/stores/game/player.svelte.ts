@@ -182,7 +182,7 @@ class PlayerStore {
 
 		const currentIndex = stages.indexOf(this._player.tutorial_stage);
 		if (currentIndex < stages.length - 1) {
-			this._player.tutorial_stage = stages[currentIndex + 1] as any;
+			this._player.tutorial_stage = stages[currentIndex + 1] as never;
 			this.player = this._player; // Trigger save
 		}
 	}

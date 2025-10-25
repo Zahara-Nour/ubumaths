@@ -83,7 +83,7 @@ export const POST: RequestHandler = async ({
 		};
 
 		// Generate instance
-		const result = generateInstance(questionTemplate as any, seed);
+		const result = generateInstance(questionTemplate, seed);
 
 		// Return appropriate status code
 		if (result.success) {

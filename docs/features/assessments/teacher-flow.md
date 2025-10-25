@@ -52,6 +52,7 @@ Dashboard → Enseignant → Évaluations → [Évaluation] → Résultats
 ```
 
 Voir :
+
 - Nombre de soumissions / nombre d'élèves
 - Statut par élève (Complété / En cours / Pas commencé)
 - Scores moyens
@@ -60,6 +61,7 @@ Voir :
 ### Alertes
 
 Notification quand :
+
 - Un élève soumet son évaluation
 - Date limite approche
 - Anomalie détectée (temps très court/long)
@@ -71,6 +73,7 @@ Notification quand :
 ### Auto-correction
 
 Questions auto-corrigées :
+
 - Choix multiples
 - Vrai/Faux
 - Réponse courte (exacte)
@@ -78,11 +81,13 @@ Questions auto-corrigées :
 ### Correction manuelle
 
 Questions nécessitant correction :
+
 - Réponse longue
 - Upload de fichiers
 - Questions ouvertes
 
 **Interface de correction** :
+
 1. Voir la réponse élève
 2. Attribuer points
 3. Ajouter commentaire

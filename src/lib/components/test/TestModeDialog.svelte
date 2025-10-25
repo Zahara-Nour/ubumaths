@@ -106,7 +106,7 @@
 
 		<!-- Mode selection -->
 		<div class="grid gap-4 py-4 sm:grid-cols-3">
-			{#each modeConfigs as config}
+			{#each modeConfigs as config (config.mode)}
 				<button type="button" onclick={() => handleModeSelect(config.mode)} class="transition-all">
 					<Card.Root
 						class="h-full cursor-pointer transition-all hover:shadow-lg {selectedMode ===
@@ -129,7 +129,7 @@
 						<Card.Content>
 							<p class="mb-3 text-sm text-muted-foreground">{config.description}</p>
 							<ul class="space-y-1 text-xs text-muted-foreground">
-								{#each config.features as feature}
+								{#each config.features as feature (feature)}
 									<li class="flex items-center gap-2">
 										<span class="h-1 w-1 rounded-full bg-primary"></span>
 										{feature}

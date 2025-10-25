@@ -40,8 +40,8 @@ interface WSMessage {
 	// Chat-specific fields
 	conversationId?: string;
 	messageId?: string;
-	content?: any;
-	attachments?: any[];
+	content?: unknown;
+	attachments?: unknown[];
 	isTyping?: boolean;
 	emoji?: string;
 	action?: 'add' | 'remove';
@@ -58,8 +58,8 @@ interface ChatMessageBroadcast {
 	conversationId: string;
 	messageId: string;
 	senderId: string;
-	content: any;
-	attachments?: any[];
+	content: unknown;
+	attachments?: unknown[];
 	createdAt: string;
 }
 

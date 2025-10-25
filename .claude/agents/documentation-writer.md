@@ -77,6 +77,7 @@ Before finalizing documentation:
 ## When You Need Clarification
 
 If any of these are unclear, ask the user before proceeding:
+
 - The target audience for the documentation
 - The scope of what should be documented
 - Whether to update existing docs or create new files
@@ -86,6 +87,7 @@ If any of these are unclear, ask the user before proceeding:
 ## Output Format
 
 Your documentation should:
+
 - Be immediately usable (complete, not a template)
 - Include the full file path where it should be saved
 - Follow Markdown best practices

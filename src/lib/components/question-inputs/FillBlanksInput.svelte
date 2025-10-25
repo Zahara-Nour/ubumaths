@@ -51,7 +51,7 @@
 	});
 
 	// Handle Enter key to submit
-	function handleKeydown(e: KeyboardEvent, index: number) {
+	function handleKeydown(e: KeyboardEvent, _index: number) {
 		if (e.key === 'Enter' && !disabled && onSubmit) {
 			e.preventDefault();
 			onSubmit();
@@ -74,7 +74,7 @@
 <div class="fill-blanks-container">
 	<!-- Render statement segments with blank inputs interspersed -->
 	<div class="statement-with-blanks">
-		{#each segments as segment, i}
+		{#each segments as segment, i (i)}
 			<!-- Render text/math segment -->
 			{#if segment.trim()}
 				<span class="segment-text">
@@ -94,7 +94,7 @@
 							: validationResults[i] === false
 								? 'incorrect'
 								: ''}"
-						placeholder="\\placeholder{{}}"
+						placeholder="\\placeholder&#123;&#125;"
 						onkeydown={(e) => handleKeydown(e, i)}
 					/>
 

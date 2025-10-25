@@ -8,9 +8,9 @@
 	import CombatLog from '$lib/components/game/combat/CombatLog.svelte';
 	import ChallengeContainer from '$lib/components/game/challenges/ChallengeContainer.svelte';
 	import ChallengeResult from '$lib/components/game/challenges/ChallengeResult.svelte';
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 	import { generateChallengeInstance } from '$lib/utils/game/challenge-variables'; // For future challenge generation
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 	import { calculatePlayerMaxEndurance } from '$lib/utils/game/combat'; // For future endurance calculations
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData, ActionData } from './$types';
@@ -19,12 +19,12 @@
 
 	// Combat state
 	let selectedSpellNum = $state<number | null>(null);
-	let activeChallenge = $state<any>(null);
-	let challengeInstance = $state<any>(null);
-	let challengeResult = $state<any>(null);
+	let activeChallenge = $state<unknown>(null);
+	let challengeInstance = $state<unknown>(null);
+	let challengeResult = $state<unknown>(null);
 	let submitting = $state(false);
 	let victory = $state(false);
-	let rewards = $state<any>(null);
+	let rewards = $state<unknown>(null);
 
 	// Player HP calculation
 	const playerMaxHP = $derived(calculatePlayerMaxEndurance(data.gamePlayer.level));
@@ -53,7 +53,7 @@
 		selectedSpellNum = spellNum;
 	}
 
-	async function handleChallengeSubmit(answer: any, timeTaken: number) {
+	async function handleChallengeSubmit(answer: unknown, timeTaken: number) {
 		console.log('[handleChallengeSubmit] Called with:', { answer, timeTaken });
 		console.log('[handleChallengeSubmit] State:', {
 			activeChallenge,
@@ -114,7 +114,8 @@
 				let success = false;
 				let damageDealt = 0;
 				let isVictory = false;
-				let serverData: any = null;
+				let serverData: { success?: boolean; damage_dealt?: number; is_victory?: boolean } | null =
+					null;
 
 				if (result.type === 'success' && result.data) {
 					// Parse result.data if it's a string

@@ -462,6 +462,6 @@ describe('resolveContent - Error Handling', () => {
 		const resolved = toResolvedVariables({ a: null });
 
 		// Should handle null values appropriately (not currently implemented)
-		expect(() => resolveContentFields(fields, resolved as any)).toThrow();
+		expect(() => resolveContentFields(fields, resolved as never)).toThrow();
 	});
 });

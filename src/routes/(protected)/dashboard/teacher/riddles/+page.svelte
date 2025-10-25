@@ -192,7 +192,11 @@
 								</DropdownMenu.Trigger>
 								<DropdownMenu.Content align="end">
 									<DropdownMenu.Item>
-										<a href="/dashboard/teacher/riddles/{riddle.id}/edit" class="flex items-center">
+										<a
+											href="/dashboard/teacher/riddles/{riddle.id}/edit"
+											data-sveltekit-preload-data="hover"
+											class="flex items-center"
+										>
 											<Edit class="mr-2 h-4 w-4" />
 											Modifier
 										</a>

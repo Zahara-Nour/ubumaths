@@ -83,7 +83,7 @@ export const actions: Actions = {
 		}
 
 		// Build update object
-		const updateData: any = {
+		const updateData = {
 			firstname: firstname || null,
 			lastname: lastname || null,
 			email,
@@ -118,7 +118,7 @@ export const actions: Actions = {
 		// Transform class_members array to class_ids array for easier use
 		const profileWithClasses = {
 			...updatedProfile,
-			class_ids: updatedProfile.class_members?.map((cm: any) => cm.class_id) || []
+			class_ids: updatedProfile.class_members?.map((cm) => cm.class_id) || []
 		};
 
 		return { success: true, profile: profileWithClasses };

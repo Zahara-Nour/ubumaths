@@ -65,7 +65,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	}
 
 	// Format response
-	const formattedVersions = versions?.map((v: any) => ({
+	const formattedVersions = versions?.map((v) => ({
 		...v,
 		modified_by_name: v.modifier?.full_name || 'Inconnu'
 	}));

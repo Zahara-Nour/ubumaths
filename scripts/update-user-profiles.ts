@@ -266,7 +266,7 @@ async function updateProfiles() {
 	let updatedCount = 0;
 
 	for (const profile of profiles) {
-		const updates: any = {};
+		const updates: Record<string, unknown> = {};
 		let needsUpdate = false;
 
 		console.log(`\n📧 ${profile.email} (${profile.role})`);

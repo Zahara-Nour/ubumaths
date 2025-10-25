@@ -19,7 +19,7 @@ import {
 	mockFetchResponse,
 	mockApiResponse,
 	getSmallClassScenario
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 	// MOCK_CLASSES // For future tests
 } from '$lib/test-utils/cache-fixtures';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -47,7 +47,7 @@
 		Info,
 		FileText
 	} from 'lucide-svelte';
-	import { renderContentFields, hasImages, extractImages } from '$lib/utils/content-field-helpers';
+	import { renderContentFields, extractImages } from '$lib/utils/content-field-helpers';
 	import { cn } from '$lib/utils';
 
 	// ============================================================================
@@ -157,7 +157,7 @@
 	);
 
 	// Is QCM and answer is indices
-	const isQCMAnswer = $derived(instance.type === 'multiple_choice');
+	const _isQCMAnswer = $derived(instance.type === 'multiple_choice');
 
 	// ============================================================================
 	// EVENT HANDLERS
@@ -195,7 +195,7 @@
 	/**
 	 * Get badge variant for grade
 	 */
-	function getGradeBadgeVariant(grade: string): 'default' | 'secondary' | 'outline' {
+	function getGradeBadgeVariant(_grade: string): 'default' | 'secondary' | 'outline' {
 		// Simple logic: you can customize
 		return 'outline';
 	}
@@ -287,7 +287,7 @@
 						<div class="flex items-center gap-2">
 							<span class="text-sm font-medium text-muted-foreground">Niveaux:</span>
 							<div class="flex flex-wrap gap-1">
-								{#each instance.grades as grade}
+								{#each instance.grades as grade (grade)}
 									<Badge variant={getGradeBadgeVariant(grade)} class="text-xs">
 										{grade}
 									</Badge>
@@ -327,7 +327,7 @@
 				<!-- Statement Images -->
 				{#if statementImages.length > 0}
 					<div class="mt-3 space-y-2">
-						{#each statementImages as image}
+						{#each statementImages as image, i (i)}
 							<img
 								src={image.content}
 								alt={image.alt || 'Question image'}
@@ -376,7 +376,7 @@
 
 					<Collapsible.Content class="px-2">
 						<div class="grid gap-2 sm:grid-cols-2">
-							{#each instance.resolvedVariables || [] as variable}
+							{#each instance.resolvedVariables || [] as variable, i (i)}
 								<div class="flex items-start gap-2 rounded border bg-muted/50 p-2 text-sm">
 									<code class="flex-shrink-0 font-semibold">{variable.name}:</code>
 									<code class="break-all">
@@ -400,7 +400,7 @@
 				<div class="rounded-lg border-2 border-green-600 bg-green-50 p-3 dark:bg-green-950/20">
 					{#if answerArray.length > 1}
 						<ul class="space-y-1">
-							{#each answerArray as ans, i}
+							{#each answerArray as ans, i (i)}
 								<li class="flex items-center gap-2">
 									<Badge class="bg-green-600">{i + 1}</Badge>
 									<MathDisplay text={String(ans)} />
@@ -422,7 +422,7 @@
 					<span class="text-sm font-semibold">Choix (mélangés)</span>
 				</div>
 				<div class="space-y-2">
-					{#each instance.shuffledChoices || [] as choice, i}
+					{#each instance.shuffledChoices || [] as choice, i (i)}
 						{@const isCorrect =
 							(typeof instance.answer === 'string' && instance.answer === String(i)) ||
 							(Array.isArray(instance.answer) && instance.answer.includes(String(i)))}
@@ -438,7 +438,7 @@
 								{String.fromCharCode(65 + i)}
 							</Badge>
 							<div class="flex-1">
-								{#each choice.content as field}
+								{#each choice.content as field, i (i)}
 									{#if field.type === 'text'}
 										<MathDisplay text={field.content} />
 									{:else if field.type === 'image'}
@@ -484,7 +484,7 @@
 							<!-- Correction Images -->
 							{#if correctionImages.length > 0}
 								<div class="space-y-2">
-									{#each correctionImages as image}
+									{#each correctionImages as image, i (i)}
 										<img
 											src={image.content}
 											alt={image.alt || 'Correction image'}

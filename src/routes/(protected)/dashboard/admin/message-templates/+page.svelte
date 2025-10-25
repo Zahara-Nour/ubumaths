@@ -20,8 +20,6 @@
 		Star,
 		StarOff,
 		History,
-		Eye,
-		EyeOff,
 		ChevronDown,
 		ChevronUp,
 		BarChart3,
@@ -152,7 +150,7 @@
 			console.error('Error loading templates:', error);
 			toaster.error('Erreur lors du chargement');
 		} else {
-			templates = (data || []).map((t: any) => ({
+			templates = (data || []).map((t) => ({
 				...t,
 				class_name: t.classes?.name || null
 			}));
@@ -403,7 +401,10 @@
 			<p class="text-muted-foreground">Gérez les templates système et de classe</p>
 		</div>
 		<div class="flex gap-2">
-			<Button variant="outline" onclick={() => goto('/dashboard/admin/message-templates/stats')}>
+			<Button
+				variant="outline"
+				onclick={() => goto('/dashboard/admin/message-templates/stats').then(() => {})}
+			>
 				<BarChart3 class="mr-2 h-4 w-4" />
 				Statistiques
 			</Button>
@@ -439,7 +440,7 @@
 				</Select.Trigger>
 				<Select.Content>
 					<Select.Item value={null}>Tous les scopes</Select.Item>
-					{#each scopeOptions as option}
+					{#each scopeOptions as option (option.value)}
 						<Select.Item value={option.value}>{option.label}</Select.Item>
 					{/each}
 				</Select.Content>
@@ -455,7 +456,7 @@
 				</Select.Trigger>
 				<Select.Content>
 					<Select.Item value={null}>Tous les types</Select.Item>
-					{#each triggerTypeOptions as option}
+					{#each triggerTypeOptions as option (option.value)}
 						<Select.Item value={option.value}>{option.label}</Select.Item>
 					{/each}
 				</Select.Content>
@@ -489,7 +490,7 @@
 		{#if templates.some((t) => t.tags && (t.tags as string[]).length > 0)}
 			{@const allTags = Array.from(new Set(templates.flatMap((t) => (t.tags as string[]) || [])))}
 			<div class="flex flex-wrap gap-2">
-				{#each allTags as tag}
+				{#each allTags as tag (tag)}
 					<Badge
 						variant={filterTags.includes(tag) ? 'default' : 'outline'}
 						class="cursor-pointer"
@@ -578,7 +579,7 @@
 						</div>
 						{#if template.tags && (template.tags as string[]).length > 0}
 							<div class="flex flex-wrap gap-1">
-								{#each template.tags as string[] as tag}
+								{#each template.tags as string[] as tag (tag)}
 									<Badge variant="outline" class="text-xs">{tag}</Badge>
 								{/each}
 							</div>
@@ -620,7 +621,8 @@
 						<Button
 							variant="outline"
 							size="sm"
-							onclick={() => goto(`/dashboard/admin/message-templates/${template.id}/versions`)}
+							onclick={() =>
+								goto(`/dashboard/admin/message-templates/${template.id}/versions`).then(() => {})}
 						>
 							<History class="h-3 w-3" />
 						</Button>
@@ -682,7 +684,7 @@
 									<Select.Value placeholder="Sélectionnez" />
 								</Select.Trigger>
 								<Select.Content>
-									{#each triggerTypeOptions as option}
+									{#each triggerTypeOptions as option (option.value)}
 										<Select.Item value={option.value}>{option.label}</Select.Item>
 									{/each}
 								</Select.Content>
@@ -700,7 +702,7 @@
 									<Select.Value placeholder="Sélectionnez" />
 								</Select.Trigger>
 								<Select.Content>
-									{#each scopeOptions as option}
+									{#each scopeOptions as option, index (index)}
 										<Select.Item value={option.value}>{option.label}</Select.Item>
 									{/each}
 								</Select.Content>

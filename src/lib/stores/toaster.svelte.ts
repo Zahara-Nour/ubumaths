@@ -16,19 +16,19 @@ import { toast } from 'svelte-sonner';
  */
 
 export const toaster = {
-	success: (message: string, data?: any) => {
+	success: (message: string, data?: unknown) => {
 		toast.success(message, data);
 	},
-	error: (message: string, data?: any) => {
+	error: (message: string, data?: unknown) => {
 		toast.error(message, data);
 	},
-	warning: (message: string, data?: any) => {
+	warning: (message: string, data?: unknown) => {
 		toast.warning(message, data);
 	},
-	info: (message: string, data?: any) => {
+	info: (message: string, data?: unknown) => {
 		toast.info(message, data);
 	},
-	message: (message: string, data?: any) => {
+	message: (message: string, data?: unknown) => {
 		toast(message, data);
 	}
 };

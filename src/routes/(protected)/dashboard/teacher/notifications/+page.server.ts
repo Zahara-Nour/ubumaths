@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	}
 
 	// Get teacher's classes
-	const { data: classes, error: classesError } = await supabase
+	const { data: classes, error: _classesError } = await supabase
 		.from('classes')
 		.select('id, name')
 		.eq('teacher_id', session.user.id)
@@ -50,7 +50,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 			.in('class_id', classIds);
 
 		students =
-			studentsData?.map((cm: any) => ({
+			studentsData?.map((cm) => ({
 				id: cm.student.id,
 				firstname: cm.student.firstname,
 				lastname: cm.student.lastname,
@@ -94,9 +94,9 @@ export const actions: Actions = {
 		const notificationData: CreateNotificationData = {
 			title,
 			message,
-			type: type as any,
-			priority: priority as any,
-			target_type: targetType as any,
+			type: type as unknown as CreateNotificationData['type'],
+			priority: priority as unknown as CreateNotificationData['priority'],
+			target_type: targetType as unknown as CreateNotificationData['target_type'],
 			action_label: actionLabel || undefined,
 			action_url: actionUrl || undefined
 		};

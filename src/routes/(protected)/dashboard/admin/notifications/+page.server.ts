@@ -86,9 +86,9 @@ export const actions: Actions = {
 		const notificationData: CreateNotificationData = {
 			title,
 			message,
-			type: type as any,
-			priority: priority as any,
-			target_type: targetType as any,
+			type: type as CreateNotificationData['type'],
+			priority: priority as CreateNotificationData['priority'],
+			target_type: targetType as CreateNotificationData['target_type'],
 			action_label: actionLabel || undefined,
 			action_url: actionUrl || undefined
 		};

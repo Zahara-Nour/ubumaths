@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { ShoppingCart } from 'lucide-svelte';
-	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { questionCart } from '$lib/stores/questionCart.svelte';
 	import { goto } from '$app/navigation';
@@ -10,10 +9,10 @@
 	let hasItems = $derived(totalItems > 0);
 
 	/**
-	 * Navigate to cart page
+	 * Navigate to cart page (using then to handle promise)
 	 */
 	function handleClick() {
-		goto('/automaths/panier');
+		goto('/automaths/panier').then(() => {});
 	}
 </script>
 

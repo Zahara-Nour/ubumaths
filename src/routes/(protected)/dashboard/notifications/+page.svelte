@@ -40,7 +40,7 @@
 
 		// Navigate if action URL exists
 		if (notification.action_url) {
-			goto(notification.action_url);
+			goto(notification.action_url).then(() => {});
 		}
 	}
 

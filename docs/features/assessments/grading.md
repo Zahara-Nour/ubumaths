@@ -32,6 +32,7 @@ Questions nécessitant intervention enseignant :
 ### Configuration par question
 
 Chaque question a :
+
 - **Points maximum** : Score si réponse correcte
 - **Points partiels** : (optionnel) Pour réponses partiellement correctes
 - **Pénalité** : (optionnel) Points retirés pour erreur
@@ -62,14 +63,15 @@ Utilisation du Compute Engine (CortexJS) :
 
 ```typescript
 // Exemple : Vérifier équivalence mathématique
-const studentAnswer = "2x + 4";
-const correctAnswer = "2(x + 2)";
+const studentAnswer = '2x + 4';
+const correctAnswer = '2(x + 2)';
 
 const result = ce.parse(studentAnswer).isEqual(ce.parse(correctAnswer));
 // result = true (équivalent mathématiquement)
 ```
 
 **Avantages** :
+
 - Accepte formes équivalentes
 - Simplifie automatiquement
 - Gère fractions, puissances, etc.
@@ -127,6 +129,7 @@ Score final = (Score brut / Score max) × Échelle
 ```
 
 Exemple :
+
 - Score brut : 15/25
 - Échelle : 20
 - Score final : (15/25) × 20 = 12/20
@@ -134,6 +137,7 @@ Exemple :
 ### Bonus/Malus
 
 Optionnel :
+
 - **Bonus** : Questions extras, rapidité
 - **Malus** : Retard, plagiat détecté
 
@@ -158,6 +162,7 @@ Selon configuration enseignant :
 - **Après correction** : Correction manuelle terminée
 
 **Options** :
+
 - Afficher score seulement
 - Afficher score + bonnes réponses
 - Afficher score + corrections détaillées

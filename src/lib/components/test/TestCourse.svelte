@@ -201,7 +201,7 @@
 
 		<!-- Questions grid -->
 		<div class="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-			{#each session.instances as instance, index}
+			{#each session.instances as instance, index (index)}
 				<div class="relative" id="question-{index}">
 					<!-- Question number badge -->
 					<div

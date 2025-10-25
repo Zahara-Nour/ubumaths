@@ -39,8 +39,8 @@ export async function createAssessment(
 			grade: data.grade,
 			description: data.description || null,
 			created_by: userId,
-			categories: data.categories as any, // JSONB
-			settings: data.settings as any, // JSONB
+			categories: data.categories as never, // JSONB
+			settings: data.settings as never, // JSONB
 			status: data.status
 		})
 		.select()
@@ -104,7 +104,7 @@ export async function getTeacherAssessments(
 	}
 
 	// Transform to AssessmentWithCreator
-	const assessments: AssessmentWithCreator[] = (data || []).map((a: any) => ({
+	const assessments: AssessmentWithCreator[] = (data || []).map((a) => ({
 		...a,
 		creator: a.creator?.[0] || null
 	}));
@@ -133,7 +133,7 @@ export async function updateAssessment(
 		return { data: null, error: new Error('Unauthorized') };
 	}
 
-	const updateData: any = {};
+	const updateData: Record<string, unknown> = {};
 	if (data.title !== undefined) updateData.title = data.title;
 	if (data.grade !== undefined) updateData.grade = data.grade;
 	if (data.description !== undefined) updateData.description = data.description;

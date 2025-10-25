@@ -10,7 +10,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { QuestionTemplate, QuestionType, GradeLevel } from '$lib/questions/types';
+import type { QuestionTemplate } from '$lib/questions/types';
 import { validateTemplate } from '$lib/questions';
 import { detectCircularDependencies } from '$lib/questions';
 import { checkCategoryUniqueness, getNextAvailableLevel } from '$lib/questions/category-validation';

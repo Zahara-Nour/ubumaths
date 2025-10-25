@@ -91,29 +91,37 @@ For this Svelte 5 + SvelteKit project:
 Structure your accessibility audit reports as follows:
 
 ### ✅ Accessibility Strengths
+
 [List what's done well]
 
 ### 🔴 Critical Issues (WCAG Level A Violations)
+
 [Issues that must be fixed - prevent basic access]
+
 - **Issue**: [Description]
   - **WCAG**: [Success Criterion number]
   - **Impact**: [Who this affects]
   - **Fix**: [Specific code changes needed]
 
 ### 🟡 Important Issues (WCAG Level AA Violations)
+
 [Issues that should be fixed - affect usability]
+
 - **Issue**: [Description]
   - **WCAG**: [Success Criterion number]
   - **Impact**: [Who this affects]
   - **Fix**: [Specific code changes needed]
 
 ### 🟢 Enhancements (WCAG Level AAA or Best Practices)
+
 [Optional improvements for enhanced accessibility]
+
 - **Enhancement**: [Description]
   - **Benefit**: [Improvement this provides]
   - **Implementation**: [How to implement]
 
 ### 📋 Testing Recommendations
+
 [Specific tests to perform with assistive technologies]
 
 ## Quality Assurance

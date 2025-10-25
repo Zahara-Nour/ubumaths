@@ -323,25 +323,34 @@ export function createMockSupabaseClient() {
 
 	return {
 		from: (table: string) => ({
-			select: (columns: string = '*') => ({
-				eq: (column: string, value: any) => ({
+			select: (_columns: string = '*') => ({
+				eq: (column: string, value: unknown) => ({
 					single: async () => {
-						const data = (mockData as any)[table]?.find((item: any) => item[column] === value);
+						const tableData = mockData[table as keyof typeof mockData] as Array<
+							Record<string, unknown>
+						>;
+						const data = tableData?.find((item) => item[column] === value);
 						return { data, error: null };
 					},
 					maybeSingle: async () => {
-						const data = (mockData as any)[table]?.find((item: any) => item[column] === value);
+						const tableData = mockData[table as keyof typeof mockData] as Array<
+							Record<string, unknown>
+						>;
+						const data = tableData?.find((item) => item[column] === value);
 						return { data, error: null };
 					}
 				}),
 				limit: (n: number) => ({
-					then: async (resolve: any) => {
-						const data = (mockData as any)[table]?.slice(0, n);
+					then: async (resolve: (result: { data: unknown; error: null }) => unknown) => {
+						const tableData = mockData[table as keyof typeof mockData] as Array<
+							Record<string, unknown>
+						>;
+						const data = tableData?.slice(0, n);
 						return resolve({ data, error: null });
 					}
 				})
 			}),
-			insert: (values: any) => ({
+			insert: (values: unknown) => ({
 				select: () => ({
 					single: async () => {
 						const inserted = Array.isArray(values) ? values[0] : values;
@@ -349,8 +358,8 @@ export function createMockSupabaseClient() {
 					}
 				})
 			}),
-			update: (values: any) => ({
-				eq: (column: string, value: any) => ({
+			update: (values: Record<string, unknown>) => ({
+				eq: (_column: string, _value: unknown) => ({
 					select: () => ({
 						single: async () => {
 							return { data: { ...values }, error: null };
@@ -365,6 +374,9 @@ export function createMockSupabaseClient() {
 // ============================================================================
 // Random Number Generator Seeding
 // ============================================================================
+
+// Store original Math.random
+const originalRandom = Math.random;
 
 /**
  * Seed Math.random for deterministic tests
@@ -383,5 +395,5 @@ export function seedRandom(seed: number = 12345) {
  * Reset Math.random to original implementation
  */
 export function resetRandom() {
-	Math.random = Math.random; // Browser will restore native implementation
+	Math.random = originalRandom;
 }

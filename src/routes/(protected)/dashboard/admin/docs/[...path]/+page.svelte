@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
@@ -49,12 +48,16 @@
 	<!-- Header -->
 	<div class="mb-6 flex items-center justify-between">
 		<div>
-			<nav class="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-				<a href="/dashboard/admin/docs" class="hover:text-foreground">📚 Documentation</a>
-				{#each breadcrumbs as crumb, index}
+			<nav class="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
+				<a
+					href="/dashboard/admin/docs"
+					data-sveltekit-preload-data="hover"
+					class="hover:text-foreground">📚 Documentation</a
+				>
+				{#each breadcrumbs as crumb, index (index)}
 					<span>/</span>
 					{#if index === breadcrumbs.length - 1}
-						<span class="text-foreground font-medium">{crumb.replace('.md', '')}</span>
+						<span class="font-medium text-foreground">{crumb.replace('.md', '')}</span>
 					{:else}
 						<span class="hover:text-foreground">{crumb}</span>
 					{/if}
@@ -62,16 +65,16 @@
 			</nav>
 			<h1 class="text-3xl font-bold">{data.doc?.metadata?.title || 'Document'}</h1>
 			{#if data.doc?.metadata?.status}
-				<p class="text-sm text-muted-foreground mt-1">
+				<p class="mt-1 text-sm text-muted-foreground">
 					Status : {data.doc.metadata.status}
 				</p>
 			{/if}
 		</div>
 
 		<!-- Back button -->
-		<Button variant="outline" onclick={() => goto('/dashboard/admin/docs')}>
-			← Retour
-		</Button>
+		<Button variant="outline" onclick={() => goto('/dashboard/admin/docs').then(() => {})}
+			>← Retour</Button
+		>
 	</div>
 
 	<!-- Search -->
@@ -86,38 +89,38 @@
 		<Button onclick={handleSearch}>Rechercher</Button>
 	</div>
 
-	<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+	<div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
 		<!-- Sidebar -->
 		<aside class="lg:col-span-1">
 			<div class="sticky top-6 space-y-4">
 				<div class="space-y-2">
-					<h2 class="font-semibold text-lg">Navigation</h2>
-					<div class="h-px bg-border mb-4"></div>
+					<h2 class="text-lg font-semibold">Navigation</h2>
+					<div class="mb-4 h-px bg-border"></div>
 
-					{#each data.categories as category}
+					{#each data.categories as category (category.name)}
 						<div>
 							<button
 								onclick={() => toggleCategory(category.path)}
-								class="flex items-center justify-between w-full p-2 hover:bg-accent rounded-md text-left"
+								class="flex w-full items-center justify-between rounded-md p-2 text-left hover:bg-accent"
 							>
 								<span class="flex items-center gap-2">
 									<span>{category.icon}</span>
 									<span class="font-medium">{category.name}</span>
 								</span>
-								<span class="text-muted-foreground text-sm">
+								<span class="text-sm text-muted-foreground">
 									{expandedCategories.has(category.path) ? '▼' : '▶'}
 								</span>
 							</button>
 
 							{#if expandedCategories.has(category.path)}
-								<div class="ml-4 mt-1 space-y-0.5">
-									{#each category.docs as doc}
+								<div class="mt-1 ml-4 space-y-0.5">
+									{#each category.docs as doc (doc.path)}
 										{@const depth = (doc.path.match(/\//g) || []).length}
 										{@const isReadme = doc.path.endsWith('README.md')}
 										<a
 											href={getDocUrl(category.path, doc.path)}
 											style="padding-left: {depth * 0.75 + 0.5}rem"
-											class="block py-1.5 px-2 text-sm hover:bg-accent rounded-md transition-colors {data.currentPath ===
+											class="block rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent {data.currentPath ===
 											`${category.path}/${doc.path}`
 												? 'bg-accent font-medium text-foreground'
 												: 'text-muted-foreground hover:text-foreground'} {isReadme
@@ -140,15 +143,15 @@
 
 				<!-- Table of Contents (if available) -->
 				{#if data.doc && data.doc.toc.length > 0}
-					<div class="space-y-2 mt-6">
-						<h3 class="font-semibold text-sm">Sur cette page</h3>
-						<div class="h-px bg-border mb-2"></div>
+					<div class="mt-6 space-y-2">
+						<h3 class="text-sm font-semibold">Sur cette page</h3>
+						<div class="mb-2 h-px bg-border"></div>
 						<ul class="space-y-1 text-sm">
-							{#each data.doc.toc as item}
+							{#each data.doc.toc as item (item.slug)}
 								<li style="margin-left: {(item.level - 2) * 0.75}rem">
 									<a
 										href="#{item.id}"
-										class="text-muted-foreground hover:text-foreground block py-1"
+										class="block py-1 text-muted-foreground hover:text-foreground"
 									>
 										{item.text}
 									</a>
@@ -162,24 +165,16 @@
 
 		<!-- Main content -->
 		<main class="lg:col-span-3">
-			<div class="bg-card border rounded-lg p-6 md:p-8">
+			<div class="rounded-lg border bg-card p-6 md:p-8">
 				<!-- Rendered markdown -->
-				<article class="prose prose-slate dark:prose-invert max-w-none">
+				<article class="prose max-w-none prose-slate dark:prose-invert">
 					{@html htmlWithIds}
 				</article>
 
 				<!-- Footer navigation -->
-				<div class="mt-8 pt-6 border-t flex justify-between items-center">
-					<Button
-						variant="outline"
-						onclick={() => window.history.back()}
-					>
-						← Précédent
-					</Button>
-					<Button
-						variant="outline"
-						onclick={() => goto('/dashboard/admin/docs')}
-					>
+				<div class="mt-8 flex items-center justify-between border-t pt-6">
+					<Button variant="outline" onclick={() => window.history.back()}>← Précédent</Button>
+					<Button variant="outline" onclick={() => goto('/dashboard/admin/docs').then(() => {})}>
 						📚 Retour à l'index
 					</Button>
 				</div>

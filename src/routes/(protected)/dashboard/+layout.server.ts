@@ -70,7 +70,7 @@ export const load: LayoutServerLoad = async ({ parent, locals }) => {
 	 * For 3 classes: 7 queries → 1 query (85% reduction)
 	 * Expected speedup: 70-80% faster dashboard load
 	 */
-	let teacherClasses: any[] = [];
+	let teacherClasses: { id: string; name: string; level?: string; student_count?: number }[] = [];
 
 	if (profile.role === 'teacher') {
 		const { supabase } = locals;

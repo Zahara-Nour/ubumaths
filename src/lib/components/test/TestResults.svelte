@@ -127,7 +127,7 @@
 
 		<!-- Grid of correction cards -->
 		<div class="grid gap-6 lg:grid-cols-2">
-			{#each result.answers as answerResult, index}
+			{#each result.answers as answerResult, index (index)}
 				<CorrectionCard {answerResult} questionNumber={index + 1} size="md" />
 			{/each}
 		</div>

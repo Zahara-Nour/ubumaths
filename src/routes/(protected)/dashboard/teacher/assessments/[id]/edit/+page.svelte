@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { enhance } from '$app/forms';
+	import { enhance as _enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { ArrowLeft } from 'lucide-svelte';
@@ -11,10 +11,10 @@
 
 	let { data }: { data: PageData } = $props();
 
-	let isSubmitting = $state(false);
+	let _isSubmitting = $state(false);
 
 	function handleBack() {
-		goto('/dashboard/teacher/assessments');
+		goto('/dashboard/teacher/assessments').then(() => {});
 	}
 
 	async function handleSubmit(formData: {
@@ -41,7 +41,7 @@
 
 			if (result.type === 'success' || result.success) {
 				toaster.success('Évaluation mise à jour');
-				goto('/dashboard/teacher/assessments');
+				goto('/dashboard/teacher/assessments').then(() => {});
 			} else {
 				toaster.error(result.error || 'Échec de la mise à jour');
 			}

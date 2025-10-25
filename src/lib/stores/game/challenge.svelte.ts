@@ -75,7 +75,7 @@ class ChallengeStore {
 		}
 	}
 
-	submitAnswer(answer: any, correct: boolean) {
+	submitAnswer(answer: unknown, correct: boolean) {
 		this._answerSubmitted = true;
 		this._success = correct;
 		this.stopTimer();

@@ -22,7 +22,7 @@
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
+	import { toaster as _toaster } from '$lib/stores/toaster.svelte';
 	import { page } from '$app/state';
 	import { navigating } from '$app/stores';
 	import type { LayoutData } from './$types';
@@ -35,7 +35,7 @@
 	import SkeletonForm from '$lib/components/skeleton/SkeletonForm.svelte';
 	import { getSkeletonType } from '$lib/utils/skeleton-detector';
 
-	let { children, data }: { children: any; data: LayoutData } = $props();
+	let { children, data }: { children: import('svelte').Snippet; data: LayoutData } = $props();
 
 	// Check if we're in a dashboard route
 	let isDashboardRoute = $derived(page.url.pathname.startsWith('/dashboard'));
@@ -46,8 +46,8 @@
 	// Initialize theme and fontSize stores (ensures DOM updates on mode/size changes)
 	$effect(() => {
 		// Access to ensure reactivity
-		theme.dark;
-		fontSize.size;
+		void theme.dark;
+		void fontSize.size;
 	});
 </script>
 
@@ -93,7 +93,10 @@
 		<!-- Main content -->
 		<main class="relative flex-1 overflow-y-auto" class:p-6={!isDashboardRoute}>
 			<!-- Always render children so page can load -->
-			<div class:opacity-0={$navigating && !isDashboardRoute} class="transition-opacity duration-200">
+			<div
+				class:opacity-0={$navigating && !isDashboardRoute}
+				class="transition-opacity duration-200"
+			>
 				{@render children?.()}
 			</div>
 

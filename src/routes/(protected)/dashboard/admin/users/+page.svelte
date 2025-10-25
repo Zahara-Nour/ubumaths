@@ -28,16 +28,16 @@
 
 	// Search state
 	let searchTerm = $state(''); // Current text search input
-	let searchResults = $state<any[]>([]); // Results from text search
-	let classResults = $state<any[]>([]); // Results from class filter
+	let searchResults = $state<unknown[]>([]); // Results from text search
+	let classResults = $state<unknown[]>([]); // Results from class filter
 	let isSearching = $state(false); // Loading state for text search
 	let isSearchingClass = $state(false); // Loading state for class filter
 	let selectedClassFilter = $state<string>(''); // Currently selected class ID for filtering
 	let searchTimeout: NodeJS.Timeout | null = null; // Debounce timer for search
 
 	// User selection and editing state
-	let selectedUser = $state<any | null>(null); // Currently viewed user
-	let editedUser = $state<any>({}); // Copy of user being edited
+	let selectedUser = $state<unknown>(null); // Currently viewed user
+	let editedUser = $state<unknown>({}); // Copy of user being edited
 	let isEditing = $state(false); // Whether edit mode is active
 	let classToAdd = $state(''); // Selected class to add to user
 
@@ -49,7 +49,12 @@
 	 * Get user's full display name
 	 * Falls back to full_name or email if first/last names not available
 	 */
-	function getFullName(user: any): string {
+	function getFullName(user: {
+		firstname?: string;
+		lastname?: string;
+		full_name?: string;
+		email: string;
+	}): string {
 		if (user.firstname && user.lastname) {
 			return `${user.firstname} ${user.lastname}`;
 		}
@@ -169,7 +174,7 @@
 	 * Select a user to view/edit in the right panel
 	 * Resets edit mode when selecting a new user
 	 */
-	function selectUser(user: any) {
+	function selectUser(user: (typeof data.users)[number]) {
 		selectedUser = user;
 		editedUser = { ...user };
 		isEditing = false;

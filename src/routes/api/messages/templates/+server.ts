@@ -114,7 +114,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	}
 
 	// Format response
-	const formattedTemplates = templates?.map((t: any) => ({
+	const formattedTemplates = templates?.map((t) => ({
 		...t,
 		class_name: t.classes?.name || null
 	}));

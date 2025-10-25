@@ -152,19 +152,16 @@ import type { PageServerLoad } from './$types';
 import { requireAuth } from '$lib/server/auth';
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
-  const { user } = await safeGetSession();
-  requireAuth(user);
+	const { user } = await safeGetSession();
+	requireAuth(user);
 
-  const { data, error } = await supabase
-    .from('feature_table')
-    .select('*')
-    .eq('user_id', user.id);
+	const { data, error } = await supabase.from('feature_table').select('*').eq('user_id', user.id);
 
-  if (error) throw error;
+	if (error) throw error;
 
-  return {
-    items: data
-  };
+	return {
+		items: data
+	};
 };
 ```
 
@@ -176,27 +173,25 @@ import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
-  create: async ({ request, locals: { safeGetSession, supabase } }) => {
-    const { user } = await safeGetSession();
-    if (!user) return fail(401, { message: 'Non autorisé' });
+	create: async ({ request, locals: { safeGetSession, supabase } }) => {
+		const { user } = await safeGetSession();
+		if (!user) return fail(401, { message: 'Non autorisé' });
 
-    const formData = await request.formData();
-    const title = formData.get('title') as string;
+		const formData = await request.formData();
+		const title = formData.get('title') as string;
 
-    // Validation
-    if (!title || title.length < 3) {
-      return fail(400, { message: 'Titre trop court' });
-    }
+		// Validation
+		if (!title || title.length < 3) {
+			return fail(400, { message: 'Titre trop court' });
+		}
 
-    // Insert
-    const { error } = await supabase
-      .from('feature_table')
-      .insert({ title, user_id: user.id });
+		// Insert
+		const { error } = await supabase.from('feature_table').insert({ title, user_id: user.id });
 
-    if (error) return fail(500, { message: error.message });
+		if (error) return fail(500, { message: error.message });
 
-    return { success: true };
-  }
+		return { success: true };
+	}
 };
 ```
 
@@ -205,34 +200,38 @@ export const actions: Actions = {
 ```svelte
 <!-- FeatureCard.svelte -->
 <script lang="ts">
-  import type { Feature } from '$lib/types/feature-name';
-  import { Button } from '$lib/components/ui/button';
+	import type { Feature } from '$lib/types/feature-name';
+	import { Button } from '$lib/components/ui/button';
 
-  let { feature, onEdit, onDelete }: {
-    feature: Feature;
-    onEdit: (id: string) => void;
-    onDelete: (id: string) => void;
-  } = $props();
+	let {
+		feature,
+		onEdit,
+		onDelete
+	}: {
+		feature: Feature;
+		onEdit: (id: string) => void;
+		onDelete: (id: string) => void;
+	} = $props();
 
-  function handleEdit() {
-    onEdit(feature.id);
-  }
+	function handleEdit() {
+		onEdit(feature.id);
+	}
 
-  function handleDelete() {
-    if (confirm('Êtes-vous sûr ?')) {
-      onDelete(feature.id);
-    }
-  }
+	function handleDelete() {
+		if (confirm('Êtes-vous sûr ?')) {
+			onDelete(feature.id);
+		}
+	}
 </script>
 
-<div class="border rounded-lg p-4">
-  <h3 class="text-lg font-semibold">{feature.title}</h3>
-  <p class="text-muted-foreground">{feature.description}</p>
+<div class="rounded-lg border p-4">
+	<h3 class="text-lg font-semibold">{feature.title}</h3>
+	<p class="text-muted-foreground">{feature.description}</p>
 
-  <div class="mt-4 flex gap-2">
-    <Button onclick={handleEdit}>Modifier</Button>
-    <Button variant="destructive" onclick={handleDelete}>Supprimer</Button>
-  </div>
+	<div class="mt-4 flex gap-2">
+		<Button onclick={handleEdit}>Modifier</Button>
+		<Button variant="destructive" onclick={handleDelete}>Supprimer</Button>
+	</div>
 </div>
 ```
 
@@ -245,23 +244,23 @@ let optimistic = $state<Record<string, number>>({});
 let debounceTimer: ReturnType<typeof setTimeout>;
 
 function handleUpdate(id: string, delta: number) {
-  // Update optimiste immédiat
-  optimistic[id] = (optimistic[id] || 0) + delta;
+	// Update optimiste immédiat
+	optimistic[id] = (optimistic[id] || 0) + delta;
 
-  // Debounce update serveur
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(async () => {
-    try {
-      await fetch(`/api/feature/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ value: optimistic[id] })
-      });
-      optimistic[id] = 0; // Reset
-    } catch (error) {
-      optimistic[id] = 0; // Rollback on error
-      toaster.error('Erreur lors de la mise à jour');
-    }
-  }, 500);
+	// Debounce update serveur
+	clearTimeout(debounceTimer);
+	debounceTimer = setTimeout(async () => {
+		try {
+			await fetch(`/api/feature/${id}`, {
+				method: 'PATCH',
+				body: JSON.stringify({ value: optimistic[id] })
+			});
+			optimistic[id] = 0; // Reset
+		} catch (error) {
+			optimistic[id] = 0; // Rollback on error
+			toaster.error('Erreur lors de la mise à jour');
+		}
+	}, 500);
 }
 ```
 
@@ -351,21 +350,21 @@ import { describe, it, expect } from 'vitest';
 import { parseFeature } from './parser';
 
 describe('Feature Parser', () => {
-  it('should parse valid input', () => {
-    const input = 'valid input';
-    const result = parseFeature(input);
+	it('should parse valid input', () => {
+		const input = 'valid input';
+		const result = parseFeature(input);
 
-    expect(result.success).toBe(true);
-    expect(result.data).toBeDefined();
-  });
+		expect(result.success).toBe(true);
+		expect(result.data).toBeDefined();
+	});
 
-  it('should reject invalid input', () => {
-    const input = '';
-    const result = parseFeature(input);
+	it('should reject invalid input', () => {
+		const input = '';
+		const result = parseFeature(input);
 
-    expect(result.success).toBe(false);
-    expect(result.error).toBeDefined();
-  });
+		expect(result.success).toBe(false);
+		expect(result.error).toBeDefined();
+	});
 });
 ```
 
@@ -376,24 +375,24 @@ describe('Feature Parser', () => {
 import { test, expect } from '@playwright/test';
 
 test('user can create a new item', async ({ page }) => {
-  // Login
-  await page.goto('/login');
-  await page.fill('[name="email"]', 'test@example.com');
-  await page.fill('[name="password"]', 'password');
-  await page.click('button[type="submit"]');
+	// Login
+	await page.goto('/login');
+	await page.fill('[name="email"]', 'test@example.com');
+	await page.fill('[name="password"]', 'password');
+	await page.click('button[type="submit"]');
 
-  // Navigate to feature
-  await page.goto('/dashboard/feature-name');
-  await expect(page.getByText('Feature Name')).toBeVisible();
+	// Navigate to feature
+	await page.goto('/dashboard/feature-name');
+	await expect(page.getByText('Feature Name')).toBeVisible();
 
-  // Create item
-  await page.click('text=Créer');
-  await page.fill('[name="title"]', 'Test Item');
-  await page.fill('[name="description"]', 'Test description');
-  await page.click('button[type="submit"]');
+	// Create item
+	await page.click('text=Créer');
+	await page.fill('[name="title"]', 'Test Item');
+	await page.fill('[name="description"]', 'Test description');
+	await page.click('button[type="submit"]');
 
-  // Verify
-  await expect(page.getByText('Test Item')).toBeVisible();
+	// Verify
+	await expect(page.getByText('Test Item')).toBeVisible();
 });
 ```
 
@@ -410,6 +409,7 @@ cp docs/contributing/feature-template.md docs/features/feature-name/README.md
 ```
 
 Puis remplir les sections :
+
 - Vue d'ensemble
 - Quick start
 - Architecture

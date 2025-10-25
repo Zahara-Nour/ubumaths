@@ -25,7 +25,7 @@
 		RiddleDifficulty,
 		AnswerConfig
 	} from '$lib/types/riddle';
-	import { getDifficultyLabel, calculateGidouilles } from '$lib/types/riddle';
+	import { calculateGidouilles } from '$lib/types/riddle';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -104,10 +104,6 @@
 
 		onSubmit(data);
 	}
-
-	function handleGenreSelect(value: string) {
-		genre = value;
-	}
 </script>
 
 <form
@@ -157,7 +153,7 @@
 						list="genre-suggestions"
 					/>
 					<datalist id="genre-suggestions">
-						{#each genreSuggestions as suggestion}
+						{#each genreSuggestions as suggestion (suggestion)}
 							<option value={suggestion}></option>
 						{/each}
 					</datalist>

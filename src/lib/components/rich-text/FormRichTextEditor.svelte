@@ -71,15 +71,10 @@
 	// Component Props
 	interface Props {
 		value?: string;
-		jsonValue?: any;
-		placeholder?: string;
+		jsonValue?: unknown;
 	}
 
-	let {
-		value = $bindable(''),
-		jsonValue = $bindable(undefined),
-		placeholder = 'Entrez votre texte...'
-	}: Props = $props();
+	let { value = $bindable(''), jsonValue = $bindable(undefined) }: Props = $props();
 
 	// Editor State
 	let editorElement = $state<HTMLElement | null>(null);
@@ -102,7 +97,7 @@
 	let isBulletList = $state(false);
 	let isOrderedList = $state(false);
 	let isTaskList = $state(false);
-	let isBlockquote = $state(false);
+	let _isBlockquote = $state(false);
 	let currentAlignment = $state<'left' | 'center' | 'right' | 'justify'>('left');
 	let currentHeading = $state<number | null>(null);
 
@@ -556,7 +551,7 @@
 		linkUrl = '';
 	}
 
-	function removeLink() {
+	function _removeLink() {
 		editor?.chain().focus().unsetLink().run();
 	}
 
@@ -840,7 +835,7 @@
 							class="absolute top-full left-0 z-50 mt-1 rounded-lg border border-border bg-popover p-2 shadow-md"
 						>
 							<div class="grid grid-cols-4 gap-1">
-								{#each textColors as color}
+								{#each textColors as color (color.value)}
 									<button
 										type="button"
 										class="h-6 w-6 rounded border border-border"
@@ -870,7 +865,7 @@
 							class="absolute top-full left-0 z-50 mt-1 rounded-lg border border-border bg-popover p-2 shadow-md"
 						>
 							<div class="grid grid-cols-4 gap-1">
-								{#each highlightColors as color}
+								{#each highlightColors as color (color.value)}
 									<button
 										type="button"
 										class="h-6 w-6 rounded border border-border"
@@ -938,11 +933,11 @@
 						<div
 							class="absolute top-full left-0 z-50 mt-1 max-h-64 w-64 overflow-y-auto rounded-lg border border-border bg-popover p-2 shadow-md"
 						>
-							{#each emojiCategories as category}
+							{#each emojiCategories as category (category.name)}
 								<div class="mb-2">
 									<p class="mb-1 text-xs font-medium text-muted-foreground">{category.name}</p>
 									<div class="grid grid-cols-8 gap-1">
-										{#each category.emojis as emoji}
+										{#each category.emojis as emoji (emoji)}
 											<button
 												type="button"
 												class="flex h-6 w-6 items-center justify-center rounded hover:bg-muted"

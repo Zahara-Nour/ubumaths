@@ -32,7 +32,6 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Badge } from '$lib/components/ui/badge';
 	import PrecisionEditor from './PrecisionEditor.svelte';
-	import ContentFieldEditor from './ContentFieldEditor.svelte';
 	import { Plus, Trash2 } from 'lucide-svelte';
 
 	interface Props {
@@ -247,7 +246,7 @@
 						bind:value={transformType}
 						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 					>
-						{#each TRANSFORM_TYPES as type}
+						{#each TRANSFORM_TYPES as type (type.value)}
 							<option value={type.value}>{type.label}</option>
 						{/each}
 					</select>
@@ -324,7 +323,7 @@
 			</Card.Header>
 			<Card.Content class="space-y-4">
 				{#if blanks}
-					{#each blanks as blank, index}
+					{#each blanks as blank, index (index)}
 						<div class="flex gap-3">
 							<div class="flex-1 space-y-2">
 								<Label for="blank-{index}">
@@ -444,7 +443,7 @@
 				<!-- Choices -->
 				{#if choices}
 					<div class="space-y-3">
-						{#each choices as choice, index}
+						{#each choices as choice, index (index)}
 							<div class="flex gap-3">
 								<!-- Correct answer checkbox/radio -->
 								<div class="flex items-center pt-8">

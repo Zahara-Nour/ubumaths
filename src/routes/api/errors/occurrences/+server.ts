@@ -31,12 +31,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		const error_type = url.searchParams.get('error_type');
 		if (error_type) {
-			filters.error_type = error_type as any;
+			filters.error_type = error_type as ErrorFilters['error_type'];
 		}
 
 		const severity = url.searchParams.get('severity');
 		if (severity) {
-			filters.severity = severity as any;
+			filters.severity = severity as ErrorFilters['severity'];
 		}
 
 		const resolved = url.searchParams.get('resolved');

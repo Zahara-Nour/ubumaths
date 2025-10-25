@@ -18,7 +18,6 @@
 -->
 
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
 
 	interface Props {
@@ -99,7 +98,7 @@
 
 <div class="fsrs-buttons-container">
 	<div class="grid grid-cols-2 gap-3 md:grid-cols-4">
-		{#each buttons as btn}
+		{#each buttons as btn (btn.grade)}
 			<button
 				class={cn(
 					'fsrs-button group relative flex flex-col items-center justify-center gap-2 rounded-lg px-4 py-6 font-semibold shadow-md transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50',

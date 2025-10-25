@@ -8,10 +8,10 @@
 	let { data }: { data: PageData } = $props();
 
 	let showModal = $state(false);
-	let editingSchool = $state<any>(null);
+	let editingSchool = $state<unknown>(null);
 	let activeTab = $state<'single' | 'bulk'>('single');
 	let bulkData = $state('');
-	let parsedSchools = $state<any[]>([]);
+	let parsedSchools = $state<unknown[]>([]);
 	let parseError = $state('');
 
 	let formData = $state({
@@ -40,7 +40,7 @@
 		showModal = true;
 	}
 
-	function openEditModal(school: any) {
+	function openEditModal(school: (typeof data.schools)[number]) {
 		editingSchool = school;
 		activeTab = 'single';
 		formData = {
@@ -72,7 +72,7 @@
 		}
 
 		const lines = bulkData.trim().split('\n');
-		const schools: any[] = [];
+		const schools: { name: string; city?: string; country?: string; address?: string }[] = [];
 
 		for (let i = 0; i < lines.length; i++) {
 			const line = lines[i].trim();
@@ -197,7 +197,10 @@
 								{/if}
 							</td>
 							<td class="space-x-2 px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
-								<a href="/dashboard/admin/schools/{school.id}/timetable">
+								<a
+									href="/dashboard/admin/schools/{school.id}/timetable"
+									data-sveltekit-preload-data="hover"
+								>
 									<Button variant="ghost" size="sm">Emploi du Temps</Button>
 								</a>
 								<Button variant="ghost" size="sm" onclick={() => openEditModal(school)}>

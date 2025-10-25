@@ -22,7 +22,7 @@
 	/**
 	 * Handle session completion
 	 */
-	function handleComplete(summary: any) {
+	function handleComplete(summary: { total: number; correct: number; wrong: number }) {
 		console.log('Session completed:', summary);
 		// Could show a completion modal or navigate back
 	}
@@ -31,7 +31,7 @@
 	 * Navigate back to deck list
 	 */
 	function goBack() {
-		goto('/dashboard/revisions');
+		goto('/dashboard/revisions').then(() => {});
 	}
 </script>
 

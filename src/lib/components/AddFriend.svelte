@@ -58,7 +58,7 @@
 	}
 
 	function getStatusBadge(status: 'pending' | 'accepted' | 'rejected' | null): {
-		icon: any;
+		icon: typeof Check;
 		label: string;
 		class: string;
 	} {

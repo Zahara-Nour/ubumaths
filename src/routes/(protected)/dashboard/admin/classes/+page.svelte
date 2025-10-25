@@ -13,7 +13,7 @@
 	// State
 	let selectedSchool = $state('');
 	let showModal = $state(false);
-	let editingClass = $state<any>(null);
+	let editingClass = $state<(typeof data.classes)[number] | null>(null);
 	let copiedCode = $state<string | null>(null);
 	let autoGenerateCode = $state(true);
 
@@ -32,7 +32,7 @@
 	);
 
 	// Get teacher display name
-	function getTeacherName(teacher: any): string {
+	function getTeacherName(teacher: { firstname?: string; lastname?: string } | null): string {
 		if (!teacher) return '—';
 		if (teacher.firstname && teacher.lastname) {
 			return `${teacher.firstname} ${teacher.lastname}`;
@@ -64,7 +64,7 @@
 	}
 
 	// Open edit modal
-	function openEditModal(classItem: any) {
+	function openEditModal(classItem: (typeof data.classes)[number]) {
 		editingClass = classItem;
 		autoGenerateCode = false;
 		formData = {
@@ -238,7 +238,8 @@
 													toaster.success('Classe désactivée avec succès');
 												} else if (result.type === 'failure') {
 													const message =
-														(result.data as any)?.message || 'Erreur lors de la désactivation';
+														(result.data as unknown as { message?: string })?.message ||
+														'Erreur lors de la désactivation';
 													toaster.error(message);
 												}
 											};
@@ -327,7 +328,9 @@
 									toaster.success('Classe créée avec succès');
 								}
 							} else if (result.type === 'failure') {
-								const message = (result.data as any)?.message || 'Une erreur est survenue';
+								const message =
+									(result.data as unknown as { message?: string })?.message ||
+									'Une erreur est survenue';
 								toaster.error(message);
 							}
 						};

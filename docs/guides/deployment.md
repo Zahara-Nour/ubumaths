@@ -67,13 +67,14 @@ git push origin main
 ```
 
 - Déclenche build automatique
-- Tests  exécutés
+- Tests exécutés
 - Déploiement si succès
 - URL production mise à jour
 
 ### Preview (branches)
 
 Chaque push sur branche feature :
+
 - Crée deployment preview
 - URL unique : `ubumaths-git-<branch>.vercel.app`
 - Permet test avant merge
@@ -85,12 +86,14 @@ Chaque push sur branche feature :
 ### Workflow
 
 1. **Local** : Créer migration SQL
+
    ```bash
    # Créer fichier migration
    supabase/migrations/<timestamp>_description.sql
    ```
 
 2. **Test local**
+
    ```bash
    pnpm db:migrate
    ```
@@ -134,6 +137,7 @@ Chaque push sur branche feature :
 ### Vercel Analytics
 
 Dashboard → Analytics :
+
 - Visites
 - Performance (Core Web Vitals)
 - Erreurs runtime
@@ -141,6 +145,7 @@ Dashboard → Analytics :
 ### Error Monitoring
 
 UbuMaths intégré error monitoring :
+
 - Dashboard : `/dashboard/admin/errors`
 - Capture automatique erreurs
 - Stack traces
@@ -170,6 +175,7 @@ UbuMaths intégré error monitoring :
 ### Variables d'environnement
 
 Si erreur "Missing env var" :
+
 1. Vérifier Vercel → Settings → Environment Variables
 2. Ajouter variables manquantes
 3. Redeploy (rerun deployment)
@@ -187,22 +193,23 @@ Si erreur "Missing env var" :
 ### CORS
 
 Configuration dans `src/hooks.server.ts` :
+
 ```typescript
 export const handle: Handle = async ({ event, resolve }) => {
-  // CORS headers si nécessaire
-  if (event.url.pathname.startsWith('/api/')) {
-    if (event.request.method === 'OPTIONS') {
-      return new Response(null, {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        }
-      });
-    }
-  }
+	// CORS headers si nécessaire
+	if (event.url.pathname.startsWith('/api/')) {
+		if (event.request.method === 'OPTIONS') {
+			return new Response(null, {
+				headers: {
+					'Access-Control-Allow-Origin': '*',
+					'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+					'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+				}
+			});
+		}
+	}
 
-  return resolve(event);
+	return resolve(event);
 };
 ```
 
@@ -213,6 +220,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 ### Edge Functions
 
 Vercel déploie automatiquement comme Edge Functions :
+
 - Latence minimale
 - Distribution globale
 - Cold starts rapides
@@ -220,6 +228,7 @@ Vercel déploie automatiquement comme Edge Functions :
 ### Caching
 
 Headers cache configurés :
+
 - Static assets : Cache agressif
 - API : Cache intelligent
 - HTML : Pas de cache (SSR)
@@ -227,6 +236,7 @@ Headers cache configurés :
 ### Build optimization
 
 Dans `vite.config.ts` :
+
 - Code splitting par route
 - Tree shaking
 - Minification production

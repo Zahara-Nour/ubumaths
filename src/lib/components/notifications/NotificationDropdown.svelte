@@ -11,7 +11,6 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import { Bell } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
-	import { cn } from '$lib/utils';
 
 	// Get top 5 notifications for dropdown
 	const MAX_DROPDOWN_NOTIFICATIONS = 5;
@@ -42,16 +41,17 @@
 		// Close popover
 		isOpen = false;
 
-		// Navigate if action URL exists
+		// Navigate if action URL exists (using then to handle promise)
 		if (notification.action_url) {
-			goto(notification.action_url);
+			goto(notification.action_url).then(() => {});
 		}
 	}
 
 	// Handle "View all" click
 	function handleViewAll() {
 		isOpen = false;
-		goto('/dashboard/notifications');
+		// Using then to handle promise
+		goto('/dashboard/notifications').then(() => {});
 	}
 
 	// Get priority colors for notification

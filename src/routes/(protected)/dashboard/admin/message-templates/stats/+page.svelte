@@ -1,5 +1,14 @@
 <script lang="ts" context="module">
-	function generateCSV(stats: any): string {
+	function generateCSV(stats: {
+		overview: {
+			total_uses: number;
+			total_templates: number;
+			completion_rate: number;
+			unique_users: number;
+			avg_time_to_complete: number;
+		};
+		top_templates?: { title: string; usage_count: number; completion_rate: number }[];
+	}): string {
 		const rows: string[] = [];
 
 		// Header
@@ -18,7 +27,7 @@
 
 		// Top templates
 		if (stats.top_templates) {
-			stats.top_templates.forEach((t: any) => {
+			stats.top_templates.forEach((t) => {
 				rows.push(`"${t.title}",${t.usage_count},${(t.completion_rate * 100).toFixed(2)}%`);
 			});
 		}
@@ -39,7 +48,7 @@
 
 	// State
 	let isLoading = $state(true);
-	let stats = $state<any>(null);
+	let stats = $state<unknown>(null);
 	let timeRange = $state<'7d' | '30d' | '90d' | 'all'>('30d');
 
 	const timeRangeOptions = [
@@ -114,7 +123,10 @@
 	<!-- Header -->
 	<div class="mb-6 flex items-center justify-between">
 		<div>
-			<Button variant="ghost" onclick={() => goto('/dashboard/admin/message-templates')}>
+			<Button
+				variant="ghost"
+				onclick={() => goto('/dashboard/admin/message-templates').then(() => {})}
+			>
 				<ArrowLeft class="mr-2 h-4 w-4" />
 				Retour aux templates
 			</Button>
@@ -136,7 +148,7 @@
 				<Select.Value placeholder="Période" />
 			</Select.Trigger>
 			<Select.Content>
-				{#each timeRangeOptions as option}
+				{#each timeRangeOptions as option (option.value)}
 					<Select.Item value={option.value}>{option.label}</Select.Item>
 				{/each}
 			</Select.Content>
@@ -221,7 +233,7 @@
 				<Card.Content>
 					{#if stats.top_templates && stats.top_templates.length > 0}
 						<div class="space-y-3">
-							{#each stats.top_templates as template, index}
+							{#each stats.top_templates as template, index (template.id)}
 								<div class="flex items-center justify-between rounded-lg border border-border p-3">
 									<div class="flex items-center gap-3">
 										<Badge variant="outline" class="font-mono">{index + 1}</Badge>
@@ -263,7 +275,7 @@
 				<Card.Content>
 					{#if stats.by_trigger_type && stats.by_trigger_type.length > 0}
 						<div class="space-y-3">
-							{#each stats.by_trigger_type as item}
+							{#each stats.by_trigger_type as item (item.trigger_type)}
 								{@const percentage = (item.usage_count / stats.overview.total_uses) * 100}
 								<div class="space-y-2">
 									<div class="flex items-center justify-between">
@@ -298,7 +310,7 @@
 				<Card.Content>
 					{#if stats.recent_usage && stats.recent_usage.length > 0}
 						<div class="space-y-2">
-							{#each stats.recent_usage as usage}
+							{#each stats.recent_usage as usage (usage.id)}
 								<div class="flex items-center justify-between rounded-lg border border-border p-3">
 									<div>
 										<div class="font-medium">{usage.template_title}</div>

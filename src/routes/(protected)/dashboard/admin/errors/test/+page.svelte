@@ -51,7 +51,7 @@
 			if (!response.ok) {
 				alert('Server error triggered (check dashboard)');
 			}
-		} catch (err) {
+		} catch (_err) {
 			alert('Server error triggered (check dashboard)');
 		}
 	}

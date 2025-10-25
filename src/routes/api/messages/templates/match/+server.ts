@@ -28,7 +28,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	// Parse query parameters
 	const triggerType = url.searchParams.get('trigger_type') as TriggerType;
 	const classId = url.searchParams.get('class_id');
-	const entityId = url.searchParams.get('entity_id'); // For future use
+	const _entityId = url.searchParams.get('entity_id'); // For future use
 
 	if (!triggerType) {
 		return error(400, 'trigger_type est requis');

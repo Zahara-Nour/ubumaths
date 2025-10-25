@@ -44,22 +44,18 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 		.not('genre', 'is', null)
 		.eq('status', 'published');
 
-	const uniqueGenres = [
-		...new Set((allGenres || []).map((r: any) => r.genre).filter((g: string) => g))
-	];
+	const uniqueGenres = [...new Set((allGenres || []).map((r) => r.genre).filter((g: string) => g))];
 
 	// Calculate summary stats
 	const totalSuccess = history?.length || 0;
 	const totalGidouilles =
-		history?.reduce((sum: number, h: any) => sum + (h.gidouilles_awarded || 0), 0) || 0;
-	const firstAttemptCount =
-		history?.filter((h: any) => h.total_attempts_for_success === 1).length || 0;
-	const multipleAttemptCount =
-		history?.filter((h: any) => h.total_attempts_for_success > 1).length || 0;
+		history?.reduce((sum: number, h) => sum + (h.gidouilles_awarded || 0), 0) || 0;
+	const firstAttemptCount = history?.filter((h) => h.total_attempts_for_success === 1).length || 0;
+	const multipleAttemptCount = history?.filter((h) => h.total_attempts_for_success > 1).length || 0;
 
 	// Calculate genre counts
 	const genreCounts: Record<string, number> = {};
-	history?.forEach((h: any) => {
+	history?.forEach((h) => {
 		if (h.genre) {
 			genreCounts[h.genre] = (genreCounts[h.genre] || 0) + 1;
 		}
@@ -86,12 +82,12 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 					.select('riddle_id')
 					.order('assignment_date', { ascending: false })
 					.limit(30)
-			).data?.map((r: any) => r.riddle_id) || []
+			).data?.map((r) => r.riddle_id) || []
 		)
 		.order('created_at', { ascending: false });
 
 	const consecutiveDaysStreak = new Set(
-		(riddleOfTheDayAttempts || []).map((a: any) => a.created_at.split('T')[0])
+		(riddleOfTheDayAttempts || []).map((a) => a.created_at.split('T')[0])
 	).size;
 
 	// Badge progress

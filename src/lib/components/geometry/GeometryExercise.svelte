@@ -30,7 +30,7 @@
 	let { exercise, attempt = null, onSubmit, onSave, onHintUsed }: Props = $props();
 
 	let mathGraphApp: MathGraphApp | null = $state(null);
-	let editorRef: any = $state(null);
+	let editorRef: HTMLElement | null = $state(null);
 	let validationResults: ValidationResults | null = $state(null);
 	let isValidating = $state(false);
 	let showHints = $state(false);

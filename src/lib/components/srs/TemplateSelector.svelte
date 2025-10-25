@@ -18,7 +18,6 @@
 
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Badge } from '$lib/components/ui/badge';
@@ -35,7 +34,7 @@
 	let { onSelect, onCancel, initialSelection = [] }: Props = $props();
 
 	// State
-	let templates = $state<any[]>([]);
+	let templates = $state<Array<{ id: string; title: string; type: string }>>([]);
 	let selectedIds = new SvelteSet<string>(initialSelection);
 	let searchQuery = $state('');
 	let isLoading = $state(true);

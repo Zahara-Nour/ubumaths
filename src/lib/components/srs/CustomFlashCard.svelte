@@ -118,7 +118,7 @@
 
 					<Card.Content class="space-y-4">
 						<div class="content-section rounded-lg border bg-card p-4">
-							{#each frontContent as field}
+							{#each frontContent as field, i (i)}
 								{#if field.type === 'text'}
 									<MathDisplay text={field.content} />
 								{:else if field.type === 'image'}
@@ -157,7 +157,7 @@
 
 					<Card.Content class="space-y-4">
 						<div class="content-section rounded-lg border bg-card p-4">
-							{#each backContent as field}
+							{#each backContent as field, i (i)}
 								{#if field.type === 'text'}
 									<MathDisplay text={field.content} />
 								{:else if field.type === 'image'}

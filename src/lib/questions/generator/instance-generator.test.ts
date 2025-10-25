@@ -270,7 +270,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 		expect(result.instance!.multipleAnswers).toBe(false);
 
 		// Verify correct answer is tracked (don't check specific value, just that it exists)
-		const correctAnswer = getVarValue(result.instance!.resolvedVariables, 'correct');
+		const _correctAnswer = getVarValue(result.instance!.resolvedVariables, 'correct');
 		const shuffledCorrectIndex = parseInt(result.instance!.answer as string);
 		expect(shuffledCorrectIndex).toBeGreaterThanOrEqual(0);
 		expect(shuffledCorrectIndex).toBeLessThan(4);

@@ -75,7 +75,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		}
 
 		switch (action) {
-			case 'updateStatus':
+			case 'updateStatus': {
 				if (!status || !['inbox', 'archived', 'trash'].includes(status)) {
 					throw error(400, 'Statut invalide');
 				}
@@ -91,8 +91,9 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 					throw error(500, 'Erreur lors de la mise à jour du statut');
 				}
 				break;
+			}
 
-			case 'toggleRead':
+			case 'toggleRead': {
 				// Toggle read/unread status
 				const { data: inboxEntry } = await supabase
 					.from('message_inbox')
@@ -115,8 +116,9 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				}
 
 				return json({ success: true, isRead: newReadValue !== null });
+			}
 
-			case 'toggleStar':
+			case 'toggleStar': {
 				const { data: newStarValue, error: starError } = await supabase.rpc('toggle_message_star', {
 					p_message_id: messageId,
 					p_user_id: session.user.id
@@ -128,8 +130,9 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				}
 
 				return json({ success: true, isStarred: newStarValue });
+			}
 
-			case 'moveToFolder':
+			case 'moveToFolder': {
 				if (!folderId) {
 					throw error(400, 'ID du dossier requis');
 				}
@@ -145,6 +148,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 					throw error(500, 'Erreur lors du déplacement vers le dossier');
 				}
 				break;
+			}
 
 			default:
 				throw error(400, 'Action invalide');

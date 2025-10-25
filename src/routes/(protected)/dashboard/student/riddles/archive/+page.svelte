@@ -20,21 +20,27 @@
 		return format(new Date(dateString), 'EEEE d MMMM yyyy', { locale: fr });
 	}
 
-	function getStatusIcon(attempt: any) {
+	type RiddleAttempt = {
+		is_correct: boolean | null;
+		attempt_number: number;
+		gidouilles_awarded: number;
+	} | null;
+
+	function getStatusIcon(attempt: RiddleAttempt) {
 		if (!attempt) return Clock;
 		if (attempt.is_correct === true) return Trophy;
 		if (attempt.is_correct === false) return XCircle;
 		return Clock;
 	}
 
-	function getStatusColor(attempt: any) {
+	function getStatusColor(attempt: RiddleAttempt) {
 		if (!attempt) return 'text-muted-foreground';
 		if (attempt.is_correct === true) return 'text-green-600 dark:text-green-400';
 		if (attempt.is_correct === false) return 'text-red-600 dark:text-red-400';
 		return 'text-yellow-600 dark:text-yellow-400';
 	}
 
-	function getStatusText(attempt: any) {
+	function getStatusText(attempt: RiddleAttempt) {
 		if (!attempt) return 'Non tentée';
 		if (attempt.is_correct === true) return `Réussie (${attempt.gidouilles_awarded} gidouilles)`;
 		if (attempt.is_correct === false)

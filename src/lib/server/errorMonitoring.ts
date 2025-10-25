@@ -71,7 +71,7 @@ export interface LogErrorData {
 	request_method?: string;
 	status_code?: number;
 	request_headers?: Record<string, string>;
-	request_body?: Record<string, any>;
+	request_body?: Record<string, unknown>;
 	response_time?: number;
 
 	// Optional - Browser context (client errors)
@@ -84,7 +84,7 @@ export interface LogErrorData {
 	viewport_height?: number;
 
 	// Optional - Additional context
-	context?: Record<string, any>;
+	context?: Record<string, unknown>;
 	tags?: string[];
 }
 
@@ -157,10 +157,12 @@ const SENSITIVE_PATTERNS = [
 /**
  * Sanitize an object by removing sensitive fields
  */
-function sanitizeObject(obj: Record<string, any> | null | undefined): Record<string, any> | null {
+function sanitizeObject(
+	obj: Record<string, unknown> | null | undefined
+): Record<string, unknown> | null {
 	if (!obj || typeof obj !== 'object') return null;
 
-	const sanitized: Record<string, any> = {};
+	const sanitized: Record<string, unknown> = {};
 
 	for (const [key, value] of Object.entries(obj)) {
 		// Check if key matches sensitive pattern
@@ -170,7 +172,7 @@ function sanitizeObject(obj: Record<string, any> | null | undefined): Record<str
 			sanitized[key] = '[REDACTED]';
 		} else if (value && typeof value === 'object' && !Array.isArray(value)) {
 			// Recursively sanitize nested objects
-			sanitized[key] = sanitizeObject(value);
+			sanitized[key] = sanitizeObject(value as Record<string, unknown>);
 		} else if (Array.isArray(value)) {
 			// Sanitize arrays of objects
 			sanitized[key] = value.map((item) =>
@@ -197,25 +199,25 @@ function sanitizeErrorData(data: LogErrorData): LogErrorData {
 
 	// Sanitize request body
 	if (sanitized.request_body) {
-		sanitized.request_body = sanitizeObject(sanitized.request_body);
+		sanitized.request_body = sanitizeObject(sanitized.request_body) || undefined;
 	}
 
 	// Sanitize context
 	if (sanitized.context) {
-		sanitized.context = sanitizeObject(sanitized.context);
+		sanitized.context = sanitizeObject(sanitized.context) || undefined;
 	}
 
 	// Redact email addresses from stack traces
 	if (sanitized.stack_trace) {
 		sanitized.stack_trace = sanitized.stack_trace.replace(
-			/[\w\.-]+@[\w\.-]+\.\w+/g,
+			/[\w.-]+@[\w.-]+\.\w+/g,
 			'[email]@[domain]'
 		);
 	}
 
 	// Redact email addresses from messages
 	if (sanitized.message) {
-		sanitized.message = sanitized.message.replace(/[\w\.-]+@[\w\.-]+\.\w+/g, '[email]@[domain]');
+		sanitized.message = sanitized.message.replace(/[\w.-]+@[\w.-]+\.\w+/g, '[email]@[domain]');
 	}
 
 	return sanitized;

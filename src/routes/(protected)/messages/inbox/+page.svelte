@@ -89,7 +89,7 @@
 
 	// Navigate to message
 	function viewMessage(messageId: string) {
-		goto(`/messages/${messageId}`);
+		goto(`/messages/${messageId}`).then(() => {});
 	}
 
 	// Toggle star
@@ -140,7 +140,7 @@
 					{/if}
 				</p>
 			</div>
-			<Button onclick={() => goto('/messages/compose')}>
+			<Button onclick={() => goto('/messages/compose').then(() => {})}>
 				<PencilLine class="mr-2 h-4 w-4" />
 				Nouveau message
 			</Button>
@@ -199,7 +199,7 @@
 			</div>
 		{:else}
 			<div class="divide-y divide-border">
-				{#each filteredMessages() as message, index}
+				{#each filteredMessages() as message, index (message.id)}
 					<button
 						onclick={() => viewMessage(message.message_id)}
 						class="group flex w-full items-start gap-4 p-4 text-left transition-colors hover:bg-muted/50"

@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { Badge } from '$lib/components/ui/badge';
 
-	let { children }: { children: any } = $props();
+	let { children }: { children: unknown } = $props();
 
 	const debugPages = [
 		{ href: '/dashboard/admin/debug/database', label: 'Database' },

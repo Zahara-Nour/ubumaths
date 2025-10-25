@@ -1,6 +1,6 @@
 import type { PageServerLoad, Actions } from './$types';
 import type { CreateRiddleData } from '$lib/types/riddle';
-import { error, redirect, fail } from '@sveltejs/kit';
+import { redirect, fail } from '@sveltejs/kit';
 
 /**
  * Load page (no data needed for new riddle)

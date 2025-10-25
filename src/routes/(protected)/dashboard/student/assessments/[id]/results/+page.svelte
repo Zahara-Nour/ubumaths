@@ -10,7 +10,7 @@
 	let { data }: { data: PageData } = $props();
 
 	function handleBack() {
-		goto('/dashboard/student/assessments');
+		goto('/dashboard/student/assessments').then(() => {});
 	}
 
 	// Calculate stats

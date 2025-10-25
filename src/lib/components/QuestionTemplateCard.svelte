@@ -75,7 +75,7 @@
 	/**
 	 * Get display title (with LaTeX support)
 	 */
-	function getDisplayTitle(template: any): string {
+	function getDisplayTitle(template: QuestionTemplate): string {
 		if (template.title && template.title.trim().length > 0) {
 			// Return title as-is (LaTeX will be rendered by MathLive if needed)
 			return template.title.length > 150
@@ -90,7 +90,7 @@
 	 * Get first text content from statement (for fallback preview)
 	 * Used only for templates without title (legacy)
 	 */
-	function getStatementPreview(template: any): string {
+	function getStatementPreview(template: QuestionTemplate): string {
 		// Handle new variations structure
 		if (!template.variations || template.variations.length === 0) {
 			return '(No variations)';
@@ -154,7 +154,7 @@
 
 		<!-- Grades -->
 		<div class="flex flex-wrap gap-1">
-			{#each template.grades.slice(0, 4) as grade}
+			{#each template.grades.slice(0, 4) as grade (grade)}
 				<Badge variant="outline" class="text-xs">{grade}</Badge>
 			{/each}
 			{#if template.grades.length > 4}

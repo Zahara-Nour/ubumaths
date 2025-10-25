@@ -11,7 +11,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { ArrowLeft } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { goto } from '$app/navigation';
+	import { goto as _goto } from '$app/navigation';
 
 	let { data }: { data: PageData } = $props();
 

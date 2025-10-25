@@ -24,10 +24,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Plus, Trash2, ArrowUp, ArrowDown, Image, Type } from 'lucide-svelte';
+	import { Trash2, ArrowUp, ArrowDown, Image, Type } from 'lucide-svelte';
 
 	interface Props {
 		fields: ContentField[] | undefined;
@@ -98,7 +96,7 @@
 <div class="space-y-4">
 	{#if fields && fields.length > 0}
 		<div class="space-y-3">
-			{#each fields as field, index}
+			{#each fields as field, index (index)}
 				<Card.Root>
 					<Card.Content class="pt-6">
 						<div class="flex gap-4">
@@ -128,7 +126,7 @@
 							<div class="flex-1 space-y-3">
 								<!-- Field type selector -->
 								<div class="flex items-center gap-3">
-									<Label for="field-type-{index}">Type</Label>
+									<label for="field-type-{index}" class="text-sm font-medium">Type</label>
 									<select
 										id="field-type-{index}"
 										value={field.type}
@@ -139,13 +137,17 @@
 										<option value="text">📝 Texte</option>
 										<option value="image">🖼️ Image</option>
 									</select>
-									<Badge variant="outline">#{index + 1}</Badge>
+									<span
+										class="inline-flex h-6 items-center rounded-md border border-border bg-background px-2 text-xs"
+									>
+										#{index + 1}
+									</span>
 								</div>
 
 								<!-- Text field -->
 								{#if field.type === 'text'}
 									<div class="space-y-2">
-										<Label for="field-content-{index}">Contenu</Label>
+										<label for="field-content-{index}" class="text-sm font-medium">Contenu</label>
 										<div class="flex flex-wrap gap-2">
 											<Button
 												variant="outline"
@@ -187,7 +189,9 @@
 								<!-- Image field -->
 								{#if field.type === 'image'}
 									<div class="space-y-1">
-										<Label for="field-content-{index}">URL de l'image</Label>
+										<label for="field-content-{index}" class="text-sm font-medium"
+											>URL de l'image</label
+										>
 										<Input
 											id="field-content-{index}"
 											bind:value={field.content}

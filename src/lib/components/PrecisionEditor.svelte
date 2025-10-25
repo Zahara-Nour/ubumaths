@@ -89,7 +89,7 @@
 				onchange={(e) => handleTypeChange(e.currentTarget.value)}
 				class="flex h-auto w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 			>
-				{#each PRECISION_TYPES as type}
+				{#each PRECISION_TYPES as type (type.value)}
 					<option value={type.value}>
 						{type.label} - {type.description}
 					</option>

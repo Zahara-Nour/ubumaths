@@ -9,7 +9,7 @@
 
 	interface Props {
 		instance: ChallengeInstance;
-		onsubmit: (answer: any, timeTaken: number) => void;
+		onsubmit: (answer: string | number, timeTaken: number) => void;
 		ontimeout?: () => void;
 		showHint?: boolean;
 	}
@@ -29,7 +29,7 @@
 	// Time taken calculation
 	const timeTaken = $derived(instance.challenge.timer - timeRemaining);
 
-	function handleSubmit(answer: any) {
+	function handleSubmit(answer: string | number) {
 		if (answered) return;
 
 		answered = true;

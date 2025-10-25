@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { error, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 
 /**
  * Load riddle statistics for teacher
@@ -58,7 +58,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 
 	// Aggregate by student
 	const studentMap = new Map();
-	(studentStats || []).forEach((attempt: any) => {
+	(studentStats || []).forEach((attempt) => {
 		const studentId = attempt.student_id;
 		if (!studentMap.has(studentId)) {
 			studentMap.set(studentId, {
@@ -82,7 +82,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 
 	// Total gidouilles distributed
 	const totalGidouilles = (studentStats || []).reduce(
-		(sum: number, a: any) => sum + (a.gidouilles_awarded || 0),
+		(sum: number, a) => sum + (a.gidouilles_awarded || 0),
 		0
 	);
 

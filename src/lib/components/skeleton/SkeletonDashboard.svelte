@@ -7,7 +7,7 @@
 -->
 
 <div
-	class="space-y-6 animate-in fade-in duration-300"
+	class="animate-in fade-in space-y-6 duration-300"
 	role="status"
 	aria-live="polite"
 	aria-label="Chargement du contenu du tableau de bord"
@@ -21,7 +21,7 @@
 
 	<!-- Stats cards grid -->
 	<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-		{#each Array(4) as _, i (i)}
+		{#each Array(4) as _unused, i (i)}
 			<div class="skeleton h-32 rounded-lg"></div>
 		{/each}
 	</div>

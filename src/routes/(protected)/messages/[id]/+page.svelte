@@ -89,7 +89,7 @@
 	async function archiveMessage() {
 		if (!message) return;
 		await privateMessages.updateStatus(message.message_id, 'archived');
-		goto('/messages/inbox');
+		goto('/messages/inbox').then(() => {});
 	}
 
 	// Delete message
@@ -97,7 +97,7 @@
 		if (!message) return;
 		if (confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) {
 			await privateMessages.deleteMessage(message.message_id);
-			goto('/messages/inbox');
+			goto('/messages/inbox').then(() => {});
 		}
 	}
 
@@ -117,7 +117,7 @@
 	function viewThread() {
 		if (!message) return;
 		const rootId = message.thread_root_id || message.message_id;
-		goto(`/messages/thread/${rootId}`);
+		goto(`/messages/thread/${rootId}`).then(() => {});
 	}
 
 	// Check if message is part of a thread
@@ -131,7 +131,7 @@
 	<div class="border-b border-border bg-card p-4">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-3">
-				<Button variant="ghost" size="sm" onclick={() => goto('/messages/inbox')}>
+				<Button variant="ghost" size="sm" onclick={() => goto('/messages/inbox').then(() => {})}>
 					<ArrowLeft class="h-4 w-4" />
 				</Button>
 				<div>
@@ -186,7 +186,7 @@
 				<p class="mt-2 text-sm text-muted-foreground">
 					Ce message n'existe pas ou vous n'y avez pas accès
 				</p>
-				<Button onclick={() => goto('/messages/inbox')} class="mt-4">
+				<Button onclick={() => goto('/messages/inbox').then(() => {})} class="mt-4">
 					Retour à la boîte de réception
 				</Button>
 			</div>
@@ -239,7 +239,7 @@
 						<div class="text-right">
 							<div class="text-sm text-muted-foreground">À :</div>
 							<div class="mt-1 space-y-1">
-								{#each message.recipients as recipient}
+								{#each message.recipients as recipient (recipient.id)}
 									<div class="flex items-center justify-end gap-2">
 										{#if recipient.avatar_url && !failedAvatars.has(recipient.id)}
 											<img
@@ -287,7 +287,7 @@
 							</h3>
 						</div>
 						<div class="space-y-2">
-							{#each message.attachments as attachment}
+							{#each message.attachments as attachment (attachment.id)}
 								{@const FileIcon = getFileIcon(attachment.file_type)}
 								<div
 									class="group flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:bg-muted/50"

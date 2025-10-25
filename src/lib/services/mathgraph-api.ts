@@ -48,7 +48,7 @@
 
 import type {
 	MathGraphApp
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 	// SetFigOptions // Unused - for future features
 } from '$lib/types/geometry';
 
@@ -485,17 +485,17 @@ export class MathGraphHelpers {
 			try {
 				// MathGraph32 stores figure state in the app object
 				// We need to trigger a save to get the base64 code
-				const originalSaveHandler = (window as any).mtgSaveHandler;
+				const originalSaveHandler = (window as never).mtgSaveHandler;
 
-				(window as any).mtgSaveHandler = (figCode: string) => {
-					(window as any).mtgSaveHandler = originalSaveHandler;
+				(window as never).mtgSaveHandler = (figCode: string) => {
+					(window as never).mtgSaveHandler = originalSaveHandler;
 					resolve(figCode);
 				};
 
 				// Trigger save (this will call our handler)
 				// Note: This is a workaround - actual implementation may vary
 				setTimeout(() => {
-					(window as any).mtgSaveHandler = originalSaveHandler;
+					(window as never).mtgSaveHandler = originalSaveHandler;
 					reject(new Error('Timeout getting figure state'));
 				}, 5000);
 			} catch (error) {
@@ -555,7 +555,7 @@ export class MathGraphHelpers {
 
 			// Determine object type based on nature
 			// Note: These nature constants would need to be imported from MathGraph32
-			const className = (obj as any).className;
+			const className = (obj as never).className;
 
 			if (className?.includes('Point')) counts.points++;
 			else if (className?.includes('Droite') || className?.includes('Line')) counts.lines++;
@@ -581,8 +581,8 @@ export class MathGraphHelpers {
 		const points: Array<{ name: string; x: number; y: number; tag?: string }> = [];
 
 		for (const obj of list.col) {
-			if (obj.existe && (obj as any).className?.includes('Point')) {
-				const point = obj as any;
+			if (obj.existe && (obj as never).className?.includes('Point')) {
+				const point = obj;
 				points.push({
 					name: point.nom || point.name || '',
 					x: point.x || 0,
@@ -599,7 +599,7 @@ export class MathGraphHelpers {
 	 * Find an object by tag
 	 * Uses official API getElement() with fallback to legacy methods
 	 */
-	static findByTag(app: MathGraphApp, tag: string): any | null {
+	static findByTag(app: MathGraphApp, tag: string): unknown | null {
 		// Try official API first
 		if (app.getElement) {
 			return app.getElement(tag);
@@ -622,7 +622,7 @@ export class MathGraphHelpers {
 	 * Find a point by name
 	 * Uses official API getElement() with fallback to legacy methods
 	 */
-	static findPointByName(app: MathGraphApp, name: string): any | null {
+	static findPointByName(app: MathGraphApp, name: string): unknown | null {
 		// Try official API first
 		if (app.getElement) {
 			return app.getElement(name);

@@ -90,7 +90,7 @@
 	<div class="border-b border-border bg-card p-4">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-3">
-				<Button variant="ghost" size="sm" onclick={() => goto('/messages/inbox')}>
+				<Button variant="ghost" size="sm" onclick={() => goto('/messages/inbox').then(() => {})}>
 					<ArrowLeft class="h-4 w-4" />
 				</Button>
 				<div>
@@ -125,13 +125,13 @@
 				<p class="mt-2 text-sm text-muted-foreground">
 					Ce fil de discussion n'existe pas ou vous n'y avez pas accès
 				</p>
-				<Button onclick={() => goto('/messages/inbox')} class="mt-4">
+				<Button onclick={() => goto('/messages/inbox').then(() => {})} class="mt-4">
 					Retour à la boîte de réception
 				</Button>
 			</div>
 		{:else}
 			<div class="mx-auto max-w-4xl space-y-6 p-6">
-				{#each thread as message, index}
+				{#each thread as message, index (message.id)}
 					<div
 						class="rounded-lg border border-border bg-card p-6 transition-shadow hover:shadow-md"
 						class:ml-8={index > 0}
@@ -204,7 +204,7 @@
 									</div>
 								</div>
 								<div class="space-y-2">
-									{#each message.attachments as attachment}
+									{#each message.attachments as attachment (attachment.id)}
 										{@const FileIcon = getFileIcon(attachment.file_type)}
 										<div
 											class="group flex items-center gap-3 rounded-lg border border-border bg-background p-2 text-sm transition-colors hover:bg-muted/50"

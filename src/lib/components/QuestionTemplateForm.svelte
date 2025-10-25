@@ -28,38 +28,22 @@
 		QuestionVariation,
 		QuestionType,
 		GradeLevel,
-		QuestionVariable,
-		ContentField,
 		PrecisionType
 	} from '$lib/questions/types';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
-	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { Badge } from '$lib/components/ui/badge';
 	import VariableEditor from './VariableEditor.svelte';
 	import ContentFieldEditor from './ContentFieldEditor.svelte';
 	import AnswerEditor from './AnswerEditor.svelte';
-	import PrecisionEditor from './PrecisionEditor.svelte';
 	import QuestionPreview from './QuestionPreview.svelte';
 	import JsonViewer from './JsonViewer.svelte';
 	import CategorySelector from './CategorySelector.svelte';
 	import FormRichTextEditor from './rich-text/FormRichTextEditor.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Collapsible from '$lib/components/ui/collapsible';
-	import {
-		Save,
-		X,
-		Plus,
-		Trash2,
-		Copy,
-		CircleQuestionMark,
-		FileText,
-		CheckCircle2,
-		ChevronDown
-	} from 'lucide-svelte';
+	import { X, Plus, Trash2, Copy, FileText, CheckCircle2, ChevronDown } from 'lucide-svelte';
 	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
 
 	interface Props {
@@ -371,7 +355,7 @@
 
 	// Handle save
 	// Toggle status between draft and published
-	function toggleStatus() {
+	function _toggleStatus() {
 		if (status === 'draft') {
 			// Trying to publish - check for duplicates
 			if (categoryDuplicate) {
@@ -520,7 +504,7 @@
 				bind:value={questionType}
 				class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 			>
-				{#each QUESTION_TYPES as type}
+				{#each QUESTION_TYPES as type (type.value)}
 					<option value={type.value}>{type.label}</option>
 				{/each}
 			</select>
@@ -633,7 +617,7 @@
 	<div class="space-y-2">
 		<Label>Niveaux scolaires<span class="text-destructive">*</span></Label>
 		<div class="flex flex-wrap gap-2">
-			{#each GRADE_LEVELS as grade}
+			{#each GRADE_LEVELS as grade (grade)}
 				<Badge
 					class={grades.includes(grade)
 						? 'cursor-pointer bg-primary text-primary-foreground hover:bg-primary/80'
@@ -689,7 +673,7 @@
 		<Card.Content class="space-y-4">
 			<!-- Variation Tabs -->
 			<div class="flex gap-2 overflow-x-auto border-b">
-				{#each variations as _, index}
+				{#each variations as _, index (index)}
 					<div class="flex flex-shrink-0 items-center">
 						<button
 							type="button"
@@ -716,7 +700,7 @@
 			</div>
 
 			<!-- Current Variation Content -->
-			{#each variations as variation, index}
+			{#each variations as variation, index (index)}
 				{#if currentVariationIndex === index}
 					<div class="space-y-6 pt-4">
 						<!-- Duplicate Button (only for variations after the first) -->
@@ -942,7 +926,7 @@
 					bind:value={duplicateSourceIndex}
 					class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 				>
-					{#each variations as _, index}
+					{#each variations as _, index (index)}
 						<option value={index}>
 							Variation {index + 1}
 							{#if index === 0}(Référence){/if}

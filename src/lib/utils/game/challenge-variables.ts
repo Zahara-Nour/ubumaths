@@ -33,19 +33,23 @@ math.import(
 		},
 
 		// Pick random element from array
-		pickRandom: (arr: any) => {
+		pickRandom: (arr: unknown) => {
 			// Math.js passes arrays as Matrix objects, convert to JS array
-			const jsArray = Array.isArray(arr) ? arr : arr.toArray ? arr.toArray() : [arr];
+			const jsArray = Array.isArray(arr)
+				? arr
+				: (arr as { toArray?: () => unknown[] }).toArray
+					? (arr as { toArray: () => unknown[] }).toArray()
+					: [arr];
 			return jsArray[Math.floor(Math.random() * jsArray.length)];
 		},
 
 		// Find index of element in array
-		indexOf: (arr: any[], element: any) => {
+		indexOf: (arr: unknown[], element: unknown) => {
 			return arr.indexOf(element);
 		},
 
 		// Check if arrays are different
-		different: (arr1: any[], ...otherArrays: any[][]) => {
+		different: (arr1: unknown[], ...otherArrays: unknown[][]) => {
 			const str1 = JSON.stringify(arr1);
 			for (const otherArr of otherArrays) {
 				if (JSON.stringify(otherArr) === str1) {
@@ -73,7 +77,7 @@ math.import(
 		},
 
 		// Shuffle array
-		shuffle: (arr: any[]) => {
+		shuffle: (arr: unknown[]) => {
 			const shuffled = [...arr];
 			for (let i = shuffled.length - 1; i > 0; i--) {
 				const j = Math.floor(Math.random() * (i + 1));
@@ -100,7 +104,7 @@ math.import(
  * @returns Challenge instance with evaluated variables
  */
 export function generateChallengeInstance(challenge: GameChallenge): ChallengeInstance {
-	const variables: Record<string, any> = {};
+	const variables: Record<string, unknown> = {};
 	const expressions: Record<string, string> = {};
 
 	// Sort variables by dependency order
@@ -156,7 +160,7 @@ export function generateChallengeInstance(challenge: GameChallenge): ChallengeIn
  * @param context - Variable values
  * @returns Evaluated result
  */
-function evaluateWithContext(expr: string, context: Record<string, any>): any {
+function evaluateWithContext(expr: string, context: Record<string, unknown>): unknown {
 	// Replace variable references {varName} with actual values
 	let interpolated = expr.replace(/\{(\w+)\}/g, (_, varName) => {
 		if (context[varName] !== undefined) {
@@ -193,7 +197,7 @@ function evaluateWithContext(expr: string, context: Record<string, any>): any {
  * @param variables - Variable values
  * @returns Interpolated expression
  */
-function interpolateExpression(expr: any, variables: Record<string, any>): string {
+function interpolateExpression(expr: unknown, variables: Record<string, unknown>): string {
 	// Ensure expr is a string
 	if (typeof expr !== 'string') {
 		console.error('[interpolateExpression] expr is not a string:', { expr, type: typeof expr });
@@ -262,10 +266,10 @@ function topologicalSort(variables: ChallengeVariables): string[] {
 		}
 
 		// Pattern 2: varName[index] or varName.property - direct variable access
-		const directMatches = expr.match(/\b(\w+)\s*[\[\.]]/g);
+		const directMatches = expr.match(/\b(\w+)\s*[[.]]/g);
 		if (directMatches) {
 			for (const match of directMatches) {
-				const depVar = match.replace(/[\[\.\s]/g, ''); // Extract variable name
+				const depVar = match.replace(/[[.\s]/g, ''); // Extract variable name
 				if (graph[depVar] && depVar !== varName) {
 					dependencies.add(depVar);
 				}
@@ -276,7 +280,7 @@ function topologicalSort(variables: ChallengeVariables): string[] {
 		const functionMatches = expr.match(/(\w+)\s*\(/g);
 		if (functionMatches) {
 			for (const match of functionMatches) {
-				const depVar = match.replace(/[\(\s]/g, ''); // Extract variable name
+				const depVar = match.replace(/[(\s]/g, ''); // Extract variable name
 				// Only add if it's a variable name in our graph (not a function like pickRandom)
 				if (graph[depVar] && depVar !== varName) {
 					dependencies.add(depVar);
@@ -335,7 +339,7 @@ function topologicalSort(variables: ChallengeVariables): string[] {
  * @param variables - Variable values
  * @returns Evaluated answer
  */
-function evaluateAnswer(answerDef: ChallengeAnswer, variables: Record<string, any>): any {
+function evaluateAnswer(answerDef: ChallengeAnswer, variables: Record<string, unknown>): unknown {
 	// Handle array format from original Navadra JSON: ["variableName"] or ["expression"] or [{ if: ..., choice: ... }]
 	if (Array.isArray(answerDef)) {
 		// If first element is a string, it could be a variable reference OR an expression
@@ -401,7 +405,7 @@ function evaluateAnswer(answerDef: ChallengeAnswer, variables: Record<string, an
  * @param variables - Variable values
  * @returns Interpolated question HTML
  */
-export function interpolateQuestion(question: string, variables: Record<string, any>): string {
+export function interpolateQuestion(question: string, variables: Record<string, unknown>): string {
 	return question.replace(/\{(\w+)\}/g, (match, varName) => {
 		if (variables[varName] !== undefined) {
 			const value = variables[varName];
@@ -430,8 +434,8 @@ export function interpolateQuestion(question: string, variables: Record<string, 
  * @returns True if answer is correct
  */
 export function validateAnswer(
-	studentAnswer: any,
-	correctAnswer: any,
+	studentAnswer: unknown,
+	correctAnswer: unknown,
 	tolerance: number = 0.01
 ): boolean {
 	console.log('[validateAnswer] Starting validation');
@@ -545,7 +549,7 @@ export function validateAnswer(
  * @param answer - Answer value
  * @returns Formatted string
  */
-export function formatAnswer(answer: any): string {
+export function formatAnswer(answer: unknown): string {
 	if (Array.isArray(answer)) {
 		return answer.join(', ');
 	}

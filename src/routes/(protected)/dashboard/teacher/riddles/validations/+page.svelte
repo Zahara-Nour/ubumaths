@@ -6,7 +6,6 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
-	import type { AttemptWithDetails } from '$lib/types/riddle';
 	import {
 		getDifficultyLabel,
 		getDifficultyColor,

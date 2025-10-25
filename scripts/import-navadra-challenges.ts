@@ -24,11 +24,11 @@ interface ChallengeJSON {
 	timer: number;
 	type: number;
 	question: string;
-	view?: any;
-	var?: any;
-	answer: any;
+	view?: Record<string, unknown>;
+	var?: Record<string, unknown>;
+	answer: string | number | Record<string, unknown>;
 	hint?: string;
-	showAnswer?: any;
+	showAnswer?: unknown;
 }
 
 /**

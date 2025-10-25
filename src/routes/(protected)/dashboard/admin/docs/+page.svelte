@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
@@ -23,7 +22,7 @@
 		if (searchQuery.trim()) {
 			goto(`/dashboard/admin/docs?q=${encodeURIComponent(searchQuery)}`);
 		} else {
-			goto('/dashboard/admin/docs');
+			goto('/dashboard/admin/docs').then(() => {});
 		}
 	}
 
@@ -47,7 +46,7 @@
 <div class="container mx-auto p-6">
 	<div class="mb-6">
 		<h1 class="text-3xl font-bold">📚 Documentation</h1>
-		<p class="text-muted-foreground mt-2">
+		<p class="mt-2 text-muted-foreground">
 			Documentation complète d'UbuMaths - Architecture, guides, et références
 		</p>
 	</div>
@@ -64,38 +63,38 @@
 		<Button onclick={handleSearch}>Rechercher</Button>
 	</div>
 
-	<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+	<div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
 		<!-- Sidebar -->
 		<aside class="lg:col-span-1">
 			<div class="sticky top-6 space-y-4">
 				<div class="space-y-2">
-					<h2 class="font-semibold text-lg">Navigation</h2>
-					<div class="h-px bg-border mb-4"></div>
+					<h2 class="text-lg font-semibold">Navigation</h2>
+					<div class="mb-4 h-px bg-border"></div>
 
-					{#each data.categories as category}
+					{#each data.categories as category (category.name)}
 						<div>
 							<button
 								onclick={() => toggleCategory(category.path)}
-								class="flex items-center justify-between w-full p-2 hover:bg-accent rounded-md text-left"
+								class="flex w-full items-center justify-between rounded-md p-2 text-left hover:bg-accent"
 							>
 								<span class="flex items-center gap-2">
 									<span>{category.icon}</span>
 									<span class="font-medium">{category.name}</span>
 								</span>
-								<span class="text-muted-foreground text-sm">
+								<span class="text-sm text-muted-foreground">
 									{expandedCategories.has(category.path) ? '▼' : '▶'}
 								</span>
 							</button>
 
 							{#if expandedCategories.has(category.path)}
-								<div class="ml-4 mt-1 space-y-0.5">
-									{#each category.docs as doc}
+								<div class="mt-1 ml-4 space-y-0.5">
+									{#each category.docs as doc (doc.path)}
 										{@const depth = (doc.path.match(/\//g) || []).length}
 										{@const isReadme = doc.path.endsWith('README.md')}
 										<a
 											href={getDocUrl(category.path, doc.path)}
 											style="padding-left: {depth * 0.75 + 0.5}rem"
-											class="block py-1.5 px-2 text-sm hover:bg-accent rounded-md transition-colors {data.currentPath ===
+											class="block rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent {data.currentPath ===
 											`${category.path}/${doc.path}`
 												? 'bg-accent font-medium text-foreground'
 												: 'text-muted-foreground hover:text-foreground'} {isReadme
@@ -120,13 +119,17 @@
 
 		<!-- Main content -->
 		<main class="lg:col-span-3">
-			<div class="bg-card border rounded-lg p-6">
+			<div class="rounded-lg border bg-card p-6">
 				{#if data.searchQuery}
 					<div class="mb-4">
 						<p class="text-sm text-muted-foreground">
 							Recherche : <strong>{data.searchQuery}</strong>
 						</p>
-						<Button variant="outline" size="sm" onclick={() => goto('/dashboard/admin/docs')}>
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={() => goto('/dashboard/admin/docs').then(() => {})}
+						>
 							Effacer
 						</Button>
 					</div>
@@ -134,15 +137,12 @@
 
 				<!-- Table of Contents -->
 				{#if data.defaultDoc && data.defaultDoc.toc.length > 0}
-					<details class="mb-6 p-4 border rounded-md" open>
-						<summary class="font-semibold cursor-pointer">📋 Table des matières</summary>
+					<details class="mb-6 rounded-md border p-4" open>
+						<summary class="cursor-pointer font-semibold">📋 Table des matières</summary>
 						<ul class="mt-2 space-y-1">
-							{#each data.defaultDoc.toc as item}
+							{#each data.defaultDoc.toc as item (item.slug)}
 								<li style="margin-left: {(item.level - 2) * 1}rem">
-									<a
-										href="#{item.id}"
-										class="text-sm text-primary hover:underline"
-									>
+									<a href="#{item.id}" class="text-sm text-primary hover:underline">
 										{item.text}
 									</a>
 								</li>
@@ -152,7 +152,7 @@
 				{/if}
 
 				<!-- Rendered markdown -->
-				<article class="prose prose-slate dark:prose-invert max-w-none">
+				<article class="prose max-w-none prose-slate dark:prose-invert">
 					{@html htmlWithIds}
 				</article>
 			</div>

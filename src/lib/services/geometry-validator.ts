@@ -212,7 +212,7 @@ async function validateMeasurement(
 	if (config.checkAngle) {
 		// Measure angle
 		const angleTag = config.angleTag as string;
-		const angleMeasure = MathGraphHelpers.findByTag(app, angleTag) as any;
+		const angleMeasure = MathGraphHelpers.findByTag(app, angleTag);
 		if (angleMeasure?.valeur !== undefined) {
 			actualValue = angleMeasure.valeur;
 			measurements['angle'] = actualValue;
@@ -220,7 +220,7 @@ async function validateMeasurement(
 	} else if (config.checkDistance) {
 		// Measure distance
 		const distanceTag = config.distanceTag as string;
-		const distanceMeasure = MathGraphHelpers.findByTag(app, distanceTag) as any;
+		const distanceMeasure = MathGraphHelpers.findByTag(app, distanceTag);
 		if (distanceMeasure?.valeur !== undefined) {
 			actualValue = distanceMeasure.valeur;
 			measurements['distance'] = actualValue;
@@ -471,7 +471,7 @@ export function validatePointOnLine(
 	tolerance: number = DEFAULT_TOLERANCE_DISTANCE
 ): boolean {
 	const point = MathGraphHelpers.findByTag(app, pointTag) as MathGraphPoint;
-	const line = MathGraphHelpers.findByTag(app, lineTag) as any;
+	const line = MathGraphHelpers.findByTag(app, lineTag);
 
 	if (!point || !line || !point.existe || !line.existe) {
 		return false;
@@ -646,8 +646,8 @@ export function validateLinesParallel(
 	line2Tag: string,
 	angleTolerance: number = DEFAULT_TOLERANCE_ANGLE
 ): boolean {
-	const line1 = MathGraphHelpers.findByTag(app, line1Tag) as any;
-	const line2 = MathGraphHelpers.findByTag(app, line2Tag) as any;
+	const line1 = MathGraphHelpers.findByTag(app, line1Tag);
+	const line2 = MathGraphHelpers.findByTag(app, line2Tag);
 
 	if (!line1 || !line2) return false;
 
@@ -710,8 +710,8 @@ export function validateLinesPerpendicular(
 	line2Tag: string,
 	angleTolerance: number = DEFAULT_TOLERANCE_ANGLE
 ): boolean {
-	const line1 = MathGraphHelpers.findByTag(app, line1Tag) as any;
-	const line2 = MathGraphHelpers.findByTag(app, line2Tag) as any;
+	const line1 = MathGraphHelpers.findByTag(app, line1Tag);
+	const line2 = MathGraphHelpers.findByTag(app, line2Tag);
 
 	if (!line1 || !line2) return false;
 
@@ -738,7 +738,7 @@ export function validateLinePassesThroughPoints(
 	pointTags: string[],
 	tolerance: number = DEFAULT_TOLERANCE_DISTANCE
 ): boolean {
-	const line = MathGraphHelpers.findByTag(app, lineTag) as any;
+	const line = MathGraphHelpers.findByTag(app, lineTag);
 	if (!line) return false;
 
 	const linePoints = extractLinePoints(line);
@@ -782,7 +782,7 @@ export function validateLineBisector(
 	const midX = (a.x + b.x) / 2;
 	const midY = (a.y + b.y) / 2;
 
-	const line = MathGraphHelpers.findByTag(app, lineTag) as any;
+	const line = MathGraphHelpers.findByTag(app, lineTag);
 	const linePoints = extractLinePoints(line);
 	if (!linePoints) return false;
 
@@ -1092,10 +1092,10 @@ export function validateRightTriangle(
  * This is a simplified version - actual implementation would
  * depend on MathGraph32's line representation
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 function extractLinePoints(
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	line: any // For future line extraction
+	_line: unknown // For future line extraction
 ): { p1: { x: number; y: number }; p2: { x: number; y: number } } | null {
 	// This would need to be implemented based on MathGraph32's internal structure
 	// For now, return null as placeholder

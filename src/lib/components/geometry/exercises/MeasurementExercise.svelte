@@ -15,7 +15,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import * as Card from '$lib/components/ui/card';
 	import { Ruler, Check, AlertCircle, RotateCcw } from 'lucide-svelte';
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 	import { validateExercise } from '$lib/services/geometry-validator'; // For future auto-validation
 	import { toaster } from '$lib/stores/toaster.svelte';
 
@@ -26,7 +26,6 @@
 		onSave?: (data: { answers: Record<string, number>; attempts: number }) => void;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let { exercise, attempt = null, onValidate, onSave }: Props = $props(); // attempt for future features
 
 	// State

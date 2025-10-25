@@ -9,10 +9,9 @@ import type {
 	MessageTemplate,
 	MessageTemplateInput,
 	TriggerType,
-	TemplateContext,
 	RenderedTemplate
 } from '$lib/types/messageTemplates';
-import { renderTemplate, buildGlobalContext } from '$lib/templates/templateEngine';
+import { renderTemplate } from '$lib/templates/templateEngine';
 
 interface MessageTemplatesState {
 	templates: MessageTemplate[];

@@ -7,6 +7,7 @@ Documentation historique et obsolète conservée pour référence.
 ## 📁 Structure
 
 ### `/sessions/`
+
 Summaries de sessions de développement et debug.
 
 Ces fichiers documentent les étapes de développement spécifiques mais ne sont plus pertinents pour la documentation active :
@@ -18,6 +19,7 @@ Ces fichiers documentent les étapes de développement spécifiques mais ne sont
 **Note** : Les informations importantes ont été consolidées dans la documentation principale.
 
 ### `/deprecated/`
+
 Documentation de features ou composants obsolètes.
 
 Conservés pour référence historique :
@@ -33,6 +35,7 @@ Conservés pour référence historique :
 Cette documentation est **archivée** et peut être obsolète.
 
 Pour la documentation à jour, consulter :
+
 - [Documentation principale](../README.md)
 - [Features actuelles](../features/README.md)
 

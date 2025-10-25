@@ -71,7 +71,7 @@ export interface CachedStudent {
 export interface CachedStudentFull extends CachedStudent {
 	full_name?: string;
 	gidouilles: number;
-	vip_cards: any; // StudentVipCards type
+	vip_cards: Record<string, number>; // StudentVipCards type
 	role?: string;
 	gender?: string;
 }

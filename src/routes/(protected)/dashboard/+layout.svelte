@@ -78,7 +78,7 @@
 	// PROPS RECEIVED FROM PARENT LAYOUT SERVER LOAD:
 	// - data: Contains profile from +layout.server.ts
 	// - children: The child route component to render (e.g., +page.svelte)
-	let { data, children }: { data: LayoutData; children: any } = $props();
+	let { data, children }: { data: LayoutData; children: unknown } = $props();
 
 	// Determine which skeleton variant to show based on current route
 	let skeletonType = $derived(getSkeletonType(page.url.pathname));
@@ -237,7 +237,12 @@
 			<!-- Left side: Gidouille, Welcome message, and Avatar -->
 			<div class="flex items-center gap-4">
 				<!-- Gidouille - links to home -->
-				<a href="/" class="transition-opacity hover:opacity-80" aria-label="Back to home">
+				<a
+					href="/"
+					data-sveltekit-preload-data="hover"
+					class="transition-opacity hover:opacity-80"
+					aria-label="Back to home"
+				>
 					<img src={gidouille} alt="Gidouille" class="h-8 w-8" />
 				</a>
 
@@ -379,7 +384,7 @@
 
 					<!-- Overlay skeleton during navigation -->
 					{#if $navigating}
-						<div class="absolute inset-0 p-4 sm:p-6 lg:p-8 bg-background">
+						<div class="absolute inset-0 bg-background p-4 sm:p-6 lg:p-8">
 							<div class="mx-auto max-w-7xl">
 								{#if skeletonType === 'dashboard'}
 									<SkeletonDashboard />

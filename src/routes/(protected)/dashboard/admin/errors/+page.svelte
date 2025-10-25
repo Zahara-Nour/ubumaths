@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -36,7 +35,7 @@
 		typeFilter = 'all';
 		severityFilter = 'all';
 		resolvedFilter = 'all';
-		goto('?');
+		goto('?').then(() => {});
 	}
 
 	// Format date
@@ -244,7 +243,7 @@
 				</div>
 			{:else}
 				<div class="space-y-4">
-					{#each data.occurrences as occurrence}
+					{#each data.occurrences as occurrence (occurrence.id)}
 						<div class="rounded-lg border p-4 transition-colors hover:bg-accent/50">
 							<div class="mb-2 flex items-start justify-between">
 								<div class="flex-1">
@@ -284,7 +283,8 @@
 								<Button
 									variant="outline"
 									size="sm"
-									onclick={() => goto(`/dashboard/admin/errors/${occurrence.last_error_log_id}`)}
+									onclick={() =>
+										goto(`/dashboard/admin/errors/${occurrence.last_error_log_id}`).then(() => {})}
 								>
 									Voir détails
 								</Button>

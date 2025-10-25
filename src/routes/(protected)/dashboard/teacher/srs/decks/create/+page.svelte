@@ -39,7 +39,12 @@
 	let showTemplateSelector = $state(false);
 
 	// Cards to add
-	let pendingCards = $state<Array<{ type: 'template' | 'custom'; data: any }>>([]);
+	let pendingCards = $state<
+		Array<{
+			type: 'template' | 'custom';
+			data: { templateId?: string; title: string; question?: string; answer?: string };
+		}>
+	>([]);
 
 	// Form validation
 	const canSave = $derived(deckName.trim().length > 0);
@@ -104,7 +109,7 @@
 			}
 
 			toaster.success(`Deck "${deck.name}" créé avec succès !`);
-			goto(`/dashboard/teacher/srs/decks/${deck.id}/assign`);
+			goto(`/dashboard/teacher/srs/decks/${deck.id}/assign`).then(() => {});
 		} catch (error) {
 			console.error('Error creating deck:', error);
 			toaster.error('Erreur lors de la création du deck');
@@ -138,7 +143,7 @@
 
 			// Add each template to pending cards
 			templateIds.forEach((templateId) => {
-				const template = templates.find((t: any) => t.id === templateId);
+				const template = templates.find((t) => t.id === templateId);
 				pendingCards.push({
 					type: 'template',
 					data: {
@@ -176,7 +181,7 @@
 	 * Navigate back
 	 */
 	function goBack() {
-		goto('/dashboard/teacher/srs/decks');
+		goto('/dashboard/teacher/srs/decks').then(() => {});
 	}
 </script>
 
@@ -331,7 +336,7 @@
 				</div>
 			{:else}
 				<div class="space-y-2">
-					{#each pendingCards as card, i}
+					{#each pendingCards as card, i (i)}
 						<div class="flex items-center justify-between rounded-lg border bg-card p-3">
 							<div class="flex items-center gap-3">
 								<Badge variant={card.type === 'template' ? 'default' : 'secondary'}>

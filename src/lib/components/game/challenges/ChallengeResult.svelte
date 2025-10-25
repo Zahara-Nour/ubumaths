@@ -4,8 +4,8 @@
 
 	interface Props {
 		success: boolean;
-		studentAnswer: any;
-		correctAnswer: any;
+		studentAnswer: string | number;
+		correctAnswer: string | number;
 		timeTaken: number; // milliseconds
 		oncontinue?: () => void;
 	}

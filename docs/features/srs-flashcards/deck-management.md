@@ -11,6 +11,7 @@ Système de gestion des decks de flashcards.
 Un **deck** est une collection de flashcards organisée par thème.
 
 Exemples :
+
 - "Algèbre - Equations du 1er degré"
 - "Géométrie - Théorème de Pythagore"
 - "Calcul mental - Tables de multiplication"
@@ -21,15 +22,15 @@ Exemples :
 
 ```typescript
 interface Deck {
-  id: string;
-  user_id: string;      // Propriétaire (enseignant)
-  title: string;
-  description?: string;
-  category?: string;
-  is_public: boolean;   // Partageable ou privé
-  card_count: number;   // Nombre de cartes
-  created_at: Date;
-  updated_at: Date;
+	id: string;
+	user_id: string; // Propriétaire (enseignant)
+	title: string;
+	description?: string;
+	category?: string;
+	is_public: boolean; // Partageable ou privé
+	card_count: number; // Nombre de cartes
+	created_at: Date;
+	updated_at: Date;
 }
 ```
 
@@ -40,6 +41,7 @@ interface Deck {
 ### Créer un deck
 
 1. **Accéder à la gestion**
+
    ```
    Dashboard → Enseignant → Flashcards → Mes Decks
    ```
@@ -74,10 +76,12 @@ interface Deck {
 ### Partager un deck
 
 **Public** :
+
 - Visible par tous élèves
 - Accessible dans bibliothèque
 
 **Assigné** :
+
 - Assigner à classes spécifiques
 - Notification élèves
 - Suivi progression
@@ -93,6 +97,7 @@ Dashboard → Élève → Flashcards → Bibliothèque
 ```
 
 Sources :
+
 - **Mes decks** : Personnels
 - **Assignés** : Par enseignants
 - **Publics** : Partagés par tous enseignants
@@ -106,6 +111,7 @@ Sources :
 ### Session de révision
 
 Pour chaque carte :
+
 1. **Voir question** (recto)
 2. **Réfléchir** à la réponse
 3. **Révéler réponse** (verso)
@@ -129,12 +135,14 @@ Pour chaque carte :
 ### Vue enseignant
 
 Par deck :
+
 - Nombre d'élèves l'utilisant
 - Taux de complétion moyen
 - Cartes les plus difficiles
 - Engagement (révisions/jour)
 
 Par élève :
+
 - Progression dans deck
 - Dernière révision
 - Cartes en difficulté
@@ -191,10 +199,12 @@ front,back,category,difficulty
 ### Questions efficaces
 
 ✅ **BON** :
+
 - "Combien de côtés a un hexagone ?" → "6"
 - "Quelle est la formule de l'aire d'un cercle ?" → "πr²"
 
 ❌ **MAUVAIS** :
+
 - "Tout ce qu'il faut savoir sur les cercles" (trop large)
 - "Expliquer la géométrie" (trop vague)
 

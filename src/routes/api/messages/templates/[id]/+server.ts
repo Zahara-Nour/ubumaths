@@ -167,8 +167,9 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	// Prevent changing created_by
-	delete (updates as any).created_by;
-	delete (updates as any).created_at;
+	const updatesRecord = updates as Record<string, unknown>;
+	delete updatesRecord.created_by;
+	delete updatesRecord.created_at;
 
 	// Update template
 	const { data: updatedTemplate, error: updateError } = await supabase

@@ -7,12 +7,15 @@ Guide pour contribuer à UbuMaths.
 ## 📚 Documents essentiels
 
 ### [⭐ Guide de documentation](documentation-guide.md)
+
 **À LIRE EN PREMIER** : Comment écrire et organiser la documentation.
 
 ### [Implémentation de features](feature-implementation.md)
+
 Process complet pour ajouter une nouvelle fonctionnalité.
 
 ### [Checklist code review](code-review-checklist.md)
+
 Points à vérifier avant de soumettre une PR.
 
 ---
@@ -63,16 +66,16 @@ git commit -m "docs: mettre à jour guide Z"
 
 ## 📝 Types de commits
 
-| Type       | Description                                  | Bump version |
-| ---------- | -------------------------------------------- | ------------ |
-| `feat`     | Nouvelle fonctionnalité                      | Minor        |
-| `fix`      | Correction de bug                            | Patch        |
-| `docs`     | Documentation seulement                      | -            |
-| `style`    | Formatage, pas de changement de code         | -            |
-| `refactor` | Refactoring, pas de changement fonctionnel   | -            |
-| `test`     | Ajout/modification tests                     | -            |
-| `chore`    | Maintenance, config, dépendances             | -            |
-| `perf`     | Amélioration performance                     | Patch        |
+| Type       | Description                                | Bump version |
+| ---------- | ------------------------------------------ | ------------ |
+| `feat`     | Nouvelle fonctionnalité                    | Minor        |
+| `fix`      | Correction de bug                          | Patch        |
+| `docs`     | Documentation seulement                    | -            |
+| `style`    | Formatage, pas de changement de code       | -            |
+| `refactor` | Refactoring, pas de changement fonctionnel | -            |
+| `test`     | Ajout/modification tests                   | -            |
+| `chore`    | Maintenance, config, dépendances           | -            |
+| `perf`     | Amélioration performance                   | Patch        |
 
 ---
 
@@ -107,6 +110,7 @@ pnpm test:unit
 ### Coverage
 
 Priorité sur :
+
 - Logique métier (utils, generators, parsers)
 - API endpoints
 - Validations

@@ -139,7 +139,7 @@
 	 * Go back to question selection
 	 */
 	function handleBackToSelection() {
-		goto('/automaths');
+		goto('/automaths').then(() => {});
 	}
 
 	/**
@@ -168,7 +168,7 @@
 		}
 
 		// Navigate to test page
-		goto(`/automaths/test?${params.toString()}`);
+		goto(`/automaths/test?${params.toString()}`).then(() => {});
 	}
 
 	/**
@@ -187,7 +187,7 @@
 	}
 
 	function handleCreateAssessment() {
-		goto('/dashboard/teacher/assessments/new');
+		goto('/dashboard/teacher/assessments/new').then(() => {});
 	}
 </script>
 

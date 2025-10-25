@@ -137,43 +137,55 @@ Usage examples
 -->
 
 <script lang="ts">
-  // ===========================
-  // IMPORTS
-  // ===========================
-  import { ... } from '...';
+	// ===========================
+	// IMPORTS
+	// ===========================
+	import { Button } from '$lib/components/ui/button';
 
-  // ===========================
-  // TYPES & INTERFACES
-  // ===========================
-  interface Props { ... }
+	// ===========================
+	// TYPES & INTERFACES
+	// ===========================
+	interface Props {
+		title: string;
+		count?: number;
+	}
 
-  // ===========================
-  // PROPS & DERIVED STATE
-  // ===========================
-  let { prop1, prop2 }: Props = $props();
-  const derived = $derived(...);
+	// ===========================
+	// PROPS & DERIVED STATE
+	// ===========================
+	let { prop1, prop2 }: Props = $props();
+	const derived = $derived(prop1 + prop2);
 
-  // ===========================
-  // STATE MANAGEMENT
-  // ===========================
-  let localState = $state(...);
-  let anotherState = $state(...);
+	// ===========================
+	// STATE MANAGEMENT
+	// ===========================
+	let localState = $state(0);
+	let anotherState = $state('initial');
 
-  // ===========================
-  // LIFECYCLE
-  // ===========================
-  $effect(() => { ... });
+	// ===========================
+	// LIFECYCLE
+	// ===========================
+	$effect(() => {
+		console.log('Effect running');
+	});
 
-  // ===========================
-  // HELPER FUNCTIONS
-  // ===========================
-  function helperFunction() { ... }
+	// ===========================
+	// HELPER FUNCTIONS
+	// ===========================
+	function helperFunction() {
+		return localState + 1;
+	}
 
-  // ===========================
-  // EVENT HANDLERS
-  // ===========================
-  function handleClick() { ... }
-  function handleSubmit() { ... }
+	// ===========================
+	// EVENT HANDLERS
+	// ===========================
+	function handleClick() {
+		localState++;
+	}
+
+	function handleSubmit() {
+		console.log('Submitted');
+	}
 </script>
 
 <!--

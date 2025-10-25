@@ -14,12 +14,15 @@
 
 	let { data }: { data: PageData } = $props();
 
-	function getSuccessRate(stats: any): number {
+	function getSuccessRate(stats: { total_attempts: number; successful_attempts: number }): number {
 		if (stats.total_attempts === 0) return 0;
 		return Math.round((stats.successful_attempts / stats.total_attempts) * 100);
 	}
 
-	function getAverageAttempts(stats: any): string {
+	function getAverageAttempts(stats: {
+		total_attempts: number;
+		successful_attempts: number;
+	}): string {
 		if (stats.successful_attempts === 0) return 'N/A';
 		return (stats.total_attempts / stats.successful_attempts).toFixed(1);
 	}

@@ -39,7 +39,7 @@ export async function autoSelectRiddleOfTheDay(
 			.select('riddle_id')
 			.gte('assignment_date', thirtyDaysAgoStr);
 
-		const recentRiddleIds = (recentRiddles || []).map((r: any) => r.riddle_id);
+		const recentRiddleIds = (recentRiddles || []).map((r) => r.riddle_id);
 
 		// Get last used difficulty to determine next difficulty
 		const { data: lastRiddle } = await supabase

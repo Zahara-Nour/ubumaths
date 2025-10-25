@@ -14,19 +14,19 @@
 	let archived = $derived(data.assessments.filter((a) => a.status === 'archived'));
 
 	function handleCreateNew() {
-		goto('/dashboard/teacher/assessments/new');
+		goto('/dashboard/teacher/assessments/new').then(() => {});
 	}
 
 	function handleEdit(assessmentId: string) {
-		goto(`/dashboard/teacher/assessments/${assessmentId}/edit`);
+		goto(`/dashboard/teacher/assessments/${assessmentId}/edit`).then(() => {});
 	}
 
 	function handleAssign(assessmentId: string) {
-		goto(`/dashboard/teacher/assessments/${assessmentId}/assign`);
+		goto(`/dashboard/teacher/assessments/${assessmentId}/assign`).then(() => {});
 	}
 
 	function handleViewResults(assessmentId: string) {
-		goto(`/dashboard/teacher/assessments/${assessmentId}/results`);
+		goto(`/dashboard/teacher/assessments/${assessmentId}/results`).then(() => {});
 	}
 </script>
 

@@ -56,7 +56,7 @@
 
 			if (result?.success) {
 				toaster.success('Énigme modifiée avec succès');
-				goto('/dashboard/teacher/riddles');
+				goto('/dashboard/teacher/riddles').then(() => {});
 			} else {
 				toaster.error(result?.message || "Erreur lors de la modification de l'énigme");
 				loading = false;
@@ -69,7 +69,7 @@
 	}
 
 	function handleCancel() {
-		goto('/dashboard/teacher/riddles');
+		goto('/dashboard/teacher/riddles').then(() => {});
 	}
 </script>
 

@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	}
 
 	// Enrich with profile data
-	const studentIds = (leaderboard || []).map((entry: any) => entry.student_id);
+	const studentIds = (leaderboard || []).map((entry) => entry.student_id);
 
 	const { data: profiles } = await supabase
 		.from('profiles')
@@ -31,12 +31,12 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 
 	// Create profile map
 	const profileMap = new Map();
-	(profiles || []).forEach((profile: any) => {
+	(profiles || []).forEach((profile) => {
 		profileMap.set(profile.id, profile);
 	});
 
 	// Merge data
-	const enrichedLeaderboard = (leaderboard || []).map((entry: any, index: number) => ({
+	const enrichedLeaderboard = (leaderboard || []).map((entry, index: number) => ({
 		...entry,
 		rank: index + 1,
 		profile: profileMap.get(entry.student_id) || {
@@ -49,7 +49,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 
 	// Find current user rank
 	const currentUserEntry = enrichedLeaderboard.find(
-		(entry: any) => entry.student_id === session.user.id
+		(entry) => entry.student_id === session.user.id
 	);
 	const currentUserRank = currentUserEntry ? currentUserEntry.rank : null;
 

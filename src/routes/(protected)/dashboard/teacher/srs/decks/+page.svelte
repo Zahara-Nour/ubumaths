@@ -32,12 +32,13 @@
 		Lock,
 		Users
 	} from 'lucide-svelte';
-	import { cn } from '$lib/utils';
 	import type { Deck } from '$lib/srs/types';
 
 	interface Props {
 		data: {
-			decks: (Deck & { stats: any })[];
+			decks: (Deck & {
+				stats: { total_cards: number; active_cards: number; suspended_cards: number };
+			})[];
 		};
 	}
 
@@ -57,21 +58,21 @@
 	 * Navigate to create deck
 	 */
 	function createDeck() {
-		goto('/dashboard/teacher/srs/decks/create');
+		goto('/dashboard/teacher/srs/decks/create').then(() => {});
 	}
 
 	/**
 	 * Navigate to assign deck
 	 */
 	function assignDeck(deckId: string) {
-		goto(`/dashboard/teacher/srs/decks/${deckId}/assign`);
+		goto(`/dashboard/teacher/srs/decks/${deckId}/assign`).then(() => {});
 	}
 
 	/**
 	 * Navigate to edit deck
 	 */
 	function editDeck(deckId: string) {
-		goto(`/dashboard/teacher/srs/decks/${deckId}/edit`);
+		goto(`/dashboard/teacher/srs/decks/${deckId}/edit`).then(() => {});
 	}
 
 	/**

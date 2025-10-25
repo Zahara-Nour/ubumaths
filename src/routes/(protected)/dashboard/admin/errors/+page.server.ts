@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	}
 
 	// Parse filters from query params
-	const filters: any = {};
+	const filters: Record<string, string | boolean | number> = {};
 	const error_type = url.searchParams.get('type');
 	if (error_type) filters.error_type = error_type;
 

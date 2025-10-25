@@ -28,8 +28,8 @@
 
 	interface Props {
 		data: {
-			deck: any;
-			cards: any[];
+			deck: { id: string; name: string; description?: string };
+			cards: { id: string; question: string; answer: string }[];
 		};
 	}
 
@@ -97,7 +97,7 @@
 
 			toaster.success('Deck mis à jour avec succès');
 			await invalidate('app:data');
-			goto('/dashboard/teacher/srs/decks');
+			goto('/dashboard/teacher/srs/decks').then(() => {});
 		} catch (error) {
 			console.error('Error saving deck:', error);
 			toaster.error('Erreur lors de la mise à jour du deck');
@@ -172,7 +172,7 @@
 				return;
 			}
 		}
-		goto('/dashboard/teacher/srs/decks');
+		goto('/dashboard/teacher/srs/decks').then(() => {});
 	}
 </script>
 

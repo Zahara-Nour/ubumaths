@@ -7,18 +7,23 @@ Guides pratiques pour utiliser et déployer UbuMaths.
 ## Guides disponibles
 
 ### [Import d'élèves](student-import.md)
+
 Workflow complet d'import CSV des élèves, cas particuliers, troubleshooting.
 
 ### [Déploiement](deployment.md)
+
 Déploiement sur Vercel, configuration environnement, CI/CD.
 
 ### [Dépannage](troubleshooting.md)
+
 Solutions aux problèmes courants, debugging, logs.
 
 ### [Guide de tests](testing-guide.md)
+
 Comment tester l'application, structure des tests, commandes.
 
 ### [Composants UI](ui-components.md)
+
 Utilisation de Shadcn-svelte, composants disponibles, patterns.
 
 ---

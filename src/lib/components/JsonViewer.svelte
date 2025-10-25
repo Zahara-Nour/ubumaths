@@ -21,7 +21,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	interface Props {
-		data: any;
+		data: unknown;
 	}
 
 	let { data }: Props = $props();
@@ -40,7 +40,7 @@
 			setTimeout(() => {
 				copied = false;
 			}, 2000);
-		} catch (error) {
+		} catch (_error) {
 			toaster.error('Erreur lors de la copie');
 		}
 	}

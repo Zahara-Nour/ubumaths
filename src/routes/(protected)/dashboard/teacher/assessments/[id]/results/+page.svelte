@@ -11,7 +11,7 @@
 	let { data }: { data: PageData } = $props();
 
 	function handleBack() {
-		goto('/dashboard/teacher/assessments');
+		goto('/dashboard/teacher/assessments').then(() => {});
 	}
 
 	// Sort results by name

@@ -6,7 +6,7 @@
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import type { PageData } from './$types';
 	import type { CartItem } from '$lib/stores/questionCart.svelte';
-	import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
+	import type { QuestionInstance } from '$lib/questions/types';
 	import type { TestMode, TestSession } from '$lib/types/test';
 	import { AlertCircle } from 'lucide-svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -208,7 +208,7 @@
 	 * Handle back to cart
 	 */
 	function handleBackToCart() {
-		goto('/automaths/panier');
+		goto('/automaths/panier').then(() => {});
 	}
 
 	/**

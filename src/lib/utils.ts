@@ -17,7 +17,7 @@ export type WithChild<T = Snippet> = {
 };
 
 export type WithoutChild<T> = Omit<T, 'children' | 'child'> & {
-	children?: Snippet<[any?]>;
+	children?: Snippet<[unknown?]>;
 };
 
 export type WithoutChildren<T> = Omit<T, 'children'>;

@@ -26,11 +26,9 @@
 	import type { QuestionVariable } from '$lib/questions/types';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Plus, Trash2, ArrowUp, ArrowDown, CircleQuestionMark } from 'lucide-svelte';
+	import { Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-svelte';
 
 	interface Props {
 		variables?: QuestionVariable[];
@@ -382,7 +380,7 @@
 		</Card.Root>
 	{:else}
 		<div class="space-y-3">
-			{#each variables as variable, index}
+			{#each variables as variable, index (index)}
 				<Card.Root>
 					<Card.Content class="pt-6">
 						<div class="flex gap-4">

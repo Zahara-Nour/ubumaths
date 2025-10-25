@@ -14,7 +14,7 @@ import { formatDate, formatTime } from './templateEngine';
 // FILTERS (Variable Formatting)
 // =====================================================
 
-export type FilterFunction = (value: any, ...args: string[]) => any;
+export type FilterFunction = (value: unknown, ...args: string[]) => unknown;
 
 export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	/**
@@ -116,7 +116,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Default value if empty
 	 * Usage: {{description | default:Aucune description}}
 	 */
-	default: (value: any, defaultValue: string = '') => {
+	default: (value: unknown, defaultValue: string = '') => {
 		return value || defaultValue;
 	},
 
@@ -124,7 +124,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Join array with separator
 	 * Usage: {{tags | join:, }}
 	 */
-	join: (value: any[], separator: string = ', ') => {
+	join: (value: unknown[], separator: string = ', ') => {
 		if (!Array.isArray(value)) return value;
 		return value.join(separator);
 	},
@@ -133,7 +133,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * First N items from array
 	 * Usage: {{items | first:3}}
 	 */
-	first: (value: any[], count: string = '1') => {
+	first: (value: unknown[], count: string = '1') => {
 		if (!Array.isArray(value)) return value;
 		const n = parseInt(count, 10);
 		return value.slice(0, n);
@@ -143,7 +143,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Last N items from array
 	 * Usage: {{items | last:3}}
 	 */
-	last: (value: any[], count: string = '1') => {
+	last: (value: unknown[], count: string = '1') => {
 		if (!Array.isArray(value)) return value;
 		const n = parseInt(count, 10);
 		return value.slice(-n);
@@ -192,7 +192,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 /**
  * Apply a single filter with arguments
  */
-export function applyFilter(value: any, filterExpr: string): any {
+export function applyFilter(value: unknown, filterExpr: string): unknown {
 	const parts = filterExpr.split(':');
 	const filterName = parts[0].trim();
 	const args = parts.slice(1).map((arg) => arg.trim());
@@ -215,7 +215,7 @@ export function applyFilter(value: any, filterExpr: string): any {
  * Apply chained filters
  * Example: {{name | uppercase | truncate:20}}
  */
-export function applyFilters(value: any, filtersExpr: string): any {
+export function applyFilters(value: unknown, filtersExpr: string): unknown {
 	const filters = filtersExpr.split('|').map((f) => f.trim());
 
 	return filters.reduce((result, filter) => {
@@ -256,7 +256,7 @@ export function parseConditionals(template: string): ConditionalBlock[] {
 /**
  * Render conditional blocks
  */
-export function renderConditionals(template: string, data: Record<string, any>): string {
+export function renderConditionals(template: string, data: Record<string, unknown>): string {
 	const regex = /\{\{#if\s+(\w+)\}\}([\s\S]*?)(?:\{\{else\}\}([\s\S]*?))?\{\{\/if\}\}/g;
 
 	return template.replace(regex, (match, variable, ifBlock, elseBlock = '') => {
@@ -276,7 +276,7 @@ export function renderConditionals(template: string, data: Record<string, any>):
 /**
  * Render template with conditionals and filters
  */
-export function renderAdvancedTemplate(template: string, data: Record<string, any>): string {
+export function renderAdvancedTemplate(template: string, data: Record<string, unknown>): string {
 	let result = template;
 
 	// Step 1: Handle conditional blocks

@@ -139,7 +139,7 @@
 	 * Navigate back to questions list page
 	 */
 	function handleBack() {
-		goto('/dashboard/admin/questions');
+		goto('/dashboard/admin/questions').then(() => {});
 	}
 </script>
 
@@ -269,7 +269,7 @@ TEMPLATE - PAGE LAYOUT
 						<div class="border-t pt-2">
 							<span class="text-muted-foreground">Variables résolues:</span>
 							<div class="mt-1 space-y-1">
-								{#each Object.entries(instance.resolvedVariables) as [name, value]}
+								{#each Object.entries(instance.resolvedVariables) as [name, value] (name)}
 									<div class="flex justify-between font-mono text-xs">
 										<span>{name}:</span>
 										<span>{value}</span>

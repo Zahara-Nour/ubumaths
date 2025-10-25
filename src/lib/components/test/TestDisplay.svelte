@@ -332,7 +332,7 @@
 		</div>
 
 		<div class="space-y-4">
-			{#each session.instances as instance, index}
+			{#each session.instances as instance, index (index)}
 				<div>
 					<h3 class="mb-2 text-lg font-semibold">Question {index + 1}</h3>
 					<QuestionCard interactive={false} {instance} size="md" />
@@ -361,7 +361,7 @@
 
 		<!-- Grid of correction cards -->
 		<div class="grid gap-6 lg:grid-cols-2">
-			{#each session.instances as instance, index}
+			{#each session.instances as _instance, index (index)}
 				<CorrectionCard
 					answerResult={createAnswerResultForDisplay(index)}
 					questionNumber={index + 1}

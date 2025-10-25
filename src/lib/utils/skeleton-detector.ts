@@ -52,7 +52,7 @@ export function getSkeletonType(pathname: string): SkeletonType {
 		'/auth/login'
 	];
 
-	if (formPatterns.some((pattern) => pathname.includes('/new') || pathname.includes('/edit'))) {
+	if (pathname.includes('/new') || pathname.includes('/edit')) {
 		return 'form';
 	}
 

@@ -7,18 +7,23 @@ Process de développement et standards pour contribuer à UbuMaths.
 ## Documents
 
 ### [Git workflow](git-workflow.md)
+
 Workflow Git, branches, commits conventionnels, pull requests.
 
 ### [Gestion de versions](version-management.md)
+
 Système de versioning automatique, releases, changelog, tags.
 
 ### [Migrations base de données](database-migrations.md)
+
 Workflow migrations Supabase, naming conventions, rollback.
 
 ### [Style de code](code-style.md)
+
 Standards de code, conventions de nommage, patterns recommandés.
 
 ### [Migration Svelte 5](svelte5-migration.md)
+
 Guide de migration vers Svelte 5, runes, deprecations résolues.
 
 ---
@@ -82,16 +87,19 @@ git push --follow-tags origin main
 ## Standards de qualité
 
 ### Code Quality
+
 - ✅ Prettier passing (format)
 - ✅ Build succeeds (no errors)
 - ⚠️ ~280 ESLint warnings (non-blocking, complex types)
 
 ### Testing
+
 - Unit tests (Vitest) : Client + Server
 - E2E tests (Playwright) : Full flows
 - Coverage : Priorité sur logique métier
 
 ### Performance
+
 - Dev server : ~1.7s startup
 - Build : Code splitting par route
 - Conditional loading : Assets on-demand

@@ -9,3 +9,15 @@ Analyse moi tout le projet pour réorganiser toute la documentation :
 - je veux enfin que cette documentation soit accessible en ligne dans le dashboard admin, formaté correctement en HTML a partir des fichiers .md.
 
 Ultrathink about how to to this. Ask me for clarifications. Make some design proposals.
+
+
+
+
+
+
+Dans les settings du dashboard admin, je veux pouvoir activer/desactiver certaines parties/fonctionnalités 
+du site (error monitoring,...). Distinguer les fonctionalités système des outils disponibles pour les
+utilisateurs.
+Dans les settings du dashboard teacher, je veux pouvoir activer/desactiver certains ouitls/fonctionalités aux 
+élèves (par classes ou/et par élèves).
+Ultrathink on how to do this. ask me for clarification and make me some proposals.

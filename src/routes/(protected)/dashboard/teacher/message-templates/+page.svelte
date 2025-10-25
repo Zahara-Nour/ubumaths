@@ -30,7 +30,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type {
 		MessageTemplate,
-		MessageTemplateInput,
+		MessageTemplateInput as _MessageTemplateInput,
 		TriggerType
 	} from '$lib/types/messageTemplates';
 	import { getVariablesForTrigger } from '$lib/templates/templateVariables';
@@ -73,7 +73,7 @@
 	let previewTimeout = $state<number | null>(null);
 
 	// Version history
-	let templateVersions = $state<Array<any>>([]);
+	let templateVersions = $state<Array<unknown>>([]);
 	let loadingVersions = $state(false);
 	let selectedVersionTemplate = $state<MessageTemplate | null>(null);
 
@@ -181,7 +181,7 @@
 				console.error('Error loading templates:', error);
 				toaster.error('Erreur lors du chargement des templates');
 			} else {
-				templates = (data || []).map((t: any) => ({
+				templates = (data || []).map((t) => ({
 					...t,
 					class_name: t.classes?.name
 				}));
@@ -196,7 +196,7 @@
 			const { data, error } = await supabase.from('user_favorite_templates').select('template_id');
 
 			if (!error && data) {
-				favoriteTemplateIds = new Set(data.map((f: any) => f.template_id));
+				favoriteTemplateIds = new Set(data.map((f) => f.template_id));
 			}
 		} catch (error) {
 			console.error('Error loading favorites:', error);
@@ -314,9 +314,10 @@
 	$effect(() => {
 		// Watch form changes when in preview mode
 		if (activeTab === 'preview') {
-			formSubject;
-			formBody;
-			formTriggerType;
+			// These accesses are intentional to trigger reactivity
+			void formSubject;
+			void formBody;
+			void formTriggerType;
 			updatePreview();
 		}
 	});
@@ -340,7 +341,7 @@
 		isLoading = true;
 
 		try {
-			const templateData: any = {
+			const templateData = {
 				title: formTitle.trim(),
 				description: formDescription.trim() || null,
 				subject_template: formSubject.trim(),
@@ -619,7 +620,7 @@
 					</Select.Trigger>
 					<Select.Content>
 						<Select.Item value={null}>Tous les scopes</Select.Item>
-						{#each scopeOptions as option}
+						{#each scopeOptions as option (option.value)}
 							<Select.Item value={option.value}>{option.label}</Select.Item>
 						{/each}
 					</Select.Content>
@@ -636,7 +637,7 @@
 					</Select.Trigger>
 					<Select.Content>
 						<Select.Item value={null}>Tous les types</Select.Item>
-						{#each triggerTypeOptions as option}
+						{#each triggerTypeOptions as option (option.value)}
 							<Select.Item value={option.value}>{option.label}</Select.Item>
 						{/each}
 					</Select.Content>
@@ -656,7 +657,7 @@
 			{#if allTags().length > 0}
 				<div class="flex flex-wrap gap-2">
 					<span class="text-sm text-muted-foreground">Tags:</span>
-					{#each allTags() as tag}
+					{#each allTags() as tag (tag)}
 						<Badge
 							variant={filterSelectedTags.includes(tag) ? 'default' : 'outline'}
 							class="cursor-pointer"
@@ -749,7 +750,7 @@
 								<!-- Tags -->
 								{#if template.tags && template.tags.length > 0}
 									<div class="mb-2 flex flex-wrap gap-1">
-										{#each template.tags as tag}
+										{#each template.tags as tag (tag)}
 											<Badge variant="secondary" class="text-xs">{tag}</Badge>
 										{/each}
 									</div>
@@ -883,7 +884,7 @@
 								<Select.Value placeholder="Sélectionnez une classe" />
 							</Select.Trigger>
 							<Select.Content>
-								{#each classes as classItem}
+								{#each classes as classItem (classItem.id)}
 									<Select.Item value={classItem.id}>{classItem.name}</Select.Item>
 								{/each}
 							</Select.Content>
@@ -903,7 +904,7 @@
 								<Select.Value placeholder="Sélectionnez un type" />
 							</Select.Trigger>
 							<Select.Content>
-								{#each triggerTypeOptions as option}
+								{#each triggerTypeOptions as option (option.value)}
 									<Select.Item value={option.value}>{option.label}</Select.Item>
 								{/each}
 							</Select.Content>
@@ -1010,7 +1011,7 @@
 			<div class="py-8 text-center text-muted-foreground">Aucune version disponible</div>
 		{:else}
 			<div class="space-y-3">
-				{#each templateVersions as version}
+				{#each templateVersions as version (version.id)}
 					<div class="rounded-lg border border-border p-4">
 						<div class="mb-2 flex items-start justify-between">
 							<div class="flex-1">

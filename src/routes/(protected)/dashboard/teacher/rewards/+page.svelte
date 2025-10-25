@@ -149,9 +149,13 @@
 
 	// VIP card states
 	let vipModalOpen = $state(false);
-	let selectedStudentForVipModal = $state<{ id: string; name: string; vipCards: any } | null>(null);
+	let selectedStudentForVipModal = $state<{
+		id: string;
+		name: string;
+		vipCards: Record<string, number>;
+	} | null>(null);
 	let revealingCard = $state<{
-		card: any;
+		card: { card_id: string; quantity: number };
 		studentName: string;
 		loading: boolean;
 		confirmed: boolean;
@@ -496,7 +500,13 @@
 	 * Open VIP cards modal for a student
 	 * Passes student ID for card removal functionality (teacher view)
 	 */
-	function openVipModal(student: any) {
+	function openVipModal(student: {
+		id: string;
+		firstname?: string;
+		lastname?: string;
+		full_name?: string;
+		vip_cards?: Record<string, number>;
+	}) {
 		selectedStudentForVipModal = {
 			id: student.id,
 			name: getFullName(student.firstname, student.lastname, student.full_name),

@@ -59,7 +59,7 @@
 				} else {
 					toaster.success('Question créée avec succès');
 				}
-				goto('/dashboard/admin/questions');
+				goto('/dashboard/admin/questions').then(() => {});
 			} else {
 				toaster.error('Erreur lors de la création');
 				console.error('Validation errors:', result.errors);
@@ -73,7 +73,7 @@
 	}
 
 	function handleCancel() {
-		goto('/dashboard/admin/questions');
+		goto('/dashboard/admin/questions').then(() => {});
 	}
 </script>
 

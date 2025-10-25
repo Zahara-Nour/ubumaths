@@ -51,7 +51,7 @@ export const actions = {
 	 * Initiates the OAuth flow with Google provider.
 	 * Redirects user to Google for authentication, then back to our callback handler.
 	 */
-	googleSignIn: async ({ request, locals: { supabase }, url }) => {
+	googleSignIn: async ({ locals: { supabase }, url }) => {
 		// Get the redirect destination - default to dashboard
 		const redirectTo = url.searchParams.get('redirectTo') || '/dashboard';
 

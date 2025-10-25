@@ -59,12 +59,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const { data: existingAssignments } = await getAssessmentAssignments(locals.supabase, params.id);
 
 	// Format classes with student count and assignment status
-	const formattedClasses = (classes || []).map((c: any) => ({
+	const formattedClasses = (classes || []).map((c) => ({
 		id: c.id,
 		name: c.name,
 		level: c.level,
 		student_count: c.class_members?.length || 0,
-		is_assigned: existingAssignments?.some((a: any) => a.class_id === c.id) || false
+		is_assigned: existingAssignments?.some((a) => a.class_id === c.id) || false
 	}));
 
 	return {
@@ -107,7 +107,7 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	unassign: async ({ request, params, locals }) => {
+	unassign: async ({ request, params: _params, locals }) => {
 		const session = await locals.safeGetSession();
 		if (!session) {
 			return { success: false, error: 'Non authentifié' };

@@ -96,8 +96,8 @@ src/
 ```typescript
 // Code avec commentaires explicatifs
 const example = createExample({
-  param1: 'value',
-  param2: 42
+	param1: 'value',
+	param2: 42
 });
 ```
 
@@ -124,10 +124,10 @@ FEATURE_ENDPOINT=https://...
 
 ### Options disponibles
 
-| Option | Type | Défaut | Description |
-|--------|------|--------|-------------|
+| Option    | Type     | Défaut      | Description |
+| --------- | -------- | ----------- | ----------- |
 | `option1` | `string` | `'default'` | Description |
-| `option2` | `number` | `100` | Description |
+| `option2` | `number` | `100`       | Description |
 
 ---
 
@@ -245,10 +245,12 @@ Pour contribuer à cette feature :
 ## 📜 Changelog
 
 ### v1.1.0 (YYYY-MM-DD)
+
 - Added: Feature X
 - Fixed: Bug Y
 
 ### v1.0.0 (YYYY-MM-DD)
+
 - Initial release
 
 ---

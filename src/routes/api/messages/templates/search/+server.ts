@@ -92,10 +92,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	}
 
 	// Format results
-	const formattedResults = results?.map((r: any) => ({
+	const formattedResults = results?.map((r) => ({
 		...r,
 		class_name: r.classes?.name || null,
-		is_favorited: r.user_favorite_templates?.some((f: any) => f.user_id === user.id) || false
+		is_favorited: r.user_favorite_templates?.some((f) => f.user_id === user.id) || false
 	}));
 
 	return json({

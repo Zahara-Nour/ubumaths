@@ -7,3 +7,9 @@ bun.lockb
 
 # Miscellaneous
 /static/
+prompt
+.claude
+.claude/
+.claude/**
+docs/contributing/feature-template.md
+docs/guides/ui-components.md

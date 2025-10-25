@@ -1,4 +1,4 @@
-import { readdir, readFile, stat } from 'fs/promises';
+import { readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 import type { DocumentMetadata } from './markdown-parser';
 
@@ -109,21 +109,17 @@ async function scanCategory(
 /**
  * Quick metadata extraction without full parsing
  */
-function extractQuickMetadata(
-	content: string,
-	category: string,
-	path: string
-): DocumentMetadata {
+function extractQuickMetadata(content: string, category: string, path: string): DocumentMetadata {
 	// Extract title - prefer ## heading over # if first is a filename
 	const h1Match = content.match(/^#\s+(.+)$/m);
-	const h1Title = h1Match ? h1Match[1].replace(/[🎯📝📊🏗️🔧⚙️🚀📖🤝📦🛠️]/g, '').trim() : null;
+	const h1Title = h1Match ? h1Match[1].replace(/\p{Emoji}/gu, '').trim() : null;
 
 	// If H1 looks like a filename (contains .md or _), try to find a better H2
 	let title = h1Title || path.replace('.md', '');
 	if (h1Title && (h1Title.includes('.md') || h1Title.includes('_'))) {
 		const h2Match = content.match(/^##\s+(.+)$/m);
 		if (h2Match) {
-			title = h2Match[1].replace(/[🎯📝📊🏗️🔧⚙️🚀📖🤝📦🛠️]/g, '').trim();
+			title = h2Match[1].replace(/\p{Emoji}/gu, '').trim();
 		}
 	}
 
@@ -152,7 +148,7 @@ export async function getDocumentContent(categoryPath: string, docPath: string):
 
 	try {
 		return await readFile(fullPath, 'utf-8');
-	} catch (error) {
+	} catch {
 		throw new Error(`Document not found: ${categoryPath}/${docPath}`);
 	}
 }

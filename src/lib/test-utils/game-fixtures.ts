@@ -326,26 +326,26 @@ export function createMockSupabaseClient() {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			select: (columns: string = '*') => ({
 				// columns for future filtering
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				eq: (column: string, value: any) => ({
+
+				eq: (column: string, value: unknown) => ({
 					// column, value for future filtering
 					single: async () => {
-						const data = (mockData as any)[table]?.find((item: any) => item[column] === value);
+						const data = (mockData as never)[table]?.find((item: never) => item[column] === value);
 						return { data, error: null };
 					},
 					maybeSingle: async () => {
-						const data = (mockData as any)[table]?.find((item: any) => item[column] === value);
+						const data = (mockData as never)[table]?.find((item: never) => item[column] === value);
 						return { data, error: null };
 					}
 				}),
 				limit: (n: number) => ({
-					then: async (resolve: any) => {
-						const data = (mockData as any)[table]?.slice(0, n);
+					then: async (resolve: (value: unknown) => unknown) => {
+						const data = (mockData as never)[table]?.slice(0, n);
 						return resolve({ data, error: null });
 					}
 				})
 			}),
-			insert: (values: any) => ({
+			insert: (values: unknown) => ({
 				select: () => ({
 					single: async () => {
 						const inserted = Array.isArray(values) ? values[0] : values;
@@ -353,9 +353,9 @@ export function createMockSupabaseClient() {
 					}
 				})
 			}),
-			update: (values: any) => ({
+			update: (values: unknown) => ({
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				eq: (column: string, value: any) => ({
+				eq: (column: string, value: unknown) => ({
 					// column, value for future filtering
 					select: () => ({
 						single: async () => {
@@ -371,6 +371,9 @@ export function createMockSupabaseClient() {
 // ============================================================================
 // Random Number Generator Seeding
 // ============================================================================
+
+// Store original Math.random
+const originalRandom = Math.random;
 
 /**
  * Seed Math.random for deterministic tests
@@ -389,5 +392,5 @@ export function seedRandom(seed: number = 12345) {
  * Reset Math.random to original implementation
  */
 export function resetRandom() {
-	Math.random = Math.random; // Browser will restore native implementation
+	Math.random = originalRandom;
 }

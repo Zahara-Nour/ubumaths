@@ -116,12 +116,12 @@ export const GET: RequestHandler = async ({
 				if (!profile) return null;
 
 				// Base student data (always included)
-				const student: any = {
+				const student = {
 					id: profile.id,
 					firstname: profile.firstname || '',
 					lastname: profile.lastname || '',
 					avatar_url: profile.avatar_url || ''
-				};
+				} as Record<string, unknown>;
 
 				// Add full data if requested
 				if (full) {

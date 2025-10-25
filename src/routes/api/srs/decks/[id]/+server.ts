@@ -43,7 +43,7 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 		}
 
 		// Get deck stats
-		const { data: stats, error: statsError } = await supabase.rpc('get_deck_stats', {
+		const { data: stats, error: _statsError } = await supabase.rpc('get_deck_stats', {
 			p_user_id: user.id,
 			p_deck_id: id
 		});

@@ -474,7 +474,7 @@ export interface MathGraphApp {
 	addLineBisAOB(options: AddLineBisAOBOptions): MathGraphLine | Promise<void>; // OFFICIAL: Angle bisector
 	addBisector?(options: AddBisectorOptions): MathGraphLine | Promise<void>; // LEGACY
 	addMediator?(options: AddMediatorOptions): MathGraphLine | Promise<void>; // LEGACY
-	addPerpBisector?(options: any): MathGraphLine | Promise<void>; // DOES NOT EXIST
+	addPerpBisector?(options: AddLineMedABOptions): MathGraphLine | Promise<void>; // DOES NOT EXIST
 
 	// Circle creation
 	addCircleOA(options: AddCircleOAOptions): MathGraphCircle | Promise<void>;
@@ -566,9 +566,7 @@ export interface MathGraphPoint extends MathGraphObject {
 	couleur: string;
 }
 
-export interface MathGraphLine extends MathGraphObject {
-	// Line properties
-}
+export type MathGraphLine = MathGraphObject;
 
 export interface MathGraphCircle extends MathGraphObject {
 	centreX: number;
@@ -576,25 +574,15 @@ export interface MathGraphCircle extends MathGraphObject {
 	rayon: number;
 }
 
-export interface MathGraphSegment extends MathGraphObject {
-	// Segment properties
-}
+export type MathGraphSegment = MathGraphObject;
 
-export interface MathGraphRay extends MathGraphObject {
-	// Ray properties
-}
+export type MathGraphRay = MathGraphObject;
 
-export interface MathGraphVector extends MathGraphObject {
-	// Vector properties
-}
+export type MathGraphVector = MathGraphObject;
 
-export interface MathGraphPolygon extends MathGraphObject {
-	// Polygon properties
-}
+export type MathGraphPolygon = MathGraphObject;
 
-export interface MathGraphBrokenLine extends MathGraphObject {
-	// Broken line properties
-}
+export type MathGraphBrokenLine = MathGraphObject;
 
 export interface MathGraphMeasure extends MathGraphObject {
 	valeur: number;
@@ -610,25 +598,15 @@ export interface MathGraphVariable extends MathGraphCalculation {
 	step: number;
 }
 
-export interface MathGraphFunction extends MathGraphObject {
-	// Function properties
-}
+export type MathGraphFunction = MathGraphObject;
 
-export interface MathGraphTransformation extends MathGraphObject {
-	// Transformation properties
-}
+export type MathGraphTransformation = MathGraphObject;
 
-export interface MathGraphText extends MathGraphObject {
-	// Text properties
-}
+export type MathGraphText = MathGraphObject;
 
-export interface MathGraphSurface extends MathGraphObject {
-	// Surface properties
-}
+export type MathGraphSurface = MathGraphObject;
 
-export interface MathGraphLocus extends MathGraphObject {
-	// Locus properties
-}
+export type MathGraphLocus = MathGraphObject;
 
 export interface MathGraphFrame extends MathGraphObject {
 	getAbsCoord(x: number, y: number): [number, number];

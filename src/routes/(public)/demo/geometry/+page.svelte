@@ -33,7 +33,7 @@
 	let demoHints = $state(0);
 	let demoTime = $state(600);
 	let demoAttempts = $state(1);
-	let gradeResult = $state<any>(null);
+	let gradeResult = $state<{ grade: string; percentage: number } | null>(null);
 
 	// Static data
 	const systemFeatures = [

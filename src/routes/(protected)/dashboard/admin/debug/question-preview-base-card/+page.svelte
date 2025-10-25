@@ -9,9 +9,7 @@
 <script lang="ts">
 	import type { QuestionInstance } from '$lib/questions/types';
 	import QuestionPreviewBaseCard from '$lib/components/questions/QuestionPreviewBaseCard.svelte';
-	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Label } from '$lib/components/ui/label';
 
 	// ============================================================================
 	// SAMPLE DATA

@@ -78,7 +78,7 @@
 <div class="multiple-choice-container">
 	<!-- Choice buttons -->
 	<div class="choices-grid">
-		{#each choices as choice, i}
+		{#each choices as choice, i (i)}
 			{@const selected = isSelected(i)}
 			{@const correct = showValidation && choice.isCorrect}
 			{@const incorrect = showValidation && !choice.isCorrect && selected}

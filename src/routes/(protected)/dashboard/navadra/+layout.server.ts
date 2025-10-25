@@ -13,7 +13,7 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
 	}
 
 	// Fetch or create game player profile
-	let { data: gamePlayer, error: gamePlayerError } = await supabase
+	const { data: gamePlayer, error: gamePlayerError } = await supabase
 		.from('game_players')
 		.select('*')
 		.eq('user_id', user.id)

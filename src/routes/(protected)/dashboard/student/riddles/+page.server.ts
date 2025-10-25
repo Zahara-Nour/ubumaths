@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import type { DbRiddle, DbRiddleAttempt } from '$lib/types/riddle';
+import type { DbRiddleAttempt } from '$lib/types/riddle';
 import { redirect } from '@sveltejs/kit';
 
 /**
@@ -57,7 +57,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		riddleOfTheDay: riddleOfTheDay && riddleOfTheDay.length > 0 ? riddleOfTheDay[0] : null,
 		riddleOfTheDayDate,
 		studentAttempt,
-		assignments: (assignments || []).map((a: any) => ({
+		assignments: (assignments || []).map((a) => ({
 			...a,
 			riddle: a.riddle
 		}))

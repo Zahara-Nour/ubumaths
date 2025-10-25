@@ -19,7 +19,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { cleanupExpiredNotifications } from '$lib/server/notifications';
 
-export const POST: RequestHandler = async ({ request, locals: { supabase } }) => {
+export const POST: RequestHandler = async ({ request: _request, locals: { supabase } }) => {
 	// Optional: Verify cron secret for security
 	// const authHeader = request.headers.get('authorization');
 	// if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {

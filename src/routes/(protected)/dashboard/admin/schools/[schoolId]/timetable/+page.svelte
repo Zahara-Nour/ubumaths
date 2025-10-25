@@ -183,7 +183,7 @@
 	 * Navigate back to schools page
 	 */
 	function handleGoBack() {
-		goto('/dashboard/admin/schools');
+		goto('/dashboard/admin/schools').then(() => {});
 	}
 
 	// Sorted periods for display

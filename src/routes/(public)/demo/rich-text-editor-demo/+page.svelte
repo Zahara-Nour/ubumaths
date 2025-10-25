@@ -8,7 +8,7 @@
 	interface Message {
 		id: number;
 		author: string;
-		content: any;
+		content: unknown;
 		timestamp: Date;
 	}
 
@@ -83,7 +83,7 @@
 	let messages = $state<Message[]>(demoMessages);
 	let messagesContainer = $state<HTMLElement | null>(null);
 
-	async function handleSendMessage(content: any) {
+	async function handleSendMessage(content: unknown) {
 		const newMessage: Message = {
 			id: messages.length + 1,
 			author: 'Vous',

@@ -114,7 +114,7 @@
 					<div class="p-8 text-center text-sm text-muted-foreground">Aucune variable trouvée</div>
 				{:else}
 					<div class="space-y-1">
-						{#each filteredVariables() as variable}
+						{#each filteredVariables() as variable (variable.name)}
 							<button
 								type="button"
 								class="w-full rounded-md p-3 text-left transition-colors hover:bg-muted"
@@ -154,7 +154,7 @@
 					<div class="p-8 text-center text-sm text-muted-foreground">Aucun filtre trouvé</div>
 				{:else}
 					<div class="space-y-1">
-						{#each filteredFilters() as filter}
+						{#each filteredFilters() as filter (filter.label)}
 							<button
 								type="button"
 								class="w-full rounded-md p-3 text-left transition-colors hover:bg-muted"

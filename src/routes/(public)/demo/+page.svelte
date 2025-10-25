@@ -13,7 +13,7 @@
 	const logger = createLogger('+page.svelte');
 
 	let latex = $state('');
-	let mathfieldRef: any;
+	let mathfieldRef: MathfieldElement | undefined;
 	let currentLatex = $state('');
 	let flipped = $state(false);
 	let flipped2 = $state(false);
@@ -101,7 +101,7 @@
 	<!-- Demo Pages Grid -->
 	<div class="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 		{#each demoPages as demo (demo.href)}
-			<a href={demo.href} class="group block">
+			<a href={demo.href} data-sveltekit-preload-data="hover" class="group block">
 				<Card.Root
 					class="h-full border-2 transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg"
 				>

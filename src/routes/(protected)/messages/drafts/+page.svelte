@@ -38,7 +38,7 @@
 
 	// Edit draft (navigate to compose with draft data)
 	function editDraft(draftId: string) {
-		goto(`/messages/compose?draftId=${draftId}`);
+		goto(`/messages/compose?draftId=${draftId}`).then(() => {});
 	}
 </script>
 
@@ -52,7 +52,7 @@
 					{privateMessages.drafts.length} brouillon{privateMessages.drafts.length !== 1 ? 's' : ''}
 				</p>
 			</div>
-			<Button onclick={() => goto('/messages/compose')}>
+			<Button onclick={() => goto('/messages/compose').then(() => {})}>
 				<PencilLine class="mr-2 h-4 w-4" />
 				Nouveau message
 			</Button>
@@ -72,14 +72,14 @@
 				<p class="mt-2 text-sm text-muted-foreground">
 					Vos brouillons de messages apparaîtront ici
 				</p>
-				<Button onclick={() => goto('/messages/compose')} class="mt-4">
+				<Button onclick={() => goto('/messages/compose').then(() => {})} class="mt-4">
 					<PencilLine class="mr-2 h-4 w-4" />
 					Créer un message
 				</Button>
 			</div>
 		{:else}
 			<div class="divide-y divide-border">
-				{#each privateMessages.drafts as draft}
+				{#each privateMessages.drafts as draft (draft.id)}
 					<button
 						onclick={() => editDraft(draft.id)}
 						class="group flex w-full items-start gap-4 p-4 text-left transition-colors hover:bg-muted/50"

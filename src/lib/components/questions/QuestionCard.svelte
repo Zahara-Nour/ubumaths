@@ -69,7 +69,6 @@
 	// Type-specific state
 	let selectedChoices = $state<number[]>([]);
 	let fillBlankValues = $state<string[]>([]);
-	let blankValidationResults = $state<(boolean | null)[]>([]);
 
 	// ============================================================================
 	// DERIVED STATE
@@ -191,7 +190,7 @@
 	/**
 	 * Handle answer change (for real-time callbacks)
 	 */
-	function handleAnswerChange() {
+	function _handleAnswerChange() {
 		const value = prepareAnswerValue();
 		onAnswerChange?.(value as string | string[]);
 	}
@@ -222,7 +221,7 @@
 			<div class="statement-section">
 				<h3 class="mb-3 text-lg font-semibold">Énoncé</h3>
 				<div class="statement-content rounded-lg border bg-card p-4">
-					{#each instance.statement as field}
+					{#each instance.statement as field, i (i)}
 						{#if field.type === 'text'}
 							<MathDisplay text={field.content} />
 						{:else if field.type === 'image'}

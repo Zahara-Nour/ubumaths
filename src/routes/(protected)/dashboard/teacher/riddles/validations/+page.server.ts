@@ -45,7 +45,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	}
 
 	// Transform to AttemptWithDetails
-	const pendingValidations: AttemptWithDetails[] = (attempts || []).map((attempt: any) => ({
+	const pendingValidations: AttemptWithDetails[] = (attempts || []).map((attempt) => ({
 		...attempt,
 		riddle: attempt.riddle,
 		student: {

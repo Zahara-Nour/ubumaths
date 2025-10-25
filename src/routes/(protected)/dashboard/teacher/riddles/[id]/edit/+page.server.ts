@@ -1,5 +1,5 @@
 import type { PageServerLoad, Actions } from './$types';
-import type { DbRiddle, UpdateRiddleData } from '$lib/types/riddle';
+import type { DbRiddle } from '$lib/types/riddle';
 import { error, redirect, fail } from '@sveltejs/kit';
 
 /**

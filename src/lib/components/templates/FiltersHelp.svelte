@@ -47,11 +47,11 @@
 			<div class="rounded-lg border border-border bg-muted/50 p-4">
 				<h4 class="mb-2 font-semibold">Syntaxe</h4>
 				<code class="block rounded bg-card p-2 font-mono text-sm">
-					{'{'}{'{'}}variable | filter:argument{'}'}{'}'}
+					{'{'}{'{'}}variable | filter:argument}}
 				</code>
 				<p class="mt-2 text-sm text-muted-foreground">
 					Vous pouvez chaîner plusieurs filtres :
-					<code class="font-mono">{'{'}{'{'}}name | uppercase | truncate:20{'}'}{'}'} </code>
+					<code class="font-mono">{'{'}{'{'}}name | uppercase | truncate:20}} </code>
 				</p>
 			</div>
 
@@ -62,7 +62,7 @@
 					Filtres de Texte
 				</h4>
 				<div class="space-y-3">
-					{#each categories.text as filterName}
+					{#each categories.text as filterName (filterName)}
 						{@const filter = availableFilters.find((f) => f.name === filterName)}
 						{#if filter}
 							<div class="rounded-lg border border-border p-3">
@@ -88,7 +88,7 @@
 					Filtres de Nombres
 				</h4>
 				<div class="space-y-3">
-					{#each categories.numbers as filterName}
+					{#each categories.numbers as filterName (filterName)}
 						{@const filter = availableFilters.find((f) => f.name === filterName)}
 						{#if filter}
 							<div class="rounded-lg border border-border p-3">
@@ -114,7 +114,7 @@
 					Filtres de Dates
 				</h4>
 				<div class="space-y-3">
-					{#each categories.dates as filterName}
+					{#each categories.dates as filterName (filterName)}
 						{@const filter = availableFilters.find((f) => f.name === filterName)}
 						{#if filter}
 							<div class="rounded-lg border border-border p-3">
@@ -140,7 +140,7 @@
 					Filtres de Tableaux
 				</h4>
 				<div class="space-y-3">
-					{#each categories.arrays as filterName}
+					{#each categories.arrays as filterName (filterName)}
 						{@const filter = availableFilters.find((f) => f.name === filterName)}
 						{#if filter}
 							<div class="rounded-lg border border-border p-3">
@@ -166,7 +166,7 @@
 					Filtres Utilitaires
 				</h4>
 				<div class="space-y-3">
-					{#each categories.utility as filterName}
+					{#each categories.utility as filterName (filterName)}
 						{@const filter = availableFilters.find((f) => f.name === filterName)}
 						{#if filter}
 							<div class="rounded-lg border border-border p-3">
@@ -192,15 +192,15 @@
 				<h4 class="mb-2 font-semibold text-blue-900 dark:text-blue-100">💡 Blocs Conditionnels</h4>
 				<p class="mb-2 text-sm text-blue-800 dark:text-blue-200">
 					Affichez du contenu conditionnellement avec <code class="font-mono"
-						>{'{'}{'{'}}#if{'}'}{'}'}...{'{'}{'{'}} /if{'}'}{'}'}
+						>{'{'}{'{'}}#if}}...{'{'}{'{'}} /if}}
 					</code>
 				</p>
 				<code class="block rounded bg-white p-3 font-mono text-xs dark:bg-gray-900">
-					{'{'}{'{'}}#if due_date{'}'}{'}'}<br />
-					&nbsp;&nbsp;Date limite: {'{'}{'{'}}due_date{'}'}{'}'} <br />
-					{'{'}{'{'}}else{'}'}{'}'} <br />
+					{'{'}{'{'}}#if due_date}}<br />
+					&nbsp;&nbsp;Date limite: {'{'}{'{'}}due_date}} <br />
+					{'{'}{'{'}}else}} <br />
 					&nbsp;&nbsp;Pas de date limite<br />
-					{'{'}{'{'}} /if{'}'}{'}'}
+					{'{'}{'{'}} /if}}
 				</code>
 			</div>
 		</div>

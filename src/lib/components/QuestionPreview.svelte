@@ -22,7 +22,6 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
-	import * as Select from '$lib/components/ui/select';
 	import { AlertCircle, RefreshCw, Check, X } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
@@ -98,7 +97,7 @@
 	}
 
 	// Render LaTeX with MathLive
-	function renderLatex(element: HTMLElement) {
+	function renderLatex(_element: HTMLElement) {
 		if (typeof window !== 'undefined' && window.MathfieldElement && mathLiveLoaded) {
 			// Use MathLive's renderMathInElement if available
 			// For now, just display raw LaTeX
@@ -108,8 +107,8 @@
 
 	// Auto-generate on mount and template change
 	$effect(() => {
-		// Track template changes
-		template;
+		// Track template changes by accessing it
+		void template;
 		generate();
 	});
 
@@ -176,7 +175,7 @@
 						class="flex h-9 w-64 rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 					>
 						<option value="random">Aléatoire (selon la graine)</option>
-						{#each Array(variationCount) as _, index}
+						{#each Array(variationCount) as _, index (index)}
 							<option value={String(index)}>Variation {index + 1}</option>
 						{/each}
 					</select>
@@ -199,7 +198,7 @@
 					<span class="font-semibold">Erreurs de génération</span>
 				</div>
 				<ul class="space-y-1">
-					{#each errors as error}
+					{#each errors as error, i (i)}
 						<li class="flex items-start gap-2 text-sm text-destructive">
 							<X class="mt-0.5 h-4 w-4 flex-shrink-0" />
 							<span>{error}</span>
@@ -321,7 +320,7 @@
 					<div class="space-y-2">
 						<Badge variant="outline">Variables résolues</Badge>
 						<div class="grid gap-2 md:grid-cols-2">
-							{#each Object.entries(instance.resolvedVariables) as [name, value]}
+							{#each Object.entries(instance.resolvedVariables) as [name, value] (name)}
 								<div class="flex items-start gap-2 rounded border bg-muted/50 p-2 text-sm">
 									<code class="flex-shrink-0 font-semibold">{name}:</code>
 									<code class="break-all">{formatVariableValue(value)}</code>
@@ -337,7 +336,7 @@
 					<div class="rounded border bg-green-50 p-3 dark:bg-green-950/20">
 						{#if Array.isArray(instance.answer)}
 							<ul class="space-y-1">
-								{#each instance.answer as ans, i}
+								{#each instance.answer as ans, i (i)}
 									<li class="flex items-center gap-2">
 										<Badge class="bg-green-600">{i + 1}</Badge>
 										<code class="font-mono">{ans}</code>
@@ -355,7 +354,7 @@
 					<div class="space-y-2">
 						<Badge variant="outline">Choix (mélangés)</Badge>
 						<div class="space-y-2">
-							{#each instance.shuffledChoices as choice, i}
+							{#each instance.shuffledChoices as choice, i (i)}
 								{@const isCorrect =
 									(typeof instance.answer === 'string' && instance.answer === String(i)) ||
 									(Array.isArray(instance.answer) && instance.answer.includes(String(i)))}

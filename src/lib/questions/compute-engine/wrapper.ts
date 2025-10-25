@@ -115,7 +115,7 @@ export function areEquivalent(latex1: string, latex2: string): boolean {
 
 		// Check if they're equal
 		return simplified1.isEqual(simplified2);
-	} catch (error) {
+	} catch (_error) {
 		// If parsing fails, compare as strings
 		return latex1 === latex2;
 	}

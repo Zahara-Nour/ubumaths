@@ -178,7 +178,7 @@ export const MathInline = Node.create({
 		return [
 			new InputRule({
 				// Pattern to detect: $$formula$$
-				find: /\$\$([^\$]+)\$\$$/,
+				find: /\$\$([^$]+)\$\$$/,
 
 				// Handler called when pattern is matched
 				handler: ({ state, range, match }) => {

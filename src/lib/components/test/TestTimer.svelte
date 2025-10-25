@@ -235,9 +235,9 @@
 	$effect(() => {
 		// Track changes
 		if (mode === 'countdown') {
-			duration;
+			void duration;
 		} else {
-			startTime;
+			void startTime;
 		}
 
 		// Update state without tracking

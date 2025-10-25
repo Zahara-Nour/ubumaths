@@ -65,7 +65,7 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
 	}
 
 	// Transform friendships data
-	const transformedFriendships = friendships.map((f: any) => ({
+	const transformedFriendships = friendships.map((f) => ({
 		id: f.id,
 		requester_id: f.requester_id,
 		addressee_id: f.addressee_id,
@@ -91,9 +91,9 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
 	// Calculate stats
 	const stats = {
 		total: transformedFriendships.length,
-		accepted: transformedFriendships.filter((f: any) => f.status === 'accepted').length,
-		pending: transformedFriendships.filter((f: any) => f.status === 'pending').length,
-		rejected: transformedFriendships.filter((f: any) => f.status === 'rejected').length
+		accepted: transformedFriendships.filter((f) => f.status === 'accepted').length,
+		pending: transformedFriendships.filter((f) => f.status === 'pending').length,
+		rejected: transformedFriendships.filter((f) => f.status === 'rejected').length
 	};
 
 	return {

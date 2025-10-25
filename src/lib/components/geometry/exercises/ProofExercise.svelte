@@ -16,7 +16,6 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Select from '$lib/components/ui/select';
 	import { BookOpen, Check, Plus, Trash2, MoveUp, MoveDown } from 'lucide-svelte';
-	import { validateExercise } from '$lib/services/geometry-validator';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	interface ProofStep {

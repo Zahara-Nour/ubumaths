@@ -8,7 +8,7 @@
 	Usage: Display this during navigation, hide when content is ready
 -->
 
-<div class="space-y-6 animate-in fade-in duration-300">
+<div class="animate-in fade-in space-y-6 duration-300">
 	<!-- Page header skeleton -->
 	<div class="space-y-2">
 		<div class="skeleton h-9 w-64 rounded"></div>
@@ -17,7 +17,7 @@
 
 	<!-- Content blocks skeleton -->
 	<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-		{#each Array(6) as _, i (i)}
+		{#each Array(6) as _unused, i (i)}
 			<div class="skeleton h-48 rounded-lg"></div>
 		{/each}
 	</div>

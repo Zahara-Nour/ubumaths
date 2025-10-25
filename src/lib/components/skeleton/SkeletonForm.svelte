@@ -6,7 +6,7 @@
 	Perfect for pages with forms, settings, or data entry.
 -->
 
-<div class="space-y-8 animate-in fade-in duration-300">
+<div class="animate-in fade-in space-y-8 duration-300">
 	<!-- Page header -->
 	<div class="space-y-2">
 		<div class="skeleton h-9 w-64 rounded"></div>
@@ -19,7 +19,7 @@
 		<div class="space-y-4 rounded-lg border border-border bg-card p-6 shadow">
 			<div class="skeleton h-6 w-48 rounded"></div>
 			<div class="space-y-4">
-				{#each Array(3) as _, i (i)}
+				{#each Array(3) as _unused, i (i)}
 					<div class="space-y-2">
 						<div class="skeleton h-4 w-32 rounded"></div>
 						<div class="skeleton h-10 w-full rounded"></div>
@@ -32,7 +32,7 @@
 		<div class="space-y-4 rounded-lg border border-border bg-card p-6 shadow">
 			<div class="skeleton h-6 w-48 rounded"></div>
 			<div class="space-y-4">
-				{#each Array(2) as _, i (i)}
+				{#each Array(2) as _unused, i (i)}
 					<div class="space-y-2">
 						<div class="skeleton h-4 w-32 rounded"></div>
 						<div class="skeleton h-10 w-full rounded"></div>

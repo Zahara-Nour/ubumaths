@@ -200,11 +200,11 @@ export interface GameChallenge {
 	timer: number; // milliseconds
 	challenge_type: number;
 	question: string;
-	view_config: Record<string, any>;
+	view_config: Record<string, unknown>;
 	variables: ChallengeVariables;
 	answer: ChallengeAnswer;
 	hint: string | null;
-	show_answer: any | null;
+	show_answer: unknown;
 	times_attempted: number;
 	times_succeeded: number;
 	avg_time_taken: number | null;
@@ -221,22 +221,22 @@ export interface ChallengeVariable {
 	value?: string;
 	expression?: string;
 	// Additional properties from original challenge system
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 export interface ChallengeAnswer {
 	type?: string;
-	value?: string | number | any[];
+	value?: string | number | unknown[];
 	tolerance?: number;
 	// Additional properties
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 export interface ChallengeInstance {
 	challenge: GameChallenge;
-	variables: Record<string, any>;
+	variables: Record<string, unknown>;
 	expressions: Record<string, string>;
-	correct_answer: any;
+	correct_answer: unknown;
 }
 
 // ============================================================================
@@ -250,9 +250,9 @@ export interface GameChallengeAttempt {
 	combat_id: string | null;
 	success: boolean;
 	time_taken: number; // milliseconds
-	answer_given: any;
-	correct_answer: any;
-	challenge_instance: any;
+	answer_given: unknown;
+	correct_answer: unknown;
+	challenge_instance: unknown;
 	attempted_at: string;
 }
 

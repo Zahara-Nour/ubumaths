@@ -4,13 +4,12 @@
 
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
-import { validateAnswer, generateChallengeInstance } from '$lib/utils/game/challenge-variables';
+import { validateAnswer } from '$lib/utils/game/challenge-variables';
 import {
 	calculateDamage,
 	calculateXPReward,
 	calculatePrestigeReward,
-	calculatePyrsReward,
-	calculatePlayerMaxEndurance
+	calculatePyrsReward
 } from '$lib/utils/game/combat';
 
 export const load: PageServerLoad = async ({ params, locals: { safeGetSession, supabase } }) => {

@@ -151,7 +151,7 @@
 				<Select.Value placeholder="Sélectionner un niveau" />
 			</Select.Trigger>
 			<Select.Content>
-				{#each GRADE_LEVELS as level}
+				{#each GRADE_LEVELS as level (level)}
 					<Select.Item value={level} label={level}>{level}</Select.Item>
 				{/each}
 			</Select.Content>

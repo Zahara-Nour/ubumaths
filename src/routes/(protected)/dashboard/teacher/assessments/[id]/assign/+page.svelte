@@ -14,7 +14,7 @@
 	let isSubmitting = $state(false);
 
 	function handleBack() {
-		goto('/dashboard/teacher/assessments');
+		goto('/dashboard/teacher/assessments').then(() => {});
 	}
 
 	function toggleClass(classId: string) {

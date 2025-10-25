@@ -19,6 +19,7 @@ FSRS est un algorithme moderne de répétition espacée qui optimise la rétenti
 ### Spaced Repetition
 
 Réviser :
+
 - Fréquemment au début (nouvelle carte)
 - De moins en moins souvent (carte maîtrisée)
 - Juste avant d'oublier (timing optimal)
@@ -26,6 +27,7 @@ Réviser :
 ### Courbe d'oubli
 
 Basé sur recherches d'Ebbinghaus :
+
 - Oubli rapide après apprentissage
 - Réactivation renforce mémoire
 - Intervalles croissants optimisent rétention
@@ -40,15 +42,15 @@ Chaque carte stocke :
 
 ```typescript
 {
-  stability: number;    // Stabilité mémoire (jours)
-  difficulty: number;   // Difficulté (0.0-10.0)
-  elapsed_days: number; // Jours depuis dernière révision
-  scheduled_days: number; // Intervalle planifié
-  reps: number;         // Nombre total de révisions
-  lapses: number;       // Nombre d'oublis
-  state: 'new' | 'learning' | 'review' | 'relearning';
-  last_review: Date;
-  due: Date;           // Prochaine révision due
+	stability: number; // Stabilité mémoire (jours)
+	difficulty: number; // Difficulté (0.0-10.0)
+	elapsed_days: number; // Jours depuis dernière révision
+	scheduled_days: number; // Intervalle planifié
+	reps: number; // Nombre total de révisions
+	lapses: number; // Nombre d'oublis
+	state: 'new' | 'learning' | 'review' | 'relearning';
+	last_review: Date;
+	due: Date; // Prochaine révision due
 }
 ```
 
@@ -58,8 +60,7 @@ Chaque carte stocke :
 
 ```typescript
 const DEFAULT_PARAMS = [
-  0.4, 0.6, 2.4, 5.8, 4.93, 0.94, 0.86, 0.01, 1.49, 0.14, 0.94,
-  2.18, 0.05, 0.34, 1.26, 0.29, 2.61
+	0.4, 0.6, 2.4, 5.8, 4.93, 0.94, 0.86, 0.01, 1.49, 0.14, 0.94, 2.18, 0.05, 0.34, 1.26, 0.29, 2.61
 ];
 ```
 
@@ -97,6 +98,7 @@ Nouvel intervalle = Stabilité × (Retrievability_target) ^ (1/Decay)
 ```
 
 Où :
+
 - **Stabilité** : Durée avant oubli (50% retrievability)
 - **Retrievability_target** : Taux de rétention souhaité (90%)
 - **Decay** : Vitesse d'oubli (dépend de difficulté)
@@ -106,11 +108,11 @@ Où :
 Carte avec stabilité 10 jours :
 
 | Réponse | Nouvelle stabilité | Prochain intervalle |
-|---------|-------------------|---------------------|
-| Again   | 2 jours           | 1 jour              |
-| Hard    | 7 jours           | 3 jours             |
-| Good    | 25 jours          | 10 jours            |
-| Easy    | 50 jours          | 20 jours            |
+| ------- | ------------------ | ------------------- |
+| Again   | 2 jours            | 1 jour              |
+| Hard    | 7 jours            | 3 jours             |
+| Good    | 25 jours           | 10 jours            |
+| Easy    | 50 jours           | 20 jours            |
 
 ---
 
@@ -119,6 +121,7 @@ Carte avec stabilité 10 jours :
 ### 1. New (Nouvelle)
 
 Première fois vue :
+
 - `stability` = initial (1 jour)
 - `difficulty` = moyenne (5.0)
 - Révisions fréquentes
@@ -126,6 +129,7 @@ Première fois vue :
 ### 2. Learning (Apprentissage)
 
 En phase d'apprentissage :
+
 - Intervalles courts (minutes/heures)
 - Graduellement espacés
 - Passe en "Review" après succès
@@ -133,6 +137,7 @@ En phase d'apprentissage :
 ### 3. Review (Révision)
 
 Carte maîtrisée :
+
 - Intervalles longs (jours/mois)
 - Stabilité élevée
 - Moins de révisions
@@ -140,6 +145,7 @@ Carte maîtrisée :
 ### 4. Relearning (Réapprentissage)
 
 Après oubli (Again) :
+
 - Retour intervalles courts
 - Reconstruction mémoire
 - Retour "Review" après succès
@@ -151,6 +157,7 @@ Après oubli (Again) :
 ### Ajustement automatique
 
 FSRS s'adapte à l'élève :
+
 - Historique révisions
 - Taux de succès
 - Pattern d'oublis
@@ -158,6 +165,7 @@ FSRS s'adapte à l'élève :
 ### Difficulty tracking
 
 La difficulté évolue :
+
 - Augmente si échecs répétés
 - Diminue si succès constants
 - Reflète facilité subjective
@@ -197,21 +205,18 @@ import { fsrs, Rating } from 'ts-fsrs';
 
 const f = fsrs();
 
-export function scheduleCard(
-  card: FSRSCard,
-  rating: 'again' | 'hard' | 'good' | 'easy'
-): FSRSCard {
-  const ratingMap = {
-    again: Rating.Again,
-    hard: Rating.Hard,
-    good: Rating.Good,
-    easy: Rating.Easy
-  };
+export function scheduleCard(card: FSRSCard, rating: 'again' | 'hard' | 'good' | 'easy'): FSRSCard {
+	const ratingMap = {
+		again: Rating.Again,
+		hard: Rating.Hard,
+		good: Rating.Good,
+		easy: Rating.Easy
+	};
 
-  const scheduling = f.repeat(card, now());
-  const newCard = scheduling[ratingMap[rating]].card;
+	const scheduling = f.repeat(card, now());
+	const newCard = scheduling[ratingMap[rating]].card;
 
-  return newCard;
+	return newCard;
 }
 ```
 

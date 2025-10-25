@@ -6,7 +6,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Check, X } from 'lucide-svelte';
 
-	let sentMessages = $state<any[]>([]);
+	let sentMessages = $state<unknown[]>([]);
 	let formContent = $state('');
 
 	const exampleFormContent = `<h3>Description du template</h3>
@@ -14,7 +14,7 @@
 <p>Formule utilisée : <math-inline latex="ax^2 + bx + c = 0"></math-inline></p>
 <p>Difficulté : ⭐⭐⭐</p>`;
 
-	function handleSend(content: any) {
+	function handleSend(content: unknown) {
 		sentMessages = [...sentMessages, { timestamp: new Date(), content }];
 	}
 
@@ -113,7 +113,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each comparisons as comp}
+						{#each comparisons as comp, i (i)}
 							<tr class="border-b">
 								<td class="p-3 font-medium">{comp.aspect}</td>
 								<td class="p-3">
@@ -186,7 +186,7 @@
 					</div>
 				{:else}
 					<div class="space-y-3">
-						{#each sentMessages as message, i}
+						{#each sentMessages as message, i (i)}
 							<div class="rounded-lg border border-border bg-muted/50 p-3">
 								<div class="mb-2 text-xs text-muted-foreground">
 									Message #{i + 1} - {message.timestamp.toLocaleTimeString('fr-FR')}

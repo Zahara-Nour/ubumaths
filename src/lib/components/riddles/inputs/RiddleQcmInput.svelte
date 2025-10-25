@@ -43,7 +43,7 @@
 	</Label>
 
 	<div class="space-y-2">
-		{#each choices as choice, index}
+		{#each choices as choice, index (index)}
 			<button
 				type="button"
 				onclick={() => handleToggle(index)}

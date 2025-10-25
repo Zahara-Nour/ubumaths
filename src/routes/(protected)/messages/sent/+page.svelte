@@ -52,7 +52,7 @@
 
 	// Navigate to message
 	function viewMessage(messageId: string) {
-		goto(`/messages/${messageId}`);
+		goto(`/messages/${messageId}`).then(() => {});
 	}
 </script>
 
@@ -71,7 +71,7 @@
 					{/if}
 				</p>
 			</div>
-			<Button onclick={() => goto('/messages/compose')}>
+			<Button onclick={() => goto('/messages/compose').then(() => {})}>
 				<PencilLine class="mr-2 h-4 w-4" />
 				Nouveau message
 			</Button>
@@ -119,7 +119,7 @@
 					<p class="mt-2 text-sm text-muted-foreground">
 						Vous n'avez pas encore envoyé de messages
 					</p>
-					<Button onclick={() => goto('/messages/compose')} class="mt-4">
+					<Button onclick={() => goto('/messages/compose').then(() => {})} class="mt-4">
 						<PencilLine class="mr-2 h-4 w-4" />
 						Envoyer votre premier message
 					</Button>
@@ -127,7 +127,7 @@
 			</div>
 		{:else}
 			<div class="divide-y divide-border">
-				{#each filteredMessages() as message}
+				{#each filteredMessages() as message (message.id)}
 					<button
 						onclick={() => viewMessage(message.message_id)}
 						class="group flex w-full items-start gap-4 p-4 text-left transition-colors hover:bg-muted/50"

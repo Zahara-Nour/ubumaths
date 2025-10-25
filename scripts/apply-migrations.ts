@@ -79,8 +79,9 @@ async function applyMigrations() {
 			}
 
 			console.log(`   ✅ Applied successfully\n`);
-		} catch (error: any) {
-			console.error(`   ❌ Failed to apply migration: ${error.message}\n`);
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			console.error(`   ❌ Failed to apply migration: ${message}\n`);
 			console.log('⚠️  Please apply this migration manually through the Supabase SQL Editor:');
 			console.log(
 				`   1. Go to: ${supabaseUrl.replace('https://', 'https://supabase.com/dashboard/project/')}/sql`

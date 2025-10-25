@@ -155,7 +155,7 @@ export async function deleteChatAttachment(
 function sanitizeFilename(filename: string): string {
 	// Remove path separators and special characters
 	return filename
-		.replace(/[\/\\]/g, '_') // Replace slashes
+		.replace(/[/\\]/g, '_') // Replace slashes
 		.replace(/[^a-zA-Z0-9._-]/g, '_') // Replace special chars
 		.substring(0, 200); // Limit length
 }

@@ -65,7 +65,7 @@ export interface SubmitGradeOptions {
 	validationResults: ValidationResults;
 	gradeResult: GradeResult;
 	figureState?: string;
-	studentAnswer?: any;
+	studentAnswer?: unknown;
 	hintsUsed?: number;
 	timeSpent?: number;
 	activeTime?: number;
@@ -75,7 +75,7 @@ export interface SubmitGradeOptions {
 export interface UpdateAttemptOptions {
 	attemptId: string;
 	figureState?: string;
-	studentAnswer?: any;
+	studentAnswer?: unknown;
 	timeSpent?: number;
 	activeTime?: number;
 	lastSavedAt?: Date;
@@ -123,7 +123,7 @@ export async function submitGrade(
 			attempts_count: attemptCount,
 			current_figure_state: options.figureState ?? '',
 			student_answer: options.studentAnswer ?? null,
-			validation_results: options.validationResults as any,
+			validation_results: options.validationResults as never,
 			score_earned: options.gradeResult.finalScore,
 			max_score_possible: options.gradeResult.maxScore,
 			hints_used: options.hintsUsed ?? 0,
@@ -142,7 +142,7 @@ export async function submitGrade(
 				figureState: options.figureState,
 				score: options.gradeResult.finalScore
 			};
-			attemptData.figure_history = [historyEntry] as any;
+			attemptData.figure_history = [historyEntry] as never;
 		}
 
 		// Insert attempt
@@ -194,12 +194,12 @@ export async function updateAttempt(
 				.single();
 
 			if (currentAttempt) {
-				const history = (currentAttempt.figure_history as any[]) ?? [];
+				const history = (currentAttempt.figure_history as unknown[]) ?? [];
 				history.push({
 					timestamp: new Date().toISOString(),
 					figureState: options.figureState
 				});
-				updateData.figure_history = history as any;
+				updateData.figure_history = history as never;
 			}
 		}
 

@@ -25,7 +25,7 @@
 	import type { Deck } from '$lib/srs/types';
 
 	interface Props {
-		deck: Deck & { stats?: any };
+		deck: Deck & { stats?: { new: number; learning: number; due: number } };
 		onclick?: () => void;
 		showActions?: boolean;
 	}

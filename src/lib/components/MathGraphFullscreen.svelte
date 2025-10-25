@@ -36,7 +36,7 @@
 		showButton?: boolean;
 		buttonPosition?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
 		onFullscreenChange?: (isFullscreen: boolean) => void;
-		children?: any;
+		children?: import('svelte').Snippet;
 	}
 
 	let {
@@ -223,7 +223,7 @@
 		let contentBounds = [width, height];
 
 		if (svgId) {
-			const app = service.getApp(svgId) as any;
+			const app = service.getApp(svgId) as { getFigDim?: () => number[] };
 			if (app && typeof app.getFigDim === 'function') {
 				contentBounds = app.getFigDim();
 			}

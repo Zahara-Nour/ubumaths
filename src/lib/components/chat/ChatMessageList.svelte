@@ -27,7 +27,6 @@
 		- Show "Today", "Yesterday", etc.
 -->
 <script lang="ts">
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	import { onMount, tick } from 'svelte'; // onMount for future scroll handling
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
@@ -273,6 +272,7 @@
 											href={attachment.public_url}
 											target="_blank"
 											rel="noopener noreferrer"
+											data-sveltekit-preload-data="off"
 											class="flex items-center gap-2 rounded border border-border bg-background/50 p-2 text-sm hover:bg-background"
 										>
 											<Download class="h-4 w-4" />

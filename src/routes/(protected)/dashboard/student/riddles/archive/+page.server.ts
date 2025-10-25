@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	}
 
 	// Get student's attempts for these riddles
-	const riddleIds = (history || []).map((h: any) => h.riddle_id);
+	const riddleIds = (history || []).map((h) => h.riddle_id);
 
 	const { data: attempts } = await supabase
 		.from('riddle_attempts')
@@ -38,7 +38,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 
 	// Create map of riddle_id to attempt
 	const attemptsMap = new Map();
-	(attempts || []).forEach((attempt: any) => {
+	(attempts || []).forEach((attempt) => {
 		// Keep only successful attempts or latest attempt
 		if (
 			!attemptsMap.has(attempt.riddle_id) ||
@@ -50,7 +50,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	});
 
 	// Transform data
-	const archive = (history || []).map((h: any) => ({
+	const archive = (history || []).map((h) => ({
 		...h,
 		riddle: h.riddle,
 		studentAttempt: attemptsMap.get(h.riddle_id) || null

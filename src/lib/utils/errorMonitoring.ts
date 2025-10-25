@@ -40,7 +40,7 @@ export interface ClientErrorData {
 	device_type?: 'mobile' | 'tablet' | 'desktop';
 	viewport_width?: number;
 	viewport_height?: number;
-	context?: Record<string, any>;
+	context?: Record<string, unknown>;
 	tags?: string[];
 }
 
@@ -67,8 +67,8 @@ const CONFIG = {
 // =====================================================
 
 let errorQueue: ErrorQueueItem[] = [];
-let errorCounts: Map<number, number> = new Map(); // timestamp => count
-let sentHashes: Set<string> = new Set(); // Recently sent error hashes
+const errorCounts: Map<number, number> = new Map(); // timestamp => count
+const sentHashes: Set<string> = new Set(); // Recently sent error hashes
 let batchTimer: ReturnType<typeof setTimeout> | null = null;
 let isInitialized = false;
 
@@ -412,7 +412,7 @@ export function captureError(
 	error: Error | string,
 	options?: {
 		severity?: ErrorSeverity;
-		context?: Record<string, any>;
+		context?: Record<string, unknown>;
 		tags?: string[];
 	}
 ): void {
@@ -447,7 +447,7 @@ export function captureError(
 export function captureValidationError(
 	fieldName: string,
 	errorMessage: string,
-	formData?: Record<string, any>
+	formData?: Record<string, unknown>
 ): void {
 	if (!CONFIG.ENABLED) return;
 
@@ -478,7 +478,7 @@ export function capturePerformance(
 	metric: string,
 	value: number,
 	threshold: number,
-	context?: Record<string, any>
+	context?: Record<string, unknown>
 ): void {
 	if (!CONFIG.ENABLED) return;
 

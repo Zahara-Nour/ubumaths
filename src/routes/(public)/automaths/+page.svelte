@@ -1,7 +1,6 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Accordion from '$lib/components/ui/accordion';
-	import { Badge } from '$lib/components/ui/badge';
 	import QuestionPreviewCard from '$lib/components/QuestionPreviewCard.svelte';
 	import CartFloatingButton from '$lib/components/CartFloatingButton.svelte';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
@@ -111,7 +110,7 @@
 				class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none sm:w-80"
 			>
 				<option value="" disabled selected={!selectedTheme}>Choisir un thème...</option>
-				{#each data.themes || [] as theme}
+				{#each data.themes || [] as theme (theme)}
 					<option value={theme}>{theme}</option>
 				{/each}
 			</select>
@@ -121,14 +120,14 @@
 			<!-- Domain tabs -->
 			<Tabs.Root value={selectedDomain} onValueChange={handleDomainChange}>
 				<Tabs.List class="mb-6 flex-wrap border border-border !bg-transparent">
-					{#each availableDomains as domain}
+					{#each availableDomains as domain (domain)}
 						<Tabs.Trigger value={domain.domain} class="flex items-center gap-2">
 							{domain.domain}
 						</Tabs.Trigger>
 					{/each}
 				</Tabs.List>
 
-				{#each availableDomains as domain}
+				{#each availableDomains as domain (domain)}
 					<Tabs.Content value={domain.domain} class="space-y-6 bg-transparent">
 						{#if availableSubdomains.length === 0}
 							<p class="text-center text-muted-foreground">
@@ -140,7 +139,7 @@
 								type="multiple"
 								class="space-y-4 rounded-lg border-border bg-background"
 							>
-								{#each availableSubdomains as subdomainGroup}
+								{#each availableSubdomains as subdomainGroup (subdomainGroup.subdomain)}
 									<Accordion.Item
 										value={subdomainGroup.subdomain || 'general'}
 										class="rounded-lg border !border-b-0 bg-background"
@@ -159,7 +158,7 @@
 										<Accordion.Content class="bg-background px-4 pt-2 pb-4">
 											<!-- Questions gallery -->
 											<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-												{#each subdomainGroup.questions as question}
+												{#each subdomainGroup.questions as question (question.id)}
 													<QuestionPreviewCard
 														template={question.template}
 														preview={question.preview}

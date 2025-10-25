@@ -55,7 +55,7 @@
 	);
 
 	function handleBackToList() {
-		goto('/dashboard/teacher/assessments');
+		goto('/dashboard/teacher/assessments').then(() => {});
 	}
 
 	function handleNextStep() {
@@ -74,7 +74,7 @@
 		}
 	}
 
-	function handleConfigSubmit(data: any) {
+	function handleConfigSubmit(data: Record<string, unknown>) {
 		formData = {
 			...data,
 			categories: cartItems
@@ -110,14 +110,14 @@
 				throw new Error('Failed to create assessment');
 			}
 
-			const { assessment } = await response.json();
+			const { assessment: _assessment } = await response.json();
 
 			// Clear cart
 			questionCart.clearCart();
 
 			toaster.success(status === 'published' ? 'Évaluation publiée !' : 'Brouillon sauvegardé');
 
-			goto('/dashboard/teacher/assessments');
+			goto('/dashboard/teacher/assessments').then(() => {});
 		} catch (error) {
 			console.error('Failed to create assessment:', error);
 			toaster.error('Échec de la création');
@@ -146,7 +146,7 @@
 	<!-- Progress Indicator -->
 	<div class="mb-8">
 		<div class="mx-auto flex max-w-md items-center justify-between">
-			{#each [1, 2, 3] as stepNum}
+			{#each [1, 2, 3] as stepNum (stepNum)}
 				<div class="flex flex-col items-center gap-2">
 					<div
 						class="flex h-10 w-10 items-center justify-center rounded-full border-2 {stepNum <= step
@@ -181,7 +181,7 @@
 							<p class="mt-2 text-muted-foreground">
 								Allez dans Automaths pour ajouter des questions
 							</p>
-							<Button onclick={() => goto('/automaths')} class="mt-6">
+							<Button onclick={() => goto('/automaths').then(() => {})} class="mt-6">
 								Parcourir les questions
 							</Button>
 						</div>
@@ -198,7 +198,7 @@
 					</Card.Header>
 					<Card.Content>
 						<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-							{#each cartItemsWithInstances as { item, instance }}
+							{#each cartItemsWithInstances as { item, instance } (item.category.theme + item.category.domain + item.category.subdomain + item.category.level)}
 								<CartQuestionCard
 									{item}
 									{instance}
@@ -212,7 +212,7 @@
 				</Card.Root>
 
 				<div class="flex justify-between">
-					<Button variant="outline" onclick={() => goto('/automaths')}>
+					<Button variant="outline" onclick={() => goto('/automaths').then(() => {})}>
 						Ajouter des questions
 					</Button>
 					<Button onclick={handleNextStep}>Suivant</Button>

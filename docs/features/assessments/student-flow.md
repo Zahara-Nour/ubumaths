@@ -21,6 +21,7 @@ Dashboard → Élève → Évaluations
 ```
 
 Voir :
+
 - Évaluations à faire (avec date limite)
 - Évaluations en cours
 - Évaluations complétées
@@ -72,6 +73,7 @@ Voir :
 ### Score immédiat (si activé)
 
 Affichage direct après soumission :
+
 - Score total (/20 ou /100)
 - Questions correctes/incorrectes
 - Corrections (si autorisé par enseignant)
@@ -79,6 +81,7 @@ Affichage direct après soumission :
 ### Score différé
 
 Attendre correction de l'enseignant :
+
 - Notification quand corrigé
 - Accès aux résultats dans Dashboard
 

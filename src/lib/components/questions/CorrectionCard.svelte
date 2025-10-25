@@ -69,8 +69,6 @@
 
 	const isCorrect = $derived(answerResult.isCorrect);
 
-	const statusColor = $derived(isCorrect ? 'green' : 'red');
-
 	// ============================================================================
 	// INITIALIZATION
 	// ============================================================================
@@ -196,7 +194,7 @@
 
 							{#if showStatement}
 								<div class="statement-content rounded-lg border bg-muted/30 p-4">
-									{#each answerResult.instance.statement as field}
+									{#each answerResult.instance.statement as field, i (i)}
 										{#if field.type === 'text'}
 											<MathDisplay text={field.content} />
 										{:else if field.type === 'image'}
@@ -226,7 +224,7 @@
 									<!-- Type-specific rendering -->
 									{#if answerResult.instance.type === 'fill_in_blanks' && Array.isArray(answerResult.userAnswer.value)}
 										<ul class="space-y-1">
-											{#each answerResult.userAnswer.value as value, i}
+											{#each answerResult.userAnswer.value as value, i (i)}
 												<li class="flex items-center gap-2">
 													<code class="text-sm">{value}</code>
 												</li>
@@ -235,7 +233,7 @@
 									{:else if answerResult.instance.type === 'multiple_choice'}
 										<ul class="space-y-1">
 											{#if Array.isArray(answerResult.userAnswer.value)}
-												{#each answerResult.userAnswer.value as index}
+												{#each answerResult.userAnswer.value as index (index)}
 													<li class="font-medium">{String.fromCharCode(65 + Number(index))}</li>
 												{/each}
 											{:else}
@@ -246,7 +244,7 @@
 										</ul>
 									{:else if Array.isArray(answerResult.userAnswer.value)}
 										<ul class="space-y-1">
-											{#each answerResult.userAnswer.value as val}
+											{#each answerResult.userAnswer.value as val, i (i)}
 												<li><MathDisplay text={String(val)} /></li>
 											{/each}
 										</ul>
@@ -263,7 +261,7 @@
 							<div class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950">
 								{#if Array.isArray(answerResult.instance.answer)}
 									<ul class="space-y-1">
-										{#each answerResult.instance.answer as ans}
+										{#each answerResult.instance.answer as ans, i (i)}
 											<li><MathDisplay text={String(ans)} /></li>
 										{/each}
 									</ul>
@@ -312,7 +310,7 @@
 					<Card.Content>
 						{#if answerResult.instance.correction && answerResult.instance.correction.length > 0}
 							<div class="space-y-3 rounded-lg border bg-muted/50 p-4">
-								{#each answerResult.instance.correction as field}
+								{#each answerResult.instance.correction as field, i (i)}
 									{#if field.type === 'text'}
 										<MathDisplay text={field.content} />
 									{:else if field.type === 'image'}

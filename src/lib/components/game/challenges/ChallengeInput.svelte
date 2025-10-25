@@ -3,7 +3,7 @@
 	import { Input } from '$lib/components/ui/input';
 
 	interface Props {
-		onsubmit: (answer: any) => void;
+		onsubmit: (answer: string | number) => void;
 		disabled?: boolean;
 		placeholder?: string;
 		type?: 'number' | 'text';
@@ -29,7 +29,7 @@
 		}
 
 		// Parse answer based on type
-		let parsedAnswer: any = answerStr.trim();
+		let parsedAnswer: string | number = answerStr.trim();
 		if (type === 'number') {
 			parsedAnswer = parseFloat(answerStr);
 			if (isNaN(parsedAnswer)) {

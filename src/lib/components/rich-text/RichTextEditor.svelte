@@ -109,8 +109,7 @@
 
 	// Component Props
 	interface Props {
-		onSend?: (content: any) => void;
-		placeholder?: string;
+		onSend?: (content: unknown) => void;
 	}
 
 	let { onSend }: Props = $props();

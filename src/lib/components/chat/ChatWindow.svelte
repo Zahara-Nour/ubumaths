@@ -35,7 +35,7 @@
 	interface Props {
 		userId: string;
 		isTeacher: boolean;
-		supabase: any; // SupabaseClient type
+		supabase: ReturnType<typeof chatStore.supabase>; // SupabaseClient type
 	}
 
 	let { userId, isTeacher, supabase }: Props = $props();
@@ -90,7 +90,7 @@
 	/**
 	 * Handle send message
 	 */
-	async function handleSendMessage(content: any, attachments: File[]): Promise<void> {
+	async function handleSendMessage(content: unknown, attachments: File[]): Promise<void> {
 		if (!chatStore.activeConversationId) return;
 
 		let attachmentRecords: Array<{

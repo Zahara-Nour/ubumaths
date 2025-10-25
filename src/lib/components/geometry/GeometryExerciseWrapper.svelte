@@ -23,11 +23,10 @@
 		attempt?: GeometryExerciseAttempt | null;
 		hints?: GeometryHint[];
 		onValidate?: (results: ValidationResults) => void;
-		onSave?: (data: any) => void;
+		onSave?: (data: Record<string, unknown>) => void;
 		onComplete?: () => void;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let { exercise, attempt = null, hints = [], onValidate, onSave, onComplete }: Props = $props(); // exerciseId, currentStep for future features
 
 	// Determine which component to render based on exercise type

@@ -33,6 +33,7 @@ Chaque dossier de feature DOIT contenir un `README.md` avec :
 ### 3. Pas de redondance
 
 **❌ MAUVAIS** :
+
 ```
 /docs/features/questions/
 ├── overview.md          # Contient intro
@@ -41,6 +42,7 @@ Chaque dossier de feature DOIT contenir un `README.md` avec :
 ```
 
 **✅ BON** :
+
 ```
 /docs/features/questions/
 ├── README.md           # Contient intro + quick start
@@ -63,6 +65,7 @@ Indiquer clairement le statut d'implémentation :
 ```
 
 Statuts possibles :
+
 - ✅ **Production** : Feature complète et déployée
 - 🔄 **In Progress** : Développement en cours
 - 📝 **Planned** : Planifié mais pas commencé
@@ -129,13 +132,16 @@ Component A → Component B → Database
 ## 🗺️ Roadmap
 
 ### Implemented ✅
+
 - Feature X
 - Feature Y
 
 ### In Progress 🔄
+
 - Feature Z
 
 ### Planned 📝
+
 - Feature W
 - Feature V
 
@@ -189,9 +195,9 @@ Detailed explanation...
 \`\`\`typescript
 // Code example with comments
 const example = createExample({
-  // Explain each parameter
-  param1: 'value',
-  param2: 42
+// Explain each parameter
+param1: 'value',
+param2: 42
 });
 \`\`\`
 
@@ -204,10 +210,12 @@ const example = createExample({
 ## Best Practices
 
 ✅ **DO**:
+
 - Good practice 1
 - Good practice 2
 
 ❌ **DON'T**:
+
 - Bad practice 1
 - Bad practice 2
 
@@ -258,13 +266,13 @@ const example = createExample({
 
 Utiliser des emojis pour la navigation visuelle rapide :
 
-| Catégorie       | Emoji | Usage                    |
-| --------------- | ----- | ------------------------ |
-| Feature/Product | 🎯 📝 🗂️ 🧩 | En-têtes de features    |
-| Architecture    | 🏗️ 🔧 ⚙️  | Docs techniques         |
-| Guide           | 📖 📚 🚀  | Guides et tutoriels     |
-| Status          | ✅ 🔄 📝 🚧 | Indicateurs de statut   |
-| Warning         | ⚠️ ❌ ✋  | Avertissements          |
+| Catégorie       | Emoji       | Usage                 |
+| --------------- | ----------- | --------------------- |
+| Feature/Product | 🎯 📝 🗂️ 🧩 | En-têtes de features  |
+| Architecture    | 🏗️ 🔧 ⚙️    | Docs techniques       |
+| Guide           | 📖 📚 🚀    | Guides et tutoriels   |
+| Status          | ✅ 🔄 📝 🚧 | Indicateurs de statut |
+| Warning         | ⚠️ ❌ ✋    | Avertissements        |
 
 **Important** : Pas d'abus - 1 emoji par titre maximum.
 
@@ -295,10 +303,10 @@ const example = 'code';
 Utiliser des tables pour info structurée :
 
 ```markdown
-| Command       | Description          |
-| ------------- | -------------------- |
-| `pnpm dev`    | Start dev server     |
-| `pnpm build`  | Build for production |
+| Command      | Description          |
+| ------------ | -------------------- |
+| `pnpm dev`   | Start dev server     |
+| `pnpm build` | Build for production |
 ```
 
 ---
@@ -308,12 +316,14 @@ Utiliser des tables pour info structurée :
 ### Créer une nouvelle doc
 
 ✅ **Créer quand** :
+
 - Nouveau feature majeur
 - Architecture complexe qui mérite explication
 - Guide utilisateur nécessaire (teacher/student/admin)
 - API publique ou workflow important
 
 ❌ **Ne PAS créer pour** :
+
 - Bug fix simple (→ git commit message suffit)
 - Session de debug temporaire (→ notes locales)
 - Changement mineur de code
@@ -322,12 +332,14 @@ Utiliser des tables pour info structurée :
 ### Modifier la doc existante
 
 ✅ **Mettre à jour quand** :
+
 - Feature évolue significativement
 - Bug critique corrigé
 - API change
 - Workflow modifié
 
 ❌ **Ne PAS polluer avec** :
+
 - Changements cosmétiques
 - Typos mineures répétées (grouper les fixes)
 - Notes de debug temporaires

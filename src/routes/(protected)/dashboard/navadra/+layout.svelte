@@ -5,7 +5,7 @@
 	import { spellsStore } from '$lib/stores/game/spells.svelte';
 	import type { LayoutData } from './$types';
 
-	let { data, children }: { data: LayoutData; children: any } = $props();
+	let { data, children }: { data: LayoutData; children: unknown } = $props();
 
 	// Initialize stores with server data
 	onMount(() => {
@@ -25,7 +25,7 @@
 
 	// Handle exit game
 	function handleExitGame() {
-		goto('/dashboard');
+		goto('/dashboard').then(() => {});
 	}
 </script>
 

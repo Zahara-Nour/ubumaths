@@ -29,12 +29,11 @@
 	interface Props {
 		conversationId: string;
 		isTeacher?: boolean;
-		onSend: (content: any, attachments: File[]) => Promise<void>;
+		onSend: (content: unknown, attachments: File[]) => Promise<void>;
 		onTyping: (isTyping: boolean) => void;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	let { conversationId, isTeacher = false, onSend, onTyping }: Props = $props(); // conversationId for future features
+	let { conversationId: _conversationId, isTeacher = false, onSend, onTyping }: Props = $props(); // conversationId for future features
 
 	// Component State
 	let attachments = $state<File[]>([]);
@@ -88,7 +87,7 @@
 	/**
 	 * Handle message send
 	 */
-	async function handleSend(content: any): Promise<void> {
+	async function handleSend(content: unknown): Promise<void> {
 		if (isSending) return;
 
 		// Stop typing indicator

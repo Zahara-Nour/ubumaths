@@ -160,7 +160,7 @@
 										<Select.Value placeholder="Sélectionner un type" />
 									</Select.Trigger>
 									<Select.Content>
-										{#each Object.entries(NOTIFICATION_TYPE_LABELS) as [value, label]}
+										{#each Object.entries(NOTIFICATION_TYPE_LABELS) as [value, label] (value)}
 											<Select.Item {value}>{label}</Select.Item>
 										{/each}
 									</Select.Content>
@@ -178,7 +178,7 @@
 										<Select.Value placeholder="Sélectionner une priorité" />
 									</Select.Trigger>
 									<Select.Content>
-										{#each Object.entries(NOTIFICATION_PRIORITY_LABELS) as [value, label]}
+										{#each Object.entries(NOTIFICATION_PRIORITY_LABELS) as [value, label] (value)}
 											<Select.Item {value}>{label}</Select.Item>
 										{/each}
 									</Select.Content>
@@ -231,7 +231,7 @@
 									>{targetType === 'role' ? 'Sélectionner les rôles' : 'Filtrer par rôle'}</Label
 								>
 								<div class="grid gap-2 sm:grid-cols-3">
-									{#each ['admin', 'teacher', 'student'] as role}
+									{#each ['admin', 'teacher', 'student'] as role (role)}
 										<label class="flex items-center gap-2 rounded border p-2 hover:bg-muted">
 											<input
 												type="checkbox"
@@ -260,7 +260,7 @@
 								<Label>Sélectionner les classes</Label>
 								<div class="max-h-48 overflow-y-auto rounded border p-2">
 									<div class="grid gap-2 sm:grid-cols-2">
-										{#each data.classes as cls}
+										{#each data.classes as cls (cls.id)}
 											<label class="flex items-center gap-2 rounded p-2 hover:bg-muted">
 												<input
 													type="checkbox"
@@ -289,7 +289,7 @@
 								<div class="max-h-48 overflow-y-auto rounded border p-2">
 									{#if availableUsers.length > 0}
 										<div class="grid gap-2 sm:grid-cols-2">
-											{#each availableUsers as user}
+											{#each availableUsers as user (user.id)}
 												<label class="flex items-center gap-2 rounded p-2 text-sm hover:bg-muted">
 													<input
 														type="checkbox"
@@ -376,7 +376,7 @@
 				</Card.Content>
 			</Card.Root>
 		{:else}
-			{#each data.notificationStats as stat}
+			{#each data.notificationStats as stat (stat.id)}
 				<Card.Root>
 					<Card.Header>
 						<div class="flex items-start justify-between">

@@ -19,7 +19,8 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 		const responseTime = Date.now() - startTime;
 
 		// Skip logging for static assets and favicon to prevent cascade
-		const isStaticAsset = event.url.pathname.startsWith('/_app/') ||
+		const isStaticAsset =
+			event.url.pathname.startsWith('/_app/') ||
 			event.url.pathname === '/favicon.ico' ||
 			event.url.pathname.endsWith('.png') ||
 			event.url.pathname.endsWith('.jpg') ||
@@ -32,7 +33,10 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 			Promise.resolve().then(async () => {
 				try {
 					// Add timeout to prevent getUserContext from hanging
-					const getUserContextWithTimeout = async (supabase: any, userId: string) => {
+					const getUserContextWithTimeout = async (
+						supabase: ReturnType<typeof event.locals.supabase>,
+						userId: string
+					) => {
 						const timeoutPromise = new Promise((_, reject) =>
 							setTimeout(() => reject(new Error('Timeout')), 2000)
 						);

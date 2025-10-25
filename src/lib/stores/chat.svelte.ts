@@ -47,7 +47,7 @@ export interface Message {
 	sender_firstname: string | null;
 	sender_lastname: string | null;
 	sender_avatar_url: string | null;
-	content: any; // TipTap JSON
+	content: unknown; // TipTap JSON
 	plain_text: string;
 	created_at: string;
 	edited_at: string | null;
@@ -149,7 +149,7 @@ class ChatStore {
 				return;
 			}
 
-			this.conversations = (data || []).map((conv: any) => ({
+			this.conversations = (data || []).map((conv) => ({
 				id: conv.conversation_id,
 				name: conv.name,
 				is_group: conv.is_group,
@@ -197,7 +197,7 @@ class ChatStore {
 				return;
 			}
 
-			const messages: Message[] = (data || []).map((msg: any) => ({
+			const messages: Message[] = (data || []).map((msg) => ({
 				id: msg.id,
 				conversation_id: msg.conversation_id,
 				sender_id: msg.sender_id,
@@ -236,7 +236,7 @@ class ChatStore {
 	 */
 	async sendMessage(
 		conversationId: string,
-		content: any,
+		content: unknown,
 		attachmentRecords?: Array<{
 			file_name: string;
 			file_type: string;
@@ -434,7 +434,7 @@ class ChatStore {
 			for (const [conversationId, msgs] of this.messages.entries()) {
 				const message = msgs.find((m) => m.id === messageId);
 				if (message) {
-					message.reactions = (data || []).map((r: any) => ({
+					message.reactions = (data || []).map((r) => ({
 						emoji: r.emoji,
 						count: r.count,
 						user_reacted: r.user_reacted
@@ -548,7 +548,13 @@ class ChatStore {
 	 * Handle incoming WebSocket messages
 	 * (Called by WebSocket manager)
 	 */
-	handleWebSocketMessage(message: any): void {
+	handleWebSocketMessage(message: {
+		type: string;
+		conversationId?: string;
+		userId?: string;
+		isTyping?: boolean;
+		messageId?: string;
+	}): void {
 		switch (message.type) {
 			case 'chat_message':
 				this.handleIncomingMessage(message);
@@ -565,7 +571,7 @@ class ChatStore {
 		}
 	}
 
-	private handleIncomingMessage(message: any): void {
+	private handleIncomingMessage(message: { conversationId?: string }): void {
 		// Fetch full message details and add to conversation
 		if (this.activeConversationId === message.conversationId) {
 			this.loadMessages(message.conversationId, 1);
@@ -575,7 +581,11 @@ class ChatStore {
 		this.loadConversations();
 	}
 
-	private handleTypingIndicator(message: any): void {
+	private handleTypingIndicator(message: {
+		conversationId?: string;
+		userId?: string;
+		isTyping?: boolean;
+	}): void {
 		const { conversationId, userId, isTyping } = message;
 
 		if (!this.typingUsers.has(conversationId)) {
@@ -615,12 +625,12 @@ class ChatStore {
 		}
 	}
 
-	private handleMessageRead(message: any): void {
+	private handleMessageRead(message: unknown): void {
 		// Update read receipts (implementation depends on UI requirements)
 		console.log('Message read:', message);
 	}
 
-	private handleMessageReaction(message: any): void {
+	private handleMessageReaction(message: { messageId?: string }): void {
 		// Reload reactions for the message
 		this.loadMessageReactions(message.messageId);
 	}
