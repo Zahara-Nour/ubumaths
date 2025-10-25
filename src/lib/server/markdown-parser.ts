@@ -135,6 +135,7 @@ function extractCategory(filePath: string): string {
 function generateTableOfContents(content: string): TableOfContentsItem[] {
 	const toc: TableOfContentsItem[] = [];
 	const headerRegex = /^(#{1,6})\s+(.+)$/gm;
+	const usedIds = new Set<string>();
 
 	let match;
 	while ((match = headerRegex.exec(content)) !== null) {
@@ -150,7 +151,16 @@ function generateTableOfContents(content: string): TableOfContentsItem[] {
 			.replace(/[^a-z0-9]+/g, '-')
 			.replace(/^-|-$/g, '');
 
-		toc.push({ id, text, level });
+		// Ensure unique ID by appending number if needed
+		let uniqueId = id;
+		let counter = 1;
+		while (usedIds.has(uniqueId)) {
+			uniqueId = `${id}-${counter}`;
+			counter++;
+		}
+		usedIds.add(uniqueId);
+
+		toc.push({ id: uniqueId, text, level });
 	}
 
 	return toc;

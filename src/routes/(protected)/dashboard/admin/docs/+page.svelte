@@ -140,7 +140,7 @@
 					<details class="mb-6 rounded-md border p-4" open>
 						<summary class="cursor-pointer font-semibold">📋 Table des matières</summary>
 						<ul class="mt-2 space-y-1">
-							{#each data.defaultDoc.toc as item (item.slug)}
+							{#each data.defaultDoc.toc as item (item.id)}
 								<li style="margin-left: {(item.level - 2) * 1}rem">
 									<a href="#{item.id}" class="text-sm text-primary hover:underline">
 										{item.text}

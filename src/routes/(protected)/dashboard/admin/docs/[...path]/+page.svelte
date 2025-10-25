@@ -147,7 +147,7 @@
 						<h3 class="text-sm font-semibold">Sur cette page</h3>
 						<div class="mb-2 h-px bg-border"></div>
 						<ul class="space-y-1 text-sm">
-							{#each data.doc.toc as item (item.slug)}
+							{#each data.doc.toc as item (item.id)}
 								<li style="margin-left: {(item.level - 2) * 0.75}rem">
 									<a
 										href="#{item.id}"

@@ -22,7 +22,8 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 	}
 
 	// Parse path: /features/questions/README -> category: features, docPath: questions/README.md
-	const pathSegments = params.path.split('/');
+	// Filter out empty segments (from trailing slashes)
+	const pathSegments = params.path.split('/').filter((s) => s.length > 0);
 
 	if (pathSegments.length < 1) {
 		throw error(400, 'Invalid document path');
@@ -31,8 +32,12 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 	const category = pathSegments[0];
 	let docPath = pathSegments.slice(1).join('/');
 
+	// If no docPath, default to README.md
+	if (!docPath) {
+		docPath = 'README.md';
+	}
 	// Add .md extension if not already present
-	if (!docPath.endsWith('.md')) {
+	else if (!docPath.endsWith('.md')) {
 		docPath += '.md';
 	}
 

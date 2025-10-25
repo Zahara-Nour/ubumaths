@@ -120,14 +120,14 @@
 			<!-- Domain tabs -->
 			<Tabs.Root value={selectedDomain} onValueChange={handleDomainChange}>
 				<Tabs.List class="mb-6 flex-wrap border border-border !bg-transparent">
-					{#each availableDomains as domain (domain)}
+					{#each availableDomains as domain (domain.domain)}
 						<Tabs.Trigger value={domain.domain} class="flex items-center gap-2">
 							{domain.domain}
 						</Tabs.Trigger>
 					{/each}
 				</Tabs.List>
 
-				{#each availableDomains as domain (domain)}
+				{#each availableDomains as domain (domain.domain)}
 					<Tabs.Content value={domain.domain} class="space-y-6 bg-transparent">
 						{#if availableSubdomains.length === 0}
 							<p class="text-center text-muted-foreground">
