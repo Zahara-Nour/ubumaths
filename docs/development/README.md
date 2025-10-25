@@ -26,6 +26,10 @@ Standards de code, conventions de nommage, patterns recommandés.
 
 Guide de migration vers Svelte 5, runes, deprecations résolues.
 
+### [Debug Tools](debug-tools.md)
+
+Outils de débogage et développement dans l'interface admin.
+
 ---
 
 ## Quick Start Development
