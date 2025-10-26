@@ -19,17 +19,8 @@
 
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import type { Class, ClassSchedule, School } from '$lib/types/database';
+import type { School } from '$lib/types/database';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
-
-/**
- * Extended class type with additional computed data
- * Combines class info with student count and schedule entries
- */
-interface ClassWithData extends Class {
-	student_count: number;
-	schedules: ClassSchedule[];
-}
 
 /**
  * Load function - Fetches teacher's classes with student counts and schedules

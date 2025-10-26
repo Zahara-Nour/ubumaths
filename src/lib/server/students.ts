@@ -260,10 +260,11 @@ export async function getTeacherClassesWithStudents(
 	);
 
 	// Call optimized RPC function
+	// Note: p_is_test_mode parameter exists in the database but types may be stale
 	const { data, error } = await supabase.rpc('get_teacher_classes_with_students', {
 		p_teacher_id: userId,
 		p_is_test_mode: isTestMode
-	});
+	} as unknown as { p_teacher_id: string });
 
 	if (error) {
 		console.error('[getTeacherClassesWithStudents] Error fetching classes:', error);
@@ -272,7 +273,8 @@ export async function getTeacherClassesWithStudents(
 
 	console.log('[getTeacherClassesWithStudents] Fetched', data?.length || 0, 'classes');
 
-	return (data || []) as ClassWithStudents[];
+	// Cast is safe: RPC function returns the correct structure with students as StudentFull[]
+	return (data || []) as unknown as ClassWithStudents[];
 }
 
 /**
@@ -306,10 +308,11 @@ export async function getTeacherClassesWithCounts(
 	);
 
 	// Call optimized RPC function
+	// Note: p_is_test_mode parameter exists in the database but types may be stale
 	const { data, error } = await supabase.rpc('get_teacher_classes_with_data', {
 		p_teacher_id: userId,
 		p_is_test_mode: isTestMode
-	});
+	} as unknown as { p_teacher_id: string });
 
 	if (error) {
 		console.error('[getTeacherClassesWithCounts] Error fetching classes:', error);

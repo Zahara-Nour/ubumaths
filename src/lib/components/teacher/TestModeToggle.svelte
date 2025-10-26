@@ -21,7 +21,6 @@
 
 	import { testMode } from '$lib/stores/test-mode.svelte';
 	import { Badge } from '$lib/components/ui/badge';
-	import { goto, invalidateAll } from '$app/navigation';
 	import { teacherStudentsCache } from '$lib/stores/teacherStudentsCache.svelte';
 
 	// Props

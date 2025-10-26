@@ -199,7 +199,7 @@ export async function getUnreadNotifications(
 		conditions.push(`and(target_type.eq.role,target_roles.cs.{${profile.role}})`);
 
 		// By classes (if user has classes)
-		if (profile.class_ids.length > 0) {
+		if (profile.class_ids && profile.class_ids.length > 0) {
 			conditions.push(
 				`and(target_type.eq.classes,target_class_ids.ov.{${profile.class_ids.join(',')}})`
 			);
@@ -441,7 +441,7 @@ export async function getCreatedNotifications(
 					const { count } = await supabase
 						.from('profiles')
 						.select('*', { count: 'exact', head: true })
-						.in('role', n.target_roles);
+						.in('role', n.target_roles as ('student' | 'teacher' | 'admin')[]);
 					totalRecipients = count || 0;
 					targetSummary = n.target_roles.join(', ');
 				} else if (n.target_type === 'classes' && n.target_class_ids) {

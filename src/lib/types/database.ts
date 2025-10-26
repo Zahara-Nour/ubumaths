@@ -5503,3 +5503,20 @@ export const Constants = {
 		}
 	}
 } as const;
+
+// Commonly used type exports
+export type Profile = Tables<'profiles'>;
+export type UserRole = Database['public']['Enums']['user_role'];
+export type Notification = Tables<'notifications'>;
+export type NotificationRead = Tables<'notification_reads'>;
+
+// Notification-related types (defined as strings in the database)
+export type NotificationType = 'info' | 'alert' | 'announcement' | 'reminder';
+export type NotificationPriority = 'normal' | 'important' | 'urgent';
+export type NotificationTargetType = 'all' | 'roles' | 'classes' | 'users';
+export type SystemEventType =
+	| 'assessment_assigned'
+	| 'assessment_graded'
+	| 'class_joined'
+	| 'reward_earned'
+	| 'achievement_unlocked';
