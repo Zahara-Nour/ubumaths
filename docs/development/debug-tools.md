@@ -152,6 +152,79 @@ $ integral_a^b f(x) d x $
 
 **Documentation** : [typst.app/docs](https://typst.app/docs/)
 
+### LaTeX PDF
+
+**Nouveau** : Compilateur LaTeX en ligne avec aperçu PDF.
+
+**URL** : `/dashboard/admin/debug/latex-preview`
+
+**Fonctionnalités** :
+
+- Éditeur LaTeX avec auto-redimensionnement
+- Compilation serveur via TeXLive.net
+- Sélection du moteur (PDFLaTeX, LuaLaTeX, XeLaTeX, LaTeX, ConTeXt)
+- Auto-détection du moteur depuis commentaires `%!TEX`
+- Aperçu PDF intégré (navigateur natif)
+- Export PDF avec téléchargement
+- Affichage détaillé des logs de compilation en cas d'erreur
+- Exemples de syntaxe mathématique
+
+**Cas d'usage** :
+
+- Création de documents mathématiques complexes
+- Export de corrections au format PDF avec mise en page professionnelle
+- Test de formules LaTeX avant intégration
+- Génération de supports de cours avec packages LaTeX
+- Compilation de documents nécessitant des packages spécifiques (TikZ, pgfplots, etc.)
+
+**Moteurs disponibles** :
+
+- **PDFLaTeX** (défaut) : Compilation standard, compatible avec la plupart des packages
+- **LuaLaTeX** : Support Unicode natif, scripts Lua, polices système
+- **XeLaTeX** : Support Unicode, polices système, fontspec
+- **LaTeX** : Compilation classique avec DVI → PDF
+- **ConTeXt** : Système de composition alternatif
+
+**Syntaxe LaTeX** :
+
+```latex
+\documentclass{article}
+\usepackage{amsmath}
+
+\begin{document}
+
+\section{Équations}
+
+Equation inline : $E = mc^2$
+
+Equation centrée :
+\[ \int_a^b f(x) \, dx \]
+
+\end{document}
+```
+
+**Auto-détection du moteur** :
+
+Ajouter un commentaire en première ligne :
+
+```latex
+%!TEX lualatex
+
+\documentclass{article}
+% Le moteur LuaLaTeX sera automatiquement sélectionné
+```
+
+**Architecture technique** :
+
+- Server-side proxy (`/api/latex/compile`) pour éviter les problèmes CORS
+- Communication avec [TeXLive.net](https://texlive.net) pour la compilation
+- Détection automatique PDF vs log file via Content-Type
+- Affichage d'erreurs détaillées avec log de compilation
+
+**Service** : [TeXLive.net CGI](https://texlive.net)
+
+**Documentation** : [Learn LaTeX](https://www.learnlatex.org/)
+
 ---
 
 ## Ajout d'un Nouvel Outil

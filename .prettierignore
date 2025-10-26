@@ -13,3 +13,6 @@ prompt
 .claude/**
 docs/contributing/feature-template.md
 docs/guides/ui-components.md
+
+# External libraries (LaTeX CGI demo files)
+externe/
