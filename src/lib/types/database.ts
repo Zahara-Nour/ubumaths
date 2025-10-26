@@ -511,6 +511,76 @@ export type Database = {
 					}
 				];
 			};
+			exercises: {
+				Row: {
+					created_at: string;
+					created_by: string;
+					difficulty: number;
+					estimated_time_minutes: number | null;
+					grade_levels: string[] | null;
+					id: string;
+					solution_md: string;
+					source: string | null;
+					statement_md: string;
+					tags: string[];
+					title: string | null;
+					topic: string | null;
+					updated_at: string;
+				};
+				Insert: {
+					created_at?: string;
+					created_by: string;
+					difficulty: number;
+					estimated_time_minutes?: number | null;
+					grade_levels?: string[] | null;
+					id?: string;
+					solution_md: string;
+					source?: string | null;
+					statement_md: string;
+					tags?: string[];
+					title?: string | null;
+					topic?: string | null;
+					updated_at?: string;
+				};
+				Update: {
+					created_at?: string;
+					created_by?: string;
+					difficulty?: number;
+					estimated_time_minutes?: number | null;
+					grade_levels?: string[] | null;
+					id?: string;
+					solution_md?: string;
+					source?: string | null;
+					statement_md?: string;
+					tags?: string[];
+					title?: string | null;
+					topic?: string | null;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'exercises_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'exercises_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'exercises_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			error_logs: {
 				Row: {
 					browser_name: string | null;
