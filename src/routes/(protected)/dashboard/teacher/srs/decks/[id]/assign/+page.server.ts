@@ -8,6 +8,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getTeacherTestMode } from '$lib/server/test-mode';
+import { getTeacherClassesWithCounts } from '$lib/server/students';
 
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
 	const { session, user } = await safeGetSession();
@@ -62,32 +63,9 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 
 		console.log('Students found:', students?.length || 0);
 
-		// Fetch teacher's classes
-		const { data: classes, error: classesError } = await supabase
-			.from('classes')
-			.select('id, name, description')
-			.eq('teacher_id', user.id)
-			.order('name');
-
-		if (classesError) {
-			console.error('Error fetching classes:', classesError);
-		}
-
-		// For each class, count students filtered by test mode
-		const classesWithCounts = await Promise.all(
-			(classes || []).map(async (classItem) => {
-				const { count } = await supabase
-					.from('class_members')
-					.select('student_id, profiles!inner(is_test)', { count: 'exact', head: true })
-					.eq('class_id', classItem.id)
-					.eq('profiles.is_test', isTestMode);
-
-				return {
-					...classItem,
-					student_count: count || 0
-				};
-			})
-		);
+		// Use unified helper to get classes with student counts
+		// Automatically handles test mode filtering
+		const classesWithCounts = await getTeacherClassesWithCounts(user.id, supabase);
 
 		// Map students to match expected format
 		const mappedStudents = (students || []).map((s) => ({

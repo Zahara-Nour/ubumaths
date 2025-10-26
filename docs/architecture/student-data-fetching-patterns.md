@@ -480,21 +480,31 @@ const classesWithData = await getTeacherClassesWithCounts(user.id, supabase);
 - `src/lib/server/test-mode.ts` - Test mode helpers
 - `supabase/migrations/*_add_test_users_system.sql` - RPC functions
 
-### Refactored Pages (Using New Helpers)
+### Refactored Pages (Using New Helpers) ✅
 
-- `src/routes/(protected)/dashboard/teacher/rewards/+page.server.ts` ✅
-- `src/routes/(protected)/dashboard/+layout.server.ts` ✅
-- `src/routes/(protected)/dashboard/teacher/classes/+page.server.ts` ✅
-
-### Pages Still Using Direct Queries (Migration Pending)
-
+- `src/routes/(protected)/dashboard/teacher/rewards/+page.server.ts`
+- `src/routes/(protected)/dashboard/+layout.server.ts`
+- `src/routes/(protected)/dashboard/teacher/classes/+page.server.ts`
 - `src/routes/(protected)/dashboard/teacher/assessments/[id]/assign/+page.server.ts`
 - `src/routes/(protected)/dashboard/teacher/srs/decks/[id]/assign/+page.server.ts`
-- `src/lib/server/assessments.ts`
+
+### Pages Using Test Mode Filtering Correctly
+
+These pages use test mode filtering but not via helpers due to specialized queries:
+
+- `src/lib/server/assessments.ts` - Uses `isTestMode` parameter for specialized result queries
 
 ---
 
 ## Update Log
+
+**2025-10-26 (Late Evening)**: Phase 3 Migration Completed ✅
+
+- Migrated all remaining assignment pages to use unified helpers
+- Updated assessment assign page: `getTeacherClassesWithCounts()`
+- Updated SRS deck assign page: `getTeacherClassesWithCounts()`
+- **Total: 5 pages now using unified helpers** (100% of applicable pages)
+- Remaining test mode filtering in `assessments.ts` uses correct pattern for specialized queries
 
 **2025-10-26 (Evening)**: UI Enhancement
 

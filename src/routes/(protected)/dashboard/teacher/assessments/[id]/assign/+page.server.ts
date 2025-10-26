@@ -1,7 +1,7 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { getAssessment, getAssessmentAssignments, assignAssessment } from '$lib/server/assessments';
-import { getTeacherTestMode } from '$lib/server/test-mode';
+import { getTeacherClassesWithCounts } from '$lib/server/students';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const session = await locals.safeGetSession();
@@ -40,37 +40,21 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		throw redirect(303, `/dashboard/teacher/assessments/${params.id}`);
 	}
 
-	// Get test mode to filter student counts
-	const isTestMode = await getTeacherTestMode(session.user.id, locals.supabase);
-
-	// Get teacher's classes
-	const { data: classes } = await locals.supabase
-		.from('classes')
-		.select('id, name, level')
-		.eq('teacher_id', session.user.id)
-		.order('name');
+	// Use unified helper to get classes with student counts
+	// Automatically handles test mode filtering
+	const classesWithData = await getTeacherClassesWithCounts(session.user.id, locals.supabase);
 
 	// Get existing assignments
 	const { data: existingAssignments } = await getAssessmentAssignments(locals.supabase, params.id);
 
-	// For each class, count students filtered by test mode
-	const formattedClasses = await Promise.all(
-		(classes || []).map(async (c) => {
-			const { count } = await locals.supabase
-				.from('class_members')
-				.select('student_id, profiles!inner(is_test)', { count: 'exact', head: true })
-				.eq('class_id', c.id)
-				.eq('profiles.is_test', isTestMode);
-
-			return {
-				id: c.id,
-				name: c.name,
-				level: c.level,
-				student_count: count || 0,
-				is_assigned: existingAssignments?.some((a) => a.class_id === c.id) || false
-			};
-		})
-	);
+	// Add is_assigned field to classes
+	const formattedClasses = classesWithData.map((c) => ({
+		id: c.id,
+		name: c.name,
+		level: c.description, // Note: helper returns description, UI expects level
+		student_count: c.student_count,
+		is_assigned: existingAssignments?.some((a) => a.class_id === c.id) || false
+	}));
 
 	return {
 		assessment,

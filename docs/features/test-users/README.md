@@ -269,18 +269,23 @@ export async function getClassStudents(options) {
 
 The following pages have been refactored to use unified helper functions with automatic test mode filtering:
 
-### Phase 2 Complete ✅
+### Phase 2 & 3 Complete ✅
+
+All applicable teacher pages now use unified helpers:
 
 - `/dashboard/teacher/rewards/+page.server.ts` - Rewards management
 - `/dashboard/+layout.server.ts` - Teacher class dropdown
 - `/dashboard/teacher/classes/+page.server.ts` - Class schedule management
+- `/dashboard/teacher/assessments/[id]/assign/+page.server.ts` - Assessment assignment
+- `/dashboard/teacher/srs/decks/[id]/assign/+page.server.ts` - SRS deck assignment
 
-### Using Test Mode Filtering
+### Using Test Mode Filtering (Direct Implementation)
 
-- `/dashboard/teacher/assessments/[id]/assign/+page.server.ts`
-- `/dashboard/teacher/srs/decks/[id]/assign/+page.server.ts`
-- `/dashboard/teacher/riddles/+page.server.ts`
-- `/api/classes/[classId]/students/+server.ts`
+These pages use test mode filtering with direct queries (not via helpers):
+
+- `/dashboard/teacher/riddles/+page.server.ts` - Riddle statistics
+- `/api/classes/[classId]/students/+server.ts` - Student API endpoint
+- `src/lib/server/assessments.ts` - Assessment results (specialized queries)
 
 ---
 
