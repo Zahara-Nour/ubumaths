@@ -1,6 +1,7 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { getAssessment, getAssessmentAssignments, assignAssessment } from '$lib/server/assessments';
+import { getTeacherTestMode } from '$lib/server/test-mode';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const session = await locals.safeGetSession();
@@ -39,33 +40,37 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		throw redirect(303, `/dashboard/teacher/assessments/${params.id}`);
 	}
 
-	// Get teacher's classes with student counts
+	// Get test mode to filter student counts
+	const isTestMode = await getTeacherTestMode(session.user.id, locals.supabase);
+
+	// Get teacher's classes
 	const { data: classes } = await locals.supabase
 		.from('classes')
-		.select(
-			`
-			id,
-			name,
-			level,
-			class_members (
-				student_id
-			)
-		`
-		)
+		.select('id, name, level')
 		.eq('teacher_id', session.user.id)
 		.order('name');
 
 	// Get existing assignments
 	const { data: existingAssignments } = await getAssessmentAssignments(locals.supabase, params.id);
 
-	// Format classes with student count and assignment status
-	const formattedClasses = (classes || []).map((c) => ({
-		id: c.id,
-		name: c.name,
-		level: c.level,
-		student_count: c.class_members?.length || 0,
-		is_assigned: existingAssignments?.some((a) => a.class_id === c.id) || false
-	}));
+	// For each class, count students filtered by test mode
+	const formattedClasses = await Promise.all(
+		(classes || []).map(async (c) => {
+			const { count } = await locals.supabase
+				.from('class_members')
+				.select('student_id, profiles!inner(is_test)', { count: 'exact', head: true })
+				.eq('class_id', c.id)
+				.eq('profiles.is_test', isTestMode);
+
+			return {
+				id: c.id,
+				name: c.name,
+				level: c.level,
+				student_count: count || 0,
+				is_assigned: existingAssignments?.some((a) => a.class_id === c.id) || false
+			};
+		})
+	);
 
 	return {
 		assessment,

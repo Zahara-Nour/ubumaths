@@ -490,10 +490,13 @@ export async function validateAttempt(
 /**
  * Get results for an assessment (teacher view)
  * Uses the assessment_results view
+ *
+ * @param isTestMode - If true, only include test students; if false, only real students
  */
 export async function getAssessmentResults(
 	supabase: TypedSupabaseClient,
-	assessmentId: string
+	assessmentId: string,
+	isTestMode: boolean = false
 ): Promise<{ data: DbAssessmentResult[] | null; error: Error | null }> {
 	// First get all assignments for this assessment
 	const { data: assignments, error: assignError } = await supabase
@@ -518,8 +521,9 @@ export async function getAssessmentResults(
 		if (assignment.class_id) {
 			const { data: classMembers } = await supabase
 				.from('class_members')
-				.select('student_id, profiles:profiles!student_id(id, firstname, lastname)')
-				.eq('class_id', assignment.class_id);
+				.select('student_id, profiles:profiles!student_id(id, firstname, lastname, is_test)')
+				.eq('class_id', assignment.class_id)
+				.eq('profiles.is_test', isTestMode);
 
 			for (const member of classMembers || []) {
 				const result = await getStudentAssignmentResult(
@@ -527,7 +531,8 @@ export async function getAssessmentResults(
 					assignment.id,
 					assessmentId,
 					member.student_id,
-					assignment.class_id
+					assignment.class_id,
+					isTestMode
 				);
 				if (result) results.push(result);
 			}
@@ -539,7 +544,8 @@ export async function getAssessmentResults(
 				assignment.id,
 				assessmentId,
 				assignment.student_id,
-				null
+				null,
+				isTestMode
 			);
 			if (result) results.push(result);
 		}
@@ -556,7 +562,8 @@ async function getStudentAssignmentResult(
 	assignmentId: string,
 	assessmentId: string,
 	studentId: string,
-	classId: string | null
+	classId: string | null,
+	isTestMode: boolean = false
 ): Promise<DbAssessmentResult | null> {
 	// Get assessment info
 	const { data: assessment } = await supabase
@@ -565,11 +572,12 @@ async function getStudentAssignmentResult(
 		.eq('id', assessmentId)
 		.single();
 
-	// Get student info
+	// Get student info - filter by is_test to ensure data isolation
 	const { data: student } = await supabase
 		.from('profiles')
-		.select('id, firstname, lastname')
+		.select('id, firstname, lastname, is_test')
 		.eq('id', studentId)
+		.eq('is_test', isTestMode)
 		.single();
 
 	// Get class info if applicable
@@ -627,12 +635,15 @@ async function getStudentAssignmentResult(
 
 /**
  * Get assessment statistics
+ *
+ * @param isTestMode - If true, only include test students; if false, only real students
  */
 export async function getAssessmentStatistics(
 	supabase: TypedSupabaseClient,
-	assessmentId: string
+	assessmentId: string,
+	isTestMode: boolean = false
 ): Promise<{ data: AssessmentStatistics | null; error: Error | null }> {
-	const { data: results, error } = await getAssessmentResults(supabase, assessmentId);
+	const { data: results, error } = await getAssessmentResults(supabase, assessmentId, isTestMode);
 
 	if (error || !results) {
 		return { data: null, error };
@@ -675,12 +686,15 @@ export async function getAssessmentStatistics(
 
 /**
  * Get class-level statistics for an assessment
+ *
+ * @param isTestMode - If true, only include test students; if false, only real students
  */
 export async function getClassStatistics(
 	supabase: TypedSupabaseClient,
-	assessmentId: string
+	assessmentId: string,
+	isTestMode: boolean = false
 ): Promise<{ data: ClassAssessmentStatistics[] | null; error: Error | null }> {
-	const { data: results, error } = await getAssessmentResults(supabase, assessmentId);
+	const { data: results, error } = await getAssessmentResults(supabase, assessmentId, isTestMode);
 
 	if (error || !results) {
 		return { data: null, error };

@@ -7,6 +7,7 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { getTeacherTestMode } from '$lib/server/test-mode';
 
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
 	const { session, user } = await safeGetSession();
@@ -44,11 +45,15 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			updatedAt: deck.updated_at
 		};
 
-		// Fetch teacher's students (all students in the system for now)
+		// Get test mode to filter students
+		const isTestMode = await getTeacherTestMode(user.id, supabase);
+
+		// Fetch teacher's students filtered by test mode
 		const { data: students, error: studentsError } = await supabase
 			.from('profiles')
-			.select('id, firstname, lastname, email, role')
+			.select('id, firstname, lastname, email, role, is_test')
 			.eq('role', 'student')
+			.eq('is_test', isTestMode)
 			.order('lastname');
 
 		if (studentsError) {
@@ -68,13 +73,14 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			console.error('Error fetching classes:', classesError);
 		}
 
-		// For each class, count students
+		// For each class, count students filtered by test mode
 		const classesWithCounts = await Promise.all(
 			(classes || []).map(async (classItem) => {
 				const { count } = await supabase
 					.from('class_members')
-					.select('*', { count: 'exact', head: true })
-					.eq('class_id', classItem.id);
+					.select('student_id, profiles!inner(is_test)', { count: 'exact', head: true })
+					.eq('class_id', classItem.id)
+					.eq('profiles.is_test', isTestMode);
 
 				return {
 					...classItem,

@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
+import { getTeacherTestMode } from '$lib/server/test-mode';
 
 /**
  * Load riddle statistics for teacher
@@ -10,6 +11,9 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		throw redirect(303, '/login');
 	}
 
+	// Get test mode to filter students
+	const isTestMode = await getTeacherTestMode(session.user.id, supabase);
+
 	// Overview stats
 	const { data: riddles } = await supabase
 		.from('riddles')
@@ -19,17 +23,19 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	const totalRiddles = riddles?.length || 0;
 	const publishedRiddles = riddles?.filter((r) => r.status === 'published').length || 0;
 
-	// Pending validations count
+	// Pending validations count - filtered by test mode
 	const { data: pendingValidations } = await supabase
 		.from('riddle_attempts')
 		.select(
 			`
 			id,
-			riddle:riddles!inner(created_by)
+			riddle:riddles!inner(created_by),
+			student:profiles!riddle_attempts_student_id_fkey(is_test)
 		`
 		)
 		.is('is_correct', null)
-		.eq('riddles.created_by', session.user.id);
+		.eq('riddles.created_by', session.user.id)
+		.eq('profiles.is_test', isTestMode);
 
 	const pendingCount = pendingValidations?.length || 0;
 
@@ -40,7 +46,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.eq('created_by', session.user.id)
 		.order('total_attempts', { ascending: false });
 
-	// Top students for this teacher's riddles
+	// Top students for this teacher's riddles - filtered by test mode
 	const { data: studentStats } = await supabase
 		.from('riddle_attempts')
 		.select(
@@ -50,11 +56,12 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 			attempt_number,
 			gidouilles_awarded,
 			riddle:riddles!inner(created_by),
-			student:profiles!riddle_attempts_student_id_fkey(id, firstname, lastname, avatar_url)
+			student:profiles!riddle_attempts_student_id_fkey(id, firstname, lastname, avatar_url, is_test)
 		`
 		)
 		.eq('riddles.created_by', session.user.id)
-		.eq('is_correct', true);
+		.eq('is_correct', true)
+		.eq('profiles.is_test', isTestMode);
 
 	// Aggregate by student
 	const studentMap = new Map();

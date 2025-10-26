@@ -74,6 +74,7 @@
 	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
 	import SkeletonForm from '$lib/components/skeleton/SkeletonForm.svelte';
 	import { getSkeletonType } from '$lib/utils/skeleton-detector';
+	import TestModeToggle from '$lib/components/teacher/TestModeToggle.svelte';
 
 	// PROPS RECEIVED FROM PARENT LAYOUT SERVER LOAD:
 	// - data: Contains profile from +layout.server.ts
@@ -254,6 +255,11 @@
 
 			<!-- Spacer -->
 			<div class="flex-1"></div>
+
+			<!-- Test Mode Toggle (teachers only) -->
+			{#if data.profile.role === 'teacher'}
+				<TestModeToggle currentUserIsTest={data.profile.is_test} />
+			{/if}
 
 			<!-- Right side: Controls -->
 			<div class="border-l pl-2">

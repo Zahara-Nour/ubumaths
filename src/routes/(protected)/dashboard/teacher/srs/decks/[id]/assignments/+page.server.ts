@@ -7,6 +7,7 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { getTeacherTestMode } from '$lib/server/test-mode';
 
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
 	const { session, user } = await safeGetSession();
@@ -44,6 +45,9 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			updatedAt: deck.updated_at
 		};
 
+		// Get test mode to filter assignments
+		const isTestMode = await getTeacherTestMode(user.id, supabase);
+
 		// Fetch assignments for this deck
 		const { data: assignments, error: assignmentsError } = await supabase
 			.from('srs_deck_assignments')
@@ -58,11 +62,12 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		// Get student details and their deck copies
 		const assignmentsWithDetails = await Promise.all(
 			(assignments || []).map(async (assignment) => {
-				// Get student profile
+				// Get student profile - filter by test mode
 				const { data: student } = await supabase
 					.from('profiles')
-					.select('id, firstname, lastname, email, avatar_url')
+					.select('id, firstname, lastname, email, avatar_url, is_test')
 					.eq('id', assignment.assigned_to)
+					.eq('is_test', isTestMode)
 					.single();
 
 				// Check if student has the deck copy

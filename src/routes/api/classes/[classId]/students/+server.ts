@@ -1,5 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { getTeacherTestMode } from '$lib/server/test-mode';
 
 /**
  * GET /api/classes/[classId]/students
@@ -15,6 +16,11 @@ import type { RequestHandler } from './$types';
  * - Verifies user is authenticated
  * - Verifies user is a teacher or admin
  * - For teachers: verifies they own the class
+ *
+ * TEST MODE FILTERING:
+ * - Respects teacher's test mode preference
+ * - Only returns test students when test mode is ON
+ * - Only returns real students when test mode is OFF
  *
  * RETURNS:
  * Array of students with fields based on 'full' parameter
@@ -73,7 +79,14 @@ export const GET: RequestHandler = async ({
 			}
 		}
 
+		// Get teacher's test mode (admins default to false - see real students)
+		const isTestMode =
+			profile.role === 'teacher' ? await getTeacherTestMode(user.id, supabase) : false;
+
+		console.log('[API /api/classes/students] Test mode:', isTestMode, 'for user:', user.id);
+
 		// Build select query based on 'full' parameter
+		// IMPORTANT: Always include is_test field for filtering
 		const selectFields = full
 			? `
 				student_id,
@@ -86,7 +99,8 @@ export const GET: RequestHandler = async ({
 					gidouilles,
 					vip_cards,
 					role,
-					gender
+					gender,
+					is_test
 				)
 			`
 			: `
@@ -95,19 +109,24 @@ export const GET: RequestHandler = async ({
 					id,
 					firstname,
 					lastname,
-					avatar_url
+					avatar_url,
+					is_test
 				)
 			`;
 
-		// Fetch students in this class
+		// Fetch students in this class, filtered by test mode
 		const { data: members, error: membersError } = await supabase
 			.from('class_members')
 			.select(selectFields)
-			.eq('class_id', classId);
+			.eq('class_id', classId)
+			.eq('profiles.is_test', isTestMode); // Filter by test mode
 
 		if (membersError) {
+			console.error('[API /api/classes/students] Query error:', membersError);
 			throw error(500, 'Failed to fetch class members');
 		}
+
+		console.log('[API /api/classes/students] Fetched', members?.length || 0, 'students');
 
 		// Transform members to students array
 		const students = (members || [])

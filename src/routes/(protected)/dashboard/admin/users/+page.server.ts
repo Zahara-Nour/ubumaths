@@ -77,6 +77,7 @@ export const actions: Actions = {
 		const schoolId = formData.get('school_id') as string;
 		const avatarUrl = formData.get('avatar_url') as string;
 		const gender = formData.get('gender') as 'boy' | 'girl' | '';
+		const isTest = formData.get('is_test') === 'on'; // Checkbox value
 
 		if (!userId) {
 			return fail(400, { message: 'User ID is required' });
@@ -90,7 +91,8 @@ export const actions: Actions = {
 			role,
 			school_id: schoolId || null,
 			avatar_url: avatarUrl || null,
-			gender: gender || null
+			gender: gender || null,
+			is_test: isTest
 		};
 
 		const { error: updateError } = await supabase

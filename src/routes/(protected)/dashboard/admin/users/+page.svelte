@@ -35,6 +35,9 @@
 	let selectedClassFilter = $state<string>(''); // Currently selected class ID for filtering
 	let searchTimeout: NodeJS.Timeout | null = null; // Debounce timer for search
 
+	// Test filter state
+	let testFilter = $state<'all' | 'real' | 'test'>('all'); // Filter for test vs real users
+
 	// User selection and editing state
 	let selectedUser = $state<unknown>(null); // Currently viewed user
 	let editedUser = $state<unknown>({}); // Copy of user being edited
@@ -79,6 +82,13 @@
 	}
 
 	/**
+	 * Get Tailwind classes for test user badge
+	 */
+	function getTestBadgeClass(): string {
+		return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+	}
+
+	/**
 	 * Convert array of class IDs to array of class names
 	 * Filters out any IDs that don't match existing classes
 	 */
@@ -90,6 +100,26 @@
 			.map((id) => data.classes.find((c) => c.id === id)?.name)
 			.filter((name): name is string => !!name);
 	}
+
+	/**
+	 * Apply test filter to a list of users
+	 */
+	function applyTestFilter(users: unknown[]): unknown[] {
+		if (testFilter === 'all') return users;
+		if (testFilter === 'test') return users.filter((u) => u.is_test === true);
+		if (testFilter === 'real') return users.filter((u) => u.is_test === false);
+		return users;
+	}
+
+	/**
+	 * Get filtered search results based on test filter
+	 */
+	let filteredSearchResults = $derived(applyTestFilter(searchResults));
+
+	/**
+	 * Get filtered class results based on test filter
+	 */
+	let filteredClassResults = $derived(applyTestFilter(classResults));
 
 	/**
 	 * Search Handlers
@@ -361,23 +391,40 @@
 					</Card.Content>
 				</Card.Root>
 
+				<!-- Test Filter -->
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Filtrer par type</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<select
+							bind:value={testFilter}
+							class="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
+						>
+							<option value="all">Tous les utilisateurs</option>
+							<option value="real">Réels uniquement</option>
+							<option value="test">Test uniquement</option>
+						</select>
+					</Card.Content>
+				</Card.Root>
+
 				<!-- Search Results List -->
-				{#if searchResults.length > 0 || classResults.length > 0}
+				{#if filteredSearchResults.length > 0 || filteredClassResults.length > 0}
 					<Card.Root>
 						<Card.Header>
 							<Card.Title>
-								{#if searchResults.length > 0}
-									Résultats de recherche ({searchResults.length})
-								{:else if classResults.length > 0}
+								{#if filteredSearchResults.length > 0}
+									Résultats de recherche ({filteredSearchResults.length})
+								{:else if filteredClassResults.length > 0}
 									{@const className =
 										data.classes.find((c) => c.id === selectedClassFilter)?.name || 'Classe'}
-									Étudiants de {className} ({classResults.length})
+									Étudiants de {className} ({filteredClassResults.length})
 								{/if}
 							</Card.Title>
 						</Card.Header>
 						<Card.Content>
 							<div class="max-h-96 space-y-2 overflow-y-auto">
-								{#each searchResults.length > 0 ? searchResults : classResults as user (user.id)}
+								{#each filteredSearchResults.length > 0 ? filteredSearchResults : filteredClassResults as user (user.id)}
 									<button
 										type="button"
 										onclick={() => selectUser(user)}
@@ -402,7 +449,12 @@
 												</p>
 												<p class="truncate text-xs text-muted-foreground">{user.email}</p>
 											</div>
-											<Badge class={getRoleBadgeClass(user.role)}>{user.role}</Badge>
+											<div class="flex gap-1">
+												<Badge class={getRoleBadgeClass(user.role)}>{user.role}</Badge>
+												{#if user.is_test}
+													<Badge class={getTestBadgeClass()}>TEST</Badge>
+												{/if}
+											</div>
 										</div>
 									</button>
 								{/each}
@@ -589,6 +641,29 @@
 											<Badge class={getRoleBadgeClass(selectedUser.role) + ' mt-1'}>
 												{selectedUser.role}
 											</Badge>
+										{/if}
+									</div>
+
+									<!-- Test User -->
+									<div>
+										<Label for="is_test">Utilisateur de test</Label>
+										{#if isEditing}
+											<div class="mt-2 flex items-center gap-2">
+												<input
+													type="checkbox"
+													id="is_test"
+													name="is_test"
+													bind:checked={editedUser.is_test}
+													class="h-4 w-4 rounded border-border text-primary focus:ring-2 focus:ring-ring"
+												/>
+												<label for="is_test" class="text-sm text-muted-foreground">
+													Marquer comme utilisateur de test
+												</label>
+											</div>
+										{:else if selectedUser.is_test}
+											<Badge class={getTestBadgeClass() + ' mt-1'}>TEST</Badge>
+										{:else}
+											<p class="mt-1 text-sm text-muted-foreground">Non</p>
 										{/if}
 									</div>
 

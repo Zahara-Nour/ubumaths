@@ -20,6 +20,7 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { Class, ClassSchedule, School } from '$lib/types/database';
+import { getTeacherClassesWithCounts } from '$lib/server/students';
 
 /**
  * Extended class type with additional computed data
@@ -59,19 +60,9 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 		throw error(403, 'Only teachers can access this page');
 	}
 
-	// Fetch all active classes owned by this teacher
-	// Ordered by name for consistent display
-	const { data: classes, error: classesError } = await supabase
-		.from('classes')
-		.select('*')
-		.eq('teacher_id', user.id)
-		.eq('is_active', true)
-		.order('name');
-
-	if (classesError) {
-		console.error('Error loading classes:', classesError);
-		throw error(500, 'Failed to load classes');
-	}
+	// Use unified helper to fetch classes with counts and schedules
+	// Automatically handles test mode filtering
+	const classesWithData = await getTeacherClassesWithCounts(user.id, supabase);
 
 	// Fetch school timetable (needed for period selection in schedule modal)
 	let school: School | null = null;
@@ -88,43 +79,6 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 			school = schoolData;
 		}
 	}
-
-	// For each class, fetch student count and schedule entries
-	// Uses Promise.all for parallel fetching (better performance)
-	const classesWithData: ClassWithData[] = await Promise.all(
-		(classes || []).map(async (classItem) => {
-			// Count students in this class via class_members table
-			// Using count: 'exact' with head: true for efficient counting
-			const { count, error: countError } = await supabase
-				.from('class_members')
-				.select('*', { count: 'exact', head: true })
-				.eq('class_id', classItem.id);
-
-			if (countError) {
-				console.error(`Error counting students for class ${classItem.id}:`, countError);
-			}
-
-			// Fetch all schedule entries for this class
-			// Ordered by day (Sunday-Thursday) then time for logical display
-			const { data: schedules, error: schedulesError } = await supabase
-				.from('class_schedules')
-				.select('*')
-				.eq('class_id', classItem.id)
-				.order('day_of_week')
-				.order('start_time');
-
-			if (schedulesError) {
-				console.error(`Error loading schedules for class ${classItem.id}:`, schedulesError);
-			}
-
-			// Combine class data with computed values
-			return {
-				...classItem,
-				student_count: count || 0,
-				schedules: (schedules || []) as ClassSchedule[]
-			};
-		})
-	);
 
 	return {
 		classes: classesWithData,

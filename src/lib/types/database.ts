@@ -3346,6 +3346,7 @@ export type Database = {
 					gidouilles: number;
 					grade: string | null;
 					id: string;
+					is_test: boolean;
 					lastname: string | null;
 					role: Database['public']['Enums']['user_role'];
 					school_id: string | null;
@@ -3363,6 +3364,7 @@ export type Database = {
 					gidouilles?: number;
 					grade?: string | null;
 					id: string;
+					is_test?: boolean;
 					lastname?: string | null;
 					role?: Database['public']['Enums']['user_role'];
 					school_id?: string | null;
@@ -3380,6 +3382,7 @@ export type Database = {
 					gidouilles?: number;
 					grade?: string | null;
 					id?: string;
+					is_test?: boolean;
 					lastname?: string | null;
 					role?: Database['public']['Enums']['user_role'];
 					school_id?: string | null;
@@ -4522,6 +4525,27 @@ export type Database = {
 						referencedColumns: ['student_id'];
 					}
 				];
+			};
+			user_preferences: {
+				Row: {
+					created_at: string;
+					test_mode_enabled: boolean;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					created_at?: string;
+					test_mode_enabled?: boolean;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					created_at?: string;
+					test_mode_enabled?: boolean;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [];
 			};
 		};
 		Views: {

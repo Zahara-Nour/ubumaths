@@ -32,6 +32,7 @@
 
 import type { LayoutServerLoad } from './$types';
 import { createLogger } from '$lib/utils/logger';
+import { getTeacherClassesWithCounts } from '$lib/server/students';
 
 const logger = createLogger('dashboard/+layout.server.ts');
 
@@ -75,38 +76,15 @@ export const load: LayoutServerLoad = async ({ parent, locals }) => {
 	if (profile.role === 'teacher') {
 		const { supabase } = locals;
 
-		// Single optimized query that fetches classes with student counts and schedules
-		// Uses a database function for efficient aggregation
-		const { data: classesData, error: classesError } = await supabase.rpc(
-			'get_teacher_classes_with_data',
-			{
-				p_teacher_id: profile.id
-			}
-		);
+		// Get teacher's classes with student counts and schedules
+		// Uses unified helper that handles test mode filtering automatically
+		try {
+			teacherClasses = await getTeacherClassesWithCounts(profile.id, supabase);
+		} catch (err) {
+			logger.error('Error fetching teacher classes:', err);
 
-		if (classesError) {
-			logger.error('Error fetching teacher classes:', classesError);
-
-			// Fallback to old method if RPC fails (backward compatibility)
-			const { data: classes, error: fallbackError } = await supabase
-				.from('classes')
-				.select('*')
-				.eq('teacher_id', profile.id)
-				.eq('is_active', true)
-				.order('name');
-
-			if (fallbackError) {
-				logger.error('Fallback query also failed:', fallbackError);
-			} else if (classes) {
-				// Use fallback with empty counts/schedules
-				teacherClasses = classes.map((cls) => ({
-					...cls,
-					student_count: 0,
-					schedules: []
-				}));
-			}
-		} else if (classesData) {
-			teacherClasses = classesData;
+			// Fallback to empty array on error
+			teacherClasses = [];
 		}
 	}
 

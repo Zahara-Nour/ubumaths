@@ -2,6 +2,7 @@ import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { Profile, Class } from '$lib/types/database';
 import type { StudentVipCards } from '$lib/types/vip-card';
+import { getTeacherClassesWithStudents } from '$lib/server/students';
 
 // Type pour les élèves avec leurs gidouilles
 export interface StudentWithGidouilles extends Profile {
@@ -10,6 +11,7 @@ export interface StudentWithGidouilles extends Profile {
 
 // Load function: Récupère les classes du professeur avec leurs élèves
 export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
+	console.log('[Rewards Page] Load function called');
 	// Get user and profile from parent (protected) layout
 	const { user, profile } = await parent();
 
@@ -30,18 +32,14 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 	 *
 	 * For 3 classes: 7 queries → 1 query (85% reduction)
 	 * Expected speedup: 60-70% faster page load
+	 *
+	 * TEST MODE FILTERING (2025-10-26):
+	 * ==================================
+	 * Teachers can toggle test mode to see only test or only real students.
+	 * Test teachers (is_test = true) always see test students.
+	 * Now using unified helper function for consistent filtering.
 	 */
-	const { data: classesWithStudents, error: classesError } = await supabase.rpc(
-		'get_teacher_classes_with_students',
-		{
-			p_teacher_id: user.id
-		}
-	);
-
-	if (classesError) {
-		console.error('Error loading classes with students:', classesError);
-		throw error(500, 'Failed to load classes');
-	}
+	const classesWithStudents = await getTeacherClassesWithStudents(user.id, supabase);
 
 	return {
 		classes: classesWithStudents as Array<

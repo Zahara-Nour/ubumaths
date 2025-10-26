@@ -20,6 +20,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Fetch all assessments (not filtered by status)
+	// NOTE: Assessment listing is NOT filtered by test mode - teachers can see all their assessments
+	// Test mode filtering only applies to students/results shown for each assessment
 	const { data: assessments, error } = await getTeacherAssessments(
 		locals.supabase,
 		session.user.id

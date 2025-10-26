@@ -5,6 +5,7 @@ import {
 	getAssessmentResults,
 	getAssessmentStatistics
 } from '$lib/server/assessments';
+import { getTeacherTestMode } from '$lib/server/test-mode';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const session = await locals.safeGetSession();
@@ -38,10 +39,14 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		throw error(403, 'Non autorisé');
 	}
 
-	// Fetch results
+	// Get test mode to filter results
+	const isTestMode = await getTeacherTestMode(session.user.id, locals.supabase);
+
+	// Fetch results - filtered by test mode
 	const { data: results, error: resultsError } = await getAssessmentResults(
 		locals.supabase,
-		params.id
+		params.id,
+		isTestMode
 	);
 
 	if (resultsError) {
@@ -53,8 +58,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		};
 	}
 
-	// Fetch statistics
-	const { data: statistics } = await getAssessmentStatistics(locals.supabase, params.id);
+	// Fetch statistics - filtered by test mode
+	const { data: statistics } = await getAssessmentStatistics(
+		locals.supabase,
+		params.id,
+		isTestMode
+	);
 
 	return {
 		assessment,
