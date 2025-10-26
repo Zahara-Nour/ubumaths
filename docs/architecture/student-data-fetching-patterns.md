@@ -411,6 +411,156 @@ const classesWithData = await getTeacherClassesWithCounts(user.id, supabase);
 
 ---
 
+## ⚡ Caching Strategy: Server vs Client
+
+### Important: Helper Functions DO NOT Use Cache
+
+The unified helper functions (`getClassStudents`, `getTeacherClassesWithStudents`, etc.) are **server-side utilities** that **always query the database directly**. They do NOT check or use any cache.
+
+### Two Separate Systems
+
+#### 1. Server-Side Helpers (NO Cache) ❌
+
+**Location**: `src/lib/server/students.ts`
+**Used In**: `+page.server.ts` files (SSR)
+**Caching**: None - always queries database
+
+```typescript
+// Server-side - NO cache
+import { getClassStudents } from '$lib/server/students';
+
+export const load: PageServerLoad = async ({ params, parent, locals }) => {
+	const { user } = await parent();
+
+	// This ALWAYS queries the database (no cache check)
+	const students = await getClassStudents({
+		classId: params.classId,
+		userId: user.id,
+		supabase: locals.supabase
+	});
+
+	return { students };
+};
+```
+
+**Purpose**:
+
+- ✅ Consistent test mode filtering
+- ✅ Prevent N+1 query patterns
+- ✅ Single source of truth for database queries
+- ✅ Type safety
+- ❌ NOT caching (that's a separate concern)
+
+#### 2. Client-Side Cache (HAS Cache) ✅
+
+**Location**: `src/lib/stores/teacherStudentsCache.svelte.ts`
+**Used In**: `+page.svelte` files (client components)
+**Caching**: Yes - checks cache before fetching
+
+```typescript
+// Client-side - WITH cache
+import { teacherStudentsCache } from '$lib/stores/teacherStudentsCache.svelte';
+
+async function loadStudents(classId: string) {
+	// This checks cache FIRST, then fetches if needed
+	const students = await teacherStudentsCache.getStudents(classId);
+
+	// Cache flow:
+	// 1. Check if classId is in cache
+	// 2. If cached: return immediately (instant)
+	// 3. If not cached: fetch from /api/classes/{classId}/students
+	// 4. Store result in cache for future calls
+	// 5. Return students
+}
+```
+
+**Purpose**:
+
+- ✅ Reduce redundant API calls
+- ✅ Instant data on component re-mount
+- ✅ Deduplication (multiple requests = single API call)
+- ✅ Smart invalidation (clear on mutations)
+
+### When Cache Is Used
+
+| Where             | What                                 | Cache? | Reason                           |
+| ----------------- | ------------------------------------ | ------ | -------------------------------- |
+| `+page.server.ts` | `getClassStudents()`                 | ❌ No  | SSR - fresh data each request    |
+| `+page.svelte`    | `teacherStudentsCache.getStudents()` | ✅ Yes | Client - reuse across components |
+| API endpoint      | `/api/classes/[classId]/students`    | ❌ No  | Called by cache on miss          |
+| RPC functions     | `get_teacher_classes_with_*`         | ❌ No  | Database-level optimization      |
+
+### Why Helper Functions Don't Cache
+
+1. **Server-side execution**: Runs on server during SSR, no persistent state
+2. **Fresh data guarantee**: Each page load gets latest data from database
+3. **Simple architecture**: Caching is a client-side optimization concern
+4. **Different lifecycles**: Server functions run per-request, cache is per-session
+5. **Database optimized**: RPC functions already provide query optimization
+
+### Cache Invalidation
+
+The client-side cache is automatically cleared when:
+
+```typescript
+// Test mode toggle (clears entire cache)
+testMode.toggle();
+await fetch('/api/test-mode', { method: 'POST', ... });
+teacherStudentsCache.clear(); // ← Clears all cached classes
+window.location.reload();
+
+// After mutations (clears specific class)
+await awardGidouilles(studentId, amount);
+teacherStudentsCache.invalidate(classId); // ← Clears one class
+
+// Manual clear (e.g., on logout)
+teacherStudentsCache.clear();
+```
+
+### Best Practices
+
+**Use Server-Side Helpers When:**
+
+- ✅ Loading data in `+page.server.ts` or `+layout.server.ts`
+- ✅ Initial page render (SSR)
+- ✅ You need fresh data every time
+- ✅ Building API endpoints
+
+**Use Client-Side Cache When:**
+
+- ✅ Loading data in `+page.svelte` or components
+- ✅ Modal/dialog that opens repeatedly
+- ✅ Interactive components (Wheel, dropdowns)
+- ✅ Data shared across multiple components
+
+**Example: Best of Both Worlds**
+
+```typescript
+// +page.server.ts - Initial load (server-side, no cache)
+import { getTeacherClassesWithCounts } from '$lib/server/students';
+
+export const load: PageServerLoad = async ({ parent, locals }) => {
+  const { user } = await parent();
+  const classes = await getTeacherClassesWithCounts(user.id, locals.supabase);
+  return { classes };
+};
+
+// +page.svelte - Interactive modal (client-side, with cache)
+<script lang="ts">
+  import { teacherStudentsCache } from '$lib/stores/teacherStudentsCache.svelte';
+
+  let { data } = $props();
+
+  async function openWheelModal(classId: string) {
+    // Uses cache - instant if already loaded
+    const students = await teacherStudentsCache.getStudents(classId);
+    showWheel(students);
+  }
+</script>
+```
+
+---
+
 ## Recommended Action Plan
 
 ### Phase 1: Documentation (Immediate)
