@@ -168,14 +168,14 @@ src/lib/questions/
     { type: 'text', content: 'Solve: $${{a}}x + {{b}} = {{c}}$$' }
   ],
   variables: [
-    { name: 'a', expression: '{#:2-9}' },
-    { name: 'b', expression: '{#:-20-20!0}' },
-    { name: 'c', expression: '{#:-20-20!{@:b}}' },
-    { name: 'solution', expression: '{eval:({@:c}-{@:b})/{@:a}}' },
-    { name: 'wrong1', expression: '{eval:({@:c}+{@:b})/{@:a}}' }
+    { name: 'a', expression: '{{2-9}}' },
+    { name: 'b', expression: '{{-20-20!0}}' },
+    { name: 'c', expression: '{{-20-20!{{b}}}}' },
+    { name: 'solution', expression: '{{eval:({{c}}-{{b}})/{{a}}}}' },
+    { name: 'wrong1', expression: '{{eval:({{c}}+{{b}})/{{a}}}}' }
   ],
   answer: '0',  // Index of correct choice
-  choices: ['x = {@:solution}', 'x = {@:wrong1}', ...],
+  choices: ['x = {{solution}}', 'x = {{wrong1}}', ...],
   multiple_answers: false,
   grades: ['3', '2']
 }
@@ -351,70 +351,70 @@ WHERE title IS NULL;
 
 ### Syntax Reference
 
-#### Variable References: `{@:varName}`
+#### Variable References: `{{varName}}`
 
 ```typescript
 // Reference previously defined variables
-{ name: 'a', expression: '{#:1-10}' },
-{ name: 'b', expression: '{@:a} + 5' }  // b = a + 5
+{ name: 'a', expression: '{{1-10}}' },
+{ name: 'b', expression: '{{a}} + 5' }  // b = a + 5
 ```
 
-#### Random Numbers: `{#:...}`
+#### Random Numbers: `{{...}}`
 
 **Integer Range**:
 
 ```typescript
-{#:1-10}           // Random integer from 1 to 10
-{#:{@:min}-{@:max}}  // Variable bounds
+{{1-10}}           // Random integer from 1 to 10
+{{{{min}}-{{max}}}}  // Variable bounds
 ```
 
 **Decimal by Range**:
 
 ```typescript
-{#:0.5-9.99:0.01}  // Random decimal with step
-{#:1.5-10.5:0.5}   // Step of 0.5
+{{0.5-9.99:0.01}}  // Random decimal with step
+{{1.5-10.5:0.5}}   // Step of 0.5
 ```
 
 **Decimal by Digits**:
 
 ```typescript
-{#:2.3}            // 2 digits before, 3 after decimal
-{#:{@:before}.{@:after}}  // Variable digits
+{{2.3}}            // 2 digits before, 3 after decimal
+{{{{before}}.{{after}}}}  // Variable digits
 ```
 
 **With Exclusions**:
 
 ```typescript
-{#:1-50!5}         // Exclude 5
-{#:1-50!5,7-9}     // Exclude 5, 7, 8, 9
-{#:1-100!{@:a},{@:b}-{@:c}}  // Exclude variables and ranges
+{{1-50!5}}         // Exclude 5
+{{1-50!5,7-9}}     // Exclude 5, 7, 8, 9
+{{1-100!{{a}},{{b}}-{{c}}}}  // Exclude variables and ranges
 ```
 
-#### Mathematical Evaluation: `{eval:expression}`
+#### Mathematical Evaluation: `{{eval:expression}}`
 
 ```typescript
-{eval:2+3}         // Returns "5"
-{eval:{@:a}^2}     // Square of variable a
-{eval:sqrt({@:a}^2+{@:b}^2)}  // Pythagorean theorem
-{eval:({@:c}-{@:b})/{@:a}}    // Complex expression
+{{eval:2+3}}         // Returns "5"
+{{eval:{{a}}^2}}     // Square of variable a
+{{eval:sqrt({{a}}^2+{{b}}^2)}}  // Pythagorean theorem
+{{eval:({{c}}-{{b}})/{{a}}}}    // Complex expression
 ```
 
-**Important:** All variable references (`{@:}`) and random expressions (`{#:}`) inside an `{eval:}` expression are **fully resolved BEFORE** being passed to MathLive's Compute Engine. The engine only receives a clean mathematical expression with actual numbers.
+**Important:** All variable references (`{{...}}`) and random expressions inside a `{{eval:...}}` expression are **fully resolved BEFORE** being passed to MathLive's Compute Engine. The engine only receives a clean mathematical expression with actual numbers.
 
 ### Variable Resolution Pipeline
 
 Variables are resolved in **declaration order** through a **three-stage pipeline**:
 
-1. **Replace `{@:}` references** with previously resolved values
-2. **Generate `{#:}` random numbers** (using resolved variables in bounds)
-3. **Evaluate `{eval:}` expressions** with MathLive Compute Engine
+1. **Replace variable references** with previously resolved values
+2. **Generate random numbers** (using resolved variables in bounds)
+3. **Evaluate `{{eval:}}` expressions** with MathLive Compute Engine
 
 **Implementation Details** ([variable-resolver.ts](src/lib/questions/generator/variable-resolver.ts)):
 
 **Stage 1 - Variable References:**
 
 ```typescript
-// Replace all {@:varName} with their resolved values
+// Replace all {{varName}} with their resolved values
 expression = expression.replace(/@:(\w+)/g, (match, varName) => {
 	return resolvedVariables[varName] || match;
 });
@@ -423,7 +423,7 @@ expression = expression.replace(/@:(\w+)/g, (match, varName) => {
 **Stage 2 - Random Numbers:**
 
 ```typescript
-// Generate random numbers and replace {#:...} expressions
+// Generate random numbers and replace {{...}} expressions
 expression = expression.replace(/#:([^}]+)/g, (match, randomExpr) => {
 	return generateRandomNumber(randomExpr, resolvedVariables).toString();
 });
@@ -432,7 +432,7 @@ expression = expression.replace(/#:([^}]+)/g, (match, randomExpr) => {
 **Stage 3 - Mathematical Evaluation:**
 
 ```typescript
-// Extract content inside {eval:...}, evaluate with Compute Engine, replace with result
+// Extract content inside {{eval:...}}, evaluate with Compute Engine, replace with result
 expression = expression.replace(/eval:([^}]+)/g, (match, evalExpr) => {
 	try {
 		const result = evaluateExpression(evalExpr); // MathLive Compute Engine
@@ -449,18 +449,18 @@ expression = expression.replace(/eval:([^}]+)/g, (match, evalExpr) => {
 Given this variable definition:
 
 ```typescript
-{ name: 'sum', expression: '{eval:{@:a}+{@:b}}' }
+{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' }
 ```
 
 If `a = 5` and `b = 7`, the resolution process is:
 
-1. **Initial expression:** `{eval:{@:a}+{@:b}}`
-2. **After Stage 1** (variable replacement): `{eval:5+7}`
+1. **Initial expression:** `{{eval:{{a}}+{{b}}}}`
+2. **After Stage 1** (variable replacement): `{{eval:5+7}}`
 3. **After Stage 3** (eval processing):
-   - Extract `5+7` from `{eval:5+7}`
+   - Extract `5+7` from `{{eval:5+7}}`
    - Pass `"5+7"` to MathLive's `evaluateExpression()`
    - Compute Engine returns `12`
-   - Replace entire `{eval:5+7}` with `"12"`
+   - Replace entire `{{eval:5+7}}` with `"12"`
 4. **Final result:** `"12"`
 
 **Pipeline Example:**
@@ -469,9 +469,9 @@ If `a = 5` and `b = 7`, the resolution process is:
 [
 	{ name: 'min', expression: '5' }, // Stage 1: min = 5
 	{ name: 'max', expression: '10' }, // Stage 1: max = 10
-	{ name: 'a', expression: '{#:{@:min}-{@:max}}' }, // Stage 2: a = random(5, 10)
-	{ name: 'b', expression: '{#:1-20!{@:a}}' }, // Stage 2: b = random(1, 20) excluding a
-	{ name: 'sum', expression: '{eval:{@:a}+{@:b}}' } // Stage 3: sum = a + b (evaluated)
+	{ name: 'a', expression: '{{{{min}}-{{max}}}}' }, // Stage 2: a = random(5, 10)
+	{ name: 'b', expression: '{{1-20!{{a}}}}' }, // Stage 2: b = random(1, 20) excluding a
+	{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' } // Stage 3: sum = a + b (evaluated)
 ];
 ```
 
@@ -498,15 +498,15 @@ If `a = 5` and `b = 7`, the resolution process is:
 ```typescript
 // ❌ ERROR: Circular reference
 [
-	{ name: 'a', expression: '{@:b}' },
-	{ name: 'b', expression: '{@:a}' }
+	{ name: 'a', expression: '{{b}}' },
+	{ name: 'b', expression: '{{a}}' }
 ][
 	// Error: "Circular reference detected: a -> b -> a"
 
 	// ✅ OK: Sequential dependency
-	({ name: 'a', expression: '{#:1-10}' },
-	{ name: 'b', expression: '{@:a} + 5' },
-	{ name: 'c', expression: '{@:b} * 2' })
+	({ name: 'a', expression: '{{1-10}}' },
+	{ name: 'b', expression: '{{a}} + 5' },
+	{ name: 'c', expression: '{{b}} * 2' })
 ];
 ```
 
@@ -690,10 +690,10 @@ The help system provides guidance for:
 **Variables Help**:
 
 - Complete syntax reference with examples
-- Variable references: `{@:varName}`
-- Random numbers: `{#:1-10}`, `{#:1.5-9.99:0.01}`, `{#:2.3}`
-- Exclusions: `{#:1-50!5}`, `{#:1-50!5,7-9}`, `{#:1-100!{@:a},{@:b}-{@:c}}`
-- Evaluation: `{eval:expression}`
+- Variable references: `{{varName}}`
+- Random numbers: `{{1-10}}`, `{{1.5-9.99:0.01}}`, `{{2.3}}`
+- Exclusions: `{{1-50!5}}`, `{{1-50!5,7-9}}`, `{{1-100!{{a}},{{b}}-{{c}}}}`
+- Evaluation: `{{eval:expression}}`
 - Dependency order and circular reference warnings
 - Interactive examples
 
@@ -765,9 +765,9 @@ function insertSyntax(index: number, syntax: string) {
 
 **Syntax Helper Buttons** (7 buttons in ContentFieldEditor):
 
-- Variable: `{@:}`
-- Aléatoire: `{#:1-10}`
-- Évaluation: `{eval:}`
+- Variable: `{{}}`
+- Aléatoire: `{{1-10}}`
+- Évaluation: `{{eval:}}`
 - LaTeX $$: `$$$$`
 - Fraction: `\frac{}{}`
 - Exposant: `^{}`
@@ -909,8 +909,8 @@ export function evaluateExpression(latex: string): number | string {
 **Usage in Variable Resolution:**
 
 ```typescript
-// Input from variable expression: '{eval:{@:a}+{@:b}}'
-// After Stage 1 (variable replacement): '{eval:5+7}'
+// Input from variable expression: '{{eval:{{a}}+{{b}}}}'
+// After Stage 1 (variable replacement): '{{eval:5+7}}'
 // Extract '5+7', pass to evaluateExpression('5+7')
 // Compute Engine returns: 12
 // Final result: '12'
@@ -1268,12 +1268,12 @@ The Question Variations System allows question templates to have **multiple vari
 {
   id: 'template-1',
   type: 'numerical_exact',
-  statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+  statement: [{ type: 'text', content: 'Calculate {{a}} + {{b}}' }],
   variables: [
-    { name: 'a', expression: '{#:1-10}' },
-    { name: 'b', expression: '{#:1-10}' }
+    { name: 'a', expression: '{{1-10}}' },
+    { name: 'b', expression: '{{1-10}}' }
   ],
-  answer: '{eval:{@:a}+{@:b}}',
+  answer: '{{eval:{{a}}+{{b}}}}',
   grades: ['6'],
   theme: 'Arithmétique',
   // ...
@@ -1288,21 +1288,21 @@ The Question Variations System allows question templates to have **multiple vari
   type: 'numerical_exact',
   variations: [
     {
-      statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+      statement: [{ type: 'text', content: 'Calculate {{a}} + {{b}}' }],
       variables: [
-        { name: 'a', expression: '{#:1-10}' },
-        { name: 'b', expression: '{#:1-10}' }
+        { name: 'a', expression: '{{1-10}}' },
+        { name: 'b', expression: '{{1-10}}' }
       ],
-      answer: '{eval:{@:a}+{@:b}}',
+      answer: '{{eval:{{a}}+{{b}}}}',
       correction: [{ type: 'text', content: 'Add the numbers...' }]
     },
     {
-      statement: [{ type: 'text', content: 'Calculate {@:a} - {@:b}' }],
+      statement: [{ type: 'text', content: 'Calculate {{a}} - {{b}}' }],
       variables: [
-        { name: 'a', expression: '{#:10-20}' },
-        { name: 'b', expression: '{#:1-{@:a}}' }
+        { name: 'a', expression: '{{10-20}}' },
+        { name: 'b', expression: '{{1-{{a}}}}' }
       ],
-      answer: '{eval:{@:a}-{@:b}}',
+      answer: '{{eval:{{a}}-{{b}}}}',
       correction: [{ type: 'text', content: 'Subtract the numbers...' }]
     }
   ],
@@ -1515,37 +1515,37 @@ Response: {
   type: 'numerical_exact',
   variations: [
     {
-      statement: [{ type: 'text', content: 'Calculate: $${@:a} + {@:b}$$' }],
+      statement: [{ type: 'text', content: 'Calculate: $${{a}} + {{b}}$$' }],
       variables: [
-        { name: 'a', expression: '{#:10-50}' },
-        { name: 'b', expression: '{#:10-50}' }
+        { name: 'a', expression: '{{10-50}}' },
+        { name: 'b', expression: '{{10-50}}' }
       ],
-      answer: '{eval:{@:a}+{@:b}}'
+      answer: '{{eval:{{a}}+{{b}}}}'
     },
     {
-      statement: [{ type: 'text', content: 'Calculate: $${@:a} - {@:b}$$' }],
+      statement: [{ type: 'text', content: 'Calculate: $${{a}} - {{b}}$$' }],
       variables: [
-        { name: 'a', expression: '{#:20-99}' },
-        { name: 'b', expression: '{#:10-{@:a}}' }
+        { name: 'a', expression: '{{20-99}}' },
+        { name: 'b', expression: '{{10-{{a}}}}' }
       ],
-      answer: '{eval:{@:a}-{@:b}}'
+      answer: '{{eval:{{a}}-{{b}}}}'
     },
     {
-      statement: [{ type: 'text', content: 'Calculate: $${@:a} \\times {@:b}$$' }],
+      statement: [{ type: 'text', content: 'Calculate: $${{a}} \\times {{b}}$$' }],
       variables: [
-        { name: 'a', expression: '{#:2-12}' },
-        { name: 'b', expression: '{#:2-12}' }
+        { name: 'a', expression: '{{2-12}}' },
+        { name: 'b', expression: '{{2-12}}' }
       ],
-      answer: '{eval:{@:a}*{@:b}}'
+      answer: '{{eval:{{a}}*{{b}}}}'
     },
     {
-      statement: [{ type: 'text', content: 'Calculate: $${@:dividend} \\div {@:divisor}$$' }],
+      statement: [{ type: 'text', content: 'Calculate: $${{dividend}} \\div {{divisor}}$$' }],
       variables: [
-        { name: 'divisor', expression: '{#:2-9}' },
-        { name: 'quotient', expression: '{#:2-12}' },
-        { name: 'dividend', expression: '{eval:{@:divisor}*{@:quotient}}' }
+        { name: 'divisor', expression: '{{2-9}}' },
+        { name: 'quotient', expression: '{{2-12}}' },
+        { name: 'dividend', expression: '{{eval:{{divisor}}*{{quotient}}}}' }
       ],
-      answer: '{@:quotient}'
+      answer: '{{quotient}}'
     }
   ],
   precision: { type: 'none' },
