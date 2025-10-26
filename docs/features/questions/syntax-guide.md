@@ -2,6 +2,63 @@
 
 Quick reference for template expression syntax.
 
+🆕 **2025-01-26:** Dual syntax support added - choose between Questions syntax and Markdown syntax.
+
+---
+
+## Syntaxes Disponibles
+
+UbuMaths supporte deux syntaxes pour le paramétrage des questions :
+
+### Syntaxe Questions (Classique)
+
+Syntaxe historique du système de Questions. Compatible avec toutes les questions existantes et toujours entièrement supportée.
+
+**Variables :** `{@:nom}`
+**Nombres aléatoires :** `{#:1-10}`
+**Évaluation :** `{eval:expression}`
+
+### Syntaxe Markdown (Nouvelle)
+
+Syntaxe alternative plus lisible dans le markdown, compatible avec le système d'Exercices. Recommandée pour les nouveaux modèles.
+
+**Variables :** `{{nom}}`
+**Nombres aléatoires :** `{{random:1-10}}` ou `{{1-10}}`
+**Évaluation :** `{{eval:expression}}`
+
+### Comparaison
+
+| Fonctionnalité             | Syntaxe Questions | Syntaxe Markdown  | Raccourci  |
+| -------------------------- | ----------------- | ----------------- | ---------- |
+| Variable                   | `{@:var}`         | `{{var}}`         | -          |
+| Nombre aléatoire (entier)  | `{#:1-10}`        | `{{random:1-10}}` | `{{1-10}}` |
+| Nombre aléatoire (décimal) | `{#:2.3}`         | `{{random:2.3}}`  | `{{2.3}}`  |
+| Évaluation                 | `{eval:expr}`     | `{{eval:expr}}`   | -          |
+
+### Choisir sa Syntaxe
+
+- Les deux syntaxes sont **équivalentes** et **interchangeables**
+- Vous pouvez **mélanger** les deux syntaxes dans le même document
+- Choisissez votre syntaxe préférée dans l'éditeur de question
+- La syntaxe Markdown utilise des raccourcis pratiques (ex: `{{1-10}}` au lieu de `{{random:1-10}}`)
+
+### Conversion entre Syntaxes
+
+Pour convertir une question existante de la syntaxe Questions vers Markdown :
+
+1. Remplacer `{@:var}` par `{{var}}`
+2. Remplacer `{#:spec}` par `{{random:spec}}` ou utiliser les raccourcis `{{spec}}`
+3. `{eval:expr}` devient `{{eval:expr}}`
+
+**Exemple :**
+
+```
+AVANT (Questions) : Calculate {@:a} + {@:b} = {eval:{@:a}+{@:b}}
+APRÈS (Markdown)  : Calculate {{a}} + {{b}} = {{eval:{{a}}+{{b}}}}
+```
+
+L'éditeur de question propose un sélecteur de syntaxe pour faciliter la création de nouvelles questions.
+
 ---
 
 ## Variable References

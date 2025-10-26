@@ -24,8 +24,11 @@
 
 <script lang="ts">
 	import type { QuestionVariable } from '$lib/questions/types';
+	import type { Syntax } from '$lib/shared/parameterization/types';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
+	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-svelte';
@@ -33,9 +36,14 @@
 	interface Props {
 		variables?: QuestionVariable[];
 		helpDialogOpen?: boolean;
+		syntax?: Syntax;
 	}
 
-	let { variables = $bindable([]), helpDialogOpen = $bindable(false) }: Props = $props();
+	let {
+		variables = $bindable([]),
+		helpDialogOpen = $bindable(false),
+		syntax = 'markdown'
+	}: Props = $props();
 
 	// Add new variable
 	function addVariable() {
@@ -443,7 +451,9 @@
 									<Input
 										id="var-expression-{index}"
 										bind:value={variable.expression}
-										placeholder={'Ex: {#:1-10}, {@:min}+5, {eval:2^3}'}
+										placeholder={syntax === 'markdown'
+											? 'Ex: {{random:1-10}}, {{var}}+5, {{eval:2^3}}'
+											: 'Ex: {#:1-10}, {@:min}+5, {eval:2^3}'}
 									/>
 								</div>
 
@@ -452,23 +462,29 @@
 									<Button
 										variant="outline"
 										size="sm"
-										onclick={() => insertSyntax(index, '{@:}')}
+										onclick={() =>
+											insertSyntax(index, syntax === 'markdown' ? '{{var}}' : '{@:var}')}
 										class="text-xs"
 									>
-										Variable
+										{syntax === 'markdown' ? '{{var}}' : '{@:var}'}
 									</Button>
 									<Button
 										variant="outline"
 										size="sm"
-										onclick={() => insertSyntax(index, '{#:1-10}')}
+										onclick={() =>
+											insertSyntax(index, syntax === 'markdown' ? '{{random:1-10}}' : '{#:1-10}')}
 										class="text-xs"
 									>
-										Aléatoire
+										{syntax === 'markdown' ? '{{random:1-10}}' : '{#:1-10}'}
 									</Button>
 									<Button
 										variant="outline"
 										size="sm"
-										onclick={() => insertSyntax(index, '{#:0.5-9.99:0.01}')}
+										onclick={() =>
+											insertSyntax(
+												index,
+												syntax === 'markdown' ? '{{random:0.5-9.99:0.01}}' : '{#:0.5-9.99:0.01}'
+											)}
 										class="text-xs"
 									>
 										Décimal
@@ -476,7 +492,11 @@
 									<Button
 										variant="outline"
 										size="sm"
-										onclick={() => insertSyntax(index, '{#:1-100!5}')}
+										onclick={() =>
+											insertSyntax(
+												index,
+												syntax === 'markdown' ? '{{random:1-100!5}}' : '{#:1-100!5}'
+											)}
 										class="text-xs"
 									>
 										Exclusion
@@ -484,7 +504,8 @@
 									<Button
 										variant="outline"
 										size="sm"
-										onclick={() => insertSyntax(index, '{eval:}')}
+										onclick={() =>
+											insertSyntax(index, syntax === 'markdown' ? '{{eval:}}' : '{eval:}')}
 										class="text-xs"
 									>
 										Évaluation

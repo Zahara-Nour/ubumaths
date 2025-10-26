@@ -5,6 +5,8 @@
  * Resolves ContentField arrays by replacing variables and generating
  * random values in text content.
  *
+ * Uses variable-resolver which wraps shared library for full resolution pipeline.
+ *
  * @module questions/generator/content-resolver
  */
 

@@ -11,8 +11,24 @@
  * - Complex exclusion patterns (values, ranges, variables)
  * - Precision types for numerical answers
  *
+ * Uses shared parameterization library for variable resolution and random generation.
+ *
  * @module questions/types
  */
+
+// ============================================================================
+// SHARED PARAMETERIZATION TYPES
+// ============================================================================
+
+import type {
+	Variable as SharedVariable,
+	ResolvedVariable as SharedResolvedVariable,
+	RandomSpec as SharedRandomSpec,
+	Syntax
+} from '$lib/shared/parameterization';
+
+// Re-export shared types for convenience
+export type { Syntax };
 
 // ============================================================================
 // GRADE LEVELS
@@ -122,6 +138,7 @@ export type PrecisionType =
 /**
  * Variable definition in a question template
  *
+ * Uses shared Variable type from parameterization library.
  * Variables are resolved in declaration order and can reference
  * previously defined variables.
  *
@@ -145,16 +162,7 @@ export type PrecisionType =
  * { name: 'a', expression: '{#:1-10}' }
  * { name: 'b', expression: '{#:1-10!{@:a}}' }
  */
-export interface QuestionVariable {
-	/** Variable name (used in {@:name} references) */
-	name: string;
-
-	/**
-	 * Expression with LaTeX and special syntax
-	 * Can contain {@:}, {#:}, {eval:} constructs
-	 */
-	expression: string;
-}
+export type QuestionVariable = SharedVariable;
 
 // ============================================================================
 // QUESTION VARIATIONS
@@ -333,14 +341,10 @@ export interface QuestionTemplate {
 
 /**
  * Resolved variable with final value
+ *
+ * Uses shared ResolvedVariable type from parameterization library.
  */
-export interface ResolvedVariable {
-	/** Variable name */
-	name: string;
-
-	/** Final LaTeX value with substitutions (e.g., "3^2 + 7") */
-	value: string;
-}
+export type ResolvedVariable = SharedResolvedVariable;
 
 /**
  * Generated question instance
@@ -445,65 +449,25 @@ export type GenerationResult =
 // ============================================================================
 
 /**
- * Number or variable reference
- *
- * Used for min/max bounds and digit counts in random expressions
- */
-export type NumberOrVariable = number | { type: 'variable'; name: string };
-
-/**
- * Exclusion pattern for random generation
- *
- * @example Single value
- * { type: 'value', value: 5 }
- *
- * @example Range
- * { type: 'range', min: 5, max: 7 }  // Excludes 5, 6, 7
- *
- * @example Variable
- * { type: 'variable', name: 'a' }  // Excludes value of variable 'a'
- */
-export type Exclusion =
-	| { type: 'value'; value: NumberOrVariable }
-	| { type: 'range'; min: NumberOrVariable; max: NumberOrVariable }
-	| { type: 'variable'; name: string };
-
-/**
  * Random number specification
  *
+ * Uses shared RandomSpec from parameterization library.
  * Parsed from {#:...} expressions with full support for variables
  * in bounds, digits, and exclusions.
  *
  * @example Integer range
- * {#:1-10} → { type: 'integer', min: 1, max: 10 }
+ * {#:1-10} → { type: 'integer', min: {type:'number',value:1}, max: {...,value:10} }
  *
  * @example Variable bounds
  * {#:{@:min}-{@:max}} → { type: 'integer', min: {type:'variable',name:'min'}, max: {...} }
  *
  * @example Decimal by digits
- * {#:2.3} → { type: 'decimal', digitsBefore: 2, digitsAfter: 3 }
+ * {#:2.3} → { type: 'decimal-by-digits', digitsBefore: {type:'number',value:2}, digitsAfter: {...,value:3} }
  *
  * @example Decimal range with step
- * {#:0.5-9.99:0.01} → { type: 'decimal', min: 0.5, max: 9.99, step: 0.01 }
+ * {#:0.5-9.99:0.01} → { type: 'decimal-range', min: {...,value:0.5}, max: {...,value:9.99}, step: 0.01 }
  *
  * @example With exclusions
  * {#:1-20!5,7-9,{@:a}} → { ..., exclusions: [...] }
  */
-export interface RandomSpec {
-	/** Type of random number */
-	type: 'integer' | 'decimal';
-
-	// For integer/decimal ranges
-	min?: NumberOrVariable;
-	max?: NumberOrVariable;
-
-	/** Step for decimal ranges (default: 1 for integers, 0.01 for decimals) */
-	step?: number;
-
-	// For decimal by digit specification
-	digitsBefore?: NumberOrVariable;
-	digitsAfter?: NumberOrVariable;
-
-	/** Exclusion patterns (values, ranges, variables) */
-	exclusions: Exclusion[];
-}
+export type RandomSpec = SharedRandomSpec;

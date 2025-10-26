@@ -2,21 +2,39 @@
 
 A comprehensive system for creating and managing mathematical question templates with variable support, random generation, and automatic instance creation.
 
+🆕 **2025-01-26:** Now powered by the shared parameterization library with dual syntax support. See [Parameterization System Architecture](/docs/architecture/parameterization-system.md) for technical details.
+
 ---
 
 ## Overview
 
 The Question Bank System allows educators to create reusable question templates that generate unique instances with randomized values while maintaining pedagogical structure.
 
+### Shared Parameterization Library
+
+The Question Bank System uses the shared parameterization library (`src/lib/shared/parameterization`) for:
+
+- Variable resolution
+- Random number generation
+- Expression evaluation
+- Syntax validation
+
+This library is content-agnostic and also used by the Exercises feature. See:
+
+- [Shared Library README](/src/lib/shared/parameterization/README.md) - Developer documentation
+- [Parameterization System Architecture](/docs/architecture/parameterization-system.md) - System design
+
 ### Key Features
 
 - **6 Question Types:** numerical (exact/decimal/rounded), algebraic transforms, fill-in-blanks, multiple choice
+- **Dual Syntax Support:** Choose between Questions syntax (`{@:var}`) and Markdown syntax (`{{var}}`)
 - **Variable System:** Define variables with dependencies and references
 - **Random Generation:** Full support for random numbers with variables in bounds
 - **Complex Exclusions:** Exclude values, ranges, and variables from random generation
 - **Mathematical Evaluation:** Integrate MathLive Compute Engine for expression evaluation
 - **Circular Dependency Detection:** Automatic validation prevents infinite loops
 - **Seeded Random:** Reproducible question instances for testing and debug
+- **Syntax Conversion:** Convert templates between syntaxes
 
 ---
 
