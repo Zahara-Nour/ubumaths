@@ -11,14 +11,19 @@
 	- Live preview with MathLive rendering
 	- Support for math ($...$, $$...$$), lists, tables, images
 	- Split view: editor + preview
+	- Variable editor for parameterized exercises
+	- Distribution mode selector
+	- Syntax helper buttons for parameterization
 
 	TOOLBAR SECTIONS:
 	- Texte: Bold, Italic, Code
 	- Math: Inline and block formulas
 	- Structure: Headings, lists, tables
 	- Media: Images, horizontal rules
+	- Parameterization: Variable references, random values, expressions
 
 	@see src/lib/exercises/parser/markdown-parser.ts
+	@see src/lib/shared/parameterization for variable system
 -->
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
@@ -40,10 +45,12 @@
 		Upload,
 		Loader2
 	} from 'lucide-svelte';
-	import ExerciseDisplay from './ExerciseDisplay.svelte';
+	import ExerciseMarkdownPreview from './ExerciseMarkdownPreview.svelte';
 	import { uploadExerciseImage } from '$lib/exercises/services/image-upload';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
+	import type { Variable } from '$lib/shared/parameterization';
+	import type { DistributionMode } from '$lib/exercises/types';
 
 	// Props
 	interface Props {
@@ -52,6 +59,8 @@
 		showPreview?: boolean;
 		supabase?: SupabaseClient;
 		userId?: string;
+		variables?: Variable[];
+		distributionMode?: DistributionMode;
 	}
 
 	let {
@@ -59,7 +68,9 @@
 		placeholder = 'Écrivez votre exercice en markdown...',
 		showPreview = true,
 		supabase,
-		userId
+		userId,
+		variables = $bindable([]),
+		distributionMode = $bindable('on_demand')
 	}: Props = $props();
 
 	// Editor state
@@ -72,6 +83,14 @@
 	let textSectionOpen = $state(true);
 	let mathSectionOpen = $state(false);
 	let structureSectionOpen = $state(false);
+	let parameterizationSectionOpen = $state(false);
+
+	// Auto-show parameterization section if variables exist
+	$effect(() => {
+		if (variables && variables.length > 0) {
+			parameterizationSectionOpen = true;
+		}
+	});
 
 	/**
 	 * Insert text at cursor position
@@ -154,7 +173,11 @@
 | Cellule 1 | Cellule 2 |`
 			),
 		image: () => insertText('![Description](', ')'),
-		hr: () => insertTemplate('---')
+		hr: () => insertTemplate('---'),
+		// Parameterization actions
+		varReference: () => insertText('{{', '}}'),
+		randomInt: () => insertText('{{random:', '}}'),
+		evalExpression: () => insertText('{{eval:', '}}')
 	};
 
 	// Math templates
@@ -257,6 +280,19 @@
 				Structure
 			</Button>
 
+			<!-- Parameterization Section Toggle (only if variables exist) -->
+			{#if variables && variables.length > 0}
+				<Button
+					variant="ghost"
+					size="sm"
+					onclick={() => (parameterizationSectionOpen = !parameterizationSectionOpen)}
+					class="font-medium"
+					title="Syntaxe de paramétrage"
+				>
+					<Type class="mr-1 h-4 w-4" />
+					Variables
+				</Button>
+			{/if}
 			<div class="flex-1"></div>
 
 			<!-- Preview Toggle -->
@@ -393,6 +429,47 @@
 				</Button>
 			</div>
 		{/if}
+
+		<!-- Parameterization Section (only show if variables exist) -->
+		{#if variables && variables.length > 0 && parameterizationSectionOpen}
+			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
+				<Button
+					variant="ghost"
+					size="sm"
+					onclick={actions.varReference}
+					title="Référence à une variable"
+					class="font-mono"
+				>
+					&#123;&#123;var&#125;&#125;
+				</Button>
+
+				<Button
+					variant="ghost"
+					size="sm"
+					onclick={actions.randomInt}
+					title="Nombre aléatoire"
+					class="font-mono"
+				>
+					&#123;&#123;random:1-10&#125;&#125;
+				</Button>
+
+				<Button
+					variant="ghost"
+					size="sm"
+					onclick={actions.evalExpression}
+					title="Expression évaluée"
+					class="font-mono"
+				>
+					&#123;&#123;eval:...&#125;&#125;
+				</Button>
+
+				<div class="mx-1 h-6 w-px bg-border"></div>
+
+				<span class="text-xs text-muted-foreground">
+					Utilisez ces syntaxes pour insérer des variables dans votre texte
+				</span>
+			</div>
+		{/if}
 	</div>
 
 	<!-- Editor and Preview -->
@@ -414,7 +491,7 @@
 		<!-- Live Preview -->
 		{#if previewVisible}
 			<div class="w-1/2 overflow-y-auto bg-background p-4">
-				<ExerciseDisplay markdown={value} />
+				<ExerciseMarkdownPreview markdown={value} />
 			</div>
 		{/if}
 	</div>

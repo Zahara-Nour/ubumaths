@@ -3,9 +3,9 @@ import { error, redirect } from '@sveltejs/kit';
 import { getExercise } from '$lib/server/exercises';
 
 /**
- * Load exercise for editing
+ * Load exercise for editing and view assignments
  */
-export const load: PageServerLoad = async ({ locals, params }) => {
+export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	const { session } = await locals.safeGetSession();
 	if (!session) {
 		throw redirect(303, '/login');
@@ -26,7 +26,16 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		throw error(403, "Vous n'êtes pas autorisé à modifier cet exercice");
 	}
 
+	// Fetch assignments count via API
+	const assignmentsResponse = await fetch(`/api/exercises/${id}/assign`);
+	let assignmentCount = 0;
+	if (assignmentsResponse.ok) {
+		const assignments = await assignmentsResponse.json();
+		assignmentCount = assignments.length;
+	}
+
 	return {
-		exercise: result.data
+		exercise: result.data,
+		assignmentCount
 	};
 };

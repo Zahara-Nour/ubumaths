@@ -516,9 +516,11 @@ export type Database = {
 					created_at: string;
 					created_by: string;
 					difficulty: number;
+					distribution_mode: string;
 					estimated_time_minutes: number | null;
 					grade_levels: string[] | null;
 					id: string;
+					is_public: boolean;
 					solution_md: string;
 					source: string | null;
 					statement_md: string;
@@ -526,14 +528,17 @@ export type Database = {
 					title: string | null;
 					topic: string | null;
 					updated_at: string;
+					variables: Json;
 				};
 				Insert: {
 					created_at?: string;
 					created_by: string;
 					difficulty: number;
+					distribution_mode?: string;
 					estimated_time_minutes?: number | null;
 					grade_levels?: string[] | null;
 					id?: string;
+					is_public?: boolean;
 					solution_md: string;
 					source?: string | null;
 					statement_md: string;
@@ -541,14 +546,17 @@ export type Database = {
 					title?: string | null;
 					topic?: string | null;
 					updated_at?: string;
+					variables?: Json;
 				};
 				Update: {
 					created_at?: string;
 					created_by?: string;
 					difficulty?: number;
+					distribution_mode?: string;
 					estimated_time_minutes?: number | null;
 					grade_levels?: string[] | null;
 					id?: string;
+					is_public?: boolean;
 					solution_md?: string;
 					source?: string | null;
 					statement_md?: string;
@@ -556,6 +564,7 @@ export type Database = {
 					title?: string | null;
 					topic?: string | null;
 					updated_at?: string;
+					variables?: Json;
 				};
 				Relationships: [
 					{

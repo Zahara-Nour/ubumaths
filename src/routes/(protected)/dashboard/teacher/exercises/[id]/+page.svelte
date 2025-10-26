@@ -2,6 +2,9 @@
 	import { invalidateAll } from '$app/navigation';
 	import ExerciseForm from '$lib/components/exercises/ExerciseForm.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import * as Card from '$lib/components/ui/card';
+	import { Users } from 'lucide-svelte';
 	import type { Database } from '$lib/types/database';
 	import type { PageData } from './$types';
 
@@ -49,11 +52,44 @@
 </svelte:head>
 
 <div class="container mx-auto py-6">
-	<div class="mb-6">
-		<h1 class="text-3xl font-bold">Modifier l'exercice</h1>
-		<p class="text-muted-foreground">
-			{data.exercise.title || '(Sans titre)'}
-		</p>
+	<div class="mb-6 flex items-start justify-between">
+		<div>
+			<h1 class="text-3xl font-bold">Modifier l'exercice</h1>
+			<p class="text-muted-foreground">
+				{data.exercise.title || '(Sans titre)'}
+			</p>
+		</div>
+
+		<!-- Assignments Quick Access -->
+		{#if data.assignmentCount > 0}
+			<Card.Root class="w-64">
+				<Card.Content class="p-4">
+					<div class="flex items-center justify-between">
+						<div class="flex items-center gap-2">
+							<Users class="h-5 w-5 text-muted-foreground" />
+							<div>
+								<div class="text-sm font-medium">Assignations</div>
+								<div class="text-xs text-muted-foreground">
+									{data.assignmentCount} active{data.assignmentCount > 1 ? 's' : ''}
+								</div>
+							</div>
+						</div>
+						<Button
+							size="sm"
+							variant="outline"
+							href="/dashboard/teacher/exercises/{data.exercise.id}/assign"
+						>
+							Gérer
+						</Button>
+					</div>
+				</Card.Content>
+			</Card.Root>
+		{:else}
+			<Button variant="outline" href="/dashboard/teacher/exercises/{data.exercise.id}/assign">
+				<Users class="mr-2 h-4 w-4" />
+				Assigner
+			</Button>
+		{/if}
 	</div>
 
 	<ExerciseForm

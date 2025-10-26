@@ -2328,21 +2328,24 @@ Math exercise bank with rich markdown content, LaTeX formulas, and multiple expo
 
 Mathematical exercises with markdown-formatted statements and solutions.
 
-| Column                 | Type        | Description                                                   |
-| ---------------------- | ----------- | ------------------------------------------------------------- |
-| id                     | UUID        | Exercise ID (primary key)                                     |
-| title                  | TEXT        | Exercise title (optional, for organization)                   |
-| source                 | TEXT        | Source reference (e.g., book name, author)                    |
-| difficulty             | INTEGER     | Difficulty level: 1 (easy), 2 (medium), 3 (hard)              |
-| tags                   | TEXT[]      | Tags for categorization (e.g., ['algèbre', 'équations'])      |
-| statement_md           | TEXT        | Exercise statement in markdown with LaTeX ($...$ and $$...$$) |
-| solution_md            | TEXT        | Solution/correction in markdown with LaTeX                    |
-| estimated_time_minutes | INTEGER     | Estimated completion time in minutes                          |
-| grade_levels           | TEXT[]      | Applicable grade levels (e.g., ['3', '2', 'SPE_1'])           |
-| topic                  | TEXT        | Topic category (e.g., 'Algèbre', 'Géométrie')                 |
-| created_at             | TIMESTAMPTZ | Creation timestamp                                            |
-| updated_at             | TIMESTAMPTZ | Last update timestamp                                         |
-| created_by             | UUID        | Teacher who created the exercise (FK → profiles.id)           |
+| Column                 | Type        | Description                                                       |
+| ---------------------- | ----------- | ----------------------------------------------------------------- |
+| id                     | UUID        | Exercise ID (primary key)                                         |
+| title                  | TEXT        | Exercise title (optional, for organization)                       |
+| source                 | TEXT        | Source reference (e.g., book name, author)                        |
+| difficulty             | INTEGER     | Difficulty level: 1 (easy), 2 (medium), 3 (hard)                  |
+| tags                   | TEXT[]      | Tags for categorization (e.g., ['algèbre', 'équations'])          |
+| statement_md           | TEXT        | Exercise statement in markdown with LaTeX ($...$ and $$...$$)     |
+| solution_md            | TEXT        | Solution/correction in markdown with LaTeX                        |
+| estimated_time_minutes | INTEGER     | Estimated completion time in minutes                              |
+| grade_levels           | TEXT[]      | Applicable grade levels (e.g., ['3', '2', 'SPE_1'])               |
+| topic                  | TEXT        | Topic category (e.g., 'Algèbre', 'Géométrie')                     |
+| variables              | JSONB       | Parameterization variables (default: `[]`)                        |
+| distribution_mode      | TEXT        | Instance distribution: `on_demand`, `per_student`, or `per_group` |
+| is_public              | BOOLEAN     | Whether exercise is publicly shared (default: `false`)            |
+| created_at             | TIMESTAMPTZ | Creation timestamp                                                |
+| updated_at             | TIMESTAMPTZ | Last update timestamp                                             |
+| created_by             | UUID        | Teacher who created the exercise (FK → profiles.id)               |
 
 **Markdown Format**:
 
@@ -2368,6 +2371,44 @@ Résoudre les équations suivantes:
 | 0   | 0    |
 | 1   | 2    |
 ```
+
+**Parameterization**:
+
+Exercises can include variables to generate different instances:
+
+- **Variables**: Defined in the `variables` JSONB array, each variable has a `name` and `expression`
+- **Syntax**: Uses Markdown syntax (`{{}}`) for variable references, random values, and evaluations
+  - Variable reference: `{{varName}}`
+  - Random integer: `{{1-10}}` or `{{random:1-10}}`
+  - Random decimal: `{{0.5-9.99:0.01}}`
+  - Evaluation: `{{eval:a+b}}`
+  - Exclusions: `{{1-10!{{a}}}}`
+- **Distribution Modes**:
+  - `on_demand`: Students can regenerate unlimited times (random each time)
+  - `per_student`: Each student gets unique consistent values (deterministic seed)
+  - `per_group`: All students in a group see the same values (shared seed)
+
+**Example Parameterized Exercise**:
+
+```json
+{
+	"variables": [
+		{ "name": "a", "expression": "{{1-10}}" },
+		{ "name": "b", "expression": "{{1-10}}" },
+		{ "name": "sum", "expression": "{{eval:{{a}}+{{b}}}}" }
+	],
+	"statement_md": "Calculer : ${{a}} + {{b}}$",
+	"solution_md": "La réponse est ${{sum}}$",
+	"distribution_mode": "per_student"
+}
+```
+
+When displayed to a student, variables are resolved to actual values:
+
+- Student 1 might see: "Calculer : $7 + 3$" with solution "La réponse est $10$"
+- Student 2 might see: "Calculer : $4 + 9$" with solution "La réponse est $13$"
+
+See: `docs/features/exercises/parameterization-guide.md` for complete documentation.
 
 ### Storage
 
@@ -2439,6 +2480,11 @@ CREATE INDEX idx_exercises_grade_levels ON exercises USING gin(grade_levels);
 CREATE INDEX idx_exercises_topic ON exercises(topic);
 CREATE INDEX idx_exercises_created_at ON exercises(created_at DESC);
 
+-- Parameterization indexes
+CREATE INDEX idx_exercises_distribution_mode ON exercises(distribution_mode);
+CREATE INDEX idx_exercises_is_public ON exercises(is_public);
+CREATE INDEX idx_exercises_has_variables ON exercises((jsonb_array_length(variables) > 0));
+
 -- Full-text search on title and source
 CREATE INDEX idx_exercises_search ON exercises
   USING gin(to_tsvector('french', coalesce(title, '') || ' ' || coalesce(source, '')));
@@ -2453,6 +2499,30 @@ CREATE TRIGGER exercises_updated_at
   BEFORE UPDATE ON exercises
   FOR EACH ROW
   EXECUTE FUNCTION update_exercises_updated_at();
+```
+
+### Helper Functions
+
+**Check if exercise has variables**:
+
+```sql
+CREATE OR REPLACE FUNCTION is_exercise_parameterized(exercise_id UUID)
+RETURNS BOOLEAN AS $$
+  SELECT COALESCE(jsonb_array_length(variables) > 0, false)
+  FROM exercises
+  WHERE id = exercise_id;
+$$ LANGUAGE SQL STABLE;
+```
+
+Usage:
+
+```sql
+-- Find all parameterized exercises
+SELECT * FROM exercises
+WHERE is_exercise_parameterized(id);
+
+-- Check if a specific exercise is parameterized
+SELECT is_exercise_parameterized('uuid-here');
 ```
 
 ### Usage Examples
@@ -2505,15 +2575,71 @@ WHERE to_tsvector('french', coalesce(title, '') || ' ' || coalesce(source, ''))
 ORDER BY created_at DESC;
 ```
 
+#### Create a parameterized exercise
+
+```sql
+INSERT INTO exercises (
+  title,
+  statement_md,
+  solution_md,
+  variables,
+  distribution_mode,
+  difficulty,
+  tags,
+  grade_levels,
+  created_by
+)
+VALUES (
+  'Addition aléatoire',
+  'Calculer : ${{a}} + {{b}}$',
+  'La réponse est ${{sum}}$',
+  '[
+    {"name": "a", "expression": "{{1-10}}"},
+    {"name": "b", "expression": "{{1-10}}"},
+    {"name": "sum", "expression": "{{eval:{{a}}+{{b}}}}"}
+  ]'::jsonb,
+  'per_student',
+  1,
+  ARRAY['arithmétique', 'addition'],
+  ARRAY['6', '5'],
+  auth.uid()
+);
+```
+
+#### Find parameterized exercises
+
+```sql
+-- All exercises with variables
+SELECT *
+FROM exercises
+WHERE jsonb_array_length(variables) > 0;
+
+-- Using the helper function
+SELECT *
+FROM exercises
+WHERE is_exercise_parameterized(id);
+
+-- Per-student distribution mode only
+SELECT *
+FROM exercises
+WHERE distribution_mode = 'per_student'
+  AND jsonb_array_length(variables) > 0;
+```
+
 ### Related Documentation
 
-- **Migration**: `supabase/migrations/20251026080000_create_exercises_table.sql`
+- **Migrations**:
+  - `supabase/migrations/20251026080000_create_exercises_table.sql` (initial table)
+  - `supabase/migrations/20251026153000_add_exercise_parameterization.sql` (parameterization)
 - **Types**: `src/lib/exercises/types.ts`
+- **Instance Generator**: `src/lib/exercises/generator/instance-generator.ts`
 - **Parser**: `src/lib/exercises/parser/`
 - **Transpilers**: `src/lib/exercises/transpilers/`
 - **Components**: `src/lib/components/exercises/`
 - **Test Page**: `src/routes/(protected)/test-exercises/` (development)
-- **Feature Documentation**: `docs/features/exercises/README.md`
+- **Feature Documentation**:
+  - `docs/features/exercises/README.md` (overview)
+  - `docs/features/exercises/parameterization-guide.md` (parameterization)
 - **Features**:
   - Rich markdown with LaTeX math support
   - GitHub Flavored Markdown (tables, lists)
@@ -2522,3 +2648,6 @@ ORDER BY created_at DESC;
   - Full-text search in French
   - Tag-based filtering
   - Difficulty and grade level organization
+  - **Parameterization with variables** (random values, evaluations)
+  - **Three distribution modes** (on-demand, per-student, per-group)
+  - **Deterministic seeding** for consistent student experiences

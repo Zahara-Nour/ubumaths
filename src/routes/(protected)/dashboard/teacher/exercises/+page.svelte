@@ -309,6 +309,13 @@
 									<div class="flex justify-end gap-2">
 										<Button
 											size="sm"
+											variant="ghost"
+											href="/dashboard/teacher/exercises/{exercise.id}/assign"
+										>
+											Assigner
+										</Button>
+										<Button
+											size="sm"
 											variant="outline"
 											href="/dashboard/teacher/exercises/{exercise.id}"
 										>

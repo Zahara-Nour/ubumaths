@@ -48,8 +48,27 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 	// This contains the user's role which determines the dashboard view
 	const { profile } = await parent();
 
-	// For students, fetch additional stats for rewards block
+	// For students, fetch additional stats for rewards block and recent exercises
 	let riddlesSolved = 0;
+	let recentExercises: Array<{
+		id: string;
+		title: string | null;
+		tags: string[] | null;
+		difficulty: string | null;
+		distribution_mode: string | null;
+		exercise_assignments?: Array<{
+			id: string;
+			optional_deadline: string | null;
+			notes: string | null;
+			assigned_at: string;
+		}> | null;
+		exercise_completions?: Array<{
+			completed_at: string | null;
+			last_viewed_at: string;
+			view_count: number;
+		}> | null;
+	}> = [];
+
 	if (profile.role === 'student') {
 		// Get count of successfully solved riddles
 		const { count } = await supabase
@@ -59,12 +78,44 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 			.eq('is_correct', true);
 
 		riddlesSolved = count || 0;
+
+		// Get recent assigned exercises (up to 5, sorted by deadline)
+		const { data: exercises } = await supabase
+			.from('exercises')
+			.select(
+				`
+				id,
+				title,
+				tags,
+				difficulty,
+				distribution_mode,
+				exercise_assignments!inner(
+					id,
+					optional_deadline,
+					notes,
+					assigned_at
+				),
+				exercise_completions(
+					completed_at,
+					last_viewed_at
+				)
+			`
+			)
+			.or(
+				`exercise_assignments.student_id.eq.${profile.id},exercise_assignments.assigned_to_type.eq.public`
+			)
+			.eq('exercise_assignments.is_active', true)
+			.limit(5)
+			.order('exercise_assignments.optional_deadline', { ascending: true, nullsFirst: false });
+
+		recentExercises = exercises || [];
 	}
 
 	// Return profile to the client component
 	// +page.svelte will use profile.role to render the correct dashboard
 	return {
 		profile,
-		riddlesSolved
+		riddlesSolved,
+		recentExercises
 	};
 };
