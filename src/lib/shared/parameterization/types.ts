@@ -2,32 +2,19 @@
  * Shared Parameterization Library - Type Definitions
  * ===================================================
  *
- * Content-agnostic parameterization system supporting dual syntax:
- * - Questions syntax: {@:var}, {#:1-10}, {eval:expr}
- * - Markdown syntax: {{var}}, {{random:1-10}}, {{eval:expr}}
+ * Content-agnostic parameterization system using Markdown syntax:
+ * - Variables: {{var}}
+ * - Random: {{random:1-10}} or {{1-10}}
+ * - Eval: {{eval:expr}}
  *
  * Features:
  * - Variables with reference chaining
  * - Random number generation (integer, decimal, with exclusions)
  * - Expression evaluation
  * - Circular dependency detection
- * - Syntax conversion (Questions ↔ Markdown)
  *
  * @module shared/parameterization/types
  */
-
-// ============================================================================
-// SYNTAX TYPES
-// ============================================================================
-
-/**
- * Parameterization syntax flavor
- *
- * - 'questions': Original syntax: {@:var}, {#:1-10}, {eval:expr}
- * - 'markdown': Alternative syntax: {{var}}, {{random:1-10}}, {{eval:expr}}
- * - 'both': Accept and process both syntaxes
- */
-export type Syntax = 'questions' | 'markdown' | 'both';
 
 // ============================================================================
 // TOKENS
@@ -42,7 +29,7 @@ export interface Token {
 	/** Token type */
 	type: 'variable' | 'random' | 'eval';
 
-	/** Full token text including delimiters: "{@:a}" or "{{a}}" */
+	/** Full token text including delimiters: "{{a}}" */
 	content: string;
 
 	/** Inner content without delimiters: "a" */
@@ -53,9 +40,6 @@ export interface Token {
 
 	/** End position in original text (exclusive) */
 	end: number;
-
-	/** Which syntax this token uses */
-	syntax: 'questions' | 'markdown';
 }
 
 // ============================================================================
@@ -72,13 +56,13 @@ export interface Token {
  * { name: 'a', expression: '42' }
  *
  * @example Variable reference
- * { name: 'b', expression: '{@:a}' } // or {{a}} in markdown
+ * { name: 'b', expression: '{{a}}' }
  *
  * @example Random number
- * { name: 'c', expression: '{#:1-10}' } // or {{random:1-10}}
+ * { name: 'c', expression: '{{random:1-10}}' }
  *
  * @example Expression
- * { name: 'd', expression: '{eval:a+b}' } // or {{eval:a+b}}
+ * { name: 'd', expression: '{{eval:a+b}}' }
  */
 export interface Variable {
 	/** Variable name (used in references) */
@@ -89,9 +73,9 @@ export interface Variable {
 	 *
 	 * Can contain:
 	 * - Literal values: "42", "3.14"
-	 * - Variable references: {@:var} or {{var}}
-	 * - Random specs: {#:1-10} or {{random:1-10}}
-	 * - Eval expressions: {eval:a+b} or {{eval:a+b}}
+	 * - Variable references: {{var}}
+	 * - Random specs: {{random:1-10}} or {{1-10}}
+	 * - Eval expressions: {{eval:a+b}}
 	 */
 	expression: string;
 }
@@ -142,47 +126,42 @@ export type Exclusion =
  * Unified type supporting all random number formats using discriminated union.
  *
  * @example Integer range
- * Questions: {#:1-10}
- * Markdown: {{random:1-10}} or {{1-10}}
+ * Syntax: {{random:1-10}} or {{1-10}}
  * Spec: { type: 'integer', min: {type:'number',value:1}, max: {...,value:10} }
  *
  * @example Decimal by digits
- * Questions: {#:2.3}
- * Markdown: {{random:2.3}} or {{2.3}}
+ * Syntax: {{random:2.3}} or {{2.3}}
  * Spec: { type: 'decimal-by-digits', digitsBefore: {type:'number',value:2}, digitsAfter: {...,value:3} }
  *
  * @example Decimal range with step
- * Questions: {#:0.5-9.99:0.01}
- * Markdown: {{random:0.5-9.99:0.01}} or {{0.5-9.99:0.01}}
+ * Syntax: {{random:0.5-9.99:0.01}} or {{0.5-9.99:0.01}}
  * Spec: { type: 'decimal-range', min: {...,value:0.5}, max: {...,value:9.99}, step: 0.01 }
  *
  * @example With exclusions
- * Questions: {#:1-20!5,7-9}
- * Markdown: {{random:1-20!5,7-9}} or {{1-20!5,7-9}}
+ * Syntax: {{random:1-20!5,7-9}} or {{1-20!5,7-9}}
  * Spec: { ..., exclusions: [...] }
  *
  * @example Variable bounds
- * Questions: {#:{@:min}-{@:max}}
- * Markdown: {{random:{{min}}-{{max}}}} or {{{{min}}-{{max}}}}
+ * Syntax: {{random:{{min}}-{{max}}}} or {{{{min}}-{{max}}}}
  * Spec: { type: 'integer', min: {type:'variable',name:'min'}, max: {type:'variable',name:'max'} }
  */
 export type RandomSpec =
 	| {
-			/** Integer range: {#:1-10} or {{random:1-10}} */
+			/** Integer range: {{random:1-10}} or {{1-10}} */
 			type: 'integer';
 			min: NumberOrVariable;
 			max: NumberOrVariable;
 			exclusions: Exclusion[];
 	  }
 	| {
-			/** Decimal by digits: {#:2.3} or {{random:2.3}} */
+			/** Decimal by digits: {{random:2.3}} or {{2.3}} */
 			type: 'decimal-by-digits';
 			digitsBefore: NumberOrVariable;
 			digitsAfter: NumberOrVariable;
 			exclusions: Exclusion[];
 	  }
 	| {
-			/** Decimal range with step: {#:0.5-9.99:0.01} or {{random:0.5-9.99:0.01}} */
+			/** Decimal range with step: {{random:0.5-9.99:0.01}} or {{0.5-9.99:0.01}} */
 			type: 'decimal-range';
 			min: NumberOrVariable;
 			max: NumberOrVariable;
@@ -208,9 +187,6 @@ export interface ResolutionContext {
 
 	/** Optional seed for reproducible random generation */
 	seed?: number;
-
-	/** Syntax to use for parsing (default: 'both') */
-	syntax?: Syntax;
 }
 
 /**

@@ -73,6 +73,19 @@ Intégration MathGraph32 pour figures géométriques interactives.
 - [Documentation API](features/geometry/api-docs.md)
 - [Exemples](features/geometry/examples.md)
 
+### 📓 Banque d'exercices
+
+**Status** : ✅ Production | [Documentation →](features/exercises/README.md)
+
+Système de création et gestion d'exercices en markdown avec export LaTeX/PDF.
+
+- Parser markdown avec support LaTeX (✅ Complet)
+- Transpiler vers LaTeX (✅ Complet)
+- Composants d'édition et affichage (✅ Complet)
+- Interface enseignant (✅ Production)
+- Import/Export JSON/Markdown (✅ Complet)
+- **2025-10-26** : 45 erreurs ESLint corrigées, feature production-ready
+
 ### 🎮 Navadra (Combat Math)
 
 **Status** : 🔄 En cours | [Documentation →](features/navadra/README.md)
@@ -199,10 +212,10 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 ## 📊 Statistiques
 
-- **Features en production** : 10
+- **Features en production** : 11
 - **Features en développement** : 1 (Navadra)
-- **Lignes de documentation** : ~10,000+
-- **Dernière mise à jour** : 2025-10-24
+- **Lignes de documentation** : ~10,500+
+- **Dernière mise à jour** : 2025-10-26
 
 ---
 

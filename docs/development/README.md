@@ -20,7 +20,11 @@ Workflow migrations Supabase, naming conventions, rollback.
 
 ### [Style de code](code-style.md)
 
-Standards de code, conventions de nommage, patterns recommandés.
+Standards de code, conventions de nommage, patterns recommandés, état du linting.
+
+### [Linting Best Practices](linting-best-practices.md)
+
+Stratégie de linting, lint-staged, Husky, ESLint cache, workflow automatisé.
 
 ### [Migration Svelte 5](svelte5-migration.md)
 
@@ -94,7 +98,9 @@ git push --follow-tags origin main
 
 - ✅ Prettier passing (format)
 - ✅ Build succeeds (no errors)
-- ⚠️ ~280 ESLint warnings (non-blocking, complex types)
+- ✅ **ESLint : 0 errors** (100% réduction depuis ~853 erreurs initiales)
+- ⚠️ ESLint : 20 warnings (acceptables, patterns légitimes)
+- ✅ TypeScript strict mode
 
 ### Testing
 

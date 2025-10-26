@@ -2,21 +2,17 @@
  * Random Parser - Parse random number specifications
  * ====================================================
  *
- * Parses random number specifications from both syntax flavors:
- * - Questions: {#:1-10}, {#:2.3}, {#:0.5-9.99:0.01}
- * - Markdown: {{random:1-10}}, {{1-10}}, {{2.3}}, {{0.5-9.99:0.01}}
- *
- * Supports:
- * - Integer ranges: {#:1-10} or {{random:1-10}}
- * - Decimal by digits: {#:2.3} or {{random:2.3}}
- * - Decimal ranges with step: {#:0.5-9.99:0.01} or {{random:0.5-9.99:0.01}}
- * - Variable bounds: {#:{@:min}-{@:max}} or {{random:{{min}}-{{max}}}}
- * - Exclusions: {#:1-20!5,7-9} or {{random:1-20!5,7-9}}
+ * Parses random number specifications from Markdown syntax:
+ * - Integer ranges: {{random:1-10}} or {{1-10}}
+ * - Decimal by digits: {{random:2.3}} or {{2.3}}
+ * - Decimal ranges with step: {{random:0.5-9.99:0.01}} or {{0.5-9.99:0.01}}
+ * - Variable bounds: {{random:{{min}}-{{max}}}} or {{{{min}}-{{max}}}}
+ * - Exclusions: {{random:1-20!5,7-9}} or {{1-20!5,7-9}}
  *
  * @module shared/parameterization/parser/random-parser
  */
 
-import type { RandomSpec, Syntax, NumberOrVariable, Exclusion } from '../types';
+import type { RandomSpec, NumberOrVariable, Exclusion } from '../types';
 
 /**
  * Parse a random specification token
@@ -27,97 +23,72 @@ import type { RandomSpec, Syntax, NumberOrVariable, Exclusion } from '../types';
  * - Multiple decimal formats
  *
  * @param token - Full token string including delimiters
- * @param syntax - Expected syntax (optional, auto-detects if not provided)
  * @returns Parsed RandomSpec, or null if token is not a valid random specification
  *
- * @example Integer range (Questions)
+ * @example Integer range with prefix
  * ```typescript
- * parseRandomSpec('{#:1-10}', 'questions')
+ * parseRandomSpec('{{random:1-10}}')
  * // → { type: 'integer', min: {type:'number',value:1}, max: {...,value:10}, exclusions: [] }
  * ```
  *
- * @example Integer range (Markdown)
+ * @example Integer range shorthand
  * ```typescript
- * parseRandomSpec('{{random:1-10}}', 'markdown')
- * // → { type: 'integer', min: {type:'number',value:1}, max: {...,value:10}, exclusions: [] }
- * ```
- *
- * @example Markdown shorthand
- * ```typescript
- * parseRandomSpec('{{1-10}}', 'markdown')
+ * parseRandomSpec('{{1-10}}')
  * // → { type: 'integer', min: {type:'number',value:1}, max: {...,value:10}, exclusions: [] }
  * ```
  *
  * @example Decimal by digits
  * ```typescript
- * parseRandomSpec('{#:2.3}', 'questions')
+ * parseRandomSpec('{{2.3}}')
  * // → { type: 'decimal-by-digits', digitsBefore: {type:'number',value:2}, digitsAfter: {...,value:3}, exclusions: [] }
  * ```
  *
  * @example Decimal range with step
  * ```typescript
- * parseRandomSpec('{#:0.5-9.99:0.01}', 'questions')
+ * parseRandomSpec('{{0.5-9.99:0.01}}')
  * // → { type: 'decimal-range', min: {...,value:0.5}, max: {...,value:9.99}, step: 0.01, exclusions: [] }
  * ```
  *
  * @example With exclusions
  * ```typescript
- * parseRandomSpec('{#:1-20!5,7-9}', 'questions')
+ * parseRandomSpec('{{1-20!5,7-9}}')
  * // → { type: 'integer', ..., exclusions: [
  * //      { type: 'value', value: {type:'number',value:5} },
  * //      { type: 'range', min: {type:'number',value:7}, max: {type:'number',value:9} }
  * //    ] }
  * ```
  *
- * @example Variable bounds (Questions)
+ * @example Variable bounds
  * ```typescript
- * parseRandomSpec('{#:{@:min}-{@:max}}', 'questions')
- * // → { type: 'integer', min: {type:'variable',name:'min'}, max: {type:'variable',name:'max'}, exclusions: [] }
- * ```
- *
- * @example Variable bounds (Markdown)
- * ```typescript
- * parseRandomSpec('{{random:{{min}}-{{max}}}}', 'markdown')
+ * parseRandomSpec('{{random:{{min}}-{{max}}}}')
  * // → { type: 'integer', min: {type:'variable',name:'min'}, max: {type:'variable',name:'max'}, exclusions: [] }
  * ```
  *
  * @example Variable digits
  * ```typescript
- * parseRandomSpec('{#:{@:before}.{@:after}}', 'questions')
+ * parseRandomSpec('{{{{before}}.{{after}}}}')
  * // → { type: 'decimal-by-digits', digitsBefore: {type:'variable',name:'before'}, digitsAfter: {type:'variable',name:'after'}, exclusions: [] }
  * ```
  */
-export function parseRandomSpec(token: string, syntax?: Syntax): RandomSpec | null {
-	// Extract content based on syntax
+export function parseRandomSpec(token: string): RandomSpec | null {
+	// Extract content from Markdown syntax
 	let content: string | null = null;
-	let detectedSyntax: 'questions' | 'markdown' | null = null;
 
-	// Try Questions syntax: {#:...}
-	if (!syntax || syntax === 'questions' || syntax === 'both') {
-		if (token.startsWith('{#:') && token.endsWith('}')) {
-			content = token.slice(3, -1);
-			detectedSyntax = 'questions';
-		}
+	// Try {{random:...}} format
+	if (token.startsWith('{{random:') && token.endsWith('}}')) {
+		content = token.slice(9, -2);
+	}
+	// Try {{...}} shorthand format
+	else if (token.startsWith('{{') && token.endsWith('}}')) {
+		content = token.slice(2, -2);
 	}
 
-	// Try Markdown syntax: {{random:...}} or {{...}}
-	if (!content && (!syntax || syntax === 'markdown' || syntax === 'both')) {
-		if (token.startsWith('{{random:') && token.endsWith('}}')) {
-			content = token.slice(9, -2);
-			detectedSyntax = 'markdown';
-		} else if (token.startsWith('{{') && token.endsWith('}}')) {
-			// Shorthand: {{1-10}} or {{2.3}}
-			content = token.slice(2, -2);
-			detectedSyntax = 'markdown';
-		}
-	}
-
-	if (!content || !detectedSyntax) {
+	if (!content) {
 		return null;
 	}
 
 	try {
-		return parseRandomContent(content, detectedSyntax);
+		return parseRandomContent(content);
 	} catch {
 		return null;
 	}
@@ -126,23 +97,23 @@ export function parseRandomSpec(token: string, syntax?: Syntax): RandomSpec | nu
 /**
  * Parse the inner content of a random specification
  */
-function parseRandomContent(content: string, syntax: 'questions' | 'markdown'): RandomSpec {
+function parseRandomContent(content: string): RandomSpec {
 	// Split base and exclusions
-	const [baseSpec, exclusionSpec] = splitAtTopLevel(content, '!', syntax);
+	const [baseSpec, exclusionSpec] = splitAtTopLevel(content, '!');
 
 	// Parse base specification
 	let spec: RandomSpec;
 
 	// Check if it's a decimal by digits format (contains . but no -)
 	if (baseSpec.includes('.') && !baseSpec.includes('-')) {
-		spec = parseDecimalByDigits(baseSpec, syntax);
+		spec = parseDecimalByDigits(baseSpec);
 	} else {
-		spec = parseRange(baseSpec, syntax);
+		spec = parseRange(baseSpec);
 	}
 
 	// Parse exclusions if present
 	if (exclusionSpec) {
-		spec.exclusions = parseExclusions(exclusionSpec, syntax);
+		spec.exclusions = parseExclusions(exclusionSpec);
 	} else {
 		spec.exclusions = [];
 	}
@@ -151,10 +122,9 @@ function parseRandomContent(content: string, syntax: 'questions' | 'markdown'): 
 }
 
 /**
- * Parse decimal format: {#:2.3} or {{2.3}}
- * Or with variables: {#:{@:before}.{@:after}} or {{{{before}}.{{after}}}}
+ * Parse decimal format: {{2.3}} or {{{{before}}.{{after}}}}
  */
-function parseDecimalByDigits(spec: string, syntax: 'questions' | 'markdown'): RandomSpec {
+function parseDecimalByDigits(spec: string): RandomSpec {
 	const [beforeStr, afterStr] = spec.split('.');
 
 	if (!beforeStr || !afterStr) {
@@ -163,22 +133,22 @@ function parseDecimalByDigits(spec: string, syntax: 'questions' | 'markdown'): R
 
 	return {
 		type: 'decimal-by-digits',
-		digitsBefore: parseNumberOrVariable(beforeStr, syntax),
-		digitsAfter: parseNumberOrVariable(afterStr, syntax),
+		digitsBefore: parseNumberOrVariable(beforeStr),
+		digitsAfter: parseNumberOrVariable(afterStr),
 		exclusions: []
 	};
 }
 
 /**
  * Parse range format
- * Examples: {#:1-10}, {{random:1-10}}, {#:0.5-9.99:0.01}, {#:{@:min}-{@:max}}
+ * Examples: {{1-10}}, {{random:1-10}}, {{0.5-9.99:0.01}}, {{{{min}}-{{max}}}}
  */
-function parseRange(spec: string, syntax: 'questions' | 'markdown'): RandomSpec {
+function parseRange(spec: string): RandomSpec {
 	// Check for step notation (split at top level to avoid splitting inside variables)
-	const [rangeSpec, stepStr] = splitAtTopLevel(spec, ':', syntax);
+	const [rangeSpec, stepStr] = splitAtTopLevel(spec, ':');
 
 	// Parse min-max
-	const { min, max } = parseMinMax(rangeSpec, syntax);
+	const { min, max } = parseMinMax(rangeSpec);
 
 	// Determine if decimal or integer
 	const isDecimal =
@@ -218,13 +188,9 @@ function isNumberOrVariableDecimal(val: NumberOrVariable): boolean {
  * Examples:
  * - "1-10" → min: 1, max: 10
  * - "-5-10" → min: -5, max: 10
- * - "{@:a}-{@:b}" → min: {type:'variable',name:'a'}, max: {...}
  * - "{{min}}-{{max}}" → min: {type:'variable',name:'min'}, max: {...}
  */
-function parseMinMax(
-	rangeSpec: string,
-	syntax: 'questions' | 'markdown'
-): { min: NumberOrVariable; max: NumberOrVariable } {
+function parseMinMax(rangeSpec: string): { min: NumberOrVariable; max: NumberOrVariable } {
 	let minStr = '';
 	let maxStr = '';
 	let inVariable = false;
@@ -266,8 +232,8 @@ function parseMinMax(
 	}
 
 	return {
-		min: parseNumberOrVariable(minStr, syntax),
-		max: parseNumberOrVariable(maxStr, syntax)
+		min: parseNumberOrVariable(minStr),
+		max: parseNumberOrVariable(maxStr)
 	};
 }
 
@@ -275,29 +241,18 @@ function parseMinMax(
  * Parse a string as number or variable reference
  *
  * @example Number
- * parseNumberOrVariable('42', 'questions') → {type:'number',value:42}
+ * parseNumberOrVariable('42') → {type:'number',value:42}
  *
- * @example Variable (Questions)
- * parseNumberOrVariable('{@:varName}', 'questions') → {type:'variable',name:'varName'}
- *
- * @example Variable (Markdown)
- * parseNumberOrVariable('{{varName}}', 'markdown') → {type:'variable',name:'varName'}
+ * @example Variable
+ * parseNumberOrVariable('{{varName}}') → {type:'variable',name:'varName'}
  */
-function parseNumberOrVariable(str: string, syntax: 'questions' | 'markdown'): NumberOrVariable {
+function parseNumberOrVariable(str: string): NumberOrVariable {
 	const trimmed = str.trim();
 
-	// Check if it's a variable
-	if (syntax === 'questions') {
-		if (trimmed.startsWith('{@:') && trimmed.endsWith('}')) {
-			const varName = trimmed.slice(3, -1);
-			return { type: 'variable', name: varName };
-		}
-	} else {
-		// Markdown syntax
-		if (trimmed.startsWith('{{') && trimmed.endsWith('}}')) {
-			const varName = trimmed.slice(2, -2);
-			return { type: 'variable', name: varName };
-		}
+	// Check if it's a variable (Markdown syntax)
+	if (trimmed.startsWith('{{') && trimmed.endsWith('}}')) {
+		const varName = trimmed.slice(2, -2);
+		return { type: 'variable', name: varName };
 	}
 
 	// It's a number
@@ -310,17 +265,17 @@ function parseNumberOrVariable(str: string, syntax: 'questions' | 'markdown'): N
 }
 
 /**
- * Parse exclusions: "5,7-9,{@:a},{@:b}-{@:c}" or "5,7-9,{{a}},{{b}}-{{c}}"
+ * Parse exclusions: "5,7-9,{{a}},{{b}}-{{c}}"
  */
-function parseExclusions(spec: string, syntax: 'questions' | 'markdown'): Exclusion[] {
+function parseExclusions(spec: string): Exclusion[] {
 	const exclusions: Exclusion[] = [];
-	const parts = splitExclusionParts(spec, syntax);
+	const parts = splitExclusionParts(spec);
 
 	for (const part of parts) {
 		const trimmed = part.trim();
 
-		// Variable reference
-		const varPattern = syntax === 'questions' ? /^\{@:(\w+)\}$/ : /^\{\{(\w+)\}\}$/;
+		// Variable reference (Markdown)
+		const varPattern = /^\{\{(\w+)\}\}$/;
 		const varMatch = trimmed.match(varPattern);
 		if (varMatch && !trimmed.includes('-')) {
 			exclusions.push({ type: 'value', value: { type: 'variable', name: varMatch[1] } });
@@ -328,17 +283,17 @@ function parseExclusions(spec: string, syntax: 'questions' | 'markdown'): Exclus
 		// Range: detect by trying to parse as range
 		else if (trimmed.includes('-')) {
 			try {
-				const { min, max } = parseMinMax(trimmed, syntax);
+				const { min, max } = parseMinMax(trimmed);
 				exclusions.push({ type: 'range', min, max });
 			} catch {
 				// If parseMinMax fails, treat as single value
-				const value = parseNumberOrVariable(trimmed, syntax);
+				const value = parseNumberOrVariable(trimmed);
 				exclusions.push({ type: 'value', value });
 			}
 		}
 		// Single value
 		else {
-			const value = parseNumberOrVariable(trimmed, syntax);
+			const value = parseNumberOrVariable(trimmed);
 			exclusions.push({ type: 'value', value });
 		}
 	}
@@ -349,10 +304,9 @@ function parseExclusions(spec: string, syntax: 'questions' | 'markdown'): Exclus
 /**
  * Split exclusion parts while respecting braces
  *
- * Example: "5,{@:a},{@:b}-{@:c}" → ["5", "{@:a}", "{@:b}-{@:c}"]
  * Example: "5,{{a}},{{b}}-{{c}}" → ["5", "{{a}}", "{{b}}-{{c}}"]
  */
-function splitExclusionParts(spec: string, _syntax: 'questions' | 'markdown'): string[] {
+function splitExclusionParts(spec: string): string[] {
 	const parts: string[] = [];
 	let current = '';
 	let braceCount = 0;
@@ -385,15 +339,10 @@ function splitExclusionParts(spec: string, _syntax: 'questions' | 'markdown'): s
  * Split string at character, but only at top level (outside braces)
  *
  * @example
- * splitAtTopLevel('1-10!5', '!', 'questions') → ['1-10', '5']
- * splitAtTopLevel('{@:a}-{@:b}!{@:c}', '!', 'questions') → ['{@:a}-{@:b}', '{@:c}']
- * splitAtTopLevel('{{a}}-{{b}}!{{c}}', '!', 'markdown') → ['{{a}}-{{b}}', '{{c}}']
+ * splitAtTopLevel('1-10!5', '!') → ['1-10', '5']
+ * splitAtTopLevel('{{a}}-{{b}}!{{c}}', '!') → ['{{a}}-{{b}}', '{{c}}']
  */
-function splitAtTopLevel(
-	str: string,
-	separator: string,
-	_syntax: 'questions' | 'markdown'
-): [string, string | undefined] {
+function splitAtTopLevel(str: string, separator: string): [string, string | undefined] {
 	let braceCount = 0;
 	let separatorIndex = -1;
 

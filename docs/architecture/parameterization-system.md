@@ -2,7 +2,7 @@
 
 Architectural overview of the shared parameterization library used by Questions and Exercises features.
 
-**Version:** 1.0.0
+**Version:** 2.0.0
 **Date:** 2025-01-26
 
 ---
@@ -13,7 +13,6 @@ Architectural overview of the shared parameterization library used by Questions 
 - [Component Architecture](#component-architecture)
 - [Design Decisions](#design-decisions)
 - [3-Stage Resolution Pipeline](#3-stage-resolution-pipeline)
-- [Dual Syntax Support](#dual-syntax-support)
 - [Random Number Generation](#random-number-generation)
 - [Circular Dependency Detection](#circular-dependency-detection)
 - [Integration Points](#integration-points)
@@ -32,7 +31,6 @@ The Shared Parameterization Library provides a unified, content-agnostic system 
 2. **Random Number Generation** - Generate reproducible random values with constraints
 3. **Expression Evaluation** - Evaluate mathematical expressions using MathLive
 4. **Validation** - Detect circular dependencies and syntax errors
-5. **Syntax Conversion** - Convert between Questions and Markdown syntaxes
 
 ### Scope
 
@@ -44,7 +42,7 @@ The library is used by:
 ### Design Principles
 
 1. **Content-Agnostic** - No feature-specific types, logic, or dependencies
-2. **Dual Syntax First-Class** - Questions and Markdown syntaxes equally supported
+2. **Markdown Syntax Only** - Simple, readable `{{}}` syntax for all features
 3. **Composable** - Each layer (parser, resolver, validator) can be used independently
 4. **Testable** - 447 tests with 99%+ coverage
 5. **Type-Safe** - Full TypeScript support with discriminated unions
@@ -80,27 +78,21 @@ The library is used by:
               │  │  ┌──────────────────┐  │  │
               │  │  │  Tokenizer       │  │  │
               │  │  │  • Extract tokens│  │  │
-              │  │  │  • Both syntaxes │  │  │
+              │  │  │  • Markdown      │  │  │
               │  │  └──────────────────┘  │  │
               │  │  ┌──────────────────┐  │  │
               │  │  │  Variable Parser │  │  │
-              │  │  │  • {@:var}       │  │  │
               │  │  │  • {{var}}       │  │  │
               │  │  └──────────────────┘  │  │
               │  │  ┌──────────────────┐  │  │
               │  │  │  Random Parser   │  │  │
-              │  │  │  • {#:1-10}      │  │  │
               │  │  │  • {{1-10}}      │  │  │
+              │  │  │  • {{random:}}   │  │  │
               │  │  │  • All formats   │  │  │
               │  │  └──────────────────┘  │  │
               │  │  ┌──────────────────┐  │  │
               │  │  │  Eval Parser     │  │  │
-              │  │  │  • {eval:expr}   │  │  │
               │  │  │  • {{eval:expr}} │  │  │
-              │  │  └──────────────────┘  │  │
-              │  │  ┌──────────────────┐  │  │
-              │  │  │  Syntax Converter│  │  │
-              │  │  │  • Q ↔ M         │  │  │
               │  │  └──────────────────┘  │  │
               │  └────────────────────────┘  │
               │              │               │
@@ -153,10 +145,9 @@ src/lib/shared/parameterization/
 │
 ├── parser/                       # Parser Layer
 │   ├── tokenizer.ts             # Extract tokens from text
-│   ├── variable-parser.ts       # Parse {@:var} or {{var}}
-│   ├── random-parser.ts         # Parse {#:1-10} or {{1-10}}
-│   ├── eval-parser.ts           # Parse {eval:expr} or {{eval:expr}}
-│   └── syntax-converter.ts      # Convert between syntaxes
+│   ├── variable-parser.ts       # Parse {{var}}
+│   ├── random-parser.ts         # Parse {{1-10}} or {{random:...}}
+│   └── eval-parser.ts           # Parse {{eval:expr}}
 │
 ├── resolver/                     # Resolver Layer
 │   ├── variable-resolver.ts     # 3-stage variable resolution
@@ -194,65 +185,65 @@ src/lib/shared/parameterization/
 - ⚠️ Features must map their types to shared types
 - ⚠️ Some feature-specific validation happens at feature level
 
-### Why Dual Syntax?
+### Why Markdown Syntax?
 
-**Problem:** Questions used `{@:var}` syntax, but Exercises needed more markdown-friendly syntax.
-
-**Solution:** Support both syntaxes as first-class citizens with automatic detection and conversion.
+**Decision:** Use clean, readable `{{var}}` syntax inspired by common templating languages.
 
 **Benefits:**
 
-- ✅ Questions can continue using existing syntax
-- ✅ Exercises can use more readable `{{var}}` syntax
-- ✅ Users can choose preferred syntax
-- ✅ Bidirectional conversion enables migration
+- ✅ Easy to read and write
+- ✅ Familiar to developers (Handlebars, Mustache, Liquid)
+- ✅ Works well in markdown editors and documents
+- ✅ Clear visual distinction from code
+- ✅ Consistent across all features (Questions and Exercises)
 
-**Implementation:**
+**Syntax:**
 
-- All parser functions accept `syntax: Syntax` parameter (`'questions'` | `'markdown'` | `'both'`)
-- Tokenizer extracts both syntaxes when `syntax = 'both'`
-- Each token tracks which syntax it uses
-- Syntax converter provides bidirectional transformation
+- Variables: `{{var}}`
+- Random: `{{random:1-10}}` or `{{1-10}}`
+- Eval: `{{eval:expr}}`
+
+**Historical Note:** The system previously supported dual syntax (`{@:}` / `{{}}`) but was simplified to Markdown-only in Phase 5 for consistency and maintainability.
 
 ### Why 3-Stage Resolution?
 
 **Problem:** Variable expressions can contain:
 
-1. References to other variables: `{@:a}`
-2. Random number specs: `{#:1-10}`
-3. Eval expressions: `{eval:a+b}`
+1. References to other variables: `{{a}}`
+2. Random number specs: `{{random:1-10}}` or `{{1-10}}`
+3. Eval expressions: `{{eval:a+b}}`
 
 These need to be resolved in a specific order.
 
 **Solution:** 3-stage pipeline that processes each variable through:
 
-1. **Stage 1: Replace Variable References** - `{@:var}` → resolved value
-2. **Stage 2: Generate Random Numbers** - `{#:1-10}` → actual number
-3. **Stage 3: Evaluate Expressions** - `{eval:a+b}` → calculated result
+1. **Stage 1: Replace Variable References** - `{{var}}` → resolved value
+2. **Stage 2: Generate Random Numbers** - `{{random:1-10}}` → actual number
+3. **Stage 3: Evaluate Expressions** - `{{eval:a+b}}` → calculated result
 
 **Example:**
 
 ```typescript
-// Input: { name: 'result', expression: '{eval:{@:a}+{#:1-5}}' }
+// Input: { name: 'result', expression: '{{eval:{{a}}+{{random:1-5}}}}' }
 // Assume: a = 7 (already resolved)
 
-// Stage 1: Replace {@:a} → '7'
-//   '{eval:{@:a}+{#:1-5}}' → '{eval:7+{#:1-5}}'
+// Stage 1: Replace {{a}} → '7'
+//   '{{eval:{{a}}+{{random:1-5}}}}' → '{{eval:7+{{random:1-5}}}}'
 
-// Stage 2: Generate {#:1-5} → random value (e.g., 3)
-//   '{eval:7+{#:1-5}}' → '{eval:7+3}'
+// Stage 2: Generate {{random:1-5}} → random value (e.g., 3)
+//   '{{eval:7+{{random:1-5}}}}' → '{{eval:7+3}}'
 
-// Stage 3: Evaluate {eval:7+3} → 10
-//   '{eval:7+3}' → '10'
+// Stage 3: Evaluate {{eval:7+3}} → 10
+//   '{{eval:7+3}}' → '10'
 
 // Final: '10'
 ```
 
 **Why This Order?**
 
-- Variables must be resolved before random generation (for variable bounds: `{#:{@:min}-{@:max}}`)
-- Random numbers must be generated before evaluation (for `{eval:{#:1-10}+5}`)
-- Evaluation must be last (for `{eval:{@:a}+{@:b}}`)
+- Variables must be resolved before random generation (for variable bounds: `{{random:{{min}}-{{max}}}}`)
+- Random numbers must be generated before evaluation (for `{{eval:{{random:1-10}}+5}}`)
+- Evaluation must be last (for `{{eval:{{a}}+{{b}}}}`)
 
 **Benefits:**
 
@@ -318,7 +309,7 @@ a → b → c → a  // Circular!
 
 ```
 INPUT: Variable definition
-  { name: 'result', expression: '{eval:{@:a}+{#:1-5}}' }
+  { name: 'result', expression: '{{eval:{{a}}+{{random:1-5}}}}' }
 
 CONTEXT: Previously resolved variables
   [{ name: 'a', value: '7' }]
@@ -326,41 +317,42 @@ CONTEXT: Previously resolved variables
 ┌─────────────────────────────────────────────────────────────┐
 │ STAGE 1: Replace Variable References                       │
 ├─────────────────────────────────────────────────────────────┤
-│ 1. Tokenize expression: '{eval:{@:a}+{#:1-5}}'             │
-│ 2. Filter variable tokens: [{@:a}]                          │
+│ 1. Tokenize expression: '{{eval:{{a}}+{{random:1-5}}}}'    │
+│ 2. Filter variable tokens: [{{a}}]                          │
 │ 3. For each token (reverse order):                          │
-│    - Parse: {@:a} → 'a'                                     │
+│    - Parse: {{a}} → 'a'                                     │
 │    - Lookup: resolvedVariables.find(v => v.name === 'a')    │
-│    - Replace: '{eval:{@:a}+{#:1-5}}' → '{eval:7+{#:1-5}}'  │
+│    - Replace: '{{eval:{{a}}+{{random:1-5}}}}' →            │
+│              '{{eval:7+{{random:1-5}}}}'                    │
 │                                                             │
-│ OUTPUT: '{eval:7+{#:1-5}}'                                  │
+│ OUTPUT: '{{eval:7+{{random:1-5}}}}'                         │
 └─────────────────────────────────────────────────────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
 │ STAGE 2: Generate Random Numbers                           │
 ├─────────────────────────────────────────────────────────────┤
-│ 1. Tokenize: '{eval:7+{#:1-5}}'                            │
-│ 2. Filter random tokens: [{#:1-5}]                          │
+│ 1. Tokenize: '{{eval:7+{{random:1-5}}}}'                   │
+│ 2. Filter random tokens: [{{random:1-5}}]                   │
 │ 3. For each token (reverse order):                          │
-│    - Parse: {#:1-5} → { type: 'integer', min: 1, max: 5 }  │
+│    - Parse: {{random:1-5}} → { type: 'integer', ... }      │
 │    - Generate: generateRandomNumber(spec, seed) → 3         │
-│    - Replace: '{eval:7+{#:1-5}}' → '{eval:7+3}'            │
+│    - Replace: '{{eval:7+{{random:1-5}}}}' → '{{eval:7+3}}' │
 │                                                             │
-│ OUTPUT: '{eval:7+3}'                                        │
+│ OUTPUT: '{{eval:7+3}}'                                      │
 └─────────────────────────────────────────────────────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
 │ STAGE 3: Evaluate Expressions                              │
 ├─────────────────────────────────────────────────────────────┤
-│ 1. Tokenize: '{eval:7+3}'                                  │
-│ 2. Filter eval tokens: [{eval:7+3}]                         │
+│ 1. Tokenize: '{{eval:7+3}}'                                │
+│ 2. Filter eval tokens: [{{eval:7+3}}]                       │
 │ 3. For each token (reverse order):                          │
-│    - Parse: {eval:7+3} → '7+3'                             │
+│    - Parse: {{eval:7+3}} → '7+3'                           │
 │    - Resolve vars in expression (if any): '7+3' (none)      │
 │    - Evaluate: evaluateExpression('7+3') → 10               │
-│    - Replace: '{eval:7+3}' → '10'                          │
+│    - Replace: '{{eval:7+3}}' → '10'                        │
 │                                                             │
 │ OUTPUT: '10'                                                │
 └─────────────────────────────────────────────────────────────┘
@@ -376,7 +368,7 @@ CONTEXT: Previously resolved variables
 
 **Process:**
 
-1. Tokenize expression to find all `{@:var}` or `{{var}}` tokens
+1. Tokenize expression to find all `{{var}}` tokens
 2. For each token (reverse order to preserve positions):
    - Parse variable name
    - Lookup in resolved variables
@@ -387,13 +379,13 @@ CONTEXT: Previously resolved variables
 
 ```typescript
 // Input
-expression: '{@:a} + {@:b}'
+expression: '{{a}} + {{b}}'
 resolved: [{ name: 'a', value: '5' }, { name: 'b', value: '10' }]
 
 // Process
-tokens: [{@:a}, {@:b}]
-replace {@:b}: '{@:a} + 10'
-replace {@:a}: '5 + 10'
+tokens: [{{a}}, {{b}}]
+replace {{b}}: '{{a}} + 10'
+replace {{a}}: '5 + 10'
 
 // Output
 '5 + 10'
@@ -401,10 +393,10 @@ replace {@:a}: '5 + 10'
 
 **Handles:**
 
-- Simple references: `{@:a}`
-- Nested in random: `{#:{@:min}-{@:max}}`
-- Nested in eval: `{eval:{@:a}+{@:b}}`
-- Multiple references: `{@:a} + {@:b} - {@:c}`
+- Simple references: `{{a}}`
+- Nested in random: `{{random:{{min}}-{{max}}}}`
+- Nested in eval: `{{eval:{{a}}+{{b}}}}`
+- Multiple references: `{{a}} + {{b}} - {{c}}`
 
 ### Stage 2: Random Number Generation
 
@@ -413,7 +405,7 @@ replace {@:a}: '5 + 10'
 
 **Process:**
 
-1. Tokenize expression to find all `{#:...}` or `{{random:...}}` tokens
+1. Tokenize expression to find all `{{random:...}}` or shorthand `{{1-10}}` tokens
 2. For each token (reverse order):
    - Parse random specification
    - Resolve variable bounds/exclusions using resolved variables
@@ -424,7 +416,7 @@ replace {@:a}: '5 + 10'
 
 ```typescript
 // Input
-expression: '{#:1-10}'
+expression: '{{random:1-10}}'
 seed: 12345
 
 // Process
@@ -440,11 +432,11 @@ replace: '7'
 
 ```typescript
 // Input
-expression: '{#:{@:min}-{@:max}}'
+expression: '{{random:{{min}}-{{max}}}}'
 resolved: [{ name: 'min', value: '1' }, { name: 'max', value: '100' }]
 
 // Process (after Stage 1 already replaced variables)
-expression: '{#:1-100}'
+expression: '{{random:1-100}}'
 parse: { type: 'integer', min: 1, max: 100, exclusions: [] }
 generate: 42
 replace: '42'
@@ -455,11 +447,11 @@ replace: '42'
 
 **Handles:**
 
-- Integer range: `{#:1-10}`
-- Decimal by digits: `{#:2.3}`
-- Decimal range: `{#:0.5-9.99:0.01}`
-- Exclusions: `{#:1-10!5,7-9}`
-- Variable bounds: `{#:{@:min}-{@:max}}`
+- Integer range: `{{random:1-10}}` or `{{1-10}}`
+- Decimal by digits: `{{random:2.3}}` or `{{2.3}}`
+- Decimal range: `{{random:0.5-9.99:0.01}}`
+- Exclusions: `{{random:1-10!5,7-9}}`
+- Variable bounds: `{{random:{{min}}-{{max}}}}`
 
 ### Stage 3: Expression Evaluation
 
@@ -468,7 +460,7 @@ replace: '42'
 
 **Process:**
 
-1. Tokenize expression to find all `{eval:...}` or `{{eval:...}}` tokens
+1. Tokenize expression to find all `{{eval:...}}` tokens
 2. For each token (reverse order):
    - Parse eval expression
    - Resolve any remaining variable references inside expression
@@ -479,7 +471,7 @@ replace: '42'
 
 ```typescript
 // Input
-expression: '{eval:5+10}'
+expression: '{{eval:5+10}}'
 
 // Process
 parse: '5+10'
@@ -494,14 +486,14 @@ replace: '15'
 
 ```typescript
 // Input (after Stage 1 and 2)
-expression: '{eval:5+10}'  // Already resolved
+expression: '{{eval:5+10}}'  // Already resolved
 
 // But if eval contains variables:
-expression: '{eval:{@:a}+{@:b}}'
+expression: '{{eval:{{a}}+{{b}}}}'
 resolved: [{ name: 'a', value: '5' }, { name: 'b', value: '10' }]
 
 // Process
-parse: '{@:a}+{@:b}'
+parse: '{{a}}+{{b}}'
 resolve vars: '5+10'
 evaluate: evaluateExpression('5+10') → 15
 replace: '15'
@@ -512,98 +504,10 @@ replace: '15'
 
 **Handles:**
 
-- Simple expressions: `{eval:3+4}`
-- With variables: `{eval:{@:a}+{@:b}}`
-- Complex expressions: `{eval:({@:a})^2-{@:b}}`
-- LaTeX expressions: `{eval:\frac{1}{2}}`
-
----
-
-## Dual Syntax Support
-
-### Syntax Detection
-
-The tokenizer automatically detects which syntax is used based on delimiters:
-
-```
-Questions Syntax:
-  {<prefix>:<content>}
-  - {@:var}      → Variable
-  - {#:1-10}     → Random
-  - {eval:expr}  → Eval
-
-Markdown Syntax:
-  {{<content>}}
-  - {{var}}              → Variable (if valid identifier)
-  - {{random:1-10}}      → Random (explicit)
-  - {{1-10}}             → Random (shorthand, auto-detected)
-  - {{eval:expr}}        → Eval
-```
-
-### Auto-Detection Algorithm
-
-For Markdown syntax (`{{...}}`), the tokenizer uses heuristics to determine token type:
-
-```typescript
-function detectMarkdownTokenType(innerContent: string): 'variable' | 'random' | 'eval' | null {
-	// Explicit prefixes
-	if (innerContent.startsWith('random:')) return 'random';
-	if (innerContent.startsWith('eval:')) return 'eval';
-
-	// Auto-detect random patterns
-	if (isRandomShorthand(innerContent)) return 'random';
-
-	// Valid identifier → variable
-	if (isValidVariableName(innerContent)) return 'variable';
-
-	return null; // Not a parameterization token
-}
-
-function isRandomShorthand(content: string): boolean {
-	// Pattern 1: Contains "-" with numbers → range (e.g., "1-10", "-5-10")
-	if (content.includes('-') && /\d/.test(content)) return true;
-
-	// Pattern 2: Decimal by digits (e.g., "2.3")
-	if (/^\d+\.\d+$/.test(content)) return true;
-
-	// Pattern 3: Variable bounds (e.g., "{{min}}-{{max}}")
-	if (content.includes('-') && content.includes('{{')) return true;
-
-	// Pattern 4: Has exclusions (e.g., "1-10!5")
-	if (content.includes('!')) return true;
-
-	// Pattern 5: Has step notation (e.g., "0.5-9.99:0.01")
-	if (content.includes(':')) return true;
-
-	return false;
-}
-```
-
-### Syntax Conversion
-
-Bidirectional conversion between syntaxes:
-
-```typescript
-// Questions → Markdown
-convertSyntax('{@:a}', 'questions', 'markdown')       → '{{a}}'
-convertSyntax('{#:1-10}', 'questions', 'markdown')    → '{{random:1-10}}'
-convertSyntax('{eval:a+b}', 'questions', 'markdown')  → '{{eval:a+b}}'
-
-// Markdown → Questions
-convertSyntax('{{a}}', 'markdown', 'questions')           → '{@:a}'
-convertSyntax('{{random:1-10}}', 'markdown', 'questions') → '{#:1-10}'
-convertSyntax('{{1-10}}', 'markdown', 'questions')        → '{#:1-10}'
-convertSyntax('{{eval:a+b}}', 'markdown', 'questions')    → '{eval:a+b}'
-```
-
-**Implementation:**
-
-1. Tokenize with source syntax
-2. For each token:
-   - Convert to target syntax based on type
-   - Preserve inner content
-3. Replace tokens in original text
-4. Return converted text
+- Simple expressions: `{{eval:3+4}}`
+- With variables: `{{eval:{{a}}+{{b}}}}`
+- Complex expressions: `{{eval:({{a}})^2-{{b}}}}`
+- LaTeX expressions: `{{eval:\frac{1}{2}}}`
 
 ---
 
@@ -783,15 +687,15 @@ Extract dependencies from all token types:
 
 ```typescript
 function getVariableNames(expression: string): string[] {
-	const tokens = tokenize(expression, 'both');
+	const tokens = tokenize(expression);
 	const names: string[] = [];
 
 	for (const token of tokens) {
 		if (token.type === 'variable') {
-			// Direct reference: {@:a}
+			// Direct reference: {{a}}
 			names.push(parseVariableReference(token.content));
 		} else if (token.type === 'random') {
-			// Inside random spec: {#:{@:min}-{@:max}!{@:exclude}}
+			// Inside random spec: {{random:{{min}}-{{max}}!{{exclude}}}}
 			const spec = parseRandomSpec(token.content);
 			if (spec.type === 'integer' || spec.type === 'decimal-range') {
 				if (spec.min.type === 'variable') names.push(spec.min.name);
@@ -804,7 +708,7 @@ function getVariableNames(expression: string): string[] {
 				// ... handle range exclusions
 			}
 		} else if (token.type === 'eval') {
-			// Inside eval: {eval:{@:a}+{@:b}}
+			// Inside eval: {{eval:{{a}}+{{b}}}}
 			const expr = parseEvalExpression(token.content);
 			names.push(...getVariableNames(expr)); // Recursive
 		}
@@ -900,21 +804,21 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Que
 	}));
 
 	// Resolve using shared library
-	const resolved = resolveVariables(variables, seed, 'questions');
+	const resolved = resolveVariables(variables, seed);
 
 	// Resolve statement
 	const statement = template.variations[variationIndex].statement.map((field) => {
 		if (field.type === 'text') {
 			return {
 				type: 'text',
-				content: resolveText(field.content, resolved, 'questions')
+				content: resolveText(field.content, resolved)
 			};
 		}
 		return field; // Images unchanged
 	});
 
 	// Resolve answer
-	const answer = resolveText(template.variations[variationIndex].answer, resolved, 'questions');
+	const answer = resolveText(template.variations[variationIndex].answer, resolved);
 
 	return { statement, answer /* ... */ };
 }
@@ -934,12 +838,12 @@ export function generateExerciseInstance(exercise: Exercise, seed?: number): Exe
 		expression: v.expression
 	}));
 
-	// Resolve using shared library with Markdown syntax
-	const resolved = resolveVariables(variables, seed, 'markdown');
+	// Resolve using shared library
+	const resolved = resolveVariables(variables, seed);
 
 	// Resolve content
-	const content = resolveText(exercise.content, resolved, 'markdown');
-	const solution = resolveText(exercise.solution, resolved, 'markdown');
+	const content = resolveText(exercise.content, resolved);
+	const solution = resolveText(exercise.solution, resolved);
 
 	return { content, solution /* ... */ };
 }
@@ -1020,7 +924,7 @@ Based on benchmarks with typical question templates:
 
 ---
 
-## Migration Strategy
+## Migration History
 
 ### Phase 1: Extract from Questions (✅ Complete)
 
@@ -1056,7 +960,7 @@ Based on benchmarks with typical question templates:
 - ✅ Added syntax selector to question editor UI
 - ✅ All 367 Questions tests still passing
 
-### Phase 3: Integrate with Exercises (⏳ Pending)
+### Phase 3: Integrate with Exercises (✅ Complete)
 
 **Goals:**
 
@@ -1064,13 +968,44 @@ Based on benchmarks with typical question templates:
 - Use Markdown syntax by default
 - Reuse all shared library functionality
 
-**Planned:**
+**Completed:**
 
-- Create Exercises variable UI
-- Integrate shared library for exercise generation
-- Add exercise-specific documentation
+- ✅ Created Exercises variable UI
+- ✅ Integrated shared library for exercise generation
+- ✅ Added exercise-specific documentation
 
-### Phase 4: Advanced Features (Future)
+### Phase 4: Simplify to Markdown-Only (✅ Complete)
+
+**Goals:**
+
+- Remove dual syntax complexity
+- Migrate all Questions content to Markdown syntax
+- Simplify codebase and documentation
+
+**Completed:**
+
+- ✅ Database migration (removed syntax column from question_templates)
+- ✅ Code migration (removed syntax parameters, syntax converter)
+- ✅ Test migration (447 tests updated to Markdown syntax)
+- ✅ UI migration (removed syntax selector from question editor)
+- ✅ Documentation migration (all docs updated to Markdown syntax)
+
+### Phase 5: Production Release (✅ Complete)
+
+**Goals:**
+
+- Finalize documentation
+- Verify all references to dual syntax removed
+- Update version numbers to 2.0.0
+
+**Completed:**
+
+- ✅ Updated all documentation files
+- ✅ Removed all dual syntax references
+- ✅ Version bumped to 2.0.0
+- ✅ System marked as Production Ready
+
+## Future Enhancements
 
 **Potential Enhancements:**
 
@@ -1103,7 +1038,7 @@ Based on benchmarks with typical question templates:
    ```typescript
    // Local vs global variables
    { name: 'a', expression: '5', scope: 'global' }
-   { name: 'temp', expression: '{@:a}*2', scope: 'local' }
+   { name: 'temp', expression: '{{a}}*2', scope: 'local' }
    ```
 
 4. **Conditional Expressions**
@@ -1118,7 +1053,7 @@ Based on benchmarks with typical question templates:
    // Register custom functions
    registerFunction('gcd', (a, b) => /* ... */);
    // Use in expressions
-   {eval:gcd(12,8)}
+   {{eval:gcd(12,8)}}
    ```
 
 ### Backward Compatibility
@@ -1143,6 +1078,6 @@ When adding new features:
 
 ---
 
-**Version:** 1.0.0
-**Last Updated:** 2025-01-26
+**Version:** 2.0.0
+**Last Updated:** 2025-10-26
 **Status:** Production Ready

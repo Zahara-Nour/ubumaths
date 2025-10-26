@@ -139,22 +139,21 @@ export function detectCircularDependencies(variables: Variable[]): ValidationRes
 /**
  * Extract all variable names referenced in an expression
  *
- * Supports both Questions and Markdown syntax.
- * Recursively extracts variables from inside {eval:} and {#:} expressions.
+ * Recursively extracts variables from inside {{eval:}} and {{random:}} expressions.
  */
 function getVariableNames(expression: string): string[] {
-	const tokens = tokenize(expression, 'both');
+	const tokens = tokenize(expression);
 	const names: string[] = [];
 
 	for (const token of tokens) {
 		if (token.type === 'variable') {
-			const varName = parseVariableReference(token.content, token.syntax);
+			const varName = parseVariableReference(token.content);
 			if (varName) {
 				names.push(varName);
 			}
 		} else if (token.type === 'random') {
-			// Extract variables from inside random specs: {#:1-{@:max}}
-			const randomSpec = parseRandomSpec(token.content, token.syntax);
+			// Extract variables from inside random specs: {{random:1-{{max}}}}
+			const randomSpec = parseRandomSpec(token.content);
 			if (randomSpec) {
 				// Check min/max bounds for variable references
 				if (randomSpec.type === 'integer' || randomSpec.type === 'decimal-range') {
@@ -177,8 +176,8 @@ function getVariableNames(expression: string): string[] {
 				}
 			}
 		} else if (token.type === 'eval') {
-			// Extract variables from inside eval expressions: {eval:{@:a} + {@:b}}
-			const evalExpr = parseEvalExpression(token.content, token.syntax);
+			// Extract variables from inside eval expressions: {{eval:{{a}} + {{b}}}}
+			const evalExpr = parseEvalExpression(token.content);
 			if (evalExpr) {
 				// Recursively extract variable names from the eval expression
 				const innerNames = getVariableNames(evalExpr);

@@ -104,6 +104,7 @@
 				{ href: '/dashboard/teacher/classes', label: 'Classes', icon: GraduationCap },
 				{ href: '/dashboard/students', label: 'Students', icon: Users },
 				{ href: '/dashboard/teacher/riddles', label: 'Énigmes', icon: Lightbulb },
+				{ href: '/dashboard/teacher/exercises', label: 'Exercices', icon: BookOpen },
 				{ href: '/dashboard/teacher/rewards', label: 'Rewards', icon: Gift }
 			];
 		} else if (role === 'admin') {

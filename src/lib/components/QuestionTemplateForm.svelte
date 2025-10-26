@@ -30,7 +30,6 @@
 		GradeLevel,
 		PrecisionType
 	} from '$lib/questions/types';
-	import type { Syntax } from '$lib/shared/parameterization/types';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -57,7 +56,6 @@
 		CircleQuestionMark
 	} from 'lucide-svelte';
 	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
-	import { browser } from '$app/environment';
 
 	interface Props {
 		template?: QuestionTemplate;
@@ -166,18 +164,6 @@
 	);
 	let multipleAnswers = $state<boolean | undefined>(template?.multipleAnswers);
 
-	// Syntax preference state
-	let syntaxPreference = $state<Syntax>(
-		(browser && (localStorage.getItem('questions-syntax-preference') as Syntax)) || 'markdown'
-	);
-
-	// Save syntax preference to localStorage
-	$effect(() => {
-		if (browser) {
-			localStorage.setItem('questions-syntax-preference', syntaxPreference);
-		}
-	});
-
 	// Help dialog states
 	let titleDescriptionHelpOpen = $state(false);
 	let variableHelpOpen = $state(false);
@@ -187,7 +173,6 @@
 	let statementHelpOpen = $state(false);
 	let answerHelpOpen = $state(false);
 	let correctionHelpOpen = $state(false);
-	let syntaxHelpOpen = $state(false);
 
 	// Collapsible states
 	let descriptionOpen = $state(false);
@@ -672,80 +657,6 @@
 		<Input id="exercise-instruction" type="text" bind:value={exerciseInstruction} />
 	</div>
 
-	<!-- Syntax Preference Selector -->
-	<Card.Root>
-		<Card.Header>
-			<Card.Title class="flex items-center gap-2">
-				Syntaxe de paramétrage
-				<button
-					type="button"
-					onclick={() => (syntaxHelpOpen = true)}
-					class="text-muted-foreground transition-colors hover:text-foreground"
-					aria-label="Aide sur la syntaxe de paramétrage"
-				>
-					<CircleQuestionMark class="h-5 w-5" />
-				</button>
-			</Card.Title>
-			<Card.Description>
-				Choisissez la syntaxe pour définir les variables et paramètres
-			</Card.Description>
-		</Card.Header>
-		<Card.Content class="space-y-4">
-			<div class="space-y-2">
-				<Label for="syntax-preference">Syntaxe préférée</Label>
-				<select
-					id="syntax-preference"
-					bind:value={syntaxPreference}
-					class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-				>
-					<option value="markdown">Markdown ({'{{'}var}}) - Recommandé</option>
-					<option value="questions">Questions (@:var) - Classique</option>
-				</select>
-				<p class="text-sm text-muted-foreground">
-					{#if syntaxPreference === 'markdown'}
-						Syntaxe moderne compatible avec le système d'Exercices
-					{:else}
-						Syntaxe classique utilisée dans les questions existantes
-					{/if}
-				</p>
-			</div>
-
-			<!-- Quick reference -->
-			<div class="rounded-lg border bg-muted/30 p-4">
-				<p class="mb-2 text-sm font-semibold">Référence rapide :</p>
-				<div class="grid gap-2 text-xs">
-					{#if syntaxPreference === 'markdown'}
-						<div class="flex items-center gap-2">
-							<code class="rounded bg-background px-2 py-1 font-mono">{'{{'}var}}</code>
-							<span class="text-muted-foreground">Variable</span>
-						</div>
-						<div class="flex items-center gap-2">
-							<code class="rounded bg-background px-2 py-1 font-mono">{'{{'}random:1-10}}</code>
-							<span class="text-muted-foreground">Nombre aléatoire</span>
-						</div>
-						<div class="flex items-center gap-2">
-							<code class="rounded bg-background px-2 py-1 font-mono">{'{{'}eval:expr}}</code>
-							<span class="text-muted-foreground">Évaluation</span>
-						</div>
-					{:else}
-						<div class="flex items-center gap-2">
-							<code class="rounded bg-background px-2 py-1 font-mono">@:var</code>
-							<span class="text-muted-foreground">Variable</span>
-						</div>
-						<div class="flex items-center gap-2">
-							<code class="rounded bg-background px-2 py-1 font-mono">#:1-10</code>
-							<span class="text-muted-foreground">Nombre aléatoire</span>
-						</div>
-						<div class="flex items-center gap-2">
-							<code class="rounded bg-background px-2 py-1 font-mono">eval:expr</code>
-							<span class="text-muted-foreground">Évaluation</span>
-						</div>
-					{/if}
-				</div>
-			</div>
-		</Card.Content>
-	</Card.Root>
-
 	<!-- Variations Management -->
 	<Card.Root>
 		<Card.Header>
@@ -877,7 +788,6 @@
 											<VariableEditor
 												bind:variables={variation.variables}
 												bind:helpDialogOpen={variableHelpOpen}
-												syntax={syntaxPreference}
 											/>
 										</Card.Content>
 									</Collapsible.Content>
@@ -1665,193 +1575,6 @@
 
 		<Dialog.Footer>
 			<Button onclick={() => (answerHelpOpen = false)}>Fermer</Button>
-		</Dialog.Footer>
-	</Dialog.Content>
-</Dialog.Root>
-
-<!-- Syntax Help -->
-<Dialog.Root bind:open={syntaxHelpOpen}>
-	<Dialog.Content class="max-h-[85vh] max-w-3xl overflow-y-auto">
-		<Dialog.Header>
-			<Dialog.Title>Syntaxes de paramétrage</Dialog.Title>
-			<Dialog.Description>
-				Comparez les deux syntaxes disponibles pour vos questions
-			</Dialog.Description>
-		</Dialog.Header>
-
-		<div class="space-y-6 py-4">
-			<!-- Introduction -->
-			<section>
-				<h4 class="mb-2 font-semibold">Deux syntaxes équivalentes</h4>
-				<p class="text-sm text-muted-foreground">
-					Le système d'UbuMaths supporte deux syntaxes pour définir des variables et paramètres dans
-					vos questions. Les deux sont totalement équivalentes et fonctionnent de la même manière.
-					Choisissez celle que vous préférez.
-				</p>
-			</section>
-
-			<!-- Comparison table -->
-			<section>
-				<h4 class="mb-3 font-semibold">Comparaison syntaxique</h4>
-				<div class="overflow-x-auto rounded-lg border">
-					<table class="w-full text-sm">
-						<thead class="border-b bg-muted/50">
-							<tr>
-								<th class="p-3 text-left font-semibold">Type</th>
-								<th class="p-3 text-left font-semibold">
-									Markdown <Badge class="ml-2" variant="default">Recommandé</Badge>
-								</th>
-								<th class="p-3 text-left font-semibold">Questions (Classique)</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr class="border-b">
-								<td class="p-3 font-medium">Variable</td>
-								<td class="p-3"><code class="rounded bg-muted px-2 py-1">{'{{'}var}}</code></td>
-								<td class="p-3"><code class="rounded bg-muted px-2 py-1">@:var</code></td>
-							</tr>
-							<tr class="border-b">
-								<td class="p-3 font-medium">Nombre aléatoire</td>
-								<td class="p-3"
-									><code class="rounded bg-muted px-2 py-1">{'{{'}random:1-10}}</code></td
-								>
-								<td class="p-3"><code class="rounded bg-muted px-2 py-1">#:1-10</code></td>
-							</tr>
-							<tr class="border-b">
-								<td class="p-3 font-medium">Évaluation</td>
-								<td class="p-3"><code class="rounded bg-muted px-2 py-1">{'{{'}eval:a+b}}</code></td
-								>
-								<td class="p-3"><code class="rounded bg-muted px-2 py-1">eval:a+b</code></td>
-							</tr>
-							<tr>
-								<td class="p-3 font-medium">Décimal avec pas</td>
-								<td class="p-3"
-									><code class="rounded bg-muted px-2 py-1">{'{{'}random:0.5-9.99:0.01}}</code></td
-								>
-								<td class="p-3"><code class="rounded bg-muted px-2 py-1">#:0.5-9.99:0.01</code></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</section>
-
-			<!-- Why Markdown is recommended -->
-			<section>
-				<h4 class="mb-2 font-semibold">Pourquoi Markdown est recommandé ?</h4>
-				<ul class="space-y-2 text-sm text-muted-foreground">
-					<li class="flex gap-2">
-						<span class="text-primary">•</span>
-						<span
-							><strong>Compatibilité</strong> : Syntaxe commune avec le système d'Exercices d'UbuMaths</span
-						>
-					</li>
-					<li class="flex gap-2">
-						<span class="text-primary">•</span>
-						<span
-							><strong>Lisibilité</strong> : Plus explicite avec les préfixes "random:" et "eval:"</span
-						>
-					</li>
-					<li class="flex gap-2">
-						<span class="text-primary">•</span>
-						<span
-							><strong>Standard</strong> : Syntaxe similaire aux templates modernes (Handlebars, Mustache)</span
-						>
-					</li>
-					<li class="flex gap-2">
-						<span class="text-primary">•</span>
-						<span
-							><strong>Futur</strong> : Deviendra la syntaxe par défaut dans les prochaines versions</span
-						>
-					</li>
-				</ul>
-			</section>
-
-			<!-- When to use Questions syntax -->
-			<section>
-				<h4 class="mb-2 font-semibold">Quand utiliser la syntaxe Questions ?</h4>
-				<ul class="space-y-2 text-sm text-muted-foreground">
-					<li class="flex gap-2">
-						<span class="text-primary">•</span>
-						<span
-							><strong>Questions existantes</strong> : Si vous modifiez une question déjà créée avec
-							cette syntaxe</span
-						>
-					</li>
-					<li class="flex gap-2">
-						<span class="text-primary">•</span>
-						<span
-							><strong>Préférence personnelle</strong> : Si vous trouvez cette syntaxe plus concise</span
-						>
-					</li>
-					<li class="flex gap-2">
-						<span class="text-primary">•</span>
-						<span><strong>Habitude</strong> : Si vous avez l'habitude de cette notation</span>
-					</li>
-				</ul>
-			</section>
-
-			<!-- Practical example -->
-			<section>
-				<h4 class="mb-3 font-semibold">Exemple pratique</h4>
-				<div class="space-y-4">
-					<!-- Markdown example -->
-					<div class="rounded-lg border bg-blue-50 p-4 dark:bg-blue-950">
-						<p class="mb-2 font-semibold text-blue-900 dark:text-blue-100">Syntaxe Markdown</p>
-						<div class="space-y-2 text-sm">
-							<div>
-								<p class="text-xs text-muted-foreground">Variables :</p>
-								<div class="ml-3 space-y-1 font-mono text-xs">
-									<p>a = {'{{'}random:1-10}}</p>
-									<p>b = {'{{'}random:1-10}}</p>
-									<p>resultat = {'{{'}eval:{'{{'}a}}+{'{{'}b}}}}</p>
-								</div>
-							</div>
-							<div>
-								<p class="text-xs text-muted-foreground">Énoncé :</p>
-								<p class="ml-3 font-mono text-xs">Calculer $${'{{'}a}}+ {'{{'}b}}$$</p>
-							</div>
-						</div>
-					</div>
-
-					<!-- Questions example -->
-					<div class="rounded-lg border bg-green-50 p-4 dark:bg-green-950">
-						<p class="mb-2 font-semibold text-green-900 dark:text-green-100">
-							Syntaxe Questions (équivalent)
-						</p>
-						<div class="space-y-2 text-sm">
-							<div>
-								<p class="text-xs text-muted-foreground">Variables :</p>
-								<div class="ml-3 space-y-1 font-mono text-xs">
-									<p>a = #:1-10</p>
-									<p>b = #:1-10</p>
-									<p>resultat = eval:@:a+@:b</p>
-								</div>
-							</div>
-							<div>
-								<p class="text-xs text-muted-foreground">Énoncé :</p>
-								<p class="ml-3 font-mono text-xs">Calculer $$@:a + @:b$$</p>
-							</div>
-						</div>
-					</div>
-
-					<p class="text-center text-sm text-muted-foreground italic">
-						→ Les deux produisent exactement le même résultat
-					</p>
-				</div>
-			</section>
-
-			<!-- Persistence note -->
-			<section>
-				<h4 class="mb-2 font-semibold">Préférence sauvegardée</h4>
-				<p class="text-sm text-muted-foreground">
-					Votre choix de syntaxe est automatiquement sauvegardé dans votre navigateur. Vous pouvez
-					changer de syntaxe à tout moment, et les boutons d'aide s'adapteront automatiquement.
-				</p>
-			</section>
-		</div>
-
-		<Dialog.Footer>
-			<Button onclick={() => (syntaxHelpOpen = false)}>Fermer</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

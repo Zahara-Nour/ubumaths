@@ -13,7 +13,7 @@
  * @module shared/parameterization/validator/variable-validator
  */
 
-import type { Variable, ValidationResult, Syntax, ValidationError } from '../types';
+import type { Variable, ValidationResult, ValidationError } from '../types';
 import { tokenize } from '../parser/tokenizer';
 import { parseVariableReference } from '../parser/variable-parser';
 import { parseRandomSpec } from '../parser/random-parser';
@@ -32,7 +32,6 @@ import { parseRandomSpec } from '../parser/random-parser';
  * Note: Does NOT check for circular dependencies (use detectCircularDependencies)
  *
  * @param variables - Variable definitions to validate
- * @param syntax - Expected syntax (default: 'both')
  * @returns Validation result with all errors found
  *
  * @example Valid variables
@@ -135,10 +134,7 @@ import { parseRandomSpec } from '../parser/random-parser';
  * //   }
  * ```
  */
-export function validateVariables(
-	variables: Variable[],
-	syntax: Syntax = 'both'
-): ValidationResult {
+export function validateVariables(variables: Variable[]): ValidationResult {
 	const errors: ValidationError[] = [];
 
 	if (!variables || variables.length === 0) {
@@ -182,12 +178,12 @@ export function validateVariables(
 
 	// 3. Validate expression syntax (basic check)
 	for (const variable of variables) {
-		const tokens = tokenize(variable.expression, syntax);
+		const tokens = tokenize(variable.expression);
 
 		// Check variable references are well-formed
 		for (const token of tokens) {
 			if (token.type === 'variable') {
-				const varName = parseVariableReference(token.content, token.syntax);
+				const varName = parseVariableReference(token.content);
 				if (!varName) {
 					errors.push({
 						type: 'invalid-syntax',
@@ -201,7 +197,7 @@ export function validateVariables(
 		// Check random specs are valid
 		for (const token of tokens) {
 			if (token.type === 'random') {
-				const spec = parseRandomSpec(token.content, token.syntax);
+				const spec = parseRandomSpec(token.content);
 				if (!spec) {
 					errors.push({
 						type: 'invalid-syntax',
@@ -229,10 +225,10 @@ export function validateVariables(
 	// 4. Check for undefined variable references
 	const definedNames = new Set(variables.map((v) => v.name));
 	for (const variable of variables) {
-		const tokens = tokenize(variable.expression, syntax);
+		const tokens = tokenize(variable.expression);
 		for (const token of tokens) {
 			if (token.type === 'variable') {
-				const refName = parseVariableReference(token.content, token.syntax);
+				const refName = parseVariableReference(token.content);
 				if (refName && !definedNames.has(refName)) {
 					errors.push({
 						type: 'undefined-variable',

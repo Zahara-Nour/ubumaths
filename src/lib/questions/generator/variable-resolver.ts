@@ -53,7 +53,7 @@ export function resolveVariableExpression(
 	seed?: number
 ): string {
 	// Use shared library's resolveExpression for full 3-stage pipeline
-	return sharedResolveExpression(expression, alreadyResolved, seed, 'questions');
+	return sharedResolveExpression(expression, alreadyResolved, seed);
 }
 
 /**
@@ -90,8 +90,8 @@ export function resolveVariables(
 		return [];
 	}
 
-	// Use shared library resolver with Questions syntax
-	const result = sharedResolveVariables(variables, seed, 'questions');
+	// Use shared library resolver
+	const result = sharedResolveVariables(variables, seed);
 
 	if (result === null) {
 		throw new Error('Failed to resolve variables');

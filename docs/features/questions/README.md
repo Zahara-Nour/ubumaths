@@ -34,7 +34,7 @@ The system allows admins to create question templates that generate infinite var
 src/lib/questions/
 ├── types.ts                          # Complete type system (270+ lines)
 ├── parser/
-│   ├── tokenizer.ts                  # Extract {@:}, {#:}, {eval:} tokens
+│   ├── tokenizer.ts                  # Extract {{var}}, {{random:}}, {{eval:}} tokens
 │   ├── random-parser.ts              # Parse random expressions
 │   ├── variable-parser.ts            # Extract variable references
 │   └── eval-parser.ts                # Extract evaluation expressions
@@ -93,16 +93,16 @@ src/lib/questions/
 {
   type: 'numerical_exact',
   statement: [
-    { type: 'text', content: 'Calculate $$\\frac{{@:num}}{{@:den}}$$' }
+    { type: 'text', content: 'Calculate $$\\frac{{{num}}}{{{den}}}$$' }
   ],
   variables: [
-    { name: 'gcd', expression: '{#:2-5}' },
-    { name: 'a', expression: '{#:2-9}' },
-    { name: 'b', expression: '{#:2-9!{@:a}}' },
-    { name: 'num', expression: '{eval:{@:a}*{@:gcd}}' },
-    { name: 'den', expression: '{eval:{@:b}*{@:gcd}}' }
+    { name: 'gcd', expression: '{{2-5}}' },
+    { name: 'a', expression: '{{2-9}}' },
+    { name: 'b', expression: '{{2-9!{{a}}}}' },
+    { name: 'num', expression: '{{eval:{{a}}*{{gcd}}}}' },
+    { name: 'den', expression: '{{eval:{{b}}*{{gcd}}}}' }
   ],
-  answer: '{eval:{@:num}/{@:den}}',
+  answer: '{{eval:{{num}}/{{den}}}}',
   precision: { type: 'decimal', digits: 2 },
   grades: ['6', '5']
 }
@@ -123,12 +123,12 @@ src/lib/questions/
 ```typescript
 {
   type: 'algebraic_transform',
-  statement: [{ type: 'text', content: 'Factor: $$x^2 - {@:c}$$' }],
+  statement: [{ type: 'text', content: 'Factor: $$x^2 - {{c}}$$' }],
   variables: [
-    { name: 'a', expression: '{#:2-9}' },
-    { name: 'c', expression: '{eval:{@:a}^2}' }
+    { name: 'a', expression: '{{2-9}}' },
+    { name: 'c', expression: '{{eval:{{a}}^2}}' }
   ],
-  answer: '(x-{@:a})(x+{@:a})',
+  answer: '(x-{{a}})(x+{{a}})',
   transform_type: 'factor',
   grades: ['3', '2']
 }
@@ -144,14 +144,14 @@ src/lib/questions/
 {
   type: 'fill_in_blanks',
   statement: [
-    { type: 'text', content: 'If the sides are {@:a} and {@:b}, the hypotenuse is ____ using the ____ theorem.' }
+    { type: 'text', content: 'If the sides are {{a}} and {{b}}, the hypotenuse is ____ using the ____ theorem.' }
   ],
   variables: [
-    { name: 'a', expression: '{#:3-9}' },
-    { name: 'b', expression: '{#:3-9!{@:a}}' },
-    { name: 'c', expression: '{eval:sqrt({@:a}^2+{@:b}^2)}' }
+    { name: 'a', expression: '{{3-9}}' },
+    { name: 'b', expression: '{{3-9!{{a}}}}' },
+    { name: 'c', expression: '{{eval:sqrt({{a}}^2+{{b}}^2)}}' }
   ],
-  answer: ['{@:c}', 'Pythagorean'],
+  answer: ['{{c}}', 'Pythagorean'],
   blanks: [0, 1],
   grades: ['4', '3']
 }
@@ -165,7 +165,7 @@ src/lib/questions/
 {
   type: 'multiple_choice',
   statement: [
-    { type: 'text', content: 'Solve: $${@:a}x + {@:b} = {@:c}$$' }
+    { type: 'text', content: 'Solve: $${{a}}x + {{b}} = {{c}}$$' }
   ],
   variables: [
     { name: 'a', expression: '{#:2-9}' },

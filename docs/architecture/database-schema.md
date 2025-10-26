@@ -2315,3 +2315,210 @@ ORDER BY last_attempt_at DESC;
   - Riddle of the day
   - Statistics and leaderboard
   - Rich text and image support
+
+---
+
+## Exercise Bank System
+
+Math exercise bank with rich markdown content, LaTeX formulas, and multiple export formats (web, LaTeX/PDF).
+
+### Tables
+
+#### `exercises`
+
+Mathematical exercises with markdown-formatted statements and solutions.
+
+| Column                 | Type        | Description                                                   |
+| ---------------------- | ----------- | ------------------------------------------------------------- |
+| id                     | UUID        | Exercise ID (primary key)                                     |
+| title                  | TEXT        | Exercise title (optional, for organization)                   |
+| source                 | TEXT        | Source reference (e.g., book name, author)                    |
+| difficulty             | INTEGER     | Difficulty level: 1 (easy), 2 (medium), 3 (hard)              |
+| tags                   | TEXT[]      | Tags for categorization (e.g., ['algèbre', 'équations'])      |
+| statement_md           | TEXT        | Exercise statement in markdown with LaTeX ($...$ and $$...$$) |
+| solution_md            | TEXT        | Solution/correction in markdown with LaTeX                    |
+| estimated_time_minutes | INTEGER     | Estimated completion time in minutes                          |
+| grade_levels           | TEXT[]      | Applicable grade levels (e.g., ['3', '2', 'SPE_1'])           |
+| topic                  | TEXT        | Topic category (e.g., 'Algèbre', 'Géométrie')                 |
+| created_at             | TIMESTAMPTZ | Creation timestamp                                            |
+| updated_at             | TIMESTAMPTZ | Last update timestamp                                         |
+| created_by             | UUID        | Teacher who created the exercise (FK → profiles.id)           |
+
+**Markdown Format**:
+
+- **Inline math**: `$x^2 + 2x + 1$`
+- **Block math**: `$$\int_0^\pi \sin(x) dx = 2$$`
+- **Lists**: Ordered (1., a.) and unordered (-, \*, +) with nesting
+- **Tables**: GitHub Flavored Markdown (GFM) syntax
+- **Images**: `![Description](path/to/image.png)` (stored in Supabase Storage)
+- **Text formatting**: `**bold**`, `*italic*`, `` `code` ``
+
+**Example Content**:
+
+```markdown
+# Équations du premier degré
+
+Résoudre les équations suivantes:
+
+1. $2x + 3 = 7$
+2. $\frac{x}{2} + \frac{x}{3} = 5$
+
+| x   | f(x) |
+| --- | ---- |
+| 0   | 0    |
+| 1   | 2    |
+```
+
+### Storage
+
+#### `exercise-images` Bucket
+
+Public storage bucket for exercise images.
+
+- **Path structure**: `{userId}/{exerciseId}/{filename}`
+- **Access**: Public read, authenticated teachers can upload/update/delete their own images
+- **Cleanup**: Images automatically cleaned up when exercise is deleted (trigger)
+
+### Row Level Security
+
+**Teachers can**:
+
+- View all exercises (read)
+- Create new exercises (insert)
+- Update their own exercises (update)
+- Delete their own exercises (delete)
+
+**RLS Policies**:
+
+```sql
+-- Teachers can view all exercises
+CREATE POLICY "Teachers can view all exercises"
+  ON exercises FOR SELECT
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'teacher'
+    )
+  );
+
+-- Teachers can create exercises
+CREATE POLICY "Teachers can create exercises"
+  ON exercises FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'teacher'
+    )
+    AND created_by = auth.uid()
+  );
+
+-- Teachers can update/delete their own exercises
+CREATE POLICY "Teachers can update own exercises"
+  ON exercises FOR UPDATE
+  TO authenticated
+  USING (created_by = auth.uid());
+
+CREATE POLICY "Teachers can delete own exercises"
+  ON exercises FOR DELETE
+  TO authenticated
+  USING (created_by = auth.uid());
+```
+
+### Indexes
+
+```sql
+-- Performance indexes
+CREATE INDEX idx_exercises_created_by ON exercises(created_by);
+CREATE INDEX idx_exercises_difficulty ON exercises(difficulty);
+CREATE INDEX idx_exercises_tags ON exercises USING gin(tags);
+CREATE INDEX idx_exercises_grade_levels ON exercises USING gin(grade_levels);
+CREATE INDEX idx_exercises_topic ON exercises(topic);
+CREATE INDEX idx_exercises_created_at ON exercises(created_at DESC);
+
+-- Full-text search on title and source
+CREATE INDEX idx_exercises_search ON exercises
+  USING gin(to_tsvector('french', coalesce(title, '') || ' ' || coalesce(source, '')));
+```
+
+### Triggers
+
+**Auto-update `updated_at`**:
+
+```sql
+CREATE TRIGGER exercises_updated_at
+  BEFORE UPDATE ON exercises
+  FOR EACH ROW
+  EXECUTE FUNCTION update_exercises_updated_at();
+```
+
+### Usage Examples
+
+#### Create an exercise
+
+```sql
+INSERT INTO exercises (
+  title,
+  source,
+  difficulty,
+  tags,
+  statement_md,
+  solution_md,
+  estimated_time_minutes,
+  grade_levels,
+  topic,
+  created_by
+)
+VALUES (
+  'Équations du premier degré',
+  'Livre de mathématiques 3ème',
+  2,
+  ARRAY['algèbre', 'équations', '3ème'],
+  '# Exercice\n\nRésoudre: $2x + 3 = 7$',
+  '# Solution\n\n$$x = 2$$',
+  10,
+  ARRAY['3', '2'],
+  'Algèbre',
+  auth.uid()
+);
+```
+
+#### Find exercises by tags
+
+```sql
+SELECT *
+FROM exercises
+WHERE tags @> ARRAY['algèbre', 'équations']
+ORDER BY difficulty ASC, created_at DESC;
+```
+
+#### Search exercises
+
+```sql
+SELECT *
+FROM exercises
+WHERE to_tsvector('french', coalesce(title, '') || ' ' || coalesce(source, ''))
+  @@ to_tsquery('french', 'pythagore')
+ORDER BY created_at DESC;
+```
+
+### Related Documentation
+
+- **Migration**: `supabase/migrations/20251026080000_create_exercises_table.sql`
+- **Types**: `src/lib/exercises/types.ts`
+- **Parser**: `src/lib/exercises/parser/`
+- **Transpilers**: `src/lib/exercises/transpilers/`
+- **Components**: `src/lib/components/exercises/`
+- **Test Page**: `src/routes/(protected)/test-exercises/` (development)
+- **Feature Documentation**: `docs/features/exercises/README.md`
+- **Features**:
+  - Rich markdown with LaTeX math support
+  - GitHub Flavored Markdown (tables, lists)
+  - Image upload to Supabase Storage
+  - LaTeX/PDF export via transpiler
+  - Full-text search in French
+  - Tag-based filtering
+  - Difficulty and grade level organization

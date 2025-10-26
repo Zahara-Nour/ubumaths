@@ -187,7 +187,7 @@
 					<Input
 						id="answer"
 						bind:value={answer}
-						placeholder={'Ex: {@:a} + {@:b}, {eval:2^3}, 42'}
+						placeholder={'Ex: {{a}} + {{b}}, {{eval:2^3}}, 42'}
 						class="font-mono"
 					/>
 
@@ -196,7 +196,7 @@
 						<Button
 							variant="outline"
 							size="sm"
-							onclick={() => insertSyntax('answer', '{@:}', (v) => (answer = v))}
+							onclick={() => insertSyntax('answer', '{{}}', (v) => (answer = v))}
 							class="text-xs"
 						>
 							Variable
@@ -204,7 +204,7 @@
 						<Button
 							variant="outline"
 							size="sm"
-							onclick={() => insertSyntax('answer', '{#:1-10}', (v) => (answer = v))}
+							onclick={() => insertSyntax('answer', '{{random:1-10}}', (v) => (answer = v))}
 							class="text-xs"
 						>
 							Aléatoire
@@ -212,7 +212,7 @@
 						<Button
 							variant="outline"
 							size="sm"
-							onclick={() => insertSyntax('answer', '{eval:}', (v) => (answer = v))}
+							onclick={() => insertSyntax('answer', '{{eval:}}', (v) => (answer = v))}
 							class="text-xs"
 						>
 							Évaluation
@@ -267,7 +267,7 @@
 						<Button
 							variant="outline"
 							size="sm"
-							onclick={() => insertSyntax('answer', '{@:}', (v) => (answer = v))}
+							onclick={() => insertSyntax('answer', '{{}}', (v) => (answer = v))}
 							class="text-xs"
 						>
 							Variable
@@ -275,7 +275,7 @@
 						<Button
 							variant="outline"
 							size="sm"
-							onclick={() => insertSyntax('answer', '{eval:}', (v) => (answer = v))}
+							onclick={() => insertSyntax('answer', '{{eval:}}', (v) => (answer = v))}
 							class="text-xs"
 						>
 							Évaluation
@@ -350,7 +350,7 @@
 										<Input
 											id="blank-answer-{index}"
 											bind:value={blank.expectedAnswer}
-											placeholder={'Ex: {@:var}, {eval:...}'}
+											placeholder={'Ex: {{var}}, {{eval:...}}'}
 											class="font-mono"
 										/>
 										<!-- Syntax helper buttons -->
@@ -361,7 +361,7 @@
 												onclick={() =>
 													insertSyntax(
 														`blank-answer-${index}`,
-														'{@:}',
+														'{{}}',
 														(v) => (blank.expectedAnswer = v)
 													)}
 												class="h-auto px-2 py-0.5 text-xs"
@@ -374,7 +374,7 @@
 												onclick={() =>
 													insertSyntax(
 														`blank-answer-${index}`,
-														'{eval:}',
+														'{{eval:}}',
 														(v) => (blank.expectedAnswer = v)
 													)}
 												class="h-auto px-2 py-0.5 text-xs"
@@ -477,7 +477,7 @@
 										<Input
 											id="choice-{index}"
 											bind:value={choice.content.content}
-											placeholder={'Contenu du choix (LaTeX, {@:var}, {#:...} supportés)'}
+											placeholder={'Contenu du choix (LaTeX, {{var}}, {{random:...}} supportés)'}
 											class="font-mono"
 										/>
 										<!-- Syntax helper buttons -->
@@ -488,7 +488,7 @@
 												onclick={() =>
 													insertSyntax(
 														`choice-${index}`,
-														'{@:}',
+														'{{}}',
 														(v) => (choice.content.content = v)
 													)}
 												class="h-auto px-2 py-0.5 text-xs"
@@ -501,7 +501,7 @@
 												onclick={() =>
 													insertSyntax(
 														`choice-${index}`,
-														'{eval:}',
+														'{{eval:}}',
 														(v) => (choice.content.content = v)
 													)}
 												class="h-auto px-2 py-0.5 text-xs"

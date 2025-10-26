@@ -24,7 +24,6 @@
 
 <script lang="ts">
 	import type { QuestionVariable } from '$lib/questions/types';
-	import type { Syntax } from '$lib/shared/parameterization/types';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -36,14 +35,9 @@
 	interface Props {
 		variables?: QuestionVariable[];
 		helpDialogOpen?: boolean;
-		syntax?: Syntax;
 	}
 
-	let {
-		variables = $bindable([]),
-		helpDialogOpen = $bindable(false),
-		syntax = 'markdown'
-	}: Props = $props();
+	let { variables = $bindable([]), helpDialogOpen = $bindable(false) }: Props = $props();
 
 	// Add new variable
 	function addVariable() {
@@ -131,9 +125,7 @@
 						<!-- Variable reference -->
 						<div class="rounded-lg border bg-muted/30 p-4">
 							<div class="mb-2 flex items-center gap-2">
-								<code class="rounded bg-background px-2 py-1 font-mono text-sm"
-									>&#123;@:nom&#125;</code
-								>
+								<code class="rounded bg-background px-2 py-1 font-mono text-sm">{'{{'}nom}}</code>
 								<span class="text-sm font-medium">Référence à une variable</span>
 							</div>
 							<p class="mb-2 text-sm text-muted-foreground">
@@ -144,11 +136,11 @@
 								<div class="space-y-1 font-mono text-xs">
 									<p>
 										<span class="text-muted-foreground">Variable 1 :</span> a =
-										<code>&#123;#:1-10&#125;</code>
+										<code>{'{{'}random:1-10}}</code>
 									</p>
 									<p>
 										<span class="text-muted-foreground">Variable 2 :</span> b =
-										<code>&#123;@:a&#125; + 5</code>
+										<code>{'{{'}a}} + 5</code>
 									</p>
 									<p class="text-muted-foreground">→ Si a=3, alors b=8</p>
 								</div>
@@ -159,7 +151,7 @@
 						<div class="rounded-lg border bg-muted/30 p-4">
 							<div class="mb-2 flex items-center gap-2">
 								<code class="rounded bg-background px-2 py-1 font-mono text-sm"
-									>&#123;#:min-max&#125;</code
+									>{'{{'}random:min-max}}</code
 								>
 								<span class="text-sm font-medium">Nombre aléatoire entier</span>
 							</div>
@@ -169,10 +161,10 @@
 							<div class="rounded bg-background p-3 text-sm">
 								<p class="mb-1 font-medium">Exemples :</p>
 								<div class="space-y-1 font-mono text-xs">
-									<p><code>&#123;#:1-10&#125;</code> → nombre entre 1 et 10</p>
-									<p><code>&#123;#:-5-5&#125;</code> → nombre entre -5 et 5</p>
+									<p><code>{'{{'}random:1-10}}</code> → nombre entre 1 et 10</p>
+									<p><code>{'{{'}random:-5-5}}</code> → nombre entre -5 et 5</p>
 									<p>
-										<code>&#123;#:&#123;@:min&#125;-&#123;@:max&#125;&#125;</code> → bornes variables
+										<code>{'{{'}random:{'{{'}min}}-{'{{'}max}}}}</code> → bornes variables
 									</p>
 								</div>
 							</div>
@@ -182,7 +174,7 @@
 						<div class="rounded-lg border bg-muted/30 p-4">
 							<div class="mb-2 flex items-center gap-2">
 								<code class="rounded bg-background px-2 py-1 font-mono text-sm"
-									>&#123;#:min-max:step&#125;</code
+									>{'{{'}random:min-max:step}}</code
 								>
 								<span class="text-sm font-medium">Nombre décimal avec pas</span>
 							</div>
@@ -192,8 +184,8 @@
 							<div class="rounded bg-background p-3 text-sm">
 								<p class="mb-1 font-medium">Exemples :</p>
 								<div class="space-y-1 font-mono text-xs">
-									<p><code>&#123;#:0.5-9.99:0.01&#125;</code> → décimal par step de 0.01</p>
-									<p><code>&#123;#:0-100:0.5&#125;</code> → multiple de 0.5</p>
+									<p><code>{'{{'}random:0.5-9.99:0.01}}</code> → décimal par step de 0.01</p>
+									<p><code>{'{{'}random:0-100:0.5}}</code> → multiple de 0.5</p>
 								</div>
 							</div>
 						</div>
@@ -202,7 +194,7 @@
 						<div class="rounded-lg border bg-muted/30 p-4">
 							<div class="mb-2 flex items-center gap-2">
 								<code class="rounded bg-background px-2 py-1 font-mono text-sm"
-									>&#123;#:avant.après&#125;</code
+									>{'{{'}random:avant.après}}</code
 								>
 								<span class="text-sm font-medium">Décimal par nombre de chiffres</span>
 							</div>
@@ -212,8 +204,8 @@
 							<div class="rounded bg-background p-3 text-sm">
 								<p class="mb-1 font-medium">Exemples :</p>
 								<div class="space-y-1 font-mono text-xs">
-									<p><code>&#123;#:2.3&#125;</code> → 2 chiffres avant, 3 après (ex: 45.382)</p>
-									<p><code>&#123;#:1.2&#125;</code> → 1 chiffre avant, 2 après (ex: 7.25)</p>
+									<p><code>{'{{'}random:2.3}}</code> → 2 chiffres avant, 3 après (ex: 45.382)</p>
+									<p><code>{'{{'}random:1.2}}</code> → 1 chiffre avant, 2 après (ex: 7.25)</p>
 								</div>
 							</div>
 						</div>
@@ -222,7 +214,7 @@
 						<div class="rounded-lg border bg-muted/30 p-4">
 							<div class="mb-2 flex items-center gap-2">
 								<code class="rounded bg-background px-2 py-1 font-mono text-sm"
-									>&#123;#:min-max!exclusions&#125;</code
+									>{'{{'}random:min-max!exclusions}}</code
 								>
 								<span class="text-sm font-medium">Nombres avec exclusions</span>
 							</div>
@@ -232,15 +224,14 @@
 							<div class="rounded bg-background p-3 text-sm">
 								<p class="mb-1 font-medium">Exemples :</p>
 								<div class="space-y-1 font-mono text-xs">
-									<p><code>&#123;#:1-20!5&#125;</code> → 1 à 20 sauf 5</p>
-									<p><code>&#123;#:1-20!5,7&#125;</code> → exclure 5 et 7</p>
-									<p><code>&#123;#:1-20!5-10&#125;</code> → exclure la plage 5 à 10</p>
+									<p><code>{'{{'}random:1-20!5}}</code> → 1 à 20 sauf 5</p>
+									<p><code>{'{{'}random:1-20!5,7}}</code> → exclure 5 et 7</p>
+									<p><code>{'{{'}random:1-20!5-10}}</code> → exclure la plage 5 à 10</p>
 									<p>
-										<code>&#123;#:1-20!&#123;@:a&#125;&#125;</code> → exclure la valeur de la variable
-										a
+										<code>{'{{'}random:1-20!{'{{'}a}}}}</code> → exclure la valeur de la variable a
 									</p>
 									<p>
-										<code>&#123;#:1-100!5,10-20,&#123;@:b&#125;&#125;</code> → exclusions multiples
+										<code>{'{{'}random:1-100!5,10-20,{'{{'}b}}}}</code> → exclusions multiples
 									</p>
 								</div>
 							</div>
@@ -250,7 +241,7 @@
 						<div class="rounded-lg border bg-muted/30 p-4">
 							<div class="mb-2 flex items-center gap-2">
 								<code class="rounded bg-background px-2 py-1 font-mono text-sm"
-									>&#123;eval:expression&#125;</code
+									>{'{{'}eval:expression}}</code
 								>
 								<span class="text-sm font-medium">Évaluation mathématique</span>
 							</div>
@@ -260,11 +251,11 @@
 							<div class="rounded bg-background p-3 text-sm">
 								<p class="mb-1 font-medium">Exemples :</p>
 								<div class="space-y-1 font-mono text-xs">
-									<p><code>&#123;eval:2+3&#125;</code> → 5</p>
-									<p><code>&#123;eval:2^3&#125;</code> → 8</p>
-									<p><code>&#123;eval:\frac&#123;10&#125;&#123;2&#125;&#125;</code> → 5</p>
+									<p><code>{'{{'}eval:2+3}}</code> → 5</p>
+									<p><code>{'{{'}eval:2^3}}</code> → 8</p>
+									<p><code>{'{{'}eval:\frac&#123;10&#125;&#123;2&#125;}}</code> → 5</p>
 									<p>
-										<code>&#123;eval:&#123;@:a&#125;*&#123;@:b&#125;&#125;</code> → produit de a et b
+										<code>{'{{'}eval:{'{{'}a}}*{'{{'}b}}}}</code> → produit de a et b
 									</p>
 								</div>
 							</div>
@@ -284,22 +275,22 @@
 						<div class="rounded bg-background p-3">
 							<p class="mb-2 font-medium">Exemple d'ordre valide :</p>
 							<div class="space-y-1 font-mono text-xs">
-								<p class="text-green-600">✓ Variable 1 : min = &#123;#:1-5&#125;</p>
-								<p class="text-green-600">✓ Variable 2 : max = &#123;#:10-20&#125;</p>
+								<p class="text-green-600">✓ Variable 1 : min = {'{{'}random:1-5}}</p>
+								<p class="text-green-600">✓ Variable 2 : max = {'{{'}random:10-20}}</p>
 								<p class="text-green-600">
-									✓ Variable 3 : x = &#123;#:&#123;@:min&#125;-&#123;@:max&#125;&#125;
+									✓ Variable 3 : x = {'{{'}random:{'{{'}min}}-{'{{'}max}}}}
 								</p>
 								<p class="text-green-600">
-									✓ Variable 4 : resultat = &#123;eval:&#123;@:x&#125;*2&#125;
+									✓ Variable 4 : resultat = {'{{'}eval:{'{{'}x}}*2}}
 								</p>
 							</div>
 							<p class="mt-4 mb-2 font-medium">Exemple d'ordre invalide :</p>
 							<div class="space-y-1 font-mono text-xs">
 								<p class="text-destructive">
-									✗ Variable 1 : x = &#123;#:&#123;@:min&#125;-&#123;@:max&#125;&#125;
+									✗ Variable 1 : x = {'{{'}random:{'{{'}min}}-{'{{'}max}}}}
 								</p>
 								<p class="text-destructive">
-									✗ Variable 2 : min = &#123;#:1-5&#125; ← min n'existe pas encore !
+									✗ Variable 2 : min = {'{{'}random:1-5}} ← min n'existe pas encore !
 								</p>
 							</div>
 						</div>
@@ -312,7 +303,7 @@
 					<div class="rounded-lg border bg-muted/30 p-4 text-sm">
 						<p class="mb-3 text-muted-foreground">
 							Une fois les variables définies, vous pouvez les utiliser dans l'énoncé et la réponse
-							avec la syntaxe <code class="rounded bg-background px-1">&#123;@:nom&#125;</code>.
+							avec la syntaxe <code class="rounded bg-background px-1">{'{{'}nom}}</code>.
 						</p>
 						<div class="rounded bg-background p-3">
 							<p class="mb-2 font-medium">Exemple complet :</p>
@@ -320,18 +311,18 @@
 								<div>
 									<p class="font-semibold">Variables :</p>
 									<div class="ml-3 space-y-1 font-mono">
-										<p>a = &#123;#:1-10&#125;</p>
-										<p>b = &#123;#:1-10!&#123;@:a&#125;&#125;</p>
-										<p>resultat = &#123;eval:&#123;@:a&#125;+&#123;@:b&#125;&#125;</p>
+										<p>a = {'{{'}random:1-10}}</p>
+										<p>b = {'{{'}random:1-10!{'{{'}a}}}}</p>
+										<p>resultat = {'{{'}eval:{'{{'}a}}+{'{{'}b}}}}</p>
 									</div>
 								</div>
 								<div>
 									<p class="font-semibold">Énoncé :</p>
-									<p class="ml-3">Calculer $$&#123;@:a&#125; + &#123;@:b&#125;$$</p>
+									<p class="ml-3">Calculer $${'{{'}a}} + {'{{'}b}}$$</p>
 								</div>
 								<div>
 									<p class="font-semibold">Réponse :</p>
-									<p class="ml-3">&#123;@:resultat&#125;</p>
+									<p class="ml-3">{'{{'}resultat}}</p>
 								</div>
 							</div>
 						</div>
@@ -451,9 +442,7 @@
 									<Input
 										id="var-expression-{index}"
 										bind:value={variable.expression}
-										placeholder={syntax === 'markdown'
-											? 'Ex: {{random:1-10}}, {{var}}+5, {{eval:2^3}}'
-											: 'Ex: {#:1-10}, {@:min}+5, {eval:2^3}'}
+										placeholder={'Ex: {{random:1-10}}, {{var}}+5, {{eval:2^3}}'}
 									/>
 								</div>
 
@@ -462,29 +451,23 @@
 									<Button
 										variant="outline"
 										size="sm"
-										onclick={() =>
-											insertSyntax(index, syntax === 'markdown' ? '{{var}}' : '{@:var}')}
+										onclick={() => insertSyntax(index, '{{var}}')}
 										class="text-xs"
 									>
-										{syntax === 'markdown' ? '{{var}}' : '{@:var}'}
+										{'{{var}}'}
 									</Button>
 									<Button
 										variant="outline"
 										size="sm"
-										onclick={() =>
-											insertSyntax(index, syntax === 'markdown' ? '{{random:1-10}}' : '{#:1-10}')}
+										onclick={() => insertSyntax(index, '{{random:1-10}}')}
 										class="text-xs"
 									>
-										{syntax === 'markdown' ? '{{random:1-10}}' : '{#:1-10}'}
+										{'{{random:1-10}}'}
 									</Button>
 									<Button
 										variant="outline"
 										size="sm"
-										onclick={() =>
-											insertSyntax(
-												index,
-												syntax === 'markdown' ? '{{random:0.5-9.99:0.01}}' : '{#:0.5-9.99:0.01}'
-											)}
+										onclick={() => insertSyntax(index, '{{random:0.5-9.99:0.01}}')}
 										class="text-xs"
 									>
 										Décimal
@@ -492,11 +475,7 @@
 									<Button
 										variant="outline"
 										size="sm"
-										onclick={() =>
-											insertSyntax(
-												index,
-												syntax === 'markdown' ? '{{random:1-100!5}}' : '{#:1-100!5}'
-											)}
+										onclick={() => insertSyntax(index, '{{random:1-100!5}}')}
 										class="text-xs"
 									>
 										Exclusion
@@ -504,8 +483,7 @@
 									<Button
 										variant="outline"
 										size="sm"
-										onclick={() =>
-											insertSyntax(index, syntax === 'markdown' ? '{{eval:}}' : '{eval:}')}
+										onclick={() => insertSyntax(index, '{{eval:}}')}
 										class="text-xs"
 									>
 										Évaluation

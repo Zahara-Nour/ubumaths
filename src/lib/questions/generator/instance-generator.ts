@@ -15,7 +15,7 @@
 
 import type { QuestionTemplate, QuestionInstance, GenerationResult } from '../types';
 import { validateTemplate } from '../validators/template-validator';
-import { detectCircularDependencies } from '../validators/circular-dependency';
+import { detectCircularDependencies } from '$lib/shared/parameterization/validator/circular-dependency';
 import { resolveVariables } from './variable-resolver';
 import { resolveContentFields, resolveAnswer, resolveExpression } from './content-resolver';
 import { shuffleChoices } from './choice-shuffler';

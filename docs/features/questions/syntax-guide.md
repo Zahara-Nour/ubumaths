@@ -2,77 +2,30 @@
 
 Quick reference for template expression syntax.
 
-🆕 **2025-01-26:** Dual syntax support added - choose between Questions syntax and Markdown syntax.
+🆕 **2025-10-26:** All questions now use Markdown syntax (`{{}}`) for consistency across Questions and Exercises features.
 
 ---
 
-## Syntaxes Disponibles
+## Syntaxe de Paramétrisation
 
-UbuMaths supporte deux syntaxes pour le paramétrage des questions :
+UbuMaths utilise une syntaxe de type Markdown avec des doubles accolades pour la paramétrisation des questions.
 
-### Syntaxe Questions (Classique)
-
-Syntaxe historique du système de Questions. Compatible avec toutes les questions existantes et toujours entièrement supportée.
-
-**Variables :** `{@:nom}`
-**Nombres aléatoires :** `{#:1-10}`
-**Évaluation :** `{eval:expression}`
-
-### Syntaxe Markdown (Nouvelle)
-
-Syntaxe alternative plus lisible dans le markdown, compatible avec le système d'Exercices. Recommandée pour les nouveaux modèles.
-
-**Variables :** `{{nom}}`
-**Nombres aléatoires :** `{{random:1-10}}` ou `{{1-10}}`
-**Évaluation :** `{{eval:expression}}`
-
-### Comparaison
-
-| Fonctionnalité             | Syntaxe Questions | Syntaxe Markdown  | Raccourci  |
-| -------------------------- | ----------------- | ----------------- | ---------- |
-| Variable                   | `{@:var}`         | `{{var}}`         | -          |
-| Nombre aléatoire (entier)  | `{#:1-10}`        | `{{random:1-10}}` | `{{1-10}}` |
-| Nombre aléatoire (décimal) | `{#:2.3}`         | `{{random:2.3}}`  | `{{2.3}}`  |
-| Évaluation                 | `{eval:expr}`     | `{{eval:expr}}`   | -          |
-
-### Choisir sa Syntaxe
-
-- Les deux syntaxes sont **équivalentes** et **interchangeables**
-- Vous pouvez **mélanger** les deux syntaxes dans le même document
-- Choisissez votre syntaxe préférée dans l'éditeur de question
-- La syntaxe Markdown utilise des raccourcis pratiques (ex: `{{1-10}}` au lieu de `{{random:1-10}}`)
-
-### Conversion entre Syntaxes
-
-Pour convertir une question existante de la syntaxe Questions vers Markdown :
-
-1. Remplacer `{@:var}` par `{{var}}`
-2. Remplacer `{#:spec}` par `{{random:spec}}` ou utiliser les raccourcis `{{spec}}`
-3. `{eval:expr}` devient `{{eval:expr}}`
-
-**Exemple :**
-
-```
-AVANT (Questions) : Calculate {@:a} + {@:b} = {eval:{@:a}+{@:b}}
-APRÈS (Markdown)  : Calculate {{a}} + {{b}} = {{eval:{{a}}+{{b}}}}
-```
-
-L'éditeur de question propose un sélecteur de syntaxe pour faciliter la création de nouvelles questions.
+**Syntaxe**: `{{variable}}`, `{{random:1-10}}`, `{{eval:expression}}`
 
 ---
 
 ## Variable References
 
-**Syntax:** `{@:varName}`
+**Syntax:** `{{varName}}`
 
 **Usage:** Reference a previously defined variable.
 
 **Examples:**
 
 ```latex
-$${@:a} + {@:b}$$           → Replace with variable values
-{@:max}                     → Use in any expression
-Calculate {@:a}^2           → LaTeX with variable
+$${{a}} + {{b}}$$           → Replace with variable values
+{{max}}                     → Use in any expression
+Calculate {{a}}^2           → LaTeX with variable
 ```
 
 **Rules:**
@@ -86,85 +39,87 @@ Calculate {@:a}^2           → LaTeX with variable
 
 ### Integer Range
 
-**Syntax:** `{#:min-max}`
+**Syntax:** `{{random:min-max}}` or `{{min-max}}`
 
 **Examples:**
 
 ```typescript
-{#:1-10}                    → Random integer 1 to 10
-{#:-5-5}                    → Random integer -5 to 5
-{#:{@:min}-{@:max}}         → Variable bounds
-{#:1-{@:limit}}             → Min literal, max variable
+{{random:1-10}}             → Random integer 1 to 10
+{{1-10}}                    → Shorthand for above
+{{random:-5-5}}             → Random integer -5 to 5
+{{random:{{min}}-{{max}}}}  → Variable bounds
+{{random:1-{{limit}}}}      → Min literal, max variable
 ```
 
 ### Decimal by Digits
 
-**Syntax:** `{#:digitsBefore.digitsAfter}`
+**Syntax:** `{{random:digitsBefore.digitsAfter}}` or `{{digitsBefore.digitsAfter}}`
 
 **Examples:**
 
 ```typescript
-{#:2.3}                     → 2 digits before, 3 after (e.g., 45.123)
-{#:1.2}                     → 1 before, 2 after (e.g., 7.89)
-{#:{@:before}.{@:after}}    → Variable digits
-{#:2.{@:precision}}         → Before literal, after variable
+{{random:2.3}}              → 2 digits before, 3 after (e.g., 45.123)
+{{2.3}}                     → Shorthand for above
+{{1.2}}                     → 1 before, 2 after (e.g., 7.89)
+{{random:{{before}}.{{after}}}}  → Variable digits
+{{random:2.{{precision}}}}  → Before literal, after variable
 ```
 
 ### Decimal Range with Step
 
-**Syntax:** `{#:min-max:step}`
+**Syntax:** `{{random:min-max:step}}`
 
 **Examples:**
 
 ```typescript
-{#:0.5-9.99:0.01}           → Decimal 0.5 to 9.99 by 0.01
-{#:0-1:0.1}                 → 0, 0.1, 0.2, ..., 1.0
-{#:{@:min}-{@:max}:0.5}     → Variable range with step
+{{random:0.5-9.99:0.01}}    → Decimal 0.5 to 9.99 by 0.01
+{{random:0-1:0.1}}          → 0, 0.1, 0.2, ..., 1.0
+{{random:{{min}}-{{max}}:0.5}}  → Variable range with step
 ```
 
 ### Exclusions
 
-**Syntax:** `{#:base!exclusions}`
+**Syntax:** `{{random:base!exclusions}}` or `{{base!exclusions}}`
 
 **Single Values:**
 
 ```typescript
-{#:1-10!5}                  → 1 to 10 except 5
-{#:1-20!5,7}                → Except 5 and 7
-{#:1-100!{@:a}}             → Except variable 'a'
+{{random:1-10!5}}           → 1 to 10 except 5
+{{1-20!5,7}}                → Except 5 and 7 (shorthand)
+{{random:1-100!{{a}}}}      → Except variable 'a'
 ```
 
 **Ranges:**
 
 ```typescript
-{#:1-20!5-7}                → Except 5, 6, 7
-{#:1-100!10-20,50}          → Except 10-20 and 50
-{#:1-100!{@:min}-{@:max}}   → Except variable range
+{{random:1-20!5-7}}         → Except 5, 6, 7
+{{1-100!10-20,50}}          → Except 10-20 and 50
+{{random:1-100!{{min}}-{{max}}}}  → Except variable range
 ```
 
 **Mixed:**
 
 ```typescript
-{#:1-50!5,7-9,{@:x}}        → Except 5, 7-9, and variable x
-{#:1-100!{@:a},{@:b}-{@:c}} → Multiple variables
+{{random:1-50!5,7-9,{{x}}}} → Except 5, 7-9, and variable x
+{{1-100!{{a}},{{b}}-{{c}}}} → Multiple variables (shorthand)
 ```
 
 ---
 
 ## Mathematical Evaluation
 
-**Syntax:** `{eval:expression}`
+**Syntax:** `{{eval:expression}}`
 
 **Usage:** Evaluate mathematical expression using MathLive Compute Engine.
 
 **Examples:**
 
 ```typescript
-{eval:3+4}                  → "7"
-{eval:2^3}                  → "8"
-{eval:{@:a}*{@:b}}          → Multiply variables
-{eval:({@:a})^2-{@:b}}      → Complex expression
-{eval:\frac{1}{2}}          → LaTeX expressions
+{{eval:3+4}}                → "7"
+{{eval:2^3}}                → "8"
+{{eval:{{a}}*{{b}}}}        → Multiply variables
+{{eval:({{a}})^2-{{b}}}}    → Complex expression
+{{eval:\frac{1}{2}}}        → LaTeX expressions
 ```
 
 **Supported:**
@@ -174,30 +129,30 @@ Calculate {@:a}^2           → LaTeX with variable
 - Variables (after substitution)
 - Parentheses for grouping
 
-### How `{eval:}` Works - Resolution Process
+### How `{{eval:}}` Works - Resolution Process
 
-**IMPORTANT:** All variable references (`{@:}`) and random expressions (`{#:}`) inside an `{eval:}` expression are **fully resolved BEFORE** being passed to MathLive's Compute Engine. The engine only receives a clean mathematical expression with actual numbers.
+**IMPORTANT:** All variable references (`{{var}}`) and random expressions (`{{random:...}}`) inside an `{{eval:}}` expression are **fully resolved BEFORE** being passed to MathLive's Compute Engine. The engine only receives a clean mathematical expression with actual numbers.
 
 **Three-Stage Pipeline:**
 
 1. **Stage 1 - Replace Variable References:**
 
    ```typescript
-   // Replace all {@:varName} with their resolved values
-   '{eval:{@:a}+{@:b}}' → '{eval:5+7}' (if a=5, b=7)
+   // Replace all {{varName}} with their resolved values
+   '{{eval:{{a}}+{{b}}}}' → '{{eval:5+7}}' (if a=5, b=7)
    ```
 
 2. **Stage 2 - Generate Random Numbers:**
 
    ```typescript
-   // Generate random numbers and replace {#:...} expressions
-   '{eval:{#:1-10}*2}' → '{eval:7*2}' (if random=7)
+   // Generate random numbers and replace {{random:...}} expressions
+   '{{eval:{{random:1-10}}*2}}' → '{{eval:7*2}}' (if random=7)
    ```
 
 3. **Stage 3 - Evaluate with MathLive:**
    ```typescript
    // Extract expression, evaluate, replace with result
-   '{eval:5+7}' → Extract '5+7' → Compute Engine → '12'
+   '{{eval:5+7}}' → Extract '5+7' → Compute Engine → '12'
    ```
 
 **Complete Example:**
@@ -205,21 +160,21 @@ Calculate {@:a}^2           → LaTeX with variable
 Given this variable definition:
 
 ```typescript
-{ name: 'sum', expression: '{eval:{@:a}+{@:b}}' }
+{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' }
 ```
 
 If `a = 5` and `b = 7`, the resolution process is:
 
-1. **Initial:** `{eval:{@:a}+{@:b}}`
-2. **After variable replacement:** `{eval:5+7}`
+1. **Initial:** `{{eval:{{a}}+{{b}}}}`
+2. **After variable replacement:** `{{eval:5+7}}`
 3. **After eval processing:**
-   - Extract `5+7` from `{eval:5+7}`
+   - Extract `5+7` from `{{eval:5+7}}`
    - Pass `"5+7"` to MathLive's Compute Engine
    - Engine returns `12`
-   - Replace entire `{eval:5+7}` with `"12"`
+   - Replace entire `{{eval:5+7}}` with `"12"`
 4. **Final result:** `"12"`
 
-**Key Point:** The Compute Engine NEVER sees the original `{@:a}` or `{#:...}` syntax - it only receives pure mathematical expressions like `"5+7"` or `"sqrt(25)"` with actual numbers.
+**Key Point:** The Compute Engine NEVER sees the original `{{a}}` or `{{random:...}}` syntax - it only receives pure mathematical expressions like `"5+7"` or `"sqrt(25)"` with actual numbers.
 
 ---
 
@@ -233,15 +188,15 @@ If `a = 5` and `b = 7`, the resolution process is:
 
 ```latex
 Calculate $$3 + 4$$
-Simplify $$\frac{{@:a}}{{@:b}}$$
-Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
+Simplify $$\frac{{{a}}}{{{b}}}$$
+Solve $${{a}}x^2 + {{b}}x + {{c}} = 0$$
 ```
 
 **Can contain:**
 
-- Variable references: `{@:varName}`
-- Random numbers: `{#:1-10}`
-- Evaluations: `{eval:...}`
+- Variable references: `{{varName}}`
+- Random numbers: `{{random:1-10}}` or `{{1-10}}`
+- Evaluations: `{{eval:...}}`
 
 ---
 
@@ -252,11 +207,11 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 ```json
 {
 	"variables": [
-		{ "name": "a", "expression": "{#:1-20}" },
-		{ "name": "b", "expression": "{#:1-20}" }
+		{ "name": "a", "expression": "{{random:1-20}}" },
+		{ "name": "b", "expression": "{{random:1-20}}" }
 	],
-	"statement": [{ "type": "text", "content": "Calculate: $${@:a} + {@:b}$$" }],
-	"answer": "{eval:{@:a}+{@:b}}"
+	"statement": [{ "type": "text", "content": "Calculate: $${{a}} + {{b}}$$" }],
+	"answer": "{{eval:{{a}}+{{b}}}}"
 }
 ```
 
@@ -266,11 +221,11 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 {
 	"variables": [
 		{ "name": "maxValue", "expression": "10" },
-		{ "name": "a", "expression": "{#:1-{@:maxValue}}" },
-		{ "name": "b", "expression": "{#:1-{@:maxValue}}" }
+		{ "name": "a", "expression": "{{random:1-{{maxValue}}}}" },
+		{ "name": "b", "expression": "{{random:1-{{maxValue}}}}" }
 	],
-	"statement": [{ "type": "text", "content": "Calculate: $${@:a} \\times {@:b}$$" }],
-	"answer": "{eval:{@:a}*{@:b}}"
+	"statement": [{ "type": "text", "content": "Calculate: $${{a}} \\times {{b}}$$" }],
+	"answer": "{{eval:{{a}}*{{b}}}}"
 }
 ```
 
@@ -279,11 +234,11 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 ```json
 {
 	"variables": [
-		{ "name": "a", "expression": "{#:1-10}" },
-		{ "name": "b", "expression": "{#:1-10!{@:a}}" }
+		{ "name": "a", "expression": "{{random:1-10}}" },
+		{ "name": "b", "expression": "{{random:1-10!{{a}}}}" }
 	],
-	"statement": [{ "type": "text", "content": "Calculate: $${@:a}^2 - {@:b}^2$$" }],
-	"answer": "{eval:({@:a})^2-({@:b})^2}"
+	"statement": [{ "type": "text", "content": "Calculate: $${{a}}^2 - {{b}}^2$$" }],
+	"answer": "{{eval:({{a}})^2-({{b}})^2}}"
 }
 ```
 
@@ -292,14 +247,14 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 ```json
 {
 	"variables": [
-		{ "name": "gcd", "expression": "{#:2-5}" },
-		{ "name": "a", "expression": "{#:2-9}" },
-		{ "name": "b", "expression": "{#:2-9!{@:a}}" },
-		{ "name": "num", "expression": "{eval:{@:a}*{@:gcd}}" },
-		{ "name": "den", "expression": "{eval:{@:b}*{@:gcd}}" }
+		{ "name": "gcd", "expression": "{{random:2-5}}" },
+		{ "name": "a", "expression": "{{random:2-9}}" },
+		{ "name": "b", "expression": "{{random:2-9!{{a}}}}" },
+		{ "name": "num", "expression": "{{eval:{{a}}*{{gcd}}}}" },
+		{ "name": "den", "expression": "{{eval:{{b}}*{{gcd}}}}" }
 	],
-	"statement": [{ "type": "text", "content": "Simplify: $$\\frac{{@:num}}{{@:den}}$$" }],
-	"answer": "\\frac{{@:a}}{{@:b}}"
+	"statement": [{ "type": "text", "content": "Simplify: $$\\frac{{{num}}}{{{den}}}$$" }],
+	"answer": "\\frac{{{a}}}{{{b}}}"
 }
 ```
 
@@ -310,10 +265,10 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 	"variables": [
 		{ "name": "min", "expression": "0.5" },
 		{ "name": "max", "expression": "9.99" },
-		{ "name": "value", "expression": "{#:{@:min}-{@:max}:0.01}" }
+		{ "name": "value", "expression": "{{random:{{min}}-{{max}}:0.01}}" }
 	],
-	"statement": [{ "type": "text", "content": "Round $${@:value}$$ to 2 decimal places" }],
-	"answer": "{eval:round({@:value}, 2)}"
+	"statement": [{ "type": "text", "content": "Round $${{value}}$$ to 2 decimal places" }],
+	"answer": "{{eval:round({{value}}, 2)}}"
 }
 ```
 
@@ -323,20 +278,20 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 
 **Within a variable expression:**
 
-1. `{@:otherVar}` → Replace with resolved value
-2. `{#:...}` → Generate random number
-3. `{eval:...}` → Evaluate expression
+1. `{{otherVar}}` → Replace with resolved value
+2. `{{random:...}}` → Generate random number
+3. `{{eval:...}}` → Evaluate expression
 
 **Example flow:**
 
 ```typescript
 // Variable definition
-{ name: 'c', expression: '{eval:{@:a}+{#:1-5}}' }
+{ name: 'c', expression: '{{eval:{{a}}+{{random:1-5}}}}' }
 
 // Resolution steps (if a=7):
-// 1. Replace {@:a}    → "{eval:7+{#:1-5}}"
-// 2. Generate {#:1-5} → "{eval:7+3}"
-// 3. Evaluate         → "10"
+// 1. Replace {{a}}          → "{{eval:7+{{random:1-5}}}}"
+// 2. Generate {{random:1-5}} → "{{eval:7+3}}"
+// 3. Evaluate               → "10"
 ```
 
 ---
@@ -347,25 +302,25 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 
 ```typescript
 // Non-zero divisor
-{ name: 'divisor', expression: '{#:1-10!0}' }
+{ name: 'divisor', expression: '{{random:1-10!0}}' }
 
 // Different from previous
-{ name: 'a', expression: '{#:1-10}' }
-{ name: 'b', expression: '{#:1-10!{@:a}}' }
+{ name: 'a', expression: '{{random:1-10}}' }
+{ name: 'b', expression: '{{random:1-10!{{a}}}}' }
 
 // Within specific range excluding middle
-{ name: 'x', expression: '{#:1-100!40-60}' }
+{ name: 'x', expression: '{{random:1-100!40-60}}' }
 ```
 
 ### Evaluated vs. Raw
 
 ```typescript
 // Keep as expression
-{ name: 'expr', expression: '{@:a}^2 + {@:b}' }
+{ name: 'expr', expression: '{{a}}^2 + {{b}}' }
 // → "3^2 + 5" (LaTeX preserved)
 
 // Evaluate to number
-{ name: 'result', expression: '{eval:{@:a}^2 + {@:b}}' }
+{ name: 'result', expression: '{{eval:{{a}}^2 + {{b}}}}' }
 // → "14" (evaluated)
 ```
 
@@ -373,12 +328,12 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 
 ```typescript
 // Correct answer
-{ name: 'correct', expression: '{eval:{@:a}+{@:b}}' }
+{ name: 'correct', expression: '{{eval:{{a}}+{{b}}}}' }
 
 // Wrong answers (common mistakes)
-{ name: 'wrong1', expression: '{eval:{@:a}*{@:b}}' }      // Multiply instead of add
-{ name: 'wrong2', expression: '{eval:{@:a}-{@:b}}' }      // Subtract instead of add
-{ name: 'wrong3', expression: '{eval:{@:correct}+1}' }    // Off by one
+{ name: 'wrong1', expression: '{{eval:{{a}}*{{b}}}}' }      // Multiply instead of add
+{ name: 'wrong2', expression: '{{eval:{{a}}-{{b}}}}' }      // Subtract instead of add
+{ name: 'wrong3', expression: '{{eval:{{correct}}+1}}' }    // Off by one
 ```
 
 ---
@@ -389,18 +344,18 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 
 ```typescript
 // Variable not yet defined
-{ name: 'a', expression: '{@:b}' }  // b doesn't exist
+{ name: 'a', expression: '{{b}}' }  // b doesn't exist
 { name: 'b', expression: '5' }
 
 // Circular reference
-{ name: 'a', expression: '{@:b}' }
-{ name: 'b', expression: '{@:a}' }
+{ name: 'a', expression: '{{b}}' }
+{ name: 'b', expression: '{{a}}' }
 
 // Invalid range (min >= max)
-{ name: 'x', expression: '{#:10-5}' }
+{ name: 'x', expression: '{{random:10-5}}' }
 
 // Using variable in its own definition
-{ name: 'a', expression: '{@:a} + 1' }
+{ name: 'a', expression: '{{a}} + 1' }
 ```
 
 ### ✅ Best Practices
@@ -408,16 +363,16 @@ Solve $${@:a}x^2 + {@:b}x + {@:c} = 0$$
 ```typescript
 // Define dependencies first
 { name: 'max', expression: '20' }
-{ name: 'a', expression: '{#:1-{@:max}}' }
+{ name: 'a', expression: '{{random:1-{{max}}}}' }
 
 // Use meaningful names
-{ name: 'numerator', expression: '{#:1-100}' }
-{ name: 'denominator', expression: '{#:1-10!0}' }
+{ name: 'numerator', expression: '{{random:1-100}}' }
+{ name: 'denominator', expression: '{{random:1-10!0}}' }
 
 // Document complex expressions
 {
   name: 'discriminant',
-  expression: '{eval:({@:b})^2-4*{@:a}*{@:c}}'
+  expression: '{{eval:({{b}})^2-4*{{a}}*{{c}}}}'
   // Δ = b² - 4ac
 }
 ```
@@ -451,12 +406,12 @@ When generating a question instance, one variation is selected either:
 ```typescript
 {
   type: 'numerical_exact',
-  statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+  statement: [{ type: 'text', content: 'Calculate {{a}} + {{b}}' }],
   variables: [
-    { name: 'a', expression: '{#:1-10}' },
-    { name: 'b', expression: '{#:1-10}' }
+    { name: 'a', expression: '{{random:1-10}}' },
+    { name: 'b', expression: '{{random:1-10}}' }
   ],
-  answer: '{eval:{@:a}+{@:b}}',
+  answer: '{{eval:{{a}}+{{b}}}}',
   grades: ['6']
 }
 ```
@@ -468,20 +423,20 @@ When generating a question instance, one variation is selected either:
   type: 'numerical_exact',
   variations: [
     {
-      statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+      statement: [{ type: 'text', content: 'Calculate {{a}} + {{b}}' }],
       variables: [
-        { name: 'a', expression: '{#:1-10}' },
-        { name: 'b', expression: '{#:1-10}' }
+        { name: 'a', expression: '{{random:1-10}}' },
+        { name: 'b', expression: '{{random:1-10}}' }
       ],
-      answer: '{eval:{@:a}+{@:b}}'
+      answer: '{{eval:{{a}}+{{b}}}}'
     },
     {
-      statement: [{ type: 'text', content: 'Calculate {@:a} - {@:b}' }],
+      statement: [{ type: 'text', content: 'Calculate {{a}} - {{b}}' }],
       variables: [
-        { name: 'a', expression: '{#:10-20}' },
-        { name: 'b', expression: '{#:1-{@:a}}' }
+        { name: 'a', expression: '{{random:10-20}}' },
+        { name: 'b', expression: '{{random:1-{{a}}}}' }
       ],
-      answer: '{eval:{@:a}-{@:b}}'
+      answer: '{{eval:{{a}}-{{b}}}}'
     }
   ],
   grades: ['6']
@@ -497,37 +452,37 @@ When generating a question instance, one variation is selected either:
   type: 'numerical_exact',
   variations: [
     {
-      statement: [{ type: 'text', content: 'Calculate: $${@:a} + {@:b}$$' }],
+      statement: [{ type: 'text', content: 'Calculate: $${{a}} + {{b}}$$' }],
       variables: [
-        { name: 'a', expression: '{#:10-50}' },
-        { name: 'b', expression: '{#:10-50}' }
+        { name: 'a', expression: '{{random:10-50}}' },
+        { name: 'b', expression: '{{random:10-50}}' }
       ],
-      answer: '{eval:{@:a}+{@:b}}'
+      answer: '{{eval:{{a}}+{{b}}}}'
     },
     {
-      statement: [{ type: 'text', content: 'Calculate: $${@:a} - {@:b}$$' }],
+      statement: [{ type: 'text', content: 'Calculate: $${{a}} - {{b}}$$' }],
       variables: [
-        { name: 'a', expression: '{#:20-99}' },
-        { name: 'b', expression: '{#:10-{@:a}}' }
+        { name: 'a', expression: '{{random:20-99}}' },
+        { name: 'b', expression: '{{random:10-{{a}}}}' }
       ],
-      answer: '{eval:{@:a}-{@:b}}'
+      answer: '{{eval:{{a}}-{{b}}}}'
     },
     {
-      statement: [{ type: 'text', content: 'Calculate: $${@:a} \\times {@:b}$$' }],
+      statement: [{ type: 'text', content: 'Calculate: $${{a}} \\times {{b}}$$' }],
       variables: [
-        { name: 'a', expression: '{#:2-12}' },
-        { name: 'b', expression: '{#:2-12}' }
+        { name: 'a', expression: '{{random:2-12}}' },
+        { name: 'b', expression: '{{random:2-12}}' }
       ],
-      answer: '{eval:{@:a}*{@:b}}'
+      answer: '{{eval:{{a}}*{{b}}}}'
     },
     {
-      statement: [{ type: 'text', content: 'Calculate: $${@:dividend} \\div {@:divisor}$$' }],
+      statement: [{ type: 'text', content: 'Calculate: $${{dividend}} \\div {{divisor}}$$' }],
       variables: [
-        { name: 'divisor', expression: '{#:2-9}' },
-        { name: 'quotient', expression: '{#:2-12}' },
-        { name: 'dividend', expression: '{eval:{@:divisor}*{@:quotient}}' }
+        { name: 'divisor', expression: '{{random:2-9}}' },
+        { name: 'quotient', expression: '{{random:2-12}}' },
+        { name: 'dividend', expression: '{{eval:{{divisor}}*{{quotient}}}}' }
       ],
-      answer: '{@:quotient}'
+      answer: '{{quotient}}'
     }
   ],
   precision: { type: 'none' },
@@ -617,17 +572,18 @@ seed = 100 → Variation 1 (100 % 4 = 0)
 
 ## Quick Reference Card
 
-| Syntax              | Purpose                 | Example           |
-| ------------------- | ----------------------- | ----------------- |
-| `{@:name}`          | Variable reference      | `{@:a}`           |
-| `{#:1-10}`          | Random integer          | `{#:5-15}`        |
-| `{#:2.3}`           | Random decimal (digits) | `{#:1.2}`         |
-| `{#:0.5-9.99:0.01}` | Random decimal (range)  | `{#:0-1:0.1}`     |
-| `{#:1-10!5}`        | Exclude single value    | `{#:1-20!10}`     |
-| `{#:1-20!5-7}`      | Exclude range           | `{#:1-50!10-20}`  |
-| `{#:1-100!{@:a}}`   | Exclude variable        | `{#:1-10!{@:x}}`  |
-| `{eval:3+4}`        | Evaluate expression     | `{eval:{@:a}^2}`  |
-| `$$...$$`           | LaTeX math              | `$$\frac{1}{2}$$` |
+| Syntax                     | Purpose                 | Example              |
+| -------------------------- | ----------------------- | -------------------- |
+| `{{name}}`                 | Variable reference      | `{{a}}`              |
+| `{{random:1-10}}`          | Random integer          | `{{random:5-15}}`    |
+| `{{1-10}}`                 | Random integer (short)  | `{{5-15}}`           |
+| `{{random:2.3}}`           | Random decimal (digits) | `{{1.2}}`            |
+| `{{random:0.5-9.99:0.01}}` | Random decimal (range)  | `{{random:0-1:0.1}}` |
+| `{{1-10!5}}`               | Exclude single value    | `{{1-20!10}}`        |
+| `{{1-20!5-7}}`             | Exclude range           | `{{1-50!10-20}}`     |
+| `{{1-100!{{a}}}}`          | Exclude variable        | `{{1-10!{{x}}}}`     |
+| `{{eval:3+4}}`             | Evaluate expression     | `{{eval:{{a}}^2}}`   |
+| `$$...$$`                  | LaTeX math              | `$$\frac{1}{2}$$`    |
 
 ---
 

@@ -4,16 +4,16 @@
  *
  * Content-agnostic parameterization system for Questions and Exercises.
  *
- * Supports dual syntax:
- * - Questions: {@:var}, {#:1-10}, {eval:expr}
- * - Markdown: {{var}}, {{random:1-10}}, {{eval:expr}}
+ * Uses Markdown syntax:
+ * - Variables: {{var}}
+ * - Random: {{random:1-10}} or {{1-10}}
+ * - Eval: {{eval:expr}}
  *
  * Features:
  * - Variable system with reference chaining
  * - Random number generation (integer, decimal, exclusions)
  * - Expression evaluation
  * - Circular dependency detection
- * - Bidirectional syntax conversion
  *
  * @module shared/parameterization
  *
@@ -23,27 +23,18 @@
  *
  * // Define variables
  * const variables = [
- *   { name: 'a', expression: '{#:1-10}' },
- *   { name: 'b', expression: '{#:1-10}' },
- *   { name: 'sum', expression: '{eval:a+b}' }
+ *   { name: 'a', expression: '{{random:1-10}}' },
+ *   { name: 'b', expression: '{{random:1-10}}' },
+ *   { name: 'sum', expression: '{{eval:a+b}}' }
  * ];
  *
  * // Resolve variables
  * const resolved = resolveVariables(variables, 12345); // with seed
  *
  * // Resolve text
- * const text = 'The sum of {@:a} and {@:b} is {@:sum}';
- * const result = resolveText(text, resolved, 'questions');
+ * const text = 'The sum of {{a}} and {{b}} is {{sum}}';
+ * const result = resolveText(text, resolved);
  * // → 'The sum of 7 and 3 is 10'
- * ```
- *
- * @example Syntax conversion
- * ```typescript
- * import { convertSyntax } from '$lib/shared/parameterization';
- *
- * const questionsText = 'Value: {@:a}, Random: {#:1-10}';
- * const markdownText = convertSyntax(questionsText, 'questions', 'markdown');
- * // → 'Value: {{a}}, Random: {{random:1-10}}'
  * ```
  *
  * @example Validation
@@ -51,8 +42,8 @@
  * import { validateVariables, detectCircularDependencies } from '$lib/shared/parameterization';
  *
  * const variables = [
- *   { name: 'a', expression: '{@:b}' },
- *   { name: 'b', expression: '{@:a}' }
+ *   { name: 'a', expression: '{{b}}' },
+ *   { name: 'b', expression: '{{a}}' }
  * ];
  *
  * // Check for circular dependencies
@@ -82,7 +73,7 @@ export * from './types';
 /**
  * Extract all parameterization tokens from text
  *
- * Supports both Questions and Markdown syntax.
+ * Supports Markdown syntax.
  * See: {@link module:shared/parameterization/parser/tokenizer}
  */
 export { tokenize } from './parser/tokenizer';
@@ -90,7 +81,7 @@ export { tokenize } from './parser/tokenizer';
 /**
  * Parse a variable reference token
  *
- * Extracts variable name from {@:var} or {{var}}.
+ * Extracts variable name from {{var}}.
  * See: {@link module:shared/parameterization/parser/variable-parser}
  */
 export { parseVariableReference } from './parser/variable-parser';
@@ -106,18 +97,10 @@ export { parseRandomSpec } from './parser/random-parser';
 /**
  * Parse an eval expression token
  *
- * Extracts expression from {eval:expr} or {{eval:expr}}.
+ * Extracts expression from {{eval:expr}}.
  * See: {@link module:shared/parameterization/parser/eval-parser}
  */
 export { parseEvalExpression } from './parser/eval-parser';
-
-/**
- * Convert text between parameterization syntaxes
- *
- * Bidirectional: Questions ↔ Markdown.
- * See: {@link module:shared/parameterization/parser/syntax-converter}
- */
-export { convertSyntax } from './parser/syntax-converter';
 
 // ============================================================================
 // RESOLVERS

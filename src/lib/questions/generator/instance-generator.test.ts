@@ -28,12 +28,12 @@ describe('generateInstance - Numerical Exact Questions', () => {
 			type: 'numerical_exact',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+					statement: [{ type: 'text', content: 'Calculate {{a}} + {{b}}' }],
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' }
+						{ name: 'a', expression: '{{1-10}}' },
+						{ name: 'b', expression: '{{1-10}}' }
 					],
-					answer: '{eval:{@:a} + {@:b}}'
+					answer: '{{eval:{{a}} + {{b}}}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -66,9 +66,9 @@ describe('generateInstance - Numerical Exact Questions', () => {
 			type: 'numerical_exact',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Value: {@:x}' }],
-					variables: [{ name: 'x', expression: '{#:1-100}' }],
-					answer: '{@:x}'
+					statement: [{ type: 'text', content: 'Value: {{x}}' }],
+					variables: [{ name: 'x', expression: '{{1-100}}' }],
+					answer: '{{x}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -93,9 +93,9 @@ describe('generateInstance - Numerical Exact Questions', () => {
 			type: 'numerical_exact',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Value: {@:x}' }],
-					variables: [{ name: 'x', expression: '{#:1-1000}' }],
-					answer: '{@:x}'
+					statement: [{ type: 'text', content: 'Value: {{x}}' }],
+					variables: [{ name: 'x', expression: '{{1-1000}}' }],
+					answer: '{{x}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -124,12 +124,12 @@ describe('generateInstance - Algebraic Transform Questions', () => {
 			type: 'algebraic_transform',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Factor: $$x^2 - {@:c}$$' }],
+					statement: [{ type: 'text', content: 'Factor: $$x^2 - {{c}}$$' }],
 					variables: [
-						{ name: 'a', expression: '{#:2-9}' },
-						{ name: 'c', expression: '{eval:{@:a}^2}' }
+						{ name: 'a', expression: '{{2-9}}' },
+						{ name: 'c', expression: '{{eval:{{a}}^2}}' }
 					],
-					answer: '(x-{@:a})(x+{@:a})'
+					answer: '(x-{{a}})(x+{{a}})'
 				}
 			],
 			transformType: 'factor',
@@ -161,13 +161,13 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 			type: 'fill_in_blanks',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Complete: {@:a} + {@:b} = ___' }],
+					statement: [{ type: 'text', content: 'Complete: {{a}} + {{b}} = ___' }],
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' }
+						{ name: 'a', expression: '{{1-10}}' },
+						{ name: 'b', expression: '{{1-10}}' }
 					],
-					answer: ['{eval:{@:a} + {@:b}}'],
-					blanks: [{ position: 0, expectedAnswer: '{eval:{@:a} + {@:b}}' }]
+					answer: ['{{eval:{{a}} + {{b}}}}'],
+					blanks: [{ position: 0, expectedAnswer: '{{eval:{{a}} + {{b}}}}' }]
 				}
 			],
 			grades: ['6'],
@@ -196,16 +196,16 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 			type: 'fill_in_blanks',
 			variations: [
 				{
-					statement: [{ type: 'text', content: '___ + ___ = {@:sum}' }],
+					statement: [{ type: 'text', content: '___ + ___ = {{sum}}' }],
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' },
-						{ name: 'sum', expression: '{eval:{@:a} + {@:b}}' }
+						{ name: 'a', expression: '{{1-10}}' },
+						{ name: 'b', expression: '{{1-10}}' },
+						{ name: 'sum', expression: '{{eval:{{a}} + {{b}}}}' }
 					],
-					answer: ['{@:a}', '{@:b}'],
+					answer: ['{{a}}', '{{b}}'],
 					blanks: [
-						{ position: 0, expectedAnswer: '{@:a}' },
-						{ position: 1, expectedAnswer: '{@:b}' }
+						{ position: 0, expectedAnswer: '{{a}}' },
+						{ position: 1, expectedAnswer: '{{b}}' }
 					]
 				}
 			],
@@ -235,20 +235,20 @@ describe('generateInstance - Multiple Choice Questions', () => {
 			type: 'multiple_choice',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'What is {@:a} + {@:b}?' }],
+					statement: [{ type: 'text', content: 'What is {{a}} + {{b}}?' }],
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' },
-						{ name: 'correct', expression: '{eval:{@:a} + {@:b}}' },
-						{ name: 'wrong1', expression: '{eval:{@:a} + {@:b} + 1}' },
-						{ name: 'wrong2', expression: '{eval:{@:a} + {@:b} - 1}' }
+						{ name: 'a', expression: '{{1-10}}' },
+						{ name: 'b', expression: '{{1-10}}' },
+						{ name: 'correct', expression: '{{eval:{{a}} + {{b}}}}' },
+						{ name: 'wrong1', expression: '{{eval:{{a}} + {{b}} + 1}}' },
+						{ name: 'wrong2', expression: '{{eval:{{a}} + {{b}} - 1}}' }
 					],
 					answer: '0',
 					choices: [
-						{ content: { type: 'text', content: '{@:correct}' }, isCorrect: true },
-						{ content: { type: 'text', content: '{@:wrong1}' }, isCorrect: false },
-						{ content: { type: 'text', content: '{@:wrong2}' }, isCorrect: false },
-						{ content: { type: 'text', content: '{eval:{@:a} * {@:b}}' }, isCorrect: false }
+						{ content: { type: 'text', content: '{{correct}}' }, isCorrect: true },
+						{ content: { type: 'text', content: '{{wrong1}}' }, isCorrect: false },
+						{ content: { type: 'text', content: '{{wrong2}}' }, isCorrect: false },
+						{ content: { type: 'text', content: '{{eval:{{a}} * {{b}}}}' }, isCorrect: false }
 					]
 				}
 			],
@@ -339,16 +339,16 @@ describe('generateInstance - Complex Variable Resolution', () => {
 					statement: [
 						{
 							type: 'text',
-							content: 'Calculer: $$\\frac{{@:num1}}{{@:den}} + \\frac{{@:num2}}{{@:den}}$$'
+							content: 'Calculer: $$\\frac{{{num1}}}{{{den}}} + \\frac{{{num2}}}{{{den}}}$$'
 						}
 					],
 					variables: [
-						{ name: 'den', expression: '{#:2-9}' },
-						{ name: 'denMinus1', expression: '{eval:{@:den}-1}' },
-						{ name: 'num1', expression: '{#:1-{@:denMinus1}}' },
-						{ name: 'num2', expression: '{#:1-{@:denMinus1}!{@:num1}}' }
+						{ name: 'den', expression: '{{2-9}}' },
+						{ name: 'denMinus1', expression: '{{eval:{{den}}-1}}' },
+						{ name: 'num1', expression: '{{1-{{denMinus1}}}}' },
+						{ name: 'num2', expression: '{{1-{{denMinus1}}}!{{num1}}}' }
 					],
-					answer: '{eval:({@:num1}+{@:num2})/{@:den}}'
+					answer: '{{eval:({{num1}}+{{num2}})/{{den}}}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -380,15 +380,15 @@ describe('generateInstance - Complex Variable Resolution', () => {
 			type: 'numerical_exact',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Simplifier: $$\\frac{{@:num}}{{@:den}}$$' }],
+					statement: [{ type: 'text', content: 'Simplifier: $$\\frac{{{num}}}{{{den}}}$$' }],
 					variables: [
-						{ name: 'gcd', expression: '{#:2-5}' },
-						{ name: 'a', expression: '{#:2-9}' },
-						{ name: 'b', expression: '{#:2-9!{@:a}}' },
-						{ name: 'num', expression: '{eval:{@:a}*{@:gcd}}' },
-						{ name: 'den', expression: '{eval:{@:b}*{@:gcd}}' }
+						{ name: 'gcd', expression: '{{2-5}}' },
+						{ name: 'a', expression: '{{2-9}}' },
+						{ name: 'b', expression: '{{2-9!{{a}}}}' },
+						{ name: 'num', expression: '{{eval:{{a}}*{{gcd}}}}' },
+						{ name: 'den', expression: '{{eval:{{b}}*{{gcd}}}}' }
 					],
-					answer: '{eval:{@:num}/{@:den}}'
+					answer: '{{eval:{{num}}/{{den}}}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -423,12 +423,12 @@ describe('generateInstance - Content Resolution', () => {
 			type: 'numerical_exact',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'What is {@:x} × {@:y}?' }],
+					statement: [{ type: 'text', content: 'What is {{x}} × {{y}}?' }],
 					variables: [
-						{ name: 'x', expression: '{#:2-9}' },
-						{ name: 'y', expression: '{#:2-9}' }
+						{ name: 'x', expression: '{{2-9}}' },
+						{ name: 'y', expression: '{{2-9}}' }
 					],
-					answer: '{eval:{@:x} * {@:y}}'
+					answer: '{{eval:{{x}} * {{y}}}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -456,12 +456,12 @@ describe('generateInstance - Content Resolution', () => {
 			type: 'numerical_exact',
 			variations: [
 				{
-					statement: [{ type: 'text', content: '$$\\frac{{@:a}}{{@:b}}$$' }],
+					statement: [{ type: 'text', content: '$$\\frac{{{a}}}{{{b}}}$$' }],
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' }
+						{ name: 'a', expression: '{{1-10}}' },
+						{ name: 'b', expression: '{{1-10}}' }
 					],
-					answer: '{eval:{@:a}/{@:b}}'
+					answer: '{{eval:{{a}}/{{b}}}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -489,14 +489,14 @@ describe('generateInstance - Content Resolution', () => {
 			type: 'numerical_exact',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+					statement: [{ type: 'text', content: 'Calculate {{a}} + {{b}}' }],
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' }
+						{ name: 'a', expression: '{{1-10}}' },
+						{ name: 'b', expression: '{{1-10}}' }
 					],
-					answer: '{eval:{@:a} + {@:b}}',
+					answer: '{{eval:{{a}} + {{b}}}}',
 					correction: [
-						{ type: 'text', content: 'The answer is {@:a} + {@:b} = {eval:{@:a} + {@:b}}' }
+						{ type: 'text', content: 'The answer is {{a}} + {{b}} = {{eval:{{a}} + {{b}}}}' }
 					]
 				}
 			],
@@ -528,12 +528,12 @@ describe('generateInstance - Precision Handling', () => {
 			type: 'numerical_decimal',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Calculate {@:a} / {@:b}' }],
+					statement: [{ type: 'text', content: 'Calculate {{a}} / {{b}}' }],
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:2-9}' }
+						{ name: 'a', expression: '{{1-10}}' },
+						{ name: 'b', expression: '{{2-9}}' }
 					],
-					answer: '{eval:{@:a}/{@:b}}'
+					answer: '{{eval:{{a}}/{{b}}}}'
 				}
 			],
 			precision: { type: 'decimal', digits: 2 },
@@ -558,9 +558,9 @@ describe('generateInstance - Precision Handling', () => {
 			type: 'numerical_rounded',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Estimate sqrt({@:a})' }],
-					variables: [{ name: 'a', expression: '{#:10-100}' }],
-					answer: '{eval:sqrt({@:a})}'
+					statement: [{ type: 'text', content: 'Estimate sqrt({{a}})' }],
+					variables: [{ name: 'a', expression: '{{10-100}}' }],
+					answer: '{{eval:sqrt({{a}})}}'
 				}
 			],
 			precision: { type: 'tolerance', tolerance: 0.1, mode: 'absolute' },
@@ -591,12 +591,12 @@ describe('generateInstance - Validation Errors', () => {
 			type: 'numerical_exact',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Value: {@:a}' }],
+					statement: [{ type: 'text', content: 'Value: {{a}}' }],
 					variables: [
-						{ name: 'a', expression: '{@:b}' },
-						{ name: 'b', expression: '{@:a}' }
+						{ name: 'a', expression: '{{b}}' },
+						{ name: 'b', expression: '{{a}}' }
 					],
-					answer: '{@:a}'
+					answer: '{{a}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -622,13 +622,13 @@ describe('generateInstance - Validation Errors', () => {
 			type: 'numerical_exact',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Value: {@:x}' }],
+					statement: [{ type: 'text', content: 'Value: {{x}}' }],
 					variables: [
 						{ name: 'min', expression: '10' },
 						{ name: 'max', expression: '5' },
-						{ name: 'x', expression: '{#:{@:min}-{@:max}}' }
+						{ name: 'x', expression: '{{{{min}}}-{{max}}}' }
 					],
-					answer: '{@:x}'
+					answer: '{{x}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -655,8 +655,8 @@ describe('generateInstance - Validation Errors', () => {
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Value' }],
-					variables: [{ name: 'a', expression: '{eval:invalid syntax}' }],
-					answer: '{@:a}'
+					variables: [{ name: 'a', expression: '{{eval:invalid syntax}' }],
+					answer: '{{a}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -741,12 +741,12 @@ describe('generateInstance - Edge Cases', () => {
 			variations: [
 				{
 					statement: [
-						{ type: 'text', content: 'Given {@:a}' },
+						{ type: 'text', content: 'Given {{a}}' },
 						{ type: 'image', content: 'https://example.com/image.png', alt: 'Example image' },
-						{ type: 'text', content: 'Calculate {@:a} × 2' }
+						{ type: 'text', content: 'Calculate {{a}} × 2' }
 					],
-					variables: [{ name: 'a', expression: '{#:1-10}' }],
-					answer: '{eval:{@:a} * 2}'
+					variables: [{ name: 'a', expression: '{{1-10}}' }],
+					answer: '{{eval:{{a}} * 2}'
 				}
 			],
 			precision: { type: 'none' },
@@ -777,14 +777,14 @@ describe('generateInstance - Real-World Templates', () => {
 			type: 'algebraic_transform',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Résoudre: ${@:a}x^2 + {@:b}x + {@:c} = 0$' }],
+					statement: [{ type: 'text', content: 'Résoudre: ${{a}}x^2 + {{b}}x + {{c}} = 0$' }],
 					variables: [
-						{ name: 'a', expression: '{#:1-5}' },
-						{ name: 'b', expression: '{#:-10-10}' },
-						{ name: 'c', expression: '{#:-10-10}' },
-						{ name: 'disc', expression: '{eval:{@:b}^2 - 4*{@:a}*{@:c}}' }
+						{ name: 'a', expression: '{{1-5}}' },
+						{ name: 'b', expression: '{{-10-10}}' },
+						{ name: 'c', expression: '{{-10-10}}' },
+						{ name: 'disc', expression: '{{eval:{{b}}^2 - 4*{{a}}*{{c}}}}' }
 					],
-					answer: 'x = \\frac{-{@:b} \\pm \\sqrt{{@:disc}}}{2{@:a}}'
+					answer: 'x = \\frac{-{{b}} \\pm \\sqrt{{{disc}}}}{2{{a}}}'
 				}
 			],
 			transformType: 'solve',
@@ -819,15 +819,15 @@ describe('generateInstance - Real-World Templates', () => {
 						{
 							type: 'text',
 							content:
-								'Un article coûte {@:price}€. Il y a {@:discount}% de réduction. Quel est le prix final?'
+								'Un article coûte {{price}}€. Il y a {{discount}}% de réduction. Quel est le prix final?'
 						}
 					],
 					variables: [
-						{ name: 'price', expression: '{#:50-200}' },
-						{ name: 'discount', expression: '{#:10-50}' },
-						{ name: 'reduction', expression: '{eval:{@:price} * {@:discount} / 100}' }
+						{ name: 'price', expression: '{{50-200}}' },
+						{ name: 'discount', expression: '{{10-50}}' },
+						{ name: 'reduction', expression: '{{eval:{{price}} * {{discount}} / 100}' }
 					],
-					answer: '{eval:{@:price} - {@:reduction}}'
+					answer: '{{eval:{{price}} - {{reduction}}}'
 				}
 			],
 			precision: { type: 'decimal', digits: 2 },
@@ -859,20 +859,20 @@ describe('generateInstance - Variation Selection', () => {
 			type: 'numerical_exact',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Addition: {@:a} + {@:b}' }],
+					statement: [{ type: 'text', content: 'Addition: {{a}} + {{b}}' }],
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' }
+						{ name: 'a', expression: '{{1-10}}' },
+						{ name: 'b', expression: '{{1-10}}' }
 					],
-					answer: '{eval:{@:a} + {@:b}}'
+					answer: '{{eval:{{a}} + {{b}}}}'
 				},
 				{
-					statement: [{ type: 'text', content: 'Subtraction: {@:a} - {@:b}' }],
+					statement: [{ type: 'text', content: 'Subtraction: {{a}} - {{b}}' }],
 					variables: [
-						{ name: 'a', expression: '{#:10-20}' },
-						{ name: 'b', expression: '{#:1-{@:a}}' }
+						{ name: 'a', expression: '{{10-20}}' },
+						{ name: 'b', expression: '{{1-{{a}}}}' }
 					],
-					answer: '{eval:{@:a} - {@:b}}'
+					answer: '{{eval:{{a}} - {{b}}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -898,20 +898,20 @@ describe('generateInstance - Variation Selection', () => {
 			type: 'numerical_exact',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Addition: {@:a} + {@:b}' }],
+					statement: [{ type: 'text', content: 'Addition: {{a}} + {{b}}' }],
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' }
+						{ name: 'a', expression: '{{1-10}}' },
+						{ name: 'b', expression: '{{1-10}}' }
 					],
-					answer: '{eval:{@:a} + {@:b}}'
+					answer: '{{eval:{{a}} + {{b}}}}'
 				},
 				{
-					statement: [{ type: 'text', content: 'Subtraction: {@:a} - {@:b}' }],
+					statement: [{ type: 'text', content: 'Subtraction: {{a}} - {{b}}' }],
 					variables: [
-						{ name: 'a', expression: '{#:10-20}' },
-						{ name: 'b', expression: '{#:1-{@:a}}' }
+						{ name: 'a', expression: '{{10-20}}' },
+						{ name: 'b', expression: '{{1-{{a}}}}' }
 					],
-					answer: '{eval:{@:a} - {@:b}}'
+					answer: '{{eval:{{a}} - {{b}}}'
 				}
 			],
 			precision: { type: 'none' },

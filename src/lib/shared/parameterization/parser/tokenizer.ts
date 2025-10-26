@@ -2,147 +2,50 @@
  * Tokenizer - Extract parameterization tokens from text
  * ======================================================
  *
- * Extracts all parameterization constructs from text:
- * - Questions syntax: {@:var}, {#:1-10}, {eval:expr}
- * - Markdown syntax: {{var}}, {{random:1-10}}, {{eval:expr}}
+ * Extracts all parameterization constructs from text using Markdown syntax:
+ * - Variables: {{var}}
+ * - Random: {{random:1-10}} or {{1-10}}
+ * - Eval: {{eval:expr}}
  *
  * @module shared/parameterization/parser/tokenizer
  */
 
-import type { Token, Syntax } from '../types';
+import type { Token } from '../types';
 
 /**
  * Extract all parameterization tokens from text
  *
- * Supports both Questions and Markdown syntax, with auto-detection
- * of token types based on content patterns.
+ * Supports Markdown syntax with auto-detection of token types based on content patterns.
  *
  * @param text - Text to tokenize
- * @param syntax - Syntax to parse ('questions', 'markdown', or 'both')
  * @returns Array of tokens in order of appearance
  *
- * @example Questions syntax
+ * @example Variables
  * ```typescript
- * tokenize('Value: {@:a}, Random: {#:1-10}, Result: {eval:a+5}', 'questions')
- * // Returns 3 tokens with type 'variable', 'random', 'eval'
+ * tokenize('Value: {{a}}')
+ * // Returns 1 token with type 'variable'
  * ```
  *
- * @example Markdown syntax
+ * @example Random with explicit prefix
  * ```typescript
- * tokenize('Value: {{a}}, Random: {{random:1-10}}, Result: {{eval:a+5}}', 'markdown')
- * // Returns 3 tokens with type 'variable', 'random', 'eval'
+ * tokenize('Random: {{random:1-10}}')
+ * // Returns 1 token with type 'random'
  * ```
  *
- * @example Markdown shorthand
+ * @example Random shorthand
  * ```typescript
- * tokenize('Random: {{1-10}}', 'markdown')
+ * tokenize('Random: {{1-10}}')
  * // Auto-detects as random token
  * ```
  *
- * @example Both syntaxes
+ * @example Eval expression
  * ```typescript
- * tokenize('Questions: {@:a}, Markdown: {{b}}', 'both')
- * // Returns 2 tokens, one for each syntax
+ * tokenize('Result: {{eval:a+5}}')
+ * // Returns 1 token with type 'eval'
  * ```
  */
-export function tokenize(text: string, syntax: Syntax = 'both'): Token[] {
-	const tokens: Token[] = [];
-
-	// Parse Questions syntax if enabled
-	if (syntax === 'questions' || syntax === 'both') {
-		tokens.push(...extractQuestionsTokens(text));
-	}
-
-	// Parse Markdown syntax if enabled
-	if (syntax === 'markdown' || syntax === 'both') {
-		tokens.push(...extractMarkdownTokens(text));
-	}
-
-	// Sort by position to maintain order
-	return tokens.sort((a, b) => a.start - b.start);
-}
-
-/**
- * Extract Questions syntax tokens: {@:var}, {#:1-10}, {eval:expr}
- */
-function extractQuestionsTokens(text: string): Token[] {
-	const tokens: Token[] = [];
-	let i = 0;
-
-	while (i < text.length) {
-		if (text[i] === '{') {
-			const result = extractQuestionsBracedToken(text, i);
-			if (result.token) {
-				tokens.push(result.token);
-				i = result.endIndex;
-				continue;
-			}
-		}
-		i++;
-	}
-
-	return tokens;
-}
-
-/**
- * Extract a Questions syntax braced token starting at position
- *
- * Handles nested braces correctly for complex expressions like:
- * {#:{@:min}-{@:max}}
- */
-function extractQuestionsBracedToken(
-	text: string,
-	start: number
-): { token: Token | null; endIndex: number } {
-	let braceCount = 1;
-	let i = start + 1;
-
-	// Find matching closing brace
-	while (i < text.length && braceCount > 0) {
-		if (text[i] === '{') braceCount++;
-		if (text[i] === '}') braceCount--;
-		i++;
-	}
-
-	if (braceCount !== 0) {
-		// Unmatched braces
-		return { token: null, endIndex: start + 1 };
-	}
-
-	const content = text.substring(start, i);
-	const innerContent = text.substring(start + 1, i - 1);
-
-	// Determine token type
-	let type: 'variable' | 'random' | 'eval' | null = null;
-	let inner = innerContent;
-
-	if (innerContent.startsWith('@:')) {
-		type = 'variable';
-		inner = innerContent.substring(2);
-	} else if (innerContent.startsWith('#:')) {
-		type = 'random';
-		inner = innerContent.substring(2);
-	} else if (innerContent.startsWith('eval:')) {
-		type = 'eval';
-		inner = innerContent.substring(5);
-	}
-
-	if (!type) {
-		// Not a parameterization token
-		return { token: null, endIndex: start + 1 };
-	}
-
-	return {
-		token: {
-			type,
-			content,
-			inner,
-			start,
-			end: i,
-			syntax: 'questions'
-		},
-		endIndex: i
-	};
+export function tokenize(text: string): Token[] {
+	return extractMarkdownTokens(text);
 }
 
 /**
@@ -233,8 +136,7 @@ function extractMarkdownBracedToken(
 			content,
 			inner,
 			start,
-			end: i,
-			syntax: 'markdown'
+			end: i
 		},
 		endIndex: i
 	};

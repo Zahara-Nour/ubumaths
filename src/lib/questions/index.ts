@@ -49,7 +49,10 @@ export { shuffleChoices, type ShuffledChoice } from './generator/choice-shuffler
 // Validators
 export { validateTemplate, isValidTemplate } from './validators/template-validator';
 
-export { detectCircularDependencies, hasCircularReference } from './validators/circular-dependency';
+export {
+	detectCircularDependencies,
+	hasCircularReference
+} from '$lib/shared/parameterization/validator/circular-dependency';
 
 // Compute Engine
 export {

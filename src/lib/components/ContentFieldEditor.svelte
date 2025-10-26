@@ -152,7 +152,7 @@
 											<Button
 												variant="outline"
 												size="sm"
-												onclick={() => insertSyntax(index, '{@:}')}
+												onclick={() => insertSyntax(index, '{{var}}')}
 												class="text-xs"
 											>
 												Variable
@@ -160,7 +160,7 @@
 											<Button
 												variant="outline"
 												size="sm"
-												onclick={() => insertSyntax(index, '{#:1-10}')}
+												onclick={() => insertSyntax(index, '{{random:1-10}}')}
 												class="text-xs"
 											>
 												Aléatoire
@@ -168,7 +168,7 @@
 											<Button
 												variant="outline"
 												size="sm"
-												onclick={() => insertSyntax(index, '{eval:}')}
+												onclick={() => insertSyntax(index, '{{eval:}}')}
 												class="text-xs"
 											>
 												Évaluation
@@ -177,7 +177,7 @@
 										<Textarea
 											id="field-content-{index}"
 											bind:value={field.content}
-											placeholder={'Ex: Calculer {@:a} + {@:b} = {eval:{@:a}+{@:b}}'}
+											placeholder={'Ex: Calculer $${{a}} + {{b}} = {{eval:{{a}}+{{b}}}}$$'}
 											rows={3}
 											class="font-mono text-sm"
 										/>

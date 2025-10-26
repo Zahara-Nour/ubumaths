@@ -73,7 +73,7 @@ describe('validateVariables', () => {
 		it('should accept valid variable references', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '5' },
-				{ name: 'b', expression: '{@:a}' }
+				{ name: 'b', expression: '{{a}}' }
 			];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
@@ -82,9 +82,9 @@ describe('validateVariables', () => {
 
 		it('should accept valid random specs', () => {
 			const variables: Variable[] = [
-				{ name: 'a', expression: '{#:1-10}' },
-				{ name: 'b', expression: '{#:2.3}' },
-				{ name: 'c', expression: '{#:0.5-9.99:0.01}' }
+				{ name: 'a', expression: '{{random:1-10}}' },
+				{ name: 'b', expression: '{{random:2.3}}' },
+				{ name: 'c', expression: '{{random:0.5-9.99:0.01}}' }
 			];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
@@ -220,7 +220,7 @@ describe('validateVariables', () => {
 
 	describe('Undefined references', () => {
 		it('should detect undefined variable reference', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{@:undefined}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{undefined}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(false);
 			expect(result.errors).toHaveLength(1);
@@ -230,7 +230,7 @@ describe('validateVariables', () => {
 		});
 
 		it('should detect multiple undefined references', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{@:x} + {@:y}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{x}} + {{y}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(false);
 			expect(result.errors.length).toBeGreaterThanOrEqual(2);
@@ -248,8 +248,8 @@ describe('validateVariables', () => {
 		it('should not flag valid references', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '5' },
-				{ name: 'b', expression: '{@:a}' },
-				{ name: 'c', expression: '{@:a} + {@:b}' }
+				{ name: 'b', expression: '{{a}}' },
+				{ name: 'c', expression: '{{a}} + {{b}}' }
 			];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
@@ -258,7 +258,7 @@ describe('validateVariables', () => {
 
 		it('should detect forward reference as undefined', () => {
 			const variables: Variable[] = [
-				{ name: 'a', expression: '{@:b}' },
+				{ name: 'a', expression: '{{b}}' },
 				{ name: 'b', expression: '5' }
 			];
 			const result = validateVariables(variables);
@@ -274,15 +274,6 @@ describe('validateVariables', () => {
 
 	describe('Syntax validation', () => {
 		it('should detect malformed variable reference', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{@:}' }];
-			const result = validateVariables(variables);
-			expect(result.valid).toBe(false);
-			expect(result.errors).toHaveLength(1);
-			expect(result.errors[0].type).toBe('invalid-syntax');
-			expect(result.errors[0].message).toContain('Malformed');
-		});
-
-		it('should detect malformed Markdown variable reference', () => {
 			const variables: Variable[] = [{ name: 'a', expression: '{{}}' }];
 			const result = validateVariables(variables);
 			// Empty {{}} may be considered valid syntax (just empty content)
@@ -291,7 +282,7 @@ describe('validateVariables', () => {
 		});
 
 		it('should detect invalid random spec syntax', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{#:invalid}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{random:invalid}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(false);
 			expect(result.errors).toHaveLength(1);
@@ -300,7 +291,7 @@ describe('validateVariables', () => {
 		});
 
 		it('should detect invalid range in random spec', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{#:10-1}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{random:10-1}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(false);
 			expect(result.errors).toHaveLength(1);
@@ -310,21 +301,21 @@ describe('validateVariables', () => {
 		});
 
 		it('should accept equal min and max in range', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{#:5-5}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{random:5-5}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
 			expect(result.errors).toHaveLength(0);
 		});
 
 		it('should accept negative ranges', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{#:-10--5}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{random:-10--5}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
 			expect(result.errors).toHaveLength(0);
 		});
 
 		it('should detect inverted negative range', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{#:-1--10}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{random:-1--10}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(false);
 			expect(result.errors).toHaveLength(1);
@@ -338,21 +329,21 @@ describe('validateVariables', () => {
 
 	describe('Random spec validation', () => {
 		it('should accept valid integer range', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{#:1-10}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{random:1-10}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
 			expect(result.errors).toHaveLength(0);
 		});
 
 		it('should accept valid decimal by digits', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{#:2.3}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{random:2.3}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
 			expect(result.errors).toHaveLength(0);
 		});
 
 		it('should accept valid decimal range with step', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{#:0.5-9.99:0.01}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{random:0.5-9.99:0.01}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
 			expect(result.errors).toHaveLength(0);
@@ -360,9 +351,9 @@ describe('validateVariables', () => {
 
 		it('should accept random with exclusions', () => {
 			const variables: Variable[] = [
-				{ name: 'a', expression: '{#:1-10!5}' },
-				{ name: 'b', expression: '{#:1-20!5-10}' },
-				{ name: 'c', expression: '{#:1-30!3,7,9}' }
+				{ name: 'a', expression: '{{random:1-10!5}}' },
+				{ name: 'b', expression: '{{random:1-20!5-10}}' },
+				{ name: 'c', expression: '{{random:1-30!3,7,9}}' }
 			];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
@@ -373,7 +364,7 @@ describe('validateVariables', () => {
 			const variables: Variable[] = [
 				{ name: 'min', expression: '1' },
 				{ name: 'max', expression: '10' },
-				{ name: 'rand', expression: '{#:{@:min}-{@:max}}' }
+				{ name: 'rand', expression: '{{random:{{min}}-{{max}}}}' }
 			];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
@@ -385,7 +376,7 @@ describe('validateVariables', () => {
 			const variables: Variable[] = [
 				{ name: 'min', expression: '10' },
 				{ name: 'max', expression: '1' },
-				{ name: 'rand', expression: '{#:{@:min}-{@:max}}' }
+				{ name: 'rand', expression: '{{random:{{min}}-{{max}}}}' }
 			];
 			const result = validateVariables(variables);
 			// Should pass validation (runtime will fail during resolution)
@@ -401,8 +392,8 @@ describe('validateVariables', () => {
 		it('should report all errors found', () => {
 			const variables: Variable[] = [
 				{ name: '', expression: '5' }, // Empty name
-				{ name: 'a', expression: '{@:undefined}' }, // Undefined reference
-				{ name: 'b', expression: '{#:10-1}' }, // Invalid range
+				{ name: 'a', expression: '{{undefined}}' }, // Undefined reference
+				{ name: 'b', expression: '{{random:10-1}}' }, // Invalid range
 				{ name: 'a', expression: '10' } // Duplicate name
 			];
 			const result = validateVariables(variables);
@@ -414,8 +405,8 @@ describe('validateVariables', () => {
 			const variables: Variable[] = [
 				{ name: '123', expression: '5' },
 				{ name: 'invalid-name', expression: '10' },
-				{ name: 'a', expression: '{@:x}' },
-				{ name: 'b', expression: '{#:invalid}' }
+				{ name: 'a', expression: '{{x}}' },
+				{ name: 'b', expression: '{{random:invalid}}' }
 			];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(false);
@@ -438,9 +429,9 @@ describe('validateVariables', () => {
 		it('should handle complex valid expressions', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '5' },
-				{ name: 'b', expression: '{#:1-10}' },
-				{ name: 'c', expression: '{eval:{@:a}+{@:b}}' },
-				{ name: 'd', expression: 'Text with {@:c} value' }
+				{ name: 'b', expression: '{{random:1-10}}' },
+				{ name: 'c', expression: '{{eval:{{a}}+{{b}}}}' },
+				{ name: 'd', expression: 'Text with {{c}} value' }
 			];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
@@ -451,7 +442,7 @@ describe('validateVariables', () => {
 			const variables: Variable[] = [
 				{ name: 'numerator', expression: '6' },
 				{ name: 'denominator', expression: '2' },
-				{ name: 'result', expression: '{eval:\\frac{6}{2}}' }
+				{ name: 'result', expression: '{{eval:\\frac{6}{2}}}' }
 			];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
@@ -470,8 +461,8 @@ describe('validateVariables', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '1' },
 				{ name: 'b', expression: '2' },
-				{ name: 'x', expression: '{@:a}' },
-				{ name: 'y', expression: '{@:b}' }
+				{ name: 'x', expression: '{{a}}' },
+				{ name: 'y', expression: '{{b}}' }
 			];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);

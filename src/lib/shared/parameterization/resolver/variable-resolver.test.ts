@@ -6,6 +6,8 @@
  * 1. Variable references
  * 2. Random generation
  * 3. Eval expressions
+ *
+ * All tests use Markdown syntax ({{var}}, {{random:1-10}}, {{eval:expr}})
  */
 
 import { describe, it, expect } from 'vitest';
@@ -18,23 +20,12 @@ describe('resolveVariables', () => {
 	// ============================================================================
 
 	describe('Stage 1: Variable references', () => {
-		it('should resolve simple variable reference (Questions syntax)', () => {
-			const variables: Variable[] = [
-				{ name: 'a', expression: '5' },
-				{ name: 'b', expression: '{@:a}' }
-			];
-			const resolved = resolveVariables(variables);
-			expect(resolved).toHaveLength(2);
-			expect(resolved[0]).toEqual({ name: 'a', value: '5' });
-			expect(resolved[1]).toEqual({ name: 'b', value: '5' });
-		});
-
-		it('should resolve simple variable reference (Markdown syntax)', () => {
+		it('should resolve simple variable reference', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '5' },
 				{ name: 'b', expression: '{{a}}' }
 			];
-			const resolved = resolveVariables(variables, undefined, 'markdown');
+			const resolved = resolveVariables(variables);
 			expect(resolved).toHaveLength(2);
 			expect(resolved[0]).toEqual({ name: 'a', value: '5' });
 			expect(resolved[1]).toEqual({ name: 'b', value: '5' });
@@ -44,7 +35,7 @@ describe('resolveVariables', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '5' },
 				{ name: 'b', expression: '10' },
-				{ name: 'sum', expression: '{@:a} + {@:b}' }
+				{ name: 'sum', expression: '{{a}} + {{b}}' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[2].value).toBe('5 + 10');
@@ -53,8 +44,8 @@ describe('resolveVariables', () => {
 		it('should handle chained references', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '5' },
-				{ name: 'b', expression: '{@:a}' },
-				{ name: 'c', expression: '{@:b}' }
+				{ name: 'b', expression: '{{a}}' },
+				{ name: 'c', expression: '{{b}}' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[0].value).toBe('5');
@@ -65,10 +56,10 @@ describe('resolveVariables', () => {
 		it('should handle long chains', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '42' },
-				{ name: 'b', expression: '{@:a}' },
-				{ name: 'c', expression: '{@:b}' },
-				{ name: 'd', expression: '{@:c}' },
-				{ name: 'e', expression: '{@:d}' }
+				{ name: 'b', expression: '{{a}}' },
+				{ name: 'c', expression: '{{b}}' },
+				{ name: 'd', expression: '{{c}}' },
+				{ name: 'e', expression: '{{d}}' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[4].value).toBe('42');
@@ -77,7 +68,7 @@ describe('resolveVariables', () => {
 		it('should preserve text around variable references', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '5' },
-				{ name: 'text', expression: 'Value is {@:a} units' }
+				{ name: 'text', expression: 'Value is {{a}} units' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[1].value).toBe('Value is 5 units');
@@ -87,7 +78,7 @@ describe('resolveVariables', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '5' },
 				{ name: 'b', expression: '10' },
-				{ name: 'text', expression: '{@:a} + {@:b} = 15' }
+				{ name: 'text', expression: '{{a}} + {{b}} = 15' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[2].value).toBe('5 + 10 = 15');
@@ -97,7 +88,7 @@ describe('resolveVariables', () => {
 			const variables: Variable[] = [
 				{ name: 'pi', expression: '3.14' },
 				{ name: 'radius', expression: '5' },
-				{ name: 'formula', expression: '{@:pi} * {@:radius}' }
+				{ name: 'formula', expression: '{{pi}} * {{radius}}' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[2].value).toBe('3.14 * 5');
@@ -106,14 +97,14 @@ describe('resolveVariables', () => {
 		it('should handle negative numbers', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '-5' },
-				{ name: 'b', expression: '{@:a}' }
+				{ name: 'b', expression: '{{a}}' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[1].value).toBe('-5');
 		});
 
 		it('should throw error on undefined variable reference', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{@:undefined}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{undefined}}' }];
 			expect(() => resolveVariables(variables)).toThrow(
 				'Variable "undefined" not found or not yet resolved'
 			);
@@ -121,22 +112,12 @@ describe('resolveVariables', () => {
 
 		it('should throw error on forward reference', () => {
 			const variables: Variable[] = [
-				{ name: 'a', expression: '{@:b}' },
+				{ name: 'a', expression: '{{b}}' },
 				{ name: 'b', expression: '5' }
 			];
 			expect(() => resolveVariables(variables)).toThrow(
 				'Variable "b" not found or not yet resolved'
 			);
-		});
-
-		it('should handle mixed syntax when using "both"', () => {
-			const variables: Variable[] = [
-				{ name: 'a', expression: '5' },
-				{ name: 'b', expression: '{@:a}' },
-				{ name: 'c', expression: '{{b}}' }
-			];
-			const resolved = resolveVariables(variables, undefined, 'both');
-			expect(resolved[2].value).toBe('5');
 		});
 	});
 
@@ -146,7 +127,7 @@ describe('resolveVariables', () => {
 
 	describe('Stage 2: Random generation', () => {
 		it('should generate random integers', () => {
-			const variables: Variable[] = [{ name: 'rand', expression: '{#:1-10}' }];
+			const variables: Variable[] = [{ name: 'rand', expression: '{{random:1-10}}' }];
 			const resolved = resolveVariables(variables, 42);
 			const value = parseInt(resolved[0].value);
 			expect(value).toBeGreaterThanOrEqual(1);
@@ -155,14 +136,14 @@ describe('resolveVariables', () => {
 		});
 
 		it('should generate same value with same seed', () => {
-			const variables: Variable[] = [{ name: 'rand', expression: '{#:1-100}' }];
+			const variables: Variable[] = [{ name: 'rand', expression: '{{random:1-100}}' }];
 			const resolved1 = resolveVariables(variables, 42);
 			const resolved2 = resolveVariables(variables, 42);
 			expect(resolved1[0].value).toBe(resolved2[0].value);
 		});
 
 		it('should generate different values with different seeds', () => {
-			const variables: Variable[] = [{ name: 'rand', expression: '{#:1-1000}' }];
+			const variables: Variable[] = [{ name: 'rand', expression: '{{random:1-1000}}' }];
 			const resolved1 = resolveVariables(variables, 42);
 			const resolved2 = resolveVariables(variables, 43);
 			expect(resolved1[0].value).not.toBe(resolved2[0].value);
@@ -172,7 +153,7 @@ describe('resolveVariables', () => {
 			const variables: Variable[] = [
 				{ name: 'min', expression: '5' },
 				{ name: 'max', expression: '15' },
-				{ name: 'rand', expression: '{#:{@:min}-{@:max}}' }
+				{ name: 'rand', expression: '{{random:{{min}}-{{max}}}}' }
 			];
 			const resolved = resolveVariables(variables, 42);
 			const value = parseInt(resolved[2].value);
@@ -181,7 +162,7 @@ describe('resolveVariables', () => {
 		});
 
 		it('should generate random decimals by digits', () => {
-			const variables: Variable[] = [{ name: 'rand', expression: '{#:2.3}' }];
+			const variables: Variable[] = [{ name: 'rand', expression: '{{random:2.3}}' }];
 			const resolved = resolveVariables(variables, 42);
 			const value = parseFloat(resolved[0].value);
 			expect(value).toBeGreaterThanOrEqual(10); // min 2 digits before
@@ -191,7 +172,7 @@ describe('resolveVariables', () => {
 		});
 
 		it('should handle exclusions', () => {
-			const variables: Variable[] = [{ name: 'rand', expression: '{#:1-5!3}' }];
+			const variables: Variable[] = [{ name: 'rand', expression: '{{random:1-5!3}}' }];
 			const values = Array.from({ length: 100 }, (_, i) => {
 				const resolved = resolveVariables(variables, i);
 				return parseInt(resolved[0].value);
@@ -201,7 +182,7 @@ describe('resolveVariables', () => {
 		});
 
 		it('should handle range exclusions', () => {
-			const variables: Variable[] = [{ name: 'rand', expression: '{#:1-10!5-7}' }];
+			const variables: Variable[] = [{ name: 'rand', expression: '{{random:1-10!5-7}}' }];
 			const values = Array.from({ length: 100 }, (_, i) => {
 				const resolved = resolveVariables(variables, i);
 				return parseInt(resolved[0].value);
@@ -212,7 +193,7 @@ describe('resolveVariables', () => {
 		});
 
 		it('should handle multiple exclusions', () => {
-			const variables: Variable[] = [{ name: 'rand', expression: '{#:1-10!3,5,7}' }];
+			const variables: Variable[] = [{ name: 'rand', expression: '{{random:1-10!3,5,7}}' }];
 			const values = Array.from({ length: 100 }, (_, i) => {
 				const resolved = resolveVariables(variables, i);
 				return parseInt(resolved[0].value);
@@ -225,7 +206,7 @@ describe('resolveVariables', () => {
 		it('should handle variable exclusions', () => {
 			const variables: Variable[] = [
 				{ name: 'excluded', expression: '5' },
-				{ name: 'rand', expression: '{#:1-10!{@:excluded}}' }
+				{ name: 'rand', expression: '{{random:1-10!{{excluded}}}}' }
 			];
 			const values = Array.from({ length: 50 }, (_, i) => {
 				const resolved = resolveVariables(variables, i);
@@ -236,8 +217,8 @@ describe('resolveVariables', () => {
 
 		it('should generate multiple different random values', () => {
 			const variables: Variable[] = [
-				{ name: 'a', expression: '{#:1-100}' },
-				{ name: 'b', expression: '{#:1-100}' }
+				{ name: 'a', expression: '{{random:1-100}}' },
+				{ name: 'b', expression: '{{random:1-100}}' }
 			];
 			const resolved = resolveVariables(variables, 42);
 			// Both random specs start with same seed, so may generate same value
@@ -251,7 +232,7 @@ describe('resolveVariables', () => {
 		});
 
 		it('should handle random in text context', () => {
-			const variables: Variable[] = [{ name: 'text', expression: 'Value is {#:1-10}' }];
+			const variables: Variable[] = [{ name: 'text', expression: 'Value is {{random:1-10}}' }];
 			const resolved = resolveVariables(variables, 42);
 			expect(resolved[0].value).toMatch(/^Value is \d+$/);
 		});
@@ -263,43 +244,43 @@ describe('resolveVariables', () => {
 
 	describe('Stage 3: Eval expressions', () => {
 		it('should evaluate simple math', () => {
-			const variables: Variable[] = [{ name: 'result', expression: '{eval:5+3}' }];
+			const variables: Variable[] = [{ name: 'result', expression: '{{eval:5+3}}' }];
 			const resolved = resolveVariables(variables);
 			expect(resolved[0].value).toBe('8');
 		});
 
 		it('should evaluate subtraction', () => {
-			const variables: Variable[] = [{ name: 'result', expression: '{eval:10-3}' }];
+			const variables: Variable[] = [{ name: 'result', expression: '{{eval:10-3}}' }];
 			const resolved = resolveVariables(variables);
 			expect(resolved[0].value).toBe('7');
 		});
 
 		it('should evaluate multiplication', () => {
-			const variables: Variable[] = [{ name: 'result', expression: '{eval:4*5}' }];
+			const variables: Variable[] = [{ name: 'result', expression: '{{eval:4*5}}' }];
 			const resolved = resolveVariables(variables);
 			expect(resolved[0].value).toBe('20');
 		});
 
 		it('should evaluate division', () => {
-			const variables: Variable[] = [{ name: 'result', expression: '{eval:20/4}' }];
+			const variables: Variable[] = [{ name: 'result', expression: '{{eval:20/4}}' }];
 			const resolved = resolveVariables(variables);
 			expect(resolved[0].value).toBe('5');
 		});
 
 		it('should evaluate simple arithmetic', () => {
-			const variables: Variable[] = [{ name: 'sum', expression: '{eval:5+10}' }];
+			const variables: Variable[] = [{ name: 'sum', expression: '{{eval:5+10}}' }];
 			const resolved = resolveVariables(variables);
 			expect(resolved[0].value).toBe('15');
 		});
 
 		it('should evaluate expressions with multiplication', () => {
-			const variables: Variable[] = [{ name: 'result', expression: '{eval:(5+10)*2}' }];
+			const variables: Variable[] = [{ name: 'result', expression: '{{eval:(5+10)*2}}' }];
 			const resolved = resolveVariables(variables);
 			expect(resolved[0].value).toBe('30');
 		});
 
 		it('should handle LaTeX expressions', () => {
-			const variables: Variable[] = [{ name: 'frac', expression: '{eval:\\frac{6}{2}}' }];
+			const variables: Variable[] = [{ name: 'frac', expression: '{{eval:\\frac{6}{2}}}' }];
 			const resolved = resolveVariables(variables);
 			expect(resolved[0].value).toBe('3');
 		});
@@ -308,14 +289,14 @@ describe('resolveVariables', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '5' },
 				{ name: 'b', expression: '10' },
-				{ name: 'result', expression: '{eval:5+10}' }
+				{ name: 'result', expression: '{{eval:5+10}}' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[2].value).toBe('15');
 		});
 
 		it('should handle decimal division results', () => {
-			const variables: Variable[] = [{ name: 'result', expression: '{eval:7/2}' }];
+			const variables: Variable[] = [{ name: 'result', expression: '{{eval:7/2}}' }];
 			const resolved = resolveVariables(variables);
 			// Compute engine may return '7/2' as LaTeX or '3.5' as decimal
 			// Just verify it's a valid representation of 3.5
@@ -324,21 +305,21 @@ describe('resolveVariables', () => {
 		});
 
 		it('should handle negative results', () => {
-			const variables: Variable[] = [{ name: 'result', expression: '{eval:5-10}' }];
+			const variables: Variable[] = [{ name: 'result', expression: '{{eval:5-10}}' }];
 			const resolved = resolveVariables(variables);
 			expect(resolved[0].value).toBe('-5');
 		});
 
 		it('should evaluate power operations', () => {
-			const variables: Variable[] = [{ name: 'result', expression: '{eval:2^3}' }];
+			const variables: Variable[] = [{ name: 'result', expression: '{{eval:2^3}}' }];
 			const resolved = resolveVariables(variables);
 			expect(resolved[0].value).toBe('8');
 		});
 
 		it('should handle multiple eval expressions', () => {
 			const variables: Variable[] = [
-				{ name: 'sum', expression: '{eval:5+3}' },
-				{ name: 'product', expression: '{eval:4*2}' }
+				{ name: 'sum', expression: '{{eval:5+3}}' },
+				{ name: 'product', expression: '{{eval:4*2}}' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[0].value).toBe('8');
@@ -355,8 +336,8 @@ describe('resolveVariables', () => {
 			const variables: Variable[] = [
 				{ name: 'min', expression: '1' },
 				{ name: 'max', expression: '10' },
-				{ name: 'rand', expression: '{#:{@:min}-{@:max}}' },
-				{ name: 'doubled', expression: '{eval:2*2}' } // Simple eval test
+				{ name: 'rand', expression: '{{random:{{min}}-{{max}}}}' },
+				{ name: 'doubled', expression: '{{eval:2*2}}' }
 			];
 			const resolved = resolveVariables(variables, 42);
 			const randValue = parseInt(resolved[2].value);
@@ -368,7 +349,7 @@ describe('resolveVariables', () => {
 		it('should handle variable refs and random generation together', () => {
 			const variables: Variable[] = [
 				{ name: 'base', expression: '5' },
-				{ name: 'multiplier', expression: '{#:1-10}' }
+				{ name: 'multiplier', expression: '{{random:1-10}}' }
 			];
 			const resolved = resolveVariables(variables, 42);
 			expect(resolved[0].value).toBe('5');
@@ -381,8 +362,8 @@ describe('resolveVariables', () => {
 			const variables: Variable[] = [
 				{ name: 'min', expression: '1' },
 				{ name: 'max', expression: '10' },
-				{ name: 'a', expression: '{#:{@:min}-{@:max}}' },
-				{ name: 'b', expression: '{#:{@:min}-{@:max}!{@:a}}' }
+				{ name: 'a', expression: '{{random:{{min}}-{{max}}}}' },
+				{ name: 'b', expression: '{{random:{{min}}-{{max}}!{{a}}}}' }
 			];
 			const resolved = resolveVariables(variables, 12345);
 			const a = parseInt(resolved[2].value);
@@ -397,8 +378,8 @@ describe('resolveVariables', () => {
 		it('should handle text with variable and random tokens', () => {
 			const variables: Variable[] = [
 				{ name: 'constant', expression: '5' },
-				{ name: 'rand', expression: '{#:1-10}' },
-				{ name: 'text', expression: 'Constant: {@:constant}, Random: {@:rand}' }
+				{ name: 'rand', expression: '{{random:1-10}}' },
+				{ name: 'text', expression: 'Constant: {{constant}}, Random: {{rand}}' }
 			];
 			const resolved = resolveVariables(variables, 42);
 			expect(resolved[2].value).toMatch(/^Constant: \d+, Random: \d+$/);
@@ -408,9 +389,9 @@ describe('resolveVariables', () => {
 		it('should maintain resolution order with chained references', () => {
 			const variables: Variable[] = [
 				{ name: 'step1', expression: '5' },
-				{ name: 'step2', expression: '{@:step1}' },
-				{ name: 'step3', expression: '{@:step2}' },
-				{ name: 'step4', expression: '{@:step3}' }
+				{ name: 'step2', expression: '{{step1}}' },
+				{ name: 'step3', expression: '{{step2}}' },
+				{ name: 'step4', expression: '{{step3}}' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[0].value).toBe('5');
@@ -440,7 +421,7 @@ describe('resolveVariables', () => {
 		it('should handle whitespace in expressions', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '5' },
-				{ name: 'b', expression: '  {@:a}  ' }
+				{ name: 'b', expression: '  {{a}}  ' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[1].value).toBe('  5  ');
@@ -455,7 +436,7 @@ describe('resolveVariables', () => {
 		it('should handle very large numbers', () => {
 			const variables: Variable[] = [
 				{ name: 'big', expression: '999999999' },
-				{ name: 'ref', expression: '{@:big}' }
+				{ name: 'ref', expression: '{{big}}' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[1].value).toBe('999999999');
@@ -464,7 +445,7 @@ describe('resolveVariables', () => {
 		it('should preserve special characters', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '5' },
-				{ name: 'text', expression: '${@:a} euros!' }
+				{ name: 'text', expression: '${{a}} euros!' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[1].value).toBe('$5 euros!');
@@ -473,7 +454,7 @@ describe('resolveVariables', () => {
 		it('should handle Unicode characters', () => {
 			const variables: Variable[] = [
 				{ name: 'pi', expression: 'π' },
-				{ name: 'text', expression: 'Value: {@:pi}' }
+				{ name: 'text', expression: 'Value: {{pi}}' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[1].value).toBe('Value: π');
@@ -482,7 +463,7 @@ describe('resolveVariables', () => {
 		it('should handle zero values', () => {
 			const variables: Variable[] = [
 				{ name: 'zero', expression: '0' },
-				{ name: 'result', expression: '{eval:0+5}' }
+				{ name: 'result', expression: '{{eval:0+5}}' }
 			];
 			const resolved = resolveVariables(variables);
 			expect(resolved[1].value).toBe('5');

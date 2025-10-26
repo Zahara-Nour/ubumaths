@@ -38,10 +38,40 @@ pnpm release          # Créer une release (main branch)
 ## 📊 Code Quality
 
 - ✅ Prettier passing, build succeeds
-- ✅ **0 ESLint errors** (down from ~853)
-- ⚠️ 24 ESLint warnings non-bloquants (style preferences)
-- **Avant commit** : `pnpm format`
-- **Nouveau code** : Maintenir 0 errors, corriger les nouveaux si présents
+- ✅ **0 ESLint errors** (100% reduction from ~853 initial errors)
+- ⚠️ 20 ESLint warnings (acceptable, legitimate patterns)
+- **Avant commit** : Automatique via `lint-staged` hook
+- **Nouveau code** : Maintenir 0 errors obligatoire
+
+### 🚨 IMPORTANT: Efficient Linting Strategy
+
+**NEVER** run `pnpm eslint . --no-cache` or full uncached lint - it takes ~30s.
+
+**✅ DO** (Fast & Efficient):
+
+```bash
+# 1. After making changes - lint ONLY changed files
+pnpm eslint path/to/changed/file.ts --cache
+
+# 2. Before major steps - lint specific directory
+pnpm eslint src/lib/exercises/ --cache
+
+# 3. Final verification - full cached lint (3-5s)
+pnpm lint  # Uses --cache by default now
+```
+
+**Why?**
+
+- ESLint cache makes subsequent runs **6-10x faster** (30s → 3-5s)
+- Linting specific files is **instant** (~0.5s)
+- `lint-staged` runs automatically on commit (only staged files)
+
+**Pre-commit Hook**:
+
+- Automatically runs `lint-staged` on `git commit`
+- Lints & formats only staged files (~1-2s)
+- Auto-fixes issues when possible
+- **Blocks commit** if errors remain
 
 ---
 

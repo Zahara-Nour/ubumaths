@@ -2,18 +2,16 @@
 
 Content-agnostic parameterization system for Questions and Exercises features.
 
-**Version:** 1.0.0
+**Version:** 2.0.0
 **Tests:** 447 passing
 **Coverage:** 99%+
+**Syntax:** Markdown-only (`{{var}}`, `{{random:1-10}}`, `{{eval:expr}}`)
 
 ---
 
 ## Overview
 
-The Shared Parameterization Library provides a unified, content-agnostic system for variable resolution, random number generation, and expression evaluation. It supports two syntaxes to serve different use cases:
-
-- **Questions Syntax** (`{@:var}`, `{#:1-10}`, `{eval:expr}`) - Original UbuMaths syntax
-- **Markdown Syntax** (`{{var}}`, `{{random:1-10}}`, `{{eval:expr}}`) - Human-readable alternative
+The Shared Parameterization Library provides a unified, content-agnostic system for variable resolution, random number generation, and expression evaluation using Markdown-like double-brace syntax.
 
 ### Who Uses It
 
@@ -24,13 +22,12 @@ The Shared Parameterization Library provides a unified, content-agnostic system 
 
 ### Key Features
 
-- **Dual Syntax Support** - Use Questions or Markdown syntax, or mix both
+- **Markdown Syntax** - Clean `{{var}}` syntax for variables, random numbers, and evaluation
 - **3-Layer Architecture** - Clean separation: Parser → Resolver → Validator
 - **Variable System** - Reference chaining with dependency resolution
 - **Random Generation** - Integer, decimal, exclusions, variable bounds, seeding
 - **Expression Evaluation** - MathLive Compute Engine integration
 - **Validation** - Circular dependency detection, syntax validation
-- **Syntax Conversion** - Bidirectional conversion between syntaxes
 - **Content-Agnostic** - No feature-specific dependencies
 
 ---
@@ -42,15 +39,15 @@ The Shared Parameterization Library provides a unified, content-agnostic system 
 ```typescript
 import { resolveVariables, resolveText } from '$lib/shared/parameterization';
 
-// Define variables
+// Define variables using Markdown syntax
 const variables = [
-	{ name: 'a', expression: '{#:1-10}' },
-	{ name: 'b', expression: '{#:1-10}' },
-	{ name: 'sum', expression: '{eval:a+b}' }
+	{ name: 'a', expression: '{{1-10}}' }, // Shorthand for random
+	{ name: 'b', expression: '{{random:1-10}}' }, // Explicit random
+	{ name: 'sum', expression: '{{eval:a+b}}' }
 ];
 
 // Resolve variables with seeded random generation
-const resolved = resolveVariables(variables, 12345, 'questions');
+const resolved = resolveVariables(variables, 12345);
 // → [
 //     { name: 'a', value: '7' },
 //     { name: 'b', value: '3' },
@@ -58,41 +55,9 @@ const resolved = resolveVariables(variables, 12345, 'questions');
 //   ]
 
 // Resolve text using resolved variables
-const text = 'Calculate {@:a} + {@:b} = {@:sum}';
-const result = resolveText(text, resolved, 'questions');
-// → 'Calculate 7 + 3 = 10'
-```
-
-### Markdown Syntax
-
-```typescript
-import { resolveVariables, resolveText } from '$lib/shared/parameterization';
-
-// Same variables, different syntax
-const variables = [
-	{ name: 'a', expression: '{{1-10}}' }, // Shorthand
-	{ name: 'b', expression: '{{random:1-10}}' }, // Explicit
-	{ name: 'sum', expression: '{{eval:a+b}}' }
-];
-
-const resolved = resolveVariables(variables, 12345, 'markdown');
 const text = 'Calculate {{a}} + {{b}} = {{sum}}';
-const result = resolveText(text, resolved, 'markdown');
+const result = resolveText(text, resolved);
 // → 'Calculate 7 + 3 = 10'
-```
-
-### Syntax Conversion
-
-```typescript
-import { convertSyntax } from '$lib/shared/parameterization';
-
-const questionsText = 'Value: {@:a}, Random: {#:1-10}, Eval: {eval:a+5}';
-const markdownText = convertSyntax(questionsText, 'questions', 'markdown');
-// → 'Value: {{a}}, Random: {{random:1-10}}, Eval: {{eval:a+5}}'
-
-// Convert back
-const restored = convertSyntax(markdownText, 'markdown', 'questions');
-// → 'Value: {@:a}, Random: {#:1-10}, Eval: {eval:a+5}'
 ```
 
 ### Validation
@@ -135,8 +100,7 @@ The library follows a clean 3-layer architecture:
 ┌────────────────────────────────────────┐
 │           Parser Layer                 │
 │  Tokenizer, Variable Parser,           │
-│  Random Parser, Eval Parser,           │
-│  Syntax Converter                      │
+│  Random Parser, Eval Parser            │
 └────────────┬───────────────────────────┘
              │
              ▼
@@ -157,7 +121,7 @@ The library follows a clean 3-layer architecture:
 **Design Principles:**
 
 1. **Content-Agnostic** - No feature-specific types or logic
-2. **Dual Syntax** - Questions and Markdown syntaxes are first-class citizens
+2. **Markdown Syntax** - Clean double-brace syntax for readability
 3. **Composable** - Each layer can be used independently
 4. **Testable** - 447 tests with 99%+ coverage
 5. **Type-Safe** - Full TypeScript support with discriminated unions
@@ -166,27 +130,11 @@ The library follows a clean 3-layer architecture:
 
 ## Syntax Guide
 
-### Comparison Table
-
-| Feature                     | Questions Syntax    | Markdown Syntax            | Shorthand           |
-| --------------------------- | ------------------- | -------------------------- | ------------------- |
-| **Variable Reference**      | `{@:var}`           | `{{var}}`                  | -                   |
-| **Random Integer**          | `{#:1-10}`          | `{{random:1-10}}`          | `{{1-10}}`          |
-| **Random Decimal (digits)** | `{#:2.3}`           | `{{random:2.3}}`           | `{{2.3}}`           |
-| **Random Decimal (range)**  | `{#:0.5-9.99:0.01}` | `{{random:0.5-9.99:0.01}}` | `{{0.5-9.99:0.01}}` |
-| **Exclusions**              | `{#:1-10!5}`        | `{{random:1-10!5}}`        | `{{1-10!5}}`        |
-| **Eval**                    | `{eval:a+b}`        | `{{eval:a+b}}`             | -                   |
-
 ### Variable References
 
-Reference a previously defined variable:
+Reference a previously defined variable using `{{varName}}`:
 
 ```typescript
-// Questions syntax
-{ name: 'a', expression: '5' }
-{ name: 'b', expression: '{@:a}' }  // → '5'
-
-// Markdown syntax
 { name: 'a', expression: '5' }
 { name: 'b', expression: '{{a}}' }  // → '5'
 ```
@@ -198,20 +146,17 @@ Reference a previously defined variable:
 Generate random integer between min and max (inclusive):
 
 ```typescript
-// Questions syntax
-{ name: 'x', expression: '{#:1-10}' }        // → Random 1-10
-
-// Markdown syntax (explicit)
+// Explicit syntax
 { name: 'x', expression: '{{random:1-10}}' } // → Random 1-10
 
-// Markdown syntax (shorthand)
+// Shorthand syntax
 { name: 'x', expression: '{{1-10}}' }        // → Random 1-10
 
 // Variable bounds
 { name: 'min', expression: '1' }
 { name: 'max', expression: '100' }
-{ name: 'x', expression: '{#:{@:min}-{@:max}}' }     // Questions
-{ name: 'y', expression: '{{random:{{min}}-{{max}}}}' } // Markdown
+{ name: 'x', expression: '{{random:{{min}}-{{max}}}}' }
+{ name: 'y', expression: '{{{{min}}-{{max}}}}' } // Shorthand
 ```
 
 #### Decimal by Digits
@@ -219,17 +164,13 @@ Generate random integer between min and max (inclusive):
 Generate decimal with specified digits before/after decimal point:
 
 ```typescript
-// Questions syntax
-{ name: 'x', expression: '{#:2.3}' }  // → e.g., "45.123"
-
-// Markdown syntax
-{ name: 'x', expression: '{{2.3}}' }  // → e.g., "45.123"
+{ name: 'x', expression: '{{2.3}}' }  // → e.g., "45.123" (2 before, 3 after)
+{ name: 'y', expression: '{{random:2.3}}' }  // → Explicit form
 
 // Variable digits
 { name: 'before', expression: '2' }
 { name: 'after', expression: '3' }
-{ name: 'x', expression: '{#:{@:before}.{@:after}}' }     // Questions
-{ name: 'y', expression: '{{{{before}}.{{after}}}}' }     // Markdown
+{ name: 'x', expression: '{{{{before}}.{{after}}}}' }
 ```
 
 #### Decimal Range with Step
@@ -237,11 +178,8 @@ Generate decimal with specified digits before/after decimal point:
 Generate decimal in range with specific step:
 
 ```typescript
-// Questions syntax
-{ name: 'x', expression: '{#:0.5-9.99:0.01}' }  // → 0.50 to 9.99 by 0.01
-
-// Markdown syntax
 { name: 'x', expression: '{{0.5-9.99:0.01}}' }  // → 0.50 to 9.99 by 0.01
+{ name: 'y', expression: '{{random:0.5-9.99:0.01}}' }  // → Explicit form
 ```
 
 #### Exclusions
@@ -250,21 +188,20 @@ Exclude specific values or ranges:
 
 ```typescript
 // Single value exclusion
-{ name: 'x', expression: '{#:1-10!5}' }         // Questions
-{ name: 'y', expression: '{{1-10!5}}' }         // Markdown
+{ name: 'x', expression: '{{1-10!5}}' }         // Exclude 5
 
 // Multiple values
-{ name: 'x', expression: '{#:1-20!5,7}' }       // Exclude 5 and 7
+{ name: 'x', expression: '{{1-20!5,7}}' }       // Exclude 5 and 7
 
 // Range exclusion
-{ name: 'x', expression: '{#:1-50!10-20}' }     // Exclude 10-20
+{ name: 'x', expression: '{{1-50!10-20}}' }     // Exclude 10-20
 
 // Variable exclusion
-{ name: 'a', expression: '{#:1-10}' }
-{ name: 'b', expression: '{#:1-10!{@:a}}' }     // Exclude a's value
+{ name: 'a', expression: '{{1-10}}' }
+{ name: 'b', expression: '{{1-10!{{a}}}}' }     // Exclude a's value
 
 // Mixed
-{ name: 'x', expression: '{#:1-100!5,7-9,{@:a}}' }  // Exclude 5, 7-9, and a
+{ name: 'x', expression: '{{1-100!5,7-9,{{a}}}}' }  // Exclude 5, 7-9, and a
 ```
 
 ### Expression Evaluation
@@ -272,25 +209,20 @@ Exclude specific values or ranges:
 Evaluate mathematical expressions using MathLive Compute Engine:
 
 ```typescript
-// Questions syntax
 { name: 'a', expression: '5' }
 { name: 'b', expression: '10' }
-{ name: 'sum', expression: '{eval:a+b}' }         // → '15'
-{ name: 'product', expression: '{eval:a*b}' }     // → '50'
-{ name: 'power', expression: '{eval:a^2}' }       // → '25'
-
-// Markdown syntax
-{ name: 'sum', expression: '{{eval:a+b}}' }       // → '15'
+{ name: 'sum', expression: '{{eval:a+b}}' }         // → '15'
+{ name: 'product', expression: '{{eval:a*b}}' }     // → '50'
+{ name: 'power', expression: '{{eval:a^2}}' }       // → '25'
 
 // Complex expressions
-{ name: 'result', expression: '{eval:(a+b)^2-a*b}' }
+{ name: 'result', expression: '{{eval:(a+b)^2-a*b}}' }
 
 // With variable references (auto-resolved before evaluation)
-{ name: 'expr', expression: '{eval:{@:a}+{@:b}}' }         // Questions
-{ name: 'expr', expression: '{{eval:{{a}}+{{b}}}}' }       // Markdown
+{ name: 'expr', expression: '{{eval:{{a}}+{{b}}}}' }
 ```
 
-**Important:** All variable references inside `{eval:...}` or `{{eval:...}}` are **fully resolved BEFORE** being passed to MathLive. The engine only receives clean mathematical expressions with actual numbers.
+**Important:** All variable references inside `{{eval:...}}` are **fully resolved BEFORE** being passed to MathLive. The engine only receives clean mathematical expressions with actual numbers.
 
 ---
 
@@ -303,20 +235,14 @@ Extract all parameterization tokens from text:
 ```typescript
 import { tokenize } from '$lib/shared/parameterization';
 
-const text = 'Value: {@:a}, Random: {#:1-10}, Result: {eval:a+5}';
-const tokens = tokenize(text, 'questions');
+const text = 'Value: {{a}}, Random: {{1-10}}, Result: {{eval:a+5}}';
+const tokens = tokenize(text);
 // → [
-//     { type: 'variable', content: '{@:a}', inner: 'a', start: 7, end: 12, syntax: 'questions' },
-//     { type: 'random', content: '{#:1-10}', inner: '1-10', start: 22, end: 31, syntax: 'questions' },
-//     { type: 'eval', content: '{eval:a+5}', inner: 'a+5', start: 41, end: 52, syntax: 'questions' }
+//     { type: 'variable', content: '{{a}}', inner: 'a', start: 7, end: 12 },
+//     { type: 'random', content: '{{1-10}}', inner: '1-10', start: 22, end: 31 },
+//     { type: 'eval', content: '{{eval:a+5}}', inner: 'a+5', start: 41, end: 52 }
 //   ]
 ```
-
-**Supported Syntaxes:**
-
-- `'questions'` - Parse only Questions syntax
-- `'markdown'` - Parse only Markdown syntax
-- `'both'` - Parse both syntaxes (default)
 
 ### Variable Parser
 
@@ -325,11 +251,7 @@ Parse variable reference tokens:
 ```typescript
 import { parseVariableReference } from '$lib/shared/parameterization';
 
-// Questions syntax
-parseVariableReference('{@:myVar}', 'questions'); // → 'myVar'
-
-// Markdown syntax
-parseVariableReference('{{myVar}}', 'markdown'); // → 'myVar'
+parseVariableReference('{{myVar}}'); // → 'myVar'
 ```
 
 ### Random Parser
@@ -340,19 +262,19 @@ Parse random specification tokens:
 import { parseRandomSpec } from '$lib/shared/parameterization';
 
 // Integer range
-const spec1 = parseRandomSpec('{#:1-10}', 'questions');
+const spec1 = parseRandomSpec('{{1-10}}');
 // → { type: 'integer', min: { type: 'number', value: 1 }, max: { type: 'number', value: 10 }, exclusions: [] }
 
 // Decimal by digits
-const spec2 = parseRandomSpec('{{2.3}}', 'markdown');
+const spec2 = parseRandomSpec('{{2.3}}');
 // → { type: 'decimal-by-digits', digitsBefore: { type: 'number', value: 2 }, digitsAfter: { type: 'number', value: 3 }, exclusions: [] }
 
 // With exclusions
-const spec3 = parseRandomSpec('{#:1-20!5,7-9}', 'questions');
+const spec3 = parseRandomSpec('{{1-20!5,7-9}}');
 // → { type: 'integer', ..., exclusions: [{ type: 'value', value: { type: 'number', value: 5 } }, { type: 'range', min: ..., max: ... }] }
 
 // Variable bounds
-const spec4 = parseRandomSpec('{#:{@:min}-{@:max}}', 'questions');
+const spec4 = parseRandomSpec('{{{{min}}-{{max}}}}');
 // → { type: 'integer', min: { type: 'variable', name: 'min' }, max: { type: 'variable', name: 'max' }, exclusions: [] }
 ```
 
@@ -363,46 +285,10 @@ Parse eval expression tokens:
 ```typescript
 import { parseEvalExpression } from '$lib/shared/parameterization';
 
-// Questions syntax
-parseEvalExpression('{eval:a+b}', 'questions'); // → 'a+b'
-
-// Markdown syntax
-parseEvalExpression('{{eval:a+b}}', 'markdown'); // → 'a+b'
+parseEvalExpression('{{eval:a+b}}'); // → 'a+b'
 
 // With variable references (inner content preserved)
-parseEvalExpression('{eval:{@:a}+{@:b}}', 'questions'); // → '{@:a}+{@:b}'
-```
-
-### Syntax Converter
-
-Convert text between syntaxes:
-
-```typescript
-import { convertSyntax } from '$lib/shared/parameterization';
-
-// Questions → Markdown
-const markdown = convertSyntax(
-	'Value: {@:a}, Random: {#:1-10}, Eval: {eval:a+5}',
-	'questions',
-	'markdown'
-);
-// → 'Value: {{a}}, Random: {{random:1-10}}, Eval: {{eval:a+5}}'
-
-// Markdown → Questions
-const questions = convertSyntax(
-	'Value: {{a}}, Random: {{1-10}}, Eval: {{eval:a+5}}',
-	'markdown',
-	'questions'
-);
-// → 'Value: {@:a}, Random: {#:1-10}, Eval: {eval:a+5}'
-
-// Preserves text outside tokens
-const converted = convertSyntax(
-	'Calculate $$\\frac{{@:a}}{{@:b}}$$ = {@:result}',
-	'questions',
-	'markdown'
-);
-// → 'Calculate $$\\frac{{a}}{{b}}$$ = {{result}}'
+parseEvalExpression('{{eval:{{a}}+{{b}}}}'); // → '{{a}}+{{b}}'
 ```
 
 ---
@@ -417,12 +303,12 @@ Resolve variables using 3-stage pipeline:
 import { resolveVariables } from '$lib/shared/parameterization';
 
 const variables = [
-	{ name: 'a', expression: '{#:1-10}' },
-	{ name: 'b', expression: '{#:1-10}' },
-	{ name: 'sum', expression: '{eval:{@:a}+{@:b}}' }
+	{ name: 'a', expression: '{{1-10}}' },
+	{ name: 'b', expression: '{{1-10}}' },
+	{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' }
 ];
 
-const resolved = resolveVariables(variables, 12345, 'questions');
+const resolved = resolveVariables(variables, 12345);
 // → [
 //     { name: 'a', value: '7' },
 //     { name: 'b', value: '3' },
@@ -434,24 +320,24 @@ const resolved = resolveVariables(variables, 12345, 'questions');
 
 For each variable, the resolver processes the expression through 3 stages:
 
-1. **Replace Variable References** - `{@:var}` → resolved value
-2. **Generate Random Numbers** - `{#:1-10}` → actual number
-3. **Evaluate Expressions** - `{eval:a+b}` → calculated result
+1. **Replace Variable References** - `{{var}}` → resolved value
+2. **Generate Random Numbers** - `{{1-10}}` → actual number
+3. **Evaluate Expressions** - `{{eval:a+b}}` → calculated result
 
 **Example:**
 
 ```typescript
 // Given: a=7 (already resolved)
-// Processing: { name: 'result', expression: '{eval:{@:a}+{#:1-5}}' }
+// Processing: { name: 'result', expression: '{{eval:{{a}}+{{1-5}}}}' }
 
 // STAGE 1: Replace variable references
-//   '{eval:{@:a}+{#:1-5}}' → '{eval:7+{#:1-5}}'
+//   '{{eval:{{a}}+{{1-5}}}}' → '{{eval:7+{{1-5}}}}'
 
 // STAGE 2: Generate random numbers
-//   '{eval:7+{#:1-5}}' → '{eval:7+3}' (random generated: 3)
+//   '{{eval:7+{{1-5}}}}' → '{{eval:7+3}}' (random generated: 3)
 
 // STAGE 3: Evaluate expressions
-//   '{eval:7+3}' → Extract '7+3' → Pass to MathLive → Returns 10
+//   '{{eval:7+3}}' → Extract '7+3' → Pass to MathLive → Returns 10
 //   Final: '10'
 ```
 
@@ -469,10 +355,9 @@ const alreadyResolved = [
 
 // Resolve arbitrary expression
 const result = resolveExpression(
-	'The sum of {@:a} and {@:b} is {eval:{@:a}+{@:b}}',
+	'The sum of {{a}} and {{b}} is {{eval:{{a}}+{{b}}}}',
 	alreadyResolved,
-	12345,
-	'questions'
+	12345
 );
 // → 'The sum of 5 and 10 is 15'
 ```
@@ -548,19 +433,14 @@ const resolved = [
 	{ name: 'sum', value: '10' }
 ];
 
-// Questions syntax
-const text1 = 'Calculate {@:a} + {@:b} = {@:sum}';
-const result1 = resolveText(text1, resolved, 'questions');
-// → 'Calculate 7 + 3 = 10'
-
 // Markdown syntax
-const text2 = 'Calculate {{a}} + {{b}} = {{sum}}';
-const result2 = resolveText(text2, resolved, 'markdown');
+const text = 'Calculate {{a}} + {{b}} = {{sum}}';
+const result = resolveText(text, resolved);
 // → 'Calculate 7 + 3 = 10'
 
 // In LaTeX
-const text3 = 'Simplify: $$\\frac{{@:a}}{{@:b}}$$';
-const result3 = resolveText(text3, resolved, 'questions');
+const latexText = 'Simplify: $$\\frac{{{a}}}{{{b}}}$$';
+const latexResult = resolveText(latexText, resolved);
 // → 'Simplify: $$\\frac{7}{3}$$'
 ```
 
@@ -578,14 +458,14 @@ import { detectCircularDependencies } from '$lib/shared/parameterization';
 // Valid - no cycle
 const valid = [
 	{ name: 'a', expression: '5' },
-	{ name: 'b', expression: '{@:a}' },
-	{ name: 'c', expression: '{@:b}' }
+	{ name: 'b', expression: '{{a}}' },
+	{ name: 'c', expression: '{{b}}' }
 ];
 detectCircularDependencies(valid);
 // → { valid: true, errors: [] }
 
 // Invalid - direct self-reference
-const selfRef = [{ name: 'a', expression: '{@:a}' }];
+const selfRef = [{ name: 'a', expression: '{{a}}' }];
 detectCircularDependencies(selfRef);
 // → {
 //     valid: false,
@@ -599,9 +479,9 @@ detectCircularDependencies(selfRef);
 
 // Invalid - indirect cycle
 const cycle = [
-	{ name: 'a', expression: '{@:b}' },
-	{ name: 'b', expression: '{@:c}' },
-	{ name: 'c', expression: '{@:a}' }
+	{ name: 'a', expression: '{{b}}' },
+	{ name: 'b', expression: '{{c}}' },
+	{ name: 'c', expression: '{{a}}' }
 ];
 detectCircularDependencies(cycle);
 // → {
@@ -627,10 +507,10 @@ detectCircularDependencies(cycle);
 
 The detector finds variables referenced in:
 
-- Direct variable references: `{@:a}`
-- Inside random specs: `{#:{@:min}-{@:max}}`
-- Inside random exclusions: `{#:1-10!{@:x}}`
-- Inside eval expressions: `{eval:{@:a}+{@:b}}`
+- Direct variable references: `{{a}}`
+- Inside random specs: `{{{{min}}-{{max}}}}`
+- Inside random exclusions: `{{1-10!{{x}}}}`
+- Inside eval expressions: `{{eval:{{a}}+{{b}}}}`
 
 ### Variable Validator
 
@@ -640,9 +520,9 @@ Comprehensive validation of variable definitions:
 import { validateVariables } from '$lib/shared/parameterization';
 
 const variables = [
-	{ name: 'a', expression: '{#:1-10}' },
-	{ name: 'b', expression: '{@:a}' },
-	{ name: 'sum', expression: '{eval:a+b}' }
+	{ name: 'a', expression: '{{1-10}}' },
+	{ name: 'b', expression: '{{a}}' },
+	{ name: 'sum', expression: '{{eval:a+b}}' }
 ];
 
 const result = validateVariables(variables);
@@ -661,9 +541,9 @@ const result = validateVariables(variables);
 ```typescript
 const invalid = [
 	{ name: '', expression: '5' }, // Empty name
-	{ name: 'a', expression: '{@:undefined}' }, // Undefined reference
-	{ name: 'b', expression: '{#:10-5}' }, // Invalid range
-	{ name: 'c', expression: '{@:c}' } // Self-reference
+	{ name: 'a', expression: '{{undefined}}' }, // Undefined reference
+	{ name: 'b', expression: '{{10-5}}' }, // Invalid range
+	{ name: 'c', expression: '{{c}}' } // Self-reference
 ];
 
 const result = validateVariables(invalid);
@@ -688,66 +568,63 @@ All supported random number formats with examples:
 
 ```typescript
 // Basic range
-{#:1-10}                    // Questions
-{{random:1-10}}             // Markdown explicit
-{{1-10}}                    // Markdown shorthand
+{{random:1-10}}             // Explicit
+{{1-10}}                    // Shorthand
 
 // Negative numbers
-{#:-10-10}                  // -10 to 10
 {{-10-10}}                  // -10 to 10
 
 // Variable bounds
-{#:{@:min}-{@:max}}         // Questions
-{{random:{{min}}-{{max}}}}  // Markdown
-{{{{min}}-{{max}}}}         // Markdown shorthand
+{{random:{{min}}-{{max}}}}  // Explicit
+{{{{min}}-{{max}}}}         // Shorthand
 ```
 
 ### Decimal by Digits
 
 ```typescript
 // Fixed digits
-{#:2.3}                     // Questions: 2 before, 3 after (e.g., "45.123")
-{{2.3}}                     // Markdown: 2 before, 3 after
+{{random:2.3}}              // Explicit: 2 before, 3 after (e.g., "45.123")
+{{2.3}}                     // Shorthand: 2 before, 3 after
 
 // Variable digits
-{#:{@:before}.{@:after}}    // Questions
-{{{{before}}.{{after}}}}    // Markdown
+{{random:{{before}}.{{after}}}}  // Explicit
+{{{{before}}.{{after}}}}         // Shorthand
 ```
 
 ### Decimal Range with Step
 
 ```typescript
 // Fixed step
-{#:0.5-9.99:0.01}           // Questions: 0.50 to 9.99 by 0.01
-{{0.5-9.99:0.01}}           // Markdown: 0.50 to 9.99 by 0.01
+{{random:0.5-9.99:0.01}}    // 0.50 to 9.99 by 0.01
+{{0.5-9.99:0.01}}           // Same (shorthand)
 
 // Common steps
-{#:0-1:0.1}                 // 0.0, 0.1, 0.2, ..., 1.0
-{#:0-10:0.5}                // 0.0, 0.5, 1.0, ..., 10.0
+{{0-1:0.1}}                 // 0.0, 0.1, 0.2, ..., 1.0
+{{0-10:0.5}}                // 0.0, 0.5, 1.0, ..., 10.0
 ```
 
 ### Exclusions
 
 ```typescript
 // Single value
-{#:1-10!5}                  // Exclude 5
-{{1-10!5}}                  // Exclude 5
+{{random:1-10!5}}           // Exclude 5
+{{1-10!5}}                  // Shorthand
 
 // Multiple values
-{#:1-20!5,7}                // Exclude 5 and 7
-{{1-20!5,7}}                // Exclude 5 and 7
+{{random:1-20!5,7}}         // Exclude 5 and 7
+{{1-20!5,7}}                // Shorthand
 
 // Range exclusion
-{#:1-50!10-20}              // Exclude 10-20
-{{1-50!10-20}}              // Exclude 10-20
+{{random:1-50!10-20}}       // Exclude 10-20
+{{1-50!10-20}}              // Shorthand
 
 // Variable exclusion
-{#:1-10!{@:a}}              // Questions: Exclude a's value
-{{1-10!{{a}}}}              // Markdown: Exclude a's value
+{{random:1-10!{{a}}}}       // Exclude a's value
+{{1-10!{{a}}}}              // Shorthand
 
 // Mixed
-{#:1-100!5,7-9,{@:x}}       // Exclude 5, 7-9, and x
-{{1-100!5,7-9,{{x}}}}       // Exclude 5, 7-9, and x
+{{random:1-100!5,7-9,{{x}}}}  // Exclude 5, 7-9, and x
+{{1-100!5,7-9,{{x}}}}         // Shorthand
 ```
 
 ---
@@ -764,18 +641,18 @@ import { resolveVariables, resolveText } from '$lib/shared/parameterization';
 // Question template with variables
 const template = {
 	variables: [
-		{ name: 'a', expression: '{#:1-10}' },
-		{ name: 'b', expression: '{#:1-10}' },
-		{ name: 'sum', expression: '{eval:{@:a}+{@:b}}' }
+		{ name: 'a', expression: '{{1-10}}' },
+		{ name: 'b', expression: '{{1-10}}' },
+		{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' }
 	],
-	statement: 'Calculate {@:a} + {@:b}',
-	answer: '{@:sum}'
+	statement: 'Calculate {{a}} + {{b}}',
+	answer: '{{sum}}'
 };
 
 // Generate instance
-const resolved = resolveVariables(template.variables, 12345, 'questions');
-const statement = resolveText(template.statement, resolved, 'questions');
-const answer = resolveText(template.answer, resolved, 'questions');
+const resolved = resolveVariables(template.variables, 12345);
+const statement = resolveText(template.statement, resolved);
+const answer = resolveText(template.answer, resolved);
 
 // Result: "Calculate 7 + 3", answer: "10"
 ```
@@ -798,9 +675,9 @@ const exercise = {
 };
 
 // Generate instance
-const resolved = resolveVariables(exercise.variables, undefined, 'markdown');
-const content = resolveText(exercise.content, resolved, 'markdown');
-const solution = resolveText(exercise.solution, resolved, 'markdown');
+const resolved = resolveVariables(exercise.variables, undefined);
+const content = resolveText(exercise.content, resolved);
+const solution = resolveText(exercise.solution, resolved);
 
 // Result: "A square has side length 12 cm. Calculate its area."
 //         "Area = 144 cm²"
@@ -808,12 +685,12 @@ const solution = resolveText(exercise.solution, resolved, 'markdown');
 
 **Key Differences:**
 
-| Aspect               | Questions                     | Exercises                         |
-| -------------------- | ----------------------------- | --------------------------------- |
-| **Preferred Syntax** | Questions (`{@:}`, `{#:}`)    | Markdown (`{{}}`)                 |
-| **Use Case**         | Math question generation      | Exercise content parameterization |
-| **Content Types**    | Statement, answer, correction | Instructions, solutions, hints    |
-| **Validation**       | Pre-save template validation  | Runtime content validation        |
+| Aspect            | Questions                     | Exercises                         |
+| ----------------- | ----------------------------- | --------------------------------- |
+| **Syntax**        | Markdown (`{{}}`)             | Markdown (`{{}}`)                 |
+| **Use Case**      | Math question generation      | Exercise content parameterization |
+| **Content Types** | Statement, answer, correction | Instructions, solutions, hints    |
+| **Validation**    | Pre-save template validation  | Runtime content validation        |
 
 ---
 
@@ -870,12 +747,12 @@ import { resolveVariables } from '$lib/shared/parameterization';
 describe('Variable Resolver', () => {
 	it('resolves 3-stage pipeline correctly', () => {
 		const variables = [
-			{ name: 'a', expression: '{#:1-10}' },
-			{ name: 'b', expression: '{@:a}' },
-			{ name: 'sum', expression: '{eval:a+b}' }
+			{ name: 'a', expression: '{{1-10}}' },
+			{ name: 'b', expression: '{{a}}' },
+			{ name: 'sum', expression: '{{eval:a+b}}' }
 		];
 
-		const resolved = resolveVariables(variables, 12345, 'questions');
+		const resolved = resolveVariables(variables, 12345);
 
 		expect(resolved).toHaveLength(3);
 		expect(resolved[0].name).toBe('a');
@@ -933,16 +810,11 @@ const instance = generateInstance(template); // Re-validates every time
 
 ```typescript
 /**
- * Syntax flavor
- */
-type Syntax = 'questions' | 'markdown' | 'both';
-
-/**
  * Variable definition
  */
 interface Variable {
 	name: string;
-	expression: string; // Can contain {@:}, {#:}, {eval:} or {{}}
+	expression: string; // Can contain {{var}}, {{random:...}}, {{eval:...}}
 }
 
 /**
@@ -1012,37 +884,40 @@ Full type definitions: [`types.ts`](./types.ts)
 
 ---
 
-## Migration from Questions-Specific Code
+## Migration History
 
-The shared library was extracted from the Questions feature. Here's how to migrate:
+**Note:** This section describes the historical evolution of the library. The library now uses **Markdown-only syntax** (`{{}}`). References to Questions syntax (`{@:}`, `{#:}`) are for historical context only.
 
-### Before (Questions-specific)
+The shared library was extracted from the Questions feature and evolved through several phases:
+
+### Phase 1-2: Extraction and Dual Syntax (Complete) ⚠️ Historical
+
+- Extracted parameterization code from Questions feature
+- Created shared library supporting both Questions (`{@:}`, `{#:}`) and Markdown (`{{}}`) syntax
+- Achieved 447 tests with 99%+ coverage
+
+### Phase 3-4: Integration and Simplification (Complete)
+
+- Integrated with Exercises feature
+- Migrated all Questions content to Markdown syntax
+- Removed dual syntax support from code
+
+### Phase 5: Documentation Update (Complete)
+
+- Updated all documentation to Markdown-only syntax
+- Removed references to Questions syntax
+- Simplified API examples
+
+### Current State
+
+The library now uses a clean, unified API:
 
 ```typescript
-// Old: src/lib/questions/parser/variable-parser.ts
-import { parseVariableReference } from '$lib/questions/parser/variable-parser';
-import { resolveVariables } from '$lib/questions/generator/variable-resolver';
-
-const varName = parseVariableReference('{@:a}');
-const resolved = resolveVariables(template.variables, seed);
-```
-
-### After (Shared library)
-
-```typescript
-// New: src/lib/shared/parameterization
 import { parseVariableReference, resolveVariables } from '$lib/shared/parameterization';
 
-const varName = parseVariableReference('{@:a}', 'questions'); // Syntax parameter added
-const resolved = resolveVariables(template.variables, seed, 'questions'); // Syntax parameter added
+const varName = parseVariableReference('{{a}}');
+const resolved = resolveVariables(template.variables, seed);
 ```
-
-### Key Changes
-
-1. **Syntax Parameter** - All parser functions now accept `syntax: Syntax` parameter
-2. **Import Path** - Changed from `$lib/questions/*` to `$lib/shared/parameterization`
-3. **Content-Agnostic** - No feature-specific types (QuestionVariable → Variable)
-4. **Dual Syntax** - Functions work with both Questions and Markdown syntax
 
 ---
 
@@ -1059,14 +934,13 @@ When adding new features to the shared library:
 
 ### Adding a New Token Type
 
-If you need to add a new token type (e.g., `{condition:...}`):
+If you need to add a new token type (e.g., `{{condition:...}}`):
 
 1. Update `Token` type in `types.ts`
 2. Add parser in `parser/` directory
 3. Add resolver logic in `resolver/variable-resolver.ts`
 4. Add tests for parser and resolver
-5. Update syntax converter
-6. Update documentation
+5. Update documentation
 
 ---
 
@@ -1080,6 +954,6 @@ If you need to add a new token type (e.g., `{condition:...}`):
 
 ---
 
-**Version:** 1.0.0
-**Last Updated:** 2025-01-26
+**Version:** 2.0.0
+**Last Updated:** 2025-10-26
 **Maintainers:** UbuMaths Development Team

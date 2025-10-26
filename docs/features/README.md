@@ -56,6 +56,11 @@ Templates de messages réutilisables.
 Authentification Google OAuth + email/password.
 **Status** : ✅ Production
 
+### [📓 Exercises](exercises/README.md)
+
+Banque d'exercices en markdown avec export LaTeX/PDF.
+**Status** : ✅ Production
+
 ---
 
 ## Features en développement

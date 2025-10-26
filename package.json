@@ -11,7 +11,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
-		"lint": "prettier --check . && eslint .",
+		"lint": "prettier --check . && eslint . --cache",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"test:e2e": "playwright test",
@@ -29,6 +29,13 @@
 		"game:seed-spells": "npx tsx scripts/seed-spell-definitions.ts",
 		"docs:check-links": "npx tsx scripts/check-doc-links.ts"
 	},
+	"lint-staged": {
+		"*.{js,ts,svelte}": [
+			"eslint --cache --fix",
+			"prettier --write"
+		],
+		"*.{json,md,css,html}": "prettier --write"
+	},
 	"devDependencies": {
 		"@commitlint/cli": "^20.1.0",
 		"@commitlint/config-conventional": "^20.0.0",
@@ -44,6 +51,7 @@
 		"@tailwindcss/typography": "^0.5.18",
 		"@tailwindcss/vite": "^4.1.13",
 		"@types/canvas-confetti": "^1.9.0",
+		"@types/js-yaml": "^4.0.9",
 		"@types/node": "^22",
 		"@types/ws": "^8.18.1",
 		"@vitest/browser": "^3.2.4",
@@ -55,6 +63,7 @@
 		"eslint-plugin-svelte": "^3.12.4",
 		"globals": "^16.4.0",
 		"husky": "^9.1.7",
+		"lint-staged": "^16.2.6",
 		"lucide-svelte": "^0.545.0",
 		"playwright": "^1.55.1",
 		"prettier": "^3.6.2",
@@ -109,6 +118,8 @@
 		"mathlive": "^0.107.1",
 		"mode-watcher": "^1.1.0",
 		"svelte-sonner": "^1.0.5",
-		"ws": "^8.18.3"
+		"ws": "^8.18.3",
+		"yaml": "^2.8.1",
+		"zod": "^4.1.12"
 	}
 }
