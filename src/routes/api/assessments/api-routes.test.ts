@@ -19,7 +19,7 @@
  * @module api/assessments/api-routes.test
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import type { CreateAssessmentData, UpdateAssessmentData } from '$lib/types/assessment';
 import { DEFAULT_ASSESSMENT_SETTINGS } from '$lib/types/assessment';
 import {
@@ -28,6 +28,9 @@ import {
 	createMockRequest,
 	createMockURL
 } from '../../../../tests/helpers/supabase-helpers';
+
+// Type helper for RequestEvent-like objects used in tests
+type MockRequestEvent = Record<string, unknown>;
 
 // ============================================================================
 // MOCK SETUP
@@ -87,11 +90,12 @@ describe('POST /api/assessments', () => {
 			await POST({
 				request,
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(401);
-			expect(err.body.message).toBe('Unauthorized');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Unauthorized');
 		}
 	});
 
@@ -119,11 +123,12 @@ describe('POST /api/assessments', () => {
 			await POST({
 				request,
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Forbidden - Teachers only');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Forbidden - Teachers only');
 		}
 	});
 
@@ -148,7 +153,9 @@ describe('POST /api/assessments', () => {
 		const assessmentData: CreateAssessmentData = {
 			title: 'Test Assessment',
 			grade: '3ème',
-			categories: [{ id: 'cat-1', bank_id: 'bank-1', count: 5, title: 'Test Category', filters: {} }],
+			categories: [
+				{ id: 'cat-1', bank_id: 'bank-1', count: 5, title: 'Test Category', filters: {} }
+			],
 			settings: DEFAULT_ASSESSMENT_SETTINGS,
 			status: 'draft'
 		};
@@ -158,7 +165,7 @@ describe('POST /api/assessments', () => {
 		const response = await POST({
 			request,
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -188,7 +195,9 @@ describe('POST /api/assessments', () => {
 		const assessmentData: CreateAssessmentData = {
 			title: 'Published Assessment',
 			grade: '4ème',
-			categories: [{ id: 'cat-1', bank_id: 'bank-1', count: 5, title: 'Test Category', filters: {} }],
+			categories: [
+				{ id: 'cat-1', bank_id: 'bank-1', count: 5, title: 'Test Category', filters: {} }
+			],
 			settings: DEFAULT_ASSESSMENT_SETTINGS,
 			status: 'published'
 		};
@@ -198,7 +207,7 @@ describe('POST /api/assessments', () => {
 		const response = await POST({
 			request,
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -228,11 +237,12 @@ describe('POST /api/assessments', () => {
 			await POST({
 				request,
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(400);
-			expect(err.body.message).toBe('Missing required fields');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(400);
+			expect(error.body.message).toBe('Missing required fields');
 		}
 	});
 
@@ -260,11 +270,12 @@ describe('POST /api/assessments', () => {
 			await POST({
 				request,
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(400);
-			expect(err.body.message).toBe('Missing required fields');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(400);
+			expect(error.body.message).toBe('Missing required fields');
 		}
 	});
 
@@ -300,11 +311,12 @@ describe('POST /api/assessments', () => {
 			await POST({
 				request,
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(500);
-			expect(err.body.message).toBe('Failed to create assessment');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(500);
+			expect(error.body.message).toBe('Failed to create assessment');
 		}
 	});
 });
@@ -324,11 +336,12 @@ describe('GET /api/assessments', () => {
 			await GET({
 				url,
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(401);
-			expect(err.body.message).toBe('Unauthorized');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Unauthorized');
 		}
 	});
 
@@ -350,11 +363,12 @@ describe('GET /api/assessments', () => {
 			await GET({
 				url,
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Forbidden - Teachers only');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Forbidden - Teachers only');
 		}
 	});
 
@@ -395,7 +409,7 @@ describe('GET /api/assessments', () => {
 		const response = await GET({
 			url,
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -431,7 +445,7 @@ describe('GET /api/assessments', () => {
 		const response = await GET({
 			url,
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -467,11 +481,12 @@ describe('GET /api/assessments', () => {
 			await GET({
 				url,
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(500);
-			expect(err.body.message).toBe('Failed to fetch assessments');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(500);
+			expect(error.body.message).toBe('Failed to fetch assessments');
 		}
 	});
 });
@@ -490,11 +505,12 @@ describe('GET /api/assessments/[id]', () => {
 			await GET({
 				params: { id: mockAssessmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(401);
-			expect(err.body.message).toBe('Unauthorized');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Unauthorized');
 		}
 	});
 
@@ -519,7 +535,7 @@ describe('GET /api/assessments/[id]', () => {
 		const response = await GET({
 			params: { id: mockAssessmentId },
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -549,11 +565,12 @@ describe('GET /api/assessments/[id]', () => {
 			await GET({
 				params: { id: mockAssessmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Forbidden');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Forbidden');
 		}
 	});
 
@@ -573,11 +590,12 @@ describe('GET /api/assessments/[id]', () => {
 			await GET({
 				params: { id: 'non-existent' },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(404);
-			expect(err.body.message).toBe('Assessment not found');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(404);
+			expect(error.body.message).toBe('Assessment not found');
 		}
 	});
 });
@@ -598,11 +616,12 @@ describe('PUT /api/assessments/[id]', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(401);
-			expect(err.body.message).toBe('Unauthorized');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Unauthorized');
 		}
 	});
 
@@ -625,11 +644,12 @@ describe('PUT /api/assessments/[id]', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Forbidden - Teachers only');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Forbidden - Teachers only');
 		}
 	});
 
@@ -668,7 +688,7 @@ describe('PUT /api/assessments/[id]', () => {
 			request,
 			params: { id: mockAssessmentId },
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -700,11 +720,12 @@ describe('PUT /api/assessments/[id]', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Forbidden - Not your assessment');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Forbidden - Not your assessment');
 		}
 	});
 });
@@ -723,11 +744,12 @@ describe('DELETE /api/assessments/[id]', () => {
 			await DELETE({
 				params: { id: mockAssessmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(401);
-			expect(err.body.message).toBe('Unauthorized');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Unauthorized');
 		}
 	});
 
@@ -747,11 +769,12 @@ describe('DELETE /api/assessments/[id]', () => {
 			await DELETE({
 				params: { id: mockAssessmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Forbidden - Teachers only');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Forbidden - Teachers only');
 		}
 	});
 
@@ -783,7 +806,7 @@ describe('DELETE /api/assessments/[id]', () => {
 		const response = await DELETE({
 			params: { id: mockAssessmentId },
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -812,11 +835,12 @@ describe('DELETE /api/assessments/[id]', () => {
 			await DELETE({
 				params: { id: mockAssessmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Forbidden - Not your assessment');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Forbidden - Not your assessment');
 		}
 	});
 });
@@ -839,11 +863,12 @@ describe('POST /api/assessments/[id]/assign', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(401);
-			expect(err.body.message).toBe('Unauthorized');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Unauthorized');
 		}
 	});
 
@@ -868,11 +893,12 @@ describe('POST /api/assessments/[id]/assign', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Forbidden - Teachers only');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Forbidden - Teachers only');
 		}
 	});
 
@@ -945,7 +971,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 			request,
 			params: { id: mockAssessmentId },
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1012,7 +1038,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 			request,
 			params: { id: mockAssessmentId },
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1040,11 +1066,12 @@ describe('POST /api/assessments/[id]/assign', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(400);
-			expect(err.body.message).toBe('Must specify at least one class or student');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(400);
+			expect(error.body.message).toBe('Must specify at least one class or student');
 		}
 	});
 
@@ -1075,11 +1102,12 @@ describe('POST /api/assessments/[id]/assign', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(400);
-			expect(err.body.message).toBe('Assessment must be published before assigning');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(400);
+			expect(error.body.message).toBe('Assessment must be published before assigning');
 		}
 	});
 
@@ -1110,11 +1138,12 @@ describe('POST /api/assessments/[id]/assign', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Forbidden - Not your assessment');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Forbidden - Not your assessment');
 		}
 	});
 });
@@ -1133,11 +1162,12 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 			await POST({
 				params: { id: mockAssignmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(401);
-			expect(err.body.message).toBe('Unauthorized');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Unauthorized');
 		}
 	});
 
@@ -1157,11 +1187,12 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 			await POST({
 				params: { id: mockAssignmentId },
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Forbidden - Students only');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Forbidden - Students only');
 		}
 	});
 
@@ -1206,7 +1237,7 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 		const response = await POST({
 			params: { id: mockAssignmentId },
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1246,7 +1277,7 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 		const response = await POST({
 			params: { id: mockAssignmentId },
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1295,7 +1326,7 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 		const response = await POST({
 			params: { id: mockAssignmentId },
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1317,11 +1348,12 @@ describe('GET /api/assessments/assigned', () => {
 		try {
 			await GET({
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(401);
-			expect(err.body.message).toBe('Unauthorized');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Unauthorized');
 		}
 	});
 
@@ -1340,11 +1372,12 @@ describe('GET /api/assessments/assigned', () => {
 		try {
 			await GET({
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Forbidden - Students only');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Forbidden - Students only');
 		}
 	});
 
@@ -1398,7 +1431,7 @@ describe('GET /api/assessments/assigned', () => {
 
 		const response = await GET({
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1439,7 +1472,7 @@ describe('GET /api/assessments/assigned', () => {
 
 		const response = await GET({
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1481,11 +1514,12 @@ describe('GET /api/assessments/assigned', () => {
 		try {
 			await GET({
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(500);
-			expect(err.body.message).toBe('Failed to fetch assigned assessments');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(500);
+			expect(error.body.message).toBe('Failed to fetch assigned assessments');
 		}
 	});
 });
@@ -1506,11 +1540,12 @@ describe('GET /api/assessments/[id]/results', () => {
 				params: { id: mockAssessmentId },
 				url,
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(401);
-			expect(err.body.message).toBe('Unauthorized');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Unauthorized');
 		}
 	});
 
@@ -1533,11 +1568,12 @@ describe('GET /api/assessments/[id]/results', () => {
 				params: { id: mockAssessmentId },
 				url,
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Forbidden - Teachers only');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Forbidden - Teachers only');
 		}
 	});
 
@@ -1566,11 +1602,12 @@ describe('GET /api/assessments/[id]/results', () => {
 				params: { id: mockAssessmentId },
 				url,
 				locals
-			} as any);
+			} as MockRequestEvent);
 			expect.fail('Should have thrown an error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toBe('Forbidden - Not your assessment');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Forbidden - Not your assessment');
 		}
 	});
 
@@ -1608,7 +1645,7 @@ describe('GET /api/assessments/[id]/results', () => {
 			params: { id: mockAssessmentId },
 			url,
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1660,7 +1697,7 @@ describe('GET /api/assessments/[id]/results', () => {
 			params: { id: mockAssessmentId },
 			url,
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1712,7 +1749,7 @@ describe('GET /api/assessments/[id]/results', () => {
 			params: { id: mockAssessmentId },
 			url,
 			locals
-		} as any);
+		} as MockRequestEvent);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);

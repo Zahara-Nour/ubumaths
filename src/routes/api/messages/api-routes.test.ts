@@ -18,12 +18,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
 	createMockSupabase,
-	createMockRequest,
 	createMockLocals,
 	mockIds,
 	mockMessage,
-	mockGroupMessage,
-	mockInboxEntry,
 	mockDraft,
 	mockTemplate,
 	mockThreadMessages,
@@ -34,8 +31,7 @@ import {
 	validateSendMessageData,
 	validateTemplateData,
 	extractTemplateVariables,
-	mockSanitize,
-	isMessageRead
+	mockSanitize
 } from '../../../../tests/helpers/message-helpers';
 
 // ============================================================================
@@ -533,10 +529,7 @@ describe('Draft Management', () => {
 
 	describe('GET /api/messages/drafts', () => {
 		it('should fetch all drafts for user', () => {
-			const drafts = [
-				createMockDraft({ id: 'draft-1' }),
-				createMockDraft({ id: 'draft-2' })
-			];
+			const drafts = [createMockDraft({ id: 'draft-1' }), createMockDraft({ id: 'draft-2' })];
 
 			mockSupabase._mockChain.then.mockReturnValueOnce({
 				data: drafts,
@@ -849,11 +842,6 @@ describe('DELETE /api/messages/[id]', () => {
 			error: null
 		});
 
-		mockSupabase._mockChain.then.mockResolvedValueOnce({
-			data: {},
-			error: null
-		});
-
 		// Check ownership
 		await mockSupabase
 			.from('private_messages')
@@ -861,12 +849,18 @@ describe('DELETE /api/messages/[id]', () => {
 			.eq('id', mockIds.message1)
 			.single();
 
+		// Mock the update operation
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: {},
+			error: null
+		});
+
 		// Delete as sender
 		const result = await mockSupabase
 			.from('private_messages')
 			.update({ deleted_by_sender: true })
 			.eq('id', mockIds.message1)
-			.then();
+			.single();
 
 		expect(mockSupabase._mockChain.update).toHaveBeenCalled();
 		expect(result.error).toBeNull();
@@ -878,7 +872,8 @@ describe('DELETE /api/messages/[id]', () => {
 			error: null
 		});
 
-		mockSupabase._mockChain.then.mockResolvedValueOnce({
+		// Mock the update operation
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: {},
 			error: null
 		});
@@ -889,7 +884,7 @@ describe('DELETE /api/messages/[id]', () => {
 			.update({ deleted: true })
 			.eq('message_id', mockIds.message1)
 			.eq('recipient_id', mockIds.student1)
-			.then();
+			.single();
 
 		expect(mockSupabase._mockChain.update).toHaveBeenCalled();
 		expect(result.error).toBeNull();
@@ -1128,9 +1123,7 @@ describe('Message Templates', () => {
 		});
 
 		it('should filter templates by trigger type', () => {
-			const assessmentTemplates = [
-				createMockTemplate({ trigger_type: 'assessment_question' })
-			];
+			const assessmentTemplates = [createMockTemplate({ trigger_type: 'assessment_question' })];
 
 			mockSupabase._mockChain.then.mockReturnValueOnce({
 				data: assessmentTemplates,
@@ -1148,9 +1141,7 @@ describe('Message Templates', () => {
 		});
 
 		it('should only show active templates to students', () => {
-			const activeTemplates = [
-				createMockTemplate({ is_active: true, id: 'template-1' })
-			];
+			const activeTemplates = [createMockTemplate({ is_active: true, id: 'template-1' })];
 
 			mockSupabase._mockChain.then.mockReturnValueOnce({
 				data: activeTemplates,
@@ -1581,9 +1572,13 @@ describe('Authorization & Access Control', () => {
 		});
 
 		// Different user trying to delete
-		mockSupabase._mockChain.then.mockResolvedValueOnce({
-			data: null,
-			error: { message: 'Not authorized' }
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: null,
+					error: { message: 'Not authorized' }
+				})
+			);
 		});
 
 		const checkResult = await mockSupabase
