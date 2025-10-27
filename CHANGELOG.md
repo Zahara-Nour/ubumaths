@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/Zahara-Nour/ubumaths/compare/v0.0.6...v0.0.7) (2025-10-27)
+
+### 🐛 Bug Fixes
+
+- use dynamic origin for Google OAuth callback URL ([e66bf0e](https://github.com/Zahara-Nour/ubumaths/commit/e66bf0ea637b185f51ca2eac1e6df2672d2b45cc))
+
 ### [0.0.6](https://github.com/Zahara-Nour/ubumaths/compare/v0.0.5...v0.0.6) (2025-10-27)
 
 ### ✨ Features
