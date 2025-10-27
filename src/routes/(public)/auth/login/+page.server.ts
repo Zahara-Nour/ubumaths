@@ -41,6 +41,11 @@ import { redirect, fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { createLogger } from '$lib/utils/logger';
 import { dev } from '$app/environment';
+import {
+	checkLoginRateLimitByIP,
+	checkLoginRateLimitByEmail,
+	checkOAuthRateLimitByIP
+} from '$lib/server/rateLimiter';
 
 const logger = createLogger('login/+page.server.ts');
 
@@ -50,8 +55,21 @@ export const actions = {
 	 *
 	 * Initiates the OAuth flow with Google provider.
 	 * Redirects user to Google for authentication, then back to our callback handler.
+	 *
+	 * SECURITY: Rate limited to prevent OAuth abuse
 	 */
-	googleSignIn: async ({ locals: { supabase }, url }) => {
+	googleSignIn: async ({ locals: { supabase }, url, getClientAddress }) => {
+		// SECURITY: Rate limit by IP to prevent OAuth flow abuse
+		const clientIP = getClientAddress();
+		const rateLimitResult = checkOAuthRateLimitByIP(clientIP);
+
+		if (!rateLimitResult.allowed) {
+			logger.warn('OAuth rate limit exceeded', { ip: clientIP });
+			return fail(429, {
+				error: rateLimitResult.message || 'Trop de tentatives. Veuillez réessayer plus tard.'
+			});
+		}
+
 		// Get the redirect destination - default to dashboard
 		const redirectTo = url.searchParams.get('redirectTo') || '/dashboard';
 
@@ -92,8 +110,10 @@ export const actions = {
 	 * Email/Password Login action
 	 *
 	 * Authenticates user with email and password, sets server-side cookies
+	 *
+	 * SECURITY: Rate limited by both IP and email to prevent brute force attacks
 	 */
-	login: async ({ request, locals: { supabase } }) => {
+	login: async ({ request, locals: { supabase }, getClientAddress }) => {
 		// Extract form data
 		const formData = await request.formData();
 		const email = formData.get('email') as string;
@@ -103,6 +123,34 @@ export const actions = {
 		if (!email || !password) {
 			return fail(400, {
 				error: 'Email and password are required',
+				email
+			});
+		}
+
+		// SECURITY: Check rate limits BEFORE attempting authentication
+		// This prevents database queries on rate-limited requests
+
+		// 1. Check IP-based rate limit
+		const clientIP = getClientAddress();
+		const ipRateLimitResult = checkLoginRateLimitByIP(clientIP);
+
+		if (!ipRateLimitResult.allowed) {
+			logger.warn('Login rate limit exceeded by IP', { ip: clientIP });
+			return fail(429, {
+				error:
+					ipRateLimitResult.message || 'Trop de tentatives. Veuillez réessayer plus tard.',
+				email
+			});
+		}
+
+		// 2. Check email-based rate limit (stricter)
+		const emailRateLimitResult = checkLoginRateLimitByEmail(email);
+
+		if (!emailRateLimitResult.allowed) {
+			logger.warn('Login rate limit exceeded by email', { email });
+			return fail(429, {
+				error:
+					emailRateLimitResult.message || 'Trop de tentatives. Veuillez réessayer plus tard.',
 				email
 			});
 		}

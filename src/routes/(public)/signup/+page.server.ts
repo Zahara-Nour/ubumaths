@@ -28,6 +28,8 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { createLogger } from '$lib/utils/logger';
+import { validatePasswordPolicy } from '$lib/server/passwordPolicy';
+import { checkSignupRateLimitByIP } from '$lib/server/rateLimiter';
 
 const logger = createLogger('signup/+page.server.ts');
 
@@ -36,8 +38,23 @@ export const actions = {
 	 * Signup action
 	 *
 	 * Creates a new user account and sets server-side cookies (if auto-confirm enabled)
+	 *
+	 * SECURITY: Rate limited by IP to prevent signup abuse and spam accounts
 	 */
-	signup: async ({ request, locals: { supabase } }) => {
+	signup: async ({ request, locals: { supabase }, getClientAddress }) => {
+		// SECURITY: Check rate limit BEFORE processing signup
+		const clientIP = getClientAddress();
+		const rateLimitResult = checkSignupRateLimitByIP(clientIP);
+
+		if (!rateLimitResult.allowed) {
+			logger.warn('Signup rate limit exceeded', { ip: clientIP });
+			return fail(429, {
+				error:
+					rateLimitResult.message ||
+					'Trop de tentatives de création de compte. Veuillez réessayer plus tard.'
+			});
+		}
+
 		// Extract form data
 		const formData = await request.formData();
 		const email = formData.get('email') as string;
@@ -54,14 +71,17 @@ export const actions = {
 
 		if (password !== confirmPassword) {
 			return fail(400, {
-				error: 'Passwords do not match',
+				error: 'Les mots de passe ne correspondent pas',
 				email
 			});
 		}
 
-		if (password.length < 6) {
+		// Validate password against security policy
+		const passwordValidation = validatePasswordPolicy(password);
+		if (!passwordValidation.valid) {
+			// Return all validation errors
 			return fail(400, {
-				error: 'Password must be at least 6 characters',
+				error: passwordValidation.errors.join('. '),
 				email
 			});
 		}

@@ -105,27 +105,16 @@
 								</div>
 								<div class="flex items-center gap-2">
 									<span
-										class={passwordStrength.requirements.hasUpperCase &&
-										passwordStrength.requirements.hasLowerCase
-											? 'text-green-600'
-											: ''}
+										class={passwordStrength.requirements.complexityMet ? 'text-green-600' : ''}
 									>
-										{passwordStrength.requirements.hasUpperCase &&
-										passwordStrength.requirements.hasLowerCase
-											? '✓'
-											: '○'} Lettres majuscules et minuscules
+										{passwordStrength.requirements.complexityMet ? '✓' : '○'} Au moins 3 types de
+										caractères (majuscules, minuscules, chiffres, spéciaux)
 									</span>
 								</div>
 								<div class="flex items-center gap-2">
-									<span class={passwordStrength.requirements.hasNumber ? 'text-green-600' : ''}>
-										{passwordStrength.requirements.hasNumber ? '✓' : '○'} Chiffres
-									</span>
-								</div>
-								<div class="flex items-center gap-2">
-									<span
-										class={passwordStrength.requirements.hasSpecialChar ? 'text-green-600' : ''}
-									>
-										{passwordStrength.requirements.hasSpecialChar ? '✓' : '○'} Caractères spéciaux
+									<span class={passwordStrength.requirements.notCommon ? 'text-green-600' : ''}>
+										{passwordStrength.requirements.notCommon ? '✓' : '○'} Pas un mot de passe
+										courant
 									</span>
 								</div>
 							</div>

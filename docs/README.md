@@ -153,6 +153,7 @@ Système d'authentification avec Google OAuth + email/password.
 | [WebSocket](architecture/websocket.md)                    | Architecture temps réel               |
 | [Éditeur rich text](architecture/rich-text-editor.md)     | TipTap + MathLive                     |
 | [Performance](architecture/performance.md)                | Optimisations et best practices       |
+| [CSRF Protection](architecture/csrf-protection.md)        | Protection anti-CSRF                  |
 
 ---
 
