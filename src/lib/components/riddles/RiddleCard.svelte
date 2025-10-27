@@ -40,6 +40,7 @@
 	import RiddleMathInput from '$lib/components/riddles/inputs/RiddleMathInput.svelte';
 	import RiddleManualInput from '$lib/components/riddles/inputs/RiddleManualInput.svelte';
 	import { cn } from '$lib/utils';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import { Send, CheckCircle2, XCircle, Clock } from 'lucide-svelte';
 
 	// Props
@@ -209,7 +210,7 @@
 				<div class="statement-content rounded-lg border bg-card p-4">
 					<!-- Rich text content -->
 					<div class="prose max-w-none dark:prose-invert">
-						{@html riddle.statement}
+						{@html sanitizeHtml(riddle.statement)}
 					</div>
 
 					<!-- Image if present -->
@@ -326,7 +327,7 @@
 						class="correction-content rounded-lg border border-primary/30 bg-primary/5 p-4 dark:bg-primary/10"
 					>
 						<div class="prose max-w-none dark:prose-invert">
-							{@html riddle.correction}
+							{@html sanitizeHtml(riddle.correction)}
 						</div>
 					</div>
 				</div>

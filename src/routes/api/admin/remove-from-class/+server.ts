@@ -8,6 +8,17 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 		throw error(401, 'Unauthorized');
 	}
 
+	// ✅ SECURITY: Verify admin role
+	const { data: profile } = await supabase
+		.from('profiles')
+		.select('role')
+		.eq('id', user.id)
+		.single();
+
+	if (!profile || profile.role !== 'admin') {
+		throw error(403, 'Forbidden - Admin access required');
+	}
+
 	const { userId, classId } = await request.json();
 
 	if (!userId || !classId) {

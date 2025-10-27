@@ -1,6 +1,7 @@
-import { json } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
+import { checkLoginRateLimitByIP } from '$lib/server/rateLimiter';
 
 interface TextContent {
 	type: 'text';
@@ -25,13 +26,62 @@ interface ChatRequest {
 	messages: ChatMessage[];
 }
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
 	try {
+		// ====================================================================
+		// SECURITY: Authentication Check
+		// ====================================================================
+		const session = await locals.safeGetSession();
+		if (!session?.user) {
+			throw error(401, { message: 'Authentication required' });
+		}
+
+		// ====================================================================
+		// SECURITY: Rate Limiting
+		// ====================================================================
+		const clientIP = getClientAddress();
+		const rateLimitResult = checkLoginRateLimitByIP(clientIP);
+
+		if (!rateLimitResult.allowed) {
+			throw error(429, {
+				message: rateLimitResult.message || 'Too many requests. Please try again later.'
+			});
+		}
+
+		// ====================================================================
+		// SECURITY: Input Validation
+		// ====================================================================
 		const { messages } = (await request.json()) as ChatRequest;
 
-		// Validation
 		if (!messages || !Array.isArray(messages)) {
-			return json({ error: 'Format de messages invalide' }, { status: 400 });
+			throw error(400, { message: 'Format de messages invalide' });
+		}
+
+		// Validate message count (prevent abuse)
+		if (messages.length === 0) {
+			throw error(400, { message: 'Au moins un message requis' });
+		}
+
+		if (messages.length > 50) {
+			throw error(400, { message: 'Trop de messages dans la conversation' });
+		}
+
+		// Validate each message structure
+		for (const msg of messages) {
+			if (!msg.role || !['system', 'user', 'assistant'].includes(msg.role)) {
+				throw error(400, { message: 'Invalid message role' });
+			}
+
+			if (!msg.content) {
+				throw error(400, { message: 'Message content required' });
+			}
+
+			// Validate content length
+			const contentStr =
+				typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content);
+			if (contentStr.length > 10000) {
+				throw error(400, { message: 'Message trop long (max 10000 caractères)' });
+			}
 		}
 
 		// Check if API key is configured
@@ -86,17 +136,47 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const data = await response.json();
 
-		return json({
-			message: data.choices[0].message.content
+		// ====================================================================
+		// SECURITY: Usage Logging
+		// ====================================================================
+		const responseMessage = data.choices[0].message.content;
+
+		// Log usage to database (async, non-blocking)
+		Promise.resolve().then(async () => {
+			try {
+				await locals.supabase.from('ai_chat_usage').insert({
+					user_id: session.user.id,
+					model: model,
+					message_count: messages.length,
+					tokens_used: data.usage?.total_tokens || 0,
+					client_ip: clientIP,
+					response_length: responseMessage?.length || 0
+				});
+			} catch (logError) {
+				// Non-blocking error - don't fail the request
+				console.error('Failed to log AI chat usage:', logError);
+			}
 		});
-	} catch (error) {
-		console.error('Server error:', error);
-		return json(
-			{
-				error: "Erreur lors de la communication avec l'IA",
-				details: error instanceof Error ? error.message : 'Unknown error'
-			},
-			{ status: 500 }
-		);
+
+		return json({
+			message: responseMessage
+		});
+	} catch (err) {
+		// Enhanced error logging
+		const errorMessage = err instanceof Error ? err.message : String(err);
+		console.error('AI Chat API Error:', {
+			error: errorMessage,
+			userId: (await locals.safeGetSession())?.user?.id,
+			timestamp: new Date().toISOString()
+		});
+
+		// Return appropriate error response
+		if (err && typeof err === 'object' && 'status' in err) {
+			throw err; // Re-throw SvelteKit errors (401, 429, 400)
+		}
+
+		throw error(500, {
+			message: "Erreur lors de la communication avec l'IA"
+		});
 	}
 };

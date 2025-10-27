@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte'; // For future challenge initialization
 	import type { ChallengeInstance } from '$lib/types/game';
 	import { interpolateQuestion } from '$lib/utils/game/challenge-variables';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import { Button } from '$lib/components/ui/button';
 	import ChallengeTimer from './ChallengeTimer.svelte';
 	import ChallengeInput from './ChallengeInput.svelte';
@@ -71,7 +72,7 @@
 	<!-- Challenge Question -->
 	<div class="challenge-question rounded-md bg-muted p-6">
 		<div class="prose prose-sm max-w-none dark:prose-invert">
-			{@html questionHtml}
+			{@html sanitizeHtml(questionHtml)}
 		</div>
 	</div>
 
@@ -92,7 +93,7 @@
 						<Button onclick={toggleHint} variant="ghost" size="sm">Masquer</Button>
 					</div>
 					<div class="rounded-md border border-border bg-muted/50 p-4 text-sm">
-						{@html instance.challenge.hint}
+						{@html sanitizeHtml(instance.challenge.hint)}
 					</div>
 				</div>
 			{/if}

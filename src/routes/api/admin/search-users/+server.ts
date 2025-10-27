@@ -8,6 +8,17 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
 		throw error(401, 'Unauthorized');
 	}
 
+	// ✅ SECURITY: Verify admin role
+	const { data: profile } = await supabase
+		.from('profiles')
+		.select('role')
+		.eq('id', user.id)
+		.single();
+
+	if (!profile || profile.role !== 'admin') {
+		throw error(403, 'Forbidden - Admin access required');
+	}
+
 	const searchTerm = url.searchParams.get('q');
 
 	if (!searchTerm || searchTerm.length < 3) {

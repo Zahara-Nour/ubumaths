@@ -11,6 +11,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import { Sparkles, Trophy, Calendar, ArrowRight, History } from 'lucide-svelte';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import { format } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 
@@ -85,7 +86,7 @@
 		<!-- Riddle Statement (preview) -->
 		<div class="rounded-lg bg-background/50 p-4">
 			<div class="prose prose-sm line-clamp-3 max-w-none dark:prose-invert">
-				{@html riddle.statement}
+				{@html sanitizeHtml(riddle.statement)}
 			</div>
 		</div>
 

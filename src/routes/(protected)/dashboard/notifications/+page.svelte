@@ -10,6 +10,7 @@
 		type NotificationWithDetails
 	} from '$lib/types/notification';
 	import { Button } from '$lib/components/ui/button';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import { Bell } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -143,7 +144,7 @@
 										notification
 									).text}"
 								>
-									{@html notification.message}
+									{@html sanitizeHtml(notification.message)}
 								</div>
 
 								<!-- Action button (if present) -->
