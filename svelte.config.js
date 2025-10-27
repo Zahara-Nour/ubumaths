@@ -9,12 +9,10 @@ const config = {
 	kit: {
 		adapter: adapter({ runtime: 'nodejs22.x' }),
 		// CSRF Protection - validates Origin/Referer headers for POST/PUT/DELETE/PATCH requests
-		// All origins are allowed by default, except those that don't match the server's origin
-		// Add additional trusted origins here if needed (e.g., for mobile apps)
+		// Protection is enabled by default - requests from different origins are blocked
+		// Add trusted origins here if you need to allow specific cross-origin requests
 		csrf: {
-			checkOrigin: true
-			// trustedOrigins can be configured here if you need to allow specific cross-origin requests
-			// Example: trustedOrigins: ['https://mobile-app.ubumaths.com']
+			// trustedOrigins: ['https://mobile-app.ubumaths.com']
 		}
 	}
 };
