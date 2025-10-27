@@ -10,14 +10,14 @@
 
 The SRS/Flashcards feature now has **complete automated test coverage** across all critical components:
 
-| Component | Test File | Tests | Status |
-|-----------|-----------|-------|--------|
-| **FSRS-6 Algorithm** | `src/lib/srs/fsrs.test.ts` | 60 | ✅ Passing |
-| **Configuration** | `src/lib/srs/config.test.ts` | 39 | ✅ Passing |
-| **Instance Generator** | `src/lib/srs/generator.test.ts` | 25 | ✅ Passing |
-| **API Routes** | `src/routes/api/srs/api-routes.test.ts` | N/A* | ✅ Created |
+| Component              | Test File                               | Tests | Status     |
+| ---------------------- | --------------------------------------- | ----- | ---------- |
+| **FSRS-6 Algorithm**   | `src/lib/srs/fsrs.test.ts`              | 60    | ✅ Passing |
+| **Configuration**      | `src/lib/srs/config.test.ts`            | 39    | ✅ Passing |
+| **Instance Generator** | `src/lib/srs/generator.test.ts`         | 25    | ✅ Passing |
+| **API Routes**         | `src/routes/api/srs/api-routes.test.ts` | N/A\* | ✅ Created |
 
-*API route tests use mocked Supabase client for unit testing
+\*API route tests use mocked Supabase client for unit testing
 
 ---
 
@@ -28,6 +28,7 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 **File**: `src/lib/srs/fsrs.test.ts`
 
 #### Initialization & Configuration (10 tests)
+
 - ✅ Default parameter validation
 - ✅ Custom retention settings (0.7 - 0.97)
 - ✅ Custom maximum intervals
@@ -36,10 +37,12 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ Helper function creation
 
 #### Card Initialization (2 tests)
+
 - ✅ Default values for new cards
 - ✅ Next review scheduling for new cards
 
 #### Retrievability Calculation (5 tests)
+
 - ✅ 100% retrievability for new cards
 - ✅ High retrievability for recently reviewed cards
 - ✅ Lower retrievability for overdue cards
@@ -47,6 +50,7 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ Edge case handling (no last review, zero stability)
 
 #### Card State Transitions (6 tests)
+
 - ✅ New → Learning (GOOD, HARD, EASY)
 - ✅ New → Relearning (AGAIN)
 - ✅ Learning → Learning (stays on success)
@@ -54,6 +58,7 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ Relearning → Review (on success)
 
 #### Difficulty Updates (6 tests)
+
 - ✅ Decrease on EASY grade
 - ✅ Stable on GOOD grade
 - ✅ Increase on HARD grade
@@ -62,6 +67,7 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ Maximum difficulty clamping (10)
 
 #### Stability Calculation (6 tests)
+
 - ✅ Initial stability based on first review
 - ✅ Higher initial stability for EASY vs GOOD
 - ✅ Lower initial stability for HARD
@@ -70,12 +76,14 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ Post-lapse stability decrease on AGAIN
 
 #### Interval Calculation (4 tests)
+
 - ✅ Interval based on stability
 - ✅ Minimum interval (1 day)
 - ✅ Maximum interval enforcement
 - ✅ Retention-dependent intervals
 
 #### Review History (6 tests)
+
 - ✅ History entry creation
 - ✅ Timestamp recording
 - ✅ Elapsed days calculation
@@ -84,23 +92,27 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ History accumulation across multiple reviews
 
 #### Next Review Scheduling (3 tests)
+
 - ✅ Future date based on interval
 - ✅ Sooner scheduling for HARD
 - ✅ Later scheduling for EASY
 
 #### Due Date Checking (4 tests)
+
 - ✅ Due status for past dates
 - ✅ Not due for future dates
 - ✅ Days until due (positive)
 - ✅ Days overdue (negative)
 
 #### Edge Cases (4 tests)
+
 - ✅ Rapid successive reviews
 - ✅ Alternating EASY/AGAIN grades
 - ✅ Very long intervals without overflow
 - ✅ Data integrity across multiple reviews
 
 #### Integration Scenarios (2 tests)
+
 - ✅ Realistic learning progression
 - ✅ Forgetting and relearning flow
 
@@ -111,6 +123,7 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 **File**: `src/lib/srs/config.test.ts`
 
 #### Constants Validation (5 tests)
+
 - ✅ 21 FSRS parameters
 - ✅ All parameters are numbers
 - ✅ Default retention (0.9)
@@ -118,6 +131,7 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ Decay parameter (-0.5)
 
 #### Retention Profiles (5 tests)
+
 - ✅ Relaxed (80%)
 - ✅ Balanced (90%)
 - ✅ High (95%)
@@ -127,6 +141,7 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 #### Validation Functions (18 tests)
 
 **isValidRetention**:
+
 - ✅ Accept lower boundary (0.7)
 - ✅ Accept upper boundary (0.97)
 - ✅ Accept valid range values
@@ -135,6 +150,7 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ Reject negative values
 
 **isValidParameters**:
+
 - ✅ Accept valid 21-parameter array
 - ✅ Accept any 21-element array
 - ✅ Reject fewer than 21
@@ -143,6 +159,7 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ Reject non-array values
 
 **getRetentionProfileName**:
+
 - ✅ Relaxed profile naming
 - ✅ Balanced profile naming
 - ✅ High profile naming
@@ -150,22 +167,26 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ Edge case handling
 
 #### Grade Labels (4 tests)
+
 - ✅ All 4 grades defined
 - ✅ French labels
 - ✅ Descriptions
 - ✅ Emojis and colors
 
 #### State Labels (2 tests)
+
 - ✅ All 4 states defined
 - ✅ French labels
 
 #### Learning Steps (4 tests)
+
 - ✅ Default learning steps defined
 - ✅ Learning steps in milliseconds
 - ✅ Default relearning steps defined
 - ✅ Relearning steps in milliseconds
 
 #### Educational Config (1 test)
+
 - ✅ Complete config export
 
 ---
@@ -175,6 +196,7 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 **File**: `src/lib/srs/generator.test.ts`
 
 #### generateSRSInstance (6 tests)
+
 - ✅ Generate with random seed
 - ✅ Different instances on multiple calls
 - ✅ Seed within valid range (0-1,000,000)
@@ -183,6 +205,7 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ Fail for template without variations
 
 #### generateSRSPreviewInstances (6 tests)
+
 - ✅ Generate multiple instances
 - ✅ Default count (5 instances)
 - ✅ Filter failed generations
@@ -191,6 +214,7 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ Handle large instance count
 
 #### validateTemplateForSRS (6 tests)
+
 - ✅ Validate published template
 - ✅ Reject draft template
 - ✅ Reject archived template
@@ -199,11 +223,13 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ Accumulate multiple errors
 
 #### Edge Cases (3 tests)
+
 - ✅ Multiple variations handling
 - ✅ Complex parameters
 - ✅ Rapid successive generations
 
 #### Integration (4 tests)
+
 - ✅ Valid instance structure
 - ✅ Template metadata preservation
 - ✅ LaTeX content handling
@@ -215,6 +241,7 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 **File**: `src/routes/api/srs/api-routes.test.ts`
 
 #### POST /api/srs/decks (7 tests)
+
 - ✅ Create personal deck with valid data
 - ✅ Reject unauthenticated requests
 - ✅ Reject missing deck name
@@ -224,11 +251,13 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ Validate retention bounds
 
 #### GET /api/srs/decks (3 tests)
+
 - ✅ Return user decks with stats
 - ✅ Require authentication
 - ✅ Handle empty deck list
 
 #### POST /api/srs/cards (6 tests)
+
 - ✅ Add template card to deck
 - ✅ Add custom card to deck
 - ✅ Reject adding to assigned deck
@@ -237,16 +266,19 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 - ✅ Validate card type
 
 #### GET /api/srs/cards (2 tests)
+
 - ✅ List cards in deck
 - ✅ Require deck_id parameter
 
 #### POST /api/srs/review/submit (4 tests)
+
 - ✅ Submit review and update stats
 - ✅ Validate grade value (1-4)
 - ✅ Require cardId
 - ✅ Require deckId
 
 #### GET /api/srs/review/due (3 tests)
+
 - ✅ Return due cards for deck
 - ✅ Require deck_id parameter
 - ✅ Return empty array when no cards due
@@ -299,13 +331,13 @@ The SRS/Flashcards feature now has **complete automated test coverage** across a
 
 ### Files Created
 
-| File | Lines | Purpose |
-|------|-------|---------|
-| `src/lib/srs/fsrs.test.ts` | ~900 | Core FSRS-6 algorithm |
-| `src/lib/srs/config.test.ts` | ~260 | Configuration validation |
-| `src/lib/srs/generator.test.ts` | ~330 | Instance generation |
-| `src/routes/api/srs/api-routes.test.ts` | ~770 | API endpoint testing |
-| **Total** | **~2,260** | **Complete test suite** |
+| File                                    | Lines      | Purpose                  |
+| --------------------------------------- | ---------- | ------------------------ |
+| `src/lib/srs/fsrs.test.ts`              | ~900       | Core FSRS-6 algorithm    |
+| `src/lib/srs/config.test.ts`            | ~260       | Configuration validation |
+| `src/lib/srs/generator.test.ts`         | ~330       | Instance generation      |
+| `src/routes/api/srs/api-routes.test.ts` | ~770       | API endpoint testing     |
+| **Total**                               | **~2,260** | **Complete test suite**  |
 
 ### Test Execution
 
@@ -314,6 +346,7 @@ pnpm test:unit src/lib/srs/
 ```
 
 **Results**:
+
 ```
 ✓ |server| src/lib/srs/config.test.ts (39 tests) 11ms
 ✓ |server| src/lib/srs/generator.test.ts (25 tests) 11ms
@@ -328,16 +361,19 @@ Test Files  3 passed (3)
 ## 🔬 Testing Strategy
 
 ### Unit Tests
+
 - **FSRS Algorithm**: Pure function testing with known inputs/outputs
 - **Configuration**: Validation and boundary testing
 - **Generator**: Randomness and edge case testing
 
 ### Integration Tests
+
 - **Realistic Scenarios**: Multi-review learning progressions
 - **Forgetting Curves**: Complete forget → relearn flows
 - **State Transitions**: Full state machine validation
 
 ### API Tests
+
 - **Mocked Dependencies**: Supabase client mocking
 - **Authorization**: Session and user verification
 - **Validation**: Input validation and error handling
@@ -360,11 +396,13 @@ Test Files  3 passed (3)
 ## 🚀 Running Tests
 
 ### All SRS Tests
+
 ```bash
 pnpm test:unit src/lib/srs/
 ```
 
 ### Individual Test Files
+
 ```bash
 pnpm test:unit src/lib/srs/fsrs.test.ts
 pnpm test:unit src/lib/srs/config.test.ts
@@ -373,6 +411,7 @@ pnpm test:unit src/routes/api/srs/api-routes.test.ts
 ```
 
 ### Watch Mode
+
 ```bash
 pnpm test:unit src/lib/srs/ --watch
 ```
@@ -382,6 +421,7 @@ pnpm test:unit src/lib/srs/ --watch
 ## 📝 What's Not Tested (Intentionally)
 
 ### UI Components
+
 - Flashcard display components
 - Review session UI
 - Deck management interface
@@ -389,6 +429,7 @@ pnpm test:unit src/lib/srs/ --watch
 **Rationale**: These require browser environment and are better suited for E2E tests.
 
 ### Database Operations
+
 - RLS policies
 - Triggers
 - Database functions (get_deck_stats, get_due_cards_for_deck)
@@ -396,6 +437,7 @@ pnpm test:unit src/lib/srs/ --watch
 **Rationale**: Tested via API integration tests with mocked Supabase.
 
 ### Authentication Flow
+
 - Login/logout
 - Session management
 
@@ -439,6 +481,7 @@ The SRS/Flashcards feature has **comprehensive, production-ready test coverage**
 **Code Quality**: Production-ready
 
 The test suite provides confidence for:
+
 - Refactoring the FSRS algorithm
 - Adding new features (import/export, statistics)
 - Upgrading to future FSRS versions

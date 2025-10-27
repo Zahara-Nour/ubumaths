@@ -31,6 +31,7 @@ kit: {
 ```
 
 **What this does:**
+
 - Automatically validates `Origin` or `Referer` headers on all state-changing requests
 - Returns 403 Forbidden if headers don't match the request host
 - Protects all form actions and API routes automatically
@@ -56,6 +57,7 @@ isValidOrigin(request: Request): boolean
 ```
 
 **Allowed origins configured:**
+
 - Production: `https://ubumaths.com`, `https://www.ubumaths.com`
 - Vercel: `https://ubumaths-6op8.vercel.app` + preview deployments
 - Development: `http://localhost:5173`, `http://localhost:5175`
@@ -63,11 +65,13 @@ isValidOrigin(request: Request): boolean
 ### 3. Documentation
 
 **Created:**
+
 - `/Users/david/Coding/js/ubumaths/docs/architecture/csrf-protection.md` - Complete CSRF documentation
 - `/Users/david/Coding/js/ubumaths/docs/architecture/csrf-testing-checklist.md` - Testing guidelines
 - `/Users/david/Coding/js/ubumaths/docs/architecture/csrf-implementation-summary.md` - This summary
 
 **Updated:**
+
 - `/Users/david/Coding/js/ubumaths/docs/README.md` - Added CSRF documentation link
 
 ---
@@ -81,13 +85,14 @@ SvelteKit automatically protects all routes when `csrf.checkOrigin: true` is ena
 ```typescript
 // ✅ Automatically protected - no code changes needed
 export const POST: RequestHandler = async ({ request, locals }) => {
-  // SvelteKit validates origin before this runs
-  const data = await request.json();
-  // ... process request
+	// SvelteKit validates origin before this runs
+	const data = await request.json();
+	// ... process request
 };
 ```
 
 **Protected automatically:**
+
 - ✅ All form submissions (`+page.server.ts` form actions)
 - ✅ All API routes with POST/PUT/DELETE/PATCH methods
 - ✅ All server load functions that mutate state
@@ -100,10 +105,10 @@ For custom error handling or logging:
 import { validateOrigin } from '$lib/server/csrfProtection';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-  // Explicit validation with custom error handling
-  validateOrigin(request);
+	// Explicit validation with custom error handling
+	validateOrigin(request);
 
-  // ... rest of handler
+	// ... rest of handler
 };
 ```
 
@@ -114,20 +119,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 ### Attack Prevented
 
 **Before CSRF Protection:**
+
 ```html
 <!-- Malicious website: evil.com -->
 <form action="https://ubumaths.com/api/rewards/gidouilles" method="POST">
-  <input type="hidden" name="studentId" value="victim-id">
-  <input type="hidden" name="amount" value="-9999">
+	<input type="hidden" name="studentId" value="victim-id" />
+	<input type="hidden" name="amount" value="-9999" />
 </form>
 <script>
-  document.forms[0].submit(); // Auto-submits when page loads
+	document.forms[0].submit(); // Auto-submits when page loads
 </script>
 ```
 
 **Result:** ✅ Request succeeds, student's gidouilles stolen
 
 **After CSRF Protection:**
+
 ```
 HTTP/1.1 403 Forbidden
 Cross-site POST form submissions are forbidden
@@ -169,6 +176,7 @@ All form submissions in `+page.server.ts` files:
 All state-changing API endpoints in `+server.ts` files:
 
 **POST endpoints (77 routes):**
+
 - `/api/rewards/gidouilles` - Award gidouilles
 - `/api/assessments` - Create assessment
 - `/api/messages/send` - Send message
@@ -177,12 +185,14 @@ All state-changing API endpoints in `+server.ts` files:
 - ... and 72 more POST routes
 
 **PUT endpoints:**
+
 - `/api/assessments/[id]` - Update assessment
 - `/api/exercises/[id]` - Update exercise
 - `/api/questions/templates/[id]` - Update template
 - ... and all other PUT routes
 
 **DELETE endpoints:**
+
 - `/api/assessments/[id]` - Delete assessment
 - `/api/exercises/[id]` - Delete exercise
 - `/api/messages/[id]` - Delete message
@@ -197,17 +207,20 @@ All state-changing API endpoints in `+server.ts` files:
 ### Pre-Deployment Testing
 
 **Development environment:**
+
 - [ ] All forms work on localhost:5173 and localhost:5175
 - [ ] All API POST/PUT/DELETE requests work
 - [ ] No CSRF errors in browser console
 - [ ] Cross-origin requests properly blocked (curl tests)
 
 **Staging environment (Vercel):**
+
 - [ ] Forms work on preview deployment
 - [ ] API routes work correctly
 - [ ] Preview URLs automatically allowed
 
 **Production environment:**
+
 - [ ] All user workflows functional
 - [ ] No increase in 403 errors
 - [ ] Monitoring confirms no legitimate requests blocked
@@ -215,12 +228,14 @@ All state-changing API endpoints in `+server.ts` files:
 ### Security Testing
 
 **CSRF attack simulation:**
+
 1. Create malicious HTML page on different domain
 2. Attempt form submission to UbuMaths endpoints
 3. Verify requests are blocked (403 Forbidden)
 4. Confirm no state changes in database
 
 **Expected results:**
+
 - ❌ Cross-origin form submissions blocked
 - ❌ Cross-origin API requests blocked
 - ✅ Same-origin requests succeed
@@ -229,6 +244,7 @@ All state-changing API endpoints in `+server.ts` files:
 ### Browser Compatibility
 
 Test on all major browsers:
+
 - Chrome/Edge (Chromium)
 - Firefox
 - Safari (desktop and iOS)
@@ -289,7 +305,7 @@ If CSRF protection causes production issues:
 ```javascript
 // svelte.config.js - EMERGENCY ONLY
 csrf: {
-  checkOrigin: false  // ⚠️ SECURITY RISK - temporary only!
+	checkOrigin: false; // ⚠️ SECURITY RISK - temporary only!
 }
 ```
 
@@ -326,6 +342,7 @@ docs/README.md                                          (+1 line)
 ```
 
 **Total changes:**
+
 - 4 new files
 - 2 modified files
 - ~1,500 lines of documentation
@@ -338,6 +355,7 @@ docs/README.md                                          (+1 line)
 ### Before Deployment
 
 1. **Run tests:**
+
    ```bash
    pnpm test:unit  # Unit tests
    pnpm test:e2e   # E2E tests
@@ -388,6 +406,7 @@ docs/README.md                                          (+1 line)
 **Verification:** Pending deployment and testing
 
 **Changes:**
+
 1. Enabled SvelteKit built-in CSRF protection
 2. Created helper utilities for manual validation
 3. Configured allowed origins for all environments
@@ -404,6 +423,7 @@ docs/README.md                                          (+1 line)
 - [CWE-352: CSRF](https://cwe.mitre.org/data/definitions/352.html)
 
 **Internal documentation:**
+
 - [CSRF Protection Guide](csrf-protection.md)
 - [CSRF Testing Checklist](csrf-testing-checklist.md)
 

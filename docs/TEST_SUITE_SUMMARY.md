@@ -14,6 +14,7 @@ Duration:    ~51 seconds
 ```
 
 ### Latest Addition: SRS/Flashcards (2025-10-27)
+
 - ✅ **124 new tests** added
 - ✅ **100% passing** rate
 - ✅ **4 test files** created (2,626 lines)
@@ -23,18 +24,18 @@ Duration:    ~51 seconds
 
 ## Status by Feature
 
-| Feature | Tests | Passed | Failed | Skipped | Status |
-|---------|-------|--------|--------|---------|--------|
-| **Questions** | 334 | 329 | 0 | 5 | ✅ PASSING |
-| **Exercises** | ~400 | ~395 | 0 | 5 | ✅ PASSING |
-| **SRS/Flashcards** | 124 | 124 | 0 | 0 | ✅ PASSING |
-| **Shared Parameterization** | 46 | 46 | 0 | 0 | ✅ PASSING |
-| **Teacher Students Cache** | ~40 | ~40 | 0 | 0 | ✅ PASSING |
-| **Image Upload** | 50 | 50 | 0 | 0 | ✅ PASSING |
-| **Exercise Assignments** | 6 | 6 | 0 | 0 | ✅ PASSING |
-| **API Routes (Exercises)** | 29 | 0 | 29 | 0 | ❌ FAILING |
-| **Combat System** | ~20 | ~20 | 0 | 0 | ✅ PASSING |
-| **Other** | ~224 | ~209 | 1 | 14 | ⚠️ PARTIAL |
+| Feature                     | Tests | Passed | Failed | Skipped | Status     |
+| --------------------------- | ----- | ------ | ------ | ------- | ---------- |
+| **Questions**               | 334   | 329    | 0      | 5       | ✅ PASSING |
+| **Exercises**               | ~400  | ~395   | 0      | 5       | ✅ PASSING |
+| **SRS/Flashcards**          | 124   | 124    | 0      | 0       | ✅ PASSING |
+| **Shared Parameterization** | 46    | 46     | 0      | 0       | ✅ PASSING |
+| **Teacher Students Cache**  | ~40   | ~40    | 0      | 0       | ✅ PASSING |
+| **Image Upload**            | 50    | 50     | 0      | 0       | ✅ PASSING |
+| **Exercise Assignments**    | 6     | 6      | 0      | 0       | ✅ PASSING |
+| **API Routes (Exercises)**  | 29    | 0      | 29     | 0       | ❌ FAILING |
+| **Combat System**           | ~20   | ~20    | 0      | 0       | ✅ PASSING |
+| **Other**                   | ~224  | ~209   | 1      | 14      | ⚠️ PARTIAL |
 
 ---
 
@@ -45,6 +46,7 @@ Duration:    ~51 seconds
 **Root Cause**: Mock Supabase client not properly configured for destructuring
 
 **Affected Tests**:
+
 - POST /api/exercises/[id]/assign (4 tests)
 - GET /api/exercises/assigned (0 tests - passing auth checks)
 - POST /api/exercises/[id]/view (2 tests)
@@ -55,6 +57,7 @@ Duration:    ~51 seconds
 - Authorization edge cases (2 tests)
 
 **Error Pattern**:
+
 ```
 TypeError: Cannot destructure property 'data' of '(intermediate value)' as it is undefined.
 ```
@@ -62,6 +65,7 @@ TypeError: Cannot destructure property 'data' of '(intermediate value)' as it is
 **Fix Required**: Update test mocks to properly return `{ data, error }` structure for all Supabase queries.
 
 **Files to Fix**:
+
 - `/Users/david/Coding/js/ubumaths/src/routes/api/exercises/api-routes.test.ts`
 
 ---
@@ -71,7 +75,7 @@ TypeError: Cannot destructure property 'data' of '(intermediate value)' as it is
 ### Unit Tests ✅
 
 - **Parser tests**: 222 tests (Questions) + similar for Exercises
-- **Generator tests**: 135 tests (Questions) + similar for Exercises  
+- **Generator tests**: 135 tests (Questions) + similar for Exercises
 - **Validator tests**: 34 tests (Questions) + 46 tests (Shared Parameterization)
 - **Service tests**: Image upload (50 tests), Exercise assignments (6 tests)
 - **Store tests**: Teacher students cache (~40 tests)
@@ -102,6 +106,7 @@ TypeError: Cannot destructure property 'data' of '(intermediate value)' as it is
 See [TEST_REPORT_QUESTIONS.md](./TEST_REPORT_QUESTIONS.md) for comprehensive Questions feature test report.
 
 **Summary**:
+
 - ✅ 334 tests total
 - ✅ 329 passing (98.5%)
 - ⚠️ 5 skipped (1.5%)
@@ -113,6 +118,7 @@ See [TEST_REPORT_QUESTIONS.md](./TEST_REPORT_QUESTIONS.md) for comprehensive Que
 See [features/srs-flashcards/test-coverage-report.md](./features/srs-flashcards/test-coverage-report.md) for comprehensive SRS test report.
 
 **Summary**:
+
 - ✅ 124 tests total
 - ✅ 124 passing (100%)
 - ⚠️ 0 skipped (0%)
@@ -135,10 +141,12 @@ See [features/srs-flashcards/test-coverage-report.md](./features/srs-flashcards/
 ### 2. Skipped Tests (LOW PRIORITY)
 
 **Questions Feature**: 5 tests skipped
+
 - Complex eval expressions (expected behavior)
 - Complex template scenarios (require additional setup)
 
 **Other Features**: 19 tests skipped across other features
+
 - Reason: Expected behavior or pending implementation
 
 ---
@@ -146,6 +154,7 @@ See [features/srs-flashcards/test-coverage-report.md](./features/srs-flashcards/
 ## Test Quality Metrics
 
 ### Code Coverage ✅
+
 - **Parser layer**: ~100%
 - **Generator layer**: ~98%
 - **Validator layer**: ~100%
@@ -153,12 +162,14 @@ See [features/srs-flashcards/test-coverage-report.md](./features/srs-flashcards/
 - **Overall**: ~85-90% (estimated)
 
 ### Test Organization ✅
+
 - Clear file naming: `*.test.ts` for unit tests, `*.spec.ts` for E2E
 - Descriptive test names using behavior-driven format
 - Arrange-Act-Assert pattern followed consistently
 - Well-organized describe blocks
 
 ### Test Performance ✅
+
 - Fast unit tests: 0-5ms per test
 - Slower integration tests: 50-100ms per test
 - Total execution time: ~80 seconds for 1149 tests
@@ -241,17 +252,20 @@ pnpm test
 ## Test Infrastructure
 
 ### Tools
+
 - **Framework**: Vitest v3.2.4
 - **Browser Testing**: Playwright (for Svelte components)
 - **Mocking**: Vitest built-in mocks
 - **Assertions**: Vitest expect API
 
 ### Configuration
+
 - **Unit tests**: `vitest.config.ts`
 - **E2E tests**: `playwright.config.ts`
 - **Pre-commit**: `lint-staged` configured in `package.json`
 
 ### CI/CD
+
 - ⚠️ **Not yet configured** - recommend GitHub Actions workflow
 
 ---

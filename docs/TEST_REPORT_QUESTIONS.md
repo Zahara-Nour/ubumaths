@@ -25,6 +25,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 ### Parser Tests (222 tests)
 
 #### 1. **tokenizer.test.ts** - 31 tests ✅
+
 - **Purpose**: Extract variable references, random expressions, eval expressions, and LaTeX
 - **Coverage**:
   - Variable reference detection (`{@:varName}`)
@@ -36,6 +37,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 - **Status**: All tests passing
 
 #### 2. **variable-parser.test.ts** - 31 tests ✅
+
 - **Purpose**: Parse variable definitions from expressions
 - **Coverage**:
   - Simple variable parsing
@@ -47,6 +49,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 - **Status**: All tests passing
 
 #### 3. **random-parser.test.ts** - 29 tests ✅
+
 - **Purpose**: Parse random number generation expressions (`{#:...}`)
 - **Coverage**:
   - Integer ranges (`{#:1-10}`)
@@ -60,6 +63,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 - **Status**: All tests passing
 
 #### 4. **eval-parser.test.ts** - 42 tests ✅
+
 - **Purpose**: Parse mathematical evaluation expressions (`{eval:...}`)
 - **Coverage**:
   - Simple arithmetic (`{eval:2+3}`)
@@ -73,6 +77,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 - **Status**: All tests passing
 
 #### 5. **math-extractor.test.ts** (Exercises feature, relevant to Questions)
+
 - **Purpose**: Extract and validate mathematical expressions
 - **Coverage**: Inline/display math, variable substitution, nested expressions
 - **Note**: Shared utility used by Questions feature
@@ -82,6 +87,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 ### Generator Tests (135 tests)
 
 #### 6. **variable-resolver.test.ts** - 39 tests ✅ (1 skipped)
+
 - **Purpose**: Resolve variable values using 3-stage pipeline (variables → random → eval)
 - **Coverage**:
   - Simple cases (integer random, eval, literal numbers)
@@ -97,6 +103,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 - **Note**: This is the CORE resolution engine for the Questions feature
 
 #### 7. **random-generator.test.ts** - 36 tests ✅
+
 - **Purpose**: Generate random numbers based on parsed expressions
 - **Coverage**:
   - Integer ranges (negative, crossing zero, single-value)
@@ -111,6 +118,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 - **Status**: All tests passing
 
 #### 8. **content-resolver.test.ts** - 41 tests ✅
+
 - **Purpose**: Resolve variables in text content (statement, correction, choices)
 - **Coverage**:
   - Text field resolution (single/multiple variables)
@@ -125,6 +133,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 - **Status**: All tests passing
 
 #### 9. **choice-shuffler.test.ts** - 23 tests ✅
+
 - **Purpose**: Shuffle multiple choice options using Fisher-Yates algorithm
 - **Coverage**:
   - Basic functionality (shuffling, preserving elements, tracking indices)
@@ -138,6 +147,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 - **Status**: All tests passing
 
 #### 10. **instance-generator.test.ts** - 27 tests ✅ (4 skipped)
+
 - **Purpose**: Generate question instances from templates (master orchestrator)
 - **Coverage**:
   - Numerical exact questions (simple, reproducible, seeded)
@@ -155,6 +165,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 - **Note**: This is the MAIN entry point for question generation
 
 #### 11. **test-exact-repro.test.ts** - 1 test ✅
+
 - **Purpose**: Exact reproduction test for debugging specific scenarios
 - **Coverage**: Simple numerical question instance generation
 - **Status**: Passing
@@ -164,6 +175,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 ### Validator Tests (34 tests)
 
 #### 12. **template-validator.test.ts** - 34 tests ✅
+
 - **Purpose**: Validate question template structure and syntax
 - **Coverage**:
   - **Valid templates**: Simple numerical, with variables, all question types, multiple variations
@@ -187,6 +199,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 ### Core Functionality Coverage: ✅ EXCELLENT
 
 #### 1. **Parsing Layer** (100% coverage)
+
 - ✅ Variable references: `{@:varName}`
 - ✅ Random expressions: `{#:min-max}`, `{#d:x.y}`, `{#:min-max!exclusions}`
 - ✅ Eval expressions: `{eval:mathematical_expression}`
@@ -195,6 +208,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 - ✅ Error handling: invalid syntax, missing braces
 
 #### 2. **Resolution Layer** (98.5% coverage - 5 tests skipped)
+
 - ✅ 3-stage pipeline: variables → random → eval
 - ✅ Variable resolution: literal, random, eval, references
 - ✅ Random generation: integers, decimals, exclusions, seeded
@@ -205,6 +219,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 - ⚠️ 5 skipped tests: complex eval expressions (expected behavior)
 
 #### 3. **Generation Layer** (85% coverage)
+
 - ✅ All question types: numerical_exact, numerical_decimal, numerical_rounded, algebraic_transform, fill_in_blanks, multiple_choice
 - ✅ Variation selection: seed-based, modulo, independent validation
 - ✅ Choice shuffling: Fisher-Yates, seeded, index tracking
@@ -212,6 +227,7 @@ The Questions feature test suite consists of **334 individual test cases** acros
 - ⚠️ 4 skipped tests in instance-generator (complex templates, expected)
 
 #### 4. **Validation Layer** (100% coverage)
+
 - ✅ Required fields validation
 - ✅ Type-specific validation
 - ✅ Statement/variable validation
@@ -317,14 +333,14 @@ The Questions feature test suite consists of **334 individual test cases** acros
 
 ## Comparison to Expected Test Counts
 
-| Component | Expected | Actual | Status |
-|-----------|----------|--------|--------|
-| Parser tests | 222 | 222 | ✅ Matches |
-| Validator tests | 50+ | 34 | ⚠️ Fewer (but comprehensive) |
-| Generator tests | 35+ | 135 | ✅ Exceeds expectation |
-| Import/Export tests | 23 | 0 | ❌ Missing |
-| Image upload tests | 50 | 50 (in Exercises) | ✅ Exists (shared) |
-| **TOTAL** | **300+** | **334** | ✅ **Exceeds expectation** |
+| Component           | Expected | Actual            | Status                       |
+| ------------------- | -------- | ----------------- | ---------------------------- |
+| Parser tests        | 222      | 222               | ✅ Matches                   |
+| Validator tests     | 50+      | 34                | ⚠️ Fewer (but comprehensive) |
+| Generator tests     | 35+      | 135               | ✅ Exceeds expectation       |
+| Import/Export tests | 23       | 0                 | ❌ Missing                   |
+| Image upload tests  | 50       | 50 (in Exercises) | ✅ Exists (shared)           |
+| **TOTAL**           | **300+** | **334**           | ✅ **Exceeds expectation**   |
 
 **Note**: Import/Export tests are likely in Exercises feature (`exercise-import-export.test.ts`) and may be shared functionality. The Questions feature may not need separate import/export if it uses the same system.
 
@@ -413,6 +429,7 @@ The Questions feature has **excellent test coverage** with **334 passing tests**
 - ✅ **Validation**: 34 tests - thorough validation of template structure
 
 **Strengths**:
+
 - Zero failing tests
 - Well-organized, descriptive test names
 - Real-world mathematical examples
@@ -420,6 +437,7 @@ The Questions feature has **excellent test coverage** with **334 passing tests**
 - Comprehensive edge case coverage
 
 **Gaps**:
+
 - Missing import/export tests (expected in requirements)
 - Missing database integration tests
 - Missing API endpoint tests
@@ -428,6 +446,7 @@ The Questions feature has **excellent test coverage** with **334 passing tests**
 **Overall Assessment**: **A-** (Excellent core functionality, missing infrastructure tests)
 
 **Next Steps**:
+
 1. Add import/export tests
 2. Add database integration tests
 3. Add API endpoint tests

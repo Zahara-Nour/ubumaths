@@ -19,6 +19,7 @@ Successfully implemented comprehensive rate limiting for all authentication endp
 ### 1. Core Rate Limiter Utility (`src/lib/server/rateLimiter.ts`)
 
 **Features**:
+
 - ✅ In-memory rate limiting with configurable windows and limits
 - ✅ Dual tracking: by IP address AND email (double protection)
 - ✅ Exponential backoff for repeated violations (15min → 30min → 1h → 2h → up to 24h)
@@ -29,6 +30,7 @@ Successfully implemented comprehensive rate limiting for all authentication endp
 - ✅ Fail-safe design (fails open on errors to avoid DoS)
 
 **Storage Architecture**:
+
 ```
 loginIPStore     → Login attempts by IP (5 per 15min)
 emailStore       → Login attempts by email (3 per 15min, stricter)
@@ -41,6 +43,7 @@ oauthIPStore     → OAuth attempts by IP (10 per 15min)
 #### Login Endpoint (`src/routes/(public)/auth/login/+page.server.ts`)
 
 **Protected Actions**:
+
 - ✅ Email/Password Login (`?/login`)
   - Rate limited by IP (5 attempts per 15min)
   - Rate limited by email (3 attempts per 15min)
@@ -51,6 +54,7 @@ oauthIPStore     → OAuth attempts by IP (10 per 15min)
   - Prevents OAuth flow abuse
 
 **Security Flow**:
+
 ```
 1. Extract client IP and email
 2. Check IP-based rate limit → Block if exceeded (HTTP 429)
@@ -61,11 +65,13 @@ oauthIPStore     → OAuth attempts by IP (10 per 15min)
 #### Signup Endpoint (`src/routes/(public)/signup/+page.server.ts`)
 
 **Protected Actions**:
+
 - ✅ Account Creation (`?/signup`)
   - Rate limited by IP (3 attempts per hour)
   - Prevents spam account creation
 
 **Security Flow**:
+
 ```
 1. Extract client IP
 2. Check IP-based rate limit → Block if exceeded (HTTP 429)
@@ -77,6 +83,7 @@ oauthIPStore     → OAuth attempts by IP (10 per 15min)
 **Coverage**: 26/26 tests passing (100%)
 
 **Test Categories**:
+
 - ✅ Login rate limiting (IP and email)
 - ✅ Signup rate limiting
 - ✅ OAuth rate limiting
@@ -90,6 +97,7 @@ oauthIPStore     → OAuth attempts by IP (10 per 15min)
 ### 4. Documentation (`docs/security/rate-limiting.md`)
 
 **Comprehensive documentation includes**:
+
 - ✅ Security threat model
 - ✅ Configuration details
 - ✅ Implementation architecture
@@ -104,14 +112,15 @@ oauthIPStore     → OAuth attempts by IP (10 per 15min)
 
 ## Rate Limit Configuration
 
-| Endpoint | Type | Max Attempts | Window | Block Duration |
-|----------|------|--------------|--------|----------------|
-| Login | IP | 5 | 15 min | 15 min |
-| Login | Email | 3 | 15 min | 15 min |
-| Signup | IP | 3 | 1 hour | 30 min |
-| OAuth | IP | 10 | 15 min | 15 min |
+| Endpoint | Type  | Max Attempts | Window | Block Duration |
+| -------- | ----- | ------------ | ------ | -------------- |
+| Login    | IP    | 5            | 15 min | 15 min         |
+| Login    | Email | 3            | 15 min | 15 min         |
+| Signup   | IP    | 3            | 1 hour | 30 min         |
+| OAuth    | IP    | 10           | 15 min | 15 min         |
 
 **Notes**:
+
 - Email-based login limits are stricter (3 vs 5) to protect specific accounts
 - Signup has longer window (1 hour) and block duration (30 min) due to resource intensity
 - OAuth allows more attempts (10) to accommodate user confusion/retries
@@ -122,6 +131,7 @@ oauthIPStore     → OAuth attempts by IP (10 per 15min)
 ## Security Improvements
 
 ### Before Implementation
+
 - ❌ No rate limiting on authentication endpoints
 - ❌ Vulnerable to brute force attacks
 - ❌ Vulnerable to credential stuffing
@@ -130,6 +140,7 @@ oauthIPStore     → OAuth attempts by IP (10 per 15min)
 - ❌ No protection against OAuth flow abuse
 
 ### After Implementation
+
 - ✅ Comprehensive rate limiting on all auth endpoints
 - ✅ Protected against brute force attacks
 - ✅ Protected against credential stuffing
@@ -155,7 +166,7 @@ const emailLimit = checkLoginRateLimitByEmail(email);
 
 // Both must pass
 if (!ipLimit.allowed || !emailLimit.allowed) {
-  return fail(429, { error: "Rate limit exceeded" });
+	return fail(429, { error: 'Rate limit exceeded' });
 }
 ```
 
@@ -165,8 +176,8 @@ if (!ipLimit.allowed || !emailLimit.allowed) {
 // Increase block duration on repeated violations
 const backoffMultiplier = Math.pow(2, violationCount);
 const blockDuration = Math.min(
-  baseBlockDuration * backoffMultiplier,
-  24 * 60 * 60 * 1000  // Max 24 hours
+	baseBlockDuration * backoffMultiplier,
+	24 * 60 * 60 * 1000 // Max 24 hours
 );
 ```
 
@@ -174,14 +185,17 @@ const blockDuration = Math.min(
 
 ```typescript
 // Prevent memory leaks with automatic cleanup
-setInterval(() => {
-  // Remove expired entries from all stores
-  for (const [key, entry] of store.entries()) {
-    if (isExpired(entry)) {
-      store.delete(key);
-    }
-  }
-}, 5 * 60 * 1000);  // Every 5 minutes
+setInterval(
+	() => {
+		// Remove expired entries from all stores
+		for (const [key, entry] of store.entries()) {
+			if (isExpired(entry)) {
+				store.delete(key);
+			}
+		}
+	},
+	5 * 60 * 1000
+); // Every 5 minutes
 ```
 
 ### 4. Fail-Safe Design
@@ -189,8 +203,8 @@ setInterval(() => {
 ```typescript
 // Fail open rather than blocking legitimate users
 if (!ip) {
-  logger.warn('Missing IP address for rate limit check');
-  return { allowed: true };  // Fail open
+	logger.warn('Missing IP address for rate limit check');
+	return { allowed: true }; // Fail open
 }
 ```
 
@@ -210,6 +224,7 @@ Trop de tentatives. Compte bloqué pendant 2 heures.
 ### HTTP Status Code
 
 Rate-limited requests return **HTTP 429 Too Many Requests** with:
+
 - `retryAfter`: Seconds until unblocked
 - `message`: French error message
 - `allowed`: false
@@ -221,11 +236,13 @@ Rate-limited requests return **HTTP 429 Too Many Requests** with:
 ### ✅ Ready for Single-Instance Deployments
 
 The current in-memory implementation is production-ready for:
+
 - Single server deployments
 - Vercel deployments with single instance
 - Development and staging environments
 
 **Characteristics**:
+
 - Low latency (no network calls)
 - No external dependencies
 - Auto-cleanup prevents memory leaks
@@ -236,6 +253,7 @@ The current in-memory implementation is production-ready for:
 For horizontal scaling (multiple Vercel instances, serverless functions), migrate to Redis:
 
 **Recommended**: [Upstash Redis](https://upstash.com/)
+
 - Serverless-friendly (HTTP-based)
 - Free tier: 10,000 requests/day
 - Auto-expiration built-in
@@ -248,6 +266,7 @@ For horizontal scaling (multiple Vercel instances, serverless functions), migrat
 ## Testing Results
 
 ### Unit Tests
+
 ```bash
 pnpm test:unit rateLimiter.test.ts
 
@@ -257,6 +276,7 @@ pnpm test:unit rateLimiter.test.ts
 ```
 
 ### Type Checking
+
 ```bash
 pnpm check
 
@@ -269,6 +289,7 @@ pnpm check
 ## Files Created/Modified
 
 ### New Files
+
 1. ✅ `src/lib/server/rateLimiter.ts` (470 lines)
    - Core rate limiter implementation
 
@@ -282,6 +303,7 @@ pnpm check
    - Implementation summary
 
 ### Modified Files
+
 1. ✅ `src/routes/(public)/auth/login/+page.server.ts`
    - Added rate limiting to login and OAuth actions
 
@@ -299,6 +321,7 @@ pnpm check
 **Finding**: Authentication endpoints have NO rate limiting, making them vulnerable to brute force attacks.
 
 **Vulnerable Endpoints**:
+
 - ❌ `POST /auth/login?/login` (email/password)
 - ❌ `POST /auth/login?/googleSignIn` (OAuth)
 - ❌ `POST /signup?/signup` (account creation)
@@ -308,6 +331,7 @@ pnpm check
 **Status**: ✅ RESOLVED
 
 **Implementation**:
+
 - ✅ All authentication endpoints now have comprehensive rate limiting
 - ✅ Dual protection (IP + email for login)
 - ✅ Exponential backoff for repeated violations
@@ -325,21 +349,23 @@ pnpm check
 ### Metrics to Track
 
 1. **Rate Limit Hit Rate**
+
    ```typescript
    // Track percentage of requests that hit rate limits
    logger.info('Rate limit metrics', {
-     totalRequests: loginAttempts,
-     blockedRequests: rateLimitHits,
-     hitRate: (rateLimitHits / loginAttempts) * 100
+   	totalRequests: loginAttempts,
+   	blockedRequests: rateLimitHits,
+   	hitRate: (rateLimitHits / loginAttempts) * 100
    });
    ```
 
 2. **Violation Patterns**
+
    ```typescript
    // Track IPs/emails with high violation counts
    const status = getRateLimitStatus(ip, 'login-ip');
    if (status?.violationCount > 3) {
-     logger.warn('Persistent attacker detected', { ip, violations: status.violationCount });
+   	logger.warn('Persistent attacker detected', { ip, violations: status.violationCount });
    }
    ```
 
@@ -353,6 +379,7 @@ pnpm check
 ### Alerts
 
 Set up alerts for:
+
 - ⚠️ Unusually high rate limit hit rate (>5%)
 - ⚠️ IPs with >10 violation count
 - ⚠️ Total entries >100,000 (potential memory issue)
@@ -362,6 +389,7 @@ Set up alerts for:
 ## Next Steps
 
 ### Immediate
+
 - ✅ All implemented and tested
 - ✅ Production-ready for single-instance deployments
 
@@ -394,6 +422,7 @@ Set up alerts for:
 ✅ **Rate limiting successfully implemented and tested**
 
 The implementation:
+
 - Addresses the CRITICAL P0 security vulnerability
 - Protects against brute force, credential stuffing, and account enumeration
 - Maintains excellent user experience for legitimate users

@@ -7,6 +7,7 @@ UbuMaths implements a modern, secure password policy aligned with **NIST 800-63B
 ### Security Context
 
 This platform handles sensitive educational data including:
+
 - Student personally identifiable information (PII)
 - Academic records and grades
 - Authentication credentials
@@ -30,7 +31,7 @@ All user passwords must meet the following criteria:
    - Lowercase letters (a-z)
    - Uppercase letters (A-Z)
    - Numbers (0-9)
-   - Special characters (!@#$%^&*()_+-=[]{};\':"|,.<>/?~`)
+   - Special characters (!@#$%^&\*()\_+-=[]{};\':"|,.<>/?~`)
 
 3. **Common Password Check**: Password must not appear in the common passwords blocklist
 
@@ -57,8 +58,8 @@ import { validatePasswordPolicy } from '$lib/server/passwordPolicy';
 const result = validatePasswordPolicy(password);
 
 if (!result.valid) {
-  // Handle validation errors
-  console.error(result.errors); // Array of French error messages
+	// Handle validation errors
+	console.error(result.errors); // Array of French error messages
 }
 ```
 
@@ -69,6 +70,7 @@ if (!result.valid) {
 Validates password against all security requirements.
 
 **Returns**:
+
 ```typescript
 {
   valid: boolean;
@@ -117,10 +119,10 @@ const strength = calculatePasswordStrength(password);
 // Validate password against security policy
 const passwordValidation = validatePasswordPolicy(password);
 if (!passwordValidation.valid) {
-  return fail(400, {
-    error: passwordValidation.errors.join('. '),
-    email
-  });
+	return fail(400, {
+		error: passwordValidation.errors.join('. '),
+		email
+	});
 }
 ```
 
@@ -142,6 +144,7 @@ The system maintains a list of 100+ common passwords that are blocked, including
 ### Why Block These?
 
 These passwords appear in nearly **every major data breach** and are:
+
 - First tried in automated attacks
 - Trivially crackable in seconds
 - Provide no real security value
@@ -168,6 +171,7 @@ The signup page provides:
 ### Example User Flows
 
 **Weak password attempt**:
+
 ```
 User enters: "abc123"
 Feedback: "Trop court - utilisez au moins 8 caractères"
@@ -175,6 +179,7 @@ Requirements: ○ Au moins 8 caractères (not met)
 ```
 
 **Common password attempt**:
+
 ```
 User enters: "password123"
 Feedback: "Mot de passe trop commun - choisissez-en un plus unique"
@@ -182,6 +187,7 @@ Server error: "Ce mot de passe est trop commun et facile à deviner"
 ```
 
 **Valid password**:
+
 ```
 User enters: "MathClass2024!"
 Feedback: "Mot de passe fort !"
@@ -197,6 +203,7 @@ All requirements: ✓ (green checkmarks)
 Comprehensive test suite at: `/src/lib/server/passwordPolicy.test.ts`
 
 **31 test cases covering**:
+
 - Length validation (min/max)
 - Complexity requirements (all combinations)
 - Common password detection (numeric, words, French, education)
@@ -246,6 +253,7 @@ Password policy is **one layer** in a multi-layer security approach:
 ### Password Storage
 
 Passwords are **never stored in plaintext**. Supabase Auth handles:
+
 - bcrypt hashing with salt
 - Secure password comparison
 - Password reset flows
@@ -268,23 +276,25 @@ Potential improvements:
 
 ### NIST 800-63B Alignment
 
-| Requirement | NIST Guideline | UbuMaths Implementation |
-|-------------|----------------|-------------------------|
-| Minimum length | 8 characters | ✅ 8 characters |
-| Maximum length | 64+ characters | ✅ 128 characters |
-| Complexity | Complexity optional but recommended | ✅ 3 of 4 types required |
-| Common passwords | Must block | ✅ 100+ passwords blocked |
-| Password hints | Not allowed | ✅ Not used |
-| Arbitrary rules | Avoid (special char positions, etc.) | ✅ Flexible complexity |
+| Requirement      | NIST Guideline                       | UbuMaths Implementation   |
+| ---------------- | ------------------------------------ | ------------------------- |
+| Minimum length   | 8 characters                         | ✅ 8 characters           |
+| Maximum length   | 64+ characters                       | ✅ 128 characters         |
+| Complexity       | Complexity optional but recommended  | ✅ 3 of 4 types required  |
+| Common passwords | Must block                           | ✅ 100+ passwords blocked |
+| Password hints   | Not allowed                          | ✅ Not used               |
+| Arbitrary rules  | Avoid (special char positions, etc.) | ✅ Flexible complexity    |
 
 ### Educational Data Privacy
 
 **GDPR Considerations**:
+
 - Strong passwords protect student PII (personal data)
 - Prevents unauthorized data access
 - Required for data controller responsibilities
 
 **Potential FERPA/COPPA**:
+
 - US schools may require FERPA compliance
 - Strong auth protects educational records
 - Password policy supports compliance framework
@@ -298,6 +308,7 @@ Potential improvements:
 **Old requirement**: Minimum 6 characters (no other checks)
 
 **Security risk**: CRITICAL
+
 - 6-character passwords crackable in minutes
 - No complexity = "123456" was valid
 - Common passwords allowed
@@ -316,13 +327,13 @@ Potential improvements:
 
 All error messages are in **French** for user-facing display:
 
-| Scenario | Error Message |
-|----------|---------------|
-| Too short | "Le mot de passe doit contenir au moins 8 caractères" |
-| Too long | "Le mot de passe ne peut pas dépasser 128 caractères" |
+| Scenario                | Error Message                                                                                                                                             |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Too short               | "Le mot de passe doit contenir au moins 8 caractères"                                                                                                     |
+| Too long                | "Le mot de passe ne peut pas dépasser 128 caractères"                                                                                                     |
 | Insufficient complexity | "Le mot de passe doit contenir au moins 3 types de caractères parmi : lettres majuscules, minuscules, chiffres et caractères spéciaux. Manquant : [list]" |
-| Common password | "Ce mot de passe est trop commun et facile à deviner. Veuillez en choisir un plus unique" |
-| Passwords don't match | "Les mots de passe ne correspondent pas" |
+| Common password         | "Ce mot de passe est trop commun et facile à deviner. Veuillez en choisir un plus unique"                                                                 |
+| Passwords don't match   | "Les mots de passe ne correspondent pas"                                                                                                                  |
 
 ---
 
@@ -340,6 +351,7 @@ All error messages are in **French** for user-facing display:
 **Warning**: Changing core requirements may lock out users or weaken security.
 
 **Process**:
+
 1. Update validation logic in `passwordPolicy.ts`
 2. Update client-side feedback in `passwordStrength.ts`
 3. Update UI checklist in `signup/+page.svelte`
@@ -371,6 +383,7 @@ console.log('Errors:', result.errors);
 ## Changelog
 
 ### Version 1.0 (2025-10-27)
+
 - Initial implementation
 - NIST 800-63B alignment
 - 8-character minimum
@@ -385,6 +398,7 @@ console.log('Errors:', result.errors);
 ## Support
 
 For security concerns or questions:
+
 - **Security issues**: Contact admin immediately
 - **User support**: Direct to help documentation
 - **Development questions**: See developer guide above

@@ -104,17 +104,14 @@
 									</span>
 								</div>
 								<div class="flex items-center gap-2">
-									<span
-										class={passwordStrength.requirements.complexityMet ? 'text-green-600' : ''}
-									>
-										{passwordStrength.requirements.complexityMet ? '✓' : '○'} Au moins 3 types de
-										caractères (majuscules, minuscules, chiffres, spéciaux)
+									<span class={passwordStrength.requirements.complexityMet ? 'text-green-600' : ''}>
+										{passwordStrength.requirements.complexityMet ? '✓' : '○'} Au moins 3 types de caractères
+										(majuscules, minuscules, chiffres, spéciaux)
 									</span>
 								</div>
 								<div class="flex items-center gap-2">
 									<span class={passwordStrength.requirements.notCommon ? 'text-green-600' : ''}>
-										{passwordStrength.requirements.notCommon ? '✓' : '○'} Pas un mot de passe
-										courant
+										{passwordStrength.requirements.notCommon ? '✓' : '○'} Pas un mot de passe courant
 									</span>
 								</div>
 							</div>

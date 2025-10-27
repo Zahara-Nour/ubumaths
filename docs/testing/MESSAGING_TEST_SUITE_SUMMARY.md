@@ -23,6 +23,7 @@ Comprehensive helper library providing:
 - **Data Generators**: Functions to create custom test data
 
 **Key Features:**
+
 - Reusable mock data (mockMessage, mockTemplate, mockDraft, etc.)
 - Mock request/locals creation for API route testing
 - Template variable extraction
@@ -40,6 +41,7 @@ Comprehensive test suite covering **21 API endpoints** with **78 test cases**.
 ### ✅ Message CRUD Operations (13 tests)
 
 #### **Send Messages** (9 tests)
+
 - ✓ Send to single recipient
 - ✓ Send to multiple recipients
 - ✓ Send group message to class
@@ -53,6 +55,7 @@ Comprehensive test suite covering **21 API endpoints** with **78 test cases**.
 **Coverage:** POST `/api/messages/send`
 
 #### **Read Messages** (4 tests)
+
 - ✓ Fetch message details for authorized user
 - ✓ Auto-mark as read when fetched by recipient
 - ✓ Reject unauthorized access
@@ -65,6 +68,7 @@ Comprehensive test suite covering **21 API endpoints** with **78 test cases**.
 ### ✅ Inbox & Sent Messages (7 tests)
 
 #### **Inbox** (5 tests)
+
 - ✓ Fetch inbox messages
 - ✓ Fetch archived messages
 - ✓ Fetch messages in specific folder
@@ -74,6 +78,7 @@ Comprehensive test suite covering **21 API endpoints** with **78 test cases**.
 **Coverage:** GET `/api/messages/inbox`
 
 #### **Sent Messages** (2 tests)
+
 - ✓ Fetch sent messages for user
 - ✓ Exclude deleted sent messages
 
@@ -84,12 +89,14 @@ Comprehensive test suite covering **21 API endpoints** with **78 test cases**.
 ### ✅ Draft Management (7 tests)
 
 #### **List Drafts** (2 tests)
+
 - ✓ Fetch all drafts for user
 - ✓ Return empty array when no drafts
 
 **Coverage:** GET `/api/messages/drafts`
 
 #### **Create/Update Drafts** (3 tests)
+
 - ✓ Create new draft
 - ✓ Update existing draft
 - ✓ Reject update to draft owned by different user
@@ -97,6 +104,7 @@ Comprehensive test suite covering **21 API endpoints** with **78 test cases**.
 **Coverage:** POST `/api/messages/drafts`
 
 #### **Delete Drafts** (2 tests)
+
 - ✓ Delete draft
 - ✓ Reject delete of draft owned by different user
 
@@ -107,6 +115,7 @@ Comprehensive test suite covering **21 API endpoints** with **78 test cases**.
 ### ✅ Message Status Management (10 tests)
 
 #### **Archive/Trash** (3 tests)
+
 - ✓ Archive message
 - ✓ Move message to trash
 - ✓ Restore message to inbox
@@ -114,23 +123,27 @@ Comprehensive test suite covering **21 API endpoints** with **78 test cases**.
 **Coverage:** PATCH `/api/messages/[id]` (action: updateStatus)
 
 #### **Read/Unread Toggle** (2 tests)
+
 - ✓ Mark message as read
 - ✓ Mark message as unread
 
 **Coverage:** PATCH `/api/messages/[id]` (action: toggleRead)
 
 #### **Star/Unstar** (2 tests)
+
 - ✓ Star message
 - ✓ Unstar message
 
 **Coverage:** PATCH `/api/messages/[id]` (action: toggleStar)
 
 #### **Move to Folder** (1 test)
+
 - ✓ Move message to folder
 
 **Coverage:** PATCH `/api/messages/[id]` (action: moveToFolder)
 
 #### **Delete Message** (2 tests)
+
 - ✓ Soft delete message for sender
 - ✓ Soft delete message for recipient
 
@@ -177,6 +190,7 @@ Comprehensive test suite covering **21 API endpoints** with **78 test cases**.
 ### ✅ Message Templates (21 tests)
 
 #### **List Templates** (4 tests)
+
 - ✓ Fetch all templates for admin
 - ✓ Filter templates by scope (system/class)
 - ✓ Filter templates by trigger type
@@ -185,6 +199,7 @@ Comprehensive test suite covering **21 API endpoints** with **78 test cases**.
 **Coverage:** GET `/api/messages/templates`
 
 #### **Create Templates** (5 tests)
+
 - ✓ Create system template (admin only)
 - ✓ Create class template (teacher)
 - ✓ Reject template without required fields
@@ -194,6 +209,7 @@ Comprehensive test suite covering **21 API endpoints** with **78 test cases**.
 **Coverage:** POST `/api/messages/templates`
 
 #### **Get/Update/Delete Templates** (5 tests)
+
 - ✓ Fetch single template
 - ✓ Return 404 for non-existent template
 - ✓ Update template
@@ -201,28 +217,33 @@ Comprehensive test suite covering **21 API endpoints** with **78 test cases**.
 - ✓ Delete template
 
 **Coverage:**
+
 - GET `/api/messages/templates/[id]`
 - PATCH `/api/messages/templates/[id]`
 - DELETE `/api/messages/templates/[id]`
 
 #### **Template Matching** (2 tests)
+
 - ✓ Find matching template for context
 - ✓ Prioritize class templates over system templates
 
 **Coverage:** GET `/api/messages/templates/match`
 
 #### **Template Preview** (2 tests)
+
 - ✓ Preview template with variables
 - ✓ Identify missing variables
 
 **Coverage:** POST `/api/messages/templates/[id]/preview`
 
 #### **Template Duplication** (1 test)
+
 - ✓ Duplicate template
 
 **Coverage:** POST `/api/messages/templates/[id]/duplicate`
 
 #### **Variable Extraction** (3 tests)
+
 - ✓ Extract all variables from template
 - ✓ Handle templates with no variables
 - ✓ Handle duplicate variables
@@ -253,30 +274,30 @@ Comprehensive test suite covering **21 API endpoints** with **78 test cases**.
 
 ### Core Messaging (21 endpoints)
 
-| Endpoint | Method | Tests | Status |
-|----------|--------|-------|--------|
-| `/api/messages/send` | POST | 9 | ✅ |
-| `/api/messages/[id]` | GET | 4 | ✅ |
-| `/api/messages/[id]` | PATCH | 6 | ✅ |
-| `/api/messages/[id]` | DELETE | 2 | ✅ |
-| `/api/messages/inbox` | GET | 5 | ✅ |
-| `/api/messages/sent` | GET | 2 | ✅ |
-| `/api/messages/drafts` | GET | 2 | ✅ |
-| `/api/messages/drafts` | POST | 3 | ✅ |
-| `/api/messages/drafts/[id]` | DELETE | 2 | ✅ |
-| `/api/messages/thread` | GET | 3 | ✅ |
-| `/api/messages/unread-count` | GET | 2 | ✅ |
-| `/api/messages/search` | GET | 2 | ✅ |
-| `/api/messages/recipients` | GET | 1 | ✅ |
-| **Templates** |  |  |  |
-| `/api/messages/templates` | GET | 4 | ✅ |
-| `/api/messages/templates` | POST | 5 | ✅ |
-| `/api/messages/templates/[id]` | GET | 2 | ✅ |
-| `/api/messages/templates/[id]` | PATCH | 2 | ✅ |
-| `/api/messages/templates/[id]` | DELETE | 1 | ✅ |
-| `/api/messages/templates/match` | GET | 2 | ✅ |
-| `/api/messages/templates/[id]/preview` | POST | 2 | ✅ |
-| `/api/messages/templates/[id]/duplicate` | POST | 1 | ✅ |
+| Endpoint                                 | Method | Tests | Status |
+| ---------------------------------------- | ------ | ----- | ------ |
+| `/api/messages/send`                     | POST   | 9     | ✅     |
+| `/api/messages/[id]`                     | GET    | 4     | ✅     |
+| `/api/messages/[id]`                     | PATCH  | 6     | ✅     |
+| `/api/messages/[id]`                     | DELETE | 2     | ✅     |
+| `/api/messages/inbox`                    | GET    | 5     | ✅     |
+| `/api/messages/sent`                     | GET    | 2     | ✅     |
+| `/api/messages/drafts`                   | GET    | 2     | ✅     |
+| `/api/messages/drafts`                   | POST   | 3     | ✅     |
+| `/api/messages/drafts/[id]`              | DELETE | 2     | ✅     |
+| `/api/messages/thread`                   | GET    | 3     | ✅     |
+| `/api/messages/unread-count`             | GET    | 2     | ✅     |
+| `/api/messages/search`                   | GET    | 2     | ✅     |
+| `/api/messages/recipients`               | GET    | 1     | ✅     |
+| **Templates**                            |        |       |        |
+| `/api/messages/templates`                | GET    | 4     | ✅     |
+| `/api/messages/templates`                | POST   | 5     | ✅     |
+| `/api/messages/templates/[id]`           | GET    | 2     | ✅     |
+| `/api/messages/templates/[id]`           | PATCH  | 2     | ✅     |
+| `/api/messages/templates/[id]`           | DELETE | 1     | ✅     |
+| `/api/messages/templates/match`          | GET    | 2     | ✅     |
+| `/api/messages/templates/[id]/preview`   | POST   | 2     | ✅     |
+| `/api/messages/templates/[id]/duplicate` | POST   | 1     | ✅     |
 
 **Total: 21 unique endpoints, 78 test cases**
 
@@ -284,22 +305,22 @@ Comprehensive test suite covering **21 API endpoints** with **78 test cases**.
 
 ## Test Categories Breakdown
 
-| Category | Tests | Status |
-|----------|-------|--------|
-| **Message CRUD** | 13 | ✅ |
-| **Inbox & Sent** | 7 | ✅ |
-| **Draft Management** | 7 | ✅ |
-| **Status Management** | 10 | ✅ |
-| **Threads** | 3 | ✅ |
-| **Unread Count** | 2 | ✅ |
-| **Search** | 2 | ✅ |
-| **Recipients** | 1 | ✅ |
-| **Templates (Core)** | 14 | ✅ |
-| **Templates (Advanced)** | 7 | ✅ |
-| **Authorization** | 5 | ✅ |
-| **Validation** | 5 | ✅ |
-| **Security (XSS)** | 2 | ✅ |
-| **TOTAL** | **78** | **✅** |
+| Category                 | Tests  | Status |
+| ------------------------ | ------ | ------ |
+| **Message CRUD**         | 13     | ✅     |
+| **Inbox & Sent**         | 7      | ✅     |
+| **Draft Management**     | 7      | ✅     |
+| **Status Management**    | 10     | ✅     |
+| **Threads**              | 3      | ✅     |
+| **Unread Count**         | 2      | ✅     |
+| **Search**               | 2      | ✅     |
+| **Recipients**           | 1      | ✅     |
+| **Templates (Core)**     | 14     | ✅     |
+| **Templates (Advanced)** | 7      | ✅     |
+| **Authorization**        | 5      | ✅     |
+| **Validation**           | 5      | ✅     |
+| **Security (XSS)**       | 2      | ✅     |
+| **TOTAL**                | **78** | **✅** |
 
 ---
 
@@ -316,11 +337,7 @@ mockSupabase.rpc.mockResolvedValueOnce({ data: result, error: null });
 
 ```typescript
 mockSupabase._mockChain.then.mockReturnValueOnce({ data: messages, error: null });
-const result = mockSupabase
-  .from('private_messages')
-  .select('*')
-  .eq('sender_id', userId)
-  .then();
+const result = mockSupabase.from('private_messages').select('*').eq('sender_id', userId).then();
 ```
 
 ### 3. Validation Testing
@@ -344,18 +361,22 @@ expect(locals.user?.id).toBe(userId);
 ## Test Data Fixtures
 
 ### Messages
+
 - `mockMessage` - Basic private message
 - `mockGroupMessage` - Class group message
 - `mockRichTextMessage` - TipTap with math formulas
 - `mockThreadMessages` - Thread conversation (3 messages)
 
 ### Drafts
+
 - `mockDraft` - Message draft
 
 ### Templates
+
 - `mockTemplate` - Assessment question template with variables
 
 ### Inbox
+
 - `mockInboxEntry` - Inbox entry with read status
 
 ---
@@ -363,11 +384,13 @@ expect(locals.user?.id).toBe(userId);
 ## Security Testing Coverage
 
 ### ✅ XSS Prevention
+
 - HTML sanitization testing
 - Script tag removal
 - Event handler stripping
 
 ### ✅ Authorization
+
 - Unauthenticated request rejection
 - Recipient-only message access
 - Sender-only delete permission
@@ -375,6 +398,7 @@ expect(locals.user?.id).toBe(userId);
 - Role-based template creation
 
 ### ✅ Input Validation
+
 - Subject/content required fields
 - Recipient ID format (UUID)
 - Class ID requirement for group messages
@@ -386,12 +410,14 @@ expect(locals.user?.id).toBe(userId);
 ## Rich Text & Math Testing
 
 ### TipTap Integration
+
 - ✓ Valid TipTap JSON structure
 - ✓ Math formula nodes (`type: 'math'`)
 - ✓ LaTeX formula handling
 - ✓ Malformed JSON handling
 
 ### MathLive Support
+
 - ✓ LaTeX syntax in formulas
 - ✓ Formula rendering detection
 - ✓ Math content extraction
@@ -401,12 +427,14 @@ expect(locals.user?.id).toBe(userId);
 ## Template System Testing
 
 ### Variable Handling
+
 - ✓ Variable extraction (`{{var}}` syntax)
 - ✓ Variable replacement
 - ✓ Missing variable detection
 - ✓ Duplicate variable handling
 
 ### Trigger Types
+
 - `assessment_question`
 - `srs_help`
 - `system_notification`
@@ -414,6 +442,7 @@ expect(locals.user?.id).toBe(userId);
 - `general`
 
 ### Scope Management
+
 - System templates (admin only)
 - Class templates (teacher only)
 - Template visibility by role
@@ -423,6 +452,7 @@ expect(locals.user?.id).toBe(userId);
 ## Edge Cases Tested
 
 ### Message Edge Cases
+
 - Empty recipient list
 - Missing class ID for group messages
 - Deleted messages (sender vs recipient)
@@ -430,11 +460,13 @@ expect(locals.user?.id).toBe(userId);
 - Unauthorized access (403)
 
 ### Draft Edge Cases
+
 - Empty drafts list
 - Update non-existent draft
 - Delete draft owned by different user
 
 ### Template Edge Cases
+
 - System template with class_id (invalid)
 - Class template without class_id (invalid)
 - Inactive templates (hidden from students)
@@ -442,6 +474,7 @@ expect(locals.user?.id).toBe(userId);
 - Duplicate variables in template
 
 ### Database Edge Cases
+
 - Database connection errors
 - RPC call failures
 - Empty result sets
@@ -481,6 +514,7 @@ pnpm test:unit src/routes/api/messages/api-routes.test.ts --coverage
 ```
 
 Examples:
+
 - `POST /api/messages/send > should send a message to single recipient`
 - `Draft Management > DELETE > should reject delete of draft owned by different user`
 - `Message Templates > Variable Extraction > should extract all variables from template`
@@ -524,14 +558,14 @@ Examples:
 
 ## Success Metrics
 
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Test Pass Rate | 100% | 100% | ✅ |
-| API Coverage | 100% | 21/21 endpoints | ✅ |
-| Test Execution Time | <1s | ~75ms | ✅ |
-| Authorization Tests | Complete | 5 tests | ✅ |
-| Validation Tests | Complete | 5 tests | ✅ |
-| Edge Case Coverage | High | 15+ edge cases | ✅ |
+| Metric              | Target   | Actual          | Status |
+| ------------------- | -------- | --------------- | ------ |
+| Test Pass Rate      | 100%     | 100%            | ✅     |
+| API Coverage        | 100%     | 21/21 endpoints | ✅     |
+| Test Execution Time | <1s      | ~75ms           | ✅     |
+| Authorization Tests | Complete | 5 tests         | ✅     |
+| Validation Tests    | Complete | 5 tests         | ✅     |
+| Edge Case Coverage  | High     | 15+ edge cases  | ✅     |
 
 ---
 

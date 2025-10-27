@@ -137,8 +137,7 @@ export const actions = {
 		if (!ipRateLimitResult.allowed) {
 			logger.warn('Login rate limit exceeded by IP', { ip: clientIP });
 			return fail(429, {
-				error:
-					ipRateLimitResult.message || 'Trop de tentatives. Veuillez réessayer plus tard.',
+				error: ipRateLimitResult.message || 'Trop de tentatives. Veuillez réessayer plus tard.',
 				email
 			});
 		}
@@ -149,8 +148,7 @@ export const actions = {
 		if (!emailRateLimitResult.allowed) {
 			logger.warn('Login rate limit exceeded by email', { email });
 			return fail(429, {
-				error:
-					emailRateLimitResult.message || 'Trop de tentatives. Veuillez réessayer plus tard.',
+				error: emailRateLimitResult.message || 'Trop de tentatives. Veuillez réessayer plus tard.',
 				email
 			});
 		}

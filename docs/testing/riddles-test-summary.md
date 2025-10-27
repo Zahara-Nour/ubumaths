@@ -12,18 +12,19 @@ src/lib/server/riddle-auto-select.test.ts   (17 tests) ⚠️ 13/17 passing
 
 ## Coverage Statistics
 
-| Component | Tests | Status |
-|-----------|-------|--------|
-| Validation Logic | 55 | ✅ 100% |
-| Badge System | 33 | ✅ 100% |
-| Message Creation | 22 | ✅ 100% |
-| API Endpoints | 16 | ✅ 100% |
-| Auto-Selection | 17 | ⚠️ 76% |
-| **TOTAL** | **143** | **97.2%** |
+| Component        | Tests   | Status    |
+| ---------------- | ------- | --------- |
+| Validation Logic | 55      | ✅ 100%   |
+| Badge System     | 33      | ✅ 100%   |
+| Message Creation | 22      | ✅ 100%   |
+| API Endpoints    | 16      | ✅ 100%   |
+| Auto-Selection   | 17      | ⚠️ 76%    |
+| **TOTAL**        | **143** | **97.2%** |
 
 ## What's Tested
 
 ### Validation (55 tests)
+
 - ✅ Numerical answers (tolerance, precision, boundaries)
 - ✅ Text answers (case-sensitive, accents, whitespace)
 - ✅ QCM answers (single, multiple, order independence)
@@ -31,6 +32,7 @@ src/lib/server/riddle-auto-select.test.ts   (17 tests) ⚠️ 13/17 passing
 - ✅ Manual validation workflow
 
 ### Badges (33 tests)
+
 - ✅ Perfectionist badges (5, 15, 30, 50 first attempts)
 - ✅ Persistent badges (5, 15, 30, 50 multiple attempts)
 - ✅ Streak badges (3, 7, 14, 30 consecutive days)
@@ -38,17 +40,20 @@ src/lib/server/riddle-auto-select.test.ts   (17 tests) ⚠️ 13/17 passing
 - ✅ All 4 tiers: Bronze, Silver, Gold, Platinum
 
 ### Messages (22 tests)
+
 - ✅ Validation request to teacher
 - ✅ Result notification to student
 - ✅ HTML formatting, links, feedback
 
 ### API Routes (16 tests)
+
 - ✅ POST /api/riddles/[id]/submit
 - ✅ POST /api/riddles/auto-select-daily
 - ✅ GET /api/riddles/auto-select-daily
 - ✅ Authentication, authorization, error handling
 
 ### Auto-Select (17 tests - 4 failing due to mock complexity)
+
 - ✅ Difficulty rotation (1→2→3→1)
 - ✅ 30-day recency filter
 - ✅ Random selection

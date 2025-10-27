@@ -25,10 +25,7 @@ vi.mock('$lib/server/riddle-auto-select', () => ({
 }));
 
 import { validateRiddleAnswer } from '$lib/utils/riddle-validator';
-import {
-	createRiddleValidationMessage,
-	getRiddleTeacherId
-} from '$lib/server/riddle-messages';
+import { createRiddleValidationMessage, getRiddleTeacherId } from '$lib/server/riddle-messages';
 import { checkAndAutoSelectToday } from '$lib/server/riddle-auto-select';
 
 describe('POST /api/riddles/[id]/submit', () => {

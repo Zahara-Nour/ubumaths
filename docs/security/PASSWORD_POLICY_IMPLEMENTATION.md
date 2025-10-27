@@ -15,6 +15,7 @@ Successfully upgraded UbuMaths password security from **critically weak** (6-cha
 **File**: `/src/lib/server/passwordPolicy.ts`
 
 #### Features
+
 - ✅ Minimum 8 characters (NIST 800-63B recommendation)
 - ✅ Maximum 128 characters (DoS prevention)
 - ✅ Complexity requirement: 3 of 4 character types
@@ -44,28 +45,32 @@ calculatePasswordScore(password: string): number
 **File**: `/src/routes/(public)/signup/+page.server.ts`
 
 #### Changes
+
 - ❌ **REMOVED**: Weak 6-character check
 - ✅ **ADDED**: Comprehensive password policy validation
 - ✅ **ADDED**: Clear French error messages
 - ✅ Works with existing rate limiting
 
 #### Before
+
 ```typescript
-if (password.length < 6) {  // ❌ CRITICALLY WEAK
-  return fail(400, {
-    error: 'Password must be at least 6 characters'
-  });
+if (password.length < 6) {
+	// ❌ CRITICALLY WEAK
+	return fail(400, {
+		error: 'Password must be at least 6 characters'
+	});
 }
 ```
 
 #### After
+
 ```typescript
 const passwordValidation = validatePasswordPolicy(password);
 if (!passwordValidation.valid) {
-  return fail(400, {
-    error: passwordValidation.errors.join('. '),
-    email
-  });
+	return fail(400, {
+		error: passwordValidation.errors.join('. '),
+		email
+	});
 }
 ```
 
@@ -76,6 +81,7 @@ if (!passwordValidation.valid) {
 **File**: `/src/lib/utils/passwordStrength.ts`
 
 #### Updates
+
 - ✅ Added complexity checking (3 of 4 types)
 - ✅ Added common password detection
 - ✅ French feedback messages
@@ -83,6 +89,7 @@ if (!passwordValidation.valid) {
 - ✅ Consistent with server-side requirements
 
 #### UI Integration
+
 **File**: `/src/routes/(public)/signup/+page.svelte`
 
 - ✅ Updated requirements checklist
@@ -97,6 +104,7 @@ if (!passwordValidation.valid) {
 **Location**: `/src/lib/server/passwordPolicy.ts`
 
 #### Categories (100+ passwords)
+
 1. **Numeric patterns**: 123456, 12345678, 111111, etc.
 2. **Common words**: password, welcome, admin, qwerty, etc.
 3. **French passwords**: motdepasse, bienvenue, azerty, etc.
@@ -105,6 +113,7 @@ if (!passwordValidation.valid) {
 6. **Simple variations**: password1, p@ssword, qwerty!, etc.
 
 **Why These?**
+
 - Appear in major breach databases
 - First tried in automated attacks
 - Provide zero security value
@@ -118,6 +127,7 @@ if (!passwordValidation.valid) {
 #### Coverage: 31 Test Cases
 
 **Test Categories**:
+
 - ✅ Length requirements (min/max)
 - ✅ Complexity requirements (all combinations of 3/4 types)
 - ✅ Common password detection (all categories)
@@ -128,6 +138,7 @@ if (!passwordValidation.valid) {
 - ✅ Edge cases
 
 **Test Results**:
+
 ```bash
 ✓ 31 tests passed
 ✓ 0 tests failed
@@ -141,6 +152,7 @@ if (!passwordValidation.valid) {
 **File**: `/docs/security/password-policy.md`
 
 Comprehensive documentation including:
+
 - ✅ Security requirements and rationale
 - ✅ Implementation guide
 - ✅ User experience flows
@@ -157,26 +169,28 @@ Comprehensive documentation including:
 
 ### Before vs After
 
-| Aspect | Before (CRITICAL) | After (SECURE) |
-|--------|------------------|----------------|
-| Minimum length | 6 characters | 8 characters |
-| Maximum length | None (DoS risk) | 128 characters |
-| Complexity | None | 3 of 4 types required |
-| Common passwords | Allowed | Blocked (100+) |
-| "123456" | ✅ Valid | ❌ Rejected |
-| "password" | ✅ Valid | ❌ Rejected |
-| "azerty" | ✅ Valid | ❌ Rejected |
-| "student123" | ✅ Valid | ❌ Rejected |
-| "MyStr0ng!Pass" | ✅ Valid | ✅ Valid |
+| Aspect           | Before (CRITICAL) | After (SECURE)        |
+| ---------------- | ----------------- | --------------------- |
+| Minimum length   | 6 characters      | 8 characters          |
+| Maximum length   | None (DoS risk)   | 128 characters        |
+| Complexity       | None              | 3 of 4 types required |
+| Common passwords | Allowed           | Blocked (100+)        |
+| "123456"         | ✅ Valid          | ❌ Rejected           |
+| "password"       | ✅ Valid          | ❌ Rejected           |
+| "azerty"         | ✅ Valid          | ❌ Rejected           |
+| "student123"     | ✅ Valid          | ❌ Rejected           |
+| "MyStr0ng!Pass"  | ✅ Valid          | ✅ Valid              |
 
 ### Attack Resistance
 
 **Old Policy (6 chars, no complexity)**:
+
 - Brute force: ~1-2 minutes (with GPU)
 - Dictionary attack: Instant
 - Common password attack: Instant
 
 **New Policy (8 chars, 3 types, no common)**:
+
 - Brute force: ~2-3 days (with GPU)
 - Dictionary attack: Blocked
 - Common password attack: Blocked
@@ -187,14 +201,14 @@ Comprehensive documentation including:
 
 ## NIST 800-63B Compliance
 
-| NIST Requirement | UbuMaths Implementation | Status |
-|------------------|------------------------|--------|
-| Min 8 characters | 8 characters minimum | ✅ Compliant |
-| Max 64+ characters | 128 characters maximum | ✅ Compliant |
-| Block common passwords | 100+ blocked | ✅ Compliant |
-| No composition rules | Flexible 3/4 types | ✅ Compliant |
-| No password hints | Not used | ✅ Compliant |
-| Unicode support | Supported | ✅ Compliant |
+| NIST Requirement       | UbuMaths Implementation | Status       |
+| ---------------------- | ----------------------- | ------------ |
+| Min 8 characters       | 8 characters minimum    | ✅ Compliant |
+| Max 64+ characters     | 128 characters maximum  | ✅ Compliant |
+| Block common passwords | 100+ blocked            | ✅ Compliant |
+| No composition rules   | Flexible 3/4 types      | ✅ Compliant |
+| No password hints      | Not used                | ✅ Compliant |
+| Unicode support        | Supported               | ✅ Compliant |
 
 **Result**: ✅ **Fully NIST 800-63B Compliant**
 
@@ -205,6 +219,7 @@ Comprehensive documentation including:
 ### Signup Flow Example
 
 **Attempt 1**: User enters "abc123"
+
 ```
 ❌ Feedback: "Trop court - utilisez au moins 8 caractères"
 ○ Au moins 8 caractères (not met)
@@ -213,6 +228,7 @@ Comprehensive documentation including:
 ```
 
 **Attempt 2**: User enters "password123"
+
 ```
 ❌ Feedback: "Mot de passe trop commun - choisissez-en un plus unique"
 ✓ Au moins 8 caractères
@@ -221,6 +237,7 @@ Comprehensive documentation including:
 ```
 
 **Attempt 3**: User enters "MathClass2024!"
+
 ```
 ✅ Feedback: "Mot de passe fort !"
 ✓ Au moins 8 caractères
@@ -234,6 +251,7 @@ Comprehensive documentation including:
 ## Files Changed
 
 ### New Files Created
+
 1. `/src/lib/server/passwordPolicy.ts` (237 lines)
    - Password validation logic
    - Common password blocklist
@@ -255,6 +273,7 @@ Comprehensive documentation including:
    - Testing results
 
 ### Files Modified
+
 1. `/src/routes/(public)/signup/+page.server.ts`
    - Updated password validation (lines 56-71)
    - Uses `validatePasswordPolicy()` function
@@ -276,6 +295,7 @@ Comprehensive documentation including:
 ## Testing Results
 
 ### Unit Tests
+
 ```bash
 $ pnpm test:unit src/lib/server/passwordPolicy.test.ts
 
@@ -285,6 +305,7 @@ $ pnpm test:unit src/lib/server/passwordPolicy.test.ts
 ```
 
 ### Linting
+
 ```bash
 $ pnpm eslint src/lib/server/passwordPolicy.ts --cache
 
@@ -293,6 +314,7 @@ $ pnpm eslint src/lib/server/passwordPolicy.ts --cache
 ```
 
 ### Type Checking
+
 ```bash
 $ pnpm check
 
@@ -305,14 +327,17 @@ Note: Pre-existing errors in other files (unrelated)
 ## Migration Considerations
 
 ### Existing Users
+
 - ✅ **Grandfathered**: Not forced to change password immediately
 - 🔄 **Recommended**: Periodic password reset campaign
 
 ### New Users
+
 - ✅ **Immediate**: Must meet new policy at signup
 - ✅ **No bypass**: Server-side validation enforced
 
 ### Password Reset
+
 - 🔄 **TODO**: Update password reset flow to use new policy
 - **File to update**: `/src/routes/(public)/reset-password/+page.server.ts`
 
@@ -374,6 +399,7 @@ Note: Pre-existing errors in other files (unrelated)
 ## Recommendations
 
 ### Immediate (Done ✅)
+
 - ✅ Implement 8-character minimum
 - ✅ Add complexity requirements
 - ✅ Block common passwords
@@ -382,12 +408,14 @@ Note: Pre-existing errors in other files (unrelated)
 - ✅ Comprehensive tests
 
 ### Short-term (Next Sprint)
+
 - 🔄 Update password reset flow
 - 🔄 Add "forgot password" validation
 - 🔄 Create admin documentation
 - 🔄 Plan password reset campaign for existing users
 
 ### Long-term (Future)
+
 - 💡 Integrate zxcvbn for entropy checking
 - 💡 Add Have I Been Pwned API integration
 - 💡 Implement password history (prevent reuse)
@@ -423,6 +451,7 @@ The password policy has been upgraded from a **2014-era weak standard** to a **m
 ## Changelog
 
 **2025-10-27**: Initial implementation
+
 - Created password policy module
 - Updated signup validation
 - Enhanced client-side feedback

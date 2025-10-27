@@ -5,6 +5,7 @@
 ### 1. Development Environment (localhost)
 
 #### Form Actions
+
 - [ ] Login form works (`/auth/login`)
 - [ ] Password reset form works (`/auth/reset-password`)
 - [ ] Student import form works (`/dashboard/admin/import-students`)
@@ -15,6 +16,7 @@
 - [ ] Riddle submission form works (`/dashboard/student/riddles/[id]`)
 
 #### API Routes (POST)
+
 - [ ] `/api/rewards/gidouilles` - Award gidouilles
 - [ ] `/api/assessments` - Create assessment
 - [ ] `/api/messages/send` - Send message
@@ -24,6 +26,7 @@
 - [ ] `/api/chat` - Send chat message
 
 #### API Routes (PUT)
+
 - [ ] `/api/assessments/[id]` - Update assessment
 - [ ] `/api/exercises/[id]` - Update exercise
 - [ ] `/api/questions/templates/[id]` - Update question template
@@ -31,6 +34,7 @@
 - [ ] `/api/messages/templates/[id]` - Update message template
 
 #### API Routes (DELETE)
+
 - [ ] `/api/assessments/[id]` - Delete assessment
 - [ ] `/api/exercises/[id]` - Delete exercise
 - [ ] `/api/messages/[id]` - Delete message
@@ -43,6 +47,7 @@
 Test on both development ports:
 
 #### Port 5173 (User Port)
+
 ```bash
 pnpm dev -- --port 5173
 ```
@@ -52,6 +57,7 @@ pnpm dev -- --port 5173
 - [ ] No CSRF errors in console
 
 #### Port 5175 (Claude Port)
+
 ```bash
 pnpm dev -- --port 5175
 ```
@@ -67,15 +73,18 @@ pnpm dev -- --port 5175
 Use curl or Postman to test that disallowed origins are blocked:
 
 #### Test 1: Missing Origin Header (should FAIL with 403)
+
 ```bash
 curl -X POST http://localhost:5173/api/rewards/gidouilles \
   -H "Content-Type: application/json" \
   -H "Cookie: your-session-cookie" \
   -d '{"studentId": "test", "amount": 10}'
 ```
+
 **Expected:** 403 Forbidden (Cross-site POST form submissions are forbidden)
 
 #### Test 2: Invalid Origin Header (should FAIL with 403)
+
 ```bash
 curl -X POST http://localhost:5173/api/rewards/gidouilles \
   -H "Origin: https://evil.com" \
@@ -83,9 +92,11 @@ curl -X POST http://localhost:5173/api/rewards/gidouilles \
   -H "Cookie: your-session-cookie" \
   -d '{"studentId": "test", "amount": 10}'
 ```
+
 **Expected:** 403 Forbidden
 
 #### Test 3: Valid Origin Header (should SUCCEED)
+
 ```bash
 curl -X POST http://localhost:5173/api/rewards/gidouilles \
   -H "Origin: http://localhost:5173" \
@@ -93,6 +104,7 @@ curl -X POST http://localhost:5173/api/rewards/gidouilles \
   -H "Cookie: your-session-cookie" \
   -d '{"studentId": "test", "amount": 10}'
 ```
+
 **Expected:** 200 OK (or 401 if not authenticated)
 
 ---
@@ -104,11 +116,13 @@ curl -X POST http://localhost:5173/api/rewards/gidouilles \
 After deploying to Vercel preview:
 
 #### Form Actions
+
 - [ ] Login works on `https://ubumaths-6op8.vercel.app`
 - [ ] All form submissions work
 - [ ] No CSRF errors in browser console
 
 #### API Routes
+
 - [ ] POST requests work from same origin
 - [ ] PUT requests work from same origin
 - [ ] DELETE requests work from same origin
@@ -120,6 +134,7 @@ After deploying to Vercel preview:
 After deploying to production:
 
 #### Production Domain (`ubumaths.com`)
+
 - [ ] Login form works
 - [ ] All teacher workflows work:
   - [ ] Create assessment
@@ -142,6 +157,7 @@ After deploying to production:
 Test that external origins are properly blocked:
 
 #### Test 1: External Origin (should FAIL with 403)
+
 ```bash
 curl -X POST https://ubumaths.com/api/rewards/gidouilles \
   -H "Origin: https://malicious-site.com" \
@@ -149,9 +165,11 @@ curl -X POST https://ubumaths.com/api/rewards/gidouilles \
   -H "Cookie: your-session-cookie" \
   -d '{"studentId": "test", "amount": 10}'
 ```
+
 **Expected:** 403 Forbidden
 
 #### Test 2: Production Origin (should SUCCEED)
+
 ```bash
 curl -X POST https://ubumaths.com/api/rewards/gidouilles \
   -H "Origin: https://ubumaths.com" \
@@ -159,6 +177,7 @@ curl -X POST https://ubumaths.com/api/rewards/gidouilles \
   -H "Cookie: your-session-cookie" \
   -d '{"studentId": "test", "amount": 10}'
 ```
+
 **Expected:** 200 OK (or 401 if not authenticated)
 
 ---
@@ -173,49 +192,50 @@ Create a test HTML file on a different domain to simulate CSRF attack:
 <!-- evil-test.html - Serve from different origin -->
 <!DOCTYPE html>
 <html>
-<head>
-  <title>CSRF Test</title>
-</head>
-<body>
-  <h1>CSRF Attack Simulation</h1>
+	<head>
+		<title>CSRF Test</title>
+	</head>
+	<body>
+		<h1>CSRF Attack Simulation</h1>
 
-  <!-- Form submission test -->
-  <form id="csrf-form" action="https://ubumaths.com/api/rewards/gidouilles" method="POST">
-    <input type="hidden" name="studentId" value="test-student">
-    <input type="hidden" name="amount" value="9999">
-    <button type="submit">Attempt CSRF Attack</button>
-  </form>
+		<!-- Form submission test -->
+		<form id="csrf-form" action="https://ubumaths.com/api/rewards/gidouilles" method="POST">
+			<input type="hidden" name="studentId" value="test-student" />
+			<input type="hidden" name="amount" value="9999" />
+			<button type="submit">Attempt CSRF Attack</button>
+		</form>
 
-  <!-- Fetch API test -->
-  <button onclick="attemptFetch()">Attempt Fetch CSRF</button>
+		<!-- Fetch API test -->
+		<button onclick="attemptFetch()">Attempt Fetch CSRF</button>
 
-  <script>
-    async function attemptFetch() {
-      try {
-        const response = await fetch('https://ubumaths.com/api/rewards/gidouilles', {
-          method: 'POST',
-          credentials: 'include', // Include cookies
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            studentId: 'test-student',
-            amount: 9999
-          })
-        });
-        console.log('Response:', response.status);
-        alert('Attack succeeded - SECURITY ISSUE!');
-      } catch (error) {
-        console.log('Attack blocked:', error);
-        alert('Attack blocked - Security working correctly');
-      }
-    }
-  </script>
-</body>
+		<script>
+			async function attemptFetch() {
+				try {
+					const response = await fetch('https://ubumaths.com/api/rewards/gidouilles', {
+						method: 'POST',
+						credentials: 'include', // Include cookies
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							studentId: 'test-student',
+							amount: 9999
+						})
+					});
+					console.log('Response:', response.status);
+					alert('Attack succeeded - SECURITY ISSUE!');
+				} catch (error) {
+					console.log('Attack blocked:', error);
+					alert('Attack blocked - Security working correctly');
+				}
+			}
+		</script>
+	</body>
 </html>
 ```
 
 #### Testing Steps:
+
 1. Serve file from different domain (e.g., `http://localhost:8000`)
 2. Login to UbuMaths in same browser
 3. Visit the evil-test.html page
@@ -223,6 +243,7 @@ Create a test HTML file on a different domain to simulate CSRF attack:
 5. Check browser DevTools Network tab
 
 **Expected Results:**
+
 - ❌ Form submission: Blocked by browser (403 or CORS error)
 - ❌ Fetch request: Blocked by SvelteKit (403 Forbidden)
 - ✅ No state change in database
@@ -235,6 +256,7 @@ Create a test HTML file on a different domain to simulate CSRF attack:
 Verify that legitimate cross-origin scenarios work:
 
 #### Scenario: Mobile App API Calls
+
 If UbuMaths has a mobile app making API calls:
 
 - [ ] Configure CORS headers for mobile app domain
@@ -250,16 +272,19 @@ If UbuMaths has a mobile app making API calls:
 Test CSRF protection across different browsers:
 
 ### Desktop Browsers
+
 - [ ] Chrome/Edge (Chromium) - Latest
 - [ ] Firefox - Latest
 - [ ] Safari - Latest
 
 ### Mobile Browsers
+
 - [ ] Chrome Mobile - Latest
 - [ ] Safari iOS - Latest
 - [ ] Firefox Mobile - Latest
 
 **For each browser, test:**
+
 1. Login flow
 2. Form submission
 3. API POST request via UI interaction
@@ -272,6 +297,7 @@ Test CSRF protection across different browsers:
 After enabling CSRF protection, verify no regressions:
 
 ### User Workflows
+
 - [ ] Student can complete daily riddle
 - [ ] Teacher can create and assign assessment
 - [ ] Teacher can award gidouilles
@@ -281,11 +307,13 @@ After enabling CSRF protection, verify no regressions:
 - [ ] Exercises can be assigned and completed
 
 ### Performance
+
 - [ ] No noticeable slowdown in request handling
 - [ ] Server response times unchanged
 - [ ] No increase in server errors
 
 ### Error Handling
+
 - [ ] Appropriate error messages for blocked requests
 - [ ] No stack traces leaked to client
 - [ ] Errors logged server-side for monitoring
@@ -333,6 +361,7 @@ If CSRF protection causes issues in production:
 ### Immediate Rollback
 
 1. **Disable CSRF in svelte.config.js:**
+
 ```javascript
 kit: {
   adapter: adapter(),
@@ -343,6 +372,7 @@ kit: {
 ```
 
 2. **Deploy emergency fix:**
+
 ```bash
 git checkout main
 git revert HEAD  # Revert CSRF commit
@@ -350,11 +380,13 @@ git push
 ```
 
 3. **Investigate root cause:**
+
 - Check server logs for error patterns
 - Review allowed origins configuration
 - Test locally with production-like setup
 
 4. **Re-enable with fix:**
+
 - Update ALLOWED_ORIGINS if needed
 - Add missing deployment URLs
 - Re-deploy with proper configuration
@@ -406,37 +438,37 @@ CSRF protection is successfully deployed when:
 import { test, expect } from '@playwright/test';
 
 test.describe('CSRF Protection', () => {
-  test('should allow same-origin form submission', async ({ page }) => {
-    await page.goto('http://localhost:5173/auth/login');
+	test('should allow same-origin form submission', async ({ page }) => {
+		await page.goto('http://localhost:5173/auth/login');
 
-    await page.fill('input[name="email"]', 'test@voltairedoha.com');
-    await page.fill('input[name="password"]', 'password123');
-    await page.click('button[type="submit"]');
+		await page.fill('input[name="email"]', 'test@voltairedoha.com');
+		await page.fill('input[name="password"]', 'password123');
+		await page.click('button[type="submit"]');
 
-    // Should not show CSRF error
-    await expect(page.locator('text=forbidden')).not.toBeVisible();
-  });
+		// Should not show CSRF error
+		await expect(page.locator('text=forbidden')).not.toBeVisible();
+	});
 
-  test('should block cross-origin API request', async ({ page, context }) => {
-    // Login first
-    await page.goto('http://localhost:5173/auth/login');
-    // ... login steps
+	test('should block cross-origin API request', async ({ page, context }) => {
+		// Login first
+		await page.goto('http://localhost:5173/auth/login');
+		// ... login steps
 
-    // Create page with different origin
-    const maliciousPage = await context.newPage();
+		// Create page with different origin
+		const maliciousPage = await context.newPage();
 
-    // Attempt cross-origin request
-    const response = await maliciousPage.evaluate(async () => {
-      return fetch('http://localhost:5173/api/rewards/gidouilles', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ studentId: 'test', amount: 9999 })
-      });
-    });
+		// Attempt cross-origin request
+		const response = await maliciousPage.evaluate(async () => {
+			return fetch('http://localhost:5173/api/rewards/gidouilles', {
+				method: 'POST',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ studentId: 'test', amount: 9999 })
+			});
+		});
 
-    expect(response.status).toBe(403);
-  });
+		expect(response.status).toBe(403);
+	});
 });
 ```
 
@@ -456,11 +488,13 @@ After testing is complete, update:
 ## Sign-Off
 
 ### Pre-Production
+
 - [ ] Developer: All tests passed in development
 - [ ] Code Review: CSRF implementation reviewed
 - [ ] Security Review: Configuration validated
 
 ### Post-Production
+
 - [ ] Deployment: Production deployment successful
 - [ ] Monitoring: No errors in first 24 hours
 - [ ] User Testing: Sample users verify functionality

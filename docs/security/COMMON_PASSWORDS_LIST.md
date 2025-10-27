@@ -5,6 +5,7 @@ This document lists all passwords blocked by the UbuMaths password policy.
 ## Why These Passwords?
 
 These passwords appear in major data breach databases and are:
+
 - First tried in automated dictionary attacks
 - Trivially crackable in seconds with modern hardware
 - Provide no meaningful security
@@ -17,6 +18,7 @@ These passwords appear in major data breach databases and are:
 ## Complete Blocklist (100+ Passwords)
 
 ### Numeric Patterns (9)
+
 ```
 123456
 12345678
@@ -35,6 +37,7 @@ These passwords appear in major data breach databases and are:
 ---
 
 ### Common English Words (25)
+
 ```
 password
 password1
@@ -69,6 +72,7 @@ starwars
 ---
 
 ### French Common Passwords (12)
+
 ```
 motdepasse
 azerty
@@ -89,6 +93,7 @@ paris
 ---
 
 ### Keyboard Patterns (11)
+
 ```
 abc123
 abc123456
@@ -106,6 +111,7 @@ asdfghjkl
 ---
 
 ### Names and Common Terms (12)
+
 ```
 jordan
 michael
@@ -119,6 +125,7 @@ baseball
 ---
 
 ### Education-Related (14)
+
 ```
 student
 student1
@@ -142,6 +149,7 @@ ubumaths
 ---
 
 ### Simple Variations (9)
+
 ```
 passw0rd
 p@ssword
@@ -158,6 +166,7 @@ azerty!
 ---
 
 ### Year Patterns (5)
+
 ```
 2024
 2023
@@ -171,6 +180,7 @@ azerty!
 ---
 
 ### Repeated Characters (4)
+
 ```
 aaaaaa
 aaaa
@@ -184,9 +194,11 @@ aaaaaaaa
 ## Implementation Details
 
 ### Case Sensitivity
+
 All password checks are **case-insensitive**:
+
 ```typescript
-COMMON_PASSWORDS.has(password.toLowerCase())
+COMMON_PASSWORDS.has(password.toLowerCase());
 ```
 
 This means "PASSWORD", "Password", and "PaSsWoRd" are all blocked if "password" is in the list.
@@ -198,6 +210,7 @@ This means "PASSWORD", "Password", and "PaSsWoRd" are all blocked if "password" 
 ## Adding Passwords to Blocklist
 
 ### Process
+
 1. Edit `/src/lib/server/passwordPolicy.ts`
 2. Add password(s) to `COMMON_PASSWORDS` Set
 3. Run tests: `pnpm test:unit src/lib/server/passwordPolicy.test.ts`
@@ -206,6 +219,7 @@ This means "PASSWORD", "Password", and "PaSsWoRd" are all blocked if "password" 
 ### Criteria for Adding
 
 Add passwords that are:
+
 - ✅ In top 1000 most common passwords lists
 - ✅ Appeared in major breach databases
 - ✅ Platform-specific weak patterns (e.g., "ubumaths123")
@@ -213,6 +227,7 @@ Add passwords that are:
 - ✅ Pure numeric sequences
 
 Do NOT add:
+
 - ❌ Strong passwords accidentally
 - ❌ Overly specific restrictions
 - ❌ Names of current students/teachers (privacy)
@@ -221,18 +236,18 @@ Do NOT add:
 
 ## Statistics
 
-| Category | Count | % of Blocklist |
-|----------|-------|----------------|
-| Numeric patterns | 10 | 9% |
-| Common English | 25 | 23% |
-| French passwords | 12 | 11% |
-| Keyboard patterns | 11 | 10% |
-| Names & terms | 12 | 11% |
-| Education-related | 14 | 13% |
-| Simple variations | 9 | 8% |
-| Year patterns | 5 | 5% |
-| Repeated chars | 4 | 4% |
-| **TOTAL** | **~100** | **100%** |
+| Category          | Count    | % of Blocklist |
+| ----------------- | -------- | -------------- |
+| Numeric patterns  | 10       | 9%             |
+| Common English    | 25       | 23%            |
+| French passwords  | 12       | 11%            |
+| Keyboard patterns | 11       | 10%            |
+| Names & terms     | 12       | 11%            |
+| Education-related | 14       | 13%            |
+| Simple variations | 9        | 8%             |
+| Year patterns     | 5        | 5%             |
+| Repeated chars    | 4        | 4%             |
+| **TOTAL**         | **~100** | **100%**       |
 
 ---
 
@@ -242,18 +257,35 @@ For performance, the **client-side** validation (`/src/lib/utils/passwordStrengt
 
 ```typescript
 const COMMON_PASSWORDS_CLIENT = new Set([
-  '123456', '12345678', '123456789',
-  'password', 'password1', 'password123',
-  'motdepasse', 'azerty', 'azerty123',
-  'qwerty', 'qwerty123', 'welcome',
-  'admin', 'admin123', 'bienvenue',
-  'bonjour', 'abc123', 'letmein',
-  'iloveyou', 'student', 'teacher',
-  'school', 'voltaire', 'doha'
+	'123456',
+	'12345678',
+	'123456789',
+	'password',
+	'password1',
+	'password123',
+	'motdepasse',
+	'azerty',
+	'azerty123',
+	'qwerty',
+	'qwerty123',
+	'welcome',
+	'admin',
+	'admin123',
+	'bienvenue',
+	'bonjour',
+	'abc123',
+	'letmein',
+	'iloveyou',
+	'student',
+	'teacher',
+	'school',
+	'voltaire',
+	'doha'
 ]);
 ```
 
 **Why subset?**
+
 - Reduces JavaScript bundle size
 - Provides instant feedback for most common cases
 - Server-side still checks full list (authoritative)
@@ -263,6 +295,7 @@ const COMMON_PASSWORDS_CLIENT = new Set([
 ## Examples
 
 ### Blocked Passwords
+
 ```
 ❌ "password"        → "Ce mot de passe est trop commun"
 ❌ "PASSWORD"        → "Ce mot de passe est trop commun" (case-insensitive)
@@ -273,6 +306,7 @@ const COMMON_PASSWORDS_CLIENT = new Set([
 ```
 
 ### Allowed Passwords
+
 ```
 ✅ "MyStr0ng!Pass"   → Strong password (not common, meets complexity)
 ✅ "MathClass2024!"  → Valid (not a simple year pattern)
@@ -288,6 +322,7 @@ The blocklist is tested in:
 `/src/lib/server/passwordPolicy.test.ts`
 
 ### Relevant Tests
+
 - `should reject common numeric passwords` (6 cases)
 - `should reject common word passwords` (6 cases)
 - `should reject French common passwords` (4 cases)
@@ -301,6 +336,7 @@ The blocklist is tested in:
 ## Security Research References
 
 ### Major Password Breach Databases
+
 1. **RockYou (2009)**: 32 million plaintext passwords
    - Source of "123456", "password", "qwerty" dominance
 2. **Have I Been Pwned**: 500M+ breached passwords
@@ -309,6 +345,7 @@ The blocklist is tested in:
 4. **NCSC/UK Cyber Survey**: Common UK passwords
 
 ### Academic Research
+
 - "The Tangled Web of Password Reuse" (CMU, 2014)
 - "The Science of Guessing" (Wheeler, 2012)
 - "Fast, Lean, and Accurate: Modeling Password Guessability Using Neural Networks" (Melicher et al., 2016)
@@ -318,6 +355,7 @@ The blocklist is tested in:
 ## Future Enhancements
 
 ### Potential Improvements
+
 1. **Dynamic blocklist updates**: Fetch from Have I Been Pwned API
 2. **Expand to top 1000**: Currently ~100, could expand
 3. **Context-aware blocking**: Block passwords containing user's name/email
@@ -325,11 +363,12 @@ The blocklist is tested in:
 5. **Regional lists**: Add more French/Arabic common passwords
 
 ### API Integration (Future)
+
 ```typescript
 // Potential Have I Been Pwned integration
 async function checkPwnedPasswords(password: string): Promise<boolean> {
-  // Check password against 500M+ breached passwords
-  // Returns true if password appears in breach database
+	// Check password against 500M+ breached passwords
+	// Returns true if password appears in breach database
 }
 ```
 
@@ -340,26 +379,31 @@ async function checkPwnedPasswords(password: string): Promise<boolean> {
 ## FAQ
 
 ### Why not use Have I Been Pwned API?
+
 - **Current**: Static list is faster, no external dependency, privacy-preserving
 - **Future**: May integrate for additional security layer
 
 ### Why block "voltaire" and "doha"?
+
 - School-specific passwords are predictable
 - Students/teachers might use "voltaire123" or "doha2024"
 - Better to block and encourage unique passwords
 
 ### What if a user's name is in the blocklist?
+
 - Unlikely (we only block common names like "michael", "jennifer")
 - If it happens, they can use name + other characters (meets complexity)
 - Example: "Michael" is blocked, but "Michael2024!" would pass (if Michael wasn't blocked, since it has complexity)
 
 ### Can I still use my favorite password?
+
 - If it's common/weak: **No** - it's blocked for your security
 - If it's unique and strong: **Yes** - it will be accepted
 
 ---
 
 ## Related Documentation
+
 - [Password Policy Guide](./password-policy.md)
 - [Password Policy Implementation](./PASSWORD_POLICY_IMPLEMENTATION.md)
 - [Security Audit Report](../security-audit.md)

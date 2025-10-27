@@ -22,12 +22,12 @@
 
 ### Coverage by Service
 
-| Service | Tests | Focus Areas | Status |
-|---------|-------|-------------|--------|
-| `geometry-validator.ts` | 28 | Point, circle, triangle validators; main validation flow | ✅ Complete |
-| `geometry-grader.ts` | 61 | Letter grades (A-F), penalties (hints/time/attempts), scoring | ✅ Complete |
-| `geometry-generator.ts` | 26 | Triangle/circle/angle generation, transformations, randomization | ✅ Complete |
-| `geometry-grade-utils.ts` | 44 | Formatting, color coding, statistics, achievements, rankings | ✅ Complete |
+| Service                   | Tests | Focus Areas                                                      | Status      |
+| ------------------------- | ----- | ---------------------------------------------------------------- | ----------- |
+| `geometry-validator.ts`   | 28    | Point, circle, triangle validators; main validation flow         | ✅ Complete |
+| `geometry-grader.ts`      | 61    | Letter grades (A-F), penalties (hints/time/attempts), scoring    | ✅ Complete |
+| `geometry-generator.ts`   | 26    | Triangle/circle/angle generation, transformations, randomization | ✅ Complete |
+| `geometry-grade-utils.ts` | 44    | Formatting, color coding, statistics, achievements, rankings     | ✅ Complete |
 
 ---
 
@@ -40,6 +40,7 @@
 #### Test Categories:
 
 **Main Validation Function (6 tests)**
+
 - ✅ Measurement exercise validation (angle measurement)
 - ✅ Reject incorrect measurements
 - ✅ Construction exercise with all objects present
@@ -48,6 +49,7 @@
 - ✅ Graceful error handling
 
 **Point Validators (7 tests)**
+
 - ✅ Validate exact midpoint
 - ✅ Validate midpoint within tolerance (±2px)
 - ✅ Reject point outside tolerance
@@ -57,6 +59,7 @@
 - ✅ Reject coordinates outside tolerance
 
 **Circle Validators (6 tests)**
+
 - ✅ Exact radius validation
 - ✅ Radius within tolerance
 - ✅ Reject radius outside tolerance
@@ -65,6 +68,7 @@
 - ✅ Center within tolerance
 
 **Triangle Validators (9 tests)**
+
 - ✅ Valid triangle detection
 - ✅ Reject collinear points
 - ✅ Handle null points
@@ -76,6 +80,7 @@
 - ✅ Tolerance-based validation
 
 **Key Features Tested:**
+
 - Tolerance system (±2° angles, ±2px distances)
 - Object existence checking
 - Geometric property validation
@@ -91,6 +96,7 @@
 #### Test Categories:
 
 **Letter Grade Calculation (5 tests)**
+
 - ✅ A grade: 90-100%
 - ✅ B grade: 80-89%
 - ✅ C grade: 70-79%
@@ -98,6 +104,7 @@
 - ✅ F grade: 0-59%
 
 **Hint Penalties (6 tests)**
+
 - ✅ No penalty for zero hints
 - ✅ 0% penalty for general hints (free)
 - ✅ 5% penalty for specific hints
@@ -106,6 +113,7 @@
 - ✅ Scale penalties with maxScore
 
 **Time Penalties (7 tests)**
+
 - ✅ No penalty when time not tracked
 - ✅ No penalty when no time limit
 - ✅ No penalty within time limit
@@ -115,6 +123,7 @@
 - ✅ Scale with maxScore
 
 **Attempt Penalties (5 tests)**
+
 - ✅ Zero penalty for first attempt
 - ✅ 2% penalty for second attempt
 - ✅ 4% penalty for third attempt
@@ -122,6 +131,7 @@
 - ✅ Scale with maxScore
 
 **Complete Grade Calculation (8 tests)**
+
 - ✅ Grade with no penalties
 - ✅ Apply hint penalties
 - ✅ Apply time penalties
@@ -132,6 +142,7 @@
 - ✅ Generate appropriate feedback
 
 **Scoring Utilities (7 tests)**
+
 - ✅ Extract grading criteria from exercise
 - ✅ Use defaults when not specified
 - ✅ Calculate correctness percentage
@@ -141,6 +152,7 @@
 - ✅ Calculate weighted scores with rubric
 
 **Statistics (8 tests)**
+
 - ✅ Calculate average from attempts
 - ✅ Handle empty arrays
 - ✅ Get best score
@@ -151,16 +163,19 @@
 - ✅ Tier colors and messages
 
 **Feedback Generation (3 tests)**
+
 - ✅ Positive feedback for high scores
 - ✅ Include penalty information
 - ✅ Failure messages
 - ✅ Complete performance reports
 
 **Partial Credit (2 tests)**
+
 - ✅ Points for correct objects
 - ✅ Bonus for perfection
 
 **Key Formulas Verified:**
+
 ```
 Final Score = Raw Score - Hints - Time - Attempts
 Letter Grade = A (90%+), B (80-89%), C (70-79%), D (60-69%), F (<60%)
@@ -178,6 +193,7 @@ Attempt Penalty = min((attempt - 1) × 2%, 10%)
 #### Test Categories:
 
 **Triangle Generation (6 tests)**
+
 - ✅ Generate equilateral triangle
 - ✅ Generate right triangle
 - ✅ Generate isosceles triangle
@@ -186,17 +202,20 @@ Attempt Penalty = min((attempt - 1) × 2%, 10%)
 - ✅ Generate reproducible figures with seeds
 
 **Circle Generation (3 tests)**
+
 - ✅ Generate single circle
 - ✅ Generate two intersecting circles
 - ✅ Use custom center labels
 
 **Transformation Generation (4 tests)**
+
 - ✅ Translation problems with vectors
 - ✅ Rotation problems with center and angle
 - ✅ Reflection problems with axis
 - ✅ Homothety problems with ratio
 
 **Angle Generation (6 tests)**
+
 - ✅ Angle measurement problems
 - ✅ Angle construction problems
 - ✅ Complementary angle problems (sum to 90°)
@@ -205,17 +224,20 @@ Attempt Penalty = min((attempt - 1) × 2%, 10%)
 - ✅ Difficulty-based angle values
 
 **Metadata Validation (4 tests)**
+
 - ✅ Include randomization seed
 - ✅ Include all created objects
 - ✅ Include relevant measurements
 - ✅ Return base64 encoded figure
 
 **Constraint Validation (3 tests)**
+
 - ✅ Respect minSideLength constraint
 - ✅ Respect maxSideLength constraint
 - ✅ Use fixedSideLength when provided
 
 **Key Features Verified:**
+
 - Geometric construction algorithms
 - Randomization with constraints
 - Metadata generation for validation
@@ -232,6 +254,7 @@ Attempt Penalty = min((attempt - 1) × 2%, 10%)
 #### Test Categories:
 
 **Formatting (10 tests)**
+
 - ✅ Format score as "X/Y"
 - ✅ Round decimal scores
 - ✅ Format percentage with default decimals
@@ -244,6 +267,7 @@ Attempt Penalty = min((attempt - 1) × 2%, 10%)
 - ✅ Padding for time display
 
 **Color Coding (7 tests)**
+
 - ✅ Green for 90%+ (Excellent)
 - ✅ Blue for 80-89% (Très bien)
 - ✅ Cyan for 70-79% (Bien)
@@ -253,6 +277,7 @@ Attempt Penalty = min((attempt - 1) × 2%, 10%)
 - ✅ Letter grade colors (A-F)
 
 **Attempt Comparison (6 tests)**
+
 - ✅ Detect improvement with difference and percentage
 - ✅ Detect decline
 - ✅ Detect no change
@@ -261,12 +286,14 @@ Attempt Penalty = min((attempt - 1) × 2%, 10%)
 - ✅ Stable trend (→)
 
 **Statistics (4 tests)**
+
 - ✅ Calculate attempt statistics (avg, best, worst, median, std dev)
 - ✅ Handle even number of attempts for median
 - ✅ Return zeros for empty arrays
 - ✅ Calculate class-wide statistics
 
 **Ranking (6 tests)**
+
 - ✅ Calculate rank correctly
 - ✅ Handle top rank
 - ✅ Handle last rank
@@ -276,6 +303,7 @@ Attempt Penalty = min((attempt - 1) × 2%, 10%)
 - ✅ En progression tier (↗)
 
 **Achievement System (9 tests)**
+
 - ✅ Perfect achievement (100% no hints)
 - ✅ Speedster achievement (quick completion)
 - ✅ First try achievement (success on attempt 1)
@@ -287,6 +315,7 @@ Attempt Penalty = min((attempt - 1) × 2%, 10%)
 - ✅ Handle unknown achievements
 
 **Key Achievements:**
+
 - 🏆 Perfect - 100% score without hints
 - ⚡ Speedster - Completed in <50% of time limit
 - 🎯 First Try - Succeeded on first attempt with ≥80%
@@ -303,15 +332,15 @@ Given that the Geometry feature integrates with MathGraph32 (browser-only librar
 
 ```typescript
 vi.mock('./mathgraph-api', () => ({
-  MathGraphHelpers: {
-    findByTag: vi.fn(),
-    calculateDistance: vi.fn((p1, p2) => {
-      const dx = p2.x - p1.x;
-      const dy = p2.y - p1.y;
-      return Math.sqrt(dx * dx + dy * dy);
-    }),
-    // ... other mocked functions
-  }
+	MathGraphHelpers: {
+		findByTag: vi.fn(),
+		calculateDistance: vi.fn((p1, p2) => {
+			const dx = p2.x - p1.x;
+			const dy = p2.y - p1.y;
+			return Math.sqrt(dx * dx + dy * dy);
+		})
+		// ... other mocked functions
+	}
 }));
 ```
 
@@ -326,20 +355,20 @@ vi.mock('./mathgraph-api', () => ({
 
 ```typescript
 describe('validatePointIsMidpoint', () => {
-  it('should return true for exact midpoint', () => {
-    // Arrange
-    const app = createMockApp();
-    vi.mocked(MathGraphHelpers.findByTag)
-      .mockReturnValueOnce(createMockPoint('M', 50, 0))
-      .mockReturnValueOnce(createMockPoint('A', 0, 0))
-      .mockReturnValueOnce(createMockPoint('B', 100, 0));
+	it('should return true for exact midpoint', () => {
+		// Arrange
+		const app = createMockApp();
+		vi.mocked(MathGraphHelpers.findByTag)
+			.mockReturnValueOnce(createMockPoint('M', 50, 0))
+			.mockReturnValueOnce(createMockPoint('A', 0, 0))
+			.mockReturnValueOnce(createMockPoint('B', 100, 0));
 
-    // Act
-    const result = validatePointIsMidpoint(app, 'M', 'A', 'B');
+		// Act
+		const result = validatePointIsMidpoint(app, 'M', 'A', 'B');
 
-    // Assert
-    expect(result).toBe(true);
-  });
+		// Assert
+		expect(result).toBe(true);
+	});
 });
 ```
 
@@ -411,12 +440,12 @@ describe('validatePointIsMidpoint', () => {
 
 While we don't have exact line coverage percentages (would require `--coverage` flag), we estimate:
 
-| Service | Estimated Coverage | Confidence |
-|---------|-------------------|------------|
-| geometry-validator.ts | ~60% | High - Core validators tested, browser-dependent parts mocked |
-| geometry-grader.ts | ~95% | Very High - All scoring logic tested |
-| geometry-generator.ts | ~85% | High - All generation types tested |
-| geometry-grade-utils.ts | ~95% | Very High - All utilities tested |
+| Service                 | Estimated Coverage | Confidence                                                    |
+| ----------------------- | ------------------ | ------------------------------------------------------------- |
+| geometry-validator.ts   | ~60%               | High - Core validators tested, browser-dependent parts mocked |
+| geometry-grader.ts      | ~95%               | Very High - All scoring logic tested                          |
+| geometry-generator.ts   | ~85%               | High - All generation types tested                            |
+| geometry-grade-utils.ts | ~95%               | Very High - All utilities tested                              |
 
 **Overall Estimated Coverage: ~84%**
 
@@ -470,14 +499,14 @@ While we don't have exact line coverage percentages (would require `--coverage` 
 
 ## Comparison with Other Features
 
-| Feature | Test Files | Tests | Pass Rate | Status |
-|---------|-----------|-------|-----------|--------|
-| **Geometry** | 4 | 159 | 100% | ✅ Complete |
-| Questions | 10+ | 200+ | ~98% | ✅ Established |
-| Exercises | 8 | 150+ | ~99% | ✅ Established |
-| Assessments | 3 | 50+ | 100% | ✅ Established |
-| SRS/Flashcards | 3 | 40+ | 100% | ✅ Established |
-| Riddles | 4 | 60+ | 100% | ✅ Established |
+| Feature        | Test Files | Tests | Pass Rate | Status         |
+| -------------- | ---------- | ----- | --------- | -------------- |
+| **Geometry**   | 4          | 159   | 100%      | ✅ Complete    |
+| Questions      | 10+        | 200+  | ~98%      | ✅ Established |
+| Exercises      | 8          | 150+  | ~99%      | ✅ Established |
+| Assessments    | 3          | 50+   | 100%      | ✅ Established |
+| SRS/Flashcards | 3          | 40+   | 100%      | ✅ Established |
+| Riddles        | 4          | 60+   | 100%      | ✅ Established |
 
 **Geometry feature test coverage is on par with other production-ready features.**
 
@@ -502,12 +531,14 @@ The Geometry feature now has comprehensive automated test coverage with:
 ### Production Readiness
 
 ✅ **Ready for production** with caveats:
+
 - Core functionality is well-tested and reliable
 - Grading system is thoroughly validated
 - Generator produces correct figures
 - Utilities work as expected
 
 ⚠️ **Recommended before full deployment:**
+
 - Add E2E tests with real MathGraph32 in Playwright
 - Run coverage analysis to identify any missed branches
 - Test with real student data in staging environment

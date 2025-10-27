@@ -4,11 +4,11 @@
 
 ## Test Files
 
-| File | Tests | Status |
-|------|-------|--------|
-| `src/lib/srs/fsrs.test.ts` | 60 | ✅ 100% passing |
-| `src/lib/srs/config.test.ts` | 39 | ✅ 100% passing |
-| `src/lib/srs/generator.test.ts` | 25 | ✅ 100% passing |
+| File                                    | Tests     | Status                |
+| --------------------------------------- | --------- | --------------------- |
+| `src/lib/srs/fsrs.test.ts`              | 60        | ✅ 100% passing       |
+| `src/lib/srs/config.test.ts`            | 39        | ✅ 100% passing       |
+| `src/lib/srs/generator.test.ts`         | 25        | ✅ 100% passing       |
 | `src/routes/api/srs/api-routes.test.ts` | API tests | ✅ Created with mocks |
 
 ## Quick Stats

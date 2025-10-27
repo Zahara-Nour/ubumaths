@@ -20,12 +20,14 @@ With `csrf.checkOrigin: true` enabled in `svelte.config.js`, **ALL** state-chang
 All form submissions in `+page.server.ts` files are protected:
 
 ### Authentication
+
 - `POST /auth/login` - User login
 - `POST /auth/reset-password` - Password reset request
 - `POST /auth/update-password` - Update password
 - `POST /signup` - New user registration
 
 ### Admin Dashboard
+
 - `POST /dashboard/admin/classes` - Create/manage classes
 - `POST /dashboard/admin/import-students` - Import students from CSV
 - `POST /dashboard/admin/questions` - Create questions
@@ -38,6 +40,7 @@ All form submissions in `+page.server.ts` files are protected:
 - `POST /dashboard/admin/errors/[id]` - Manage error reports
 
 ### Teacher Dashboard
+
 - `POST /dashboard/teacher/assessments/new` - Create assessment
 - `POST /dashboard/teacher/assessments/[id]/edit` - Edit assessment
 - `POST /dashboard/teacher/assessments/[id]/assign` - Assign assessment
@@ -57,12 +60,14 @@ All form submissions in `+page.server.ts` files are protected:
 - `POST /dashboard/teacher/notifications` - Send notifications
 
 ### Student Dashboard
+
 - `POST /dashboard/student/riddles/[id]` - Submit riddle answer
 - `POST /dashboard/student/assessments` - Take assessment
 - `POST /dashboard/student/exercises/[id]` - Complete exercise
 - `POST /dashboard/revisions` - SRS review
 
 ### Game Features
+
 - `POST /dashboard/navadra/combat` - Combat actions
 - `POST /dashboard/navadra/combat/[combatId]` - Combat turn
 - `POST /dashboard/navadra/spells` - Use spell
@@ -70,6 +75,7 @@ All form submissions in `+page.server.ts` files are protected:
 - `POST /dashboard/friends` - Manage friends
 
 ### Public Routes
+
 - `POST /automaths` - AutoMaths worksheet generation
 - `POST /automaths/test` - AutoMaths test mode
 - `POST /automaths/panier` - AutoMaths cart
@@ -83,14 +89,17 @@ All form submissions in `+page.server.ts` files are protected:
 All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 
 ### Authentication & Session
+
 - `POST /api/auth/logout` - Logout user
 - `POST /api/auth/callback` - OAuth callback
 - `POST /api/auth/confirm` - Email confirmation
 
 ### Rewards & Gamification
+
 - `POST /api/rewards/gidouilles` - Award gidouilles to students
 
 ### Questions System
+
 - `POST /api/questions/templates` - Create question template
 - `PUT /api/questions/templates/[id]` - Update question template
 - `DELETE /api/questions/templates/[id]` - Delete question template
@@ -100,6 +109,7 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 - `POST /api/questions/generate/[id]` - Generate question instance
 
 ### Assessments
+
 - `POST /api/assessments` - Create assessment
 - `PUT /api/assessments/[id]` - Update assessment
 - `DELETE /api/assessments/[id]` - Delete assessment
@@ -109,6 +119,7 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 - `GET /api/assessments/assigned` - List assigned (safe method)
 
 ### SRS & Flashcards
+
 - `POST /api/srs/cards` - Create flashcard
 - `PUT /api/srs/cards/[id]` - Update flashcard
 - `DELETE /api/srs/cards/[id]` - Delete flashcard
@@ -120,6 +131,7 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 - `GET /api/srs/review/due` - Get due cards (safe method)
 
 ### Notifications
+
 - `POST /api/notifications/mark-read` - Mark notification as read
 - `POST /api/notifications/mark-all-read` - Mark all as read
 - `DELETE /api/notifications/cleanup` - Cleanup old notifications
@@ -127,6 +139,7 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 - `GET /api/notifications/unread-count` - Get count (safe method)
 
 ### Messaging System
+
 - `POST /api/messages/send` - Send private message
 - `PUT /api/messages/[id]` - Update message
 - `DELETE /api/messages/[id]` - Delete message
@@ -141,6 +154,7 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 - `GET /api/messages/unread-count` - Get count (safe method)
 
 ### Message Templates
+
 - `POST /api/messages/templates` - Create template
 - `PUT /api/messages/templates/[id]` - Update template
 - `DELETE /api/messages/templates/[id]` - Delete template
@@ -155,10 +169,12 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 - `GET /api/messages/templates/match` - Match template (safe method)
 
 ### Riddles
+
 - `POST /api/riddles/[id]/submit` - Submit riddle answer
 - `POST /api/riddles/auto-select-daily` - Auto-select daily riddle
 
 ### Error Monitoring
+
 - `POST /api/errors/log` - Log client-side error
 - `PUT /api/errors/[id]` - Update error status
 - `DELETE /api/errors/[id]` - Delete error
@@ -169,12 +185,14 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 - `GET /api/errors/occurrences` - Get occurrences (safe method)
 
 ### Admin Operations
+
 - `POST /api/admin/add-to-class` - Add student to class
 - `POST /api/admin/remove-from-class` - Remove student from class
 - `GET /api/admin/search-users` - Search users (safe method)
 - `GET /api/admin/class-students` - List students (safe method)
 
 ### Exercises
+
 - `POST /api/exercises` - Create exercise
 - `PUT /api/exercises/[id]` - Update exercise
 - `DELETE /api/exercises/[id]` - Delete exercise
@@ -193,9 +211,11 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 - `GET /api/exercises/assignments/stats` - Assignment stats (safe method)
 
 ### Classes
+
 - `GET /api/classes/[classId]/students` - List students (safe method)
 
 ### Utilities
+
 - `POST /api/latex/compile` - Compile LaTeX to PDF
 - `POST /api/test-mode` - Toggle test mode
 - `POST /api/chat` - Send chat message
@@ -208,6 +228,7 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 ## Protection Summary
 
 ### State-Changing Endpoints (Protected)
+
 - **Form Actions:** 60+ endpoints
 - **API POST:** 50+ endpoints
 - **API PUT:** 15+ endpoints
@@ -215,6 +236,7 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 - **Total Protected:** **137+ endpoints**
 
 ### Safe Methods (Not Protected, No Risk)
+
 - **GET requests:** ~100+ endpoints
 - **HEAD requests:** As needed
 - **OPTIONS requests:** CORS preflight
@@ -242,9 +264,9 @@ Cookie: session=...
 ```typescript
 // Automatic validation (no code needed)
 if (request.headers.get('origin') !== request.headers.get('host')) {
-  return new Response('Cross-site POST form submissions are forbidden', {
-    status: 403
-  });
+	return new Response('Cross-site POST form submissions are forbidden', {
+		status: 403
+	});
 }
 ```
 
@@ -291,14 +313,17 @@ curl -X POST http://localhost:5173/api/rewards/gidouilles \
 ## Allowed Origins
 
 ### Production
+
 - `https://ubumaths.com`
 - `https://www.ubumaths.com`
 
 ### Vercel
+
 - `https://ubumaths-6op8.vercel.app` (production)
 - `https://ubumaths-*.vercel.app` (preview deployments)
 
 ### Development
+
 - `http://localhost:5173` (user port)
 - `http://localhost:5175` (Claude port)
 - `http://127.0.0.1:5173`
@@ -316,16 +341,16 @@ For routes that need custom CSRF handling:
 import { validateOrigin } from '$lib/server/csrfProtection';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-  // Manual validation with custom error handling
-  try {
-    validateOrigin(request);
-  } catch (error) {
-    // Custom logging or error response
-    console.error('CSRF attempt blocked:', request.headers.get('origin'));
-    return json({ error: 'Forbidden' }, { status: 403 });
-  }
+	// Manual validation with custom error handling
+	try {
+		validateOrigin(request);
+	} catch (error) {
+		// Custom logging or error response
+		console.error('CSRF attempt blocked:', request.headers.get('origin'));
+		return json({ error: 'Forbidden' }, { status: 403 });
+	}
 
-  // ... rest of handler
+	// ... rest of handler
 };
 ```
 
@@ -338,11 +363,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 ### What to Monitor
 
 **Normal patterns:**
+
 - Same-origin requests: 100% success rate
 - Cross-origin GET requests: Allowed (safe method)
 - API clients with proper Origin header: Allowed
 
 **Attack patterns:**
+
 - Spike in 403 errors: Possible CSRF attack
 - Cross-origin POST requests: Blocked automatically
 - Missing Origin/Referer headers: Blocked automatically

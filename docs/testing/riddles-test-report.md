@@ -20,13 +20,13 @@ Comprehensive automated test suite created for the Riddles feature with **139/14
 
 ### Coverage by Priority
 
-| Priority | Component | Tests | Status |
-|----------|-----------|-------|--------|
-| **HIGH** | Validation Logic | 55 | ✅ 100% Pass |
-| **HIGH** | Badge/Reward System | 33 | ✅ 100% Pass |
-| **MEDIUM** | Message Creation | 22 | ✅ 100% Pass |
-| **MEDIUM** | API Endpoints | 16 | ✅ 100% Pass |
-| **LOW** | Auto-Selection | 17 | ⚠️ 76% Pass |
+| Priority   | Component           | Tests | Status       |
+| ---------- | ------------------- | ----- | ------------ |
+| **HIGH**   | Validation Logic    | 55    | ✅ 100% Pass |
+| **HIGH**   | Badge/Reward System | 33    | ✅ 100% Pass |
+| **MEDIUM** | Message Creation    | 22    | ✅ 100% Pass |
+| **MEDIUM** | API Endpoints       | 16    | ✅ 100% Pass |
+| **LOW**    | Auto-Selection      | 17    | ⚠️ 76% Pass  |
 
 ---
 
@@ -39,6 +39,7 @@ Comprehensive automated test suite created for the Riddles feature with **139/14
 ### 1.1 Numerical Validation (15 tests)
 
 Tests cover:
+
 - ✅ Exact number matching
 - ✅ Tolerance-based validation (default 0.01, custom tolerance)
 - ✅ Boundary conditions at tolerance limits
@@ -50,18 +51,26 @@ Tests cover:
 - ✅ Zero handling
 
 **Example Test Cases:**
+
 ```typescript
 // Tolerance validation
-expect(validateRiddleAnswer(10.05, { type: 'numerical', value: 10, options: { tolerance: 0.1 } })).toBe(true);
-expect(validateRiddleAnswer(10.11, { type: 'numerical', value: 10, options: { tolerance: 0.1 } })).toBe(false);
+expect(
+	validateRiddleAnswer(10.05, { type: 'numerical', value: 10, options: { tolerance: 0.1 } })
+).toBe(true);
+expect(
+	validateRiddleAnswer(10.11, { type: 'numerical', value: 10, options: { tolerance: 0.1 } })
+).toBe(false);
 
 // Edge case: zero
-expect(validateRiddleAnswer(0.005, { type: 'numerical', value: 0, options: { tolerance: 0.01 } })).toBe(true);
+expect(
+	validateRiddleAnswer(0.005, { type: 'numerical', value: 0, options: { tolerance: 0.01 } })
+).toBe(true);
 ```
 
 ### 1.2 Text Validation (7 tests)
 
 Tests cover:
+
 - ✅ Case-insensitive matching (default)
 - ✅ Case-sensitive option
 - ✅ Whitespace trimming
@@ -70,6 +79,7 @@ Tests cover:
 - ✅ Empty string rejection
 
 **Critical Test:**
+
 ```typescript
 // French accents matter!
 expect(validateRiddleAnswer('café', { type: 'text', value: 'café' })).toBe(true);
@@ -79,6 +89,7 @@ expect(validateRiddleAnswer('cafe', { type: 'text', value: 'café' })).toBe(fals
 ### 1.3 QCM Validation (9 tests)
 
 Tests cover:
+
 - ✅ Single correct answer
 - ✅ Multiple correct answers
 - ✅ Order independence ([0,2] === [2,0])
@@ -89,6 +100,7 @@ Tests cover:
 - ✅ Single value vs array handling
 
 **Example:**
+
 ```typescript
 // Multiple answers - order doesn't matter
 expect(validateRiddleAnswer([0, 2], { type: 'qcm', value: [0, 2] })).toBe(true);
@@ -98,6 +110,7 @@ expect(validateRiddleAnswer([2, 0], { type: 'qcm', value: [0, 2] })).toBe(true);
 ### 1.4 Math Expression Validation (5 tests)
 
 Tests cover:
+
 - ✅ Exact expression matching
 - ✅ Whitespace normalization (`2x+3` === `2x + 3`)
 - ✅ Complex expressions with parentheses
@@ -112,6 +125,7 @@ Tests cover:
 ### 1.6 Utility Functions (18 tests)
 
 Tests for:
+
 - ✅ `formatValidationMessage()` - 4 tests
 - ✅ `isAnswerComplete()` - 10 tests (all types)
 - ✅ `getAnswerPlaceholder()` - 1 test
@@ -128,6 +142,7 @@ Tests for:
 ### 2.1 Perfectionist Badges (6 tests)
 
 Tests all tier thresholds:
+
 - ✅ 4 attempts = No badge
 - ✅ 5 attempts = Bronze 🥉
 - ✅ 15 attempts = Silver 🥈
@@ -138,11 +153,13 @@ Tests all tier thresholds:
 ### 2.2 Persistent Badges (4 tests)
 
 Same tier structure for multiple-attempt completions:
+
 - ✅ Bronze (5), Silver (15), Gold (30), Platinum (50)
 
 ### 2.3 Streak Badges (5 tests)
 
 Different thresholds for consecutive days:
+
 - ✅ 2 days = No badge
 - ✅ 3 days = Bronze
 - ✅ 7 days = Silver
@@ -152,6 +169,7 @@ Different thresholds for consecutive days:
 ### 2.4 Genre Expert Badges (5 tests)
 
 Dynamic badges based on riddle genres:
+
 - ✅ < 5 riddles = No badge
 - ✅ 5 riddles = Bronze
 - ✅ 10 riddles = Silver
@@ -160,15 +178,16 @@ Dynamic badges based on riddle genres:
 - ✅ Multiple genres simultaneously
 
 **Example:**
+
 ```typescript
 // Student with progress in 4 genres
 const progress = {
-  genreCounts: {
-    'Algèbre': 15,      // Silver badge
-    'Géométrie': 8,     // Bronze badge
-    'Logique': 25,      // Gold badge
-    'Arithmétique': 6   // Bronze badge
-  }
+	genreCounts: {
+		Algèbre: 15, // Silver badge
+		Géométrie: 8, // Bronze badge
+		Logique: 25, // Gold badge
+		Arithmétique: 6 // Bronze badge
+	}
 };
 // Creates 4 separate expert badges
 ```
@@ -200,6 +219,7 @@ const progress = {
 ### 3.1 Validation Request Messages (8 tests)
 
 Tests `createRiddleValidationMessage()`:
+
 - ✅ Correct subject format: "Validation énigme #42 - Alice Dupont"
 - ✅ Body includes student name, riddle number, title
 - ✅ Validation link: `/dashboard/teacher/riddles/validations/{attemptId}`
@@ -212,6 +232,7 @@ Tests `createRiddleValidationMessage()`:
 ### 3.2 Teacher ID Lookup (4 tests)
 
 Tests `getRiddleTeacherId()`:
+
 - ✅ Returns teacher ID for existing riddle
 - ✅ Returns null for non-existent riddle
 - ✅ Returns null on database error
@@ -220,6 +241,7 @@ Tests `getRiddleTeacherId()`:
 ### 3.3 Validation Result Messages (10 tests)
 
 Tests `sendValidationResultMessage()`:
+
 - ✅ Success message (green ✓, gidouilles awarded)
 - ✅ Failure message (red ✗, "réessayer")
 - ✅ Optional teacher feedback included
@@ -252,12 +274,13 @@ Tests `sendValidationResultMessage()`:
 - ✅ Returns proper JSON response
 
 **RPC Call Verification:**
+
 ```typescript
 expect(mockSupabase.rpc).toHaveBeenCalledWith('submit_riddle_attempt', {
-  p_riddle_id: 'riddle-123',
-  p_student_id: 'student-123',
-  p_submitted_answer: { value: mockAnswer },
-  p_is_correct: true
+	p_riddle_id: 'riddle-123',
+	p_student_id: 'student-123',
+	p_submitted_answer: { value: mockAnswer },
+	p_is_correct: true
 });
 ```
 
@@ -303,6 +326,7 @@ expect(mockSupabase.rpc).toHaveBeenCalledWith('submit_riddle_attempt', {
 **Issue:** Mock complexity for Supabase query chaining
 
 Tests that need fixing:
+
 1. ❌ Difficulty rotation 1 → 2 → 3 → 1
 2. ❌ Difficulty wrap from 3 → 1
 3. ❌ Default to difficulty 1 when no previous
@@ -310,13 +334,14 @@ Tests that need fixing:
 
 **Root Cause:**
 The tests are mocking nested Supabase query chains incorrectly. The logic itself is sound, but the mock setup needs refactoring to handle:
+
 ```typescript
 supabase
-  .from('riddles')
-  .select('id')
-  .eq('status', 'published')
-  .eq('difficulty', targetDifficulty)
-  .not('id', 'in', `(${recentRiddleIds.join(',')})`)
+	.from('riddles')
+	.select('id')
+	.eq('status', 'published')
+	.eq('difficulty', targetDifficulty)
+	.not('id', 'in', `(${recentRiddleIds.join(',')})`);
 ```
 
 **Fix Required:** Update mock implementation to handle multiple chained `.eq()` calls.
@@ -329,39 +354,40 @@ supabase
 
 ### By Component
 
-| Component | Tests | Pass | Fail | Coverage |
-|-----------|-------|------|------|----------|
-| **Validation** | 55 | 55 | 0 | 100% |
-| **Badges** | 33 | 33 | 0 | 100% |
-| **Messages** | 22 | 22 | 0 | 100% |
-| **API Routes** | 16 | 16 | 0 | 100% |
-| **Auto-Select** | 17 | 13 | 4 | 76% |
-| **TOTAL** | **143** | **139** | **4** | **97.2%** |
+| Component       | Tests   | Pass    | Fail  | Coverage  |
+| --------------- | ------- | ------- | ----- | --------- |
+| **Validation**  | 55      | 55      | 0     | 100%      |
+| **Badges**      | 33      | 33      | 0     | 100%      |
+| **Messages**    | 22      | 22      | 0     | 100%      |
+| **API Routes**  | 16      | 16      | 0     | 100%      |
+| **Auto-Select** | 17      | 13      | 4     | 76%       |
+| **TOTAL**       | **143** | **139** | **4** | **97.2%** |
 
 ### By Answer Type
 
-| Answer Type | Tests | Status |
-|-------------|-------|--------|
-| Numerical | 15 | ✅ All Pass |
-| Text | 7 | ✅ All Pass |
-| QCM | 9 | ✅ All Pass |
-| Math | 5 | ✅ All Pass |
-| Manual | 1 | ✅ All Pass |
+| Answer Type | Tests | Status      |
+| ----------- | ----- | ----------- |
+| Numerical   | 15    | ✅ All Pass |
+| Text        | 7     | ✅ All Pass |
+| QCM         | 9     | ✅ All Pass |
+| Math        | 5     | ✅ All Pass |
+| Manual      | 1     | ✅ All Pass |
 
 ### By Badge Type
 
-| Badge Type | Tiers | Tests | Status |
-|------------|-------|-------|--------|
-| Perfectionist (1st attempt) | 4 | 6 | ✅ All Pass |
-| Persistent (multiple attempts) | 4 | 4 | ✅ All Pass |
-| Streak (consecutive days) | 4 | 5 | ✅ All Pass |
-| Genre Expert (dynamic) | 4 | 5 | ✅ All Pass |
+| Badge Type                     | Tiers | Tests | Status      |
+| ------------------------------ | ----- | ----- | ----------- |
+| Perfectionist (1st attempt)    | 4     | 6     | ✅ All Pass |
+| Persistent (multiple attempts) | 4     | 4     | ✅ All Pass |
+| Streak (consecutive days)      | 4     | 5     | ✅ All Pass |
+| Genre Expert (dynamic)         | 4     | 5     | ✅ All Pass |
 
 ---
 
 ## Critical Features Tested
 
 ### ✅ Fairness & Accuracy
+
 - Exact numerical matching with configurable tolerance
 - Case-insensitive French text (important for student UX)
 - Accented character handling (café ≠ cafe)
@@ -369,6 +395,7 @@ supabase
 - Invalid input rejection
 
 ### ✅ Reward Logic
+
 - Degressive gidouilles calculation (difficulty × multiplier)
   - 1st attempt: × 3 (difficulty 3 = 9 gidouilles)
   - 2nd attempt: × 2 (difficulty 3 = 6 gidouilles)
@@ -377,12 +404,14 @@ supabase
 - Progress tracking for all badge types
 
 ### ✅ Teacher Workflow
+
 - Automatic message creation for manual validation
 - Validation link generation
 - Result notifications to students
 - Feedback mechanism
 
 ### ✅ Student Experience
+
 - Clear validation messages (✓/✗)
 - Placeholder text per answer type
 - Answer sanitization
@@ -393,15 +422,17 @@ supabase
 ## Edge Cases Covered
 
 ### Input Validation
+
 - ✅ Null/undefined inputs
 - ✅ Empty strings/arrays
 - ✅ Very long text (10,000+ characters)
-- ✅ Special characters (@#$%^&*())
+- ✅ Special characters (@#$%^&\*())
 - ✅ Scientific notation (1e6)
 - ✅ Negative numbers
 - ✅ Zero values
 
 ### Badge System
+
 - ✅ Exact tier thresholds (5, 15, 30, 50)
 - ✅ One-below threshold (stays at lower tier)
 - ✅ Genre names with special chars ("Algèbre & Calcul")
@@ -410,6 +441,7 @@ supabase
 - ✅ Zero progress (all badges unearned)
 
 ### Auto-Select Algorithm
+
 - ✅ No eligible riddles available
 - ✅ All riddles recently used
 - ✅ Database connection errors
@@ -421,6 +453,7 @@ supabase
 ## Performance Considerations
 
 ### Test Execution Time
+
 - Validator tests: ~12ms (55 tests) = 0.22ms/test
 - Badge tests: ~11ms (33 tests) = 0.33ms/test
 - Message tests: ~21ms (22 tests) = 0.95ms/test
@@ -471,11 +504,13 @@ Fast test execution enables rapid development cycles.
 ## Running the Tests
 
 ### Run All Riddle Tests
+
 ```bash
 pnpm test:unit -- riddle --run
 ```
 
 ### Run Specific Test File
+
 ```bash
 pnpm test:unit -- riddle-validator.test.ts --run
 pnpm test:unit -- riddle-badges.test.ts --run
@@ -485,11 +520,13 @@ pnpm test:unit -- api-routes.test.ts --run
 ```
 
 ### Watch Mode (for development)
+
 ```bash
 pnpm test:unit -- riddle
 ```
 
 ### Coverage Report
+
 ```bash
 pnpm test:unit -- riddle --coverage
 ```
@@ -501,6 +538,7 @@ pnpm test:unit -- riddle --coverage
 ### Adding New Answer Types
 
 If a new answer type is added (e.g., "equation"), update:
+
 1. `riddle-validator.test.ts` - Add 5-10 tests for new type
 2. Test `isAnswerComplete()` for new type
 3. Test `sanitizeAnswer()` for new type
@@ -509,6 +547,7 @@ If a new answer type is added (e.g., "equation"), update:
 ### Adding New Badge Types
 
 If a new badge type is added:
+
 1. `riddle-badges.test.ts` - Add tier threshold tests
 2. Test badge properties (id, name, icon, description)
 3. Test tier progression
@@ -517,6 +556,7 @@ If a new badge type is added:
 ### API Endpoint Changes
 
 For any API changes:
+
 1. Update mocks in `api-routes.test.ts`
 2. Test authentication/authorization
 3. Test error responses (400, 401, 404, 500)
@@ -537,6 +577,7 @@ The Riddles feature has **comprehensive test coverage (97.2%)** across all criti
 **Total: 139/143 tests passing**
 
 The feature is **production-ready** with robust test coverage ensuring:
+
 - Fair and accurate answer validation
 - Correct reward calculations
 - Reliable teacher-student communication
@@ -547,6 +588,7 @@ The 4 failing tests are infrastructure issues (mocking complexity), not logic bu
 ---
 
 **Next Steps:**
+
 1. Fix auto-select mock setup (optional, low priority)
 2. Add E2E tests for complete user journeys
 3. Generate coverage report with `vitest --coverage`

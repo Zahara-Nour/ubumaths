@@ -242,16 +242,16 @@ export async function getClassStudents(options) {
 <!-- src/lib/components/teacher/TestModeToggle.svelte -->
 
 <script>
-  let isLoading = $state(false);
+	let isLoading = $state(false);
 
-  async function handleToggle() {
-    isLoading = true;  // Show overlay
-    testMode.toggle();
+	async function handleToggle() {
+		isLoading = true; // Show overlay
+		testMode.toggle();
 
-    await fetch('/api/test-mode', { method: 'POST', ... });
-    teacherStudentsCache.clear();
-    window.location.reload();  // Overlay stays until reload completes
-  }
+		await fetch('/api/test-mode', { method: 'POST' });
+		teacherStudentsCache.clear();
+		window.location.reload(); // Overlay stays until reload completes
+	}
 </script>
 
 {#if isLoading}

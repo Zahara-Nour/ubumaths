@@ -66,18 +66,18 @@ Build Status:        ✅ PASS (42.26s)
 
 ### Test Coverage by Feature
 
-| Feature | Tests | Pass | Fail | Skip | Pass Rate |
-|---------|-------|------|------|------|-----------|
-| **Questions** | 334 | 329 | 0 | 5 | 98.5% ✅ |
-| **Exercises** | 653 | 624 | 29 | 0 | 95.6% ✅ |
-| **Assessments** | 91 | 0 | 69 | 0 | 0% ⚠️ Mock issues |
-| **SRS/Flashcards** | 124 | 124 | 0 | 0 | 100% ✅ |
-| **Riddles** | 143 | 139 | 4 | 0 | 97.2% ✅ |
-| **Geometry** | 159 | 159 | 0 | 0 | 100% ✅ |
-| **Messaging** | 78 | 78 | 0 | 0 | 100% ✅ |
-| **Message Templates** | 250 | 250 | 0 | 0 | 100% ✅ |
-| **Parameterization** | 52 | 52 | 0 | 0 | 100% ✅ |
-| **Other** | 133 | 136 | 0 | 19 | 100% ✅ |
+| Feature               | Tests | Pass | Fail | Skip | Pass Rate         |
+| --------------------- | ----- | ---- | ---- | ---- | ----------------- |
+| **Questions**         | 334   | 329  | 0    | 5    | 98.5% ✅          |
+| **Exercises**         | 653   | 624  | 29   | 0    | 95.6% ✅          |
+| **Assessments**       | 91    | 0    | 69   | 0    | 0% ⚠️ Mock issues |
+| **SRS/Flashcards**    | 124   | 124  | 0    | 0    | 100% ✅           |
+| **Riddles**           | 143   | 139  | 4    | 0    | 97.2% ✅          |
+| **Geometry**          | 159   | 159  | 0    | 0    | 100% ✅           |
+| **Messaging**         | 78    | 78   | 0    | 0    | 100% ✅           |
+| **Message Templates** | 250   | 250  | 0    | 0    | 100% ✅           |
+| **Parameterization**  | 52    | 52   | 0    | 0    | 100% ✅           |
+| **Other**             | 133   | 136  | 0    | 19   | 100% ✅           |
 
 ### Tests Created During This Review
 
@@ -94,6 +94,7 @@ Build Status:        ✅ PASS (42.26s)
 ### Test Quality Assessment
 
 **Strengths:**
+
 - ✅ Excellent Arrange-Act-Assert structure
 - ✅ Comprehensive edge case coverage
 - ✅ Fast execution (<100ms for most suites)
@@ -101,6 +102,7 @@ Build Status:        ✅ PASS (42.26s)
 - ✅ Clear, descriptive test names
 
 **Weaknesses:**
+
 - ⚠️ 102 tests failing due to mock configuration issues
 - ⚠️ Some E2E tests not run in this review
 - ⚠️ Missing database trigger tests
@@ -117,6 +119,7 @@ Build Status:        ✅ PASS (42.26s)
 **Test Coverage**: 329/334 tests passing (98.5%)
 
 **Highlights:**
+
 - Complete parameterization engine with variable resolution
 - 4 question types: Numerical, Algebraic, Fill-in-Blanks, Multiple Choice
 - 1,500+ lines of documentation
@@ -124,12 +127,14 @@ Build Status:        ✅ PASS (42.26s)
 - Zero critical issues
 
 **Implementation:**
+
 - **Backend**: 17 files (parser, generator, validators)
 - **Frontend**: 10 components with 7 help modals
 - **API**: 7+ endpoints
 - **Database**: Migration 078 with GIN indexes
 
 **Recommendations:**
+
 - Add E2E tests for complete workflows
 - Consider caching for frequently-used templates
 - Add template import/export functionality
@@ -143,6 +148,7 @@ Build Status:        ✅ PASS (42.26s)
 **Test Coverage**: 624/653 tests passing (95.6%)
 
 **Highlights:**
+
 - Rich Markdown with LaTeX support
 - Complete parameterization (3 distribution modes)
 - Image upload with Supabase Storage
@@ -150,16 +156,19 @@ Build Status:        ✅ PASS (42.26s)
 - Assignment system with completion tracking
 
 **Implementation:**
+
 - **Backend**: 3 files (1,220 lines for assignments)
 - **Frontend**: 6 components
 - **API**: 13 endpoints
 - **Database**: 17+ indexes, full-text search
 
 **Known Issues:**
+
 - ⚠️ 29 tests failing (mock configuration, not functional bugs)
 - API route tests need mock refactoring
 
 **Recommendations:**
+
 - Fix Supabase mock chains in tests
 - Add rate limiting on assignment creation
 - Implement version history for exercises
@@ -173,6 +182,7 @@ Build Status:        ✅ PASS (42.26s)
 **Test Coverage**: 0/91 tests passing (mock issues)
 
 **Highlights:**
+
 - Complete test/assessment workflow
 - Flexible assignment (individuals, classes, combinations)
 - Result tracking with statistics
@@ -180,16 +190,19 @@ Build Status:        ✅ PASS (42.26s)
 - Draft/Published/Archived states
 
 **Implementation:**
+
 - **Backend**: 731 lines, 15+ functions
 - **Frontend**: 10 teacher pages + 4 student pages
 - **API**: 6 endpoints
 - **Database**: Migration 082 with 11 indexes
 
 **Known Issues:**
+
 - ⚠️ All 91 tests failing due to mock setup issues
 - Tests written but need integration fixes
 
 **Recommendations:**
+
 - **HIGH PRIORITY**: Fix mock infrastructure (2-4 hours)
 - Add assessment duplication feature
 - Implement question bank filters
@@ -203,6 +216,7 @@ Build Status:        ✅ PASS (42.26s)
 **Test Coverage**: 124/124 tests passing (100%)
 
 **Highlights:**
+
 - **FSRS-6 algorithm** fully implemented and tested
 - Card states: New → Learning → Review → Relearning
 - Teacher-created and personal decks
@@ -210,18 +224,21 @@ Build Status:        ✅ PASS (42.26s)
 - Statistics and progress tracking
 
 **Implementation:**
+
 - **Backend**: FSRS algorithm (300+ lines)
 - **Frontend**: 6 components with 3D flip animation
 - **API**: 12 endpoints
 - **Database**: 5 tables with proper indexes
 
 **Test Quality:**
+
 - ✅ Algorithm validated against FSRS-6 spec
 - ✅ State transitions thoroughly tested
 - ✅ Edge cases (overdue, rapid reviews) covered
 - ✅ All 124 tests passing
 
 **Recommendations:**
+
 - Add real-time sync (currently polling)
 - Implement spaced repetition scheduling UI
 - Add study session analytics
@@ -235,6 +252,7 @@ Build Status:        ✅ PASS (42.26s)
 **Test Coverage**: 139/143 tests passing (97.2%)
 
 **Highlights:**
+
 - 5 validation types (exact, numerical, text, QCM, manual)
 - Daily riddle with auto-selection algorithm
 - Achievement system (4 types × 4 tiers = 16 badges)
@@ -242,6 +260,7 @@ Build Status:        ✅ PASS (42.26s)
 - Teacher review workflow for manual validation
 
 **Implementation:**
+
 - **Backend**: 4 server utilities
 - **Frontend**: Multiple specialized input components
 - **API**: 7+ endpoints
@@ -249,12 +268,14 @@ Build Status:        ✅ PASS (42.26s)
 - **Documentation**: 140+ pages
 
 **Test Quality:**
+
 - ✅ 55 validation tests (all types)
 - ✅ 33 badge system tests
 - ✅ 22 messaging tests
 - ⚠️ 4 auto-select tests failing (mock issues)
 
 **Recommendations:**
+
 - Fix auto-select mock configuration
 - Add riddle categories/tags
 - Implement difficulty rating system
@@ -268,6 +289,7 @@ Build Status:        ✅ PASS (42.26s)
 **Test Coverage**: 159/159 tests passing (100%)
 
 **Highlights:**
+
 - MathGraph32 integration
 - 4 exercise types (View, Measure, Construct, Proof)
 - 10 construction tools
@@ -276,17 +298,20 @@ Build Status:        ✅ PASS (42.26s)
 - 5 achievements (Perfect, Speedster, First Try, Persistent, Independent)
 
 **Implementation:**
+
 - **Backend**: 6 services with JSDoc
 - **Frontend**: 4 exercise type UIs
 - **Documentation**: 6,500+ lines (5 files)
 
 **Test Quality:**
+
 - ✅ 28 validator tests
 - ✅ 61 grading tests (letter grades, penalties)
 - ✅ 26 generator tests
 - ✅ 44 utility tests
 
 **Recommendations:**
+
 - Add E2E tests with browser-based MathGraph32
 - Create library of classroom-ready examples
 - Implement student progress analytics
@@ -300,6 +325,7 @@ Build Status:        ✅ PASS (42.26s)
 **Security Audit**: 3 Critical + 3 High Priority Issues
 
 **Highlights:**
+
 - Excellent server-first verification pattern
 - Google OAuth with domain validation
 - Role-based access control (Student, Teacher, Admin)
@@ -308,11 +334,13 @@ Build Status:        ✅ PASS (42.26s)
 **Critical Security Issues:**
 
 #### 🔴 **CRITICAL #1: No Rate Limiting**
+
 - **Impact**: Unlimited login attempts (brute force vulnerability)
 - **Fix Provided**: Rate limiter implementation (4-8 hours)
 - **Priority**: P0 - Fix before production
 
 #### 🔴 **CRITICAL #2: Weak Password Policy**
+
 - **Impact**: 6-character minimum (2014-era security)
 - **Current**: `if (password.length < 6)`
 - **Required**: 8+ characters, 3/4 character types
@@ -320,16 +348,19 @@ Build Status:        ✅ PASS (42.26s)
 - **Priority**: P0 - Fix before production
 
 #### 🔴 **CRITICAL #3: Missing CSRF Protection**
+
 - **Impact**: Cross-site request forgery attacks possible
 - **Fix**: Enable SvelteKit's built-in CSRF via `svelte.config.js`
 - **Priority**: P0 - Fix before production
 
 **Additional Issues:**
+
 - 🟠 No session timeout management
 - 🟠 Inconsistent authorization checks in API routes
 - 🟡 Console.log in production code (info disclosure)
 
 **Recommendations:**
+
 - **IMMEDIATE**: Fix P0 security issues (6-10 hours)
 - Implement session timeout (6 hours)
 - Audit all API routes for authorization (12 hours)
@@ -345,6 +376,7 @@ Build Status:        ✅ PASS (42.26s)
 **Test Coverage**: 78/78 tests passing (100%)
 
 **Highlights:**
+
 - Private messaging (teacher ↔ student)
 - Rich text editor (TipTap + MathLive)
 - Attachment support
@@ -353,11 +385,13 @@ Build Status:        ✅ PASS (42.26s)
 - Message templates integration
 
 **Implementation:**
+
 - **Backend**: 20+ API endpoints
 - **Frontend**: 5 pages (inbox, sent, drafts, archived, compose)
 - **Tests**: 78 comprehensive tests (NEW)
 
 **Test Quality:**
+
 - ✅ Message CRUD (13 tests)
 - ✅ Draft management (7 tests)
 - ✅ Status updates (10 tests)
@@ -366,6 +400,7 @@ Build Status:        ✅ PASS (42.26s)
 - ✅ Validation (5 tests)
 
 **Recommendations:**
+
 - Add message search functionality
 - Implement bulk actions (delete multiple)
 - Add notification preferences
@@ -379,6 +414,7 @@ Build Status:        ✅ PASS (42.26s)
 **Test Coverage**: 250/250 tests passing (100%)
 
 **Highlights:**
+
 - **30+ variables** (student, class, assessment context)
 - **14 filters** (uppercase, date_format, number_format, etc.)
 - **Conditional logic** (if/else statements)
@@ -387,6 +423,7 @@ Build Status:        ✅ PASS (42.26s)
 - Usage statistics and analytics
 
 **Implementation:**
+
 - **Backend**: Template engine with advanced features
 - **Frontend**: Admin + Teacher UIs
 - **API**: 10+ endpoints
@@ -394,12 +431,14 @@ Build Status:        ✅ PASS (42.26s)
 - **Tests**: 250 tests (NEW - created in this review)
 
 **Test Quality:**
+
 - ✅ 63 basic rendering tests
 - ✅ 108 advanced engine tests (filters + conditionals)
 - ✅ 79 variable registry tests
 - ✅ Edge cases and validation
 
 **Recommendations:**
+
 - Add template sharing between teachers
 - Implement A/B testing for templates
 - Add multilingual support (v2.2)
@@ -413,6 +452,7 @@ Build Status:        ✅ PASS (42.26s)
 **Code Review**: Type mismatches found
 
 **Highlights:**
+
 - Flexible targeting (all, role, classes, users)
 - Priority levels (normal, important, urgent)
 - Auto-cleanup (30-day expiration)
@@ -423,6 +463,7 @@ Build Status:        ✅ PASS (42.26s)
 **Critical Issues:**
 
 #### 🟡 **Type Mismatch: NotificationTargetType**
+
 ```typescript
 // Database: 'role' (singular)
 CHECK (target_type IN ('all', 'role', 'classes', 'users'))
@@ -430,14 +471,17 @@ CHECK (target_type IN ('all', 'role', 'classes', 'users'))
 // TypeScript: 'roles' (plural) ❌
 export type NotificationTargetType = 'all' | 'roles' | 'classes' | 'users';
 ```
+
 **Impact**: 15+ TypeScript errors, target_type.eq.role never matches
 **Fix**: Change 'roles' → 'role' in database.ts
 
 #### 🟡 **Missing SystemEventType Values**
+
 Missing: 'assignment_created', 'resource_added', 'badge_unlocked', 'maintenance_scheduled', 'feature_released'
 **Fix**: Add these to SystemEventType union
 
 **Recommendations:**
+
 - Fix type mismatches (1 hour)
 - Optimize getUnreadCount() to use COUNT instead of fetching all (2 hours)
 - Add HTML sanitization with DOMPurify
@@ -452,6 +496,7 @@ Missing: 'assignment_created', 'resource_added', 'badge_unlocked', 'maintenance_
 **Code Review**: 5 issues found (3 critical)
 
 **Highlights:**
+
 - Client + server error capture
 - Deduplication via SHA-256 hash
 - Privacy-first (auto-sanitizes passwords, tokens, emails)
@@ -462,23 +507,28 @@ Missing: 'assignment_created', 'resource_added', 'badge_unlocked', 'maintenance_
 **Issues Found:**
 
 #### 🟠 **Migration File Duplication**
+
 Two versions exist: `100_create_error_monitoring_system.sql` and `20251023024428_create_error_monitoring_system.sql`
 **Fix**: Remove numbered version, keep timestamped
 
 #### 🟠 **Missing goto Import**
+
 Error detail page uses `goto()` without importing
 **Fix**: Add `import { goto } from '$app/navigation'`
 
 #### 🟠 **Shadcn Select Usage**
+
 Dashboard violates project rule (CLAUDE.md forbids Shadcn Select)
 **Fix**: Replace with native `<select>` elements
 
 #### 🟡 **Hash Inconsistency**
+
 Client uses base64 truncation, server uses SHA-256
 **Impact**: Same error won't deduplicate across client/server
 **Fix**: Use SHA-256 consistently
 
 **Recommendations:**
+
 - Fix critical issues (30 minutes)
 - Add test suite for sanitization logic (2-4 hours)
 - Implement scheduled cleanup job
@@ -493,6 +543,7 @@ Client uses base64 truncation, server uses SHA-256
 **Completeness**: 90% (core mechanics done)
 
 **Highlights:**
+
 - Turn-based combat system ✅
 - Math challenge evaluation (Math.js) ✅
 - Element advantages (Fire > Earth > Wind > Water) ✅
@@ -503,21 +554,26 @@ Client uses base64 truncation, server uses SHA-256
 **Critical Issues:**
 
 #### 🟡 **TypeScript Strict Mode Violations**
+
 ```typescript
 let activeChallenge = $state<unknown>(null); // ❌
 // Should be: $state<GameChallenge | null>(null)
 ```
+
 **Impact**: 37 type errors in combat page
 **Fix**: Define proper interfaces (2-3 hours)
 
 #### 🟡 **Const Assignment Error**
+
 ```typescript
 const { data: gamePlayer } = ...;
 gamePlayer = newGamePlayer; // ❌ Cannot assign to const
 ```
+
 **Fix**: Change `const` to `let`
 
 **Phase 1 Complete:**
+
 - ✅ Database schema (12 tables)
 - ✅ Combat mechanics
 - ✅ Challenge system
@@ -525,6 +581,7 @@ gamePlayer = newGamePlayer; // ❌ Cannot assign to const
 - ✅ Reward integration
 
 **Phase 1 Incomplete:**
+
 - ⚠️ Spell unlocking (manual SQL required)
 - ⚠️ Deck builder (uses first 10 only)
 - ⚠️ Multiple challenge types (numeric only)
@@ -533,6 +590,7 @@ gamePlayer = newGamePlayer; // ❌ Cannot assign to const
 - ⚠️ Profile page (linked but doesn't exist)
 
 **Recommendations:**
+
 - **Priority 1**: Fix TypeScript errors (2-3 hours)
 - **Priority 2**: Implement spell unlocking (4-6 hours)
 - **Priority 3**: Add missing routes (6-8 hours)
@@ -547,6 +605,7 @@ gamePlayer = newGamePlayer; // ❌ Cannot assign to const
 **Test Coverage**: Some tests failing (mock issues)
 
 **Highlights:**
+
 - Assignment types: Student, Class, Public
 - Optional deadlines and notes
 - Completion tracking (self-reported + views)
@@ -554,11 +613,13 @@ gamePlayer = newGamePlayer; // ❌ Cannot assign to const
 - Teacher statistics
 
 **Implementation:**
+
 - **Backend**: 1,220 lines, 20+ functions
 - **API**: 8 endpoints
 - **Database**: 17 indexes, RLS policies
 
 **Recommendations:**
+
 - Add assignment analytics
 - Implement assignment templates
 - Add bulk assignment operations
@@ -581,14 +642,14 @@ Additional production-ready features:
 
 ### Critical Vulnerabilities (Fix Before Production)
 
-| # | Issue | Severity | Impact | Fix Effort |
-|---|-------|----------|--------|------------|
-| 1 | No rate limiting on auth endpoints | 🔴 Critical | Brute force attacks | 4-8 hours |
-| 2 | Weak password requirements (6 chars) | 🔴 Critical | Account compromise | 1 hour |
-| 3 | Missing CSRF protection | 🔴 Critical | Cross-site attacks | 30 mins |
-| 4 | No session timeout | 🟠 High | Prolonged unauthorized access | 6 hours |
-| 5 | Inconsistent API authorization | 🟠 High | Broken access control | 12 hours |
-| 6 | Console.log in production | 🟠 High | Information disclosure | 4 hours |
+| #   | Issue                                | Severity    | Impact                        | Fix Effort |
+| --- | ------------------------------------ | ----------- | ----------------------------- | ---------- |
+| 1   | No rate limiting on auth endpoints   | 🔴 Critical | Brute force attacks           | 4-8 hours  |
+| 2   | Weak password requirements (6 chars) | 🔴 Critical | Account compromise            | 1 hour     |
+| 3   | Missing CSRF protection              | 🔴 Critical | Cross-site attacks            | 30 mins    |
+| 4   | No session timeout                   | 🟠 High     | Prolonged unauthorized access | 6 hours    |
+| 5   | Inconsistent API authorization       | 🟠 High     | Broken access control         | 12 hours   |
+| 6   | Console.log in production            | 🟠 High     | Information disclosure        | 4 hours    |
 
 **Total Security Hardening Effort**: ~28-32 hours
 
@@ -645,6 +706,7 @@ Type Coverage: ~95% (estimated)
 ```
 
 **Known Type Issues**:
+
 - Navadra Game: 37 errors (unknown types)
 - Notifications: 15+ errors (type mismatch)
 - Various: Minor inference issues
@@ -690,6 +752,7 @@ Coverage: All major features documented
 ```
 
 **Documentation Quality**:
+
 - ✅ Feature documentation (complete)
 - ✅ Architecture guides (database, routing)
 - ✅ Development guides (git, versioning)
@@ -733,6 +796,7 @@ Status: ✔ done
 Build time: 42.26s (acceptable for project size)
 
 **Recommendations**:
+
 - Consider code splitting for large components (QuestionTemplateForm: 200 kB)
 - Implement lazy loading for admin sections
 - Add Vercel Edge Functions for frequently-accessed API routes
@@ -744,60 +808,36 @@ Build time: 42.26s (acceptable for project size)
 ### Immediate Actions (This Week)
 
 **Priority 0 - Security (Critical)**:
+
 1. Enable CSRF protection (30 mins)
 2. Update password policy to 8+ characters (15 mins)
 3. Implement rate limiting on auth endpoints (4-8 hours)
 
-**Priority 1 - Test Fixes (Important)**:
-4. Fix Exercises mock issues (2-4 hours)
-5. Fix Assessments mock issues (2-4 hours)
-6. Fix Notifications type mismatches (1 hour)
+**Priority 1 - Test Fixes (Important)**: 4. Fix Exercises mock issues (2-4 hours) 5. Fix Assessments mock issues (2-4 hours) 6. Fix Notifications type mismatches (1 hour)
 
 **Estimated Total**: 10-18 hours
 
 ### Short-Term (Next 2 Weeks)
 
-**Priority 2 - Feature Completion**:
-7. Complete Navadra Game Phase 1 fixes (2-3 hours)
-8. Fix Error Monitoring issues (30 mins)
-9. Implement session timeout (6 hours)
-10. Audit API authorization (12 hours)
+**Priority 2 - Feature Completion**: 7. Complete Navadra Game Phase 1 fixes (2-3 hours) 8. Fix Error Monitoring issues (30 mins) 9. Implement session timeout (6 hours) 10. Audit API authorization (12 hours)
 
-**Priority 3 - Quality Improvements**:
-11. Add E2E tests for critical flows (8-12 hours)
-12. Implement database trigger tests (4-6 hours)
-13. Add performance tests (4-6 hours)
+**Priority 3 - Quality Improvements**: 11. Add E2E tests for critical flows (8-12 hours) 12. Implement database trigger tests (4-6 hours) 13. Add performance tests (4-6 hours)
 
 **Estimated Total**: 38-48 hours
 
 ### Medium-Term (Next Month)
 
-**Priority 4 - Security Hardening**:
-14. Remove all console.log calls (4 hours)
-15. Add HTML sanitization (2-3 hours)
-16. Implement security event logging (10 hours)
-17. Add re-authentication for sensitive operations (4-6 hours)
+**Priority 4 - Security Hardening**: 14. Remove all console.log calls (4 hours) 15. Add HTML sanitization (2-3 hours) 16. Implement security event logging (10 hours) 17. Add re-authentication for sensitive operations (4-6 hours)
 
-**Priority 5 - Feature Enhancements**:
-18. Navadra Game Phase 2 (spell unlocking, deck builder) (20-30 hours)
-19. Question template import/export (8-12 hours)
-20. Assessment analytics dashboard (12-16 hours)
+**Priority 5 - Feature Enhancements**: 18. Navadra Game Phase 2 (spell unlocking, deck builder) (20-30 hours) 19. Question template import/export (8-12 hours) 20. Assessment analytics dashboard (12-16 hours)
 
 **Estimated Total**: 60-80 hours
 
 ### Long-Term (Next Quarter)
 
-**Priority 6 - Production Readiness**:
-21. External penetration testing (consult security firm)
-22. Load testing (1000+ concurrent users)
-23. CI/CD security scanning integration
-24. Automated accessibility testing
+**Priority 6 - Production Readiness**: 21. External penetration testing (consult security firm) 22. Load testing (1000+ concurrent users) 23. CI/CD security scanning integration 24. Automated accessibility testing
 
-**Priority 7 - Feature Development**:
-25. Real-time collaboration features
-26. Mobile app (PWA)
-27. Offline mode
-28. AI-powered question generation
+**Priority 7 - Feature Development**: 25. Real-time collaboration features 26. Mobile app (PWA) 27. Offline mode 28. AI-powered question generation
 
 ---
 
@@ -817,6 +857,7 @@ UbuMaths is a **remarkably well-built educational platform** with **13 productio
 ### Blockers Before Production
 
 **3 Critical Security Issues** require immediate attention:
+
 1. Rate limiting (4-8 hours)
 2. Password policy (15 mins)
 3. CSRF protection (30 mins)
