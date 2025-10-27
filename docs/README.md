@@ -183,6 +183,23 @@ Système d'authentification avec Google OAuth + email/password.
 
 ---
 
+## 🧪 Tests
+
+**Status** : ✅ 100% Pass Rate (2,064/2,064 tests) | [Documentation →](testing/README.md)
+
+| Document                                                      | Description                      |
+| ------------------------------------------------------------- | -------------------------------- |
+| [Vue d'ensemble](testing/README.md)                           | Documentation générale des tests |
+| [100% Pass Rate](testing/test-suite-achievement.md) ⭐        | Histoire de l'achievement        |
+| [Infrastructure](testing/test-infrastructure.md) ⭐           | Guide des helpers de test        |
+| [Patterns communs](testing/common-test-patterns.md) ⭐        | Référence rapide des patterns    |
+| [Rapport Questions](../TEST_REPORT_QUESTIONS.md)              | Tests feature Questions          |
+| [Rapport Assessments](testing/ASSESSMENT_TEST_REPORT.md)      | Tests feature Assessments        |
+| [Rapport Templates](testing/message-templates-test-report.md) | Tests templates de messages      |
+| [Rapport Riddles](testing/riddles-test-report.md)             | Tests feature Riddles            |
+
+---
+
 ## 🤝 Contribution
 
 | Document                                                          | Description                        |
@@ -215,8 +232,9 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 - **Features en production** : 11
 - **Features en développement** : 1 (Navadra)
-- **Lignes de documentation** : ~10,500+
-- **Dernière mise à jour** : 2025-10-26
+- **Tests** : 2,064 tests (100% pass rate)
+- **Lignes de documentation** : ~14,000+
+- **Dernière mise à jour** : 2025-10-27
 
 ---
 

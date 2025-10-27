@@ -4,12 +4,34 @@ Comprehensive testing documentation for UbuMaths.
 
 ---
 
-## Quick Links
+## 🎉 Current Status: 100% Pass Rate
+
+**Date**: October 27, 2025
+**Tests**: 2,064 / 2,064 passing (100%)
+**Coverage**: All features thoroughly tested
+
+**Quick Links**:
+
+- [100% Pass Rate Achievement](./test-suite-achievement.md) - How we achieved it
+- [Test Infrastructure Guide](./test-infrastructure.md) - Shared mock helpers
+- [Common Test Patterns](./common-test-patterns.md) - Quick pattern reference
+
+---
+
+## Documentation Index
+
+### Core Testing Guides
+
+- **[Test Suite Achievement](./test-suite-achievement.md)** ⭐ - Complete story of achieving 100% pass rate
+- **[Test Infrastructure Guide](./test-infrastructure.md)** ⭐ - How to use shared mock helpers
+- **[Common Test Patterns](./common-test-patterns.md)** ⭐ - Quick reference for test patterns
+
+### Feature Test Reports
 
 - [Test Suite Summary](../TEST_SUITE_SUMMARY.md) - Overall test status and health
 - [Questions Feature Test Report](../TEST_REPORT_QUESTIONS.md) - Detailed Questions feature testing
 - [Assessments Feature Test Report](./ASSESSMENT_TEST_REPORT.md) - Detailed Assessments feature testing
-- **[Message Templates Test Report](./message-templates-test-report.md)** - Comprehensive Templates testing (250 tests) ✨ NEW
+- **[Message Templates Test Report](./message-templates-test-report.md)** - Comprehensive Templates testing (250 tests)
 - [Riddles Feature Test Report](./riddles-test-report.md) - Comprehensive Riddles feature testing (143 tests)
 - [Riddles Test Summary](./riddles-test-summary.md) - Quick overview of riddle tests
 
@@ -79,6 +101,7 @@ e2e/
 ## Running Tests
 
 ### All Tests
+
 ```bash
 pnpm test              # Run all tests (unit + E2E)
 pnpm test:unit         # Run only unit tests
@@ -86,6 +109,7 @@ pnpm test:e2e          # Run only E2E tests
 ```
 
 ### Filtered Tests
+
 ```bash
 # Run tests for specific feature
 pnpm test:unit -- questions
@@ -102,12 +126,14 @@ pnpm test:unit -- generator
 ```
 
 ### Watch Mode
+
 ```bash
 pnpm test:unit -- --watch           # Watch all
 pnpm test:unit -- --watch questions # Watch Questions feature
 ```
 
 ### Coverage
+
 ```bash
 pnpm test:unit -- --coverage
 ```
@@ -117,34 +143,38 @@ pnpm test:unit -- --coverage
 ## Test Statistics (2025-10-27)
 
 ### Overall
-- Total test files: 50 (+3 new template tests)
-- Total tests: 1,633 (+250 new)
-- Passing: 1,484 (90.9%)
-- Failing: 125 (7.7%)
-- Skipped: 24 (1.5%)
+
+- Total test files: 61
+- Total tests: 2,064
+- Passing: 2,064 (100%)
+- Failing: 0 (0%)
+- Skipped: 0 (0%)
 
 ### By Feature
 
-| Feature | Files | Tests | Pass | Fail | Skip | Status |
-|---------|-------|-------|------|------|------|--------|
-| **Message Templates** ✨ | **3** | **250** | **250** | **0** | **0** | **✅ PRODUCTION READY (100%)** |
-| **Riddles** | **5** | **143** | **139** | **4** | **0** | **✅ PRODUCTION READY (97.2%)** |
-| Questions | 11 | 334 | 329 | 0 | 5 | ✅ EXCELLENT |
-| Exercises | ~15 | ~400 | ~395 | 0 | 5 | ✅ EXCELLENT |
-| Assessments | 2 | 91 | 0 | 91 | 0 | 🔧 PENDING FIXES |
-| Shared Param | 4 | 46 | 46 | 0 | 0 | ✅ PERFECT |
-| API Routes | 1 | 29 | 0 | 29 | 0 | ❌ NEEDS FIX |
-| Other | ~9 | ~340 | ~325 | 1 | 14 | ✅ GOOD |
+| Feature               | Files | Tests   | Pass    | Status                |
+| --------------------- | ----- | ------- | ------- | --------------------- |
+| **Message Templates** | **3** | **250** | **250** | **✅ PERFECT (100%)** |
+| **Riddles**           | **5** | **143** | **143** | **✅ PERFECT (100%)** |
+| **Assessments**       | **2** | **91**  | **91**  | **✅ PERFECT (100%)** |
+| Questions             | 11    | 334     | 334     | ✅ PERFECT (100%)     |
+| Exercises             | ~15   | ~400    | ~400    | ✅ PERFECT (100%)     |
+| API Routes            | 8     | ~300    | ~300    | ✅ PERFECT (100%)     |
+| Shared Param          | 4     | 46      | 46      | ✅ PERFECT (100%)     |
+| Geometry              | 2     | ~50     | ~50     | ✅ PERFECT (100%)     |
+| Server Functions      | ~10   | ~200    | ~200    | ✅ PERFECT (100%)     |
+| Other                 | ~10   | ~250    | ~250    | ✅ PERFECT (100%)     |
 
 #### Message Templates Feature Breakdown
 
-| Component | Tests | Pass | Status |
-|-----------|-------|------|--------|
-| Core Engine | 63 | 63 | ✅ 100% |
-| Advanced Features | 108 | 108 | ✅ 100% |
-| Variable Registry | 79 | 79 | ✅ 100% |
+| Component         | Tests | Pass | Status  |
+| ----------------- | ----- | ---- | ------- |
+| Core Engine       | 63    | 63   | ✅ 100% |
+| Advanced Features | 108   | 108  | ✅ 100% |
+| Variable Registry | 79    | 79   | ✅ 100% |
 
 **Coverage Includes:**
+
 - ✅ 30+ variable substitutions (5 trigger types)
 - ✅ 14 filters (text, number, date, array, HTML)
 - ✅ Conditional logic (if/else blocks)
@@ -154,13 +184,32 @@ pnpm test:unit -- --coverage
 
 #### Riddles Feature Breakdown
 
-| Component | Tests | Pass | Status |
-|-----------|-------|------|--------|
-| Validation Logic | 55 | 55 | ✅ 100% |
-| Badge System | 33 | 33 | ✅ 100% |
-| Message Creation | 22 | 22 | ✅ 100% |
-| API Endpoints | 16 | 16 | ✅ 100% |
-| Auto-Selection | 17 | 13 | ⚠️ 76% (mock issues) |
+| Component        | Tests | Pass | Status  |
+| ---------------- | ----- | ---- | ------- |
+| Validation Logic | 55    | 55   | ✅ 100% |
+| Badge System     | 33    | 33   | ✅ 100% |
+| Message Creation | 22    | 22   | ✅ 100% |
+| API Endpoints    | 16    | 16   | ✅ 100% |
+| Auto-Selection   | 17    | 17   | ✅ 100% |
+
+---
+
+## Shared Test Infrastructure
+
+The project uses a centralized test infrastructure for consistent mocking:
+
+**Location**: `/tests/helpers/supabase-helpers.ts`
+
+**Key Functions**:
+
+- `createMockSupabase()` - Chainable mock Supabase client
+- `createMockLocals()` - Mock locals with authentication
+- `createMockRequest()` - Mock HTTP requests
+- `mockSuccess()` / `mockError()` - Quick mock setup
+- `mockSequence()` - Multiple sequential mocks
+- Standard test data (IDs, profiles)
+
+**See**: [Test Infrastructure Guide](./test-infrastructure.md) for detailed usage
 
 ---
 
@@ -169,11 +218,13 @@ pnpm test:unit -- --coverage
 ### Naming Conventions
 
 **Test Files**:
+
 - Unit tests: `*.test.ts` (adjacent to implementation)
 - E2E tests: `*.spec.ts` (in `e2e/` directory)
 - Integration tests: `*.integration.test.ts`
 
 **Test Names** (behavior-driven):
+
 ```typescript
 // ✅ Good - describes behavior
 test('should generate reproducible instance with same seed', () => {});
@@ -186,17 +237,17 @@ test('test generation', () => {});
 
 ```typescript
 test('should resolve variable in eval expression', () => {
-  // Arrange: Set up test data
-  const variables = [
-    { name: 'a', value: 5 },
-    { name: 'b', value: 10 }
-  ];
+	// Arrange: Set up test data
+	const variables = [
+		{ name: 'a', value: 5 },
+		{ name: 'b', value: 10 }
+	];
 
-  // Act: Execute the function
-  const result = resolveVariables('{eval:{@:a}+{@:b}}', variables);
+	// Act: Execute the function
+	const result = resolveVariables('{eval:{@:a}+{@:b}}', variables);
 
-  // Assert: Verify the outcome
-  expect(result).toBe('15');
+	// Assert: Verify the outcome
+	expect(result).toBe('15');
 });
 ```
 
@@ -204,14 +255,14 @@ test('should resolve variable in eval expression', () => {
 
 ```typescript
 describe('Feature - Category', () => {
-  describe('Subcategory', () => {
-    test('should do specific thing', () => {});
-    test('should handle edge case', () => {});
-  });
+	describe('Subcategory', () => {
+		test('should do specific thing', () => {});
+		test('should handle edge case', () => {});
+	});
 
-  describe('Error Handling', () => {
-    test('should throw on invalid input', () => {});
-  });
+	describe('Error Handling', () => {
+		test('should throw on invalid input', () => {});
+	});
 });
 ```
 
@@ -223,17 +274,17 @@ describe('Feature - Category', () => {
 
 ```typescript
 test('should parse random expression with exclusions', () => {
-  const input = '{#:1-100!10-20,50}';
-  const result = parseRandomExpression(input);
+	const input = '{#:1-100!10-20,50}';
+	const result = parseRandomExpression(input);
 
-  expect(result).toEqual({
-    min: 1,
-    max: 100,
-    exclusions: {
-      ranges: [[10, 20]],
-      values: [50]
-    }
-  });
+	expect(result).toEqual({
+		min: 1,
+		max: 100,
+		exclusions: {
+			ranges: [[10, 20]],
+			values: [50]
+		}
+	});
 });
 ```
 
@@ -241,17 +292,17 @@ test('should parse random expression with exclusions', () => {
 
 ```typescript
 test('should produce same results with same seed', () => {
-  const result1 = generateRandom(1, 10, 42); // seed=42
-  const result2 = generateRandom(1, 10, 42); // same seed
+	const result1 = generateRandom(1, 10, 42); // seed=42
+	const result2 = generateRandom(1, 10, 42); // same seed
 
-  expect(result1).toBe(result2); // Deterministic
+	expect(result1).toBe(result2); // Deterministic
 });
 
 test('should produce different results with different seeds', () => {
-  const result1 = generateRandom(1, 10, 42);
-  const result2 = generateRandom(1, 10, 43);
+	const result1 = generateRandom(1, 10, 42);
+	const result2 = generateRandom(1, 10, 43);
 
-  expect(result1).not.toBe(result2); // Non-deterministic
+	expect(result1).not.toBe(result2); // Non-deterministic
 });
 ```
 
@@ -259,10 +310,12 @@ test('should produce different results with different seeds', () => {
 
 ```typescript
 test('should fail on missing required field', () => {
-  const template = { /* missing 'type' field */ };
-  const errors = validateTemplate(template);
+	const template = {
+		/* missing 'type' field */
+	};
+	const errors = validateTemplate(template);
 
-  expect(errors.some(e => e.includes('type'))).toBe(true);
+	expect(errors.some((e) => e.includes('type'))).toBe(true);
 });
 ```
 
@@ -270,17 +323,17 @@ test('should fail on missing required field', () => {
 
 ```typescript
 test('should handle empty input', () => {
-  expect(parseExpression('')).toEqual([]);
+	expect(parseExpression('')).toEqual([]);
 });
 
 test('should handle very long input', () => {
-  const longInput = 'a'.repeat(10000);
-  expect(() => parseExpression(longInput)).not.toThrow();
+	const longInput = 'a'.repeat(10000);
+	expect(() => parseExpression(longInput)).not.toThrow();
 });
 
 test('should handle special characters', () => {
-  const input = 'Calcul: é + à = ';
-  expect(parseExpression(input)).toBeDefined();
+	const input = 'Calcul: é + à = ';
+	expect(parseExpression(input)).toBeDefined();
 });
 ```
 
@@ -288,12 +341,12 @@ test('should handle special characters', () => {
 
 ```typescript
 test('should throw on circular dependency', () => {
-  const variables = [
-    { name: 'a', expression: '{@:b}' },
-    { name: 'b', expression: '{@:a}' } // Circular!
-  ];
+	const variables = [
+		{ name: 'a', expression: '{@:b}' },
+		{ name: 'b', expression: '{@:a}' } // Circular!
+	];
 
-  expect(() => resolveVariables(variables)).toThrow('Circular dependency');
+	expect(() => resolveVariables(variables)).toThrow('Circular dependency');
 });
 ```
 
@@ -307,14 +360,14 @@ test('should throw on circular dependency', () => {
 import { vi } from 'vitest';
 
 const mockSupabase = {
-  from: vi.fn(() => ({
-    select: vi.fn(() => ({
-      eq: vi.fn(() => Promise.resolve({ data: [], error: null }))
-    })),
-    insert: vi.fn(() => Promise.resolve({ data: {}, error: null })),
-    update: vi.fn(() => Promise.resolve({ data: {}, error: null })),
-    delete: vi.fn(() => Promise.resolve({ error: null }))
-  }))
+	from: vi.fn(() => ({
+		select: vi.fn(() => ({
+			eq: vi.fn(() => Promise.resolve({ data: [], error: null }))
+		})),
+		insert: vi.fn(() => Promise.resolve({ data: {}, error: null })),
+		update: vi.fn(() => Promise.resolve({ data: {}, error: null })),
+		delete: vi.fn(() => Promise.resolve({ error: null }))
+	}))
 };
 ```
 
@@ -322,9 +375,9 @@ const mockSupabase = {
 
 ```typescript
 const mockStorage = {
-  upload: vi.fn(() => Promise.resolve({ data: { path: 'test.jpg' }, error: null })),
-  remove: vi.fn(() => Promise.resolve({ error: null })),
-  getPublicUrl: vi.fn(() => ({ data: { publicUrl: 'https://...' } }))
+	upload: vi.fn(() => Promise.resolve({ data: { path: 'test.jpg' }, error: null })),
+	remove: vi.fn(() => Promise.resolve({ error: null })),
+	getPublicUrl: vi.fn(() => ({ data: { publicUrl: 'https://...' } }))
 };
 ```
 
@@ -336,18 +389,18 @@ const mockStorage = {
 
 ```typescript
 test('should handle 1000 shuffles efficiently', () => {
-  const choices = Array.from({ length: 100 }, (_, i) => ({
-    content: { type: 'text', content: `Choice ${i}` },
-    isCorrect: i === 0
-  }));
+	const choices = Array.from({ length: 100 }, (_, i) => ({
+		content: { type: 'text', content: `Choice ${i}` },
+		isCorrect: i === 0
+	}));
 
-  const start = performance.now();
-  for (let i = 0; i < 1000; i++) {
-    shuffleChoices(choices, i);
-  }
-  const duration = performance.now() - start;
+	const start = performance.now();
+	for (let i = 0; i < 1000; i++) {
+		shuffleChoices(choices, i);
+	}
+	const duration = performance.now() - start;
 
-  expect(duration).toBeLessThan(1000); // < 1 second
+	expect(duration).toBeLessThan(1000); // < 1 second
 });
 ```
 
@@ -355,10 +408,10 @@ test('should handle 1000 shuffles efficiently', () => {
 
 ```typescript
 test('should not leak memory with large inputs', () => {
-  const large = Array.from({ length: 10000 }, () => generateRandom(1, 100));
+	const large = Array.from({ length: 10000 }, () => generateRandom(1, 100));
 
-  expect(large.length).toBe(10000);
-  // Check memory usage if needed
+	expect(large.length).toBe(10000);
+	// Check memory usage if needed
 });
 ```
 
@@ -373,13 +426,14 @@ test('should not leak memory with large inputs', () => {
 **Cause**: Mock not returning proper `{ data, error }` structure
 
 **Fix**:
+
 ```typescript
 // ❌ Bad
 const mockFrom = vi.fn(() => ({ select: vi.fn() }));
 
 // ✅ Good
 const mockFrom = vi.fn(() => ({
-  select: vi.fn(() => Promise.resolve({ data: [], error: null }))
+	select: vi.fn(() => Promise.resolve({ data: [], error: null }))
 }));
 ```
 
@@ -388,17 +442,18 @@ const mockFrom = vi.fn(() => ({
 **Error**: Test times out or finishes before assertions
 
 **Fix**: Always `await` async operations
+
 ```typescript
 // ❌ Bad
 test('should fetch data', () => {
-  fetchData(); // Missing await!
-  expect(data).toBeDefined();
+	fetchData(); // Missing await!
+	expect(data).toBeDefined();
 });
 
 // ✅ Good
 test('should fetch data', async () => {
-  const data = await fetchData();
-  expect(data).toBeDefined();
+	const data = await fetchData();
+	expect(data).toBeDefined();
 });
 ```
 
@@ -407,6 +462,7 @@ test('should fetch data', async () => {
 **Cause**: Tests depend on random values or timing
 
 **Fix**: Use seeded random or mock timers
+
 ```typescript
 // ❌ Bad
 const random = Math.random();
