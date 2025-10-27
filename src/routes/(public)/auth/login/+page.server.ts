@@ -40,7 +40,6 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { createLogger } from '$lib/utils/logger';
-import { dev } from '$app/environment';
 import {
 	checkLoginRateLimitByIP,
 	checkLoginRateLimitByEmail,
@@ -73,10 +72,9 @@ export const actions = {
 		// Get the redirect destination - default to dashboard
 		const redirectTo = url.searchParams.get('redirectTo') || '/dashboard';
 
-		// Determine the callback URL based on environment
-		const callbackUrl = dev
-			? 'http://localhost:5173/auth/callback'
-			: 'https://ubumaths-6op8.vercel.app/auth/callback';
+		// Use the current origin to build the callback URL
+		// This automatically works in dev (localhost:5173) and production (vercel domain)
+		const callbackUrl = `${url.origin}/auth/callback`;
 
 		logger.info('Initiating Google OAuth flow', { callbackUrl, redirectTo });
 
