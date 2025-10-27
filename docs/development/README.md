@@ -26,6 +26,10 @@ Standards de code, conventions de nommage, patterns recommandés, état du linti
 
 Stratégie de linting, lint-staged, Husky, ESLint cache, workflow automatisé.
 
+### [Type Safety Patterns](type-safety-patterns.md) 🆕 2025-10-27
+
+Patterns de type safety pour interactions avec Supabase, assertions d'enum, typage des mocks, null safety.
+
 ### [Migration Svelte 5](svelte5-migration.md)
 
 Guide de migration vers Svelte 5, runes, deprecations résolues.

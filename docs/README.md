@@ -234,8 +234,9 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 - **Features en production** : 11
 - **Features en développement** : 1 (Navadra)
-- **Tests** : 2,064 tests (100% pass rate)
-- **Lignes de documentation** : ~14,000+
+- **Tests** : 2,088 tests (2,063 passing, 100% non-skipped pass rate)
+- **Code Quality** : 0 errors in production code (853 → 0)
+- **Lignes de documentation** : ~16,000+
 - **Dernière mise à jour** : 2025-10-27
 
 ---
