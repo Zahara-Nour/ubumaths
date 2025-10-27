@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/Zahara-Nour/ubumaths/compare/v0.0.5...v0.0.6) (2025-10-27)
+
+### ✨ Features
+
+- enhance games UI with improved styling and Mathémo integration ([8c25d68](https://github.com/Zahara-Nour/ubumaths/commit/8c25d685072a324108495ad247e8b4ac2712007d))
+
 ### [0.0.5](https://github.com/Zahara-Nour/ubumaths/compare/v0.0.4...v0.0.5) (2025-10-27)
 
 ### 🐛 Bug Fixes
