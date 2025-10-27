@@ -975,14 +975,14 @@
 		.letter.flipping-exact.new-discovery {
 			animation:
 				flip-to-exact 0.6s ease-in-out,
-				glow-pulse 0.8s ease-in-out 0.6s 3;
+				glow-pulse 0.8s ease-in-out 0.6s 15;
 			animation-fill-mode: forwards;
 		}
 
 		.letter.flipping-close.new-discovery {
 			animation:
 				flip-to-close 0.6s ease-in-out,
-				glow-pulse 0.8s ease-in-out 0.6s 3;
+				glow-pulse 0.8s ease-in-out 0.6s 15;
 			animation-fill-mode: forwards;
 		}
 
