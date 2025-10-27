@@ -43,6 +43,12 @@
 	/** Triggers wiggle animation when invalid word is submitted */
 	let badGuess = $state(false);
 
+	/** Track which row is currently animating (null if no animation) */
+	let animatingRow = $state<number | null>(null);
+
+	/** Indices of letters that are newly discovered in the animating row */
+	let newlyDiscoveredIndices = $state<number[]>([]);
+
 	// ===== Derived Values (Computed from Game State) =====
 
 	/** Has the player won the game? */
@@ -122,12 +128,53 @@
 		if (key === 'enter') {
 			if (!canSubmit) return;
 
+			// Calculate newly discovered letters before submitting
+			const currentGuessText = currentGuess;
+			const currentRowIndex = game.currentRow;
+
+			// Get all unique letters that matched (exact OR close) in ANY previous guess
+			const previouslyMatchedLetters = new Set<string>();
+			for (let i = 0; i < currentRowIndex; i++) {
+				const guess = game.guesses[i];
+				const feedback = game.answers[i];
+				if (guess && feedback) {
+					for (let j = 0; j < guess.length; j++) {
+						const letter = guess[j].toLowerCase();
+						const feedbackChar = feedback[j];
+						// Only count letters that were exact ('x') or close ('c') matches
+						if (feedbackChar === 'x' || feedbackChar === 'c') {
+							previouslyMatchedLetters.add(letter);
+						}
+					}
+				}
+			}
+
+			// Find indices of letters being matched for the FIRST TIME ever
+			const newIndices: number[] = [];
+			for (let i = 0; i < currentGuessText.length; i++) {
+				const letter = currentGuessText[i].toLowerCase();
+				// Only glow if this letter has never matched before
+				if (!previouslyMatchedLetters.has(letter)) {
+					newIndices.push(i);
+				}
+			}
+
 			// Try to submit guess
 			const valid = game.enterGuess();
 			if (!valid) {
 				// Trigger wiggle animation for invalid word
 				badGuess = true;
 				setTimeout(() => (badGuess = false), 500);
+			} else {
+				// Valid guess - trigger flip animation
+				animatingRow = currentRowIndex;
+				newlyDiscoveredIndices = newIndices;
+
+				// Clear animation state after all animations complete
+				setTimeout(() => {
+					animatingRow = null;
+					newlyDiscoveredIndices = [];
+				}, 2500);
 			}
 		} else if (key === 'backspace') {
 			game.updateGuess('backspace');
@@ -194,15 +241,15 @@
 	<meta name="description" content="Un clone de Wordle adapté au cours de Maths" />
 </svelte:head>
 
-<div class="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
-	<h1 class="text-4xl font-bold" style="font-family: 'pacifico'">Mathémo</h1>
+<div class="flex min-h-screen flex-col items-center justify-start gap-2 p-4 pt-4 sm:gap-4 sm:pt-8">
+	<h1 class="text-3xl font-bold sm:text-4xl" style="font-family: 'pacifico'">Mathémo</h1>
 
 	<!-- Controls: Difficulty and Attempts -->
 	{#if !gameOver}
-		<div class="flex flex-wrap items-center justify-center gap-4">
+		<div class="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
 			<!-- Difficulty Selector -->
-			<div class="flex items-center gap-2">
-				<label for="difficulty" class="text-sm font-medium">Niveau:</label>
+			<div class="flex items-center gap-1 sm:gap-2">
+				<label for="difficulty" class="text-xs font-medium sm:text-sm">Niveau:</label>
 				<Select.Root
 					selected={{ value: game.difficulty, label: game.difficulty }}
 					onSelectedChange={handleDifficultyChange}
@@ -219,8 +266,8 @@
 			</div>
 
 			<!-- Attempts Controls -->
-			<div class="flex items-center gap-2">
-				<span class="text-sm font-medium">Tentatives:</span>
+			<div class="flex items-center gap-1 sm:gap-2">
+				<span class="text-xs font-medium sm:text-sm">Tentatives:</span>
 				<Button
 					variant="outline"
 					size="sm"
@@ -247,7 +294,7 @@
 		class="grid"
 		class:playing={!won}
 		class:bad-guess={badGuess}
-		style="--grid-size: {game.getSize()}"
+		style="--grid-size: {game.getSize()}; --max-attempts: {game.maxAttempts}"
 	>
 		{#each Array(game.maxAttempts) as _unused, row (row)}
 			{@const current = row === game.currentRow && !gameOver}
@@ -261,7 +308,22 @@
 					{@const close = answer === 'c'}
 					{@const missing = answer === '_'}
 					{@const clue = !value && current && !!game.correctLetters[column]}
-					<div class="letter" class:exact class:close class:missing class:selected class:clue>
+					{@const isAnimating = animatingRow === row}
+					{@const isNewDiscovery = newlyDiscoveredIndices.includes(column)}
+					<div
+						class="letter"
+						class:exact={exact && !isAnimating}
+						class:close={close && !isAnimating}
+						class:missing={missing && !isAnimating}
+						class:selected
+						class:clue
+						class:flipping={isAnimating}
+						class:flipping-exact={isAnimating && exact}
+						class:flipping-close={isAnimating && close}
+						class:flipping-missing={isAnimating && missing}
+						class:new-discovery={isNewDiscovery}
+						style={isAnimating ? `animation-delay: ${column * 150}ms` : ''}
+					>
 						{value || (current ? game.correctLetters[column] : '')}
 						<span class="visually-hidden">
 							{#if exact}
@@ -369,28 +431,39 @@
 <style lang="postcss">
 	/* ===== Grid Container ===== */
 	.grid {
-		/* Dynamic grid size based on target word length (set via inline style) */
-		--width: calc(var(--grid-size) * 3.5rem * var(--font-scale));
-		--height: calc(7 * 3rem * var(--font-scale)); /* 7 rows maximum */
-		max-width: var(--width);
-		max-height: var(--height);
+		/* Dynamic grid size based on target word length and number of attempts */
+		/* Scale down cell size when there are more attempts to prevent overflow */
+		--cell-size: calc(
+			min(3rem, max(2rem, calc((100vh - 400px) / var(--max-attempts)))) * var(--font-scale)
+		);
 		align-self: center;
 		justify-self: center;
 		width: 100%;
-		height: 100%;
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
-		/* Big gap around grid for visual breathing room */
-		margin: calc(2rem * var(--font-scale)) 0;
+		gap: calc(0.2rem * var(--font-scale));
+		/* Minimal margin to maximize available space */
+		margin: calc(0.25rem * var(--font-scale)) 0;
+	}
+
+	/* Larger cell sizes and margins on taller screens */
+	@media (min-height: 800px) {
+		.grid {
+			--cell-size: calc(
+				min(3.5rem, max(2.5rem, calc((100vh - 500px) / var(--max-attempts)))) * var(--font-scale)
+			);
+			margin: calc(1rem * var(--font-scale)) 0;
+		}
 	}
 
 	/* Individual grid rows (one per guess attempt) */
 	.grid .row {
 		display: grid;
-		grid-template-columns: repeat(var(--grid-size), 1fr);
+		grid-template-columns: repeat(var(--grid-size), var(--cell-size));
 		grid-gap: calc(0.2rem * var(--font-scale));
-		margin: 0 0 calc(0.2rem * var(--font-scale)) 0;
+		height: var(--cell-size);
+		justify-content: center;
 	}
 
 	/* Wiggle animation for invalid word submission */
@@ -411,6 +484,7 @@
 	.letter {
 		aspect-ratio: 1; /* Square cells */
 		width: 100%;
+		height: 100%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -418,7 +492,8 @@
 		box-sizing: border-box;
 		text-transform: lowercase;
 		border: none;
-		font-size: calc(2rem * var(--font-scale)); /* Scales with accessibility font size */
+		/* Font size scales with cell size */
+		font-size: calc(var(--cell-size) * 0.6);
 		border-radius: 2px;
 		background: #e8e8e8; /* Light mode: light gray */
 		margin: 0;
@@ -464,19 +539,21 @@
 
 	/* Close match (correct letter in wrong position) */
 	.letter.close {
-		border: calc(3px * var(--font-scale)) solid #5b8def; /* Blue border */
-		background: #e8e8e8; /* Keep background neutral */
+		background: #c0c0c0; /* Same gray background as tried letters */
+		color: #5b8def; /* Blue text */
+		font-weight: bold;
 	}
 
 	:global(.dark) .letter.close {
-		border: calc(3px * var(--font-scale)) solid #4a7bd8;
-		background: #2a2a2a;
+		background: #404040; /* Same dark background as tried letters */
+		color: #4a7bd8; /* Blue text for dark mode */
+		font-weight: bold;
 	}
 
 	/* Selected/active cell (current typing position) */
 	.selected {
 		outline: none;
-		border: calc(3px * var(--font-scale)) solid #f95454; /* Red blinking border */
+		border: max(2px, calc(var(--cell-size) * 0.08)) solid #f95454; /* Red blinking border */
 		animation-name: blinking;
 		animation-duration: 1.5s;
 		animation-iteration-count: 100; /* Effectively infinite */
@@ -486,7 +563,16 @@
 	.controls {
 		text-align: center;
 		justify-content: center;
-		height: min(18vh, 10rem); /* Responsive height */
+		/* More compact on mobile to fit with virtual keyboard */
+		height: min(16vh, 8rem);
+		flex-shrink: 0;
+	}
+
+	/* Larger controls area on taller screens */
+	@media (min-height: 800px) {
+		.controls {
+			height: min(18vh, 10rem);
+		}
 	}
 
 	/* ===== On-Screen Keyboard ===== */
@@ -538,31 +624,41 @@
 	}
 
 	.keyboard button.exact {
-		background: #5b8def;
-		color: white;
+		background: #c0c0c0; /* Same gray background as tried letters */
+		color: #5b8def; /* Blue text */
+		font-weight: bold;
+		font-size: calc(var(--size) * 0.75); /* 1.5x larger than normal (0.5 * 1.5) */
 	}
 
 	:global(.dark) .keyboard button.exact {
-		background: #4a7bd8;
-		color: white;
+		background: #404040; /* Same dark background as tried letters */
+		color: #4a7bd8; /* Blue text for dark mode */
+		font-weight: bold;
 	}
 
 	.keyboard button.missing {
 		background: #c0c0c0;
-		color: #c0c0c0;
+		color: #666; /* Darker text so it's still visible */
+		opacity: 0.7; /* Slightly faded to show it's not in the word */
 	}
 
 	:global(.dark) .keyboard button.missing {
 		background: #404040;
-		color: #404040;
+		color: #999; /* Lighter text for dark mode */
+		opacity: 0.7;
 	}
 
 	.keyboard button.close {
-		border: calc(4px * var(--font-scale)) solid #5b8def;
+		background: #c0c0c0; /* Same gray background as tried letters */
+		color: #5b8def; /* Blue text */
+		font-weight: bold;
+		font-size: calc(var(--size) * 0.75); /* 1.5x larger than normal (0.5 * 1.5) */
 	}
 
 	:global(.dark) .keyboard button.close {
-		border: calc(4px * var(--font-scale)) solid #4a7bd8;
+		background: #404040; /* Same dark background as tried letters */
+		color: #4a7bd8; /* Blue text for dark mode */
+		font-weight: bold;
 	}
 
 	.keyboard button:focus {
@@ -640,5 +736,281 @@
 		position: absolute;
 		width: 1px;
 		white-space: nowrap;
+	}
+
+	/* ===== Flip Card Animation ===== */
+
+	/* Base styles for flipping letters - start neutral regardless of final state */
+	.letter.flipping-exact,
+	.letter.flipping-close,
+	.letter.flipping-missing {
+		background: #e8e8e8;
+		color: #1a1a1a;
+		font-weight: normal;
+	}
+
+	:global(.dark) .letter.flipping-exact,
+	:global(.dark) .letter.flipping-close,
+	:global(.dark) .letter.flipping-missing {
+		background: #2a2a2a;
+		color: #e8e8e8;
+		font-weight: normal;
+	}
+
+	/* Flip animation - 3D rotation with color reveal at midpoint */
+	@keyframes flip-to-exact {
+		0% {
+			transform: rotateX(0deg);
+			background: #e8e8e8;
+			color: #1a1a1a;
+		}
+		49.99% {
+			transform: rotateX(90deg);
+			background: #e8e8e8;
+			color: #1a1a1a;
+		}
+		50% {
+			transform: rotateX(90deg);
+			background: #5b8def;
+			color: white;
+		}
+		100% {
+			transform: rotateX(0deg);
+			background: #5b8def;
+			color: white;
+		}
+	}
+
+	@keyframes flip-to-close {
+		0% {
+			transform: rotateX(0deg);
+			background: #e8e8e8;
+			color: #1a1a1a;
+			font-weight: normal;
+		}
+		49.99% {
+			transform: rotateX(90deg);
+			background: #e8e8e8;
+			color: #1a1a1a;
+			font-weight: normal;
+		}
+		50% {
+			transform: rotateX(90deg);
+			background: #c0c0c0;
+			color: #5b8def;
+			font-weight: bold;
+		}
+		100% {
+			transform: rotateX(0deg);
+			background: #c0c0c0;
+			color: #5b8def;
+			font-weight: bold;
+		}
+	}
+
+	@keyframes flip-to-missing {
+		0% {
+			transform: rotateX(0deg);
+			background: #e8e8e8;
+			color: #1a1a1a;
+		}
+		49.99% {
+			transform: rotateX(90deg);
+			background: #e8e8e8;
+			color: #1a1a1a;
+		}
+		50% {
+			transform: rotateX(90deg);
+			background: #c0c0c0;
+			color: #666;
+		}
+		100% {
+			transform: rotateX(0deg);
+			background: #c0c0c0;
+			color: #666;
+		}
+	}
+
+	/* Dark mode flip animations */
+	@keyframes flip-to-exact-dark {
+		0% {
+			transform: rotateX(0deg);
+			background: #2a2a2a;
+			color: #e8e8e8;
+		}
+		49.99% {
+			transform: rotateX(90deg);
+			background: #2a2a2a;
+			color: #e8e8e8;
+		}
+		50% {
+			transform: rotateX(90deg);
+			background: #4a7bd8;
+			color: white;
+		}
+		100% {
+			transform: rotateX(0deg);
+			background: #4a7bd8;
+			color: white;
+		}
+	}
+
+	@keyframes flip-to-close-dark {
+		0% {
+			transform: rotateX(0deg);
+			background: #2a2a2a;
+			color: #e8e8e8;
+			font-weight: normal;
+		}
+		49.99% {
+			transform: rotateX(90deg);
+			background: #2a2a2a;
+			color: #e8e8e8;
+			font-weight: normal;
+		}
+		50% {
+			transform: rotateX(90deg);
+			background: #404040;
+			color: #4a7bd8;
+			font-weight: bold;
+		}
+		100% {
+			transform: rotateX(0deg);
+			background: #404040;
+			color: #4a7bd8;
+			font-weight: bold;
+		}
+	}
+
+	@keyframes flip-to-missing-dark {
+		0% {
+			transform: rotateX(0deg);
+			background: #2a2a2a;
+			color: #e8e8e8;
+		}
+		49.99% {
+			transform: rotateX(90deg);
+			background: #2a2a2a;
+			color: #e8e8e8;
+		}
+		50% {
+			transform: rotateX(90deg);
+			background: #404040;
+			color: #888;
+		}
+		100% {
+			transform: rotateX(0deg);
+			background: #404040;
+			color: #888;
+		}
+	}
+
+	/* Glow pulse animation for newly discovered letters */
+	@keyframes glow-pulse {
+		0%,
+		100% {
+			box-shadow:
+				0 0 5px rgba(91, 141, 239, 0.5),
+				0 0 10px rgba(91, 141, 239, 0.3);
+		}
+		50% {
+			box-shadow:
+				0 0 15px rgba(91, 141, 239, 0.8),
+				0 0 25px rgba(91, 141, 239, 0.5),
+				0 0 35px rgba(91, 141, 239, 0.3);
+		}
+	}
+
+	/* Dark mode glow pulse */
+	@keyframes glow-pulse-dark {
+		0%,
+		100% {
+			box-shadow:
+				0 0 5px rgba(74, 123, 216, 0.5),
+				0 0 10px rgba(74, 123, 216, 0.3);
+		}
+		50% {
+			box-shadow:
+				0 0 15px rgba(74, 123, 216, 0.8),
+				0 0 25px rgba(74, 123, 216, 0.5),
+				0 0 35px rgba(74, 123, 216, 0.3);
+		}
+	}
+
+	/* Apply flip animation to letters when row is animating */
+	@media (prefers-reduced-motion: no-preference) {
+		/* Apply specific flip animation based on final state */
+		.letter.flipping-exact {
+			animation: flip-to-exact 0.6s ease-in-out;
+			animation-fill-mode: forwards;
+		}
+
+		.letter.flipping-close {
+			animation: flip-to-close 0.6s ease-in-out;
+			animation-fill-mode: forwards;
+		}
+
+		.letter.flipping-missing {
+			animation: flip-to-missing 0.6s ease-in-out;
+			animation-fill-mode: forwards;
+		}
+
+		/* Dark mode uses different animations */
+		:global(.dark) .letter.flipping-exact {
+			animation: flip-to-exact-dark 0.6s ease-in-out;
+			animation-fill-mode: forwards;
+		}
+
+		:global(.dark) .letter.flipping-close {
+			animation: flip-to-close-dark 0.6s ease-in-out;
+			animation-fill-mode: forwards;
+		}
+
+		:global(.dark) .letter.flipping-missing {
+			animation: flip-to-missing-dark 0.6s ease-in-out;
+			animation-fill-mode: forwards;
+		}
+
+		/* ONLY newly discovered letters get glow - combine with their flip animation */
+		.letter.flipping-exact.new-discovery {
+			animation:
+				flip-to-exact 0.6s ease-in-out,
+				glow-pulse 0.8s ease-in-out 0.6s 3;
+			animation-fill-mode: forwards;
+		}
+
+		.letter.flipping-close.new-discovery {
+			animation:
+				flip-to-close 0.6s ease-in-out,
+				glow-pulse 0.8s ease-in-out 0.6s 3;
+			animation-fill-mode: forwards;
+		}
+
+		/* Missing letters don't get glow effect - they just flip normally */
+
+		/* Dark mode new discoveries */
+		:global(.dark) .letter.flipping-exact.new-discovery {
+			animation:
+				flip-to-exact-dark 0.6s ease-in-out,
+				glow-pulse-dark 0.8s ease-in-out 0.6s 3;
+			animation-fill-mode: forwards;
+		}
+
+		:global(.dark) .letter.flipping-close.new-discovery {
+			animation:
+				flip-to-close-dark 0.6s ease-in-out,
+				glow-pulse-dark 0.8s ease-in-out 0.6s 3;
+			animation-fill-mode: forwards;
+		}
+
+		/* Missing letters don't get glow effect in dark mode either */
+	}
+
+	/* For users who prefer reduced motion, skip animations */
+	@media (prefers-reduced-motion: reduce) {
+		.letter.flipping,
+		.letter.new-discovery {
+			animation: none;
+		}
 	}
 </style>
