@@ -489,7 +489,7 @@ export async function validateAttempt(
 
 /**
  * Get results for an assessment (teacher view)
- * Uses the assessment_results view
+ * Optimized to batch all queries and use in-memory lookups
  *
  * @param isTestMode - If true, only include test students; if false, only real students
  */
@@ -498,7 +498,7 @@ export async function getAssessmentResults(
 	assessmentId: string,
 	isTestMode: boolean = false
 ): Promise<{ data: DbAssessmentResult[] | null; error: Error | null }> {
-	// First get all assignments for this assessment
+	// Step 1: Get all assignments for this assessment (1 query)
 	const { data: assignments, error: assignError } = await supabase
 		.from('assessment_assignments')
 		.select('id, class_id, student_id')
@@ -513,41 +513,140 @@ export async function getAssessmentResults(
 		return { data: [], error: null };
 	}
 
+	// Step 2: Get assessment info once (1 query)
+	const { data: assessment } = await supabase
+		.from('assessments')
+		.select('title, grade')
+		.eq('id', assessmentId)
+		.single();
+
+	if (!assessment) {
+		return { data: null, error: new Error('Assessment not found') };
+	}
+
+	// Step 3: Collect all unique class IDs and student IDs
+	const classIds = [...new Set(assignments.filter((a) => a.class_id).map((a) => a.class_id!))];
+	const directStudentIds = assignments.filter((a) => a.student_id).map((a) => a.student_id!);
+
+	// Step 4: Batch fetch all class members (1 query)
+	const classMembersMap = new Map<string, Array<{ student_id: string; class_id: string }>>();
+	if (classIds.length > 0) {
+		const { data: classMembers } = await supabase
+			.from('class_members')
+			.select('student_id, class_id')
+			.in('class_id', classIds);
+
+		for (const member of classMembers || []) {
+			if (!classMembersMap.has(member.class_id)) {
+				classMembersMap.set(member.class_id, []);
+			}
+			classMembersMap.get(member.class_id)!.push(member);
+		}
+	}
+
+	// Step 5: Build list of all student IDs (from classes and direct assignments)
+	const allStudentIds = new Set<string>(directStudentIds);
+	for (const members of classMembersMap.values()) {
+		for (const member of members) {
+			allStudentIds.add(member.student_id);
+		}
+	}
+
+	if (allStudentIds.size === 0) {
+		return { data: [], error: null };
+	}
+
+	// Step 6: Batch fetch all student profiles (1 query)
+	const { data: students } = await supabase
+		.from('profiles')
+		.select('id, firstname, lastname, is_test')
+		.in('id', Array.from(allStudentIds))
+		.eq('is_test', isTestMode);
+
+	const studentsMap = new Map((students || []).map((s) => [s.id, s]));
+
+	// Step 7: Batch fetch all class names (1 query)
+	const classNamesMap = new Map<string, string>();
+	if (classIds.length > 0) {
+		const { data: classes } = await supabase.from('classes').select('id, name').in('id', classIds);
+
+		for (const cls of classes || []) {
+			classNamesMap.set(cls.id, cls.name);
+		}
+	}
+
+	// Step 8: Batch fetch all test attempts for all assignments (1 query)
+	const assignmentIds = assignments.map((a) => a.id);
+	const { data: allAttempts } = await supabase
+		.from('test_sessions')
+		.select('assignment_id, user_id, score, completed_at, total_questions')
+		.in('assignment_id', assignmentIds)
+		.order('completed_at', { ascending: false });
+
+	// Group attempts by assignment_id + user_id
+	const attemptsMap = new Map<
+		string,
+		Array<{
+			score: number | null;
+			completed_at: string | null;
+			total_questions: number | null;
+		}>
+	>();
+
+	for (const attempt of allAttempts || []) {
+		const key = `${attempt.assignment_id}:${attempt.user_id}`;
+		if (!attemptsMap.has(key)) {
+			attemptsMap.set(key, []);
+		}
+		attemptsMap.get(key)!.push({
+			score: attempt.score,
+			completed_at: attempt.completed_at,
+			total_questions: attempt.total_questions
+		});
+	}
+
+	// Step 9: Build results using in-memory lookups
 	const results: DbAssessmentResult[] = [];
 
-	// For each assignment, get student results
 	for (const assignment of assignments) {
-		// If assigned to class, get all class members
+		// Handle class assignments
 		if (assignment.class_id) {
-			const { data: classMembers } = await supabase
-				.from('class_members')
-				.select('student_id, profiles:profiles!student_id(id, firstname, lastname, is_test)')
-				.eq('class_id', assignment.class_id)
-				.eq('profiles.is_test', isTestMode);
+			const classMembers = classMembersMap.get(assignment.class_id) || [];
+			const className = classNamesMap.get(assignment.class_id) || null;
 
-			for (const member of classMembers || []) {
-				const result = await getStudentAssignmentResult(
-					supabase,
+			for (const member of classMembers) {
+				const student = studentsMap.get(member.student_id);
+				if (!student) continue; // Skip if student not in filtered results (is_test mismatch)
+
+				const result = buildResultFromMaps(
 					assignment.id,
 					assessmentId,
-					member.student_id,
+					assessment.title,
+					assessment.grade,
 					assignment.class_id,
-					isTestMode
+					className,
+					student,
+					attemptsMap
 				);
-				if (result) results.push(result);
+				results.push(result);
 			}
 		}
-		// If assigned to individual student
+		// Handle direct student assignments
 		else if (assignment.student_id) {
-			const result = await getStudentAssignmentResult(
-				supabase,
+			const student = studentsMap.get(assignment.student_id);
+			if (!student) continue; // Skip if student not in filtered results (is_test mismatch)
+
+			const result = buildResultFromMaps(
 				assignment.id,
 				assessmentId,
-				assignment.student_id,
+				assessment.title,
+				assessment.grade,
 				null,
-				isTestMode
+				null,
+				student,
+				attemptsMap
 			);
-			if (result) results.push(result);
+			results.push(result);
 		}
 	}
 
@@ -555,72 +654,43 @@ export async function getAssessmentResults(
 }
 
 /**
- * Helper: Get result for a specific student assignment
+ * Helper: Build result object from in-memory maps
  */
-async function getStudentAssignmentResult(
-	supabase: TypedSupabaseClient,
+function buildResultFromMaps(
 	assignmentId: string,
 	assessmentId: string,
-	studentId: string,
+	assessmentTitle: string,
+	assessmentGrade: string,
 	classId: string | null,
-	isTestMode: boolean = false
-): Promise<DbAssessmentResult | null> {
-	// Get assessment info
-	const { data: assessment } = await supabase
-		.from('assessments')
-		.select('title, grade')
-		.eq('id', assessmentId)
-		.single();
+	className: string | null,
+	student: { id: string; firstname: string; lastname: string; is_test: boolean },
+	attemptsMap: Map<
+		string,
+		Array<{
+			score: number | null;
+			completed_at: string | null;
+			total_questions: number | null;
+		}>
+	>
+): DbAssessmentResult {
+	const attemptsKey = `${assignmentId}:${student.id}`;
+	const attempts = attemptsMap.get(attemptsKey) || [];
 
-	// Get student info - filter by is_test to ensure data isolation
-	const { data: student } = await supabase
-		.from('profiles')
-		.select('id, firstname, lastname, is_test')
-		.eq('id', studentId)
-		.eq('is_test', isTestMode)
-		.single();
-
-	// Get class info if applicable
-	let className: string | null = null;
-	if (classId) {
-		const { data: classData } = await supabase
-			.from('classes')
-			.select('name')
-			.eq('id', classId)
-			.single();
-		className = classData?.name || null;
-	}
-
-	// Get all attempts for this student
-	const { data: attempts } = await supabase
-		.from('test_sessions')
-		.select('score, completed_at, total_questions')
-		.eq('assignment_id', assignmentId)
-		.eq('user_id', studentId)
-		.order('completed_at', { ascending: false });
-
-	const attemptsCount = attempts?.length || 0;
-	const bestScore = attempts?.reduce((max, a) => Math.max(max, a.score || 0), 0) || null;
-	const lastAttempt = attempts?.[0]; // Most recent
+	const attemptsCount = attempts.length;
+	const bestScore = attempts.reduce((max, a) => Math.max(max, a.score || 0), 0) || null;
+	const lastAttempt = attempts[0]; // Most recent (already sorted DESC)
 	const lastAttemptAt = lastAttempt?.completed_at || null;
 	const totalQuestions = lastAttempt?.total_questions || null;
 
-	// Determine status
-	const status = getStudentStatus(
-		attemptsCount,
-		lastAttemptAt,
-		null // We'll get settings later if needed
-	);
-
-	if (!assessment || !student) return null;
+	const status = getStudentStatus(attemptsCount, lastAttemptAt, null);
 
 	return {
 		assignment_id: assignmentId,
 		assessment_id: assessmentId,
-		assessment_title: assessment.title,
-		assessment_grade: assessment.grade,
+		assessment_title: assessmentTitle,
+		assessment_grade: assessmentGrade,
 		class_id: classId,
-		student_id: studentId,
+		student_id: student.id,
 		student_user_id: student.id,
 		student_firstname: student.firstname,
 		student_lastname: student.lastname,

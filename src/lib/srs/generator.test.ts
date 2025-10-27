@@ -5,7 +5,7 @@
  * Tests for generating QuestionInstances for SRS flashcards.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
 	generateSRSInstance,
 	generateSRSPreviewInstances,
@@ -212,7 +212,9 @@ describe('validateTemplateForSRS', () => {
 	});
 
 	it('should reject template with null variations', () => {
-		const template = createMockTemplate({ variations: null as any });
+		const template = createMockTemplate({
+			variations: null as unknown as QuestionTemplate['variations']
+		});
 		const result = validateTemplateForSRS(template);
 
 		expect(result.isValid).toBe(false);

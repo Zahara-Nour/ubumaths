@@ -84,7 +84,18 @@ describe('generateInstance - Numerical Exact Questions', () => {
 		const result1 = generateInstance(template, 12345);
 		const result2 = generateInstance(template, 12345);
 
-		expect(result1.instance).toEqual(result2.instance);
+		// Test reproducibility by checking deterministic fields
+		expect(result1.success).toBe(true);
+		expect(result2.success).toBe(true);
+
+		// Verify both instances have valid timestamps (non-deterministic field)
+		expect(result1.instance!.generatedAt).toBeDefined();
+		expect(result2.instance!.generatedAt).toBeDefined();
+
+		// Test all deterministic fields are identical
+		const { generatedAt: _gen1, ...instance1Deterministic } = result1.instance!;
+		const { generatedAt: _gen2, ...instance2Deterministic } = result2.instance!;
+		expect(instance1Deterministic).toEqual(instance2Deterministic);
 	});
 
 	it('should generate different instances with different seeds', () => {

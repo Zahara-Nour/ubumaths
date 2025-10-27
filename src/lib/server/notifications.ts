@@ -11,7 +11,11 @@ import type {
 	CreateNotificationData,
 	CreateSystemNotificationData,
 	NotificationWithDetails,
-	NotificationStats
+	NotificationStats,
+	NotificationType,
+	NotificationPriority,
+	NotificationTargetType,
+	SystemEventType
 } from '$lib/types/notification';
 
 type SupabaseClientType = SupabaseClient<Database>;
@@ -44,7 +48,7 @@ export async function createNotification(
 
 		// For teachers, validate that they can only target their classes/students
 		if (profile.role === 'teacher') {
-			if (data.target_type === 'all' || data.target_type === 'role') {
+			if (data.target_type === 'all' || data.target_type === 'roles') {
 				return {
 					success: false,
 					error: 'Les professeurs ne peuvent cibler que leurs classes ou élèves'
@@ -196,7 +200,7 @@ export async function getUnreadNotifications(
 		const conditions = [`target_type.eq.all`];
 
 		// By role
-		conditions.push(`and(target_type.eq.role,target_roles.cs.{${profile.role}})`);
+		conditions.push(`and(target_type.eq.roles,target_roles.cs.{${profile.role}})`);
 
 		// By classes (if user has classes)
 		if (profile.class_ids && profile.class_ids.length > 0) {
@@ -249,14 +253,14 @@ export async function getUnreadNotifications(
 				created_by: n.created_by,
 				title: n.title,
 				message: n.message,
-				type: n.type,
-				priority: n.priority,
+				type: n.type as NotificationType,
+				priority: n.priority as NotificationPriority,
 				action_label: n.action_label,
 				action_url: n.action_url,
-				target_type: n.target_type,
+				target_type: n.target_type as NotificationTargetType,
 				expires_at: n.expires_at,
 				is_system: n.is_system,
-				system_event_type: n.system_event_type,
+				system_event_type: n.system_event_type as SystemEventType | null,
 				creator: n.creator || undefined,
 				is_read: false
 			}));
@@ -437,7 +441,7 @@ export async function getCreatedNotifications(
 						.select('*', { count: 'exact', head: true });
 					totalRecipients = count || 0;
 					targetSummary = 'Tous les utilisateurs';
-				} else if (n.target_type === 'role' && n.target_roles) {
+				} else if (n.target_type === 'roles' && n.target_roles) {
 					const { count } = await supabase
 						.from('profiles')
 						.select('*', { count: 'exact', head: true })
@@ -475,9 +479,9 @@ export async function getCreatedNotifications(
 					id: n.id,
 					title: n.title,
 					created_at: n.created_at,
-					type: n.type,
-					priority: n.priority,
-					target_type: n.target_type,
+					type: n.type as NotificationType,
+					priority: n.priority as NotificationPriority,
+					target_type: n.target_type as NotificationTargetType,
 					target_summary: targetSummary,
 					total_recipients: totalRecipients,
 					read_count: readCount || 0,

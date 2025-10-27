@@ -1094,7 +1094,6 @@ export function validateRightTriangle(
  */
 
 function extractLinePoints(
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	_line: unknown // For future line extraction
 ): { p1: { x: number; y: number }; p2: { x: number; y: number } } | null {
 	// This would need to be implemented based on MathGraph32's internal structure

@@ -101,7 +101,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 					// Query for eligible riddles
 					return {
 						select: vi.fn().mockReturnValue({
-							eq: vi.fn().mockImplementation((field: string, value: unknown) => {
+							eq: vi.fn().mockImplementation((field: string, _value: unknown) => {
 								if (field === 'status') {
 									return {
 										eq: vi.fn().mockImplementation((f: string, v: number) => {
@@ -194,7 +194,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 				} else if (table === 'riddles') {
 					return {
 						select: vi.fn().mockReturnValue({
-							eq: vi.fn().mockImplementation((field: string, value: unknown) => {
+							eq: vi.fn().mockImplementation((field: string, _value: unknown) => {
 								if (field === 'status') {
 									return {
 										eq: vi.fn().mockImplementation((f: string, v: number) => {
@@ -284,7 +284,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 				} else if (table === 'riddles') {
 					return {
 						select: vi.fn().mockReturnValue({
-							eq: vi.fn().mockImplementation((field: string, value: unknown) => {
+							eq: vi.fn().mockImplementation((field: string, _value: unknown) => {
 								if (field === 'status') {
 									return {
 										eq: vi.fn().mockImplementation((f: string, v: number) => {
@@ -545,7 +545,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 
 					return {
 						select: vi.fn().mockReturnValue({
-							eq: vi.fn().mockImplementation((field: string, value: unknown) => {
+							eq: vi.fn().mockImplementation((field: string, _value: unknown) => {
 								if (field === 'status' && riddlesQueryCount === 1) {
 									// First riddles query - target difficulty 3 (2+1)
 									return {
@@ -857,7 +857,7 @@ describe('checkAndAutoSelectToday', () => {
 	});
 
 	it('should skip selection if riddle already exists for today', async () => {
-		const today = new Date().toISOString().split('T')[0];
+		const _today = new Date().toISOString().split('T')[0];
 
 		(mockSupabase.from as Mock).mockReturnValue({
 			select: vi.fn().mockReturnValue({
@@ -877,7 +877,7 @@ describe('checkAndAutoSelectToday', () => {
 	});
 
 	it('should auto-select if no riddle exists for today', async () => {
-		const today = new Date().toISOString().split('T')[0];
+		const _today = new Date().toISOString().split('T')[0];
 
 		let callCount = 0;
 		(mockSupabase.from as Mock).mockImplementation((table: string) => {

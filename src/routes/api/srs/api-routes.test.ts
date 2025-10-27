@@ -25,9 +25,9 @@
  * - Test error handling
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
-import { Grade } from '$lib/srs/types';
+import { Grade, type FSRSConfig } from '$lib/srs/types';
 
 // Mock Supabase responses
 const mockSupabaseClient = () => {
@@ -219,7 +219,7 @@ describe('POST /api/srs/decks - Create Deck', () => {
 		const { POST } = await import('./decks/+server');
 
 		const mockSupabase = mockSupabaseClient();
-		let capturedConfig: any;
+		let capturedConfig: FSRSConfig | undefined;
 
 		const insertMock = vi.fn().mockImplementation((data) => {
 			capturedConfig = data.config;

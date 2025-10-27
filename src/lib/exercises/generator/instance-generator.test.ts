@@ -54,7 +54,7 @@ describe('Static Exercises', () => {
 		expect(result.success).toBe(true);
 		expect(result.instance).toBeDefined();
 
-		if (result.success) {
+		if (result.success && result.instance) {
 			expect(result.instance.statement_md).toBe('Calculate $2 + 3$');
 			expect(result.instance.solution_md).toBe('The answer is $5$');
 			expect(result.instance.resolvedVariables).toEqual([]);
@@ -69,7 +69,7 @@ describe('Static Exercises', () => {
 		const result = generateExerciseInstance(exercise);
 
 		expect(result.success).toBe(true);
-		if (result.success) {
+		if (result.success && result.instance) {
 			expect(typeof result.instance.seed).toBe('number');
 		}
 	});
@@ -88,7 +88,7 @@ describe('Static Exercises', () => {
 		const result = generateExerciseInstance(exercise);
 
 		expect(result.success).toBe(true);
-		if (result.success) {
+		if (result.success && result.instance) {
 			expect(result.instance.title).toBe('Addition Practice');
 			expect(result.instance.difficulty).toBe(2);
 			expect(result.instance.tags).toEqual(['addition', 'arithmetic']);
@@ -120,7 +120,7 @@ describe('Parameterized Exercises - Simple Variables', () => {
 		const result = generateExerciseInstance(exercise, { seed: 42 });
 
 		expect(result.success).toBe(true);
-		if (result.success) {
+		if (result.success && result.instance) {
 			expect(result.instance.statement_md).toBe('Calculate $7 + 3$');
 			expect(result.instance.solution_md).toBe('The answer is $10$');
 			expect(result.instance.resolvedVariables).toEqual([
@@ -140,7 +140,7 @@ describe('Parameterized Exercises - Simple Variables', () => {
 		const result = generateExerciseInstance(exercise, { seed: 12345 });
 
 		expect(result.success).toBe(true);
-		if (result.success) {
+		if (result.success && result.instance) {
 			const value = parseInt(result.instance.resolvedVariables[0].value);
 			expect(value).toBeGreaterThanOrEqual(1);
 			expect(value).toBeLessThanOrEqual(10);
@@ -162,7 +162,7 @@ describe('Parameterized Exercises - Simple Variables', () => {
 		const result = generateExerciseInstance(exercise, { seed: 42 });
 
 		expect(result.success).toBe(true);
-		if (result.success) {
+		if (result.success && result.instance) {
 			expect(result.instance.statement_md).toBe('Calculate $5 + 3$');
 			expect(result.instance.solution_md).toBe('The answer is $8$');
 			expect(result.instance.resolvedVariables).toEqual([
@@ -193,7 +193,7 @@ describe('Parameterized Exercises - Complex Scenarios', () => {
 		const result = generateExerciseInstance(exercise, { seed: 42 });
 
 		expect(result.success).toBe(true);
-		if (result.success) {
+		if (result.success && result.instance) {
 			expect(result.instance.statement_md).toContain('x = 2');
 			expect(result.instance.statement_md).toContain('y = 3');
 			expect(result.instance.statement_md).toContain('$2^2 + 3^2$');
@@ -217,7 +217,7 @@ describe('Parameterized Exercises - Complex Scenarios', () => {
 		const result = generateExerciseInstance(exercise, { seed: 42 });
 
 		expect(result.success).toBe(true);
-		if (result.success) {
+		if (result.success && result.instance) {
 			expect(result.instance.statement_md).toBe('Values: a=5, b=5, c=10');
 			expect(result.instance.resolvedVariables).toEqual([
 				{ name: 'a', value: '5' },
@@ -278,7 +278,7 @@ describe('Error Handling', () => {
 		const result = generateExerciseInstance(exercise, { parseAST: true });
 		expect(result.success).toBe(true);
 
-		if (result.success) {
+		if (result.success && result.instance) {
 			expect(result.instance.statement_ast).toBeDefined();
 			expect(result.instance.solution_ast).toBeDefined();
 		}
@@ -303,7 +303,7 @@ describe('Seeding', () => {
 		expect(result1.success).toBe(true);
 		expect(result2.success).toBe(true);
 
-		if (result1.success && result2.success) {
+		if (result1.success && result1.instance && result2.success && result2.instance) {
 			// Seeds should be different (extremely unlikely to be same)
 			expect(result1.instance.seed).not.toBe(result2.instance.seed);
 		}
@@ -322,7 +322,7 @@ describe('Seeding', () => {
 		expect(result1.success).toBe(true);
 		expect(result2.success).toBe(true);
 
-		if (result1.success && result2.success) {
+		if (result1.success && result1.instance && result2.success && result2.instance) {
 			expect(result1.instance.seed).toBe(12345);
 			expect(result2.instance.seed).toBe(12345);
 			expect(result1.instance.statement_md).toBe(result2.instance.statement_md);
@@ -389,7 +389,7 @@ describe('AST Parsing', () => {
 		const result = generateExerciseInstance(exercise);
 
 		expect(result.success).toBe(true);
-		if (result.success) {
+		if (result.success && result.instance) {
 			expect(result.instance.statement_ast).toBeUndefined();
 			expect(result.instance.solution_ast).toBeUndefined();
 		}
@@ -404,7 +404,7 @@ describe('AST Parsing', () => {
 		const result = generateExerciseInstance(exercise, { parseAST: true });
 
 		expect(result.success).toBe(true);
-		if (result.success) {
+		if (result.success && result.instance) {
 			expect(result.instance.statement_ast).toBeDefined();
 			expect(result.instance.solution_ast).toBeDefined();
 			expect(result.instance.statement_ast!.type).toBe('document');
@@ -425,7 +425,7 @@ describe('AST Parsing', () => {
 		const result = generateExerciseInstance(exercise, { seed: 42, parseAST: true });
 
 		expect(result.success).toBe(true);
-		if (result.success) {
+		if (result.success && result.instance) {
 			// AST should contain resolved values, not {{}} syntax
 			expect(result.instance.statement_md).toBe('Calculate $7 + 3$');
 			expect(result.instance.statement_ast).toBeDefined();
@@ -471,7 +471,12 @@ describe('Batch Generation', () => {
 
 		// Same seeds = same results
 		for (let i = 0; i < 3; i++) {
-			if (results1[i].success && results2[i].success) {
+			if (
+				results1[i].success &&
+				results1[i].instance &&
+				results2[i].success &&
+				results2[i].instance
+			) {
 				expect(results1[i].instance!.seed).toBe(1000 + i);
 				expect(results2[i].instance!.seed).toBe(1000 + i);
 				expect(results1[i].instance!.statement_md).toBe(results2[i].instance!.statement_md);
@@ -490,7 +495,7 @@ describe('Batch Generation', () => {
 
 		expect(results).toHaveLength(5);
 
-		if (results.every((r) => r.success)) {
+		if (results.every((r) => r.success && r.instance)) {
 			const seeds = results.map((r) => r.instance!.seed);
 			// All seeds should be different (extremely unlikely to collide)
 			const uniqueSeeds = new Set(seeds);
@@ -549,7 +554,7 @@ describe('Integration Tests', () => {
 
 		expect(result.success).toBe(true);
 
-		if (result.success) {
+		if (result.success && result.instance) {
 			// Verify all variables resolved
 			expect(result.instance.resolvedVariables).toHaveLength(4);
 

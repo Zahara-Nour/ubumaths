@@ -18,7 +18,7 @@
  * that the implementation adheres to the FSRS-6 specification.
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { FSRS, createDefaultFSRS } from './fsrs';
 import { Grade, type CardStats } from './types';
 import {

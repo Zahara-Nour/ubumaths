@@ -12,7 +12,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database, Json } from '$lib/types/database';
 import { createSystemNotification } from './notifications';
 import { dev } from '$app/environment';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
@@ -271,37 +271,40 @@ export async function logError(
 		// Use service role client to bypass RLS
 		const serviceClient = getServiceRoleClient();
 
+		// Prepare insert data
+		const insertData: Database['public']['Tables']['error_logs']['Insert'] = {
+			error_type: truncated.error_type,
+			severity: truncated.severity || 'error',
+			message: truncated.message || 'Unknown error',
+			stack_trace: truncated.stack_trace,
+			error_name: truncated.error_name,
+			file_path: truncated.file_path,
+			line_number: truncated.line_number,
+			column_number: truncated.column_number,
+			url: truncated.url || 'unknown',
+			user_id: truncated.user_id,
+			user_role: truncated.user_role,
+			session_id: truncated.session_id,
+			request_method: truncated.request_method,
+			status_code: truncated.status_code,
+			request_headers: truncated.request_headers as Json | undefined,
+			request_body: truncated.request_body as Json | undefined,
+			response_time: truncated.response_time,
+			user_agent: truncated.user_agent,
+			browser_name: truncated.browser_name,
+			browser_version: truncated.browser_version,
+			os_name: truncated.os_name,
+			device_type: truncated.device_type,
+			viewport_width: truncated.viewport_width,
+			viewport_height: truncated.viewport_height,
+			context: truncated.context as Json | undefined,
+			tags: truncated.tags
+		};
+
 		// Insert error log
 		const { data: errorLog, error: insertError } = await serviceClient
 			.from('error_logs')
-			.insert({
-				error_type: truncated.error_type,
-				severity: truncated.severity || 'error',
-				message: truncated.message || 'Unknown error',
-				stack_trace: truncated.stack_trace,
-				error_name: truncated.error_name,
-				file_path: truncated.file_path,
-				line_number: truncated.line_number,
-				column_number: truncated.column_number,
-				url: truncated.url || 'unknown',
-				user_id: truncated.user_id,
-				user_role: truncated.user_role,
-				session_id: truncated.session_id,
-				request_method: truncated.request_method,
-				status_code: truncated.status_code,
-				request_headers: truncated.request_headers,
-				request_body: truncated.request_body,
-				response_time: truncated.response_time,
-				user_agent: truncated.user_agent,
-				browser_name: truncated.browser_name,
-				browser_version: truncated.browser_version,
-				os_name: truncated.os_name,
-				device_type: truncated.device_type,
-				viewport_width: truncated.viewport_width,
-				viewport_height: truncated.viewport_height,
-				context: truncated.context,
-				tags: truncated.tags
-			})
+			.insert(insertData)
 			.select('id, severity, error_signature')
 			.single();
 
@@ -312,7 +315,12 @@ export async function logError(
 
 		// Check if we should send notification for critical errors
 		if (errorLog.severity === 'critical') {
-			await notifyCriticalError(supabase, errorLog.id, truncated);
+			await notifyCriticalError(supabase, errorLog.id, {
+				...truncated,
+				message: truncated.message || 'Unknown error',
+				url: truncated.url || 'unknown',
+				stack_trace: truncated.stack_trace ?? undefined
+			});
 		}
 
 		return { success: true, id: errorLog.id };
@@ -345,9 +353,9 @@ async function notifyCriticalError(
 			priority: 'urgent',
 			action_label: 'Voir les détails',
 			action_url: `/dashboard/admin/errors/${errorId}`,
-			target_type: 'role',
+			target_type: 'roles',
 			target_roles: ['admin'],
-			system_event_type: 'error_critical'
+			system_event_type: 'assessment_graded' // Note: 'error_critical' not in SystemEventType enum, using fallback
 		});
 	} catch (error) {
 		console.error('Failed to send critical error notification:', error);
@@ -378,7 +386,7 @@ export async function getErrorStats(
 				critical_errors: Number(data.critical_errors),
 				errors_last_hour: Number(data.errors_last_hour),
 				unique_errors: Number(data.unique_errors),
-				most_common_error_type: data.most_common_error_type
+				most_common_error_type: data.most_common_error_type as ErrorType | null
 			}
 		};
 	} catch (error) {
@@ -558,7 +566,7 @@ export async function resolveError(
 		const { error } = await supabase.rpc('resolve_error', {
 			p_error_log_id: errorId,
 			p_resolved_by: userId,
-			p_notes: notes || null
+			p_notes: notes || ''
 		});
 
 		if (error) {
@@ -586,7 +594,7 @@ export async function resolveErrorBySignature(
 		const { data, error } = await supabase.rpc('resolve_error_by_signature', {
 			p_error_signature: errorSignature,
 			p_resolved_by: userId,
-			p_notes: notes || null
+			p_notes: notes || ''
 		});
 
 		if (error) {

@@ -18,17 +18,13 @@ import type {
 	ExerciseAssignment,
 	ExerciseCompletion,
 	CreateExerciseAssignment,
-	BulkAssignmentData,
-	StudentExerciseFilters,
-	TeacherAssignmentFilters
+	BulkAssignmentData
 } from '$lib/exercises/types';
 import { validateAssignmentData } from '$lib/exercises/types';
 
 // ============================================================================
 // MOCK SETUP
 // ============================================================================
-
-type MockSupabaseClient = SupabaseClient<Database>;
 
 /**
  * Create a mock Supabase client with chainable query builder
@@ -52,12 +48,20 @@ function createMockSupabase() {
 		then: vi.fn()
 	};
 
+	const mockRpc = vi.fn();
+
 	return {
 		from: vi.fn(() => mockChain),
-		rpc: vi.fn(),
-		_mockChain: mockChain
-	} as unknown as MockSupabaseClient & { _mockChain: typeof mockChain };
+		rpc: mockRpc,
+		_mockChain: mockChain,
+		_mockRpc: mockRpc
+	} as unknown as SupabaseClient<Database> & {
+		_mockChain: typeof mockChain;
+		_mockRpc: typeof mockRpc;
+	};
 }
+
+type MockSupabaseClient = ReturnType<typeof createMockSupabase>;
 
 // ============================================================================
 // TEST DATA FIXTURES
@@ -129,13 +133,13 @@ describe('createExerciseAssignment', () => {
 		};
 
 		// Mock exercise ownership check
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: mockExercise,
 			error: null
 		});
 
 		// Mock assignment creation
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: mockAssignment,
 			error: null
 		});
@@ -160,7 +164,7 @@ describe('createExerciseAssignment', () => {
 		};
 
 		// Mock exercise owned by different teacher
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: { ...mockExercise, created_by: 'other-teacher' },
 			error: null
 		});
@@ -199,7 +203,7 @@ describe('createExerciseAssignment', () => {
 		};
 
 		// Mock exercise not found
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: null,
 			error: { message: 'Not found' }
 		});
@@ -223,7 +227,7 @@ describe('createExerciseAssignment', () => {
 		};
 
 		// Mock ownership check
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: mockExercise,
 			error: null
 		});
@@ -235,7 +239,7 @@ describe('createExerciseAssignment', () => {
 			student_id: null,
 			class_id: mockClassId
 		};
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: classAssignment,
 			error: null
 		});
@@ -259,7 +263,7 @@ describe('createExerciseAssignment', () => {
 		};
 
 		// Mock ownership check
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: mockExercise,
 			error: null
 		});
@@ -271,7 +275,7 @@ describe('createExerciseAssignment', () => {
 			student_id: null,
 			class_id: null
 		};
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: publicAssignment,
 			error: null
 		});
@@ -310,13 +314,13 @@ describe('createBulkAssignments', () => {
 		};
 
 		// Mock ownership check
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: mockExercise,
 			error: null
 		});
 
 		// Mock bulk insert
-		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({
 					data: [{}, {}, {}], // 3 assignments created
@@ -339,13 +343,13 @@ describe('createBulkAssignments', () => {
 		};
 
 		// Mock ownership check
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: mockExercise,
 			error: null
 		});
 
 		// Mock bulk insert
-		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({
 					data: [{}, {}], // 2 assignments created
@@ -369,13 +373,13 @@ describe('createBulkAssignments', () => {
 		};
 
 		// Mock ownership check
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: mockExercise,
 			error: null
 		});
 
 		// Mock bulk insert (1 student + 1 class + 1 public = 3)
-		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({
 					data: [{}, {}, {}],
@@ -409,7 +413,7 @@ describe('createBulkAssignments', () => {
 		};
 
 		// Mock exercise owned by different teacher
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: { ...mockExercise, created_by: 'other-teacher' },
 			error: null
 		});
@@ -439,14 +443,14 @@ describe('updateAssignment', () => {
 		};
 
 		// Mock ownership check
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: { assigned_by: mockTeacherId },
 			error: null
 		});
 
 		// Mock update
 		const updatedAssignment = { ...mockAssignment, ...updates };
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: updatedAssignment,
 			error: null
 		});
@@ -468,13 +472,13 @@ describe('updateAssignment', () => {
 		};
 
 		// Mock ownership check
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: { assigned_by: mockTeacherId },
 			error: null
 		});
 
 		// Mock update
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: { ...mockAssignment, ...updates },
 			error: null
 		});
@@ -496,13 +500,13 @@ describe('updateAssignment', () => {
 		};
 
 		// Mock ownership check
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: { assigned_by: mockTeacherId },
 			error: null
 		});
 
 		// Mock update
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: { ...mockAssignment, is_active: false },
 			error: null
 		});
@@ -522,7 +526,7 @@ describe('updateAssignment', () => {
 		const updates = { notes: 'New notes' };
 
 		// Mock ownership check - different teacher
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: { assigned_by: 'other-teacher' },
 			error: null
 		});
@@ -542,7 +546,7 @@ describe('updateAssignment', () => {
 		const updates = { notes: 'New notes' };
 
 		// Mock assignment not found
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: null,
 			error: { message: 'Not found' }
 		});
@@ -573,13 +577,13 @@ describe('deleteAssignment', () => {
 
 	it('should soft delete assignment (default)', async () => {
 		// Mock ownership check
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: { assigned_by: mockTeacherId },
 			error: null
 		});
 
 		// Mock update (soft delete)
-		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({
 					data: {},
@@ -597,13 +601,13 @@ describe('deleteAssignment', () => {
 
 	it('should hard delete assignment when specified', async () => {
 		// Mock ownership check
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: { assigned_by: mockTeacherId },
 			error: null
 		});
 
 		// Mock delete
-		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({
 					data: {},
@@ -625,7 +629,7 @@ describe('deleteAssignment', () => {
 
 	it('should reject delete when not authorized', async () => {
 		// Mock ownership check - different teacher
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: { assigned_by: 'other-teacher' },
 			error: null
 		});
@@ -638,7 +642,7 @@ describe('deleteAssignment', () => {
 
 	it('should reject delete when assignment not found', async () => {
 		// Mock assignment not found
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: null,
 			error: { message: 'Not found' }
 		});
@@ -664,14 +668,14 @@ describe('markExerciseAsViewed', () => {
 
 	it('should create new completion record on first view', async () => {
 		// Mock no existing completion
-		(supabase as any)._mockChain.maybeSingle.mockResolvedValueOnce({
+		supabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: null,
 			error: null
 		});
 
 		// Mock creation
 		const newCompletion = { ...mockCompletion, view_count: 1 };
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: newCompletion,
 			error: null
 		});
@@ -691,14 +695,14 @@ describe('markExerciseAsViewed', () => {
 	it('should increment view count on subsequent views', async () => {
 		// Mock existing completion
 		const existingCompletion = { ...mockCompletion, view_count: 2 };
-		(supabase as any)._mockChain.maybeSingle.mockResolvedValueOnce({
+		supabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: existingCompletion,
 			error: null
 		});
 
 		// Mock update
 		const updatedCompletion = { ...existingCompletion, view_count: 3 };
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: updatedCompletion,
 			error: null
 		});
@@ -713,7 +717,7 @@ describe('markExerciseAsViewed', () => {
 		const now = new Date().toISOString();
 
 		// Mock existing completion
-		(supabase as any)._mockChain.maybeSingle.mockResolvedValueOnce({
+		supabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: mockCompletion,
 			error: null
 		});
@@ -724,7 +728,7 @@ describe('markExerciseAsViewed', () => {
 			view_count: 2,
 			last_viewed_at: now
 		};
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: updatedCompletion,
 			error: null
 		});
@@ -746,7 +750,7 @@ describe('markExerciseAsComplete', () => {
 
 	it('should mark exercise as complete (new completion record)', async () => {
 		// Mock no existing completion
-		(supabase as any)._mockChain.maybeSingle.mockResolvedValueOnce({
+		supabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: null,
 			error: null
 		});
@@ -759,7 +763,7 @@ describe('markExerciseAsComplete', () => {
 			last_viewed_at: now,
 			view_count: 1
 		};
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: completedRecord,
 			error: null
 		});
@@ -777,7 +781,7 @@ describe('markExerciseAsComplete', () => {
 
 	it('should mark exercise as complete (existing completion record)', async () => {
 		// Mock existing completion (not yet completed)
-		(supabase as any)._mockChain.maybeSingle.mockResolvedValueOnce({
+		supabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: mockCompletion,
 			error: null
 		});
@@ -789,7 +793,7 @@ describe('markExerciseAsComplete', () => {
 			completed_at: now,
 			view_count: 2
 		};
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: completedRecord,
 			error: null
 		});
@@ -822,7 +826,7 @@ describe('markExerciseAsIncomplete', () => {
 			completed_at: null,
 			last_viewed_at: now
 		};
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: incompletedRecord,
 			error: null
 		});
@@ -843,7 +847,7 @@ describe('markExerciseAsIncomplete', () => {
 			completed_at: null,
 			view_count: 5 // Preserve existing view count
 		};
-		(supabase as any)._mockChain.single.mockResolvedValueOnce({
+		supabase._mockChain.single.mockResolvedValueOnce({
 			data: incompletedRecord,
 			error: null
 		});
@@ -873,7 +877,7 @@ describe('studentHasAccess', () => {
 
 	it('should return true when student has access', async () => {
 		// Mock RPC call returning true
-		(supabase.rpc as any).mockResolvedValueOnce({
+		supabase._mockRpc.mockResolvedValueOnce({
 			data: true,
 			error: null
 		});
@@ -889,7 +893,7 @@ describe('studentHasAccess', () => {
 
 	it('should return false when student does not have access', async () => {
 		// Mock RPC call returning false
-		(supabase.rpc as any).mockResolvedValueOnce({
+		supabase._mockRpc.mockResolvedValueOnce({
 			data: false,
 			error: null
 		});
@@ -901,7 +905,7 @@ describe('studentHasAccess', () => {
 
 	it('should return false on error', async () => {
 		// Mock RPC error
-		(supabase.rpc as any).mockResolvedValueOnce({
+		supabase._mockRpc.mockResolvedValueOnce({
 			data: null,
 			error: { message: 'Database error' }
 		});
@@ -922,7 +926,7 @@ describe('getStudentClasses', () => {
 
 	it('should return list of class IDs', async () => {
 		// Mock class membership query
-		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({
 					data: [{ class_id: 'class-1' }, { class_id: 'class-2' }, { class_id: 'class-3' }],
@@ -939,7 +943,7 @@ describe('getStudentClasses', () => {
 
 	it('should return empty array when student has no classes', async () => {
 		// Mock empty result
-		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({
 					data: [],
@@ -956,7 +960,7 @@ describe('getStudentClasses', () => {
 
 	it('should handle error gracefully', async () => {
 		// Mock error
-		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({
 					data: null,
@@ -986,13 +990,13 @@ describe('getStudentProgress', () => {
 
 	it('should calculate progress correctly', async () => {
 		// Mock get_student_exercises RPC
-		(supabase.rpc as any).mockResolvedValueOnce({
+		supabase._mockRpc.mockResolvedValueOnce({
 			data: ['ex-1', 'ex-2', 'ex-3', 'ex-4', 'ex-5'], // 5 exercises
 			error: null
 		});
 
 		// Mock completions query (3 completed)
-		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({
 					data: [{ id: 'c1' }, { id: 'c2' }, { id: 'c3' }],
@@ -1011,7 +1015,7 @@ describe('getStudentProgress', () => {
 
 	it('should return zero progress when no exercises assigned', async () => {
 		// Mock empty exercises list
-		(supabase.rpc as any).mockResolvedValueOnce({
+		supabase._mockRpc.mockResolvedValueOnce({
 			data: [],
 			error: null
 		});
@@ -1026,13 +1030,13 @@ describe('getStudentProgress', () => {
 
 	it('should handle 100% completion', async () => {
 		// Mock exercises
-		(supabase.rpc as any).mockResolvedValueOnce({
+		supabase._mockRpc.mockResolvedValueOnce({
 			data: ['ex-1', 'ex-2'],
 			error: null
 		});
 
 		// Mock all completed
-		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({
 					data: [{ id: 'c1' }, { id: 'c2' }],

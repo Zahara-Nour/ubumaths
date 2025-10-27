@@ -6,7 +6,15 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { MathGraphApp } from '$lib/types/geometry';
+import type {
+	MathGraphApp,
+	AddPointXYOptions,
+	AddSegmentOptions,
+	AddLineOptions,
+	AddCircleOAOptions,
+	AddRayOptions,
+	AddVectorOptions
+} from '$lib/types/geometry';
 import {
 	generateRandomTriangle,
 	generateCircleConfiguration,
@@ -18,46 +26,54 @@ import {
 // TEST HELPERS
 // =============================================================================
 
+interface MockObject {
+	type: string;
+	[key: string]: unknown;
+}
+
+interface MockMathGraphApp extends Partial<MathGraphApp> {
+	addedObjects?: MockObject[];
+}
+
 /**
  * Creates a mock MathGraph32 app for testing
  */
 function createMockApp(): MathGraphApp {
-	const addedObjects: any[] = [];
+	const addedObjects: MockObject[] = [];
 
-	const mockApp = {
+	const mockApp: MockMathGraphApp = {
 		liste: { length: 0 },
-		addPointXY: async (params: any) => {
+		addPointXY: async (params: AddPointXYOptions) => {
 			addedObjects.push({ type: 'point', ...params });
 			return {};
 		},
-		addSegment: async (params: any) => {
+		addSegment: async (params: AddSegmentOptions) => {
 			addedObjects.push({ type: 'segment', ...params });
 			return {};
 		},
-		addLineAB: async (params: any) => {
+		addLineAB: async (params: AddLineOptions) => {
 			addedObjects.push({ type: 'line', ...params });
 			return {};
 		},
-		addCircleOA: async (params: any) => {
+		addCircleOA: async (params: AddCircleOAOptions) => {
 			addedObjects.push({ type: 'circle', ...params });
 			return {};
 		},
-		addRay: async (params: any) => {
+		addRay: async (params: AddRayOptions) => {
 			addedObjects.push({ type: 'ray', ...params });
 			return {};
 		},
-		addVector: async (params: any) => {
+		addVector: async (params: AddVectorOptions) => {
 			addedObjects.push({ type: 'vector', ...params });
 			return {};
 		},
 		refresh: async () => {},
 		getBase64Code: () => 'mock_base64_figure',
-		getFig: async () => 'mock_base64_figure'
-	} as MathGraphApp;
+		getFig: async () => 'mock_base64_figure',
+		addedObjects
+	};
 
-	(mockApp as any).addedObjects = addedObjects;
-
-	return mockApp;
+	return mockApp as MathGraphApp;
 }
 
 // =============================================================================

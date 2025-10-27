@@ -243,19 +243,37 @@ export function isValidTipTapContent(content: string): boolean {
 }
 
 /**
+ * TipTap node structure
+ */
+interface TipTapNode {
+	type: string;
+	content?: TipTapNode[];
+	attrs?: Record<string, unknown>;
+	text?: string;
+}
+
+/**
+ * TipTap document structure
+ */
+interface TipTapDoc {
+	type: 'doc';
+	content?: TipTapNode[];
+}
+
+/**
  * Check if content contains math formulas
  */
 export function containsMathFormulas(content: string): boolean {
 	if (isValidTipTapContent(content)) {
-		const parsed = JSON.parse(content);
-		const checkNode = (node: any): boolean => {
+		const parsed = JSON.parse(content) as TipTapDoc;
+		const checkNode = (node: TipTapNode): boolean => {
 			if (node.type === 'math') return true;
 			if (node.content) {
-				return node.content.some((child: any) => checkNode(child));
+				return node.content.some((child: TipTapNode) => checkNode(child));
 			}
 			return false;
 		};
-		return parsed.content?.some((node: any) => checkNode(node)) || false;
+		return parsed.content?.some((node: TipTapNode) => checkNode(node)) || false;
 	}
 	// Check for LaTeX in plain text
 	return /\$\$.*?\$\$|\$.*?\$/.test(content);

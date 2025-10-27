@@ -167,19 +167,25 @@ export function createMockURL(searchParams: Record<string, string> = {}) {
  * mockSuccess(supabase, { id: '123', name: 'Test' }, 'then');
  * ```
  */
-export function mockSuccess(
+export function mockSuccess<T = unknown>(
 	supabase: ReturnType<typeof createMockSupabase>,
-	data: any,
+	data: T,
 	method: 'single' | 'then' | 'maybeSingle' = 'single'
 ) {
 	const response = { data, error: null };
 
 	if (method === 'then') {
 		// For thenable protocol, use mockImplementationOnce (mockResolvedValueOnce doesn't work!)
-		(supabase._mockChain.then as any).mockImplementationOnce((onFulfilled?: any) => {
-			return Promise.resolve(onFulfilled ? onFulfilled(response) : response);
-		});
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		(supabase._mockChain.then as any).mockImplementationOnce(
+			(
+				onFulfilled?: (value: typeof response) => typeof response | PromiseLike<typeof response>
+			) => {
+				return Promise.resolve(onFulfilled ? onFulfilled(response) : response);
+			}
+		);
 	} else {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(supabase._mockChain[method] as any).mockResolvedValueOnce(response);
 	}
 }
@@ -211,10 +217,16 @@ export function mockError(
 
 	if (method === 'then') {
 		// For thenable protocol, use mockImplementationOnce (mockResolvedValueOnce doesn't work!)
-		(supabase._mockChain.then as any).mockImplementationOnce((onFulfilled?: any) => {
-			return Promise.resolve(onFulfilled ? onFulfilled(response) : response);
-		});
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		(supabase._mockChain.then as any).mockImplementationOnce(
+			(
+				onFulfilled?: (value: typeof response) => typeof response | PromiseLike<typeof response>
+			) => {
+				return Promise.resolve(onFulfilled ? onFulfilled(response) : response);
+			}
+		);
 	} else {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(supabase._mockChain[method] as any).mockResolvedValueOnce(response);
 	}
 }
@@ -243,20 +255,26 @@ export function mockError(
  * ], 'then');
  * ```
  */
-export function mockSequence(
+export function mockSequence<T = unknown>(
 	supabase: ReturnType<typeof createMockSupabase>,
-	responses: Array<{ data: any; error: any }>,
+	responses: Array<{ data: T | null; error: { message: string } | null }>,
 	method: 'single' | 'then' | 'maybeSingle' = 'single'
 ) {
 	if (method === 'then') {
 		// For thenable protocol, use mockImplementationOnce (mockResolvedValueOnce doesn't work!)
 		responses.forEach((response) => {
-			(supabase._mockChain.then as any).mockImplementationOnce((onFulfilled?: any) => {
-				return Promise.resolve(onFulfilled ? onFulfilled(response) : response);
-			});
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(supabase._mockChain.then as any).mockImplementationOnce(
+				(
+					onFulfilled?: (value: typeof response) => typeof response | PromiseLike<typeof response>
+				) => {
+					return Promise.resolve(onFulfilled ? onFulfilled(response) : response);
+				}
+			);
 		});
 	} else {
 		responses.forEach((response) => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(supabase._mockChain[method] as any).mockResolvedValueOnce(response);
 		});
 	}

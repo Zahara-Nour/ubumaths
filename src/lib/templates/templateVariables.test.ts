@@ -282,7 +282,7 @@ describe('VARIABLES_BY_TRIGGER', () => {
 	});
 
 	it('should not have duplicate variables in any trigger', () => {
-		Object.entries(VARIABLES_BY_TRIGGER).forEach(([trigger, variables]) => {
+		Object.entries(VARIABLES_BY_TRIGGER).forEach(([_trigger, variables]) => {
 			const names = variables.map((v) => v.name);
 			const uniqueNames = new Set(names);
 

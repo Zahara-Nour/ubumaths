@@ -128,10 +128,10 @@ describe('Validation Functions', () => {
 		});
 
 		it('should reject non-array values', () => {
-			expect(isValidParameters(null as any)).toBe(false);
-			expect(isValidParameters(undefined as any)).toBe(false);
-			expect(isValidParameters('not an array' as any)).toBe(false);
-			expect(isValidParameters(42 as any)).toBe(false);
+			expect(isValidParameters(null as unknown as number[])).toBe(false);
+			expect(isValidParameters(undefined as unknown as number[])).toBe(false);
+			expect(isValidParameters('not an array' as unknown as number[])).toBe(false);
+			expect(isValidParameters(42 as unknown as number[])).toBe(false);
 		});
 	});
 
