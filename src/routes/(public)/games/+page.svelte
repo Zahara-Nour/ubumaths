@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { MessageCircle, Sparkles, Sword, Lock, Target } from 'lucide-svelte';
-	import pereUbuImage from '$lib/assets/images/pereubu.png';
+	import { Sword, Lock, Target } from 'lucide-svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -12,20 +10,8 @@
 	// Game cards data
 	const games = [
 		{
-			title: 'Père Ubu',
-			description:
-				'Discutez avec le Père Ubu, votre professeur de mathématiques pataphysique. Posez vos questions et recevez des explications... originales !',
-			icon: MessageCircle,
-			href: '/pere-ubu',
-			color: 'from-purple-500 to-indigo-600',
-			emoji: '🎭',
-			public: true,
-			image: pereUbuImage
-		},
-		{
 			title: 'Trio',
-			description:
-				'Trouvez trois nombres alignés qui satisfont une équation mathématique. Entraînez-vous au calcul mental tout en résolvant des puzzles !',
+			description: "Les trois bons chiffres et c'est gagné !",
 			icon: Target,
 			href: '/games/trio',
 			color: 'from-green-500 to-blue-600',
@@ -33,9 +19,17 @@
 			public: true
 		},
 		{
+			title: 'Mathémo',
+			description: 'Montre que tu as du vocabulaire !',
+			icon: Target,
+			href: '/games/mathemo',
+			color: 'from-cyan-500 to-blue-600',
+			emoji: '🔤',
+			public: true
+		},
+		{
 			title: 'Navadra',
-			description:
-				"Affrontez des monstres épiques en résolvant des problèmes mathématiques. Gagnez de l'expérience et débloquez de nouveaux sorts !",
+			description: 'Une aventure épique !',
 			icon: Sword,
 			href: '/dashboard/navadra',
 			color: 'from-red-500 to-orange-600',
@@ -49,7 +43,7 @@
 	<title>Jeux Mathématiques | UbuMaths</title>
 	<meta
 		name="description"
-		content="Apprenez les mathématiques en vous amusant avec nos jeux éducatifs : Père Ubu, Trio et Navadra."
+		content="Apprenez les mathématiques en vous amusant avec nos jeux éducatifs : Père Ubu, Trio, Mathémo et Navadra."
 	/>
 </svelte:head>
 
@@ -63,23 +57,20 @@
 				🎮
 			</div>
 		</div>
-		<h1 class="mb-4 text-4xl font-bold text-foreground md:text-5xl">Jeux Mathématiques</h1>
-		<p class="mx-auto max-w-2xl text-lg text-muted-foreground">
-			Apprenez les mathématiques en vous amusant ! Explorez nos jeux éducatifs interactifs et
-			progressez tout en jouant.
-		</p>
+		<h1 class="mb-4 text-4xl font-bold text-foreground md:text-5xl">Jeux</h1>
 	</section>
 
 	<!-- Games Grid -->
 	<section class="mb-12">
 		<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 			{#each games as game (game.href)}
-				<div
-					class="group relative overflow-hidden rounded-xl border border-border bg-card shadow-lg transition-all hover:shadow-xl"
+				<a
+					href={game.public || isAuthenticated ? game.href : '/auth/login'}
+					class="group relative block cursor-pointer overflow-hidden rounded-xl border border-border bg-card shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl"
 				>
 					<!-- Background gradient on hover -->
 					<div
-						class="absolute inset-0 bg-gradient-to-br {game.color} opacity-0 transition-opacity duration-300 group-hover:opacity-5"
+						class="absolute inset-0 bg-gradient-to-br {game.color} opacity-0 transition-opacity duration-300 group-hover:opacity-10"
 					></div>
 
 					<!-- Card content -->
@@ -113,37 +104,12 @@
 						</div>
 
 						<!-- Description -->
-						<p class="mb-6 text-muted-foreground">
+						<p class="text-muted-foreground">
 							{game.description}
 						</p>
-
-						<!-- Action button -->
-						{#if game.public || isAuthenticated}
-							<Button
-								href={game.href}
-								class="w-full bg-gradient-to-r {game.color} text-white hover:opacity-90"
-							>
-								<Sparkles class="mr-2 h-5 w-5" />
-								Jouer maintenant
-							</Button>
-						{:else}
-							<Button href="/auth/login" variant="outline" class="w-full">
-								<Lock class="mr-2 h-4 w-4" />
-								Se connecter pour jouer
-							</Button>
-						{/if}
 					</div>
-				</div>
+				</a>
 			{/each}
 		</div>
-	</section>
-
-	<!-- Coming Soon Section -->
-	<section class="rounded-xl border border-border bg-card/50 p-8 text-center">
-		<div class="mb-4 text-4xl">🚀</div>
-		<h3 class="mb-2 text-xl font-bold text-card-foreground">Bientôt disponible</h3>
-		<p class="text-muted-foreground">
-			De nouveaux jeux mathématiques sont en cours de développement. Restez connectés !
-		</p>
 	</section>
 </div>

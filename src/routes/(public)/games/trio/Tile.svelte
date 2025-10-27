@@ -24,12 +24,12 @@
 <button
 	class="flex h-12 w-12 items-center justify-center rounded-lg text-3xl font-bold transition-all md:h-16 md:w-16 md:text-5xl
 		{isSelected
-		? 'bg-secondary text-secondary-foreground shadow-lg'
+		? 'bg-accent text-accent-foreground shadow-lg'
 		: isSelectedThird
-			? 'bg-accent text-accent-foreground shadow-lg'
-			: 'bg-neutral text-neutral-foreground  hover:brightness-150'}
+			? 'bg-ternary text-ternary-foreground shadow-lg'
+			: 'border-secondary-50 border-2 bg-card text-card-foreground  hover:brightness-150'}
 		{isNotAvailable
-		? 'cursor-not-allowed opacity-20 hover:hover:brightness-100'
+		? 'cursor-not-allowed opacity-3 hover:hover:brightness-100'
 		: 'cursor-pointer hover:scale-105'}"
 	style="font-family:'Baloo 2', sans-serif;"
 	{onclick}

@@ -3,23 +3,35 @@
 @plugin '@tailwindcss/typography';
 
 @theme {
+	/* orange corail : #c66140 */
+	/* bleu : #5b8cc6 */
+	/*  jaune petant : #ffe266 */
+	/* rouge : #d55555 */
+	/* rouge petant : #ff5757  */
+	/* miel : #FFC400 */
+	/* vert petant : #A3D651 */
+	/* vert :  #d5d651 */
+
 	/* Custom Theme - Uses Tailwind CSS 4 @theme syntax */
 	--color-background: light-dark(#fafafa, #262624);
 	--color-foreground: light-dark(#1a1a1a, #efefef);
 
-	--color-card: light-dark(#ffffff, #2e2e2c);
+	--color-card: light-dark(#ffffff, #2f2f2f);
 	--color-card-foreground: light-dark(#1a1a1a, #efefef);
 
 	--color-popover: light-dark(#ffffff, #2e2e2c);
 	--color-popover-foreground: light-dark(#1a1a1a, #efefef);
 	/* Primary = Orange/Coral accent */
 
-	--color-primary: light-dark(#fc8f1b, #c66140);
-	--color-primary-foreground: #ffffff;
+	--color-primary: light-dark(#fc8f1b, #ffc400);
+	--color-primary-foreground: #111111;
 
 	/* Secondary = Neutral light gray / dark gray */
-	--color-secondary: light-dark(#f0f0f0, #5b8cc6);
+	--color-secondary: light-dark(#f0f0f0, #737373);
 	--color-secondary-foreground: light-dark(#1a1a1a, #efefef);
+
+	--color-ternary: light-dark(#5b8cc6, #5b8cc6);
+	--color-ternary-foreground: light-dark(#ffffff, #ffffff);
 
 	--color-muted: light-dark(#f0f0f0, #333331);
 	--color-muted-foreground: light-dark(#737373, #9e9e9e);
@@ -42,7 +54,7 @@
 	--color-neutral: light-dark(#f0f0f0, #333331);
 	--color-neutral-foreground: light-dark(#1a1a1a, #efefef);
 
-	--color-success: light-dark(#d5d651, #d5d651);
+	--color-success: light-dark(#a3d651, #a3d651);
 	--color-success-foreground: light-dark(#ffffff, #ffffff);
 	--color-failure: light-dark(#ff5757, #ff5757);
 	--color-failure-foreground: light-dark(#ffffff, #ffffff);

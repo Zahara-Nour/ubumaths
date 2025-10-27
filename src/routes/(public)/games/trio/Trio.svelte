@@ -446,9 +446,7 @@
 	<div class="flex flex-col justify-center" style="font-family:'Baloo 2', sans-serif;">
 		<div
 			class="mx-4 my-2 flex h-16 w-16 items-center justify-center rounded-lg p-4 text-4xl font-bold md:h-20 md:w-20 md:text-5xl
-				{selecteds.length >= 1
-				? 'bg-secondary text-secondary-foreground'
-				: 'bg-muted text-muted-foreground'}"
+				{selecteds.length >= 1 ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground'}"
 		>
 			{#if selecteds.length >= 1}
 				{grid[selecteds[0].i][selecteds[0].j].n}
@@ -465,9 +463,7 @@
 
 		<div
 			class="mx-4 my-2 flex h-16 w-16 items-center justify-center rounded-lg p-4 text-4xl font-bold md:h-20 md:w-20 md:text-5xl
-				{selecteds.length >= 2
-				? 'bg-secondary text-secondary-foreground'
-				: 'bg-muted text-muted-foreground'}"
+				{selecteds.length >= 2 ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground'}"
 		>
 			{#if selecteds.length >= 2}
 				{grid[selecteds[1].i][selecteds[1].j].n}
@@ -489,7 +485,7 @@
 
 		<div
 			class="mx-4 my-2 flex h-16 w-16 items-center justify-center rounded-lg p-4 text-4xl font-bold md:h-20 md:w-20 md:text-5xl
-				{selecteds.length >= 3 ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground'}"
+				{selecteds.length >= 3 ? 'bg-ternary text-ternary-foreground' : 'bg-muted text-muted-foreground'}"
 		>
 			{#if selecteds.length === 3}
 				{grid[selecteds[2].i][selecteds[2].j].n}
