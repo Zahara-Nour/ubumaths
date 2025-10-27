@@ -25,17 +25,26 @@
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import QuestionTemplateForm from '$lib/components/QuestionTemplateForm.svelte';
 	import type { QuestionTemplate } from '$lib/questions/types';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { ArrowLeft } from 'lucide-svelte';
+	import { ArrowLeft, Loader2 } from 'lucide-svelte';
 	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
+	import { onMount } from 'svelte';
 
 	let { data }: { data: PageData } = $props();
 
 	let isSubmitting = $state(false);
+	let QuestionTemplateForm = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+	let isLoading = $state(true);
+
+	// Dynamically import QuestionTemplateForm to reduce initial bundle size
+	onMount(async () => {
+		const module = await import('$lib/components/QuestionTemplateForm.svelte');
+		QuestionTemplateForm = module.default;
+		isLoading = false;
+	});
 
 	async function handleSave(
 		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>
@@ -99,12 +108,19 @@
 	<!-- Main Form -->
 	<Card.Root>
 		<Card.Content>
-			<QuestionTemplateForm
-				template={data.template}
-				onSave={handleSave}
-				onCancel={handleCancel}
-				{isSubmitting}
-			/>
+			{#if isLoading}
+				<div class="flex min-h-[400px] items-center justify-center">
+					<Loader2 class="h-8 w-8 animate-spin text-muted-foreground" />
+				</div>
+			{:else if QuestionTemplateForm}
+				<svelte:component
+					this={QuestionTemplateForm}
+					template={data.template}
+					onSave={handleSave}
+					onCancel={handleCancel}
+					{isSubmitting}
+				/>
+			{/if}
 		</Card.Content>
 	</Card.Root>
 </div>

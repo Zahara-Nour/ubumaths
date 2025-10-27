@@ -39,12 +39,19 @@
 	import VariableEditor from './VariableEditor.svelte';
 	import ContentFieldEditor from './ContentFieldEditor.svelte';
 	import AnswerEditor from './AnswerEditor.svelte';
-	import QuestionPreview from './QuestionPreview.svelte';
-	import JsonViewer from './JsonViewer.svelte';
 	import CategorySelector from './CategorySelector.svelte';
-	import FormRichTextEditor from './rich-text/FormRichTextEditor.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Collapsible from '$lib/components/ui/collapsible';
+
+	// Lazy-loaded heavy components to reduce initial bundle size
+	let FormRichTextEditor = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+	let QuestionPreview = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+	let JsonViewer = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+	let loadedComponents = $state({
+		richText: false,
+		preview: false,
+		json: false
+	});
 	import {
 		X,
 		Plus,
@@ -100,9 +107,39 @@
 	let domainOptions = $state<string[]>([]);
 	let subdomainOptions = $state<string[]>([]);
 
+	// Lazy loading functions for heavy components
+	async function loadFormRichTextEditor() {
+		if (!loadedComponents.richText) {
+			const module = await import('./rich-text/FormRichTextEditor.svelte');
+			FormRichTextEditor = module.default;
+			loadedComponents.richText = true;
+		}
+	}
+
+	async function loadQuestionPreview() {
+		if (!loadedComponents.preview) {
+			const module = await import('./QuestionPreview.svelte');
+			QuestionPreview = module.default;
+			loadedComponents.preview = true;
+		}
+	}
+
+	async function loadJsonViewer() {
+		if (!loadedComponents.json) {
+			const module = await import('./JsonViewer.svelte');
+			JsonViewer = module.default;
+			loadedComponents.json = true;
+		}
+	}
+
 	// Load category cache on mount
 	$effect(() => {
 		questionCategoriesCache.fetchCategories();
+	});
+
+	// Pre-load preview tab (default) on mount
+	$effect(() => {
+		loadQuestionPreview();
 	});
 
 	// Fetch existing categories on mount (for autocomplete options)
@@ -483,7 +520,12 @@
 			</div>
 
 			<!-- Description (Optional, with rich text and LaTeX support) -->
-			<Collapsible.Root bind:open={descriptionOpen}>
+			<Collapsible.Root
+				bind:open={descriptionOpen}
+				onOpenChange={async (open) => {
+					if (open) await loadFormRichTextEditor();
+				}}
+			>
 				<div class="space-y-2">
 					<Collapsible.Trigger
 						class="flex w-full items-center justify-between rounded-md p-2 transition-colors hover:bg-muted/50"
@@ -496,10 +538,13 @@
 						/>
 					</Collapsible.Trigger>
 					<Collapsible.Content class="space-y-2">
-						<FormRichTextEditor
-							bind:value={description}
-							placeholder="Description ou contexte supplémentaire pour ce template..."
-						/>
+						{#if FormRichTextEditor}
+							<svelte:component
+								this={FormRichTextEditor}
+								bind:value={description}
+								placeholder="Description ou contexte supplémentaire pour ce template..."
+							/>
+						{/if}
 					</Collapsible.Content>
 				</div>
 			</Collapsible.Root>
@@ -877,18 +922,36 @@
 	</Card.Root>
 
 	<!-- Preview & JSON -->
-	<Tabs.Root value="preview">
+	<Tabs.Root
+		value="preview"
+		onValueChange={async (value) => {
+			if (value === 'preview') await loadQuestionPreview();
+			if (value === 'json') await loadJsonViewer();
+		}}
+	>
 		<Tabs.List class="grid w-full grid-cols-2">
-			<Tabs.Trigger value="preview">Aperçu</Tabs.Trigger>
-			<Tabs.Trigger value="json">JSON</Tabs.Trigger>
+			<Tabs.Trigger value="preview" onclick={() => loadQuestionPreview()}>Aperçu</Tabs.Trigger>
+			<Tabs.Trigger value="json" onclick={() => loadJsonViewer()}>JSON</Tabs.Trigger>
 		</Tabs.List>
 
 		<Tabs.Content value="preview">
-			<QuestionPreview template={buildTemplate()} />
+			{#if QuestionPreview}
+				<svelte:component this={QuestionPreview} template={buildTemplate()} />
+			{:else}
+				<div class="flex items-center justify-center p-8">
+					<p class="text-muted-foreground">Chargement de l'aperçu...</p>
+				</div>
+			{/if}
 		</Tabs.Content>
 
 		<Tabs.Content value="json">
-			<JsonViewer data={buildTemplate()} />
+			{#if JsonViewer}
+				<svelte:component this={JsonViewer} data={buildTemplate()} />
+			{:else}
+				<div class="flex items-center justify-center p-8">
+					<p class="text-muted-foreground">Chargement du JSON...</p>
+				</div>
+			{/if}
 		</Tabs.Content>
 	</Tabs.Root>
 
