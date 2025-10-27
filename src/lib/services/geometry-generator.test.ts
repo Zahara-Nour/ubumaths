@@ -155,9 +155,7 @@ describe('Triangle Generation', () => {
 			});
 
 			// Figures should have different seeds (randomized)
-			expect(result1.metadata.randomizationSeed).not.toBe(
-				result2.metadata.randomizationSeed
-			);
+			expect(result1.metadata.randomizationSeed).not.toBe(result2.metadata.randomizationSeed);
 		});
 	});
 });

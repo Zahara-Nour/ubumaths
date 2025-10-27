@@ -205,6 +205,8 @@ describe('createExercise', () => {
 		expect(mockSupabase.from).toHaveBeenCalledWith('exercises');
 		expect(mockSupabase.__mockQuery.insert).toHaveBeenCalledWith({
 			...newExercise,
+			distribution_mode: 'on_demand', // Default value
+			variables: undefined, // Empty variables array becomes undefined
 			created_by: 'user-123'
 		});
 		expect(result.data).toEqual(createdExercise);

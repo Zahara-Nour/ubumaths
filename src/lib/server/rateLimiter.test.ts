@@ -357,7 +357,7 @@ describe('Rate Limiter', () => {
 		});
 
 		it('should handle special characters in email', () => {
-			const specialEmail = "test+alias@example.com";
+			const specialEmail = 'test+alias@example.com';
 			const result = checkLoginRateLimitByEmail(specialEmail);
 			expect(result.allowed).toBe(true);
 		});

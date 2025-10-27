@@ -14,7 +14,7 @@ import type { AssignAssessmentData } from '$lib/types/assessment';
  * Assign assessment to classes and/or students
  */
 export const POST: RequestHandler = async ({ locals, params, request }) => {
-	const session = await locals.sapabaseClient();
+	const session = await locals.safeGetSession();
 	if (!session) {
 		throw error(401, 'Unauthorized');
 	}

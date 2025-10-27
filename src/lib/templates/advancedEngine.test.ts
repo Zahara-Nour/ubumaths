@@ -383,7 +383,10 @@ describe('applyFilters', () => {
 	});
 
 	it('should apply complex filter chain', () => {
-		const result = applyFilters('HELLO WORLD THIS IS A LONG TEXT', 'lowercase | capitalize | truncate:15');
+		const result = applyFilters(
+			'HELLO WORLD THIS IS A LONG TEXT',
+			'lowercase | capitalize | truncate:15'
+		);
 		// lowercase: "hello world this is a long text"
 		// capitalize: "Hello world this is a long text"
 		// truncate: "Hello world thi..."

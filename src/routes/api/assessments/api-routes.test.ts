@@ -22,64 +22,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { CreateAssessmentData, UpdateAssessmentData } from '$lib/types/assessment';
 import { DEFAULT_ASSESSMENT_SETTINGS } from '$lib/types/assessment';
+import {
+	createMockSupabase,
+	createMockLocals,
+	createMockRequest,
+	createMockURL
+} from '../../../../tests/helpers/supabase-helpers';
 
 // ============================================================================
 // MOCK SETUP
 // ============================================================================
-
-/**
- * Mock locals object (SvelteKit context)
- */
-function createMockLocals(user: any = null, profile: any = null) {
-	const mockSupabase = {
-		from: vi.fn(() => ({
-			select: vi.fn().mockReturnThis(),
-			insert: vi.fn().mockReturnThis(),
-			update: vi.fn().mockReturnThis(),
-			delete: vi.fn().mockReturnThis(),
-			eq: vi.fn().mockReturnThis(),
-			in: vi.fn().mockReturnThis(),
-			not: vi.fn().mockReturnThis(),
-			or: vi.fn().mockReturnThis(),
-			order: vi.fn().mockReturnThis(),
-			limit: vi.fn().mockReturnThis(),
-			single: vi.fn(),
-			maybeSingle: vi.fn(),
-			then: vi.fn()
-		})),
-		rpc: vi.fn()
-	};
-
-	return {
-		safeGetSession: vi.fn(async () => {
-			if (!user) return null;
-			return { user };
-		}),
-		supabase: mockSupabase
-	};
-}
-
-/**
- * Mock Request object
- */
-function createMockRequest(body: any = {}, method: string = 'POST') {
-	return {
-		method,
-		json: vi.fn(async () => body),
-		headers: new Headers()
-	} as any;
-}
-
-/**
- * Mock URL with search params
- */
-function createMockURL(searchParams: Record<string, string> = {}) {
-	const url = new URL('http://localhost');
-	Object.entries(searchParams).forEach(([key, value]) => {
-		url.searchParams.set(key, value);
-	});
-	return url;
-}
+// Using shared helpers from tests/helpers/supabase-helpers.ts
 
 // ============================================================================
 // TEST DATA
@@ -130,22 +83,26 @@ describe('POST /api/assessments', () => {
 			status: 'draft'
 		});
 
-		const response = await POST({
-			request,
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await POST({
+				request,
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(401);
+			expect(err.body.message).toBe('Unauthorized');
+		}
 	});
 
 	it('should reject non-teacher users', async () => {
 		const { POST } = await import('./+server');
 
-		const locals = createMockLocals(mockStudent);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockStudent.id, mockSupabase);
+
 		// Mock student profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'student' },
 			error: null
 		});
@@ -158,29 +115,32 @@ describe('POST /api/assessments', () => {
 			status: 'draft'
 		});
 
-		const response = await POST({
-			request,
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toBe('Forbidden - Teachers only');
+		try {
+			await POST({
+				request,
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(403);
+			expect(err.body.message).toBe('Forbidden - Teachers only');
+		}
 	});
 
 	it('should create draft assessment successfully', async () => {
 		const { POST } = await import('./+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock assessment creation
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: mockAssessment,
 			error: null
 		});
@@ -188,7 +148,7 @@ describe('POST /api/assessments', () => {
 		const assessmentData: CreateAssessmentData = {
 			title: 'Test Assessment',
 			grade: '3ème',
-			categories: [],
+			categories: [{ id: 'cat-1', bank_id: 'bank-1', count: 5, title: 'Test Category', filters: {} }],
 			settings: DEFAULT_ASSESSMENT_SETTINGS,
 			status: 'draft'
 		};
@@ -209,17 +169,18 @@ describe('POST /api/assessments', () => {
 	it('should create published assessment', async () => {
 		const { POST } = await import('./+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock assessment creation
 		const publishedAssessment = { ...mockAssessment, status: 'published' as const };
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: publishedAssessment,
 			error: null
 		});
@@ -227,7 +188,7 @@ describe('POST /api/assessments', () => {
 		const assessmentData: CreateAssessmentData = {
 			title: 'Published Assessment',
 			grade: '4ème',
-			categories: [],
+			categories: [{ id: 'cat-1', bank_id: 'bank-1', count: 5, title: 'Test Category', filters: {} }],
 			settings: DEFAULT_ASSESSMENT_SETTINGS,
 			status: 'published'
 		};
@@ -247,10 +208,11 @@ describe('POST /api/assessments', () => {
 	it('should validate required fields', async () => {
 		const { POST } = await import('./+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
@@ -262,23 +224,26 @@ describe('POST /api/assessments', () => {
 			status: 'draft'
 		});
 
-		const response = await POST({
-			request,
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(400);
-		expect(data.error).toBe('Missing required fields');
+		try {
+			await POST({
+				request,
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(400);
+			expect(err.body.message).toBe('Missing required fields');
+		}
 	});
 
 	it('should reject empty categories array', async () => {
 		const { POST } = await import('./+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
@@ -291,29 +256,32 @@ describe('POST /api/assessments', () => {
 			status: 'draft'
 		});
 
-		const response = await POST({
-			request,
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(400);
-		expect(data.error).toBe('Missing required fields');
+		try {
+			await POST({
+				request,
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(400);
+			expect(err.body.message).toBe('Missing required fields');
+		}
 	});
 
 	it('should handle database errors', async () => {
 		const { POST } = await import('./+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock database error
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: null,
 			error: { message: 'Database error' }
 		});
@@ -328,14 +296,16 @@ describe('POST /api/assessments', () => {
 
 		const request = createMockRequest(assessmentData);
 
-		const response = await POST({
-			request,
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(500);
-		expect(data.error).toBe('Failed to create assessment');
+		try {
+			await POST({
+				request,
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(500);
+			expect(err.body.message).toBe('Failed to create assessment');
+		}
 	});
 });
 
@@ -350,46 +320,52 @@ describe('GET /api/assessments', () => {
 		const locals = createMockLocals(); // No user
 		const url = createMockURL();
 
-		const response = await GET({
-			url,
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await GET({
+				url,
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(401);
+			expect(err.body.message).toBe('Unauthorized');
+		}
 	});
 
 	it('should reject non-teacher users', async () => {
 		const { GET } = await import('./+server');
 
-		const locals = createMockLocals(mockStudent);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock student profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'student' },
 			error: null
 		});
 
 		const url = createMockURL();
 
-		const response = await GET({
-			url,
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toBe('Forbidden - Teachers only');
+		try {
+			await GET({
+				url,
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(403);
+			expect(err.body.message).toBe('Forbidden - Teachers only');
+		}
 	});
 
 	it('should return all teacher assessments', async () => {
 		const { GET } = await import('./+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
@@ -405,9 +381,13 @@ describe('GET /api/assessments', () => {
 			}
 		];
 
-		(locals.supabase.from('assessments') as any).then.mockResolvedValueOnce({
-			data: assessments,
-			error: null
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: assessments,
+					error: null
+				})
+			);
 		});
 
 		const url = createMockURL();
@@ -425,22 +405,25 @@ describe('GET /api/assessments', () => {
 	it('should filter assessments by status', async () => {
 		const { GET } = await import('./+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock filtered assessments
-		const publishedAssessments = [
-			{ ...mockAssessment, status: 'published' as const, creator: [] }
-		];
+		const publishedAssessments = [{ ...mockAssessment, status: 'published' as const, creator: [] }];
 
-		(locals.supabase.from('assessments') as any).then.mockResolvedValueOnce({
-			data: publishedAssessments,
-			error: null
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: publishedAssessments,
+					error: null
+				})
+			);
 		});
 
 		const url = createMockURL({ status: 'published' });
@@ -459,30 +442,37 @@ describe('GET /api/assessments', () => {
 	it('should handle database errors', async () => {
 		const { GET } = await import('./+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock database error
-		(locals.supabase.from('assessments') as any).then.mockResolvedValueOnce({
-			data: null,
-			error: { message: 'Database error' }
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: null,
+					error: { message: 'Database error' }
+				})
+			);
 		});
 
 		const url = createMockURL();
 
-		const response = await GET({
-			url,
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(500);
-		expect(data.error).toBe('Failed to fetch assessments');
+		try {
+			await GET({
+				url,
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(500);
+			expect(err.body.message).toBe('Failed to fetch assessments');
+		}
 	});
 });
 
@@ -496,29 +486,32 @@ describe('GET /api/assessments/[id]', () => {
 
 		const locals = createMockLocals(); // No user
 
-		const response = await GET({
-			params: { id: mockAssessmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await GET({
+				params: { id: mockAssessmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(401);
+			expect(err.body.message).toBe('Unauthorized');
+		}
 	});
 
 	it('should allow teacher to view their own assessment', async () => {
 		const { GET } = await import('./[id]/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock assessment fetch
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: mockAssessment,
 			error: null
 		});
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
@@ -534,52 +527,58 @@ describe('GET /api/assessments/[id]', () => {
 		expect(data.assessment.id).toBe(mockAssessmentId);
 	});
 
-	it('should reject teacher viewing another teacher\'s assessment', async () => {
+	it("should reject teacher viewing another teacher's assessment", async () => {
 		const { GET } = await import('./[id]/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock assessment owned by different teacher
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { ...mockAssessment, created_by: 'other-teacher' },
 			error: null
 		});
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
-		const response = await GET({
-			params: { id: mockAssessmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toBe('Forbidden');
+		try {
+			await GET({
+				params: { id: mockAssessmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(403);
+			expect(err.body.message).toBe('Forbidden');
+		}
 	});
 
 	it('should handle assessment not found', async () => {
 		const { GET } = await import('./[id]/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock assessment not found
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: null,
 			error: { message: 'Not found' }
 		});
 
-		const response = await GET({
-			params: { id: 'non-existent' },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(404);
-		expect(data.error).toBe('Assessment not found');
+		try {
+			await GET({
+				params: { id: 'non-existent' },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(404);
+			expect(err.body.message).toBe('Assessment not found');
+		}
 	});
 });
 
@@ -594,61 +593,67 @@ describe('PUT /api/assessments/[id]', () => {
 		const locals = createMockLocals(); // No user
 		const request = createMockRequest({ title: 'Updated Title' }, 'PUT');
 
-		const response = await PUT({
-			request,
-			params: { id: mockAssessmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await PUT({
+				request,
+				params: { id: mockAssessmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(401);
+			expect(err.body.message).toBe('Unauthorized');
+		}
 	});
 
 	it('should reject non-teacher users', async () => {
 		const { PUT } = await import('./[id]/+server');
 
-		const locals = createMockLocals(mockStudent);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock student profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'student' },
 			error: null
 		});
 
 		const request = createMockRequest({ title: 'Updated Title' }, 'PUT');
 
-		const response = await PUT({
-			request,
-			params: { id: mockAssessmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toBe('Forbidden - Teachers only');
+		try {
+			await PUT({
+				request,
+				params: { id: mockAssessmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(403);
+			expect(err.body.message).toBe('Forbidden - Teachers only');
+		}
 	});
 
 	it('should update assessment successfully', async () => {
 		const { PUT } = await import('./[id]/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock ownership check
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: mockTeacher.id },
 			error: null
 		});
 
 		// Mock update
 		const updatedAssessment = { ...mockAssessment, title: 'Updated Title' };
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: updatedAssessment,
 			error: null
 		});
@@ -673,31 +678,34 @@ describe('PUT /api/assessments/[id]', () => {
 	it('should reject update when not authorized', async () => {
 		const { PUT } = await import('./[id]/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock ownership check - different teacher
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: 'other-teacher' },
 			error: null
 		});
 
 		const request = createMockRequest({ title: 'Updated Title' }, 'PUT');
 
-		const response = await PUT({
-			request,
-			params: { id: mockAssessmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toBe('Forbidden - Not your assessment');
+		try {
+			await PUT({
+				request,
+				params: { id: mockAssessmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(403);
+			expect(err.body.message).toBe('Forbidden - Not your assessment');
+		}
 	});
 });
 
@@ -711,57 +719,63 @@ describe('DELETE /api/assessments/[id]', () => {
 
 		const locals = createMockLocals(); // No user
 
-		const response = await DELETE({
-			params: { id: mockAssessmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await DELETE({
+				params: { id: mockAssessmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(401);
+			expect(err.body.message).toBe('Unauthorized');
+		}
 	});
 
 	it('should reject non-teacher users', async () => {
 		const { DELETE } = await import('./[id]/+server');
 
-		const locals = createMockLocals(mockStudent);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock student profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'student' },
 			error: null
 		});
 
-		const response = await DELETE({
-			params: { id: mockAssessmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toBe('Forbidden - Teachers only');
+		try {
+			await DELETE({
+				params: { id: mockAssessmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(403);
+			expect(err.body.message).toBe('Forbidden - Teachers only');
+		}
 	});
 
 	it('should archive assessment successfully', async () => {
 		const { DELETE } = await import('./[id]/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock ownership check
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: mockTeacher.id },
 			error: null
 		});
 
 		// Mock archive
 		const archivedAssessment = { ...mockAssessment, status: 'archived' as const };
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: archivedAssessment,
 			error: null
 		});
@@ -779,28 +793,31 @@ describe('DELETE /api/assessments/[id]', () => {
 	it('should reject delete when not authorized', async () => {
 		const { DELETE } = await import('./[id]/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock ownership check - different teacher
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: 'other-teacher' },
 			error: null
 		});
 
-		const response = await DELETE({
-			params: { id: mockAssessmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toBe('Forbidden - Not your assessment');
+		try {
+			await DELETE({
+				params: { id: mockAssessmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(403);
+			expect(err.body.message).toBe('Forbidden - Not your assessment');
+		}
 	});
 });
 
@@ -817,24 +834,27 @@ describe('POST /api/assessments/[id]/assign', () => {
 			class_ids: ['class-1']
 		});
 
-		const response = await POST({
-			request,
-			params: { id: mockAssessmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await POST({
+				request,
+				params: { id: mockAssessmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(401);
+			expect(err.body.message).toBe('Unauthorized');
+		}
 	});
 
 	it('should reject non-teacher users', async () => {
 		const { POST } = await import('./[id]/assign/+server');
 
-		const locals = createMockLocals(mockStudent);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock student profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'student' },
 			error: null
 		});
@@ -843,44 +863,78 @@ describe('POST /api/assessments/[id]/assign', () => {
 			class_ids: ['class-1']
 		});
 
-		const response = await POST({
-			request,
-			params: { id: mockAssessmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toBe('Forbidden - Teachers only');
+		try {
+			await POST({
+				request,
+				params: { id: mockAssessmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(403);
+			expect(err.body.message).toBe('Forbidden - Teachers only');
+		}
 	});
 
 	it('should assign to classes successfully', async () => {
 		const { POST } = await import('./[id]/assign/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher', firstname: 'John', lastname: 'Doe' },
 			error: null
 		});
 
-		// Mock ownership and status check
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		// Mock ownership and status check (in assignAssessment)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: mockTeacher.id, status: 'published' },
 			error: null
 		});
 
-		// Mock assignment creation
-		(locals.supabase.from('assessment_assignments') as any).select.mockResolvedValueOnce({
-			data: [{}, {}], // 2 assignments
+		// Mock assignment creation (in assignAssessment)
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{}, {}], // 2 assignments
+					error: null
+				})
+			);
+		});
+
+		// Mock assessment fetch for notification (in getAssessment)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: mockAssessment,
 			error: null
 		});
 
-		// Mock assessment fetch for notification
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
-			data: mockAssessment,
+		// Mock notification creation queries (createSystemNotification makes 3 queries)
+		// 1. Insert into notifications table
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: 'notif-1' },
 			error: null
+		});
+
+		// 2. Get class members
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ student_id: 'student-1' }],
+					error: null
+				})
+			);
+		});
+
+		// 3. Insert notification recipients
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{}],
+					error: null
+				})
+			);
 		});
 
 		const request = createMockRequest({
@@ -902,30 +956,52 @@ describe('POST /api/assessments/[id]/assign', () => {
 	it('should assign to individual students', async () => {
 		const { POST } = await import('./[id]/assign/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher', firstname: 'John', lastname: 'Doe' },
 			error: null
 		});
 
-		// Mock ownership and status check
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		// Mock ownership and status check (in assignAssessment)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: mockTeacher.id, status: 'published' },
 			error: null
 		});
 
-		// Mock assignment creation
-		(locals.supabase.from('assessment_assignments') as any).select.mockResolvedValueOnce({
-			data: [{}, {}, {}], // 3 assignments
+		// Mock assignment creation (in assignAssessment)
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{}, {}, {}], // 3 assignments
+					error: null
+				})
+			);
+		});
+
+		// Mock assessment fetch for notification (in getAssessment)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: mockAssessment,
 			error: null
 		});
 
-		// Mock assessment fetch for notification
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
-			data: mockAssessment,
+		// Mock notification creation queries (createSystemNotification for student_ids)
+		// 1. Insert into notifications table
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: 'notif-1' },
 			error: null
+		});
+
+		// 2. Insert notification recipients (for individual students)
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{}, {}, {}],
+					error: null
+				})
+			);
 		});
 
 		const request = createMockRequest({
@@ -946,10 +1022,11 @@ describe('POST /api/assessments/[id]/assign', () => {
 	it('should reject when no targets specified', async () => {
 		const { POST } = await import('./[id]/assign/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
@@ -958,30 +1035,33 @@ describe('POST /api/assessments/[id]/assign', () => {
 			// No class_ids or student_ids
 		});
 
-		const response = await POST({
-			request,
-			params: { id: mockAssessmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(400);
-		expect(data.error).toBe('Must specify at least one class or student');
+		try {
+			await POST({
+				request,
+				params: { id: mockAssessmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(400);
+			expect(err.body.message).toBe('Must specify at least one class or student');
+		}
 	});
 
 	it('should reject when assessment is not published', async () => {
 		const { POST } = await import('./[id]/assign/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock ownership check - assessment is draft
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: mockTeacher.id, status: 'draft' },
 			error: null
 		});
@@ -990,30 +1070,33 @@ describe('POST /api/assessments/[id]/assign', () => {
 			class_ids: ['class-1']
 		});
 
-		const response = await POST({
-			request,
-			params: { id: mockAssessmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(400);
-		expect(data.error).toBe('Assessment must be published before assigning');
+		try {
+			await POST({
+				request,
+				params: { id: mockAssessmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(400);
+			expect(err.body.message).toBe('Assessment must be published before assigning');
+		}
 	});
 
 	it('should reject when not authorized', async () => {
 		const { POST } = await import('./[id]/assign/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock ownership check - different teacher
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: 'other-teacher', status: 'published' },
 			error: null
 		});
@@ -1022,15 +1105,17 @@ describe('POST /api/assessments/[id]/assign', () => {
 			class_ids: ['class-1']
 		});
 
-		const response = await POST({
-			request,
-			params: { id: mockAssessmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toBe('Forbidden - Not your assessment');
+		try {
+			await POST({
+				request,
+				params: { id: mockAssessmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(403);
+			expect(err.body.message).toBe('Forbidden - Not your assessment');
+		}
 	});
 });
 
@@ -1044,50 +1129,56 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 
 		const locals = createMockLocals(); // No user
 
-		const response = await POST({
-			params: { id: mockAssignmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await POST({
+				params: { id: mockAssignmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(401);
+			expect(err.body.message).toBe('Unauthorized');
+		}
 	});
 
 	it('should reject non-student users', async () => {
 		const { POST } = await import('./[id]/validate-attempt/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
-		const response = await POST({
-			params: { id: mockAssignmentId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toBe('Forbidden - Students only');
+		try {
+			await POST({
+				params: { id: mockAssignmentId },
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(403);
+			expect(err.body.message).toBe('Forbidden - Students only');
+		}
 	});
 
 	it('should allow attempt when conditions are met', async () => {
 		const { POST } = await import('./[id]/validate-attempt/+server');
 
-		const locals = createMockLocals(mockStudent);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock student profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'student' },
 			error: null
 		});
 
 		// Mock assignment fetch
-		(locals.supabase.from('assessment_assignments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: {
 				id: mockAssignmentId,
 				assessment: {
@@ -1103,9 +1194,13 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 		});
 
 		// Mock existing attempts (1 attempt)
-		(locals.supabase.from('test_sessions') as any).select.mockResolvedValueOnce({
-			data: [{ id: 'attempt-1' }],
-			error: null
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ id: 'attempt-1' }],
+					error: null
+				})
+			);
 		});
 
 		const response = await POST({
@@ -1122,10 +1217,11 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 	it('should reject when deadline has passed', async () => {
 		const { POST } = await import('./[id]/validate-attempt/+server');
 
-		const locals = createMockLocals(mockStudent);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock student profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'student' },
 			error: null
 		});
@@ -1133,7 +1229,7 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 		const pastDeadline = new Date('2020-01-01').toISOString();
 
 		// Mock assignment fetch with past deadline
-		(locals.supabase.from('assessment_assignments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: {
 				id: mockAssignmentId,
 				assessment: {
@@ -1161,16 +1257,17 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 	it('should reject when max attempts reached', async () => {
 		const { POST } = await import('./[id]/validate-attempt/+server');
 
-		const locals = createMockLocals(mockStudent);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock student profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'student' },
 			error: null
 		});
 
 		// Mock assignment fetch
-		(locals.supabase.from('assessment_assignments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: {
 				id: mockAssignmentId,
 				assessment: {
@@ -1186,9 +1283,13 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 		});
 
 		// Mock existing attempts (2 attempts = max)
-		(locals.supabase.from('test_sessions') as any).select.mockResolvedValueOnce({
-			data: [{ id: 'attempt-1' }, { id: 'attempt-2' }],
-			error: null
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ id: 'attempt-1' }, { id: 'attempt-2' }],
+					error: null
+				})
+			);
 		});
 
 		const response = await POST({
@@ -1213,50 +1314,60 @@ describe('GET /api/assessments/assigned', () => {
 
 		const locals = createMockLocals(); // No user
 
-		const response = await GET({
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await GET({
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(401);
+			expect(err.body.message).toBe('Unauthorized');
+		}
 	});
 
 	it('should reject non-student users', async () => {
 		const { GET } = await import('./assigned/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
-		const response = await GET({
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toBe('Forbidden - Students only');
+		try {
+			await GET({
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(403);
+			expect(err.body.message).toBe('Forbidden - Students only');
+		}
 	});
 
 	it('should return student assignments', async () => {
 		const { GET } = await import('./assigned/+server');
 
-		const locals = createMockLocals(mockStudent);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock student profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'student' },
 			error: null
 		});
 
 		// Mock student's classes
-		(locals.supabase.from('class_members') as any).select.mockResolvedValueOnce({
-			data: [{ class_id: 'class-1' }],
-			error: null
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ class_id: 'class-1' }],
+					error: null
+				})
+			);
 		});
 
 		// Mock assignments
@@ -1266,15 +1377,23 @@ describe('GET /api/assessments/assigned', () => {
 				assessment: { ...mockAssessment, status: 'published' as const }
 			}
 		];
-		(locals.supabase.from('assessment_assignments') as any).then.mockResolvedValueOnce({
-			data: assignments,
-			error: null
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: assignments,
+					error: null
+				})
+			);
 		});
 
 		// Mock attempts
-		(locals.supabase.from('test_sessions') as any).select.mockResolvedValueOnce({
-			data: [],
-			error: null
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		const response = await GET({
@@ -1289,24 +1408,33 @@ describe('GET /api/assessments/assigned', () => {
 	it('should return empty array when student has no assignments', async () => {
 		const { GET } = await import('./assigned/+server');
 
-		const locals = createMockLocals(mockStudent);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock student profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'student' },
 			error: null
 		});
 
 		// Mock no classes
-		(locals.supabase.from('class_members') as any).select.mockResolvedValueOnce({
-			data: [],
-			error: null
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		// Mock no assignments
-		(locals.supabase.from('assessment_assignments') as any).then.mockResolvedValueOnce({
-			data: [],
-			error: null
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		const response = await GET({
@@ -1321,27 +1449,44 @@ describe('GET /api/assessments/assigned', () => {
 	it('should handle database errors', async () => {
 		const { GET } = await import('./assigned/+server');
 
-		const locals = createMockLocals(mockStudent);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock student profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'student' },
 			error: null
 		});
 
-		// Mock database error
-		(locals.supabase.from('class_members') as any).select.mockResolvedValueOnce({
-			data: null,
-			error: { message: 'Database error' }
+		// Mock get student's classes (getStudentAssignments)
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
-		const response = await GET({
-			locals
-		} as any);
+		// Mock database error in assignments query
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: null,
+					error: { message: 'Database error' }
+				})
+			);
+		});
 
-		const data = await response.json();
-		expect(response.status).toBe(500);
-		expect(data.error).toBe('Failed to fetch assigned assessments');
+		try {
+			await GET({
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(500);
+			expect(err.body.message).toBe('Failed to fetch assigned assessments');
+		}
 	});
 });
 
@@ -1356,92 +1501,105 @@ describe('GET /api/assessments/[id]/results', () => {
 		const locals = createMockLocals(); // No user
 		const url = createMockURL();
 
-		const response = await GET({
-			params: { id: mockAssessmentId },
-			url,
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await GET({
+				params: { id: mockAssessmentId },
+				url,
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(401);
+			expect(err.body.message).toBe('Unauthorized');
+		}
 	});
 
 	it('should reject non-teacher users', async () => {
 		const { GET } = await import('./[id]/results/+server');
 
-		const locals = createMockLocals(mockStudent);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock student profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'student' },
 			error: null
 		});
 
 		const url = createMockURL();
 
-		const response = await GET({
-			params: { id: mockAssessmentId },
-			url,
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toBe('Forbidden - Teachers only');
+		try {
+			await GET({
+				params: { id: mockAssessmentId },
+				url,
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(403);
+			expect(err.body.message).toBe('Forbidden - Teachers only');
+		}
 	});
 
 	it('should reject when teacher does not own assessment', async () => {
 		const { GET } = await import('./[id]/results/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock assessment owned by different teacher
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: 'other-teacher' },
 			error: null
 		});
 
 		const url = createMockURL();
 
-		const response = await GET({
-			params: { id: mockAssessmentId },
-			url,
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toBe('Forbidden - Not your assessment');
+		try {
+			await GET({
+				params: { id: mockAssessmentId },
+				url,
+				locals
+			} as any);
+			expect.fail('Should have thrown an error');
+		} catch (err: any) {
+			expect(err.status).toBe(403);
+			expect(err.body.message).toBe('Forbidden - Not your assessment');
+		}
 	});
 
 	it('should return results successfully', async () => {
 		const { GET } = await import('./[id]/results/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock assessment ownership check
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: mockTeacher.id },
 			error: null
 		});
 
 		// Mock assignments fetch
-		(locals.supabase.from('assessment_assignments') as any).select.mockResolvedValueOnce({
-			data: [],
-			error: null
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		const url = createMockURL();
@@ -1460,24 +1618,40 @@ describe('GET /api/assessments/[id]/results', () => {
 	it('should include statistics when requested', async () => {
 		const { GET } = await import('./[id]/results/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock assessment ownership check
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: mockTeacher.id },
 			error: null
 		});
 
-		// Mock assignments fetch
-		(locals.supabase.from('assessment_assignments') as any).select.mockResolvedValueOnce({
-			data: [],
-			error: null
+		// Mock assignments fetch for getAssessmentResults (called 3 times - once for results, once for stats, once for class stats but we only request stats)
+		// First call: getAssessmentResults
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
+		});
+
+		// Second call: getAssessmentStatistics calls getAssessmentResults again
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		const url = createMockURL({ stats: 'true' });
@@ -1496,24 +1670,40 @@ describe('GET /api/assessments/[id]/results', () => {
 	it('should include class statistics when requested', async () => {
 		const { GET } = await import('./[id]/results/+server');
 
-		const locals = createMockLocals(mockTeacher);
+		const mockSupabase = createMockSupabase();
+		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
 		// Mock teacher profile check
-		(locals.supabase.from('profiles') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'teacher' },
 			error: null
 		});
 
 		// Mock assessment ownership check
-		(locals.supabase.from('assessments') as any).single.mockResolvedValueOnce({
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: mockTeacher.id },
 			error: null
 		});
 
-		// Mock assignments fetch
-		(locals.supabase.from('assessment_assignments') as any).select.mockResolvedValueOnce({
-			data: [],
-			error: null
+		// Mock assignments fetch for getAssessmentResults (called twice - once for results, once for class stats)
+		// First call: getAssessmentResults
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
+		});
+
+		// Second call: getClassStatistics calls getAssessmentResults again
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		const url = createMockURL({ class_stats: 'true' });

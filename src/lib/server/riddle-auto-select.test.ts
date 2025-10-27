@@ -49,52 +49,78 @@ describe('autoSelectRiddleOfTheDay', () => {
 		it('should rotate difficulty 1 -> 2 -> 3 -> 1', async () => {
 			const targetDate = '2025-01-15';
 
-			// Mock: No existing riddle for target date
-			const mockFrom = vi.fn();
+			// Track which query we're on for riddle_of_the_day table
+			let riddleOfDayQueryCount = 0;
+
 			(mockSupabase.from as Mock).mockImplementation((table: string) => {
 				if (table === 'riddle_of_the_day') {
-					return {
-						select: vi.fn().mockReturnValue({
-							eq: vi.fn().mockReturnValue({
-								single: vi.fn().mockResolvedValueOnce({
-									data: null, // First call: no riddle for target date
+					riddleOfDayQueryCount++;
+
+					if (riddleOfDayQueryCount === 1) {
+						// First query: Check if riddle exists for target date
+						return {
+							select: vi.fn().mockReturnValue({
+								eq: vi.fn().mockReturnValue({
+									single: vi.fn().mockResolvedValue({
+										data: null,
+										error: null
+									})
+								})
+							})
+						};
+					} else if (riddleOfDayQueryCount === 2) {
+						// Second query: Get recent riddles
+						return {
+							select: vi.fn().mockReturnValue({
+								gte: vi.fn().mockResolvedValue({
+									data: [],
 									error: null
 								})
-							}),
-							gte: vi.fn().mockReturnValue({
-								// Recent riddles (last 30 days)
-								data: [],
-								error: null
-							}),
-							lt: vi.fn().mockReturnValue({
-								order: vi.fn().mockReturnValue({
-									limit: vi.fn().mockReturnValue({
-										single: vi.fn().mockResolvedValue({
-											data: {
-												riddle: { difficulty: 2 } // Last riddle was difficulty 2
-											},
-											error: null
+							})
+						};
+					} else {
+						// Third query: Get last riddle for difficulty rotation
+						return {
+							select: vi.fn().mockReturnValue({
+								lt: vi.fn().mockReturnValue({
+									order: vi.fn().mockReturnValue({
+										limit: vi.fn().mockReturnValue({
+											single: vi.fn().mockResolvedValue({
+												data: {
+													riddle: { difficulty: 2 }
+												},
+												error: null
+											})
 										})
 									})
 								})
 							})
-						})
-					};
+						};
+					}
 				} else if (table === 'riddles') {
+					// Query for eligible riddles
 					return {
 						select: vi.fn().mockReturnValue({
-							eq: vi.fn().mockImplementation((field: string, value: number) => {
-								if (field === 'difficulty' && value === 3) {
-									// Next should be 3 (since last was 2)
+							eq: vi.fn().mockImplementation((field: string, value: unknown) => {
+								if (field === 'status') {
 									return {
-										eq: vi.fn().mockReturnValue({
-											data: [{ id: 'riddle-diff-3' }],
-											error: null
+										eq: vi.fn().mockImplementation((f: string, v: number) => {
+											if (f === 'difficulty' && v === 3) {
+												// Next should be 3 (since last was 2)
+												return Promise.resolve({
+													data: [{ id: 'riddle-diff-3' }],
+													error: null
+												});
+											}
+											return Promise.resolve({
+												data: [],
+												error: null
+											});
 										})
 									};
 								}
 								return {
-									eq: vi.fn().mockReturnValue({
+									eq: vi.fn().mockResolvedValue({
 										data: [],
 										error: null
 									})
@@ -103,7 +129,7 @@ describe('autoSelectRiddleOfTheDay', () => {
 						})
 					};
 				}
-				return mockFrom(table);
+				return { select: vi.fn() };
 			});
 
 			(mockSupabase.rpc as Mock).mockResolvedValue({
@@ -120,40 +146,78 @@ describe('autoSelectRiddleOfTheDay', () => {
 		it('should wrap from difficulty 3 to difficulty 1', async () => {
 			const targetDate = '2025-01-15';
 
+			let riddleOfDayQueryCount = 0;
+
 			(mockSupabase.from as Mock).mockImplementation((table: string) => {
 				if (table === 'riddle_of_the_day') {
-					return {
-						select: vi.fn().mockReturnValue({
-							eq: vi.fn().mockReturnValue({
-								single: vi.fn().mockResolvedValueOnce({ data: null, error: null })
-							}),
-							gte: vi.fn().mockReturnValue({ data: [], error: null }),
-							lt: vi.fn().mockReturnValue({
-								order: vi.fn().mockReturnValue({
-									limit: vi.fn().mockReturnValue({
-										single: vi.fn().mockResolvedValue({
-											data: { riddle: { difficulty: 3 } }, // Last was 3
-											error: null
+					riddleOfDayQueryCount++;
+
+					if (riddleOfDayQueryCount === 1) {
+						// First query: Check if riddle exists for target date
+						return {
+							select: vi.fn().mockReturnValue({
+								eq: vi.fn().mockReturnValue({
+									single: vi.fn().mockResolvedValue({
+										data: null,
+										error: null
+									})
+								})
+							})
+						};
+					} else if (riddleOfDayQueryCount === 2) {
+						// Second query: Get recent riddles
+						return {
+							select: vi.fn().mockReturnValue({
+								gte: vi.fn().mockResolvedValue({
+									data: [],
+									error: null
+								})
+							})
+						};
+					} else {
+						// Third query: Get last riddle for difficulty rotation
+						return {
+							select: vi.fn().mockReturnValue({
+								lt: vi.fn().mockReturnValue({
+									order: vi.fn().mockReturnValue({
+										limit: vi.fn().mockReturnValue({
+											single: vi.fn().mockResolvedValue({
+												data: { riddle: { difficulty: 3 } },
+												error: null
+											})
 										})
 									})
 								})
 							})
-						})
-					};
+						};
+					}
 				} else if (table === 'riddles') {
 					return {
 						select: vi.fn().mockReturnValue({
-							eq: vi.fn().mockImplementation((field: string, value: number) => {
-								if (field === 'difficulty' && value === 1) {
-									// Should wrap to 1
+							eq: vi.fn().mockImplementation((field: string, value: unknown) => {
+								if (field === 'status') {
 									return {
-										eq: vi.fn().mockReturnValue({
-											data: [{ id: 'riddle-diff-1' }],
-											error: null
+										eq: vi.fn().mockImplementation((f: string, v: number) => {
+											if (f === 'difficulty' && v === 1) {
+												// Should wrap to 1
+												return Promise.resolve({
+													data: [{ id: 'riddle-diff-1' }],
+													error: null
+												});
+											}
+											return Promise.resolve({
+												data: [],
+												error: null
+											});
 										})
 									};
 								}
-								return { eq: vi.fn().mockReturnValue({ data: [], error: null }) };
+								return {
+									eq: vi.fn().mockResolvedValue({
+										data: [],
+										error: null
+									})
+								};
 							})
 						})
 					};
@@ -172,39 +236,77 @@ describe('autoSelectRiddleOfTheDay', () => {
 		it('should default to difficulty 1 when no previous riddle', async () => {
 			const targetDate = '2025-01-15';
 
+			let riddleOfDayQueryCount = 0;
+
 			(mockSupabase.from as Mock).mockImplementation((table: string) => {
 				if (table === 'riddle_of_the_day') {
-					return {
-						select: vi.fn().mockReturnValue({
-							eq: vi.fn().mockReturnValue({
-								single: vi.fn().mockResolvedValueOnce({ data: null, error: null })
-							}),
-							gte: vi.fn().mockReturnValue({ data: [], error: null }),
-							lt: vi.fn().mockReturnValue({
-								order: vi.fn().mockReturnValue({
-									limit: vi.fn().mockReturnValue({
-										single: vi.fn().mockResolvedValue({
-											data: null, // No previous riddle
-											error: null
+					riddleOfDayQueryCount++;
+
+					if (riddleOfDayQueryCount === 1) {
+						// First query: Check if riddle exists for target date
+						return {
+							select: vi.fn().mockReturnValue({
+								eq: vi.fn().mockReturnValue({
+									single: vi.fn().mockResolvedValue({
+										data: null,
+										error: null
+									})
+								})
+							})
+						};
+					} else if (riddleOfDayQueryCount === 2) {
+						// Second query: Get recent riddles
+						return {
+							select: vi.fn().mockReturnValue({
+								gte: vi.fn().mockResolvedValue({
+									data: [],
+									error: null
+								})
+							})
+						};
+					} else {
+						// Third query: Get last riddle for difficulty rotation
+						return {
+							select: vi.fn().mockReturnValue({
+								lt: vi.fn().mockReturnValue({
+									order: vi.fn().mockReturnValue({
+										limit: vi.fn().mockReturnValue({
+											single: vi.fn().mockResolvedValue({
+												data: null, // No previous riddle
+												error: null
+											})
 										})
 									})
 								})
 							})
-						})
-					};
+						};
+					}
 				} else if (table === 'riddles') {
 					return {
 						select: vi.fn().mockReturnValue({
-							eq: vi.fn().mockImplementation((field: string, value: number) => {
-								if (field === 'difficulty' && value === 1) {
+							eq: vi.fn().mockImplementation((field: string, value: unknown) => {
+								if (field === 'status') {
 									return {
-										eq: vi.fn().mockReturnValue({
-											data: [{ id: 'riddle-diff-1-default' }],
-											error: null
+										eq: vi.fn().mockImplementation((f: string, v: number) => {
+											if (f === 'difficulty' && v === 1) {
+												return Promise.resolve({
+													data: [{ id: 'riddle-diff-1-default' }],
+													error: null
+												});
+											}
+											return Promise.resolve({
+												data: [],
+												error: null
+											});
 										})
 									};
 								}
-								return { eq: vi.fn().mockReturnValue({ data: [], error: null }) };
+								return {
+									eq: vi.fn().mockResolvedValue({
+										data: [],
+										error: null
+									})
+								};
 							})
 						})
 					};
@@ -392,40 +494,75 @@ describe('autoSelectRiddleOfTheDay', () => {
 		it('should fallback to any difficulty if no riddles at target difficulty', async () => {
 			const targetDate = '2025-01-15';
 
+			let riddleOfDayQueryCount = 0;
+			let riddlesQueryCount = 0;
+
 			(mockSupabase.from as Mock).mockImplementation((table: string) => {
 				if (table === 'riddle_of_the_day') {
-					return {
-						select: vi.fn().mockReturnValue({
-							eq: vi.fn().mockReturnValue({
-								single: vi.fn().mockResolvedValueOnce({ data: null, error: null })
-							}),
-							gte: vi.fn().mockReturnValue({ data: [], error: null }),
-							lt: vi.fn().mockReturnValue({
-								order: vi.fn().mockReturnValue({
-									limit: vi.fn().mockReturnValue({
-										single: vi.fn().mockResolvedValue({
-											data: { riddle: { difficulty: 2 } },
-											error: null
+					riddleOfDayQueryCount++;
+
+					if (riddleOfDayQueryCount === 1) {
+						// First query: Check if riddle exists for target date
+						return {
+							select: vi.fn().mockReturnValue({
+								eq: vi.fn().mockReturnValue({
+									single: vi.fn().mockResolvedValue({
+										data: null,
+										error: null
+									})
+								})
+							})
+						};
+					} else if (riddleOfDayQueryCount === 2) {
+						// Second query: Get recent riddles
+						return {
+							select: vi.fn().mockReturnValue({
+								gte: vi.fn().mockResolvedValue({
+									data: [],
+									error: null
+								})
+							})
+						};
+					} else {
+						// Third query: Get last riddle for difficulty rotation
+						return {
+							select: vi.fn().mockReturnValue({
+								lt: vi.fn().mockReturnValue({
+									order: vi.fn().mockReturnValue({
+										limit: vi.fn().mockReturnValue({
+											single: vi.fn().mockResolvedValue({
+												data: { riddle: { difficulty: 2 } },
+												error: null
+											})
 										})
 									})
 								})
 							})
-						})
-					};
+						};
+					}
 				} else if (table === 'riddles') {
+					riddlesQueryCount++;
+
 					return {
 						select: vi.fn().mockReturnValue({
-							eq: vi.fn().mockImplementation((field: string) => {
-								if (field === 'status') {
-									// Fallback query (no difficulty filter)
+							eq: vi.fn().mockImplementation((field: string, value: unknown) => {
+								if (field === 'status' && riddlesQueryCount === 1) {
+									// First riddles query - target difficulty 3 (2+1)
 									return {
+										eq: vi.fn().mockResolvedValue({
+											data: [], // No riddles at target difficulty
+											error: null
+										})
+									};
+								} else if (field === 'status' && riddlesQueryCount === 2) {
+									// Fallback query (no difficulty filter)
+									return Promise.resolve({
 										data: [{ id: 'fallback-riddle-any-difficulty' }],
 										error: null
-									};
+									});
 								}
-								// Target difficulty query returns empty
 								return {
-									eq: vi.fn().mockReturnValue({
+									eq: vi.fn().mockResolvedValue({
 										data: [],
 										error: null
 									})

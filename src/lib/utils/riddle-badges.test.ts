@@ -619,8 +619,6 @@ describe('getTierColorClass', () => {
 		expect(getTierColorClass('bronze')).toBe('border-amber-700 bg-amber-50 dark:bg-amber-950');
 		expect(getTierColorClass('silver')).toBe('border-gray-400 bg-gray-50 dark:bg-gray-900');
 		expect(getTierColorClass('gold')).toBe('border-yellow-500 bg-yellow-50 dark:bg-yellow-950');
-		expect(getTierColorClass('platinum')).toBe(
-			'border-purple-500 bg-purple-50 dark:bg-purple-950'
-		);
+		expect(getTierColorClass('platinum')).toBe('border-purple-500 bg-purple-50 dark:bg-purple-950');
 	});
 });

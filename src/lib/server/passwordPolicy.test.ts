@@ -5,7 +5,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { validatePasswordPolicy, getPasswordRequirements, calculatePasswordScore } from './passwordPolicy';
+import {
+	validatePasswordPolicy,
+	getPasswordRequirements,
+	calculatePasswordScore
+} from './passwordPolicy';
 
 describe('validatePasswordPolicy', () => {
 	describe('Length Requirements', () => {
@@ -25,9 +29,7 @@ describe('validatePasswordPolicy', () => {
 			const longPassword = 'A'.repeat(129) + '1!';
 			const result = validatePasswordPolicy(longPassword);
 			expect(result.valid).toBe(false);
-			expect(result.errors).toContain(
-				'Le mot de passe ne peut pas dépasser 128 caractères'
-			);
+			expect(result.errors).toContain('Le mot de passe ne peut pas dépasser 128 caractères');
 			expect(result.requirements.maxLength).toBe(false);
 		});
 
@@ -77,9 +79,7 @@ describe('validatePasswordPolicy', () => {
 			const result = validatePasswordPolicy('password123');
 			expect(result.valid).toBe(false);
 			expect(result.requirements.complexityMet).toBe(false);
-			expect(result.errors.some(e => e.includes('au moins 3 types de caractères'))).toBe(
-				true
-			);
+			expect(result.errors.some((e) => e.includes('au moins 3 types de caractères'))).toBe(true);
 		});
 
 		it('should reject password with only 1 character type', () => {
@@ -100,22 +100,13 @@ describe('validatePasswordPolicy', () => {
 
 	describe('Common Password Detection', () => {
 		it('should reject common numeric passwords', () => {
-			const commonPasswords = [
-				'123456',
-				'12345678',
-				'123456789',
-				'1234567890',
-				'111111',
-				'000000'
-			];
+			const commonPasswords = ['123456', '12345678', '123456789', '1234567890', '111111', '000000'];
 
 			for (const password of commonPasswords) {
 				const result = validatePasswordPolicy(password);
 				expect(result.valid).toBe(false);
 				expect(result.requirements.notCommon).toBe(false);
-				expect(
-					result.errors.some(e => e.includes('trop commun'))
-				).toBe(true);
+				expect(result.errors.some((e) => e.includes('trop commun'))).toBe(true);
 			}
 		});
 
@@ -205,9 +196,9 @@ describe('validatePasswordPolicy', () => {
 	describe('Error Messages', () => {
 		it('should provide French error messages', () => {
 			const result = validatePasswordPolicy('abc');
-			expect(result.errors.every(e => typeof e === 'string')).toBe(true);
+			expect(result.errors.every((e) => typeof e === 'string')).toBe(true);
 			// Check for French content
-			expect(result.errors.some(e => e.includes('caractères'))).toBe(true);
+			expect(result.errors.some((e) => e.includes('caractères'))).toBe(true);
 		});
 
 		it('should list all violations when multiple requirements fail', () => {
@@ -217,7 +208,7 @@ describe('validatePasswordPolicy', () => {
 
 		it('should specify missing character types', () => {
 			const result = validatePasswordPolicy('abcdefgh');
-			expect(result.errors.some(e => e.includes('Manquant'))).toBe(true);
+			expect(result.errors.some((e) => e.includes('Manquant'))).toBe(true);
 		});
 	});
 });
@@ -227,7 +218,7 @@ describe('getPasswordRequirements', () => {
 		const requirements = getPasswordRequirements();
 		expect(Array.isArray(requirements)).toBe(true);
 		expect(requirements.length).toBe(4);
-		expect(requirements.every(r => typeof r === 'string')).toBe(true);
+		expect(requirements.every((r) => typeof r === 'string')).toBe(true);
 	});
 
 	it('should include all key requirements', () => {

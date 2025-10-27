@@ -9,7 +9,12 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { MathGraphApp, MathGraphPoint, MathGraphCircle, GeometryExercise } from '$lib/types/geometry';
+import type {
+	MathGraphApp,
+	MathGraphPoint,
+	MathGraphCircle,
+	GeometryExercise
+} from '$lib/types/geometry';
 import {
 	validateExercise,
 	validatePointIsMidpoint,
@@ -26,7 +31,7 @@ vi.mock('./mathgraph-api', () => ({
 	MathGraphHelpers: {
 		findByTag: vi.fn(),
 		findPointByName: vi.fn(),
-		calculateDistance: vi.fn((p1: {x: number, y: number}, p2: {x: number, y: number}) => {
+		calculateDistance: vi.fn((p1: { x: number; y: number }, p2: { x: number; y: number }) => {
 			const dx = p2.x - p1.x;
 			const dy = p2.y - p1.y;
 			return Math.sqrt(dx * dx + dy * dy);
@@ -56,7 +61,12 @@ function createMockApp(): MathGraphApp {
 	} as MathGraphApp;
 }
 
-function createMockPoint(tag: string, x: number, y: number, existe: boolean = true): MathGraphPoint {
+function createMockPoint(
+	tag: string,
+	x: number,
+	y: number,
+	existe: boolean = true
+): MathGraphPoint {
 	return {
 		tag,
 		nom: tag,
@@ -68,7 +78,12 @@ function createMockPoint(tag: string, x: number, y: number, existe: boolean = tr
 	} as MathGraphPoint;
 }
 
-function createMockCircle(tag: string, centreX: number, centreY: number, rayon: number): MathGraphCircle {
+function createMockCircle(
+	tag: string,
+	centreX: number,
+	centreY: number,
+	rayon: number
+): MathGraphCircle {
 	return {
 		tag,
 		nom: tag,
@@ -502,8 +517,8 @@ describe('Triangle Validators', () => {
 
 			// Mock calculateDistance to return different values for each side
 			vi.mocked(MathGraphHelpers.calculateDistance)
-				.mockReturnValueOnce(100)  // AB
-				.mockReturnValueOnce(130)  // AC
+				.mockReturnValueOnce(100) // AB
+				.mockReturnValueOnce(130) // AC
 				.mockReturnValueOnce(110); // BC
 
 			const result = validateIsoscelesTriangle(app, 'A', 'B', 'C', 2);

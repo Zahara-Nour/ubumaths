@@ -621,11 +621,7 @@ describe('Scoring Utilities', () => {
 describe('Statistics Calculation', () => {
 	describe('calculateAverageScore', () => {
 		it('should calculate average from attempts', () => {
-			const attempts = [
-				createMockAttempt(80),
-				createMockAttempt(90),
-				createMockAttempt(70)
-			];
+			const attempts = [createMockAttempt(80), createMockAttempt(90), createMockAttempt(70)];
 
 			const average = calculateAverageScore(attempts);
 
@@ -641,11 +637,7 @@ describe('Statistics Calculation', () => {
 
 	describe('getBestScore', () => {
 		it('should return highest score', () => {
-			const attempts = [
-				createMockAttempt(80),
-				createMockAttempt(95),
-				createMockAttempt(70)
-			];
+			const attempts = [createMockAttempt(80), createMockAttempt(95), createMockAttempt(70)];
 
 			const best = getBestScore(attempts);
 
@@ -661,11 +653,7 @@ describe('Statistics Calculation', () => {
 
 	describe('calculateImprovement', () => {
 		it('should calculate positive improvement', () => {
-			const attempts = [
-				createMockAttempt(70),
-				createMockAttempt(80),
-				createMockAttempt(90)
-			];
+			const attempts = [createMockAttempt(70), createMockAttempt(80), createMockAttempt(90)];
 
 			const improvement = calculateImprovement(attempts);
 
@@ -673,11 +661,7 @@ describe('Statistics Calculation', () => {
 		});
 
 		it('should calculate negative improvement', () => {
-			const attempts = [
-				createMockAttempt(90),
-				createMockAttempt(80),
-				createMockAttempt(70)
-			];
+			const attempts = [createMockAttempt(90), createMockAttempt(80), createMockAttempt(70)];
 
 			const improvement = calculateImprovement(attempts);
 

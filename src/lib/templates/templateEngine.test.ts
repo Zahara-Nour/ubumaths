@@ -137,7 +137,8 @@ describe('renderTemplate', () => {
 		const template: MessageTemplate = {
 			...mockTemplate,
 			subject_template: '{{student_name}} - {{assessment_title}}',
-			body_template: 'Hi {{student_name}}, regarding {{assessment_title}}. {{student_name}}, please confirm.'
+			body_template:
+				'Hi {{student_name}}, regarding {{assessment_title}}. {{student_name}}, please confirm.'
 		};
 
 		const result = renderTemplate(template, mockData);

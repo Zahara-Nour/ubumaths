@@ -115,8 +115,8 @@ describe('createExerciseAssignment', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should create a valid student assignment', async () => {
@@ -297,8 +297,8 @@ describe('createBulkAssignments', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should create multiple student assignments', async () => {
@@ -316,9 +316,13 @@ describe('createBulkAssignments', () => {
 		});
 
 		// Mock bulk insert
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: [{}, {}, {}], // 3 assignments created
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{}, {}, {}], // 3 assignments created
+					error: null
+				})
+			);
 		});
 
 		const result = await assignments.createBulkAssignments(supabase, bulkData, mockTeacherId);
@@ -341,9 +345,13 @@ describe('createBulkAssignments', () => {
 		});
 
 		// Mock bulk insert
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: [{}, {}], // 2 assignments created
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{}, {}], // 2 assignments created
+					error: null
+				})
+			);
 		});
 
 		const result = await assignments.createBulkAssignments(supabase, bulkData, mockTeacherId);
@@ -367,9 +375,13 @@ describe('createBulkAssignments', () => {
 		});
 
 		// Mock bulk insert (1 student + 1 class + 1 public = 3)
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: [{}, {}, {}],
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{}, {}, {}],
+					error: null
+				})
+			);
 		});
 
 		const result = await assignments.createBulkAssignments(supabase, bulkData, mockTeacherId);
@@ -417,8 +429,8 @@ describe('updateAssignment', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should update assignment deadline', async () => {
@@ -522,7 +534,7 @@ describe('updateAssignment', () => {
 			mockTeacherId
 		);
 
-		expect(result.error).toBe('Not authorized to update this assignment');
+		expect(result.error).toBe('Not authorized to modify this assignment');
 		expect(result.data).toBeNull();
 	});
 
@@ -555,8 +567,8 @@ describe('deleteAssignment', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should soft delete assignment (default)', async () => {
@@ -567,9 +579,13 @@ describe('deleteAssignment', () => {
 		});
 
 		// Mock update (soft delete)
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: {},
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: {},
+					error: null
+				})
+			);
 		});
 
 		const result = await assignments.deleteAssignment(supabase, mockAssignmentId, mockTeacherId);
@@ -587,9 +603,13 @@ describe('deleteAssignment', () => {
 		});
 
 		// Mock delete
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: {},
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: {},
+					error: null
+				})
+			);
 		});
 
 		const result = await assignments.deleteAssignment(
@@ -613,7 +633,7 @@ describe('deleteAssignment', () => {
 		const result = await assignments.deleteAssignment(supabase, mockAssignmentId, mockTeacherId);
 
 		expect(result.success).toBe(false);
-		expect(result.error).toBe('Not authorized to delete this assignment');
+		expect(result.error).toBe('Not authorized to modify this assignment');
 	});
 
 	it('should reject delete when assignment not found', async () => {
@@ -638,8 +658,8 @@ describe('markExerciseAsViewed', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should create new completion record on first view', async () => {
@@ -720,8 +740,8 @@ describe('markExerciseAsComplete', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should mark exercise as complete (new completion record)', async () => {
@@ -790,8 +810,8 @@ describe('markExerciseAsIncomplete', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should unmark exercise as complete', async () => {
@@ -847,8 +867,8 @@ describe('studentHasAccess', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should return true when student has access', async () => {
@@ -896,15 +916,19 @@ describe('getStudentClasses', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should return list of class IDs', async () => {
 		// Mock class membership query
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: [{ class_id: 'class-1' }, { class_id: 'class-2' }, { class_id: 'class-3' }],
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ class_id: 'class-1' }, { class_id: 'class-2' }, { class_id: 'class-3' }],
+					error: null
+				})
+			);
 		});
 
 		const result = await assignments.getStudentClasses(supabase, mockStudentId);
@@ -915,9 +939,13 @@ describe('getStudentClasses', () => {
 
 	it('should return empty array when student has no classes', async () => {
 		// Mock empty result
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: [],
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		const result = await assignments.getStudentClasses(supabase, mockStudentId);
@@ -928,9 +956,13 @@ describe('getStudentClasses', () => {
 
 	it('should handle error gracefully', async () => {
 		// Mock error
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: null,
-			error: { message: 'Database error' }
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: null,
+					error: { message: 'Database error' }
+				})
+			);
 		});
 
 		const result = await assignments.getStudentClasses(supabase, mockStudentId);
@@ -948,8 +980,8 @@ describe('getStudentProgress', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should calculate progress correctly', async () => {
@@ -960,9 +992,13 @@ describe('getStudentProgress', () => {
 		});
 
 		// Mock completions query (3 completed)
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: [{ id: 'c1' }, { id: 'c2' }, { id: 'c3' }],
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ id: 'c1' }, { id: 'c2' }, { id: 'c3' }],
+					error: null
+				})
+			);
 		});
 
 		const result = await assignments.getStudentProgress(supabase, mockStudentId);
@@ -996,9 +1032,13 @@ describe('getStudentProgress', () => {
 		});
 
 		// Mock all completed
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: [{ id: 'c1' }, { id: 'c2' }],
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ id: 'c1' }, { id: 'c2' }],
+					error: null
+				})
+			);
 		});
 
 		const result = await assignments.getStudentProgress(supabase, mockStudentId);

@@ -264,9 +264,13 @@ describe('getTeacherAssessments', () => {
 			}
 		];
 
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: assessments_list,
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: assessments_list,
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.getTeacherAssessments(supabase, mockTeacherId);
@@ -277,13 +281,15 @@ describe('getTeacherAssessments', () => {
 	});
 
 	it('should filter assessments by status', async () => {
-		const publishedAssessments = [
-			{ ...mockAssessment, status: 'published' as const, creator: [] }
-		];
+		const publishedAssessments = [{ ...mockAssessment, status: 'published' as const, creator: [] }];
 
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: publishedAssessments,
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: publishedAssessments,
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.getTeacherAssessments(supabase, mockTeacherId, 'published');
@@ -293,9 +299,13 @@ describe('getTeacherAssessments', () => {
 	});
 
 	it('should return empty array when teacher has no assessments', async () => {
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: [],
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.getTeacherAssessments(supabase, mockTeacherId);
@@ -559,8 +569,8 @@ describe('assignAssessment', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should assign assessment to classes', async () => {
@@ -569,16 +579,20 @@ describe('assignAssessment', () => {
 			class_ids: ['class-1', 'class-2']
 		};
 
-		// Mock ownership and status check
+		// Mock ownership and status check - first query
 		(supabase as any)._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: mockTeacherId, status: 'published' },
 			error: null
 		});
 
-		// Mock assignment creation
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [{}, {}], // 2 assignments created
-			error: null
+		// Mock assignment creation - second query: .insert().select() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{}, {}], // 2 assignments created
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.assignAssessment(supabase, assignmentData, mockTeacherId);
@@ -593,16 +607,20 @@ describe('assignAssessment', () => {
 			student_ids: ['student-1', 'student-2', 'student-3']
 		};
 
-		// Mock ownership and status check
+		// Mock ownership and status check - first query
 		(supabase as any)._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: mockTeacherId, status: 'published' },
 			error: null
 		});
 
-		// Mock assignment creation
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [{}, {}, {}], // 3 assignments created
-			error: null
+		// Mock assignment creation - second query: .insert().select() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{}, {}, {}], // 3 assignments created
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.assignAssessment(supabase, assignmentData, mockTeacherId);
@@ -618,16 +636,20 @@ describe('assignAssessment', () => {
 			student_ids: ['student-1', 'student-2']
 		};
 
-		// Mock ownership and status check
+		// Mock ownership and status check - first query
 		(supabase as any)._mockChain.single.mockResolvedValueOnce({
 			data: { created_by: mockTeacherId, status: 'published' },
 			error: null
 		});
 
-		// Mock assignment creation (1 class + 2 students = 3 total)
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [{}, {}, {}],
-			error: null
+		// Mock assignment creation - second query: .insert().select() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{}, {}, {}], // 1 class + 2 students = 3 total
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.assignAssessment(supabase, assignmentData, mockTeacherId);
@@ -737,9 +759,13 @@ describe('getAssessmentAssignments', () => {
 			}
 		];
 
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: assignments,
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: assignments,
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.getAssessmentAssignments(supabase, mockAssessmentId);
@@ -749,9 +775,13 @@ describe('getAssessmentAssignments', () => {
 	});
 
 	it('should return empty array when no assignments exist', async () => {
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: [],
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.getAssessmentAssignments(supabase, mockAssessmentId);
@@ -783,9 +813,13 @@ describe('removeAssignment', () => {
 		});
 
 		// Mock deletion
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: {},
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: {},
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.removeAssignment(supabase, mockAssignmentId, mockTeacherId);
@@ -834,33 +868,45 @@ describe('getStudentAssignments', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should get student assignments (direct + class-based)', async () => {
-		// Mock student's classes
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [{ class_id: 'class-1' }, { class_id: 'class-2' }],
-			error: null
+		// Mock student's classes - query 1: .select().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ class_id: 'class-1' }, { class_id: 'class-2' }],
+					error: null
+				})
+			);
 		});
 
-		// Mock assignments
+		// Mock assignments - query 2: .select().eq().or() (awaited directly)
 		const assignments = [
 			{
 				id: 'assign-1',
 				assessment: { ...mockAssessment, status: 'published' as const }
 			}
 		];
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: assignments,
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: assignments,
+					error: null
+				})
+			);
 		});
 
-		// Mock attempts fetch for each assignment
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [],
-			error: null
+		// Mock attempts fetch for each assignment - query 3: .select().eq().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.getStudentAssignments(supabase, mockStudentId);
@@ -870,33 +916,45 @@ describe('getStudentAssignments', () => {
 	});
 
 	it('should include attempt statistics for each assignment', async () => {
-		// Mock student's classes
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [],
-			error: null
+		// Mock student's classes - query 1: .select().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
-		// Mock assignments
+		// Mock assignments - query 2: .select().eq().eq() (awaited directly)
 		const assignments = [
 			{
 				id: 'assign-1',
 				assessment: { ...mockAssessment, status: 'published' as const }
 			}
 		];
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: assignments,
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: assignments,
+					error: null
+				})
+			);
 		});
 
-		// Mock attempts with scores
+		// Mock attempts with scores - query 3: .select().eq().eq() (awaited directly)
 		const attempts = [
 			{ score: 7, completed_at: '2024-01-16T10:00:00Z' },
 			{ score: 8, completed_at: '2024-01-17T10:00:00Z' },
 			{ score: 9, completed_at: '2024-01-18T10:00:00Z' }
 		];
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: attempts,
-			error: null
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: attempts,
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.getStudentAssignments(supabase, mockStudentId);
@@ -908,16 +966,24 @@ describe('getStudentAssignments', () => {
 	});
 
 	it('should return empty array when student has no assignments', async () => {
-		// Mock no classes
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [],
-			error: null
+		// Mock no classes - query 1: .select().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
-		// Mock no assignments
-		(supabase as any)._mockChain.then.mockResolvedValueOnce({
-			data: [],
-			error: null
+		// Mock no assignments - query 2: .select().eq().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.getStudentAssignments(supabase, mockStudentId);
@@ -935,8 +1001,8 @@ describe('validateAttempt', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should allow attempt when conditions are met', async () => {
@@ -956,10 +1022,14 @@ describe('validateAttempt', () => {
 			error: null
 		});
 
-		// Mock existing attempts (1 attempt)
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [{ id: 'attempt-1' }],
-			error: null
+		// Mock existing attempts - query 2: .select().eq().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ id: 'attempt-1' }],
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.validateAttempt(supabase, mockAssignmentId, mockStudentId);
@@ -1012,10 +1082,14 @@ describe('validateAttempt', () => {
 			error: null
 		});
 
-		// Mock existing attempts (2 attempts = max reached)
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [{ id: 'attempt-1' }, { id: 'attempt-2' }],
-			error: null
+		// Mock existing attempts - query 2: .select().eq().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ id: 'attempt-1' }, { id: 'attempt-2' }],
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.validateAttempt(supabase, mockAssignmentId, mockStudentId);
@@ -1043,16 +1117,14 @@ describe('validateAttempt', () => {
 			error: null
 		});
 
-		// Mock many existing attempts
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [
-				{ id: '1' },
-				{ id: '2' },
-				{ id: '3' },
-				{ id: '4' },
-				{ id: '5' }
-			],
-			error: null
+		// Mock many existing attempts - query 2: .select().eq().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }, { id: '5' }],
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.validateAttempt(supabase, mockAssignmentId, mockStudentId);
@@ -1084,55 +1156,76 @@ describe('getAssessmentResults', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should get results for class assignments', async () => {
-		// Mock assignments (1 class assignment)
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [
-				{
-					id: 'assign-1',
-					class_id: mockClassId,
-					student_id: null
-				}
-			],
-			error: null
+		// Query 1: Get assignments - .select().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [
+						{
+							id: 'assign-1',
+							class_id: mockClassId,
+							student_id: null
+						}
+					],
+					error: null
+				})
+			);
 		});
 
-		// Mock class members
-		(supabase as any)._mockChain.eq.mockResolvedValueOnce({
-			data: [
-				{
-					student_id: 'student-1',
-					profiles: { id: 'student-1', firstname: 'John', lastname: 'Doe', is_test: false }
-				},
-				{
-					student_id: 'student-2',
-					profiles: { id: 'student-2', firstname: 'Jane', lastname: 'Smith', is_test: false }
-				}
-			],
-			error: null
+		// Query 2: Get class members - .select().eq().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [
+						{
+							student_id: 'student-1',
+							profiles: { id: 'student-1', firstname: 'John', lastname: 'Doe', is_test: false }
+						},
+						{
+							student_id: 'student-2',
+							profiles: { id: 'student-2', firstname: 'Jane', lastname: 'Smith', is_test: false }
+						}
+					],
+					error: null
+				})
+			);
 		});
 
-		// Mock assessment info for each student
+		// For each of 2 students, mock 4 queries from getStudentAssignmentResult
 		for (let i = 0; i < 2; i++) {
+			// Query 3+: Get assessment info - .select().eq().single()
 			(supabase as any)._mockChain.single.mockResolvedValueOnce({
 				data: { title: 'Test Assessment', grade: '3ème' },
 				error: null
 			});
+			// Query 4+: Get student info - .select().eq().eq().single()
 			(supabase as any)._mockChain.single.mockResolvedValueOnce({
-				data: { id: `student-${i + 1}`, firstname: i === 0 ? 'John' : 'Jane', lastname: i === 0 ? 'Doe' : 'Smith', is_test: false },
+				data: {
+					id: `student-${i + 1}`,
+					firstname: i === 0 ? 'John' : 'Jane',
+					lastname: i === 0 ? 'Doe' : 'Smith',
+					is_test: false
+				},
 				error: null
 			});
+			// Query 5+: Get class info - .select().eq().single()
 			(supabase as any)._mockChain.single.mockResolvedValueOnce({
 				data: { name: '3ème A' },
 				error: null
 			});
-			(supabase as any)._mockChain.order.mockResolvedValueOnce({
-				data: [],
-				error: null
+			// Query 6+: Get attempts - .select().eq().eq().order() (awaited directly)
+			(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+				return Promise.resolve(
+					onFulfilled({
+						data: [],
+						error: null
+					})
+				);
 			});
 		}
 
@@ -1143,45 +1236,61 @@ describe('getAssessmentResults', () => {
 	});
 
 	it('should filter test students when isTestMode is true', async () => {
-		// Mock assignments
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [
-				{
-					id: 'assign-1',
-					class_id: mockClassId,
-					student_id: null
-				}
-			],
-			error: null
+		// Query 1: Get assignments - .select().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [
+						{
+							id: 'assign-1',
+							class_id: mockClassId,
+							student_id: null
+						}
+					],
+					error: null
+				})
+			);
 		});
 
-		// Mock class members - only test students
-		(supabase as any)._mockChain.eq.mockResolvedValueOnce({
-			data: [
-				{
-					student_id: 'test-student-1',
-					profiles: { id: 'test-student-1', firstname: 'Test', lastname: 'User', is_test: true }
-				}
-			],
-			error: null
+		// Query 2: Get class members - .select().eq().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [
+						{
+							student_id: 'test-student-1',
+							profiles: { id: 'test-student-1', firstname: 'Test', lastname: 'User', is_test: true }
+						}
+					],
+					error: null
+				})
+			);
 		});
 
-		// Mock assessment info
+		// For 1 test student, mock 4 queries from getStudentAssignmentResult
+		// Query 3: Get assessment info - .select().eq().single()
 		(supabase as any)._mockChain.single.mockResolvedValueOnce({
 			data: { title: 'Test Assessment', grade: '3ème' },
 			error: null
 		});
+		// Query 4: Get student info - .select().eq().eq().single()
 		(supabase as any)._mockChain.single.mockResolvedValueOnce({
 			data: { id: 'test-student-1', firstname: 'Test', lastname: 'User', is_test: true },
 			error: null
 		});
+		// Query 5: Get class info - .select().eq().single()
 		(supabase as any)._mockChain.single.mockResolvedValueOnce({
 			data: { name: '3ème A' },
 			error: null
 		});
-		(supabase as any)._mockChain.order.mockResolvedValueOnce({
-			data: [],
-			error: null
+		// Query 6: Get attempts - .select().eq().eq().order() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.getAssessmentResults(supabase, mockAssessmentId, true);
@@ -1191,9 +1300,14 @@ describe('getAssessmentResults', () => {
 	});
 
 	it('should return empty array when no assignments exist', async () => {
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [],
-			error: null
+		// Query 1: Get assignments - .select().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.getAssessmentResults(supabase, mockAssessmentId, false);
@@ -1207,33 +1321,40 @@ describe('getAssessmentStatistics', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should calculate statistics from results', async () => {
-		// Mock assignments
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [
-				{ id: 'assign-1', student_id: 'student-1', class_id: null }
-			],
-			error: null
+		// Query 1: Get assignments - .select().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ id: 'assign-1', student_id: 'student-1', class_id: null }],
+					error: null
+				})
+			);
 		});
 
-		// Mock student info
+		// Individual student assignment (class_id is null), so getStudentAssignmentResult runs without class query
+		// Query 2: Get assessment info - .select().eq().single()
 		(supabase as any)._mockChain.single.mockResolvedValueOnce({
 			data: { title: 'Test', grade: '3ème' },
 			error: null
 		});
+		// Query 3: Get student info - .select().eq().eq().single()
 		(supabase as any)._mockChain.single.mockResolvedValueOnce({
 			data: { id: 'student-1', firstname: 'John', lastname: 'Doe', is_test: false },
 			error: null
 		});
-
-		// Mock attempts with score
-		(supabase as any)._mockChain.order.mockResolvedValueOnce({
-			data: [{ score: 8, completed_at: '2024-01-16T10:00:00Z', total_questions: 10 }],
-			error: null
+		// Query 4: Get attempts - .select().eq().eq().order() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ score: 8, completed_at: '2024-01-16T10:00:00Z', total_questions: 10 }],
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.getAssessmentStatistics(supabase, mockAssessmentId, false);
@@ -1248,9 +1369,14 @@ describe('getAssessmentStatistics', () => {
 	});
 
 	it('should handle zero assignments', async () => {
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [],
-			error: null
+		// Query 1: Get assignments - .select().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.getAssessmentStatistics(supabase, mockAssessmentId, false);
@@ -1265,40 +1391,48 @@ describe('getClassStatistics', () => {
 	let supabase: MockSupabaseClient;
 
 	beforeEach(() => {
-		supabase = createMockSupabase();
 		vi.clearAllMocks();
+		supabase = createMockSupabase();
 	});
 
 	it('should calculate statistics per class', async () => {
-		// Mock assignments (2 students in class)
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [
-				{ id: 'assign-1', class_id: mockClassId, student_id: null }
-			],
-			error: null
+		// Query 1: Get assignments - .select().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ id: 'assign-1', class_id: mockClassId, student_id: null }],
+					error: null
+				})
+			);
 		});
 
-		// Mock class members
-		(supabase as any)._mockChain.eq.mockResolvedValueOnce({
-			data: [
-				{
-					student_id: 'student-1',
-					profiles: { id: 'student-1', firstname: 'John', lastname: 'Doe', is_test: false }
-				},
-				{
-					student_id: 'student-2',
-					profiles: { id: 'student-2', firstname: 'Jane', lastname: 'Smith', is_test: false }
-				}
-			],
-			error: null
+		// Query 2: Get class members - .select().eq().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [
+						{
+							student_id: 'student-1',
+							profiles: { id: 'student-1', firstname: 'John', lastname: 'Doe', is_test: false }
+						},
+						{
+							student_id: 'student-2',
+							profiles: { id: 'student-2', firstname: 'Jane', lastname: 'Smith', is_test: false }
+						}
+					],
+					error: null
+				})
+			);
 		});
 
-		// Mock assessment and student info for each student
+		// For each of 2 students, mock 4 queries from getStudentAssignmentResult
 		for (let i = 0; i < 2; i++) {
+			// Query 3+: Get assessment info - .select().eq().single()
 			(supabase as any)._mockChain.single.mockResolvedValueOnce({
 				data: { title: 'Test', grade: '3ème' },
 				error: null
 			});
+			// Query 4+: Get student info - .select().eq().eq().single()
 			(supabase as any)._mockChain.single.mockResolvedValueOnce({
 				data: {
 					id: `student-${i + 1}`,
@@ -1308,13 +1442,21 @@ describe('getClassStatistics', () => {
 				},
 				error: null
 			});
+			// Query 5+: Get class info - .select().eq().single()
 			(supabase as any)._mockChain.single.mockResolvedValueOnce({
 				data: { name: '3ème A' },
 				error: null
 			});
-			(supabase as any)._mockChain.order.mockResolvedValueOnce({
-				data: [{ score: i === 0 ? 7 : 9, completed_at: '2024-01-16T10:00:00Z', total_questions: 10 }],
-				error: null
+			// Query 6+: Get attempts - .select().eq().eq().order() (awaited directly)
+			(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+				return Promise.resolve(
+					onFulfilled({
+						data: [
+							{ score: i === 0 ? 7 : 9, completed_at: '2024-01-16T10:00:00Z', total_questions: 10 }
+						],
+						error: null
+					})
+				);
 			});
 		}
 
@@ -1330,26 +1472,35 @@ describe('getClassStatistics', () => {
 	});
 
 	it('should return empty array when no class assignments exist', async () => {
-		// Mock only individual student assignments (no class assignments)
-		(supabase as any)._mockChain.select.mockResolvedValueOnce({
-			data: [
-				{ id: 'assign-1', student_id: 'student-1', class_id: null }
-			],
-			error: null
+		// Query 1: Get assignments (individual student, not class) - .select().eq() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [{ id: 'assign-1', student_id: 'student-1', class_id: null }],
+					error: null
+				})
+			);
 		});
 
-		// Mock student info
+		// Individual student assignment (class_id is null), so getStudentAssignmentResult runs without class query
+		// Query 2: Get assessment info - .select().eq().single()
 		(supabase as any)._mockChain.single.mockResolvedValueOnce({
 			data: { title: 'Test', grade: '3ème' },
 			error: null
 		});
+		// Query 3: Get student info - .select().eq().eq().single()
 		(supabase as any)._mockChain.single.mockResolvedValueOnce({
 			data: { id: 'student-1', firstname: 'John', lastname: 'Doe', is_test: false },
 			error: null
 		});
-		(supabase as any)._mockChain.order.mockResolvedValueOnce({
-			data: [],
-			error: null
+		// Query 4: Get attempts - .select().eq().eq().order() (awaited directly)
+		(supabase as any)._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
 		});
 
 		const result = await assessments.getClassStatistics(supabase, mockAssessmentId, false);
