@@ -14,6 +14,10 @@ Organisation des dossiers, conventions de nommage, organisation des fichiers.
 
 Tables, relations, RLS policies, migrations Supabase.
 
+### [Component Architecture](components.md) ⭐
+
+MySelect component, standardisation des dropdowns, SSR compatibility.
+
 ### [Routing](routing.md)
 
 Organisation des routes SvelteKit, groupes de routes, patterns.

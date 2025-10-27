@@ -1,16 +1,15 @@
 /**
- * Mathémo Game - Static Prerendering
- * ===================================
+ * Mathémo Game - Server-Side Rendering
+ * ======================================
  *
- * This game can be prerendered because:
- * - Client-side only (localStorage for state)
- * - No auth required
- * - Word lists are static (imported from words.ts)
+ * Prerendering disabled because:
+ * - Bits UI Select component has SSR issues with snippets
+ * - The Select dropdown for difficulty selection requires client-side rendering
  *
  * Performance impact:
- * - Instant initial load
- * - Game logic runs client-side
- * - No server round-trip
+ * - Still very fast (client-side game logic)
+ * - localStorage for state persistence
+ * - Word lists are statically imported
  */
 
-export const prerender = true;
+export const prerender = false;

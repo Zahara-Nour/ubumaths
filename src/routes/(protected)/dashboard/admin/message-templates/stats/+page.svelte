@@ -41,7 +41,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { Loader2, TrendingUp, Users, CheckCircle, BarChart3, ArrowLeft } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto } from '$app/navigation';
@@ -135,24 +135,13 @@
 		</div>
 
 		<!-- Time Range Filter -->
-		<Select.Root
-			selected={{
-				value: timeRange,
-				label: timeRangeOptions.find((o) => o.value === timeRange)?.label || '30 derniers jours'
-			}}
-			onSelectedChange={(v) => {
-				if (v) timeRange = v.value as typeof timeRange;
-			}}
-		>
-			<Select.Trigger class="w-48">
-				<Select.Value placeholder="Période" />
-			</Select.Trigger>
-			<Select.Content>
-				{#each timeRangeOptions as option (option.value)}
-					<Select.Item value={option.value}>{option.label}</Select.Item>
-				{/each}
-			</Select.Content>
-		</Select.Root>
+		<MySelect
+			type="single"
+			bind:value={timeRange}
+			items={timeRangeOptions}
+			placeholder="Période"
+			triggerClass="h-10 w-48 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+		/>
 	</div>
 
 	{#if isLoading}

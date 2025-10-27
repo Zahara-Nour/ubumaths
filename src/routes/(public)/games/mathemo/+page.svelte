@@ -23,7 +23,7 @@
 	import dancing from '$lib/assets/images/dancing.gif';
 	import type { Difficulty } from './types';
 	import { Button } from '$lib/components/ui/button';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 
 	// Random congratulations messages for when player wins
 	const congrats = [
@@ -38,6 +38,9 @@
 	// All available difficulty levels (French grade levels)
 	const difficulties: Difficulty[] = ['6ème', '5ème', '4ème', '3ème', '2nde', '1ère', 'Tale'];
 
+	// Create items array for Select component (Bits UI format)
+	const difficultyItems = difficulties.map((d) => ({ value: d, label: d }));
+
 	// ===== Local Component State =====
 
 	/** Triggers wiggle animation when invalid word is submitted */
@@ -48,6 +51,9 @@
 
 	/** Indices of letters that are newly discovered in the animating row */
 	let newlyDiscoveredIndices = $state<number[]>([]);
+
+	/** Track selected difficulty for two-way binding with MySelect */
+	let selectedDifficulty = $state<string>(game.difficulty);
 
 	// ===== Derived Values (Computed from Game State) =====
 
@@ -116,6 +122,18 @@
 		});
 
 		return map;
+	});
+
+	// ===== Effects =====
+
+	/**
+	 * Watch for difficulty changes and start a new game
+	 * Uses $effect to react to selectedDifficulty changes
+	 */
+	$effect(() => {
+		if (selectedDifficulty !== game.difficulty && !gameOver) {
+			game.startNewGame(selectedDifficulty as Difficulty, game.maxAttempts);
+		}
 	});
 
 	// ===== Event Handlers =====
@@ -206,16 +224,6 @@
 	}
 
 	/**
-	 * Handle difficulty level change from dropdown
-	 * Starts a new game with the selected difficulty
-	 * @param selected - Selected difficulty option from Select component
-	 */
-	function handleDifficultyChange(selected: { value: Difficulty; label: string } | undefined) {
-		if (!selected || gameOver) return;
-		game.startNewGame(selected.value, game.maxAttempts);
-	}
-
-	/**
 	 * Adjust the maximum number of attempts
 	 * @param delta - Amount to change (+1 or -1)
 	 */
@@ -250,19 +258,12 @@
 			<!-- Difficulty Selector -->
 			<div class="flex items-center gap-1 sm:gap-2">
 				<label for="difficulty" class="text-xs font-medium sm:text-sm">Niveau:</label>
-				<Select.Root
-					selected={{ value: game.difficulty, label: game.difficulty }}
-					onSelectedChange={handleDifficultyChange}
-				>
-					<Select.Trigger class="w-32">
-						{game.difficulty}
-					</Select.Trigger>
-					<Select.Content>
-						{#each difficulties as diff (diff)}
-							<Select.Item value={diff}>{diff}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
+				<MySelect
+					type="single"
+					bind:value={selectedDifficulty}
+					items={difficultyItems}
+					placeholder="Sélectionner un niveau"
+				/>
 			</div>
 
 			<!-- Attempts Controls -->
@@ -624,16 +625,13 @@
 	}
 
 	.keyboard button.exact {
-		background: #c0c0c0; /* Same gray background as tried letters */
-		color: #5b8def; /* Blue text */
-		font-weight: bold;
-		font-size: calc(var(--size) * 0.75); /* 1.5x larger than normal (0.5 * 1.5) */
+		background: #5b8def; /* Blue background - same as exact matches in grid */
+		color: white;
 	}
 
 	:global(.dark) .keyboard button.exact {
-		background: #404040; /* Same dark background as tried letters */
-		color: #4a7bd8; /* Blue text for dark mode */
-		font-weight: bold;
+		background: #4a7bd8; /* Slightly darker blue for dark mode - same as grid */
+		color: white;
 	}
 
 	.keyboard button.missing {
@@ -649,16 +647,13 @@
 	}
 
 	.keyboard button.close {
-		background: #c0c0c0; /* Same gray background as tried letters */
-		color: #5b8def; /* Blue text */
-		font-weight: bold;
-		font-size: calc(var(--size) * 0.75); /* 1.5x larger than normal (0.5 * 1.5) */
+		background: #5b8def; /* Blue background - same as exact matches in grid */
+		color: white;
 	}
 
 	:global(.dark) .keyboard button.close {
-		background: #404040; /* Same dark background as tried letters */
-		color: #4a7bd8; /* Blue text for dark mode */
-		font-weight: bold;
+		background: #4a7bd8; /* Slightly darker blue for dark mode - same as grid */
+		color: white;
 	}
 
 	.keyboard button:focus {
@@ -910,14 +905,14 @@
 		0%,
 		100% {
 			box-shadow:
-				0 0 5px rgba(91, 141, 239, 0.5),
-				0 0 10px rgba(91, 141, 239, 0.3);
+				0 0 10px rgba(91, 141, 239, 0.5),
+				0 0 20px rgba(91, 141, 239, 0.3);
 		}
 		50% {
 			box-shadow:
-				0 0 15px rgba(91, 141, 239, 0.8),
-				0 0 25px rgba(91, 141, 239, 0.5),
-				0 0 35px rgba(91, 141, 239, 0.3);
+				0 0 30px rgba(91, 141, 239, 0.8),
+				0 0 50px rgba(91, 141, 239, 0.5),
+				0 0 70px rgba(91, 141, 239, 0.3);
 		}
 	}
 
@@ -926,14 +921,14 @@
 		0%,
 		100% {
 			box-shadow:
-				0 0 5px rgba(74, 123, 216, 0.5),
-				0 0 10px rgba(74, 123, 216, 0.3);
+				0 0 10px rgba(74, 123, 216, 0.5),
+				0 0 20px rgba(74, 123, 216, 0.3);
 		}
 		50% {
 			box-shadow:
-				0 0 15px rgba(74, 123, 216, 0.8),
-				0 0 25px rgba(74, 123, 216, 0.5),
-				0 0 35px rgba(74, 123, 216, 0.3);
+				0 0 30px rgba(74, 123, 216, 0.8),
+				0 0 50px rgba(74, 123, 216, 0.5),
+				0 0 70px rgba(74, 123, 216, 0.3);
 		}
 	}
 
@@ -975,14 +970,14 @@
 		.letter.flipping-exact.new-discovery {
 			animation:
 				flip-to-exact 0.6s ease-in-out,
-				glow-pulse 0.8s ease-in-out 0.6s 15;
+				glow-pulse 0.8s ease-in-out 0.6s 50;
 			animation-fill-mode: forwards;
 		}
 
 		.letter.flipping-close.new-discovery {
 			animation:
 				flip-to-close 0.6s ease-in-out,
-				glow-pulse 0.8s ease-in-out 0.6s 15;
+				glow-pulse 0.8s ease-in-out 0.6s 50;
 			animation-fill-mode: forwards;
 		}
 

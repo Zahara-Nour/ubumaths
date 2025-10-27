@@ -10,10 +10,10 @@
 
 <script lang="ts">
 	import type { AnswerConfig, AnswerType } from '$lib/types/riddle';
-	import { getAnswerTypeLabel } from '$lib/types/riddle';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import * as Select from '$lib/components/ui/select';
+	import { Label } from '$lib/components/ui/label';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Switch } from '$lib/components/ui/switch';
 	import { Plus, X, CheckCircle2 } from 'lucide-svelte';
@@ -83,12 +83,15 @@
 		enabled = !enabled;
 	}
 
-	function handleTypeChange(type: AnswerType) {
-		answerType = type;
-		// Reset values for new type
-		answerValue = '';
-		correctChoices = [0];
-	}
+	// Reset values when type changes
+	let previousType = $state(answerType);
+	$effect(() => {
+		if (answerType !== previousType) {
+			answerValue = '';
+			correctChoices = [0];
+			previousType = answerType;
+		}
+	});
 
 	function addQcmChoice() {
 		qcmChoices = [...qcmChoices, ''];
@@ -131,20 +134,17 @@
 			<!-- Type Selection -->
 			<div class="space-y-2">
 				<Label for="answer-type">Type de réponse</Label>
-				<Select.Root
-					selected={{ value: answerType, label: getAnswerTypeLabel(answerType) }}
-					onSelectedChange={(v) => v && handleTypeChange(v.value as AnswerType)}
-				>
-					<Select.Trigger id="answer-type">
-						<Select.Value />
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Item value="text">Texte</Select.Item>
-						<Select.Item value="numerical">Numérique</Select.Item>
-						<Select.Item value="qcm">QCM (choix multiples)</Select.Item>
-						<Select.Item value="math">Expression mathématique</Select.Item>
-					</Select.Content>
-				</Select.Root>
+				<MySelect
+					type="single"
+					bind:value={answerType}
+					items={[
+						{ value: 'text', label: 'Texte' },
+						{ value: 'numerical', label: 'Numérique' },
+						{ value: 'qcm', label: 'QCM (choix multiples)' },
+						{ value: 'math', label: 'Expression mathématique' }
+					]}
+					triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+				/>
 			</div>
 
 			<!-- Configuration based on type -->

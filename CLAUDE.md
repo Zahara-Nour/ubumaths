@@ -110,12 +110,6 @@ src/
 		/* effect */
 	} // ❌ Use $effect()
 </script>
-
-<!-- UI Components -->
-<Select.Root>
-	<!-- ❌ Shadcn Select buggy -->
-	<Select.Trigger />
-</Select.Root>
 ```
 
 ### ✅ DO
@@ -128,26 +122,80 @@ src/
 		/* effect */
 	});
 </script>
-
-<!-- UI Components -->
-<select class="...">
-	<!-- ✅ Native HTML select -->
-	<option>Option 1</option>
-</select>
 ```
 
 ---
 
-## 🎨 UI Components (Shadcn-svelte)
+## 🎨 UI Components
+
+### Shadcn-svelte Components
 
 **Docs** : https://www.shadcn-svelte.com/docs
 **Location** : `src/lib/components/ui/`
 
 **Disponibles** : Button, Input, Textarea, Dropdown Menu, Avatar, Tabs, Separator
 
-**⚠️ NE PAS utiliser** : Shadcn Select (utiliser `<select>` HTML natif)
-
 **Ajouter un composant** : `npx shadcn-svelte@latest add <component>`
+
+### MySelect Component (Select Dropdowns)
+
+**Location** : `src/lib/components/MySelect.svelte`
+**Built on** : Bits UI Select (SSR-compatible)
+
+**✅ ALWAYS use MySelect** for all dropdown/select components
+
+**❌ NEVER use** :
+
+- Shadcn-svelte Select (`import * as Select from '$lib/components/ui/select'`)
+- Native HTML `<select>` elements
+
+**Why MySelect?** :
+
+- SSR-compatible (unlike Shadcn Select)
+- Consistent API across entire codebase
+- Built on Bits UI Select (stable, well-tested)
+- Accessible, keyboard navigation
+- Svelte 5 runes compatible
+
+**Usage** :
+
+```svelte
+<script>
+	import MySelect from '$lib/components/MySelect.svelte';
+
+	// Two-way binding with $state
+	let selectedValue = $state('option1');
+
+	const items = [
+		{ value: 'option1', label: 'Option 1' },
+		{ value: 'option2', label: 'Option 2' },
+		{ value: 'option3', label: 'Option 3', disabled: true }
+	];
+</script>
+
+<MySelect
+	type="single"
+	bind:value={selectedValue}
+	{items}
+	placeholder="Select an option"
+	triggerClass="h-9 w-40 rounded-md border" // Optional custom styling
+/>
+```
+
+**Props** :
+
+- `type`: `"single"` or `"multiple"` (Bits UI Select API)
+- `value`: Bindable value (`bind:value`)
+- `items`: Array of `{ value: string, label: string, disabled?: boolean }`
+- `placeholder`: Optional placeholder text (default: "Select...")
+- `triggerClass`: Optional CSS classes for trigger button
+- `contentProps`: Optional props for Select.Content (Bits UI)
+
+**Important** : Requires `export const prerender = false;` in `+page.ts` for SSR compatibility
+
+**Standardization (2025-10-27)** : All 20 files using Select/select have been refactored to MySelect
+**Documentation** : See [Component Architecture](docs/architecture/components.md)
+**Référence** : `src/routes/(public)/games/mathemo/+page.svelte` (lines 26, 262-267)
 
 ### Patterns importants
 
@@ -158,6 +206,7 @@ src/
 <!-- Imports -->
 import { Button } from '$lib/components/ui/button';
 import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+import MySelect from '$lib/components/MySelect.svelte';
 
 <!-- Toast notifications -->
 import { toaster } from '$lib/stores/toaster.svelte';

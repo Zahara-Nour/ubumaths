@@ -14,7 +14,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import * as Card from '$lib/components/ui/card';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { BookOpen, Check, Plus, Trash2, MoveUp, MoveDown } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
@@ -420,24 +420,14 @@
 					<!-- Justification -->
 					<div class="space-y-2">
 						<label for="justification-{step.id}" class="text-sm font-medium"> Justification </label>
-						<Select.Root
-							selected={{ value: step.justification, label: step.justification || 'Choisir...' }}
-							onSelectedChange={(selected) => {
-								if (selected) {
-									updateJustification(index, selected.value);
-								}
-							}}
+						<MySelect
+							type="single"
+							bind:value={proofSteps[index].justification}
+							items={commonJustifications.map((j) => ({ value: j, label: j }))}
+							placeholder="Choisir une justification..."
 							disabled={hasSubmitted && validationResults?.isValid}
-						>
-							<Select.Trigger>
-								<Select.Value placeholder="Choisir une justification..." />
-							</Select.Trigger>
-							<Select.Content>
-								{#each commonJustifications as justification, i (i)}
-									<Select.Item value={justification}>{justification}</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
+							triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+						/>
 
 						{#if step.justification === 'Autre'}
 							<Textarea

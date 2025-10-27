@@ -30,6 +30,10 @@ Stratégie de linting, lint-staged, Husky, ESLint cache, workflow automatisé.
 
 Guide de migration vers Svelte 5, runes, deprecations résolues.
 
+### [MySelect Migration](myselect-migration.md) 🆕 2025-10-27
+
+Guide de migration des composants Select/select vers MySelect, standardisation des dropdowns.
+
 ### [Debug Tools](debug-tools.md)
 
 Outils de débogage et développement dans l'interface admin.

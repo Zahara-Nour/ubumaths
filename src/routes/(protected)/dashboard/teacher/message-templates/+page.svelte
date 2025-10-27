@@ -3,7 +3,7 @@
 	import { supabase } from '$lib/supabaseClient';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Label } from '$lib/components/ui/label';
@@ -65,6 +65,10 @@
 	let searchQuery = $state('');
 	let filterFavoritesOnly = $state(false);
 	let filterSelectedTags = $state<string[]>([]);
+
+	// MySelect needs string values, so we use 'null' string for null values
+	let filterScopeValue = $state<string>('null');
+	let filterTriggerTypeValue = $state<string>('null');
 
 	// Preview state
 	let activeTab = $state<'edit' | 'preview'>('edit');
@@ -610,38 +614,34 @@
 				</div>
 
 				<!-- Scope Filter -->
-				<Select.Root
-					onSelectedChange={(v) => {
-						filterScope = v?.value || null;
+				<MySelect
+					type="single"
+					bind:value={filterScopeValue}
+					items={[
+						{ value: 'null', label: 'Tous les scopes' },
+						...scopeOptions.map((opt) => ({ value: opt.value, label: opt.label }))
+					]}
+					placeholder="Tous les scopes"
+					triggerClass="h-10 w-48 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+					onValueChange={(v) => {
+						filterScope = v === 'null' ? null : v;
 					}}
-				>
-					<Select.Trigger class="w-48">
-						<Select.Value placeholder="Tous les scopes" />
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Item value={null}>Tous les scopes</Select.Item>
-						{#each scopeOptions as option (option.value)}
-							<Select.Item value={option.value}>{option.label}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
+				/>
 
 				<!-- Trigger Type Filter -->
-				<Select.Root
-					onSelectedChange={(v) => {
-						filterTriggerType = v?.value || null;
+				<MySelect
+					type="single"
+					bind:value={filterTriggerTypeValue}
+					items={[
+						{ value: 'null', label: 'Tous les types' },
+						...triggerTypeOptions.map((opt) => ({ value: opt.value, label: opt.label }))
+					]}
+					placeholder="Tous les types"
+					triggerClass="h-10 w-64 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+					onValueChange={(v) => {
+						filterTriggerType = v === 'null' ? null : v;
 					}}
-				>
-					<Select.Trigger class="w-64">
-						<Select.Value placeholder="Tous les types" />
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Item value={null}>Tous les types</Select.Item>
-						{#each triggerTypeOptions as option (option.value)}
-							<Select.Item value={option.value}>{option.label}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
+				/>
 
 				<!-- Favorites Filter -->
 				<Button
@@ -871,44 +871,25 @@
 					<!-- Class Selection -->
 					<div class="space-y-2">
 						<Label>Classe *</Label>
-						<Select.Root
-							selected={{
-								value: formClassId || classes[0]?.id,
-								label: classes.find((c) => c.id === formClassId)?.name || 'Sélectionnez une classe'
-							}}
-							onSelectedChange={(v) => {
-								if (v) formClassId = v.value;
-							}}
-						>
-							<Select.Trigger>
-								<Select.Value placeholder="Sélectionnez une classe" />
-							</Select.Trigger>
-							<Select.Content>
-								{#each classes as classItem (classItem.id)}
-									<Select.Item value={classItem.id}>{classItem.name}</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
+						<MySelect
+							type="single"
+							bind:value={formClassId}
+							items={classes.map((c) => ({ value: c.id, label: c.name }))}
+							placeholder="Sélectionnez une classe"
+							triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+						/>
 					</div>
 
 					<!-- Trigger Type -->
 					<div class="space-y-2">
 						<Label>Type de déclencheur *</Label>
-						<Select.Root
-							selected={{ value: formTriggerType, label: getTriggerTypeLabel(formTriggerType) }}
-							onSelectedChange={(v) => {
-								if (v) formTriggerType = v.value as TriggerType;
-							}}
-						>
-							<Select.Trigger>
-								<Select.Value placeholder="Sélectionnez un type" />
-							</Select.Trigger>
-							<Select.Content>
-								{#each triggerTypeOptions as option (option.value)}
-									<Select.Item value={option.value}>{option.label}</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
+						<MySelect
+							type="single"
+							bind:value={formTriggerType}
+							items={triggerTypeOptions}
+							placeholder="Sélectionnez un type"
+							triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+						/>
 					</div>
 
 					<!-- Tags -->

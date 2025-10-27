@@ -17,7 +17,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import CustomCardEditor from '$lib/components/srs/CustomCardEditor.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -195,17 +195,18 @@
 				<Card.Content class="space-y-4">
 					<div class="space-y-2">
 						<Label for="retention-profile">Intensité de révision</Label>
-						<Select.Root bind:selected={retentionProfile}>
-							<Select.Trigger id="retention-profile">
-								<Select.Value placeholder="Sélectionnez" />
-							</Select.Trigger>
-							<Select.Content>
-								<Select.Item value="relaxed">Détendu (80%)</Select.Item>
-								<Select.Item value="balanced">Équilibré (90%)</Select.Item>
-								<Select.Item value="high">Élevé (95%)</Select.Item>
-								<Select.Item value="expert">Expert (97%)</Select.Item>
-							</Select.Content>
-						</Select.Root>
+						<MySelect
+							type="single"
+							bind:value={retentionProfile}
+							items={[
+								{ value: 'relaxed', label: 'Détendu (80%)' },
+								{ value: 'balanced', label: 'Équilibré (90%)' },
+								{ value: 'high', label: 'Élevé (95%)' },
+								{ value: 'expert', label: 'Expert (97%)' }
+							]}
+							placeholder="Sélectionnez"
+							triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+						/>
 						<p class="text-xs text-muted-foreground">
 							Plus le taux est élevé, plus vous aurez de révisions
 						</p>

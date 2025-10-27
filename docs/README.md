@@ -149,6 +149,7 @@ Système d'authentification avec Google OAuth + email/password.
 | [Vue d'ensemble](architecture/README.md)                  | Architecture générale du projet       |
 | [Structure du projet](architecture/project-structure.md)  | Organisation des dossiers et fichiers |
 | [Schéma base de données](architecture/database-schema.md) | Tables, relations, RLS policies       |
+| [Component Architecture](architecture/components.md) ⭐   | MySelect, standardisation dropdowns   |
 | [Routing](architecture/routing.md)                        | Routes SvelteKit et organisation      |
 | [WebSocket](architecture/websocket.md)                    | Architecture temps réel               |
 | [Éditeur rich text](architecture/rich-text-editor.md)     | TipTap + MathLive                     |
@@ -172,14 +173,15 @@ Système d'authentification avec Google OAuth + email/password.
 
 ## 🛠️ Développement
 
-| Document                                                 | Description                  |
-| -------------------------------------------------------- | ---------------------------- |
-| [Vue d'ensemble](development/README.md)                  | Process de développement     |
-| [Git workflow](development/git-workflow.md)              | Workflow Git et branches     |
-| [Gestion de versions](development/version-management.md) | Releases et versioning       |
-| [Migrations DB](development/database-migrations.md)      | Workflow migrations Supabase |
-| [Style de code](development/code-style.md)               | Standards et conventions     |
-| [Migration Svelte 5](development/svelte5-migration.md)   | Guide migration runes        |
+| Document                                                 | Description                   |
+| -------------------------------------------------------- | ----------------------------- |
+| [Vue d'ensemble](development/README.md)                  | Process de développement      |
+| [Git workflow](development/git-workflow.md)              | Workflow Git et branches      |
+| [Gestion de versions](development/version-management.md) | Releases et versioning        |
+| [Migrations DB](development/database-migrations.md)      | Workflow migrations Supabase  |
+| [Style de code](development/code-style.md)               | Standards et conventions      |
+| [Migration Svelte 5](development/svelte5-migration.md)   | Guide migration runes         |
+| [MySelect Migration](development/myselect-migration.md)  | Guide migration vers MySelect |
 
 ---
 

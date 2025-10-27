@@ -15,7 +15,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { Separator } from '$lib/components/ui/separator';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -25,6 +25,14 @@
 	let sliderValue = $state([50]);
 	let checkboxChecked = $state(false);
 	let switchChecked = $state(false);
+	let selectedOption = $state('option1');
+
+	// Items for MySelect demo
+	const selectDemoItems = [
+		{ value: 'option1', label: 'Option 1' },
+		{ value: 'option2', label: 'Option 2' },
+		{ value: 'option3', label: 'Option 3' }
+	];
 
 	// Tailwind color palette state
 	let searchFilter = $state('');
@@ -776,14 +784,13 @@
 								<Card.Title>Select</Card.Title>
 							</Card.Header>
 							<Card.Content>
-								<Select.Root>
-									<Select.Trigger class="w-full">Choisissez une option</Select.Trigger>
-									<Select.Content>
-										<Select.Item value="option1">Option 1</Select.Item>
-										<Select.Item value="option2">Option 2</Select.Item>
-										<Select.Item value="option3">Option 3</Select.Item>
-									</Select.Content>
-								</Select.Root>
+								<MySelect
+									type="single"
+									bind:value={selectedOption}
+									items={selectDemoItems}
+									placeholder="Choisissez une option"
+									triggerClass="h-9 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+								/>
 							</Card.Content>
 						</Card.Root>
 

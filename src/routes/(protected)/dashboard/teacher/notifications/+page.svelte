@@ -4,7 +4,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
 	import FormRichTextEditor from '$lib/components/rich-text/FormRichTextEditor.svelte';
@@ -36,6 +36,17 @@
 	const availableStudents = $derived(
 		targetType === 'users' ? data.students.filter((s) => selectedClassIds.includes(s.class_id)) : []
 	);
+
+	// Items for MySelect dropdowns
+	const typeItems = Object.entries(NOTIFICATION_TYPE_LABELS).map(([value, label]) => ({
+		value,
+		label
+	}));
+
+	const priorityItems = Object.entries(NOTIFICATION_PRIORITY_LABELS).map(([value, label]) => ({
+		value,
+		label
+	}));
 
 	// Reset form
 	function resetForm() {
@@ -131,37 +142,25 @@
 						<div class="grid gap-4 sm:grid-cols-2">
 							<div class="space-y-2">
 								<Label for="type">Type</Label>
-								<Select.Root
-									selected={{ value: type, label: NOTIFICATION_TYPE_LABELS[type] }}
-									onSelectedChange={(v) => v && (type = v.value as NotificationType)}
-								>
-									<Select.Trigger id="type">
-										<Select.Value placeholder="Sélectionner un type" />
-									</Select.Trigger>
-									<Select.Content>
-										{#each Object.entries(NOTIFICATION_TYPE_LABELS) as [value, label] (value)}
-											<Select.Item {value}>{label}</Select.Item>
-										{/each}
-									</Select.Content>
-								</Select.Root>
+								<MySelect
+									type="single"
+									bind:value={type}
+									items={typeItems}
+									placeholder="Sélectionner un type"
+									triggerClass="h-9 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+								/>
 								<input type="hidden" name="type" value={type} />
 							</div>
 
 							<div class="space-y-2">
 								<Label for="priority">Priorité</Label>
-								<Select.Root
-									selected={{ value: priority, label: NOTIFICATION_PRIORITY_LABELS[priority] }}
-									onSelectedChange={(v) => v && (priority = v.value as NotificationPriority)}
-								>
-									<Select.Trigger id="priority">
-										<Select.Value placeholder="Sélectionner une priorité" />
-									</Select.Trigger>
-									<Select.Content>
-										{#each Object.entries(NOTIFICATION_PRIORITY_LABELS) as [value, label] (value)}
-											<Select.Item {value}>{label}</Select.Item>
-										{/each}
-									</Select.Content>
-								</Select.Root>
+								<MySelect
+									type="single"
+									bind:value={priority}
+									items={priorityItems}
+									placeholder="Sélectionner une priorité"
+									triggerClass="h-9 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+								/>
 								<input type="hidden" name="priority" value={priority} />
 							</div>
 						</div>

@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
 
@@ -16,6 +16,32 @@
 	let resolvedFilter = $state(
 		data.filters.resolved === null ? 'all' : data.filters.resolved ? 'true' : 'false'
 	);
+
+	// Items for MySelect dropdowns
+	const typeItems = [
+		{ value: 'all', label: 'Tous types' },
+		{ value: 'client_js', label: 'Client JS' },
+		{ value: 'server_api', label: 'Server API' },
+		{ value: 'server_load', label: 'Server Load' },
+		{ value: 'server_action', label: 'Server Action' },
+		{ value: 'validation', label: 'Validation' },
+		{ value: 'performance', label: 'Performance' },
+		{ value: 'database', label: 'Database' }
+	];
+
+	const severityItems = [
+		{ value: 'all', label: 'Toutes sévérités' },
+		{ value: 'critical', label: 'Critique' },
+		{ value: 'error', label: 'Erreur' },
+		{ value: 'warning', label: 'Avertissement' },
+		{ value: 'info', label: 'Info' }
+	];
+
+	const resolvedItems = [
+		{ value: 'all', label: 'Toutes' },
+		{ value: 'false', label: 'Non résolues' },
+		{ value: 'true', label: 'Résolues' }
+	];
 
 	// Apply filters
 	function applyFilters() {
@@ -142,70 +168,37 @@
 				<!-- Type Filter -->
 				<div class="space-y-2">
 					<label class="text-sm font-medium">Type d'erreur</label>
-					<Select.Root
-						selected={{ value: typeFilter, label: getErrorTypeName(typeFilter) }}
-						onSelectedChange={(v) => v && (typeFilter = v.value)}
-					>
-						<Select.Trigger>
-							<Select.Value placeholder="Tous types" />
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Item value="all">Tous types</Select.Item>
-							<Select.Item value="client_js">Client JS</Select.Item>
-							<Select.Item value="server_api">Server API</Select.Item>
-							<Select.Item value="server_load">Server Load</Select.Item>
-							<Select.Item value="server_action">Server Action</Select.Item>
-							<Select.Item value="validation">Validation</Select.Item>
-							<Select.Item value="performance">Performance</Select.Item>
-							<Select.Item value="database">Database</Select.Item>
-						</Select.Content>
-					</Select.Root>
+					<MySelect
+						type="single"
+						bind:value={typeFilter}
+						items={typeItems}
+						placeholder="Tous types"
+						triggerClass="h-9 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+					/>
 				</div>
 
 				<!-- Severity Filter -->
 				<div class="space-y-2">
 					<label class="text-sm font-medium">Sévérité</label>
-					<Select.Root
-						selected={{ value: severityFilter, label: severityFilter }}
-						onSelectedChange={(v) => v && (severityFilter = v.value)}
-					>
-						<Select.Trigger>
-							<Select.Value placeholder="Toutes sévérités" />
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Item value="all">Toutes sévérités</Select.Item>
-							<Select.Item value="critical">Critique</Select.Item>
-							<Select.Item value="error">Erreur</Select.Item>
-							<Select.Item value="warning">Avertissement</Select.Item>
-							<Select.Item value="info">Info</Select.Item>
-						</Select.Content>
-					</Select.Root>
+					<MySelect
+						type="single"
+						bind:value={severityFilter}
+						items={severityItems}
+						placeholder="Toutes sévérités"
+						triggerClass="h-9 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+					/>
 				</div>
 
 				<!-- Resolved Filter -->
 				<div class="space-y-2">
 					<label class="text-sm font-medium">Statut</label>
-					<Select.Root
-						selected={{
-							value: resolvedFilter,
-							label:
-								resolvedFilter === 'true'
-									? 'Résolues'
-									: resolvedFilter === 'false'
-										? 'Non résolues'
-										: 'Toutes'
-						}}
-						onSelectedChange={(v) => v && (resolvedFilter = v.value)}
-					>
-						<Select.Trigger>
-							<Select.Value placeholder="Tous statuts" />
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Item value="all">Toutes</Select.Item>
-							<Select.Item value="false">Non résolues</Select.Item>
-							<Select.Item value="true">Résolues</Select.Item>
-						</Select.Content>
-					</Select.Root>
+					<MySelect
+						type="single"
+						bind:value={resolvedFilter}
+						items={resolvedItems}
+						placeholder="Tous statuts"
+						triggerClass="h-9 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+					/>
 				</div>
 
 				<!-- Search -->

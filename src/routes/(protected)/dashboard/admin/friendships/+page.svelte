@@ -3,7 +3,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Trash2, Search, Users, AlertTriangle } from 'lucide-svelte';
@@ -14,6 +14,12 @@
 	let searchQuery = $state('');
 	let selectedClass = $state<string>('all');
 	let deletingFriendshipId = $state<string | null>(null);
+
+	// Class items for MySelect
+	const classItems = $derived([
+		{ value: 'all', label: 'Toutes les classes' },
+		...data.classes.map((c) => ({ value: c.id, label: c.name }))
+	]);
 
 	const filteredFriendships = $derived(() => {
 		let filtered = data.friendships;
@@ -134,28 +140,13 @@
 			/>
 		</div>
 
-		<Select.Root
-			selected={{
-				value: selectedClass,
-				label:
-					selectedClass === 'all'
-						? 'Toutes les classes'
-						: data.classes.find((c) => c.id === selectedClass)?.name || 'Toutes les classes'
-			}}
-			onSelectedChange={(v) => {
-				if (v) selectedClass = v.value;
-			}}
-		>
-			<Select.Trigger class="w-64">
-				<Select.Value placeholder="Filtrer par classe..." />
-			</Select.Trigger>
-			<Select.Content>
-				<Select.Item value="all">Toutes les classes</Select.Item>
-				{#each data.classes as classItem (classItem.id)}
-					<Select.Item value={classItem.id}>{classItem.name}</Select.Item>
-				{/each}
-			</Select.Content>
-		</Select.Root>
+		<MySelect
+			type="single"
+			bind:value={selectedClass}
+			items={classItems}
+			placeholder="Filtrer par classe..."
+			triggerClass="h-10 w-64 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+		/>
 	</div>
 
 	<!-- Friendships List -->

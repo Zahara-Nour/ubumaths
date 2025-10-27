@@ -4,7 +4,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import FormRichTextEditor from '$lib/components/rich-text/FormRichTextEditor.svelte';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { Loader2, Send, X, Save, Check, Paperclip, FileIcon, Trash2, Reply } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
@@ -480,22 +480,16 @@
 					{#if isGroupMessage}
 						<div class="space-y-2">
 							<Label for="class-select">Classe</Label>
-							<Select.Root
-								onSelectedChange={(v) => {
-									selectedClassId = v?.value || null;
-								}}
-							>
-								<Select.Trigger id="class-select">
-									<Select.Value placeholder="Sélectionnez une classe" />
-								</Select.Trigger>
-								<Select.Content>
-									{#each privateMessages.classes as classItem (classItem.id)}
-										<Select.Item value={classItem.class_id}>
-											{classItem.class_name} ({classItem.student_count} élèves)
-										</Select.Item>
-									{/each}
-								</Select.Content>
-							</Select.Root>
+							<MySelect
+								type="single"
+								bind:value={selectedClassId}
+								items={privateMessages.classes.map((c) => ({
+									value: c.class_id,
+									label: `${c.class_name} (${c.student_count} élèves)`
+								}))}
+								placeholder="Sélectionnez une classe"
+								triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+							/>
 						</div>
 					{:else}
 						<!-- Recipients selector (for individual messages) -->

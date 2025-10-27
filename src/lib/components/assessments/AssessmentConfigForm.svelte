@@ -15,7 +15,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import type { AssessmentSettings } from '$lib/types/assessment';
 	import { GRADE_LEVELS, DEFAULT_ASSESSMENT_SETTINGS } from '$lib/types/assessment';
@@ -39,10 +39,6 @@
 	// Form state
 	let title = $state(initialData?.title || '');
 	let grade = $state(initialData?.grade || '6ème');
-	let gradeSelected = $state<{ value: string; label: string }>({
-		value: initialData?.grade || '6ème',
-		label: initialData?.grade || '6ème'
-	});
 	let description = $state(initialData?.description || '');
 	let maxAttempts = $state<number | null>(
 		initialData?.settings?.max_attempts ?? DEFAULT_ASSESSMENT_SETTINGS.max_attempts
@@ -138,24 +134,15 @@
 	<!-- Grade -->
 	<div class="space-y-2">
 		<Label for="grade">Niveau *</Label>
-		<Select.Root
-			selected={gradeSelected}
-			onSelectedChange={(v) => {
-				if (v) {
-					gradeSelected = v;
-					grade = v.value;
-				}
-			}}
-		>
-			<Select.Trigger id="grade" class={errors.grade ? 'border-red-500' : ''}>
-				<Select.Value placeholder="Sélectionner un niveau" />
-			</Select.Trigger>
-			<Select.Content>
-				{#each GRADE_LEVELS as level (level)}
-					<Select.Item value={level} label={level}>{level}</Select.Item>
-				{/each}
-			</Select.Content>
-		</Select.Root>
+		<MySelect
+			type="single"
+			bind:value={grade}
+			items={GRADE_LEVELS.map((level) => ({ value: level, label: level }))}
+			placeholder="Sélectionner un niveau"
+			triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between {errors.grade
+				? 'border-red-500'
+				: ''}"
+		/>
 		{#if errors.grade}
 			<p class="text-sm text-red-500">{errors.grade}</p>
 		{/if}

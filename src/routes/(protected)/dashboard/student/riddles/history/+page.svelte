@@ -11,7 +11,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Progress from '$lib/components/ui/progress';
 	import { BookOpen, ArrowLeft, Trophy, Target, Award } from 'lucide-svelte';
 	import { format } from 'date-fns';
@@ -20,25 +20,30 @@
 
 	let { data }: { data: PageData } = $props();
 
-	let selectedDifficulty = $state<{ value: string; label: string }>({
-		value: data.filters.difficulty || 'all',
-		label: data.filters.difficulty
-			? getDifficultyLabel(parseInt(data.filters.difficulty))
-			: 'Toutes'
-	});
+	let selectedDifficulty = $state<string>(data.filters.difficulty || 'all');
+	let selectedGenre = $state<string>(data.filters.genre || 'all');
 
-	let selectedGenre = $state<{ value: string; label: string }>({
-		value: data.filters.genre || 'all',
-		label: data.filters.genre || 'Tous'
-	});
+	// Difficulty items for MySelect
+	const difficultyItems = [
+		{ value: 'all', label: 'Toutes' },
+		{ value: '1', label: getDifficultyLabel(1) },
+		{ value: '2', label: getDifficultyLabel(2) },
+		{ value: '3', label: getDifficultyLabel(3) }
+	];
+
+	// Genre items for MySelect (dynamically built from data)
+	const genreItems = $derived([
+		{ value: 'all', label: 'Tous' },
+		...data.uniqueGenres.map((genre) => ({ value: genre, label: genre }))
+	]);
 
 	function applyFilters() {
 		const params = new URLSearchParams();
-		if (selectedDifficulty.value !== 'all') {
-			params.set('difficulty', selectedDifficulty.value);
+		if (selectedDifficulty !== 'all') {
+			params.set('difficulty', selectedDifficulty);
 		}
-		if (selectedGenre.value !== 'all') {
-			params.set('genre', selectedGenre.value);
+		if (selectedGenre !== 'all') {
+			params.set('genre', selectedGenre);
 		}
 		goto(`/dashboard/student/riddles/history?${params.toString()}`);
 	}
@@ -196,57 +201,27 @@
 				<!-- Difficulty Filter -->
 				<div class="flex-1 space-y-2">
 					<label class="text-sm font-medium">Difficulté</label>
-					<Select.Root
-						selected={selectedDifficulty}
-						onSelectedChange={(v) => {
-							if (v) {
-								selectedDifficulty = v;
-								applyFilters();
-							}
-						}}
-					>
-						<Select.Trigger>
-							<Select.Value placeholder="Toutes" />
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Item value="all" label="Toutes">Toutes</Select.Item>
-							<Select.Item value="1" label={getDifficultyLabel(1)}>
-								{getDifficultyLabel(1)}
-							</Select.Item>
-							<Select.Item value="2" label={getDifficultyLabel(2)}>
-								{getDifficultyLabel(2)}
-							</Select.Item>
-							<Select.Item value="3" label={getDifficultyLabel(3)}>
-								{getDifficultyLabel(3)}
-							</Select.Item>
-						</Select.Content>
-					</Select.Root>
+					<MySelect
+						type="single"
+						bind:value={selectedDifficulty}
+						items={difficultyItems}
+						placeholder="Toutes"
+						triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+						onValueChange={() => applyFilters()}
+					/>
 				</div>
 
 				<!-- Genre Filter -->
 				<div class="flex-1 space-y-2">
 					<label class="text-sm font-medium">Genre</label>
-					<Select.Root
-						selected={selectedGenre}
-						onSelectedChange={(v) => {
-							if (v) {
-								selectedGenre = v;
-								applyFilters();
-							}
-						}}
-					>
-						<Select.Trigger>
-							<Select.Value placeholder="Tous" />
-						</Select.Trigger>
-						<Select.Content>
-							<Select.Item value="all" label="Tous">Tous</Select.Item>
-							{#each data.uniqueGenres as genre (genre)}
-								<Select.Item value={genre} label={genre}>
-									{genre}
-								</Select.Item>
-							{/each}
-						</Select.Content>
-					</Select.Root>
+					<MySelect
+						type="single"
+						bind:value={selectedGenre}
+						items={genreItems}
+						placeholder="Tous"
+						triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+						onValueChange={() => applyFilters()}
+					/>
 				</div>
 			</div>
 		</Card.Content>

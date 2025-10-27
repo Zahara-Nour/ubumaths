@@ -78,28 +78,55 @@ UbuMaths utilise [Shadcn-svelte](https://www.shadcn-svelte.com/) pour les compos
 </div>
 ```
 
-### ⚠️ Select (DO NOT USE)
+### MySelect (Dropdowns)
 
-**Important** : NE PAS utiliser Shadcn Select - utiliser `<select>` natif :
+**Important** : TOUJOURS utiliser `MySelect` pour les dropdowns - NE JAMAIS utiliser Shadcn Select ou `<select>` natif.
 
 ```svelte
 <script lang="ts">
+	import MySelect from '$lib/components/MySelect.svelte';
+
 	let category = $state('');
+
+	const categoryItems = [
+		{ value: 'algebra', label: 'Algèbre' },
+		{ value: 'geometry', label: 'Géométrie' },
+		{ value: 'calculus', label: 'Analyse' }
+	];
 </script>
 
-<!-- ✅ BON : Select natif -->
-<select
+<!-- ✅ BON : MySelect -->
+<MySelect
+	type="single"
 	bind:value={category}
-	class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
->
-	<option value="">Choisir une catégorie</option>
-	<option value="algebra">Algèbre</option>
-	<option value="geometry">Géométrie</option>
-</select>
+	items={categoryItems}
+	placeholder="Choisir une catégorie"
+/>
 
 <!-- ❌ MAUVAIS : Shadcn Select -->
-<!-- Cause problèmes avec Svelte 5 -->
+<!-- Cause problèmes SSR avec Svelte 5 -->
+
+<!-- ❌ MAUVAIS : Select natif -->
+<!-- Pas accessible, style inconsistant -->
 ```
+
+**Props** :
+
+- `type`: `"single"` ou `"multiple"`
+- `value`: Bindable (`bind:value`)
+- `items`: `{ value: string, label: string, disabled?: boolean }[]`
+- `placeholder`: Texte placeholder (optionnel)
+- `triggerClass`: Classes CSS personnalisées (optionnel)
+- `contentProps`: Props Bits UI Select.Content (optionnel)
+
+**SSR Compatibility** : Ajouter `export const prerender = false;` dans `+page.ts` :
+
+```typescript
+// +page.ts
+export const prerender = false;
+```
+
+**Voir aussi** : [Component Architecture](../architecture/components.md)
 
 ### Card
 

@@ -12,14 +12,13 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Alert from '$lib/components/ui/alert';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Sparkles, Calendar, History, Trash2, Plus } from 'lucide-svelte';
 	import { format } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { enhance } from '$app/forms';
-	import { cn } from '$lib/utils';
 
 	let { data }: { data: PageData } = $props();
 
@@ -27,8 +26,13 @@
 	let selectedDate = $state<string>(format(new Date(), 'yyyy-MM-dd'));
 	let isSubmitting = $state(false);
 
-	// Select component requires object structure
-	let selectedRiddle = $state<{ value: string; label: string }>({ value: '', label: '' });
+	// Riddle items for MySelect
+	const riddleItems = $derived(
+		data.availableRiddles.map((riddle) => ({
+			value: riddle.id,
+			label: `#${riddle.riddle_number} - ${riddle.title}`
+		}))
+	);
 
 	function formatDate(dateString: string) {
 		return format(new Date(dateString), 'EEEE d MMMM yyyy', { locale: fr });
@@ -122,7 +126,6 @@
 						if (result.type === 'success') {
 							toaster.success('Énigme du jour définie avec succès');
 							selectedRiddleId = '';
-							selectedRiddle = { value: '', label: '' };
 						} else if (result.type === 'failure') {
 							toaster.error(result.data?.message || 'Erreur lors de la définition');
 						}
@@ -146,32 +149,13 @@
 					<!-- Riddle Selection -->
 					<div class="space-y-2">
 						<Label for="riddle_id">Énigme</Label>
-						<Select.Root
-							selected={selectedRiddle}
-							onSelectedChange={(v) => {
-								if (v) {
-									selectedRiddle = v;
-									selectedRiddleId = v.value;
-								}
-							}}
-						>
-							<Select.Trigger>
-								<Select.Value placeholder="Sélectionner une énigme" />
-							</Select.Trigger>
-							<Select.Content>
-								{#each data.availableRiddles as riddle (riddle.id)}
-									<Select.Item value={riddle.id} label="#{riddle.riddle_number} - {riddle.title}">
-										<div class="flex items-center gap-2">
-											<span>#{riddle.riddle_number}</span>
-											<Badge class={cn('text-xs', getDifficultyColor(riddle.difficulty))}>
-												{getDifficultyLabel(riddle.difficulty)}
-											</Badge>
-											<span>{riddle.title}</span>
-										</div>
-									</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
+						<MySelect
+							type="single"
+							bind:value={selectedRiddleId}
+							items={riddleItems}
+							placeholder="Sélectionner une énigme"
+							triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+						/>
 						<input type="hidden" name="riddle_id" value={selectedRiddleId} />
 					</div>
 

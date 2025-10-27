@@ -53,7 +53,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { getDayName } from '$lib/utils/schedule';
 	import { formatPeriodDisplay } from '$lib/utils/timetable';
 	import { Trash2 } from 'lucide-svelte';
@@ -109,31 +109,25 @@
 	 */
 	$effect(() => {
 		if (open) {
+			const dayOfWeek = entry?.day_of_week ?? defaultDay;
+			const periodNumber = entry?.period_number ?? (periods[0]?.number || 1);
+
 			formData = {
 				id: entry?.id,
-				day_of_week: entry?.day_of_week ?? defaultDay,
+				day_of_week: dayOfWeek,
 				start_time: entry?.start_time ?? (periods[0]?.start_time || '08:00:00'),
 				end_time: entry?.end_time ?? (periods[0]?.end_time || '09:00:00'),
-				period_number: entry?.period_number ?? (periods[0]?.number || 1),
+				period_number: periodNumber,
 				subject: entry?.subject ?? '',
 				room: entry?.room ?? '',
 				notes: entry?.notes ?? ''
 			};
+
+			// Update select values
+			selectedDay = String(dayOfWeek);
+			selectedPeriod = String(periodNumber);
 		}
 	});
-
-	/**
-	 * Handle period selection change
-	 * Auto-populate start_time and end_time from selected period
-	 */
-	function handlePeriodChange(periodNumber: number) {
-		const period = periods.find((p) => p.number === periodNumber);
-		if (period) {
-			formData.period_number = period.number;
-			formData.start_time = period.start_time;
-			formData.end_time = period.end_time;
-		}
-	}
 
 	/**
 	 * Handle form submission
@@ -164,25 +158,38 @@
 		onClose();
 	}
 
-	// Day options for select
+	// Day options for select (convert number to string for MySelect)
 	const dayOptions = [0, 1, 2, 3, 4].map((day) => ({
-		value: day,
+		value: String(day),
 		label: getDayName(day)
 	}));
 
-	// Period options for select
+	// Period options for select (convert number to string for MySelect)
 	const periodOptions = $derived(
 		periods.map((period) => ({
-			value: period.number,
+			value: String(period.number),
 			label: formatPeriodDisplay(period)
 		}))
 	);
 
-	// Get selected day option
-	let selectedDay = $derived(dayOptions.find((opt) => opt.value === formData.day_of_week));
+	// Selected values as strings for MySelect binding
+	let selectedDay = $state(String(formData.day_of_week));
+	let selectedPeriod = $state(String(formData.period_number));
 
-	// Get selected period option
-	let selectedPeriod = $derived(periodOptions.find((opt) => opt.value === formData.period_number));
+	// Sync formData when selections change
+	$effect(() => {
+		formData.day_of_week = parseInt(selectedDay);
+	});
+
+	$effect(() => {
+		const periodNum = parseInt(selectedPeriod);
+		const period = periods.find((p) => p.number === periodNum);
+		if (period) {
+			formData.period_number = period.number;
+			formData.start_time = period.start_time;
+			formData.end_time = period.end_time;
+		}
+	});
 
 	// Modal title based on mode
 	const modalTitle = $derived(
@@ -214,22 +221,14 @@
 				<label class="mb-2 block text-sm font-medium text-foreground">
 					Jour <span class="text-destructive">*</span>
 				</label>
-				<Select.Root
-					selected={selectedDay}
-					onSelectedChange={(v) => {
-						if (v) formData.day_of_week = v.value;
-					}}
+				<MySelect
+					type="single"
+					bind:value={selectedDay}
+					items={dayOptions}
+					placeholder="Sélectionner un jour"
 					disabled={readonly}
-				>
-					<Select.Trigger class="w-full">
-						<Select.Value placeholder="Sélectionner un jour" />
-					</Select.Trigger>
-					<Select.Content>
-						{#each dayOptions as dayOpt (dayOpt.value)}
-							<Select.Item value={dayOpt.value}>{dayOpt.label}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
+					triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+				/>
 			</div>
 
 			<!-- Period Selection -->
@@ -243,22 +242,14 @@
 						l'emploi du temps.
 					</div>
 				{:else}
-					<Select.Root
-						selected={selectedPeriod}
-						onSelectedChange={(v) => {
-							if (v) handlePeriodChange(v.value);
-						}}
+					<MySelect
+						type="single"
+						bind:value={selectedPeriod}
+						items={periodOptions}
+						placeholder="Sélectionner une période"
 						disabled={readonly}
-					>
-						<Select.Trigger class="w-full">
-							<Select.Value placeholder="Sélectionner une période" />
-						</Select.Trigger>
-						<Select.Content>
-							{#each periodOptions as periodOpt (periodOpt.value)}
-								<Select.Item value={periodOpt.value}>{periodOpt.label}</Select.Item>
-							{/each}
-						</Select.Content>
-					</Select.Root>
+						triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+					/>
 				{/if}
 			</div>
 

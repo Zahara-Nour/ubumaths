@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Label } from '$lib/components/ui/label';
@@ -61,6 +61,10 @@
 	let filterTags = $state<string[]>([]);
 	let favoritesOnly = $state(false);
 	let searchQuery = $state('');
+
+	// MySelect needs string values, so we use 'null' string for null values
+	let filterScopeValue = $state<string>('null');
+	let filterTriggerTypeValue = $state<string>('null');
 	let expandedCards = $state<Set<string>>(new Set());
 
 	const triggerTypeOptions = [
@@ -430,37 +434,33 @@
 
 		<!-- Filter row -->
 		<div class="flex flex-wrap gap-3">
-			<Select.Root
-				onSelectedChange={(v) => {
-					filterScope = v?.value || null;
+			<MySelect
+				type="single"
+				bind:value={filterScopeValue}
+				items={[
+					{ value: 'null', label: 'Tous les scopes' },
+					...scopeOptions.map((opt) => ({ value: opt.value, label: opt.label }))
+				]}
+				placeholder="Tous les scopes"
+				triggerClass="h-10 w-48 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+				onValueChange={(v) => {
+					filterScope = v === 'null' ? null : v;
 				}}
-			>
-				<Select.Trigger class="w-48">
-					<Select.Value placeholder="Tous les scopes" />
-				</Select.Trigger>
-				<Select.Content>
-					<Select.Item value={null}>Tous les scopes</Select.Item>
-					{#each scopeOptions as option (option.value)}
-						<Select.Item value={option.value}>{option.label}</Select.Item>
-					{/each}
-				</Select.Content>
-			</Select.Root>
+			/>
 
-			<Select.Root
-				onSelectedChange={(v) => {
-					filterTriggerType = v?.value || null;
+			<MySelect
+				type="single"
+				bind:value={filterTriggerTypeValue}
+				items={[
+					{ value: 'null', label: 'Tous les types' },
+					...triggerTypeOptions.map((opt) => ({ value: opt.value, label: opt.label }))
+				]}
+				placeholder="Tous les types"
+				triggerClass="h-10 w-64 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+				onValueChange={(v) => {
+					filterTriggerType = v === 'null' ? null : v;
 				}}
-			>
-				<Select.Trigger class="w-64">
-					<Select.Value placeholder="Tous les types" />
-				</Select.Trigger>
-				<Select.Content>
-					<Select.Item value={null}>Tous les types</Select.Item>
-					{#each triggerTypeOptions as option (option.value)}
-						<Select.Item value={option.value}>{option.label}</Select.Item>
-					{/each}
-				</Select.Content>
-			</Select.Root>
+			/>
 
 			<Button
 				variant={favoritesOnly ? 'default' : 'outline'}
@@ -675,38 +675,24 @@
 					<div class="grid gap-4 md:grid-cols-2">
 						<div class="space-y-2">
 							<Label>Type de déclencheur *</Label>
-							<Select.Root
-								onSelectedChange={(v) => {
-									if (v) formTriggerType = v.value as TriggerType;
-								}}
-							>
-								<Select.Trigger>
-									<Select.Value placeholder="Sélectionnez" />
-								</Select.Trigger>
-								<Select.Content>
-									{#each triggerTypeOptions as option (option.value)}
-										<Select.Item value={option.value}>{option.label}</Select.Item>
-									{/each}
-								</Select.Content>
-							</Select.Root>
+							<MySelect
+								type="single"
+								bind:value={formTriggerType}
+								items={triggerTypeOptions}
+								placeholder="Sélectionnez"
+								triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+							/>
 						</div>
 
 						<div class="space-y-2">
 							<Label>Portée *</Label>
-							<Select.Root
-								onSelectedChange={(v) => {
-									if (v) formScope = v.value as 'system' | 'class';
-								}}
-							>
-								<Select.Trigger>
-									<Select.Value placeholder="Sélectionnez" />
-								</Select.Trigger>
-								<Select.Content>
-									{#each scopeOptions as option, index (index)}
-										<Select.Item value={option.value}>{option.label}</Select.Item>
-									{/each}
-								</Select.Content>
-							</Select.Root>
+							<MySelect
+								type="single"
+								bind:value={formScope}
+								items={scopeOptions}
+								placeholder="Sélectionnez"
+								triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+							/>
 						</div>
 					</div>
 

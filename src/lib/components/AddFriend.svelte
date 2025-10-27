@@ -2,7 +2,7 @@
 	import { friendsManager } from '$lib/stores/friends.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Search, UserPlus, Check, Clock, UserX } from 'lucide-svelte';
@@ -22,6 +22,12 @@
 	>([]);
 	let isSearching = $state(false);
 	let selectedFriendshipType = $state<FriendshipType>('classmate');
+
+	// Items for MySelect
+	const friendshipTypeItems = [
+		{ value: 'classmate', label: 'Camarade' },
+		{ value: 'mentor', label: 'Mentor' }
+	];
 
 	async function handleSearch() {
 		if (!searchQuery || searchQuery.length < 2) {
@@ -109,23 +115,13 @@
 		<!-- Friendship Type Selector -->
 		<div class="flex items-center gap-3">
 			<label for="friendship-type" class="text-sm font-medium">Type de relation :</label>
-			<Select.Root
-				selected={{
-					value: selectedFriendshipType,
-					label: selectedFriendshipType === 'classmate' ? 'Camarade' : 'Mentor'
-				}}
-				onSelectedChange={(v) => {
-					if (v) selectedFriendshipType = v.value as FriendshipType;
-				}}
-			>
-				<Select.Trigger class="w-48">
-					<Select.Value placeholder="Sélectionner..." />
-				</Select.Trigger>
-				<Select.Content>
-					<Select.Item value="classmate">Camarade</Select.Item>
-					<Select.Item value="mentor">Mentor</Select.Item>
-				</Select.Content>
-			</Select.Root>
+			<MySelect
+				type="single"
+				bind:value={selectedFriendshipType}
+				items={friendshipTypeItems}
+				placeholder="Sélectionner..."
+				triggerClass="h-9 w-48 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+			/>
 		</div>
 	</div>
 
