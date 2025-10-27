@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.10](https://github.com/Zahara-Nour/ubumaths/compare/v0.0.9...v0.0.10) (2025-10-27)
+
+### 📚 Documentation
+
+- document v0.0.9 performance optimizations ([9ef3430](https://github.com/Zahara-Nour/ubumaths/commit/9ef343079d4b49ac03631ee11ea1b52093045d57))
+
 ### [0.0.9](https://github.com/Zahara-Nour/ubumaths/compare/v0.0.8...v0.0.9) (2025-10-27)
 
 ### ⚡ Performance Improvements
