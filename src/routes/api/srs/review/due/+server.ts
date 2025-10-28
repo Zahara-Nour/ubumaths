@@ -27,9 +27,9 @@ import { dueCardsQuerySchema } from '$lib/server/validation/srs';
  * @returns Array of ReviewCard objects ready for study
  */
 export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSession } }) => {
-	const { session, user } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!user || !session) {
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 

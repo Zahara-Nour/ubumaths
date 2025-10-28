@@ -19,12 +19,10 @@ type ExerciseUpdate = Database['public']['Tables']['exercises']['Update'];
  * Teachers only
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
-
-	const { user } = session;
 
 	// Only teachers can access exercises
 	const { data: profile } = await locals.supabase
@@ -55,12 +53,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
  * Only the creator can update
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
-
-	const { user } = session;
 
 	// Only teachers can update exercises
 	const { data: profile } = await locals.supabase
@@ -111,12 +107,10 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
  * Only the creator can delete
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
-
-	const { user } = session;
 
 	// Only teachers can delete exercises
 	const { data: profile } = await locals.supabase

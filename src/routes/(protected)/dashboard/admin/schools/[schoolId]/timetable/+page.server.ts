@@ -4,9 +4,9 @@ import type { SchoolTimetable } from '$lib/types/database';
 import { validateTimetable } from '$lib/utils/timetable';
 
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
-	const { session, user } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
@@ -43,9 +43,9 @@ export const actions = {
 	 * Validates periods and saves to database
 	 */
 	updateTimetable: async ({ request, params, locals: { supabase, safeGetSession } }) => {
-		const { session, user } = await safeGetSession();
+		const { user } = await safeGetSession();
 
-		if (!session) {
+		if (!user) {
 			return fail(401, { message: 'Not authenticated' });
 		}
 

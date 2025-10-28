@@ -6,8 +6,8 @@ import { getExercise } from '$lib/server/exercises';
  * Load exercise for editing and view assignments
  */
 export const load: PageServerLoad = async ({ locals, params, fetch }) => {
-	const { session } = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	}
 
 	// Check ownership
-	if (result.data.created_by !== session.user.id) {
+	if (result.data.created_by !== user.id) {
 		throw error(403, "Vous n'êtes pas autorisé à modifier cet exercice");
 	}
 

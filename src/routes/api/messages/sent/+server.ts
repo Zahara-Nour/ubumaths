@@ -7,9 +7,9 @@ import type { RequestHandler } from './$types';
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const supabase = locals.supabase;
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
@@ -20,7 +20,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		// Call database function
 		const { data: messages, error: fetchError } = await supabase.rpc('get_user_sent_messages', {
-			p_user_id: session.user.id,
+			p_user_id: user.id,
 			p_limit: limit,
 			p_offset: offset
 		});

@@ -20,12 +20,11 @@ import { validateViewExercise } from '$lib/server/validation';
  * @returns Completion record with updated view data
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	const { user } = session;
 	const exerciseId = params.id;
 
 	// Parse and validate optional assignment_id from body

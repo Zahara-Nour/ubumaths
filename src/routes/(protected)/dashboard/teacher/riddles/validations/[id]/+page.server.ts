@@ -7,8 +7,8 @@ import { sendValidationResultMessage } from '$lib/server/riddle-messages';
  * Load validation details
  */
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
-	const { session } = await safeGetSession();
-	if (!session) {
+	const { user } = await safeGetSession();
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
@@ -47,7 +47,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 	}
 
 	// Verify teacher owns this riddle
-	if (attempt.riddle.created_by !== session.user.id) {
+	if (attempt.riddle.created_by !== user.id) {
 		throw error(403, 'Vous ne pouvez valider que vos propres énigmes');
 	}
 
@@ -72,8 +72,8 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
  */
 export const actions: Actions = {
 	validate: async ({ params, request, locals: { supabase, safeGetSession } }) => {
-		const { session } = await safeGetSession();
-		if (!session) {
+		const { user } = await safeGetSession();
+		if (!user) {
 			return fail(401, { message: 'Non authentifié' });
 		}
 
@@ -84,7 +84,7 @@ export const actions: Actions = {
 		// Validate using RPC function
 		const { error: validateError } = await supabase.rpc('validate_riddle_attempt', {
 			p_attempt_id: params.id,
-			p_teacher_id: session.user.id,
+			p_teacher_id: user.id,
 			p_is_correct: isCorrect
 		});
 
@@ -109,7 +109,7 @@ export const actions: Actions = {
 		if (attempt) {
 			await sendValidationResultMessage(supabase, {
 				studentId: attempt.student_id,
-				teacherId: session.user.id,
+				teacherId: user.id,
 				riddleNumber: attempt.riddle.riddle_number,
 				riddleTitle: attempt.riddle.title,
 				isCorrect,

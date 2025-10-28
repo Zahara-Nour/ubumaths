@@ -2,9 +2,9 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals, fetch }) => {
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
@@ -34,7 +34,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		.from('exercise_assignments')
 		.select('*')
 		.eq('exercise_id', exerciseId)
-		.or(`student_id.eq.${session.user.id},assigned_to_type.eq.public`)
+		.or(`student_id.eq.${user.id},assigned_to_type.eq.public`)
 		.maybeSingle();
 
 	// Fetch completion
@@ -42,14 +42,14 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		.from('exercise_completions')
 		.select('*')
 		.eq('exercise_id', exerciseId)
-		.eq('student_id', session.user.id)
+		.eq('student_id', user.id)
 		.maybeSingle();
 
 	// Get student's classes (for per_group mode)
 	const { data: classMemberships } = await locals.supabase
 		.from('class_members')
 		.select('class_id')
-		.eq('student_id', session.user.id);
+		.eq('student_id', user.id);
 
 	const classIds = classMemberships?.map((cm) => cm.class_id) || [];
 
@@ -58,6 +58,6 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		assignment,
 		completion,
 		classIds,
-		userId: session.user.id
+		userId: user.id
 	};
 };

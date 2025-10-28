@@ -3,8 +3,8 @@ import type { PageServerLoad } from './$types';
 import { getTeacherAssessments } from '$lib/server/assessments';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw redirect(303, '/auth/signin');
 	}
 
@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { data: profile } = await locals.supabase
 		.from('profiles')
 		.select('role')
-		.eq('id', session.user.id)
+		.eq('id', user.id)
 		.single();
 
 	if (!profile || profile.role !== 'teacher') {
@@ -22,10 +22,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Fetch all assessments (not filtered by status)
 	// NOTE: Assessment listing is NOT filtered by test mode - teachers can see all their assessments
 	// Test mode filtering only applies to students/results shown for each assessment
-	const { data: assessments, error } = await getTeacherAssessments(
-		locals.supabase,
-		session.user.id
-	);
+	const { data: assessments, error } = await getTeacherAssessments(locals.supabase, user.id);
 
 	if (error) {
 		console.error('Failed to fetch assessments:', error);

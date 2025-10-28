@@ -14,8 +14,8 @@ export const POST: RequestHandler = async ({
 	request,
 	locals: { supabase, safeGetSession }
 }) => {
-	const { session } = await safeGetSession();
-	if (!session) {
+	const { user } = await safeGetSession();
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({
 	// Submit attempt using RPC function
 	const { data: attemptId, error: submitError } = await supabase.rpc('submit_riddle_attempt', {
 		p_riddle_id: params.id,
-		p_student_id: session.user.id,
+		p_student_id: user.id,
 		p_submitted_answer: { value: answer }, // Store as JSONB
 		p_is_correct: isCorrect
 	});
@@ -83,7 +83,7 @@ export const POST: RequestHandler = async ({
 		const { data: student } = await supabase
 			.from('profiles')
 			.select('firstname, lastname')
-			.eq('id', session.user.id)
+			.eq('id', user.id)
 			.single();
 
 		// Get teacher ID
@@ -98,7 +98,7 @@ export const POST: RequestHandler = async ({
 				riddleId: params.id,
 				riddleNumber: riddle.riddle_number,
 				riddleTitle: riddle.title,
-				studentId: session.user.id,
+				studentId: user.id,
 				studentName,
 				teacherId
 			});

@@ -2,8 +2,8 @@ import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw redirect(303, '/auth/signin');
 	}
 
@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const { data: profile } = await locals.supabase
 		.from('profiles')
 		.select('role')
-		.eq('id', session.user.id)
+		.eq('id', user.id)
 		.single();
 
 	if (!profile || profile.role !== 'student') {
@@ -36,7 +36,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	// Verify student has access to this assignment
 	// Check if directly assigned or assigned via class
-	const isDirectlyAssigned = assignment.student_id === session.user.id;
+	const isDirectlyAssigned = assignment.student_id === user.id;
 
 	let isAssignedViaClass = false;
 	if (assignment.class_id) {
@@ -44,7 +44,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			.from('class_members')
 			.select('id')
 			.eq('class_id', assignment.class_id)
-			.eq('student_id', session.user.id)
+			.eq('student_id', user.id)
 			.single();
 
 		isAssignedViaClass = !!membership;
@@ -59,7 +59,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.from('test_sessions')
 		.select('*')
 		.eq('assignment_id', params.id)
-		.eq('user_id', session.user.id)
+		.eq('user_id', user.id)
 		.order('created_at', { ascending: false });
 
 	if (attemptsError) {

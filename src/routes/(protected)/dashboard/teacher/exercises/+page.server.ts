@@ -6,8 +6,8 @@ import { getTeacherExercises, deleteExercise } from '$lib/server/exercises';
  * Load teacher's exercises with optional filters
  */
 export const load: PageServerLoad = async ({ locals, url }) => {
-	const { session } = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
@@ -50,7 +50,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	}
 
 	// Fetch exercises
-	const result = await getTeacherExercises(locals.supabase, session.user.id, filters, {
+	const result = await getTeacherExercises(locals.supabase, user.id, filters, {
 		page,
 		limit
 	});
@@ -86,8 +86,8 @@ export const actions: Actions = {
 	 * Delete an exercise
 	 */
 	delete: async ({ request, locals }) => {
-		const { session } = await locals.safeGetSession();
-		if (!session) {
+		const { user } = await locals.safeGetSession();
+		if (!user) {
 			return fail(401, { message: 'Non authentifié' });
 		}
 
@@ -99,7 +99,7 @@ export const actions: Actions = {
 		}
 
 		// Delete exercise
-		const result = await deleteExercise(locals.supabase, exerciseId, session.user.id);
+		const result = await deleteExercise(locals.supabase, exerciseId, user.id);
 
 		if (result.error) {
 			console.error('Error deleting exercise:', result.error);

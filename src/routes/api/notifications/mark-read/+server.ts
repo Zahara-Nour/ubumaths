@@ -13,9 +13,9 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 	// ====================================================================
 	// SECURITY: Authentication Check
 	// ====================================================================
-	const { session } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
@@ -34,7 +34,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 	// ====================================================================
 	// Business Logic
 	// ====================================================================
-	const result = await markAsRead(supabase, notificationId, session.user.id);
+	const result = await markAsRead(supabase, notificationId, user.id);
 
 	if (!result.success) {
 		throw error(500, result.error || 'Erreur lors de la mise à jour');

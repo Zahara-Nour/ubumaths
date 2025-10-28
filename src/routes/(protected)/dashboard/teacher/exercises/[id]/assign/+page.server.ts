@@ -10,9 +10,9 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const supabase = locals.supabase;
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
@@ -30,7 +30,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	}
 
 	// Check ownership
-	if (exercise.created_by !== session.user.id) {
+	if (exercise.created_by !== user.id) {
 		throw error(403, 'Not authorized');
 	}
 
@@ -54,7 +54,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 			)
 		`
 		)
-		.eq('teacher_id', session.user.id);
+		.eq('teacher_id', user.id);
 
 	// Transform classes to include student count
 	const classesWithCount =
@@ -79,7 +79,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 			)
 		`
 		)
-		.eq('class.teacher_id', session.user.id);
+		.eq('class.teacher_id', user.id);
 
 	// Extract unique students
 	const studentsMap = new Map<

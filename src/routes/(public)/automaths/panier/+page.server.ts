@@ -16,14 +16,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Get user role if authenticated
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 	let userRole: string | null = null;
 
 	if (session) {
 		const { data: profile } = await supabase
 			.from('profiles')
 			.select('role')
-			.eq('id', session.user.id)
+			.eq('id', user.id)
 			.single();
 
 		userRole = profile?.role || null;

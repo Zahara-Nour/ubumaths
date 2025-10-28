@@ -12,16 +12,16 @@ import { uuidSchema } from '$lib/server/validation/common';
 import { getCached, CACHE_KEYS, TTL } from '$lib/server/cache';
 
 export const GET: RequestHandler = async ({ locals: { supabase, safeGetSession } }) => {
-	const { session } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
 	// Validate user ID format (project security standard: validate all inputs)
-	const userIdValidation = uuidSchema.safeParse(session.user.id);
+	const userIdValidation = uuidSchema.safeParse(user.id);
 	if (!userIdValidation.success) {
-		console.error('Invalid user ID format in session:', session.user.id);
+		console.error('Invalid user ID format in session:', user.id);
 		throw error(400, 'Format ID utilisateur invalide');
 	}
 

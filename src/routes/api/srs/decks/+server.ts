@@ -33,9 +33,9 @@ import { validateJsonResponse } from '$lib/server/validation/response-utils';
  * @returns Array of decks with stats
  */
 export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSession } }) => {
-	const { session, user } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!user || !session) {
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
@@ -146,9 +146,9 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
  * @returns Created deck
  */
 export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
-	const { session, user } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!user || !session) {
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 

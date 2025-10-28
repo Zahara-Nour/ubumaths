@@ -9,8 +9,8 @@ import { getErrorStats, getErrorOccurrences } from '$lib/server/errorMonitoring'
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Check authentication
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw redirect(302, '/auth');
 	}
 
@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const { data: profile } = await locals.supabase
 		.from('profiles')
 		.select('role')
-		.eq('id', session.user.id)
+		.eq('id', user.id)
 		.single();
 
 	if (!profile || profile.role !== 'admin') {

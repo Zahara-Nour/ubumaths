@@ -7,9 +7,9 @@ import type { RequestHandler } from './$types';
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const supabase = locals.supabase;
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.from('message_drafts')
 			.select('*')
 			.eq('id', params.id)
-			.eq('author_id', session.user.id)
+			.eq('author_id', user.id)
 			.single();
 
 		if (fetchError) {
@@ -42,9 +42,9 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const supabase = locals.supabase;
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
@@ -53,7 +53,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.from('message_drafts')
 			.delete()
 			.eq('id', params.id)
-			.eq('author_id', session.user.id);
+			.eq('author_id', user.id);
 
 		if (deleteError) {
 			console.error('Error deleting draft:', deleteError);

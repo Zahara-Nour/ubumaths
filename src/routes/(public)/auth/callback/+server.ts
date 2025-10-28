@@ -31,8 +31,6 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	const code = url.searchParams.get('code');
 	const next = url.searchParams.get('next') ?? '/dashboard';
 
-	logger.info('OAuth callback received', { hasCode: !!code, next });
-
 	if (!code) {
 		logger.error('No code provided in OAuth callback');
 		throw error(400, 'Missing authorization code');
@@ -61,8 +59,6 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 			);
 		}
 
-		logger.info('Session created for user:', user.email);
-
 		// Validate email domain
 		const email = user.email;
 		if (!email || !email.endsWith(ALLOWED_DOMAIN)) {
@@ -78,8 +74,6 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 			);
 		}
 
-		logger.info('Email domain validated successfully');
-
 		// Check if profile exists
 		const { data: existingProfile, error: profileError } = await supabase
 			.from('profiles')
@@ -94,8 +88,6 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
 		// Create profile if it doesn't exist
 		if (!existingProfile) {
-			logger.info('Creating new profile for user:', user.email);
-
 			// Extract avatar URL from Google OAuth metadata
 			// Google uses 'picture' field (standard), but check 'avatar_url' as fallback
 			const { error: insertError } = await supabase.from('profiles').insert({
@@ -111,17 +103,12 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 				logger.error('Failed to create profile:', insertError);
 				// Don't fail the auth flow, just log the error
 				// The profile creation trigger might handle this
-			} else {
-				logger.info('Profile created successfully');
 			}
 		} else {
-			logger.info('Profile already exists, updating Google avatar if available');
-
-			// Update avatar_url if we have one from Google and profile doesn't have one
-			// This handles users who logged in before avatar saving was implemented
+			// Always sync avatar from Google on each login
 			// Google OAuth stores avatar in 'picture' field (standard), check 'avatar_url' as fallback
 			const googleAvatar = user.user_metadata?.picture || user.user_metadata?.avatar_url;
-			if (googleAvatar && !existingProfile.avatar_url) {
+			if (googleAvatar) {
 				const { error: updateError } = await supabase
 					.from('profiles')
 					.update({ avatar_url: googleAvatar })
@@ -129,15 +116,13 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
 				if (updateError) {
 					logger.error('Failed to update avatar:', updateError);
-				} else {
-					logger.info('Updated avatar for existing user');
 				}
 			}
 		}
 
 		// Success! Session cookies are set by the server client.
 		// Redirect to the original page or home
-		logger.info('Authentication successful, redirecting to:', next);
+		logger.info('Authentication successful:', user.email);
 		throw redirect(303, next);
 	} catch (err) {
 		// If it's already a redirect, re-throw it

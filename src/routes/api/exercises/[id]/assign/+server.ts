@@ -34,12 +34,10 @@ import {
  * @returns Created assignment(s) with count
  */
 export const POST: RequestHandler = async ({ request, params, locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
-
-	const { user } = session;
 
 	// Check if user is a teacher
 	const { data: profile } = await locals.supabase
@@ -138,12 +136,10 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
  * @returns Array of assignments with details
  */
 export const GET: RequestHandler = async ({ params, url, locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
-
-	const { user } = session;
 
 	// Check if user is a teacher
 	const { data: profile } = await locals.supabase

@@ -6,8 +6,8 @@ import { error, redirect, fail } from '@sveltejs/kit';
  * Load teacher's riddles
  */
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
-	const { session } = await safeGetSession();
-	if (!session) {
+	const { user } = await safeGetSession();
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	const { data: riddles, error: riddlesError } = await supabase
 		.from('riddles')
 		.select('*')
-		.eq('created_by', session.user.id)
+		.eq('created_by', user.id)
 		.order('riddle_number', { ascending: false });
 
 	if (riddlesError) {
@@ -27,7 +27,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	const { data: stats, error: statsError } = await supabase
 		.from('riddle_stats')
 		.select('*')
-		.eq('created_by', session.user.id);
+		.eq('created_by', user.id);
 
 	if (statsError) {
 		console.error('Error fetching riddle stats:', statsError);
@@ -52,8 +52,8 @@ export const actions: Actions = {
 	 * Delete a riddle
 	 */
 	delete: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { session } = await safeGetSession();
-		if (!session) {
+		const { user } = await safeGetSession();
+		if (!user) {
 			return fail(401, { message: 'Non authentifié' });
 		}
 
@@ -79,8 +79,8 @@ export const actions: Actions = {
 	 * Toggle riddle status (draft <-> published)
 	 */
 	toggleStatus: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { session } = await safeGetSession();
-		if (!session) {
+		const { user } = await safeGetSession();
+		if (!user) {
 			return fail(401, { message: 'Non authentifié' });
 		}
 

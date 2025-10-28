@@ -9,9 +9,9 @@ import { invalidateCache, CACHE_KEYS } from '$lib/server/cache';
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
@@ -38,7 +38,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Call database function to send message
 		const { data: messageId, error: sendError } = await supabase.rpc('send_private_message', {
-			p_sender_id: session.user.id,
+			p_sender_id: user.id,
 			p_recipient_ids: isGroupMessage ? null : recipientIds,
 			p_subject: subject.trim(),
 			p_content: content,

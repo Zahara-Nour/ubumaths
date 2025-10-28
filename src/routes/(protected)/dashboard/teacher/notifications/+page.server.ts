@@ -8,9 +8,9 @@ import {
 import type { CreateNotificationData } from '$lib/types/notification';
 
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
-	const { session } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw redirect(303, '/auth/login');
 	}
 
@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	const { data: profile, error: profileError } = await supabase
 		.from('profiles')
 		.select('role')
-		.eq('id', session.user.id)
+		.eq('id', user.id)
 		.single();
 
 	if (profileError || !profile || profile.role !== 'teacher') {
@@ -29,7 +29,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	const { data: classes, error: _classesError } = await supabase
 		.from('classes')
 		.select('id, name')
-		.eq('teacher_id', session.user.id)
+		.eq('teacher_id', user.id)
 		.eq('is_active', true)
 		.order('name');
 
@@ -59,7 +59,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	}
 
 	// Get teacher's created notifications with stats
-	const notificationStats = await getCreatedNotifications(supabase, session.user.id);
+	const notificationStats = await getCreatedNotifications(supabase, user.id);
 
 	return {
 		classes: classes || [],
@@ -70,9 +70,9 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 
 export const actions: Actions = {
 	create: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { session } = await safeGetSession();
+		const { user } = await safeGetSession();
 
-		if (!session) {
+		if (!user) {
 			return fail(401, { error: 'Non authentifié' });
 		}
 
@@ -117,7 +117,7 @@ export const actions: Actions = {
 		}
 
 		// Create notification
-		const result = await createNotification(supabase, notificationData, session.user.id);
+		const result = await createNotification(supabase, notificationData, user.id);
 
 		if (!result.success) {
 			return fail(500, { error: result.error || 'Erreur lors de la création' });
@@ -127,9 +127,9 @@ export const actions: Actions = {
 	},
 
 	delete: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { session } = await safeGetSession();
+		const { user } = await safeGetSession();
 
-		if (!session) {
+		if (!user) {
 			return fail(401, { error: 'Non authentifié' });
 		}
 
@@ -140,7 +140,7 @@ export const actions: Actions = {
 			return fail(400, { error: 'ID de notification manquant' });
 		}
 
-		const result = await deleteNotification(supabase, notificationId, session.user.id);
+		const result = await deleteNotification(supabase, notificationId, user.id);
 
 		if (!result.success) {
 			return fail(500, { error: result.error || 'Erreur lors de la suppression' });

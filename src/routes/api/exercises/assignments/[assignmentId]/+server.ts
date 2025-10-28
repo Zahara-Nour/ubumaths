@@ -22,12 +22,10 @@ import { validateUpdateAssignment } from '$lib/server/validation';
  * @returns Updated assignment
  */
 export const PATCH: RequestHandler = async ({ request, params, locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
-
-	const { user } = session;
 
 	// Check if user is a teacher
 	const { data: profile } = await locals.supabase
@@ -88,12 +86,10 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
  * @returns Success status
  */
 export const DELETE: RequestHandler = async ({ params, url, locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
-
-	const { user } = session;
 
 	// Check if user is a teacher
 	const { data: profile } = await locals.supabase

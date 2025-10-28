@@ -30,8 +30,8 @@ import type { ImportOptions } from '$lib/exercises/types';
  * - ImportResult with statistics and errors
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { session } = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
@@ -39,7 +39,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const { data: profile } = await locals.supabase
 		.from('profiles')
 		.select('role')
-		.eq('id', session.user.id)
+		.eq('id', user.id)
 		.single();
 
 	if (!profile || profile.role !== 'teacher') {
@@ -82,21 +82,11 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		// Check if single or multiple exercises
 		if (Array.isArray(data)) {
 			// Multiple exercises
-			const result = await importExercisesFromJSON(
-				locals.supabase,
-				data,
-				session.user.id,
-				importOptions
-			);
+			const result = await importExercisesFromJSON(locals.supabase, data, user.id, importOptions);
 			return json(result);
 		} else {
 			// Single exercise
-			const result = await importExerciseFromJSON(
-				locals.supabase,
-				data,
-				session.user.id,
-				importOptions
-			);
+			const result = await importExerciseFromJSON(locals.supabase, data, user.id, importOptions);
 
 			// Convert single import result to ImportResult format
 			return json({
@@ -117,7 +107,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		const result = await importExerciseFromMarkdown(
 			locals.supabase,
 			content,
-			session.user.id,
+			user.id,
 			importOptions
 		);
 

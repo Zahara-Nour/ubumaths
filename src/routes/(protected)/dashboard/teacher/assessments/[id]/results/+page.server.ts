@@ -9,8 +9,8 @@ import { getTeacherTestMode } from '$lib/server/test-mode';
 import { getCached, CACHE_KEYS, TTL } from '$lib/server/cache';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw redirect(303, '/auth/signin');
 	}
 
@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const { data: profile } = await locals.supabase
 		.from('profiles')
 		.select('role')
-		.eq('id', session.user.id)
+		.eq('id', user.id)
 		.single();
 
 	if (!profile || profile.role !== 'teacher') {
@@ -36,12 +36,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// Verify ownership
-	if (assessment.created_by !== session.user.id) {
+	if (assessment.created_by !== user.id) {
 		throw error(403, 'Non autorisé');
 	}
 
 	// Get test mode to filter results
-	const isTestMode = await getTeacherTestMode(session.user.id, locals.supabase);
+	const isTestMode = await getTeacherTestMode(user.id, locals.supabase);
 
 	// Cache assessment results (5 min TTL - données rarement modifiées)
 	const { data: results, error: resultsError } = await getCached(

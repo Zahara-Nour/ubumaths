@@ -30,12 +30,25 @@
  */
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { createLogger } from '$lib/utils/logger';
+
+const logger = createLogger('auth/logout');
 
 export const POST: RequestHandler = async ({ locals: { supabase } }) => {
+	// Get user email before signing out for logging purposes
+	const {
+		data: { user }
+	} = await supabase.auth.getUser();
+
 	// Sign out on the server - this is the key!
 	// The server Supabase client will clear cookies via the cookie handlers
 	// defined in src/lib/server/supabase.ts
 	await supabase.auth.signOut();
+
+	// Log successful logout
+	if (user?.email) {
+		logger.info('User disconnected:', user.email);
+	}
 
 	// Redirect to home page - the layout will detect the auth change
 	// and update the UI to show the login button

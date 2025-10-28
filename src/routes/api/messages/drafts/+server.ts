@@ -7,9 +7,9 @@ import type { RequestHandler } from './$types';
  */
 export const GET: RequestHandler = async ({ locals }) => {
 	const supabase = locals.supabase;
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
@@ -17,7 +17,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		const { data: drafts, error: fetchError } = await supabase
 			.from('message_drafts')
 			.select('*')
-			.eq('author_id', session.user.id)
+			.eq('author_id', user.id)
 			.order('updated_at', { ascending: false });
 
 		if (fetchError) {
@@ -41,9 +41,9 @@ export const GET: RequestHandler = async ({ locals }) => {
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
@@ -73,7 +73,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					replying_to_message_id: replyingToMessageId || null
 				})
 				.eq('id', id)
-				.eq('author_id', session.user.id)
+				.eq('author_id', user.id)
 				.select()
 				.single();
 
@@ -88,7 +88,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const { data: draft, error: createError } = await supabase
 				.from('message_drafts')
 				.insert({
-					author_id: session.user.id,
+					author_id: user.id,
 					subject,
 					content,
 					recipient_ids: recipientIds,

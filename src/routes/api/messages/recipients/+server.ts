@@ -9,9 +9,9 @@ import type { RequestHandler } from './$types';
  */
 export const GET: RequestHandler = async ({ locals }) => {
 	const supabase = locals.supabase;
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
@@ -20,7 +20,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
 			.select('role')
-			.eq('id', session.user.id)
+			.eq('id', user.id)
 			.single();
 
 		if (profileError) {
@@ -32,7 +32,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		const { data: recipients, error: recipientsError } = await supabase.rpc(
 			'get_allowed_recipients',
 			{
-				p_user_id: session.user.id
+				p_user_id: user.id
 			}
 		);
 
@@ -47,7 +47,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			const { data: classesData, error: classesError } = await supabase.rpc(
 				'get_teacher_classes_for_messaging',
 				{
-					p_teacher_id: session.user.id
+					p_teacher_id: user.id
 				}
 			);
 

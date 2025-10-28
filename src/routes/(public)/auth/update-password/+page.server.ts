@@ -25,9 +25,9 @@ const logger = createLogger('auth/update-password/+page.server.ts');
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
 	// Check if user has a valid session (should have been created by /auth/confirm)
-	const { session } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		logger.error('No session found - user needs to use password reset link');
 		// Redirect to password reset request page
 		throw redirect(303, '/auth/reset-password');

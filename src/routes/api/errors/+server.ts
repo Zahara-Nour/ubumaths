@@ -9,8 +9,8 @@ import { getErrorLogs, type ErrorFilters } from '$lib/server/errorMonitoring';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	// Check authentication
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const { data: profile } = await locals.supabase
 		.from('profiles')
 		.select('role')
-		.eq('id', session.user.id)
+		.eq('id', user.id)
 		.single();
 
 	if (!profile || profile.role !== 'admin') {

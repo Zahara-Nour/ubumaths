@@ -20,12 +20,11 @@ import { studentHasAccess } from '$lib/server/exercise-assignments';
  * @returns { has_access: boolean }
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	const { user } = session;
 	const exerciseId = params.id;
 
 	// Check access

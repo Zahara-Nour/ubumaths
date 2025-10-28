@@ -6,8 +6,8 @@ import type { BadgeProgress } from '$lib/utils/riddle-badges';
  * Load student's personal riddle history
  */
 export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSession } }) => {
-	const { session } = await safeGetSession();
-	if (!session) {
+	const { user } = await safeGetSession();
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 	let query = supabase
 		.from('riddle_student_history')
 		.select('*')
-		.eq('student_id', session.user.id)
+		.eq('student_id', user.id)
 		.eq('is_correct', true) // Only successful attempts
 		.order('first_success_at', { ascending: false });
 
@@ -72,7 +72,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
 			riddle:riddles!inner(id)
 		`
 		)
-		.eq('student_id', session.user.id)
+		.eq('student_id', user.id)
 		.eq('is_correct', true)
 		.in(
 			'riddle_id',

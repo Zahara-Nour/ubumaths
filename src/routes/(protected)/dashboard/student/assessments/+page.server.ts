@@ -3,8 +3,8 @@ import type { PageServerLoad } from './$types';
 import { getStudentAssignments } from '$lib/server/assessments';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw redirect(303, '/auth/signin');
 	}
 
@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { data: profile } = await locals.supabase
 		.from('profiles')
 		.select('role')
-		.eq('id', session.user.id)
+		.eq('id', user.id)
 		.single();
 
 	if (!profile || profile.role !== 'student') {
@@ -20,10 +20,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Fetch assigned assessments
-	const { data: assignments, error } = await getStudentAssignments(
-		locals.supabase,
-		session.user.id
-	);
+	const { data: assignments, error } = await getStudentAssignments(locals.supabase, user.id);
 
 	if (error) {
 		console.error('Failed to fetch assignments:', error);

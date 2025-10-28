@@ -109,9 +109,9 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 						return Promise.race([contextPromise, timeoutPromise]).catch(() => ({}));
 					};
 
-					const session = await event.locals.safeGetSession();
-					const userContext = session?.user?.id
-						? await getUserContextWithTimeout(event.locals.supabase, session.user.id)
+					const { user } = await event.locals.safeGetSession();
+					const userContext = user?.id
+						? await getUserContextWithTimeout(event.locals.supabase, user.id)
 						: {};
 
 					await logError(event.locals.supabase, {
@@ -141,10 +141,8 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 		const stackTrace = error instanceof Error ? error.stack : undefined;
 
 		// Get user context if available
-		const session = await event.locals.safeGetSession();
-		const userContext = session?.user?.id
-			? await getUserContext(event.locals.supabase, session.user.id)
-			: {};
+		const { user } = await event.locals.safeGetSession();
+		const userContext = user?.id ? await getUserContext(event.locals.supabase, user.id) : {};
 
 		// Determine error type based on route
 		const errorType = event.url.pathname.startsWith('/api/')

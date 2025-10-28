@@ -7,9 +7,9 @@ import type { RequestHandler } from './$types';
  */
 export const GET: RequestHandler = async ({ locals }) => {
 	const supabase = locals.supabase;
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
@@ -17,7 +17,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		const { data: count, error: fetchError } = await supabase.rpc(
 			'get_private_messages_unread_count',
 			{
-				p_user_id: session.user.id
+				p_user_id: user.id
 			}
 		);
 

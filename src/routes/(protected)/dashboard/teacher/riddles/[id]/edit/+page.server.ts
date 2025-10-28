@@ -6,8 +6,8 @@ import { error, redirect, fail } from '@sveltejs/kit';
  * Load riddle for editing
  */
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
-	const { session } = await safeGetSession();
-	if (!session) {
+	const { user } = await safeGetSession();
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
@@ -16,7 +16,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		.from('riddles')
 		.select('*')
 		.eq('id', params.id)
-		.eq('created_by', session.user.id)
+		.eq('created_by', user.id)
 		.single();
 
 	if (riddleError || !riddle) {
@@ -34,8 +34,8 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
  */
 export const actions: Actions = {
 	default: async ({ params, request, locals: { supabase, safeGetSession } }) => {
-		const { session } = await safeGetSession();
-		if (!session) {
+		const { user } = await safeGetSession();
+		if (!user) {
 			return fail(401, { message: 'Non authentifié' });
 		}
 
@@ -74,7 +74,7 @@ export const actions: Actions = {
 			.from('riddles')
 			.update(updateData)
 			.eq('id', params.id)
-			.eq('created_by', session.user.id);
+			.eq('created_by', user.id);
 
 		if (updateError) {
 			console.error('[RIDDLE EDIT SERVER] Error updating riddle:', updateError);

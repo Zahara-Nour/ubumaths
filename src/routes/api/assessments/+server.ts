@@ -20,12 +20,10 @@ import { validateJsonResponse } from '$lib/server/validation/response-utils';
  * Get teacher's assessments with optional status filter
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
-
-	const { user } = session;
 
 	// Only teachers can access this
 	const { data: profile } = await locals.supabase
@@ -74,12 +72,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
  * Create a new assessment
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
-
-	const { user } = session;
 
 	// Only teachers can create assessments
 	const { data: profile } = await locals.supabase

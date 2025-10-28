@@ -77,13 +77,9 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 
 	logger.trace('Supabase client created');
 
-	// Use the verified session and user from the server
-	// The server already verified these with getUser() - safe to trust
-	logger.info(
-		'Session from server:',
-		data.session ? `User: ${data.session.user.email}` : 'No session'
-	);
-	logger.info('User from server:', data.user ? data.user.email : 'No user');
+	// Use the verified user from the server
+	// The server already verified this with getUser() - safe to trust
+	logger.info('User from server:', data.user ? `User: ${data.user.email}` : 'No user');
 
 	/**
 	 * Set up auth state change listener (browser only)
@@ -93,21 +89,21 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	 * - SIGNED_OUT: User just logged out
 	 * - TOKEN_REFRESHED: Session was refreshed automatically
 	 *
-	 * IMPORTANT: We DON'T use the session from this callback!
+	 * IMPORTANT: We DON'T use the session/user from this callback!
 	 * Why? It's unverified (comes from localStorage/cookies).
 	 *
 	 * Instead, we:
 	 * 1. Detect that auth state changed
 	 * 2. Invalidate 'supabase:auth' to trigger re-running this load function
 	 * 3. The load function runs again, which calls +layout.server.ts
-	 * 4. +layout.server.ts verifies the new session with getUser()
+	 * 4. +layout.server.ts verifies the user with getUser()
 	 * 5. Verified data flows back to this function and to all components
 	 *
 	 * This ensures all auth data in the app is always verified by the server.
 	 */
 	if (isBrowser()) {
-		supabase.auth.onAuthStateChange((event, session) => {
-			logger.info('Auth state changed:', event, session ? 'has session' : 'no session');
+		supabase.auth.onAuthStateChange((event) => {
+			logger.info('Auth state changed:', event);
 
 			// On these events, reload verified data from server
 			if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
@@ -121,8 +117,6 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 
 	// Return verified data and Supabase client to all components
 	return {
-		// Verified session from server (safe to use)
-		session: data.session,
 		// Supabase client for making authenticated requests
 		supabase,
 		// Verified user from server (safe to use)

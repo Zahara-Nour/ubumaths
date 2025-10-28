@@ -9,9 +9,9 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
-	const { session, user } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!user || !session) {
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 

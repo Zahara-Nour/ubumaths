@@ -77,8 +77,6 @@ export const actions = {
 		// This automatically works in dev (localhost:5173) and production (vercel domain)
 		const callbackUrl = `${url.origin}/auth/callback`;
 
-		logger.info('Initiating Google OAuth flow', { callbackUrl, redirectTo });
-
 		// Initiate OAuth flow with Google
 		const { data, error } = await supabase.auth.signInWithOAuth({
 			provider: 'google',

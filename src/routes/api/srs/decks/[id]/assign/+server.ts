@@ -35,9 +35,9 @@ export const POST: RequestHandler = async ({
 	request,
 	locals: { supabase, safeGetSession }
 }) => {
-	const { session, user } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!user || !session) {
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 

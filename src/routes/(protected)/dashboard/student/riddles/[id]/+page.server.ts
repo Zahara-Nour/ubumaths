@@ -6,8 +6,8 @@ import { error, redirect } from '@sveltejs/kit';
  * Load riddle detail for student to attempt
  */
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
-	const { session } = await safeGetSession();
-	if (!session) {
+	const { user } = await safeGetSession();
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
@@ -29,7 +29,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		.from('riddle_attempts')
 		.select('*')
 		.eq('riddle_id', params.id)
-		.eq('student_id', session.user.id)
+		.eq('student_id', user.id)
 		.order('attempt_number', { ascending: false })
 		.limit(1);
 

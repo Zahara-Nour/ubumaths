@@ -224,8 +224,6 @@ export async function getClassStudents(
 		})
 		.filter((s): s is Student | StudentFull => s !== null);
 
-	console.log('[getClassStudents] Fetched', students.length, 'students');
-
 	return students;
 }
 
@@ -251,13 +249,6 @@ export async function getTeacherClassesWithStudents(
 ): Promise<ClassWithStudents[]> {
 	// Get teacher's test mode preference
 	const isTestMode = await getTeacherTestMode(userId, supabase);
-
-	console.log(
-		'[getTeacherClassesWithStudents] Fetching classes for teacher:',
-		userId,
-		'Test mode:',
-		isTestMode
-	);
 
 	// Call optimized RPC function
 	// Note: p_is_test_mode parameter exists in the database but types may be stale
@@ -300,13 +291,6 @@ export async function getTeacherClassesWithCounts(
 	// Get teacher's test mode preference
 	const isTestMode = await getTeacherTestMode(userId, supabase);
 
-	console.log(
-		'[getTeacherClassesWithCounts] Fetching classes for teacher:',
-		userId,
-		'Test mode:',
-		isTestMode
-	);
-
 	// Call optimized RPC function
 	// Note: p_is_test_mode parameter exists in the database but types may be stale
 	const { data, error } = await supabase.rpc('get_teacher_classes_with_data', {
@@ -318,8 +302,6 @@ export async function getTeacherClassesWithCounts(
 		console.error('[getTeacherClassesWithCounts] Error fetching classes:', error);
 		throw new Error(`Failed to fetch teacher classes: ${error.message}`);
 	}
-
-	console.log('[getTeacherClassesWithCounts] Fetched', data?.length || 0, 'classes');
 
 	return (data || []) as ClassWithData[];
 }

@@ -25,12 +25,10 @@ import { validateStudentExerciseFilters } from '$lib/server/validation';
  * @returns Array of exercises with assignment and completion data
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
-
-	const { user } = session;
 
 	// Validate and parse filters from query params
 	const queryValidation = validateStudentExerciseFilters(url.searchParams);

@@ -41,10 +41,9 @@ function redactEmail(email: string | null): string {
 	return local.substring(0, 3) + '***@' + domain;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession }, parent }) => {
-	// supabase for future queries
-	const { session, user } = await safeGetSession();
+	// Get verified user for authentication
+	const { user } = await safeGetSession();
 
 	if (!user) {
 		throw error(401, 'Unauthorized');
@@ -55,6 +54,13 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	if (profile.role !== 'admin') {
 		throw error(403, 'Admin access required');
 	}
+
+	// For this debug page only, we need to inspect the session object
+	// This is the only place in the app where we call getSession() directly
+	// because the purpose of this page is to debug session information
+	const {
+		data: { session }
+	} = await supabase.auth.getSession();
 
 	// Build session metadata (with redacted tokens)
 	const sessionMetadata = session

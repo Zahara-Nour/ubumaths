@@ -10,8 +10,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const { id } = params;
 
 	// Check authentication
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw redirect(302, '/auth');
 	}
 
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const { data: profile } = await locals.supabase
 		.from('profiles')
 		.select('role')
-		.eq('id', session.user.id)
+		.eq('id', user.id)
 		.single();
 
 	if (!profile || profile.role !== 'admin') {
@@ -45,8 +45,8 @@ export const actions: Actions = {
 	resolve: async ({ params, request, locals }) => {
 		const { id } = params;
 
-		const session = await locals.safeGetSession();
-		if (!session) {
+		const { user } = await locals.safeGetSession();
+		if (!user) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -54,7 +54,7 @@ export const actions: Actions = {
 		const { data: profile } = await locals.supabase
 			.from('profiles')
 			.select('role')
-			.eq('id', session.user.id)
+			.eq('id', user.id)
 			.single();
 
 		if (!profile || profile.role !== 'admin') {
@@ -64,7 +64,7 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const notes = formData.get('notes') as string;
 
-		const result = await resolveError(locals.supabase, id, session.user.id, notes);
+		const result = await resolveError(locals.supabase, id, user.id, notes);
 
 		if (!result.success) {
 			return fail(500, { error: result.error || 'Failed to resolve error' });

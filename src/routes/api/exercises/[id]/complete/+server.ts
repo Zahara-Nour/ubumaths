@@ -18,12 +18,11 @@ import { markExerciseAsComplete, markExerciseAsIncomplete } from '$lib/server/ex
  * @returns Completion record with completed_at set
  */
 export const POST: RequestHandler = async ({ params, locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	const { user } = session;
 	const exerciseId = params.id;
 
 	// Mark exercise as complete
@@ -50,12 +49,11 @@ export const POST: RequestHandler = async ({ params, locals }) => {
  * @returns Completion record with completed_at=null
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	const { user } = session;
 	const exerciseId = params.id;
 
 	// Unmark exercise as complete

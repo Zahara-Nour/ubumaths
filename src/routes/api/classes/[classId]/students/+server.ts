@@ -83,8 +83,6 @@ export const GET: RequestHandler = async ({
 		const isTestMode =
 			profile.role === 'teacher' ? await getTeacherTestMode(user.id, supabase) : false;
 
-		console.log('[API /api/classes/students] Test mode:', isTestMode, 'for user:', user.id);
-
 		// Build select query based on 'full' parameter
 		// IMPORTANT: Always include is_test field for filtering
 		const selectFields = full
@@ -125,8 +123,6 @@ export const GET: RequestHandler = async ({
 			console.error('[API /api/classes/students] Query error:', membersError);
 			throw error(500, 'Failed to fetch class members');
 		}
-
-		console.log('[API /api/classes/students] Fetched', members?.length || 0, 'students');
 
 		// Transform members to students array
 		const students = (members || [])

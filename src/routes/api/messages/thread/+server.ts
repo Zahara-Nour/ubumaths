@@ -7,9 +7,9 @@ import type { RequestHandler } from './$types';
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const supabase = locals.supabase;
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
@@ -23,7 +23,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// Get thread messages
 		const { data: messages, error: fetchError } = await supabase.rpc('get_message_thread', {
 			p_thread_root_id: rootId,
-			p_user_id: session.user.id
+			p_user_id: user.id
 		});
 
 		if (fetchError) {

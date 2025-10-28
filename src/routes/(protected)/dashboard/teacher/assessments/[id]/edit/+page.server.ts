@@ -4,8 +4,8 @@ import { getAssessment, updateAssessment } from '$lib/server/assessments';
 import type { UpdateAssessmentData } from '$lib/types/assessment';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw redirect(303, '/auth/signin');
 	}
 
@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const { data: profile } = await locals.supabase
 		.from('profiles')
 		.select('role')
-		.eq('id', session.user.id)
+		.eq('id', user.id)
 		.single();
 
 	if (!profile || profile.role !== 'teacher') {
@@ -31,7 +31,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// Verify ownership
-	if (assessment.created_by !== session.user.id) {
+	if (assessment.created_by !== user.id) {
 		throw error(403, 'Non autorisé');
 	}
 
@@ -47,8 +47,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 export const actions: Actions = {
 	default: async ({ request, params, locals }) => {
-		const session = await locals.safeGetSession();
-		if (!session) {
+		const { user } = await locals.safeGetSession();
+		if (!user) {
 			return { success: false, error: 'Non authentifié' };
 		}
 
@@ -71,12 +71,7 @@ export const actions: Actions = {
 			settings
 		};
 
-		const { error } = await updateAssessment(
-			locals.supabase,
-			params.id,
-			updateData,
-			session.user.id
-		);
+		const { error } = await updateAssessment(locals.supabase, params.id, updateData, user.id);
 
 		if (error) {
 			console.error('Failed to update assessment:', error);

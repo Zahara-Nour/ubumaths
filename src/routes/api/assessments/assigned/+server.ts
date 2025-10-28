@@ -12,12 +12,10 @@ import { getStudentAssignments } from '$lib/server/assessments';
  * Get all assessments assigned to current student
  */
 export const GET: RequestHandler = async ({ locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
-
-	const { user } = session;
 
 	// Only students can access this
 	const { data: profile } = await locals.supabase

@@ -4,8 +4,8 @@ import { getAssessment, getAssessmentAssignments, assignAssessment } from '$lib/
 import { getTeacherClassesWithCounts } from '$lib/server/students';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw redirect(303, '/auth/signin');
 	}
 
@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const { data: profile } = await locals.supabase
 		.from('profiles')
 		.select('role')
-		.eq('id', session.user.id)
+		.eq('id', user.id)
 		.single();
 
 	if (!profile || profile.role !== 'teacher') {
@@ -31,7 +31,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// Verify ownership
-	if (assessment.created_by !== session.user.id) {
+	if (assessment.created_by !== user.id) {
 		throw error(403, 'Non autorisé');
 	}
 
@@ -42,7 +42,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	// Use unified helper to get classes with student counts
 	// Automatically handles test mode filtering
-	const classesWithData = await getTeacherClassesWithCounts(session.user.id, locals.supabase);
+	const classesWithData = await getTeacherClassesWithCounts(user.id, locals.supabase);
 
 	// Get existing assignments
 	const { data: existingAssignments } = await getAssessmentAssignments(locals.supabase, params.id);
@@ -65,8 +65,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 export const actions: Actions = {
 	assign: async ({ request, params, locals }) => {
-		const session = await locals.safeGetSession();
-		if (!session) {
+		const { user } = await locals.safeGetSession();
+		if (!user) {
 			return { success: false, error: 'Non authentifié' };
 		}
 
@@ -85,7 +85,7 @@ export const actions: Actions = {
 				assessment_id: params.id,
 				class_ids: classIds
 			},
-			session.user.id
+			user.id
 		);
 
 		if (error) {
@@ -97,8 +97,8 @@ export const actions: Actions = {
 	},
 
 	unassign: async ({ request, params: _params, locals }) => {
-		const session = await locals.safeGetSession();
-		if (!session) {
+		const { user } = await locals.safeGetSession();
+		if (!user) {
 			return { success: false, error: 'Non authentifié' };
 		}
 

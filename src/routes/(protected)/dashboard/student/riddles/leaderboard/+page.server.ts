@@ -5,8 +5,8 @@ import { redirect } from '@sveltejs/kit';
  * Load global riddle leaderboard
  */
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
-	const { session } = await safeGetSession();
-	if (!session) {
+	const { user } = await safeGetSession();
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
@@ -48,14 +48,12 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	}));
 
 	// Find current user rank
-	const currentUserEntry = enrichedLeaderboard.find(
-		(entry) => entry.student_id === session.user.id
-	);
+	const currentUserEntry = enrichedLeaderboard.find((entry) => entry.student_id === user.id);
 	const currentUserRank = currentUserEntry ? currentUserEntry.rank : null;
 
 	return {
 		leaderboard: enrichedLeaderboard,
-		currentUserId: session.user.id,
+		currentUserId: user.id,
 		currentUserRank
 	};
 };

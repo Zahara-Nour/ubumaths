@@ -7,8 +7,8 @@ import { validateFormData, riddleFormSchema } from '$lib/server/validation';
  * Load page (no data needed for new riddle)
  */
 export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
-	const { session } = await safeGetSession();
-	if (!session) {
+	const { user } = await safeGetSession();
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
@@ -20,8 +20,8 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
  */
 export const actions: Actions = {
 	default: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { session } = await safeGetSession();
-		if (!session) {
+		const { user } = await safeGetSession();
+		if (!user) {
 			return fail(401, { message: 'Non authentifié' });
 		}
 
@@ -56,7 +56,7 @@ export const actions: Actions = {
 			image_url: validation.data.image_url || undefined,
 			answer,
 			status: validation.data.status,
-			created_by: session.user.id
+			created_by: user.id
 		};
 
 		// Insert riddle

@@ -24,12 +24,10 @@ type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
  * Teachers only
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
-
-	const { user } = session;
 
 	// Only teachers can access exercises
 	const { data: profile } = await locals.supabase
@@ -108,12 +106,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
  * Teachers only
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
-
-	const { user } = session;
 
 	// Only teachers can create exercises
 	const { data: profile } = await locals.supabase

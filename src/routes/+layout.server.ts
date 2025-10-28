@@ -24,8 +24,8 @@ import type { LayoutServerLoad } from './$types';
 import { getUserProfile } from '$lib/server/auth';
 
 export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase }, cookies }) => {
-	// Get verified session and user from the server hook
-	const { session, user } = await safeGetSession();
+	// Get verified user from the server hook
+	const { user } = await safeGetSession();
 
 	// Fetch profile for authenticated users (null for anonymous)
 	let profile = null;
@@ -34,8 +34,6 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
 	}
 
 	return {
-		// Verified session (contains auth tokens)
-		session,
 		// Verified user object (authenticated via getUser())
 		user,
 		// User profile (includes role) - cached at root level

@@ -48,32 +48,28 @@ export const handle: Handle = async ({ event, resolve }) => {
 	});
 
 	/**
-	 * safeGetSession - Securely retrieve and verify the user session
+	 * safeGetSession - Securely retrieve and verify the user
 	 *
 	 * SECURITY PATTERN (recommended by Supabase):
-	 * 1. Call getUser() to verify the user with Supabase's auth server
-	 *    - This makes a network request to validate the session
-	 *    - Prevents using tampered/fake sessions from cookies
-	 * 2. Only if user is verified, get the session tokens
-	 *    - The session contains access tokens needed for API calls
-	 *    - Safe to use because we've verified authenticity first
+	 * - Call getUser() to verify the user with Supabase's auth server
+	 * - This makes a network request to validate the session
+	 * - Prevents using tampered/fake sessions from cookies
+	 * - Returns only the verified user object
 	 *
-	 * WHY THE WARNING APPEARS:
-	 * Supabase shows a console warning when getSession() is called because
-	 * it reads directly from cookies without server verification. However,
-	 * this is SAFE in our case because:
-	 * - We verify the user FIRST with getUser()
-	 * - We only use the session AFTER verification
-	 * - This follows Supabase's recommended security pattern
+	 * WHY WE DON'T CALL getSession():
+	 * - getSession() reads directly from cookies and shows security warnings
+	 * - The session tokens are managed automatically by the Supabase client via cookies
+	 * - We only need the verified user object for authorization checks
+	 * - The client-side Supabase client handles session management automatically
 	 *
 	 * PERFORMANCE OPTIMIZATION:
 	 * - Added 5-second timeout to prevent hanging on slow Supabase connections
-	 * - Falls back to no session if timeout is reached
+	 * - Falls back to no user if timeout is reached
 	 *
-	 * @returns {Object} { session, user } - Both verified and safe to use
+	 * @returns {Object} { user } - Verified user object (or null if not authenticated)
 	 */
 	event.locals.safeGetSession = async () => {
-		logger.trace('Checking and verifying session...');
+		logger.trace('Verifying user with Supabase auth server...');
 
 		// Helper to add timeout to promises
 		const withTimeout = <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
@@ -86,8 +82,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 		};
 
 		try {
-			// STEP 1: Verify the user with Supabase's auth server (with 5s timeout)
-			// This is the critical security step - never skip this!
+			// Verify the user with Supabase's auth server (with 5s timeout)
+			// This is the ONLY security check needed - never skip this!
 			const {
 				data: { user },
 				error
@@ -95,24 +91,16 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 			// If verification fails, return null (user not authenticated)
 			if (error || !user) {
-				logger.info('No valid session found');
-				return { session: null, user: null };
+				// No logging needed - unauthenticated state is normal and expected
+				return { user: null };
 			}
 
-			logger.info('User verified:', user.email);
-
-			// STEP 2: Get the session tokens (safe because user is verified, with 3s timeout)
-			// The session contains access/refresh tokens needed for authenticated requests
-			// Supabase will warn about this, but it's safe because we verified above
-			const {
-				data: { session }
-			} = await withTimeout(event.locals.supabase.auth.getSession(), 3000);
-
-			return { session, user };
+			// User verified successfully (no need to log on every request)
+			return { user };
 		} catch (error) {
-			// Timeout or other error - log and return no session
+			// Timeout or other error - log and return no user
 			logger.error('Error in safeGetSession:', error);
-			return { session: null, user: null };
+			return { user: null };
 		}
 	};
 

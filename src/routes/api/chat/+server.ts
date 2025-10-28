@@ -34,7 +34,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// ====================================================================
 		// SECURITY: Authentication Check
 		// ====================================================================
-		const session = await locals.safeGetSession();
+		const { user } = await locals.safeGetSession();
 		if (!session?.user) {
 			throw error(401, { message: 'Authentication required' });
 		}
@@ -42,7 +42,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// ====================================================================
 		// SECURITY: Rate Limiting (5 requests per 15 minutes per user)
 		// ====================================================================
-		const rateLimitResult = await checkChatbotRateLimit(session.user.id);
+		const rateLimitResult = await checkChatbotRateLimit(user.id);
 
 		if (!rateLimitResult.allowed) {
 			throw error(429, {
@@ -147,7 +147,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		Promise.resolve().then(async () => {
 			try {
 				await locals.supabase.from('ai_chat_usage').insert({
-					user_id: session.user.id,
+					user_id: user.id,
 					model: model,
 					message_count: messages.length,
 					tokens_used: data.usage?.total_tokens || 0,

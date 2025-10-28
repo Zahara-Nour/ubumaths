@@ -15,12 +15,10 @@ import { uuidSchema } from '$lib/server/validation/common';
  * Assign assessment to classes and/or students
  */
 export const POST: RequestHandler = async ({ locals, params, request }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
-
-	const { user } = session;
 
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);

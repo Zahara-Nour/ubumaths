@@ -8,9 +8,9 @@ import { invalidateCache, CACHE_KEYS } from '$lib/server/cache';
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const supabase = locals.supabase;
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
@@ -20,7 +20,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		// Get message details
 		const { data: messages, error: fetchError } = await supabase.rpc('get_message_details', {
 			p_message_id: messageId,
-			p_user_id: session.user.id
+			p_user_id: user.id
 		});
 
 		if (fetchError) {
@@ -41,12 +41,12 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		// Mark as read if recipient
 		const { data: wasMarked } = await supabase.rpc('mark_message_as_read', {
 			p_message_id: messageId,
-			p_user_id: session.user.id
+			p_user_id: user.id
 		});
 
 		// Invalidate activity cache if message was newly marked as read (fire-and-forget)
 		if (wasMarked) {
-			invalidateCache(CACHE_KEYS.ACTIVITY_COUNTS(session.user.id)).catch((err) => {
+			invalidateCache(CACHE_KEYS.ACTIVITY_COUNTS(user.id)).catch((err) => {
 				console.error(
 					'[Cache] Failed to invalidate activity cache after marking message read:',
 					err
@@ -70,9 +70,9 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  */
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	const supabase = locals.supabase;
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
@@ -93,7 +93,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 				const { error: statusError } = await supabase.rpc('update_message_status', {
 					p_message_id: messageId,
-					p_user_id: session.user.id,
+					p_user_id: user.id,
 					p_status: status
 				});
 
@@ -110,7 +110,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 					.from('message_inbox')
 					.select('read_at')
 					.eq('message_id', messageId)
-					.eq('recipient_id', session.user.id)
+					.eq('recipient_id', user.id)
 					.single();
 
 				const newReadValue = inboxEntry?.read_at ? null : new Date().toISOString();
@@ -119,7 +119,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 					.from('message_inbox')
 					.update({ read_at: newReadValue })
 					.eq('message_id', messageId)
-					.eq('recipient_id', session.user.id);
+					.eq('recipient_id', user.id);
 
 				if (readError) {
 					console.error('Error toggling read:', readError);
@@ -127,7 +127,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				}
 
 				// Invalidate activity cache when toggling read status (fire-and-forget)
-				invalidateCache(CACHE_KEYS.ACTIVITY_COUNTS(session.user.id)).catch((err) => {
+				invalidateCache(CACHE_KEYS.ACTIVITY_COUNTS(user.id)).catch((err) => {
 					console.error('[Cache] Failed to invalidate activity cache after toggling read:', err);
 				});
 
@@ -137,7 +137,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			case 'toggleStar': {
 				const { data: newStarValue, error: starError } = await supabase.rpc('toggle_message_star', {
 					p_message_id: messageId,
-					p_user_id: session.user.id
+					p_user_id: user.id
 				});
 
 				if (starError) {
@@ -155,7 +155,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 				const { error: folderError } = await supabase.rpc('move_message_to_folder', {
 					p_message_id: messageId,
-					p_user_id: session.user.id,
+					p_user_id: user.id,
 					p_folder_id: folderId
 				});
 
@@ -186,9 +186,9 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const supabase = locals.supabase;
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
@@ -206,7 +206,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw error(404, 'Message non trouvé');
 		}
 
-		if (message.sender_id === session.user.id) {
+		if (message.sender_id === user.id) {
 			// Sender deleting their sent message
 			const { error: deleteError } = await supabase
 				.from('private_messages')
@@ -223,7 +223,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 				.from('message_inbox')
 				.update({ deleted: true })
 				.eq('message_id', messageId)
-				.eq('recipient_id', session.user.id);
+				.eq('recipient_id', user.id);
 
 			if (deleteError) {
 				console.error('Error deleting inbox entry:', deleteError);

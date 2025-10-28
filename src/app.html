@@ -9,21 +9,7 @@
 		<link rel="preconnect" href="https://umamathsprod.supabase.co" crossorigin />
 		<link rel="dns-prefetch" href="https://umamathsprod.supabase.co" />
 
-		<!-- Mathlive fonts - preload only essential fonts -->
-		<link
-			rel="preload"
-			as="font"
-			type="font/woff2"
-			crossorigin
-			href="%sveltekit.assets%/fonts/KaTeX_Main-Regular.woff2"
-		/>
-		<link
-			rel="preload"
-			as="font"
-			type="font/woff2"
-			crossorigin
-			href="%sveltekit.assets%/fonts/KaTeX_Math-Italic.woff2"
-		/>
+		<!-- Mathlive fonts - loaded on demand via CSS to avoid preload warnings -->
 		<link rel="stylesheet" href="/mathlive-fonts.css" />
 
 		<!-- Pacifico font for game titles -->

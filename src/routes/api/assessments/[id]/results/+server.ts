@@ -18,12 +18,10 @@ import { uuidSchema } from '$lib/server/validation/common';
  * Get all results for an assessment
  */
 export const GET: RequestHandler = async ({ locals, params, url }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
-
-	const { user } = session;
 
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);

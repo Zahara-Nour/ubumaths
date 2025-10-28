@@ -8,9 +8,9 @@ import {
 import type { CreateNotificationData } from '$lib/types/notification';
 
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
-	const { session } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw redirect(303, '/auth/login');
 	}
 
@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	const { data: profile, error: profileError } = await supabase
 		.from('profiles')
 		.select('role')
-		.eq('id', session.user.id)
+		.eq('id', user.id)
 		.single();
 
 	if (profileError || !profile || profile.role !== 'admin') {
@@ -40,7 +40,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.order('lastname');
 
 	// Get admin's created notifications with stats
-	const notificationStats = await getCreatedNotifications(supabase, session.user.id);
+	const notificationStats = await getCreatedNotifications(supabase, user.id);
 
 	return {
 		classes: classes || [],
@@ -51,9 +51,9 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 
 export const actions: Actions = {
 	create: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { session } = await safeGetSession();
+		const { user } = await safeGetSession();
 
-		if (!session) {
+		if (!user) {
 			return fail(401, { error: 'Non authentifié' });
 		}
 
@@ -61,7 +61,7 @@ export const actions: Actions = {
 		const { data: profile } = await supabase
 			.from('profiles')
 			.select('role')
-			.eq('id', session.user.id)
+			.eq('id', user.id)
 			.single();
 
 		if (!profile || profile.role !== 'admin') {
@@ -116,7 +116,7 @@ export const actions: Actions = {
 		// 'all' doesn't need additional data
 
 		// Create notification
-		const result = await createNotification(supabase, notificationData, session.user.id);
+		const result = await createNotification(supabase, notificationData, user.id);
 
 		if (!result.success) {
 			return fail(500, { error: result.error || 'Erreur lors de la création' });
@@ -126,9 +126,9 @@ export const actions: Actions = {
 	},
 
 	delete: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { session } = await safeGetSession();
+		const { user } = await safeGetSession();
 
-		if (!session) {
+		if (!user) {
 			return fail(401, { error: 'Non authentifié' });
 		}
 
@@ -139,7 +139,7 @@ export const actions: Actions = {
 			return fail(400, { error: 'ID de notification manquant' });
 		}
 
-		const result = await deleteNotification(supabase, notificationId, session.user.id);
+		const result = await deleteNotification(supabase, notificationId, user.id);
 
 		if (!result.success) {
 			return fail(500, { error: result.error || 'Erreur lors de la suppression' });

@@ -11,13 +11,13 @@ import { unreadCountResponseSchema } from '$lib/server/validation/notifications'
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 
 export const GET: RequestHandler = async ({ locals: { supabase, safeGetSession } }) => {
-	const { session } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!session) {
+	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
 
-	const count = await getUnreadCount(supabase, session.user.id);
+	const count = await getUnreadCount(supabase, user.id);
 
 	// Validate response
 	const validated = validateJsonResponse(

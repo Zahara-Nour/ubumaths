@@ -48,11 +48,8 @@ export async function getTeacherTestMode(
 		return false; // Default to showing real students on error
 	}
 
-	console.log('[getTeacherTestMode] Profile is_test:', profile?.is_test);
-
 	// Test teachers are always in test mode
 	if (profile.is_test) {
-		console.log('[getTeacherTestMode] Test teacher detected - returning TRUE');
 		return true;
 	}
 
@@ -68,9 +65,7 @@ export async function getTeacherTestMode(
 		return false; // Default to showing real students on error
 	}
 
-	console.log('[getTeacherTestMode] Preference found:', preference);
 	const testMode = preference?.test_mode_enabled ?? false;
-	console.log('[getTeacherTestMode] Returning test mode:', testMode);
 
 	// Return preference value, or false if no preference exists
 	return testMode;
@@ -92,8 +87,6 @@ export async function setTeacherTestMode(
 	enabled: boolean,
 	supabase: SupabaseClient<Database>
 ): Promise<boolean> {
-	console.log('[setTeacherTestMode] Upserting preference:', { userId, enabled });
-
 	// Upsert the preference (insert if doesn't exist, update if it does)
 	const { error } = await supabase.from('user_preferences').upsert(
 		{
@@ -111,6 +104,5 @@ export async function setTeacherTestMode(
 		return false;
 	}
 
-	console.log('[setTeacherTestMode] Preference updated successfully');
 	return true;
 }

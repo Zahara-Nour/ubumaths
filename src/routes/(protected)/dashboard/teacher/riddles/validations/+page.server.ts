@@ -7,13 +7,13 @@ import { getTeacherTestMode } from '$lib/server/test-mode';
  * Load pending manual validations for teacher
  */
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
-	const { session } = await safeGetSession();
-	if (!session) {
+	const { user } = await safeGetSession();
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
 	// Get test mode to filter students
-	const isTestMode = await getTeacherTestMode(session.user.id, supabase);
+	const isTestMode = await getTeacherTestMode(user.id, supabase);
 
 	// Fetch pending validations for teacher's riddles, filtered by test mode
 	const { data: attempts, error: attemptsError } = await supabase
@@ -41,7 +41,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		`
 		)
 		.is('is_correct', null) // Only pending validations
-		.eq('riddles.created_by', session.user.id) // Only teacher's riddles
+		.eq('riddles.created_by', user.id) // Only teacher's riddles
 		.eq('profiles.is_test', isTestMode) // Filter by test mode
 		.order('created_at', { ascending: true });
 

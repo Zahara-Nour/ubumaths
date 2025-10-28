@@ -6,19 +6,19 @@ import { getTeacherTestMode } from '$lib/server/test-mode';
  * Load riddle statistics for teacher
  */
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
-	const { session } = await safeGetSession();
-	if (!session) {
+	const { user } = await safeGetSession();
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
 	// Get test mode to filter students
-	const isTestMode = await getTeacherTestMode(session.user.id, supabase);
+	const isTestMode = await getTeacherTestMode(user.id, supabase);
 
 	// Overview stats
 	const { data: riddles } = await supabase
 		.from('riddles')
 		.select('id, status')
-		.eq('created_by', session.user.id);
+		.eq('created_by', user.id);
 
 	const totalRiddles = riddles?.length || 0;
 	const publishedRiddles = riddles?.filter((r) => r.status === 'published').length || 0;
@@ -34,7 +34,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		`
 		)
 		.is('is_correct', null)
-		.eq('riddles.created_by', session.user.id)
+		.eq('riddles.created_by', user.id)
 		.eq('profiles.is_test', isTestMode);
 
 	const pendingCount = pendingValidations?.length || 0;
@@ -43,7 +43,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	const { data: riddleStats } = await supabase
 		.from('riddle_stats')
 		.select('*')
-		.eq('created_by', session.user.id)
+		.eq('created_by', user.id)
 		.order('total_attempts', { ascending: false });
 
 	// Top students for this teacher's riddles - filtered by test mode
@@ -59,7 +59,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 			student:profiles!riddle_attempts_student_id_fkey(id, firstname, lastname, avatar_url, is_test)
 		`
 		)
-		.eq('riddles.created_by', session.user.id)
+		.eq('riddles.created_by', user.id)
 		.eq('is_correct', true)
 		.eq('profiles.is_test', isTestMode);
 

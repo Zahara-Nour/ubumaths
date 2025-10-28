@@ -17,8 +17,8 @@ import { uuidSchema } from '$lib/server/validation/common';
  * Get assessment by ID
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
@@ -37,7 +37,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	}
 
 	// Check authorization
-	const { user } = session;
+
 	const { data: profile } = await locals.supabase
 		.from('profiles')
 		.select('role')
@@ -74,12 +74,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
  * Update assessment
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
-
-	const { user } = session;
 
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);
@@ -127,12 +125,10 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
  * Archive assessment
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
-
-	const { user } = session;
 
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);

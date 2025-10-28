@@ -62,8 +62,6 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession }, paren
 	// If user is null, requireAuth() throws a redirect to /login
 	requireAuth(user);
 
-	logger.info('User authenticated for protected route:', user!.email);
-
 	// Get profile from parent layout (root +layout.server.ts)
 	// This avoids redundant database queries
 	const parentData = await parent();
@@ -82,8 +80,6 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession }, paren
 			'Your account is not fully set up. Please contact an administrator to complete your profile setup.'
 		);
 	}
-
-	logger.info('Profile loaded for protected route:', profile.role);
 
 	// Return user and profile to child routes
 	// All child routes in (protected)/ can access this via parent()

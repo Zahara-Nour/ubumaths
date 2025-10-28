@@ -10,9 +10,9 @@ import type { PageServerLoad } from './$types';
 import { getTeacherTestMode } from '$lib/server/test-mode';
 
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
-	const { session, user } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!user || !session) {
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 

@@ -13,12 +13,10 @@ import { uuidSchema } from '$lib/server/validation/common';
  * Validate if student can attempt an assessment
  */
 export const POST: RequestHandler = async ({ locals, params }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
-
-	const { user } = session;
 
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);

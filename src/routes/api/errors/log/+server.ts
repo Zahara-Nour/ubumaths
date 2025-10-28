@@ -21,10 +21,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const errorData = validation.data as LogErrorData;
 
 		// Get user context if session exists
-		const session = await locals.safeGetSession();
+		const { user } = await locals.safeGetSession();
 		let userContext = {};
 		if (session?.user?.id) {
-			userContext = await getUserContext(locals.supabase, session.user.id);
+			userContext = await getUserContext(locals.supabase, user.id);
 		}
 
 		// Merge error data with user context

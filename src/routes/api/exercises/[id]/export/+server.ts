@@ -18,8 +18,8 @@ import {
 import { validateExportSingleExerciseQuery } from '$lib/server/validation';
 
 export const GET: RequestHandler = async ({ locals, params, url }) => {
-	const { session } = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
@@ -27,7 +27,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const { data: profile } = await locals.supabase
 		.from('profiles')
 		.select('role')
-		.eq('id', session.user.id)
+		.eq('id', user.id)
 		.single();
 
 	if (!profile || profile.role !== 'teacher') {
@@ -41,10 +41,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	}
 
 	// Verify user owns the exercise or it's public
-	if (
-		result.data.created_by !== session.user.id &&
-		!(result.data as { is_public?: boolean }).is_public
-	) {
+	if (result.data.created_by !== user.id && !(result.data as { is_public?: boolean }).is_public) {
 		throw error(403, 'Forbidden - Cannot export this exercise');
 	}
 

@@ -36,7 +36,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const { data: testSession, error: sessionError } = await supabase
 			.from('test_sessions')
 			.insert({
-				user_id: session.user.id,
+				user_id: user.id,
 				mode: result.mode,
 				categories: categories,
 				score: result.score,

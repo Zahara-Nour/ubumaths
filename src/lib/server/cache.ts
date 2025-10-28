@@ -301,6 +301,7 @@ export async function checkRateLimit(
  * Log cache metrics in development mode
  *
  * Outputs structured JSON logs for cache operations
+ * Control with ENABLE_CACHE_LOGS=true in .env (default: false)
  *
  * @param operation - Type of cache operation
  * @param key - Cache key (abbreviated to namespace for privacy)
@@ -311,7 +312,9 @@ export function logCacheMetrics(
 	key: string,
 	duration?: number
 ) {
-	if (!dev) return;
+	// Only log if explicitly enabled via environment variable
+	// Set ENABLE_CACHE_LOGS=true in .env to see cache metrics
+	if (!dev || process.env.ENABLE_CACHE_LOGS !== 'true') return;
 
 	console.log(
 		JSON.stringify({

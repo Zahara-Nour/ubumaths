@@ -5,8 +5,8 @@ import { redirect } from '@sveltejs/kit';
  * Load archive of past riddles of the day
  */
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
-	const { session } = await safeGetSession();
-	if (!session) {
+	const { user } = await safeGetSession();
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
@@ -33,7 +33,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	const { data: attempts } = await supabase
 		.from('riddle_attempts')
 		.select('riddle_id, is_correct, attempt_number, gidouilles_awarded')
-		.eq('student_id', session.user.id)
+		.eq('student_id', user.id)
 		.in('riddle_id', riddleIds);
 
 	// Create map of riddle_id to attempt

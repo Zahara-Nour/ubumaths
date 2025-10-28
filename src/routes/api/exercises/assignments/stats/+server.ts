@@ -18,12 +18,10 @@ import { getAssignmentStats } from '$lib/server/exercise-assignments';
  * @returns AssignmentStats object
  */
 export const GET: RequestHandler = async ({ locals }) => {
-	const session = await locals.safeGetSession();
-	if (!session) {
+	const { user } = await locals.safeGetSession();
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
-
-	const { user } = session;
 
 	// Check if user is a teacher
 	const { data: profile } = await locals.supabase

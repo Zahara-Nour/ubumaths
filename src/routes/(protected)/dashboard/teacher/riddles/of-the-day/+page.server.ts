@@ -5,8 +5,8 @@ import { redirect, fail } from '@sveltejs/kit';
  * Load riddle of the day management data
  */
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
-	const { session } = await safeGetSession();
-	if (!session) {
+	const { user } = await safeGetSession();
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
@@ -55,8 +55,8 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
  */
 export const actions: Actions = {
 	setRiddle: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { session } = await safeGetSession();
-		if (!session) {
+		const { user } = await safeGetSession();
+		if (!user) {
 			return fail(401, { message: 'Non authentifié' });
 		}
 
@@ -95,8 +95,8 @@ export const actions: Actions = {
 	},
 
 	removeRiddle: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { session } = await safeGetSession();
-		if (!session) {
+		const { user } = await safeGetSession();
+		if (!user) {
 			return fail(401, { message: 'Non authentifié' });
 		}
 

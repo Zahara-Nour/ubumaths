@@ -22,9 +22,9 @@ import { updateCardSchema, uuidParamSchema } from '$lib/server/validation/srs';
  * @returns Card
  */
 export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetSession } }) => {
-	const { session, user } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!user || !session) {
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
@@ -86,9 +86,9 @@ export const PUT: RequestHandler = async ({
 	request,
 	locals: { supabase, safeGetSession }
 }) => {
-	const { session, user } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!user || !session) {
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
@@ -194,9 +194,9 @@ export const PUT: RequestHandler = async ({
  * @returns Success message
  */
 export const DELETE: RequestHandler = async ({ params, locals: { supabase, safeGetSession } }) => {
-	const { session, user } = await safeGetSession();
+	const { user } = await safeGetSession();
 
-	if (!user || !session) {
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
