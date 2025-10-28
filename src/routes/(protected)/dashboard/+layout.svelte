@@ -65,6 +65,7 @@
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { notificationStore } from '$lib/stores/notifications.svelte';
+	import { activityStore } from '$lib/stores/activity.svelte';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import NotificationBanner from '$lib/components/notifications/NotificationBanner.svelte';
@@ -194,12 +195,18 @@
 		return '';
 	}
 
-	// Start notification polling when dashboard loads
+	// Start unified activity polling when dashboard loads
+	// This polls both notifications AND messages in a single request
 	$effect(() => {
-		notificationStore.startPolling(30000); // Poll every 30 seconds
+		// Fetch initial notifications details (full data for banner/dropdown)
+		notificationStore.fetchUnread();
+
+		// Start unified polling for counts (notifications + messages)
+		// Uses default 30-second interval
+		activityStore.startPolling();
 
 		return () => {
-			notificationStore.stopPolling();
+			activityStore.stopPolling();
 		};
 	});
 </script>

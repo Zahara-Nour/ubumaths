@@ -3,23 +3,11 @@
 	import { privateMessages } from '$lib/stores/privateMessages.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Inbox, Send, PencilLine, Archive, Trash2 } from 'lucide-svelte';
-	import { onMount } from 'svelte';
 
 	const { children } = $props();
 
-	// Load unread count on mount and set up polling
-	onMount(() => {
-		privateMessages.loadUnreadCount();
-
-		// Poll every 30 seconds for new messages
-		const interval = setInterval(() => {
-			privateMessages.loadUnreadCount();
-		}, 30000);
-
-		return () => {
-			clearInterval(interval);
-		};
-	});
+	// Note: Unread count polling is now handled by the unified activityStore
+	// in the dashboard layout to reduce database load
 
 	// Navigation items
 	const navItems = [

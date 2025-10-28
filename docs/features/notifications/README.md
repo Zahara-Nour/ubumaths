@@ -123,19 +123,41 @@ Route : `/dashboard/notifications`
 
 ### 4. Polling Automatique
 
-Le store polls automatiquement toutes les 30 secondes pour vérifier les nouvelles notifications.
+**🆕 2025-10-28** : Système de polling unifié pour optimiser les performances.
 
-**Implémentation**:
+Le système utilise désormais un **polling unifié** qui combine les notifications et les messages en une seule requête, réduisant l'overhead de 50%.
+
+**Architecture**:
 
 ```typescript
-// Dans dashboard/+layout.svelte
+// Polling central dans dashboard/+layout.svelte
+import { activityStore } from '$lib/stores/activity.svelte';
+
 $effect(() => {
-	notificationStore.startPolling(30000);
+	// Démarre le polling unifié (notifications + messages)
+	activityStore.startPolling(30000);
+
 	return () => {
-		notificationStore.stopPolling();
+		activityStore.stopPolling();
 	};
 });
 ```
+
+**Avantages**:
+
+- ✅ **50% moins de requêtes HTTP** (1 au lieu de 2 toutes les 30s)
+- ✅ **Exécution parallèle** avec `Promise.all()` côté serveur
+- ✅ **Un seul endpoint** : `/api/activity/unread-counts`
+- ✅ **Rétrocompatible** : `notificationStore.unreadCount` fonctionne toujours
+
+**Comment ça marche**:
+
+1. `activityStore` interroge `/api/activity/unread-counts` toutes les 30s
+2. L'endpoint retourne `{ notifications: 5, messages: 3 }`
+3. `activityStore` met à jour `notificationStore.unreadCount` et `privateMessages.unreadCount`
+4. Les composants lisent simplement leurs stores respectifs
+
+**Pour en savoir plus** : [Polling Patterns Guide](../../development/polling-patterns.md)
 
 ---
 

@@ -30,6 +30,10 @@ Stratégie de linting, lint-staged, Husky, ESLint cache, workflow automatisé.
 
 Patterns de type safety pour interactions avec Supabase, assertions d'enum, typage des mocks, null safety.
 
+### [Polling Patterns](polling-patterns.md) 🆕 2025-10-28
+
+Guide complet pour implémenter le polling unifié, optimiser les requêtes, et gérer les mises à jour d'activité en temps réel.
+
 ### [Migration Svelte 5](svelte5-migration.md)
 
 Guide de migration vers Svelte 5, runes, deprecations résolues.

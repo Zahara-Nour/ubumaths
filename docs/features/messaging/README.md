@@ -39,6 +39,31 @@ Rich text editor → Pièce jointe (optionnelle) →
 Envoi → Notification élève → Réponse → Thread
 ```
 
+### Polling des Messages Non Lus
+
+**🆕 2025-10-28** : Système de polling unifié pour optimiser les performances.
+
+Le compteur de messages non lus est maintenant géré par le **polling unifié** (`activityStore`), qui combine les notifications et les messages en une seule requête HTTP.
+
+**Avantages**:
+
+- ✅ **50% moins de requêtes** (partagé avec les notifications)
+- ✅ **Exécution parallèle** des requêtes base de données
+- ✅ **Rétrocompatible** : `privateMessages.unreadCount` fonctionne toujours
+
+**Architecture technique**:
+
+```typescript
+// Le polling démarre dans dashboard/+layout.svelte
+activityStore.startPolling(30000); // Toutes les 30 secondes
+
+// activityStore appelle /api/activity/unread-counts
+// → Retourne { notifications: 5, messages: 3 }
+// → Met à jour privateMessages.unreadCount automatiquement
+```
+
+**Pour développeurs** : Voir [Polling Patterns Guide](../../development/polling-patterns.md) pour plus de détails.
+
 ---
 
 ## 📚 Documentation

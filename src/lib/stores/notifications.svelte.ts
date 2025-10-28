@@ -2,7 +2,7 @@
  * Notification Store
  *
  * Client-side store for managing notification state.
- * Handles polling for unread notifications and provides methods to mark as read.
+ * Note: Polling is now handled by the unified activityStore to reduce database load
  */
 
 import type { NotificationWithDetails } from '$lib/types/notification';
@@ -16,10 +16,6 @@ class NotificationStore {
 	notifications = $state<NotificationWithDetails[]>([]);
 	isLoading = $state(false);
 	error = $state<string | null>(null);
-
-	// Polling interval reference
-	private pollInterval: ReturnType<typeof setInterval> | null = null;
-	private pollIntervalMs = 30000; // 30 seconds
 
 	/**
 	 * Fetch unread notifications from API
@@ -127,43 +123,9 @@ class NotificationStore {
 	}
 
 	/**
-	 * Start polling for new notifications
-	 *
-	 * @param intervalMs - Polling interval in milliseconds (default: 30000)
-	 */
-	startPolling(intervalMs = 30000): void {
-		// Don't start if already polling
-		if (this.pollInterval !== null) {
-			return;
-		}
-
-		this.pollIntervalMs = intervalMs;
-
-		// Initial fetch
-		this.fetchUnread();
-
-		// Start polling
-		this.pollInterval = setInterval(() => {
-			// Only fetch count during polling to reduce load
-			this.fetchUnreadCount();
-		}, this.pollIntervalMs);
-	}
-
-	/**
-	 * Stop polling
-	 */
-	stopPolling(): void {
-		if (this.pollInterval !== null) {
-			clearInterval(this.pollInterval);
-			this.pollInterval = null;
-		}
-	}
-
-	/**
 	 * Reset store state
 	 */
 	reset(): void {
-		this.stopPolling();
 		this.notifications = [];
 		this.unreadCount = 0;
 		this.isLoading = false;

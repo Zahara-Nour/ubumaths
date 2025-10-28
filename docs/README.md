@@ -180,6 +180,7 @@ Système d'authentification avec Google OAuth + email/password.
 | [Gestion de versions](development/version-management.md) | Releases et versioning        |
 | [Migrations DB](development/database-migrations.md)      | Workflow migrations Supabase  |
 | [Style de code](development/code-style.md)               | Standards et conventions      |
+| [Polling Patterns](development/polling-patterns.md) 🆕   | Guide polling unifié          |
 | [Migration Svelte 5](development/svelte5-migration.md)   | Guide migration runes         |
 | [MySelect Migration](development/myselect-migration.md)  | Guide migration vers MySelect |
 

@@ -454,5 +454,152 @@ Total: 5 queries
 
 ---
 
-**Last Updated:** 2025-10-18
+## Phase 4 Optimizations (2025-10-28)
+
+### 11. Unified Activity Polling
+
+**Problem:** The dashboard was making 2 separate database queries every 30 seconds to poll for activity updates:
+
+- `/api/notifications/unread-count` - Notification count
+- Private messages unread count (via separate mechanism)
+
+**Impact:** Doubled the database polling overhead, resulting in unnecessary load on both the database and the client.
+
+**Solution:** Created a unified polling system with a single API endpoint that combines both queries.
+
+**New Architecture:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Dashboard Layout                          │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │         activityStore (Central Polling)            │    │
+│  │  - Polls /api/activity/unread-counts every 30s     │    │
+│  │  - Updates both notification & message stores      │    │
+│  └──────────────┬─────────────────────────────────────┘    │
+│                 │                                            │
+│                 ├───────────────┬────────────────────────────┤
+│                 ▼               ▼                            │
+│  ┌─────────────────────┐  ┌──────────────────────┐         │
+│  │ notificationStore   │  │ privateMessages      │         │
+│  │ - Receives updates  │  │ - Receives updates   │         │
+│  │ - No internal poll  │  │ - No internal poll   │         │
+│  └─────────────────────┘  └──────────────────────┘         │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Files Created:**
+
+- [src/routes/api/activity/unread-counts/+server.ts](/src/routes/api/activity/unread-counts/+server.ts) - Unified API endpoint
+- [src/lib/stores/activity.svelte.ts](/src/lib/stores/activity.svelte.ts) - Central polling manager
+- [src/routes/api/activity/unread-counts.test.ts](/src/routes/api/activity/unread-counts.test.ts) - Test suite (8/8 passing)
+
+**Files Modified:**
+
+- [src/lib/stores/notifications.svelte.ts](/src/lib/stores/notifications.svelte.ts) - Removed internal polling
+- [src/routes/(protected)/messages/+layout.svelte](</src/routes/(protected)/messages/+layout.svelte>) - Removed polling logic
+- [src/routes/(protected)/dashboard/+layout.svelte](</src/routes/(protected)/dashboard/+layout.svelte>) - Uses unified activity polling
+
+**API Endpoint Implementation:**
+
+```typescript
+// GET /api/activity/unread-counts
+// Returns: { notifications: number, messages: number }
+
+// Uses Promise.all() for parallel execution
+const [notificationsCount, messagesResult] = await Promise.all([
+	getUnreadCount(supabase, session.user.id),
+	supabase.rpc('get_private_messages_unread_count', { p_user_id: session.user.id })
+]);
+```
+
+**Unified Store Pattern:**
+
+```typescript
+// In src/lib/stores/activity.svelte.ts
+class ActivityStore {
+	async fetchUnreadCounts(): Promise<void> {
+		const response = await fetch('/api/activity/unread-counts');
+		const data = await response.json();
+
+		// Update individual stores
+		notificationStore.unreadCount = data.notifications || 0;
+		privateMessages.unreadCount = data.messages || 0;
+	}
+
+	startPolling(intervalMs = 30000): void {
+		this.fetchUnreadCounts(); // Initial fetch
+		this.pollInterval = setInterval(() => {
+			this.fetchUnreadCounts();
+		}, intervalMs);
+	}
+}
+```
+
+**Dashboard Integration:**
+
+```svelte
+<!-- In dashboard/+layout.svelte -->
+<script>
+	import { activityStore } from '$lib/stores/activity.svelte';
+
+	$effect(() => {
+		// Start unified polling on mount
+		activityStore.startPolling(30000);
+
+		// Cleanup on unmount
+		return () => {
+			activityStore.stopPolling();
+		};
+	});
+</script>
+```
+
+**Performance Impact:**
+
+| Metric                  | Before          | After           | Improvement         |
+| ----------------------- | --------------- | --------------- | ------------------- |
+| Polling requests (30s)  | 2 requests      | 1 request       | **50% reduction**   |
+| Database queries (30s)  | 2 queries       | 2 queries\*     | Same (parallelized) |
+| Client network overhead | 2 HTTP requests | 1 HTTP request  | **50% reduction**   |
+| Server endpoint calls   | 2 endpoints     | 1 endpoint      | **50% reduction**   |
+| Response size           | ~50 bytes total | ~40 bytes total | Slightly smaller    |
+
+\*Note: The 2 database queries still execute but are now combined in a single API endpoint using `Promise.all()` for parallel execution, reducing overall latency.
+
+**Testing:**
+
+Comprehensive test suite covering:
+
+- ✅ Authenticated user receives both counts
+- ✅ Zero counts handled gracefully
+- ✅ Null RPC response handled
+- ✅ 401 error for unauthenticated users
+- ✅ RPC error handling
+- ✅ Notification service error handling
+- ✅ Parallel execution verification (Promise.all)
+- ✅ Large count handling (999+ notifications)
+
+**Backward Compatibility:**
+
+- Individual stores (`notificationStore`, `privateMessages`) maintain their public APIs
+- Components can still access counts via their respective stores
+- No user-facing changes required
+- Old polling mechanisms cleanly removed (no duplicate polling)
+
+**Future Improvements:**
+
+This pattern can be extended to include additional activity counters:
+
+- Friend requests pending
+- Assessment results ready
+- Rewards/badges earned
+- Any other real-time counters
+
+Simply add to the unified endpoint and update the store's `fetchUnreadCounts()` method.
+
+---
+
+**Last Updated:** 2025-10-28
 **Maintained by:** Development Team
