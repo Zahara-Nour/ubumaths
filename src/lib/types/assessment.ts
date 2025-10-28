@@ -61,6 +61,7 @@ export interface DbAssessment {
 	grade: string;
 	description: string | null;
 	created_by: string;
+	academic_period_id: string | null;
 	categories: CartItem[]; // Stored as JSONB
 	settings: AssessmentSettings; // Stored as JSONB
 	status: AssessmentStatus;

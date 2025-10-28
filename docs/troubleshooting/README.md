@@ -9,12 +9,27 @@
 
 ## Table of Contents
 
-1. [Environment & Configuration](#environment--configuration)
-2. [Redis Cache Issues](#redis-cache-issues)
-3. [Database Issues](#database-issues)
-4. [Build & Deployment](#build--deployment)
-5. [Testing Issues](#testing-issues)
-6. [Performance Issues](#performance-issues)
+1. [Recent Bug Fixes](#recent-bug-fixes) 🆕
+2. [Environment & Configuration](#environment--configuration)
+3. [Redis Cache Issues](#redis-cache-issues)
+4. [Database Issues](#database-issues)
+5. [Build & Deployment](#build--deployment)
+6. [Testing Issues](#testing-issues)
+7. [Performance Issues](#performance-issues)
+
+---
+
+## Recent Bug Fixes
+
+> 🆕 2025-10-29
+
+For recently fixed bugs and their solutions, see [Bug Fixes - 2025-10-29](./bug-fixes-2025-10-29.md).
+
+**Quick Links**:
+
+- **Activity Polling 401 Errors**: Fixed race condition during dashboard load
+- **Color Input Validation**: Fixed empty string handling in HTML5 color inputs
+- **TypeScript Form Errors**: Added proper type guards for form.errors access
 
 ---
 
@@ -549,6 +564,6 @@ Required in `.env`:
 
 ---
 
-**Last Updated**: 2025-10-28
+**Last Updated**: 2025-10-29
 **Maintained By**: Development Team
 **Contributions**: See [Contributing Guide](../contributing/README.md)

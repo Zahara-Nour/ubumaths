@@ -41,6 +41,19 @@ Création et gestion d'évaluations par les enseignants, passage par les élève
 - [Workflow élève](features/assessments/student-flow.md)
 - [Système de notation](features/assessments/grading.md)
 
+### 📅 Périodes académiques
+
+**Status** : ✅ Production | [Documentation →](features/academic-periods/README.md) 🆕
+
+Système complet de gestion du calendrier académique : années scolaires, trimestres/semestres, vacances.
+
+- [Guide utilisateur](features/academic-periods/user-guide.md)
+- [Référence API](features/academic-periods/api-reference.md)
+- [Schéma base de données](features/academic-periods/database.md)
+- Auto-assignation des évaluations aux périodes
+- Duplication d'années scolaires avec offset de dates
+- **2025-10-28** : Implémentation complète avec triggers et RLS
+
 ### 🗂️ SRS & Flashcards
 
 **Status** : ✅ Production | [Documentation →](features/srs-flashcards/README.md)
@@ -258,17 +271,18 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 ## 📊 Statistiques
 
-- **Features en production** : 11
+- **Features en production** : 12 🆕
 - **Features en développement** : 1 (Navadra)
-- **Tests** : 3,334 tests (99.3% pass rate) 🆕
+- **Tests** : 3,334 tests (99.3% pass rate)
   - Unit tests: 2,526/2,550 passing (99.1%) - includes 96 Redis cache tests
   - E2E tests: 303 ready to run - includes 20 Redis cache E2E tests
   - Validation tests: 366/366 passing (100%)
   - Database triggers: 139/139 passing (100%)
 - **Code Quality** : 0 errors in production code (853 → 0)
-- **Caching** : Redis cache with 95%+ hit rate, 88% faster loads 🆕
-- **Lignes de documentation** : ~20,000+ 🆕
-- **Dernière mise à jour** : 2025-10-28
+- **Caching** : Redis cache with 95%+ hit rate, 88% faster loads
+- **Database Tables** : 3 new tables (school_years, academic_periods, school_holidays) 🆕
+- **Lignes de documentation** : ~25,000+ 🆕
+- **Dernière mise à jour** : 2025-10-29
 
 ---
 

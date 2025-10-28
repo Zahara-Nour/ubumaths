@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [Unreleased]
+
+### ✨ Features
+
+- **academic-periods**: implement complete academic calendar management system
+  - Added 3 new database tables: `school_years`, `academic_periods`, `school_holidays`
+  - Admin UI for managing school years, teaching periods (trimesters/semesters/quarters), and vacations
+  - Auto-assignment of assessments to periods based on creation date via database trigger
+  - Year duplication wizard with selective copying (periods and holidays)
+  - RLS policies for admin CRUD and teacher read-only access
+  - Comprehensive Zod validation schemas in `src/lib/server/validation/academic.ts` (467 lines)
+  - Full feature documentation: 74KB across 4 files
+  - Database migrations: 7 SQL files including RLS fixes
+  - **Impact**: Enables period-based report cards, temporal analysis, and academic calendar management
+
+### 🐛 Bug Fixes
+
+- **dashboard**: fix 401 errors in activity polling during initial page load
+  - Added authentication guard in `src/routes/(protected)/dashboard/+layout.svelte:204-206`
+  - Polling now only starts after user session is fully established
+  - Prevents race condition where polling started before authentication completed
+  - **Impact**: Eliminates console errors during client-side hydration
+
+- **forms**: fix color input validation error with empty strings
+  - Changed fallback operator from `??` to `||` in color input value binding
+  - HTML5 color inputs reject empty strings even though they're falsy
+  - Fixed validation error: "Please select a color from the color picker"
+  - **Impact**: Color pickers work correctly when no default color is set
+
+- **typescript**: fix type safety in form error handling
+  - Added proper type guards using `'errors' in form` before accessing form.errors
+  - Prevents runtime errors when form object doesn't have errors property
+  - **Impact**: Safer form error handling across all form actions
+
+### 📚 Documentation
+
+- **academic-periods**: add comprehensive feature documentation (74KB, 4 files)
+  - Created `docs/features/academic-periods/README.md`: feature overview, use cases, quick start
+  - Created `docs/features/academic-periods/user-guide.md`: complete admin workflows (20KB)
+  - Created `docs/features/academic-periods/api-reference.md`: form actions, validation schemas (21KB)
+  - Created `docs/features/academic-periods/database.md`: schema, triggers, RLS policies (23KB)
+  - Updated `docs/architecture/database-schema.md`: documented 3 new tables and relationships
+  - Updated `docs/README.md`: added academic periods to features list, updated statistics
+
 ### [0.1.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.1.0...v0.1.1) (2025-10-28)
 
 ### 🐛 Bug Fixes

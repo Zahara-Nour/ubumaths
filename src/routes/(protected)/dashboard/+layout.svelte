@@ -197,7 +197,14 @@
 
 	// Start unified activity polling when dashboard loads
 	// This polls both notifications AND messages in a single request
+	// Only start if we have a valid profile (user is authenticated)
 	$effect(() => {
+		// Guard: Only start polling if user profile exists
+		// This prevents 401 errors during client-side hydration before session is established
+		if (!data.profile?.id) {
+			return;
+		}
+
 		// Fetch initial notifications details (full data for banner/dropdown)
 		notificationStore.fetchUnread();
 

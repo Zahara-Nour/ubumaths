@@ -119,6 +119,7 @@ export type Database = {
 			};
 			assessments: {
 				Row: {
+					academic_period_id: string | null;
 					categories: Json;
 					created_at: string;
 					created_by: string;
@@ -131,6 +132,7 @@ export type Database = {
 					updated_at: string;
 				};
 				Insert: {
+					academic_period_id?: string | null;
 					categories: Json;
 					created_at?: string;
 					created_by: string;
@@ -143,6 +145,7 @@ export type Database = {
 					updated_at?: string;
 				};
 				Update: {
+					academic_period_id?: string | null;
 					categories?: Json;
 					created_at?: string;
 					created_by?: string;
@@ -155,6 +158,13 @@ export type Database = {
 					updated_at?: string;
 				};
 				Relationships: [
+					{
+						foreignKeyName: 'assessments_academic_period_id_fkey';
+						columns: ['academic_period_id'];
+						isOneToOne: false;
+						referencedRelation: 'academic_periods';
+						referencedColumns: ['id'];
+					},
 					{
 						foreignKeyName: 'assessments_created_by_fkey';
 						columns: ['created_by'];
@@ -3928,6 +3938,138 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			academic_periods: {
+				Row: {
+					color: string;
+					created_at: string;
+					end_date: string;
+					id: string;
+					metadata: Json;
+					name: string;
+					period_order: number;
+					school_year_id: string;
+					start_date: string;
+					type: string;
+					updated_at: string;
+				};
+				Insert: {
+					color?: string;
+					created_at?: string;
+					end_date: string;
+					id?: string;
+					metadata?: Json;
+					name: string;
+					period_order: number;
+					school_year_id: string;
+					start_date: string;
+					type: string;
+					updated_at?: string;
+				};
+				Update: {
+					color?: string;
+					created_at?: string;
+					end_date?: string;
+					id?: string;
+					metadata?: Json;
+					name?: string;
+					period_order?: number;
+					school_year_id?: string;
+					start_date?: string;
+					type?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'academic_periods_school_year_id_fkey';
+						columns: ['school_year_id'];
+						isOneToOne: false;
+						referencedRelation: 'school_years';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			school_holidays: {
+				Row: {
+					created_at: string;
+					end_date: string;
+					id: string;
+					name: string;
+					school_year_id: string;
+					start_date: string;
+					updated_at: string;
+				};
+				Insert: {
+					created_at?: string;
+					end_date: string;
+					id?: string;
+					name: string;
+					school_year_id: string;
+					start_date: string;
+					updated_at?: string;
+				};
+				Update: {
+					created_at?: string;
+					end_date?: string;
+					id?: string;
+					name?: string;
+					school_year_id?: string;
+					start_date?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'school_holidays_school_year_id_fkey';
+						columns: ['school_year_id'];
+						isOneToOne: false;
+						referencedRelation: 'school_years';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			school_years: {
+				Row: {
+					created_at: string;
+					end_date: string;
+					id: string;
+					is_active: boolean;
+					metadata: Json;
+					name: string;
+					school_id: string;
+					start_date: string;
+					updated_at: string;
+				};
+				Insert: {
+					created_at?: string;
+					end_date: string;
+					id?: string;
+					is_active?: boolean;
+					metadata?: Json;
+					name: string;
+					school_id: string;
+					start_date: string;
+					updated_at?: string;
+				};
+				Update: {
+					created_at?: string;
+					end_date?: string;
+					id?: string;
+					is_active?: boolean;
+					metadata?: Json;
+					name?: string;
+					school_id?: string;
+					start_date?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'school_years_school_id_fkey';
+						columns: ['school_id'];
+						isOneToOne: false;
+						referencedRelation: 'schools';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			srs_card_stats: {
 				Row: {
 					card_reference_id: string;
@@ -5599,3 +5741,16 @@ export type SystemEventType =
 	| 'class_joined'
 	| 'reward_earned'
 	| 'achievement_unlocked';
+
+// School timetable types (stored as JSON in schools.timetable column)
+export interface SchoolPeriod {
+	id?: string;
+	number: number;
+	name?: string;
+	start_time: string; // HH:MM:SS format
+	end_time: string; // HH:MM:SS format
+}
+
+export interface SchoolTimetable {
+	periods: SchoolPeriod[];
+}

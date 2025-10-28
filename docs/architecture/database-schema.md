@@ -120,6 +120,141 @@ The `class_ids` array is maintained for backward compatibility but is NOT the so
 - Admins can view and update all profiles (including role, school, classes)
 - Profile creation allowed (for signup trigger)
 
+### Academic Calendar Tables
+
+> 🆕 2025-10-28
+
+The academic calendar system manages school years, teaching periods (trimesters/semesters), and vacation schedules. See [Academic Periods Feature Documentation](../features/academic-periods/README.md) for complete details.
+
+#### `school_years`
+
+Academic year definitions (e.g., "2024-2025") with one active year per school.
+
+| Column     | Type        | Description                                 |
+| ---------- | ----------- | ------------------------------------------- |
+| id         | UUID (PK)   | School year ID                              |
+| school_id  | UUID (FK)   | References schools(id)                      |
+| name       | TEXT        | Year name (format: "YYYY-YYYY")             |
+| start_date | DATE        | Academic year start date                    |
+| end_date   | DATE        | Academic year end date                      |
+| is_active  | BOOLEAN     | Active year flag (only one per school)      |
+| metadata   | JSONB       | Extensible metadata (region, custom fields) |
+| created_at | TIMESTAMPTZ | Creation time                               |
+| updated_at | TIMESTAMPTZ | Last update time                            |
+
+**Constraints**:
+
+- `UNIQUE (school_id, name)` - Unique year name per school
+- `CHECK (end_date > start_date)` - Valid date range
+- `UNIQUE NULLS NOT DISTINCT (school_id, CASE WHEN is_active THEN TRUE END)` - Only one active year per school
+
+**Indexes**:
+
+- `idx_school_years_school` ON (school_id)
+- `idx_school_years_active` ON (school_id, is_active) WHERE is_active = true
+
+**RLS Policies**:
+
+- Admins: Full CRUD access for their school
+- Teachers: Read-only access for their school
+
+**Migration**: `20251028120000_create_school_years.sql`
+
+---
+
+#### `academic_periods`
+
+Teaching periods (trimesters, semesters, quarters) within school years.
+
+| Column         | Type        | Description                                               |
+| -------------- | ----------- | --------------------------------------------------------- |
+| id             | UUID (PK)   | Period ID                                                 |
+| school_year_id | UUID (FK)   | References school_years(id)                               |
+| type           | TEXT        | Period type: 'trimester', 'semester', 'quarter', 'custom' |
+| name           | TEXT        | Period name (e.g., "Trimestre 1")                         |
+| start_date     | DATE        | Period start date                                         |
+| end_date       | DATE        | Period end date                                           |
+| period_order   | INTEGER     | Sequential order (1-10)                                   |
+| color          | TEXT        | Hex color for UI (#RRGGBB, default: #3b82f6)              |
+| metadata       | JSONB       | Extensible metadata                                       |
+| created_at     | TIMESTAMPTZ | Creation time                                             |
+| updated_at     | TIMESTAMPTZ | Last update time                                          |
+
+**Constraints**:
+
+- `CHECK (end_date > start_date)` - Valid date range
+- `UNIQUE (school_year_id, period_order)` - Unique order per year
+- `CHECK (type IN ('trimester', 'semester', 'quarter', 'custom'))` - Valid period type
+- `CHECK (period_order > 0)` - Positive order
+
+**Indexes**:
+
+- `idx_academic_periods_year` ON (school_year_id)
+- `idx_academic_periods_order` ON (school_year_id, period_order)
+
+**RLS Policies**:
+
+- Admins: Full CRUD access for their school's years
+- Teachers: Read-only access for their school's years
+
+**Migration**: `20251028120100_create_academic_periods.sql`
+
+---
+
+#### `school_holidays`
+
+School vacation periods within academic years.
+
+| Column         | Type        | Description                             |
+| -------------- | ----------- | --------------------------------------- |
+| id             | UUID (PK)   | Holiday ID                              |
+| school_year_id | UUID (FK)   | References school_years(id)             |
+| name           | TEXT        | Holiday name (e.g., "Vacances de Noël") |
+| start_date     | DATE        | Holiday start date                      |
+| end_date       | DATE        | Holiday end date                        |
+| created_at     | TIMESTAMPTZ | Creation time                           |
+| updated_at     | TIMESTAMPTZ | Last update time                        |
+
+**Constraints**:
+
+- `CHECK (end_date > start_date)` - Valid date range
+
+**Indexes**:
+
+- `idx_school_holidays_year` ON (school_year_id)
+- `idx_school_holidays_dates` ON (start_date, end_date)
+
+**RLS Policies**:
+
+- Admins: Full CRUD access for their school's years
+- Teachers: Read-only access for their school's years
+
+**Migration**: `20251028120200_create_school_holidays.sql`
+
+---
+
+#### `assessments` (Extended)
+
+**Added Column** (2025-10-28):
+
+| Column             | Type                | Description                     |
+| ------------------ | ------------------- | ------------------------------- |
+| academic_period_id | UUID (FK, nullable) | References academic_periods(id) |
+
+**Purpose**: Links assessments to academic periods for report card generation and statistics. Auto-assigned by trigger based on assessment creation date.
+
+**Index**:
+
+- `idx_assessments_period` ON (academic_period_id)
+
+**Trigger**: `auto_assign_assessment_period` - Automatically links new assessments to matching period based on created_at date and active school year.
+
+**Migration**: `20251028120300_link_assessments_to_periods.sql`
+
+**Related Documentation**: See [Assessment System](../features/assessments/) for full details.
+
+---
+
 ### Classroom Management Tables
 
 #### `classes`

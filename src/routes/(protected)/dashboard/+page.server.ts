@@ -70,20 +70,19 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 	}> = [];
 
 	if (profile.role === 'student') {
-		// Get count of successfully solved riddles
-		const { count } = await supabase
-			.from('riddle_attempts')
-			.select('*', { count: 'exact', head: true })
-			.eq('student_id', profile.id)
-			.eq('is_correct', true);
-
-		riddlesSolved = count || 0;
-
-		// Get recent assigned exercises (up to 5, sorted by deadline)
-		const { data: exercises } = await supabase
-			.from('exercises')
-			.select(
-				`
+		// Execute both queries in parallel for better performance
+		const [riddleCount, exercisesData] = await Promise.all([
+			// Get count of successfully solved riddles
+			supabase
+				.from('riddle_attempts')
+				.select('*', { count: 'exact', head: true })
+				.eq('student_id', profile.id)
+				.eq('is_correct', true),
+			// Get recent assigned exercises (up to 5, sorted by deadline)
+			supabase
+				.from('exercises')
+				.select(
+					`
 				id,
 				title,
 				tags,
@@ -100,15 +99,17 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 					last_viewed_at
 				)
 			`
-			)
-			.or(
-				`exercise_assignments.student_id.eq.${profile.id},exercise_assignments.assigned_to_type.eq.public`
-			)
-			.eq('exercise_assignments.is_active', true)
-			.limit(5)
-			.order('exercise_assignments.optional_deadline', { ascending: true, nullsFirst: false });
+				)
+				.or(
+					`exercise_assignments.student_id.eq.${profile.id},exercise_assignments.assigned_to_type.eq.public`
+				)
+				.eq('exercise_assignments.is_active', true)
+				.limit(5)
+				.order('exercise_assignments.optional_deadline', { ascending: true, nullsFirst: false })
+		]);
 
-		recentExercises = exercises || [];
+		riddlesSolved = riddleCount.count || 0;
+		recentExercises = (exercisesData.data || []) as typeof recentExercises;
 	}
 
 	// Return profile to the client component

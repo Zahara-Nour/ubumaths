@@ -198,10 +198,10 @@
 							</td>
 							<td class="space-x-2 px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
 								<a
-									href="/dashboard/admin/schools/{school.id}/timetable"
+									href="/dashboard/admin/schools/{school.id}/organisation"
 									data-sveltekit-preload-data="hover"
 								>
-									<Button variant="ghost" size="sm">Emploi du Temps</Button>
+									<Button variant="ghost" size="sm">Organisation</Button>
 								</a>
 								<Button variant="ghost" size="sm" onclick={() => openEditModal(school)}>
 									Modifier
