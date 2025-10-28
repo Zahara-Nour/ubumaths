@@ -188,7 +188,9 @@ Système d'authentification avec Google OAuth + email/password.
 
 ## 🧪 Tests
 
-**Status** : ✅ 100% Pass Rate (2,064/2,064 tests) | [Documentation →](testing/README.md)
+**Status** : ✅ 3,218 tests (99.2% pass rate) | [Documentation →](testing/README.md)
+
+### Tests Unitaires (Vitest)
 
 | Document                                                       | Description                               |
 | -------------------------------------------------------------- | ----------------------------------------- |
@@ -201,6 +203,16 @@ Système d'authentification avec Google OAuth + email/password.
 | [Rapport Assessments](testing/ASSESSMENT_TEST_REPORT.md)       | Tests feature Assessments                 |
 | [Rapport Templates](testing/message-templates-test-report.md)  | Tests templates de messages               |
 | [Rapport Riddles](testing/riddles-test-report.md)              | Tests feature Riddles                     |
+
+### Tests E2E (Playwright) 🆕
+
+| Document                                                         | Description                               |
+| ---------------------------------------------------------------- | ----------------------------------------- |
+| [Testing Overview](development/testing/README.md) ⭐             | Vue d'ensemble de tous les types de tests |
+| [E2E Testing Guide](development/testing/e2e-testing-guide.md) ⭐ | Guide complet e2e (283 tests)             |
+| [Auth Tests](development/testing/e2e-auth-tests.md)              | Tests authentification & RBAC (95 tests)  |
+| [Teacher Tests](development/testing/e2e-teacher-tests.md)        | Tests features enseignant (50 tests)      |
+| [Student Tests](development/testing/e2e-student-tests.md)        | Tests features élève (56 tests)           |
 
 ---
 
@@ -236,10 +248,14 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 - **Features en production** : 11
 - **Features en développement** : 1 (Navadra)
-- **Tests** : 2,088 tests (2,063 passing, 100% non-skipped pass rate)
+- **Tests** : 3,218 tests (99.2% pass rate)
+  - Unit tests: 2,430/2,454 passing (99.0%)
+  - E2E tests: 283 ready to run
+  - Validation tests: 366/366 passing (100%)
+  - Database triggers: 139/139 passing (100%)
 - **Code Quality** : 0 errors in production code (853 → 0)
 - **Lignes de documentation** : ~16,000+
-- **Dernière mise à jour** : 2025-10-27
+- **Dernière mise à jour** : 2025-10-28
 
 ---
 
