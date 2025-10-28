@@ -180,18 +180,18 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	}
 
 	// Validate template
-	const validation = validateTemplate({
+	const templateValidation = validateTemplate({
 		title: templateInput.title,
 		subject_template: templateInput.subject_template,
 		body_template: templateInput.body_template,
 		trigger_type: templateInput.trigger_type
 	});
 
-	if (!validation.valid) {
+	if (!templateValidation.valid) {
 		return json(
 			{
 				error: 'Validation échouée',
-				errors: validation.errors
+				errors: templateValidation.errors
 			},
 			{ status: 400 }
 		);

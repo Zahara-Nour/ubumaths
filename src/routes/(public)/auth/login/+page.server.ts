@@ -61,7 +61,7 @@ export const actions = {
 	googleSignIn: async ({ locals: { supabase }, url, getClientAddress }) => {
 		// SECURITY: Rate limit by IP to prevent OAuth flow abuse
 		const clientIP = getClientAddress();
-		const rateLimitResult = checkOAuthRateLimitByIP(clientIP);
+		const rateLimitResult = await checkOAuthRateLimitByIP(clientIP);
 
 		if (!rateLimitResult.allowed) {
 			logger.warn('OAuth rate limit exceeded', { ip: clientIP });
@@ -128,7 +128,7 @@ export const actions = {
 
 		// 1. Check IP-based rate limit
 		const clientIP = getClientAddress();
-		const ipRateLimitResult = checkLoginRateLimitByIP(clientIP);
+		const ipRateLimitResult = await checkLoginRateLimitByIP(clientIP);
 
 		if (!ipRateLimitResult.allowed) {
 			logger.warn('Login rate limit exceeded by IP', { ip: clientIP });
@@ -139,7 +139,7 @@ export const actions = {
 		}
 
 		// 2. Check email-based rate limit (stricter)
-		const emailRateLimitResult = checkLoginRateLimitByEmail(email);
+		const emailRateLimitResult = await checkLoginRateLimitByEmail(email);
 
 		if (!emailRateLimitResult.allowed) {
 			logger.warn('Login rate limit exceeded by email', { email });

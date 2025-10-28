@@ -17,8 +17,76 @@ import type {
 	NotificationTargetType,
 	SystemEventType
 } from '$lib/types/notification';
+import { invalidateCache, CACHE_KEYS } from './cache';
 
 type SupabaseClientType = SupabaseClient<Database>;
+
+/**
+ * Invalidate activity cache for users affected by a notification
+ *
+ * Fire-and-forget pattern: Does not block notification creation.
+ * Silently logs errors if cache invalidation fails.
+ */
+async function invalidateActivityCacheForNotification(
+	supabase: SupabaseClientType,
+	targetType: string,
+	targetRoles?: string[] | null,
+	targetClassIds?: string[] | null,
+	targetUserIds?: string[] | null
+): Promise<void> {
+	try {
+		// Determine which users are affected
+		let affectedUserIds: string[] = [];
+
+		if (targetType === 'all') {
+			// Invalidate all user caches (pattern-based)
+			invalidateCache('cache:activity:*').catch((err) => {
+				console.error('[Cache] Failed to invalidate activity cache (all users):', err);
+			});
+			return;
+		}
+
+		if (targetType === 'roles' && targetRoles && targetRoles.length > 0) {
+			// Get all users with these roles
+			const validRoles = targetRoles.filter(
+				(r): r is 'student' | 'teacher' | 'admin' =>
+					r === 'student' || r === 'teacher' || r === 'admin'
+			);
+
+			if (validRoles.length > 0) {
+				const { data: users } = await supabase.from('profiles').select('id').in('role', validRoles);
+
+				affectedUserIds = users?.map((u) => u.id) || [];
+			}
+		}
+
+		if (targetType === 'classes' && targetClassIds && targetClassIds.length > 0) {
+			// Get all students in these classes
+			const { data: members } = await supabase
+				.from('class_members')
+				.select('student_id')
+				.in('class_id', targetClassIds);
+
+			affectedUserIds = [...new Set(members?.map((m) => m.student_id) || [])];
+		}
+
+		if (targetType === 'users' && targetUserIds && targetUserIds.length > 0) {
+			affectedUserIds = targetUserIds;
+		}
+
+		// Invalidate cache for each affected user (fire-and-forget)
+		if (affectedUserIds.length > 0) {
+			Promise.all(
+				affectedUserIds.map((userId) => invalidateCache(CACHE_KEYS.ACTIVITY_COUNTS(userId)))
+			).catch((err) => {
+				console.error('[Cache] Failed to invalidate activity caches:', err);
+			});
+		}
+	} catch (err) {
+		console.error('[Cache] Error invalidating activity cache for notification:', err);
+		// Don't throw - cache invalidation failure shouldn't break notification creation
+	}
+}
 
 /**
  * Create a new notification
@@ -126,6 +194,17 @@ export async function createNotification(
 			return { success: false, error: 'Erreur lors de la création de la notification' };
 		}
 
+		// Invalidate activity cache for affected users (fire-and-forget)
+		invalidateActivityCacheForNotification(
+			supabase,
+			data.target_type,
+			data.target_roles,
+			data.target_class_ids,
+			data.target_user_ids
+		).catch(() => {
+			// Errors already logged in helper function
+		});
+
 		return { success: true, id: notification.id };
 	} catch (error) {
 		console.error('Error in createNotification:', error);
@@ -167,6 +246,17 @@ export async function createSystemNotification(
 			console.error('Error creating system notification:', insertError);
 			return { success: false, error: 'Erreur lors de la création de la notification système' };
 		}
+
+		// Invalidate activity cache for affected users (fire-and-forget)
+		invalidateActivityCacheForNotification(
+			supabase,
+			data.target_type,
+			data.target_roles,
+			data.target_class_ids,
+			data.target_user_ids
+		).catch(() => {
+			// Errors already logged in helper function
+		});
 
 		return { success: true };
 	} catch (error) {
@@ -314,6 +404,11 @@ export async function markAsRead(
 			return { success: false, error: 'Erreur lors de la mise à jour' };
 		}
 
+		// Invalidate activity cache for this user (fire-and-forget)
+		invalidateCache(CACHE_KEYS.ACTIVITY_COUNTS(userId)).catch((err) => {
+			console.error('[Cache] Failed to invalidate activity cache after marking read:', err);
+		});
+
 		return { success: true };
 	} catch (error) {
 		console.error('Error in markAsRead:', error);
@@ -349,6 +444,11 @@ export async function markAllAsRead(
 			console.error('Error marking all as read:', error);
 			return { success: false, error: 'Erreur lors de la mise à jour' };
 		}
+
+		// Invalidate activity cache for this user (fire-and-forget)
+		invalidateCache(CACHE_KEYS.ACTIVITY_COUNTS(userId)).catch((err) => {
+			console.error('[Cache] Failed to invalidate activity cache after marking all read:', err);
+		});
 
 		return { success: true };
 	} catch (error) {

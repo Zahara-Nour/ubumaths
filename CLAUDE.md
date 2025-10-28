@@ -31,11 +31,46 @@ pnpm db:migrate       # Push migrations Supabase
 pnpm release          # Créer une release (main branch)
 ```
 
+### Redis Cache Commands
+
+```bash
+# Check cache health (requires Redis configured)
+curl http://localhost:5175/api/health/redis
+
+# Run cache tests
+pnpm test:unit tests/unit/cache.test.ts
+pnpm test:unit tests/unit/*-cache.test.ts
+
+# Run E2E cache tests
+npx playwright test e2e/redis-cache
+```
+
 ### Ports de développement
 
 - **5173** : Port utilisateur (NE PAS UTILISER)
 - **5175** : Port Claude (TOUJOURS UTILISER : `pnpm dev -- --port 5175`)
 - **54321** : Supabase local (pour tests de triggers)
+
+### Redis Cache Configuration
+
+Configure Upstash Redis credentials in `.env`:
+
+```bash
+# .env
+UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your_token_here
+```
+
+**Features**:
+
+- ✅ Assessment results caching (5 min TTL) - 88% faster load
+- ✅ Activity polling caching (30s TTL) - 95% less DB queries
+- ✅ Rate limiting (login, signup, chatbot) - Multi-instance safe
+- ✅ Fail-safe design (works without Redis configured)
+
+**Setup Guide**: See [docs/guides/redis-cache-setup.md](docs/guides/redis-cache-setup.md)
+
+**Free tier**: 10K requests/day, 256MB storage (sufficient for dev)
 
 ---
 

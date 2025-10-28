@@ -45,7 +45,7 @@ export const actions = {
 	signup: async ({ request, locals: { supabase }, getClientAddress }) => {
 		// SECURITY: Check rate limit BEFORE processing signup
 		const clientIP = getClientAddress();
-		const rateLimitResult = checkSignupRateLimitByIP(clientIP);
+		const rateLimitResult = await checkSignupRateLimitByIP(clientIP);
 
 		if (!rateLimitResult.allowed) {
 			logger.warn('Signup rate limit exceeded', { ip: clientIP });

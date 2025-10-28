@@ -6,6 +6,7 @@ import {
 	getAssessmentStatistics
 } from '$lib/server/assessments';
 import { getTeacherTestMode } from '$lib/server/test-mode';
+import { getCached, CACHE_KEYS, TTL } from '$lib/server/cache';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const session = await locals.safeGetSession();
@@ -42,11 +43,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Get test mode to filter results
 	const isTestMode = await getTeacherTestMode(session.user.id, locals.supabase);
 
-	// Fetch results - filtered by test mode
-	const { data: results, error: resultsError } = await getAssessmentResults(
-		locals.supabase,
-		params.id,
-		isTestMode
+	// Cache assessment results (5 min TTL - données rarement modifiées)
+	const { data: results, error: resultsError } = await getCached(
+		CACHE_KEYS.ASSESSMENT_RESULTS(params.id, isTestMode),
+		TTL.ASSESSMENT_RESULTS,
+		async () => getAssessmentResults(locals.supabase, params.id, isTestMode)
 	);
 
 	if (resultsError) {
@@ -58,11 +59,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		};
 	}
 
-	// Fetch statistics - filtered by test mode
-	const { data: statistics } = await getAssessmentStatistics(
-		locals.supabase,
-		params.id,
-		isTestMode
+	// Cache assessment statistics (5 min TTL - synchronisé avec results)
+	const { data: statistics } = await getCached(
+		CACHE_KEYS.ASSESSMENT_STATS(params.id, isTestMode),
+		TTL.ASSESSMENT_RESULTS,
+		async () => getAssessmentStatistics(locals.supabase, params.id, isTestMode)
 	);
 
 	return {

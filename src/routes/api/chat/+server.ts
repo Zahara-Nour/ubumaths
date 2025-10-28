@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { checkLoginRateLimitByIP } from '$lib/server/rateLimiter';
+import { checkChatbotRateLimit } from '$lib/server/rateLimiter';
 import { getEnv } from '$lib/server/env';
 
 interface TextContent {
@@ -26,7 +26,7 @@ interface ChatRequest {
 	messages: ChatMessage[];
 }
 
-export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		// Get validated environment variables
 		const env = getEnv();
@@ -40,14 +40,13 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 		}
 
 		// ====================================================================
-		// SECURITY: Rate Limiting
+		// SECURITY: Rate Limiting (5 requests per 15 minutes per user)
 		// ====================================================================
-		const clientIP = getClientAddress();
-		const rateLimitResult = checkLoginRateLimitByIP(clientIP);
+		const rateLimitResult = await checkChatbotRateLimit(session.user.id);
 
 		if (!rateLimitResult.allowed) {
 			throw error(429, {
-				message: rateLimitResult.message || 'Too many requests. Please try again later.'
+				message: rateLimitResult.message || 'Trop de requêtes. Veuillez réessayer plus tard.'
 			});
 		}
 
@@ -152,7 +151,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 					model: model,
 					message_count: messages.length,
 					tokens_used: data.usage?.total_tokens || 0,
-					client_ip: clientIP,
+					client_ip: null, // No longer tracking IP for chatbot (rate limit by user ID)
 					response_length: responseMessage?.length || 0
 				});
 			} catch (logError) {

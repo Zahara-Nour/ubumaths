@@ -36,3 +36,12 @@ debug-*.js
 check-*.js
 investigate-*.sql
 fix-*.sql
+
+# Temporary summary/report files in root
+*_SUMMARY.md
+*_REPORT.md
+*_STATUS.md
+*_IMPLEMENTATION.md
+
+# Playwright reports (generated on test run)
+playwright-report/
