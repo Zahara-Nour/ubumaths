@@ -12,6 +12,7 @@ import type { RequestHandler } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
 import { validateTemplate, detectCircularDependencies } from '$lib/questions';
 import { checkCategoryUniqueness } from '$lib/questions/category-validation';
+import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/validation';
 
 /**
  * GET /api/questions/templates/[id]
@@ -69,13 +70,18 @@ export const PUT: RequestHandler = async ({
 	request,
 	locals: { safeGetSession, supabase }
 }) => {
+	// ====================================================================
+	// SECURITY: Authentication Check
+	// ====================================================================
 	const { user } = await safeGetSession();
 
 	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
-	// Check role (only admins can update)
+	// ====================================================================
+	// SECURITY: Authorization Check
+	// ====================================================================
 	const { data: profile } = await supabase
 		.from('profiles')
 		.select('role')
@@ -87,18 +93,23 @@ export const PUT: RequestHandler = async ({
 	}
 
 	try {
-		const templateData = (await request.json()) as Partial<QuestionTemplate>;
+		// ====================================================================
+		// SECURITY: Input Validation
+		// ====================================================================
+		const body = await request.json();
+		const validation = validateRequest(updateQuestionTemplateSchema, body);
 
-		// Validate required fields
-		if (!templateData.title || templateData.title.trim().length === 0) {
+		if (!validation.success) {
 			return json(
 				{
 					success: false,
-					errors: ['Title is required']
+					errors: [validation.error]
 				},
 				{ status: 400 }
 			);
 		}
+
+		const templateData = validation.data as Partial<QuestionTemplate>;
 
 		// Only validate if status is 'published'
 		if (templateData.status === 'published') {

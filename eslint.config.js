@@ -7,6 +7,7 @@ import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import ts from 'typescript-eslint';
 import svelteConfig from './svelte.config.js';
+import requireZodValidation from './eslint-rules/require-zod-validation.js';
 
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
@@ -55,6 +56,20 @@ export default defineConfig(
 				parser: ts.parser,
 				svelteConfig
 			}
+		}
+	},
+	// Custom rules for API routes
+	{
+		files: ['src/routes/api/**/*.ts'],
+		plugins: {
+			custom: {
+				rules: {
+					'require-zod-validation': requireZodValidation
+				}
+			}
+		},
+		rules: {
+			'custom/require-zod-validation': 'error'
 		}
 	}
 );

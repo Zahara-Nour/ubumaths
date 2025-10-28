@@ -9,12 +9,18 @@ import type { RequestHandler } from './$types';
 import { markAllAsRead } from '$lib/server/notifications';
 
 export const POST: RequestHandler = async ({ locals: { supabase, safeGetSession } }) => {
+	// ====================================================================
+	// SECURITY: Authentication Check
+	// ====================================================================
 	const { session } = await safeGetSession();
 
 	if (!session) {
 		throw error(401, 'Non authentifié');
 	}
 
+	// ====================================================================
+	// Business Logic
+	// ====================================================================
 	const result = await markAllAsRead(supabase, session.user.id);
 
 	if (!result.success) {

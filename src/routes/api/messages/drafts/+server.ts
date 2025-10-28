@@ -48,9 +48,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	try {
-		const body = await request.json();
+		// ✅ SECURITY: Validate input with Zod
+		const bodyRaw = await request.json();
+		const { saveDraftSchema } = await import('$lib/server/validation/messages');
+		const validation = saveDraftSchema.safeParse(bodyRaw);
+
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
+		}
+
 		const { id, subject, content, recipientIds, isGroupMessage, classId, replyingToMessageId } =
-			body;
+			validation.data;
 
 		if (id) {
 			// Update existing draft

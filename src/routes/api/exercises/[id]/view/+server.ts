@@ -7,6 +7,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { markExerciseAsViewed } from '$lib/server/exercise-assignments';
+import { validateViewExercise } from '$lib/server/validation';
 
 /**
  * POST /api/exercises/[id]/view
@@ -27,9 +28,18 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	const { user } = session;
 	const exerciseId = params.id;
 
-	// Parse optional assignment_id from body
+	// Parse and validate optional assignment_id from body
 	const body = await request.json().catch(() => ({}));
-	const assignmentId = body.assignment_id;
+	const validation = validateViewExercise(body);
+
+	if (!validation.success) {
+		const errorMsg = validation.error.errors
+			.map((e) => `${e.path.join('.')}: ${e.message}`)
+			.join('; ');
+		return json({ error: `Validation failed: ${errorMsg}` }, { status: 400 });
+	}
+
+	const assignmentId = validation.data.assignment_id;
 
 	// Track view
 	const { data: completion, error: viewError } = await markExerciseAsViewed(

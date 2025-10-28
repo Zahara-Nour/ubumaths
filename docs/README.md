@@ -189,16 +189,17 @@ Système d'authentification avec Google OAuth + email/password.
 
 **Status** : ✅ 100% Pass Rate (2,064/2,064 tests) | [Documentation →](testing/README.md)
 
-| Document                                                      | Description                      |
-| ------------------------------------------------------------- | -------------------------------- |
-| [Vue d'ensemble](testing/README.md)                           | Documentation générale des tests |
-| [100% Pass Rate](testing/test-suite-achievement.md) ⭐        | Histoire de l'achievement        |
-| [Infrastructure](testing/test-infrastructure.md) ⭐           | Guide des helpers de test        |
-| [Patterns communs](testing/common-test-patterns.md) ⭐        | Référence rapide des patterns    |
-| [Rapport Questions](../TEST_REPORT_QUESTIONS.md)              | Tests feature Questions          |
-| [Rapport Assessments](testing/ASSESSMENT_TEST_REPORT.md)      | Tests feature Assessments        |
-| [Rapport Templates](testing/message-templates-test-report.md) | Tests templates de messages      |
-| [Rapport Riddles](testing/riddles-test-report.md)             | Tests feature Riddles            |
+| Document                                                       | Description                               |
+| -------------------------------------------------------------- | ----------------------------------------- |
+| [Vue d'ensemble](testing/README.md)                            | Documentation générale des tests          |
+| [100% Pass Rate](testing/test-suite-achievement.md) ⭐         | Histoire de l'achievement                 |
+| [Infrastructure](testing/test-infrastructure.md) ⭐            | Guide des helpers de test                 |
+| [Patterns communs](testing/common-test-patterns.md) ⭐         | Référence rapide des patterns             |
+| [Database Trigger Tests](testing/database-trigger-tests.md) ⭐ | Tests des triggers PostgreSQL (139 tests) |
+| [Rapport Questions](../TEST_REPORT_QUESTIONS.md)               | Tests feature Questions                   |
+| [Rapport Assessments](testing/ASSESSMENT_TEST_REPORT.md)       | Tests feature Assessments                 |
+| [Rapport Templates](testing/message-templates-test-report.md)  | Tests templates de messages               |
+| [Rapport Riddles](testing/riddles-test-report.md)              | Tests feature Riddles                     |
 
 ---
 

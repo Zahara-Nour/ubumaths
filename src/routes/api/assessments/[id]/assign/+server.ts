@@ -7,7 +7,8 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { assignAssessment, getAssessment } from '$lib/server/assessments';
 import { notifyNewAssessment } from '$lib/server/auto-notifications';
-import type { AssignAssessmentData } from '$lib/types/assessment';
+import { assignAssessmentSchema } from '$lib/server/validation/assessments';
+import { uuidSchema } from '$lib/server/validation/common';
 
 /**
  * POST /api/assessments/[id]/assign
@@ -20,7 +21,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	const { user } = session;
-	const { id: assessmentId } = params;
+
+	// Validate UUID
+	const idValidation = uuidSchema.safeParse(params.id);
+	if (!idValidation.success) {
+		throw error(400, 'Invalid assessment ID format');
+	}
+
+	const assessmentId = idValidation.data;
 
 	// Only teachers can assign
 	const { data: profile } = await locals.supabase
@@ -33,22 +41,21 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(403, 'Forbidden - Teachers only');
 	}
 
-	// Parse request body
-	const { class_ids, student_ids } = await request.json();
+	// Parse and validate request body
+	const body = await request.json();
+	const validation = assignAssessmentSchema.safeParse(body);
 
-	const data: AssignAssessmentData = {
+	if (!validation.success) {
+		throw error(400, validation.error.issues[0].message);
+	}
+
+	const { class_ids, student_ids } = validation.data;
+
+	const data = {
 		assessment_id: assessmentId,
 		class_ids,
 		student_ids
 	};
-
-	// Validate that at least one target is specified
-	if (
-		(!data.class_ids || data.class_ids.length === 0) &&
-		(!data.student_ids || data.student_ids.length === 0)
-	) {
-		throw error(400, 'Must specify at least one class or student');
-	}
 
 	// Create assignments
 	const result = await assignAssessment(locals.supabase, data, user.id);

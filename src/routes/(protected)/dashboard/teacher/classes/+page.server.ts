@@ -21,6 +21,12 @@ import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { School } from '$lib/types/database';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
+import {
+	validateFormData,
+	createScheduleEntrySchema,
+	updateScheduleEntrySchema,
+	deleteScheduleEntrySchema
+} from '$lib/server/validation';
 
 /**
  * Load function - Fetches teacher's classes with student counts and schedules
@@ -106,24 +112,22 @@ export const actions: Actions = {
 		}
 
 		const formData = await request.formData();
-		const classId = formData.get('class_id') as string;
-		const dayOfWeek = parseInt(formData.get('day_of_week') as string, 10);
-		const periodNumber = parseInt(formData.get('period_number') as string, 10);
-		const startTime = formData.get('start_time') as string;
-		const endTime = formData.get('end_time') as string;
-		const subject = formData.get('subject') as string;
-		const room = formData.get('room') as string;
-		const notes = formData.get('notes') as string;
 
-		// Validate required fields
-		if (!classId || isNaN(dayOfWeek) || !startTime || !endTime) {
-			return fail(400, { message: 'Missing required fields' });
+		const validation = validateFormData(createScheduleEntrySchema, formData);
+		if (!validation.success) {
+			return fail(400, { errors: validation.errors });
 		}
 
-		// Validate day of week (0-4 for Sunday-Thursday)
-		if (dayOfWeek < 0 || dayOfWeek > 4) {
-			return fail(400, { message: 'Invalid day of week' });
-		}
+		const {
+			class_id: classId,
+			day_of_week: dayOfWeek,
+			period_number: periodNumber,
+			start_time: startTime,
+			end_time: endTime,
+			subject,
+			room,
+			notes
+		} = validation.data;
 
 		// Verify teacher owns this class
 		const { data: classData, error: classError } = await supabase
@@ -183,24 +187,22 @@ export const actions: Actions = {
 		}
 
 		const formData = await request.formData();
-		const id = formData.get('id') as string;
-		const dayOfWeek = parseInt(formData.get('day_of_week') as string, 10);
-		const periodNumber = parseInt(formData.get('period_number') as string, 10);
-		const startTime = formData.get('start_time') as string;
-		const endTime = formData.get('end_time') as string;
-		const subject = formData.get('subject') as string;
-		const room = formData.get('room') as string;
-		const notes = formData.get('notes') as string;
 
-		// Validate required fields
-		if (!id || isNaN(dayOfWeek) || !startTime || !endTime) {
-			return fail(400, { message: 'Missing required fields' });
+		const validation = validateFormData(updateScheduleEntrySchema, formData);
+		if (!validation.success) {
+			return fail(400, { errors: validation.errors });
 		}
 
-		// Validate day of week
-		if (dayOfWeek < 0 || dayOfWeek > 4) {
-			return fail(400, { message: 'Invalid day of week' });
-		}
+		const {
+			id,
+			day_of_week: dayOfWeek,
+			period_number: periodNumber,
+			start_time: startTime,
+			end_time: endTime,
+			subject,
+			room,
+			notes
+		} = validation.data;
 
 		// Verify teacher owns this schedule entry
 		const { data: scheduleData, error: scheduleError } = await supabase
@@ -259,11 +261,13 @@ export const actions: Actions = {
 		}
 
 		const formData = await request.formData();
-		const id = formData.get('id') as string;
 
-		if (!id) {
-			return fail(400, { message: 'Missing schedule entry ID' });
+		const validation = validateFormData(deleteScheduleEntrySchema, formData);
+		if (!validation.success) {
+			return fail(400, { errors: validation.errors });
 		}
+
+		const { id } = validation.data;
 
 		// Verify teacher owns this schedule entry
 		const { data: scheduleData, error: scheduleError } = await supabase

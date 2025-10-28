@@ -1,0 +1,2165 @@
+/**
+ * OpenAPI 3.1 Specification Generator
+ * Generates comprehensive API documentation from Zod validation schemas
+ */
+
+import {
+	OpenAPIRegistry,
+	OpenApiGeneratorV31,
+	extendZodWithOpenApi
+} from '@asteasolutions/zod-to-openapi';
+import { z } from 'zod';
+
+// Extend Zod with OpenAPI methods
+extendZodWithOpenApi(z);
+
+// Import all validation schemas
+import * as assessments from '$lib/server/validation/assessments';
+import * as exercises from '$lib/server/validation/exercises';
+import * as srs from '$lib/server/validation/srs';
+import * as messages from '$lib/server/validation/messages';
+import * as questions from '$lib/server/validation/questions';
+import * as notifications from '$lib/server/validation/notifications';
+import * as rewards from '$lib/server/validation/rewards';
+import * as admin from '$lib/server/validation/admin';
+import * as common from '$lib/server/validation/common';
+import * as classes from '$lib/server/validation/classes';
+import * as riddles from '$lib/server/validation/riddles';
+import * as errors from '$lib/server/validation/errors';
+
+// ============================================================================
+// COMMON RESPONSE SCHEMAS
+// ============================================================================
+
+const successResponseSchema = z.object({
+	success: z.boolean(),
+	message: z.string().optional()
+});
+
+const errorResponseSchema = z.object({
+	error: z.object({
+		message: z.string(),
+		code: z.string().optional(),
+		details: z.unknown().optional()
+	})
+});
+
+const paginatedResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
+	z.object({
+		data: z.array(dataSchema),
+		pagination: z.object({
+			page: z.number().int(),
+			limit: z.number().int(),
+			total: z.number().int(),
+			totalPages: z.number().int()
+		})
+	});
+
+// ============================================================================
+// OPENAPI GENERATOR
+// ============================================================================
+
+export function generateOpenAPISpec() {
+	const registry = new OpenAPIRegistry();
+
+	// Note: We skip schema registration since zod-to-openapi will
+	// automatically generate schemas from the request/response definitions
+	// in registerPath calls below
+
+	// ============================================================================
+	// ASSESSMENT ENDPOINTS
+	// ============================================================================
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/assessments',
+		description: 'List all assessments with optional filtering and pagination',
+		summary: 'List assessments',
+		tags: ['Assessments'],
+		request: {
+			query: assessments.listAssessmentsQuerySchema
+		},
+		responses: {
+			200: {
+				description: 'List of assessments',
+				content: {
+					'application/json': {
+						schema: z.object({
+							data: z.array(z.unknown()),
+							pagination: z.object({
+								page: z.number(),
+								limit: z.number(),
+								total: z.number()
+							}).optional()
+						})
+					}
+				}
+			},
+			400: {
+				description: 'Invalid query parameters',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			401: {
+				description: 'Unauthorized - authentication required',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/assessments',
+		description: 'Create a new assessment with question categories',
+		summary: 'Create assessment',
+		tags: ['Assessments'],
+		request: {
+			body: {
+				content: {
+					'application/json': {
+						schema: assessments.createAssessmentSchema
+					}
+				}
+			}
+		},
+		responses: {
+			201: {
+				description: 'Assessment created successfully',
+				content: {
+					'application/json': {
+						schema: z.object({
+							id: z.string().uuid(),
+							message: z.string()
+						})
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			401: {
+				description: 'Unauthorized',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			403: {
+				description: 'Forbidden - insufficient permissions',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/assessments/{id}',
+		description: 'Get a specific assessment by ID',
+		summary: 'Get assessment',
+		tags: ['Assessments'],
+		request: {
+			params: z.object({ id: common.uuidSchema })
+		},
+		responses: {
+			200: {
+				description: 'Assessment details',
+				content: {
+					'application/json': {
+						schema: z.unknown()
+					}
+				}
+			},
+			404: {
+				description: 'Assessment not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			401: {
+				description: 'Unauthorized',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'put',
+		path: '/api/assessments/{id}',
+		description: 'Update an existing assessment',
+		summary: 'Update assessment',
+		tags: ['Assessments'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			body: {
+				content: {
+					'application/json': {
+						schema: assessments.updateAssessmentSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Assessment updated successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Assessment not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			403: {
+				description: 'Forbidden - insufficient permissions',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'delete',
+		path: '/api/assessments/{id}',
+		description: 'Delete an assessment',
+		summary: 'Delete assessment',
+		tags: ['Assessments'],
+		request: {
+			params: z.object({ id: common.uuidSchema })
+		},
+		responses: {
+			200: {
+				description: 'Assessment deleted successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Assessment not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			403: {
+				description: 'Forbidden - insufficient permissions',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/assessments/{id}/assign',
+		description: 'Assign an assessment to students or classes',
+		summary: 'Assign assessment',
+		tags: ['Assessments'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			body: {
+				content: {
+					'application/json': {
+						schema: assessments.assignAssessmentSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Assessment assigned successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Assessment not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			403: {
+				description: 'Forbidden - insufficient permissions',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/assessments/{id}/results',
+		description: 'Get assessment results with optional statistics',
+		summary: 'Get assessment results',
+		tags: ['Assessments'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			query: assessments.getResultsQuerySchema
+		},
+		responses: {
+			200: {
+				description: 'Assessment results',
+				content: {
+					'application/json': {
+						schema: z.unknown()
+					}
+				}
+			},
+			404: {
+				description: 'Assessment not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			403: {
+				description: 'Forbidden - insufficient permissions',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	// ============================================================================
+	// EXERCISE ENDPOINTS
+	// ============================================================================
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/exercises',
+		description: 'List exercises with filtering, search, and pagination',
+		summary: 'List exercises',
+		tags: ['Exercises'],
+		request: {
+			query: exercises.listExercisesQuerySchema
+		},
+		responses: {
+			200: {
+				description: 'List of exercises',
+				content: {
+					'application/json': {
+						schema: z.object({
+							data: z.array(z.unknown()),
+							pagination: z.object({
+								page: z.number(),
+								limit: z.number(),
+								total: z.number()
+							})
+						})
+					}
+				}
+			},
+			400: {
+				description: 'Invalid query parameters',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/exercises',
+		description: 'Create a new exercise',
+		summary: 'Create exercise',
+		tags: ['Exercises'],
+		request: {
+			body: {
+				content: {
+					'application/json': {
+						schema: exercises.createExerciseSchema
+					}
+				}
+			}
+		},
+		responses: {
+			201: {
+				description: 'Exercise created successfully',
+				content: {
+					'application/json': {
+						schema: z.object({
+							id: z.string().uuid(),
+							message: z.string()
+						})
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			401: {
+				description: 'Unauthorized',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/exercises/{id}',
+		description: 'Get a specific exercise by ID',
+		summary: 'Get exercise',
+		tags: ['Exercises'],
+		request: {
+			params: z.object({ id: common.uuidSchema })
+		},
+		responses: {
+			200: {
+				description: 'Exercise details',
+				content: {
+					'application/json': {
+						schema: z.unknown()
+					}
+				}
+			},
+			404: {
+				description: 'Exercise not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'put',
+		path: '/api/exercises/{id}',
+		description: 'Update an existing exercise',
+		summary: 'Update exercise',
+		tags: ['Exercises'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			body: {
+				content: {
+					'application/json': {
+						schema: exercises.updateExerciseSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Exercise updated successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Exercise not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			403: {
+				description: 'Forbidden',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'delete',
+		path: '/api/exercises/{id}',
+		description: 'Delete an exercise',
+		summary: 'Delete exercise',
+		tags: ['Exercises'],
+		request: {
+			params: z.object({ id: common.uuidSchema })
+		},
+		responses: {
+			200: {
+				description: 'Exercise deleted successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Exercise not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			403: {
+				description: 'Forbidden',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/exercises/{id}/assign',
+		description: 'Assign an exercise to students or classes (bulk or single mode)',
+		summary: 'Assign exercise',
+		tags: ['Exercises'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			body: {
+				content: {
+					'application/json': {
+						schema: z.union([exercises.bulkAssignSchema, exercises.singleAssignSchema])
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Exercise assigned successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Exercise not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/exercises/{id}/assign',
+		description: 'Get exercise assignments with filtering',
+		summary: 'Get exercise assignments',
+		tags: ['Exercises'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			query: exercises.assignmentQuerySchema
+		},
+		responses: {
+			200: {
+				description: 'List of assignments',
+				content: {
+					'application/json': {
+						schema: z.array(z.unknown())
+					}
+				}
+			},
+			404: {
+				description: 'Exercise not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/exercises/assigned',
+		description: 'Get exercises assigned to the current student',
+		summary: 'Get assigned exercises (student)',
+		tags: ['Exercises'],
+		request: {
+			query: exercises.studentExerciseFiltersSchema
+		},
+		responses: {
+			200: {
+				description: 'List of assigned exercises',
+				content: {
+					'application/json': {
+						schema: z.array(z.unknown())
+					}
+				}
+			},
+			401: {
+				description: 'Unauthorized',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/exercises/export',
+		description: 'Export multiple exercises in JSON or Markdown format',
+		summary: 'Export exercises',
+		tags: ['Exercises'],
+		request: {
+			body: {
+				content: {
+					'application/json': {
+						schema: exercises.exportExercisesSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Exercises exported successfully',
+				content: {
+					'application/json': {
+						schema: z.unknown()
+					},
+					'text/markdown': {
+						schema: z.string()
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/exercises/{id}/export',
+		description: 'Export a single exercise',
+		summary: 'Export single exercise',
+		tags: ['Exercises'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			query: exercises.exportSingleExerciseQuerySchema
+		},
+		responses: {
+			200: {
+				description: 'Exercise exported successfully',
+				content: {
+					'application/json': {
+						schema: z.unknown()
+					},
+					'text/markdown': {
+						schema: z.string()
+					}
+				}
+			},
+			404: {
+				description: 'Exercise not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/exercises/{id}/view',
+		description: 'Mark an exercise as viewed',
+		summary: 'Mark exercise as viewed',
+		tags: ['Exercises'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			body: {
+				content: {
+					'application/json': {
+						schema: exercises.viewExerciseSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Exercise marked as viewed',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Exercise not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'patch',
+		path: '/api/exercises/assignments/{assignmentId}',
+		description: 'Update an exercise assignment',
+		summary: 'Update assignment',
+		tags: ['Exercises'],
+		request: {
+			params: z.object({ assignmentId: common.uuidSchema }),
+			body: {
+				content: {
+					'application/json': {
+						schema: exercises.updateAssignmentSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Assignment updated successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Assignment not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	// ============================================================================
+	// SRS (SPACED REPETITION) ENDPOINTS
+	// ============================================================================
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/srs/decks',
+		description: 'List all decks with optional filtering',
+		summary: 'List decks',
+		tags: ['SRS'],
+		request: {
+			query: srs.listDecksQuerySchema
+		},
+		responses: {
+			200: {
+				description: 'List of decks',
+				content: {
+					'application/json': {
+						schema: z.array(z.unknown())
+					}
+				}
+			},
+			401: {
+				description: 'Unauthorized',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/srs/decks',
+		description: 'Create a new deck',
+		summary: 'Create deck',
+		tags: ['SRS'],
+		request: {
+			body: {
+				content: {
+					'application/json': {
+						schema: srs.createDeckSchema
+					}
+				}
+			}
+		},
+		responses: {
+			201: {
+				description: 'Deck created successfully',
+				content: {
+					'application/json': {
+						schema: z.object({
+							id: z.string().uuid(),
+							message: z.string()
+						})
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/srs/decks/{id}',
+		description: 'Get a specific deck by ID',
+		summary: 'Get deck',
+		tags: ['SRS'],
+		request: {
+			params: z.object({ id: common.uuidSchema })
+		},
+		responses: {
+			200: {
+				description: 'Deck details',
+				content: {
+					'application/json': {
+						schema: z.unknown()
+					}
+				}
+			},
+			404: {
+				description: 'Deck not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'put',
+		path: '/api/srs/decks/{id}',
+		description: 'Update an existing deck',
+		summary: 'Update deck',
+		tags: ['SRS'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			body: {
+				content: {
+					'application/json': {
+						schema: srs.updateDeckSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Deck updated successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Deck not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'delete',
+		path: '/api/srs/decks/{id}',
+		description: 'Delete a deck',
+		summary: 'Delete deck',
+		tags: ['SRS'],
+		request: {
+			params: z.object({ id: common.uuidSchema })
+		},
+		responses: {
+			200: {
+				description: 'Deck deleted successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Deck not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/srs/decks/{id}/assign',
+		description: 'Assign a deck to students or classes',
+		summary: 'Assign deck',
+		tags: ['SRS'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			body: {
+				content: {
+					'application/json': {
+						schema: srs.assignDeckSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Deck assigned successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Deck not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/srs/cards',
+		description: 'List cards in a deck',
+		summary: 'List cards',
+		tags: ['SRS'],
+		request: {
+			query: srs.listCardsQuerySchema
+		},
+		responses: {
+			200: {
+				description: 'List of cards',
+				content: {
+					'application/json': {
+						schema: z.array(z.unknown())
+					}
+				}
+			},
+			400: {
+				description: 'Invalid query parameters',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/srs/cards',
+		description: 'Create a new card (template or custom)',
+		summary: 'Create card',
+		tags: ['SRS'],
+		request: {
+			body: {
+				content: {
+					'application/json': {
+						schema: srs.createCardSchema
+					}
+				}
+			}
+		},
+		responses: {
+			201: {
+				description: 'Card created successfully',
+				content: {
+					'application/json': {
+						schema: z.object({
+							id: z.string().uuid(),
+							message: z.string()
+						})
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'put',
+		path: '/api/srs/cards/{id}',
+		description: 'Update a custom card',
+		summary: 'Update card',
+		tags: ['SRS'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			body: {
+				content: {
+					'application/json': {
+						schema: srs.updateCardSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Card updated successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error or template card',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Card not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'delete',
+		path: '/api/srs/cards/{id}',
+		description: 'Delete a card',
+		summary: 'Delete card',
+		tags: ['SRS'],
+		request: {
+			params: z.object({ id: common.uuidSchema })
+		},
+		responses: {
+			200: {
+				description: 'Card deleted successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Card not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/srs/review/due',
+		description: 'Get cards due for review',
+		summary: 'Get due cards',
+		tags: ['SRS'],
+		request: {
+			query: srs.dueCardsQuerySchema
+		},
+		responses: {
+			200: {
+				description: 'List of due cards',
+				content: {
+					'application/json': {
+						schema: z.array(z.unknown())
+					}
+				}
+			},
+			400: {
+				description: 'Invalid query parameters',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/srs/review',
+		description: 'Submit a card review',
+		summary: 'Submit review',
+		tags: ['SRS'],
+		request: {
+			body: {
+				content: {
+					'application/json': {
+						schema: srs.submitReviewSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Review submitted successfully',
+				content: {
+					'application/json': {
+						schema: z.object({
+							nextReviewDate: z.string().datetime(),
+							message: z.string()
+						})
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	// ============================================================================
+	// MESSAGE ENDPOINTS
+	// ============================================================================
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/messages',
+		description: 'Send a new message',
+		summary: 'Send message',
+		tags: ['Messages'],
+		request: {
+			body: {
+				content: {
+					'application/json': {
+						schema: messages.sendMessageSchema
+					}
+				}
+			}
+		},
+		responses: {
+			201: {
+				description: 'Message sent successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			401: {
+				description: 'Unauthorized',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/messages/drafts',
+		description: 'Save a message draft',
+		summary: 'Save draft',
+		tags: ['Messages'],
+		request: {
+			body: {
+				content: {
+					'application/json': {
+						schema: messages.saveDraftSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Draft saved successfully',
+				content: {
+					'application/json': {
+						schema: z.object({
+							id: z.string().uuid(),
+							message: z.string()
+						})
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	// ============================================================================
+	// QUESTION ENDPOINTS
+	// ============================================================================
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/questions',
+		description: 'List question templates with filtering and pagination',
+		summary: 'List question templates',
+		tags: ['Questions'],
+		request: {
+			query: questions.listQuestionsQuerySchema
+		},
+		responses: {
+			200: {
+				description: 'List of question templates',
+				content: {
+					'application/json': {
+						schema: z.object({
+							data: z.array(z.unknown()),
+							pagination: z.object({
+								page: z.number(),
+								limit: z.number(),
+								total: z.number()
+							})
+						})
+					}
+				}
+			},
+			400: {
+				description: 'Invalid query parameters',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/questions',
+		description: 'Create a new question template',
+		summary: 'Create question template',
+		tags: ['Questions'],
+		request: {
+			body: {
+				content: {
+					'application/json': {
+						schema: questions.createQuestionTemplateSchema
+					}
+				}
+			}
+		},
+		responses: {
+			201: {
+				description: 'Question template created successfully',
+				content: {
+					'application/json': {
+						schema: z.object({
+							id: z.string().uuid(),
+							message: z.string()
+						})
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			403: {
+				description: 'Forbidden - insufficient permissions',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'put',
+		path: '/api/questions/{id}',
+		description: 'Update a question template',
+		summary: 'Update question template',
+		tags: ['Questions'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			body: {
+				content: {
+					'application/json': {
+						schema: questions.updateQuestionTemplateSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Question template updated successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Question template not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/questions/{id}/generate',
+		description: 'Generate a question instance from a template',
+		summary: 'Generate question',
+		tags: ['Questions'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			body: {
+				content: {
+					'application/json': {
+						schema: questions.generateQuestionSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Question generated successfully',
+				content: {
+					'application/json': {
+						schema: z.unknown()
+					}
+				}
+			},
+			404: {
+				description: 'Question template not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	// ============================================================================
+	// NOTIFICATION ENDPOINTS
+	// ============================================================================
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/notifications',
+		description: 'List notifications with pagination',
+		summary: 'List notifications',
+		tags: ['Notifications'],
+		request: {
+			query: notifications.listNotificationsQuerySchema
+		},
+		responses: {
+			200: {
+				description: 'List of notifications',
+				content: {
+					'application/json': {
+						schema: z.object({
+							data: z.array(z.unknown()),
+							pagination: z.object({
+								page: z.number(),
+								limit: z.number(),
+								total: z.number()
+							})
+						})
+					}
+				}
+			},
+			401: {
+				description: 'Unauthorized',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/notifications/{id}/read',
+		description: 'Mark a notification as read',
+		summary: 'Mark notification as read',
+		tags: ['Notifications'],
+		request: {
+			params: z.object({ id: common.uuidSchema })
+		},
+		responses: {
+			200: {
+				description: 'Notification marked as read',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Notification not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/notifications/read-all',
+		description: 'Mark all notifications as read',
+		summary: 'Mark all notifications as read',
+		tags: ['Notifications'],
+		responses: {
+			200: {
+				description: 'All notifications marked as read',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			401: {
+				description: 'Unauthorized',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	// ============================================================================
+	// CLASS ENDPOINTS
+	// ============================================================================
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/classes',
+		description: 'List all classes for the current teacher',
+		summary: 'List classes',
+		tags: ['Classes'],
+		responses: {
+			200: {
+				description: 'List of classes',
+				content: {
+					'application/json': {
+						schema: z.array(z.unknown())
+					}
+				}
+			},
+			401: {
+				description: 'Unauthorized',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/classes',
+		description: 'Create a new class',
+		summary: 'Create class',
+		tags: ['Classes'],
+		request: {
+			body: {
+				content: {
+					'application/json': {
+						schema: classes.createClassSchema
+					}
+				}
+			}
+		},
+		responses: {
+			201: {
+				description: 'Class created successfully',
+				content: {
+					'application/json': {
+						schema: z.object({
+							id: z.string().uuid(),
+							message: z.string()
+						})
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			403: {
+				description: 'Forbidden - teachers only',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'put',
+		path: '/api/classes/{id}',
+		description: 'Update a class',
+		summary: 'Update class',
+		tags: ['Classes'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			body: {
+				content: {
+					'application/json': {
+						schema: classes.updateClassSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Class updated successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Class not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/classes/{id}/students',
+		description: 'Get students in a class',
+		summary: 'Get class students',
+		tags: ['Classes'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			query: classes.getClassStudentsSchema
+		},
+		responses: {
+			200: {
+				description: 'List of students',
+				content: {
+					'application/json': {
+						schema: z.array(z.unknown())
+					}
+				}
+			},
+			404: {
+				description: 'Class not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	// ============================================================================
+	// ADMIN ENDPOINTS
+	// ============================================================================
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/admin/add-to-class',
+		description: 'Add a user to a class (admin only)',
+		summary: 'Add user to class',
+		tags: ['Admin'],
+		request: {
+			body: {
+				content: {
+					'application/json': {
+						schema: admin.addToClassSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'User added to class successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			403: {
+				description: 'Forbidden - admin only',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/admin/remove-from-class',
+		description: 'Remove a user from a class (admin only)',
+		summary: 'Remove user from class',
+		tags: ['Admin'],
+		request: {
+			body: {
+				content: {
+					'application/json': {
+						schema: admin.removeFromClassSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'User removed from class successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			403: {
+				description: 'Forbidden - admin only',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	registry.registerPath({
+		method: 'get',
+		path: '/api/admin/search-users',
+		description: 'Search for users (admin only)',
+		summary: 'Search users',
+		tags: ['Admin'],
+		request: {
+			query: admin.searchUsersSchema
+		},
+		responses: {
+			200: {
+				description: 'List of matching users',
+				content: {
+					'application/json': {
+						schema: z.array(z.unknown())
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			403: {
+				description: 'Forbidden - admin only',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	// ============================================================================
+	// REWARDS ENDPOINTS
+	// ============================================================================
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/rewards/award',
+		description: 'Award gidouilles to a student',
+		summary: 'Award gidouilles',
+		tags: ['Rewards'],
+		request: {
+			body: {
+				content: {
+					'application/json': {
+						schema: rewards.awardGidouillesSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Gidouilles awarded successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			403: {
+				description: 'Forbidden - teachers only',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	// ============================================================================
+	// RIDDLES ENDPOINTS
+	// ============================================================================
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/riddles/{id}/answer',
+		description: 'Submit an answer to a riddle',
+		summary: 'Submit riddle answer',
+		tags: ['Riddles'],
+		request: {
+			params: z.object({ id: common.uuidSchema }),
+			body: {
+				content: {
+					'application/json': {
+						schema: riddles.riddleAnswerSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Answer submitted and evaluated',
+				content: {
+					'application/json': {
+						schema: z.object({
+							correct: z.boolean(),
+							message: z.string()
+						})
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			},
+			404: {
+				description: 'Riddle not found',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	// ============================================================================
+	// ERROR LOGGING ENDPOINTS
+	// ============================================================================
+
+	registry.registerPath({
+		method: 'post',
+		path: '/api/errors/log',
+		description: 'Log a client-side error',
+		summary: 'Log error',
+		tags: ['Errors'],
+		request: {
+			body: {
+				content: {
+					'application/json': {
+						schema: errors.logErrorSchema
+					}
+				}
+			}
+		},
+		responses: {
+			200: {
+				description: 'Error logged successfully',
+				content: {
+					'application/json': {
+						schema: successResponseSchema
+					}
+				}
+			},
+			400: {
+				description: 'Validation error',
+				content: {
+					'application/json': {
+						schema: errorResponseSchema
+					}
+				}
+			}
+		}
+	});
+
+	// ============================================================================
+	// GENERATE OPENAPI DOCUMENT
+	// ============================================================================
+
+	const generator = new OpenApiGeneratorV31(registry.definitions);
+
+	return generator.generateDocument({
+		openapi: '3.1.0',
+		info: {
+			title: 'UbuMaths API',
+			version: '1.0.0',
+			description: `
+# UbuMaths API Documentation
+
+Educational mathematics platform API with comprehensive Zod validation.
+
+## Features
+
+- **Assessments**: Create, manage, and grade assessments
+- **Exercises**: Mathematical exercises with solutions
+- **SRS (Spaced Repetition)**: Flashcard system with FSRS algorithm
+- **Messages**: Internal messaging system
+- **Questions**: Question template management
+- **Notifications**: User notification system
+- **Classes**: Class management for teachers
+- **Rewards**: Gamification with gidouilles currency
+- **Admin**: Administrative operations
+
+## Authentication
+
+All endpoints require authentication via session cookies. Users must be logged in to access the API.
+
+## Rate Limiting
+
+- AI Chatbot: 5 requests per 15 minutes
+- General API: No rate limiting currently implemented
+
+## Error Handling
+
+All errors follow a consistent format:
+
+\`\`\`json
+{
+  "error": {
+    "message": "Human-readable error message",
+    "code": "ERROR_CODE",
+    "details": {}
+  }
+}
+\`\`\`
+
+## Validation
+
+All request bodies and query parameters are validated using Zod schemas. Invalid requests will return a 400 status code with detailed validation errors.
+			`.trim(),
+			contact: {
+				name: 'UbuMaths Team',
+				url: 'https://ubumaths.com'
+			}
+		},
+		servers: [
+			{
+				url: 'https://ubumaths.com',
+				description: 'Production server'
+			},
+			{
+				url: 'http://localhost:5173',
+				description: 'Development server (user)'
+			},
+			{
+				url: 'http://localhost:5175',
+				description: 'Development server (Claude)'
+			}
+		],
+		tags: [
+			{
+				name: 'Assessments',
+				description: 'Assessment creation, management, and grading'
+			},
+			{
+				name: 'Exercises',
+				description: 'Mathematical exercise management and assignment'
+			},
+			{
+				name: 'SRS',
+				description: 'Spaced repetition system (flashcards) with FSRS algorithm'
+			},
+			{
+				name: 'Messages',
+				description: 'Internal messaging system for teachers and students'
+			},
+			{
+				name: 'Questions',
+				description: 'Question template management and generation'
+			},
+			{
+				name: 'Notifications',
+				description: 'User notification system'
+			},
+			{
+				name: 'Classes',
+				description: 'Class management for teachers'
+			},
+			{
+				name: 'Admin',
+				description: 'Administrative operations (admin role required)'
+			},
+			{
+				name: 'Rewards',
+				description: 'Gamification and gidouilles reward system'
+			},
+			{
+				name: 'Riddles',
+				description: 'Daily riddles and puzzles'
+			},
+			{
+				name: 'Errors',
+				description: 'Client-side error logging'
+			}
+		],
+		components: {
+			securitySchemes: {
+				cookieAuth: {
+					type: 'apiKey',
+					in: 'cookie',
+					name: 'session',
+					description: 'Session-based authentication using HTTP-only cookies'
+				}
+			}
+		},
+		security: [
+			{
+				cookieAuth: []
+			}
+		]
+	});
+}

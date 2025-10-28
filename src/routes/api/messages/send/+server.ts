@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { sendMessageSchema } from '$lib/server/validation/messages';
 
 /**
  * POST /api/messages/send
@@ -14,18 +15,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	try {
+		// ✅ SECURITY: Validate input with Zod
 		const body = await request.json();
-		const { recipientIds, subject, content, isGroupMessage, classId, parentMessageId } = body;
+		const validation = sendMessageSchema.safeParse(body);
 
-		// Validation
-		if (!subject || subject.trim().length === 0) {
-			throw error(400, 'Le sujet est requis');
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
 		}
 
-		if (!content) {
-			throw error(400, 'Le contenu est requis');
-		}
+		const { recipientIds, subject, content, isGroupMessage, classId, parentMessageId } =
+			validation.data;
 
+		// Additional business logic validation
 		if (!isGroupMessage && (!recipientIds || recipientIds.length === 0)) {
 			throw error(400, 'Au moins un destinataire est requis');
 		}

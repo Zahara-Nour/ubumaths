@@ -11,7 +11,13 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { CreateCardRequest } from '$lib/srs/types';
+import {
+	createCardSchema,
+	listCardsQuerySchema,
+	cardListResponseSchema,
+	createCardResponseSchema
+} from '$lib/server/validation/srs';
+import { validateJsonResponse } from '$lib/server/validation/response-utils';
 
 /**
  * GET /api/srs/cards?deck_id=X
@@ -30,11 +36,17 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	const deckId = url.searchParams.get('deck_id');
+	// ✅ SECURITY: Validate query parameters with Zod
+	const queryRaw = {
+		deck_id: url.searchParams.get('deck_id')
+	};
+	const validation = listCardsQuerySchema.safeParse(queryRaw);
 
-	if (!deckId) {
-		return json({ error: 'deck_id query parameter is required' }, { status: 400 });
+	if (!validation.success) {
+		return json({ error: validation.error.issues[0].message }, { status: 400 });
 	}
+
+	const { deck_id: deckId } = validation.data;
 
 	try {
 		// Verify user owns deck
@@ -61,7 +73,14 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 			return json({ error: 'Failed to fetch cards' }, { status: 500 });
 		}
 
-		return json({ cards: cards || [] });
+		// Validate response
+		const validated = validateJsonResponse(
+			cardListResponseSchema,
+			{ cards: cards || [] },
+			'GET /api/srs/cards'
+		);
+
+		return json(validated);
 	} catch (error) {
 		console.error('Unexpected error in GET /api/srs/cards:', error);
 		return json({ error: 'Internal server error' }, { status: 500 });
@@ -98,16 +117,15 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 	}
 
 	try {
-		const body = (await request.json()) as CreateCardRequest;
+		// ✅ SECURITY: Validate input with Zod
+		const bodyRaw = await request.json();
+		const validation = createCardSchema.safeParse(bodyRaw);
 
-		// Validate required fields
-		if (!body.deckId) {
-			return json({ error: 'deckId is required' }, { status: 400 });
+		if (!validation.success) {
+			return json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
 
-		if (!body.cardType || !['template', 'custom'].includes(body.cardType)) {
-			return json({ error: 'Invalid cardType. Must be "template" or "custom"' }, { status: 400 });
-		}
+		const body = validation.data;
 
 		// Verify user owns deck and deck is not assigned (editable)
 		const { data: deck, error: deckError } = await supabase
@@ -128,12 +146,8 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 			);
 		}
 
-		// Validate card type specific fields
+		// Handle discriminated union - Zod has already validated the structure
 		if (body.cardType === 'template') {
-			if (!body.templateId) {
-				return json({ error: 'templateId is required for template cards' }, { status: 400 });
-			}
-
 			// Verify template exists and is published
 			const { data: template, error: templateError } = await supabase
 				.from('question_templates')
@@ -167,26 +181,16 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 				return json({ error: 'Failed to create card' }, { status: 500 });
 			}
 
-			return json({ card }, { status: 201 });
+			// Validate response
+			const validated = validateJsonResponse(
+				createCardResponseSchema,
+				{ card },
+				'POST /api/srs/cards (template)'
+			);
+
+			return json(validated, { status: 201 });
 		} else {
-			// Custom card
-			if (!body.frontContent || !Array.isArray(body.frontContent)) {
-				return json({ error: 'frontContent is required for custom cards' }, { status: 400 });
-			}
-
-			if (!body.backContent || !Array.isArray(body.backContent)) {
-				return json({ error: 'backContent is required for custom cards' }, { status: 400 });
-			}
-
-			// Validate content is not empty
-			if (body.frontContent.length === 0) {
-				return json({ error: 'frontContent cannot be empty' }, { status: 400 });
-			}
-
-			if (body.backContent.length === 0) {
-				return json({ error: 'backContent cannot be empty' }, { status: 400 });
-			}
-
+			// Custom card - Zod has already validated frontContent and backContent exist and are non-empty
 			// Create custom card
 			const { data: card, error: createError } = await supabase
 				.from('srs_cards')
@@ -205,7 +209,14 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 				return json({ error: 'Failed to create card' }, { status: 500 });
 			}
 
-			return json({ card }, { status: 201 });
+			// Validate response
+			const validated = validateJsonResponse(
+				createCardResponseSchema,
+				{ card },
+				'POST /api/srs/cards (custom)'
+			);
+
+			return json(validated, { status: 201 });
 		}
 	} catch (error) {
 		console.error('Unexpected error in POST /api/srs/cards:', error);

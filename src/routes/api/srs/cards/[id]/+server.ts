@@ -12,6 +12,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { updateCardSchema, uuidParamSchema } from '$lib/server/validation/srs';
 
 /**
  * GET /api/srs/cards/[id]
@@ -27,7 +28,13 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	const { id } = params;
+	// ✅ SECURITY: Validate UUID parameter
+	const paramValidation = uuidParamSchema.safeParse(params);
+	if (!paramValidation.success) {
+		return json({ error: 'Invalid card ID' }, { status: 400 });
+	}
+
+	const { id } = paramValidation.data;
 
 	try {
 		// Get card (RLS ensures user owns deck)
@@ -85,7 +92,13 @@ export const PUT: RequestHandler = async ({
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	const { id } = params;
+	// ✅ SECURITY: Validate UUID parameter
+	const paramValidation = uuidParamSchema.safeParse(params);
+	if (!paramValidation.success) {
+		return json({ error: 'Invalid card ID' }, { status: 400 });
+	}
+
+	const { id } = paramValidation.data;
 
 	try {
 		// Get card
@@ -127,22 +140,24 @@ export const PUT: RequestHandler = async ({
 			);
 		}
 
-		const body = await request.json();
+		// ✅ SECURITY: Validate input with Zod
+		const bodyRaw = await request.json();
+		const validation = updateCardSchema.safeParse(bodyRaw);
+
+		if (!validation.success) {
+			return json({ error: validation.error.issues[0].message }, { status: 400 });
+		}
+
+		const body = validation.data;
 
 		// Build update object
 		const updates: Record<string, unknown> = {};
 
 		if (body.frontContent !== undefined) {
-			if (!Array.isArray(body.frontContent) || body.frontContent.length === 0) {
-				return json({ error: 'frontContent must be a non-empty array' }, { status: 400 });
-			}
 			updates.front_content = body.frontContent;
 		}
 
 		if (body.backContent !== undefined) {
-			if (!Array.isArray(body.backContent) || body.backContent.length === 0) {
-				return json({ error: 'backContent must be a non-empty array' }, { status: 400 });
-			}
 			updates.back_content = body.backContent;
 		}
 
@@ -185,7 +200,13 @@ export const DELETE: RequestHandler = async ({ params, locals: { supabase, safeG
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	const { id } = params;
+	// ✅ SECURITY: Validate UUID parameter
+	const paramValidation = uuidParamSchema.safeParse(params);
+	if (!paramValidation.success) {
+		return json({ error: 'Invalid card ID' }, { status: 400 });
+	}
+
+	const { id } = paramValidation.data;
 
 	try {
 		// Get card

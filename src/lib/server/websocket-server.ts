@@ -2,24 +2,20 @@ import { WebSocketServer, WebSocket } from 'ws';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import dotenv from 'dotenv';
+import { initEnv, getEnv } from './env';
 
 // Load environment variables from .env file
 dotenv.config();
 
+// Validate environment variables
+initEnv();
+const env = getEnv();
+
 const PORT = 3001;
 
 // Initialize Supabase client (admin mode for server operations)
-const supabaseUrl = process.env.PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-if (!supabaseUrl || !supabaseServiceKey) {
-	console.error('Missing Supabase environment variables');
-	console.error('PUBLIC_SUPABASE_URL:', supabaseUrl);
-	console.error('SUPABASE_SERVICE_ROLE_KEY:', supabaseServiceKey ? 'Set' : 'Not set');
-	process.exit(1);
-}
-
-const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
+// Using validated environment variables ensures type safety and guarantees values exist
+const supabase = createClient<Database>(env.PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
 
 // Connection store: Map<user_id, WebSocket>
 const connections = new Map<string, WebSocket>();

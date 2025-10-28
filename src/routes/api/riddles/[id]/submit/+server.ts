@@ -3,6 +3,7 @@ import type { AnswerConfig } from '$lib/types/riddle';
 import { error, json } from '@sveltejs/kit';
 import { validateRiddleAnswer } from '$lib/utils/riddle-validator';
 import { createRiddleValidationMessage, getRiddleTeacherId } from '$lib/server/riddle-messages';
+import { riddleAnswerSchema } from '$lib/server/validation/riddles';
 
 /**
  * Submit riddle attempt
@@ -18,11 +19,15 @@ export const POST: RequestHandler = async ({
 		throw error(401, 'Non authentifié');
 	}
 
-	const { answer } = await request.json();
+	// ✅ SECURITY: Validate input with Zod
+	const body = await request.json();
+	const validation = riddleAnswerSchema.safeParse(body);
 
-	if (!answer) {
-		throw error(400, 'Réponse manquante');
+	if (!validation.success) {
+		throw error(400, validation.error.issues[0].message);
 	}
+
+	const { answer } = validation.data;
 
 	// Fetch riddle
 	const { data: riddle, error: riddleError } = await supabase

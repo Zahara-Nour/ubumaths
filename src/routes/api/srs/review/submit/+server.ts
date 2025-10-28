@@ -10,9 +10,10 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { SubmitReviewRequest, CardStats } from '$lib/srs/types';
+import type { CardStats } from '$lib/srs/types';
 import { FSRS } from '$lib/srs/fsrs';
 import { DEFAULT_FSRS_PARAMS } from '$lib/srs/config';
+import { submitReviewSchema } from '$lib/server/validation/srs';
 
 /**
  * POST /api/srs/review/submit
@@ -43,21 +44,16 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 	}
 
 	try {
-		const body = (await request.json()) as SubmitReviewRequest;
+		// ✅ SECURITY: Validate input with Zod
+		const bodyRaw = await request.json();
+		const validation = submitReviewSchema.safeParse(bodyRaw);
+
+		if (!validation.success) {
+			return json({ error: validation.error.issues[0].message }, { status: 400 });
+		}
+
+		const body = validation.data;
 		console.log('[SRS Submit] Received review:', body);
-
-		// Validate required fields
-		if (!body.cardId) {
-			return json({ error: 'cardId is required' }, { status: 400 });
-		}
-
-		if (!body.deckId) {
-			return json({ error: 'deckId is required' }, { status: 400 });
-		}
-
-		if (!body.grade || ![1, 2, 3, 4].includes(body.grade)) {
-			return json({ error: 'grade must be 1, 2, 3, or 4' }, { status: 400 });
-		}
 
 		// Get card to determine type and reference
 		console.log('[SRS Submit] Fetching card:', body.cardId);

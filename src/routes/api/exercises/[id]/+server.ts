@@ -9,6 +9,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getExercise, updateExercise, deleteExercise } from '$lib/server/exercises';
 import type { Database } from '$lib/types/database';
+import { validateUpdateExercise } from '$lib/server/validation';
 
 type ExerciseUpdate = Database['public']['Tables']['exercises']['Update'];
 
@@ -74,13 +75,18 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	const { id } = params;
 
-	// Parse update data
-	const data: Omit<ExerciseUpdate, 'id' | 'created_by' | 'created_at'> = await request.json();
+	// Parse and validate update data
+	const body = await request.json();
+	const validation = validateUpdateExercise(body);
 
-	// Validate difficulty if provided
-	if (data.difficulty !== undefined && ![1, 2, 3].includes(data.difficulty)) {
-		throw error(400, 'Invalid difficulty: must be 1 (easy), 2 (medium), or 3 (hard)');
+	if (!validation.success) {
+		const errorMsg = validation.error.errors
+			.map((e) => `${e.path.join('.')}: ${e.message}`)
+			.join('; ');
+		throw error(400, `Validation failed: ${errorMsg}`);
 	}
+
+	const data = validation.data as Omit<ExerciseUpdate, 'id' | 'created_by' | 'created_at'>;
 
 	// Update exercise
 	const result = await updateExercise(locals.supabase, id, data, user.id);

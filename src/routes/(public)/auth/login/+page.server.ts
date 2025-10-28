@@ -45,6 +45,7 @@ import {
 	checkLoginRateLimitByEmail,
 	checkOAuthRateLimitByIP
 } from '$lib/server/rateLimiter';
+import { validateFormData, loginFormSchema } from '$lib/server/validation';
 
 const logger = createLogger('login/+page.server.ts');
 
@@ -112,18 +113,15 @@ export const actions = {
 	 * SECURITY: Rate limited by both IP and email to prevent brute force attacks
 	 */
 	login: async ({ request, locals: { supabase }, getClientAddress }) => {
-		// Extract form data
+		// Extract and validate form data
 		const formData = await request.formData();
-		const email = formData.get('email') as string;
-		const password = formData.get('password') as string;
 
-		// Validate inputs
-		if (!email || !password) {
-			return fail(400, {
-				error: 'Email and password are required',
-				email
-			});
+		const validation = validateFormData(loginFormSchema, formData);
+		if (!validation.success) {
+			return fail(400, { errors: validation.errors });
 		}
+
+		const { email, password } = validation.data;
 
 		// SECURITY: Check rate limits BEFORE attempting authentication
 		// This prevents database queries on rate-limited requests

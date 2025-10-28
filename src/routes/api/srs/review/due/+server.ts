@@ -12,6 +12,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { ReviewCard } from '$lib/srs/types';
 import { generateSRSInstance } from '$lib/srs/generator';
+import { dueCardsQuerySchema } from '$lib/server/validation/srs';
 
 /**
  * GET /api/srs/review/due?deck_id=X
@@ -32,11 +33,17 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	const deckId = url.searchParams.get('deck_id');
+	// ✅ SECURITY: Validate query parameters with Zod
+	const queryRaw = {
+		deck_id: url.searchParams.get('deck_id')
+	};
+	const validation = dueCardsQuerySchema.safeParse(queryRaw);
 
-	if (!deckId) {
-		return json({ error: 'deck_id query parameter is required' }, { status: 400 });
+	if (!validation.success) {
+		return json({ error: validation.error.issues[0].message }, { status: 400 });
 	}
+
+	const { deck_id: deckId } = validation.data;
 
 	try {
 		// Verify user owns deck

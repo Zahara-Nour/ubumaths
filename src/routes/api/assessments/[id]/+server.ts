@@ -7,8 +7,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { getAssessment, updateAssessment, archiveAssessment } from '$lib/server/assessments';
-import type { UpdateAssessmentData } from '$lib/types/assessment';
+import { updateAssessmentSchema } from '$lib/server/validation/assessments';
+import { uuidSchema } from '$lib/server/validation/common';
 
 /**
  * GET /api/assessments/[id]
@@ -20,7 +22,13 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(401, 'Unauthorized');
 	}
 
-	const { id } = params;
+	// Validate UUID
+	const idValidation = uuidSchema.safeParse(params.id);
+	if (!idValidation.success) {
+		throw error(400, 'Invalid assessment ID format');
+	}
+
+	const id = idValidation.data;
 
 	const result = await getAssessment(locals.supabase, id);
 
@@ -72,7 +80,14 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	const { user } = session;
-	const { id } = params;
+
+	// Validate UUID
+	const idValidation = uuidSchema.safeParse(params.id);
+	if (!idValidation.success) {
+		throw error(400, 'Invalid assessment ID format');
+	}
+
+	const id = idValidation.data;
 
 	// Only teachers can update
 	const { data: profile } = await locals.supabase
@@ -85,11 +100,16 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(403, 'Forbidden - Teachers only');
 	}
 
-	// Parse update data
-	const data: UpdateAssessmentData = await request.json();
+	// Parse and validate request body
+	const body = await request.json();
+	const validation = updateAssessmentSchema.safeParse(body);
+
+	if (!validation.success) {
+		throw error(400, validation.error.issues[0].message);
+	}
 
 	// Update assessment
-	const result = await updateAssessment(locals.supabase, id, data, user.id);
+	const result = await updateAssessment(locals.supabase, id, validation.data, user.id);
 
 	if (result.error) {
 		if (result.error.message === 'Unauthorized') {
@@ -113,7 +133,14 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	}
 
 	const { user } = session;
-	const { id } = params;
+
+	// Validate UUID
+	const idValidation = uuidSchema.safeParse(params.id);
+	if (!idValidation.success) {
+		throw error(400, 'Invalid assessment ID format');
+	}
+
+	const id = idValidation.data;
 
 	// Only teachers can delete
 	const { data: profile } = await locals.supabase
@@ -143,10 +170,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 /**
  * Helper: Get student's class IDs
  */
-async function getStudentClassIds(
-	supabase: ReturnType<typeof createClient>,
-	studentId: string
-): Promise<string> {
+async function getStudentClassIds(supabase: SupabaseClient, studentId: string): Promise<string> {
 	const { data } = await supabase
 		.from('class_members')
 		.select('class_id')

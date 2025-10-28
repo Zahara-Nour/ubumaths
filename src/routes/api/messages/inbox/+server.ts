@@ -1,5 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { inboxMessagesResponseSchema } from '$lib/server/validation/messages';
+import { validateJsonResponse } from '$lib/server/validation/response-utils';
 
 /**
  * GET /api/messages/inbox
@@ -39,7 +41,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			throw error(500, 'Erreur lors de la récupération de la boîte de réception');
 		}
 
-		return json({ messages: messages || [] });
+		// Validate response
+		const validated = validateJsonResponse(
+			inboxMessagesResponseSchema,
+			{ messages: messages || [] },
+			'GET /api/messages/inbox'
+		);
+
+		return json(validated);
 	} catch (err) {
 		console.error('Error in inbox API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {

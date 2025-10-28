@@ -11,8 +11,14 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { CreateDeckRequest } from '$lib/srs/types';
 import { DEFAULT_DESIRED_RETENTION, DEFAULT_MAXIMUM_INTERVAL } from '$lib/srs/config';
+import {
+	createDeckSchema,
+	listDecksQuerySchema,
+	deckListResponseSchema,
+	createDeckResponseSchema
+} from '$lib/server/validation/srs';
+import { validateJsonResponse } from '$lib/server/validation/response-utils';
 
 /**
  * GET /api/srs/decks
@@ -20,9 +26,13 @@ import { DEFAULT_DESIRED_RETENTION, DEFAULT_MAXIMUM_INTERVAL } from '$lib/srs/co
  * List all decks for the authenticated user.
  * Includes deck statistics (total cards, due count, etc.)
  *
+ * Query params (optional):
+ * - deckType: 'official' | 'personal'
+ * - search: string (max 100 chars)
+ *
  * @returns Array of decks with stats
  */
-export const GET: RequestHandler = async ({ locals: { supabase, safeGetSession } }) => {
+export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSession } }) => {
 	const { session, user } = await safeGetSession();
 
 	if (!user || !session) {
@@ -30,12 +40,33 @@ export const GET: RequestHandler = async ({ locals: { supabase, safeGetSession }
 	}
 
 	try {
+		// ✅ SECURITY: Validate query parameters with Zod
+		const queryRaw = {
+			deckType: url.searchParams.get('deckType'),
+			search: url.searchParams.get('search')
+		};
+		const validation = listDecksQuerySchema.safeParse(queryRaw);
+
+		if (!validation.success) {
+			return json({ error: validation.error.issues[0].message }, { status: 400 });
+		}
+
+		const query = validation.data;
 		// Get user's decks
-		const { data: decks, error: decksError } = await supabase
-			.from('srs_decks')
-			.select('*')
-			.eq('owner_id', user.id)
-			.order('created_at', { ascending: false });
+		let dbQuery = supabase.from('srs_decks').select('*').eq('owner_id', user.id);
+
+		// Apply optional filters
+		if (query.deckType) {
+			dbQuery = dbQuery.eq('deck_type', query.deckType);
+		}
+
+		if (query.search) {
+			dbQuery = dbQuery.ilike('name', `%${query.search}%`);
+		}
+
+		const { data: decks, error: decksError } = await dbQuery.order('created_at', {
+			ascending: false
+		});
 
 		if (decksError) {
 			console.error('Error fetching decks:', decksError);
@@ -85,7 +116,14 @@ export const GET: RequestHandler = async ({ locals: { supabase, safeGetSession }
 			})
 		);
 
-		return json({ decks: decksWithStats });
+		// Validate response
+		const validated = validateJsonResponse(
+			deckListResponseSchema,
+			{ decks: decksWithStats },
+			'GET /api/srs/decks'
+		);
+
+		return json(validated);
 	} catch (error) {
 		console.error('Unexpected error in GET /api/srs/decks:', error);
 		return json({ error: 'Internal server error' }, { status: 500 });
@@ -115,19 +153,15 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 	}
 
 	try {
-		const body = (await request.json()) as CreateDeckRequest;
+		// ✅ SECURITY: Validate input with Zod
+		const bodyRaw = await request.json();
+		const validation = createDeckSchema.safeParse(bodyRaw);
 
-		// Validate required fields
-		if (!body.name || body.name.trim().length === 0) {
-			return json({ error: 'Deck name is required' }, { status: 400 });
+		if (!validation.success) {
+			return json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
 
-		if (!body.deckType || !['official', 'personal'].includes(body.deckType)) {
-			return json(
-				{ error: 'Invalid deck type. Must be "official" or "personal"' },
-				{ status: 400 }
-			);
-		}
+		const body = validation.data;
 
 		// Build config with defaults
 		const config = {
@@ -135,11 +169,6 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 			maximumInterval: body.config?.maximumInterval ?? DEFAULT_MAXIMUM_INTERVAL,
 			...(body.config?.parameters && { parameters: body.config.parameters })
 		};
-
-		// Validate desiredRetention
-		if (config.desiredRetention < 0.7 || config.desiredRetention > 0.97) {
-			return json({ error: 'Desired retention must be between 0.7 and 0.97' }, { status: 400 });
-		}
 
 		// Create deck
 		const { data: deck, error: createError } = await supabase
@@ -160,7 +189,14 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 			return json({ error: 'Failed to create deck' }, { status: 500 });
 		}
 
-		return json({ deck }, { status: 201 });
+		// Validate response
+		const validated = validateJsonResponse(
+			createDeckResponseSchema,
+			{ deck },
+			'POST /api/srs/decks'
+		);
+
+		return json(validated, { status: 201 });
 	} catch (error) {
 		console.error('Unexpected error in POST /api/srs/decks:', error);
 		return json({ error: 'Internal server error' }, { status: 500 });

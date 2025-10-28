@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 import { checkLoginRateLimitByIP } from '$lib/server/rateLimiter';
+import { getEnv } from '$lib/server/env';
 
 interface TextContent {
 	type: 'text';
@@ -28,6 +28,9 @@ interface ChatRequest {
 
 export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
 	try {
+		// Get validated environment variables
+		const env = getEnv();
+
 		// ====================================================================
 		// SECURITY: Authentication Check
 		// ====================================================================
@@ -84,7 +87,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 			}
 		}
 
-		// Check if API key is configured
+		// Check if API key is configured (type-safe optional check)
 		if (!env.GROQ_API_KEY) {
 			console.error('GROQ_API_KEY not configured');
 			return json(

@@ -26,17 +26,22 @@ DECLARE
   v_student_id UUID;
   i INTEGER;
 BEGIN
-  -- Get school ID
+  -- Get or create school ID
   SELECT id INTO v_school_id
   FROM schools
   WHERE name = 'Lycée Franco-Qatari Voltaire'
   LIMIT 1;
 
   IF v_school_id IS NULL THEN
-    RAISE EXCEPTION 'School "Lycée Franco-Qatari Voltaire" not found. Please create it first.';
-  END IF;
+    -- Create the school if it doesn't exist
+    INSERT INTO schools (name, country, city)
+    VALUES ('Lycée Franco-Qatari Voltaire', 'Qatar', 'Doha')
+    RETURNING id INTO v_school_id;
 
-  RAISE NOTICE 'Using school_id: %', v_school_id;
+    RAISE NOTICE 'Created school "Lycée Franco-Qatari Voltaire" with ID: %', v_school_id;
+  ELSE
+    RAISE NOTICE 'Using existing school_id: %', v_school_id;
+  END IF;
 
   -- ============================================================
   -- PART 1: CREATE 4 NEW TEACHERS

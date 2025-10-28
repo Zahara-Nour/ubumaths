@@ -18,6 +18,7 @@
 
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
+import { validateFormData, updateProfileFormSchema } from '$lib/server/validation';
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase }, parent }) => {
 	const { user } = await safeGetSession();
@@ -69,36 +70,28 @@ export const actions: Actions = {
 		}
 
 		const formData = await request.formData();
-		const userId = formData.get('user_id') as string;
-		const firstname = formData.get('firstname') as string;
-		const lastname = formData.get('lastname') as string;
-		const email = formData.get('email') as string;
-		const role = formData.get('role') as 'student' | 'teacher' | 'admin';
-		const schoolId = formData.get('school_id') as string;
-		const avatarUrl = formData.get('avatar_url') as string;
-		const gender = formData.get('gender') as 'boy' | 'girl' | '';
-		const isTest = formData.get('is_test') === 'on'; // Checkbox value
 
-		if (!userId) {
-			return fail(400, { message: 'User ID is required' });
+		const validation = validateFormData(updateProfileFormSchema, formData);
+		if (!validation.success) {
+			return fail(400, { errors: validation.errors });
 		}
 
 		// Build update object
 		const updateData = {
-			firstname: firstname || null,
-			lastname: lastname || null,
-			email,
-			role,
-			school_id: schoolId || null,
-			avatar_url: avatarUrl || null,
-			gender: gender || null,
-			is_test: isTest
+			firstname: validation.data.firstname,
+			lastname: validation.data.lastname,
+			email: validation.data.email,
+			role: validation.data.role,
+			school_id: validation.data.school_id,
+			avatar_url: validation.data.avatar_url,
+			gender: validation.data.gender,
+			is_test: validation.data.is_test ?? false
 		};
 
 		const { error: updateError } = await supabase
 			.from('profiles')
 			.update(updateData)
-			.eq('id', userId);
+			.eq('id', validation.data.user_id);
 
 		if (updateError) {
 			console.error('Update error:', updateError);
@@ -109,7 +102,7 @@ export const actions: Actions = {
 		const { data: updatedProfile, error: fetchError } = await supabase
 			.from('profiles')
 			.select('*, schools(name), class_members(class_id)')
-			.eq('id', userId)
+			.eq('id', validation.data.user_id)
 			.single();
 
 		if (fetchError) {

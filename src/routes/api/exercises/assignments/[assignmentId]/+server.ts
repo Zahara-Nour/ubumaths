@@ -9,6 +9,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { updateAssignment, deleteAssignment } from '$lib/server/exercise-assignments';
 import type { ExerciseAssignment } from '$lib/exercises/types';
+import { validateUpdateAssignment } from '$lib/server/validation';
 
 /**
  * PATCH /api/exercises/assignments/[assignmentId]
@@ -40,17 +41,19 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 	}
 
 	const assignmentId = params.assignmentId;
-	const updates: Partial<Pick<ExerciseAssignment, 'optional_deadline' | 'notes' | 'is_active'>> =
-		await request.json();
+	const body = await request.json();
 
-	// Validate that at least one field is being updated
-	if (
-		updates.optional_deadline === undefined &&
-		updates.notes === undefined &&
-		updates.is_active === undefined
-	) {
-		return json({ error: 'No fields to update' }, { status: 400 });
+	// Validate update body
+	const validation = validateUpdateAssignment(body);
+	if (!validation.success) {
+		const errorMsg = validation.error.errors
+			.map((e) => `${e.path.join('.')}: ${e.message}`)
+			.join('; ');
+		return json({ error: `Validation failed: ${errorMsg}` }, { status: 400 });
 	}
+
+	const updates: Partial<Pick<ExerciseAssignment, 'optional_deadline' | 'notes' | 'is_active'>> =
+		validation.data;
 
 	// Update assignment
 	const { data: updated, error: updateError } = await updateAssignment(

@@ -8,6 +8,13 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getExercises, createExercise, type ExerciseFilters } from '$lib/server/exercises';
 import type { Database } from '$lib/types/database';
+import {
+	validateListExercisesQuery,
+	validateCreateExercise,
+	exerciseListResponseSchema,
+	createExerciseResponseSchema
+} from '$lib/server/validation';
+import { validateJsonResponse } from '$lib/server/validation/response-utils';
 
 type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -35,32 +42,34 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(403, 'Forbidden - Teachers only');
 	}
 
-	// Parse query parameters
-	const difficulty = url.searchParams.get('difficulty');
-	const tags = url.searchParams.get('tags')?.split(',').filter(Boolean);
-	const topic = url.searchParams.get('topic');
-	const grade_levels = url.searchParams.get('grade_levels')?.split(',').filter(Boolean);
-	const search = url.searchParams.get('search');
-	const page = parseInt(url.searchParams.get('page') || '1');
-	const limit = parseInt(url.searchParams.get('limit') || '50');
+	// Validate and parse query parameters
+	const queryValidation = validateListExercisesQuery(url.searchParams);
+	if (!queryValidation.success) {
+		const errorMsg = queryValidation.error.errors
+			.map((e) => `${e.path.join('.')}: ${e.message}`)
+			.join('; ');
+		throw error(400, `Invalid query parameters: ${errorMsg}`);
+	}
+
+	const { page, limit, difficulty, tags, topic, grade_levels, search } = queryValidation.data;
 
 	// Build filters
 	const filters: ExerciseFilters = {};
 
-	if (difficulty && ['1', '2', '3'].includes(difficulty)) {
-		filters.difficulty = parseInt(difficulty) as 1 | 2 | 3;
+	if (difficulty !== undefined) {
+		filters.difficulty = difficulty as 1 | 2 | 3;
 	}
 
-	if (tags && tags.length > 0) {
-		filters.tags = tags;
+	if (tags) {
+		filters.tags = tags.split(',').filter(Boolean);
 	}
 
 	if (topic) {
 		filters.topic = topic;
 	}
 
-	if (grade_levels && grade_levels.length > 0) {
-		filters.grade_levels = grade_levels;
+	if (grade_levels) {
+		filters.grade_levels = grade_levels.split(',').filter(Boolean);
 	}
 
 	if (search) {
@@ -75,15 +84,22 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(500, 'Failed to fetch exercises');
 	}
 
-	return json({
-		exercises: result.data,
-		pagination: {
-			page: result.page,
-			limit: result.limit,
-			total: result.count,
-			totalPages: result.totalPages
-		}
-	});
+	// Validate response
+	const validated = validateJsonResponse(
+		exerciseListResponseSchema,
+		{
+			exercises: result.data,
+			pagination: {
+				page: result.page,
+				limit: result.limit,
+				total: result.count,
+				totalPages: result.totalPages
+			}
+		},
+		'GET /api/exercises'
+	);
+
+	return json(validated);
 };
 
 /**
@@ -110,18 +126,18 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(403, 'Forbidden - Teachers only');
 	}
 
-	// Parse request body
-	const data: Omit<ExerciseInsert, 'created_by'> = await request.json();
+	// Parse and validate request body
+	const body = await request.json();
+	const validation = validateCreateExercise(body);
 
-	// Validate required fields
-	if (!data.statement_md || !data.solution_md || data.difficulty === undefined) {
-		throw error(400, 'Missing required fields: statement_md, solution_md, difficulty');
+	if (!validation.success) {
+		const errorMsg = validation.error.errors
+			.map((e) => `${e.path.join('.')}: ${e.message}`)
+			.join('; ');
+		throw error(400, `Validation failed: ${errorMsg}`);
 	}
 
-	// Validate difficulty
-	if (![1, 2, 3].includes(data.difficulty)) {
-		throw error(400, 'Invalid difficulty: must be 1 (easy), 2 (medium), or 3 (hard)');
-	}
+	const data = validation.data as Omit<ExerciseInsert, 'created_by'>;
 
 	// Create exercise
 	const result = await createExercise(locals.supabase, data, user.id);
@@ -131,5 +147,12 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(500, 'Failed to create exercise');
 	}
 
-	return json({ exercise: result.data }, { status: 201 });
+	// Validate response
+	const validated = validateJsonResponse(
+		createExerciseResponseSchema,
+		{ exercise: result.data },
+		'POST /api/exercises'
+	);
+
+	return json(validated, { status: 201 });
 };

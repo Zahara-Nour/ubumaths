@@ -5,7 +5,7 @@
  * GET - List all assignments for an exercise (teacher only)
  */
 
-import { json } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
 	createExerciseAssignment,
@@ -17,6 +17,11 @@ import type {
 	BulkAssignmentData,
 	TeacherAssignmentFilters
 } from '$lib/exercises/types';
+import {
+	validateBulkAssign,
+	validateSingleAssign,
+	validateAssignmentQuery
+} from '$lib/server/validation';
 
 /**
  * POST /api/exercises/[id]/assign
@@ -52,14 +57,22 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 
 	// Check if bulk assignment (has students[] or classes[] or make_public)
 	if (body.students || body.classes || body.make_public) {
-		// Bulk assignment
+		// Validate bulk assignment
+		const validation = validateBulkAssign(body);
+		if (!validation.success) {
+			const errorMsg = validation.error.errors
+				.map((e) => `${e.path.join('.')}: ${e.message}`)
+				.join('; ');
+			throw error(400, `Validation failed: ${errorMsg}`);
+		}
+
 		const bulkData: BulkAssignmentData = {
 			exercise_id: exerciseId,
-			students: body.students,
-			classes: body.classes,
-			make_public: body.make_public,
-			optional_deadline: body.optional_deadline || null,
-			notes: body.notes
+			students: validation.data.students,
+			classes: validation.data.classes,
+			make_public: validation.data.make_public,
+			optional_deadline: validation.data.optional_deadline || null,
+			notes: validation.data.notes
 		};
 
 		const { count, error: bulkError } = await createBulkAssignments(
@@ -70,7 +83,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 
 		if (bulkError) {
 			console.error('Failed to create bulk assignments:', bulkError);
-			return json({ error: bulkError }, { status: 400 });
+			throw error(400, bulkError);
 		}
 
 		return json(
@@ -82,14 +95,22 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 		);
 	}
 
-	// Single assignment
+	// Validate single assignment
+	const validation = validateSingleAssign(body);
+	if (!validation.success) {
+		const errorMsg = validation.error.errors
+			.map((e) => `${e.path.join('.')}: ${e.message}`)
+			.join('; ');
+		throw error(400, `Validation failed: ${errorMsg}`);
+	}
+
 	const assignmentData: CreateExerciseAssignment = {
 		exercise_id: exerciseId,
-		assigned_to_type: body.assigned_to_type,
-		student_id: body.student_id,
-		class_id: body.class_id,
-		optional_deadline: body.optional_deadline || null,
-		notes: body.notes
+		assigned_to_type: validation.data.assigned_to_type,
+		student_id: validation.data.student_id,
+		class_id: validation.data.class_id,
+		optional_deadline: validation.data.optional_deadline || null,
+		notes: validation.data.notes
 	};
 
 	const { data: assignment, error: assignmentError } = await createExerciseAssignment(
@@ -100,7 +121,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 
 	if (assignmentError) {
 		console.error('Failed to create assignment:', assignmentError);
-		return json({ error: assignmentError }, { status: 400 });
+		throw error(400, assignmentError);
 	}
 
 	return json(assignment, { status: 201 });
@@ -137,24 +158,29 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 
 	const exerciseId = params.id;
 
-	// Parse query params for filters
+	// Validate and parse query params for filters
+	const queryValidation = validateAssignmentQuery(url.searchParams);
+	if (!queryValidation.success) {
+		const errorMsg = queryValidation.error.errors
+			.map((e) => `${e.path.join('.')}: ${e.message}`)
+			.join('; ');
+		return json({ error: `Invalid query parameters: ${errorMsg}` }, { status: 400 });
+	}
+
 	const filters: TeacherAssignmentFilters = {
 		exercise_id: exerciseId
 	};
 
-	const typeParam = url.searchParams.get('type');
-	if (typeParam === 'student' || typeParam === 'class' || typeParam === 'public') {
-		filters.assigned_to_type = typeParam;
+	if (queryValidation.data.type) {
+		filters.assigned_to_type = queryValidation.data.type;
 	}
 
-	const activeParam = url.searchParams.get('active');
-	if (activeParam !== null) {
-		filters.is_active = activeParam === 'true';
+	if (queryValidation.data.active !== undefined) {
+		filters.is_active = queryValidation.data.active;
 	}
 
-	const hasDeadlineParam = url.searchParams.get('has_deadline');
-	if (hasDeadlineParam !== null) {
-		filters.has_deadline = hasDeadlineParam === 'true';
+	if (queryValidation.data.has_deadline !== undefined) {
+		filters.has_deadline = queryValidation.data.has_deadline;
 	}
 
 	// Fetch assignments

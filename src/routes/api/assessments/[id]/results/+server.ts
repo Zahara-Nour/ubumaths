@@ -10,6 +10,8 @@ import {
 	getAssessmentStatistics,
 	getClassStatistics
 } from '$lib/server/assessments';
+import { getResultsQuerySchema } from '$lib/server/validation/assessments';
+import { uuidSchema } from '$lib/server/validation/common';
 
 /**
  * GET /api/assessments/[id]/results
@@ -22,7 +24,14 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	}
 
 	const { user } = session;
-	const { id: assessmentId } = params;
+
+	// Validate UUID
+	const idValidation = uuidSchema.safeParse(params.id);
+	if (!idValidation.success) {
+		throw error(400, 'Invalid assessment ID format');
+	}
+
+	const assessmentId = idValidation.data;
 
 	// Only teachers can view results
 	const { data: profile } = await locals.supabase
@@ -46,9 +55,19 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		throw error(403, 'Forbidden - Not your assessment');
 	}
 
-	// Get what data the client wants
-	const includeStats = url.searchParams.get('stats') === 'true';
-	const includeClassStats = url.searchParams.get('class_stats') === 'true';
+	// Validate query parameters
+	const queryValidation = getResultsQuerySchema.safeParse({
+		stats: url.searchParams.get('stats'),
+		class_stats: url.searchParams.get('class_stats'),
+		student_id: url.searchParams.get('student_id'),
+		class_id: url.searchParams.get('class_id')
+	});
+
+	if (!queryValidation.success) {
+		throw error(400, queryValidation.error.issues[0].message);
+	}
+
+	const { stats: includeStats, class_stats: includeClassStats } = queryValidation.data;
 
 	// Get results
 	const resultsPromise = getAssessmentResults(locals.supabase, assessmentId);

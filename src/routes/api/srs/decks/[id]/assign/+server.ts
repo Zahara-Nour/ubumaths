@@ -11,10 +11,10 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { AssignDeckRequest } from '$lib/srs/types';
 import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
+import { assignDeckSchema, uuidParamSchema } from '$lib/server/validation/srs';
 
 /**
  * POST /api/srs/decks/[id]/assign
@@ -41,7 +41,13 @@ export const POST: RequestHandler = async ({
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	const { id: deckId } = params;
+	// ✅ SECURITY: Validate UUID parameter
+	const paramValidation = uuidParamSchema.safeParse(params);
+	if (!paramValidation.success) {
+		return json({ error: 'Invalid deck ID' }, { status: 400 });
+	}
+
+	const { id: deckId } = paramValidation.data;
 
 	try {
 		// Check if user is teacher or admin
@@ -67,16 +73,15 @@ export const POST: RequestHandler = async ({
 			return json({ error: 'Source deck not found' }, { status: 404 });
 		}
 
-		const body = (await request.json()) as AssignDeckRequest;
+		// ✅ SECURITY: Validate input with Zod
+		const bodyRaw = await request.json();
+		const validation = assignDeckSchema.safeParse(bodyRaw);
 
-		// Validate request
-		if (!body.targetType || !['student', 'class'].includes(body.targetType)) {
-			return json({ error: 'Invalid target type' }, { status: 400 });
+		if (!validation.success) {
+			return json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
 
-		if (!body.targetIds || !Array.isArray(body.targetIds) || body.targetIds.length === 0) {
-			return json({ error: 'At least one target ID is required' }, { status: 400 });
-		}
+		const body = validation.data;
 
 		// Get target student IDs
 		let studentIds: string[] = [];

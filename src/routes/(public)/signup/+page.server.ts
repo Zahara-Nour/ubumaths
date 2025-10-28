@@ -30,6 +30,7 @@ import type { Actions } from './$types';
 import { createLogger } from '$lib/utils/logger';
 import { validatePasswordPolicy } from '$lib/server/passwordPolicy';
 import { checkSignupRateLimitByIP } from '$lib/server/rateLimiter';
+import { validateFormData, signupFormSchema } from '$lib/server/validation';
 
 const logger = createLogger('signup/+page.server.ts');
 
@@ -55,24 +56,20 @@ export const actions = {
 			});
 		}
 
-		// Extract form data
+		// Extract and validate form data
 		const formData = await request.formData();
-		const email = formData.get('email') as string;
-		const password = formData.get('password') as string;
-		const confirmPassword = formData.get('confirmPassword') as string;
 
-		// Validate inputs
-		if (!email || !password || !confirmPassword) {
-			return fail(400, {
-				error: 'All fields are required',
-				email
-			});
+		const validation = validateFormData(signupFormSchema, formData);
+		if (!validation.success) {
+			return fail(400, { errors: validation.errors });
 		}
 
+		const { email, password, confirmPassword } = validation.data;
+
+		// Check password match
 		if (password !== confirmPassword) {
 			return fail(400, {
-				error: 'Les mots de passe ne correspondent pas',
-				email
+				errors: { confirmPassword: ['Les mots de passe ne correspondent pas'] }
 			});
 		}
 

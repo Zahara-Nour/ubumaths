@@ -1,5 +1,6 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
+import { validateFormData, importStudentsFormSchema } from '$lib/server/validation';
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase }, parent }) => {
 	const { user } = await safeGetSession();
@@ -89,12 +90,13 @@ export const actions: Actions = {
 		}
 
 		const formData = await request.formData();
-		const studentsJson = formData.get('students') as string;
-		const schoolId = formData.get('school_id') as string;
 
-		if (!studentsJson || !schoolId) {
-			return fail(400, { message: 'Missing required fields' });
+		const validation = validateFormData(importStudentsFormSchema, formData);
+		if (!validation.success) {
+			return fail(400, { errors: validation.errors });
 		}
+
+		const { students: studentsJson, school_id: schoolId } = validation.data;
 
 		try {
 			const students = JSON.parse(studentsJson);

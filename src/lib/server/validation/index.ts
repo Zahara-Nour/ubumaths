@@ -1,0 +1,23 @@
+/**
+ * Validation library - central export
+ * Re-exports all validation schemas for easy importing
+ */
+
+// Common schemas and helpers
+export * from './common';
+
+// Feature-specific schemas
+export * from './admin';
+export * from './assessments';
+export * from './auth';
+export * from './classes';
+export * from './errors';
+export * from './exercises';
+export * from './latex';
+export * from './message-templates';
+export * from './messages';
+export * from './notifications';
+export * from './questions';
+export * from './rewards';
+export * from './riddles';
+export * from './srs';

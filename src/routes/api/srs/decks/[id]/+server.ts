@@ -12,6 +12,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { updateDeckSchema, uuidParamSchema } from '$lib/server/validation/srs';
 
 /**
  * GET /api/srs/decks/[id]
@@ -27,7 +28,13 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	const { id } = params;
+	// ✅ SECURITY: Validate UUID parameter
+	const paramValidation = uuidParamSchema.safeParse(params);
+	if (!paramValidation.success) {
+		return json({ error: 'Invalid deck ID' }, { status: 400 });
+	}
+
+	const { id } = paramValidation.data;
 
 	try {
 		// Get deck (RLS ensures user owns it)
@@ -94,7 +101,13 @@ export const PUT: RequestHandler = async ({
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	const { id } = params;
+	// ✅ SECURITY: Validate UUID parameter
+	const paramValidation = uuidParamSchema.safeParse(params);
+	if (!paramValidation.success) {
+		return json({ error: 'Invalid deck ID' }, { status: 400 });
+	}
+
+	const { id } = paramValidation.data;
 
 	try {
 		// Check if deck exists and is owned by user
@@ -117,15 +130,20 @@ export const PUT: RequestHandler = async ({
 			);
 		}
 
-		const body = await request.json();
+		// ✅ SECURITY: Validate input with Zod
+		const bodyRaw = await request.json();
+		const validation = updateDeckSchema.safeParse(bodyRaw);
+
+		if (!validation.success) {
+			return json({ error: validation.error.issues[0].message }, { status: 400 });
+		}
+
+		const body = validation.data;
 
 		// Build update object
 		const updates: Record<string, unknown> = {};
 
 		if (body.name !== undefined) {
-			if (body.name.trim().length === 0) {
-				return json({ error: 'Deck name cannot be empty' }, { status: 400 });
-			}
 			updates.name = body.name.trim();
 		}
 
@@ -139,11 +157,6 @@ export const PUT: RequestHandler = async ({
 				...existingDeck.config,
 				...body.config
 			};
-
-			// Validate desiredRetention
-			if (newConfig.desiredRetention < 0.7 || newConfig.desiredRetention > 0.97) {
-				return json({ error: 'Desired retention must be between 0.7 and 0.97' }, { status: 400 });
-			}
 
 			updates.config = newConfig;
 		}
@@ -185,7 +198,13 @@ export const DELETE: RequestHandler = async ({ params, locals: { supabase, safeG
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	const { id } = params;
+	// ✅ SECURITY: Validate UUID parameter
+	const paramValidation = uuidParamSchema.safeParse(params);
+	if (!paramValidation.success) {
+		return json({ error: 'Invalid deck ID' }, { status: 400 });
+	}
+
+	const { id } = paramValidation.data;
 
 	try {
 		// Check if deck exists and is owned by user

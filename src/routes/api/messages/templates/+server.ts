@@ -11,6 +11,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { validateTemplate } from '$lib/templates/templateEngine';
 import type { MessageTemplateInput } from '$lib/types/messageTemplates';
+import { createMessageTemplateSchema, validateRequest } from '$lib/server/validation';
 
 // =====================================================
 // GET - List templates
@@ -18,6 +19,9 @@ import type { MessageTemplateInput } from '$lib/types/messageTemplates';
 export const GET: RequestHandler = async ({ locals, url }) => {
 	const { supabase, user } = locals;
 
+	// ====================================================================
+	// SECURITY: Authentication Check
+	// ====================================================================
 	if (!user) {
 		return error(401, 'Non authentifié');
 	}
@@ -33,7 +37,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		return error(404, 'Profil non trouvé');
 	}
 
-	// Parse query parameters
+	// ====================================================================
+	// SECURITY: Input Validation (Query Parameters)
+	// ====================================================================
 	const scope = url.searchParams.get('scope'); // 'system' | 'class' | null
 	const triggerType = url.searchParams.get('trigger_type');
 	const classId = url.searchParams.get('class_id');
@@ -131,6 +137,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 export const POST: RequestHandler = async ({ locals, request }) => {
 	const { supabase, user } = locals;
 
+	// ====================================================================
+	// SECURITY: Authentication Check
+	// ====================================================================
 	if (!user) {
 		return error(401, 'Non authentifié');
 	}
@@ -146,18 +155,24 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		return error(404, 'Profil non trouvé');
 	}
 
-	// Only admins and teachers can create templates
+	// ====================================================================
+	// SECURITY: Authorization Check
+	// ====================================================================
 	if (profile.role !== 'admin' && profile.role !== 'teacher') {
 		return error(403, 'Permissions insuffisantes');
 	}
 
-	// Parse request body
-	let templateInput: MessageTemplateInput;
-	try {
-		templateInput = await request.json();
-	} catch {
-		return error(400, 'Données invalides');
+	// ====================================================================
+	// SECURITY: Input Validation
+	// ====================================================================
+	const body = await request.json();
+	const validation = validateRequest(createMessageTemplateSchema, body);
+
+	if (!validation.success) {
+		return error(400, validation.error);
 	}
+
+	const templateInput: MessageTemplateInput = validation.data;
 
 	// Teachers can only create class templates
 	if (profile.role === 'teacher' && templateInput.scope === 'system') {

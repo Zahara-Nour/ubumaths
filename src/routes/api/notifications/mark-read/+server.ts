@@ -7,20 +7,33 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { markAsRead } from '$lib/server/notifications';
+import { markNotificationReadSchema, validateRequest } from '$lib/server/validation';
 
 export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
+	// ====================================================================
+	// SECURITY: Authentication Check
+	// ====================================================================
 	const { session } = await safeGetSession();
 
 	if (!session) {
 		throw error(401, 'Non authentifié');
 	}
 
-	const { notificationId } = await request.json();
+	// ====================================================================
+	// SECURITY: Input Validation
+	// ====================================================================
+	const body = await request.json();
+	const validation = validateRequest(markNotificationReadSchema, body);
 
-	if (!notificationId) {
-		throw error(400, 'ID de notification manquant');
+	if (!validation.success) {
+		throw error(400, validation.error);
 	}
 
+	const { notificationId } = validation.data;
+
+	// ====================================================================
+	// Business Logic
+	// ====================================================================
 	const result = await markAsRead(supabase, notificationId, session.user.id);
 
 	if (!result.success) {

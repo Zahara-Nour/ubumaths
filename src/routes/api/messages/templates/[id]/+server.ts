@@ -11,6 +11,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { validateTemplate } from '$lib/templates/templateEngine';
+import { updateMessageTemplateSchema, validateRequest } from '$lib/server/validation';
 
 // =====================================================
 // GET - Get template details
@@ -60,6 +61,9 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	const { supabase, user } = locals;
 	const { id } = params;
 
+	// ====================================================================
+	// SECURITY: Authentication Check
+	// ====================================================================
 	if (!user) {
 		return error(401, 'Non authentifié');
 	}
@@ -86,7 +90,9 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		return error(404, 'Template non trouvé');
 	}
 
-	// Check permissions
+	// ====================================================================
+	// SECURITY: Authorization Check
+	// ====================================================================
 	const isAdmin = profile.role === 'admin';
 	const isOwner = existingTemplate.created_by === user.id;
 	const isSystemTemplate = existingTemplate.scope === 'system';
@@ -101,13 +107,17 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		return error(403, 'Vous ne pouvez modifier que vos propres templates');
 	}
 
-	// Parse update data
-	let updates: Partial<typeof existingTemplate>;
-	try {
-		updates = await request.json();
-	} catch {
-		return error(400, 'Données invalides');
+	// ====================================================================
+	// SECURITY: Input Validation
+	// ====================================================================
+	const body = await request.json();
+	const validation = validateRequest(updateMessageTemplateSchema, body);
+
+	if (!validation.success) {
+		return error(400, validation.error);
 	}
+
+	const updates: Partial<typeof existingTemplate> = validation.data;
 
 	// Teachers cannot change scope to system
 	if (updates.scope === 'system' && !isAdmin) {

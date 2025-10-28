@@ -1,5 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { awardGidouillesSchema } from '$lib/server/validation/rewards';
 
 export const POST: RequestHandler = async ({ request, locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -9,12 +10,15 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 	}
 
 	try {
-		const { studentId, amount } = await request.json();
+		// ✅ SECURITY: Validate input with Zod
+		const body = await request.json();
+		const validation = awardGidouillesSchema.safeParse(body);
 
-		// Validate inputs
-		if (!studentId || typeof amount !== 'number' || amount <= 0) {
-			throw error(400, 'Invalid request: studentId and positive amount required');
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
 		}
+
+		const { studentId, amount } = validation.data;
 
 		// Verify the user is a teacher
 		const { data: profile, error: profileError } = await supabase

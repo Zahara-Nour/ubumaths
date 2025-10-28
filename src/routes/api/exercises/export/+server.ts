@@ -11,6 +11,7 @@ import {
 	exportExerciseToMarkdown,
 	generateExportFilename
 } from '$lib/server/exercise-import-export';
+import { validateExportExercises } from '$lib/server/validation';
 
 /**
  * POST /api/exercises/export
@@ -44,18 +45,18 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(403, 'Forbidden - Teachers only');
 	}
 
-	// Parse request body
+	// Parse and validate request body
 	const body = await request.json();
-	const { exercise_ids, format, pretty_print = true } = body;
+	const validation = validateExportExercises(body);
 
-	// Validate inputs
-	if (!Array.isArray(exercise_ids) || exercise_ids.length === 0) {
-		throw error(400, 'Missing or invalid exercise_ids');
+	if (!validation.success) {
+		const errorMsg = validation.error.errors
+			.map((e) => `${e.path.join('.')}: ${e.message}`)
+			.join('; ');
+		throw error(400, `Validation failed: ${errorMsg}`);
 	}
 
-	if (!['json', 'markdown'].includes(format)) {
-		throw error(400, 'Invalid format. Must be "json" or "markdown"');
-	}
+	const { exercise_ids, format, pretty_print = true } = validation.data;
 
 	// Fetch exercises
 	const exercises = [];

@@ -6,16 +6,19 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { logError, getUserContext, type LogErrorData } from '$lib/server/errorMonitoring';
+import { logErrorSchema } from '$lib/server/validation/errors';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
-		// Parse error data from request
-		const errorData: LogErrorData = await request.json();
+		// ✅ SECURITY: Validate input with Zod
+		const bodyRaw = await request.json();
+		const validation = logErrorSchema.safeParse(bodyRaw);
 
-		// Validate required fields
-		if (!errorData.error_type || !errorData.message || !errorData.url) {
-			throw error(400, 'Missing required fields: error_type, message, url');
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
 		}
+
+		const errorData = validation.data as LogErrorData;
 
 		// Get user context if session exists
 		const session = await locals.safeGetSession();

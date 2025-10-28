@@ -8,6 +8,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getAssignmentsForStudent } from '$lib/server/exercise-assignments';
 import type { StudentExerciseFilters } from '$lib/exercises/types';
+import { validateStudentExerciseFilters } from '$lib/server/validation';
 
 /**
  * GET /api/exercises/assigned
@@ -31,32 +32,36 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	const { user } = session;
 
-	// Parse filters from query params
+	// Validate and parse filters from query params
+	const queryValidation = validateStudentExerciseFilters(url.searchParams);
+	if (!queryValidation.success) {
+		const errorMsg = queryValidation.error.errors
+			.map((e) => `${e.path.join('.')}: ${e.message}`)
+			.join('; ');
+		return json({ error: `Invalid query parameters: ${errorMsg}` }, { status: 400 });
+	}
+
+	// Build filters
 	const filters: StudentExerciseFilters = {};
 
-	const completedParam = url.searchParams.get('completed');
-	if (completedParam !== null) {
-		filters.show_completed = completedParam === 'true';
+	if (queryValidation.data.completed !== undefined) {
+		filters.show_completed = queryValidation.data.completed;
 	}
 
-	const assignedOnlyParam = url.searchParams.get('assigned_only');
-	if (assignedOnlyParam !== null) {
-		filters.show_assigned_only = assignedOnlyParam === 'true';
+	if (queryValidation.data.assigned_only !== undefined) {
+		filters.show_assigned_only = queryValidation.data.assigned_only;
 	}
 
-	const publicParam = url.searchParams.get('public');
-	if (publicParam !== null) {
-		filters.show_public = publicParam === 'true';
+	if (queryValidation.data.public !== undefined) {
+		filters.show_public = queryValidation.data.public;
 	}
 
-	const hasDeadlineParam = url.searchParams.get('has_deadline');
-	if (hasDeadlineParam !== null) {
-		filters.has_deadline = hasDeadlineParam === 'true';
+	if (queryValidation.data.has_deadline !== undefined) {
+		filters.has_deadline = queryValidation.data.has_deadline;
 	}
 
-	const searchParam = url.searchParams.get('search');
-	if (searchParam) {
-		filters.search = searchParam;
+	if (queryValidation.data.search) {
+		filters.search = queryValidation.data.search;
 	}
 
 	// Fetch student's assigned exercises

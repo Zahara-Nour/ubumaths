@@ -14,6 +14,14 @@ import type { QuestionTemplate } from '$lib/questions/types';
 import { validateTemplate } from '$lib/questions';
 import { detectCircularDependencies } from '$lib/questions';
 import { checkCategoryUniqueness, getNextAvailableLevel } from '$lib/questions/category-validation';
+import {
+	createQuestionTemplateSchema,
+	validateRequest,
+	createQuestionTemplateResponseSchema,
+	listQuestionsQuerySchema,
+	questionTemplatesListResponseSchema
+} from '$lib/server/validation';
+import { validateJsonResponse } from '$lib/server/validation/response-utils';
 
 /**
  * GET /api/questions/templates
@@ -30,13 +38,18 @@ import { checkCategoryUniqueness, getNextAvailableLevel } from '$lib/questions/c
  * Returns: { templates: QuestionTemplate[], total: number }
  */
 export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supabase } }) => {
+	// ====================================================================
+	// SECURITY: Authentication Check
+	// ====================================================================
 	const { user } = await safeGetSession();
 
 	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
-	// Check role (teachers and admins can view)
+	// ====================================================================
+	// SECURITY: Authorization Check
+	// ====================================================================
 	const { data: profile } = await supabase
 		.from('profiles')
 		.select('role')
@@ -48,12 +61,29 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
 	}
 
 	try {
-		// Parse query parameters
-		const typeParam = url.searchParams.get('type');
-		const gradesParam = url.searchParams.get('grades');
-		const statusParam = url.searchParams.get('status');
-		const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 100);
-		const offset = parseInt(url.searchParams.get('offset') || '0');
+		// ====================================================================
+		// SECURITY: Query Parameter Validation
+		// ====================================================================
+		const queryRaw = {
+			type: url.searchParams.get('type'),
+			grades: url.searchParams.get('grades'),
+			status: url.searchParams.get('status'),
+			limit: url.searchParams.get('limit'),
+			offset: url.searchParams.get('offset')
+		};
+		const queryValidation = listQuestionsQuerySchema.safeParse(queryRaw);
+
+		if (!queryValidation.success) {
+			throw error(400, queryValidation.error.issues[0].message);
+		}
+
+		const {
+			type: typeParam,
+			grades: gradesParam,
+			status: statusParam,
+			limit,
+			offset
+		} = queryValidation.data;
 
 		// Build query
 		let query = supabase.from('question_templates').select('*', { count: 'exact' });
@@ -64,8 +94,7 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
 		}
 
 		if (gradesParam) {
-			const grades = gradesParam.split(',').map((g) => g.trim());
-			query = query.overlaps('grades', grades);
+			query = query.overlaps('grades', gradesParam);
 		}
 
 		if (statusParam) {
@@ -82,10 +111,14 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
 			throw error(500, 'Failed to fetch templates');
 		}
 
-		return json({
-			templates: templates || [],
-			total: count || 0
-		});
+		// Validate response
+		const validated = validateJsonResponse(
+			questionTemplatesListResponseSchema,
+			{ templates: templates || [], total: count || 0 },
+			'GET /api/questions/templates'
+		);
+
+		return json(validated);
 	} catch (err) {
 		console.error('Error in GET /api/questions/templates:', err);
 
@@ -107,13 +140,18 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
  * Returns: { success: true, template: QuestionTemplate } | { success: false, errors: string[] }
  */
 export const POST: RequestHandler = async ({ request, locals: { safeGetSession, supabase } }) => {
+	// ====================================================================
+	// SECURITY: Authentication Check
+	// ====================================================================
 	const { user } = await safeGetSession();
 
 	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
-	// Check role (only admins can create)
+	// ====================================================================
+	// SECURITY: Authorization Check
+	// ====================================================================
 	const { data: profile } = await supabase
 		.from('profiles')
 		.select('role')
@@ -125,18 +163,23 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 	}
 
 	try {
-		const templateData = (await request.json()) as Partial<QuestionTemplate>;
+		// ====================================================================
+		// SECURITY: Input Validation
+		// ====================================================================
+		const body = await request.json();
+		const validation = validateRequest(createQuestionTemplateSchema, body);
 
-		// Validate required fields
-		if (!templateData.title || templateData.title.trim().length === 0) {
+		if (!validation.success) {
 			return json(
 				{
 					success: false,
-					errors: ['Title is required']
+					errors: [validation.error]
 				},
 				{ status: 400 }
 			);
 		}
+
+		const templateData = validation.data as Partial<QuestionTemplate>;
 
 		// Only validate if status is 'published'
 		if (templateData.status === 'published') {
@@ -236,15 +279,19 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 			throw error(500, 'Failed to create template');
 		}
 
-		return json(
+		// Validate response
+		const validated = validateJsonResponse(
+			createQuestionTemplateResponseSchema,
 			{
 				success: true,
 				template,
 				levelAdjusted,
 				adjustedLevel: levelAdjusted ? adjustedLevel : undefined
 			},
-			{ status: 201 }
+			'POST /api/questions/templates'
 		);
+
+		return json(validated, { status: 201 });
 	} catch (err) {
 		console.error('Error in POST /api/questions/templates:', err);
 

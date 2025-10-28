@@ -4,6 +4,20 @@ import type { Handle } from '@sveltejs/kit';
 import { logError, getUserContext } from '$lib/server/errorMonitoring';
 import { dev } from '$app/environment';
 import { error } from '@sveltejs/kit';
+import { initEnv } from '$lib/server/env';
+
+// ====================================================================
+// Environment Variable Validation
+// Validate on application startup - fails fast if config is invalid
+// ====================================================================
+try {
+	initEnv();
+} catch (err) {
+	const errorMessage = err instanceof Error ? err.message : String(err);
+	console.error('Failed to initialize environment:', errorMessage);
+	// Application won't start with invalid env vars in production
+	// In development, validation errors are logged but execution continues
+}
 
 /**
  * CSRF Protection Handle

@@ -15,6 +15,7 @@ import {
 	exportExerciseToMarkdown,
 	generateExportFilename
 } from '$lib/server/exercise-import-export';
+import { validateExportSingleExerciseQuery } from '$lib/server/validation';
 
 export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const { session } = await locals.safeGetSession();
@@ -47,13 +48,16 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		throw error(403, 'Forbidden - Cannot export this exercise');
 	}
 
-	// Get format from query params
-	const format = url.searchParams.get('format') || 'json';
-	const prettyPrint = url.searchParams.get('pretty') !== 'false';
-
-	if (!['json', 'markdown'].includes(format)) {
-		throw error(400, 'Invalid format. Must be "json" or "markdown"');
+	// Validate and parse query params
+	const queryValidation = validateExportSingleExerciseQuery(url.searchParams);
+	if (!queryValidation.success) {
+		const errorMsg = queryValidation.error.errors
+			.map((e) => `${e.path.join('.')}: ${e.message}`)
+			.join('; ');
+		throw error(400, `Invalid query parameters: ${errorMsg}`);
 	}
+
+	const { format, pretty: prettyPrint } = queryValidation.data;
 
 	// Export exercise
 	let content: string;

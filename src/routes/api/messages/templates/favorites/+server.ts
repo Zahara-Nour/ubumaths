@@ -10,6 +10,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { uuidSchema, validateRequest } from '$lib/server/validation';
 
 // GET - List favorites
 export const GET: RequestHandler = async ({ locals }) => {
@@ -61,26 +62,30 @@ export const GET: RequestHandler = async ({ locals }) => {
 export const POST: RequestHandler = async ({ locals, request }) => {
 	const { supabase, user } = locals;
 
+	// ====================================================================
+	// SECURITY: Authentication Check
+	// ====================================================================
 	if (!user) {
 		return error(401, 'Non authentifié');
 	}
 
-	let body: { template_id: string };
-	try {
-		body = await request.json();
-	} catch {
-		return error(400, 'Données invalides');
+	// ====================================================================
+	// SECURITY: Input Validation
+	// ====================================================================
+	const body = await request.json();
+	const validation = validateRequest(uuidSchema, body.template_id);
+
+	if (!validation.success) {
+		return error(400, validation.error);
 	}
 
-	if (!body.template_id) {
-		return error(400, 'template_id requis');
-	}
+	const templateId = validation.data;
 
 	// Check if template exists and user has access
 	const { data: template, error: templateError } = await supabase
 		.from('message_templates')
 		.select('id')
-		.eq('id', body.template_id)
+		.eq('id', templateId)
 		.single();
 
 	if (templateError || !template) {
@@ -92,7 +97,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.from('user_favorite_templates')
 		.insert({
 			user_id: user.id,
-			template_id: body.template_id
+			template_id: templateId
 		})
 		.select()
 		.single();
@@ -109,7 +114,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 	// Log action
 	await supabase.rpc('log_template_action', {
-		p_template_id: body.template_id,
+		p_template_id: templateId,
 		p_action: 'favorited',
 		p_performed_by: user.id
 	});
