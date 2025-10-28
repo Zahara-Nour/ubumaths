@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [Unreleased]
 
+## [0.0.11] - 2025-10-28
+
+### 🐛 Bug Fixes
+
+- **env**: implement lazy Redis initialization to resolve environment variable loading ([3a9112f](https://github.com/Zahara-Nour/ubumaths/commit/3a9112f))
+  - Fixed critical timing issue where Redis client initialization failed due to env vars not loaded yet
+  - Implemented lazy initialization in `src/lib/server/cache.ts` with `getRedisClient()` function
+  - Added explicit environment loading in `vite.config.ts` using Vite's `loadEnv()` API
+  - Fixed env var names: `UPSTASH_REDIS_URL` → `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_TOKEN` → `UPSTASH_REDIS_REST_TOKEN`
+  - Updated `.env.example` and `src/lib/server/env.ts` schema to match REST API naming
+  - Impact: Dev server now starts without Redis warnings, all 44 Redis tests passing (were failing before)
+
+### 📚 Documentation
+
+- **troubleshooting**: add comprehensive environment loading troubleshooting guide ([3a9112f](https://github.com/Zahara-Nour/ubumaths/commit/3a9112f))
+  - Created `docs/troubleshooting/env-loading-fix.md` (17KB technical deep-dive explaining the issue and solution)
+  - Created `docs/troubleshooting/README.md` (troubleshooting section index with common issues)
+  - Updated `docs/architecture/redis-caching.md` with lazy initialization architecture section
+  - Updated `docs/guides/redis-cache-setup.md` with env loading mechanism explanation
+  - Updated `docs/README.md` with troubleshooting section link
+  - Enhanced code comments in `cache.ts` and `vite.config.ts` with WHY explanations and timing diagrams
+  - Total documentation: 28KB, 1,270 lines, production-ready
+
+## [Unreleased]
+
 ### 🔒 Security Fixes (CRITICAL)
 
 - **admin**: add role authorization checks to admin endpoints ([#security-audit](https://github.com/Zahara-Nour/ubumaths/issues))

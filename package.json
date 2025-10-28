@@ -1,7 +1,7 @@
 {
 	"name": "ubumaths",
 	"private": true,
-	"version": "0.0.10",
+	"version": "0.0.11",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -22,6 +22,7 @@
 		"release:patch": "standard-version --release-as patch",
 		"release:minor": "standard-version --release-as minor",
 		"release:major": "standard-version --release-as major",
+		"kill:servers": "bash scripts/kill-servers.sh",
 		"db:migrate": "npx supabase db push",
 		"db:start": "npx supabase start",
 		"db:stop": "npx supabase stop",
@@ -120,6 +121,7 @@
 		"@tiptap/extension-text-style": "^3.7.0",
 		"@tiptap/extension-underline": "^3.7.0",
 		"@tiptap/starter-kit": "^3.7.0",
+		"@upstash/redis": "^1.35.6",
 		"bad-words": "^4.0.0",
 		"canvas-confetti": "^1.9.3",
 		"date-fns": "^4.1.0",
