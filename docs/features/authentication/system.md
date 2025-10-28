@@ -843,6 +843,138 @@ If migrating from client-side auth to this SSR-compatible system:
 
 ---
 
+## Recent Improvements
+
+### Authentication Logging (2025-10-28)
+
+The authentication system now includes streamlined logging for better debugging and audit trails:
+
+**OAuth Callback Improvements** (`src/routes/(public)/auth/callback/+server.ts`):
+
+- Removed verbose debug logs during OAuth flow
+- Simplified to log only essential authentication events
+- Logs: `"Authentication successful: [email]"` on successful login
+- Error logs maintained for troubleshooting failed authentications
+
+**Logout Logging** (`src/routes/(public)/auth/logout/+server.ts`):
+
+- Added audit trail logging on logout
+- Logs: `"User disconnected: [email]"` when users sign out
+- Captures user email before signing out for security audit purposes
+
+**Benefits**:
+
+- Cleaner console output during development
+- Easier to track user login/logout events
+- Better audit trail for security compliance
+- Reduced noise in production logs
+
+---
+
+### Google Avatar Sync Enhancement (2025-10-28)
+
+The OAuth callback now automatically keeps Google profile avatars up-to-date:
+
+**Previous Behavior**:
+
+- Avatar only synced on profile creation
+- Changes to Google avatar required manual database updates
+- Users saw stale avatars after changing their Google profile picture
+
+**New Behavior** (lines 108-121 in `callback/+server.ts`):
+
+- **Always syncs avatar on every login** (not just on profile creation)
+- Automatically updates `profiles.avatar_url` from Google OAuth metadata
+- Uses `user.user_metadata.picture` (Google's standard avatar field)
+- Fallback to `user.user_metadata.avatar_url` for compatibility
+
+**Implementation**:
+
+```typescript
+// Always sync avatar from Google on each login
+const googleAvatar = user.user_metadata?.picture || user.user_metadata?.avatar_url;
+if (googleAvatar) {
+	const { error: updateError } = await supabase
+		.from('profiles')
+		.update({ avatar_url: googleAvatar })
+		.eq('id', user.id);
+
+	if (updateError) {
+		logger.error('Failed to update avatar:', updateError);
+	}
+}
+```
+
+**Benefits**:
+
+- Users always see their current Google profile picture
+- No manual intervention needed to update avatars
+- Seamless experience across Google Workspace and UbuMaths
+- Fails gracefully if avatar update fails (logs error, doesn't block login)
+
+---
+
+### Session Variable Bug Fix (2025-10-28)
+
+Fixed an undefined `session` variable issue in authentication checks across 12 route files:
+
+**Files Affected**:
+
+- SRS endpoints: `/api/srs/decks/**`, `/api/srs/cards/**`, `/api/srs/review/**`
+- Revisions page: `/dashboard/revisions/+page.server.ts`
+
+**Previous Code**:
+
+```typescript
+const { session, user } = await safeGetSession();
+if (!user || !session) {
+	throw error(401, 'Unauthorized');
+}
+```
+
+**Fixed Code**:
+
+```typescript
+const { user } = await safeGetSession();
+if (!user) {
+	throw error(401, 'Unauthorized');
+}
+```
+
+**Why the Change?**
+
+- `safeGetSession()` always returns `{ session, user }`
+- When not authenticated, BOTH are `null`
+- Checking `!user` is sufficient (user is the verified identity)
+- Removes redundant `session` check
+- Simplifies authentication logic across codebase
+
+**Impact**:
+
+- More consistent authentication checks
+- Reduces confusion about when to check `session` vs `user`
+- Aligns with Supabase's recommended pattern (verify user, then use session tokens)
+
+---
+
+### Performance Optimization (2025-10-28)
+
+Removed unnecessary font preloading to eliminate browser warnings:
+
+**Change** (`src/app.html`):
+
+- Removed KaTeX font preloading (`<link rel="preload">` tags)
+- Fonts now load on-demand via CSS when MathLive/KaTeX is used
+- Eliminates browser console warnings about unused preloaded resources
+
+**Benefits**:
+
+- Cleaner browser console
+- Slightly faster initial page load (no unused preloads)
+- Fonts still load quickly when needed (browser caching)
+
+---
+
 ## Additional Resources
 
 - **Official Supabase Guide**: https://supabase.com/docs/guides/auth/server-side/sveltekit
@@ -852,5 +984,5 @@ If migrating from client-side auth to this SSR-compatible system:
 
 ---
 
-**Last Updated**: 2025-01-11
-**Version**: 2.0 (SSR-compatible with password reset)
+**Last Updated**: 2025-10-28
+**Version**: 2.1 (OAuth logging improvements + avatar sync + session bug fixes)

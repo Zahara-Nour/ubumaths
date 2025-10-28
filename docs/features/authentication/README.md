@@ -67,9 +67,10 @@ Server: Validates email domain (@voltairedoha.com only)
   ↓
 If domain valid:
   ├─ Check if profile exists
-  ├─ Create profile if new user (role: 'student')
-  ├─ Link Google account if existing user
+  ├─ Create profile if new user (role: 'student', sync avatar)
+  ├─ Update existing user profile (sync avatar from Google) ✨ NEW
   ├─ Sets auth cookies ✅
+  ├─ Log: "Authentication successful: [email]" 📝
   └─ Redirect to /dashboard (or original page if specified)
 If domain invalid:
   ├─ Sign out user immediately
@@ -117,7 +118,11 @@ User clicks logout
   ↓
 POST to /auth/logout (server endpoint)
   ↓
+Server: Capture user email for audit log
+  ↓
 Server: supabase.auth.signOut()
+  ↓
+Server: Log: "User disconnected: [email]" 📝
   ↓
 Server: Clears auth cookies ✅
   ↓
@@ -300,7 +305,9 @@ UI updates automatically (Svelte 5 reactivity)
 - Handles redirect from Google after authentication
 - Exchanges authorization code for session
 - Validates email domain (@voltairedoha.com)
-- Creates or links user profile
+- Creates profile for new users (with avatar sync)
+- **Always syncs avatar from Google on every login** (2025-10-28)
+- Logs authentication success for audit trail
 - Redirects to original page
 
 ### 8. src/routes/auth/logout/+server.ts
@@ -308,7 +315,9 @@ UI updates automatically (Svelte 5 reactivity)
 **Role**: Server-side logout endpoint
 
 - Handles logout POST request
+- Captures user email for audit log (2025-10-28)
 - Calls `signOut()` on server
+- Logs user disconnection for audit trail
 - Clears auth cookies
 - Redirects to home
 
@@ -394,22 +403,37 @@ SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET=your-google-client-secret
 
 ### Check Auth State
 
-Look for these console logs:
+Look for these console logs (streamlined as of 2025-10-28):
+
+**During Login (OAuth)**:
 
 ```
-[Supabase] Creating server client...
-[Supabase] Checking and verifying session...
-[Supabase] User verified: user@example.com
-[Layout] Loading, isBrowser: true
-[Layout] Session from server: User: user@example.com
-[Layout] Auth state changed: SIGNED_IN
+[auth/callback] Authentication successful: user@voltairedoha.com
 ```
+
+**During Logout**:
+
+```
+[auth/logout] User disconnected: user@voltairedoha.com
+```
+
+**Error Cases**:
+
+```
+[auth/callback] No code provided in OAuth callback
+[auth/callback] Code exchange failed: [error details]
+[auth/callback] Unauthorized email domain: user@otherdomain.com
+[auth/callback] Failed to update avatar: [error details]
+```
+
+**Note**: Verbose debug logs have been removed to reduce console noise. Only essential authentication events and errors are logged.
 
 ### Common Issues
 
 1. **Login button doesn't update**: Check that `onAuthStateChange()` is calling `invalidate()`
 2. **Session is null**: Verify that `getUser()` is being called in `safeGetSession()`
 3. **Props not reactive**: Ensure components receive props from layout data
+4. **Avatar not updating**: Check that Google OAuth is providing `user.user_metadata.picture` - avatar syncs automatically on each login (as of 2025-10-28)
 
 ## References
 
