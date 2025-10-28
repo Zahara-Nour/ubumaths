@@ -2,7 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased]
+### [0.1.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.1.0...v0.1.1) (2025-10-28)
+
+### 🐛 Bug Fixes
+
+- **auth:** improve authentication logging and fix session validation bug ([ef43ab9](https://github.com/Zahara-Nour/ubumaths/commit/ef43ab91594366bf751a9d76d1ae0bb117da5278))
+
+### 📚 Documentation
+
+- **auth:** document authentication system improvements ([75b024f](https://github.com/Zahara-Nour/ubumaths/commit/75b024f1d9c67d186aab39055d0b1e3a2980891f))
 
 ## [0.1.0] - 2025-10-28
 
