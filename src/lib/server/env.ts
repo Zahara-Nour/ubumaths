@@ -87,8 +87,8 @@ const envSchema = z.object({
 		.pipe(z.number().positive()),
 
 	// Upstash Redis (optional, for distributed rate limiting)
-	UPSTASH_REDIS_URL: z.string().url('Invalid Upstash Redis URL').optional(),
-	UPSTASH_REDIS_TOKEN: z.string().optional(),
+	UPSTASH_REDIS_REST_URL: z.string().url('Invalid Upstash Redis URL').optional(),
+	UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
 
 	// ====================================================================
 	// Security Configuration

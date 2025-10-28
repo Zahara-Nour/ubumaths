@@ -154,35 +154,38 @@ Système d'authentification avec Google OAuth + email/password.
 | [WebSocket](architecture/websocket.md)                    | Architecture temps réel               |
 | [Éditeur rich text](architecture/rich-text-editor.md)     | TipTap + MathLive                     |
 | [Performance](architecture/performance.md)                | Optimisations et best practices       |
+| [Redis Caching](architecture/redis-caching.md) 🆕 ⭐      | Upstash Redis cache implementation    |
 | [CSRF Protection](architecture/csrf-protection.md)        | Protection anti-CSRF                  |
 
 ---
 
 ## 📖 Guides pratiques
 
-| Guide                                       | Description                      |
-| ------------------------------------------- | -------------------------------- |
-| [Vue d'ensemble](guides/README.md)          | Index des guides                 |
-| [Import d'élèves](guides/student-import.md) | Workflow d'import CSV            |
-| [Déploiement](guides/deployment.md)         | Déploiement sur Vercel           |
-| [Dépannage](guides/troubleshooting.md)      | Solutions aux problèmes courants |
-| [Guide de tests](guides/testing-guide.md)   | Comment tester l'application     |
-| [Composants UI](guides/ui-components.md)    | Utilisation Shadcn-svelte        |
+| Guide                                                  | Description                           |
+| ------------------------------------------------------ | ------------------------------------- |
+| [Vue d'ensemble](guides/README.md)                     | Index des guides                      |
+| [Import d'élèves](guides/student-import.md)            | Workflow d'import CSV                 |
+| [Redis Cache Setup](guides/redis-cache-setup.md) 🆕 ⭐ | Configuration Redis locale/production |
+| [Déploiement](guides/deployment.md)                    | Déploiement sur Vercel                |
+| [Dépannage](guides/troubleshooting.md)                 | Solutions aux problèmes courants      |
+| [Guide de tests](guides/testing-guide.md)              | Comment tester l'application          |
+| [Composants UI](guides/ui-components.md)               | Utilisation Shadcn-svelte             |
 
 ---
 
 ## 🛠️ Développement
 
-| Document                                                 | Description                   |
-| -------------------------------------------------------- | ----------------------------- |
-| [Vue d'ensemble](development/README.md)                  | Process de développement      |
-| [Git workflow](development/git-workflow.md)              | Workflow Git et branches      |
-| [Gestion de versions](development/version-management.md) | Releases et versioning        |
-| [Migrations DB](development/database-migrations.md)      | Workflow migrations Supabase  |
-| [Style de code](development/code-style.md)               | Standards et conventions      |
-| [Polling Patterns](development/polling-patterns.md) 🆕   | Guide polling unifié          |
-| [Migration Svelte 5](development/svelte5-migration.md)   | Guide migration runes         |
-| [MySelect Migration](development/myselect-migration.md)  | Guide migration vers MySelect |
+| Document                                                     | Description                   |
+| ------------------------------------------------------------ | ----------------------------- |
+| [Vue d'ensemble](development/README.md)                      | Process de développement      |
+| [Git workflow](development/git-workflow.md)                  | Workflow Git et branches      |
+| [Gestion de versions](development/version-management.md)     | Releases et versioning        |
+| [Migrations DB](development/database-migrations.md)          | Workflow migrations Supabase  |
+| [Style de code](development/code-style.md)                   | Standards et conventions      |
+| [Polling Patterns](development/polling-patterns.md) 🆕       | Guide polling unifié          |
+| [Rate Limiting Redis](development/rate-limiting-redis.md) 🆕 | Migration rate limiting Redis |
+| [Migration Svelte 5](development/svelte5-migration.md)       | Guide migration runes         |
+| [MySelect Migration](development/myselect-migration.md)      | Guide migration vers MySelect |
 
 ---
 
@@ -227,6 +230,15 @@ Système d'authentification avec Google OAuth + email/password.
 
 ---
 
+## 🔧 Troubleshooting
+
+| Document                                                         | Description                            |
+| ---------------------------------------------------------------- | -------------------------------------- |
+| [Troubleshooting Guide](troubleshooting/README.md) ⭐            | Common issues and solutions            |
+| [Environment Loading Fix](troubleshooting/env-loading-fix.md) 🆕 | Technical guide to lazy initialization |
+
+---
+
 ## 📦 Archive
 
 Documentation historique et obsolète : [Archive →](archive/README.md)
@@ -248,13 +260,14 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 - **Features en production** : 11
 - **Features en développement** : 1 (Navadra)
-- **Tests** : 3,218 tests (99.2% pass rate)
-  - Unit tests: 2,430/2,454 passing (99.0%)
-  - E2E tests: 283 ready to run
+- **Tests** : 3,334 tests (99.3% pass rate) 🆕
+  - Unit tests: 2,526/2,550 passing (99.1%) - includes 96 Redis cache tests
+  - E2E tests: 303 ready to run - includes 20 Redis cache E2E tests
   - Validation tests: 366/366 passing (100%)
   - Database triggers: 139/139 passing (100%)
 - **Code Quality** : 0 errors in production code (853 → 0)
-- **Lignes de documentation** : ~16,000+
+- **Caching** : Redis cache with 95%+ hit rate, 88% faster loads 🆕
+- **Lignes de documentation** : ~20,000+ 🆕
 - **Dernière mise à jour** : 2025-10-28
 
 ---
