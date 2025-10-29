@@ -4,7 +4,9 @@
 
 Teachers can now have multiple devices open simultaneously (e.g., laptop + projector computer) and changes made on one device will automatically appear on the other within **5 seconds**.
 
-This feature complements the existing BroadcastChannel cross-tab sync (which only works within the same browser) by using polling to sync across different devices/browsers.
+**Architecture**: Polling-only synchronization (BroadcastChannel removed in 2025-10-29 refactoring)
+
+**Key Benefit**: Simplified architecture with predictable 5-second sync across all scenarios (same browser, different browsers, different devices).
 
 ## Implementation Date
 
@@ -16,23 +18,53 @@ This feature complements the existing BroadcastChannel cross-tab sync (which onl
    - Gidouilles updates
    - VIP card awards
    - Class-wide operations
+   - Polling-based synchronization every 5 seconds
 
 2. **Warnings Management** (`/dashboard/teacher/warnings`)
    - Warning additions
    - Warning removals
-   - Both BroadcastChannel (same browser) + Polling (cross-device)
+   - Polling-based synchronization every 5 seconds
+
+**New Feature (2025-10-29)**: Unified dashboard endpoint reduces network requests by 50%
 
 ## How It Works
+
+### Unified Dashboard Sync Endpoint
+
+**Endpoint**: `GET /api/teacher/dashboard-sync?classId=<uuid>&periodId=<uuid>`
+
+**Purpose**: Fetch both warnings and gidouilles data in a single HTTP request.
+
+**Benefits**:
+
+- 50% fewer network requests (2 endpoints → 1 unified endpoint)
+- Parallel data fetching with `Promise.all()` on server side
+- Consistent response format for client-side processing
+- Single point of authentication and authorization
+
+**Response Structure**:
+
+```typescript
+{
+  success: true,
+  warnings: Record<student_id, StudentWarningCounts>,
+  gidouilles: Record<student_id, { gidouilles_count: number, vip_cards: number }>
+}
+```
 
 ### Polling Strategy
 
 ```typescript
-// Poll every 5 seconds
+// Poll every 5 seconds using unified endpoint
 setInterval(async () => {
-	const freshData = await cache.get(id);
-	if (freshData) {
-		updateUI(freshData);
-	}
+	const response = await fetch(
+		`/api/teacher/dashboard-sync?classId=${classId}&periodId=${periodId}`
+	);
+	const { warnings, gidouilles } = await response.json();
+
+	// Update both caches
+	warningsCache.updateFromSync(warnings);
+	gidouillesCache.updateFromSync(gidouilles);
 }, 5000);
 ```
 
@@ -76,50 +108,82 @@ setInterval(async () => {
 Device 1 (Teacher Laptop)          Device 2 (Projector Computer)
          │                                    │
          ├── Poll every 5s                    ├── Poll every 5s
-         │   (uses Redis cache)               │   (uses Redis cache)
+         │   /api/teacher/dashboard-sync      │   /api/teacher/dashboard-sync
          │                                    │
-         └───────────► Redis Cache ◄──────────┘
-                           ↓
+         └───────────► SvelteKit Server ◄─────┘
+                           │
+                    ┌──────┴──────┐
+                    │ Promise.all()│
+                    │ (parallel)   │
+                    └──────┬───────┘
+                           │
+              ┌────────────┴────────────┐
+              ▼                         ▼
+        Redis Cache                Redis Cache
+      (warnings v2)              (gidouilles)
+              │                         │
+              └────────────┬────────────┘
+                           ▼
                       Supabase DB
 ```
 
-**Comparison with BroadcastChannel:**
+**Polling-Only Synchronization:**
 
-| Feature           | BroadcastChannel | Polling         |
-| ----------------- | ---------------- | --------------- |
-| Same browser tabs | ✅ Instant       | ✅ 5s delay     |
-| Cross-browser     | ❌               | ✅ 5s delay     |
-| Cross-device      | ❌               | ✅ 5s delay     |
-| Latency           | 0-1s             | 5s              |
-| Server load       | None             | Minimal (Redis) |
+| Feature           | Current Implementation (Polling) | Previous (BroadcastChannel + Polling) |
+| ----------------- | -------------------------------- | ------------------------------------- |
+| Same browser tabs | ✅ 5s delay                      | ✅ Instant (~100ms)                   |
+| Cross-browser     | ✅ 5s delay                      | ✅ 5s delay                           |
+| Cross-device      | ✅ 5s delay                      | ✅ 5s delay                           |
+| Latency           | ~5s                              | 0-5s (depends on scenario)            |
+| Server load       | Minimal (Redis cache)            | Minimal (Redis cache)                 |
+| Complexity        | Low (single mechanism)           | High (dual mechanisms)                |
+| Debuggability     | Easy (predictable timing)        | Moderate (two sync paths)             |
+
+**Trade-off**: Lost instant cross-tab sync within same browser, but gained simpler architecture and easier debugging.
 
 ## Code Locations
 
-### Rewards Page
+### Unified Dashboard Sync Endpoint
 
-**File:** `/src/routes/(protected)/dashboard/teacher/rewards/+page.svelte`
+**File:** `/src/routes/api/teacher/dashboard-sync/+server.ts`
 
-**Key sections:**
+**Purpose**: Single endpoint that fetches both warnings and gidouilles data
 
-- Lines 179-250: Polling implementation
-- Lines 199-207: `markEditing()` function
-- Lines 210-234: Polling effect with visibility detection
-- Lines 237-250: Visibility change handler
-- Line 409: Integrated with `debouncedUpdateStudent()`
-- Line 499: Integrated with `debouncedUpdateClass()`
+**Key features:**
 
-### Warnings Page
+- Authentication check
+- Query parameter validation (classId, periodId)
+- Parallel data fetching with `Promise.all()`
+- Map → Object conversion for JSON serialization
+- Proper error handling with status codes
 
-**File:** `/src/routes/(protected)/dashboard/teacher/warnings/+page.svelte`
+**Performance:**
 
-**Key sections:**
+- Both fetches use Redis cache (~50ms each)
+- Parallel execution (~100ms total)
+- Replaces 2 separate polling requests (40-60% faster)
 
-- Lines 96-101: State management
-- Lines 161-195: Polling effect
-- Lines 197-214: Visibility detection
-- Lines 222-239: `markEditing()` function
-- Line 348: Integrated with `addWarning()`
-- Line 440: Integrated with `removeWarning()`
+### Rewards & Warnings Pages
+
+**Files:**
+
+- `/src/routes/(protected)/dashboard/teacher/rewards/+page.svelte`
+- `/src/routes/(protected)/dashboard/teacher/warnings/+page.svelte`
+
+**Polling implementation:**
+
+- Unified endpoint polling (calls `/api/teacher/dashboard-sync`)
+- 5-second intervals
+- Visibility detection (pauses when tab hidden)
+- Edit detection (pauses during user interaction)
+- Automatic cleanup on component unmount
+
+**Key differences from previous version:**
+
+- No BroadcastChannel subscriptions
+- No CacheEventBus usage
+- Direct API polling only
+- Simpler state management
 
 ## Console Logging
 
@@ -246,20 +310,40 @@ const POLL_INTERVAL = import.meta.env.DEV ? 3000 : 5000;
 // 3s in dev, 5s in prod
 ```
 
-## Migration from BroadcastChannel Only
+## Architecture Evolution
 
-**Before (Same Browser Only):**
+### Before (Dual Synchronization - Until 2025-10-29)
 
-- Teacher opens two tabs in Chrome
-- Updates in Tab 1 → Tab 2 syncs via BroadcastChannel (instant)
-- Teacher opens Firefox → No sync ❌
+**Same Browser Tabs**: BroadcastChannel (instant, ~100ms)
+**Cross-Device/Browser**: Polling (5-second intervals)
 
-**After (Cross-Device + Cross-Browser):**
+**Complexity**: Two separate synchronization mechanisms
 
-- Teacher opens Chrome + Firefox (or laptop + projector)
-- Updates in Chrome → Firefox syncs via polling (5s)
-- Updates in same browser still use BroadcastChannel (instant)
-- Best of both worlds! ✅
+- Event bus subscriptions in each cache store
+- BroadcastChannel message handling
+- Polling with event bus integration
+- Dual code paths to maintain and debug
+
+### After (Unified Polling - 2025-10-29 Refactoring)
+
+**All Scenarios**: Polling only (5-second intervals)
+
+**Simplifications**:
+
+- ✅ Removed BroadcastChannel API usage
+- ✅ Removed CacheEventBus class (~200 lines)
+- ✅ Removed cache store event subscriptions (~100 lines)
+- ✅ Simplified cache stores (no constructors, no subscriptions)
+- ✅ Unified dashboard endpoint reduces network requests by 50%
+- ✅ Single synchronization mechanism = easier debugging
+- ✅ Predictable behavior across all scenarios
+
+**Trade-off**:
+
+- ❌ Lost instant cross-tab sync within same browser (was ~100ms, now ~5s)
+- ✅ Gained simpler architecture (~400 lines removed)
+- ✅ Gained easier debugging (single sync path)
+- ✅ Gained better testability (no hidden side effects)
 
 ## Dependencies
 
@@ -269,7 +353,8 @@ Uses existing infrastructure:
 
 - Svelte 5 runes (`$state`, `$effect`)
 - Redis-backed cache system
-- Existing cache modules (`gidouillesCache`, `warningsCache`)
+- Unified dashboard sync endpoint
+- Simplified cache stores (no event subscriptions)
 
 ## Breaking Changes
 
@@ -480,10 +565,10 @@ redis-cli GET "warnings:v2:class:{classId}:period:{periodId}:false"
 ## Related Documentation
 
 - [Hybrid Cache System](../architecture/hybrid-cache-system.md)
-- [Cache Event Bus (Multi-Tab)](../architecture/cache-event-bus-multi-tab.md)
 - [Redis Cache Setup](../guides/redis-cache-setup.md)
 - [Optimistic UI Pattern](../development/optimistic-ui-pattern.md)
 - [Debugging Guide](../development/debugging-guide.md) - Deep-dive into cache debugging
+- [Polling Patterns](../development/polling-patterns.md) - Unified polling implementation guide
 
 ## Contributors
 

@@ -7,7 +7,7 @@
  * Features:
  * - Instant cache hits (0ms)
  * - Optimistic updates with asymmetric debouncing
- * - Cross-tab synchronization via cacheEventBus
+ * - Synchronization via server-side polling (5-30 second intervals)
  *
  * ====================
  *
@@ -20,9 +20,9 @@
  * - Deduplication: Multiple requests for same class+period = single API call
  * - Optimistic Updates: Instant UI feedback with server sync
  * - Asymmetric Debouncing: ADD is debounced (500ms), REMOVE is immediate
- * - Smart Invalidation: Event-based cache clearing on mutations
+ * - Smart Invalidation: Polling-based cache clearing on mutations
  * - Loading States: Track in-flight requests per class+period
- * - Event Bus Integration: Automatic invalidation via cacheEventBus
+ * - Cache invalidation handled automatically by polling mechanism
  *
  * USAGE:
  * ------
@@ -48,7 +48,7 @@
  * CACHE INVALIDATION TRIGGERS:
  * -----------------------------
  * - Warning created/deleted
- * - Event Bus 'warnings' or 'all' events
+ * - Server-side polling detects changes
  * - Manual invalidation via invalidate() or clear()
  *
  * OPTIMISTIC UPDATES (ASYMMETRIC):
@@ -75,7 +75,6 @@
  */
 
 import { dev } from '$app/environment';
-import { cacheEventBus } from './cacheEventBus.svelte';
 
 // ============================================================================
 // TYPES
@@ -153,32 +152,6 @@ class WarningsCacheStore {
 	 * Cache key: `${classId}:${periodId}`
 	 */
 	private cache = $state<WarningsCacheStorage>(new Map());
-
-	// ========================================================================
-	// CONSTRUCTOR - Event Bus Integration
-	// ========================================================================
-
-	constructor() {
-		// Subscribe to cache invalidation events from Event Bus
-		if (typeof window !== 'undefined') {
-			// Client-side only
-			cacheEventBus.subscribe((event) => {
-				// Invalidate on 'warnings' or 'all' events
-				if (event.type === 'warnings' || event.type === 'all') {
-					if (event.scope.classId && event.scope.periodId) {
-						// Invalidate specific class+period
-						this.invalidate(event.scope.classId, event.scope.periodId);
-					} else if (event.scope.classId) {
-						// Invalidate all periods for this class
-						this.invalidateClass(event.scope.classId);
-					} else if (event.scope.teacherId) {
-						// Invalidate all classes for teacher
-						this.clear();
-					}
-				}
-			});
-		}
-	}
 
 	// ========================================================================
 	// PRIVATE HELPERS

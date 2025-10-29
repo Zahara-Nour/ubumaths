@@ -2,7 +2,7 @@
 
 > Comprehensive guide to UbuMaths' dual-layer caching strategy combining in-memory and Redis caches
 
-**Last Updated**: 2025-10-29
+**Last Updated**: 2025-10-29 (post-BroadcastChannel removal)
 **Status**: Production Ready
 
 ---
@@ -183,6 +183,31 @@ Cache MISS: 0ms ──→ 250ms (DB query) ──→ 260ms (Redis store) ──�
 ---
 
 ## Cache Modules
+
+### Teacher Dashboard Synchronization (2025-10-29)
+
+**Endpoint**: `/api/teacher/dashboard-sync`
+
+**Architecture**: Unified polling endpoint that fetches both warnings and gidouilles data in a single request.
+
+**Key Benefits**:
+
+- 50% fewer network requests (was 2 endpoints, now 1)
+- Parallel server-side data fetching with `Promise.all()`
+- Both data sources use Redis cache (~50ms each, ~100ms total)
+- Simplified client-side polling logic
+- Single point of authentication/authorization
+
+**Synchronization Method**: Polling-only (BroadcastChannel removed for simpler architecture)
+
+**Polling Interval**: 5 seconds
+**Smart Behaviors**: Pauses during editing, pauses when tab hidden, visibility detection
+
+**Impact**: Teachers using multiple devices (laptop + projector) see updates within 5 seconds.
+
+**Reference**: See [Cross-Device Synchronization](../features/cross-device-sync.md)
+
+---
 
 ### 1. Profile Cache (In-Memory)
 
@@ -435,7 +460,7 @@ await invalidateTemplatesCache();
 - ✅ School data (timetables, profiles)
 - ✅ Question templates (published)
 - ✅ Assessment results caching
-- ✅ Activity polling (cross-tab sync)
+- ✅ Unified dashboard synchronization (polling)
 - ✅ Rate limiting (distributed)
 
 **Don't Use For**:

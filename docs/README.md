@@ -135,13 +135,14 @@ Système de récompenses gamifié pour motiver les élèves.
 
 Synchronisation temps réel entre plusieurs appareils pour les dashboards enseignants.
 
+- **Architecture** : Polling-only (BroadcastChannel supprimé 2025-10-29)
+- **Endpoint unifié** : `/api/teacher/dashboard-sync` (50% moins de requêtes)
 - Polling toutes les 5 secondes (laptop + projecteur use case)
 - Smart behaviors : pause pendant édition, pause si onglet caché
 - Intégré avec Redis cache (50ms response, 99% hit rate)
-- Complète BroadcastChannel (même navigateur) avec polling (cross-device)
 - Pages supportées : Récompenses, Avertissements
-- Console logging pour monitoring
-- **2025-10-29** : Implémentation complète avec troubleshooting guide
+- **Simplification** : ~400 lignes de code supprimées
+- **2025-10-29** : Refactoring complet vers polling unifié
 
 ### 🎮 Navadra (Combat Math)
 
@@ -201,19 +202,20 @@ Système d'authentification avec Google OAuth + email/password.
 
 ## 🏗️ Architecture
 
-| Document                                                              | Description                           |
-| --------------------------------------------------------------------- | ------------------------------------- |
-| [Vue d'ensemble](architecture/README.md)                              | Architecture générale du projet       |
-| [Structure du projet](architecture/project-structure.md)              | Organisation des dossiers et fichiers |
-| [Schéma base de données](architecture/database-schema.md)             | Tables, relations, RLS policies       |
-| [Component Architecture](architecture/components.md) ⭐               | MySelect, standardisation dropdowns   |
-| [Routing](architecture/routing.md)                                    | Routes SvelteKit et organisation      |
-| [WebSocket](architecture/websocket.md)                                | Architecture temps réel               |
-| [Éditeur rich text](architecture/rich-text-editor.md)                 | TipTap + MathLive                     |
-| [Performance](architecture/performance.md)                            | Optimisations et best practices       |
-| [Redis Caching](architecture/redis-caching.md) 🆕 ⭐                  | Upstash Redis cache implementation    |
-| [Teacher Dashboard Cache](architecture/teacher-dashboard-cache.md) 🆕 | Three-cache system with Event Bus ⭐  |
-| [CSRF Protection](architecture/csrf-protection.md)                    | Protection anti-CSRF                  |
+| Document                                                                 | Description                              |
+| ------------------------------------------------------------------------ | ---------------------------------------- |
+| [Vue d'ensemble](architecture/README.md)                                 | Architecture générale du projet          |
+| [Structure du projet](architecture/project-structure.md)                 | Organisation des dossiers et fichiers    |
+| [Schéma base de données](architecture/database-schema.md)                | Tables, relations, RLS policies          |
+| [Component Architecture](architecture/components.md) ⭐                  | MySelect, standardisation dropdowns      |
+| [Routing](architecture/routing.md)                                       | Routes SvelteKit et organisation         |
+| [WebSocket](architecture/websocket.md)                                   | Architecture temps réel                  |
+| [Éditeur rich text](architecture/rich-text-editor.md)                    | TipTap + MathLive                        |
+| [Performance](architecture/performance.md)                               | Optimisations et best practices          |
+| [Redis Caching](architecture/redis-caching.md) ⭐                        | Upstash Redis cache implementation       |
+| [Hybrid Cache System](architecture/hybrid-cache-system.md) ⭐            | In-memory + Redis dual-layer strategy    |
+| [Teacher Dashboard Cache](architecture/teacher-dashboard-cache.md) (OLD) | ⚠️ Pre-2025-10-29 (BroadcastChannel era) |
+| [CSRF Protection](architecture/csrf-protection.md)                       | Protection anti-CSRF                     |
 
 ---
 

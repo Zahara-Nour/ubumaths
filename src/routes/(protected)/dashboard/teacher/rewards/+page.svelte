@@ -118,7 +118,6 @@
 	import { canAffordVipCard } from '$lib/utils/vip-cards';
 	import { Sparkles, Eye, Loader2 } from 'lucide-svelte';
 	import { gidouillesCache } from '$lib/stores/gidouillesCache.svelte';
-	import { cacheEventBus } from '$lib/stores/cacheEventBus.svelte';
 
 	// Data from server load function
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -189,7 +188,7 @@
 	 * Smart behaviors:
 	 * - Only polls when tab is visible (pauses when hidden)
 	 * - Pauses while user is actively editing (prevents conflicts)
-	 * - Uses Redis cache for fast responses (~50ms vs 850ms DB)
+	 * - Direct API polling for reliable synchronization
 	 * - Cleans up interval on unmount
 	 */
 	let pollInterval: ReturnType<typeof setInterval> | null = $state(null);
@@ -213,9 +212,38 @@
 			// Start polling interval
 			pollInterval = setInterval(async () => {
 				console.log('[RewardsPage] Polling gidouilles (cross-device sync)');
-				const freshData = await gidouillesCache.get(selectedClassId);
-				if (freshData) {
-					gidouillesData = freshData;
+				try {
+					const response = await fetch(`/api/classes/${selectedClassId}/gidouilles`);
+
+					if (!response.ok) {
+						console.error('[RewardsPage] Polling failed:', response.statusText);
+						return;
+					}
+
+					const result = await response.json();
+					const students = result.students || [];
+
+					// Convert array to Map
+					const dataMap = new Map<
+						string,
+						{ gidouilles: number; vip_cards: Record<string, number> }
+					>();
+					students.forEach(
+						(student: { id: string; gidouilles: number; vip_cards: Record<string, number> }) => {
+							dataMap.set(student.id, {
+								gidouilles: student.gidouilles,
+								vip_cards: student.vip_cards || {}
+							});
+						}
+					);
+
+					gidouillesData = dataMap;
+
+					// Update cache with fresh data (optional - for other components)
+					// Note: Cache will auto-reload via its own fetch mechanism when needed
+				} catch (error) {
+					console.error('[RewardsPage] Polling error:', error);
+					// Keep existing data on error (graceful degradation)
 				}
 			}, 5000); // 5 seconds
 		} else {
@@ -235,13 +263,35 @@
 
 	// Handle visibility changes (pause when tab hidden)
 	$effect(() => {
-		const handleVisibilityChange = () => {
+		const handleVisibilityChange = async () => {
 			if (document.visibilityState === 'visible' && selectedClassId && !isEditing) {
 				// Tab became visible - immediately reload and resume polling
 				console.log('[RewardsPage] Tab visible - reloading gidouilles');
-				gidouillesCache.get(selectedClassId).then((data) => {
-					if (data) gidouillesData = data;
-				});
+				try {
+					const response = await fetch(`/api/classes/${selectedClassId}/gidouilles`);
+					if (response.ok) {
+						const result = await response.json();
+						const students = result.students || [];
+
+						// Convert array to Map
+						const dataMap = new Map<
+							string,
+							{ gidouilles: number; vip_cards: Record<string, number> }
+						>();
+						students.forEach(
+							(student: { id: string; gidouilles: number; vip_cards: Record<string, number> }) => {
+								dataMap.set(student.id, {
+									gidouilles: student.gidouilles,
+									vip_cards: student.vip_cards || {}
+								});
+							}
+						);
+
+						gidouillesData = dataMap;
+					}
+				} catch (error) {
+					console.error('[RewardsPage] Visibility reload error:', error);
+				}
 			}
 		};
 
@@ -444,17 +494,9 @@
 
 				if (response.ok) {
 					// SUCCESS: Server updated the database
-					// Wait 100ms then refresh data from cache and show confirmation
+					// Wait 100ms then refresh data and show confirmation
 					setTimeout(() => {
-						// Publish invalidation event via Event Bus
-						if (selectedClassId) {
-							cacheEventBus.invalidateGidouilles(
-								selectedClassId,
-								`Updated gidouilles for ${studentName}`
-							);
-						}
-
-						// Clear optimistic state (cache will reload automatically)
+						// Clear optimistic state
 						clearOptimisticOverride(studentId);
 
 						// Show success toast with accumulated delta and student name
@@ -536,13 +578,7 @@
 					const classItem = data.classes.find((c) => c.id === classId);
 					const studentCount = classItem?.students.length || 0;
 					setTimeout(() => {
-						// Publish invalidation event via Event Bus
-						cacheEventBus.invalidateGidouilles(
-							classId,
-							`Updated gidouilles for entire class (${studentCount} students)`
-						);
-
-						// Clear optimistic state for all students (cache will reload automatically)
+						// Clear optimistic state for all students
 						classItem?.students.forEach((student) => clearOptimisticOverride(student.id));
 
 						// Show success toast with student count
@@ -632,11 +668,6 @@
 	// Close card reveal modal
 	function handleRevealComplete() {
 		revealingCard = null;
-
-		// Publish invalidation event via Event Bus (VIP cards changed)
-		if (selectedClassId) {
-			cacheEventBus.invalidateGidouilles(selectedClassId, 'VIP card awarded');
-		}
 	}
 </script>
 

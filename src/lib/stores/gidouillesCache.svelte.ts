@@ -7,7 +7,7 @@
  * Features:
  * - Instant cache hits (0ms)
  * - Optimistic updates for responsive UI
- * - Cross-tab synchronization via cacheEventBus
+ * - Synchronization via server-side polling (5-30 second intervals)
  *
  * ======================
  *
@@ -19,9 +19,9 @@
  * - Progressive Loading: Fetch only when needed (lazy loading)
  * - Deduplication: Multiple requests for same class = single API call
  * - Optimistic Updates: Instant UI feedback with server sync
- * - Smart Invalidation: Event-based cache clearing on mutations
+ * - Smart Invalidation: Polling-based cache clearing on mutations
  * - Loading States: Track in-flight requests per class
- * - Event Bus Integration: Automatic invalidation via cacheEventBus
+ * - Cache invalidation handled automatically by polling mechanism
  *
  * USAGE:
  * ------
@@ -46,7 +46,7 @@
  * -----------------------------
  * - Gidouilles awarded/removed
  * - VIP cards awarded/removed
- * - Event Bus 'gidouilles' or 'all' events
+ * - Server-side polling detects changes
  * - Manual invalidation via invalidate() or clear()
  *
  * OPTIMISTIC UPDATES:
@@ -64,7 +64,6 @@
  */
 
 import { dev } from '$app/environment';
-import { cacheEventBus } from './cacheEventBus.svelte';
 
 // ============================================================================
 // TYPES
@@ -114,29 +113,6 @@ class GidouillesCacheStore {
 	 * Structure: Map<classId, GidouillesCacheEntry>
 	 */
 	private cache = $state<GidouillesCacheStorage>(new Map());
-
-	// ========================================================================
-	// CONSTRUCTOR - Event Bus Integration
-	// ========================================================================
-
-	constructor() {
-		// Subscribe to cache invalidation events from Event Bus
-		if (typeof window !== 'undefined') {
-			// Client-side only
-			cacheEventBus.subscribe((event) => {
-				// Invalidate on 'gidouilles' or 'all' events
-				if (event.type === 'gidouilles' || event.type === 'all') {
-					if (event.scope.classId) {
-						// Invalidate specific class
-						this.invalidate(event.scope.classId);
-					} else if (event.scope.teacherId) {
-						// Invalidate all classes for teacher
-						this.clear();
-					}
-				}
-			});
-		}
-	}
 
 	// ========================================================================
 	// PUBLIC QUERY METHODS (Synchronous)

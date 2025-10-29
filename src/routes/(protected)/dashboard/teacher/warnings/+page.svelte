@@ -38,11 +38,11 @@
 
 	CROSS-DEVICE SYNCHRONIZATION:
 	------------------------------
-	- Polling: Fetches updates every 5 seconds from Redis-backed cache
+	- Polling: Fetches updates every 5 seconds from API
 	- Smart pausing: Stops polling during user edits (2s timeout after last action)
 	- Visibility-aware: Only polls when tab is visible
 	- Immediate reload: Fetches fresh data when tab becomes visible
-	- Complements BroadcastChannel: Works across different browsers/devices
+	- Works across different browsers/devices
 	- Use case: Teacher has laptop + projector showing same page
 -->
 
@@ -59,7 +59,6 @@
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import { teacherStudentsCache } from '$lib/stores/teacherStudentsCache.svelte';
 	import { warningsCache } from '$lib/stores/warningsCache.svelte';
-	import { cacheEventBus } from '$lib/stores/cacheEventBus.svelte';
 	import { History, AlertCircle } from 'lucide-svelte';
 	import type { Warning, StudentWarningCounts } from '$lib/server/warnings';
 
@@ -128,27 +127,6 @@
 	});
 
 	/**
-	 * Subscribe to Event Bus for cross-tab cache invalidation
-	 */
-	$effect(() => {
-		const unsubscribe = cacheEventBus.subscribe((event) => {
-			// Only respond to warnings or 'all' events
-			if (event.type === 'warnings' || event.type === 'all') {
-				// Check if the event matches our current class and period
-				const matchesClass = !event.scope.classId || event.scope.classId === selectedClassId;
-				const matchesPeriod = !event.scope.periodId || event.scope.periodId === selectedPeriodId;
-
-				if (matchesClass && matchesPeriod) {
-					loadWarnings();
-				}
-			}
-		});
-
-		// Cleanup subscription on unmount
-		return unsubscribe;
-	});
-
-	/**
 	 * Cleanup pending timeouts on unmount
 	 */
 	$effect(() => {
@@ -160,7 +138,7 @@
 	});
 
 	/**
-	 * Setup cross-device polling (complements BroadcastChannel for different devices)
+	 * Setup polling for cross-device synchronization
 	 * Polls every 5 seconds to fetch latest warnings when:
 	 * - Both class and period are selected
 	 * - Tab is visible
@@ -178,11 +156,36 @@
 		}
 
 		// Start polling every 5 seconds
-		pollInterval = setInterval(() => {
+		pollInterval = setInterval(async () => {
 			// Only poll if tab is visible and user is not editing
 			if (document.visibilityState === 'visible' && !isEditing) {
 				console.log('[WarningsPage] Polling warnings (cross-device sync)');
-				loadWarnings();
+				try {
+					const response = await fetch(
+						`/api/classes/${selectedClassId}/warnings?period_id=${selectedPeriodId}`
+					);
+
+					if (!response.ok) {
+						console.error('[WarningsPage] Polling failed:', response.statusText);
+						return;
+					}
+
+					const result = await response.json();
+
+					// Convert to Map for efficient lookups
+					const newWarningsData = new Map<string, StudentWarningCounts>();
+					for (const [studentId, counts] of Object.entries(result.warnings)) {
+						newWarningsData.set(studentId, counts as StudentWarningCounts);
+					}
+
+					warningsData = newWarningsData;
+
+					// Update cache with fresh data
+					warningsCache.updateCache?.(selectedClassId, selectedPeriodId, result.warnings);
+				} catch (error) {
+					console.error('[WarningsPage] Polling error:', error);
+					// Keep existing data on error (graceful degradation)
+				}
 			}
 		}, 5000);
 
@@ -418,13 +421,6 @@
 				teacherStudentsCache.invalidate(selectedClassId);
 				warningsCache.invalidate(selectedClassId, selectedPeriodId);
 
-				// Publish Event Bus event for cross-tab sync
-				cacheEventBus.invalidateWarnings(
-					selectedClassId,
-					selectedPeriodId,
-					`Added ${warningType} warning for ${studentName}`
-				);
-
 				// Force immediate reload to get fresh data
 				await loadWarnings();
 
@@ -502,13 +498,6 @@
 				// Invalidate cache
 				teacherStudentsCache.invalidate(selectedClassId);
 				warningsCache.invalidate(selectedClassId, selectedPeriodId);
-
-				// Publish Event Bus event for cross-tab sync
-				cacheEventBus.invalidateWarnings(
-					selectedClassId,
-					selectedPeriodId,
-					`Removed ${warningType} warning for ${studentName}`
-				);
 
 				// Show success toast
 				toaster.success(
