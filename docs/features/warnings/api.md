@@ -75,6 +75,16 @@ Fetches aggregated warning counts for all students in a class.
 }
 ```
 
+**Test Mode Filtering** (2025-10-29):
+
+This function now properly filters warnings by test mode to prevent data mismatches. The filtering works in three steps:
+
+1. **Join with profiles table**: Fetches class members with their `is_test` flag from the `profiles` table (since `student_warnings` and `class_members` tables don't have this flag)
+2. **Build valid student Set**: Creates a Set of student IDs whose `is_test` flag matches the teacher's current test mode preference (O(1) lookup performance)
+3. **Filter warnings**: Only includes warnings for students in the valid Set, preventing test student warnings from appearing when viewing real students (and vice versa)
+
+**Why this matters**: Before this fix, warnings for all students were returned regardless of test mode, causing incorrect "default values" to appear in the UI when the teacher's test mode didn't match the students who had warnings.
+
 **Example:**
 
 ```typescript

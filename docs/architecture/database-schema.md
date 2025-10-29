@@ -406,6 +406,24 @@ WHERE w.class_id = $1
 GROUP BY w.warning_type;
 ```
 
+**Test Mode Filtering** (2025-10-29):
+
+**Note**: The `student_warnings` table does not include an `is_test` column. To filter warnings by test mode (real vs test students), queries must join with the `profiles` table through `class_members`:
+
+```sql
+-- Get warnings filtered by test mode
+SELECT w.*
+FROM student_warnings w
+JOIN class_members cm ON cm.student_id = w.student_id AND cm.class_id = w.class_id
+JOIN profiles p ON p.id = cm.student_id
+WHERE w.class_id = $1
+  AND w.academic_period_id = $2
+  AND p.is_test = $3  -- Filter by test mode (true/false)
+ORDER BY w.created_at DESC;
+```
+
+This filtering is implemented in `getClassWarnings()` (`src/lib/server/cache/warnings.ts`) to prevent warnings for test students from appearing when viewing real students, and vice versa.
+
 **Use Cases**:
 
 1. **Teacher Dashboard**: Teachers can view, add, and remove warnings for students in their classes

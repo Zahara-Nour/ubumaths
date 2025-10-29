@@ -127,6 +127,7 @@ src/
 - Cache key: `warnings:class:{classId}:period:{periodId}:{testMode}`
 - Automatic fallback to database on cache miss
 - Invalidated after warning create/delete operations
+- **Test mode filtering** (2025-10-29): Joins with `profiles` table to filter warnings by `is_test` flag, preventing data mismatches when switching test modes
 
 **3. Event Bus Coordination** (`cacheEventBus.svelte.ts`):
 
@@ -246,6 +247,22 @@ $effect(() => {
 
 - Les enseignants ne peuvent voir/modifier que les avertissements de leurs classes
 - Seul le créateur peut supprimer un avertissement
+
+### Test Mode Filtering
+
+**Challenge** (Fixed 2025-10-29): The `student_warnings` table doesn't include an `is_test` flag, which caused warnings to display incorrect data when teachers switched between test and real modes.
+
+**Solution**: The `getClassWarnings()` function now implements three-step filtering:
+
+1. **Join with profiles**: Query `class_members` joined with `profiles` to retrieve each student's `is_test` flag
+2. **Build valid Set**: Create a Set of student IDs matching the teacher's current test mode (O(1) lookup performance)
+3. **Filter warnings**: Only aggregate warnings for students in the valid Set
+
+**Code location**: `src/lib/server/cache/warnings.ts` (lines 160-226)
+
+**Performance consideration**: Using a Set for student ID lookups ensures O(1) filtering performance even with large classes (100+ students).
+
+**Why this matters**: Without this filtering, warnings for test students would appear when viewing real students (and vice versa), causing the UI to show incorrect "default values" for students who shouldn't have visible warnings.
 
 ---
 

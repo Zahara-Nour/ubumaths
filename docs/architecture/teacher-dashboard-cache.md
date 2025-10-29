@@ -365,6 +365,7 @@ interface StudentWarningCounts {
 - **Client cache**: Map\<cacheKey, Map\<studentId, StudentWarningCounts>>
 - **Cache key**: `${classId}:${periodId}` (period-scoped)
 - **Optimistic updates**: Asymmetric debouncing (ADD debounced, REMOVE immediate)
+- **Test mode filtering** (2025-10-29): Joins `profiles` table to filter by `is_test` flag, preventing data mismatches
 
 **Invalidation Triggers**:
 
@@ -442,6 +443,48 @@ $effect(() => {
 	return unsubscribe; // Cleanup on unmount
 });
 ```
+
+**Test Mode Filtering** (2025-10-29):
+
+**Problem**: The `student_warnings` table doesn't include an `is_test` flag, which caused warnings to display incorrect data when teachers switched between test and real student modes.
+
+**Solution**: Three-step filtering in `getClassWarnings()`:
+
+```typescript
+// STEP 1: Fetch class members with is_test flag from profiles table
+const { data: classMembers } = await supabase
+	.from('class_members')
+	.select('student_id, profiles!inner(is_test)')
+	.eq('class_id', classId);
+
+// STEP 2: Build Set of valid student IDs (O(1) lookup)
+const validStudentIds = new Set<string>();
+for (const member of classMembers || []) {
+	const memberIsTest = member.profiles?.is_test ?? false;
+	if (memberIsTest === isTestMode) {
+		validStudentIds.add(member.student_id);
+	}
+}
+
+// STEP 3: Filter warnings by valid student Set
+for (const warning of warnings || []) {
+	if (!validStudentIds.has(warning.student_id)) {
+		continue; // Skip warnings for students not in current test mode
+	}
+	// ... aggregate warning counts
+}
+```
+
+**Why the join is necessary**:
+
+- `student_warnings` table: No `is_test` column
+- `class_members` table: No `is_test` column
+- `profiles` table: Has `is_test` column (source of truth)
+- Solution: Join through `class_members` → `profiles` to get test mode flag
+
+**Performance**: Using a Set for student ID filtering ensures O(1) lookup performance even with 100+ students and 500+ warnings.
+
+**Impact**: Prevents incorrect "default values" from appearing in the UI when teacher's test mode doesn't match the students who have warnings.
 
 **Testing Multi-Tab Sync**:
 
