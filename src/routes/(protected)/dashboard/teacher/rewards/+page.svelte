@@ -182,8 +182,15 @@
 	/**
 	 * Auto-reload gidouilles every 5 seconds for cross-device sync
 	 *
-	 * When teacher has multiple devices open (e.g., laptop + projector computer),
-	 * this ensures changes made on one device appear on the other within 5 seconds.
+	 * WHY POLLING: Replaced BroadcastChannel (removed in refactoring)
+	 * - BroadcastChannel only works within same browser instance
+	 * - Teacher scenario: laptop + projector (2 different browsers)
+	 * - Polling ensures changes sync across ANY devices/browsers
+	 *
+	 * WHY 5 SECONDS:
+	 * - Fast enough: Teacher sees projector update within reasonable time
+	 * - Light load: 12 requests/minute is negligible server impact
+	 * - Battery friendly: Not aggressive enough to drain mobile devices
 	 *
 	 * Smart behaviors:
 	 * - Only polls when tab is visible (pauses when hidden)

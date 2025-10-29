@@ -95,9 +95,12 @@
 
 	// CROSS-DEVICE SYNC STATE (polling-based)
 	// Polls every 5 seconds to sync changes from other devices (laptop + projector)
-	// Complements BroadcastChannel (which only works within same browser)
+	// WHY POLLING: Replaced BroadcastChannel for cross-browser/device sync reliability
+	// - BroadcastChannel only works within same browser (not laptop → projector)
+	// - Polling works across ANY devices/browsers viewing same page
+	// - 5 second interval balances freshness vs server load
 	let pollInterval: ReturnType<typeof setInterval> | null = $state(null);
-	let isEditing = $state(false); // Pause polling during user edits
+	let isEditing = $state(false); // Pause polling during user edits (prevents race conditions)
 	let editingTimeout: ReturnType<typeof setTimeout> | null = $state(null);
 
 	// ============================================================================
@@ -236,6 +239,17 @@
 	/**
 	 * Mark user as actively editing to pause cross-device polling
 	 * Resets 2 seconds after last interaction to resume polling
+	 *
+	 * WHY PAUSE POLLING DURING EDITS:
+	 * - Prevents race condition where polling overwrites optimistic updates
+	 * - Example: User clicks +C, server sync takes 500ms, polling fetches at 400ms
+	 * - Without pause: UI would flicker (optimistic → old data → new data)
+	 * - With pause: UI stays stable (optimistic → new data)
+	 *
+	 * WHY 2 SECOND TIMEOUT:
+	 * - Long enough to batch rapid clicks (user adding multiple warnings)
+	 * - Short enough to resume sync quickly after user stops
+	 * - Balances UX responsiveness with conflict prevention
 	 */
 	function markEditing() {
 		isEditing = true;

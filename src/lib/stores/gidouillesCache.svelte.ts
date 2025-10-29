@@ -9,6 +9,12 @@
  * - Optimistic updates for responsive UI
  * - Synchronization via server-side polling (5-30 second intervals)
  *
+ * ARCHITECTURE NOTE (Post-Refactoring):
+ * - NO constructor needed - cache uses direct API polling for sync
+ * - Removed BroadcastChannel/CacheEventBus completely
+ * - Simpler, more reliable cross-device sync via polling
+ * - Pages handle their own polling intervals (rewards page: 5s)
+ *
  * ======================
  *
  * Client-side cache for student gidouilles and VIP cards per class.

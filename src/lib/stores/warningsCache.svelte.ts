@@ -9,6 +9,12 @@
  * - Optimistic updates with asymmetric debouncing
  * - Synchronization via server-side polling (5-30 second intervals)
  *
+ * ARCHITECTURE NOTE (Post-Refactoring):
+ * - NO constructor needed - cache uses direct API polling for sync
+ * - Removed BroadcastChannel/CacheEventBus completely
+ * - Simpler, more reliable cross-device sync via polling
+ * - Pages handle their own polling intervals (warnings page: 5s)
+ *
  * ====================
  *
  * Client-side cache for student warnings per class and academic period.
