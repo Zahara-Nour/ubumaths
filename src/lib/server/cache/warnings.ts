@@ -157,6 +157,43 @@ export async function getClassWarnings(
 			throw error(403, 'You do not have permission to view warnings for this class');
 		}
 
+		// STEP 1: Fetch class members with test mode flag
+		// =============================================
+		// We join with profiles table to get is_test because:
+		// - student_warnings table doesn't have is_test column
+		// - class_members table doesn't have is_test column
+		// - is_test is stored in profiles table
+		//
+		// This ensures we only return warnings for students matching the teacher's
+		// current test mode preference (real students vs test students).
+		const { data: classMembers, error: membersError } = await supabase
+			.from('class_members')
+			.select('student_id, profiles!inner(is_test)')
+			.eq('class_id', classId);
+
+		if (membersError) {
+			console.error('[getClassWarnings] Error fetching class members:', membersError);
+			throw error(500, `Failed to fetch class members: ${membersError.message}`);
+		}
+
+		// STEP 2: Build a Set of valid student IDs for O(1) lookups
+		// ===========================================================
+		// Only include students whose is_test flag matches the teacher's current mode.
+		// Using a Set for efficient lookups when filtering warnings below.
+		const validStudentIds = new Set<string>();
+		for (const member of classMembers || []) {
+			// Access is_test from the joined profiles table
+			// Safe type checking to handle various Supabase response formats
+			const memberIsTest =
+				member.profiles && typeof member.profiles === 'object' && 'is_test' in member.profiles
+					? (member.profiles as { is_test: boolean }).is_test
+					: false;
+
+			if (memberIsTest === isTestMode) {
+				validStudentIds.add(member.student_id);
+			}
+		}
+
 		// Fetch all warnings for this class and period
 		// Type assertion needed until database types are regenerated after migration
 		const { data: warnings, error: warningsError } = (await supabase
@@ -174,18 +211,19 @@ export async function getClassWarnings(
 			throw error(500, `Failed to fetch warnings: ${warningsError.message}`);
 		}
 
-		console.log('[getClassWarnings] Found', warnings?.length || 0, 'warnings');
-
 		// Aggregate warnings by student
 		const warningsMap = new Map<string, StudentWarningCounts>();
 
-		// Initialize counts for all students with warnings
+		// STEP 3: Aggregate warnings by student (filtered by test mode)
+		// ==============================================================
+		// Only process warnings for students in validStudentIds Set.
+		// This prevents warnings for test students from appearing when viewing real students,
+		// and vice versa, which was causing incorrect "default values" to appear in the UI.
 		for (const warning of warnings || []) {
-			// Filter by test mode (since RLS doesn't filter on is_test)
-			// We need to join with profiles to check is_test
-			// For now, we assume all warnings in the result set are for the correct test mode
-			// (The proper fix would be to add a join in the query above, but student_warnings
-			//  doesn't directly link to profiles - it links via class_members)
+			// Filter by test mode: only include warnings for students matching current test mode
+			if (!validStudentIds.has(warning.student_id)) {
+				continue; // Skip warnings for students not in current test mode
+			}
 
 			if (!warningsMap.has(warning.student_id)) {
 				warningsMap.set(warning.student_id, {
