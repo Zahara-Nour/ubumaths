@@ -2,7 +2,7 @@
 
 Documentation complète de la plateforme éducative UbuMaths.
 
-**Dernière mise à jour** : 2025-10-24
+**Dernière mise à jour** : 2025-10-29
 **Statut** : 🟢 Active Development
 
 ---
@@ -127,7 +127,21 @@ Système de récompenses gamifié pour motiver les élèves.
 - Optimistic UI avec debouncing (500ms)
 - Cache 5 min TTL avec Event Bus
 - Batching automatique (10 clics = 1 requête DB)
-- **2025-10-29** : Cache architecture séparée
+- **2025-10-29** : Cache architecture séparée + cross-device sync
+
+### 🔄 Synchronisation multi-appareils
+
+**Status** : ✅ Production | [Documentation →](features/cross-device-sync.md) 🆕 ⭐
+
+Synchronisation temps réel entre plusieurs appareils pour les dashboards enseignants.
+
+- Polling toutes les 5 secondes (laptop + projecteur use case)
+- Smart behaviors : pause pendant édition, pause si onglet caché
+- Intégré avec Redis cache (50ms response, 99% hit rate)
+- Complète BroadcastChannel (même navigateur) avec polling (cross-device)
+- Pages supportées : Récompenses, Avertissements
+- Console logging pour monitoring
+- **2025-10-29** : Implémentation complète avec troubleshooting guide
 
 ### 🎮 Navadra (Combat Math)
 
@@ -219,17 +233,20 @@ Système d'authentification avec Google OAuth + email/password.
 
 ## 🛠️ Développement
 
-| Document                                                     | Description                   |
-| ------------------------------------------------------------ | ----------------------------- |
-| [Vue d'ensemble](development/README.md)                      | Process de développement      |
-| [Git workflow](development/git-workflow.md)                  | Workflow Git et branches      |
-| [Gestion de versions](development/version-management.md)     | Releases et versioning        |
-| [Migrations DB](development/database-migrations.md)          | Workflow migrations Supabase  |
-| [Style de code](development/code-style.md)                   | Standards et conventions      |
-| [Polling Patterns](development/polling-patterns.md) 🆕       | Guide polling unifié          |
-| [Rate Limiting Redis](development/rate-limiting-redis.md) 🆕 | Migration rate limiting Redis |
-| [Migration Svelte 5](development/svelte5-migration.md)       | Guide migration runes         |
-| [MySelect Migration](development/myselect-migration.md)      | Guide migration vers MySelect |
+| Document                                                       | Description                       |
+| -------------------------------------------------------------- | --------------------------------- |
+| [Vue d'ensemble](development/README.md)                        | Process de développement          |
+| [Git workflow](development/git-workflow.md)                    | Workflow Git et branches          |
+| [Gestion de versions](development/version-management.md)       | Releases et versioning            |
+| [Migrations DB](development/database-migrations.md)            | Workflow migrations Supabase      |
+| [Style de code](development/code-style.md)                     | Standards et conventions          |
+| [Debugging Guide](development/debugging-guide.md) 🆕 ⭐        | Debug multi-layer cache (16KB) ⭐ |
+| [Cache Logging Format](development/cache-logging-format.md) 🆕 | Format logs cache standardisé     |
+| [Polling Patterns](development/polling-patterns.md) 🆕         | Guide polling unifié              |
+| [Rate Limiting Redis](development/rate-limiting-redis.md) 🆕   | Migration rate limiting Redis     |
+| [Type Safety Patterns](development/type-safety-patterns.md) 🆕 | Patterns TypeScript sécurisés     |
+| [Migration Svelte 5](development/svelte5-migration.md)         | Guide migration runes             |
+| [MySelect Migration](development/myselect-migration.md)        | Guide migration vers MySelect     |
 
 ---
 

@@ -176,6 +176,79 @@
 		}
 	});
 
+	// ============================================================================
+	// CROSS-DEVICE SYNCHRONIZATION (Polling)
+	// ============================================================================
+
+	/**
+	 * Auto-reload gidouilles every 5 seconds for cross-device sync
+	 *
+	 * When teacher has multiple devices open (e.g., laptop + projector computer),
+	 * this ensures changes made on one device appear on the other within 5 seconds.
+	 *
+	 * Smart behaviors:
+	 * - Only polls when tab is visible (pauses when hidden)
+	 * - Pauses while user is actively editing (prevents conflicts)
+	 * - Uses Redis cache for fast responses (~50ms vs 850ms DB)
+	 * - Cleans up interval on unmount
+	 */
+	let pollInterval: ReturnType<typeof setInterval> | null = $state(null);
+	let isEditing = $state(false); // Tracks if user is actively editing
+	let editingTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	// Mark as editing and reset timer
+	function markEditing() {
+		isEditing = true;
+		if (editingTimeout) clearTimeout(editingTimeout);
+		// Resume polling 2 seconds after last edit
+		editingTimeout = setTimeout(() => {
+			isEditing = false;
+		}, 2000);
+	}
+
+	// Polling effect - runs every 5 seconds when conditions are met
+	$effect(() => {
+		// Only poll if class selected, tab visible, and user not editing
+		if (selectedClassId && document.visibilityState === 'visible' && !isEditing) {
+			// Start polling interval
+			pollInterval = setInterval(async () => {
+				console.log('[RewardsPage] Polling gidouilles (cross-device sync)');
+				const freshData = await gidouillesCache.get(selectedClassId);
+				if (freshData) {
+					gidouillesData = freshData;
+				}
+			}, 5000); // 5 seconds
+		} else {
+			// Stop polling if conditions not met
+			if (pollInterval) {
+				clearInterval(pollInterval);
+				pollInterval = null;
+			}
+		}
+
+		// Cleanup on unmount
+		return () => {
+			if (pollInterval) clearInterval(pollInterval);
+			if (editingTimeout) clearTimeout(editingTimeout);
+		};
+	});
+
+	// Handle visibility changes (pause when tab hidden)
+	$effect(() => {
+		const handleVisibilityChange = () => {
+			if (document.visibilityState === 'visible' && selectedClassId && !isEditing) {
+				// Tab became visible - immediately reload and resume polling
+				console.log('[RewardsPage] Tab visible - reloading gidouilles');
+				gidouillesCache.get(selectedClassId).then((data) => {
+					if (data) gidouillesData = data;
+				});
+			}
+		};
+
+		document.addEventListener('visibilitychange', handleVisibilityChange);
+		return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+	});
+
 	// Initialize deltas to 1 for each student and class
 	$effect(() => {
 		data.classes.forEach((classItem) => {
@@ -332,6 +405,9 @@
 	) {
 		const key = `student-${studentId}`;
 
+		// Mark as editing to pause polling (prevents conflicts)
+		markEditing();
+
 		// STEP 1: Apply optimistic update immediately for instant UI feedback
 		updateStudentGidouillesOptimistic(studentId, delta, currentValue);
 
@@ -418,6 +494,9 @@
 	 */
 	function debouncedUpdateClass(classId: string, delta: number) {
 		const key = `class-${classId}`;
+
+		// Mark as editing to pause polling (prevents conflicts)
+		markEditing();
 
 		// STEP 1: Apply optimistic update to ALL students immediately
 		updateClassGidouillesOptimistic(classId, delta);

@@ -81,14 +81,18 @@ export type ClassWarningsMap = Map<string, StudentWarningCounts>;
 /**
  * Generate cache key for class warnings
  *
- * Format: warnings:class:{classId}:period:{periodId}:{testMode}
+ * Format: warnings:v2:class:{classId}:period:{periodId}:{testMode}
+ *
+ * Version history:
+ * - v1: Used Map (broken - serialized to empty object)
+ * - v2: Uses plain object (fixed - properly serialized)
  *
  * @param classId - Class UUID
  * @param periodId - Academic period UUID
  * @param isTestMode - Whether test mode is enabled
  */
 function getWarningsCacheKey(classId: string, periodId: string, isTestMode: boolean) {
-	return `warnings:class:${classId}:period:${periodId}:${isTestMode}`;
+	return `warnings:v2:class:${classId}:period:${periodId}:${isTestMode}`;
 }
 
 // ============================================================================
@@ -269,7 +273,30 @@ export async function getClassWarnings(
 		return fetchWarnings();
 	}
 
-	return getCached<ClassWarningsMap>(cacheKey, WARNINGS_TTL, fetchWarnings, 'getClassWarnings');
+	// Fetch data (may come from cache or DB)
+	const result = await getCached<Record<string, StudentWarningCounts>>(
+		cacheKey,
+		WARNINGS_TTL,
+		async () => {
+			// Convert Map to plain object for Redis serialization
+			// Maps cannot be JSON.stringify'd properly (become empty objects)
+			const map = await fetchWarnings();
+			const obj: Record<string, StudentWarningCounts> = {};
+			for (const [studentId, counts] of map.entries()) {
+				obj[studentId] = counts;
+			}
+			return obj;
+		},
+		'getClassWarnings'
+	);
+
+	// Convert cached object back to Map
+	const resultMap = new Map<string, StudentWarningCounts>();
+	for (const [studentId, counts] of Object.entries(result)) {
+		resultMap.set(studentId, counts);
+	}
+
+	return resultMap;
 }
 
 /**
@@ -287,8 +314,8 @@ export async function getClassWarnings(
  */
 export async function invalidateWarningsCache(classId: string, periodId: string): Promise<void> {
 	try {
-		// Invalidate both test modes for this class and period
-		await invalidateCache(`warnings:class:${classId}:period:${periodId}:*`);
+		// Invalidate both test modes for this class and period (v2 keys)
+		await invalidateCache(`warnings:v2:class:${classId}:period:${periodId}:*`);
 	} catch (error) {
 		console.error('[invalidateWarningsCache] Error:', error);
 		// Don't throw - invalidation failures shouldn't break the app
@@ -309,8 +336,8 @@ export async function invalidateWarningsCache(classId: string, periodId: string)
  */
 export async function invalidateAllClassWarningsCaches(classId: string): Promise<void> {
 	try {
-		// Invalidate all periods and test modes for this class
-		await invalidateCache(`warnings:class:${classId}:*`);
+		// Invalidate all periods and test modes for this class (v2 keys)
+		await invalidateCache(`warnings:v2:class:${classId}:*`);
 	} catch (error) {
 		console.error('[invalidateAllClassWarningsCaches] Error:', error);
 		// Don't throw - invalidation failures shouldn't break the app

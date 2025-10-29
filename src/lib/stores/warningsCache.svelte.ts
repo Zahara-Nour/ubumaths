@@ -570,12 +570,12 @@ class WarningsCacheStore {
 
 			const result = await response.json();
 
-			// The API returns an object with student IDs as keys and counts as values
-			// Format: { studentId: { C: 0, M: 1, R: 0, T: 0, total: 1, score: 19, warnings: [...] } }
+			// The API returns { success: true, warnings: { studentId: counts } }
+			// Extract the warnings object from the response
 			const dataMap = new Map<string, StudentWarningCounts>();
 
-			if (result && typeof result === 'object') {
-				Object.entries(result).forEach(([studentId, counts]) => {
+			if (result && typeof result === 'object' && result.warnings) {
+				Object.entries(result.warnings).forEach(([studentId, counts]) => {
 					dataMap.set(studentId, counts as StudentWarningCounts);
 				});
 			}

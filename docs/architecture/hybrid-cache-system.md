@@ -1174,7 +1174,68 @@ Look for:
 
 ---
 
-### 2. Set Appropriate TTLs
+### 2. Handle JavaScript Map Serialization (CRITICAL)
+
+JavaScript `Map` objects **cannot** be JSON.stringify'd correctly - they serialize to empty objects `{}`.
+
+✅ **DO**:
+
+```typescript
+// Convert Map → Object before caching in Redis
+const dataMap = await fetchData(); // Returns Map
+const obj: Record<string, DataType> = {};
+for (const [key, value] of dataMap.entries()) {
+	obj[key] = value;
+}
+await redis.setex(cacheKey, TTL, JSON.stringify(obj)); // Serializes correctly
+
+// Convert Object → Map after reading from Redis
+const cached = await redis.get(cacheKey);
+const resultMap = new Map<string, DataType>();
+for (const [key, value] of Object.entries(cached)) {
+	resultMap.set(key, value);
+}
+```
+
+❌ **DON'T**:
+
+```typescript
+// BROKEN - Map serializes to empty object "{}"
+const dataMap = new Map([['key', { value: 'test' }]]);
+await redis.setex(cacheKey, TTL, JSON.stringify(dataMap)); // Stores "{}"!
+
+const cached = await redis.get(cacheKey);
+const resultMap = new Map(Object.entries(cached)); // Empty Map!
+```
+
+**Why This Matters**:
+
+- Maps are common in TypeScript for keyed collections
+- `JSON.stringify(map)` produces `"{}"`
+- Redis will cache empty objects, causing "data disappears" bugs
+- Symptoms: Data loads from DB initially, then disappears after cache hit
+
+**Cache Version History**:
+
+- `warnings:v1:*` - Used Map directly (BROKEN, serialized to `{}`)
+- `warnings:v2:*` - Uses Object conversion (FIXED, serializes correctly)
+
+**Verification Test**:
+
+```javascript
+// Run this in browser console or Node REPL to verify the bug:
+const map = new Map([['key', { value: 'test' }]]);
+JSON.stringify(map); // Returns "{}" - THE BUG
+
+const obj = Object.fromEntries(map);
+JSON.stringify(obj); // Returns '{"key":{"value":"test"}}' - CORRECT
+```
+
+**Reference**: See `src/lib/server/cache/warnings.ts` lines 277-298 for correct implementation.
+
+---
+
+### 3. Set Appropriate TTLs
 
 ✅ **DO**:
 
@@ -1190,7 +1251,7 @@ Look for:
 
 ---
 
-### 3. Invalidate Eagerly
+### 4. Invalidate Eagerly
 
 ✅ **DO**:
 
@@ -1206,7 +1267,33 @@ Look for:
 
 ---
 
-### 4. Monitor Cache Performance
+### 5. Use Cache Key Versioning
+
+When fixing cache serialization bugs or changing data structures, bump the cache key version.
+
+✅ **DO**:
+
+```typescript
+// Version cache keys to allow easy invalidation
+const CACHE_VERSION = 'v2';
+const cacheKey = `warnings:${CACHE_VERSION}:class:${classId}:period:${periodId}`;
+
+// After fixing serialization bug, increment version:
+const CACHE_VERSION = 'v3'; // Old v2 caches auto-expire, no manual cleanup needed
+```
+
+**Benefits**:
+
+- Old corrupted caches auto-expire via TTL
+- No manual cache invalidation needed
+- Clear version history in code
+- Easy rollback if needed
+
+**Example**: `warnings:v1:*` (broken Map serialization) → `warnings:v2:*` (fixed with Object conversion)
+
+---
+
+### 6. Monitor Cache Performance
 
 ✅ **DO**:
 
@@ -1223,7 +1310,7 @@ Look for:
 
 ---
 
-### 5. Handle Cache Failures Gracefully
+### 7. Handle Cache Failures Gracefully
 
 ✅ **DO**:
 
@@ -1240,7 +1327,7 @@ Look for:
 
 ---
 
-### 6. Test Cache Behavior
+### 8. Test Cache Behavior
 
 ✅ **DO**:
 

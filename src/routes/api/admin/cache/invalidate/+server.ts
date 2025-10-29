@@ -27,10 +27,16 @@
  *    - Requires user ID parameter
  *    - Invalidate after: role changes only (not regular profile updates)
  *
+ * 4. **Warnings Cache** (Redis, 3-minute TTL):
+ *    - Stores warning counts by class and academic period
+ *    - Requires class ID parameter, optionally period ID
+ *    - Invalidate after: schema changes, test mode issues, data corruption
+ *
  * ## Query Parameters
  *
- * - `type`: (required) 'school' | 'templates' | 'profile'
- * - `id`: (required for school/profile) UUID of school or user
+ * - `type`: (required) 'school' | 'templates' | 'profile' | 'warnings'
+ * - `id`: (required for school/profile/warnings) UUID of school, user, or class
+ * - `periodId`: (optional for warnings) UUID of academic period to invalidate specific period
  *
  * ## Usage Examples
  *
@@ -47,6 +53,16 @@
  *
  * # Invalidate user profile cache after role change
  * curl -X POST "http://localhost:5175/api/admin/cache/invalidate?type=profile&id=7c9e6679-7425-40de-944b-e07fc1f90ae7" \
+ *   -H "Cookie: sb-access-token=..." \
+ *   -H "Cookie: sb-refresh-token=..."
+ *
+ * # Invalidate warnings cache for specific class and period
+ * curl -X POST "http://localhost:5175/api/admin/cache/invalidate?type=warnings&id=CLASS_UUID&periodId=PERIOD_UUID" \
+ *   -H "Cookie: sb-access-token=..." \
+ *   -H "Cookie: sb-refresh-token=..."
+ *
+ * # Invalidate all warnings caches for a class (all periods)
+ * curl -X POST "http://localhost:5175/api/admin/cache/invalidate?type=warnings&id=CLASS_UUID" \
  *   -H "Cookie: sb-access-token=..." \
  *   -H "Cookie: sb-refresh-token=..."
  * ```
@@ -81,6 +97,10 @@ import type { RequestHandler } from './$types';
 import { invalidateSchoolCache } from '$lib/server/cache/schools';
 import { invalidateTemplatesCache } from '$lib/server/cache/templates';
 import { invalidateProfileCache, getCachedProfile } from '$lib/server/cache/profile';
+import {
+	invalidateWarningsCache,
+	invalidateAllClassWarningsCaches
+} from '$lib/server/cache/warnings';
 
 /**
  * POST /api/admin/cache/invalidate
@@ -117,9 +137,13 @@ export const POST: RequestHandler = async ({ url, locals: { supabase, user } }) 
 
 	const type = url.searchParams.get('type');
 	const id = url.searchParams.get('id');
+	const periodId = url.searchParams.get('periodId');
 
 	if (!type) {
-		throw error(400, 'Missing required parameter: type. Use: school, templates, or profile');
+		throw error(
+			400,
+			'Missing required parameter: type. Use: school, templates, profile, or warnings'
+		);
 	}
 
 	// ============================================================================
@@ -177,7 +201,46 @@ export const POST: RequestHandler = async ({ url, locals: { supabase, user } }) 
 				throw error(500, 'Failed to invalidate profile cache. Please try again.');
 			}
 
+		case 'warnings':
+			// Warnings cache requires class ID, optionally period ID
+			if (!id) {
+				throw error(
+					400,
+					'Missing class ID. Provide ?type=warnings&id=CLASS_UUID[&periodId=PERIOD_UUID]'
+				);
+			}
+
+			try {
+				if (periodId) {
+					// Invalidate specific class+period
+					await invalidateWarningsCache(id, periodId);
+					console.log(
+						`[Admin Cache] Warnings cache invalidated: class=${id}, period=${periodId} by admin ${user.id}`
+					);
+					return json({
+						success: true,
+						message: 'Warnings cache invalidated successfully (specific period)'
+					});
+				} else {
+					// Invalidate all periods for this class
+					await invalidateAllClassWarningsCaches(id);
+					console.log(
+						`[Admin Cache] All warnings caches invalidated for class: ${id} by admin ${user.id}`
+					);
+					return json({
+						success: true,
+						message: 'Warnings cache invalidated successfully (all periods)'
+					});
+				}
+			} catch (err) {
+				console.error('[Admin Cache] Failed to invalidate warnings cache:', err);
+				throw error(500, 'Failed to invalidate warnings cache. Please try again.');
+			}
+
 		default:
-			throw error(400, `Invalid cache type: ${type}. Valid types: school, templates, profile`);
+			throw error(
+				400,
+				`Invalid cache type: ${type}. Valid types: school, templates, profile, warnings`
+			);
 	}
 };
