@@ -4367,6 +4367,96 @@ export type Database = {
 					}
 				];
 			};
+			student_warnings: {
+				Row: {
+					academic_period_id: string;
+					class_id: string;
+					created_at: string;
+					created_by: string;
+					id: string;
+					student_id: string;
+					updated_at: string;
+					warning_type: string;
+				};
+				Insert: {
+					academic_period_id: string;
+					class_id: string;
+					created_at?: string;
+					created_by: string;
+					id?: string;
+					student_id: string;
+					updated_at?: string;
+					warning_type: string;
+				};
+				Update: {
+					academic_period_id?: string;
+					class_id?: string;
+					created_at?: string;
+					created_by?: string;
+					id?: string;
+					student_id?: string;
+					updated_at?: string;
+					warning_type?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'student_warnings_academic_period_id_fkey';
+						columns: ['academic_period_id'];
+						isOneToOne: false;
+						referencedRelation: 'academic_periods';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			template_audit_log: {
 				Row: {
 					action: string;

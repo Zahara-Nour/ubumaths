@@ -57,7 +57,8 @@
 		MessageCircle,
 		BookOpen,
 		Lightbulb,
-		FileText
+		FileText,
+		AlertTriangle
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -106,7 +107,8 @@
 				{ href: '/dashboard/students', label: 'Students', icon: Users },
 				{ href: '/dashboard/teacher/riddles', label: 'Énigmes', icon: Lightbulb },
 				{ href: '/dashboard/teacher/exercises', label: 'Exercices', icon: BookOpen },
-				{ href: '/dashboard/teacher/rewards', label: 'Rewards', icon: Gift }
+				{ href: '/dashboard/teacher/rewards', label: 'Rewards', icon: Gift },
+				{ href: '/dashboard/teacher/warnings', label: 'Avertissements', icon: AlertTriangle }
 			];
 		} else if (role === 'admin') {
 			return [

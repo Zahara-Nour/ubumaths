@@ -61,6 +61,11 @@ Authentification Google OAuth + email/password.
 Banque d'exercices en markdown avec export LaTeX/PDF.
 **Status** : ✅ Production
 
+### [⚠️ Warnings](warnings/README.md)
+
+Gestion des avertissements comportementaux par période académique.
+**Status** : ✅ Production
+
 ---
 
 ## Features en développement

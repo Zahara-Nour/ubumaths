@@ -99,6 +99,20 @@ Système de création et gestion d'exercices en markdown avec export LaTeX/PDF.
 - Import/Export JSON/Markdown (✅ Complet)
 - **2025-10-26** : 45 erreurs ESLint corrigées, feature production-ready
 
+### ⚠️ Avertissements
+
+**Status** : ✅ Production | [Documentation →](features/warnings/README.md) 🆕
+
+Système de gestion des avertissements comportementaux pour les élèves.
+
+- [Documentation API](features/warnings/api.md)
+- [Historique UI](features/warnings/ui-changelog.md)
+- 4 types d'avertissements (C, M, R, T)
+- Calcul automatique du score comportemental (note/20)
+- Historique par période académique
+- Optimistic UI avec debouncing
+- **2025-10-29** : UI refactoring (badge + count séparés, "Aucun" fallback)
+
 ### 🎮 Navadra (Combat Math)
 
 **Status** : 🔄 En cours | [Documentation →](features/navadra/README.md)

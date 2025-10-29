@@ -8,10 +8,12 @@ The database is designed to support a complete math learning platform with:
 
 - **User Management**: Students, teachers, and admins
 - **School Management**: Multi-school support with school profiles
+- **Academic Calendar**: School years, academic periods (trimesters/semesters), holidays
+- **Student Management**: Behavioral warnings and monitoring (NEW)
 - **Classroom Management**: Classes and class memberships
 - **Friend System**: Mutual friendships with request/accept workflow
 - **Real-Time Presence**: WebSocket-based online/offline status
-- **Error Monitoring**: Comprehensive error logging and tracking system (NEW)
+- **Error Monitoring**: Comprehensive error logging and tracking system
 
 ## Entity Relationship Diagram
 
@@ -22,7 +24,14 @@ profiles (user_role: student/teacher/admin) ← pending_students (pre-populated)
     ↓
     ├─→ schools (school_id FK)
     │       ├─ name, city, country (unique)
-    │       └─ address, logo_url, is_active
+    │       ├─ address, logo_url, is_active
+    │       └─→ school_years (school_id FK)
+    │               └─→ academic_periods (school_year_id FK)
+    │                       └─→ student_warnings (academic_period_id FK) [NEW]
+    │                               ├─ student_id → profiles
+    │                               ├─ class_id → classes
+    │                               ├─ created_by → profiles (teacher)
+    │                               └─ warning_type: C/M/R/T
     │
     ├─→ classes (teacher_id, school_id FK) → class_members (students)
     │
@@ -252,6 +261,133 @@ School vacation periods within academic years.
 **Migration**: `20251028120300_link_assessments_to_periods.sql`
 
 **Related Documentation**: See [Assessment System](../features/assessments/) for full details.
+
+---
+
+### Student Management Tables
+
+> 🆕 2025-10-29
+
+#### `student_warnings`
+
+Tracks student behavioral warnings issued by teachers during academic periods. Used for student monitoring, behavior reports, and calculating student behavior scores.
+
+| Column             | Type        | Description                                              |
+| ------------------ | ----------- | -------------------------------------------------------- |
+| id                 | UUID (PK)   | Warning ID                                               |
+| student_id         | UUID (FK)   | References profiles(id) ON DELETE CASCADE                |
+| class_id           | UUID (FK)   | References classes(id) ON DELETE CASCADE                 |
+| academic_period_id | UUID (FK)   | References academic_periods(id) ON DELETE CASCADE        |
+| warning_type       | TEXT        | Warning type: 'C', 'M', 'R', or 'T' (see types below)    |
+| created_by         | UUID (FK)   | Teacher who issued the warning (references profiles(id)) |
+| created_at         | TIMESTAMPTZ | Warning issue time                                       |
+| updated_at         | TIMESTAMPTZ | Last update time                                         |
+
+**Warning Types**:
+
+- **C** (Conduite): Behavioral issues (conduct)
+- **M** (Manque de Travail): Lack of work/homework not completed
+- **R** (Retard): Tardiness
+- **T** (Tricherie): Cheating
+
+**Constraints**:
+
+- `CHECK (warning_type IN ('C', 'M', 'R', 'T'))` - Valid warning types only
+
+**Indexes**:
+
+- `idx_warnings_student_period` ON (student_id, academic_period_id) - Fast lookup of student warnings per period
+- `idx_warnings_class_period` ON (class_id, academic_period_id) - Fast lookup of class warnings per period
+- `idx_warnings_created_by` ON (created_by) - Fast lookup of warnings by teacher
+
+**RLS Policies**:
+
+- **SELECT**: Teachers can view all warnings for students in their classes
+  - Policy: `teachers_select_own_class_warnings`
+  - Uses: `is_class_teacher(class_id)` function
+- **INSERT**: Teachers can create warnings for students in their classes
+  - Policy: `teachers_insert_own_class_warnings`
+  - Ensures: `created_by = auth.uid()` (teacher can only create warnings as themselves)
+- **DELETE**: Teachers can delete warnings they personally created
+  - Policy: `teachers_delete_own_warnings`
+  - Ensures: `created_by = auth.uid()` AND `is_class_teacher(class_id)`
+
+**Triggers**:
+
+- `update_student_warnings_updated_at` - Automatically updates `updated_at` timestamp on row modifications
+
+**Behavior Score Calculation**:
+
+Student behavior scores are calculated using the formula:
+
+```
+Score = 20 - (total_warnings)
+```
+
+For example:
+
+- 0 warnings = 20/20 (perfect score)
+- 3 warnings = 17/20
+- 20+ warnings = 0/20 (minimum)
+
+**Common Query Patterns**:
+
+```sql
+-- Get all warnings for a student in current period
+SELECT w.*, p.firstname, p.lastname, p.email as teacher_email
+FROM student_warnings w
+JOIN profiles p ON p.id = w.created_by
+WHERE w.student_id = $1
+  AND w.academic_period_id = $2
+ORDER BY w.created_at DESC;
+
+-- Calculate student behavior score for current period
+SELECT
+  student_id,
+  20 - COUNT(*) as behavior_score
+FROM student_warnings
+WHERE student_id = $1
+  AND academic_period_id = $2
+GROUP BY student_id;
+
+-- Get warning breakdown by type for a student
+SELECT
+  warning_type,
+  COUNT(*) as count
+FROM student_warnings
+WHERE student_id = $1
+  AND academic_period_id = $2
+GROUP BY warning_type
+ORDER BY warning_type;
+
+-- Get all warnings issued by a teacher
+SELECT w.*, s.firstname as student_firstname, s.lastname as student_lastname
+FROM student_warnings w
+JOIN profiles s ON s.id = w.student_id
+WHERE w.created_by = $1
+  AND w.academic_period_id = $2
+ORDER BY w.created_at DESC;
+
+-- Get class-wide warning statistics
+SELECT
+  w.warning_type,
+  COUNT(*) as total_warnings,
+  COUNT(DISTINCT w.student_id) as students_affected
+FROM student_warnings w
+WHERE w.class_id = $1
+  AND w.academic_period_id = $2
+GROUP BY w.warning_type;
+```
+
+**Use Cases**:
+
+1. **Teacher Dashboard**: Teachers can view, add, and remove warnings for students in their classes
+2. **Student Reports**: Generate behavior reports showing warning counts by type per period
+3. **Parent Communication**: Export warning history for parent-teacher conferences
+4. **Behavior Trends**: Analyze warning patterns across periods, classes, or students
+5. **Report Cards**: Automatically calculate behavior scores for inclusion in academic reports
+
+**Migration**: `20251029013121_create_student_warnings.sql`
 
 ---
 
