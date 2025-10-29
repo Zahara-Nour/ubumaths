@@ -18,6 +18,28 @@
 
 ---
 
+## Overview
+
+### Hybrid Cache Strategy
+
+UbuMaths uses a hybrid caching approach combining two cache tiers:
+
+- **In-Memory Cache**: Per-user data (profile roles, preferences)
+  - Zero latency (< 1ms)
+  - No setup required
+  - Automatic cleanup
+  - Per-instance isolation
+
+- **Redis Cache**: Shared data (schools, templates, assessment results)
+  - Low latency (~50ms)
+  - Requires Upstash configuration (this guide)
+  - Cross-instance consistency
+  - Global data sharing
+
+See [Hybrid Cache System](../architecture/hybrid-cache-system.md) for architecture details.
+
+---
+
 ## Prerequisites
 
 Before setting up Redis cache, ensure you have:
@@ -32,6 +54,8 @@ Before setting up Redis cache, ensure you have:
 
 - GitHub account (for signing up to Upstash)
 - Vercel account (for production deployment)
+
+**Note**: In-memory cache works without any setup. This guide is only for configuring Redis (Tier 2 cache).
 
 ---
 
@@ -661,6 +685,72 @@ warnings:class:abc-123:period:def-456:false
 
 ---
 
+## Cache Types (Hybrid System)
+
+UbuMaths implements a hybrid cache strategy with two tiers:
+
+### In-Memory Cache (Tier 1)
+
+**Purpose**: Per-user data with ultra-low latency
+
+**Features**:
+
+- Zero configuration required
+- <1ms latency (memory lookup)
+- Automatic TTL-based cleanup
+- Per-instance isolation
+
+**Modules**:
+
+- **Profile Cache**: User role checks (15min TTL)
+
+**Usage**:
+
+```typescript
+import { getCachedProfile } from '$lib/server/cache/profile';
+
+const profile = await getCachedProfile(userId, supabase);
+if (profile?.role === 'admin') {
+	// User is admin
+}
+```
+
+**No Setup Required**: Works out of the box!
+
+---
+
+### Redis Cache (Tier 2)
+
+**Purpose**: Shared data across multiple users/instances
+
+**Features**:
+
+- ~50ms latency (network roundtrip)
+- Cross-instance consistency
+- Requires Upstash configuration (this guide)
+- Distributed rate limiting
+
+**Modules**:
+
+- **Schools Cache**: School data, timetables (1hour TTL)
+- **Templates Cache**: Published question templates (10min TTL)
+- **Assessment Results**: Cached results (5min TTL)
+- **Activity Polling**: Dashboard activity counts (30s TTL)
+
+**Usage**:
+
+```typescript
+import { getCachedSchool } from '$lib/server/cache/schools';
+import { getCachedTemplates } from '$lib/server/cache/templates';
+
+const school = await getCachedSchool(schoolId, supabase);
+const templates = await getCachedTemplates(supabase);
+```
+
+**Setup Required**: Follow this guide to configure Redis.
+
+---
+
 ## Next Steps
 
 ### After Setup
@@ -668,6 +758,7 @@ warnings:class:abc-123:period:def-456:false
 Now that Redis cache is configured, you can:
 
 1. **Learn cache patterns**:
+   - [Hybrid Cache System](../architecture/hybrid-cache-system.md) - Two-tier architecture ⭐
    - [Redis Caching Architecture](../architecture/redis-caching.md) - General caching patterns
    - [Teacher Dashboard Cache Architecture](../architecture/teacher-dashboard-cache.md) - Three-cache system
 

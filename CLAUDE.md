@@ -736,6 +736,58 @@ function handleUpdate(id: string, delta: number) {
 
 ---
 
+## 💾 Caching Strategy
+
+### Hybrid Cache System
+
+UbuMaths uses a two-tier caching strategy combining in-memory and Redis caches.
+
+**In-Memory Cache** (zero latency):
+
+```typescript
+import { getCachedProfile } from '$lib/server/cache/profile';
+const profile = await getCachedProfile(userId, supabase);
+```
+
+**Redis Cache** (shared across instances):
+
+```typescript
+import { getCachedSchool } from '$lib/server/cache/schools';
+import { getCachedTemplates } from '$lib/server/cache/templates';
+
+const school = await getCachedSchool(schoolId, supabase);
+const templates = await getCachedTemplates(supabase);
+```
+
+**When to use which**:
+
+- ✅ In-Memory: Per-user data, ultra-high frequency reads (profile roles, session data)
+- ✅ Redis: Shared data, multi-instance deployments (schools, templates, rate limiting)
+
+**Manual Invalidation** (admin only):
+
+```bash
+# Invalidate school cache after timetable update
+curl -X POST "/api/admin/cache/invalidate?type=school&id={schoolId}"
+
+# Invalidate templates after publishing
+curl -X POST "/api/admin/cache/invalidate?type=templates"
+```
+
+**Cache Modules**:
+
+| Module             | Type      | TTL    | Purpose                      |
+| ------------------ | --------- | ------ | ---------------------------- |
+| Profile            | In-Memory | 15 min | User role checks             |
+| Schools            | Redis     | 1 hour | School data, timetables      |
+| Templates          | Redis     | 10 min | Published question templates |
+| Assessment Results | Redis     | 5 min  | Cached results               |
+| Activity Polling   | Redis     | 30 sec | Dashboard activity counts    |
+
+📚 **Docs**: [Hybrid Cache System](docs/architecture/hybrid-cache-system.md)
+
+---
+
 ## 📚 Documentation
 
 ### Structure complète

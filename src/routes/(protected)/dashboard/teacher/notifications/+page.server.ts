@@ -6,6 +6,7 @@ import {
 	deleteNotification
 } from '$lib/server/notifications';
 import type { CreateNotificationData } from '$lib/types/notification';
+import { getCachedProfile } from '$lib/server/cache/profile';
 
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -15,13 +16,9 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	}
 
 	// Get user profile to check role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
+	const profile = await getCachedProfile(user.id, supabase);
 
-	if (profileError || !profile || profile.role !== 'teacher') {
+	if (!profile || profile.role !== 'teacher') {
 		throw redirect(303, '/dashboard');
 	}
 

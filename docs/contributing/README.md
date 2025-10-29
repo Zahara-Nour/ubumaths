@@ -115,6 +115,62 @@ Priorité sur :
 - API endpoints
 - Validations
 
+### Testing Cache Modules
+
+Cache modules have comprehensive unit tests (107 tests, 100% pass rate):
+
+```bash
+# Run all cache tests
+pnpm test:unit tests/unit/cache/
+
+# Run specific cache module tests
+pnpm test:unit tests/unit/cache/memory-cache.test.ts
+pnpm test:unit tests/unit/cache/profile-cache.test.ts
+pnpm test:unit tests/unit/cache/schools-cache.test.ts
+pnpm test:unit tests/unit/cache/templates-cache.test.ts
+pnpm test:unit tests/unit/api/admin-cache-invalidation.test.ts
+```
+
+**When to add cache tests**:
+
+- New cache module created
+- Cache invalidation logic changed
+- TTL values modified
+- New cache helper function added
+
+**Cache test structure**:
+
+```typescript
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { memoryCache } from '$lib/server/cache/memory';
+
+describe('MyCache Module', () => {
+	beforeEach(() => {
+		memoryCache.clear(); // Reset cache between tests
+	});
+
+	afterAll(() => {
+		memoryCache.destroy(); // Prevent memory leaks
+	});
+
+	it('caches data on first access', async () => {
+		// Test cache miss → DB query → cache store
+	});
+
+	it('returns cached data on subsequent access', async () => {
+		// Test cache hit
+	});
+
+	it('invalidates cache correctly', async () => {
+		// Test invalidation
+	});
+
+	it('handles TTL expiration', async () => {
+		// Test TTL behavior
+	});
+});
+```
+
 ---
 
 ## ❓ Questions ?

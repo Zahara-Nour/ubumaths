@@ -7,6 +7,7 @@ import {
 } from '$lib/server/assessments';
 import { getTeacherTestMode } from '$lib/server/test-mode';
 import { getCached, CACHE_KEYS, TTL } from '$lib/server/cache';
+import { getCachedProfile } from '$lib/server/cache/profile';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
@@ -15,11 +16,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// Verify user is a teacher
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
+	const profile = await getCachedProfile(user.id, locals.supabase);
 
 	if (!profile || profile.role !== 'teacher') {
 		throw redirect(303, '/dashboard');

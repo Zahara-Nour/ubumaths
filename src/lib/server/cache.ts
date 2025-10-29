@@ -112,6 +112,12 @@ export const TTL = {
 	/** Warnings data - 3 minutes (updated frequently during active periods) */
 	WARNINGS: 180,
 
+	/** School timetable data - 1 hour (changes rarely) */
+	SCHOOL_DATA: 3600,
+
+	/** Question templates - 10 minutes (templates published occasionally) */
+	TEMPLATES: 600,
+
 	/** Rate limit: Login attempts - 15 minutes */
 	RATE_LIMIT_LOGIN: 900,
 
@@ -160,6 +166,12 @@ export const CACHE_KEYS = {
 	/** Warnings for a class and period (NEW) */
 	CLASS_WARNINGS: (classId: string, periodId: string, isTestMode: boolean) =>
 		`warnings:class:${classId}:period:${periodId}:${isTestMode ? 'test' : 'real'}`,
+
+	/** School data by school ID */
+	SCHOOL_DATA: (schoolId: string) => `cache:school:${schoolId}:data`,
+
+	/** Published question templates (global - no user/school scope) */
+	TEMPLATES_PUBLISHED: () => 'cache:templates:published',
 
 	/** Rate limit: Login attempts by IP address */
 	RATE_LIMIT_LOGIN_IP: (ip: string) => `ratelimit:login:ip:${ip}`,

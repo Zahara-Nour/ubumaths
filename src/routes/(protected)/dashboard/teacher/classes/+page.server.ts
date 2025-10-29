@@ -27,6 +27,7 @@ import {
 	updateScheduleEntrySchema,
 	deleteScheduleEntrySchema
 } from '$lib/server/validation';
+import { getCachedSchool } from '$lib/server/cache/schools';
 
 /**
  * Load function - Fetches teacher's classes with student counts and schedules
@@ -64,17 +65,7 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 	// Fetch school timetable (needed for period selection in schedule modal)
 	let school: School | null = null;
 	if (profile.school_id) {
-		const { data: schoolData, error: schoolError } = await supabase
-			.from('schools')
-			.select('*')
-			.eq('id', profile.school_id)
-			.single();
-
-		if (schoolError) {
-			console.error('Error loading school:', schoolError);
-		} else {
-			school = schoolData;
-		}
+		school = await getCachedSchool(profile.school_id, supabase);
 	}
 
 	return {
