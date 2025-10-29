@@ -69,6 +69,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Clock, Target, BookOpen } from 'lucide-svelte';
 	import Wheel from '$lib/components/Wheel.svelte';
+	import StudentQuickActionsTable from '$lib/components/teacher/StudentQuickActionsTable.svelte';
 
 	// Stores & Utilities
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -84,6 +85,7 @@
 		isWeekend
 	} from '$lib/utils/timeMatching';
 	import { teacherStudentsCache } from '$lib/stores/teacherStudentsCache.svelte';
+	import { findCurrentPeriod } from '$lib/utils/academic-period';
 
 	// ============================================================================
 	// COMPONENT STATE
@@ -119,6 +121,24 @@
 	const selectedClass = $derived<ClassWithData | undefined>(
 		classes.find((c) => c.id === selectedClassId)
 	);
+
+	/**
+	 * Current academic period ID (auto-detected from date range)
+	 * Used by StudentQuickActionsTable to filter warnings by period
+	 * Updates automatically when data.academicPeriods changes
+	 */
+	let currentPeriodId = $state<string | null>(null);
+
+	/**
+	 * Update current period when academic periods change
+	 * Uses findCurrentPeriod() to determine active period based on today's date
+	 */
+	$effect(() => {
+		if (data.academicPeriods && data.academicPeriods.length > 0) {
+			currentPeriodId = findCurrentPeriod(data.academicPeriods);
+			console.log('[TeacherDashboard] Current period detected:', currentPeriodId);
+		}
+	});
 
 	// ============================================================================
 	// WHEEL OF FORTUNE MODAL STATE
@@ -434,6 +454,15 @@
 					</div>
 				</div>
 			{/if}
+		</div>
+	{/if}
+
+	<!-- STUDENT QUICK ACTIONS TABLE -->
+	<!-- Displays student list with quick action buttons when class is selected -->
+	{#if selectedClassId && currentPeriodId}
+		<div class="rounded-lg bg-card p-6 shadow">
+			<h3 class="mb-4 text-lg font-semibold text-foreground">Actions Rapides - Élèves</h3>
+			<StudentQuickActionsTable classId={selectedClassId} periodId={currentPeriodId} />
 		</div>
 	{/if}
 

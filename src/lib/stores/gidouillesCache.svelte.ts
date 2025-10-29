@@ -70,15 +70,11 @@
  */
 
 import { dev } from '$app/environment';
+import type { StudentVipCards } from '$lib/types/vip-card';
 
 // ============================================================================
 // TYPES
 // ============================================================================
-
-/**
- * VIP cards structure (matches database Json type)
- */
-export type StudentVipCards = Record<string, number>;
 
 /**
  * Gidouilles data for a single student

@@ -48,6 +48,18 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 	// This contains the user's role which determines the dashboard view
 	const { profile } = await parent();
 
+	// For teachers, fetch academic periods (needed for StudentQuickActionsTable)
+	let academicPeriods: Array<{
+		id: string;
+		name: string;
+		start_date: string;
+		end_date: string;
+		school_year_id: string;
+		period_order: number;
+		type: string;
+		color: string;
+	}> = [];
+
 	// For students, fetch additional stats for rewards block and recent exercises
 	let riddlesSolved = 0;
 	let recentExercises: Array<{
@@ -68,6 +80,29 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 			view_count: number;
 		}> | null;
 	}> = [];
+
+	if (profile.role === 'teacher' && profile.school_id) {
+		// Fetch academic periods for the teacher's school
+		// Used by StudentQuickActionsTable to determine current period for warnings
+		// Strategy: Get current school year first, then fetch its periods
+		const { data: schoolYear } = await supabase
+			.from('school_years')
+			.select('id')
+			.eq('school_id', profile.school_id)
+			.order('start_date', { ascending: false })
+			.limit(1)
+			.maybeSingle();
+
+		if (schoolYear) {
+			const { data: periods } = await supabase
+				.from('academic_periods')
+				.select('id, name, start_date, end_date, school_year_id, period_order, type, color')
+				.eq('school_year_id', schoolYear.id)
+				.order('start_date', { ascending: false });
+
+			academicPeriods = (periods || []) as typeof academicPeriods;
+		}
+	}
 
 	if (profile.role === 'student') {
 		// Execute both queries in parallel for better performance
@@ -117,6 +152,7 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 	return {
 		profile,
 		riddlesSolved,
-		recentExercises
+		recentExercises,
+		academicPeriods
 	};
 };
