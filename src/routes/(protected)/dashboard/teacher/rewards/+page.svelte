@@ -110,7 +110,6 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { invalidateAll } from '$app/navigation';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import VipCardsModal from '$lib/components/VipCardsModal.svelte';
@@ -118,7 +117,8 @@
 	import { getVipCardById } from '$lib/types/vip-card';
 	import { canAffordVipCard } from '$lib/utils/vip-cards';
 	import { Sparkles, Eye, Loader2 } from 'lucide-svelte';
-	import { teacherStudentsCache } from '$lib/stores/teacherStudentsCache.svelte';
+	import { gidouillesCache } from '$lib/stores/gidouillesCache.svelte';
+	import { cacheEventBus } from '$lib/stores/cacheEventBus.svelte';
 
 	// Data from server load function
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -131,6 +131,11 @@
 
 	// Local state for gidouilles input at class level
 	let classDeltas = $state<Record<string, number>>({});
+
+	// Gidouilles data (fetched from cache)
+	let gidouillesData = $state<
+		Map<string, { gidouilles: number; vip_cards: Record<string, number> }>
+	>(new Map());
 
 	// OPTIMISTIC UI STATE
 	// Tracks temporary gidouilles values that override server data
@@ -161,6 +166,15 @@
 		confirmed: boolean;
 	} | null>(null); // Tracks card reveal state with loading/confirmed
 	let lastProcessedCardId = $state<string | null>(null); // Tracks last processed cardId to prevent duplicates and infinite loops
+
+	// Load gidouilles data when selected class changes
+	$effect(() => {
+		if (selectedClassId) {
+			gidouillesCache.get(selectedClassId).then((data) => {
+				gidouillesData = data;
+			});
+		}
+	});
 
 	// Initialize deltas to 1 for each student and class
 	$effect(() => {
@@ -219,14 +233,19 @@
 	 * Get current gidouilles for a student with optimistic override
 	 *
 	 * Returns the optimistic value if it exists (user clicked but server hasn't
-	 * confirmed yet), otherwise returns the server value.
+	 * confirmed yet), otherwise returns the cached value.
 	 *
 	 * @param studentId - The student's ID
-	 * @param serverValue - The confirmed value from the database
 	 * @returns The gidouilles count to display in the UI
 	 */
-	function getStudentGidouilles(studentId: string, serverValue: number): number {
-		return optimisticGidouilles[studentId] ?? serverValue;
+	function getStudentGidouilles(studentId: string): number {
+		// First check optimistic override
+		if (optimisticGidouilles[studentId] !== undefined) {
+			return optimisticGidouilles[studentId];
+		}
+
+		// Otherwise return cached value
+		return gidouillesData.get(studentId)?.gidouilles ?? 0;
 	}
 
 	/**
@@ -261,7 +280,7 @@
 		const classItem = data.classes.find((c) => c.id === classId);
 		if (classItem) {
 			classItem.students.forEach((student) => {
-				const currentValue = getStudentGidouilles(student.id, student.gidouilles);
+				const currentValue = getStudentGidouilles(student.id);
 				const newValue = Math.max(0, currentValue + delta);
 				optimisticGidouilles[student.id] = newValue;
 			});
@@ -349,16 +368,19 @@
 
 				if (response.ok) {
 					// SUCCESS: Server updated the database
-					// Wait 100ms then refresh data from server and show confirmation
+					// Wait 100ms then refresh data from cache and show confirmation
 					setTimeout(() => {
-						invalidateAll(); // Fetch fresh data from server
-						// Invalidate cache for this class (student's gidouilles changed)
-						const classId = data.classes.find((c) =>
-							c.students.some((s) => s.id === studentId)
-						)?.id;
-						if (classId) {
-							teacherStudentsCache.invalidate(classId);
+						// Publish invalidation event via Event Bus
+						if (selectedClassId) {
+							cacheEventBus.invalidateGidouilles(
+								selectedClassId,
+								`Updated gidouilles for ${studentName}`
+							);
 						}
+
+						// Clear optimistic state (cache will reload automatically)
+						clearOptimisticOverride(studentId);
+
 						// Show success toast with accumulated delta and student name
 						toaster.success(
 							`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} (${studentName})`
@@ -435,9 +457,15 @@
 					const classItem = data.classes.find((c) => c.id === classId);
 					const studentCount = classItem?.students.length || 0;
 					setTimeout(() => {
-						invalidateAll(); // Refresh all student data
-						// Invalidate cache for this class (all students' gidouilles changed)
-						teacherStudentsCache.invalidate(classId);
+						// Publish invalidation event via Event Bus
+						cacheEventBus.invalidateGidouilles(
+							classId,
+							`Updated gidouilles for entire class (${studentCount} students)`
+						);
+
+						// Clear optimistic state for all students (cache will reload automatically)
+						classItem?.students.forEach((student) => clearOptimisticOverride(student.id));
+
 						// Show success toast with student count
 						toaster.success(
 							`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} pour ${studentCount} élève${studentCount > 1 ? 's' : ''}`
@@ -525,11 +553,11 @@
 	// Close card reveal modal
 	function handleRevealComplete() {
 		revealingCard = null;
-		invalidateAll(); // Refresh data to update card collection
 
-		// Invalidate cache for all classes (VIP cards changed)
-		// We invalidate all because we don't know which class the student belongs to here
-		data.classes.forEach((c) => teacherStudentsCache.invalidate(c.id));
+		// Publish invalidation event via Event Bus (VIP cards changed)
+		if (selectedClassId) {
+			cacheEventBus.invalidateGidouilles(selectedClassId, 'VIP card awarded');
+		}
 	}
 </script>
 
@@ -655,7 +683,7 @@
 										<div class="flex w-32 items-center justify-end gap-2">
 											<img src={gidouilleImg} alt="Gidouille" class="h-6 w-6 flex-shrink-0" />
 											<span class="text-2xl font-bold text-foreground tabular-nums">
-												{getStudentGidouilles(student.id, student.gidouilles)}
+												{getStudentGidouilles(student.id)}
 											</span>
 										</div>
 
@@ -666,11 +694,10 @@
 												size="sm"
 												variant="default"
 												class="h-10 w-10 p-0"
-												disabled={getStudentGidouilles(student.id, student.gidouilles) <
-													studentDeltas[student.id]}
+												disabled={getStudentGidouilles(student.id) < studentDeltas[student.id]}
 												onclick={() => {
 													const delta = -studentDeltas[student.id];
-													const currentValue = getStudentGidouilles(student.id, student.gidouilles);
+													const currentValue = getStudentGidouilles(student.id);
 													// Get student name for toast (priority: firstname > full_name > fallback)
 													const name = student.firstname || student.full_name || 'Élève';
 													debouncedUpdateStudent(student.id, delta, currentValue, name);
@@ -697,7 +724,7 @@
 												class="h-10 w-10 p-0"
 												onclick={() => {
 													const delta = studentDeltas[student.id];
-													const currentValue = getStudentGidouilles(student.id, student.gidouilles);
+													const currentValue = getStudentGidouilles(student.id);
 													// Get student name for toast (priority: firstname > full_name > fallback)
 													const name = student.firstname || student.full_name || 'Élève';
 													debouncedUpdateStudent(student.id, delta, currentValue, name);
@@ -744,7 +771,7 @@
 													};
 
 													// Optimistically deduct 3 gidouilles
-													const currentValue = getStudentGidouilles(student.id, student.gidouilles);
+													const currentValue = getStudentGidouilles(student.id);
 													updateStudentGidouillesOptimistic(student.id, -3, currentValue);
 
 													return async ({ result, update }) => {
@@ -767,9 +794,8 @@
 													size="sm"
 													variant="default"
 													class="gap-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-													disabled={!canAffordVipCard(
-														getStudentGidouilles(student.id, student.gidouilles)
-													) || revealingCard !== null}
+													disabled={!canAffordVipCard(getStudentGidouilles(student.id)) ||
+														revealingCard !== null}
 												>
 													{#if revealingCard !== null}
 														<Loader2 class="h-4 w-4 animate-spin" />

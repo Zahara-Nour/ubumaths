@@ -110,8 +110,24 @@ Système de gestion des avertissements comportementaux pour les élèves.
 - 4 types d'avertissements (C, M, R, T)
 - Calcul automatique du score comportemental (note/20)
 - Historique par période académique
-- Optimistic UI avec debouncing
+- Optimistic UI avec debouncing asymétrique
+- Cache 3 min TTL avec Event Bus
 - **2025-10-29** : UI refactoring (badge + count séparés, "Aucun" fallback)
+
+### 💰 Récompenses (Gidouilles & VIP Cards)
+
+**Status** : ✅ Production | [Documentation →](features/rewards/README.md) 🆕
+
+Système de récompenses gamifié pour motiver les élèves.
+
+- Gidouilles (monnaie virtuelle) avec +/- ajustement
+- Cartes VIP (Joker Homework, Extra Time, etc.)
+- Boutique élève pour acheter des cartes
+- Distribution en masse par classe
+- Optimistic UI avec debouncing (500ms)
+- Cache 5 min TTL avec Event Bus
+- Batching automatique (10 clics = 1 requête DB)
+- **2025-10-29** : Cache architecture séparée
 
 ### 🎮 Navadra (Combat Math)
 
@@ -171,18 +187,19 @@ Système d'authentification avec Google OAuth + email/password.
 
 ## 🏗️ Architecture
 
-| Document                                                  | Description                           |
-| --------------------------------------------------------- | ------------------------------------- |
-| [Vue d'ensemble](architecture/README.md)                  | Architecture générale du projet       |
-| [Structure du projet](architecture/project-structure.md)  | Organisation des dossiers et fichiers |
-| [Schéma base de données](architecture/database-schema.md) | Tables, relations, RLS policies       |
-| [Component Architecture](architecture/components.md) ⭐   | MySelect, standardisation dropdowns   |
-| [Routing](architecture/routing.md)                        | Routes SvelteKit et organisation      |
-| [WebSocket](architecture/websocket.md)                    | Architecture temps réel               |
-| [Éditeur rich text](architecture/rich-text-editor.md)     | TipTap + MathLive                     |
-| [Performance](architecture/performance.md)                | Optimisations et best practices       |
-| [Redis Caching](architecture/redis-caching.md) 🆕 ⭐      | Upstash Redis cache implementation    |
-| [CSRF Protection](architecture/csrf-protection.md)        | Protection anti-CSRF                  |
+| Document                                                              | Description                           |
+| --------------------------------------------------------------------- | ------------------------------------- |
+| [Vue d'ensemble](architecture/README.md)                              | Architecture générale du projet       |
+| [Structure du projet](architecture/project-structure.md)              | Organisation des dossiers et fichiers |
+| [Schéma base de données](architecture/database-schema.md)             | Tables, relations, RLS policies       |
+| [Component Architecture](architecture/components.md) ⭐               | MySelect, standardisation dropdowns   |
+| [Routing](architecture/routing.md)                                    | Routes SvelteKit et organisation      |
+| [WebSocket](architecture/websocket.md)                                | Architecture temps réel               |
+| [Éditeur rich text](architecture/rich-text-editor.md)                 | TipTap + MathLive                     |
+| [Performance](architecture/performance.md)                            | Optimisations et best practices       |
+| [Redis Caching](architecture/redis-caching.md) 🆕 ⭐                  | Upstash Redis cache implementation    |
+| [Teacher Dashboard Cache](architecture/teacher-dashboard-cache.md) 🆕 | Three-cache system with Event Bus ⭐  |
+| [CSRF Protection](architecture/csrf-protection.md)                    | Protection anti-CSRF                  |
 
 ---
 
@@ -285,7 +302,7 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 ## 📊 Statistiques
 
-- **Features en production** : 12 🆕
+- **Features en production** : 13 🆕 (added Rewards system)
 - **Features en développement** : 1 (Navadra)
 - **Tests** : 3,334 tests (99.3% pass rate)
   - Unit tests: 2,526/2,550 passing (99.1%) - includes 96 Redis cache tests
@@ -293,9 +310,12 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
   - Validation tests: 366/366 passing (100%)
   - Database triggers: 139/139 passing (100%)
 - **Code Quality** : 0 errors in production code (853 → 0)
-- **Caching** : Redis cache with 95%+ hit rate, 88% faster loads
+- **Caching** : Three-cache system (students 10m, gidouilles 5m, warnings 3m) with Event Bus
+  - Cache hit rates: 95% (students), 85% (gidouilles), 80% (warnings)
+  - 90% faster loads (3.6s → 0.4s)
+  - 97% fewer database queries (244 → 6 per load)
 - **Database Tables** : 3 new tables (school_years, academic_periods, school_holidays) 🆕
-- **Lignes de documentation** : ~25,000+ 🆕
+- **Lignes de documentation** : ~30,000+ 🆕 (added 5,000+ for cache architecture)
 - **Dernière mise à jour** : 2025-10-29
 
 ---

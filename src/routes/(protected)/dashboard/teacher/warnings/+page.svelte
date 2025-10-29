@@ -48,6 +48,8 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import { teacherStudentsCache } from '$lib/stores/teacherStudentsCache.svelte';
+	import { warningsCache } from '$lib/stores/warningsCache.svelte';
+	import { cacheEventBus } from '$lib/stores/cacheEventBus.svelte';
 	import { History, AlertCircle } from 'lucide-svelte';
 	import type { Warning, StudentWarningCounts } from '$lib/server/warnings';
 
@@ -105,6 +107,30 @@
 		if (selectedClassId && selectedPeriodId) {
 			loadWarnings();
 		}
+	});
+
+	/**
+	 * Subscribe to Event Bus for cross-tab cache invalidation
+	 */
+	$effect(() => {
+		const unsubscribe = cacheEventBus.subscribe((event) => {
+			console.log('[Warnings] Event Bus received:', event.type, event.scope);
+
+			// Only respond to warnings or 'all' events
+			if (event.type === 'warnings' || event.type === 'all') {
+				// Check if the event matches our current class and period
+				const matchesClass = !event.scope.classId || event.scope.classId === selectedClassId;
+				const matchesPeriod = !event.scope.periodId || event.scope.periodId === selectedPeriodId;
+
+				if (matchesClass && matchesPeriod) {
+					console.log('[Warnings] Reloading due to Event Bus invalidation:', event.reason);
+					loadWarnings();
+				}
+			}
+		});
+
+		// Cleanup subscription on unmount
+		return unsubscribe;
 	});
 
 	/**
@@ -191,6 +217,8 @@
 	async function loadWarnings() {
 		if (!selectedClassId || !selectedPeriodId) return;
 
+		console.log('[loadWarnings] START - class:', selectedClassId, 'period:', selectedPeriodId);
+
 		_isLoadingWarnings = true;
 
 		try {
@@ -210,9 +238,23 @@
 				newWarningsData.set(studentId, counts as StudentWarningCounts);
 			}
 
+			console.log(
+				'[loadWarnings] Got data from API, size:',
+				newWarningsData.size,
+				'entries:',
+				Array.from(newWarningsData.keys())
+			);
+
+			// Log first student's data to see structure
+			const firstStudent = Array.from(newWarningsData.entries())[0];
+			if (firstStudent) {
+				console.log('[loadWarnings] First student data:', firstStudent);
+			}
+
 			warningsData = newWarningsData;
+			console.log('[loadWarnings] Updated warningsData, new size:', warningsData.size);
 		} catch (err) {
-			console.error('Error loading warnings:', err);
+			console.error('[loadWarnings] ERROR:', err);
 			toaster.error('Erreur lors du chargement des avertissements');
 		} finally {
 			_isLoadingWarnings = false;
@@ -273,21 +315,38 @@
 				const result = await response.json();
 
 				// SUCCESS: Update with server response
-				setTimeout(() => {
-					// Clear optimistic override
-					delete optimisticWarnings[studentId];
+				console.log('[addWarning] SUCCESS - API call completed');
 
-					// Update server data
-					warningsData.set(studentId, result.counts);
+				// Clear optimistic override
+				delete optimisticWarnings[studentId];
+				console.log('[addWarning] Cleared optimistic state');
 
-					// Invalidate cache
-					teacherStudentsCache.invalidate(selectedClassId);
+				// Update server data
+				warningsData.set(studentId, result.counts);
+				console.log('[addWarning] Updated warningsData with server response');
 
-					// Show success toast
-					toaster.success(
-						`Avertissement ${getWarningTypeLabel(warningType)} ajouté (${studentName})`
-					);
-				}, 100);
+				// Invalidate cache
+				teacherStudentsCache.invalidate(selectedClassId);
+				warningsCache.invalidate(selectedClassId, selectedPeriodId);
+				console.log('[addWarning] Invalidated cache');
+
+				// Publish Event Bus event for cross-tab sync
+				cacheEventBus.invalidateWarnings(
+					selectedClassId,
+					selectedPeriodId,
+					`Added ${warningType} warning for ${studentName}`
+				);
+				console.log('[addWarning] Published Event Bus invalidation');
+
+				// Force immediate reload to get fresh data
+				console.log('[addWarning] About to call loadWarnings()...');
+				await loadWarnings();
+				console.log('[addWarning] loadWarnings() completed');
+
+				// Show success toast
+				toaster.success(
+					`Avertissement ${getWarningTypeLabel(warningType)} ajouté (${studentName})`
+				);
 			} catch (err) {
 				console.error('Error adding warning:', err);
 
@@ -354,6 +413,14 @@
 
 				// Invalidate cache
 				teacherStudentsCache.invalidate(selectedClassId);
+				warningsCache.invalidate(selectedClassId, selectedPeriodId);
+
+				// Publish Event Bus event for cross-tab sync
+				cacheEventBus.invalidateWarnings(
+					selectedClassId,
+					selectedPeriodId,
+					`Removed ${warningType} warning for ${studentName}`
+				);
 
 				// Show success toast
 				toaster.success(

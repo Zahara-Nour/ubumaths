@@ -103,6 +103,15 @@ export const TTL = {
 	/** Activity counts - 30 seconds (matches frontend polling interval) */
 	ACTIVITY_COUNTS: 30,
 
+	/** Student profile data - 10 minutes (names, avatars change infrequently) */
+	STUDENTS: 600,
+
+	/** Gidouilles data - 5 minutes (updated more frequently than profiles) */
+	GIDOUILLES: 300,
+
+	/** Warnings data - 3 minutes (updated frequently during active periods) */
+	WARNINGS: 180,
+
 	/** Rate limit: Login attempts - 15 minutes */
 	RATE_LIMIT_LOGIN: 900,
 
@@ -135,6 +144,22 @@ export const CACHE_KEYS = {
 
 	/** Activity counts by user ID */
 	ACTIVITY_COUNTS: (userId: string) => `cache:activity:${userId}:counts`,
+
+	/** Teacher students for specific class (NEW) */
+	TEACHER_STUDENTS: (teacherId: string, classId: string, isTestMode: boolean) =>
+		`students:teacher:${teacherId}:class:${classId}:${isTestMode ? 'test' : 'real'}`,
+
+	/** Teacher students for all classes (NEW) */
+	TEACHER_ALL_CLASSES: (teacherId: string, isTestMode: boolean) =>
+		`students:teacher:${teacherId}:all:${isTestMode ? 'test' : 'real'}`,
+
+	/** Gidouilles for a class (NEW) */
+	CLASS_GIDOUILLES: (classId: string, isTestMode: boolean) =>
+		`gidouilles:class:${classId}:${isTestMode ? 'test' : 'real'}`,
+
+	/** Warnings for a class and period (NEW) */
+	CLASS_WARNINGS: (classId: string, periodId: string, isTestMode: boolean) =>
+		`warnings:class:${classId}:period:${periodId}:${isTestMode ? 'test' : 'real'}`,
 
 	/** Rate limit: Login attempts by IP address */
 	RATE_LIMIT_LOGIN_IP: (ip: string) => `ratelimit:login:ip:${ip}`,

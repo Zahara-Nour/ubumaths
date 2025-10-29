@@ -233,6 +233,10 @@ export async function getClassStudents(
  * Uses optimized RPC function that fetches all data in a single query.
  * Best for pages that need to display all students (e.g., rewards page).
  *
+ * NOTE: This function fetches ALL student fields including gidouilles and vip_cards.
+ * For caching, use getTeacherStudents() from cache/students.ts which excludes
+ * frequently-changing fields (gidouilles, vip_cards) for better cache efficiency.
+ *
  * @param userId - Teacher's user ID
  * @param supabase - Supabase client instance
  * @returns Promise resolving to array of classes with students

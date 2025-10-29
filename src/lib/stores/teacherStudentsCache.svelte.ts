@@ -11,7 +11,7 @@
  * - Deduplication: Multiple requests for same class = single API call
  * - Smart Invalidation: Event-based cache clearing on mutations
  * - Loading States: Track in-flight requests per class
- * - Flexible API: Support minimal or full student data
+ * - Event Bus Integration: Automatic invalidation via cacheEventBus
  *
  * USAGE:
  * ------
@@ -20,9 +20,6 @@
  *
  * // Get students (auto-fetches if not cached)
  * const students = await teacherStudentsCache.getStudents(classId);
- *
- * // Get students with full data (gidouilles, vip_cards, etc.)
- * const studentsWithRewards = await teacherStudentsCache.getStudents(classId, true);
  *
  * // Check if class is cached
  * if (teacherStudentsCache.has(classId)) { ... }
@@ -37,8 +34,8 @@
  * CACHE INVALIDATION TRIGGERS:
  * -----------------------------
  * - Student import (new students added)
- * - Rewards changed (gidouilles/VIP cards modified)
  * - Class membership changed (students added/removed)
+ * - Event Bus 'students' or 'all' events
  * - Manual invalidation via invalidate() or clear()
  *
  * PERFORMANCE:
@@ -47,31 +44,30 @@
  * - Dashboard modal uses cache (no reload on reopen)
  * - Pages can share cached data
  * - Memory efficient (cache only fetched classes)
+ *
+ * NOTE:
+ * -----
+ * This cache stores ONLY basic student info (id, name, avatar, role, gender).
+ * For gidouilles/vip_cards data, use gidouillesCache.
+ * For warnings data, use warningsCache.
  */
 
 import { getContext, setContext } from 'svelte';
+import { cacheEventBus } from './cacheEventBus.svelte';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 /**
- * Minimal student data (for Wheel component)
+ * Student data stored in cache (basic info only)
  */
 export interface CachedStudent {
 	id: string;
 	firstname: string;
 	lastname?: string;
 	avatar_url?: string;
-}
-
-/**
- * Full student data (for Rewards page)
- */
-export interface CachedStudentFull extends CachedStudent {
 	full_name?: string;
-	gidouilles: number;
-	vip_cards: Record<string, number>; // StudentVipCards type
 	role?: string;
 	gender?: string;
 }
@@ -80,10 +76,9 @@ export interface CachedStudentFull extends CachedStudent {
  * Cache entry for a single class
  */
 interface CacheEntry {
-	students: CachedStudent[] | CachedStudentFull[];
+	students: CachedStudent[];
 	lastFetched: Date;
 	isLoading: boolean;
-	isFull: boolean; // Whether this cache has full data
 }
 
 /**
@@ -117,6 +112,30 @@ class TeacherStudentsCacheStore {
 	 * - Triggers re-renders in components that access the cache
 	 */
 	private cache = $state<CacheStorage>(new Map());
+
+	// ========================================================================
+	// CONSTRUCTOR - Event Bus Integration
+	// ========================================================================
+
+	constructor() {
+		// Subscribe to cache invalidation events from Event Bus
+		// This enables automatic cache clearing when data changes elsewhere
+		if (typeof window !== 'undefined') {
+			// Client-side only - Event Bus not needed on server
+			cacheEventBus.subscribe((event) => {
+				// Invalidate on 'students' or 'all' events
+				if (event.type === 'students' || event.type === 'all') {
+					if (event.scope.classId) {
+						// Invalidate specific class
+						this.invalidate(event.scope.classId);
+					} else if (event.scope.teacherId) {
+						// Invalidate all classes for teacher
+						this.clear();
+					}
+				}
+			});
+		}
+	}
 
 	// ========================================================================
 	// PUBLIC QUERY METHODS (Synchronous)
@@ -181,7 +200,7 @@ class TeacherStudentsCacheStore {
 	 *   cache.getStudents('class-123');
 	 * }
 	 */
-	getCached(classId: string): CachedStudent[] | CachedStudentFull[] | undefined {
+	getCached(classId: string): CachedStudent[] | undefined {
 		const entry = this.cache.get(classId);
 		// Don't return data if still loading
 		if (!entry || entry.isLoading) return undefined;
@@ -200,8 +219,6 @@ class TeacherStudentsCacheStore {
 	 *
 	 * **Scenario 1: Cache Hit**
 	 * - Returns cached data immediately
-	 * - If full data is cached, always returns it (even for minimal requests)
-	 * - If minimal data is cached but full is requested, re-fetches
 	 *
 	 * **Scenario 2: Currently Loading (Deduplication)**
 	 * - Waits for in-flight request to complete
@@ -214,43 +231,18 @@ class TeacherStudentsCacheStore {
 	 * - Returns fresh data
 	 *
 	 * @param classId - The class ID
-	 * @param full - Whether to fetch full student data (default: false)
-	 *               - false: Returns id, firstname, lastname, avatar_url
-	 *               - true: Returns all fields + gidouilles, vip_cards, role, gender
 	 * @returns Promise resolving to student array
 	 *
 	 * @example
-	 * // Minimal data (for Wheel component)
 	 * const students = await cache.getStudents('class-123');
-	 *
-	 * @example
-	 * // Full data (for Rewards page)
-	 * const students = await cache.getStudents('class-123', true);
 	 */
-	async getStudents(
-		classId: string,
-		full: boolean = false
-	): Promise<CachedStudent[] | CachedStudentFull[]> {
+	async getStudents(classId: string): Promise<CachedStudent[]> {
 		const entry = this.cache.get(classId);
 
 		// ====================================================================
 		// CASE 1: CACHE HIT - Return cached data if available
 		// ====================================================================
 		if (entry && !entry.isLoading) {
-			// Sub-case 1a: Full data is cached
-			// Always return full data (satisfies both minimal and full requests)
-			if (entry.isFull) {
-				return entry.students;
-			}
-
-			// Sub-case 1b: Minimal data is cached, but full data is requested
-			// Need to upgrade cache by re-fetching
-			if (!entry.isFull && full) {
-				return this.fetchStudents(classId, full);
-			}
-
-			// Sub-case 1c: Minimal data is cached, minimal data is requested
-			// Perfect match - return cached data
 			return entry.students;
 		}
 
@@ -266,7 +258,7 @@ class TeacherStudentsCacheStore {
 		// ====================================================================
 		// CASE 3: CACHE MISS - Fetch from API
 		// ====================================================================
-		return this.fetchStudents(classId, full);
+		return this.fetchStudents(classId);
 	}
 
 	// ========================================================================
@@ -280,7 +272,7 @@ class TeacherStudentsCacheStore {
 	 *
 	 * **Flow:**
 	 * 1. Set loading state immediately (prevents duplicate requests)
-	 * 2. Fetch from `/api/classes/{classId}/students[?full=true]`
+	 * 2. Fetch from `/api/classes/{classId}/students`
 	 * 3. On success: Update cache with data, mark as loaded
 	 * 4. On error: Remove cache entry, throw error (allows retry)
 	 *
@@ -291,15 +283,11 @@ class TeacherStudentsCacheStore {
 	 * - Cache is deleted on error (allows subsequent retry)
 	 *
 	 * @param classId - The class ID
-	 * @param full - Whether to request full student data
 	 * @returns Promise resolving to student array
 	 * @throws Error if fetch fails for any reason
 	 * @private
 	 */
-	private async fetchStudents(
-		classId: string,
-		full: boolean
-	): Promise<CachedStudent[] | CachedStudentFull[]> {
+	private async fetchStudents(classId: string): Promise<CachedStudent[]> {
 		// ====================================================================
 		// STEP 1: Set loading state
 		// ====================================================================
@@ -308,21 +296,14 @@ class TeacherStudentsCacheStore {
 		this.cache.set(classId, {
 			students: [],
 			lastFetched: new Date(),
-			isLoading: true,
-			isFull: full
+			isLoading: true
 		});
 
 		try {
 			// ================================================================
-			// STEP 2: Build API URL
+			// STEP 2: Fetch from API
 			// ================================================================
-			// Minimal: /api/classes/{classId}/students
-			// Full:    /api/classes/{classId}/students?full=true
-			const url = `/api/classes/${classId}/students${full ? '?full=true' : ''}`;
-
-			// ================================================================
-			// STEP 3: Fetch from API
-			// ================================================================
+			const url = `/api/classes/${classId}/students`;
 			const response = await fetch(url);
 
 			// Check HTTP status
@@ -335,13 +316,12 @@ class TeacherStudentsCacheStore {
 			const students = data.students || []; // Default to empty array if missing
 
 			// ================================================================
-			// STEP 4: Update cache with successful result
+			// STEP 3: Update cache with successful result
 			// ================================================================
 			this.cache.set(classId, {
 				students,
 				lastFetched: new Date(),
-				isLoading: false, // Mark as loaded
-				isFull: full
+				isLoading: false // Mark as loaded
 			});
 
 			return students;
@@ -350,7 +330,7 @@ class TeacherStudentsCacheStore {
 			// ERROR HANDLING
 			// ================================================================
 			// Log error for debugging
-			console.error('Error fetching students:', error);
+			console.error('[TeacherStudentsCache] Error fetching students:', error);
 
 			// Remove cache entry to allow retry
 			// Important: Don't leave stale loading state
@@ -391,7 +371,7 @@ class TeacherStudentsCacheStore {
 	 * @throws Error if entry is deleted (fetch failed) or timeout occurs
 	 * @private
 	 */
-	private async waitForLoad(classId: string): Promise<CachedStudent[] | CachedStudentFull[]> {
+	private async waitForLoad(classId: string): Promise<CachedStudent[]> {
 		return new Promise((resolve, reject) => {
 			// ================================================================
 			// POLLING LOOP - Check every 100ms
@@ -543,7 +523,6 @@ class TeacherStudentsCacheStore {
 	 *
 	 * **Smart Preloading:**
 	 * - Skips if data is already cached
-	 * - Only re-fetches if upgrading from minimal to full data
 	 * - Prevents unnecessary network requests
 	 *
 	 * **Use Cases:**
@@ -559,7 +538,6 @@ class TeacherStudentsCacheStore {
 	 * - Non-blocking UX
 	 *
 	 * @param classId - The class ID to preload
-	 * @param full - Whether to preload full student data (default: false)
 	 *
 	 * @example
 	 * // Preload when class is selected
@@ -584,19 +562,14 @@ class TeacherStudentsCacheStore {
 	 *   teacherStudentsCache.preload(classId);
 	 * }
 	 */
-	preload(classId: string, full: boolean = false): void {
+	preload(classId: string): void {
 		// ====================================================================
 		// SKIP CONDITIONS - Don't preload if data is sufficient
 		// ====================================================================
 		const entry = this.cache.get(classId);
 
-		// Already has full data - always sufficient
-		if (entry?.isFull) {
-			return;
-		}
-
-		// Already has minimal data and we only need minimal
-		if (entry && !full) {
+		// Already cached - skip
+		if (entry) {
 			return;
 		}
 
@@ -604,9 +577,9 @@ class TeacherStudentsCacheStore {
 		// FIRE-AND-FORGET FETCH
 		// ====================================================================
 		// Intentionally not awaiting - this is background loading
-		this.getStudents(classId, full).catch((error) => {
+		this.getStudents(classId).catch((error) => {
 			// Log but don't throw - preload failures are non-critical
-			console.warn('Preload failed for class:', classId, error);
+			console.warn('[TeacherStudentsCache] Preload failed for class:', classId, error);
 		});
 	}
 

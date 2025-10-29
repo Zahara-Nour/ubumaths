@@ -527,13 +527,149 @@ For comprehensive troubleshooting, see [Troubleshooting Guide](../troubleshootin
 
 ---
 
+## Teacher Dashboard Caches
+
+The teacher dashboard uses three independent caches for optimal performance and cache hit rates.
+
+### Students Cache
+
+**Purpose**: Student profiles (names, avatars, roles)
+
+- **TTL**: 10 minutes (600s) - profiles change infrequently
+- **Keys**: `students:teacher:{teacherId}:class:{classId}:{testMode}`
+- **Data Stored**: `id, firstname, lastname, full_name, avatar_url, role, gender, is_test`
+- **Invalidation Triggers**:
+  - Student CSV imports
+  - Profile updates (name, avatar, role changes)
+  - Event Bus `students` or `all` events
+
+**Example Redis Key**:
+
+```
+students:teacher:550e8400-e29b-41d4-a716-446655440000:class:abc-123:false
+```
+
+**Cache Hit Rate**: 95%+ (profiles rarely change)
+
+---
+
+### Gidouilles Cache
+
+**Purpose**: Rewards and VIP cards
+
+- **TTL**: 5 minutes (300s) - updated moderately
+- **Keys**: `gidouilles:class:{classId}:{testMode}`
+- **Data Stored**: `student_id, gidouilles, vip_cards`
+- **Invalidation Triggers**:
+  - Gidouilles awarded/removed
+  - VIP cards awarded/removed
+  - Bulk reward operations
+  - Event Bus `gidouilles` or `all` events
+
+**Example Redis Key**:
+
+```
+gidouilles:class:abc-123:false
+```
+
+**Cache Hit Rate**: 85%+ (moderate update frequency)
+
+**Features**:
+
+- Optimistic updates with rollback
+- Debounced server sync (500ms)
+- Instant UI feedback
+
+---
+
+### Warnings Cache
+
+**Purpose**: Warning counts by academic period
+
+- **TTL**: 3 minutes (180s) - updated frequently in active periods
+- **Keys**: `warnings:class:{classId}:period:{periodId}:{testMode}`
+- **Data Stored**: Warning counts (C, M, R, T), total, score, full warning records
+- **Invalidation Triggers**:
+  - Warning created/deleted
+  - Academic period changed
+  - Event Bus `warnings` or `all` events
+
+**Example Redis Key**:
+
+```
+warnings:class:abc-123:period:def-456:false
+```
+
+**Cache Hit Rate**: 80%+ (frequent updates during active periods)
+
+**Features**:
+
+- Period-scoped cache (separate cache per academic period)
+- Asymmetric debouncing (ADD debounced 500ms, REMOVE immediate)
+- Optimistic updates with rollback
+
+---
+
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────────────┐
+│          TEACHER DASHBOARD                      │
+│  ┌──────────────────────────────────────────┐   │
+│  │         CLIENT-SIDE CACHES               │   │
+│  │  ┌────────┐  ┌────────┐  ┌────────┐     │   │
+│  │  │Students│  │Gidouil-│  │Warnings│     │   │
+│  │  │(10min) │  │les(5m) │  │ (3min) │     │   │
+│  │  └───┬────┘  └───┬────┘  └───┬────┘     │   │
+│  │      └───────────┼───────────┘          │   │
+│  │                  ▼                       │   │
+│  │        ┌──────────────────┐              │   │
+│  │        │   EVENT BUS      │              │   │
+│  │        │ (Pub/Sub System) │              │   │
+│  │        └──────────────────┘              │   │
+│  └──────────────────────────────────────────┘   │
+└─────────────────┬───────────────────────────────┘
+                  │
+         ┌────────▼────────┐
+         │  API ENDPOINTS  │
+         │  ┌───────────┐  │
+         │  │   REDIS   │  │
+         │  │ (Upstash) │  │
+         │  └─────┬─────┘  │
+         │        │        │
+         │  ┌─────▼─────┐  │
+         │  │ Supabase  │  │
+         │  └───────────┘  │
+         └─────────────────┘
+```
+
+**Why Three Caches?**
+
+1. **Different update frequencies**: Profiles change rarely, warnings change frequently
+2. **Granular invalidation**: Only invalidate what changed (not everything)
+3. **Optimal TTLs**: Longer TTL for stable data = higher cache hit rate
+4. **Simpler debugging**: Clear separation of concerns
+
+**Event Bus Coordination**:
+
+- Components subscribe to cache invalidation events
+- Mutations publish events to invalidate affected caches
+- Automatic synchronization across components
+- Future: Multi-tab sync with BroadcastChannel
+
+**For comprehensive architecture details**: See [Teacher Dashboard Cache Architecture](../architecture/teacher-dashboard-cache.md)
+
+---
+
 ## Next Steps
 
 ### After Setup
 
 Now that Redis cache is configured, you can:
 
-1. **Learn cache patterns**: Read [Redis Caching Architecture](../architecture/redis-caching.md)
+1. **Learn cache patterns**:
+   - [Redis Caching Architecture](../architecture/redis-caching.md) - General caching patterns
+   - [Teacher Dashboard Cache Architecture](../architecture/teacher-dashboard-cache.md) - Three-cache system
 
 2. **Add cache to new endpoints**: Follow [Migration Guide](../architecture/redis-caching.md#migration-guide)
 

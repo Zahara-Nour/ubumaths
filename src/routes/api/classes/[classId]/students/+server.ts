@@ -5,11 +5,14 @@ import { getTeacherTestMode } from '$lib/server/test-mode';
 /**
  * GET /api/classes/[classId]/students
  *
- * Fetches all students in a specific class.
+ * Fetches all students in a specific class (profile data only).
  * Used by the Wheel of Fortune modal and teacher students cache.
  *
+ * IMPORTANT: This endpoint returns ONLY student profile data.
+ * For gidouilles and vip_cards, use /api/classes/[classId]/gidouilles
+ *
  * QUERY PARAMETERS:
- * - full=true: Include gidouilles, vip_cards, role, gender (for rewards page)
+ * - full=true: Include full_name, role, gender
  * - full=false or omitted: Basic data only (id, firstname, lastname, avatar_url)
  *
  * SECURITY:
@@ -85,6 +88,7 @@ export const GET: RequestHandler = async ({
 
 		// Build select query based on 'full' parameter
 		// IMPORTANT: Always include is_test field for filtering
+		// NOTE: gidouilles and vip_cards removed - use /api/classes/[classId]/gidouilles instead
 		const selectFields = full
 			? `
 				student_id,
@@ -94,8 +98,6 @@ export const GET: RequestHandler = async ({
 					lastname,
 					full_name,
 					avatar_url,
-					gidouilles,
-					vip_cards,
 					role,
 					gender,
 					is_test
@@ -138,11 +140,9 @@ export const GET: RequestHandler = async ({
 					avatar_url: profile.avatar_url || ''
 				} as Record<string, unknown>;
 
-				// Add full data if requested
+				// Add full data if requested (excluding gidouilles/vip_cards)
 				if (full) {
 					student.full_name = profile.full_name || '';
-					student.gidouilles = profile.gidouilles || 0;
-					student.vip_cards = profile.vip_cards || {};
 					student.role = profile.role || '';
 					student.gender = profile.gender || '';
 				}

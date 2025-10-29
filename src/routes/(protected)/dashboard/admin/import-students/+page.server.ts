@@ -1,6 +1,49 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '$lib/types/database';
 import { validateFormData, importStudentsFormSchema } from '$lib/server/validation';
+import { invalidateTeacherStudentsCache } from '$lib/server/cache/students';
+
+/**
+ * Helper function to invalidate students cache for all teachers who own the affected classes
+ */
+async function invalidateStudentsCacheForClasses(
+	supabase: SupabaseClient<Database>,
+	classIds: Set<string>
+): Promise<void> {
+	if (classIds.size === 0) return;
+
+	// Fetch teacher IDs for all affected classes
+	const { data: classes, error: classError } = await supabase
+		.from('classes')
+		.select('id, teacher_id')
+		.in('id', Array.from(classIds));
+
+	if (classError) {
+		console.error('[invalidateStudentsCacheForClasses] Error fetching classes:', classError);
+		return; // Don't fail the request if cache invalidation fails
+	}
+
+	if (!classes || classes.length === 0) return;
+
+	// Invalidate cache for each teacher-class combination
+	for (const cls of classes) {
+		try {
+			await invalidateTeacherStudentsCache(cls.teacher_id, cls.id);
+		} catch (err) {
+			console.error(
+				`[invalidateStudentsCacheForClasses] Failed to invalidate cache for teacher ${cls.teacher_id}, class ${cls.id}:`,
+				err
+			);
+			// Continue with other invalidations even if one fails
+		}
+	}
+
+	console.log(
+		`[invalidateStudentsCacheForClasses] Invalidated cache for ${classes.length} teacher-class combinations`
+	);
+}
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase }, parent }) => {
 	const { user } = await safeGetSession();
@@ -140,6 +183,12 @@ export const actions: Actions = {
 				};
 			});
 
+			// Track affected class IDs for cache invalidation
+			const affectedClassIds = new Set<string>();
+			pendingStudents.forEach((student) => {
+				student.class_ids.forEach((classId: string) => affectedClassIds.add(classId));
+			});
+
 			// Try to insert into pending_students table (normal flow)
 			// This is the happy path: students don't exist yet and will be activated on first login
 			const { data, error: insertError } = await supabase
@@ -251,6 +300,9 @@ export const actions: Actions = {
 						}
 					}
 
+					// Invalidate students cache for all affected teachers
+					await invalidateStudentsCacheForClasses(supabase, affectedClassIds);
+
 					// Return success with detailed counts
 					return {
 						success: true,
@@ -264,6 +316,9 @@ export const actions: Actions = {
 				// Other database errors (not duplicate email)
 				return fail(500, { message: "Erreur lors de l'importation des élèves" });
 			}
+
+			// Invalidate students cache for all affected teachers (happy path)
+			await invalidateStudentsCacheForClasses(supabase, affectedClassIds);
 
 			return {
 				success: true,

@@ -22,6 +22,7 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { addWarningSchema } from '$lib/server/validation/warnings';
 import { addWarning } from '$lib/server/warnings';
+import { invalidateWarningsCache } from '$lib/server/cache/warnings';
 
 export const POST: RequestHandler = async ({ request, locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -50,6 +51,9 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 			teacherId: user.id,
 			supabase
 		});
+
+		// Invalidate warnings cache for this class and period
+		await invalidateWarningsCache(class_id, academic_period_id);
 
 		return json({
 			success: true,
