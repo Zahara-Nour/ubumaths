@@ -239,6 +239,59 @@ The application uses two mechanisms to ensure environment variables load correct
 
 ---
 
+## Monitoring Cache Performance
+
+To monitor cache performance in real-time during development:
+
+### Step 1: Enable Cache Logging
+
+Add to your `.env` file:
+
+```bash
+# Enable detailed cache logging
+ENABLE_CACHE_LOGS=true
+```
+
+### Step 2: Start Dev Server
+
+```bash
+pnpm dev -- --port 5175
+```
+
+### Step 3: Observe Cache Operations
+
+You'll see detailed logs in your terminal showing:
+
+- **Cache hits/misses** for Redis operations
+- **Database fetch timing** when cache misses occur
+- **Cache key patterns** for debugging
+- **Performance metrics** for each tier (Redis, RAM, DB)
+
+**Example output**:
+
+```
+[getCachedSchool][Redis][Tier-2] HIT (52ms) school:550e8400:data
+[getCachedProfile][RAM Server][Tier-1] HIT (0.8ms) profile:abc123:role
+[getCachedTemplates][Database][Source] FETCH (245ms) Published templates
+```
+
+### Understanding the Log Format
+
+```
+[functionName][source][Tier-X] STATUS (timing) details
+```
+
+- **functionName**: Which cache function was called
+- **source**: Where data came from (Redis, RAM Server, Database)
+- **Tier-X**: Cache tier level (1 = in-memory, 2 = Redis)
+- **STATUS**: HIT, MISS, FETCH, SET, INVALIDATE
+- **timing**: Operation duration in milliseconds
+- **details**: Cache key or operation description
+
+**For complete logging documentation**, see [Cache Logging Format](../development/cache-logging-format.md).
+
+---
+
 ## Production Setup (Vercel)
 
 ### Step 1: Create Production Redis Database

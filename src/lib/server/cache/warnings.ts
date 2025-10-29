@@ -24,6 +24,7 @@ import type { Database } from '$lib/types/database';
 import { getCached, invalidateCache } from '$lib/server/cache';
 import { getTeacherTestMode } from '$lib/server/test-mode';
 import { error } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 
 // ============================================================================
 // CONSTANTS
@@ -136,12 +137,7 @@ export async function getClassWarnings(
 
 	// Wrapper function for cache fallback
 	const fetchWarnings = async (): Promise<ClassWarningsMap> => {
-		console.log('[getClassWarnings] Fetching from DB:', {
-			classId,
-			periodId,
-			teacherId,
-			isTestMode
-		});
+		const dbStart = performance.now();
 
 		// Verify teacher owns the class (security check)
 		const { data: classCheck, error: classError } = await supabase
@@ -221,6 +217,12 @@ export async function getClassWarnings(
 			counts.score = Math.max(0, Math.min(20, 20 - counts.total)); // Clamp to 0-20
 		}
 
+		const dbDuration = Math.round(performance.now() - dbStart);
+		if (dev)
+			console.log(
+				`[getClassWarnings][DB] ⏱️ FETCH (${dbDuration}ms) { classId: '${classId}', periodId: '${periodId}', teacherId: '${teacherId}', isTestMode: ${isTestMode} }`
+			);
+
 		return warningsMap;
 	};
 
@@ -229,7 +231,7 @@ export async function getClassWarnings(
 		return fetchWarnings();
 	}
 
-	return getCached<ClassWarningsMap>(cacheKey, WARNINGS_TTL, fetchWarnings);
+	return getCached<ClassWarningsMap>(cacheKey, WARNINGS_TTL, fetchWarnings, 'getClassWarnings');
 }
 
 /**

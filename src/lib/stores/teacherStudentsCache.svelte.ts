@@ -1,5 +1,14 @@
 /**
- * Teacher Students Cache Store
+ * Teacher Students Cache Store (Client Store - Tier 3)
+ *
+ * Browser-based cache for student data with progressive loading.
+ * Logs use format: [teacherStudentsCache.get][Client Store][Tier-3]
+ *
+ * Features:
+ * - Instant cache hits (0ms)
+ * - Deduplication (prevents duplicate API calls)
+ * - Cross-tab synchronization via cacheEventBus
+ *
  * =============================
  *
  * Client-side cache for teacher's class students with progressive loading.
@@ -53,6 +62,7 @@
  */
 
 import { getContext, setContext } from 'svelte';
+import { dev } from '$app/environment';
 import { cacheEventBus } from './cacheEventBus.svelte';
 
 // ============================================================================
@@ -243,6 +253,10 @@ class TeacherStudentsCacheStore {
 		// CASE 1: CACHE HIT - Return cached data if available
 		// ====================================================================
 		if (entry && !entry.isLoading) {
+			if (dev)
+				console.log(
+					`[teacherStudentsCache.get][Client Store][Tier-3] 🎯 HIT (0ms) students:class:${classId}`
+				);
 			return entry.students;
 		}
 
@@ -252,12 +266,20 @@ class TeacherStudentsCacheStore {
 		// Deduplication: If another component already triggered a fetch,
 		// wait for it to complete instead of making a duplicate request
 		if (entry?.isLoading) {
+			if (dev)
+				console.log(
+					`[teacherStudentsCache.get][Client Store][Tier-3] 🔄 LOADING students:class:${classId} (dedup)`
+				);
 			return this.waitForLoad(classId);
 		}
 
 		// ====================================================================
 		// CASE 3: CACHE MISS - Fetch from API
 		// ====================================================================
+		if (dev)
+			console.log(
+				`[teacherStudentsCache.get][Client Store][Tier-3] ❌ MISS → fetching via API students:class:${classId}`
+			);
 		return this.fetchStudents(classId);
 	}
 

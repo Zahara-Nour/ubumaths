@@ -1,5 +1,14 @@
 /**
- * Gidouilles Cache Store
+ * Gidouilles Cache Store (Client Store - Tier 3)
+ *
+ * Browser-based cache for gidouilles/VIP cards data.
+ * Logs use format: [gidouillesCache.get][Client Store][Tier-3]
+ *
+ * Features:
+ * - Instant cache hits (0ms)
+ * - Optimistic updates for responsive UI
+ * - Cross-tab synchronization via cacheEventBus
+ *
  * ======================
  *
  * Client-side cache for student gidouilles and VIP cards per class.
@@ -54,6 +63,7 @@
  * For warnings data, use warningsCache.
  */
 
+import { dev } from '$app/environment';
 import { cacheEventBus } from './cacheEventBus.svelte';
 
 // ============================================================================
@@ -215,15 +225,27 @@ class GidouillesCacheStore {
 
 		// CASE 1: CACHE HIT - Return cached data with optimistic updates
 		if (entry && !entry.loading) {
+			if (dev)
+				console.log(
+					`[gidouillesCache.get][Client Store][Tier-3] 🎯 HIT (0ms) gidouilles:class:${classId}`
+				);
 			return this.getCached(classId) || new Map();
 		}
 
 		// CASE 2: CURRENTLY LOADING - Wait for in-flight request
 		if (entry?.loading) {
+			if (dev)
+				console.log(
+					`[gidouillesCache.get][Client Store][Tier-3] 🔄 LOADING gidouilles:class:${classId} (dedup)`
+				);
 			return this.waitForLoad(classId);
 		}
 
 		// CASE 3: CACHE MISS - Fetch from API
+		if (dev)
+			console.log(
+				`[gidouillesCache.get][Client Store][Tier-3] ❌ MISS → fetching via API gidouilles:class:${classId}`
+			);
 		return this.fetch(classId);
 	}
 

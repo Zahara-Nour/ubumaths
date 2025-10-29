@@ -44,7 +44,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const { data: results, error: resultsError } = await getCached(
 		CACHE_KEYS.ASSESSMENT_RESULTS(params.id, isTestMode),
 		TTL.ASSESSMENT_RESULTS,
-		async () => getAssessmentResults(locals.supabase, params.id, isTestMode)
+		async () => getAssessmentResults(locals.supabase, params.id, isTestMode),
+		'getAssessmentResults'
 	);
 
 	if (resultsError) {
@@ -60,7 +61,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const { data: statistics } = await getCached(
 		CACHE_KEYS.ASSESSMENT_STATS(params.id, isTestMode),
 		TTL.ASSESSMENT_RESULTS,
-		async () => getAssessmentStatistics(locals.supabase, params.id, isTestMode)
+		async () => getAssessmentStatistics(locals.supabase, params.id, isTestMode),
+		'getAssessmentStatistics'
 	);
 
 	return {

@@ -55,7 +55,8 @@ export const GET: RequestHandler = async ({ locals: { supabase, safeGetSession }
 					notifications: notificationsCount,
 					messages: messagesResult.data || 0
 				};
-			}
+			},
+			'getActivityCounts'
 		);
 
 		// Return cached or fresh counts

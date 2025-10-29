@@ -98,9 +98,6 @@ type SchoolYear = Database['public']['Tables']['school_years']['Row'];
  *   schoolId: 'school-uuid',
  *   supabase
  * });
- * if (period) {
- *   console.log('Current period:', period.name); // "Trimestre 2"
- * }
  */
 export async function getCurrentAcademicPeriod(options: {
 	schoolId: string;
@@ -110,8 +107,6 @@ export async function getCurrentAcademicPeriod(options: {
 
 	// Get today's date in ISO format (YYYY-MM-DD)
 	const today = new Date().toISOString().split('T')[0];
-
-	console.log('[getCurrentAcademicPeriod] Finding period for date:', today, 'school:', schoolId);
 
 	// Query for current period in active school year
 	const { data, error: queryError } = await supabase
@@ -134,17 +129,6 @@ export async function getCurrentAcademicPeriod(options: {
 		console.error('[getCurrentAcademicPeriod] Error fetching period:', queryError);
 		throw error(500, `Failed to fetch current academic period: ${queryError.message}`);
 	}
-
-	if (!data) {
-		console.log('[getCurrentAcademicPeriod] No active period found for today');
-		return null;
-	}
-
-	console.log(
-		'[getCurrentAcademicPeriod] Found period:',
-		data.name,
-		`(${data.start_date} to ${data.end_date})`
-	);
 
 	// Type assertion: RPC returns proper structure
 	return data as unknown as AcademicPeriod;
@@ -172,8 +156,6 @@ export async function getCurrentAcademicPeriod(options: {
  * });
  *
  * const studentData = warnings.get('student-uuid');
- * console.log(`Student has ${studentData.total} warnings, score: ${studentData.score}/20`);
- * console.log(`C: ${studentData.C}, M: ${studentData.M}, R: ${studentData.R}, T: ${studentData.T}`);
  */
 export async function getClassWarnings(options: {
 	classId: string;
@@ -182,15 +164,6 @@ export async function getClassWarnings(options: {
 	supabase: SupabaseClient<Database>;
 }): Promise<ClassWarningsMap> {
 	const { classId, periodId, teacherId, supabase } = options;
-
-	console.log(
-		'[getClassWarnings] Fetching warnings for class:',
-		classId,
-		'period:',
-		periodId,
-		'teacher:',
-		teacherId
-	);
 
 	// Verify teacher owns the class (will fail if not via RLS)
 	const { data: classCheck, error: classError } = await supabase
@@ -224,11 +197,8 @@ export async function getClassWarnings(options: {
 	};
 
 	if (warningsError) {
-		console.error('[getClassWarnings] Error fetching warnings:', warningsError);
 		throw error(500, `Failed to fetch warnings: ${warningsError.message}`);
 	}
-
-	console.log('[getClassWarnings] Found', warnings?.length || 0, 'warnings');
 
 	// Aggregate warnings by student
 	const warningsMap = new Map<string, StudentWarningCounts>();
@@ -304,15 +274,6 @@ export async function addWarning(options: {
 }): Promise<StudentWarningCounts> {
 	const { studentId, classId, periodId, warningType, teacherId, supabase } = options;
 
-	console.log(
-		'[addWarning] Adding warning:',
-		warningType,
-		'for student:',
-		studentId,
-		'in class:',
-		classId
-	);
-
 	// Validate warning type
 	if (!['C', 'M', 'R', 'T'].includes(warningType)) {
 		throw error(400, `Invalid warning type: ${warningType}. Must be C, M, R, or T.`);
@@ -344,8 +305,6 @@ export async function addWarning(options: {
 		console.error('[addWarning] No warning returned after insert');
 		throw error(500, 'Failed to add warning: No data returned');
 	}
-
-	console.log('[addWarning] Warning added successfully:', newWarning.id);
 
 	// Fetch updated counts for this student
 	const warningsMap = await getClassWarnings({
@@ -392,8 +351,6 @@ export async function addWarning(options: {
  *   teacherId: user.id,
  *   supabase
  * });
- * console.log('Removed warning for student:', result.studentId);
- * console.log('New score:', result.updatedCounts.score);
  */
 export async function removeWarning(options: {
 	warningId: string;
@@ -406,8 +363,6 @@ export async function removeWarning(options: {
 	updatedCounts: StudentWarningCounts;
 }> {
 	const { warningId, teacherId, supabase } = options;
-
-	console.log('[removeWarning] Removing warning:', warningId, 'by teacher:', teacherId);
 
 	// Fetch warning first to get student_id, class_id, period_id before deletion
 	// Type assertion needed until database types are regenerated after migration
@@ -456,8 +411,6 @@ export async function removeWarning(options: {
 		console.error('[removeWarning] Error deleting warning:', deleteError);
 		throw error(500, `Failed to delete warning: ${deleteError.message}`);
 	}
-
-	console.log('[removeWarning] Warning deleted successfully');
 
 	// Fetch updated counts for this student
 	const warningsMap = await getClassWarnings({
@@ -558,7 +511,6 @@ export async function getStudentWarnings(options: {
  *   schoolYearId: 'year-uuid',
  *   supabase
  * });
- * periods.forEach(p => console.log(p.name, p.start_date, '-', p.end_date));
  */
 export async function getSchoolYearPeriods(options: {
 	schoolYearId: string;
@@ -595,7 +547,6 @@ export async function getSchoolYearPeriods(options: {
  *   schoolId: 'school-uuid',
  *   supabase
  * });
- * console.log('Active year:', activeYear?.name); // "2024-2025"
  */
 export async function getActiveSchoolYear(options: {
 	schoolId: string;

@@ -17,7 +17,9 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getClassWarnings } from '$lib/server/warnings';
+// Use cached version (with Redis caching and logging)
+// This reduces DB queries and provides performance visibility via logs
+import { getClassWarnings } from '$lib/server/cache/warnings';
 
 export const GET: RequestHandler = async ({
 	params,
@@ -44,12 +46,13 @@ export const GET: RequestHandler = async ({
 		}
 
 		// Fetch warnings for class (helper verifies teacher ownership)
-		const warningsMap = await getClassWarnings({
-			classId,
-			periodId,
-			teacherId: user.id,
-			supabase
-		});
+		const warningsResult = await getClassWarnings(classId, periodId, user.id, supabase);
+
+		// Convert to Map if coming from cache (JSON deserialization converts Map to object)
+		const warningsMap =
+			warningsResult instanceof Map
+				? warningsResult
+				: new Map(Object.entries(warningsResult as Record<string, unknown>));
 
 		// Convert Map to plain object for JSON serialization
 		const warningsObject: Record<string, unknown> = {};

@@ -35,6 +35,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { getCached, invalidateCache, CACHE_KEYS, TTL } from '$lib/server/cache';
+import { dev } from '$app/environment';
 
 // ============================================================================
 // TYPES
@@ -75,7 +76,7 @@ export async function getCachedSchool(
 	const cacheKey = CACHE_KEYS.SCHOOL_DATA(schoolId);
 
 	const fetchSchool = async (): Promise<School | null> => {
-		console.log('[getCachedSchool] Fetching from DB:', { schoolId });
+		const dbStart = performance.now();
 
 		const { data, error } = await supabase.from('schools').select('*').eq('id', schoolId).single();
 
@@ -89,10 +90,14 @@ export async function getCachedSchool(
 			throw new Error(`Failed to fetch school: ${error.message}`);
 		}
 
+		const dbDuration = Math.round(performance.now() - dbStart);
+		if (dev)
+			console.log(`[getCachedSchool][DB] ⏱️ FETCH (${dbDuration}ms) { schoolId: '${schoolId}' }`);
+
 		return data;
 	};
 
-	return getCached<School | null>(cacheKey, TTL.SCHOOL_DATA, fetchSchool);
+	return getCached<School | null>(cacheKey, TTL.SCHOOL_DATA, fetchSchool, 'getCachedSchool');
 }
 
 /**

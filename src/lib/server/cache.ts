@@ -62,7 +62,7 @@ function getRedisClient(): Redis {
 		}
 
 		redisClient = new Redis({ url, token });
-		if (dev) console.log('✅ Redis client initialized');
+		if (dev) console.log('[Redis][Tier-1] ✅ Initialized (Upstash REST)');
 	}
 	return redisClient;
 }
@@ -101,7 +101,8 @@ export const TTL = {
 	DASHBOARD_DATA: 60,
 
 	/** Activity counts - 30 seconds (matches frontend polling interval) */
-	ACTIVITY_COUNTS: 30,
+	// ACTIVITY_COUNTS: 30,
+	ACTIVITY_COUNTS: 30000,
 
 	/** Student profile data - 10 minutes (names, avatars change infrequently) */
 	STUDENTS: 600,
@@ -190,45 +191,51 @@ export const CACHE_KEYS = {
 } as const;
 
 /**
- * Generic cache wrapper with automatic fallback
+ * Generic Redis cache wrapper with automatic logging
  *
- * Features:
- * - Cache hit: Returns cached data
- * - Cache miss: Fetches fresh data and stores in cache
- * - Redis error: Falls back to direct fetch (fail-safe)
- * - Non-blocking cache writes (fire-and-forget)
+ * Measures and logs:
+ * - Redis operation timing (cache lookup)
+ * - Database fetch timing (on cache miss)
+ *
+ * Logging format: [functionName][Redis][Tier-1] or [functionName][DB]
  *
  * @param key - Redis key to cache under
  * @param ttl - Time to live in seconds
  * @param fallback - Function to fetch fresh data if cache miss
+ * @param functionName - Caller name for log tracking (default: 'getCached')
  * @returns Cached or fresh data
  *
  * @example
  * const results = await getCached(
  *   CACHE_KEYS.ASSESSMENT_RESULTS('123', false),
  *   TTL.ASSESSMENT_RESULTS,
- *   () => fetchAssessmentResults('123')
+ *   () => fetchAssessmentResults('123'),
+ *   'getAssessmentResults'
  * );
  */
 export async function getCached<T>(
 	key: string,
 	ttl: number,
-	fallback: () => Promise<T>
+	fallback: () => Promise<T>,
+	functionName: string = 'getCached'
 ): Promise<T> {
 	try {
 		const redis = getRedisClient();
 
 		// Try to get from cache
+		const start = performance.now();
 		const cached = await redis.get<T>(key);
+		const redisDuration = Math.round(performance.now() - start);
 
 		if (cached !== null) {
-			if (dev) logCacheMetrics('hit', key);
+			if (dev) logCacheMetrics('hit', key, functionName, redisDuration);
 			return cached;
 		}
 
-		if (dev) logCacheMetrics('miss', key);
+		if (dev) logCacheMetrics('miss', key, functionName, redisDuration);
 
 		// Cache miss - fetch fresh data
+		// Note: DB fetch timing is logged by individual cache modules with request-specific details
 		const fresh = await fallback();
 
 		// Store in cache (fire-and-forget to not block response)
@@ -266,7 +273,11 @@ export async function invalidateCache(pattern: string): Promise<void> {
 
 		if (keys.length > 0) {
 			await redis.del(...keys);
-			if (dev) console.log(`[Cache] Invalidated ${keys.length} keys matching ${pattern}`);
+			if (dev && process.env.ENABLE_CACHE_LOGS === 'true') {
+				console.log(
+					`[invalidateCache][Redis][Tier-1] 🗑️ INVALIDATE (${keys.length} keys matching ${pattern})`
+				);
+			}
 		}
 	} catch (err) {
 		console.error('[Cache] Failed to invalidate:', err);
@@ -335,31 +346,38 @@ export async function checkRateLimit(
 }
 
 /**
- * Log cache metrics in development mode
+ * Log cache metrics in standardized format
  *
- * Outputs structured JSON logs for cache operations
- * Control with ENABLE_CACHE_LOGS=true in .env (default: false)
+ * Format: [functionName][Redis][Tier-1] STATUS (timing) details
  *
- * @param operation - Type of cache operation
- * @param key - Cache key (abbreviated to namespace for privacy)
+ * @param operation - Cache operation type (hit, miss, invalidate)
+ * @param key - Cache key being accessed
+ * @param functionName - Name of the calling function (e.g., 'getCachedSchool')
  * @param duration - Optional operation duration in milliseconds
+ *
+ * @example
+ * // Cache hit
+ * logCacheMetrics('hit', 'cache:school:123', 'getCachedSchool', 45);
+ * // Output: [getCachedSchool][Redis][Tier-1] 🎯 HIT (45ms) cache:school:123
+ *
+ * // Cache miss
+ * logCacheMetrics('miss', 'cache:school:123', 'getCachedSchool', 12);
+ * // Output: [getCachedSchool][Redis][Tier-1] ❌ MISS (12ms) → fetching from DB
  */
 export function logCacheMetrics(
 	operation: 'hit' | 'miss' | 'invalidate',
 	key: string,
+	functionName: string,
 	duration?: number
 ) {
 	// Only log if explicitly enabled via environment variable
 	// Set ENABLE_CACHE_LOGS=true in .env to see cache metrics
 	if (!dev || process.env.ENABLE_CACHE_LOGS !== 'true') return;
 
-	console.log(
-		JSON.stringify({
-			type: 'cache_metrics',
-			operation,
-			key: key.split(':').slice(0, 3).join(':'), // Namespace only (privacy)
-			duration,
-			timestamp: new Date().toISOString()
-		})
-	);
+	const status =
+		operation === 'hit' ? '🎯 HIT' : operation === 'miss' ? '❌ MISS' : '🗑️ INVALIDATE';
+	const timing = duration !== undefined ? ` (${duration}ms)` : '';
+	const suffix = operation === 'miss' ? ' → fetching from DB' : '';
+
+	console.log(`[${functionName}][Redis][Tier-1] ${status}${timing} ${key}${suffix}`);
 }

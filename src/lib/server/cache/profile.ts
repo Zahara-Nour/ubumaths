@@ -43,6 +43,7 @@
 import type { Database } from '$lib/types/database';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getMemoryCached, memoryCache } from './memory';
+import { dev } from '$app/environment';
 
 /**
  * User profile role information
@@ -114,30 +115,41 @@ export async function getCachedProfile(
 	userId: string,
 	supabase: SupabaseClient<Database>
 ): Promise<ProfileRole | null> {
-	return getMemoryCached(`profile:${userId}:role`, PROFILE_ROLE_TTL_SECONDS, async () => {
-		try {
-			const { data, error } = await supabase
-				.from('profiles')
-				.select('role')
-				.eq('id', userId)
-				.single();
+	return getMemoryCached(
+		`profile:${userId}:role`,
+		PROFILE_ROLE_TTL_SECONDS,
+		async () => {
+			try {
+				const dbStart = performance.now();
 
-			if (error) {
-				console.error(`[getCachedProfile] Database error for user ${userId}:`, error);
+				const { data, error } = await supabase
+					.from('profiles')
+					.select('role')
+					.eq('id', userId)
+					.single();
+
+				if (error) {
+					console.error(`[getCachedProfile] Database error for user ${userId}:`, error);
+					return null;
+				}
+
+				if (!data) {
+					console.error(`[getCachedProfile] Profile not found for user ${userId}`);
+					return null;
+				}
+
+				const dbDuration = Math.round(performance.now() - dbStart);
+				if (dev)
+					console.log(`[getCachedProfile][DB] ⏱️ FETCH (${dbDuration}ms) { userId: '${userId}' }`);
+
+				return { role: data.role };
+			} catch (err) {
+				console.error(`[getCachedProfile] Unexpected error for user ${userId}:`, err);
 				return null;
 			}
-
-			if (!data) {
-				console.error(`[getCachedProfile] Profile not found for user ${userId}`);
-				return null;
-			}
-
-			return { role: data.role };
-		} catch (err) {
-			console.error(`[getCachedProfile] Unexpected error for user ${userId}:`, err);
-			return null;
-		}
-	});
+		},
+		'getCachedProfile'
+	);
 }
 
 /**

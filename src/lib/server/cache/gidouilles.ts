@@ -23,6 +23,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { getCached, invalidateCache } from '$lib/server/cache';
 import { getTeacherTestMode } from '$lib/server/test-mode';
+import { dev } from '$app/environment';
 
 // ============================================================================
 // CONSTANTS
@@ -102,11 +103,7 @@ export async function getClassGidouilles(
 
 	// Wrapper function for cache fallback
 	const fetchGidouilles = async (): Promise<GidouillesData[]> => {
-		console.log('[getClassGidouilles] Fetching from DB:', {
-			classId,
-			teacherId,
-			isTestMode
-		});
+		const dbStart = performance.now();
 
 		// Verify teacher owns the class (security check)
 		const { data: classCheck, error: classError } = await supabase
@@ -162,6 +159,12 @@ export async function getClassGidouilles(
 			})
 			.filter((g): g is GidouillesData => g !== null);
 
+		const dbDuration = Math.round(performance.now() - dbStart);
+		if (dev)
+			console.log(
+				`[getClassGidouilles][DB] ⏱️ FETCH (${dbDuration}ms) { classId: '${classId}', teacherId: '${teacherId}', isTestMode: ${isTestMode} }`
+			);
+
 		return gidouilles;
 	};
 
@@ -170,7 +173,12 @@ export async function getClassGidouilles(
 		return fetchGidouilles();
 	}
 
-	return getCached<GidouillesData[]>(cacheKey, GIDOUILLES_TTL, fetchGidouilles);
+	return getCached<GidouillesData[]>(
+		cacheKey,
+		GIDOUILLES_TTL,
+		fetchGidouilles,
+		'getClassGidouilles'
+	);
 }
 
 /**

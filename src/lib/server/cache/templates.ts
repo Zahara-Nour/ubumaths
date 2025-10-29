@@ -56,6 +56,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { getCached, invalidateCache, CACHE_KEYS, TTL } from '$lib/server/cache';
+import { dev } from '$app/environment';
 
 // ============================================================================
 // TYPES
@@ -97,7 +98,7 @@ export async function getCachedTemplates(
 	const cacheKey = CACHE_KEYS.TEMPLATES_PUBLISHED();
 
 	const fetchTemplates = async (): Promise<QuestionTemplate[]> => {
-		console.log('[getCachedTemplates] Fetching from DB');
+		const dbStart = performance.now();
 
 		const { data, error } = await supabase
 			.from('question_templates')
@@ -111,11 +112,19 @@ export async function getCachedTemplates(
 			return [];
 		}
 
+		const dbDuration = Math.round(performance.now() - dbStart);
+		if (dev) console.log(`[getCachedTemplates][DB] ⏱️ FETCH (${dbDuration}ms)`);
+
 		return data || [];
 	};
 
 	try {
-		return await getCached<QuestionTemplate[]>(cacheKey, TTL.TEMPLATES, fetchTemplates);
+		return await getCached<QuestionTemplate[]>(
+			cacheKey,
+			TTL.TEMPLATES,
+			fetchTemplates,
+			'getCachedTemplates'
+		);
 	} catch (error) {
 		console.error('[getCachedTemplates] Cache error, returning empty array:', error);
 		// Fail-safe: return empty array instead of throwing

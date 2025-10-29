@@ -72,6 +72,37 @@ UPSTASH_REDIS_REST_TOKEN=your_token_here
 
 **Free tier**: 10K requests/day, 256MB storage (sufficient for dev)
 
+### Cache Logging (Dev Mode)
+
+Monitor cache performance with detailed source + timing logs:
+
+```bash
+# .env
+ENABLE_CACHE_LOGS=true
+```
+
+**Log Format**: `[functionName][source][Tier-X] STATUS (timing) details`
+
+**Examples**:
+
+```bash
+[getCachedSchool][Redis][Tier-1] 🎯 HIT (45ms) cache:school:def456
+[getCachedSchool][Redis][Tier-1] ❌ MISS (12ms) → fetching from DB
+[getCachedSchool][DB] ⏱️ FETCH (850ms) { schoolId: 'def456' }
+
+[getCachedProfile][RAM Server][Tier-2] 🎯 HIT (0ms) profile:abc123:role
+[teacherStudentsCache.get][Client Store][Tier-3] 🎯 HIT (0ms) students:class:xyz
+```
+
+**Cache Tiers**:
+
+- **DB**: Source of truth (Supabase Postgres) - No tier
+- **Tier-1**: Redis (Upstash cloud) - ~50ms
+- **Tier-2**: RAM Server (Node.js process) - <1ms
+- **Tier-3**: Client Store (Browser) - 0ms
+
+**Full Documentation**: [docs/development/cache-logging-format.md](docs/development/cache-logging-format.md)
+
 ---
 
 ## 📊 Code Quality

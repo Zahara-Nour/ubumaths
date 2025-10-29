@@ -897,6 +897,34 @@ export const actions: Actions = {
 
 ## Monitoring
 
+### Cache Logging System
+
+For detailed cache performance monitoring and debugging, see **[Cache Logging Format](../development/cache-logging-format.md)**.
+
+The logging system provides:
+
+- **Real-time visibility** into cache hits/misses across all tiers
+- **Performance timing** for each cache operation (Redis, RAM, DB)
+- **Source identification** showing which tier served the data
+- **Function-level tracing** to identify cache usage patterns
+
+**Enable in development**:
+
+```bash
+# .env
+ENABLE_CACHE_LOGS=true
+```
+
+**Example log output**:
+
+```
+[getCachedSchool][Redis][Tier-2] HIT (52ms) school:550e8400-e29b-41d4-a716-446655440000:data
+[getCachedProfile][RAM Server][Tier-1] HIT (0.8ms) profile:123:role
+[getCachedTemplates][Database][Source] FETCH (245ms) Published templates
+```
+
+---
+
 ### In-Memory Cache Statistics
 
 ```typescript

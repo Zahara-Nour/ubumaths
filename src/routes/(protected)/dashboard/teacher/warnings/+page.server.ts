@@ -16,7 +16,8 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getTeacherClassesWithStudents } from '$lib/server/students';
+// Use cached version for better performance (10min TTL)
+import { getTeacherStudents } from '$lib/server/cache/students';
 import {
 	getCurrentAcademicPeriod,
 	getSchoolYearPeriods,
@@ -41,8 +42,6 @@ import {
  * }
  */
 export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
-	console.log('[Warnings Page] Load function called');
-
 	// Get user and profile from parent (protected) layout
 	const { user, profile } = await parent();
 
@@ -58,8 +57,8 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 	// Verify teacher has a school_id (required for academic periods)
 	if (!profile.school_id) {
 		console.warn('[Warnings Page] Teacher has no school_id, cannot load periods');
-		// Load classes but return empty periods
-		const classesWithStudents = await getTeacherClassesWithStudents(user.id, supabase);
+		// Load classes but return empty periods (classId=undefined loads all classes)
+		const classesWithStudents = await getTeacherStudents(user.id, undefined, supabase);
 		return {
 			classes: classesWithStudents,
 			currentPeriod: null,
@@ -69,14 +68,12 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 
 	try {
 		// Fetch all data in parallel for performance
+		// classId=undefined loads all classes with their students (cached, 10min TTL)
 		const [classesWithStudents, currentPeriod, activeYear] = await Promise.all([
-			getTeacherClassesWithStudents(user.id, supabase),
+			getTeacherStudents(user.id, undefined, supabase),
 			getCurrentAcademicPeriod({ schoolId: profile.school_id, supabase }),
 			getActiveSchoolYear({ schoolId: profile.school_id, supabase })
 		]);
-
-		console.log('[Warnings Page] Loaded', classesWithStudents.length, 'classes');
-		console.log('[Warnings Page] Current period:', currentPeriod?.name || 'None');
 
 		// Fetch all periods for the active school year (for history dropdown)
 		const allPeriods = activeYear
@@ -85,10 +82,6 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 					supabase
 				})
 			: [];
-
-		if (activeYear) {
-			console.log('[Warnings Page] Loaded', allPeriods.length, 'periods for school year');
-		}
 
 		return {
 			classes: classesWithStudents,

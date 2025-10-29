@@ -266,8 +266,6 @@ export async function getTeacherClassesWithStudents(
 		throw new Error(`Failed to fetch teacher classes: ${error.message}`);
 	}
 
-	console.log('[getTeacherClassesWithStudents] Fetched', data?.length || 0, 'classes');
-
 	// Cast is safe: RPC function returns the correct structure with students as StudentFull[]
 	return (data || []) as unknown as ClassWithStudents[];
 }

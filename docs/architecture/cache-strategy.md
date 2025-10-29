@@ -262,6 +262,41 @@ Set environment variables in Vercel dashboard:
 
 ## Monitoring
 
+### Cache Logging System
+
+For detailed cache monitoring and debugging, UbuMaths implements a standardized logging format. See **[Cache Logging Format](../development/cache-logging-format.md)** for complete documentation.
+
+**Enable in development**:
+
+```bash
+# .env
+ENABLE_CACHE_LOGS=true
+```
+
+**Log format**:
+
+```
+[functionName][source][Tier-X] STATUS (timing) details
+```
+
+**Example logs**:
+
+```
+[getCached][Redis][Tier-2] HIT (52ms) cache:assessment:123:results:false
+[getCached][Redis][Tier-2] MISS (3ms) cache:assessment:456:results:false
+[getCached][Database][Source] FETCH (245ms) Assessment results
+```
+
+**Benefits**:
+
+- Real-time visibility into cache performance
+- Identify cache hit/miss patterns
+- Debug cache key issues
+- Measure tier-specific latency
+- Track cache invalidation operations
+
+---
+
 ### Development Mode
 
 Cache operations are logged in development:

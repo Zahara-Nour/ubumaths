@@ -1,5 +1,14 @@
 /**
- * In-Memory Cache Module
+ * In-Memory Cache Module (RAM Server - Tier 2)
+ *
+ * Ultra-fast in-memory cache using Node.js process memory.
+ * Logs use format: [functionName][RAM Server][Tier-2]
+ *
+ * Tier hierarchy (fastest to slowest):
+ * - Tier-3: Client Store (browser)
+ * - Tier-2: RAM Server (this module)
+ * - Tier-1: Redis (Upstash)
+ * - DB: Supabase Postgres (source of truth)
  *
  * Provides a type-safe, TTL-based in-memory cache with automatic cleanup.
  * Designed for per-user, per-request data that doesn't benefit from Redis.
@@ -119,6 +128,7 @@ export class MemoryCache {
 	 * @param key - Cache key (use namespaced keys like "user:123:profile")
 	 * @param ttlSeconds - Time to live in seconds
 	 * @param fallback - Async function to compute value on cache miss
+	 * @param functionName - Name of calling function for logging (default: 'getMemoryCached')
 	 * @returns Cached or computed value
 	 *
 	 * @example
@@ -126,11 +136,17 @@ export class MemoryCache {
 	 * const profile = await memoryCache.get(
 	 *   'user:123:profile',
 	 *   60,
-	 *   async () => fetchUserProfile(123)
+	 *   async () => fetchUserProfile(123),
+	 *   'getCachedProfile'
 	 * );
 	 * ```
 	 */
-	async get<T>(key: string, ttlSeconds: number, fallback: () => Promise<T>): Promise<T> {
+	async get<T>(
+		key: string,
+		ttlSeconds: number,
+		fallback: () => Promise<T>,
+		functionName: string = 'getMemoryCached'
+	): Promise<T> {
 		const now = Date.now();
 		const entry = this.cache.get(key) as CacheEntry<T> | undefined;
 
@@ -138,7 +154,7 @@ export class MemoryCache {
 		if (entry && entry.expires > now) {
 			this.stats.hits++;
 			if (dev) {
-				console.log(`[MemoryCache] HIT: ${key}`);
+				console.log(`[${functionName}][RAM Server][Tier-2] 🎯 HIT (0ms) ${key}`);
 			}
 			return entry.data;
 		}
@@ -146,7 +162,7 @@ export class MemoryCache {
 		// Cache miss: compute and store
 		this.stats.misses++;
 		if (dev) {
-			console.log(`[MemoryCache] MISS: ${key}`);
+			console.log(`[${functionName}][RAM Server][Tier-2] ❌ MISS (0ms) → fetching from fallback`);
 		}
 
 		const data = await fallback();
@@ -172,7 +188,7 @@ export class MemoryCache {
 	invalidate(key: string): boolean {
 		const deleted = this.cache.delete(key);
 		if (deleted && dev) {
-			console.log(`[MemoryCache] INVALIDATE: ${key}`);
+			console.log(`[invalidate][RAM Server][Tier-2] 🗑️ INVALIDATE ${key}`);
 		}
 		return deleted;
 	}
@@ -201,7 +217,9 @@ export class MemoryCache {
 			}
 		}
 		if (count > 0 && dev) {
-			console.log(`[MemoryCache] INVALIDATE PATTERN: ${prefix} (${count} entries)`);
+			console.log(
+				`[invalidatePattern][RAM Server][Tier-2] 🗑️ INVALIDATE PATTERN ${prefix} (${count} entries)`
+			);
 		}
 		return count;
 	}
@@ -220,7 +238,7 @@ export class MemoryCache {
 		const size = this.cache.size;
 		this.cache.clear();
 		if (dev && size > 0) {
-			console.log(`[MemoryCache] CLEAR: removed ${size} entries`);
+			console.log(`[clear][RAM Server][Tier-2] 🗑️ CLEAR (${size} entries removed)`);
 		}
 	}
 
@@ -245,7 +263,7 @@ export class MemoryCache {
 		this.stats.evictions += evicted;
 
 		if (evicted > 0 && dev) {
-			console.log(`[MemoryCache] CLEANUP: evicted ${evicted} expired entries`);
+			console.log(`[cleanup][RAM Server][Tier-2] 🧹 CLEANUP (${evicted} entries evicted)`);
 		}
 
 		return evicted;
@@ -297,7 +315,7 @@ export class MemoryCache {
 		}
 		this.clear();
 		if (dev) {
-			console.log('[MemoryCache] DESTROY: cleanup interval stopped');
+			console.log('[destroy][RAM Server][Tier-2] 🛑 DESTROY (cleanup interval stopped)');
 		}
 	}
 }
@@ -317,6 +335,7 @@ export const memoryCache = new MemoryCache();
  * @param key - Cache key (use namespaced keys like "user:123:profile")
  * @param ttlSeconds - Time to live in seconds
  * @param fallback - Async function to compute value on cache miss
+ * @param functionName - Name of calling function for logging (default: 'getMemoryCached')
  * @returns Cached or computed value
  *
  * @example
@@ -332,14 +351,16 @@ export const memoryCache = new MemoryCache();
  *       .eq('id', userId)
  *       .single();
  *     return data;
- *   }
+ *   },
+ *   'getCachedProfile'
  * );
  * ```
  */
 export async function getMemoryCached<T>(
 	key: string,
 	ttlSeconds: number,
-	fallback: () => Promise<T>
+	fallback: () => Promise<T>,
+	functionName: string = 'getMemoryCached'
 ): Promise<T> {
-	return memoryCache.get(key, ttlSeconds, fallback);
+	return memoryCache.get(key, ttlSeconds, fallback, functionName);
 }

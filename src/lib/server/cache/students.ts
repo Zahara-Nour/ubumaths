@@ -23,6 +23,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { getCached, invalidateCache } from '$lib/server/cache';
 import { getTeacherTestMode } from '$lib/server/test-mode';
+import { dev } from '$app/environment';
 
 // ============================================================================
 // CONSTANTS
@@ -125,11 +126,7 @@ export async function getTeacherStudents(
 
 	// Wrapper function for cache fallback
 	const fetchStudents = async () => {
-		console.log('[getTeacherStudents] Fetching from DB:', {
-			teacherId,
-			classId,
-			isTestMode
-		});
+		const dbStart = performance.now();
 
 		if (classId) {
 			// Fetch specific class students
@@ -176,6 +173,12 @@ export async function getTeacherStudents(
 					} as StudentData;
 				})
 				.filter((s): s is StudentData => s !== null);
+
+			const dbDuration = Math.round(performance.now() - dbStart);
+			if (dev)
+				console.log(
+					`[getTeacherStudents][DB] ⏱️ FETCH (${dbDuration}ms) { teacherId: '${teacherId}', classId: '${classId}', isTestMode: ${isTestMode} }`
+				);
 
 			return students;
 		} else {
@@ -242,6 +245,12 @@ export async function getTeacherStudents(
 				}))
 			}));
 
+			const dbDuration = Math.round(performance.now() - dbStart);
+			if (dev)
+				console.log(
+					`[getTeacherStudents][DB] ⏱️ FETCH (${dbDuration}ms) { teacherId: '${teacherId}', classId: all, isTestMode: ${isTestMode} }`
+				);
+
 			return classes;
 		}
 	};
@@ -251,7 +260,12 @@ export async function getTeacherStudents(
 		return fetchStudents();
 	}
 
-	return getCached<ClassWithStudentsData[] | StudentData[]>(cacheKey, STUDENTS_TTL, fetchStudents);
+	return getCached<ClassWithStudentsData[] | StudentData[]>(
+		cacheKey,
+		STUDENTS_TTL,
+		fetchStudents,
+		'getTeacherStudents'
+	);
 }
 
 /**

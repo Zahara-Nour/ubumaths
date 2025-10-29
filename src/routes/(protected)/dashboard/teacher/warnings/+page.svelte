@@ -114,8 +114,6 @@
 	 */
 	$effect(() => {
 		const unsubscribe = cacheEventBus.subscribe((event) => {
-			console.log('[Warnings] Event Bus received:', event.type, event.scope);
-
 			// Only respond to warnings or 'all' events
 			if (event.type === 'warnings' || event.type === 'all') {
 				// Check if the event matches our current class and period
@@ -123,7 +121,6 @@
 				const matchesPeriod = !event.scope.periodId || event.scope.periodId === selectedPeriodId;
 
 				if (matchesClass && matchesPeriod) {
-					console.log('[Warnings] Reloading due to Event Bus invalidation:', event.reason);
 					loadWarnings();
 				}
 			}
@@ -217,8 +214,6 @@
 	async function loadWarnings() {
 		if (!selectedClassId || !selectedPeriodId) return;
 
-		console.log('[loadWarnings] START - class:', selectedClassId, 'period:', selectedPeriodId);
-
 		_isLoadingWarnings = true;
 
 		try {
@@ -238,21 +233,7 @@
 				newWarningsData.set(studentId, counts as StudentWarningCounts);
 			}
 
-			console.log(
-				'[loadWarnings] Got data from API, size:',
-				newWarningsData.size,
-				'entries:',
-				Array.from(newWarningsData.keys())
-			);
-
-			// Log first student's data to see structure
-			const firstStudent = Array.from(newWarningsData.entries())[0];
-			if (firstStudent) {
-				console.log('[loadWarnings] First student data:', firstStudent);
-			}
-
 			warningsData = newWarningsData;
-			console.log('[loadWarnings] Updated warningsData, new size:', warningsData.size);
 		} catch (err) {
 			console.error('[loadWarnings] ERROR:', err);
 			toaster.error('Erreur lors du chargement des avertissements');
@@ -314,21 +295,15 @@
 
 				const result = await response.json();
 
-				// SUCCESS: Update with server response
-				console.log('[addWarning] SUCCESS - API call completed');
-
 				// Clear optimistic override
 				delete optimisticWarnings[studentId];
-				console.log('[addWarning] Cleared optimistic state');
 
 				// Update server data
 				warningsData.set(studentId, result.counts);
-				console.log('[addWarning] Updated warningsData with server response');
 
 				// Invalidate cache
 				teacherStudentsCache.invalidate(selectedClassId);
 				warningsCache.invalidate(selectedClassId, selectedPeriodId);
-				console.log('[addWarning] Invalidated cache');
 
 				// Publish Event Bus event for cross-tab sync
 				cacheEventBus.invalidateWarnings(
@@ -336,12 +311,9 @@
 					selectedPeriodId,
 					`Added ${warningType} warning for ${studentName}`
 				);
-				console.log('[addWarning] Published Event Bus invalidation');
 
 				// Force immediate reload to get fresh data
-				console.log('[addWarning] About to call loadWarnings()...');
 				await loadWarnings();
-				console.log('[addWarning] loadWarnings() completed');
 
 				// Show success toast
 				toaster.success(

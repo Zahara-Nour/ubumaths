@@ -1,5 +1,14 @@
 /**
- * Warnings Cache Store
+ * Warnings Cache Store (Client Store - Tier 3)
+ *
+ * Browser-based cache for student warnings data.
+ * Logs use format: [warningsCache.get][Client Store][Tier-3]
+ *
+ * Features:
+ * - Instant cache hits (0ms)
+ * - Optimistic updates with asymmetric debouncing
+ * - Cross-tab synchronization via cacheEventBus
+ *
  * ====================
  *
  * Client-side cache for student warnings per class and academic period.
@@ -65,6 +74,7 @@
  * For gidouilles/vip_cards, use gidouillesCache.
  */
 
+import { dev } from '$app/environment';
 import { cacheEventBus } from './cacheEventBus.svelte';
 
 // ============================================================================
@@ -363,15 +373,27 @@ class WarningsCacheStore {
 
 		// CASE 1: CACHE HIT - Return cached data with optimistic updates
 		if (entry && !entry.loading) {
+			if (dev)
+				console.log(
+					`[warningsCache.get][Client Store][Tier-3] 🎯 HIT (0ms) warnings:class:${classId}:period:${periodId}`
+				);
 			return this.getCached(classId, periodId) || new Map();
 		}
 
 		// CASE 2: CURRENTLY LOADING - Wait for in-flight request
 		if (entry?.loading) {
+			if (dev)
+				console.log(
+					`[warningsCache.get][Client Store][Tier-3] 🔄 LOADING warnings:class:${classId}:period:${periodId} (dedup)`
+				);
 			return this.waitForLoad(classId, periodId);
 		}
 
 		// CASE 3: CACHE MISS - Fetch from API
+		if (dev)
+			console.log(
+				`[warningsCache.get][Client Store][Tier-3] ❌ MISS → fetching via API warnings:class:${classId}:period:${periodId}`
+			);
 		return this.fetch(classId, periodId);
 	}
 
