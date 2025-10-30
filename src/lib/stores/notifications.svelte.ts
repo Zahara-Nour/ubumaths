@@ -2,7 +2,7 @@
  * Notification Store
  *
  * Client-side store for managing notification state.
- * Note: Polling is now handled by the unified activityStore to reduce database load
+ * Note: Manual refresh only - no automatic polling (architecture simplified 2025-10-30)
  */
 
 import type { NotificationWithDetails } from '$lib/types/notification';

@@ -10,14 +10,14 @@ import { defineConfig, devices } from '@playwright/test';
  * - Screenshot and trace capture on failures
  * - Parallel test execution
  * - Test isolation and cleanup
- * - Extended timeout for Redis cache and polling tests
+ * - Extended timeout for rate limiting and database tests
  */
 
 export default defineConfig({
 	testDir: './e2e',
 
 	// Maximum time one test can run for
-	// Increased to 120s for Redis cache tests (polling, rate limiting)
+	// Increased to 120s for rate limiting tests (database-based, no Redis)
 	timeout: 120 * 1000, // 120 seconds
 
 	// Test execution configuration
