@@ -4,7 +4,6 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { invalidateCache, CACHE_KEYS } from './cache';
 
 /**
  * Create a message to teacher requesting validation of a riddle answer
@@ -58,11 +57,6 @@ export async function createRiddleValidationMessage(
 			console.error('Error creating validation message:', messageError);
 			return { success: false, error: messageError.message };
 		}
-
-		// Invalidate activity cache for teacher (fire-and-forget)
-		invalidateCache(CACHE_KEYS.ACTIVITY_COUNTS(data.teacherId)).catch((err) => {
-			console.error('[Cache] Failed to invalidate activity cache after riddle message:', err);
-		});
 
 		return { success: true, messageId: message.id };
 	} catch (error) {
@@ -147,11 +141,6 @@ export async function sendValidationResultMessage(
 			console.error('Error sending validation result:', messageError);
 			return { success: false, error: messageError.message };
 		}
-
-		// Invalidate activity cache for student (fire-and-forget)
-		invalidateCache(CACHE_KEYS.ACTIVITY_COUNTS(data.studentId)).catch((err) => {
-			console.error('[Cache] Failed to invalidate activity cache after validation result:', err);
-		});
 
 		return { success: true };
 	} catch (error) {

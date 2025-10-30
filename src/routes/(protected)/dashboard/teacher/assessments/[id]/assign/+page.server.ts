@@ -2,7 +2,6 @@ import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { getAssessment, getAssessmentAssignments, assignAssessment } from '$lib/server/assessments';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
-import { getCachedProfile } from '$lib/server/cache/profile';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
@@ -11,9 +10,17 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// Verify user is a teacher
-	const profile = await getCachedProfile(user.id, locals.supabase);
+	const { data: profileData, error: profileError } = await locals.supabase
+		.from('profiles')
+		.select('role')
+		.eq('id', user.id)
+		.single();
 
-	if (!profile || profile.role !== 'teacher') {
+	if (profileError || !profileData) {
+		throw error(403, 'Profil non trouvé');
+	}
+
+	if (profileData.role !== 'teacher') {
 		throw redirect(303, '/dashboard');
 	}
 

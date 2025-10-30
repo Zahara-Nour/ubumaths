@@ -1,7 +1,5 @@
-import { redirect } from '@sveltejs/kit';
+import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getCachedProfile } from '$lib/server/cache/profile';
-import { getCachedTemplates } from '$lib/server/cache/templates';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user } = await locals.safeGetSession();
@@ -10,16 +8,33 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Verify user is a teacher
-	const profile = await getCachedProfile(user.id, locals.supabase);
+	const { data: profileData, error: profileError } = await locals.supabase
+		.from('profiles')
+		.select('role')
+		.eq('id', user.id)
+		.single();
 
-	if (!profile || profile.role !== 'teacher') {
+	if (profileError || !profileData) {
+		throw error(403, 'Profil non trouvé');
+	}
+
+	if (profileData.role !== 'teacher') {
 		throw redirect(303, '/dashboard');
 	}
 
-	// Fetch templates for cart preview (cached in Redis - 10 min TTL)
-	const templates = await getCachedTemplates(locals.supabase);
+	// Fetch all published question templates
+	const { data: templates, error: templatesError } = await locals.supabase
+		.from('question_templates')
+		.select('*')
+		.eq('is_published', true)
+		.order('category', { ascending: true })
+		.order('level', { ascending: true });
+
+	if (templatesError) {
+		throw error(500, 'Erreur lors du chargement des templates');
+	}
 
 	return {
-		templates
+		templates: templates || []
 	};
 };

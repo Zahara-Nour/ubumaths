@@ -1,6 +1,5 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { invalidateCache, CACHE_KEYS } from '$lib/server/cache';
 
 /**
  * GET /api/messages/[id]
@@ -39,20 +38,10 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		}
 
 		// Mark as read if recipient
-		const { data: wasMarked } = await supabase.rpc('mark_message_as_read', {
+		await supabase.rpc('mark_message_as_read', {
 			p_message_id: messageId,
 			p_user_id: user.id
 		});
-
-		// Invalidate activity cache if message was newly marked as read (fire-and-forget)
-		if (wasMarked) {
-			invalidateCache(CACHE_KEYS.ACTIVITY_COUNTS(user.id)).catch((err) => {
-				console.error(
-					'[Cache] Failed to invalidate activity cache after marking message read:',
-					err
-				);
-			});
-		}
 
 		return json({ message: messages[0] });
 	} catch (err) {
@@ -125,11 +114,6 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 					console.error('Error toggling read:', readError);
 					throw error(500, 'Erreur lors de la mise à jour du statut de lecture');
 				}
-
-				// Invalidate activity cache when toggling read status (fire-and-forget)
-				invalidateCache(CACHE_KEYS.ACTIVITY_COUNTS(user.id)).catch((err) => {
-					console.error('[Cache] Failed to invalidate activity cache after toggling read:', err);
-				});
 
 				return json({ success: true, isRead: newReadValue !== null });
 			}

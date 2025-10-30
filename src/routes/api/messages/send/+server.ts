@@ -1,7 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { sendMessageSchema } from '$lib/server/validation/messages';
-import { invalidateCache, CACHE_KEYS } from '$lib/server/cache';
 
 /**
  * POST /api/messages/send
@@ -50,16 +49,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (sendError) {
 			console.error('Error sending message:', sendError);
 			throw error(500, sendError.message || "Erreur lors de l'envoi du message");
-		}
-
-		// Invalidate activity cache for recipients (fire-and-forget)
-		// Note: recipientIds contains actual recipients even for group messages (expanded by RPC)
-		if (recipientIds && recipientIds.length > 0) {
-			Promise.all(
-				recipientIds.map((recipientId) => invalidateCache(CACHE_KEYS.ACTIVITY_COUNTS(recipientId)))
-			).catch((err) => {
-				console.error('[Cache] Failed to invalidate activity cache after message send:', err);
-			});
 		}
 
 		return json({ success: true, messageId });

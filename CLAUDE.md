@@ -31,74 +31,23 @@ pnpm db:migrate       # Push migrations Supabase
 pnpm release          # Créer une release (main branch)
 ```
 
-### Redis Cache Commands
-
-```bash
-# Check cache health (requires Redis configured)
-curl http://localhost:5175/api/health/redis
-
-# Run cache tests
-pnpm test:unit tests/unit/cache.test.ts
-pnpm test:unit tests/unit/*-cache.test.ts
-
-# Run E2E cache tests
-npx playwright test e2e/redis-cache
-```
-
 ### Ports de développement
 
 - **5173** : Port utilisateur (NE PAS UTILISER)
 - **5175** : Port Claude (TOUJOURS UTILISER : `pnpm dev -- --port 5175`)
 - **54321** : Supabase local (pour tests de triggers)
 
-### Redis Cache Configuration
+### Rate Limiting
 
-Configure Upstash Redis credentials in `.env`:
+**Database-based rate limiting** (replaced Redis 2025-10-30):
 
-```bash
-# .env
-UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
-UPSTASH_REDIS_REST_TOKEN=your_token_here
-```
+- ✅ Login attempts: 5/15min (IP + email)
+- ✅ Signup: 3/1hour (IP)
+- ✅ OAuth: 10/15min (IP)
+- ✅ Chatbot: 5/15min (user)
+- ✅ Automatic cleanup of expired entries
 
-**Features**:
-
-- ✅ Assessment results caching (5 min TTL) - 88% faster load
-- ✅ Rate limiting (login, signup, chatbot) - Multi-instance safe
-- ✅ Fail-safe design (works without Redis configured)
-
-**Setup Guide**: See [docs/guides/redis-cache-setup.md](docs/guides/redis-cache-setup.md)
-
-**Free tier**: 10K requests/day, 256MB storage (sufficient for dev)
-
-### Cache Logging (Dev Mode)
-
-Monitor cache performance with detailed source + timing logs:
-
-```bash
-# .env
-ENABLE_CACHE_LOGS=true
-```
-
-**Log Format**: `[functionName][source][Tier-X] STATUS (timing) details`
-
-**Examples**:
-
-```bash
-[getCachedSchool][Redis][Tier-1] 🎯 HIT (45ms) cache:school:def456
-[getCachedSchool][Redis][Tier-1] ❌ MISS (12ms) → fetching from DB
-[getCachedSchool][DB] ⏱️ FETCH (850ms) { schoolId: 'def456' }
-
-[getCachedProfile][RAM Server][Tier-2] 🎯 HIT (0ms) profile:abc123:role
-```
-
-**Cache Tiers**:
-
-- **DB**: Source of truth (Supabase Postgres) - No tier
-- **Tier-1**: Redis (Upstash cloud) - ~50ms
-- **Tier-2**: RAM Server (Node.js process) - <1ms
-
-**Full Documentation**: [docs/development/cache-logging-format.md](docs/development/cache-logging-format.md)
+**Implementation**: Uses Supabase `rate_limits` table with atomic counters
 
 ---
 
@@ -125,11 +74,11 @@ ENABLE_CACHE_LOGS=true
 - ✅ **AI Chatbot**: Rate limited (5 req/15min) + authenticated
 - ✅ **Input Validation**: 100% of API endpoints have Zod validation (50+ endpoints validated, 0 vulnerabilities) - See [🛡️ Input Validation](#🛡️-input-validation-with-zod)
 
-**Performance** (NEW):
+**Performance**:
 
-- ✅ **Assessment Results**: 90% faster (3.6s → 0.4s load time)
 - ✅ **Database Indexes**: 13 new indexes for hot paths
 - ✅ **N+1 Queries**: Eliminated in assessment results (244 → 6 queries, 97% reduction)
+- ⚠️ **No caching layer**: Direct DB queries on every request (simpler architecture, slightly slower)
 
 **Standards**:
 
@@ -771,56 +720,40 @@ function handleUpdate(id: string, delta: number) {
 
 ---
 
-## 💾 Caching Strategy
+## 💾 Data Fetching Strategy
 
-### Server-Side Cache System
+**Architecture** (Updated 2025-10-30): Direct database queries, no caching layer.
 
-UbuMaths uses a two-tier **server-side** caching strategy combining in-memory and Redis caches.
+**Before** (with Redis):
 
-**In-Memory Cache** (zero latency):
+- Server-side caching (Redis + in-memory)
+- Complex invalidation logic
+- Faster responses (~50ms cached)
+
+**After** (current):
+
+- ✅ Direct Supabase queries
+- ✅ Always fresh data
+- ✅ Simpler architecture
+- ⚠️ Slightly slower (~100-200ms per query)
+
+**Example**:
 
 ```typescript
-import { getCachedProfile } from '$lib/server/cache/profile';
-const profile = await getCachedProfile(userId, supabase);
+// Direct DB query (current approach)
+const { data: school, error } = await supabase
+	.from('schools')
+	.select('*')
+	.eq('id', schoolId)
+	.single();
 ```
 
-**Redis Cache** (shared across instances):
+**Optimization tips**:
 
-```typescript
-import { getCachedSchool } from '$lib/server/cache/schools';
-import { getCachedTemplates } from '$lib/server/cache/templates';
-
-const school = await getCachedSchool(schoolId, supabase);
-const templates = await getCachedTemplates(supabase);
-```
-
-**When to use which**:
-
-- ✅ In-Memory: Per-user data, ultra-high frequency reads (profile roles, session data)
-- ✅ Redis: Shared data, multi-instance deployments (schools, templates, rate limiting)
-
-**Manual Invalidation** (admin only):
-
-```bash
-# Invalidate school cache after timetable update
-curl -X POST "/api/admin/cache/invalidate?type=school&id={schoolId}"
-
-# Invalidate templates after publishing
-curl -X POST "/api/admin/cache/invalidate?type=templates"
-```
-
-**Cache Modules**:
-
-| Module             | Type      | TTL    | Purpose                      |
-| ------------------ | --------- | ------ | ---------------------------- |
-| Profile            | In-Memory | 15 min | User role checks             |
-| Schools            | Redis     | 1 hour | School data, timetables      |
-| Templates          | Redis     | 10 min | Published question templates |
-| Assessment Results | Redis     | 5 min  | Cached results               |
-
-**Note**: Client-side polling and cache stores have been removed (2025-10-30). The architecture now uses simple direct API calls with server-side caching only.
-
-📚 **Docs**: [Hybrid Cache System](docs/architecture/hybrid-cache-system.md)
+- Use proper database indexes (13 indexes on hot paths)
+- Eliminate N+1 queries with joins
+- Use RPC functions for complex aggregations
+- Implement optimistic UI for better perceived performance
 
 ---
 

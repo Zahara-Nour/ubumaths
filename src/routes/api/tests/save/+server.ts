@@ -2,7 +2,6 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { TestResult } from '$lib/types/test';
 import type { CartItem } from '$lib/stores/questionCart.svelte';
-import { invalidateCache } from '$lib/server/cache';
 
 /**
  * API route to save test results to database
@@ -52,26 +51,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (sessionError || !testSession) {
 			console.error('Error inserting test session:', sessionError);
 			return json({ error: 'Failed to save test session' }, { status: 500 });
-		}
-
-		// Invalidate assessment cache if this was an assigned test
-		// Fire-and-forget to not block the response
-		if (assignmentId) {
-			// Fetch assessment_id from assignment to invalidate the correct cache
-			supabase
-				.from('assessment_assignments')
-				.select('assessment_id')
-				.eq('id', assignmentId)
-				.single()
-				.then(({ data }) => {
-					if (data?.assessment_id) {
-						// Invalidate all caches for this assessment (results + stats, test + prod)
-						return invalidateCache(`cache:assessment:${data.assessment_id}:*`);
-					}
-				})
-				.catch((err) => {
-					console.error('[Cache] Failed to invalidate assessment cache:', err);
-				});
 		}
 
 		// Insert test answers

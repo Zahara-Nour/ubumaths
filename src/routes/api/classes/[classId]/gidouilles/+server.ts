@@ -1,22 +1,19 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getClassGidouilles } from '$lib/server/cache/gidouilles';
+import { getTeacherTestMode } from '$lib/server/test-mode';
 
 /**
  * GET /api/classes/[classId]/gidouilles
  *
  * Fetches gidouilles and vip_cards data for all students in a class.
- * Uses Redis caching with automatic fallback for performance.
  *
  * FEATURES:
- * - Redis caching (5-minute TTL)
  * - Test mode aware (respects teacher's test_mode preference)
- * - Graceful fallback on Redis errors
  *
  * SECURITY:
  * - Verifies user is authenticated
  * - Verifies user is a teacher
- * - Verifies teacher owns the class (handled in getClassGidouilles)
+ * - Verifies teacher owns the class
  *
  * RETURNS:
  * Array of { student_id, gidouilles, vip_cards } objects
@@ -58,9 +55,65 @@ export const GET: RequestHandler = async ({ params, locals: { safeGetSession, su
 			throw error(403, 'Seuls les enseignants peuvent accéder aux gidouilles de classe');
 		}
 
-		// Fetch gidouilles data with caching
-		// getClassGidouilles verifies teacher owns the class
-		const gidouilles = await getClassGidouilles(classId, user.id, supabase);
+		// Get teacher's test mode preference
+		const isTestMode = await getTeacherTestMode(user.id, supabase);
+
+		// Verify teacher owns the class (security check)
+		const { data: classCheck, error: classError } = await supabase
+			.from('classes')
+			.select('id')
+			.eq('id', classId)
+			.eq('teacher_id', user.id)
+			.maybeSingle();
+
+		if (classError) {
+			console.error('[GET /api/classes/gidouilles] Error verifying class ownership:', classError);
+			throw error(500, `Failed to verify class ownership: ${classError.message}`);
+		}
+
+		if (!classCheck) {
+			console.error('[GET /api/classes/gidouilles] Teacher does not own class:', classId);
+			throw error(403, 'You do not have permission to view this class');
+		}
+
+		// Fetch gidouilles data via class_members join
+		const { data: members, error: membersError } = await supabase
+			.from('class_members')
+			.select(
+				`
+				student_id,
+				profiles!class_members_student_id_fkey (
+					id,
+					gidouilles,
+					vip_cards,
+					is_test
+				)
+			`
+			)
+			.eq('class_id', classId)
+			.eq('profiles.is_test', isTestMode);
+
+		if (membersError) {
+			console.error('[GET /api/classes/gidouilles] Error fetching gidouilles:', membersError);
+			throw error(500, `Failed to fetch gidouilles: ${membersError.message}`);
+		}
+
+		// Transform to gidouilles array
+		const gidouilles = (members || [])
+			.map((member) => {
+				const profile = Array.isArray(member.profiles) ? member.profiles[0] : member.profiles;
+				if (!profile) return null;
+
+				return {
+					student_id: profile.id,
+					gidouilles: profile.gidouilles || 0,
+					vip_cards: profile.vip_cards || {}
+				};
+			})
+			.filter(
+				(g): g is { student_id: string; gidouilles: number; vip_cards: Record<string, number> } =>
+					g !== null
+			);
 
 		return json({ gidouilles });
 	} catch (err) {

@@ -6,8 +6,6 @@ import {
 	getAssessmentStatistics
 } from '$lib/server/assessments';
 import { getTeacherTestMode } from '$lib/server/test-mode';
-import { getCached, CACHE_KEYS, TTL } from '$lib/server/cache';
-import { getCachedProfile } from '$lib/server/cache/profile';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
@@ -16,9 +14,17 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// Verify user is a teacher
-	const profile = await getCachedProfile(user.id, locals.supabase);
+	const { data: profileData, error: profileError } = await locals.supabase
+		.from('profiles')
+		.select('role')
+		.eq('id', user.id)
+		.single();
 
-	if (!profile || profile.role !== 'teacher') {
+	if (profileError || !profileData) {
+		throw error(403, 'Profil non trouvé');
+	}
+
+	if (profileData.role !== 'teacher') {
 		throw redirect(303, '/dashboard');
 	}
 
@@ -40,12 +46,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Get test mode to filter results
 	const isTestMode = await getTeacherTestMode(user.id, locals.supabase);
 
-	// Cache assessment results (5 min TTL - données rarement modifiées)
-	const { data: results, error: resultsError } = await getCached(
-		CACHE_KEYS.ASSESSMENT_RESULTS(params.id, isTestMode),
-		TTL.ASSESSMENT_RESULTS,
-		async () => getAssessmentResults(locals.supabase, params.id, isTestMode),
-		'getAssessmentResults'
+	// Fetch assessment results (direct DB query, no cache)
+	const { data: results, error: resultsError } = await getAssessmentResults(
+		locals.supabase,
+		params.id,
+		isTestMode
 	);
 
 	if (resultsError) {
@@ -57,12 +62,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		};
 	}
 
-	// Cache assessment statistics (5 min TTL - synchronisé avec results)
-	const { data: statistics } = await getCached(
-		CACHE_KEYS.ASSESSMENT_STATS(params.id, isTestMode),
-		TTL.ASSESSMENT_RESULTS,
-		async () => getAssessmentStatistics(locals.supabase, params.id, isTestMode),
-		'getAssessmentStatistics'
+	// Fetch assessment statistics (direct DB query, no cache)
+	const { data: statistics } = await getAssessmentStatistics(
+		locals.supabase,
+		params.id,
+		isTestMode
 	);
 
 	return {

@@ -3579,6 +3579,30 @@ export type Database = {
 					}
 				];
 			};
+			rate_limits: {
+				Row: {
+					count: number;
+					created_at: string | null;
+					expires_at: string;
+					id: string;
+					key: string;
+				};
+				Insert: {
+					count?: number;
+					created_at?: string | null;
+					expires_at: string;
+					id?: string;
+					key: string;
+				};
+				Update: {
+					count?: number;
+					created_at?: string | null;
+					expires_at?: string;
+					id?: string;
+					key?: string;
+				};
+				Relationships: [];
+			};
 			riddle_assignments: {
 				Row: {
 					assigned_at: string;

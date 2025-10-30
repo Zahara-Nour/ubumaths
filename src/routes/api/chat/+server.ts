@@ -42,7 +42,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// ====================================================================
 		// SECURITY: Rate Limiting (5 requests per 15 minutes per user)
 		// ====================================================================
-		const rateLimitResult = await checkChatbotRateLimit(user.id);
+		const rateLimitResult = await checkChatbotRateLimit(user.id, locals.supabase);
 
 		if (!rateLimitResult.allowed) {
 			throw error(429, {

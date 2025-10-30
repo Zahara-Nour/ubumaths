@@ -1,27 +1,25 @@
+import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
-import { getCachedTemplates } from '$lib/server/cache/templates';
 
 /**
  * Load all published question templates for test generation
- * Similar to cart page, loads templates from database
- *
- * PERFORMANCE OPTIMIZATION (2025-10-29):
- * =======================================
- * Uses Redis cache for templates instead of DB query.
- *
- * Cache Strategy:
- * - Fetch: All templates from Redis cache (10 min TTL)
- * - Sort: In-memory by created_at (descending)
- * - Impact: 67% faster (150ms → 50ms)
  */
 export const load: PageServerLoad = async ({ locals }) => {
 	const supabase = locals.supabase;
 
-	// Fetch from Redis cache (10 min TTL)
-	const allTemplates = await getCachedTemplates(supabase);
+	// Fetch all published question templates directly from database
+	const { data: allTemplates, error: templatesError } = await supabase
+		.from('question_templates')
+		.select('*')
+		.eq('is_published', true);
 
-	// Sort by created_at (in-memory, fast)
+	if (templatesError) {
+		console.error('Failed to load question templates:', templatesError);
+		throw error(500, 'Failed to load questions');
+	}
+
+	// Sort by created_at (descending)
 	const templates =
 		allTemplates?.sort(
 			(a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()

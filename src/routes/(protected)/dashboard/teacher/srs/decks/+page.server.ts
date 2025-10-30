@@ -7,7 +7,6 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getCachedProfile } from '$lib/server/cache/profile';
 
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -17,9 +16,17 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	}
 
 	// Check if user is teacher or admin
-	const profile = await getCachedProfile(user.id, supabase);
+	const { data: profileData, error: profileError } = await supabase
+		.from('profiles')
+		.select('role')
+		.eq('id', user.id)
+		.single();
 
-	if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {
+	if (profileError || !profileData) {
+		throw error(403, 'Profil non trouvé');
+	}
+
+	if (profileData.role !== 'teacher' && profileData.role !== 'admin') {
 		throw error(403, 'Forbidden. Only teachers can access this page.');
 	}
 

@@ -21,29 +21,9 @@ const APP_VERSION = pkg.version;
  * See PERFORMANCE_OPTIMIZATIONS.md for detailed explanation
  */
 export default defineConfig(({ mode }) => {
-	/**
-	 * Critical: Explicit Environment Variable Loading
-	 * ================================================
-	 *
-	 * WHY THIS IS NECESSARY:
-	 * - Vite loads .env files but doesn't automatically expose all vars to process.env
-	 * - Server-side code (like Redis client in src/lib/server/cache.ts) needs vars in process.env
-	 * - Without explicit loading, Redis client initialization fails with undefined credentials
-	 *
-	 * WHAT THIS DOES:
-	 * 1. loadEnv(mode, cwd, prefix) reads .env files (.env, .env.local, .env.[mode])
-	 * 2. Third parameter '' means load ALL vars (not just VITE_ prefixed ones)
-	 * 3. Object.assign merges loaded vars into process.env for server-side access
-	 *
-	 * TIMING:
-	 * - Runs BEFORE server starts, BEFORE modules are imported
-	 * - Ensures lazy-initialized Redis client (cache.ts) finds env vars on first use
-	 *
-	 * DO NOT REMOVE: Required for Redis, Supabase, and other server-side libs
-	 * See: docs/troubleshooting/env-loading-fix.md for detailed explanation
-	 */
-	const env = loadEnv(mode, process.cwd(), ''); // mode: 'development' | 'production' | 'test'
-	Object.assign(process.env, env); // Make available to all server-side code
+	// Load environment variables for server-side code
+	const env = loadEnv(mode, process.cwd(), '');
+	Object.assign(process.env, env);
 
 	return {
 		plugins: [tailwindcss(), sveltekit()],

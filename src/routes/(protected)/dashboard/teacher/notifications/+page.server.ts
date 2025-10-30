@@ -1,4 +1,4 @@
-import { redirect, fail } from '@sveltejs/kit';
+import { redirect, fail, error } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import {
 	getCreatedNotifications,
@@ -6,7 +6,6 @@ import {
 	deleteNotification
 } from '$lib/server/notifications';
 import type { CreateNotificationData } from '$lib/types/notification';
-import { getCachedProfile } from '$lib/server/cache/profile';
 
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -16,9 +15,17 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	}
 
 	// Get user profile to check role
-	const profile = await getCachedProfile(user.id, supabase);
+	const { data: profileData, error: profileError } = await supabase
+		.from('profiles')
+		.select('role')
+		.eq('id', user.id)
+		.single();
 
-	if (!profile || profile.role !== 'teacher') {
+	if (profileError || !profileData) {
+		throw error(403, 'Profil non trouvé');
+	}
+
+	if (profileData.role !== 'teacher') {
 		throw redirect(303, '/dashboard');
 	}
 

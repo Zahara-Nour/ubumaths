@@ -2,7 +2,6 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionTemplate, QuestionInstance } from '$lib/questions/types';
-import { getCachedTemplates } from '$lib/server/cache/templates';
 
 /**
  * Hierarchical structure for organizing questions
@@ -27,27 +26,14 @@ interface ThemeGroup {
 	domains: DomainGroup[];
 }
 
-/**
- * PERFORMANCE OPTIMIZATION (2025-10-29):
- * =======================================
- * Templates are now fetched from Redis cache instead of direct DB query.
- *
- * Benefits:
- * - 10-minute cache TTL reduces DB load
- * - Shared cache across all users (global key)
- * - In-memory sorting maintains same behavior
- * - 67% faster page loads (150ms → 50ms)
- *
- * Cache Strategy:
- * - Fetch: ALL published templates from Redis
- * - Sort: Multi-level in-memory (theme/domain/subdomain/level)
- * - Invalidation: Manual via admin API or automatic on 10min TTL
- */
 export const load: PageServerLoad = async ({ locals: { supabase } }) => {
-	// Fetch all published templates from Redis cache (10 min TTL)
-	const allTemplates = await getCachedTemplates(supabase);
+	// Fetch all published question templates directly from database
+	const { data: allTemplates, error: templatesError } = await supabase
+		.from('question_templates')
+		.select('*')
+		.eq('is_published', true);
 
-	// Sort as before (in-memory, fast)
+	// Sort by theme, domain, subdomain, level
 	const templates =
 		allTemplates?.sort((a, b) => {
 			if (a.theme !== b.theme) return a.theme.localeCompare(b.theme);
@@ -57,8 +43,6 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 			}
 			return (a.level || '').localeCompare(b.level || '');
 		}) || [];
-
-	const templatesError = null; // No error when using cache
 
 	if (templatesError) {
 		console.error('Failed to load question templates:', templatesError);

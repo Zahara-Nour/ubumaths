@@ -16,8 +16,7 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-// Use cached version for better performance (10min TTL)
-import { getTeacherStudents } from '$lib/server/cache/students';
+import { getTeacherClassesWithStudents } from '$lib/server/students';
 import {
 	getCurrentAcademicPeriod,
 	getSchoolYearPeriods,
@@ -57,8 +56,8 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 	// Verify teacher has a school_id (required for academic periods)
 	if (!profile.school_id) {
 		console.warn('[Warnings Page] Teacher has no school_id, cannot load periods');
-		// Load classes but return empty periods (classId=undefined loads all classes)
-		const classesWithStudents = await getTeacherStudents(user.id, undefined, supabase);
+		// Load classes but return empty periods
+		const classesWithStudents = await getTeacherClassesWithStudents(user.id, supabase);
 		return {
 			classes: classesWithStudents,
 			currentPeriod: null,
@@ -68,9 +67,8 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 
 	try {
 		// Fetch all data in parallel for performance
-		// classId=undefined loads all classes with their students (cached, 10min TTL)
 		const [classesWithStudents, currentPeriod, activeYear] = await Promise.all([
-			getTeacherStudents(user.id, undefined, supabase),
+			getTeacherClassesWithStudents(user.id, supabase),
 			getCurrentAcademicPeriod({ schoolId: profile.school_id, supabase }),
 			getActiveSchoolYear({ schoolId: profile.school_id, supabase })
 		]);

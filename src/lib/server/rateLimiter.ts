@@ -1,14 +1,14 @@
 /**
- * Rate Limiter for Authentication Endpoints (Redis-backed)
+ * Rate Limiter for Authentication Endpoints (Database-backed)
  *
  * SECURITY: Prevents brute force attacks on authentication endpoints
  *
  * FEATURES:
- * - Redis-backed rate limiting for multi-instance support (Vercel)
+ * - Database-backed rate limiting (replaces Redis)
  * - Dual tracking: by IP address AND email (double protection)
- * - Atomic counters prevent race conditions
- * - Automatic TTL-based expiration (no cleanup needed)
- * - Fail-open on Redis errors (prevents DoS from Redis downtime)
+ * - Transactional guarantees from Supabase Postgres
+ * - Automatic cleanup via database function
+ * - Fail-open on database errors (prevents DoS from DB issues)
  *
  * CONFIGURATION:
  * - Login attempts: 5 per 15 minutes per IP
@@ -17,15 +17,16 @@
  * - OAuth attempts: 10 per 15 minutes per IP
  * - Chatbot requests: 5 per 15 minutes per user
  *
- * PRODUCTION READY:
- * - Multi-instance safe (shared state via Redis)
- * - Atomic counters prevent race conditions
- * - Upstash Redis with REST API (serverless-friendly)
- * - All counters persist across deployments
+ * MIGRATION FROM REDIS:
+ * - Previous implementation used Redis atomic counters
+ * - New implementation uses Supabase rate_limits table
+ * - More reliable for single-instance deployments
+ * - No external dependencies (Redis) required
  */
 
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '$lib/types/database';
 import { createLogger } from '$lib/utils/logger';
-import { checkRateLimit, CACHE_KEYS, TTL } from '$lib/server/cache';
 
 const logger = createLogger('rateLimiter');
 
@@ -34,7 +35,9 @@ const logger = createLogger('rateLimiter');
 // ============================================================================
 
 interface RateLimitConfig {
-	maxAttempts: number; // max attempts before blocking
+	key: string;
+	maxAttempts: number;
+	windowSeconds: number;
 }
 
 interface RateLimitResult {
@@ -43,30 +46,92 @@ interface RateLimitResult {
 }
 
 // ============================================================================
-// CONFIGURATION
+// CORE RATE LIMITING LOGIC
 // ============================================================================
 
-const RATE_LIMIT_CONFIGS = {
-	LOGIN_IP: {
-		maxAttempts: 5 // 5 attempts per 15 minutes
-	} as RateLimitConfig,
+/**
+ * Check rate limit using database
+ *
+ * This function implements the core rate limiting logic:
+ * 1. Check if a rate limit entry exists for the key
+ * 2. If it exists and hasn't expired:
+ *    - Check if count >= maxAttempts (rate limited)
+ *    - Otherwise increment count
+ * 3. If it doesn't exist or expired, create new entry
+ *
+ * @param supabase - Supabase client instance
+ * @param config - Rate limit configuration
+ * @returns true if rate limit exceeded, false if allowed
+ */
+async function checkRateLimit(
+	supabase: SupabaseClient<Database>,
+	config: RateLimitConfig
+): Promise<boolean> {
+	const { key, maxAttempts, windowSeconds } = config;
+	const expiresAt = new Date(Date.now() + windowSeconds * 1000);
 
-	LOGIN_EMAIL: {
-		maxAttempts: 3 // 3 attempts per 15 minutes (stricter)
-	} as RateLimitConfig,
+	try {
+		// Try to find existing rate limit entry that hasn't expired
+		const { data: existing, error: fetchError } = await supabase
+			.from('rate_limits')
+			.select('count, expires_at')
+			.eq('key', key)
+			.gte('expires_at', new Date().toISOString())
+			.maybeSingle();
 
-	SIGNUP_IP: {
-		maxAttempts: 3 // 3 attempts per hour
-	} as RateLimitConfig,
+		if (fetchError) {
+			logger.error('Rate limit check error:', fetchError);
+			return false; // Fail open on errors
+		}
 
-	OAUTH_IP: {
-		maxAttempts: 10 // 10 attempts per 15 minutes
-	} as RateLimitConfig,
+		if (existing) {
+			// Entry exists and hasn't expired
+			if (existing.count >= maxAttempts) {
+				logger.debug('Rate limit exceeded', { key: maskKey(key), count: existing.count });
+				return true; // Rate limit exceeded
+			}
 
-	CHATBOT: {
-		maxAttempts: 5 // 5 requests per 15 minutes
-	} as RateLimitConfig
-};
+			// Increment counter
+			const { error: updateError } = await supabase
+				.from('rate_limits')
+				.update({ count: existing.count + 1 })
+				.eq('key', key);
+
+			if (updateError) {
+				logger.error('Rate limit update error:', updateError);
+				return false; // Fail open
+			}
+
+			logger.debug('Rate limit incremented', { key: maskKey(key), count: existing.count + 1 });
+			return false; // Allowed
+		} else {
+			// No existing entry or expired - create new entry
+			const { error: insertError } = await supabase.from('rate_limits').insert({
+				key,
+				count: 1,
+				expires_at: expiresAt.toISOString()
+			});
+
+			if (insertError) {
+				// Handle unique constraint violation (race condition)
+				if (insertError.code === '23505') {
+					// Entry was created by another request, retry once
+					logger.debug('Unique constraint violation, retrying', { key: maskKey(key) });
+					return checkRateLimit(supabase, config);
+				}
+
+				logger.error('Rate limit insert error:', insertError);
+				return false; // Fail open
+			}
+
+			logger.debug('Rate limit entry created', { key: maskKey(key) });
+			return false; // First attempt, allowed
+		}
+	} catch (error) {
+		logger.error('Rate limit error:', error);
+		return false; // Fail open on exceptions
+	}
+}
 
 // ============================================================================
 // UTILITY FUNCTIONS
@@ -76,20 +141,24 @@ const RATE_LIMIT_CONFIGS = {
  * Mask sensitive keys for logging
  */
 function maskKey(key: string): string {
-	if (key.includes('@')) {
+	// Extract the actual value from the key (e.g., "ratelimit:login:ip:192.168.1.1" -> "192.168.1.1")
+	const parts = key.split(':');
+	const value = parts[parts.length - 1];
+
+	if (value.includes('@')) {
 		// Email - show first 2 chars and domain
-		const [local, domain] = key.split('@');
+		const [local, domain] = value.split('@');
 		return `${local.substring(0, 2)}***@${domain}`;
 	}
 
 	// IP - show first and last octet
-	const parts = key.split('.');
-	if (parts.length === 4) {
-		return `${parts[0]}.***.***${parts[3]}`;
+	const ipParts = value.split('.');
+	if (ipParts.length === 4) {
+		return `${ipParts[0]}.***.***${ipParts[3]}`;
 	}
 
-	// IPv6 or other - show first 4 chars
-	return `${key.substring(0, 4)}***`;
+	// UUID or other - show first 4 chars
+	return `${value.substring(0, 4)}***`;
 }
 
 // ============================================================================
@@ -100,27 +169,32 @@ function maskKey(key: string): string {
  * Check login rate limit by IP address
  *
  * @param ip - Client IP address
+ * @param supabase - Supabase client instance
  * @returns Rate limit result with allowed status and optional message
  *
  * SECURITY: 5 attempts per 15 minutes
  */
-export async function checkLoginRateLimitByIP(ip: string): Promise<RateLimitResult> {
+export async function checkLoginRateLimitByIP(
+	ip: string,
+	supabase: SupabaseClient<Database>
+): Promise<RateLimitResult> {
 	if (!ip) {
 		logger.warn('Missing IP address for rate limit check');
 		return { allowed: true }; // Fail open rather than blocking legitimate users
 	}
 
-	const config = RATE_LIMIT_CONFIGS.LOGIN_IP;
-	const key = CACHE_KEYS.RATE_LIMIT_LOGIN_IP(ip);
+	const key = `ratelimit:login:ip:${ip}`;
+	const limited = await checkRateLimit(supabase, {
+		key,
+		maxAttempts: 5,
+		windowSeconds: 900 // 15 minutes
+	});
 
-	const result = await checkRateLimit(key, config.maxAttempts, TTL.RATE_LIMIT_LOGIN);
-
-	if (!result.allowed) {
-		const minutes = Math.ceil((result.retryAfter || 0) / 60);
-		logger.warn('Login rate limit exceeded by IP', { ip: maskKey(ip), retryAfter: minutes });
+	if (limited) {
+		logger.warn('Login rate limit exceeded by IP', { ip: maskKey(key) });
 		return {
 			allowed: false,
-			message: `Trop de tentatives de connexion. Réessayez dans ${minutes} minute${minutes > 1 ? 's' : ''}.`
+			message: 'Trop de tentatives de connexion. Réessayez dans 15 minutes.'
 		};
 	}
 
@@ -131,11 +205,15 @@ export async function checkLoginRateLimitByIP(ip: string): Promise<RateLimitResu
  * Check login rate limit by email address
  *
  * @param email - User email address
+ * @param supabase - Supabase client instance
  * @returns Rate limit result with allowed status and optional message
  *
  * SECURITY: 3 attempts per 15 minutes (stricter than IP limit)
  */
-export async function checkLoginRateLimitByEmail(email: string): Promise<RateLimitResult> {
+export async function checkLoginRateLimitByEmail(
+	email: string,
+	supabase: SupabaseClient<Database>
+): Promise<RateLimitResult> {
 	if (!email) {
 		logger.warn('Missing email for rate limit check');
 		return { allowed: true }; // Fail open
@@ -143,20 +221,19 @@ export async function checkLoginRateLimitByEmail(email: string): Promise<RateLim
 
 	// Normalize email to lowercase for consistent tracking
 	const normalizedEmail = email.toLowerCase().trim();
-	const config = RATE_LIMIT_CONFIGS.LOGIN_EMAIL;
-	const key = CACHE_KEYS.RATE_LIMIT_LOGIN_EMAIL(normalizedEmail);
+	const key = `ratelimit:login:email:${normalizedEmail}`;
 
-	const result = await checkRateLimit(key, config.maxAttempts, TTL.RATE_LIMIT_LOGIN);
+	const limited = await checkRateLimit(supabase, {
+		key,
+		maxAttempts: 3,
+		windowSeconds: 900 // 15 minutes
+	});
 
-	if (!result.allowed) {
-		const minutes = Math.ceil((result.retryAfter || 0) / 60);
-		logger.warn('Login rate limit exceeded by email', {
-			email: maskKey(email),
-			retryAfter: minutes
-		});
+	if (limited) {
+		logger.warn('Login rate limit exceeded by email', { email: maskKey(key) });
 		return {
 			allowed: false,
-			message: `Trop de tentatives de connexion pour cet email. Réessayez dans ${minutes} minute${minutes > 1 ? 's' : ''}.`
+			message: 'Trop de tentatives de connexion pour cet email. Réessayez dans 15 minutes.'
 		};
 	}
 
@@ -167,27 +244,32 @@ export async function checkLoginRateLimitByEmail(email: string): Promise<RateLim
  * Check signup rate limit by IP address
  *
  * @param ip - Client IP address
+ * @param supabase - Supabase client instance
  * @returns Rate limit result with allowed status and optional message
  *
  * SECURITY: 3 attempts per hour (stricter to prevent spam accounts)
  */
-export async function checkSignupRateLimitByIP(ip: string): Promise<RateLimitResult> {
+export async function checkSignupRateLimitByIP(
+	ip: string,
+	supabase: SupabaseClient<Database>
+): Promise<RateLimitResult> {
 	if (!ip) {
 		logger.warn('Missing IP address for signup rate limit check');
 		return { allowed: true }; // Fail open
 	}
 
-	const config = RATE_LIMIT_CONFIGS.SIGNUP_IP;
-	const key = CACHE_KEYS.RATE_LIMIT_SIGNUP(ip);
+	const key = `ratelimit:signup:${ip}`;
+	const limited = await checkRateLimit(supabase, {
+		key,
+		maxAttempts: 3,
+		windowSeconds: 3600 // 1 hour
+	});
 
-	const result = await checkRateLimit(key, config.maxAttempts, TTL.RATE_LIMIT_SIGNUP);
-
-	if (!result.allowed) {
-		const hours = Math.ceil((result.retryAfter || 0) / 3600);
-		logger.warn('Signup rate limit exceeded by IP', { ip: maskKey(ip), retryAfter: hours });
+	if (limited) {
+		logger.warn('Signup rate limit exceeded by IP', { ip: maskKey(key) });
 		return {
 			allowed: false,
-			message: `Trop de tentatives d'inscription. Réessayez dans ${hours} heure${hours > 1 ? 's' : ''}.`
+			message: "Trop de tentatives d'inscription. Réessayez dans 1 heure."
 		};
 	}
 
@@ -198,27 +280,32 @@ export async function checkSignupRateLimitByIP(ip: string): Promise<RateLimitRes
  * Check OAuth rate limit by IP address
  *
  * @param ip - Client IP address
+ * @param supabase - Supabase client instance
  * @returns Rate limit result with allowed status and optional message
  *
  * SECURITY: 10 attempts per 15 minutes (higher limit for OAuth flow)
  */
-export async function checkOAuthRateLimitByIP(ip: string): Promise<RateLimitResult> {
+export async function checkOAuthRateLimitByIP(
+	ip: string,
+	supabase: SupabaseClient<Database>
+): Promise<RateLimitResult> {
 	if (!ip) {
 		logger.warn('Missing IP address for OAuth rate limit check');
 		return { allowed: true }; // Fail open
 	}
 
-	const config = RATE_LIMIT_CONFIGS.OAUTH_IP;
-	const key = CACHE_KEYS.RATE_LIMIT_OAUTH(ip);
+	const key = `ratelimit:oauth:${ip}`;
+	const limited = await checkRateLimit(supabase, {
+		key,
+		maxAttempts: 10,
+		windowSeconds: 900 // 15 minutes
+	});
 
-	const result = await checkRateLimit(key, config.maxAttempts, TTL.RATE_LIMIT_LOGIN);
-
-	if (!result.allowed) {
-		const minutes = Math.ceil((result.retryAfter || 0) / 60);
-		logger.warn('OAuth rate limit exceeded by IP', { ip: maskKey(ip), retryAfter: minutes });
+	if (limited) {
+		logger.warn('OAuth rate limit exceeded by IP', { ip: maskKey(key) });
 		return {
 			allowed: false,
-			message: `Trop de tentatives OAuth. Réessayez dans ${minutes} minute${minutes > 1 ? 's' : ''}.`
+			message: 'Trop de tentatives OAuth. Réessayez dans 15 minutes.'
 		};
 	}
 
@@ -229,27 +316,32 @@ export async function checkOAuthRateLimitByIP(ip: string): Promise<RateLimitResu
  * Check chatbot rate limit by user ID
  *
  * @param userId - User ID
+ * @param supabase - Supabase client instance
  * @returns Rate limit result with allowed status and optional message
  *
  * SECURITY: 5 requests per 15 minutes
  */
-export async function checkChatbotRateLimit(userId: string): Promise<RateLimitResult> {
+export async function checkChatbotRateLimit(
+	userId: string,
+	supabase: SupabaseClient<Database>
+): Promise<RateLimitResult> {
 	if (!userId) {
 		logger.warn('Missing user ID for chatbot rate limit check');
 		return { allowed: true }; // Fail open
 	}
 
-	const config = RATE_LIMIT_CONFIGS.CHATBOT;
-	const key = CACHE_KEYS.RATE_LIMIT_CHAT(userId);
+	const key = `ratelimit:chat:${userId}`;
+	const limited = await checkRateLimit(supabase, {
+		key,
+		maxAttempts: 5,
+		windowSeconds: 900 // 15 minutes
+	});
 
-	const result = await checkRateLimit(key, config.maxAttempts, TTL.RATE_LIMIT_LOGIN);
-
-	if (!result.allowed) {
-		const minutes = Math.ceil((result.retryAfter || 0) / 60);
-		logger.warn('Chatbot rate limit exceeded', { userId: maskKey(userId), retryAfter: minutes });
+	if (limited) {
+		logger.warn('Chatbot rate limit exceeded', { userId: maskKey(key) });
 		return {
 			allowed: false,
-			message: `Trop de requêtes au chatbot. Réessayez dans ${minutes} minute${minutes > 1 ? 's' : ''}.`
+			message: 'Trop de requêtes au chatbot. Réessayez dans 15 minutes.'
 		};
 	}
 

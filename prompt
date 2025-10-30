@@ -1,6 +1,7 @@
 EN UTILISANT les agents appropriés, repasse en revue tout le code pour vérifier :
 0. qu'il n'y a plus de gestion du cache Redis et aucune reférence à Redis dans le code ou dans supabase.
-1. qu' il n ' y a plus trace de Polling nyulle part !
+1. qu' il n ' y a plus trace de Polling n
+ulle part !
 2. qu'il n ' y a plus de traces de cache de données (AUCUN cache : client store, redis, Ram server).
 2bis . que toutes les requests de données se font uniquement par des appels db, par l'intermédiaire de fonctions helpers, en vérifiant qu'il n' y a pas de problemes de type N+1 requests. 
 3. qu'il ne reste pas des routes API inutilisées.
@@ -9,4 +10,5 @@ EN UTILISANT les agents appropriés, repasse en revue tout le code pour vérifie
 6. qu'il n'y pas de variables différentes servant le même but.
 7. De manière générale qu'il n'y a pas de code redondant.
 8. que le code est bien documenté (inline + jsdoc)
+9. qu'il n' y a pas de tests inutiles.
 Prends le plus grand soin a nettoyer tout le code, c'est important pour la suite du projet. Encore une fois, utilise les bons agents !

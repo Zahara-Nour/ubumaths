@@ -3,7 +3,6 @@ import type { PageServerLoad, Actions } from './$types';
 import type { Profile, Class } from '$lib/types/database';
 import type { StudentVipCards } from '$lib/types/vip-card';
 import { getTeacherClassesWithStudents } from '$lib/server/students';
-import { invalidateGidouillesCache } from '$lib/server/cache/gidouilles';
 
 // Type pour les élèves avec leurs gidouilles
 export interface StudentWithGidouilles extends Profile {
@@ -91,18 +90,6 @@ export const actions: Actions = {
 				});
 			}
 
-			// Invalidate gidouilles cache for all classes this student belongs to
-			const { data: memberships } = await supabase
-				.from('class_members')
-				.select('class_id')
-				.eq('student_id', studentId);
-
-			if (memberships) {
-				for (const membership of memberships) {
-					await invalidateGidouillesCache(membership.class_id);
-				}
-			}
-
 			return {
 				success: true,
 				message: 'Carte VIP attribuée avec succès !',
@@ -152,18 +139,6 @@ export const actions: Actions = {
 				});
 			}
 
-			// Invalidate gidouilles cache for all classes this student belongs to
-			const { data: memberships } = await supabase
-				.from('class_members')
-				.select('class_id')
-				.eq('student_id', studentId);
-
-			if (memberships) {
-				for (const membership of memberships) {
-					await invalidateGidouillesCache(membership.class_id);
-				}
-			}
-
 			return {
 				success: true,
 				message: 'Carte VIP utilisée avec succès'
@@ -204,18 +179,6 @@ export const actions: Actions = {
 				return fail(500, {
 					message: rpcError.message || 'Failed to update gidouilles'
 				});
-			}
-
-			// Invalidate gidouilles cache for all classes this student belongs to
-			const { data: memberships } = await supabase
-				.from('class_members')
-				.select('class_id')
-				.eq('student_id', studentId);
-
-			if (memberships) {
-				for (const membership of memberships) {
-					await invalidateGidouillesCache(membership.class_id);
-				}
 			}
 
 			return {
@@ -260,9 +223,6 @@ export const actions: Actions = {
 					message: rpcError.message || 'Failed to update class gidouilles'
 				});
 			}
-
-			// Invalidate gidouilles cache for this class
-			await invalidateGidouillesCache(classId);
 
 			return {
 				success: true,
@@ -311,18 +271,6 @@ export const actions: Actions = {
 				return fail(404, {
 					message: 'No card found to remove'
 				});
-			}
-
-			// Invalidate gidouilles cache for all classes this student belongs to
-			const { data: memberships } = await supabase
-				.from('class_members')
-				.select('class_id')
-				.eq('student_id', studentId);
-
-			if (memberships) {
-				for (const membership of memberships) {
-					await invalidateGidouillesCache(membership.class_id);
-				}
 			}
 
 			return {

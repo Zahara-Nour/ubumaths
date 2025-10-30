@@ -18,7 +18,6 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { removeWarningSchema } from '$lib/server/validation/warnings';
 import { removeWarning } from '$lib/server/warnings';
-import { invalidateWarningsCache } from '$lib/server/cache/warnings';
 
 export const DELETE: RequestHandler = async ({ params, locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -43,9 +42,6 @@ export const DELETE: RequestHandler = async ({ params, locals: { safeGetSession,
 			teacherId: user.id,
 			supabase
 		});
-
-		// Invalidate warnings cache for this class and period
-		await invalidateWarningsCache(result.classId, result.periodId);
 
 		return json({
 			success: true,
