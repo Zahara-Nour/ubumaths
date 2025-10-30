@@ -14,6 +14,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { classStudentsQuerySchema } from '$lib/server/validation/admin';
 
 export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -22,7 +23,18 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
 		throw error(401, 'Unauthorized');
 	}
 
-	const classId = url.searchParams.get('class_id');
+	// ====================================================================
+	// SECURITY: Validate input with Zod
+	// ====================================================================
+	const validation = classStudentsQuerySchema.safeParse({
+		class_id: url.searchParams.get('class_id')
+	});
+
+	if (!validation.success) {
+		throw error(400, validation.error.issues[0].message);
+	}
+
+	const { class_id: classId } = validation.data;
 
 	if (!classId) {
 		return json({ users: [] });

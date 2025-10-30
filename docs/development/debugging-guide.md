@@ -181,17 +181,17 @@ console.log($warningsCache.cache.get('class:period:key'));
 
 ```svelte
 <script>
-  // Is there a loading state?
-  let _hasLoadedOnce = $state(false);
+	// Is there a loading state?
+	let _hasLoadedOnce = $state(false);
 
-  $effect(() => {
-    // Is this setting _hasLoadedOnce after first load?
-    if (selectedClassId && selectedPeriodId) {
-      cache.get(...).then(() => {
-        _hasLoadedOnce = true;
-      });
-    }
-  });
+	$effect(() => {
+		// Is this setting _hasLoadedOnce after first load?
+		if (selectedClassId && selectedPeriodId) {
+			cache.get(selectedClassId, selectedPeriodId).then(() => {
+				_hasLoadedOnce = true;
+			});
+		}
+	});
 </script>
 ```
 

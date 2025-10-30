@@ -14,7 +14,10 @@ import {
 	messageResponseSchema,
 	sendMessageResponseSchema,
 	searchMessagesQuerySchema,
-	updateMessageSchema
+	updateMessageSchema,
+	inboxMessagesQuerySchema,
+	sentMessagesQuerySchema,
+	threadMessagesQuerySchema
 } from './messages';
 
 // Notifications
@@ -685,6 +688,381 @@ describe('rewards, messages, notifications validation schemas', () => {
 				const data = { action, ...rest };
 				const result = updateMessageSchema.safeParse(data);
 				expect(result.success).toBe(shouldPass);
+			});
+		});
+	});
+
+	describe('inboxMessagesQuerySchema', () => {
+		it('should accept valid query with all parameters', () => {
+			const data = {
+				status: 'inbox',
+				folderId: '550e8400-e29b-41d4-a716-446655440000',
+				limit: 25,
+				offset: 10
+			};
+
+			const result = inboxMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.status).toBe('inbox');
+				expect(result.data.limit).toBe(25);
+				expect(result.data.offset).toBe(10);
+			}
+		});
+
+		it('should use default values', () => {
+			const data = {};
+
+			const result = inboxMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.status).toBe('inbox');
+				expect(result.data.limit).toBe(50);
+				expect(result.data.offset).toBe(0);
+			}
+		});
+
+		it('should accept all valid status values', () => {
+			const statuses = ['inbox', 'archived', 'trash'];
+			statuses.forEach((status) => {
+				const data = { status };
+				const result = inboxMessagesQuerySchema.safeParse(data);
+				expect(result.success).toBe(true);
+			});
+		});
+
+		it('should reject invalid status values', () => {
+			const invalidStatuses = ['sent', 'draft', 'invalid', ''];
+			invalidStatuses.forEach((status) => {
+				const data = { status };
+				const result = inboxMessagesQuerySchema.safeParse(data);
+				expect(result.success).toBe(false);
+			});
+		});
+
+		it('should accept optional folderId UUID', () => {
+			const data = {
+				folderId: '6ba7b810-9dad-11d1-80b4-00c04fd430c8'
+			};
+
+			const result = inboxMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.folderId).toBe('6ba7b810-9dad-11d1-80b4-00c04fd430c8');
+			}
+		});
+
+		it('should reject invalid folderId UUID', () => {
+			const data = {
+				folderId: 'not-a-uuid'
+			};
+
+			const result = inboxMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should coerce limit to number', () => {
+			const data = {
+				limit: '30'
+			};
+
+			const result = inboxMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.limit).toBe(30);
+				expect(typeof result.data.limit).toBe('number');
+			}
+		});
+
+		it('should coerce offset to number', () => {
+			const data = {
+				offset: '20'
+			};
+
+			const result = inboxMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.offset).toBe(20);
+				expect(typeof result.data.offset).toBe('number');
+			}
+		});
+
+		it('should reject limit exceeding max (100)', () => {
+			const data = {
+				limit: 101
+			};
+
+			const result = inboxMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('Maximum 100 messages');
+			}
+		});
+
+		it('should reject negative limit', () => {
+			const data = {
+				limit: -5
+			};
+
+			const result = inboxMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject negative offset', () => {
+			const data = {
+				offset: -10
+			};
+
+			const result = inboxMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject decimal limit', () => {
+			const data = {
+				limit: 25.5
+			};
+
+			const result = inboxMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject decimal offset', () => {
+			const data = {
+				offset: 10.5
+			};
+
+			const result = inboxMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+	});
+
+	describe('sentMessagesQuerySchema', () => {
+		it('should accept valid pagination parameters', () => {
+			const data = {
+				limit: 30,
+				offset: 15
+			};
+
+			const result = sentMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.limit).toBe(30);
+				expect(result.data.offset).toBe(15);
+			}
+		});
+
+		it('should use default values when not provided', () => {
+			const data = {};
+
+			const result = sentMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.limit).toBe(50);
+				expect(result.data.offset).toBe(0);
+			}
+		});
+
+		it('should coerce string limit to number', () => {
+			const data = {
+				limit: '20'
+			};
+
+			const result = sentMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.limit).toBe(20);
+				expect(typeof result.data.limit).toBe('number');
+			}
+		});
+
+		it('should coerce string offset to number', () => {
+			const data = {
+				offset: '10'
+			};
+
+			const result = sentMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.offset).toBe(10);
+				expect(typeof result.data.offset).toBe('number');
+			}
+		});
+
+		it('should reject limit exceeding max (100)', () => {
+			const data = {
+				limit: 101
+			};
+
+			const result = sentMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('Maximum 100 messages');
+			}
+		});
+
+		it('should reject negative limit', () => {
+			const data = {
+				limit: -1
+			};
+
+			const result = sentMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject zero limit', () => {
+			const data = {
+				limit: 0
+			};
+
+			const result = sentMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject negative offset', () => {
+			const data = {
+				offset: -5
+			};
+
+			const result = sentMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject decimal limit', () => {
+			const data = {
+				limit: 50.7
+			};
+
+			const result = sentMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject decimal offset', () => {
+			const data = {
+				offset: 10.3
+			};
+
+			const result = sentMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should accept boundary value limit=1', () => {
+			const data = {
+				limit: 1
+			};
+
+			const result = sentMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should accept boundary value limit=100', () => {
+			const data = {
+				limit: 100
+			};
+
+			const result = sentMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject very large offset', () => {
+			const data = {
+				offset: Number.MAX_SAFE_INTEGER
+			};
+
+			const result = sentMessagesQuerySchema.safeParse(data);
+			// Should still parse successfully (no max constraint on offset)
+			expect(result.success).toBe(true);
+		});
+	});
+
+	describe('threadMessagesQuerySchema', () => {
+		it('should accept valid root message UUID', () => {
+			const data = {
+				rootId: '550e8400-e29b-41d4-a716-446655440000'
+			};
+
+			const result = threadMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.rootId).toBe('550e8400-e29b-41d4-a716-446655440000');
+			}
+		});
+
+		it('should reject invalid UUID format', () => {
+			const data = {
+				rootId: 'not-a-uuid'
+			};
+
+			const result = threadMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('ID du message racine invalide');
+			}
+		});
+
+		it('should reject empty string', () => {
+			const data = {
+				rootId: ''
+			};
+
+			const result = threadMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject missing rootId field', () => {
+			const data = {};
+
+			const result = threadMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject UUID with invalid characters', () => {
+			const data = {
+				rootId: '550e8400-e29b-41d4-a716-44665544000g'
+			};
+
+			const result = threadMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject UUID too short', () => {
+			const data = {
+				rootId: '550e8400-e29b-41d4-a716'
+			};
+
+			const result = threadMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject null rootId', () => {
+			const data = {
+				rootId: null
+			};
+
+			const result = threadMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject undefined rootId', () => {
+			const data = {
+				rootId: undefined
+			};
+
+			const result = threadMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should accept different valid UUID formats', () => {
+			const validUuids = [
+				'550e8400-e29b-41d4-a716-446655440000',
+				'6ba7b810-9dad-11d1-80b4-00c04fd430c8',
+				'00000000-0000-0000-0000-000000000000',
+				'ffffffff-ffff-ffff-ffff-ffffffffffff'
+			];
+
+			validUuids.forEach((rootId) => {
+				const data = { rootId };
+				const result = threadMessagesQuerySchema.safeParse(data);
+				expect(result.success).toBe(true);
 			});
 		});
 	});

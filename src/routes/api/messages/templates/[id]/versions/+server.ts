@@ -9,6 +9,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { templateVersionSchema } from '$lib/server/validation/message-templates';
 
 // GET - List versions
 export const GET: RequestHandler = async ({ locals, params }) => {
@@ -85,17 +86,13 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		return error(401, 'Non authentifié');
 	}
 
-	// Parse body
-	let body: { version_number: number };
-	try {
-		body = await request.json();
-	} catch {
-		return error(400, 'Données invalides');
+	// ✅ SECURITY: Validate request body with Zod
+	const validation = templateVersionSchema.safeParse(await request.json());
+	if (!validation.success) {
+		throw error(400, validation.error.issues[0].message);
 	}
 
-	if (!body.version_number || body.version_number < 1) {
-		return error(400, 'version_number requis et doit être >= 1');
-	}
+	const body = validation.data;
 
 	// Check template ownership
 	const { data: template } = await supabase

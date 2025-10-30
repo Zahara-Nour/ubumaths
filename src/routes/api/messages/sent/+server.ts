@@ -1,5 +1,10 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import {
+	sentMessagesResponseSchema,
+	sentMessagesQuerySchema
+} from '$lib/server/validation/messages';
+import { validateJsonResponse } from '$lib/server/validation/response-utils';
 
 /**
  * GET /api/messages/sent
@@ -14,9 +19,17 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	try {
-		// Get query parameters
-		const limit = parseInt(url.searchParams.get('limit') || '50', 10);
-		const offset = parseInt(url.searchParams.get('offset') || '0', 10);
+		// ✅ SECURITY: Validate query parameters with Zod
+		const validation = sentMessagesQuerySchema.safeParse({
+			limit: url.searchParams.get('limit'),
+			offset: url.searchParams.get('offset')
+		});
+
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
+		}
+
+		const { limit, offset } = validation.data;
 
 		// Call database function
 		const { data: messages, error: fetchError } = await supabase.rpc('get_user_sent_messages', {
@@ -30,7 +43,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			throw error(500, 'Erreur lors de la récupération des messages envoyés');
 		}
 
-		return json({ messages: messages || [] });
+		// Validate response
+		const validated = validateJsonResponse(
+			sentMessagesResponseSchema,
+			{ messages: messages || [] },
+			'GET /api/messages/sent'
+		);
+
+		return json(validated);
 	} catch (err) {
 		console.error('Error in sent messages API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {

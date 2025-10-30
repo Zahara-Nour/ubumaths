@@ -125,3 +125,14 @@ export const templateStatsQuerySchema = z.object({
 	template_id: uuidSchema.optional(),
 	period: z.enum(['week', 'month', 'year', 'all']).default('month')
 });
+
+/**
+ * Schema for restoring a template version
+ * POST /api/messages/templates/[id]/versions
+ */
+export const templateVersionSchema = z.object({
+	version_number: z
+		.number()
+		.int('Le numéro de version doit être un entier')
+		.positive('Le numéro de version doit être >= 1')
+});

@@ -179,6 +179,35 @@ export const searchMessagesResponseSchema = z.object({
 });
 
 // ============================================================================
+// QUERY PARAMETER SCHEMAS
+// ============================================================================
+
+/**
+ * Schema for inbox query parameters (GET /api/messages/inbox)
+ */
+export const inboxMessagesQuerySchema = z.object({
+	status: z.enum(['inbox', 'archived', 'trash']).default('inbox'),
+	folderId: z.string().uuid().optional(),
+	limit: z.coerce.number().int().positive().max(100, 'Maximum 100 messages').default(50),
+	offset: z.coerce.number().int().nonnegative().default(0)
+});
+
+/**
+ * Schema for sent messages query parameters (GET /api/messages/sent)
+ */
+export const sentMessagesQuerySchema = z.object({
+	limit: z.coerce.number().int().positive().max(100, 'Maximum 100 messages').default(50),
+	offset: z.coerce.number().int().nonnegative().default(0)
+});
+
+/**
+ * Schema for thread messages query parameters (GET /api/messages/thread)
+ */
+export const threadMessagesQuerySchema = z.object({
+	rootId: z.string().uuid('ID du message racine invalide')
+});
+
+// ============================================================================
 // UPDATE MESSAGE SCHEMAS
 // ============================================================================
 

@@ -172,3 +172,15 @@ export const formDataTransforms = {
 		.transform((val) => (val.trim() === '' ? null : val.trim()))
 		.pipe(z.string().uuid('UUID invalide').nullable())
 };
+
+// ============================================================================
+// MISCELLANEOUS SCHEMAS
+// ============================================================================
+
+/**
+ * Schema for test mode toggle
+ * POST /api/test-mode
+ */
+export const testModeSchema = z.object({
+	enabled: z.boolean()
+});

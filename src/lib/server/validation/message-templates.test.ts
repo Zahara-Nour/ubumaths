@@ -14,7 +14,8 @@ import {
 	previewTemplateSchema,
 	duplicateTemplateSchema,
 	approveTemplateSchema,
-	templateStatsQuerySchema
+	templateStatsQuerySchema,
+	templateVersionSchema
 } from './message-templates';
 
 describe('message templates validation schemas', () => {
@@ -775,6 +776,147 @@ describe('message templates validation schemas', () => {
 
 			const result = templateStatsQuerySchema.safeParse(data);
 			expect(result.success).toBe(true);
+		});
+	});
+
+	describe('templateVersionSchema', () => {
+		it('should accept valid version number', () => {
+			const data = {
+				version_number: 5
+			};
+
+			const result = templateVersionSchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.version_number).toBe(5);
+			}
+		});
+
+		it('should accept version_number = 1 (boundary)', () => {
+			const data = {
+				version_number: 1
+			};
+
+			const result = templateVersionSchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.version_number).toBe(1);
+			}
+		});
+
+		it('should accept version_number = 1000 (high value)', () => {
+			const data = {
+				version_number: 1000
+			};
+
+			const result = templateVersionSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject version_number = 0', () => {
+			const data = {
+				version_number: 0
+			};
+
+			const result = templateVersionSchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('doit être >= 1');
+			}
+		});
+
+		it('should reject negative version_number', () => {
+			const data = {
+				version_number: -5
+			};
+
+			const result = templateVersionSchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('doit être >= 1');
+			}
+		});
+
+		it('should reject decimal version_number', () => {
+			const data = {
+				version_number: 2.5
+			};
+
+			const result = templateVersionSchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('doit être un entier');
+			}
+		});
+
+		it('should reject NaN version_number', () => {
+			const data = {
+				version_number: NaN
+			};
+
+			const result = templateVersionSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject Infinity version_number', () => {
+			const data = {
+				version_number: Infinity
+			};
+
+			const result = templateVersionSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject negative Infinity version_number', () => {
+			const data = {
+				version_number: -Infinity
+			};
+
+			const result = templateVersionSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject missing version_number', () => {
+			const data = {};
+
+			const result = templateVersionSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject string version_number', () => {
+			const data = {
+				version_number: '5'
+			};
+
+			const result = templateVersionSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject null version_number', () => {
+			const data = {
+				version_number: null
+			};
+
+			const result = templateVersionSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject undefined version_number', () => {
+			const data = {
+				version_number: undefined
+			};
+
+			const result = templateVersionSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should accept large valid version numbers', () => {
+			const largeVersions = [100, 500, 999, 5000];
+			largeVersions.forEach((version_number) => {
+				const data = { version_number };
+				const result = templateVersionSchema.safeParse(data);
+				expect(result.success).toBe(true);
+			});
 		});
 	});
 });

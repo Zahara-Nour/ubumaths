@@ -1,5 +1,10 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import {
+	messageThreadResponseSchema,
+	threadMessagesQuerySchema
+} from '$lib/server/validation/messages';
+import { validateJsonResponse } from '$lib/server/validation/response-utils';
 
 /**
  * GET /api/messages/thread?rootId=xxx
@@ -14,11 +19,16 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	try {
-		const rootId = url.searchParams.get('rootId');
+		// ✅ SECURITY: Validate query parameters with Zod
+		const validation = threadMessagesQuerySchema.safeParse({
+			rootId: url.searchParams.get('rootId')
+		});
 
-		if (!rootId) {
-			throw error(400, 'ID du message racine requis');
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
 		}
+
+		const { rootId } = validation.data;
 
 		// Get thread messages
 		const { data: messages, error: fetchError } = await supabase.rpc('get_message_thread', {
@@ -36,7 +46,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			throw error(500, 'Erreur lors de la récupération du fil de discussion');
 		}
 
-		return json({ messages: messages || [] });
+		// Validate response
+		const validated = validateJsonResponse(
+			messageThreadResponseSchema,
+			{ messages: messages || [] },
+			'GET /api/messages/thread'
+		);
+
+		return json(validated);
 	} catch (err) {
 		console.error('Error in thread API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {

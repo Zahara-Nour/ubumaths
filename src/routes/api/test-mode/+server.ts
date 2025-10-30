@@ -9,6 +9,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { setTeacherTestMode } from '$lib/server/test-mode';
+import { testModeSchema } from '$lib/server/validation/common';
 
 export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -18,11 +19,13 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 	}
 
 	try {
-		const { enabled } = await request.json();
-
-		if (typeof enabled !== 'boolean') {
-			throw error(400, 'Invalid request body');
+		// ✅ SECURITY: Validate request body with Zod
+		const validation = testModeSchema.safeParse(await request.json());
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
 		}
+
+		const { enabled } = validation.data;
 
 		// Update test mode preference in database
 		const success = await setTeacherTestMode(user.id, enabled, supabase);

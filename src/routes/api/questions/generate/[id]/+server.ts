@@ -8,6 +8,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { generateInstance } from '$lib/questions';
+import { generateQuestionSchema } from '$lib/server/validation/questions';
 
 /**
  * POST /api/questions/generate/[id]
@@ -53,13 +54,23 @@ export const POST: RequestHandler = async ({
 			throw error(404, 'Template not found');
 		}
 
-		// Parse request body for seed (optional)
+		// ====================================================================
+		// SECURITY: Validate input with Zod
+		// ====================================================================
 		let seed: number | undefined;
 		try {
 			const body = await request.json();
-			seed = body.seed;
-		} catch {
+			const validation = generateQuestionSchema.safeParse(body);
+			if (!validation.success) {
+				throw error(400, validation.error.issues[0].message);
+			}
+			seed = validation.data.seed;
+			// Note: variationIndex is validated but not currently used in generateInstance
+		} catch (err) {
 			// No body or invalid JSON - use random seed
+			if (err && typeof err === 'object' && 'status' in err) {
+				throw err; // Re-throw validation errors
+			}
 		}
 
 		// Convert database format (snake_case) to QuestionTemplate type (camelCase)

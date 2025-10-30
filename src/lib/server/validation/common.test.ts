@@ -15,7 +15,8 @@ import {
 	formatGradeForDisplay,
 	validateRequest,
 	validateFormData,
-	formDataTransforms
+	formDataTransforms,
+	testModeSchema
 } from './common';
 
 describe('common validation schemas', () => {
@@ -564,6 +565,124 @@ describe('common validation schemas', () => {
 				const result = formDataTransforms.optionalUuid.safeParse('not-a-uuid');
 				expect(result.success).toBe(false);
 			});
+		});
+	});
+
+	// ============================================================================
+	// TEST MODE SCHEMA
+	// ============================================================================
+
+	describe('testModeSchema', () => {
+		it('should accept enabled: true', () => {
+			const data = {
+				enabled: true
+			};
+
+			const result = testModeSchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.enabled).toBe(true);
+			}
+		});
+
+		it('should accept enabled: false', () => {
+			const data = {
+				enabled: false
+			};
+
+			const result = testModeSchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.enabled).toBe(false);
+			}
+		});
+
+		it('should reject string "true"', () => {
+			const data = {
+				enabled: 'true'
+			};
+
+			const result = testModeSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject string "false"', () => {
+			const data = {
+				enabled: 'false'
+			};
+
+			const result = testModeSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject number 1', () => {
+			const data = {
+				enabled: 1
+			};
+
+			const result = testModeSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject number 0', () => {
+			const data = {
+				enabled: 0
+			};
+
+			const result = testModeSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject null', () => {
+			const data = {
+				enabled: null
+			};
+
+			const result = testModeSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject undefined', () => {
+			const data = {
+				enabled: undefined
+			};
+
+			const result = testModeSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject missing enabled field', () => {
+			const data = {};
+
+			const result = testModeSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject object value', () => {
+			const data = {
+				enabled: { value: true }
+			};
+
+			const result = testModeSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject array value', () => {
+			const data = {
+				enabled: [true]
+			};
+
+			const result = testModeSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject empty string', () => {
+			const data = {
+				enabled: ''
+			};
+
+			const result = testModeSchema.safeParse(data);
+			expect(result.success).toBe(false);
 		});
 	});
 });

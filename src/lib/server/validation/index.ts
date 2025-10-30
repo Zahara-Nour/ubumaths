@@ -10,6 +10,7 @@ export * from './common';
 export * from './admin';
 export * from './assessments';
 export * from './auth';
+export * from './chat';
 export * from './classes';
 export * from './errors';
 export * from './exercises';

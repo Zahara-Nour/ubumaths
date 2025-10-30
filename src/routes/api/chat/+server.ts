@@ -2,29 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { checkChatbotRateLimit } from '$lib/server/rateLimiter';
 import { getEnv } from '$lib/server/env';
-
-interface TextContent {
-	type: 'text';
-	text: string;
-}
-
-interface ImageUrlContent {
-	type: 'image_url';
-	image_url: {
-		url: string;
-	};
-}
-
-type MessageContent = string | Array<TextContent | ImageUrlContent>;
-
-interface ChatMessage {
-	role: 'system' | 'user' | 'assistant';
-	content: MessageContent;
-}
-
-interface ChatRequest {
-	messages: ChatMessage[];
-}
+import { chatRequestSchema } from '$lib/server/validation/chat';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
@@ -51,40 +29,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// ====================================================================
-		// SECURITY: Input Validation
+		// SECURITY: Input Validation with Zod
 		// ====================================================================
-		const { messages } = (await request.json()) as ChatRequest;
+		const validation = chatRequestSchema.safeParse(await request.json());
 
-		if (!messages || !Array.isArray(messages)) {
-			throw error(400, { message: 'Format de messages invalide' });
+		if (!validation.success) {
+			throw error(400, { message: validation.error.issues[0].message });
 		}
 
-		// Validate message count (prevent abuse)
-		if (messages.length === 0) {
-			throw error(400, { message: 'Au moins un message requis' });
-		}
-
-		if (messages.length > 50) {
-			throw error(400, { message: 'Trop de messages dans la conversation' });
-		}
-
-		// Validate each message structure
-		for (const msg of messages) {
-			if (!msg.role || !['system', 'user', 'assistant'].includes(msg.role)) {
-				throw error(400, { message: 'Invalid message role' });
-			}
-
-			if (!msg.content) {
-				throw error(400, { message: 'Message content required' });
-			}
-
-			// Validate content length
-			const contentStr =
-				typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content);
-			if (contentStr.length > 10000) {
-				throw error(400, { message: 'Message trop long (max 10000 caractères)' });
-			}
-		}
+		const { messages } = validation.data;
 
 		// Check if API key is configured (type-safe optional check)
 		if (!env.GROQ_API_KEY) {

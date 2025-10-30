@@ -93,3 +93,28 @@ export const createNotificationFormSchema = z.object({
 	target_class_id: formDataTransforms.optionalUuid.nullable(),
 	expires_at: formDataTransforms.optionalString.nullable()
 });
+
+// ============================================================================
+// TEST MODE SCHEMA
+// ============================================================================
+
+/**
+ * Schema for toggling test mode (POST /api/test-mode)
+ * Teacher-only: Enable/disable test mode for question generation
+ */
+export const testModeSchema = z.object({
+	enabled: z.boolean()
+});
+
+// ============================================================================
+// CLASS STUDENTS QUERY SCHEMA
+// ============================================================================
+
+/**
+ * Schema for querying students in a class (GET /api/admin/class-students)
+ * Query Parameters:
+ * - class_id: Optional UUID of the class to filter students
+ */
+export const classStudentsQuerySchema = z.object({
+	class_id: z.string().uuid('ID de classe invalide').optional()
+});

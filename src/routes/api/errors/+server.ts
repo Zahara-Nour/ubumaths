@@ -6,6 +6,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getErrorLogs, type ErrorFilters } from '$lib/server/errorMonitoring';
+import { listErrorsQuerySchema } from '$lib/server/validation/errors';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	// Check authentication
@@ -26,53 +27,35 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	try {
-		// Parse query parameters
-		const filters: ErrorFilters = {};
+		// ✅ SECURITY: Validate query parameters with Zod
+		const validation = listErrorsQuerySchema.safeParse({
+			error_type: url.searchParams.get('error_type'),
+			severity: url.searchParams.get('severity'),
+			resolved: url.searchParams.get('resolved'),
+			user_id: url.searchParams.get('user_id'),
+			date_from: url.searchParams.get('date_from'),
+			date_to: url.searchParams.get('date_to'),
+			search: url.searchParams.get('search'),
+			limit: url.searchParams.get('limit'),
+			offset: url.searchParams.get('offset')
+		});
 
-		const error_type = url.searchParams.get('error_type');
-		if (error_type) {
-			filters.error_type = error_type as ErrorFilters['error_type'];
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
 		}
 
-		const severity = url.searchParams.get('severity');
-		if (severity) {
-			filters.severity = severity as ErrorFilters['severity'];
-		}
-
-		const resolved = url.searchParams.get('resolved');
-		if (resolved !== null) {
-			filters.resolved = resolved === 'true';
-		}
-
-		const user_id = url.searchParams.get('user_id');
-		if (user_id) {
-			filters.user_id = user_id;
-		}
-
-		const date_from = url.searchParams.get('date_from');
-		if (date_from) {
-			filters.date_from = date_from;
-		}
-
-		const date_to = url.searchParams.get('date_to');
-		if (date_to) {
-			filters.date_to = date_to;
-		}
-
-		const search = url.searchParams.get('search');
-		if (search) {
-			filters.search = search;
-		}
-
-		const limit = url.searchParams.get('limit');
-		if (limit) {
-			filters.limit = parseInt(limit, 10);
-		}
-
-		const offset = url.searchParams.get('offset');
-		if (offset) {
-			filters.offset = parseInt(offset, 10);
-		}
+		// Build filters from validated data
+		const filters: ErrorFilters = {
+			...(validation.data.error_type && { error_type: validation.data.error_type }),
+			...(validation.data.severity && { severity: validation.data.severity }),
+			...(validation.data.resolved !== undefined && { resolved: validation.data.resolved }),
+			...(validation.data.user_id && { user_id: validation.data.user_id }),
+			...(validation.data.date_from && { date_from: validation.data.date_from }),
+			...(validation.data.date_to && { date_to: validation.data.date_to }),
+			...(validation.data.search && { search: validation.data.search }),
+			limit: validation.data.limit,
+			offset: validation.data.offset
+		};
 
 		// Get error logs
 		const result = await getErrorLogs(locals.supabase, filters);

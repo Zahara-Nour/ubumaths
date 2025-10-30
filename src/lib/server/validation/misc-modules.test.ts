@@ -9,7 +9,12 @@ import { describe, it, expect } from 'vitest';
 import { riddleAnswerSchema, riddleFormSchema, riddleOfTheDaySchema } from './riddles';
 
 // Errors
-import { logErrorSchema, resolveErrorSchema, cleanupErrorsSchema } from './errors';
+import {
+	logErrorSchema,
+	resolveErrorSchema,
+	cleanupErrorsSchema,
+	listErrorsQuerySchema
+} from './errors';
 
 // LaTeX
 import { compileLatexSchema } from './latex';
@@ -413,6 +418,337 @@ describe('miscellaneous validation modules', () => {
 
 			const result = cleanupErrorsSchema.safeParse(data);
 			expect(result.success).toBe(false);
+		});
+	});
+
+	describe('listErrorsQuerySchema', () => {
+		it('should accept valid query with all parameters', () => {
+			const data = {
+				error_type: 'frontend',
+				severity: 'high',
+				resolved: 'true',
+				user_id: '550e8400-e29b-41d4-a716-446655440000',
+				date_from: '2025-01-01T00:00:00Z',
+				date_to: '2025-12-31T23:59:59Z',
+				search: 'TypeError',
+				limit: 30,
+				offset: 10
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.error_type).toBe('frontend');
+				expect(result.data.severity).toBe('high');
+				expect(result.data.resolved).toBe(true);
+				expect(result.data.limit).toBe(30);
+				expect(result.data.offset).toBe(10);
+			}
+		});
+
+		it('should use default values for limit and offset', () => {
+			const data = {};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.limit).toBe(50);
+				expect(result.data.offset).toBe(0);
+			}
+		});
+
+		it('should accept all error_type values', () => {
+			const errorTypes = ['frontend', 'backend', 'api', 'database', 'unknown'] as const;
+			errorTypes.forEach((error_type) => {
+				const data = { error_type };
+				const result = listErrorsQuerySchema.safeParse(data);
+				expect(result.success).toBe(true);
+			});
+		});
+
+		it('should reject invalid error_type', () => {
+			const data = {
+				error_type: 'invalid_type'
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should accept all severity values', () => {
+			const severities = ['low', 'medium', 'high', 'critical'] as const;
+			severities.forEach((severity) => {
+				const data = { severity };
+				const result = listErrorsQuerySchema.safeParse(data);
+				expect(result.success).toBe(true);
+			});
+		});
+
+		it('should reject invalid severity', () => {
+			const data = {
+				severity: 'urgent'
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should transform resolved string "true" to boolean true', () => {
+			const data = {
+				resolved: 'true'
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.resolved).toBe(true);
+				expect(typeof result.data.resolved).toBe('boolean');
+			}
+		});
+
+		it('should transform resolved string "false" to boolean false', () => {
+			const data = {
+				resolved: 'false'
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.resolved).toBe(false);
+				expect(typeof result.data.resolved).toBe('boolean');
+			}
+		});
+
+		it('should transform invalid resolved string to undefined', () => {
+			const data = {
+				resolved: 'maybe'
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.resolved).toBe(undefined);
+			}
+		});
+
+		it('should accept valid user_id UUID', () => {
+			const data = {
+				user_id: '6ba7b810-9dad-11d1-80b4-00c04fd430c8'
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject invalid user_id UUID', () => {
+			const data = {
+				user_id: 'not-a-uuid'
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should accept valid datetime for date_from', () => {
+			const data = {
+				date_from: '2025-06-15T10:30:00Z'
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject invalid datetime for date_from', () => {
+			const data = {
+				date_from: '2025-06-15' // Missing time component
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('Date de début invalide');
+			}
+		});
+
+		it('should accept valid datetime for date_to', () => {
+			const data = {
+				date_to: '2025-12-31T23:59:59Z'
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject invalid datetime for date_to', () => {
+			const data = {
+				date_to: 'invalid-date'
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('Date de fin invalide');
+			}
+		});
+
+		it('should accept search string within max length', () => {
+			const data = {
+				search: 'Error in component'
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject search string exceeding max length (200 chars)', () => {
+			const data = {
+				search: 'a'.repeat(201)
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should accept search string at exactly max length', () => {
+			const data = {
+				search: 'a'.repeat(200)
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should trim search string', () => {
+			const data = {
+				search: '  TypeError  '
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.search).toBe('TypeError');
+			}
+		});
+
+		it('should coerce limit to number', () => {
+			const data = {
+				limit: '25'
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.limit).toBe(25);
+				expect(typeof result.data.limit).toBe('number');
+			}
+		});
+
+		it('should coerce offset to number', () => {
+			const data = {
+				offset: '15'
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.offset).toBe(15);
+				expect(typeof result.data.offset).toBe('number');
+			}
+		});
+
+		it('should reject limit exceeding max (100)', () => {
+			const data = {
+				limit: 101
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('Maximum 100 erreurs');
+			}
+		});
+
+		it('should reject negative limit', () => {
+			const data = {
+				limit: -10
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject zero limit', () => {
+			const data = {
+				limit: 0
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject negative offset', () => {
+			const data = {
+				offset: -5
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject decimal limit', () => {
+			const data = {
+				limit: 50.5
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject decimal offset', () => {
+			const data = {
+				offset: 10.7
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should accept all optional fields as undefined', () => {
+			const data = {
+				error_type: undefined,
+				severity: undefined,
+				resolved: undefined,
+				user_id: undefined,
+				date_from: undefined,
+				date_to: undefined,
+				search: undefined
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should accept minimal query (only defaults)', () => {
+			const result = listErrorsQuerySchema.safeParse({});
+			expect(result.success).toBe(true);
+		});
+
+		it('should accept boundary value limit=1', () => {
+			const data = {
+				limit: 1
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should accept boundary value limit=100', () => {
+			const data = {
+				limit: 100
+			};
+
+			const result = listErrorsQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
 		});
 	});
 

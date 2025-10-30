@@ -1,6 +1,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { inboxMessagesResponseSchema } from '$lib/server/validation/messages';
+import {
+	inboxMessagesResponseSchema,
+	inboxMessagesQuerySchema
+} from '$lib/server/validation/messages';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 
 /**
@@ -16,16 +19,19 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	try {
-		// Get query parameters
-		const status = url.searchParams.get('status') || 'inbox';
-		const folderId = url.searchParams.get('folderId');
-		const limit = parseInt(url.searchParams.get('limit') || '50', 10);
-		const offset = parseInt(url.searchParams.get('offset') || '0', 10);
+		// ✅ SECURITY: Validate query parameters with Zod
+		const validation = inboxMessagesQuerySchema.safeParse({
+			status: url.searchParams.get('status'),
+			folderId: url.searchParams.get('folderId'),
+			limit: url.searchParams.get('limit'),
+			offset: url.searchParams.get('offset')
+		});
 
-		// Validate status
-		if (!['inbox', 'archived', 'trash'].includes(status)) {
-			throw error(400, 'Statut invalide');
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
 		}
+
+		const { status, folderId, limit, offset } = validation.data;
 
 		// Call database function
 		const { data: messages, error: fetchError } = await supabase.rpc('get_user_inbox', {
