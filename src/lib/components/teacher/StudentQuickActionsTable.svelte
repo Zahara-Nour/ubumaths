@@ -297,8 +297,9 @@
 					delete newUpdates[student.id]?.gidouilles;
 					optimisticUpdates = newUpdates;
 
-					// Invalidate cache
+					// Invalidate cache and reload data
 					gidouillesCache.invalidate(classId);
+					await loadData(); // Fetch fresh data immediately
 
 					toaster.success(`1 gidouille retirée (${student.firstname})`);
 				} else {
@@ -346,8 +347,9 @@
 					delete newUpdates[student.id]?.vipCards;
 					optimisticUpdates = newUpdates;
 
-					// Invalidate cache
+					// Invalidate cache and reload data
 					gidouillesCache.invalidate(classId);
+					await loadData(); // Fetch fresh data immediately
 
 					toaster.success(`Carte VIP retirée (${student.firstname})`);
 				} else {
@@ -400,8 +402,9 @@
 					delete newUpdates[student.id]?.warnings;
 					optimisticUpdates = newUpdates;
 
-					// Invalidate cache
+					// Invalidate cache and reload data
 					warningsCache.invalidate(classId, periodId);
+					await loadData(); // Fetch fresh data immediately
 
 					toaster.success(`Avertissement de conduite ajouté (${student.firstname})`);
 				} else {
@@ -450,8 +453,9 @@
 				delete newUpdates[student.id]?.gidouilles;
 				optimisticUpdates = newUpdates;
 
-				// Invalidate cache
+				// Invalidate cache and reload data
 				gidouillesCache.invalidate(classId);
+				await loadData(); // Fetch fresh data immediately
 
 				toaster.success(`+1 gidouille (${student.firstname})`);
 			} else {
