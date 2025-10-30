@@ -285,10 +285,10 @@
 			};
 
 			try {
-				const response = await fetch(`/api/classes/${classId}/gidouilles`, {
-					method: 'PATCH',
+				const response = await fetch('/api/rewards/gidouilles', {
+					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ studentId: student.id, delta: -1 })
+					body: JSON.stringify({ studentId: student.id, amount: -1 })
 				});
 
 				if (response.ok) {
@@ -447,10 +447,10 @@
 		};
 
 		try {
-			const response = await fetch(`/api/classes/${classId}/gidouilles`, {
-				method: 'PATCH',
+			const response = await fetch('/api/rewards/gidouilles', {
+				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ studentId: student.id, delta: 1 })
+				body: JSON.stringify({ studentId: student.id, amount: 1 })
 			});
 
 			if (response.ok) {
