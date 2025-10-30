@@ -129,10 +129,10 @@ export const PUT: RequestHandler = async ({
 			const allCircularErrors: string[] = [];
 			if (templateData.variations) {
 				templateData.variations.forEach((variation, index) => {
-					const circularErrors = detectCircularDependencies(variation.variables);
+					const circularErrors = detectCircularDependencies(variation.variables || []);
 					if (circularErrors.length > 0) {
 						allCircularErrors.push(
-							...circularErrors.map((err) => `Variation ${index + 1}: ${err}`)
+							...circularErrors.map((err: string) => `Variation ${index + 1}: ${err}`)
 						);
 					}
 				});

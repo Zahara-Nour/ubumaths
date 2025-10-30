@@ -3,6 +3,7 @@
 // Helper functions for managing VIP cards in the reward system
 
 import type { StudentVipCards } from '$lib/types/vip-card';
+import { getVipCardById } from '$lib/types/vip-card';
 
 /**
  * Cost in gidouilles to purchase one VIP card
@@ -97,9 +98,13 @@ export function sortCardsByPriority(
 	const rarityOrder = { legendary: 0, epic: 1, rare: 2, common: 3 };
 
 	return cards.sort((a, b) => {
+		// Look up card definitions to get rarity
+		const cardDefA = getVipCardById(a.cardId);
+		const cardDefB = getVipCardById(b.cardId);
+
 		// First sort by rarity (legendary first)
-		const rarityA = rarityOrder[a.card.rarity as keyof typeof rarityOrder] ?? 99;
-		const rarityB = rarityOrder[b.card.rarity as keyof typeof rarityOrder] ?? 99;
+		const rarityA = cardDefA?.rarity ? rarityOrder[cardDefA.rarity as keyof typeof rarityOrder] : 99;
+		const rarityB = cardDefB?.rarity ? rarityOrder[cardDefB.rarity as keyof typeof rarityOrder] : 99;
 
 		if (rarityA !== rarityB) {
 			return rarityA - rarityB;

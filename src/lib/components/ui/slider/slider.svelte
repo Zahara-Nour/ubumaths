@@ -15,6 +15,7 @@
 Discriminated Unions + Destructing (required for bindable) do not
 get along, so we shut typescript up by casting `value` to `never`.
 -->
+<!-- @ts-expect-error: Bits UI discriminated union type complexity -->
 <SliderPrimitive.Root
 	bind:ref
 	bind:value={value as never}

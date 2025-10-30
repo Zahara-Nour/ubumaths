@@ -113,7 +113,7 @@ export const actions: Actions = {
 		// Transform class_members array to class_ids array for easier use
 		const profileWithClasses = {
 			...updatedProfile,
-			class_ids: updatedProfile.class_members?.map((cm) => cm.class_id) || []
+			class_ids: updatedProfile.class_members?.map((cm: { class_id: string }) => cm.class_id) || []
 		};
 
 		return { success: true, profile: profileWithClasses };

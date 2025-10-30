@@ -52,7 +52,9 @@ export function evaluateExpression(latex: string): number | string {
 
 		// Convert to number or string
 		if (result.isNumber) {
-			return result.numericValue ?? NaN;
+			const numValue = result.numericValue;
+			// numericValue can be number or NumericValue object - convert to number
+			return typeof numValue === 'number' ? numValue : (numValue?.valueOf() ?? NaN);
 		}
 
 		// Return as LaTeX for symbolic results
@@ -113,8 +115,8 @@ export function areEquivalent(latex1: string, latex2: string): boolean {
 		const simplified1 = expr1.simplify();
 		const simplified2 = expr2.simplify();
 
-		// Check if they're equal
-		return simplified1.isEqual(simplified2);
+		// Check if they're equal (isEqual can return undefined)
+		return simplified1.isEqual(simplified2) ?? false;
 	} catch (_error) {
 		// If parsing fails, compare as strings
 		return latex1 === latex2;

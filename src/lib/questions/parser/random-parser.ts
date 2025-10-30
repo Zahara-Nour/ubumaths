@@ -92,7 +92,7 @@ function parseDecimalByDigits(spec: string): RandomSpec {
 	}
 
 	return {
-		type: 'decimal',
+		type: 'decimal-by-digits',
 		digitsBefore: parseNumberOrVariable(beforeStr),
 		digitsAfter: parseNumberOrVariable(afterStr),
 		exclusions: []
@@ -113,23 +113,32 @@ function parseRange(spec: string): RandomSpec {
 	const isDecimal =
 		stepStr !== undefined || isNumberOrVariableDecimal(min) || isNumberOrVariableDecimal(max);
 
-	// Add default step for decimal ranges without explicit step
-	const step = stepStr ? parseFloat(stepStr) : isDecimal ? 0.01 : undefined;
-
-	return {
-		type: isDecimal ? 'decimal' : 'integer',
-		min,
-		max,
-		step,
-		exclusions: []
-	};
+	if (isDecimal) {
+		// Decimal range with step
+		const step = stepStr ? parseFloat(stepStr) : 0.01;
+		return {
+			type: 'decimal-range',
+			min,
+			max,
+			step,
+			exclusions: []
+		};
+	} else {
+		// Integer range
+		return {
+			type: 'integer',
+			min,
+			max,
+			exclusions: []
+		};
+	}
 }
 
 /**
  * Check if NumberOrVariable represents a decimal
  */
 function isNumberOrVariableDecimal(val: NumberOrVariable): boolean {
-	return typeof val === 'number' && !Number.isInteger(val);
+	return val.type === 'number' && !Number.isInteger(val.value);
 }
 
 /**
@@ -192,7 +201,7 @@ function parseMinMax(rangeSpec: string): { min: NumberOrVariable; max: NumberOrV
  * Parse a string as number or variable reference
  *
  * @example Number
- * parseNumberOrVariable('42') → 42
+ * parseNumberOrVariable('42') → { type: 'number', value: 42 }
  *
  * @example Variable
  * parseNumberOrVariable('{@:varName}') → { type: 'variable', name: 'varName' }
@@ -212,7 +221,7 @@ export function parseNumberOrVariable(str: string): NumberOrVariable {
 		throw new Error(`Invalid number or variable reference: ${str}`);
 	}
 
-	return num;
+	return { type: 'number', value: num };
 }
 
 /**
@@ -225,14 +234,16 @@ function parseExclusions(spec: string): Exclusion[] {
 	for (const part of parts) {
 		const trimmed = part.trim();
 
-		// Variable reference: {@:name}
-		if (trimmed.startsWith('{@:') && trimmed.endsWith('}') && !trimmed.includes('-')) {
-			const varName = trimmed.slice(3, -1);
-			exclusions.push({ type: 'variable', name: varName });
-		}
 		// Range: detect by trying to parse as range
 		// This handles: 5-7, -10--5, {@:a}-{@:b}, -10-20
-		else if (trimmed.includes('-')) {
+		if (
+			trimmed.includes('-') &&
+			!(
+				trimmed.startsWith('{@:') &&
+				trimmed.endsWith('}') &&
+				trimmed.indexOf('-') === trimmed.lastIndexOf('-')
+			)
+		) {
 			try {
 				const { min, max } = parseMinMax(trimmed);
 				exclusions.push({ type: 'range', min, max });
@@ -242,7 +253,7 @@ function parseExclusions(spec: string): Exclusion[] {
 				exclusions.push({ type: 'value', value });
 			}
 		}
-		// Single value: 5 or -3
+		// Single value: 5, -3, or {@:name}
 		else {
 			const value = parseNumberOrVariable(trimmed);
 			exclusions.push({ type: 'value', value });

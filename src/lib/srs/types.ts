@@ -16,8 +16,7 @@
  * - Tracks Difficulty, Stability, Retrievability (DSR model)
  */
 
-import type { ContentField } from '$lib/types/question-display';
-import type { QuestionInstance } from '$lib/questions/types';
+import type { ContentField, QuestionInstance } from '$lib/questions/types';
 
 // ============================================================================
 // DECK TYPES

@@ -49,7 +49,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	const formattedFavorites = favorites?.map((f) => ({
 		...f.message_templates,
 		favorited_at: f.created_at,
-		class_name: f.message_templates?.classes?.name || null
+		class_name: (f.message_templates?.classes as { name?: string } | null)?.name || null
 	}));
 
 	return json({

@@ -19,7 +19,10 @@
  * @module api/assessments/api-routes.test
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { describe, it, expect } from 'vitest';
+import type { RequestEvent } from '@sveltejs/kit';
 import type { CreateAssessmentData, UpdateAssessmentData } from '$lib/types/assessment';
 import { DEFAULT_ASSESSMENT_SETTINGS } from '$lib/types/assessment';
 import {
@@ -28,9 +31,6 @@ import {
 	createMockRequest,
 	createMockURL
 } from '../../../../tests/helpers/supabase-helpers';
-
-// Type helper for RequestEvent-like objects used in tests
-type MockRequestEvent = Record<string, unknown>;
 
 // ============================================================================
 // MOCK SETUP
@@ -41,25 +41,47 @@ type MockRequestEvent = Record<string, unknown>;
 // TEST DATA
 // ============================================================================
 
+// Valid UUIDs for Zod validation
+const TEST_IDS = {
+	teacher: '550e8400-e29b-41d4-a716-446655440001',
+	student: '550e8400-e29b-41d4-a716-446655440002',
+	student2: '550e8400-e29b-41d4-a716-446655440003',
+	assessment: '550e8400-e29b-41d4-a716-446655440011',
+	assignment: '550e8400-e29b-41d4-a716-446655440012',
+	class: '550e8400-e29b-41d4-a716-446655440021'
+};
+
+// Mock CartItem for tests
+const mockCartItem = {
+	category: {
+		theme: 'Arithmétique',
+		domain: 'Addition',
+		subdomain: null,
+		level: 1
+	},
+	quantity: 5,
+	delay: 20
+};
+
 const mockTeacher = {
-	id: 'teacher-123',
+	id: TEST_IDS.teacher,
 	email: 'teacher@voltairedoha.com',
 	role: 'teacher'
 };
 
 const mockStudent = {
-	id: 'student-456',
+	id: TEST_IDS.student,
 	email: 'student@voltairedoha.com',
 	role: 'student'
 };
 
-const mockAssessmentId = 'assessment-789';
-const mockAssignmentId = 'assign-abc';
+const mockAssessmentId = TEST_IDS.assessment;
+const mockAssignmentId = TEST_IDS.assignment;
 
 const mockAssessment = {
 	id: mockAssessmentId,
 	title: 'Test Assessment',
-	grade: '3ème',
+	grade: '3eme',
 	description: 'Test description',
 	created_by: mockTeacher.id,
 	categories: [],
@@ -80,17 +102,18 @@ describe('POST /api/assessments', () => {
 		const locals = createMockLocals(); // No user
 		const request = createMockRequest({
 			title: 'Test Assessment',
-			grade: '3ème',
+			grade: '3eme',
 			categories: [],
 			settings: DEFAULT_ASSESSMENT_SETTINGS,
 			status: 'draft'
 		});
 
 		try {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			await POST({
 				request,
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -113,7 +136,7 @@ describe('POST /api/assessments', () => {
 
 		const request = createMockRequest({
 			title: 'Test Assessment',
-			grade: '3ème',
+			grade: '3eme',
 			categories: [],
 			settings: DEFAULT_ASSESSMENT_SETTINGS,
 			status: 'draft'
@@ -123,7 +146,7 @@ describe('POST /api/assessments', () => {
 			await POST({
 				request,
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -152,11 +175,13 @@ describe('POST /api/assessments', () => {
 
 		const assessmentData: CreateAssessmentData = {
 			title: 'Test Assessment',
-			grade: '3ème',
-			categories: [
-				{ id: 'cat-1', bank_id: 'bank-1', count: 5, title: 'Test Category', filters: {} }
-			],
-			settings: DEFAULT_ASSESSMENT_SETTINGS,
+			grade: '3eme',
+			categories: [mockCartItem],
+			settings: {
+				...DEFAULT_ASSESSMENT_SETTINGS,
+				time_limit: 3600, // 60 minutes in seconds
+				max_attempts: 3
+			},
 			status: 'draft'
 		};
 
@@ -165,7 +190,7 @@ describe('POST /api/assessments', () => {
 		const response = await POST({
 			request,
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -194,11 +219,13 @@ describe('POST /api/assessments', () => {
 
 		const assessmentData: CreateAssessmentData = {
 			title: 'Published Assessment',
-			grade: '4ème',
-			categories: [
-				{ id: 'cat-1', bank_id: 'bank-1', count: 5, title: 'Test Category', filters: {} }
-			],
-			settings: DEFAULT_ASSESSMENT_SETTINGS,
+			grade: '4eme',
+			categories: [mockCartItem],
+			settings: {
+				...DEFAULT_ASSESSMENT_SETTINGS,
+				time_limit: 3600,
+				max_attempts: 3
+			},
 			status: 'published'
 		};
 
@@ -207,7 +234,7 @@ describe('POST /api/assessments', () => {
 		const response = await POST({
 			request,
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -228,21 +255,20 @@ describe('POST /api/assessments', () => {
 
 		// Missing title and categories
 		const request = createMockRequest({
-			grade: '3ème',
-			settings: DEFAULT_ASSESSMENT_SETTINGS,
-			status: 'draft'
+			grade: '3eme'
 		});
 
 		try {
 			await POST({
 				request,
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(400);
-			expect(error.body.message).toBe('Missing required fields');
+			// Zod returns "Invalid input: expected string, received undefined" for missing required field
+			expect(error.body.message).toContain('Invalid input');
 		}
 	});
 
@@ -260,22 +286,21 @@ describe('POST /api/assessments', () => {
 
 		const request = createMockRequest({
 			title: 'Test',
-			grade: '3ème',
-			categories: [], // Empty array
-			settings: DEFAULT_ASSESSMENT_SETTINGS,
-			status: 'draft'
+			grade: '3eme',
+			categories: [] // Empty array
 		});
 
 		try {
 			await POST({
 				request,
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(400);
-			expect(error.body.message).toBe('Missing required fields');
+			// Zod returns "At least one category required"
+			expect(error.body.message).toContain('category');
 		}
 	});
 
@@ -299,9 +324,13 @@ describe('POST /api/assessments', () => {
 
 		const assessmentData: CreateAssessmentData = {
 			title: 'Test',
-			grade: '3ème',
-			categories: [{ id: 'cat-1', bank_id: 'bank-1', count: 5, title: 'Test', filters: {} }],
-			settings: DEFAULT_ASSESSMENT_SETTINGS,
+			grade: '3eme',
+			categories: [mockCartItem],
+			settings: {
+				...DEFAULT_ASSESSMENT_SETTINGS,
+				time_limit: 3600,
+				max_attempts: 3
+			},
 			status: 'draft'
 		};
 
@@ -311,7 +340,7 @@ describe('POST /api/assessments', () => {
 			await POST({
 				request,
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -336,7 +365,7 @@ describe('GET /api/assessments', () => {
 			await GET({
 				url,
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -363,7 +392,7 @@ describe('GET /api/assessments', () => {
 			await GET({
 				url,
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -409,7 +438,7 @@ describe('GET /api/assessments', () => {
 		const response = await GET({
 			url,
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -445,7 +474,7 @@ describe('GET /api/assessments', () => {
 		const response = await GET({
 			url,
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -481,7 +510,7 @@ describe('GET /api/assessments', () => {
 			await GET({
 				url,
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -505,7 +534,7 @@ describe('GET /api/assessments/[id]', () => {
 			await GET({
 				params: { id: mockAssessmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -535,7 +564,7 @@ describe('GET /api/assessments/[id]', () => {
 		const response = await GET({
 			params: { id: mockAssessmentId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -565,7 +594,7 @@ describe('GET /api/assessments/[id]', () => {
 			await GET({
 				params: { id: mockAssessmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -590,7 +619,7 @@ describe('GET /api/assessments/[id]', () => {
 			await GET({
 				params: { id: 'non-existent' },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -616,7 +645,7 @@ describe('PUT /api/assessments/[id]', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -644,7 +673,7 @@ describe('PUT /api/assessments/[id]', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -688,7 +717,7 @@ describe('PUT /api/assessments/[id]', () => {
 			request,
 			params: { id: mockAssessmentId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -720,7 +749,7 @@ describe('PUT /api/assessments/[id]', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -744,7 +773,7 @@ describe('DELETE /api/assessments/[id]', () => {
 			await DELETE({
 				params: { id: mockAssessmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -769,7 +798,7 @@ describe('DELETE /api/assessments/[id]', () => {
 			await DELETE({
 				params: { id: mockAssessmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -806,7 +835,7 @@ describe('DELETE /api/assessments/[id]', () => {
 		const response = await DELETE({
 			params: { id: mockAssessmentId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -835,7 +864,7 @@ describe('DELETE /api/assessments/[id]', () => {
 			await DELETE({
 				params: { id: mockAssessmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -863,7 +892,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -893,7 +922,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -971,7 +1000,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 			request,
 			params: { id: mockAssessmentId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1038,7 +1067,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 			request,
 			params: { id: mockAssessmentId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1066,7 +1095,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -1102,7 +1131,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -1138,7 +1167,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 				request,
 				params: { id: mockAssessmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -1162,7 +1191,7 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 			await POST({
 				params: { id: mockAssignmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -1187,7 +1216,7 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 			await POST({
 				params: { id: mockAssignmentId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -1237,7 +1266,7 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 		const response = await POST({
 			params: { id: mockAssignmentId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1277,7 +1306,7 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 		const response = await POST({
 			params: { id: mockAssignmentId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1326,7 +1355,7 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 		const response = await POST({
 			params: { id: mockAssignmentId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1348,7 +1377,7 @@ describe('GET /api/assessments/assigned', () => {
 		try {
 			await GET({
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -1372,7 +1401,7 @@ describe('GET /api/assessments/assigned', () => {
 		try {
 			await GET({
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -1431,7 +1460,7 @@ describe('GET /api/assessments/assigned', () => {
 
 		const response = await GET({
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1472,7 +1501,7 @@ describe('GET /api/assessments/assigned', () => {
 
 		const response = await GET({
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1514,7 +1543,7 @@ describe('GET /api/assessments/assigned', () => {
 		try {
 			await GET({
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -1540,7 +1569,7 @@ describe('GET /api/assessments/[id]/results', () => {
 				params: { id: mockAssessmentId },
 				url,
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -1568,7 +1597,7 @@ describe('GET /api/assessments/[id]/results', () => {
 				params: { id: mockAssessmentId },
 				url,
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -1602,7 +1631,7 @@ describe('GET /api/assessments/[id]/results', () => {
 				params: { id: mockAssessmentId },
 				url,
 				locals
-			} as MockRequestEvent);
+			} as any);
 			expect.fail('Should have thrown an error');
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
@@ -1645,7 +1674,7 @@ describe('GET /api/assessments/[id]/results', () => {
 			params: { id: mockAssessmentId },
 			url,
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1697,7 +1726,7 @@ describe('GET /api/assessments/[id]/results', () => {
 			params: { id: mockAssessmentId },
 			url,
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -1749,7 +1778,7 @@ describe('GET /api/assessments/[id]/results', () => {
 			params: { id: mockAssessmentId },
 			url,
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);

@@ -41,7 +41,7 @@ export const createExerciseSchema = z.object({
 	statement_md: z.string().trim().min(1, 'Statement is required').max(50000, 'Statement too long'),
 	solution_md: z.string().trim().min(1, 'Solution is required').max(50000, 'Solution too long'),
 	difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)], {
-		errorMap: () => ({ message: 'Difficulty must be 1 (easy), 2 (medium), or 3 (hard)' })
+		message: 'Difficulty must be 1 (easy), 2 (medium), or 3 (hard)'
 	}),
 	tags: z
 		.array(z.string().trim().min(1).max(50))
@@ -130,7 +130,7 @@ export const bulkAssignSchema = z
 export const singleAssignSchema = z
 	.object({
 		assigned_to_type: z.enum(['student', 'class', 'public'], {
-			errorMap: () => ({ message: 'Invalid assignment type' })
+			message: 'Invalid assignment type'
 		}),
 		student_id: z.string().uuid('Invalid student ID').optional(),
 		class_id: z.string().uuid('Invalid class ID').optional(),
@@ -154,7 +154,7 @@ export const singleAssignSchema = z
 export const assignmentQuerySchema = z.object({
 	type: z
 		.enum(['student', 'class', 'public'], {
-			errorMap: () => ({ message: 'Invalid type filter' })
+			message: 'Invalid type filter'
 		})
 		.optional(),
 	active: z
@@ -199,7 +199,7 @@ export const exportExercisesSchema = z.object({
 		.min(1, 'At least one exercise ID required')
 		.max(100, 'Maximum 100 exercises per export'),
 	format: z.enum(['json', 'markdown'], {
-		errorMap: () => ({ message: 'Format must be "json" or "markdown"' })
+		message: 'Format must be "json" or "markdown"'
 	}),
 	pretty_print: z.boolean().default(true).optional()
 });
@@ -210,14 +210,13 @@ export const exportExercisesSchema = z.object({
 export const exportSingleExerciseQuerySchema = z.object({
 	format: z
 		.enum(['json', 'markdown'], {
-			errorMap: () => ({ message: 'Format must be "json" or "markdown"' })
+			message: 'Format must be "json" or "markdown"'
 		})
 		.default('json'),
 	pretty: z
 		.string()
-		.optional()
-		.transform((val) => val !== 'false')
 		.default('true')
+		.transform((val) => val !== 'false')
 });
 
 /**
@@ -233,16 +232,14 @@ export const viewExerciseSchema = z.object({
  */
 export const importExercisesSchema = z.object({
 	format: z.enum(['json', 'markdown'], {
-		errorMap: () => ({ message: 'Format must be "json" or "markdown"' })
+		message: 'Format must be "json" or "markdown"'
 	}),
-	content: z.union([z.string().min(1, 'Content is required'), z.record(z.any())], {
-		errorMap: () => ({ message: 'Content must be a string or object' })
-	}),
+	content: z.union([z.string().min(1, 'Content is required'), z.record(z.string(), z.any())]),
 	options: z
 		.object({
 			on_duplicate: z
 				.enum(['skip', 'replace', 'create-copy'], {
-					errorMap: () => ({ message: 'on_duplicate must be "skip", "replace", or "create-copy"' })
+					message: 'on_duplicate must be "skip", "replace", or "create-copy"'
 				})
 				.default('skip')
 				.optional(),

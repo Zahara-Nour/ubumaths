@@ -124,3 +124,47 @@ export function getPeriodName(period: AcademicPeriod): string {
 	const year = new Date(period.start_date).getFullYear();
 	return `Période ${year}`;
 }
+
+/**
+ * Checks if a specific date is within a period's date range
+ *
+ * @param date - Date to check (string or Date object)
+ * @param period - Academic period object
+ * @returns True if date is within period bounds
+ *
+ * @example
+ * ```typescript
+ * const period = { start_date: '2024-09-01', end_date: '2024-12-15', ... };
+ * isDateInPeriod('2024-10-15', period); // → true
+ * isDateInPeriod('2024-08-15', period); // → false
+ * ```
+ */
+export function isDateInPeriod(date: string | Date, period: AcademicPeriod): boolean {
+	const checkDate = typeof date === 'string' ? new Date(date) : date;
+	const start = new Date(period.start_date);
+	const end = new Date(period.end_date);
+	return checkDate >= start && checkDate <= end;
+}
+
+/**
+ * Filters periods by school year
+ *
+ * @param periods - Array of academic periods
+ * @param schoolYearId - School year ID to filter by
+ * @returns Filtered array of periods for the specified school year
+ *
+ * @example
+ * ```typescript
+ * const allPeriods = [
+ *   { id: 'p1', school_year_id: 'year-2024', ... },
+ *   { id: 'p2', school_year_id: 'year-2023', ... },
+ * ];
+ * getPeriodsForYear(allPeriods, 'year-2024'); // → [{ id: 'p1', ... }]
+ * ```
+ */
+export function getPeriodsForYear(
+	periods: AcademicPeriod[],
+	schoolYearId: string
+): AcademicPeriod[] {
+	return periods.filter((p) => p.school_year_id === schoolYearId);
+}

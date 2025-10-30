@@ -169,7 +169,7 @@ export const actions: Actions = {
 			city: school.city,
 			country: school.country,
 			address: school.address || null,
-			logo_url: school.logo_url || null,
+			logo_url: (school as { logo_url?: string }).logo_url || null,
 			is_active: true
 		}));
 

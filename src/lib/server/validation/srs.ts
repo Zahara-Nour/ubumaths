@@ -74,8 +74,8 @@ export const updateDeckSchema = createDeckSchema.partial();
  * Schema for deck query parameters
  */
 export const listDecksQuerySchema = z.object({
-	deckType: z.enum(['official', 'personal']).optional(),
-	search: z.string().max(100).optional()
+	deckType: z.enum(['official', 'personal']).nullish(),
+	search: z.string().max(100).nullish()
 });
 
 /**

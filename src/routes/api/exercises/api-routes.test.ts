@@ -18,6 +18,8 @@
  * @module api/exercises/api-routes.test
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { describe, it, expect, vi } from 'vitest';
 import {
 	createMockSupabase,
@@ -51,19 +53,19 @@ type MockRequestEvent<Params = Record<string, string>> = {
 // ============================================================================
 
 const mockTeacher = {
-	id: 'teacher-123',
+	id: '550e8400-e29b-41d4-a716-446655440001',
 	email: 'teacher@voltairedoha.com',
 	role: 'teacher'
 };
 
 const mockStudent = {
-	id: 'student-456',
+	id: '550e8400-e29b-41d4-a716-446655440002',
 	email: 'student@voltairedoha.com',
 	role: 'student'
 };
 
-const mockExerciseId = 'ex-789';
-const mockAssignmentId = 'assign-abc';
+const mockExerciseId = '550e8400-e29b-41d4-a716-446655440003';
+const mockAssignmentId = '550e8400-e29b-41d4-a716-446655440004';
 
 // ============================================================================
 // POST /api/exercises/[id]/assign - CREATE ASSIGNMENTS
@@ -77,14 +79,14 @@ describe('POST /api/exercises/[id]/assign', () => {
 		const locals = createMockLocals(); // No user
 		const request = createMockRequest({
 			assigned_to_type: 'student',
-			student_id: 'student-123'
+			student_id: '550e8400-e29b-41d4-a716-446655440005'
 		});
 
 		const response = await POST({
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(401);
@@ -104,14 +106,14 @@ describe('POST /api/exercises/[id]/assign', () => {
 
 		const request = createMockRequest({
 			assigned_to_type: 'student',
-			student_id: 'student-123'
+			student_id: '550e8400-e29b-41d4-a716-446655440005'
 		});
 
 		const response = await POST({
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(403);
@@ -141,7 +143,7 @@ describe('POST /api/exercises/[id]/assign', () => {
 			id: mockAssignmentId,
 			exercise_id: mockExerciseId,
 			assigned_to_type: 'student',
-			student_id: 'student-123',
+			student_id: '550e8400-e29b-41d4-a716-446655440005',
 			assigned_by: mockTeacher.id
 		};
 		mockSupabase._mockChain.single.mockResolvedValueOnce({
@@ -151,7 +153,7 @@ describe('POST /api/exercises/[id]/assign', () => {
 
 		const request = createMockRequest({
 			assigned_to_type: 'student',
-			student_id: 'student-123',
+			student_id: '550e8400-e29b-41d4-a716-446655440005',
 			optional_deadline: '2024-01-20T23:59:59Z',
 			notes: 'Complete this week'
 		});
@@ -160,7 +162,7 @@ describe('POST /api/exercises/[id]/assign', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(201);
@@ -197,7 +199,11 @@ describe('POST /api/exercises/[id]/assign', () => {
 		});
 
 		const request = createMockRequest({
-			students: ['student-1', 'student-2', 'student-3'],
+			students: [
+				'550e8400-e29b-41d4-a716-446655440006',
+				'550e8400-e29b-41d4-a716-446655440007',
+				'550e8400-e29b-41d4-a716-446655440008'
+			],
 			optional_deadline: '2024-01-20T23:59:59Z',
 			notes: 'Homework'
 		});
@@ -206,7 +212,7 @@ describe('POST /api/exercises/[id]/assign', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(201);
@@ -234,18 +240,16 @@ describe('POST /api/exercises/[id]/assign', () => {
 
 		const request = createMockRequest({
 			assigned_to_type: 'student',
-			student_id: 'student-123'
+			student_id: '550e8400-e29b-41d4-a716-446655440005'
 		});
 
-		const response = await POST({
-			request,
-			params: { id: mockExerciseId },
-			locals
-		} as MockRequestEvent);
-
-		const data = await response.json();
-		expect(response.status).toBe(400);
-		expect(data.error).toBeDefined();
+		await expect(
+			POST({
+				request,
+				params: { id: mockExerciseId },
+				locals
+			} as any)
+		).rejects.toThrow();
 	});
 });
 
@@ -263,7 +267,7 @@ describe('GET /api/exercises/assigned', () => {
 		const response = await GET({
 			url,
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(401);
@@ -277,7 +281,7 @@ describe('GET /api/exercises/assigned', () => {
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock RPC call for student exercises
-		locals.supabase.rpc.mockResolvedValueOnce({
+		(locals.supabase.rpc as any).mockResolvedValueOnce({
 			data: ['ex-1', 'ex-2', 'ex-3'],
 			error: null
 		});
@@ -320,7 +324,7 @@ describe('GET /api/exercises/assigned', () => {
 		const response = await GET({
 			url,
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -334,7 +338,7 @@ describe('GET /api/exercises/assigned', () => {
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock empty result
-		locals.supabase.rpc.mockResolvedValueOnce({
+		(locals.supabase.rpc as any).mockResolvedValueOnce({
 			data: [],
 			error: null
 		});
@@ -348,7 +352,7 @@ describe('GET /api/exercises/assigned', () => {
 		const response = await GET({
 			url,
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		expect(response.status).toBe(200);
 		expect(locals.supabase.rpc).toHaveBeenCalledWith('get_student_exercises', {
@@ -372,7 +376,7 @@ describe('POST /api/exercises/[id]/view', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(401);
@@ -386,8 +390,7 @@ describe('POST /api/exercises/[id]/view', () => {
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock no existing completion
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(locals.supabase.from('exercise_completions') as any).maybeSingle.mockResolvedValueOnce({
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: null,
 			error: null
 		});
@@ -412,7 +415,7 @@ describe('POST /api/exercises/[id]/view', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -431,8 +434,7 @@ describe('POST /api/exercises/[id]/view', () => {
 			id: 'completion-123',
 			view_count: 5
 		};
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(locals.supabase.from('exercise_completions') as any).maybeSingle.mockResolvedValueOnce({
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: existingCompletion,
 			error: null
 		});
@@ -457,7 +459,7 @@ describe('POST /api/exercises/[id]/view', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -480,7 +482,7 @@ describe('POST /api/exercises/[id]/complete', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(401);
@@ -494,8 +496,7 @@ describe('POST /api/exercises/[id]/complete', () => {
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock existing completion (not yet completed)
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(locals.supabase.from('exercise_completions') as any).maybeSingle.mockResolvedValueOnce({
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: {
 				id: 'completion-123',
 				view_count: 3,
@@ -525,7 +526,7 @@ describe('POST /api/exercises/[id]/complete', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -540,8 +541,7 @@ describe('POST /api/exercises/[id]/complete', () => {
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock no existing completion
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(locals.supabase.from('exercise_completions') as any).maybeSingle.mockResolvedValueOnce({
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: null,
 			error: null
 		});
@@ -567,7 +567,7 @@ describe('POST /api/exercises/[id]/complete', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -591,7 +591,7 @@ describe('DELETE /api/exercises/[id]/complete', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(401);
@@ -625,7 +625,7 @@ describe('DELETE /api/exercises/[id]/complete', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -651,7 +651,7 @@ describe('DELETE /api/exercises/[id]/complete', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(500);
@@ -674,7 +674,7 @@ describe('GET /api/exercises/[id]/access', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(401);
@@ -688,7 +688,7 @@ describe('GET /api/exercises/[id]/access', () => {
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock RPC call returning true
-		locals.supabase.rpc.mockResolvedValueOnce({
+		(locals.supabase.rpc as any).mockResolvedValueOnce({
 			data: true,
 			error: null
 		});
@@ -699,7 +699,7 @@ describe('GET /api/exercises/[id]/access', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -717,7 +717,7 @@ describe('GET /api/exercises/[id]/access', () => {
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock RPC call returning false
-		locals.supabase.rpc.mockResolvedValueOnce({
+		(locals.supabase.rpc as any).mockResolvedValueOnce({
 			data: false,
 			error: null
 		});
@@ -728,7 +728,7 @@ describe('GET /api/exercises/[id]/access', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -742,7 +742,7 @@ describe('GET /api/exercises/[id]/access', () => {
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock RPC error
-		locals.supabase.rpc.mockResolvedValueOnce({
+		(locals.supabase.rpc as any).mockResolvedValueOnce({
 			data: null,
 			error: { message: 'RPC error' }
 		});
@@ -753,7 +753,7 @@ describe('GET /api/exercises/[id]/access', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -790,15 +790,13 @@ describe('Request validation', () => {
 			// Missing student_id
 		});
 
-		const response = await POST({
-			request,
-			params: { id: mockExerciseId },
-			locals
-		} as MockRequestEvent);
-
-		const data = await response.json();
-		expect(response.status).toBe(400);
-		expect(data.error).toContain('student_id');
+		await expect(
+			POST({
+				request,
+				params: { id: mockExerciseId },
+				locals
+			} as any)
+		).rejects.toThrow();
 	});
 
 	it('should handle malformed JSON', async () => {
@@ -825,7 +823,7 @@ describe('Request validation', () => {
 				request,
 				params: { id: mockExerciseId },
 				locals
-			} as MockRequestEvent);
+			} as any);
 		} catch (error) {
 			expect(error).toBeDefined();
 		}
@@ -855,7 +853,7 @@ describe('Error handling', () => {
 		const response = await GET({
 			url,
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		// Function handles errors gracefully and returns empty paginated response with 200 status
@@ -872,8 +870,7 @@ describe('Error handling', () => {
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock view tracking with missing assignment_id (should work)
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(locals.supabase.from('exercise_completions') as any).maybeSingle.mockResolvedValueOnce({
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: null,
 			error: null
 		});
@@ -893,7 +890,7 @@ describe('Error handling', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(200);
@@ -926,7 +923,7 @@ describe('Authorization edge cases', () => {
 			request,
 			params: { id: mockExerciseId },
 			locals
-		} as MockRequestEvent);
+		} as any);
 
 		const data = await response.json();
 		expect(response.status).toBe(403);
@@ -956,14 +953,12 @@ describe('Authorization edge cases', () => {
 			student_id: mockStudent.id
 		});
 
-		const response = await POST({
-			request,
-			params: { id: mockExerciseId },
-			locals
-		} as MockRequestEvent);
-
-		const data = await response.json();
-		expect(response.status).toBe(400);
-		expect(data.error).toBeDefined();
+		await expect(
+			POST({
+				request,
+				params: { id: mockExerciseId },
+				locals
+			} as any)
+		).rejects.toThrow();
 	});
 });

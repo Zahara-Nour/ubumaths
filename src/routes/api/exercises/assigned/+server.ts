@@ -10,6 +10,8 @@ import { getAssignmentsForStudent } from '$lib/server/exercise-assignments';
 import type { StudentExerciseFilters } from '$lib/exercises/types';
 import { validateStudentExerciseFilters } from '$lib/server/validation';
 
+type ZodIssue = { path: (string | number)[]; message: string };
+
 /**
  * GET /api/exercises/assigned
  *
@@ -33,8 +35,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	// Validate and parse filters from query params
 	const queryValidation = validateStudentExerciseFilters(url.searchParams);
 	if (!queryValidation.success) {
-		const errorMsg = queryValidation.error.errors
-			.map((e) => `${e.path.join('.')}: ${e.message}`)
+		const errorMsg = queryValidation.error.issues
+			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
 		return json({ error: `Invalid query parameters: ${errorMsg}` }, { status: 400 });
 	}
@@ -63,11 +65,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	// Fetch student's assigned exercises
-	const { data: exercises, error: fetchError } = await getAssignmentsForStudent(
-		locals.supabase,
-		user.id,
-		filters
-	);
+	const result = await getAssignmentsForStudent(locals.supabase, user.id, filters);
+	const exercises = result.data;
+	const fetchError = 'error' in result ? result.error : null;
 
 	if (fetchError) {
 		console.error('Failed to fetch assigned exercises:', fetchError);

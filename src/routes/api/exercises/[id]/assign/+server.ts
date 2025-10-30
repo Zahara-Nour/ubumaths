@@ -23,6 +23,8 @@ import {
 	validateAssignmentQuery
 } from '$lib/server/validation';
 
+type ZodIssue = { path: (string | number)[]; message: string };
+
 /**
  * POST /api/exercises/[id]/assign
  *
@@ -58,8 +60,8 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 		// Validate bulk assignment
 		const validation = validateBulkAssign(body);
 		if (!validation.success) {
-			const errorMsg = validation.error.errors
-				.map((e) => `${e.path.join('.')}: ${e.message}`)
+			const errorMsg = validation.error.issues
+				.map((e) => `${(e as ZodIssue).path.join('.')}: ${e.message}`)
 				.join('; ');
 			throw error(400, `Validation failed: ${errorMsg}`);
 		}
@@ -96,8 +98,8 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 	// Validate single assignment
 	const validation = validateSingleAssign(body);
 	if (!validation.success) {
-		const errorMsg = validation.error.errors
-			.map((e) => `${e.path.join('.')}: ${e.message}`)
+		const errorMsg = validation.error.issues
+			.map((e) => `${(e as ZodIssue).path.join('.')}: ${e.message}`)
 			.join('; ');
 		throw error(400, `Validation failed: ${errorMsg}`);
 	}
@@ -157,8 +159,8 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	// Validate and parse query params for filters
 	const queryValidation = validateAssignmentQuery(url.searchParams);
 	if (!queryValidation.success) {
-		const errorMsg = queryValidation.error.errors
-			.map((e) => `${e.path.join('.')}: ${e.message}`)
+		const errorMsg = queryValidation.error.issues
+			.map((e) => `${(e as ZodIssue).path.join('.')}: ${e.message}`)
 			.join('; ');
 		return json({ error: `Invalid query parameters: ${errorMsg}` }, { status: 400 });
 	}
@@ -180,11 +182,9 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	}
 
 	// Fetch assignments
-	const { data: assignments, error: fetchError } = await getAssignmentsForExercise(
-		locals.supabase,
-		exerciseId,
-		filters
-	);
+	const result = await getAssignmentsForExercise(locals.supabase, exerciseId, filters);
+	const assignments = result.data;
+	const fetchError = 'error' in result ? result.error : null;
 
 	if (fetchError) {
 		console.error('Failed to fetch assignments:', fetchError);

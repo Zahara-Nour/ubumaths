@@ -19,8 +19,10 @@
 
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import type { School } from '$lib/types/database';
+import type { Database } from '$lib/types/database';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
+
+type School = Database['public']['Tables']['schools']['Row'];
 import {
 	validateFormData,
 	createScheduleEntrySchema,

@@ -57,7 +57,7 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
 	// Transform class_members array to class_ids array for easier use
 	const usersWithClasses = users?.map((user) => ({
 		...user,
-		class_ids: user.class_members?.map((cm) => cm.class_id) || []
+		class_ids: user.class_members?.map((cm: { class_id: string }) => cm.class_id) || []
 	}));
 
 	return json({ users: usersWithClasses || [] });

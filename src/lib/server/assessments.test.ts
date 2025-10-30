@@ -93,13 +93,17 @@ const mockAssessment: DbAssessment = {
 	grade: '3ème',
 	description: 'Test description',
 	created_by: mockTeacherId,
+	academic_period_id: null,
 	categories: [
 		{
-			id: 'cat-1',
-			bank_id: 'bank-1',
-			count: 5,
-			title: 'Algebra',
-			filters: {}
+			category: {
+				theme: 'Algèbre',
+				domain: 'Équations',
+				subdomain: null,
+				level: 1
+			},
+			quantity: 5,
+			delay: 20
 		}
 	],
 	settings: DEFAULT_ASSESSMENT_SETTINGS,
@@ -196,7 +200,16 @@ describe('createAssessment', () => {
 
 	it('should include categories and settings in JSONB format', async () => {
 		const categories = [
-			{ id: 'cat-1', bank_id: 'bank-1', count: 10, title: 'Algèbre', filters: {} }
+			{
+				category: {
+					theme: 'Algèbre',
+					domain: 'Équations',
+					subdomain: null,
+					level: 1
+				},
+				quantity: 10,
+				delay: 20
+			}
 		];
 		const settings = {
 			...DEFAULT_ASSESSMENT_SETTINGS,
@@ -406,7 +419,7 @@ describe('updateAssessment', () => {
 		);
 
 		expect(result.error).toBeNull();
-		expect(result.data?.settings.max_attempts).toBe(5);
+		expect((result.data?.settings as any)?.max_attempts).toBe(5);
 	});
 
 	it('should reject update when not authorized', async () => {
@@ -961,11 +974,11 @@ describe('getStudentAssignments', () => {
 			);
 		});
 
-		// Mock attempts with scores - query 3: .select().eq().eq() (awaited directly)
+		// Mock attempts with scores - query 3: .select().in().eq() (awaited directly)
 		const attempts = [
-			{ score: 7, completed_at: '2024-01-16T10:00:00Z' },
-			{ score: 8, completed_at: '2024-01-17T10:00:00Z' },
-			{ score: 9, completed_at: '2024-01-18T10:00:00Z' }
+			{ assignment_id: 'assign-1', score: 7, completed_at: '2024-01-16T10:00:00Z' },
+			{ assignment_id: 'assign-1', score: 8, completed_at: '2024-01-17T10:00:00Z' },
+			{ assignment_id: 'assign-1', score: 9, completed_at: '2024-01-18T10:00:00Z' }
 		];
 		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
@@ -996,6 +1009,16 @@ describe('getStudentAssignments', () => {
 		});
 
 		// Mock no assignments - query 2: .select().eq().eq() (awaited directly)
+		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(
+				onFulfilled({
+					data: [],
+					error: null
+				})
+			);
+		});
+
+		// Mock no attempts - query 3: .select().in().eq() (awaited directly)
 		supabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
 			return Promise.resolve(
 				onFulfilled({

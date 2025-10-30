@@ -26,6 +26,8 @@ describe('generateInstance - Numerical Exact Questions', () => {
 		const template: QuestionTemplate = {
 			id: 'test-1',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Calculate {{a}} + {{b}}' }],
@@ -41,29 +43,33 @@ describe('generateInstance - Numerical Exact Questions', () => {
 			theme: 'Arithmétique',
 			domain: 'Addition',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template);
 
 		expect(result.success).toBe(true);
+		if (!result.success) return;
+
 		expect(result.instance).toBeDefined();
-		expect(result.instance!.type).toBe('numerical_exact');
+		expect(result.instance.type).toBe('numerical_exact');
 
 		// Check variables exist in array
-		const a = getVarValue(result.instance!.resolvedVariables, 'a');
-		const b = getVarValue(result.instance!.resolvedVariables, 'b');
+		const a = getVarValue(result.instance.resolvedVariables, 'a');
+		const b = getVarValue(result.instance.resolvedVariables, 'b');
 		expect(a).not.toBeNaN();
 		expect(b).not.toBeNaN();
-		expect(result.instance!.answer).toBe((a + b).toString());
+		expect(result.instance.answer).toBe((a + b).toString());
 	});
 
 	it('should generate reproducible instance with seed', () => {
 		const template: QuestionTemplate = {
 			id: 'test-2',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Value: {{x}}' }],
@@ -76,8 +82,8 @@ describe('generateInstance - Numerical Exact Questions', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -87,14 +93,15 @@ describe('generateInstance - Numerical Exact Questions', () => {
 		// Test reproducibility by checking deterministic fields
 		expect(result1.success).toBe(true);
 		expect(result2.success).toBe(true);
+		if (!result1.success || !result2.success) return;
 
 		// Verify both instances have valid timestamps (non-deterministic field)
-		expect(result1.instance!.generatedAt).toBeDefined();
-		expect(result2.instance!.generatedAt).toBeDefined();
+		expect(result1.instance.generatedAt).toBeDefined();
+		expect(result2.instance.generatedAt).toBeDefined();
 
 		// Test all deterministic fields are identical
-		const { generatedAt: _gen1, ...instance1Deterministic } = result1.instance!;
-		const { generatedAt: _gen2, ...instance2Deterministic } = result2.instance!;
+		const { generatedAt: _gen1, ...instance1Deterministic } = result1.instance;
+		const { generatedAt: _gen2, ...instance2Deterministic } = result2.instance;
 		expect(instance1Deterministic).toEqual(instance2Deterministic);
 	});
 
@@ -102,6 +109,8 @@ describe('generateInstance - Numerical Exact Questions', () => {
 		const template: QuestionTemplate = {
 			id: 'test-3',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Value: {{x}}' }],
@@ -114,16 +123,20 @@ describe('generateInstance - Numerical Exact Questions', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result1 = generateInstance(template, 11111);
 		const result2 = generateInstance(template, 22222);
 
-		const x1 = getVarValue(result1.instance!.resolvedVariables, 'x');
-		const x2 = getVarValue(result2.instance!.resolvedVariables, 'x');
+		expect(result1.success).toBe(true);
+		expect(result2.success).toBe(true);
+		if (!result1.success || !result2.success) return;
+
+		const x1 = getVarValue(result1.instance.resolvedVariables, 'x');
+		const x2 = getVarValue(result2.instance.resolvedVariables, 'x');
 		expect(x1).not.toBe(x2);
 	});
 });
@@ -133,6 +146,8 @@ describe('generateInstance - Algebraic Transform Questions', () => {
 		const template: QuestionTemplate = {
 			id: 'test-4',
 			type: 'algebraic_transform',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Factor: $$x^2 - {{c}}$$' }],
@@ -148,19 +163,21 @@ describe('generateInstance - Algebraic Transform Questions', () => {
 			theme: 'Algèbre',
 			domain: 'Factorisation',
 			level: 2,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template);
 
 		expect(result.success).toBe(true);
-		expect(result.instance!.type).toBe('algebraic_transform');
-		expect(result.instance!.transformType).toBe('factor');
+		if (!result.success) return;
 
-		const a = getVarValue(result.instance!.resolvedVariables, 'a');
-		const c = getVarValue(result.instance!.resolvedVariables, 'c');
+		expect(result.instance.type).toBe('algebraic_transform');
+		expect(result.instance.transformType).toBe('factor');
+
+		const a = getVarValue(result.instance.resolvedVariables, 'a');
+		const c = getVarValue(result.instance.resolvedVariables, 'c');
 		expect(c).toBe(a ** 2);
 	});
 });
@@ -170,6 +187,8 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 		const template: QuestionTemplate = {
 			id: 'test-5',
 			type: 'fill_in_blanks',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Complete: {{a}} + {{b}} = ___' }],
@@ -185,26 +204,30 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 			theme: 'Arithmétique',
 			domain: 'Addition',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template);
 
 		expect(result.success).toBe(true);
-		expect(result.instance!.type).toBe('fill_in_blanks');
-		expect(Array.isArray(result.instance!.answer)).toBe(true);
+		if (!result.success) return;
 
-		const a = getVarValue(result.instance!.resolvedVariables, 'a');
-		const b = getVarValue(result.instance!.resolvedVariables, 'b');
-		expect(result.instance!.answer[0]).toBe((a + b).toString());
+		expect(result.instance.type).toBe('fill_in_blanks');
+		expect(Array.isArray(result.instance.answer)).toBe(true);
+
+		const a = getVarValue(result.instance.resolvedVariables, 'a');
+		const b = getVarValue(result.instance.resolvedVariables, 'b');
+		expect(result.instance.answer[0]).toBe((a + b).toString());
 	});
 
 	it('should generate fill-in-blanks with multiple blanks', () => {
 		const template: QuestionTemplate = {
 			id: 'test-6',
 			type: 'fill_in_blanks',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: '___ + ___ = {{sum}}' }],
@@ -224,18 +247,20 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 			theme: 'Arithmétique',
 			domain: 'Addition',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template);
 
 		expect(result.success).toBe(true);
-		expect(result.instance!.answer).toHaveLength(2);
-		expect(result.instance!.blanks).toHaveLength(2);
-		expect(result.instance!.blanks![0].position).toBe(0);
-		expect(result.instance!.blanks![1].position).toBe(1);
+		if (!result.success) return;
+
+		expect(result.instance.answer).toHaveLength(2);
+		expect(result.instance.blanks).toHaveLength(2);
+		expect(result.instance.blanks![0].position).toBe(0);
+		expect(result.instance.blanks![1].position).toBe(1);
 	});
 });
 
@@ -244,6 +269,8 @@ describe('generateInstance - Multiple Choice Questions', () => {
 		const template: QuestionTemplate = {
 			id: 'test-7',
 			type: 'multiple_choice',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'What is {{a}} + {{b}}?' }],
@@ -268,33 +295,37 @@ describe('generateInstance - Multiple Choice Questions', () => {
 			theme: 'Arithmétique',
 			domain: 'Addition',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template, 12345);
 
 		expect(result.success).toBe(true);
-		expect(result.instance!.type).toBe('multiple_choice');
-		expect(result.instance!.shuffledChoices).toHaveLength(4);
-		expect(result.instance!.multipleAnswers).toBe(false);
+		if (!result.success) return;
+
+		expect(result.instance.type).toBe('multiple_choice');
+		expect(result.instance.shuffledChoices).toHaveLength(4);
+		expect(result.instance.multipleAnswers).toBe(false);
 
 		// Verify correct answer is tracked (don't check specific value, just that it exists)
-		const _correctAnswer = getVarValue(result.instance!.resolvedVariables, 'correct');
-		const shuffledCorrectIndex = parseInt(result.instance!.answer as string);
+		const _correctAnswer = getVarValue(result.instance.resolvedVariables, 'correct');
+		const shuffledCorrectIndex = parseInt(result.instance.answer as string);
 		expect(shuffledCorrectIndex).toBeGreaterThanOrEqual(0);
 		expect(shuffledCorrectIndex).toBeLessThan(4);
 
 		// Verify the answer index points to a valid choice
-		expect(result.instance!.shuffledChoices![shuffledCorrectIndex]).toBeDefined();
-		expect(result.instance!.shuffledChoices![shuffledCorrectIndex].content.content).toBeDefined();
+		expect(result.instance.shuffledChoices![shuffledCorrectIndex]).toBeDefined();
+		expect(result.instance.shuffledChoices![shuffledCorrectIndex].content.content).toBeDefined();
 	});
 
 	it('should generate multiple choice with multiple correct answers', () => {
 		const template: QuestionTemplate = {
 			id: 'test-8',
 			type: 'multiple_choice',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Select all prime numbers:' }],
@@ -313,20 +344,22 @@ describe('generateInstance - Multiple Choice Questions', () => {
 			theme: 'Arithmétique',
 			domain: 'Nombres premiers',
 			level: 2,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template, 54321);
 
 		expect(result.success).toBe(true);
-		expect(result.instance!.multipleAnswers).toBe(true);
-		expect(Array.isArray(result.instance!.answer)).toBe(true);
+		if (!result.success) return;
 
-		const answerIndices = result.instance!.answer as string[];
+		expect(result.instance.multipleAnswers).toBe(true);
+		expect(Array.isArray(result.instance.answer)).toBe(true);
+
+		const answerIndices = result.instance.answer as string[];
 		const correctChoices = answerIndices.map(
-			(i) => result.instance!.shuffledChoices![parseInt(i)].content.content
+			(i) => result.instance.shuffledChoices![parseInt(i)].content.content
 		);
 
 		// Verify we have 2 correct answers (don't check which specific ones due to shuffling)
@@ -345,6 +378,8 @@ describe('generateInstance - Complex Variable Resolution', () => {
 		const template: QuestionTemplate = {
 			id: 'test-9',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [
@@ -367,28 +402,31 @@ describe('generateInstance - Complex Variable Resolution', () => {
 			theme: 'Fractions',
 			domain: 'Addition',
 			level: 2,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template, 99999);
 
 		expect(result.success).toBe(true);
+		if (!result.success) return;
 
-		const num1 = getVarValue(result.instance!.resolvedVariables, 'num1');
-		const num2 = getVarValue(result.instance!.resolvedVariables, 'num2');
-		const den = getVarValue(result.instance!.resolvedVariables, 'den');
+		const num1 = getVarValue(result.instance.resolvedVariables, 'num1');
+		const num2 = getVarValue(result.instance.resolvedVariables, 'num2');
+		const den = getVarValue(result.instance.resolvedVariables, 'den');
 		expect(num1).not.toBe(num2); // Exclusion working
 		expect(num1).toBeLessThan(den); // Bounds working
 		expect(num2).toBeLessThan(den);
-		expect(parseFloat(result.instance!.answer as string)).toBeCloseTo((num1 + num2) / den, 5);
+		expect(parseFloat(result.instance.answer as string)).toBeCloseTo((num1 + num2) / den, 5);
 	});
 
 	it('should generate GCD simplification instance', () => {
 		const template: QuestionTemplate = {
 			id: 'test-10',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Simplifier: $$\\frac{{{num}}}{{{den}}}$$' }],
@@ -407,20 +445,21 @@ describe('generateInstance - Complex Variable Resolution', () => {
 			theme: 'Fractions',
 			domain: 'Simplification',
 			level: 3,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template, 33333);
 
 		expect(result.success).toBe(true);
+		if (!result.success) return;
 
-		const gcd = getVarValue(result.instance!.resolvedVariables, 'gcd');
-		const a = getVarValue(result.instance!.resolvedVariables, 'a');
-		const b = getVarValue(result.instance!.resolvedVariables, 'b');
-		const num = getVarValue(result.instance!.resolvedVariables, 'num');
-		const den = getVarValue(result.instance!.resolvedVariables, 'den');
+		const gcd = getVarValue(result.instance.resolvedVariables, 'gcd');
+		const a = getVarValue(result.instance.resolvedVariables, 'a');
+		const b = getVarValue(result.instance.resolvedVariables, 'b');
+		const num = getVarValue(result.instance.resolvedVariables, 'num');
+		const den = getVarValue(result.instance.resolvedVariables, 'den');
 		expect(num).toBe(a * gcd);
 		expect(den).toBe(b * gcd);
 		expect(a).not.toBe(b);
@@ -432,6 +471,8 @@ describe('generateInstance - Content Resolution', () => {
 		const template: QuestionTemplate = {
 			id: 'test-11',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'What is {{x}} × {{y}}?' }],
@@ -447,24 +488,27 @@ describe('generateInstance - Content Resolution', () => {
 			theme: 'Arithmétique',
 			domain: 'Multiplication',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template, 77777);
 
 		expect(result.success).toBe(true);
+		if (!result.success) return;
 
-		const x = getVarValue(result.instance!.resolvedVariables, 'x');
-		const y = getVarValue(result.instance!.resolvedVariables, 'y');
-		expect(result.instance!.statement[0].content).toBe(`What is ${x} × ${y}?`);
+		const x = getVarValue(result.instance.resolvedVariables, 'x');
+		const y = getVarValue(result.instance.resolvedVariables, 'y');
+		expect(result.instance.statement[0].content).toBe(`What is ${x} × ${y}?`);
 	});
 
 	it('should resolve LaTeX in statement', () => {
 		const template: QuestionTemplate = {
 			id: 'test-12',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: '$$\\frac{{{a}}}{{{b}}}$$' }],
@@ -480,24 +524,27 @@ describe('generateInstance - Content Resolution', () => {
 			theme: 'Fractions',
 			domain: 'Division',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template, 44444);
 
 		expect(result.success).toBe(true);
+		if (!result.success) return;
 
-		const a = getVarValue(result.instance!.resolvedVariables, 'a');
-		const b = getVarValue(result.instance!.resolvedVariables, 'b');
-		expect(result.instance!.statement[0].content).toBe(`$$\\frac{${a}}{${b}}$$`);
+		const a = getVarValue(result.instance.resolvedVariables, 'a');
+		const b = getVarValue(result.instance.resolvedVariables, 'b');
+		expect(result.instance.statement[0].content).toBe(`$$\\frac{${a}}{${b}}$$`);
 	});
 
 	it('should resolve correction field', () => {
 		const template: QuestionTemplate = {
 			id: 'test-13',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Calculate {{a}} + {{b}}' }],
@@ -516,19 +563,20 @@ describe('generateInstance - Content Resolution', () => {
 			theme: 'Arithmétique',
 			domain: 'Addition',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template, 66666);
 
 		expect(result.success).toBe(true);
+		if (!result.success) return;
 
-		const a = getVarValue(result.instance!.resolvedVariables, 'a');
-		const b = getVarValue(result.instance!.resolvedVariables, 'b');
+		const a = getVarValue(result.instance.resolvedVariables, 'a');
+		const b = getVarValue(result.instance.resolvedVariables, 'b');
 		const sum = a + b;
-		expect(result.instance!.correction![0].content).toBe(`The answer is ${a} + ${b} = ${sum}`);
+		expect(result.instance.correction![0].content).toBe(`The answer is ${a} + ${b} = ${sum}`);
 	});
 });
 
@@ -537,6 +585,8 @@ describe('generateInstance - Precision Handling', () => {
 		const template: QuestionTemplate = {
 			id: 'test-14',
 			type: 'numerical_decimal',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Calculate {{a}} / {{b}}' }],
@@ -552,21 +602,25 @@ describe('generateInstance - Precision Handling', () => {
 			theme: 'Arithmétique',
 			domain: 'Division',
 			level: 2,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template);
 
 		expect(result.success).toBe(true);
-		expect(result.instance!.precision).toEqual({ type: 'decimal', digits: 2 });
+		if (!result.success) return;
+
+		expect(result.instance.precision).toEqual({ type: 'decimal', digits: 2 });
 	});
 
 	it('should include tolerance precision', () => {
 		const template: QuestionTemplate = {
 			id: 'test-15',
 			type: 'numerical_rounded',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Estimate sqrt({{a}})' }],
@@ -579,15 +633,17 @@ describe('generateInstance - Precision Handling', () => {
 			theme: 'Arithmétique',
 			domain: 'Racine carrée',
 			level: 3,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template);
 
 		expect(result.success).toBe(true);
-		expect(result.instance!.precision).toEqual({
+		if (!result.success) return;
+
+		expect(result.instance.precision).toEqual({
 			type: 'tolerance',
 			tolerance: 0.1,
 			mode: 'absolute'
@@ -600,6 +656,8 @@ describe('generateInstance - Validation Errors', () => {
 		const template: QuestionTemplate = {
 			id: 'test-16',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Value: {{a}}' }],
@@ -615,22 +673,26 @@ describe('generateInstance - Validation Errors', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template);
 
 		expect(result.success).toBe(false);
+		if (result.success) return;
+
 		expect(result.errors).toBeDefined();
-		expect(result.errors!.length).toBeGreaterThan(0);
+		expect(result.errors.length).toBeGreaterThan(0);
 	});
 
 	it('should fail on min > max after variable resolution', () => {
 		const template: QuestionTemplate = {
 			id: 'test-17',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Value: {{x}}' }],
@@ -647,14 +709,16 @@ describe('generateInstance - Validation Errors', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template);
 
 		expect(result.success).toBe(false);
+		if (result.success) return;
+
 		expect(result.errors).toBeDefined();
 	});
 
@@ -663,6 +727,8 @@ describe('generateInstance - Validation Errors', () => {
 		const template: QuestionTemplate = {
 			id: 'test-18',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Value' }],
@@ -675,14 +741,16 @@ describe('generateInstance - Validation Errors', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template);
 
 		expect(result.success).toBe(false);
+		if (result.success) return;
+
 		expect(result.errors).toBeDefined();
 	});
 });
@@ -692,6 +760,8 @@ describe('generateInstance - Edge Cases', () => {
 		const template: QuestionTemplate = {
 			id: 'test-19',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'What is 2 + 2?' }],
@@ -704,22 +774,26 @@ describe('generateInstance - Edge Cases', () => {
 			theme: 'Arithmétique',
 			domain: 'Addition',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template);
 
 		expect(result.success).toBe(true);
-		expect(result.instance!.resolvedVariables).toEqual([]);
-		expect(result.instance!.answer).toBe('4');
+		if (!result.success) return;
+
+		expect(result.instance.resolvedVariables).toEqual([]);
+		expect(result.instance.answer).toBe('4');
 	});
 
 	it('should generate instance with delay parameter', () => {
 		const template: QuestionTemplate = {
 			id: 'test-20',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -733,15 +807,17 @@ describe('generateInstance - Edge Cases', () => {
 			domain: 'Test',
 			level: 1,
 			delay: 120,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template);
 
 		expect(result.success).toBe(true);
-		expect(result.instance!.delay).toBe(120);
+		if (!result.success) return;
+
+		expect(result.instance.delay).toBe(120);
 	});
 
 	// Note: Failing due to validation issue with image fields (success: false, error: undefined)
@@ -749,6 +825,8 @@ describe('generateInstance - Edge Cases', () => {
 		const template: QuestionTemplate = {
 			id: 'test-21',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [
@@ -765,19 +843,21 @@ describe('generateInstance - Edge Cases', () => {
 			theme: 'Arithmétique',
 			domain: 'Multiplication',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template);
 
 		expect(result.success).toBe(true);
-		expect(result.instance!.statement).toHaveLength(3);
+		if (!result.success) return;
 
-		const a = getVarValue(result.instance!.resolvedVariables, 'a');
-		expect(result.instance!.statement[0].content).toBe(`Given ${a}`);
-		expect(result.instance!.statement[2].content).toBe(`Calculate ${a} × 2`);
+		expect(result.instance.statement).toHaveLength(3);
+
+		const a = getVarValue(result.instance.resolvedVariables, 'a');
+		expect(result.instance.statement[0].content).toBe(`Given ${a}`);
+		expect(result.instance.statement[2].content).toBe(`Calculate ${a} × 2`);
 	});
 });
 
@@ -786,6 +866,8 @@ describe('generateInstance - Real-World Templates', () => {
 		const template: QuestionTemplate = {
 			id: 'test-22',
 			type: 'algebraic_transform',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Résoudre: ${{a}}x^2 + {{b}}x + {{c}} = 0$' }],
@@ -799,23 +881,24 @@ describe('generateInstance - Real-World Templates', () => {
 				}
 			],
 			transformType: 'solve',
-			grades: ['3', '2', '1'],
+			grades: ['3'],
 			theme: 'Algèbre',
 			domain: 'Équations',
 			level: 4,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template, 88888);
 
 		expect(result.success).toBe(true);
+		if (!result.success) return;
 
-		const a = getVarValue(result.instance!.resolvedVariables, 'a');
-		const b = getVarValue(result.instance!.resolvedVariables, 'b');
-		const c = getVarValue(result.instance!.resolvedVariables, 'c');
-		const disc = getVarValue(result.instance!.resolvedVariables, 'disc');
+		const a = getVarValue(result.instance.resolvedVariables, 'a');
+		const b = getVarValue(result.instance.resolvedVariables, 'b');
+		const c = getVarValue(result.instance.resolvedVariables, 'c');
+		const disc = getVarValue(result.instance.resolvedVariables, 'disc');
 		expect(disc).toBe(b ** 2 - 4 * a * c);
 	});
 
@@ -824,6 +907,8 @@ describe('generateInstance - Real-World Templates', () => {
 		const template: QuestionTemplate = {
 			id: 'test-23',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [
@@ -846,20 +931,21 @@ describe('generateInstance - Real-World Templates', () => {
 			theme: 'Arithmétique',
 			domain: 'Pourcentages',
 			level: 2,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template, 55555);
 
 		expect(result.success).toBe(true);
+		if (!result.success) return;
 
-		const price = getVarValue(result.instance!.resolvedVariables, 'price');
-		const discount = getVarValue(result.instance!.resolvedVariables, 'discount');
-		const reduction = getVarValue(result.instance!.resolvedVariables, 'reduction');
+		const price = getVarValue(result.instance.resolvedVariables, 'price');
+		const discount = getVarValue(result.instance.resolvedVariables, 'discount');
+		const reduction = getVarValue(result.instance.resolvedVariables, 'reduction');
 		expect(reduction).toBeCloseTo((price * discount) / 100, 5);
-		expect(parseFloat(result.instance!.answer as string)).toBeCloseTo(price - reduction, 5);
+		expect(parseFloat(result.instance.answer as string)).toBeCloseTo(price - reduction, 5);
 	});
 });
 
@@ -868,6 +954,8 @@ describe('generateInstance - Variation Selection', () => {
 		const template: QuestionTemplate = {
 			id: 'test-24',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Addition: {{a}} + {{b}}' }],
@@ -891,22 +979,26 @@ describe('generateInstance - Variation Selection', () => {
 			theme: 'Arithmétique',
 			domain: 'Opérations',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template, 0);
 
 		expect(result.success).toBe(true);
-		expect(result.instance!.selectedVariationIndex).toBe(0);
-		expect(result.instance!.statement[0].content).toContain('Addition');
+		if (!result.success) return;
+
+		expect(result.instance.selectedVariationIndex).toBe(0);
+		expect(result.instance.statement[0].content).toContain('Addition');
 	});
 
 	it('should select second variation with seed 1', () => {
 		const template: QuestionTemplate = {
 			id: 'test-25',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Addition: {{a}} + {{b}}' }],
@@ -930,22 +1022,26 @@ describe('generateInstance - Variation Selection', () => {
 			theme: 'Arithmétique',
 			domain: 'Opérations',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template, 1);
 
 		expect(result.success).toBe(true);
-		expect(result.instance!.selectedVariationIndex).toBe(1);
-		expect(result.instance!.statement[0].content).toContain('Subtraction');
+		if (!result.success) return;
+
+		expect(result.instance.selectedVariationIndex).toBe(1);
+		expect(result.instance.statement[0].content).toContain('Subtraction');
 	});
 
 	it('should handle variation selection with modulo (4 variations)', () => {
 		const template: QuestionTemplate = {
 			id: 'test-26',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Op 1' }],
@@ -973,8 +1069,8 @@ describe('generateInstance - Variation Selection', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -984,24 +1080,36 @@ describe('generateInstance - Variation Selection', () => {
 		const result2 = generateInstance(template, 2);
 		const result3 = generateInstance(template, 3);
 
-		expect(result0.instance!.selectedVariationIndex).toBe(0);
-		expect(result1.instance!.selectedVariationIndex).toBe(1);
-		expect(result2.instance!.selectedVariationIndex).toBe(2);
-		expect(result3.instance!.selectedVariationIndex).toBe(3);
+		expect(result0.success).toBe(true);
+		expect(result1.success).toBe(true);
+		expect(result2.success).toBe(true);
+		expect(result3.success).toBe(true);
+		if (!result0.success || !result1.success || !result2.success || !result3.success) return;
+
+		expect(result0.instance.selectedVariationIndex).toBe(0);
+		expect(result1.instance.selectedVariationIndex).toBe(1);
+		expect(result2.instance.selectedVariationIndex).toBe(2);
+		expect(result3.instance.selectedVariationIndex).toBe(3);
 
 		// Test seed 4 wraps around to variation 0 (4 % 4 = 0)
 		const result4 = generateInstance(template, 4);
-		expect(result4.instance!.selectedVariationIndex).toBe(0);
+		expect(result4.success).toBe(true);
+		if (!result4.success) return;
+		expect(result4.instance.selectedVariationIndex).toBe(0);
 
 		// Test seed 100 maps to variation 0 (100 % 4 = 0)
 		const result100 = generateInstance(template, 100);
-		expect(result100.instance!.selectedVariationIndex).toBe(0);
+		expect(result100.success).toBe(true);
+		if (!result100.success) return;
+		expect(result100.instance.selectedVariationIndex).toBe(0);
 	});
 
 	it('should validate variations independently', () => {
 		const template: QuestionTemplate = {
 			id: 'test-27',
 			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Valid variation' }],
@@ -1019,17 +1127,19 @@ describe('generateInstance - Variation Selection', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
 		const result = generateInstance(template);
 
 		expect(result.success).toBe(false);
+		if (result.success) return;
+
 		expect(result.errors).toBeDefined();
-		expect(result.errors!.some((e) => e.includes('Variation 2') || e.includes('variation 1'))).toBe(
-			true
-		);
+		expect(
+			result.errors.some((e: string) => e.includes('Variation 2') || e.includes('variation 1'))
+		).toBe(true);
 	});
 });

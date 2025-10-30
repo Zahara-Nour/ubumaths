@@ -12,6 +12,7 @@ import type { Database } from '$lib/types/database';
 import { validateUpdateExercise } from '$lib/server/validation';
 
 type ExerciseUpdate = Database['public']['Tables']['exercises']['Update'];
+type ZodIssue = { path: (string | number)[]; message: string };
 
 /**
  * GET /api/exercises/[id]
@@ -76,8 +77,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const validation = validateUpdateExercise(body);
 
 	if (!validation.success) {
-		const errorMsg = validation.error.errors
-			.map((e) => `${e.path.join('.')}: ${e.message}`)
+		const errorMsg = validation.error.issues
+			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
 		throw error(400, `Validation failed: ${errorMsg}`);
 	}

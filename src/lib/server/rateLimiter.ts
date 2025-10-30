@@ -86,8 +86,10 @@ async function checkRateLimit(
 
 		if (existing) {
 			// Entry exists and hasn't expired
+			console.log(`[RATE LIMITER] Checking: count=${existing.count}, max=${maxAttempts}, blocked=${existing.count >= maxAttempts}`);
 			if (existing.count >= maxAttempts) {
-				logger.debug('Rate limit exceeded', { key: maskKey(key), count: existing.count });
+				logger.trace('Rate limit exceeded', { key: maskKey(key), count: existing.count });
+				console.log(`[RATE LIMITER] BLOCKING - returning true`);
 				return true; // Rate limit exceeded
 			}
 
@@ -102,7 +104,8 @@ async function checkRateLimit(
 				return false; // Fail open
 			}
 
-			logger.debug('Rate limit incremented', { key: maskKey(key), count: existing.count + 1 });
+			logger.trace('Rate limit incremented', { key: maskKey(key), count: existing.count + 1 });
+			console.log(`[RATE LIMITER] ALLOWING - returning false`);
 			return false; // Allowed
 		} else {
 			// No existing entry or expired - create new entry
@@ -116,7 +119,7 @@ async function checkRateLimit(
 				// Handle unique constraint violation (race condition)
 				if (insertError.code === '23505') {
 					// Entry was created by another request, retry once
-					logger.debug('Unique constraint violation, retrying', { key: maskKey(key) });
+					logger.trace('Unique constraint violation, retrying', { key: maskKey(key) });
 					return checkRateLimit(supabase, config);
 				}
 
@@ -124,7 +127,7 @@ async function checkRateLimit(
 				return false; // Fail open
 			}
 
-			logger.debug('Rate limit entry created', { key: maskKey(key) });
+			logger.trace('Rate limit entry created', { key: maskKey(key) });
 			return false; // First attempt, allowed
 		}
 	} catch (error) {
@@ -189,6 +192,8 @@ export async function checkLoginRateLimitByIP(
 		maxAttempts: 5,
 		windowSeconds: 900 // 15 minutes
 	});
+
+	console.log(`[checkLoginRateLimitByIP] limited=${limited}, will return allowed=${!limited}`);
 
 	if (limited) {
 		logger.warn('Login rate limit exceeded by IP', { ip: maskKey(key) });

@@ -14,7 +14,7 @@
  * - Set up terminal operations (`.single()`, `.then()`) to resolve with mock data
  */
 
-import { vi } from 'vitest';
+import { vi, expect } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
@@ -104,7 +104,7 @@ export function createMockSupabase() {
 /**
  * Create mock request object for API route tests
  */
-export function createMockRequest(data?: Record<string, unknown>, method: string = 'POST') {
+export function createMockRequest(data?: unknown, method: string = 'POST') {
 	return {
 		method,
 		json: vi.fn().mockResolvedValue(data || {}),
@@ -129,7 +129,10 @@ export function createMockLocals(
 						user: { id: userId },
 						session: { access_token: 'mock-token' }
 					}
-				: null // Return null when no user (for 401 tests)
+				: {
+						user: null,
+						session: null
+					}
 		)
 	};
 }

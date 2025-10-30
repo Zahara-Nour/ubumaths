@@ -16,9 +16,7 @@ import {
 	importExerciseFromMarkdown,
 	importExercisesFromJSON
 } from './exercise-import-export';
-import type { Database } from '$lib/types/database';
-
-type Exercise = Database['public']['Tables']['exercises']['Row'];
+import type { Exercise } from '$lib/exercises/types';
 
 // Sample exercise for testing
 const sampleExercise: Exercise = {
@@ -34,7 +32,10 @@ const sampleExercise: Exercise = {
 	topic: 'Algèbre',
 	created_at: '2024-01-01T00:00:00Z',
 	updated_at: '2024-01-01T00:00:00Z',
-	created_by: 'user-123'
+	created_by: 'user-123',
+	distribution_mode: 'on_demand',
+	is_public: false,
+	variables: []
 };
 
 // Mock Supabase client
@@ -90,18 +91,14 @@ describe('exportExerciseToJSON', () => {
 	it('should handle exercise with minimal fields', () => {
 		const minimalExercise: Exercise = {
 			id: 'ex-min',
-			title: null,
-			source: null,
 			difficulty: 1,
 			tags: [],
 			statement_md: 'Simple question',
 			solution_md: 'Simple answer',
-			estimated_time_minutes: null,
-			grade_levels: null,
-			topic: null,
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
-			created_by: 'user-123'
+			created_by: 'user-123',
+			distribution_mode: 'on_demand'
 		};
 
 		const json = exportExerciseToJSON(minimalExercise);
@@ -137,18 +134,14 @@ describe('exportExerciseToMarkdown', () => {
 	it('should handle exercise with minimal fields', () => {
 		const minimalExercise: Exercise = {
 			id: 'ex-min',
-			title: null,
-			source: null,
 			difficulty: 1,
 			tags: [],
 			statement_md: 'Q',
 			solution_md: 'A',
-			estimated_time_minutes: null,
-			grade_levels: null,
-			topic: null,
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
-			created_by: 'user-123'
+			created_by: 'user-123',
+			distribution_mode: 'on_demand'
 		};
 
 		const markdown = exportExerciseToMarkdown(minimalExercise);
@@ -180,7 +173,7 @@ describe('generateExportFilename', () => {
 	});
 
 	it('should use exercise ID when title is null', () => {
-		const noTitleExercise = { ...sampleExercise, title: null };
+		const noTitleExercise = { ...sampleExercise, title: undefined };
 		const filename = generateExportFilename(noTitleExercise, 'json');
 
 		expect(filename).toContain('ex-123');
@@ -505,7 +498,8 @@ describe('importExerciseFromJSON', () => {
 			dataWithInvalidDifficulty,
 			'user-123',
 			{
-				validate: false
+				validate: false,
+				onDuplicate: 'skip'
 			}
 		);
 

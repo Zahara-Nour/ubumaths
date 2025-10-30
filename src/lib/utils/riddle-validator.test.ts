@@ -215,7 +215,7 @@ describe('validateRiddleAnswer', () => {
 		it('should validate single correct answer', () => {
 			const config: AnswerConfig = {
 				type: 'qcm',
-				value: [1],
+				value: [1] as unknown as string,
 				options: {
 					choices: ['Option A', 'Option B', 'Option C'],
 					multipleAnswers: false
@@ -229,7 +229,7 @@ describe('validateRiddleAnswer', () => {
 		it('should validate multiple correct answers', () => {
 			const config: AnswerConfig = {
 				type: 'qcm',
-				value: [0, 2],
+				value: [0, 2] as unknown as string,
 				options: {
 					choices: ['Option A', 'Option B', 'Option C'],
 					multipleAnswers: true
@@ -243,7 +243,7 @@ describe('validateRiddleAnswer', () => {
 		it('should reject incorrect QCM answers', () => {
 			const config: AnswerConfig = {
 				type: 'qcm',
-				value: [1],
+				value: [1] as unknown as string,
 				options: {
 					choices: ['Option A', 'Option B', 'Option C']
 				}
@@ -257,7 +257,7 @@ describe('validateRiddleAnswer', () => {
 		it('should reject partial matches for multiple answers', () => {
 			const config: AnswerConfig = {
 				type: 'qcm',
-				value: [0, 1, 2],
+				value: [0, 1, 2] as unknown as string,
 				options: {
 					choices: ['A', 'B', 'C', 'D'],
 					multipleAnswers: true
@@ -271,7 +271,7 @@ describe('validateRiddleAnswer', () => {
 		it('should reject invalid choice indices', () => {
 			const config: AnswerConfig = {
 				type: 'qcm',
-				value: [1],
+				value: [1] as unknown as string,
 				options: {
 					choices: ['A', 'B', 'C']
 				}
@@ -284,7 +284,7 @@ describe('validateRiddleAnswer', () => {
 		it('should handle string indices by converting to numbers', () => {
 			const config: AnswerConfig = {
 				type: 'qcm',
-				value: [1],
+				value: [1] as unknown as string,
 				options: {
 					choices: ['A', 'B', 'C']
 				}
@@ -296,7 +296,7 @@ describe('validateRiddleAnswer', () => {
 		it('should return error for missing choices configuration', () => {
 			const config: AnswerConfig = {
 				type: 'qcm',
-				value: [1],
+				value: [1] as unknown as string,
 				options: {}
 			};
 

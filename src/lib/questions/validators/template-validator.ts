@@ -126,8 +126,8 @@ function validateVariation(
 			if (field.type === 'text' && !field.content) {
 				errors.push(`${prefix} Text content field cannot be empty`);
 			}
-			if (field.type === 'image' && !field.url) {
-				errors.push(`${prefix} Image field requires url`);
+			if (field.type === 'image' && !field.content) {
+				errors.push(`${prefix} Image field requires content (URL)`);
 			}
 		}
 	}
@@ -143,8 +143,8 @@ function validateVariation(
 			if (field.type === 'text' && !field.content) {
 				errors.push(`${prefix} Correction text field cannot be empty`);
 			}
-			if (field.type === 'image' && !field.url) {
-				errors.push(`${prefix} Correction image field requires url`);
+			if (field.type === 'image' && !field.content) {
+				errors.push(`${prefix} Correction image field requires content (URL)`);
 			}
 		}
 	}

@@ -493,7 +493,7 @@ class PrivateMessagesStore {
 
 			// Update drafts list
 			if (params.id) {
-				this.drafts = this.drafts.map((d) => (d.id === params.id ? data.draft : d));
+				this.drafts = this.drafts.map((d: any) => (d.id === params.id ? data.draft : d));
 			} else {
 				this.drafts = [data.draft, ...this.drafts];
 			}
@@ -519,7 +519,7 @@ class PrivateMessagesStore {
 				throw new Error('Erreur lors de la suppression du brouillon');
 			}
 
-			this.drafts = this.drafts.filter((d) => d.id !== draftId);
+			this.drafts = this.drafts.filter((d: any) => d.id !== draftId);
 			toaster.success('Brouillon supprimé');
 		} catch (error) {
 			console.error('Error deleting draft:', error);

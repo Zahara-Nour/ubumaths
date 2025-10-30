@@ -18,7 +18,7 @@ import {
 } from './exercises';
 import type { Database } from '$lib/types/database';
 
-type Exercise = Database['public']['Tables']['exercises']['Row'];
+type ExerciseRow = Database['public']['Tables']['exercises']['Row'];
 
 // Mock Supabase client
 const createMockSupabase = () => {
@@ -45,7 +45,7 @@ const createMockSupabase = () => {
 describe('getExercises', () => {
 	it('should fetch exercises with default pagination', async () => {
 		const mockSupabase = createMockSupabase() as any;
-		const mockData: Exercise[] = [
+		const mockData: ExerciseRow[] = [
 			{
 				id: '1',
 				title: 'Test Exercise',
@@ -59,7 +59,10 @@ describe('getExercises', () => {
 				topic: 'Algèbre',
 				created_at: '2024-01-01T00:00:00Z',
 				updated_at: '2024-01-01T00:00:00Z',
-				created_by: 'user-123'
+				created_by: 'user-123',
+				distribution_mode: 'on_demand',
+				is_public: false,
+				variables: {}
 			}
 		];
 
@@ -135,7 +138,7 @@ describe('getExercises', () => {
 describe('getExercise', () => {
 	it('should fetch a single exercise by ID', async () => {
 		const mockSupabase = createMockSupabase() as any;
-		const mockExercise: Exercise = {
+		const mockExercise: ExerciseRow = {
 			id: 'ex-123',
 			title: 'Test Exercise',
 			source: 'Test Book',
@@ -148,7 +151,10 @@ describe('getExercise', () => {
 			topic: 'Algèbre',
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
-			created_by: 'user-123'
+			created_by: 'user-123',
+			distribution_mode: 'on_demand',
+			is_public: false,
+			variables: {}
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: mockExercise, error: null });
@@ -185,7 +191,7 @@ describe('createExercise', () => {
 			solution_md: 'Test solution'
 		};
 
-		const createdExercise: Exercise = {
+		const createdExercise: ExerciseRow = {
 			id: 'new-ex-123',
 			...newExercise,
 			title: null,
@@ -195,7 +201,10 @@ describe('createExercise', () => {
 			topic: null,
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
-			created_by: 'user-123'
+			created_by: 'user-123',
+			distribution_mode: 'on_demand',
+			is_public: false,
+			variables: {}
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: createdExercise, error: null });
@@ -217,7 +226,7 @@ describe('createExercise', () => {
 describe('updateExercise', () => {
 	it('should update an existing exercise', async () => {
 		const mockSupabase = createMockSupabase() as any;
-		const existingExercise: Exercise = {
+		const existingExercise: ExerciseRow = {
 			id: 'ex-123',
 			title: 'Original Title',
 			source: 'Original Source',
@@ -230,7 +239,10 @@ describe('updateExercise', () => {
 			topic: 'Algèbre',
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
-			created_by: 'user-123'
+			created_by: 'user-123',
+			distribution_mode: 'on_demand',
+			is_public: false,
+			variables: {}
 		};
 
 		const updates = {
@@ -252,7 +264,7 @@ describe('updateExercise', () => {
 
 	it('should reject update from non-owner', async () => {
 		const mockSupabase = createMockSupabase() as any;
-		const existingExercise: Exercise = {
+		const existingExercise: ExerciseRow = {
 			id: 'ex-123',
 			title: 'Test',
 			source: null,
@@ -265,7 +277,10 @@ describe('updateExercise', () => {
 			topic: null,
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
-			created_by: 'owner-456'
+			created_by: 'owner-456',
+			distribution_mode: 'on_demand',
+			is_public: false,
+			variables: {}
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: existingExercise, error: null });
@@ -281,7 +296,7 @@ describe('updateExercise', () => {
 describe('deleteExercise', () => {
 	it('should delete an exercise', async () => {
 		const mockSupabase = createMockSupabase() as any;
-		const existingExercise: Exercise = {
+		const existingExercise: ExerciseRow = {
 			id: 'ex-123',
 			title: 'To Delete',
 			source: null,
@@ -294,7 +309,10 @@ describe('deleteExercise', () => {
 			topic: null,
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
-			created_by: 'user-123'
+			created_by: 'user-123',
+			distribution_mode: 'on_demand',
+			is_public: false,
+			variables: {}
 		};
 
 		// Mock getExercise call - .single() returns the exercise
@@ -320,7 +338,7 @@ describe('deleteExercise', () => {
 
 	it('should reject delete from non-owner', async () => {
 		const mockSupabase = createMockSupabase() as any;
-		const existingExercise: Exercise = {
+		const existingExercise: ExerciseRow = {
 			id: 'ex-123',
 			title: 'Protected',
 			source: null,
@@ -333,7 +351,10 @@ describe('deleteExercise', () => {
 			topic: null,
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
-			created_by: 'owner-456'
+			created_by: 'owner-456',
+			distribution_mode: 'on_demand',
+			is_public: false,
+			variables: {}
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: existingExercise, error: null });

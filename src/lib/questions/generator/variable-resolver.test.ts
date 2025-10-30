@@ -42,9 +42,9 @@ describe('resolveVariables - Simple Cases', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.a).toBeGreaterThanOrEqual(1);
-		expect(result.a).toBeLessThanOrEqual(10);
-		expect(Number.isInteger(result.a)).toBe(true);
+		expect(Number(result.a)).toBeGreaterThanOrEqual(1);
+		expect(Number(result.a)).toBeLessThanOrEqual(10);
+		expect(Number.isInteger(Number(result.a))).toBe(true);
 	});
 
 	it('should resolve simple eval expression', () => {
@@ -53,7 +53,7 @@ describe('resolveVariables - Simple Cases', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.a).toBe(5);
+		expect(Number(result.a)).toBe(5);
 	});
 
 	it('should resolve literal number', () => {
@@ -62,7 +62,7 @@ describe('resolveVariables - Simple Cases', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.a).toBe(42); // toObject() converts numeric strings to numbers
+		expect(Number(result.a)).toBe(42); // toObject() converts numeric strings to numbers
 	});
 
 	it('should resolve multiple independent variables', () => {
@@ -75,11 +75,11 @@ describe('resolveVariables - Simple Cases', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.a).toBeGreaterThanOrEqual(1);
-		expect(result.a).toBeLessThanOrEqual(5);
-		expect(result.b).toBeGreaterThanOrEqual(6);
-		expect(result.b).toBeLessThanOrEqual(10);
-		expect(result.c).toBe(15);
+		expect(Number(result.a)).toBeGreaterThanOrEqual(1);
+		expect(Number(result.a)).toBeLessThanOrEqual(5);
+		expect(Number(result.b)).toBeGreaterThanOrEqual(6);
+		expect(Number(result.b)).toBeLessThanOrEqual(10);
+		expect(Number(result.c)).toBe(15);
 	});
 });
 
@@ -93,8 +93,8 @@ describe('resolveVariables - Variable References', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.a).toBe(5);
-		expect(result.b).toBe(5);
+		expect(Number(result.a)).toBe(5);
+		expect(Number(result.b)).toBe(5);
 	});
 
 	it('should resolve variable in eval expression', () => {
@@ -106,7 +106,7 @@ describe('resolveVariables - Variable References', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.b).toBe(result.a * 2);
+		expect(Number(result.b)).toBe(Number(result.a) * 2);
 	});
 
 	it('should resolve variable in random bounds', () => {
@@ -119,8 +119,8 @@ describe('resolveVariables - Variable References', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.random).toBeGreaterThanOrEqual(5);
-		expect(result.random).toBeLessThanOrEqual(15);
+		expect(Number(result.random)).toBeGreaterThanOrEqual(5);
+		expect(Number(result.random)).toBeLessThanOrEqual(15);
 	});
 
 	it('should resolve chain of variable references', () => {
@@ -133,7 +133,7 @@ describe('resolveVariables - Variable References', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.c).toBe((result.a + 10) * 2);
+		expect(Number(result.c)).toBe((Number(result.a) + 10) * 2);
 	});
 
 	it('should resolve multiple variables in one expression', () => {
@@ -146,7 +146,7 @@ describe('resolveVariables - Variable References', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.sum).toBe(result.a + result.b);
+		expect(Number(result.sum)).toBe(Number(result.a) + Number(result.b));
 	});
 });
 
@@ -161,8 +161,8 @@ describe('resolveVariables - 3-Stage Pipeline', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.random).toBeGreaterThanOrEqual(1);
-		expect(result.random).toBeLessThanOrEqual(10);
+		expect(Number(result.random)).toBeGreaterThanOrEqual(1);
+		expect(Number(result.random)).toBeLessThanOrEqual(10);
 	});
 
 	it('should resolve random before eval', () => {
@@ -174,7 +174,7 @@ describe('resolveVariables - 3-Stage Pipeline', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.doubled).toBe(result.random * 2);
+		expect(result.doubled).toBe(Number(result.random) * 2);
 	});
 
 	it('should resolve full pipeline: variable → random → eval', () => {
@@ -187,9 +187,9 @@ describe('resolveVariables - 3-Stage Pipeline', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.random).toBeGreaterThanOrEqual(1);
-		expect(result.random).toBeLessThanOrEqual(10);
-		expect(result.squared).toBe(result.random ** 2);
+		expect(Number(result.random)).toBeGreaterThanOrEqual(1);
+		expect(Number(result.random)).toBeLessThanOrEqual(10);
+		expect(result.squared).toBe(Number(result.random) ** 2);
 	});
 
 	it('should handle complex multi-stage resolution', () => {
@@ -204,12 +204,12 @@ describe('resolveVariables - 3-Stage Pipeline', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		const expectedMin = result.base * 2;
-		const expectedMax = result.base * 2 + 10;
+		const expectedMin = Number(result.base) * 2;
+		const expectedMax = Number(result.base) * 2 + 10;
 
 		expect(result.multiplier).toBe(expectedMin);
-		expect(result.min).toBe(expectedMin);
-		expect(result.max).toBe(expectedMax);
+		expect(Number(result.min)).toBe(expectedMin);
+		expect(Number(result.max)).toBe(expectedMax);
 		expect(result.final).toBeGreaterThanOrEqual(expectedMin);
 		expect(result.final).toBeLessThanOrEqual(expectedMax);
 	});
@@ -225,9 +225,9 @@ describe('resolveVariables - Exclusions with Variables', () => {
 		const resolved = resolveVariables(variables, 12345);
 		const result = toObject(resolved);
 
-		expect(result.random).not.toBe(5);
-		expect(result.random).toBeGreaterThanOrEqual(1);
-		expect(result.random).toBeLessThanOrEqual(10);
+		expect(Number(result.random)).not.toBe(5);
+		expect(Number(result.random)).toBeGreaterThanOrEqual(1);
+		expect(Number(result.random)).toBeLessThanOrEqual(10);
 	});
 
 	it('should resolve variables in range exclusion', () => {
@@ -240,7 +240,7 @@ describe('resolveVariables - Exclusions with Variables', () => {
 		const resolved = resolveVariables(variables, 54321);
 		const result = toObject(resolved);
 
-		expect(result.random < 5 || result.random > 8).toBe(true);
+		expect(Number(result.random) < 5 || Number(result.random) > 8).toBe(true);
 	});
 
 	it('should resolve multiple exclusions with variables', () => {
@@ -253,8 +253,8 @@ describe('resolveVariables - Exclusions with Variables', () => {
 		const resolved = resolveVariables(variables, 11111);
 		const result = toObject(resolved);
 
-		expect(result.random).not.toBe(3);
-		expect(result.random).not.toBe(7);
+		expect(Number(result.random)).not.toBe(3);
+		expect(Number(result.random)).not.toBe(7);
 	});
 });
 
@@ -308,8 +308,8 @@ describe('resolveVariables - Decimal Variables', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.a).toBeGreaterThanOrEqual(0.5);
-		expect(result.a).toBeLessThanOrEqual(9.99);
+		expect(Number(result.a)).toBeGreaterThanOrEqual(0.5);
+		expect(Number(result.a)).toBeLessThanOrEqual(9.99);
 	});
 
 	it('should resolve decimal by digits', () => {
@@ -318,8 +318,8 @@ describe('resolveVariables - Decimal Variables', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.a).toBeGreaterThanOrEqual(10);
-		expect(result.a).toBeLessThan(100);
+		expect(Number(result.a)).toBeGreaterThanOrEqual(10);
+		expect(Number(result.a)).toBeLessThan(100);
 	});
 
 	it('should resolve eval with decimal variables', () => {
@@ -331,7 +331,7 @@ describe('resolveVariables - Decimal Variables', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.b).toBe(result.a * 2);
+		expect(Number(result.b)).toBe(Number(result.a) * 2);
 	});
 
 	it('should resolve decimal variables in bounds', () => {
@@ -344,8 +344,8 @@ describe('resolveVariables - Decimal Variables', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.random).toBeGreaterThanOrEqual(1.5);
-		expect(result.random).toBeLessThanOrEqual(9.5);
+		expect(Number(result.random)).toBeGreaterThanOrEqual(1.5);
+		expect(Number(result.random)).toBeLessThanOrEqual(9.5);
 	});
 });
 
@@ -362,14 +362,17 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 		const resolved = resolveVariables(variables, 12345);
 		const result = toObject(resolved);
 
-		expect(result.den).toBeGreaterThanOrEqual(2);
-		expect(result.den).toBeLessThanOrEqual(9);
-		expect(result.num1).toBeGreaterThanOrEqual(1);
-		expect(result.num1).toBeLessThan(result.den);
-		expect(result.num2).toBeGreaterThanOrEqual(1);
-		expect(result.num2).toBeLessThan(result.den);
-		expect(result.num1).not.toBe(result.num2);
-		expect(result.answer).toBeCloseTo((result.num1 + result.num2) / result.den, 5);
+		expect(Number(result.den)).toBeGreaterThanOrEqual(2);
+		expect(Number(result.den)).toBeLessThanOrEqual(9);
+		expect(Number(result.num1)).toBeGreaterThanOrEqual(1);
+		expect(Number(result.num1)).toBeLessThan(Number(result.den));
+		expect(Number(result.num2)).toBeGreaterThanOrEqual(1);
+		expect(Number(result.num2)).toBeLessThan(Number(result.den));
+		expect(Number(result.num1)).not.toBe(Number(result.num2));
+		expect(result.answer).toBeCloseTo(
+			(Number(result.num1) + Number(result.num2)) / Number(result.den),
+			5
+		);
 	});
 
 	it('should resolve GCD/simplification variables', () => {
@@ -385,12 +388,12 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 		const resolved = resolveVariables(variables, 54321);
 		const result = toObject(resolved);
 
-		expect(result.gcd).toBeGreaterThanOrEqual(2);
-		expect(result.gcd).toBeLessThanOrEqual(5);
-		expect(result.a).not.toBe(result.b);
-		expect(result.num).toBe(result.a * result.gcd);
-		expect(result.den).toBe(result.b * result.gcd);
-		expect(result.answer).toBeCloseTo(result.num / result.den, 5);
+		expect(Number(result.gcd)).toBeGreaterThanOrEqual(2);
+		expect(Number(result.gcd)).toBeLessThanOrEqual(5);
+		expect(Number(result.a)).not.toBe(Number(result.b));
+		expect(Number(result.num)).toBe(Number(result.a) * Number(result.gcd));
+		expect(Number(result.den)).toBe(Number(result.b) * Number(result.gcd));
+		expect(result.answer).toBeCloseTo(Number(result.num) / Number(result.den), 5);
 	});
 
 	it('should resolve quadratic equation variables', () => {
@@ -404,7 +407,9 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 		const resolved = resolveVariables(variables, 99999);
 		const result = toObject(resolved);
 
-		expect(result.discriminant).toBe(result.b ** 2 - 4 * result.a * result.c);
+		expect(result.discriminant).toBe(
+			Number(result.b) ** 2 - 4 * Number(result.a) * Number(result.c)
+		);
 	});
 
 	it('should resolve percentage calculation variables', () => {
@@ -418,8 +423,11 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 		const resolved = resolveVariables(variables, 33333);
 		const result = toObject(resolved);
 
-		expect(result.reduction).toBeCloseTo((result.price * result.discount) / 100, 5);
-		expect(result.final).toBeCloseTo(result.price - result.reduction, 5);
+		expect(Number(result.reduction)).toBeCloseTo(
+			(Number(result.price) * Number(result.discount)) / 100,
+			5
+		);
+		expect(result.final).toBeCloseTo(Number(result.price) - Number(result.reduction), 5);
 	});
 });
 
@@ -451,7 +459,7 @@ describe('resolveVariables - Edge Cases', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.latex).toContain(result.a.toString());
+		expect(result.latex).toContain(Number(result.a).toString());
 	});
 
 	it('should handle very long variable names', () => {
@@ -466,7 +474,7 @@ describe('resolveVariables - Edge Cases', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.result).toBe(result.very_long_variable_name_for_testing * 2);
+		expect(Number(result.result)).toBe(Number(result.very_long_variable_name_for_testing) * 2);
 	});
 
 	it('should handle negative numbers in eval', () => {
@@ -478,7 +486,7 @@ describe('resolveVariables - Edge Cases', () => {
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
 
-		expect(result.negative).toBe(-result.a);
+		expect(result.negative).toBe(-Number(result.a));
 	});
 
 	it('should handle zero values', () => {
@@ -491,7 +499,7 @@ describe('resolveVariables - Edge Cases', () => {
 		const result = toObject(resolved);
 
 		expect(result.zero).toBe(0);
-		expect(result.result).toBe(5);
+		expect(Number(result.result)).toBe(5);
 	});
 });
 

@@ -23,7 +23,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Get user context if session exists
 		const { user } = await locals.safeGetSession();
 		let userContext = {};
-		if (session?.user?.id) {
+		if (user?.id) {
 			userContext = await getUserContext(locals.supabase, user.id);
 		}
 

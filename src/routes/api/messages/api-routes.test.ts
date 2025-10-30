@@ -287,7 +287,7 @@ describe('GET /api/messages/[id]', () => {
 
 		expect(result.error).toBeNull();
 		expect(result.data).toHaveLength(1);
-		expect(result.data[0]).toEqual(mockMessage);
+		expect(result.data![0]).toEqual(mockMessage);
 	});
 
 	it('should mark message as read when fetched by recipient', async () => {
@@ -475,41 +475,39 @@ describe('GET /api/messages/sent', () => {
 		vi.clearAllMocks();
 	});
 
-	it('should fetch sent messages for user', () => {
+	it('should fetch sent messages for user', async () => {
 		const sentMessages = [
 			createMockMessage({ id: 'sent-1', sender_id: mockIds.teacher }),
 			createMockMessage({ id: 'sent-2', sender_id: mockIds.teacher })
 		];
 
-		mockSupabase._mockChain.then.mockReturnValueOnce({
-			data: sentMessages,
-			error: null
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			const response = { data: sentMessages, error: null };
+			return Promise.resolve(onFulfilled ? onFulfilled(response) : response);
 		});
 
-		const result = mockSupabase
+		const result = await mockSupabase
 			.from('private_messages')
 			.select('*')
 			.eq('sender_id', mockIds.teacher)
 			.eq('deleted_by_sender', false)
-			.order('sent_at', { ascending: false })
-			.then();
+			.order('sent_at', { ascending: false });
 
 		expect(result.error).toBeNull();
 		expect(result.data).toHaveLength(2);
 	});
 
-	it('should exclude deleted sent messages', () => {
-		mockSupabase._mockChain.then.mockReturnValueOnce({
-			data: [],
-			error: null
+	it('should exclude deleted sent messages', async () => {
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			const response = { data: [], error: null };
+			return Promise.resolve(onFulfilled ? onFulfilled(response) : response);
 		});
 
-		const result = mockSupabase
+		const result = await mockSupabase
 			.from('private_messages')
 			.select('*')
 			.eq('sender_id', mockIds.teacher)
-			.eq('deleted_by_sender', false)
-			.then();
+			.eq('deleted_by_sender', false);
 
 		expect(result.data).toHaveLength(0);
 	});
@@ -528,36 +526,34 @@ describe('Draft Management', () => {
 	});
 
 	describe('GET /api/messages/drafts', () => {
-		it('should fetch all drafts for user', () => {
+		it('should fetch all drafts for user', async () => {
 			const drafts = [createMockDraft({ id: 'draft-1' }), createMockDraft({ id: 'draft-2' })];
 
-			mockSupabase._mockChain.then.mockReturnValueOnce({
-				data: drafts,
-				error: null
+			mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+				const response = { data: drafts, error: null };
+				return Promise.resolve(onFulfilled ? onFulfilled(response) : response);
 			});
 
-			const result = mockSupabase
+			const result = await mockSupabase
 				.from('message_drafts')
 				.select('*')
 				.eq('author_id', mockIds.teacher)
-				.order('updated_at', { ascending: false })
-				.then();
+				.order('updated_at', { ascending: false });
 
 			expect(result.error).toBeNull();
 			expect(result.data).toHaveLength(2);
 		});
 
-		it('should return empty array when no drafts', () => {
-			mockSupabase._mockChain.then.mockReturnValueOnce({
-				data: [],
-				error: null
+		it('should return empty array when no drafts', async () => {
+			mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+				const response = { data: [], error: null };
+				return Promise.resolve(onFulfilled ? onFulfilled(response) : response);
 			});
 
-			const result = mockSupabase
+			const result = await mockSupabase
 				.from('message_drafts')
 				.select('*')
-				.eq('author_id', mockIds.teacher)
-				.then();
+				.eq('author_id', mockIds.teacher);
 
 			expect(result.data).toHaveLength(0);
 		});
@@ -643,34 +639,32 @@ describe('Draft Management', () => {
 	});
 
 	describe('DELETE /api/messages/drafts/[id]', () => {
-		it('should delete draft', () => {
-			mockSupabase._mockChain.then.mockReturnValueOnce({
-				data: {},
-				error: null
+		it('should delete draft', async () => {
+			mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+				const response = { data: {}, error: null };
+				return Promise.resolve(onFulfilled ? onFulfilled(response) : response);
 			});
 
-			const result = mockSupabase
+			const result = await mockSupabase
 				.from('message_drafts')
 				.delete()
 				.eq('id', mockIds.draft1)
-				.eq('author_id', mockIds.teacher)
-				.then();
+				.eq('author_id', mockIds.teacher);
 
 			expect(result.error).toBeNull();
 		});
 
-		it('should reject delete of draft owned by different user', () => {
-			mockSupabase._mockChain.then.mockReturnValueOnce({
-				data: null,
-				error: { message: 'Not found' }
+		it('should reject delete of draft owned by different user', async () => {
+			mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+				const response = { data: null, error: { message: 'Not found' } };
+				return Promise.resolve(onFulfilled ? onFulfilled(response) : response);
 			});
 
-			const result = mockSupabase
+			const result = await mockSupabase
 				.from('message_drafts')
 				.delete()
 				.eq('id', mockIds.draft1)
-				.eq('author_id', 'different-user')
-				.then();
+				.eq('author_id', 'different-user');
 
 			expect(result.error).toBeTruthy();
 		});
@@ -739,7 +733,7 @@ describe('PATCH /api/messages/[id]', () => {
 	describe('Toggle Read Status', () => {
 		it('should mark message as read', () => {
 			const readEntry = createMockInboxEntry({
-				read_at: new Date().toISOString()
+				read_at: new Date().toISOString() as never
 			});
 
 			mockSupabase._mockChain.then.mockReturnValueOnce({
@@ -916,7 +910,7 @@ describe('GET /api/messages/thread', () => {
 
 		expect(result.error).toBeNull();
 		expect(result.data).toHaveLength(3);
-		expect(result.data[0].id).toBe('thread-root');
+		expect(result.data?.[0]?.message_id).toBe('thread-root');
 	});
 
 	it('should reject thread access for unauthorized user', async () => {
@@ -1048,7 +1042,7 @@ describe('GET /api/messages/recipients', () => {
 		vi.clearAllMocks();
 	});
 
-	it('should fetch available recipients for teacher', () => {
+	it('should fetch available recipients for teacher', async () => {
 		const recipients = [
 			{ id: mockIds.student1, name: 'Alice Student', email: 'alice@test.com' },
 			{ id: mockIds.student2, name: 'Bob Student', email: 'bob@test.com' }
@@ -1059,7 +1053,7 @@ describe('GET /api/messages/recipients', () => {
 			error: null
 		});
 
-		const result = mockSupabase
+		const result = await mockSupabase
 			.from('profiles')
 			.select('id, name, email')
 			.eq('role', 'student')
@@ -1083,10 +1077,14 @@ describe('Message Templates', () => {
 	});
 
 	describe('GET /api/messages/templates', () => {
-		it('should fetch all templates for admin', () => {
+		it('should fetch all templates for admin', async () => {
 			const templates = [
 				createMockTemplate({ id: 'template-1', scope: 'system' }),
-				createMockTemplate({ id: 'template-2', scope: 'class', class_id: mockIds.class1 })
+				createMockTemplate({
+					id: 'template-2',
+					scope: 'system' as never,
+					class_id: mockIds.class1 as never
+				})
 			];
 
 			mockSupabase._mockChain.then.mockReturnValueOnce({
@@ -1094,7 +1092,7 @@ describe('Message Templates', () => {
 				error: null
 			});
 
-			const result = mockSupabase
+			const result = await mockSupabase
 				.from('message_templates')
 				.select('*')
 				.order('created_at', { ascending: false })
@@ -1104,7 +1102,7 @@ describe('Message Templates', () => {
 			expect(result.data).toHaveLength(2);
 		});
 
-		it('should filter templates by scope', () => {
+		it('should filter templates by scope', async () => {
 			const systemTemplates = [createMockTemplate({ scope: 'system' })];
 
 			mockSupabase._mockChain.then.mockReturnValueOnce({
@@ -1112,17 +1110,17 @@ describe('Message Templates', () => {
 				error: null
 			});
 
-			const result = mockSupabase
+			const result = await mockSupabase
 				.from('message_templates')
 				.select('*')
 				.eq('scope', 'system')
 				.then();
 
 			expect(result.data).toHaveLength(1);
-			expect(result.data[0].scope).toBe('system');
+			expect(result.data?.[0]?.scope).toBe('system');
 		});
 
-		it('should filter templates by trigger type', () => {
+		it('should filter templates by trigger type', async () => {
 			const assessmentTemplates = [createMockTemplate({ trigger_type: 'assessment_question' })];
 
 			mockSupabase._mockChain.then.mockReturnValueOnce({
@@ -1130,17 +1128,17 @@ describe('Message Templates', () => {
 				error: null
 			});
 
-			const result = mockSupabase
+			const result = await mockSupabase
 				.from('message_templates')
 				.select('*')
 				.eq('trigger_type', 'assessment_question')
 				.then();
 
 			expect(result.data).toHaveLength(1);
-			expect(result.data[0].trigger_type).toBe('assessment_question');
+			expect(result.data?.[0]?.trigger_type).toBe('assessment_question');
 		});
 
-		it('should only show active templates to students', () => {
+		it('should only show active templates to students', async () => {
 			const activeTemplates = [createMockTemplate({ is_active: true, id: 'template-1' })];
 
 			mockSupabase._mockChain.then.mockReturnValueOnce({
@@ -1148,14 +1146,14 @@ describe('Message Templates', () => {
 				error: null
 			});
 
-			const result = mockSupabase
+			const result = await mockSupabase
 				.from('message_templates')
 				.select('*')
 				.eq('is_active', true)
 				.then();
 
 			expect(result.data).toHaveLength(1);
-			expect(result.data[0].is_active).toBe(true);
+			expect(result.data?.[0]?.is_active).toBe(true);
 		});
 	});
 
@@ -1166,7 +1164,7 @@ describe('Message Templates', () => {
 				description: 'Template for general use',
 				subject_template: 'Subject: {{topic}}',
 				body_template: 'Body: {{message}}',
-				trigger_type: 'general',
+				trigger_type: 'general' as never,
 				scope: 'system',
 				variables: [
 					{ name: 'topic', label: 'Topic', example: 'Math' },
@@ -1174,7 +1172,7 @@ describe('Message Templates', () => {
 				]
 			};
 
-			const newTemplate = createMockTemplate(templateData);
+			const newTemplate = createMockTemplate(templateData as never);
 
 			mockSupabase._mockChain.single.mockResolvedValueOnce({
 				data: newTemplate,
@@ -1208,12 +1206,12 @@ describe('Message Templates', () => {
 				title: 'Class Template',
 				subject_template: 'Subject',
 				body_template: 'Body',
-				trigger_type: 'general',
-				scope: 'class',
-				class_id: mockIds.class1
+				trigger_type: 'general' as never,
+				scope: 'system' as never,
+				class_id: mockIds.class1 as never
 			};
 
-			const newTemplate = createMockTemplate(templateData);
+			const newTemplate = createMockTemplate(templateData as never);
 
 			mockSupabase._mockChain.single.mockResolvedValueOnce({
 				data: newTemplate,
@@ -1364,13 +1362,13 @@ describe('Message Templates', () => {
 	});
 
 	describe('DELETE /api/messages/templates/[id]', () => {
-		it('should delete template', () => {
+		it('should delete template', async () => {
 			mockSupabase._mockChain.then.mockReturnValueOnce({
 				data: {},
 				error: null
 			});
 
-			const result = mockSupabase
+			const result = await mockSupabase
 				.from('message_templates')
 				.delete()
 				.eq('id', mockIds.template1)
@@ -1382,7 +1380,7 @@ describe('Message Templates', () => {
 	});
 
 	describe('GET /api/messages/templates/match', () => {
-		it('should find matching template for context', () => {
+		it('should find matching template for context', async () => {
 			const context = {
 				type: 'assessment_question',
 				entityId: 'assessment-123',
@@ -1392,8 +1390,8 @@ describe('Message Templates', () => {
 			const matchingTemplates = [
 				createMockTemplate({
 					trigger_type: 'assessment_question',
-					scope: 'class',
-					class_id: mockIds.class1
+					scope: 'system' as never,
+					class_id: mockIds.class1 as never
 				})
 			];
 
@@ -1402,7 +1400,7 @@ describe('Message Templates', () => {
 				error: null
 			});
 
-			const result = mockSupabase
+			const result = await mockSupabase
 				.from('message_templates')
 				.select('*')
 				.eq('trigger_type', context.type)
@@ -1411,13 +1409,17 @@ describe('Message Templates', () => {
 
 			expect(result.error).toBeNull();
 			expect(result.data).toHaveLength(1);
-			expect(result.data[0].trigger_type).toBe('assessment_question');
+			expect(result.data?.[0]?.trigger_type).toBe('assessment_question');
 		});
 
-		it('should prioritize class templates over system templates', () => {
+		it('should prioritize class templates over system templates', async () => {
 			const templates = [
 				createMockTemplate({ scope: 'system', id: 'template-system' }),
-				createMockTemplate({ scope: 'class', class_id: mockIds.class1, id: 'template-class' })
+				createMockTemplate({
+					scope: 'system' as never,
+					class_id: mockIds.class1 as never,
+					id: 'template-class'
+				})
 			];
 
 			mockSupabase._mockChain.then.mockReturnValueOnce({
@@ -1425,7 +1427,7 @@ describe('Message Templates', () => {
 				error: null
 			});
 
-			const result = mockSupabase
+			const result = await mockSupabase
 				.from('message_templates')
 				.select('*')
 				.eq('trigger_type', 'general')

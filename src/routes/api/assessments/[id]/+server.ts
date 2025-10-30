@@ -172,5 +172,5 @@ async function getStudentClassIds(supabase: SupabaseClient, studentId: string): 
 		.select('class_id')
 		.eq('student_id', studentId);
 
-	return data?.map((cm) => cm.class_id).join(',') || '';
+	return data?.map((cm: { class_id: string }) => cm.class_id).join(',') || '';
 }

@@ -82,7 +82,7 @@ describe('GLOBAL_VARIABLES', () => {
 		GLOBAL_VARIABLES.forEach((variable) => {
 			// Check that labels/descriptions contain French characters or common French words
 			expect(variable.label.length).toBeGreaterThan(0);
-			expect(variable.description.length).toBeGreaterThan(0);
+			expect(variable.description?.length ?? 0).toBeGreaterThan(0);
 		});
 	});
 });
@@ -752,7 +752,7 @@ describe('Data Quality', () => {
 
 		allVariables.forEach((variable) => {
 			expect(variable.description).toBeTruthy();
-			expect(variable.description.length).toBeGreaterThan(0);
+			expect(variable.description?.length ?? 0).toBeGreaterThan(0);
 		});
 	});
 

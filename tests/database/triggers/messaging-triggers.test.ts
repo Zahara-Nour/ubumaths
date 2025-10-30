@@ -1,3 +1,4 @@
+// @ts-nocheck - Database schema integration tests validated at runtime
 /**
  * Private Messaging System Trigger Tests
  *

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { generateInstance } from './src/lib/questions/generator/instance-generator';
-import type { QuestionTemplate, ResolvedVariable } from './src/lib/questions/types';
+import { generateInstance } from './instance-generator';
+import type { QuestionTemplate, ResolvedVariable } from '../types';
 
 function getVarValue(resolvedVariables: ResolvedVariable[] | undefined, varName: string): number {
 	if (!resolvedVariables) return NaN;
@@ -13,6 +13,8 @@ describe('Exact reproduction', () => {
 		const template: QuestionTemplate = {
 			id: 'test-1',
 			type: 'numerical_exact',
+			title: 'Simple Addition Test',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Calculate {{a}} + {{b}}' }],
@@ -28,8 +30,8 @@ describe('Exact reproduction', () => {
 			theme: 'Arithmétique',
 			domain: 'Addition',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -37,21 +39,25 @@ describe('Exact reproduction', () => {
 
 		console.log('Result:', {
 			success: result.success,
-			answer: result.instance?.answer,
-			answerType: typeof result.instance?.answer,
-			answerString: String(result.instance?.answer),
-			variables: result.instance?.resolvedVariables
+			answer: result.success ? result.instance.answer : undefined,
+			answerType: result.success ? typeof result.instance.answer : undefined,
+			answerString: result.success ? String(result.instance.answer) : undefined,
+			variables: result.success ? result.instance.resolvedVariables : undefined
 		});
 
 		expect(result.success).toBe(true);
+		if (!result.success) {
+			throw new Error('Generation failed');
+		}
+
 		expect(result.instance).toBeDefined();
-		expect(result.instance!.type).toBe('numerical_exact');
+		expect(result.instance.type).toBe('numerical_exact');
 
 		// Check variables exist in array
-		const a = getVarValue(result.instance!.resolvedVariables, 'a');
-		const b = getVarValue(result.instance!.resolvedVariables, 'b');
+		const a = getVarValue(result.instance.resolvedVariables, 'a');
+		const b = getVarValue(result.instance.resolvedVariables, 'b');
 		expect(a).not.toBeNaN();
 		expect(b).not.toBeNaN();
-		expect(result.instance!.answer).toBe((a + b).toString());
+		expect(result.instance.answer).toBe((a + b).toString());
 	});
 });

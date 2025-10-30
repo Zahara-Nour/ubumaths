@@ -68,16 +68,18 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		const selectedVariation = template.variations[variationIndex];
 
 		// 3. Detect circular dependencies in selected variation
-		const circularErrors = detectCircularDependencies(selectedVariation.variables);
-		if (circularErrors.length > 0) {
-			return {
-				success: false,
-				errors: circularErrors
-			};
+		if (selectedVariation.variables) {
+			const circularResult = detectCircularDependencies(selectedVariation.variables);
+			if (!circularResult.valid) {
+				return {
+					success: false,
+					errors: circularResult.errors.map((err) => err.message)
+				};
+			}
 		}
 
 		// 4. Resolve variables in declaration order
-		const resolvedVariables = resolveVariables(selectedVariation.variables, seed);
+		const resolvedVariables = resolveVariables(selectedVariation.variables || [], seed);
 
 		// 5. Resolve content fields from selected variation
 		const resolvedStatement = resolveContentFields(

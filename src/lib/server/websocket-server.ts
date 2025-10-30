@@ -121,8 +121,15 @@ async function updatePresence(userId: string, status: 'online' | 'offline'): Pro
 	}
 }
 
-// Broadcast presence update to specific users
-function broadcastToUsers(userIds: string[], message: PresenceUpdateMessage): void {
+// Broadcast message to specific users
+type BroadcastMessage =
+	| PresenceUpdateMessage
+	| ChatMessageBroadcast
+	| TypingIndicatorBroadcast
+	| MessageReadBroadcast
+	| MessageReactionBroadcast;
+
+function broadcastToUsers(userIds: string[], message: BroadcastMessage): void {
 	userIds.forEach((userId) => {
 		const ws = connections.get(userId);
 		if (ws && ws.readyState === WebSocket.OPEN) {

@@ -12,7 +12,7 @@ import {
 } from './challenge-variables';
 import { seedRandom, resetRandom, createTestChallenge } from '$lib/test-utils/game-fixtures';
 
-import type { GameChallenge } from '$lib/types/game'; // For future tests
+import type { GameChallenge, ChallengeAnswer } from '$lib/types/game'; // For future tests
 
 describe('Challenge Variable System', () => {
 	describe('generateChallengeInstance', () => {
@@ -85,7 +85,7 @@ describe('Challenge Variable System', () => {
 			const challenge: GameChallenge = {
 				...createTestChallenge(),
 				variables: {
-					options: { value: ['A', 'B', 'C'] }
+					options: { value: ['A', 'B', 'C'] as unknown as string }
 				}
 			};
 
@@ -161,7 +161,7 @@ describe('Challenge Variable System', () => {
 				variables: {
 					result: { value: '42' }
 				},
-				answer: ['result'] // Array format from original Navadra
+				answer: ['result'] as unknown as ChallengeAnswer // Array format from original Navadra
 			};
 
 			const instance = generateChallengeInstance(challenge);
@@ -178,7 +178,7 @@ describe('Challenge Variable System', () => {
 				answer: [
 					{ if: 'a > 5', choice: '15' },
 					{ if: 'a <= 5', choice: '5' }
-				]
+				] as unknown as ChallengeAnswer
 			};
 
 			const instance = generateChallengeInstance(challenge);
@@ -193,7 +193,7 @@ describe('Challenge Variable System', () => {
 					a: { value: '10' },
 					b: { value: '5' }
 				},
-				answer: [{ determined: true, choice: '{a} - {b}' }]
+				answer: [{ determined: true, choice: '{a} - {b}' }] as unknown as ChallengeAnswer
 			};
 
 			const instance = generateChallengeInstance(challenge);
@@ -498,7 +498,7 @@ describe('Challenge Variable System', () => {
 
 				expect(instance.variables.a).toBeDefined();
 				expect(instance.variables.b).toBeDefined();
-				expect(instance.correct_answer).toBe(instance.variables.a + instance.variables.b);
+				expect(instance.correct_answer).toBe((instance.variables.a as number) + (instance.variables.b as number));
 			});
 
 			it('should interpolate addition question correctly', () => {
@@ -519,7 +519,7 @@ describe('Challenge Variable System', () => {
 
 				expect(instance.variables.a).toBeDefined();
 				expect(instance.variables.b).toBeDefined();
-				expect(instance.correct_answer).toBe(instance.variables.a - instance.variables.b);
+				expect(instance.correct_answer).toBe((instance.variables.a as number) - (instance.variables.b as number));
 			});
 
 			it('should ensure a > b for positive results', () => {
@@ -527,7 +527,7 @@ describe('Challenge Variable System', () => {
 				const instance = generateChallengeInstance(challenge);
 
 				// Template has a: randomInt(10, 20), b: randomInt(1, 10)
-				expect(instance.variables.a).toBeGreaterThan(instance.variables.b);
+				expect(instance.variables.a as number).toBeGreaterThan(instance.variables.b as number);
 			});
 		});
 
@@ -538,7 +538,7 @@ describe('Challenge Variable System', () => {
 
 				expect(instance.variables.a).toBeDefined();
 				expect(instance.variables.b).toBeDefined();
-				expect(instance.correct_answer).toBe(instance.variables.a * instance.variables.b);
+				expect(instance.correct_answer).toBe((instance.variables.a as number) * (instance.variables.b as number));
 			});
 		});
 	});

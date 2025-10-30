@@ -81,9 +81,11 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
 			type: typeParam,
 			grades: gradesParam,
 			status: statusParam,
-			limit,
-			offset
+			page,
+			limit
 		} = queryValidation.data;
+
+		const offset = (page - 1) * limit;
 
 		// Build query
 		let query = supabase.from('question_templates').select('*', { count: 'exact' });
@@ -184,7 +186,7 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 		// Only validate if status is 'published'
 		if (templateData.status === 'published') {
 			// Validate template structure
-			const validationErrors = validateTemplate(templateData as QuestionTemplate);
+			const validationErrors: string[] = validateTemplate(templateData as QuestionTemplate);
 			if (validationErrors.length > 0) {
 				return json(
 					{
@@ -199,10 +201,10 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 			const allCircularErrors: string[] = [];
 			if (templateData.variations) {
 				templateData.variations.forEach((variation, index) => {
-					const circularErrors = detectCircularDependencies(variation.variables);
+					const circularErrors = detectCircularDependencies(variation.variables || []);
 					if (circularErrors.length > 0) {
 						allCircularErrors.push(
-							...circularErrors.map((err) => `Variation ${index + 1}: ${err}`)
+							...circularErrors.map((err: string) => `Variation ${index + 1}: ${err}`)
 						);
 					}
 				});

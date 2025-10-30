@@ -306,7 +306,7 @@ describe('createTemplateMatch', () => {
 			data: {
 				student_name: 'Marie Dubois',
 				teacher_name: null,
-				assessment_title: undefined
+				assessment_title: null
 			}
 		};
 

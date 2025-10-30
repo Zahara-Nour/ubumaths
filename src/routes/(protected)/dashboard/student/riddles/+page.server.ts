@@ -5,11 +5,14 @@ import { redirect } from '@sveltejs/kit';
 /**
  * Load riddle of the day for student
  */
-export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
+export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession }, parent }) => {
 	const { user } = await safeGetSession();
 	if (!user) {
 		throw redirect(303, '/login');
 	}
+
+	// Get profile from parent layout
+	const { profile } = await parent();
 
 	// Get riddle of the day using RPC function
 	const { data: riddleOfTheDay, error: riddleError } = await supabase.rpc('get_riddle_of_the_day');
@@ -41,6 +44,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	}
 
 	// Get assigned riddles for this student (optional for now)
+	const classIds = profile?.class_ids || [];
 	const { data: assignments } = await supabase
 		.from('riddle_assignments')
 		.select(
@@ -49,7 +53,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 			riddle:riddles(*)
 		`
 		)
-		.or(`student_id.eq.${user.id},class_id.in.(${user.class_ids || []})`)
+		.or(`student_id.eq.${user.id},class_id.in.(${classIds.join(',')})`)
 		.eq('riddles.status', 'published')
 		.order('assigned_at', { ascending: false });
 

@@ -81,9 +81,9 @@ export const unreadNotificationsResponseSchema = z.object({
 });
 
 /**
- * Unread count response schema (GET /api/notifications/unread-count)
+ * Unread notifications count response schema (GET /api/notifications/unread-count)
  */
-export const unreadCountResponseSchema = z.object({
+export const unreadNotificationsCountResponseSchema = z.object({
 	count: z.number().int().nonnegative()
 });
 

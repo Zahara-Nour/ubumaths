@@ -1,4 +1,6 @@
-import type { ClassSchedule } from '$lib/types/database';
+import type { Database } from '$lib/types/database';
+
+type ClassSchedule = Database['public']['Tables']['class_schedules']['Row'];
 
 /**
  * Schedule Utility Functions

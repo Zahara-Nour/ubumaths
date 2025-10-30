@@ -96,8 +96,17 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
+	// Add default settings if not provided
+	const assessmentData = {
+		...validation.data,
+		settings: {
+			max_attempts: validation.data.max_attempts,
+			duration_minutes: validation.data.duration
+		}
+	} as unknown as import('$lib/types/assessment').CreateAssessmentData;
+
 	// Create assessment
-	const result = await createAssessment(locals.supabase, validation.data, user.id);
+	const result = await createAssessment(locals.supabase, assessmentData, user.id);
 
 	if (result.error) {
 		console.error('Failed to create assessment:', result.error);

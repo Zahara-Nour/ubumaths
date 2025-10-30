@@ -10,7 +10,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { Exercise, ExerciseExport, ImportResult, ImportOptions } from '$lib/exercises/types';
-import { validateExerciseExport, sanitizeExerciseForInsert } from '$lib/exercises/validation';
+import {
+	validateExerciseExport,
+	sanitizeExerciseForInsert,
+	type ValidatedExerciseExport
+} from '$lib/exercises/validation';
 import {
 	serializeToMarkdown,
 	parseMarkdownWithFrontmatter
@@ -191,7 +195,7 @@ export async function importExerciseFromJSON(
 		data = validation.data;
 	}
 
-	const exerciseData = data as ExerciseExport;
+	const exerciseData = data as ValidatedExerciseExport;
 
 	// Check for duplicates
 	const duplicateId = await findDuplicateExercise(supabase, exerciseData, userId);

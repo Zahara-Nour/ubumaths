@@ -17,7 +17,8 @@ import {
 	updateMessageSchema,
 	inboxMessagesQuerySchema,
 	sentMessagesQuerySchema,
-	threadMessagesQuerySchema
+	threadMessagesQuerySchema,
+	unreadCountResponseSchema
 } from './messages';
 
 // Notifications
@@ -26,8 +27,7 @@ import {
 	markAllReadSchema,
 	listNotificationsQuerySchema,
 	notificationTypeSchema,
-	notificationResponseSchema,
-	unreadCountResponseSchema
+	notificationResponseSchema
 } from './notifications';
 
 describe('rewards, messages, notifications validation schemas', () => {

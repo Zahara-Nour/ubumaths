@@ -7,14 +7,23 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateRandomNumber } from './random-generator';
-import type { RandomExpression } from '../types';
+import type { RandomSpec, NumberOrVariable } from '../types';
+
+// Helper functions for constructing test specifications
+function num(value: number): NumberOrVariable {
+	return { type: 'number', value };
+}
+
+function varRef(name: string): NumberOrVariable {
+	return { type: 'variable', name };
+}
 
 describe('generateRandomNumber - Integer Ranges', () => {
 	it('should generate integer within range', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
-			max: 10,
+			min: num(1),
+			max: num(10),
 			exclusions: []
 		};
 
@@ -26,10 +35,10 @@ describe('generateRandomNumber - Integer Ranges', () => {
 	});
 
 	it('should generate same number with same seed', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
-			max: 100,
+			min: num(1),
+			max: num(100),
 			exclusions: []
 		};
 
@@ -40,10 +49,10 @@ describe('generateRandomNumber - Integer Ranges', () => {
 	});
 
 	it('should generate different numbers with different seeds', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
-			max: 1000,
+			min: num(1),
+			max: num(1000),
 			exclusions: []
 		};
 
@@ -55,10 +64,10 @@ describe('generateRandomNumber - Integer Ranges', () => {
 	});
 
 	it('should handle negative ranges', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: -10,
-			max: -1,
+			min: num(-10),
+			max: num(-1),
 			exclusions: []
 		};
 
@@ -69,10 +78,10 @@ describe('generateRandomNumber - Integer Ranges', () => {
 	});
 
 	it('should handle range crossing zero', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: -5,
-			max: 5,
+			min: num(-5),
+			max: num(5),
 			exclusions: []
 		};
 
@@ -83,10 +92,10 @@ describe('generateRandomNumber - Integer Ranges', () => {
 	});
 
 	it('should handle single-value range', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 42,
-			max: 42,
+			min: num(42),
+			max: num(42),
 			exclusions: []
 		};
 
@@ -98,10 +107,10 @@ describe('generateRandomNumber - Integer Ranges', () => {
 
 describe('generateRandomNumber - Decimal Ranges', () => {
 	it('should generate decimal within range', () => {
-		const spec: RandomExpression = {
-			type: 'decimal',
-			min: 0.5,
-			max: 9.99,
+		const spec: RandomSpec = {
+			type: 'decimal-range',
+			min: num(0.5),
+			max: num(9.99),
 			step: 0.01,
 			exclusions: []
 		};
@@ -113,10 +122,10 @@ describe('generateRandomNumber - Decimal Ranges', () => {
 	});
 
 	it('should respect decimal step', () => {
-		const spec: RandomExpression = {
-			type: 'decimal',
-			min: 0,
-			max: 1,
+		const spec: RandomSpec = {
+			type: 'decimal-range',
+			min: num(0),
+			max: num(1),
 			step: 0.1,
 			exclusions: []
 		};
@@ -131,10 +140,10 @@ describe('generateRandomNumber - Decimal Ranges', () => {
 	});
 
 	it('should handle decimal step of 0.01', () => {
-		const spec: RandomExpression = {
-			type: 'decimal',
-			min: 1.5,
-			max: 2.5,
+		const spec: RandomSpec = {
+			type: 'decimal-range',
+			min: num(1.5),
+			max: num(2.5),
 			step: 0.01,
 			exclusions: []
 		};
@@ -150,10 +159,10 @@ describe('generateRandomNumber - Decimal Ranges', () => {
 	});
 
 	it('should generate same decimal with same seed', () => {
-		const spec: RandomExpression = {
-			type: 'decimal',
-			min: 0,
-			max: 10,
+		const spec: RandomSpec = {
+			type: 'decimal-range',
+			min: num(0),
+			max: num(10),
 			step: 0.1,
 			exclusions: []
 		};
@@ -167,10 +176,10 @@ describe('generateRandomNumber - Decimal Ranges', () => {
 
 describe('generateRandomNumber - Decimal by Digits', () => {
 	it('should generate decimal with specified digits', () => {
-		const spec: RandomExpression = {
-			type: 'decimal',
-			digitsBefore: 2,
-			digitsAfter: 3,
+		const spec: RandomSpec = {
+			type: 'decimal-by-digits',
+			digitsBefore: num(2),
+			digitsAfter: num(3),
 			exclusions: []
 		};
 
@@ -188,10 +197,10 @@ describe('generateRandomNumber - Decimal by Digits', () => {
 	});
 
 	it('should handle single digit before decimal', () => {
-		const spec: RandomExpression = {
-			type: 'decimal',
-			digitsBefore: 1,
-			digitsAfter: 2,
+		const spec: RandomSpec = {
+			type: 'decimal-by-digits',
+			digitsBefore: num(1),
+			digitsAfter: num(2),
 			exclusions: []
 		};
 
@@ -202,10 +211,10 @@ describe('generateRandomNumber - Decimal by Digits', () => {
 	});
 
 	it('should handle many digits after decimal', () => {
-		const spec: RandomExpression = {
-			type: 'decimal',
-			digitsBefore: 1,
-			digitsAfter: 5,
+		const spec: RandomSpec = {
+			type: 'decimal-by-digits',
+			digitsBefore: num(1),
+			digitsAfter: num(5),
 			exclusions: []
 		};
 
@@ -222,11 +231,11 @@ describe('generateRandomNumber - Decimal by Digits', () => {
 
 describe('generateRandomNumber - Value Exclusions', () => {
 	it('should exclude single value', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
-			max: 5,
-			exclusions: [{ type: 'value', value: 3 }]
+			min: num(1),
+			max: num(5),
+			exclusions: [{ type: 'value', value: num(3) }]
 		};
 
 		// Generate many times to ensure 3 is never chosen
@@ -238,14 +247,14 @@ describe('generateRandomNumber - Value Exclusions', () => {
 	});
 
 	it('should exclude multiple values', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
-			max: 10,
+			min: num(1),
+			max: num(10),
 			exclusions: [
-				{ type: 'value', value: 3 },
-				{ type: 'value', value: 5 },
-				{ type: 'value', value: 7 }
+				{ type: 'value', value: num(3) },
+				{ type: 'value', value: num(5) },
+				{ type: 'value', value: num(7) }
 			]
 		};
 
@@ -256,12 +265,12 @@ describe('generateRandomNumber - Value Exclusions', () => {
 	});
 
 	it('should handle decimal value exclusions', () => {
-		const spec: RandomExpression = {
-			type: 'decimal',
-			min: 1.0,
-			max: 5.0,
+		const spec: RandomSpec = {
+			type: 'decimal-range',
+			min: num(1.0),
+			max: num(5.0),
 			step: 0.5,
-			exclusions: [{ type: 'value', value: 2.5 }]
+			exclusions: [{ type: 'value', value: num(2.5) }]
 		};
 
 		for (let i = 0; i < 30; i++) {
@@ -273,11 +282,11 @@ describe('generateRandomNumber - Value Exclusions', () => {
 
 describe('generateRandomNumber - Range Exclusions', () => {
 	it('should exclude range of values', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
-			max: 20,
-			exclusions: [{ type: 'range', min: 10, max: 15 }]
+			min: num(1),
+			max: num(20),
+			exclusions: [{ type: 'range', min: num(10), max: num(15) }]
 		};
 
 		for (let i = 0; i < 50; i++) {
@@ -287,13 +296,13 @@ describe('generateRandomNumber - Range Exclusions', () => {
 	});
 
 	it('should exclude multiple ranges', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
-			max: 30,
+			min: num(1),
+			max: num(30),
 			exclusions: [
-				{ type: 'range', min: 5, max: 10 },
-				{ type: 'range', min: 20, max: 25 }
+				{ type: 'range', min: num(5), max: num(10) },
+				{ type: 'range', min: num(20), max: num(25) }
 			]
 		};
 
@@ -306,11 +315,11 @@ describe('generateRandomNumber - Range Exclusions', () => {
 	});
 
 	it('should handle range exclusion at boundaries', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
-			max: 10,
-			exclusions: [{ type: 'range', min: 1, max: 5 }]
+			min: num(1),
+			max: num(10),
+			exclusions: [{ type: 'range', min: num(1), max: num(5) }]
 		};
 
 		for (let i = 0; i < 30; i++) {
@@ -323,10 +332,10 @@ describe('generateRandomNumber - Range Exclusions', () => {
 
 describe('generateRandomNumber - Variable Resolution', () => {
 	it('should resolve variable in min bound', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
 			min: { type: 'variable', name: 'minVal' },
-			max: 10,
+			max: num(10),
 			exclusions: []
 		};
 
@@ -338,9 +347,9 @@ describe('generateRandomNumber - Variable Resolution', () => {
 	});
 
 	it('should resolve variable in max bound', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
+			min: num(1),
 			max: { type: 'variable', name: 'maxVal' },
 			exclusions: []
 		};
@@ -353,7 +362,7 @@ describe('generateRandomNumber - Variable Resolution', () => {
 	});
 
 	it('should resolve variables in both bounds', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
 			min: { type: 'variable', name: 'min' },
 			max: { type: 'variable', name: 'max' },
@@ -368,11 +377,11 @@ describe('generateRandomNumber - Variable Resolution', () => {
 	});
 
 	it('should resolve variable in value exclusion', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
-			max: 10,
-			exclusions: [{ type: 'variable', name: 'excluded' }]
+			min: num(1),
+			max: num(10),
+			exclusions: [{ type: 'value', value: varRef('excluded') }]
 		};
 
 		const context = { excluded: 5 };
@@ -384,10 +393,10 @@ describe('generateRandomNumber - Variable Resolution', () => {
 	});
 
 	it('should resolve variables in range exclusion', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
-			max: 20,
+			min: num(1),
+			max: num(20),
 			exclusions: [
 				{
 					type: 'range',
@@ -406,10 +415,10 @@ describe('generateRandomNumber - Variable Resolution', () => {
 	});
 
 	it('should resolve variables in decimal digits', () => {
-		const spec: RandomExpression = {
-			type: 'decimal',
-			digitsBefore: { type: 'variable', name: 'before' },
-			digitsAfter: { type: 'variable', name: 'after' },
+		const spec: RandomSpec = {
+			type: 'decimal-by-digits',
+			digitsBefore: varRef('before'),
+			digitsAfter: varRef('after'),
 			exclusions: []
 		};
 
@@ -423,10 +432,10 @@ describe('generateRandomNumber - Variable Resolution', () => {
 
 describe('generateRandomNumber - Edge Cases', () => {
 	it('should handle large ranges', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
-			max: 1000000,
+			min: num(1),
+			max: num(1000000),
 			exclusions: []
 		};
 
@@ -437,10 +446,10 @@ describe('generateRandomNumber - Edge Cases', () => {
 	});
 
 	it('should handle very small decimal steps', () => {
-		const spec: RandomExpression = {
-			type: 'decimal',
-			min: 0,
-			max: 1,
+		const spec: RandomSpec = {
+			type: 'decimal-range',
+			min: num(0),
+			max: num(1),
 			step: 0.001,
 			exclusions: []
 		};
@@ -454,13 +463,13 @@ describe('generateRandomNumber - Edge Cases', () => {
 	it('should handle many exclusions', () => {
 		const exclusions = [];
 		for (let i = 2; i <= 50; i += 2) {
-			exclusions.push({ type: 'value' as const, value: i });
+			exclusions.push({ type: 'value' as const, value: num(i) });
 		}
 
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
-			max: 50,
+			min: num(1),
+			max: num(50),
 			exclusions
 		};
 
@@ -472,11 +481,11 @@ describe('generateRandomNumber - Edge Cases', () => {
 	});
 
 	it('should handle exclusion covering entire range except one value', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
-			max: 5,
-			exclusions: [{ type: 'range', min: 1, max: 4 }]
+			min: num(1),
+			max: num(5),
+			exclusions: [{ type: 'range', min: num(1), max: num(4) }]
 		};
 
 		const result = generateRandomNumber(spec, {});
@@ -486,10 +495,10 @@ describe('generateRandomNumber - Edge Cases', () => {
 	});
 
 	it('should handle negative decimal numbers', () => {
-		const spec: RandomExpression = {
-			type: 'decimal',
-			min: -5.5,
-			max: -0.5,
+		const spec: RandomSpec = {
+			type: 'decimal-range',
+			min: num(-5.5),
+			max: num(-0.5),
 			step: 0.5,
 			exclusions: []
 		};
@@ -501,10 +510,10 @@ describe('generateRandomNumber - Edge Cases', () => {
 	});
 
 	it('should handle zero in range', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: -3,
-			max: 3,
+			min: num(-3),
+			max: num(3),
 			exclusions: []
 		};
 
@@ -517,10 +526,10 @@ describe('generateRandomNumber - Edge Cases', () => {
 
 describe('generateRandomNumber - Error Cases', () => {
 	it('should throw on min > max', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 10,
-			max: 1,
+			min: num(10),
+			max: num(1),
 			exclusions: []
 		};
 
@@ -528,10 +537,10 @@ describe('generateRandomNumber - Error Cases', () => {
 	});
 
 	it('should throw on invalid step (zero)', () => {
-		const spec: RandomExpression = {
-			type: 'decimal',
-			min: 0,
-			max: 10,
+		const spec: RandomSpec = {
+			type: 'decimal-range',
+			min: num(0),
+			max: num(10),
 			step: 0,
 			exclusions: []
 		};
@@ -540,10 +549,10 @@ describe('generateRandomNumber - Error Cases', () => {
 	});
 
 	it('should throw on negative step', () => {
-		const spec: RandomExpression = {
-			type: 'decimal',
-			min: 0,
-			max: 10,
+		const spec: RandomSpec = {
+			type: 'decimal-range',
+			min: num(0),
+			max: num(10),
 			step: -0.1,
 			exclusions: []
 		};
@@ -552,10 +561,10 @@ describe('generateRandomNumber - Error Cases', () => {
 	});
 
 	it('should throw on missing variable in context', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
 			min: { type: 'variable', name: 'missing' },
-			max: 10,
+			max: num(10),
 			exclusions: []
 		};
 
@@ -563,11 +572,11 @@ describe('generateRandomNumber - Error Cases', () => {
 	});
 
 	it('should throw when all values are excluded', () => {
-		const spec: RandomExpression = {
+		const spec: RandomSpec = {
 			type: 'integer',
-			min: 1,
-			max: 5,
-			exclusions: [{ type: 'range', min: 1, max: 5 }]
+			min: num(1),
+			max: num(5),
+			exclusions: [{ type: 'range', min: num(1), max: num(5) }]
 		};
 
 		expect(() => generateRandomNumber(spec, {})).toThrow();

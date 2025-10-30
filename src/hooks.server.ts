@@ -99,10 +99,10 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 				try {
 					// Add timeout to prevent getUserContext from hanging
 					const getUserContextWithTimeout = async (
-						supabase: ReturnType<typeof event.locals.supabase>,
+						supabase: typeof event.locals.supabase,
 						userId: string
 					) => {
-						const timeoutPromise = new Promise((_, reject) =>
+						const timeoutPromise = new Promise<Record<string, never>>((_, reject) =>
 							setTimeout(() => reject(new Error('Timeout')), 2000)
 						);
 						const contextPromise = getUserContext(supabase, userId);
@@ -122,7 +122,7 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 						request_method: event.request.method,
 						response_time: responseTime,
 						status_code: response.status,
-						...userContext,
+						...(userContext as Record<string, unknown>),
 						tags: ['slow_request']
 					});
 				} catch (error) {

@@ -1,17 +1,12 @@
-import Root, {
-	type ButtonProps,
-	type ButtonSize,
-	type ButtonVariant,
-	buttonVariants
-} from './button.svelte';
+import Root from './button.svelte';
+
+// Re-export types from dedicated types file for better TypeScript compatibility
+export type { ButtonProps, ButtonSize, ButtonVariant } from './types.js';
+export type { ButtonProps as Props } from './types.js';
+// Note: buttonVariants is exported from button.svelte and can be imported directly if needed
 
 export {
 	Root,
-	type ButtonProps as Props,
 	//
-	Root as Button,
-	buttonVariants,
-	type ButtonProps,
-	type ButtonSize,
-	type ButtonVariant
+	Root as Button
 };

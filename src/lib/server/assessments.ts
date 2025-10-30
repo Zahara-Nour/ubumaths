@@ -105,10 +105,13 @@ export async function getTeacherAssessments(
 	}
 
 	// Transform to AssessmentWithCreator
-	const assessments: AssessmentWithCreator[] = (data || []).map((a) => ({
-		...a,
-		creator: a.creator?.[0] || null
-	}));
+	const assessments = (data || []).map((a) => {
+		const creatorData = Array.isArray(a.creator) ? a.creator[0] : a.creator;
+		return {
+			...a,
+			creator: creatorData || null
+		} as unknown as AssessmentWithCreator;
+	});
 
 	return { data: assessments, error: null };
 }
@@ -142,7 +145,9 @@ export async function updateAssessment(
 		// Merge with existing settings
 		const { data: current } = await getAssessment(supabase, assessmentId);
 		if (current) {
-			updateData.settings = { ...current.settings, ...data.settings };
+			const currentSettings =
+				current.settings && typeof current.settings === 'object' ? current.settings : {};
+			updateData.settings = { ...currentSettings, ...data.settings };
 		}
 	}
 	if (data.status !== undefined) updateData.status = data.status;
@@ -396,28 +401,37 @@ export async function getStudentAssignments(supabase: TypedSupabaseClient, stude
 		Array<{ score: number | null; completed_at: string | null }>
 	>();
 	for (const attempt of allAttempts || []) {
-		if (!attemptsMap.has(attempt.assignment_id)) {
-			attemptsMap.set(attempt.assignment_id, []);
+		const assignmentId =
+			attempt.assignment_id && typeof attempt.assignment_id === 'string'
+				? attempt.assignment_id
+				: '';
+		if (!assignmentId) continue;
+
+		if (!attemptsMap.has(assignmentId)) {
+			attemptsMap.set(assignmentId, []);
 		}
-		attemptsMap.get(attempt.assignment_id)!.push({
+		attemptsMap.get(assignmentId)!.push({
 			score: attempt.score,
 			completed_at: attempt.completed_at
 		});
 	}
 
 	// Enrich assignments with attempt stats using in-memory map lookups (no DB calls)
-	const enriched: AssignmentWithDetails[] = (assignments || []).map((assignment) => {
+	const enriched = (assignments || []).map((assignment) => {
 		const attempts = attemptsMap.get(assignment.id) || [];
 		const attemptsCount = attempts.length;
 		const bestScore = attempts.reduce((max, a) => Math.max(max, a.score || 0), 0) || null;
 		const lastAttempt = attempts[attempts.length - 1];
 		const lastAttemptAt = lastAttempt?.completed_at || null;
 
-		const status = getStudentStatus(
-			attemptsCount,
-			lastAttemptAt,
-			assignment.assessment.settings.deadline
-		);
+		// Extract deadline from settings JSON
+		const settings = assignment.assessment.settings;
+		const deadline =
+			settings && typeof settings === 'object' && 'deadline' in settings
+				? (settings as { deadline: string | null }).deadline
+				: null;
+
+		const status = getStudentStatus(attemptsCount, lastAttemptAt, deadline);
 
 		return {
 			...assignment,
@@ -425,7 +439,7 @@ export async function getStudentAssignments(supabase: TypedSupabaseClient, stude
 			best_score: bestScore,
 			last_attempt_at: lastAttemptAt,
 			status
-		};
+		} as unknown as AssignmentWithDetails;
 	});
 
 	return { data: enriched, error: null };
@@ -462,8 +476,19 @@ export async function validateAttempt(
 
 	const settings = assignment.assessment.settings;
 
+	// Extract deadline and max_attempts from settings JSON
+	const deadline =
+		settings && typeof settings === 'object' && 'deadline' in settings
+			? (settings as { deadline: string | null }).deadline
+			: null;
+
+	const maxAttempts =
+		settings && typeof settings === 'object' && 'max_attempts' in settings
+			? (settings as { max_attempts: number | null }).max_attempts
+			: null;
+
 	// Check deadline
-	const deadlinePassed = isDeadlinePassed(settings.deadline);
+	const deadlinePassed = isDeadlinePassed(deadline);
 	if (deadlinePassed) {
 		return {
 			can_attempt: false,
@@ -482,7 +507,7 @@ export async function validateAttempt(
 		.eq('user_id', studentId);
 
 	const currentAttempts = existingAttempts?.length || 0;
-	const attemptsRemaining = getAttemptsRemaining(currentAttempts, settings.max_attempts);
+	const attemptsRemaining = getAttemptsRemaining(currentAttempts, maxAttempts);
 
 	// Check if attempts exhausted
 	if (attemptsRemaining !== null && attemptsRemaining <= 0) {
@@ -730,7 +755,12 @@ function buildResultFromMaps(
 	assessmentGrade: string,
 	classId: string | null,
 	className: string | null,
-	student: { id: string; firstname: string; lastname: string; is_test: boolean },
+	student: {
+		id: string;
+		firstname: string | null;
+		lastname: string | null;
+		is_test: boolean;
+	},
 	attemptsMap: Map<
 		string,
 		Array<{

@@ -253,12 +253,12 @@ describe('Environment validation', () => {
 					.string()
 					.transform(Number)
 					.pipe(z.number().positive())
-					.default('900000'),
+					.default(900000),
 				RATE_LIMIT_MAX_REQUESTS: z
 					.string()
 					.transform(Number)
 					.pipe(z.number().positive())
-					.default('5')
+					.default(5)
 			});
 
 			const result = schema.safeParse({
@@ -308,7 +308,7 @@ describe('Environment validation', () => {
 					.string()
 					.transform((val) => val === 'true')
 					.pipe(z.boolean())
-					.default('true')
+					.default(true)
 			});
 
 			const result = schema.safeParse({

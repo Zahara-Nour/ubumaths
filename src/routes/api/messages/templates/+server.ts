@@ -96,7 +96,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.select('class_id')
 			.eq('student_id', user.id);
 
-		const studentClassIds = classMembers?.map((cm) => cm.class_id) || [];
+		const studentClassIds = classMembers?.map((cm: { class_id: string }) => cm.class_id) || [];
 
 		if (studentClassIds.length > 0) {
 			query = query.or(
@@ -122,7 +122,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	// Format response
 	const formattedTemplates = templates?.map((t) => ({
 		...t,
-		class_name: t.classes?.name || null
+		class_name: (t.classes as { name?: string } | null)?.name || null
 	}));
 
 	return json({
@@ -172,7 +172,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		return error(400, validation.error);
 	}
 
-	const templateInput: MessageTemplateInput = validation.data;
+	const templateInput = validation.data as MessageTemplateInput;
 
 	// Teachers can only create class templates
 	if (profile.role === 'teacher' && templateInput.scope === 'system') {
@@ -247,7 +247,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		{
 			template: newTemplate,
 			message: 'Template créé avec succès',
-			warnings: validation.warnings
+			warnings: templateValidation.warnings || []
 		},
 		{ status: 201 }
 	);

@@ -7,7 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getUnreadCount } from '$lib/server/notifications';
-import { unreadCountResponseSchema } from '$lib/server/validation/notifications';
+import { unreadNotificationsCountResponseSchema } from '$lib/server/validation/notifications';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 
 export const GET: RequestHandler = async ({ locals: { supabase, safeGetSession } }) => {
@@ -21,7 +21,7 @@ export const GET: RequestHandler = async ({ locals: { supabase, safeGetSession }
 
 	// Validate response
 	const validated = validateJsonResponse(
-		unreadCountResponseSchema,
+		unreadNotificationsCountResponseSchema,
 		{ count },
 		'GET /api/notifications/unread-count'
 	);

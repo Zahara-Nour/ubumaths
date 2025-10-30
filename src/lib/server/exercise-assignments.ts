@@ -22,9 +22,10 @@
  *              get_exercise_completion_stats
  *
  * These will be created in Phase 4 of the exercise assignment system implementation.
- * Until then, this file will have TypeScript type errors (expected - do not use until Phase 4).
  *
  * @status READY - All backend issues fixed (N+1 queries, SQL injection, pagination, etc.)
+ * @note Type assertions used for Phase 4 tables (exercise_assignments, exercise_completions)
+ *       until database schema is migrated. RPC functions added to database.ts proactively.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -47,6 +48,10 @@ import { validateAssignmentData } from '$lib/exercises/types';
 import { validateSearchQuery } from '$lib/utils/search';
 
 type TypedSupabaseClient = SupabaseClient<Database>;
+
+// Type helpers for Phase 4 tables (not yet in database schema)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type UnknownTable = any;
 
 // ============================================================================
 // ASSIGNMENT MANAGEMENT FUNCTIONS
@@ -122,8 +127,9 @@ export async function createExerciseAssignment(
 		is_active: true
 	};
 
-	const { data: assignment, error } = await supabase
-		.from('exercise_assignments')
+	const { data: assignment, error } = await (
+		supabase.from('exercise_assignments' as UnknownTable) as any
+	)
 		.insert(insertData)
 		.select()
 		.single();
@@ -133,7 +139,7 @@ export async function createExerciseAssignment(
 		return { data: null, error: error.message };
 	}
 
-	return { data: assignment as ExerciseAssignment, error: null };
+	return { data: assignment as unknown as ExerciseAssignment, error: null };
 }
 
 /**
@@ -261,7 +267,7 @@ export async function createBulkAssignments(
 
 	// Insert all assignments (atomic transaction)
 	const { data: created, error } = await supabase
-		.from('exercise_assignments')
+		.from('exercise_assignments' as UnknownTable)
 		.insert(assignments)
 		.select();
 
@@ -311,7 +317,7 @@ export async function getAssignmentsForExercise(
 
 	// Build base query
 	let query = supabase
-		.from('assigned_exercises_with_details')
+		.from('assigned_exercises_with_details' as UnknownTable)
 		.select('*', { count: 'exact' })
 		.eq('exercise_id', exerciseId)
 		.order('assigned_at', { ascending: false });
@@ -348,7 +354,7 @@ export async function getAssignmentsForExercise(
 	const total = count || 0;
 
 	return {
-		data: (data as AssignedExerciseWithDetails[]) || [],
+		data: (data as unknown as AssignedExerciseWithDetails[]) || [],
 		total,
 		limit,
 		offset,
@@ -403,9 +409,12 @@ export async function getAssignmentsForStudent(
 	const offset = pagination?.offset || 0;
 
 	// Step 1: Get all accessible exercise IDs via RPC function
-	const { data: exerciseIds, error: functionError } = await supabase.rpc('get_student_exercises', {
-		p_student_id: studentId
-	});
+	const { data: exerciseIds, error: functionError } = await supabase.rpc(
+		'get_student_exercises' as any,
+		{
+			p_student_id: studentId
+		}
+	);
 
 	if (functionError) {
 		console.error('Error fetching student exercises:', functionError);
@@ -418,7 +427,8 @@ export async function getAssignmentsForStudent(
 		};
 	}
 
-	if (!exerciseIds || exerciseIds.length === 0) {
+	const exerciseIdArray = exerciseIds as unknown as string[];
+	if (!exerciseIdArray || exerciseIdArray.length === 0) {
 		return {
 			data: [],
 			total: 0,
@@ -429,7 +439,7 @@ export async function getAssignmentsForStudent(
 	}
 
 	// Step 2: Build exercise query with search filter
-	let exerciseQuery = supabase.from('exercises').select('*').in('id', exerciseIds);
+	let exerciseQuery = supabase.from('exercises').select('*').in('id', exerciseIdArray);
 
 	// Apply search filter using Supabase's textSearch (safe from SQL injection)
 	if (filters?.search) {
@@ -479,7 +489,7 @@ export async function getAssignmentsForStudent(
 
 	// Fetch direct assignments (student or public)
 	const { data: directAssignments } = await supabase
-		.from('exercise_assignments')
+		.from('exercise_assignments' as UnknownTable)
 		.select('*')
 		.in('exercise_id', exerciseIdsForBatch)
 		.eq('is_active', true)
@@ -488,7 +498,7 @@ export async function getAssignmentsForStudent(
 	// Fetch class assignments (requires join with class_members)
 	// Note: This uses a computed filter which is safe as studentId is from auth context
 	const { data: classAssignments } = await supabase
-		.from('exercise_assignments')
+		.from('exercise_assignments' as UnknownTable)
 		.select('*')
 		.in('exercise_id', exerciseIdsForBatch)
 		.eq('assigned_to_type', 'class')
@@ -505,11 +515,11 @@ export async function getAssignmentsForStudent(
 	const allAssignments = [
 		...(directAssignments || []),
 		...(classAssignments || [])
-	] as ExerciseAssignment[];
+	] as unknown as ExerciseAssignment[];
 
 	// Step 4: Batch-fetch all completions for these exercises
 	const { data: allCompletions } = await supabase
-		.from('exercise_completions')
+		.from('exercise_completions' as UnknownTable)
 		.select('*')
 		.in('exercise_id', exerciseIdsForBatch)
 		.eq('student_id', studentId);
@@ -528,7 +538,10 @@ export async function getAssignmentsForStudent(
 	}
 
 	const completionMap = new Map(
-		allCompletions?.map((c) => [c.exercise_id, c as ExerciseCompletion])
+		allCompletions?.map((c) => [
+			(c as unknown as ExerciseCompletion).exercise_id,
+			c as unknown as ExerciseCompletion
+		])
 	);
 
 	// Step 6: Enrich exercises with assignment and completion data (no DB calls!)
@@ -566,7 +579,7 @@ export async function getAssignmentsForStudent(
 			assignment,
 			completion,
 			is_accessible
-		} as ExerciseWithCompletion);
+		} as unknown as ExerciseWithCompletion);
 	}
 
 	// Step 7: Sort by deadline (urgent first), then by assigned_at (recent first)
@@ -644,7 +657,7 @@ export async function updateAssignment(
 
 	// Update assignment
 	const { data: updated, error } = await supabase
-		.from('exercise_assignments')
+		.from('exercise_assignments' as UnknownTable)
 		.update(updates)
 		.eq('id', assignmentId)
 		.select()
@@ -655,7 +668,7 @@ export async function updateAssignment(
 		return { data: null, error: error.message };
 	}
 
-	return { data: updated as ExerciseAssignment, error: null };
+	return { data: updated as unknown as ExerciseAssignment, error: null };
 }
 
 /**
@@ -696,7 +709,10 @@ export async function deleteAssignment(
 
 	if (hardDelete) {
 		// Hard delete: remove from database
-		const { error } = await supabase.from('exercise_assignments').delete().eq('id', assignmentId);
+		const { error } = await supabase
+			.from('exercise_assignments' as UnknownTable)
+			.delete()
+			.eq('id', assignmentId);
 
 		if (error) {
 			console.error('Error deleting assignment:', error);
@@ -705,7 +721,7 @@ export async function deleteAssignment(
 	} else {
 		// Soft delete: mark inactive
 		const { error } = await supabase
-			.from('exercise_assignments')
+			.from('exercise_assignments' as UnknownTable)
 			.update({ is_active: false })
 			.eq('id', assignmentId);
 
@@ -754,7 +770,7 @@ export async function markExerciseAsViewed(
 ): Promise<{ data: ExerciseCompletion | null; error: string | null }> {
 	// Check if completion record exists
 	const { data: existing } = await supabase
-		.from('exercise_completions')
+		.from('exercise_completions' as UnknownTable)
 		.select('*')
 		.eq('exercise_id', exerciseId)
 		.eq('student_id', studentId)
@@ -763,12 +779,12 @@ export async function markExerciseAsViewed(
 	if (existing) {
 		// Update existing record
 		const { data: updated, error } = await supabase
-			.from('exercise_completions')
+			.from('exercise_completions' as UnknownTable)
 			.update({
-				view_count: existing.view_count + 1,
+				view_count: (existing as unknown as ExerciseCompletion).view_count + 1,
 				last_viewed_at: new Date().toISOString()
 			})
-			.eq('id', existing.id)
+			.eq('id', (existing as unknown as ExerciseCompletion).id)
 			.select()
 			.single();
 
@@ -777,11 +793,11 @@ export async function markExerciseAsViewed(
 			return { data: null, error: error.message };
 		}
 
-		return { data: updated as ExerciseCompletion, error: null };
+		return { data: updated as unknown as ExerciseCompletion, error: null };
 	} else {
 		// Create new record
 		const { data: created, error } = await supabase
-			.from('exercise_completions')
+			.from('exercise_completions' as UnknownTable)
 			.insert({
 				exercise_id: exerciseId,
 				student_id: studentId,
@@ -798,7 +814,7 @@ export async function markExerciseAsViewed(
 			return { data: null, error: error.message };
 		}
 
-		return { data: created as ExerciseCompletion, error: null };
+		return { data: created as unknown as ExerciseCompletion, error: null };
 	}
 }
 
@@ -832,7 +848,7 @@ export async function markExerciseAsComplete(
 
 	// Check if completion record exists
 	const { data: existing } = await supabase
-		.from('exercise_completions')
+		.from('exercise_completions' as UnknownTable)
 		.select('*')
 		.eq('exercise_id', exerciseId)
 		.eq('student_id', studentId)
@@ -841,13 +857,13 @@ export async function markExerciseAsComplete(
 	if (existing) {
 		// Update existing record
 		const { data: updated, error } = await supabase
-			.from('exercise_completions')
+			.from('exercise_completions' as UnknownTable)
 			.update({
 				completed_at: now,
 				last_viewed_at: now,
-				view_count: existing.view_count + 1
+				view_count: (existing as unknown as ExerciseCompletion).view_count + 1
 			})
-			.eq('id', existing.id)
+			.eq('id', (existing as unknown as ExerciseCompletion).id)
 			.select()
 			.single();
 
@@ -856,11 +872,11 @@ export async function markExerciseAsComplete(
 			return { data: null, error: error.message };
 		}
 
-		return { data: updated as ExerciseCompletion, error: null };
+		return { data: updated as unknown as ExerciseCompletion, error: null };
 	} else {
 		// Create new record
 		const { data: created, error } = await supabase
-			.from('exercise_completions')
+			.from('exercise_completions' as UnknownTable)
 			.insert({
 				exercise_id: exerciseId,
 				student_id: studentId,
@@ -877,7 +893,7 @@ export async function markExerciseAsComplete(
 			return { data: null, error: error.message };
 		}
 
-		return { data: created as ExerciseCompletion, error: null };
+		return { data: created as unknown as ExerciseCompletion, error: null };
 	}
 }
 
@@ -909,7 +925,7 @@ export async function markExerciseAsIncomplete(
 ): Promise<{ data: ExerciseCompletion | null; error: string | null }> {
 	// Update existing record
 	const { data: updated, error } = await supabase
-		.from('exercise_completions')
+		.from('exercise_completions' as UnknownTable)
 		.update({
 			completed_at: null,
 			last_viewed_at: new Date().toISOString()
@@ -924,7 +940,7 @@ export async function markExerciseAsIncomplete(
 		return { data: null, error: error.message };
 	}
 
-	return { data: updated as ExerciseCompletion, error: null };
+	return { data: updated as unknown as ExerciseCompletion, error: null };
 }
 
 /**
@@ -953,7 +969,7 @@ export async function getStudentCompletion(
 	studentId: string
 ): Promise<{ data: ExerciseCompletion | null; error: string | null }> {
 	const { data, error } = await supabase
-		.from('exercise_completions')
+		.from('exercise_completions' as UnknownTable)
 		.select('*')
 		.eq('exercise_id', exerciseId)
 		.eq('student_id', studentId)
@@ -994,7 +1010,7 @@ export async function getAssignmentStats(
 	supabase: TypedSupabaseClient,
 	teacherId: string
 ): Promise<{ data: AssignmentStats | null; error: string | null }> {
-	const { data, error } = await supabase.rpc('get_teacher_assignment_stats', {
+	const { data, error } = await supabase.rpc('get_teacher_assignment_stats' as any, {
 		p_teacher_id: teacherId
 	});
 
@@ -1004,13 +1020,14 @@ export async function getAssignmentStats(
 	}
 
 	// Transform database result to AssignmentStats type
+	const dataArray = data as any[];
 	const stats: AssignmentStats = {
-		total_assignments: data?.[0]?.total_assignments || 0,
-		active_assignments: data?.[0]?.active_assignments || 0,
-		student_assignments: data?.[0]?.student_assignments || 0,
-		class_assignments: data?.[0]?.class_assignments || 0,
-		public_assignments: data?.[0]?.public_assignments || 0,
-		with_deadline: data?.[0]?.with_deadline || 0
+		total_assignments: dataArray?.[0]?.total_assignments || 0,
+		active_assignments: dataArray?.[0]?.active_assignments || 0,
+		student_assignments: dataArray?.[0]?.student_assignments || 0,
+		class_assignments: dataArray?.[0]?.class_assignments || 0,
+		public_assignments: dataArray?.[0]?.public_assignments || 0,
+		with_deadline: dataArray?.[0]?.with_deadline || 0
 	};
 
 	return { data: stats, error: null };
@@ -1045,7 +1062,7 @@ export async function getExerciseCompletionStats(
 	exerciseId: string
 ): Promise<{ data: ExerciseCompletionStats | null; error: string | null }> {
 	// Call the correct RPC function with exercise_id parameter
-	const { data, error } = await supabase.rpc('get_exercise_completion_stats', {
+	const { data, error } = await supabase.rpc('get_exercise_completion_stats' as any, {
 		p_exercise_id: exerciseId
 	});
 
@@ -1055,13 +1072,14 @@ export async function getExerciseCompletionStats(
 	}
 
 	// Transform database result to ExerciseCompletionStats type
+	const dataArray = data as any[];
 	const stats: ExerciseCompletionStats = {
 		exercise_id: exerciseId,
-		total_assigned: data?.[0]?.total_assigned || 0,
-		total_viewed: data?.[0]?.total_viewed || 0,
-		total_completed: data?.[0]?.total_completed || 0,
-		completion_rate: data?.[0]?.completion_rate || 0,
-		average_view_count: data?.[0]?.average_view_count || 0
+		total_assigned: dataArray?.[0]?.total_assigned || 0,
+		total_viewed: dataArray?.[0]?.total_viewed || 0,
+		total_completed: dataArray?.[0]?.total_completed || 0,
+		completion_rate: dataArray?.[0]?.completion_rate || 0,
+		average_view_count: dataArray?.[0]?.average_view_count || 0
 	};
 
 	return { data: stats, error: null };
@@ -1096,9 +1114,12 @@ export async function getStudentProgress(
 	error: string | null;
 }> {
 	// Get all exercises accessible to student
-	const { data: exerciseIds, error: functionError } = await supabase.rpc('get_student_exercises', {
-		p_student_id: studentId
-	});
+	const { data: exerciseIds, error: functionError } = await supabase.rpc(
+		'get_student_exercises' as any,
+		{
+			p_student_id: studentId
+		}
+	);
 
 	if (functionError) {
 		console.error('Error fetching student exercises:', functionError);
@@ -1110,7 +1131,8 @@ export async function getStudentProgress(
 		};
 	}
 
-	const total_assigned = exerciseIds?.length || 0;
+	const exerciseIdArray = exerciseIds as unknown as string[];
+	const total_assigned = exerciseIdArray?.length || 0;
 
 	if (total_assigned === 0) {
 		return {
@@ -1123,11 +1145,11 @@ export async function getStudentProgress(
 
 	// Get completed exercises
 	const { data: completions, error: completionsError } = await supabase
-		.from('exercise_completions')
+		.from('exercise_completions' as UnknownTable)
 		.select('id')
 		.eq('student_id', studentId)
 		.not('completed_at', 'is', null)
-		.in('exercise_id', exerciseIds);
+		.in('exercise_id', exerciseIdArray);
 
 	if (completionsError) {
 		console.error('Error fetching completions:', completionsError);
@@ -1186,7 +1208,7 @@ export async function studentHasAccess(
 	exerciseId: string,
 	studentId: string
 ): Promise<boolean> {
-	const { data, error } = await supabase.rpc('student_has_exercise_access', {
+	const { data, error } = await supabase.rpc('student_has_exercise_access' as any, {
 		p_exercise_id: exerciseId,
 		p_student_id: studentId
 	});
@@ -1225,16 +1247,20 @@ export async function getAccessibleExercises(
 	studentId: string
 ): Promise<{ data: Array<Record<string, unknown>>; error: string | null }> {
 	// Get exercise IDs accessible to student
-	const { data: exerciseIds, error: functionError } = await supabase.rpc('get_student_exercises', {
-		p_student_id: studentId
-	});
+	const { data: exerciseIds, error: functionError } = await supabase.rpc(
+		'get_student_exercises' as any,
+		{
+			p_student_id: studentId
+		}
+	);
 
 	if (functionError) {
 		console.error('Error fetching student exercises:', functionError);
 		return { data: [], error: functionError.message };
 	}
 
-	if (!exerciseIds || exerciseIds.length === 0) {
+	const exerciseIdArray = exerciseIds as unknown as string[];
+	if (!exerciseIdArray || exerciseIdArray.length === 0) {
 		return { data: [], error: null };
 	}
 
@@ -1242,7 +1268,7 @@ export async function getAccessibleExercises(
 	const { data: exercises, error: exercisesError } = await supabase
 		.from('exercises')
 		.select('*')
-		.in('id', exerciseIds)
+		.in('id', exerciseIdArray)
 		.order('created_at', { ascending: false });
 
 	if (exercisesError) {
@@ -1286,7 +1312,7 @@ async function validateAssignmentOwnership(
 	userId: string
 ): Promise<{ valid: boolean; assignment?: ExerciseAssignment; error?: string }> {
 	const { data: assignment, error: fetchError } = await supabase
-		.from('exercise_assignments')
+		.from('exercise_assignments' as UnknownTable)
 		.select('*')
 		.eq('id', assignmentId)
 		.single();
@@ -1295,11 +1321,11 @@ async function validateAssignmentOwnership(
 		return { valid: false, error: 'Assignment not found' };
 	}
 
-	if (assignment.assigned_by !== userId) {
+	if ((assignment as unknown as ExerciseAssignment).assigned_by !== userId) {
 		return { valid: false, error: 'Not authorized to modify this assignment' };
 	}
 
-	return { valid: true, assignment: assignment as ExerciseAssignment };
+	return { valid: true, assignment: assignment as unknown as ExerciseAssignment };
 }
 
 /**

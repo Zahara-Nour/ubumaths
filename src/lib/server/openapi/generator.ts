@@ -3,12 +3,12 @@
  * Manually constructs OpenAPI spec from existing Zod schemas
  */
 
-import type { OpenAPIV3_1 } from 'openapi3-ts/oas31';
+import type { OpenAPIObject } from 'openapi3-ts/oas31';
 
 /**
  * Generate OpenAPI 3.1 specification
  */
-export function generateOpenAPISpec(): OpenAPIV3_1.Document {
+export function generateOpenAPISpec(): OpenAPIObject {
 	return {
 		openapi: '3.1.0',
 		info: {

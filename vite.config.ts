@@ -115,8 +115,11 @@ export default defineConfig(({ mode }) => {
 					test: {
 						name: 'server',
 						environment: 'node',
-						include: ['src/**/*.{test,spec}.{js,ts}', 'tests/**/*.{test,spec}.{js,ts}'],
-						exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
+						include: ['src/**/*.{test,spec}.{js,ts}', 'tests/unit/**/*.{test,spec}.{js,ts}'],
+						exclude: [
+							'src/**/*.svelte.{test,spec}.{js,ts}',
+							'tests/database/**/*.{test,spec}.{js,ts}' // Exclude database trigger tests (require Supabase)
+						]
 					}
 				}
 			]

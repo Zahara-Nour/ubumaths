@@ -536,7 +536,7 @@ export const words = [
  */
 const allWordsSet = new Set<string>();
 Object.values(WORD_LISTS).forEach((words) => {
-	words.forEach((word) => allWordsSet.add(word));
+	words.forEach((word: string) => allWordsSet.add(word));
 });
 
 /**

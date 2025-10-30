@@ -76,15 +76,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	// Verify the OTP token and exchange it for a session
 	// This is the key step - it validates the token and creates a session
 	const { error } = await supabase.auth.verifyOtp({
-		type: type as
-			| 'signup'
-			| 'email'
-			| 'recovery'
-			| 'invite'
-			| 'magiclink'
-			| 'email_change'
-			| 'sms'
-			| 'phone_change',
+		type: type as 'signup' | 'email' | 'recovery' | 'invite' | 'magiclink' | 'email_change',
 		token_hash
 	});
 

@@ -218,7 +218,7 @@ export const threadMessagesQuerySchema = z.object({
 export const updateMessageSchema = z
 	.object({
 		action: z.enum(['updateStatus', 'toggleRead', 'toggleStar', 'moveToFolder'], {
-			errorMap: () => ({ message: 'Action invalide' })
+			message: 'Action invalide'
 		}),
 		status: z.enum(['inbox', 'archived', 'trash']).optional(),
 		folderId: z.string().uuid('ID de dossier invalide').optional()

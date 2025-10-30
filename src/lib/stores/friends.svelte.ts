@@ -113,7 +113,7 @@ class FriendsManager {
 			// Update websocket presence map for accepted friends
 			this.friendships.forEach((f) => {
 				if (f.presence) {
-					websocketManager.friendsPresence.set(f.friend_profile.id, f.presence.status);
+					websocketManager.friendsPresence.set(f.friend_profile.id, f.presence.status as "offline" | "online");
 				}
 			});
 		} catch (err) {
@@ -298,7 +298,7 @@ class FriendsManager {
 			const friendshipMap = new Map<string, 'pending' | 'accepted' | 'rejected'>();
 			existingFriendships?.forEach((f) => {
 				const friendId = f.requester_id === this.currentUserId ? f.addressee_id : f.requester_id;
-				friendshipMap.set(friendId, f.status);
+				friendshipMap.set(friendId, f.status as 'pending' | 'accepted' | 'rejected');
 			});
 
 			// Enrich users with friendship status

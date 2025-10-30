@@ -149,7 +149,7 @@ class ChatStore {
 				return;
 			}
 
-			this.conversations = (data || []).map((conv) => ({
+			this.conversations = (data || []).map((conv: Record<string, unknown>) => ({
 				id: conv.conversation_id,
 				name: conv.name,
 				is_group: conv.is_group,
@@ -197,7 +197,7 @@ class ChatStore {
 				return;
 			}
 
-			const messages: Message[] = (data || []).map((msg) => ({
+			const messages: Message[] = (data || []).map((msg: Record<string, unknown>) => ({
 				id: msg.id,
 				conversation_id: msg.conversation_id,
 				sender_id: msg.sender_id,
@@ -309,7 +309,16 @@ class ChatStore {
 				created_at: data.created_at,
 				edited_at: data.edited_at,
 				is_flagged: data.is_flagged,
-				attachments: attachmentRecords || [],
+				attachments: attachmentRecords
+					? attachmentRecords.map((att, idx) => ({
+							id: `temp-${idx}`,
+							file_name: att.file_name,
+							file_type: att.file_type,
+							file_size: att.file_size,
+							public_url: att.public_url,
+							uploaded_by: this.userId || ''
+						}))
+					: [],
 				reactions: []
 			};
 
@@ -434,7 +443,7 @@ class ChatStore {
 			for (const [conversationId, msgs] of this.messages.entries()) {
 				const message = msgs.find((m) => m.id === messageId);
 				if (message) {
-					message.reactions = (data || []).map((r) => ({
+					message.reactions = (data || []).map((r: Record<string, unknown>) => ({
 						emoji: r.emoji,
 						count: r.count,
 						user_reacted: r.user_reacted
@@ -588,6 +597,8 @@ class ChatStore {
 	}): void {
 		const { conversationId, userId, isTyping } = message;
 
+		if (!userId || !conversationId) return; // Guard against undefined
+
 		if (!this.typingUsers.has(conversationId)) {
 			this.typingUsers.set(conversationId, []);
 		}
@@ -632,7 +643,9 @@ class ChatStore {
 
 	private handleMessageReaction(message: { messageId?: string }): void {
 		// Reload reactions for the message
-		this.loadMessageReactions(message.messageId);
+		if (message.messageId) {
+			this.loadMessageReactions(message.messageId);
+		}
 	}
 }
 

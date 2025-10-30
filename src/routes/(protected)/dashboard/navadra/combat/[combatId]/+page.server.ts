@@ -282,7 +282,7 @@ export const actions: Actions = {
 		if (isVictory) {
 			// Calculate rewards
 			const xpGained = calculateXPReward(combat.monster, gamePlayer.level, 0);
-			const prestigeGained = calculatePrestigeReward(combat.monster, timeTaken / 1000, 0);
+			const prestigeGained = calculatePrestigeReward(combat.monster, time_taken / 1000, 0);
 			const pyrsGained = calculatePyrsReward(combat.monster);
 
 			// Update combat

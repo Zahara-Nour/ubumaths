@@ -54,7 +54,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.select('class_id')
 			.eq('student_id', user.id);
 
-		userClassIds = classMembers?.map((cm) => cm.class_id) || [];
+		userClassIds =
+			classMembers?.map((cm) => (cm as { class_id: string }).class_id) || [];
 	} else {
 		userClassIds = [classId];
 	}

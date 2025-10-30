@@ -1,7 +1,10 @@
 import Root from './alert.svelte';
 import Description from './alert-description.svelte';
 import Title from './alert-title.svelte';
-export { alertVariants, type AlertVariant } from './alert.svelte';
+
+// Re-export types from dedicated types file for better TypeScript compatibility
+export type { AlertVariant } from './types.js';
+// Note: alertVariants is exported from alert.svelte and can be imported directly if needed
 
 export {
 	Root,

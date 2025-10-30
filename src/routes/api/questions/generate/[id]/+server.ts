@@ -91,7 +91,7 @@ export const POST: RequestHandler = async ({
 			created_at: template.created_at,
 			updated_at: template.updated_at,
 			created_by: template.created_by
-		};
+		} as import('$lib/questions/types').QuestionTemplate;
 
 		// Generate instance
 		const result = generateInstance(questionTemplate, seed);

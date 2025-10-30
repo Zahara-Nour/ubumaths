@@ -10,6 +10,7 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getExercise } from '$lib/server/exercises';
+import type { Exercise } from '$lib/exercises/types';
 import {
 	exportExerciseToJSON,
 	exportExerciseToMarkdown,
@@ -48,7 +49,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// Validate and parse query params
 	const queryValidation = validateExportSingleExerciseQuery(url.searchParams);
 	if (!queryValidation.success) {
-		const errorMsg = queryValidation.error.errors
+		const errorMsg = queryValidation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
 		throw error(400, `Invalid query parameters: ${errorMsg}`);
@@ -61,13 +62,16 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	let filename: string;
 	let mimeType: string;
 
+	// Type assertion for exercise data
+	const exerciseData = result.data as Exercise;
+
 	if (format === 'json') {
-		content = exportExerciseToJSON(result.data, prettyPrint);
-		filename = generateExportFilename(result.data, 'json');
+		content = exportExerciseToJSON(exerciseData, prettyPrint);
+		filename = generateExportFilename(exerciseData, 'json');
 		mimeType = 'application/json';
 	} else {
-		content = exportExerciseToMarkdown(result.data);
-		filename = generateExportFilename(result.data, 'md');
+		content = exportExerciseToMarkdown(exerciseData);
+		filename = generateExportFilename(exerciseData, 'md');
 		mimeType = 'text/markdown';
 	}
 

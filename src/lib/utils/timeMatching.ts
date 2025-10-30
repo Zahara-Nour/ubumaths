@@ -182,7 +182,7 @@ export function findCurrentSchedule(
 
 		// Find matching schedule for current day and time
 		const matchingSchedule = cls.schedules.find(
-			(schedule) =>
+			(schedule: ClassSchedule) =>
 				// Must match both day AND be within time range
 				schedule.day_of_week === day && isWithinTimeRange(schedule, time)
 		);

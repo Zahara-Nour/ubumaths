@@ -57,7 +57,7 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 	// Transform class_members array to class_ids array
 	const profileWithClasses = {
 		...updatedProfile,
-		class_ids: updatedProfile.class_members?.map((cm) => cm.class_id) || []
+		class_ids: updatedProfile.class_members?.map((cm: { class_id: string }) => cm.class_id) || []
 	};
 
 	return json({ success: true, profile: profileWithClasses });

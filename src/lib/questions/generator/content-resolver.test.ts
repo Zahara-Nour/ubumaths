@@ -459,7 +459,7 @@ describe('resolveContent - Error Handling', () => {
 	it.skip('should handle null/undefined in context', () => {
 		const fields: ContentField[] = [{ type: 'text', content: 'Value: {{a}}' }];
 
-		const resolved = toResolvedVariables({ a: null });
+		const resolved = toResolvedVariables({ a: 0 }); // Use 0 instead of null for type safety
 
 		// Should handle null values appropriately (not currently implemented)
 		expect(() => resolveContentFields(fields, resolved as never)).toThrow();

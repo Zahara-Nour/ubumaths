@@ -17,8 +17,7 @@
  */
 
 import { Node, mergeAttributes, InputRule } from '@tiptap/core';
-import type { Node as PMNode } from '@tiptap/pm/model';
-import type { Editor } from '@tiptap/core';
+import type { NodeViewRendererProps } from '@tiptap/core';
 
 /**
  * MathInline Extension
@@ -88,12 +87,10 @@ export const MathInline = Node.create({
 	 * 4. Configure as read-only if editor is not editable
 	 * 5. Listen for input events to sync formula changes back to node
 	 *
-	 * @param node - The ProseMirror node containing our math data
-	 * @param editor - The TipTap editor instance
-	 * @param getPos - Function to get current position in document
+	 * @param props - NodeViewRendererProps containing node, editor, and getPos
 	 */
 	addNodeView() {
-		return ({ node, editor, getPos }: { node: PMNode; editor: Editor; getPos: () => number }) => {
+		return ({ node, editor, getPos }: NodeViewRendererProps) => {
 			// Create wrapper element
 			const dom = document.createElement('span');
 			dom.classList.add('math-inline-wrapper');
@@ -105,7 +102,7 @@ export const MathInline = Node.create({
 			};
 
 			// Set initial LaTeX value
-			mathfield.value = node.attrs.latex;
+			mathfield.value = node.attrs.latex as string;
 
 			// Style as inline element
 			mathfield.style.display = 'inline-block';
@@ -143,11 +140,14 @@ export const MathInline = Node.create({
 	 * Usage:
 	 *   editor.commands.insertMathInline('x^2 + y^2')
 	 */
+	// TipTap's command typing is complex - using type assertion for custom commands
+	// @ts-expect-error - TipTap command typing requires exact match with RawCommands
 	addCommands() {
 		return {
 			insertMathInline:
 				(latex = '') =>
-				({ commands }) => {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				({ commands }: any) => {
 					return commands.insertContent({
 						type: this.name,
 						attrs: { latex }
@@ -263,7 +263,7 @@ export const MathBlock = Node.create({
 	 * - More padding
 	 */
 	addNodeView() {
-		return ({ node, editor, getPos }: { node: PMNode; editor: Editor; getPos: () => number }) => {
+		return ({ node, editor, getPos }: NodeViewRendererProps) => {
 			// Create block wrapper
 			const dom = document.createElement('div');
 			dom.classList.add('math-block-wrapper');
@@ -275,7 +275,7 @@ export const MathBlock = Node.create({
 			};
 
 			// Set initial value
-			mathfield.value = node.attrs.latex;
+			mathfield.value = node.attrs.latex as string;
 
 			// Style as block element (centered, larger)
 			mathfield.style.display = 'block';
@@ -311,11 +311,14 @@ export const MathBlock = Node.create({
 	 *
 	 * Adds editor.commands.insertMathBlock() command.
 	 */
+	// TipTap's command typing is complex - using type assertion for custom commands
+	// @ts-expect-error - TipTap command typing requires exact match with RawCommands
 	addCommands() {
 		return {
 			insertMathBlock:
 				(latex = '') =>
-				({ commands }) => {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				({ commands }: any) => {
 					return commands.insertContent({
 						type: this.name,
 						attrs: { latex }

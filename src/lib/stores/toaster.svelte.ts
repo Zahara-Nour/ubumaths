@@ -1,4 +1,5 @@
-import { toast } from 'svelte-sonner';
+import { toast, type ExternalToast } from 'svelte-sonner';
+import type { Component } from 'svelte';
 
 /**
  * Toaster Store
@@ -16,19 +17,19 @@ import { toast } from 'svelte-sonner';
  */
 
 export const toaster = {
-	success: (message: string, data?: unknown) => {
+	success: (message: string, data?: ExternalToast<Component>) => {
 		toast.success(message, data);
 	},
-	error: (message: string, data?: unknown) => {
+	error: (message: string, data?: ExternalToast<Component>) => {
 		toast.error(message, data);
 	},
-	warning: (message: string, data?: unknown) => {
+	warning: (message: string, data?: ExternalToast<Component>) => {
 		toast.warning(message, data);
 	},
-	info: (message: string, data?: unknown) => {
+	info: (message: string, data?: ExternalToast<Component>) => {
 		toast.info(message, data);
 	},
-	message: (message: string, data?: unknown) => {
+	message: (message: string, data?: ExternalToast<Component>) => {
 		toast(message, data);
 	}
 };

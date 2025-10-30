@@ -42,7 +42,7 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 	const classesWithStudents = await getTeacherClassesWithStudents(user.id, supabase);
 
 	return {
-		classes: classesWithStudents as Array<
+		classes: classesWithStudents as unknown as Array<
 			Class & {
 				students: Array<{
 					id: string;

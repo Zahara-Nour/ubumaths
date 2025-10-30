@@ -64,27 +64,28 @@ function createMockSupabase() {
 						gte: (column2: string, value2: string) => ({
 							maybeSingle: async () => {
 								const entry = rateLimits.get(value);
-								if (!entry || new Date(entry.expires_at) < new Date(value2)) {
+								console.log(`[MOCK SELECT] key=${value}, entry=`, entry);
+								if (!entry || new Date(entry.expires_at).getTime() < new Date(value2).getTime()) {
 									return { data: null, error: null };
 								}
-								return { data: entry, error: null };
+								// Return a copy to avoid reference issues
+								const result = { data: { ...entry }, error: null };
+								console.log(`[MOCK SELECT] Returning:`, result.data);
+								return result;
 							}
 						})
 					})
 				}),
 				update: (data: { count: number }) => ({
-					eq: (column: string, value: string) => ({
-						then: async (callback: (result: { error: null }) => void) => {
-							const entry = rateLimits.get(value);
-							if (entry) {
-								entry.count = data.count;
-							}
-							return callback({ error: null });
+					eq: (column: string, value: string) => {
+						// Synchronously update the entry, then return a resolved promise
+						console.log(`[MOCK UPDATE] key=${value}, count=${data.count}`);
+						const entry = rateLimits.get(value);
+						if (entry) {
+							entry.count = data.count;
+							console.log(`[MOCK UPDATE] Updated entry:`, entry);
 						}
-					}),
-					// For compatibility with the async pattern
-					async then(onFulfilled: (value: { error: null }) => unknown) {
-						return onFulfilled({ error: null });
+						return Promise.resolve({ error: null });
 					}
 				}),
 				insert: (
@@ -99,15 +100,15 @@ function createMockSupabase() {
 								count: number;
 								expires_at: string;
 						  }[]
-				) => ({
-					async then(onFulfilled: (value: { error: null }) => unknown) {
-						const records = Array.isArray(data) ? data : [data];
-						for (const record of records) {
-							rateLimits.set(record.key, record);
-						}
-						return onFulfilled({ error: null });
+				) => {
+					// Synchronously insert into the map, then return a resolved promise
+					const records = Array.isArray(data) ? data : [data];
+					for (const record of records) {
+						console.log(`[MOCK INSERT] key=${record.key}, count=${record.count}`);
+						rateLimits.set(record.key, record);
 					}
-				})
+					return Promise.resolve({ error: null });
+				}
 			};
 		}
 	} as unknown as SupabaseClient<Database>;

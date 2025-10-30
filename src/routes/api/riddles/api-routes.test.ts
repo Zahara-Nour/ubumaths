@@ -30,14 +30,15 @@ import { checkAndAutoSelectToday } from '$lib/server/riddle-auto-select';
 
 describe('POST /api/riddles/[id]/submit', () => {
 	let mockSupabase: SupabaseClient;
-	let mockSession: { user: { id: string } };
+	let mockSession: { user: { id: string }; session: { access_token: string } };
 	let mockRequest: Request;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
 
 		mockSession = {
-			user: { id: 'student-123' }
+			user: { id: 'student-123' },
+			session: { access_token: 'mock-token' }
 		};
 
 		mockSupabase = {
@@ -58,7 +59,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 				request: mockRequest,
 				locals: {
 					supabase: mockSupabase,
-					safeGetSession: async () => ({ session: null })
+					safeGetSession: async () => ({ user: null, session: null })
 				}
 			} as never)
 		).rejects.toThrow();
@@ -76,7 +77,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 				request: mockRequest,
 				locals: {
 					supabase: mockSupabase,
-					safeGetSession: async () => ({ session: mockSession })
+					safeGetSession: async () => mockSession
 				}
 			} as never)
 		).rejects.toThrow();
@@ -154,7 +155,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 			request: mockRequest,
 			locals: {
 				supabase: mockSupabase,
-				safeGetSession: async () => ({ session: mockSession })
+				safeGetSession: async () => mockSession
 			}
 		} as never);
 
@@ -234,7 +235,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 			request: mockRequest,
 			locals: {
 				supabase: mockSupabase,
-				safeGetSession: async () => ({ session: mockSession })
+				safeGetSession: async () => mockSession
 			}
 		} as never);
 
@@ -323,7 +324,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 			request: mockRequest,
 			locals: {
 				supabase: mockSupabase,
-				safeGetSession: async () => ({ session: mockSession })
+				safeGetSession: async () => mockSession
 			}
 		} as never);
 
@@ -367,7 +368,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 				request: mockRequest,
 				locals: {
 					supabase: mockSupabase,
-					safeGetSession: async () => ({ session: mockSession })
+					safeGetSession: async () => mockSession
 				}
 			} as never)
 		).rejects.toThrow();
@@ -408,7 +409,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 				request: mockRequest,
 				locals: {
 					supabase: mockSupabase,
-					safeGetSession: async () => ({ session: mockSession })
+					safeGetSession: async () => mockSession
 				}
 			} as never)
 		).rejects.toThrow();
@@ -471,7 +472,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 			request: mockRequest,
 			locals: {
 				supabase: mockSupabase,
-				safeGetSession: async () => ({ session: mockSession })
+				safeGetSession: async () => mockSession
 			}
 		} as never);
 

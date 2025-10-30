@@ -65,28 +65,34 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
 	}
 
 	// Transform friendships data
-	const transformedFriendships = friendships.map((f) => ({
-		id: f.id,
-		requester_id: f.requester_id,
-		addressee_id: f.addressee_id,
-		status: f.status,
-		friendship_type: f.friendship_type,
-		created_at: f.created_at,
-		requester_name:
-			f.requester?.full_name ||
-			`${f.requester?.firstname || ''} ${f.requester?.lastname || ''}`.trim() ||
-			'Utilisateur inconnu',
-		requester_avatar: f.requester?.avatar_url || null,
-		requester_role: f.requester?.role || 'student',
-		requester_class_ids: f.requester?.class_ids || [],
-		addressee_name:
-			f.addressee?.full_name ||
-			`${f.addressee?.firstname || ''} ${f.addressee?.lastname || ''}`.trim() ||
-			'Utilisateur inconnu',
-		addressee_avatar: f.addressee?.avatar_url || null,
-		addressee_role: f.addressee?.role || 'student',
-		addressee_class_ids: f.addressee?.class_ids || []
-	}));
+	const transformedFriendships = friendships.map((f) => {
+		// Type assertion for nested profile data
+		const requester = Array.isArray(f.requester) ? f.requester[0] : f.requester;
+		const addressee = Array.isArray(f.addressee) ? f.addressee[0] : f.addressee;
+
+		return {
+			id: f.id,
+			requester_id: f.requester_id,
+			addressee_id: f.addressee_id,
+			status: f.status,
+			friendship_type: f.friendship_type,
+			created_at: f.created_at,
+			requester_name:
+				requester?.full_name ||
+				`${requester?.firstname || ''} ${requester?.lastname || ''}`.trim() ||
+				'Utilisateur inconnu',
+			requester_avatar: requester?.avatar_url || null,
+			requester_role: requester?.role || 'student',
+			requester_class_ids: requester?.class_ids || [],
+			addressee_name:
+				addressee?.full_name ||
+				`${addressee?.firstname || ''} ${addressee?.lastname || ''}`.trim() ||
+				'Utilisateur inconnu',
+			addressee_avatar: addressee?.avatar_url || null,
+			addressee_role: addressee?.role || 'student',
+			addressee_class_ids: addressee?.class_ids || []
+		};
+	});
 
 	// Calculate stats
 	const stats = {

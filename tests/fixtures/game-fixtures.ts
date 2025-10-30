@@ -326,14 +326,14 @@ export function createMockSupabaseClient() {
 			select: (_columns: string = '*') => ({
 				eq: (column: string, value: unknown) => ({
 					single: async () => {
-						const tableData = mockData[table as keyof typeof mockData] as Array<
+						const tableData = mockData[table as keyof typeof mockData] as unknown as Array<
 							Record<string, unknown>
 						>;
 						const data = tableData?.find((item) => item[column] === value);
 						return { data, error: null };
 					},
 					maybeSingle: async () => {
-						const tableData = mockData[table as keyof typeof mockData] as Array<
+						const tableData = mockData[table as keyof typeof mockData] as unknown as Array<
 							Record<string, unknown>
 						>;
 						const data = tableData?.find((item) => item[column] === value);
@@ -342,7 +342,7 @@ export function createMockSupabaseClient() {
 				}),
 				limit: (n: number) => ({
 					then: async (resolve: (result: { data: unknown; error: null }) => unknown) => {
-						const tableData = mockData[table as keyof typeof mockData] as Array<
+						const tableData = mockData[table as keyof typeof mockData] as unknown as Array<
 							Record<string, unknown>
 						>;
 						const data = tableData?.slice(0, n);

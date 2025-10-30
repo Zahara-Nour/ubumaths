@@ -37,12 +37,15 @@ export async function testSupabaseConnection() {
 
 		// Test 3: Database access
 		logger.info('[Test 3] Testing database read access...');
-		const { data: topics, error: topicsError } = await supabase.from('topics').select('*').limit(5);
+		const { data: schools, error: schoolsError } = await supabase
+			.from('schools')
+			.select('*')
+			.limit(5);
 
-		if (topicsError) {
-			logger.error('[Test 3] ❌ Database read failed:', topicsError.message);
+		if (schoolsError) {
+			logger.error('[Test 3] ❌ Database read failed:', schoolsError.message);
 		} else {
-			logger.info('[Test 3] ✅ Database read successful, topics found:', topics?.length ?? 0);
+			logger.info('[Test 3] ✅ Database read successful, schools found:', schools?.length ?? 0);
 		}
 
 		logger.info('=== Test Complete ===');
@@ -50,7 +53,7 @@ export async function testSupabaseConnection() {
 		return {
 			connectionOk: !healthError,
 			authOk: !!session,
-			databaseOk: !topicsError
+			databaseOk: !schoolsError
 		};
 	} catch (err) {
 		logger.error('=== Test Failed ===', err);

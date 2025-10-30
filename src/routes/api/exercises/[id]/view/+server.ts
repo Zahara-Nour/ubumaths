@@ -9,6 +9,8 @@ import type { RequestHandler } from './$types';
 import { markExerciseAsViewed } from '$lib/server/exercise-assignments';
 import { validateViewExercise } from '$lib/server/validation';
 
+type ZodIssue = { path: (string | number)[]; message: string };
+
 /**
  * POST /api/exercises/[id]/view
  *
@@ -32,8 +34,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	const validation = validateViewExercise(body);
 
 	if (!validation.success) {
-		const errorMsg = validation.error.errors
-			.map((e) => `${e.path.join('.')}: ${e.message}`)
+		const errorMsg = validation.error.issues
+			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
 		return json({ error: `Validation failed: ${errorMsg}` }, { status: 400 });
 	}

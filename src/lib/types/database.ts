@@ -5283,13 +5283,18 @@ export type NotificationRead = Tables<'notification_reads'>;
 // Notification-related types (defined as strings in the database)
 export type NotificationType = 'info' | 'alert' | 'announcement' | 'reminder';
 export type NotificationPriority = 'normal' | 'important' | 'urgent';
-export type NotificationTargetType = 'all' | 'roles' | 'classes' | 'users';
+export type NotificationTargetType = 'all' | 'role' | 'roles' | 'classes' | 'users';
 export type SystemEventType =
 	| 'assessment_assigned'
 	| 'assessment_graded'
 	| 'class_joined'
 	| 'reward_earned'
-	| 'achievement_unlocked';
+	| 'achievement_unlocked'
+	| 'assignment_created'
+	| 'resource_added'
+	| 'badge_unlocked'
+	| 'maintenance_scheduled'
+	| 'feature_released';
 
 // School timetable types (stored as JSON in schools.timetable column)
 export interface SchoolPeriod {
@@ -5303,3 +5308,23 @@ export interface SchoolPeriod {
 export interface SchoolTimetable {
 	periods: SchoolPeriod[];
 }
+
+// Friendship types
+export type FriendshipType = 'classmate' | 'mentor';
+
+export type FriendshipWithProfile = Database['public']['Tables']['friendships']['Row'] & {
+	friend_profile: {
+		id: string;
+		full_name: string | null;
+		firstname: string | null;
+		lastname: string | null;
+		avatar_url: string | null;
+		role: 'student' | 'teacher' | 'admin';
+	};
+	presence?: Database['public']['Tables']['user_presence']['Row'] | null;
+};
+
+// Re-export commonly used types
+export type Class = Database['public']['Tables']['classes']['Row'];
+export type ClassSchedule = Database['public']['Tables']['class_schedules']['Row'];
+export type Gender = 'M' | 'F' | 'Other';

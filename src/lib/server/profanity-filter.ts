@@ -6,7 +6,7 @@
  * Uses the bad-words library with custom French profanity list.
  */
 
-import Filter from 'bad-words';
+import { Filter } from 'bad-words';
 
 // Initialize filter
 const filter = new Filter();
@@ -142,7 +142,7 @@ export function extractTextFromTipTap(content: unknown): string {
 		}
 	}
 
-	traverse(content);
+	traverse(content as Record<string, unknown>);
 
 	return text.trim();
 }

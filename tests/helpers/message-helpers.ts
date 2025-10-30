@@ -13,6 +13,7 @@
 import { vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import type { Mock } from 'vitest';
 
 // ============================================================================
 // MOCK SUPABASE CLIENT
@@ -42,11 +43,16 @@ export function createMockSupabase() {
 		then: vi.fn()
 	};
 
+	const mockRpc = vi.fn();
+
 	return {
 		from: vi.fn(() => mockChain),
-		rpc: vi.fn(),
+		rpc: mockRpc,
 		_mockChain: mockChain
-	} as unknown as SupabaseClient<Database> & { _mockChain: typeof mockChain };
+	} as unknown as SupabaseClient<Database> & {
+		_mockChain: typeof mockChain;
+		rpc: Mock;
+	};
 }
 
 /**
@@ -299,7 +305,7 @@ export function isMessageRead(inboxEntry: typeof mockInboxEntry): boolean {
  * Check if message is in trash
  */
 export function isMessageTrashed(inboxEntry: typeof mockInboxEntry): boolean {
-	return inboxEntry.status === 'trash' || inboxEntry.deleted;
+	return (inboxEntry.status as string) === 'trash' || inboxEntry.deleted;
 }
 
 // ============================================================================

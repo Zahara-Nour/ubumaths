@@ -21,19 +21,19 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Convert to uppercase
 	 * Usage: {{name | uppercase}}
 	 */
-	uppercase: (value: string) => String(value).toUpperCase(),
+	uppercase: (value: unknown) => String(value).toUpperCase(),
 
 	/**
 	 * Convert to lowercase
 	 * Usage: {{name | lowercase}}
 	 */
-	lowercase: (value: string) => String(value).toLowerCase(),
+	lowercase: (value: unknown) => String(value).toLowerCase(),
 
 	/**
 	 * Capitalize first letter
 	 * Usage: {{name | capitalize}}
 	 */
-	capitalize: (value: string) => {
+	capitalize: (value: unknown) => {
 		const str = String(value);
 		return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 	},
@@ -42,7 +42,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Truncate text to length
 	 * Usage: {{description | truncate:100}}
 	 */
-	truncate: (value: string, length: string = '50') => {
+	truncate: (value: unknown, length: string = '50') => {
 		const str = String(value);
 		const maxLength = parseInt(length, 10);
 		if (str.length <= maxLength) return str;
@@ -53,7 +53,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Format as currency
 	 * Usage: {{amount | currency:EUR}}
 	 */
-	currency: (value: number, code: string = 'EUR') => {
+	currency: (value: unknown, code: string = 'EUR') => {
 		const num = parseFloat(String(value));
 		if (isNaN(num)) return value;
 
@@ -67,7 +67,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Format number with separator
 	 * Usage: {{count | number}}
 	 */
-	number: (value: number) => {
+	number: (value: unknown) => {
 		const num = parseFloat(String(value));
 		if (isNaN(num)) return value;
 
@@ -78,8 +78,8 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Format date
 	 * Usage: {{date | date:DD/MM/YYYY}}
 	 */
-	date: (value: string | Date, format: string = 'long') => {
-		const date = value instanceof Date ? value : new Date(value);
+	date: (value: unknown, format: string = 'long') => {
+		const date = value instanceof Date ? value : new Date(String(value));
 		if (isNaN(date.getTime())) return value;
 
 		if (format === 'short') {
@@ -96,8 +96,8 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Format time
 	 * Usage: {{timestamp | time}}
 	 */
-	time: (value: string | Date) => {
-		const date = value instanceof Date ? value : new Date(value);
+	time: (value: unknown) => {
+		const date = value instanceof Date ? value : new Date(String(value));
 		if (isNaN(date.getTime())) return value;
 
 		return formatTime(date);
@@ -107,7 +107,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Pluralize based on count
 	 * Usage: {{count | pluralize:élève:élèves}}
 	 */
-	pluralize: (count: number, singular: string, plural: string) => {
+	pluralize: (count: unknown, singular: string, plural: string) => {
 		const num = parseFloat(String(count));
 		return num <= 1 ? singular : plural;
 	},
@@ -124,7 +124,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Join array with separator
 	 * Usage: {{tags | join:, }}
 	 */
-	join: (value: unknown[], separator: string = ', ') => {
+	join: (value: unknown, separator: string = ', ') => {
 		if (!Array.isArray(value)) return value;
 		return value.join(separator);
 	},
@@ -133,7 +133,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * First N items from array
 	 * Usage: {{items | first:3}}
 	 */
-	first: (value: unknown[], count: string = '1') => {
+	first: (value: unknown, count: string = '1') => {
 		if (!Array.isArray(value)) return value;
 		const n = parseInt(count, 10);
 		return value.slice(0, n);
@@ -143,7 +143,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Last N items from array
 	 * Usage: {{items | last:3}}
 	 */
-	last: (value: unknown[], count: string = '1') => {
+	last: (value: unknown, count: string = '1') => {
 		if (!Array.isArray(value)) return value;
 		const n = parseInt(count, 10);
 		return value.slice(-n);
@@ -153,7 +153,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Escape HTML
 	 * Usage: {{html | escape}}
 	 */
-	escape: (value: string) => {
+	escape: (value: unknown) => {
 		const str = String(value);
 		const htmlEscapes: Record<string, string> = {
 			'&': '&amp;',
@@ -169,7 +169,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Strip HTML tags
 	 * Usage: {{html | striptags}}
 	 */
-	striptags: (value: string) => {
+	striptags: (value: unknown) => {
 		const str = String(value);
 		return str.replace(/<[^>]*>/g, '');
 	},
@@ -178,7 +178,7 @@ export const TEMPLATE_FILTERS: Record<string, FilterFunction> = {
 	 * Add percentage sign
 	 * Usage: {{rate | percent}}
 	 */
-	percent: (value: number) => {
+	percent: (value: unknown) => {
 		const num = parseFloat(String(value));
 		if (isNaN(num)) return value;
 		return `${num}%`;

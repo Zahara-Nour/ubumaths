@@ -5,7 +5,12 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getErrorLogs, type ErrorFilters } from '$lib/server/errorMonitoring';
+import {
+	getErrorLogs,
+	type ErrorFilters,
+	type ErrorType,
+	type ErrorSeverity
+} from '$lib/server/errorMonitoring';
 import { listErrorsQuerySchema } from '$lib/server/validation/errors';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
@@ -46,8 +51,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		// Build filters from validated data
 		const filters: ErrorFilters = {
-			...(validation.data.error_type && { error_type: validation.data.error_type }),
-			...(validation.data.severity && { severity: validation.data.severity }),
+			...(validation.data.error_type && {
+				error_type: validation.data.error_type as ErrorType | ErrorType[]
+			}),
+			...(validation.data.severity && {
+				severity: validation.data.severity as ErrorSeverity | ErrorSeverity[]
+			}),
 			...(validation.data.resolved !== undefined && { resolved: validation.data.resolved }),
 			...(validation.data.user_id && { user_id: validation.data.user_id }),
 			...(validation.data.date_from && { date_from: validation.data.date_from }),

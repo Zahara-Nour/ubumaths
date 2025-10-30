@@ -15,6 +15,8 @@ describe('validateTemplate - Valid Templates', () => {
 		const template: QuestionTemplate = {
 			id: 'test-1',
 			type: 'numerical_exact',
+			title: 'Simple Addition',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Calculate 2 + 3' }],
@@ -27,8 +29,8 @@ describe('validateTemplate - Valid Templates', () => {
 			theme: 'Arithmétique',
 			domain: 'Addition',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -41,6 +43,8 @@ describe('validateTemplate - Valid Templates', () => {
 		const template: QuestionTemplate = {
 			id: 'test-2',
 			type: 'numerical_exact',
+			title: 'Test with Variables',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
@@ -56,8 +60,8 @@ describe('validateTemplate - Valid Templates', () => {
 			theme: 'Arithmétique',
 			domain: 'Addition',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -77,9 +81,11 @@ describe('validateTemplate - Valid Templates', () => {
 		] as const;
 
 		for (const type of types) {
-			const template = {
+			const template: QuestionTemplate = {
 				id: `test-${type}`,
 				type,
+				title: `Test ${type}`,
+				status: 'published' as const,
 				variations: [
 					{
 						statement: [{ type: 'text', content: 'Question' }],
@@ -104,18 +110,12 @@ describe('validateTemplate - Valid Templates', () => {
 				theme: 'Test',
 				domain: 'Test',
 				level: 1,
-				created_at: new Date(),
-				updated_at: new Date(),
-				created_by: 'test-user'
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString(),
+				created_by: 'test-user',
+				transformType: type === 'algebraic_transform' ? 'simplify' : undefined,
+				multipleAnswers: type === 'multiple_choice' ? false : undefined
 			};
-
-			if (type === 'algebraic_transform') {
-				template.transformType = 'simplify';
-			}
-
-			if (type === 'multiple_choice') {
-				template.multipleAnswers = false;
-			}
 
 			const errors = validateTemplate(template);
 			expect(errors).toEqual([]);
@@ -126,6 +126,8 @@ describe('validateTemplate - Valid Templates', () => {
 		const template: QuestionTemplate = {
 			id: 'test-multi-var',
 			type: 'numerical_exact',
+			title: 'Test Multiple Variations',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
@@ -149,8 +151,8 @@ describe('validateTemplate - Valid Templates', () => {
 			theme: 'Arithmétique',
 			domain: 'Opérations',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -164,6 +166,8 @@ describe('validateTemplate - Required Fields', () => {
 	it('should fail on missing type', () => {
 		const template = {
 			id: 'test',
+			title: 'Test Template',
+			status: 'published' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -176,10 +180,10 @@ describe('validateTemplate - Required Fields', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
-		};
+		} as unknown as QuestionTemplate;
 
 		const errors = validateTemplate(template);
 
@@ -190,15 +194,17 @@ describe('validateTemplate - Required Fields', () => {
 		const template = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published' as const,
 			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
-		};
+		} as unknown as QuestionTemplate;
 
 		const errors = validateTemplate(template);
 
@@ -209,16 +215,18 @@ describe('validateTemplate - Required Fields', () => {
 		const template = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published' as const,
 			variations: [],
 			precision: { type: 'none' },
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
-		};
+		} as unknown as QuestionTemplate;
 
 		const errors = validateTemplate(template);
 
@@ -229,6 +237,8 @@ describe('validateTemplate - Required Fields', () => {
 		const template = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published' as const,
 			variations: [
 				{
 					variables: [],
@@ -240,10 +250,10 @@ describe('validateTemplate - Required Fields', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
-		};
+		} as unknown as QuestionTemplate;
 
 		const errors = validateTemplate(template);
 
@@ -254,6 +264,8 @@ describe('validateTemplate - Required Fields', () => {
 		const template = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -265,10 +277,10 @@ describe('validateTemplate - Required Fields', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
-		};
+		} as unknown as QuestionTemplate;
 
 		const errors = validateTemplate(template);
 
@@ -279,6 +291,8 @@ describe('validateTemplate - Required Fields', () => {
 		const template = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -290,10 +304,10 @@ describe('validateTemplate - Required Fields', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
-		};
+		} as unknown as QuestionTemplate;
 
 		const errors = validateTemplate(template);
 
@@ -304,6 +318,8 @@ describe('validateTemplate - Required Fields', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Empty Grades',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -316,8 +332,8 @@ describe('validateTemplate - Required Fields', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -330,6 +346,8 @@ describe('validateTemplate - Required Fields', () => {
 		const template = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -341,10 +359,10 @@ describe('validateTemplate - Required Fields', () => {
 			grades: ['6'],
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
-		};
+		} as unknown as QuestionTemplate;
 
 		const errors = validateTemplate(template);
 
@@ -355,6 +373,8 @@ describe('validateTemplate - Required Fields', () => {
 		const template = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -366,10 +386,10 @@ describe('validateTemplate - Required Fields', () => {
 			grades: ['6'],
 			theme: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
-		};
+		} as unknown as QuestionTemplate;
 
 		const errors = validateTemplate(template);
 
@@ -380,6 +400,8 @@ describe('validateTemplate - Required Fields', () => {
 		const template = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -391,10 +413,10 @@ describe('validateTemplate - Required Fields', () => {
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
-		};
+		} as unknown as QuestionTemplate;
 
 		const errors = validateTemplate(template);
 
@@ -407,6 +429,8 @@ describe('validateTemplate - Statement Validation', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Empty Statement',
+			status: 'published',
 			variations: [
 				{
 					statement: [],
@@ -419,8 +443,8 @@ describe('validateTemplate - Statement Validation', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -433,6 +457,8 @@ describe('validateTemplate - Statement Validation', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: '' }],
@@ -445,8 +471,8 @@ describe('validateTemplate - Statement Validation', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -459,11 +485,13 @@ describe('validateTemplate - Statement Validation', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published',
 			variations: [
 				{
 					statement: [
 						{ type: 'text', content: 'What is this?' },
-						{ type: 'image', url: 'https://example.com/image.png', alt: 'Example' }
+						{ type: 'image', content: 'https://example.com/image.png', alt: 'Example' }
 					],
 					variables: [],
 					answer: '5'
@@ -474,8 +502,8 @@ describe('validateTemplate - Statement Validation', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -490,6 +518,8 @@ describe('validateTemplate - Variable Validation', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -505,8 +535,8 @@ describe('validateTemplate - Variable Validation', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -519,6 +549,8 @@ describe('validateTemplate - Variable Validation', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -531,8 +563,8 @@ describe('validateTemplate - Variable Validation', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -545,6 +577,8 @@ describe('validateTemplate - Variable Validation', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -562,8 +596,8 @@ describe('validateTemplate - Variable Validation', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -576,6 +610,8 @@ describe('validateTemplate - Variable Validation', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question 1' }],
@@ -593,8 +629,8 @@ describe('validateTemplate - Variable Validation', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -609,6 +645,8 @@ describe('validateTemplate - Type-Specific Validation', () => {
 		const template = {
 			id: 'test',
 			type: 'algebraic_transform',
+			title: 'Test Template',
+			status: 'published' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -620,10 +658,10 @@ describe('validateTemplate - Type-Specific Validation', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
-		};
+		} as unknown as QuestionTemplate;
 
 		const errors = validateTemplate(template);
 
@@ -637,6 +675,8 @@ describe('validateTemplate - Type-Specific Validation', () => {
 			const template: QuestionTemplate = {
 				id: `test-${transformType}`,
 				type: 'algebraic_transform',
+				title: `Test ${transformType}`,
+				status: 'published',
 				variations: [
 					{
 						statement: [{ type: 'text', content: 'Question' }],
@@ -649,8 +689,8 @@ describe('validateTemplate - Type-Specific Validation', () => {
 				theme: 'Test',
 				domain: 'Test',
 				level: 1,
-				created_at: new Date(),
-				updated_at: new Date(),
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString(),
 				created_by: 'test-user'
 			};
 
@@ -663,6 +703,8 @@ describe('validateTemplate - Type-Specific Validation', () => {
 		const template = {
 			id: 'test',
 			type: 'fill_in_blanks',
+			title: 'Test Template',
+			status: 'published' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -674,10 +716,10 @@ describe('validateTemplate - Type-Specific Validation', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
-		};
+		} as unknown as QuestionTemplate;
 
 		const errors = validateTemplate(template);
 
@@ -688,6 +730,8 @@ describe('validateTemplate - Type-Specific Validation', () => {
 		const template = {
 			id: 'test',
 			type: 'multiple_choice',
+			title: 'Test Template',
+			status: 'published' as const,
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -700,10 +744,10 @@ describe('validateTemplate - Type-Specific Validation', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
-		};
+		} as unknown as QuestionTemplate;
 
 		const errors = validateTemplate(template);
 
@@ -714,6 +758,8 @@ describe('validateTemplate - Type-Specific Validation', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'multiple_choice',
+			title: 'Test Template',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -727,8 +773,8 @@ describe('validateTemplate - Type-Specific Validation', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -743,6 +789,8 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Valid' }],
@@ -760,8 +808,8 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -774,6 +822,8 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published',
 			variations: [
 				{
 					statement: [], // Invalid variation 1
@@ -791,8 +841,8 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -808,6 +858,8 @@ describe('validateTemplate - Edge Cases', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -821,8 +873,8 @@ describe('validateTemplate - Edge Cases', () => {
 			domain: 'Test',
 			level: 1,
 			delay: 120,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -835,6 +887,8 @@ describe('validateTemplate - Edge Cases', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -848,8 +902,8 @@ describe('validateTemplate - Edge Cases', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -862,6 +916,8 @@ describe('validateTemplate - Edge Cases', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -870,12 +926,12 @@ describe('validateTemplate - Edge Cases', () => {
 				}
 			],
 			precision: { type: 'none' },
-			grades: ['CP', 'CE1', 'CE2', 'CM1', 'CM2', '6', '5', '4', '3', '2', '1', 'Tale', 'STMG'],
+			grades: ['CP', 'CE1', 'CE2', 'CM1', 'CM2', '6', '5', '4', '3', '2', 'SPE_1', 'SPE_T', 'STMG'],
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -888,6 +944,8 @@ describe('validateTemplate - Edge Cases', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'a'.repeat(5000) }],
@@ -900,8 +958,8 @@ describe('validateTemplate - Edge Cases', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -919,6 +977,8 @@ describe('validateTemplate - Edge Cases', () => {
 		const template: QuestionTemplate = {
 			id: 'test',
 			type: 'numerical_exact',
+			title: 'Test Template',
+			status: 'published',
 			variations: [
 				{
 					statement: [{ type: 'text', content: 'Question' }],
@@ -931,8 +991,8 @@ describe('validateTemplate - Edge Cases', () => {
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
 		};
 
@@ -947,6 +1007,8 @@ describe('validateTemplate - Multiple Errors', () => {
 		const template = {
 			id: 'test',
 			type: 'algebraic_transform',
+			title: 'Test Template',
+			status: 'published' as const,
 			variations: [
 				{
 					statement: [],
@@ -959,10 +1021,10 @@ describe('validateTemplate - Multiple Errors', () => {
 			],
 			grades: [],
 			// missing theme, domain, level, transformType
-			created_at: new Date(),
-			updated_at: new Date(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
 			created_by: 'test-user'
-		};
+		} as unknown as QuestionTemplate;
 
 		const errors = validateTemplate(template);
 

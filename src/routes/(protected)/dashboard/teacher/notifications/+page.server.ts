@@ -54,12 +54,15 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 			.in('class_id', classIds);
 
 		students =
-			studentsData?.map((cm) => ({
-				id: cm.student.id,
-				firstname: cm.student.firstname,
-				lastname: cm.student.lastname,
-				class_id: cm.class_id
-			})) || [];
+			studentsData?.map((cm) => {
+				const student = Array.isArray(cm.student) ? cm.student[0] : cm.student;
+				return {
+					id: student.id,
+					firstname: student.firstname,
+					lastname: student.lastname,
+					class_id: cm.class_id
+				};
+			}) || [];
 	}
 
 	// Get teacher's created notifications with stats

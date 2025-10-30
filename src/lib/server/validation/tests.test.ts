@@ -15,7 +15,7 @@ describe('test system validation schemas', () => {
 		const createValidTestData = () => ({
 			result: {
 				sessionId: '550e8400-e29b-41d4-a716-446655440000',
-				mode: 'interactive' as const,
+				mode: 'interactive' as ('display' | 'interactive' | 'course'),
 				score: 7.5,
 				scorePercentage: 75,
 				totalQuestions: 10,
@@ -186,7 +186,7 @@ describe('test system validation schemas', () => {
 			const modes = ['display', 'interactive', 'course'] as const;
 			modes.forEach((mode) => {
 				const data = createValidTestData();
-				data.result.mode = mode;
+				data.result.mode = mode as 'display' | 'interactive' | 'course';
 				const result = saveTestSchema.safeParse(data);
 				expect(result.success).toBe(true);
 			});
@@ -213,28 +213,28 @@ describe('test system validation schemas', () => {
 
 		it('should accept test without sessionId', () => {
 			const data = createValidTestData();
-			delete data.result.sessionId;
+			delete (data.result as any).sessionId;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(true);
 		});
 
 		it('should accept test without assignmentId', () => {
 			const data = createValidTestData();
-			delete data.assignmentId;
+			delete (data as any).assignmentId;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(true);
 		});
 
 		it('should accept answer with null userAnswer', () => {
 			const data = createValidTestData();
-			data.result.answers[0].userAnswer = null;
+			data.result.answers[0].userAnswer = null as any;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(true);
 		});
 
 		it('should accept answer without userAnswer field', () => {
 			const data = createValidTestData();
-			delete data.result.answers[0].userAnswer;
+			delete (data.result.answers[0] as any).userAnswer;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(true);
 		});
@@ -328,13 +328,17 @@ describe('test system validation schemas', () => {
 			data.result.answers = Array.from({ length: 501 }, (_, i) => ({
 				index: i,
 				instance: {
+					templateId: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
 					statement: `Question ${i}`,
 					answer: 42,
-					type: 'input-number' as const
+					type: 'input-number' as const,
+					variables: {}
 				},
 				userAnswer: 42,
-				isCorrect: true
-			}));
+				isCorrect: true,
+				timeSpent: 30,
+				attempts: 1
+			})) as any;
 			data.result.totalQuestions = 501;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(false);

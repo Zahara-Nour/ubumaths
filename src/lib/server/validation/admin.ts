@@ -101,10 +101,11 @@ export const createNotificationFormSchema = z.object({
 /**
  * Schema for toggling test mode (POST /api/test-mode)
  * Teacher-only: Enable/disable test mode for question generation
+ * NOTE: Exported from common.ts to avoid duplication
  */
-export const testModeSchema = z.object({
-	enabled: z.boolean()
-});
+// export const testModeSchema = z.object({
+// 	enabled: z.boolean()
+// });
 
 // ============================================================================
 // CLASS STUDENTS QUERY SCHEMA

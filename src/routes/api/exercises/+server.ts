@@ -43,8 +43,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	// Validate and parse query parameters
 	const queryValidation = validateListExercisesQuery(url.searchParams);
 	if (!queryValidation.success) {
-		const errorMsg = queryValidation.error.errors
-			.map((e) => `${e.path.join('.')}: ${e.message}`)
+		const errorMsg = queryValidation.error.issues
+			.map((e: unknown) => `${(e as { path: string[]; message: string }).path.join('.')}: ${(e as { path: string[]; message: string }).message}`)
 			.join('; ');
 		throw error(400, `Invalid query parameters: ${errorMsg}`);
 	}
@@ -127,8 +127,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const validation = validateCreateExercise(body);
 
 	if (!validation.success) {
-		const errorMsg = validation.error.errors
-			.map((e) => `${e.path.join('.')}: ${e.message}`)
+		const errorMsg = validation.error.issues
+			.map((e: unknown) => `${(e as { path: string[]; message: string }).path.join('.')}: ${(e as { path: string[]; message: string }).message}`)
 			.join('; ');
 		throw error(400, `Validation failed: ${errorMsg}`);
 	}

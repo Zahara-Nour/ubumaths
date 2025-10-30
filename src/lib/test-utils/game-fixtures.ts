@@ -330,17 +330,20 @@ export function createMockSupabaseClient() {
 				eq: (column: string, value: unknown) => ({
 					// column, value for future filtering
 					single: async () => {
-						const data = (mockData as never)[table]?.find((item: never) => item[column] === value);
+						const tableData = (mockData as Record<string, unknown[]>)[table];
+						const data = tableData?.find((item: unknown) => (item as Record<string, unknown>)[column] === value);
 						return { data, error: null };
 					},
 					maybeSingle: async () => {
-						const data = (mockData as never)[table]?.find((item: never) => item[column] === value);
+						const tableData = (mockData as Record<string, unknown[]>)[table];
+						const data = tableData?.find((item: unknown) => (item as Record<string, unknown>)[column] === value);
 						return { data, error: null };
 					}
 				}),
 				limit: (n: number) => ({
 					then: async (resolve: (value: unknown) => unknown) => {
-						const data = (mockData as never)[table]?.slice(0, n);
+						const tableData = (mockData as Record<string, unknown[]>)[table];
+						const data = tableData?.slice(0, n);
 						return resolve({ data, error: null });
 					}
 				})
@@ -359,7 +362,7 @@ export function createMockSupabaseClient() {
 					// column, value for future filtering
 					select: () => ({
 						single: async () => {
-							return { data: { ...values }, error: null };
+							return { data: { ...(values as Record<string, unknown>) }, error: null };
 						}
 					})
 				})

@@ -24,11 +24,13 @@ import type {
 	Variable as SharedVariable,
 	ResolvedVariable as SharedResolvedVariable,
 	RandomSpec as SharedRandomSpec,
-	Syntax
+	NumberOrVariable as SharedNumberOrVariable,
+	Exclusion as SharedExclusion
 } from '$lib/shared/parameterization';
 
 // Re-export shared types for convenience
-export type { Syntax };
+export type NumberOrVariable = SharedNumberOrVariable;
+export type Exclusion = SharedExclusion;
 
 // ============================================================================
 // GRADE LEVELS

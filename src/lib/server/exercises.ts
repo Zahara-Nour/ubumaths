@@ -218,7 +218,9 @@ export async function createExercise(
 		.insert({
 			...exercise,
 			variables:
-				variablesValidation.variables.length > 0 ? variablesValidation.variables : undefined,
+				variablesValidation.variables.length > 0
+					? (variablesValidation.variables as unknown as Database['public']['Tables']['exercises']['Row']['variables'])
+					: undefined,
 			distribution_mode: distributionMode,
 			created_by: userId
 		})
@@ -279,7 +281,9 @@ export async function updateExercise(
 		updates = {
 			...updates,
 			variables:
-				variablesValidation.variables.length > 0 ? variablesValidation.variables : undefined
+				variablesValidation.variables.length > 0
+					? (variablesValidation.variables as unknown as Database['public']['Tables']['exercises']['Row']['variables'])
+					: undefined
 		};
 	}
 
