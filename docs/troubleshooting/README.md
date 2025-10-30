@@ -11,11 +11,10 @@
 
 1. [Recent Bug Fixes](#recent-bug-fixes) 🆕
 2. [Environment & Configuration](#environment--configuration)
-3. [Redis Cache Issues](#redis-cache-issues)
-4. [Database Issues](#database-issues)
-5. [Build & Deployment](#build--deployment)
-6. [Testing Issues](#testing-issues)
-7. [Performance Issues](#performance-issues)
+3. [Database Issues](#database-issues)
+4. [Build & Deployment](#build--deployment)
+5. [Testing Issues](#testing-issues)
+6. [Performance Issues](#performance-issues)
 
 ---
 
@@ -41,9 +40,9 @@ For recently fixed bugs and their solutions, see [Bug Fixes - 2025-10-29](./bug-
 
 - Environment validation errors on startup
 - "undefined" values in `process.env` despite correct `.env` file
-- Redis/Supabase connection failures with valid credentials
+- Supabase connection failures with valid credentials
 
-**Solution**: See [Environment Variable Loading Fix](./env-loading-fix.md)
+**Solution**: Use lazy initialization for environment-dependent resources
 
 **Quick Fix**:
 
@@ -73,7 +72,7 @@ function getResource(): Resource {
 
 **References**:
 
-- [Detailed guide](./env-loading-fix.md)
+- [Environment Variables Guide](../development/environment-variables.md)
 - [Vite Environment Variables](https://vitejs.dev/guide/env-and-mode.html)
 
 ---
@@ -107,122 +106,6 @@ function getResource(): Resource {
    ```bash
    grep "^\.env$" .gitignore
    ```
-
----
-
-## Redis Cache Issues
-
-### Redis Connection Failed
-
-**Symptoms**: `[Cache] Redis error, using fallback: Error: fetch failed`
-
-**Diagnosis**:
-
-```bash
-# Check environment variables
-echo $UPSTASH_REDIS_REST_URL
-echo $UPSTASH_REDIS_REST_TOKEN
-
-# Test connection
-curl -X POST $UPSTASH_REDIS_REST_URL/ping \
-  -H "Authorization: Bearer $UPSTASH_REDIS_REST_TOKEN"
-```
-
-**Solutions**:
-
-1. **Missing credentials**: Configure in `.env`:
-
-   ```bash
-   UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
-   UPSTASH_REDIS_REST_TOKEN=your_token_here
-   ```
-
-2. **Invalid credentials**: Verify in Upstash console → Database → REST API tab
-
-3. **Network issues**: Check firewall/proxy settings
-
-4. **Vercel deployment**: Add env vars in Vercel project settings → Environment Variables
-
-**References**:
-
-- [Redis Cache Setup Guide](../guides/redis-cache-setup.md)
-- [Redis Architecture](../architecture/redis-caching.md)
-
----
-
-### Cache Returning Stale Data
-
-**Symptoms**: Users see old data after updates
-
-**Diagnosis**:
-
-- Check if invalidation is called after data modifications
-- Verify cache key matches between set and invalidate
-- Check TTL configuration
-
-**Solutions**:
-
-1. **Add cache invalidation after updates**:
-
-   ```typescript
-   await updateDatabase(id, data);
-   await invalidateCache(CACHE_KEYS.MY_DATA(id)); // Add this!
-   ```
-
-2. **Verify key consistency**:
-
-   ```typescript
-   console.log('Setting:', CACHE_KEYS.MY_DATA(id));
-   console.log('Getting:', CACHE_KEYS.MY_DATA(id));
-   // Must be identical!
-   ```
-
-3. **Reduce TTL temporarily**:
-   ```typescript
-   const TTL = {
-   	MY_DATA: 30 // Reduced from 300 to 30 seconds
-   };
-   ```
-
----
-
-### High Redis Costs (Exceeding Free Tier)
-
-**Symptoms**: Exceeding 10K requests/day limit
-
-**Diagnosis**: Check Upstash dashboard → Metrics → Daily Request Count
-
-**Solutions**:
-
-1. **Increase TTLs** (reduce cache misses):
-
-   ```typescript
-   const TTL = {
-   	ACTIVITY_COUNTS: 60 // Increased from 30s
-   };
-   ```
-
-2. **Reduce polling frequency**:
-
-   ```typescript
-   activityStore.startPolling(60000); // 60s instead of 30s
-   ```
-
-3. **Batch requests**:
-
-   ```typescript
-   // Combine multiple requests into one
-   const data = await getCached(key, ttl, async () => {
-   	return Promise.all([fetchNotifications(), fetchMessages(), fetchAlerts()]);
-   });
-   ```
-
-4. **Upgrade to paid tier**: $0.20 per 100K requests
-
-**References**:
-
-- [Redis Cost Estimation](../guides/redis-cache-setup.md#cost-estimation)
-- [Performance Metrics](../architecture/redis-caching.md#performance-metrics)
 
 ---
 
@@ -443,7 +326,7 @@ curl -X POST $UPSTASH_REDIS_REST_URL/ping \
    - Use `select()` to limit columns fetched
    - Combine multiple queries with `Promise.all()`
 
-3. **Enable Redis cache**: See [Redis Setup Guide](../guides/redis-cache-setup.md)
+3. **Add database indexes**: Check `docs/architecture/database-schema.md` for required indexes
 
 ---
 
@@ -455,7 +338,7 @@ curl -X POST $UPSTASH_REDIS_REST_URL/ping \
 
 **Solutions**:
 
-1. **Implement Redis caching**: [Setup Guide](../guides/redis-cache-setup.md)
+1. **Add strategic database indexes**: See [Performance Guide](../architecture/performance.md)
 
 2. **Reduce polling frequency**:
 
@@ -540,7 +423,7 @@ pnpm db:migrate                 # Apply migrations
 pnpm db:reset                   # Reset local database
 
 # Cache
-curl http://localhost:5175/api/health/redis  # Check Redis health
+curl http://localhost:5175/api/health  # Check health status
 ```
 
 ### Environment Variables Checklist

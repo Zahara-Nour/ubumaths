@@ -121,12 +121,11 @@ src/
 - Event Bus integration for cross-component sync
 - TTL: None (invalidated on mutations)
 
-**2. Server-side Cache** (`src/lib/server/cache/warnings.ts`):
+**2. Server-side Queries** (Direct database):
 
-- Redis (Upstash) cache with 3-minute TTL
-- Cache key: `warnings:class:{classId}:period:{periodId}:{testMode}`
-- Automatic fallback to database on cache miss
-- Invalidated after warning create/delete operations
+- Direct database queries (no caching layer since 2025-10-30)
+- Always returns fresh data (~100-200ms response time)
+- Strategic indexes for fast lookups
 - **Test mode filtering** (2025-10-29): Joins with `profiles` table to filter warnings by `is_test` flag, preventing data mismatches when switching test modes
 
 **3. Event Bus Coordination** (`cacheEventBus.svelte.ts`):
@@ -142,8 +141,7 @@ src/
 Component → warningsCache.get(classId, periodId)
   → Client cache (hit) → Return instantly
   → Client cache (miss) → API call
-    → Redis cache (hit) → Return in ~50ms
-    → Redis cache (miss) → Database query → ~300ms
+    → Database query → ~100-200ms
 
 After mutation (with cross-tab sync):
   Optimistic update → UI updates instantly
@@ -157,9 +155,9 @@ After mutation (with cross-tab sync):
 
 **Performance Impact**:
 
-- **Cache hit rate**: 80%+ (frequent updates during active periods)
-- **Average load time**: 3.6s → 0.4s (90% faster)
-- **Database queries**: Reduced by ~70%
+- **Client cache hit rate**: High (instant load on revisit)
+- **Database response time**: ~100-200ms (with strategic indexes)
+- **Optimistic UI**: Perceived instant updates (actual sync debounced 500ms)
 
 **For comprehensive cache details**: See [Teacher Dashboard Cache Architecture](../../architecture/teacher-dashboard-cache.md)
 

@@ -56,12 +56,12 @@ These variables **must** be set for the application to function:
 
 ### Rate Limiting
 
-| Variable                  | Description                      | Default  | Notes                |
-| ------------------------- | -------------------------------- | -------- | -------------------- |
-| `RATE_LIMIT_WINDOW_MS`    | Rate limit window (milliseconds) | `900000` | 15 minutes           |
-| `RATE_LIMIT_MAX_REQUESTS` | Max requests per window          | `5`      | -                    |
-| `UPSTASH_REDIS_URL`       | Upstash Redis URL                | -        | Distributed limiting |
-| `UPSTASH_REDIS_TOKEN`     | Upstash Redis token              | -        | Distributed limiting |
+| Variable                  | Description                      | Default  | Notes      |
+| ------------------------- | -------------------------------- | -------- | ---------- |
+| `RATE_LIMIT_WINDOW_MS`    | Rate limit window (milliseconds) | `900000` | 15 minutes |
+| `RATE_LIMIT_MAX_REQUESTS` | Max requests per window          | `5`      | -          |
+
+**Note**: Rate limiting uses database-backed storage (Supabase `rate_limits` table) as of 2025-10-30. No external Redis/Upstash configuration required.
 
 ### Security
 

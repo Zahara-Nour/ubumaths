@@ -69,54 +69,6 @@ export function renderContentFields(fields: ContentField[], options: RenderOptio
 }
 
 /**
- * Extract plain text from ContentField[] (no LaTeX, no images)
- *
- * Useful for previews, SEO, or accessibility.
- *
- * @param fields - Array of content fields
- * @returns Plain text without LaTeX or images
- *
- * @example
- * const fields = [{ type: 'text', content: 'Résoudre $$x^2 + 3$$' }];
- * const plain = extractPlainText(fields);
- * // => "Résoudre x^2 + 3"
- */
-export function extractPlainText(fields: ContentField[]): string {
-	return fields
-		.map((field) => {
-			if (field.type === 'text') {
-				// Remove LaTeX delimiters $$...$$
-				return field.content.replace(/\$\$([^$]+)\$\$/g, '$1');
-			}
-			return '';
-		})
-		.filter(Boolean)
-		.join(' ');
-}
-
-/**
- * Count characters in ContentField[] (excluding images)
- *
- * @param fields - Array of content fields
- * @returns Total character count
- */
-export function countContentLength(fields: ContentField[]): number {
-	return fields
-		.filter((field) => field.type === 'text')
-		.reduce((sum, field) => sum + field.content.length, 0);
-}
-
-/**
- * Check if ContentField[] contains images
- *
- * @param fields - Array of content fields
- * @returns True if at least one image is present
- */
-export function hasImages(fields: ContentField[]): boolean {
-	return fields.some((field) => field.type === 'image');
-}
-
-/**
  * Get all images from ContentField[]
  *
  * @param fields - Array of content fields
@@ -130,48 +82,6 @@ export function extractImages(
 		content: string;
 		alt?: string;
 	}>;
-}
-
-/**
- * Truncate ContentField[] to a maximum character length
- *
- * Preserves complete fields (doesn't split in the middle).
- *
- * @param fields - Array of content fields
- * @param maxLength - Maximum total character length
- * @returns Truncated array of fields
- */
-export function truncateContentFields(fields: ContentField[], maxLength: number): ContentField[] {
-	const result: ContentField[] = [];
-	let currentLength = 0;
-
-	for (const field of fields) {
-		if (field.type === 'text') {
-			const fieldLength = field.content.length;
-
-			if (currentLength + fieldLength <= maxLength) {
-				// Add entire field
-				result.push(field);
-				currentLength += fieldLength;
-			} else if (currentLength < maxLength) {
-				// Add truncated field
-				const remaining = maxLength - currentLength;
-				result.push({
-					type: 'text',
-					content: field.content.substring(0, remaining) + '...'
-				});
-				break;
-			} else {
-				// Already exceeded max length
-				break;
-			}
-		} else if (field.type === 'image') {
-			// Images don't count towards length, but add them
-			result.push(field);
-		}
-	}
-
-	return result;
 }
 
 // ============================================================================

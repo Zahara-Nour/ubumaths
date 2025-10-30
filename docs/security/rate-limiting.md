@@ -440,49 +440,57 @@ if (response.status === 429) {
 
 ---
 
-### Migration to Redis/Upstash (Recommended for Production)
+### Migration to Database-Backed Rate Limiting (COMPLETE - 2025-10-30)
 
-For multi-instance deployments (Vercel, serverless), migrate to Redis:
+**Status**: ✅ **Migration Complete**
 
-**Upstash Redis Example**:
+The rate limiting system has been migrated from in-memory storage to a database-backed implementation using Supabase's `rate_limits` table.
 
-```typescript
-import { Redis } from '@upstash/redis';
+**Current Implementation** (`src/lib/server/rateLimiter.ts`):
 
-const redis = new Redis({
-	url: process.env.UPSTASH_REDIS_URL!,
-	token: process.env.UPSTASH_REDIS_TOKEN!
-});
+- **Storage**: Supabase `rate_limits` table with atomic counters
+- **Endpoints Protected**: Login (5/15min), Signup (3/1hour), OAuth (10/15min), Chatbot (5/15min)
+- **Multi-instance Safe**: Shared state across all Vercel serverless instances
+- **Automatic Cleanup**: Expired entries removed via database triggers
+- **Atomic Operations**: Uses `UPSERT` with conflict resolution for thread-safe increments
 
-async function checkRateLimit(key: string, config: RateLimitConfig) {
-	const attempts = await redis.incr(`ratelimit:${key}`);
+**Benefits of Database-Backed Approach**:
 
-	if (attempts === 1) {
-		// First attempt - set expiration
-		await redis.expire(`ratelimit:${key}`, config.windowMs / 1000);
-	}
+- ✅ Shared state across all instances (Vercel serverless compatible)
+- ✅ Persistent across restarts
+- ✅ No external dependencies (no Redis/Upstash needed)
+- ✅ Automatic cleanup via database triggers
+- ✅ Atomic operations via PostgreSQL `ON CONFLICT` clause
+- ✅ Lower operational complexity (one less service to manage)
+- ✅ Cost-effective (uses existing Supabase infrastructure)
 
-	if (attempts > config.maxAttempts) {
-		await redis.setex(`ratelimit:block:${key}`, config.blockDurationMs / 1000, attempts);
-		return { allowed: false, retryAfter: config.blockDurationMs / 1000 };
-	}
+**Performance Considerations**:
 
-	return { allowed: true, remainingAttempts: config.maxAttempts - attempts };
-}
-```
+- Database queries: ~50-100ms per rate limit check
+- Acceptable latency for authentication endpoints (security > speed)
+- Indexes ensure fast lookups: `idx_rate_limits_key`, `idx_rate_limits_expires_at`
 
-**Benefits**:
+**Trade-offs vs Redis**:
 
-- Shared state across all instances
-- Persistent across restarts
-- Atomic operations
-- Auto-expiration built-in
-- Scales horizontally
+| Aspect           | Database-Backed (Current) | Redis-Based (Previous)  |
+| ---------------- | ------------------------- | ----------------------- |
+| Latency          | ~50-100ms                 | ~10-20ms                |
+| Setup Complexity | Low (uses existing DB)    | Medium (external Redis) |
+| Cost             | Included in Supabase      | $0-20/month             |
+| Multi-instance   | ✅ Yes                    | ✅ Yes                  |
+| Persistence      | ✅ Yes                    | ✅ Yes                  |
+| Auto-cleanup     | ✅ Yes (triggers)         | ✅ Yes (TTL)            |
 
-**Cost**:
+**Why Database Over Redis?**
 
-- Upstash Free Tier: 10,000 requests/day
-- Upstash Pro: $0.20 per 100K requests
+For UbuMaths' scale (~100-1000 users), the ~50ms extra latency on authentication endpoints is negligible compared to:
+
+- Simplified architecture (no Redis management)
+- Lower operational cost ($0 vs $20/month)
+- Reduced deployment complexity
+- Easier debugging (data visible in Supabase dashboard)
+
+**Reference**: See [Database Schema](../architecture/database-schema.md) for `rate_limits` table structure.
 
 ---
 

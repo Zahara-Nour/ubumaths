@@ -1,5 +1,6 @@
 import { marked } from 'marked';
 import hljs from 'highlight.js';
+import { slugify } from '$lib/utils/string';
 
 // Configure marked
 marked.setOptions({
@@ -146,10 +147,7 @@ function generateTableOfContents(content: string): TableOfContentsItem[] {
 		if (level === 1) continue;
 
 		// Generate ID from text (slugify)
-		const id = text
-			.toLowerCase()
-			.replace(/[^a-z0-9]+/g, '-')
-			.replace(/^-|-$/g, '');
+		const id = slugify(text);
 
 		// Ensure unique ID by appending number if needed
 		let uniqueId = id;

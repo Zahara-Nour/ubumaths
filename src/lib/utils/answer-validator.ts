@@ -326,29 +326,3 @@ export function validateChoice(
 				: `Le choix correct est: ${String.fromCharCode(65 + correctIndexes[0])}`
 	};
 }
-
-// ============================================================================
-// HELPER FUNCTIONS
-// ============================================================================
-
-/**
- * Check if two values are approximately equal (for floating point comparison)
- *
- * @param a - First value
- * @param b - Second value
- * @param epsilon - Tolerance (default: 1e-10)
- * @returns Whether values are approximately equal
- */
-export function approximatelyEqual(a: number, b: number, epsilon: number = 1e-10): boolean {
-	return Math.abs(a - b) < epsilon;
-}
-
-/**
- * Normalize whitespace in string
- *
- * @param str - Input string
- * @returns String with normalized whitespace
- */
-export function normalizeWhitespace(str: string): string {
-	return str.trim().replace(/\s+/g, ' ');
-}

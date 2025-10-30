@@ -601,239 +601,172 @@ Simply add to the unified endpoint and update the store's `fetchUnreadCounts()` 
 
 ---
 
-## Phase 5: Redis Caching (2025-10-28)
+## Phase 5: Caching Strategy Evolution (2025-10-28 → 2025-10-30)
 
-### Problem
+### Initial Approach: Redis Caching (2025-10-28)
 
-High database load from repetitive queries:
+**Implementation**: Upstash Redis with multi-layer caching
+**Duration**: 2 days
+**Outcome**: Removed on 2025-10-30
 
-- Assessment results: Multiple queries for same data
-- Activity polling: 576,000 queries/day (100 users × 2 queries/30s × 24h)
-- Rate limiting: In-memory storage not multi-instance safe
+**What was implemented**:
 
-### Solution
+- Redis cache layer for assessment results, activity counts
+- Cache hit rates: 85-95%
+- ~88% faster response times on cache hits (~50ms vs 400ms)
+- 95% reduction in database queries for cached endpoints
 
-Implemented Redis caching with Upstash REST API:
+**Why it was removed**:
 
-- Cache frequently-read, rarely-written data
-- Automatic TTL expiration (no manual cleanup)
-- Multi-instance safe (shared state via Redis)
-- Fail-safe design (graceful fallback to database)
+1. **Architectural Complexity**: Added external dependency (Upstash Redis)
+2. **Operational Overhead**: Additional service to monitor, configure, and debug
+3. **Cost Consideration**: $20/month for production tier (vs $0 for direct DB queries)
+4. **Debugging Difficulty**: Multi-layer caching made it harder to trace data flow
+5. **Scale Mismatch**: UbuMaths' scale (~100-1000 users) doesn't justify caching complexity
+6. **Supabase Performance**: Direct Supabase queries are fast enough (~100-300ms) with proper indexes
 
-### Implementation
+### Current Approach: Direct Database Queries (2025-10-30+)
 
-#### Core Cache Module (`src/lib/server/cache.ts`)
+**Philosophy**: Simpler architecture, always-fresh data, strategic indexes
 
-Generic cache wrapper with automatic fallback:
+**Implementation**:
 
 ```typescript
-export async function getCached<T>(
-	key: string,
-	ttl: number,
-	fallback: () => Promise<T>
-): Promise<T> {
-	try {
-		// Try cache first
-		const cached = await redis.get<T>(key);
-		if (cached !== null) return cached;
+// BEFORE (with Redis cache)
+const cached = await redis.get(cacheKey);
+if (cached) return cached;
+const data = await supabase.from('table').select();
+await redis.setex(cacheKey, TTL, data);
+return data;
 
-		// Cache miss - fetch fresh data
-		const fresh = await fallback();
-
-		// Store in cache (fire-and-forget)
-		redis.setex(key, ttl, fresh).catch(console.error);
-
-		return fresh;
-	} catch (err) {
-		// Redis error - fallback to direct fetch
-		console.error('[Cache] Redis error, using fallback:', err);
-		return fallback();
-	}
-}
+// AFTER (direct queries)
+const { data } = await supabase.from('table').select();
+return data;
 ```
 
-**Features**:
+**Performance Strategy**:
 
-- Type-safe generic wrapper
-- Fire-and-forget writes (non-blocking)
-- Automatic fallback on Redis errors
-- TTL-based expiration
+1. **Database Indexes**: 13 strategic indexes on hot query paths
+   - `idx_rate_limits_key` (rate limiting lookups)
+   - `idx_student_warnings_class_period` (warnings by class)
+   - `idx_assessment_results_student` (student results)
+   - See [Database Schema](database-schema.md) for full list
 
-#### Rate Limiting (`src/lib/server/rateLimiter.ts`)
+2. **N+1 Query Elimination**: RPC functions with JOINs
+   - Dashboard: 7 queries → 1 query (85% reduction)
+   - Rewards page: 7 queries → 1 query
+   - Database debug: 16 queries → 5 queries
 
-Migrated from in-memory to Redis atomic counters:
+3. **Optimistic UI**: Instant perceived performance
+   - Client updates immediately
+   - Server sync in background (debounced 500ms)
+   - Rollback on errors
+
+4. **Smart Data Fetching**:
+   - Parallel queries with `Promise.all()`
+   - Pagination for large datasets
+   - Selective field projection (`select('id, name')`)
+
+### Performance Comparison
+
+| Metric                   | Redis Cached (2025-10-28) | Direct DB (2025-10-30+) | Delta        |
+| ------------------------ | ------------------------- | ----------------------- | ------------ |
+| **Cache Hit Response**   | ~50ms                     | -                       | N/A          |
+| **Cache Miss Response**  | ~300ms                    | ~100-200ms              | **Faster!**  |
+| **Average Response**     | ~80ms (95% hit rate)      | ~100-200ms              | +20-120ms    |
+| **Architectural Layers** | 4 (Client → Redis → DB)   | 2 (Client → DB)         | **Simpler**  |
+| **Debugging Complexity** | High (trace 3 layers)     | Low (direct queries)    | **Easier**   |
+| **Operational Cost**     | $20/month (Redis)         | $0 (Supabase included)  | **Cheaper**  |
+| **Data Freshness**       | Up to TTL stale (30s-5m)  | Always fresh            | **Fresher**  |
+| **Multi-instance Safe**  | ✅ Yes                    | ✅ Yes                  | Equal        |
+| **Database Query Count** | 95% reduction (cached)    | Direct (with indexes)   | More queries |
+
+### Trade-off Analysis
+
+**What we gained** (removing Redis):
+
+- ✅ **Simpler architecture**: Fewer moving parts, easier to understand
+- ✅ **Lower cost**: $0 vs $20/month (240/year savings)
+- ✅ **Easier debugging**: Direct query logs, no cache invalidation bugs
+- ✅ **Always fresh data**: No stale cache issues
+- ✅ **Faster development**: No cache invalidation logic to maintain
+
+**What we lost** (removing Redis):
+
+- ❌ **~50ms response time**: Now ~100-200ms (but acceptable for UbuMaths' use cases)
+- ❌ **Reduced DB load**: More queries hit database (mitigated by indexes)
+- ❌ **Cost savings at scale**: Would matter at 10,000+ users
+
+**Why this makes sense for UbuMaths**:
+
+At our current scale (~100-1000 users), the complexity of maintaining a cache layer outweighs the performance benefits. The ~50-100ms extra latency is:
+
+- **Imperceptible to users** (~100ms is within "instant" threshold)
+- **Acceptable for educational app** (not a high-frequency trading platform)
+- **Offset by optimistic UI** (perceived performance is instant)
+
+### Database-Backed Rate Limiting
+
+**Implementation**: Uses Supabase `rate_limits` table instead of Redis counters
 
 ```typescript
-export async function checkRateLimit(
-	key: string,
-	maxAttempts: number,
-	windowSeconds: number
-): Promise<{ allowed: boolean; remaining: number; retryAfter?: number }> {
-	try {
-		// Atomic increment (thread-safe)
-		const count = await redis.incr(key);
-
-		// Set TTL on first attempt
-		if (count === 1) {
-			await redis.expire(key, windowSeconds);
+// Check and increment rate limit
+const { data, error } = await supabase
+	.from('rate_limits')
+	.upsert(
+		{
+			key: `login:${ip}`,
+			attempts: 1,
+			expires_at: new Date(Date.now() + 15 * 60 * 1000)
+		},
+		{
+			onConflict: 'key',
+			ignoreDuplicates: false
 		}
-
-		const allowed = count <= maxAttempts;
-		if (!allowed) {
-			const ttl = await redis.ttl(key);
-			return { allowed: false, remaining: 0, retryAfter: ttl };
-		}
-
-		return { allowed: true, remaining: maxAttempts - count };
-	} catch (err) {
-		// Fail open (allow request) to prevent DoS
-		return { allowed: true, remaining: maxAttempts };
-	}
-}
+	)
+	.select()
+	.single();
 ```
 
-**Migration Benefits**:
+**Performance**: ~50-100ms per check (acceptable for auth endpoints)
+**Benefits**:
 
-- ✅ Multi-instance safe (Vercel serverless)
-- ✅ Persists across restarts
-- ✅ Automatic cleanup (TTL-based)
-- ✅ Atomic operations (no race conditions)
+- Multi-instance safe (Postgres atomicity)
+- No external dependencies
+- Automatic cleanup (database triggers)
+- Visible in Supabase dashboard (easier debugging)
 
-#### Cached Endpoints
+### Lessons Learned
 
-**1. Assessment Results** (`+page.server.ts`)
+**Premature optimization**: Implementing Redis before measuring if database performance was actually a bottleneck
 
-```typescript
-const { data: results } = await getCached(
-	CACHE_KEYS.ASSESSMENT_RESULTS(assessmentId, isTestMode),
-	TTL.ASSESSMENT_RESULTS, // 5 minutes
-	() => getAssessmentResults(locals.supabase, assessmentId, isTestMode)
-);
-```
+**KISS principle**: Simpler architectures are easier to maintain, debug, and reason about
 
-**Invalidation**: Test submission
+**Cost-benefit analysis**: Performance gains must justify operational complexity
 
-```typescript
-// In /api/tests/save/+server.ts
-await invalidateCache(`cache:assessment:${assessmentId}:*`);
-```
+**When to cache**:
 
-**2. Activity Polling** (`/api/activity/unread-counts/+server.ts`)
+- ✅ High traffic (10,000+ concurrent users)
+- ✅ Expensive queries (>1s response time)
+- ✅ External API calls (slow/rate-limited)
 
-```typescript
-const counts = await getCached(
-	CACHE_KEYS.ACTIVITY_COUNTS(userId),
-	TTL.ACTIVITY_COUNTS, // 30 seconds
-	async () => {
-		const [notifications, messages] = await Promise.all([
-			getUnreadCount(supabase, userId),
-			supabase.rpc('get_private_messages_unread_count', { p_user_id: userId })
-		]);
-		return { notifications, messages: messages.data || 0 };
-	}
-);
-```
+**When NOT to cache** (UbuMaths' case):
 
-**Invalidation**: New notification/message
+- ❌ Low-medium traffic (100-1000 users)
+- ❌ Fast queries (<300ms with indexes)
+- ❌ Simple architecture preferred
+- ❌ Always-fresh data critical
 
-```typescript
-// In notification/message creation
-await invalidateCache(CACHE_KEYS.ACTIVITY_COUNTS(userId));
-```
+### Future Considerations
 
-### Cache Strategy
+**If UbuMaths grows to 10,000+ users**, revisit caching with:
 
-| Data Type          | TTL             | Invalidation             | Rationale                       |
-| ------------------ | --------------- | ------------------------ | ------------------------------- |
-| Assessment results | 5 min           | Test submission          | Rarely changes after completion |
-| Activity counts    | 30 sec          | New notification/message | Matches polling interval        |
-| Rate limits        | 15 min - 1 hour | Automatic (TTL)          | Security requirements           |
+- **Read replicas**: Separate read/write databases
+- **Edge caching**: Vercel Edge Functions with KV store
+- **Materialized views**: Pre-computed aggregations in Postgres
+- **CDN caching**: Static assets and API responses
 
-**Cache Key Pattern**: `{type}:{entity}:{id}:{subtype}:{testMode}`
-
-**Examples**:
-
-- `cache:assessment:123:results:false`
-- `cache:activity:user-uuid:counts`
-- `ratelimit:login:ip:192.168.1.1`
-
-### Performance Impact
-
-| Metric                         | Before      | After      | Improvement       |
-| ------------------------------ | ----------- | ---------- | ----------------- |
-| Assessment results (cache hit) | 0.4s        | 0.05s      | **88% faster**    |
-| Activity polling queries       | 576,000/day | 28,800/day | **95% reduction** |
-| Database load                  | Medium      | Low        | **50% overall**   |
-| Cache hit rate                 | N/A         | 95%+       | Excellent         |
-
-**Cost Savings** (100 active users):
-
-- Before: $367/month (database queries)
-- After: $0/month (free tiers)
-- **Savings**: $367/month (100% reduction)
-
-### Files Modified/Created
-
-**Core Implementation**:
-
-- `src/lib/server/cache.ts` (NEW) - Cache helpers
-- `src/lib/server/rateLimiter.ts` (MIGRATED) - Redis rate limiting
-- `src/routes/api/activity/unread-counts/+server.ts` (NEW) - Unified polling
-- `src/lib/stores/activity.svelte.ts` (NEW) - Central polling manager
-
-**Cached Endpoints**:
-
-- `src/routes/(protected)/dashboard/teacher/assessments/[id]/results/+page.server.ts`
-- `src/routes/(protected)/dashboard/+layout.svelte`
-
-**Rate Limited Endpoints**:
-
-- `src/routes/auth/signin/+page.server.ts`
-- `src/routes/auth/signup/+page.server.ts`
-- `src/routes/api/chat/+server.ts`
-
-### Testing
-
-**Unit Tests** (96 tests, 100% pass rate):
-
-- `tests/unit/cache.test.ts` (24 tests) - Core cache logic
-- `tests/unit/rateLimiter-redis.test.ts` (20 tests) - Rate limiting
-- `tests/unit/assessment-cache.test.ts` (14 tests) - Assessment caching
-- `tests/unit/activity-cache.test.ts` (18 tests) - Activity polling cache
-- Plus 20 additional tests in other files
-
-**E2E Tests** (20 tests, Playwright):
-
-- `e2e/redis-cache/rate-limiting.spec.ts` (7 tests)
-- `e2e/redis-cache/assessment-results.spec.ts` (5 tests)
-- `e2e/redis-cache/activity-polling.spec.ts` (8 tests)
-
-**Code Review**: 9.5/10 - Production Ready
-
-### Configuration
-
-**Environment Variables** (`.env`):
-
-```bash
-UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
-UPSTASH_REDIS_REST_TOKEN=your_token_here
-```
-
-**Free Tier** (Upstash):
-
-- 10,000 requests/day
-- 256MB storage
-- Sufficient for development
-
-**Setup Guide**: [Redis Cache Setup](../guides/redis-cache-setup.md)
-
-### Documentation
-
-- [Redis Caching Architecture](./redis-caching.md) - Comprehensive guide
-- [Rate Limiting with Redis](../development/rate-limiting-redis.md) - Rate limiting details
-- [Redis E2E Tests Report](../../REDIS_E2E_TESTS_REPORT.md) - Test results
-
-See [Redis Caching Architecture](./redis-caching.md) for full implementation details.
+**For now** (100-1000 users): Direct database queries + strategic indexes is the right approach.
 
 ---
 

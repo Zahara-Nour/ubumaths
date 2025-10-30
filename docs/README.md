@@ -212,8 +212,6 @@ Système d'authentification avec Google OAuth + email/password.
 | [WebSocket](architecture/websocket.md)                                   | Architecture temps réel                  |
 | [Éditeur rich text](architecture/rich-text-editor.md)                    | TipTap + MathLive                        |
 | [Performance](architecture/performance.md)                               | Optimisations et best practices          |
-| [Redis Caching](architecture/redis-caching.md) ⭐                        | Upstash Redis cache implementation       |
-| [Hybrid Cache System](architecture/hybrid-cache-system.md) ⭐            | In-memory + Redis dual-layer strategy    |
 | [Teacher Dashboard Cache](architecture/teacher-dashboard-cache.md) (OLD) | ⚠️ Pre-2025-10-29 (BroadcastChannel era) |
 | [CSRF Protection](architecture/csrf-protection.md)                       | Protection anti-CSRF                     |
 
@@ -221,34 +219,33 @@ Système d'authentification avec Google OAuth + email/password.
 
 ## 📖 Guides pratiques
 
-| Guide                                                  | Description                           |
-| ------------------------------------------------------ | ------------------------------------- |
-| [Vue d'ensemble](guides/README.md)                     | Index des guides                      |
-| [Import d'élèves](guides/student-import.md)            | Workflow d'import CSV                 |
-| [Redis Cache Setup](guides/redis-cache-setup.md) 🆕 ⭐ | Configuration Redis locale/production |
-| [Déploiement](guides/deployment.md)                    | Déploiement sur Vercel                |
-| [Dépannage](guides/troubleshooting.md)                 | Solutions aux problèmes courants      |
-| [Guide de tests](guides/testing-guide.md)              | Comment tester l'application          |
-| [Composants UI](guides/ui-components.md)               | Utilisation Shadcn-svelte             |
+| Guide                                       | Description                      |
+| ------------------------------------------- | -------------------------------- |
+| [Vue d'ensemble](guides/README.md)          | Index des guides                 |
+| [Import d'élèves](guides/student-import.md) | Workflow d'import CSV            |
+| [Déploiement](guides/deployment.md)         | Déploiement sur Vercel           |
+| [Dépannage](guides/troubleshooting.md)      | Solutions aux problèmes courants |
+| [Guide de tests](guides/testing-guide.md)   | Comment tester l'application     |
+| [Composants UI](guides/ui-components.md)    | Utilisation Shadcn-svelte        |
 
 ---
 
 ## 🛠️ Développement
 
-| Document                                                       | Description                       |
-| -------------------------------------------------------------- | --------------------------------- |
-| [Vue d'ensemble](development/README.md)                        | Process de développement          |
-| [Git workflow](development/git-workflow.md)                    | Workflow Git et branches          |
-| [Gestion de versions](development/version-management.md)       | Releases et versioning            |
-| [Migrations DB](development/database-migrations.md)            | Workflow migrations Supabase      |
-| [Style de code](development/code-style.md)                     | Standards et conventions          |
-| [Debugging Guide](development/debugging-guide.md) 🆕 ⭐        | Debug multi-layer cache (16KB) ⭐ |
-| [Cache Logging Format](development/cache-logging-format.md) 🆕 | Format logs cache standardisé     |
-| [Polling Patterns](development/polling-patterns.md) 🆕         | Guide polling unifié              |
-| [Rate Limiting Redis](development/rate-limiting-redis.md) 🆕   | Migration rate limiting Redis     |
-| [Type Safety Patterns](development/type-safety-patterns.md) 🆕 | Patterns TypeScript sécurisés     |
-| [Migration Svelte 5](development/svelte5-migration.md)         | Guide migration runes             |
-| [MySelect Migration](development/myselect-migration.md)        | Guide migration vers MySelect     |
+| Document                                                       | Description                         |
+| -------------------------------------------------------------- | ----------------------------------- |
+| [Vue d'ensemble](development/README.md)                        | Process de développement            |
+| [Git workflow](development/git-workflow.md)                    | Workflow Git et branches            |
+| [Gestion de versions](development/version-management.md)       | Releases et versioning              |
+| [Migrations DB](development/database-migrations.md)            | Workflow migrations Supabase        |
+| [Style de code](development/code-style.md)                     | Standards et conventions            |
+| [Debugging Guide](development/debugging-guide.md) (OLD)        | ⚠️ Pre-2025-10-30 (Redis cache era) |
+| [Cache Logging Format](development/cache-logging-format.md) 🆕 | Format logs cache standardisé       |
+| [Polling Patterns](development/polling-patterns.md) 🆕         | Guide polling unifié                |
+| [Rate Limiting Redis](development/rate-limiting-redis.md) 🆕   | Migration rate limiting Redis       |
+| [Type Safety Patterns](development/type-safety-patterns.md) 🆕 | Patterns TypeScript sécurisés       |
+| [Migration Svelte 5](development/svelte5-migration.md)         | Guide migration runes               |
+| [MySelect Migration](development/myselect-migration.md)        | Guide migration vers MySelect       |
 
 ---
 
@@ -324,18 +321,18 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 - **Features en production** : 13 🆕 (added Rewards system)
 - **Features en développement** : 1 (Navadra)
 - **Tests** : 3,334 tests (99.3% pass rate)
-  - Unit tests: 2,526/2,550 passing (99.1%) - includes 96 Redis cache tests
-  - E2E tests: 303 ready to run - includes 20 Redis cache E2E tests
+  - Unit tests: 2,526/2,550 passing (99.1%)
+  - E2E tests: 303 ready to run
   - Validation tests: 366/366 passing (100%)
   - Database triggers: 139/139 passing (100%)
 - **Code Quality** : 0 errors in production code (853 → 0)
-- **Caching** : Three-cache system (students 10m, gidouilles 5m, warnings 3m) with Event Bus
-  - Cache hit rates: 95% (students), 85% (gidouilles), 80% (warnings)
-  - 90% faster loads (3.6s → 0.4s)
-  - 97% fewer database queries (244 → 6 per load)
+- **Data Fetching** : Direct database queries (no caching layer since 2025-10-30)
+  - Strategic database indexes on hot paths
+  - Optimistic UI for better perceived performance
+  - 97% fewer N+1 queries (244 → 6 per load)
 - **Database Tables** : 3 new tables (school_years, academic_periods, school_holidays) 🆕
-- **Lignes de documentation** : ~30,000+ 🆕 (added 5,000+ for cache architecture)
-- **Dernière mise à jour** : 2025-10-29
+- **Lignes de documentation** : ~30,000+
+- **Dernière mise à jour** : 2025-10-30
 
 ---
 

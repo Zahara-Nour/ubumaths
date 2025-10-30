@@ -1,5 +1,5 @@
 import type { SchoolTimetable, SchoolPeriod } from '$lib/types/database';
-import { formatTimeDisplay } from './schedule';
+import { formatTimeDisplay, timeToMinutes } from './schedule';
 
 /**
  * Timetable Utility Functions
@@ -141,15 +141,6 @@ export function findMatchingPeriod(
 	if (!timetable || !timetable.periods) return undefined;
 
 	return timetable.periods.find((p) => p.start_time === startTime && p.end_time === endTime);
-}
-
-/**
- * Convert time string to minutes since midnight
- * @param time - Time string (HH:MM:SS or HH:MM)
- */
-function timeToMinutes(time: string): number {
-	const parts = time.split(':');
-	return parseInt(parts[0]) * 60 + parseInt(parts[1]);
 }
 
 /**

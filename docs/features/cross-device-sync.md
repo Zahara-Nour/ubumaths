@@ -90,12 +90,12 @@ setInterval(async () => {
 
 ### Performance Optimization
 
-**Redis Cache Integration:**
+**Direct Database Queries (2025-10-30+):**
 
-- All polling requests hit Redis cache first
-- ~50ms response time (vs 850ms direct DB query)
-- 99% cache hit rate for typical usage
-- Minimal impact on database
+- All polling requests query database directly
+- ~100-200ms response time (strategic indexes)
+- Always fresh data (no stale cache issues)
+- Minimal database load (~12 requests/minute per teacher)
 
 **Request Frequency:**
 
@@ -119,12 +119,13 @@ Device 1 (Teacher Laptop)          Device 2 (Projector Computer)
                            │
               ┌────────────┴────────────┐
               ▼                         ▼
-        Redis Cache                Redis Cache
-      (warnings v2)              (gidouilles)
+      Direct DB Query             Direct DB Query
+      (warnings + students)       (gidouilles)
               │                         │
               └────────────┬────────────┘
                            ▼
                       Supabase DB
+                  (~100-200ms response)
 ```
 
 **Polling-Only Synchronization:**
@@ -135,7 +136,7 @@ Device 1 (Teacher Laptop)          Device 2 (Projector Computer)
 | Cross-browser     | ✅ 5s delay                      | ✅ 5s delay                           |
 | Cross-device      | ✅ 5s delay                      | ✅ 5s delay                           |
 | Latency           | ~5s                              | 0-5s (depends on scenario)            |
-| Server load       | Minimal (Redis cache)            | Minimal (Redis cache)                 |
+| Server load       | Minimal (direct DB queries)      | Minimal (direct DB queries)           |
 | Complexity        | Low (single mechanism)           | High (dual mechanisms)                |
 | Debuggability     | Easy (predictable timing)        | Moderate (two sync paths)             |
 
@@ -159,9 +160,9 @@ Device 1 (Teacher Laptop)          Device 2 (Projector Computer)
 
 **Performance:**
 
-- Both fetches use Redis cache (~50ms each)
-- Parallel execution (~100ms total)
-- Replaces 2 separate polling requests (40-60% faster)
+- Both fetches query database directly (~100-200ms each)
+- Parallel execution with `Promise.all()` (~100-200ms total)
+- Replaces 2 separate polling requests (40-60% fewer HTTP round-trips)
 
 ### Rewards & Warnings Pages
 
@@ -250,11 +251,11 @@ Both pages log polling activity for debugging:
 
 ## Performance Metrics
 
-**Measured Performance:**
+**Measured Performance (2025-10-30+):**
 
-- Polling request latency: ~50ms (Redis cache hit)
+- Polling request latency: ~100-200ms (direct database query)
 - UI update time: <100ms
-- Total cross-device sync time: ~5.1 seconds
+- Total cross-device sync time: ~5.2 seconds
 - Network overhead: ~200 bytes per poll
 - CPU overhead: Negligible (<0.1% when polling)
 
@@ -262,7 +263,7 @@ Both pages log polling activity for debugging:
 
 - Requests per minute: 12 (one every 5 seconds)
 - Requests per hour: 720
-- Database queries per hour: ~7 (99% cache hit rate)
+- Database queries per hour: 720 (direct queries, no caching)
 
 ## Future Improvements
 
@@ -390,50 +391,29 @@ Object.entries(result.warnings).forEach(([studentId, counts]) => {
 
 ---
 
-#### Bug #2: Map Serialization in Redis Cache (ROOT CAUSE)
+#### Bug #2: Map Serialization in Redis Cache (OBSOLETE - Redis removed 2025-10-30)
+
+**Historical Note**: This bug existed in the Redis-era caching implementation (2025-10-28 to 2025-10-30).
 
 **Symptom**: Data would load correctly initially, then disappear on page reload or after 5s polling.
 
 **Root Cause**: JavaScript `Map` objects cannot be JSON.stringify'd - they serialize to empty objects `{}`.
 
+**What was wrong**:
+
 ```typescript
-// BEFORE (BROKEN) - Maps stored directly in Redis
+// BROKEN - Maps stored directly in Redis
 const warningsMap = new Map<string, StudentWarningCounts>();
-// ... populate map ...
 await redis.setex(cacheKey, TTL, JSON.stringify(warningsMap)); // Becomes "{}"!
 ```
 
-**Evidence from Investigation**:
+**Why this is obsolete**: Redis caching was removed on 2025-10-30 in favor of direct database queries. The current implementation:
 
-1. Fresh DB queries returned correct data
-2. Redis cache returned empty Map after reading
-3. `JSON.stringify(new Map([['key', 'value']]))` produces `"{}"`
+- Queries database directly (no serialization needed)
+- Returns always-fresh data (~100-200ms)
+- Simpler architecture (no cache invalidation bugs)
 
-**Solution**: Convert Map to plain object before caching, then convert back after reading.
-
-```typescript
-// CORRECT - Convert Map → Object for Redis storage
-const warningsMap = await fetchWarnings(); // Returns Map
-const obj: Record<string, StudentWarningCounts> = {};
-for (const [studentId, counts] of warningsMap.entries()) {
-	obj[studentId] = counts;
-}
-await redis.setex(cacheKey, TTL, JSON.stringify(obj)); // Serializes correctly
-
-// Convert Object → Map after reading
-const cached = await redis.get(cacheKey);
-const resultMap = new Map<string, StudentWarningCounts>();
-for (const [studentId, counts] of Object.entries(cached)) {
-	resultMap.set(studentId, counts);
-}
-```
-
-**Files Modified**:
-
-- `src/lib/server/cache/warnings.ts` (lines 277-298)
-- Cache key version bumped: `warnings:v1:*` → `warnings:v2:*`
-
-**Impact**: Redis cache now correctly persists warnings data across page reloads and polling cycles.
+**Lesson learned**: Premature optimization (adding Redis) introduced complexity and bugs that weren't worth the ~50ms latency improvement.
 
 ---
 
@@ -491,15 +471,16 @@ redis-cli KEYS "warnings:v2:*"
 
 ---
 
-### Debugging Cross-Device Sync Issues
+### Debugging Cross-Device Sync Issues (2025-10-30+)
 
 If cross-device sync is not working:
 
-**1. Check Redis Connection**:
+**1. Check Database Connection**:
 
 ```bash
-curl http://localhost:5175/api/health/redis
-# Expected: {"status":"healthy","latency":45,"timestamp":"..."}
+# Verify Supabase connection
+curl http://localhost:5175/api/health
+# Expected: {"status":"healthy","database":"connected"}
 ```
 
 **2. Verify Polling Logs**:
@@ -508,67 +489,69 @@ curl http://localhost:5175/api/health/redis
 // Browser console should show:
 [WarningsPage] Polling warnings (cross-device sync)
 [WarningsPage] Tab visible - reloading warnings
+[WarningsPage] Fetched 5 warnings for class {classId}
 ```
 
-**3. Check Cache Key Version**:
+**3. Check Network Tab**:
 
-```bash
-# All cache keys should be v2 (not v1)
-redis-cli KEYS "warnings:*"
-# Expected: warnings:v2:class:{uuid}:period:{uuid}:true
+```
+// Look for polling requests (every 5 seconds)
+GET /api/teacher/dashboard-sync?classId={uuid}&periodId={uuid}
+Status: 200 OK
+Response time: ~100-200ms
 ```
 
-**4. Test Map Serialization**:
+**4. Inspect API Response**:
 
 ```javascript
-// In browser console or Node REPL:
-const map = new Map([['key', { value: 'test' }]]);
-JSON.stringify(map); // Returns "{}" - THIS IS THE BUG!
+// Browser console - check response structure:
+fetch('/api/teacher/dashboard-sync?classId=xxx&periodId=yyy')
+	.then((r) => r.json())
+	.then(console.log);
 
-const obj = Object.fromEntries(map);
-JSON.stringify(obj); // Returns '{"key":{"value":"test"}}' - CORRECT
+// Expected:
+// { warnings: { studentId: { C: 1, M: 0, ... } }, gidouilles: { studentId: 125 } }
 ```
 
-**5. Inspect Cache Response**:
+**5. Check for JavaScript Errors**:
 
-```bash
-# Check Redis cache content
-redis-cli GET "warnings:v2:class:{classId}:period:{periodId}:false"
-# Should show JSON object with student IDs, not empty "{}"
+```javascript
+// Browser console errors might indicate:
+- Authentication failures (401)
+- Missing query parameters (400)
+- Database connection issues (500)
 ```
 
 ---
 
-### Common Symptoms of Cache Corruption
+### Common Issues
 
-**"Flash then Disappear" Pattern**:
+**"Data Not Syncing Across Devices"**:
 
-- Data loads correctly on first page load
-- After 5 seconds (polling), data disappears
-- Refreshing page shows data again briefly
-- **Root Cause**: Corrupted cache (Map serialization bug)
+- ✅ Check both devices are polling (console logs)
+- ✅ Verify both devices have same classId/periodId selected
+- ✅ Check network connectivity on both devices
+- ✅ Confirm database query latency < 5s
 
-**"Default Values Persist"**:
+**"Sync Working But Slow"**:
 
-- UI shows 0/0/0/0 even when data exists
-- Database has correct data but UI doesn't update
-- **Root Cause**: Client cache stored API metadata instead of data
+- Check database indexes: `idx_student_warnings_class_period`, `idx_profiles_gidouilles`
+- Verify query execution time in Supabase dashboard (<200ms)
+- Consider reducing poll interval from 5s to 3s if needed
 
-**"Works Without Redis, Breaks With Redis"**:
+**"401 Unauthorized Errors"**:
 
-- Data displays correctly when Redis is down
-- Data corrupts when Redis is enabled
-- **Root Cause**: Redis serialization issue (Map → Object conversion needed)
+- User session expired - refresh page to re-authenticate
+- Check Supabase auth token in browser DevTools (Application → Local Storage)
 
 ---
 
 ## Related Documentation
 
-- [Hybrid Cache System](../architecture/hybrid-cache-system.md)
-- [Redis Cache Setup](../guides/redis-cache-setup.md)
-- [Optimistic UI Pattern](../development/optimistic-ui-pattern.md)
-- [Debugging Guide](../development/debugging-guide.md) - Deep-dive into cache debugging
+- [Performance Optimizations](../architecture/performance.md) - Direct database query strategy
 - [Polling Patterns](../development/polling-patterns.md) - Unified polling implementation guide
+- [Database Schema](../architecture/database-schema.md) - Strategic indexes
+- [Debugging Guide (OLD)](../development/debugging-guide.md) - ⚠️ Pre-2025-10-30 (Redis era)
 
 ## Contributors
 

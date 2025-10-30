@@ -377,19 +377,39 @@ export async function getStudentAssignments(supabase: TypedSupabaseClient, stude
 		return { data: null, error };
 	}
 
-	// For each assignment, get attempt stats
-	const enriched: AssignmentWithDetails[] = [];
+	// N+1 Query Optimization: Batch fetch all attempts in one query
+	// Instead of N queries (1 per assignment), we fetch all attempts at once and use Map lookups
+	const assignmentIds = (assignments || []).map((a) => a.id);
 
-	for (const assignment of assignments || []) {
-		const { data: attempts } = await supabase
-			.from('test_sessions')
-			.select('score, completed_at')
-			.eq('assignment_id', assignment.id)
-			.eq('user_id', studentId);
+	// Batch fetch all test attempts for all assignments (1 query instead of N)
+	const { data: allAttempts } = await supabase
+		.from('test_sessions')
+		.select('assignment_id, score, completed_at')
+		.in('assignment_id', assignmentIds)
+		.eq('user_id', studentId)
+		.order('completed_at', { ascending: true });
 
-		const attemptsCount = attempts?.length || 0;
-		const bestScore = attempts?.reduce((max, a) => Math.max(max, a.score || 0), 0) || null;
-		const lastAttempt = attempts?.[attempts.length - 1];
+	// Build map for O(1) lookup: assignment_id -> attempts[]
+	const attemptsMap = new Map<
+		string,
+		Array<{ score: number | null; completed_at: string | null }>
+	>();
+	for (const attempt of allAttempts || []) {
+		if (!attemptsMap.has(attempt.assignment_id)) {
+			attemptsMap.set(attempt.assignment_id, []);
+		}
+		attemptsMap.get(attempt.assignment_id)!.push({
+			score: attempt.score,
+			completed_at: attempt.completed_at
+		});
+	}
+
+	// Enrich assignments with attempt stats using in-memory map lookups (no DB calls)
+	const enriched: AssignmentWithDetails[] = (assignments || []).map((assignment) => {
+		const attempts = attemptsMap.get(assignment.id) || [];
+		const attemptsCount = attempts.length;
+		const bestScore = attempts.reduce((max, a) => Math.max(max, a.score || 0), 0) || null;
+		const lastAttempt = attempts[attempts.length - 1];
 		const lastAttemptAt = lastAttempt?.completed_at || null;
 
 		const status = getStudentStatus(
@@ -398,14 +418,14 @@ export async function getStudentAssignments(supabase: TypedSupabaseClient, stude
 			assignment.assessment.settings.deadline
 		);
 
-		enriched.push({
+		return {
 			...assignment,
 			attempts_count: attemptsCount,
 			best_score: bestScore,
 			last_attempt_at: lastAttemptAt,
 			status
-		});
-	}
+		};
+	});
 
 	return { data: enriched, error: null };
 }
