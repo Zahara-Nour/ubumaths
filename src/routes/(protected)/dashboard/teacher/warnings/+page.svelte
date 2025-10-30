@@ -190,7 +190,7 @@
 					// Keep existing data on error (graceful degradation)
 				}
 			}
-		}, 5000);
+		}, 60000);
 
 		// Cleanup interval on unmount or when dependencies change
 		return () => {

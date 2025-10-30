@@ -300,9 +300,6 @@
 					// Invalidate cache
 					gidouillesCache.invalidate(classId);
 
-					// Send notification
-					await sendNotification(student, 'gidouille_removed');
-
 					toaster.success(`1 gidouille retirée (${student.firstname})`);
 				} else {
 					throw new Error('Failed');
@@ -351,9 +348,6 @@
 
 					// Invalidate cache
 					gidouillesCache.invalidate(classId);
-
-					// Send notification
-					await sendNotification(student, 'vip_card_removed');
 
 					toaster.success(`Carte VIP retirée (${student.firstname})`);
 				} else {
@@ -408,9 +402,6 @@
 
 					// Invalidate cache
 					warningsCache.invalidate(classId, periodId);
-
-					// Send notification
-					await sendNotification(student, 'warning_added');
 
 					toaster.success(`Avertissement de conduite ajouté (${student.firstname})`);
 				} else {
@@ -483,53 +474,6 @@
 		vipModalOpen = true;
 	}
 
-	/**
-	 * Send notification to student
-	 */
-	async function sendNotification(
-		student: StudentData,
-		type: 'gidouille_removed' | 'vip_card_removed' | 'warning_added'
-	) {
-		const messages = {
-			gidouille_removed: {
-				title: '🪙 Gidouille retirée',
-				message: 'Vous avez perdu 1 gidouille suite à un avertissement.',
-				url: '/dashboard/student/rewards'
-			},
-			vip_card_removed: {
-				title: '🎴 Carte VIP retirée',
-				message: 'Votre carte a été retirée suite à un avertissement.',
-				url: '/dashboard/student/rewards'
-			},
-			warning_added: {
-				title: '⚠️ Avertissement de Conduite',
-				message: 'Vous avez reçu un avertissement de conduite.',
-				url: '/dashboard/student'
-			}
-		};
-
-		const msg = messages[type];
-
-		try {
-			await fetch('/api/notifications/create', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					title: msg.title,
-					message: msg.message,
-					type: 'alert',
-					priority: 'important',
-					target_type: 'users',
-					target_user_ids: [student.id],
-					action_label: 'Voir',
-					action_url: msg.url
-				})
-			});
-		} catch (_error) {
-			console.error('[StudentQuickActions] Failed to send notification:', _error);
-		}
-	}
-
 	// ============================================================================
 	// EFFECTS
 	// ============================================================================
@@ -555,7 +499,7 @@
 			pollInterval = setInterval(async () => {
 				console.log('[StudentQuickActions] Polling (cross-device sync)');
 				await loadData();
-			}, 5000);
+			}, 60000);
 		} else {
 			if (pollInterval) {
 				clearInterval(pollInterval);

@@ -252,7 +252,7 @@
 					console.error('[RewardsPage] Polling error:', error);
 					// Keep existing data on error (graceful degradation)
 				}
-			}, 5000); // 5 seconds
+			}, 60000); // 5 seconds
 		} else {
 			// Stop polling if conditions not met
 			if (pollInterval) {
