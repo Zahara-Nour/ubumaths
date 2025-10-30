@@ -102,19 +102,19 @@ Line 3 ends here
 version: "1.0"
 difficulty: 3
 tags:
-  - géométrie
-title: "Advanced Geometry"
-source: "Geometry Book"
+  - algèbre
+title: "Advanced Algebra"
+source: "Algebra Book"
 estimated_time_minutes: 25
 grade_levels:
   - "2"
   - "1"
-topic: "Géométrie analytique"
+topic: "Algèbre avancée"
 ---
 
 # Énoncé
 
-Complex geometry problem
+Complex algebra problem
 
 # Solution
 
@@ -126,7 +126,7 @@ Detailed solution
 		expect(result.success).toBe(true);
 		expect(result.data?.estimated_time_minutes).toBe(25);
 		expect(result.data?.grade_levels).toEqual(['2', '1']);
-		expect(result.data?.topic).toBe('Géométrie analytique');
+		expect(result.data?.topic).toBe('Algèbre avancée');
 	});
 
 	it('should reject markdown without frontmatter delimiter', () => {

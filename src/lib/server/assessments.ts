@@ -16,7 +16,8 @@ import type {
 	AssessmentStatistics,
 	ClassAssessmentStatistics
 } from '$lib/types/assessment';
-import { isDeadlinePassed, getAttemptsRemaining, getStudentStatus } from '$lib/types/assessment';
+import { getAttemptsRemaining, getStudentStatus } from '$lib/types/assessment';
+import { isDeadlinePassed } from '$lib/utils/dates';
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -674,7 +675,53 @@ export async function getAssessmentResults(
 }
 
 /**
- * Helper: Build result object from in-memory maps
+ * Build an assessment result object from pre-fetched in-memory maps
+ *
+ * This helper function constructs a single assessment result record for a student
+ * by looking up their attempts in a pre-built Map. This is part of the N+1 query
+ * optimization strategy - all attempts are fetched once in bulk, then this function
+ * performs O(1) lookups instead of querying the database for each student.
+ *
+ * OPTIMIZATION PATTERN:
+ * - Called during the result assembly phase of getAssessmentResults()
+ * - Works in conjunction with the attemptsMap built at lines 607-626
+ * - Eliminates one database query per student (crucial for 100+ students)
+ * - All data is already in memory, so lookups are extremely fast
+ *
+ * @param assignmentId - The assessment assignment ID
+ * @param assessmentId - The assessment ID (for reference)
+ * @param assessmentTitle - Assessment title (from assessment record)
+ * @param assessmentGrade - Grade level (from assessment record)
+ * @param classId - Class ID if assignment is class-based, null for direct student assignment
+ * @param className - Class name (for display), null for direct student assignment
+ * @param student - Student profile data { id, firstname, lastname, is_test }
+ * @param attemptsMap - Pre-built Map<string, attempts[]> from database query
+ *        Keys are formatted as "${assignmentId}:${studentId}"
+ * @returns Complete DbAssessmentResult object with calculated stats
+ *
+ * @example
+ * ```typescript
+ * // This is called internally during result assembly:
+ * const result = buildResultFromMaps(
+ *   assignmentId,
+ *   assessmentId,
+ *   'Math Quiz',
+ *   '6eme',
+ *   classId,
+ *   'Class 6A',
+ *   student,
+ *   attemptsMap
+ * );
+ * ```
+ *
+ * CALCULATION LOGIC:
+ * The function performs these calculations from the attempts list:
+ * - Attempts count: Total number of test sessions (length of attempts array)
+ * - Best score: Maximum score across all attempts (0 if no valid scores)
+ * - Last attempt: The first item in the array (pre-sorted DESC by completed_at)
+ * - Last attempt time: When the most recent attempt was completed
+ * - Total questions: Number of questions from the most recent attempt
+ * - Status: Calculated from attempts count, deadline, and completion status
  */
 function buildResultFromMaps(
 	assignmentId: string,
@@ -693,17 +740,33 @@ function buildResultFromMaps(
 		}>
 	>
 ): DbAssessmentResult {
+	// STEP 1: Build lookup key and retrieve attempts for this student-assignment pair
+	// Key format: "${assignmentId}:${studentId}" (matches keys built in getAssessmentResults)
 	const attemptsKey = `${assignmentId}:${student.id}`;
 	const attempts = attemptsMap.get(attemptsKey) || [];
 
+	// STEP 2: Calculate attempt statistics
+	// Count: Total number of test sessions for this assignment-student pair
 	const attemptsCount = attempts.length;
+
+	// Best score: Maximum score across all attempts
+	// reduce() finds the maximum, defaulting to 0 for null scores, then || null if no attempts
 	const bestScore = attempts.reduce((max, a) => Math.max(max, a.score || 0), 0) || null;
-	const lastAttempt = attempts[0]; // Most recent (already sorted DESC)
+
+	// Last attempt: The first item (pre-sorted DESC by completed_at in getAssessmentResults)
+	// This is the most recent attempt
+	const lastAttempt = attempts[0];
+
+	// Last attempt timestamp: When the most recent attempt was completed
 	const lastAttemptAt = lastAttempt?.completed_at || null;
+
+	// Total questions: From the most recent attempt (useful for score interpretation)
 	const totalQuestions = lastAttempt?.total_questions || null;
 
+	// STEP 3: Calculate student status (not_started, in_progress, completed, expired)
 	const status = getStudentStatus(attemptsCount, lastAttemptAt, null);
 
+	// STEP 4: Assemble and return the complete result object
 	return {
 		assignment_id: assignmentId,
 		assessment_id: assessmentId,

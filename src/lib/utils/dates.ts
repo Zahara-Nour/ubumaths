@@ -25,17 +25,68 @@ export function isDeadlineSoon(deadline: string | null | undefined): boolean {
 
 /**
  * Format deadline for display (French locale)
+ *
+ * @param deadline - ISO timestamp string (or null)
+ * @param mode - Display mode: 'compact' (default) or 'detailed'
+ * @returns Formatted deadline string
+ *
+ * @example Compact mode (default)
+ * ```typescript
+ * formatDeadline('2024-01-20T23:59:59Z') // "Dans 5 jours"
+ * formatDeadline('2024-01-20T23:59:59Z', 'compact') // "5j"
+ * ```
+ *
+ * @example Detailed mode
+ * ```typescript
+ * formatDeadline('2024-01-20T23:59:59Z', 'detailed') // "Dans 5 jours"
+ * formatDeadline(null, 'detailed') // "Aucune limite"
+ * ```
  */
-export function formatDeadline(deadline: string): string {
+export function formatDeadline(
+	deadline: string | null,
+	mode: 'compact' | 'detailed' = 'compact'
+): string {
+	if (!deadline) {
+		return mode === 'detailed' ? 'Aucune limite' : 'Aucune limite';
+	}
+
 	const date = new Date(deadline);
-	const days = differenceInDays(date, new Date());
+	const now = new Date();
+	const diffMs = date.getTime() - now.getTime();
+	const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+	const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
 
-	if (days < 0) return 'Échue';
-	if (days === 0) return "Aujourd'hui";
-	if (days === 1) return 'Demain';
-	if (days <= 7) return `${days}j`;
+	// Expired
+	if (diffMs < 0) {
+		return mode === 'detailed' ? 'Expiré' : 'Échue';
+	}
 
-	// For longer deadlines, show actual date
+	// Less than 24 hours
+	if (diffHours < 24) {
+		if (diffHours === 0) return "Aujourd'hui";
+		return mode === 'detailed' ? `Plus que ${diffHours}h` : `${diffHours}h`;
+	}
+
+	// Tomorrow
+	if (diffDays === 1) {
+		return 'Demain';
+	}
+
+	// Within a week
+	if (diffDays < 7) {
+		return mode === 'detailed' ? `Dans ${diffDays} jours` : `${diffDays}j`;
+	}
+
+	// More than a week
+	if (mode === 'detailed') {
+		return date.toLocaleDateString('fr-FR', {
+			day: 'numeric',
+			month: 'short',
+			year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+		});
+	}
+
+	// Compact: show date
 	return format(date, 'dd/MM', { locale: fr });
 }
 

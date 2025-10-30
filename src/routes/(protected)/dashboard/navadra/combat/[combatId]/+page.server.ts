@@ -11,6 +11,7 @@ import {
 	calculatePrestigeReward,
 	calculatePyrsReward
 } from '$lib/utils/game/combat';
+import { selectSpellSchema, submitAnswerSchema } from '$lib/server/validation/navadra';
 
 export const load: PageServerLoad = async ({ params, locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -88,8 +89,20 @@ export const actions: Actions = {
 		const { user } = await safeGetSession();
 		if (!user) throw error(401, 'Unauthorized');
 
-		const data = await request.formData();
-		const spellNum = parseInt(data.get('spell_num') as string);
+		const formData = await request.formData();
+
+		// Validate input using Zod schema
+		const validation = selectSpellSchema.safeParse({
+			spell_num: parseInt(formData.get('spell_num') as string)
+		});
+
+		if (!validation.success) {
+			return fail(400, {
+				error: validation.error.issues[0].message
+			});
+		}
+
+		const { spell_num } = validation.data;
 
 		// Fetch combat
 		const { data: combat } = await supabase
@@ -99,7 +112,7 @@ export const actions: Actions = {
 			.single();
 
 		if (!combat || combat.status !== 'active') {
-			return fail(400, { error: 'Combat is not active' });
+			return fail(400, { error: "Le combat n'est pas actif" });
 		}
 
 		// Fetch spell
@@ -107,11 +120,11 @@ export const actions: Actions = {
 			.from('game_spells')
 			.select('*')
 			.eq('user_id', user.id)
-			.eq('spell_num', spellNum)
+			.eq('spell_num', spell_num)
 			.single();
 
 		if (!spell) {
-			return fail(400, { error: 'Spell not found' });
+			return fail(400, { error: 'Sort introuvable' });
 		}
 
 		// Select random challenge based on spell element
@@ -123,7 +136,7 @@ export const actions: Actions = {
 			.limit(10);
 
 		if (!challenges || challenges.length === 0) {
-			return fail(500, { error: 'No challenges available for this element' });
+			return fail(500, { error: 'Aucun défi disponible pour cet élément' });
 		}
 
 		const randomChallenge = challenges[Math.floor(Math.random() * challenges.length)];
@@ -140,19 +153,31 @@ export const actions: Actions = {
 		const { user } = await safeGetSession();
 		if (!user) throw error(401, 'Unauthorized');
 
-		const data = await request.formData();
-		const challengeId = data.get('challenge_id') as string;
-		const answer = JSON.parse(data.get('answer') as string);
-		const correctAnswer = JSON.parse(data.get('correct_answer') as string);
-		const timeTaken = parseInt(data.get('time_taken') as string);
-		const spellNum = parseInt(data.get('spell_num') as string);
+		const formData = await request.formData();
+
+		// Validate input using Zod schema
+		const validation = submitAnswerSchema.safeParse({
+			challenge_id: formData.get('challenge_id'),
+			answer: formData.get('answer'),
+			correct_answer: formData.get('correct_answer'),
+			time_taken: parseInt(formData.get('time_taken') as string),
+			spell_num: parseInt(formData.get('spell_num') as string)
+		});
+
+		if (!validation.success) {
+			return fail(400, {
+				error: validation.error.issues[0].message
+			});
+		}
+
+		const { challenge_id, answer, correct_answer, time_taken, spell_num } = validation.data;
 
 		console.log('[submitAnswer] Received form data:', {
-			challengeId,
+			challenge_id,
 			answer,
-			correctAnswer,
-			timeTaken,
-			spellNum
+			correct_answer,
+			time_taken,
+			spell_num
 		});
 
 		// Fetch combat
@@ -163,38 +188,38 @@ export const actions: Actions = {
 			.single();
 
 		if (!combat || combat.status !== 'active') {
-			return fail(400, { error: 'Combat is not active' });
+			return fail(400, { error: "Le combat n'est pas actif" });
 		}
 
 		// Fetch challenge
 		const { data: challenge } = await supabase
 			.from('game_challenges')
 			.select('*')
-			.eq('id', challengeId)
+			.eq('id', challenge_id)
 			.single();
 
 		if (!challenge) {
-			return fail(400, { error: 'Challenge not found' });
+			return fail(400, { error: 'Défi introuvable' });
 		}
 
 		// Validate answer using the correct answer from the client
 		// (generated on the client with the same random seed as displayed)
 		console.log('[submitAnswer] Validating answer:');
 		console.log('  - Student answer:', JSON.stringify(answer));
-		console.log('  - Correct answer:', JSON.stringify(correctAnswer));
+		console.log('  - Correct answer:', JSON.stringify(correct_answer));
 		console.log('  - Tolerance:', challenge.answer?.tolerance);
-		const success = validateAnswer(answer, correctAnswer, challenge.answer?.tolerance);
+		const success = validateAnswer(answer, correct_answer, challenge.answer?.tolerance);
 		console.log('[submitAnswer] Validation result:', success);
 
 		// Record challenge attempt
 		await supabase.from('game_challenge_attempts').insert({
 			user_id: user.id,
-			challenge_id: challengeId,
+			challenge_id,
 			combat_id: params.combatId,
 			success,
-			time_taken: timeTaken,
+			time_taken,
 			answer_given: answer,
-			correct_answer: correctAnswer,
+			correct_answer,
 			challenge_instance: null // We don't need to store the full instance anymore
 		});
 
@@ -203,7 +228,7 @@ export const actions: Actions = {
 			.from('game_spells')
 			.select('*')
 			.eq('user_id', user.id)
-			.eq('spell_num', spellNum)
+			.eq('spell_num', spell_num)
 			.single();
 
 		const { data: gamePlayer } = await supabase
@@ -213,7 +238,7 @@ export const actions: Actions = {
 			.single();
 
 		if (!spell || !gamePlayer) {
-			return fail(500, { error: 'Failed to fetch spell or player data' });
+			return fail(500, { error: 'Échec de récupération des données du sort ou du joueur' });
 		}
 
 		// Calculate damage (only if answer is correct)
@@ -239,11 +264,11 @@ export const actions: Actions = {
 			turn: combat.current_turn,
 			player_id: user.id,
 			action: 'spell',
-			spell_num: spellNum,
+			spell_num,
 			challenge_result: {
-				challenge_id: challengeId,
+				challenge_id,
 				success,
-				time_taken: timeTaken
+				time_taken
 			},
 			damage_dealt: damage,
 			timestamp: new Date().toISOString()

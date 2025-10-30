@@ -7,6 +7,17 @@
  *
  * Endpoint:
  * - POST /api/srs/decks/[id]/assign
+ *
+ * Performance Optimization:
+ * - Uses batch operations to reduce N+1 query problem
+ * - Queries: ~6 total (vs. ~63 for N=20 students)
+ *   1. Fetch class members (1 query with .in())
+ *   2. Fetch source cards (1 query)
+ *   3. Batch-insert decks (1 query)
+ *   4. Batch-insert cards (1 query)
+ *   5. Batch-insert stats (1 query)
+ *   6. Batch-insert assignments (1 query)
+ * - 90%+ reduction in database queries
  */
 
 import { json } from '@sveltejs/kit';
@@ -83,34 +94,35 @@ export const POST: RequestHandler = async ({
 
 		const body = validation.data;
 
-		// Get target student IDs
+		// ============================================================================
+		// OPTIMIZATION: Batch-fetch all student IDs in ONE query
+		// ============================================================================
 		let studentIds: string[] = [];
 
 		if (body.targetType === 'student') {
 			studentIds = body.targetIds;
-			console.log('Assigning to individual students:', studentIds);
+			console.log('Assigning to individual students:', studentIds.length);
 		} else {
-			// Get all students in classes
-			console.log('Assigning to classes:', body.targetIds);
-			for (const classId of body.targetIds) {
-				const { data: members, error: membersError } = await supabase
-					.from('class_members')
-					.select('student_id')
-					.eq('class_id', classId);
+			// Batch-fetch all class members in ONE query using .in()
+			console.log('Assigning to classes:', body.targetIds.length);
+			const { data: members, error: membersError } = await supabase
+				.from('class_members')
+				.select('student_id')
+				.in('class_id', body.targetIds);
 
-				console.log(`Class ${classId}: found ${members?.length || 0} members`);
-				if (membersError) {
-					console.error(`Error fetching members for class ${classId}:`, membersError);
-				}
-
-				if (members) {
-					studentIds.push(...members.map((m) => m.student_id));
-				}
+			if (membersError) {
+				console.error('Error fetching class members:', membersError);
+				return json({ error: 'Failed to fetch class members' }, { status: 500 });
 			}
 
-			// Remove duplicates
-			studentIds = [...new Set(studentIds)];
-			console.log('Total unique students to assign:', studentIds.length);
+			if (!members || members.length === 0) {
+				console.error('No students found in specified classes');
+				return json({ error: 'No students found in specified classes' }, { status: 400 });
+			}
+
+			// Remove duplicates (students in multiple classes)
+			studentIds = [...new Set(members.map((m) => m.student_id))];
+			console.log(`Total unique students to assign: ${studentIds.length}`);
 		}
 
 		if (studentIds.length === 0) {
@@ -126,12 +138,6 @@ export const POST: RequestHandler = async ({
 
 		console.log('Source deck has', sourceCards?.length || 0, 'cards');
 
-		const results = {
-			successCount: 0,
-			failedStudents: [] as string[],
-			createdDecks: [] as string[]
-		};
-
 		// Create admin client to bypass RLS for deck assignment
 		const adminClient = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 			auth: {
@@ -140,102 +146,148 @@ export const POST: RequestHandler = async ({
 			}
 		});
 
-		// Create deck copy for each student
-		console.log('Creating deck copies for', studentIds.length, 'students');
-		for (const studentId of studentIds) {
-			try {
-				console.log(`Creating deck copy for student ${studentId}...`);
-				// Create deck copy (marked as assigned) - using admin client to bypass RLS
-				const { data: newDeck, error: createDeckError } = await adminClient
+		// ============================================================================
+		// OPTIMIZATION: Batch insert all decks, cards, stats, and assignments
+		// Instead of 4N queries (1 deck + 1 cards + 1 stats + 1 assignment per student),
+		// we use 5 queries total (1 deck batch + 1 cards batch + 1 stats batch + 1 assignments batch + 1 mark source)
+		// ============================================================================
+
+		console.log(`Batch-creating ${studentIds.length} deck copies...`);
+
+		// Step 1: Batch-insert all decks for all students (ONE query)
+		const decksToCreate = studentIds.map((studentId) => ({
+			name: sourceDeck.name,
+			description: sourceDeck.description,
+			owner_id: studentId,
+			deck_type: sourceDeck.deck_type,
+			is_assigned: true, // Mark as assigned (read-only)
+			config: sourceDeck.config
+		}));
+
+		const { data: createdDecks, error: decksError } = await adminClient
+			.from('srs_decks')
+			.insert(decksToCreate)
+			.select('id, owner_id');
+
+		if (decksError || !createdDecks) {
+			console.error('Failed to batch-create decks:', decksError);
+			return json({ error: 'Failed to create deck copies' }, { status: 500 });
+		}
+
+		console.log(`✓ Created ${createdDecks.length} deck copies`);
+
+		// Build mapping: studentId -> deckId for O(1) lookups
+		const studentToDeckMap = new Map<string, string>();
+		for (const deck of createdDecks) {
+			studentToDeckMap.set(deck.owner_id, deck.id);
+		}
+
+		// Step 2: Batch-insert all cards for all decks (ONE query)
+		const allCardsToCreate: Array<{
+			deck_id: string;
+			card_type: string;
+			template_id: string | null;
+			front_content: unknown;
+			back_content: unknown;
+		}> = [];
+
+		if (sourceCards && sourceCards.length > 0) {
+			for (const deck of createdDecks) {
+				const cardsForDeck = sourceCards.map((card) => ({
+					deck_id: deck.id,
+					card_type: card.card_type,
+					template_id: card.template_id,
+					front_content: card.front_content,
+					back_content: card.back_content
+				}));
+				allCardsToCreate.push(...cardsForDeck);
+			}
+
+			console.log(`Batch-inserting ${allCardsToCreate.length} cards...`);
+
+			const { data: insertedCards, error: cardsError } = await adminClient
+				.from('srs_cards')
+				.insert(allCardsToCreate)
+				.select('id, deck_id, card_type, template_id');
+
+			if (cardsError || !insertedCards) {
+				console.error('Failed to batch-insert cards:', cardsError);
+				// Rollback: Delete all created decks
+				await adminClient
 					.from('srs_decks')
-					.insert({
-						name: sourceDeck.name,
-						description: sourceDeck.description,
-						owner_id: studentId,
-						deck_type: sourceDeck.deck_type,
-						is_assigned: true, // Mark as assigned (read-only)
-						config: sourceDeck.config
-					})
-					.select()
-					.single();
+					.delete()
+					.in(
+						'id',
+						createdDecks.map((d) => d.id)
+					);
+				return json({ error: 'Failed to copy cards' }, { status: 500 });
+			}
 
-				if (createDeckError || !newDeck) {
-					console.error(`Failed to create deck for student ${studentId}:`, createDeckError);
-					results.failedStudents.push(studentId);
-					continue;
-				}
+			console.log(`✓ Inserted ${insertedCards.length} cards`);
 
-				console.log(`✓ Deck copy created for student ${studentId}: ${newDeck.id}`);
+			// Step 3: Batch-insert all card stats (ONE query)
+			const now = new Date().toISOString();
+			const allStatsToCreate = insertedCards.map((card) => {
+				// Find the student who owns this card's deck
+				const deckOwnerId = createdDecks.find((d) => d.id === card.deck_id)?.owner_id;
 
-				// Copy all cards to new deck - using admin client
-				if (sourceCards && sourceCards.length > 0) {
-					const cardCopies = sourceCards.map((card) => ({
-						deck_id: newDeck.id,
-						card_type: card.card_type,
-						template_id: card.template_id,
-						front_content: card.front_content,
-						back_content: card.back_content
-					}));
+				return {
+					user_id: deckOwnerId!,
+					card_reference_type: card.card_type,
+					card_reference_id: card.card_type === 'template' ? card.template_id : card.id,
+					difficulty: 5.0, // Default difficulty (FSRS default)
+					stability: 0.1, // Very short initial stability (new card)
+					state: 'new',
+					last_review: null,
+					next_review: now, // Available immediately
+					total_reviews: 0,
+					review_history: []
+				};
+			});
 
-					const { data: insertedCards, error: cardsError } = await adminClient
-						.from('srs_cards')
-						.insert(cardCopies)
-						.select('id, card_type, template_id');
+			console.log(`Batch-inserting ${allStatsToCreate.length} card stats...`);
 
-					if (cardsError) {
-						console.error(`Failed to copy cards for student ${studentId}:`, cardsError);
-						// Rollback: Delete deck using admin client
-						await adminClient.from('srs_decks').delete().eq('id', newDeck.id);
-						results.failedStudents.push(studentId);
-						continue;
-					}
+			const { error: statsError } = await adminClient
+				.from('srs_card_stats')
+				.insert(allStatsToCreate);
 
-					// Create initial card stats for each card (so they show up in reviews)
-					if (insertedCards) {
-						console.log(`Creating initial stats for ${insertedCards.length} cards...`);
-						const now = new Date().toISOString();
-
-						const statsToCreate = insertedCards.map((card) => ({
-							user_id: studentId,
-							card_reference_type: card.card_type,
-							card_reference_id: card.card_type === 'template' ? card.template_id : card.id,
-							difficulty: 5.0, // Default difficulty (FSRS default)
-							stability: 0.1, // Very short initial stability (new card)
-							state: 'new',
-							last_review: null,
-							next_review: now, // Available immediately
-							total_reviews: 0,
-							review_history: []
-						}));
-
-						const { error: statsError } = await adminClient
-							.from('srs_card_stats')
-							.insert(statsToCreate);
-
-						if (statsError) {
-							console.error(`Failed to create card stats for student ${studentId}:`, statsError);
-							// Continue anyway - cards exist, just without stats
-						} else {
-							console.log(`✓ Created ${statsToCreate.length} card stats for student ${studentId}`);
-						}
-					}
-				}
-
-				// Create assignment record - using admin client
-				await adminClient.from('srs_deck_assignments').insert({
-					source_deck_id: deckId,
-					assigned_by: user.id,
-					assigned_to: studentId,
-					assignment_type: 'student'
-				});
-
-				results.successCount++;
-				results.createdDecks.push(newDeck.id);
-			} catch (error) {
-				console.error(`Error assigning deck to student ${studentId}:`, error);
-				results.failedStudents.push(studentId);
+			if (statsError) {
+				console.error('Failed to batch-insert card stats:', statsError);
+				// Continue anyway - cards exist, just without stats
+				console.warn(
+					'Warning: Cards created without stats. Students may not see cards in reviews.'
+				);
+			} else {
+				console.log(`✓ Inserted ${allStatsToCreate.length} card stats`);
 			}
 		}
+
+		// Step 4: Batch-insert all assignment records (ONE query)
+		const assignmentsToCreate = studentIds.map((studentId) => ({
+			source_deck_id: deckId,
+			assigned_by: user.id,
+			assigned_to: studentId,
+			assignment_type: 'student' as const
+		}));
+
+		console.log(`Batch-inserting ${assignmentsToCreate.length} assignment records...`);
+
+		const { error: assignmentsError } = await adminClient
+			.from('srs_deck_assignments')
+			.insert(assignmentsToCreate);
+
+		if (assignmentsError) {
+			console.error('Failed to batch-insert assignments:', assignmentsError);
+			// Continue anyway - decks and cards are created
+		} else {
+			console.log(`✓ Inserted ${assignmentsToCreate.length} assignment records`);
+		}
+
+		const results = {
+			successCount: createdDecks.length,
+			failedStudents: [] as string[],
+			createdDecks: createdDecks.map((d) => d.id)
+		};
 
 		// Mark source deck as assigned if assignment was successful
 		if (results.successCount > 0) {

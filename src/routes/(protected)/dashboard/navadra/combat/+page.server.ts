@@ -3,9 +3,10 @@
 // Date: 2025-10-15
 
 import type { PageServerLoad, Actions } from './$types';
-import { error, redirect } from '@sveltejs/kit';
+import { error, redirect, fail } from '@sveltejs/kit';
 import { generateRandomMonster } from '$lib/utils/game/combat';
 import { getRandomMonsterTemplate, getMonsterImagePaths } from '$lib/data/game/monsters';
+import { startCombatSchema } from '$lib/server/validation/navadra';
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -105,21 +106,32 @@ export const actions: Actions = {
 		const { user } = await safeGetSession();
 		if (!user) throw error(401, 'Unauthorized');
 
-		const data = await request.formData();
-		const monsterId = data.get('monster_id') as string | null;
+		const formData = await request.formData();
 
+		// Validate input using Zod schema
+		const validation = startCombatSchema.safeParse({
+			monster_id: formData.get('monster_id') || undefined
+		});
+
+		if (!validation.success) {
+			return fail(400, {
+				error: validation.error.issues[0].message
+			});
+		}
+
+		const { monster_id } = validation.data;
 		let monster;
 
-		if (monsterId) {
+		if (monster_id) {
 			// Use existing monster
 			const { data: existingMonster, error: monsterError } = await supabase
 				.from('game_monsters')
 				.select('*')
-				.eq('id', monsterId)
+				.eq('id', monster_id)
 				.single();
 
 			if (monsterError || !existingMonster) {
-				throw error(404, 'Monster not found');
+				return fail(404, { error: 'Monstre introuvable' });
 			}
 
 			monster = existingMonster;

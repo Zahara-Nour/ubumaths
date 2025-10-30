@@ -17,6 +17,7 @@
 // ============================================================================
 
 import type { Variable, ResolvedVariable } from '$lib/shared/parameterization';
+import { isDeadlinePassed as isDeadlinePassedUtil } from '$lib/utils/dates';
 
 // ============================================================================
 // PARAMETERIZATION TYPES
@@ -1849,10 +1850,12 @@ export function hasDeadline(assignment: ExerciseAssignment): boolean {
  * };
  * isDeadlinePassed(assignment); // true
  * ```
+ *
+ * @deprecated Use isDeadlinePassed from '$lib/utils/dates' instead
+ * @see isDeadlinePassed in $lib/utils/dates.ts
  */
 export function isDeadlinePassed(assignment: ExerciseAssignment): boolean {
-	if (!assignment.optional_deadline) return false;
-	return new Date(assignment.optional_deadline) < new Date();
+	return isDeadlinePassedUtil(assignment.optional_deadline);
 }
 
 /**

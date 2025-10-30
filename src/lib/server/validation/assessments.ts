@@ -57,6 +57,49 @@ export const createAssessmentSchema = z.object({
  */
 export const updateAssessmentSchema = createAssessmentSchema.partial();
 
+/**
+ * Schema for assessment edit form (from +page.server.ts)
+ * Validates the form data including stringified JSON settings
+ */
+export const assessmentEditFormSchema = z.object({
+	title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long'),
+	grade: gradeSchema,
+	description: z.string().trim().optional(),
+	settings: z
+		.string()
+		.min(1, 'Paramètres requis')
+		.transform((str, ctx) => {
+			try {
+				return JSON.parse(str);
+			} catch {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: 'Format JSON invalide pour les paramètres'
+				});
+				return z.NEVER;
+			}
+		})
+		.pipe(
+			z.object({
+				duration: z
+					.number()
+					.int()
+					.positive()
+					.max(180, 'Durée trop longue (max 180 minutes)')
+					.optional(),
+				max_attempts: z
+					.number()
+					.int()
+					.positive()
+					.max(10, 'Trop de tentatives autorisées')
+					.default(1),
+				show_solutions: z.boolean().optional().default(false),
+				shuffle_questions: z.boolean().optional().default(false),
+				shuffle_answers: z.boolean().optional().default(false)
+			})
+		)
+});
+
 // ============================================================================
 // ASSIGNMENT SCHEMAS
 // ============================================================================

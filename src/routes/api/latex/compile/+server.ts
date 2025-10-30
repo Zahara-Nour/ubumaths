@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { compileLatexSchema } from '$lib/server/validation/latex';
 
 /**
  * Server-side proxy for LaTeX compilation via TeXLive.net
@@ -10,10 +11,37 @@ export const POST: RequestHandler = async ({ request }) => {
 		// Get the form data from the client
 		const formData = await request.formData();
 
+		// Extract and validate fields
+		const latex = formData.get('latex');
+		const format = formData.get('format');
+		const fontSize = formData.get('fontSize');
+		const displayMode = formData.get('displayMode');
+
+		// Validate input using Zod schema
+		const validation = compileLatexSchema.safeParse({
+			latex: latex?.toString(),
+			format: format?.toString(),
+			fontSize: fontSize ? Number(fontSize) : undefined,
+			displayMode: displayMode === 'true' || displayMode === '1'
+		});
+
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
+		}
+
+		// Create validated FormData to forward
+		const validatedFormData = new FormData();
+		validatedFormData.append('latex', validation.data.latex);
+		validatedFormData.append('format', validation.data.format);
+		if (validation.data.fontSize) {
+			validatedFormData.append('fontSize', validation.data.fontSize.toString());
+		}
+		validatedFormData.append('displayMode', validation.data.displayMode.toString());
+
 		// Forward the request to texlive.net
 		const response = await fetch('https://texlive.net/cgi-bin/latexcgi', {
 			method: 'POST',
-			body: formData
+			body: validatedFormData
 		});
 
 		if (!response.ok) {

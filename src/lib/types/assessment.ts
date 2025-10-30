@@ -4,6 +4,10 @@
  */
 
 import type { CartItem } from '$lib/stores/questionCart.svelte';
+import {
+	formatDeadline as formatDeadlineUtil,
+	isDeadlinePassed as isDeadlinePassedUtil
+} from '$lib/utils/dates';
 
 // ===========================================================================
 // ASSESSMENT CONFIGURATION
@@ -282,10 +286,11 @@ export interface ResultsSort {
 
 /**
  * Check if assessment deadline has passed
+ * @deprecated Use isDeadlinePassed from '$lib/utils/dates' instead
+ * @see isDeadlinePassed in $lib/utils/dates.ts
  */
 export function isDeadlinePassed(deadline: string | null): boolean {
-	if (!deadline) return false;
-	return new Date(deadline) < new Date();
+	return isDeadlinePassedUtil(deadline);
 }
 
 /**
@@ -323,37 +328,11 @@ export function getStudentStatus(
 
 /**
  * Format deadline for display
+ * @deprecated Use formatDeadline from '$lib/utils/dates' instead
+ * @see formatDeadline in $lib/utils/dates.ts
  */
 export function formatDeadline(deadline: string | null): string {
-	if (!deadline) return 'Aucune limite';
-
-	const date = new Date(deadline);
-	const now = new Date();
-	const diffMs = date.getTime() - now.getTime();
-	const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-	const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-
-	if (diffMs < 0) {
-		return 'Expiré';
-	}
-
-	if (diffHours < 24) {
-		return `Plus que ${diffHours}h`;
-	}
-
-	if (diffDays === 1) {
-		return 'Demain';
-	}
-
-	if (diffDays < 7) {
-		return `Dans ${diffDays} jours`;
-	}
-
-	return date.toLocaleDateString('fr-FR', {
-		day: 'numeric',
-		month: 'short',
-		year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
-	});
+	return formatDeadlineUtil(deadline, 'detailed');
 }
 
 /**

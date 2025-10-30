@@ -33,3 +33,79 @@ export function getStudentCardCounts(vipCards: StudentVipCards): Map<string, num
 
 	return counts;
 }
+
+/**
+ * Get student cards with their counts, grouped by card ID
+ * Returns an array of objects with card data and count
+ */
+export function getStudentCardsWithCounts(vipCards: StudentVipCards): Array<{
+	cardId: string;
+	count: number;
+	card: StudentVipCards[string];
+}> {
+	const cardMap = new Map<
+		string,
+		{ cardId: string; count: number; card: StudentVipCards[string] }
+	>();
+
+	Object.values(vipCards).forEach((instance) => {
+		if (instance.usedAt === null) {
+			const existing = cardMap.get(instance.cardId);
+			if (existing) {
+				existing.count++;
+			} else {
+				cardMap.set(instance.cardId, {
+					cardId: instance.cardId,
+					count: 1,
+					card: instance
+				});
+			}
+		}
+	});
+
+	return Array.from(cardMap.values());
+}
+
+/**
+ * Get the number of unique card types owned by student (only unused cards)
+ */
+export function getUniqueCardTypesCount(vipCards: StudentVipCards): number {
+	const uniqueCardIds = new Set<string>();
+
+	Object.values(vipCards).forEach((instance) => {
+		if (instance.usedAt === null) {
+			uniqueCardIds.add(instance.cardId);
+		}
+	});
+
+	return uniqueCardIds.size;
+}
+
+/**
+ * Get total number of unused cards owned by student
+ */
+export function getTotalUnusedCards(vipCards: StudentVipCards): number {
+	return Object.values(vipCards).filter((instance) => instance.usedAt === null).length;
+}
+
+/**
+ * Sort cards by priority: rarity (legendary > epic > rare > common) then by count (desc)
+ */
+export function sortCardsByPriority(
+	cards: Array<{ cardId: string; count: number; card: StudentVipCards[string] }>
+): Array<{ cardId: string; count: number; card: StudentVipCards[string] }> {
+	const rarityOrder = { legendary: 0, epic: 1, rare: 2, common: 3 };
+
+	return cards.sort((a, b) => {
+		// First sort by rarity (legendary first)
+		const rarityA = rarityOrder[a.card.rarity as keyof typeof rarityOrder] ?? 99;
+		const rarityB = rarityOrder[b.card.rarity as keyof typeof rarityOrder] ?? 99;
+
+		if (rarityA !== rarityB) {
+			return rarityA - rarityB;
+		}
+
+		// Then sort by count (higher count first)
+		return b.count - a.count;
+	});
+}

@@ -7,6 +7,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { generateUniqueFilename } from '$lib/utils/filename';
 
 export const MAX_FILE_SIZE = 1048576; // 1MB in bytes
 export const MAX_MESSAGE_FILE_SIZE = 5 * 1024 * 1024; // 5MB for messages
@@ -47,9 +48,8 @@ export async function uploadChatAttachment(
 	}
 
 	// Create storage path: conversation_id/message_id/filename
-	const timestamp = Date.now();
-	const sanitizedFilename = sanitizeFilename(file.name);
-	const storagePath = `${conversationId}/${messageId}/${timestamp}_${sanitizedFilename}`;
+	const uniqueFilename = generateUniqueFilename(file.name);
+	const storagePath = `${conversationId}/${messageId}/${uniqueFilename}`;
 
 	try {
 		// Upload to Supabase Storage
@@ -147,20 +147,6 @@ export async function deleteChatAttachment(
 }
 
 /**
- * Sanitize filename to prevent path traversal and special characters
- *
- * @param filename - Original filename
- * @returns Sanitized filename
- */
-function sanitizeFilename(filename: string): string {
-	// Remove path separators and special characters
-	return filename
-		.replace(/[/\\]/g, '_') // Replace slashes
-		.replace(/[^a-zA-Z0-9._-]/g, '_') // Replace special chars
-		.substring(0, 200); // Limit length
-}
-
-/**
  * Validate file type (optional - can be used for additional validation)
  *
  * @param file - File to validate
@@ -225,9 +211,8 @@ export async function uploadMessageAttachment(
 	}
 
 	// Create storage path: messages/message_id/filename
-	const timestamp = Date.now();
-	const sanitizedFilename = sanitizeFilename(file.name);
-	const storagePath = `messages/${messageId}/${timestamp}_${sanitizedFilename}`;
+	const uniqueFilename = generateUniqueFilename(file.name);
+	const storagePath = `messages/${messageId}/${uniqueFilename}`;
 
 	try {
 		// Upload to Supabase Storage

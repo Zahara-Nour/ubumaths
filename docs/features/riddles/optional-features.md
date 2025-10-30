@@ -89,18 +89,9 @@ Ce fichier liste les **14 items optionnels** restants pour atteindre 100% de pro
 
 ---
 
-## ⚡ Performance (4 items)
+## ⚡ Performance (3 items)
 
-### 4. Cache Redis Énigme du Jour
-
-**Description** : Cache l'énigme du jour pour éviter requête DB à chaque visite
-**Stack** : Redis (Upstash ou self-hosted)
-**Implémentation** :
-
-- Cache key : `riddle:daily:{date}`
-- TTL : 24 heures (expire minuit)
-- Invalidation : Sur set/delete énigme du jour
-- Fallback DB si cache miss
+> **Note**: Redis caching was removed on 2025-10-30 in favor of a simpler architecture with direct database queries and strategic indexes. See [Architecture Simplification](../../development/architecture-simplification.md) for details.
 
 **Fichiers à créer** :
 

@@ -103,4 +103,31 @@ class OrientationStore {
 }
 
 export const orientation = new OrientationStore();
+
+/**
+ * Reset the base orientation reference point for 3D card rotation
+ *
+ * This utility function resets the baseline orientation used for calculating
+ * relative device tilt. When called, the current device orientation becomes
+ * the new zero-point, and relative values are recalculated from that point.
+ *
+ * USAGE:
+ * Call this when the user initiates a new holographic card interaction,
+ * or when the card view is first opened, to ensure smooth relative rotations
+ * that don't jump based on device position at that moment.
+ *
+ * @example
+ * ```typescript
+ * import { resetBaseOrientation } from '$lib/stores/holo-card.svelte';
+ *
+ * // When user opens the holographic card view
+ * resetBaseOrientation();
+ * ```
+ *
+ * INTERNAL MECHANICS:
+ * - Sets `firstReading` flag to true, so next deviceorientation event becomes base
+ * - Clears current base orientation values (alpha, beta, gamma = 0)
+ * - Subsequent orientation changes are relative to this new baseline
+ * - Prevents large jumps in card rotation when switching views or resetting
+ */
 export const resetBaseOrientation = () => orientation.resetBase();

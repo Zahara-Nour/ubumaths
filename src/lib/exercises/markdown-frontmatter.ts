@@ -25,6 +25,7 @@
 import * as YAML from 'yaml';
 import type { ExerciseExport, ExerciseFrontmatter } from './types';
 import { validateFrontmatter } from './validation';
+import { sanitizeForSlug } from '$lib/utils/filename';
 
 // ============================================================================
 // CONSTANTS
@@ -219,7 +220,7 @@ export function serializeToMarkdownFiles(exercises: ExerciseExport[]): Map<strin
 	exercises.forEach((exercise, index) => {
 		// Generate filename from title or index
 		const filename = exercise.title
-			? `${sanitizeFilename(exercise.title)}.md`
+			? `${sanitizeForSlug(exercise.title)}.md`
 			: `exercise-${index + 1}.md`;
 
 		const markdown = serializeToMarkdown(exercise);
@@ -227,30 +228,6 @@ export function serializeToMarkdownFiles(exercises: ExerciseExport[]): Map<strin
 	});
 
 	return files;
-}
-
-// ============================================================================
-// UTILITY FUNCTIONS
-// ============================================================================
-
-/**
- * Sanitize string for use as filename
- *
- * @param name - Original name
- * @returns Sanitized filename-safe string
- */
-function sanitizeFilename(name: string): string {
-	return name
-		.toLowerCase()
-		.replace(/[àáâäã]/g, 'a')
-		.replace(/[èéêë]/g, 'e')
-		.replace(/[ìíîï]/g, 'i')
-		.replace(/[òóôöõ]/g, 'o')
-		.replace(/[ùúûü]/g, 'u')
-		.replace(/[ç]/g, 'c')
-		.replace(/[^a-z0-9]+/g, '-')
-		.replace(/^-+|-+$/g, '')
-		.substring(0, 50);
 }
 
 /**

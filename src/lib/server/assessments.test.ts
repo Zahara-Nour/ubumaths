@@ -196,7 +196,7 @@ describe('createAssessment', () => {
 
 	it('should include categories and settings in JSONB format', async () => {
 		const categories = [
-			{ id: 'cat-1', bank_id: 'bank-1', count: 10, title: 'Geometry', filters: {} }
+			{ id: 'cat-1', bank_id: 'bank-1', count: 10, title: 'Algèbre', filters: {} }
 		];
 		const settings = {
 			...DEFAULT_ASSESSMENT_SETTINGS,

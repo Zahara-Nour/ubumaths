@@ -266,7 +266,7 @@ describe('calculateBadges', () => {
 				multipleAttemptCount: 0,
 				genreCounts: {
 					Algèbre: 4,
-					Géométrie: 3
+					Logique: 3
 				},
 				consecutiveDaysStreak: 0
 			};
@@ -302,16 +302,16 @@ describe('calculateBadges', () => {
 				firstAttemptCount: 0,
 				multipleAttemptCount: 0,
 				genreCounts: {
-					Géométrie: 10
+					Logique: 10
 				},
 				consecutiveDaysStreak: 0
 			};
 
 			const badges = calculateBadges(progress);
-			const geometryExpert = badges.find((b) => b.id === 'expert-Géométrie-silver');
+			const logicExpert = badges.find((b) => b.id === 'expert-Logique-silver');
 
-			expect(geometryExpert?.earned).toBe(true);
-			expect(geometryExpert?.tier).toBe('silver');
+			expect(logicExpert?.earned).toBe(true);
+			expect(logicExpert?.tier).toBe('silver');
 		});
 
 		it('should award gold expert badge with 20 riddles', () => {
@@ -354,7 +354,7 @@ describe('calculateBadges', () => {
 				multipleAttemptCount: 0,
 				genreCounts: {
 					Algèbre: 15,
-					Géométrie: 8,
+					Probabilités: 8,
 					Logique: 25,
 					Arithmétique: 6
 				},
@@ -369,8 +369,8 @@ describe('calculateBadges', () => {
 			const algebraBadge = expertBadges.find((b) => b.id.includes('Algèbre'));
 			expect(algebraBadge?.tier).toBe('silver');
 
-			const geometryBadge = expertBadges.find((b) => b.id.includes('Géométrie'));
-			expect(geometryBadge?.tier).toBe('bronze');
+			const probabilitiesBadge = expertBadges.find((b) => b.id.includes('Probabilités'));
+			expect(probabilitiesBadge?.tier).toBe('bronze');
 
 			const logicBadge = expertBadges.find((b) => b.id.includes('Logique'));
 			expect(logicBadge?.tier).toBe('gold');
@@ -387,7 +387,7 @@ describe('calculateBadges', () => {
 				multipleAttemptCount: 12,
 				genreCounts: {
 					Algèbre: 8,
-					Géométrie: 15
+					Probabilités: 15
 				},
 				consecutiveDaysStreak: 10
 			};
@@ -563,7 +563,7 @@ describe('calculateBadges', () => {
 				multipleAttemptCount: 0,
 				genreCounts: {
 					'Algèbre & Calcul': 10,
-					'Géométrie/Espace': 5
+					'Logique/Raisonnement': 5
 				},
 				consecutiveDaysStreak: 0
 			};
@@ -573,7 +573,7 @@ describe('calculateBadges', () => {
 
 			expect(expertBadges.length).toBe(2);
 			expect(expertBadges.some((b) => b.name.includes('Algèbre & Calcul'))).toBe(true);
-			expect(expertBadges.some((b) => b.name.includes('Géométrie/Espace'))).toBe(true);
+			expect(expertBadges.some((b) => b.name.includes('Logique/Raisonnement'))).toBe(true);
 		});
 
 		it('should handle empty genre name', () => {

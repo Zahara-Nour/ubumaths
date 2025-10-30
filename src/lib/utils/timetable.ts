@@ -68,10 +68,41 @@ export interface ValidationResult {
 	errors: ValidationError[];
 }
 
+/**
+ * Validate school timetable for conflicts and errors
+ *
+ * Performs comprehensive validation of periods within a school timetable:
+ * 1. Checks for duplicate period numbers
+ * 2. Validates each period has valid time range (end > start)
+ * 3. Detects overlapping time slots between consecutive periods
+ *
+ * VALIDATION RULES:
+ * - Period numbers must be unique (no duplicates)
+ * - End time must be strictly after start time for each period
+ * - Consecutive periods cannot overlap (end time of one must <= start time of next)
+ *
+ * @param periods - Array of school periods to validate
+ * @returns Validation result containing overall valid status and detailed error list
+ *
+ * @example
+ * ```typescript
+ * const periods: SchoolPeriod[] = [
+ *   { number: 1, start_time: '07:00:00', end_time: '08:00:00' },
+ *   { number: 2, start_time: '08:00:00', end_time: '09:00:00' }
+ * ];
+ *
+ * const result = validateTimetable(periods);
+ * if (result.valid) {
+ *   console.log('Timetable is valid');
+ * } else {
+ *   result.errors.forEach(err => console.error(err.message));
+ * }
+ * ```
+ */
 export function validateTimetable(periods: SchoolPeriod[]): ValidationResult {
 	const errors: ValidationError[] = [];
 
-	// Check for duplicate period numbers
+	// Step 1: Check for duplicate period numbers
 	const numbers = periods.map((p) => p.number);
 	const duplicates = numbers.filter((n, i) => numbers.indexOf(n) !== i);
 	if (duplicates.length > 0) {
@@ -84,7 +115,7 @@ export function validateTimetable(periods: SchoolPeriod[]): ValidationResult {
 		});
 	}
 
-	// Check each period for valid time range
+	// Step 2: Check each period for valid time range (end time must be after start time)
 	periods.forEach((period) => {
 		const startMinutes = timeToMinutes(period.start_time);
 		const endMinutes = timeToMinutes(period.end_time);
@@ -98,11 +129,13 @@ export function validateTimetable(periods: SchoolPeriod[]): ValidationResult {
 		}
 	});
 
-	// Check for overlapping periods (sort by start time first)
+	// Step 3: Check for overlapping periods
+	// Sort by start time to compare consecutive periods efficiently
 	const sorted = [...periods].sort((a, b) => {
 		return timeToMinutes(a.start_time) - timeToMinutes(b.start_time);
 	});
 
+	// Compare each pair of consecutive periods for overlaps
 	for (let i = 0; i < sorted.length - 1; i++) {
 		const current = sorted[i];
 		const next = sorted[i + 1];
@@ -110,6 +143,7 @@ export function validateTimetable(periods: SchoolPeriod[]): ValidationResult {
 		const currentEnd = timeToMinutes(current.end_time);
 		const nextStart = timeToMinutes(next.start_time);
 
+		// Overlap occurs if current period ends after next period starts
 		if (currentEnd > nextStart) {
 			errors.push({
 				type: 'overlap',

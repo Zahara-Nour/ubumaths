@@ -433,8 +433,6 @@ Required in `.env`:
 - [ ] `PUBLIC_SUPABASE_URL`
 - [ ] `PUBLIC_SUPABASE_ANON_KEY`
 - [ ] `SUPABASE_SERVICE_ROLE_KEY`
-- [ ] `UPSTASH_REDIS_REST_URL` (optional but recommended)
-- [ ] `UPSTASH_REDIS_REST_TOKEN` (optional but recommended)
 - [ ] `OPENAI_API_KEY` (for AI chatbot)
 
 ### Useful Links

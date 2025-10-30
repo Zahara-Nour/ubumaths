@@ -145,7 +145,10 @@ export function requireAuth(user: { id: string } | null) {
  *
  * @param profile - User's profile from getUserProfile() (contains role)
  * @param allowedRoles - Single role or array of roles that are allowed
- * @throws {error} 403 Forbidden if user doesn't have any of the allowed roles
+ * @throws {error} 403 Forbidden - Thrown in two cases:
+ *   - "Access denied: No profile found" if profile is null (user not properly initialized)
+ *   - "Access denied: This page requires {role} role" if user's role is not in allowedRoles
+ *   SvelteKit's error() function returns a 403 HTTP response that navigates to error page
  *
  * @example
  * ```typescript
@@ -164,6 +167,13 @@ export function requireAuth(user: { id: string } | null) {
  *   return { teacherData: ... };
  * };
  * ```
+ *
+ * ERROR BEHAVIOR:
+ * When authorization fails, SvelteKit throws a 403 Forbidden error that:
+ * - Halts execution and prevents the rest of the load function from running
+ * - Automatically redirects the user to +error.svelte with the error message
+ * - Returns an HTTP 403 status to the client
+ * - The user sees a generic "Access Denied" error page with the error message
  */
 export function requireRole(profile: Profile | null, allowedRoles: UserRole | UserRole[]) {
 	// Check if profile exists
