@@ -154,10 +154,11 @@
 	// ============================================================================
 
 	/**
-	 * Get gidouilles for a student (with optimistic updates)
+	 * Get gidouilles for a student (with optimistic updates from cache)
 	 */
 	function getGidouilles(student: StudentData): number {
-		return optimisticUpdates[student.id]?.gidouilles ?? student.gidouilles;
+		// gidouillesCache.get() already applies optimistic updates
+		return student.gidouilles;
 	}
 
 	/**
@@ -275,14 +276,8 @@
 
 		// STEP 1: Remove gidouille if > 0
 		if (gidouilles > 0) {
-			// Optimistic UI
-			optimisticUpdates = {
-				...optimisticUpdates,
-				[student.id]: {
-					...optimisticUpdates[student.id],
-					gidouilles: gidouilles - 1
-				}
-			};
+			// Optimistic UI - use cache method
+			gidouillesCache.updateOptimistic(classId, student.id, -1);
 
 			try {
 				const response = await fetch('/api/rewards/gidouilles', {
@@ -292,24 +287,15 @@
 				});
 
 				if (response.ok) {
-					// Clear optimistic state
-					const newUpdates = { ...optimisticUpdates };
-					delete newUpdates[student.id]?.gidouilles;
-					optimisticUpdates = newUpdates;
-
-					// Invalidate cache and reload data
-					gidouillesCache.invalidate(classId);
-					await loadData(); // Fetch fresh data immediately
-
+					// Commit optimistic update to cache (no reload needed!)
+					gidouillesCache.commitOptimistic(classId, student.id);
 					toaster.success(`1 gidouille retirée (${student.firstname})`);
 				} else {
 					throw new Error('Failed');
 				}
 			} catch (_error) {
 				// Rollback optimistic update
-				const newUpdates = { ...optimisticUpdates };
-				delete newUpdates[student.id]?.gidouilles;
-				optimisticUpdates = newUpdates;
+				gidouillesCache.rollbackOptimistic(classId, student.id);
 				toaster.error('Erreur lors du retrait de la gidouille');
 			}
 			return;
@@ -429,16 +415,9 @@
 	 */
 	async function handleAddGidouille(student: StudentData) {
 		markEditing();
-		const current = getGidouilles(student);
 
-		// Optimistic UI
-		optimisticUpdates = {
-			...optimisticUpdates,
-			[student.id]: {
-				...optimisticUpdates[student.id],
-				gidouilles: current + 1
-			}
-		};
+		// Optimistic UI - use cache method
+		gidouillesCache.updateOptimistic(classId, student.id, +1);
 
 		try {
 			const response = await fetch('/api/rewards/gidouilles', {
@@ -448,24 +427,15 @@
 			});
 
 			if (response.ok) {
-				// Clear optimistic state
-				const newUpdates = { ...optimisticUpdates };
-				delete newUpdates[student.id]?.gidouilles;
-				optimisticUpdates = newUpdates;
-
-				// Invalidate cache and reload data
-				gidouillesCache.invalidate(classId);
-				await loadData(); // Fetch fresh data immediately
-
+				// Commit optimistic update to cache (no reload needed!)
+				gidouillesCache.commitOptimistic(classId, student.id);
 				toaster.success(`+1 gidouille (${student.firstname})`);
 			} else {
 				throw new Error('Failed');
 			}
 		} catch (_error) {
 			// Rollback optimistic update
-			const newUpdates = { ...optimisticUpdates };
-			delete newUpdates[student.id]?.gidouilles;
-			optimisticUpdates = newUpdates;
+			gidouillesCache.rollbackOptimistic(classId, student.id);
 			toaster.error("Erreur lors de l'ajout de la gidouille");
 		}
 	}

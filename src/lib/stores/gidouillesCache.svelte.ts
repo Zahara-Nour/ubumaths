@@ -302,6 +302,47 @@ class GidouillesCacheStore {
 		this.clearOptimistic(classId, studentId);
 	}
 
+	/**
+	 * Commit optimistic update to cache (after successful server sync)
+	 *
+	 * Applies the optimistic delta permanently to the cached data,
+	 * then clears the optimistic overlay. This avoids unnecessary
+	 * server refetches after successful mutations.
+	 *
+	 * @param classId - The class ID
+	 * @param studentId - The student ID
+	 *
+	 * @example
+	 * // After successful API call
+	 * const response = await fetch('/api/rewards/gidouilles', { ... });
+	 * if (response.ok) {
+	 *   gidouillesCache.commitOptimistic(classId, studentId);
+	 *   // No need to reload data from server!
+	 * }
+	 */
+	commitOptimistic(classId: string, studentId: string): void {
+		const entry = this.cache.get(classId);
+		if (!entry) return;
+
+		const delta = entry.optimistic.get(studentId);
+		if (delta === undefined || delta === 0) {
+			// No optimistic update to commit
+			return;
+		}
+
+		const current = entry.data.get(studentId);
+		if (current) {
+			// Apply delta permanently to cached data
+			entry.data.set(studentId, {
+				...current,
+				gidouilles: Math.max(0, current.gidouilles + delta)
+			});
+		}
+
+		// Clear optimistic overlay
+		entry.optimistic.delete(studentId);
+	}
+
 	// ========================================================================
 	// PRIVATE METHODS (Internal Implementation)
 	// ========================================================================
