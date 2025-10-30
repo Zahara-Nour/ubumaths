@@ -14,8 +14,8 @@ Comprehensive testing guide for UbuMaths application.
 | **Unit Tests**        | 2,430/2,454     | 99.0%     | [Unit Tests](../../../docs/testing/README.md)                    |
 | **E2E Tests**         | 283 tests       | Ready     | [E2E Guide](e2e-testing-guide.md)                                |
 | **Zod Validation**    | 366 tests       | 100%      | [Validation](../../../CLAUDE.md#-input-validation-with-zod)      |
-| **Database Triggers** | 139 tests       | 100%      | [Trigger Tests](../../../docs/testing/database-trigger-tests.md) |
-| **Total**             | **3,218 tests** | **99.2%** | -                                                                |
+| **Database Triggers** | 131 tests       | 100%      | [Trigger Tests](../../../docs/testing/database-trigger-tests.md) |
+| **Total**             | **3,210 tests** | **99.2%** | -                                                                |
 
 ---
 
@@ -35,7 +35,6 @@ Comprehensive testing guide for UbuMaths application.
 - ✅ Assessment grading logic
 - ✅ SRS flashcard algorithms
 - ✅ Exercise parsing and validation
-- ✅ Geometry integration
 - ✅ Utility functions
 
 **Documentation**: [Unit Testing Guide](../../../docs/testing/README.md)
@@ -413,13 +412,13 @@ export default defineConfig({
 
 **Database Triggers**:
 
-- Total: 139 tests
-- Passing: 139 tests (100%)
+- Total: 131 tests
+- Passing: 131 tests (100%)
 - Coverage: All triggers tested
 
 **Overall**:
 
-- **Total Tests**: 3,218
+- **Total Tests**: 3,210
 - **Pass Rate**: 99.2%
 - **Achievement**: Zero errors in production code
 

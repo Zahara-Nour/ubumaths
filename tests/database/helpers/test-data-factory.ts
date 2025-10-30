@@ -245,105 +245,6 @@ export class PrivateMessageBuilder {
 }
 
 /**
- * Builder for creating test geometry exercises
- */
-export class GeometryExerciseBuilder {
-	private data: Partial<Tables['geometry_exercises']['Insert']> = {};
-
-	constructor(createdBy: string) {
-		this.data = {
-			id: generateTestId('geo'),
-			created_by: createdBy,
-			exercise_type: 'construct',
-			title: 'Test Geometry Exercise',
-			description: 'Test description',
-			instructions: 'Complete the construction',
-			created_at: new Date().toISOString()
-		};
-	}
-
-	withType(type: string): this {
-		this.data.exercise_type = type;
-		return this;
-	}
-
-	withTitle(title: string): this {
-		this.data.title = title;
-		return this;
-	}
-
-	async create(): Promise<Tables['geometry_exercises']['Row']> {
-		const client = createServiceRoleClient();
-		const { data, error } = await client
-			.from('geometry_exercises')
-			.insert(this.data)
-			.select()
-			.single();
-		if (error) throw error;
-		return data;
-	}
-}
-
-/**
- * Builder for creating test geometry exercise attempts
- */
-export class GeometryExerciseAttemptBuilder {
-	private data: Partial<Tables['geometry_exercise_attempts']['Insert']> = {};
-
-	constructor(exerciseId: string, studentId: string) {
-		this.data = {
-			id: generateTestId('attempt'),
-			exercise_id: exerciseId,
-			student_id: studentId,
-			status: 'in_progress',
-			attempt_number: 1,
-			hint_penalties: 0,
-			time_penalties: 0,
-			time_spent_seconds: 0,
-			active_time_seconds: 0,
-			started_at: new Date().toISOString(),
-			last_saved_at: new Date().toISOString()
-		};
-	}
-
-	withStatus(status: string): this {
-		this.data.status = status;
-		return this;
-	}
-
-	withRawScore(score: number): this {
-		this.data.raw_score = score;
-		return this;
-	}
-
-	withHintPenalties(penalties: number): this {
-		this.data.hint_penalties = penalties;
-		return this;
-	}
-
-	withTimePenalties(penalties: number): this {
-		this.data.time_penalties = penalties;
-		return this;
-	}
-
-	withFinalScore(score: number | null): this {
-		this.data.final_score = score;
-		return this;
-	}
-
-	async create(): Promise<Tables['geometry_exercise_attempts']['Row']> {
-		const client = createServiceRoleClient();
-		const { data, error } = await client
-			.from('geometry_exercise_attempts')
-			.insert(this.data)
-			.select()
-			.single();
-		if (error) throw error;
-		return data;
-	}
-}
-
-/**
  * Builder for creating test error logs
  */
 export class ErrorLogBuilder {
@@ -408,8 +309,5 @@ export const TestData = {
 	exercise: (createdBy: string) => new ExerciseBuilder(createdBy),
 	gameCombat: (organizerId: string) => new GameCombatBuilder(organizerId),
 	privateMessage: (senderId: string) => new PrivateMessageBuilder(senderId),
-	geometryExercise: (createdBy: string) => new GeometryExerciseBuilder(createdBy),
-	geometryExerciseAttempt: (exerciseId: string, studentId: string) =>
-		new GeometryExerciseAttemptBuilder(exerciseId, studentId),
 	errorLog: () => new ErrorLogBuilder()
 };

@@ -182,13 +182,12 @@ npx supabase stop --no-backup
 | **sync-triggers.test.ts**             | 10    | 2                  | `003_sync_class_members.sql`                                      |
 | **chat-triggers.test.ts**             | 14    | 4                  | `007_chat_system.sql`, `012_chat_profanity_filter.sql`            |
 | **messaging-triggers.test.ts**        | 20    | 6                  | `004_messaging_system.sql`, `013_message_profanity_filter.sql`    |
-| **geometry-triggers.test.ts**         | 8     | 3                  | `020241026225633_geometry_scoring_triggers.sql`                   |
 | **error-monitoring-triggers.test.ts** | 13    | 3                  | `020241027153426_add_error_logging.sql`                           |
 | **template-triggers.test.ts**         | 13    | 3                  | `020241027221412_exercise_template_system.sql`                    |
 | **assignment-triggers.test.ts**       | 12    | 1                  | `020241027005912_create_exercise_assignments.sql`                 |
 | **cleanup-triggers.test.ts**          | 9     | 2                  | `008_cleanup_triggers.sql`                                        |
 
-**Total**: 139 tests covering 72 triggers across 11 test files
+**Total**: 131 tests covering 69 triggers across 10 test files
 
 ### Trigger Categories
 
@@ -226,12 +225,6 @@ npx supabase stop --no-backup
 - Detect profanity in messages
 - Track message inbox entries
 - Auto-delete old message drafts
-
-**Geometry Exercises** (3 triggers)
-
-- Calculate final score with penalties
-- Award XP for successful completions
-- Track completion stats
 
 **Error Monitoring** (3 triggers)
 
@@ -1059,38 +1052,6 @@ jobs:
 
 ---
 
-### geometry-triggers.test.ts
-
-**Tests**: 8
-**Triggers Tested**: 3
-**Migration**: `020241026225633_geometry_scoring_triggers.sql`
-
-**Triggers**:
-
-1. **trigger_calculate_geometry_final_score** (BEFORE UPDATE on `geometry_exercise_attempts`)
-   - Calculates `final_score = raw_score - hint_penalties - time_penalties`
-   - Only when `status` changes to 'submitted'
-
-2. **trigger_award_geometry_xp** (AFTER UPDATE on `geometry_exercise_attempts`)
-   - Awards XP to student profile
-   - Only when `status` changes to 'submitted' AND `final_score >= 70`
-
-3. **trigger_track_geometry_completion** (AFTER UPDATE on `geometry_exercise_attempts`)
-   - Updates exercise completion stats
-   - Tracks best score, attempts, completion time
-
-**Key Test Cases**:
-
-- Final score calculation with penalties
-- XP award for passing score (>= 70)
-- No XP for failing score (< 70)
-- Completion stat tracking
-- Best score tracking (higher score overwrites)
-
-**Location**: `/Users/david/Coding/js/ubumaths/tests/database/triggers/geometry-triggers.test.ts`
-
----
-
 ### error-monitoring-triggers.test.ts
 
 **Tests**: 13
@@ -1908,7 +1869,6 @@ All test files located in: `/Users/david/Coding/js/ubumaths/tests/database/trigg
 - [sync-triggers.test.ts](../../tests/database/triggers/sync-triggers.test.ts)
 - [chat-triggers.test.ts](../../tests/database/triggers/chat-triggers.test.ts)
 - [messaging-triggers.test.ts](../../tests/database/triggers/messaging-triggers.test.ts)
-- [geometry-triggers.test.ts](../../tests/database/triggers/geometry-triggers.test.ts)
 - [error-monitoring-triggers.test.ts](../../tests/database/triggers/error-monitoring-triggers.test.ts)
 - [template-triggers.test.ts](../../tests/database/triggers/template-triggers.test.ts)
 - [assignment-triggers.test.ts](../../tests/database/triggers/assignment-triggers.test.ts)
@@ -1934,7 +1894,6 @@ Key migrations with triggers:
 - `009_navadra_game_enhancements.sql` - Enhanced game triggers
 - `012_chat_profanity_filter.sql` - Chat profanity detection
 - `013_message_profanity_filter.sql` - Message profanity detection
-- `020241026225633_geometry_scoring_triggers.sql` - Geometry scoring
 - `020241027005912_create_exercise_assignments.sql` - Assignment tracking
 - `020241027153426_add_error_logging.sql` - Error monitoring
 - `020241027221412_exercise_template_system.sql` - Template system
@@ -1963,10 +1922,10 @@ Key migrations with triggers:
 
 **Database trigger tests provide confidence that critical business logic in triggers works correctly**:
 
-- 139 tests covering 72 triggers across 26+ migrations
+- 131 tests covering 69 triggers across 26+ migrations
 - Integration tests against real PostgreSQL database (Supabase local)
 - Builder pattern for clean, maintainable test data creation
-- Comprehensive coverage of profile, game, chat, messaging, geometry, and error monitoring triggers
+- Comprehensive coverage of profile, game, chat, messaging, and error monitoring triggers
 - CI/CD integration via GitHub Actions
 - Well-documented patterns and best practices
 

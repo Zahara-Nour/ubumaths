@@ -240,7 +240,7 @@ git commit --no-verify -m "fix: emergency hotfix"
 
 ```javascript
 rules: {
-  // ❌ Désactivé : Nécessaire pour canvas/WebGL (MathGraph32, MathLive)
+  // ❌ Désactivé : Nécessaire pour canvas/WebGL (MathLive)
   'svelte/no-dom-manipulating': 'off',
 
   // ❌ Désactivé : Nécessaire pour le rendu Markdown sanitisé

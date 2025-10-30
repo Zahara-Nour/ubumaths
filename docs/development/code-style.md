@@ -368,9 +368,8 @@ rules: {
 
 **DOM Manipulation** : Requis pour :
 
-- Canvas 2D/WebGL dans les démos de géométrie
+- Canvas 2D/WebGL dans les démos
 - Intégration MathLive (éditeur d'équations)
-- Bibliothèque MathGraph32
 
 **{@html} Tags** : Utilisé pour :
 

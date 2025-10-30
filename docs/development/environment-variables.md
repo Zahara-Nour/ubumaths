@@ -82,7 +82,6 @@ openssl rand -base64 32
 
 | Variable                | Description               | Notes                   |
 | ----------------------- | ------------------------- | ----------------------- |
-| `MATHGRAPH32_API_URL`   | MathGraph32 API endpoint  | For geometry features   |
 | `LATEX_COMPILER_URL`    | LaTeX compilation service | For PDF generation      |
 | `TYPST_COMPILER_URL`    | Typst compilation service | For modern PDF gen      |
 | `EMAIL_FROM`            | Email sender address      | For email notifications |

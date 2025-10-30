@@ -66,18 +66,6 @@ Test du système d'avatar et fallback.
 - Test des fallbacks
 - Validation des URLs
 
-### MathGraph32
-
-Test du visualiseur de géométrie MathGraph32.
-
-**URL** : `/dashboard/admin/debug/mathgraph`
-
-**Fonctionnalités** :
-
-- Chargement de figures
-- Test des interactions
-- Validation de l'API
-
 ### Wheel
 
 Test du système de roue de sélection d'élèves.

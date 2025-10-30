@@ -5,7 +5,7 @@
  * corresponding to French school grades (6ème through Tale).
  *
  * Vocabulary selection:
- * - 6ème/5ème: Basic arithmetic, fractions, geometry
+ * - 6ème/5ème: Basic arithmetic, fractions
  * - 4ème/3ème: Algebra, equations, functions, statistics
  * - 2nde/1ère/Tale: Advanced functions, calculus, derivatives, integrals
  */
@@ -170,8 +170,6 @@ export const WORD_LISTS: WordLists = {
 		'unite',
 		'vitesse',
 		'volume',
-		// Basic arithmetic and geometry (6th grade)
-
 		'pyramide',
 		'signe',
 		'solide',
