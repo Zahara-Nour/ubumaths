@@ -28,7 +28,7 @@
  * - Implementing rate limiting or distributed locks
  * - Caching large datasets or query results
  * - TTL > 5 minutes
- * - Examples: assessment results, activity polling, authentication tokens
+ * - Examples: assessment results, activity counts, authentication tokens
  *
  * ## Memory Leak Prevention:
  * - Automatic cleanup runs every 60 seconds to remove expired entries

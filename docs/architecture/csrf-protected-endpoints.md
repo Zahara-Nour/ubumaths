@@ -158,13 +158,10 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 - `POST /api/messages/templates` - Create template
 - `PUT /api/messages/templates/[id]` - Update template
 - `DELETE /api/messages/templates/[id]` - Delete template
-- `POST /api/messages/templates/[id]/approve` - Approve template
 - `POST /api/messages/templates/[id]/duplicate` - Duplicate template
-- `POST /api/messages/templates/track-usage` - Track usage
 - `POST /api/messages/templates/[id]/versions` - Create version
 - `POST /api/messages/templates/favorites` - Toggle favorite
 - `GET /api/messages/templates/[id]/preview` - Preview (safe method)
-- `GET /api/messages/templates/search` - Search (safe method)
 - `GET /api/messages/templates/stats` - Get stats (safe method)
 - `GET /api/messages/templates/match` - Match template (safe method)
 
@@ -206,9 +203,7 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 - `GET /api/exercises/[id]/export` - Export (safe method)
 - `GET /api/exercises/export` - Batch export (safe method)
 - `GET /api/exercises/[id]/access` - Check access (safe method)
-- `GET /api/exercises/[id]/stats` - Get stats (safe method)
 - `GET /api/exercises/assigned` - List assigned (safe method)
-- `GET /api/exercises/assignments/stats` - Assignment stats (safe method)
 
 ### Classes
 

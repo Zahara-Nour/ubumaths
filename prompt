@@ -1,23 +1,12 @@
-je veux réorganiser toute la documentation de ce projet. Actuellement, il y a beaucoup trop de fichiers .md essentiellement au même endroit avec des noms qui ne sont pas forcément cohérents entre eux.
-Analyse moi tout le projet pour réorganiser toute la documentation :
-- le fichier principal est CLAUDE.md qui doit rester le plus léger possible mais qui doit contenir les informations importantes pour Claude Code et qui va référencer les autres documents. La gestion choisie pour l'écriture de la documentation doit être une priorité dans ce document.
-- Comment utiliser et quoi mettre dans les fichiers CLAUDE/md plus globaux afin que je puisse les utiliser dans d'autres projets ? 
-- Le reste de la documentation doit être dans le repertoire /docs. 
-- je veux hierarchiser la documentation par les différents features implémentés et par des thèmes comme  l'architecture générale, la gestion de la base de données, la façon d'écrire les tests, l'optimisation du site, les choix de codage pour respecter les best practices, les erreurs à ne pas refaire (à mettre surement dans CLAUDE.md).  
-- Je ne veux pas d'informations redondantes. Les informations les plus importantes sont pour les features implémentés : une description détaillée du feature, ou en est l'implémentation et quelles sont les étapes/améliorations futures, ce qu'il reste à faire pour terminer l'installation.
-- la façon de nommer les noms doit être globalemente cohérente. Il y a parfois des fichiers README, est-ce qu'on ne peut pas mettre l'information qu'ils contiennent dans les autres documents spécifiques à l'endroit ou ils sont ? 
-- je veux enfin que cette documentation soit accessible en ligne dans le dashboard admin, formaté correctement en HTML a partir des fichiers .md.
-
-Ultrathink about how to to this. Ask me for clarifications. Make some design proposals.
-
-
-
-
-
-
-Dans les settings du dashboard admin, je veux pouvoir activer/desactiver certaines parties/fonctionnalités 
-du site (error monitoring,...). Distinguer les fonctionalités système des outils disponibles pour les
-utilisateurs.
-Dans les settings du dashboard teacher, je veux pouvoir activer/desactiver certains ouitls/fonctionalités aux 
-élèves (par classes ou/et par élèves).
-Ultrathink on how to do this. ask me for clarification and make me some proposals.
+EN UTILISANT les agents appropriés, repasse en revue tout le code pour vérifier :
+0. qu'il n'y a plus de gestion du cache Redis et aucune reférence à Redis dans le code ou dans supabase.
+1. qu' il n ' y a plus trace de Polling nyulle part !
+2. qu'il n ' y a plus de traces de cache de données (AUCUN cache : client store, redis, Ram server).
+2bis . que toutes les requests de données se font uniquement par des appels db, par l'intermédiaire de fonctions helpers, en vérifiant qu'il n' y a pas de problemes de type N+1 requests. 
+3. qu'il ne reste pas des routes API inutilisées.
+4. qu'il n' y a pas des fonctions inutilisées.
+5. qu'il n'y a pas des fonctions différentes servant le même but.
+6. qu'il n'y pas de variables différentes servant le même but.
+7. De manière générale qu'il n'y a pas de code redondant.
+8. que le code est bien documenté (inline + jsdoc)
+Prends le plus grand soin a nettoyer tout le code, c'est important pour la suite du projet. Encore une fois, utilise les bons agents !

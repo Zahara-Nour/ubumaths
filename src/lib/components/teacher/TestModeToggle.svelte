@@ -21,7 +21,6 @@
 
 	import { testMode } from '$lib/stores/test-mode.svelte';
 	import { Badge } from '$lib/components/ui/badge';
-	import { teacherStudentsCache } from '$lib/stores/teacherStudentsCache.svelte';
 
 	// Props
 	let { currentUserIsTest = false }: { currentUserIsTest?: boolean } = $props();
@@ -59,11 +58,7 @@
 			const result = await response.json();
 			console.log('[TestModeToggle] Server sync successful:', result);
 
-			// 3. Clear student cache (students are filtered differently now)
-			console.log('[TestModeToggle] Clearing student cache...');
-			teacherStudentsCache.clear();
-
-			// 4. Force HARD page reload to refetch with new test mode
+			// 3. Force HARD page reload to refetch with new test mode
 			console.log('[TestModeToggle] Forcing hard reload...');
 			window.location.reload();
 		} catch (error) {

@@ -89,9 +89,9 @@ function getRedisClient(): Redis {
  * Cache TTL (Time To Live) constants in seconds
  *
  * Design principles:
- * - Longer TTL for rarely-changing data (assessment results)
- * - Shorter TTL for frequently-updated data (activity counts)
- * - Match polling intervals where applicable
+ * - Longer TTL for rarely-changing data (assessment results, school data)
+ * - Shorter TTL for frequently-updated data (activity counts, dashboard data)
+ * - Balance between freshness and database load reduction
  */
 export const TTL = {
 	/** Assessment results - 5 minutes (rarely modified after completion) */
@@ -100,7 +100,7 @@ export const TTL = {
 	/** Dashboard data - 1 minute (frequently modified during active use) */
 	DASHBOARD_DATA: 60,
 
-	/** Activity counts - 30 seconds (matches frontend polling interval) */
+	/** Activity counts - 30 seconds (short TTL for manual refresh responsiveness) */
 	// ACTIVITY_COUNTS: 30,
 	ACTIVITY_COUNTS: 30000,
 

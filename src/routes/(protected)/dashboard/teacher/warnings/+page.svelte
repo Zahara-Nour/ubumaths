@@ -15,7 +15,6 @@
 	- Real-time score calculation (20 - total warnings)
 	- Optimistic UI with instant feedback
 	- Toast notifications for success/error feedback
-	- Cross-device synchronization (laptop + projector)
 
 	WARNING TYPES:
 	--------------
@@ -33,17 +32,8 @@
 
 	OPTIMISTIC UI PATTERN:
 	----------------------
-	Similar to rewards page - instant updates with debounced server sync.
+	Instant updates with debounced server sync (500ms).
 	Each operation updates UI immediately, then syncs with backend.
-
-	CROSS-DEVICE SYNCHRONIZATION:
-	------------------------------
-	- Polling: Fetches updates every 5 seconds from API
-	- Smart pausing: Stops polling during user edits (2s timeout after last action)
-	- Visibility-aware: Only polls when tab is visible
-	- Immediate reload: Fetches fresh data when tab becomes visible
-	- Works across different browsers/devices
-	- Use case: Teacher has laptop + projector showing same page
 -->
 
 <script lang="ts">
@@ -57,8 +47,6 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
-	import { teacherStudentsCache } from '$lib/stores/teacherStudentsCache.svelte';
-	import { warningsCache } from '$lib/stores/warningsCache.svelte';
 	import { History, AlertCircle } from 'lucide-svelte';
 	import type { Warning, StudentWarningCounts } from '$lib/server/warnings';
 
@@ -92,16 +80,6 @@
 	let warningsData = $state<Map<string, StudentWarningCounts>>(new Map());
 	let _isLoadingWarnings = $state(false);
 	let _hasLoadedOnce = $state(false); // Track if we've loaded data at least once (prevents flash of default values)
-
-	// CROSS-DEVICE SYNC STATE (polling-based)
-	// Polls every 5 seconds to sync changes from other devices (laptop + projector)
-	// WHY POLLING: Replaced BroadcastChannel for cross-browser/device sync reliability
-	// - BroadcastChannel only works within same browser (not laptop → projector)
-	// - Polling works across ANY devices/browsers viewing same page
-	// - 5 second interval balances freshness vs server load
-	let pollInterval: ReturnType<typeof setInterval> | null = $state(null);
-	let isEditing = $state(false); // Pause polling during user edits (prevents race conditions)
-	let editingTimeout: ReturnType<typeof setTimeout> | null = $state(null);
 
 	// ============================================================================
 	// COMPUTED VALUES
@@ -140,131 +118,9 @@
 		};
 	});
 
-	/**
-	 * Setup polling for cross-device synchronization
-	 * Polls every 5 seconds to fetch latest warnings when:
-	 * - Both class and period are selected
-	 * - Tab is visible
-	 * - User is NOT actively editing (prevents conflicts)
-	 */
-	$effect(() => {
-		// Only setup polling if class and period are selected
-		if (!selectedClassId || !selectedPeriodId) {
-			// Clear existing interval if selections are removed
-			if (pollInterval) {
-				clearInterval(pollInterval);
-				pollInterval = null;
-			}
-			return;
-		}
-
-		// Start polling every 5 seconds
-		pollInterval = setInterval(async () => {
-			// Only poll if tab is visible and user is not editing
-			if (document.visibilityState === 'visible' && !isEditing) {
-				console.log('[WarningsPage] Polling warnings (cross-device sync)');
-				try {
-					const response = await fetch(
-						`/api/classes/${selectedClassId}/warnings?period_id=${selectedPeriodId}`
-					);
-
-					if (!response.ok) {
-						console.error('[WarningsPage] Polling failed:', response.statusText);
-						return;
-					}
-
-					const result = await response.json();
-
-					// Convert to Map for efficient lookups
-					const newWarningsData = new Map<string, StudentWarningCounts>();
-					for (const [studentId, counts] of Object.entries(result.warnings)) {
-						newWarningsData.set(studentId, counts as StudentWarningCounts);
-					}
-
-					warningsData = newWarningsData;
-
-					// Update cache with fresh data
-					warningsCache.updateCache?.(selectedClassId, selectedPeriodId, result.warnings);
-				} catch (error) {
-					console.error('[WarningsPage] Polling error:', error);
-					// Keep existing data on error (graceful degradation)
-				}
-			}
-		}, 60000);
-
-		// Cleanup interval on unmount or when dependencies change
-		return () => {
-			if (pollInterval) {
-				clearInterval(pollInterval);
-				pollInterval = null;
-			}
-		};
-	});
-
-	/**
-	 * Handle visibility change - reload immediately when tab becomes visible
-	 * This ensures fresh data when user switches back to the tab
-	 */
-	$effect(() => {
-		const handleVisibilityChange = () => {
-			if (document.visibilityState === 'visible' && selectedClassId && selectedPeriodId) {
-				console.log('[WarningsPage] Tab visible - reloading warnings');
-				loadWarnings();
-			}
-		};
-
-		document.addEventListener('visibilitychange', handleVisibilityChange);
-
-		return () => {
-			document.removeEventListener('visibilitychange', handleVisibilityChange);
-		};
-	});
-
-	/**
-	 * Cleanup editing timeout on unmount
-	 */
-	$effect(() => {
-		return () => {
-			if (editingTimeout) {
-				clearTimeout(editingTimeout);
-				editingTimeout = null;
-			}
-		};
-	});
-
 	// ============================================================================
 	// HELPER FUNCTIONS
 	// ============================================================================
-
-	/**
-	 * Mark user as actively editing to pause cross-device polling
-	 * Resets 2 seconds after last interaction to resume polling
-	 *
-	 * WHY PAUSE POLLING DURING EDITS:
-	 * - Prevents race condition where polling overwrites optimistic updates
-	 * - Example: User clicks +C, server sync takes 500ms, polling fetches at 400ms
-	 * - Without pause: UI would flicker (optimistic → old data → new data)
-	 * - With pause: UI stays stable (optimistic → new data)
-	 *
-	 * WHY 2 SECOND TIMEOUT:
-	 * - Long enough to batch rapid clicks (user adding multiple warnings)
-	 * - Short enough to resume sync quickly after user stops
-	 * - Balances UX responsiveness with conflict prevention
-	 */
-	function markEditing() {
-		isEditing = true;
-
-		// Clear existing timeout
-		if (editingTimeout) {
-			clearTimeout(editingTimeout);
-		}
-
-		// Reset isEditing flag after 2 seconds of inactivity
-		editingTimeout = setTimeout(() => {
-			isEditing = false;
-			editingTimeout = null;
-		}, 2000);
-	}
 
 	/**
 	 * Get full name or identifier for student
@@ -378,9 +234,6 @@
 			return;
 		}
 
-		// Mark as editing to pause cross-device polling (prevents conflicts)
-		markEditing();
-
 		// STEP 1: Apply optimistic update immediately
 		const currentCounts = getStudentWarnings(studentId);
 		const newCounts = { ...currentCounts };
@@ -431,10 +284,6 @@
 				// Update server data
 				warningsData.set(studentId, result.counts);
 
-				// Invalidate cache
-				teacherStudentsCache.invalidate(selectedClassId);
-				warningsCache.invalidate(selectedClassId, selectedPeriodId);
-
 				// Force immediate reload to get fresh data
 				await loadWarnings();
 
@@ -462,9 +311,6 @@
 		if (!warningToDelete) return;
 
 		const { warningId, studentId, studentName, warningType } = warningToDelete;
-
-		// Mark as editing to pause cross-device polling (prevents conflicts)
-		markEditing();
 
 		// STEP 1: Save current state for rollback
 		const previousCounts = getStudentWarnings(studentId);
@@ -508,10 +354,6 @@
 
 				// Update server data
 				warningsData.set(studentId, result.counts);
-
-				// Invalidate cache
-				teacherStudentsCache.invalidate(selectedClassId);
-				warningsCache.invalidate(selectedClassId, selectedPeriodId);
 
 				// Show success toast
 				toaster.success(

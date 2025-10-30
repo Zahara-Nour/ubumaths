@@ -6,8 +6,8 @@
 
 	const { children } = $props();
 
-	// Note: Unread count polling is now handled by the unified activityStore
-	// in the dashboard layout to reduce database load
+	// Note: Unread count updates are handled by activityStore (manual refresh only, no polling)
+	// See dashboard layout for initial load. Updates occur after user actions only.
 
 	// Navigation items
 	const navItems = [

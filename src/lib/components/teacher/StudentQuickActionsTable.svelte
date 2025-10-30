@@ -14,7 +14,6 @@
 		- View VIP cards button (🎴): Opens modal with all cards
 	- Color-coded warning scores: green (≥15), orange (10-14), red (<10)
 	- Optimistic UI for instant feedback
-	- Cross-device polling (5s) for real-time sync
 
 	OPTIMISTIC UI PATTERN:
 	----------------------
@@ -29,12 +28,6 @@
 		 - Request sent to server in background
 		 - On success: Clear optimistic state, show success toast
 		 - On error: Rollback optimistic state, show error toast
-
-	3. POLLING SYNCHRONIZATION (5 seconds)
-		 - Auto-reloads data every 5s for cross-device sync
-		 - Pauses while user is actively editing (isEditing flag)
-		 - Resumes 2s after last action completes
-		 - Ensures projector + laptop stay in sync
 
 	WARNING BUTTON 3-STEP LOGIC:
 	-----------------------------
@@ -60,23 +53,13 @@
 		- Shows warning toast: "Already has 20 warnings"
 		- No action taken
 
-	CROSS-DEVICE POLLING:
-	---------------------
-	- Polls every 5s when tab is visible and not editing
-	- markEditing() sets isEditing = true, clears after 2s
-	- Pauses polling during active edits to prevent conflicts
-	- Resumes automatically when user stops interacting
-	- Document visibility API pauses polling when tab hidden
-	- Reloads data when tab becomes visible again
-
 	TECHNICAL DETAILS:
 	------------------
 	- Uses Svelte 5 runes ($state, $derived, $effect, $props)
-	- Three cache stores: teacherStudentsCache, gidouillesCache, warningsCache
-	- Parallel data loading (Promise.all) for fast initial render
 	- Optimistic state tracks all pending changes per student
 	- Immutable updates for proper reactivity
-	- Cleanup in $effect return function
+	- Data loaded from 3 API endpoints: /students, /gidouilles, /warnings
+	- Parallel fetch with Promise.all for optimal performance
 
 	SECURITY:
 	---------
@@ -92,13 +75,12 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { teacherStudentsCache } from '$lib/stores/teacherStudentsCache.svelte';
-	import { gidouillesCache } from '$lib/stores/gidouillesCache.svelte';
-	import { warningsCache, type StudentWarningCounts } from '$lib/stores/warningsCache.svelte';
+	import type { StudentWarningCounts } from '$lib/server/warnings';
 	import VipCardsModal from '$lib/components/VipCardsModal.svelte';
 	import { getAvatarFallback } from '$lib/utils/avatar';
 	import { AlertTriangle, Plus, Eye, Loader2 } from 'lucide-svelte';
 	import type { StudentVipCards } from '$lib/types/vip-card';
+	import { supabase } from '$lib/supabaseClient';
 
 	// ============================================================================
 	// PROPS
@@ -131,7 +113,7 @@
 	// STATE
 	// ============================================================================
 
-	// Student data (merged from 3 caches)
+	// Student data (merged from 3 API endpoints)
 	let studentsData = $state<StudentData[]>([]);
 	let isLoading = $state(true);
 
@@ -144,20 +126,16 @@
 	let vipModalOpen = $state(false);
 	let selectedStudent = $state<StudentData | null>(null);
 
-	// Polling control
-	let pollInterval: ReturnType<typeof setInterval> | null = $state(null);
-	let isEditing = $state(false);
-	let editingTimeout: ReturnType<typeof setTimeout> | null = null;
-
 	// ============================================================================
 	// DERIVED STATE (With Optimistic Updates Applied)
 	// ============================================================================
 
 	/**
-	 * Get gidouilles for a student (with optimistic updates from cache)
+	 * Get gidouilles for a student
+	 * Note: Currently returns server value directly.
+	 * Gidouilles use immediate reload pattern instead of optimistic updates.
 	 */
 	function getGidouilles(student: StudentData): number {
-		// gidouillesCache.get() already applies optimistic updates
 		return student.gidouilles;
 	}
 
@@ -189,52 +167,58 @@
 	// ============================================================================
 
 	/**
-	 * Load student data from all 3 caches in parallel
+	 * Load student data from API endpoints
+	 * Fetches profiles, gidouilles, and warnings in parallel and merges them
 	 */
 	async function loadData() {
 		isLoading = true;
 		try {
-			// Load from 3 caches in parallel (Promise.all for speed)
-			const [students, gidouilles, warnings] = await Promise.all([
-				teacherStudentsCache.getStudents(classId),
-				gidouillesCache.get(classId),
-				warningsCache.get(classId, periodId)
+			// Fetch all 3 endpoints in parallel
+			const [profilesRes, gidouillesRes, warningsRes] = await Promise.all([
+				fetch(`/api/classes/${classId}/students`),
+				fetch(`/api/classes/${classId}/gidouilles`),
+				fetch(`/api/classes/${classId}/warnings?period_id=${periodId}`)
 			]);
 
-			// Merge data and sort by firstname
-			studentsData = students
-				.map((s) => ({
-					...s,
-					gidouilles: gidouilles.get(s.id)?.gidouilles ?? 0,
-					vipCards: gidouilles.get(s.id)?.vip_cards ?? {},
-					warnings: warnings.get(s.id) ?? {
-						C: 0,
-						M: 0,
-						R: 0,
-						T: 0,
-						total: 0,
-						score: 20,
-						warnings: []
-					}
-				}))
-				.sort((a, b) => a.firstname.localeCompare(b.firstname));
-		} catch (_error) {
-			console.error('[StudentQuickActions] Error loading data:', _error);
-			toaster.error('Erreur de chargement des données');
+			// Check for errors
+			if (!profilesRes.ok || !gidouillesRes.ok || !warningsRes.ok) {
+				throw new Error('Failed to fetch data');
+			}
+
+			// Parse responses
+			const profilesData = await profilesRes.json();
+			const gidouillesData = await gidouillesRes.json();
+			const warningsData = await warningsRes.json();
+
+			// Merge data into StudentData array
+			studentsData = profilesData.students.map((profile: StudentData) => {
+				// Find matching gidouilles data
+				const gidouillesRecord = gidouillesData.gidouilles.find(
+					(g: { student_id: string }) => g.student_id === profile.id
+				);
+
+				// Find matching warnings data
+				const warningsRecord = warningsData.warnings[profile.id];
+
+				return {
+					id: profile.id,
+					firstname: profile.firstname,
+					lastname: profile.lastname,
+					avatar_url: profile.avatar_url,
+					role: profile.role,
+					gender: profile.gender,
+					gidouilles: gidouillesRecord?.gidouilles ?? 0,
+					vipCards: gidouillesRecord?.vip_cards ?? {},
+					warnings: warningsRecord ?? { T: 0, C: 0, D: 0, M: 0, total: 0, score: 20 }
+				};
+			});
+		} catch (error) {
+			console.error('Error loading student data:', error);
+			toaster.error('Erreur lors du chargement des données');
+			studentsData = [];
 		} finally {
 			isLoading = false;
 		}
-	}
-
-	/**
-	 * Mark user as actively editing (pauses polling)
-	 */
-	function markEditing() {
-		isEditing = true;
-		if (editingTimeout) clearTimeout(editingTimeout);
-		editingTimeout = setTimeout(() => {
-			isEditing = false;
-		}, 2000);
 	}
 
 	// ============================================================================
@@ -272,13 +256,8 @@
 		const unusedVipCards = getUnusedVipCards(getVipCards(student));
 		const score = getWarnings(student).score;
 
-		markEditing();
-
 		// STEP 1: Remove gidouille if > 0
 		if (gidouilles > 0) {
-			// Optimistic UI - use cache method
-			gidouillesCache.updateOptimistic(classId, student.id, -1);
-
 			try {
 				const response = await fetch('/api/rewards/gidouilles', {
 					method: 'POST',
@@ -287,15 +266,12 @@
 				});
 
 				if (response.ok) {
-					// Commit optimistic update to cache (no reload needed!)
-					gidouillesCache.commitOptimistic(classId, student.id);
 					toaster.success(`1 gidouille retirée (${student.firstname})`);
+					await loadData(); // Reload data
 				} else {
 					throw new Error('Failed');
 				}
 			} catch (_error) {
-				// Rollback optimistic update
-				gidouillesCache.rollbackOptimistic(classId, student.id);
 				toaster.error('Erreur lors du retrait de la gidouille');
 			}
 			return;
@@ -318,35 +294,40 @@
 			};
 
 			try {
-				const response = await fetch('/api/vip-cards/remove', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						studentId: student.id,
-						instanceId: randomCard.instanceId
-					})
+				// Call RPC function to remove VIP card
+				// Note: RPC function takes cardId (e.g., "captain", "joker") not instanceId
+				// It will remove the oldest unused instance of that card type
+				const { data: success, error: rpcError } = await supabase.rpc('remove_student_vip_card', {
+					p_student_id: student.id,
+					p_card_id: randomCard.cardId
 				});
 
-				if (response.ok) {
-					// Clear optimistic state
-					const newUpdates = { ...optimisticUpdates };
-					delete newUpdates[student.id]?.vipCards;
-					optimisticUpdates = newUpdates;
-
-					// Invalidate cache and reload data
-					gidouillesCache.invalidate(classId);
-					await loadData(); // Fetch fresh data immediately
-
-					toaster.success(`Carte VIP retirée (${student.firstname})`);
-				} else {
-					throw new Error('Failed');
+				if (rpcError) {
+					throw new Error(rpcError.message);
 				}
-			} catch (_error) {
+
+				if (!success) {
+					throw new Error('No card found to remove');
+				}
+
+				// Clear optimistic state
+				const newUpdates = { ...optimisticUpdates };
+				delete newUpdates[student.id]?.vipCards;
+				optimisticUpdates = newUpdates;
+
+				// Reload data
+				await loadData();
+
+				toaster.success(`Carte VIP retirée (${student.firstname})`);
+			} catch (error) {
 				// Rollback optimistic update
 				const newUpdates = { ...optimisticUpdates };
 				delete newUpdates[student.id]?.vipCards;
 				optimisticUpdates = newUpdates;
-				toaster.error('Erreur lors du retrait de la carte');
+
+				const errorMessage =
+					error instanceof Error ? error.message : 'Erreur lors du retrait de la carte';
+				toaster.error(errorMessage);
 			}
 			return;
 		}
@@ -388,9 +369,8 @@
 					delete newUpdates[student.id]?.warnings;
 					optimisticUpdates = newUpdates;
 
-					// Invalidate cache and reload data
-					warningsCache.invalidate(classId, periodId);
-					await loadData(); // Fetch fresh data immediately
+					// Reload data
+					await loadData();
 
 					toaster.success(`Avertissement de conduite ajouté (${student.firstname})`);
 				} else {
@@ -414,11 +394,6 @@
 	 * Handle add gidouille button click
 	 */
 	async function handleAddGidouille(student: StudentData) {
-		markEditing();
-
-		// Optimistic UI - use cache method
-		gidouillesCache.updateOptimistic(classId, student.id, +1);
-
 		try {
 			const response = await fetch('/api/rewards/gidouilles', {
 				method: 'POST',
@@ -427,15 +402,12 @@
 			});
 
 			if (response.ok) {
-				// Commit optimistic update to cache (no reload needed!)
-				gidouillesCache.commitOptimistic(classId, student.id);
 				toaster.success(`+1 gidouille (${student.firstname})`);
+				await loadData(); // Reload data
 			} else {
 				throw new Error('Failed');
 			}
 		} catch (_error) {
-			// Rollback optimistic update
-			gidouillesCache.rollbackOptimistic(classId, student.id);
 			toaster.error("Erreur lors de l'ajout de la gidouille");
 		}
 	}
@@ -459,51 +431,6 @@
 		if (classId && periodId) {
 			loadData();
 		}
-	});
-
-	/**
-	 * Polling effect (5s interval with smart pausing)
-	 */
-	$effect(() => {
-		// Only poll if:
-		// - classId and periodId are set
-		// - User is not actively editing
-		// - Tab is visible
-		if (classId && periodId && !isEditing && document.visibilityState === 'visible') {
-			pollInterval = setInterval(async () => {
-				console.log('[StudentQuickActions] Polling (cross-device sync)');
-				await loadData();
-			}, 60000);
-		} else {
-			if (pollInterval) {
-				clearInterval(pollInterval);
-				pollInterval = null;
-			}
-		}
-
-		// Cleanup on unmount or when dependencies change
-		return () => {
-			if (pollInterval) clearInterval(pollInterval);
-			if (editingTimeout) clearTimeout(editingTimeout);
-		};
-	});
-
-	/**
-	 * Visibility change handler (reload when tab becomes visible)
-	 */
-	$effect(() => {
-		const handleVisibilityChange = async () => {
-			if (document.visibilityState === 'visible' && classId && periodId && !isEditing) {
-				console.log('[StudentQuickActions] Tab visible - reloading');
-				await loadData();
-			}
-		};
-
-		document.addEventListener('visibilitychange', handleVisibilityChange);
-
-		return () => {
-			document.removeEventListener('visibilitychange', handleVisibilityChange);
-		};
 	});
 </script>
 

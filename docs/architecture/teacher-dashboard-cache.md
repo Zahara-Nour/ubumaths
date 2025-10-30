@@ -1,10 +1,42 @@
 # Teacher Dashboard Cache Architecture
 
-> Comprehensive guide to the three-cache architecture with Event Bus synchronization
+> **⚠️ DEPRECATED**: This document describes the old three-cache architecture that was removed on 2025-10-30.
+>
+> **See instead**: [Hybrid Cache System](hybrid-cache-system.md) (server-side only)
+> **Migration notes**: [Architecture Simplification](../development/architecture-simplification.md)
 
-**Last Updated**: 2025-10-29
-**Status**: ✅ Production
-**Target Audience**: Developers working with the teacher dashboard
+**Last Updated**: 2025-10-30
+**Status**: ⚠️ DEPRECATED (Archived for reference)
+**Target Audience**: Developers maintaining legacy code or understanding migration history
+
+---
+
+## ⚠️ Important Notice
+
+This architecture has been simplified as of **2025-10-30**. The following components were removed:
+
+- **Client-side cache stores** (`teacherStudentsCache`, `gidouillesCache`, `warningsCache`) - ~3000 lines removed
+- **Client-side polling mechanisms** (30s-60s intervals) - 4 polling locations removed
+- **Event Bus cross-component synchronization** (client-side)
+- **BroadcastChannel multi-tab sync** (client-side)
+- **Optimistic UI with cache coordination** (moved to simple local state)
+
+**New architecture**: Components now make direct API calls. Server-side caching remains (Redis + in-memory).
+
+**Why the change?**:
+
+- Simpler mental model (fewer moving parts)
+- Easier debugging (less state to track)
+- Better maintainability (less code to maintain)
+- Sufficient performance with server-side caching alone
+
+**If you need the features described below**, refer to the git history before 2025-10-30 or contact the team for migration assistance.
+
+---
+
+## Historical Documentation (Pre-2025-10-30)
+
+> The content below describes the **old architecture** and is kept for reference only.
 
 ---
 

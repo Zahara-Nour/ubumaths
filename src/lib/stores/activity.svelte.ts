@@ -1,31 +1,44 @@
 /**
- * Unified Activity Store
+ * Activity Store
  *
- * Central polling mechanism for user activity counters (notifications, messages)
- * Reduces database load by combining multiple polling requests into a single endpoint
+ * Provides manual refresh functionality for activity counters (notifications, messages).
+ * Fetches unread counts from two separate API endpoints in parallel:
+ * - /api/notifications/unread-count
+ * - /api/messages/unread-count
+ *
+ * ARCHITECTURE:
+ * - No automatic polling - counters update on user actions only
+ * - Manual refresh via refresh() method
+ * - Used in dashboard layout for initial data load
+ * - Updates both notificationStore.unreadCount and privateMessages.unreadCount
+ *
+ * USAGE:
+ * ```typescript
+ * import { activityStore } from '$lib/stores/activity.svelte';
+ *
+ * // Fetch initial data on dashboard load
+ * activityStore.refresh();
+ *
+ * // After user action that may change counts
+ * await markNotificationAsRead(notificationId);
+ * activityStore.refresh(); // Refresh counts
+ * ```
+ *
+ * ERROR HANDLING:
+ * - On error, preserves existing counts to avoid UI flicker
+ * - Errors are logged but don't throw
  */
 
 import { notificationStore } from './notifications.svelte';
 import { privateMessages } from './privateMessages.svelte';
 
 /**
- * Default polling interval for activity counts (30 seconds)
- * Balances data freshness with server load reduction
- */
-const DEFAULT_POLL_INTERVAL_MS = 30000;
-
-/**
  * Activity store class
- * Manages unified polling for notifications and messages
+ * Manages manual refresh for notifications and messages
  */
 class ActivityStore {
-	// Polling state
-	private pollInterval: ReturnType<typeof setInterval> | null = null;
-	private pollIntervalMs = DEFAULT_POLL_INTERVAL_MS;
-	private isPolling = $state(false);
-
 	/**
-	 * Fetch unread counts from unified API endpoint
+	 * Fetch unread counts from individual API endpoints
 	 *
 	 * Updates both notificationStore.unreadCount and privateMessages.unreadCount
 	 * On error, preserves existing counts to avoid UI flicker
@@ -34,17 +47,21 @@ class ActivityStore {
 	 */
 	async fetchUnreadCounts(): Promise<void> {
 		try {
-			const response = await fetch('/api/activity/unread-counts');
+			// Fetch both counts in parallel
+			const [notificationsRes, messagesRes] = await Promise.all([
+				fetch('/api/notifications/unread-count'),
+				fetch('/api/messages/unread-count')
+			]);
 
-			if (!response.ok) {
-				throw new Error('Failed to fetch activity counts');
-			}
-
-			const data = await response.json();
+			// Parse responses
+			const notificationsData = notificationsRes.ok
+				? await notificationsRes.json()
+				: { unreadCount: 0 };
+			const messagesData = messagesRes.ok ? await messagesRes.json() : { unreadCount: 0 };
 
 			// Update individual stores with their respective counts
-			notificationStore.unreadCount = data.notifications || 0;
-			privateMessages.unreadCount = data.messages || 0;
+			notificationStore.unreadCount = notificationsData.unreadCount || 0;
+			privateMessages.unreadCount = messagesData.unreadCount || 0;
 		} catch (err) {
 			console.error('Error fetching activity counts:', err);
 			// On error, don't reset counts to avoid UI flicker
@@ -52,58 +69,10 @@ class ActivityStore {
 	}
 
 	/**
-	 * Start unified polling
-	 *
-	 * @param intervalMs - Polling interval in milliseconds (default: 30000)
-	 */
-	startPolling(intervalMs = DEFAULT_POLL_INTERVAL_MS): void {
-		// Don't start if already polling
-		if (this.pollInterval !== null) {
-			return;
-		}
-
-		this.pollIntervalMs = intervalMs;
-		this.isPolling = true;
-
-		// Initial fetch
-		this.fetchUnreadCounts();
-
-		// Start polling
-		this.pollInterval = setInterval(() => {
-			this.fetchUnreadCounts();
-		}, this.pollIntervalMs);
-	}
-
-	/**
-	 * Stop polling
-	 */
-	stopPolling(): void {
-		if (this.pollInterval !== null) {
-			clearInterval(this.pollInterval);
-			this.pollInterval = null;
-		}
-		this.isPolling = false;
-	}
-
-	/**
-	 * Get current polling status
-	 */
-	get polling(): boolean {
-		return this.isPolling;
-	}
-
-	/**
 	 * Manually trigger a refresh (useful after user actions)
 	 */
 	async refresh(): Promise<void> {
 		await this.fetchUnreadCounts();
-	}
-
-	/**
-	 * Reset and cleanup
-	 */
-	reset(): void {
-		this.stopPolling();
 	}
 }
 

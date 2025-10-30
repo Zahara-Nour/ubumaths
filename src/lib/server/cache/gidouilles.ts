@@ -58,7 +58,7 @@ export interface GidouillesData {
  * @param isTestMode - Whether test mode is enabled
  */
 function getGidouillesCacheKey(classId: string, isTestMode: boolean) {
-	return `gidouilles:class:${classId}:${isTestMode}`;
+	return `gidouilles:class:${classId}:${isTestMode ? 'test' : 'real'}`;
 }
 
 // ============================================================================

@@ -25,9 +25,6 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	import type { PendingStudent, School } from '$lib/types/database'; // Types for future features
-	import { teacherStudentsCache } from '$lib/stores/teacherStudentsCache.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -459,8 +456,6 @@
 								isProcessing = false;
 								if (result.type === 'success') {
 									toaster.success('Élèves importés avec succès');
-									// Clear entire cache (new students may affect multiple classes)
-									teacherStudentsCache.clear();
 									handleClearPreview();
 								} else if (result.type === 'failure') {
 									toaster.error((result.data?.message as string) || "Erreur lors de l'importation");

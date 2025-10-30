@@ -197,11 +197,11 @@
 		return '';
 	}
 
-	// Start unified activity polling when dashboard loads
-	// This polls both notifications AND messages in a single request
-	// Only start if we have a valid profile (user is authenticated)
+	// Fetch initial activity data when dashboard loads
+	// This fetches both notifications AND messages counts in a single request
+	// Only fetch if we have a valid profile (user is authenticated)
 	$effect(() => {
-		// Guard: Only start polling if user profile exists
+		// Guard: Only fetch if user profile exists
 		// This prevents 401 errors during client-side hydration before session is established
 		if (!data.profile?.id) {
 			return;
@@ -210,13 +210,11 @@
 		// Fetch initial notifications details (full data for banner/dropdown)
 		notificationStore.fetchUnread();
 
-		// Start unified polling for counts (notifications + messages)
-		// Uses default 30-second interval
-		activityStore.startPolling();
+		// Fetch initial activity counts (notifications + messages)
+		// No automatic polling - counters update on user actions only
+		activityStore.refresh();
 
-		return () => {
-			activityStore.stopPolling();
-		};
+		// No cleanup needed
 	});
 </script>
 

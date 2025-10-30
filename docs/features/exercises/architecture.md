@@ -556,11 +556,6 @@ Located in `/src/routes/api/exercises/`.
 - Get completion statistics for exercise
 - Teacher only (for own exercises)
 
-**`GET /api/exercises/assignments/stats`**
-
-- Get aggregate assignment statistics
-- Teacher dashboard summary
-
 #### Access Control
 
 **`GET /api/exercises/[id]/access`**

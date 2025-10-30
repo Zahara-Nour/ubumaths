@@ -14,7 +14,7 @@
 	- View student VIP card collections (with removal capability)
 	- Remove VIP cards from students (teacher-only, no gidouilles refund)
 	- Animated card reveal with loading state
-	- Real-time reactive updates with optimistic UI
+	- Optimistic UI with instant feedback
 	- Toast notifications for success/error feedback
 
 	PERFORMANCE OPTIMIZATION (Optimistic UI + Debouncing):
@@ -114,10 +114,9 @@
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import VipCardsModal from '$lib/components/VipCardsModal.svelte';
 	import VipCardHoloReveal from '$lib/components/VipCardHoloReveal.svelte';
-	import { getVipCardById } from '$lib/types/vip-card';
+	import { getVipCardById, type VipCard, type StudentVipCards } from '$lib/types/vip-card';
 	import { canAffordVipCard } from '$lib/utils/vip-cards';
 	import { Sparkles, Eye, Loader2 } from 'lucide-svelte';
-	import { gidouillesCache } from '$lib/stores/gidouillesCache.svelte';
 
 	// Data from server load function
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -130,11 +129,6 @@
 
 	// Local state for gidouilles input at class level
 	let classDeltas = $state<Record<string, number>>({});
-
-	// Gidouilles data (fetched from cache)
-	let gidouillesData = $state<
-		Map<string, { gidouilles: number; vip_cards: Record<string, number> }>
-	>(new Map());
 
 	// OPTIMISTIC UI STATE
 	// Tracks temporary gidouilles values that override server data
@@ -156,155 +150,15 @@
 	let selectedStudentForVipModal = $state<{
 		id: string;
 		name: string;
-		vipCards: Record<string, number>;
+		vipCards: StudentVipCards;
 	} | null>(null);
 	let revealingCard = $state<{
-		card: { card_id: string; quantity: number };
+		card: VipCard;
 		studentName: string;
 		loading: boolean;
 		confirmed: boolean;
 	} | null>(null); // Tracks card reveal state with loading/confirmed
 	let lastProcessedCardId = $state<string | null>(null); // Tracks last processed cardId to prevent duplicates and infinite loops
-
-	// Load gidouilles data when selected class changes
-	$effect(() => {
-		if (selectedClassId) {
-			gidouillesCache.get(selectedClassId).then((data) => {
-				gidouillesData = data;
-			});
-		}
-	});
-
-	// ============================================================================
-	// CROSS-DEVICE SYNCHRONIZATION (Polling)
-	// ============================================================================
-
-	/**
-	 * Auto-reload gidouilles every 5 seconds for cross-device sync
-	 *
-	 * WHY POLLING: Replaced BroadcastChannel (removed in refactoring)
-	 * - BroadcastChannel only works within same browser instance
-	 * - Teacher scenario: laptop + projector (2 different browsers)
-	 * - Polling ensures changes sync across ANY devices/browsers
-	 *
-	 * WHY 5 SECONDS:
-	 * - Fast enough: Teacher sees projector update within reasonable time
-	 * - Light load: 12 requests/minute is negligible server impact
-	 * - Battery friendly: Not aggressive enough to drain mobile devices
-	 *
-	 * Smart behaviors:
-	 * - Only polls when tab is visible (pauses when hidden)
-	 * - Pauses while user is actively editing (prevents conflicts)
-	 * - Direct API polling for reliable synchronization
-	 * - Cleans up interval on unmount
-	 */
-	let pollInterval: ReturnType<typeof setInterval> | null = $state(null);
-	let isEditing = $state(false); // Tracks if user is actively editing
-	let editingTimeout: ReturnType<typeof setTimeout> | null = null;
-
-	// Mark as editing and reset timer
-	function markEditing() {
-		isEditing = true;
-		if (editingTimeout) clearTimeout(editingTimeout);
-		// Resume polling 2 seconds after last edit
-		editingTimeout = setTimeout(() => {
-			isEditing = false;
-		}, 2000);
-	}
-
-	// Polling effect - runs every 5 seconds when conditions are met
-	$effect(() => {
-		// Only poll if class selected, tab visible, and user not editing
-		if (selectedClassId && document.visibilityState === 'visible' && !isEditing) {
-			// Start polling interval
-			pollInterval = setInterval(async () => {
-				console.log('[RewardsPage] Polling gidouilles (cross-device sync)');
-				try {
-					const response = await fetch(`/api/classes/${selectedClassId}/gidouilles`);
-
-					if (!response.ok) {
-						console.error('[RewardsPage] Polling failed:', response.statusText);
-						return;
-					}
-
-					const result = await response.json();
-					const students = result.students || [];
-
-					// Convert array to Map
-					const dataMap = new Map<
-						string,
-						{ gidouilles: number; vip_cards: Record<string, number> }
-					>();
-					students.forEach(
-						(student: { id: string; gidouilles: number; vip_cards: Record<string, number> }) => {
-							dataMap.set(student.id, {
-								gidouilles: student.gidouilles,
-								vip_cards: student.vip_cards || {}
-							});
-						}
-					);
-
-					gidouillesData = dataMap;
-
-					// Update cache with fresh data (optional - for other components)
-					// Note: Cache will auto-reload via its own fetch mechanism when needed
-				} catch (error) {
-					console.error('[RewardsPage] Polling error:', error);
-					// Keep existing data on error (graceful degradation)
-				}
-			}, 60000); // 5 seconds
-		} else {
-			// Stop polling if conditions not met
-			if (pollInterval) {
-				clearInterval(pollInterval);
-				pollInterval = null;
-			}
-		}
-
-		// Cleanup on unmount
-		return () => {
-			if (pollInterval) clearInterval(pollInterval);
-			if (editingTimeout) clearTimeout(editingTimeout);
-		};
-	});
-
-	// Handle visibility changes (pause when tab hidden)
-	$effect(() => {
-		const handleVisibilityChange = async () => {
-			if (document.visibilityState === 'visible' && selectedClassId && !isEditing) {
-				// Tab became visible - immediately reload and resume polling
-				console.log('[RewardsPage] Tab visible - reloading gidouilles');
-				try {
-					const response = await fetch(`/api/classes/${selectedClassId}/gidouilles`);
-					if (response.ok) {
-						const result = await response.json();
-						const students = result.students || [];
-
-						// Convert array to Map
-						const dataMap = new Map<
-							string,
-							{ gidouilles: number; vip_cards: Record<string, number> }
-						>();
-						students.forEach(
-							(student: { id: string; gidouilles: number; vip_cards: Record<string, number> }) => {
-								dataMap.set(student.id, {
-									gidouilles: student.gidouilles,
-									vip_cards: student.vip_cards || {}
-								});
-							}
-						);
-
-						gidouillesData = dataMap;
-					}
-				} catch (error) {
-					console.error('[RewardsPage] Visibility reload error:', error);
-				}
-			}
-		};
-
-		document.addEventListener('visibilitychange', handleVisibilityChange);
-		return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-	});
 
 	// Initialize deltas to 1 for each student and class
 	$effect(() => {
@@ -312,11 +166,13 @@
 			if (!classDeltas[classItem.id]) {
 				classDeltas[classItem.id] = 1;
 			}
-			classItem.students.forEach((student) => {
-				if (!studentDeltas[student.id]) {
-					studentDeltas[student.id] = 1;
+			classItem.students.forEach(
+				(student: { id: string; firstname: string | null; gidouilles: number }) => {
+					if (!studentDeltas[student.id]) {
+						studentDeltas[student.id] = 1;
+					}
 				}
-			});
+			);
 		});
 	});
 
@@ -363,7 +219,7 @@
 	 * Get current gidouilles for a student with optimistic override
 	 *
 	 * Returns the optimistic value if it exists (user clicked but server hasn't
-	 * confirmed yet), otherwise returns the cached value.
+	 * confirmed yet), otherwise returns the server value from data.
 	 *
 	 * @param studentId - The student's ID
 	 * @returns The gidouilles count to display in the UI
@@ -374,8 +230,12 @@
 			return optimisticGidouilles[studentId];
 		}
 
-		// Otherwise return cached value
-		return gidouillesData.get(studentId)?.gidouilles ?? 0;
+		// Otherwise find student in data
+		const classItem = data.classes.find((c) => c.id === selectedClassId);
+		if (!classItem) return 0;
+
+		const student = classItem.students.find((s: { id: string }) => s.id === studentId);
+		return student?.gidouilles ?? 0;
 	}
 
 	/**
@@ -409,7 +269,7 @@
 	function updateClassGidouillesOptimistic(classId: string, delta: number) {
 		const classItem = data.classes.find((c) => c.id === classId);
 		if (classItem) {
-			classItem.students.forEach((student) => {
+			classItem.students.forEach((student: { id: string }) => {
 				const currentValue = getStudentGidouilles(student.id);
 				const newValue = Math.max(0, currentValue + delta);
 				optimisticGidouilles[student.id] = newValue;
@@ -461,9 +321,6 @@
 		studentName: string
 	) {
 		const key = `student-${studentId}`;
-
-		// Mark as editing to pause polling (prevents conflicts)
-		markEditing();
 
 		// STEP 1: Apply optimistic update immediately for instant UI feedback
 		updateStudentGidouillesOptimistic(studentId, delta, currentValue);
@@ -544,9 +401,6 @@
 	function debouncedUpdateClass(classId: string, delta: number) {
 		const key = `class-${classId}`;
 
-		// Mark as editing to pause polling (prevents conflicts)
-		markEditing();
-
 		// STEP 1: Apply optimistic update to ALL students immediately
 		updateClassGidouillesOptimistic(classId, delta);
 
@@ -586,7 +440,9 @@
 					const studentCount = classItem?.students.length || 0;
 					setTimeout(() => {
 						// Clear optimistic state for all students
-						classItem?.students.forEach((student) => clearOptimisticOverride(student.id));
+						classItem?.students.forEach((student: { id: string }) =>
+							clearOptimisticOverride(student.id)
+						);
 
 						// Show success toast with student count
 						toaster.success(
@@ -596,13 +452,17 @@
 				} else {
 					// ERROR: Rollback all students in the class
 					const classItem = data.classes.find((c) => c.id === classId);
-					classItem?.students.forEach((student) => clearOptimisticOverride(student.id));
+					classItem?.students.forEach((student: { id: string }) =>
+						clearOptimisticOverride(student.id)
+					);
 					toaster.error('Échec de la mise à jour de la classe');
 				}
 			} catch {
 				// NETWORK ERROR: Rollback all students
 				const classItem = data.classes.find((c) => c.id === classId);
-				classItem?.students.forEach((student) => clearOptimisticOverride(student.id));
+				classItem?.students.forEach((student: { id: string }) =>
+					clearOptimisticOverride(student.id)
+				);
 				toaster.error('Erreur réseau');
 			}
 		}, 500) as unknown as number;
@@ -652,10 +512,10 @@
 	 */
 	function openVipModal(student: {
 		id: string;
-		firstname?: string;
-		lastname?: string;
-		full_name?: string;
-		vip_cards?: Record<string, number>;
+		firstname: string | null;
+		lastname: string | null;
+		full_name: string | null;
+		vip_cards: StudentVipCards;
 	}) {
 		selectedStudentForVipModal = {
 			id: student.id,
@@ -880,8 +740,16 @@
 													);
 
 													// Initialize reveal modal with loading state (back of card, shaking)
+													const placeholderCard = getVipCardById('bonus');
+													if (!placeholderCard) {
+														toaster.error('Erreur: carte non trouvée');
+														// Return early with async function that does nothing
+														return async ({ update }) => {
+															await update();
+														};
+													}
 													revealingCard = {
-														card: getVipCardById('bonus'), // Temporary card (will be replaced)
+														card: placeholderCard, // Temporary card (will be replaced)
 														studentName,
 														loading: true,
 														confirmed: false

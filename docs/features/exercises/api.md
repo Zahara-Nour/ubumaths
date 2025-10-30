@@ -842,38 +842,6 @@ curl -X GET /api/exercises/ex-123/stats
 
 ---
 
-### GET /api/exercises/assignments/stats
-
-Get aggregate assignment statistics for the current teacher.
-
-**Authorization**: Teacher only
-
-**Response** (200 OK):
-
-```json
-{
-	"success": true,
-	"data": {
-		"total_assignments": 45,
-		"active_assignments": 42,
-		"student_assignments": 30, // Individual assignments
-		"class_assignments": 10, // Class-wide assignments
-		"public_assignments": 5, // Public assignments
-		"with_deadline": 25, // Assignments with deadlines
-		"total_completions": 120, // Total completed exercises
-		"unique_students_engaged": 38 // Unique students who viewed/completed
-	}
-}
-```
-
-**Example**:
-
-```bash
-curl -X GET /api/exercises/assignments/stats
-```
-
----
-
 ## Access Control
 
 ### GET /api/exercises/[id]/access
@@ -1274,10 +1242,9 @@ The Exercise API provides **13 endpoints** across 7 categories:
 - `POST /api/exercises/[id]/complete` - Mark complete
 - `POST /api/exercises/[id]/uncomplete` - Unmark complete
 
-**Analytics** (2 endpoints):
+**Analytics** (1 endpoint):
 
 - `GET /api/exercises/[id]/stats` - Exercise statistics
-- `GET /api/exercises/assignments/stats` - Teacher statistics
 
 **Access Control** (1 endpoint):
 

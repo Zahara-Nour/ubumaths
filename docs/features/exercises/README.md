@@ -74,10 +74,9 @@ src/routes/api/exercises/
 ├── [id]/access/+server.ts            # Check access
 ├── assigned/+server.ts               # Get assigned exercises
 ├── assignments/[assignmentId]/+server.ts  # Update/delete assignment
-├── assignments/stats/+server.ts      # Teacher statistics
 ├── export/+server.ts                 # Export API endpoint
 └── import/+server.ts                 # Import API endpoint
-# Total: 13 API endpoints
+# Total: 12 API endpoints
 ```
 
 #### Database & Storage
@@ -1564,21 +1563,6 @@ SELECT student_has_exercise_access('ex-123', 'student-abc');
 ```
 
 ### Statistics & Analytics
-
-**Teacher Dashboard**:
-
-```typescript
-GET /api/exercises/assignments/stats
-{
-  "total_assignments": 45,
-  "active_assignments": 42,
-  "student_assignments": 30,
-  "class_assignments": 10,
-  "public_assignments": 5,
-  "total_completions": 120,
-  "unique_students_engaged": 38
-}
-```
 
 **Per-Exercise Analytics**:
 

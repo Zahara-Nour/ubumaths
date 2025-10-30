@@ -170,7 +170,7 @@
 - `GET /api/messages/templates/favorites` - No body
 - `DELETE /api/messages/templates/favorites` - Query params only
 - `GET /api/messages/templates/match` - Query params only
-- Plus 8 other sub-routes (approve, duplicate, preview, versions, search, stats, track-usage)
+- Plus 5 other sub-routes (duplicate, preview, versions, stats, favorites)
 
 ---
 
@@ -282,7 +282,6 @@ export * from './questions';
 - `/api/exercises/[id]/view`
 - `/api/exercises/assigned`
 - `/api/exercises/assignments/[assignmentId]`
-- `/api/exercises/assignments/stats`
 - `/api/exercises/export`
 - `/api/exercises/import`
 

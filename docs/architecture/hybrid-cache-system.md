@@ -1,8 +1,8 @@
 # Hybrid Cache System Architecture
 
-> Comprehensive guide to UbuMaths' dual-layer caching strategy combining in-memory and Redis caches
+> Server-side two-tier caching strategy combining in-memory and Redis caches
 
-**Last Updated**: 2025-10-29 (post-BroadcastChannel removal)
+**Last Updated**: 2025-10-30 (post-architecture simplification)
 **Status**: Production Ready
 
 ---
@@ -26,16 +26,16 @@
 
 ### Why Hybrid Cache?
 
-UbuMaths uses a **two-tier caching strategy** to optimize for different data access patterns:
+UbuMaths uses a **two-tier server-side caching strategy** to optimize for different data access patterns:
 
-**In-Memory Cache** (Tier 1):
+**In-Memory Cache** (Tier-2):
 
 - Ultra-low latency (< 1ms)
 - Per-user data isolation
 - Request-scoped lifecycle
 - No network overhead
 
-**Redis Cache** (Tier 2):
+**Redis Cache** (Tier-1):
 
 - Cross-instance data sharing
 - Persistent across deployments
@@ -50,6 +50,7 @@ UbuMaths uses a **two-tier caching strategy** to optimize for different data acc
 2. **Latency Optimization**: Use the fastest cache tier for each access pattern
 3. **Cost Efficiency**: In-memory cache is free, Redis has request quotas
 4. **Fail-Safe Design**: Both cache layers gracefully degrade to database queries
+5. **Simplicity First**: Removed client-side caching complexity for maintainability
 
 ### System Diagram
 
@@ -59,11 +60,11 @@ UbuMaths uses a **two-tier caching strategy** to optimize for different data acc
 ├────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  ┌───────────────────────────────────────────────────────┐    │
-│  │               HYBRID CACHE LAYER                      │    │
+│  │               SERVER-SIDE CACHE LAYER                  │    │
 │  │                                                        │    │
 │  │  ┌─────────────────────┐    ┌────────────────────┐   │    │
 │  │  │   In-Memory Cache   │    │   Redis Cache      │   │    │
-│  │  │   (Tier 1)          │    │   (Tier 2)         │   │    │
+│  │  │   (Tier-2)          │    │   (Tier-1)         │   │    │
 │  │  │                     │    │                    │   │    │
 │  │  │ • User profiles     │    │ • Schools data     │   │    │
 │  │  │ • Session data      │    │ • Templates        │   │    │
@@ -84,6 +85,8 @@ UbuMaths uses a **two-tier caching strategy** to optimize for different data acc
                │  (Source of Truth)     │
                └────────────────────────┘
 ```
+
+**Simplification (2025-10-30)**: Removed Tier-3 client-side cache stores and polling mechanisms. Components now make simple API calls with server-side caching only.
 
 ---
 
@@ -183,31 +186,6 @@ Cache MISS: 0ms ──→ 250ms (DB query) ──→ 260ms (Redis store) ──�
 ---
 
 ## Cache Modules
-
-### Teacher Dashboard Synchronization (2025-10-29)
-
-**Endpoint**: `/api/teacher/dashboard-sync`
-
-**Architecture**: Unified polling endpoint that fetches both warnings and gidouilles data in a single request.
-
-**Key Benefits**:
-
-- 50% fewer network requests (was 2 endpoints, now 1)
-- Parallel server-side data fetching with `Promise.all()`
-- Both data sources use Redis cache (~50ms each, ~100ms total)
-- Simplified client-side polling logic
-- Single point of authentication/authorization
-
-**Synchronization Method**: Polling-only (BroadcastChannel removed for simpler architecture)
-
-**Polling Interval**: 5 seconds
-**Smart Behaviors**: Pauses during editing, pauses when tab hidden, visibility detection
-
-**Impact**: Teachers using multiple devices (laptop + projector) see updates within 5 seconds.
-
-**Reference**: See [Cross-Device Synchronization](../features/cross-device-sync.md)
-
----
 
 ### 1. Profile Cache (In-Memory)
 
@@ -460,7 +438,6 @@ await invalidateTemplatesCache();
 - ✅ School data (timetables, profiles)
 - ✅ Question templates (published)
 - ✅ Assessment results caching
-- ✅ Unified dashboard synchronization (polling)
 - ✅ Rate limiting (distributed)
 
 **Don't Use For**:
@@ -478,11 +455,11 @@ await invalidateTemplatesCache();
 START: Need to cache data
   │
   ├─ Is data user-specific?
-  │    ├─ YES → In-Memory Cache
+  │    ├─ YES → In-Memory Cache (Tier-2)
   │    └─ NO → Continue
   │
   ├─ Is data shared across multiple users?
-  │    ├─ YES → Redis Cache
+  │    ├─ YES → Redis Cache (Tier-1)
   │    └─ NO → Database Direct
   │
   ├─ Is access frequency > 10 req/sec per user?
@@ -690,43 +667,6 @@ curl -X POST "/api/admin/cache/invalidate?type=all"
 }
 ```
 
-**Implementation**:
-
-```typescript
-// src/routes/api/admin/cache/invalidate/+server.ts
-export const POST: RequestHandler = async ({ url, locals: { supabase, user } }) => {
-	// 1. Verify admin role
-	const profile = await getCachedProfile(user.id, supabase);
-	if (profile?.role !== 'admin') {
-		throw error(403, 'Admin access required');
-	}
-
-	// 2. Parse query parameters
-	const type = url.searchParams.get('type');
-	const id = url.searchParams.get('id');
-
-	// 3. Invalidate cache
-	switch (type) {
-		case 'school':
-			if (!id) throw error(400, 'School ID required');
-			await invalidateSchoolCache(id);
-			return json({ success: true, message: 'School cache invalidated' });
-
-		case 'templates':
-			await invalidateTemplatesCache();
-			return json({ success: true, message: 'Templates cache invalidated' });
-
-		case 'all':
-			// Invalidate all cache types
-			await invalidateCache('*');
-			return json({ success: true, message: 'All caches invalidated' });
-
-		default:
-			throw error(400, 'Invalid cache type');
-	}
-};
-```
-
 ---
 
 ## Implementation Examples
@@ -812,11 +752,6 @@ export const load: PageServerLoad = async ({ locals: { supabase, user } }) => {
 		currentPeriod: getCurrentPeriod(school.timetable)
 	};
 };
-
-function getCurrentPeriod(timetable: unknown) {
-	// Logic to determine current period based on time
-	// ...
-}
 ```
 
 **Performance**:
@@ -868,58 +803,6 @@ export const load: PageServerLoad = async ({ locals: { supabase }, url }) => {
 
 ---
 
-### Example 4: Invalidating After Admin Operation
-
-```typescript
-// src/routes/(protected)/admin/schools/[id]/timetable/+page.server.ts
-import { invalidateSchoolCache } from '$lib/server/cache/schools';
-import type { Actions } from './$types';
-import { error, fail } from '@sveltejs/kit';
-
-export const actions: Actions = {
-	updateTimetable: async ({ params, request, locals: { supabase, user } }) => {
-		// 1. Verify admin role
-		const profile = await getCachedProfile(user.id, supabase);
-		if (profile?.role !== 'admin') {
-			throw error(403, 'Admin access required');
-		}
-
-		// 2. Parse form data
-		const formData = await request.formData();
-		const timetableJson = formData.get('timetable') as string;
-
-		try {
-			const timetable = JSON.parse(timetableJson);
-
-			// 3. Update school timetable in database
-			const { error: updateError } = await supabase
-				.from('schools')
-				.update({ timetable })
-				.eq('id', params.id);
-
-			if (updateError) {
-				return fail(500, { message: 'Failed to update timetable' });
-			}
-
-			// 4. Invalidate school cache immediately
-			await invalidateSchoolCache(params.id);
-
-			return { success: true };
-		} catch (err) {
-			return fail(400, { message: 'Invalid timetable JSON' });
-		}
-	}
-};
-```
-
-**Invalidation Impact**:
-
-- Next teacher loading schedule sees updated timetable immediately
-- No stale data served (cache invalidated before response)
-- Automatic re-caching on next access
-
----
-
 ## Monitoring
 
 ### Cache Logging System
@@ -943,8 +826,8 @@ ENABLE_CACHE_LOGS=true
 **Example log output**:
 
 ```
-[getCachedSchool][Redis][Tier-2] HIT (52ms) school:550e8400-e29b-41d4-a716-446655440000:data
-[getCachedProfile][RAM Server][Tier-1] HIT (0.8ms) profile:123:role
+[getCachedSchool][Redis][Tier-1] HIT (52ms) school:550e8400-e29b-41d4-a716-446655440000:data
+[getCachedProfile][RAM Server][Tier-2] HIT (0.8ms) profile:123:role
 [getCachedTemplates][Database][Source] FETCH (245ms) Published templates
 ```
 
@@ -1021,7 +904,7 @@ Cache Statistics:
 {
 	"status": "healthy",
 	"latency": 45,
-	"timestamp": "2025-10-29T10:30:00.000Z"
+	"timestamp": "2025-10-30T10:30:00.000Z"
 }
 ```
 
@@ -1160,7 +1043,6 @@ setInterval(() => {
 
 - TTL too short (frequent cache misses)
 - Too many invalidations
-- High-frequency polling
 
 **Diagnosis**:
 
@@ -1175,9 +1057,8 @@ Look for:
 **Solutions**:
 
 1. **Increase TTL**: Change from 300s to 600s for templates
-2. **Reduce polling frequency**: Change from 30s to 60s
-3. **Batch invalidations**: Group multiple invalidations together
-4. **Use in-memory cache**: Move high-frequency data to memory
+2. **Batch invalidations**: Group multiple invalidations together
+3. **Use in-memory cache**: Move high-frequency data to memory
 
 ---
 
@@ -1238,25 +1119,6 @@ const resultMap = new Map(Object.entries(cached)); // Empty Map!
 - Maps are common in TypeScript for keyed collections
 - `JSON.stringify(map)` produces `"{}"`
 - Redis will cache empty objects, causing "data disappears" bugs
-- Symptoms: Data loads from DB initially, then disappears after cache hit
-
-**Cache Version History**:
-
-- `warnings:v1:*` - Used Map directly (BROKEN, serialized to `{}`)
-- `warnings:v2:*` - Uses Object conversion (FIXED, serializes correctly)
-
-**Verification Test**:
-
-```javascript
-// Run this in browser console or Node REPL to verify the bug:
-const map = new Map([['key', { value: 'test' }]]);
-JSON.stringify(map); // Returns "{}" - THE BUG
-
-const obj = Object.fromEntries(map);
-JSON.stringify(obj); // Returns '{"key":{"value":"test"}}' - CORRECT
-```
-
-**Reference**: See `src/lib/server/cache/warnings.ts` lines 277-298 for correct implementation.
 
 ---
 
@@ -1292,33 +1154,7 @@ JSON.stringify(obj); // Returns '{"key":{"value":"test"}}' - CORRECT
 
 ---
 
-### 5. Use Cache Key Versioning
-
-When fixing cache serialization bugs or changing data structures, bump the cache key version.
-
-✅ **DO**:
-
-```typescript
-// Version cache keys to allow easy invalidation
-const CACHE_VERSION = 'v2';
-const cacheKey = `warnings:${CACHE_VERSION}:class:${classId}:period:${periodId}`;
-
-// After fixing serialization bug, increment version:
-const CACHE_VERSION = 'v3'; // Old v2 caches auto-expire, no manual cleanup needed
-```
-
-**Benefits**:
-
-- Old corrupted caches auto-expire via TTL
-- No manual cache invalidation needed
-- Clear version history in code
-- Easy rollback if needed
-
-**Example**: `warnings:v1:*` (broken Map serialization) → `warnings:v2:*` (fixed with Object conversion)
-
----
-
-### 6. Monitor Cache Performance
+### 5. Monitor Cache Performance
 
 ✅ **DO**:
 
@@ -1335,7 +1171,7 @@ const CACHE_VERSION = 'v3'; // Old v2 caches auto-expire, no manual cleanup need
 
 ---
 
-### 7. Handle Cache Failures Gracefully
+### 6. Handle Cache Failures Gracefully
 
 ✅ **DO**:
 
@@ -1352,7 +1188,7 @@ const CACHE_VERSION = 'v3'; // Old v2 caches auto-expire, no manual cleanup need
 
 ---
 
-### 8. Test Cache Behavior
+### 7. Test Cache Behavior
 
 ✅ **DO**:
 
@@ -1378,8 +1214,9 @@ The hybrid cache system provides:
 3. **Smart Cache Selection**: Automatic tier selection based on data patterns
 4. **Graceful Degradation**: Works without caching if Redis unavailable
 5. **Manual Invalidation**: Admin API for explicit cache control
+6. **Simplified Architecture**: Removed client-side caching complexity (2025-10-30)
 
-**Key Takeaway**: Use in-memory cache for per-user data, Redis cache for shared data, and direct database queries for frequently-changing data.
+**Key Takeaway**: Use in-memory cache for per-user data, Redis cache for shared data, and direct database queries for frequently-changing data. Keep it simple - server-side caching only.
 
 ---
 
@@ -1388,8 +1225,9 @@ The hybrid cache system provides:
 - [Redis Setup Guide](../guides/redis-cache-setup.md) - How to configure Redis
 - [Redis Caching Architecture](redis-caching.md) - Deep dive into Redis cache
 - [Performance Optimization](performance.md) - Overall performance strategies
+- [Architecture Simplification](../development/architecture-simplification.md) - Migration notes (2025-10-30)
 
 ---
 
-**Last Updated**: 2025-10-29
+**Last Updated**: 2025-10-30
 **Maintained By**: Development Team

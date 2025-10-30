@@ -64,7 +64,6 @@ UPSTASH_REDIS_REST_TOKEN=your_token_here
 **Features**:
 
 - ✅ Assessment results caching (5 min TTL) - 88% faster load
-- ✅ Activity polling caching (30s TTL) - 95% less DB queries
 - ✅ Rate limiting (login, signup, chatbot) - Multi-instance safe
 - ✅ Fail-safe design (works without Redis configured)
 
@@ -91,7 +90,6 @@ ENABLE_CACHE_LOGS=true
 [getCachedSchool][DB] ⏱️ FETCH (850ms) { schoolId: 'def456' }
 
 [getCachedProfile][RAM Server][Tier-2] 🎯 HIT (0ms) profile:abc123:role
-[teacherStudentsCache.get][Client Store][Tier-3] 🎯 HIT (0ms) students:class:xyz
 ```
 
 **Cache Tiers**:
@@ -99,7 +97,6 @@ ENABLE_CACHE_LOGS=true
 - **DB**: Source of truth (Supabase Postgres) - No tier
 - **Tier-1**: Redis (Upstash cloud) - ~50ms
 - **Tier-2**: RAM Server (Node.js process) - <1ms
-- **Tier-3**: Client Store (Browser) - 0ms
 
 **Full Documentation**: [docs/development/cache-logging-format.md](docs/development/cache-logging-format.md)
 
@@ -740,28 +737,35 @@ let { value = $bindable() } = $props();
 
 ## ⚡ Performance Pattern : Optimistic UI + Debouncing
 
-Pour les updates serveur fréquentes (compteurs, quantités) :
+Pour les updates serveur fréquentes (compteurs, quantités), utilisez un pattern optimiste simple :
 
 ```typescript
 let optimistic = $state<Record<string, number>>({});
 let debounceTimer: ReturnType<typeof setTimeout>;
 
 function handleUpdate(id: string, delta: number) {
-	// 1. Update optimiste immédiat
+	// 1. Update optimiste immédiat (UI instantanée)
 	optimistic[id] = (optimistic[id] || 0) + delta;
 
-	// 2. Debounce update serveur
+	// 2. Debounce update serveur (batch multiple changes)
 	clearTimeout(debounceTimer);
 	debounceTimer = setTimeout(async () => {
 		try {
 			await updateServer(id, optimistic[id]);
-			optimistic[id] = 0; // Reset
+			optimistic[id] = 0; // Reset après succès
 		} catch (error) {
-			optimistic[id] = 0; // Rollback on error
+			optimistic[id] = 0; // Rollback en cas d'erreur
+			toaster.error('Échec de la mise à jour');
 		}
 	}, 500);
 }
 ```
+
+**Benefits**:
+
+- Instant UI feedback (no waiting for server)
+- Automatic batching (10 clicks = 1 DB query)
+- Rollback on error
 
 **Référence** : `src/routes/(protected)/dashboard/teacher/rewards/+page.svelte`
 
@@ -769,9 +773,9 @@ function handleUpdate(id: string, delta: number) {
 
 ## 💾 Caching Strategy
 
-### Hybrid Cache System
+### Server-Side Cache System
 
-UbuMaths uses a two-tier caching strategy combining in-memory and Redis caches.
+UbuMaths uses a two-tier **server-side** caching strategy combining in-memory and Redis caches.
 
 **In-Memory Cache** (zero latency):
 
@@ -813,7 +817,8 @@ curl -X POST "/api/admin/cache/invalidate?type=templates"
 | Schools            | Redis     | 1 hour | School data, timetables      |
 | Templates          | Redis     | 10 min | Published question templates |
 | Assessment Results | Redis     | 5 min  | Cached results               |
-| Activity Polling   | Redis     | 30 sec | Dashboard activity counts    |
+
+**Note**: Client-side polling and cache stores have been removed (2025-10-30). The architecture now uses simple direct API calls with server-side caching only.
 
 📚 **Docs**: [Hybrid Cache System](docs/architecture/hybrid-cache-system.md)
 
