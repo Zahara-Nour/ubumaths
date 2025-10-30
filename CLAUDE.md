@@ -776,7 +776,6 @@ const { data: school, error } = await supabase
 | Assessments      | [docs/features/assessments/](docs/features/assessments/)           |
 | SRS/Flashcards   | [docs/features/srs-flashcards/](docs/features/srs-flashcards/)     |
 | Riddles          | [docs/features/riddles/](docs/features/riddles/)                   |
-| Geometry         | [docs/features/geometry/](docs/features/geometry/)                 |
 | Error Monitoring | [docs/features/error-monitoring/](docs/features/error-monitoring/) |
 
 ### Documentation technique

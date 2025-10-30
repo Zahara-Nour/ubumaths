@@ -310,7 +310,6 @@ mockSupabase._mockChain.then.mockImplementationOnce(...);     // Get recipients
 | **Assessments Feature** | 2          | 91    | 100%   |
 | **Riddles Feature**     | 5          | 143   | 100%   |
 | **Templates Feature**   | 3          | 250   | 100%   |
-| **Geometry**            | 2          | 50+   | 100%   |
 | **Components & Utils**  | 15+        | 300+  | 100%   |
 
 **Total**: 2,064 tests across 61 test files

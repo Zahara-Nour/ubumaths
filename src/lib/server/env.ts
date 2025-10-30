@@ -115,9 +115,6 @@ const envSchema = z.object({
 	// External Services (Optional)
 	// ====================================================================
 
-	// MathGraph32 (for geometry features)
-	MATHGRAPH32_API_URL: z.string().url('Invalid MathGraph32 API URL').optional(),
-
 	// LaTeX/Typst compilation
 	LATEX_COMPILER_URL: z.string().url('Invalid LaTeX compiler URL').optional(),
 	TYPST_COMPILER_URL: z.string().url('Invalid Typst compiler URL').optional(),

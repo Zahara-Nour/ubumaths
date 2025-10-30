@@ -26,11 +26,6 @@ Système de répétition espacée (FSRS) avec flashcards.
 Système d'énigmes quotidiennes avec badges.
 **Status** : ✅ Production
 
-### [📐 Geometry](geometry/README.md)
-
-Figures géométriques interactives avec MathGraph32.
-**Status** : ✅ Production
-
 ### [💬 Messaging](messaging/README.md)
 
 Messagerie privée enseignant-élève.

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Sparkles, Palette, FileText, Shapes, Gamepad2, Presentation } from 'lucide-svelte';
+	import { Sparkles, Palette, FileText, Gamepad2, Presentation } from 'lucide-svelte';
 	import MathField from '$lib/components/MathField.svelte';
 	import DynamicMathField from '$lib/components/DynamicMathField.svelte';
 	import FlipCard from '$lib/components/FlipCard.svelte';
@@ -54,13 +54,6 @@
 			href: '/demo/question-display-demo',
 			icon: Presentation,
 			color: 'from-teal-500 to-green-500'
-		},
-		{
-			title: 'Géométrie Interactive',
-			description: 'Outils et visualisations de géométrie mathématique',
-			href: '/demo/geometry',
-			icon: Shapes,
-			color: 'from-green-500 to-emerald-500'
 		},
 		{
 			title: 'Test de Thème',

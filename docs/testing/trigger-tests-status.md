@@ -63,7 +63,6 @@ Database trigger tests were implemented but are currently failing due to foundat
 - `messaging-triggers.test.ts` (20 tests)
 - `cleanup-triggers.test.ts` (9 tests)
 - `sync-triggers.test.ts` (10 tests)
-- `geometry-triggers.test.ts` (10 tests)
 - `game-triggers.test.ts` (11 tests)
 - `profile-triggers.test.ts` (7 tests - these NEED auth.users access to test the trigger)
 

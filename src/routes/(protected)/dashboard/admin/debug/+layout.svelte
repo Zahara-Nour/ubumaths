@@ -9,7 +9,6 @@
 		{ href: '/dashboard/admin/debug/session', label: 'Session' },
 		{ href: '/dashboard/admin/debug/rls', label: 'RLS Policies' },
 		{ href: '/dashboard/admin/debug/avatar', label: 'Avatar' },
-		{ href: '/dashboard/admin/debug/mathgraph', label: 'MathGraph32' },
 		{ href: '/dashboard/admin/debug/wheel', label: 'Wheel' },
 		{ href: '/dashboard/admin/debug/question-display', label: 'QuestionDisplay' },
 		{ href: '/dashboard/admin/debug/rich-text', label: 'RichTextEditor' },

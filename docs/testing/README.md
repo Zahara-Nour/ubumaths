@@ -97,7 +97,7 @@ src/routes/api/assessments/
 └── api-routes.test.ts (47 tests)
 
 src/routes/api/riddles/
-└── api-routes.test.ts (16 tests) ✨ NEW
+└── api-routes.test.ts (16 tests)
 ```
 
 ### E2E Tests (`*.spec.ts`)
@@ -182,7 +182,6 @@ pnpm test:unit -- --coverage
 | Exercises             | ~15   | ~400    | ~400    | ✅ PERFECT (100%)     |
 | API Routes            | 8     | ~300    | ~300    | ✅ PERFECT (100%)     |
 | Shared Param          | 4     | 46      | 46      | ✅ PERFECT (100%)     |
-| Geometry              | 2     | ~50     | ~50     | ✅ PERFECT (100%)     |
 | Server Functions      | ~10   | ~200    | ~200    | ✅ PERFECT (100%)     |
 | Other                 | ~10   | ~250    | ~250    | ✅ PERFECT (100%)     |
 

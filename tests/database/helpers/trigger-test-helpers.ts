@@ -104,8 +104,6 @@ export async function cleanupAllTestData(): Promise<void> {
 		'assessment_responses',
 		'assessment_attempts',
 		'assessments',
-		'geometry_exercise_attempts',
-		'geometry_exercises',
 		'exercise_completions',
 		'exercise_assignments',
 		'exercises',

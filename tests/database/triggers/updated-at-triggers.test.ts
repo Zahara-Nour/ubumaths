@@ -53,15 +53,6 @@ const TABLES_WITH_UPDATED_AT: Array<{
 		updateValue: 'Updated question?'
 	},
 	{
-		table: 'geometry_exercises',
-		createData: async () => {
-			const teacher = await TestData.profile().withRole('teacher').create();
-			return await TestData.geometryExercise(teacher.id).create();
-		},
-		updateField: 'title',
-		updateValue: 'Updated Geometry Title'
-	},
-	{
 		table: 'private_messages',
 		createData: async () => {
 			const sender = await TestData.profile().create();

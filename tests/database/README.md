@@ -26,7 +26,6 @@ tests/database/
 │   ├── game-triggers.test.ts           # ✅ Game system triggers
 │   ├── chat-triggers.test.ts           # ⏳ To implement
 │   ├── messaging-triggers.test.ts      # ⏳ To implement
-│   ├── geometry-triggers.test.ts       # ⏳ To implement
 │   ├── error-monitoring-triggers.test.ts  # ⏳ To implement
 │   ├── sync-triggers.test.ts           # ⏳ To implement
 │   ├── template-triggers.test.ts       # ⏳ To implement
@@ -318,26 +317,22 @@ pnpm db:start
    - `trigger_update_search_index_on_attachment` - Update has_attachments flag
    - `trigger_update_folder_count_on_{insert,update,delete}` - Folder counts
 
-4. **geometry-triggers.test.ts** (Estimated: 1 hour)
-   - `update_geometry_attempts_last_saved` - Update last_saved_at when in_progress
-   - `calculate_geometry_score` - Calculate final score with penalties
-
-5. **error-monitoring-triggers.test.ts** (Estimated: 1.5 hours)
+4. **error-monitoring-triggers.test.ts** (Estimated: 1.5 hours)
    - `trigger_set_error_signature` - Generate MD5 signature for deduplication
    - `trigger_update_error_occurrence` - Upsert aggregated error_occurrences
 
-6. **template-triggers.test.ts** (Estimated: 1 hour)
+5. **template-triggers.test.ts** (Estimated: 1 hour)
    - `trigger_save_template_version` - Version history on changes
    - `trigger_auto_log_template_changes` - Audit logging
 
-7. **cleanup-triggers.test.ts** (Estimated: 1.5 hours)
+6. **cleanup-triggers.test.ts** (Estimated: 1.5 hours)
    - `trigger_delete_exercise_images` - Delete images from Storage
    - Requires Storage setup (see "Storage Testing" below)
 
-8. **assignment-triggers.test.ts** (Estimated: 30 min)
+7. **assignment-triggers.test.ts** (Estimated: 30 min)
    - `trigger_update_completion_last_viewed` - Update last_viewed_at
 
-### Total Remaining: ~10.5 hours
+### Total Remaining: ~9.5 hours
 
 ## Storage Testing (For cleanup-triggers.test.ts)
 

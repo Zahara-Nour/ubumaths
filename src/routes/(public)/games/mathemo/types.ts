@@ -7,7 +7,7 @@
 
 /**
  * Difficulty levels corresponding to French grade levels
- * - 6ème/5ème: Middle school (basic arithmetic, geometry)
+ * - 6ème/5ème: Middle school (basic arithmetic)
  * - 4ème/3ème: Middle school (algebra, functions)
  * - 2nde/1ère/Tale: High school (advanced algebra, calculus, statistics)
  */

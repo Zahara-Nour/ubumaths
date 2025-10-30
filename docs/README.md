@@ -75,17 +75,6 @@ Système de répétition espacée (FSRS) avec flashcards interactives.
 - [Implémentation](features/riddles/implementation.md)
 - [Déploiement](features/riddles/deployment.md)
 
-### 📐 Géométrie dynamique
-
-**Status** : ✅ Production | [Documentation →](features/geometry/README.md)
-
-Intégration MathGraph32 pour figures géométriques interactives.
-
-- [Guide élève](features/geometry/student-guide.md)
-- [Guide enseignant](features/geometry/teacher-guide.md)
-- [Documentation API](features/geometry/api-docs.md)
-- [Exemples](features/geometry/examples.md)
-
 ### 📓 Banque d'exercices
 
 **Status** : ✅ Production | [Documentation →](features/exercises/README.md)

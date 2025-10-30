@@ -79,18 +79,16 @@
 
 ## 🐛 ESLint Fixes (57 Errors → 0 Errors)
 
-### Files Fixed (10 files)
+### Files Fixed (9 files)
 
 1. **`riddle-auto-select.test.ts`** - 6 errors (unused parameters → `_parameter`)
-2. **`geometry-generator.test.ts`** - 8 errors (proper MathGraph32 interfaces)
-3. **`srs/config.test.ts`** - 4 errors (`as any` → `as unknown as Type`)
-4. **`srs/fsrs.test.ts`** - 1 error (removed unused import)
-5. **`srs/generator.test.ts`** - 2 errors (removed unused import, proper types)
-6. **`api/srs/api-routes.test.ts`** - 1 error (re-added required import)
-7. **`api/exercises/api-routes.test.ts`** - 35 errors (proper MockRequestEvent type)
-8. **`templateVariables.test.ts`** - 1 error (unused parameter)
-9. **`geometry-validator.ts`** - 1 warning (removed unused eslint-disable)
-10. **`assessments.ts`** - Prettier formatting
+2. **`srs/config.test.ts`** - 4 errors (`as any` → `as unknown as Type`)
+3. **`srs/fsrs.test.ts`** - 1 error (removed unused import)
+4. **`srs/generator.test.ts`** - 2 errors (removed unused import, proper types)
+5. **`api/srs/api-routes.test.ts`** - 1 error (re-added required import)
+6. **`api/exercises/api-routes.test.ts`** - 35 errors (proper MockRequestEvent type)
+7. **`templateVariables.test.ts`** - 1 error (unused parameter)
+8. **`assessments.ts`** - Prettier formatting
 
 **Result**: 0 ESLint errors, 29 warnings (within project standards)
 

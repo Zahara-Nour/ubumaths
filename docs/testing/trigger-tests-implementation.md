@@ -227,7 +227,7 @@ it('should handle WHEN clause correctly', async () => {
 ### Next Steps (Recommended Order)
 
 1. **Week 1**: Implement sync-triggers.test.ts + chat-triggers.test.ts (3 hours)
-2. **Week 2**: Implement messaging-triggers.test.ts + geometry-triggers.test.ts (3 hours)
+2. **Week 2**: Implement messaging-triggers.test.ts (2 hours)
 3. **Week 3**: Implement error-monitoring + template triggers (2.5 hours)
 4. **Week 4**: Implement cleanup + assignment triggers (2 hours)
 
@@ -244,7 +244,6 @@ tests/database/
 │   ├── sync-triggers.test.ts           ⏳ TODO (4 tests est.)
 │   ├── chat-triggers.test.ts           ⏳ TODO (9 tests est.)
 │   ├── messaging-triggers.test.ts      ⏳ TODO (8 tests est.)
-│   ├── geometry-triggers.test.ts       ⏳ TODO (5 tests est.)
 │   ├── error-monitoring-triggers.test.ts  ⏳ TODO (6 tests est.)
 │   ├── template-triggers.test.ts       ⏳ TODO (6 tests est.)
 │   ├── cleanup-triggers.test.ts        ⏳ TODO (4 tests est.)
