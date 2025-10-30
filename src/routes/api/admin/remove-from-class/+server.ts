@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { removeFromClassSchema } from '$lib/server/validation/admin';
 
 export const POST: RequestHandler = async ({ request, locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -19,11 +20,15 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 		throw error(403, 'Forbidden - Admin access required');
 	}
 
-	const { userId, classId } = await request.json();
+	// ✅ SECURITY: Validate input with Zod
+	const body = await request.json();
+	const validation = removeFromClassSchema.safeParse(body);
 
-	if (!userId || !classId) {
-		return json({ error: 'User ID and Class ID are required' }, { status: 400 });
+	if (!validation.success) {
+		throw error(400, validation.error.issues[0].message);
 	}
+
+	const { userId, classId } = validation.data;
 
 	// Remove from class_members table
 	const { error: deleteError } = await supabase

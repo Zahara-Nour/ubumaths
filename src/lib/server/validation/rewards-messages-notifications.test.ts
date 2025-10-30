@@ -12,7 +12,9 @@ import {
 	sendMessageSchema,
 	saveDraftSchema,
 	messageResponseSchema,
-	sendMessageResponseSchema
+	sendMessageResponseSchema,
+	searchMessagesQuerySchema,
+	updateMessageSchema
 } from './messages';
 
 // Notifications
@@ -351,6 +353,339 @@ describe('rewards, messages, notifications validation schemas', () => {
 
 			const result = sendMessageResponseSchema.safeParse(data);
 			expect(result.success).toBe(false);
+		});
+	});
+
+	describe('searchMessagesQuerySchema', () => {
+		it('should accept valid search query', () => {
+			const data = {
+				q: 'important meeting',
+				searchIn: 'inbox',
+				hasAttachments: 'true',
+				senderName: 'John Doe',
+				dateFrom: '2025-01-01T00:00:00Z',
+				dateTo: '2025-12-31T23:59:59Z',
+				limit: 50,
+				offset: 0
+			};
+
+			const result = searchMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should use default values', () => {
+			const data = {
+				q: 'test'
+			};
+
+			const result = searchMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.searchIn).toBe('all');
+				expect(result.data.limit).toBe(50);
+				expect(result.data.offset).toBe(0);
+			}
+		});
+
+		it('should accept all searchIn values', () => {
+			['inbox', 'sent', 'all'].forEach((searchIn) => {
+				const data = {
+					q: 'test',
+					searchIn
+				};
+
+				const result = searchMessagesQuerySchema.safeParse(data);
+				expect(result.success).toBe(true);
+			});
+		});
+
+		it('should transform hasAttachments string to boolean', () => {
+			const testCases = [
+				{ input: 'true', expected: true },
+				{ input: 'false', expected: false },
+				{ input: 'invalid', expected: undefined }
+			];
+
+			testCases.forEach(({ input, expected }) => {
+				const data = {
+					q: 'test',
+					hasAttachments: input
+				};
+
+				const result = searchMessagesQuerySchema.safeParse(data);
+				expect(result.success).toBe(true);
+				if (result.success) {
+					expect(result.data.hasAttachments).toBe(expected);
+				}
+			});
+		});
+
+		it('should coerce limit to number', () => {
+			const data = {
+				q: 'test',
+				limit: '25'
+			};
+
+			const result = searchMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.limit).toBe(25);
+				expect(typeof result.data.limit).toBe('number');
+			}
+		});
+
+		it('should coerce offset to number', () => {
+			const data = {
+				q: 'test',
+				offset: '10'
+			};
+
+			const result = searchMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.offset).toBe(10);
+				expect(typeof result.data.offset).toBe('number');
+			}
+		});
+
+		it('should reject empty query', () => {
+			const data = {
+				q: '   '
+			};
+
+			const result = searchMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject query exceeding max length', () => {
+			const data = {
+				q: 'a'.repeat(201)
+			};
+
+			const result = searchMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject invalid searchIn value', () => {
+			const data = {
+				q: 'test',
+				searchIn: 'invalid'
+			};
+
+			const result = searchMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject senderName exceeding max length', () => {
+			const data = {
+				q: 'test',
+				senderName: 'a'.repeat(201)
+			};
+
+			const result = searchMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject invalid dateFrom format', () => {
+			const data = {
+				q: 'test',
+				dateFrom: '2025-01-01' // Missing time
+			};
+
+			const result = searchMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject invalid dateTo format', () => {
+			const data = {
+				q: 'test',
+				dateTo: 'invalid-date'
+			};
+
+			const result = searchMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject limit exceeding max', () => {
+			const data = {
+				q: 'test',
+				limit: 101
+			};
+
+			const result = searchMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject negative offset', () => {
+			const data = {
+				q: 'test',
+				offset: -5
+			};
+
+			const result = searchMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should accept optional fields as undefined', () => {
+			const data = {
+				q: 'test',
+				searchIn: undefined,
+				hasAttachments: undefined,
+				senderName: undefined,
+				dateFrom: undefined,
+				dateTo: undefined
+			};
+
+			const result = searchMessagesQuerySchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+	});
+
+	describe('updateMessageSchema', () => {
+		it('should accept updateStatus action with status', () => {
+			const data = {
+				action: 'updateStatus',
+				status: 'archived'
+			};
+
+			const result = updateMessageSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should accept all status values', () => {
+			['inbox', 'archived', 'trash'].forEach((status) => {
+				const data = {
+					action: 'updateStatus',
+					status
+				};
+
+				const result = updateMessageSchema.safeParse(data);
+				expect(result.success).toBe(true);
+			});
+		});
+
+		it('should accept toggleRead action without additional fields', () => {
+			const data = {
+				action: 'toggleRead'
+			};
+
+			const result = updateMessageSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should accept toggleStar action without additional fields', () => {
+			const data = {
+				action: 'toggleStar'
+			};
+
+			const result = updateMessageSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should accept moveToFolder action with folderId', () => {
+			const data = {
+				action: 'moveToFolder',
+				folderId: '550e8400-e29b-41d4-a716-446655440000'
+			};
+
+			const result = updateMessageSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject updateStatus without status', () => {
+			const data = {
+				action: 'updateStatus'
+			};
+
+			const result = updateMessageSchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('Champs requis manquants');
+			}
+		});
+
+		it('should reject moveToFolder without folderId', () => {
+			const data = {
+				action: 'moveToFolder'
+			};
+
+			const result = updateMessageSchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('Champs requis manquants');
+			}
+		});
+
+		it('should reject invalid action', () => {
+			const data = {
+				action: 'invalid'
+			};
+
+			const result = updateMessageSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject invalid status', () => {
+			const data = {
+				action: 'updateStatus',
+				status: 'invalid'
+			};
+
+			const result = updateMessageSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject invalid folderId UUID', () => {
+			const data = {
+				action: 'moveToFolder',
+				folderId: 'not-a-uuid'
+			};
+
+			const result = updateMessageSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should allow updateStatus with extra folderId (ignored)', () => {
+			const data = {
+				action: 'updateStatus',
+				status: 'inbox',
+				folderId: '550e8400-e29b-41d4-a716-446655440000'
+			};
+
+			const result = updateMessageSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should allow moveToFolder with extra status (ignored)', () => {
+			const data = {
+				action: 'moveToFolder',
+				folderId: '550e8400-e29b-41d4-a716-446655440000',
+				status: 'inbox'
+			};
+
+			const result = updateMessageSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should validate refine logic for all actions', () => {
+			const testCases = [
+				{ action: 'updateStatus', status: 'inbox', shouldPass: true },
+				{ action: 'updateStatus', shouldPass: false }, // Missing status
+				{
+					action: 'moveToFolder',
+					folderId: '550e8400-e29b-41d4-a716-446655440000',
+					shouldPass: true
+				},
+				{ action: 'moveToFolder', shouldPass: false }, // Missing folderId
+				{ action: 'toggleRead', shouldPass: true },
+				{ action: 'toggleStar', shouldPass: true }
+			];
+
+			testCases.forEach(({ action, shouldPass, ...rest }) => {
+				const data = { action, ...rest };
+				const result = updateMessageSchema.safeParse(data);
+				expect(result.success).toBe(shouldPass);
+			});
 		});
 	});
 

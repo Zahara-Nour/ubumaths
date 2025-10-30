@@ -18,6 +18,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getClassWarnings } from '$lib/server/warnings';
+import { getClassWarningsSchema } from '$lib/server/validation/classes';
 
 export const GET: RequestHandler = async ({
 	params,
@@ -31,17 +32,17 @@ export const GET: RequestHandler = async ({
 	}
 
 	try {
-		// Extract and validate parameters
-		const classId = params.classId;
-		const periodId = url.searchParams.get('period_id');
+		// ✅ SECURITY: Validate parameters with Zod
+		const validation = getClassWarningsSchema.safeParse({
+			classId: params.classId,
+			period_id: url.searchParams.get('period_id') || ''
+		});
 
-		if (!classId) {
-			throw error(400, 'Class ID is required');
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
 		}
 
-		if (!periodId) {
-			throw error(400, 'Period ID is required (query param: period_id)');
-		}
+		const { classId, period_id: periodId } = validation.data;
 
 		// Fetch warnings for class (helper verifies teacher ownership)
 		const warningsResult = await getClassWarnings({

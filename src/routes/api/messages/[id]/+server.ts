@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { updateMessageSchema } from '$lib/server/validation/messages';
 
 /**
  * GET /api/messages/[id]
@@ -67,19 +68,20 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 	try {
 		const messageId = params.id;
-		const body = await request.json();
-		const { action, status, folderId } = body;
 
-		if (!action) {
-			throw error(400, 'Action requise');
+		// SECURITY: Validate request body with Zod schema
+		const body = await request.json();
+		const validation = updateMessageSchema.safeParse(body);
+
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
 		}
+
+		const { action, status, folderId } = validation.data;
 
 		switch (action) {
 			case 'updateStatus': {
-				if (!status || !['inbox', 'archived', 'trash'].includes(status)) {
-					throw error(400, 'Statut invalide');
-				}
-
+				// Zod schema already validated status exists and is valid
 				const { error: statusError } = await supabase.rpc('update_message_status', {
 					p_message_id: messageId,
 					p_user_id: user.id,
@@ -133,10 +135,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			}
 
 			case 'moveToFolder': {
-				if (!folderId) {
-					throw error(400, 'ID du dossier requis');
-				}
-
+				// Zod schema already validated folderId exists
 				const { error: folderError } = await supabase.rpc('move_message_to_folder', {
 					p_message_id: messageId,
 					p_user_id: user.id,
@@ -149,9 +148,6 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				}
 				break;
 			}
-
-			default:
-				throw error(400, 'Action invalide');
 		}
 
 		return json({ success: true });

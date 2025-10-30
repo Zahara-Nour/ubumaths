@@ -7,6 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getErrorLog, resolveError } from '$lib/server/errorMonitoring';
+import { resolveErrorSchema } from '$lib/server/validation/errors';
 
 /**
  * GET /api/errors/[id]
@@ -75,7 +76,15 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	try {
-		const { notes } = await request.json();
+		// SECURITY: Validate request body with Zod schema
+		const body = await request.json();
+		const validation = resolveErrorSchema.safeParse(body);
+
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
+		}
+
+		const { notes } = validation.data;
 
 		const result = await resolveError(locals.supabase, id, user.id, notes);
 

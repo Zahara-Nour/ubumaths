@@ -11,6 +11,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { templateStatsQuerySchema } from '$lib/server/validation/message-templates';
 
 export const GET: RequestHandler = async ({ locals, url }) => {
 	const { supabase, user } = locals;
@@ -29,8 +30,16 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		return error(403, 'Permissions insuffisantes');
 	}
 
-	const templateId = url.searchParams.get('template_id');
-	const period = url.searchParams.get('period') || 'month';
+	// ✅ SECURITY: Validate query parameters with Zod
+	const validation = templateStatsQuerySchema.safeParse({
+		template_id: url.searchParams.get('template_id'),
+		period: url.searchParams.get('period')
+	});
+	if (!validation.success) {
+		throw error(400, validation.error.issues[0].message);
+	}
+
+	const { template_id: templateId, period } = validation.data;
 
 	// Calculate date filter
 	const now = new Date();

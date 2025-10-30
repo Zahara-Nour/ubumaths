@@ -32,6 +32,20 @@ export const paginationSchema = z.object({
 });
 
 // ============================================================================
+// ROLE SCHEMAS
+// ============================================================================
+
+/**
+ * User role enum
+ */
+export const roleSchema = z.enum(['student', 'teacher', 'admin']);
+
+/**
+ * User role enum including 'all' (for targeting)
+ */
+export const roleWithAllSchema = z.enum(['all', 'student', 'teacher', 'admin']);
+
+// ============================================================================
 // DIFFICULTY & GRADE SCHEMAS
 // ============================================================================
 
@@ -41,9 +55,26 @@ export const paginationSchema = z.object({
 export const difficultySchema = z.union([z.literal(1), z.literal(2), z.literal(3)]);
 
 /**
- * Grade levels in French education system
+ * Grade levels in French education system (without accents - canonical format)
  */
 export const gradeSchema = z.enum(['6eme', '5eme', '4eme', '3eme', '2nde', '1ere', 'Terminale']);
+
+/**
+ * Format grade string with accents for display
+ * Converts '6eme' to '6ème', etc.
+ */
+export function formatGradeForDisplay(grade: string): string {
+	const gradeMap: Record<string, string> = {
+		'6eme': '6ème',
+		'5eme': '5ème',
+		'4eme': '4ème',
+		'3eme': '3ème',
+		'2nde': '2nde',
+		'1ere': '1ère',
+		Terminale: 'Terminale'
+	};
+	return gradeMap[grade] || grade;
+}
 
 // ============================================================================
 // VALIDATION HELPER FUNCTION

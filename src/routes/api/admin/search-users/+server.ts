@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { searchUsersSchema } from '$lib/server/validation/admin';
 
 export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -19,9 +20,21 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
 		throw error(403, 'Forbidden - Admin access required');
 	}
 
-	const searchTerm = url.searchParams.get('q');
+	// ✅ SECURITY: Validate query parameters with Zod
+	const validation = searchUsersSchema.safeParse({
+		query: url.searchParams.get('q') || '',
+		role: url.searchParams.get('role'),
+		limit: url.searchParams.get('limit')
+	});
 
-	if (!searchTerm || searchTerm.length < 3) {
+	if (!validation.success) {
+		throw error(400, validation.error.issues[0].message);
+	}
+
+	const { query: searchTerm, limit } = validation.data;
+
+	// Return empty array for short queries (less than 3 chars)
+	if (searchTerm.length < 3) {
 		return json({ users: [] });
 	}
 
@@ -34,7 +47,7 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
 		)
 		.order('lastname', { ascending: true })
 		.order('firstname', { ascending: true })
-		.limit(50);
+		.limit(limit);
 
 	if (searchError) {
 		console.error('Search error:', searchError);

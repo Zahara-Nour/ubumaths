@@ -9,7 +9,7 @@ import { describe, it, expect } from 'vitest';
 import { riddleAnswerSchema, riddleFormSchema, riddleOfTheDaySchema } from './riddles';
 
 // Errors
-import { logErrorSchema } from './errors';
+import { logErrorSchema, resolveErrorSchema, cleanupErrorsSchema } from './errors';
 
 // LaTeX
 import { compileLatexSchema } from './latex';
@@ -29,7 +29,9 @@ import {
 	createClassSchema,
 	updateClassSchema,
 	getClassStudentsSchema,
-	createScheduleEntrySchema
+	createScheduleEntrySchema,
+	getClassWarningsSchema,
+	getClassGidouillesSchema
 } from './classes';
 
 describe('miscellaneous validation modules', () => {
@@ -246,6 +248,170 @@ describe('miscellaneous validation modules', () => {
 			};
 
 			const result = logErrorSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+	});
+
+	describe('resolveErrorSchema', () => {
+		it('should accept notes field', () => {
+			const data = {
+				notes: 'Fixed by restarting server'
+			};
+
+			const result = resolveErrorSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should accept empty object (notes optional)', () => {
+			const result = resolveErrorSchema.safeParse({});
+			expect(result.success).toBe(true);
+		});
+
+		it('should accept undefined notes', () => {
+			const data = {
+				notes: undefined
+			};
+
+			const result = resolveErrorSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject notes exceeding max length', () => {
+			const data = {
+				notes: 'a'.repeat(2001)
+			};
+
+			const result = resolveErrorSchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('max 2000');
+			}
+		});
+
+		it('should accept notes at exactly max length', () => {
+			const data = {
+				notes: 'a'.repeat(2000)
+			};
+
+			const result = resolveErrorSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should accept long detailed notes', () => {
+			const data = {
+				notes:
+					'Error was caused by race condition in authentication flow. ' +
+					'Fixed by implementing proper mutex locks. ' +
+					'Added tests to prevent regression. ' +
+					'Deployed to production and monitoring shows no recurrence.'
+			};
+
+			const result = resolveErrorSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+	});
+
+	describe('cleanupErrorsSchema', () => {
+		it('should accept valid days_old', () => {
+			const data = {
+				days_old: 90
+			};
+
+			const result = cleanupErrorsSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should use default value', () => {
+			const result = cleanupErrorsSchema.safeParse({});
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.days_old).toBe(90);
+			}
+		});
+
+		it('should accept undefined days_old', () => {
+			const data = {
+				days_old: undefined
+			};
+
+			const result = cleanupErrorsSchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.days_old).toBe(90);
+			}
+		});
+
+		it('should accept days_old from 1 to 365', () => {
+			const validValues = [1, 30, 90, 180, 365];
+			validValues.forEach((days_old) => {
+				const result = cleanupErrorsSchema.safeParse({ days_old });
+				expect(result.success).toBe(true);
+			});
+		});
+
+		it('should reject zero days_old', () => {
+			const data = {
+				days_old: 0
+			};
+
+			const result = cleanupErrorsSchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('positive');
+			}
+		});
+
+		it('should reject negative days_old', () => {
+			const data = {
+				days_old: -30
+			};
+
+			const result = cleanupErrorsSchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('positive');
+			}
+		});
+
+		it('should reject days_old exceeding max', () => {
+			const data = {
+				days_old: 366
+			};
+
+			const result = cleanupErrorsSchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('365');
+			}
+		});
+
+		it('should reject decimal days_old', () => {
+			const data = {
+				days_old: 90.5
+			};
+
+			const result = cleanupErrorsSchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('integer');
+			}
+		});
+
+		it('should reject infinite days_old', () => {
+			const data = {
+				days_old: Infinity
+			};
+
+			const result = cleanupErrorsSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject NaN days_old', () => {
+			const data = {
+				days_old: NaN
+			};
+
+			const result = cleanupErrorsSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 	});
@@ -599,27 +765,37 @@ describe('miscellaneous validation modules', () => {
 	});
 
 	describe('getClassStudentsSchema', () => {
-		it('should accept includeStats parameter', () => {
-			const data = { includeStats: true };
+		it('should accept full parameter', () => {
+			const data = { full: 'true' };
 			const result = getClassStudentsSchema.safeParse(data);
 			expect(result.success).toBe(true);
 		});
 
-		it('should use default value', () => {
+		it('should accept empty object (transform undefined to false)', () => {
 			const result = getClassStudentsSchema.safeParse({});
 			expect(result.success).toBe(true);
 			if (result.success) {
-				expect(result.data.includeStats).toBe(false);
+				// The transform converts undefined string to false boolean
+				expect(result.data.full).toBe(false);
 			}
 		});
 
 		it('should coerce string to boolean', () => {
-			const data = { includeStats: 'true' };
+			const data = { full: 'true' };
 			const result = getClassStudentsSchema.safeParse(data);
 			expect(result.success).toBe(true);
 			if (result.success) {
-				expect(result.data.includeStats).toBe(true);
-				expect(typeof result.data.includeStats).toBe('boolean');
+				expect(result.data.full).toBe(true);
+				expect(typeof result.data.full).toBe('boolean');
+			}
+		});
+
+		it('should transform "false" string to false boolean', () => {
+			const data = { full: 'false' };
+			const result = getClassStudentsSchema.safeParse(data);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.full).toBe(false);
 			}
 		});
 	});
@@ -693,6 +869,94 @@ describe('miscellaneous validation modules', () => {
 			};
 
 			const result = createScheduleEntrySchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+	});
+
+	describe('getClassWarningsSchema', () => {
+		it('should accept valid classId and period_id', () => {
+			const data = {
+				classId: '550e8400-e29b-41d4-a716-446655440000',
+				period_id: '6ba7b810-9dad-11d1-80b4-00c04fd430c8'
+			};
+
+			const result = getClassWarningsSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject invalid classId UUID', () => {
+			const data = {
+				classId: 'not-a-uuid',
+				period_id: '6ba7b810-9dad-11d1-80b4-00c04fd430c8'
+			};
+
+			const result = getClassWarningsSchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('Invalid class ID');
+			}
+		});
+
+		it('should reject invalid period_id UUID', () => {
+			const data = {
+				classId: '550e8400-e29b-41d4-a716-446655440000',
+				period_id: 'invalid-uuid'
+			};
+
+			const result = getClassWarningsSchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('Invalid period ID');
+			}
+		});
+
+		it('should reject missing fields', () => {
+			const missingFields = [
+				{ classId: '550e8400-e29b-41d4-a716-446655440000' },
+				{ period_id: '6ba7b810-9dad-11d1-80b4-00c04fd430c8' },
+				{}
+			];
+
+			missingFields.forEach((data) => {
+				const result = getClassWarningsSchema.safeParse(data);
+				expect(result.success).toBe(false);
+			});
+		});
+	});
+
+	describe('getClassGidouillesSchema', () => {
+		it('should accept valid classId', () => {
+			const data = {
+				classId: '550e8400-e29b-41d4-a716-446655440000'
+			};
+
+			const result = getClassGidouillesSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject invalid classId UUID', () => {
+			const data = {
+				classId: 'not-a-uuid'
+			};
+
+			const result = getClassGidouillesSchema.safeParse(data);
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('Invalid class ID');
+			}
+		});
+
+		it('should reject missing classId', () => {
+			const result = getClassGidouillesSchema.safeParse({});
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject empty string classId', () => {
+			const data = {
+				classId: ''
+			};
+
+			const result = getClassGidouillesSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 	});

@@ -15,7 +15,8 @@ import {
 	viewExerciseSchema,
 	updateAssignmentSchema,
 	exerciseResponseSchema,
-	exerciseListResponseSchema
+	exerciseListResponseSchema,
+	importExercisesSchema
 } from './exercises';
 
 describe('exercise validation schemas', () => {
@@ -463,8 +464,171 @@ describe('exercise validation schemas', () => {
 	});
 
 	// ============================================================================
-	// EXPORT SCHEMAS
+	// IMPORT/EXPORT SCHEMAS
 	// ============================================================================
+
+	describe('importExercisesSchema', () => {
+		it('should accept JSON format with string content', () => {
+			const data = {
+				format: 'json',
+				content: '{"exercise": "data"}',
+				options: {
+					on_duplicate: 'skip',
+					validate: true
+				}
+			};
+
+			const result = importExercisesSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should accept JSON format with stringified object content', () => {
+			const data = {
+				format: 'json',
+				content: JSON.stringify({ exercise: 'data', statement: 'Problem' }),
+				options: {
+					on_duplicate: 'replace'
+				}
+			};
+
+			const result = importExercisesSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should accept markdown format', () => {
+			const data = {
+				format: 'markdown',
+				content: '# Exercise\nSolve for x'
+			};
+
+			const result = importExercisesSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should accept missing options (defaults handled by endpoint)', () => {
+			const data = {
+				format: 'json',
+				content: '{"test": "data"}'
+			};
+
+			const result = importExercisesSchema.safeParse(data);
+			expect(result.success).toBe(true);
+			// Options are optional at schema level (undefined if not provided)
+			// Defaults are applied in the API endpoint logic, not the schema
+		});
+
+		it('should accept all on_duplicate values', () => {
+			const onDuplicateValues = ['skip', 'replace', 'create-copy'];
+
+			onDuplicateValues.forEach((on_duplicate) => {
+				const data = {
+					format: 'json',
+					content: '{}',
+					options: { on_duplicate }
+				};
+
+				const result = importExercisesSchema.safeParse(data);
+				expect(result.success).toBe(true);
+			});
+		});
+
+		it('should accept validate option', () => {
+			[true, false].forEach((validate) => {
+				const data = {
+					format: 'json',
+					content: '{}',
+					options: { validate }
+				};
+
+				const result = importExercisesSchema.safeParse(data);
+				expect(result.success).toBe(true);
+			});
+		});
+
+		it('should accept missing options', () => {
+			const data = {
+				format: 'json',
+				content: '{}'
+			};
+
+			const result = importExercisesSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject invalid format', () => {
+			const data = {
+				format: 'xml',
+				content: '{}'
+			};
+
+			const result = importExercisesSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject empty content', () => {
+			const data = {
+				format: 'json',
+				content: ''
+			};
+
+			const result = importExercisesSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject invalid on_duplicate value', () => {
+			const data = {
+				format: 'json',
+				content: '{}',
+				options: {
+					on_duplicate: 'invalid'
+				}
+			};
+
+			const result = importExercisesSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
+		it('should accept stringified complex object', () => {
+			const data = {
+				format: 'json',
+				content: JSON.stringify({
+					exercises: [
+						{ id: '1', statement: 'Problem 1' },
+						{ id: '2', statement: 'Problem 2' }
+					],
+					metadata: { author: 'Teacher', date: '2025-01-01' }
+				})
+			};
+
+			const result = importExercisesSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should accept both formats with string content', () => {
+			const testCases = [
+				{ format: 'json', content: '{"key": "value"}' },
+				{ format: 'json', content: JSON.stringify({ key: 'value' }) },
+				{ format: 'markdown', content: '# Heading\nContent' }
+			];
+
+			testCases.forEach((data) => {
+				const result = importExercisesSchema.safeParse(data);
+				expect(result.success).toBe(true);
+			});
+		});
+
+		it('should reject missing required fields', () => {
+			const missingFields = [
+				{ format: 'json' }, // Missing content
+				{ content: '{}' } // Missing format
+			];
+
+			missingFields.forEach((data) => {
+				const result = importExercisesSchema.safeParse(data);
+				expect(result.success).toBe(false);
+			});
+		});
+	});
 
 	describe('exportExercisesSchema', () => {
 		it('should accept valid export request', () => {

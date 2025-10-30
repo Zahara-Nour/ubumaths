@@ -6,6 +6,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { cleanupOldErrors } from '$lib/server/errorMonitoring';
+import { cleanupErrorsSchema } from '$lib/server/validation/errors';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	// Check authentication
@@ -26,8 +27,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	try {
-		// Parse days_old parameter (default: 90)
-		const { days_old } = await request.json().catch(() => ({ days_old: 90 }));
+		// SECURITY: Validate request body with Zod schema
+		const body = await request.json().catch(() => ({}));
+		const validation = cleanupErrorsSchema.safeParse(body);
+
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
+		}
+
+		const { days_old = 90 } = validation.data;
 
 		const result = await cleanupOldErrors(locals.supabase, days_old);
 

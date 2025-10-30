@@ -228,6 +228,30 @@ export const viewExerciseSchema = z.object({
 });
 
 /**
+ * Schema for importing exercises (POST /api/exercises/import)
+ * Supports both JSON and Markdown formats with import options
+ */
+export const importExercisesSchema = z.object({
+	format: z.enum(['json', 'markdown'], {
+		errorMap: () => ({ message: 'Format must be "json" or "markdown"' })
+	}),
+	content: z.union([z.string().min(1, 'Content is required'), z.record(z.any())], {
+		errorMap: () => ({ message: 'Content must be a string or object' })
+	}),
+	options: z
+		.object({
+			on_duplicate: z
+				.enum(['skip', 'replace', 'create-copy'], {
+					errorMap: () => ({ message: 'on_duplicate must be "skip", "replace", or "create-copy"' })
+				})
+				.default('skip')
+				.optional(),
+			validate: z.boolean().default(true).optional()
+		})
+		.optional()
+});
+
+/**
  * Schema for updating assignment (PATCH /api/exercises/assignments/[assignmentId])
  */
 export const updateAssignmentSchema = z

@@ -84,15 +84,44 @@ export const templateMatchSchema = z.object({
 });
 
 /**
- * Schema for duplicating a template
+ * Schema for previewing a template with data substitution
+ * POST /api/messages/templates/[id]/preview
  */
-export const duplicateTemplateSchema = z.object({
-	title: z.string().trim().min(1).max(200).optional()
+export const previewTemplateSchema = z.object({
+	data: z
+		.record(
+			z.string(),
+			z.union([z.string().max(1000, 'Valeur trop longue (max 1000 caractères)'), z.number()])
+		)
+		.refine((obj) => Object.keys(obj).length <= 50, {
+			message: 'Trop de variables (max 50)'
+		})
+		.optional()
 });
 
 /**
- * Schema for approving a template (admin only)
+ * Schema for duplicating a template
+ * POST /api/messages/templates/[id]/duplicate
+ */
+export const duplicateTemplateSchema = z.object({
+	new_title: z.string().trim().max(200, 'Titre trop long (max 200 caractères)').optional(),
+	class_id: uuidSchema.optional()
+});
+
+/**
+ * Schema for approving/rejecting a template (admin only)
+ * POST /api/messages/templates/[id]/approve
  */
 export const approveTemplateSchema = z.object({
-	approved: z.boolean()
+	action: z.enum(['approve', 'reject']),
+	notes: z.string().max(1000, 'Notes trop longues (max 1000 caractères)').optional()
+});
+
+/**
+ * Schema for template statistics query parameters
+ * GET /api/messages/templates/stats
+ */
+export const templateStatsQuerySchema = z.object({
+	template_id: uuidSchema.optional(),
+	period: z.enum(['week', 'month', 'year', 'all']).default('month')
 });

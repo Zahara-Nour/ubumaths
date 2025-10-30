@@ -11,6 +11,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { previewTemplate } from '$lib/templates/templateEngine';
+import { previewTemplateSchema } from '$lib/server/validation/message-templates';
 
 // =====================================================
 // POST - Generate preview
@@ -34,14 +35,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		return error(404, 'Template non trouvé');
 	}
 
-	// Parse request body
-	let customData: Record<string, string | number> = {};
-	try {
-		const body = await request.json();
-		customData = body.data || {};
-	} catch {
-		// If no data provided, use example data
+	// ✅ SECURITY: Validate input with Zod
+	const body = await request.json();
+	const validation = previewTemplateSchema.safeParse(body);
+	if (!validation.success) {
+		throw error(400, validation.error.issues[0].message);
 	}
+
+	const { data: customData = {} } = validation.data;
 
 	// Generate preview
 	const preview = previewTemplate(template, customData);

@@ -9,6 +9,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { duplicateTemplateSchema } from '$lib/server/validation/message-templates';
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { supabase, user } = locals;
@@ -34,19 +35,20 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		return error(403, 'Permissions insuffisantes');
 	}
 
-	// Parse body
-	let body: { new_title?: string; class_id?: string } = {};
-	try {
-		body = await request.json();
-	} catch {
-		// Body is optional
+	// ✅ SECURITY: Validate input with Zod
+	const body = await request.json();
+	const validation = duplicateTemplateSchema.safeParse(body);
+	if (!validation.success) {
+		throw error(400, validation.error.issues[0].message);
 	}
+
+	const { new_title, class_id } = validation.data;
 
 	// Call duplicate function
 	const { data: newTemplateId, error: dupError } = await supabase.rpc('duplicate_template', {
 		p_template_id: id,
 		p_user_id: user.id,
-		p_new_title: body.new_title || null
+		p_new_title: new_title || null
 	});
 
 	if (dupError) {
@@ -55,18 +57,18 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	// If class_id provided, update the duplicate
-	if (body.class_id) {
+	if (class_id) {
 		// Verify user owns the class
 		const { data: classData } = await supabase
 			.from('classes')
 			.select('teacher_id')
-			.eq('id', body.class_id)
+			.eq('id', class_id)
 			.single();
 
 		if (classData && classData.teacher_id === user.id) {
 			await supabase
 				.from('message_templates')
-				.update({ class_id: body.class_id })
+				.update({ class_id: class_id })
 				.eq('id', newTemplateId);
 		}
 	}

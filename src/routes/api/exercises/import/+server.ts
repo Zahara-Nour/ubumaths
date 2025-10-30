@@ -11,6 +11,7 @@ import {
 	importExercisesFromJSON
 } from '$lib/server/exercise-import-export';
 import type { ImportOptions } from '$lib/exercises/types';
+import { importExercisesSchema } from '$lib/server/validation/exercises';
 
 /**
  * POST /api/exercises/import
@@ -46,18 +47,15 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(403, 'Forbidden - Teachers only');
 	}
 
-	// Parse request body
+	// SECURITY: Validate request body with Zod schema
 	const body = await request.json();
-	const { format, content, options = {} } = body;
+	const validation = importExercisesSchema.safeParse(body);
 
-	// Validate inputs
-	if (!['json', 'markdown'].includes(format)) {
-		throw error(400, 'Invalid format. Must be "json" or "markdown"');
+	if (!validation.success) {
+		throw error(400, validation.error.issues[0].message);
 	}
 
-	if (!content) {
-		throw error(400, 'Missing content');
-	}
+	const { format, content, options = {} } = validation.data;
 
 	// Build import options
 	const importOptions: ImportOptions = {

@@ -3,7 +3,7 @@
  */
 
 import { z } from 'zod';
-import { formDataTransforms } from './common';
+import { formDataTransforms, roleSchema, roleWithAllSchema } from './common';
 
 /**
  * Schema for adding a user to a class
@@ -23,18 +23,13 @@ export const removeFromClassSchema = addToClassSchema;
  */
 export const searchUsersSchema = z.object({
 	query: z.string().trim().min(1).max(100),
-	role: z.enum(['student', 'teacher', 'admin']).optional(),
+	role: roleSchema.optional(),
 	limit: z.coerce.number().int().positive().max(50).default(20)
 });
 
 // ============================================================================
 // USER MANAGEMENT FORM SCHEMAS
 // ============================================================================
-
-/**
- * User role enum
- */
-const userRoleSchema = z.enum(['student', 'teacher', 'admin']);
 
 /**
  * Gender enum (empty string allowed)
@@ -49,7 +44,7 @@ export const updateProfileFormSchema = z.object({
 	firstname: formDataTransforms.optionalString.nullable(),
 	lastname: formDataTransforms.optionalString.nullable(),
 	email: formDataTransforms.email,
-	role: userRoleSchema,
+	role: roleSchema,
 	school_id: formDataTransforms.optionalUuid.nullable(),
 	avatar_url: formDataTransforms.optionalString.nullable(),
 	gender: genderSchema.transform((val) => (val === '' ? null : val)),
@@ -94,7 +89,7 @@ export const createNotificationFormSchema = z.object({
 	title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long (max 200)'),
 	message: z.string().min(1, 'Message requis').max(2000, 'Message trop long (max 2000)'),
 	type: z.enum(['info', 'success', 'warning', 'error']),
-	target_role: z.enum(['all', 'student', 'teacher', 'admin']),
+	target_role: roleWithAllSchema,
 	target_class_id: formDataTransforms.optionalUuid.nullable(),
 	expires_at: formDataTransforms.optionalString.nullable()
 });

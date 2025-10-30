@@ -35,10 +35,16 @@ export const createClassSchema = z.object({
 export const updateClassSchema = createClassSchema.partial();
 
 /**
- * Schema for getting students in a class
+ * Schema for getting students in a class (GET /api/classes/[classId]/students)
+ * Query parameter: full=true for complete profile data
  */
 export const getClassStudentsSchema = z.object({
-	includeStats: z.coerce.boolean().default(false)
+	full: z
+		.string()
+		.optional()
+		.transform((val) => val === 'true')
+		.pipe(z.boolean())
+		.optional()
 });
 
 // ============================================================================
@@ -88,4 +94,23 @@ export const updateScheduleEntrySchema = z.object({
  */
 export const deleteScheduleEntrySchema = z.object({
 	id: formDataTransforms.uuid
+});
+
+// ============================================================================
+// CLASS WARNINGS/GIDOUILLES QUERY SCHEMAS
+// ============================================================================
+
+/**
+ * Get class warnings query parameters
+ */
+export const getClassWarningsSchema = z.object({
+	classId: z.string().uuid('Invalid class ID format'),
+	period_id: z.string().uuid('Invalid period ID format')
+});
+
+/**
+ * Get class gidouilles - validates classId param
+ */
+export const getClassGidouillesSchema = z.object({
+	classId: z.string().uuid('Invalid class ID format')
 });

@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { TestResult } from '$lib/types/test';
-import type { CartItem } from '$lib/stores/questionCart.svelte';
+import { validateSaveTest } from '$lib/server/validation/tests';
 
 /**
  * API route to save test results to database
@@ -20,22 +19,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	try {
-		// Parse request body
+		// SECURITY: Validate request body with Zod schema
 		const body = await request.json();
-		const result: TestResult = body.result;
-		const categories: CartItem[] = body.categories;
-		const assignmentId: string | undefined = body.assignmentId;
+		const validation = validateSaveTest(body);
 
-		// Validate input
-		if (!result || !categories) {
-			return json({ error: 'Invalid request body' }, { status: 400 });
+		if (!validation.success) {
+			return json({ error: validation.error.issues[0].message }, { status: 400 });
 		}
+
+		const { result, categories, assignmentId } = validation.data;
 
 		// Insert test session
 		const { data: testSession, error: sessionError } = await supabase
 			.from('test_sessions')
 			.insert({
-				user_id: user.id,
+				user_id: session.user.id, // BUGFIX: was user.id (undefined)
 				mode: result.mode,
 				categories: categories,
 				score: result.score,

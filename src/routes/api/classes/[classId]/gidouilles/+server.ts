@@ -1,6 +1,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getTeacherTestMode } from '$lib/server/test-mode';
+import { getClassGidouillesSchema } from '$lib/server/validation/classes';
 
 /**
  * GET /api/classes/[classId]/gidouilles
@@ -32,11 +33,16 @@ export const GET: RequestHandler = async ({ params, locals: { safeGetSession, su
 		throw error(401, 'Non authentifié');
 	}
 
-	const { classId } = params;
+	// ✅ SECURITY: Validate class ID with Zod
+	const validation = getClassGidouillesSchema.safeParse({
+		classId: params.classId
+	});
 
-	if (!classId) {
-		throw error(400, 'ID de classe requis');
+	if (!validation.success) {
+		throw error(400, validation.error.issues[0].message);
 	}
+
+	const { classId } = validation.data;
 
 	try {
 		// Fetch user's profile to verify role

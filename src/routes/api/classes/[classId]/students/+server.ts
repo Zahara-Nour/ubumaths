@@ -1,6 +1,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getTeacherTestMode } from '$lib/server/test-mode';
+import { getClassStudentsSchema } from '$lib/server/validation/classes';
 
 /**
  * GET /api/classes/[classId]/students
@@ -45,8 +46,15 @@ export const GET: RequestHandler = async ({
 		throw error(400, 'Class ID is required');
 	}
 
-	// Check if full data is requested
-	const full = url.searchParams.get('full') === 'true';
+	// SECURITY: Validate query parameters with Zod schema
+	const queryParams = Object.fromEntries(url.searchParams);
+	const validation = getClassStudentsSchema.safeParse(queryParams);
+
+	if (!validation.success) {
+		throw error(400, validation.error.issues[0].message);
+	}
+
+	const { full } = validation.data;
 
 	try {
 		// Fetch user's profile to check role

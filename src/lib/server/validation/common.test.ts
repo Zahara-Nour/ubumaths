@@ -10,6 +10,9 @@ import {
 	paginationSchema,
 	difficultySchema,
 	gradeSchema,
+	roleSchema,
+	roleWithAllSchema,
+	formatGradeForDisplay,
 	validateRequest,
 	validateFormData,
 	formDataTransforms
@@ -191,6 +194,91 @@ describe('common validation schemas', () => {
 				const result = gradeSchema.safeParse(grade);
 				expect(result.success).toBe(false);
 			});
+		});
+
+		it('should reject accented grade levels (canonical format uses no accents)', () => {
+			const accentedGrades = ['6ème', '5ème', '4ème', '3ème', '1ère'];
+			accentedGrades.forEach((grade) => {
+				const result = gradeSchema.safeParse(grade);
+				expect(result.success).toBe(false);
+			});
+		});
+	});
+
+	describe('roleSchema', () => {
+		it('should accept valid user roles', () => {
+			const validRoles = ['student', 'teacher', 'admin'];
+			validRoles.forEach((role) => {
+				const result = roleSchema.safeParse(role);
+				expect(result.success).toBe(true);
+				if (result.success) {
+					expect(result.data).toBe(role);
+				}
+			});
+		});
+
+		it('should reject invalid roles', () => {
+			const invalidRoles = ['user', 'admin_user', 'superuser', 'guest', '', null, 'all'];
+			invalidRoles.forEach((role) => {
+				const result = roleSchema.safeParse(role);
+				expect(result.success).toBe(false);
+			});
+		});
+
+		it('should reject "all" role (use roleWithAllSchema for that)', () => {
+			const result = roleSchema.safeParse('all');
+			expect(result.success).toBe(false);
+		});
+	});
+
+	describe('roleWithAllSchema', () => {
+		it('should accept valid user roles plus "all"', () => {
+			const validRoles = ['all', 'student', 'teacher', 'admin'];
+			validRoles.forEach((role) => {
+				const result = roleWithAllSchema.safeParse(role);
+				expect(result.success).toBe(true);
+				if (result.success) {
+					expect(result.data).toBe(role);
+				}
+			});
+		});
+
+		it('should reject invalid roles', () => {
+			const invalidRoles = ['user', 'admin_user', 'superuser', 'guest', '', null];
+			invalidRoles.forEach((role) => {
+				const result = roleWithAllSchema.safeParse(role);
+				expect(result.success).toBe(false);
+			});
+		});
+	});
+
+	describe('formatGradeForDisplay', () => {
+		it('should convert grades to display format with accents', () => {
+			const gradeMap = {
+				'6eme': '6ème',
+				'5eme': '5ème',
+				'4eme': '4ème',
+				'3eme': '3ème',
+				'2nde': '2nde',
+				'1ere': '1ère',
+				Terminale: 'Terminale'
+			};
+
+			Object.entries(gradeMap).forEach(([input, expected]) => {
+				const result = formatGradeForDisplay(input);
+				expect(result).toBe(expected);
+			});
+		});
+
+		it('should return input unchanged for unknown grades', () => {
+			const unknownGrade = 'unknown_grade';
+			const result = formatGradeForDisplay(unknownGrade);
+			expect(result).toBe(unknownGrade);
+		});
+
+		it('should handle already-formatted grades', () => {
+			const result = formatGradeForDisplay('6ème');
+			expect(result).toBe('6ème');
 		});
 	});
 
