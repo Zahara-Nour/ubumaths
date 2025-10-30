@@ -35,7 +35,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// SECURITY: Authentication Check
 		// ====================================================================
 		const { user } = await locals.safeGetSession();
-		if (!session?.user) {
+		if (!user) {
 			throw error(401, { message: 'Authentication required' });
 		}
 
