@@ -365,7 +365,7 @@
 			const filteredCorrection = variation.correction?.filter(
 				(field) =>
 					(field.type === 'text' && field.content.trim() !== '') ||
-					(field.type === 'image' && field.url)
+					(field.type === 'image' && field.content)
 			);
 
 			return {

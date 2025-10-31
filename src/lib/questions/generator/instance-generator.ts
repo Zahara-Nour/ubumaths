@@ -100,9 +100,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let resolvedBlanks;
 
 		if (template.type === 'multiple_choice' && selectedVariation.choices) {
-			// Resolve choice content
+			// Resolve choice content (keep as array to support multiple fields)
 			resolvedChoices = selectedVariation.choices.map((choice) => ({
-				content: resolveContentFields([choice.content], resolvedVariables, seed)[0],
+				content: resolveContentFields([choice.content], resolvedVariables, seed),
 				isCorrect: choice.isCorrect
 			}));
 

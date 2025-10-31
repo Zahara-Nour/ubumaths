@@ -167,7 +167,6 @@
 									type="single"
 									bind:value={type}
 									items={typeItems}
-									placeholder="Sélectionner un type"
 									triggerClass="h-9 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
 								/>
 								<input type="hidden" name="type" value={type} />
@@ -179,7 +178,6 @@
 									type="single"
 									bind:value={priority}
 									items={priorityItems}
-									placeholder="Sélectionner une priorité"
 									triggerClass="h-9 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
 								/>
 								<input type="hidden" name="priority" value={priority} />
@@ -195,7 +193,6 @@
 						<!-- Message (Rich Text) -->
 						<div class="space-y-2">
 							<Label for="message">Message</Label>
-							<FormRichTextEditor bind:value={message} placeholder="Écrivez votre message..." />
 							<input type="hidden" name="message" value={message} />
 						</div>
 
@@ -335,7 +332,6 @@
 										id="actionLabel"
 										name="actionLabel"
 										bind:value={actionLabel}
-										placeholder="Voir plus d'infos"
 									/>
 								</div>
 								<div class="space-y-2">
@@ -344,7 +340,6 @@
 										id="actionUrl"
 										name="actionUrl"
 										bind:value={actionUrl}
-										placeholder="/dashboard/..."
 									/>
 								</div>
 							</div>

@@ -55,7 +55,7 @@
 				if (field.type === 'text') {
 					return field.content;
 				} else if (field.type === 'image') {
-					return `<img src="${field.url}" alt="${field.alt || ''}" />`;
+					return `<img src="${field.content}" alt="${field.alt || ''}" />`;
 				}
 				return '';
 			})
@@ -113,7 +113,6 @@
 				</div>
 				<FormRichTextEditor
 					bind:value={frontHTML}
-					placeholder="Entrez la question ou le concept à réviser..."
 				/>
 			</div>
 
@@ -125,7 +124,6 @@
 				</div>
 				<FormRichTextEditor
 					bind:value={backHTML}
-					placeholder="Entrez la réponse ou l'explication détaillée..."
 				/>
 			</div>
 		</TabsContent>

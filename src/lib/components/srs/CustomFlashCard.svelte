@@ -123,7 +123,7 @@
 									<MathDisplay text={field.content} />
 								{:else if field.type === 'image'}
 									<img
-										src={field.url}
+										src={field.content}
 										alt={field.alt || 'Image'}
 										class="my-4 max-w-full rounded-lg"
 									/>
@@ -162,7 +162,7 @@
 									<MathDisplay text={field.content} />
 								{:else if field.type === 'image'}
 									<img
-										src={field.url}
+										src={field.content}
 										alt={field.alt || 'Image'}
 										class="my-4 max-w-full rounded-lg"
 									/>

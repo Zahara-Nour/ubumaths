@@ -134,7 +134,6 @@
 				<Input
 					id="title"
 					bind:value={title}
-					placeholder="Ex: Le mystère des triangles magiques"
 					maxlength={100}
 					required
 				/>
@@ -149,7 +148,6 @@
 					<Input
 						id="genre"
 						bind:value={genre}
-						placeholder="Ex: Logique, Géométrie..."
 						list="genre-suggestions"
 					/>
 					<datalist id="genre-suggestions">
@@ -204,7 +202,6 @@
 		<Card.Content>
 			<FormRichTextEditor
 				bind:value={statement}
-				placeholder="Énoncez votre énigme ici... Vous pouvez utiliser des formules mathématiques, des couleurs, etc."
 			/>
 		</Card.Content>
 	</Card.Root>
@@ -220,7 +217,6 @@
 		<Card.Content>
 			<FormRichTextEditor
 				bind:value={correction}
-				placeholder="Expliquez la solution de l'énigme ici..."
 			/>
 		</Card.Content>
 	</Card.Root>
@@ -240,7 +236,6 @@
 				id="image-url"
 				bind:value={imageUrl}
 				type="url"
-				placeholder="https://exemple.com/image.png"
 			/>
 			{#if imageUrl}
 				<div class="mt-3">

@@ -317,7 +317,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 
 		// Verify the answer index points to a valid choice
 		expect(result.instance.shuffledChoices![shuffledCorrectIndex]).toBeDefined();
-		expect(result.instance.shuffledChoices![shuffledCorrectIndex].content.content).toBeDefined();
+		expect(result.instance.shuffledChoices![shuffledCorrectIndex].content[0].content).toBeDefined();
 	});
 
 	it('should generate multiple choice with multiple correct answers', () => {
@@ -359,7 +359,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 
 		const answerIndices = result.instance.answer as string[];
 		const correctChoices = answerIndices.map(
-			(i) => result.instance.shuffledChoices![parseInt(i)].content.content
+			(i) => result.instance.shuffledChoices![parseInt(i)].content[0].content
 		);
 
 		// Verify we have 2 correct answers (don't check which specific ones due to shuffling)

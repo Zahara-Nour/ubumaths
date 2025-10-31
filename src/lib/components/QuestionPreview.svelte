@@ -127,7 +127,7 @@
 				if (field.type === 'text') {
 					return field.content;
 				} else {
-					return `[Image: ${field.url}]`;
+					return `[Image: ${field.content}]`;
 				}
 			})
 			.join(' ');

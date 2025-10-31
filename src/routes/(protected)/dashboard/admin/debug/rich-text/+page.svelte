@@ -169,7 +169,6 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content class="space-y-4">
-			<RichTextEditor onSend={handleSend} placeholder="Tapez votre message..." />
 
 			<div>
 				<div class="mb-2 flex items-center justify-between">
@@ -228,7 +227,6 @@
 						<Button size="sm" variant="outline" onclick={resetForm}>Reset</Button>
 					</div>
 				</div>
-				<FormRichTextEditor bind:value={formContent} placeholder="Entrez une description..." />
 			</div>
 
 			<div>
@@ -288,7 +286,6 @@
 
 &lt;RichTextEditor
   onSend=&#123;handleSend&#125;
-  placeholder="Tapez votre message..."
 /&gt;</code
 						></pre>
 				</div>
@@ -318,7 +315,6 @@
 &lt;form onsubmit=&#123;handleSubmit&#125;&gt;
   &lt;FormRichTextEditor
     bind:value=&#123;description&#125;
-    placeholder="Entrez une description..."
   /&gt;
   &lt;button type="submit"&gt;Enregistrer&lt;/button&gt;
 &lt;/form&gt;

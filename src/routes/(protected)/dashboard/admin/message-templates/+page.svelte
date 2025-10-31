@@ -431,7 +431,6 @@
 			<Search class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 			<Input
 				type="text"
-				placeholder="Rechercher dans les templates..."
 				bind:value={searchQuery}
 				class="pl-10"
 			/>
@@ -446,7 +445,6 @@
 					{ value: 'null', label: 'Tous les scopes' },
 					...scopeOptions.map((opt) => ({ value: opt.value, label: opt.label }))
 				]}
-				placeholder="Tous les scopes"
 				triggerClass="h-10 w-48 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
 				onValueChange={(v) => {
 					filterScope = v === 'null' ? null : v;
@@ -460,7 +458,6 @@
 					{ value: 'null', label: 'Tous les types' },
 					...triggerTypeOptions.map((opt) => ({ value: opt.value, label: opt.label }))
 				]}
-				placeholder="Tous les types"
 				triggerClass="h-10 w-64 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
 				onValueChange={(v) => {
 					filterTriggerType = v === 'null' ? null : v;
@@ -684,7 +681,6 @@
 								type="single"
 								bind:value={formTriggerType}
 								items={triggerTypeOptions}
-								placeholder="Sélectionnez"
 								triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
 							/>
 						</div>
@@ -695,7 +691,6 @@
 								type="single"
 								bind:value={formScope}
 								items={scopeOptions}
-								placeholder="Sélectionnez"
 								triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
 							/>
 						</div>
@@ -725,7 +720,6 @@
 								<FiltersHelp />
 							</div>
 						</div>
-						<FormRichTextEditor bind:value={formBody} placeholder="Écrivez le template..." />
 					</div>
 
 					<!-- Active checkbox -->

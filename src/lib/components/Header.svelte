@@ -41,7 +41,7 @@
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import type { User } from '@supabase/supabase-js';
-	import type { Profile } from '$lib/types/database';
+	import type { Profile, Gender } from '$lib/types/database';
 	import {
 		Menu,
 		X,
@@ -169,7 +169,7 @@
 		// Use role/gender-based default avatar if profile is available
 		// See: src/lib/utils/avatar.ts for implementation
 		if (profile) {
-			return getAvatarFallback(profile.role, profile.gender);
+			return getAvatarFallback(profile.role, profile.gender as Gender | null);
 		}
 
 		// Empty string triggers Avatar.Fallback component to show initials

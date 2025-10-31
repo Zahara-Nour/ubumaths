@@ -142,14 +142,14 @@
 			],
 			answer: '0',
 			choices: [
-				{ content: { type: 'text', content: '$$x = 4$$' }, isCorrect: true },
-				{ content: { type: 'text', content: '$$x = 9$$' }, isCorrect: false },
-				{ content: { type: 'text', content: '$$x = 6.5$$' }, isCorrect: false }
+				{ content: [{ type: 'text', content: '$$x = 4$$' }], isCorrect: true },
+				{ content: [{ type: 'text', content: '$$x = 9$$' }], isCorrect: false },
+				{ content: [{ type: 'text', content: '$$x = 6.5$$' }], isCorrect: false }
 			],
 			shuffledChoices: [
-				{ content: { type: 'text', content: '$$x = 4$$' }, originalIndex: 0 },
-				{ content: { type: 'text', content: '$$x = 9$$' }, originalIndex: 1 },
-				{ content: { type: 'text', content: '$$x = 6.5$$' }, originalIndex: 2 }
+				{ content: [{ type: 'text', content: '$$x = 4$$' }], originalIndex: 0 },
+				{ content: [{ type: 'text', content: '$$x = 9$$' }], originalIndex: 1 },
+				{ content: [{ type: 'text', content: '$$x = 6.5$$' }], originalIndex: 2 }
 			],
 			correctChoiceIndex: 0,
 			multipleAnswers: false,

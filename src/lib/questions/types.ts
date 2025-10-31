@@ -403,13 +403,13 @@ export interface QuestionInstance {
 	}[];
 
 	choices?: {
-		content: ContentField; // Resolved
+		content: ContentField[]; // Resolved (array of fields)
 		isCorrect: boolean;
 	}[];
 
 	/** Shuffled choices (for display, preserves original index) */
 	shuffledChoices?: {
-		content: ContentField;
+		content: ContentField[]; // Array of fields (text, images, etc.)
 		originalIndex: number; // Index before shuffle
 	}[];
 

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import type { Database } from '$lib/types/database';
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -8,10 +9,10 @@
 	let { data }: { data: PageData } = $props();
 
 	let showModal = $state(false);
-	let editingSchool = $state<unknown>(null);
+	let editingSchool = $state<Database['public']['Tables']['schools']['Row'] | null>(null);
 	let activeTab = $state<'single' | 'bulk'>('single');
 	let bulkData = $state('');
-	let parsedSchools = $state<unknown[]>([]);
+	let parsedSchools = $state<Array<{ name: string; city?: string; country?: string; address?: string; logo_url?: string }>>([]);
 	let parseError = $state('');
 
 	let formData = $state({
@@ -72,7 +73,7 @@
 		}
 
 		const lines = bulkData.trim().split('\n');
-		const schools: { name: string; city?: string; country?: string; address?: string }[] = [];
+		const schools: { name: string; city?: string; country?: string; address?: string; logo_url?: string }[] = [];
 
 		for (let i = 0; i < lines.length; i++) {
 			const line = lines[i].trim();

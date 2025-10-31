@@ -15,7 +15,7 @@ import { randomInt } from '$lib/utils/random';
  * Shuffled choice with original index
  */
 export interface ShuffledChoice {
-	content: ContentField;
+	content: ContentField[]; // Array to support multiple fields (text + image, etc.)
 	originalIndex: number;
 }
 
@@ -29,22 +29,22 @@ export interface ShuffledChoice {
  * @example
  * ```typescript
  * const choices = [
- *   { content: { type: 'text', content: 'A' }, isCorrect: true },
- *   { content: { type: 'text', content: 'B' }, isCorrect: false },
- *   { content: { type: 'text', content: 'C' }, isCorrect: false }
+ *   { content: [{ type: 'text', content: 'A' }], isCorrect: true },
+ *   { content: [{ type: 'text', content: 'B' }], isCorrect: false },
+ *   { content: [{ type: 'text', content: 'C' }], isCorrect: false }
  * ];
  *
  * const shuffled = shuffleChoices(choices);
  * // Returns:
  * // [
- * //   { content: { type: 'text', content: 'B' }, originalIndex: 1 },
- * //   { content: { type: 'text', content: 'A' }, originalIndex: 0 },
- * //   { content: { type: 'text', content: 'C' }, originalIndex: 2 }
+ * //   { content: [{ type: 'text', content: 'B' }], originalIndex: 1 },
+ * //   { content: [{ type: 'text', content: 'A' }], originalIndex: 0 },
+ * //   { content: [{ type: 'text', content: 'C' }], originalIndex: 2 }
  * // ]
  * ```
  */
 export function shuffleChoices(
-	choices: { content: ContentField; isCorrect: boolean }[],
+	choices: { content: ContentField[]; isCorrect: boolean }[],
 	seed?: number
 ): ShuffledChoice[] {
 	// Create array with original indices

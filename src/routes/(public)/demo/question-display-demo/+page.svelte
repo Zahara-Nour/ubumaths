@@ -76,16 +76,16 @@
 		],
 		answer: '1', // Index of correct choice
 		choices: [
-			{ content: { type: 'text', content: '$$3.00$$' }, isCorrect: false },
-			{ content: { type: 'text', content: '$$3.14$$' }, isCorrect: true },
-			{ content: { type: 'text', content: '$$3.41$$' }, isCorrect: false },
-			{ content: { type: 'text', content: '$$2.71$$' }, isCorrect: false }
+			{ content: [{ type: 'text', content: '$$3.00$$' }], isCorrect: false },
+			{ content: [{ type: 'text', content: '$$3.14$$' }], isCorrect: true },
+			{ content: [{ type: 'text', content: '$$3.41$$' }], isCorrect: false },
+			{ content: [{ type: 'text', content: '$$2.71$$' }], isCorrect: false }
 		],
 		shuffledChoices: [
-			{ content: { type: 'text', content: '$$3.00$$' }, originalIndex: 0 },
-			{ content: { type: 'text', content: '$$3.14$$' }, originalIndex: 1 },
-			{ content: { type: 'text', content: '$$3.41$$' }, originalIndex: 2 },
-			{ content: { type: 'text', content: '$$2.71$$' }, originalIndex: 3 }
+			{ content: [{ type: 'text', content: '$$3.00$$' }], originalIndex: 0 },
+			{ content: [{ type: 'text', content: '$$3.14$$' }], originalIndex: 1 },
+			{ content: [{ type: 'text', content: '$$3.41$$' }], originalIndex: 2 },
+			{ content: [{ type: 'text', content: '$$2.71$$' }], originalIndex: 3 }
 		],
 		multipleAnswers: false,
 		grades: ['6'],

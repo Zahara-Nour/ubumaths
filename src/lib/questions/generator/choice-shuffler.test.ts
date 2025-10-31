@@ -10,9 +10,9 @@ import { describe, it, expect } from 'vitest';
 import { shuffleChoices, type ShuffledChoice } from './choice-shuffler';
 import type { ContentField } from '../types';
 
-// Helper to create a text content field
-function textField(content: string): ContentField {
-	return { type: 'text', content };
+// Helper to create a text content field array (choices now use ContentField[] not ContentField)
+function textField(content: string): ContentField[] {
+	return [{ type: 'text', content }];
 }
 
 describe('shuffleChoices - Basic Functionality', () => {
@@ -43,7 +43,7 @@ describe('shuffleChoices - Basic Functionality', () => {
 
 		const result = shuffleChoices(choices);
 
-		const contents = result.map((r) => r.content.content).sort();
+		const contents = result.map((r) => r.content[0].content).sort();
 		expect(contents).toEqual(['A', 'B', 'C', 'D', 'E']);
 	});
 
@@ -80,7 +80,7 @@ describe('shuffleChoices - Basic Functionality', () => {
 		// Find the correct answer in shuffled results
 		const correctChoice = result.find((r) => r.originalIndex === 0);
 		expect(correctChoice).toBeDefined();
-		expect(correctChoice!.content.content).toBe('Correct answer');
+		expect(correctChoice!.content[0].content).toBe('Correct answer');
 	});
 });
 
@@ -100,7 +100,7 @@ describe('shuffleChoices - Seeded Random', () => {
 		const result2 = shuffleChoices(choices, seed);
 
 		expect(result1.map((r) => r.originalIndex)).toEqual(result2.map((r) => r.originalIndex));
-		expect(result1.map((r) => r.content.content)).toEqual(result2.map((r) => r.content.content));
+		expect(result1.map((r) => r.content[0].content)).toEqual(result2.map((r) => r.content[0].content));
 	});
 
 	it('should be reproducible across multiple calls', () => {
@@ -153,7 +153,7 @@ describe('shuffleChoices - Edge Cases', () => {
 		const result = shuffleChoices(choices, 12345);
 
 		expect(result).toHaveLength(2);
-		const contents = result.map((r) => r.content.content).sort();
+		const contents = result.map((r) => r.content[0].content).sort();
 		expect(contents).toEqual(['A', 'B']);
 	});
 
@@ -163,7 +163,7 @@ describe('shuffleChoices - Edge Cases', () => {
 		const result = shuffleChoices(choices);
 
 		expect(result).toHaveLength(1);
-		expect(result[0].content.content).toBe('Only');
+		expect(result[0].content[0].content).toBe('Only');
 		expect(result[0].originalIndex).toBe(0);
 	});
 
@@ -183,14 +183,14 @@ describe('shuffleChoices - Edge Cases', () => {
 
 	it('should handle choices with image content', () => {
 		const choices = [
-			{ content: { type: 'image', url: 'http://example.com/a.png', alt: 'A' }, isCorrect: false },
-			{ content: { type: 'image', url: 'http://example.com/b.png', alt: 'B' }, isCorrect: true }
+			{ content: [{ type: 'image', content: 'http://example.com/a.png', alt: 'A' }], isCorrect: false },
+			{ content: [{ type: 'image', content: 'http://example.com/b.png', alt: 'B' }], isCorrect: true }
 		];
 
-		const result = shuffleChoices(choices as never, 77777);
+		const result = shuffleChoices(choices, 77777);
 
 		expect(result).toHaveLength(2);
-		expect(result.every((r) => r.content.type === 'image')).toBe(true);
+		expect(result.every((r) => r.content[0].type === 'image')).toBe(true);
 	});
 
 	it('should handle choices with special characters', () => {
@@ -203,7 +203,7 @@ describe('shuffleChoices - Edge Cases', () => {
 		const result = shuffleChoices(choices);
 
 		expect(result).toHaveLength(3);
-		const contents = result.map((r) => r.content.content);
+		const contents = result.map((r) => r.content[0].content);
 		expect(contents).toContain('$$x^2 + 5x + 6$$');
 		expect(contents).toContain('é à è ù ô');
 		expect(contents).toContain('<script>alert("xss")</script>');
@@ -218,7 +218,7 @@ describe('shuffleChoices - Edge Cases', () => {
 		const result = shuffleChoices(choices);
 
 		expect(result).toHaveLength(2);
-		expect(result.some((r) => r.content.content === '')).toBe(true);
+		expect(result.some((r) => r.content[0].content === '')).toBe(true);
 	});
 
 	it('should handle duplicate choice values', () => {
@@ -230,7 +230,7 @@ describe('shuffleChoices - Edge Cases', () => {
 
 		const result = shuffleChoices(choices);
 
-		const sameCount = result.filter((r) => r.content.content === 'Same').length;
+		const sameCount = result.filter((r) => r.content[0].content === 'Same').length;
 		expect(sameCount).toBe(2);
 	});
 });
@@ -261,7 +261,7 @@ describe('shuffleChoices - Fisher-Yates Algorithm Verification', () => {
 		const permutations = new Set<string>();
 		for (let seed = 0; seed < 100; seed++) {
 			const result = shuffleChoices(choices, seed);
-			const perm = result.map((r) => r.content.content).join('');
+			const perm = result.map((r) => r.content[0].content).join('');
 			permutations.add(perm);
 		}
 
@@ -282,7 +282,7 @@ describe('shuffleChoices - Real-World Scenarios', () => {
 
 		expect(result).toHaveLength(3);
 		const correctChoice = result.find((r) => r.originalIndex === 0);
-		expect(correctChoice!.content.content).toContain('-b \\pm \\sqrt{b^2-4ac}');
+		expect(correctChoice!.content[0].content).toContain('-b \\pm \\sqrt{b^2-4ac}');
 	});
 
 	it('should shuffle French text choices', () => {
@@ -297,7 +297,7 @@ describe('shuffleChoices - Real-World Scenarios', () => {
 
 		expect(result).toHaveLength(4);
 		const correctChoice = result.find((r) => r.originalIndex === 0);
-		expect(correctChoice!.content.content).toBe('La réponse correcte');
+		expect(correctChoice!.content[0].content).toBe('La réponse correcte');
 	});
 
 	it('should track all correct answers for multiple choice', () => {
@@ -344,7 +344,7 @@ describe('shuffleChoices - Integration with Instance Generator', () => {
 
 		expect(correctNewIndex).toBeGreaterThanOrEqual(0);
 		expect(correctNewIndex).toBeLessThan(4);
-		expect(shuffled[correctNewIndex].content.content).toBe('42');
+		expect(shuffled[correctNewIndex].content[0].content).toBe('42');
 	});
 
 	it('should handle multiple correct answers for checkbox mode', () => {
@@ -363,8 +363,8 @@ describe('shuffleChoices - Integration with Instance Generator', () => {
 			.map((s) => shuffled.indexOf(s));
 
 		expect(correctIndices).toHaveLength(2);
-		expect(shuffled[correctIndices[0]].content.content).toMatch(/^(2|7)$/);
-		expect(shuffled[correctIndices[1]].content.content).toMatch(/^(2|7)$/);
+		expect(shuffled[correctIndices[0]].content[0].content).toMatch(/^(2|7)$/);
+		expect(shuffled[correctIndices[1]].content[0].content).toMatch(/^(2|7)$/);
 	});
 });
 

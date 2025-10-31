@@ -192,7 +192,7 @@
 			return data.user.user_metadata.avatar_url;
 		}
 		if (data.profile) {
-			return getAvatarFallback(data.profile.role, data.profile.gender);
+			return getAvatarFallback(data.profile.role, data.profile.gender as Gender | null);
 		}
 		return '';
 	}

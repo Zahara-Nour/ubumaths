@@ -487,7 +487,6 @@
 									value: c.class_id,
 									label: `${c.class_name} (${c.student_count} élèves)`
 								}))}
-								placeholder="Sélectionnez une classe"
 								triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
 							/>
 						</div>
@@ -594,7 +593,6 @@
 							id="subject"
 							type="text"
 							bind:value={subject}
-							placeholder="Entrez le sujet du message"
 							maxlength={200}
 							required
 						/>
@@ -607,7 +605,6 @@
 						<FormRichTextEditor
 							bind:value={content}
 							bind:jsonValue={contentJson}
-							placeholder="Écrivez votre message..."
 						/>
 					</div>
 

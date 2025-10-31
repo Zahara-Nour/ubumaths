@@ -20,7 +20,7 @@
 
 		// Finally, use role/gender-based fallback if profile is available
 		if (data.profile) {
-			return getAvatarFallback(data.profile.role, data.profile.gender);
+			return getAvatarFallback(data.profile.role, data.profile.gender as Gender | null);
 		}
 
 		// Default fallback - empty string will trigger Avatar.Fallback
