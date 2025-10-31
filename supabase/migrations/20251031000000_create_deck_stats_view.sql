@@ -38,8 +38,8 @@ SELECT
 FROM srs_decks d
 LEFT JOIN srs_cards c ON c.deck_id = d.id
 LEFT JOIN srs_card_stats cs ON (
-  (cs.card_reference_type = 'custom' AND cs.card_reference_id = 'custom_' || c.id)
-  OR (cs.card_reference_type = 'template' AND c.template_id IS NOT NULL AND cs.card_reference_id = 'template_' || c.template_id)
+  (cs.card_reference_type = 'custom' AND cs.card_reference_id = c.id)
+  OR (cs.card_reference_type = 'template' AND c.template_id IS NOT NULL AND cs.card_reference_id = c.template_id)
 ) AND cs.user_id = d.owner_id
 GROUP BY d.id, d.owner_id, d.name, d.description, d.deck_type, d.is_assigned, d.config, d.created_at, d.updated_at;
 

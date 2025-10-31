@@ -10,10 +10,10 @@
 	- Shows: Name | Gidouilles | VIP Cards | Warnings Score | Actions
 	- Quick action buttons:
 		- Warning button (⚠️): 3-step logic (remove gidouille → remove VIP card → add warning)
-		- Add gidouille button (+1): Instant optimistic UI
+		- Add gidouille button (+1): Instant optimistic UI update
 		- View VIP cards button (🎴): Opens modal with all cards
 	- Color-coded warning scores: green (≥15), orange (10-14), red (<10)
-	- Optimistic UI for instant feedback
+	- Optimistic UI for all actions (gidouilles, VIP cards, warnings)
 
 	OPTIMISTIC UI PATTERN:
 	----------------------
@@ -131,12 +131,10 @@
 	// ============================================================================
 
 	/**
-	 * Get gidouilles for a student
-	 * Note: Currently returns server value directly.
-	 * Gidouilles use immediate reload pattern instead of optimistic updates.
+	 * Get gidouilles for a student (with optimistic updates)
 	 */
 	function getGidouilles(student: StudentData): number {
-		return student.gidouilles;
+		return optimisticUpdates[student.id]?.gidouilles ?? student.gidouilles;
 	}
 
 	/**
@@ -256,8 +254,17 @@
 		const unusedVipCards = getUnusedVipCards(getVipCards(student));
 		const score = getWarnings(student).score;
 
-		// STEP 1: Remove gidouille if > 0
+		// STEP 1: Remove gidouille if > 0 (optimistic UI)
 		if (gidouilles > 0) {
+			// Optimistic UI - remove gidouille immediately
+			optimisticUpdates = {
+				...optimisticUpdates,
+				[student.id]: {
+					...optimisticUpdates[student.id],
+					gidouilles: gidouilles - 1
+				}
+			};
+
 			try {
 				const response = await fetch('/api/rewards/gidouilles', {
 					method: 'POST',
@@ -266,12 +273,25 @@
 				});
 
 				if (response.ok) {
+					// Clear optimistic state and update server data
+					const newUpdates = { ...optimisticUpdates };
+					delete newUpdates[student.id]?.gidouilles;
+					optimisticUpdates = newUpdates;
+
+					// Update studentsData with server value
+					studentsData = studentsData.map((s) =>
+						s.id === student.id ? { ...s, gidouilles: gidouilles - 1 } : s
+					);
+
 					toaster.success(`1 gidouille retirée (${student.firstname})`);
-					await loadData(); // Reload data
 				} else {
 					throw new Error('Failed');
 				}
 			} catch (_error) {
+				// Rollback optimistic update
+				const newUpdates = { ...optimisticUpdates };
+				delete newUpdates[student.id]?.gidouilles;
+				optimisticUpdates = newUpdates;
 				toaster.error('Erreur lors du retrait de la gidouille');
 			}
 			return;
@@ -391,9 +411,19 @@
 	}
 
 	/**
-	 * Handle add gidouille button click
+	 * Handle add gidouille button click (optimistic UI)
 	 */
 	async function handleAddGidouille(student: StudentData) {
+		// Optimistic UI - add gidouille immediately
+		const currentGidouilles = getGidouilles(student);
+		optimisticUpdates = {
+			...optimisticUpdates,
+			[student.id]: {
+				...optimisticUpdates[student.id],
+				gidouilles: currentGidouilles + 1
+			}
+		};
+
 		try {
 			const response = await fetch('/api/rewards/gidouilles', {
 				method: 'POST',
@@ -402,12 +432,25 @@
 			});
 
 			if (response.ok) {
+				// Clear optimistic state and update server data
+				const newUpdates = { ...optimisticUpdates };
+				delete newUpdates[student.id]?.gidouilles;
+				optimisticUpdates = newUpdates;
+
+				// Update studentsData with server value
+				studentsData = studentsData.map((s) =>
+					s.id === student.id ? { ...s, gidouilles: currentGidouilles + 1 } : s
+				);
+
 				toaster.success(`+1 gidouille (${student.firstname})`);
-				await loadData(); // Reload data
 			} else {
 				throw new Error('Failed');
 			}
 		} catch (_error) {
+			// Rollback optimistic update
+			const newUpdates = { ...optimisticUpdates };
+			delete newUpdates[student.id]?.gidouilles;
+			optimisticUpdates = newUpdates;
 			toaster.error("Erreur lors de l'ajout de la gidouille");
 		}
 	}
