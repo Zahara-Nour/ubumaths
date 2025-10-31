@@ -1,4 +1,3 @@
-// @ts-nocheck - Database schema integration tests validated at runtime
 /**
  * Updated_at Trigger Tests
  *

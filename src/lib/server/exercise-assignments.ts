@@ -50,8 +50,19 @@ import { validateSearchQuery } from '$lib/utils/search';
 type TypedSupabaseClient = SupabaseClient<Database>;
 
 // Type helpers for Phase 4 tables (not yet in database schema)
+type UnknownTable = string;
+
+// Helper to bypass type checking for tables not yet in schema
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type UnknownTable = any;
+function fromUnknownTable(supabase: TypedSupabaseClient, table: UnknownTable): any {
+	return supabase.from(table);
+}
+
+// Helper to bypass type checking for RPC functions not yet in schema
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function callUnknownRpc(supabase: TypedSupabaseClient, fn: string, params?: any): any {
+	return supabase.rpc(fn, params);
+}
 
 // ============================================================================
 // ASSIGNMENT MANAGEMENT FUNCTIONS
@@ -127,9 +138,7 @@ export async function createExerciseAssignment(
 		is_active: true
 	};
 
-	const { data: assignment, error } = await (
-		supabase.from('exercise_assignments' as UnknownTable) as any
-	)
+	const { data: assignment, error } = await fromUnknownTable(supabase, 'exercise_assignments')
 		.insert(insertData)
 		.select()
 		.single();
@@ -409,8 +418,9 @@ export async function getAssignmentsForStudent(
 	const offset = pagination?.offset || 0;
 
 	// Step 1: Get all accessible exercise IDs via RPC function
-	const { data: exerciseIds, error: functionError } = await supabase.rpc(
-		'get_student_exercises' as any,
+	const { data: exerciseIds, error: functionError } = await callUnknownRpc(
+		supabase,
+		'get_student_exercises',
 		{
 			p_student_id: studentId
 		}
@@ -1028,7 +1038,7 @@ export async function getAssignmentStats(
 	supabase: TypedSupabaseClient,
 	teacherId: string
 ): Promise<{ data: AssignmentStats | null; error: string | null }> {
-	const { data, error } = await supabase.rpc('get_teacher_assignment_stats' as any, {
+	const { data, error } = await callUnknownRpc(supabase, 'get_teacher_assignment_stats', {
 		p_teacher_id: teacherId
 	});
 
@@ -1038,7 +1048,12 @@ export async function getAssignmentStats(
 	}
 
 	// Transform database result to AssignmentStats type
-	const dataArray = data as any[];
+	const dataArray = data as Array<{
+		total_assignments: number;
+		active_assignments: number;
+		completed_assignments: number;
+		exercises_assigned: number;
+	}>;
 	const stats: AssignmentStats = {
 		total_assignments: dataArray?.[0]?.total_assignments || 0,
 		active_assignments: dataArray?.[0]?.active_assignments || 0,
@@ -1080,7 +1095,7 @@ export async function getExerciseCompletionStats(
 	exerciseId: string
 ): Promise<{ data: ExerciseCompletionStats | null; error: string | null }> {
 	// Call the correct RPC function with exercise_id parameter
-	const { data, error } = await supabase.rpc('get_exercise_completion_stats' as any, {
+	const { data, error } = await callUnknownRpc(supabase, 'get_exercise_completion_stats', {
 		p_exercise_id: exerciseId
 	});
 
@@ -1090,7 +1105,12 @@ export async function getExerciseCompletionStats(
 	}
 
 	// Transform database result to ExerciseCompletionStats type
-	const dataArray = data as any[];
+	const dataArray = data as Array<{
+		total_assigned: number;
+		total_completed: number;
+		completion_rate: number;
+		avg_completion_time: number;
+	}>;
 	const stats: ExerciseCompletionStats = {
 		exercise_id: exerciseId,
 		total_assigned: dataArray?.[0]?.total_assigned || 0,
@@ -1132,8 +1152,9 @@ export async function getStudentProgress(
 	error: string | null;
 }> {
 	// Get all exercises accessible to student
-	const { data: exerciseIds, error: functionError } = await supabase.rpc(
-		'get_student_exercises' as any,
+	const { data: exerciseIds, error: functionError } = await callUnknownRpc(
+		supabase,
+		'get_student_exercises',
 		{
 			p_student_id: studentId
 		}
@@ -1226,7 +1247,7 @@ export async function studentHasAccess(
 	exerciseId: string,
 	studentId: string
 ): Promise<boolean> {
-	const { data, error } = await supabase.rpc('student_has_exercise_access' as any, {
+	const { data, error } = await callUnknownRpc(supabase, 'student_has_exercise_access', {
 		p_exercise_id: exerciseId,
 		p_student_id: studentId
 	});
@@ -1265,8 +1286,9 @@ export async function getAccessibleExercises(
 	studentId: string
 ): Promise<{ data: Array<Record<string, unknown>>; error: string | null }> {
 	// Get exercise IDs accessible to student
-	const { data: exerciseIds, error: functionError } = await supabase.rpc(
-		'get_student_exercises' as any,
+	const { data: exerciseIds, error: functionError } = await callUnknownRpc(
+		supabase,
+		'get_student_exercises',
 		{
 			p_student_id: studentId
 		}

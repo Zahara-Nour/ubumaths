@@ -93,7 +93,7 @@
 
 		<!-- Achievements Card -->
 		<a
-			href={resolve('/dashboard/navadra/achievements' as any)}
+			href="/dashboard/navadra/achievements"
 			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
 		>
 			<div class="mb-4 text-5xl">🏆</div>
@@ -103,7 +103,7 @@
 
 		<!-- Leaderboard Card -->
 		<a
-			href={resolve('/dashboard/navadra/leaderboard' as any)}
+			href="/dashboard/navadra/leaderboard"
 			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
 		>
 			<div class="mb-4 text-5xl">🥇</div>
@@ -115,7 +115,7 @@
 
 		<!-- Profile Card -->
 		<a
-			href={resolve('/dashboard/navadra/profile' as any)}
+			href="/dashboard/navadra/profile"
 			class="group rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-lg"
 		>
 			<div class="mb-4 text-5xl">👤</div>

@@ -6,7 +6,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Check, X } from 'lucide-svelte';
 
-	let sentMessages = $state<unknown[]>([]);
+	let sentMessages = $state<Array<{ timestamp: Date; content: unknown }>>([]);
 	let formContent = $state('');
 
 	const exampleFormContent = `<h3>Description du template</h3>

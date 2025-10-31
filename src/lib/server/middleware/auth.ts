@@ -45,28 +45,10 @@ export type UserRole = 'student' | 'teacher' | 'admin';
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
 /**
- * User object from Supabase Auth
- */
-interface User {
-	id: string;
-	email?: string;
-	[key: string]: unknown;
-}
-
-/**
- * Locals object from SvelteKit request context
- */
-interface Locals {
-	supabase: import('@supabase/supabase-js').SupabaseClient<Database>;
-	safeGetSession: () => Promise<{ user: User | null }>;
-	user: User | null;
-}
-
-/**
  * Result of successful authentication
  */
 export interface AuthResult {
-	user: User;
+	user: import('@supabase/supabase-js').User;
 	profile: Profile;
 }
 
@@ -143,7 +125,7 @@ export interface AuthResult {
  * const { user, profile } = await requireAuth(locals);
  * ```
  */
-export async function requireAuth(locals: Locals): Promise<AuthResult> {
+export async function requireAuth(locals: App.Locals): Promise<AuthResult> {
 	// Check authentication
 	const { user } = await locals.safeGetSession();
 
@@ -242,7 +224,7 @@ export async function requireAuth(locals: Locals): Promise<AuthResult> {
  * const { user, profile } = await requireRole(locals, 'teacher');
  * ```
  */
-export async function requireRole(locals: Locals, role: UserRole): Promise<AuthResult> {
+export async function requireRole(locals: App.Locals, role: UserRole): Promise<AuthResult> {
 	// First check authentication and get profile
 	const { user, profile } = await requireAuth(locals);
 
@@ -322,7 +304,7 @@ export async function requireRole(locals: Locals, role: UserRole): Promise<AuthR
  * const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
  * ```
  */
-export async function requireRoles(locals: Locals, roles: UserRole[]): Promise<AuthResult> {
+export async function requireRoles(locals: App.Locals, roles: UserRole[]): Promise<AuthResult> {
 	// First check authentication and get profile
 	const { user, profile } = await requireAuth(locals);
 

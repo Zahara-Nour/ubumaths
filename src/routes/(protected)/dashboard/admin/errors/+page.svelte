@@ -1,3 +1,4 @@
+<!-- eslint-disable custom/require-zod-validation -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';

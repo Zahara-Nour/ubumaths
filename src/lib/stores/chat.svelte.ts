@@ -635,7 +635,7 @@ class ChatStore {
 		}
 	}
 
-	private handleMessageRead(message: unknown): void {
+	private handleMessageRead(_message: unknown): void {
 		// Update read receipts (implementation depends on UI requirements)
 		// TODO: Implement read receipt handling
 	}

@@ -6,6 +6,9 @@
 import { describe, it, expect } from 'vitest';
 import { saveTestSchema, saveTestResponseSchema, validateSaveTest } from './tests';
 
+// Helper type for tests that need to modify objects
+type Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P] };
+
 describe('test system validation schemas', () => {
 	// ============================================================================
 	// SAVE TEST SCHEMA
@@ -212,29 +215,29 @@ describe('test system validation schemas', () => {
 		});
 
 		it('should accept test without sessionId', () => {
-			const data = createValidTestData();
-			delete (data.result as any).sessionId;
+			const data = createValidTestData() as Mutable<ReturnType<typeof createValidTestData>>;
+			delete data.result.sessionId;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(true);
 		});
 
 		it('should accept test without assignmentId', () => {
-			const data = createValidTestData();
-			delete (data as any).assignmentId;
+			const data = createValidTestData() as Mutable<ReturnType<typeof createValidTestData>>;
+			delete data.assignmentId;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(true);
 		});
 
 		it('should accept answer with null userAnswer', () => {
 			const data = createValidTestData();
-			data.result.answers[0].userAnswer = null as any;
+			data.result.answers[0].userAnswer = null;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(true);
 		});
 
 		it('should accept answer without userAnswer field', () => {
-			const data = createValidTestData();
-			delete (data.result.answers[0] as any).userAnswer;
+			const data = createValidTestData() as Mutable<ReturnType<typeof createValidTestData>>;
+			delete data.result.answers[0].userAnswer;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(true);
 		});
@@ -338,7 +341,7 @@ describe('test system validation schemas', () => {
 				isCorrect: true,
 				timeSpent: 30,
 				attempts: 1
-			})) as any;
+			}));
 			data.result.totalQuestions = 501;
 			const result = saveTestSchema.safeParse(data);
 			expect(result.success).toBe(false);

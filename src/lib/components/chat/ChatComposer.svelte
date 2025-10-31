@@ -197,7 +197,7 @@
 
 		<!-- Rich Text Editor -->
 		<div class="flex-1">
-			<RichTextEditor placeholder="Écrivez votre message..." onSend={handleSend} />
+			<RichTextEditor onSend={handleSend} />
 		</div>
 	</div>
 

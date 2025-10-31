@@ -4,7 +4,7 @@
  * Returns only the count of unread notifications (lighter than fetching all)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getUnreadCount } from '$lib/server/notifications';
 import { unreadNotificationsCountResponseSchema } from '$lib/server/validation/notifications';

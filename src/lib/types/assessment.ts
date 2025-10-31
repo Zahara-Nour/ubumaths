@@ -4,10 +4,7 @@
  */
 
 import type { CartItem } from '$lib/stores/questionCart.svelte';
-import {
-	formatDeadline as formatDeadlineUtil,
-	isDeadlinePassed as isDeadlinePassedUtil
-} from '$lib/utils/dates';
+import { isDeadlinePassed as isDeadlinePassedUtil } from '$lib/utils/dates';
 
 // ===========================================================================
 // ASSESSMENT CONFIGURATION

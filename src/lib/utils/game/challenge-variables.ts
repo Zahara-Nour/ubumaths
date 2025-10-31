@@ -67,7 +67,6 @@ function evaluateExpression(expression: string, variables: Record<string, number
 
 	// Evaluate safely using Function constructor
 	try {
-		// eslint-disable-next-line no-new-func
 		const fn = new Function('return ' + expr);
 		const result = fn();
 		return typeof result === 'number' ? result : NaN;
@@ -100,7 +99,7 @@ function evaluateAnswer(
 				return null;
 			}
 			// Recursively evaluate each element
-			return answerDef.value.map((item: AnswerDefinition) => evaluateAnswer(item, variables));
+			return (answerDef.value as AnswerDefinition[]).map((item) => evaluateAnswer(item, variables));
 
 		case 'expression':
 			if (typeof answerDef.value !== 'string') {

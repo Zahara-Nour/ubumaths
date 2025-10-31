@@ -125,7 +125,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
  * @returns Array of assignments with details
  */
 export const GET: RequestHandler = async ({ params, url, locals }) => {
-	const { user } = await requireRole(locals, 'teacher');
+	await requireRole(locals, 'teacher');
 
 	const exerciseId = params.id;
 

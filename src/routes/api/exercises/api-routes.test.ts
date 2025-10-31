@@ -37,7 +37,7 @@ import {
  * Mock request event for SvelteKit API route handlers
  * Matches the structure of RequestEvent used by handlers
  */
-type MockRequestEvent<Params = Record<string, string>> = {
+type _MockRequestEvent<Params = Record<string, string>> = {
 	request: Request;
 	params: Params;
 	locals: ReturnType<typeof createMockLocals>;

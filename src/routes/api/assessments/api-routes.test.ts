@@ -22,7 +22,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect } from 'vitest';
-import type { RequestEvent } from '@sveltejs/kit';
 import type { CreateAssessmentData, UpdateAssessmentData } from '$lib/types/assessment';
 import { DEFAULT_ASSESSMENT_SETTINGS } from '$lib/types/assessment';
 import {
@@ -109,7 +108,6 @@ describe('POST /api/assessments', () => {
 		});
 
 		try {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			await POST({
 				request,
 				locals

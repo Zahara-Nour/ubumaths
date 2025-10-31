@@ -249,7 +249,7 @@ describe('Challenge Variable System', () => {
 
 		it('should format arrays as comma-separated values', () => {
 			const question = 'Choisir parmi {options}';
-			const variables = { options: [1, 2, 3] };
+			const variables = { options: [1, 2, 3] } as Record<string, number | number[]>;
 
 			const result = interpolateQuestion(question, variables);
 

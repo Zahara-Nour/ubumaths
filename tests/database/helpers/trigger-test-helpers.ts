@@ -1,4 +1,3 @@
-// @ts-nocheck - Database schema integration tests validated at runtime
 /**
  * Test Helpers for Database Trigger Tests
  *
