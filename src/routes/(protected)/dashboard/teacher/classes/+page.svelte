@@ -44,8 +44,45 @@
 	import ScheduleEntryModal from '$lib/components/ScheduleEntryModal.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { invalidateAll } from '$app/navigation';
+	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 
 	let { data }: { data: PageData } = $props();
+
+	// ============================================================================
+	// Cache Hydration
+	// ============================================================================
+
+	/**
+	 * Hydrate cache with fresh data from server load function
+	 * Populates Cache 3 (class info) and Cache 4 (school info)
+	 */
+	$effect(() => {
+		// Hydrate class info cache (Cache 3) for each class
+		for (const classItem of data.classes) {
+			const classInfo = {
+				id: classItem.id,
+				teacher_id: classItem.teacher_id,
+				name: classItem.name,
+				description: classItem.description,
+				join_code: classItem.join_code,
+				is_active: classItem.is_active,
+				created_at: classItem.created_at,
+				updated_at: classItem.updated_at,
+				student_count: classItem.student_count,
+				schedules: classItem.schedules
+			};
+			teacherCache.hydrateClass(classItem.id, classInfo);
+		}
+
+		// Hydrate school info cache (Cache 4) if available
+		if (data.school) {
+			teacherCache.hydrateSchool({
+				school: data.school,
+				current_period: null,
+				all_periods: []
+			});
+		}
+	});
 
 	// ============================================================================
 	// Modal State Management

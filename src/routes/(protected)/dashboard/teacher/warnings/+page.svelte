@@ -49,6 +49,7 @@
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import { History, AlertCircle } from 'lucide-svelte';
 	import type { Warning, StudentWarningCounts } from '$lib/server/warnings';
+	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 
 	// Data from server load function
 	let { data }: { data: PageData } = $props();
@@ -192,6 +193,7 @@
 
 	/**
 	 * Load warnings for selected class and period
+	 * Uses cache with composite key: ${classId}:${periodId}
 	 */
 	async function loadWarnings() {
 		if (!selectedClassId || !selectedPeriodId) return;
@@ -199,23 +201,14 @@
 		_isLoadingWarnings = true;
 
 		try {
-			const response = await fetch(
-				`/api/classes/${selectedClassId}/warnings?period_id=${selectedPeriodId}`
+			// Use cache (auto-fetches if expired or missing)
+			const cachedWarnings = await teacherCache.getStudentWarnings(
+				selectedClassId,
+				selectedPeriodId
 			);
 
-			if (!response.ok) {
-				throw new Error('Failed to fetch warnings');
-			}
-
-			const result = await response.json();
-
 			// Convert to Map for efficient lookups
-			const newWarningsData = new Map<string, StudentWarningCounts>();
-			for (const [studentId, counts] of Object.entries(result.warnings)) {
-				newWarningsData.set(studentId, counts as StudentWarningCounts);
-			}
-
-			warningsData = newWarningsData;
+			warningsData = new Map(cachedWarnings);
 			_hasLoadedOnce = true; // Mark that we've successfully loaded data at least once
 		} catch (err) {
 			console.error('[loadWarnings] ERROR:', err);
@@ -283,6 +276,9 @@
 
 				// Update server data
 				warningsData.set(studentId, result.counts);
+
+				// Invalidate cache to ensure fresh data
+				teacherCache.invalidateWarnings(selectedClassId, selectedPeriodId);
 
 				// Force immediate reload to get fresh data
 				await loadWarnings();
@@ -354,6 +350,9 @@
 
 				// Update server data
 				warningsData.set(studentId, result.counts);
+
+				// Invalidate cache to ensure fresh data
+				teacherCache.invalidateWarnings(selectedClassId, selectedPeriodId);
 
 				// Show success toast
 				toaster.success(

@@ -117,6 +117,7 @@
 	import { getVipCardById, type VipCard, type StudentVipCards } from '$lib/types/vip-card';
 	import { canAffordVipCard } from '$lib/utils/vip-cards';
 	import { Sparkles, Eye, Loader2 } from 'lucide-svelte';
+	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 
 	// Data from server load function
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -124,9 +125,31 @@
 	// Local reactive copy of classes data (needed for optimistic updates)
 	let classes = $state(data.classes);
 
-	// Sync classes when data changes from server
+	// Sync classes when data changes from server AND hydrate cache
 	$effect(() => {
 		classes = data.classes;
+
+		// Hydrate cache with fresh data from server
+		// This allows other pages to use this data without refetching
+		for (const classItem of data.classes) {
+			// Hydrate rewards cache
+			teacherCache.hydrateRewards(classItem.id, classItem.students);
+
+			// Hydrate student basic info cache
+			teacherCache.hydrateStudents(
+				classItem.id,
+				classItem.students.map((s) => ({
+					id: s.id,
+					firstname: s.firstname,
+					lastname: s.lastname,
+					full_name: s.full_name,
+					avatar_url: s.avatar_url,
+					role: s.role,
+					gender: s.gender,
+					is_test: false // This will be set correctly from server data
+				}))
+			);
+		}
 	});
 
 	// Local state for selected class
@@ -381,6 +404,9 @@
 					// Clear optimistic state (now safe since data is updated)
 					clearOptimisticOverride(studentId);
 
+					// Invalidate cache to ensure other pages get fresh data
+					teacherCache.invalidateRewards(selectedClassId);
+
 					// Show success toast with accumulated delta and student name
 					toaster.success(
 						`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} (${studentName})`
@@ -477,6 +503,9 @@
 					classItem?.students.forEach((student: { id: string }) =>
 						clearOptimisticOverride(student.id)
 					);
+
+					// Invalidate cache to ensure other pages get fresh data
+					teacherCache.invalidateRewards(classId);
 
 					// Show success toast with student count
 					toaster.success(
@@ -797,6 +826,8 @@
 														// Clear optimistic override after server response
 														if (result.type === 'success') {
 															clearOptimisticOverride(student.id);
+															// Invalidate cache to ensure other pages get fresh VIP cards data
+															teacherCache.invalidateRewards(selectedClassId);
 															// Card will be updated by $effect when form.cardId arrives
 														} else {
 															// Rollback on error
