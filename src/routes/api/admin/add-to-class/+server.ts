@@ -1,24 +1,10 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { addToClassSchema } from '$lib/server/validation/admin';
+import { requireRole } from '$lib/server/middleware/auth';
 
-export const POST: RequestHandler = async ({ request, locals: { safeGetSession, supabase } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// ✅ SECURITY: Verify admin role
-	const { data: profile } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Forbidden - Admin access required');
-	}
+export const POST: RequestHandler = async ({ request, locals }) => {
+	await requireRole(locals, 'admin');
 
 	// ✅ SECURITY: Validate input with Zod
 	const body = await request.json();
@@ -31,7 +17,7 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 	const { userId, classId } = validation.data;
 
 	// Check if already in class
-	const { data: existing } = await supabase
+	const { data: existing } = await locals.supabase
 		.from('class_members')
 		.select('id')
 		.eq('student_id', userId)
@@ -43,7 +29,7 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 	}
 
 	// Add to class_members table
-	const { error: insertError } = await supabase
+	const { error: insertError } = await locals.supabase
 		.from('class_members')
 		.insert({ student_id: userId, class_id: classId });
 
@@ -53,7 +39,7 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 	}
 
 	// Fetch the updated profile with all classes
-	const { data: updatedProfile, error: fetchError } = await supabase
+	const { data: updatedProfile, error: fetchError } = await locals.supabase
 		.from('profiles')
 		.select('*, schools(name), class_members(class_id)')
 		.eq('id', userId)

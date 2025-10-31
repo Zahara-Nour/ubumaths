@@ -22,13 +22,11 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { addWarningSchema } from '$lib/server/validation/warnings';
 import { addWarning } from '$lib/server/warnings';
+import { requireAuth } from '$lib/server/middleware/auth';
 
-export const POST: RequestHandler = async ({ request, locals: { safeGetSession, supabase } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+export const POST: RequestHandler = async ({ request, locals }) => {
+	const { user } = await requireAuth(locals);
+	const supabase = locals.supabase;
 
 	try {
 		// ✅ SECURITY: Validate input with Zod

@@ -9,6 +9,7 @@ import type { RequestHandler } from './$types';
 import { getAssignmentsForStudent } from '$lib/server/exercise-assignments';
 import type { StudentExerciseFilters } from '$lib/exercises/types';
 import { validateStudentExerciseFilters } from '$lib/server/validation';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -27,10 +28,7 @@ type ZodIssue = { path: (string | number)[]; message: string };
  * @returns Array of exercises with assignment and completion data
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+	const { user } = await requireAuth(locals);
 
 	// Validate and parse filters from query params
 	const queryValidation = validateStudentExerciseFilters(url.searchParams);

@@ -11,6 +11,7 @@ import { generateInstance } from '$lib/questions';
 import { generateQuestionSchema } from '$lib/server/validation/questions';
 import type { QuestionTemplate } from '$lib/questions/types';
 import type { Database } from '$lib/types/database';
+import { requireRole } from '$lib/server/middleware/auth';
 
 type DbQuestionTemplate = Database['public']['Tables']['question_templates']['Row'];
 
@@ -55,27 +56,9 @@ function dbRowToQuestionTemplate(row: DbQuestionTemplate): QuestionTemplate {
  *
  * Returns: GenerationResult { success, instance? | errors? }
  */
-export const POST: RequestHandler = async ({
-	params,
-	request,
-	locals: { safeGetSession, supabase }
-}) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Check role
-	const { data: profile } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {
-		throw error(403, 'Only teachers and admins can generate question instances');
-	}
+export const POST: RequestHandler = async ({ params, request, locals }) => {
+	await requireRole(locals, 'teacher');
+	const supabase = locals.supabase;
 
 	try {
 		// Fetch template

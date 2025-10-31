@@ -5,18 +5,15 @@ import {
 	threadMessagesQuerySchema
 } from '$lib/server/validation/messages';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/messages/thread?rootId=xxx
  * Get all messages in a thread
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
+	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
-	const { user } = await locals.safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
 
 	try {
 		// ✅ SECURITY: Validate query parameters with Zod

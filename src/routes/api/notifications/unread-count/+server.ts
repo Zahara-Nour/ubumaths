@@ -9,13 +9,11 @@ import type { RequestHandler } from './$types';
 import { getUnreadCount } from '$lib/server/notifications';
 import { unreadNotificationsCountResponseSchema } from '$lib/server/validation/notifications';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { requireAuth } from '$lib/server/middleware/auth';
 
-export const GET: RequestHandler = async ({ locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+export const GET: RequestHandler = async ({ locals }) => {
+	const { user } = await requireAuth(locals);
+	const supabase = locals.supabase;
 
 	const count = await getUnreadCount(supabase, user.id);
 

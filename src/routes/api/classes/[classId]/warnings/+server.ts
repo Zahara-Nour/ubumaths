@@ -19,17 +19,10 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getClassWarnings } from '$lib/server/warnings';
 import { getClassWarningsSchema } from '$lib/server/validation/classes';
+import { requireAuth } from '$lib/server/middleware/auth';
 
-export const GET: RequestHandler = async ({
-	params,
-	url,
-	locals: { safeGetSession, supabase }
-}) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+export const GET: RequestHandler = async ({ params, url, locals }) => {
+	const { user } = await requireAuth(locals);
 
 	try {
 		// ✅ SECURITY: Validate parameters with Zod
@@ -49,7 +42,7 @@ export const GET: RequestHandler = async ({
 			classId,
 			periodId,
 			teacherId: user.id,
-			supabase
+			supabase: locals.supabase
 		});
 
 		// Convert to Map if coming from cache (JSON deserialization converts Map to object)

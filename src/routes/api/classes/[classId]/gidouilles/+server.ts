@@ -2,6 +2,7 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getTeacherTestMode } from '$lib/server/test-mode';
 import { getClassGidouillesSchema } from '$lib/server/validation/classes';
+import { requireRole } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/classes/[classId]/gidouilles
@@ -26,12 +27,8 @@ import { getClassGidouillesSchema } from '$lib/server/validation/classes';
  *     console.log('Gidouilles data:', data.gidouilles);
  *   });
  */
-export const GET: RequestHandler = async ({ params, locals: { safeGetSession, supabase } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+export const GET: RequestHandler = async ({ params, locals }) => {
+	const { user } = await requireRole(locals, 'teacher');
 
 	// ✅ SECURITY: Validate class ID with Zod
 	const validation = getClassGidouillesSchema.safeParse({
@@ -45,27 +42,11 @@ export const GET: RequestHandler = async ({ params, locals: { safeGetSession, su
 	const { classId } = validation.data;
 
 	try {
-		// Fetch user's profile to verify role
-		const { data: profile, error: profileError } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (profileError || !profile) {
-			throw error(500, 'Échec de récupération du profil utilisateur');
-		}
-
-		// Only teachers can access this endpoint (admins not supported yet)
-		if (profile.role !== 'teacher') {
-			throw error(403, 'Seuls les enseignants peuvent accéder aux gidouilles de classe');
-		}
-
 		// Get teacher's test mode preference
-		const isTestMode = await getTeacherTestMode(user.id, supabase);
+		const isTestMode = await getTeacherTestMode(user.id, locals.supabase);
 
 		// Verify teacher owns the class (security check)
-		const { data: classCheck, error: classError } = await supabase
+		const { data: classCheck, error: classError } = await locals.supabase
 			.from('classes')
 			.select('id')
 			.eq('id', classId)
@@ -83,7 +64,7 @@ export const GET: RequestHandler = async ({ params, locals: { safeGetSession, su
 		}
 
 		// Fetch gidouilles data via class_members join
-		const { data: members, error: membersError } = await supabase
+		const { data: members, error: membersError } = await locals.supabase
 			.from('class_members')
 			.select(
 				`

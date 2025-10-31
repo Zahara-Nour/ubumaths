@@ -7,24 +7,10 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { cleanupOldErrors } from '$lib/server/errorMonitoring';
 import { cleanupErrorsSchema } from '$lib/server/validation/errors';
+import { requireRole } from '$lib/server/middleware/auth';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// Check authentication
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Check if user is admin
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Forbidden - Admin access required');
-	}
+	await requireRole(locals, 'admin');
 
 	try {
 		// SECURITY: Validate request body with Zod schema

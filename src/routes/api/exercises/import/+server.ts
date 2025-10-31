@@ -12,6 +12,7 @@ import {
 } from '$lib/server/exercise-import-export';
 import type { ImportOptions } from '$lib/exercises/types';
 import { importExercisesSchema } from '$lib/server/validation/exercises';
+import { requireRole } from '$lib/server/middleware/auth';
 
 /**
  * POST /api/exercises/import
@@ -31,21 +32,7 @@ import { importExercisesSchema } from '$lib/server/validation/exercises';
  * - ImportResult with statistics and errors
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Only teachers can import exercises
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden - Teachers only');
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	// SECURITY: Validate request body with Zod schema
 	const body = await request.json();

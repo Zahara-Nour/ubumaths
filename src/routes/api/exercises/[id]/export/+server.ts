@@ -17,23 +17,10 @@ import {
 	generateExportFilename
 } from '$lib/server/exercise-import-export';
 import { validateExportSingleExerciseQuery } from '$lib/server/validation';
+import { requireRole } from '$lib/server/middleware/auth';
 
 export const GET: RequestHandler = async ({ locals, params, url }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Only teachers can export exercises
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden - Teachers only');
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	// Get exercise
 	const result = await getExercise(locals.supabase, params.id);

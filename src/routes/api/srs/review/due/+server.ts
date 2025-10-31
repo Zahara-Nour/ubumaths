@@ -15,6 +15,7 @@ import type { ContentField } from '$lib/questions/types';
 import type { CardState } from '$lib/srs/types';
 import { generateSRSInstance } from '$lib/srs/generator';
 import { dueCardsQuerySchema } from '$lib/server/validation/srs';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * Lightweight stats for API response (subset of CardStats)
@@ -59,12 +60,9 @@ type ReviewCard =
  *
  * @returns Array of ReviewCard objects ready for study
  */
-export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+export const GET: RequestHandler = async ({ url, locals }) => {
+	const { user } = await requireAuth(locals);
+	const supabase = locals.supabase;
 
 	// ✅ SECURITY: Validate query parameters with Zod
 	const queryRaw = {

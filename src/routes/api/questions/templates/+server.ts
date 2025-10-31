@@ -22,6 +22,7 @@ import {
 	questionTemplatesListResponseSchema
 } from '$lib/server/validation';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { requireRoles, requireRole } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/questions/templates
@@ -37,28 +38,8 @@ import { validateJsonResponse } from '$lib/server/validation/response-utils';
  *
  * Returns: { templates: QuestionTemplate[], total: number }
  */
-export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supabase } }) => {
-	// ====================================================================
-	// SECURITY: Authentication Check
-	// ====================================================================
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// ====================================================================
-	// SECURITY: Authorization Check
-	// ====================================================================
-	const { data: profile } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {
-		throw error(403, 'Only teachers and admins can access question templates');
-	}
+export const GET: RequestHandler = async ({ url, locals }) => {
+	await requireRoles(locals, ['teacher', 'admin']);
 
 	try {
 		// ====================================================================
@@ -88,7 +69,7 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
 		const offset = (page - 1) * limit;
 
 		// Build query
-		let query = supabase.from('question_templates').select('*', { count: 'exact' });
+		let query = locals.supabase.from('question_templates').select('*', { count: 'exact' });
 
 		// Apply filters
 		if (typeParam) {
@@ -141,28 +122,8 @@ export const GET: RequestHandler = async ({ url, locals: { safeGetSession, supab
  *
  * Returns: { success: true, template: QuestionTemplate } | { success: false, errors: string[] }
  */
-export const POST: RequestHandler = async ({ request, locals: { safeGetSession, supabase } }) => {
-	// ====================================================================
-	// SECURITY: Authentication Check
-	// ====================================================================
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// ====================================================================
-	// SECURITY: Authorization Check
-	// ====================================================================
-	const { data: profile } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Only admins can create question templates');
-	}
+export const POST: RequestHandler = async ({ request, locals }) => {
+	const { user } = await requireRole(locals, 'admin');
 
 	try {
 		// ====================================================================
@@ -228,7 +189,7 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 		let levelAdjusted = false;
 
 		if (templateData.status === 'published') {
-			const categoryCheck = await checkCategoryUniqueness(supabase, {
+			const categoryCheck = await checkCategoryUniqueness(locals.supabase, {
 				theme: templateData.theme!,
 				domain: templateData.domain!,
 				subdomain: templateData.subdomain,
@@ -237,7 +198,7 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 
 			if (!categoryCheck.isUnique) {
 				// Category exists - auto-adjust level to next available (max + 1)
-				const nextLevel = await getNextAvailableLevel(supabase, {
+				const nextLevel = await getNextAvailableLevel(locals.supabase, {
 					theme: templateData.theme!,
 					domain: templateData.domain!,
 					subdomain: templateData.subdomain
@@ -249,7 +210,7 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 		}
 
 		// Insert template (map camelCase to snake_case for database)
-		const { data: template, error: insertError } = await supabase
+		const { data: template, error: insertError } = await locals.supabase
 			.from('question_templates')
 			.insert({
 				type: templateData.type,

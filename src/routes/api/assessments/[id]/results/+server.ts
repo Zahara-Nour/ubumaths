@@ -12,17 +12,14 @@ import {
 } from '$lib/server/assessments';
 import { getResultsQuerySchema } from '$lib/server/validation/assessments';
 import { uuidSchema } from '$lib/server/validation/common';
-import { getUserProfile } from '$lib/server/auth';
+import { requireRole } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/assessments/[id]/results
  * Get all results for an assessment
  */
 export const GET: RequestHandler = async ({ locals, params, url }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);
@@ -31,13 +28,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	}
 
 	const assessmentId = idValidation.data;
-
-	// ✅ STANDARDIZED: Use getUserProfile helper for consistent profile fetching
-	const profile = await getUserProfile(locals.supabase, user.id);
-
-	if (!profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden - Teachers only');
-	}
 
 	// Verify teacher owns the assessment
 	const { data: assessment } = await locals.supabase

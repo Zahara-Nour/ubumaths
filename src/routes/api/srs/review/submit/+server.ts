@@ -14,6 +14,7 @@ import type { CardStats } from '$lib/srs/types';
 import { FSRS } from '$lib/srs/fsrs';
 import { DEFAULT_FSRS_PARAMS } from '$lib/srs/config';
 import { submitReviewSchema } from '$lib/server/validation/srs';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * POST /api/srs/review/submit
@@ -36,12 +37,9 @@ import { submitReviewSchema } from '$lib/server/validation/srs';
  *
  * @returns Updated card statistics and next review date
  */
-export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+export const POST: RequestHandler = async ({ request, locals }) => {
+	const { user } = await requireAuth(locals);
+	const supabase = locals.supabase;
 
 	try {
 		// ✅ SECURITY: Validate input with Zod

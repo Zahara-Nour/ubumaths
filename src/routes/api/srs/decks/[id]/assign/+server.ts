@@ -26,6 +26,7 @@ import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import { assignDeckSchema, uuidParamSchema } from '$lib/server/validation/srs';
+import { requireRole } from '$lib/server/middleware/auth';
 
 /**
  * POST /api/srs/decks/[id]/assign
@@ -41,16 +42,8 @@ import { assignDeckSchema, uuidParamSchema } from '$lib/server/validation/srs';
  *
  * @returns Assignment results
  */
-export const POST: RequestHandler = async ({
-	params,
-	request,
-	locals: { supabase, safeGetSession }
-}) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+export const POST: RequestHandler = async ({ params, request, locals }) => {
+	const { user } = await requireRole(locals, 'teacher');
 
 	// ✅ SECURITY: Validate UUID parameter
 	const paramValidation = uuidParamSchema.safeParse(params);
@@ -59,19 +52,9 @@ export const POST: RequestHandler = async ({
 	}
 
 	const { id: deckId } = paramValidation.data;
+	const supabase = locals.supabase;
 
 	try {
-		// Check if user is teacher or admin
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {
-			return json({ error: 'Forbidden. Only teachers can assign decks.' }, { status: 403 });
-		}
-
 		// Get source deck
 		const { data: sourceDeck, error: deckError } = await supabase
 			.from('srs_decks')

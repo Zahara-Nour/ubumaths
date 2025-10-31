@@ -22,6 +22,7 @@ import {
 	validateSingleAssign,
 	validateAssignmentQuery
 } from '$lib/server/validation';
+import { requireRole } from '$lib/server/middleware/auth';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -36,21 +37,7 @@ type ZodIssue = { path: (string | number)[]; message: string };
  * @returns Created assignment(s) with count
  */
 export const POST: RequestHandler = async ({ request, params, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
-
-	// Check if user is a teacher
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		return json({ error: 'Forbidden - Teachers only' }, { status: 403 });
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	const exerciseId = params.id;
 	const body = await request.json();
@@ -138,21 +125,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
  * @returns Array of assignments with details
  */
 export const GET: RequestHandler = async ({ params, url, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
-
-	// Check if user is a teacher
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		return json({ error: 'Forbidden - Teachers only' }, { status: 403 });
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	const exerciseId = params.id;
 

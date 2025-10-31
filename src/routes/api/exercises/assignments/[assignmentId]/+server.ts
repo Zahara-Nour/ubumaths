@@ -10,6 +10,7 @@ import type { RequestHandler } from './$types';
 import { updateAssignment, deleteAssignment } from '$lib/server/exercise-assignments';
 import type { ExerciseAssignment } from '$lib/exercises/types';
 import { validateUpdateAssignment } from '$lib/server/validation';
+import { requireRole } from '$lib/server/middleware/auth';
 
 /**
  * PATCH /api/exercises/assignments/[assignmentId]
@@ -22,21 +23,7 @@ import { validateUpdateAssignment } from '$lib/server/validation';
  * @returns Updated assignment
  */
 export const PATCH: RequestHandler = async ({ request, params, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
-
-	// Check if user is a teacher
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		return json({ error: 'Forbidden - Teachers only' }, { status: 403 });
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	const assignmentId = params.assignmentId;
 	const body = await request.json();
@@ -86,21 +73,7 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
  * @returns Success status
  */
 export const DELETE: RequestHandler = async ({ params, url, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
-
-	// Check if user is a teacher
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		return json({ error: 'Forbidden - Teachers only' }, { status: 403 });
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	const assignmentId = params.assignmentId;
 	const hardDelete = url.searchParams.get('hard') === 'true';

@@ -6,27 +6,14 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getStudentAssignments } from '$lib/server/assessments';
+import { requireRole } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/assessments/assigned
  * Get all assessments assigned to current student
  */
 export const GET: RequestHandler = async ({ locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Only students can access this
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'student') {
-		throw error(403, 'Forbidden - Students only');
-	}
+	const { user } = await requireRole(locals, 'student');
 
 	// Get assigned assessments
 	const result = await getStudentAssignments(locals.supabase, user.id);

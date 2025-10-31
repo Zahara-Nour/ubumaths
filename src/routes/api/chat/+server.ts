@@ -117,9 +117,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	} catch (err) {
 		// Enhanced error logging
 		const errorMessage = err instanceof Error ? err.message : String(err);
+		// Note: user might not be available if error occurred during auth
 		console.error('AI Chat API Error:', {
 			error: errorMessage,
-			userId: (await locals.safeGetSession())?.user?.id,
 			timestamp: new Date().toISOString()
 		});
 

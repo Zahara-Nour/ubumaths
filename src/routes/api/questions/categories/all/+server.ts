@@ -10,6 +10,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireRole } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/questions/categories/all
@@ -19,23 +20,9 @@ import type { RequestHandler } from './$types';
  *
  * Returns: { categories: QuestionCategory[] }
  */
-export const GET: RequestHandler = async ({ locals: { safeGetSession, supabase } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Check role (teachers and admins can view)
-	const { data: profile } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {
-		throw error(403, 'Only teachers and admins can access question categories');
-	}
+export const GET: RequestHandler = async ({ locals }) => {
+	await requireRole(locals, 'teacher');
+	const supabase = locals.supabase;
 
 	try {
 		// Fetch all published templates with their categories (including id for exclusion)

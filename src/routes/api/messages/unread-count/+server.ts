@@ -1,17 +1,14 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/messages/unread-count
  * Get count of unread private messages for the current user
  */
 export const GET: RequestHandler = async ({ locals }) => {
+	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
-	const { user } = await locals.safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
 
 	try {
 		const { data: count, error: fetchError } = await supabase.rpc(

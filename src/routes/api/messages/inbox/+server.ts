@@ -5,18 +5,14 @@ import {
 	inboxMessagesQuerySchema
 } from '$lib/server/validation/messages';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/messages/inbox
  * Get inbox messages for the current user
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
-	const supabase = locals.supabase;
-	const { user } = await locals.safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
 
 	try {
 		// ✅ SECURITY: Validate query parameters with Zod
@@ -34,7 +30,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const { status, folderId, limit, offset } = validation.data;
 
 		// Call database function
-		const { data: messages, error: fetchError } = await supabase.rpc('get_user_inbox', {
+		const { data: messages, error: fetchError } = await locals.supabase.rpc('get_user_inbox', {
 			p_user_id: user.id,
 			p_status: status,
 			p_folder_id: folderId || null,

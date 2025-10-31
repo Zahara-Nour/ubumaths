@@ -14,6 +14,7 @@ import {
 	generateExportFilename
 } from '$lib/server/exercise-import-export';
 import { validateExportExercises } from '$lib/server/validation';
+import { requireRole } from '$lib/server/middleware/auth';
 
 /**
  * POST /api/exercises/export
@@ -31,21 +32,7 @@ import { validateExportExercises } from '$lib/server/validation';
  * - Multiple exercises: { filename, content, mime_type } (JSON array or ZIP)
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Only teachers can export exercises
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden - Teachers only');
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	// Parse and validate request body
 	const body = await request.json();

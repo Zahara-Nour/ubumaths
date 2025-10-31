@@ -18,6 +18,7 @@ import {
 	createCardResponseSchema
 } from '$lib/server/validation/srs';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/srs/cards?deck_id=X
@@ -29,12 +30,9 @@ import { validateJsonResponse } from '$lib/server/validation/response-utils';
  *
  * @returns Array of cards
  */
-export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+export const GET: RequestHandler = async ({ url, locals }) => {
+	const { user } = await requireAuth(locals);
+	const supabase = locals.supabase;
 
 	// ✅ SECURITY: Validate query parameters with Zod
 	const queryRaw = {
@@ -109,12 +107,9 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
  *
  * @returns Created card
  */
-export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+export const POST: RequestHandler = async ({ request, locals }) => {
+	const { user } = await requireAuth(locals);
+	const supabase = locals.supabase;
 
 	try {
 		// ✅ SECURITY: Validate input with Zod

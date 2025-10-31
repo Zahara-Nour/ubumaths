@@ -4,20 +4,14 @@ import { error, json } from '@sveltejs/kit';
 import { validateRiddleAnswer } from '$lib/utils/riddle-validator';
 import { createRiddleValidationMessage, getRiddleTeacherId } from '$lib/server/riddle-messages';
 import { riddleAnswerSchema } from '$lib/server/validation/riddles';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * Submit riddle attempt
  * POST /api/riddles/[id]/submit
  */
-export const POST: RequestHandler = async ({
-	params,
-	request,
-	locals: { supabase, safeGetSession }
-}) => {
-	const { user } = await safeGetSession();
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+export const POST: RequestHandler = async ({ params, request, locals }) => {
+	const { user } = await requireAuth(locals);
 
 	// ✅ SECURITY: Validate input with Zod
 	const body = await request.json();
@@ -30,7 +24,7 @@ export const POST: RequestHandler = async ({
 	const { answer } = validation.data;
 
 	// Fetch riddle
-	const { data: riddle, error: riddleError } = await supabase
+	const { data: riddle, error: riddleError } = await locals.supabase
 		.from('riddles')
 		.select('*')
 		.eq('id', params.id)
@@ -54,12 +48,15 @@ export const POST: RequestHandler = async ({
 	}
 
 	// Submit attempt using RPC function
-	const { data: attemptId, error: submitError } = await supabase.rpc('submit_riddle_attempt', {
-		p_riddle_id: params.id,
-		p_student_id: user.id,
-		p_submitted_answer: { value: answer }, // Store as JSONB
-		p_is_correct: isCorrect
-	});
+	const { data: attemptId, error: submitError } = await locals.supabase.rpc(
+		'submit_riddle_attempt',
+		{
+			p_riddle_id: params.id,
+			p_student_id: user.id,
+			p_submitted_answer: { value: answer }, // Store as JSONB
+			p_is_correct: isCorrect
+		}
+	);
 
 	if (submitError) {
 		console.error('Error submitting attempt:', submitError);
@@ -67,7 +64,7 @@ export const POST: RequestHandler = async ({
 	}
 
 	// Fetch the created attempt to return full details
-	const { data: attempt, error: attemptError } = await supabase
+	const { data: attempt, error: attemptError } = await locals.supabase
 		.from('riddle_attempts')
 		.select('*')
 		.eq('id', attemptId)
@@ -80,20 +77,20 @@ export const POST: RequestHandler = async ({
 	// If manual validation, create a message to teacher
 	if (isCorrect === null) {
 		// Get student profile for name
-		const { data: student } = await supabase
+		const { data: student } = await locals.supabase
 			.from('profiles')
 			.select('firstname, lastname')
 			.eq('id', user.id)
 			.single();
 
 		// Get teacher ID
-		const teacherId = await getRiddleTeacherId(supabase, params.id);
+		const teacherId = await getRiddleTeacherId(locals.supabase, params.id);
 
 		if (teacherId && student) {
 			const studentName = `${student.firstname || ''} ${student.lastname || ''}`.trim();
 
 			// Create validation message
-			await createRiddleValidationMessage(supabase, {
+			await createRiddleValidationMessage(locals.supabase, {
 				attemptId,
 				riddleId: params.id,
 				riddleNumber: riddle.riddle_number,

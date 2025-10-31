@@ -10,6 +10,7 @@ import type { RequestHandler } from './$types';
 import { getExercise, updateExercise, deleteExercise } from '$lib/server/exercises';
 import type { Database } from '$lib/types/database';
 import { validateUpdateExercise } from '$lib/server/validation';
+import { requireRole } from '$lib/server/middleware/auth';
 
 type ExerciseUpdate = Database['public']['Tables']['exercises']['Update'];
 type ZodIssue = { path: (string | number)[]; message: string };
@@ -20,21 +21,7 @@ type ZodIssue = { path: (string | number)[]; message: string };
  * Teachers only
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Only teachers can access exercises
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden - Teachers only');
-	}
+	await requireRole(locals, 'teacher');
 
 	const { id } = params;
 
@@ -54,21 +41,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
  * Only the creator can update
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Only teachers can update exercises
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden - Teachers only');
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	const { id } = params;
 
@@ -108,21 +81,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
  * Only the creator can delete
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Only teachers can delete exercises
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden - Teachers only');
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	const { id } = params;
 

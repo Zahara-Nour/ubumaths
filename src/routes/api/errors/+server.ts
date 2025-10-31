@@ -12,24 +12,10 @@ import {
 	type ErrorSeverity
 } from '$lib/server/errorMonitoring';
 import { listErrorsQuerySchema } from '$lib/server/validation/errors';
+import { requireRole } from '$lib/server/middleware/auth';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
-	// Check authentication
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Check if user is admin
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Forbidden - Admin access required');
-	}
+	await requireRole(locals, 'admin');
 
 	try {
 		// ✅ SECURITY: Validate query parameters with Zod

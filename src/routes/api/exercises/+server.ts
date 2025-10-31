@@ -15,6 +15,7 @@ import {
 	createExerciseResponseSchema
 } from '$lib/server/validation';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { requireRole } from '$lib/server/middleware/auth';
 
 type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -24,21 +25,7 @@ type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
  * Teachers only
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Only teachers can access exercises
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden - Teachers only');
-	}
+	await requireRole(locals, 'teacher');
 
 	// Validate and parse query parameters
 	const queryValidation = validateListExercisesQuery(url.searchParams);
@@ -109,21 +96,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
  * Teachers only
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Only teachers can create exercises
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden - Teachers only');
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	// Parse and validate request body
 	const body = await request.json();

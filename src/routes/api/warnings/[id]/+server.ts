@@ -18,13 +18,10 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { removeWarningSchema } from '$lib/server/validation/warnings';
 import { removeWarning } from '$lib/server/warnings';
+import { requireAuth } from '$lib/server/middleware/auth';
 
-export const DELETE: RequestHandler = async ({ params, locals: { safeGetSession, supabase } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+export const DELETE: RequestHandler = async ({ params, locals }) => {
+	const { user } = await requireAuth(locals);
 
 	try {
 		// ✅ SECURITY: Validate warning ID with Zod
@@ -40,7 +37,7 @@ export const DELETE: RequestHandler = async ({ params, locals: { safeGetSession,
 		const result = await removeWarning({
 			warningId: warning_id,
 			teacherId: user.id,
-			supabase
+			supabase: locals.supabase
 		});
 
 		return json({

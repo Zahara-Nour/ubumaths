@@ -9,16 +9,14 @@ import { assignAssessment, getAssessment } from '$lib/server/assessments';
 import { notifyNewAssessment } from '$lib/server/auto-notifications';
 import { assignAssessmentSchema } from '$lib/server/validation/assessments';
 import { uuidSchema } from '$lib/server/validation/common';
+import { requireRole } from '$lib/server/middleware/auth';
 
 /**
  * POST /api/assessments/[id]/assign
  * Assign assessment to classes and/or students
  */
 export const POST: RequestHandler = async ({ locals, params, request }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
+	const { user, profile } = await requireRole(locals, 'teacher');
 
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);
@@ -27,17 +25,6 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	const assessmentId = idValidation.data;
-
-	// Only teachers can assign
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role, firstname, lastname')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden - Teachers only');
-	}
 
 	// Parse and validate request body
 	const body = await request.json();

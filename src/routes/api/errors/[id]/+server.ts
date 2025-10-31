@@ -8,30 +8,16 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getErrorLog, resolveError } from '$lib/server/errorMonitoring';
 import { resolveErrorSchema } from '$lib/server/validation/errors';
+import { requireRole } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/errors/[id]
  * Get error log details (admin only)
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
+	await requireRole(locals, 'admin');
+
 	const { id } = params;
-
-	// Check authentication
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Check if user is admin
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Forbidden - Admin access required');
-	}
 
 	try {
 		const result = await getErrorLog(locals.supabase, id);
@@ -56,24 +42,9 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  * Resolve error (admin only)
  */
 export const PUT: RequestHandler = async ({ params, request, locals }) => {
+	const { user } = await requireRole(locals, 'admin');
+
 	const { id } = params;
-
-	// Check authentication
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Check if user is admin
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Forbidden - Admin access required');
-	}
 
 	try {
 		// SECURITY: Validate request body with Zod schema

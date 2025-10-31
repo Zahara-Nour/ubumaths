@@ -1,18 +1,15 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { searchMessagesQuerySchema } from '$lib/server/validation/messages';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/messages/search?q=query&searchIn=all&hasAttachments=true&senderName=...&dateFrom=...&dateTo=...
  * Search private messages with full-text search and filters
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
+	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
-	const { user } = await locals.safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
 
 	try {
 		// SECURITY: Validate query parameters with Zod schema

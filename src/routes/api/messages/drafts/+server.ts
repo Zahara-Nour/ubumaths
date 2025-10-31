@@ -1,20 +1,16 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/messages/drafts
  * Get all drafts for the current user
  */
 export const GET: RequestHandler = async ({ locals }) => {
-	const supabase = locals.supabase;
-	const { user } = await locals.safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
 
 	try {
-		const { data: drafts, error: fetchError } = await supabase
+		const { data: drafts, error: fetchError } = await locals.supabase
 			.from('message_drafts')
 			.select('*')
 			.eq('author_id', user.id)
@@ -40,12 +36,7 @@ export const GET: RequestHandler = async ({ locals }) => {
  * Create or update a draft
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const supabase = locals.supabase;
-	const { user } = await locals.safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+	const { user } = await requireAuth(locals);
 
 	try {
 		// ✅ SECURITY: Validate input with Zod
@@ -62,7 +53,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (id) {
 			// Update existing draft
-			const { data: draft, error: updateError } = await supabase
+			const { data: draft, error: updateError } = await locals.supabase
 				.from('message_drafts')
 				.update({
 					subject,
@@ -85,7 +76,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ draft });
 		} else {
 			// Create new draft
-			const { data: draft, error: createError } = await supabase
+			const { data: draft, error: createError } = await locals.supabase
 				.from('message_drafts')
 				.insert({
 					author_id: user.id,

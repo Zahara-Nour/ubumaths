@@ -11,16 +11,14 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { getAssessment, updateAssessment, archiveAssessment } from '$lib/server/assessments';
 import { updateAssessmentSchema } from '$lib/server/validation/assessments';
 import { uuidSchema } from '$lib/server/validation/common';
+import { requireAuth, requireRole } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/assessments/[id]
  * Get assessment by ID
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
+	const { user, profile } = await requireAuth(locals);
 
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);
@@ -37,12 +35,6 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	}
 
 	// Check authorization
-
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
 
 	// Teachers can only view their own assessments
 	if (profile?.role === 'teacher' && result.data.created_by !== user.id) {
@@ -74,10 +66,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
  * Update assessment
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);
@@ -86,17 +75,6 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	const id = idValidation.data;
-
-	// Only teachers can update
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden - Teachers only');
-	}
 
 	// Parse and validate request body
 	const body = await request.json();
@@ -125,10 +103,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
  * Archive assessment
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);
@@ -137,17 +112,6 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	}
 
 	const id = idValidation.data;
-
-	// Only teachers can delete
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden - Teachers only');
-	}
 
 	// Archive assessment
 	const result = await archiveAssessment(locals.supabase, id, user.id);

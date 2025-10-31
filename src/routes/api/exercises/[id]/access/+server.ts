@@ -7,6 +7,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { studentHasAccess } from '$lib/server/exercise-assignments';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/exercises/[id]/access
@@ -20,10 +21,7 @@ import { studentHasAccess } from '$lib/server/exercise-assignments';
  * @returns { has_access: boolean }
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+	const { user } = await requireAuth(locals);
 
 	const exerciseId = params.id;
 

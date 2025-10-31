@@ -13,6 +13,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { updateCardSchema, uuidParamSchema } from '$lib/server/validation/srs';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/srs/cards/[id]
@@ -21,12 +22,9 @@ import { updateCardSchema, uuidParamSchema } from '$lib/server/validation/srs';
  *
  * @returns Card
  */
-export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+export const GET: RequestHandler = async ({ params, locals }) => {
+	const { user } = await requireAuth(locals);
+	const supabase = locals.supabase;
 
 	// ✅ SECURITY: Validate UUID parameter
 	const paramValidation = uuidParamSchema.safeParse(params);
@@ -81,16 +79,9 @@ export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetS
  *
  * @returns Updated card
  */
-export const PUT: RequestHandler = async ({
-	params,
-	request,
-	locals: { supabase, safeGetSession }
-}) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+export const PUT: RequestHandler = async ({ params, request, locals }) => {
+	const { user } = await requireAuth(locals);
+	const supabase = locals.supabase;
 
 	// ✅ SECURITY: Validate UUID parameter
 	const paramValidation = uuidParamSchema.safeParse(params);
@@ -193,12 +184,9 @@ export const PUT: RequestHandler = async ({
  *
  * @returns Success message
  */
-export const DELETE: RequestHandler = async ({ params, locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+export const DELETE: RequestHandler = async ({ params, locals }) => {
+	const { user } = await requireAuth(locals);
+	const supabase = locals.supabase;
 
 	// ✅ SECURITY: Validate UUID parameter
 	const paramValidation = uuidParamSchema.safeParse(params);

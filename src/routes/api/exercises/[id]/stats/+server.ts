@@ -7,7 +7,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getExerciseCompletionStats } from '$lib/server/exercise-assignments';
-import { getUserProfile } from '$lib/server/auth';
+import { requireRole } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/exercises/[id]/stats
@@ -19,17 +19,7 @@ import { getUserProfile } from '$lib/server/auth';
  * @returns ExerciseCompletionStats object
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
-
-	// ✅ STANDARDIZED: Use getUserProfile helper for consistent profile fetching
-	const profile = await getUserProfile(locals.supabase, user.id);
-
-	if (!profile || profile.role !== 'teacher') {
-		return json({ error: 'Forbidden - Teachers only' }, { status: 403 });
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	const exerciseId = params.id;
 

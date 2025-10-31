@@ -8,6 +8,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { markExerciseAsViewed } from '$lib/server/exercise-assignments';
 import { validateViewExercise } from '$lib/server/validation';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -22,10 +23,7 @@ type ZodIssue = { path: (string | number)[]; message: string };
  * @returns Completion record with updated view data
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+	const { user } = await requireAuth(locals);
 
 	const exerciseId = params.id;
 

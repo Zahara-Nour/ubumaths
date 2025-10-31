@@ -13,32 +13,18 @@ import type { QuestionTemplate } from '$lib/questions/types';
 import { validateTemplate, detectCircularDependencies } from '$lib/questions';
 import { checkCategoryUniqueness } from '$lib/questions/category-validation';
 import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/validation';
+import { requireRoles, requireRole } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/questions/templates/[id]
  *
  * Retrieve a single template by ID
  */
-export const GET: RequestHandler = async ({ params, locals: { safeGetSession, supabase } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Check role
-	const { data: profile } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {
-		throw error(403, 'Only teachers and admins can access question templates');
-	}
+export const GET: RequestHandler = async ({ params, locals }) => {
+	await requireRoles(locals, ['teacher', 'admin']);
 
 	try {
-		const { data: template, error: queryError } = await supabase
+		const { data: template, error: queryError } = await locals.supabase
 			.from('question_templates')
 			.select('*')
 			.eq('id', params.id)
@@ -65,32 +51,8 @@ export const GET: RequestHandler = async ({ params, locals: { safeGetSession, su
  *
  * Update an existing template
  */
-export const PUT: RequestHandler = async ({
-	params,
-	request,
-	locals: { safeGetSession, supabase }
-}) => {
-	// ====================================================================
-	// SECURITY: Authentication Check
-	// ====================================================================
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// ====================================================================
-	// SECURITY: Authorization Check
-	// ====================================================================
-	const { data: profile } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Only admins can update question templates');
-	}
+export const PUT: RequestHandler = async ({ params, request, locals }) => {
+	await requireRole(locals, 'admin');
 
 	try {
 		// ====================================================================
@@ -152,7 +114,7 @@ export const PUT: RequestHandler = async ({
 		// Category uniqueness validation (only for published templates)
 		if (templateData.status === 'published') {
 			const categoryCheck = await checkCategoryUniqueness(
-				supabase,
+				locals.supabase,
 				{
 					theme: templateData.theme!,
 					domain: templateData.domain!,
@@ -177,7 +139,7 @@ export const PUT: RequestHandler = async ({
 		}
 
 		// Update template (map camelCase to snake_case for database)
-		const { data: template, error: updateError } = await supabase
+		const { data: template, error: updateError } = await locals.supabase
 			.from('question_templates')
 			.update({
 				type: templateData.type,
@@ -240,27 +202,12 @@ export const PUT: RequestHandler = async ({
  *
  * Delete a template
  */
-export const DELETE: RequestHandler = async ({ params, locals: { safeGetSession, supabase } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Check role (only admins can delete)
-	const { data: profile } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Only admins can delete question templates');
-	}
+export const DELETE: RequestHandler = async ({ params, locals }) => {
+	await requireRole(locals, 'admin');
 
 	try {
 		// Check if template exists first
-		const { data: existing } = await supabase
+		const { data: existing } = await locals.supabase
 			.from('question_templates')
 			.select('id')
 			.eq('id', params.id)
@@ -271,7 +218,7 @@ export const DELETE: RequestHandler = async ({ params, locals: { safeGetSession,
 		}
 
 		// Delete template
-		const { error: deleteError } = await supabase
+		const { error: deleteError } = await locals.supabase
 			.from('question_templates')
 			.delete()
 			.eq('id', params.id);

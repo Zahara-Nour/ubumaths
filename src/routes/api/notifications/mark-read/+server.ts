@@ -8,16 +8,11 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { markAsRead } from '$lib/server/notifications';
 import { markNotificationReadSchema, validateRequest } from '$lib/server/validation';
+import { requireAuth } from '$lib/server/middleware/auth';
 
-export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
-	// ====================================================================
-	// SECURITY: Authentication Check
-	// ====================================================================
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+export const POST: RequestHandler = async ({ request, locals }) => {
+	const { user } = await requireAuth(locals);
+	const supabase = locals.supabase;
 
 	// ====================================================================
 	// SECURITY: Input Validation

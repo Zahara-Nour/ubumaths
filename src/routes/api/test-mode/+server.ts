@@ -10,13 +10,11 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { setTeacherTestMode } from '$lib/server/test-mode';
 import { testModeSchema } from '$lib/server/validation/common';
+import { requireAuth } from '$lib/server/middleware/auth';
 
-export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
+export const POST: RequestHandler = async ({ request, locals }) => {
+	const { user } = await requireAuth(locals);
+	const supabase = locals.supabase;
 
 	try {
 		// ✅ SECURITY: Validate request body with Zod

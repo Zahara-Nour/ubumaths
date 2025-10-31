@@ -7,13 +7,11 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getUnreadNotifications } from '$lib/server/notifications';
+import { requireAuth } from '$lib/server/middleware/auth';
 
-export const GET: RequestHandler = async ({ locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+export const GET: RequestHandler = async ({ locals }) => {
+	const { user } = await requireAuth(locals);
+	const supabase = locals.supabase;
 
 	const notifications = await getUnreadNotifications(supabase, user.id);
 

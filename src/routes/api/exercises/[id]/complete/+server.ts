@@ -8,6 +8,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { markExerciseAsComplete, markExerciseAsIncomplete } from '$lib/server/exercise-assignments';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * POST /api/exercises/[id]/complete
@@ -18,10 +19,7 @@ import { markExerciseAsComplete, markExerciseAsIncomplete } from '$lib/server/ex
  * @returns Completion record with completed_at set
  */
 export const POST: RequestHandler = async ({ params, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+	const { user } = await requireAuth(locals);
 
 	const exerciseId = params.id;
 
@@ -49,10 +47,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
  * @returns Completion record with completed_at=null
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+	const { user } = await requireAuth(locals);
 
 	const exerciseId = params.id;
 

@@ -1,18 +1,15 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { updateMessageSchema } from '$lib/server/validation/messages';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/messages/[id]
  * Get a single message with full details
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
+	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
-	const { user } = await locals.safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
 
 	try {
 		const messageId = params.id;
@@ -59,12 +56,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  * Update message status, folder, or star
  */
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
+	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
-	const { user } = await locals.safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
 
 	try {
 		const messageId = params.id;
@@ -165,12 +158,8 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
  * Delete a message (soft delete for recipients, can be used by sender or moderator)
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
+	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
-	const { user } = await locals.safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
 
 	try {
 		const messageId = params.id;

@@ -1,17 +1,14 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/messages/drafts/[id]
  * Get a specific draft
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
+	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
-	const { user } = await locals.safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
 
 	try {
 		const { data: draft, error: fetchError } = await supabase
@@ -41,12 +38,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  * Delete a draft
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
+	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
-	const { user } = await locals.safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
 
 	try {
 		const { error: deleteError } = await supabase

@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/messages/recipients
@@ -8,12 +9,8 @@ import type { RequestHandler } from './$types';
  * - Teachers can message their students and get their classes for group messaging
  */
 export const GET: RequestHandler = async ({ locals }) => {
+	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
-	const { user } = await locals.safeGetSession();
-
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
 
 	try {
 		// Get user's role
