@@ -12,9 +12,25 @@ Documentation complète de la plateforme éducative UbuMaths.
 | Pour...                       | Voir                                            |
 | ----------------------------- | ----------------------------------------------- |
 | **Démarrer le développement** | [CLAUDE.md](../CLAUDE.md) à la racine           |
+| **Documentation Claude Code** | [docs/claude/](claude/README.md) ⭐             |
 | **Comprendre l'architecture** | [Architecture](#-architecture)                  |
 | **Découvrir les features**    | [Features](#-features-implémentées)             |
 | **Contribuer au projet**      | [Guide de contribution](contributing/README.md) |
+
+---
+
+## 🤖 Documentation Claude Code
+
+Documentation détaillée pour Claude Code lors du développement.
+
+| Document                                                | Description                                    |
+| ------------------------------------------------------- | ---------------------------------------------- |
+| [Index Claude Docs](claude/README.md) ⭐                | Vue d'ensemble documentation Claude            |
+| [Architecture](claude/architecture.md)                  | Structure, routing, data fetching, performance |
+| [Best Practices](claude/best-practices.md)              | Svelte 5, TypeScript, anti-patterns            |
+| [UI Components](claude/ui-components.md)                | Shadcn, MySelect, Tailwind                     |
+| [Database](claude/database.md)                          | Supabase, migrations, schéma                   |
+| [Quality Standards](claude/quality-standards.md) ⭐⭐⭐ | Tests, linting, Zod validation                 |
 
 ---
 
@@ -208,14 +224,16 @@ Système d'authentification avec Google OAuth + email/password.
 
 ## 📖 Guides pratiques
 
-| Guide                                       | Description                      |
-| ------------------------------------------- | -------------------------------- |
-| [Vue d'ensemble](guides/README.md)          | Index des guides                 |
-| [Import d'élèves](guides/student-import.md) | Workflow d'import CSV            |
-| [Déploiement](guides/deployment.md)         | Déploiement sur Vercel           |
-| [Dépannage](guides/troubleshooting.md)      | Solutions aux problèmes courants |
-| [Guide de tests](guides/testing-guide.md)   | Comment tester l'application     |
-| [Composants UI](guides/ui-components.md)    | Utilisation Shadcn-svelte        |
+| Guide                                           | Description                      |
+| ----------------------------------------------- | -------------------------------- |
+| [Getting Started](getting-started/README.md) ⭐ | Installation et premiers pas     |
+| [Vue d'ensemble](guides/README.md)              | Index des guides                 |
+| [Import d'élèves](guides/student-import.md)     | Workflow d'import CSV            |
+| [Déploiement](guides/deployment.md)             | Déploiement sur Vercel           |
+| [Dépannage](guides/troubleshooting.md)          | Solutions aux problèmes courants |
+| [Guide de tests](guides/testing-guide.md)       | Comment tester l'application     |
+| [Composants UI](guides/ui-components.md)        | Utilisation Shadcn-svelte        |
+| [Migration Reports](migrations/README.md) 🆕    | Rapports de migrations clés      |
 
 ---
 
