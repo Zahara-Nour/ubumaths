@@ -25,14 +25,22 @@
 	import type { Deck } from '$lib/srs/types';
 
 	interface Props {
-		deck: Deck & { stats?: { new: number; learning: number; due: number } };
+		deck: Deck & {
+			stats?: {
+				due_count: number;
+				total_cards: number;
+				new_count: number;
+				learning_count: number;
+			};
+		};
 		onclick?: () => void;
 		showActions?: boolean;
 	}
 
 	let { deck, onclick, showActions = true }: Props = $props();
 
-	const stats = $derived(deck.stats || {});
+	const defaultStats = { due_count: 0, total_cards: 0, new_count: 0, learning_count: 0 };
+	const stats = $derived(deck.stats || defaultStats);
 	const dueCount = $derived(stats.due_count || 0);
 	const totalCards = $derived(stats.total_cards || 0);
 	const newCount = $derived(stats.new_count || 0);
