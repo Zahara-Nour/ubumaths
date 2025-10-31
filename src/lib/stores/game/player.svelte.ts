@@ -190,7 +190,7 @@ class PlayerStore {
 	private onLevelUp() {
 		// This can be listened to by components
 		// Show level up modal, unlock new spells, etc.
-		console.log(`Level up! New level: ${this.level}`);
+		// Level up event - components can listen to this.level changes
 	}
 
 	// Persistence

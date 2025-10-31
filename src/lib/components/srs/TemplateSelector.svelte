@@ -92,17 +92,13 @@
 	 * Toggle template selection
 	 */
 	function toggleTemplate(templateId: string) {
-		console.log('Toggle template:', templateId);
 		if (selectedIds.has(templateId)) {
 			selectedIds.delete(templateId);
 			selectionCount--;
-			console.log('Removed. New size:', selectedIds.size, 'count:', selectionCount);
 		} else {
 			selectedIds.add(templateId);
 			selectionCount++;
-			console.log('Added. New size:', selectedIds.size, 'count:', selectionCount);
 		}
-		console.log('hasSelection:', hasSelection);
 	}
 
 	/**

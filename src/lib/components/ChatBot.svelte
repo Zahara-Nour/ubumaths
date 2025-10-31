@@ -1,3 +1,56 @@
+<!--
+	ChatBot Component
+	=================
+	AI-powered mathematical assistant using Claude API (Anthropic)
+
+	FEATURES:
+	- Multi-turn conversations with context retention
+	- Image attachments (file upload + URL)
+	- LaTeX/MathML rendering in responses
+	- Rate limiting (5 requests per 15 minutes per user)
+	- Customizable AI personalities (Père Ubu, friendly teacher, etc.)
+	- Markdown formatting in messages
+	- Conversation history persistence
+	- Auto-scroll to latest message
+	- Typing indicators with animated rotation
+
+	SECURITY:
+	- Authenticated users only (requires login)
+	- Server-side rate limiting to prevent abuse
+	- Input sanitization for URLs and file uploads
+	- File size limits (5MB max per image)
+	- CORS-safe image loading with error handling
+
+	PROPS:
+	- personalityKey?: PersonalityKey (default: 'pereUbu') - AI personality from personalities config
+
+	TECHNICAL IMPLEMENTATION:
+	- Uses Svelte 5 runes ($state, $derived, $effect, $props)
+	- Claude API via POST to /api/ai/chat endpoint
+	- Base64 encoding for image attachments
+	- MathDisplay component for LaTeX rendering
+	- Smooth scrolling with scroll-behavior CSS
+
+	USAGE:
+	```svelte
+	<ChatBot personalityKey="pereUbu" />
+	<ChatBot personalityKey="friendly" />
+	```
+
+	RATE LIMITS:
+	- 5 requests per 15 minutes per user (enforced server-side)
+	- User-friendly French error messages on limit exceeded
+	- Automatic retry guidance in error messages
+
+	LIMITATIONS:
+	- Images must be accessible URLs or valid base64 data
+	- Maximum 5MB per image file
+	- LaTeX rendering requires MathJax/KaTeX (via MathDisplay)
+	- Conversation history is session-scoped (not persisted to database)
+
+	@component
+-->
+
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -103,7 +156,9 @@
 		// Scroll once when typing starts
 		if (messagesContainer) {
 			setTimeout(() => {
-				messagesContainer.scrollTop = messagesContainer.scrollHeight;
+				if (messagesContainer) {
+					messagesContainer.scrollTop = messagesContainer.scrollHeight;
+				}
 			}, 100);
 		}
 
@@ -121,7 +176,9 @@
 			// Scroll to bottom after skipping
 			if (messagesContainer) {
 				setTimeout(() => {
-					messagesContainer.scrollTop = messagesContainer.scrollHeight;
+					if (messagesContainer) {
+						messagesContainer.scrollTop = messagesContainer.scrollHeight;
+					}
 				}, 50);
 			}
 		}
@@ -334,7 +391,9 @@
 	$effect(() => {
 		if (messagesContainer && messages.length > 0) {
 			setTimeout(() => {
-				messagesContainer.scrollTop = messagesContainer.scrollHeight;
+				if (messagesContainer) {
+					messagesContainer.scrollTop = messagesContainer.scrollHeight;
+				}
 			}, 100);
 		}
 	});

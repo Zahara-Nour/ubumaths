@@ -19,6 +19,7 @@ import {
 	createDeckResponseSchema
 } from '$lib/server/validation/srs';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/srs/decks
@@ -32,12 +33,8 @@ import { validateJsonResponse } from '$lib/server/validation/response-utils';
  *
  * @returns Array of decks with stats
  */
-export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+export const GET: RequestHandler = async ({ url, locals }) => {
+	const { user } = await requireAuth(locals);
 
 	try {
 		// ✅ SECURITY: Validate query parameters with Zod
@@ -52,8 +49,16 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 		}
 
 		const query = validation.data;
-		// Get user's decks
-		let dbQuery = supabase.from('srs_decks').select('*').eq('owner_id', user.id);
+
+		// ✅ OPTIMIZED: Use deck_stats_view to get decks with stats in single query (eliminates N+1)
+		// Previous: 1 + N queries (1 for decks + N RPC calls for stats)
+		// Now: 1 query (view pre-computes all stats)
+		let dbQuery = locals.supabase
+			.from('deck_stats_view')
+			.select(
+				'deck_id, owner_id, name, description, deck_type, is_assigned, config, created_at, updated_at, total_cards, new_count, learning_count, review_count, due_count'
+			)
+			.eq('owner_id', user.id);
 
 		// Apply optional filters
 		if (query.deckType) {
@@ -64,7 +69,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 			dbQuery = dbQuery.ilike('name', `%${query.search}%`);
 		}
 
-		const { data: decks, error: decksError } = await dbQuery.order('created_at', {
+		const { data: deckStats, error: decksError } = await dbQuery.order('created_at', {
 			ascending: false
 		});
 
@@ -73,48 +78,29 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 			return json({ error: 'Failed to fetch decks' }, { status: 500 });
 		}
 
-		if (!decks) {
+		if (!deckStats) {
 			return json({ decks: [] });
 		}
 
-		// Get stats for each deck using helper function
-		const decksWithStats = await Promise.all(
-			decks.map(async (deck) => {
-				const { data: stats, error: statsError } = await supabase.rpc('get_deck_stats', {
-					p_user_id: user.id,
-					p_deck_id: deck.id
-				});
-
-				if (statsError) {
-					console.error(`Error fetching stats for deck ${deck.id}:`, statsError);
-					// Return deck without stats on error
-					return {
-						...deck,
-						stats: {
-							total_cards: 0,
-							due_count: 0,
-							new_count: 0,
-							learning_count: 0,
-							review_count: 0
-						}
-					};
-				}
-
-				// RPC returns array with single row
-				const deckStats = stats?.[0] || {
-					total_cards: 0,
-					due_count: 0,
-					new_count: 0,
-					learning_count: 0,
-					review_count: 0
-				};
-
-				return {
-					...deck,
-					stats: deckStats
-				};
-			})
-		);
+		// Transform view data to match expected response format
+		const decksWithStats = deckStats.map((row) => ({
+			id: row.deck_id,
+			owner_id: row.owner_id,
+			name: row.name,
+			description: row.description,
+			deck_type: row.deck_type,
+			is_assigned: row.is_assigned,
+			config: row.config,
+			created_at: row.created_at,
+			updated_at: row.updated_at,
+			stats: {
+				total_cards: row.total_cards,
+				due_count: row.due_count,
+				new_count: row.new_count,
+				learning_count: row.learning_count,
+				review_count: row.review_count
+			}
+		}));
 
 		// Validate response
 		const validated = validateJsonResponse(
@@ -145,12 +131,8 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
  *
  * @returns Created deck
  */
-export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+export const POST: RequestHandler = async ({ request, locals }) => {
+	const { user } = await requireAuth(locals);
 
 	try {
 		// ✅ SECURITY: Validate input with Zod
@@ -171,7 +153,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 		};
 
 		// Create deck
-		const { data: deck, error: createError } = await supabase
+		const { data: deck, error: createError } = await locals.supabase
 			.from('srs_decks')
 			.insert({
 				name: body.name.trim(),

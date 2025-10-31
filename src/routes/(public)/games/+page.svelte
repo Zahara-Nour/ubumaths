@@ -5,10 +5,19 @@
 	let { data }: { data: PageData } = $props();
 
 	// Check if user is authenticated
-	const isAuthenticated = $derived(!!data.session);
+	const isAuthenticated = $derived(!!data.user);
 
 	// Game cards data
-	const games = [
+	const games: Array<{
+		title: string;
+		description: string;
+		icon: typeof Target | typeof Sword;
+		href: string;
+		color: string;
+		emoji: string;
+		public: boolean;
+		image?: string;
+	}> = [
 		{
 			title: 'Trio',
 			description: "Les trois bons chiffres et c'est gagné !",

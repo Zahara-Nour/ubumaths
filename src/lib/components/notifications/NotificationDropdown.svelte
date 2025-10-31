@@ -42,8 +42,9 @@
 		isOpen = false;
 
 		// Navigate if action URL exists (using then to handle promise)
+		// Type assertion: action_url comes from database, assumed to be valid route
 		if (notification.action_url) {
-			goto(notification.action_url).then(() => {});
+			goto(notification.action_url as Parameters<typeof goto>[0]).then(() => {});
 		}
 	}
 

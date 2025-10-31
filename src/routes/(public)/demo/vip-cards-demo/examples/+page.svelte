@@ -39,7 +39,7 @@
 		<p class="subtitle">Explore different ways to use the VipCardHolo component</p>
 
 		<nav class="examples-nav">
-			<a href={resolve('/vip-cards-demo')}>← Back to Gallery</a>
+			<a href={resolve('/demo/vip-cards-demo')}>← Back to Gallery</a>
 		</nav>
 	</header>
 

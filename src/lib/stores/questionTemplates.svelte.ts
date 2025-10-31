@@ -137,7 +137,7 @@ class QuestionTemplatesStore {
 		// Skip if there was a recent error (likely offline)
 		// Don't retry immediately to avoid error spam
 		if (!force && this.cache.error) {
-			console.log('[Templates Cache] Skipping fetch due to previous error (likely offline)');
+			// Skip fetch silently to avoid error spam
 			return;
 		}
 

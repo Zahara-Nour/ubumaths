@@ -38,7 +38,7 @@
 
 2. **updated-at-triggers.test.ts** (18 tests)
    - Parameterized suite covering 42 triggers
-   - Tests 5 representative tables (profiles, classes, exercises, geometry, messages)
+   - Tests 5 representative tables (profiles, classes, exercises, messages, assessments)
    - Can be expanded to cover all 42 tables
    - Performance tests for bulk updates
 
@@ -105,7 +105,6 @@
 - Chat room auto-creation
 - Message processing & search indexing
 - Folder count management
-- Geometry exercise scoring
 - Error signature generation & deduplication
 - Template versioning
 - Exercise image cleanup (Storage)
@@ -132,23 +131,19 @@
    - Attachment flag updates
    - Folder count management (insert/update/delete)
 
-4. **geometry-triggers.test.ts** (1 hour)
-   - Update last_saved_at for in_progress attempts
-   - Calculate final score with penalties
-
-5. **error-monitoring-triggers.test.ts** (1.5 hours)
+4. **error-monitoring-triggers.test.ts** (1.5 hours)
    - Generate MD5 signature for deduplication
    - Upsert aggregated error_occurrences
 
-6. **template-triggers.test.ts** (1 hour)
+5. **template-triggers.test.ts** (1 hour)
    - Save version history on changes
    - Audit logging
 
-7. **cleanup-triggers.test.ts** (1.5 hours)
+6. **cleanup-triggers.test.ts** (1.5 hours)
    - Delete images from Supabase Storage
    - Requires Storage setup/mocking
 
-8. **assignment-triggers.test.ts** (30 min)
+7. **assignment-triggers.test.ts** (30 min)
    - Update last_viewed_at on view_count increment
 
 ### Expand Parameterized Tests (Optional)

@@ -51,7 +51,8 @@
 		await notificationStore.markAsRead(currentNotification.id);
 
 		// Navigate to action URL (using then to handle promise)
-		goto(currentNotification.action_url).then(() => {});
+		// Type assertion: action_url comes from database, assumed to be valid route
+		goto(currentNotification.action_url as Parameters<typeof goto>[0]).then(() => {});
 	}
 
 	// Get priority colors

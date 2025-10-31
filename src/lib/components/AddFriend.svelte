@@ -64,7 +64,7 @@
 	}
 
 	function getStatusBadge(status: 'pending' | 'accepted' | 'rejected' | null): {
-		icon: typeof Check;
+		icon: typeof Check | typeof Clock | typeof UserX | null;
 		label: string;
 		class: string;
 	} {

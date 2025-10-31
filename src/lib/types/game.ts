@@ -239,6 +239,11 @@ export interface ChallengeInstance {
 	correct_answer: unknown;
 }
 
+// Type aliases for compatibility with challenge-variables system
+export type Challenge = GameChallenge;
+export type VariableDefinition = ChallengeVariable;
+export type AnswerDefinition = ChallengeAnswer;
+
 // ============================================================================
 // Game Challenge Attempts
 // ============================================================================

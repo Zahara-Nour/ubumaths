@@ -7,6 +7,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getExerciseCompletionStats } from '$lib/server/exercise-assignments';
+import { getUserProfile } from '$lib/server/auth';
 
 /**
  * GET /api/exercises/[id]/stats
@@ -23,12 +24,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	// Check if user is a teacher
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
+	// ✅ STANDARDIZED: Use getUserProfile helper for consistent profile fetching
+	const profile = await getUserProfile(locals.supabase, user.id);
 
 	if (!profile || profile.role !== 'teacher') {
 		return json({ error: 'Forbidden - Teachers only' }, { status: 403 });

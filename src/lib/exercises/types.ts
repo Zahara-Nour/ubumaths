@@ -17,7 +17,6 @@
 // ============================================================================
 
 import type { Variable, ResolvedVariable } from '$lib/shared/parameterization';
-import { isDeadlinePassed as isDeadlinePassedUtil } from '$lib/utils/dates';
 
 // ============================================================================
 // PARAMETERIZATION TYPES
@@ -1832,30 +1831,6 @@ export function validateAssignmentData(data: CreateExerciseAssignment): {
  */
 export function hasDeadline(assignment: ExerciseAssignment): boolean {
 	return assignment.optional_deadline !== null;
-}
-
-/**
- * Check if assignment deadline has passed
- *
- * Compares deadline with current time. Returns false if no deadline.
- *
- * @param assignment - Assignment to check
- * @returns True if deadline exists and has passed
- *
- * @example
- * ```typescript
- * const assignment: ExerciseAssignment = {
- *   // ... fields ...
- *   optional_deadline: '2024-01-15T23:59:59Z' // In the past
- * };
- * isDeadlinePassed(assignment); // true
- * ```
- *
- * @deprecated Use isDeadlinePassed from '$lib/utils/dates' instead
- * @see isDeadlinePassed in $lib/utils/dates.ts
- */
-export function isDeadlinePassed(assignment: ExerciseAssignment): boolean {
-	return isDeadlinePassedUtil(assignment.optional_deadline);
 }
 
 /**

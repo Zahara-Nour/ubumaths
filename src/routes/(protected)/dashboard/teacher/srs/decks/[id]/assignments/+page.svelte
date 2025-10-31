@@ -30,10 +30,34 @@
 	} from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 
+	interface Student {
+		firstName?: string;
+		lastName?: string;
+		email?: string;
+		avatarUrl?: string;
+	}
+
+	interface StudentDeck {
+		stats?: {
+			total_cards?: number;
+			due_count?: number;
+		};
+	}
+
+	interface Assignment {
+		id: string;
+		student_id: string;
+		assigned_at: string;
+		assignedAt: string;
+		assignedTo: string;
+		student?: Student;
+		studentDeck?: StudentDeck | null;
+	}
+
 	interface Props {
 		data: {
 			deck: { name: string }; // id available from page.params
-			assignments: { id: string; student_id: string; assigned_at: string }[];
+			assignments: Assignment[];
 		};
 	}
 

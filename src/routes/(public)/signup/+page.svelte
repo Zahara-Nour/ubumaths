@@ -63,7 +63,7 @@
 						type="email"
 						autocomplete="email"
 						required
-						value={form?.email ?? ''}
+						value={form && 'email' in form ? form.email : ''}
 					/>
 				</div>
 

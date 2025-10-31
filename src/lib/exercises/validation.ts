@@ -15,6 +15,20 @@ import { z } from 'zod';
 
 /**
  * Schema for difficulty level (1, 2, or 3)
+ *
+ * @example Valid values
+ * ```typescript
+ * difficultySchema.parse(1); // ✅ Easy
+ * difficultySchema.parse(2); // ✅ Medium
+ * difficultySchema.parse(3); // ✅ Hard
+ * ```
+ *
+ * @example Invalid values
+ * ```typescript
+ * difficultySchema.parse(0);   // ❌ Throws ZodError
+ * difficultySchema.parse(4);   // ❌ Throws ZodError
+ * difficultySchema.parse('2'); // ❌ Throws ZodError (must be number, not string)
+ * ```
  */
 const difficultySchema = z
 	.union([z.literal(1), z.literal(2), z.literal(3)])
@@ -43,6 +57,38 @@ const gradeLevelsSchema = z
 /**
  * Schema for ExerciseExport (clean export format)
  * Used for JSON import/export
+ *
+ * @example Valid exercise export
+ * ```typescript
+ * const exercise = {
+ *   version: '1.0',
+ *   title: 'Équations du premier degré',
+ *   source: 'Livre Chapitre 3',
+ *   difficulty: 2,
+ *   tags: ['algèbre', 'équations'],
+ *   statement_md: '# Résoudre\n\nRésoudre l\'équation: $2x + 5 = 13$',
+ *   solution_md: '# Solution\n\n$2x = 8$\n\n$x = 4$',
+ *   estimated_time_minutes: 10,
+ *   grade_levels: ['4eme', '3eme'],
+ *   topic: 'Algèbre'
+ * };
+ *
+ * const result = exerciseExportSchema.parse(exercise);
+ * // ✅ Valid - returns typed exercise object
+ * ```
+ *
+ * @example Invalid exercise (missing required fields)
+ * ```typescript
+ * const invalid = {
+ *   version: '1.0',
+ *   difficulty: 2,
+ *   statement_md: 'Some question'
+ *   // ❌ Missing solution_md (required)
+ * };
+ *
+ * exerciseExportSchema.parse(invalid);
+ * // Throws: ZodError - solution_md is required
+ * ```
  */
 export const exerciseExportSchema = z.object({
 	version: z.literal('1.0'),
@@ -135,8 +181,64 @@ export type ValidatedTemplateCreate = z.infer<typeof templateCreateSchema>;
 /**
  * Validate a single exercise export
  *
- * @param data - Exercise data to validate
+ * Safely validates exercise data with detailed error messages.
+ * Always use this before inserting exercise data into the database.
+ *
+ * @param data - Exercise data to validate (typically from request.json() or file upload)
  * @returns Validation result with success flag and data or error
+ * @returns result.success - `true` if valid, `false` if validation failed
+ * @returns result.data - Validated and typed exercise data (only if success=true)
+ * @returns result.error - Human-readable error message (only if success=false)
+ *
+ * @example Successful validation
+ * ```typescript
+ * const exerciseData = {
+ *   version: '1.0',
+ *   difficulty: 2,
+ *   tags: ['algèbre'],
+ *   statement_md: '# Question\n\nRésoudre $x + 5 = 10$',
+ *   solution_md: '# Solution\n\n$x = 5$'
+ * };
+ *
+ * const result = validateExerciseExport(exerciseData);
+ * if (result.success) {
+ *   // result.data is fully typed and validated
+ *   const exercise = result.data; // Type: ValidatedExerciseExport
+ *   console.log(exercise.difficulty); // 2
+ * }
+ * ```
+ *
+ * @example Failed validation
+ * ```typescript
+ * const invalid = {
+ *   version: '1.0',
+ *   difficulty: 5, // ❌ Invalid (must be 1, 2, or 3)
+ *   statement_md: '',  // ❌ Empty statement
+ *   solution_md: 'Solution'
+ * };
+ *
+ * const result = validateExerciseExport(invalid);
+ * if (!result.success) {
+ *   console.log(result.error);
+ *   // Output: "difficulty: Invalid literal value, expected 1 | 2 | 3; statement_md: String must contain at least 1 character(s)"
+ * }
+ * ```
+ *
+ * @example In API endpoint
+ * ```typescript
+ * export const POST: RequestHandler = async ({ request }) => {
+ *   const data = await request.json();
+ *
+ *   const validation = validateExerciseExport(data);
+ *   if (!validation.success) {
+ *     return json({ error: validation.error }, { status: 400 });
+ *   }
+ *
+ *   // Safe to use validation.data - it's fully validated
+ *   const sanitized = sanitizeExerciseForInsert(validation.data);
+ *   // Insert into database...
+ * };
+ * ```
  */
 export function validateExerciseExport(data: unknown): {
 	success: boolean;
@@ -158,8 +260,75 @@ export function validateExerciseExport(data: unknown): {
 /**
  * Validate an array of exercise exports (bulk import)
  *
+ * Validates multiple exercises at once, useful for bulk JSON imports.
+ * If ANY exercise fails validation, the entire operation fails (all-or-nothing).
+ *
  * @param data - Array of exercise data to validate
  * @returns Validation result with success flag and data or error
+ * @returns result.success - `true` if all exercises valid, `false` if any failed
+ * @returns result.data - Array of validated exercises (only if success=true)
+ * @returns result.error - Error message with path to first failed exercise (only if success=false)
+ *
+ * @example Successful bulk validation
+ * ```typescript
+ * const exercises = [
+ *   {
+ *     version: '1.0',
+ *     difficulty: 1,
+ *     tags: ['géométrie'],
+ *     statement_md: 'Calculate the area of a square with side 5cm',
+ *     solution_md: 'Area = 5 × 5 = 25 cm²'
+ *   },
+ *   {
+ *     version: '1.0',
+ *     difficulty: 2,
+ *     tags: ['algèbre'],
+ *     statement_md: 'Solve: x + 3 = 7',
+ *     solution_md: 'x = 4'
+ *   }
+ * ];
+ *
+ * const result = validateExerciseExportArray(exercises);
+ * if (result.success) {
+ *   console.log(`Validated ${result.data.length} exercises`);
+ *   // result.data is ValidatedExerciseExport[]
+ * }
+ * ```
+ *
+ * @example Failed validation (one bad exercise)
+ * ```typescript
+ * const exercises = [
+ *   { version: '1.0', difficulty: 1, statement_md: 'Q1', solution_md: 'A1' },
+ *   { version: '1.0', difficulty: 99, statement_md: 'Q2', solution_md: 'A2' }, // ❌ Invalid difficulty
+ *   { version: '1.0', difficulty: 2, statement_md: 'Q3', solution_md: 'A3' }
+ * ];
+ *
+ * const result = validateExerciseExportArray(exercises);
+ * if (!result.success) {
+ *   console.log(result.error);
+ *   // Output: "1.difficulty: Invalid literal value, expected 1 | 2 | 3"
+ *   // Shows which exercise (index 1) and which field failed
+ * }
+ * ```
+ *
+ * @example In bulk import API
+ * ```typescript
+ * export const POST: RequestHandler = async ({ request }) => {
+ *   const data = await request.json();
+ *
+ *   const validation = validateExerciseExportArray(data);
+ *   if (!validation.success) {
+ *     return json({
+ *       error: 'Validation failed',
+ *       details: validation.error
+ *     }, { status: 400 });
+ *   }
+ *
+ *   // All exercises are valid - safe to bulk insert
+ *   const exercises = validation.data.map(sanitizeExerciseForInsert);
+ *   // Bulk insert into database...
+ * };
+ * ```
  */
 export function validateExerciseExportArray(data: unknown): {
 	success: boolean;
@@ -237,8 +406,49 @@ export function validateTemplateCreate(data: unknown): {
  * Sanitize and prepare exercise data for database insertion
  * Removes any extra fields that aren't in the schema
  *
- * @param data - Validated exercise export data
- * @returns Clean data ready for DB insertion
+ * **IMPORTANT**: Only use this AFTER validating with `validateExerciseExport()`.
+ * This function assumes data is already validated and only removes the version field.
+ *
+ * @param data - Validated exercise export data (from validateExerciseExport().data)
+ * @returns Clean data ready for DB insertion (without version field)
+ *
+ * @example Typical workflow
+ * ```typescript
+ * // 1. Validate first
+ * const validation = validateExerciseExport(rawData);
+ * if (!validation.success) {
+ *   return { error: validation.error };
+ * }
+ *
+ * // 2. Sanitize for database
+ * const exerciseData = sanitizeExerciseForInsert(validation.data);
+ *
+ * // 3. Insert into database
+ * const { data, error } = await supabase
+ *   .from('exercises')
+ *   .insert({
+ *     ...exerciseData,
+ *     created_by: userId,
+ *     is_public: false
+ *   })
+ *   .select()
+ *   .single();
+ * ```
+ *
+ * @example What gets removed
+ * ```typescript
+ * const validated = {
+ *   version: '1.0',  // ← This will be removed
+ *   difficulty: 2,
+ *   tags: ['algèbre'],
+ *   statement_md: 'Question',
+ *   solution_md: 'Answer'
+ * };
+ *
+ * const sanitized = sanitizeExerciseForInsert(validated);
+ * // Result: { difficulty: 2, tags: [...], statement_md: '...', solution_md: '...' }
+ * // The 'version' field is removed because it's not stored in the database
+ * ```
  */
 export function sanitizeExerciseForInsert(
 	data: ValidatedExerciseExport

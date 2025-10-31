@@ -27,6 +27,7 @@
 	} from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { MessageTemplate, TriggerType } from '$lib/types/messageTemplates';
+	import type { Json } from '$lib/types/database';
 	import { getVariablesForTrigger } from '$lib/templates/templateVariables';
 	import { previewTemplate } from '$lib/templates/templateEngine';
 	import { supabase } from '$lib/supabaseClient';
@@ -53,7 +54,10 @@
 
 	// Preview
 	let showPreview = $state(false);
-	let previewHtml = $state({ subject: '', body: '' });
+	let previewHtml = $state<{ subject: string; body: string; missingVariables?: string[] }>({
+		subject: '',
+		body: ''
+	});
 
 	// Filters
 	let filterScope = $state<string | null>(null);
@@ -108,9 +112,7 @@
 		}
 
 		if (filterTags.length > 0) {
-			result = result.filter(
-				(t) => t.tags && filterTags.every((tag) => (t.tags as string[]).includes(tag))
-			);
+			result = result.filter((t) => t.tags && filterTags.every((tag) => t.tags!.includes(tag)));
 		}
 
 		if (favoritesOnly) {
@@ -154,10 +156,13 @@
 			console.error('Error loading templates:', error);
 			toaster.error('Erreur lors du chargement');
 		} else {
-			templates = (data || []).map((t) => ({
-				...t,
-				class_name: t.classes?.name || null
-			}));
+			templates = (data || []).map((t) => {
+				const { classes, ...template } = t;
+				return {
+					...template,
+					class_name: (classes as { name: string } | null)?.name || null
+				} as MessageTemplate;
+			});
 		}
 
 		isLoading = false;
@@ -275,7 +280,7 @@
 			trigger_type: formTriggerType,
 			scope: formScope,
 			is_active: formIsActive,
-			variables: availableVariables,
+			variables: availableVariables as unknown as Json,
 			tags: formTags
 		};
 
@@ -487,8 +492,8 @@
 		</div>
 
 		<!-- Tags filter (if there are templates with tags) -->
-		{#if templates.some((t) => t.tags && (t.tags as string[]).length > 0)}
-			{@const allTags = Array.from(new Set(templates.flatMap((t) => (t.tags as string[]) || [])))}
+		{#if templates.some((t) => t.tags && t.tags.length > 0)}
+			{@const allTags = Array.from(new Set(templates.flatMap((t) => t.tags || [])))}
 			<div class="flex flex-wrap gap-2">
 				{#each allTags as tag (tag)}
 					<Badge
@@ -577,9 +582,9 @@
 								{template.scope === 'system' ? 'Système' : 'Classe'}
 							</Badge>
 						</div>
-						{#if template.tags && (template.tags as string[]).length > 0}
+						{#if template.tags && template.tags.length > 0}
 							<div class="flex flex-wrap gap-1">
-								{#each template.tags as string[] as tag (tag)}
+								{#each template.tags as tag (tag)}
 									<Badge variant="outline" class="text-xs">{tag}</Badge>
 								{/each}
 							</div>
@@ -713,7 +718,10 @@
 						<div class="flex items-center justify-between">
 							<Label>Corps du message *</Label>
 							<div class="flex gap-2">
-								<VariableAutocomplete {formTriggerType} on:insert={handleVariableInsert} />
+								<VariableAutocomplete
+									triggerType={formTriggerType}
+									on:insert={handleVariableInsert}
+								/>
 								<FiltersHelp />
 							</div>
 						</div>

@@ -13,6 +13,7 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Checkbox } from '$lib/components/ui/checkbox';
@@ -20,19 +21,43 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { ArrowLeft, Users, UserCheck, Send, Loader2 } from 'lucide-svelte';
-	import type { AssignDeckRequest } from '$lib/srs/types';
+	import type { AssignDeckRequest, FSRSConfig } from '$lib/srs/types';
+
+	interface Student {
+		id: string;
+		firstname: string;
+		lastname: string;
+		email?: string;
+	}
+
+	interface Class {
+		id: string;
+		name: string;
+		description?: string;
+		student_count?: number;
+	}
+
+	interface DeckInfo {
+		name: string;
+		description?: string;
+		deckType?: 'official' | 'personal';
+		config?: FSRSConfig;
+		stats?: {
+			total_cards?: number;
+		};
+	}
 
 	interface Props {
 		data: {
-			deck: { name: string }; // id available from page.params
-			students: { id: string; firstname: string; lastname: string }[];
-			classes: { id: string; name: string }[];
+			deck: DeckInfo;
+			students: Student[];
+			classes: Class[];
 		};
 	}
 
 	let { data }: Props = $props();
 
-	const deckId = $derived(page.params.id);
+	const deckId = $derived($page.params.id);
 
 	// State
 	let selectedStudents = $state<string[]>([]);
@@ -195,7 +220,7 @@
 	</Card.Root>
 
 	<!-- Selection Tabs -->
-	<Tabs defaultValue="students" class="w-full">
+	<Tabs value="students" class="w-full">
 		<TabsList class="mb-6 w-full">
 			<TabsTrigger value="students" class="flex-1">
 				<Users class="mr-2 h-4 w-4" />
@@ -243,8 +268,8 @@
 									/>
 									<div class="flex-1">
 										<p class="font-medium">
-											{student.first_name}
-											{student.last_name}
+											{student.firstname}
+											{student.lastname}
 										</p>
 										{#if student.email}
 											<p class="text-sm text-muted-foreground">{student.email}</p>

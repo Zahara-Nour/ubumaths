@@ -10,9 +10,42 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { ReviewCard } from '$lib/srs/types';
+import type { QuestionInstance } from '$lib/questions/types';
+import type { ContentField } from '$lib/questions/types';
+import type { CardState } from '$lib/srs/types';
 import { generateSRSInstance } from '$lib/srs/generator';
 import { dueCardsQuerySchema } from '$lib/server/validation/srs';
+
+/**
+ * Lightweight stats for API response (subset of CardStats)
+ */
+interface ReviewCardStats {
+	state: CardState;
+	difficulty: number;
+	stability: number;
+	totalReviews: number;
+	lastReview: string | null;
+	nextReview: string;
+}
+
+/**
+ * Review card for API response (simplified from $lib/srs/types)
+ */
+type ReviewCard =
+	| {
+			cardId: string;
+			cardType: 'template';
+			templateId: string;
+			instance: QuestionInstance;
+			stats: ReviewCardStats;
+	  }
+	| {
+			cardId: string;
+			cardType: 'custom';
+			frontContent: ContentField[];
+			backContent: ContentField[];
+			stats: ReviewCardStats;
+	  };
 
 /**
  * GET /api/srs/review/due?deck_id=X
@@ -105,10 +138,10 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 					// Generate new instance with random seed
 					const result = generateSRSInstance(template);
 
-					if (!result.success || !result.instance) {
+					if (!result.success) {
 						console.error(
 							`[SRS] Failed to generate instance for template ${dueCard.template_id}:`,
-							result.errors
+							result.errors // TypeScript now knows result.errors exists when success is false
 						);
 						continue;
 					}

@@ -355,12 +355,6 @@
 		let scaleF = 1.75;
 		let targetScale = Math.min(scaleW, scaleH, scaleF);
 
-		console.log('[VipCardHolo] popover() called', {
-			firstPop,
-			targetScale,
-			currentScale: $springScale
-		});
-
 		setCenter();
 
 		if (firstPop) {
@@ -427,7 +421,6 @@
 	// Watch for active card changes
 	$effect(() => {
 		if (activeCard.get() && activeCard.get() === thisCard) {
-			console.log('[VipCardHolo] Active card matched - calling popover()');
 			popover();
 			active = true;
 		} else {
@@ -444,14 +437,23 @@
 		}
 	});
 
-	// Handle visibility changes
-	if (typeof document !== 'undefined') {
-		document.addEventListener('visibilitychange', () => {
+	// Handle visibility changes - wrapped in $effect() to prevent memory leak
+	$effect(() => {
+		const handleVisibilityChange = () => {
 			isVisible = document.visibilityState === 'visible';
 			endShowcase();
 			reset();
-		});
-	}
+		};
+
+		if (typeof document !== 'undefined') {
+			document.addEventListener('visibilitychange', handleVisibilityChange);
+
+			// Cleanup on component unmount
+			return () => {
+				document.removeEventListener('visibilitychange', handleVisibilityChange);
+			};
+		}
+	});
 
 	// Computed styles
 	const staticStyles = $derived(`
@@ -487,24 +489,12 @@
 	// This effect runs whenever autoPopover or thisCard changes
 	$effect(() => {
 		if (autoPopover && thisCard && enablePopover) {
-			console.log('[VipCardHolo] autoPopover triggered!', {
-				thisCard: !!thisCard,
-				currentActive: !!activeCard.get(),
-				enablePopover
-			});
-
 			// Small delay to ensure DOM is ready and card is positioned
 			const timer = setTimeout(() => {
 				if (thisCard && !activeCard.get()) {
-					console.log('[VipCardHolo] Setting activeCard to trigger popover');
 					// Only set if no card is currently active
 					activeCard.set(thisCard);
 					resetBaseOrientation();
-				} else {
-					console.log('[VipCardHolo] Skipped activation', {
-						hasCard: !!thisCard,
-						hasActive: !!activeCard.get()
-					});
 				}
 			}, 200);
 

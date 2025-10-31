@@ -166,7 +166,7 @@
 	</div>
 
 	<!-- Decks List with Tabs -->
-	<Tabs defaultValue="all" class="w-full">
+	<Tabs value="all" class="w-full">
 		<TabsList class="mb-6">
 			<TabsTrigger value="all">Tous ({totalDecks})</TabsTrigger>
 			<TabsTrigger value="official">Officiels ({officialDecks.length})</TabsTrigger>
@@ -221,7 +221,7 @@
 
 									<!-- Actions Menu -->
 									<DropdownMenu.Root>
-										<DropdownMenu.Trigger asChild>
+										<DropdownMenu.Trigger>
 											{#snippet child({ props })}
 												<Button {...props} variant="ghost" size="sm">
 													<MoreVertical class="h-4 w-4" />

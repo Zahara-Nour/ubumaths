@@ -254,11 +254,7 @@ describe('Environment validation', () => {
 					.transform(Number)
 					.pipe(z.number().positive())
 					.default(900000),
-				RATE_LIMIT_MAX_REQUESTS: z
-					.string()
-					.transform(Number)
-					.pipe(z.number().positive())
-					.default(5)
+				RATE_LIMIT_MAX_REQUESTS: z.string().transform(Number).pipe(z.number().positive()).default(5)
 			});
 
 			const result = schema.safeParse({

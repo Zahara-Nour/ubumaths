@@ -57,11 +57,11 @@ export async function autoSelectRiddleOfTheDay(
 		// Determine next difficulty (rotate 1 -> 2 -> 3 -> 1)
 		let targetDifficulty: RiddleDifficulty = 1;
 		if (lastRiddle && typeof lastRiddle === 'object' && 'riddle' in lastRiddle) {
-		const riddleData = lastRiddle.riddle;
-		if (riddleData && typeof riddleData === 'object' && 'difficulty' in riddleData) {
-			const lastDiff = riddleData.difficulty as number;
-			targetDifficulty = (lastDiff === 3 ? 1 : (lastDiff + 1)) as RiddleDifficulty;
-		}
+			const riddleData = lastRiddle.riddle;
+			if (riddleData && typeof riddleData === 'object' && 'difficulty' in riddleData) {
+				const lastDiff = riddleData.difficulty as number;
+				targetDifficulty = (lastDiff === 3 ? 1 : lastDiff + 1) as RiddleDifficulty;
+			}
 		}
 
 		// Get eligible riddles

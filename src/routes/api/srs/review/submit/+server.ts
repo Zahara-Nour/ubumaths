@@ -166,7 +166,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 		// Upsert stats to database
 		console.log('[SRS Submit] Upserting stats to database...');
 		const { error: upsertError } = await supabase.from('srs_card_stats').upsert({
-			id: updatedStats.id, // Include ID to update existing record or create new one
+			id: stats.id, // Use original stats.id (preserved by reviewCard spread operator)
 			user_id: updatedStats.userId,
 			card_reference_type: updatedStats.cardReferenceType,
 			card_reference_id: updatedStats.cardReferenceId,

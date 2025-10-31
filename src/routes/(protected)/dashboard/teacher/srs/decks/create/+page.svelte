@@ -28,6 +28,28 @@
 	import type { ContentField } from '$lib/questions/types';
 	import type { CreateDeckRequest, CreateCardRequest } from '$lib/srs/types';
 
+	// Card data types
+	type TemplateCardData = {
+		templateId: string;
+		title: string;
+	};
+
+	type CustomCardData = {
+		frontContent: ContentField[];
+		backContent: ContentField[];
+		title: string;
+	};
+
+	type PendingCard =
+		| {
+				type: 'template';
+				data: TemplateCardData;
+		  }
+		| {
+				type: 'custom';
+				data: CustomCardData;
+		  };
+
 	// State
 	let deckName = $state('');
 	let deckDescription = $state('');
@@ -39,12 +61,7 @@
 	let showTemplateSelector = $state(false);
 
 	// Cards to add
-	let pendingCards = $state<
-		Array<{
-			type: 'template' | 'custom';
-			data: { templateId?: string; title: string; question?: string; answer?: string };
-		}>
-	>([]);
+	let pendingCards = $state<PendingCard[]>([]);
 
 	// Form validation
 	const canSave = $derived(deckName.trim().length > 0);
@@ -124,7 +141,7 @@
 	async function handleSaveCustomCard(frontContent: ContentField[], backContent: ContentField[]) {
 		pendingCards.push({
 			type: 'custom',
-			data: { frontContent, backContent }
+			data: { frontContent, backContent, title: 'Carte personnalisée' }
 		});
 
 		showCustomCardEditor = false;
@@ -143,7 +160,7 @@
 
 			// Add each template to pending cards
 			templateIds.forEach((templateId) => {
-				const template = templates.find((t) => t.id === templateId);
+				const template = templates.find((t: { id: string; title?: string }) => t.id === templateId);
 				pendingCards.push({
 					type: 'template',
 					data: {
@@ -159,11 +176,11 @@
 			);
 		} catch (error) {
 			console.error('Error fetching template details:', error);
-			// Fallback: add without titles
+			// Fallback: add with generic titles
 			templateIds.forEach((templateId) => {
 				pendingCards.push({
 					type: 'template',
-					data: { templateId }
+					data: { templateId, title: `Template ${templateId.slice(0, 8)}` }
 				});
 			});
 			showTemplateSelector = false;
@@ -344,7 +361,7 @@
 								</Badge>
 								<span class="text-sm">
 									{#if card.type === 'template'}
-										{card.data.title || `Template ${card.data.templateId.slice(0, 8)}`}
+										{card.data.title}
 									{:else}
 										Carte personnalisée
 									{/if}

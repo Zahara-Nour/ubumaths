@@ -25,11 +25,26 @@
 	import { Save, Plus, Trash2, ArrowLeft, Sparkles, BookOpen } from 'lucide-svelte';
 	import { RETENTION_PROFILES } from '$lib/srs/config';
 	import type { ContentField } from '$lib/questions/types';
+	import type { FSRSConfig } from '$lib/srs/types';
+
+	interface DeckCard {
+		id: string;
+		question: string;
+		answer: string;
+		card_type?: 'template' | 'custom';
+		template_id?: string;
+	}
 
 	interface Props {
 		data: {
-			deck: { id: string; name: string; description?: string };
-			cards: { id: string; question: string; answer: string }[];
+			deck: {
+				id: string;
+				name: string;
+				description?: string;
+				deckType: 'official' | 'personal';
+				config?: FSRSConfig;
+			};
+			cards: DeckCard[];
 		};
 	}
 

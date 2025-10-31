@@ -92,7 +92,7 @@
 						<DropdownMenu.Content align="end">
 							<DropdownMenu.Item>
 								<a
-									href={resolve(`/dashboard/profile/${friend.friend_profile.id}`)}
+									href={resolve(`/dashboard/profile/${friend.friend_profile.id}` as any)}
 									class="flex w-full items-center"
 								>
 									Voir le profil

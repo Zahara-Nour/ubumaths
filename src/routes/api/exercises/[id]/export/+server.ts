@@ -62,8 +62,9 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	let filename: string;
 	let mimeType: string;
 
-	// Type assertion for exercise data
-	const exerciseData = result.data as Exercise;
+	// Safe: getExercise() returns database row that matches Exercise structure
+	// Database Json fields (variables) are cast to Variable[] type
+	const exerciseData = result.data as unknown as Exercise;
 
 	if (format === 'json') {
 		content = exportExerciseToJSON(exerciseData, prettyPrint);

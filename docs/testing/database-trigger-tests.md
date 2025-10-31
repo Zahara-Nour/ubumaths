@@ -502,10 +502,6 @@ TestData.privateMessage(senderId) // PrivateMessageBuilder
 	.isGroupMessage()
 	.create();
 
-TestData.geometryExercise(createdBy) // GeometryExerciseBuilder
-	.withTitle('Triangle Construction')
-	.create();
-
 TestData.errorLog() // ErrorLogBuilder
 	.withType('client_js')
 	.withSeverity('error')
@@ -877,8 +873,8 @@ jobs:
 - `profiles`
 - `classes`
 - `exercises`
-- `geometry_exercises`
 - `private_messages`
+- `assessments`
 - ... and 37 more tables
 
 **Key Test Cases**:

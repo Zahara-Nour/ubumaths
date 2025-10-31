@@ -78,7 +78,7 @@ describe('generateSRSInstance', () => {
 
 		expect(result.success).toBe(true);
 		expect(result.success && result.instance).toBeDefined();
-		expect((result.success ? result.instance.seed : undefined)).toBeDefined();
+		expect(result.success ? result.instance.seed : undefined).toBeDefined();
 	});
 
 	it('should generate different instances on multiple calls', () => {
@@ -88,8 +88,8 @@ describe('generateSRSInstance', () => {
 		const result2 = generateSRSInstance(template);
 
 		const seed1 = result1.success ? result1.instance.seed : undefined;
-	const seed2 = result2.success ? result2.instance.seed : undefined;
-	expect(seed1).not.toBe(seed2);
+		const seed2 = result2.success ? result2.instance.seed : undefined;
+		expect(seed1).not.toBe(seed2);
 	});
 
 	it('should generate seed within valid range (0-1000000)', () => {
@@ -98,7 +98,7 @@ describe('generateSRSInstance', () => {
 		// Test multiple times to ensure consistency
 		for (let i = 0; i < 10; i++) {
 			const result = generateSRSInstance(template);
-			const seed = (result.success ? result.instance.seed : undefined);
+			const seed = result.success ? result.instance.seed : undefined;
 
 			expect(seed).toBeGreaterThanOrEqual(0);
 			expect(seed).toBeLessThan(1000000);
@@ -244,15 +244,15 @@ describe('SRS Generator Edge Cases', () => {
 		const template = createMockTemplate({
 			variations: [
 				{
-			statement: [{ type: 'text', content: 'Q1' }],
-			answer: '1',
-			correction: [{ type: 'text', content: 'S1' }]
-		},
+					statement: [{ type: 'text', content: 'Q1' }],
+					answer: '1',
+					correction: [{ type: 'text', content: 'S1' }]
+				},
 				{
-			statement: [{ type: 'text', content: 'Q2' }],
-			answer: '2',
-			correction: [{ type: 'text', content: 'S2' }]
-		}
+					statement: [{ type: 'text', content: 'Q2' }],
+					answer: '2',
+					correction: [{ type: 'text', content: 'S2' }]
+				}
 			]
 		});
 
@@ -263,17 +263,17 @@ describe('SRS Generator Edge Cases', () => {
 	it('should handle template with complex parameters', () => {
 		const template = createMockTemplate({
 			variations: [
-			{
-				statement: [{ type: 'text', content: 'Solve {@:a} + {@:b}' }],
-				variables: [
-					{ name: 'a', expression: '{#:1-10}' },
-					{ name: 'b', expression: '{#:1-10}' }
-				],
-				answer: '{eval:{@:a} + {@:b}}',
-				correction: [{ type: 'text', content: 'Solution' }]
-			}
-		]
-	});
+				{
+					statement: [{ type: 'text', content: 'Solve {@:a} + {@:b}' }],
+					variables: [
+						{ name: 'a', expression: '{#:1-10}' },
+						{ name: 'b', expression: '{#:1-10}' }
+					],
+					answer: '{eval:{@:a} + {@:b}}',
+					correction: [{ type: 'text', content: 'Solution' }]
+				}
+			]
+		});
 
 		const result = generateSRSInstance(template);
 		expect(result.success).toBe(true);
@@ -305,42 +305,42 @@ describe('Integration with Question System', () => {
 		const template = createMockTemplate();
 		const result = generateSRSInstance(template);
 
-		expect(result.success).toBe(true); if (result.success) { expect(result.instance).toMatchObject({
-			id: expect.any(String),
-			templateId: template.id,
-			seed: expect.any(Number),
-			variationIndex: expect.any(Number),
-			question: expect.any(Array),
-			solution: expect.any(Array),
-			answer: expect.any(Object),
-			points: expect.any(Number)
-		});
-	}
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.instance).toMatchObject({
+				id: expect.any(String),
+				templateId: template.id,
+				seed: expect.any(Number),
+				variationIndex: expect.any(Number),
+				question: expect.any(Array),
+				solution: expect.any(Array),
+				answer: expect.any(Object),
+				points: expect.any(Number)
+			});
+		}
 	});
 
 	it('should preserve template metadata', () => {
-		const template = createMockTemplate({
-		});
+		const template = createMockTemplate({});
 
 		const result = generateSRSInstance(template);
 
 		if (result.success) {
-
-		expect(result.instance.templateId).toBe(template.id);
-	}
+			expect(result.instance.templateId).toBe(template.id);
+		}
 	});
 
 	it('should handle LaTeX in question content', () => {
 		const template = createMockTemplate({
 			variations: [
 				{
-			statement: [
+					statement: [
 						{ type: 'text', content: 'Solve: ' },
 						{ type: 'text', content: 'x^2 + 2x + 1 = 0' }
 					],
-			answer: '-1',
-			correction: [{ type: 'text', content: 'x = -1' }]
-		}
+					answer: '-1',
+					correction: [{ type: 'text', content: 'x = -1' }]
+				}
 			]
 		});
 

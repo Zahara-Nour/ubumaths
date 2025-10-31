@@ -1,9 +1,13 @@
 import { toaster } from '$lib/stores/toaster.svelte';
+import type { Database } from '$lib/types/database';
 
 /**
  * Private Messages Store
  * Manages private messaging state and operations
  */
+
+// Database types
+type MessageDraftRow = Database['public']['Tables']['message_drafts']['Row'];
 
 // Types
 export interface PrivateMessage {
@@ -82,7 +86,7 @@ class PrivateMessagesStore {
 	sent = $state<SentMessage[]>([]);
 	currentMessage = $state<MessageDetails | null>(null);
 	currentThread = $state<unknown[]>([]);
-	drafts = $state<unknown[]>([]);
+	drafts = $state<MessageDraftRow[]>([]);
 
 	recipients = $state<MessageRecipient[]>([]);
 	classes = $state<TeacherClass[]>([]);
@@ -493,7 +497,7 @@ class PrivateMessagesStore {
 
 			// Update drafts list
 			if (params.id) {
-				this.drafts = this.drafts.map((d: any) => (d.id === params.id ? data.draft : d));
+				this.drafts = this.drafts.map((d) => (d.id === params.id ? data.draft : d));
 			} else {
 				this.drafts = [data.draft, ...this.drafts];
 			}
@@ -519,7 +523,7 @@ class PrivateMessagesStore {
 				throw new Error('Erreur lors de la suppression du brouillon');
 			}
 
-			this.drafts = this.drafts.filter((d: any) => d.id !== draftId);
+			this.drafts = this.drafts.filter((d) => d.id !== draftId);
 			toaster.success('Brouillon supprimé');
 		} catch (error) {
 			console.error('Error deleting draft:', error);

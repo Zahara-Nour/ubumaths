@@ -172,7 +172,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		return error(400, validation.error);
 	}
 
-	const templateInput = validation.data as MessageTemplateInput;
+	// Safe: createMessageTemplateSchema validates structure, cast to MessageTemplateInput
+	// Zod schema guarantees all required MessageTemplateInput fields are present
+	const templateInput = validation.data as unknown as MessageTemplateInput;
 
 	// Teachers can only create class templates
 	if (profile.role === 'teacher' && templateInput.scope === 'system') {

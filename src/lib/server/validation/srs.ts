@@ -23,7 +23,8 @@ export const createDeckSchema = z.object({
 	config: z
 		.object({
 			desiredRetention: z.number().min(0.7).max(0.97).optional(),
-			maximumInterval: z.number().int().positive().max(36500).optional()
+			maximumInterval: z.number().int().positive().max(36500).optional(),
+			parameters: z.array(z.number()).length(21).optional()
 		})
 		.optional()
 });
@@ -125,7 +126,7 @@ export const dueCardsQuerySchema = z.object({
 export const fsrsConfigSchema = z.object({
 	desiredRetention: z.number().min(0.7).max(0.97),
 	maximumInterval: z.number().int().positive().max(36500),
-	parameters: z.record(z.string(), z.any()).optional()
+	parameters: z.array(z.number()).length(21).optional()
 });
 
 /**

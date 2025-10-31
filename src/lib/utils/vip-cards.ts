@@ -38,27 +38,47 @@ export function getStudentCardCounts(vipCards: StudentVipCards): Map<string, num
 /**
  * Get student cards with their counts, grouped by card ID
  * Returns an array of objects with card data and count
+ * NOTE: Returns the full VipCard definition, not just the instance
  */
 export function getStudentCardsWithCounts(vipCards: StudentVipCards): Array<{
-	cardId: string;
+	id: string;
+	name: string;
+	description: string;
+	imagePath: string;
+	category: string;
+	rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 	count: number;
-	card: StudentVipCards[string];
 }> {
 	const cardMap = new Map<
 		string,
-		{ cardId: string; count: number; card: StudentVipCards[string] }
+		{
+			id: string;
+			name: string;
+			description: string;
+			imagePath: string;
+			category: string;
+			rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+			count: number;
+		}
 	>();
 
 	Object.values(vipCards).forEach((instance) => {
 		if (instance.usedAt === null) {
+			const cardDef = getVipCardById(instance.cardId);
+			if (!cardDef) return; // Skip if card definition not found
+
 			const existing = cardMap.get(instance.cardId);
 			if (existing) {
 				existing.count++;
 			} else {
 				cardMap.set(instance.cardId, {
-					cardId: instance.cardId,
-					count: 1,
-					card: instance
+					id: cardDef.id,
+					name: cardDef.name,
+					description: cardDef.description,
+					imagePath: cardDef.imagePath,
+					category: cardDef.category,
+					rarity: cardDef.rarity,
+					count: 1
 				});
 			}
 		}
@@ -93,18 +113,30 @@ export function getTotalUnusedCards(vipCards: StudentVipCards): number {
  * Sort cards by priority: rarity (legendary > epic > rare > common) then by count (desc)
  */
 export function sortCardsByPriority(
-	cards: Array<{ cardId: string; count: number; card: StudentVipCards[string] }>
-): Array<{ cardId: string; count: number; card: StudentVipCards[string] }> {
+	cards: Array<{
+		id: string;
+		name: string;
+		description: string;
+		imagePath: string;
+		category: string;
+		rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+		count: number;
+	}>
+): Array<{
+	id: string;
+	name: string;
+	description: string;
+	imagePath: string;
+	category: string;
+	rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+	count: number;
+}> {
 	const rarityOrder = { legendary: 0, epic: 1, rare: 2, common: 3 };
 
 	return cards.sort((a, b) => {
-		// Look up card definitions to get rarity
-		const cardDefA = getVipCardById(a.cardId);
-		const cardDefB = getVipCardById(b.cardId);
-
 		// First sort by rarity (legendary first)
-		const rarityA = cardDefA?.rarity ? rarityOrder[cardDefA.rarity as keyof typeof rarityOrder] : 99;
-		const rarityB = cardDefB?.rarity ? rarityOrder[cardDefB.rarity as keyof typeof rarityOrder] : 99;
+		const rarityA = a.rarity ? rarityOrder[a.rarity as keyof typeof rarityOrder] : 99;
+		const rarityB = b.rarity ? rarityOrder[b.rarity as keyof typeof rarityOrder] : 99;
 
 		if (rarityA !== rarityB) {
 			return rarityA - rarityB;

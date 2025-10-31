@@ -42,7 +42,12 @@ const mockTemplate: MessageTemplate = {
 	created_by: 'system',
 	class_id: null,
 	variables: [],
+	tags: null,
 	is_active: true,
+	approval_status: null,
+	reviewed_by: null,
+	reviewed_at: null,
+	review_notes: null,
 	created_at: '2024-01-01T00:00:00Z',
 	updated_at: '2024-01-01T00:00:00Z'
 };

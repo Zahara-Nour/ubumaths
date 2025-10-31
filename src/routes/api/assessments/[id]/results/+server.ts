@@ -12,6 +12,7 @@ import {
 } from '$lib/server/assessments';
 import { getResultsQuerySchema } from '$lib/server/validation/assessments';
 import { uuidSchema } from '$lib/server/validation/common';
+import { getUserProfile } from '$lib/server/auth';
 
 /**
  * GET /api/assessments/[id]/results
@@ -31,12 +32,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 	const assessmentId = idValidation.data;
 
-	// Only teachers can view results
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
+	// ✅ STANDARDIZED: Use getUserProfile helper for consistent profile fetching
+	const profile = await getUserProfile(locals.supabase, user.id);
 
 	if (!profile || profile.role !== 'teacher') {
 		throw error(403, 'Forbidden - Teachers only');

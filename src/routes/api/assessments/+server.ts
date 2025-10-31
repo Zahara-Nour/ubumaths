@@ -14,27 +14,14 @@ import {
 	createAssessmentResponseSchema
 } from '$lib/server/validation/assessments';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { requireRole } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/assessments
  * Get teacher's assessments with optional status filter
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Only teachers can access this
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden - Teachers only');
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	// Validate query parameters
 	const queryValidation = listAssessmentsQuerySchema.safeParse({
@@ -72,21 +59,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
  * Create a new assessment
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Only teachers can create assessments
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'teacher') {
-		throw error(403, 'Forbidden - Teachers only');
-	}
+	const { user } = await requireRole(locals, 'teacher');
 
 	// Parse and validate request body
 	const body = await request.json();

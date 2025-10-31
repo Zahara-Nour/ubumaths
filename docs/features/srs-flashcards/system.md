@@ -221,6 +221,37 @@ Historique des attributions de decks.
 | `assignment_type` | TEXT      | 'student' ou 'class'       |
 | `created_at`      | TIMESTAMP | Date d'attribution         |
 
+### Vues (Views)
+
+#### `deck_stats_view`
+
+Vue pré-calculée pour optimiser les requêtes de statistiques des decks. Élimine le pattern N+1 dans `GET /api/srs/decks`.
+
+**Performance** : Réduit 1+N requêtes → 1 requête (amélioration de 10-20%)
+
+**Colonnes** :
+
+- Toutes les colonnes de `srs_decks` (id renommé en `deck_id`)
+- `total_cards` : Nombre total de cartes
+- `new_count` : Nouvelles cartes (state = 'new' ou NULL)
+- `learning_count` : Cartes en apprentissage (state = 'learning')
+- `review_count` : Cartes en révision (state = 'review')
+- `due_count` : Cartes dues maintenant (next_review <= NOW())
+
+**Utilisation** :
+
+```typescript
+// Au lieu de:
+// 1. Fetch decks (1 query)
+// 2. For each deck, call get_deck_stats RPC (N queries)
+
+// Utiliser:
+const { data } = await supabase.from('deck_stats_view').select('*').eq('owner_id', userId);
+// 1 seule requête retourne decks + stats!
+```
+
+**Créée** : 2025-10-31 (Migration `20251031000000_create_deck_stats_view.sql`)
+
 ### Fonctions SQL helpers
 
 #### `get_due_cards_for_deck(user_id, deck_id)`
@@ -236,7 +267,9 @@ Retourne toutes les cartes dues pour révision dans un deck.
 - `state`, `difficulty`, `stability` : Stats FSRS
 - `total_reviews`, `last_review`, `next_review`
 
-#### `get_deck_stats(user_id, deck_id)`
+#### `get_deck_stats(user_id, deck_id)` ⚠️ DEPRECATED
+
+⚠️ **DEPRECATED**: Utiliser `deck_stats_view` à la place pour de meilleures performances.
 
 Retourne les statistiques d'un deck pour un utilisateur.
 

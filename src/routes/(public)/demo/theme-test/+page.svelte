@@ -800,7 +800,7 @@
 							</Card.Header>
 							<Card.Content class="space-y-4">
 								<Label>Valeur: {sliderValue[0]}%</Label>
-								<Slider bind:value={sliderValue} max={100} step={1} />
+								<Slider type="multiple" bind:value={sliderValue} max={100} step={1} />
 							</Card.Content>
 						</Card.Root>
 

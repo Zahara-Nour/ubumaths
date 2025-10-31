@@ -1,139 +1,161 @@
-// Challenge variable generation and evaluation
-// Ported from original Navadra challenge.js
-// Author: Claude Code
-// Date: 2025-10-15
-//
-// KNOWN LIMITATIONS:
-// 1. Array values with expression strings (e.g., allLengths: ["a*10^baseA", "b*10^baseB"])
-//    are not automatically evaluated - they remain as strings
-// 2. MathJS array indexing doesn't work with JavaScript arrays - use subset() function instead
-// 3. Variables with complex conditions that reference other variables may fail to evaluate
-// 4. Custom function return types (pickRandom, randomInt) may have type compatibility issues with MathJS
-//
-// Simpler challenges work well. Complex challenges with nested dependencies and conditions
-// may require manual testing and adjustment.
+/**
+ * Challenge Variables System
+ * ===========================
+ *
+ * Enables dynamic variable generation and evaluation in game challenges.
+ *
+ * Features:
+ * - Random number generation within configurable ranges
+ * - Expression evaluation with variable substitution
+ * - Support for complex mathematical operations
+ * - Multiple validation strategies (numeric with tolerance, string, array, object)
+ *
+ * Variable Definition Types:
+ * - random: Generate random integer/decimal within min/max range
+ * - expression: Evaluate mathematical expression using other variables
+ *
+ * Answer Types:
+ * - number: Numeric answer (supports tolerance)
+ * - string: Text answer (case-insensitive)
+ * - array: Array of values
+ * - expression: Mathematical expression to evaluate
+ *
+ * Usage Example:
+ * ```ts
+ * const challenge = {
+ *   variables: {
+ *     a: { type: 'random', min: 1, max: 10 },
+ *     b: { type: 'random', min: 1, max: 10 },
+ *     sum: { type: 'expression', expression: '{a} + {b}' }
+ *   },
+ *   answer: { type: 'expression', value: '{sum}' }
+ * };
+ *
+ * const result = generateChallengeVariables(challenge);
+ * // result.variables = { a: 7, b: 3, sum: 10 }
+ * // result.correct_answer = 10
+ * ```
+ */
 
-import { create, all, type MathJsInstance } from 'mathjs';
-import type {
-	GameChallenge,
-	ChallengeInstance,
-	ChallengeVariables,
-	ChallengeAnswer
-} from '$lib/types/game';
-
-// Create Math.js instance
-const math = create(all) as MathJsInstance;
-
-// Add custom functions used in original Navadra challenges
-math.import(
-	{
-		// Random integer between min and max (inclusive of min, exclusive of max)
-		randomInt: (min: number, max: number) => {
-			return Math.floor(Math.random() * (max - min)) + min;
-		},
-
-		// Pick random element from array
-		pickRandom: (arr: unknown) => {
-			// Math.js passes arrays as Matrix objects, convert to JS array
-			const jsArray = Array.isArray(arr)
-				? arr
-				: (arr as { toArray?: () => unknown[] }).toArray
-					? (arr as { toArray: () => unknown[] }).toArray()
-					: [arr];
-			return jsArray[Math.floor(Math.random() * jsArray.length)];
-		},
-
-		// Find index of element in array
-		indexOf: (arr: unknown[], element: unknown) => {
-			return arr.indexOf(element);
-		},
-
-		// Check if arrays are different
-		different: (arr1: unknown[], ...otherArrays: unknown[][]) => {
-			const str1 = JSON.stringify(arr1);
-			for (const otherArr of otherArrays) {
-				if (JSON.stringify(otherArr) === str1) {
-					return false;
-				}
-			}
-			return true;
-		},
-
-		// Greatest common divisor
-		pgcd: (a: number, b: number) => {
-			a = Math.abs(Math.floor(a));
-			b = Math.abs(Math.floor(b));
-			while (b !== 0) {
-				const temp = b;
-				b = a % b;
-				a = temp;
-			}
-			return a;
-		},
-
-		// Least common multiple
-		ppcm: (a: number, b: number) => {
-			return Math.abs(Math.floor((a * b) / math.evaluate('pgcd(a, b)', { a, b })));
-		},
-
-		// Shuffle array
-		shuffle: (arr: unknown[]) => {
-			const shuffled = [...arr];
-			for (let i = shuffled.length - 1; i > 0; i--) {
-				const j = Math.floor(Math.random() * (i + 1));
-				[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-			}
-			return shuffled;
-		},
-
-		// Range function
-		range: (start: number, end: number, step: number = 1) => {
-			const result = [];
-			for (let i = start; i < end; i += step) {
-				result.push(i);
-			}
-			return result;
-		}
-	},
-	{ override: true }
-);
+import type { Challenge, VariableDefinition, AnswerDefinition } from '$lib/types/game';
 
 /**
- * Generate a challenge instance with randomized variables
- * @param challenge - The challenge definition
- * @returns Challenge instance with evaluated variables
+ * Generate random number within range
  */
-export function generateChallengeInstance(challenge: GameChallenge): ChallengeInstance {
-	const variables: Record<string, unknown> = {};
+function generateRandomValue(min: number, max: number, decimals: number = 0): number {
+	const value = Math.random() * (max - min) + min;
+	return decimals > 0 ? parseFloat(value.toFixed(decimals)) : Math.floor(value);
+}
+
+/**
+ * Evaluate mathematical expression with variables
+ * Supports basic arithmetic: +, -, *, /, ^, sqrt, parentheses
+ */
+function evaluateExpression(expression: string, variables: Record<string, number>): number {
+	// Replace variables
+	let expr = expression;
+	for (const [varName, value] of Object.entries(variables)) {
+		const regex = new RegExp(`\\{${varName}\\}`, 'g');
+		expr = expr.replace(regex, String(value));
+	}
+
+	// Replace sqrt(x) with Math.sqrt(x)
+	expr = expr.replace(/sqrt\s*\(/g, 'Math.sqrt(');
+
+	// Replace ^ with ** for exponentiation
+	expr = expr.replace(/\^/g, '**');
+
+	// Evaluate safely using Function constructor
+	try {
+		// eslint-disable-next-line no-new-func
+		const fn = new Function('return ' + expr);
+		const result = fn();
+		return typeof result === 'number' ? result : NaN;
+	} catch (error) {
+		console.error('Error evaluating expression:', expression, error);
+		return NaN;
+	}
+}
+
+/**
+ * Evaluate answer definition (can be number, string, array, or expression)
+ */
+function evaluateAnswer(
+	answerDef: AnswerDefinition | undefined,
+	variables: Record<string, number>
+): unknown {
+	if (!answerDef) {
+		return null;
+	}
+
+	switch (answerDef.type) {
+		case 'number':
+			return typeof answerDef.value === 'number' ? answerDef.value : null;
+
+		case 'string':
+			return typeof answerDef.value === 'string' ? answerDef.value : null;
+
+		case 'array':
+			if (!Array.isArray(answerDef.value)) {
+				return null;
+			}
+			// Recursively evaluate each element
+			return answerDef.value.map((item: AnswerDefinition) => evaluateAnswer(item, variables));
+
+		case 'expression':
+			if (typeof answerDef.value !== 'string') {
+				return null;
+			}
+			return evaluateExpression(answerDef.value, variables);
+
+		default:
+			// Direct value
+			return answerDef;
+	}
+}
+
+/**
+ * Generate all variables for a challenge
+ * @param challenge - Challenge definition with variables
+ * @returns Object containing challenge, variables, expressions, and correct answer
+ */
+export function generateChallengeVariables(challenge: Challenge): {
+	challenge: Challenge;
+	variables: Record<string, number>;
+	expressions: Record<string, string>;
+	correct_answer: unknown;
+} {
+	const variables: Record<string, number> = {};
 	const expressions: Record<string, string> = {};
 
-	// Sort variables by dependency order
-	const sortedVarNames = topologicalSort(challenge.variables);
+	if (!challenge.variables) {
+		return {
+			challenge,
+			variables,
+			expressions,
+			correct_answer: evaluateAnswer(challenge.answer, variables)
+		};
+	}
 
-	// Evaluate each variable
-	for (const varName of sortedVarNames) {
-		const varDef = challenge.variables[varName];
+	// Generate random variables first
+	for (const [varName, rawVarDef] of Object.entries(challenge.variables)) {
+		const varDef = rawVarDef as VariableDefinition;
+		if (varDef.type === 'random') {
+			variables[varName] = generateRandomValue(
+				(varDef.min as number) ?? 0,
+				(varDef.max as number) ?? 10,
+				(varDef.decimals as number) ?? 0
+			);
+		}
+	}
 
-		if (varDef.value !== undefined) {
-			// Check if value is an array - store directly without evaluation
-			if (Array.isArray(varDef.value)) {
-				variables[varName] = varDef.value;
-			} else {
-				// Evaluate value with Math.js (it's a string expression)
-				try {
-					const evaluated = evaluateWithContext(varDef.value, variables);
-					variables[varName] = evaluated;
-				} catch (error) {
-					console.error(`Failed to evaluate variable ${varName}:`, error);
-					variables[varName] = null;
-				}
-			}
-		} else if (varDef.expression !== undefined) {
-			// Check if expression is an array - store directly
-			if (Array.isArray(varDef.expression)) {
-				expressions[varName] = JSON.stringify(varDef.expression);
-				variables[varName] = varDef.expression;
-			} else {
+	// Evaluate expression variables (depends on random variables)
+	for (const [varName, rawVarDef] of Object.entries(challenge.variables)) {
+		const varDef = rawVarDef as VariableDefinition;
+		if (varDef.type === 'expression') {
+			if (varDef.expression) {
+				// Evaluate the expression with current variables
+				variables[varName] = evaluateExpression(varDef.expression, variables);
 				// Store expression (don't evaluate, used for display)
 				expressions[varName] = interpolateExpression(varDef.expression, variables);
 			}
@@ -141,10 +163,7 @@ export function generateChallengeInstance(challenge: GameChallenge): ChallengeIn
 	}
 
 	// Evaluate correct answer
-	console.log('Challenge answer definition:', JSON.stringify(challenge.answer, null, 2));
-	console.log('Variables:', JSON.stringify(variables, null, 2));
 	const correctAnswer = evaluateAnswer(challenge.answer, variables);
-	console.log('Evaluated correct answer:', correctAnswer);
 
 	return {
 		challenge,
@@ -155,271 +174,56 @@ export function generateChallengeInstance(challenge: GameChallenge): ChallengeIn
 }
 
 /**
- * Evaluate a Math.js expression with variable context
- * @param expr - Expression string
- * @param context - Variable values
- * @returns Evaluated result
+ * Replace variable placeholders in text with their values
+ * @param text - Text with {variable} placeholders
+ * @param variables - Variable name -> value mapping
+ * @returns Text with variables replaced
  */
-function evaluateWithContext(expr: string, context: Record<string, unknown>): unknown {
-	// Replace variable references {varName} with actual values
-	let interpolated = expr.replace(/\{(\w+)\}/g, (_, varName) => {
-		if (context[varName] !== undefined) {
-			// If it's a string or array, return as-is
-			if (typeof context[varName] === 'string') {
-				return `"${context[varName]}"`;
-			}
-			if (Array.isArray(context[varName])) {
-				return JSON.stringify(context[varName]);
-			}
-			return String(context[varName]);
+export function interpolateVariables(text: string, variables: Record<string, number>): string {
+	return text.replace(/\{(\w+)\}/g, (match, varName) => {
+		if (varName in variables) {
+			return String(variables[varName]);
 		}
-		return varName;
-	});
-
-	// Replace 'x' used as multiplication operator with '*'
-	// Match 'x' surrounded by spaces or between number and word
-	// Examples: "13 x 10" -> "13 * 10", "5x" -> "5*", "x3" -> "*3"
-	interpolated = interpolated.replace(/(\d+)\s*x\s+/gi, '$1 * ');
-	interpolated = interpolated.replace(/\s+x\s*(\d+)/gi, ' * $1');
-	interpolated = interpolated.replace(/(\d+)x(\d+)/gi, '$1*$2');
-
-	try {
-		return math.evaluate(interpolated, context);
-	} catch (error) {
-		console.error('Failed to evaluate expression:', expr, error);
-		return null;
-	}
-}
-
-/**
- * Interpolate expression with variable values
- * @param expr - Expression template
- * @param variables - Variable values
- * @returns Interpolated expression
- */
-function interpolateExpression(expr: unknown, variables: Record<string, unknown>): string {
-	// Ensure expr is a string
-	if (typeof expr !== 'string') {
-		console.error('[interpolateExpression] expr is not a string:', { expr, type: typeof expr });
-		return String(expr || '');
-	}
-
-	return expr.replace(/\{(\w+)\}/g, (_, varName) => {
-		return variables[varName] !== undefined ? String(variables[varName]) : `{${varName}}`;
+		return match;
 	});
 }
 
 /**
- * Topological sort of variables by dependencies
- * @param variables - Variable definitions
- * @returns Sorted variable names
+ * Get variable value or expression display
+ * @param varName - Variable name
+ * @param variables - Variable values
+ * @param expressions - Expression strings (for display)
+ * @returns Value or expression to display
  */
-function topologicalSort(variables: ChallengeVariables): string[] {
-	const graph: Record<string, string[]> = {};
-	const inDegree: Record<string, number> = {};
-
-	// Build dependency graph
-	for (const varName in variables) {
-		graph[varName] = [];
-		inDegree[varName] = 0;
+export function getVariableDisplay(
+	varName: string,
+	variables: Record<string, number>,
+	expressions: Record<string, string>
+): string {
+	// If it's an expression variable, show the expression
+	if (varName in expressions) {
+		return expressions[varName];
 	}
 
-	for (const varName in variables) {
-		const varDef = variables[varName];
-
-		// Ensure expr is always a string
-		let expr = '';
-		if (typeof varDef === 'string') {
-			expr = varDef;
-		} else if (varDef && typeof varDef === 'object') {
-			// Extract expression from value or expression field
-			const rawValue = varDef.value || varDef.expression;
-
-			// If it's an array, check if array elements reference other variables
-			if (Array.isArray(rawValue)) {
-				// Array elements might be variable names (strings)
-				expr = rawValue.filter((item) => typeof item === 'string').join(' ');
-			} else {
-				expr = String(rawValue || '');
-			}
-		} else {
-			console.error('[topologicalSort] Invalid varDef type:', {
-				varName,
-				varDef,
-				type: typeof varDef
-			});
-			continue; // Skip invalid variable definitions
-		}
-
-		// Find all variable references (avoid duplicates with a Set)
-		const dependencies = new Set<string>();
-
-		// Pattern 1: {varName} - template variables
-		const templateMatches = expr.match(/\{(\w+)\}/g);
-		if (templateMatches) {
-			for (const match of templateMatches) {
-				const depVar = match.slice(1, -1); // Remove { }
-				if (graph[depVar]) {
-					dependencies.add(depVar);
-				}
-			}
-		}
-
-		// Pattern 2: varName[index] or varName.property - direct variable access
-		const directMatches = expr.match(/\b(\w+)\s*[[.]]/g);
-		if (directMatches) {
-			for (const match of directMatches) {
-				const depVar = match.replace(/[[.\s]/g, ''); // Extract variable name
-				if (graph[depVar] && depVar !== varName) {
-					dependencies.add(depVar);
-				}
-			}
-		}
-
-		// Pattern 3: Function calls - varName(args)
-		const functionMatches = expr.match(/(\w+)\s*\(/g);
-		if (functionMatches) {
-			for (const match of functionMatches) {
-				const depVar = match.replace(/[(\s]/g, ''); // Extract variable name
-				// Only add if it's a variable name in our graph (not a function like pickRandom)
-				if (graph[depVar] && depVar !== varName) {
-					dependencies.add(depVar);
-				}
-			}
-		}
-
-		// Pattern 4: Bare variable names (e.g., x in "x*y")
-		// Match word boundaries to get all identifiers
-		const bareMatches = expr.match(/\b[a-zA-Z_]\w*/g);
-		if (bareMatches) {
-			for (const depVar of bareMatches) {
-				// Only add if it's a variable in our graph (not a function or the variable itself)
-				if (graph[depVar] && depVar !== varName) {
-					dependencies.add(depVar);
-				}
-			}
-		}
-
-		// Add edges for all unique dependencies
-		for (const depVar of dependencies) {
-			graph[depVar].push(varName);
-			inDegree[varName]++;
-		}
+	// Otherwise show the value
+	if (varName in variables) {
+		return String(variables[varName]);
 	}
 
-	// Kahn's algorithm for topological sort
-	const queue: string[] = [];
-	const result: string[] = [];
-
-	// Start with variables that have no dependencies
-	for (const varName in inDegree) {
-		if (inDegree[varName] === 0) {
-			queue.push(varName);
-		}
-	}
-
-	while (queue.length > 0) {
-		const varName = queue.shift()!;
-		result.push(varName);
-
-		for (const neighbor of graph[varName]) {
-			inDegree[neighbor]--;
-			if (inDegree[neighbor] === 0) {
-				queue.push(neighbor);
-			}
-		}
-	}
-
-	return result;
+	return `{${varName}}`;
 }
 
 /**
- * Evaluate the correct answer
- * @param answerDef - Answer definition
- * @param variables - Variable values
- * @returns Evaluated answer
+ * Interpolate expressions for display (shows the expression with values, not result)
+ * Example: "{a} + {b}" with a=5, b=3 becomes "5 + 3"
  */
-function evaluateAnswer(answerDef: ChallengeAnswer, variables: Record<string, unknown>): unknown {
-	// Handle array format from original Navadra JSON: ["variableName"] or ["expression"] or [{ if: ..., choice: ... }]
-	if (Array.isArray(answerDef)) {
-		// If first element is a string, it could be a variable reference OR an expression
-		if (typeof answerDef[0] === 'string') {
-			const str = answerDef[0];
-
-			// Check if it's a simple variable name (just letters/numbers/underscore)
-			if (/^[a-zA-Z_]\w*$/.test(str) && variables[str] !== undefined) {
-				// It's a variable reference
-				return variables[str];
-			}
-
-			// Otherwise, treat it as an expression and evaluate it
-			return evaluateWithContext(str, variables);
-		}
-
-		// If first element is an object with conditions
-		for (const option of answerDef) {
-			// Handle "determined: true" format
-			if (option.determined === true && option.choice) {
-				// Interpolate the choice with variables and evaluate if it's an expression
-				const interpolated = interpolateExpression(option.choice, variables);
-				// Try to evaluate as expression (e.g., "28 - 3 - 5")
-				return evaluateWithContext(interpolated, variables);
-			}
-
-			// Handle "if: condition" format
-			if (option.if && option.choice) {
-				try {
-					const conditionResult = evaluateWithContext(option.if, variables);
-					if (conditionResult) {
-						// Interpolate the choice with variables and evaluate if it's an expression
-						const interpolated = interpolateExpression(option.choice, variables);
-						return evaluateWithContext(interpolated, variables);
-					}
-				} catch (error) {
-					console.error('Failed to evaluate answer condition:', option.if, error);
-				}
-			}
-		}
-		return null;
-	}
-
-	// Handle object format with value property
-	if (answerDef.value !== undefined) {
-		if (typeof answerDef.value === 'string') {
-			// Could be a variable reference or an expression
-			if (variables[answerDef.value] !== undefined) {
-				return variables[answerDef.value];
-			}
-			// Otherwise evaluate as expression
-			return evaluateWithContext(answerDef.value, variables);
-		}
-		return answerDef.value;
-	}
-
-	return null;
-}
-
-/**
- * Interpolate question text with variable values
- * @param question - Question template
- * @param variables - Variable values
- * @returns Interpolated question HTML
- */
-export function interpolateQuestion(question: string, variables: Record<string, unknown>): string {
-	return question.replace(/\{(\w+)\}/g, (match, varName) => {
-		if (variables[varName] !== undefined) {
+export function interpolateExpression(
+	expression: string,
+	variables: Record<string, number>
+): string {
+	return expression.replace(/\{(\w+)\}/g, (match, varName) => {
+		if (varName in variables) {
 			const value = variables[varName];
-
-			// Format arrays nicely
-			if (Array.isArray(value)) {
-				return value.join(', ');
-			}
-
-			// Format numbers
-			if (typeof value === 'number') {
-				return String(value);
-			}
-
 			return String(value);
 		}
 		return match;
@@ -438,29 +242,12 @@ export function validateAnswer(
 	correctAnswer: unknown,
 	tolerance: number = 0.01
 ): boolean {
-	console.log('[validateAnswer] Starting validation');
-	console.log(
-		'[validateAnswer] Student:',
-		JSON.stringify(studentAnswer),
-		'Type:',
-		typeof studentAnswer
-	);
-	console.log(
-		'[validateAnswer] Correct:',
-		JSON.stringify(correctAnswer),
-		'Type:',
-		typeof correctAnswer
-	);
-	console.log('[validateAnswer] Tolerance:', tolerance);
-
 	// Handle null/undefined
 	if (studentAnswer === null || studentAnswer === undefined) {
-		console.log('[validateAnswer] FAIL: Student answer is null/undefined');
 		return false;
 	}
 
 	if (correctAnswer === null || correctAnswer === undefined) {
-		console.log('[validateAnswer] FAIL: Correct answer is null/undefined');
 		return false;
 	}
 
@@ -468,50 +255,29 @@ export function validateAnswer(
 	let parsedStudentAnswer = studentAnswer;
 	if (typeof studentAnswer === 'string' && /^-?\d+\.?\d*$/.test(studentAnswer.trim())) {
 		parsedStudentAnswer = parseFloat(studentAnswer);
-		console.log(
-			'[validateAnswer] Parsed student answer from string to number:',
-			parsedStudentAnswer
-		);
 	}
 
 	// Numeric comparison with tolerance
 	if (typeof correctAnswer === 'number') {
-		console.log('[validateAnswer] Correct answer is number, checking student...');
 		if (typeof parsedStudentAnswer === 'number') {
 			const diff = Math.abs(parsedStudentAnswer - correctAnswer);
 			const result = diff <= tolerance;
-			console.log(
-				'[validateAnswer] Numeric comparison: diff =',
-				diff,
-				'tolerance =',
-				tolerance,
-				'result =',
-				result
-			);
 			return result;
 		} else {
-			console.log(
-				'[validateAnswer] FAIL: Correct is number but student is',
-				typeof parsedStudentAnswer
-			);
 			return false;
 		}
 	}
 
 	// Array comparison
 	if (Array.isArray(correctAnswer) && Array.isArray(parsedStudentAnswer)) {
-		console.log('[validateAnswer] Array comparison');
 		if (correctAnswer.length !== parsedStudentAnswer.length) {
-			console.log('[validateAnswer] FAIL: Array lengths differ');
 			return false;
 		}
 		for (let i = 0; i < correctAnswer.length; i++) {
 			if (!validateAnswer(parsedStudentAnswer[i], correctAnswer[i], tolerance)) {
-				console.log('[validateAnswer] FAIL: Array element', i, 'differs');
 				return false;
 			}
 		}
-		console.log('[validateAnswer] SUCCESS: All array elements match');
 		return true;
 	}
 
@@ -520,44 +286,135 @@ export function validateAnswer(
 		const studentStr = String(parsedStudentAnswer).trim().toLowerCase();
 		const correctStr = correctAnswer.trim().toLowerCase();
 		const result = correctStr === studentStr;
-		console.log('[validateAnswer] String comparison:', studentStr, '===', correctStr, '?', result);
 		return result;
 	}
 
 	// Object comparison
 	if (typeof correctAnswer === 'object' && typeof parsedStudentAnswer === 'object') {
 		const result = JSON.stringify(parsedStudentAnswer) === JSON.stringify(correctAnswer);
-		console.log('[validateAnswer] Object comparison:', result);
 		return result;
 	}
 
 	// Direct comparison
 	const result = parsedStudentAnswer === correctAnswer;
-	console.log(
-		'[validateAnswer] Direct comparison:',
-		parsedStudentAnswer,
-		'===',
-		correctAnswer,
-		'?',
-		result
-	);
 	return result;
 }
 
 /**
- * Format answer for display
- * @param answer - Answer value
- * @returns Formatted string
+ * Format tolerance for display
+ * @param tolerance - Numerical tolerance
+ * @returns Human-readable tolerance string
+ */
+export function formatTolerance(tolerance: number): string {
+	if (tolerance === 0) {
+		return 'exacte';
+	}
+	return `±${tolerance}`;
+}
+
+/**
+ * Check if a variable definition requires other variables
+ */
+export function hasVariableDependencies(varDef: VariableDefinition): boolean {
+	if (varDef.type === 'expression' && varDef.expression) {
+		return /\{\w+\}/.test(varDef.expression);
+	}
+	return false;
+}
+
+/**
+ * Extract variable names from expression
+ */
+export function extractVariableNames(expression: string): string[] {
+	const matches = expression.matchAll(/\{(\w+)\}/g);
+	return Array.from(matches, (m) => m[1]);
+}
+
+/**
+ * Validate variable dependencies (check for cycles and missing variables)
+ */
+export function validateVariableDependencies(variables: Record<string, VariableDefinition>): {
+	valid: boolean;
+	errors: string[];
+} {
+	const errors: string[] = [];
+
+	for (const [varName, varDef] of Object.entries(variables)) {
+		if (varDef.type === 'expression' && varDef.expression) {
+			const deps = extractVariableNames(varDef.expression);
+
+			for (const dep of deps) {
+				// Check if dependency exists
+				if (!(dep in variables)) {
+					errors.push(`Variable '${varName}' depends on undefined variable '${dep}'`);
+				}
+
+				// Check for direct self-reference
+				if (dep === varName) {
+					errors.push(`Variable '${varName}' cannot reference itself`);
+				}
+
+				// Check if dependency is also an expression (potential cycle)
+				if (dep in variables && variables[dep].type === 'expression') {
+					// Could implement more sophisticated cycle detection here
+					// For now, just warn
+					errors.push(
+						`Variable '${varName}' depends on expression variable '${dep}' (potential cycle risk)`
+					);
+				}
+			}
+		}
+	}
+
+	return {
+		valid: errors.length === 0,
+		errors
+	};
+}
+
+/**
+ * Generate a complete challenge instance with variables and correct answer
+ * Alias for generateChallengeVariables for backward compatibility
+ */
+export function generateChallengeInstance(challenge: Challenge): {
+	challenge: Challenge;
+	variables: Record<string, number>;
+	expressions: Record<string, string>;
+	correct_answer: unknown;
+} {
+	return generateChallengeVariables(challenge);
+}
+
+/**
+ * Interpolate question text with variable values
+ * Replaces {variable} placeholders with their values
+ */
+export function interpolateQuestion(question: string, variables: Record<string, number>): string {
+	return interpolateVariables(question, variables);
+}
+
+/**
+ * Format an answer value for display
+ * Handles numbers, strings, and arrays
  */
 export function formatAnswer(answer: unknown): string {
-	if (Array.isArray(answer)) {
-		return answer.join(', ');
+	if (answer === null || answer === undefined) {
+		return '-';
 	}
 
 	if (typeof answer === 'number') {
-		// Round to 2 decimal places if needed
-		return answer % 1 === 0 ? String(answer) : answer.toFixed(2);
+		// Format numbers with up to 4 decimal places, remove trailing zeros
+		return answer.toFixed(4).replace(/\.?0+$/, '');
 	}
 
-	return String(answer);
+	if (typeof answer === 'string') {
+		return answer;
+	}
+
+	if (Array.isArray(answer)) {
+		return answer.map(formatAnswer).join(', ');
+	}
+
+	// For objects, convert to JSON
+	return JSON.stringify(answer);
 }

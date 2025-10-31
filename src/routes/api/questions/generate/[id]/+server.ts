@@ -9,6 +9,41 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { generateInstance } from '$lib/questions';
 import { generateQuestionSchema } from '$lib/server/validation/questions';
+import type { QuestionTemplate } from '$lib/questions/types';
+import type { Database } from '$lib/types/database';
+
+type DbQuestionTemplate = Database['public']['Tables']['question_templates']['Row'];
+
+/**
+ * Transform database row to QuestionTemplate type
+ * Database uses snake_case and Json types, application uses camelCase and specific types
+ * Safe: Database schema guarantees these Json fields match the expected structures
+ */
+function dbRowToQuestionTemplate(row: DbQuestionTemplate): QuestionTemplate {
+	return {
+		id: row.id,
+		type: row.type as unknown as QuestionTemplate['type'],
+		title: row.title,
+		description: row.description ?? undefined,
+		variations: row.variations as unknown as QuestionTemplate['variations'],
+		exerciseInstruction: row.exercise_instruction ?? undefined,
+		options: (row.options as unknown as QuestionTemplate['options']) ?? undefined,
+		precision: (row.precision as unknown as QuestionTemplate['precision']) ?? { type: 'none' },
+		grades: row.grades as unknown as QuestionTemplate['grades'],
+		theme: row.theme,
+		domain: row.domain,
+		subdomain: row.subdomain ?? undefined,
+		level: row.level,
+		status: row.status as unknown as QuestionTemplate['status'],
+		delay: row.delay ?? undefined,
+		transformType:
+			(row.transform_type as unknown as QuestionTemplate['transformType']) ?? undefined,
+		multipleAnswers: row.multiple_answers ?? undefined,
+		created_at: row.created_at ?? undefined,
+		updated_at: row.updated_at ?? undefined,
+		created_by: row.created_by ?? undefined
+	};
+}
 
 /**
  * POST /api/questions/generate/[id]
@@ -73,25 +108,8 @@ export const POST: RequestHandler = async ({
 			}
 		}
 
-		// Convert database format (snake_case) to QuestionTemplate type (camelCase)
-		const questionTemplate = {
-			id: template.id,
-			type: template.type,
-			statement: template.statement,
-			variables: template.variables || [],
-			answer: template.answer,
-			precision: template.precision || { type: 'none' },
-			grades: template.grades,
-			delay: template.delay,
-			correction: template.correction,
-			transform_type: template.transform_type,
-			blanks: template.blanks,
-			choices: template.choices,
-			multiple_answers: template.multiple_answers,
-			created_at: template.created_at,
-			updated_at: template.updated_at,
-			created_by: template.created_by
-		} as import('$lib/questions/types').QuestionTemplate;
+		// Transform database row to application type
+		const questionTemplate = dbRowToQuestionTemplate(template);
 
 		// Generate instance
 		const result = generateInstance(questionTemplate, seed);

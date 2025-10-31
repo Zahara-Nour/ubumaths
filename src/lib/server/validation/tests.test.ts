@@ -15,7 +15,7 @@ describe('test system validation schemas', () => {
 		const createValidTestData = () => ({
 			result: {
 				sessionId: '550e8400-e29b-41d4-a716-446655440000',
-				mode: 'interactive' as ('display' | 'interactive' | 'course'),
+				mode: 'interactive' as 'display' | 'interactive' | 'course',
 				score: 7.5,
 				scorePercentage: 75,
 				totalQuestions: 10,
@@ -164,8 +164,8 @@ describe('test system validation schemas', () => {
 				},
 				{
 					category: {
-						theme: 'Geometry',
-						domain: 'Shapes',
+						theme: 'Arithmétique',
+						domain: 'Opérations',
 						subdomain: null,
 						level: 2
 					},

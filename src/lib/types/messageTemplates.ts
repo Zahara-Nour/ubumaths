@@ -52,12 +52,17 @@ export interface MessageTemplate {
 	subject_template: string;
 	body_template: string;
 	trigger_type: TriggerType;
-	trigger_config: Record<string, unknown>;
+	trigger_config: Record<string, unknown> | null;
 	scope: TemplateScope;
 	created_by: string;
 	class_id: string | null;
-	variables: TemplateVariable[];
+	variables: TemplateVariable[] | null;
+	tags: string[] | null;
 	is_active: boolean;
+	approval_status: string | null;
+	reviewed_by: string | null;
+	reviewed_at: string | null;
+	review_notes: string | null;
 	created_at: string;
 	updated_at: string;
 }

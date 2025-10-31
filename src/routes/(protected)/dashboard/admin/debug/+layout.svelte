@@ -1,8 +1,9 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import { page } from '$app/state';
 	import { Badge } from '$lib/components/ui/badge';
 
-	let { children }: { children: unknown } = $props();
+	let { children }: { children: Snippet } = $props();
 
 	const debugPages = [
 		{ href: '/dashboard/admin/debug/database', label: 'Database' },

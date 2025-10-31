@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { checkChatbotRateLimit } from '$lib/server/rateLimiter';
 import { getEnv } from '$lib/server/env';
 import { chatRequestSchema } from '$lib/server/validation/chat';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
@@ -12,10 +13,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// ====================================================================
 		// SECURITY: Authentication Check
 		// ====================================================================
-		const { user } = await locals.safeGetSession();
-		if (!user) {
-			throw error(401, { message: 'Authentication required' });
-		}
+		const { user } = await requireAuth(locals);
 
 		// ====================================================================
 		// SECURITY: Rate Limiting (5 requests per 15 minutes per user)

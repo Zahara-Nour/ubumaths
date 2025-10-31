@@ -127,7 +127,6 @@ class ChatStore {
 		$effect(() => {
 			// Note: In a real implementation, we'd subscribe to websocketManager events
 			// For now, this is a placeholder for the integration point
-			console.log('Chat store: Subscribed to WebSocket');
 		});
 	}
 
@@ -638,7 +637,7 @@ class ChatStore {
 
 	private handleMessageRead(message: unknown): void {
 		// Update read receipts (implementation depends on UI requirements)
-		console.log('Message read:', message);
+		// TODO: Implement read receipt handling
 	}
 
 	private handleMessageReaction(message: { messageId?: string }): void {

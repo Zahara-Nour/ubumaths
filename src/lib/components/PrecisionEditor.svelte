@@ -23,15 +23,11 @@
 	import { Badge } from '$lib/components/ui/badge';
 
 	interface Props {
-		precision: PrecisionType | undefined;
+		precision?: PrecisionType;
 	}
 
-	let { precision = $bindable() }: Props = $props();
-
-	// Initialize if undefined
-	if (!precision) {
-		precision = { type: 'none' };
-	}
+	// Initialize with default value if undefined
+	let { precision = $bindable({ type: 'none' }) }: Props = $props();
 
 	// Precision type options
 	const PRECISION_TYPES = [
@@ -98,7 +94,7 @@
 		</div>
 
 		<!-- Type-specific configuration -->
-		{#if precision.type === 'decimal'}
+		{#if precision.type === 'decimal' && 'digits' in precision}
 			<div class="space-y-2">
 				<Label for="decimal-digits">Nombre de décimales</Label>
 				<Input id="decimal-digits" type="number" min="0" max="10" bind:value={precision.digits} />
@@ -106,7 +102,7 @@
 			</div>
 		{/if}
 
-		{#if precision.type === 'significant'}
+		{#if precision.type === 'significant' && 'digits' in precision}
 			<div class="space-y-2">
 				<Label for="significant-digits">Nombre de chiffres significatifs</Label>
 				<Input
@@ -122,7 +118,7 @@
 			</div>
 		{/if}
 
-		{#if precision.type === 'magnitude'}
+		{#if precision.type === 'magnitude' && 'digits' in precision}
 			<div class="space-y-2">
 				<Label for="magnitude-digits">Puissance de 10</Label>
 				<Input
@@ -136,7 +132,7 @@
 			</div>
 		{/if}
 
-		{#if precision.type === 'tolerance'}
+		{#if precision.type === 'tolerance' && 'mode' in precision && 'tolerance' in precision}
 			<div class="space-y-4">
 				<div class="space-y-2">
 					<Label for="tolerance-mode">Mode de tolérance</Label>

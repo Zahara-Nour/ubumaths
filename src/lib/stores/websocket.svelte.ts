@@ -1,4 +1,7 @@
 import { browser } from '$app/environment';
+import { createLogger } from '$lib/utils/logger';
+
+const logger = createLogger('websocket.svelte.ts');
 
 const WS_URL = 'ws://localhost:3001';
 const HEARTBEAT_INTERVAL = 60000; // 60 seconds
@@ -86,7 +89,7 @@ class WebSocketManager {
 			this.ws = new WebSocket(WS_URL);
 
 			this.ws.onopen = () => {
-				console.log('WebSocket connected');
+				logger.info('WebSocket connected');
 				this.connectionStatus = 'connected';
 				this.reconnectAttempts = 0;
 
@@ -109,7 +112,7 @@ class WebSocketManager {
 			};
 
 			this.ws.onclose = () => {
-				console.log('WebSocket disconnected');
+				logger.info('WebSocket disconnected');
 				this.connectionStatus = 'disconnected';
 
 				// Clear heartbeat
@@ -142,21 +145,21 @@ class WebSocketManager {
 
 			switch (message.type) {
 				case 'auth_success':
-					console.log('WebSocket authentication successful');
+					logger.info('WebSocket authentication successful');
 					break;
 
 				case 'presence_update':
 					// Update friend presence in map
 					this.friendsPresence.set(message.userId, message.status);
-					console.log(`Friend ${message.userId} is now ${message.status}`);
+					logger.trace(`Friend ${message.userId} is now ${message.status}`);
 					break;
 
 				case 'error':
-					console.error('WebSocket error:', message.message);
+					logger.error('WebSocket error:', message.message);
 					break;
 
 				default:
-					console.warn('Unknown message type:', message);
+					logger.warn('Unknown message type:', message);
 			}
 		} catch (error) {
 			console.error('Error parsing WebSocket message:', error);
@@ -198,7 +201,7 @@ class WebSocketManager {
 			RECONNECT_MAX_DELAY
 		);
 
-		console.log(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts + 1})`);
+		logger.info(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts + 1})`);
 
 		this.reconnectTimeout = setTimeout(() => {
 			this.reconnectAttempts++;

@@ -33,9 +33,23 @@
 		MessageTemplateInput as _MessageTemplateInput,
 		TriggerType
 	} from '$lib/types/messageTemplates';
+	import type { Json } from '$lib/types/database';
 	import { getVariablesForTrigger } from '$lib/templates/templateVariables';
 	import { renderTemplate } from '$lib/templates/templateEngine';
 	import { cn } from '$lib/utils';
+
+	// Types
+	interface TemplateVersion {
+		id: string;
+		title: string;
+		subject_template: string;
+		body_template: string;
+		created_at: string;
+	}
+
+	interface TemplateWithClassName extends MessageTemplate {
+		class_name?: string;
+	}
 
 	// State
 	let isLoading = $state(false);
@@ -44,7 +58,7 @@
 	let isEditMode = $state(false);
 	let editingTemplate = $state<MessageTemplate | null>(null);
 	let classes = $state<Array<{ id: string; name: string }>>([]);
-	let templates = $state<Array<MessageTemplate & { class_name?: string }>>([]);
+	let templates = $state<TemplateWithClassName[]>([]);
 	let favoriteTemplateIds = $state<Set<string>>(new Set());
 	let expandedCards = $state<Set<string>>(new Set());
 	let currentUserId = $state<string | null>(null);
@@ -77,7 +91,7 @@
 	let previewTimeout = $state<number | null>(null);
 
 	// Version history
-	let templateVersions = $state<Array<unknown>>([]);
+	let templateVersions = $state<TemplateVersion[]>([]);
 	let loadingVersions = $state(false);
 	let selectedVersionTemplate = $state<MessageTemplate | null>(null);
 
@@ -147,9 +161,9 @@
 
 	let availableVariables = $derived(getVariablesForTrigger(formTriggerType));
 
-	let canEditTemplate = $derived((template: MessageTemplate) => {
+	function canEditTemplate(template: MessageTemplate): boolean {
 		return template.scope === 'class' && template.created_by === currentUserId;
-	});
+	}
 
 	// Load data on mount
 	onMount(() => {
@@ -187,8 +201,8 @@
 			} else {
 				templates = (data || []).map((t) => ({
 					...t,
-					class_name: t.classes?.name
-				}));
+					class_name: (t.classes as { name: string } | null)?.name
+				})) as TemplateWithClassName[];
 			}
 		} finally {
 			isLoading = false;
@@ -288,12 +302,21 @@
 				const tempTemplate: MessageTemplate = {
 					id: 'preview',
 					title: formTitle,
+					description: formDescription || null,
 					subject_template: formSubject,
 					body_template: formBody,
 					trigger_type: formTriggerType,
+					trigger_config: null,
 					scope: 'class',
+					created_by: currentUserId || '',
+					class_id: formClassId,
 					is_active: true,
 					variables: availableVariables,
+					tags: formTags,
+					approval_status: null,
+					reviewed_by: null,
+					reviewed_at: null,
+					review_notes: null,
 					created_at: new Date().toISOString(),
 					updated_at: new Date().toISOString()
 				};
@@ -354,7 +377,7 @@
 				scope: 'class',
 				class_id: formClassId,
 				is_active: formIsActive,
-				variables: availableVariables,
+				variables: availableVariables as unknown as Json,
 				tags: formTags
 			};
 

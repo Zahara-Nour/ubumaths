@@ -2,7 +2,6 @@
 	import type { TemplateVariable, TriggerType } from '$lib/types/messageTemplates';
 	import { getVariablesForTrigger } from '$lib/templates/templateVariables';
 	import { getAvailableFilters } from '$lib/templates/advancedEngine';
-	import { createEventDispatcher } from 'svelte';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -13,17 +12,14 @@
 	interface Props {
 		triggerType: TriggerType;
 		open?: boolean;
+		onInsert?: (data: { text: string; type: 'variable' | 'filter' }) => void;
 	}
 
-	let { triggerType, open = $bindable(false) }: Props = $props();
+	let { triggerType, open = $bindable(false), onInsert }: Props = $props();
 
 	// State
 	let searchQuery = $state('');
 	let activeTab = $state<'variables' | 'filters'>('variables');
-
-	const dispatch = createEventDispatcher<{
-		insert: { text: string; type: 'variable' | 'filter' };
-	}>();
 
 	// Get available variables and filters
 	let availableVariables = $derived(getVariablesForTrigger(triggerType));
@@ -50,7 +46,7 @@
 	});
 
 	function insertVariable(variable: TemplateVariable) {
-		dispatch('insert', {
+		onInsert?.({
 			text: `{{${variable.name}}}`,
 			type: 'variable'
 		});
@@ -59,7 +55,7 @@
 	}
 
 	function insertFilter(filterName: string) {
-		dispatch('insert', {
+		onInsert?.({
 			text: ` | ${filterName}`,
 			type: 'filter'
 		});

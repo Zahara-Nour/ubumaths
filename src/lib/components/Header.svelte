@@ -40,7 +40,7 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
-	import type { Session, User } from '@supabase/supabase-js';
+	import type { User } from '@supabase/supabase-js';
 	import type { Profile } from '$lib/types/database';
 	import {
 		Menu,
@@ -94,7 +94,6 @@
 	// These are automatically reactive in Svelte 5
 	let {
 		title = 'UbuMaths',
-		session = null,
 		user = null,
 		profile = null,
 		sidebarItems = [
@@ -103,7 +102,6 @@
 		]
 	}: {
 		title?: string;
-		session?: Session | null; // Verified session from server
 		user?: User | null; // Verified user from server
 		profile?: Profile | null; // User profile from database
 		sidebarItems?: Array<{ label: string; href: string; icon?: string }>;
@@ -200,7 +198,7 @@
 					{#each sidebarItems as item (item.href)}
 						<DropdownMenu.Item>
 							<a
-								href={resolve(item.href)}
+								href={resolve(item.href as Parameters<typeof resolve>[0])}
 								class="flex w-full items-center"
 								onclick={closeMobileMenu}
 							>
@@ -227,7 +225,7 @@
 		<!-- Navigation -->
 		<nav class="flex items-center gap-2">
 			<!-- Auth section -->
-			{#if session}
+			{#if user}
 				<div class="border-l pl-2">
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger
@@ -264,7 +262,7 @@
 								</a>
 							</DropdownMenu.Item>
 							<DropdownMenu.Item>
-								<a href={resolve('/messages')} class="flex w-full items-center">
+								<a href={resolve('/messages/inbox')} class="flex w-full items-center">
 									<Mail class="mr-2 h-4 w-4" />
 									Messages
 								</a>

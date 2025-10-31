@@ -19,17 +19,23 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	import type { Profile, Class } from '$lib/types/database'; // Types for future features
+	import type { Database } from '$lib/types/database';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import { Upload } from 'lucide-svelte';
+
+	// Extended profile type that includes related data from API responses
+	type Profile = Database['public']['Tables']['profiles']['Row'];
+	type ExtendedProfile = Profile & {
+		schools?: { name: string } | null;
+		class_members?: { class_id: string }[];
+	};
 
 	let { data }: { data: PageData } = $props();
 
 	// Search state
 	let searchTerm = $state(''); // Current text search input
-	let searchResults = $state<unknown[]>([]); // Results from text search
-	let classResults = $state<unknown[]>([]); // Results from class filter
+	let searchResults = $state<ExtendedProfile[]>([]); // Results from text search
+	let classResults = $state<ExtendedProfile[]>([]); // Results from class filter
 	let isSearching = $state(false); // Loading state for text search
 	let isSearchingClass = $state(false); // Loading state for class filter
 	let selectedClassFilter = $state<string>(''); // Currently selected class ID for filtering
@@ -39,8 +45,8 @@
 	let testFilter = $state<'all' | 'real' | 'test'>('all'); // Filter for test vs real users
 
 	// User selection and editing state
-	let selectedUser = $state<unknown>(null); // Currently viewed user
-	let editedUser = $state<unknown>({}); // Copy of user being edited
+	let selectedUser = $state<ExtendedProfile | null>(null); // Currently viewed user
+	let editedUser = $state<Partial<ExtendedProfile>>({}); // Copy of user being edited
 	let isEditing = $state(false); // Whether edit mode is active
 	let classToAdd = $state(''); // Selected class to add to user
 
@@ -53,15 +59,25 @@
 	 * Falls back to full_name or email if first/last names not available
 	 */
 	function getFullName(user: {
-		firstname?: string;
-		lastname?: string;
-		full_name?: string;
-		email: string;
+		firstname?: string | null;
+		lastname?: string | null;
+		full_name?: string | null;
+		email?: string | null;
 	}): string {
 		if (user.firstname && user.lastname) {
 			return `${user.firstname} ${user.lastname}`;
 		}
-		return user.full_name || user.email;
+		return user.full_name || user.email || 'Unknown User';
+	}
+
+	/**
+	 * Convert database gender string to Gender type for avatar function
+	 */
+	function toGender(gender: string | null | undefined): 'M' | 'F' | null {
+		if (!gender) return null;
+		if (gender === 'boy') return 'M';
+		if (gender === 'girl') return 'F';
+		return null;
 	}
 
 	/**
@@ -104,7 +120,7 @@
 	/**
 	 * Apply test filter to a list of users
 	 */
-	function applyTestFilter(users: unknown[]): unknown[] {
+	function applyTestFilter(users: ExtendedProfile[]): ExtendedProfile[] {
 		if (testFilter === 'all') return users;
 		if (testFilter === 'test') return users.filter((u) => u.is_test === true);
 		if (testFilter === 'real') return users.filter((u) => u.is_test === false);
@@ -146,7 +162,7 @@
 		searchTimeout = setTimeout(async () => {
 			try {
 				const response = await fetch(`/api/admin/search-users?q=${encodeURIComponent(searchTerm)}`);
-				const result = await response.json();
+				const result = (await response.json()) as { users?: ExtendedProfile[] };
 
 				if (result.users) {
 					searchResults = result.users;
@@ -179,7 +195,7 @@
 			const response = await fetch(
 				`/api/admin/class-students?class_id=${encodeURIComponent(classId)}`
 			);
-			const result = await response.json();
+			const result = (await response.json()) as { users?: ExtendedProfile[] };
 
 			if (result.users) {
 				classResults = result.users;
@@ -204,7 +220,7 @@
 	 * Select a user to view/edit in the right panel
 	 * Resets edit mode when selecting a new user
 	 */
-	function selectUser(user: (typeof data.users)[number]) {
+	function selectUser(user: ExtendedProfile) {
 		selectedUser = user;
 		editedUser = { ...user };
 		isEditing = false;
@@ -214,7 +230,9 @@
 	 * Enter edit mode for the selected user
 	 */
 	function startEdit() {
-		editedUser = { ...selectedUser };
+		if (selectedUser) {
+			editedUser = { ...selectedUser };
+		}
 		isEditing = true;
 	}
 
@@ -222,7 +240,9 @@
 	 * Cancel editing and revert changes
 	 */
 	function cancelEdit() {
-		editedUser = { ...selectedUser };
+		if (selectedUser) {
+			editedUser = { ...selectedUser };
+		}
 		isEditing = false;
 	}
 
@@ -246,27 +266,33 @@
 				body: JSON.stringify({ userId: selectedUser.id, classId })
 			});
 
-			const result = await response.json();
+			const result = (await response.json()) as {
+				success?: boolean;
+				profile?: ExtendedProfile;
+				error?: string;
+			};
+
 			if (result.success && result.profile) {
 				// Update selected user with server response
-				selectedUser = result.profile;
-				editedUser = { ...selectedUser };
+				const updatedUser = result.profile;
+				selectedUser = updatedUser;
+				editedUser = { ...updatedUser };
 
 				// Update in search results if present
-				const searchIndex = searchResults.findIndex((u) => u.id === selectedUser.id);
+				const searchIndex = searchResults.findIndex((u) => u.id === updatedUser.id);
 				if (searchIndex !== -1) {
-					searchResults[searchIndex] = { ...selectedUser };
+					searchResults[searchIndex] = { ...updatedUser };
 				}
 
 				// Handle class filter results
 				if (selectedClassFilter === classId) {
 					// Removed class matches current filter - remove user from list
-					classResults = classResults.filter((u) => u.id !== selectedUser.id);
+					classResults = classResults.filter((u) => u.id !== updatedUser.id);
 				} else {
 					// Update user in class results if present
-					const classIndex = classResults.findIndex((u) => u.id === selectedUser.id);
+					const classIndex = classResults.findIndex((u) => u.id === updatedUser.id);
 					if (classIndex !== -1) {
-						classResults[classIndex] = { ...selectedUser };
+						classResults[classIndex] = { ...updatedUser };
 					}
 				}
 			}
@@ -291,34 +317,40 @@
 				body: JSON.stringify({ userId: selectedUser.id, classId: classToAdd })
 			});
 
-			const result = await response.json();
+			const result = (await response.json()) as {
+				success?: boolean;
+				profile?: ExtendedProfile;
+				error?: string;
+			};
+
 			if (result.success && result.profile) {
 				// Update selected user with server response
-				selectedUser = result.profile;
-				editedUser = { ...selectedUser };
+				const updatedUser = result.profile;
+				selectedUser = updatedUser;
+				editedUser = { ...updatedUser };
 
 				// Update in search results if present
-				const searchIndex = searchResults.findIndex((u) => u.id === selectedUser.id);
+				const searchIndex = searchResults.findIndex((u) => u.id === updatedUser.id);
 				if (searchIndex !== -1) {
-					searchResults[searchIndex] = { ...selectedUser };
+					searchResults[searchIndex] = { ...updatedUser };
 				}
 
 				// Handle class filter results
 				if (selectedClassFilter === classToAdd) {
 					// Added class matches current filter
-					const classIndex = classResults.findIndex((u) => u.id === selectedUser.id);
+					const classIndex = classResults.findIndex((u) => u.id === updatedUser.id);
 					if (classIndex === -1) {
 						// User not in list - add them
-						classResults = [...classResults, { ...selectedUser }];
+						classResults = [...classResults, { ...updatedUser }];
 					} else {
 						// User already in list - update them
-						classResults[classIndex] = { ...selectedUser };
+						classResults[classIndex] = { ...updatedUser };
 					}
 				} else {
 					// Update user in class results if present
-					const classIndex = classResults.findIndex((u) => u.id === selectedUser.id);
+					const classIndex = classResults.findIndex((u) => u.id === updatedUser.id);
 					if (classIndex !== -1) {
-						classResults[classIndex] = { ...selectedUser };
+						classResults[classIndex] = { ...updatedUser };
 					}
 				}
 
@@ -436,7 +468,8 @@
 										<div class="flex items-center gap-3">
 											<Avatar.Root class="h-10 w-10">
 												<Avatar.Image
-													src={user.avatar_url || getAvatarFallback(user.role, user.gender)}
+													src={user.avatar_url ||
+														getAvatarFallback(user.role, toGender(user.gender))}
 													alt={getFullName(user)}
 												/>
 												<Avatar.Fallback
@@ -490,33 +523,34 @@
 						</Card.Header>
 						<Card.Content class="space-y-6">
 							<!-- Avatar -->
-							<div class="flex items-center gap-4">
-								<Avatar.Root class="h-20 w-20">
-									<Avatar.Image
-										src={(isEditing ? editedUser.avatar_url : selectedUser.avatar_url) ||
-											getAvatarFallback(
-												isEditing ? editedUser.role : selectedUser.role,
-												isEditing ? editedUser.gender : selectedUser.gender
+							{#if selectedUser}
+								{@const currentUser = isEditing ? editedUser : selectedUser}
+								{@const role = currentUser.role || 'student'}
+								{@const gender = toGender(currentUser.gender)}
+								<div class="flex items-center gap-4">
+									<Avatar.Root class="h-20 w-20">
+										<Avatar.Image
+											src={currentUser.avatar_url || getAvatarFallback(role, gender)}
+											alt={getFullName(currentUser)}
+										/>
+										<Avatar.Fallback class="text-2xl">
+											{getAvatarInitials(
+												currentUser.firstname ?? null,
+												currentUser.lastname ?? null
 											)}
-										alt={getFullName(isEditing ? editedUser : selectedUser)}
-									/>
-									<Avatar.Fallback class="text-2xl">
-										{getAvatarInitials(
-											isEditing ? editedUser.firstname : selectedUser.firstname,
-											isEditing ? editedUser.lastname : selectedUser.lastname
-										)}
-									</Avatar.Fallback>
-								</Avatar.Root>
-								<div class="flex-1">
-									{#if isEditing}
-										<Label for="avatar-url">URL de l'avatar</Label>
-										<Input id="avatar-url" type="url" bind:value={editedUser.avatar_url} />
-									{:else}
-										<h3 class="text-xl font-semibold">{getFullName(selectedUser)}</h3>
-										<p class="text-sm text-muted-foreground">{selectedUser.email}</p>
-									{/if}
+										</Avatar.Fallback>
+									</Avatar.Root>
+									<div class="flex-1">
+										{#if isEditing}
+											<Label for="avatar-url">URL de l'avatar</Label>
+											<Input id="avatar-url" type="url" bind:value={editedUser.avatar_url} />
+										{:else}
+											<h3 class="text-xl font-semibold">{getFullName(selectedUser)}</h3>
+											<p class="text-sm text-muted-foreground">{selectedUser.email}</p>
+										{/if}
+									</div>
 								</div>
-							</div>
+							{/if}
 
 							<Separator />
 
@@ -527,25 +561,31 @@
 								use:enhance={() => {
 									return async ({ result, update }) => {
 										await update();
-										if (result.type === 'success' && result.data?.profile) {
+										if (
+											result.type === 'success' &&
+											result.data &&
+											'profile' in result.data &&
+											result.data.profile
+										) {
 											// Use the profile returned from the server (includes school relation)
-											selectedUser = result.data.profile;
-											editedUser = { ...selectedUser };
+											const profile = result.data.profile as ExtendedProfile;
+											selectedUser = profile;
+											editedUser = { ...profile };
 
 											// Update in searchResults if present
-											const searchIndex = searchResults.findIndex((u) => u.id === selectedUser.id);
+											const searchIndex = searchResults.findIndex((u) => u.id === profile.id);
 											if (searchIndex !== -1) {
-												searchResults[searchIndex] = { ...selectedUser };
+												searchResults[searchIndex] = { ...profile };
 											}
 
 											// Update in classResults if present
-											const classIndex = classResults.findIndex((u) => u.id === selectedUser.id);
+											const classIndex = classResults.findIndex((u) => u.id === profile.id);
 											if (classIndex !== -1) {
-												classResults[classIndex] = { ...selectedUser };
+												classResults[classIndex] = { ...profile };
 											}
 
 											isEditing = false;
-										} else if (result.type === 'success') {
+										} else if (result.type === 'success' && selectedUser) {
 											// Fallback if profile not returned
 											selectedUser = { ...selectedUser, ...editedUser };
 											isEditing = false;
@@ -553,7 +593,7 @@
 									};
 								}}
 							>
-								<input type="hidden" name="user_id" value={selectedUser.id} />
+								<input type="hidden" name="user_id" value={selectedUser?.id || ''} />
 
 								<div class="space-y-4">
 									<!-- Personal Info -->
@@ -722,7 +762,7 @@
 														class="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 													>
 														<option value="">Ajouter une classe</option>
-														{#each data.classes.filter((c) => !selectedUser.class_ids?.includes(c.id)) as classItem (classItem.id)}
+														{#each data.classes.filter((c) => !selectedUser?.class_ids?.includes(c.id)) as classItem (classItem.id)}
 															<option value={classItem.id}>{classItem.name}</option>
 														{/each}
 													</select>

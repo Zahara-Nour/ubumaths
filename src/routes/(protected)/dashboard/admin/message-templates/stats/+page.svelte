@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	function generateCSV(stats: {
+	interface StatsForCSV {
 		overview: {
 			total_uses: number;
 			total_templates: number;
@@ -8,7 +8,9 @@
 			avg_time_to_complete: number;
 		};
 		top_templates?: { title: string; usage_count: number; completion_rate: number }[];
-	}): string {
+	}
+
+	function generateCSV(stats: StatsForCSV): string {
 		const rows: string[] = [];
 
 		// Header
@@ -46,9 +48,46 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto } from '$app/navigation';
 
+	// Types
+	interface TemplateStats {
+		overview: {
+			total_uses: number;
+			total_templates: number;
+			completion_rate: number;
+			unique_users: number;
+			avg_time_to_complete: number;
+			completed_uses: number;
+		};
+		top_templates?: Array<{
+			id: string;
+			title: string;
+			usage_count: number;
+			completion_rate: number;
+			trigger_type: string;
+			scope: string;
+		}>;
+		by_trigger_type?: Array<{
+			trigger_type: string;
+			usage_count: number;
+		}>;
+		recent_usage?: Array<{
+			id: string;
+			template_title: string;
+			user_name: string | null;
+			class_name: string | null;
+			completed: boolean;
+			used_at: string;
+		}>;
+		user_adoption?: {
+			power_users: number;
+			regular_users: number;
+			casual_users: number;
+		};
+	}
+
 	// State
 	let isLoading = $state(true);
-	let stats = $state<unknown>(null);
+	let stats = $state<TemplateStats | null>(null);
 	let timeRange = $state<'7d' | '30d' | '90d' | 'all'>('30d');
 
 	const timeRangeOptions = [
@@ -390,6 +429,10 @@
 					variant="outline"
 					onclick={async () => {
 						try {
+							if (!stats) {
+								toaster.error('Aucune statistique à exporter');
+								return;
+							}
 							const csv = generateCSV(stats);
 							const blob = new Blob([csv], { type: 'text/csv' });
 							const url = URL.createObjectURL(blob);

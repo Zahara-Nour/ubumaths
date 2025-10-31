@@ -38,8 +38,6 @@
 			}
 		}
 
-		console.log('Submitting answer:', parsedAnswer, 'type:', typeof parsedAnswer);
-
 		// Submit answer
 		onsubmit(parsedAnswer);
 		errorMessage = '';

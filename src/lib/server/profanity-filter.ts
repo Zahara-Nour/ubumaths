@@ -4,6 +4,40 @@
  *
  * Server-side profanity detection and filtering for chat messages.
  * Uses the bad-words library with custom French profanity list.
+ *
+ * ## Current Status: NOT IN USE
+ *
+ * This module was created for potential future AI chatbot implementation
+ * but is **not currently integrated** into any production feature.
+ *
+ * ## Intended Use Cases
+ *
+ * When implementing AI chatbot or student messaging features:
+ * - Filter user input before sending to AI
+ * - Validate student messages in chat
+ * - Moderate user-generated content
+ *
+ * ## Integration Points
+ *
+ * To use this module in a future feature:
+ *
+ * ```typescript
+ * import { checkProfanity } from '$lib/server/profanity-filter';
+ *
+ * // In API endpoint
+ * const result = checkProfanity(userMessage);
+ * if (result.isProfane) {
+ *   return error(400, 'Message contains inappropriate content');
+ * }
+ * ```
+ *
+ * ## Dependencies
+ *
+ * - `bad-words` npm package (currently installed)
+ * - Custom French profanity list (see below)
+ *
+ * @module server/profanity-filter
+ * @status unused
  */
 
 import { Filter } from 'bad-words';

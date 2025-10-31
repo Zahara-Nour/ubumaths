@@ -113,7 +113,10 @@ class FriendsManager {
 			// Update websocket presence map for accepted friends
 			this.friendships.forEach((f) => {
 				if (f.presence) {
-					websocketManager.friendsPresence.set(f.friend_profile.id, f.presence.status as "offline" | "online");
+					websocketManager.friendsPresence.set(
+						f.friend_profile.id,
+						f.presence.status as 'offline' | 'online'
+					);
 				}
 			});
 		} catch (err) {

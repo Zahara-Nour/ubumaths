@@ -6,6 +6,7 @@ import {
 	getAssessmentStatistics
 } from '$lib/server/assessments';
 import { getTeacherTestMode } from '$lib/server/test-mode';
+import { getUserProfile } from '$lib/server/auth';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
@@ -13,18 +14,14 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		throw redirect(303, '/auth/signin');
 	}
 
-	// Verify user is a teacher
-	const { data: profileData, error: profileError } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
+	// ✅ STANDARDIZED: Use getUserProfile helper for consistent profile fetching
+	const profile = await getUserProfile(locals.supabase, user.id);
 
-	if (profileError || !profileData) {
+	if (!profile) {
 		throw error(403, 'Profil non trouvé');
 	}
 
-	if (profileData.role !== 'teacher') {
+	if (profile.role !== 'teacher') {
 		throw redirect(303, '/dashboard');
 	}
 

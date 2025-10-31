@@ -9,6 +9,7 @@
  */
 
 import type { ContentField } from '../types';
+import { randomInt } from '$lib/utils/random';
 
 /**
  * Shuffled choice with original index
@@ -54,25 +55,9 @@ export function shuffleChoices(
 
 	// Fisher-Yates shuffle
 	for (let i = indexed.length - 1; i > 0; i--) {
-		const j = seededRandomInt(0, i, seed ? seed + i : undefined);
+		const j = randomInt(0, i, seed ? seed + i : undefined);
 		[indexed[i], indexed[j]] = [indexed[j], indexed[i]];
 	}
 
 	return indexed;
-}
-
-/**
- * Seeded random integer between min and max (inclusive)
- */
-function seededRandomInt(min: number, max: number, seed?: number): number {
-	const random = seed !== undefined ? seededRandom(seed) : Math.random();
-	return Math.floor(random * (max - min + 1)) + min;
-}
-
-/**
- * Seeded pseudo-random number generator
- */
-function seededRandom(seed: number): number {
-	const x = Math.sin(seed) * 10000;
-	return x - Math.floor(x);
 }

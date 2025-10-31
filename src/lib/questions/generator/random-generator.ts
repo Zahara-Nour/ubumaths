@@ -12,6 +12,7 @@
  */
 
 import type { RandomSpec, NumberOrVariable, ResolvedVariable } from '../types';
+import { seededRandom } from '$lib/utils/random';
 
 /**
  * Variable context - can be array or object
@@ -260,18 +261,4 @@ export function randomDecimalByRange(
 	const steps = Math.floor((max - min) / step);
 	const selectedStep = Math.floor(random * (steps + 1));
 	return parseFloat((min + selectedStep * step).toFixed(10)); // Avoid float errors
-}
-
-/**
- * Seeded pseudo-random number generator
- *
- * Uses simple sine-based PRNG for reproducibility.
- * Not cryptographically secure, but sufficient for educational content.
- *
- * @param seed - Seed value
- * @returns Pseudo-random number between 0 and 1
- */
-export function seededRandom(seed: number): number {
-	const x = Math.sin(seed) * 10000;
-	return x - Math.floor(x);
 }

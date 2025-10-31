@@ -101,14 +101,14 @@
 	// Example: Server says ×3, optimistic says -1 removed → Display shows ×2
 	const cardsWithCounts = $derived(
 		sortCardsByPriority(getStudentCardsWithCounts(vipCards))
-			.map((cardWithCount) => {
-				const removedCount = optimisticRemovedCounts[cardWithCount.id] || 0;
+			.map((card) => {
+				const removedCount = optimisticRemovedCounts[card.id] || 0;
 				return {
-					...cardWithCount,
-					count: Math.max(0, cardWithCount.count - removedCount)
+					...card,
+					count: Math.max(0, card.count - removedCount)
 				};
 			})
-			.filter((cardWithCount) => cardWithCount.count > 0) // Hide cards with 0 count
+			.filter((card) => card.count > 0) // Hide cards with 0 count
 	);
 
 	// CLEANUP EFFECT
@@ -134,8 +134,27 @@
 	}
 
 	// Handle card click - open holographic modal
-	function handleCardClick(card: VipCardType, count: number) {
-		selectedCardForHolo = { card, count };
+	function handleCardClick(
+		card: {
+			id: string;
+			name: string;
+			description: string;
+			imagePath: string;
+			category: string;
+			rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+		},
+		count: number
+	) {
+		// Convert to VipCardType for the holographic modal
+		const vipCard: VipCardType = {
+			id: card.id,
+			name: card.name,
+			description: card.description,
+			imagePath: card.imagePath,
+			category: card.category as VipCardType['category'],
+			rarity: card.rarity
+		};
+		selectedCardForHolo = { card: vipCard, count };
 		holoModalVisible = true;
 	}
 
@@ -162,7 +181,14 @@
 	 *
 	 * @param card - The VIP card to remove
 	 */
-	async function handleRemoveCard(card: VipCardType) {
+	async function handleRemoveCard(card: {
+		id: string;
+		name: string;
+		description: string;
+		imagePath: string;
+		category: string;
+		rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+	}) {
 		if (!teacherView || !studentId) return;
 
 		// STEP 1: Apply optimistic update (instant UI feedback)
@@ -253,27 +279,27 @@
 		{:else}
 			<!-- All Cards Grid - Sorted by Rarity -->
 			<div class="grid grid-cols-2 gap-8 p-6 sm:grid-cols-3 xl:grid-cols-3">
-				{#each cardsWithCounts as cardWithCount (cardWithCount.card.id)}
+				{#each cardsWithCounts as card (card.id)}
 					<div
 						class="transform cursor-pointer transition-transform hover:scale-105"
-						onclick={() => handleCardClick(cardWithCount, cardWithCount.count)}
+						onclick={() => handleCardClick(card, card.count)}
 						onkeydown={(e) => {
 							if (e.key === 'Enter' || e.key === ' ') {
 								e.preventDefault();
-								handleCardClick(cardWithCount, cardWithCount.count);
+								handleCardClick(card, card.count);
 							}
 						}}
 						role="button"
 						tabindex="0"
-						aria-label="Voir {cardWithCount.name} en grand"
+						aria-label="Voir {card.name} en grand"
 					>
 						<VipCard
-							card={cardWithCount}
-							count={cardWithCount.count}
+							{card}
+							count={card.count}
 							size="sm"
 							clickable={false}
 							showRemoveButton={teacherView}
-							onRemove={() => handleRemoveCard(cardWithCount)}
+							onRemove={() => handleRemoveCard(card)}
 						/>
 					</div>
 				{/each}

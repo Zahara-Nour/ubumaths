@@ -4572,6 +4572,47 @@ export type Database = {
 					}
 				];
 			};
+			deck_stats_view: {
+				Row: {
+					config: Json | null;
+					created_at: string;
+					deck_id: string;
+					deck_type: string;
+					description: string | null;
+					due_count: number;
+					is_assigned: boolean;
+					learning_count: number;
+					name: string;
+					new_count: number;
+					owner_id: string;
+					review_count: number;
+					total_cards: number;
+					updated_at: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'srs_decks_owner_id_fkey';
+						columns: ['owner_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'srs_decks_owner_id_fkey';
+						columns: ['owner_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'srs_decks_owner_id_fkey';
+						columns: ['owner_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 		};
 		Functions: {
 			award_random_vip_card: { Args: { p_student_id: string }; Returns: string };

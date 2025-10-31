@@ -498,7 +498,9 @@ describe('Challenge Variable System', () => {
 
 				expect(instance.variables.a).toBeDefined();
 				expect(instance.variables.b).toBeDefined();
-				expect(instance.correct_answer).toBe((instance.variables.a as number) + (instance.variables.b as number));
+				expect(instance.correct_answer).toBe(
+					(instance.variables.a as number) + (instance.variables.b as number)
+				);
 			});
 
 			it('should interpolate addition question correctly', () => {
@@ -519,7 +521,9 @@ describe('Challenge Variable System', () => {
 
 				expect(instance.variables.a).toBeDefined();
 				expect(instance.variables.b).toBeDefined();
-				expect(instance.correct_answer).toBe((instance.variables.a as number) - (instance.variables.b as number));
+				expect(instance.correct_answer).toBe(
+					(instance.variables.a as number) - (instance.variables.b as number)
+				);
 			});
 
 			it('should ensure a > b for positive results', () => {
@@ -538,7 +542,9 @@ describe('Challenge Variable System', () => {
 
 				expect(instance.variables.a).toBeDefined();
 				expect(instance.variables.b).toBeDefined();
-				expect(instance.correct_answer).toBe((instance.variables.a as number) * (instance.variables.b as number));
+				expect(instance.correct_answer).toBe(
+					(instance.variables.a as number) * (instance.variables.b as number)
+				);
 			});
 		});
 	});

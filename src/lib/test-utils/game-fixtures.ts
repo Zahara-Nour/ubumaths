@@ -331,12 +331,16 @@ export function createMockSupabaseClient() {
 					// column, value for future filtering
 					single: async () => {
 						const tableData = (mockData as Record<string, unknown[]>)[table];
-						const data = tableData?.find((item: unknown) => (item as Record<string, unknown>)[column] === value);
+						const data = tableData?.find(
+							(item: unknown) => (item as Record<string, unknown>)[column] === value
+						);
 						return { data, error: null };
 					},
 					maybeSingle: async () => {
 						const tableData = (mockData as Record<string, unknown[]>)[table];
-						const data = tableData?.find((item: unknown) => (item as Record<string, unknown>)[column] === value);
+						const data = tableData?.find(
+							(item: unknown) => (item as Record<string, unknown>)[column] === value
+						);
 						return { data, error: null };
 					}
 				}),

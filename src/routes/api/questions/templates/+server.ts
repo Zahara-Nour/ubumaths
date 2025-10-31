@@ -181,7 +181,9 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 			);
 		}
 
-		const templateData = validation.data as Partial<QuestionTemplate>;
+		// Safe: createQuestionTemplateSchema validates structure, cast to Partial<QuestionTemplate>
+		// Zod schema enforces the shape of QuestionTemplate fields
+		const templateData = validation.data as unknown as Partial<QuestionTemplate>;
 
 		// Only validate if status is 'published'
 		if (templateData.status === 'published') {
@@ -201,10 +203,10 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession, 
 			const allCircularErrors: string[] = [];
 			if (templateData.variations) {
 				templateData.variations.forEach((variation, index) => {
-					const circularErrors = detectCircularDependencies(variation.variables || []);
-					if (circularErrors.length > 0) {
+					const circularResult = detectCircularDependencies(variation.variables || []);
+					if (!circularResult.valid && circularResult.errors.length > 0) {
 						allCircularErrors.push(
-							...circularErrors.map((err: string) => `Variation ${index + 1}: ${err}`)
+							...circularResult.errors.map((err) => `Variation ${index + 1}: ${err.message}`)
 						);
 					}
 				});

@@ -12,6 +12,21 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { uuidSchema, validateRequest } from '$lib/server/validation';
 
+// Type for the nested query result structure
+type FavoriteWithTemplate = {
+	created_at: string;
+	message_templates: {
+		id: string;
+		title: string;
+		description: string | null;
+		subject_template: string;
+		trigger_type: string;
+		scope: string;
+		is_active: boolean;
+		classes: { name: string } | null;
+	} | null;
+};
+
 // GET - List favorites
 export const GET: RequestHandler = async ({ locals }) => {
 	const { supabase, user } = locals;
@@ -45,12 +60,23 @@ export const GET: RequestHandler = async ({ locals }) => {
 		return error(500, 'Erreur lors de la récupération des favoris');
 	}
 
+	// Safe: Supabase query structure guarantees this shape (nested relations)
+	// Convert from Supabase's unknown type to our defined structure
+	const typedFavorites = favorites as unknown as FavoriteWithTemplate[] | null;
+
 	// Format response
-	const formattedFavorites = favorites?.map((f) => ({
-		...f.message_templates,
-		favorited_at: f.created_at,
-		class_name: (f.message_templates?.classes as { name?: string } | null)?.name || null
-	}));
+	const formattedFavorites = typedFavorites
+		?.map((f) => {
+			const template = f.message_templates;
+			if (!template) return null;
+
+			return {
+				...template,
+				favorited_at: f.created_at,
+				class_name: template.classes?.name ?? null
+			};
+		})
+		.filter((f): f is NonNullable<typeof f> => f !== null);
 
 	return json({
 		favorites: formattedFavorites || [],

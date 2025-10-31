@@ -285,15 +285,6 @@ export interface ResultsSort {
 // ===========================================================================
 
 /**
- * Check if assessment deadline has passed
- * @deprecated Use isDeadlinePassed from '$lib/utils/dates' instead
- * @see isDeadlinePassed in $lib/utils/dates.ts
- */
-export function isDeadlinePassed(deadline: string | null): boolean {
-	return isDeadlinePassedUtil(deadline);
-}
-
-/**
  * Calculate attempts remaining
  */
 export function getAttemptsRemaining(
@@ -312,7 +303,7 @@ export function getStudentStatus(
 	lastAttemptAt: string | null,
 	deadline: string | null
 ): StudentAssessmentStatus {
-	const deadlinePassed = isDeadlinePassed(deadline);
+	const deadlinePassed = isDeadlinePassedUtil(deadline);
 
 	if (attemptsCount === 0) {
 		return deadlinePassed ? 'expired' : 'not_started';
@@ -324,15 +315,6 @@ export function getStudentStatus(
 	}
 
 	return 'completed';
-}
-
-/**
- * Format deadline for display
- * @deprecated Use formatDeadline from '$lib/utils/dates' instead
- * @see formatDeadline in $lib/utils/dates.ts
- */
-export function formatDeadline(deadline: string | null): string {
-	return formatDeadlineUtil(deadline, 'detailed');
 }
 
 /**

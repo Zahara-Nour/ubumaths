@@ -32,7 +32,9 @@
 	);
 
 	// Get teacher display name
-	function getTeacherName(teacher: { firstname?: string; lastname?: string } | null): string {
+	function getTeacherName(
+		teacher: { firstname?: string; lastname?: string; email?: string } | null
+	): string {
 		if (!teacher) return '—';
 		if (teacher.firstname && teacher.lastname) {
 			return `${teacher.firstname} ${teacher.lastname}`;

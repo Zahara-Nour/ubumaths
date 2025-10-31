@@ -36,11 +36,9 @@
 		// 1. Update client-side store (for immediate UI feedback)
 		testMode.toggle();
 		const newValue = $testMode; // Get the new value AFTER toggling
-		console.log('[TestModeToggle] Toggled to:', newValue);
 
 		// 2. Sync with server database
 		try {
-			console.log('[TestModeToggle] Syncing with server...');
 			const response = await fetch('/api/test-mode', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -55,11 +53,9 @@
 				return;
 			}
 
-			const result = await response.json();
-			console.log('[TestModeToggle] Server sync successful:', result);
+			await response.json();
 
 			// 3. Force HARD page reload to refetch with new test mode
-			console.log('[TestModeToggle] Forcing hard reload...');
 			window.location.reload();
 		} catch (error) {
 			console.error('[TestModeToggle] Error syncing test mode:', error);
