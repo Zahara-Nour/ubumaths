@@ -180,6 +180,322 @@ if (isUser(data)) {
 
 ---
 
+## 🤖 CRITICAL: Agent Usage Policy
+
+**RÈGLE ABSOLUE** : Claude doit TOUJOURS déléguer aux agents spécialisés. Ne JAMAIS faire directement ce qu'un agent devrait faire.
+
+### 🔍 Explore Agent - `subagent_type=Explore`
+
+**QUAND UTILISER** (OBLIGATOIRE):
+
+- Comprendre comment une fonctionnalité fonctionne
+- Chercher où quelque chose est implémenté (sauf si fichier précis connu)
+- Découvrir la structure du code
+- Trouver des patterns ou conventions
+- Analyser l'architecture
+- Répondre à "Comment marche X ?" ou "Où est implémenté Y ?"
+
+**❌ NE JAMAIS faire directement**:
+
+```bash
+# ❌ INTERDIT
+pnpm exec grep -r "pattern" src/
+find src/ -name "*.svelte"
+```
+
+**✅ TOUJOURS utiliser**:
+
+```typescript
+// ✅ OBLIGATOIRE
+Task tool with subagent_type=Explore
+```
+
+**EXEMPLES**:
+
+- User: "Où sont gérées les erreurs client ?" → Explore agent
+- User: "Comment fonctionne l'authentification ?" → Explore agent
+- User: "Quelle est la structure du codebase ?" → Explore agent
+
+---
+
+### 🎨 Frontend Developer Agent - `subagent_type=frontend-developer`
+
+**QUAND UTILISER** (OBLIGATOIRE):
+
+- Créer/modifier des composants Svelte
+- Implémenter des interfaces utilisateur
+- Améliorer l'UX/UI
+- Créer des layouts responsive
+- Intégrer Shadcn-svelte, Tailwind, Bits UI
+- Travailler sur des formulaires/modals/cartes
+- Améliorer l'accessibilité visuelle
+
+**❌ NE JAMAIS faire directement**:
+
+```svelte
+<!-- ❌ INTERDIT de créer/modifier directement -->
+<script>
+	let count = $state(0);
+</script>
+
+<Button onclick={() => count++}>Click</Button>
+```
+
+**✅ TOUJOURS utiliser**:
+
+```typescript
+// ✅ OBLIGATOIRE pour tout travail UI
+Task tool with subagent_type=frontend-developer
+```
+
+**EXEMPLES**:
+
+- User: "Crée un composant carte pour afficher les stats" → frontend-developer
+- User: "Le formulaire n'est pas user-friendly" → frontend-developer
+- User: "Le sidebar ne marche pas sur mobile" → frontend-developer
+- Après avoir créé un endpoint API → frontend-developer (proactif)
+
+---
+
+### 🔧 Backend Developer Agent - `subagent_type=backend-developer`
+
+**QUAND UTILISER** (OBLIGATOIRE):
+
+- Créer/modifier des endpoints API (+server.ts)
+- Implémenter des fonctions de chargement serveur (+page.server.ts)
+- Créer des form actions
+- Optimiser des requêtes database
+- Implémenter auth/authorization logic
+- Gérer uploads de fichiers
+- Implémenter caching
+- Debug de performance serveur
+
+**❌ NE JAMAIS faire directement**:
+
+```typescript
+// ❌ INTERDIT de créer directement
+// src/routes/api/students/+server.ts
+export async function GET({ request }) {
+	// ...
+}
+```
+
+**✅ TOUJOURS utiliser**:
+
+```typescript
+// ✅ OBLIGATOIRE pour backend
+Task tool with subagent_type=backend-developer
+```
+
+**EXEMPLES**:
+
+- User: "Crée un endpoint pour récupérer les résultats paginés" → backend-developer
+- User: "Cette requête est trop lente" → backend-developer
+- User: "Ajoute une action pour créer des devoirs" → backend-developer
+
+---
+
+### 💾 Supabase Expert Agent - `subagent_type=supabase-expert`
+
+**QUAND UTILISER** (OBLIGATOIRE):
+
+- Créer/modifier des migrations database
+- Designer un schéma de tables
+- Créer/réviser des RLS policies
+- Optimiser des relations database
+- Analyser des problèmes d'import/sync
+- Troubleshooting database
+- Auditer la sécurité database
+
+**❌ NE JAMAIS faire directement**:
+
+```sql
+-- ❌ INTERDIT de créer directement
+-- supabase/migrations/20250131000000_add_table.sql
+CREATE TABLE public.new_table (...);
+```
+
+**✅ TOUJOURS utiliser**:
+
+```typescript
+// ✅ OBLIGATOIRE pour database
+Task tool with subagent_type=supabase-expert
+```
+
+**EXEMPLES**:
+
+- User: "Ajoute une table pour suivre la progression" → supabase-expert
+- User: "Révise les RLS policies sur class_members" → supabase-expert
+- Après avoir terminé une feature avec nouvelle table → supabase-expert (proactif)
+
+---
+
+### ✅ Code Reviewer Agent - `subagent_type=code-reviewer`
+
+**QUAND UTILISER** (OBLIGATOIRE - PROACTIF):
+
+- **TOUJOURS** après avoir écrit une fonction/composant/feature
+- **TOUJOURS** après un bug fix
+- **TOUJOURS** après un refactoring
+- **SANS ATTENDRE** que l'utilisateur le demande
+
+**❌ NE JAMAIS**:
+
+- Envoyer du code sans review
+- Attendre que l'utilisateur demande une review
+
+**✅ TOUJOURS utiliser**:
+
+```typescript
+// ✅ OBLIGATOIRE après code significatif
+Task tool with subagent_type=code-reviewer
+```
+
+**EXEMPLES**:
+
+- Claude: "J'ai implémenté la fonction de validation" → code-reviewer (auto)
+- Claude: "J'ai fixé le bug d'avatar" → code-reviewer (auto)
+- User: "Crée une utility pour valider les téléphones" → implémenter → code-reviewer (auto)
+
+---
+
+### 🧪 Test Automator Agent - `subagent_type=test-automator`
+
+**QUAND UTILISER** (OBLIGATOIRE):
+
+- Créer des tests pour nouvelle feature
+- Améliorer la couverture de tests
+- Fixer des tests qui échouent
+- Créer des tests E2E
+- Auditer la qualité des tests
+
+**EXEMPLES**:
+
+- User: "J'ai ajouté une fonction de parsing math" → test-automator
+- User: "Le module enrollment a été mis à jour, vérifie" → test-automator
+- Après nouvelle feature → test-automator (proactif)
+
+---
+
+### 🔒 Security Auditor Agent - `subagent_type=security-auditor`
+
+**QUAND UTILISER** (OBLIGATOIRE - PROACTIF):
+
+- **TOUJOURS** après auth/OAuth implementation
+- **TOUJOURS** après création d'endpoints API sensibles
+- **TOUJOURS** après ajout de dépendances
+- **TOUJOURS** après manipulation de données utilisateur
+- **TOUJOURS** après file upload systems
+
+**EXEMPLES**:
+
+- User: "J'ai implémenté Google OAuth login" → security-auditor (auto)
+- User: "Voici les nouveaux endpoints pour les records étudiants" → security-auditor (auto)
+- User: "J'ajoute le package 'axios'" → security-auditor (auto)
+
+---
+
+### 🚀 Commit Manager Agent - `subagent_type=commit-manager`
+
+**QUAND UTILISER** (OBLIGATOIRE):
+
+- User dit "commit", "ready to commit", "prépare un commit"
+- User demande de bump une version
+- User dit "c'est prêt à être commité"
+
+**❌ NE JAMAIS**:
+
+```bash
+# ❌ INTERDIT de commiter directement
+git add .
+git commit -m "message"
+```
+
+**✅ TOUJOURS utiliser**:
+
+```typescript
+// ✅ OBLIGATOIRE pour commits
+Task tool with subagent_type=commit-manager
+```
+
+---
+
+### 📚 Documentation Writer Agent - `subagent_type=documentation-writer`
+
+**QUAND UTILISER** (OBLIGATOIRE - PROACTIF):
+
+- **TOUJOURS** après nouvelle feature
+- **TOUJOURS** après changement de schéma database
+- **TOUJOURS** après création de middleware
+- User demande explicitement de documenter
+
+**EXEMPLES**:
+
+- User: "J'ai implémenté le tracking de progression" → documentation-writer (auto)
+- User: "J'ai modifié la table class_members" → documentation-writer (auto)
+
+---
+
+### ⚡ Performance Optimizer Agent - `subagent_type=performance-optimizer`
+
+**QUAND UTILISER**:
+
+- User signale des lenteurs
+- Avant déploiement majeur
+- Après migrations database
+- User demande optimization
+
+---
+
+### 🔧 TypeScript Expert Agent - `subagent_type=typescript-expert`
+
+**QUAND UTILISER**:
+
+- Erreurs TypeScript complexes
+- Design de types avancés (generics, conditional types)
+- Migration JS → TS
+- Optimisation de configuration TS
+
+---
+
+### 📐 API Designer Agent - `subagent_type=api-designer`
+
+**QUAND UTILISER**:
+
+- Designer de nouveaux endpoints REST
+- Refactoring d'API structure
+- Review d'architecture API
+- Questions sur pagination/filtering
+
+---
+
+### 🐛 Debugger Agent - `subagent_type=debugger`
+
+**QUAND UTILISER**:
+
+- Erreurs runtime
+- Erreurs TypeScript
+- Build failures
+- Tests qui échouent
+- Comportement inattendu
+
+---
+
+### 🎯 Règle d'Or
+
+**SI** la tâche nécessite :
+
+- Plus de 3 étapes
+- OU touche du code important
+- OU modifie plusieurs fichiers
+- OU nécessite expertise spécialisée
+
+**ALORS** → Agent obligatoire
+
+**AUCUNE EXCEPTION**
+
+---
+
 ## 🗃️ Database (Supabase)
 
 ### Migration Workflow
