@@ -4,6 +4,70 @@ Guide complet pour écrire et organiser la documentation d'UbuMaths.
 
 ---
 
+## 🤖 Documentation Claude Code (Nouveau 2025-10-31)
+
+### Structure en deux niveaux
+
+**CLAUDE.md (racine)** - Quick-start condensé (~300 lignes)
+
+- Commandes essentielles (dev, test, lint)
+- 4 règles critiques (Zod, MySelect, Svelte 5, no `any`)
+- Liens vers docs détaillées
+- Pre-commit checklist
+
+**docs/claude/** - Documentation détaillée (~1,200 lignes)
+
+- `README.md` - Index navigation
+- `architecture.md` - Structure, routing, data fetching, performance
+- `best-practices.md` - Svelte 5, TypeScript, anti-patterns
+- `ui-components.md` - Shadcn, MySelect, Tailwind
+- `database.md` - Supabase, migrations
+- `quality-standards.md` ⭐ - Tests, linting, **Zod validation complète**
+
+### Quand modifier quoi ?
+
+| Type de modification          | Fichier à modifier                       |
+| ----------------------------- | ---------------------------------------- |
+| Nouvelle commande essentielle | `CLAUDE.md`                              |
+| Changement règle critique     | `CLAUDE.md` + fichier détaillé approprié |
+| Détails d'implémentation      | Fichier dans `docs/claude/`              |
+| Nouveaux patterns TypeScript  | `docs/claude/best-practices.md`          |
+| Nouveaux patterns Svelte 5    | `docs/claude/best-practices.md`          |
+| Standards de tests/linting    | `docs/claude/quality-standards.md`       |
+| Ajout composant UI            | `docs/claude/ui-components.md`           |
+| Migration database            | `docs/claude/database.md`                |
+| Architecture routing/perf     | `docs/claude/architecture.md`            |
+
+### Guidelines pour agents documentation-writer
+
+Quand un agent crée/modifie de la documentation pour Claude Code :
+
+**✅ DO:**
+
+- Toujours lire `CLAUDE.md` et `docs/claude/README.md` en premier
+- Suivre la structure existante dans `docs/claude/`
+- Mettre à jour **à la fois** `CLAUDE.md` (résumé) ET fichier détaillé approprié
+- Utiliser les liens relatifs vers `docs/claude/`
+- Inclure lien de navigation en bas : `[← Back to Claude Docs](./README.md)`
+
+**❌ DON'T:**
+
+- Ne PAS créer de nouveaux fichiers dans `docs/claude/` sans justification
+- Ne PAS dupliquer l'info entre `CLAUDE.md` et `docs/claude/`
+- Ne PAS mettre de détails d'implémentation dans `CLAUDE.md` (max 300 lignes)
+- Ne PAS créer de fichiers temporaires dans `docs/claude/`
+
+### Exemple : Ajouter un nouveau composant UI
+
+```bash
+# 1. Ajouter résumé dans CLAUDE.md (section "Essential Rules")
+# 2. Ajouter détails complets dans docs/claude/ui-components.md
+# 3. Mettre à jour docs/claude/README.md (Quick Links)
+# 4. Tester les liens
+```
+
+---
+
 ## 🎯 Principes fondamentaux
 
 ### 1. Un feature = un dossier

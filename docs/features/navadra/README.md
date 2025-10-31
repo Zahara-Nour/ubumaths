@@ -1,7 +1,45 @@
-# Navadra Game - Setup & Testing Guide
+# 🎮 Navadra Game
 
-**Date**: October 15, 2025
-**Status**: Phase 1 Implementation Complete - Ready for Testing!
+Educational RPG game integrating math challenges with turn-based combat, spell collection, and reward progression.
+
+**Status**: ✅ Production (Phase 1)
+**Version**: 1.0.0
+**Last Updated**: 2025-10-22
+
+---
+
+## 🚀 Quick Start
+
+### For Students: Play the Game
+
+1. Go to `/dashboard/navadra`
+2. View your player stats and spells in your grimoire
+3. Click "Combat" to start a battle
+4. Select a spell and solve the math challenge
+5. Defeat monsters to earn XP, prestige, and pyrs
+6. XP converts to gidouilles (10 XP = 1 gidouille)
+
+### For Developers: Setup the Game
+
+1. Run database migrations: `pnpm db:migrate`
+2. Import challenges: `pnpm game:import-challenges`
+3. Setup game assets: `pnpm game:setup-assets`
+4. Navigate to `/dashboard/navadra` to test
+
+---
+
+## 📖 Overview
+
+Navadra is an educational RPG that combines mathematics with turn-based combat mechanics. Students collect spells, fight monsters by solving math challenges, and progress through an engaging storyline.
+
+**Key Features**:
+
+- **Turn-based Combat**: Fight monsters using math skills
+- **Spell Collection**: Unlock and upgrade spells across 4 elements (Fire, Water, Earth, Wind)
+- **Element Advantages**: Strategic combat with element weaknesses
+- **Math Challenges**: 464 challenges across all grade levels
+- **Reward System**: XP converts to gidouilles automatically
+- **Progress Tracking**: Combat statistics, achievements, and rankings
 
 ---
 
@@ -333,6 +371,40 @@ TRUNCATE game_combats, game_spells, game_players,
 
 ---
 
+## 🗺️ Roadmap
+
+### Implemented ✅
+
+- ✅ Database schema with 12 tables, RLS policies, and triggers
+- ✅ Game profile auto-creation on first login
+- ✅ Turn-based combat system with element advantages
+- ✅ Spell collection and management (4 elements)
+- ✅ Math challenge system with 464 challenges (Math.js evaluation)
+- ✅ Challenge timer with warning states
+- ✅ XP → Gidouilles automatic conversion (10:1 ratio)
+- ✅ Combat statistics tracking (wins, attempts, pyrs)
+- ✅ Victory rewards (XP, prestige, pyrs)
+- ✅ Challenge attempt history
+
+### In Progress 🔄
+
+- 🔄 Spell unlocking system (automatic from combat victories)
+- 🔄 Deck builder UI (choose 10 spells from collection)
+- 🔄 Achievement system (definitions and progress tracking)
+- 🔄 Monster variety (names, images, categories)
+
+### Planned 📝
+
+- 📝 Additional challenge types (multiple choice, drag-and-drop, geometry)
+- 📝 Boss monsters and special encounters
+- 📝 Achievement notifications and rewards
+- 📝 Multiplayer combat (WebSocket support)
+- 📝 Performance optimizations (caching, image preloading)
+- 📝 Storyline progression system
+- 📝 Leaderboards and rankings
+
+---
+
 ## 📝 Next Development Steps
 
 ### Priority 1: Spell Unlocking System
@@ -442,4 +514,6 @@ You'll know it's working when you can:
 
 **Ready to test? Let's go! 🎮🧮**
 
-Start here: `http://localhost:5173/dashboard/navadra`
+## Start here: `http://localhost:5173/dashboard/navadra`
+
+[← Back to Features](../README.md)

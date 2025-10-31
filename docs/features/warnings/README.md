@@ -8,7 +8,7 @@ Système de gestion des avertissements comportementaux pour les élèves, avec s
 
 ---
 
-## 📋 Vue d'ensemble
+## 📖 Vue d'ensemble
 
 Le système d'avertissements permet aux enseignants de :
 
@@ -16,6 +16,48 @@ Le système d'avertissements permet aux enseignants de :
 - **Visualiser** les scores comportementaux (note sur 20)
 - **Gérer** les avertissements par classe et période académique
 - **Consulter** l'historique des périodes passées
+
+---
+
+## 🚀 Quick Start
+
+### For Teachers: Manage Warnings
+
+1. Go to `/dashboard/teacher/warnings`
+2. Select a class from the tabs
+3. Click "Ajouter" next to a student's name
+4. Select warning type (C, M, R, or T)
+5. Changes apply instantly (optimistic UI)
+6. Click a badge to remove the last warning of that type
+
+### For Teachers: View Behavioral Scores
+
+- Each student displays a score out of 20
+- Formula: `20 - total_warnings`
+- Color-coded: Green (≥15), Orange (10-14), Red (<10)
+
+### For Teachers: View History
+
+1. Click "Historique" button
+2. Select a past academic period
+3. View warnings for that period
+4. Click "Retour à la période actuelle" to return
+
+### For Developers: Implement Warnings
+
+```typescript
+import { getClassWarnings } from '$lib/server/warnings';
+
+// Automatic test mode filtering included
+const warnings = await getClassWarnings({
+  classId: class.id,
+  periodId: period.id,
+  userId: teacher.id,
+  supabase
+});
+```
+
+---
 
 ### Types d'avertissements
 
@@ -512,23 +554,37 @@ tests/e2e/warnings-cross-tab.spec.ts
 - **Lucide-svelte** : Icons (History, AlertCircle)
 - **Academic Periods** : Système de trimestres/semestres
 
-### Future improvements
+## 🗺️ Roadmap
 
-- [ ] **Zod validation** : Add server-side input validation schemas
-- [ ] **Unit tests** : Test all server functions
-- [ ] **E2E tests** : Test complete user workflows
-- [ ] **Export** : PDF report of warnings per period
-- [ ] **Statistics** : Class-level analytics dashboard
-- [ ] **Notifications** : Alert students/parents after N warnings
-- [ ] **Reasons** : Optional text field for warning context
-- [ ] **Real-time** : Supabase subscriptions for multi-device sync (cross-device, not just cross-tab)
+### Implemented ✅
 
-### Completed improvements
+- ✅ Four warning types (C, M, R, T) with behavioral scoring
+- ✅ Optimistic UI with asymmetric debouncing (ADD: 500ms, REMOVE: immediate)
+- ✅ Three-layer caching (client + server + Event Bus)
+- ✅ Cross-tab synchronization (BroadcastChannel API)
+- ✅ Academic period filtering with history view
+- ✅ Test mode filtering (separate test/real students)
+- ✅ RLS policies (teachers see only their classes)
+- ✅ Client-side cache with Event Bus coordination
+- ✅ Badge UI refinements (counts outside badges, hide if zero)
+- ✅ Score color coding (green/orange/red thresholds)
 
-- [x] **Multi-tab sync** : BroadcastChannel API for automatic cross-tab synchronization (2025-10-29)
-- [x] **Client-side cache** : Optimistic UI with hybrid Redis + client-side caching (2025-10-29)
-- [x] **Event Bus** : Publish/subscribe pattern for cache coordination (2025-10-29)
-- [x] **Asymmetric debouncing** : ADD debounced (500ms), REMOVE immediate (2025-10-29)
+### In Progress 🔄
+
+- 🔄 Zod validation (server-side input validation schemas)
+- 🔄 Unit tests (server functions)
+- 🔄 E2E tests (complete user workflows)
+
+### Planned 📝
+
+- 📝 Export reports (PDF of warnings per period)
+- 📝 Statistics dashboard (class-level analytics)
+- 📝 Notifications (alert students/parents after N warnings)
+- 📝 Warning reasons (optional text field for context)
+- 📝 Real-time sync (Supabase subscriptions for cross-device, not just cross-tab)
+- 📝 Warning categories (group similar behaviors)
+- 📝 Parent access (view their child's warnings)
+- 📝 Historical trends (charts showing behavior over time)
 
 ---
 
@@ -552,3 +608,7 @@ Pour contribuer à cette feature, consulter :
 **Dernière mise à jour** : 2025-10-29
 **Mainteneur** : Équipe UbuMaths
 **Status** : ✅ Production-ready
+
+---
+
+[← Back to Features](../README.md)

@@ -74,6 +74,35 @@ activityStore.startPolling(30000); // Toutes les 30 secondes
 
 ---
 
+## 🗺️ Roadmap
+
+### Implemented ✅
+
+- ✅ Private messaging between teacher and student
+- ✅ Rich text editor (TipTap + MathLive)
+- ✅ Message templates system
+- ✅ Attachment support (images, PDFs)
+- ✅ Read/unread status tracking
+- ✅ Real-time notifications
+- ✅ Message threading
+
+### In Progress 🔄
+
+- 🔄 Group messaging (class broadcasts)
+- 🔄 Message search functionality
+- 🔄 Message archiving
+
+### Planned 📝
+
+- 📝 Voice messages
+- 📝 Video messages
+- 📝 Message reactions (emoji)
+- 📝 Message scheduling
+- 📝 Auto-responses
+- 📝 Translation support
+
+---
+
 ## 🎯 Cas d'usage
 
 ### Pour les enseignants

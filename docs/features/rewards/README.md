@@ -8,7 +8,37 @@ Système de récompenses pour les élèves avec monnaie virtuelle (gidouilles) e
 
 ---
 
-## 📋 Vue d'ensemble
+## 🚀 Quick Start
+
+### For Teachers: Distribute Gidouilles
+
+1. Go to `/dashboard/teacher/rewards`
+2. Select your class from tabs
+3. Click [+] or [-] next to student names to adjust gidouilles
+4. Changes sync automatically after 500ms of inactivity
+5. Use "Distribuer à tous" for bulk distribution
+
+### For Students: Spend Gidouilles
+
+1. Go to `/dashboard/student/shop`
+2. View your balance and available VIP cards
+3. Click "Acheter" to purchase a card (if enough gidouilles)
+4. Use cards from your inventory when needed
+
+### For Developers: Update Gidouilles
+
+```typescript
+import { gidouillesCache } from '$lib/stores/gidouillesCache.svelte';
+
+// Optimistic update (instant UI)
+gidouillesCache.updateOptimistic(classId, studentId, +5);
+
+// Server sync happens automatically after 500ms debounce
+```
+
+---
+
+## 📖 Vue d'ensemble
 
 Le système de récompenses gamifie l'apprentissage en permettant aux enseignants de :
 
@@ -474,18 +504,39 @@ npx playwright test e2e/rewards
 - **Upstash Redis**: Server-side cache
 - **Event Bus**: Cache coordination
 
-### Future Improvements
+## 🗺️ Roadmap
 
-- [ ] **Transaction History**: Full audit log of gidouille transactions
-- [ ] **Analytics Dashboard**: Class-level statistics and leaderboards
-- [ ] **Custom Rewards**: Teachers can define custom VIP cards
-- [ ] **Achievements**: Unlock badges for milestones (100 gidouilles, etc.)
-- [ ] **Marketplace**: Student-to-student trading (with teacher approval)
-- [ ] **Export Reports**: PDF/CSV export of rewards per student
-- [ ] **Notifications**: Alert students when they earn gidouilles
-- [ ] **Real-time**: Supabase subscriptions for live updates
-- [ ] **Undo**: Undo last transaction (with time limit)
-- [ ] **Bulk Import**: CSV import of gidouille amounts
+### Implemented ✅
+
+- ✅ Gidouilles system (virtual currency)
+- ✅ VIP cards system (special privileges)
+- ✅ Teacher dashboard with class tabs
+- ✅ Optimistic UI with symmetric debouncing (500ms)
+- ✅ Three-layer caching (client + server + Event Bus)
+- ✅ Bulk distribution to entire class
+- ✅ Student shop for VIP card purchases
+- ✅ RLS policies for security
+- ✅ Input validation with Zod
+- ✅ Transaction batching (10 clicks = 1 DB query)
+- ✅ Cache invalidation with Event Bus
+- ✅ Test mode separation (test students)
+
+### In Progress 🔄
+
+- 🔄 Transaction history (audit log of all gidouille changes)
+- 🔄 Analytics dashboard (class-level statistics and leaderboards)
+- 🔄 Custom VIP cards (teachers define their own reward types)
+
+### Planned 📝
+
+- 📝 Achievement badges (unlock for milestones like 100 gidouilles)
+- 📝 Student marketplace (peer-to-peer trading with teacher approval)
+- 📝 Export reports (PDF/CSV of rewards per student)
+- 📝 Notifications (alert students when they earn gidouilles)
+- 📝 Real-time updates (Supabase subscriptions instead of polling)
+- 📝 Undo functionality (reverse last transaction with time limit)
+- 📝 Bulk import (CSV import of gidouille amounts)
+- 📝 Reward scheduling (automatic gidouille distribution on events)
 
 ---
 
@@ -510,3 +561,7 @@ Pour contribuer à cette feature, consulter :
 **Dernière mise à jour**: 2025-10-29
 **Mainteneur**: Équipe UbuMaths
 **Status**: ✅ Production-ready
+
+---
+
+[← Back to Features](../README.md)

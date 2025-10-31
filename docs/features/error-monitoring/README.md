@@ -55,6 +55,36 @@ Pour plus de détails, voir [system.md](system.md)
 
 ---
 
+## 🗺️ Roadmap
+
+### Implemented ✅
+
+- ✅ Global error capture (client + server)
+- ✅ Error deduplication by hash
+- ✅ Occurrence counting
+- ✅ Stack trace analysis
+- ✅ Context capture (URL, user agent, user info)
+- ✅ Admin dashboard with filtering
+- ✅ Error resolution tracking
+- ✅ Database storage with indexes
+
+### In Progress 🔄
+
+- 🔄 Email notifications for critical errors
+- 🔄 Error grouping by similarity
+- 🔄 Performance impact monitoring
+
+### Planned 📝
+
+- 📝 Automated error assignment to developers
+- 📝 Integration with external monitoring (Sentry, Rollbar)
+- 📝 Error trends and analytics
+- 📝 Source map support for minified code
+- 📝 Error replay (session recording)
+- 📝 Automated error categorization (AI-powered)
+
+---
+
 ## 📚 Documentation
 
 - [Quick Start (5 min)](quick-start.md) - Démarrage rapide

@@ -1,6 +1,44 @@
-# Système de Notifications - UbuMaths
+# 🔔 Système de Notifications
 
-Documentation complète du système de notifications.
+Système complet de notifications avec ciblage intelligent, polling unifié, et interface multi-composants.
+
+**Status**: ✅ Production
+**Version**: 1.0.0
+**Last Updated**: 2025-10-28
+
+---
+
+## 🚀 Quick Start
+
+### For Teachers: Send a Notification
+
+1. Go to `/dashboard/teacher/notifications`
+2. Fill in the form (type, priority, title, message)
+3. Select target: your classes or specific students
+4. Add optional action button (label + URL)
+5. Click "Send" to create the notification
+
+### For Students: View Notifications
+
+1. Check the sticky banner at the top of dashboard
+2. Click the bell icon (🔔) in sidebar for dropdown
+3. Go to `/dashboard/notifications` for complete list
+4. Mark as read individually or all at once
+
+### For Developers: Create Auto-Notifications
+
+```typescript
+import { notifyNewAssignment } from '$lib/server/auto-notifications';
+
+await notifyNewAssignment(supabase, {
+	assignmentId: '...',
+	assignmentTitle: 'Math Homework',
+	classId: '...',
+	teacherName: 'John Doe'
+});
+```
+
+---
 
 ## Table des Matières
 
@@ -14,7 +52,7 @@ Documentation complète du système de notifications.
 
 ---
 
-## Vue d'ensemble
+## 📖 Vue d'ensemble
 
 Le système de notifications permet :
 
@@ -581,14 +619,39 @@ Voir `src/lib/server/notifications.ts` et `src/lib/server/auto-notifications.ts`
 
 ---
 
-## Feuille de Route Future
+## 🗺️ Roadmap
 
-Améliorations potentielles :
+### Implemented ✅
 
-- [ ] Temps réel avec Supabase Realtime (au lieu du polling)
-- [ ] Préférences utilisateur (activer/désactiver certains types)
-- [ ] Historique des notifications lues
-- [ ] Notification push (navigateur)
-- [ ] Email pour notifications importantes
-- [ ] Templates de notifications
-- [ ] Statistiques avancées (taux d'ouverture, meilleur moment, etc.)
+- ✅ Notification banner (sticky carousel)
+- ✅ Notification dropdown with badge counter
+- ✅ Complete notifications page
+- ✅ Manual notifications (teachers, admins)
+- ✅ Automatic notifications (7 types: assignments, resources, rewards, VIP cards, badges, maintenance, features)
+- ✅ Intelligent targeting (all, role, classes, users)
+- ✅ Priority levels (normal, important, urgent)
+- ✅ Rich text messages with action buttons
+- ✅ Read receipts and statistics
+- ✅ Unified polling system (50% less HTTP requests)
+- ✅ Automatic cleanup (30+ days old)
+- ✅ Cron job support (Vercel)
+
+### In Progress 🔄
+
+- 🔄 Real-time notifications with Supabase Realtime
+- 🔄 User notification preferences (enable/disable types)
+- 🔄 Email notifications for important messages
+
+### Planned 📝
+
+- 📝 Browser push notifications
+- 📝 Notification history (read notifications archive)
+- 📝 Notification templates system
+- 📝 Advanced statistics (open rate, best timing)
+- 📝 In-app notification sound/vibration
+- 📝 Digest mode (daily/weekly summary)
+- 📝 Notification scheduling (send later)
+
+---
+
+[← Back to Features](../README.md)

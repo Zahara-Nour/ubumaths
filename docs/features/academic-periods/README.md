@@ -1,8 +1,36 @@
-# Academic Periods Feature
-
-> 🆕 2025-10-28
+# 📅 Academic Periods Feature
 
 Comprehensive academic calendar management system for organizing school years, teaching periods (trimesters/semesters), and vacation schedules.
+
+**Status**: ✅ Production
+**Version**: 1.0.0
+**Last Updated**: 2025-10-28
+
+---
+
+## 🚀 Quick Start
+
+### For Administrators: Setup Academic Year
+
+1. Go to `/dashboard/admin/academic-periods`
+2. Click "Create New School Year"
+3. Enter year name (e.g., "2024-2025") and date range
+4. Select period type (Trimester, Semester, Quarter, or Custom)
+5. Click "Create" to generate periods automatically
+6. Mark as active year if needed
+
+### For Teachers: View Current Period
+
+- Navigate to dashboard - current period displays in header
+- Assessments automatically link to active period
+
+### For Developers: Get Active Period
+
+```typescript
+import { getActivePeriod } from '$lib/server/academic-periods';
+
+const period = await getActivePeriod(schoolId, supabase);
+```
 
 ---
 
@@ -17,7 +45,7 @@ Comprehensive academic calendar management system for organizing school years, t
 
 ---
 
-## Overview
+## 📖 Overview
 
 The Academic Periods feature provides a complete solution for managing the academic calendar structure of educational institutions. It enables administrators to:
 
@@ -238,6 +266,35 @@ For detailed workflows, configuration options, and best practices, see:
 
 ---
 
+## 🗺️ Roadmap
+
+### Implemented ✅
+
+- ✅ School year CRUD operations
+- ✅ Academic periods (trimester, semester, quarter, custom)
+- ✅ School holidays management
+- ✅ Year duplication wizard
+- ✅ Auto-assignment of assessments to periods
+- ✅ RLS policies for admin/teacher access
+- ✅ Database triggers for consistency
+- ✅ Active year enforcement (one per school)
+
+### In Progress 🔄
+
+- 🔄 Report card generation (period-based bulletins)
+- 🔄 Calendar view with periods and holidays
+- 🔄 Import/Export academic calendars
+
+### Planned 📝
+
+- 📝 Multi-year statistical comparisons
+- 📝 Holiday templates by region (France zones A/B/C)
+- 📝 Period-based notifications (end of trimester alerts)
+- 📝 Historical data archival automation
+- 📝 iCalendar integration (.ics export)
+
+---
+
 ## Feature Status
 
 - Status: Production-ready
@@ -256,3 +313,7 @@ For questions or issues:
 - Review [API Reference](./api-reference.md) for integration details
 - Consult [Database Schema](./database.md) for data structure
 - See [Quick Start Guide](../../guides/academic-periods-quick-start.md) for tutorials
+
+---
+
+[← Back to Features](../README.md)

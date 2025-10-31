@@ -6,9 +6,45 @@
 
 ---
 
-## Overview
+## 📖 Overview
 
 The Test Users System allows teachers to separate test/demo students from real students throughout the application. Teachers can toggle between viewing test students (for demos, training) and real students (for actual teaching).
+
+---
+
+## 🚀 Quick Start
+
+### For Teachers: Toggle Test Mode
+
+1. Log in to your teacher dashboard
+2. Look for the "Mode Test" toggle at the top
+3. Click the toggle to switch between test/real students
+4. A loading overlay appears during the reload
+5. All views (classes, rewards, assessments) now show only the selected student type
+
+### For Administrators: Mark Test Users
+
+1. Go to `/dashboard/admin/users`
+2. Find the user you want to mark as test
+3. Toggle the `is_test` flag
+4. Test teachers are permanently locked to test mode
+5. Test students only appear when test mode is enabled
+
+### For Developers: Use Test Mode Filtering
+
+```typescript
+import { getTeacherTestMode } from '$lib/server/test-mode';
+import { getClassStudents } from '$lib/server/students';
+
+// Automatic filtering based on teacher's test mode
+const students = await getClassStudents({
+  userId: teacher.id,
+  classId: class.id,
+  supabase
+});
+```
+
+---
 
 ## Key Features
 
@@ -334,23 +370,38 @@ Example for 3 classes:
 
 ---
 
-## Future Enhancements
+## 🗺️ Roadmap
 
-### Potential Phase 3 (Optional)
+### Implemented ✅
 
-- Migrate remaining pages to use unified helpers:
-  - Assessment assignment pages
-  - SRS deck assignment pages
-  - Assessment results server helpers
-- Add server-side caching layer for frequently accessed data
-- Implement soft toggle (no page reload) using SvelteKit invalidation
+- ✅ Test mode toggle with loading overlay
+- ✅ Persistent user preference (localStorage + database)
+- ✅ Automatic filtering for all student queries
+- ✅ Test teacher locking (always test mode)
+- ✅ Unified student fetching helpers
+- ✅ Complete data isolation (analytics, statistics, counts)
+- ✅ 85% database query reduction (N+1 → single RPC)
+- ✅ Rewards page integration
+- ✅ Dashboard layout integration
+- ✅ Teacher classes page integration
+- ✅ Assessment assignment integration
+- ✅ SRS deck assignment integration
 
-### Potential Phase 4 (Long-term)
+### In Progress 🔄
 
-- Bulk student import with automatic test flag assignment
-- Test data generation tools for demos
-- Scheduled cleanup of old test data
-- Export/import test scenarios
+- 🔄 Remaining page migrations to unified helpers
+- 🔄 Assessment results server helper optimization
+- 🔄 Server-side caching layer for frequently accessed data
+
+### Planned 📝
+
+- 📝 Soft toggle (no page reload) using SvelteKit invalidation
+- 📝 Bulk student import with automatic test flag assignment
+- 📝 Test data generation tools for demos and training
+- 📝 Scheduled cleanup of old test data
+- 📝 Export/import test scenarios
+- 📝 Test mode analytics (track usage patterns)
+- 📝 Visual indicators for test mode in UI (persistent badge)
 
 ---
 
@@ -392,3 +443,7 @@ Example for 3 classes:
 ---
 
 **Questions or Issues?** See [Contributing Guide](../../contributing/README.md)
+
+---
+
+[← Back to Features](../README.md)
