@@ -419,6 +419,7 @@
 				M: currentWarnings.M,
 				R: currentWarnings.R,
 				total: currentWarnings.total + 1,
+				unresolved_count: currentWarnings.unresolved_count,
 				score: currentWarnings.score - 1,
 				warnings: currentWarnings.warnings // Keep existing warnings array
 			};

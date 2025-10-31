@@ -458,7 +458,7 @@
 		isBulletList = editor.isActive('bulletList');
 		isOrderedList = editor.isActive('orderedList');
 		isTaskList = editor.isActive('taskList');
-		isBlockquote = editor.isActive('blockquote');
+		_isBlockquote = editor.isActive('blockquote');
 
 		// Heading level
 		if (editor.isActive('heading', { level: 1 })) currentHeading = 1;
@@ -490,7 +490,7 @@
 	}
 
 	function toggleStrike() {
-		editor?.chain().focus().toggleStrikethrough().run();
+		editor?.chain().focus().toggleStrike().run();
 	}
 
 	function toggleCode() {

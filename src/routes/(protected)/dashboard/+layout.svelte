@@ -67,7 +67,7 @@
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { notificationStore } from '$lib/stores/notifications.svelte';
 	import { activityStore } from '$lib/stores/activity.svelte';
-	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
+	import { getAvatarFallback, getAvatarInitials, type Gender } from '$lib/utils/avatar';
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import NotificationBanner from '$lib/components/notifications/NotificationBanner.svelte';
 	import NotificationDropdown from '$lib/components/notifications/NotificationDropdown.svelte';

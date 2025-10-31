@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
+	import { getAvatarFallback, getAvatarInitials, type Gender } from '$lib/utils/avatar';
 
 	let { data } = $props();
 
