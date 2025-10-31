@@ -30,12 +30,8 @@
 	} from 'lucide-svelte';
 	import type { DbAssessment } from '$lib/types/assessment';
 	import type { AssignmentWithDetails } from '$lib/types/assessment';
-	import {
-		formatDeadline,
-		getStatusColor,
-		getStatusLabel,
-		getAttemptsRemaining
-	} from '$lib/types/assessment';
+	import { getStatusColor, getStatusLabel, getAttemptsRemaining } from '$lib/types/assessment';
+	import { formatDeadline } from '$lib/utils/dates';
 
 	interface Props {
 		assessment: DbAssessment;

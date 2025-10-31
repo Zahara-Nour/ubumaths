@@ -35,9 +35,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const { user } = await requireRole(locals, 'teacher');
 
 	// Parse and validate request body
-	// eslint-disable-next-line custom/require-zod-validation -- validation happens on next line
-	const body = await request.json();
-	const validation = validateExportExercises(body);
+	const validation = validateExportExercises(await request.json());
 
 	if (!validation.success) {
 		const errorMsg = validation.error.issues
