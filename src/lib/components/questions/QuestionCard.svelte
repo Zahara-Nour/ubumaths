@@ -69,6 +69,7 @@
 	// Type-specific state
 	let selectedChoices = $state<number[]>([]);
 	let fillBlankValues = $state<string[]>([]);
+	let blankValidationResults = $state<(boolean | null)[]>([]);
 
 	// ============================================================================
 	// DERIVED STATE

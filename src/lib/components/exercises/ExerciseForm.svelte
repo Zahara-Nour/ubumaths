@@ -23,7 +23,7 @@
 	// Form state
 	let title = $state(exercise?.title || '');
 	let source = $state(exercise?.source || '');
-	let difficulty = $state<1 | 2 | 3>(exercise?.difficulty || 2);
+	let difficulty = $state<1 | 2 | 3>((exercise?.difficulty as 1 | 2 | 3) || 2);
 	let tags = $state<string>(exercise?.tags?.join(', ') || '');
 	let topic = $state(exercise?.topic || '');
 	let estimatedTime = $state<number | null>(exercise?.estimated_time_minutes || null);
