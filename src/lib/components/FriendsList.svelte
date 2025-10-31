@@ -71,7 +71,7 @@
 								<OnlineStatus status={friendsManager.getFriendPresence(friend.friend_profile.id)} />
 							</div>
 							<p class="text-sm text-muted-foreground">
-								{getFriendshipTypeLabel(friend.friendship_type)}
+								{getFriendshipTypeLabel(friend.friendship_type as 'classmate' | 'mentor')}
 								{#if friend.friend_profile.role === 'teacher'}
 									• Enseignant
 								{/if}
@@ -91,8 +91,9 @@
 						</DropdownMenu.Trigger>
 						<DropdownMenu.Content align="end">
 							<DropdownMenu.Item>
+								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 								<a
-									href={resolve(`/dashboard/profile/${friend.friend_profile.id}`)}
+									href={`/dashboard/profile/${friend.friend_profile.id}`}
 									class="flex w-full items-center"
 								>
 									Voir le profil

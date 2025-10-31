@@ -48,7 +48,7 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Editor } from '@tiptap/core';
+	import { Editor, type Content } from '@tiptap/core';
 	import StarterKit from '@tiptap/starter-kit';
 	import { MathInline, MathBlock } from '$lib/extensions/math-extension';
 	import 'mathlive'; // Import MathLive web components
@@ -94,7 +94,7 @@
 				MathInline, // Inline math formulas
 				MathBlock // Block math formulas
 			],
-			content: content, // Initial content from props
+			content: content as Content, // Initial content from props
 			editable: false, // IMPORTANT: Makes content read-only
 			editorProps: {
 				attributes: {

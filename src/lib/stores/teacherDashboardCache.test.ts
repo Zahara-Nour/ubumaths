@@ -32,6 +32,7 @@ import type {
 	ClassInfo,
 	SchoolInfo
 } from '$lib/types/teacher-cache';
+import type { StudentVipCards } from '$lib/types/vip-card';
 
 // ============================================================================
 // TEST SETUP
@@ -933,9 +934,14 @@ describe('Cache 2B: Student Warnings', () => {
 		it('should ignore update if cache is empty', () => {
 			expect(() => {
 				cache.updateWarningsOptimistic(classId, periodId, 'student-1', {
+					C: 0,
+					M: 0,
+					R: 0,
+					T: 0,
 					unresolved_count: 0,
 					total: 0,
-					score: 0
+					score: 0,
+					warnings: []
 				});
 			}).not.toThrow();
 		});
@@ -1641,7 +1647,7 @@ describe('Edge Cases & Concurrency', () => {
 					new Promise((_, reject) => {
 						setTimeout(() => reject(new Error('Network timeout')), 100);
 					})
-			);
+			) as typeof fetch;
 
 			const students = await cache.getStudentBasic('class-1');
 

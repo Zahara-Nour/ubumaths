@@ -187,7 +187,7 @@
 							<!-- Online status for 1-on-1 chats -->
 							{#if !conversation.is_group && conversation.other_user_id}
 								<div class="absolute right-0 bottom-0">
-									<OnlineStatus userId={conversation.other_user_id} size="sm" />
+									<OnlineStatus status="offline" size="sm" />
 								</div>
 							{/if}
 

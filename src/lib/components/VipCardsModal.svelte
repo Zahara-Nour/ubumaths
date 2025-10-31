@@ -294,7 +294,7 @@
 						aria-label="Voir {card.name} en grand"
 					>
 						<VipCard
-							{card}
+							card={card as VipCardType}
 							count={card.count}
 							size="sm"
 							clickable={false}

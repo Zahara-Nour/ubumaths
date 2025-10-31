@@ -183,8 +183,8 @@ describe('shuffleChoices - Edge Cases', () => {
 
 	it('should handle choices with image content', () => {
 		const choices = [
-			{ content: [{ type: 'image', content: 'http://example.com/a.png', alt: 'A' }], isCorrect: false },
-			{ content: [{ type: 'image', content: 'http://example.com/b.png', alt: 'B' }], isCorrect: true }
+			{ content: [{ type: 'image' as const, content: 'http://example.com/a.png', alt: 'A' }], isCorrect: false },
+			{ content: [{ type: 'image' as const, content: 'http://example.com/b.png', alt: 'B' }], isCorrect: true }
 		];
 
 		const result = shuffleChoices(choices, 77777);

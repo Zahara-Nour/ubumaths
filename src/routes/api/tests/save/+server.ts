@@ -11,10 +11,10 @@ import { validateSaveTest } from '$lib/server/validation/tests';
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
-	const { session } = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
 	// Check authentication
-	if (!session?.user) {
+	if (!user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
@@ -33,7 +33,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const { data: testSession, error: sessionError } = await supabase
 			.from('test_sessions')
 			.insert({
-				user_id: session.user.id, // BUGFIX: was user.id (undefined)
+				user_id: user.id,
 				mode: result.mode,
 				categories: categories,
 				score: result.score,

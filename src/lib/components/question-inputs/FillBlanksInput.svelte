@@ -95,7 +95,7 @@
 								? 'incorrect'
 								: ''}"
 						placeholder="\\placeholder&#123;&#125;"
-						onkeydown={(e) => handleKeydown(e, i)}
+						onkeydown={(e: KeyboardEvent) => handleKeydown(e, i)}
 					/>
 
 					<!-- Validation indicator -->

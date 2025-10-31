@@ -225,7 +225,7 @@
 								</Avatar.Root>
 
 								<div class="absolute -right-1 -bottom-1">
-									<OnlineStatus userId={friend.id} size="sm" />
+									<OnlineStatus status="offline" size="sm" />
 								</div>
 							</div>
 

@@ -52,7 +52,7 @@
 		bind:value
 		readonly={disabled}
 		virtual-keyboard-mode="manual"
-		smart-mode
+		smart-mode="true"
 		class="numerical-input-field"
 		onkeydown={handleKeydown}
 		{placeholder}

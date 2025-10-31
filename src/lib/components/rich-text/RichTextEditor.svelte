@@ -546,11 +546,13 @@
 	 * Insert Math Formulas
 	 */
 	function insertMathInline(latex: string = '') {
+		// @ts-expect-error - Custom Tiptap command from math extension
 		editor?.commands.insertMathInline(latex);
 		editor?.commands.focus();
 	}
 
 	function insertMathBlock(latex: string = '') {
+		// @ts-expect-error - Custom Tiptap command from math extension
 		editor?.commands.insertMathBlock(latex);
 		editor?.commands.focus();
 	}
@@ -562,7 +564,7 @@
 		if (currentHeading === level) {
 			editor?.chain().focus().setParagraph().run();
 		} else {
-			editor?.chain().focus().setHeading({ level }).run();
+			editor?.chain().focus().setHeading({ level: level as 1 | 2 | 3 | 4 | 5 | 6 }).run();
 		}
 	}
 

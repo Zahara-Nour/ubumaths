@@ -73,7 +73,7 @@
 							<div>
 								<p class="font-medium">{friendsManager.getDisplayName(request)}</p>
 								<p class="text-sm text-muted-foreground">
-									{getFriendshipTypeLabel(request.friendship_type)}
+									{getFriendshipTypeLabel(request.friendship_type as 'classmate' | 'mentor')}
 									{#if request.friend_profile.role === 'teacher'}
 										• Enseignant
 									{/if}
@@ -141,7 +141,7 @@
 							<div>
 								<p class="font-medium">{friendsManager.getDisplayName(request)}</p>
 								<p class="text-sm text-muted-foreground">
-									{getFriendshipTypeLabel(request.friendship_type)}
+									{getFriendshipTypeLabel(request.friendship_type as 'classmate' | 'mentor')}
 									{#if request.friend_profile.role === 'teacher'}
 										• Enseignant
 									{/if}
