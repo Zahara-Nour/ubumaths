@@ -14,6 +14,7 @@
 		- View VIP cards button (🎴): Opens modal with all cards
 	- Color-coded warning scores: green (≥15), orange (10-14), red (<10)
 	- Optimistic UI for all actions (gidouilles, VIP cards, warnings)
+	- Debounced API calls: Rapid clicks batched into single request (500ms)
 
 	OPTIMISTIC UI PATTERN:
 	----------------------
@@ -24,7 +25,13 @@
 		 - Local state (optimisticUpdates) overrides server data
 		 - User sees change immediately without waiting
 
-	2. BACKGROUND SYNC
+	2. DEBOUNCED API CALLS (Gidouille Add/Remove Only)
+		 - Rapid clicks accumulate locally via optimistic state
+		 - Timer resets on each click (500ms debounce)
+		 - Single batched API call sent after inactivity
+		 - Example: 5 rapid clicks = 1 API call with amount: +5
+
+	3. BACKGROUND SYNC
 		 - Request sent to server in background
 		 - On success: Clear optimistic state, show success toast
 		 - On error: Rollback optimistic state, show error toast
@@ -121,6 +128,10 @@
 	// Tracks temporary overrides for instant feedback
 	// Example: { "student-123": { gidouilles: 5, warnings: {...} } }
 	let optimisticUpdates = $state<Record<string, Partial<StudentData>>>({});
+
+	// Debounce timers for batching gidouille updates
+	// Tracks pending API calls per student to batch rapid clicks
+	let debounceTimers = $state<Record<string, ReturnType<typeof setTimeout>>>({});
 
 	// VIP cards modal state
 	let vipModalOpen = $state(false);
@@ -254,46 +265,75 @@
 		const unusedVipCards = getUnusedVipCards(getVipCards(student));
 		const score = getWarnings(student).score;
 
-		// STEP 1: Remove gidouille if > 0 (optimistic UI)
+		// STEP 1: Remove gidouille if > 0 (optimistic UI + debounced API call)
 		if (gidouilles > 0) {
-			// Optimistic UI - remove gidouille immediately
+			const studentId = student.id;
+
+			// 1. Instant optimistic update
 			optimisticUpdates = {
 				...optimisticUpdates,
-				[student.id]: {
-					...optimisticUpdates[student.id],
+				[studentId]: {
+					...optimisticUpdates[studentId],
 					gidouilles: gidouilles - 1
 				}
 			};
 
-			try {
-				const response = await fetch('/api/rewards/gidouilles', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ studentId: student.id, amount: -1 })
-				});
-
-				if (response.ok) {
-					// Clear optimistic state and update server data
-					const newUpdates = { ...optimisticUpdates };
-					delete newUpdates[student.id]?.gidouilles;
-					optimisticUpdates = newUpdates;
-
-					// Update studentsData with server value
-					studentsData = studentsData.map((s) =>
-						s.id === student.id ? { ...s, gidouilles: gidouilles - 1 } : s
-					);
-
-					toaster.success(`1 gidouille retirée (${student.firstname})`);
-				} else {
-					throw new Error('Failed');
-				}
-			} catch (_error) {
-				// Rollback optimistic update
-				const newUpdates = { ...optimisticUpdates };
-				delete newUpdates[student.id]?.gidouilles;
-				optimisticUpdates = newUpdates;
-				toaster.error('Erreur lors du retrait de la gidouille');
+			// 2. Clear existing timer for this student
+			if (debounceTimers[studentId]) {
+				clearTimeout(debounceTimers[studentId]);
 			}
+
+			// 3. Set new debounced timer (500ms)
+			debounceTimers[studentId] = setTimeout(async () => {
+				const accumulatedAmount = optimisticUpdates[studentId]?.gidouilles ?? student.gidouilles;
+				const actualChange = accumulatedAmount - student.gidouilles;
+
+				if (actualChange === 0) return;
+
+				try {
+					const response = await fetch('/api/rewards/gidouilles', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							studentId,
+							amount: actualChange
+						})
+					});
+
+					if (response.ok) {
+						const data = await response.json();
+
+						// Update local state with server value
+						studentsData = studentsData.map((s) =>
+							s.id === studentId ? { ...s, gidouilles: data.newAmount } : s
+						);
+
+						// Clear optimistic state
+						const newUpdates = { ...optimisticUpdates };
+						delete newUpdates[studentId]?.gidouilles;
+						optimisticUpdates = newUpdates;
+
+						// Show toast with accumulated amount
+						const amountStr = actualChange > 0 ? `+${actualChange}` : `${actualChange}`;
+						const plural = Math.abs(actualChange) > 1 ? 's' : '';
+						toaster.success(`${amountStr} gidouille${plural} (${student.firstname})`);
+					} else {
+						throw new Error('Failed');
+					}
+				} catch (_error) {
+					// Rollback optimistic update
+					const newUpdates = { ...optimisticUpdates };
+					delete newUpdates[studentId]?.gidouilles;
+					optimisticUpdates = newUpdates;
+					toaster.error('Erreur lors du retrait de la gidouille');
+				}
+
+				// Clean up timer
+				const newTimers = { ...debounceTimers };
+				delete newTimers[studentId];
+				debounceTimers = newTimers;
+			}, 500);
+
 			return;
 		}
 
@@ -411,48 +451,77 @@
 	}
 
 	/**
-	 * Handle add gidouille button click (optimistic UI)
+	 * Handle add gidouille button click (optimistic UI + debounced API call)
+	 * Batches rapid clicks into single API call after 500ms of inactivity
 	 */
 	async function handleAddGidouille(student: StudentData) {
-		// Optimistic UI - add gidouille immediately
+		const studentId = student.id;
+
+		// 1. Instant optimistic update
 		const currentGidouilles = getGidouilles(student);
 		optimisticUpdates = {
 			...optimisticUpdates,
-			[student.id]: {
-				...optimisticUpdates[student.id],
+			[studentId]: {
+				...optimisticUpdates[studentId],
 				gidouilles: currentGidouilles + 1
 			}
 		};
 
-		try {
-			const response = await fetch('/api/rewards/gidouilles', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ studentId: student.id, amount: 1 })
-			});
-
-			if (response.ok) {
-				// Clear optimistic state and update server data
-				const newUpdates = { ...optimisticUpdates };
-				delete newUpdates[student.id]?.gidouilles;
-				optimisticUpdates = newUpdates;
-
-				// Update studentsData with server value
-				studentsData = studentsData.map((s) =>
-					s.id === student.id ? { ...s, gidouilles: currentGidouilles + 1 } : s
-				);
-
-				toaster.success(`+1 gidouille (${student.firstname})`);
-			} else {
-				throw new Error('Failed');
-			}
-		} catch (_error) {
-			// Rollback optimistic update
-			const newUpdates = { ...optimisticUpdates };
-			delete newUpdates[student.id]?.gidouilles;
-			optimisticUpdates = newUpdates;
-			toaster.error("Erreur lors de l'ajout de la gidouille");
+		// 2. Clear existing timer for this student
+		if (debounceTimers[studentId]) {
+			clearTimeout(debounceTimers[studentId]);
 		}
+
+		// 3. Set new debounced timer (500ms)
+		debounceTimers[studentId] = setTimeout(async () => {
+			const accumulatedAmount = optimisticUpdates[studentId]?.gidouilles ?? student.gidouilles;
+			const actualChange = accumulatedAmount - student.gidouilles;
+
+			if (actualChange === 0) return;
+
+			try {
+				const response = await fetch('/api/rewards/gidouilles', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						studentId,
+						amount: actualChange
+					})
+				});
+
+				if (response.ok) {
+					const data = await response.json();
+
+					// Update local state with server value
+					studentsData = studentsData.map((s) =>
+						s.id === studentId ? { ...s, gidouilles: data.newAmount } : s
+					);
+
+					// Clear optimistic state
+					const newUpdates = { ...optimisticUpdates };
+					delete newUpdates[studentId]?.gidouilles;
+					optimisticUpdates = newUpdates;
+
+					// Show toast with accumulated amount
+					const amountStr = actualChange > 0 ? `+${actualChange}` : `${actualChange}`;
+					const plural = Math.abs(actualChange) > 1 ? 's' : '';
+					toaster.success(`${amountStr} gidouille${plural} (${student.firstname})`);
+				} else {
+					throw new Error('Failed');
+				}
+			} catch (_error) {
+				// Rollback optimistic update
+				const newUpdates = { ...optimisticUpdates };
+				delete newUpdates[studentId]?.gidouilles;
+				optimisticUpdates = newUpdates;
+				toaster.error("Erreur lors de l'ajout de la gidouille");
+			}
+
+			// Clean up timer
+			const newTimers = { ...debounceTimers };
+			delete newTimers[studentId];
+			debounceTimers = newTimers;
+		}, 500);
 	}
 
 	/**
