@@ -20,7 +20,7 @@
 -->
 
 <script lang="ts">
-	import type { QuestionInstance } from '$lib/questions/types';
+	import type { QuestionInstance, Choice } from '$lib/questions/types';
 	import type { AnswerData } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
 	import MathDisplay from '$lib/components/MathDisplay.svelte';
@@ -244,13 +244,13 @@
 					<!-- Type-specific inputs -->
 					{#if instance.type === 'numerical_exact' || instance.type === 'numerical_decimal' || instance.type === 'numerical_rounded'}
 						<NumericalInput
-							bind:value={userAnswer}
+							bind:value={userAnswer as string}
 							disabled={isInputDisabled}
 							onSubmit={handleSubmit}
 						/>
 					{:else if instance.type === 'algebraic_transform'}
 						<AlgebraicInput
-							bind:value={userAnswer}
+							bind:value={userAnswer as string}
 							disabled={isInputDisabled}
 							onSubmit={handleSubmit}
 						/>
@@ -265,7 +265,7 @@
 						/>
 					{:else if instance.type === 'multiple_choice'}
 						<MultipleChoiceInput
-							choices={instance.shuffledChoices || []}
+							choices={instance.shuffledChoices as Choice[] || []}
 							bind:selectedIndexes={selectedChoices}
 							multipleAnswers={instance.multipleAnswers}
 							disabled={isInputDisabled}
