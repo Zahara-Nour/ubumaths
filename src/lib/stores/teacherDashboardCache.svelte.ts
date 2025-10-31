@@ -44,6 +44,7 @@ import type {
 	CachedSchool,
 	CacheStats
 } from '$lib/types/teacher-cache';
+import type { StudentVipCards } from '$lib/types/vip-card';
 import { createLogger } from '$lib/utils/logger';
 import { browser } from '$app/environment';
 
@@ -333,7 +334,7 @@ export class TeacherDashboardCache {
 	updateVipCardsOptimistic(
 		classId: string,
 		studentId: string,
-		vipCards: Record<string, number>
+		vipCards: StudentVipCards
 	): void {
 		const cached = this.rewardsCache.get(classId);
 		if (!cached) return;
@@ -587,7 +588,7 @@ export class TeacherDashboardCache {
 	 */
 	hydrateRewards(
 		classId: string,
-		students: Array<{ id: string; gidouilles: number; vip_cards: Record<string, number> }>
+		students: Array<{ id: string; gidouilles: number; vip_cards: StudentVipCards }>
 	): void {
 		const rewardsMap = new Map<string, StudentRewards>();
 

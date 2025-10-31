@@ -21,36 +21,39 @@
 	let container: HTMLDivElement;
 	let mathfield: MathfieldElement | null = null;
 
-	onMount(async () => {
-		await import('mathlive');
+	onMount(() => {
+		(async () => {
+			await import('mathlive');
 
-		// Create math-field element programmatically
-		mathfield = document.createElement('math-field') as MathfieldElement;
-		mathfield.value = initialValue;
-		mathfield.readOnly = readonly;
-		mathfield.virtualKeyboardMode = virtualKeyboardMode;
+			// Create math-field element programmatically
+			mathfield = document.createElement('math-field') as MathfieldElement;
+			mathfield.value = initialValue;
+			mathfield.readOnly = readonly;
+			// @ts-ignore - virtualKeyboardMode exists but not in types
+			mathfield.virtualKeyboardMode = virtualKeyboardMode;
 
-		// Set placeholder if provided
-		if (placeholder) {
-			mathfield.setAttribute('placeholder', placeholder);
-		}
-
-		// Apply any additional props as attributes
-		for (const [key, value] of Object.entries(restProps)) {
-			if (value !== undefined && value !== null) {
-				mathfield.setAttribute(key, String(value));
+			// Set placeholder if provided
+			if (placeholder) {
+				mathfield.setAttribute('placeholder', placeholder);
 			}
-		}
 
-		// Listen for input changes
-		mathfield.addEventListener('input', () => {
-			if (mathfield && oninput) {
-				oninput(mathfield.value, mathfield);
+			// Apply any additional props as attributes
+			for (const [key, value] of Object.entries(restProps)) {
+				if (value !== undefined && value !== null) {
+					mathfield.setAttribute(key, String(value));
+				}
 			}
-		});
 
-		// Append to container
-		container.appendChild(mathfield);
+			// Listen for input changes
+			mathfield.addEventListener('input', () => {
+				if (mathfield && oninput) {
+					oninput(mathfield.value, mathfield);
+				}
+			});
+
+			// Append to container
+			container.appendChild(mathfield);
+		})();
 
 		return () => {
 			// Cleanup on unmount

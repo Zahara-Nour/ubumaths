@@ -71,12 +71,12 @@
 				student_count: classItem.student_count,
 				schedules: classItem.schedules
 			};
-			teacherCache.hydrateClass(classItem.id, classInfo);
+			teacherCache.hydrateClassInfo(classItem.id, classInfo);
 		}
 
 		// Hydrate school info cache (Cache 4) if available
 		if (data.school) {
-			teacherCache.hydrateSchool({
+			teacherCache.hydrateSchoolInfo({
 				school: data.school,
 				current_period: null,
 				all_periods: []
@@ -189,7 +189,8 @@
 	 */
 	async function createMathsEntry(classId: string, day: number, time: string) {
 		// Find the period that starts at this time
-		const period = data.school?.timetable?.periods.find((p) => p.start_time === time);
+		const timetable = data.school?.timetable as { periods?: Array<{ start_time: string; end_time: string; period_number: number }> } | undefined;
+		const period = timetable?.periods?.find((p: { start_time: string }) => p.start_time === time);
 
 		if (!period) {
 			toaster.error('Période introuvable');
@@ -213,7 +214,7 @@
 			day_of_week: day,
 			start_time: period.start_time,
 			end_time: period.end_time,
-			period_number: period.number,
+			period_number: period.period_number,
 			subject: 'Maths',
 			room: null,
 			notes: null,
@@ -228,7 +229,7 @@
 		const formData = new FormData();
 		formData.append('class_id', classId);
 		formData.append('day_of_week', day.toString());
-		formData.append('period_number', period.number.toString());
+		formData.append('period_number', period.period_number.toString());
 		formData.append('start_time', period.start_time);
 		formData.append('end_time', period.end_time);
 		formData.append('subject', 'Maths');
@@ -397,7 +398,7 @@
 	</div>
 
 	<!-- Warning if no timetable configured -->
-	{#if !data.school?.timetable || data.school.timetable.periods.length === 0}
+	{#if !data.school?.timetable || (data.school.timetable as { periods?: unknown[] }).periods?.length === 0}
 		<div class="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-yellow-800">
 			<p class="text-sm">
 				<strong>Attention:</strong> Aucun emploi du temps n'est configuré pour votre école. Contactez
@@ -445,7 +446,7 @@
 						<h3 class="mb-4 text-lg font-semibold text-foreground">Emploi du Temps</h3>
 						<ClassScheduleGrid
 							schedules={getMergedSchedules(classItem.id, classItem.schedules)}
-							periods={data.school?.timetable?.periods || []}
+							periods={(data.school?.timetable as { periods?: unknown[] })?.periods || []}
 							onCellClick={(day, time, entry) => handleCellClick(classItem.id, day, time, entry)}
 						/>
 					</div>
@@ -470,7 +471,7 @@
 		mode={modalMode}
 		entry={selectedEntry}
 		{defaultDay}
-		periods={data.school.timetable.periods}
+		periods={(data.school.timetable as { periods: unknown[] }).periods}
 		onClose={handleModalClose}
 		onSave={handleSave}
 		onDelete={modalMode === 'edit' ? handleDelete : undefined}

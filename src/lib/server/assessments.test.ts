@@ -419,7 +419,7 @@ describe('updateAssessment', () => {
 		);
 
 		expect(result.error).toBeNull();
-		expect(result.data?.settings?.max_attempts).toBe(5);
+		expect((result.data?.settings as { max_attempts?: number })?.max_attempts).toBe(5);
 	});
 
 	it('should reject update when not authorized', async () => {

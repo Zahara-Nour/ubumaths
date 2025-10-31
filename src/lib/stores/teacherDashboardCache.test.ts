@@ -83,7 +83,10 @@ function _createMockRewards(studentIds: string[]): Map<string, StudentRewards> {
 	studentIds.forEach((id, i) => {
 		rewards.set(id, {
 			gidouilles: i * 10,
-			vip_cards: { card1: i, card2: i * 2 }
+			vip_cards: {
+				card1: { cardId: 'card1', earnedAt: new Date().toISOString(), usedAt: null },
+				card2: { cardId: 'card2', earnedAt: new Date().toISOString(), usedAt: null }
+			}
 		});
 	});
 	return rewards;
@@ -93,9 +96,14 @@ function _createMockWarnings(studentIds: string[]): Map<string, StudentWarningCo
 	const warnings = new Map<string, StudentWarningCounts>();
 	studentIds.forEach((id, i) => {
 		warnings.set(id, {
+			C: i,
+			M: i,
+			R: i,
+			T: i,
+			total: i * 2,
 			unresolved_count: i,
-			total_count: i * 2,
-			score: i * 5
+			score: i * 5,
+			warnings: []
 		});
 	});
 	return warnings;
@@ -134,28 +142,39 @@ function createMockSchoolInfo(): SchoolInfo {
 		school: {
 			id: 'school-1',
 			name: 'Test School',
-			display_name: 'Test School',
+			city: 'Paris',
+			country: 'France',
+			address: null,
+			logo_url: null,
+			timetable: null,
+			is_active: true,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString()
 		},
 		current_period: {
 			id: 'period-1',
-			school_id: 'school-1',
+			school_year_id: 'year-1',
 			name: 'Fall 2025',
 			start_date: '2025-09-01',
 			end_date: '2025-12-20',
-			is_current: true,
+			type: 'trimester',
+			period_order: 1,
+			color: '#0000ff',
+			metadata: {},
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString()
 		},
 		all_periods: [
 			{
 				id: 'period-1',
-				school_id: 'school-1',
+				school_year_id: 'year-1',
 				name: 'Fall 2025',
 				start_date: '2025-09-01',
 				end_date: '2025-12-20',
-				is_current: true,
+				type: 'trimester',
+				period_order: 1,
+				color: '#0000ff',
+				metadata: {},
 				created_at: new Date().toISOString(),
 				updated_at: new Date().toISOString()
 			}
@@ -177,14 +196,14 @@ describe('Cache 1: Student Basic Info', () => {
 		mockDateNow(Date.now());
 
 		// Mock fetch for students endpoint
-		global.fetch = vi.fn((url: string) => {
-			if (url.includes(`/api/classes/${classId}/students`)) {
+		global.fetch = vi.fn((url: string | URL | Request) => {
+			if (url.toString().includes(`/api/classes/${classId}/students`)) {
 				return Promise.resolve({
 					ok: true,
 					json: () => Promise.resolve({ students: mockStudents })
 				} as Response);
 			}
-			return Promise.reject(new Error(`Unexpected URL: ${url}`));
+			return Promise.reject(new Error(`Unexpected URL: ${url.toString()}`));
 		});
 	});
 
@@ -293,20 +312,20 @@ describe('Cache 1: Student Basic Info', () => {
 			// Create new cache for this test to avoid interference
 			const testCache = createCache();
 
-			global.fetch = vi.fn((url: string) => {
-				if (url.includes(classId)) {
+			global.fetch = vi.fn((url: string | URL | Request) => {
+				if (url.toString().includes(classId)) {
 					return Promise.resolve({
 						ok: true,
 						json: () => Promise.resolve({ students: mockStudents })
 					} as Response);
 				}
-				if (url.includes(classId2)) {
+				if (url.toString().includes(classId2)) {
 					return Promise.resolve({
 						ok: true,
 						json: () => Promise.resolve({ students: mockStudents2 })
 					} as Response);
 				}
-				return Promise.reject(new Error(`Unexpected URL: ${url}`));
+				return Promise.reject(new Error(`Unexpected URL: ${url.toString()}`));
 			});
 
 			const students1 = await testCache.getStudentBasic(classId);
@@ -321,20 +340,20 @@ describe('Cache 1: Student Basic Info', () => {
 			const classId2 = 'class-456';
 			const testCache = createCache();
 
-			global.fetch = vi.fn((url: string) => {
-				if (url.includes(classId)) {
+			global.fetch = vi.fn((url: string | URL | Request) => {
+				if (url.toString().includes(classId)) {
 					return Promise.resolve({
 						ok: true,
 						json: () => Promise.resolve({ students: mockStudents })
 					} as Response);
 				}
-				if (url.includes(classId2)) {
+				if (url.toString().includes(classId2)) {
 					return Promise.resolve({
 						ok: true,
 						json: () => Promise.resolve({ students: createMockStudents(2) })
 					} as Response);
 				}
-				return Promise.reject(new Error(`Unexpected URL: ${url}`));
+				return Promise.reject(new Error(`Unexpected URL: ${url.toString()}`));
 			});
 
 			// Fetch both classes
@@ -456,14 +475,14 @@ describe('Cache 2A: Student Rewards', () => {
 		cache = createCache();
 		mockDateNow(Date.now());
 
-		global.fetch = vi.fn((url: string) => {
-			if (url.includes(`/api/classes/${classId}/gidouilles`)) {
+		global.fetch = vi.fn((url: string | URL | Request) => {
+			if (url.toString().includes(`/api/classes/${classId}/gidouilles`)) {
 				return Promise.resolve({
 					ok: true,
 					json: () => Promise.resolve({ gidouilles: mockRewardsArray })
 				} as Response);
 			}
-			return Promise.reject(new Error(`Unexpected URL: ${url}`));
+			return Promise.reject(new Error(`Unexpected URL: ${url.toString()}`));
 		});
 	});
 
@@ -615,20 +634,28 @@ describe('Cache 2A: Student Rewards', () => {
 		it('should update VIP cards optimistically', async () => {
 			await cache.getStudentRewards(classId);
 
-			cache.updateVipCardsOptimistic(classId, 'student-1', { card1: 5, card2: 3 });
+			const newCards = {
+				card1: { cardId: 'card1', earnedAt: new Date().toISOString(), usedAt: null },
+				card2: { cardId: 'card2', earnedAt: new Date().toISOString(), usedAt: null }
+			};
+			cache.updateVipCardsOptimistic(classId, 'student-1', newCards);
 
 			const rewards = await cache.getStudentRewards(classId);
-			expect(rewards.get('student-1')?.vip_cards).toEqual({ card1: 5, card2: 3 });
+			expect(rewards.get('student-1')?.vip_cards).toEqual(newCards);
 		});
 
 		it('should completely replace VIP cards object', async () => {
 			await cache.getStudentRewards(classId);
 
-			// Original: { card1: 1 }
-			cache.updateVipCardsOptimistic(classId, 'student-1', { card2: 2, card3: 3 });
+			// Original: { card1: { cardId: 'card1', ... } }
+			const newCards = {
+				card2: { cardId: 'card2', earnedAt: new Date().toISOString(), usedAt: null },
+				card3: { cardId: 'card3', earnedAt: new Date().toISOString(), usedAt: null }
+			};
+			cache.updateVipCardsOptimistic(classId, 'student-1', newCards);
 
 			const rewards = await cache.getStudentRewards(classId);
-			expect(rewards.get('student-1')?.vip_cards).toEqual({ card2: 2, card3: 3 });
+			expect(rewards.get('student-1')?.vip_cards).toEqual(newCards);
 		});
 
 		it('should handle empty VIP cards object', async () => {
@@ -642,7 +669,9 @@ describe('Cache 2A: Student Rewards', () => {
 
 		it('should ignore update if cache is empty', () => {
 			expect(() => {
-				cache.updateVipCardsOptimistic(classId, 'student-1', { card1: 1 });
+				cache.updateVipCardsOptimistic(classId, 'student-1', {
+					card1: { cardId: 'card1', earnedAt: new Date().toISOString(), usedAt: null }
+				});
 			}).not.toThrow();
 		});
 	});
@@ -677,8 +706,12 @@ describe('Cache 2A: Student Rewards', () => {
 	describe('Hydration', () => {
 		it('should hydrate rewards from load function data', () => {
 			const students = [
-				{ id: 'student-1', gidouilles: 10, vip_cards: { card1: 1 } },
-				{ id: 'student-2', gidouilles: 20, vip_cards: {} }
+				{
+					id: 'student-1',
+					gidouilles: 10,
+					vip_cards: { card1: { cardId: 'card1', earnedAt: new Date().toISOString(), usedAt: null } }
+				},
+				{ id: 'student-2', gidouilles: 20, vip_cards: {} as StudentVipCards }
 			];
 
 			cache.hydrateRewards(classId, students);
@@ -708,14 +741,14 @@ describe('Cache 2B: Student Warnings', () => {
 		cache = createCache();
 		mockDateNow(Date.now());
 
-		global.fetch = vi.fn((url: string) => {
-			if (url.includes(`/api/classes/${classId}/warnings?period_id=${periodId}`)) {
+		global.fetch = vi.fn((url: string | URL | Request) => {
+			if (url.toString().includes(`/api/classes/${classId}/warnings?period_id=${periodId}`)) {
 				return Promise.resolve({
 					ok: true,
 					json: () => Promise.resolve({ warnings: mockWarningsData })
 				} as Response);
 			}
-			return Promise.reject(new Error(`Unexpected URL: ${url}`));
+			return Promise.reject(new Error(`Unexpected URL: ${url.toString()}`));
 		});
 	});
 
@@ -778,14 +811,14 @@ describe('Cache 2B: Student Warnings', () => {
 		it('should cache warnings independently per class:period', async () => {
 			const periodId2 = 'period-789';
 
-			global.fetch = vi.fn((url: string) => {
-				if (url.includes(`period_id=${periodId}`)) {
+			global.fetch = vi.fn((url: string | URL | Request) => {
+				if (url.toString().includes(`period_id=${periodId}`)) {
 					return Promise.resolve({
 						ok: true,
 						json: () => Promise.resolve({ warnings: mockWarningsData })
 					} as Response);
 				}
-				if (url.includes(`period_id=${periodId2}`)) {
+				if (url.toString().includes(`period_id=${periodId2}`)) {
 					return Promise.resolve({
 						ok: true,
 						json: () => Promise.resolve({ warnings: { 'student-3': { unresolved_count: 5 } } })
@@ -856,16 +889,26 @@ describe('Cache 2B: Student Warnings', () => {
 			await cache.getStudentWarnings(classId, periodId);
 
 			cache.updateWarningsOptimistic(classId, periodId, 'student-1', {
+				C: 1,
+				M: 2,
+				R: 1,
+				T: 1,
 				unresolved_count: 2,
-				total_count: 5,
-				score: 25
+				total: 5,
+				score: 25,
+				warnings: []
 			});
 
 			const warnings = await cache.getStudentWarnings(classId, periodId);
 			expect(warnings.get('student-1')).toEqual({
+				C: 1,
+				M: 2,
+				R: 1,
+				T: 1,
 				unresolved_count: 2,
-				total_count: 5,
-				score: 25
+				total: 5,
+				score: 25,
+				warnings: []
 			});
 		});
 
@@ -873,9 +916,14 @@ describe('Cache 2B: Student Warnings', () => {
 			await cache.getStudentWarnings(classId, periodId);
 
 			cache.updateWarningsOptimistic(classId, periodId, 'student-3', {
+				C: 0,
+				M: 1,
+				R: 0,
+				T: 0,
 				unresolved_count: 1,
-				total_count: 1,
-				score: 5
+				total: 1,
+				score: 5,
+				warnings: []
 			});
 
 			const warnings = await cache.getStudentWarnings(classId, periodId);
@@ -886,7 +934,7 @@ describe('Cache 2B: Student Warnings', () => {
 			expect(() => {
 				cache.updateWarningsOptimistic(classId, periodId, 'student-1', {
 					unresolved_count: 0,
-					total_count: 0,
+					total: 0,
 					score: 0
 				});
 			}).not.toThrow();
@@ -923,7 +971,7 @@ describe('Cache 2B: Student Warnings', () => {
 	describe('Hydration', () => {
 		it('should hydrate warnings from load function data', () => {
 			const warningsMap = new Map<string, StudentWarningCounts>();
-			warningsMap.set('student-1', { unresolved_count: 1, total_count: 3, score: 15 });
+			warningsMap.set('student-1', { C: 1, M: 1, R: 1, T: 0, unresolved_count: 1, total: 3, score: 15, warnings: [] });
 
 			cache.hydrateWarnings(classId, periodId, warningsMap);
 
@@ -1458,8 +1506,8 @@ describe('Edge Cases & Concurrency', () => {
 		});
 
 		it('should handle concurrent fetches for different classes', async () => {
-			global.fetch = vi.fn((url: string) => {
-				const classId = url.match(/classes\/([^/]+)/)?.[1];
+			global.fetch = vi.fn((url: string | URL | Request) => {
+				const classId = url.toString().match(/classes\/([^/]+)/)?.[1];
 				return Promise.resolve({
 					ok: true,
 					json: () => Promise.resolve({ students: [{ id: classId }] })
@@ -1537,9 +1585,14 @@ describe('Edge Cases & Concurrency', () => {
 			const largeWarningsData: Record<string, StudentWarningCounts> = {};
 			for (let i = 0; i < 250; i++) {
 				largeWarningsData[`student-${i}`] = {
+					C: i % 4,
+					M: i % 3,
+					R: i % 2,
+					T: i % 5,
 					unresolved_count: i,
-					total_count: i * 2,
-					score: i * 5
+					total: i * 2,
+					score: i * 5,
+					warnings: []
 				};
 			}
 
@@ -1571,7 +1624,7 @@ describe('Edge Cases & Concurrency', () => {
 		});
 
 		it('should handle response with wrong type', async () => {
-			global.fetch = vi.fn(() =>
+			global.fetch = vi.fn((): Promise<Response> =>
 				Promise.resolve({
 					ok: true,
 					json: () => Promise.resolve({ students: 'not-an-array' })

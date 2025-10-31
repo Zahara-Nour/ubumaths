@@ -159,6 +159,7 @@
 				R: 0,
 				T: 0,
 				total: 0,
+				unresolved_count: 0,
 				score: 20,
 				warnings: []
 			}
@@ -229,7 +230,7 @@
 
 		// STEP 1: Apply optimistic update immediately
 		const currentCounts = getStudentWarnings(studentId);
-		const newCounts = { ...currentCounts };
+		const newCounts: StudentWarningCounts = { ...currentCounts } as StudentWarningCounts;
 
 		// Increment specific warning type
 		if (warningType === 'C') newCounts.C++;
@@ -239,6 +240,7 @@
 
 		// Recalculate totals
 		newCounts.total = newCounts.C + newCounts.M + newCounts.R + newCounts.T;
+		newCounts.unresolved_count = newCounts.total;
 		newCounts.score = Math.max(0, Math.min(20, 20 - newCounts.total));
 
 		// Apply optimistic update
@@ -313,7 +315,7 @@
 		const rollbackState = { ...previousCounts };
 
 		// STEP 2: Apply optimistic update immediately
-		const newCounts = { ...previousCounts };
+		const newCounts: StudentWarningCounts = { ...previousCounts } as StudentWarningCounts;
 
 		// Decrement specific warning type (prevent negative values)
 		if (warningType === 'C') newCounts.C = Math.max(0, newCounts.C - 1);
@@ -323,6 +325,7 @@
 
 		// Recalculate totals
 		newCounts.total = newCounts.C + newCounts.M + newCounts.R + newCounts.T;
+		newCounts.unresolved_count = newCounts.total;
 		newCounts.score = Math.max(0, Math.min(20, 20 - newCounts.total));
 
 		// Apply optimistic update (instant UI feedback)

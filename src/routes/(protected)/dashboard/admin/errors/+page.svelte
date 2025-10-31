@@ -231,7 +231,7 @@
 			<Card.Description>Erreurs dédupliquées triées par fréquence</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			{#if data.occurrences.length === 0}
+			{#if !data.occurrences || data.occurrences.length === 0}
 				<div class="py-8 text-center text-muted-foreground">
 					<p>Aucune erreur trouvée</p>
 				</div>

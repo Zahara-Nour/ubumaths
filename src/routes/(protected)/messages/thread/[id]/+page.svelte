@@ -90,7 +90,7 @@
 	<div class="border-b border-border bg-card p-4">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-3">
-				<Button variant="ghost" size="sm" onclick={() => goto('/messages/inbox').then(() => {})}>
+				<Button variant="ghost" size="sm" onclick={() => goto('/messages/inbox')}>
 					<ArrowLeft class="h-4 w-4" />
 				</Button>
 				<div>

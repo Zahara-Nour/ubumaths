@@ -47,6 +47,7 @@ describe('Template Version History Triggers', () => {
 		const { data: teacher } = await serviceClient
 			.from('profiles')
 			.insert({
+				id: crypto.randomUUID(),
 				email: `teacher-${Date.now()}@test.com`,
 				role: 'teacher',
 				full_name: 'Test Teacher'

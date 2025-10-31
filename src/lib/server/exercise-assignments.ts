@@ -53,15 +53,19 @@ type TypedSupabaseClient = SupabaseClient<Database>;
 type UnknownTable = string;
 
 // Helper to bypass type checking for tables not yet in schema
+// Returns a query builder with all methods typed as 'any' to prevent cascading type errors
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function fromUnknownTable(supabase: TypedSupabaseClient, table: UnknownTable): any {
-	return supabase.from(table);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return (supabase as any).from(table);
 }
 
 // Helper to bypass type checking for RPC functions not yet in schema
+// Returns a promise typed as 'any' to prevent cascading type errors
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function callUnknownRpc(supabase: TypedSupabaseClient, fn: string, params?: any): any {
-	return supabase.rpc(fn, params);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return (supabase as any).rpc(fn, params);
 }
 
 // ============================================================================
@@ -275,8 +279,7 @@ export async function createBulkAssignments(
 	}
 
 	// Insert all assignments (atomic transaction)
-	const { data: created, error } = await supabase
-		.from('exercise_assignments' as UnknownTable)
+	const { data: created, error } = await fromUnknownTable(supabase, 'exercise_assignments')
 		.insert(assignments)
 		.select();
 
@@ -325,8 +328,7 @@ export async function getAssignmentsForExercise(
 	const offset = pagination?.offset || 0;
 
 	// Build base query
-	let query = supabase
-		.from('assigned_exercises_with_details' as UnknownTable)
+	let query = fromUnknownTable(supabase, 'assigned_exercises_with_details')
 		.select('*', { count: 'exact' })
 		.eq('exercise_id', exerciseId)
 		.order('assigned_at', { ascending: false });
@@ -508,8 +510,7 @@ export async function getAssignmentsForStudent(
 	// - Supabase's .or() method still uses parameterized queries internally
 	// - The string is only used to construct the filter logic, not as raw SQL
 	// - This is a documented pattern in Supabase docs for OR conditions
-	const { data: directAssignments } = await supabase
-		.from('exercise_assignments' as UnknownTable)
+	const { data: directAssignments } = await fromUnknownTable(supabase, 'exercise_assignments')
 		.select('*')
 		.in('exercise_id', exerciseIdsForBatch)
 		.eq('is_active', true)
@@ -525,8 +526,7 @@ export async function getAssignmentsForStudent(
 	// 1. class_members table has index on student_id
 	// 2. Result is a small array of class IDs (typically 1-3 classes per student)
 	// 3. The .in() filter is optimized by Postgres using the class_id index
-	const { data: classAssignments } = await supabase
-		.from('exercise_assignments' as UnknownTable)
+	const { data: classAssignments } = await fromUnknownTable(supabase, 'exercise_assignments')
 		.select('*')
 		.in('exercise_id', exerciseIdsForBatch)
 		.eq('assigned_to_type', 'class')
@@ -546,8 +546,7 @@ export async function getAssignmentsForStudent(
 	] as unknown as ExerciseAssignment[];
 
 	// Step 4: Batch-fetch all completions for these exercises
-	const { data: allCompletions } = await supabase
-		.from('exercise_completions' as UnknownTable)
+	const { data: allCompletions } = await fromUnknownTable(supabase, 'exercise_completions')
 		.select('*')
 		.in('exercise_id', exerciseIdsForBatch)
 		.eq('student_id', studentId);
@@ -566,9 +565,9 @@ export async function getAssignmentsForStudent(
 	}
 
 	const completionMap = new Map(
-		allCompletions?.map((c) => [
-			(c as unknown as ExerciseCompletion).exercise_id,
-			c as unknown as ExerciseCompletion
+		allCompletions?.map((c: unknown) => [
+			(c as ExerciseCompletion).exercise_id,
+			c as ExerciseCompletion
 		])
 	);
 
@@ -577,7 +576,7 @@ export async function getAssignmentsForStudent(
 
 	for (const exercise of exercises) {
 		const assignment = assignmentMap.get(exercise.id);
-		const completion = completionMap.get(exercise.id);
+		const completion = completionMap.get(exercise.id) as ExerciseCompletion | undefined;
 
 		// Apply completion filter
 		if (filters?.show_completed === false && completion?.completed_at) {
@@ -684,8 +683,7 @@ export async function updateAssignment(
 	}
 
 	// Update assignment
-	const { data: updated, error } = await supabase
-		.from('exercise_assignments' as UnknownTable)
+	const { data: updated, error } = await fromUnknownTable(supabase, 'exercise_assignments')
 		.update(updates)
 		.eq('id', assignmentId)
 		.select()
@@ -737,8 +735,7 @@ export async function deleteAssignment(
 
 	if (hardDelete) {
 		// Hard delete: remove from database
-		const { error } = await supabase
-			.from('exercise_assignments' as UnknownTable)
+		const { error } = await fromUnknownTable(supabase, 'exercise_assignments')
 			.delete()
 			.eq('id', assignmentId);
 
@@ -748,8 +745,7 @@ export async function deleteAssignment(
 		}
 	} else {
 		// Soft delete: mark inactive
-		const { error } = await supabase
-			.from('exercise_assignments' as UnknownTable)
+		const { error } = await fromUnknownTable(supabase, 'exercise_assignments')
 			.update({ is_active: false })
 			.eq('id', assignmentId);
 
@@ -797,8 +793,7 @@ export async function markExerciseAsViewed(
 	assignmentId?: string
 ): Promise<{ data: ExerciseCompletion | null; error: string | null }> {
 	// Check if completion record exists
-	const { data: existing } = await supabase
-		.from('exercise_completions' as UnknownTable)
+	const { data: existing } = await fromUnknownTable(supabase, 'exercise_completions')
 		.select('*')
 		.eq('exercise_id', exerciseId)
 		.eq('student_id', studentId)
@@ -806,8 +801,7 @@ export async function markExerciseAsViewed(
 
 	if (existing) {
 		// Update existing record
-		const { data: updated, error } = await supabase
-			.from('exercise_completions' as UnknownTable)
+		const { data: updated, error } = await fromUnknownTable(supabase, 'exercise_completions')
 			.update({
 				view_count: (existing as unknown as ExerciseCompletion).view_count + 1,
 				last_viewed_at: new Date().toISOString()
@@ -824,8 +818,7 @@ export async function markExerciseAsViewed(
 		return { data: updated as unknown as ExerciseCompletion, error: null };
 	} else {
 		// Create new record
-		const { data: created, error } = await supabase
-			.from('exercise_completions' as UnknownTable)
+		const { data: created, error } = await fromUnknownTable(supabase, 'exercise_completions')
 			.insert({
 				exercise_id: exerciseId,
 				student_id: studentId,
@@ -875,8 +868,7 @@ export async function markExerciseAsComplete(
 	const now = new Date().toISOString();
 
 	// Check if completion record exists
-	const { data: existing } = await supabase
-		.from('exercise_completions' as UnknownTable)
+	const { data: existing } = await fromUnknownTable(supabase, 'exercise_completions')
 		.select('*')
 		.eq('exercise_id', exerciseId)
 		.eq('student_id', studentId)
@@ -884,8 +876,7 @@ export async function markExerciseAsComplete(
 
 	if (existing) {
 		// Update existing record
-		const { data: updated, error } = await supabase
-			.from('exercise_completions' as UnknownTable)
+		const { data: updated, error } = await fromUnknownTable(supabase, 'exercise_completions')
 			.update({
 				completed_at: now,
 				last_viewed_at: now,
@@ -903,8 +894,7 @@ export async function markExerciseAsComplete(
 		return { data: updated as unknown as ExerciseCompletion, error: null };
 	} else {
 		// Create new record
-		const { data: created, error } = await supabase
-			.from('exercise_completions' as UnknownTable)
+		const { data: created, error } = await fromUnknownTable(supabase, 'exercise_completions')
 			.insert({
 				exercise_id: exerciseId,
 				student_id: studentId,
@@ -952,8 +942,7 @@ export async function markExerciseAsIncomplete(
 	studentId: string
 ): Promise<{ data: ExerciseCompletion | null; error: string | null }> {
 	// Update existing record
-	const { data: updated, error } = await supabase
-		.from('exercise_completions' as UnknownTable)
+	const { data: updated, error } = await fromUnknownTable(supabase, 'exercise_completions')
 		.update({
 			completed_at: null,
 			last_viewed_at: new Date().toISOString()
@@ -996,8 +985,7 @@ export async function getStudentCompletion(
 	exerciseId: string,
 	studentId: string
 ): Promise<{ data: ExerciseCompletion | null; error: string | null }> {
-	const { data, error } = await supabase
-		.from('exercise_completions' as UnknownTable)
+	const { data, error } = await fromUnknownTable(supabase, 'exercise_completions')
 		.select('*')
 		.eq('exercise_id', exerciseId)
 		.eq('student_id', studentId)
@@ -1051,8 +1039,10 @@ export async function getAssignmentStats(
 	const dataArray = data as Array<{
 		total_assignments: number;
 		active_assignments: number;
-		completed_assignments: number;
-		exercises_assigned: number;
+		student_assignments: number;
+		class_assignments: number;
+		public_assignments: number;
+		with_deadline: number;
 	}>;
 	const stats: AssignmentStats = {
 		total_assignments: dataArray?.[0]?.total_assignments || 0,
@@ -1107,9 +1097,10 @@ export async function getExerciseCompletionStats(
 	// Transform database result to ExerciseCompletionStats type
 	const dataArray = data as Array<{
 		total_assigned: number;
+		total_viewed: number;
 		total_completed: number;
 		completion_rate: number;
-		avg_completion_time: number;
+		average_view_count: number;
 	}>;
 	const stats: ExerciseCompletionStats = {
 		exercise_id: exerciseId,
@@ -1183,8 +1174,7 @@ export async function getStudentProgress(
 	}
 
 	// Get completed exercises
-	const { data: completions, error: completionsError } = await supabase
-		.from('exercise_completions' as UnknownTable)
+	const { data: completions, error: completionsError } = await fromUnknownTable(supabase, 'exercise_completions')
 		.select('id')
 		.eq('student_id', studentId)
 		.not('completed_at', 'is', null)
@@ -1351,8 +1341,7 @@ async function validateAssignmentOwnership(
 	assignmentId: string,
 	userId: string
 ): Promise<{ valid: boolean; assignment?: ExerciseAssignment; error?: string }> {
-	const { data: assignment, error: fetchError } = await supabase
-		.from('exercise_assignments' as UnknownTable)
+	const { data: assignment, error: fetchError } = await fromUnknownTable(supabase, 'exercise_assignments')
 		.select('*')
 		.eq('id', assignmentId)
 		.single();

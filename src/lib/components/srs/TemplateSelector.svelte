@@ -34,7 +34,7 @@
 	let { onSelect, onCancel, initialSelection = [] }: Props = $props();
 
 	// State
-	let templates = $state<Array<{ id: string; title: string; type: string }>>([]);
+	let templates = $state<Array<{ id: string; title: string; type: string; topic?: string; level?: string; description?: string }>>([]);
 	let selectedIds = new SvelteSet<string>(initialSelection);
 	let searchQuery = $state('');
 	let isLoading = $state(true);

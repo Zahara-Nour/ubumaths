@@ -61,6 +61,7 @@
 
 {#if href}
 	<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+	<!-- @ts-expect-error: href type is too complex for resolve function -->
 	<a
 		bind:this={ref}
 		data-slot="button"

@@ -311,7 +311,8 @@ describe('Game System Triggers', () => {
 			// Create 2 decks, first one active
 			await serviceClient.from('game_spell_decks').insert({
 				user_id: student.id,
-				name: 'Deck 1',
+				deck_name: 'Deck 1',
+				spell_ids: [],
 				is_active: true
 			});
 
@@ -319,7 +320,8 @@ describe('Game System Triggers', () => {
 				.from('game_spell_decks')
 				.insert({
 					user_id: student.id,
-					name: 'Deck 2',
+					deck_name: 'Deck 2',
+					spell_ids: [],
 					is_active: false
 				})
 				.select()
@@ -352,7 +354,7 @@ describe('Game System Triggers', () => {
 				.from('game_spell_decks')
 				.insert({
 					user_id: student.id,
-					name: 'Deck 1',
+					deck_name: 'Deck 1',
 					is_active: true
 				})
 				.select()
@@ -362,7 +364,8 @@ describe('Game System Triggers', () => {
 				.from('game_spell_decks')
 				.insert({
 					user_id: student.id,
-					name: 'Deck 2',
+					deck_name: 'Deck 2',
+					spell_ids: [],
 					is_active: false
 				})
 				.select()
@@ -371,7 +374,7 @@ describe('Game System Triggers', () => {
 			// Act: Update deck2 name but keep is_active = false
 			await serviceClient
 				.from('game_spell_decks')
-				.update({ name: 'Updated Deck 2' })
+				.update({ deck_name: 'Updated Deck 2' })
 				.eq('id', deck2!.id);
 
 			await new Promise((resolve) => setTimeout(resolve, 100));

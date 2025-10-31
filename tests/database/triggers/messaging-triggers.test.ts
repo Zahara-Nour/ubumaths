@@ -781,7 +781,7 @@ describe('Private Messaging Triggers', () => {
 
 			// Act: Add 3 attachments to each message
 			await Promise.all([
-				...([1, 2, 3].map((i) =>
+				...[1, 2, 3].map((i) =>
 					serviceClient.from('message_attachments_v2').insert({
 						message_id: message1.id,
 						file_name: `msg1_file${i}.pdf`,
@@ -790,8 +790,8 @@ describe('Private Messaging Triggers', () => {
 						storage_path: `messages/msg1_file${i}.pdf`,
 						uploaded_by: sender.id
 					})
-				) as Promise<unknown>[]),
-				...([1, 2, 3].map((i) =>
+				),
+				...[1, 2, 3].map((i) =>
 					serviceClient.from('message_attachments_v2').insert({
 						message_id: message2.id,
 						file_name: `msg2_file${i}.pdf`,
@@ -800,7 +800,7 @@ describe('Private Messaging Triggers', () => {
 						storage_path: `messages/msg2_file${i}.pdf`,
 						uploaded_by: sender.id
 					})
-				) as Promise<unknown>[])
+				)
 			]);
 
 			// Assert: Both messages should have 3 attachments each

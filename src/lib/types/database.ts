@@ -600,6 +600,129 @@ export type Database = {
 					}
 				];
 			};
+			exercise_assignments: {
+				Row: {
+					assigned_at: string;
+					assigned_by: string;
+					assigned_to_type: string;
+					class_id: string | null;
+					exercise_id: string;
+					id: string;
+					is_active: boolean;
+					notes: string | null;
+					optional_deadline: string | null;
+					student_id: string | null;
+				};
+				Insert: {
+					assigned_at?: string;
+					assigned_by: string;
+					assigned_to_type: string;
+					class_id?: string | null;
+					exercise_id: string;
+					id?: string;
+					is_active?: boolean;
+					notes?: string | null;
+					optional_deadline?: string | null;
+					student_id?: string | null;
+				};
+				Update: {
+					assigned_at?: string;
+					assigned_by?: string;
+					assigned_to_type?: string;
+					class_id?: string | null;
+					exercise_id?: string;
+					id?: string;
+					is_active?: boolean;
+					notes?: string | null;
+					optional_deadline?: string | null;
+					student_id?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'exercise_assignments_assigned_by_fkey';
+						columns: ['assigned_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'exercise_assignments_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'exercise_assignments_exercise_id_fkey';
+						columns: ['exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'exercises';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'exercise_assignments_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			exercise_completions: {
+				Row: {
+					assignment_id: string | null;
+					completed_at: string | null;
+					created_at: string;
+					exercise_id: string;
+					id: string;
+					last_viewed_at: string;
+					student_id: string;
+					view_count: number;
+				};
+				Insert: {
+					assignment_id?: string | null;
+					completed_at?: string | null;
+					created_at?: string;
+					exercise_id: string;
+					id?: string;
+					last_viewed_at?: string;
+					student_id: string;
+					view_count?: number;
+				};
+				Update: {
+					assignment_id?: string | null;
+					completed_at?: string | null;
+					created_at?: string;
+					exercise_id?: string;
+					id?: string;
+					last_viewed_at?: string;
+					student_id?: string;
+					view_count?: number;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'exercise_completions_assignment_id_fkey';
+						columns: ['assignment_id'];
+						isOneToOne: false;
+						referencedRelation: 'exercise_assignments';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'exercise_completions_exercise_id_fkey';
+						columns: ['exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'exercises';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'exercise_completions_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			error_logs: {
 				Row: {
 					browser_name: string | null;

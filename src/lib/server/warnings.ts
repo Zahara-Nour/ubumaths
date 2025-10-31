@@ -60,6 +60,7 @@ export interface StudentWarningCounts {
 	R: number; // Retard
 	T: number; // Tricherie
 	total: number; // Sum of all warnings
+	unresolved_count: number; // Count of unresolved warnings
 	score: number; // 20 - total (clamped to 0-20)
 	warnings: Warning[]; // Full warning details
 }
@@ -212,6 +213,7 @@ export async function getClassWarnings(options: {
 				R: 0,
 				T: 0,
 				total: 0,
+				unresolved_count: 0,
 				score: 20,
 				warnings: []
 			});
@@ -325,6 +327,7 @@ export async function addWarning(options: {
 			R: warningType === 'R' ? 1 : 0,
 			T: warningType === 'T' ? 1 : 0,
 			total: 1,
+			unresolved_count: 1,
 			score: 19,
 			warnings: [newWarning]
 		};
@@ -429,6 +432,7 @@ export async function removeWarning(options: {
 		R: 0,
 		T: 0,
 		total: 0,
+		unresolved_count: 0,
 		score: 20,
 		warnings: []
 	};
@@ -490,6 +494,7 @@ export async function getStudentWarnings(options: {
 			R: 0,
 			T: 0,
 			total: 0,
+			unresolved_count: 0,
 			score: 20,
 			warnings: []
 		}

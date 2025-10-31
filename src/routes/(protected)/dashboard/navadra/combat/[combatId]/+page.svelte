@@ -14,14 +14,15 @@
 	import { calculatePlayerMaxEndurance } from '$lib/utils/game/combat'; // For future endurance calculations
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData, ActionData } from './$types';
+	import type { ChallengeInstance } from '$lib/types/game';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
 	// Combat state
 	let selectedSpellNum = $state<number | null>(null);
 	let activeChallenge = $state<unknown>(null);
-	let challengeInstance = $state<unknown>(null);
-	let challengeResult = $state<unknown>(null);
+	let challengeInstance = $state<ChallengeInstance | null>(null);
+	let challengeResult = $state<{ success?: boolean; answer: unknown; correctAnswer: unknown; timeTaken: number } | null>(null);
 	let submitting = $state(false);
 	let victory = $state(false);
 	let rewards = $state<unknown>(null);
@@ -72,7 +73,7 @@
 		}
 
 		// Store challenge result for display
-		const correctAnswer = challengeInstance.correct_answer;
+		const correctAnswer = (challengeInstance as { correct_answer: unknown }).correct_answer;
 
 		console.log('[handleChallengeSubmit] Submitting to server:', {
 			answer,
@@ -87,7 +88,7 @@
 		submitting = true;
 
 		const formData = new FormData();
-		formData.append('challenge_id', activeChallenge.id);
+		formData.append('challenge_id', (activeChallenge as { id: string }).id);
 		formData.append('answer', JSON.stringify(answer));
 		formData.append('correct_answer', JSON.stringify(correctAnswer));
 		formData.append('time_taken', String(timeTaken));
@@ -114,33 +115,41 @@
 				let success = false;
 				let damageDealt = 0;
 				let isVictory = false;
-				let serverData: { success?: boolean; damage_dealt?: number; is_victory?: boolean } | null =
-					null;
+				let serverData: {
+					success?: boolean;
+					damage_dealt?: number;
+					is_victory?: boolean;
+					challengeSuccess?: boolean;
+					damageDealt?: number;
+					victory?: boolean;
+					rewards?: unknown;
+				} | null = null;
 
 				if (result.type === 'success' && result.data) {
 					// Parse result.data if it's a string
-					const parsed = typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
+					const parsed: unknown = typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
 					console.log('[handleChallengeSubmit] Parsed response:', parsed);
 
 					// SvelteKit form actions return data directly as objects
 					// Check if parsed is already an object with the expected properties
 					if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
 						// Direct object format from server
-						serverData = parsed;
-						success = serverData.challengeSuccess ?? false;
-						damageDealt = serverData.damageDealt ?? 0;
-						isVictory = serverData.victory ?? false;
+						const parsedData = parsed as Record<string, unknown>;
+						serverData = parsedData as typeof serverData;
+						success = (parsedData.challengeSuccess as boolean | undefined) ?? false;
+						damageDealt = (parsedData.damageDealt as number | undefined) ?? 0;
+						isVictory = (parsedData.victory as boolean | undefined) ?? false;
 
 						console.log('[handleChallengeSubmit] Extracted from object:', {
 							success,
 							damageDealt,
 							isVictory,
-							rewards: serverData.rewards
+							rewards: parsedData.rewards
 						});
 					} else if (Array.isArray(parsed) && parsed.length >= 4) {
 						// PostgreSQL array format: [columnIndices, ...values]
 						// The first element contains column-to-index mappings
-						const columnIndices = parsed[0];
+						const columnIndices = parsed[0] as Record<string, number>;
 						console.log('[handleChallengeSubmit] Column indices:', columnIndices);
 
 						// Extract values using column indices
@@ -150,7 +159,7 @@
 						success = challengeSuccessIdx === 1;
 
 						const damageDealtIdx = columnIndices?.damageDealt ?? 2;
-						damageDealt = parsed[damageDealtIdx] ?? 0;
+						damageDealt = (parsed[damageDealtIdx] as number) ?? 0;
 
 						const victoryIdx = columnIndices?.victory ?? 3;
 						isVictory = parsed[victoryIdx] === true;
@@ -159,16 +168,16 @@
 						// that tells us where to find the actual XP, prestige, pyrs values
 						let rewardsData = null;
 						if (isVictory && columnIndices?.rewards !== undefined) {
-							const rewardsMapping = parsed[columnIndices.rewards];
+							const rewardsMapping = parsed[columnIndices.rewards] as Record<string, number>;
 							console.log('[handleChallengeSubmit] Rewards mapping:', rewardsMapping);
 
 							if (rewardsMapping && typeof rewardsMapping === 'object') {
 								// Use the rewards mapping to extract actual values
 								rewardsData = {
-									xp: parsed[rewardsMapping.xp] ?? 0,
-									prestige: parsed[rewardsMapping.prestige] ?? 0,
-									pyrs: parsed[rewardsMapping.pyrs] ?? 0,
-									element: parsed[rewardsMapping.element] ?? ''
+									xp: (parsed[rewardsMapping.xp] as number) ?? 0,
+									prestige: (parsed[rewardsMapping.prestige] as number) ?? 0,
+									pyrs: (parsed[rewardsMapping.pyrs] as number) ?? 0,
+									element: (parsed[rewardsMapping.element] as string) ?? ''
 								};
 								console.log('[handleChallengeSubmit] Extracted rewards:', rewardsData);
 							}
@@ -176,8 +185,8 @@
 
 						// Store serverData for rewards access
 						serverData = {
-							success: parsed[1],
-							damageDealt: parsed[damageDealtIdx],
+							success: parsed[1] as boolean,
+							damageDealt: parsed[damageDealtIdx] as number,
 							challengeSuccess: success,
 							victory: isVictory,
 							rewards: rewardsData
@@ -188,14 +197,16 @@
 							damageDealt,
 							isVictory,
 							challengeSuccessIdx,
-							rewards: serverData.rewards
+							rewards: serverData?.rewards
 						});
 					} else {
 						// Fallback
-						serverData = Array.isArray(parsed) ? parsed[0] : parsed;
-						success = serverData?.challengeSuccess ?? false;
-						damageDealt = serverData?.damageDealt ?? 0;
-						isVictory = serverData?.victory ?? false;
+						const fallbackRaw: unknown = Array.isArray(parsed) ? parsed[0] : parsed;
+						const fallbackData = fallbackRaw as Record<string, unknown>;
+						serverData = fallbackData as typeof serverData;
+						success = (fallbackData.challengeSuccess as boolean | undefined) ?? false;
+						damageDealt = (fallbackData.damageDealt as number | undefined) ?? 0;
+						isVictory = (fallbackData.victory as boolean | undefined) ?? false;
 
 						console.log('[handleChallengeSubmit] Extracted from fallback:', {
 							success,
@@ -288,18 +299,19 @@
 
 				<!-- Rewards -->
 				{#if rewards}
+					{@const rewardsData = rewards as { xp?: number; prestige?: number; pyrs?: number; element?: string }}
 					<div class="grid grid-cols-3 gap-4 rounded-lg bg-background p-6">
 						<div class="space-y-1">
-							<p class="text-3xl font-bold text-primary">+{rewards.xp ?? 0}</p>
+							<p class="text-3xl font-bold text-primary">+{rewardsData.xp ?? 0}</p>
 							<p class="text-sm text-muted-foreground">XP</p>
 						</div>
 						<div class="space-y-1">
-							<p class="text-3xl font-bold text-primary">+{rewards.prestige ?? 0}</p>
+							<p class="text-3xl font-bold text-primary">+{rewardsData.prestige ?? 0}</p>
 							<p class="text-sm text-muted-foreground">Prestige</p>
 						</div>
 						<div class="space-y-1">
-							<p class="text-3xl font-bold text-primary">+{rewards.pyrs ?? 0}</p>
-							<p class="text-sm text-muted-foreground">Pyrs {rewards.element ?? ''}</p>
+							<p class="text-3xl font-bold text-primary">+{rewardsData.pyrs ?? 0}</p>
+							<p class="text-sm text-muted-foreground">Pyrs {rewardsData.element ?? ''}</p>
 						</div>
 					</div>
 				{:else}
@@ -322,10 +334,10 @@
 		<!-- Challenge Result -->
 		<div class="mx-auto max-w-4xl p-8">
 			<ChallengeResult
-				success={challengeResult.success ?? false}
-				studentAnswer={challengeResult.answer}
-				correctAnswer={challengeResult.correctAnswer}
-				timeTaken={challengeResult.timeTaken}
+				success={challengeResult?.success ?? false}
+				studentAnswer={challengeResult?.answer as string | number}
+				correctAnswer={challengeResult?.correctAnswer as string | number}
+				timeTaken={challengeResult?.timeTaken ?? 0}
 			/>
 
 			<Button onclick={handleChallengeContinue} size="lg" class="mt-6 w-full">Continuer</Button>

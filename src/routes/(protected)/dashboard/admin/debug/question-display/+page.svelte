@@ -47,7 +47,7 @@
 	// SAMPLE QUESTIONS
 	// ============================================================================
 
-	const sampleQuestions: Record<string, QuestionInstance> = {
+	const sampleQuestions: Record<string, Partial<QuestionInstance> & Pick<QuestionInstance, 'type' | 'templateId'>> = {
 		numerical_exact: {
 			templateId: 'debug-numerical-1',
 			type: 'numerical_exact',
@@ -142,14 +142,14 @@
 			],
 			answer: '0',
 			choices: [
-				{ type: 'text', content: '$$x = 4$$' },
-				{ type: 'text', content: '$$x = 9$$' },
-				{ type: 'text', content: '$$x = 6.5$$' }
+				{ content: { type: 'text', content: '$$x = 4$$' }, isCorrect: true },
+				{ content: { type: 'text', content: '$$x = 9$$' }, isCorrect: false },
+				{ content: { type: 'text', content: '$$x = 6.5$$' }, isCorrect: false }
 			],
 			shuffledChoices: [
-				{ type: 'text', content: '$$x = 4$$', originalIndex: 0 },
-				{ type: 'text', content: '$$x = 9$$', originalIndex: 1 },
-				{ type: 'text', content: '$$x = 6.5$$', originalIndex: 2 }
+				{ content: { type: 'text', content: '$$x = 4$$' }, originalIndex: 0 },
+				{ content: { type: 'text', content: '$$x = 9$$' }, originalIndex: 1 },
+				{ content: { type: 'text', content: '$$x = 6.5$$' }, originalIndex: 2 }
 			],
 			correctChoiceIndex: 0,
 			multipleAnswers: false,
@@ -333,7 +333,7 @@
 		<Card.Content>
 			<FlashCard
 				{interactive}
-				instance={currentInstance}
+				instance={currentInstance as QuestionInstance}
 				onAnswerSubmit={handleAnswerSubmit}
 				onAnswerChange={handleAnswerChange}
 				onComplete={handleComplete}
@@ -400,7 +400,7 @@
 							<div>
 								<span class="text-sm font-medium">Grades:</span>
 								<div class="ml-2 inline-flex gap-1">
-									{#each currentInstance.grades as grade (grade)}
+									{#each currentInstance.grades || [] as grade (grade)}
 										<Badge variant="secondary">{grade}</Badge>
 									{/each}
 								</div>

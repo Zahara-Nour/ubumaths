@@ -11,7 +11,7 @@ import { validateSaveTest } from '$lib/server/validation/tests';
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
-	const session = await locals.getSession();
+	const { session } = await locals.safeGetSession();
 
 	// Check authentication
 	if (!session?.user) {

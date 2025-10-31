@@ -12,3 +12,7 @@ ulle part !
 8. que le code est bien documenté (inline + jsdoc)
 9. qu'il n' y a pas de tests inutiles.
 Prends le plus grand soin a nettoyer tout le code, c'est important pour la suite du projet. Encore une fois, utilise les bons agents !
+
+
+
+Dans le dashboard teacher, les pages utilisent beaucoup la liste des élève de chaque classe, et les gidouilles, 

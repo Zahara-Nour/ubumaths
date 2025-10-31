@@ -169,7 +169,7 @@
 	function skipTypingAnimation(messageIndex: number) {
 		if (typingMessageIndex === messageIndex) {
 			const message = messages[messageIndex];
-			displayedText[messageIndex] = message.content;
+			displayedText[messageIndex] = getMessageText(message.content);
 			typingMessageIndex = null;
 			message.isTyping = false;
 
@@ -199,7 +199,7 @@
 
 	// Refs for DOM elements
 	let messagesContainer: HTMLDivElement | undefined;
-	let textareaElement: HTMLTextAreaElement | undefined;
+	let textareaElement: any;
 	let fileInputElement: HTMLInputElement | undefined;
 
 	// Constants for image validation

@@ -58,6 +58,20 @@ export interface TeacherClass {
 	student_count: number;
 }
 
+export interface MessageRecipientDisplay {
+	id: string;
+	name: string;
+	avatar_url: string | null;
+}
+
+export interface MessageAttachment {
+	id: string;
+	file_name: string;
+	file_type: string;
+	file_size: number;
+	public_url: string;
+}
+
 export interface MessageDetails {
 	message_id: string;
 	sender_id: string;
@@ -76,8 +90,8 @@ export interface MessageDetails {
 	read_at: string | null;
 	is_starred: boolean;
 	status: string;
-	attachments: unknown[] | null;
-	recipients: unknown[] | null;
+	attachments: MessageAttachment[] | null;
+	recipients: MessageRecipientDisplay[] | null;
 }
 
 class PrivateMessagesStore {
@@ -85,7 +99,7 @@ class PrivateMessagesStore {
 	inbox = $state<PrivateMessage[]>([]);
 	sent = $state<SentMessage[]>([]);
 	currentMessage = $state<MessageDetails | null>(null);
-	currentThread = $state<unknown[]>([]);
+	currentThread = $state<MessageDetails[]>([]);
 	drafts = $state<MessageDraftRow[]>([]);
 
 	recipients = $state<MessageRecipient[]>([]);

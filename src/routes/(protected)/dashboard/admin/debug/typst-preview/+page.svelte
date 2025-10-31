@@ -6,17 +6,13 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { FileDown, Eye, AlertCircle } from 'lucide-svelte';
 
-	// Declare typst global type
-	declare global {
-		interface Window {
-			$typst: {
-				setCompilerInitOptions: (options: { getModule: () => string }) => void;
-				setRendererInitOptions: (options: { getModule: () => string }) => void;
-				svg: (options: { mainContent: string }) => Promise<string>;
-				pdf: (options: { mainContent: string }) => Promise<Uint8Array>;
-			};
-		}
-	}
+	// Type for typst library
+	type TypstLibrary = {
+		setCompilerInitOptions: (options: { getModule: () => string }) => void;
+		setRendererInitOptions: (options: { getModule: () => string }) => void;
+		svg: (options: { mainContent: string }) => Promise<string>;
+		pdf: (options: { mainContent: string }) => Promise<Uint8Array>;
+	};
 
 	// State
 	let typstContent = $state(`= Démonstration Typst.ts
@@ -81,17 +77,18 @@ Typst permet de créer facilement des documents mathématiques professionnels av
 	 * Initialize typst.ts compiler and renderer
 	 */
 	function initializeTypst() {
-		if (!window.$typst) {
+		const typst = (window as { $typst?: TypstLibrary }).$typst;
+		if (!typst) {
 			error = 'Typst library not loaded';
 			return;
 		}
 
 		try {
-			window.$typst.setCompilerInitOptions({
+			typst.setCompilerInitOptions({
 				getModule: () =>
 					'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm'
 			});
-			window.$typst.setRendererInitOptions({
+			typst.setRendererInitOptions({
 				getModule: () =>
 					'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm'
 			});
@@ -107,7 +104,8 @@ Typst permet de créer facilement des documents mathématiques professionnels av
 	 * Render typst content to SVG
 	 */
 	async function renderPreview(content: string) {
-		if (!isInitialized || !window.$typst) {
+		const typst = (window as { $typst?: TypstLibrary }).$typst;
+		if (!isInitialized || !typst) {
 			return;
 		}
 
@@ -115,7 +113,7 @@ Typst permet de créer facilement des documents mathématiques professionnels av
 		error = null;
 
 		try {
-			const svg = await window.$typst.svg({ mainContent: content });
+			const svg = await typst.svg({ mainContent: content });
 			svgContent = svg;
 		} catch (err) {
 			error = `Compilation error: ${err}`;
@@ -130,7 +128,8 @@ Typst permet de créer facilement des documents mathématiques professionnels av
 	 * Export content as PDF
 	 */
 	async function exportPdf() {
-		if (!isInitialized || !window.$typst) {
+		const typst = (window as { $typst?: TypstLibrary }).$typst;
+		if (!isInitialized || !typst) {
 			return;
 		}
 
@@ -138,7 +137,7 @@ Typst permet de créer facilement des documents mathématiques professionnels av
 		error = null;
 
 		try {
-			const pdfData = await window.$typst.pdf({ mainContent: typstContent });
+			const pdfData = await typst.pdf({ mainContent: typstContent });
 			const pdfFile = new Blob([pdfData], { type: 'application/pdf' });
 
 			// Create download link

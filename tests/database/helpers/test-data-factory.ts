@@ -65,7 +65,7 @@ export class ProfileBuilder {
 		});
 
 		// Then create profile
-		const { data, error } = await client.from('profiles').insert(this.data).select().single();
+		const { data, error } = await client.from('profiles').insert(this.data as Tables['profiles']['Insert']).select().single();
 		if (error) throw error;
 		return data;
 	}
@@ -82,8 +82,9 @@ export class ClassBuilder {
 			id: generateTestId('class'),
 			teacher_id: teacherId,
 			name: 'Test Class',
+			join_code: `TEST${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
 			created_at: new Date().toISOString(),
-			archived: false
+			is_active: true
 		};
 	}
 
@@ -93,13 +94,13 @@ export class ClassBuilder {
 	}
 
 	archived(): this {
-		this.data.archived = true;
+		this.data.is_active = false;
 		return this;
 	}
 
 	async create(): Promise<Tables['classes']['Row']> {
 		const client = createServiceRoleClient();
-		const { data, error } = await client.from('classes').insert(this.data).select().single();
+		const { data, error } = await client.from('classes').insert(this.data as Tables['classes']['Insert']).select().single();
 		if (error) throw error;
 		return data;
 	}
@@ -115,31 +116,37 @@ export class ExerciseBuilder {
 		this.data = {
 			id: generateTestId('exercise'),
 			created_by: createdBy,
-			type: 'multiple_choice',
-			question: 'What is 2 + 2?',
-			answer: '4',
+			difficulty: 1,
+			statement_md: 'What is 2 + 2?',
+			solution_md: 'The answer is 4',
+			is_public: false,
 			created_at: new Date().toISOString()
 		};
 	}
 
-	withType(type: string): this {
-		this.data.type = type;
+	withDifficulty(difficulty: number): this {
+		this.data.difficulty = difficulty;
+		return this;
+	}
+
+	withStatement(statement: string): this {
+		this.data.statement_md = statement;
 		return this;
 	}
 
 	withQuestion(question: string): this {
-		this.data.question = question;
+		this.data.statement_md = question;
 		return this;
 	}
 
-	withAnswer(answer: string): this {
-		this.data.answer = answer;
+	withSolution(solution: string): this {
+		this.data.solution_md = solution;
 		return this;
 	}
 
 	async create(): Promise<Tables['exercises']['Row']> {
 		const client = createServiceRoleClient();
-		const { data, error } = await client.from('exercises').insert(this.data).select().single();
+		const { data, error } = await client.from('exercises').insert(this.data as Tables['exercises']['Insert']).select().single();
 		if (error) throw error;
 		return data;
 	}
@@ -151,10 +158,11 @@ export class ExerciseBuilder {
 export class GameCombatBuilder {
 	private data: Partial<Tables['game_combats']['Insert']> = {};
 
-	constructor(organizerId: string) {
+	constructor(organizerId: string, monsterId?: string) {
 		this.data = {
 			id: generateTestId('combat'),
 			organizer_id: organizerId,
+			monster_id: monsterId || generateTestId('monster'),
 			status: 'active',
 			xp_gained: 0,
 			ready_player_ids: [],
@@ -184,7 +192,7 @@ export class GameCombatBuilder {
 
 	async create(): Promise<Tables['game_combats']['Row']> {
 		const client = createServiceRoleClient();
-		const { data, error } = await client.from('game_combats').insert(this.data).select().single();
+		const { data, error } = await client.from('game_combats').insert(this.data as Tables['game_combats']['Insert']).select().single();
 		if (error) throw error;
 		return data;
 	}
@@ -236,7 +244,7 @@ export class PrivateMessageBuilder {
 		const client = createServiceRoleClient();
 		const { data, error } = await client
 			.from('private_messages')
-			.insert(this.data)
+			.insert(this.data as Tables['private_messages']['Insert'])
 			.select()
 			.single();
 		if (error) throw error;
@@ -296,7 +304,7 @@ export class ErrorLogBuilder {
 
 	async create(): Promise<Tables['error_logs']['Row']> {
 		const client = createServiceRoleClient();
-		const { data, error } = await client.from('error_logs').insert(this.data).select().single();
+		const { data, error } = await client.from('error_logs').insert(this.data as Tables['error_logs']['Insert']).select().single();
 		if (error) throw error;
 		return data;
 	}
@@ -307,7 +315,7 @@ export const TestData = {
 	profile: () => new ProfileBuilder(),
 	class: (teacherId: string) => new ClassBuilder(teacherId),
 	exercise: (createdBy: string) => new ExerciseBuilder(createdBy),
-	gameCombat: (organizerId: string) => new GameCombatBuilder(organizerId),
+	gameCombat: (organizerId: string, monsterId?: string) => new GameCombatBuilder(organizerId, monsterId),
 	privateMessage: (senderId: string) => new PrivateMessageBuilder(senderId),
 	errorLog: () => new ErrorLogBuilder()
 };

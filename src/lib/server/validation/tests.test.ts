@@ -215,30 +215,46 @@ describe('test system validation schemas', () => {
 		});
 
 		it('should accept test without sessionId', () => {
-			const data = createValidTestData() as Mutable<ReturnType<typeof createValidTestData>>;
-			delete data.result.sessionId;
-			const result = saveTestSchema.safeParse(data);
+			const data = createValidTestData();
+			const { sessionId, ...resultWithoutSessionId } = data.result;
+			const testData = { ...data, result: resultWithoutSessionId };
+			const result = saveTestSchema.safeParse(testData);
 			expect(result.success).toBe(true);
 		});
 
 		it('should accept test without assignmentId', () => {
-			const data = createValidTestData() as Mutable<ReturnType<typeof createValidTestData>>;
-			delete data.assignmentId;
-			const result = saveTestSchema.safeParse(data);
+			const data = createValidTestData();
+			const { assignmentId, ...testData } = data;
+			const result = saveTestSchema.safeParse(testData);
 			expect(result.success).toBe(true);
 		});
 
 		it('should accept answer with null userAnswer', () => {
 			const data = createValidTestData();
-			data.result.answers[0].userAnswer = null;
-			const result = saveTestSchema.safeParse(data);
+			const answer = data.result.answers[0];
+			const modifiedAnswer = { ...answer, userAnswer: null as never };
+			const testData = {
+				...data,
+				result: {
+					...data.result,
+					answers: [modifiedAnswer, ...data.result.answers.slice(1)]
+				}
+			};
+			const result = saveTestSchema.safeParse(testData);
 			expect(result.success).toBe(true);
 		});
 
 		it('should accept answer without userAnswer field', () => {
-			const data = createValidTestData() as Mutable<ReturnType<typeof createValidTestData>>;
-			delete data.result.answers[0].userAnswer;
-			const result = saveTestSchema.safeParse(data);
+			const data = createValidTestData();
+			const { userAnswer, ...answerWithoutUserAnswer } = data.result.answers[0];
+			const testData = {
+				...data,
+				result: {
+					...data.result,
+					answers: [answerWithoutUserAnswer, ...data.result.answers.slice(1)]
+				}
+			};
+			const result = saveTestSchema.safeParse(testData);
 			expect(result.success).toBe(true);
 		});
 
@@ -335,7 +351,7 @@ describe('test system validation schemas', () => {
 					statement: `Question ${i}`,
 					answer: 42,
 					type: 'input-number' as const,
-					variables: {}
+					variables: { a: i, b: i + 1 }
 				},
 				userAnswer: 42,
 				isCorrect: true,

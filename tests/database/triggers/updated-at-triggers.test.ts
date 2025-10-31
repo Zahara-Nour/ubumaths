@@ -189,7 +189,7 @@ describe('Updated_at Triggers (Parameterized)', () => {
 			// Act: Update with NULL value
 			const { data: updated } = await serviceClient
 				.from('exercises')
-				.update({ hint: null })
+				.update({ source: null })
 				.eq('id', exercise.id)
 				.select()
 				.single();
@@ -213,7 +213,7 @@ describe('Updated_at Triggers (Parameterized)', () => {
 			// Act: Bulk update
 			await serviceClient
 				.from('exercises')
-				.update({ question: 'Bulk updated' })
+				.update({ statement_md: 'Bulk updated' })
 				.in(
 					'id',
 					exercises.map((e) => e.id)

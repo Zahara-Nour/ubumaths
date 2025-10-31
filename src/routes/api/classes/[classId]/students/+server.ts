@@ -110,13 +110,13 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 				): s is {
 					id: string;
 					firstname: string;
-					lastname?: string;
-					avatar_url?: string;
-					role?: string;
-					gender?: string;
+					lastname: string | undefined;
+					avatar_url: string | undefined;
+					role: string | undefined;
+					gender: string | undefined;
 				} => s !== null
 			)
-			.sort((a, b) => a.firstname.localeCompare(b.firstname)); // Sort alphabetically by firstname
+			.sort((a, b) => (a?.firstname || '').localeCompare(b?.firstname || '')); // Sort alphabetically by firstname
 
 		return json({ students });
 	} catch (err) {

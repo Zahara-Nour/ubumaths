@@ -137,7 +137,7 @@
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					cardId: currentCard.cardId,
+					cardId: currentCard.card.id,
 					deckId,
 					grade,
 					timeSpent
@@ -301,17 +301,17 @@
 
 		<!-- FlashCard Display -->
 		<div class="mb-6">
-			{#if currentCard.cardType === 'template' && currentCard.instance}
+			{#if currentCard.card.cardType === 'template' && currentCard.instance}
 				<FlashCard
 					interactive={false}
 					instance={currentCard.instance}
 					size="lg"
 					onFlip={handleFlip}
 				/>
-			{:else if currentCard.cardType === 'custom' && currentCard.frontContent && currentCard.backContent}
+			{:else if currentCard.card.cardType === 'custom' && currentCard.card.frontContent && currentCard.card.backContent}
 				<CustomFlashCard
-					frontContent={currentCard.frontContent}
-					backContent={currentCard.backContent}
+					frontContent={currentCard.card.frontContent}
+					backContent={currentCard.card.backContent}
 					size="lg"
 					onFlip={handleFlip}
 				/>
