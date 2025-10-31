@@ -121,8 +121,16 @@
 	// Data from server load function
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
+	// Local reactive copy of classes data (needed for optimistic updates)
+	let classes = $state(data.classes);
+
+	// Sync classes when data changes from server
+	$effect(() => {
+		classes = data.classes;
+	});
+
 	// Local state for selected class
-	let selectedClassId = $state(data.classes[0]?.id);
+	let selectedClassId = $state(classes[0]?.id);
 
 	// Local state for gidouilles inputs (per student)
 	let studentDeltas = $state<Record<string, number>>({});
@@ -162,7 +170,7 @@
 
 	// Initialize deltas to 1 for each student and class
 	$effect(() => {
-		data.classes.forEach((classItem) => {
+		classes.forEach((classItem) => {
 			if (!classDeltas[classItem.id]) {
 				classDeltas[classItem.id] = 1;
 			}
@@ -230,8 +238,8 @@
 			return optimisticGidouilles[studentId];
 		}
 
-		// Otherwise find student in data
-		const classItem = data.classes.find((c) => c.id === selectedClassId);
+		// Otherwise find student in classes
+		const classItem = classes.find((c) => c.id === selectedClassId);
 		if (!classItem) return 0;
 
 		const student = classItem.students.find((s: { id: string }) => s.id === studentId);
@@ -267,7 +275,7 @@
 	 * @param delta - The change amount to apply to each student
 	 */
 	function updateClassGidouillesOptimistic(classId: string, delta: number) {
-		const classItem = data.classes.find((c) => c.id === classId);
+		const classItem = classes.find((c) => c.id === classId);
 		if (classItem) {
 			classItem.students.forEach((student: { id: string }) => {
 				const currentValue = getStudentGidouilles(student.id);
@@ -358,16 +366,25 @@
 
 				if (response.ok) {
 					// SUCCESS: Server updated the database
-					// Wait 100ms then refresh data and show confirmation
-					setTimeout(() => {
-						// Clear optimistic state
-						clearOptimisticOverride(studentId);
+					await response.json();
 
-						// Show success toast with accumulated delta and student name
-						toaster.success(
-							`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} (${studentName})`
-						);
-					}, 100);
+					// Update local data: apply accumulated delta to the student
+					classes = classes.map((classItem) => ({
+						...classItem,
+						students: classItem.students.map((student) =>
+							student.id === studentId
+								? { ...student, gidouilles: student.gidouilles + accumulatedDelta }
+								: student
+						)
+					}));
+
+					// Clear optimistic state (now safe since data is updated)
+					clearOptimisticOverride(studentId);
+
+					// Show success toast with accumulated delta and student name
+					toaster.success(
+						`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} (${studentName})`
+					);
 				} else {
 					// ERROR: Server returned error status
 					clearOptimisticOverride(studentId); // Rollback to server value
@@ -436,22 +453,38 @@
 
 				if (response.ok) {
 					// SUCCESS: All students updated in database
-					const classItem = data.classes.find((c) => c.id === classId);
-					const studentCount = classItem?.students.length || 0;
-					setTimeout(() => {
-						// Clear optimistic state for all students
-						classItem?.students.forEach((student: { id: string }) =>
-							clearOptimisticOverride(student.id)
-						);
+					// Parse response (contains studentsUpdated count)
+					await response.json();
 
-						// Show success toast with student count
-						toaster.success(
-							`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} pour ${studentCount} élève${studentCount > 1 ? 's' : ''}`
-						);
-					}, 100);
+					// Update local data: apply accumulated delta to all students in the class
+					classes = classes.map((classItem) => {
+						if (classItem.id === classId) {
+							return {
+								...classItem,
+								students: classItem.students.map((student) => ({
+									...student,
+									gidouilles: student.gidouilles + accumulatedDelta
+								}))
+							};
+						}
+						return classItem;
+					});
+
+					const classItem = classes.find((c) => c.id === classId);
+					const studentCount = classItem?.students.length || 0;
+
+					// Clear optimistic state for all students (now safe since data is updated)
+					classItem?.students.forEach((student: { id: string }) =>
+						clearOptimisticOverride(student.id)
+					);
+
+					// Show success toast with student count
+					toaster.success(
+						`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} pour ${studentCount} élève${studentCount > 1 ? 's' : ''}`
+					);
 				} else {
 					// ERROR: Rollback all students in the class
-					const classItem = data.classes.find((c) => c.id === classId);
+					const classItem = classes.find((c) => c.id === classId);
 					classItem?.students.forEach((student: { id: string }) =>
 						clearOptimisticOverride(student.id)
 					);
@@ -459,7 +492,7 @@
 				}
 			} catch {
 				// NETWORK ERROR: Rollback all students
-				const classItem = data.classes.find((c) => c.id === classId);
+				const classItem = classes.find((c) => c.id === classId);
 				classItem?.students.forEach((student: { id: string }) =>
 					clearOptimisticOverride(student.id)
 				);
@@ -545,7 +578,7 @@
 	</div>
 
 	<!-- MAIN CONTENT -->
-	{#if data.classes.length === 0}
+	{#if classes.length === 0}
 		<!-- Pas de classes -->
 		<div class="rounded-lg border border-border bg-card p-12 text-center">
 			<img src={gidouilleImg} alt="Gidouille" class="mx-auto mb-4 h-16 w-16 opacity-50" />
@@ -558,14 +591,14 @@
 		<!-- TABS PAR CLASSE -->
 		<Tabs.Root bind:value={selectedClassId} class="w-full">
 			<Tabs.List class="mb-6">
-				{#each data.classes as classItem (classItem.id)}
+				{#each classes as classItem (classItem.id)}
 					<Tabs.Trigger value={classItem.id}>
 						{classItem.name}
 					</Tabs.Trigger>
 				{/each}
 			</Tabs.List>
 
-			{#each data.classes as classItem (classItem.id)}
+			{#each classes as classItem (classItem.id)}
 				<Tabs.Content value={classItem.id} class="mt-0 space-y-6">
 					<!-- CONTRÔLES AU NIVEAU CLASSE -->
 					<div class="rounded-lg border border-border bg-card p-6">

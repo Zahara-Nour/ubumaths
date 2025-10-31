@@ -218,7 +218,7 @@
 					gender: profile.gender,
 					gidouilles: gidouillesRecord?.gidouilles ?? 0,
 					vipCards: gidouillesRecord?.vip_cards ?? {},
-					warnings: warningsRecord ?? { T: 0, C: 0, D: 0, M: 0, total: 0, score: 20 }
+					warnings: warningsRecord ?? { T: 0, C: 0, M: 0, R: 0, total: 0, score: 20, warnings: [] }
 				};
 			});
 		} catch (error) {
@@ -339,26 +339,28 @@
 
 		// STEP 2: Remove random VIP card if has cards
 		if (unusedVipCards.length > 0) {
+			const studentId = student.id;
 			const randomCard = selectRandomCard(unusedVipCards);
 
-			// Optimistic UI - remove card from collection
+			// 1. Instant optimistic update - remove card from collection
 			const newVipCards = { ...getVipCards(student) };
 			delete newVipCards[randomCard.instanceId];
 
 			optimisticUpdates = {
 				...optimisticUpdates,
-				[student.id]: {
-					...optimisticUpdates[student.id],
+				[studentId]: {
+					...optimisticUpdates[studentId],
 					vipCards: newVipCards
 				}
 			};
 
+			// 2. Make API call
 			try {
 				// Call RPC function to remove VIP card
 				// Note: RPC function takes cardId (e.g., "captain", "joker") not instanceId
 				// It will remove the oldest unused instance of that card type
 				const { data: success, error: rpcError } = await supabase.rpc('remove_student_vip_card', {
-					p_student_id: student.id,
+					p_student_id: studentId,
 					p_card_id: randomCard.cardId
 				});
 
@@ -370,19 +372,32 @@
 					throw new Error('No card found to remove');
 				}
 
+				// Fetch updated VIP cards for this student only (no loading spinner)
+				const gidouillesRes = await fetch(`/api/classes/${classId}/gidouilles`);
+				if (gidouillesRes.ok) {
+					const gidouillesData = await gidouillesRes.json();
+					const updatedRecord = gidouillesData.gidouilles.find(
+						(g: { student_id: string; vip_cards: StudentVipCards }) => g.student_id === studentId
+					);
+
+					if (updatedRecord) {
+						// Update local state with server value
+						studentsData = studentsData.map((s) =>
+							s.id === studentId ? { ...s, vipCards: updatedRecord.vip_cards } : s
+						);
+					}
+				}
+
 				// Clear optimistic state
 				const newUpdates = { ...optimisticUpdates };
-				delete newUpdates[student.id]?.vipCards;
+				delete newUpdates[studentId]?.vipCards;
 				optimisticUpdates = newUpdates;
-
-				// Reload data
-				await loadData();
 
 				toaster.success(`Carte VIP retirée (${student.firstname})`);
 			} catch (error) {
 				// Rollback optimistic update
 				const newUpdates = { ...optimisticUpdates };
-				delete newUpdates[student.id]?.vipCards;
+				delete newUpdates[studentId]?.vipCards;
 				optimisticUpdates = newUpdates;
 
 				const errorMessage =
@@ -394,29 +409,35 @@
 
 		// STEP 3: Add warning C if score ≠ 0
 		if (score !== 0) {
-			// Optimistic UI - add warning
+			const studentId = student.id;
+
+			// 1. Instant optimistic update
 			const currentWarnings = getWarnings(student);
 			const newWarnings: StudentWarningCounts = {
-				...currentWarnings,
+				T: currentWarnings.T,
 				C: currentWarnings.C + 1,
+				M: currentWarnings.M,
+				R: currentWarnings.R,
 				total: currentWarnings.total + 1,
-				score: currentWarnings.score - 1
+				score: currentWarnings.score - 1,
+				warnings: currentWarnings.warnings // Keep existing warnings array
 			};
 
 			optimisticUpdates = {
 				...optimisticUpdates,
-				[student.id]: {
-					...optimisticUpdates[student.id],
+				[studentId]: {
+					...optimisticUpdates[studentId],
 					warnings: newWarnings
 				}
 			};
 
+			// 2. Make API call
 			try {
 				const response = await fetch('/api/warnings', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
-						student_id: student.id,
+						student_id: studentId,
 						warning_type: 'C',
 						class_id: classId,
 						academic_period_id: periodId
@@ -424,13 +445,18 @@
 				});
 
 				if (response.ok) {
+					const data = await response.json();
+
+					// Update local state with server value
+					// API returns { success: true, counts: StudentWarningCounts }
+					studentsData = studentsData.map((s) =>
+						s.id === studentId ? { ...s, warnings: data.counts } : s
+					);
+
 					// Clear optimistic state
 					const newUpdates = { ...optimisticUpdates };
-					delete newUpdates[student.id]?.warnings;
+					delete newUpdates[studentId]?.warnings;
 					optimisticUpdates = newUpdates;
-
-					// Reload data
-					await loadData();
 
 					toaster.success(`Avertissement de conduite ajouté (${student.firstname})`);
 				} else {
@@ -439,7 +465,7 @@
 			} catch (_error) {
 				// Rollback optimistic update
 				const newUpdates = { ...optimisticUpdates };
-				delete newUpdates[student.id]?.warnings;
+				delete newUpdates[studentId]?.warnings;
 				optimisticUpdates = newUpdates;
 				toaster.error("Erreur lors de l'ajout de l'avertissement");
 			}
