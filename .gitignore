@@ -45,3 +45,11 @@ fix-*.sql
 
 # Playwright reports (generated on test run)
 playwright-report/
+
+# Analysis and validation temporary files
+TESTING_CHECKLIST.md
+VALIDATION_STATUS.txt
+audit-validation.sh
+typescript-check-output.txt
+validation-audit.json
+/tmp/ts-*.log
