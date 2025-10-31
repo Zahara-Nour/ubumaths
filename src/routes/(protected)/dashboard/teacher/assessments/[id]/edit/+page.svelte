@@ -23,7 +23,7 @@
 		description: string;
 		settings: AssessmentSettings;
 	}) {
-		isSubmitting = true;
+		_isSubmitting = true;
 
 		try {
 			const form = new FormData();
@@ -49,7 +49,7 @@
 			console.error('Update failed:', error);
 			toaster.error('Échec de la mise à jour');
 		} finally {
-			isSubmitting = false;
+			_isSubmitting = false;
 		}
 	}
 </script>

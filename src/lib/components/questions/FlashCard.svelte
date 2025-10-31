@@ -379,13 +379,13 @@
 								<!-- Type-specific inputs -->
 								{#if instance.type === 'numerical_exact' || instance.type === 'numerical_decimal' || instance.type === 'numerical_rounded'}
 									<NumericalInput
-										bind:value={userAnswer}
+										bind:value={userAnswer as string}
 										disabled={isInputDisabled}
 										onSubmit={handleSubmit}
 									/>
 								{:else if instance.type === 'algebraic_transform'}
 									<AlgebraicInput
-										bind:value={userAnswer}
+										bind:value={userAnswer as string}
 										disabled={isInputDisabled}
 										onSubmit={handleSubmit}
 									/>

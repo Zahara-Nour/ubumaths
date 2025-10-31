@@ -1,5 +1,7 @@
 import type { Gender, UserRole } from '$lib/types/database';
 
+export type { Gender };
+
 // Avatar image imports
 import avatarAdmin from '$lib/assets/images/avatars/avatar-admin.jpg';
 import avatarStudentBoy from '$lib/assets/images/avatars/avatar-student-boy.jpg';
