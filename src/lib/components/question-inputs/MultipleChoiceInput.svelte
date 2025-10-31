@@ -18,10 +18,12 @@
 	import MathDisplay from '$lib/components/MathDisplay.svelte';
 	import { Check, X } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
+	import type { ContentField } from '$lib/questions/types';
 
 	interface Choice {
-		content: { type: 'text' | 'image'; content: string; url?: string; alt?: string };
-		isCorrect: boolean;
+		content: ContentField[]; // Array of content fields (text, images, etc.)
+		originalIndex?: number; // For shuffled choices
+		isCorrect?: boolean; // For validation mode
 	}
 
 	interface Props {
@@ -82,6 +84,7 @@
 			{@const selected = isSelected(i)}
 			{@const correct = showValidation && choice.isCorrect}
 			{@const incorrect = showValidation && !choice.isCorrect && selected}
+			{@const contentField = choice.content[0]}
 
 			<button
 				type="button"
@@ -100,12 +103,12 @@
 
 				<!-- Choice content -->
 				<div class="choice-content">
-					{#if choice.content.type === 'text'}
-						<MathDisplay text={choice.content.content} />
-					{:else if choice.content.type === 'image'}
+					{#if contentField.type === 'text'}
+						<MathDisplay text={contentField.content} />
+					{:else if contentField.type === 'image'}
 						<img
-							src={choice.content.url}
-							alt={choice.content.alt || `Choice ${getChoiceLetter(i)}`}
+							src={contentField.content}
+							alt={contentField.alt || `Choice ${getChoiceLetter(i)}`}
 							class="choice-image"
 						/>
 					{/if}

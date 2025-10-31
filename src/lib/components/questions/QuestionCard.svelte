@@ -20,7 +20,7 @@
 -->
 
 <script lang="ts">
-	import type { QuestionInstance, Choice } from '$lib/questions/types';
+	import type { QuestionInstance } from '$lib/questions/types';
 	import type { AnswerData } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
 	import MathDisplay from '$lib/components/MathDisplay.svelte';
@@ -265,7 +265,7 @@
 						/>
 					{:else if instance.type === 'multiple_choice'}
 						<MultipleChoiceInput
-							choices={instance.shuffledChoices as Choice[] || []}
+							choices={instance.shuffledChoices || []}
 							bind:selectedIndexes={selectedChoices}
 							multipleAnswers={instance.multipleAnswers}
 							disabled={isInputDisabled}
