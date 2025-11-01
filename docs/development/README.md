@@ -30,6 +30,10 @@ Stratégie de linting, lint-staged, Husky, ESLint cache, workflow automatisé.
 
 Patterns de type safety pour interactions avec Supabase, assertions d'enum, typage des mocks, null safety.
 
+### [Incremental Type Checking](incremental-type-checking.md) 🆕 2025-11-01
+
+Guide pour optimiser le workflow de type checking avec vérifications incrémentales, check rapide, et check de fichiers modifiés.
+
 ### [Polling Patterns](polling-patterns.md) 🆕 2025-10-28
 
 Guide complet pour implémenter le polling unifié, optimiser les requêtes, et gérer les mises à jour d'activité en temps réel.
@@ -74,8 +78,14 @@ pnpm dev -- --port 5175  # Port Claude
 # Formater le code
 pnpm format
 
-# Vérifier types
+# Vérifier types (rapide - recommandé)
+pnpm check:fast
+
+# Vérifier types complet (Svelte + TypeScript)
 pnpm check
+
+# Vérifier seulement les fichiers modifiés
+pnpm check:changed
 
 # Lancer tests
 pnpm test:unit

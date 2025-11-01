@@ -23,7 +23,10 @@ pnpm dev -- --port 5175    # TOUJOURS utiliser port 5175 (Claude)
 pnpm build                 # Build production
 
 # Quality checks
-pnpm check                 # Type checking (TypeScript + Svelte)
+pnpm check                 # Type checking (TypeScript + Svelte) - full check
+pnpm check:fast            # TypeScript only (incremental, much faster)
+pnpm check:changed         # Check only changed files since HEAD
+pnpm check:staged          # Check only staged files (for pre-commit)
 pnpm lint                  # ESLint (cached, fast)
 pnpm format                # Prettier formatting
 
