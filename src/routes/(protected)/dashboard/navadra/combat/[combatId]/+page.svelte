@@ -135,7 +135,7 @@
 					if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
 						// Direct object format from server
 						const parsedData = parsed as Record<string, unknown>;
-						serverData = parsedData as typeof serverData;
+						serverData = parsedData as unknown as typeof serverData;
 						success = (parsedData.challengeSuccess as boolean | undefined) ?? false;
 						damageDealt = (parsedData.damageDealt as number | undefined) ?? 0;
 						isVictory = (parsedData.victory as boolean | undefined) ?? false;
@@ -203,7 +203,7 @@
 						// Fallback
 						const fallbackRaw: unknown = Array.isArray(parsed) ? parsed[0] : parsed;
 						const fallbackData = fallbackRaw as Record<string, unknown>;
-						serverData = fallbackData as typeof serverData;
+						serverData = fallbackData as unknown as typeof serverData;
 						success = (fallbackData.challengeSuccess as boolean | undefined) ?? false;
 						damageDealt = (fallbackData.damageDealt as number | undefined) ?? 0;
 						isVictory = (fallbackData.victory as boolean | undefined) ?? false;
