@@ -276,7 +276,7 @@
 		<div class="w-full md:w-80 md:border-r md:border-border">
 			<ChatConversationList
 				conversations={chatStore.conversations}
-				selectedConversationId={chatStore.activeConversationId}
+				selectedConversationId={chatStore.activeConversationId || undefined}
 				onSelectConversation={handleSelectConversation}
 				onNewChat={handleNewChat}
 			/>

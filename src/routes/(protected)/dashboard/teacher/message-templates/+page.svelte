@@ -69,7 +69,7 @@
 	let formSubject = $state('');
 	let formBody = $state('');
 	let formTriggerType = $state<TriggerType>('general');
-	let formClassId = $state<string | null>(null);
+	let formClassId = $state<string | undefined>(undefined);
 	let formIsActive = $state(true);
 	let formTags = $state<string[]>([]);
 
@@ -280,7 +280,7 @@
 		formSubject = '';
 		formBody = '';
 		formTriggerType = 'general';
-		formClassId = classes[0]?.id || null;
+		formClassId = classes[0]?.id || undefined;
 		formIsActive = true;
 		formTags = [];
 		previewSubject = '';

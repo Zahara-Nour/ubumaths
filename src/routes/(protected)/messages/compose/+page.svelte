@@ -18,7 +18,7 @@
 	let contentJson = $state<unknown>(null);
 	let selectedRecipients = $state<string[]>([]);
 	let isGroupMessage = $state(false);
-	let selectedClassId = $state<string | null>(null);
+	let selectedClassId = $state<string | undefined>(undefined);
 	let isSending = $state(false);
 	let currentDraftId = $state<string | null>(null);
 	let autosaveStatus = $state<'idle' | 'saving' | 'saved'>('idle');
@@ -109,7 +109,7 @@
 			content = draft.content || '';
 			selectedRecipients = draft.recipient_ids || [];
 			isGroupMessage = draft.is_group_message || false;
-			selectedClassId = draft.class_id || null;
+			selectedClassId = draft.class_id || undefined;
 		} catch (error) {
 			console.error('Error loading draft:', error);
 		} finally {
@@ -454,7 +454,7 @@
 										checked={!isGroupMessage}
 										onchange={() => {
 											isGroupMessage = false;
-											selectedClassId = null;
+											selectedClassId = undefined;
 										}}
 									/>
 									<span>Individuel</span>
