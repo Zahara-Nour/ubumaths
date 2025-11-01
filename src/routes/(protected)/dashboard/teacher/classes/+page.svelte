@@ -128,7 +128,7 @@
 	 * Used to display both confirmed and pending entries
 	 */
 	function getMergedSchedules(classId: string, serverSchedules: ClassSchedule[]): ClassSchedule[] {
-		const optimisticList = Object.entries(optimisticEntries)
+		const optimisticList: ClassSchedule[] = Object.entries(optimisticEntries)
 			.filter(([key]) => key.startsWith(classId))
 			.map(([, entry]) => entry);
 
@@ -447,7 +447,7 @@
 					<div>
 						<h3 class="mb-4 text-lg font-semibold text-foreground">Emploi du Temps</h3>
 						<ClassScheduleGrid
-							schedules={getMergedSchedules(classItem.id, classItem.schedules) as any}
+							schedules={getMergedSchedules(classItem.id, classItem.schedules)}
 							periods={(data.school?.timetable as unknown as { periods?: SchoolPeriod[] })
 								?.periods || []}
 							onCellClick={(day, time, entry) => handleCellClick(classItem.id, day, time, entry)}

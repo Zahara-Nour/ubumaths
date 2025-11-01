@@ -66,11 +66,10 @@
 	</Button>
 
 	<!-- Riddle Card in Interactive Mode -->
-	<!-- @ts-expect-error handleSubmit param type mismatch with RiddleCard prop -->
 	<RiddleCard
 		riddle={data.riddle}
 		mode="interactive"
 		studentAttempt={data.studentAttempt}
-		onSubmit={handleSubmit}
+		onSubmit={(answer: unknown) => handleSubmit(answer as string | number)}
 	/>
 </div>

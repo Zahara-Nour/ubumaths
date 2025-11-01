@@ -94,9 +94,12 @@ export interface ClassWithData {
 		day_of_week: number;
 		start_time: string;
 		end_time: string;
+		period_number: number | null;
 		subject: string | null;
 		room: string | null;
 		notes: string | null;
+		created_at: string;
+		updated_at: string;
 	}>;
 }
 

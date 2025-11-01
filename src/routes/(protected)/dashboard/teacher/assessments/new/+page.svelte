@@ -74,10 +74,19 @@
 		}
 	}
 
-	function handleConfigSubmit(data: Record<string, unknown> | FormData) {
-		const configData = data instanceof FormData ? Object.fromEntries(data) : data;
+	function handleConfigSubmit(data: {
+		title: string;
+		grade: string;
+		description: string;
+		settings: {
+			max_attempts: number | null;
+			time_limit: number | null;
+			deadline: string | null;
+			shuffle_questions: boolean;
+		};
+	}) {
 		formData = {
-			...configData,
+			...data,
 			categories: cartItems
 		};
 		step = 3;
@@ -230,7 +239,6 @@
 				<Card.Description>Définissez les paramètres de votre évaluation</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<!-- @ts-expect-error handleConfigSubmit accepts Record or FormData, prop expects FormData -->
 				<AssessmentConfigForm
 					initialData={formData}
 					onSubmit={handleConfigSubmit}

@@ -349,8 +349,8 @@
 		}
 	});
 
-	function handleVariableInsert(event: CustomEvent<{ text: string; type: 'variable' | 'filter' }>) {
-		formBody += event.detail.text;
+	function handleVariableInsert(data: { text: string; type: 'variable' | 'filter' }) {
+		formBody += data.text;
 		updatePreview();
 	}
 

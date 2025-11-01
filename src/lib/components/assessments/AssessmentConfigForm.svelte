@@ -20,7 +20,7 @@
 	import type { AssessmentSettings } from '$lib/types/assessment';
 	import { GRADE_LEVELS, DEFAULT_ASSESSMENT_SETTINGS } from '$lib/types/assessment';
 
-	interface FormData {
+	interface AssessmentFormData {
 		title: string;
 		grade: string;
 		description: string;
@@ -28,8 +28,8 @@
 	}
 
 	interface Props {
-		initialData?: Partial<FormData>;
-		onSubmit: (data: FormData) => void;
+		initialData?: Partial<AssessmentFormData>;
+		onSubmit: (data: AssessmentFormData) => void;
 		onCancel?: () => void;
 		submitLabel?: string;
 	}

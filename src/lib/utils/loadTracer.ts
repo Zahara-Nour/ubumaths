@@ -77,11 +77,10 @@ interface LoadEvent {
 	depends: (...deps: `${string}:${string}`[]) => void;
 }
 
- 
 type ServerLoadFunction = (
 	event: any
 ) => Promise<Record<string, unknown>> | Record<string, unknown>;
- 
+
 type ClientLoadFunction = (
 	event: any
 ) => Promise<Record<string, unknown>> | Record<string, unknown>;
@@ -214,7 +213,10 @@ export class LoadMonitor {
 				return result;
 			} catch (error) {
 				const duration = (performance.now() - startTime).toFixed(2);
-				this.log(`[Server Load${typeLabel}] ${route} (${visitType}) - Error (${duration}ms)`, error);
+				this.log(
+					`[Server Load${typeLabel}] ${route} (${visitType}) - Error (${duration}ms)`,
+					error
+				);
 				throw error;
 			}
 		}) as T;
@@ -274,7 +276,9 @@ export class LoadMonitor {
 
 				const duration = (performance.now() - startTime).toFixed(2);
 
-				this.log(`[Client Load${typeLabel}] ${route} (${visitType}, ${context}) - Completed (${duration}ms)`);
+				this.log(
+					`[Client Load${typeLabel}] ${route} (${visitType}, ${context}) - Completed (${duration}ms)`
+				);
 
 				return result;
 			} catch (error) {

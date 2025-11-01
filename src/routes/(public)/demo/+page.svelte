@@ -12,8 +12,17 @@
 
 	const logger = createLogger('+page.svelte');
 
+	// Type for DynamicMathField component instance
+	type DynamicMathFieldComponent = {
+		getValue: () => string;
+		setValue: (value: string) => void;
+		focus: () => void;
+		blur: () => void;
+		getMathfield: () => MathfieldElement | null;
+	};
+
 	let latex = $state('');
-	let mathfieldRef: MathfieldElement | undefined;
+	let mathfieldRef: DynamicMathFieldComponent | undefined;
 	let currentLatex = $state('');
 	let flipped = $state(false);
 	let flipped2 = $state(false);
@@ -156,7 +165,6 @@
 				</div>
 
 				<div class="mt-6 space-y-4">
-					<!-- @ts-expect-error mathfieldRef is a Svelte component ref, not MathfieldElement -->
 					<DynamicMathField
 						bind:this={mathfieldRef}
 						initialValue="x=\frac{1}{2}"
