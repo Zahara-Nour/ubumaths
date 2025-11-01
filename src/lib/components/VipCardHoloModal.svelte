@@ -99,7 +99,7 @@
 		<span class="absolute inset-0 bg-black/90 backdrop-blur-md"></span>
 
 		<!-- Content Container -->
-		<span
+		<div role="presentation"
 			class={cn(
 				'relative z-10 flex w-full max-w-4xl flex-col items-center gap-6 transition-all duration-500',
 				mounted ? 'translate-y-0 scale-100' : 'translate-y-10 scale-95'
@@ -160,6 +160,6 @@
 
 			<!-- Dismiss Hint -->
 			<p class="mt-4 text-sm text-white/60">Cliquez n'importe où pour fermer</p>
-		</span>
+		</div>
 	</button>
 {/if}
