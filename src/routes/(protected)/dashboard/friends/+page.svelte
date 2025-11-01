@@ -20,8 +20,8 @@
 			await friendsManager.loadFriendships();
 
 			// Connect to WebSocket for real-time presence
-			if (data.session?.access_token) {
-				websocketManager.connect(data.user.id, data.session.access_token);
+			if (data.accessToken) {
+				websocketManager.connect(data.user.id, data.accessToken);
 			}
 		}
 	});

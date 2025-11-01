@@ -11,7 +11,9 @@
 	import { page } from '$app/state';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { uploadMultipleMessageAttachments } from '$lib/utils/file-upload';
-	import { supabase } from '$lib/supabaseClient';
+
+	// Props
+	let { data } = $props();
 
 	let subject = $state('');
 	let content = $state('');
@@ -26,7 +28,7 @@
 	let autosaveTimer: ReturnType<typeof setTimeout> | null = null;
 	let replyToMessageId = $state<string | null>(null);
 	let attachments = $state<File[]>([]);
-	let fileInputRef: HTMLInputElement;
+	let fileInputRef: HTMLInputElement | undefined = $state();
 	let failedAvatars = $state<Set<string>>(new Set());
 
 	const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -214,7 +216,7 @@
 			if (attachments.length > 0 && messageId) {
 				try {
 					const uploadResults = await uploadMultipleMessageAttachments(
-						supabase,
+						data.supabase,
 						attachments,
 						messageId
 					);
@@ -275,7 +277,7 @@
 			// Get current user
 			const {
 				data: { user }
-			} = await supabase.auth.getUser();
+			} = await data.supabase.auth.getUser();
 			if (!user) {
 				throw new Error('User not authenticated');
 			}
@@ -290,7 +292,9 @@
 				uploaded_by: user.id
 			}));
 
-			const { error } = await supabase.from('message_attachments_v2').insert(attachmentRecords);
+			const { error } = await data.supabase
+				.from('message_attachments_v2')
+				.insert(attachmentRecords);
 
 			if (error) {
 				console.error('Error saving attachment records:', error);

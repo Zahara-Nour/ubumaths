@@ -30,9 +30,11 @@
 	import type { Json } from '$lib/types/database';
 	import { getVariablesForTrigger } from '$lib/templates/templateVariables';
 	import { previewTemplate } from '$lib/templates/templateEngine';
-	import { supabase } from '$lib/supabaseClient';
 	import { goto } from '$app/navigation';
 	import { cn } from '$lib/utils';
+
+	// Props
+	let { data } = $props();
 
 	// State
 	let isLoading = $state(false);
@@ -142,7 +144,7 @@
 	async function loadTemplates() {
 		isLoading = true;
 
-		const { data, error } = await supabase
+		const { data: templatesData, error } = await data.supabase
 			.from('message_templates')
 			.select(
 				`
@@ -156,7 +158,7 @@
 			console.error('Error loading templates:', error);
 			toaster.error('Erreur lors du chargement');
 		} else {
-			templates = (data || []).map((t) => {
+			templates = (templatesData || []).map((t) => {
 				const { classes, ...template } = t;
 				return {
 					...template,
@@ -169,10 +171,12 @@
 	}
 
 	async function loadFavorites() {
-		const { data } = await supabase.from('user_favorite_templates').select('template_id');
+		const { data: favoritesData } = await data.supabase
+			.from('user_favorite_templates')
+			.select('template_id');
 
-		if (data) {
-			favoriteTemplateIds = new Set(data.map((f) => f.template_id));
+		if (favoritesData) {
+			favoriteTemplateIds = new Set(favoritesData.map((f) => f.template_id));
 		}
 	}
 
@@ -286,7 +290,7 @@
 
 		try {
 			if (isEditMode && editingTemplate) {
-				const { error } = await supabase
+				const { error } = await data.supabase
 					.from('message_templates')
 					.update(templateData)
 					.eq('id', editingTemplate.id);
@@ -294,9 +298,9 @@
 				if (error) throw error;
 				toaster.success('Template mis à jour');
 			} else {
-				const { error } = await supabase.from('message_templates').insert({
+				const { error } = await data.supabase.from('message_templates').insert({
 					...templateData,
-					created_by: (await supabase.auth.getUser()).data.user!.id
+					created_by: (await data.supabase.auth.getUser()).data.user!.id
 				});
 
 				if (error) throw error;
@@ -318,7 +322,7 @@
 
 		isLoading = true;
 
-		const { error } = await supabase.from('message_templates').delete().eq('id', template.id);
+		const { error } = await data.supabase.from('message_templates').delete().eq('id', template.id);
 
 		isLoading = false;
 

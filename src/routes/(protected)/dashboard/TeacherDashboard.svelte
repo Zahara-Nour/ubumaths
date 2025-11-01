@@ -135,7 +135,6 @@
 		if (data.academicPeriods && data.academicPeriods.length > 0) {
 			// data.academicPeriods has partial fields but includes id, start_date, end_date which are needed
 			currentPeriodId = findCurrentPeriod(data.academicPeriods as unknown as AcademicPeriod[]);
-			console.log('[TeacherDashboard] Current period detected:', currentPeriodId);
 		}
 	});
 

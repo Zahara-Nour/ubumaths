@@ -202,12 +202,16 @@
 	// Fetch initial activity data when dashboard loads
 	// This fetches both notifications AND messages counts in a single request
 	// Only fetch if we have a valid profile (user is authenticated)
+	let hasInitialized = $state(false);
 	$effect(() => {
-		// Guard: Only fetch if user profile exists
-		// This prevents 401 errors during client-side hydration before session is established
-		if (!data.profile?.id) {
+		// Guard: Only run once on initial mount with valid profile
+		// This prevents 401 errors during hydration and stops repeated calls
+		if (!data.profile?.id || hasInitialized) {
 			return;
 		}
+
+		// Mark as initialized to prevent re-runs
+		hasInitialized = true;
 
 		// Fetch initial notifications details (full data for banner/dropdown)
 		notificationStore.fetchUnread();
@@ -215,8 +219,6 @@
 		// Fetch initial activity counts (notifications + messages)
 		// No automatic polling - counters update on user actions only
 		activityStore.refresh();
-
-		// No cleanup needed
 	});
 </script>
 

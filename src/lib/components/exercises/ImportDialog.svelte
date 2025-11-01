@@ -187,6 +187,8 @@
 
 				<!-- Drag & drop zone -->
 				<div
+					role="region"
+					aria-label="Zone de glisser-déposer pour importer des fichiers"
 					class="rounded-lg border-2 border-dashed p-8 text-center transition-colors {dragOver
 						? 'border-primary bg-primary/5'
 						: 'border-border'}"

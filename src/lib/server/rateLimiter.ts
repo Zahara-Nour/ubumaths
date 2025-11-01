@@ -105,7 +105,7 @@ function getServiceRoleClient(): SupabaseClient<Database> {
 	// Store in globalThis to persist across HMR reloads
 	globalForSupabase.supabaseServiceRoleClient = serviceRoleClientInstance;
 
-	logger.debug('Rate limiter service role client initialized');
+	logger.trace('Rate limiter service role client initialized');
 	return serviceRoleClientInstance;
 }
 

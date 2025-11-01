@@ -365,8 +365,4 @@
 				0 0 35px rgba(255, 215, 0, 0.7);
 		}
 	}
-
-	h2 {
-		animation: glow 2s ease-in-out infinite;
-	}
 </style>

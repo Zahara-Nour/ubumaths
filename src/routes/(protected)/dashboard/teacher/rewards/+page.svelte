@@ -152,8 +152,8 @@
 		}
 	});
 
-	// Local state for selected class
-	let selectedClassId = $state(classes[0]?.id);
+	// Local state for selected class - use $derived to track classes reactively
+	let selectedClassId = $derived(classes[0]?.id);
 
 	// Local state for gidouilles inputs (per student)
 	let studentDeltas = $state<Record<string, number>>({});

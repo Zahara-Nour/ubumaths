@@ -173,8 +173,9 @@
 	);
 
 	// Selected values as strings for MySelect binding
-	let selectedDay = $state(String(formData.day_of_week));
-	let selectedPeriod = $state(String(formData.period_number));
+	// Initialize with derived values to avoid capturing stale initial state
+	let selectedDay = $state(String(entry?.day_of_week ?? defaultDay));
+	let selectedPeriod = $state(String(entry?.period_number ?? (periods[0]?.number || 1)));
 
 	// Sync formData when selections change
 	$effect(() => {

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { supabase } from '$lib/supabaseClient';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import MySelect from '$lib/components/MySelect.svelte';
@@ -50,6 +49,9 @@
 	interface TemplateWithClassName extends MessageTemplate {
 		class_name?: string;
 	}
+
+	// Props
+	let { data } = $props();
 
 	// State
 	let isLoading = $state(false);
@@ -176,7 +178,7 @@
 	async function loadCurrentUser() {
 		const {
 			data: { user }
-		} = await supabase.auth.getUser();
+		} = await data.supabase.auth.getUser();
 		if (user) {
 			currentUserId = user.id;
 		}
@@ -185,7 +187,7 @@
 	async function loadTemplates() {
 		isLoading = true;
 		try {
-			const { data, error } = await supabase
+			const { data: templatesData, error } = await data.supabase
 				.from('message_templates')
 				.select(
 					`
@@ -199,7 +201,7 @@
 				console.error('Error loading templates:', error);
 				toaster.error('Erreur lors du chargement des templates');
 			} else {
-				templates = (data || []).map((t) => ({
+				templates = (templatesData || []).map((t) => ({
 					...t,
 					class_name: (t.classes as { name: string } | null)?.name
 				})) as TemplateWithClassName[];
@@ -211,10 +213,12 @@
 
 	async function loadFavorites() {
 		try {
-			const { data, error } = await supabase.from('user_favorite_templates').select('template_id');
+			const { data: favoritesData, error } = await data.supabase
+				.from('user_favorite_templates')
+				.select('template_id');
 
-			if (!error && data) {
-				favoriteTemplateIds = new Set(data.map((f) => f.template_id));
+			if (!error && favoritesData) {
+				favoriteTemplateIds = new Set(favoritesData.map((f) => f.template_id));
 			}
 		} catch (error) {
 			console.error('Error loading favorites:', error);
@@ -224,20 +228,20 @@
 	async function loadClasses() {
 		const {
 			data: { user }
-		} = await supabase.auth.getUser();
+		} = await data.supabase.auth.getUser();
 
 		if (!user) return;
 
-		const { data } = await supabase
+		const { data: classesData } = await data.supabase
 			.from('classes')
 			.select('id, name')
 			.eq('teacher_id', user.id)
 			.order('name');
 
-		if (data) {
-			classes = data;
-			if (data.length > 0 && !formClassId) {
-				formClassId = data[0].id;
+		if (classesData) {
+			classes = classesData;
+			if (classesData.length > 0 && !formClassId) {
+				formClassId = classesData[0].id;
 			}
 		}
 	}
@@ -382,7 +386,7 @@
 			};
 
 			if (isEditMode && editingTemplate) {
-				const { error } = await supabase
+				const { error } = await data.supabase
 					.from('message_templates')
 					.update(templateData)
 					.eq('id', editingTemplate.id);
@@ -396,8 +400,7 @@
 					await loadTemplates();
 				}
 			} else {
-				// @ts-expect-error - templateData type doesn't match exact Supabase type but is compatible
-				const { error } = await supabase.from('message_templates').insert([templateData]);
+				const { error } = await data.supabase.from('message_templates').insert([templateData]);
 
 				if (error) {
 					console.error('Error creating template:', error);
@@ -428,7 +431,10 @@
 
 		isLoading = true;
 		try {
-			const { error } = await supabase.from('message_templates').delete().eq('id', template.id);
+			const { error } = await data.supabase
+				.from('message_templates')
+				.delete()
+				.eq('id', template.id);
 
 			if (error) {
 				console.error('Error deleting template:', error);

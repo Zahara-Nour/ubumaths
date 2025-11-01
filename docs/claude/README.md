@@ -12,6 +12,7 @@ Documentation détaillée pour Claude Code lors du développement d'UbuMaths.
 
 - **[Architecture](./architecture.md)** - Structure projet, routing, data fetching, performance
 - **[Database](./database.md)** - Supabase, migrations, schéma
+- **[SSR-Compatible Supabase Patterns](./ssr-supabase-patterns.md)** ⭐ - Essential patterns for Supabase in SSR
 - **[UI Components](./ui-components.md)** - Shadcn, MySelect, Tailwind, toasts
 
 ### Standards & Best Practices
@@ -27,6 +28,7 @@ Documentation détaillée pour Claude Code lors du développement d'UbuMaths.
 
 - ⚠️ **Anti-patterns critiques** : [Best Practices - Erreurs courantes](./best-practices.md#erreurs-courantes-à-éviter)
 - 🛡️ **Input Validation** : [Quality Standards - Zod Validation](./quality-standards.md#input-validation-with-zod)
+- 🔌 **SSR Supabase Patterns** : [SSR-Compatible Supabase](./ssr-supabase-patterns.md) ⭐ **NEW**
 - 🧩 **MySelect Component** : [UI Components - MySelect](./ui-components.md#myselect-component)
 - 💾 **Svelte 5 Runes** : [Best Practices - Svelte 5](./best-practices.md#svelte-5-runes)
 - 🗃️ **Database Migrations** : [Database - Workflow](./database.md#workflow-migrations)

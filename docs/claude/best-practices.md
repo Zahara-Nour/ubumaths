@@ -676,6 +676,50 @@ let quadrupled = $derived(doubled * 2);
 
 ---
 
+## Supabase Client Usage (SSR-Compatible)
+
+⚠️ **CRITICAL**: Never import `supabaseClient` directly in components.
+
+**Problem**: Multiple GoTrueClient instances warning
+
+```typescript
+// ❌ WRONG - Creates duplicate client instances
+import { supabaseClient } from '$lib/server/supabaseClient';
+```
+
+**Solution**: Use `data.supabase` from layout
+
+```svelte
+<script lang="ts">
+	import type { PageData } from './$types';
+
+	// ✅ CORRECT: Receive from layout data
+	let { data }: { data: PageData } = $props();
+
+	async function loadData() {
+		// Use the SAME client instance everywhere
+		const { data: results } = await data.supabase.from('table').select('*');
+	}
+</script>
+```
+
+**For mutations**: Create API endpoints instead
+
+```typescript
+// ✅ CORRECT: API endpoint with Zod validation
+// src/routes/api/my-endpoint/+server.ts
+export const POST: RequestHandler = async ({ request, locals }) => {
+	const { user } = await requireAuth(locals);
+	const supabase = locals.supabase; // ✅ From hooks.server.ts
+
+	// Validate, mutate, return
+};
+```
+
+**📖 Complete Guide**: [SSR-Compatible Supabase Patterns](./ssr-supabase-patterns.md) - Essential patterns for SSR, security, and performance
+
+---
+
 ## Summary Checklist
 
 Before submitting code:
@@ -689,6 +733,8 @@ Before submitting code:
 - [ ] All user input validated with Zod
 - [ ] TypeScript strict mode passes
 - [ ] Code organized correctly (imports → types → constants → variables → functions)
+- [ ] Use `data.supabase` (not direct `supabaseClient` import)
+- [ ] Mutations go through API endpoints (not direct RPC in components)
 
 ---
 

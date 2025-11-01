@@ -87,7 +87,6 @@
 	import { getAvatarFallback } from '$lib/utils/avatar';
 	import { AlertTriangle, Plus, Eye, Loader2 } from 'lucide-svelte';
 	import type { StudentVipCards } from '$lib/types/vip-card';
-	import { supabase } from '$lib/supabaseClient';
 
 	// ============================================================================
 	// PROPS
@@ -356,20 +355,20 @@
 
 			// 2. Make API call
 			try {
-				// Call RPC function to remove VIP card
-				// Note: RPC function takes cardId (e.g., "captain", "joker") not instanceId
-				// It will remove the oldest unused instance of that card type
-				const { data: success, error: rpcError } = await supabase.rpc('remove_student_vip_card', {
-					p_student_id: studentId,
-					p_card_id: randomCard.cardId
+				// Call API endpoint to remove VIP card
+				// Uses SSR-compatible client (fixes "Multiple GoTrueClient" warning)
+				const response = await fetch('/api/rewards/vip-cards/remove', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						studentId,
+						cardId: randomCard.cardId
+					})
 				});
 
-				if (rpcError) {
-					throw new Error(rpcError.message);
-				}
-
-				if (!success) {
-					throw new Error('No card found to remove');
+				if (!response.ok) {
+					const errorText = await response.text();
+					throw new Error(errorText || 'Failed to remove VIP card');
 				}
 
 				// Fetch updated VIP cards for this student only (no loading spinner)

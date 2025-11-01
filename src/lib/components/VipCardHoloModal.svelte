@@ -85,23 +85,21 @@
 
 {#if visible}
 	<!-- Fullscreen Overlay -->
-	<div
+	<button
+		type="button"
 		class={cn(
-			'fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all duration-300',
+			'fixed inset-0 z-[100] flex items-center justify-center border-0 bg-transparent p-4 transition-all duration-300',
 			mounted ? 'opacity-100' : 'opacity-0'
 		)}
 		onclick={handleDismiss}
 		onkeydown={handleKeydown}
-		role="dialog"
-		aria-modal="true"
-		aria-labelledby="holo-card-title"
-		tabindex="0"
+		aria-label="Fermer la carte VIP"
 	>
 		<!-- Backdrop -->
-		<div class="absolute inset-0 bg-black/90 backdrop-blur-md"></div>
+		<span class="absolute inset-0 bg-black/90 backdrop-blur-md"></span>
 
 		<!-- Content Container -->
-		<div
+		<span
 			class={cn(
 				'relative z-10 flex w-full max-w-4xl flex-col items-center gap-6 transition-all duration-500',
 				mounted ? 'translate-y-0 scale-100' : 'translate-y-10 scale-95'
@@ -162,6 +160,6 @@
 
 			<!-- Dismiss Hint -->
 			<p class="mt-4 text-sm text-white/60">Cliquez n'importe où pour fermer</p>
-		</div>
-	</div>
+		</span>
+	</button>
 {/if}

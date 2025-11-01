@@ -358,6 +358,8 @@
 					<div class="space-y-2">
 						<Label for="drop-zone">Données des élèves</Label>
 						<div
+							role="region"
+							aria-label="Zone de saisie ou glisser-déposer pour importer des élèves"
 							class="relative rounded-lg border-2 border-dashed transition-all {isDragging
 								? 'border-primary bg-primary/5'
 								: 'border-border hover:border-primary/50'}"

@@ -196,6 +196,58 @@ const {
 4. **Then** call `getSession()` - gets session tokens (safe because verified)
 5. **Return** both session and user (both verified)
 
+### Extracting Session Data Securely
+
+**✅ CORRECT**: Verify first, extract only what you need
+
+```typescript
+// Example: src/routes/(protected)/dashboard/friends/+page.server.ts
+export const load: PageServerLoad = async ({ locals: { supabase } }) => {
+	// STEP 1: Verify with Auth server
+	const {
+		data: { user },
+		error: userError
+	} = await supabase.auth.getUser();
+
+	if (userError || !user) {
+		return { accessToken: null };
+	}
+
+	// STEP 2: Safe to get session (after verification)
+	const {
+		data: { session }
+	} = await supabase.auth.getSession();
+
+	// STEP 3: Extract ONLY what you need (minimal exposure)
+	return {
+		accessToken: session?.access_token ?? null
+		// ✅ Not returning full session object
+	};
+};
+```
+
+**Why this is secure:**
+
+- ✅ Validates user with Auth server first
+- ✅ Only extracts needed field (`accessToken`)
+- ✅ Doesn't expose full session object
+- ✅ Silences Supabase security warning (because we verified first)
+
+**❌ INSECURE Pattern (Don't Do This)**
+
+```typescript
+// ❌ WRONG - No verification, full session exposure
+export const load: PageServerLoad = async ({ locals: { supabase } }) => {
+	const {
+		data: { session }
+	} = await supabase.auth.getSession();
+
+	return { session }; // ❌ No verification, over-exposure
+};
+```
+
+**📖 Complete Guide**: [SSR-Compatible Supabase Patterns](../../claude/ssr-supabase-patterns.md#security-pattern-session-after-verification)
+
 ### Why Server-Side Login/Logout?
 
 **The Problem:**

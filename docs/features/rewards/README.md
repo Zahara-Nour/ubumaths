@@ -125,6 +125,110 @@ vip_cards: {
 
 ---
 
+## 🔌 API Endpoints
+
+### POST /api/rewards/vip-cards/remove
+
+Remove a VIP card from a student's inventory.
+
+**Authentication**: Required (teacher or admin role)
+
+**Request Body**:
+
+```typescript
+{
+	studentId: string; // UUID of the student
+	cardId: string; // Card ID (e.g., "bonus", "captain", "joker")
+}
+```
+
+**Response**:
+
+```typescript
+// Success (200)
+{
+	success: true;
+}
+
+// Error (400, 401, 403, 404, 500)
+{
+	message: string; // Error description
+}
+```
+
+**Security**:
+
+- ✅ Zod validation on request body
+- ✅ Requires authentication via `requireAuth()` middleware
+- ✅ Teacher/admin role verification
+- ✅ RPC function verifies student is in teacher's classes
+- ✅ No gidouilles refund (card is simply removed)
+
+**Example Usage**:
+
+```typescript
+async function removeVipCard(studentId: string, cardId: string) {
+	const response = await fetch('/api/rewards/vip-cards/remove', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ studentId, cardId })
+	});
+
+	if (!response.ok) {
+		const { message } = await response.json();
+		throw new Error(message);
+	}
+
+	return response.json();
+}
+```
+
+**Error Codes**:
+
+| Code | Reason                                        |
+| ---- | --------------------------------------------- |
+| 400  | Invalid request body (Zod validation failed)  |
+| 401  | Not authenticated                             |
+| 403  | Not a teacher/admin OR student not in classes |
+| 404  | No matching VIP card found to remove          |
+| 500  | Server error (database or RPC failure)        |
+
+**Related Files**:
+
+- Implementation: `src/routes/api/rewards/vip-cards/remove/+server.ts`
+- Usage: `src/lib/components/teacher/StudentQuickActionsTable.svelte`
+- Validation schema: Defined inline in endpoint
+
+**Migration Note** (2025-11-01):
+
+This endpoint was created to replace direct Supabase RPC calls in components, fixing the "Multiple GoTrueClient instances" warning. Previously, components imported `supabaseClient` directly, causing SSR/hydration conflicts.
+
+**Before (SSR issues)**:
+
+```typescript
+// ❌ OLD: Direct RPC call in component
+import { supabaseClient } from '$lib/server/supabaseClient';
+
+const { error } = await supabaseClient.rpc('remove_student_vip_card', {
+	p_student_id: studentId,
+	p_card_id: cardId
+});
+```
+
+**After (SSR-compatible)**:
+
+```typescript
+// ✅ NEW: API endpoint with proper validation
+const response = await fetch('/api/rewards/vip-cards/remove', {
+	method: 'POST',
+	body: JSON.stringify({ studentId, cardId })
+});
+```
+
+**📖 See**: [SSR-Compatible Supabase Patterns](../../claude/ssr-supabase-patterns.md)
+
+---
+
 ## 🏗️ Architecture
 
 ### Structure des fichiers
