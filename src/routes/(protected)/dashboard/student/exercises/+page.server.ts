@@ -1,7 +1,12 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { loadMonitor } from '$lib/utils/loadTracer';
 
-export const load: PageServerLoad = async ({ url, locals, fetch }) => {
+export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
+	const { url } = event;
+	const { locals } = event;
+	const { fetch } = event;
+
 	const { user } = await locals.safeGetSession();
 
 	if (!user) {
@@ -36,5 +41,5 @@ export const load: PageServerLoad = async ({ url, locals, fetch }) => {
 			has_deadline: hasDeadline === 'true',
 			search: search || ''
 		}
-	};
+});
 };

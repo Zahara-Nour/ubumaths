@@ -33,10 +33,14 @@
 import type { LayoutServerLoad } from './$types';
 import { createLogger } from '$lib/utils/logger';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
+import { loadMonitor } from '$lib/utils/loadTracer';
 
 const logger = createLogger('dashboard/+layout.server.ts');
 
-export const load: LayoutServerLoad = async ({ parent, locals }) => {
+export const load: LayoutServerLoad = loadMonitor.traceServerLoad(async (event) => {
+	const { parent } = event;
+	const { locals } = event;
+
 	// Get user and profile from parent (protected) layout
 	// They are already authenticated and verified
 	const { user, profile } = await parent();
@@ -92,5 +96,5 @@ export const load: LayoutServerLoad = async ({ parent, locals }) => {
 	// teacherClasses will be empty array for non-teachers
 	return {
 		teacherClasses
-	};
+});
 };

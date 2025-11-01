@@ -7,8 +7,13 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { loadMonitor } from '$lib/utils/loadTracer';
 
-export const load: PageServerLoad = async ({ params, locals, fetch }) => {
+export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
+	const { params } = event;
+	const { locals } = event;
+	const { fetch } = event;
+
 	const supabase = locals.supabase;
 	const { user } = await locals.safeGetSession();
 
@@ -116,5 +121,5 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		assignments,
 		classes: classesWithCount,
 		students
-	};
+});
 };

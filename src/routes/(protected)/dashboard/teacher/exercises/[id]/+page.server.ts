@@ -1,11 +1,16 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { getExercise } from '$lib/server/exercises';
+import { loadMonitor } from '$lib/utils/loadTracer';
 
 /**
  * Load exercise for editing and view assignments
  */
-export const load: PageServerLoad = async ({ locals, params, fetch }) => {
+export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
+	const { locals } = event;
+	const { params } = event;
+	const { fetch } = event;
+
 	const { user } = await locals.safeGetSession();
 	if (!user) {
 		throw redirect(303, '/login');
@@ -37,5 +42,5 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	return {
 		exercise: result.data,
 		assignmentCount
-	};
+});
 };

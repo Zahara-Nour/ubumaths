@@ -1,8 +1,11 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
+import { loadMonitor } from '$lib/utils/loadTracer';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
+	const { locals } = event;
+
 	const { supabase } = locals;
 
 	// Fetch all published question templates directly from database
@@ -39,5 +42,5 @@ export const load: PageServerLoad = async ({ locals }) => {
 	return {
 		templates: (templates as QuestionTemplate[]) || [],
 		userRole
-	};
+});
 };

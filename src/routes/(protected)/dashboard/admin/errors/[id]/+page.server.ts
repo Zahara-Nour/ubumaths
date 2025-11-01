@@ -5,8 +5,12 @@
 import { error, redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { getErrorLog, resolveError } from '$lib/server/errorMonitoring';
+import { loadMonitor } from '$lib/utils/loadTracer';
 
-export const load: PageServerLoad = async ({ params, locals }) => {
+export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
+	const { params } = event;
+	const { locals } = event;
+
 	const { id } = params;
 
 	// Check authentication
@@ -35,7 +39,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	return {
 		error: result.data
-	};
+});
 };
 
 export const actions: Actions = {

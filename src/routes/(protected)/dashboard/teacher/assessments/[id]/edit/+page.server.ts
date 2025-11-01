@@ -3,8 +3,12 @@ import type { PageServerLoad, Actions } from './$types';
 import { getAssessment, updateAssessment } from '$lib/server/assessments';
 import type { UpdateAssessmentData } from '$lib/types/assessment';
 import { assessmentEditFormSchema } from '$lib/server/validation/assessments';
+import { loadMonitor } from '$lib/utils/loadTracer';
 
-export const load: PageServerLoad = async ({ params, locals }) => {
+export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
+	const { params } = event;
+	const { locals } = event;
+
 	const { user } = await locals.safeGetSession();
 	if (!user) {
 		throw redirect(303, '/auth/signin');
@@ -47,7 +51,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	return {
 		assessment
-	};
+});
 };
 
 export const actions: Actions = {

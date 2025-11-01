@@ -1,8 +1,12 @@
 import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { requireRole } from '$lib/server/auth';
+import { loadMonitor } from '$lib/utils/loadTracer';
 
-export const load: PageServerLoad = async ({ locals, parent }) => {
+export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
+	const { locals } = event;
+	const { parent } = event;
+
 	// Get authenticated user and profile from parent layout
 	const { profile } = await parent();
 
@@ -50,7 +54,7 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
 			friendships: [],
 			classes: [],
 			stats: { total: 0, accepted: 0, pending: 0, rejected: 0 }
-		};
+});
 	}
 
 	// Fetch classes for filtering

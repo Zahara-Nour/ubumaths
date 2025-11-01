@@ -21,6 +21,7 @@ import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { Database } from '$lib/types/database';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
+import { loadMonitor } from '$lib/utils/loadTracer';
 
 type School = Database['public']['Tables']['schools']['Row'];
 import {
@@ -46,9 +47,10 @@ import {
  *   classes: ClassWithData[] - Array of classes with student_count and schedules
  * }
  */
-export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
+export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
 	// Get user and profile from parent (protected) layout
-	const { user, profile } = await parent();
+	const { user, profile } = await event.parent();
+	const { supabase } = event.locals;
 
 	if (!user || !profile) {
 		throw error(401, 'Unauthorized');
@@ -83,7 +85,7 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 		classes: classesWithData,
 		school
 	};
-};
+});
 
 /**
  * Form Actions
