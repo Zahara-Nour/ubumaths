@@ -2,12 +2,8 @@ import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { getAssessment, getAssessmentAssignments, assignAssessment } from '$lib/server/assessments';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
-import { loadMonitor } from '$lib/utils/loadTracer';
 
-export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
-	const { params } = event;
-	const { locals } = event;
-
+export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
 		throw redirect(303, '/auth/signin');
@@ -69,7 +65,7 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 		classes: formattedClasses,
 		existingAssignments: existingAssignments || []
 	};
-});
+};
 
 export const actions: Actions = {
 	assign: async ({ request, params, locals }) => {

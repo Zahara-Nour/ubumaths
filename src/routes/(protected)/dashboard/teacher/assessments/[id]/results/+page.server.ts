@@ -7,12 +7,8 @@ import {
 } from '$lib/server/assessments';
 import { getTeacherTestMode } from '$lib/server/test-mode';
 import { getUserProfile } from '$lib/server/auth';
-import { loadMonitor } from '$lib/utils/loadTracer';
 
-export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
-	const { params } = event;
-	const { locals } = event;
-
+export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
 		throw redirect(303, '/auth/signin');
@@ -75,4 +71,4 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 		results: results || [],
 		statistics
 	};
-});
+};

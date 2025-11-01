@@ -1,12 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { loadMonitor } from '$lib/utils/loadTracer';
 
-export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
-	const { params } = event;
-	const { locals } = event;
-	const { fetch } = event;
-
+export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const { user } = await locals.safeGetSession();
 
 	if (!user) {
@@ -56,7 +51,7 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 		.select('class_id')
 		.eq('student_id', user.id);
 
-	const classIds = classMemberships?.map((cm: { class_id: string }) => cm.class_id) || [];
+	const classIds = classMemberships?.map((cm) => cm.class_id) || [];
 
 	return {
 		exercise,
@@ -65,4 +60,4 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 		classIds,
 		userId: user.id
 	};
-});
+};

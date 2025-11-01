@@ -31,9 +31,7 @@
  * Child routes can access authenticated user and profile via parent():
  *
  * ```typescript
- * export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
-	const { parent } = event;
-
+ * export const load: PageServerLoad = async ({ parent }) => {
  *   const { user, profile } = await parent();
  *   // user and profile are guaranteed to exist here
  *   // No need to call requireAuth() again!
@@ -52,7 +50,6 @@ import type { LayoutServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/auth';
 import { createLogger } from '$lib/utils/logger';
-import { loadMonitor } from '$lib/utils/loadTracer';
 
 const logger = createLogger('(protected)/+layout.server.ts');
 

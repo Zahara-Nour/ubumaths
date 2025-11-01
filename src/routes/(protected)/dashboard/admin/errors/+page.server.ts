@@ -6,12 +6,8 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getErrorStats, getErrorOccurrences } from '$lib/server/errorMonitoring';
-import { loadMonitor } from '$lib/utils/loadTracer';
 
-export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
-	const { locals } = event;
-	const { url } = event;
-
+export const load: PageServerLoad = async ({ locals, url }) => {
 	// Check authentication
 	const { user } = await locals.safeGetSession();
 	if (!user) {
@@ -63,4 +59,4 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 			search
 		}
 	};
-});
+};

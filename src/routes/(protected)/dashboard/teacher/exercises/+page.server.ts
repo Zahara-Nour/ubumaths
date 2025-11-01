@@ -1,15 +1,11 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { getTeacherExercises, deleteExercise } from '$lib/server/exercises';
-import { loadMonitor } from '$lib/utils/loadTracer';
 
 /**
  * Load teacher's exercises with optional filters
  */
-export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
-	const { locals } = event;
-	const { url } = event;
-
+export const load: PageServerLoad = async ({ locals, url }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
 		throw redirect(303, '/login');
@@ -80,7 +76,7 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 			search
 		}
 	};
-});
+};
 
 /**
  * Actions for exercise management
