@@ -446,7 +446,7 @@
 						<h3 class="mb-4 text-lg font-semibold text-foreground">Emploi du Temps</h3>
 						<ClassScheduleGrid
 							schedules={getMergedSchedules(classItem.id, classItem.schedules)}
-							periods={(data.school?.timetable as { periods?: unknown[] })?.periods || []}
+							periods={(data.school?.timetable as { periods?: SchoolPeriod[] })?.periods || []}
 							onCellClick={(day, time, entry) => handleCellClick(classItem.id, day, time, entry)}
 						/>
 					</div>
@@ -471,7 +471,7 @@
 		mode={modalMode}
 		entry={selectedEntry}
 		{defaultDay}
-		periods={(data.school.timetable as { periods: unknown[] }).periods}
+		periods={(data.school.timetable as { periods: SchoolPeriod[] }).periods}
 		onClose={handleModalClose}
 		onSave={handleSave}
 		onDelete={modalMode === 'edit' ? handleDelete : undefined}
