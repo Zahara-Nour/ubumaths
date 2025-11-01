@@ -11,6 +11,7 @@ type MessageDraftRow = Database['public']['Tables']['message_drafts']['Row'];
 
 // Types
 export interface PrivateMessage {
+	id: string; // Alias for message_id
 	message_id: string;
 	sender_id: string;
 	sender_name: string;
@@ -26,6 +27,8 @@ export interface PrivateMessage {
 	recipient_count: number;
 	has_attachments: boolean;
 	attachment_count: number;
+	parent_message_id: string | null;
+	thread_root_id: string | null;
 }
 
 export interface SentMessage {
