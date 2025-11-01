@@ -56,7 +56,11 @@
 
 	interface Props {
 		data: {
-			deck: { name: string }; // id available from page.params
+			deck: {
+				name: string;
+				description?: string | null;
+				deckType?: 'official' | 'personal';
+			}; // id available from page.params
 			assignments: Assignment[];
 		};
 	}
