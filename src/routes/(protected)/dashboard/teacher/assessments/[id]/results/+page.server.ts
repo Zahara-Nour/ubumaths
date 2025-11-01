@@ -60,7 +60,7 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 			assessment,
 			results: [],
 			statistics: null
-});
+		};
 	}
 
 	// Fetch assessment statistics (direct DB query, no cache)
@@ -75,4 +75,4 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 		results: results || [],
 		statistics
 	};
-};
+});

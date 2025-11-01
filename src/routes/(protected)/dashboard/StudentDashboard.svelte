@@ -49,7 +49,7 @@
 	<!-- Summary of rewards: Gidouilles, VIP Cards, and Riddles -->
 	<RewardsBlock
 		gidouilles={data.profile.gidouilles}
-		vipCards={data.profile.vip_cards}
+		vipCards={data.profile.vip_cards as unknown as import('$lib/types/vip-card').StudentVipCards}
 		riddlesSolved={data.riddlesSolved}
 	/>
 

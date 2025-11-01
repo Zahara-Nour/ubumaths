@@ -17,7 +17,7 @@
 		Calendar,
 		Plus
 	} from 'lucide-svelte';
-	import { page } from '$app/state';
+	import { page } from '$app/stores';
 
 	interface Props {
 		role: 'teacher' | 'student';

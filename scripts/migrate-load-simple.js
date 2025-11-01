@@ -62,7 +62,9 @@ function processFile(filePath) {
 		}
 
 		// Skip if no load function
-		const loadMatch = content.match(/export\s+const\s+load(?::\s*\w+)?\s*=\s*async\s*\(\s*\{([^}]+)\}\s*\)/);
+		const loadMatch = content.match(
+			/export\s+const\s+load(?::\s*\w+)?\s*=\s*async\s*\(\s*\{([^}]+)\}\s*\)/
+		);
 		if (!loadMatch) {
 			console.log(`⏭️  ${relativePath} - No load function found`);
 			return { modified: false };
@@ -123,7 +125,8 @@ function processFile(filePath) {
 		// Pattern: export const load: Type = async ({ param1, param2 }) =>
 		// Replace with: export const load: Type = loadMonitor.traceServerLoad(async (event) =>
 
-		const loadPattern = /(export\s+const\s+load(?::\s*\w+)?\s*=\s*)async\s*\(\s*\{[^}]+\}\s*\)\s*=>/;
+		const loadPattern =
+			/(export\s+const\s+load(?::\s*\w+)?\s*=\s*)async\s*\(\s*\{[^}]+\}\s*\)\s*=>/;
 
 		newContent = newContent.replace(loadPattern, (match, prefix) => {
 			return `${prefix}loadMonitor.${wrapperMethod}(async (event) =>`;
@@ -163,7 +166,7 @@ function processFile(filePath) {
 
 		// Step 4: Add closing parenthesis at the end
 		// Find the last }; of the load function
-		const loadEndPattern = /^};$/m;
+		const _loadEndPattern = /^};$/m;
 
 		// Find all matches
 		const lines = newContent.split('\n');

@@ -177,9 +177,7 @@
 													{Math.round((badge.progress / badge.target) * 100)}%
 												</span>
 											</div>
-											<Progress.Root value={(badge.progress / badge.target) * 100}>
-												<Progress.Indicator />
-											</Progress.Root>
+											<Progress.Root value={(badge.progress / badge.target) * 100} />
 										</div>
 									{/if}
 								</div>

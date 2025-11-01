@@ -329,19 +329,11 @@
 							<div class="grid gap-4 sm:grid-cols-2">
 								<div class="space-y-2">
 									<Label for="actionLabel" class="text-sm">Libellé du bouton</Label>
-									<Input
-										id="actionLabel"
-										name="actionLabel"
-										bind:value={actionLabel}
-									/>
+									<Input id="actionLabel" name="actionLabel" bind:value={actionLabel} />
 								</div>
 								<div class="space-y-2">
 									<Label for="actionUrl" class="text-sm">URL</Label>
-									<Input
-										id="actionUrl"
-										name="actionUrl"
-										bind:value={actionUrl}
-									/>
+									<Input id="actionUrl" name="actionUrl" bind:value={actionUrl} />
 								</div>
 							</div>
 						</div>

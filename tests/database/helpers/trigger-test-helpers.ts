@@ -215,6 +215,7 @@ export async function insertTestClass(params: {
 		id: generateTestId('class'),
 		teacher_id: params.teacherId,
 		name: params.name || 'Test Class',
+		join_code: `TEST${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
 		created_at: new Date().toISOString()
 	};
 
@@ -236,9 +237,9 @@ export async function insertTestExercise(params: {
 	const exercise = {
 		id: generateTestId('exercise'),
 		created_by: params.createdBy,
-		type: params.type || 'multiple_choice',
-		question: 'Test question?',
-		answer: '42',
+		difficulty: 1,
+		statement_md: 'Test question?',
+		solution_md: '42',
 		created_at: new Date().toISOString()
 	};
 

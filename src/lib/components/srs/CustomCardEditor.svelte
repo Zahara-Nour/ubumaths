@@ -111,9 +111,7 @@
 					<h3 class="text-lg font-semibold">Recto de la carte</h3>
 					<span class="text-sm text-muted-foreground">(Question / Concept)</span>
 				</div>
-				<FormRichTextEditor
-					bind:value={frontHTML}
-				/>
+				<FormRichTextEditor bind:value={frontHTML} />
 			</div>
 
 			<!-- Back Content -->
@@ -122,9 +120,7 @@
 					<h3 class="text-lg font-semibold">Verso de la carte</h3>
 					<span class="text-sm text-muted-foreground">(Réponse / Explication)</span>
 				</div>
-				<FormRichTextEditor
-					bind:value={backHTML}
-				/>
+				<FormRichTextEditor bind:value={backHTML} />
 			</div>
 		</TabsContent>
 

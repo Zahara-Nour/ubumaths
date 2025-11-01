@@ -34,6 +34,8 @@ import { invalidate } from '$app/navigation';
 import type { LayoutLoad } from './$types';
 import { createLogger } from '$lib/utils/logger';
 import { loadMonitor } from '$lib/utils/loadTracer';
+import type { User } from '@supabase/supabase-js';
+import type { Profile } from '$lib/types/database';
 
 const logger = createLogger('+layout.ts', 'error');
 
@@ -41,6 +43,11 @@ export const load: LayoutLoad = loadMonitor.traceClientLoad(async (event) => {
 	const { data } = event;
 	const { depends } = event;
 	const { fetch } = event;
+
+	// Type assertions for server data
+	const user = (data?.user ?? null) as User | null;
+	const profile = (data?.profile ?? null) as Profile | null;
+	const cookies = data?.cookies as { name: string; value: string }[] | undefined;
 
 	// Register this load function to re-run when 'supabase:auth' is invalidated
 	// This enables reactive auth state updates throughout the app
@@ -73,7 +80,7 @@ export const load: LayoutLoad = loadMonitor.traceClientLoad(async (event) => {
 				cookies: {
 					// Read cookies from server data
 					getAll() {
-						return data.cookies;
+						return cookies || [];
 					}
 					// Note: We can't write cookies here during SSR
 					// Cookie writes happen in the server hook
@@ -84,7 +91,7 @@ export const load: LayoutLoad = loadMonitor.traceClientLoad(async (event) => {
 
 	// Use the verified user from the server
 	// The server already verified this with getUser() - safe to trust
-	logger.info('User from server:', data.user ? `User: ${data.user.email}` : 'No user');
+	logger.info('User from server:', user ? `User: ${user.email}` : 'No user');
 
 	/**
 	 * Set up auth state change listener (browser only)
@@ -125,8 +132,8 @@ export const load: LayoutLoad = loadMonitor.traceClientLoad(async (event) => {
 		// Supabase client for making authenticated requests
 		supabase,
 		// Verified user from server (safe to use)
-		user: data.user,
+		user,
 		// User profile from server (includes role, gender, etc.)
-		profile: data.profile
+		profile
+	};
 });
-};

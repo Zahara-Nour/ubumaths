@@ -68,8 +68,8 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 		assessment,
 		classes: formattedClasses,
 		existingAssignments: existingAssignments || []
+	};
 });
-};
 
 export const actions: Actions = {
 	assign: async ({ request, params, locals }) => {

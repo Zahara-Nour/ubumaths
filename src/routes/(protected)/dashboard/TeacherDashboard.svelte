@@ -62,6 +62,10 @@
 
 	// Types
 	import type { PageData } from './$types';
+	import type { ClassWithData } from '$lib/server/students';
+	import type { Class, ClassSchedule, Database } from '$lib/types/database';
+
+	type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
 
 	// UI Components
 	import { Button } from '$lib/components/ui/button';
@@ -99,14 +103,6 @@
 	 * Teacher's classes enriched with student count and schedules
 	 * Derived from data.teacherClasses (loaded in +layout.server.ts)
 	 */
-	type ClassWithData = {
-		id: string;
-		name: string;
-		description?: string;
-		join_code: string;
-		student_count?: number;
-		schedules?: { id: string; name: string; starts_at: string; ends_at: string }[];
-	};
 	const classes = $derived<ClassWithData[]>((data.teacherClasses as ClassWithData[]) || []);
 
 	/**
@@ -137,15 +133,8 @@
 	 */
 	$effect(() => {
 		if (data.academicPeriods && data.academicPeriods.length > 0) {
-			// findCurrentPeriod only needs id, start_date, end_date which are present
-			// Safe to cast since data.academicPeriods contains all required fields
-			currentPeriodId = findCurrentPeriod(
-				data.academicPeriods as Array<{
-					id: string;
-					start_date: string;
-					end_date: string;
-				}>
-			);
+			// data.academicPeriods has partial fields but includes id, start_date, end_date which are needed
+			currentPeriodId = findCurrentPeriod(data.academicPeriods as unknown as AcademicPeriod[]);
 			console.log('[TeacherDashboard] Current period detected:', currentPeriodId);
 		}
 	});
@@ -233,7 +222,10 @@
 		}
 
 		// Find matching schedule for current day/time
-		const match = findCurrentSchedule(classes);
+		// ClassWithData extends Class and includes all required fields
+		const match = findCurrentSchedule(
+			classes as unknown as Array<Class & { schedules?: ClassSchedule[] }>
+		);
 
 		if (match) {
 			// SUCCESS: Class found at current time
@@ -247,7 +239,9 @@
 			toaster.success(`Classe trouvée : ${details}`);
 		} else {
 			// NO MATCH: Valid school day/time, but no class scheduled
-			const message = getNoClassMessage(classes);
+			const message = getNoClassMessage(
+				classes as unknown as Array<Class & { schedules?: ClassSchedule[] }>
+			);
 			toaster.info(message);
 		}
 	}

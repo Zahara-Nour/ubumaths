@@ -12,7 +12,9 @@
 	let editingSchool = $state<Database['public']['Tables']['schools']['Row'] | null>(null);
 	let activeTab = $state<'single' | 'bulk'>('single');
 	let bulkData = $state('');
-	let parsedSchools = $state<Array<{ name: string; city?: string; country?: string; address?: string; logo_url?: string }>>([]);
+	let parsedSchools = $state<
+		Array<{ name: string; city?: string; country?: string; address?: string; logo_url?: string }>
+	>([]);
 	let parseError = $state('');
 
 	let formData = $state({
@@ -73,7 +75,13 @@
 		}
 
 		const lines = bulkData.trim().split('\n');
-		const schools: { name: string; city?: string; country?: string; address?: string; logo_url?: string }[] = [];
+		const schools: {
+			name: string;
+			city?: string;
+			country?: string;
+			address?: string;
+			logo_url?: string;
+		}[] = [];
 
 		for (let i = 0; i < lines.length; i++) {
 			const line = lines[i].trim();

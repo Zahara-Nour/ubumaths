@@ -85,7 +85,13 @@ function addLoadMonitorImport(content) {
 		for (let i = 0; i < lines.length; i++) {
 			const line = lines[i].trim();
 			// Skip comment lines and empty lines
-			if (line.startsWith('/**') || line.startsWith('/*') || line.startsWith('*') || line.startsWith('//') || line === '') {
+			if (
+				line.startsWith('/**') ||
+				line.startsWith('/*') ||
+				line.startsWith('*') ||
+				line.startsWith('//') ||
+				line === ''
+			) {
 				insertIndex = i + 1;
 			} else {
 				break;
@@ -129,7 +135,7 @@ function wrapLoadFunction(content, isServer) {
 
 	// Try pattern 1 (arrow with type)
 	if (pattern1.test(content)) {
-		transformed = content.replace(pattern1, (match, params) => {
+		transformed = content.replace(pattern1, (match, _params) => {
 			matched = true;
 			// Extract type annotation
 			const typeMatch = match.match(/:\s*(\w+)/);
@@ -283,7 +289,7 @@ function processFile(filePath) {
 		const isServer = isServerFile(filePath);
 
 		// Add import
-		const { content: contentWithImport, added: importAdded } = addLoadMonitorImport(content);
+		const { content: contentWithImport, added: _importAdded } = addLoadMonitorImport(content);
 
 		// Wrap load function
 		const { content: finalContent, wrapped } = wrapLoadFunction(contentWithImport, isServer);

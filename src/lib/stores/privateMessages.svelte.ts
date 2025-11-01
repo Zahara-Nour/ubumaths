@@ -32,6 +32,7 @@ export interface PrivateMessage {
 }
 
 export interface SentMessage {
+	id: string;
 	message_id: string;
 	subject: string;
 	content: unknown;
@@ -40,6 +41,8 @@ export interface SentMessage {
 	is_group_message: boolean;
 	recipient_count: number;
 	has_attachments: boolean;
+	thread_root_id?: string | null;
+	parent_message_id?: string | null;
 	recipients: Array<{
 		id: string;
 		name: string;
@@ -48,6 +51,7 @@ export interface SentMessage {
 }
 
 export interface MessageRecipient {
+	id: string;
 	user_id: string;
 	full_name: string;
 	avatar_url: string | null;
@@ -76,6 +80,7 @@ export interface MessageAttachment {
 }
 
 export interface MessageDetails {
+	id: string;
 	message_id: string;
 	sender_id: string;
 	sender_name: string;

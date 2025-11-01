@@ -150,7 +150,7 @@
 					<div class="p-8 text-center text-sm text-muted-foreground">Aucun filtre trouvé</div>
 				{:else}
 					<div class="space-y-1">
-						{#each filteredFilters() as filter (filter.label)}
+						{#each filteredFilters() as filter (filter.name)}
 							<button
 								type="button"
 								class="w-full rounded-md p-3 text-left transition-colors hover:bg-muted"

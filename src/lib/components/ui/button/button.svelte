@@ -61,12 +61,11 @@
 
 {#if href}
 	<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-	<!-- @ts-expect-error: href type is too complex for resolve function -->
 	<a
 		bind:this={ref}
 		data-slot="button"
 		class={cn(buttonVariants({ variant, size }), className)}
-		href={resolve(href)}
+		href={href ? resolve(href as any) : undefined}
 		inert={disabled ? true : undefined}
 		aria-disabled={disabled}
 		role={disabled ? 'link' : undefined}

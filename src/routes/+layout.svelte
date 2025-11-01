@@ -74,7 +74,7 @@
 <div class="flex h-screen flex-col">
 	<!-- Header - only show on non-dashboard routes -->
 	{#if !isDashboardRoute}
-		<Header title="UbuMaths" user={data.user} profile={data.profile} supabase={data.supabase} />
+		<Header title="UbuMaths" user={data.user} profile={data.profile} />
 	{/if}
 
 	<!-- Main content area with sidebar -->

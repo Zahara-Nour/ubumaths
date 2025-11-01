@@ -83,7 +83,7 @@
 					title: data.assessment.title,
 					grade: data.assessment.grade,
 					description: data.assessment.description || '',
-					settings: data.assessment.settings
+					settings: (data.assessment.settings as unknown as AssessmentSettings) || {}
 				}}
 				onSubmit={handleSubmit}
 				onCancel={handleBack}

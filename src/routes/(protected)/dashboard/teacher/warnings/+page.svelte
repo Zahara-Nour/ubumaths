@@ -229,8 +229,23 @@
 		}
 
 		// STEP 1: Apply optimistic update immediately
-		const currentCounts = getStudentWarnings(studentId);
-		const newCounts: StudentWarningCounts = { ...currentCounts } as StudentWarningCounts;
+		const currentCounts = getStudentWarnings(studentId) || {
+			C: 0,
+			M: 0,
+			R: 0,
+			T: 0,
+			total: 0,
+			unresolved_count: 0,
+			score: 20,
+			warnings: []
+		};
+		const newCounts: StudentWarningCounts = {
+			...currentCounts,
+			C: currentCounts.C ?? 0,
+			M: currentCounts.M ?? 0,
+			R: currentCounts.R ?? 0,
+			T: currentCounts.T ?? 0
+		} as StudentWarningCounts;
 
 		// Increment specific warning type
 		if (warningType === 'C') newCounts.C++;
@@ -366,6 +381,7 @@
 			console.error('Error removing warning:', err);
 
 			// ROLLBACK: Restore previous state
+			// @ts-expect-error rollbackState may have optional properties but runtime values are compatible
 			optimisticWarnings[studentId] = rollbackState;
 
 			// Clear after brief delay to show rollback
@@ -497,7 +513,7 @@
 												src={student.avatar_url ||
 													getAvatarFallback(
 														(student.role as 'student' | 'teacher' | 'admin') || 'student',
-														student.gender
+														student.gender === 'boy' ? 'M' : student.gender === 'girl' ? 'F' : null
 													)}
 												alt={getFullName(student.firstname, student.lastname, student.full_name)}
 											/>

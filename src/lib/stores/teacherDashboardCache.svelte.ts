@@ -331,11 +331,7 @@ export class TeacherDashboardCache {
 	 * @param studentId - The student ID
 	 * @param vipCards - The new VIP cards object
 	 */
-	updateVipCardsOptimistic(
-		classId: string,
-		studentId: string,
-		vipCards: StudentVipCards
-	): void {
+	updateVipCardsOptimistic(classId: string, studentId: string, vipCards: StudentVipCards): void {
 		const cached = this.rewardsCache.get(classId);
 		if (!cached) return;
 

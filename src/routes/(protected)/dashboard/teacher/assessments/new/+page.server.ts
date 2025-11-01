@@ -39,5 +39,5 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 
 	return {
 		templates: templates || []
+	};
 });
-};

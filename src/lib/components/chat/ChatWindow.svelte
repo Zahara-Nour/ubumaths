@@ -30,12 +30,13 @@
 	import { ArrowLeft, MoreVertical, Users, UserPlus } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { uploadMultipleAttachments } from '$lib/utils/file-upload';
+	import type { SupabaseClient } from '@supabase/supabase-js';
 
 	// Component Props
 	interface Props {
 		userId: string;
 		isTeacher: boolean;
-		supabase: ReturnType<typeof chatStore.supabase>; // SupabaseClient type
+		supabase: SupabaseClient;
 	}
 
 	let { userId, isTeacher, supabase }: Props = $props();
@@ -359,7 +360,7 @@
 
 				<!-- Composer Area -->
 				<ChatComposer
-					conversationId={chatStore.activeConversationId}
+					conversationId={chatStore.activeConversationId || ''}
 					{isTeacher}
 					onSend={handleSendMessage}
 					onTyping={handleTyping}

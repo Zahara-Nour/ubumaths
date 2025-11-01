@@ -1174,7 +1174,10 @@ export async function getStudentProgress(
 	}
 
 	// Get completed exercises
-	const { data: completions, error: completionsError } = await fromUnknownTable(supabase, 'exercise_completions')
+	const { data: completions, error: completionsError } = await fromUnknownTable(
+		supabase,
+		'exercise_completions'
+	)
 		.select('id')
 		.eq('student_id', studentId)
 		.not('completed_at', 'is', null)
@@ -1341,7 +1344,10 @@ async function validateAssignmentOwnership(
 	assignmentId: string,
 	userId: string
 ): Promise<{ valid: boolean; assignment?: ExerciseAssignment; error?: string }> {
-	const { data: assignment, error: fetchError } = await fromUnknownTable(supabase, 'exercise_assignments')
+	const { data: assignment, error: fetchError } = await fromUnknownTable(
+		supabase,
+		'exercise_assignments'
+	)
 		.select('*')
 		.eq('id', assignmentId)
 		.single();

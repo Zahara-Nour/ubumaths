@@ -71,11 +71,11 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 		return {
 			assignment,
 			attempts: []
-});
+		};
 	}
 
 	return {
 		assignment,
 		attempts: attempts || []
 	};
-};
+});

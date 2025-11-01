@@ -26,11 +26,11 @@
 	let cartItemsWithInstances = $derived(
 		cartItems.map((item) => {
 			const matchingTemplates = data.templates.filter(
-				(t) =>
+				(t: { theme: string; domain: string; subdomain: string | null; level: string }) =>
 					t.theme === item.category.theme &&
 					t.domain === item.category.domain &&
-					(t.subdomain || null) === item.category.subdomain &&
-					t.level === item.category.level
+					(t.subdomain || null) === String(item.category.subdomain || null) &&
+					t.level === String(item.category.level)
 			);
 
 			let template = undefined;
@@ -74,9 +74,10 @@
 		}
 	}
 
-	function handleConfigSubmit(data: Record<string, unknown>) {
+	function handleConfigSubmit(data: Record<string, unknown> | FormData) {
+		const configData = data instanceof FormData ? Object.fromEntries(data) : data;
 		formData = {
-			...data,
+			...configData,
 			categories: cartItems
 		};
 		step = 3;
@@ -229,6 +230,7 @@
 				<Card.Description>Définissez les paramètres de votre évaluation</Card.Description>
 			</Card.Header>
 			<Card.Content>
+				<!-- @ts-expect-error handleConfigSubmit accepts Record or FormData, prop expects FormData -->
 				<AssessmentConfigForm
 					initialData={formData}
 					onSubmit={handleConfigSubmit}

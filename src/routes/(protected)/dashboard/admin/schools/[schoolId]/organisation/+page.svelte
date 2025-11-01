@@ -1020,7 +1020,9 @@
 						value={editingYear?.name ?? ''}
 						required
 						placeholder="2024-2025"
-						class={form && 'errors' in form && (form.errors as Record<string, string[]>)?.name ? 'border-red-500' : ''}
+						class={form && 'errors' in form && (form.errors as Record<string, string[]>)?.name
+							? 'border-red-500'
+							: ''}
 					/>
 					{#if form && 'errors' in form && (form.errors as Record<string, string[]>)?.name}
 						<p class="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -1043,7 +1045,11 @@
 							name="start_date"
 							value={editingYear?.start_date ?? ''}
 							required
-							class={form && 'errors' in form && (form.errors as Record<string, string[]>)?.start_date ? 'border-red-500' : ''}
+							class={form &&
+							'errors' in form &&
+							(form.errors as Record<string, string[]>)?.start_date
+								? 'border-red-500'
+								: ''}
 						/>
 						{#if form && 'errors' in form && (form.errors as Record<string, string[]>)?.start_date}
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -1062,7 +1068,9 @@
 							name="end_date"
 							value={editingYear?.end_date ?? ''}
 							required
-							class={form && 'errors' in form && (form.errors as Record<string, string[]>)?.end_date ? 'border-red-500' : ''}
+							class={form && 'errors' in form && (form.errors as Record<string, string[]>)?.end_date
+								? 'border-red-500'
+								: ''}
 						/>
 						{#if form && 'errors' in form && (form.errors as Record<string, string[]>)?.end_date}
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">

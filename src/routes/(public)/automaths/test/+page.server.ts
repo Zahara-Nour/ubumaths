@@ -25,10 +25,11 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 	// Sort by created_at (descending)
 	const templates =
 		allTemplates?.sort(
-			(a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+			(a: { created_at: string }, b: { created_at: string }) =>
+				new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
 		) || [];
 
 	return {
 		templates: templates as QuestionTemplate[]
+	};
 });
-};

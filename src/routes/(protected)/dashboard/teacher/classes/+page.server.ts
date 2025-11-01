@@ -19,9 +19,10 @@
 
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import type { Database } from '$lib/types/database';
+import type { Database, Profile } from '$lib/types/database';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
 import { loadMonitor } from '$lib/utils/loadTracer';
+import type { User } from '@supabase/supabase-js';
 
 type School = Database['public']['Tables']['schools']['Row'];
 import {
@@ -49,7 +50,9 @@ import {
  */
 export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) => {
 	// Get user and profile from parent (protected) layout
-	const { user, profile } = await event.parent();
+	const parentData = await event.parent();
+	const user = parentData.user as User | null;
+	const profile = parentData.profile as Profile | null;
 	const { supabase } = event.locals;
 
 	if (!user || !profile) {

@@ -564,7 +564,11 @@
 		if (currentHeading === level) {
 			editor?.chain().focus().setParagraph().run();
 		} else {
-			editor?.chain().focus().setHeading({ level: level as 1 | 2 | 3 | 4 | 5 | 6 }).run();
+			editor
+				?.chain()
+				.focus()
+				.setHeading({ level: level as 1 | 2 | 3 | 4 | 5 | 6 })
+				.run();
 		}
 	}
 

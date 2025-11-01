@@ -169,7 +169,6 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content class="space-y-4">
-
 			<div>
 				<div class="mb-2 flex items-center justify-between">
 					<h4 class="text-sm font-medium">Messages envoyés ({sentMessages.length})</h4>

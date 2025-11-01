@@ -15,12 +15,17 @@
 
 	// Calculate stats
 	let bestScore = $derived(
-		data.attempts.length > 0 ? Math.max(...data.attempts.map((a) => a.score || 0)) : null
+		data.attempts.length > 0
+			? Math.max(...data.attempts.map((a: { score: number | null }) => a.score || 0))
+			: null
 	);
 
 	let averageScore = $derived(
 		data.attempts.length > 0
-			? data.attempts.reduce((sum, a) => sum + (a.score || 0), 0) / data.attempts.length
+			? data.attempts.reduce(
+					(sum: number, a: { score: number | null }) => sum + (a.score || 0),
+					0
+				) / data.attempts.length
 			: null
 	);
 

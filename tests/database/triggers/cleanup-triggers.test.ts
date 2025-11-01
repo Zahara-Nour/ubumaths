@@ -201,7 +201,7 @@ describe('Exercise Cleanup Triggers', () => {
 
 			expect(exercise1Images).toHaveLength(0);
 			expect(exercise2Images).toHaveLength(1);
-			expect(exercise2Images![0].name).toContain(exercise2.id);
+			expect((exercise2Images as Array<{ name: string }>)![0].name).toContain(exercise2.id);
 		});
 
 		it('should not delete images from other users', async () => {
@@ -248,7 +248,7 @@ describe('Exercise Cleanup Triggers', () => {
 
 			expect(teacher1Images).toHaveLength(0);
 			expect(teacher2Images).toHaveLength(1);
-			expect(teacher2Images![0].owner).toBe(teacher2.id);
+			expect((teacher2Images as Array<{ owner: string }>)![0].owner).toBe(teacher2.id);
 		});
 
 		it('should handle deletion when no images exist (no error)', async () => {
@@ -401,7 +401,9 @@ describe('Exercise Cleanup Triggers', () => {
 					id: generateTestId('assignment'),
 					exercise_id: exercise.id,
 					class_id: classData.id,
-					due_date: new Date().toISOString()
+					assigned_by: teacher.id,
+					assigned_to_type: 'class',
+					optional_deadline: new Date().toISOString()
 				})
 				.select()
 				.single();

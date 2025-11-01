@@ -100,7 +100,9 @@ describe('shuffleChoices - Seeded Random', () => {
 		const result2 = shuffleChoices(choices, seed);
 
 		expect(result1.map((r) => r.originalIndex)).toEqual(result2.map((r) => r.originalIndex));
-		expect(result1.map((r) => r.content[0].content)).toEqual(result2.map((r) => r.content[0].content));
+		expect(result1.map((r) => r.content[0].content)).toEqual(
+			result2.map((r) => r.content[0].content)
+		);
 	});
 
 	it('should be reproducible across multiple calls', () => {
@@ -183,8 +185,14 @@ describe('shuffleChoices - Edge Cases', () => {
 
 	it('should handle choices with image content', () => {
 		const choices = [
-			{ content: [{ type: 'image' as const, content: 'http://example.com/a.png', alt: 'A' }], isCorrect: false },
-			{ content: [{ type: 'image' as const, content: 'http://example.com/b.png', alt: 'B' }], isCorrect: true }
+			{
+				content: [{ type: 'image' as const, content: 'http://example.com/a.png', alt: 'A' }],
+				isCorrect: false
+			},
+			{
+				content: [{ type: 'image' as const, content: 'http://example.com/b.png', alt: 'B' }],
+				isCorrect: true
+			}
 		];
 
 		const result = shuffleChoices(choices, 77777);

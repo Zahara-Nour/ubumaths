@@ -63,7 +63,7 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 
 	// Transform classes to include student count
 	const classesWithCount =
-		classes?.map((c) => ({
+		classes?.map((c: { id: string; name: string; class_members: unknown[] }) => ({
 			id: c.id,
 			name: c.name,
 			student_count: c.class_members.length
@@ -96,7 +96,7 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 		}
 	>();
 
-	classMembers?.forEach((member) => {
+	classMembers?.forEach((member: { student: unknown }) => {
 		// Handle Supabase join result (student can be null or an object)
 		const studentData = Array.isArray(member.student) ? member.student[0] : member.student;
 
@@ -121,5 +121,5 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 		assignments,
 		classes: classesWithCount,
 		students
+	};
 });
-};

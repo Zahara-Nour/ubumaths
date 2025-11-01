@@ -24,7 +24,10 @@
 
 	// Interpolated question HTML
 	const questionHtml = $derived(
-		interpolateQuestion(instance.challenge.question, instance.variables)
+		interpolateQuestion(
+			instance.challenge.question,
+			instance.variables as Record<string, number | number[]>
+		)
 	);
 
 	// Time taken calculation
@@ -48,8 +51,8 @@
 		if (ontimeout) {
 			ontimeout();
 		} else {
-			// Default: submit null answer on timeout
-			onsubmit(null, instance.challenge.timer);
+			// Default: submit 0 answer on timeout
+			onsubmit(0, instance.challenge.timer);
 		}
 	}
 

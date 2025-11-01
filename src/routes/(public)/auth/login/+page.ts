@@ -7,5 +7,5 @@ export const load: PageLoad = loadMonitor.traceClientLoad(async (event) => {
 	const { supabase } = await parent();
 	return {
 		supabase
+	};
 });
-};

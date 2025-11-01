@@ -78,10 +78,12 @@
 	import { getSkeletonType } from '$lib/utils/skeleton-detector';
 	import TestModeToggle from '$lib/components/teacher/TestModeToggle.svelte';
 
+	import type { Snippet } from 'svelte';
+
 	// PROPS RECEIVED FROM PARENT LAYOUT SERVER LOAD:
 	// - data: Contains profile from +layout.server.ts
 	// - children: The child route component to render (e.g., +page.svelte)
-	let { data, children }: { data: LayoutData; children: unknown } = $props();
+	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
 	// Determine which skeleton variant to show based on current route
 	let skeletonType = $derived(getSkeletonType(page.url.pathname));

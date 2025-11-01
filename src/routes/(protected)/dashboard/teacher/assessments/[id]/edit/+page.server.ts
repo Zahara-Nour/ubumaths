@@ -51,8 +51,8 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 
 	return {
 		assessment
+	};
 });
-};
 
 export const actions: Actions = {
 	default: async ({ request, params, locals }) => {

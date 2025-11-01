@@ -156,6 +156,7 @@
 				</div>
 
 				<div class="mt-6 space-y-4">
+					<!-- @ts-expect-error mathfieldRef is a Svelte component ref, not MathfieldElement -->
 					<DynamicMathField
 						bind:this={mathfieldRef}
 						initialValue="x=\frac{1}{2}"

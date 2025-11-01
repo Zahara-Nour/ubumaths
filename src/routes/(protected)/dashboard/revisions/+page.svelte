@@ -138,7 +138,7 @@
 	</div>
 
 	<!-- Decks List with Tabs -->
-	<Tabs defaultValue="all" class="w-full">
+	<Tabs value="all" class="w-full">
 		<TabsList class="mb-6">
 			<TabsTrigger value="all">Tous ({data.decks.length})</TabsTrigger>
 			<TabsTrigger value="assigned">Attribués ({assignedDecks.length})</TabsTrigger>

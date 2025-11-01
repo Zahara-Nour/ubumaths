@@ -22,7 +22,12 @@
 	let selectedSpellNum = $state<number | null>(null);
 	let activeChallenge = $state<unknown>(null);
 	let challengeInstance = $state<ChallengeInstance | null>(null);
-	let challengeResult = $state<{ success?: boolean; answer: unknown; correctAnswer: unknown; timeTaken: number } | null>(null);
+	let challengeResult = $state<{
+		success?: boolean;
+		answer: unknown;
+		correctAnswer: unknown;
+		timeTaken: number;
+	} | null>(null);
 	let submitting = $state(false);
 	let victory = $state(false);
 	let rewards = $state<unknown>(null);
@@ -127,7 +132,8 @@
 
 				if (result.type === 'success' && result.data) {
 					// Parse result.data if it's a string
-					const parsed: unknown = typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
+					const parsed: unknown =
+						typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
 					console.log('[handleChallengeSubmit] Parsed response:', parsed);
 
 					// SvelteKit form actions return data directly as objects
@@ -299,7 +305,12 @@
 
 				<!-- Rewards -->
 				{#if rewards}
-					{@const rewardsData = rewards as { xp?: number; prestige?: number; pyrs?: number; element?: string }}
+					{@const rewardsData = rewards as {
+						xp?: number;
+						prestige?: number;
+						pyrs?: number;
+						element?: string;
+					}}
 					<div class="grid grid-cols-3 gap-4 rounded-lg bg-background p-6">
 						<div class="space-y-1">
 							<p class="text-3xl font-bold text-primary">+{rewardsData.xp ?? 0}</p>
@@ -345,7 +356,9 @@
 	{:else if currentView === 'challenge'}
 		<!-- Active Challenge -->
 		<div class="mx-auto max-w-4xl p-8">
-			<ChallengeContainer instance={challengeInstance} onsubmit={handleChallengeSubmit} />
+			{#if challengeInstance}
+				<ChallengeContainer instance={challengeInstance} onsubmit={handleChallengeSubmit} />
+			{/if}
 		</div>
 	{:else}
 		<!-- Combat Arena -->

@@ -178,7 +178,10 @@ export function generateChallengeVariables(challenge: Challenge): {
  * @param variables - Variable name -> value mapping
  * @returns Text with variables replaced
  */
-export function interpolateVariables(text: string, variables: Record<string, number | number[]>): string {
+export function interpolateVariables(
+	text: string,
+	variables: Record<string, number | number[]>
+): string {
 	return text.replace(/\{(\w+)\}/g, (match, varName) => {
 		if (varName in variables) {
 			const value = variables[varName];
@@ -389,7 +392,10 @@ export function generateChallengeInstance(challenge: Challenge): {
  * Interpolate question text with variable values
  * Replaces {variable} placeholders with their values
  */
-export function interpolateQuestion(question: string, variables: Record<string, number | number[]>): string {
+export function interpolateQuestion(
+	question: string,
+	variables: Record<string, number | number[]>
+): string {
 	return interpolateVariables(question, variables);
 }
 

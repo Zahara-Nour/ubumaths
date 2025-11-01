@@ -39,7 +39,7 @@
 	}
 
 	function getRiddleById(id: string): DbRiddle | undefined {
-		return data.availableRiddles.find((r) => r.id === id);
+		return data.availableRiddles.find((r) => r.id === id) as DbRiddle | undefined;
 	}
 </script>
 

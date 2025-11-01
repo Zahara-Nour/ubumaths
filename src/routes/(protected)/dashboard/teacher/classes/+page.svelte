@@ -69,18 +69,18 @@
 				created_at: classItem.created_at,
 				updated_at: classItem.updated_at,
 				student_count: classItem.student_count,
-				schedules: classItem.schedules
+				schedules: classItem.schedules as any
 			};
 			teacherCache.hydrateClassInfo(classItem.id, classInfo);
 		}
 
 		// Hydrate school info cache (Cache 4) if available
 		if (data.school) {
-			teacherCache.hydrateSchoolInfo({
-				school: data.school,
-				current_period: null,
-				all_periods: []
-			});
+			teacherCache.hydrateSchoolInfo(
+				data.school as any,
+				// @ts-expect-error current_period doesn't exist in schema type but exists at runtime
+				data.school.current_period || null
+			);
 		}
 	});
 
@@ -189,7 +189,9 @@
 	 */
 	async function createMathsEntry(classId: string, day: number, time: string) {
 		// Find the period that starts at this time
-		const timetable = data.school?.timetable as { periods?: Array<{ start_time: string; end_time: string; period_number: number }> } | undefined;
+		const timetable = data.school?.timetable as
+			| { periods?: Array<{ start_time: string; end_time: string; period_number: number }> }
+			| undefined;
 		const period = timetable?.periods?.find((p: { start_time: string }) => p.start_time === time);
 
 		if (!period) {
@@ -445,8 +447,9 @@
 					<div>
 						<h3 class="mb-4 text-lg font-semibold text-foreground">Emploi du Temps</h3>
 						<ClassScheduleGrid
-							schedules={getMergedSchedules(classItem.id, classItem.schedules)}
-							periods={(data.school?.timetable as { periods?: SchoolPeriod[] })?.periods || []}
+							schedules={getMergedSchedules(classItem.id, classItem.schedules) as any}
+							periods={(data.school?.timetable as unknown as { periods?: SchoolPeriod[] })
+								?.periods || []}
 							onCellClick={(day, time, entry) => handleCellClick(classItem.id, day, time, entry)}
 						/>
 					</div>
@@ -471,7 +474,7 @@
 		mode={modalMode}
 		entry={selectedEntry}
 		{defaultDay}
-		periods={(data.school.timetable as { periods: SchoolPeriod[] }).periods}
+		periods={(data.school.timetable as unknown as { periods: SchoolPeriod[] }).periods}
 		onClose={handleModalClose}
 		onSave={handleSave}
 		onDelete={modalMode === 'edit' ? handleDelete : undefined}

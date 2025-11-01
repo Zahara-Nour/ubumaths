@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { Home, Gamepad2, Calculator } from 'lucide-svelte';
 	import { resolve } from '$app/paths';
+	import type { ComponentType } from 'svelte';
 
 	// Default navigation items
 	let {
@@ -11,7 +12,7 @@
 			{ label: 'Automaths', href: '/automaths', icon: Calculator }
 		]
 	}: {
-		items?: Array<{ label: string; href: string; icon: typeof import('lucide-svelte').LucideIcon }>;
+		items?: Array<{ label: string; href: string; icon: ComponentType }>;
 	} = $props();
 
 	// Check if a link is active
@@ -25,7 +26,7 @@
 	<nav class="flex flex-col items-center gap-1 py-4">
 		{#each items as item (item.href)}
 			<a
-				href={resolve(item.href as Parameters<typeof resolve>[0])}
+				href={resolve(item.href as any)}
 				data-sveltekit-preload-data="tap"
 				class="group flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
 					item.href
@@ -35,7 +36,10 @@
 				title={item.label}
 			>
 				<!-- Svelte 5: Components are dynamic by default, no need for svelte:component -->
-				<item.icon class="h-6 w-6 transition-transform duration-300 group-hover:scale-110" />
+				<svelte:component
+					this={item.icon}
+					class="h-6 w-6 transition-transform duration-300 group-hover:scale-110"
+				/>
 				<span class="text-center text-xs leading-tight font-medium">{item.label}</span>
 			</a>
 		{/each}

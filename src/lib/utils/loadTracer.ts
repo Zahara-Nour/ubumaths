@@ -58,8 +58,9 @@ interface ServerLoadEvent {
 	request: Request;
 	cookies: {
 		get: (name: string) => string | undefined;
-		set: (name: string, value: string, opts?: unknown) => void;
-		delete: (name: string, opts?: unknown) => void;
+		set: (name: string, value: string, opts: Record<string, unknown>) => void;
+		delete: (name: string, opts: Record<string, unknown>) => void;
+		getAll: () => { name: string; value: string }[];
 	};
 	setHeaders: (headers: Record<string, string>) => void;
 	isDataRequest: boolean;
@@ -71,13 +72,19 @@ interface LoadEvent {
 	params: Record<string, string>;
 	route: { id: string | null };
 	url: URL;
-	data: Record<string, unknown>;
+	data: Record<string, unknown> | null;
 	parent: () => Promise<Record<string, unknown>>;
-	depends: (...deps: string[]) => void;
+	depends: (...deps: `${string}:${string}`[]) => void;
 }
 
-type ServerLoadFunction = (event: ServerLoadEvent) => Promise<Record<string, unknown>> | Record<string, unknown>;
-type ClientLoadFunction = (event: LoadEvent) => Promise<Record<string, unknown>> | Record<string, unknown>;
+ 
+type ServerLoadFunction = (
+	event: any
+) => Promise<Record<string, unknown>> | Record<string, unknown>;
+ 
+type ClientLoadFunction = (
+	event: any
+) => Promise<Record<string, unknown>> | Record<string, unknown>;
 
 type VisitType = 'First visit' | 'Revisit';
 type LoadType = 'Server' | 'Client';
@@ -157,34 +164,43 @@ export class LoadMonitor {
 	 * Trace a server-side load function
 	 *
 	 * @param loadFn - The original server load function
+	 * @param type - Optional type indicator ('layout' or 'page')
 	 * @returns Wrapped load function with monitoring
 	 *
 	 * @example
 	 * ```typescript
+	 * // In +page.server.ts
 	 * export const load = loadMonitor.traceServerLoad(async (event) => {
 	 *   const { user } = await event.parent();
 	 *   return { user };
-	 * });
+	 * }, 'page');
+	 *
+	 * // In +layout.server.ts
+	 * export const load = loadMonitor.traceServerLoad(async (event) => {
+	 *   return { layout: 'data' };
+	 * }, 'layout');
 	 * ```
 	 */
-	traceServerLoad<T extends ServerLoadFunction>(loadFn: T): T {
+	traceServerLoad<T extends ServerLoadFunction>(loadFn: T, type?: 'layout' | 'page'): T {
 		// If monitoring disabled, return original function unchanged
 		if (!this.monitoringEnabled) {
 			return loadFn;
 		}
 
 		// Create wrapped function
-		const wrapped = async (event: ServerLoadEvent) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const wrapped: T = (async (event: any) => {
 			const route = event.route.id || '/';
 			const visitType = this.getVisitType(route, 'Server');
+			const typeLabel = type ? ` [${type.toUpperCase()}]` : '';
 
 			// Wrap event.parent() to track calls
 			const wrappedEvent = {
 				...event,
 				parent: this.wrapParent(event.parent.bind(event), route, 'Server')
-			} as ServerLoadEvent;
+			};
 
-			this.log(`[Server Load] ${route} (${visitType}) - Started`);
+			this.log(`[Server Load${typeLabel}] ${route} (${visitType}) - Started`);
 
 			const startTime = performance.now();
 
@@ -193,43 +209,52 @@ export class LoadMonitor {
 
 				const duration = (performance.now() - startTime).toFixed(2);
 
-				this.log(`[Server Load] ${route} (${visitType}) - Completed (${duration}ms)`);
+				this.log(`[Server Load${typeLabel}] ${route} (${visitType}) - Completed (${duration}ms)`);
 
 				return result;
 			} catch (error) {
 				const duration = (performance.now() - startTime).toFixed(2);
-				this.log(`[Server Load] ${route} (${visitType}) - Error (${duration}ms)`, error);
+				this.log(`[Server Load${typeLabel}] ${route} (${visitType}) - Error (${duration}ms)`, error);
 				throw error;
 			}
-		};
+		}) as T;
 
-		return wrapped as T;
+		return wrapped;
 	}
 
 	/**
 	 * Trace a client-side load function
 	 *
 	 * @param loadFn - The original client load function
+	 * @param type - Optional type indicator ('layout' or 'page')
 	 * @returns Wrapped load function with monitoring
 	 *
 	 * @example
 	 * ```typescript
+	 * // In +page.ts
 	 * export const load = loadMonitor.traceClientLoad(async (event) => {
 	 *   const { user } = await event.parent();
 	 *   return { user };
-	 * });
+	 * }, 'page');
+	 *
+	 * // In +layout.ts
+	 * export const load = loadMonitor.traceClientLoad(async (event) => {
+	 *   return { layout: 'data' };
+	 * }, 'layout');
 	 * ```
 	 */
-	traceClientLoad<T extends ClientLoadFunction>(loadFn: T): T {
+	traceClientLoad<T extends ClientLoadFunction>(loadFn: T, type?: 'layout' | 'page'): T {
 		// If monitoring disabled, return original function unchanged
 		if (!this.monitoringEnabled) {
 			return loadFn;
 		}
 
 		// Create wrapped function
-		const wrapped = async (event: LoadEvent) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const wrapped: T = (async (event: any) => {
 			const route = event.route.id || '/';
 			const visitType = this.getVisitType(route, 'Client');
+			const typeLabel = type ? ` [${type.toUpperCase()}]` : '';
 
 			// Determine if this is SSR or client-side navigation
 			const context = browser ? 'Browser' : 'SSR';
@@ -238,9 +263,9 @@ export class LoadMonitor {
 			const wrappedEvent = {
 				...event,
 				parent: this.wrapParent(event.parent.bind(event), route, 'Client')
-			} as LoadEvent;
+			};
 
-			this.log(`[Client Load] ${route} (${visitType}, ${context}) - Started`);
+			this.log(`[Client Load${typeLabel}] ${route} (${visitType}, ${context}) - Started`);
 
 			const startTime = performance.now();
 
@@ -249,17 +274,20 @@ export class LoadMonitor {
 
 				const duration = (performance.now() - startTime).toFixed(2);
 
-				this.log(`[Client Load] ${route} (${visitType}, ${context}) - Completed (${duration}ms)`);
+				this.log(`[Client Load${typeLabel}] ${route} (${visitType}, ${context}) - Completed (${duration}ms)`);
 
 				return result;
 			} catch (error) {
 				const duration = (performance.now() - startTime).toFixed(2);
-				this.log(`[Client Load] ${route} (${visitType}, ${context}) - Error (${duration}ms)`, error);
+				this.log(
+					`[Client Load${typeLabel}] ${route} (${visitType}, ${context}) - Error (${duration}ms)`,
+					error
+				);
 				throw error;
 			}
-		};
+		}) as T;
 
-		return wrapped as T;
+		return wrapped;
 	}
 
 	/**

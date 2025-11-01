@@ -355,7 +355,8 @@ describe('Game System Triggers', () => {
 				.insert({
 					user_id: student.id,
 					deck_name: 'Deck 1',
-					is_active: true
+					is_active: true,
+					spell_ids: []
 				})
 				.select()
 				.single();

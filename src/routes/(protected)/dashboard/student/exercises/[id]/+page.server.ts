@@ -56,7 +56,7 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 		.select('class_id')
 		.eq('student_id', user.id);
 
-	const classIds = classMemberships?.map((cm) => cm.class_id) || [];
+	const classIds = classMemberships?.map((cm: { class_id: string }) => cm.class_id) || [];
 
 	return {
 		exercise,
@@ -64,5 +64,5 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 		completion,
 		classIds,
 		userId: user.id
+	};
 });
-};

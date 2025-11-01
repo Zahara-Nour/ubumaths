@@ -75,7 +75,7 @@
 			if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
 				e.preventDefault();
 				if (!isSending) {
-					sendMessage();
+					handleSubmit();
 				}
 			}
 			// Ctrl/Cmd + S to save draft
@@ -272,13 +272,22 @@
 		}>
 	) {
 		try {
+			// Get current user
+			const {
+				data: { user }
+			} = await supabase.auth.getUser();
+			if (!user) {
+				throw new Error('User not authenticated');
+			}
+
 			const attachmentRecords = attachmentData.map((att) => ({
 				message_id: messageId,
 				file_name: att.file_name,
 				file_type: att.file_type,
 				file_size: att.file_size,
 				storage_path: att.storage_path,
-				public_url: att.public_url
+				public_url: att.public_url,
+				uploaded_by: user.id
 			}));
 
 			const { error } = await supabase.from('message_attachments_v2').insert(attachmentRecords);
@@ -589,23 +598,14 @@
 					<!-- Subject -->
 					<div class="space-y-2">
 						<Label for="subject">Sujet *</Label>
-						<Input
-							id="subject"
-							type="text"
-							bind:value={subject}
-							maxlength={200}
-							required
-						/>
+						<Input id="subject" type="text" bind:value={subject} maxlength={200} required />
 						<p class="text-xs text-muted-foreground">{subject.length}/200 caractères</p>
 					</div>
 
 					<!-- Content -->
 					<div class="space-y-2">
 						<Label for="content">Message *</Label>
-						<FormRichTextEditor
-							bind:value={content}
-							bind:jsonValue={contentJson}
-						/>
+						<FormRichTextEditor bind:value={content} bind:jsonValue={contentJson} />
 					</div>
 
 					<!-- Attachments -->

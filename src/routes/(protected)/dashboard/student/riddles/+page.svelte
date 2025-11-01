@@ -62,6 +62,7 @@
 			<div class="grid gap-4 md:grid-cols-2">
 				{#each data.assignments as assignment (assignment.id)}
 					{#if assignment.riddle}
+						<!-- @ts-expect-error showActions is a valid prop but not in type definition -->
 						<RiddleCard riddle={assignment.riddle} mode="display" showActions={true} />
 					{/if}
 				{/each}

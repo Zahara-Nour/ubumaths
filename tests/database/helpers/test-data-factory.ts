@@ -65,7 +65,11 @@ export class ProfileBuilder {
 		});
 
 		// Then create profile
-		const { data, error } = await client.from('profiles').insert(this.data as Tables['profiles']['Insert']).select().single();
+		const { data, error } = await client
+			.from('profiles')
+			.insert(this.data as Tables['profiles']['Insert'])
+			.select()
+			.single();
 		if (error) throw error;
 		return data;
 	}
@@ -100,7 +104,11 @@ export class ClassBuilder {
 
 	async create(): Promise<Tables['classes']['Row']> {
 		const client = createServiceRoleClient();
-		const { data, error } = await client.from('classes').insert(this.data as Tables['classes']['Insert']).select().single();
+		const { data, error } = await client
+			.from('classes')
+			.insert(this.data as Tables['classes']['Insert'])
+			.select()
+			.single();
 		if (error) throw error;
 		return data;
 	}
@@ -146,7 +154,11 @@ export class ExerciseBuilder {
 
 	async create(): Promise<Tables['exercises']['Row']> {
 		const client = createServiceRoleClient();
-		const { data, error } = await client.from('exercises').insert(this.data as Tables['exercises']['Insert']).select().single();
+		const { data, error } = await client
+			.from('exercises')
+			.insert(this.data as Tables['exercises']['Insert'])
+			.select()
+			.single();
 		if (error) throw error;
 		return data;
 	}
@@ -192,7 +204,11 @@ export class GameCombatBuilder {
 
 	async create(): Promise<Tables['game_combats']['Row']> {
 		const client = createServiceRoleClient();
-		const { data, error } = await client.from('game_combats').insert(this.data as Tables['game_combats']['Insert']).select().single();
+		const { data, error } = await client
+			.from('game_combats')
+			.insert(this.data as Tables['game_combats']['Insert'])
+			.select()
+			.single();
 		if (error) throw error;
 		return data;
 	}
@@ -304,7 +320,11 @@ export class ErrorLogBuilder {
 
 	async create(): Promise<Tables['error_logs']['Row']> {
 		const client = createServiceRoleClient();
-		const { data, error } = await client.from('error_logs').insert(this.data as Tables['error_logs']['Insert']).select().single();
+		const { data, error } = await client
+			.from('error_logs')
+			.insert(this.data as Tables['error_logs']['Insert'])
+			.select()
+			.single();
 		if (error) throw error;
 		return data;
 	}
@@ -315,7 +335,8 @@ export const TestData = {
 	profile: () => new ProfileBuilder(),
 	class: (teacherId: string) => new ClassBuilder(teacherId),
 	exercise: (createdBy: string) => new ExerciseBuilder(createdBy),
-	gameCombat: (organizerId: string, monsterId?: string) => new GameCombatBuilder(organizerId, monsterId),
+	gameCombat: (organizerId: string, monsterId?: string) =>
+		new GameCombatBuilder(organizerId, monsterId),
 	privateMessage: (senderId: string) => new PrivateMessageBuilder(senderId),
 	errorLog: () => new ErrorLogBuilder()
 };

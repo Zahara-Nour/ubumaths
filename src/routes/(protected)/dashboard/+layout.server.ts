@@ -34,6 +34,8 @@ import type { LayoutServerLoad } from './$types';
 import { createLogger } from '$lib/utils/logger';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
 import { loadMonitor } from '$lib/utils/loadTracer';
+import type { User } from '@supabase/supabase-js';
+import type { Profile } from '$lib/types/database';
 
 const logger = createLogger('dashboard/+layout.server.ts');
 
@@ -43,7 +45,9 @@ export const load: LayoutServerLoad = loadMonitor.traceServerLoad(async (event) 
 
 	// Get user and profile from parent (protected) layout
 	// They are already authenticated and verified
-	const { user, profile } = await parent();
+	const parentData = await parent();
+	const user = parentData.user as User | null;
+	const profile = parentData.profile as Profile | null;
 
 	// TypeScript safety: user and profile are guaranteed to exist after (protected) layout auth check
 	// But we add a runtime check for extra safety
@@ -96,5 +100,5 @@ export const load: LayoutServerLoad = loadMonitor.traceServerLoad(async (event) 
 	// teacherClasses will be empty array for non-teachers
 	return {
 		teacherClasses
+	};
 });
-};

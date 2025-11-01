@@ -89,5 +89,5 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession }, paren
 	return {
 		user,
 		profile
-});
+	};
 };

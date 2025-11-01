@@ -39,8 +39,8 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 
 	return {
 		error: result.data
+	};
 });
-};
 
 export const actions: Actions = {
 	/**

@@ -18,7 +18,7 @@
 	// Class items for MySelect
 	const classItems = $derived([
 		{ value: 'all', label: 'Toutes les classes' },
-		...data.classes.map((c) => ({ value: c.id, label: c.name }))
+		...data.classes.map((c: { id: string; name: string }) => ({ value: c.id, label: c.name }))
 	]);
 
 	const filteredFriendships = $derived(() => {
@@ -28,7 +28,7 @@
 		if (searchQuery) {
 			const query = searchQuery.toLowerCase();
 			filtered = filtered.filter(
-				(f) =>
+				(f: { requester_name: string; addressee_name: string }) =>
 					f.requester_name.toLowerCase().includes(query) ||
 					f.addressee_name.toLowerCase().includes(query)
 			);
@@ -37,7 +37,7 @@
 		// Filter by class
 		if (selectedClass !== 'all') {
 			filtered = filtered.filter(
-				(f) =>
+				(f: { requester_class_ids: string[]; addressee_class_ids: string[] }) =>
 					f.requester_class_ids.includes(selectedClass) ||
 					f.addressee_class_ids.includes(selectedClass)
 			);

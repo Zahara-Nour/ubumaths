@@ -62,5 +62,5 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 			resolved: resolved === 'true' ? true : resolved === 'false' ? false : null,
 			search
 		}
+	};
 });
-};

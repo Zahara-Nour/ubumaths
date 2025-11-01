@@ -4,8 +4,9 @@
 	import { playerStore } from '$lib/stores/game/player.svelte';
 	import { spellsStore } from '$lib/stores/game/spells.svelte';
 	import type { LayoutData } from './$types';
+	import type { Snippet } from 'svelte';
 
-	let { data, children }: { data: LayoutData; children: unknown } = $props();
+	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
 	// Initialize stores with server data
 	onMount(() => {

@@ -42,5 +42,5 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 	return {
 		exercise: result.data,
 		assignmentCount
+	};
 });
-};

@@ -14,8 +14,8 @@
 <!--
 Discriminated Unions + Destructing (required for bindable) do not
 get along, so we shut typescript up by casting `value` to `never`.
+Bits UI discriminated union type complexity requires casting restProps.
 -->
-<!-- @ts-expect-error: Bits UI discriminated union type complexity -->
 <SliderPrimitive.Root
 	bind:ref
 	bind:value={value as never}
@@ -25,7 +25,7 @@ get along, so we shut typescript up by casting `value` to `never`.
 		'relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',
 		className
 	)}
-	{...restProps}
+	{...restProps as any}
 >
 	{#snippet children({ thumbs })}
 		<span

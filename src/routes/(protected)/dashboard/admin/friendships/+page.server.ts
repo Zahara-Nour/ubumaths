@@ -54,7 +54,7 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 			friendships: [],
 			classes: [],
 			stats: { total: 0, accepted: 0, pending: 0, rejected: 0 }
-});
+		};
 	}
 
 	// Fetch classes for filtering
@@ -69,7 +69,7 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 	}
 
 	// Transform friendships data
-	const transformedFriendships = friendships.map((f) => {
+	const transformedFriendships = friendships.map((f: (typeof friendships)[number]) => {
 		// Type assertion for nested profile data
 		const requester = Array.isArray(f.requester) ? f.requester[0] : f.requester;
 		const addressee = Array.isArray(f.addressee) ? f.addressee[0] : f.addressee;
@@ -101,9 +101,15 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 	// Calculate stats
 	const stats = {
 		total: transformedFriendships.length,
-		accepted: transformedFriendships.filter((f) => f.status === 'accepted').length,
-		pending: transformedFriendships.filter((f) => f.status === 'pending').length,
-		rejected: transformedFriendships.filter((f) => f.status === 'rejected').length
+		accepted: transformedFriendships.filter(
+			(f: (typeof transformedFriendships)[number]) => f.status === 'accepted'
+		).length,
+		pending: transformedFriendships.filter(
+			(f: (typeof transformedFriendships)[number]) => f.status === 'pending'
+		).length,
+		rejected: transformedFriendships.filter(
+			(f: (typeof transformedFriendships)[number]) => f.status === 'rejected'
+		).length
 	};
 
 	return {
@@ -111,7 +117,7 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 		classes: classes || [],
 		stats
 	};
-};
+});
 
 export const actions: Actions = {
 	deleteFriendship: async ({ request, locals }) => {

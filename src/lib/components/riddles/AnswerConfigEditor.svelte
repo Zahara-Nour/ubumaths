@@ -35,7 +35,9 @@
 	let caseSensitive = $state(config?.options?.caseSensitive ?? false);
 	let qcmChoices = $state<string[]>(config?.options?.choices || ['', '', '']);
 	let correctChoices = $state<number[]>(
-		Array.isArray(config?.value) ? config.value : [config?.value || 0]
+		Array.isArray(config?.value)
+			? (config.value.filter((v) => typeof v === 'number') as number[])
+			: [typeof config?.value === 'number' ? config.value : 0]
 	);
 	let multipleAnswers = $state(config?.options?.multipleAnswers ?? false);
 	let exactMatch = $state(config?.options?.exactMatch ?? true);
@@ -72,7 +74,10 @@
 
 		const newConfig: AnswerConfig = {
 			type: answerType,
-			value,
+			value:
+				answerType === 'qcm' && Array.isArray(value)
+					? value.map(String)
+					: (value as string | number),
 			options
 		};
 

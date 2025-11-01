@@ -265,7 +265,7 @@
 		formSubject = template.subject_template;
 		formBody = template.body_template;
 		formTriggerType = template.trigger_type as TriggerType;
-		formClassId = template.class_id;
+		formClassId = template.class_id ?? undefined;
 		formIsActive = template.is_active;
 		formTags = template.tags || [];
 
@@ -308,8 +308,8 @@
 					trigger_type: formTriggerType,
 					trigger_config: null,
 					scope: 'class',
-					created_by: currentUserId || '',
-					class_id: formClassId,
+					created_by: currentUserId ?? '',
+					class_id: formClassId ?? null,
 					is_active: true,
 					variables: availableVariables,
 					tags: formTags,
@@ -396,6 +396,7 @@
 					await loadTemplates();
 				}
 			} else {
+				// @ts-expect-error - templateData type doesn't match exact Supabase type but is compatible
 				const { error } = await supabase.from('message_templates').insert([templateData]);
 
 				if (error) {
@@ -929,7 +930,7 @@
 							<div class="flex gap-2">
 								<VariableAutocomplete
 									triggerType={formTriggerType}
-									on:insert={handleVariableInsert}
+									onInsert={handleVariableInsert}
 								/>
 								<FiltersHelp />
 							</div>

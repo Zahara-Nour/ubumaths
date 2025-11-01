@@ -79,8 +79,8 @@
 					const cardRequest: CreateCardRequest = {
 						deckId: deck.id,
 						cardType: 'custom',
-						frontContent: card.data.frontContent,
-						backContent: card.data.backContent
+						frontContent: (card.data as any).frontContent || card.data.question,
+						backContent: (card.data as any).backContent || card.data.answer
 					};
 
 					const cardResponse = await fetch('/api/srs/cards', {
@@ -113,7 +113,10 @@
 	async function handleSaveCustomCard(frontContent: ContentField[], backContent: ContentField[]) {
 		pendingCards.push({
 			type: 'custom',
-			data: { frontContent, backContent }
+			data: { question: '', answer: '', frontContent, backContent } as {
+				question: string;
+				answer: string;
+			}
 		});
 
 		showCustomCardEditor = false;

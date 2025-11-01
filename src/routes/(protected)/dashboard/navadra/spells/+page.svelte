@@ -12,7 +12,7 @@
 		wind: '💨'
 	};
 
-	const typeLabels = {
+	const typeLabels: Record<string, string> = {
 		attack: 'Attaque',
 		heal: 'Soin',
 		buff: 'Buff',

@@ -24,7 +24,7 @@
 
 	// Get severity badge variant
 	function getSeverityVariant(
-		severity: string
+		severity: string | undefined
 	): 'default' | 'secondary' | 'destructive' | 'outline' {
 		switch (severity) {
 			case 'critical':

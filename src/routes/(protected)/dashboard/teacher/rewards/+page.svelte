@@ -140,14 +140,14 @@
 				classItem.id,
 				classItem.students.map((s) => ({
 					id: s.id,
-					firstname: s.firstname,
-					lastname: s.lastname,
-					full_name: s.full_name,
-					avatar_url: s.avatar_url,
-					role: s.role,
-					gender: s.gender,
+					firstname: s.firstname ?? null,
+					lastname: s.lastname ?? null,
+					full_name: s.full_name ?? null,
+					avatar_url: s.avatar_url ?? null,
+					role: s.role ?? null,
+					gender: s.gender ?? null,
 					is_test: false // This will be set correctly from server data
-				}))
+				})) as any
 			);
 		}
 	});
@@ -703,7 +703,10 @@
 										<Avatar.Root class="h-12 w-12 flex-shrink-0">
 											<Avatar.Image
 												src={student.avatar_url ||
-													getAvatarFallback(student.role || 'student', student.gender)}
+													getAvatarFallback(
+														(student.role as 'student' | 'teacher' | 'admin') || 'student',
+														student.gender === 'boy' ? 'M' : student.gender === 'girl' ? 'F' : null
+													)}
 												alt={getFullName(student.firstname, student.lastname, student.full_name)}
 											/>
 											<Avatar.Fallback class="bg-primary/10 font-semibold text-primary">

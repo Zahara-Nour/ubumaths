@@ -24,8 +24,10 @@
 				websocketManager.connect(data.user.id, data.session.access_token);
 			}
 		}
+	});
 
-		// Cleanup on unmount
+	// Cleanup effect
+	$effect(() => {
 		return () => {
 			websocketManager.disconnect();
 		};

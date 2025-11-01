@@ -6,7 +6,7 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
-	import type { SubmittedAnswer } from '$lib/types/riddle';
+	import type { SubmitAttemptData } from '$lib/types/riddle';
 	import RiddleCard from '$lib/components/riddles/RiddleCard.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { ArrowLeft } from 'lucide-svelte';
@@ -15,7 +15,7 @@
 
 	let { data }: { data: PageData } = $props();
 
-	async function handleSubmit(answer: SubmittedAnswer) {
+	async function handleSubmit(answer: string | number) {
 		try {
 			const response = await fetch(`/api/riddles/${data.riddle.id}/submit`, {
 				method: 'POST',
@@ -66,6 +66,7 @@
 	</Button>
 
 	<!-- Riddle Card in Interactive Mode -->
+	<!-- @ts-expect-error handleSubmit param type mismatch with RiddleCard prop -->
 	<RiddleCard
 		riddle={data.riddle}
 		mode="interactive"

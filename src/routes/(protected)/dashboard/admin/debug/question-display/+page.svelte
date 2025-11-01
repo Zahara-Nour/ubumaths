@@ -47,7 +47,10 @@
 	// SAMPLE QUESTIONS
 	// ============================================================================
 
-	const sampleQuestions: Record<string, Partial<QuestionInstance> & Pick<QuestionInstance, 'type' | 'templateId'>> = {
+	const sampleQuestions: Record<
+		string,
+		Partial<QuestionInstance> & Pick<QuestionInstance, 'type' | 'templateId'>
+	> = {
 		numerical_exact: {
 			templateId: 'debug-numerical-1',
 			type: 'numerical_exact',
@@ -151,7 +154,6 @@
 				{ content: [{ type: 'text', content: '$$x = 9$$' }], originalIndex: 1 },
 				{ content: [{ type: 'text', content: '$$x = 6.5$$' }], originalIndex: 2 }
 			],
-			correctChoiceIndex: 0,
 			multipleAnswers: false,
 			correction: [
 				{

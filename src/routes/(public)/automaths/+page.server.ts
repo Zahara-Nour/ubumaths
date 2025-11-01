@@ -7,6 +7,7 @@ import type { QuestionTemplate, QuestionInstance } from '$lib/questions/types';
  * Hierarchical structure for organizing questions
  */
 interface QuestionWithPreview {
+	id: string; // template.id for keying
 	template: QuestionTemplate;
 	preview: QuestionInstance;
 }
@@ -64,6 +65,7 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 		const result = generateInstance(template as QuestionTemplate, PREVIEW_SEED);
 		if (result.success && result.instance) {
 			questionsWithPreviews.push({
+				id: template.id,
 				template: template as QuestionTemplate,
 				preview: result.instance
 			});

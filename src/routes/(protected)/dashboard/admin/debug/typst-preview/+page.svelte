@@ -138,7 +138,8 @@ Typst permet de créer facilement des documents mathématiques professionnels av
 
 		try {
 			const pdfData = await typst.pdf({ mainContent: typstContent });
-			const pdfFile = new Blob([pdfData], { type: 'application/pdf' });
+			// Type assertion: pdfData is Uint8Array from typst, compatible with BlobPart
+			const pdfFile = new Blob([pdfData as unknown as BlobPart], { type: 'application/pdf' });
 
 			// Create download link
 			const link = document.createElement('a');

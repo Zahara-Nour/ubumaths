@@ -36,6 +36,7 @@ pnpm dev --port 5175
 Ouvrez la console du navigateur ou regardez le terminal serveur. Vous verrez des logs comme :
 
 **Navigateur (Client Load):**
+
 ```
 [Client Load] /games (First visit, Browser) - Started
 [Client Load] /games - parent() called (12.34ms)
@@ -43,6 +44,7 @@ Ouvrez la console du navigateur ou regardez le terminal serveur. Vous verrez des
 ```
 
 **Terminal (Server Load):**
+
 ```
 10:32:15 AM [Server Load] /dashboard/teacher/classes (First visit) - Started
 10:32:15 AM [Server Load] /dashboard/teacher/classes - parent() called (45.67ms)
@@ -67,6 +69,7 @@ Ouvrez la console du navigateur ou regardez le terminal serveur. Vous verrez des
 ### Exemples
 
 **Première visite server-side:**
+
 ```
 [Server Load] /dashboard (First visit) - Started
 [Server Load] /dashboard - parent() called (5.23ms)
@@ -74,12 +77,14 @@ Ouvrez la console du navigateur ou regardez le terminal serveur. Vous verrez des
 ```
 
 **Revisit client-side dans le browser:**
+
 ```
 [Client Load] /dashboard/student/exercises (Revisit, Browser) - Started
 [Client Load] /dashboard/student/exercises (Revisit, Browser) - Completed (12.34ms)
 ```
 
 **Load avec erreur:**
+
 ```
 [Server Load] /api/data (First visit) - Started
 [Server Load] /api/data (First visit) - Error (45.67ms) Error: Failed to fetch
@@ -90,12 +95,14 @@ Ouvrez la console du navigateur ou regardez le terminal serveur. Vous verrez des
 ### Fichiers modifiés
 
 Le système a été appliqué automatiquement à **24 fichiers** :
+
 - 2 fichiers modifiés manuellement (exemples)
 - 22 fichiers modifiés par script de migration automatique
 
 ### Pattern de code
 
 **Avant (code original):**
+
 ```typescript
 export const load: PageServerLoad = async ({ parent, locals }) => {
 	const { user } = await parent();
@@ -108,6 +115,7 @@ export const load: PageServerLoad = async ({ parent, locals }) => {
 ```
 
 **Après (avec monitoring):**
+
 ```typescript
 import { loadMonitor } from '$lib/utils/loadTracer';
 
@@ -182,6 +190,7 @@ grep "parent() called" | sort -t'(' -k2 -rn
 ```
 
 Résultat :
+
 ```
 [Server Load] /dashboard/teacher/warnings - parent() called (234.56ms) ← ATTENTION!
 [Server Load] /dashboard/student/exercises - parent() called (123.45ms)
@@ -199,22 +208,24 @@ VITE_ENABLE_LOAD_MONITORING=true
 
 ### Modes de fonctionnement
 
-| Mode | Monitoring | Performance Impact |
-|------|-----------|-------------------|
-| Development (`dev = true`) + `VITE_ENABLE_LOAD_MONITORING=true` | ✅ Activé | Minimal (logging only) |
-| Development (`dev = true`) + `VITE_ENABLE_LOAD_MONITORING=false` | ❌ Désactivé | Aucun |
-| Production (`dev = false`) | ❌ Toujours désactivé | Aucun |
+| Mode                                                             | Monitoring            | Performance Impact     |
+| ---------------------------------------------------------------- | --------------------- | ---------------------- |
+| Development (`dev = true`) + `VITE_ENABLE_LOAD_MONITORING=true`  | ✅ Activé             | Minimal (logging only) |
+| Development (`dev = true`) + `VITE_ENABLE_LOAD_MONITORING=false` | ❌ Désactivé          | Aucun                  |
+| Production (`dev = false`)                                       | ❌ Toujours désactivé | Aucun                  |
 
 ## 🧪 Testing
 
 Pour tester le système manuellement :
 
 1. Activez le monitoring :
+
    ```bash
    echo "VITE_ENABLE_LOAD_MONITORING=true" >> .env
    ```
 
 2. Lancez le serveur :
+
    ```bash
    pnpm dev --port 5175
    ```
@@ -343,6 +354,7 @@ export const load: PageServerLoad = async ({ parent }) => {
 ## 📞 Support
 
 Questions ou problèmes ? Consultez :
+
 - Cette documentation
 - Le code source dans `src/lib/utils/loadTracer.ts`
 - Les exemples dans les fichiers déjà migrés

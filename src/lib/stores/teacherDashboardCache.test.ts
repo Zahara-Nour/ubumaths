@@ -710,7 +710,9 @@ describe('Cache 2A: Student Rewards', () => {
 				{
 					id: 'student-1',
 					gidouilles: 10,
-					vip_cards: { card1: { cardId: 'card1', earnedAt: new Date().toISOString(), usedAt: null } }
+					vip_cards: {
+						card1: { cardId: 'card1', earnedAt: new Date().toISOString(), usedAt: null }
+					}
 				},
 				{ id: 'student-2', gidouilles: 20, vip_cards: {} as StudentVipCards }
 			];
@@ -977,7 +979,16 @@ describe('Cache 2B: Student Warnings', () => {
 	describe('Hydration', () => {
 		it('should hydrate warnings from load function data', () => {
 			const warningsMap = new Map<string, StudentWarningCounts>();
-			warningsMap.set('student-1', { C: 1, M: 1, R: 1, T: 0, unresolved_count: 1, total: 3, score: 15, warnings: [] });
+			warningsMap.set('student-1', {
+				C: 1,
+				M: 1,
+				R: 1,
+				T: 0,
+				unresolved_count: 1,
+				total: 3,
+				score: 15,
+				warnings: []
+			});
 
 			cache.hydrateWarnings(classId, periodId, warningsMap);
 
@@ -1630,11 +1641,12 @@ describe('Edge Cases & Concurrency', () => {
 		});
 
 		it('should handle response with wrong type', async () => {
-			global.fetch = vi.fn((): Promise<Response> =>
-				Promise.resolve({
-					ok: true,
-					json: () => Promise.resolve({ students: 'not-an-array' })
-				} as Response)
+			global.fetch = vi.fn(
+				(): Promise<Response> =>
+					Promise.resolve({
+						ok: true,
+						json: () => Promise.resolve({ students: 'not-an-array' })
+					} as Response)
 			);
 
 			// Should not crash, though behavior depends on implementation

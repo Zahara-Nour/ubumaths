@@ -429,11 +429,7 @@
 		<!-- Search bar -->
 		<div class="relative">
 			<Search class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-			<Input
-				type="text"
-				bind:value={searchQuery}
-				class="pl-10"
-			/>
+			<Input type="text" bind:value={searchQuery} class="pl-10" />
 		</div>
 
 		<!-- Filter row -->
@@ -715,7 +711,10 @@
 							<div class="flex gap-2">
 								<VariableAutocomplete
 									triggerType={formTriggerType}
-									on:insert={handleVariableInsert}
+									onInsert={(data) =>
+										handleVariableInsert({ detail: data } as unknown as CustomEvent<{
+											text: string;
+										}>)}
 								/>
 								<FiltersHelp />
 							</div>

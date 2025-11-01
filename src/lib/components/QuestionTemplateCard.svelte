@@ -119,7 +119,7 @@
 				{getTypeLabel(template.type)}
 			</Badge>
 			<span class="text-xs text-muted-foreground">
-				{new Date(template.created_at).toLocaleDateString('fr-FR')}
+				{new Date(template.created_at || new Date()).toLocaleDateString('fr-FR')}
 			</span>
 		</div>
 

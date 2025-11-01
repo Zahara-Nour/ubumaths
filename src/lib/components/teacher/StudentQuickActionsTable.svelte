@@ -620,7 +620,7 @@
 										<img
 											src={getAvatarFallback(
 												(student.role as 'student' | 'teacher' | 'admin') || 'student',
-												(student.gender as 'boy' | 'girl' | null) || null
+												student.gender === 'boy' ? 'M' : student.gender === 'girl' ? 'F' : null
 											)}
 											alt={student.firstname}
 										/>

@@ -79,8 +79,8 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 			grade_levels: grade_levels || [],
 			search
 		}
+	};
 });
-};
 
 /**
  * Actions for exercise management

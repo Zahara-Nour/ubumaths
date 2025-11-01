@@ -41,5 +41,5 @@ export const load: PageServerLoad = loadMonitor.traceServerLoad(async (event) =>
 			has_deadline: hasDeadline === 'true',
 			search: search || ''
 		}
+	};
 });
-};

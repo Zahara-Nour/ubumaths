@@ -98,7 +98,7 @@
 			statement: statement.trim(),
 			correction: correction.trim(),
 			image_url: imageUrl.trim() || undefined,
-			answer: answerConfig,
+			answer: answerConfig || undefined,
 			status
 		};
 
@@ -131,12 +131,7 @@
 			<!-- Title -->
 			<div class="space-y-2">
 				<Label for="title">Titre de l'énigme *</Label>
-				<Input
-					id="title"
-					bind:value={title}
-					maxlength={100}
-					required
-				/>
+				<Input id="title" bind:value={title} maxlength={100} required />
 				<p class="text-xs text-muted-foreground">{title.length}/100 caractères</p>
 			</div>
 
@@ -145,11 +140,7 @@
 				<!-- Genre -->
 				<div class="space-y-2">
 					<Label for="genre">Genre (optionnel)</Label>
-					<Input
-						id="genre"
-						bind:value={genre}
-						list="genre-suggestions"
-					/>
+					<Input id="genre" bind:value={genre} list="genre-suggestions" />
 					<datalist id="genre-suggestions">
 						{#each genreSuggestions as suggestion (suggestion)}
 							<option value={suggestion}></option>
@@ -200,9 +191,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<FormRichTextEditor
-				bind:value={statement}
-			/>
+			<FormRichTextEditor bind:value={statement} />
 		</Card.Content>
 	</Card.Root>
 
@@ -215,9 +204,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<FormRichTextEditor
-				bind:value={correction}
-			/>
+			<FormRichTextEditor bind:value={correction} />
 		</Card.Content>
 	</Card.Root>
 
@@ -232,11 +219,7 @@
 		</Card.Header>
 		<Card.Content class="space-y-2">
 			<Label for="image-url">URL de l'image</Label>
-			<Input
-				id="image-url"
-				bind:value={imageUrl}
-				type="url"
-			/>
+			<Input id="image-url" bind:value={imageUrl} type="url" />
 			{#if imageUrl}
 				<div class="mt-3">
 					<p class="mb-2 text-sm font-medium">Aperçu:</p>
