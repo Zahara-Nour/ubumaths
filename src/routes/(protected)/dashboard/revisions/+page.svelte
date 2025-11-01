@@ -30,16 +30,29 @@
 
 	let { data }: Props = $props();
 
+	// Transform decks to match DeckCard expected format
+	const transformedDecks = $derived(
+		data.decks.map((deck) => ({
+			...deck,
+			stats: {
+				due_count: deck.stats.due_cards,
+				total_cards: deck.stats.total_cards,
+				new_count: deck.stats.new_cards,
+				learning_count: 0 // Not available in old format
+			}
+		}))
+	);
+
 	// Derived state
-	const assignedDecks = $derived(data.decks.filter((d) => d.isAssigned));
-	const personalDecks = $derived(data.decks.filter((d) => !d.isAssigned));
+	const assignedDecks = $derived(transformedDecks.filter((d) => d.isAssigned));
+	const personalDecks = $derived(transformedDecks.filter((d) => !d.isAssigned));
 
 	const totalDueCards = $derived(
-		data.decks.reduce((sum, deck) => sum + (deck.stats?.due_count || 0), 0)
+		transformedDecks.reduce((sum, deck) => sum + (deck.stats?.due_count || 0), 0)
 	);
 
 	const totalCards = $derived(
-		data.decks.reduce((sum, deck) => sum + (deck.stats?.total_cards || 0), 0)
+		transformedDecks.reduce((sum, deck) => sum + (deck.stats?.total_cards || 0), 0)
 	);
 
 	/**
@@ -150,7 +163,7 @@
 				</Card.Root>
 			{:else}
 				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-					{#each data.decks as deck (deck.id)}
+					{#each transformedDecks as deck (deck.id)}
 						<DeckCard {deck} onclick={() => startStudy(deck.id)} />
 					{/each}
 				</div>

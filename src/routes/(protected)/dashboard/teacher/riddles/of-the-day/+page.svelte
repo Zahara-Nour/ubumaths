@@ -127,7 +127,8 @@
 							toaster.success('Énigme du jour définie avec succès');
 							selectedRiddleId = '';
 						} else if (result.type === 'failure') {
-							toaster.error(result.data?.message || 'Erreur lors de la définition');
+							const errorData = result.data as { message?: string };
+							toaster.error(errorData?.message || 'Erreur lors de la définition');
 						}
 						await update();
 					};

@@ -130,7 +130,8 @@
 								toaster.success('Notification créée avec succès');
 								resetForm();
 							} else if (result.type === 'failure') {
-								toaster.error(result.data?.error || 'Erreur lors de la création');
+								const errorData = result.data as { error?: string };
+								toaster.error(errorData?.error || 'Erreur lors de la création');
 							}
 							isSubmitting = false;
 							await update();
@@ -321,7 +322,8 @@
 										if (result.type === 'success') {
 											toaster.success('Notification supprimée');
 										} else if (result.type === 'failure') {
-											toaster.error(result.data?.error || 'Erreur lors de la suppression');
+											const errorData = result.data as { error?: string };
+											toaster.error(errorData?.error || 'Erreur lors de la suppression');
 										}
 										await update();
 									};
