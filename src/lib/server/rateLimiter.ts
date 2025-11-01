@@ -24,11 +24,90 @@
  * - No external dependencies (Redis) required
  */
 
+import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { createLogger } from '$lib/utils/logger';
+import { config } from 'dotenv';
+
+// Load environment variables from .env file
+// This ensures variables are available even before SvelteKit's env module initializes
+config();
 
 const logger = createLogger('rateLimiter');
+
+// ============================================================================
+// SERVICE ROLE CLIENT (REQUIRED FOR RATE LIMITING)
+// ============================================================================
+
+/**
+ * Singleton service role client for rate limiting
+ *
+ * **Why Singleton?**
+ * - Reuses the same HTTP client across all rate limit checks
+ * - Prevents connection pool exhaustion from creating new clients
+ * - Improves performance by maintaining persistent connections
+ * - Critical fix for timeout issues (was creating client per request)
+ *
+ * **Why Service Role?**
+ * - The `rate_limits` table has RLS enabled with policies that allow all operations
+ * - However, the table grants are restricted to `service_role` only
+ * - Using the anon client (from `locals.supabase`) causes permission errors
+ * - Service role bypasses RLS and has full table access
+ *
+ * **Security**:
+ * - Rate limiting is a server-side system operation (not user-initiated)
+ * - No user data or PII is stored in rate_limits table (only counters)
+ * - Table is never exposed to client-side code
+ *
+ * **Performance**:
+ * - No session management needed (autoRefreshToken: false)
+ * - No persistence needed (persistSession: false)
+ *
+ * **HMR Safety**:
+ * - Uses `globalThis` to persist client across Hot Module Replacement (HMR) reloads
+ * - Without this, Vite's HMR would reset the instance to null on every file change
+ * - This caused "TypeError: fetch failed" errors due to connection pool exhaustion
+ */
+const globalForSupabase = globalThis as unknown as {
+	supabaseServiceRoleClient: SupabaseClient<Database> | undefined;
+};
+
+let serviceRoleClientInstance: SupabaseClient<Database> | null =
+	globalForSupabase.supabaseServiceRoleClient || null;
+
+function getServiceRoleClient(): SupabaseClient<Database> {
+	// Return existing instance if already created
+	if (serviceRoleClientInstance) {
+		return serviceRoleClientInstance;
+	}
+
+	// Get environment variables from process.env (loaded by dotenv)
+	const SUPABASE_URL = process.env.PUBLIC_SUPABASE_URL;
+	const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+	if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
+		logger.error('Missing Supabase environment variables for rate limiter', {
+			hasUrl: !!SUPABASE_URL,
+			hasKey: !!SERVICE_ROLE_KEY
+		});
+		throw new Error('Missing Supabase environment variables for rate limiter');
+	}
+
+	// Create new instance and cache it
+	serviceRoleClientInstance = createClient<Database>(SUPABASE_URL, SERVICE_ROLE_KEY, {
+		auth: {
+			autoRefreshToken: false,
+			persistSession: false
+		}
+	});
+
+	// Store in globalThis to persist across HMR reloads
+	globalForSupabase.supabaseServiceRoleClient = serviceRoleClientInstance;
+
+	logger.debug('Rate limiter service role client initialized');
+	return serviceRoleClientInstance;
+}
 
 // ============================================================================
 // TYPES
@@ -64,19 +143,26 @@ interface RateLimitResult {
  * crash the database to block legitimate users.
  *
  * **Race Condition Handling**: Uses unique constraint violations to detect
- * concurrent inserts. If a constraint violation occurs (code 23505), the
- * function retries once to read the newly created entry.
+ * concurrent inserts. If a constraint violation occurs (code 23505), it means
+ * either:
+ * - Another concurrent request just created the entry, OR
+ * - An expired entry exists in the database
+ * The function will retry up to 3 times, and if still failing, will delete
+ * the expired entry and allow the request (fail-open).
  *
- * @param supabase - Supabase client instance from request context
+ * **Service Role Client**: Uses service role client internally (not anon client)
+ * because the `rate_limits` table grants are restricted to service_role only.
+ *
  * @param config - Rate limit configuration object
  * @param config.key - Unique identifier for rate limit bucket (e.g., "ratelimit:login:ip:192.168.1.1")
  * @param config.maxAttempts - Maximum allowed attempts within window
  * @param config.windowSeconds - Time window in seconds before entry expires
+ * @param retryCount - Internal parameter tracking retry attempts (default: 0)
  * @returns `true` if rate limit exceeded (block request), `false` if allowed (or on error)
  *
  * @example Basic usage (internal function)
  * ```typescript
- * const limited = await checkRateLimit(supabase, {
+ * const limited = await checkRateLimit({
  *   key: 'ratelimit:login:ip:192.168.1.1',
  *   maxAttempts: 5,
  *   windowSeconds: 900 // 15 minutes
@@ -86,12 +172,12 @@ interface RateLimitResult {
  * }
  * ```
  */
-async function checkRateLimit(
-	supabase: SupabaseClient<Database>,
-	config: RateLimitConfig
-): Promise<boolean> {
+async function checkRateLimit(config: RateLimitConfig, retryCount = 0): Promise<boolean> {
 	const { key, maxAttempts, windowSeconds } = config;
 	const expiresAt = new Date(Date.now() + windowSeconds * 1000);
+
+	// Get service role client (required for rate_limits table access)
+	const supabase = getServiceRoleClient();
 
 	try {
 		// Try to find existing rate limit entry that hasn't expired
@@ -109,12 +195,8 @@ async function checkRateLimit(
 
 		if (existing) {
 			// Entry exists and hasn't expired
-			console.log(
-				`[RATE LIMITER] Checking: count=${existing.count}, max=${maxAttempts}, blocked=${existing.count >= maxAttempts}`
-			);
 			if (existing.count >= maxAttempts) {
 				logger.trace('Rate limit exceeded', { key: maskKey(key), count: existing.count });
-				console.log(`[RATE LIMITER] BLOCKING - returning true`);
 				return true; // Rate limit exceeded
 			}
 
@@ -130,7 +212,6 @@ async function checkRateLimit(
 			}
 
 			logger.trace('Rate limit incremented', { key: maskKey(key), count: existing.count + 1 });
-			console.log(`[RATE LIMITER] ALLOWING - returning false`);
 			return false; // Allowed
 		} else {
 			// No existing entry or expired - create new entry
@@ -142,10 +223,30 @@ async function checkRateLimit(
 
 			if (insertError) {
 				// Handle unique constraint violation (race condition)
-				if (insertError.code === '23505') {
-					// Entry was created by another request, retry once
-					logger.trace('Unique constraint violation, retrying', { key: maskKey(key) });
-					return checkRateLimit(supabase, config);
+				if ('code' in insertError && insertError.code === '23505') {
+					// Entry already exists - either:
+					// 1. Created by concurrent request (should be found on retry)
+					// 2. Expired entry blocking new inserts (needs cleanup)
+
+					if (retryCount < 3) {
+						// Retry up to 3 times
+						logger.trace('Unique constraint violation, retrying', {
+							key: maskKey(key),
+							retryCount: retryCount + 1
+						});
+						return checkRateLimit(config, retryCount + 1);
+					} else {
+						// Max retries exceeded - likely an expired entry blocking inserts
+						// Delete the expired entry and allow the request (fail-open)
+						logger.warn('Max retries on unique constraint, cleaning up expired entry', {
+							key: maskKey(key)
+						});
+
+						// Delete the blocking entry (don't care if it fails)
+						await supabase.from('rate_limits').delete().eq('key', key);
+
+						return false; // Allow request (fail-open)
+					}
 				}
 
 				logger.error('Rate limit insert error:', insertError);
@@ -232,7 +333,6 @@ function maskKey(key: string): string {
  * **Use Case**: Call this in `/auth/login/+page.server.ts` before credential validation
  *
  * @param ip - Client IP address from `event.getClientAddress()` or `X-Forwarded-For` header
- * @param supabase - Supabase client instance from `event.locals.supabase`
  * @returns Rate limit result object
  * @returns result.allowed - `true` if request should be allowed, `false` if rate limited
  * @returns result.message - User-friendly French error message (only if `allowed: false`)
@@ -240,11 +340,11 @@ function maskKey(key: string): string {
  * @example In login form action
  * ```typescript
  * export const actions = {
- *   default: async ({ request, getClientAddress, locals: { supabase } }) => {
+ *   default: async ({ request, getClientAddress }) => {
  *     const ip = getClientAddress();
  *
  *     // Check IP-based rate limit
- *     const ipLimit = await checkLoginRateLimitByIP(ip, supabase);
+ *     const ipLimit = await checkLoginRateLimitByIP(ip);
  *     if (!ipLimit.allowed) {
  *       return fail(429, { error: ipLimit.message });
  *     }
@@ -256,30 +356,25 @@ function maskKey(key: string): string {
  *
  * @example Error handling
  * ```typescript
- * const result = await checkLoginRateLimitByIP('192.168.1.1', supabase);
+ * const result = await checkLoginRateLimitByIP('192.168.1.1');
  * if (!result.allowed) {
  *   // Display to user: "Trop de tentatives de connexion. Réessayez dans 15 minutes."
  *   return json({ error: result.message }, { status: 429 });
  * }
  * ```
  */
-export async function checkLoginRateLimitByIP(
-	ip: string,
-	supabase: SupabaseClient<Database>
-): Promise<RateLimitResult> {
+export async function checkLoginRateLimitByIP(ip: string): Promise<RateLimitResult> {
 	if (!ip) {
 		logger.warn('Missing IP address for rate limit check');
 		return { allowed: true }; // Fail open rather than blocking legitimate users
 	}
 
 	const key = `ratelimit:login:ip:${ip}`;
-	const limited = await checkRateLimit(supabase, {
+	const limited = await checkRateLimit({
 		key,
 		maxAttempts: 5,
 		windowSeconds: 900 // 15 minutes
 	});
-
-	console.log(`[checkLoginRateLimitByIP] limited=${limited}, will return allowed=${!limited}`);
 
 	if (limited) {
 		logger.warn('Login rate limit exceeded by IP', { ip: maskKey(key) });
@@ -314,7 +409,6 @@ export async function checkLoginRateLimitByIP(
  * - Works with both email/password and OAuth flows
  *
  * @param email - User email address from login form (will be normalized to lowercase)
- * @param supabase - Supabase client instance from `event.locals.supabase`
  * @returns Rate limit result object
  * @returns result.allowed - `true` if request should be allowed, `false` if rate limited
  * @returns result.message - User-friendly French error message (only if `allowed: false`)
@@ -322,12 +416,12 @@ export async function checkLoginRateLimitByIP(
  * @example In login form action
  * ```typescript
  * export const actions = {
- *   default: async ({ request, locals: { supabase } }) => {
+ *   default: async ({ request }) => {
  *     const formData = await request.formData();
  *     const email = String(formData.get('email'));
  *
  *     // Check email-based rate limit (after IP check passes)
- *     const emailLimit = await checkLoginRateLimitByEmail(email, supabase);
+ *     const emailLimit = await checkLoginRateLimitByEmail(email);
  *     if (!emailLimit.allowed) {
  *       return fail(429, { error: emailLimit.message });
  *     }
@@ -340,19 +434,16 @@ export async function checkLoginRateLimitByIP(
  * @example Dual protection pattern
  * ```typescript
  * // Check both IP and email rate limits
- * const ipLimit = await checkLoginRateLimitByIP(ip, supabase);
+ * const ipLimit = await checkLoginRateLimitByIP(ip);
  * if (!ipLimit.allowed) return fail(429, { error: ipLimit.message });
  *
- * const emailLimit = await checkLoginRateLimitByEmail(email, supabase);
+ * const emailLimit = await checkLoginRateLimitByEmail(email);
  * if (!emailLimit.allowed) return fail(429, { error: emailLimit.message });
  *
  * // Both checks passed - safe to attempt authentication
  * ```
  */
-export async function checkLoginRateLimitByEmail(
-	email: string,
-	supabase: SupabaseClient<Database>
-): Promise<RateLimitResult> {
+export async function checkLoginRateLimitByEmail(email: string): Promise<RateLimitResult> {
 	if (!email) {
 		logger.warn('Missing email for rate limit check');
 		return { allowed: true }; // Fail open
@@ -362,7 +453,7 @@ export async function checkLoginRateLimitByEmail(
 	const normalizedEmail = email.toLowerCase().trim();
 	const key = `ratelimit:login:email:${normalizedEmail}`;
 
-	const limited = await checkRateLimit(supabase, {
+	const limited = await checkRateLimit({
 		key,
 		maxAttempts: 3,
 		windowSeconds: 900 // 15 minutes
@@ -409,11 +500,11 @@ export async function checkLoginRateLimitByEmail(
  * @example In signup form action
  * ```typescript
  * export const actions = {
- *   default: async ({ request, getClientAddress, locals: { supabase } }) => {
+ *   default: async ({ request, getClientAddress }) => {
  *     const ip = getClientAddress();
  *
  *     // Check signup rate limit
- *     const signupLimit = await checkSignupRateLimitByIP(ip, supabase);
+ *     const signupLimit = await checkSignupRateLimitByIP(ip);
  *     if (!signupLimit.allowed) {
  *       return fail(429, { error: signupLimit.message });
  *     }
@@ -423,17 +514,14 @@ export async function checkLoginRateLimitByEmail(
  * };
  * ```
  */
-export async function checkSignupRateLimitByIP(
-	ip: string,
-	supabase: SupabaseClient<Database>
-): Promise<RateLimitResult> {
+export async function checkSignupRateLimitByIP(ip: string): Promise<RateLimitResult> {
 	if (!ip) {
 		logger.warn('Missing IP address for signup rate limit check');
 		return { allowed: true }; // Fail open
 	}
 
 	const key = `ratelimit:signup:${ip}`;
-	const limited = await checkRateLimit(supabase, {
+	const limited = await checkRateLimit({
 		key,
 		maxAttempts: 3,
 		windowSeconds: 3600 // 1 hour
@@ -479,11 +567,11 @@ export async function checkSignupRateLimitByIP(
  *
  * @example In OAuth callback handler
  * ```typescript
- * export const GET: RequestHandler = async ({ url, getClientAddress, locals: { supabase } }) => {
+ * export const GET: RequestHandler = async ({ url, getClientAddress }) => {
  *   const ip = getClientAddress();
  *
  *   // Check OAuth rate limit
- *   const oauthLimit = await checkOAuthRateLimitByIP(ip, supabase);
+ *   const oauthLimit = await checkOAuthRateLimitByIP(ip);
  *   if (!oauthLimit.allowed) {
  *     throw error(429, oauthLimit.message);
  *   }
@@ -495,7 +583,7 @@ export async function checkSignupRateLimitByIP(
  * @example In OAuth initiation
  * ```typescript
  * // Check before redirecting to OAuth provider
- * const oauthLimit = await checkOAuthRateLimitByIP(ip, supabase);
+ * const oauthLimit = await checkOAuthRateLimitByIP(ip);
  * if (!oauthLimit.allowed) {
  *   return fail(429, { error: oauthLimit.message });
  * }
@@ -506,17 +594,14 @@ export async function checkSignupRateLimitByIP(
  * });
  * ```
  */
-export async function checkOAuthRateLimitByIP(
-	ip: string,
-	supabase: SupabaseClient<Database>
-): Promise<RateLimitResult> {
+export async function checkOAuthRateLimitByIP(ip: string): Promise<RateLimitResult> {
 	if (!ip) {
 		logger.warn('Missing IP address for OAuth rate limit check');
 		return { allowed: true }; // Fail open
 	}
 
 	const key = `ratelimit:oauth:${ip}`;
-	const limited = await checkRateLimit(supabase, {
+	const limited = await checkRateLimit({
 		key,
 		maxAttempts: 10,
 		windowSeconds: 900 // 15 minutes
@@ -567,13 +652,13 @@ export async function checkOAuthRateLimitByIP(
  *
  * @example In chatbot API endpoint
  * ```typescript
- * export const POST: RequestHandler = async ({ request, locals: { supabase, user } }) => {
+ * export const POST: RequestHandler = async ({ request, locals: { user } }) => {
  *   if (!user) {
  *     throw error(401, 'Authentication requise');
  *   }
  *
  *   // Check chatbot rate limit
- *   const chatLimit = await checkChatbotRateLimit(user.id, supabase);
+ *   const chatLimit = await checkChatbotRateLimit(user.id);
  *   if (!chatLimit.allowed) {
  *     return json({ error: chatLimit.message }, { status: 429 });
  *   }
@@ -584,7 +669,7 @@ export async function checkOAuthRateLimitByIP(
  *
  * @example With user feedback
  * ```typescript
- * const chatLimit = await checkChatbotRateLimit(userId, supabase);
+ * const chatLimit = await checkChatbotRateLimit(userId);
  * if (!chatLimit.allowed) {
  *   // Show remaining time to user
  *   return json({
@@ -594,17 +679,14 @@ export async function checkOAuthRateLimitByIP(
  * }
  * ```
  */
-export async function checkChatbotRateLimit(
-	userId: string,
-	supabase: SupabaseClient<Database>
-): Promise<RateLimitResult> {
+export async function checkChatbotRateLimit(userId: string): Promise<RateLimitResult> {
 	if (!userId) {
 		logger.warn('Missing user ID for chatbot rate limit check');
 		return { allowed: true }; // Fail open
 	}
 
 	const key = `ratelimit:chat:${userId}`;
-	const limited = await checkRateLimit(supabase, {
+	const limited = await checkRateLimit({
 		key,
 		maxAttempts: 5,
 		windowSeconds: 900 // 15 minutes

@@ -135,12 +135,10 @@ function createMockSupabase() {
 // ============================================================================
 
 describe('Rate Limiter (Database-backed)', () => {
-	let mockSupabase: SupabaseClient<Database>;
 	let expireEntry: (key: string) => void;
 
 	beforeEach(() => {
 		const mock = createMockSupabase();
-		mockSupabase = mock.mockSupabase;
 		expireEntry = mock.expireEntry;
 		vi.clearAllMocks();
 	});
@@ -148,7 +146,7 @@ describe('Rate Limiter (Database-backed)', () => {
 	describe('Login Rate Limiting by IP', () => {
 		it('should allow first login attempt', async () => {
 			const testIP = '192.168.1.100';
-			const result = await checkLoginRateLimitByIP(testIP, mockSupabase);
+			const result = await checkLoginRateLimitByIP(testIP);
 			expect(result.allowed).toBe(true);
 			expect(result.message).toBeUndefined();
 		});
@@ -158,12 +156,12 @@ describe('Rate Limiter (Database-backed)', () => {
 
 			// Attempts 1-5 should be allowed
 			for (let i = 1; i <= 5; i++) {
-				const result = await checkLoginRateLimitByIP(testIP, mockSupabase);
+				const result = await checkLoginRateLimitByIP(testIP);
 				expect(result.allowed).toBe(true);
 			}
 
 			// 6th attempt should be blocked
-			const blocked = await checkLoginRateLimitByIP(testIP, mockSupabase);
+			const blocked = await checkLoginRateLimitByIP(testIP);
 			expect(blocked.allowed).toBe(false);
 			expect(blocked.message).toContain('Trop de tentatives');
 			expect(blocked.message).toContain('15 minutes');
@@ -174,18 +172,18 @@ describe('Rate Limiter (Database-backed)', () => {
 
 			// Exceed limit (5 allowed + 1 blocked)
 			for (let i = 0; i < 6; i++) {
-				await checkLoginRateLimitByIP(testIP, mockSupabase);
+				await checkLoginRateLimitByIP(testIP);
 			}
 
 			// Verify subsequent attempts are blocked
-			const result = await checkLoginRateLimitByIP(testIP, mockSupabase);
+			const result = await checkLoginRateLimitByIP(testIP);
 			expect(result.allowed).toBe(false);
 			expect(result.message).toBeDefined();
 			expect(result.message).toContain('Trop de tentatives');
 		});
 
 		it('should handle missing IP gracefully', async () => {
-			const result = await checkLoginRateLimitByIP('', mockSupabase);
+			const result = await checkLoginRateLimitByIP('');
 			expect(result.allowed).toBe(true); // Fail open for security
 		});
 
@@ -194,18 +192,18 @@ describe('Rate Limiter (Database-backed)', () => {
 
 			// Exceed limit
 			for (let i = 0; i < 6; i++) {
-				await checkLoginRateLimitByIP(testIP, mockSupabase);
+				await checkLoginRateLimitByIP(testIP);
 			}
 
 			// Verify blocked
-			let result = await checkLoginRateLimitByIP(testIP, mockSupabase);
+			let result = await checkLoginRateLimitByIP(testIP);
 			expect(result.allowed).toBe(false);
 
 			// Manually expire the entry (simulates time passing)
 			expireEntry(`ratelimit:login:ip:${testIP}`);
 
 			// Should be allowed again
-			result = await checkLoginRateLimitByIP(testIP, mockSupabase);
+			result = await checkLoginRateLimitByIP(testIP);
 			expect(result.allowed).toBe(true);
 		});
 	});
@@ -213,7 +211,7 @@ describe('Rate Limiter (Database-backed)', () => {
 	describe('Login Rate Limiting by Email', () => {
 		it('should allow first login attempt', async () => {
 			const testEmail = 'unique-email-test@example.com';
-			const result = await checkLoginRateLimitByEmail(testEmail, mockSupabase);
+			const result = await checkLoginRateLimitByEmail(testEmail);
 			expect(result.allowed).toBe(true);
 		});
 
@@ -221,19 +219,19 @@ describe('Rate Limiter (Database-backed)', () => {
 			const normalizeTestEmail = 'NORMALIZE@EXAMPLE.COM';
 
 			// First attempt with uppercase
-			const first = await checkLoginRateLimitByEmail(normalizeTestEmail, mockSupabase);
+			const first = await checkLoginRateLimitByEmail(normalizeTestEmail);
 			expect(first.allowed).toBe(true);
 
 			// Second attempt with mixed case
-			const second = await checkLoginRateLimitByEmail('Normalize@Example.Com', mockSupabase);
+			const second = await checkLoginRateLimitByEmail('Normalize@Example.Com');
 			expect(second.allowed).toBe(true);
 
 			// Third attempt with lowercase - should track as same email
-			const third = await checkLoginRateLimitByEmail('normalize@example.com', mockSupabase);
+			const third = await checkLoginRateLimitByEmail('normalize@example.com');
 			expect(third.allowed).toBe(true);
 
 			// Fourth attempt should be blocked (limit is 3)
-			const fourth = await checkLoginRateLimitByEmail('normalize@example.com', mockSupabase);
+			const fourth = await checkLoginRateLimitByEmail('normalize@example.com');
 			expect(fourth.allowed).toBe(false);
 			expect(fourth.message).toContain('Trop de tentatives');
 		});
@@ -243,18 +241,18 @@ describe('Rate Limiter (Database-backed)', () => {
 
 			// Attempts 1-3 should be allowed
 			for (let i = 1; i <= 3; i++) {
-				const result = await checkLoginRateLimitByEmail(strictTestEmail, mockSupabase);
+				const result = await checkLoginRateLimitByEmail(strictTestEmail);
 				expect(result.allowed).toBe(true);
 			}
 
 			// 4th attempt should be blocked
-			const blocked = await checkLoginRateLimitByEmail(strictTestEmail, mockSupabase);
+			const blocked = await checkLoginRateLimitByEmail(strictTestEmail);
 			expect(blocked.allowed).toBe(false);
 			expect(blocked.message).toContain('email');
 		});
 
 		it('should handle missing email gracefully', async () => {
-			const result = await checkLoginRateLimitByEmail('', mockSupabase);
+			const result = await checkLoginRateLimitByEmail('');
 			expect(result.allowed).toBe(true); // Fail open
 		});
 
@@ -263,13 +261,13 @@ describe('Rate Limiter (Database-backed)', () => {
 
 			// Exceed email rate limit
 			for (let i = 0; i < 4; i++) {
-				await checkLoginRateLimitByEmail(separateTestEmail, mockSupabase);
+				await checkLoginRateLimitByEmail(separateTestEmail);
 			}
-			const emailResult = await checkLoginRateLimitByEmail(separateTestEmail, mockSupabase);
+			const emailResult = await checkLoginRateLimitByEmail(separateTestEmail);
 			expect(emailResult.allowed).toBe(false);
 
 			// IP should still work (different rate limit key)
-			const ipResult = await checkLoginRateLimitByIP('192.168.1.999', mockSupabase);
+			const ipResult = await checkLoginRateLimitByIP('192.168.1.999');
 			expect(ipResult.allowed).toBe(true);
 		});
 	});
@@ -277,7 +275,7 @@ describe('Rate Limiter (Database-backed)', () => {
 	describe('Signup Rate Limiting by IP', () => {
 		it('should allow first signup attempt', async () => {
 			const testIP = '192.168.1.200';
-			const result = await checkSignupRateLimitByIP(testIP, mockSupabase);
+			const result = await checkSignupRateLimitByIP(testIP);
 			expect(result.allowed).toBe(true);
 		});
 
@@ -286,12 +284,12 @@ describe('Rate Limiter (Database-backed)', () => {
 
 			// Attempts 1-3 should be allowed
 			for (let i = 1; i <= 3; i++) {
-				const result = await checkSignupRateLimitByIP(testIP, mockSupabase);
+				const result = await checkSignupRateLimitByIP(testIP);
 				expect(result.allowed).toBe(true);
 			}
 
 			// 4th attempt should be blocked
-			const blocked = await checkSignupRateLimitByIP(testIP, mockSupabase);
+			const blocked = await checkSignupRateLimitByIP(testIP);
 			expect(blocked.allowed).toBe(false);
 			expect(blocked.message).toContain('Trop de tentatives');
 			expect(blocked.message).toContain('inscription');
@@ -302,11 +300,11 @@ describe('Rate Limiter (Database-backed)', () => {
 
 			// Exceed limit
 			for (let i = 0; i < 4; i++) {
-				await checkSignupRateLimitByIP(testIP, mockSupabase);
+				await checkSignupRateLimitByIP(testIP);
 			}
 
 			// Check error message mentions 1 hour
-			const result = await checkSignupRateLimitByIP(testIP, mockSupabase);
+			const result = await checkSignupRateLimitByIP(testIP);
 			expect(result.allowed).toBe(false);
 			expect(result.message).toContain('1 heure');
 		});
@@ -315,7 +313,7 @@ describe('Rate Limiter (Database-backed)', () => {
 	describe('OAuth Rate Limiting by IP', () => {
 		it('should allow first OAuth attempt', async () => {
 			const testIP = '192.168.1.300';
-			const result = await checkOAuthRateLimitByIP(testIP, mockSupabase);
+			const result = await checkOAuthRateLimitByIP(testIP);
 			expect(result.allowed).toBe(true);
 		});
 
@@ -324,12 +322,12 @@ describe('Rate Limiter (Database-backed)', () => {
 
 			// Attempts 1-10 should be allowed
 			for (let i = 1; i <= 10; i++) {
-				const result = await checkOAuthRateLimitByIP(testIP, mockSupabase);
+				const result = await checkOAuthRateLimitByIP(testIP);
 				expect(result.allowed).toBe(true);
 			}
 
 			// 11th attempt should be blocked
-			const blocked = await checkOAuthRateLimitByIP(testIP, mockSupabase);
+			const blocked = await checkOAuthRateLimitByIP(testIP);
 			expect(blocked.allowed).toBe(false);
 			expect(blocked.message).toContain('OAuth');
 		});
@@ -341,7 +339,7 @@ describe('Rate Limiter (Database-backed)', () => {
 
 			// Simulate concurrent requests
 			const results = await Promise.all(
-				Array.from({ length: 10 }, () => checkLoginRateLimitByIP(testIP, mockSupabase))
+				Array.from({ length: 10 }, () => checkLoginRateLimitByIP(testIP))
 			);
 
 			// Should handle all requests correctly
@@ -355,13 +353,13 @@ describe('Rate Limiter (Database-backed)', () => {
 
 		it('should handle special characters in email', async () => {
 			const specialEmail = 'test+alias@example.com';
-			const result = await checkLoginRateLimitByEmail(specialEmail, mockSupabase);
+			const result = await checkLoginRateLimitByEmail(specialEmail);
 			expect(result.allowed).toBe(true);
 		});
 
 		it('should handle IPv6 addresses', async () => {
 			const ipv6 = '2001:0db8:85a3:0000:0000:8a2e:0370:7334';
-			const result = await checkLoginRateLimitByIP(ipv6, mockSupabase);
+			const result = await checkLoginRateLimitByIP(ipv6);
 			expect(result.allowed).toBe(true);
 		});
 	});
@@ -372,10 +370,10 @@ describe('Rate Limiter (Database-backed)', () => {
 
 			// Exceed limit
 			for (let i = 0; i < 6; i++) {
-				await checkLoginRateLimitByIP(testIP, mockSupabase);
+				await checkLoginRateLimitByIP(testIP);
 			}
 
-			const result = await checkLoginRateLimitByIP(testIP, mockSupabase);
+			const result = await checkLoginRateLimitByIP(testIP);
 			expect(result.message).toContain('Trop de tentatives');
 			expect(result.message).toMatch(/minute/);
 		});
@@ -385,10 +383,10 @@ describe('Rate Limiter (Database-backed)', () => {
 
 			// Exceed limit
 			for (let i = 0; i < 4; i++) {
-				await checkSignupRateLimitByIP(testIP, mockSupabase);
+				await checkSignupRateLimitByIP(testIP);
 			}
 
-			const result = await checkSignupRateLimitByIP(testIP, mockSupabase);
+			const result = await checkSignupRateLimitByIP(testIP);
 			expect(result.message).toContain('Trop de tentatives');
 			expect(result.message).toContain('inscription');
 		});

@@ -59,14 +59,12 @@ export const actions = {
 	 * SECURITY: Rate limited to prevent OAuth abuse
 	 */
 	googleSignIn: async ({ locals: { supabase }, url, getClientAddress }) => {
-		// SECURITY: Rate limit by IP to prevent OAuth flow abuse
-		const clientIP = getClientAddress();
-		const rateLimitResult = await checkOAuthRateLimitByIP(clientIP, supabase);
-
-		if (!rateLimitResult.allowed) {
-			logger.warn('OAuth rate limit exceeded', { ip: clientIP });
+		// Check OAuth rate limit (with HMR-safe globalThis singleton)
+		const ip = getClientAddress();
+		const oauthLimit = await checkOAuthRateLimitByIP(ip);
+		if (!oauthLimit.allowed) {
 			return fail(429, {
-				error: rateLimitResult.message || 'Trop de tentatives. Veuillez réessayer plus tard.'
+				error: oauthLimit.message
 			});
 		}
 
@@ -121,30 +119,16 @@ export const actions = {
 
 		const { email, password } = validation.data;
 
-		// SECURITY: Check rate limits BEFORE attempting authentication
-		// This prevents database queries on rate-limited requests
-
-		// 1. Check IP-based rate limit
-		const clientIP = getClientAddress();
-		const ipRateLimitResult = await checkLoginRateLimitByIP(clientIP, supabase);
-
-		if (!ipRateLimitResult.allowed) {
-			logger.warn('Login rate limit exceeded by IP', { ip: clientIP });
-			return fail(429, {
-				error: ipRateLimitResult.message || 'Trop de tentatives. Veuillez réessayer plus tard.',
-				email
-			});
+		// Rate limiting (with HMR-safe globalThis singleton)
+		const ip = getClientAddress();
+		const ipLimit = await checkLoginRateLimitByIP(ip);
+		if (!ipLimit.allowed) {
+			return fail(429, { error: ipLimit.message, email });
 		}
 
-		// 2. Check email-based rate limit (stricter)
-		const emailRateLimitResult = await checkLoginRateLimitByEmail(email, supabase);
-
-		if (!emailRateLimitResult.allowed) {
-			logger.warn('Login rate limit exceeded by email', { email });
-			return fail(429, {
-				error: emailRateLimitResult.message || 'Trop de tentatives. Veuillez réessayer plus tard.',
-				email
-			});
+		const emailLimit = await checkLoginRateLimitByEmail(email);
+		if (!emailLimit.allowed) {
+			return fail(429, { error: emailLimit.message, email });
 		}
 
 		// Sign in on the server - this is the key!

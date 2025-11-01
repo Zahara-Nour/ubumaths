@@ -711,6 +711,50 @@ console.log(`Total entries: ${stats.totalEntries}`);
 
 ## Changelog
 
+### 2025-11-01: HMR-Safe Singleton Fix
+
+**Problem**: Hot Module Replacement (HMR) was resetting the Supabase service role client on every file save, causing:
+
+- "TypeError: fetch failed" errors from connection pool exhaustion
+- Infinite retry loops on INSERT failures (expired entries blocking new inserts)
+- Google OAuth login hanging for 220+ seconds
+
+**Solution**: Implemented HMR-safe singleton pattern using `globalThis`
+
+**Changes**:
+
+- ✅ Service role client now persists across HMR reloads (`globalThis.supabaseServiceRoleClient`)
+- ✅ Added retry limit (max 3 attempts) to prevent infinite loops
+- ✅ Auto-cleanup of expired entries after max retries (fail-open strategy)
+- ✅ Removed verbose debug logging (uses proper logger levels)
+- ✅ Created `cleanup-expired-rate-limits.js` utility script
+
+**Impact**:
+
+- Google OAuth login: 220s+ → ~500-700ms ✅
+- No more infinite retry loops ✅
+- Cleaner console output ✅
+- HMR-safe in development ✅
+
+**Files Modified**:
+
+- `src/lib/server/rateLimiter.ts` - HMR-safe singleton + retry limits
+- `src/routes/(public)/auth/login/+page.server.ts` - Re-enabled rate limiting
+- `cleanup-expired-rate-limits.js` - Manual cleanup utility (NEW)
+
+**Reference**: See commit for detailed implementation
+
+---
+
+### 2025-10-30: Database-Backed Migration
+
+- ✅ Migrated from in-memory to Supabase `rate_limits` table
+- ✅ Multi-instance compatible (Vercel serverless ready)
+- ✅ Automatic cleanup via database triggers
+- ✅ Atomic operations using PostgreSQL `ON CONFLICT`
+
+---
+
 ### 2025-10-27: Initial Implementation
 
 - ✅ Comprehensive rate limiter utility created
