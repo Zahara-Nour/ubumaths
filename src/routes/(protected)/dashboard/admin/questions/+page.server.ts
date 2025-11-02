@@ -27,19 +27,16 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({
-	locals: { safeGetSession, supabase },
-	parent,
+	locals,
 	url
 }) => {
-	const { user } = await safeGetSession();
+	const { user, profile, supabase } = locals;
 
 	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
-	const { profile } = await parent();
-
-	if (profile.role !== 'admin') {
+	if (!profile || profile.role !== 'admin') {
 		throw error(403, 'Admin access required');
 	}
 

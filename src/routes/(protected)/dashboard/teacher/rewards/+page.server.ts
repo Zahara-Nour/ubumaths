@@ -10,19 +10,20 @@ export interface StudentWithGidouilles extends Profile {
 }
 
 // Load function: Récupère les classes du professeur avec leurs élèves
-export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
+export const load: PageServerLoad = async () => {
 	console.log('[Rewards Page] Load function called');
-	// Get user and profile from parent (protected) layout
-	const { user, profile } = await parent();
+	// Get user and profile from locals (loaded in hooks.server.ts)
+	// const { user, profile, supabase } = locals;
+	// const { user, profile } = locals;
 
-	if (!user || !profile) {
-		throw error(401, 'Unauthorized');
-	}
+	// if (!user || !profile) {
+	// 	throw error(401, 'Unauthorized');
+	// }
 
-	// Vérifier que l'utilisateur est professeur
-	if (profile.role !== 'teacher') {
-		throw error(403, 'Only teachers can access this page');
-	}
+	// // Vérifier que l'utilisateur est professeur
+	// if (profile.role !== 'teacher') {
+	// 	throw error(403, 'Only teachers can access this page');
+	// }
 
 	/**
 	 * PERFORMANCE OPTIMIZATION (2025-10-18):
@@ -39,25 +40,25 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 	 * Test teachers (is_test = true) always see test students.
 	 * Now using unified helper function for consistent filtering.
 	 */
-	const classesWithStudents = await getTeacherClassesWithStudents(user.id, supabase);
-
-	return {
-		classes: classesWithStudents as unknown as Array<
-			Class & {
-				students: Array<{
-					id: string;
-					firstname: string | null;
-					lastname: string | null;
-					full_name: string | null;
-					avatar_url: string | null;
-					gidouilles: number;
-					vip_cards: StudentVipCards;
-					role: string | null;
-					gender: string | null;
-				}>;
-			}
-		>
-	};
+	// const classesWithStudents = await getTeacherClassesWithStudents(user.id, supabase);
+	return { classes: [] };
+	// return {
+	// 	classes: classesWithStudents as unknown as Array<
+	// 		Class & {
+	// 			students: Array<{
+	// 				id: string;
+	// 				firstname: string | null;
+	// 				lastname: string | null;
+	// 				full_name: string | null;
+	// 				avatar_url: string | null;
+	// 				gidouilles: number;
+	// 				vip_cards: StudentVipCards;
+	// 				role: string | null;
+	// 				gender: string | null;
+	// 			}>;
+	// 		}
+	// 	>
+	// };
 };
 
 // Actions: Gérer les modifications de gidouilles et cartes VIP

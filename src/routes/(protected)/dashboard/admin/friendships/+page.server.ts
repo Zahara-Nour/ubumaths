@@ -2,14 +2,12 @@ import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { requireRole } from '$lib/server/auth';
 
-export const load: PageServerLoad = async ({ locals, parent }) => {
-	// Get authenticated user and profile from parent layout
-	const { profile } = await parent();
+export const load: PageServerLoad = async ({ locals }) => {
+	// Get authenticated user and profile from locals
+	const { profile, supabase } = locals;
 
 	// Require teacher or admin role
 	requireRole(profile, ['teacher', 'admin']);
-
-	const supabase = locals.supabase;
 
 	// Fetch all friendships with profile data
 	const { data: friendships, error: friendshipsError } = await supabase

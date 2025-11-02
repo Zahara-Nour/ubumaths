@@ -5,14 +5,12 @@ import { redirect } from '@sveltejs/kit';
 /**
  * Load riddle of the day for student
  */
-export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession }, parent }) => {
-	const { user } = await safeGetSession();
+export const load: PageServerLoad = async ({ locals }) => {
+	const { user, profile, supabase } = locals;
+
 	if (!user) {
 		throw redirect(303, '/login');
 	}
-
-	// Get profile from parent layout
-	const { profile } = await parent();
 
 	// Get riddle of the day using RPC function
 	const { data: riddleOfTheDay, error: riddleError } = await supabase.rpc('get_riddle_of_the_day');

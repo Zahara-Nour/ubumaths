@@ -46,9 +46,9 @@ import {
  *   classes: ClassWithData[] - Array of classes with student_count and schedules
  * }
  */
-export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
-	// Get user and profile from parent (protected) layout
-	const { user, profile } = await parent();
+export const load: PageServerLoad = async ({ locals }) => {
+	// Get user and profile from locals (loaded in hooks.server.ts)
+	const { user, profile, supabase } = locals;
 
 	if (!user || !profile) {
 		throw error(401, 'Unauthorized');

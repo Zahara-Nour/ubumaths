@@ -6,13 +6,13 @@
  * to the client-side layout.
  *
  * FLOW:
- * 1. Uses safeGetSession() from the server hook (see src/lib/server/supabase.ts)
- * 2. Returns verified session and user data
+ * 1. User and profile are loaded in hooks.server.ts (userProfileHandle)
+ * 2. We simply pass them through from locals
  * 3. Also returns cookies needed for client-side Supabase initialization
  *
  * SECURITY:
  * - The session and user are VERIFIED by safeGetSession() via getUser()
- * - Never trust session data without verification
+ * - Profile is loaded in the server hook with getUserProfile()
  * - This data is safe to use throughout the app
  *
  * USED BY:
@@ -21,24 +21,21 @@
  */
 
 import type { LayoutServerLoad } from './$types';
-import { getUserProfile } from '$lib/server/auth';
 
-export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase }, cookies }) => {
-	// Get verified user from the server hook
-	const { user } = await safeGetSession();
+export const load: LayoutServerLoad = async ({ locals, cookies }) => {
+	console.log('🎨 [ROOT LAYOUT] Exécution');
 
-	// Fetch profile for authenticated users (null for anonymous)
-	let profile = null;
-	if (user) {
-		profile = await getUserProfile(supabase, user.id);
-	}
+	// ✅ Seulement les cookies Supabase (pour l'initialisation client)
+	const supabaseAuthCookies = cookies.getAll().filter((cookie) =>
+		cookie.name.startsWith('sb-') // sb-access-token, sb-refresh-token, etc.
+	);
 
 	return {
-		// Verified user object (authenticated via getUser())
-		user,
-		// User profile (includes role) - cached at root level
-		profile,
-		// All cookies (needed for client-side Supabase initialization)
-		cookies: cookies.getAll()
+		// User and profile are already loaded in locals by userProfileHandle (hooks.server.ts)
+		user: locals.user,
+		profile: locals.profile,
+
+		// ✅ Cookies filtrés - ne se réexécute que si cookies Supabase changent
+		cookies: supabaseAuthCookies
 	};
 };

@@ -34,16 +34,14 @@ function redactEmail(email: string | null): string {
 	return local.substring(0, 3) + '***@' + domain;
 }
 
-export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession }, parent }) => {
-	const { user } = await safeGetSession();
+export const load: PageServerLoad = async ({ locals }) => {
+	const { user, profile, supabase } = locals;
 
 	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
-	const { profile } = await parent();
-
-	if (profile.role !== 'admin') {
+	if (!profile || profile.role !== 'admin') {
 		throw error(403, 'Admin access required');
 	}
 

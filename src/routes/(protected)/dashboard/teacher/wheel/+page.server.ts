@@ -1,9 +1,9 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals: { supabase }, parent }) => {
+export const load: PageServerLoad = async ({ locals, parent }) => {
 	// Get authenticated user and profile from parent layout
-	const { user, profile } = await parent();
+	const { user, profile, supabase } = locals;
 
 	if (!user || !profile) {
 		throw error(401, 'Unauthorized');

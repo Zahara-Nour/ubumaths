@@ -1,19 +1,15 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 
-export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase }, parent }) => {
-	// Get authenticated user from session
-	const { user } = await safeGetSession();
+export const load: PageServerLoad = async ({ locals }) => {
+	const { user, profile, supabase } = locals;
 
 	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
-	// Get profile from parent layout (already verified by dashboard layout)
-	const { profile } = await parent();
-
 	// Verify admin role
-	if (profile.role !== 'admin') {
+	if (!profile || profile.role !== 'admin') {
 		throw error(403, 'Admin access required');
 	}
 

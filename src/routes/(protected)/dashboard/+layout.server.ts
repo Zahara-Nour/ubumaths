@@ -36,10 +36,10 @@ import { getTeacherClassesWithCounts } from '$lib/server/students';
 
 const logger = createLogger('dashboard/+layout.server.ts');
 
-export const load: LayoutServerLoad = async ({ parent, locals }) => {
-	// Get user and profile from parent (protected) layout
-	// They are already authenticated and verified
-	const { user, profile } = await parent();
+export const load: LayoutServerLoad = async ({ locals }) => {
+	// Get user and profile from locals (loaded in hooks.server.ts)
+	// They are already authenticated and verified by (protected) layout
+	const { user, profile } = locals;
 
 	// TypeScript safety: user and profile are guaranteed to exist after (protected) layout auth check
 	// But we add a runtime check for extra safety
@@ -73,8 +73,10 @@ export const load: LayoutServerLoad = async ({ parent, locals }) => {
 	 */
 	let teacherClasses: { id: string; name: string; level?: string; student_count?: number }[] = [];
 
+	console.log('🎨 [DASHBOARD LAYOUT] Exécution');
+
 	if (profile.role === 'teacher') {
-		const { supabase } = locals;
+		const supabase = locals.supabase;
 
 		// Get teacher's classes with student counts and schedules
 		// Uses unified helper that handles test mode filtering automatically

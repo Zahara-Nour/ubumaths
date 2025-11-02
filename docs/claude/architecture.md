@@ -102,25 +102,45 @@ function myFunction() { ... }
 - ✅ Simpler architecture
 - ⚠️ Slightly slower (~100-200ms per query)
 
-### Example
+### Server Load Function Pattern (Updated 2025-11-02)
+
+**All server load functions use `locals` to access user, profile, and supabase**:
 
 ```typescript
 // +page.server.ts - load function
 export const load: PageServerLoad = async ({ locals }) => {
-	const { supabase, session } = locals;
+	// ✅ ALWAYS destructure from locals
+	const { user, profile, supabase } = locals;
+
+	// User is authenticated (from hooks.server.ts)
+	if (!user) {
+		throw error(401, 'Unauthorized');
+	}
+
+	// Profile is loaded (from hooks.server.ts)
+	if (!profile) {
+		throw error(500, 'Profile not found');
+	}
 
 	// Direct DB query (no caching)
-	const { data: school, error } = await supabase
+	const { data: school, error: schoolError } = await supabase
 		.from('schools')
 		.select('*')
-		.eq('id', session.user.school_id)
+		.eq('id', profile.school_id)
 		.single();
 
-	if (error) throw error(500, 'Failed to load school');
+	if (schoolError) throw error(500, 'Failed to load school');
 
 	return { school };
 };
 ```
+
+**Key Points:**
+
+- ✅ User and profile are loaded in `hooks.server.ts` (single query per request)
+- ✅ No need for `await parent()` in child layouts/pages
+- ✅ Consistent pattern across all server load functions
+- ✅ Type-safe with null checks (`profile | null`)
 
 ### Optimization Tips
 

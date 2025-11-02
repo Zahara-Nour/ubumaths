@@ -720,6 +720,154 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 ---
 
+## Server Load Functions: Locals Pattern (Updated 2025-11-02)
+
+⚠️ **CRITICAL**: All server load functions MUST use `locals` to access user, profile, and supabase.
+
+**Architecture Overview:**
+
+The `userProfileHandle` hook in `hooks.server.ts` loads user and profile into `locals` once per request. This means:
+
+- ✅ User and profile are available in ALL server load functions via `locals`
+- ✅ No need for `await parent()` in child routes
+- ✅ Single database query per request (efficient)
+- ✅ Consistent pattern across the application
+
+### ✅ Correct Pattern
+
+```typescript
+// src/routes/(protected)/dashboard/+page.server.ts
+import { error } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async ({ locals }) => {
+	// ✅ ALWAYS destructure from locals
+	const { user, profile, supabase } = locals;
+
+	// Verify authentication (should always pass in protected routes)
+	if (!user) {
+		throw error(401, 'Unauthorized');
+	}
+
+	// Verify profile exists (null check required for TypeScript)
+	if (!profile) {
+		throw error(500, 'Profile not found');
+	}
+
+	// Now use profile.role, profile.school_id, etc.
+	const { data: classes } = await supabase
+		.from('classes')
+		.select('*')
+		.eq('school_id', profile.school_id);
+
+	return { classes };
+};
+```
+
+### ❌ Deprecated Pattern (DO NOT USE)
+
+```typescript
+// ❌ OLD PATTERN - No longer used
+export const load: PageServerLoad = async ({ parent, locals }) => {
+	// ❌ Don't use parent() anymore
+	const { user, profile } = await parent();
+	const { supabase } = locals;
+
+	// ...
+};
+```
+
+**Why deprecated?**
+
+- Requires `await parent()` in every route (extra complexity)
+- Less efficient (multiple async calls)
+- Inconsistent with new architecture
+
+### Role-Based Access Control
+
+```typescript
+// Protected route requiring specific role
+export const load: PageServerLoad = async ({ locals }) => {
+	const { user, profile, supabase } = locals;
+
+	if (!user) {
+		throw error(401, 'Unauthorized');
+	}
+
+	// ✅ ALWAYS check profile is not null before accessing properties
+	if (!profile || profile.role !== 'admin') {
+		throw error(403, 'Admin access required');
+	}
+
+	// Now safe to use profile
+	const { data } = await supabase.from('admin_data').select('*');
+
+	return { data };
+};
+```
+
+### API Endpoints Pattern
+
+```typescript
+// src/routes/api/my-endpoint/+server.ts
+import { json, error } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
+export const POST: RequestHandler = async ({ request, locals }) => {
+	// ✅ Same pattern for API endpoints
+	const { user, profile, supabase } = locals;
+
+	if (!user) {
+		throw error(401, 'Unauthorized');
+	}
+
+	if (!profile || profile.role !== 'teacher') {
+		throw error(403, 'Teacher access required');
+	}
+
+	// Process request with validated user/profile
+	const body = await request.json();
+	// ... Zod validation ...
+
+	return json({ success: true });
+};
+```
+
+### Form Actions Pattern
+
+```typescript
+// +page.server.ts with actions
+export const actions: Actions = {
+	myAction: async ({ request, locals }) => {
+		// ✅ Access from locals in form actions too
+		const { user, profile, supabase } = locals;
+
+		if (!user) {
+			return fail(401, { message: 'Unauthorized' });
+		}
+
+		if (!profile || profile.role !== 'admin') {
+			return fail(403, { message: 'Admin access required' });
+		}
+
+		// Process form data
+		const formData = await request.formData();
+		// ... validation and processing ...
+
+		return { success: true };
+	}
+};
+```
+
+### Key Benefits
+
+1. **Performance**: User/profile loaded once per request (not per route)
+2. **Simplicity**: No `await parent()` calls
+3. **Type Safety**: TypeScript enforces null checks on `profile`
+4. **Consistency**: Same pattern everywhere (load functions, API endpoints, form actions)
+
+---
+
 ## Summary Checklist
 
 Before submitting code:
@@ -735,6 +883,9 @@ Before submitting code:
 - [ ] Code organized correctly (imports → types → constants → variables → functions)
 - [ ] Use `data.supabase` (not direct `supabaseClient` import)
 - [ ] Mutations go through API endpoints (not direct RPC in components)
+- [ ] Server load functions use `locals` pattern (not `await parent()`)
+- [ ] Profile null checks in place (`if (!profile || profile.role !== 'role')`)
+- [ ] Destructure from `locals`: `const { user, profile, supabase } = locals;`
 
 ---
 

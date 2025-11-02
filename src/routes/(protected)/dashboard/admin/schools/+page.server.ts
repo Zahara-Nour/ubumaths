@@ -1,19 +1,16 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 
-export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase }, parent }) => {
-	// Get authenticated user from session
-	const { user } = await safeGetSession();
+export const load: PageServerLoad = async ({ locals }) => {
+	const { user, profile, supabase } = locals;
 
+	// Get authenticated user from session
 	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
-	// Get profile from parent layout (already verified by dashboard layout)
-	const { profile } = await parent();
-
 	// Verify admin role
-	if (profile.role !== 'admin') {
+	if (!profile || profile.role !== 'admin') {
 		throw error(403, 'Admin access required');
 	}
 
@@ -34,8 +31,8 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 };
 
 export const actions: Actions = {
-	create: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
+	create: async ({ request, locals }) => {
+		const { user, supabase } = locals;
 
 		if (!user) {
 			return fail(401, { message: 'Unauthorized' });
@@ -48,7 +45,7 @@ export const actions: Actions = {
 		const address = formData.get('address') as string;
 		const logo_url = formData.get('logo_url') as string;
 
-		const { error: insertError } = await supabase.from('schools').insert({
+		const { error: insertError} = await supabase.from('schools').insert({
 			name,
 			city,
 			country,
@@ -64,8 +61,8 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	update: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
+	update: async ({ request, locals }) => {
+		const { user, supabase } = locals;
 
 		if (!user) {
 			return fail(401, { message: 'Unauthorized' });
@@ -99,8 +96,8 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	delete: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
+	delete: async ({ request, locals }) => {
+		const { user, supabase } = locals;
 
 		if (!user) {
 			return fail(401, { message: 'Unauthorized' });
@@ -135,8 +132,8 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	bulk_create: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
+	bulk_create: async ({ request, locals }) => {
+		const { user, supabase } = locals;
 
 		if (!user) {
 			return fail(401, { message: 'Unauthorized' });

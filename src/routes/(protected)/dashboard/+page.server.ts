@@ -43,10 +43,15 @@
 
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
-	// Inherit profile from parent layout (+layout.server.ts)
+export const load: PageServerLoad = async ({ locals }) => {
+	// Get profile from locals (loaded in hooks.server.ts)
 	// This contains the user's role which determines the dashboard view
-	const { profile } = await parent();
+	const { profile, supabase } = locals;
+
+	// TypeScript safety: profile is guaranteed by (protected) layout
+	if (!profile) {
+		throw new Error('Profile missing - this should never happen after auth check');
+	}
 
 	// For teachers, fetch academic periods (needed for StudentQuickActionsTable)
 	let academicPeriods: Array<{

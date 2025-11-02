@@ -19,18 +19,14 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession }, parent }) => {
-	// supabase for future queries
-	const { user } = await safeGetSession();
+export const load: PageServerLoad = async ({ locals }) => {
+	const { user, profile } = locals;
 
 	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
-	const { profile } = await parent();
-
-	if (profile.role !== 'admin') {
+	if (!profile || profile.role !== 'admin') {
 		throw error(403, 'Admin access required');
 	}
 

@@ -53,19 +53,15 @@ import { createLogger } from '$lib/utils/logger';
 
 const logger = createLogger('(protected)/+layout.server.ts');
 
-export const load: LayoutServerLoad = async ({ locals: { safeGetSession }, parent }) => {
-	// Get the authenticated user's session
-	// safeGetSession() verifies the user with Supabase auth server
-	const { user } = await safeGetSession();
+export const load: LayoutServerLoad = async ({ locals }) => {
+	// User and profile are already loaded in locals by userProfileHandle (hooks.server.ts)
+	const { user, profile } = locals;
+
+	console.log('🎨 [PROTECTED LAYOUT] Exécution');
 
 	// Require authentication for ALL routes in (protected) group
 	// If user is null, requireAuth() throws a redirect to /login
 	requireAuth(user);
-
-	// Get profile from parent layout (root +layout.server.ts)
-	// This avoids redundant database queries
-	const parentData = await parent();
-	const { profile } = parentData;
 
 	// Verify profile exists
 	// Every authenticated user should have a profile
@@ -82,7 +78,7 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession }, paren
 	}
 
 	// Return user and profile to child routes
-	// All child routes in (protected)/ can access this via parent()
+	// Child routes can access this via locals or parent()
 	return {
 		user,
 		profile

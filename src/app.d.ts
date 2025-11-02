@@ -2,6 +2,7 @@
 // for information about these interfaces
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import { type MathfieldElementAttributes } from 'mathlive';
+import type { Profile } from '$lib/types/database';
 
 declare global {
 	namespace App {
@@ -10,9 +11,11 @@ declare global {
 			supabase: SupabaseClient;
 			safeGetSession: () => Promise<{ user: User | null }>;
 			user: User | null;
+			profile: Profile | null;
 		}
 		interface PageData {
 			user: User | null;
+			profile: Profile | null;
 		}
 		// interface PageState {}
 		// interface Platform {}

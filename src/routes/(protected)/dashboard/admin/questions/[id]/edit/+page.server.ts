@@ -15,11 +15,11 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ params, locals: { supabase }, parent }) => {
-	const { profile } = await parent();
+export const load: PageServerLoad = async ({ params, locals }) => {
+	const { profile, supabase } = locals;
 
 	// Check admin role
-	if (profile.role !== 'admin') {
+	if (!profile || profile.role !== 'admin') {
 		throw error(403, 'Accès refusé');
 	}
 

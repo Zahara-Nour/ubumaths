@@ -5,6 +5,7 @@ import { logError, getUserContext } from '$lib/server/errorMonitoring';
 import { dev } from '$app/environment';
 import { error } from '@sveltejs/kit';
 import { initEnv } from '$lib/server/env';
+import { getUserProfile } from '$lib/server/auth';
 
 // ====================================================================
 // Environment Variable Validation
@@ -18,6 +19,33 @@ try {
 	// Application won't start with invalid env vars in production
 	// In development, validation errors are logged but execution continues
 }
+
+/**
+ * User & Profile Loading Handle
+ * Loads authenticated user and their profile into locals for all routes
+ *
+ * PERFORMANCE:
+ * - Runs after Supabase handle (requires locals.safeGetSession)
+ * - Only fetches profile if user is authenticated
+ * - Makes user and profile available to all layouts without parent() calls
+ *
+ * USAGE IN LAYOUTS:
+ * - Access via locals.user and locals.profile instead of await parent()
+ */
+const userProfileHandle: Handle = async ({ event, resolve }) => {
+	// Get user from Supabase session
+	const { user } = await event.locals.safeGetSession();
+	event.locals.user = user;
+
+	// Fetch profile for authenticated users
+	if (user) {
+		event.locals.profile = await getUserProfile(event.locals.supabase, user.id);
+	} else {
+		event.locals.profile = null;
+	}
+
+	return resolve(event);
+};
 
 /**
  * CSRF Protection Handle
@@ -182,6 +210,11 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 	}
 };
 
-// Combine hooks in sequence: Supabase first, then CSRF protection, then error monitoring
-// Order matters: Supabase auth -> CSRF validation -> Error monitoring
-export const handle: Handle = sequence(supabaseHandle, csrfHandle, errorMonitoringHandle);
+// Combine hooks in sequence: Supabase first, then user/profile, then CSRF protection, then error monitoring
+// Order matters: Supabase auth -> User/Profile loading -> CSRF validation -> Error monitoring
+export const handle: Handle = sequence(
+	supabaseHandle,
+	userProfileHandle,
+	csrfHandle,
+	errorMonitoringHandle
+);
