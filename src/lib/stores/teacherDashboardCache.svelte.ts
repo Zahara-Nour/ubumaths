@@ -47,18 +47,19 @@ import type {
 import type { StudentVipCards } from '$lib/types/vip-card';
 import { createLogger } from '$lib/utils/logger';
 import { browser } from '$app/environment';
+import { SvelteMap } from 'svelte/reactivity';
 
 // ============================================================================
 // CACHE CLASS
 // ============================================================================
 
 export class TeacherDashboardCache {
-	// Cache stores with $state for reactivity
-	private studentsCache = $state<Map<string, CachedStudents>>(new Map());
-	private rewardsCache = $state<Map<string, CachedRewards>>(new Map());
-	private warningsCache = $state<Map<string, CachedWarnings>>(new Map());
-	private classesCache = $state<Map<string, CachedClass>>(new Map());
-	private schoolCache = $state<Map<string, CachedSchool>>(new Map());
+	// Cache stores with SvelteMap for native reactivity (no $state needed)
+	private studentsCache = new SvelteMap<string, CachedStudents>();
+	private rewardsCache = new SvelteMap<string, CachedRewards>();
+	private warningsCache = new SvelteMap<string, CachedWarnings>();
+	private classesCache = new SvelteMap<string, CachedClass>();
+	private schoolCache = new SvelteMap<string, CachedSchool>();
 
 	// TTL configurations (in milliseconds)
 	private readonly STUDENTS_TTL = 2 * 60 * 60 * 1000; // 2 hours
@@ -306,6 +307,8 @@ export class TeacherDashboardCache {
 	/**
 	 * Update gidouilles optimistically (instant UI feedback)
 	 *
+	 * REACTIVITY: Creates new objects and uses .set() to trigger SvelteMap reactivity
+	 *
 	 * @param classId - The class ID
 	 * @param studentId - The student ID
 	 * @param delta - The change amount (positive or negative)
@@ -315,17 +318,32 @@ export class TeacherDashboardCache {
 		if (!cached) return;
 
 		const rewards = cached.rewards.get(studentId);
-		if (rewards) {
-			rewards.gidouilles = Math.max(0, rewards.gidouilles + delta);
-			this.log(
-				'trace',
-				`[Cache] Optimistic gidouilles update: student ${studentId} → ${rewards.gidouilles}`
-			);
-		}
+		if (!rewards) return;
+
+		// Create new rewards object to trigger reactivity
+		const newGidouilles = Math.max(0, rewards.gidouilles + delta);
+		const updatedRewards: StudentRewards = {
+			...rewards,
+			gidouilles: newGidouilles
+		};
+
+		// Create new Map with updated student rewards
+		const newRewardsMap = new SvelteMap(cached.rewards);
+		newRewardsMap.set(studentId, updatedRewards);
+
+		// Update cache with new object to trigger SvelteMap reactivity
+		this.rewardsCache.set(classId, {
+			...cached,
+			rewards: newRewardsMap
+		});
+
+		this.log('trace', `[Cache] Optimistic gidouilles update: student ${studentId} → ${newGidouilles}`);
 	}
 
 	/**
 	 * Update VIP cards optimistically (instant UI feedback)
+	 *
+	 * REACTIVITY: Creates new objects and uses .set() to trigger SvelteMap reactivity
 	 *
 	 * @param classId - The class ID
 	 * @param studentId - The student ID
@@ -336,14 +354,31 @@ export class TeacherDashboardCache {
 		if (!cached) return;
 
 		const rewards = cached.rewards.get(studentId);
-		if (rewards) {
-			rewards.vip_cards = vipCards;
-			this.log('trace', `[Cache] Optimistic VIP cards update: student ${studentId}`);
-		}
+		if (!rewards) return;
+
+		// Create new rewards object with updated VIP cards
+		const updatedRewards: StudentRewards = {
+			...rewards,
+			vip_cards: vipCards
+		};
+
+		// Create new Map with updated student rewards
+		const newRewardsMap = new SvelteMap(cached.rewards);
+		newRewardsMap.set(studentId, updatedRewards);
+
+		// Update cache with new object to trigger SvelteMap reactivity
+		this.rewardsCache.set(classId, {
+			...cached,
+			rewards: newRewardsMap
+		});
+
+		this.log('trace', `[Cache] Optimistic VIP cards update: student ${studentId}`);
 	}
 
 	/**
 	 * Update warnings optimistically (instant UI feedback)
+	 *
+	 * REACTIVITY: Creates new Map and uses .set() to trigger SvelteMap reactivity
 	 *
 	 * @param classId - The class ID
 	 * @param periodId - The academic period ID
@@ -360,11 +395,17 @@ export class TeacherDashboardCache {
 		const cached = this.warningsCache.get(key);
 		if (!cached) return;
 
-		cached.warnings.set(studentId, counts);
-		this.log(
-			'trace',
-			`[Cache] Optimistic warnings update: student ${studentId}, score: ${counts.score}`
-		);
+		// Create new Map with updated warning counts
+		const newWarningsMap = new SvelteMap(cached.warnings);
+		newWarningsMap.set(studentId, counts);
+
+		// Update cache with new object to trigger SvelteMap reactivity
+		this.warningsCache.set(key, {
+			...cached,
+			warnings: newWarningsMap
+		});
+
+		this.log('trace', `[Cache] Optimistic warnings update: student ${studentId}, score: ${counts.score}`);
 	}
 
 	// ========================================================================
@@ -481,16 +522,17 @@ export class TeacherDashboardCache {
 
 	/**
 	 * Fetch student rewards from API
+	 * Returns SvelteMap for reactive data
 	 * @private
 	 */
-	private async fetchStudentRewards(classId: string): Promise<Map<string, StudentRewards>> {
+	private async fetchStudentRewards(classId: string): Promise<SvelteMap<string, StudentRewards>> {
 		try {
 			const response = await fetch(`/api/classes/${classId}/gidouilles`);
 			if (!response.ok) {
 				throw new Error(`Failed to fetch rewards: ${response.statusText}`);
 			}
 			const data = await response.json();
-			const rewardsMap = new Map<string, StudentRewards>();
+			const rewardsMap = new SvelteMap<string, StudentRewards>();
 
 			for (const item of data.gidouilles || []) {
 				rewardsMap.set(item.student_id, {
@@ -502,25 +544,26 @@ export class TeacherDashboardCache {
 			return rewardsMap;
 		} catch (error) {
 			console.error('[Cache] Error fetching rewards:', error);
-			return new Map();
+			return new SvelteMap();
 		}
 	}
 
 	/**
 	 * Fetch student warnings from API
+	 * Returns SvelteMap for reactive data
 	 * @private
 	 */
 	private async fetchStudentWarnings(
 		classId: string,
 		periodId: string
-	): Promise<Map<string, StudentWarningCounts>> {
+	): Promise<SvelteMap<string, StudentWarningCounts>> {
 		try {
 			const response = await fetch(`/api/classes/${classId}/warnings?period_id=${periodId}`);
 			if (!response.ok) {
 				throw new Error(`Failed to fetch warnings: ${response.statusText}`);
 			}
 			const data = await response.json();
-			const warningsMap = new Map<string, StudentWarningCounts>();
+			const warningsMap = new SvelteMap<string, StudentWarningCounts>();
 
 			for (const [studentId, counts] of Object.entries(data.warnings || {})) {
 				warningsMap.set(studentId, counts as StudentWarningCounts);
@@ -529,7 +572,7 @@ export class TeacherDashboardCache {
 			return warningsMap;
 		} catch (error) {
 			console.error('[Cache] Error fetching warnings:', error);
-			return new Map();
+			return new SvelteMap();
 		}
 	}
 
@@ -579,6 +622,8 @@ export class TeacherDashboardCache {
 	/**
 	 * Hydrate rewards cache from load function data
 	 *
+	 * Uses SvelteMap for reactive rewards data
+	 *
 	 * @param classId - The class ID
 	 * @param students - Array of students with gidouilles and vip_cards
 	 */
@@ -586,7 +631,7 @@ export class TeacherDashboardCache {
 		classId: string,
 		students: Array<{ id: string; gidouilles: number; vip_cards: StudentVipCards }>
 	): void {
-		const rewardsMap = new Map<string, StudentRewards>();
+		const rewardsMap = new SvelteMap<string, StudentRewards>();
 
 		for (const student of students) {
 			rewardsMap.set(student.id, {
@@ -606,6 +651,8 @@ export class TeacherDashboardCache {
 	/**
 	 * Hydrate warnings cache from load function data
 	 *
+	 * Converts regular Map to SvelteMap for reactive warnings data
+	 *
 	 * @param classId - The class ID
 	 * @param periodId - The academic period ID
 	 * @param warningsMap - Map of studentId → warning counts
@@ -617,8 +664,11 @@ export class TeacherDashboardCache {
 	): void {
 		const key = `${classId}:${periodId}`;
 
+		// Convert regular Map to SvelteMap for reactivity
+		const reactiveWarningsMap = new SvelteMap(warningsMap);
+
 		this.warningsCache.set(key, {
-			warnings: warningsMap,
+			warnings: reactiveWarningsMap,
 			fetchedAt: Date.now()
 		});
 

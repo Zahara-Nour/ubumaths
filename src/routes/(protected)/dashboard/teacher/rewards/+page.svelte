@@ -122,34 +122,40 @@
 	// Data from server load function
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	// Local reactive copy of classes data (needed for optimistic updates)
+	// Local reactive copy of classes data (needed for server updates)
 	let classes = $state(data.classes);
 
-	// Sync classes when data changes from server AND hydrate cache
+	// Track if cache has been hydrated (to avoid re-hydrating and losing optimistic updates)
+	let cacheHydrated = $state(false);
+
+	// Hydrate cache ONCE on mount, then sync classes without re-hydrating
 	$effect(() => {
-		classes = data.classes;
+		if (!cacheHydrated) {
+			// First time: hydrate cache with initial data
+			for (const classItem of data.classes) {
+				// Hydrate rewards cache
+				teacherCache.hydrateRewards(classItem.id, classItem.students);
 
-		// Hydrate cache with fresh data from server
-		// This allows other pages to use this data without refetching
-		for (const classItem of data.classes) {
-			// Hydrate rewards cache
-			teacherCache.hydrateRewards(classItem.id, classItem.students);
-
-			// Hydrate student basic info cache
-			teacherCache.hydrateStudents(
-				classItem.id,
-				classItem.students.map((s) => ({
-					id: s.id,
-					firstname: s.firstname ?? null,
-					lastname: s.lastname ?? null,
-					full_name: s.full_name ?? null,
-					avatar_url: s.avatar_url ?? null,
-					role: s.role ?? null,
-					gender: s.gender ?? null,
-					is_test: false // This will be set correctly from server data
-				})) as any
-			);
+				// Hydrate student basic info cache
+				teacherCache.hydrateStudents(
+					classItem.id,
+					classItem.students.map((s) => ({
+						id: s.id,
+						firstname: s.firstname ?? null,
+						lastname: s.lastname ?? null,
+						full_name: s.full_name ?? null,
+						avatar_url: s.avatar_url ?? null,
+						role: s.role ?? null,
+						gender: s.gender ?? null,
+						is_test: false // This will be set correctly from server data
+					})) as any
+				);
+			}
+			cacheHydrated = true;
 		}
+
+		// Always sync classes for server updates (but don't re-hydrate cache)
+		classes = data.classes;
 	});
 
 	// Local state for selected class - use $derived to track classes reactively
@@ -160,12 +166,6 @@
 
 	// Local state for gidouilles input at class level
 	let classDeltas = $state<Record<string, number>>({});
-
-	// OPTIMISTIC UI STATE
-	// Tracks temporary gidouilles values that override server data
-	// Key: studentId, Value: optimistic gidouilles count
-	// This provides instant UI feedback before server confirmation
-	let optimisticGidouilles = $state<Record<string, number>>({});
 
 	// DEBOUNCING STATE
 	// Tracks pending server requests to batch rapid clicks
@@ -247,21 +247,23 @@
 	// ============================================================================
 
 	/**
-	 * Get current gidouilles for a student with optimistic override
+	 * Get current gidouilles for a student from cache (with optimistic override)
 	 *
-	 * Returns the optimistic value if it exists (user clicked but server hasn't
-	 * confirmed yet), otherwise returns the server value from data.
+	 * Returns the cached value (which may include optimistic updates) if available,
+	 * otherwise falls back to server data from classes.
 	 *
 	 * @param studentId - The student's ID
 	 * @returns The gidouilles count to display in the UI
 	 */
 	function getStudentGidouilles(studentId: string): number {
-		// First check optimistic override
-		if (optimisticGidouilles[studentId] !== undefined) {
-			return optimisticGidouilles[studentId];
+		// First check cache (includes optimistic overrides via SvelteMap reactivity)
+		const cached = teacherCache.getRewardsSync(selectedClassId);
+		if (cached) {
+			const rewards = cached.get(studentId);
+			if (rewards) return rewards.gidouilles;
 		}
 
-		// Otherwise find student in classes
+		// Fallback to server data from classes
 		const classItem = classes.find((c) => c.id === selectedClassId);
 		if (!classItem) return 0;
 
@@ -270,29 +272,23 @@
 	}
 
 	/**
-	 * Apply optimistic update to a single student
+	 * Apply optimistic update to a single student via cache
 	 *
-	 * Updates the UI immediately without waiting for server confirmation.
-	 * Enforces minimum of 0 gidouilles (cannot go negative).
+	 * Delegates to teacherCache.updateGidouillesOptimistic() for instant UI feedback.
+	 * The cache handles reactivity via SvelteMap and enforces minimum of 0 gidouilles.
 	 *
 	 * @param studentId - The student's ID
 	 * @param delta - The change amount (positive or negative)
-	 * @param currentValue - The current gidouilles count (may be optimistic)
 	 */
-	function updateStudentGidouillesOptimistic(
-		studentId: string,
-		delta: number,
-		currentValue: number
-	) {
-		const newValue = Math.max(0, currentValue + delta);
-		optimisticGidouilles[studentId] = newValue;
+	function updateStudentGidouillesOptimistic(studentId: string, delta: number) {
+		teacherCache.updateGidouillesOptimistic(selectedClassId, studentId, delta);
 	}
 
 	/**
-	 * Apply optimistic update to all students in a class
+	 * Apply optimistic update to all students in a class via cache
 	 *
-	 * Updates all students simultaneously for class-wide operations.
-	 * Each student's update respects the 0 minimum independently.
+	 * Delegates to teacherCache for each student.
+	 * Each student's update respects the 0 minimum independently via cache.
 	 *
 	 * @param classId - The class ID
 	 * @param delta - The change amount to apply to each student
@@ -301,23 +297,9 @@
 		const classItem = classes.find((c) => c.id === classId);
 		if (classItem) {
 			classItem.students.forEach((student: { id: string }) => {
-				const currentValue = getStudentGidouilles(student.id);
-				const newValue = Math.max(0, currentValue + delta);
-				optimisticGidouilles[student.id] = newValue;
+				teacherCache.updateGidouillesOptimistic(classId, student.id, delta);
 			});
 		}
-	}
-
-	/**
-	 * Clear optimistic override for a student
-	 *
-	 * Removes the temporary value, causing UI to revert to server data.
-	 * Called after successful server sync or on error rollback.
-	 *
-	 * @param studentId - The student's ID
-	 */
-	function clearOptimisticOverride(studentId: string) {
-		delete optimisticGidouilles[studentId];
 	}
 
 	// ============================================================================
@@ -325,36 +307,34 @@
 	// ============================================================================
 
 	/**
-	 * Debounced update for individual student gidouilles
+	 * Debounced update for individual student gidouilles via cache
 	 *
 	 * This function implements the core debouncing logic:
-	 * 1. Applies optimistic UI update immediately (instant feedback)
+	 * 1. Applies optimistic UI update immediately via teacherCache (instant feedback)
 	 * 2. Starts/resets a 500ms timer
 	 * 3. Accumulates all deltas within the debounce window
 	 * 4. After 500ms of no clicks, sends ONE request with total accumulated delta
-	 * 5. On success: refreshes data and shows success toast with student name
-	 * 6. On error: rolls back optimistic update and shows error
+	 * 5. On success: invalidates cache to refresh data and shows success toast
+	 * 6. On error: invalidates cache to rollback optimistic update and shows error
 	 *
 	 * Example: User clicks +1, +1, +1 rapidly
-	 * - UI shows: 0 → 1 → 2 → 3 (instant)
+	 * - UI shows: 0 → 1 → 2 → 3 (instant via reactive cache)
 	 * - Server receives: ONE request with delta = +3 (after 500ms)
 	 * - Toast shows: "+3 gidouilles (Marie)"
 	 *
 	 * @param studentId - The student's ID
 	 * @param delta - The change amount for this click (positive or negative)
-	 * @param currentValue - The current gidouilles count (may be optimistic)
 	 * @param studentName - The student's first name for the success toast
 	 */
 	function debouncedUpdateStudent(
 		studentId: string,
 		delta: number,
-		currentValue: number,
 		studentName: string
 	) {
 		const key = `student-${studentId}`;
 
 		// STEP 1: Apply optimistic update immediately for instant UI feedback
-		updateStudentGidouillesOptimistic(studentId, delta, currentValue);
+		updateStudentGidouillesOptimistic(studentId, delta);
 
 		// STEP 2: Handle debouncing - accumulate or initialize
 		if (pendingSubmissions[key]) {
@@ -392,6 +372,7 @@
 					await response.json();
 
 					// Update local data: apply accumulated delta to the student
+					// This keeps 'classes' in sync with the optimistic cache state
 					classes = classes.map((classItem) => ({
 						...classItem,
 						students: classItem.students.map((student) =>
@@ -401,24 +382,25 @@
 						)
 					}));
 
-					// Clear optimistic state (now safe since data is updated)
-					clearOptimisticOverride(studentId);
-
-					// Invalidate cache to ensure other pages get fresh data
-					teacherCache.invalidateRewards(selectedClassId);
+					// ✅ NO INVALIDATION NEEDED ON SUCCESS
+					// The cache already has the correct optimistic value
+					// 'classes' is now synchronized with cache
+					// Both reflect the confirmed server state
 
 					// Show success toast with accumulated delta and student name
 					toaster.success(
 						`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} (${studentName})`
 					);
 				} else {
-					// ERROR: Server returned error status
-					clearOptimisticOverride(studentId); // Rollback to server value
+					// ERROR: Server returned error status - rollback by reversing the optimistic delta
+					teacherCache.updateGidouillesOptimistic(selectedClassId, studentId, -accumulatedDelta);
+
 					toaster.error('Échec de la mise à jour');
 				}
 			} catch {
-				// NETWORK ERROR: Request failed completely
-				clearOptimisticOverride(studentId); // Rollback to server value
+				// NETWORK ERROR: Request failed completely - rollback by reversing the optimistic delta
+				teacherCache.updateGidouillesOptimistic(selectedClassId, studentId, -accumulatedDelta);
+
 				toaster.error('Erreur réseau');
 			}
 		}, 500) as unknown as number;
@@ -499,32 +481,24 @@
 					const classItem = classes.find((c) => c.id === classId);
 					const studentCount = classItem?.students.length || 0;
 
-					// Clear optimistic state for all students (now safe since data is updated)
-					classItem?.students.forEach((student: { id: string }) =>
-						clearOptimisticOverride(student.id)
-					);
-
-					// Invalidate cache to ensure other pages get fresh data
-					teacherCache.invalidateRewards(classId);
+					// ✅ NO INVALIDATION NEEDED ON SUCCESS
+					// The cache already has the correct optimistic values for all students
+					// 'classes' is now synchronized with cache
 
 					// Show success toast with student count
 					toaster.success(
 						`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} pour ${studentCount} élève${studentCount > 1 ? 's' : ''}`
 					);
 				} else {
-					// ERROR: Rollback all students in the class
-					const classItem = classes.find((c) => c.id === classId);
-					classItem?.students.forEach((student: { id: string }) =>
-						clearOptimisticOverride(student.id)
-					);
+					// ERROR: Rollback all students by reversing the optimistic delta
+					updateClassGidouillesOptimistic(classId, -accumulatedDelta);
+
 					toaster.error('Échec de la mise à jour de la classe');
 				}
 			} catch {
-				// NETWORK ERROR: Rollback all students
-				const classItem = classes.find((c) => c.id === classId);
-				classItem?.students.forEach((student: { id: string }) =>
-					clearOptimisticOverride(student.id)
-				);
+				// NETWORK ERROR: Rollback all students by reversing the optimistic delta
+				updateClassGidouillesOptimistic(classId, -accumulatedDelta);
+
 				toaster.error('Erreur réseau');
 			}
 		}, 500) as unknown as number;
@@ -739,10 +713,9 @@
 												disabled={getStudentGidouilles(student.id) < studentDeltas[student.id]}
 												onclick={() => {
 													const delta = -studentDeltas[student.id];
-													const currentValue = getStudentGidouilles(student.id);
 													// Get student name for toast (priority: firstname > full_name > fallback)
 													const name = student.firstname || student.full_name || 'Élève';
-													debouncedUpdateStudent(student.id, delta, currentValue, name);
+													debouncedUpdateStudent(student.id, delta, name);
 												}}
 											>
 												−
@@ -766,10 +739,9 @@
 												class="h-10 w-10 p-0"
 												onclick={() => {
 													const delta = studentDeltas[student.id];
-													const currentValue = getStudentGidouilles(student.id);
 													// Get student name for toast (priority: firstname > full_name > fallback)
 													const name = student.firstname || student.full_name || 'Élève';
-													debouncedUpdateStudent(student.id, delta, currentValue, name);
+													debouncedUpdateStudent(student.id, delta, name);
 												}}
 											>
 												+
@@ -820,21 +792,25 @@
 														confirmed: false
 													};
 
-													// Optimistically deduct 3 gidouilles
-													const currentValue = getStudentGidouilles(student.id);
-													updateStudentGidouillesOptimistic(student.id, -3, currentValue);
+													// Optimistically deduct 3 gidouilles via cache
+													updateStudentGidouillesOptimistic(student.id, -3);
 
 													return async ({ result, update }) => {
 														await update();
-														// Clear optimistic override after server response
+														// After update(), 'classes' is synchronized with server data
 														if (result.type === 'success') {
-															clearOptimisticOverride(student.id);
-															// Invalidate cache to ensure other pages get fresh VIP cards data
-															teacherCache.invalidateRewards(selectedClassId);
+															// SUCCESS: Re-hydrate cache with confirmed server data
+															// This updates both gidouilles (-3) AND the new VIP card
+															const classItem = classes.find((c) => c.id === selectedClassId);
+															if (classItem) {
+																teacherCache.hydrateRewards(selectedClassId, classItem.students);
+															}
+
 															// Card will be updated by $effect when form.cardId arrives
 														} else {
-															// Rollback on error
-															clearOptimisticOverride(student.id);
+															// ERROR: Rollback the -3 gidouilles optimistic update by adding +3 back
+															updateStudentGidouillesOptimistic(student.id, +3);
+
 															revealingCard = null;
 														}
 													};

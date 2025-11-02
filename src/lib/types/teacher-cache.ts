@@ -7,12 +7,13 @@
  * ARCHITECTURE:
  * - 5 separate caches with different TTLs
  * - Optimized for teacher dashboard performance
- * - Supports optimistic UI updates
+ * - Supports optimistic UI updates with SvelteMap reactivity
  */
 
 import type { StudentVipCards } from './vip-card';
 import type { Warning, StudentWarningCounts } from '$lib/server/warnings';
 import type { Database } from './database';
+import type { SvelteMap } from 'svelte/reactivity';
 
 // ============================================================================
 // BASIC TYPES
@@ -105,18 +106,20 @@ export interface CachedStudents {
 
 /**
  * Cached rewards data (Cache 2A)
+ * Uses SvelteMap for reactive optimistic updates
  */
 export interface CachedRewards {
-	rewards: Map<string, StudentRewards>;
+	rewards: SvelteMap<string, StudentRewards>;
 	fetchedAt: number;
 }
 
 /**
  * Cached warnings data (Cache 2B)
  * Key format: `${classId}:${periodId}`
+ * Uses SvelteMap for reactive optimistic updates
  */
 export interface CachedWarnings {
-	warnings: Map<string, StudentWarningCounts>;
+	warnings: SvelteMap<string, StudentWarningCounts>;
 	fetchedAt: number;
 }
 

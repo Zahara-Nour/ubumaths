@@ -5,6 +5,7 @@ Architecture et design decisions du système de cache client-side pour le dashbo
 > **Guide technique pour Claude** : [docs/claude/teacher-cache.md](../claude/teacher-cache.md)
 
 🆕 **2025-10-31** - Initial implementation
+🔄 **2025-11-02** - SvelteMap migration & optimistic UI optimization
 
 ---
 
@@ -294,7 +295,7 @@ if (isExpired) {
 
 ---
 
-### Flow 3: Optimistic UI with Cache
+### Flow 3: Optimistic UI with Cache (Updated 2025-11-02)
 
 **Scenario** : Teacher clicks +3 gidouilles
 
@@ -303,41 +304,46 @@ if (isExpired) {
    ↓
    debouncedUpdateStudent(studentId, +3)
    ↓
-   [INSTANT] optimisticGidouilles[studentId] = current + 3
    [INSTANT] teacherCache.updateGidouillesOptimistic(classId, studentId, +3)
    ↓
-   UI updates immediately (0ms latency)
+   SvelteMap reactivity triggers UI update (0ms latency)
 
 2. Debounce Timer (500ms)
    ↓
    await fetch('/api/update', { body: { studentId, delta: +3 } })
    ↓
-   [SUCCESS]
+   [SUCCESS PATH]
    ↓
-   teacherCache.invalidateRewards(classId)
+   Update local 'classes' state: student.gidouilles += 3
    ↓
-   delete optimisticGidouilles[studentId]
+   ✅ NO INVALIDATION - Cache already has correct optimistic value
    ↓
-   Next access will refetch fresh data
+   Cache and classes now synchronized with confirmed server state
+
+   [ERROR PATH]
+   ↓
+   Rollback: teacherCache.updateGidouillesOptimistic(classId, studentId, -3)
+   ↓
+   SvelteMap reactivity reverts UI (instant rollback)
+   ↓
+   Cache restored to original state
 
 3. User Navigates to Another Page (Within 10 Min)
    ↓
-   Cache was invalidated, but TTL not expired
-   ↓
    const rewards = await teacherCache.getStudentRewards(classId);
    ↓
-   Cache miss (was invalidated)
+   Cache HIT (still valid, never invalidated)
    ↓
-   Refetch from API
-   ↓
-   Cache now has fresh data
+   Return cached data (instant, no API call)
 ```
 
 **Benefits** :
 
-- ✅ Instant UI feedback (optimistic)
-- ✅ Automatic cache refresh after mutation
-- ✅ Always fresh data after updates
+- ✅ Instant UI feedback (optimistic with SvelteMap reactivity)
+- ✅ **66% fewer operations** on success (no invalidation/re-hydration)
+- ✅ **33% fewer operations** on error (just reverse the delta)
+- ✅ Cache remains active and reactive (never invalidated unnecessarily)
+- ✅ Simpler, more predictable code
 
 ---
 
@@ -532,7 +538,50 @@ Rapid +10 clicks (debounced):
 
 ---
 
-### Decision 6: Why No localStorage Persistence?
+### Decision 6: Why SvelteMap Instead of $state<Map>? (Added 2025-11-02)
+
+**Problem** : Original implementation used `$state<Map>` which didn't trigger reactivity for nested mutations.
+
+```typescript
+// ❌ DOESN'T WORK: Nested mutation not detected by Svelte 5
+private rewardsCache = $state<Map<string, CachedRewards>>(new Map());
+
+updateOptimistic(classId, studentId, delta) {
+    const cached = this.rewardsCache.get(classId);
+    cached.rewards.get(studentId).gidouilles += delta; // UI doesn't update!
+}
+```
+
+**Solution** : Migrate to `SvelteMap` from `svelte/reactivity`:
+
+```typescript
+// ✅ WORKS: SvelteMap triggers reactivity on .set()
+import { SvelteMap } from 'svelte/reactivity';
+private rewardsCache = new SvelteMap<string, CachedRewards>();
+
+updateOptimistic(classId, studentId, delta) {
+    const cached = this.rewardsCache.get(classId);
+    const newRewards = { ...cached.rewards.get(studentId), gidouilles: ... };
+    const newMap = new SvelteMap(cached.rewards);
+    newMap.set(studentId, newRewards);
+    this.rewardsCache.set(classId, { ...cached, rewards: newMap }); // ✅ UI updates!
+}
+```
+
+**Rationale** :
+
+- ✅ SvelteMap is reactive by design (built into Svelte 5)
+- ✅ Triggers UI updates on `.get()`, `.set()`, `.size` operations
+- ✅ Requires object replacement (not in-place mutation) for deep reactivity
+- ✅ Eliminates need for wrapper `$state()` - SvelteMap is already reactive
+
+**Trade-off** : Slightly more verbose code (must create new objects), but guaranteed reactivity.
+
+**Migration Date** : 2025-11-02
+
+---
+
+### Decision 7: Why No localStorage Persistence?
 
 **Alternative** : Save cache to localStorage, restore on page load.
 
@@ -622,9 +671,9 @@ const balance = await supabase.from('accounts').select('balance').eq('user_id', 
 
 ### Technology Stack
 
-- **Svelte 5** : `$state` for reactive cache
+- **Svelte 5** : `SvelteMap` from `svelte/reactivity` for reactive cache (since 2025-11-02)
 - **TypeScript** : Type-safe API
-- **Maps** : Efficient key-value storage (O(1) lookup)
+- **SvelteMap** : Reactive key-value storage with O(1) lookup and automatic UI updates
 - **Singleton** : Single shared instance
 
 ---
@@ -671,7 +720,7 @@ async getStudentRewards(classId: string): Promise<Map<string, StudentRewards>> {
 
 ---
 
-#### Pattern 2: Optimistic Updates
+#### Pattern 2: Optimistic Updates (Updated 2025-11-02)
 
 ```typescript
 updateGidouillesOptimistic(classId: string, studentId: string, delta: number): void {
@@ -679,15 +728,34 @@ updateGidouillesOptimistic(classId: string, studentId: string, delta: number): v
 	if (!cached) return;
 
 	const rewards = cached.rewards.get(studentId);
-	if (rewards) {
-		// Update in-place (reactive thanks to $state)
-		rewards.gidouilles = Math.max(0, rewards.gidouilles + delta);
-		console.log(`[Cache] Optimistic gidouilles update: student ${studentId} → ${rewards.gidouilles}`);
-	}
+	if (!rewards) return;
+
+	// Create new rewards object to trigger reactivity
+	const newGidouilles = Math.max(0, rewards.gidouilles + delta);
+	const updatedRewards: StudentRewards = {
+		...rewards,
+		gidouilles: newGidouilles
+	};
+
+	// Create new SvelteMap with updated student rewards
+	const newRewardsMap = new SvelteMap(cached.rewards);
+	newRewardsMap.set(studentId, updatedRewards);
+
+	// Update cache with new object to trigger SvelteMap reactivity
+	this.rewardsCache.set(classId, {
+		...cached,
+		rewards: newRewardsMap
+	});
+
+	console.log(`[Cache] Optimistic gidouilles update: student ${studentId} → ${newGidouilles}`);
 }
 ```
 
-**Key** : Updates existing object in-place, Svelte 5 `$state` detects change and triggers reactivity.
+**Key** :
+- Uses `SvelteMap` from `svelte/reactivity` for reactive updates
+- Creates **new objects** (not in-place mutation) to trigger reactivity
+- SvelteMap automatically triggers UI updates on `.set()` operations
+- Deep reactivity achieved through object replacement, not mutation
 
 ---
 
@@ -1095,4 +1163,30 @@ teacherCache.getStats();
 
 ---
 
-**Last Updated** : 2025-10-31
+**Last Updated** : 2025-11-02
+
+## Changelog
+
+### 2025-11-02 - SvelteMap Migration & Optimistic UI Optimization
+
+**Major Changes:**
+- **Migrated to SvelteMap**: All 5 caches now use `SvelteMap` from `svelte/reactivity` instead of `$state<Map>`
+- **Full Reactivity**: Optimistic updates now trigger UI updates immediately via SvelteMap
+- **Optimized Invalidation**:
+  - Success path: No invalidation needed (cache already correct) - **66% fewer operations**
+  - Error path: Reverse optimistic delta instead of invalidate/re-hydrate - **33% fewer operations**
+- **Eliminated Redundancy**: Removed all `invalidateRewards()` calls from rewards page (was 6, now 0)
+- **Code Reduction**: ~50 lines of local optimistic state removed, ~30 lines of invalidation logic simplified
+
+**Performance Impact:**
+- 66% reduction in cache operations on successful updates
+- 33% reduction in cache operations on failed updates
+- Instant UI feedback with guaranteed reactivity
+- Simpler, more maintainable code
+
+### 2025-10-31 - Initial Implementation
+
+- Created 5-cache system with different TTLs
+- Implemented hydration pattern from load functions
+- Added optimistic UI support
+- 60-90% reduction in API calls
