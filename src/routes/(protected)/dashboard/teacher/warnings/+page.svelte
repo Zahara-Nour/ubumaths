@@ -360,20 +360,28 @@
 				method: 'DELETE'
 			});
 
-			if (!response.ok) {
-				throw new Error('Failed to remove warning');
-			}
+			if (response.ok) {
+				// SUCCESS: Cache already has correct optimistic value
+				// No need to invalidate - optimistic update matches server response
+				// Cache will naturally expire and refresh later
+				toaster.success(
+					`Avertissement ${getWarningTypeLabel(warningType)} retiré (${studentName})`
+				);
+			} else {
+				// ERROR: Server returned error status (including 404) - rollback
+				teacherCache.updateWarningsOptimistic(
+					selectedClassId,
+					selectedPeriodId,
+					studentId,
+					previousCounts
+				);
 
-			// SUCCESS: Cache already has correct optimistic value
-			// No need to invalidate - optimistic update matches server response
-			// Cache will naturally expire and refresh later
-			toaster.success(
-				`Avertissement ${getWarningTypeLabel(warningType)} retiré (${studentName})`
-			);
+				toaster.error("Erreur lors de la suppression de l'avertissement");
+			}
 		} catch (err) {
 			console.error('Error removing warning:', err);
 
-			// ROLLBACK: Restore previous state via cache
+			// NETWORK ERROR: Request failed completely - rollback
 			teacherCache.updateWarningsOptimistic(
 				selectedClassId,
 				selectedPeriodId,
