@@ -2,63 +2,28 @@ import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { Profile, Class } from '$lib/types/database';
 import type { StudentVipCards } from '$lib/types/vip-card';
-import { getTeacherClassesWithStudents } from '$lib/server/students';
 
 // Type pour les élèves avec leurs gidouilles
 export interface StudentWithGidouilles extends Profile {
 	gidouilles: number;
 }
 
-// Load function: Récupère les classes du professeur avec leurs élèves
-export const load: PageServerLoad = async () => {
+/**
+ * Load function: Just verify auth - classes come from parent layout via cache-first
+ */
+export const load: PageServerLoad = async ({ depends, locals }) => {
 	console.log('[Rewards Page] Load function called');
-	// Get user and profile from locals (loaded in hooks.server.ts)
-	// const { user, profile, supabase } = locals;
-	// const { user, profile } = locals;
+	depends('app:rewards-data');
 
-	// if (!user || !profile) {
-	// 	throw error(401, 'Unauthorized');
-	// }
+	const { user, profile } = locals;
 
-	// // Vérifier que l'utilisateur est professeur
-	// if (profile.role !== 'teacher') {
-	// 	throw error(403, 'Only teachers can access this page');
-	// }
+	if (!user || !profile || profile.role !== 'teacher') {
+		throw error(403, 'Unauthorized');
+	}
 
-	/**
-	 * PERFORMANCE OPTIMIZATION (2025-10-18):
-	 * ======================================
-	 * Previously used N+1 queries (1 for classes + 2 per class).
-	 * Now uses a single optimized query with JOIN.
-	 *
-	 * For 3 classes: 7 queries → 1 query (85% reduction)
-	 * Expected speedup: 60-70% faster page load
-	 *
-	 * TEST MODE FILTERING (2025-10-26):
-	 * ==================================
-	 * Teachers can toggle test mode to see only test or only real students.
-	 * Test teachers (is_test = true) always see test students.
-	 * Now using unified helper function for consistent filtering.
-	 */
-	// const classesWithStudents = await getTeacherClassesWithStudents(user.id, supabase);
-	return { classes: [] };
-	// return {
-	// 	classes: classesWithStudents as unknown as Array<
-	// 		Class & {
-	// 			students: Array<{
-	// 				id: string;
-	// 				firstname: string | null;
-	// 				lastname: string | null;
-	// 				full_name: string | null;
-	// 				avatar_url: string | null;
-	// 				gidouilles: number;
-	// 				vip_cards: StudentVipCards;
-	// 				role: string | null;
-	// 				gender: string | null;
-	// 			}>;
-	// 		}
-	// 	>
-	// };
+	// Classes are loaded by parent layout via cache-first strategy
+	// No need to load them here
+	return {};
 };
 
 // Actions: Gérer les modifications de gidouilles et cartes VIP

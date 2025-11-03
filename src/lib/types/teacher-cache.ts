@@ -55,6 +55,8 @@ export interface ClassSchedule {
 	subject: string | null;
 	room: string | null;
 	notes: string | null;
+	created_at: string;
+	updated_at: string;
 }
 
 /**

@@ -9,11 +9,12 @@
  * - Uses Svelte 5 runes ($state) for reactivity
  * - Lazy initialization from localStorage (only on first access)
  * - Server-safe: All localStorage operations are guarded by `typeof window` checks
+ * - Auto-hydration is handled by the teacher layout, not by this store
  *
  * USAGE:
  * ------
  * ```typescript
- * import { getSelectedClassId, setSelectedClass } from '$lib/stores/selectedClass.svelte';
+ * import { getSelectedClassId, setSelectedClass, selectedClassStore } from '$lib/stores/selectedClass.svelte';
  *
  * // Get current selection
  * const classId = getSelectedClassId();
@@ -21,8 +22,14 @@
  * // Update selection (auto-persists to localStorage)
  * setSelectedClass('class-uuid-123');
  *
- * // Clear selection
- * clearSelectedClass();
+ * // Or use reactive store in components
+ * const store = selectedClassStore();
+ * let localClassId = $state(store.id);
+ * $effect(() => {
+ *   if (localClassId) {
+ *     store.set(localClassId);
+ *   }
+ * });
  * ```
  *
  * PERSISTENCE:
@@ -31,6 +38,11 @@
  * - Stored as raw UUID string
  * - Survives page reloads and browser restarts
  * - Cleared only when clearSelectedClass() is called or teacher logs out
+ *
+ * AUTO-HYDRATION:
+ * ---------------
+ * Cache hydration is handled automatically by the teacher layout
+ * (/dashboard/teacher/+layout.svelte) which observes selectedClassId changes.
  */
 
 import type { Class } from '$lib/types/database';

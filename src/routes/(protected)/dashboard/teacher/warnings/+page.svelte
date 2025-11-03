@@ -50,14 +50,27 @@
 	import { History, AlertCircle } from 'lucide-svelte';
 	import type { Warning, StudentWarningCounts } from '$lib/server/warnings';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
+	import type { ClassWithData } from '$lib/server/students';
 
-	// Data from server load function
+	// Data from server load function (periods only)
 	let { data }: { data: PageData } = $props();
 
-	// Local state for selected class and period
-	let selectedClassId = $state(data.classes[0]?.id || '');
+	// Get classes from cache (reactively updates when cache changes)
+	let classes = $derived(teacherCache.getAllClassesSync());
+
+	// Use shared selectedClass store (persists across pages and reloads)
+	const classStore = selectedClassStore();
+
+	// Initialize selectedClassId: restore from localStorage or select first class
+	let selectedClassId = $state(classStore.id || classes[0]?.id || '');
 	let selectedPeriodId = $state(data.currentPeriod?.id || '');
 	let showHistoryDialog = $state(false);
+
+	// Get students from cache (reactively updates when cache changes)
+	let currentStudents = $derived(
+		selectedClassId ? teacherCache.getStudentsSync(selectedClassId) : []
+	);
 
 	// OPTIMISTIC UI STATE
 	// Tracks temporary warning counts that override server data
@@ -98,6 +111,16 @@
 	// ============================================================================
 	// EFFECTS
 	// ============================================================================
+
+	/**
+	 * Sync local state with shared store when it changes locally
+	 * Note: Auto-hydration is set up in the teacher layout, not here
+	 */
+	$effect(() => {
+		if (selectedClassId) {
+			classStore.set(selectedClassId);
+		}
+	});
 
 	/**
 	 * Load warnings when class or period changes
@@ -446,7 +469,7 @@
 	{/if}
 
 	<!-- MAIN CONTENT -->
-	{#if data.classes.length === 0}
+	{#if classes.length === 0}
 		<!-- No classes -->
 		<div class="rounded-lg border border-border bg-card p-12 text-center">
 			<h2 class="mb-2 text-xl font-semibold text-foreground">Aucune classe trouvée</h2>
@@ -458,14 +481,14 @@
 		<!-- TABS BY CLASS -->
 		<Tabs.Root bind:value={selectedClassId} class="w-full">
 			<Tabs.List class="mb-6">
-				{#each data.classes as classItem (classItem.id)}
+				{#each classes as classItem (classItem.id)}
 					<Tabs.Trigger value={classItem.id}>
 						{classItem.name}
 					</Tabs.Trigger>
 				{/each}
 			</Tabs.List>
 
-			{#each data.classes as classItem (classItem.id)}
+			{#each classes as classItem (classItem.id)}
 				<Tabs.Content value={classItem.id} class="mt-0 space-y-6">
 					<!-- PERIOD SELECTOR (if not current period) -->
 					{#if selectedPeriodId !== data.currentPeriod?.id}
@@ -487,7 +510,7 @@
 					{/if}
 
 					<!-- STUDENTS LIST -->
-					{#if classItem.students.length === 0}
+					{#if currentStudents.length === 0}
 						<div class="rounded-lg border border-border bg-card p-12 text-center">
 							<p class="text-muted-foreground">Aucun élève dans cette classe</p>
 						</div>
@@ -499,12 +522,12 @@
 						<div class="overflow-hidden rounded-lg border border-border bg-card">
 							<div class="border-b border-border bg-muted/30 px-6 py-4">
 								<h3 class="text-lg font-semibold text-foreground">
-									Élèves ({classItem.students.length})
+									Élèves ({currentStudents.length})
 								</h3>
 							</div>
 
 							<div class="divide-y divide-border">
-								{#each classItem.students as student (student.id)}
+								{#each currentStudents as student (student.id)}
 									{@const counts = getStudentWarnings(student.id)}
 									<div class="flex items-center gap-6 px-6 py-4">
 										<!-- AVATAR -->

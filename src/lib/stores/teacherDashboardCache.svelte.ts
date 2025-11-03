@@ -45,6 +45,7 @@ import type {
 	CacheStats
 } from '$lib/types/teacher-cache';
 import type { StudentVipCards } from '$lib/types/vip-card';
+import type { ClassWithData } from '$lib/server/students';
 import { createLogger } from '$lib/utils/logger';
 import { browser } from '$app/environment';
 import { SvelteMap } from 'svelte/reactivity';
@@ -298,6 +299,57 @@ export class TeacherDashboardCache {
 		if (now - cached.fetchedAt >= this.WARNINGS_TTL) return null;
 
 		return cached.warnings;
+	}
+
+	/**
+	 * Get cached students synchronously (for $derived)
+	 * Returns empty array if not cached
+	 *
+	 * @param classId - The class ID
+	 * @returns Cached students array or empty array
+	 */
+	getStudentsSync(classId: string): BasicStudent[] {
+		const cached = this.studentsCache.get(classId);
+		if (!cached) return [];
+
+		const now = Date.now();
+		if (now - cached.fetchedAt >= this.STUDENTS_TTL) return [];
+
+		return cached.students;
+	}
+
+	/**
+	 * Get all cached classes synchronously (for $derived)
+	 * Returns empty array if cache is empty or expired
+	 *
+	 * Converts ClassInfo (Cache 3) to ClassWithData format
+	 *
+	 * @returns Array of cached classes or empty array
+	 */
+	getAllClassesSync(): ClassWithData[] {
+		const classes: ClassWithData[] = [];
+		const now = Date.now();
+
+		for (const [classId, cached] of this.classesCache) {
+			// Skip if expired
+			if (now - cached.fetchedAt >= this.CLASS_TTL) continue;
+
+			// Convert ClassInfo to ClassWithData format
+			classes.push({
+				id: cached.classInfo.id,
+				teacher_id: cached.classInfo.teacher_id,
+				name: cached.classInfo.name,
+				description: cached.classInfo.description,
+				join_code: cached.classInfo.join_code,
+				is_active: cached.classInfo.is_active,
+				created_at: cached.classInfo.created_at,
+				updated_at: cached.classInfo.updated_at,
+				student_count: cached.classInfo.student_count,
+				schedules: cached.classInfo.schedules
+			});
+		}
+
+		return classes;
 	}
 
 	// ========================================================================
@@ -691,6 +743,20 @@ export class TeacherDashboardCache {
 		});
 
 		this.log('trace', `[Cache] Hydrated class info for class ${classId}`);
+	}
+
+	/**
+	 * Hydrate cache with all teacher classes
+	 *
+	 * Accepts ClassWithData array and hydrates Cache 3 for each class
+	 *
+	 * @param classes - Array of class data to cache
+	 */
+	hydrateAllClasses(classes: ClassWithData[]): void {
+		for (const classData of classes) {
+			this.hydrateClassInfo(classData.id, classData);
+		}
+		this.log('trace', `[Cache] Hydrated ${classes.length} classes`);
 	}
 
 	/**

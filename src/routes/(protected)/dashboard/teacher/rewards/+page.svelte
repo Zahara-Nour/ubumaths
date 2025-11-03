@@ -118,48 +118,33 @@
 	import { canAffordVipCard } from '$lib/utils/vip-cards';
 	import { Sparkles, Eye, Loader2 } from 'lucide-svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
+	import type { ClassWithData } from '$lib/server/students';
 
 	// Data from server load function
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	// Local reactive copy of classes data (needed for server updates)
-	let classes = $state(data.classes);
+	// Get classes from cache (reactively updates when cache changes)
+	let classes = $derived(teacherCache.getAllClassesSync());
 
-	// Track if cache has been hydrated (to avoid re-hydrating and losing optimistic updates)
-	let cacheHydrated = $state(false);
+	// Use shared selectedClass store (persists across pages and reloads)
+	const classStore = selectedClassStore();
 
-	// Hydrate cache ONCE on mount, then sync classes without re-hydrating
+	// Initialize selectedClassId: restore from localStorage or select first class
+	let selectedClassId = $state(classStore.id || classes[0]?.id || '');
+
+	// Get students from cache (reactively updates when cache changes)
+	let currentStudents = $derived(
+		selectedClassId ? teacherCache.getStudentsSync(selectedClassId) : []
+	);
+
+	// Sync local state with shared store when it changes locally
+	// Note: Auto-hydration is set up in the teacher layout, not here
 	$effect(() => {
-		if (!cacheHydrated) {
-			// First time: hydrate cache with initial data
-			for (const classItem of data.classes) {
-				// Hydrate rewards cache
-				teacherCache.hydrateRewards(classItem.id, classItem.students);
-
-				// Hydrate student basic info cache
-				teacherCache.hydrateStudents(
-					classItem.id,
-					classItem.students.map((s) => ({
-						id: s.id,
-						firstname: s.firstname ?? null,
-						lastname: s.lastname ?? null,
-						full_name: s.full_name ?? null,
-						avatar_url: s.avatar_url ?? null,
-						role: s.role ?? null,
-						gender: s.gender ?? null,
-						is_test: false // This will be set correctly from server data
-					})) as any
-				);
-			}
-			cacheHydrated = true;
+		if (selectedClassId) {
+			classStore.set(selectedClassId);
 		}
-
-		// Always sync classes for server updates (but don't re-hydrate cache)
-		classes = data.classes;
 	});
-
-	// Local state for selected class - use $derived to track classes reactively
-	let selectedClassId = $derived(classes[0]?.id);
 
 	// Local state for gidouilles inputs (per student)
 	let studentDeltas = $state<Record<string, number>>({});
@@ -197,13 +182,11 @@
 			if (!classDeltas[classItem.id]) {
 				classDeltas[classItem.id] = 1;
 			}
-			classItem.students.forEach(
-				(student: { id: string; firstname: string | null; gidouilles: number }) => {
-					if (!studentDeltas[student.id]) {
-						studentDeltas[student.id] = 1;
-					}
-				}
-			);
+		});
+		currentStudents.forEach((student) => {
+			if (!studentDeltas[student.id]) {
+				studentDeltas[student.id] = 1;
+			}
 		});
 	});
 
@@ -250,25 +233,21 @@
 	 * Get current gidouilles for a student from cache (with optimistic override)
 	 *
 	 * Returns the cached value (which may include optimistic updates) if available,
-	 * otherwise falls back to server data from classes.
+	 * otherwise returns 0 as fallback.
 	 *
 	 * @param studentId - The student's ID
 	 * @returns The gidouilles count to display in the UI
 	 */
 	function getStudentGidouilles(studentId: string): number {
-		// First check cache (includes optimistic overrides via SvelteMap reactivity)
+		// Check cache (includes optimistic overrides via SvelteMap reactivity)
 		const cached = teacherCache.getRewardsSync(selectedClassId);
 		if (cached) {
 			const rewards = cached.get(studentId);
 			if (rewards) return rewards.gidouilles;
 		}
 
-		// Fallback to server data from classes
-		const classItem = classes.find((c) => c.id === selectedClassId);
-		if (!classItem) return 0;
-
-		const student = classItem.students.find((s: { id: string }) => s.id === studentId);
-		return student?.gidouilles ?? 0;
+		// Fallback to 0 if not in cache yet
+		return 0;
 	}
 
 	/**
@@ -294,12 +273,10 @@
 	 * @param delta - The change amount to apply to each student
 	 */
 	function updateClassGidouillesOptimistic(classId: string, delta: number) {
-		const classItem = classes.find((c) => c.id === classId);
-		if (classItem) {
-			classItem.students.forEach((student: { id: string }) => {
-				teacherCache.updateGidouillesOptimistic(classId, student.id, delta);
-			});
-		}
+		const students = teacherCache.getStudentsSync(classId);
+		students.forEach((student) => {
+			teacherCache.updateGidouillesOptimistic(classId, student.id, delta);
+		});
 	}
 
 	// ============================================================================
@@ -371,21 +348,9 @@
 					// SUCCESS: Server updated the database
 					await response.json();
 
-					// Update local data: apply accumulated delta to the student
-					// This keeps 'classes' in sync with the optimistic cache state
-					classes = classes.map((classItem) => ({
-						...classItem,
-						students: classItem.students.map((student) =>
-							student.id === studentId
-								? { ...student, gidouilles: student.gidouilles + accumulatedDelta }
-								: student
-						)
-					}));
-
-					// ✅ NO INVALIDATION NEEDED ON SUCCESS
-					// The cache already has the correct optimistic value
-					// 'classes' is now synchronized with cache
-					// Both reflect the confirmed server state
+					// ✅ NO DATA UPDATE NEEDED
+					// The cache already has the correct optimistic value from the immediate UI update
+					// No need to update 'classes' since it doesn't contain students anymore
 
 					// Show success toast with accumulated delta and student name
 					toaster.success(
@@ -461,29 +426,14 @@
 
 				if (response.ok) {
 					// SUCCESS: All students updated in database
-					// Parse response (contains studentsUpdated count)
 					await response.json();
 
-					// Update local data: apply accumulated delta to all students in the class
-					classes = classes.map((classItem) => {
-						if (classItem.id === classId) {
-							return {
-								...classItem,
-								students: classItem.students.map((student) => ({
-									...student,
-									gidouilles: student.gidouilles + accumulatedDelta
-								}))
-							};
-						}
-						return classItem;
-					});
-
-					const classItem = classes.find((c) => c.id === classId);
-					const studentCount = classItem?.students.length || 0;
-
-					// ✅ NO INVALIDATION NEEDED ON SUCCESS
+					// ✅ NO DATA UPDATE NEEDED
 					// The cache already has the correct optimistic values for all students
-					// 'classes' is now synchronized with cache
+
+					// Get student count from cache for toast message
+					const students = teacherCache.getStudentsSync(classId);
+					const studentCount = students.length;
 
 					// Show success toast with student count
 					toaster.success(
@@ -658,7 +608,7 @@
 					</div>
 
 					<!-- LISTE DES ÉLÈVES -->
-					{#if classItem.students.length === 0}
+					{#if currentStudents.length === 0}
 						<div class="rounded-lg border border-border bg-card p-12 text-center">
 							<p class="text-muted-foreground">Aucun élève dans cette classe</p>
 						</div>
@@ -666,12 +616,12 @@
 						<div class="overflow-hidden rounded-lg border border-border bg-card">
 							<div class="border-b border-border bg-muted/30 px-6 py-4">
 								<h3 class="text-lg font-semibold text-foreground">
-									Élèves ({classItem.students.length})
+									Élèves ({currentStudents.length})
 								</h3>
 							</div>
 
 							<div class="divide-y divide-border">
-								{#each classItem.students as student (student.id)}
+								{#each currentStudents as student (student.id)}
 									<div class="flex items-center gap-6 px-6 py-4">
 										<!-- AVATAR -->
 										<Avatar.Root class="h-12 w-12 flex-shrink-0">
@@ -797,15 +747,9 @@
 
 													return async ({ result, update }) => {
 														await update();
-														// After update(), 'classes' is synchronized with server data
 														if (result.type === 'success') {
-															// SUCCESS: Re-hydrate cache with confirmed server data
-															// This updates both gidouilles (-3) AND the new VIP card
-															const classItem = classes.find((c) => c.id === selectedClassId);
-															if (classItem) {
-																teacherCache.hydrateRewards(selectedClassId, classItem.students);
-															}
-
+															// SUCCESS: Cache already has the -3 gidouilles optimistic update
+															// The new VIP card will be reflected after server update
 															// Card will be updated by $effect when form.cardId arrives
 														} else {
 															// ERROR: Rollback the -3 gidouilles optimistic update by adding +3 back

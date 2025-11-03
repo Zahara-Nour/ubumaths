@@ -132,7 +132,9 @@ function createMockClassInfo(): ClassInfo {
 				end_time: '09:00',
 				subject: 'Math',
 				room: '101',
-				notes: null
+				notes: null,
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString()
 			}
 		]
 	};

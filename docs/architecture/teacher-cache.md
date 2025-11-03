@@ -6,6 +6,7 @@ Architecture et design decisions du système de cache client-side pour le dashbo
 
 🆕 **2025-10-31** - Initial implementation
 🔄 **2025-11-02** - SvelteMap migration & optimistic UI optimization
+🔄 **2025-11-03** - Cache-first class loading with API endpoint
 
 ---
 
@@ -1163,9 +1164,37 @@ teacherCache.getStats();
 
 ---
 
-**Last Updated** : 2025-11-02
+**Last Updated** : 2025-11-03
 
 ## Changelog
+
+### 2025-11-03 - Cache-First Class Loading
+
+**Major Changes:**
+- **Cache-First Pattern**: Implemented cache-first class loading for teacher dashboard layout
+- **New API Endpoint**: Created `/api/teacher/classes` to wrap server-only `getTeacherClassesWithCounts()`
+- **Centralized Loading**: Classes now loaded once in `/dashboard/teacher/+layout.svelte` instead of per-page
+- **New Cache Methods**:
+  - `getAllClassesSync()`: Retrieve all cached classes for reactive `$derived` usage
+  - `hydrateAllClasses()`: Populate class cache from API response
+- **Auto-Initialization**: `selectedClassId` automatically set to first class if none selected
+- **Eliminated Redundancy**: Removed class loading from rewards and warnings page servers
+
+**Performance Impact:**
+- ✅ Zero redundant class loading (was: 2x per visit to rewards/warnings)
+- ✅ Instant class list on subsequent visits (cache-first = <10ms)
+- ✅ Persists across navigation (no reload when leaving/returning to dashboard)
+- ✅ Single source of truth for class initialization
+
+**Files Modified:**
+- `src/lib/stores/teacherDashboardCache.svelte.ts`: Added class sync methods
+- `src/routes/api/teacher/classes/+server.ts`: New API endpoint
+- `src/routes/(protected)/dashboard/teacher/+layout.svelte`: Cache-first loading logic
+- `src/routes/(protected)/dashboard/teacher/rewards/+page.server.ts`: Removed class loading
+- `src/routes/(protected)/dashboard/teacher/warnings/+page.server.ts`: Removed class loading
+- `src/routes/(protected)/dashboard/teacher/rewards/+page.svelte`: Use `$derived(cache.getAllClassesSync())`
+- `src/routes/(protected)/dashboard/teacher/warnings/+page.svelte`: Use `$derived(cache.getAllClassesSync())`
+- `src/lib/types/teacher-cache.ts`: Added `created_at`/`updated_at` to ClassSchedule
 
 ### 2025-11-02 - SvelteMap Migration & Optimistic UI Optimization
 

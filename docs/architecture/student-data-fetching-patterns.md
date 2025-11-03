@@ -648,6 +648,15 @@ These pages use test mode filtering but not via helpers due to specialized queri
 
 ## Update Log
 
+**2025-11-03**: Cache-First Class Loading Pattern ✅
+
+- Implemented **cache-first pattern** for teacher class loading
+- Created new API endpoint `/api/teacher/classes` (wraps `getTeacherClassesWithCounts()`)
+- Centralized class loading in `/dashboard/teacher/+layout.svelte`
+- Added `getAllClassesSync()` and `hydrateAllClasses()` to teacherCache
+- Eliminated redundant class loading from rewards and warnings pages
+- **Impact**: Zero redundant loads, instant UI on cache hit, persists across navigation
+
 **2025-10-26 (Late Evening)**: Phase 3 Migration Completed ✅
 
 - Migrated all remaining assignment pages to use unified helpers

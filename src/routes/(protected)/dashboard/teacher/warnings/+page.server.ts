@@ -16,7 +16,6 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getTeacherClassesWithStudents } from '$lib/server/students';
 import {
 	getCurrentAcademicPeriod,
 	getSchoolYearPeriods,
@@ -24,77 +23,34 @@ import {
 } from '$lib/server/warnings';
 
 /**
- * Load function - Fetches teacher's classes, students, and academic periods
- *
- * PROCESS:
- * 1. Verify user is authenticated and has teacher role
- * 2. Fetch all active classes owned by this teacher with students
- * 3. Fetch current academic period (for today's date)
- * 4. Fetch all periods for the active school year (for history viewing)
- * 5. Return enriched data for the page
- *
- * RETURNS:
- * {
- *   classes: ClassWithStudents[] - Array of classes with full student data
- *   currentPeriod: AcademicPeriod | null - Current active period
- *   allPeriods: AcademicPeriod[] - All periods for current school year
- * }
+ * Load function - Loads period data only
+ * Classes come from parent layout (cache-first)
+ * Student warnings come from cache (hydrated by layout)
  */
 export const load: PageServerLoad = async ({ locals }) => {
-	// Get user and profile from locals (loaded in hooks.server.ts)
 	const { user, profile, supabase } = locals;
 
-	if (!user || !profile) {
-		throw error(401, 'Unauthorized');
+	if (!user || !profile || profile.role !== 'teacher') {
+		throw error(403, 'Unauthorized');
 	}
 
-	// Verify user is a teacher (not student or admin accessing this route)
-	if (profile.role !== 'teacher') {
-		throw error(403, 'Only teachers can access this page');
-	}
+	// Classes come from parent layout (cache-first)
+	// Only load period-specific data here
+	const [currentPeriod, activeYear] = await Promise.all([
+		profile.school_id
+			? getCurrentAcademicPeriod({ schoolId: profile.school_id, supabase }).catch(() => null)
+			: Promise.resolve(null),
+		profile.school_id
+			? getActiveSchoolYear({ schoolId: profile.school_id, supabase }).catch(() => null)
+			: Promise.resolve(null)
+	]);
 
-	// Verify teacher has a school_id (required for academic periods)
-	if (!profile.school_id) {
-		console.warn('[Warnings Page] Teacher has no school_id, cannot load periods');
-		// Load classes but return empty periods
-		const classesWithStudents = await getTeacherClassesWithStudents(user.id, supabase);
-		return {
-			classes: classesWithStudents,
-			currentPeriod: null,
-			allPeriods: []
-		};
-	}
+	const allPeriods = activeYear
+		? await getSchoolYearPeriods({ schoolYearId: activeYear.id, supabase }).catch(() => [])
+		: [];
 
-	try {
-		// Fetch all data in parallel for performance
-		const [classesWithStudents, currentPeriod, activeYear] = await Promise.all([
-			getTeacherClassesWithStudents(user.id, supabase),
-			getCurrentAcademicPeriod({ schoolId: profile.school_id, supabase }),
-			getActiveSchoolYear({ schoolId: profile.school_id, supabase })
-		]);
-
-		// Fetch all periods for the active school year (for history dropdown)
-		const allPeriods = activeYear
-			? await getSchoolYearPeriods({
-					schoolYearId: activeYear.id,
-					supabase
-				})
-			: [];
-
-		return {
-			classes: classesWithStudents,
-			currentPeriod,
-			allPeriods
-		};
-	} catch (err) {
-		console.error('[Warnings Page] Error loading data:', err);
-
-		// If error is from helper functions, re-throw
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-
-		// Generic error fallback
-		throw error(500, 'Failed to load warnings data');
-	}
+	return {
+		currentPeriod,
+		allPeriods
+	};
 };
