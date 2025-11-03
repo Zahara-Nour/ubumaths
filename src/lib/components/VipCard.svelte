@@ -35,7 +35,7 @@
 	import type { VipCard } from '$lib/types/vip-card';
 	import { cn } from '$lib/utils';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
-	import { Trash2 } from 'lucide-svelte';
+	import { Trash2, Sparkles, Clock } from 'lucide-svelte';
 
 	interface Props {
 		card: VipCard;
@@ -46,6 +46,9 @@
 		onclick?: () => void;
 		showRemoveButton?: boolean;
 		onRemove?: () => void;
+		showUseButton?: boolean;
+		hasPendingRequest?: boolean;
+		onUse?: () => void;
 	}
 
 	let {
@@ -56,7 +59,10 @@
 		clickable = true,
 		onclick,
 		showRemoveButton = false,
-		onRemove
+		onRemove,
+		showUseButton = false,
+		hasPendingRequest = false,
+		onUse
 	}: Props = $props();
 
 	// Size classes
@@ -91,6 +97,16 @@
 	function handleRemove(e: MouseEvent) {
 		e.stopPropagation();
 		onRemove?.();
+	}
+
+	/**
+	 * Handle use button click
+	 * IMPORTANT: Stops event propagation to prevent card flip animation
+	 * @param e - MouseEvent from use button click
+	 */
+	function handleUse(e: MouseEvent) {
+		e.stopPropagation();
+		onUse?.();
 	}
 
 	// Rarity gem color system
@@ -212,6 +228,28 @@
 					aria-label="Retirer cette carte"
 				>
 					<Trash2 class={cn(size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-5 w-5')} />
+				</button>
+			{/if}
+
+			<!-- Use Button (Bottom Left) - Only show if showUseButton and card has action -->
+			{#if showUseButton && card.action}
+				<button
+					type="button"
+					class={cn(
+						'absolute left-2 bottom-2 rounded-full p-2 shadow-lg transition-all hover:scale-110 active:scale-95',
+						hasPendingRequest
+							? 'bg-orange-500 hover:bg-orange-600 text-white'
+							: 'bg-green-600 hover:bg-green-700 text-white',
+						size === 'sm' ? 'p-1.5' : size === 'md' ? 'p-2' : 'p-2.5'
+					)}
+					onclick={handleUse}
+					aria-label={hasPendingRequest ? 'Demande en attente' : 'Utiliser cette carte'}
+				>
+					{#if hasPendingRequest}
+						<Clock class={cn(size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-5 w-5')} />
+					{:else}
+						<Sparkles class={cn(size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-5 w-5')} />
+					{/if}
 				</button>
 			{/if}
 		</div>

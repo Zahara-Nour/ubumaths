@@ -2,7 +2,7 @@
 // ===========================
 // Helper functions for managing VIP cards in the reward system
 
-import type { StudentVipCards } from '$lib/types/vip-card';
+import type { StudentVipCards, VipCardAction } from '$lib/types/vip-card';
 import { getVipCardById } from '$lib/types/vip-card';
 
 /**
@@ -45,7 +45,7 @@ export function getStudentCardsWithCounts(vipCards: StudentVipCards): Array<{
 	name: string;
 	description: string;
 	imagePath: string;
-	category: string;
+	category?: string;
 	rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 	count: number;
 }> {
@@ -56,7 +56,7 @@ export function getStudentCardsWithCounts(vipCards: StudentVipCards): Array<{
 			name: string;
 			description: string;
 			imagePath: string;
-			category: string;
+			category?: string;
 			rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 			count: number;
 		}
@@ -76,7 +76,7 @@ export function getStudentCardsWithCounts(vipCards: StudentVipCards): Array<{
 					name: cardDef.name,
 					description: cardDef.description,
 					imagePath: cardDef.imagePath,
-					category: cardDef.category,
+					category: cardDef.category || undefined,
 					rarity: cardDef.rarity,
 					count: 1
 				});
@@ -145,4 +145,49 @@ export function sortCardsByPriority(
 		// Then sort by count (higher count first)
 		return b.count - a.count;
 	});
+}
+
+/**
+ * Get human-readable French description of a VIP card action
+ */
+export function getActionDescription(action: VipCardAction): string {
+	switch (action.type) {
+		case 'draw_cards':
+			return `Piocher ${action.count} carte${action.count > 1 ? 's' : ''} VIP`;
+
+		case 'remove_warnings':
+			if (action.warningType) {
+				const typeNames = {
+					C: 'Comportement',
+					M: 'Matériel',
+					R: 'Retard',
+					T: 'Travail'
+				};
+				return `Enlever ${action.count} avertissement${action.count > 1 ? 's' : ''} (${typeNames[action.warningType]})`;
+			}
+			return `Enlever ${action.count} avertissement${action.count > 1 ? 's' : ''}`;
+
+		case 'exchange_cards':
+			if (action.exchange.mode === 'replace_random') {
+				return `Échanger ${action.exchange.count} carte${action.exchange.count > 1 ? 's' : ''} contre de nouvelles cartes`;
+			} else if (action.exchange.mode === 'rarity_points') {
+				const rarityNames = {
+					common: 'commune',
+					rare: 'rare',
+					epic: 'épique',
+					legendary: 'légendaire'
+				};
+				return `Échanger des cartes contre une carte ${rarityNames[action.exchange.targetRarity]}`;
+			} else {
+				// discard_for_specific
+				const targetCard = getVipCardById(action.exchange.targetCardId);
+				return `Échanger ${action.exchange.discardCount} carte${action.exchange.discardCount > 1 ? 's' : ''} contre ${targetCard?.name || action.exchange.targetCardId}`;
+			}
+
+		case 'add_gidouilles':
+			return `Gagner ${action.amount} gidouille${action.amount > 1 ? 's' : ''}`;
+
+		default:
+			return 'Action spéciale';
+	}
 }

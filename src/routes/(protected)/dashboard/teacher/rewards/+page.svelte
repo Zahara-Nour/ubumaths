@@ -115,10 +115,16 @@
 	import VipCardHoloReveal from '$lib/components/VipCardHoloReveal.svelte';
 	import { getVipCardById, type VipCard, type StudentVipCards } from '$lib/types/vip-card';
 	import { canAffordVipCard } from '$lib/utils/vip-cards';
-	import { Sparkles, Eye, Loader2 } from 'lucide-svelte';
+	import { Sparkles, Eye, Loader2, Check, X, Clock } from 'lucide-svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
 	import type { ClassWithData } from '$lib/server/students';
+	import * as Table from '$lib/components/ui/table';
+	import * as Card from '$lib/components/ui/card';
+	import { Badge } from '$lib/components/ui/badge';
+	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 
 	// Data from parent layouts (user/profile only)
 	let { data }: { data: PageData } = $props();
@@ -181,6 +187,104 @@
 		confirmed: boolean;
 	} | null>(null); // Tracks card reveal state with loading/confirmed
 	let lastProcessedCardId = $state<string | null>(null); // Tracks last processed cardId to prevent duplicates and infinite loops
+
+	// Tab management (URL-based)
+	let activeTab = $derived(page.url.searchParams.get('tab') || 'gidouilles');
+
+	function changeTab(tab: string) {
+		const url =
+			tab === 'gidouilles'
+				? '/dashboard/teacher/rewards'
+				: `/dashboard/teacher/rewards?tab=${tab}`;
+		goto(url, { replaceState: false });
+	}
+
+	// Processing state for use-card requests (demandes tab)
+	let processingRequests = $state<Record<string, boolean>>({});
+
+	// Handle use card from demandes tab
+	async function handleUseCard(instanceId: string, studentId: string, studentName: string) {
+		processingRequests[instanceId] = true;
+
+		try {
+			const response = await fetch('/api/vip-cards/use-card', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ instanceId, studentId })
+			});
+
+			const result = await response.json();
+
+			if (!response.ok) {
+				throw new Error(result.message || "Erreur lors de l'utilisation");
+			}
+
+			// Success toast with action details
+			let message = `Carte ${result.cardName} utilisée pour ${studentName} !`;
+			if (result.actionResult) {
+				const ar = result.actionResult;
+				if (ar.cardsDrawn) {
+					const cardNames = ar.cardsDrawn.map((c: { name: string }) => c.name).join(', ');
+					message += `\n→ Cartes tirées : ${cardNames}`;
+				} else if (ar.warningsRemoved !== undefined) {
+					message += `\n→ ${ar.warningsRemoved} avertissement(s) enlevé(s)`;
+				} else if (ar.cardsReceived) {
+					message += `\n→ Cartes reçues : ${ar.cardsReceived.join(', ')}`;
+				} else if (ar.newBalance !== undefined) {
+					message += `\n→ Nouveau solde : ${ar.newBalance} gidouilles`;
+				}
+			}
+
+			toaster.success(message);
+			await invalidateAll();
+		} catch (error) {
+			console.error('[rewards] Use card error:', error);
+			toaster.error(error instanceof Error ? error.message : 'Erreur');
+		} finally {
+			processingRequests[instanceId] = false;
+		}
+	}
+
+	// Handle reject activation request
+	async function handleReject(instanceId: string, studentId: string, studentName: string) {
+		processingRequests[instanceId] = true;
+
+		try {
+			const response = await fetch('/api/vip-cards/reject-activation', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ instanceId, studentId })
+			});
+
+			if (!response.ok) throw new Error('Erreur lors du rejet');
+
+			toaster.success(`Demande rejetée pour ${studentName}`);
+			await invalidateAll();
+		} catch (error) {
+			toaster.error('Erreur lors du rejet');
+		} finally {
+			processingRequests[instanceId] = false;
+		}
+	}
+
+	// Format date for demandes display
+	function formatDate(dateString: string): string {
+		const date = new Date(dateString);
+		const now = new Date();
+		const diffMs = now.getTime() - date.getTime();
+		const diffMins = Math.floor(diffMs / 60000);
+
+		if (diffMins < 1) return "À l'instant";
+		if (diffMins < 60) return `Il y a ${diffMins} min`;
+
+		const diffHours = Math.floor(diffMins / 60);
+		if (diffHours < 24) return `Il y a ${diffHours}h`;
+
+		const diffDays = Math.floor(diffHours / 24);
+		if (diffDays < 7) return `Il y a ${diffDays}j`;
+
+		return date.toLocaleDateString('fr-FR');
+	}
 
 	// Initialize deltas to 1 for each student and class
 	$effect(() => {
@@ -565,13 +669,25 @@
 	}
 </script>
 
-<div class="space-y-6">
-	<!-- HEADER -->
-	<div>
-		<h1 class="text-3xl font-bold text-foreground">Gestion des Récompenses</h1>
-	</div>
+<div class="container mx-auto py-8">
+	<h1 class="text-3xl font-bold mb-6">Gestion des Récompenses</h1>
 
-	<!-- MAIN CONTENT -->
+	<Tabs.Root value={activeTab} onValueChange={changeTab}>
+		<Tabs.List class="mb-6">
+			<Tabs.Trigger value="gidouilles">Gidouilles</Tabs.Trigger>
+			<Tabs.Trigger value="demandes" class="relative">
+				Demandes d'activation VIP
+				{#if data.activationRequests.length > 0}
+					<Badge variant="destructive" class="ml-2">
+						{data.activationRequests.length}
+					</Badge>
+				{/if}
+			</Tabs.Trigger>
+		</Tabs.List>
+
+		<!-- TAB 1: GIDOUILLES (existing content) -->
+		<Tabs.Content value="gidouilles">
+			<div class="space-y-6">
 	{#if classes.length === 0}
 		<!-- Pas de classes -->
 		<div class="rounded-lg border border-border bg-card p-12 text-center">
@@ -789,6 +905,106 @@
 			{/each}
 		</Tabs.Root>
 	{/if}
+			</div>
+		</Tabs.Content>
+
+		<!-- TAB 2: DEMANDES D'ACTIVATION VIP -->
+		<Tabs.Content value="demandes">
+			{#if data.activationRequests.length === 0}
+				<Card.Root>
+					<Card.Content class="pt-6 text-center">
+						<Sparkles class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+						<p class="text-lg text-muted-foreground">Aucune demande d'activation en attente</p>
+						<p class="text-sm text-muted-foreground mt-2">
+							Les demandes de vos élèves apparaîtront ici
+						</p>
+					</Card.Content>
+				</Card.Root>
+			{:else}
+				<Card.Root>
+					<Card.Header>
+						<Card.Title class="flex items-center justify-between">
+							<span>Demandes en attente</span>
+							<Badge variant="secondary">{data.activationRequests.length}</Badge>
+						</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<Table.Root>
+							<Table.Header>
+								<Table.Row>
+									<Table.Head>Élève</Table.Head>
+									<Table.Head>Carte</Table.Head>
+									<Table.Head>Action</Table.Head>
+									<Table.Head>Demandé</Table.Head>
+									<Table.Head class="text-right">Actions</Table.Head>
+								</Table.Row>
+							</Table.Header>
+							<Table.Body>
+								{#each data.activationRequests as request (request.instanceId)}
+									<Table.Row>
+										<Table.Cell class="font-medium">
+											{request.studentName}
+										</Table.Cell>
+										<Table.Cell>
+											<Badge variant="outline" class="font-semibold">
+												{request.cardName}
+											</Badge>
+										</Table.Cell>
+										<Table.Cell class="text-sm text-muted-foreground">
+											{request.actionDescription}
+										</Table.Cell>
+										<Table.Cell class="text-sm">
+											{formatDate(request.requestedAt)}
+										</Table.Cell>
+										<Table.Cell class="text-right">
+											<div class="flex gap-2 justify-end">
+												<Button
+													onclick={() =>
+														handleUseCard(
+															request.instanceId,
+															request.studentId,
+															request.studentName
+														)}
+													disabled={processingRequests[request.instanceId]}
+													size="sm"
+													class="bg-green-600 hover:bg-green-700"
+												>
+													{#if processingRequests[request.instanceId]}
+														<Loader2 class="h-4 w-4 animate-spin" />
+													{:else}
+														<Check class="h-4 w-4 mr-1" />
+														Utiliser
+													{/if}
+												</Button>
+												<Button
+													onclick={() =>
+														handleReject(
+															request.instanceId,
+															request.studentId,
+															request.studentName
+														)}
+													disabled={processingRequests[request.instanceId]}
+													size="sm"
+													variant="destructive"
+												>
+													{#if processingRequests[request.instanceId]}
+														<Loader2 class="h-4 w-4 animate-spin" />
+													{:else}
+														<X class="h-4 w-4 mr-1" />
+														Rejeter
+													{/if}
+												</Button>
+											</div>
+										</Table.Cell>
+									</Table.Row>
+								{/each}
+							</Table.Body>
+						</Table.Root>
+					</Card.Content>
+				</Card.Root>
+			{/if}
+		</Tabs.Content>
+	</Tabs.Root>
 </div>
 
 <!-- VIP Card Reveal Modal -->

@@ -96,16 +96,22 @@
 	// This state persists until modal closes to prevent UI flicker during data refresh
 	let optimisticRemovedCounts = $state<Record<string, number>>({});
 
+	// OPTIMISTIC USE STATE
+	// Tracks how many instances of each card have been used this session
+	// Similar to optimisticRemovedCounts but for card usage
+	let optimisticUsedCounts = $state<Record<string, number>>({});
+
 	// DERIVED CARDS WITH ADJUSTED COUNTS
-	// Get cards sorted by rarity, adjust counts based on optimistic removals, hide cards with 0 count
-	// Example: Server says ×3, optimistic says -1 removed → Display shows ×2
+	// Get cards sorted by rarity, adjust counts based on optimistic removals AND uses, hide cards with 0 count
+	// Example: Server says ×3, optimistic says -1 removed -1 used → Display shows ×1
 	const cardsWithCounts = $derived(
 		sortCardsByPriority(getStudentCardsWithCounts(vipCards))
 			.map((card) => {
 				const removedCount = optimisticRemovedCounts[card.id] || 0;
+				const usedCount = optimisticUsedCounts[card.id] || 0;
 				return {
 					...card,
-					count: Math.max(0, card.count - removedCount)
+					count: Math.max(0, card.count - removedCount - usedCount)
 				};
 			})
 			.filter((card) => card.count > 0) // Hide cards with 0 count
@@ -116,6 +122,7 @@
 	$effect(() => {
 		if (!open) {
 			optimisticRemovedCounts = {};
+			optimisticUsedCounts = {};
 		}
 	});
 
@@ -165,6 +172,79 @@
 		setTimeout(() => {
 			selectedCardForHolo = null;
 		}, 300);
+	}
+
+	/**
+	 * Check if a card has a pending activation request
+	 */
+	function cardHasPendingRequest(cardId: string): boolean {
+		return Object.values(vipCards).some(
+			(inst) => inst.cardId === cardId && inst.activationRequestedAt && !inst.usedAt
+		);
+	}
+
+	/**
+	 * Find instance to use (prefer instances with pending requests)
+	 */
+	function findInstanceToUse(cardId: string): string | null {
+		const entries = Object.entries(vipCards);
+
+		// Priorité 1: Instance avec demande
+		const withRequest = entries.find(
+			([_, inst]) => inst.cardId === cardId && !inst.usedAt && inst.activationRequestedAt
+		);
+		if (withRequest) return withRequest[0];
+
+		// Priorité 2: Première instance disponible
+		const available = entries.find(([_, inst]) => inst.cardId === cardId && !inst.usedAt);
+		return available?.[0] || null;
+	}
+
+	/**
+	 * Handle use card with optimistic UI
+	 * Similar to handleRemoveCard but for card usage
+	 */
+	async function handleUseCard(card: { id: string; name: string }) {
+		if (!teacherView || !studentId) return;
+
+		// Trouver instance
+		const instanceId = findInstanceToUse(card.id);
+		if (!instanceId) {
+			toaster.error('Aucune instance disponible');
+			return;
+		}
+
+		// STEP 1: Apply optimistic update
+		optimisticUsedCounts = {
+			...optimisticUsedCounts,
+			[card.id]: (optimisticUsedCounts[card.id] || 0) + 1
+		};
+
+		try {
+			const response = await fetch('/api/vip-cards/use-card', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ instanceId, studentId })
+			});
+
+			const result = await response.json();
+
+			if (!response.ok) throw new Error(result.message);
+
+			// STEP 2: SUCCESS
+			toaster.success(`Carte ${card.name} utilisée !`);
+			await invalidateAll();
+		} catch (error) {
+			// STEP 3: ERROR - Rollback optimistic update
+			const newCount = Math.max(0, (optimisticUsedCounts[card.id] || 0) - 1);
+			if (newCount === 0) {
+				const { [card.id]: _, ...rest } = optimisticUsedCounts;
+				optimisticUsedCounts = rest;
+			} else {
+				optimisticUsedCounts = { ...optimisticUsedCounts, [card.id]: newCount };
+			}
+			toaster.error("Échec de l'utilisation");
+		}
 	}
 
 	/**
@@ -300,6 +380,9 @@
 							clickable={false}
 							showRemoveButton={teacherView}
 							onRemove={() => handleRemoveCard(card)}
+							showUseButton={teacherView}
+							hasPendingRequest={cardHasPendingRequest(card.id)}
+							onUse={() => handleUseCard(card)}
 						/>
 					</div>
 				{/each}
