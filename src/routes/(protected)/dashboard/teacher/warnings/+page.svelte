@@ -72,11 +72,6 @@
 		selectedClassId ? teacherCache.getStudentsSync(selectedClassId) : []
 	);
 
-	// OPTIMISTIC UI STATE
-	// Tracks temporary warning counts that override server data
-	// Key: studentId, Value: optimistic warning counts
-	let optimisticWarnings = $state<Record<string, StudentWarningCounts>>({});
-
 	// DEBOUNCING STATE
 	// Tracks pending add operations to batch rapid clicks
 	// Key: studentId, Value: timeout ID
@@ -90,10 +85,8 @@
 		warningType: string;
 	} | null>(null);
 
-	// Warning counts by student (fetched from API)
-	let warningsData = $state<Map<string, StudentWarningCounts>>(new Map());
+	// Loading state
 	let _isLoadingWarnings = $state(false);
-	let _hasLoadedOnce = $state(false); // Track if we've loaded data at least once (prevents flash of default values)
 
 	// ============================================================================
 	// COMPUTED VALUES
@@ -170,32 +163,35 @@
 	}
 
 	/**
-	 * Get warning counts for a student with optimistic override
+	 * Get warning counts for a student from cache (with optimistic override)
+	 *
+	 * Returns the cached value (which may include optimistic updates) if available.
+	 * The cache automatically handles optimistic updates via SvelteMap reactivity.
+	 *
+	 * @param studentId - The student's ID
+	 * @returns Warning counts or default empty counts if not in cache
 	 */
-	function getStudentWarnings(studentId: string): StudentWarningCounts | null {
-		// If we haven't loaded data yet, return null (prevents flash of default values)
-		if (!_hasLoadedOnce) {
-			return null;
-		}
-
-		// Return optimistic value if it exists (user action pending)
-		if (optimisticWarnings[studentId]) {
-			return optimisticWarnings[studentId];
-		}
-
-		// Otherwise return server value (with default if student has no warnings)
-		return (
-			warningsData.get(studentId) || {
-				C: 0,
-				M: 0,
-				R: 0,
-				T: 0,
-				total: 0,
-				unresolved_count: 0,
-				score: 20,
-				warnings: []
+	function getStudentWarnings(studentId: string): StudentWarningCounts {
+		// Check cache (includes optimistic overrides via SvelteMap reactivity)
+		if (selectedClassId && selectedPeriodId) {
+			const cached = teacherCache.getWarningsSync(selectedClassId, selectedPeriodId);
+			if (cached) {
+				const counts = cached.get(studentId);
+				if (counts) return counts;
 			}
-		);
+		}
+
+		// Fallback to default empty counts if not in cache yet
+		return {
+			C: 0,
+			M: 0,
+			R: 0,
+			T: 0,
+			total: 0,
+			unresolved_count: 0,
+			score: 20,
+			warnings: []
+		};
 	}
 
 	/**
@@ -226,7 +222,7 @@
 
 	/**
 	 * Load warnings for selected class and period
-	 * Uses cache with composite key: ${classId}:${periodId}
+	 * Delegates to cache which auto-fetches if expired or missing
 	 */
 	async function loadWarnings() {
 		if (!selectedClassId || !selectedPeriodId) return;
@@ -235,14 +231,8 @@
 
 		try {
 			// Use cache (auto-fetches if expired or missing)
-			const cachedWarnings = await teacherCache.getStudentWarnings(
-				selectedClassId,
-				selectedPeriodId
-			);
-
-			// Convert to Map for efficient lookups
-			warningsData = new Map(cachedWarnings);
-			_hasLoadedOnce = true; // Mark that we've successfully loaded data at least once
+			// Cache returns SvelteMap with reactive updates
+			await teacherCache.getStudentWarnings(selectedClassId, selectedPeriodId);
 		} catch (err) {
 			console.error('[loadWarnings] ERROR:', err);
 			toaster.error('Erreur lors du chargement des avertissements');
@@ -255,22 +245,13 @@
 	 * Add warning with optimistic UI and debouncing
 	 */
 	async function addWarning(studentId: string, warningType: string, studentName: string) {
-		if (!selectedPeriodId) {
+		if (!selectedPeriodId || !selectedClassId) {
 			toaster.error('Aucune période académique active');
 			return;
 		}
 
-		// STEP 1: Apply optimistic update immediately
-		const currentCounts = getStudentWarnings(studentId) || {
-			C: 0,
-			M: 0,
-			R: 0,
-			T: 0,
-			total: 0,
-			unresolved_count: 0,
-			score: 20,
-			warnings: []
-		};
+		// STEP 1: Calculate new counts based on current cache state
+		const currentCounts = getStudentWarnings(studentId);
 		const newCounts: StudentWarningCounts = {
 			...currentCounts,
 			C: currentCounts.C ?? 0,
@@ -290,15 +271,15 @@
 		newCounts.unresolved_count = newCounts.total;
 		newCounts.score = Math.max(0, Math.min(20, 20 - newCounts.total));
 
-		// Apply optimistic update
-		optimisticWarnings[studentId] = newCounts;
+		// STEP 2: Apply optimistic update via cache
+		teacherCache.updateWarningsOptimistic(selectedClassId, selectedPeriodId, studentId, newCounts);
 
-		// STEP 2: Clear existing timeout if any
+		// STEP 3: Clear existing timeout if any
 		if (pendingAdds[studentId]) {
 			clearTimeout(pendingAdds[studentId]);
 		}
 
-		// STEP 3: Set new timeout to sync with server after 500ms
+		// STEP 4: Set new timeout to sync with server after 500ms
 		const timeoutId = setTimeout(async () => {
 			delete pendingAdds[studentId];
 
@@ -318,18 +299,8 @@
 					throw new Error('Failed to add warning');
 				}
 
-				const result = await response.json();
-
-				// Clear optimistic override
-				delete optimisticWarnings[studentId];
-
-				// Update server data
-				warningsData.set(studentId, result.counts);
-
-				// Invalidate cache to ensure fresh data
+				// SUCCESS: Cache already has optimistic value, just invalidate to refresh with server data
 				teacherCache.invalidateWarnings(selectedClassId, selectedPeriodId);
-
-				// Force immediate reload to get fresh data
 				await loadWarnings();
 
 				// Show success toast
@@ -339,8 +310,13 @@
 			} catch (err) {
 				console.error('Error adding warning:', err);
 
-				// ROLLBACK: Clear optimistic override
-				delete optimisticWarnings[studentId];
+				// ROLLBACK: Revert to previous counts by re-applying the old counts
+				teacherCache.updateWarningsOptimistic(
+					selectedClassId,
+					selectedPeriodId,
+					studentId,
+					currentCounts
+				);
 
 				toaster.error("Erreur lors de l'ajout de l'avertissement");
 			}
@@ -353,15 +329,14 @@
 	 * Remove warning with optimistic UI
 	 */
 	async function removeWarning() {
-		if (!warningToDelete) return;
+		if (!warningToDelete || !selectedClassId || !selectedPeriodId) return;
 
 		const { warningId, studentId, studentName, warningType } = warningToDelete;
 
 		// STEP 1: Save current state for rollback
 		const previousCounts = getStudentWarnings(studentId);
-		const rollbackState = { ...previousCounts };
 
-		// STEP 2: Apply optimistic update immediately
+		// STEP 2: Calculate new counts
 		const newCounts: StudentWarningCounts = { ...previousCounts } as StudentWarningCounts;
 
 		// Decrement specific warning type (prevent negative values)
@@ -375,14 +350,14 @@
 		newCounts.unresolved_count = newCounts.total;
 		newCounts.score = Math.max(0, Math.min(20, 20 - newCounts.total));
 
-		// Apply optimistic update (instant UI feedback)
-		optimisticWarnings[studentId] = newCounts;
+		// STEP 3: Apply optimistic update via cache (instant UI feedback)
+		teacherCache.updateWarningsOptimistic(selectedClassId, selectedPeriodId, studentId, newCounts);
 
-		// STEP 3: Close confirmation dialog
+		// STEP 4: Close confirmation dialog
 		warningToDelete = null;
 
 		try {
-			// STEP 4: Make API call in background
+			// STEP 5: Make API call in background
 			const response = await fetch(`/api/warnings/${warningId}`, {
 				method: 'DELETE'
 			});
@@ -391,18 +366,10 @@
 				throw new Error('Failed to remove warning');
 			}
 
-			const result = await response.json();
-
-			// SUCCESS: Update with server response after brief delay
+			// SUCCESS: Cache already has optimistic value, just invalidate to refresh with server data
 			setTimeout(() => {
-				// Clear optimistic override
-				delete optimisticWarnings[studentId];
-
-				// Update server data
-				warningsData.set(studentId, result.counts);
-
-				// Invalidate cache to ensure fresh data
 				teacherCache.invalidateWarnings(selectedClassId, selectedPeriodId);
+				loadWarnings();
 
 				// Show success toast
 				toaster.success(
@@ -412,14 +379,13 @@
 		} catch (err) {
 			console.error('Error removing warning:', err);
 
-			// ROLLBACK: Restore previous state
-			// @ts-expect-error rollbackState may have optional properties but runtime values are compatible
-			optimisticWarnings[studentId] = rollbackState;
-
-			// Clear after brief delay to show rollback
-			setTimeout(() => {
-				delete optimisticWarnings[studentId];
-			}, 100);
+			// ROLLBACK: Restore previous state via cache
+			teacherCache.updateWarningsOptimistic(
+				selectedClassId,
+				selectedPeriodId,
+				studentId,
+				previousCounts
+			);
 
 			toaster.error("Erreur lors de la suppression de l'avertissement");
 		}
