@@ -81,6 +81,7 @@
 		setSelectedClass,
 		clearSelectedClass
 	} from '$lib/stores/selectedClass.svelte';
+	import { getSelectedPeriodId, setSelectedPeriod } from '$lib/stores/selectedPeriod.svelte';
 	import {
 		findCurrentSchedule,
 		formatScheduleMatch,
@@ -88,6 +89,7 @@
 		isWeekend
 	} from '$lib/utils/timeMatching';
 	import { findCurrentPeriod } from '$lib/utils/academic-period';
+	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 
 	// ============================================================================
 	// COMPONENT STATE
@@ -101,9 +103,13 @@
 
 	/**
 	 * Teacher's classes enriched with student count and schedules
-	 * Derived from data.teacherClasses (loaded in +layout.server.ts)
+	 * Derived from teacherCache (loaded via cache-first strategy)
+	 *
+	 * Cache is hydrated in 2 locations for instant access:
+	 * 1. /dashboard/teacher/+layout.svelte (for sub-routes)
+	 * 2. This component's loadClasses() (for /dashboard route)
 	 */
-	const classes = $derived<ClassWithData[]>((data.teacherClasses as ClassWithData[]) || []);
+	let classes = $derived<ClassWithData[]>(teacherCache.getAllClassesSync());
 
 	/**
 	 * Currently selected class ID
@@ -158,6 +164,141 @@
 	 * Loading state while fetching students
 	 */
 	let isLoadingStudents = $state(false);
+
+	/**
+	 * Loading state while fetching classes
+	 */
+	let isLoadingClasses = $state(false);
+
+	/**
+	 * Loading state while fetching periods
+	 */
+	let isLoadingPeriods = $state(false);
+
+	// ============================================================================
+	// CACHE HYDRATION
+	// ============================================================================
+
+	/**
+	 * Load classes with cache-first strategy
+	 *
+	 * 1. Check memory cache first (instant)
+	 * 2. If cache miss, fetch from API
+	 * 3. Hydrate cache for next time
+	 */
+	async function loadClasses() {
+		// STEP 1: Try cache first
+		const cached = teacherCache.getAllClassesSync();
+		if (cached.length > 0) {
+			console.log(`[TeacherDashboard] ✅ Cache HIT: ${cached.length} classes`);
+			return;
+		}
+
+		// STEP 2: Cache miss - fetch from API
+		if (isLoadingClasses) return; // Prevent duplicate requests
+
+		console.log('[TeacherDashboard] ⚠️  Cache MISS: Fetching from API...');
+		isLoadingClasses = true;
+
+		try {
+			const response = await fetch('/api/teacher/classes');
+
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+			}
+
+			const { classes: fetchedClasses } = await response.json();
+
+			// STEP 3: Hydrate cache
+			teacherCache.hydrateAllClasses(fetchedClasses);
+
+			console.log(`[TeacherDashboard] ✅ API SUCCESS: Loaded ${fetchedClasses.length} classes`);
+			initializeSelectedClass();
+		} catch (err) {
+			console.error('[TeacherDashboard] ❌ Failed to load classes:', err);
+			toaster.error('Erreur lors du chargement des classes');
+		} finally {
+			isLoadingClasses = false;
+		}
+	}
+
+	/**
+	 * Initialize selectedClassId if not already set
+	 * Auto-selects first class if no selection exists
+	 */
+	function initializeSelectedClass() {
+		const currentSelectedId = getSelectedClassId();
+		const classes = teacherCache.getAllClassesSync();
+
+		if (!currentSelectedId && classes.length > 0) {
+			// No class selected - auto-select first class
+			const firstClassId = classes[0].id;
+			setSelectedClass(firstClassId);
+			console.log(`[TeacherDashboard] 🎯 Auto-selected first class: ${classes[0].name}`);
+		}
+	}
+
+	/**
+	 * Initialize selectedPeriodId if not already set
+	 * Auto-selects current period if no selection exists
+	 */
+	function initializeSelectedPeriod(currentPeriod: unknown | null) {
+		const currentSelectedId = getSelectedPeriodId();
+
+		if (!currentSelectedId && currentPeriod) {
+			// No period selected - auto-select current period
+			const periodId = (currentPeriod as any).id;
+			const periodName = (currentPeriod as any).name || 'Période actuelle';
+			setSelectedPeriod(periodId);
+			console.log(`[TeacherDashboard] 🎯 Auto-selected current period: ${periodName}`);
+		}
+	}
+
+	/**
+	 * Load academic periods with cache-first strategy
+	 *
+	 * 1. Check memory cache first (instant)
+	 * 2. If cache miss, fetch from API
+	 * 3. Store in cache for next time
+	 */
+	async function loadPeriods() {
+		const schoolId = data.profile?.school_id;
+		if (!schoolId) return;
+
+		// STEP 1: Try cache first
+		const cached = teacherCache.getPeriodsSync(schoolId);
+		if (cached) {
+			console.log(`[TeacherDashboard] ✅ Cache HIT: Periods for school ${schoolId}`);
+			return;
+		}
+
+		// STEP 2: Cache miss - fetch from API
+		if (isLoadingPeriods) return; // Prevent duplicate requests
+
+		console.log('[TeacherDashboard] ⚠️  Cache MISS: Fetching periods from API...');
+		isLoadingPeriods = true;
+
+		try {
+			const response = await fetch('/api/teacher/periods');
+
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+			}
+
+			const { currentPeriod, allPeriods } = await response.json();
+
+			// STEP 3: Store in cache
+			teacherCache.setPeriods(schoolId, currentPeriod, allPeriods);
+
+			console.log(`[TeacherDashboard] ✅ API SUCCESS: Loaded ${allPeriods.length} periods`);
+			initializeSelectedPeriod(currentPeriod);
+		} catch (err) {
+			console.error('[TeacherDashboard] ❌ Failed to load periods:', err);
+			toaster.error('Erreur lors du chargement des périodes');
+		} finally {
+			isLoadingPeriods = false;
+		}
+	}
 
 	// ============================================================================
 	// EVENT HANDLERS
@@ -315,7 +456,45 @@
 	// ============================================================================
 
 	/**
-	 * Auto-select first class if none selected
+	 * EFFECT 1: Load classes and periods on mount (cache-first)
+	 * Only fetch if user/profile data is available (prevents 403 during hot reload)
+	 */
+	$effect(() => {
+		if (data.user && data.profile) {
+			loadClasses();
+			loadPeriods();
+		}
+	});
+
+	/**
+	 * EFFECT 2: Auto-fetch student data when selectedClassId changes
+	 * Cache methods auto-fetch from API if cache miss/expired
+	 */
+	$effect(() => {
+		const classId = getSelectedClassId();
+
+		if (data.user && data.profile && classId) {
+			// These methods check cache first, then auto-fetch if needed
+			teacherCache.getStudentBasic(classId);
+			teacherCache.getStudentRewards(classId);
+		}
+	});
+
+	/**
+	 * EFFECT 3: Auto-fetch warnings when selectedClassId OR selectedPeriodId changes
+	 */
+	$effect(() => {
+		const classId = getSelectedClassId();
+		const periodId = getSelectedPeriodId();
+
+		if (data.user && data.profile && classId && periodId) {
+			// Auto-fetch warnings (cache-first, auto-fetch if cache miss/expired)
+			teacherCache.getStudentWarnings(classId, periodId);
+		}
+	});
+
+	/**
+	 * EFFECT 4: Auto-select first class if none selected
 	 *
 	 * Runs when:
 	 * - Component mounts and no class is selected
@@ -330,14 +509,6 @@
 			setSelectedClass(firstClassId); // Persist to localStorage
 		}
 	});
-
-	// TODO: Re-implement student preloading after cache refactoring
-	// $effect(() => {
-	// 	if (selectedClassId) {
-	// 		// Preload students for selected class (non-blocking)
-	// 		// This will be replaced with direct API calls
-	// 	}
-	// });
 </script>
 
 <!-- ============================================================================

@@ -85,8 +85,9 @@
 	import type { StudentWarningCounts } from '$lib/server/warnings';
 	import VipCardsModal from '$lib/components/VipCardsModal.svelte';
 	import { getAvatarFallback } from '$lib/utils/avatar';
-	import { AlertTriangle, Plus, Eye, Loader2 } from 'lucide-svelte';
+	import { AlertTriangle, Plus, Eye } from 'lucide-svelte';
 	import type { StudentVipCards } from '$lib/types/vip-card';
+	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 
 	// ============================================================================
 	// PROPS
@@ -119,47 +120,49 @@
 	// STATE
 	// ============================================================================
 
-	// Student data (merged from 3 API endpoints)
-	let studentsData = $state<StudentData[]>([]);
-	let isLoading = $state(true);
-
-	// Optimistic UI state
-	// Tracks temporary overrides for instant feedback
-	// Example: { "student-123": { gidouilles: 5, warnings: {...} } }
-	let optimisticUpdates = $state<Record<string, Partial<StudentData>>>({});
-
 	// Debounce timers for batching gidouille updates
 	// Tracks pending API calls per student to batch rapid clicks
 	let debounceTimers = $state<Record<string, ReturnType<typeof setTimeout>>>({});
+
+	// Base gidouilles values (captured at first click, before optimistic updates)
+	// Used to calculate accumulated delta correctly across multiple rapid clicks
+	let baseGidouilles = $state<Record<string, number>>({});
 
 	// VIP cards modal state
 	let vipModalOpen = $state(false);
 	let selectedStudent = $state<StudentData | null>(null);
 
 	// ============================================================================
-	// DERIVED STATE (With Optimistic Updates Applied)
+	// CACHE DATA ACCESS (Reactive via $derived)
 	// ============================================================================
 
-	/**
-	 * Get gidouilles for a student (with optimistic updates)
-	 */
-	function getGidouilles(student: StudentData): number {
-		return optimisticUpdates[student.id]?.gidouilles ?? student.gidouilles;
-	}
+	// Get students from cache (reactively updates when cache changes)
+	let students = $derived(teacherCache.getStudentsSync(classId));
 
-	/**
-	 * Get VIP cards for a student (with optimistic updates)
-	 */
-	function getVipCards(student: StudentData): StudentVipCards {
-		return optimisticUpdates[student.id]?.vipCards ?? student.vipCards;
-	}
+	// Get rewards from cache (reactively updates when cache changes)
+	let rewardsMap = $derived(teacherCache.getRewardsSync(classId));
 
-	/**
-	 * Get warnings for a student (with optimistic updates)
-	 */
-	function getWarnings(student: StudentData): StudentWarningCounts {
-		return optimisticUpdates[student.id]?.warnings ?? student.warnings;
-	}
+	// Get warnings from cache (reactively updates when cache changes)
+	let warningsMap = $derived(teacherCache.getWarningsSync(classId, periodId));
+
+	// Merge data from cache into StudentData array (reactive)
+	let studentsData = $derived(
+		students.map((student) => {
+			const rewards = rewardsMap?.get(student.id);
+			const warnings = warningsMap?.get(student.id);
+			return {
+				id: student.id,
+				firstname: student.firstname,
+				lastname: student.lastname,
+				avatar_url: student.avatar_url,
+				role: student.role,
+				gender: student.gender,
+				gidouilles: rewards?.gidouilles ?? 0,
+				vipCards: rewards?.vip_cards ?? {},
+				warnings: warnings ?? { C: 0, M: 0, R: 0, T: 0 }
+			};
+		})
+	);
 
 	/**
 	 * Calculate total warnings from counts
@@ -183,65 +186,6 @@
 		if (score >= 15) return 'default'; // Green
 		if (score >= 10) return 'secondary'; // Orange
 		return 'destructive'; // Red
-	}
-
-	// ============================================================================
-	// DATA LOADING
-	// ============================================================================
-
-	/**
-	 * Load student data from API endpoints
-	 * Fetches profiles, gidouilles, and warnings in parallel and merges them
-	 */
-	async function loadData() {
-		isLoading = true;
-		try {
-			// Fetch all 3 endpoints in parallel
-			const [profilesRes, gidouillesRes, warningsRes] = await Promise.all([
-				fetch(`/api/classes/${classId}/students`),
-				fetch(`/api/classes/${classId}/gidouilles`),
-				fetch(`/api/classes/${classId}/warnings?period_id=${periodId}`)
-			]);
-
-			// Check for errors
-			if (!profilesRes.ok || !gidouillesRes.ok || !warningsRes.ok) {
-				throw new Error('Failed to fetch data');
-			}
-
-			// Parse responses
-			const profilesData = await profilesRes.json();
-			const gidouillesData = await gidouillesRes.json();
-			const warningsData = await warningsRes.json();
-
-			// Merge data into StudentData array
-			studentsData = profilesData.students.map((profile: StudentData) => {
-				// Find matching gidouilles data
-				const gidouillesRecord = gidouillesData.gidouilles.find(
-					(g: { student_id: string }) => g.student_id === profile.id
-				);
-
-				// Find matching warnings data
-				const warningsRecord = warningsData.warnings[profile.id];
-
-				return {
-					id: profile.id,
-					firstname: profile.firstname,
-					lastname: profile.lastname,
-					avatar_url: profile.avatar_url,
-					role: profile.role,
-					gender: profile.gender,
-					gidouilles: gidouillesRecord?.gidouilles ?? 0,
-					vipCards: gidouillesRecord?.vip_cards ?? {},
-					warnings: warningsRecord ?? { T: 0, C: 0, M: 0, R: 0, total: 0, score: 20, warnings: [] }
-				};
-			});
-		} catch (error) {
-			console.error('Error loading student data:', error);
-			toaster.error('Erreur lors du chargement des données');
-			studentsData = [];
-		} finally {
-			isLoading = false;
-		}
 	}
 
 	// ============================================================================
@@ -275,22 +219,21 @@
 	 * Handle warning button click (3-step logic)
 	 */
 	async function handleWarningAction(student: StudentData) {
-		const gidouilles = getGidouilles(student);
-		const unusedVipCards = getUnusedVipCards(getVipCards(student));
-		const score = getScore(getWarnings(student));
+		const gidouilles = student.gidouilles;
+		const unusedVipCards = getUnusedVipCards(student.vipCards);
+		const score = getScore(student.warnings);
 
 		// STEP 1: Remove gidouille if > 0 (optimistic UI + debounced API call)
 		if (gidouilles > 0) {
 			const studentId = student.id;
 
-			// 1. Instant optimistic update
-			optimisticUpdates = {
-				...optimisticUpdates,
-				[studentId]: {
-					...optimisticUpdates[studentId],
-					gidouilles: gidouilles - 1
-				}
-			};
+			// Save base value on first click (before any optimistic updates)
+			if (!debounceTimers[studentId]) {
+				baseGidouilles[studentId] = gidouilles;
+			}
+
+			// 1. Instant optimistic update via cache
+			teacherCache.updateGidouillesOptimistic(classId, studentId, -1);
 
 			// 2. Clear existing timer for this student
 			if (debounceTimers[studentId]) {
@@ -299,8 +242,11 @@
 
 			// 3. Set new debounced timer (500ms)
 			debounceTimers[studentId] = setTimeout(async () => {
-				const accumulatedAmount = optimisticUpdates[studentId]?.gidouilles ?? student.gidouilles;
-				const actualChange = accumulatedAmount - student.gidouilles;
+				// Get current optimistic value from cache
+				const currentOptimistic = teacherCache.getRewardsSync(classId)?.get(studentId)?.gidouilles ?? gidouilles;
+				// Use saved base value (from first click) instead of current value
+				const baseValue = baseGidouilles[studentId] ?? gidouilles;
+				const actualChange = currentOptimistic - baseValue;
 
 				if (actualChange === 0) return;
 
@@ -315,18 +261,7 @@
 					});
 
 					if (response.ok) {
-						const data = await response.json();
-
-						// Update local state with server value
-						studentsData = studentsData.map((s) =>
-							s.id === studentId ? { ...s, gidouilles: data.newAmount } : s
-						);
-
-						// Clear optimistic state
-						const newUpdates = { ...optimisticUpdates };
-						delete newUpdates[studentId]?.gidouilles;
-						optimisticUpdates = newUpdates;
-
+						// Success: Cache already has correct optimistic value
 						// Show toast with accumulated amount
 						const amountStr = actualChange > 0 ? `+${actualChange}` : `${actualChange}`;
 						const plural = Math.abs(actualChange) > 1 ? 's' : '';
@@ -335,17 +270,19 @@
 						throw new Error('Failed');
 					}
 				} catch (_error) {
-					// Rollback optimistic update
-					const newUpdates = { ...optimisticUpdates };
-					delete newUpdates[studentId]?.gidouilles;
-					optimisticUpdates = newUpdates;
+					// Rollback optimistic update by reversing delta
+					teacherCache.updateGidouillesOptimistic(classId, studentId, -actualChange);
 					toaster.error('Erreur lors du retrait de la gidouille');
 				}
 
-				// Clean up timer
+				// Clean up timer AND base value
 				const newTimers = { ...debounceTimers };
 				delete newTimers[studentId];
 				debounceTimers = newTimers;
+
+				const newBase = { ...baseGidouilles };
+				delete newBase[studentId];
+				baseGidouilles = newBase;
 			}, 500);
 
 			return;
@@ -356,22 +293,16 @@
 			const studentId = student.id;
 			const randomCard = selectRandomCard(unusedVipCards);
 
-			// 1. Instant optimistic update - remove card from collection
-			const newVipCards = { ...getVipCards(student) };
+			// 1. Instant optimistic update via cache - remove card from collection
+			const currentVipCards = rewardsMap?.get(studentId)?.vip_cards ?? {};
+			const newVipCards = { ...currentVipCards };
 			delete newVipCards[randomCard.instanceId];
 
-			optimisticUpdates = {
-				...optimisticUpdates,
-				[studentId]: {
-					...optimisticUpdates[studentId],
-					vipCards: newVipCards
-				}
-			};
+			teacherCache.updateVipCardsOptimistic(classId, studentId, newVipCards);
 
 			// 2. Make API call
 			try {
 				// Call API endpoint to remove VIP card
-				// Uses SSR-compatible client (fixes "Multiple GoTrueClient" warning)
 				const response = await fetch('/api/rewards/vip-cards/remove', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
@@ -386,33 +317,11 @@
 					throw new Error(errorText || 'Failed to remove VIP card');
 				}
 
-				// Fetch updated VIP cards for this student only (no loading spinner)
-				const gidouillesRes = await fetch(`/api/classes/${classId}/gidouilles`);
-				if (gidouillesRes.ok) {
-					const gidouillesData = await gidouillesRes.json();
-					const updatedRecord = gidouillesData.gidouilles.find(
-						(g: { student_id: string; vip_cards: StudentVipCards }) => g.student_id === studentId
-					);
-
-					if (updatedRecord) {
-						// Update local state with server value
-						studentsData = studentsData.map((s) =>
-							s.id === studentId ? { ...s, vipCards: updatedRecord.vip_cards } : s
-						);
-					}
-				}
-
-				// Clear optimistic state
-				const newUpdates = { ...optimisticUpdates };
-				delete newUpdates[studentId]?.vipCards;
-				optimisticUpdates = newUpdates;
-
+				// Success: Cache already has correct optimistic value
 				toaster.success(`Carte VIP retirée (${student.firstname})`);
 			} catch (error) {
-				// Rollback optimistic update
-				const newUpdates = { ...optimisticUpdates };
-				delete newUpdates[studentId]?.vipCards;
-				optimisticUpdates = newUpdates;
+				// Rollback optimistic update by restoring previous state
+				teacherCache.updateVipCardsOptimistic(classId, studentId, currentVipCards);
 
 				const errorMessage =
 					error instanceof Error ? error.message : 'Erreur lors du retrait de la carte';
@@ -425,8 +334,8 @@
 		if (score !== 0) {
 			const studentId = student.id;
 
-			// 1. Instant optimistic update
-			const currentWarnings = getWarnings(student);
+			// 1. Instant optimistic update via cache
+			const currentWarnings = warningsMap?.get(studentId) ?? { C: 0, M: 0, R: 0, T: 0 };
 			const newWarnings: StudentWarningCounts = {
 				C: currentWarnings.C + 1,
 				M: currentWarnings.M,
@@ -434,13 +343,7 @@
 				T: currentWarnings.T
 			};
 
-			optimisticUpdates = {
-				...optimisticUpdates,
-				[studentId]: {
-					...optimisticUpdates[studentId],
-					warnings: newWarnings
-				}
-			};
+			teacherCache.updateWarningsOptimistic(classId, periodId, studentId, newWarnings);
 
 			// 2. Make API call
 			try {
@@ -456,28 +359,14 @@
 				});
 
 				if (response.ok) {
-					const data = await response.json();
-
-					// Update local state with server value
-					// API returns { success: true, counts: StudentWarningCounts }
-					studentsData = studentsData.map((s) =>
-						s.id === studentId ? { ...s, warnings: data.counts } : s
-					);
-
-					// Clear optimistic state
-					const newUpdates = { ...optimisticUpdates };
-					delete newUpdates[studentId]?.warnings;
-					optimisticUpdates = newUpdates;
-
+					// Success: Cache already has correct optimistic value
 					toaster.success(`Avertissement de conduite ajouté (${student.firstname})`);
 				} else {
 					throw new Error('Failed');
 				}
 			} catch (_error) {
-				// Rollback optimistic update
-				const newUpdates = { ...optimisticUpdates };
-				delete newUpdates[studentId]?.warnings;
-				optimisticUpdates = newUpdates;
+				// Rollback optimistic update by restoring previous state
+				teacherCache.updateWarningsOptimistic(classId, periodId, studentId, currentWarnings);
 				toaster.error("Erreur lors de l'ajout de l'avertissement");
 			}
 			return;
@@ -493,16 +382,15 @@
 	 */
 	async function handleAddGidouille(student: StudentData) {
 		const studentId = student.id;
+		const gidouilles = student.gidouilles;
 
-		// 1. Instant optimistic update
-		const currentGidouilles = getGidouilles(student);
-		optimisticUpdates = {
-			...optimisticUpdates,
-			[studentId]: {
-				...optimisticUpdates[studentId],
-				gidouilles: currentGidouilles + 1
-			}
-		};
+		// Save base value on first click (before any optimistic updates)
+		if (!debounceTimers[studentId]) {
+			baseGidouilles[studentId] = gidouilles;
+		}
+
+		// 1. Instant optimistic update via cache
+		teacherCache.updateGidouillesOptimistic(classId, studentId, +1);
 
 		// 2. Clear existing timer for this student
 		if (debounceTimers[studentId]) {
@@ -511,8 +399,11 @@
 
 		// 3. Set new debounced timer (500ms)
 		debounceTimers[studentId] = setTimeout(async () => {
-			const accumulatedAmount = optimisticUpdates[studentId]?.gidouilles ?? student.gidouilles;
-			const actualChange = accumulatedAmount - student.gidouilles;
+			// Get current optimistic value from cache
+			const currentOptimistic = teacherCache.getRewardsSync(classId)?.get(studentId)?.gidouilles ?? gidouilles;
+			// Use saved base value (from first click) instead of current value
+			const baseValue = baseGidouilles[studentId] ?? gidouilles;
+			const actualChange = currentOptimistic - baseValue;
 
 			if (actualChange === 0) return;
 
@@ -527,18 +418,7 @@
 				});
 
 				if (response.ok) {
-					const data = await response.json();
-
-					// Update local state with server value
-					studentsData = studentsData.map((s) =>
-						s.id === studentId ? { ...s, gidouilles: data.newAmount } : s
-					);
-
-					// Clear optimistic state
-					const newUpdates = { ...optimisticUpdates };
-					delete newUpdates[studentId]?.gidouilles;
-					optimisticUpdates = newUpdates;
-
+					// Success: Cache already has correct optimistic value
 					// Show toast with accumulated amount
 					const amountStr = actualChange > 0 ? `+${actualChange}` : `${actualChange}`;
 					const plural = Math.abs(actualChange) > 1 ? 's' : '';
@@ -547,17 +427,19 @@
 					throw new Error('Failed');
 				}
 			} catch (_error) {
-				// Rollback optimistic update
-				const newUpdates = { ...optimisticUpdates };
-				delete newUpdates[studentId]?.gidouilles;
-				optimisticUpdates = newUpdates;
+				// Rollback optimistic update by reversing delta
+				teacherCache.updateGidouillesOptimistic(classId, studentId, -actualChange);
 				toaster.error("Erreur lors de l'ajout de la gidouille");
 			}
 
-			// Clean up timer
+			// Clean up timer AND base value
 			const newTimers = { ...debounceTimers };
 			delete newTimers[studentId];
 			debounceTimers = newTimers;
+
+			const newBase = { ...baseGidouilles };
+			delete newBase[studentId];
+			baseGidouilles = newBase;
 		}, 500);
 	}
 
@@ -569,18 +451,6 @@
 		vipModalOpen = true;
 	}
 
-	// ============================================================================
-	// EFFECTS
-	// ============================================================================
-
-	/**
-	 * Load data on mount and when classId/periodId changes
-	 */
-	$effect(() => {
-		if (classId && periodId) {
-			loadData();
-		}
-	});
 </script>
 
 <!-- ============================================================================ -->
@@ -588,13 +458,7 @@
 <!-- ============================================================================ -->
 
 <div class="rounded-md border">
-	{#if isLoading}
-		<!-- Loading State -->
-		<div class="flex items-center justify-center p-8">
-			<Loader2 class="h-6 w-6 animate-spin text-muted-foreground" />
-			<span class="ml-2 text-muted-foreground">Chargement...</span>
-		</div>
-	{:else if studentsData.length === 0}
+	{#if studentsData.length === 0}
 		<!-- Empty State -->
 		<div class="flex flex-col items-center justify-center p-8 text-center">
 			<p class="text-muted-foreground">Aucun élève dans cette classe</p>
@@ -613,9 +477,9 @@
 			</Table.Header>
 			<Table.Body>
 				{#each studentsData as student (student.id)}
-					{@const gidouilles = getGidouilles(student)}
-					{@const vipCards = getVipCards(student)}
-					{@const warnings = getWarnings(student)}
+					{@const gidouilles = student.gidouilles}
+					{@const vipCards = student.vipCards}
+					{@const warnings = student.warnings}
 					{@const vipCardCount = Object.keys(vipCards).length}
 
 					<Table.Row>
@@ -709,7 +573,7 @@
 		bind:open={vipModalOpen}
 		studentName={selectedStudent.firstname}
 		studentId={selectedStudent.id}
-		vipCards={getVipCards(selectedStudent)}
+		vipCards={selectedStudent.vipCards}
 		teacherView={true}
 	/>
 {/if}

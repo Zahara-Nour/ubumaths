@@ -32,6 +32,8 @@ Documentation technique du système de cache client-side pour le dashboard ensei
 
 **TOUJOURS préférer l'hydration** plutôt que les API calls directs.
 
+#### Option A: Hydration from Load Function (Server Data)
+
 ```typescript
 // +page.server.ts - Load function
 export const load: PageServerLoad = async ({ locals }) => {
@@ -56,6 +58,43 @@ $effect(() => {
 
 **Pourquoi** : Réutilise les données déjà fetchées par le load function, évite API call redondant.
 
+#### Option B: Hydration from API Endpoints (Client-Side)
+
+**Use Case**: When no load function exists (e.g., main dashboard route `/dashboard`)
+
+```typescript
+// Component without +page.server.ts
+async function loadClasses() {
+	// Step 1: Check cache first
+	const cached = teacherCache.getAllClassesSync();
+	if (cached.length > 0) {
+		console.log('Cache HIT');
+		return;
+	}
+
+	// Step 2: Fetch from API
+	const response = await fetch('/api/teacher/classes');
+	const { classes: fetchedClasses } = await response.json();
+
+	// Step 3: Hydrate cache
+	teacherCache.hydrateAllClasses(fetchedClasses);
+}
+
+$effect(() => {
+	if (data.user && data.profile) {
+		loadClasses();
+	}
+});
+```
+
+**Référence**: TeacherDashboard.svelte (lines 29-66)
+
+**Double Hydration Strategy**: Cache hydration happens in TWO locations:
+- `/dashboard/teacher/+layout.svelte` - hydrates for `/dashboard/teacher/*` routes
+- `/dashboard/TeacherDashboard.svelte` - hydrates for main `/dashboard` route
+
+This ensures cache is populated regardless of which route the teacher lands on.
+
 ---
 
 ### Pattern 2: Auto-Fetch (Fallback)
@@ -73,42 +112,83 @@ const rewards = await teacherCache.getStudentRewards(classId);
 
 ---
 
-### Pattern 3: Optimistic UI
+### Pattern 3: Optimistic UI with Debouncing
 
-Combine cache updates avec optimistic UI pattern.
+Combine cache updates avec optimistic UI pattern + debouncing pour batch rapid clicks.
+
+**⚠️ CRITICAL**: Track base values to calculate correct deltas during debouncing.
 
 ```typescript
 // Debounced update with optimistic UI
 let optimisticGidouilles = $state<Record<string, number>>({});
+let debounceTimers = $state<Record<string, ReturnType<typeof setTimeout>>>({});
+
+// CRITICAL: Track base values BEFORE optimistic updates
+// Without this, rapid clicks calculate wrong deltas
+let baseGidouilles = $state<Record<string, number>>({});
 
 function handleUpdate(studentId: string, delta: number) {
-	// 1. Optimistic UI (instant feedback)
-	const current = getStudentGidouilles(studentId);
-	optimisticGidouilles[studentId] = current + delta;
+	const currentGidouilles = getStudentGidouilles(studentId);
 
-	// 2. Update cache optimistically
+	// STEP 1: Save base value on FIRST click (before any optimistic updates)
+	if (!debounceTimers[studentId]) {
+		baseGidouilles[studentId] = currentGidouilles;
+	}
+
+	// STEP 2: Update cache optimistically (instant UI feedback)
 	teacherCache.updateGidouillesOptimistic(classId, studentId, delta);
 
-	// 3. Debounce server sync (500ms)
-	clearTimeout(debounceTimer);
-	debounceTimer = setTimeout(async () => {
+	// STEP 3: Clear existing timer to batch multiple clicks
+	if (debounceTimers[studentId]) {
+		clearTimeout(debounceTimers[studentId]);
+	}
+
+	// STEP 4: Debounce server sync (500ms)
+	debounceTimers[studentId] = setTimeout(async () => {
 		try {
-			await fetch('/api/update', {
-				/* ... */
+			// Get current optimistic value from cache
+			const currentOptimistic =
+				teacherCache.getRewardsSync(classId)?.get(studentId)?.gidouilles ?? currentGidouilles;
+
+			// Calculate TOTAL accumulated delta using saved base
+			const baseValue = baseGidouilles[studentId] ?? currentGidouilles;
+			const actualChange = currentOptimistic - baseValue;
+
+			// API call with accumulated delta
+			await fetch('/api/rewards/gidouilles', {
+				method: 'POST',
+				body: JSON.stringify({ studentId, amount: actualChange })
 			});
 
-			// 4. Success: Invalidate cache
-			teacherCache.invalidateRewards(classId);
-			delete optimisticGidouilles[studentId];
+			// Success: Cleanup
+			delete debounceTimers[studentId];
+			delete baseGidouilles[studentId];
 		} catch {
-			// 5. Error: Rollback
-			delete optimisticGidouilles[studentId];
+			// Error: Rollback optimistic updates
+			delete debounceTimers[studentId];
+			delete baseGidouilles[studentId];
 		}
 	}, 500);
 }
 ```
 
-**Référence** : [rewards/+page.svelte](<../../src/routes/(protected)/dashboard/teacher/rewards/+page.svelte>) (lignes 245-428)
+**Why baseGidouilles is Critical**:
+
+```typescript
+// ❌ BUG: Without baseGidouilles (recaptures value after each click)
+Click 1: gidouilles = 5, optimistic → 4
+Click 2: gidouilles = 4 (changed!), optimistic → 3
+Click 3: gidouilles = 3 (changed!), optimistic → 2
+Timer fires: actualChange = 2 - 3 = -1 ❌ (should be -3)
+
+// ✅ CORRECT: With baseGidouilles (saved at first click)
+Click 1: gidouilles = 5, baseGidouilles[id] = 5, optimistic → 4
+Click 2: gidouilles = 4, baseGidouilles[id] = 5 (unchanged), optimistic → 3
+Click 3: gidouilles = 3, baseGidouilles[id] = 5 (unchanged), optimistic → 2
+Timer fires: actualChange = 2 - 5 = -3 ✅ (correct!)
+```
+
+**Référence** : StudentQuickActionsTable.svelte (lines 156-200), rewards/+page.svelte (lines 245-428)
 
 ---
 
@@ -972,4 +1052,4 @@ if (cachedVersion !== CACHE_VERSION) {
 
 ---
 
-**Last Updated** : 2025-10-31
+**Last Updated** : 2025-11-03
