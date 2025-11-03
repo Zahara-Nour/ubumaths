@@ -40,6 +40,7 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	// Register this load function to re-run when 'supabase:auth' is invalidated
 	// This enables reactive auth state updates throughout the app
 	depends('supabase:auth');
+	console.log('🎨 [ROOT LAYOUT] Exécution');
 
 	logger.info('Loading, isBrowser:', isBrowser());
 

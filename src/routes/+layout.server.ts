@@ -23,11 +23,11 @@
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ locals, cookies }) => {
-	console.log('🎨 [ROOT LAYOUT] Exécution');
+	console.log('🎨 [ROOT LAYOUT SERVER] Exécution');
 
 	// ✅ Seulement les cookies Supabase (pour l'initialisation client)
-	const supabaseAuthCookies = cookies.getAll().filter((cookie) =>
-		cookie.name.startsWith('sb-') // sb-access-token, sb-refresh-token, etc.
+	const supabaseAuthCookies = cookies.getAll().filter(
+		(cookie) => cookie.name.startsWith('sb-') // sb-access-token, sb-refresh-token, etc.
 	);
 
 	return {

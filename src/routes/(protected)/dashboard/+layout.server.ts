@@ -46,6 +46,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	if (!user || !profile) {
 		throw new Error('User or profile missing after authentication - this should never happen');
 	}
+	console.log('🎨 [DASHBOARD LAYOUT SERVER] Exécution');
 
 	logger.trace('Dashboard accessed by:', user.email, 'Role:', profile.role);
 
@@ -72,8 +73,6 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	 * Expected speedup: 70-80% faster dashboard load
 	 */
 	let teacherClasses: { id: string; name: string; level?: string; student_count?: number }[] = [];
-
-	console.log('🎨 [DASHBOARD LAYOUT] Exécution');
 
 	if (profile.role === 'teacher') {
 		const supabase = locals.supabase;
