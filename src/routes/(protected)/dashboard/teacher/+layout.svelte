@@ -7,7 +7,6 @@
 
 <script lang="ts">
 	import { getSelectedClassId, setSelectedClass } from '$lib/stores/selectedClass.svelte';
-	import { hydrateClassData } from '$lib/stores/classHydration';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import type { LayoutData } from './$types';
 	import type { ClassWithData } from '$lib/server/students';
@@ -84,13 +83,17 @@
 		loadClasses();
 	});
 
-	// EFFECT 2: Hydrate student data when selectedClassId changes
+	// EFFECT 2: Auto-fetch student data when selectedClassId changes
+	// Cache methods auto-fetch from API if cache miss/expired
 	$effect(() => {
 		const selectedClassId = getSelectedClassId();
 
-		if (selectedClassId && data.supabase) {
-			console.log(`[Teacher Layout] 🔄 Hydrating cache for class ${selectedClassId}`);
-			hydrateClassData(selectedClassId, data.supabase);
+		if (selectedClassId) {
+			// These methods check cache first, then auto-fetch if needed
+			teacherCache.getStudentBasic(selectedClassId);
+			teacherCache.getStudentRewards(selectedClassId);
+
+			// Note: Warnings are loaded on-demand by warnings page (requires periodId)
 		}
 	});
 </script>
