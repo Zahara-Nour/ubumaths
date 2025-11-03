@@ -79,8 +79,11 @@
 	}
 
 	// EFFECT 1: Load classes on mount (cache-first)
+	// Only fetch if user/profile data is available (prevents 403 during hot reload)
 	$effect(() => {
-		loadClasses();
+		if (data.user && data.profile) {
+			loadClasses();
+		}
 	});
 
 	// EFFECT 2: Auto-fetch student data when selectedClassId changes
@@ -88,7 +91,7 @@
 	$effect(() => {
 		const selectedClassId = getSelectedClassId();
 
-		if (selectedClassId) {
+		if (data.user && data.profile && selectedClassId) {
 			// These methods check cache first, then auto-fetch if needed
 			teacherCache.getStudentBasic(selectedClassId);
 			teacherCache.getStudentRewards(selectedClassId);

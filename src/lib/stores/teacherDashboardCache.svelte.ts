@@ -389,7 +389,10 @@ export class TeacherDashboardCache {
 			rewards: newRewardsMap
 		});
 
-		this.log('trace', `[Cache] Optimistic gidouilles update: student ${studentId} → ${newGidouilles}`);
+		this.log(
+			'trace',
+			`[Cache] Optimistic gidouilles update: student ${studentId} → ${newGidouilles}`
+		);
 	}
 
 	/**
@@ -457,7 +460,10 @@ export class TeacherDashboardCache {
 			warnings: newWarningsMap
 		});
 
-		this.log('trace', `[Cache] Optimistic warnings update: student ${studentId}, score: ${counts.score}`);
+		this.log(
+			'trace',
+			`[Cache] Optimistic warnings update: student ${studentId}, score: ${counts.score}`
+		);
 	}
 
 	// ========================================================================
