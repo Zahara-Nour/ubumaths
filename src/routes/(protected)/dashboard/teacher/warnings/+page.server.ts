@@ -5,10 +5,16 @@
  * Handles data loading for the teacher warnings management system.
  *
  * FEATURES:
- * - Load teacher's classes with students
- * - Load current academic period
- * - Load all periods for history viewing
- * - Security: Verify teacher authentication and ownership
+ * - Inherits academic periods from parent dashboard layout (no redundant queries)
+ * - Classes loaded via cache-first in teacher/+layout.svelte
+ * - Student warnings loaded on-demand via cache in page component
+ * - Security: Verified by parent layouts
+ *
+ * PERFORMANCE OPTIMIZATION (2025-11-03):
+ * ======================================
+ * Removed all database queries from this page load function.
+ * Academic periods now loaded once in parent dashboard layout, eliminating
+ * 3 database calls on every page navigation.
  *
  * ROUTES:
  * - Load: GET /dashboard/teacher/warnings
@@ -16,38 +22,22 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import {
-	getCurrentAcademicPeriod,
-	getSchoolYearPeriods,
-	getActiveSchoolYear
-} from '$lib/server/warnings';
 
 /**
- * Load function - Loads period data only
- * Classes come from parent layout (cache-first)
- * Student warnings come from cache (hydrated by layout)
+ * Load function - Inherits all data from parent layouts
+ * - Academic periods come from /dashboard/+layout.server.ts
+ * - Classes loaded client-side via cache-first in teacher/+layout.svelte
+ * - Warnings loaded on-demand in page component via cache
  */
-export const load: PageServerLoad = async ({ locals }) => {
-	const { user, profile, supabase } = locals;
+export const load: PageServerLoad = async ({ parent, locals }) => {
+	const { user, profile } = locals;
 
 	if (!user || !profile || profile.role !== 'teacher') {
 		throw error(403, 'Unauthorized');
 	}
 
-	// Classes come from parent layout (cache-first)
-	// Only load period-specific data here
-	const [currentPeriod, activeYear] = await Promise.all([
-		profile.school_id
-			? getCurrentAcademicPeriod({ schoolId: profile.school_id, supabase }).catch(() => null)
-			: Promise.resolve(null),
-		profile.school_id
-			? getActiveSchoolYear({ schoolId: profile.school_id, supabase }).catch(() => null)
-			: Promise.resolve(null)
-	]);
-
-	const allPeriods = activeYear
-		? await getSchoolYearPeriods({ schoolYearId: activeYear.id, supabase }).catch(() => [])
-		: [];
+	// Get periods from parent dashboard layout (already loaded)
+	const { currentPeriod, allPeriods } = await parent();
 
 	return {
 		currentPeriod,

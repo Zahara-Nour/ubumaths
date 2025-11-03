@@ -33,6 +33,11 @@
 import type { LayoutServerLoad } from './$types';
 import { createLogger } from '$lib/utils/logger';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
+import {
+	getCurrentAcademicPeriod,
+	getSchoolYearPeriods,
+	getActiveSchoolYear
+} from '$lib/server/warnings';
 
 const logger = createLogger('dashboard/+layout.server.ts');
 
@@ -58,11 +63,13 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	 * - Basic class information (name, description, join_code, etc.)
 	 * - Student count (number of enrolled students)
 	 * - Class schedules (weekly recurring schedule entries)
+	 * - Academic periods (current period + all periods for history)
 	 *
 	 * This data is used by:
 	 * - TeacherDashboard: Class selector and "Find Current Class" feature
 	 * - Teacher stats cards: Display total classes and students
-	 * - Future teacher features requiring class context
+	 * - Warnings page: Period selection and historical data
+	 * - Future teacher features requiring class/period context
 	 *
 	 * PERFORMANCE OPTIMIZATION (2025-10-18):
 	 * ======================================
@@ -71,27 +78,57 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	 *
 	 * For 3 classes: 7 queries → 1 query (85% reduction)
 	 * Expected speedup: 70-80% faster dashboard load
+	 *
+	 * PERFORMANCE OPTIMIZATION (2025-11-03):
+	 * ======================================
+	 * Moved academic periods loading to parent layout to prevent redundant
+	 * database calls on every page navigation. Periods loaded once per dashboard
+	 * session instead of on every warnings/rewards page visit.
 	 */
 	let teacherClasses: { id: string; name: string; level?: string; student_count?: number }[] = [];
+	let currentPeriod = null;
+	let allPeriods: unknown[] = [];
 
 	if (profile.role === 'teacher') {
 		const supabase = locals.supabase;
 
-		// Get teacher's classes with student counts and schedules
-		// Uses unified helper that handles test mode filtering automatically
 		try {
-			teacherClasses = await getTeacherClassesWithCounts(profile.id, supabase);
-		} catch (err) {
-			logger.error('Error fetching teacher classes:', err);
+			// Load classes and periods in parallel
+			const [classes, period, activeYear] = await Promise.all([
+				getTeacherClassesWithCounts(profile.id, supabase),
+				profile.school_id
+					? getCurrentAcademicPeriod({ schoolId: profile.school_id, supabase }).catch(() => null)
+					: Promise.resolve(null),
+				profile.school_id
+					? getActiveSchoolYear({ schoolId: profile.school_id, supabase }).catch(() => null)
+					: Promise.resolve(null)
+			]);
 
-			// Fallback to empty array on error
+			teacherClasses = classes;
+			currentPeriod = period;
+
+			// Load all periods for the active year
+			if (activeYear) {
+				allPeriods = await getSchoolYearPeriods({
+					schoolYearId: activeYear.id,
+					supabase
+				}).catch(() => []);
+			}
+		} catch (err) {
+			logger.error('Error fetching teacher data:', err);
+
+			// Fallback to empty arrays on error
 			teacherClasses = [];
+			currentPeriod = null;
+			allPeriods = [];
 		}
 	}
 
 	// Pass data to child routes
-	// teacherClasses will be empty array for non-teachers
+	// All values will be empty/null for non-teachers
 	return {
-		teacherClasses
+		teacherClasses,
+		currentPeriod,
+		allPeriods
 	};
 };

@@ -1,6 +1,6 @@
-import { error, fail } from '@sveltejs/kit';
-import type { PageServerLoad, Actions } from './$types';
-import type { Profile, Class } from '$lib/types/database';
+import { fail } from '@sveltejs/kit';
+import type { Actions } from './$types';
+import type { Profile } from '$lib/types/database';
 import type { StudentVipCards } from '$lib/types/vip-card';
 
 // Type pour les élèves avec leurs gidouilles
@@ -9,22 +9,21 @@ export interface StudentWithGidouilles extends Profile {
 }
 
 /**
- * Load function: Just verify auth - classes come from parent layout via cache-first
+ * Rewards Page - Server Actions Only
+ * ===================================
+ *
+ * PERFORMANCE OPTIMIZATION (2025-11-03):
+ * ======================================
+ * Removed load function - auth verified by parent layouts, classes loaded
+ * client-side via cache-first. No server-side data loading needed.
+ *
+ * This page only provides server actions for:
+ * - Awarding VIP cards
+ * - Using VIP cards
+ * - Updating student gidouilles
+ * - Updating class gidouilles
+ * - Removing VIP cards
  */
-export const load: PageServerLoad = async ({ depends, locals }) => {
-	console.log('[Rewards Page] Load function called');
-	depends('app:rewards-data');
-
-	const { user, profile } = locals;
-
-	if (!user || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Unauthorized');
-	}
-
-	// Classes are loaded by parent layout via cache-first strategy
-	// No need to load them here
-	return {};
-};
 
 // Actions: Gérer les modifications de gidouilles et cartes VIP
 export const actions: Actions = {
