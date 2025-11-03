@@ -62,17 +62,16 @@
 		sortCardsByPriority
 	} from '$lib/utils/vip-cards';
 	import { getTotalVipCards, type VipCard as VipCardType } from '$lib/types/vip-card';
-	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { Sparkles } from 'lucide-svelte';
-	import { invalidateAll } from '$app/navigation';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 
 	interface Props {
 		open?: boolean;
 		onOpenChange?: (open: boolean) => void;
 		studentName: string;
-		studentId?: string;
-		vipCards: StudentVipCards;
+		classId: string;
+		studentId: string;
 		teacherView?: boolean;
 	}
 
@@ -80,8 +79,8 @@
 		open = $bindable(false),
 		onOpenChange,
 		studentName,
+		classId,
 		studentId,
-		vipCards,
 		teacherView = false
 	}: Props = $props();
 
@@ -89,42 +88,19 @@
 	let holoModalVisible = $state(false);
 	let selectedCardForHolo = $state<{ card: VipCardType; count: number } | null>(null);
 
-	// OPTIMISTIC REMOVAL STATE
-	// Tracks how many instances of each card have been removed this session
-	// Key: cardId (e.g., "bonus"), Value: number of instances removed
-	// Example: { "bonus": 2, "captain": 1 } = 2 bonus + 1 captain removed
-	// This state persists until modal closes to prevent UI flicker during data refresh
-	let optimisticRemovedCounts = $state<Record<string, number>>({});
-
-	// OPTIMISTIC USE STATE
-	// Tracks how many instances of each card have been used this session
-	// Similar to optimisticRemovedCounts but for card usage
-	let optimisticUsedCounts = $state<Record<string, number>>({});
-
-	// DERIVED CARDS WITH ADJUSTED COUNTS
-	// Get cards sorted by rarity, adjust counts based on optimistic removals AND uses, hide cards with 0 count
-	// Example: Server says ×3, optimistic says -1 removed -1 used → Display shows ×1
-	const cardsWithCounts = $derived(
-		sortCardsByPriority(getStudentCardsWithCounts(vipCards))
-			.map((card) => {
-				const removedCount = optimisticRemovedCounts[card.id] || 0;
-				const usedCount = optimisticUsedCounts[card.id] || 0;
-				return {
-					...card,
-					count: Math.max(0, card.count - removedCount - usedCount)
-				};
-			})
-			.filter((card) => card.count > 0) // Hide cards with 0 count
-	);
-
-	// CLEANUP EFFECT
-	// Reset optimistic state when modal closes to start fresh next time
-	$effect(() => {
-		if (!open) {
-			optimisticRemovedCounts = {};
-			optimisticUsedCounts = {};
-		}
+	// READ VIP CARDS FROM CACHE (reactive)
+	// Automatically updates when cache changes
+	const vipCards = $derived.by(() => {
+		const rewards = teacherCache.getRewardsSync(classId);
+		return rewards?.get(studentId)?.vip_cards || {};
 	});
+
+	// DERIVED CARDS WITH COUNTS
+	// Get cards sorted by rarity, filter out cards with 0 count
+	// Optimistic updates are handled by the cache itself
+	const cardsWithCounts = $derived(
+		sortCardsByPriority(getStudentCardsWithCounts(vipCards)).filter((card) => card.count > 0)
+	);
 
 	// Statistics
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -147,7 +123,7 @@
 			name: string;
 			description: string;
 			imagePath: string;
-			category: string;
+			category?: string;
 			rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 		},
 		count: number
@@ -158,8 +134,8 @@
 			name: card.name,
 			description: card.description,
 			imagePath: card.imagePath,
-			category: card.category as VipCardType['category'],
-			rarity: card.rarity
+			category: (card.category || 'action') as VipCardType['category'],
+			rarity: card.rarity || 'common'
 		};
 		selectedCardForHolo = { card: vipCard, count };
 		holoModalVisible = true;
@@ -201,25 +177,49 @@
 	}
 
 	/**
-	 * Handle use card with optimistic UI
-	 * Similar to handleRemoveCard but for card usage
+	 * Handle card usage with optimistic UI via cache
+	 *
+	 * FLOW:
+	 * 1. Save current VIP cards state (for rollback)
+	 * 2. Find instance to use (priority: pending request > first available)
+	 * 3. Mark instance as used (usedAt: now)
+	 * 4. Update cache optimistically → UI updates instantly via $derived
+	 * 5. Send request to server
+	 * 6. On success: Cache already correct, just show toast
+	 * 7. On error: Rollback by restoring previous state to cache
+	 *
+	 * @param card - The VIP card to use
 	 */
 	async function handleUseCard(card: { id: string; name: string }) {
-		if (!teacherView || !studentId) return;
+		if (!teacherView) return;
 
-		// Trouver instance
+		// STEP 1: Save current state for rollback
+		const previousVipCards = { ...vipCards };
+
+		// STEP 2: Find instance to use
 		const instanceId = findInstanceToUse(card.id);
 		if (!instanceId) {
 			toaster.error('Aucune instance disponible');
 			return;
 		}
 
-		// STEP 1: Apply optimistic update
-		optimisticUsedCounts = {
-			...optimisticUsedCounts,
-			[card.id]: (optimisticUsedCounts[card.id] || 0) + 1
+		// STEP 3: Mark instance as used
+		const instance = vipCards[instanceId];
+		const newVipCards = {
+			...vipCards,
+			[instanceId]: {
+				...instance,
+				usedAt: new Date().toISOString(),
+				// Clear activation request fields
+				activationRequestedAt: null,
+				activationRequestedBy: null
+			}
 		};
 
+		// STEP 4: Apply optimistic update to cache (instant UI feedback)
+		teacherCache.updateVipCardsOptimistic(classId, studentId, newVipCards);
+
+		// STEP 5: Send server request
 		try {
 			const response = await fetch('/api/vip-cards/use-card', {
 				method: 'POST',
@@ -231,33 +231,26 @@
 
 			if (!response.ok) throw new Error(result.message);
 
-			// STEP 2: SUCCESS
+			// STEP 6: SUCCESS - Cache already correct, just notify
 			toaster.success(`Carte ${card.name} utilisée !`);
-			await invalidateAll();
-		} catch (error) {
-			// STEP 3: ERROR - Rollback optimistic update
-			const newCount = Math.max(0, (optimisticUsedCounts[card.id] || 0) - 1);
-			if (newCount === 0) {
-				const { [card.id]: _, ...rest } = optimisticUsedCounts;
-				optimisticUsedCounts = rest;
-			} else {
-				optimisticUsedCounts = { ...optimisticUsedCounts, [card.id]: newCount };
-			}
+		} catch (_error) {
+			// STEP 7: ERROR - Rollback by restoring previous state
+			teacherCache.updateVipCardsOptimistic(classId, studentId, previousVipCards);
 			toaster.error("Échec de l'utilisation");
 		}
 	}
 
 	/**
-	 * Handle card removal with optimistic UI
+	 * Handle card removal with optimistic UI via cache
 	 *
 	 * FLOW:
-	 * 1. Immediately increment removal count (optimistic) → UI updates instantly
-	 * 2. Send removal request to server in background
-	 * 3. On success: Refresh data and show success toast (keep optimistic state active)
-	 * 4. On error: Rollback optimistic update and show error toast
-	 *
-	 * IMPORTANT: Optimistic state is NOT cleared after success to prevent UI flicker.
-	 * It persists until the modal is closed, then gets reset by the $effect cleanup.
+	 * 1. Save current VIP cards state (for rollback)
+	 * 2. Find oldest unused instance of the card to remove
+	 * 3. Create new vipCards object without that instance
+	 * 4. Update cache optimistically → UI updates instantly via $derived
+	 * 5. Send request to server
+	 * 6. On success: Cache already correct, just show toast
+	 * 7. On error: Rollback by restoring previous state to cache
 	 *
 	 * @param card - The VIP card to remove
 	 */
@@ -269,66 +262,53 @@
 		category: string;
 		rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 	}) {
-		if (!teacherView || !studentId) return;
+		if (!teacherView) return;
 
-		// STEP 1: Apply optimistic update (instant UI feedback)
-		// Use immutable update (spread operator) to trigger Svelte 5 reactivity
-		optimisticRemovedCounts = {
-			...optimisticRemovedCounts,
-			[card.id]: (optimisticRemovedCounts[card.id] || 0) + 1
-		};
+		// STEP 1: Save current state for rollback
+		const previousVipCards = { ...vipCards };
 
-		// STEP 2: Prepare and send server request
-		const formData = new FormData();
-		formData.set('studentId', studentId);
-		formData.set('cardId', card.id);
+		// STEP 2: Find oldest unused instance to remove
+		const entries = Object.entries(vipCards);
+		const matchingInstances = entries
+			.filter(([_, inst]) => inst.cardId === card.id && !inst.usedAt)
+			.sort((a, b) => new Date(a[1].earnedAt).getTime() - new Date(b[1].earnedAt).getTime());
 
+		if (matchingInstances.length === 0) {
+			toaster.error('Aucune carte disponible');
+			return;
+		}
+
+		const [instanceIdToRemove] = matchingInstances[0];
+
+		// STEP 3: Create new vipCards without removed instance
+		const newVipCards = { ...vipCards };
+		delete newVipCards[instanceIdToRemove];
+
+		// STEP 4: Apply optimistic update to cache (instant UI feedback)
+		teacherCache.updateVipCardsOptimistic(classId, studentId, newVipCards);
+
+		// STEP 5: Send server request
 		try {
-			const response = await fetch('?/removeVipCard', {
+			const response = await fetch('/api/vip-cards/remove', {
 				method: 'POST',
-				body: formData,
-				headers: {
-					'x-sveltekit-action': 'true'
-				}
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					studentId,
+					cardId: card.id
+				})
 			});
 
-			if (response.ok) {
-				// STEP 3: SUCCESS - Refresh data and notify user
-				// NOTE: We KEEP optimistic state active to prevent flicker
-				// The derived cardsWithCounts will continue showing adjusted counts
-				// until the modal is closed (which triggers the cleanup $effect)
-				await invalidateAll();
-				toaster.success(`Carte ${card.name} retirée avec succès`);
-			} else {
-				// STEP 4a: ERROR - Rollback optimistic update
-				const newCount = Math.max(0, (optimisticRemovedCounts[card.id] || 0) - 1);
-				if (newCount === 0) {
-					// Remove key if count is 0 (use immutable update)
-					const newCounts = { ...optimisticRemovedCounts };
-					delete newCounts[card.id];
-					optimisticRemovedCounts = newCounts;
-				} else {
-					// Decrement count (use immutable update)
-					optimisticRemovedCounts = {
-						...optimisticRemovedCounts,
-						[card.id]: newCount
-					};
-				}
-				toaster.error('Échec de la suppression de la carte');
+			const result = await response.json();
+
+			if (!response.ok) {
+				throw new Error(result.message || 'Failed to remove card');
 			}
-		} catch {
-			// STEP 4b: NETWORK ERROR - Rollback optimistic update
-			const newCount = Math.max(0, (optimisticRemovedCounts[card.id] || 0) - 1);
-			if (newCount === 0) {
-				const newCounts = { ...optimisticRemovedCounts };
-				delete newCounts[card.id];
-				optimisticRemovedCounts = newCounts;
-			} else {
-				optimisticRemovedCounts = {
-					...optimisticRemovedCounts,
-					[card.id]: newCount
-				};
-			}
+
+			// STEP 6: SUCCESS - Cache already correct, just notify
+			toaster.success(`Carte ${card.name} retirée avec succès`);
+		} catch (_error) {
+			// STEP 7: ERROR - Rollback by restoring previous state
+			teacherCache.updateVipCardsOptimistic(classId, studentId, previousVipCards);
 			toaster.error('Erreur réseau');
 		}
 	}

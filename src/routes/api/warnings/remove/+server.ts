@@ -54,7 +54,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const warningId = warnings[0].id;
 
 	// Delete the warning
-	const { error: deleteError } = await supabase.from('student_warnings').delete().eq('id', warningId);
+	const { error: deleteError } = await supabase
+		.from('student_warnings')
+		.delete()
+		.eq('id', warningId);
 
 	if (deleteError) {
 		console.error('Error deleting warning:', deleteError);

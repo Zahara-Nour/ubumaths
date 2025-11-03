@@ -231,15 +231,15 @@
 				</button>
 			{/if}
 
-			<!-- Use Button (Bottom Left) - Only show if showUseButton and card has action -->
-			{#if showUseButton && card.action}
+			<!-- Use Button (Bottom Left) - Only show if showUseButton -->
+			{#if showUseButton}
 				<button
 					type="button"
 					class={cn(
-						'absolute left-2 bottom-2 rounded-full p-2 shadow-lg transition-all hover:scale-110 active:scale-95',
+						'absolute bottom-2 left-2 rounded-full p-2 shadow-lg transition-all hover:scale-110 active:scale-95',
 						hasPendingRequest
-							? 'bg-orange-500 hover:bg-orange-600 text-white'
-							: 'bg-green-600 hover:bg-green-700 text-white',
+							? 'bg-orange-500 text-white hover:bg-orange-600'
+							: 'bg-green-600 text-white hover:bg-green-700',
 						size === 'sm' ? 'p-1.5' : size === 'md' ? 'p-2' : 'p-2.5'
 					)}
 					onclick={handleUse}
@@ -248,7 +248,9 @@
 					{#if hasPendingRequest}
 						<Clock class={cn(size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-5 w-5')} />
 					{:else}
-						<Sparkles class={cn(size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-5 w-5')} />
+						<Sparkles
+							class={cn(size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-5 w-5')}
+						/>
 					{/if}
 				</button>
 			{/if}

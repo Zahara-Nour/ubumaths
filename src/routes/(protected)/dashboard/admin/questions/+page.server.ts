@@ -26,10 +26,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({
-	locals,
-	url
-}) => {
+export const load: PageServerLoad = async ({ locals, url }) => {
 	const { user, profile, supabase } = locals;
 
 	if (!user) {

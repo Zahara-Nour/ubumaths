@@ -45,7 +45,7 @@ export const actions: Actions = {
 		const address = formData.get('address') as string;
 		const logo_url = formData.get('logo_url') as string;
 
-		const { error: insertError} = await supabase.from('schools').insert({
+		const { error: insertError } = await supabase.from('schools').insert({
 			name,
 			city,
 			country,

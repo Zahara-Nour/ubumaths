@@ -107,10 +107,10 @@
 	interface StudentData {
 		id: string;
 		firstname: string;
-		lastname?: string;
-		avatar_url?: string;
-		role?: string;
-		gender?: string;
+		lastname?: string | null;
+		avatar_url?: string | null;
+		role?: string | null;
+		gender?: string | null;
 		gidouilles: number;
 		vipCards: StudentVipCards;
 		warnings: StudentWarningCounts;
@@ -243,7 +243,8 @@
 			// 3. Set new debounced timer (500ms)
 			debounceTimers[studentId] = setTimeout(async () => {
 				// Get current optimistic value from cache
-				const currentOptimistic = teacherCache.getRewardsSync(classId)?.get(studentId)?.gidouilles ?? gidouilles;
+				const currentOptimistic =
+					teacherCache.getRewardsSync(classId)?.get(studentId)?.gidouilles ?? gidouilles;
 				// Use saved base value (from first click) instead of current value
 				const baseValue = baseGidouilles[studentId] ?? gidouilles;
 				const actualChange = currentOptimistic - baseValue;
@@ -400,7 +401,8 @@
 		// 3. Set new debounced timer (500ms)
 		debounceTimers[studentId] = setTimeout(async () => {
 			// Get current optimistic value from cache
-			const currentOptimistic = teacherCache.getRewardsSync(classId)?.get(studentId)?.gidouilles ?? gidouilles;
+			const currentOptimistic =
+				teacherCache.getRewardsSync(classId)?.get(studentId)?.gidouilles ?? gidouilles;
 			// Use saved base value (from first click) instead of current value
 			const baseValue = baseGidouilles[studentId] ?? gidouilles;
 			const actualChange = currentOptimistic - baseValue;
@@ -450,7 +452,6 @@
 		selectedStudent = student;
 		vipModalOpen = true;
 	}
-
 </script>
 
 <!-- ============================================================================ -->

@@ -1,0 +1,107 @@
+<!--
+	VIP Card Activation Button Component
+	=====================================
+	Button for students to request activation of VIP cards with actions.
+
+	States:
+	- Activatable: Shows "Activer" button (card has action, not used, no pending request)
+	- Pending: Shows "En attente..." (activation requested, waiting for teacher)
+	- Hidden: Card already used or no action
+
+	Props:
+	- instanceId: UUID of the VIP card instance
+	- studentId: UUID of the student
+	- card: VipCard definition (must have action)
+	- vipCardInstance: Instance data (usedAt, activationRequestedAt, etc.)
+-->
+
+<script lang="ts">
+	import type { VipCard, VipCardInstance } from '$lib/types/vip-card';
+	import { getActionDescription } from '$lib/utils/vip-cards';
+	import { toaster } from '$lib/stores/toaster.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { Loader2, Sparkles } from 'lucide-svelte';
+
+	interface Props {
+		instanceId: string;
+		studentId: string;
+		card: VipCard;
+		vipCardInstance: VipCardInstance;
+		onActivationRequested?: () => void;
+	}
+
+	let { instanceId, studentId, card, vipCardInstance, onActivationRequested }: Props = $props();
+
+	// State
+	let isRequesting = $state(false);
+
+	// Computed states
+	const isPending = $derived(!!vipCardInstance.activationRequestedAt);
+	const isUsed = $derived(!!vipCardInstance.usedAt);
+	const canActivate = $derived(!isUsed && !isPending && !!card.action);
+	const actionDescription = $derived(card.action ? getActionDescription(card.action) : '');
+
+	/**
+	 * Request activation from teacher
+	 */
+	async function requestActivation() {
+		if (!canActivate || isRequesting) return;
+
+		isRequesting = true;
+
+		try {
+			const response = await fetch('/api/vip-cards/request-activation', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ instanceId, studentId })
+			});
+
+			const result = await response.json();
+
+			if (!response.ok) {
+				throw new Error(result.message || 'Erreur lors de la demande');
+			}
+
+			// Success
+			toaster.success("Demande d'activation envoyée !");
+
+			// Update parent component
+			onActivationRequested?.();
+		} catch (error) {
+			console.error('[VipCardActivationButton] Error:', error);
+			toaster.error(
+				error instanceof Error ? error.message : "Erreur lors de la demande d'activation"
+			);
+		} finally {
+			isRequesting = false;
+		}
+	}
+</script>
+
+{#if canActivate}
+	<div class="mt-2 flex flex-col gap-1">
+		<p class="text-center text-xs text-muted-foreground">{actionDescription}</p>
+		<Button
+			onclick={requestActivation}
+			disabled={isRequesting}
+			size="sm"
+			class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+		>
+			{#if isRequesting}
+				<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+				Envoi...
+			{:else}
+				<Sparkles class="mr-2 h-4 w-4" />
+				Activer
+			{/if}
+		</Button>
+	</div>
+{:else if isPending}
+	<div class="mt-2">
+		<Button disabled size="sm" variant="secondary" class="w-full">
+			<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+			En attente...
+		</Button>
+		<p class="mt-1 text-center text-xs text-muted-foreground">Un enseignant doit approuver</p>
+	</div>
+{/if}
