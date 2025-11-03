@@ -2,226 +2,86 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased]
+### [0.1.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.1.1...v0.1.2) (2025-11-03)
 
----
+### ⏪ Reverts
 
-### 🎯 Session Summary: BroadcastChannel Removal & Architecture Simplification (2025-10-29)
+- remove load function monitoring system ([2f813f5](https://github.com/Zahara-Nour/ubumaths/commit/2f813f592d7a8e0e4e3ca448299c8d2c84ddf27d))
 
-**Duration**: ~2 hours | **Files Modified**: 10+ | **Lines Removed**: ~400 | **Documentation Updated**: 5 files
+### 🐛 Bug Fixes
 
-**Achievements**:
+- **a11y:** resolve accessibility warnings in VipCardHoloModal ([cc07a13](https://github.com/Zahara-Nour/ubumaths/commit/cc07a13ffea76e3af2cac739f5c4d7d5d04d5f97))
+- **build:** resolve import and ESLint errors blocking production build ([e4cf883](https://github.com/Zahara-Nour/ubumaths/commit/e4cf883eb38639863e8e39cd13ce4f769a27afac))
+- **cache:** add auth guards to prevent 403/401 errors during hot reload ([3683102](https://github.com/Zahara-Nour/ubumaths/commit/36831023d0c52744a32b7899d13d611475833363))
+- correct authentication check in chat API endpoint ([9d774c0](https://github.com/Zahara-Nour/ubumaths/commit/9d774c0f96e661f7308a22a84fbe9bd1bd7d2442))
+- massive TypeScript error reduction (384→16 errors, 96% reduction) ([f8e562b](https://github.com/Zahara-Nour/ubumaths/commit/f8e562b81c65140fd066a485d114d1ede329261b))
+- **rate-limiter:** implement HMR-safe singleton to resolve OAuth timeout ([0e8470d](https://github.com/Zahara-Nour/ubumaths/commit/0e8470d1ef479a51da7b0b3d6280f4f49c9573fd))
+- **supabase:** increase auth timeout from 5s to 15s ([f512cae](https://github.com/Zahara-Nour/ubumaths/commit/f512caebf03a85805794dddc3c9f157871a541c7))
+- **svelte:** resolve $derived reference warning in class selection ([14bc84e](https://github.com/Zahara-Nour/ubumaths/commit/14bc84e39962b159083844e8fc021309b037fa7f))
+- **teacher:** correct API endpoint for gidouilles updates ([c570dc2](https://github.com/Zahara-Nour/ubumaths/commit/c570dc2e79c0dd3c725952da14cf17728bfb67dd))
+- **teacher:** reload data immediately after cache invalidation ([f438a93](https://github.com/Zahara-Nour/ubumaths/commit/f438a93f6a0b96f11eb3219ac104fa989227995a))
+- **teacher:** remove notification calls (no API endpoint exists) ([e5953fb](https://github.com/Zahara-Nour/ubumaths/commit/e5953fb7f180e656b6daacb9bed65cbe2c4a7a27))
+- **teacher:** resolve multiple critical bugs in student rewards and rate limiting ([2478a84](https://github.com/Zahara-Nour/ubumaths/commit/2478a84254260a5c3dbb0494a60d8d55aa47e4b5))
+- **teacher:** resolve optimistic UI rollback bugs in rewards page ([aa8422d](https://github.com/Zahara-Nour/ubumaths/commit/aa8422ded7fbba374aa49e9057a4acb29cba485b))
+- **ts:** add description and deckType to deck interface ([4952f80](https://github.com/Zahara-Nour/ubumaths/commit/4952f80f187662c59ca4f077457036ea267c0b79))
+- **ts:** add intermediate unknown cast for Record to typed conversion ([100b153](https://github.com/Zahara-Nour/ubumaths/commit/100b153a42e8b50f9ecd322ccd97a114086b5e7a))
+- **ts:** add missing properties to PrivateMessage interface ([b925255](https://github.com/Zahara-Nour/ubumaths/commit/b92525565656d30a0a7b5853f8c25de1c7d95173))
+- **ts:** add missing SchoolPeriod import ([61f9cd8](https://github.com/Zahara-Nour/ubumaths/commit/61f9cd8e5c95e0999facc6b4bc0339ff77f7eea4))
+- **ts:** convert string | null to string | undefined for MySelect compatibility ([8981ed3](https://github.com/Zahara-Nour/ubumaths/commit/8981ed35a1fe365e422794fb9edd99451c30acea))
+- **ts:** resolve 269 TypeScript errors across codebase (97.1% reduction) ([39201a7](https://github.com/Zahara-Nour/ubumaths/commit/39201a7ea04676160b973e954e90785742b1ffd8))
+- **ts:** resolve final 8 TypeScript errors, achieve zero-error codebase ([c271549](https://github.com/Zahara-Nour/ubumaths/commit/c2715494a9ec05a1599410d669d78eb9eb500fcd))
+- **ts:** use SchoolPeriod[] type assertion instead of unknown[] ([331ad58](https://github.com/Zahara-Nour/ubumaths/commit/331ad581167260636ebef6472f480080fdd3cf94))
+- **typescript:** resolve 165 TypeScript errors systematically (49% complete) ([b0159f0](https://github.com/Zahara-Nour/ubumaths/commit/b0159f0eb4f0e49b7a51a2addd98b3105eac9bff))
+- **typescript:** resolve 19 more errors - type assertions and imports (68% complete) ([81f2dbb](https://github.com/Zahara-Nour/ubumaths/commit/81f2dbb43dd9891d27c37d398e21454071a44ef2))
+- **typescript:** resolve 2 more errors - difficulty type and blank validation (33% complete) ([816b0df](https://github.com/Zahara-Nour/ubumaths/commit/816b0df4ea948c2de3b00c2f0c98d0744a851759))
+- **typescript:** resolve 35 errors - ContentField[] migration (21% complete) ([f72a194](https://github.com/Zahara-Nour/ubumaths/commit/f72a1940a5663a075e163ce9f1fc9af4dcc5b222))
+- **types:** fix MultipleChoiceInput to accept shuffledChoices structure (111→109) ([5fe0178](https://github.com/Zahara-Nour/ubumaths/commit/5fe01784bbbbfb391072d446c9512f4c2dba93b8))
+- **types:** resolve 2 TypeScript errors in QuestionCard (113→111) ([1a5c28f](https://github.com/Zahara-Nour/ubumaths/commit/1a5c28ffb8753b801a603e3404efa168fd93472d))
+- **types:** resolve 5 TypeScript errors in multiple files (109→106) ([547113f](https://github.com/Zahara-Nour/ubumaths/commit/547113ff9e2fe1c7dbb9ea964263d80ce13065c0))
+- **types:** resolve 6 TypeScript errors across multiple files (106→100) ([cf00b88](https://github.com/Zahara-Nour/ubumaths/commit/cf00b882c97eb361801a9c6fbabb643897539686))
+- **types:** resolve 6 TypeScript errors in multiple files (100→95) ([c708df6](https://github.com/Zahara-Nour/ubumaths/commit/c708df633c1854b903e9cbd22bf046ae597793a7))
+- **types:** resolve 9 TypeScript errors across multiple files (95→86) ([0fb99a0](https://github.com/Zahara-Nour/ubumaths/commit/0fb99a09b0d97dfe85305e46c788fd6247857370))
+- **warnings:** filter warnings by test mode to prevent data mismatch ([2a32613](https://github.com/Zahara-Nour/ubumaths/commit/2a32613a811c1b02fbd7e6eeb21e16bf803118ef))
+- **warnings:** handle all error responses with rollback (match rewards) ([6639bfe](https://github.com/Zahara-Nour/ubumaths/commit/6639bfe30701a7ecd217d4a9b30a6e695ac52eba))
+- **warnings:** prevent flicker by not invalidating cache on success ([28f3d5a](https://github.com/Zahara-Nour/ubumaths/commit/28f3d5ab444204033e078c3d4433f7374e9a380f))
 
-- ✅ **Architecture Simplification**: Removed BroadcastChannel + CacheEventBus (~400 lines)
-- ✅ **Unified Endpoint**: Created `/api/teacher/dashboard-sync` (50% fewer network requests)
-- ✅ **Cache Stores Simplified**: No constructors, no event subscriptions, cleaner code
-- ✅ **Documentation**: Updated 5 docs files to reflect polling-only architecture
-- ✅ **Tests**: All existing tests passing (no regressions)
-- ✅ **Status**: Production-ready with simplified, predictable architecture
+### ⚡ Performance Improvements
 
-**Trade-off Analysis**:
-
-- ❌ Lost: Instant cross-tab sync within same browser (was ~100ms, now ~5s)
-- ✅ Gained: Simpler codebase (~400 lines removed)
-- ✅ Gained: Easier debugging (single sync mechanism)
-- ✅ Gained: Better testability (no hidden event-driven side effects)
-- ✅ Gained: Reduced network requests (2 endpoints → 1 unified endpoint)
-
-**User Impact**:
-
-- Teachers using multiple devices still get 5-second sync (unchanged)
-- Cross-tab sync within same browser now 5 seconds (was instant)
-- Overall experience: slightly slower cross-tab, but more reliable and predictable
-
----
-
-### Changed
-
-- **BREAKING**: Removed BroadcastChannel cross-tab synchronization (2025-10-29)
-  - Simplified synchronization to polling-only architecture
-  - Created unified `/api/teacher/dashboard-sync` endpoint combining warnings + gidouilles
-  - Removed `cacheEventBus` and all event-driven cache invalidation
-  - Updated warnings and rewards pages to use direct API polling
-  - Reduced network requests by 50% (2 endpoints → 1 unified endpoint)
-  - **Migration**: Cross-tab sync now relies on 5-second polling instead of instant updates (~100ms → ~5s)
-
-### Removed
-
-- `src/lib/stores/cacheEventBus.svelte.ts` - BroadcastChannel event bus (~200 lines)
-- `src/lib/stores/__tests__/cacheEventBus-broadcast.test.ts` - Event bus tests (~150 lines)
-- `docs/architecture/cache-event-bus-multi-tab.md` - Cross-tab sync documentation
-- BroadcastChannel subscriptions from cache stores (~50 lines)
-- Cache store constructors and event handling logic (~100 lines)
-
-### Added
-
-- `src/routes/api/teacher/dashboard-sync/+server.ts` - Unified teacher dashboard endpoint (99 lines)
-- Comprehensive tests for unified dashboard sync endpoint (13 tests planned)
-
-### Performance
-
-- Polling remains at 5-second intervals for teacher dashboards
-- Activity polling unchanged at 30-second intervals
-- Unified endpoint reduces API calls from 2 → 1 per poll cycle (~50% reduction)
-- Both data sources fetched in parallel with `Promise.all()` (~100ms total vs ~100ms sequential)
-
-### Documentation
-
-- Updated `docs/features/cross-device-sync.md` - Now documents polling-only architecture
-- Updated `docs/architecture/hybrid-cache-system.md` - Added unified dashboard sync section
-- Deleted `docs/architecture/cache-event-bus-multi-tab.md` - No longer relevant
-- Updated `docs/README.md` - Removed BroadcastChannel references, added unified endpoint
-- Updated `CHANGELOG.md` - This entry
-
----
-
-### 🎯 Session Summary: Cross-Device Sync & Cache Debugging (2025-10-29)
-
-**Duration**: ~4 hours | **Files Modified**: 5 | **New Files**: 2 | **Documentation**: +16KB
-
-**Achievements**:
-
-- ✅ **Feature**: Implemented cross-device synchronization (5s polling for multi-device workflows)
-- ✅ **Critical Bugs**: Fixed 3 major cache bugs (Map serialization, API parsing, loading state)
-- ✅ **Cache Version**: Bumped warnings cache v1 → v2 (auto-migration via TTL)
-- ✅ **Documentation**: Created comprehensive debugging guide (16KB) + updated hybrid cache docs
-- ✅ **New Endpoints**: Teacher-accessible cache invalidation API
-- ✅ **Status**: Production-ready, all bugs resolved
-
-**Key Lessons**:
-
-- JavaScript Map objects cannot be JSON.stringify'd (serialize to `{}`)
-- Multi-layer caches require debugging each tier independently (Client → Redis → DB)
-- Cache version bumping prevents corrupted data from persisting
-- Loading states prevent UI flashing during async operations
-
-**User Impact**:
-
-- Teachers can now use laptop + projector with same dashboard (5s sync)
-- Data no longer disappears after page reload or polling
-- UI shows loading state instead of incorrect default values
-- Manual cache refresh available if needed
-
----
-
-### ✨ Features
-
-- **cross-device-sync**: implement polling-based synchronization for teacher dashboards (2025-10-29)
-  - Added 5-second polling for rewards and warnings management pages
-  - Enables multi-device workflows (laptop + projector showing same dashboard)
-  - Smart behaviors: pauses during editing, pauses when tab hidden, visibility detection
-  - Integrated with Redis cache (50ms response time, 99% hit rate)
-  - Console logging for debugging and monitoring
-  - Complements existing BroadcastChannel for same-browser tab sync
-  - **Impact**: Teachers can update data on one device and see changes on another within 5 seconds
-
-- **academic-periods**: implement complete academic calendar management system
-  - Added 3 new database tables: `school_years`, `academic_periods`, `school_holidays`
-  - Admin UI for managing school years, teaching periods (trimesters/semesters/quarters), and vacations
-  - Auto-assignment of assessments to periods based on creation date via database trigger
-  - Year duplication wizard with selective copying (periods and holidays)
-  - RLS policies for admin CRUD and teacher read-only access
-  - Comprehensive Zod validation schemas in `src/lib/server/validation/academic.ts` (467 lines)
-  - Full feature documentation: 74KB across 4 files
-  - Database migrations: 7 SQL files including RLS fixes
-  - **Impact**: Enables period-based report cards, temporal analysis, and academic calendar management
-
-### 🐛 Bug Fixes (CRITICAL)
-
-- **cache**: fix critical Map serialization bug causing data loss in Redis cache (2025-10-29)
-  - **Root Cause**: JavaScript `Map` objects serialize to empty objects `{}` when JSON.stringify'd
-  - **Symptom**: Data loaded correctly initially, then disappeared after Redis cache hit or 5s polling
-  - **Investigation**: Multi-layer debugging (client → Redis → DB) revealed empty objects in Redis
-  - **Solution**: Convert Map → Object before Redis storage, Object → Map after reading
-  - **Files Modified**: `src/lib/server/cache/warnings.ts` (lines 277-298)
-  - **Cache Version Bump**: `warnings:v1:*` → `warnings:v2:*` (auto-migration via TTL expiration)
-  - **Evidence**: `JSON.stringify(new Map([['key', 'value']]))` produces `"{}"`
-  - **Impact**: Redis cache now correctly persists warnings data across page reloads and polling cycles
-  - **Prevention**: Added Map serialization warnings to hybrid cache documentation
-
-- **client-cache**: fix API response parsing in warnings cache store (2025-10-29)
-  - **Root Cause**: Client cache was parsing `result` instead of `result.warnings` from API response
-  - **Symptom**: Client cache stored API metadata `{success: true, warnings: {...}}` instead of student data
-  - **File Modified**: `src/lib/stores/warningsCache.svelte.ts` (line 577)
-  - **Fix**: Changed `Object.entries(result)` to `Object.entries(result.warnings)`
-  - **Impact**: Client cache now correctly stores student warning counts, not API wrapper
-
-- **ui**: fix flash of default values during initial page load (2025-10-29)
-  - **Root Cause**: Component rendered before initial data fetch completed
-  - **Symptom**: UI briefly showed "0/0/0/0" default values before loading real data
-  - **Solution**: Added `_hasLoadedOnce` flag to track first successful data load
-  - **File Modified**: `src/routes/(protected)/dashboard/teacher/warnings/+page.svelte`
-  - **UI Change**: Shows animated "Chargement..." instead of incorrect default values
-  - **Impact**: Users now see loading indicator instead of confusing default values
-
-- **cache-invalidation**: add teacher-accessible cache invalidation endpoint (2025-10-29)
-  - **New Endpoint**: `POST /api/cache/refresh-warnings`
-  - **Purpose**: Allow teachers to manually invalidate warnings cache without admin privileges
-  - **Security**: Verifies class ownership before invalidation
-  - **Parameters**: `classId` (required), `periodId` (optional)
-  - **Impact**: Teachers can force cache refresh if data appears stale
-
-- **admin-cache-api**: extend admin cache invalidation to support warnings (2025-10-29)
-  - **Endpoint**: `POST /api/admin/cache/invalidate`
-  - **New Type**: `type=warnings` with `classId` and `periodId` parameters
-  - **File Modified**: `src/routes/api/admin/cache/invalidate/+server.ts`
-  - **Impact**: Admins can now invalidate warnings cache alongside schools/templates
-
-- **dashboard**: fix 401 errors in activity polling during initial page load
-  - Added authentication guard in `src/routes/(protected)/dashboard/+layout.svelte:204-206`
-  - Polling now only starts after user session is fully established
-  - Prevents race condition where polling started before authentication completed
-  - **Impact**: Eliminates console errors during client-side hydration
-
-- **forms**: fix color input validation error with empty strings
-  - Changed fallback operator from `??` to `||` in color input value binding
-  - HTML5 color inputs reject empty strings even though they're falsy
-  - Fixed validation error: "Please select a color from the color picker"
-  - **Impact**: Color pickers work correctly when no default color is set
-
-- **typescript**: fix type safety in form error handling
-  - Added proper type guards using `'errors' in form` before accessing form.errors
-  - Prevents runtime errors when form object doesn't have errors property
-  - **Impact**: Safer form error handling across all form actions
+- **rewards:** eliminate 653ms navigation latency with API endpoints ([dfdedb4](https://github.com/Zahara-Nour/ubumaths/commit/dfdedb4b16f5504a604af5848bd56134b95f995f))
+- **teacher:** achieve instant navigation with client-side periods cache ([cf88f66](https://github.com/Zahara-Nour/ubumaths/commit/cf88f66dc5e53345f4b9332b743935f6c5741e8d))
+- **teacher:** add debouncing to gidouille add/remove actions ([c08d416](https://github.com/Zahara-Nour/ubumaths/commit/c08d4161c9e258679c99db634f0c76e2f6e05b64))
+- **teacher:** eliminate redundant DB queries on page navigation ([02f14d6](https://github.com/Zahara-Nour/ubumaths/commit/02f14d67b44517f5fda32c2980447b63aa5bdb1e))
+- **teacher:** optimize gidouilles updates with commitOptimistic pattern ([5fce8e0](https://github.com/Zahara-Nour/ubumaths/commit/5fce8e0e297b7e19e2d790fec3d63c8a21f8c6bb))
+- **warnings:** remove server load for instant navigation ([f0ccfbe](https://github.com/Zahara-Nour/ubumaths/commit/f0ccfbed1da01ffd431c6600ee8470312f759e5a))
 
 ### 📚 Documentation
 
-- **debugging**: create comprehensive debugging guide for multi-layer cache systems (2025-10-29)
-  - Created `docs/development/debugging-guide.md` (16KB, comprehensive troubleshooting reference)
-  - Documents "Flash Then Disappear" symptom pattern (cache corruption)
-  - Documents "Default Values Persist" pattern (API parsing bugs)
-  - Documents "Works Without Redis, Breaks With Redis" pattern (serialization issues)
-  - Multi-layer cache debugging flow (Client Store → Redis → Database)
-  - Redis CLI commands, browser console techniques, network tab analysis
-  - Real-world case study: Warnings cache bug investigation (2025-10-29)
-  - Tools and techniques for cache corruption recovery
-  - **Impact**: Developers can now debug complex cache issues systematically
+- add TypeScript fixes session reports ([6a9a9f3](https://github.com/Zahara-Nour/ubumaths/commit/6a9a9f38d0d8d42301fa3a4bb8744a1c34979c4e))
+- **architecture:** document instant navigation with API endpoints ([4bee5d9](https://github.com/Zahara-Nour/ubumaths/commit/4bee5d9dc39a6596290b4576bd1a1cd384e69abe))
+- **claude:** add comprehensive agent usage policy and delegation guidelines ([731fd5a](https://github.com/Zahara-Nour/ubumaths/commit/731fd5ab185188b22f76aafe82e963e096e6a6a6))
+- complete documentation reorganization to kebab-case ([1256e47](https://github.com/Zahara-Nour/ubumaths/commit/1256e477ace2ec624a686833e67a482db42eec0c))
+- organize academic periods documentation into proper structure ([a54ef96](https://github.com/Zahara-Nour/ubumaths/commit/a54ef96dd049ac230b6189060fba8ffa4a830e70))
+- **polling:** add comprehensive code comments and session documentation ([630d5ca](https://github.com/Zahara-Nour/ubumaths/commit/630d5ca8370891e1f3842373b0b87c6b603a9c60))
+- standardize all feature documentation to comply with guide ([7ea6c57](https://github.com/Zahara-Nour/ubumaths/commit/7ea6c57aa677bda9a3b2c339d46bf7cb2803d8a3))
+- **warnings:** document test mode filtering implementation ([9981414](https://github.com/Zahara-Nour/ubumaths/commit/99814142c759fc02ce2dfdcf2cb8efb9b2a4e23f))
 
-- **cache**: document Map serialization gotcha in hybrid cache system (2025-10-29)
-  - Updated `docs/architecture/hybrid-cache-system.md` with critical Map serialization warning
-  - Added new section: "2. Handle JavaScript Map Serialization (CRITICAL)"
-  - Documents correct Map → Object → Redis → Object → Map conversion pattern
-  - Includes verification test showing `JSON.stringify(map)` produces `"{}"`
-  - Added cache key versioning best practice (section 5)
-  - Cache version history documented: v1 (broken Map) → v2 (fixed Object conversion)
-  - **Impact**: Prevents future Map serialization bugs in Redis caching
+### ✨ Features
 
-- **cross-device-sync**: add troubleshooting section with critical bug fixes (2025-10-29)
-  - Updated `docs/features/cross-device-sync.md` with comprehensive troubleshooting section
-  - Documents 3 critical bugs fixed: Map serialization, API parsing, flash of defaults
-  - Cache version bump documentation (v1 → v2 migration process)
-  - Debugging checklist: Redis connection, polling logs, cache key version, Map serialization test
-  - Common symptom patterns with root causes and solutions
-  - Cross-reference to new debugging guide
-  - **Impact**: Complete debugging reference for cross-device sync issues
-
-- **academic-periods**: add comprehensive feature documentation (74KB, 4 files)
-  - Created `docs/features/academic-periods/README.md`: feature overview, use cases, quick start
-  - Created `docs/features/academic-periods/user-guide.md`: complete admin workflows (20KB)
-  - Created `docs/features/academic-periods/api-reference.md`: form actions, validation schemas (21KB)
-  - Created `docs/features/academic-periods/database.md`: schema, triggers, RLS policies (23KB)
-  - Updated `docs/architecture/database-schema.md`: documented 3 new tables and relationships
-  - Updated `docs/README.md`: added academic periods to features list, updated statistics
+- achieve 100% Zod validation coverage for API endpoints ([48bd079](https://github.com/Zahara-Nour/ubumaths/commit/48bd079f0b6e330d6e1ed5997a1b2ae5ff73f3be))
+- **admin:** implement academic periods management system ([b38bc41](https://github.com/Zahara-Nour/ubumaths/commit/b38bc41037db6713640afae05df0a8c82d9e6ae1))
+- **cache:** implement hybrid cache system with Redis + in-memory layers ([abca453](https://github.com/Zahara-Nour/ubumaths/commit/abca453cc7012c4daf24fa3eee503d7a3757bd9e))
+- **cache:** implement standardized cache logging system ([dd8a2ee](https://github.com/Zahara-Nour/ubumaths/commit/dd8a2eef5d22775eb6b59d424a6ebf0b084da706))
+- complete Zod validation for all remaining API endpoints ([4bf623b](https://github.com/Zahara-Nour/ubumaths/commit/4bf623b27aa33564181883deb39c2ea80b5cb1d6))
+- comprehensive codebase cleanup and optimization ([e5e51d5](https://github.com/Zahara-Nour/ubumaths/commit/e5e51d5dce5f54c322e600881986b548a59b8b85))
+- **dev:** add incremental type checking support for faster development ([daed197](https://github.com/Zahara-Nour/ubumaths/commit/daed197b4af5417b9a72ba0f1beff9de0974e4ed))
+- **dev:** add load function monitoring system ([42e74ef](https://github.com/Zahara-Nour/ubumaths/commit/42e74ef63d8979f8331cef7cbb87ba17564b1568))
+- **teacher:** add student quick actions table with 3-step warning system ([496bbb7](https://github.com/Zahara-Nour/ubumaths/commit/496bbb7eb1ce09f889e5f8f7d9efca7450393b7a))
+- **teacher:** implement comprehensive cache monitoring system for dashboard ([ae6c1e3](https://github.com/Zahara-Nour/ubumaths/commit/ae6c1e3cd2e1918d2eee57a160038282a81c9bcc))
+- **teacher:** implement cross-device synchronization with critical cache fixes ([12d62e7](https://github.com/Zahara-Nour/ubumaths/commit/12d62e7645a2cc88645fb6a08126da10c6ab73da))
+- **teacher:** implement cross-tab synchronization for warnings ([78850d1](https://github.com/Zahara-Nour/ubumaths/commit/78850d14350a15d6739c4b4260545d377f65d00c))
+- **teacher:** implement student warnings management system ([a7d9a89](https://github.com/Zahara-Nour/ubumaths/commit/a7d9a89112f51173ef09017b1226ecadac3bc033))
+- **vip-cards:** implement student-requested activation system with cache-optimized UI ([967ab3b](https://github.com/Zahara-Nour/ubumaths/commit/967ab3b80be46b9d2301bf9d3fa663c74d504991))
+- **vip-cards:** sync cache instantly when cards are drawn ([be9bbd2](https://github.com/Zahara-Nour/ubumaths/commit/be9bbd2e141a2202064d721c784a89b65aec584a))
 
 ### [0.1.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.1.0...v0.1.1) (2025-10-28)
 
