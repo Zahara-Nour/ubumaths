@@ -61,7 +61,10 @@ export class TeacherDashboardCache {
 	private warningsCache = new SvelteMap<string, CachedWarnings>();
 	private classesCache = new SvelteMap<string, CachedClass>();
 	private schoolCache = new SvelteMap<string, CachedSchool>();
-	private periodsCache = new SvelteMap<string, { currentPeriod: unknown | null; allPeriods: unknown[]; cachedAt: number }>();
+	private periodsCache = new SvelteMap<
+		string,
+		{ currentPeriod: unknown | null; allPeriods: unknown[]; cachedAt: number }
+	>();
 
 	// TTL configurations (in milliseconds)
 	private readonly STUDENTS_TTL = 2 * 60 * 60 * 1000; // 2 hours
@@ -336,7 +339,7 @@ export class TeacherDashboardCache {
 		const classes: ClassWithData[] = [];
 		const now = Date.now();
 
-		for (const [classId, cached] of this.classesCache) {
+		for (const [_classId, cached] of this.classesCache) {
 			// Skip if expired
 			if (now - cached.fetchedAt >= this.CLASS_TTL) continue;
 
@@ -463,7 +466,6 @@ export class TeacherDashboardCache {
 		const total = counts.C + counts.M + counts.R + counts.T;
 		this.log('trace', `[Cache] Optimistic warnings update: student ${studentId}, total: ${total}`);
 	}
-
 
 	// ========================================================================
 	// INVALIDATION
@@ -800,7 +802,9 @@ export class TeacherDashboardCache {
 	 * Get periods from cache (sync, reactive)
 	 * Returns null if not cached or expired
 	 */
-	getPeriodsSync(schoolId: string): { currentPeriod: unknown | null; allPeriods: unknown[] } | null {
+	getPeriodsSync(
+		schoolId: string
+	): { currentPeriod: unknown | null; allPeriods: unknown[] } | null {
 		const cached = this.periodsCache.get(schoolId);
 		if (!cached) return null;
 

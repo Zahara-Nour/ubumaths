@@ -3,8 +3,29 @@
 Complete documentation for the unified VIP card activation and usage system.
 
 **Status**: ✅ Production
-**Version**: 2.0.0
-**Last Updated**: 2025-11-03
+**Version**: 2.1.0
+**Last Updated**: 2025-11-04
+
+---
+
+## 🆕 Changelog
+
+### Version 2.1.0 (2025-11-04)
+
+**Cache Synchronization for Award VIP Card**
+
+- Modified `award_random_vip_card` RPC function to return JSONB instead of TEXT
+- Now returns complete card information: `{ cardId, instanceId, earnedAt }`
+- Enables instant cache synchronization when cards are drawn
+- VIP cards now appear immediately in "Voir Cartes" modal without page refresh
+- Maintains dramatic card reveal animation
+- Backward compatible with older frontends
+
+**Technical Changes**:
+
+- Migration: `20251104005641_modify_award_vip_card_return_jsonb.sql`
+- Updated API: `/api/teacher/rewards/award-vip-card` response format
+- Frontend: `rewards/+page.svelte` now updates cache after card draw (lines 353-367)
 
 ---
 
@@ -26,11 +47,13 @@ Complete documentation for the unified VIP card activation and usage system.
 The VIP card activation system allows teachers to manage student VIP card usage through two workflows:
 
 ### 🎯 Workflow 1: Student Request → Teacher Approval
+
 1. Student requests activation from their dashboard
 2. Request appears in teacher's "Demandes d'activation VIP" tab
 3. Teacher approves → card consumed + action executed
 
 ### 🎯 Workflow 2: Direct Teacher Activation
+
 1. Teacher opens student's VIP modal from rewards page
 2. Teacher clicks "Utiliser" button (green or orange if pending request)
 3. Card consumed + action executed (prioritizes instances with pending requests)
@@ -54,11 +77,11 @@ The VIP card activation system allows teachers to manage student VIP card usage 
 
 ```typescript
 interface VipCardInstance {
-  cardId: string;                        // Card type ID (e.g., "bonus", "captain")
-  earnedAt: string;                      // ISO timestamp
-  usedAt: string | null;                 // ISO timestamp when consumed
-  activationRequestedAt?: string | null; // Student request timestamp
-  activationRequestedBy?: string | null; // Student ID who requested
+	cardId: string; // Card type ID (e.g., "bonus", "captain")
+	earnedAt: string; // ISO timestamp
+	usedAt: string | null; // ISO timestamp when consumed
+	activationRequestedAt?: string | null; // Student request timestamp
+	activationRequestedBy?: string | null; // Student ID who requested
 }
 ```
 
@@ -96,15 +119,18 @@ src/
 All VIP card management happens in `/dashboard/teacher/rewards`:
 
 **Tab 1: Gidouilles** (default)
+
 - Student list with gidouille counters
 - Quick actions: +/- gidouilles, view VIP cards, add VIP card
 
 **Tab 2: Demandes d'activation VIP** (`?tab=demandes`)
+
 - Table of pending activation requests
 - Columns: Student, Card, Action, Requested Date
 - Actions: Utiliser (approve) / Rejeter (reject)
 
 **URL-based Navigation**:
+
 ```
 /dashboard/teacher/rewards                  → Gidouilles tab
 /dashboard/teacher/rewards?tab=demandes     → Activation requests tab
@@ -136,6 +162,7 @@ sequenceDiagram
 ```
 
 **Key Points**:
+
 - Student can request activation from their dashboard (future feature)
 - Teacher sees requests in dedicated "Demandes" tab
 - Clicking "Utiliser" consumes the card and executes its action
@@ -169,6 +196,7 @@ sequenceDiagram
 ```
 
 **Key Points**:
+
 - Teacher clicks eye icon next to student in rewards table
 - Modal shows all student's VIP cards with counts (×3, ×2, etc.)
 - "Utiliser" button instantly decrements count (optimistic UI)
@@ -179,6 +207,106 @@ sequenceDiagram
 
 ## API Reference
 
+### POST /api/teacher/rewards/award-vip-card
+
+Award a random VIP card to a student (costs 3 gidouilles).
+
+**Authentication**: Required (teacher or admin)
+
+**Request Body**:
+
+```typescript
+{
+	studentId: string; // UUID of the student
+}
+```
+
+**Validation** (Zod):
+
+```typescript
+const schema = z.object({
+	studentId: z.string().uuid()
+});
+```
+
+**Response** (Success):
+
+```typescript
+{
+	success: true,
+	message: "Carte VIP attribuée avec succès !",
+	cardId: string,        // Card type (e.g., "bonus", "captain")
+	instanceId: string,    // UUID of created instance
+	earnedAt: string       // ISO timestamp
+}
+```
+
+**Response** (Error):
+
+```typescript
+{
+	message: string; // Error description
+}
+```
+
+**Status Codes**:
+
+| Code | Reason                                                |
+| ---- | ----------------------------------------------------- |
+| 200  | Success                                               |
+| 400  | Invalid request body / Insufficient gidouilles        |
+| 401  | Not authenticated                                     |
+| 403  | Not teacher/admin OR student not in teacher's classes |
+| 500  | Server error (database or RPC failure)                |
+
+**Security**:
+
+- Zod validation on request body
+- Teacher-student relationship verified via RLS in RPC function
+- Atomic database transaction (gidouilles deducted and card added together)
+- Minimum gidouilles check (student must have at least 3)
+
+**Cache Synchronization** (2025-11-04):
+
+The endpoint returns complete card information enabling instant cache updates:
+
+```typescript
+const response = await fetch('/api/teacher/rewards/award-vip-card', {
+	method: 'POST',
+	body: JSON.stringify({ studentId })
+});
+
+const result = await response.json();
+
+// Immediately update cache with new card
+if (result.instanceId && result.earnedAt) {
+	const rewards = teacherCache.getRewardsSync(selectedClassId);
+	const currentVipCards = rewards?.get(studentId)?.vip_cards || {};
+
+	teacherCache.updateVipCardsOptimistic(selectedClassId, studentId, {
+		...currentVipCards,
+		[result.instanceId]: {
+			cardId: result.cardId,
+			earnedAt: result.earnedAt,
+			usedAt: null
+		}
+	});
+}
+```
+
+**Benefits**:
+
+- VIP cards appear immediately in "Voir Cartes" modal
+- No page refresh required
+- Maintains dramatic card reveal animation
+- Backward compatible with older frontends
+
+**Migration Note** (2025-11-04):
+
+The underlying `award_random_vip_card` RPC function was modified to return JSONB instead of TEXT, enabling this cache synchronization pattern. See migration `20251104005641_modify_award_vip_card_return_jsonb.sql`.
+
+---
+
 ### POST /api/vip-cards/use-card
 
 Unified endpoint for consuming VIP cards (with or without actions).
@@ -186,22 +314,25 @@ Unified endpoint for consuming VIP cards (with or without actions).
 **Authentication**: Required (teacher or admin)
 
 **Request Body**:
+
 ```typescript
 {
-  instanceId: string;  // UUID of the VIP card instance
-  studentId: string;   // UUID of the student
+	instanceId: string; // UUID of the VIP card instance
+	studentId: string; // UUID of the student
 }
 ```
 
 **Validation** (Zod):
+
 ```typescript
 const useCardSchema = z.object({
-  instanceId: z.string().uuid('Invalid instance ID format'),
-  studentId: z.string().uuid('Invalid student ID format')
+	instanceId: z.string().uuid('Invalid instance ID format'),
+	studentId: z.string().uuid('Invalid student ID format')
 });
 ```
 
 **Response** (Success):
+
 ```typescript
 {
   success: true,
@@ -218,9 +349,10 @@ const useCardSchema = z.object({
 ```
 
 **Response** (Error):
+
 ```typescript
 {
-  message: string  // Error description
+	message: string; // Error description
 }
 ```
 
@@ -235,6 +367,7 @@ const useCardSchema = z.object({
 | 500 | Server error (database or action execution failed) |
 
 **Security**:
+
 - ✅ Zod validation on request body
 - ✅ Teacher-student relationship verified via `class_members` table
 - ✅ Card instance existence and usability checked
@@ -242,16 +375,17 @@ const useCardSchema = z.object({
 - ✅ Action execution failures properly handled
 
 **Example Usage**:
+
 ```typescript
 const response = await fetch('/api/vip-cards/use-card', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ instanceId, studentId })
+	method: 'POST',
+	headers: { 'Content-Type': 'application/json' },
+	body: JSON.stringify({ instanceId, studentId })
 });
 
 if (!response.ok) {
-  const { message } = await response.json();
-  throw new Error(message);
+	const { message } = await response.json();
+	throw new Error(message);
 }
 
 const result = await response.json();
@@ -259,6 +393,7 @@ console.log(result.cardName, result.actionResult);
 ```
 
 **Replaces** (v1.0.0):
+
 - ❌ `POST /api/vip-cards/approve-activation` (merged into use-card)
 - ❌ `POST /api/vip-cards/reject-activation` (no longer needed)
 - ❌ `POST /api/vip-cards/request-activation` (kept for student requests)
@@ -272,19 +407,20 @@ console.log(result.cardName, result.actionResult);
 **File**: `src/lib/components/VipCard.svelte`
 
 **New Props** (v2.0.0):
+
 ```typescript
 interface Props {
-  card: VipCard;
-  count?: number;
-  isFlipped?: boolean;
-  size?: 'sm' | 'md' | 'lg';
-  clickable?: boolean;
-  onclick?: () => void;
-  showRemoveButton?: boolean;          // Teacher: trash icon
-  onRemove?: () => void;
-  showUseButton?: boolean;             // NEW: Teacher use card
-  hasPendingRequest?: boolean;         // NEW: Orange vs green indicator
-  onUse?: () => void;                  // NEW: Callback when used
+	card: VipCard;
+	count?: number;
+	isFlipped?: boolean;
+	size?: 'sm' | 'md' | 'lg';
+	clickable?: boolean;
+	onclick?: () => void;
+	showRemoveButton?: boolean; // Teacher: trash icon
+	onRemove?: () => void;
+	showUseButton?: boolean; // NEW: Teacher use card
+	hasPendingRequest?: boolean; // NEW: Orange vs green indicator
+	onUse?: () => void; // NEW: Callback when used
 }
 ```
 
@@ -304,6 +440,7 @@ interface Props {
    - Button not rendered
 
 **Template**:
+
 ```svelte
 {#if showUseButton && card.action}
   <button
@@ -334,95 +471,100 @@ interface Props {
 **New Features** (v2.0.0):
 
 1. **Optimistic Used Counts**:
+
 ```typescript
 let optimisticUsedCounts = $state<Record<string, number>>({});
 ```
 
 2. **Priority-Based Instance Selection**:
+
 ```typescript
 function findInstanceToUse(cardId: string): string | null {
-  const entries = Object.entries(vipCards);
+	const entries = Object.entries(vipCards);
 
-  // Priority 1: Instance with pending request
-  const withRequest = entries.find(
-    ([_, inst]) => inst.cardId === cardId && !inst.usedAt && inst.activationRequestedAt
-  );
-  if (withRequest) return withRequest[0];
+	// Priority 1: Instance with pending request
+	const withRequest = entries.find(
+		([_, inst]) => inst.cardId === cardId && !inst.usedAt && inst.activationRequestedAt
+	);
+	if (withRequest) return withRequest[0];
 
-  // Priority 2: First available instance
-  const available = entries.find(([_, inst]) => inst.cardId === cardId && !inst.usedAt);
-  return available?.[0] || null;
+	// Priority 2: First available instance
+	const available = entries.find(([_, inst]) => inst.cardId === cardId && !inst.usedAt);
+	return available?.[0] || null;
 }
 ```
 
 3. **Optimistic UI with Rollback**:
+
 ```typescript
 async function handleUseCard(card: { id: string; name: string }) {
-  if (!teacherView || !studentId) return;
+	if (!teacherView || !studentId) return;
 
-  const instanceId = findInstanceToUse(card.id);
-  if (!instanceId) {
-    toaster.error('Aucune instance disponible');
-    return;
-  }
+	const instanceId = findInstanceToUse(card.id);
+	if (!instanceId) {
+		toaster.error('Aucune instance disponible');
+		return;
+	}
 
-  // STEP 1: Optimistic update
-  optimisticUsedCounts = {
-    ...optimisticUsedCounts,
-    [card.id]: (optimisticUsedCounts[card.id] || 0) + 1
-  };
+	// STEP 1: Optimistic update
+	optimisticUsedCounts = {
+		...optimisticUsedCounts,
+		[card.id]: (optimisticUsedCounts[card.id] || 0) + 1
+	};
 
-  try {
-    // STEP 2: Server request
-    const response = await fetch('/api/vip-cards/use-card', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ instanceId, studentId })
-    });
+	try {
+		// STEP 2: Server request
+		const response = await fetch('/api/vip-cards/use-card', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ instanceId, studentId })
+		});
 
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.message);
+		const result = await response.json();
+		if (!response.ok) throw new Error(result.message);
 
-    // STEP 3: Success
-    toaster.success(`Carte ${card.name} utilisée !`);
-    await invalidateAll();
-  } catch (error) {
-    // STEP 4: Error - Rollback
-    const newCount = Math.max(0, (optimisticUsedCounts[card.id] || 0) - 1);
-    if (newCount === 0) {
-      const { [card.id]: _, ...rest } = optimisticUsedCounts;
-      optimisticUsedCounts = rest;
-    } else {
-      optimisticUsedCounts = { ...optimisticUsedCounts, [card.id]: newCount };
-    }
-    toaster.error("Échec de l'utilisation");
-  }
+		// STEP 3: Success
+		toaster.success(`Carte ${card.name} utilisée !`);
+		await invalidateAll();
+	} catch (error) {
+		// STEP 4: Error - Rollback
+		const newCount = Math.max(0, (optimisticUsedCounts[card.id] || 0) - 1);
+		if (newCount === 0) {
+			const { [card.id]: _, ...rest } = optimisticUsedCounts;
+			optimisticUsedCounts = rest;
+		} else {
+			optimisticUsedCounts = { ...optimisticUsedCounts, [card.id]: newCount };
+		}
+		toaster.error("Échec de l'utilisation");
+	}
 }
 ```
 
 4. **Derived Counts** (accounts for both removals and uses):
+
 ```typescript
 const cardsWithCounts = $derived(
-  sortCardsByPriority(getStudentCardsWithCounts(vipCards))
-    .map((card) => {
-      const removedCount = optimisticRemovedCounts[card.id] || 0;
-      const usedCount = optimisticUsedCounts[card.id] || 0;
-      return {
-        ...card,
-        count: Math.max(0, card.count - removedCount - usedCount)
-      };
-    })
-    .filter((card) => card.count > 0)
+	sortCardsByPriority(getStudentCardsWithCounts(vipCards))
+		.map((card) => {
+			const removedCount = optimisticRemovedCounts[card.id] || 0;
+			const usedCount = optimisticUsedCounts[card.id] || 0;
+			return {
+				...card,
+				count: Math.max(0, card.count - removedCount - usedCount)
+			};
+		})
+		.filter((card) => card.count > 0)
 );
 ```
 
 5. **Cleanup Effect** (reset on modal close):
+
 ```typescript
 $effect(() => {
-  if (!open) {
-    optimisticRemovedCounts = {};
-    optimisticUsedCounts = {};
-  }
+	if (!open) {
+		optimisticRemovedCounts = {};
+		optimisticUsedCounts = {};
+	}
 });
 ```
 
@@ -433,6 +575,7 @@ $effect(() => {
 **New Features** (v2.0.0):
 
 1. **URL-based Tabs**:
+
 ```typescript
 import { page } from '$app/state';
 import { goto } from '$app/navigation';
@@ -440,134 +583,133 @@ import { goto } from '$app/navigation';
 let activeTab = $derived(page.url.searchParams.get('tab') || 'gidouilles');
 
 function changeTab(tab: string) {
-  const url = tab === 'gidouilles'
-    ? '/dashboard/teacher/rewards'
-    : `/dashboard/teacher/rewards?tab=${tab}`;
-  goto(url, { replaceState: false });
+	const url =
+		tab === 'gidouilles' ? '/dashboard/teacher/rewards' : `/dashboard/teacher/rewards?tab=${tab}`;
+	goto(url, { replaceState: false });
 }
 ```
 
 2. **Demandes Tab**:
+
 ```svelte
 <Tabs.Content value="demandes">
-  {#if data.activationRequests.length === 0}
-    <Card.Root>
-      <Card.Content class="pt-6 text-center">
-        <Sparkles class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-        <p class="text-lg text-muted-foreground">Aucune demande d'activation en attente</p>
-      </Card.Content>
-    </Card.Root>
-  {:else}
-    <Card.Root>
-      <Card.Header>
-        <Card.Title class="flex items-center justify-between">
-          <span>Demandes en attente</span>
-          <Badge variant="secondary">{data.activationRequests.length}</Badge>
-        </Card.Title>
-      </Card.Header>
-      <Card.Content>
-        <Table.Root>
-          <Table.Header>
-            <Table.Row>
-              <Table.Head>Élève</Table.Head>
-              <Table.Head>Carte</Table.Head>
-              <Table.Head>Action</Table.Head>
-              <Table.Head>Demandée le</Table.Head>
-              <Table.Head class="text-right">Actions</Table.Head>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {#each data.activationRequests as request}
-              <Table.Row>
-                <Table.Cell>{request.studentName}</Table.Cell>
-                <Table.Cell>
-                  <Badge variant="secondary">{request.cardName}</Badge>
-                </Table.Cell>
-                <Table.Cell class="text-sm text-muted-foreground">
-                  {request.actionDescription}
-                </Table.Cell>
-                <Table.Cell>
-                  {new Date(request.requestedAt).toLocaleDateString('fr-FR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </Table.Cell>
-                <Table.Cell class="text-right">
-                  <div class="flex justify-end gap-2">
-                    <Button size="sm" onclick={() => handleUseCard(request)}>
-                      Utiliser
-                    </Button>
-                    <Button size="sm" variant="outline" onclick={() => handleReject(request)}>
-                      Rejeter
-                    </Button>
-                  </div>
-                </Table.Cell>
-              </Table.Row>
-            {/each}
-          </Table.Body>
-        </Table.Root>
-      </Card.Content>
-    </Card.Root>
-  {/if}
+	{#if data.activationRequests.length === 0}
+		<Card.Root>
+			<Card.Content class="pt-6 text-center">
+				<Sparkles class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+				<p class="text-lg text-muted-foreground">Aucune demande d'activation en attente</p>
+			</Card.Content>
+		</Card.Root>
+	{:else}
+		<Card.Root>
+			<Card.Header>
+				<Card.Title class="flex items-center justify-between">
+					<span>Demandes en attente</span>
+					<Badge variant="secondary">{data.activationRequests.length}</Badge>
+				</Card.Title>
+			</Card.Header>
+			<Card.Content>
+				<Table.Root>
+					<Table.Header>
+						<Table.Row>
+							<Table.Head>Élève</Table.Head>
+							<Table.Head>Carte</Table.Head>
+							<Table.Head>Action</Table.Head>
+							<Table.Head>Demandée le</Table.Head>
+							<Table.Head class="text-right">Actions</Table.Head>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{#each data.activationRequests as request}
+							<Table.Row>
+								<Table.Cell>{request.studentName}</Table.Cell>
+								<Table.Cell>
+									<Badge variant="secondary">{request.cardName}</Badge>
+								</Table.Cell>
+								<Table.Cell class="text-sm text-muted-foreground">
+									{request.actionDescription}
+								</Table.Cell>
+								<Table.Cell>
+									{new Date(request.requestedAt).toLocaleDateString('fr-FR', {
+										day: '2-digit',
+										month: '2-digit',
+										year: 'numeric',
+										hour: '2-digit',
+										minute: '2-digit'
+									})}
+								</Table.Cell>
+								<Table.Cell class="text-right">
+									<div class="flex justify-end gap-2">
+										<Button size="sm" onclick={() => handleUseCard(request)}>Utiliser</Button>
+										<Button size="sm" variant="outline" onclick={() => handleReject(request)}>
+											Rejeter
+										</Button>
+									</div>
+								</Table.Cell>
+							</Table.Row>
+						{/each}
+					</Table.Body>
+				</Table.Root>
+			</Card.Content>
+		</Card.Root>
+	{/if}
 </Tabs.Content>
 ```
 
 **Server Load** (`+page.server.ts`):
+
 ```typescript
 export const load: PageServerLoad = async ({ locals }) => {
-  const { user } = await requireRole(locals, 'teacher');
-  const supabase = locals.supabase;
+	const { user } = await requireRole(locals, 'teacher');
+	const supabase = locals.supabase;
 
-  // Get all students that this teacher teaches
-  const { data: classMembers } = await supabase
-    .from('class_members')
-    .select('student_id, classes!inner(teacher_id)')
-    .eq('classes.teacher_id', user.id);
+	// Get all students that this teacher teaches
+	const { data: classMembers } = await supabase
+		.from('class_members')
+		.select('student_id, classes!inner(teacher_id)')
+		.eq('classes.teacher_id', user.id);
 
-  const studentIds = Array.from(new Set(classMembers?.map((cm) => cm.student_id) || []));
-  if (studentIds.length === 0) {
-    return { activationRequests: [] };
-  }
+	const studentIds = Array.from(new Set(classMembers?.map((cm) => cm.student_id) || []));
+	if (studentIds.length === 0) {
+		return { activationRequests: [] };
+	}
 
-  // Fetch profiles with vip_cards
-  const { data: profiles } = await supabase
-    .from('profiles')
-    .select('id, firstname, lastname, vip_cards')
-    .in('id', studentIds);
+	// Fetch profiles with vip_cards
+	const { data: profiles } = await supabase
+		.from('profiles')
+		.select('id, firstname, lastname, vip_cards')
+		.in('id', studentIds);
 
-  // Extract pending activation requests from JSONB
-  const activationRequests: ActivationRequest[] = [];
-  profiles?.forEach((profile) => {
-    const vipCards = (profile.vip_cards || {}) as unknown as StudentVipCards;
-    const studentName = `${profile.firstname || ''} ${profile.lastname || ''}`.trim();
+	// Extract pending activation requests from JSONB
+	const activationRequests: ActivationRequest[] = [];
+	profiles?.forEach((profile) => {
+		const vipCards = (profile.vip_cards || {}) as unknown as StudentVipCards;
+		const studentName = `${profile.firstname || ''} ${profile.lastname || ''}`.trim();
 
-    Object.entries(vipCards).forEach(([instanceId, instance]) => {
-      if (instance.activationRequestedAt && !instance.usedAt) {
-        const cardDef = getVipCardById(instance.cardId);
-        if (cardDef && cardDef.action) {
-          activationRequests.push({
-            studentId: profile.id,
-            studentName: studentName || 'Élève',
-            instanceId,
-            cardId: instance.cardId,
-            cardName: cardDef.name,
-            actionDescription: getActionDescription(cardDef.action),
-            requestedAt: instance.activationRequestedAt
-          });
-        }
-      }
-    });
-  });
+		Object.entries(vipCards).forEach(([instanceId, instance]) => {
+			if (instance.activationRequestedAt && !instance.usedAt) {
+				const cardDef = getVipCardById(instance.cardId);
+				if (cardDef && cardDef.action) {
+					activationRequests.push({
+						studentId: profile.id,
+						studentName: studentName || 'Élève',
+						instanceId,
+						cardId: instance.cardId,
+						cardName: cardDef.name,
+						actionDescription: getActionDescription(cardDef.action),
+						requestedAt: instance.activationRequestedAt
+					});
+				}
+			}
+		});
+	});
 
-  // Sort by requested date (most recent first)
-  activationRequests.sort(
-    (a, b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime()
-  );
+	// Sort by requested date (most recent first)
+	activationRequests.sort(
+		(a, b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime()
+	);
 
-  return { activationRequests };
+	return { activationRequests };
 };
 ```
 
@@ -579,11 +721,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 ```typescript
 export interface VipCardInstance {
-  cardId: string;                        // Card type ID (e.g., "bonus", "captain")
-  earnedAt: string;                      // ISO timestamp when earned
-  usedAt: string | null;                 // ISO timestamp when consumed (null = unused)
-  activationRequestedAt?: string | null; // Student request timestamp (optional)
-  activationRequestedBy?: string | null; // Student ID who requested (optional)
+	cardId: string; // Card type ID (e.g., "bonus", "captain")
+	earnedAt: string; // ISO timestamp when earned
+	usedAt: string | null; // ISO timestamp when consumed (null = unused)
+	activationRequestedAt?: string | null; // Student request timestamp (optional)
+	activationRequestedBy?: string | null; // Student ID who requested (optional)
 }
 ```
 
@@ -591,38 +733,38 @@ export interface VipCardInstance {
 
 ```typescript
 export interface VipCard {
-  id: string;               // Unique card ID
-  name: string;             // Display name (French)
-  description: string;      // Card description
-  imagePath: string;        // Path to card image
-  category: VipCardCategory;
-  rarity?: VipCardRarity;   // 'common' | 'rare' | 'epic' | 'legendary'
-  action?: VipCardAction;   // Optional action when used
+	id: string; // Unique card ID
+	name: string; // Display name (French)
+	description: string; // Card description
+	imagePath: string; // Path to card image
+	category: VipCardCategory;
+	rarity?: VipCardRarity; // 'common' | 'rare' | 'epic' | 'legendary'
+	action?: VipCardAction; // Optional action when used
 }
 
 type VipCardAction =
-  | DrawCardsAction
-  | RemoveWarningsAction
-  | ExchangeCardsAction
-  | AddGidouillesAction;
+	| DrawCardsAction
+	| RemoveWarningsAction
+	| ExchangeCardsAction
+	| AddGidouillesAction;
 ```
 
 ### Storage Format (JSONB in profiles.vip_cards)
 
 ```json
 {
-  "uuid-instance-1": {
-    "cardId": "bonus",
-    "earnedAt": "2025-11-03T10:00:00Z",
-    "usedAt": null,
-    "activationRequestedAt": "2025-11-03T12:00:00Z",
-    "activationRequestedBy": "student-uuid"
-  },
-  "uuid-instance-2": {
-    "cardId": "captain",
-    "earnedAt": "2025-11-02T15:00:00Z",
-    "usedAt": "2025-11-03T14:00:00Z"
-  }
+	"uuid-instance-1": {
+		"cardId": "bonus",
+		"earnedAt": "2025-11-03T10:00:00Z",
+		"usedAt": null,
+		"activationRequestedAt": "2025-11-03T12:00:00Z",
+		"activationRequestedBy": "student-uuid"
+	},
+	"uuid-instance-2": {
+		"cardId": "captain",
+		"earnedAt": "2025-11-02T15:00:00Z",
+		"usedAt": "2025-11-03T14:00:00Z"
+	}
 }
 ```
 
@@ -638,10 +780,11 @@ type VipCardAction =
    - Student-teacher relationship verified via `class_members` join
 
 2. **Input Validation** (Zod):
+
 ```typescript
 const useCardSchema = z.object({
-  instanceId: z.string().uuid('Invalid instance ID format'),
-  studentId: z.string().uuid('Invalid student ID format')
+	instanceId: z.string().uuid('Invalid instance ID format'),
+	studentId: z.string().uuid('Invalid student ID format')
 });
 ```
 
@@ -661,14 +804,14 @@ await updateVipCards(studentId, vipCards);
 
 // AFTER: Atomic JSONB update
 await supabase
-  .from('profiles')
-  .update({
-    vip_cards: {
-      ...vipCards,
-      [instanceId]: { ...vipCards[instanceId], usedAt: new Date().toISOString() }
-    } as never
-  })
-  .eq('id', studentId);
+	.from('profiles')
+	.update({
+		vip_cards: {
+			...vipCards,
+			[instanceId]: { ...vipCards[instanceId], usedAt: new Date().toISOString() }
+		} as never
+	})
+	.eq('id', studentId);
 ```
 
 ### Error Handling
@@ -693,34 +836,35 @@ await supabase
 
 ```typescript
 describe('VipCardActivation', () => {
-  test('findInstanceToUse prioritizes pending requests', () => {
-    const vipCards = {
-      'uuid-1': { cardId: 'bonus', usedAt: null, activationRequestedAt: null },
-      'uuid-2': { cardId: 'bonus', usedAt: null, activationRequestedAt: '2025-11-03T10:00:00Z' }
-    };
+	test('findInstanceToUse prioritizes pending requests', () => {
+		const vipCards = {
+			'uuid-1': { cardId: 'bonus', usedAt: null, activationRequestedAt: null },
+			'uuid-2': { cardId: 'bonus', usedAt: null, activationRequestedAt: '2025-11-03T10:00:00Z' }
+		};
 
-    const instanceId = findInstanceToUse('bonus', vipCards);
-    expect(instanceId).toBe('uuid-2'); // Pending request prioritized
-  });
+		const instanceId = findInstanceToUse('bonus', vipCards);
+		expect(instanceId).toBe('uuid-2'); // Pending request prioritized
+	});
 
-  test('optimistic UI rollback on error', async () => {
-    const modal = new VipCardsModal({ studentId, vipCards, teacherView: true });
+	test('optimistic UI rollback on error', async () => {
+		const modal = new VipCardsModal({ studentId, vipCards, teacherView: true });
 
-    await modal.handleUseCard({ id: 'bonus', name: 'Bonus' });
-    expect(modal.optimisticUsedCounts['bonus']).toBe(1); // Optimistic update
+		await modal.handleUseCard({ id: 'bonus', name: 'Bonus' });
+		expect(modal.optimisticUsedCounts['bonus']).toBe(1); // Optimistic update
 
-    // Simulate error
-    fetchMock.mockReject(new Error('Network error'));
+		// Simulate error
+		fetchMock.mockReject(new Error('Network error'));
 
-    await modal.handleUseCard({ id: 'bonus', name: 'Bonus' });
-    expect(modal.optimisticUsedCounts['bonus']).toBe(0); // Rollback
-  });
+		await modal.handleUseCard({ id: 'bonus', name: 'Bonus' });
+		expect(modal.optimisticUsedCounts['bonus']).toBe(0); // Rollback
+	});
 });
 ```
 
 ### Integration Tests
 
 **Scenarios**:
+
 - ✅ Student requests activation → Teacher approves → Card consumed + action executed
 - ✅ Teacher directly uses card → Optimistic update → Server sync → Success
 - ✅ Teacher directly uses card with pending request → Request cleared
@@ -733,23 +877,23 @@ describe('VipCardActivation', () => {
 
 ```typescript
 test('complete activation workflow', async ({ page }) => {
-  // Login as teacher
-  await page.goto('/dashboard/teacher/rewards');
+	// Login as teacher
+	await page.goto('/dashboard/teacher/rewards');
 
-  // Navigate to Demandes tab
-  await page.click('button:has-text("Demandes d\'activation VIP")');
+	// Navigate to Demandes tab
+	await page.click('button:has-text("Demandes d\'activation VIP")');
 
-  // Verify pending request appears
-  await expect(page.locator('td:has-text("Super Bonus")')).toBeVisible();
+	// Verify pending request appears
+	await expect(page.locator('td:has-text("Super Bonus")')).toBeVisible();
 
-  // Click Utiliser
-  await page.click('button:has-text("Utiliser")');
+	// Click Utiliser
+	await page.click('button:has-text("Utiliser")');
 
-  // Verify success toast
-  await expect(page.locator('.toast:has-text("utilisée")')).toBeVisible();
+	// Verify success toast
+	await expect(page.locator('.toast:has-text("utilisée")')).toBeVisible();
 
-  // Verify request removed from list
-  await expect(page.locator('td:has-text("Super Bonus")')).not.toBeVisible();
+	// Verify request removed from list
+	await expect(page.locator('td:has-text("Super Bonus")')).not.toBeVisible();
 });
 ```
 
@@ -773,21 +917,23 @@ test('complete activation workflow', async ({ page }) => {
 ### Migration Steps
 
 1. **Update API Calls**:
+
 ```typescript
 // BEFORE (v1.0.0)
 await fetch('/api/vip-cards/approve-activation', {
-  method: 'POST',
-  body: JSON.stringify({ instanceId, studentId })
+	method: 'POST',
+	body: JSON.stringify({ instanceId, studentId })
 });
 
 // AFTER (v2.0.0)
 await fetch('/api/vip-cards/use-card', {
-  method: 'POST',
-  body: JSON.stringify({ instanceId, studentId })
+	method: 'POST',
+	body: JSON.stringify({ instanceId, studentId })
 });
 ```
 
 2. **Update Navigation Links**:
+
 ```typescript
 // BEFORE
 <a href="/teacher/vip-cards">Cartes VIP</a>
@@ -797,16 +943,17 @@ await fetch('/api/vip-cards/use-card', {
 ```
 
 3. **Update VipCard Component Usage**:
+
 ```svelte
 <!-- BEFORE -->
 <VipCard {card} showActivationButton={true} />
 
 <!-- AFTER -->
 <VipCard
-  {card}
-  showUseButton={teacherView}
-  hasPendingRequest={cardHasPendingRequest(card.id)}
-  onUse={() => handleUseCard(card)}
+	{card}
+	showUseButton={teacherView}
+	hasPendingRequest={cardHasPendingRequest(card.id)}
+	onUse={() => handleUseCard(card)}
 />
 ```
 

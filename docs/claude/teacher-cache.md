@@ -90,6 +90,7 @@ $effect(() => {
 **Référence**: TeacherDashboard.svelte (lines 29-66)
 
 **Double Hydration Strategy**: Cache hydration happens in TWO locations:
+
 - `/dashboard/teacher/+layout.svelte` - hydrates for `/dashboard/teacher/*` routes
 - `/dashboard/TeacherDashboard.svelte` - hydrates for main `/dashboard` route
 
@@ -192,7 +193,70 @@ Timer fires: actualChange = 2 - 5 = -3 ✅ (correct!)
 
 ---
 
-### Pattern 4: Composite Keys (Warnings)
+### Pattern 4: VIP Card Cache Synchronization (Award Card)
+
+**Use Case**: After awarding a VIP card via API, immediately update cache with new card instance.
+
+**Why**: Enables instant display in "Voir Cartes" modal without page refresh, while maintaining dramatic card reveal animation.
+
+```typescript
+// Award VIP card via API
+const response = await fetch('/api/teacher/rewards/award-vip-card', {
+	method: 'POST',
+	body: JSON.stringify({ studentId })
+});
+
+if (response.ok) {
+	const result = await response.json();
+	// result = { cardId, instanceId, earnedAt }
+
+	// Get current VIP cards from cache
+	const rewards = teacherCache.getRewardsSync(selectedClassId);
+	const currentVipCards = rewards?.get(studentId)?.vip_cards || {};
+
+	// Add the new card instance to cache
+	const newVipCards = {
+		...currentVipCards,
+		[result.instanceId]: {
+			cardId: result.cardId,
+			earnedAt: result.earnedAt,
+			usedAt: null
+		}
+	};
+
+	// Update cache immediately (optimistic)
+	teacherCache.updateVipCardsOptimistic(selectedClassId, studentId, newVipCards);
+
+	// Card now appears in modal without refresh!
+}
+```
+
+**Benefits**:
+
+- Instant feedback: Card appears immediately in modal
+- Maintains UX: Dramatic reveal animation still works
+- No refetch required: Cache synchronized in real-time
+- Backward compatible: Works before and after migration
+
+**API Change** (2025-11-04):
+
+The `award_random_vip_card` RPC function was modified to return JSONB instead of TEXT:
+
+```typescript
+// BEFORE (migration 20251104005641)
+SELECT award_random_vip_card('student-uuid');
+// Returns: "bonus" (cardId only)
+
+// AFTER (migration 20251104005641)
+SELECT award_random_vip_card('student-uuid');
+// Returns: {"cardId": "bonus", "instanceId": "abc-123", "earnedAt": "2025-11-04T10:00:00Z"}
+```
+
+**Référence**: rewards/+page.svelte (lines 331-367), award-vip-card/+server.ts
+
+---
+
+### Pattern 5: Composite Keys (Warnings)
 
 Cache 2B utilise clés composites pour isolation par période.
 

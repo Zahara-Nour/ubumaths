@@ -32,7 +32,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	try {
 		// Call RPC to award random VIP card
-		const { data: cardId, error: rpcError } = await supabase.rpc('award_random_vip_card', {
+		// Returns JSONB: { cardId, instanceId, earnedAt }
+		const { data: cardData, error: rpcError } = await supabase.rpc('award_random_vip_card', {
 			p_student_id: studentId
 		});
 
@@ -41,10 +42,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(500, rpcError.message || 'Failed to award VIP card');
 		}
 
+		// Parse the JSONB response
+		const { cardId, instanceId, earnedAt } = cardData as {
+			cardId: string;
+			instanceId: string;
+			earnedAt: string;
+		};
+
 		return json({
 			success: true,
 			message: 'Carte VIP attribuée avec succès !',
-			cardId
+			cardId,
+			instanceId,
+			earnedAt
 		});
 	} catch (err) {
 		console.error('[API] Error awarding VIP card:', err);

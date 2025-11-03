@@ -917,25 +917,41 @@ VIP cards are special reward items that students can earn by spending 3 gidouill
 
 #### `award_random_vip_card(student_id UUID)`
 
-**Returns**: TEXT - The card ID that was awarded (e.g., "bonus", "captain")
+**Returns**: JSONB - Complete card information including `cardId`, `instanceId`, and `earnedAt`
+
 **Purpose**: Awards a random VIP card to a student by deducting 3 gidouilles
+
 **Security**:
 
 - SECURITY DEFINER function (runs with elevated permissions)
 - Verifies caller is a teacher via `is_teacher_or_admin()`
 - Verifies student is in one of the teacher's classes
 - Ensures student has at least 3 gidouilles before awarding
-  **Behavior**:
+
+**Behavior**:
+
 - Deducts 3 gidouilles from student's balance
 - Randomly selects from 26 available VIP cards
 - Creates new card instance with unique UUID
 - Adds card to student's vip_cards JSONB column
-  **Usage**:
+- Returns complete card information for frontend cache synchronization
+
+**Return Format**:
+
+```json
+{
+	"cardId": "bonus",
+	"instanceId": "uuid-of-instance",
+	"earnedAt": "2025-11-04T10:00:00Z"
+}
+```
+
+**Usage**:
 
 ```sql
 -- Award random VIP card to a student
 SELECT award_random_vip_card('student-uuid');
--- Returns: 'bonus' (or any other card ID)
+-- Returns: {"cardId": "bonus", "instanceId": "abc-123", "earnedAt": "2025-11-04T10:00:00Z"}
 ```
 
 **Errors**:
@@ -943,6 +959,9 @@ SELECT award_random_vip_card('student-uuid');
 - Raises exception if caller is not a teacher
 - Raises exception if student is not in teacher's classes
 - Raises exception if student has less than 3 gidouilles
+
+**Migration** (2025-11-04):
+Changed return type from TEXT (cardId only) to JSONB to enable instant cache synchronization in the frontend without requiring a full data refresh.
 
 #### `use_vip_card(student_id UUID, card_id TEXT)`
 

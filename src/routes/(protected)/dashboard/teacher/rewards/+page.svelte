@@ -113,12 +113,11 @@
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import VipCardsModal from '$lib/components/VipCardsModal.svelte';
 	import VipCardHoloReveal from '$lib/components/VipCardHoloReveal.svelte';
-	import { getVipCardById, type VipCard, type StudentVipCards } from '$lib/types/vip-card';
+	import { getVipCardById, type VipCard } from '$lib/types/vip-card';
 	import { canAffordVipCard } from '$lib/utils/vip-cards';
-	import { Sparkles, Eye, Loader2, Check, X, Clock } from 'lucide-svelte';
+	import { Sparkles, Eye, Loader2, Check, X } from 'lucide-svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
-	import type { ClassWithData } from '$lib/server/students';
 	import * as Table from '$lib/components/ui/table';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -176,9 +175,9 @@
 	// VIP card states
 	let vipModalOpen = $state(false);
 	let selectedStudentForVipModal = $state<{
+		classId: string;
 		id: string;
 		name: string;
-		vipCards: StudentVipCards;
 	} | null>(null);
 	let revealingCard = $state<{
 		card: VipCard;
@@ -186,16 +185,13 @@
 		loading: boolean;
 		confirmed: boolean;
 	} | null>(null); // Tracks card reveal state with loading/confirmed
-	let lastProcessedCardId = $state<string | null>(null); // Tracks last processed cardId to prevent duplicates and infinite loops
 
 	// Tab management (URL-based)
 	let activeTab = $derived(page.url.searchParams.get('tab') || 'gidouilles');
 
 	function changeTab(tab: string) {
 		const url =
-			tab === 'gidouilles'
-				? '/dashboard/teacher/rewards'
-				: `/dashboard/teacher/rewards?tab=${tab}`;
+			tab === 'gidouilles' ? '/dashboard/teacher/rewards' : `/dashboard/teacher/rewards?tab=${tab}`;
 		goto(url, { replaceState: false });
 	}
 
@@ -237,9 +233,9 @@
 
 			toaster.success(message);
 			await invalidateAll();
-		} catch (error) {
+		} catch (_error) {
 			console.error('[rewards] Use card error:', error);
-			toaster.error(error instanceof Error ? error.message : 'Erreur');
+			toaster.error(error instanceof Error ? errorData.message : 'Erreur');
 		} finally {
 			processingRequests[instanceId] = false;
 		}
@@ -260,7 +256,7 @@
 
 			toaster.success(`Demande rejetée pour ${studentName}`);
 			await invalidateAll();
-		} catch (error) {
+		} catch (_error) {
 			toaster.error('Erreur lors du rejet');
 		} finally {
 			processingRequests[instanceId] = false;
@@ -304,7 +300,12 @@
 	 * Award VIP Card Handler
 	 * Replaces form action with direct API call
 	 */
-	async function handleAwardVipCard(student: { id: string; firstname: string; lastname: string | null; full_name: string | null }) {
+	async function handleAwardVipCard(student: {
+		id: string;
+		firstname: string;
+		lastname: string | null;
+		full_name: string | null;
+	}) {
 		// Save student name for reveal animation
 		const studentName = getFullName(student.firstname, student.lastname, student.full_name);
 
@@ -339,10 +340,29 @@
 				const result = await response.json();
 
 				// SUCCESS: Cache already has the -3 gidouilles optimistic update
-				// Now trigger the flip animation with the actual card
+				// Now update VIP cards cache and trigger the flip animation
 				const card = getVipCardById(result.cardId);
 				if (card && revealingCard) {
 					lastProcessedCardId = result.cardId;
+
+					// Update VIP cards cache with the new card (if migration applied)
+					// After migration: result = { cardId, instanceId, earnedAt }
+					// Before migration: result = { cardId } only
+					if (result.instanceId && result.earnedAt) {
+						const rewards = teacherCache.getRewardsSync(selectedClassId);
+						const currentVipCards = rewards?.get(student.id)?.vip_cards || {};
+
+						const newVipCards = {
+							...currentVipCards,
+							[result.instanceId]: {
+								cardId: result.cardId,
+								earnedAt: result.earnedAt,
+								usedAt: null
+							}
+						};
+
+						teacherCache.updateVipCardsOptimistic(selectedClassId, student.id, newVipCards);
+					}
 
 					// Update revealingCard to show confirmation (triggers flip)
 					revealingCard = {
@@ -357,10 +377,10 @@
 				updateStudentGidouillesOptimistic(student.id, +3);
 				revealingCard = null;
 
-				const error = await response.json().catch(() => ({ message: 'Erreur inconnue' }));
-				toaster.error(error.message || 'Erreur lors de l\'attribution de la carte');
+				const errorData = await response.json().catch(() => ({ message: 'Erreur inconnue' }));
+				toaster.error(errorData.message || "Erreur lors de l'attribution de la carte");
 			}
-		} catch (err) {
+		} catch (_err) {
 			// ERROR: Rollback optimistic update
 			updateStudentGidouillesOptimistic(student.id, +3);
 			revealingCard = null;
@@ -446,11 +466,7 @@
 	 * @param delta - The change amount for this click (positive or negative)
 	 * @param studentName - The student's first name for the success toast
 	 */
-	function debouncedUpdateStudent(
-		studentId: string,
-		delta: number,
-		studentName: string
-	) {
+	function debouncedUpdateStudent(studentId: string, delta: number, studentName: string) {
 		const key = `student-${studentId}`;
 
 		// STEP 1: Apply optimistic update immediately for instant UI feedback
@@ -639,19 +655,18 @@
 
 	/**
 	 * Open VIP cards modal for a student
-	 * Passes student ID for card removal functionality (teacher view)
+	 * VIP cards will be read from cache by the modal component itself
 	 */
 	function openVipModal(student: {
 		id: string;
 		firstname: string | null;
 		lastname: string | null;
 		full_name: string | null;
-		vip_cards: StudentVipCards;
 	}) {
 		selectedStudentForVipModal = {
+			classId: selectedClassId,
 			id: student.id,
-			name: getFullName(student.firstname, student.lastname, student.full_name),
-			vipCards: student.vip_cards || {}
+			name: getFullName(student.firstname, student.lastname, student.full_name)
 		};
 		vipModalOpen = true;
 	}
@@ -670,7 +685,7 @@
 </script>
 
 <div class="container mx-auto py-8">
-	<h1 class="text-3xl font-bold mb-6">Gestion des Récompenses</h1>
+	<h1 class="mb-6 text-3xl font-bold">Gestion des Récompenses</h1>
 
 	<Tabs.Root value={activeTab} onValueChange={changeTab}>
 		<Tabs.List class="mb-6">
@@ -688,223 +703,234 @@
 		<!-- TAB 1: GIDOUILLES (existing content) -->
 		<Tabs.Content value="gidouilles">
 			<div class="space-y-6">
-	{#if classes.length === 0}
-		<!-- Pas de classes -->
-		<div class="rounded-lg border border-border bg-card p-12 text-center">
-			<img src={gidouilleImg} alt="Gidouille" class="mx-auto mb-4 h-16 w-16 opacity-50" />
-			<h2 class="mb-2 text-xl font-semibold text-foreground">Aucune classe trouvée</h2>
-			<p class="text-muted-foreground">
-				Vous devez d'abord créer des classes pour gérer les récompenses de vos élèves.
-			</p>
-		</div>
-	{:else}
-		<!-- TABS PAR CLASSE -->
-		<Tabs.Root bind:value={selectedClassId} class="w-full">
-			<Tabs.List class="mb-6">
-				{#each classes as classItem (classItem.id)}
-					<Tabs.Trigger value={classItem.id}>
-						{classItem.name}
-					</Tabs.Trigger>
-				{/each}
-			</Tabs.List>
-
-			{#each classes as classItem (classItem.id)}
-				<Tabs.Content value={classItem.id} class="mt-0 space-y-6">
-					<!-- CONTRÔLES AU NIVEAU CLASSE -->
-					<div class="rounded-lg border border-border bg-card p-6">
-						<h3 class="mb-4 text-lg font-semibold text-foreground">Actions pour toute la classe</h3>
-						<div class="flex items-end gap-3">
-							<div class="flex items-center gap-2">
-								<!-- Bouton pour enlever (debounced) -->
-								<Button
-									variant="default"
-									class="h-10 w-10 p-0"
-									onclick={() => {
-										const delta = -classDeltas[classItem.id];
-										debouncedUpdateClass(classItem.id, delta);
-									}}
-								>
-									−
-								</Button>
-
-								<!-- Input pour le nombre de gidouilles -->
-								<div class="w-16">
-									<label
-										for="class-delta-{classItem.id}"
-										class="mb-2 block text-center text-sm text-muted-foreground"
-									>
-										Nombre
-									</label>
-									<Input
-										id="class-delta-{classItem.id}"
-										type="number"
-										min="1"
-										max="9"
-										bind:value={classDeltas[classItem.id]}
-										class="w-full text-center"
-									/>
-								</div>
-
-								<!-- Bouton pour ajouter (debounced) -->
-								<Button
-									variant="default"
-									class="h-10 w-10 p-0"
-									onclick={() => {
-										const delta = classDeltas[classItem.id];
-										debouncedUpdateClass(classItem.id, delta);
-									}}
-								>
-									+
-								</Button>
-							</div>
-
-							<span class="text-sm text-muted-foreground">
-								Appliquer à tous les élèves de la classe
-							</span>
-						</div>
+				{#if classes.length === 0}
+					<!-- Pas de classes -->
+					<div class="rounded-lg border border-border bg-card p-12 text-center">
+						<img src={gidouilleImg} alt="Gidouille" class="mx-auto mb-4 h-16 w-16 opacity-50" />
+						<h2 class="mb-2 text-xl font-semibold text-foreground">Aucune classe trouvée</h2>
+						<p class="text-muted-foreground">
+							Vous devez d'abord créer des classes pour gérer les récompenses de vos élèves.
+						</p>
 					</div>
+				{:else}
+					<!-- TABS PAR CLASSE -->
+					<Tabs.Root bind:value={selectedClassId} class="w-full">
+						<Tabs.List class="mb-6">
+							{#each classes as classItem (classItem.id)}
+								<Tabs.Trigger value={classItem.id}>
+									{classItem.name}
+								</Tabs.Trigger>
+							{/each}
+						</Tabs.List>
 
-					<!-- LISTE DES ÉLÈVES -->
-					{#if currentStudents.length === 0}
-						<div class="rounded-lg border border-border bg-card p-12 text-center">
-							<p class="text-muted-foreground">Aucun élève dans cette classe</p>
-						</div>
-					{:else}
-						<div class="overflow-hidden rounded-lg border border-border bg-card">
-							<div class="border-b border-border bg-muted/30 px-6 py-4">
-								<h3 class="text-lg font-semibold text-foreground">
-									Élèves ({currentStudents.length})
-								</h3>
-							</div>
-
-							<div class="divide-y divide-border">
-								{#each currentStudents as student (student.id)}
-									<div class="flex items-center gap-6 px-6 py-4">
-										<!-- AVATAR -->
-										<Avatar.Root class="h-12 w-12 flex-shrink-0">
-											<Avatar.Image
-												src={student.avatar_url ||
-													getAvatarFallback(
-														(student.role as 'student' | 'teacher' | 'admin') || 'student',
-														student.gender === 'boy' ? 'M' : student.gender === 'girl' ? 'F' : null
-													)}
-												alt={getFullName(student.firstname, student.lastname, student.full_name)}
-											/>
-											<Avatar.Fallback class="bg-primary/10 font-semibold text-primary">
-												{getAvatarInitials(student.firstname, student.lastname)}
-											</Avatar.Fallback>
-										</Avatar.Root>
-
-										<!-- NOM DE L'ÉLÈVE -->
-										<div class="min-w-0 flex-1">
-											<p class="truncate font-medium text-foreground">
-												{getFullName(student.firstname, student.lastname, student.full_name)}
-											</p>
-										</div>
-
-										<!-- GIDOUILLES ACTUELLES -->
-										<div class="flex w-32 items-center justify-end gap-2">
-											<img src={gidouilleImg} alt="Gidouille" class="h-6 w-6 flex-shrink-0" />
-											<span class="text-2xl font-bold text-foreground tabular-nums">
-												{getStudentGidouilles(student.id)}
-											</span>
-										</div>
-
-										<!-- BOUTONS +/- AVEC INPUT AU MILIEU -->
-										<div class="flex flex-shrink-0 items-center gap-2">
+						{#each classes as classItem (classItem.id)}
+							<Tabs.Content value={classItem.id} class="mt-0 space-y-6">
+								<!-- CONTRÔLES AU NIVEAU CLASSE -->
+								<div class="rounded-lg border border-border bg-card p-6">
+									<h3 class="mb-4 text-lg font-semibold text-foreground">
+										Actions pour toute la classe
+									</h3>
+									<div class="flex items-end gap-3">
+										<div class="flex items-center gap-2">
 											<!-- Bouton pour enlever (debounced) -->
 											<Button
-												size="sm"
 												variant="default"
 												class="h-10 w-10 p-0"
-												disabled={getStudentGidouilles(student.id) < studentDeltas[student.id]}
 												onclick={() => {
-													const delta = -studentDeltas[student.id];
-													// Get student name for toast (priority: firstname > full_name > fallback)
-													const name = student.firstname || student.full_name || 'Élève';
-													debouncedUpdateStudent(student.id, delta, name);
+													const delta = -classDeltas[classItem.id];
+													debouncedUpdateClass(classItem.id, delta);
 												}}
 											>
 												−
 											</Button>
 
-											<!-- INPUT POUR LE DELTA -->
-											<div class="w-14">
+											<!-- Input pour le nombre de gidouilles -->
+											<div class="w-16">
+												<label
+													for="class-delta-{classItem.id}"
+													class="mb-2 block text-center text-sm text-muted-foreground"
+												>
+													Nombre
+												</label>
 												<Input
+													id="class-delta-{classItem.id}"
 													type="number"
 													min="1"
 													max="9"
-													bind:value={studentDeltas[student.id]}
-													class="h-10 w-full text-center"
+													bind:value={classDeltas[classItem.id]}
+													class="w-full text-center"
 												/>
 											</div>
 
 											<!-- Bouton pour ajouter (debounced) -->
 											<Button
-												size="sm"
 												variant="default"
 												class="h-10 w-10 p-0"
 												onclick={() => {
-													const delta = studentDeltas[student.id];
-													// Get student name for toast (priority: firstname > full_name > fallback)
-													const name = student.firstname || student.full_name || 'Élève';
-													debouncedUpdateStudent(student.id, delta, name);
+													const delta = classDeltas[classItem.id];
+													debouncedUpdateClass(classItem.id, delta);
 												}}
 											>
 												+
 											</Button>
 										</div>
 
-										<!-- SÉPARATEUR VERTICAL -->
-										<div class="mx-2 h-10 w-px bg-border"></div>
+										<span class="text-sm text-muted-foreground">
+											Appliquer à tous les élèves de la classe
+										</span>
+									</div>
+								</div>
 
-										<!-- BOUTONS CARTES VIP -->
-										<div class="flex flex-shrink-0 items-center gap-2">
-											<!-- Bouton Voir Cartes VIP -->
-											<Button
-												size="sm"
-												variant="outline"
-												class="gap-1"
-												onclick={() => openVipModal(student)}
-											>
-												<Eye class="h-4 w-4" />
-												<span class="hidden sm:inline">Voir Cartes</span>
-											</Button>
+								<!-- LISTE DES ÉLÈVES -->
+								{#if currentStudents.length === 0}
+									<div class="rounded-lg border border-border bg-card p-12 text-center">
+										<p class="text-muted-foreground">Aucun élève dans cette classe</p>
+									</div>
+								{:else}
+									<div class="overflow-hidden rounded-lg border border-border bg-card">
+										<div class="border-b border-border bg-muted/30 px-6 py-4">
+											<h3 class="text-lg font-semibold text-foreground">
+												Élèves ({currentStudents.length})
+											</h3>
+										</div>
 
-											<!-- Button to award VIP card -->
-											<Button
-												onclick={() => handleAwardVipCard(student)}
-												size="sm"
-												variant="default"
-												class="gap-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-												disabled={!canAffordVipCard(getStudentGidouilles(student.id)) ||
-													revealingCard !== null}
-											>
-												{#if revealingCard !== null}
-													<Loader2 class="h-4 w-4 animate-spin" />
-													<span class="hidden sm:inline">Attribution...</span>
-												{:else}
-													<Sparkles class="h-4 w-4" />
-													<span class="hidden sm:inline">Carte VIP</span>
-													<span class="text-xs opacity-80"
-														>(3 <img
-															src={gidouilleImg}
-															alt="gidouille"
-															class="inline h-3 w-3"
-														/>)</span
-													>
-												{/if}
-											</Button>
+										<div class="divide-y divide-border">
+											{#each currentStudents as student (student.id)}
+												<div class="flex items-center gap-6 px-6 py-4">
+													<!-- AVATAR -->
+													<Avatar.Root class="h-12 w-12 flex-shrink-0">
+														<Avatar.Image
+															src={student.avatar_url ||
+																getAvatarFallback(
+																	(student.role as 'student' | 'teacher' | 'admin') || 'student',
+																	student.gender === 'boy'
+																		? 'M'
+																		: student.gender === 'girl'
+																			? 'F'
+																			: null
+																)}
+															alt={getFullName(
+																student.firstname,
+																student.lastname,
+																student.full_name
+															)}
+														/>
+														<Avatar.Fallback class="bg-primary/10 font-semibold text-primary">
+															{getAvatarInitials(student.firstname, student.lastname)}
+														</Avatar.Fallback>
+													</Avatar.Root>
+
+													<!-- NOM DE L'ÉLÈVE -->
+													<div class="min-w-0 flex-1">
+														<p class="truncate font-medium text-foreground">
+															{getFullName(student.firstname, student.lastname, student.full_name)}
+														</p>
+													</div>
+
+													<!-- GIDOUILLES ACTUELLES -->
+													<div class="flex w-32 items-center justify-end gap-2">
+														<img src={gidouilleImg} alt="Gidouille" class="h-6 w-6 flex-shrink-0" />
+														<span class="text-2xl font-bold text-foreground tabular-nums">
+															{getStudentGidouilles(student.id)}
+														</span>
+													</div>
+
+													<!-- BOUTONS +/- AVEC INPUT AU MILIEU -->
+													<div class="flex flex-shrink-0 items-center gap-2">
+														<!-- Bouton pour enlever (debounced) -->
+														<Button
+															size="sm"
+															variant="default"
+															class="h-10 w-10 p-0"
+															disabled={getStudentGidouilles(student.id) <
+																studentDeltas[student.id]}
+															onclick={() => {
+																const delta = -studentDeltas[student.id];
+																// Get student name for toast (priority: firstname > full_name > fallback)
+																const name = student.firstname || student.full_name || 'Élève';
+																debouncedUpdateStudent(student.id, delta, name);
+															}}
+														>
+															−
+														</Button>
+
+														<!-- INPUT POUR LE DELTA -->
+														<div class="w-14">
+															<Input
+																type="number"
+																min="1"
+																max="9"
+																bind:value={studentDeltas[student.id]}
+																class="h-10 w-full text-center"
+															/>
+														</div>
+
+														<!-- Bouton pour ajouter (debounced) -->
+														<Button
+															size="sm"
+															variant="default"
+															class="h-10 w-10 p-0"
+															onclick={() => {
+																const delta = studentDeltas[student.id];
+																// Get student name for toast (priority: firstname > full_name > fallback)
+																const name = student.firstname || student.full_name || 'Élève';
+																debouncedUpdateStudent(student.id, delta, name);
+															}}
+														>
+															+
+														</Button>
+													</div>
+
+													<!-- SÉPARATEUR VERTICAL -->
+													<div class="mx-2 h-10 w-px bg-border"></div>
+
+													<!-- BOUTONS CARTES VIP -->
+													<div class="flex flex-shrink-0 items-center gap-2">
+														<!-- Bouton Voir Cartes VIP -->
+														<Button
+															size="sm"
+															variant="outline"
+															class="gap-1"
+															onclick={() => openVipModal(student)}
+														>
+															<Eye class="h-4 w-4" />
+															<span class="hidden sm:inline">Voir Cartes</span>
+														</Button>
+
+														<!-- Button to award VIP card -->
+														<Button
+															onclick={() => handleAwardVipCard(student)}
+															size="sm"
+															variant="default"
+															class="gap-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+															disabled={!canAffordVipCard(getStudentGidouilles(student.id)) ||
+																revealingCard !== null}
+														>
+															{#if revealingCard !== null}
+																<Loader2 class="h-4 w-4 animate-spin" />
+																<span class="hidden sm:inline">Attribution...</span>
+															{:else}
+																<Sparkles class="h-4 w-4" />
+																<span class="hidden sm:inline">Carte VIP</span>
+																<span class="text-xs opacity-80"
+																	>(3 <img
+																		src={gidouilleImg}
+																		alt="gidouille"
+																		class="inline h-3 w-3"
+																	/>)</span
+																>
+															{/if}
+														</Button>
+													</div>
+												</div>
+											{/each}
 										</div>
 									</div>
-								{/each}
-							</div>
-						</div>
-					{/if}
-				</Tabs.Content>
-			{/each}
-		</Tabs.Root>
-	{/if}
+								{/if}
+							</Tabs.Content>
+						{/each}
+					</Tabs.Root>
+				{/if}
 			</div>
 		</Tabs.Content>
 
@@ -913,9 +939,9 @@
 			{#if data.activationRequests.length === 0}
 				<Card.Root>
 					<Card.Content class="pt-6 text-center">
-						<Sparkles class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+						<Sparkles class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
 						<p class="text-lg text-muted-foreground">Aucune demande d'activation en attente</p>
-						<p class="text-sm text-muted-foreground mt-2">
+						<p class="mt-2 text-sm text-muted-foreground">
 							Les demandes de vos élèves apparaîtront ici
 						</p>
 					</Card.Content>
@@ -957,7 +983,7 @@
 											{formatDate(request.requestedAt)}
 										</Table.Cell>
 										<Table.Cell class="text-right">
-											<div class="flex gap-2 justify-end">
+											<div class="flex justify-end gap-2">
 												<Button
 													onclick={() =>
 														handleUseCard(
@@ -972,7 +998,7 @@
 													{#if processingRequests[request.instanceId]}
 														<Loader2 class="h-4 w-4 animate-spin" />
 													{:else}
-														<Check class="h-4 w-4 mr-1" />
+														<Check class="mr-1 h-4 w-4" />
 														Utiliser
 													{/if}
 												</Button>
@@ -990,7 +1016,7 @@
 													{#if processingRequests[request.instanceId]}
 														<Loader2 class="h-4 w-4 animate-spin" />
 													{:else}
-														<X class="h-4 w-4 mr-1" />
+														<X class="mr-1 h-4 w-4" />
 														Rejeter
 													{/if}
 												</Button>
@@ -1031,8 +1057,8 @@
 		bind:open={vipModalOpen}
 		onOpenChange={handleVipModalClose}
 		studentName={selectedStudentForVipModal.name}
+		classId={selectedStudentForVipModal.classId}
 		studentId={selectedStudentForVipModal.id}
-		vipCards={selectedStudentForVipModal.vipCards}
 		teacherView={true}
 	/>
 {/if}

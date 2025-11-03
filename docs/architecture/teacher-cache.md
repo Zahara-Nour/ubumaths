@@ -760,6 +760,7 @@ updateGidouillesOptimistic(classId: string, studentId: string, delta: number): v
 ```
 
 **Key** :
+
 - Uses `SvelteMap` from `svelte/reactivity` for reactive updates
 - Creates **new objects** (not in-place mutation) to trigger reactivity
 - SvelteMap automatically triggers UI updates on `.set()` operations
@@ -1178,6 +1179,7 @@ teacherCache.getStats();
 ### 2025-11-03 - Part 2: Instant Navigation with API Endpoints
 
 **Major Changes:**
+
 - **Periods Cache Added**: New cache for academic periods (quasi-static data)
   - `Cache 5`: Periods per school (TTL: 1 hour)
   - Methods: `setPeriods()`, `getPeriodsSync()`, `invalidatePeriods()`
@@ -1200,6 +1202,7 @@ teacherCache.getStats();
     - `/api/teacher/rewards/remove-vip-card`
 
 **Performance Impact:**
+
 - ✅ **100% elimination** of `__data.json` requests on navigation
 - ✅ **Warnings page**: 0ms instant (was slow due to dashboard layout load)
 - ✅ **Rewards page**: 0ms instant (was 653ms due to `+page.server.ts`)
@@ -1207,12 +1210,14 @@ teacherCache.getStats();
 - ✅ **Security improved**: All API endpoints now have Zod validation (form actions had none)
 
 **Trade-offs:**
+
 - ❌ Lost progressive enhancement (rewards form now requires JavaScript)
 - ✅ Gained security (Zod validation on all endpoints)
 - ✅ Gained flexibility (API endpoints callable from anywhere)
 - ✅ Better error handling (direct try/catch vs form response parsing)
 
 **Files Modified:**
+
 - `src/lib/stores/teacherDashboardCache.svelte.ts`: Added periods cache + methods
 - `src/lib/types/teacher-cache.ts`: Added `periods: number` to CacheStats
 - `src/routes/api/teacher/periods/+server.ts`: New periods endpoint
@@ -1250,6 +1255,7 @@ Called ONLY when user actually submits action
 ### 2025-11-03 - Cache-First Class Loading
 
 **Major Changes:**
+
 - **Cache-First Pattern**: Implemented cache-first class loading for teacher dashboard layout
 - **New API Endpoint**: Created `/api/teacher/classes` to wrap server-only `getTeacherClassesWithCounts()`
 - **Centralized Loading**: Classes now loaded once in `/dashboard/teacher/+layout.svelte` instead of per-page
@@ -1260,12 +1266,14 @@ Called ONLY when user actually submits action
 - **Eliminated Redundancy**: Removed class loading from rewards and warnings page servers
 
 **Performance Impact:**
+
 - ✅ Zero redundant class loading (was: 2x per visit to rewards/warnings)
 - ✅ Instant class list on subsequent visits (cache-first = <10ms)
 - ✅ Persists across navigation (no reload when leaving/returning to dashboard)
 - ✅ Single source of truth for class initialization
 
 **Files Modified:**
+
 - `src/lib/stores/teacherDashboardCache.svelte.ts`: Added class sync methods
 - `src/routes/api/teacher/classes/+server.ts`: New API endpoint
 - `src/routes/(protected)/dashboard/teacher/+layout.svelte`: Cache-first loading logic
@@ -1278,6 +1286,7 @@ Called ONLY when user actually submits action
 ### 2025-11-02 - SvelteMap Migration & Optimistic UI Optimization
 
 **Major Changes:**
+
 - **Migrated to SvelteMap**: All 5 caches now use `SvelteMap` from `svelte/reactivity` instead of `$state<Map>`
 - **Full Reactivity**: Optimistic updates now trigger UI updates immediately via SvelteMap
 - **Optimized Invalidation**:
@@ -1287,6 +1296,7 @@ Called ONLY when user actually submits action
 - **Code Reduction**: ~50 lines of local optimistic state removed, ~30 lines of invalidation logic simplified
 
 **Performance Impact:**
+
 - 66% reduction in cache operations on successful updates
 - 33% reduction in cache operations on failed updates
 - Instant UI feedback with guaranteed reactivity

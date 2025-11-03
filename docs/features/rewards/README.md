@@ -127,6 +127,103 @@ vip_cards: {
 
 ## 🔌 API Endpoints
 
+### POST /api/teacher/rewards/award-vip-card
+
+Award a random VIP card to a student (costs 3 gidouilles).
+
+**Authentication**: Required (teacher or admin role)
+
+**Request Body**:
+
+```typescript
+{
+	studentId: string; // UUID of the student
+}
+```
+
+**Response** (Success):
+
+```typescript
+{
+	success: true;
+	message: string; // Success message
+	cardId: string; // The card type awarded (e.g., "bonus")
+	instanceId: string; // UUID of the created card instance
+	earnedAt: string; // ISO timestamp when card was earned
+}
+```
+
+**Response** (Error):
+
+```typescript
+{
+	message: string; // Error description
+}
+```
+
+**Status Codes**:
+
+| Code | Reason                                                  |
+| ---- | ------------------------------------------------------- |
+| 200  | Success                                                 |
+| 400  | Invalid request body (Zod validation failed)            |
+| 401  | Not authenticated                                       |
+| 403  | Not a teacher/admin OR student not in teacher's classes |
+| 400  | Insufficient gidouilles (student needs at least 3)      |
+| 500  | Server error (database or RPC failure)                  |
+
+**Security**:
+
+- Zod validation on request body
+- Teacher-student relationship verified via RLS in RPC function
+- Atomic database transaction (gidouilles deducted and card added together)
+
+**Cache Synchronization** (2025-11-04):
+
+The endpoint now returns complete card information (`cardId`, `instanceId`, `earnedAt`) enabling instant cache synchronization without page refresh:
+
+```typescript
+// Frontend implementation (rewards/+page.svelte)
+const response = await fetch('/api/teacher/rewards/award-vip-card', {
+	method: 'POST',
+	body: JSON.stringify({ studentId })
+});
+
+const result = await response.json();
+
+// Immediately update cache with the new card
+if (result.instanceId && result.earnedAt) {
+	const rewards = teacherCache.getRewardsSync(selectedClassId);
+	const currentVipCards = rewards?.get(studentId)?.vip_cards || {};
+
+	const newVipCards = {
+		...currentVipCards,
+		[result.instanceId]: {
+			cardId: result.cardId,
+			earnedAt: result.earnedAt,
+			usedAt: null
+		}
+	};
+
+	teacherCache.updateVipCardsOptimistic(selectedClassId, studentId, newVipCards);
+}
+```
+
+**Benefits**:
+
+- VIP cards appear immediately in "Voir Cartes" modal
+- No page refresh required
+- Maintains dramatic card reveal animation
+- Backward compatible (works before and after migration)
+
+**Related Files**:
+
+- Implementation: `src/routes/api/teacher/rewards/award-vip-card/+server.ts`
+- RPC Function: `supabase/migrations/20251104005641_modify_award_vip_card_return_jsonb.sql`
+- Frontend Usage: `src/routes/(protected)/dashboard/teacher/rewards/+page.svelte` (lines 331-367)
+
+---
+
 ### POST /api/rewards/vip-cards/remove
 
 Remove a VIP card from a student's inventory.
