@@ -63,7 +63,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	 * - The client-side Supabase client handles session management automatically
 	 *
 	 * PERFORMANCE OPTIMIZATION:
-	 * - Added 5-second timeout to prevent hanging on slow Supabase connections
+	 * - Added 15-second timeout to prevent hanging on slow Supabase connections
 	 * - Falls back to no user if timeout is reached
 	 *
 	 * @returns {Object} { user } - Verified user object (or null if not authenticated)
@@ -82,12 +82,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 		};
 
 		try {
-			// Verify the user with Supabase's auth server (with 5s timeout)
+			// Verify the user with Supabase's auth server (with 15s timeout)
 			// This is the ONLY security check needed - never skip this!
 			const {
 				data: { user },
 				error
-			} = await withTimeout(event.locals.supabase.auth.getUser(), 5000);
+			} = await withTimeout(event.locals.supabase.auth.getUser(), 15000);
 
 			// If verification fails, return null (user not authenticated)
 			if (error || !user) {
