@@ -299,11 +299,9 @@
 					throw new Error('Failed to add warning');
 				}
 
-				// SUCCESS: Cache already has optimistic value, just invalidate to refresh with server data
-				teacherCache.invalidateWarnings(selectedClassId, selectedPeriodId);
-				await loadWarnings();
-
-				// Show success toast
+				// SUCCESS: Cache already has correct optimistic value
+				// No need to invalidate - optimistic update matches server response
+				// Cache will naturally expire and refresh later
 				toaster.success(
 					`Avertissement ${getWarningTypeLabel(warningType)} ajouté (${studentName})`
 				);
@@ -366,16 +364,12 @@
 				throw new Error('Failed to remove warning');
 			}
 
-			// SUCCESS: Cache already has optimistic value, just invalidate to refresh with server data
-			setTimeout(() => {
-				teacherCache.invalidateWarnings(selectedClassId, selectedPeriodId);
-				loadWarnings();
-
-				// Show success toast
-				toaster.success(
-					`Avertissement ${getWarningTypeLabel(warningType)} retiré (${studentName})`
-				);
-			}, 100);
+			// SUCCESS: Cache already has correct optimistic value
+			// No need to invalidate - optimistic update matches server response
+			// Cache will naturally expire and refresh later
+			toaster.success(
+				`Avertissement ${getWarningTypeLabel(warningType)} retiré (${studentName})`
+			);
 		} catch (err) {
 			console.error('Error removing warning:', err);
 
