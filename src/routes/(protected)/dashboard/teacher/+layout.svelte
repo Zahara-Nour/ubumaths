@@ -7,6 +7,7 @@
 
 <script lang="ts">
 	import { getSelectedClassId, setSelectedClass } from '$lib/stores/selectedClass.svelte';
+	import { getSelectedPeriodId, setSelectedPeriod } from '$lib/stores/selectedPeriod.svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import type { LayoutData } from './$types';
 	import type { ClassWithData } from '$lib/server/students';
@@ -80,6 +81,22 @@
 	}
 
 	/**
+	 * Initialize selectedPeriodId if not already set
+	 * Auto-selects current period if no selection exists
+	 */
+	function initializeSelectedPeriod(currentPeriod: unknown | null) {
+		const currentSelectedId = getSelectedPeriodId();
+
+		if (!currentSelectedId && currentPeriod) {
+			// No period selected - auto-select current period
+			const periodId = (currentPeriod as any).id;
+			const periodName = (currentPeriod as any).name || 'Période actuelle';
+			setSelectedPeriod(periodId);
+			console.log(`[Teacher Layout] 🎯 Auto-selected current period: ${periodName}`);
+		}
+	}
+
+	/**
 	 * Load academic periods with cache-first strategy
 	 *
 	 * 1. Check memory cache first (instant)
@@ -116,6 +133,7 @@
 			teacherCache.setPeriods(schoolId, currentPeriod, allPeriods);
 
 			console.log(`[Teacher Layout] ✅ API SUCCESS: Loaded ${allPeriods.length} periods`);
+			initializeSelectedPeriod(currentPeriod);
 		} catch (err) {
 			console.error('[Teacher Layout] ❌ Failed to load periods:', err);
 			// TODO: Show error toast to user
@@ -142,8 +160,17 @@
 			// These methods check cache first, then auto-fetch if needed
 			teacherCache.getStudentBasic(selectedClassId);
 			teacherCache.getStudentRewards(selectedClassId);
+		}
+	});
 
-			// Note: Warnings are loaded on-demand by warnings page (requires periodId)
+	// EFFECT 3: Auto-fetch warnings when selectedClassId OR selectedPeriodId changes
+	$effect(() => {
+		const selectedClassId = getSelectedClassId();
+		const selectedPeriodId = getSelectedPeriodId();
+
+		if (data.user && data.profile && selectedClassId && selectedPeriodId) {
+			// Auto-fetch warnings (cache-first, auto-fetch if cache miss/expired)
+			teacherCache.getStudentWarnings(selectedClassId, selectedPeriodId);
 		}
 	});
 </script>

@@ -166,9 +166,11 @@ export class TeacherDashboardCache {
 	 * Auto-fetches if cache expired or missing
 	 * Uses composite key: ${classId}:${periodId}
 	 *
+	 * Note: StudentWarningCounts includes warnings: Warning[] array
+	 *
 	 * @param classId - The class ID
 	 * @param periodId - The academic period ID
-	 * @returns Promise resolving to Map of studentId → warning counts
+	 * @returns Promise resolving to Map of studentId → warning counts (with warnings array)
 	 */
 	async getStudentWarnings(
 		classId: string,
@@ -288,9 +290,11 @@ export class TeacherDashboardCache {
 	 * Get cached warnings synchronously (for $derived)
 	 * Returns null if not cached
 	 *
+	 * Note: StudentWarningCounts includes warnings: Warning[] array
+	 *
 	 * @param classId - The class ID
 	 * @param periodId - The academic period ID
-	 * @returns Cached warnings map or null
+	 * @returns Cached warnings map (counts + warnings array) or null
 	 */
 	getWarningsSync(classId: string, periodId: string): Map<string, StudentWarningCounts> | null {
 		const key = `${classId}:${periodId}`;
@@ -452,21 +456,14 @@ export class TeacherDashboardCache {
 		const cached = this.warningsCache.get(key);
 		if (!cached) return;
 
-		// Create new Map with updated warning counts
-		const newWarningsMap = new SvelteMap(cached.warnings);
-		newWarningsMap.set(studentId, counts);
+		// Update the EXISTING SvelteMap to trigger reactivity
+		// (Don't create a new SvelteMap - mutate the existing one)
+		cached.warnings.set(studentId, counts);
 
-		// Update cache with new object to trigger SvelteMap reactivity
-		this.warningsCache.set(key, {
-			...cached,
-			warnings: newWarningsMap
-		});
-
-		this.log(
-			'trace',
-			`[Cache] Optimistic warnings update: student ${studentId}, score: ${counts.score}`
-		);
+		const total = counts.C + counts.M + counts.R + counts.T;
+		this.log('trace', `[Cache] Optimistic warnings update: student ${studentId}, total: ${total}`);
 	}
+
 
 	// ========================================================================
 	// INVALIDATION

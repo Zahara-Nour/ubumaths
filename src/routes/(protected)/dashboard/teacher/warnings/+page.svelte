@@ -48,10 +48,14 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import { History, AlertCircle } from 'lucide-svelte';
-	import type { Warning, StudentWarningCounts } from '$lib/server/warnings';
+	import type { StudentWarningCounts } from '$lib/server/warnings';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
+	import { selectedPeriodStore } from '$lib/stores/selectedPeriod.svelte';
 	import type { ClassWithData } from '$lib/server/students';
+	import type { Database } from '$lib/types/database';
+
+	type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
 
 	// Data from server (user/profile only)
 	let { data }: { data: PageData } = $props();
@@ -63,23 +67,26 @@
 	let cachedPeriods = $derived(
 		data.profile?.school_id ? teacherCache.getPeriodsSync(data.profile.school_id) : null
 	);
-	let currentPeriod = $derived(cachedPeriods?.currentPeriod || null);
-	let allPeriods = $derived(cachedPeriods?.allPeriods || []);
+	let currentPeriod = $derived<AcademicPeriod | null>(
+		(cachedPeriods?.currentPeriod as AcademicPeriod) || null
+	);
+	let allPeriods = $derived<AcademicPeriod[]>(
+		(cachedPeriods?.allPeriods as AcademicPeriod[]) || []
+	);
 
 	// Use shared selectedClass store (persists across pages and reloads)
 	const classStore = selectedClassStore();
 
+	// Use shared selectedPeriod store (persists across pages and reloads)
+	const periodStore = selectedPeriodStore();
+
 	// Initialize selectedClassId: restore from localStorage (fallback handled in effect)
 	let selectedClassId = $state(classStore.id || '');
-	let selectedPeriodId = $state('');
-	let showHistoryDialog = $state(false);
 
-	// Initialize selectedPeriodId from cache after periods load
-	$effect(() => {
-		if (!selectedPeriodId && currentPeriod) {
-			selectedPeriodId = (currentPeriod as any).id || '';
-		}
-	});
+	// Initialize selectedPeriodId: restore from localStorage (fallback handled in layout)
+	let selectedPeriodId = $state(periodStore.id || '');
+
+	let showHistoryDialog = $state(false);
 
 	// Get students from cache (reactively updates when cache changes)
 	let currentStudents = $derived(
@@ -91,16 +98,12 @@
 	// Key: studentId, Value: timeout ID
 	let pendingAdds = $state<Record<string, number>>({});
 
-	// Confirmation modal state
+	// Confirmation modal state (no warningId needed - will delete most recent of type)
 	let warningToDelete = $state<{
-		warningId: string;
 		studentId: string;
 		studentName: string;
 		warningType: string;
 	} | null>(null);
-
-	// Loading state
-	let _isLoadingWarnings = $state(false);
 
 	// ============================================================================
 	// COMPUTED VALUES
@@ -110,8 +113,8 @@
 	 * Get currently selected period name
 	 */
 	let selectedPeriodName = $derived(
-		allPeriods.find((p: any) => p.id === selectedPeriodId)?.name ||
-			(currentPeriod as any)?.name ||
+		allPeriods.find((p) => p.id === selectedPeriodId)?.name ||
+			currentPeriod?.name ||
 			'Période actuelle'
 	);
 
@@ -129,7 +132,7 @@
 	});
 
 	/**
-	 * Sync local state with shared store when it changes locally
+	 * Sync local selectedClassId state with shared store when it changes locally
 	 * Note: Auto-hydration is set up in the teacher layout, not here
 	 */
 	$effect(() => {
@@ -139,11 +142,12 @@
 	});
 
 	/**
-	 * Load warnings when class or period changes
+	 * Sync local selectedPeriodId state with shared store when it changes locally
+	 * Note: Auto-initialization is set up in the teacher layout, not here
 	 */
 	$effect(() => {
-		if (selectedClassId && selectedPeriodId) {
-			loadWarnings();
+		if (selectedPeriodId) {
+			periodStore.set(selectedPeriodId);
 		}
 	});
 
@@ -177,38 +181,6 @@
 	}
 
 	/**
-	 * Get warning counts for a student from cache (with optimistic override)
-	 *
-	 * Returns the cached value (which may include optimistic updates) if available.
-	 * The cache automatically handles optimistic updates via SvelteMap reactivity.
-	 *
-	 * @param studentId - The student's ID
-	 * @returns Warning counts or default empty counts if not in cache
-	 */
-	function getStudentWarnings(studentId: string): StudentWarningCounts {
-		// Check cache (includes optimistic overrides via SvelteMap reactivity)
-		if (selectedClassId && selectedPeriodId) {
-			const cached = teacherCache.getWarningsSync(selectedClassId, selectedPeriodId);
-			if (cached) {
-				const counts = cached.get(studentId);
-				if (counts) return counts;
-			}
-		}
-
-		// Fallback to default empty counts if not in cache yet
-		return {
-			C: 0,
-			M: 0,
-			R: 0,
-			T: 0,
-			total: 0,
-			unresolved_count: 0,
-			score: 20,
-			warnings: []
-		};
-	}
-
-	/**
 	 * Get CSS class for score color coding
 	 */
 	function getScoreColor(score: number): string {
@@ -230,30 +202,43 @@
 		return labels[type] || type;
 	}
 
+	/**
+	 * Get warning counts for a student from cache
+	 *
+	 * @param studentId - The student's ID
+	 * @returns Warning counts (C, M, R, T only) or default empty counts
+	 */
+	function getStudentWarnings(studentId: string): StudentWarningCounts {
+		if (selectedClassId && selectedPeriodId) {
+			const cached = teacherCache.getWarningsSync(selectedClassId, selectedPeriodId);
+			if (cached) {
+				const counts = cached.get(studentId);
+				if (counts) return counts;
+			}
+		}
+
+		// Fallback to default empty counts if not in cache yet
+		return { C: 0, M: 0, R: 0, T: 0 };
+	}
+
+	/**
+	 * Calculate total warnings for a student
+	 */
+	function getTotalWarnings(counts: StudentWarningCounts): number {
+		return counts.C + counts.M + counts.R + counts.T;
+	}
+
+	/**
+	 * Calculate score for a student (20 - total, clamped to 0-20)
+	 */
+	function getScore(counts: StudentWarningCounts): number {
+		const total = getTotalWarnings(counts);
+		return Math.max(0, Math.min(20, 20 - total));
+	}
+
 	// ============================================================================
 	// API FUNCTIONS
 	// ============================================================================
-
-	/**
-	 * Load warnings for selected class and period
-	 * Delegates to cache which auto-fetches if expired or missing
-	 */
-	async function loadWarnings() {
-		if (!selectedClassId || !selectedPeriodId) return;
-
-		_isLoadingWarnings = true;
-
-		try {
-			// Use cache (auto-fetches if expired or missing)
-			// Cache returns SvelteMap with reactive updates
-			await teacherCache.getStudentWarnings(selectedClassId, selectedPeriodId);
-		} catch (err) {
-			console.error('[loadWarnings] ERROR:', err);
-			toaster.error('Erreur lors du chargement des avertissements');
-		} finally {
-			_isLoadingWarnings = false;
-		}
-	}
 
 	/**
 	 * Add warning with optimistic UI and debouncing
@@ -264,28 +249,16 @@
 			return;
 		}
 
-		// STEP 1: Calculate new counts based on current cache state
-		const currentCounts = getStudentWarnings(studentId);
-		const newCounts: StudentWarningCounts = {
-			...currentCounts,
-			C: currentCounts.C ?? 0,
-			M: currentCounts.M ?? 0,
-			R: currentCounts.R ?? 0,
-			T: currentCounts.T ?? 0
-		} as StudentWarningCounts;
+		// STEP 1: Save current state for rollback
+		const previousCounts = getStudentWarnings(studentId);
 
-		// Increment specific warning type
+		// STEP 2: Apply optimistic update (increment count)
+		const newCounts: StudentWarningCounts = { ...previousCounts };
 		if (warningType === 'C') newCounts.C++;
 		else if (warningType === 'M') newCounts.M++;
 		else if (warningType === 'R') newCounts.R++;
 		else if (warningType === 'T') newCounts.T++;
 
-		// Recalculate totals
-		newCounts.total = newCounts.C + newCounts.M + newCounts.R + newCounts.T;
-		newCounts.unresolved_count = newCounts.total;
-		newCounts.score = Math.max(0, Math.min(20, 20 - newCounts.total));
-
-		// STEP 2: Apply optimistic update via cache
 		teacherCache.updateWarningsOptimistic(selectedClassId, selectedPeriodId, studentId, newCounts);
 
 		// STEP 3: Clear existing timeout if any
@@ -313,21 +286,20 @@
 					throw new Error('Failed to add warning');
 				}
 
-				// SUCCESS: Cache already has correct optimistic value
-				// No need to invalidate - optimistic update matches server response
-				// Cache will naturally expire and refresh later
+				// SUCCESS: Optimistic update already has temp Warning object
+				// Cache will naturally refresh later with real ID from server
 				toaster.success(
 					`Avertissement ${getWarningTypeLabel(warningType)} ajouté (${studentName})`
 				);
 			} catch (err) {
 				console.error('Error adding warning:', err);
 
-				// ROLLBACK: Revert to previous counts by re-applying the old counts
+				// ROLLBACK: Revert to previous state
 				teacherCache.updateWarningsOptimistic(
 					selectedClassId,
 					selectedPeriodId,
 					studentId,
-					currentCounts
+					previousCounts
 				);
 
 				toaster.error("Erreur lors de l'ajout de l'avertissement");
@@ -343,35 +315,34 @@
 	async function removeWarning() {
 		if (!warningToDelete || !selectedClassId || !selectedPeriodId) return;
 
-		const { warningId, studentId, studentName, warningType } = warningToDelete;
+		const { studentId, studentName, warningType } = warningToDelete;
 
 		// STEP 1: Save current state for rollback
 		const previousCounts = getStudentWarnings(studentId);
 
-		// STEP 2: Calculate new counts
-		const newCounts: StudentWarningCounts = { ...previousCounts } as StudentWarningCounts;
+		// STEP 2: Apply optimistic update (decrement count)
+		const newCounts: StudentWarningCounts = { ...previousCounts };
+		if (warningType === 'C' && newCounts.C > 0) newCounts.C--;
+		else if (warningType === 'M' && newCounts.M > 0) newCounts.M--;
+		else if (warningType === 'R' && newCounts.R > 0) newCounts.R--;
+		else if (warningType === 'T' && newCounts.T > 0) newCounts.T--;
 
-		// Decrement specific warning type (prevent negative values)
-		if (warningType === 'C') newCounts.C = Math.max(0, newCounts.C - 1);
-		else if (warningType === 'M') newCounts.M = Math.max(0, newCounts.M - 1);
-		else if (warningType === 'R') newCounts.R = Math.max(0, newCounts.R - 1);
-		else if (warningType === 'T') newCounts.T = Math.max(0, newCounts.T - 1);
-
-		// Recalculate totals
-		newCounts.total = newCounts.C + newCounts.M + newCounts.R + newCounts.T;
-		newCounts.unresolved_count = newCounts.total;
-		newCounts.score = Math.max(0, Math.min(20, 20 - newCounts.total));
-
-		// STEP 3: Apply optimistic update via cache (instant UI feedback)
 		teacherCache.updateWarningsOptimistic(selectedClassId, selectedPeriodId, studentId, newCounts);
 
-		// STEP 4: Close confirmation dialog
+		// STEP 3: Close confirmation dialog
 		warningToDelete = null;
 
 		try {
-			// STEP 5: Make API call in background
-			const response = await fetch(`/api/warnings/${warningId}`, {
-				method: 'DELETE'
+			// STEP 4: Make API call - delete most recent warning of this type
+			const response = await fetch(`/api/warnings/remove`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					student_id: studentId,
+					class_id: selectedClassId,
+					academic_period_id: selectedPeriodId,
+					warning_type: warningType
+				})
 			});
 
 			if (response.ok) {
@@ -556,37 +527,30 @@
 											{#if counts === null}
 												<!-- Loading state: Data not yet loaded, show skeleton/spinner -->
 												<span class="animate-pulse text-sm text-muted-foreground">...</span>
-											{:else if counts.total === 0}
+											{:else if getTotalWarnings(counts) === 0}
 												<!-- Fallback text when student has no warnings at all -->
 												<span class="text-sm text-muted-foreground italic">Aucun</span>
 											{:else}
 												{#each ['C', 'M', 'R', 'T'] as type (type)}
 													{@const typeCount = counts[type as keyof typeof counts]}
-													{@const typeWarnings = counts.warnings.filter(
-														(w: Warning) => w.warning_type === type
-													)}
 													{@const hasWarnings = typeof typeCount === 'number' && typeCount > 0}
 
 													{#if hasWarnings}
-														<!-- Only render warning badge if count > 0 (not just disabled) -->
+														<!-- Only render warning badge if count > 0 -->
 														<button
 															type="button"
 															class="flex cursor-pointer items-center gap-1.5 rounded-full transition-all hover:scale-110"
 															onclick={() => {
-																if (typeWarnings.length > 0) {
-																	// Delete the most recent warning of this type
-																	const mostRecent = typeWarnings[typeWarnings.length - 1];
-																	warningToDelete = {
-																		warningId: mostRecent.id,
-																		studentId: student.id,
-																		studentName: getFullName(
-																			student.firstname,
-																			student.lastname,
-																			student.full_name
-																		),
-																		warningType: type
-																	};
-																}
+																// Open confirmation dialog to delete most recent of this type
+																warningToDelete = {
+																	studentId: student.id,
+																	studentName: getFullName(
+																		student.firstname,
+																		student.lastname,
+																		student.full_name
+																	),
+																	warningType: type
+																};
 															}}
 														>
 															<!-- Badge contains ONLY the letter (e.g., "C") -->
@@ -611,8 +575,9 @@
 													.../20
 												</p>
 											{:else}
-												<p class="text-2xl font-bold tabular-nums {getScoreColor(counts.score)}">
-													{counts.score}/20
+												{@const score = getScore(counts)}
+												<p class="text-2xl font-bold tabular-nums {getScoreColor(score)}">
+													{score}/20
 												</p>
 											{/if}
 										</div>
@@ -682,7 +647,7 @@
 		</Dialog.Header>
 
 		<div class="space-y-2">
-			{#each allPeriods as period (period.id)}
+			{#each allPeriods as period: AcademicPeriod (period.id)}
 				<button
 					type="button"
 					class="flex w-full items-center justify-between rounded-lg border border-border p-4 transition-colors hover:bg-muted {selectedPeriodId ===

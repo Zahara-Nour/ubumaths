@@ -162,6 +162,21 @@
 	}
 
 	/**
+	 * Calculate total warnings from counts
+	 */
+	function getTotalWarnings(counts: StudentWarningCounts): number {
+		return counts.C + counts.M + counts.R + counts.T;
+	}
+
+	/**
+	 * Calculate score from total warnings (20 - total, clamped 0-20)
+	 */
+	function getScore(counts: StudentWarningCounts): number {
+		const total = getTotalWarnings(counts);
+		return Math.max(0, Math.min(20, 20 - total));
+	}
+
+	/**
 	 * Get warning score badge color based on score
 	 */
 	function getScoreBadgeVariant(score: number): 'default' | 'destructive' | 'secondary' {
@@ -262,7 +277,7 @@
 	async function handleWarningAction(student: StudentData) {
 		const gidouilles = getGidouilles(student);
 		const unusedVipCards = getUnusedVipCards(getVipCards(student));
-		const score = getWarnings(student).score;
+		const score = getScore(getWarnings(student));
 
 		// STEP 1: Remove gidouille if > 0 (optimistic UI + debounced API call)
 		if (gidouilles > 0) {
@@ -413,14 +428,10 @@
 			// 1. Instant optimistic update
 			const currentWarnings = getWarnings(student);
 			const newWarnings: StudentWarningCounts = {
-				T: currentWarnings.T,
 				C: currentWarnings.C + 1,
 				M: currentWarnings.M,
 				R: currentWarnings.R,
-				total: currentWarnings.total + 1,
-				unresolved_count: currentWarnings.unresolved_count,
-				score: currentWarnings.score - 1,
-				warnings: currentWarnings.warnings // Keep existing warnings array
+				T: currentWarnings.T
 			};
 
 			optimisticUpdates = {
@@ -645,8 +656,8 @@
 
 						<!-- Warnings Score -->
 						<Table.Cell class="text-center">
-							<Badge variant={getScoreBadgeVariant(warnings.score)}>
-								{warnings.score}/20
+							<Badge variant={getScoreBadgeVariant(getScore(warnings))}>
+								{getScore(warnings)}/20
 							</Badge>
 						</Table.Cell>
 

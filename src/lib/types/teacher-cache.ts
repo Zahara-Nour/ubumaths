@@ -119,6 +119,8 @@ export interface CachedRewards {
  * Cached warnings data (Cache 2B)
  * Key format: `${classId}:${periodId}`
  * Uses SvelteMap for reactive optimistic updates
+ *
+ * Stores only counts per type - total/score calculated on-the-fly
  */
 export interface CachedWarnings {
 	warnings: SvelteMap<string, StudentWarningCounts>;

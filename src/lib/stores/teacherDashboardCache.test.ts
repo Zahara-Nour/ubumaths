@@ -100,11 +100,7 @@ function _createMockWarnings(studentIds: string[]): Map<string, StudentWarningCo
 			C: i,
 			M: i,
 			R: i,
-			T: i,
-			total: i * 2,
-			unresolved_count: i,
-			score: i * 5,
-			warnings: []
+			T: i
 		});
 	});
 	return warnings;
@@ -738,8 +734,8 @@ describe('Cache 2B: Student Warnings', () => {
 	const classId = 'class-123';
 	const periodId = 'period-456';
 	const mockWarningsData = {
-		'student-1': { unresolved_count: 1, total_count: 3, score: 15 },
-		'student-2': { unresolved_count: 0, total_count: 2, score: 10 }
+		'student-1': { C: 1, M: 1, R: 1, T: 0 },
+		'student-2': { C: 0, M: 1, R: 1, T: 0 }
 	};
 
 	beforeEach(() => {
@@ -767,7 +763,7 @@ describe('Cache 2B: Student Warnings', () => {
 			const warnings = await cache.getStudentWarnings(classId, periodId);
 
 			expect(warnings.size).toBe(2);
-			expect(warnings.get('student-1')).toEqual({ unresolved_count: 1, total_count: 3, score: 15 });
+			expect(warnings.get('student-1')).toEqual({ C: 1, M: 1, R: 1, T: 0 });
 			expect(global.fetch).toHaveBeenCalledTimes(1);
 		});
 
@@ -826,7 +822,7 @@ describe('Cache 2B: Student Warnings', () => {
 				if (url.toString().includes(`period_id=${periodId2}`)) {
 					return Promise.resolve({
 						ok: true,
-						json: () => Promise.resolve({ warnings: { 'student-3': { unresolved_count: 5 } } })
+						json: () => Promise.resolve({ warnings: { 'student-3': { C: 2, M: 1, R: 1, T: 1 } } })
 					} as Response);
 				}
 				return Promise.reject(new Error('Unexpected URL'));
@@ -897,11 +893,7 @@ describe('Cache 2B: Student Warnings', () => {
 				C: 1,
 				M: 2,
 				R: 1,
-				T: 1,
-				unresolved_count: 2,
-				total: 5,
-				score: 25,
-				warnings: []
+				T: 1
 			});
 
 			const warnings = await cache.getStudentWarnings(classId, periodId);
@@ -909,11 +901,7 @@ describe('Cache 2B: Student Warnings', () => {
 				C: 1,
 				M: 2,
 				R: 1,
-				T: 1,
-				unresolved_count: 2,
-				total: 5,
-				score: 25,
-				warnings: []
+				T: 1
 			});
 		});
 
@@ -924,11 +912,7 @@ describe('Cache 2B: Student Warnings', () => {
 				C: 0,
 				M: 1,
 				R: 0,
-				T: 0,
-				unresolved_count: 1,
-				total: 1,
-				score: 5,
-				warnings: []
+				T: 0
 			});
 
 			const warnings = await cache.getStudentWarnings(classId, periodId);
@@ -941,11 +925,7 @@ describe('Cache 2B: Student Warnings', () => {
 					C: 0,
 					M: 0,
 					R: 0,
-					T: 0,
-					unresolved_count: 0,
-					total: 0,
-					score: 0,
-					warnings: []
+					T: 0
 				});
 			}).not.toThrow();
 		});
@@ -985,11 +965,7 @@ describe('Cache 2B: Student Warnings', () => {
 				C: 1,
 				M: 1,
 				R: 1,
-				T: 0,
-				unresolved_count: 1,
-				total: 3,
-				score: 15,
-				warnings: []
+				T: 0
 			});
 
 			cache.hydrateWarnings(classId, periodId, warningsMap);
@@ -1607,11 +1583,7 @@ describe('Edge Cases & Concurrency', () => {
 					C: i % 4,
 					M: i % 3,
 					R: i % 2,
-					T: i % 5,
-					unresolved_count: i,
-					total: i * 2,
-					score: i * 5,
-					warnings: []
+					T: i % 5
 				};
 			}
 

@@ -53,16 +53,13 @@ export interface Warning {
 
 /**
  * Aggregated warning counts for a student
+ * Contains only counts per type - total/score calculated on-the-fly in UI
  */
 export interface StudentWarningCounts {
 	C: number; // Conduite
 	M: number; // Manque de Travail
 	R: number; // Retard
 	T: number; // Tricherie
-	total: number; // Sum of all warnings
-	unresolved_count: number; // Count of unresolved warnings
-	score: number; // 20 - total (clamped to 0-20)
-	warnings: Warning[]; // Full warning details
 }
 
 /**
@@ -211,11 +208,7 @@ export async function getClassWarnings(options: {
 				C: 0,
 				M: 0,
 				R: 0,
-				T: 0,
-				total: 0,
-				unresolved_count: 0,
-				score: 20,
-				warnings: []
+				T: 0
 			});
 		}
 
@@ -226,15 +219,6 @@ export async function getClassWarnings(options: {
 		else if (warning.warning_type === 'M') counts.M++;
 		else if (warning.warning_type === 'R') counts.R++;
 		else if (warning.warning_type === 'T') counts.T++;
-
-		// Add to warnings array
-		counts.warnings.push(warning);
-	}
-
-	// Calculate totals and scores
-	for (const [_studentId, counts] of warningsMap.entries()) {
-		counts.total = counts.C + counts.M + counts.R + counts.T;
-		counts.score = Math.max(0, Math.min(20, 20 - counts.total)); // Clamp to 0-20
 	}
 
 	return warningsMap;
@@ -264,7 +248,7 @@ export async function getClassWarnings(options: {
  *   teacherId: user.id,
  *   supabase
  * });
- * console.log('New total:', updated.total, 'New score:', updated.score);
+ * console.log('New counts:', updated);
  */
 export async function addWarning(options: {
 	studentId: string;
@@ -325,11 +309,7 @@ export async function addWarning(options: {
 			C: warningType === 'C' ? 1 : 0,
 			M: warningType === 'M' ? 1 : 0,
 			R: warningType === 'R' ? 1 : 0,
-			T: warningType === 'T' ? 1 : 0,
-			total: 1,
-			unresolved_count: 1,
-			score: 19,
-			warnings: [newWarning]
+			T: warningType === 'T' ? 1 : 0
 		};
 	}
 
@@ -430,11 +410,7 @@ export async function removeWarning(options: {
 		C: 0,
 		M: 0,
 		R: 0,
-		T: 0,
-		total: 0,
-		unresolved_count: 0,
-		score: 20,
-		warnings: []
+		T: 0
 	};
 
 	return {
@@ -492,11 +468,7 @@ export async function getStudentWarnings(options: {
 			C: 0,
 			M: 0,
 			R: 0,
-			T: 0,
-			total: 0,
-			unresolved_count: 0,
-			score: 20,
-			warnings: []
+			T: 0
 		}
 	);
 }
