@@ -103,8 +103,7 @@
 -->
 
 <script lang="ts">
-	import type { PageData, ActionData } from './$types';
-	import { enhance } from '$app/forms';
+	import type { PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -121,8 +120,8 @@
 	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
 	import type { ClassWithData } from '$lib/server/students';
 
-	// Data from server load function
-	let { data, form }: { data: PageData; form: ActionData } = $props();
+	// Data from parent layouts (user/profile only)
+	let { data }: { data: PageData } = $props();
 
 	// Get classes from cache (reactively updates when cache changes)
 	let classes = $derived(teacherCache.getAllClassesSync());
@@ -197,19 +196,49 @@
 		});
 	});
 
-	// Handle toasts and animations based on action result
-	// IMPORTANT: lastProcessedCardId prevents duplicates and infinite loops.
-	// Without this check, the effect would trigger every time revealingCard changes,
-	// creating an infinite loop of revelations.
-	$effect(() => {
-		if (form?.success) {
-			// If it's a VIP card award, trigger confirmation (flip animation)
-			if (form.cardId && form.cardId !== lastProcessedCardId) {
-				// Only process if it's a new card (not already processed)
-				const card = getVipCardById(form.cardId);
+	/**
+	 * Award VIP Card Handler
+	 * Replaces form action with direct API call
+	 */
+	async function handleAwardVipCard(student: { id: string; firstname: string; lastname: string | null; full_name: string | null }) {
+		// Save student name for reveal animation
+		const studentName = getFullName(student.firstname, student.lastname, student.full_name);
+
+		// Initialize reveal modal with loading state (back of card, shaking)
+		const placeholderCard = getVipCardById('bonus');
+		if (!placeholderCard) {
+			toaster.error('Erreur: carte non trouvée');
+			return;
+		}
+
+		revealingCard = {
+			card: placeholderCard, // Temporary card (will be replaced)
+			studentName,
+			loading: true,
+			confirmed: false
+		};
+
+		// Optimistically deduct 3 gidouilles via cache
+		updateStudentGidouillesOptimistic(student.id, -3);
+
+		try {
+			// Call API to award VIP card
+			const response = await fetch('/api/teacher/rewards/award-vip-card', {
+				method: 'POST',
+				body: JSON.stringify({ studentId: student.id }),
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+
+			if (response.ok) {
+				const result = await response.json();
+
+				// SUCCESS: Cache already has the -3 gidouilles optimistic update
+				// Now trigger the flip animation with the actual card
+				const card = getVipCardById(result.cardId);
 				if (card && revealingCard) {
-					// Mark this card as processed to prevent re-triggers
-					lastProcessedCardId = form.cardId;
+					lastProcessedCardId = result.cardId;
 
 					// Update revealingCard to show confirmation (triggers flip)
 					revealingCard = {
@@ -219,18 +248,21 @@
 						confirmed: true
 					};
 				}
-			} else if (!form.cardId) {
-				// Other successful actions (add/remove gidouilles)
-				toaster.success(form.message || 'Opération réussie');
-			}
-		} else if (form?.message && !form?.success) {
-			// On error, hide reveal and show toast
-			revealingCard = null;
-			toaster.error(form.message);
+			} else {
+				// ERROR: Rollback the -3 gidouilles optimistic update by adding +3 back
+				updateStudentGidouillesOptimistic(student.id, +3);
+				revealingCard = null;
 
-			// The optimistic override will be rolled back by the enhance callback
+				const error = await response.json().catch(() => ({ message: 'Erreur inconnue' }));
+				toaster.error(error.message || 'Erreur lors de l\'attribution de la carte');
+			}
+		} catch (err) {
+			// ERROR: Rollback optimistic update
+			updateStudentGidouillesOptimistic(student.id, +3);
+			revealingCard = null;
+			toaster.error('Erreur réseau');
 		}
-	});
+	}
 
 	// ============================================================================
 	// OPTIMISTIC UI HELPER FUNCTIONS
@@ -336,18 +368,19 @@
 			const accumulatedDelta = pendingSubmissions[key].accumulatedDelta;
 			delete pendingSubmissions[key]; // Clear pending state
 
-			// Prepare form data with accumulated delta
-			const formData = new FormData();
-			formData.set('studentId', studentId);
-			formData.set('delta', accumulatedDelta.toString());
+			// Prepare JSON payload with accumulated delta
+			const payload = {
+				studentId,
+				delta: accumulatedDelta
+			};
 
 			try {
-				// Send request to SvelteKit form action
-				const response = await fetch('?/updateStudent', {
+				// Send request to API endpoint
+				const response = await fetch('/api/teacher/rewards/update-student', {
 					method: 'POST',
-					body: formData,
+					body: JSON.stringify(payload),
 					headers: {
-						'x-sveltekit-action': 'true' // Required for SvelteKit actions
+						'Content-Type': 'application/json'
 					}
 				});
 
@@ -416,18 +449,19 @@
 			const accumulatedDelta = pendingSubmissions[key].accumulatedDelta;
 			delete pendingSubmissions[key];
 
-			// Prepare form data
-			const formData = new FormData();
-			formData.set('classId', classId);
-			formData.set('delta', accumulatedDelta.toString());
+			// Prepare JSON payload
+			const payload = {
+				classId,
+				delta: accumulatedDelta
+			};
 
 			try {
-				// Send request to update entire class
-				const response = await fetch('?/updateClass', {
+				// Send request to API endpoint
+				const response = await fetch('/api/teacher/rewards/update-class', {
 					method: 'POST',
-					body: formData,
+					body: JSON.stringify(payload),
 					headers: {
-						'x-sveltekit-action': 'true'
+						'Content-Type': 'application/json'
 					}
 				});
 
@@ -721,77 +755,30 @@
 												<span class="hidden sm:inline">Voir Cartes</span>
 											</Button>
 
-											<!-- Form to award VIP card -->
-											<form
-												method="POST"
-												action="?/awardVipCard"
-												use:enhance={() => {
-													// Save student name for reveal animation
-													const studentName = getFullName(
-														student.firstname,
-														student.lastname,
-														student.full_name
-													);
-
-													// Initialize reveal modal with loading state (back of card, shaking)
-													const placeholderCard = getVipCardById('bonus');
-													if (!placeholderCard) {
-														toaster.error('Erreur: carte non trouvée');
-														// Return early with async function that does nothing
-														return async ({ update }) => {
-															await update();
-														};
-													}
-													revealingCard = {
-														card: placeholderCard, // Temporary card (will be replaced)
-														studentName,
-														loading: true,
-														confirmed: false
-													};
-
-													// Optimistically deduct 3 gidouilles via cache
-													updateStudentGidouillesOptimistic(student.id, -3);
-
-													return async ({ result, update }) => {
-														await update();
-														if (result.type === 'success') {
-															// SUCCESS: Cache already has the -3 gidouilles optimistic update
-															// The new VIP card will be reflected after server update
-															// Card will be updated by $effect when form.cardId arrives
-														} else {
-															// ERROR: Rollback the -3 gidouilles optimistic update by adding +3 back
-															updateStudentGidouillesOptimistic(student.id, +3);
-
-															revealingCard = null;
-														}
-													};
-												}}
+											<!-- Button to award VIP card -->
+											<Button
+												onclick={() => handleAwardVipCard(student)}
+												size="sm"
+												variant="default"
+												class="gap-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+												disabled={!canAffordVipCard(getStudentGidouilles(student.id)) ||
+													revealingCard !== null}
 											>
-												<input type="hidden" name="studentId" value={student.id} />
-												<Button
-													type="submit"
-													size="sm"
-													variant="default"
-													class="gap-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-													disabled={!canAffordVipCard(getStudentGidouilles(student.id)) ||
-														revealingCard !== null}
-												>
-													{#if revealingCard !== null}
-														<Loader2 class="h-4 w-4 animate-spin" />
-														<span class="hidden sm:inline">Attribution...</span>
-													{:else}
-														<Sparkles class="h-4 w-4" />
-														<span class="hidden sm:inline">Carte VIP</span>
-														<span class="text-xs opacity-80"
-															>(3 <img
-																src={gidouilleImg}
-																alt="gidouille"
-																class="inline h-3 w-3"
-															/>)</span
-														>
-													{/if}
-												</Button>
-											</form>
+												{#if revealingCard !== null}
+													<Loader2 class="h-4 w-4 animate-spin" />
+													<span class="hidden sm:inline">Attribution...</span>
+												{:else}
+													<Sparkles class="h-4 w-4" />
+													<span class="hidden sm:inline">Carte VIP</span>
+													<span class="text-xs opacity-80"
+														>(3 <img
+															src={gidouilleImg}
+															alt="gidouille"
+															class="inline h-3 w-3"
+														/>)</span
+													>
+												{/if}
+											</Button>
 										</div>
 									</div>
 								{/each}
