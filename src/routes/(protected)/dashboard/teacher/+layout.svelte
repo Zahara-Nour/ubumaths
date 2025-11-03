@@ -11,8 +11,9 @@
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import type { LayoutData } from './$types';
 	import type { ClassWithData } from '$lib/server/students';
+	import type { Snippet } from 'svelte';
 
-	let { data, children }: { data: LayoutData; children: any } = $props();
+	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
 	// Classes loaded via cache-first strategy
 	let classes = $state<ClassWithData[]>([]);
@@ -84,13 +85,13 @@
 	 * Initialize selectedPeriodId if not already set
 	 * Auto-selects current period if no selection exists
 	 */
-	function initializeSelectedPeriod(currentPeriod: unknown | null) {
+	function initializeSelectedPeriod(currentPeriod: { id: string; name: string } | null) {
 		const currentSelectedId = getSelectedPeriodId();
 
 		if (!currentSelectedId && currentPeriod) {
 			// No period selected - auto-select current period
-			const periodId = (currentPeriod as any).id;
-			const periodName = (currentPeriod as any).name || 'Période actuelle';
+			const periodId = currentPeriod.id;
+			const periodName = currentPeriod.name || 'Période actuelle';
 			setSelectedPeriod(periodId);
 			console.log(`[Teacher Layout] 🎯 Auto-selected current period: ${periodName}`);
 		}

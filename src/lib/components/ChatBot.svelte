@@ -199,7 +199,7 @@
 
 	// Refs for DOM elements
 	let messagesContainer: HTMLDivElement | undefined;
-	let textareaElement: any;
+	let textareaElement: HTMLTextAreaElement | undefined;
 	let fileInputElement: HTMLInputElement | undefined;
 
 	// Constants for image validation

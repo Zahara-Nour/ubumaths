@@ -7,7 +7,6 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Label } from '$lib/components/ui/label';
 	import { Badge } from '$lib/components/ui/badge';
-	import FormRichTextEditor from '$lib/components/rich-text/FormRichTextEditor.svelte';
 	import VariableAutocomplete from '$lib/components/templates/VariableAutocomplete.svelte';
 	import TagsInput from '$lib/components/templates/TagsInput.svelte';
 	import FiltersHelp from '$lib/components/templates/FiltersHelp.svelte';

@@ -6,7 +6,6 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
-	import type { SubmitAttemptData } from '$lib/types/riddle';
 	import RiddleCard from '$lib/components/riddles/RiddleCard.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { ArrowLeft } from 'lucide-svelte';

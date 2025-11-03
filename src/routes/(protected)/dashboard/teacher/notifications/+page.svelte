@@ -7,7 +7,6 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
-	import FormRichTextEditor from '$lib/components/rich-text/FormRichTextEditor.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Plus, Trash2, Send } from 'lucide-svelte';
 	import {

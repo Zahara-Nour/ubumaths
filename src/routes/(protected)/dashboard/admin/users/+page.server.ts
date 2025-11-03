@@ -21,7 +21,7 @@ import type { PageServerLoad, Actions } from './$types';
 import { validateFormData, updateProfileFormSchema } from '$lib/server/validation';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { user, profile, supabase, safeGetSession } = locals;
+	const { user, profile, supabase, safeGetSession: _safeGetSession } = locals;
 
 	if (!user) {
 		throw error(401, 'Unauthorized');

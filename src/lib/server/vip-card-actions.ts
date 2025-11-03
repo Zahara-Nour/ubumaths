@@ -499,8 +499,6 @@ async function executeExchangeRarityPoints(options: {
 		throw error(500, `Failed to discard cards: ${updateError.message}`);
 	}
 
-	// Get all cards of target rarity
-	const { data: allCardsData } = await supabase.from('profiles').select('id').limit(1);
 	// Since VIP_CARDS is in-memory, we'll use it directly
 	const { VIP_CARDS } = await import('$lib/types/vip-card');
 	const targetCards = VIP_CARDS.filter((c) => c.rarity === targetRarity);
@@ -514,7 +512,7 @@ async function executeExchangeRarityPoints(options: {
 
 	// Award the card
 	// Type assertion needed until database types are regenerated after migration
-	const { data: cardId, error: rpcError } = (await supabase.rpc(
+	const { data: _cardId, error: rpcError } = (await supabase.rpc(
 		'award_vip_card_no_cost' as never,
 		{
 			p_student_id: studentId,
@@ -603,7 +601,7 @@ async function executeExchangeDiscardForSpecific(options: {
 
 	// Award the specific card
 	// Type assertion needed until database types are regenerated after migration
-	const { data: cardId, error: rpcError } = (await supabase.rpc(
+	const { data: _cardId, error: rpcError } = (await supabase.rpc(
 		'award_vip_card_no_cost' as never,
 		{
 			p_student_id: studentId,

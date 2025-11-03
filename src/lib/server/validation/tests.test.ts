@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { saveTestSchema, saveTestResponseSchema, validateSaveTest } from './tests';
 
 // Helper type for tests that need to modify objects
-type Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P] };
+type _Mutable<T> = { -readonly [P in keyof T]: T[P] extends object ? _Mutable<T[P]> : T[P] };
 
 describe('test system validation schemas', () => {
 	// ============================================================================
@@ -216,7 +216,7 @@ describe('test system validation schemas', () => {
 
 		it('should accept test without sessionId', () => {
 			const data = createValidTestData();
-			const { sessionId, ...resultWithoutSessionId } = data.result;
+			const { sessionId: _sessionId, ...resultWithoutSessionId } = data.result;
 			const testData = { ...data, result: resultWithoutSessionId };
 			const result = saveTestSchema.safeParse(testData);
 			expect(result.success).toBe(true);
@@ -224,7 +224,7 @@ describe('test system validation schemas', () => {
 
 		it('should accept test without assignmentId', () => {
 			const data = createValidTestData();
-			const { assignmentId, ...testData } = data;
+			const { assignmentId: _assignmentId, ...testData } = data;
 			const result = saveTestSchema.safeParse(testData);
 			expect(result.success).toBe(true);
 		});
@@ -246,7 +246,7 @@ describe('test system validation schemas', () => {
 
 		it('should accept answer without userAnswer field', () => {
 			const data = createValidTestData();
-			const { userAnswer, ...answerWithoutUserAnswer } = data.result.answers[0];
+			const { userAnswer: _userAnswer, ...answerWithoutUserAnswer } = data.result.answers[0];
 			const testData = {
 				...data,
 				result: {

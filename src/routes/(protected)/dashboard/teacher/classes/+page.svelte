@@ -69,7 +69,7 @@
 				created_at: classItem.created_at,
 				updated_at: classItem.updated_at,
 				student_count: classItem.student_count,
-				schedules: classItem.schedules as any
+				schedules: classItem.schedules as never
 			};
 			teacherCache.hydrateClassInfo(classItem.id, classInfo);
 		}
@@ -77,7 +77,7 @@
 		// Hydrate school info cache (Cache 4) if available
 		if (data.school) {
 			teacherCache.hydrateSchoolInfo(
-				data.school as any,
+				data.school as never,
 				// @ts-expect-error current_period doesn't exist in schema type but exists at runtime
 				data.school.current_period || null
 			);

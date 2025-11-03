@@ -242,13 +242,13 @@
 	 * Initialize selectedPeriodId if not already set
 	 * Auto-selects current period if no selection exists
 	 */
-	function initializeSelectedPeriod(currentPeriod: unknown | null) {
+	function initializeSelectedPeriod(currentPeriod: { id: string; name: string } | null) {
 		const currentSelectedId = getSelectedPeriodId();
 
 		if (!currentSelectedId && currentPeriod) {
 			// No period selected - auto-select current period
-			const periodId = (currentPeriod as any).id;
-			const periodName = (currentPeriod as any).name || 'Période actuelle';
+			const periodId = currentPeriod.id;
+			const periodName = currentPeriod.name || 'Période actuelle';
 			setSelectedPeriod(periodId);
 			console.log(`[TeacherDashboard] 🎯 Auto-selected current period: ${periodName}`);
 		}

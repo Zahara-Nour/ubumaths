@@ -69,8 +69,8 @@
 	function formatDate(dateString: string): string {
 		const date = new Date(dateString);
 		return new Intl.DateTimeFormat('fr-FR', {
-			dateStyle: 'short',
-			timeStyle: 'short'
+			dateStyle: 'short' as const,
+			timeStyle: 'short' as const
 		}).format(date);
 	}
 

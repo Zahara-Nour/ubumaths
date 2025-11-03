@@ -53,13 +53,13 @@
 		Maximize,
 		Minimize,
 		// Upload, // Unused - for future features
+		// Sparkles, // Unused - for future features
 		Bug,
 		MessageCircle,
 		BookOpen,
 		Lightbulb,
 		FileText,
-		AlertTriangle,
-		Sparkles
+		AlertTriangle
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';

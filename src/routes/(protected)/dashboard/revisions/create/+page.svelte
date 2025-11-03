@@ -35,9 +35,17 @@
 	let showCustomCardEditor = $state(false);
 
 	// Cards to add
-	let pendingCards = $state<Array<{ type: 'custom'; data: { question: string; answer: string } }>>(
-		[]
-	);
+	let pendingCards = $state<
+		Array<{
+			type: 'custom';
+			data: {
+				question?: string;
+				answer?: string;
+				frontContent?: string;
+				backContent?: string;
+			};
+		}>
+	>([]);
 
 	// Form validation
 	const canSave = $derived(deckName.trim().length > 0);
@@ -79,8 +87,8 @@
 					const cardRequest: CreateCardRequest = {
 						deckId: deck.id,
 						cardType: 'custom',
-						frontContent: (card.data as any).frontContent || card.data.question,
-						backContent: (card.data as any).backContent || card.data.answer
+						frontContent: card.data.frontContent || card.data.question || '',
+						backContent: card.data.backContent || card.data.answer || ''
 					};
 
 					const cardResponse = await fetch('/api/srs/cards', {

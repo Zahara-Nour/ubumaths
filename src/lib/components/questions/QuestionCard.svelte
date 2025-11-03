@@ -69,7 +69,7 @@
 	// Type-specific state
 	let selectedChoices = $state<number[]>([]);
 	let fillBlankValues = $state<string[]>([]);
-	let blankValidationResults = $state<(boolean | null)[]>([]);
+	let _blankValidationResults = $state<(boolean | null)[]>([]);
 
 	// ============================================================================
 	// DERIVED STATE
@@ -94,7 +94,7 @@
 	$effect(() => {
 		if (instance.type === 'fill_in_blanks' && instance.blanks) {
 			fillBlankValues = instance.blanks.map(() => '');
-			blankValidationResults = instance.blanks.map(() => null);
+			_blankValidationResults = instance.blanks.map(() => null);
 		}
 
 		if (instance.type === 'multiple_choice' && instance.shuffledChoices) {

@@ -1,6 +1,7 @@
 <script lang="ts">
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import FormRichTextEditor from '$lib/components/rich-text/FormRichTextEditor.svelte';
+	// Unused imports - only referenced in code examples
+	import type _RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
+	import type _FormRichTextEditor from '$lib/components/rich-text/FormRichTextEditor.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -14,7 +15,7 @@
 <p>Formule utilisée : <math-inline latex="ax^2 + bx + c = 0"></math-inline></p>
 <p>Difficulté : ⭐⭐⭐</p>`;
 
-	function handleSend(content: unknown) {
+	function _handleSend(content: unknown) {
 		sentMessages = [...sentMessages, { timestamp: new Date(), content }];
 	}
 

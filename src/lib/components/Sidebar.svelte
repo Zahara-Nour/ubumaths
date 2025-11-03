@@ -26,7 +26,7 @@
 	<nav class="flex flex-col items-center gap-1 py-4">
 		{#each items as item (item.href)}
 			<a
-				href={resolve(item.href as any)}
+				href={resolve(item.href)}
 				data-sveltekit-preload-data="tap"
 				class="group flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
 					item.href

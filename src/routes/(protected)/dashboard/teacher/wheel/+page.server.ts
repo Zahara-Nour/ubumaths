@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals, parent }) => {
+export const load: PageServerLoad = async ({ locals, parent: _parent }) => {
 	// Get authenticated user and profile from parent layout
 	const { user, profile, supabase } = locals;
 

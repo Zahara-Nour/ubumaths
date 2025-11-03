@@ -29,7 +29,7 @@
 			mathfield = document.createElement('math-field') as MathfieldElement;
 			mathfield.value = initialValue;
 			mathfield.readOnly = readonly;
-			// @ts-ignore - virtualKeyboardMode exists but not in types
+			// @ts-expect-error - virtualKeyboardMode exists but not in types
 			mathfield.virtualKeyboardMode = virtualKeyboardMode;
 
 			// Set placeholder if provided

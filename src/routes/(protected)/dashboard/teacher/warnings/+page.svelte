@@ -52,7 +52,6 @@
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
 	import { selectedPeriodStore } from '$lib/stores/selectedPeriod.svelte';
-	import type { ClassWithData } from '$lib/server/students';
 	import type { Database } from '$lib/types/database';
 
 	type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
@@ -390,8 +389,8 @@
 	 * Reset to current period
 	 */
 	function resetToCurrentPeriod() {
-		if (currentPeriod) {
-			selectedPeriodId = (currentPeriod as any).id;
+		if (currentPeriod && typeof currentPeriod === 'object' && 'id' in currentPeriod) {
+			selectedPeriodId = currentPeriod.id as string;
 		}
 	}
 </script>
