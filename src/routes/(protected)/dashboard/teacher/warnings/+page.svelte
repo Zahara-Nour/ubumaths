@@ -62,8 +62,8 @@
 	// Use shared selectedClass store (persists across pages and reloads)
 	const classStore = selectedClassStore();
 
-	// Initialize selectedClassId: restore from localStorage or select first class
-	let selectedClassId = $state(classStore.id || classes[0]?.id || '');
+	// Initialize selectedClassId: restore from localStorage (fallback handled in effect)
+	let selectedClassId = $state(classStore.id || '');
 	let selectedPeriodId = $state(data.currentPeriod?.id || '');
 	let showHistoryDialog = $state(false);
 
@@ -111,6 +111,15 @@
 	// ============================================================================
 	// EFFECTS
 	// ============================================================================
+
+	/**
+	 * Fallback to first class when no selection and classes are loaded
+	 */
+	$effect(() => {
+		if (!selectedClassId && classes.length > 0) {
+			selectedClassId = classes[0].id;
+		}
+	});
 
 	/**
 	 * Sync local state with shared store when it changes locally

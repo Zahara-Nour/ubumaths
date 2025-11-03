@@ -130,13 +130,20 @@
 	// Use shared selectedClass store (persists across pages and reloads)
 	const classStore = selectedClassStore();
 
-	// Initialize selectedClassId: restore from localStorage or select first class
-	let selectedClassId = $state(classStore.id || classes[0]?.id || '');
+	// Initialize selectedClassId: restore from localStorage (fallback handled in effect)
+	let selectedClassId = $state(classStore.id || '');
 
 	// Get students from cache (reactively updates when cache changes)
 	let currentStudents = $derived(
 		selectedClassId ? teacherCache.getStudentsSync(selectedClassId) : []
 	);
+
+	// Fallback to first class when no selection and classes are loaded
+	$effect(() => {
+		if (!selectedClassId && classes.length > 0) {
+			selectedClassId = classes[0].id;
+		}
+	});
 
 	// Sync local state with shared store when it changes locally
 	// Note: Auto-hydration is set up in the teacher layout, not here
