@@ -53,19 +53,33 @@
 	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
 	import type { ClassWithData } from '$lib/server/students';
 
-	// Data from server load function (periods only)
+	// Data from server (user/profile only)
 	let { data }: { data: PageData } = $props();
 
 	// Get classes from cache (reactively updates when cache changes)
 	let classes = $derived(teacherCache.getAllClassesSync());
+
+	// Get periods from cache (reactively updates when cache changes)
+	let cachedPeriods = $derived(
+		data.profile?.school_id ? teacherCache.getPeriodsSync(data.profile.school_id) : null
+	);
+	let currentPeriod = $derived(cachedPeriods?.currentPeriod || null);
+	let allPeriods = $derived(cachedPeriods?.allPeriods || []);
 
 	// Use shared selectedClass store (persists across pages and reloads)
 	const classStore = selectedClassStore();
 
 	// Initialize selectedClassId: restore from localStorage (fallback handled in effect)
 	let selectedClassId = $state(classStore.id || '');
-	let selectedPeriodId = $state(data.currentPeriod?.id || '');
+	let selectedPeriodId = $state('');
 	let showHistoryDialog = $state(false);
+
+	// Initialize selectedPeriodId from cache after periods load
+	$effect(() => {
+		if (!selectedPeriodId && currentPeriod) {
+			selectedPeriodId = (currentPeriod as any).id || '';
+		}
+	});
 
 	// Get students from cache (reactively updates when cache changes)
 	let currentStudents = $derived(
@@ -96,8 +110,8 @@
 	 * Get currently selected period name
 	 */
 	let selectedPeriodName = $derived(
-		data.allPeriods.find((p) => p.id === selectedPeriodId)?.name ||
-			data.currentPeriod?.name ||
+		allPeriods.find((p: any) => p.id === selectedPeriodId)?.name ||
+			(currentPeriod as any)?.name ||
 			'Période actuelle'
 	);
 
@@ -405,8 +419,8 @@
 	 * Reset to current period
 	 */
 	function resetToCurrentPeriod() {
-		if (data.currentPeriod) {
-			selectedPeriodId = data.currentPeriod.id;
+		if (currentPeriod) {
+			selectedPeriodId = (currentPeriod as any).id;
 		}
 	}
 </script>
@@ -417,7 +431,7 @@
 		<h1 class="text-3xl font-bold text-foreground">Avertissements</h1>
 
 		<!-- History Button -->
-		{#if data.allPeriods.length > 0}
+		{#if allPeriods.length > 0}
 			<Button variant="outline" onclick={() => (showHistoryDialog = true)}>
 				<History class="mr-2 h-4 w-4" />
 				Historique
@@ -426,7 +440,8 @@
 	</div>
 
 	<!-- NO ACADEMIC PERIOD WARNING -->
-	{#if !data.currentPeriod && data.allPeriods.length === 0}
+	<!-- Only show if periods have been loaded (cachedPeriods !== null) and are empty -->
+	{#if cachedPeriods && !currentPeriod && allPeriods.length === 0}
 		<div
 			class="rounded-lg border border-orange-200 bg-orange-50 p-6 dark:border-orange-900 dark:bg-orange-950"
 		>
@@ -468,7 +483,7 @@
 			{#each classes as classItem (classItem.id)}
 				<Tabs.Content value={classItem.id} class="mt-0 space-y-6">
 					<!-- PERIOD SELECTOR (if not current period) -->
-					{#if selectedPeriodId !== data.currentPeriod?.id}
+					{#if selectedPeriodId !== currentPeriod?.id}
 						<div
 							class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-950"
 						>
@@ -667,7 +682,7 @@
 		</Dialog.Header>
 
 		<div class="space-y-2">
-			{#each data.allPeriods as period (period.id)}
+			{#each allPeriods as period (period.id)}
 				<button
 					type="button"
 					class="flex w-full items-center justify-between rounded-lg border border-border p-4 transition-colors hover:bg-muted {selectedPeriodId ===
@@ -684,7 +699,7 @@
 							).toLocaleDateString('fr-FR')}
 						</p>
 					</div>
-					{#if period.id === data.currentPeriod?.id}
+					{#if period.id === currentPeriod?.id}
 						<Badge variant="default">Actuelle</Badge>
 					{/if}
 				</button>

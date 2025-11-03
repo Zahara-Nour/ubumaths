@@ -61,6 +61,7 @@ export class TeacherDashboardCache {
 	private warningsCache = new SvelteMap<string, CachedWarnings>();
 	private classesCache = new SvelteMap<string, CachedClass>();
 	private schoolCache = new SvelteMap<string, CachedSchool>();
+	private periodsCache = new SvelteMap<string, { currentPeriod: unknown | null; allPeriods: unknown[]; cachedAt: number }>();
 
 	// TTL configurations (in milliseconds)
 	private readonly STUDENTS_TTL = 2 * 60 * 60 * 1000; // 2 hours
@@ -68,6 +69,7 @@ export class TeacherDashboardCache {
 	private readonly WARNINGS_TTL = 10 * 60 * 1000; // 10 minutes
 	private readonly CLASS_TTL = 24 * 60 * 60 * 1000; // 24 hours
 	private readonly SCHOOL_TTL = 24 * 60 * 60 * 1000; // 24 hours
+	private readonly PERIODS_TTL = 60 * 60 * 1000; // 1 hour (quasi-static)
 
 	// Monitoring (controlled by ENABLE_CACHE_MONITORING env variable)
 	private readonly monitoringEnabled =
@@ -781,6 +783,52 @@ export class TeacherDashboardCache {
 	}
 
 	// ========================================================================
+	// PERIODS CACHE
+	// ========================================================================
+
+	/**
+	 * Set periods in cache (currentPeriod + allPeriods)
+	 * Key: schoolId
+	 */
+	setPeriods(schoolId: string, currentPeriod: unknown | null, allPeriods: unknown[]): void {
+		this.periodsCache.set(schoolId, {
+			currentPeriod,
+			allPeriods,
+			cachedAt: Date.now()
+		});
+		this.log('trace', `[Cache] Periods stored for school ${schoolId}`);
+	}
+
+	/**
+	 * Get periods from cache (sync, reactive)
+	 * Returns null if not cached or expired
+	 */
+	getPeriodsSync(schoolId: string): { currentPeriod: unknown | null; allPeriods: unknown[] } | null {
+		const cached = this.periodsCache.get(schoolId);
+		if (!cached) return null;
+
+		// Check if expired
+		if (Date.now() - cached.cachedAt > this.PERIODS_TTL) {
+			this.periodsCache.delete(schoolId);
+			this.log('trace', `[Cache] Periods expired for school ${schoolId}`);
+			return null;
+		}
+
+		return {
+			currentPeriod: cached.currentPeriod,
+			allPeriods: cached.allPeriods
+		};
+	}
+
+	/**
+	 * Invalidate periods cache
+	 */
+	invalidatePeriods(schoolId: string): void {
+		this.periodsCache.delete(schoolId);
+		this.log('trace', `[Cache] Periods invalidated for school ${schoolId}`);
+	}
+
+	// ========================================================================
 	// CACHE STATISTICS
 	// ========================================================================
 
@@ -795,7 +843,8 @@ export class TeacherDashboardCache {
 			this.rewardsCache.size +
 			this.warningsCache.size +
 			this.classesCache.size +
-			this.schoolCache.size;
+			this.schoolCache.size +
+			this.periodsCache.size;
 
 		// Estimate memory: ~1KB per entry (rough estimate)
 		const estimatedBytes = totalEntries * 1024;
@@ -810,6 +859,7 @@ export class TeacherDashboardCache {
 			warnings: this.warningsCache.size,
 			classes: this.classesCache.size,
 			school: this.schoolCache.size,
+			periods: this.periodsCache.size,
 			totalEntries,
 			memoryEstimate
 		};

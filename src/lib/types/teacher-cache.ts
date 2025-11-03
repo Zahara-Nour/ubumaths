@@ -154,6 +154,7 @@ export interface CacheStats {
 	warnings: number;
 	classes: number;
 	school: number;
+	periods: number;
 	totalEntries: number;
 	memoryEstimate: string;
 }
