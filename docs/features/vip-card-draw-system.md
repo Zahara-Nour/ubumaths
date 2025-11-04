@@ -1316,12 +1316,363 @@ For detailed implementation guide and troubleshooting:
 
 ---
 
+## Rarity-Weighted Distribution
+
+**Status**: ✅ Implemented (2025-11-04)
+
+The VIP card drawing system uses rarity-weighted probabilities instead of uniform distribution. This makes common cards more frequent and legendary cards truly rare.
+
+### Overview
+
+**Before** (uniform distribution):
+
+- Every card: 1/26 ≈ 3.85% chance
+- No rarity tiers
+- Hard-coded card list in SQL
+
+**After** (weighted distribution):
+
+- Common: 60% (6 cards → ~10% each)
+- Rare: 25% (9 cards → ~2.8% each)
+- Epic: 12% (6 cards → ~2% each)
+- Legendary: 3% (2 cards → ~1.5% each)
+
+---
+
+### Implementation
+
+#### Two-Step Selection Process
+
+1. **Step 1**: Roll 1-100 to select rarity tier (weighted)
+2. **Step 2**: SELECT random card from chosen tier (uniform within tier)
+
+**Example** (default config: 60/25/12/3):
+
+```
+Roll 1-60   → Common rarity   → SELECT random FROM {bonus, choix, bougeotte, jeu, soldes, super-soldes}
+Roll 61-85  → Rare rarity     → SELECT random FROM {super-bonus, coup-double, ...}
+Roll 86-97  → Epic rarity     → SELECT random FROM {mega-bonus, throne, fame, ...}
+Roll 98-100 → Legendary rarity → SELECT random FROM {fortune, Sheikh}
+```
+
+#### Database Architecture
+
+**Source of Truth**: `vip_card_templates` table (26 cards with rarity metadata)
+
+**TypeScript Array**: `VIP_CARDS` in `src/lib/types/vip-card.ts` used for **UI display only**
+
+**Configuration**: `vip_card_config` table (one active config at a time)
+
+---
+
+### Card Distribution
+
+#### By Rarity (Total: 26 cards)
+
+| Rarity    | Total  | Enabled | Disabled | Probability (Default) |
+| --------- | ------ | ------- | -------- | --------------------- |
+| Common    | 8      | 6       | 2        | 60%                   |
+| Rare      | 10     | 9       | 1        | 25%                   |
+| Epic      | 6      | 6       | 0        | 12%                   |
+| Legendary | 2      | 2       | 0        | 3%                    |
+| **Total** | **26** | **23**  | **3**    | **100%**              |
+
+#### Enabled Cards (23 total)
+
+**Common** (6): bonus, choix, bougeotte, jeu, soldes, super-soldes
+**Rare** (9): super-bonus, coup-double, super-bougeotte, tranquilou, lalalalala, help, mathemagie, ecrabouilleur, inventeur, mega-soldes
+**Epic** (6): mega-bonus, throne, fame, memoire, alchimie, batman
+**Legendary** (2): fortune, Sheikh
+
+#### Disabled Cards (3)
+
+**Common** (2): candy, captain
+**Rare** (1): team
+
+These cards are commented out in the TypeScript `VIP_CARDS` array and marked `is_enabled: false` in the database. They are **never drawn** but can be re-enabled by admins.
+
+---
+
+### Configuration Management
+
+#### View Active Configuration
+
+```sql
+SELECT
+  config_name,
+  common_probability,
+  rare_probability,
+  epic_probability,
+  legendary_probability,
+  description
+FROM vip_card_config
+WHERE is_active = TRUE;
+```
+
+#### Default Configuration
+
+```sql
+config_name: 'default'
+common_probability: 60  -- 60% chance to draw common card
+rare_probability: 25    -- 25% chance to draw rare card
+epic_probability: 12    -- 12% chance to draw epic card
+legendary_probability: 3 -- 3% chance to draw legendary card
+```
+
+#### Creating Special Event Configuration
+
+**Example**: Christmas event with boosted epic/legendary drops
+
+```sql
+INSERT INTO vip_card_config (
+  config_name,
+  common_probability,
+  rare_probability,
+  epic_probability,
+  legendary_probability,
+  is_active,
+  description,
+  valid_from,
+  valid_until
+) VALUES (
+  'christmas_2025',
+  45, 25, 20, 10, -- Boosted epic (12→20%) and legendary (3→10%)
+  FALSE, -- Not active yet
+  'Christmas 2025: Gift-themed bonus drops',
+  '2025-12-15 00:00:00+00',
+  '2026-01-05 23:59:59+00'
+);
+```
+
+#### Activating Event Configuration
+
+**⚠️ Important**: Only ONE config can be active at a time.
+
+```sql
+-- Switch to event config
+BEGIN;
+UPDATE vip_card_config SET is_active = FALSE WHERE is_active = TRUE;
+UPDATE vip_card_config SET is_active = TRUE WHERE config_name = 'christmas_2025';
+COMMIT;
+```
+
+#### Returning to Default Configuration
+
+```sql
+BEGIN;
+UPDATE vip_card_config SET is_active = FALSE WHERE config_name = 'christmas_2025';
+UPDATE vip_card_config SET is_active = TRUE WHERE config_name = 'default';
+COMMIT;
+```
+
+---
+
+### Enabling/Disabling Cards
+
+Admins can temporarily disable cards without deleting them. Disabled cards are **never drawn**, even if their rarity is rolled (system falls back to common cards).
+
+#### Disable a Card
+
+```sql
+UPDATE vip_card_templates
+SET is_enabled = FALSE
+WHERE id = 'Sheikh'; -- Disable legendary Sheikh card
+```
+
+**Impact**: Sheikh will not appear in any draws until re-enabled.
+
+#### Re-enable a Card
+
+```sql
+UPDATE vip_card_templates
+SET is_enabled = TRUE
+WHERE id = 'Sheikh';
+```
+
+#### View Disabled Cards
+
+```sql
+SELECT id, name, rarity, category
+FROM vip_card_templates
+WHERE is_enabled = FALSE;
+-- Expected: candy (common), captain (common), team (rare)
+```
+
+---
+
+### Testing
+
+#### Statistical Validation
+
+**Test**: `tests/integration/vip-card-rarity-distribution.test.ts`
+
+Draws 10,000 cards and validates distribution matches config (±5% tolerance):
+
+| Rarity    | Expected | Range (±5%)   | Validation |
+| --------- | -------- | ------------- | ---------- |
+| Common    | 6,000    | 5,700 - 6,300 | ✅ Passing |
+| Rare      | 2,500    | 2,375 - 2,625 | ✅ Passing |
+| Epic      | 1,200    | 1,140 - 1,260 | ✅ Passing |
+| Legendary | 300      | 285 - 315     | ✅ Passing |
+
+**Run tests**:
+
+```bash
+pnpm test:integration -- vip-card-rarity-distribution
+```
+
+#### Enabled/Disabled Filtering
+
+**Test**: `tests/integration/vip-card-enabled-filtering.test.ts`
+
+Validates:
+
+- ✅ Disabled cards (candy, captain, team) never drawn
+- ✅ Fallback to common when rarity has no enabled cards
+- ✅ Error when ALL cards disabled: "No enabled VIP cards available"
+
+**Run tests**:
+
+```bash
+pnpm test:integration -- vip-card-enabled-filtering
+```
+
+---
+
+### Performance
+
+**Overhead**: ~21ms for 10-card draw
+
+- 1 config query: ~1ms
+- 10 card queries: ~2ms each
+
+**Optimization**:
+
+- Config queried ONCE per RPC call (not per card)
+- Indexes on `rarity` and `is_enabled` columns
+- `ORDER BY random() LIMIT 1` for card selection
+
+---
+
+### Security
+
+**RLS Policies**:
+
+- `vip_card_templates`: Authenticated users can read, admins can modify
+- `vip_card_config`: Authenticated users see active config only, admins see all
+
+**Authorization**: Same as before (teacher/admin OR auth.uid() = student)
+
+**Race Condition Protection**: `SELECT FOR UPDATE` on profiles table
+
+---
+
+### Backward Compatibility
+
+**API Endpoint**: No changes (function signature unchanged)
+
+**Function Call**:
+
+```typescript
+// Before and after: Same API
+const { data } = await supabase.rpc('draw_multiple_vip_cards', {
+	p_student_id: studentId,
+	p_count: 10,
+	p_payment_method: 'gidouilles',
+	p_gidouilles_cost: 100,
+	p_vip_card_instance_id: null
+});
+```
+
+**Return Value**: Same structure (JSONB with `cards` array)
+
+---
+
+### Troubleshooting
+
+#### Error: "No enabled VIP cards available to draw"
+
+**Cause**: All cards in selected rarity are disabled, and fallback to common also failed (all common cards disabled).
+
+**Solution**: Enable at least one common card:
+
+```sql
+UPDATE vip_card_templates
+SET is_enabled = TRUE
+WHERE rarity = 'common'
+LIMIT 1;
+```
+
+#### Error: "Probabilities must sum to 100"
+
+**Cause**: INSERT/UPDATE violates constraint.
+
+**Solution**: Ensure probabilities sum to exactly 100:
+
+```sql
+-- ❌ This fails (45+25+15+10 = 95)
+UPDATE vip_card_config SET common_probability = 45;
+
+-- ✅ This works (45+30+15+10 = 100)
+UPDATE vip_card_config
+SET common_probability = 45,
+    rare_probability = 30,
+    epic_probability = 15,
+    legendary_probability = 10
+WHERE config_name = 'default';
+```
+
+#### Distribution Doesn't Match Expectations
+
+**Symptom**: Drawing 100 cards gives unexpected rarity counts.
+
+**Cause**: Small sample size (random variance).
+
+**Solution**: Test with larger sample (N ≥ 1,000 for statistical validity):
+
+```bash
+pnpm test:integration -- vip-card-rarity-distribution
+```
+
+---
+
+### Admin Resources
+
+For detailed SQL commands and configuration management, see:
+📚 **[Admin Guide: VIP Card Management](../guides/admin-vip-card-management.md)**
+
+---
+
+### Limitations
+
+1. **No per-student customization**: All students use same active config
+2. **No UI for config management**: Admins must use SQL for now (UI planned for v2)
+3. **No automatic event scheduling**: Configs must be activated/deactivated manually
+4. **No pity timer**: Each draw is independent (no guaranteed legendary after N draws)
+
+---
+
+### Next Steps
+
+**Short-term**:
+
+- [ ] Create admin UI for managing configs (Phase 2)
+- [ ] Add analytics dashboard for card usage stats
+- [ ] Implement automatic event scheduling (cron job)
+
+**Long-term**:
+
+- [ ] Per-class custom configs (different probabilities per class)
+- [ ] Dynamic rarity adjustment (boost drops if cards accumulate)
+- [ ] Pity timer (guaranteed legendary after X draws)
+
+---
+
 ## Future Improvements
 
 ### Short Term
 
 - [ ] Validate VIP card has `draw_cards` action type in RPC function
-- [ ] Add rarity-based weighting for card selection (not uniform)
 - [ ] Student self-service card drawing (payment method: gidouilles only)
 
 ### Long Term

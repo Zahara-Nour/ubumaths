@@ -127,11 +127,15 @@ Système de récompenses gamifié pour motiver les élèves.
 
 - Gidouilles (monnaie virtuelle) avec +/- ajustement
 - Cartes VIP (Joker Homework, Extra Time, etc.)
+- [Multi-card drawing system](features/vip-card-draw-system.md) (1-10 cards at once) 🆕
+- Rarity-weighted distribution (60% common, 25% rare, 12% epic, 3% legendary)
+- Configurable probabilities for special events
 - Boutique élève pour acheter des cartes
 - Distribution en masse par classe
 - Optimistic UI avec debouncing (500ms)
 - Cache 5 min TTL avec Event Bus
 - Batching automatique (10 clics = 1 requête DB)
+- **2025-11-04** : Rarity-weighted VIP card drawing system
 - **2025-10-29** : Cache architecture séparée + cross-device sync
 
 ### 🔄 Synchronisation multi-appareils
@@ -224,16 +228,17 @@ Système d'authentification avec Google OAuth + email/password.
 
 ## 📖 Guides pratiques
 
-| Guide                                           | Description                      |
-| ----------------------------------------------- | -------------------------------- |
-| [Getting Started](getting-started/README.md) ⭐ | Installation et premiers pas     |
-| [Vue d'ensemble](guides/README.md)              | Index des guides                 |
-| [Import d'élèves](guides/student-import.md)     | Workflow d'import CSV            |
-| [Déploiement](guides/deployment.md)             | Déploiement sur Vercel           |
-| [Dépannage](guides/troubleshooting.md)          | Solutions aux problèmes courants |
-| [Guide de tests](guides/testing-guide.md)       | Comment tester l'application     |
-| [Composants UI](guides/ui-components.md)        | Utilisation Shadcn-svelte        |
-| [Migration Reports](migrations/README.md) 🆕    | Rapports de migrations clés      |
+| Guide                                                     | Description                      |
+| --------------------------------------------------------- | -------------------------------- |
+| [Getting Started](getting-started/README.md) ⭐           | Installation et premiers pas     |
+| [Vue d'ensemble](guides/README.md)                        | Index des guides                 |
+| [Import d'élèves](guides/student-import.md)               | Workflow d'import CSV            |
+| [Déploiement](guides/deployment.md)                       | Déploiement sur Vercel           |
+| [Dépannage](guides/troubleshooting.md)                    | Solutions aux problèmes courants |
+| [Guide de tests](guides/testing-guide.md)                 | Comment tester l'application     |
+| [Composants UI](guides/ui-components.md)                  | Utilisation Shadcn-svelte        |
+| [Admin VIP Cards](guides/admin-vip-card-management.md) 🆕 | Gestion des cartes VIP (admin)   |
+| [Migration Reports](migrations/README.md) 🆕              | Rapports de migrations clés      |
 
 ---
 

@@ -436,6 +436,149 @@ This filtering is implemented in `getClassWarnings()` (`src/lib/server/cache/war
 
 ---
 
+### VIP Card System Tables
+
+#### `vip_card_templates`
+
+Stores all VIP card definitions with rarity, category, and enabled status. This is the **source of truth** for card drawing. The TypeScript `VIP_CARDS` array (`src/lib/types/vip-card.ts`) is used for UI display only.
+
+| Column        | Type        | Description                                                    |
+| ------------- | ----------- | -------------------------------------------------------------- |
+| `id`          | TEXT (PK)   | Card ID (matches TypeScript VipCard.id)                        |
+| `name`        | TEXT        | French display name                                            |
+| `description` | TEXT        | French description of privilege                                |
+| `image_path`  | TEXT        | Path to card image (WebP format)                               |
+| `category`    | TEXT        | bonus, privilege, social, power (nullable)                     |
+| `rarity`      | TEXT        | common, rare, epic, legendary (**required**)                   |
+| `is_enabled`  | BOOLEAN     | Whether card can be drawn (default: TRUE)                      |
+| `action`      | JSONB       | Optional action definition (draw_cards, remove_warnings, etc.) |
+| `sort_order`  | INTEGER     | Sorting order for UI display (default: 0)                      |
+| `created_at`  | TIMESTAMPTZ | Creation timestamp                                             |
+| `updated_at`  | TIMESTAMPTZ | Last update timestamp                                          |
+
+**Card Distribution** (26 total):
+
+- **Common** (8): 6 enabled, 2 disabled (candy, captain)
+- **Rare** (10): 9 enabled, 1 disabled (team)
+- **Epic** (6): All enabled
+- **Legendary** (2): All enabled
+
+**Enabled Cards** (23 total): Available for drawing
+**Disabled Cards** (3): candy, captain, team (commented out in TypeScript)
+
+**Indexes**:
+
+- `idx_vip_card_templates_rarity` on `rarity`
+- `idx_vip_card_templates_enabled` on `is_enabled`
+- `idx_vip_card_templates_category` on `category`
+
+**RLS Policies**:
+
+- Authenticated users: `SELECT` (read-only)
+- Admins: `INSERT`, `UPDATE`, `DELETE` (via `is_admin()` function)
+
+**Trigger**: `set_updated_at_vip_card_templates` updates `updated_at` column
+
+---
+
+#### `vip_card_config`
+
+Stores rarity probability configurations. Only one config can be active at a time. Used by `draw_multiple_vip_cards()` to determine card rarity distribution.
+
+| Column                  | Type        | Description                                     |
+| ----------------------- | ----------- | ----------------------------------------------- |
+| `id`                    | UUID (PK)   | Config ID                                       |
+| `config_name`           | TEXT        | Unique name (e.g., 'default', 'halloween_2025') |
+| `common_probability`    | INTEGER     | Probability for common cards (0-100)            |
+| `rare_probability`      | INTEGER     | Probability for rare cards (0-100)              |
+| `epic_probability`      | INTEGER     | Probability for epic cards (0-100)              |
+| `legendary_probability` | INTEGER     | Probability for legendary cards (0-100)         |
+| `is_active`             | BOOLEAN     | Whether this config is currently active         |
+| `description`           | TEXT        | Optional description of event or purpose        |
+| `valid_from`            | TIMESTAMPTZ | Optional start date for scheduled events        |
+| `valid_until`           | TIMESTAMPTZ | Optional end date for scheduled events          |
+| `created_at`            | TIMESTAMPTZ | Creation timestamp                              |
+| `updated_at`            | TIMESTAMPTZ | Last update timestamp                           |
+
+**Constraint**: All four probability columns must sum to exactly 100.
+
+**Unique Constraint**: Only ONE config can have `is_active = TRUE` at any time (enforced by partial unique index).
+
+**Default Config**:
+
+```sql
+config_name: 'default'
+common_probability: 60
+rare_probability: 25
+epic_probability: 12
+legendary_probability: 3
+```
+
+**RLS Policies**:
+
+- Authenticated users: `SELECT WHERE is_active = TRUE` (see active config only)
+- Admins: `SELECT` all configs, `INSERT`, `UPDATE`, `DELETE`
+
+**Trigger**: `set_updated_at_vip_card_config` updates `updated_at` column
+
+---
+
+#### Example: Creating Event Configuration
+
+```sql
+-- Create Halloween event with boosted legendary drops
+INSERT INTO vip_card_config (
+  config_name,
+  common_probability,
+  rare_probability,
+  epic_probability,
+  legendary_probability,
+  is_active,
+  description,
+  valid_from,
+  valid_until
+) VALUES (
+  'halloween_2025',
+  40, 30, 20, 10, -- Boosted legendary (10% instead of 3%)
+  FALSE, -- Not active yet
+  'Halloween 2025: Spooky legendary cards everywhere!',
+  '2025-10-25 00:00:00+00',
+  '2025-11-01 23:59:59+00'
+);
+
+-- Activate event (deactivate current config first)
+BEGIN;
+UPDATE vip_card_config SET is_active = FALSE WHERE is_active = TRUE;
+UPDATE vip_card_config SET is_active = TRUE WHERE config_name = 'halloween_2025';
+COMMIT;
+```
+
+---
+
+#### Helper Function: `is_admin()`
+
+```sql
+CREATE OR REPLACE FUNCTION is_admin()
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM profiles
+    WHERE id = auth.uid() AND role = 'admin'
+  );
+END;
+$$;
+```
+
+Used by RLS policies to restrict admin-only operations.
+
+**Migration**: `20251104115149_add_vip_card_templates_tables.sql`
+
+---
+
 ### Classroom Management Tables
 
 #### `classes`
