@@ -36,7 +36,7 @@
 		{#if cards.length > 0}
 			<div class="space-y-4">
 				<h3 class="text-lg font-semibold">
-					{rarityLabel(rarity)} ({cards.length} carte{cards.length > 1 ? 's' : ''})
+					{rarityLabel(rarity)}
 				</h3>
 
 				<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

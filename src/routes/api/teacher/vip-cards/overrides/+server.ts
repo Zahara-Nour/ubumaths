@@ -37,17 +37,17 @@ import { templateToResponse } from '$lib/types/vip-card-admin';
  */
 export const GET: RequestHandler = async ({ locals }) => {
 	// 1. Authentication check
-	if (!locals.user) {
+	if (!locals.profile) {
 		throw error(401, 'Authentication required');
 	}
 
 	// 2. Authorization check (teacher or admin)
-	if (locals.user.role !== 'teacher' && locals.user.role !== 'admin') {
+	if (locals.profile.role !== 'teacher' && locals.profile.role !== 'admin') {
 		throw error(403, 'Teacher or admin access required');
 	}
 
 	const supabase = locals.supabase;
-	const teacherId = locals.user.id;
+	const teacherId = locals.profile.id;
 
 	try {
 		// 3. Fetch teacher's overrides
@@ -127,17 +127,17 @@ export const GET: RequestHandler = async ({ locals }) => {
  */
 export const PUT: RequestHandler = async ({ request, locals }) => {
 	// 1. Authentication check
-	if (!locals.user) {
+	if (!locals.profile) {
 		throw error(401, 'Authentication required');
 	}
 
 	// 2. Authorization check (teacher or admin)
-	if (locals.user.role !== 'teacher' && locals.user.role !== 'admin') {
+	if (locals.profile.role !== 'teacher' && locals.profile.role !== 'admin') {
 		throw error(403, 'Teacher or admin access required');
 	}
 
 	const supabase = locals.supabase;
-	const teacherId = locals.user.id;
+	const teacherId = locals.profile.id;
 
 	try {
 		// 3. Input validation
@@ -169,34 +169,34 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 			throw error(400, `Invalid card IDs: ${invalidIds.join(', ')}`);
 		}
 
-		// 5. Upsert overrides (one by one for better error handling)
-		const results = [];
+		// 5. Delete all existing overrides for this teacher
+		const { error: deleteError } = await supabase
+			.from('teacher_vip_card_overrides')
+			.delete()
+			.eq('teacher_id', teacherId);
 
-		for (const override of data.overrides) {
-			const { data: upserted, error: upsertError } = await supabase
-				.from('teacher_vip_card_overrides')
-				.upsert(
-					{
-						teacher_id: teacherId,
-						card_id: override.cardId,
-						is_enabled: override.isEnabled
-					},
-					{
-						onConflict: 'teacher_id,card_id'
-					}
-				)
-				.select()
-				.single();
-
-			if (upsertError) {
-				console.error('Error upserting override:', upsertError);
-				throw error(500, `Failed to update override for card ${override.cardId}`);
-			}
-
-			results.push(upserted);
+		if (deleteError) {
+			console.error('Error deleting existing overrides:', deleteError);
+			throw error(500, 'Failed to delete existing overrides');
 		}
 
-		// 6. Fetch card names for response
+		// 6. Insert new overrides (batch insert for better performance)
+		const overridesToInsert = data.overrides.map((override) => ({
+			teacher_id: teacherId,
+			card_id: override.cardId,
+			is_enabled: override.isEnabled
+		}));
+
+		const { error: insertError } = await supabase
+			.from('teacher_vip_card_overrides')
+			.insert(overridesToInsert);
+
+		if (insertError) {
+			console.error('Error inserting overrides:', insertError);
+			throw error(500, 'Failed to insert overrides');
+		}
+
+		// 7. Fetch card names for response
 		const { data: cards, error: cardsError } = await supabase
 			.from('vip_card_templates')
 			.select('id, name')
@@ -212,7 +212,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 			cardNameMap.set(card.id, card.name);
 		});
 
-		// 7. Build response
+		// 8. Build response
 		const overridesResponse = data.overrides.map((override) => ({
 			cardId: override.cardId,
 			cardName: cardNameMap.get(override.cardId) || override.cardId,

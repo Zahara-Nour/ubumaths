@@ -8,13 +8,11 @@
 	let { data }: { data: PageData } = $props();
 
 	// Build overrides map from database data
-	let overrides = $state<Record<string, boolean>>(() => {
-		const initial: Record<string, boolean> = {};
-		data.overrides.forEach((override) => {
-			initial[override.card_id] = override.is_enabled;
-		});
-		return initial;
+	const initialOverrides: Record<string, boolean> = {};
+	data.overrides.forEach((override) => {
+		initialOverrides[override.card_id] = override.is_enabled;
 	});
+	let overrides = $state<Record<string, boolean>>(initialOverrides);
 
 	let hasChanges = $state(false);
 	let saving = $state(false);
@@ -30,10 +28,36 @@
 		saving = true;
 
 		try {
+			// Build complete list of overrides for ALL templates
+			// Only send cards that differ from their default template value
+			const overridesArray = data.templates
+				.map((template) => {
+					const currentValue = overrides[template.id] ?? template.is_enabled;
+					// Only create override if value differs from template default
+					if (currentValue !== template.is_enabled) {
+						return {
+							cardId: template.id,
+							isEnabled: currentValue
+						};
+					}
+					return null;
+				})
+				.filter(
+					(override): override is { cardId: string; isEnabled: boolean } => override !== null
+				);
+
+			// If no overrides needed, we're done
+			if (overridesArray.length === 0) {
+				toaster.info('Aucune modification à enregistrer');
+				hasChanges = false;
+				saving = false;
+				return;
+			}
+
 			const response = await fetch('/api/teacher/vip-cards/overrides', {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ overrides })
+				body: JSON.stringify({ overrides: overridesArray })
 			});
 
 			if (!response.ok) {
@@ -121,46 +145,19 @@
 
 <div class="container mx-auto space-y-8 py-8">
 	<div class="flex items-center justify-between">
-		<h1 class="text-3xl font-bold">Paramètres Cartes VIP (Professeur)</h1>
+		<h1 class="text-3xl font-bold">Paramètres Cartes VIP</h1>
 	</div>
 
 	<!-- Global Config Display (Read-only) -->
 	<div class="rounded-lg border bg-muted/30 p-6">
-		<h2 class="mb-4 text-xl font-semibold">Configuration Globale (Lecture seule)</h2>
+		<h2 class="mb-4 text-xl font-semibold">Configuration</h2>
 		<VipCardGlobalConfigDisplay config={data.globalConfig} />
 	</div>
 
 	<!-- Teacher Overrides -->
 	<div class="space-y-6">
 		<div>
-			<h2 class="mb-2 text-xl font-semibold">Vos Préférences de Cartes</h2>
-			<p class="text-sm text-muted-foreground">
-				Activez ou désactivez les cartes VIP que vos élèves peuvent tirer. Ces paramètres
-				s'appliquent à toutes vos classes.
-			</p>
-		</div>
-
-		<!-- Warning Box -->
-		<div
-			class="rounded-lg border border-yellow-300 bg-yellow-50 p-4 dark:border-yellow-700 dark:bg-yellow-950/20"
-		>
-			<div class="flex gap-3">
-				<div class="text-xl">⚠️</div>
-				<div class="space-y-2 text-sm">
-					<p>
-						<strong>Ces paramètres s'appliquent à TOUTES vos classes.</strong> Si vous désactivez une
-						carte, vos élèves ne pourront PAS la tirer, même si elle est activée globalement.
-					</p>
-					<p>
-						Si un élève a plusieurs professeurs, la règle la plus stricte gagne : si UN professeur
-						désactive une carte, elle est bloquée pour l'élève dans TOUTES ses classes.
-					</p>
-					<p class="font-medium">
-						Vous devez laisser au moins 1 carte activée par rareté pour que le système fonctionne
-						correctement.
-					</p>
-				</div>
-			</div>
+			<h2 class="mb-2 text-xl font-semibold">Préférences</h2>
 		</div>
 
 		<!-- Cards Grid -->
@@ -216,23 +213,5 @@
 				</Button>
 			</div>
 		</div>
-	</div>
-
-	<!-- Info Box -->
-	<div
-		class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/20"
-	>
-		<p class="text-sm">
-			<strong>ℹ️ Comment ça marche ?</strong> Lorsqu'un élève tire une carte VIP, le système :
-		</p>
-		<ol class="mt-2 list-inside list-decimal space-y-1 text-sm">
-			<li>Utilise les probabilités de la configuration globale active</li>
-			<li>Filtre les cartes en fonction de vos préférences (et celles de tous ses professeurs)</li>
-			<li>Tire une carte au hasard parmi celles disponibles</li>
-		</ol>
-		<p class="mt-2 text-sm">
-			Si vous ne modifiez rien, vos élèves pourront tirer toutes les cartes activées globalement par
-			l'administrateur.
-		</p>
 	</div>
 </div>

@@ -30,12 +30,12 @@ import { configToResponse } from '$lib/types/vip-card-admin';
  */
 export const GET: RequestHandler = async ({ locals }) => {
 	// 1. Authentication check
-	if (!locals.user) {
+	if (!locals.profile) {
 		throw error(401, 'Authentication required');
 	}
 
 	// 2. Authorization check (teacher or admin)
-	if (locals.user.role !== 'teacher' && locals.user.role !== 'admin') {
+	if (locals.profile.role !== 'teacher' && locals.profile.role !== 'admin') {
 		throw error(403, 'Teacher or admin access required');
 	}
 
