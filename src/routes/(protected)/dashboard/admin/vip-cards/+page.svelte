@@ -219,7 +219,7 @@
 				throw new Error(error.message || 'Failed to activate');
 			}
 
-			const updatedConfig: VipCardConfig = await response.json();
+			const _updatedConfig: VipCardConfig = await response.json();
 
 			// Update configs: deactivate all others, activate this one
 			configs = configs.map((c) => ({
@@ -283,7 +283,7 @@
 			</div>
 
 			<!-- Cards grouped by rarity -->
-			{#each Object.entries(groupedTemplates()) as [rarity, cards]}
+			{#each Object.entries(groupedTemplates()) as [rarity, cards] (rarity)}
 				{#if cards.length > 0}
 					<div class="space-y-4">
 						<h2 class="text-xl font-semibold">
@@ -299,7 +299,7 @@
 						</h2>
 
 						<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-							{#each cards as card}
+							{#each cards as card (card.id)}
 								<VipCardPreview
 									{card}
 									isEnabled={optimisticToggles[card.id] ?? card.is_enabled}

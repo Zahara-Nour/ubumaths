@@ -110,9 +110,11 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 	async function createTeacherWithClass(name: string) {
 		try {
 			console.log('[helper] Creating teacher profile...');
+			// Use timestamp to ensure unique emails for each test run
+			const timestamp = Date.now();
 			const teacher = await TestData.profile()
 				.withRole('teacher')
-				.withEmail(`${name.toLowerCase().replace(/\s+/g, '')}@test.com`)
+				.withEmail(`${name.toLowerCase().replace(/\s+/g, '')}-${timestamp}@test.com`)
 				.withFullName(name)
 				.create();
 
@@ -136,8 +138,7 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 	async function addStudentToClass(studentId: string, classId: string) {
 		const { error } = await serviceClient.from('class_members').insert({
 			student_id: studentId,
-			class_id: classId,
-			role: 'student'
+			class_id: classId
 		});
 
 		expect(error).toBeNull();
@@ -357,10 +358,10 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 			// ========================================
 
 			console.log('[test] Creating teacher Alice with class...');
-			const { teacher: alice, class: aliceClass } = await createTeacherWithClass('Alice');
+			const { teacher: _alice, class: aliceClass } = await createTeacherWithClass('Alice');
 
 			console.log('[test] Creating teacher Bob with class...');
-			const { teacher: bob, class: bobClass } = await createTeacherWithClass('Bob');
+			const { teacher: _bob, class: bobClass } = await createTeacherWithClass('Bob');
 
 			console.log('[test] Creating student Charlie...');
 			const charlie = await TestData.profile().withRole('student').withGidouilles(2000).create();
@@ -392,7 +393,7 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 			console.log(`[test] "Sheikh" card drawn ${sheikhCount} times (not blocked) ✓`);
 
 			// Verify frequency is consistent with legendary rarity (~3%)
-			const expectedFrequency = 0.03;
+			const _expectedFrequency = 0.03;
 			const actualFrequency = sheikhCount / 1000;
 			console.log(`[test] Sheikh frequency: ${(actualFrequency * 100).toFixed(2)}% (expected ~3%)`);
 
@@ -656,7 +657,7 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 			console.log('[test] Creating 3 teachers with classes...');
 			const { teacher: alice, class: aliceClass } = await createTeacherWithClass('Alice');
 			const { teacher: bob, class: bobClass } = await createTeacherWithClass('Bob');
-			const { teacher: charlie, class: charlieClass } = await createTeacherWithClass('Charlie');
+			const { teacher: _charlie, class: charlieClass } = await createTeacherWithClass('Charlie');
 
 			console.log('[test] Creating student David...');
 			const david = await TestData.profile().withRole('student').withGidouilles(300).create();
