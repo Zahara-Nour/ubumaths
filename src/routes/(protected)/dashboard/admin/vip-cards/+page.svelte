@@ -52,6 +52,7 @@
 	let creatingCard = $state(false);
 	let editingCard = $state<VipCardTemplate | null>(null);
 	let uploadingImageCard = $state<VipCardTemplate | null>(null);
+	let deletingCard = $state<VipCardTemplate | null>(null);
 	let creatingConfig = $state(false);
 	let editingConfig = $state<VipCardConfig | null>(null);
 
@@ -111,11 +112,28 @@
 			: '/api/admin/vip-cards/templates';
 		const method = isEditing ? 'PATCH' : 'POST';
 
+		// Convert snake_case to camelCase for API
+		const apiPayload: Record<string, unknown> = {
+			id: cardData.id,
+			name: cardData.name,
+			description: cardData.description,
+			rarity: cardData.rarity,
+			category: cardData.category,
+			isEnabled: cardData.is_enabled,
+			imagePath: cardData.image_url,
+			sortOrder: cardData.sort_order
+		};
+
+		// Only include action if it's not null (Zod schema uses .optional() not .nullable())
+		if (cardData.action !== null && cardData.action !== undefined) {
+			apiPayload.action = cardData.action;
+		}
+
 		try {
 			const response = await fetch(url, {
 				method,
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(cardData)
+				body: JSON.stringify(apiPayload)
 			});
 
 			if (!response.ok) {
@@ -145,9 +163,17 @@
 		}
 	}
 
-	async function handleDeleteCard(cardId: string) {
+	function handleDeleteCard(cardId: string) {
 		const card = templates.find((t) => t.id === cardId);
-		if (!confirm(`Supprimer la carte "${card?.name}" ?`)) return;
+		if (card) {
+			deletingCard = card;
+		}
+	}
+
+	async function confirmDeleteCard() {
+		if (!deletingCard) return;
+
+		const cardId = deletingCard.id;
 
 		try {
 			const response = await fetch(`/api/admin/vip-cards/templates/${cardId}`, {
@@ -161,6 +187,7 @@
 
 			templates = templates.filter((t) => t.id !== cardId);
 			toaster.success('Carte supprimée');
+			deletingCard = null;
 		} catch (error) {
 			console.error('Delete error:', error);
 			toaster.error(error instanceof Error ? error.message : 'Échec de la suppression');
@@ -417,6 +444,63 @@
 				onComplete={(newUrl) => handleImageUploaded(uploadingImageCard.id, newUrl)}
 				onCancel={() => (uploadingImageCard = null)}
 			/>
+		</Dialog.Content>
+	</Dialog.Root>
+{/if}
+
+<!-- Delete Card Confirmation Modal -->
+{#if deletingCard}
+	<Dialog.Root
+		open={true}
+		onOpenChange={() => {
+			deletingCard = null;
+		}}
+	>
+		<Dialog.Content class="max-w-md">
+			<Dialog.Header>
+				<Dialog.Title>Confirmer la suppression</Dialog.Title>
+				<Dialog.Description>
+					Êtes-vous sûr de vouloir supprimer la carte <strong class="font-semibold text-foreground"
+						>"{deletingCard.name}"</strong
+					> ?
+				</Dialog.Description>
+			</Dialog.Header>
+
+			<div class="space-y-4">
+				<!-- Warning message -->
+				<div class="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+					<p class="text-sm text-destructive">
+						⚠️ Cette action est <strong>irréversible</strong>. Toutes les cartes déjà attribuées aux
+						élèves resteront, mais cette carte ne sera plus disponible pour de nouveaux tirages.
+					</p>
+				</div>
+
+				<!-- Card preview -->
+				<div class="rounded-lg border bg-muted/20 p-4">
+					<div class="flex items-center gap-3">
+						{#if deletingCard.image_path}
+							<img
+								src={deletingCard.image_path}
+								alt={deletingCard.name}
+								class="h-16 w-16 rounded-md object-cover"
+							/>
+						{/if}
+						<div class="flex-1">
+							<p class="font-medium">{deletingCard.name}</p>
+							<p class="text-sm text-muted-foreground">{deletingCard.description}</p>
+							<p class="mt-1 text-xs text-muted-foreground">
+								{rarityLabel(deletingCard.rarity)} • ID: {deletingCard.id}
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Action buttons -->
+				<div class="flex justify-end gap-2">
+					<Button variant="outline" onclick={() => (deletingCard = null)}>Annuler</Button>
+					<Button variant="destructive" onclick={confirmDeleteCard}>Supprimer</Button>
+				</div>
+			</div>
 		</Dialog.Content>
 	</Dialog.Root>
 {/if}

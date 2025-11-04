@@ -5,7 +5,9 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import VipCardActionEditor from '$lib/components/vip-cards/VipCardActionEditor.svelte';
 	import type { Database } from '$lib/types/database';
+	import type { VipCardAction } from '$lib/types/vip-card';
 
 	type VipCardTemplate = Database['public']['Tables']['vip_card_templates']['Row'];
 
@@ -20,10 +22,11 @@
 		name: string;
 		description: string;
 		rarity: 'common' | 'rare' | 'epic' | 'legendary';
-		category: 'gameplay' | 'academic' | 'fun' | 'social';
+		category: 'bonus' | 'privilege' | 'social' | 'power';
 		is_enabled: boolean;
 		image_url: string;
 		sort_order: number;
+		action?: VipCardAction | null;
 	}
 
 	let { card, onSave, onCancel }: Props = $props();
@@ -34,14 +37,14 @@
 		name: card?.name ?? '',
 		description: card?.description ?? '',
 		rarity: card?.rarity ?? 'common',
-		category: card?.category ?? 'gameplay',
+		category: card?.category ?? 'bonus',
 		is_enabled: card?.is_enabled ?? true,
 		image_url: card?.image_url ?? '',
-		sort_order: card?.sort_order ?? 0
+		sort_order: card?.sort_order ?? 0,
+		action: card?.action ?? null
 	});
 
 	let saving = $state(false);
-	let errors = $state<Record<string, string>>({});
 
 	// Dropdown items for MySelect
 	const rarityItems = [
@@ -52,14 +55,14 @@
 	];
 
 	const categoryItems = [
-		{ value: 'gameplay', label: 'Gameplay' },
-		{ value: 'academic', label: 'Académique' },
-		{ value: 'fun', label: 'Amusement' },
-		{ value: 'social', label: 'Social' }
+		{ value: 'bonus', label: 'Bonus' },
+		{ value: 'privilege', label: 'Privilège' },
+		{ value: 'social', label: 'Social' },
+		{ value: 'power', label: 'Pouvoir' }
 	];
 
-	// Validation using Svelte 5 $derived
-	const isFormValid = $derived(() => {
+	// Validation using Svelte 5 $derived - separate errors and validation
+	const errors = $derived.by(() => {
 		const newErrors: Record<string, string> = {};
 
 		if (!formData.id.trim()) {
@@ -84,12 +87,46 @@
 			newErrors.sort_order = "L'ordre doit être positif";
 		}
 
-		errors = newErrors;
-		return Object.keys(newErrors).length === 0;
+		// Validate action parameters if action is set
+		if (formData.action) {
+			if (formData.action.type === 'draw_cards') {
+				if (formData.action.count < 1 || formData.action.count > 10) {
+					newErrors.action = 'Le nombre de cartes doit être entre 1 et 10';
+				}
+			} else if (formData.action.type === 'remove_warnings') {
+				if (formData.action.count < 1 || formData.action.count > 5) {
+					newErrors.action = "Le nombre d'avertissements doit être entre 1 et 5";
+				}
+			} else if (formData.action.type === 'add_gidouilles') {
+				if (formData.action.amount < 1 || formData.action.amount > 200) {
+					newErrors.action = 'Le nombre de gidouilles doit être entre 1 et 200';
+				}
+			} else if (formData.action.type === 'exchange_cards') {
+				if (formData.action.exchange.mode === 'replace_random') {
+					if (formData.action.exchange.count < 1 || formData.action.exchange.count > 10) {
+						newErrors.action = 'Le nombre de cartes à remplacer doit être entre 1 et 10';
+					}
+				} else if (formData.action.exchange.mode === 'discard_for_specific') {
+					if (
+						formData.action.exchange.discardCount < 1 ||
+						formData.action.exchange.discardCount > 10
+					) {
+						newErrors.action = 'Le nombre de cartes à échanger doit être entre 1 et 10';
+					}
+					if (!formData.action.exchange.targetCardId.trim()) {
+						newErrors.action = "L'ID de la carte cible est requis";
+					}
+				}
+			}
+		}
+
+		return newErrors;
 	});
 
+	const isFormValid = $derived(Object.keys(errors).length === 0);
+
 	async function handleSubmit() {
-		if (!isFormValid()) return;
+		if (!isFormValid) return;
 
 		saving = true;
 		try {
@@ -217,10 +254,18 @@
 		<Label for="is_enabled" class="cursor-pointer">Carte activée</Label>
 	</div>
 
+	<!-- Action Configuration -->
+	<VipCardActionEditor
+		value={formData.action}
+		onValueChange={(newAction) => {
+			formData.action = newAction;
+		}}
+	/>
+
 	<!-- Action Buttons -->
 	<div class="flex justify-end gap-2 pt-4">
 		<Button type="button" variant="outline" onclick={onCancel} disabled={saving}>Annuler</Button>
-		<Button type="submit" disabled={!isFormValid() || saving}>
+		<Button type="submit" disabled={!isFormValid || saving}>
 			{saving ? 'Enregistrement...' : card ? 'Modifier' : 'Créer'}
 		</Button>
 	</div>
