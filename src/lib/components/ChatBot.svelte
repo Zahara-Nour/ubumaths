@@ -836,7 +836,7 @@
 			</div>
 
 			<Textarea
-				bind:this={textareaElement}
+				bind:ref={textareaElement}
 				bind:value={inputValue}
 				placeholder="Posez votre question... (Entrée pour envoyer, Maj+Entrée pour nouvelle ligne)"
 				disabled={isLoading}

@@ -41,8 +41,8 @@
 			data: {
 				question?: string;
 				answer?: string;
-				frontContent?: string;
-				backContent?: string;
+				frontContent?: ContentField[] | string;
+				backContent?: ContentField[] | string;
 			};
 		}>
 	>([]);
@@ -84,11 +84,19 @@
 			// Add pending cards
 			for (const card of pendingCards) {
 				try {
+					// Convert string to ContentField[] if needed
+					const frontContent: ContentField[] = Array.isArray(card.data.frontContent)
+						? card.data.frontContent
+						: [{ type: 'text', content: card.data.frontContent || card.data.question || '' }];
+					const backContent: ContentField[] = Array.isArray(card.data.backContent)
+						? card.data.backContent
+						: [{ type: 'text', content: card.data.backContent || card.data.answer || '' }];
+
 					const cardRequest: CreateCardRequest = {
 						deckId: deck.id,
 						cardType: 'custom',
-						frontContent: card.data.frontContent || card.data.question || '',
-						backContent: card.data.backContent || card.data.answer || ''
+						frontContent,
+						backContent
 					};
 
 					const cardResponse = await fetch('/api/srs/cards', {
@@ -121,10 +129,7 @@
 	async function handleSaveCustomCard(frontContent: ContentField[], backContent: ContentField[]) {
 		pendingCards.push({
 			type: 'custom',
-			data: { question: '', answer: '', frontContent, backContent } as {
-				question: string;
-				answer: string;
-			}
+			data: { frontContent, backContent }
 		});
 
 		showCustomCardEditor = false;

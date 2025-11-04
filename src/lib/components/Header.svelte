@@ -198,7 +198,7 @@
 					{#each sidebarItems as item (item.href)}
 						<DropdownMenu.Item>
 							<a
-								href={resolve(item.href)}
+								href={resolve(item.href as '/')}
 								class="flex w-full items-center"
 								onclick={closeMobileMenu}
 							>

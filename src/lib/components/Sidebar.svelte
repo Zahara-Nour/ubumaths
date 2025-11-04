@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { Home, Gamepad2, Calculator } from 'lucide-svelte';
-	import { resolve } from '$app/paths';
 	import type { ComponentType } from 'svelte';
 
 	// Default navigation items
@@ -26,7 +25,7 @@
 	<nav class="flex flex-col items-center gap-1 py-4">
 		{#each items as item (item.href)}
 			<a
-				href={resolve(item.href)}
+				href={item.href}
 				data-sveltekit-preload-data="tap"
 				class="group flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
 					item.href

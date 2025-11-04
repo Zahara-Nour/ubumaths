@@ -574,7 +574,7 @@
 		bind:open={vipModalOpen}
 		studentName={selectedStudent.firstname}
 		studentId={selectedStudent.id}
-		vipCards={selectedStudent.vipCards}
+		{classId}
 		teacherView={true}
 	/>
 {/if}

@@ -118,7 +118,7 @@ export function sortCardsByPriority(
 		name: string;
 		description: string;
 		imagePath: string;
-		category: string;
+		category?: string;
 		rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 		count: number;
 	}>
@@ -127,7 +127,7 @@ export function sortCardsByPriority(
 	name: string;
 	description: string;
 	imagePath: string;
-	category: string;
+	category?: string;
 	rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 	count: number;
 }> {

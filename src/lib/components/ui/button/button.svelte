@@ -65,7 +65,7 @@
 		bind:this={ref}
 		data-slot="button"
 		class={cn(buttonVariants({ variant, size }), className)}
-		href={href ? resolve(href) : undefined}
+		href={href ? resolve(href as '/') : undefined}
 		inert={disabled ? true : undefined}
 		aria-disabled={disabled}
 		role={disabled ? 'link' : undefined}

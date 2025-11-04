@@ -234,8 +234,8 @@
 			toaster.success(message);
 			await invalidateAll();
 		} catch (_error) {
-			console.error('[rewards] Use card error:', error);
-			toaster.error(error instanceof Error ? errorData.message : 'Erreur');
+			console.error('[rewards] Use card error:', _error);
+			toaster.error(_error instanceof Error ? _error.message : 'Erreur');
 		} finally {
 			processingRequests[instanceId] = false;
 		}

@@ -259,7 +259,7 @@
 		name: string;
 		description: string;
 		imagePath: string;
-		category: string;
+		category?: string;
 		rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 	}) {
 		if (!teacherView) return;
