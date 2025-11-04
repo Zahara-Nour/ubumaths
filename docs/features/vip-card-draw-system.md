@@ -1643,12 +1643,225 @@ For detailed SQL commands and configuration management, see:
 
 ---
 
+## Admin & Teacher Management
+
+> 🆕 2025-11-04
+
+### Admin Features
+
+Admins can manage the VIP card system via `/dashboard/admin/vip-cards`:
+
+**Template Management**:
+
+- Create new card templates (ID, name, description, rarity, category, image)
+- Edit existing cards (all fields except ID)
+- Upload custom card images (WebP/PNG/JPEG format, max 2MB, stored in Supabase Storage)
+- Enable/disable cards globally (toggle switch with optimistic UI)
+- Delete cards (with cascade deletion of student instances and teacher overrides)
+
+**Probability Configuration Management**:
+
+- Create event configurations (special probability distributions for holidays/events)
+- Edit configurations (probabilities must sum to 100%, validated in UI)
+- Activate configurations (only one active at a time, atomic transaction)
+- Delete inactive configurations (cannot delete active config)
+- Set date ranges for temporary configs (valid_from, valid_until)
+
+**Global Control**:
+
+- If admin disables a card globally, **NO ONE** can draw it (not even with teacher override)
+- Teachers cannot override admin decisions (hierarchy: admin > teacher > probability config)
+- Admins can view all teacher overrides (read-only) via database queries
+
+**UI Features**:
+
+- Two tabs: **Cartes** (card templates) and **Configurations** (probability configs)
+- Cards grouped by rarity (Communes, Rares, Épiques, Légendaires)
+- Live preview before image upload
+- Probability sliders with auto-adjustment (must sum to 100%)
+- Optimistic UI updates with automatic rollback on error
+
+**See**: [Admin VIP Card Management Guide](../guides/admin-vip-card-management.md) for complete documentation.
+
+---
+
+### Teacher Overrides
+
+Teachers can customize which cards their students can draw via `/dashboard/teacher/vip-cards`:
+
+**Capabilities**:
+
+- Enable/disable cards for their students (applies to ALL teacher's classes)
+- Cannot enable cards that admin disabled globally (admin settings override teacher preferences)
+- Read-only view of active probability configuration (teachers cannot change probabilities)
+- Bulk update via checkboxes + save button (optimistic UI with debouncing)
+
+**Intersection Logic**:
+
+When a student has multiple teachers, the **most restrictive** setting wins.
+
+**Example**:
+
+- Student has 2 teachers: Alice and Bob
+- Alice disables "bonus" card → `teacher_vip_card_overrides.is_enabled = FALSE`
+- Bob does not disable "bonus" → No override record (defaults to global enabled)
+- **Result**: Student **CANNOT** draw "bonus" (Alice's override blocks it)
+
+**Why intersection?**:
+
+- Ensures students can't bypass restrictions by joining multiple classes
+- Respects each teacher's classroom rules and autonomy
+- Simpler logic than "union" (all teachers must agree) or "average" (confusing)
+- More secure than "most permissive wins" (prevents gaming the system)
+
+**Database Implementation**:
+
+- `teacher_vip_card_overrides` table with `(teacher_id, card_id, is_enabled)` columns
+- Unique constraint: `(teacher_id, card_id)` - one override per teacher per card
+- Composite index: `(teacher_id, card_id, is_enabled)` for fast filtering
+
+**See**: [Teacher VIP Card Override Guide](../guides/teacher-vip-card-overrides.md) for complete documentation.
+
+---
+
+### Database Schema
+
+**teacher_vip_card_overrides table**:
+
+```sql
+CREATE TABLE teacher_vip_card_overrides (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  teacher_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  card_id TEXT NOT NULL REFERENCES vip_card_templates(id) ON DELETE CASCADE,
+  is_enabled BOOLEAN NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT unique_teacher_card_override UNIQUE (teacher_id, card_id)
+);
+
+CREATE INDEX idx_teacher_overrides_teacher ON teacher_vip_card_overrides(teacher_id);
+CREATE INDEX idx_teacher_overrides_card ON teacher_vip_card_overrides(card_id);
+CREATE INDEX idx_teacher_overrides_enabled ON teacher_vip_card_overrides(is_enabled);
+CREATE INDEX idx_teacher_overrides_teacher_card_enabled
+  ON teacher_vip_card_overrides(teacher_id, card_id, is_enabled);
+```
+
+**Storage bucket**: `vip-card-images` (public read, admin write/delete)
+
+- File naming: `{card_id}@0.5x.webp` (e.g., `fortune@0.5x.webp`)
+- Max file size: 5MB (enforced by bucket policy)
+- Allowed MIME types: `image/webp`, `image/jpeg`, `image/png`, `image/gif`, `image/svg+xml`
+- Public URL: `https://[project].supabase.co/storage/v1/object/public/vip-card-images/{filename}`
+
+**See**: [Database Schema Documentation](../architecture/database-schema.md#teacher_vip_card_overrides) for complete schema details.
+
+---
+
+### Draw Function Updated
+
+`draw_multiple_vip_cards()` now filters cards based on teacher overrides:
+
+**Logic**:
+
+1. Load active probability configuration from `vip_card_config`
+2. Roll weighted random for rarity (1-100)
+3. **NEW**: Filter cards by teacher overrides:
+   ```sql
+   AND NOT EXISTS (
+     SELECT 1 FROM teacher_vip_card_overrides
+     WHERE card_id = vct.id
+       AND is_enabled = FALSE
+       AND teacher_id IN (
+         SELECT teacher_id FROM classes c
+         JOIN class_members cm ON cm.class_id = c.id
+         WHERE cm.student_id = p_student_id
+       )
+   )
+   ```
+4. Select random card from filtered pool (`ORDER BY random() LIMIT 1`)
+5. Fallback to common if selected rarity is empty (all cards disabled by teachers)
+6. Return JSONB: `{cards: [{cardId, instanceId, earnedAt}, ...]}`
+
+**Performance**:
+
+- Composite index on `(teacher_id, card_id, is_enabled)` ensures fast filtering
+- Overhead: ~2-5ms per draw (acceptable for 1-10 card draws)
+- No N+1 queries (single SELECT with subquery)
+
+**Fallback Behavior**:
+
+If ALL cards in selected rarity are disabled by teachers:
+
+- System falls back to common rarity
+- Ensures students can always draw at least one card
+- If ALL common cards also disabled → Error: "No enabled VIP cards available"
+
+**Security**:
+
+- Teacher overrides checked BEFORE drawing (cannot bypass via API)
+- RLS policies ensure teachers can only modify their own overrides
+- Admins can view all overrides (read-only) for transparency
+
+---
+
+### API Endpoints
+
+**Admin Endpoints**:
+
+- `POST /api/admin/vip-cards/templates` - Create template
+- `PATCH /api/admin/vip-cards/templates/{id}` - Update template
+- `DELETE /api/admin/vip-cards/templates/{id}` - Delete template
+- `POST /api/admin/vip-cards/templates/{id}/image` - Upload image
+- `POST /api/admin/vip-cards/configs` - Create config
+- `PATCH /api/admin/vip-cards/configs/{id}` - Update config
+- `PATCH /api/admin/vip-cards/configs/{id}/activate` - Activate config (atomic)
+- `DELETE /api/admin/vip-cards/configs/{id}` - Delete config
+
+**Teacher Endpoints**:
+
+- `GET /api/teacher/vip-cards/overrides` - Get overrides + templates
+- `PUT /api/teacher/vip-cards/overrides` - Bulk update overrides
+- `GET /api/teacher/vip-cards/global-config` - Get active config (read-only)
+
+**Security**:
+
+- All endpoints use **Zod validation** for input security (discriminated unions, UUID validation, bounds checking)
+- Admin endpoints require `role = 'admin'` (enforced by RLS + API checks)
+- Teacher endpoints require `role = 'teacher'` AND ownership verification
+- CSRF protection via SvelteKit's built-in tokens
+
+**Example Request** (Teacher updating overrides):
+
+```typescript
+PUT /api/teacher/vip-cards/overrides
+Body: {
+  overrides: {
+    "bonus": false,      // Disable bonus for students
+    "choix": true,       // Enable choix
+    "fortune": false     // Disable fortune (legendary)
+  }
+}
+
+Response (200):
+{
+  "updated": 3,
+  "overrides": [
+    { "card_id": "bonus", "is_enabled": false },
+    { "card_id": "choix", "is_enabled": true },
+    { "card_id": "fortune", "is_enabled": false }
+  ]
+}
+```
+
+---
+
 ### Limitations
 
-1. **No per-student customization**: All students use same active config
-2. **No UI for config management**: Admins must use SQL for now (UI planned for v2)
-3. **No automatic event scheduling**: Configs must be activated/deactivated manually
+1. **No per-student customization**: All students use same active config (cannot customize probabilities per student)
+2. ~~**No UI for config management**~~ ✅ **IMPLEMENTED** (2025-11-04): Admin UI at `/dashboard/admin/vip-cards`
+3. **No automatic event scheduling**: Event configs must be activated/deactivated manually (no cron job)
 4. **No pity timer**: Each draw is independent (no guaranteed legendary after N draws)
+5. **Teacher overrides apply to all classes**: Teachers cannot set different card preferences per class (all-or-nothing)
 
 ---
 
@@ -1656,15 +1869,17 @@ For detailed SQL commands and configuration management, see:
 
 **Short-term**:
 
-- [ ] Create admin UI for managing configs (Phase 2)
-- [ ] Add analytics dashboard for card usage stats
-- [ ] Implement automatic event scheduling (cron job)
+- [x] ✅ Create admin UI for managing configs (**COMPLETED** 2025-11-04)
+- [x] ✅ Create teacher override UI (**COMPLETED** 2025-11-04)
+- [ ] Add analytics dashboard for card usage stats (track most popular cards, average cost, usage patterns)
+- [ ] Implement automatic event scheduling (cron job to activate/deactivate configs based on date ranges)
 
 **Long-term**:
 
-- [ ] Per-class custom configs (different probabilities per class)
-- [ ] Dynamic rarity adjustment (boost drops if cards accumulate)
-- [ ] Pity timer (guaranteed legendary after X draws)
+- [ ] Per-class custom configs (teachers can set different probabilities per class)
+- [ ] Per-class teacher overrides (teacher can disable "bonus" in Class A but enable it in Class B)
+- [ ] Dynamic rarity adjustment (boost drops if cards accumulate, prevent hoarding)
+- [ ] Pity timer (guaranteed legendary after N draws, configurable threshold)
 
 ---
 

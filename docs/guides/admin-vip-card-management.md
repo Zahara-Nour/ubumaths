@@ -1,728 +1,459 @@
-# Admin Guide: VIP Card Management
+# Admin VIP Card Management Guide
 
-> 🔑 Admin-only features for managing VIP cards and rarity probabilities.
+Guide for administrators to manage VIP card templates and probability configurations.
+
+> 🆕 2025-11-04
+
+---
 
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [Managing Card Definitions](#managing-card-definitions)
-3. [Configuring Rarity Probabilities](#configuring-rarity-probabilities)
-4. [Special Events](#special-events)
-5. [Troubleshooting](#troubleshooting)
+2. [Accessing the Admin Page](#accessing-the-admin-page)
+3. [Managing Card Templates](#managing-card-templates)
+   - [Creating a New Card](#creating-a-new-card)
+   - [Editing Cards](#editing-cards)
+   - [Uploading Card Images](#uploading-card-images)
+   - [Enabling/Disabling Cards](#enablingdisabling-cards)
+   - [Deleting Cards](#deleting-cards)
+4. [Managing Probability Configurations](#managing-probability-configurations)
+   - [Creating Event Configs](#creating-event-configs)
+   - [Activating Configs](#activating-configs)
+   - [Editing Configs](#editing-configs)
+   - [Deleting Configs](#deleting-configs)
+5. [Understanding Teacher Overrides](#understanding-teacher-overrides)
 6. [Best Practices](#best-practices)
+7. [Troubleshooting](#troubleshooting)
 
 ---
 
 ## Overview
 
-The VIP card system uses a database-driven approach with two core tables:
+The VIP card system allows students to earn and draw virtual cards with various effects. As an admin, you control:
 
-- **`vip_card_templates`**: Stores all card definitions (name, rarity, enabled status)
-- **`vip_card_config`**: Stores rarity probability configurations
+- **Card Templates**: The 26 base cards available in the system (bonus, choix, fortune, etc.)
+- **Probability Configurations**: How likely each rarity is to be drawn (common, rare, epic, legendary)
+- **Global Enable/Disable**: Which cards are available system-wide
 
-Admins can:
+Teachers can further restrict which cards their students can draw, but they cannot enable cards you've disabled globally.
 
-- ✅ Enable/disable cards without deleting them
-- ✅ Create special event configs with custom probabilities
-- ✅ Switch between configs instantly (no code deployment)
-- ✅ Schedule events with validity periods
+**Key Concepts**:
 
-All operations require admin role (`is_admin()` function).
-
----
-
-## Managing Card Definitions
-
-### View All Cards
-
-```sql
-SELECT id, name, rarity, is_enabled, category
-FROM vip_card_templates
-ORDER BY
-  CASE rarity
-    WHEN 'common' THEN 1
-    WHEN 'rare' THEN 2
-    WHEN 'epic' THEN 3
-    WHEN 'legendary' THEN 4
-  END,
-  name;
-```
-
-**Expected output**: 26 cards (23 enabled, 3 disabled)
-
-### View Card Distribution
-
-```sql
-SELECT
-  rarity,
-  COUNT(*) as total,
-  SUM(CASE WHEN is_enabled THEN 1 ELSE 0 END) as enabled,
-  SUM(CASE WHEN NOT is_enabled THEN 1 ELSE 0 END) as disabled
-FROM vip_card_templates
-GROUP BY rarity
-ORDER BY CASE rarity
-  WHEN 'common' THEN 1
-  WHEN 'rare' THEN 2
-  WHEN 'epic' THEN 3
-  WHEN 'legendary' THEN 4
-END;
-```
-
-**Expected**:
-
-- Common: 8 total (6 enabled, 2 disabled)
-- Rare: 10 total (9 enabled, 1 disabled)
-- Epic: 6 total (6 enabled, 0 disabled)
-- Legendary: 2 total (2 enabled, 0 disabled)
+- **Rarity Tiers**: Common (60%), Rare (25%), Epic (12%), Legendary (3%) by default
+- **Intersection Logic**: If ANY teacher disables a card, student cannot draw it
+- **Event Configs**: Special probability distributions for holidays/events
 
 ---
 
-### Temporarily Disable a Card
+## Accessing the Admin Page
 
-**Use Case**: Remove a card from circulation without deleting it (e.g., card is broken, privilege no longer available).
+1. Log in with an admin account
+2. Navigate to **Dashboard** → **Admin** → **Cartes VIP**
+3. You'll see two tabs: **Cartes** (Templates) and **Configurations** (Probabilities)
 
-```sql
-UPDATE vip_card_templates
-SET is_enabled = FALSE
-WHERE id = 'Sheikh'; -- Disable legendary Sheikh card
-```
+**URL**: `/dashboard/admin/vip-cards`
 
-**Impact**:
-
-- Card will NOT be drawn from now on
-- Students who already own it can still use it
-- Card remains in database for future re-enabling
-
-### Re-enable a Card
-
-```sql
-UPDATE vip_card_templates
-SET is_enabled = TRUE
-WHERE id = 'Sheikh';
-```
-
-### View Disabled Cards
-
-```sql
-SELECT id, name, rarity, category, updated_at
-FROM vip_card_templates
-WHERE is_enabled = FALSE
-ORDER BY updated_at DESC;
-```
-
-**Default disabled cards**: candy (common), captain (common), team (rare)
+**Required Permission**: `role = 'admin'` in `profiles` table
 
 ---
 
-### Add a New Card
+## Managing Card Templates
 
-**⚠️ Important**: Adding a new card requires:
+### Cartes Tab
 
-1. Database INSERT
-2. TypeScript array update (`src/lib/types/vip-card.ts`)
-3. Image upload (`/static/images/vip-cards/`)
+The **Cartes** tab shows all 26 VIP cards grouped by rarity:
 
-**Step 1: Database INSERT**
+- **Communes** (8 cards): 6 enabled, 2 disabled
+- **Rares** (10 cards): 9 enabled, 1 disabled
+- **Épiques** (6 cards): All enabled
+- **Légendaires** (2 cards): All enabled
 
-```sql
-INSERT INTO vip_card_templates (
-  id,
-  name,
-  description,
-  image_path,
-  category,
-  rarity,
-  is_enabled,
-  action,
-  sort_order
-) VALUES (
-  'new-card-id', -- Unique ID (lowercase, kebab-case)
-  'French Card Name', -- Display name
-  'French description of privilege', -- What the card does
-  '/images/vip-cards/new-card@0.5x.webp', -- Image path
-  'power', -- Category: bonus, privilege, social, power
-  'rare', -- Rarity: common, rare, epic, legendary
-  TRUE, -- Enabled by default
-  NULL, -- Or JSONB action object (see examples below)
-  0 -- Sort order (default)
-);
-```
+Each card displays:
 
-**Example with action** (card that draws 2 additional cards):
+- Card image (WebP format, 256x256 or 512x512px)
+- Card name and description (French)
+- Rarity badge (colored pill: green/blue/purple/gold)
+- Enabled/disabled status (toggle switch with optimistic UI)
+- Action buttons: **Modifier**, **Supprimer**, **Upload Image**
 
-```sql
-INSERT INTO vip_card_templates (id, name, description, image_path, category, rarity, is_enabled, action)
-VALUES (
-  'double-luck',
-  'Double Chance',
-  'Pioche 2 cartes VIP supplémentaires',
-  '/images/vip-cards/double-luck@0.5x.webp',
-  'bonus',
-  'rare',
-  TRUE,
-  '{"type": "draw_cards", "count": 2}'::jsonb
-);
-```
+**Default Disabled Cards** (as of 2025-11-04):
 
-**Step 2: TypeScript Update**
-
-Edit `src/lib/types/vip-card.ts`:
-
-```typescript
-export const VIP_CARDS: VipCard[] = [
-	// ... existing cards
-	{
-		id: 'new-card-id',
-		name: 'French Card Name',
-		description: 'French description',
-		imagePath: '/images/vip-cards/new-card@0.5x.webp',
-		category: 'power',
-		rarity: 'rare'
-	}
-];
-```
-
-**Step 3: Image Upload**
-
-Upload image to: `/static/images/vip-cards/new-card@0.5x.webp`
-
-- Format: WebP (65% smaller than JPG)
-- Resolution: 512×768 recommended
-- Naming: `{card-id}@0.5x.webp`
+- `candy` (common) - Not implemented
+- `captain` (common) - Causing classroom issues
+- `team` (rare) - Being redesigned
 
 ---
 
-## Configuring Rarity Probabilities
+### Creating a New Card
 
-### View Active Configuration
+**IMPORTANT**: This is an advanced operation. Most admins will only need to enable/disable existing cards.
 
-```sql
-SELECT
-  config_name,
-  common_probability,
-  rare_probability,
-  epic_probability,
-  legendary_probability,
-  is_active,
-  description
-FROM vip_card_config
-WHERE is_active = TRUE;
-```
+**Steps**:
 
-**Default Config** (baseline):
-
-```
-config_name: 'default'
-common: 60%
-rare: 25%
-epic: 12%
-legendary: 3%
-```
-
-### View All Configurations
-
-```sql
-SELECT
-  config_name,
-  is_active,
-  common_probability || '/' || rare_probability || '/' ||
-    epic_probability || '/' || legendary_probability as probabilities,
-  valid_from,
-  valid_until,
-  description,
-  created_at
-FROM vip_card_config
-ORDER BY is_active DESC, created_at DESC;
-```
+1. Click **+ Nouvelle Carte** button (top-right)
+2. Fill in the form:
+   - **ID**: Lowercase kebab-case (e.g., `super-bonus`)
+   - **Nom**: Display name in French (e.g., `Super Bonus`)
+   - **Description**: What the card does (max 500 characters)
+   - **Rareté**: Common, Rare, Épique, or Légendaire
+   - **Catégorie**: Bonus, Privilège, Social, or Power (optional)
+   - **Activée**: Whether card is enabled by default
+   - **Chemin Image**: Path to image (e.g., `/images/vip-cards/super-bonus@0.5x.webp`)
+   - **Action** (optional): Card effect (JSON: `{"type": "draw_cards", "count": 2}`)
+   - **Ordre de tri**: Display order (0 = first)
+3. Click **Créer**
+4. Upload an image immediately (see next section)
 
 ---
 
-### Update Default Probabilities
+### Editing Cards
 
-**Use Case**: Permanently adjust baseline rarity distribution.
+1. Find the card in the grid
+2. Click **Modifier** button
+3. Update fields as needed
+4. Click **Enregistrer**
 
-```sql
-UPDATE vip_card_config
-SET
-  common_probability = 55,
-  rare_probability = 25,
-  epic_probability = 15, -- Increased from 12%
-  legendary_probability = 5 -- Increased from 3%
-WHERE config_name = 'default';
-```
+**Common edits**:
 
-**⚠️ Constraint**: Probabilities must sum to exactly 100 (enforced by database).
+- Change description
+- Update sort order
+- Change category
+
+**Caution**:
+
+- Changing rarity affects probability calculations
+- Changing ID breaks existing card instances in database
+
+---
+
+### Uploading Card Images
+
+Card images must be **WebP format** (recommended) or PNG/JPEG. Max **2MB**.
+
+**Steps**:
+
+1. Find the card in the grid
+2. Click **Upload Image** button (camera icon 📷)
+3. Drag-and-drop a WebP image OR click to browse
+4. Preview appears before upload
+5. Click **Upload**
+6. Image is stored in Supabase Storage bucket `vip-card-images`
+7. Card's `image_path` field is updated automatically
+
+**Image Requirements**:
+
+- Format: WebP preferred (PNG, JPEG, GIF, SVG also supported)
+- Size: Max 2MB (enforced by API)
+- Recommended dimensions: 256x256 or 512x512 pixels
+- File naming: Stored as `{card_id}@0.5x.webp`
+
+**Tools for converting to WebP**:
+
+- Online: [Squoosh](https://squoosh.app/)
+- Command line: `cwebp input.png -o output.webp`
+
+---
+
+### Enabling/Disabling Cards
+
+Toggle the switch next to each card to enable/disable it globally.
+
+**What happens when you disable a card**:
+
+- Students **CANNOT** draw this card (filtered by draw function)
+- Teachers **CANNOT** override this (can't re-enable globally disabled cards)
+- Existing card instances students already own are **NOT** affected
+- Card disappears from teacher override UI
+
+**UI Feedback**:
+
+- Toggle updates instantly (optimistic UI)
+- If API fails, toggle reverts automatically
+- Success/error toast appears
+
+---
+
+### Deleting Cards
+
+**WARNING**: Deleting cards is **irreversible**.
+
+**Before deleting**:
+
+1. Check if students own instances of this card
+2. Consider disabling instead of deleting
+3. Ensure teachers aren't expecting this card
+
+**Steps**:
+
+1. Click **Supprimer** button
+2. Confirm deletion in dialog
+3. Card is permanently removed from database
+
+**What happens to existing instances?**:
+
+- Database foreign keys are set to CASCADE
+- All student-owned instances of this card are **deleted**
+- All teacher overrides for this card are **deleted**
+
+**Best practice**: Use **disable** instead of delete unless you're absolutely sure.
+
+---
+
+## Managing Probability Configurations
+
+### Configurations Tab
+
+The **Configurations** tab shows all probability configurations:
+
+- **Active** config (green checkmark ✅, highlighted border)
+- **Inactive** configs (gray, available for activation)
+
+Each config shows:
+
+- Config name
+- Probabilities: `Common% / Rare% / Epic% / Legendary%`
+- Active status
+- Date range (if specified)
+- Actions: Edit, Delete, Activate
+
+**Default config**:
+
+- Name: `"Default"`
+- Probabilities: `60 / 25 / 12 / 3`
+- Always exists, cannot be deleted while active
+- Can be edited
+
+---
+
+### Creating Event Configs
+
+Event configs are special probability distributions for holidays or events.
+
+**Example use case**: "Christmas 2025" config with boosted legendary rate (60/20/10/10) for December.
+
+**Steps**:
+
+1. Click **+ Nouvelle Configuration**
+2. Fill in form:
+   - **Nom**: Descriptive name (e.g., `Christmas 2025`)
+   - **Description**: What makes this config special
+   - **Probabilities**: Adjust 4 sliders (must sum to 100%)
+     - Common: 0-100%
+     - Rare: 0-100%
+     - Epic: 0-100%
+     - Legendary: 0-100%
+   - **Date de début** (optional): When config becomes valid
+   - **Date de fin** (optional): When config expires
+3. Sliders auto-adjust to maintain 100% total
+4. Click **Créer**
 
 **Validation**:
 
-```sql
-SELECT
-  config_name,
-  common_probability + rare_probability + epic_probability + legendary_probability as sum
-FROM vip_card_config
-WHERE config_name = 'default';
--- Must return sum = 100
-```
+- Probabilities **must** sum to exactly 100%
+- UI shows ✅ or ❌ indicator
+- Save button disabled until valid
+
+**Tips**:
+
+- Start by adjusting the slider you want to change most
+- Other sliders auto-adjust proportionally
+- Use description to explain why this config exists
 
 ---
 
-## Special Events
+### Activating Configs
 
-### Creating Event Configurations
+Only **ONE** config can be active at a time. Activating a config deactivates all others.
 
-**Example 1**: Halloween event with spooky legendary boost
+**Steps**:
 
-```sql
-INSERT INTO vip_card_config (
-  config_name,
-  common_probability,
-  rare_probability,
-  epic_probability,
-  legendary_probability,
-  is_active,
-  description,
-  valid_from,
-  valid_until
-) VALUES (
-  'halloween_2025',
-  40, 30, 20, 10, -- Boosted legendary (3→10%)
-  FALSE, -- Not active yet (manual activation)
-  'Halloween 2025: Spooky legendary cards!',
-  '2025-10-25 00:00:00+00',
-  '2025-11-01 23:59:59+00'
-);
-```
+1. Find the config you want to activate
+2. Click **Activer** button
+3. Confirm in dialog
+4. All other configs are deactivated
+5. New config becomes active immediately
 
-**Example 2**: End-of-year celebration (very generous)
+**What happens when you activate**:
 
-```sql
-INSERT INTO vip_card_config (
-  config_name,
-  common_probability,
-  rare_probability,
-  epic_probability,
-  legendary_probability,
-  is_active,
-  description
-) VALUES (
-  'end_of_year_2025',
-  30, 25, 25, 20, -- 20% legendary!
-  FALSE,
-  'End of year celebration: Everyone gets legendary cards!'
-);
-```
+- Previous active config is deactivated
+- New config is activated
+- **All future card draws** use new probabilities
+- Existing cards students own are **NOT** affected
+- Database transaction ensures atomicity
+
+**Teacher impact**:
+
+- Teachers see the new active config on their page (read-only)
+- Teachers **CANNOT** change which config is active
+- Teachers can still enable/disable specific cards
 
 ---
 
-### Activating Event Configuration
+### Editing Configs
 
-**⚠️ Critical**: Only ONE config can be active at a time.
+1. Find config in list
+2. Click **Modifier**
+3. Update fields (name, description, probabilities, dates)
+4. Click **Enregistrer**
 
-**Transaction-safe activation**:
-
-```sql
-BEGIN;
-
--- Deactivate current config
-UPDATE vip_card_config
-SET is_active = FALSE
-WHERE is_active = TRUE;
-
--- Activate event config
-UPDATE vip_card_config
-SET is_active = TRUE
-WHERE config_name = 'halloween_2025';
-
-COMMIT;
-```
-
-**Verification**:
-
-```sql
-SELECT config_name, is_active FROM vip_card_config WHERE is_active = TRUE;
--- Should return ONLY 'halloween_2025'
-```
+**Note**: You can edit the **active** config. Changes apply immediately to all future draws.
 
 ---
 
-### Deactivating Event (Return to Default)
+### Deleting Configs
 
-```sql
-BEGIN;
+**Restriction**: You **CANNOT** delete the active config.
 
-UPDATE vip_card_config
-SET is_active = FALSE
-WHERE config_name = 'halloween_2025';
+**Steps**:
 
-UPDATE vip_card_config
-SET is_active = TRUE
-WHERE config_name = 'default';
-
-COMMIT;
-```
+1. If config is active, activate a different config first
+2. Click **Supprimer**
+3. Confirm deletion
+4. Config is permanently removed
 
 ---
 
-### Scheduled Events (Manual Process)
+## Understanding Teacher Overrides
 
-**Current limitation**: No automatic scheduling. Admins must manually activate/deactivate.
+Teachers can enable/disable cards for **their students** on the Teacher VIP Cards page.
 
-**Workaround**: Use `valid_from` and `valid_until` for tracking, then manually switch:
+**Hierarchy of permissions**:
 
-```bash
-# Example cron job (requires custom script)
-# Every day at midnight, check if event should activate
+1. **Admin global enable/disable** (most powerful)
+   - If you disable a card globally, **NO ONE** can draw it
+   - Teachers cannot override this
+2. **Teacher overrides** (medium power)
+   - Teachers can disable cards for their students
+   - Teachers cannot enable cards you've disabled
+3. **Probability configs** (applies to enabled cards only)
 
-0 0 * * * psql -c "
-BEGIN;
--- Deactivate expired events
-UPDATE vip_card_config SET is_active = FALSE
-WHERE is_active = TRUE
-  AND valid_until < NOW();
+**Intersection logic**:
 
--- Activate upcoming events
-UPDATE vip_card_config SET is_active = TRUE
-WHERE config_name = 'halloween_2025'
-  AND valid_from <= NOW()
-  AND valid_until >= NOW()
-  AND NOT EXISTS (SELECT 1 FROM vip_card_config WHERE is_active = TRUE);
-COMMIT;
-"
-```
+- If a student has **multiple teachers**, the **most restrictive** setting wins
+- If **ANY** teacher disables a card, the student cannot draw it
+- Example:
+  - Student has 3 teachers: Alice, Bob, Charlie
+  - Alice disables "bonus"
+  - Bob and Charlie have no overrides
+  - Result: Student **CANNOT** draw "bonus" (Alice blocked it)
 
-**Future enhancement**: Automatic scheduling (planned for v2).
+**As an admin, you can**:
 
----
+- View all teacher overrides (read-only in database)
+- See which teachers are restricting which cards
+- **NOT** modify teacher overrides (teachers manage their own)
 
-## Troubleshooting
+**Why this design?**:
 
-### Error: "No enabled VIP cards available to draw"
-
-**Symptom**: RPC function raises exception during draw.
-
-**Cause**: All cards in selected rarity are disabled, and fallback to common also failed.
-
-**Diagnosis**:
-
-```sql
--- Check if any common cards are enabled
-SELECT COUNT(*) as enabled_common
-FROM vip_card_templates
-WHERE rarity = 'common' AND is_enabled = TRUE;
--- If 0, this is the problem
-```
-
-**Solution**: Enable at least one common card:
-
-```sql
-UPDATE vip_card_templates
-SET is_enabled = TRUE
-WHERE id = 'bonus'; -- Re-enable basic bonus card
-```
-
----
-
-### Error: "Probabilities must sum to 100"
-
-**Symptom**: INSERT or UPDATE fails with constraint violation.
-
-**Cause**: Four probability columns don't sum to exactly 100.
-
-**Example of FAILURE**:
-
-```sql
--- ❌ This will fail (45+25+15+10 = 95)
-UPDATE vip_card_config
-SET common_probability = 45
-WHERE config_name = 'default';
-```
-
-**Solution**: Update all probabilities at once:
-
-```sql
--- ✅ This works (45+30+15+10 = 100)
-UPDATE vip_card_config
-SET
-  common_probability = 45,
-  rare_probability = 30,
-  epic_probability = 15,
-  legendary_probability = 10
-WHERE config_name = 'default';
-```
-
-**Validation helper**:
-
-```sql
--- Before executing UPDATE, calculate sum
-SELECT 45 + 30 + 15 + 10 as sum; -- Must equal 100
-```
-
----
-
-### Error: "Unique constraint violation on is_active"
-
-**Symptom**: Cannot activate config because another is already active.
-
-**Cause**: Forgot to deactivate current config first.
-
-**Solution**: Use transaction (see "Activating Event Configuration" above):
-
-```sql
-BEGIN;
-UPDATE vip_card_config SET is_active = FALSE WHERE is_active = TRUE;
-UPDATE vip_card_config SET is_active = TRUE WHERE config_name = 'new_config';
-COMMIT;
-```
-
----
-
-### Distribution Doesn't Match Expectations
-
-**Symptom**: Drawing 100 cards gives unexpected rarity distribution.
-
-**Cause**: Small sample size (random variance is high for N < 1000).
-
-**Solution 1**: Test with larger sample
-
-```bash
-pnpm test:integration -- vip-card-rarity-distribution
-# This draws 10,000 cards and validates ±5% tolerance
-```
-
-**Solution 2**: Manual SQL test
-
-```sql
--- This would require custom PL/pgSQL function to draw and analyze
--- See: tests/integration/vip-card-rarity-distribution.test.ts
-```
-
-**Solution 3**: Check active config
-
-```sql
--- Verify correct config is active
-SELECT
-  config_name,
-  common_probability,
-  rare_probability,
-  epic_probability,
-  legendary_probability
-FROM vip_card_config
-WHERE is_active = TRUE;
-```
-
----
-
-### Cards Not Appearing in UI
-
-**Symptom**: Card exists in database but doesn't show in frontend.
-
-**Cause**: TypeScript `VIP_CARDS` array not updated.
-
-**Solution**: Add card to `src/lib/types/vip-card.ts`:
-
-```typescript
-export const VIP_CARDS: VipCard[] = [
-	// ... existing cards
-	{
-		id: 'new-card-id', // Must match database id
-		name: 'Display Name',
-		description: 'Description',
-		imagePath: '/images/vip-cards/new-card@0.5x.webp',
-		category: 'bonus',
-		rarity: 'rare'
-	}
-];
-```
-
-**Rebuild**:
-
-```bash
-pnpm build
-```
+- Respects teacher autonomy
+- Teachers know their classes best
+- Prevents admin micromanagement
 
 ---
 
 ## Best Practices
 
-### 1. Always Test Event Configs Before Activating
+### Card Management
 
-```bash
-# Create test config with extreme probabilities (easy to validate)
-INSERT INTO vip_card_config (config_name, common_probability, rare_probability, epic_probability, legendary_probability, is_active)
-VALUES ('test_legendary_100', 0, 0, 0, 100, FALSE);
+1. **Disable instead of delete**: Preserves data, can be re-enabled later
+2. **Test new cards**: Create card as disabled, test with test student, then enable
+3. **Communicate changes**: Tell teachers before enabling/disabling popular cards
+4. **Image optimization**: Use WebP format, compress images before upload
+5. **Descriptive IDs**: Use clear kebab-case IDs (e.g., `mega-bonus` not `mb1`)
 
-# Temporarily activate for testing
-BEGIN;
-UPDATE vip_card_config SET is_active = FALSE WHERE is_active = TRUE;
-UPDATE vip_card_config SET is_active = TRUE WHERE config_name = 'test_legendary_100';
-COMMIT;
+### Probability Configs
 
-# Draw 10 cards (should ALL be legendary)
-# ... test via UI or RPC ...
+1. **Name clearly**: Use format `"Event YYYY"` (e.g., `"Christmas 2025"`)
+2. **Set date ranges**: Prevents forgetting to deactivate event configs
+3. **Document reasoning**: Use description field to explain why config exists
+4. **Balance carefully**: Too high legendary% makes cards less special
+5. **Announce events**: Tell students about special probability periods
 
-# Return to default
-BEGIN;
-UPDATE vip_card_config SET is_active = FALSE WHERE config_name = 'test_legendary_100';
-UPDATE vip_card_config SET is_active = TRUE WHERE config_name = 'default';
-COMMIT;
+### General
 
-# Delete test config
-DELETE FROM vip_card_config WHERE config_name = 'test_legendary_100';
-```
+1. **Backup before changes**: Export database before major card changes
+2. **Monitor draw statistics**: Check if probabilities match expectations
+3. **Test with dummy students**: Create test accounts to verify behavior
+4. **Review teacher feedback**: Teachers will tell you if a card is problematic
 
 ---
 
-### 2. Document All Events
+## Troubleshooting
 
-Always add clear descriptions to configs:
+### "Card image not loading"
 
-```sql
-INSERT INTO vip_card_config (...)
-VALUES (
-  'christmas_2025',
-  ...,
-  'Christmas 2025: Gift-themed bonus drops (Dec 15 - Jan 5)' -- Clear description
-);
-```
+**Possible causes**:
 
----
+1. Image not uploaded to storage bucket
+2. Wrong image path in `image_path` field
+3. Storage bucket not public
+4. Network/CDN issue
 
-### 3. Schedule Events with Valid Dates
+**Solutions**:
 
-Use `valid_from` and `valid_until` for tracking:
-
-```sql
-INSERT INTO vip_card_config (
-  config_name,
-  ...,
-  valid_from,
-  valid_until
-) VALUES (
-  'spring_break_2025',
-  ...,
-  '2025-03-15 00:00:00+00',
-  '2025-03-30 23:59:59+00'
-);
-```
-
-Then query upcoming events:
-
-```sql
-SELECT config_name, valid_from, valid_until, description
-FROM vip_card_config
-WHERE valid_from >= NOW()
-ORDER BY valid_from;
-```
+1. Check storage bucket in Supabase Dashboard
+2. Verify `image_path` matches actual file location
+3. Ensure bucket RLS policies allow public SELECT
+4. Try accessing image URL directly in browser
 
 ---
 
-### 4. Backup Before Major Changes
+### "Students reporting they can't draw a specific card"
 
-```bash
-# Export configs before modifying
-psql -c "COPY vip_card_config TO '/tmp/vip_config_backup.csv' CSV HEADER;"
+**Possible causes**:
 
-# Export card templates
-psql -c "COPY vip_card_templates TO '/tmp/vip_cards_backup.csv' CSV HEADER;"
-```
+1. Card is disabled globally
+2. One of their teachers disabled it
+3. Selected rarity is empty after teacher overrides
+4. Bug in draw function
 
-**Restore**:
+**Solutions**:
 
-```bash
-psql -c "COPY vip_card_config FROM '/tmp/vip_config_backup.csv' CSV HEADER;"
-```
-
----
-
-### 5. Gradual Rollout for Major Changes
-
-**Example**: Testing new probabilities
-
-```sql
--- 1. Create test config
-INSERT INTO vip_card_config (config_name, ...) VALUES ('test_new_probs', ...);
-
--- 2. Activate for small group (e.g., single class)
---    (Requires per-class configs - not yet implemented)
-
--- 3. Monitor distribution for 1 week
-
--- 4. If successful, update default config
-UPDATE vip_card_config SET ... WHERE config_name = 'default';
-```
+1. Check card's enabled status in admin page
+2. Ask student's teachers if they disabled the card
+3. Check database: `SELECT * FROM teacher_vip_card_overrides WHERE card_id = 'card_id';`
+4. Check function logs for errors
 
 ---
 
-### 6. Monitor Card Usage
+### "Probability sliders won't sum to 100%"
 
-**Query**: Which cards are most/least used?
+**Cause**: Rounding errors when auto-adjusting
 
-```sql
--- This requires extracting from profiles.vip_cards JSONB
--- Example (requires custom analysis function):
-SELECT
-  jsonb_object_keys(vip_cards) as instance_id,
-  vip_cards->>instance_id->>'cardId' as card_id
-FROM profiles
-WHERE vip_cards IS NOT NULL;
-```
+**Solution**:
 
-**Future enhancement**: Dedicated `vip_card_draws` audit table for analytics.
+1. Manually adjust the smallest probability up/down by 1%
+2. UI will show ✅ when sum = 100%
+3. If stuck, refresh page and start over
 
 ---
 
-## SQL Reference
+### "Config won't delete"
 
-### Quick Commands
+**Cause**: Config is currently active
 
-```sql
--- View active config
-SELECT * FROM vip_card_config WHERE is_active = TRUE;
+**Solution**:
 
--- Switch to event
-BEGIN;
-UPDATE vip_card_config SET is_active = FALSE WHERE is_active = TRUE;
-UPDATE vip_card_config SET is_active = TRUE WHERE config_name = 'event_name';
-COMMIT;
-
--- Disable card
-UPDATE vip_card_templates SET is_enabled = FALSE WHERE id = 'card-id';
-
--- View disabled cards
-SELECT id, name, rarity FROM vip_card_templates WHERE is_enabled = FALSE;
-
--- Validate config probabilities
-SELECT
-  config_name,
-  common_probability + rare_probability + epic_probability + legendary_probability as sum
-FROM vip_card_config;
--- sum must equal 100 for all rows
-```
+1. Activate a different config first (e.g., "Default")
+2. Then delete the unwanted config
 
 ---
 
-## Admin Access
+### "Teacher says they can't see new card"
 
-**Database Access**: Requires Supabase admin credentials or service role key.
+**Possible causes**:
 
-**RLS Bypass**: Use service role client:
+1. Card is disabled globally
+2. Teacher page hasn't refreshed
+3. Card doesn't exist in `vip_card_templates`
 
-```typescript
-import { createClient } from '@supabase/supabase-js';
+**Solutions**:
 
-const serviceClient = createClient(
-	process.env.SUPABASE_URL,
-	process.env.SUPABASE_SERVICE_ROLE_KEY // ⚠️ Keep secret!
-);
-```
-
-**Admin UI** (future): Web interface for config management (planned for v2).
+1. Check card is enabled in admin page
+2. Tell teacher to refresh their browser (Cmd+R or Ctrl+R)
+3. Verify card exists in database
 
 ---
 
-**Last Updated**: 2025-11-04
-**Maintainer**: Admin team
-**Related Docs**:
-
-- [Database Schema](../architecture/database-schema.md)
-- [VIP Card Draw System](../features/vip-card-draw-system.md)
+**Last updated**: 2025-11-04  
+**Version**: 1.0

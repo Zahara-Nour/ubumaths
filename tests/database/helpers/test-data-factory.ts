@@ -65,8 +65,22 @@ export class ProfileBuilder {
 			fullName: this.data.full_name || undefined
 		});
 
-		// Wait a moment for the trigger to complete
-		await new Promise((resolve) => setTimeout(resolve, 50));
+		// Wait for the trigger to complete (with retries)
+		let profile = null;
+		for (let i = 0; i < 10; i++) {
+			await new Promise((resolve) => setTimeout(resolve, 100));
+			const { data: checkData } = await client.from('profiles').select('*').eq('id', this.data.id!);
+			if (checkData && checkData.length > 0) {
+				profile = checkData[0];
+				break;
+			}
+		}
+
+		if (!profile) {
+			throw new Error(
+				`Profile not created by trigger after 1000ms for ID: ${this.data.id}, email: ${this.data.email}`
+			);
+		}
 
 		// Update the auto-created profile with our custom data
 		// (The trigger creates a minimal profile, we enhance it here)
@@ -77,10 +91,13 @@ export class ProfileBuilder {
 				updated_at: new Date().toISOString()
 			} as Tables['profiles']['Update'])
 			.eq('id', this.data.id!)
-			.select()
-			.single();
+			.select();
 		if (error) throw error;
-		return data;
+		// Return first element
+		if (!data || data.length === 0) {
+			throw new Error(`No profile data returned after update for ID: ${this.data.id}`);
+		}
+		return data[0];
 	}
 }
 
@@ -116,10 +133,13 @@ export class ClassBuilder {
 		const { data, error } = await client
 			.from('classes')
 			.insert(this.data as Tables['classes']['Insert'])
-			.select()
-			.single();
+			.select();
 		if (error) throw error;
-		return data;
+		// Return first element (can't use .single() due to potential triggers)
+		if (!data || data.length === 0) {
+			throw new Error('No class data returned after insert');
+		}
+		return data[0];
 	}
 }
 

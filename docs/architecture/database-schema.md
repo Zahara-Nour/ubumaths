@@ -579,6 +579,123 @@ Used by RLS policies to restrict admin-only operations.
 
 ---
 
+#### `teacher_vip_card_overrides`
+
+Stores teacher-specific card enable/disable preferences that apply to ALL their classes. Teachers can restrict which VIP cards their students can draw, but cannot enable cards that admins have disabled globally.
+
+**Schema**:
+
+| Column       | Type        | Constraints                                                      | Description                      |
+| ------------ | ----------- | ---------------------------------------------------------------- | -------------------------------- |
+| `id`         | UUID        | PRIMARY KEY, default gen_random_uuid()                           | Unique identifier                |
+| `teacher_id` | UUID        | FOREIGN KEY → profiles(id) ON DELETE CASCADE, NOT NULL           | Teacher who set this override    |
+| `card_id`    | TEXT        | FOREIGN KEY → vip_card_templates(id) ON DELETE CASCADE, NOT NULL | Card being overridden            |
+| `is_enabled` | BOOLEAN     | NOT NULL                                                         | Whether teacher allows this card |
+| `created_at` | TIMESTAMPTZ | NOT NULL, default NOW()                                          | When override was created        |
+| `updated_at` | TIMESTAMPTZ | NOT NULL, default NOW()                                          | Last modification timestamp      |
+
+**Constraints**:
+
+- `UNIQUE (teacher_id, card_id)` - One override per teacher per card
+- `ON DELETE CASCADE` for both foreign keys
+
+**Indexes**:
+
+- `idx_teacher_overrides_teacher` on `teacher_id`
+- `idx_teacher_overrides_card` on `card_id`
+- `idx_teacher_overrides_enabled` on `is_enabled`
+- `idx_teacher_overrides_teacher_card_enabled` on `(teacher_id, card_id, is_enabled)` - Composite for fast lookups
+
+**RLS Policies**:
+
+- Teachers can `SELECT`, `INSERT`, `UPDATE`, `DELETE` their own overrides (`teacher_id = auth.uid()`)
+- Admins can `SELECT` all overrides (read-only)
+
+**Intersection Logic**:
+
+When a student draws a card, the system checks ALL their teachers' overrides. If ANY teacher has set `is_enabled = FALSE` for a card, that card is blocked for the student, even if other teachers haven't set an override (which defaults to global setting).
+
+**Example**:
+
+- Student has 2 teachers: Alice and Bob
+- Alice disables "candy" card (`is_enabled = FALSE`)
+- Bob has no overrides (uses global settings)
+- **Result**: Student CANNOT draw "candy" (Alice's override blocks it)
+
+This is called **intersection logic** - the most restrictive setting wins.
+
+**Hierarchy of Permissions**:
+
+1. **Admin global enable/disable** (most powerful) - If admin disables a card globally, NO ONE can draw it
+2. **Teacher overrides** (medium power) - Teachers can disable cards for their students but cannot enable globally disabled cards
+3. **Probability config** (applies to enabled cards only)
+
+**SQL Query for Drawing Cards**:
+
+```sql
+-- Filter out cards disabled by ANY teacher
+WHERE NOT EXISTS (
+  SELECT 1 FROM teacher_vip_card_overrides
+  WHERE card_id = vct.id
+    AND is_enabled = FALSE
+    AND teacher_id IN (
+      SELECT teacher_id FROM classes c
+      JOIN class_members cm ON cm.class_id = c.id
+      WHERE cm.student_id = p_student_id
+    )
+)
+```
+
+**Performance**: Composite index on `(teacher_id, card_id, is_enabled)` ensures fast filtering (~2-5ms overhead per draw).
+
+**Trigger**: `set_updated_at_teacher_vip_card_overrides` updates `updated_at` column
+
+**Migration**: `20251104120000_add_teacher_vip_card_overrides.sql`
+
+---
+
+#### Storage Bucket: `vip-card-images`
+
+Stores custom VIP card images uploaded by admins.
+
+**Configuration**:
+
+- **Public**: YES (images publicly accessible via URL)
+- **Max file size**: 5MB
+- **Allowed MIME types**: `image/webp`, `image/jpeg`, `image/png`, `image/gif`, `image/svg+xml`
+
+**RLS Policies**:
+
+- Public can `SELECT` (view) images
+- Admins can `INSERT` (upload) images
+- Admins can `DELETE` images
+- Admins can `UPDATE` image metadata
+
+**File naming convention**: `{card_id}@0.5x.webp`
+
+**Example**: For card ID "fortune", image is stored at `vip-card-images/fortune@0.5x.webp`
+
+**Public URL Format**:
+
+```
+https://[project-ref].supabase.co/storage/v1/object/public/vip-card-images/fortune@0.5x.webp
+```
+
+**Usage**:
+
+Admins upload images via `/dashboard/admin/vip-cards` interface. The `vip_card_templates.image_path` field is automatically updated to reference the new image.
+
+**Image Requirements**:
+
+- Format: WebP preferred (PNG, JPEG, GIF, SVG also supported)
+- Max size: 5MB (enforced by bucket policy)
+- Recommended dimensions: 256x256 pixels or 512x512 pixels
+- Compression: Use tools like [Squoosh](https://squoosh.app/) or `cwebp` CLI
+
+**Migration**: `20251104130000_create_vip_card_images_storage_bucket.sql`
+
+---
+
 ### Classroom Management Tables
 
 #### `classes`
@@ -3025,6 +3142,10 @@ Public storage bucket for exercise images.
 - **Path structure**: `{userId}/{exerciseId}/{filename}`
 - **Access**: Public read, authenticated teachers can upload/update/delete their own images
 - **Cleanup**: Images automatically cleaned up when exercise is deleted (trigger)
+
+#### `vip-card-images` Bucket
+
+Public storage bucket for VIP card images uploaded by admins. See [VIP Card System Tables](#storage-bucket-vip-card-images) for detailed documentation.
 
 ### Row Level Security
 
