@@ -107,12 +107,13 @@
 								{/if}
 
 								<!-- Probabilities -->
-								<p class="mt-2 text-sm text-muted-foreground">
-									<span class="font-medium">Probabilités :</span>
-									<span class="ml-1 font-mono">
-										{config.probability_common}/{config.probability_rare}/{config.probability_epic}/{config.probability_legendary}
+								<p class="mt-2 text-sm">
+									<span class="font-medium text-foreground">Probabilités :</span>
+									<span class="ml-2 font-mono text-foreground">
+										{config.common_probability}% / {config.rare_probability}% / {config.epic_probability}%
+										/ {config.legendary_probability}%
 									</span>
-									<span class="ml-1 text-xs">(C/R/E/L)</span>
+									<span class="ml-1 text-xs text-muted-foreground">(C/R/E/L)</span>
 								</p>
 
 								<!-- Date range -->
