@@ -12,6 +12,7 @@ export * from './assessments';
 export * from './auth';
 export * from './chat';
 export * from './classes';
+export * from './draw-vip-cards';
 export * from './errors';
 export * from './exercises';
 export * from './latex';

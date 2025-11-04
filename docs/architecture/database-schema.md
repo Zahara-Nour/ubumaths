@@ -958,7 +958,120 @@ SELECT award_random_vip_card('student-uuid');
 
 - Raises exception if caller is not a teacher
 - Raises exception if student is not in teacher's classes
-- Raises exception if student has less than 3 gidouilles
+- Raises exception if student has insufficient gidouilles
+
+---
+
+#### `draw_multiple_vip_cards()` 🆕 2025-11-04
+
+**Returns**: JSONB - Array of drawn cards with `cardId`, `instanceId`, and `earnedAt`
+
+**Purpose**: Securely draw multiple VIP cards (1-10) for a student with comprehensive validation and race condition protection
+
+**Signature**:
+
+```sql
+draw_multiple_vip_cards(
+  p_student_id UUID,
+  p_count INT,
+  p_payment_method TEXT,
+  p_gidouilles_cost INT DEFAULT NULL,
+  p_vip_card_instance_id UUID DEFAULT NULL
+) RETURNS JSONB
+```
+
+**Security Features**:
+
+1. **Race Condition Protection**: `SELECT FOR UPDATE` prevents double-spend attacks
+2. **Free Card Restriction**: Students CANNOT draw free cards (cost=0), only teachers/admins can
+3. **Proportional Validation**: Maximum 10 gidouilles per card (e.g., 3 cards = max 30 gidouilles)
+4. **Authorization**: Verifies teacher-student relationship or student drawing for themselves
+5. **Atomic Transactions**: All-or-nothing updates ensure consistency
+
+**Payment Methods**:
+
+**1. Gidouilles Payment** (`p_payment_method = 'gidouilles'`):
+
+- Validates `p_gidouilles_cost` is not null and >= 0
+- Validates cost <= (count × 10) - proportional limit
+- If cost = 0: only allowed if caller is teacher/admin (students blocked)
+- Checks balance >= cost with `SELECT FOR UPDATE` (prevents race conditions)
+- Deducts gidouilles atomically
+
+**2. VIP Card Payment** (`p_payment_method = 'vip_card'`):
+
+- Validates `p_vip_card_instance_id` is not null
+- Gets card instance with `SELECT FOR UPDATE`
+- Validates card exists in student's vip_cards JSONB
+- Validates card not already used (usedAt IS NULL)
+- Marks card as used (sets usedAt = NOW())
+- TODO: Validate card has `draw_cards` action (future improvement)
+
+**Return Format**:
+
+```json
+{
+	"cards": [
+		{
+			"cardId": "soldes",
+			"instanceId": "uuid-1",
+			"earnedAt": "2025-11-04T10:30:00Z"
+		},
+		{
+			"cardId": "bonus",
+			"instanceId": "uuid-2",
+			"earnedAt": "2025-11-04T10:30:00Z"
+		}
+	]
+}
+```
+
+**Usage Examples**:
+
+```sql
+-- Teacher draws 3 cards for student (15 gidouilles)
+SELECT draw_multiple_vip_cards(
+  'student-uuid',
+  3,
+  'gidouilles',
+  15,
+  NULL
+);
+
+-- Teacher draws 1 free card (only teachers can do this)
+SELECT draw_multiple_vip_cards(
+  'student-uuid',
+  1,
+  'gidouilles',
+  0,  -- FREE - students cannot do this
+  NULL
+);
+
+-- Student uses VIP card to draw 5 cards
+SELECT draw_multiple_vip_cards(
+  'student-uuid',
+  5,
+  'vip_card',
+  NULL,
+  'vip-card-instance-uuid'
+);
+```
+
+**Errors**:
+
+- `Invalid count: Must be between 1 and 10` - Count out of range
+- `Invalid payment_method: Must be 'gidouilles' or 'vip_card'` - Invalid payment method
+- `Unauthorized: Student is not in your classes` - Teacher doesn't have access to student
+- `Unauthorized: You can only draw cards for yourself or your students` - Authorization failure
+- `Unauthorized: Students cannot draw free cards (cost must be > 0)` - Student trying cost=0
+- `Invalid gidouilles_cost: Maximum X gidouilles for Y cards (received: Z)` - Proportional limit exceeded
+- `Insufficient gidouilles: Required X, available Y (shortfall: Z)` - Insufficient balance
+- `VIP card not found: Instance ID X does not exist` - Card doesn't exist
+- `VIP card already used: This card was used at X` - Card already consumed
+
+**Migration**: `supabase/migrations/20251104091315_add_draw_multiple_vip_cards_function.sql`
+
+**Related Feature Documentation**: [VIP Card Draw System](../features/vip-card-draw-system.md)
 
 **Migration** (2025-11-04):
 Changed return type from TEXT (cardId only) to JSONB to enable instant cache synchronization in the frontend without requiring a full data refresh.

@@ -34,6 +34,7 @@
 	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
 	import SkeletonForm from '$lib/components/skeleton/SkeletonForm.svelte';
 	import { getSkeletonType } from '$lib/utils/skeleton-detector';
+	import ModalStackRenderer from '$lib/components/modals/ModalStackRenderer.svelte';
 
 	let { children, data }: { children: import('svelte').Snippet; data: LayoutData } = $props();
 
@@ -70,6 +71,9 @@
 <!-- gap={12} adds spacing between toasts to prevent overlap -->
 <!-- offset="16px" adds padding from screen edge -->
 <Toaster richColors position="top-right" expand={true} visibleToasts={5} gap={12} offset="16px" />
+
+<!-- Modal Stack Renderer - renders modal stack from modalStack store -->
+<ModalStackRenderer />
 
 <div class="flex h-screen flex-col">
 	<!-- Header - only show on non-dashboard routes -->

@@ -38,6 +38,8 @@
 		loading?: boolean;
 		confirmed?: boolean;
 		onComplete?: () => void;
+		oncomplete?: () => void; // Alias for onComplete (lowercase)
+		delay?: number; // Delay before starting animation (for multi-reveal)
 	}
 
 	let {
@@ -45,7 +47,9 @@
 		studentName = 'Élève', // eslint-disable-line @typescript-eslint/no-unused-vars
 		loading = true,
 		confirmed = false,
-		onComplete
+		onComplete,
+		oncomplete,
+		delay = 0
 	}: Props = $props();
 
 	// Animation states
@@ -81,17 +85,26 @@
 		setTimeout(() => {
 			showCardBack = false; // Flip to FRONT
 			cardFlipped = true;
-		}, 400);
+		}, 400 + delay);
 
 		// Step 3: Pop animation
 		setTimeout(() => {
 			cardPopped = true;
-		}, 600);
+		}, 600 + delay);
 
 		// Step 4: Confetti
 		setTimeout(() => {
 			confettiActive = true;
-		}, 700);
+		}, 700 + delay);
+
+		// Step 5: Call completion callback
+		setTimeout(() => {
+			if (oncomplete) {
+				oncomplete();
+			} else if (onComplete) {
+				onComplete();
+			}
+		}, 3000 + delay);
 	}
 
 	onMount(() => {

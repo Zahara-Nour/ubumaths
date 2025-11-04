@@ -868,6 +868,341 @@ export const actions: Actions = {
 
 ---
 
+## Modal Stack System
+
+> 🆕 2025-11-04
+
+Generic modal navigation system for managing nested modals with stack-based approach.
+
+### When to Use
+
+Use the modal stack when you need:
+
+- **Modal Navigation**: Open modals from within other modals
+- **Context Preservation**: Return to previous modal without losing state
+- **Clean Z-Index Management**: No nested z-index issues
+- **Callbacks**: Execute code when returning to a modal
+
+### Basic Usage
+
+```typescript
+import { modalStack } from '$lib/stores/modalStack.svelte';
+import MyModal from './MyModal.svelte';
+
+// Push a modal onto the stack
+const modalId = modalStack.push({
+	component: MyModal,
+	props: { userId: '123', title: 'Edit Profile' },
+	canDismiss: true, // Allow Escape key / backdrop click
+	onReturn: () => console.log('Returned to this modal!')
+});
+
+// Close current modal (pops from stack)
+modalStack.pop();
+
+// Jump back to specific modal by ID
+modalStack.popTo(modalId);
+
+// Clear entire stack
+modalStack.clear();
+```
+
+### Helper Functions Pattern
+
+**Best Practice**: Create helper functions for common modals.
+
+**Location**: `src/lib/utils/[feature]-modals.ts`
+
+**Example**: VIP Card Drawing
+
+```typescript
+// src/lib/utils/vip-card-modals.ts
+import { modalStack } from '$lib/stores/modalStack.svelte';
+import VipCardDrawModal from '$lib/components/rewards/VipCardDrawModal.svelte';
+
+interface DrawCardsOptions {
+	studentId: string;
+	count: number;
+	paymentMethod: 'gidouilles' | 'vip_card';
+	gidouillesCost?: number;
+	vipCardInstanceId?: string;
+	studentName?: string;
+	onComplete?: () => void;
+}
+
+export function openVipCardDrawModal(options: DrawCardsOptions): string {
+	return modalStack.push({
+		component: VipCardDrawModal,
+		props: {
+			studentId: options.studentId,
+			count: options.count,
+			paymentMethod: options.paymentMethod,
+			gidouillesCost: options.gidouillesCost,
+			vipCardInstanceId: options.vipCardInstanceId,
+			studentName: options.studentName
+		},
+		canDismiss: false, // Block Escape during animation
+		onReturn: options.onComplete
+	});
+}
+```
+
+**Usage in Component**:
+
+```typescript
+import { openVipCardDrawModal } from '$lib/utils/vip-card-modals';
+
+function handleDrawCards() {
+	openVipCardDrawModal({
+		studentId: student.id,
+		count: 3,
+		paymentMethod: 'gidouilles',
+		gidouillesCost: 15,
+		studentName: student.full_name,
+		onComplete: () => {
+			console.log('Cards drawn successfully!');
+			// No need to reload - cache already updated
+		}
+	});
+}
+```
+
+### Modal Component Structure
+
+**Props**: Define with `$props()` (don't export props directly)
+
+**Close**: Call `modalStack.pop()` when done
+
+**Return Callback**: Automatically called when returning from deeper modal
+
+```svelte
+<!-- MyModal.svelte -->
+<script lang="ts">
+	import { modalStack } from '$lib/stores/modalStack.svelte';
+	import { Button } from '$lib/components/ui/button';
+
+	interface Props {
+		userId: string;
+		title: string;
+	}
+
+	let { userId, title }: Props = $props();
+
+	function handleClose() {
+		modalStack.pop(); // Closes this modal
+		// onReturn callback will be called automatically
+	}
+
+	function handleOpenNext() {
+		modalStack.push({
+			component: NextModal,
+			props: {
+				/* ... */
+			},
+			onReturn: () => {
+				console.log('Returned from NextModal');
+				// Refresh data if needed
+			}
+		});
+	}
+</script>
+
+<div class="modal">
+	<h2>{title}</h2>
+	<p>Editing user: {userId}</p>
+
+	<Button onclick={handleOpenNext}>Next Step</Button>
+	<Button onclick={handleClose}>Done</Button>
+</div>
+```
+
+### Stack Depth Patterns
+
+**Adapt UI based on depth**:
+
+```svelte
+<script>
+	import { modalStack } from '$lib/stores/modalStack.svelte';
+
+	// Change button label based on stack depth
+	let buttonLabel = $derived(modalStack.depth <= 1 ? 'Fermer' : 'Continuer');
+</script>
+
+<Button onclick={() => modalStack.pop()}>
+	{buttonLabel}
+</Button>
+```
+
+### Common Use Cases
+
+**1. Multi-Step Wizard**:
+
+```typescript
+// Step 1
+modalStack.push({ component: WizardStep1 });
+// Step 2
+modalStack.push({ component: WizardStep2 });
+// Step 3
+modalStack.push({ component: WizardStep3 });
+// User can navigate back through steps via pop()
+```
+
+**2. Confirmation Dialog**:
+
+```typescript
+modalStack.push({
+	component: ConfirmDialog,
+	props: {
+		message: 'Supprimer cet élément ?',
+		onConfirm: () => {
+			deleteItem();
+			modalStack.pop();
+		}
+	},
+	canDismiss: true // Allow cancel via Escape
+});
+```
+
+**3. Nested Forms**:
+
+```typescript
+// Main form
+modalStack.push({
+	component: StudentForm,
+	onReturn: () => refreshStudentList()
+});
+
+// Inside StudentForm: open class selection
+modalStack.push({
+	component: ClassSelector,
+	onReturn: () => {
+		// Class selected, update form
+		loadSelectedClass();
+	}
+});
+```
+
+### API Reference
+
+**`modalStack.push(entry)`**
+
+- **Parameters**: `{ component, props, canDismiss?, onReturn? }`
+- **Returns**: Modal ID (UUID)
+- **Effect**: Adds modal to stack, renders it
+
+**`modalStack.pop()`**
+
+- **Parameters**: None
+- **Returns**: Popped modal entry or undefined
+- **Effect**: Removes top modal, calls `onReturn` of new top
+
+**`modalStack.popTo(id)`**
+
+- **Parameters**: Modal ID (UUID)
+- **Returns**: void
+- **Effect**: Pops all modals until reaching the one with `id`
+
+**`modalStack.clear()`**
+
+- **Parameters**: None
+- **Returns**: void
+- **Effect**: Removes all modals from stack
+
+**`modalStack.current`**
+
+- **Type**: ModalEntry | null
+- **Returns**: Current (top) modal or null if stack empty
+
+**`modalStack.depth`**
+
+- **Type**: number
+- **Returns**: Current stack depth
+
+**`modalStack.isEmpty`**
+
+- **Type**: boolean
+- **Returns**: True if stack is empty
+
+### Anti-Patterns to Avoid
+
+**❌ DON'T: Manually manage z-index**
+
+```svelte
+<!-- ❌ Bad -->
+<div class="modal" style="z-index: {baseZIndex + depth};">
+	<!-- nested modals get z-index conflicts -->
+</div>
+```
+
+**✅ DO: Let modalStack handle rendering**
+
+```svelte
+<!-- ✅ Good -->
+<!-- Modal stack automatically renders only the top modal -->
+<div class="modal">
+	<!-- Single modal, no z-index management needed -->
+</div>
+```
+
+---
+
+**❌ DON'T: Track modal state in components**
+
+```svelte
+<!-- ❌ Bad -->
+<script>
+	let showModal = $state(false);
+	let previousModal = $state(null);
+	// Complex state management
+</script>
+```
+
+**✅ DO: Use modalStack**
+
+```typescript
+// ✅ Good
+modalStack.push({ component: MyModal });
+// Stack handles all state
+```
+
+---
+
+**❌ DON'T: Pass callbacks through multiple prop levels**
+
+```svelte
+<!-- ❌ Bad -->
+<ModalA onclose={closeA}>
+	<ModalB onclose={closeB}>
+		<ModalC onclose={closeC} />
+		<!-- Callback hell -->
+	</ModalB>
+</ModalA>
+```
+
+**✅ DO: Use onReturn callbacks**
+
+```typescript
+// ✅ Good
+modalStack.push({
+	component: ModalA,
+	onReturn: () => console.log('Returned to A')
+});
+
+modalStack.push({
+	component: ModalB,
+	onReturn: () => console.log('Returned to B')
+});
+// Clean, flat structure
+```
+
+### Related Documentation
+
+- [VIP Card Draw System](../features/vip-card-draw-system.md) - Complete example
+- [Modal Stack Architecture](../architecture/modal-stack.md) - Technical details
+- [UI Components](./ui-components.md) - Other modal patterns
+
+---
+
 ## Summary Checklist
 
 Before submitting code:

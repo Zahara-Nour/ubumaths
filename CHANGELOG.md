@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [Unreleased]
+
+### ✨ Features
+
+- **vip-cards**: implement multi-card VIP drawing system with modalStack ([#vip-cards](https://github.com/Zahara-Nour/ubumaths/issues))
+  - Teachers can now draw 1-10 VIP cards at once for students
+  - Two payment methods: gidouilles (with cost validation) or VIP card consumption
+  - Adaptive animations: holographic reveal (1-3 cards), batch grid (4+ cards)
+  - Generic modal stack infrastructure for application-wide modal navigation
+  - Race condition protection via SELECT FOR UPDATE prevents double-spend attacks
+  - Students CANNOT draw free cards (cost=0), only teachers/admins can
+  - Proportional cost validation: maximum 10 gidouilles per card
+  - Optimistic UI updates with automatic rollback on error
+  - Cache integration for instant UI feedback without page reload
+  - Impact: Teachers can efficiently reward multiple students, improved UX with smooth animations
+
+### 🔒 Security Fixes
+
+- **vip-cards**: prevent student exploitation with comprehensive validation ([#vip-cards](https://github.com/Zahara-Nour/ubumaths/issues))
+  - Students cannot draw free cards (cost=0 blocked for non-teachers)
+  - Race condition protection prevents concurrent draws with insufficient balance
+  - Proportional validation enforces max 10 gidouilles per card limit
+  - VIP card usage validation (exists, not already used, atomic marking)
+  - Authorization checks verify teacher-student relationships
+  - All RPC errors provide user-friendly messages without leaking sensitive data
+
+### 📚 Documentation
+
+- **vip-cards**: add comprehensive VIP card draw system documentation ([#vip-cards](https://github.com/Zahara-Nour/ubumaths/issues))
+  - Created `docs/features/vip-card-draw-system.md` (comprehensive feature guide)
+  - Created `docs/architecture/modal-stack.md` (modal stack architecture)
+  - Updated `docs/architecture/database-schema.md` with `draw_multiple_vip_cards()` RPC documentation
+  - Updated `docs/claude/best-practices.md` with modal stack usage patterns
+  - Total documentation: 2,500+ lines covering usage, API reference, security, testing, troubleshooting
+
+### 🧪 Testing
+
+- **vip-cards**: add comprehensive test suite for draw-vip-cards endpoint ([#vip-cards](https://github.com/Zahara-Nour/ubumaths/issues))
+  - 919 lines of tests across 3 priority levels (P0: security, P1: validation, P2: functional)
+  - P0 tests: free cards security, cost limits, insufficient balance, authorization, boundaries
+  - P1 tests: Zod schema validation, type safety
+  - P2 tests: successful draws, multiple cards, error handling
+  - TODO: Race condition integration tests (require Docker Supabase)
+  - Test coverage: All validation rules, error messages, success paths, security checks
+
 ### [0.1.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.1.1...v0.1.2) (2025-11-03)
 
 ### ⏪ Reverts

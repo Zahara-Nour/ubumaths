@@ -112,8 +112,6 @@
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import VipCardsModal from '$lib/components/VipCardsModal.svelte';
-	import VipCardHoloReveal from '$lib/components/VipCardHoloReveal.svelte';
-	import { getVipCardById, type VipCard } from '$lib/types/vip-card';
 	import { canAffordVipCard } from '$lib/utils/vip-cards';
 	import { Sparkles, Eye, Loader2, Check, X } from 'lucide-svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
@@ -124,6 +122,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { invalidateAll } from '$app/navigation';
+	import { openVipCardDrawModal } from '$lib/utils/vip-card-modals';
 
 	// Data from parent layouts (user/profile only)
 	let { data }: { data: PageData } = $props();
@@ -179,12 +178,6 @@
 		id: string;
 		name: string;
 	} | null>(null);
-	let revealingCard = $state<{
-		card: VipCard;
-		studentName: string;
-		loading: boolean;
-		confirmed: boolean;
-	} | null>(null); // Tracks card reveal state with loading/confirmed
 
 	// Tab management (URL-based)
 	let activeTab = $derived(page.url.searchParams.get('tab') || 'gidouilles');
@@ -298,94 +291,28 @@
 
 	/**
 	 * Award VIP Card Handler
-	 * Replaces form action with direct API call
+	 * Uses new modalStack-based VIP card draw system
 	 */
-	async function handleAwardVipCard(student: {
+	function handleAwardVipCard(student: {
 		id: string;
 		firstname: string;
 		lastname: string | null;
 		full_name: string | null;
 	}) {
-		// Save student name for reveal animation
 		const studentName = getFullName(student.firstname, student.lastname, student.full_name);
 
-		// Initialize reveal modal with loading state (back of card, shaking)
-		const placeholderCard = getVipCardById('bonus');
-		if (!placeholderCard) {
-			toaster.error('Erreur: carte non trouvée');
-			return;
-		}
-
-		revealingCard = {
-			card: placeholderCard, // Temporary card (will be replaced)
+		openVipCardDrawModal({
+			studentId: student.id,
+			count: 1,
+			paymentMethod: 'gidouilles',
+			gidouillesCost: 3,
 			studentName,
-			loading: true,
-			confirmed: false
-		};
-
-		// Optimistically deduct 3 gidouilles via cache
-		updateStudentGidouillesOptimistic(student.id, -3);
-
-		try {
-			// Call API to award VIP card
-			const response = await fetch('/api/teacher/rewards/award-vip-card', {
-				method: 'POST',
-				body: JSON.stringify({ studentId: student.id }),
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			});
-
-			if (response.ok) {
-				const result = await response.json();
-
-				// SUCCESS: Cache already has the -3 gidouilles optimistic update
-				// Now update VIP cards cache and trigger the flip animation
-				const card = getVipCardById(result.cardId);
-				if (card && revealingCard) {
-					lastProcessedCardId = result.cardId;
-
-					// Update VIP cards cache with the new card (if migration applied)
-					// After migration: result = { cardId, instanceId, earnedAt }
-					// Before migration: result = { cardId } only
-					if (result.instanceId && result.earnedAt) {
-						const rewards = teacherCache.getRewardsSync(selectedClassId);
-						const currentVipCards = rewards?.get(student.id)?.vip_cards || {};
-
-						const newVipCards = {
-							...currentVipCards,
-							[result.instanceId]: {
-								cardId: result.cardId,
-								earnedAt: result.earnedAt,
-								usedAt: null
-							}
-						};
-
-						teacherCache.updateVipCardsOptimistic(selectedClassId, student.id, newVipCards);
-					}
-
-					// Update revealingCard to show confirmation (triggers flip)
-					revealingCard = {
-						card,
-						studentName: revealingCard.studentName,
-						loading: false,
-						confirmed: true
-					};
-				}
-			} else {
-				// ERROR: Rollback the -3 gidouilles optimistic update by adding +3 back
-				updateStudentGidouillesOptimistic(student.id, +3);
-				revealingCard = null;
-
-				const errorData = await response.json().catch(() => ({ message: 'Erreur inconnue' }));
-				toaster.error(errorData.message || "Erreur lors de l'attribution de la carte");
+			classId: selectedClassId,
+			onComplete: () => {
+				// Optional: refresh or update UI after draw
+				// Cache is already updated optimistically by the modal
 			}
-		} catch (_err) {
-			// ERROR: Rollback optimistic update
-			updateStudentGidouillesOptimistic(student.id, +3);
-			revealingCard = null;
-			toaster.error('Erreur réseau');
-		}
+		});
 	}
 
 	// ============================================================================
@@ -677,11 +604,6 @@
 	function handleVipModalClose(newOpen: boolean) {
 		vipModalOpen = newOpen;
 	}
-
-	// Close card reveal modal
-	function handleRevealComplete() {
-		revealingCard = null;
-	}
 </script>
 
 <div class="container mx-auto py-8">
@@ -903,23 +825,17 @@
 															size="sm"
 															variant="default"
 															class="gap-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-															disabled={!canAffordVipCard(getStudentGidouilles(student.id)) ||
-																revealingCard !== null}
+															disabled={!canAffordVipCard(getStudentGidouilles(student.id))}
 														>
-															{#if revealingCard !== null}
-																<Loader2 class="h-4 w-4 animate-spin" />
-																<span class="hidden sm:inline">Attribution...</span>
-															{:else}
-																<Sparkles class="h-4 w-4" />
-																<span class="hidden sm:inline">Carte VIP</span>
-																<span class="text-xs opacity-80"
-																	>(3 <img
-																		src={gidouilleImg}
-																		alt="gidouille"
-																		class="inline h-3 w-3"
-																	/>)</span
-																>
-															{/if}
+															<Sparkles class="h-4 w-4" />
+															<span class="hidden sm:inline">Carte VIP</span>
+															<span class="text-xs opacity-80"
+																>(3 <img
+																	src={gidouilleImg}
+																	alt="gidouille"
+																	class="inline h-3 w-3"
+																/>)</span
+															>
 														</Button>
 													</div>
 												</div>
@@ -1032,18 +948,6 @@
 		</Tabs.Content>
 	</Tabs.Root>
 </div>
-
-<!-- VIP Card Reveal Modal -->
-<!-- Fullscreen modal with shake animation during loading, then flip reveal -->
-{#if revealingCard && revealingCard.card}
-	<VipCardHoloReveal
-		card={revealingCard.card}
-		studentName={revealingCard.studentName}
-		loading={revealingCard.loading}
-		confirmed={revealingCard.confirmed}
-		onComplete={handleRevealComplete}
-	/>
-{/if}
 
 <!-- Modal des Cartes VIP (Teacher View with Removal) -->
 <!--
