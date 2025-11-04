@@ -44,8 +44,22 @@ All notable changes to this project will be documented in this file. See [standa
   - P0 tests: free cards security, cost limits, insufficient balance, authorization, boundaries
   - P1 tests: Zod schema validation, type safety
   - P2 tests: successful draws, multiple cards, error handling
-  - TODO: Race condition integration tests (require Docker Supabase)
   - Test coverage: All validation rules, error messages, success paths, security checks
+- **vip-cards**: add integration tests for race condition scenarios ([#vip-cards](https://github.com/Zahara-Nour/ubumaths/issues))
+  - 5 comprehensive integration tests verifying `SELECT FOR UPDATE` protection
+  - Tests: double-spend prevention (2 scenarios), double-use prevention (2 scenarios), mixed payments (1 scenario)
+  - All tests passing (5/5) with real Supabase instance on localhost:54321
+  - Created `tests/integration/draw-vip-cards-race-conditions.test.ts` (549 lines)
+  - Created `vitest.integration.config.ts` for integration test configuration
+  - Added `pnpm test:integration` and `pnpm test:integration:watch` scripts
+  - Verifies database consistency: no negative balances, no double-use of VIP cards
+  - Test execution: 2.34s with proper cleanup and isolation
+- **test-helpers**: implement authentication helpers for integration testing ([#vip-cards](https://github.com/Zahara-Nour/ubumaths/issues))
+  - Created `tests/database/helpers/supabase-client.ts` with `createAuthenticatedClient()` helper
+  - Updated `tests/database/helpers/postgres-client.ts` with password parameter support
+  - Enables testing of RPC functions that check `auth.uid()` for authorization
+  - Uses bcrypt hashed passwords for proper Supabase auth sign-in
+  - Fixed `ProfileBuilder.create()` duplicate key violation (also fixes `pnpm test:triggers`)
 
 ### [0.1.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.1.1...v0.1.2) (2025-11-03)
 

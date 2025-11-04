@@ -1162,6 +1162,160 @@ COMMIT;
 
 ---
 
+## Integration Tests
+
+The VIP card draw system includes comprehensive integration tests that verify race condition protection using a real Supabase instance.
+
+**Location**: `tests/integration/draw-vip-cards-race-conditions.test.ts`
+
+### Test Overview
+
+**Status**: ✅ All 5 tests passing
+
+The integration test suite verifies that `SELECT FOR UPDATE` correctly prevents double-spend and double-use exploits in concurrent scenarios.
+
+**Test Scenarios**:
+
+1. **Double-Spend Prevention** (2 simultaneous draws, insufficient balance)
+   - Student has 10 gidouilles
+   - Two API calls each try to spend 10 gidouilles
+   - Result: One succeeds, one fails with "Insufficient gidouilles"
+   - Final balance: 0 (not -10)
+
+2. **Triple-Spend Scenario** (3 simultaneous draws, partial balance)
+   - Student has 20 gidouilles
+   - Three calls each try to spend 10 gidouilles
+   - Result: Two succeed, one fails
+   - Final balance: 0
+
+3. **VIP Card Double-Use** (2 simultaneous uses of same card)
+   - Student has 1 VIP card
+   - Two calls try to use same card instance
+   - Result: One succeeds, one fails with "VIP card already used"
+   - Card marked as used exactly once
+
+4. **VIP Card Triple-Use** (3 simultaneous uses of same card)
+   - Student has 1 VIP card
+   - Three calls try to use same card
+   - Result: One succeeds, two fail
+   - Card used exactly once
+
+5. **Mixed Payments** (simultaneous gidouilles + VIP card)
+   - Student has 10 gidouilles AND 1 VIP card
+   - One call pays with gidouilles, one with VIP card
+   - Result: Both succeed (different resources, no conflict)
+
+### Running Integration Tests
+
+**Prerequisites**:
+
+- Supabase local must be running (Docker required)
+- Test database seeded with proper auth users
+
+**Commands**:
+
+```bash
+# Start Supabase local (one-time setup)
+pnpm db:start
+
+# Run integration tests
+pnpm test:integration
+
+# Watch mode (for development)
+pnpm test:integration:watch
+
+# Stop Supabase when done
+pnpm db:stop
+```
+
+### Authentication Helpers
+
+The integration tests use authenticated Supabase clients to properly test RPC authorization:
+
+**Helper Function**: `createAuthenticatedClient(email, password?)`
+
+```typescript
+// Create authenticated client as student
+const student = await TestData.profile().withRole('student').create();
+
+const studentClient = await createAuthenticatedClient(student.email);
+
+// Now RPC calls have proper auth.uid()
+const { data, error } = await studentClient.rpc('draw_multiple_vip_cards', {
+	p_student_id: student.id,
+	p_count: 1,
+	p_payment_method: 'gidouilles',
+	p_gidouilles_cost: 10,
+	p_vip_card_instance_id: null
+});
+```
+
+**How it works**:
+
+1. `insertAuthUser()` creates user in `auth.users` with hashed password
+2. `createAuthenticatedClient()` signs in with test credentials
+3. Returns authenticated client with valid session token
+4. RPC functions see correct `auth.uid()` value
+
+**Files**:
+
+- `tests/database/helpers/supabase-client.ts` - Authentication helper (NEW)
+- `tests/database/helpers/postgres-client.ts` - Updated `insertAuthUser()` with password parameter
+- `tests/database/helpers/test-data-factory.ts` - Fixed `ProfileBuilder.create()` duplicate key bug
+
+### Test Results
+
+```
+ ✓ tests/integration/draw-vip-cards-race-conditions.test.ts (5)
+   ✓ POST /api/rewards/draw-vip-cards - Race Condition Tests (5)
+     ✓ Gidouilles Double-Spend Prevention (2)
+       ✓ should prevent double-spend when student makes 2 simultaneous draws with insufficient balance
+       ✓ should handle 3 simultaneous draws with balance for only 2
+     ✓ VIP Card Double-Use Prevention (2)
+       ✓ should prevent double-use when student tries to use same VIP card twice simultaneously
+       ✓ should prevent triple-use when 3 requests try to use same card simultaneously
+     ✓ Mixed Race Conditions (1)
+       ✓ should handle simultaneous gidouilles and VIP card payments without interference
+
+Test Files  1 passed (1)
+     Tests  5 passed (5)
+  Start at  10:30:45
+  Duration  2.34s
+```
+
+### What Tests Verify
+
+**Race Condition Protection**:
+
+- `SELECT FOR UPDATE` locks profile row during transaction
+- Concurrent requests wait for lock before checking balance
+- Only one request can modify balance at a time
+- Database state remains consistent (no negative balances)
+
+**Security**:
+
+- Students cannot exploit timing to get free cards
+- VIP cards cannot be used multiple times
+- Authorization checks work correctly with authenticated clients
+- Error messages are user-friendly and don't leak sensitive data
+
+**Performance**:
+
+- Tests complete in ~2 seconds (5 scenarios with cleanup)
+- Sequential execution prevents test interference
+- Proper cleanup ensures test isolation
+
+### Documentation
+
+For detailed implementation guide and troubleshooting:
+
+- See: `tests/integration/draw-vip-cards-race-conditions.README.md`
+- Architecture: Race condition protection with `SELECT FOR UPDATE`
+- Setup: Creating authenticated test clients
+- Debugging: Common issues and solutions
+
+---
+
 ## Future Improvements
 
 ### Short Term

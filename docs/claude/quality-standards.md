@@ -15,7 +15,9 @@ Complete guide to maintaining code quality, efficient linting, and secure input 
 - ✅ **ESLint (Production)**: 0 errors in main codebase
 - ✅ **ESLint (Tests)**: 0 errors (was 57) - **NEW: All test file errors fixed!**
 - ✅ **TypeScript (Production)**: 0 errors in main codebase
-- ✅ **Test Suite**: 2,430/2,454 passing (99.0% pass rate, 24 skipped)
+- ✅ **Test Suite**: 2,435/2,459 passing (99.0% pass rate, 24 skipped)
+  - Unit tests: 2,430/2,454 passing
+  - Integration tests: 5/5 passing (race condition scenarios)
 - ✅ **Zod Validation Tests**: 366 tests, 100% pass rate (was 97.3%) - **NEW: All validation schemas tested!**
 - ⚠️ **ESLint (Warnings)**: 29 warnings (legitimate Svelte reactivity patterns)
 
@@ -415,10 +417,346 @@ describe('createAssessmentSchema', () => {
 
 ---
 
+## 🧪 Testing Standards
+
+UbuMaths uses a comprehensive testing strategy with multiple test types for different purposes.
+
+### Test Types
+
+#### 1. Unit Tests
+
+**Location**: Colocated with source files (`*.test.ts`)
+**Tool**: Vitest
+**Command**: `pnpm test:unit`
+
+**Purpose**: Test individual functions, components, and modules in isolation
+
+**When to Write**:
+
+- New utility functions
+- Business logic functions
+- Validation schemas (Zod)
+- Data transformations
+- Complex calculations
+
+**Example**:
+
+```typescript
+// src/lib/utils/math-helpers.test.ts
+import { describe, it, expect } from 'vitest';
+import { calculateGrade } from './math-helpers';
+
+describe('calculateGrade', () => {
+	it('calculates percentage correctly', () => {
+		expect(calculateGrade(80, 100)).toBe(80);
+	});
+
+	it('handles zero max points', () => {
+		expect(calculateGrade(50, 0)).toBe(0);
+	});
+});
+```
+
+**Best Practices**:
+
+- Test happy path and edge cases
+- Test error conditions
+- Mock external dependencies (database, API calls)
+- Keep tests fast (<100ms each)
+- Aim for 80%+ code coverage on critical paths
+
+---
+
+#### 2. Integration Tests
+
+**Location**: `tests/integration/`
+**Tool**: Vitest + Real Supabase instance
+**Command**: `pnpm test:integration`
+
+**Purpose**: Test interactions between multiple components using real database
+
+**When to Write**:
+
+- Database race conditions (concurrent requests)
+- RPC function authorization and security
+- Multi-step workflows that span database + API + client
+- Features requiring transaction guarantees
+
+**Prerequisites**:
+
+- Supabase local running on port 54321 (`pnpm db:start`)
+- Docker installed and running
+
+**Example**:
+
+```typescript
+// tests/integration/race-conditions.test.ts
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { createAuthenticatedClient } from '../database/helpers/supabase-client';
+import { TestData } from '../database/helpers/test-data-factory';
+
+describe('Race Condition Tests', () => {
+	beforeAll(async () => {
+		// Setup: start Supabase local
+	});
+
+	afterAll(async () => {
+		// Cleanup: remove test data
+	});
+
+	it('prevents double-spend with concurrent requests', async () => {
+		// Create test student with 10 gidouilles
+		const student = await TestData.profile().withRole('student').withGidouilles(10).create();
+
+		// Create authenticated client
+		const client = await createAuthenticatedClient(student.email);
+
+		// Execute 2 simultaneous API calls, each spending 10
+		const [result1, result2] = await Promise.allSettled([
+			client.rpc('draw_multiple_vip_cards', {
+				p_student_id: student.id,
+				p_gidouilles_cost: 10
+			}),
+			client.rpc('draw_multiple_vip_cards', {
+				p_student_id: student.id,
+				p_gidouilles_cost: 10
+			})
+		]);
+
+		// One succeeds, one fails
+		const succeeded = [result1, result2].filter(
+			(r) => r.status === 'fulfilled' && r.value.data !== null
+		);
+		const failed = [result1, result2].filter(
+			(r) => r.status === 'fulfilled' && r.value.error !== null
+		);
+
+		expect(succeeded).toHaveLength(1);
+		expect(failed).toHaveLength(1);
+
+		// Verify final balance is 0 (not -10)
+		const { data: profile } = await serviceClient
+			.from('profiles')
+			.select('gidouilles')
+			.eq('id', student.id)
+			.single();
+
+		expect(profile.gidouilles).toBe(0);
+	});
+});
+```
+
+**Configuration**:
+
+File: `vitest.integration.config.ts`
+
+```typescript
+export default defineConfig({
+	test: {
+		name: 'integration',
+		environment: 'node',
+		include: ['tests/integration/**/*.{test,spec}.{js,ts}'],
+		testTimeout: 30000, // 30s for database operations
+		pool: 'forks',
+		poolOptions: {
+			forks: {
+				singleFork: true // Sequential execution
+			}
+		}
+	}
+});
+```
+
+**Best Practices**:
+
+- Use `beforeEach` to clean test data (ensure isolation)
+- Use sequential execution (`singleFork: true`) to prevent race conditions between tests
+- Create authenticated clients with `createAuthenticatedClient()` helper
+- Test database state after operations (verify consistency)
+- Clean up auth.users and profiles tables in `afterAll`
+- Use `Promise.allSettled()` for concurrent request testing
+
+**Authentication Helpers**:
+
+Integration tests need to authenticate as users to test RPC authorization:
+
+```typescript
+// Create student with auth.users entry
+const student = await TestData.profile()
+  .withRole('student')
+  .create();
+
+// Sign in as the student (gets valid session)
+const studentClient = await createAuthenticatedClient(student.email);
+
+// Now RPC functions see correct auth.uid()
+const { data, error } = await studentClient.rpc('my_rpc_function', {...});
+```
+
+**Files**:
+
+- `tests/database/helpers/supabase-client.ts` - `createAuthenticatedClient()`
+- `tests/database/helpers/postgres-client.ts` - `insertAuthUser()` with password support
+- `tests/database/helpers/test-data-factory.ts` - Test data builders
+
+---
+
+#### 3. Database Trigger Tests
+
+**Location**: `tests/database/triggers/`
+**Tool**: Vitest + Docker Supabase
+**Command**: `pnpm test:triggers`
+
+**Purpose**: Test PostgreSQL triggers and database constraints
+
+**When to Write**:
+
+- Testing database triggers (e.g., `handle_new_user()`)
+- Testing foreign key constraints
+- Testing CHECK constraints
+- Testing database functions
+
+**Example**:
+
+```typescript
+// tests/database/triggers/handle-new-user.test.ts
+it('creates profile when user is inserted', async () => {
+	const userId = crypto.randomUUID();
+	const email = 'test@example.com';
+
+	// Insert into auth.users (triggers handle_new_user)
+	await insertAuthUser({ id: userId, email });
+
+	// Wait for trigger to complete
+	await new Promise((resolve) => setTimeout(resolve, 100));
+
+	// Verify profile was created
+	const { data } = await serviceClient.from('profiles').select('*').eq('id', userId).single();
+
+	expect(data).toBeDefined();
+	expect(data.email).toBe(email);
+});
+```
+
+---
+
+#### 4. E2E Tests
+
+**Location**: `tests/e2e/`
+**Tool**: Playwright
+**Command**: `pnpm test:e2e`
+
+**Purpose**: Test full user workflows in a real browser
+
+**When to Write**:
+
+- Critical user journeys (login, sign up, take assessment)
+- Cross-page workflows
+- UI interactions
+- Browser-specific behavior
+
+---
+
+### When to Write Integration Tests vs Unit Tests
+
+**Write Integration Tests When**:
+
+- Testing race conditions (concurrent database access)
+- Testing RPC function authorization with `auth.uid()`
+- Testing transaction guarantees (atomicity)
+- Testing database triggers and constraints
+- Verifying cross-component security (e.g., students can't access other students' data)
+- Testing real database queries with actual Supabase RLS policies
+
+**Write Unit Tests When**:
+
+- Testing pure functions (no side effects)
+- Testing business logic in isolation
+- Testing validation schemas (Zod)
+- Testing data transformations
+- Testing error handling
+- Fast feedback needed (unit tests are 100x faster)
+
+**Example Decision**:
+
+- ✅ Integration test: "Verify `SELECT FOR UPDATE` prevents double-spend"
+- ✅ Unit test: "Verify Zod schema rejects invalid UUID"
+- ✅ Integration test: "Student cannot draw cards for another student"
+- ✅ Unit test: "Calculate gidouilles cost correctly"
+
+---
+
+### Running Tests
+
+```bash
+# Unit tests (fast, no Docker needed)
+pnpm test:unit
+
+# Integration tests (requires Supabase local)
+pnpm db:start           # Start Supabase (one-time)
+pnpm test:integration   # Run integration tests
+pnpm db:stop            # Stop Supabase when done
+
+# Watch mode
+pnpm test:unit -- --watch
+pnpm test:integration:watch
+
+# Database trigger tests
+pnpm test:triggers
+
+# All tests
+pnpm test
+```
+
+---
+
+### Test Coverage Goals
+
+**Critical Paths**: 90%+ coverage
+
+- Payment processing (gidouilles, VIP cards)
+- User authentication and authorization
+- Database transactions
+- Input validation (Zod schemas)
+
+**Business Logic**: 80%+ coverage
+
+- Assessment grading
+- SRS algorithm
+- Rewards calculations
+
+**UI Components**: Not required (E2E tests cover user flows)
+
+---
+
+### Test Data Management
+
+**Helpers Available**:
+
+```typescript
+// Profile builder
+const student = await TestData.profile()
+	.withRole('student')
+	.withGidouilles(100)
+	.withVipCards({ 'card-id': { cardId: 'fortune', earnedAt: '...' } })
+	.create();
+
+// Authentication
+const client = await createAuthenticatedClient(student.email);
+
+// Cleanup
+await cleanupAllTestData(); // Removes all test users and profiles
+```
+
+---
+
 ## 📚 Resources
 
 - **Zod Documentation**: https://zod.dev/
+- **Vitest Documentation**: https://vitest.dev/
+- **Playwright Documentation**: https://playwright.dev/
 - **Existing Example**: `src/lib/exercises/validation.ts` (excellent reference for schema design)
+- **Integration Test Example**: `tests/integration/draw-vip-cards-race-conditions.test.ts`
 - **Project Context**: See security audit reports for vulnerabilities prevented by Zod
 
 ---

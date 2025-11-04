@@ -57,6 +57,7 @@ export interface InsertAuthUserParams {
 	id: string;
 	email: string;
 	fullName?: string;
+	password?: string;
 	encryptedPassword?: string;
 }
 
@@ -68,23 +69,30 @@ export interface InsertAuthUserParams {
  * 2. profiles table has a foreign key constraint to auth.users
  * 3. Some triggers rely on auth.users data being present
  *
+ * IMPORTANT: Uses crypt() function to properly hash passwords for Supabase auth.
+ * The password param is hashed on insert, allowing sign-in to work correctly.
+ *
  * @param params - User data to insert
+ * @param params.id - User UUID
+ * @param params.email - User email address
+ * @param params.fullName - Full name (default: 'Test User')
+ * @param params.password - Plain text password for authentication tests (default: 'password123')
+ * @param params.encryptedPassword - Pre-hashed password (overrides password param if provided - NOT RECOMMENDED)
  * @returns The inserted user ID
  */
 export async function insertAuthUser(params: InsertAuthUserParams): Promise<string> {
 	const client = await getPostgresClient();
 
-	const {
-		id,
-		email,
-		fullName = 'Test User',
-		// Default bcrypt hash for password "password123"
-		encryptedPassword = '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy'
-	} = params;
+	const { id, email, fullName = 'Test User', password = 'password123', encryptedPassword } = params;
 
 	const now = new Date().toISOString();
 
 	try {
+		// If encryptedPassword is provided, use it directly (for backward compatibility)
+		// Otherwise, use crypt() to hash the password (RECOMMENDED)
+		const passwordValue = encryptedPassword || password;
+		const usesCrypt = !encryptedPassword;
+
 		await client.query(
 			`
 			INSERT INTO auth.users (
@@ -109,7 +117,7 @@ export async function insertAuthUser(params: InsertAuthUserParams): Promise<stri
 				'authenticated',
 				'authenticated',
 				$2,
-				$3,
+				${usesCrypt ? `crypt($3, gen_salt('bf'))` : '$3'},
 				$4,
 				'{"provider": "email", "providers": ["email"]}',
 				$5,
@@ -122,7 +130,7 @@ export async function insertAuthUser(params: InsertAuthUserParams): Promise<stri
 			)
 			ON CONFLICT (id) DO NOTHING
 		`,
-			[id, email, encryptedPassword, now, JSON.stringify({ full_name: fullName })]
+			[id, email, passwordValue, now, JSON.stringify({ full_name: fullName })]
 		);
 
 		return id;

@@ -58,16 +58,25 @@ export class ProfileBuilder {
 
 		// First, create auth.users entry using direct PostgreSQL client
 		// (Supabase client cannot access auth schema)
+		// This will trigger handle_new_user() which auto-creates a basic profile
 		await insertAuthUser({
 			id: this.data.id!,
 			email: this.data.email!,
 			fullName: this.data.full_name || undefined
 		});
 
-		// Then create profile
+		// Wait a moment for the trigger to complete
+		await new Promise((resolve) => setTimeout(resolve, 50));
+
+		// Update the auto-created profile with our custom data
+		// (The trigger creates a minimal profile, we enhance it here)
 		const { data, error } = await client
 			.from('profiles')
-			.insert(this.data as Tables['profiles']['Insert'])
+			.update({
+				...this.data,
+				updated_at: new Date().toISOString()
+			} as Tables['profiles']['Update'])
+			.eq('id', this.data.id!)
 			.select()
 			.single();
 		if (error) throw error;

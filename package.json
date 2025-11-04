@@ -16,6 +16,8 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint . --cache",
 		"test:unit": "vitest",
+		"test:integration": "vitest run --config vitest.integration.config.ts",
+		"test:integration:watch": "vitest --config vitest.integration.config.ts",
 		"test:triggers": "vitest run tests/database/triggers",
 		"test:triggers:watch": "vitest tests/database/triggers",
 		"test:lint-rules": "node eslint-rules/require-zod-validation.test.js",
