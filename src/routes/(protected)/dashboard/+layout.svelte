@@ -53,7 +53,7 @@
 		Maximize,
 		Minimize,
 		// Upload, // Unused - for future features
-		// Sparkles, // Unused - for future features
+		Sparkles,
 		Bug,
 		MessageCircle,
 		BookOpen,
@@ -111,6 +111,7 @@
 				{ href: '/dashboard/teacher/riddles', label: 'Énigmes', icon: Lightbulb },
 				{ href: '/dashboard/teacher/exercises', label: 'Exercices', icon: BookOpen },
 				{ href: '/dashboard/teacher/rewards', label: 'Rewards', icon: Gift },
+				{ href: '/dashboard/teacher/vip-cards', label: 'VIP Cards', icon: Sparkles },
 				{ href: '/dashboard/teacher/warnings', label: 'Avertissements', icon: AlertTriangle }
 			];
 		} else if (role === 'admin') {
@@ -120,6 +121,7 @@
 				{ href: '/dashboard/admin/users', label: 'Users', icon: Users },
 				{ href: '/dashboard/admin/classes', label: 'Classes', icon: GraduationCap },
 				{ href: '/dashboard/admin/questions', label: 'Questions', icon: BookOpen },
+				{ href: '/dashboard/admin/vip-cards', label: 'VIP Cards', icon: Sparkles },
 				{ href: '/dashboard/admin/docs', label: 'Documentation', icon: FileText },
 				{ href: '/dashboard/admin/debug/database', label: 'Debug', icon: Bug },
 				{ href: '/dashboard/admin/settings', label: 'Settings', icon: Settings }

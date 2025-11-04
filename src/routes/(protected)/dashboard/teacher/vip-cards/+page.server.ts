@@ -2,8 +2,10 @@ import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
+	const { profile } = locals;
+
 	// Check teacher or admin role
-	if (!locals.user || (locals.user.role !== 'teacher' && locals.user.role !== 'admin')) {
+	if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {
 		throw redirect(303, '/dashboard');
 	}
 
@@ -23,7 +25,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { data: overrides, error: overridesError } = await locals.supabase
 		.from('teacher_vip_card_overrides')
 		.select('*')
-		.eq('teacher_id', locals.user.id);
+		.eq('teacher_id', profile.id);
 
 	if (overridesError) {
 		console.error('Error loading teacher overrides:', overridesError);

@@ -43,12 +43,12 @@ import { configToResponse } from '$lib/types/vip-card-admin';
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	// 1. Authentication check
-	if (!locals.user) {
+	if (!locals.profile) {
 		throw error(401, 'Authentication required');
 	}
 
 	// 2. Authorization check (admin only)
-	if (locals.user.role !== 'admin') {
+	if (locals.profile.role !== 'admin') {
 		throw error(403, 'Admin access required');
 	}
 
@@ -116,12 +116,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
  */
 export const GET: RequestHandler = async ({ locals }) => {
 	// 1. Authentication check
-	if (!locals.user) {
+	if (!locals.profile) {
 		throw error(401, 'Authentication required');
 	}
 
 	// 2. Authorization check (admin only)
-	if (locals.user.role !== 'admin') {
+	if (locals.profile.role !== 'admin') {
 		throw error(403, 'Admin access required');
 	}
 

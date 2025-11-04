@@ -230,3 +230,21 @@ export function configToResponse(config: VipCardConfig): ConfigResponse {
 		updatedAt: config.updated_at
 	};
 }
+
+/**
+ * Convert TemplateResponse (camelCase) to vip_card_templates row (snake_case)
+ */
+export function responseToTemplate(response: TemplateResponse): VipCardTemplate {
+	return {
+		id: response.id,
+		name: response.name,
+		description: response.description,
+		rarity: response.rarity,
+		category: response.category,
+		image_path: response.imagePath,
+		is_enabled: response.isEnabled,
+		action: response.action,
+		sort_order: response.sortOrder,
+		created_at: response.createdAt
+	};
+}

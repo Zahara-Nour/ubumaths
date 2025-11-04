@@ -2,8 +2,10 @@ import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
+	const { profile } = locals;
+
 	// Check admin role
-	if (!locals.user || locals.user.role !== 'admin') {
+	if (!profile || profile.role !== 'admin') {
 		throw redirect(303, '/dashboard');
 	}
 

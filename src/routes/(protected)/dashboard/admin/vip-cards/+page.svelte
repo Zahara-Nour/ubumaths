@@ -11,6 +11,8 @@
 	import { rarityLabel } from '$lib/components/vip-cards/utils';
 	import type { Database } from '$lib/types/database';
 	import type { PageData } from './$types';
+	import { responseToTemplate } from '$lib/types/vip-card-admin';
+	import type { TemplateResponse } from '$lib/types/vip-card-admin';
 
 	type VipCardTemplate = Database['public']['Tables']['vip_card_templates']['Row'];
 	type VipCardConfig = Database['public']['Tables']['vip_card_config']['Row'];
@@ -22,7 +24,7 @@
 		rarity: 'common' | 'rare' | 'epic' | 'legendary';
 		category: 'gameplay' | 'academic' | 'fun' | 'social';
 		is_enabled: boolean;
-		image_url: string;
+		image_path: string;
 		sort_order: number;
 	}
 
@@ -89,7 +91,9 @@
 				throw new Error(error.message || 'Failed to update');
 			}
 
-			const updated: VipCardTemplate = await response.json();
+			// API returns camelCase, convert to snake_case for local state
+			const apiResponse: TemplateResponse = await response.json();
+			const updated: VipCardTemplate = responseToTemplate(apiResponse);
 			templates = templates.map((t) => (t.id === cardId ? updated : t));
 			delete optimisticToggles[cardId];
 			toaster.success('Carte mise à jour');
@@ -119,7 +123,9 @@
 				throw new Error(error.message || 'Failed to save');
 			}
 
-			const savedCard: VipCardTemplate = await response.json();
+			// API returns camelCase, convert to snake_case for local state
+			const apiResponse: TemplateResponse = await response.json();
+			const savedCard: VipCardTemplate = responseToTemplate(apiResponse);
 
 			if (isEditing) {
 				templates = templates.map((t) => (t.id === savedCard.id ? savedCard : t));
@@ -162,9 +168,34 @@
 	}
 
 	function handleImageUploaded(cardId: string, newImageUrl: string) {
-		templates = templates.map((t) => (t.id === cardId ? { ...t, image_url: newImageUrl } : t));
+		templates = templates.map((t) => (t.id === cardId ? { ...t, image_path: newImageUrl } : t));
 		uploadingImageCard = null;
 		toaster.success('Image mise à jour');
+	}
+
+	async function handleInlineEdit(cardId: string, name: string, description: string) {
+		try {
+			const response = await fetch(`/api/admin/vip-cards/templates/${cardId}`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ name, description })
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.message || 'Failed to update');
+			}
+
+			// API returns camelCase, convert to snake_case for local state
+			const apiResponse: TemplateResponse = await response.json();
+			const updated: VipCardTemplate = responseToTemplate(apiResponse);
+			templates = templates.map((t) => (t.id === updated.id ? updated : t));
+			toaster.success('Carte mise à jour');
+		} catch (error) {
+			console.error('Inline edit error:', error);
+			toaster.error(error instanceof Error ? error.message : 'Échec de la mise à jour');
+			throw error;
+		}
 	}
 
 	// === CONFIG HANDLERS ===
@@ -276,10 +307,7 @@
 				<p class="text-sm text-muted-foreground">
 					{templates.length} carte{templates.length > 1 ? 's' : ''} au total
 				</p>
-				<div class="flex gap-2">
-					<Button onclick={() => (creatingCard = true)}>+ Nouvelle Carte</Button>
-					<Button variant="outline" onclick={() => location.reload()}>🔄 Rafraîchir</Button>
-				</div>
+				<Button onclick={() => (creatingCard = true)}>+ Nouvelle Carte</Button>
 			</div>
 
 			<!-- Cards grouped by rarity -->
@@ -288,24 +316,16 @@
 					<div class="space-y-4">
 						<h2 class="text-xl font-semibold">
 							{rarityLabel(rarity)}
-							({cards.filter((c) => c.is_enabled).length} activée{cards.filter((c) => c.is_enabled)
-								.length > 1
-								? 's'
-								: ''}, {cards.filter((c) => !c.is_enabled).length} désactivée{cards.filter(
-								(c) => !c.is_enabled
-							).length > 1
-								? 's'
-								: ''})
 						</h2>
 
-						<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+						<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
 							{#each cards as card (card.id)}
 								<VipCardPreview
 									{card}
 									isEnabled={optimisticToggles[card.id] ?? card.is_enabled}
 									showActions={true}
 									onToggle={(enabled) => handleToggleCard(card.id, enabled)}
-									onEdit={() => (editingCard = card)}
+									onInlineEdit={(name, description) => handleInlineEdit(card.id, name, description)}
 									onDelete={() => handleDeleteCard(card.id)}
 									onUploadImage={() => (uploadingImageCard = card)}
 								/>
@@ -387,7 +407,7 @@
 			</Dialog.Header>
 			<VipCardImageUploader
 				cardId={uploadingImageCard.id}
-				currentImageUrl={uploadingImageCard.image_url ?? undefined}
+				currentImageUrl={uploadingImageCard.image_path ?? undefined}
 				onComplete={(newUrl) => handleImageUploaded(uploadingImageCard.id, newUrl)}
 				onCancel={() => (uploadingImageCard = null)}
 			/>
