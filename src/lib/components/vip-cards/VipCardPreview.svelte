@@ -3,17 +3,74 @@
 	import { Check, ImageIcon, Trash2 } from 'lucide-svelte';
 	import type { Database } from '$lib/types/database';
 	import { categoryIcon } from './utils';
+	import MySelect from '$lib/components/MySelect.svelte';
 
 	type VipCardTemplate = Database['public']['Tables']['vip_card_templates']['Row'];
+	type ActionType = 'draw_cards' | 'remove_warnings' | 'exchange_cards' | 'add_gidouilles';
+
+	// Typed action interface (Database stores as Json, but we know the structure)
+	interface TypedAction {
+		type: ActionType;
+		count?: number;
+		amount?: number;
+	}
+
+	// Type guard to safely access action properties
+	function isTypedAction(action: unknown): action is TypedAction {
+		if (!action || typeof action !== 'object') return false;
+		const a = action as Record<string, unknown>;
+		return (
+			typeof a.type === 'string' &&
+			['draw_cards', 'remove_warnings', 'exchange_cards', 'add_gidouilles'].includes(a.type)
+		);
+	}
 
 	interface Props {
 		card: VipCardTemplate;
 		isEnabled?: boolean;
 		showActions?: boolean;
 		onToggle?: (enabled: boolean) => void;
-		onInlineEdit?: (name: string, description: string) => Promise<void>;
+		onInlineEdit?: (
+			name: string,
+			description: string,
+			action: VipCardTemplate['action']
+		) => Promise<void>;
 		onDelete?: () => void;
 		onUploadImage?: () => void;
+	}
+
+	// Action display utilities
+	function getActionIcon(type: ActionType | null): string {
+		if (!type) return '❌';
+		switch (type) {
+			case 'draw_cards':
+				return '🎴';
+			case 'remove_warnings':
+				return '⚠️';
+			case 'exchange_cards':
+				return '🔄';
+			case 'add_gidouilles':
+				return '💰';
+		}
+	}
+
+	function getActionType(action: VipCardTemplate['action']): ActionType | null {
+		return isTypedAction(action) ? action.type : null;
+	}
+
+	function getActionLabel(action: VipCardTemplate['action']): string {
+		if (!isTypedAction(action)) return 'Aucune action';
+
+		switch (action.type) {
+			case 'draw_cards':
+				return `Tirer ${action.count || 1} carte${(action.count || 1) > 1 ? 's' : ''}`;
+			case 'remove_warnings':
+				return `Retirer ${action.count || 1} avertissement${(action.count || 1) > 1 ? 's' : ''}`;
+			case 'exchange_cards':
+				return `Échanger ${action.count || 1} carte${(action.count || 1) > 1 ? 's' : ''}`;
+			case 'add_gidouilles':
+				return `Ajouter ${action.amount || 0} Gidouilles`;
+		}
 	}
 
 	let {
@@ -31,11 +88,31 @@
 	// Inline editing state
 	let editingTitle = $state(false);
 	let editingDescription = $state(false);
+	let editingAction = $state(false);
 	let tempName = $state(card.name);
 	let tempDescription = $state(card.description);
+	let tempActionType = $state<string | undefined>(
+		isTypedAction(card.action) ? card.action.type : undefined
+	);
+	let tempActionValue = $state<number>(
+		isTypedAction(card.action) && card.action.type === 'add_gidouilles'
+			? card.action.amount || 0
+			: isTypedAction(card.action)
+				? card.action.count || 1
+				: 1
+	);
 	let isSaving = $state(false);
 
-	const isEditing = $derived(editingTitle || editingDescription);
+	const isEditing = $derived(editingTitle || editingDescription || editingAction);
+
+	// Action type options for select
+	const actionTypeOptions = [
+		{ value: '', label: 'Aucune action' },
+		{ value: 'draw_cards', label: 'Tirer des cartes' },
+		{ value: 'remove_warnings', label: 'Retirer des avertissements' },
+		{ value: 'exchange_cards', label: 'Échanger des cartes' },
+		{ value: 'add_gidouilles', label: 'Ajouter des Gidouilles' }
+	];
 
 	// Rarity gem colors (matching VipCard.svelte)
 	const rarityGemInfo = $derived(
@@ -60,6 +137,19 @@
 		editingDescription = true;
 	}
 
+	function handleActionDoubleClick() {
+		if (!onInlineEdit || !showActions) return;
+		if (isTypedAction(card.action)) {
+			tempActionType = card.action.type;
+			tempActionValue =
+				card.action.type === 'add_gidouilles' ? card.action.amount || 0 : card.action.count || 1;
+		} else {
+			tempActionType = undefined;
+			tempActionValue = 1;
+		}
+		editingAction = true;
+	}
+
 	// Handle ESC key to cancel editing
 	function handleKeyDown(e: KeyboardEvent) {
 		if (e.key === 'Escape') {
@@ -70,8 +160,28 @@
 	function cancelEditing() {
 		editingTitle = false;
 		editingDescription = false;
+		editingAction = false;
 		tempName = card.name;
 		tempDescription = card.description;
+		if (isTypedAction(card.action)) {
+			tempActionType = card.action.type;
+			tempActionValue =
+				card.action.type === 'add_gidouilles' ? card.action.amount || 0 : card.action.count || 1;
+		} else {
+			tempActionType = undefined;
+			tempActionValue = 1;
+		}
+	}
+
+	// Build action object from temp state
+	function buildAction(): VipCardTemplate['action'] {
+		if (!tempActionType || tempActionType === '') return null;
+
+		if (tempActionType === 'add_gidouilles') {
+			return { type: tempActionType, amount: tempActionValue };
+		} else {
+			return { type: tempActionType as ActionType, count: tempActionValue };
+		}
 	}
 
 	// Handle save
@@ -80,9 +190,11 @@
 
 		isSaving = true;
 		try {
-			await onInlineEdit(tempName, tempDescription);
+			const action = buildAction();
+			await onInlineEdit(tempName, tempDescription, action);
 			editingTitle = false;
 			editingDescription = false;
+			editingAction = false;
 		} catch (error) {
 			// Error handled by parent component
 			console.error('Save failed:', error);
@@ -114,7 +226,7 @@
 			<img src={card.image_path} alt={card.name} class="h-full w-full object-cover" />
 		{:else}
 			<div class="flex h-full w-full items-center justify-center text-6xl">
-				{categoryIcon(card.category)}
+				{categoryIcon(card.category || 'gameplay')}
 			</div>
 		{/if}
 
@@ -238,6 +350,41 @@
 				>
 					{card.description}
 				</p>
+			{/if}
+
+			<!-- Action - Editable on double-click -->
+			{#if editingAction}
+				<div class="space-y-2 rounded border border-primary bg-background p-2">
+					<MySelect
+						type="single"
+						bind:value={tempActionType}
+						items={actionTypeOptions}
+						placeholder="Type d'action"
+					/>
+					{#if tempActionType && tempActionType !== ''}
+						<input
+							type="number"
+							bind:value={tempActionValue}
+							min="0"
+							max="999"
+							class="w-full rounded border border-input bg-background px-2 py-1 text-xs focus:ring-2 focus:ring-primary focus:outline-none"
+							placeholder={tempActionType === 'add_gidouilles' ? 'Montant' : 'Nombre'}
+						/>
+					{/if}
+				</div>
+			{:else}
+				<div
+					class="flex items-center gap-1 text-xs {onInlineEdit && showActions
+						? 'cursor-pointer hover:text-primary'
+						: 'text-muted-foreground'}"
+					ondblclick={handleActionDoubleClick}
+					title={onInlineEdit && showActions
+						? 'Double-cliquez pour éditer'
+						: getActionLabel(card.action)}
+				>
+					<span>{getActionIcon(getActionType(card.action))}</span>
+					<span>{getActionLabel(card.action)}</span>
+				</div>
 			{/if}
 		</div>
 

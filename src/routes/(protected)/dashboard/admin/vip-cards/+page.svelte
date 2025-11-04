@@ -173,12 +173,17 @@
 		toaster.success('Image mise à jour');
 	}
 
-	async function handleInlineEdit(cardId: string, name: string, description: string) {
+	async function handleInlineEdit(
+		cardId: string,
+		name: string,
+		description: string,
+		action: VipCardTemplate['action']
+	) {
 		try {
 			const response = await fetch(`/api/admin/vip-cards/templates/${cardId}`, {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ name, description })
+				body: JSON.stringify({ name, description, action })
 			});
 
 			if (!response.ok) {
@@ -325,7 +330,8 @@
 									isEnabled={optimisticToggles[card.id] ?? card.is_enabled}
 									showActions={true}
 									onToggle={(enabled) => handleToggleCard(card.id, enabled)}
-									onInlineEdit={(name, description) => handleInlineEdit(card.id, name, description)}
+									onInlineEdit={(name, description, action) =>
+										handleInlineEdit(card.id, name, description, action)}
 									onDelete={() => handleDeleteCard(card.id)}
 									onUploadImage={() => (uploadingImageCard = card)}
 								/>
