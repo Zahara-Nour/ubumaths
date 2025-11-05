@@ -113,8 +113,9 @@
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import VipCardsModal from '$lib/components/VipCardsModal.svelte';
 	import { canAffordVipCard, getStudentCardCounts } from '$lib/utils/vip-cards';
-	import { Sparkles, Eye, Loader2, Check, X } from 'lucide-svelte';
+	import { Sparkles, Eye, Loader2, Check, X, Plus } from 'lucide-svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
 	import * as Table from '$lib/components/ui/table';
 	import * as Card from '$lib/components/ui/card';
@@ -124,7 +125,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { openVipCardDrawModal } from '$lib/utils/vip-card-modals';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { VIP_CARDS } from '$lib/types/vip-card';
+	import { VIP_CARDS, getVipCardById } from '$lib/types/vip-card';
 
 	// Data from parent layouts (user/profile only)
 	let { data }: { data: PageData } = $props();
@@ -215,6 +216,9 @@
 	// Processing state for use-card requests (demandes tab)
 	let processingRequests = $state<Record<string, boolean>>({});
 
+	// Grant VIP card state (for grant button loading state)
+	let grantingCard = $state<string | null>(null);
+
 	// Handle use card from demandes tab
 	async function handleUseCard(instanceId: string, studentId: string, studentName: string) {
 		processingRequests[instanceId] = true;
@@ -297,6 +301,48 @@
 		if (diffDays < 7) return `Il y a ${diffDays}j`;
 
 		return date.toLocaleDateString('fr-FR');
+	}
+
+	/**
+	 * Handle granting a specific VIP card to a student
+	 * Called when teacher clicks the "+" button next to a filtered card
+	 */
+	async function handleGrantVipCard(studentId: string) {
+		if (selectedCardFilter === 'all') return; // Safety check
+
+		grantingCard = studentId;
+
+		try {
+			const response = await fetch('/api/teacher/rewards/grant-specific-vip-card', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					studentId,
+					cardId: selectedCardFilter,
+					count: 1
+				})
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({}));
+				throw new Error(errorData.message || "Erreur lors de l'attribution de la carte");
+			}
+
+			await response.json();
+
+			// Get card name for success message
+			const card = getVipCardById(selectedCardFilter);
+			toaster.success(`Carte "${card?.name || selectedCardFilter}" offerte !`);
+
+			// Invalidate cache and refresh data
+			teacherCache.invalidateRewards(selectedClassId);
+			await invalidateAll();
+		} catch (err) {
+			console.error('Error granting VIP card:', err);
+			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'attribution");
+		} finally {
+			grantingCard = null;
+		}
 	}
 
 	// Initialize deltas to 1 for each student and class
@@ -741,155 +787,190 @@
 								</div>
 
 								<!-- LISTE DES ÉLÈVES -->
-								{#if currentStudents.length === 0}
-									<div class="rounded-lg border border-border bg-card p-12 text-center">
-										<p class="text-lg font-medium">Aucun élève dans cette classe</p>
-										<p class="mt-2 text-sm text-muted-foreground">
-											Ajoutez des élèves pour commencer à gérer leurs récompenses
-										</p>
-									</div>
-								{:else if filteredStudents.length === 0}
-									<div class="rounded-lg border border-border bg-card p-12 text-center">
-										<p class="text-lg font-medium">Aucun élève ne correspond au filtre</p>
-										<p class="mt-2 text-sm text-muted-foreground">
-											Aucun élève ne possède cette carte VIP actuellement
-										</p>
-									</div>
-								{:else}
-									<div class="overflow-hidden rounded-lg border border-border bg-card">
-										<div class="border-b border-border bg-muted/30 px-6 py-4">
-											<h3 class="text-lg font-semibold text-foreground">
-												Élèves ({filteredStudents.length})
-											</h3>
+								<Tooltip.Provider>
+									{#if currentStudents.length === 0}
+										<div class="rounded-lg border border-border bg-card p-12 text-center">
+											<p class="text-lg font-medium">Aucun élève dans cette classe</p>
+											<p class="mt-2 text-sm text-muted-foreground">
+												Ajoutez des élèves pour commencer à gérer leurs récompenses
+											</p>
 										</div>
+									{:else if filteredStudents.length === 0}
+										<div class="rounded-lg border border-border bg-card p-12 text-center">
+											<p class="text-lg font-medium">Aucun élève ne correspond au filtre</p>
+											<p class="mt-2 text-sm text-muted-foreground">
+												Aucun élève ne possède cette carte VIP actuellement
+											</p>
+										</div>
+									{:else}
+										<div class="overflow-hidden rounded-lg border border-border bg-card">
+											<div class="border-b border-border bg-muted/30 px-6 py-4">
+												<h3 class="text-lg font-semibold text-foreground">
+													Élèves ({filteredStudents.length})
+												</h3>
+											</div>
 
-										<div class="divide-y divide-border">
-											{#each filteredStudents as student (student.id)}
-												<div class="flex items-center gap-6 px-6 py-4">
-													<!-- AVATAR -->
-													<Avatar.Root class="h-12 w-12 flex-shrink-0">
-														<Avatar.Image
-															src={student.avatar_url ||
-																getAvatarFallback(
-																	(student.role as 'student' | 'teacher' | 'admin') || 'student',
-																	student.gender === 'boy'
-																		? 'M'
-																		: student.gender === 'girl'
-																			? 'F'
-																			: null
+											<div class="divide-y divide-border">
+												{#each filteredStudents as student (student.id)}
+													<div class="flex items-center gap-6 px-6 py-4">
+														<!-- AVATAR -->
+														<Avatar.Root class="h-12 w-12 flex-shrink-0">
+															<Avatar.Image
+																src={student.avatar_url ||
+																	getAvatarFallback(
+																		(student.role as 'student' | 'teacher' | 'admin') || 'student',
+																		student.gender === 'boy'
+																			? 'M'
+																			: student.gender === 'girl'
+																				? 'F'
+																				: null
+																	)}
+																alt={getFullName(
+																	student.firstname,
+																	student.lastname,
+																	student.full_name
 																)}
-															alt={getFullName(
-																student.firstname,
-																student.lastname,
-																student.full_name
-															)}
-														/>
-														<Avatar.Fallback class="bg-primary/10 font-semibold text-primary">
-															{getAvatarInitials(student.firstname, student.lastname)}
-														</Avatar.Fallback>
-													</Avatar.Root>
-
-													<!-- NOM DE L'ÉLÈVE -->
-													<div class="min-w-0 flex-1">
-														<p class="truncate font-medium text-foreground">
-															{getFullName(student.firstname, student.lastname, student.full_name)}
-														</p>
-													</div>
-
-													<!-- GIDOUILLES ACTUELLES -->
-													<div class="flex w-32 items-center justify-end gap-2">
-														<img src={gidouilleImg} alt="Gidouille" class="h-6 w-6 flex-shrink-0" />
-														<span class="text-2xl font-bold text-foreground tabular-nums">
-															{getStudentGidouilles(student.id)}
-														</span>
-													</div>
-
-													<!-- BOUTONS +/- AVEC INPUT AU MILIEU -->
-													<div class="flex flex-shrink-0 items-center gap-2">
-														<!-- Bouton pour enlever (debounced) -->
-														<Button
-															size="sm"
-															variant="default"
-															class="h-10 w-10 p-0"
-															disabled={getStudentGidouilles(student.id) <
-																studentDeltas[student.id]}
-															onclick={() => {
-																const delta = -studentDeltas[student.id];
-																// Get student name for toast (priority: firstname > full_name > fallback)
-																const name = student.firstname || student.full_name || 'Élève';
-																debouncedUpdateStudent(student.id, delta, name);
-															}}
-														>
-															−
-														</Button>
-
-														<!-- INPUT POUR LE DELTA -->
-														<div class="w-14">
-															<Input
-																type="number"
-																min="1"
-																max="9"
-																bind:value={studentDeltas[student.id]}
-																class="h-10 w-full text-center"
 															/>
+															<Avatar.Fallback class="bg-primary/10 font-semibold text-primary">
+																{getAvatarInitials(student.firstname, student.lastname)}
+															</Avatar.Fallback>
+														</Avatar.Root>
+
+														<!-- NOM DE L'ÉLÈVE -->
+														<div class="min-w-0 flex-1">
+															<p class="truncate font-medium text-foreground">
+																{getFullName(
+																	student.firstname,
+																	student.lastname,
+																	student.full_name
+																)}
+															</p>
 														</div>
 
-														<!-- Bouton pour ajouter (debounced) -->
-														<Button
-															size="sm"
-															variant="default"
-															class="h-10 w-10 p-0"
-															onclick={() => {
-																const delta = studentDeltas[student.id];
-																// Get student name for toast (priority: firstname > full_name > fallback)
-																const name = student.firstname || student.full_name || 'Élève';
-																debouncedUpdateStudent(student.id, delta, name);
-															}}
-														>
-															+
-														</Button>
-													</div>
+														<!-- GIDOUILLES ACTUELLES -->
+														<div class="flex w-32 items-center justify-end gap-2">
+															<img
+																src={gidouilleImg}
+																alt="Gidouille"
+																class="h-6 w-6 flex-shrink-0"
+															/>
+															<span class="text-2xl font-bold text-foreground tabular-nums">
+																{getStudentGidouilles(student.id)}
+															</span>
+														</div>
 
-													<!-- SÉPARATEUR VERTICAL -->
-													<div class="mx-2 h-10 w-px bg-border"></div>
-
-													<!-- BOUTONS CARTES VIP -->
-													<div class="flex flex-shrink-0 items-center gap-2">
-														<!-- Bouton Voir Cartes VIP -->
-														<Button
-															size="sm"
-															variant="outline"
-															class="gap-1"
-															onclick={() => openVipModal(student)}
-														>
-															<Eye class="h-4 w-4" />
-															<span class="hidden sm:inline">Voir Cartes</span>
-														</Button>
-
-														<!-- Button to award VIP card -->
-														<Button
-															onclick={() => handleAwardVipCard(student)}
-															size="sm"
-															variant="default"
-															class="gap-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-															disabled={!canAffordVipCard(getStudentGidouilles(student.id))}
-														>
-															<Sparkles class="h-4 w-4" />
-															<span class="hidden sm:inline">Carte VIP</span>
-															<span class="text-xs opacity-80"
-																>(3 <img
-																	src={gidouilleImg}
-																	alt="gidouille"
-																	class="inline h-3 w-3"
-																/>)</span
+														<!-- BOUTONS +/- AVEC INPUT AU MILIEU -->
+														<div class="flex flex-shrink-0 items-center gap-2">
+															<!-- Bouton pour enlever (debounced) -->
+															<Button
+																size="sm"
+																variant="default"
+																class="h-10 w-10 p-0"
+																disabled={getStudentGidouilles(student.id) <
+																	studentDeltas[student.id]}
+																onclick={() => {
+																	const delta = -studentDeltas[student.id];
+																	// Get student name for toast (priority: firstname > full_name > fallback)
+																	const name = student.firstname || student.full_name || 'Élève';
+																	debouncedUpdateStudent(student.id, delta, name);
+																}}
 															>
-														</Button>
+																−
+															</Button>
+
+															<!-- INPUT POUR LE DELTA -->
+															<div class="w-14">
+																<Input
+																	type="number"
+																	min="1"
+																	max="9"
+																	bind:value={studentDeltas[student.id]}
+																	class="h-10 w-full text-center"
+																/>
+															</div>
+
+															<!-- Bouton pour ajouter (debounced) -->
+															<Button
+																size="sm"
+																variant="default"
+																class="h-10 w-10 p-0"
+																onclick={() => {
+																	const delta = studentDeltas[student.id];
+																	// Get student name for toast (priority: firstname > full_name > fallback)
+																	const name = student.firstname || student.full_name || 'Élève';
+																	debouncedUpdateStudent(student.id, delta, name);
+																}}
+															>
+																+
+															</Button>
+														</div>
+
+														<!-- SÉPARATEUR VERTICAL -->
+														<div class="mx-2 h-10 w-px bg-border"></div>
+
+														<!-- BOUTONS CARTES VIP -->
+														<div class="flex flex-shrink-0 items-center gap-2">
+															<!-- Bouton Voir Cartes VIP -->
+															<Button
+																size="sm"
+																variant="outline"
+																class="gap-1"
+																onclick={() => openVipModal(student)}
+															>
+																<Eye class="h-4 w-4" />
+																<span class="hidden sm:inline">Voir Cartes</span>
+															</Button>
+
+															<!-- Button to award VIP card -->
+															<Button
+																onclick={() => handleAwardVipCard(student)}
+																size="sm"
+																variant="default"
+																class="gap-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+																disabled={!canAffordVipCard(getStudentGidouilles(student.id))}
+															>
+																<Sparkles class="h-4 w-4" />
+																<span class="hidden sm:inline">Carte VIP</span>
+																<span class="text-xs opacity-80"
+																	>(3 <img
+																		src={gidouilleImg}
+																		alt="gidouille"
+																		class="inline h-3 w-3"
+																	/>)</span
+																>
+															</Button>
+
+															<!-- Grant Specific VIP Card Button (only shows when filter is active) -->
+															{#if selectedCardFilter !== 'all'}
+																{@const card = getVipCardById(selectedCardFilter)}
+																<Tooltip.Root>
+																	<Tooltip.Trigger>
+																		<Button
+																			size="sm"
+																			variant="outline"
+																			class="h-10 w-10 p-0"
+																			onclick={() => handleGrantVipCard(student.id)}
+																			disabled={grantingCard === student.id}
+																		>
+																			{#if grantingCard === student.id}
+																				<Loader2 class="h-4 w-4 animate-spin" />
+																			{:else}
+																				<Plus class="h-4 w-4" />
+																			{/if}
+																		</Button>
+																	</Tooltip.Trigger>
+																	<Tooltip.Content>
+																		<p>Offrir carte "{card?.name || selectedCardFilter}"</p>
+																	</Tooltip.Content>
+																</Tooltip.Root>
+															{/if}
+														</div>
 													</div>
-												</div>
-											{/each}
+												{/each}
+											</div>
 										</div>
-									</div>
-								{/if}
+									{/if}
+								</Tooltip.Provider>
 							</Tabs.Content>
 						{/each}
 					</Tabs.Root>
