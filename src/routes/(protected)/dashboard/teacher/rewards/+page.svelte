@@ -312,7 +312,26 @@
 
 		grantingCard = studentId;
 
+		// Get current state for rollback if needed
+		const currentRewards = teacherCache.getRewardsSync(selectedClassId);
+		const studentRewards = currentRewards?.get(studentId);
+		const originalVipCards = studentRewards ? { ...studentRewards.vip_cards } : null;
+
 		try {
+			// Optimistic update: Add card BEFORE API call
+			if (studentRewards) {
+				const tempInstanceId = `temp-${Date.now()}-${Math.random()}`;
+				const optimisticVipCards = { ...studentRewards.vip_cards };
+
+				optimisticVipCards[tempInstanceId] = {
+					cardId: selectedCardFilter,
+					earnedAt: new Date().toISOString(),
+					usedAt: null
+				};
+
+				teacherCache.updateVipCardsOptimistic(selectedClassId, studentId, optimisticVipCards);
+			}
+
 			const response = await fetch('/api/teacher/rewards/grant-specific-vip-card', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -328,18 +347,34 @@
 				throw new Error(errorData.message || "Erreur lors de l'attribution de la carte");
 			}
 
-			await response.json();
+			const result = await response.json();
+
+			// Replace optimistic data with real data from server
+			if (studentRewards) {
+				const finalVipCards = { ...studentRewards.vip_cards };
+
+				for (const c of result.cards) {
+					finalVipCards[c.instanceId] = {
+						cardId: c.cardId,
+						earnedAt: c.earnedAt,
+						usedAt: null
+					};
+				}
+
+				teacherCache.updateVipCardsOptimistic(selectedClassId, studentId, finalVipCards);
+			}
 
 			// Get card name for success message
 			const card = getVipCardById(selectedCardFilter);
 			toaster.success(`Carte "${card?.name || selectedCardFilter}" offerte !`);
-
-			// Invalidate cache and refresh data
-			teacherCache.invalidateRewards(selectedClassId);
-			await invalidateAll();
 		} catch (err) {
 			console.error('Error granting VIP card:', err);
 			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'attribution");
+
+			// Rollback: Restore original state
+			if (originalVipCards) {
+				teacherCache.updateVipCardsOptimistic(selectedClassId, studentId, originalVipCards);
+			}
 		} finally {
 			grantingCard = null;
 		}
