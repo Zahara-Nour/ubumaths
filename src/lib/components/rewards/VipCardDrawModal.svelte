@@ -4,7 +4,7 @@
 	Modal that handles the VIP card drawing flow with animations.
 
 	Features:
-	- Automatic API call on mount
+	- Automatic API call on mount (with guard to prevent re-execution)
 	- Optimistic UI updates for gidouilles
 	- Error handling with rollback
 	- Smart animation selection (multi-holo for ≤3 cards, batch for 4+)
@@ -23,7 +23,7 @@
 	1. Mount → handleDraw() → API call
 	2. Loading → Show spinner
 	3. Success → Populate cards → Animate
-	4. Animation complete → Show "Continuer" button
+	4. Animation complete → Show click hint → Click anywhere to continue
 	5. Error → Show message → Auto-close after 3s
 -->
 
@@ -33,9 +33,9 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getVipCardById } from '$lib/types/vip-card';
 	import type { VipCard } from '$lib/types/vip-card';
-	import { Button } from '$lib/components/ui/button';
 	import VipCardMultiHoloReveal from './VipCardMultiHoloReveal.svelte';
 	import VipCardBatchReveal from './VipCardBatchReveal.svelte';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		studentId: string;
@@ -164,11 +164,26 @@
 	}
 
 	/**
-	 * Handle continue button click
+	 * Handle continue action (click anywhere or keyboard)
 	 */
 	function handleContinue() {
+		// Only allow continue when animation is complete
+		if (!animationComplete) return;
+
 		modalStack.pop();
 		// onReturn callback will be called automatically by modalStack
+	}
+
+	/**
+	 * Handle keyboard events for accessibility
+	 */
+	function handleKeydown(event: KeyboardEvent) {
+		if (!animationComplete) return;
+
+		if (event.key === 'Enter' || event.key === ' ' || event.key === 'Escape') {
+			event.preventDefault();
+			handleContinue();
+		}
 	}
 
 	/**
@@ -178,21 +193,21 @@
 		animationComplete = true;
 	}
 
-	// Auto-draw on mount
-	$effect(() => {
+	onMount(() => {
 		handleDraw();
 	});
-
-	// Button label based on stack depth
-	let buttonLabel = $derived(modalStack.depth <= 1 ? 'Fermer' : 'Continuer');
 </script>
 
 <!-- Fullscreen overlay -->
 <div
 	class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 p-4"
+	class:cursor-pointer={animationComplete}
 	role="dialog"
 	aria-modal="true"
 	aria-labelledby="draw-modal-title"
+	onclick={handleContinue}
+	onkeydown={handleKeydown}
+	tabindex={animationComplete ? 0 : -1}
 >
 	{#if loading}
 		<!-- Loading State -->
@@ -213,45 +228,44 @@
 	{:else if useMultiHolo}
 		<!-- Multi-Holo Reveal (1-3 cards) -->
 		<div class="relative w-full">
-			<VipCardMultiHoloReveal {cards} {studentName} oncomplete={handleAnimationComplete} />
-
-			{#if animationComplete}
-				<div class="animate-fade-in absolute bottom-8 left-1/2 -translate-x-1/2">
-					<Button onclick={handleContinue} size="lg" class="bg-primary hover:bg-primary/90">
-						{buttonLabel}
-					</Button>
-				</div>
-			{/if}
+			<VipCardMultiHoloReveal {cards} oncomplete={handleAnimationComplete} />
 		</div>
 	{:else if useBatch}
 		<!-- Batch Reveal (4+ cards) -->
 		<div class="relative w-full">
 			<VipCardBatchReveal {cards} {studentName} oncomplete={handleAnimationComplete} />
-
-			{#if animationComplete}
-				<div class="animate-fade-in absolute bottom-8 left-1/2 -translate-x-1/2">
-					<Button onclick={handleContinue} size="lg" class="bg-primary hover:bg-primary/90">
-						{buttonLabel}
-					</Button>
-				</div>
-			{/if}
 		</div>
 	{/if}
 </div>
 
 <style>
-	@keyframes fade-in {
-		from {
+	@keyframes fade-in-pulse {
+		0% {
 			opacity: 0;
 			transform: translateX(-50%) translateY(10px);
 		}
-		to {
+		50% {
 			opacity: 1;
+		}
+		100% {
+			opacity: 0.8;
 			transform: translateX(-50%) translateY(0);
 		}
 	}
 
-	.animate-fade-in {
-		animation: fade-in 0.5s ease-out;
+	@keyframes pulse {
+		0%,
+		100% {
+			opacity: 0.8;
+		}
+		50% {
+			opacity: 0.5;
+		}
+	}
+
+	.animate-fade-in-pulse {
+		animation:
+			fade-in-pulse 0.8s ease-out,
+			pulse 2s ease-in-out 0.8s infinite;
 	}
 </style>
