@@ -108,6 +108,38 @@ export const createNotificationFormSchema = z.object({
 // });
 
 // ============================================================================
+// USER PROFILE UPDATE SCHEMA (API)
+// ============================================================================
+
+/**
+ * Schema for partial update of user profile fields (PATCH /api/admin/users/[id])
+ * Admin-only: Update user profile fields from inline editing
+ *
+ * All fields are optional (partial update), nullable fields accept null
+ * NOTE: Email is read-only and cannot be updated via this endpoint
+ */
+export const updateUserFieldsSchema = z
+	.object({
+		firstname: z
+			.string()
+			.min(1, 'Prénom invalide')
+			.max(100, 'Prénom trop long')
+			.nullable()
+			.optional(),
+		lastname: z.string().min(1, 'Nom invalide').max(100, 'Nom trop long').nullable().optional(),
+		gender: z
+			.enum(['boy', 'girl'], { message: 'Le genre doit être "boy" ou "girl"' })
+			.nullable()
+			.optional(),
+		role: z.enum(['admin', 'teacher', 'student'], { message: 'Rôle invalide' }).optional(),
+		school_id: z.string().uuid('ID école invalide').nullable().optional(),
+		is_test: z.boolean({ message: 'is_test doit être un booléen' }).optional()
+	})
+	.refine((data) => Object.keys(data).length > 0, {
+		message: 'Au moins un champ doit être fourni'
+	});
+
+// ============================================================================
 // CLASS STUDENTS QUERY SCHEMA
 // ============================================================================
 

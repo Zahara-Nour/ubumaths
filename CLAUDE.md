@@ -121,6 +121,27 @@ const { userId, amount } = validation.data; // ✅ Type-safe AND validated
 
 ---
 
+### ☑️ CRITICAL: Always Use MyCheckbox Component
+
+**✅ Use** : `import MyCheckbox from '$lib/components/MyCheckbox.svelte';`
+**❌ NEVER use** : Shadcn-svelte Checkbox directly or native `<input type="checkbox">` elements
+
+```svelte
+<script>
+	let isEnabled = $state(false);
+</script>
+
+<MyCheckbox bind:checked={isEnabled} label="Enable notifications" />
+<MyCheckbox bind:checked={isTest} disabled label="Test account" />
+<MyCheckbox bind:checked={agree} required label="I agree to terms" />
+```
+
+**Why?** Consistent API, Svelte 5 runes, wraps Shadcn-svelte Checkbox with label management.
+**Props** : `checked` (bindable), `disabled`, `required`, `label`, `onCheckedChange`
+**📖 Complete Guide** : [docs/claude/ui-components.md#mycheckbox-component](docs/claude/ui-components.md#mycheckbox-component)
+
+---
+
 ### 💾 Svelte 5 Runes (Not Svelte 4)
 
 **✅ DO** (Svelte 5):

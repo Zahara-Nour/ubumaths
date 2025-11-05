@@ -23,14 +23,15 @@ Documentation complète de la plateforme éducative UbuMaths.
 
 Documentation détaillée pour Claude Code lors du développement.
 
-| Document                                                | Description                                    |
-| ------------------------------------------------------- | ---------------------------------------------- |
-| [Index Claude Docs](claude/README.md) ⭐                | Vue d'ensemble documentation Claude            |
-| [Architecture](claude/architecture.md)                  | Structure, routing, data fetching, performance |
-| [Best Practices](claude/best-practices.md)              | Svelte 5, TypeScript, anti-patterns            |
-| [UI Components](claude/ui-components.md)                | Shadcn, MySelect, Tailwind                     |
-| [Database](claude/database.md)                          | Supabase, migrations, schéma                   |
-| [Quality Standards](claude/quality-standards.md) ⭐⭐⭐ | Tests, linting, Zod validation                 |
+| Document                                                      | Description                                    |
+| ------------------------------------------------------------- | ---------------------------------------------- |
+| [Index Claude Docs](claude/README.md) ⭐                      | Vue d'ensemble documentation Claude            |
+| [Architecture](claude/architecture.md)                        | Structure, routing, data fetching, performance |
+| [Best Practices](claude/best-practices.md)                    | Svelte 5, TypeScript, anti-patterns            |
+| [UI Components](claude/ui-components.md)                      | Shadcn, MySelect, Tailwind                     |
+| [Database](claude/database.md)                                | Supabase, migrations, schéma                   |
+| [Quality Standards](claude/quality-standards.md) ⭐⭐⭐       | Tests, linting, Zod validation                 |
+| [Inline Editing Pattern](claude/inline-editing-pattern.md) 🆕 | Pattern standard pour édition inline           |
 
 ---
 

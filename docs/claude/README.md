@@ -20,6 +20,10 @@ Documentation détaillée pour Claude Code lors du développement d'UbuMaths.
 - **[Best Practices](./best-practices.md)** - Svelte 5, TypeScript, file organization
 - **[Quality Standards](./quality-standards.md)** - Tests, linting, Zod validation, pre-commit
 
+### UI Patterns
+
+- **[Inline Editing Pattern](./inline-editing-pattern.md)** 🆕 - Pattern standard pour édition inline de données
+
 ---
 
 ## 🎯 Quick Links
@@ -28,8 +32,9 @@ Documentation détaillée pour Claude Code lors du développement d'UbuMaths.
 
 - ⚠️ **Anti-patterns critiques** : [Best Practices - Erreurs courantes](./best-practices.md#erreurs-courantes-à-éviter)
 - 🛡️ **Input Validation** : [Quality Standards - Zod Validation](./quality-standards.md#input-validation-with-zod)
-- 🔌 **SSR Supabase Patterns** : [SSR-Compatible Supabase](./ssr-supabase-patterns.md) ⭐ **NEW**
+- 🔌 **SSR Supabase Patterns** : [SSR-Compatible Supabase](./ssr-supabase-patterns.md) ⭐
 - 🧩 **MySelect Component** : [UI Components - MySelect](./ui-components.md#myselect-component)
+- ✏️ **Inline Editing Pattern** : [Inline Editing](./inline-editing-pattern.md) 🆕 - Standard for data editing UIs
 - 💾 **Svelte 5 Runes** : [Best Practices - Svelte 5](./best-practices.md#svelte-5-runes)
 - 🗃️ **Database Migrations** : [Database - Workflow](./database.md#workflow-migrations)
 
