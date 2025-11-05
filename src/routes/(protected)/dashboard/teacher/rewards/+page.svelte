@@ -112,7 +112,7 @@
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import VipCardsModal from '$lib/components/VipCardsModal.svelte';
-	import { canAffordVipCard } from '$lib/utils/vip-cards';
+	import { canAffordVipCard, getStudentCardCounts } from '$lib/utils/vip-cards';
 	import { Sparkles, Eye, Loader2, Check, X } from 'lucide-svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
@@ -123,6 +123,8 @@
 	import { goto } from '$app/navigation';
 	import { invalidateAll } from '$app/navigation';
 	import { openVipCardDrawModal } from '$lib/utils/vip-card-modals';
+	import MySelect from '$lib/components/MySelect.svelte';
+	import { VIP_CARDS } from '$lib/types/vip-card';
 
 	// Data from parent layouts (user/profile only)
 	let { data }: { data: PageData } = $props();
@@ -139,6 +141,28 @@
 	// Get students from cache (reactively updates when cache changes)
 	let currentStudents = $derived(
 		selectedClassId ? teacherCache.getStudentsSync(selectedClassId) : []
+	);
+
+	// Filter state for VIP cards
+	let selectedCardFilter = $state<string>('all');
+
+	// Items for VIP card filter dropdown
+	const cardFilterItems = [
+		{ value: 'all', label: 'Toutes les cartes VIP' },
+		...VIP_CARDS.map((card) => ({ value: card.id, label: card.name }))
+	];
+
+	// Filtered students list based on selected VIP card
+	let filteredStudents = $derived(
+		currentStudents.filter((student) => {
+			if (selectedCardFilter === 'all') return true;
+
+			const rewards = teacherCache.getRewardsSync(selectedClassId)?.get(student.id);
+			if (!rewards) return false;
+
+			const cardCounts = getStudentCardCounts(rewards.vip_cards);
+			return (cardCounts.get(selectedCardFilter) || 0) > 0;
+		})
 	);
 
 	// Fallback to first class when no selection and classes are loaded
@@ -703,21 +727,44 @@
 									</div>
 								</div>
 
+								<!-- Filter Section -->
+								<div class="flex items-center gap-4 rounded-lg border border-border bg-card p-4">
+									<span class="text-sm font-medium">Filtrer par carte VIP :</span>
+									<div class="w-64">
+										<MySelect
+											type="single"
+											bind:value={selectedCardFilter}
+											items={cardFilterItems}
+											placeholder="Sélectionner une carte"
+										/>
+									</div>
+								</div>
+
 								<!-- LISTE DES ÉLÈVES -->
 								{#if currentStudents.length === 0}
 									<div class="rounded-lg border border-border bg-card p-12 text-center">
-										<p class="text-muted-foreground">Aucun élève dans cette classe</p>
+										<p class="text-lg font-medium">Aucun élève dans cette classe</p>
+										<p class="mt-2 text-sm text-muted-foreground">
+											Ajoutez des élèves pour commencer à gérer leurs récompenses
+										</p>
+									</div>
+								{:else if filteredStudents.length === 0}
+									<div class="rounded-lg border border-border bg-card p-12 text-center">
+										<p class="text-lg font-medium">Aucun élève ne correspond au filtre</p>
+										<p class="mt-2 text-sm text-muted-foreground">
+											Aucun élève ne possède cette carte VIP actuellement
+										</p>
 									</div>
 								{:else}
 									<div class="overflow-hidden rounded-lg border border-border bg-card">
 										<div class="border-b border-border bg-muted/30 px-6 py-4">
 											<h3 class="text-lg font-semibold text-foreground">
-												Élèves ({currentStudents.length})
+												Élèves ({filteredStudents.length})
 											</h3>
 										</div>
 
 										<div class="divide-y divide-border">
-											{#each currentStudents as student (student.id)}
+											{#each filteredStudents as student (student.id)}
 												<div class="flex items-center gap-6 px-6 py-4">
 													<!-- AVATAR -->
 													<Avatar.Root class="h-12 w-12 flex-shrink-0">
