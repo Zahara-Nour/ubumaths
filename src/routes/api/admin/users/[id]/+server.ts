@@ -113,6 +113,12 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		// Always update timestamp
 		updateData.updated_at = new Date().toISOString();
 
+		console.log('🔧 [API] Updating user:', {
+			userId,
+			receivedData: data,
+			updateData
+		});
+
 		// 3. Update profile
 		const { error: updateError } = await supabase
 			.from('profiles')
@@ -120,9 +126,11 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.eq('id', userId);
 
 		if (updateError) {
-			console.error('Error updating profile:', updateError);
+			console.error('❌ [API] Error updating profile:', updateError);
 			throw error(500, 'Failed to update profile');
 		}
+
+		console.log('✅ [API] Profile updated successfully');
 
 		// 4. Fetch updated profile with relations (schools + class_members)
 		const { data: updatedProfile, error: fetchError } = await supabase
@@ -138,9 +146,14 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.single();
 
 		if (fetchError) {
-			console.error('Error fetching updated profile:', fetchError);
+			console.error('❌ [API] Error fetching updated profile:', fetchError);
 			throw error(500, 'Failed to fetch updated profile');
 		}
+
+		console.log('📥 [API] Fetched updated profile:', {
+			school_id: updatedProfile?.school_id,
+			schools: updatedProfile?.schools
+		});
 
 		// 5. Transform response to match ExtendedProfile type
 		const extendedProfile: ExtendedProfile = {

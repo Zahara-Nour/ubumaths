@@ -53,32 +53,59 @@
 	// Inline editing state per field
 	let editingFirstname = $state(false);
 	let editingLastname = $state(false);
-	let editingGender = $state(false);
-	let editingRole = $state(false);
-	let editingSchool = $state(false);
 	let editingClasses = $state(false);
 
 	// Temporary values (edited but not saved)
+	// Note: tempGender and tempSchoolId use empty string ('') to represent null for MySelect compatibility
 	let tempFirstname = $state<string>('');
 	let tempLastname = $state<string>('');
-	let tempGender = $state<'boy' | 'girl' | null>(null);
+	let tempGender = $state<string>(''); // '' | 'boy' | 'girl' ('' represents null)
 	let tempRole = $state<'admin' | 'teacher' | 'student'>('student');
-	let tempSchoolId = $state<string | null>(null);
+	let tempSchoolId = $state<string>(''); // '' represents null
 	let tempIsTest = $state<boolean>(false);
 
 	// Track saving state
 	let isSavingAll = $state(false);
 
 	// Derived: detect if any changes made
+	// Note: tempGender and tempSchoolId use '' for null, so convert for comparison
 	const hasChanges = $derived(
 		selectedUser &&
 			(tempFirstname !== (selectedUser.firstname || '') ||
 				tempLastname !== (selectedUser.lastname || '') ||
-				tempGender !== selectedUser.gender ||
+				(tempGender || null) !== selectedUser.gender ||
 				tempRole !== selectedUser.role ||
-				tempSchoolId !== selectedUser.school_id ||
+				(tempSchoolId || null) !== selectedUser.school_id ||
 				tempIsTest !== selectedUser.is_test)
 	);
+
+	// Derived: track which specific fields have changed
+	const changedFields = $derived.by(() => {
+		if (!selectedUser) return new Set<string>();
+		const fields = new Set<string>();
+		if (tempFirstname !== (selectedUser.firstname || '')) fields.add('firstname');
+		if (tempLastname !== (selectedUser.lastname || '')) fields.add('lastname');
+		if ((tempGender || null) !== selectedUser.gender) fields.add('gender');
+		if (tempRole !== selectedUser.role) fields.add('role');
+		if ((tempSchoolId || null) !== selectedUser.school_id) fields.add('school');
+		if (tempIsTest !== selectedUser.is_test) fields.add('is_test');
+		return fields;
+	});
+
+	// Debug: Log school changes
+	$effect(() => {
+		if (selectedUser) {
+			const schoolChanged = (tempSchoolId || null) !== selectedUser.school_id;
+			if (schoolChanged) {
+				console.log('🏫 School change detected:', {
+					tempSchoolId,
+					convertedTempSchoolId: tempSchoolId || null,
+					selectedUserSchoolId: selectedUser.school_id,
+					hasChanges
+				});
+			}
+		}
+	});
 
 	/**
 	 * Utility Functions
@@ -248,13 +275,14 @@
 
 	/**
 	 * Initialize temp values when user is selected
+	 * Note: Convert null to '' for gender and schoolId (MySelect compatibility)
 	 */
 	function initTempValues(user: ExtendedProfile) {
 		tempFirstname = user.firstname || '';
 		tempLastname = user.lastname || '';
-		tempGender = user.gender;
+		tempGender = user.gender || ''; // null -> ''
 		tempRole = user.role;
-		tempSchoolId = user.school_id;
+		tempSchoolId = user.school_id || ''; // null -> ''
 		tempIsTest = !!user.is_test; // Force boolean conversion
 	}
 
@@ -268,9 +296,6 @@
 		// Close all editing modes
 		editingFirstname = false;
 		editingLastname = false;
-		editingGender = false;
-		editingRole = false;
-		editingSchool = false;
 		editingClasses = false;
 	}
 
@@ -278,7 +303,7 @@
 	 * Inline Editing Handlers
 	 */
 
-	// Double-click handlers per field (just open edit mode)
+	// Click handlers per field (open edit mode)
 	function handleFirstnameDoubleClick() {
 		if (!selectedUser) return;
 		editingFirstname = true;
@@ -287,21 +312,6 @@
 	function handleLastnameDoubleClick() {
 		if (!selectedUser) return;
 		editingLastname = true;
-	}
-
-	function handleGenderDoubleClick() {
-		if (!selectedUser) return;
-		editingGender = true;
-	}
-
-	function handleRoleDoubleClick() {
-		if (!selectedUser) return;
-		editingRole = true;
-	}
-
-	function handleSchoolDoubleClick() {
-		if (!selectedUser) return;
-		editingSchool = true;
 	}
 
 	// ESC key handler to cancel editing (revert to original)
@@ -322,15 +332,6 @@
 				break;
 			case 'lastname':
 				editingLastname = false;
-				break;
-			case 'gender':
-				editingGender = false;
-				break;
-			case 'role':
-				editingRole = false;
-				break;
-			case 'school':
-				editingSchool = false;
 				break;
 		}
 	}
@@ -356,18 +357,6 @@
 				tempLastname = selectedUser.lastname || '';
 				editingLastname = false;
 				break;
-			case 'gender':
-				tempGender = selectedUser.gender;
-				editingGender = false;
-				break;
-			case 'role':
-				tempRole = selectedUser.role;
-				editingRole = false;
-				break;
-			case 'school':
-				tempSchoolId = selectedUser.school_id;
-				editingSchool = false;
-				break;
 		}
 	}
 
@@ -378,9 +367,6 @@
 		// Close all editing modes
 		editingFirstname = false;
 		editingLastname = false;
-		editingGender = false;
-		editingRole = false;
-		editingSchool = false;
 	}
 
 	// Save all changes
@@ -390,14 +376,22 @@
 		isSavingAll = true;
 
 		try {
+			// Convert empty strings back to null for gender and school_id (API expects null, not '')
 			const updates = {
 				firstname: tempFirstname || null,
 				lastname: tempLastname || null,
-				gender: tempGender,
+				gender: (tempGender || null) as 'boy' | 'girl' | null,
 				role: tempRole,
-				school_id: tempSchoolId,
+				school_id: tempSchoolId || null,
 				is_test: tempIsTest
 			};
+
+			console.log('💾 Saving user updates:', {
+				userId: selectedUser.id,
+				tempSchoolId,
+				convertedSchoolId: tempSchoolId || null,
+				updates
+			});
 
 			const response = await fetch(`/api/admin/users/${selectedUser.id}`, {
 				method: 'PATCH',
@@ -412,12 +406,23 @@
 
 			const result: { success: boolean; profile: ExtendedProfile } = await response.json();
 
+			console.log('✅ Server response:', {
+				success: result.success,
+				returnedSchoolId: result.profile?.school_id,
+				returnedProfile: result.profile
+			});
+
 			if (result.success && result.profile) {
 				// Update selected user
 				selectedUser = { ...result.profile, class_ids: result.profile.class_ids || [] };
 
 				// Reinit temp values from saved data
 				initTempValues(result.profile);
+
+				console.log('🔄 After reinit:', {
+					tempSchoolId,
+					selectedUserSchoolId: selectedUser.school_id
+				});
 
 				// Update search results
 				if (searchResults.length > 0) {
@@ -611,7 +616,7 @@
 							type="single"
 							bind:value={selectedClassFilter}
 							items={[
-								{ value: '', label: 'Sélectionner une classe' },
+								// { value: '', label: 'Classe...' },
 								...data.classes.map((c) => ({ value: c.id, label: c.name }))
 							]}
 							onValueChange={() => handleClassFilter(selectedClassFilter)}
@@ -715,19 +720,30 @@
 							{#if selectedUser}
 								{@const role = selectedUser.role || 'student'}
 								{@const gender = toGender(selectedUser.gender)}
-								<div class="flex items-center gap-4">
-									<Avatar.Root class="h-20 w-20">
-										<Avatar.Image
-											src={selectedUser.avatar_url || getAvatarFallback(role, gender)}
-											alt={getFullName(selectedUser)}
-										/>
-										<Avatar.Fallback class="text-2xl">
-											{getAvatarInitials(selectedUser.firstname, selectedUser.lastname)}
-										</Avatar.Fallback>
-									</Avatar.Root>
-									<div class="flex-1">
-										<h3 class="text-xl font-semibold">{getFullName(selectedUser)}</h3>
-										<p class="text-sm text-muted-foreground">{selectedUser.email}</p>
+								<div class="flex justify-between">
+									<div class="flex items-center gap-4">
+										<Avatar.Root class="h-20 w-20">
+											<Avatar.Image
+												src={selectedUser.avatar_url || getAvatarFallback(role, gender)}
+												alt={getFullName(selectedUser)}
+											/>
+											<Avatar.Fallback class="text-2xl">
+												{getAvatarInitials(selectedUser.firstname, selectedUser.lastname)}
+											</Avatar.Fallback>
+										</Avatar.Root>
+										<div class="flex-1">
+											<h3 class="text-xl font-semibold">{getFullName(selectedUser)}</h3>
+											<p class="text-sm text-muted-foreground">{selectedUser.email}</p>
+										</div>
+									</div>
+									<!-- Test User -->
+									<div class="space-y-2">
+										<div class="flex items-center gap-2">
+											<MyCheckbox bind:checked={tempIsTest} label="Compte test" />
+											{#if isSavingAll && changedFields.has('is_test')}
+												<Loader2 class="h-3 w-3 animate-spin text-muted-foreground" />
+											{/if}
+										</div>
 									</div>
 								</div>
 							{/if}
@@ -739,7 +755,12 @@
 								<!-- Personal Info -->
 								<div class="grid grid-cols-2 gap-4">
 									<div class="space-y-2">
-										<Label class="text-sm font-medium text-muted-foreground">Prénom</Label>
+										<div class="flex items-center gap-2">
+											<Label class="text-sm font-medium text-muted-foreground">Prénom</Label>
+											{#if isSavingAll && changedFields.has('firstname')}
+												<Loader2 class="h-3 w-3 animate-spin text-muted-foreground" />
+											{/if}
+										</div>
 										{#if editingFirstname}
 											<input
 												type="text"
@@ -761,7 +782,12 @@
 									</div>
 
 									<div class="space-y-2">
-										<Label class="text-sm font-medium text-muted-foreground">Nom</Label>
+										<div class="flex items-center gap-2">
+											<Label class="text-sm font-medium text-muted-foreground">Nom</Label>
+											{#if isSavingAll && changedFields.has('lastname')}
+												<Loader2 class="h-3 w-3 animate-spin text-muted-foreground" />
+											{/if}
+										</div>
 										{#if editingLastname}
 											<input
 												type="text"
@@ -793,90 +819,64 @@
 
 								<!-- Gender -->
 								<div class="space-y-2">
-									<Label class="text-sm font-medium text-muted-foreground">Genre</Label>
-									{#if editingGender}
-										<MySelect
-											type="single"
-											bind:value={tempGender}
-											items={[
-												{ value: 'boy', label: 'Garçon' },
-												{ value: 'girl', label: 'Fille' }
-											]}
-											onValueChange={() => closeField('gender')}
-											class="border-muted"
-										/>
-									{:else}
-										<p
-											class="cursor-pointer text-base transition-colors hover:text-primary"
-											onclick={handleGenderDoubleClick}
-											title="Cliquez pour éditer"
-										>
-											{tempGender === 'boy' ? 'Garçon' : tempGender === 'girl' ? 'Fille' : '—'}
-										</p>
-									{/if}
+									<div class="flex items-center gap-2">
+										<Label class="text-sm font-medium text-muted-foreground">Genre</Label>
+										{#if isSavingAll && changedFields.has('gender')}
+											<Loader2 class="h-3 w-3 animate-spin text-muted-foreground" />
+										{/if}
+									</div>
+									<MySelect
+										type="single"
+										bind:value={tempGender}
+										items={[
+											// { value: '', label: 'Non spécifié' },
+											{ value: 'boy', label: 'Garçon' },
+											{ value: 'girl', label: 'Fille' }
+										]}
+										placeholder="Genre"
+										variant="invisible"
+									/>
 								</div>
 
 								<!-- Role -->
 								<div class="space-y-2">
-									<Label class="text-sm font-medium text-muted-foreground">Rôle</Label>
-									{#if editingRole}
-										<MySelect
-											type="single"
-											bind:value={tempRole}
-											items={[
-												{ value: 'student', label: 'Étudiant' },
-												{ value: 'teacher', label: 'Enseignant' },
-												{ value: 'admin', label: 'Administrateur' }
-											]}
-											onValueChange={() => closeField('role')}
-											class="border-muted"
-										/>
-									{:else}
-										<p
-											class="cursor-pointer text-base transition-colors hover:text-primary"
-											onclick={handleRoleDoubleClick}
-											title="Cliquez pour éditer"
-										>
-											<Badge class={getRoleBadgeClass(tempRole)}>
-												{tempRole === 'admin'
-													? 'Administrateur'
-													: tempRole === 'teacher'
-														? 'Enseignant'
-														: 'Étudiant'}
-											</Badge>
-										</p>
-									{/if}
-								</div>
-
-								<!-- Test User -->
-								<div class="space-y-2">
-									<Label class="text-sm font-medium text-muted-foreground">Compte de test</Label>
-									<MyCheckbox bind:checked={tempIsTest} label="Marquer comme compte de test" />
+									<div class="flex items-center gap-2">
+										<Label class="text-sm font-medium text-muted-foreground">Rôle</Label>
+										{#if isSavingAll && changedFields.has('role')}
+											<Loader2 class="h-3 w-3 animate-spin text-muted-foreground" />
+										{/if}
+									</div>
+									<MySelect
+										type="single"
+										bind:value={tempRole}
+										items={[
+											{ value: 'student', label: 'Étudiant' },
+											{ value: 'teacher', label: 'Enseignant' },
+											{ value: 'admin', label: 'Administrateur' }
+										]}
+										placeholder="Rôle"
+										variant="invisible"
+									/>
 								</div>
 
 								<!-- School -->
 								<div class="space-y-2">
-									<Label class="text-sm font-medium text-muted-foreground">École</Label>
-									{#if editingSchool}
-										<MySelect
-											type="single"
-											bind:value={tempSchoolId}
-											items={[
-												{ value: '', label: 'Aucune école' },
-												...data.schools.map((s) => ({ value: s.id, label: s.name }))
-											]}
-											onValueChange={() => closeField('school')}
-											class="border-muted"
-										/>
-									{:else}
-										<p
-											class="cursor-pointer text-base transition-colors hover:text-primary"
-											onclick={handleSchoolDoubleClick}
-											title="Cliquez pour éditer"
-										>
-											{data.schools.find((s) => s.id === tempSchoolId)?.name || '—'}
-										</p>
-									{/if}
+									<div class="flex items-center gap-2">
+										<Label class="text-sm font-medium text-muted-foreground">École</Label>
+										{#if isSavingAll && changedFields.has('school')}
+											<Loader2 class="h-3 w-3 animate-spin text-muted-foreground" />
+										{/if}
+									</div>
+									<MySelect
+										type="single"
+										bind:value={tempSchoolId}
+										items={[
+											// { value: '', label: 'Aucune école' },
+											...data.schools.map((s) => ({ value: s.id, label: s.name }))
+										]}
+										placeholder="École"
+										variant="invisible"
+									/>
 								</div>
 
 								<!-- Classes -->
@@ -948,18 +948,15 @@
 
 								<!-- Save/Reset Buttons -->
 								{#if hasChanges}
-									<div class="sticky bottom-4 mt-6 flex justify-end gap-2 border-t pt-4">
+									<div class="sticky bottom-4 mt-6 flex justify-end gap-2 pt-4">
 										<Button variant="outline" onclick={resetAllChanges} disabled={isSavingAll}>
-											<RotateCcw class="mr-2 h-4 w-4" />
-											Réinitialiser
+											<RotateCcw class="h-4 w-4" />
 										</Button>
-										<Button onclick={saveAllChanges} disabled={isSavingAll} class="min-w-[140px]">
+										<Button onclick={saveAllChanges} disabled={isSavingAll}>
 											{#if isSavingAll}
-												<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-												Enregistrement...
+												<Loader2 class="h-4 w-4 animate-spin" />
 											{:else}
-												<Save class="mr-2 h-4 w-4" />
-												Enregistrer
+												<Save class="h-4 w-4" />
 											{/if}
 										</Button>
 									</div>

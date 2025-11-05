@@ -1,7 +1,7 @@
 # Inline Editing Pattern
 
 **Status**: Production Standard
-**Last Updated**: 2025-11-05
+**Last Updated**: 2025-11-06
 **Reference Implementation**: `/dashboard/admin/users`
 
 ---
@@ -70,6 +70,15 @@ This pattern is the **standard approach** for all data editing interfaces in Ubu
 - Borderless inputs that blend with layout
 - Clear visual distinction (primary color)
 
+**MySelect Invisible Variant (NEW):**
+
+- Select fields appear as plain text until hovered
+- No border, no background, no visible input styling
+- Chevron icon only visible on hover
+- Always editable (no separate display/edit modes)
+- Seamless UX - users can click and select immediately
+- Minimum width of 150px for usability
+
 ### 2. Single Save Button for All Changes
 
 - Users can edit multiple fields without interruption
@@ -77,24 +86,34 @@ This pattern is the **standard approach** for all data editing interfaces in Ubu
 - All changes applied atomically in a single API call
 - Reduces cognitive load and API requests
 
-### 3. Persistent Temporary Values
+### 3. Per-Field Save Feedback (NEW)
+
+- During save, spinners appear next to each field's label
+- Only fields that actually changed show spinners
+- Provides clear visual feedback about which data is being saved
+- Derived `changedFields` Set tracks modified fields
+- Reduces user anxiety during async operations
+
+### 4. Persistent Temporary Values
 
 - Closing a field (Enter, blur) keeps the edited value
 - Only ESC or "Reset" reverts to original
 - Display mode always shows temp values, not original values
 - Users see their pending changes immediately
 
-### 4. Change Detection
+### 5. Change Detection
 
 - Automatic detection via `$derived` reactive state
 - Save button appears only when changes exist
 - Visual feedback for unsaved state
+- Per-field change tracking for granular feedback
 
-### 5. Simple Activation
+### 6. Simple Activation
 
 - Single click to activate (not double-click)
 - Immediate focus on input field
 - Auto-select text for text inputs (optional)
+- For MySelect invisible variant: no activation needed (always active)
 
 ---
 
@@ -102,35 +121,52 @@ This pattern is the **standard approach** for all data editing interfaces in Ubu
 
 ### State Management Pattern
 
-The pattern uses three layers of state management:
+The pattern uses four layers of state management:
 
 ```typescript
-// 1. EDITING FLAGS (one per editable field)
+// 1. EDITING FLAGS (one per editable field that toggles display/edit mode)
 // Boolean flags to track which field is in edit mode
+// NOTE: Not needed for MySelect invisible variant or checkboxes (always active)
 let editingFirstname = $state(false);
 let editingLastname = $state(false);
-let editingGender = $state(false);
-let editingRole = $state(false);
-let editingSchool = $state(false);
+// No editing flag for gender, role, school (using MySelect variant="invisible")
 
 // 2. TEMPORARY VALUES (persist after field closes)
 // These hold edited values until saved or reset
+// IMPORTANT: For nullable MySelect fields, use '' instead of null for binding compatibility
 let tempFirstname = $state<string>('');
 let tempLastname = $state<string>('');
-let tempGender = $state<'boy' | 'girl' | null>(null);
+let tempGender = $state<string>(''); // '' | 'boy' | 'girl' ('' represents null)
 let tempRole = $state<'admin' | 'teacher' | 'student'>('student');
-let tempSchoolId = $state<string | null>(null);
+let tempSchoolId = $state<string>(''); // '' represents null
+let tempIsTest = $state<boolean>(false);
 
 // 3. CHANGE DETECTION ($derived)
 // Automatically detects if any temp value differs from original
+// IMPORTANT: Convert '' to null when comparing MySelect values
 const hasChanges = $derived(
 	selectedUser &&
 		(tempFirstname !== (selectedUser.firstname || '') ||
 			tempLastname !== (selectedUser.lastname || '') ||
-			tempGender !== selectedUser.gender ||
+			(tempGender || null) !== selectedUser.gender || // Convert '' -> null
 			tempRole !== selectedUser.role ||
-			tempSchoolId !== selectedUser.school_id)
+			(tempSchoolId || null) !== selectedUser.school_id || // Convert '' -> null
+			tempIsTest !== selectedUser.is_test)
 );
+
+// 4. PER-FIELD CHANGE TRACKING ($derived.by) - NEW
+// Tracks which specific fields have changed for granular save feedback
+const changedFields = $derived.by(() => {
+	if (!selectedUser) return new Set<string>();
+	const fields = new Set<string>();
+	if (tempFirstname !== (selectedUser.firstname || '')) fields.add('firstname');
+	if (tempLastname !== (selectedUser.lastname || '')) fields.add('lastname');
+	if ((tempGender || null) !== selectedUser.gender) fields.add('gender');
+	if (tempRole !== selectedUser.role) fields.add('role');
+	if ((tempSchoolId || null) !== selectedUser.school_id) fields.add('school');
+	if (tempIsTest !== selectedUser.is_test) fields.add('is_test');
+	return fields;
+});
 ```
 
 ### Data Flow
@@ -321,6 +357,100 @@ function handleFirstnameClick() {
 ### 2. Select/Dropdown Fields (gender, role, school)
 
 **CRITICAL**: Always use `MySelect`, never native `<select>` or Shadcn Select.
+
+There are two approaches for select fields:
+
+#### Approach A: MySelect Invisible Variant (RECOMMENDED - NEW)
+
+**Benefits:**
+
+- No separate display/edit modes needed
+- Always editable, seamless UX
+- No click handler or editing flag required
+- Appears as plain text until hovered
+- Perfect for inline editing pattern
+
+**State Variables:**
+
+```typescript
+// Note: Use empty string ('') to represent null for MySelect compatibility
+let tempGender = $state<string>(''); // '' | 'boy' | 'girl'
+let tempRole = $state<'admin' | 'teacher' | 'student'>('student');
+let tempSchoolId = $state<string>(''); // '' represents null
+// NO editing flags needed!
+```
+
+**Initialization:**
+
+```typescript
+function initTempValues(user: User) {
+	// Convert null to '' for MySelect compatibility
+	tempGender = user.gender || '';
+	tempRole = user.role;
+	tempSchoolId = user.school_id || '';
+}
+```
+
+**UI Implementation:**
+
+```svelte
+<div class="space-y-2">
+	<div class="flex items-center gap-2">
+		<Label class="text-sm font-medium text-muted-foreground">Gender</Label>
+		<!-- Optional: Save spinner for this field -->
+		{#if isSavingAll && changedFields.has('gender')}
+			<Loader2 class="h-3 w-3 animate-spin text-muted-foreground" />
+		{/if}
+	</div>
+
+	<!-- ALWAYS VISIBLE - No conditional rendering -->
+	<MySelect
+		type="single"
+		bind:value={tempGender}
+		items={[
+			{ value: 'boy', label: 'Boy' },
+			{ value: 'girl', label: 'Girl' }
+		]}
+		placeholder="Gender"
+		variant="invisible"
+	/>
+</div>
+```
+
+**Change Detection:**
+
+```typescript
+// IMPORTANT: Convert '' to null when comparing
+const hasChanges = $derived(selectedUser && (tempGender || null) !== selectedUser.gender);
+```
+
+**Save Handler:**
+
+```typescript
+async function saveAllChanges() {
+	// Convert '' back to null for API
+	const updates = {
+		gender: (tempGender || null) as 'boy' | 'girl' | null
+	};
+	// ... save logic
+}
+```
+
+**Key Features:**
+
+- No editing flag needed
+- No click handler needed
+- No display/edit mode switching
+- Appears as plain text, chevron only on hover
+- Direct binding with MySelect
+- Empty string ('') represents null value
+- Convert to null in change detection and save
+
+---
+
+#### Approach B: Toggle Display/Edit Mode (Legacy)
+
+**When to use:** When you need explicit control over when field becomes editable.
 
 **State Variables:**
 
@@ -1063,6 +1193,7 @@ async function saveAllChanges() {
 - Built with Svelte 5 runes
 - Proper bindable props
 - Type-safe with TypeScript
+- Invisible variant perfect for inline editing
 
 **Import:**
 
@@ -1083,6 +1214,32 @@ import MySelect from '$lib/components/MySelect.svelte';
 	]}
 />
 ```
+
+**Invisible Variant (RECOMMENDED for inline editing - NEW):**
+
+```svelte
+<MySelect
+	type="single"
+	bind:value={tempRole}
+	items={[
+		{ value: 'student', label: 'Student' },
+		{ value: 'teacher', label: 'Teacher' },
+		{ value: 'admin', label: 'Administrator' }
+	]}
+	placeholder="Role"
+	variant="invisible"
+/>
+```
+
+**Invisible Variant Features:**
+
+- Appears as plain text in default state
+- No border, no background, no input styling
+- Chevron icon only visible on hover
+- Minimum width of 150px for usability
+- Always editable (no separate display/edit modes)
+- Perfect for seamless inline editing UX
+- Styling: `h-9 px-0 text-sm inline-flex items-center justify-between bg-transparent border-none min-w-[150px] [&>svg]:opacity-0 hover:[&>svg]:opacity-100`
 
 **With change handler:**
 
@@ -1121,9 +1278,17 @@ import MySelect from '$lib/components/MySelect.svelte';
 - `value`: Bindable value (string for single, string[] for multiple)
 - `items`: Array of `{ value: string, label: string, disabled?: boolean }`
 - `placeholder`: Optional placeholder text
+- `variant`: `"default"` or `"invisible"` (NEW - default: `"default"`)
 - `onValueChange`: Optional callback when value changes
-- `triggerClass`: Optional custom CSS classes
+- `triggerClass`: Optional custom CSS classes (overrides variant styling)
 - `disabled`: Optional disabled state
+
+**Important Notes:**
+
+- When using `variant="invisible"`, do not use conditional rendering ({#if editing})
+- For nullable values, use empty string ('') instead of null
+- Convert '' to null in change detection and save handlers
+- No editing flag or click handler needed with invisible variant
 
 ---
 
@@ -1962,6 +2127,78 @@ export const PATCH: RequestHandler = async ({ request }) => {
 
 ---
 
+### 11. Missing Fields in API SELECT Query (NEW)
+
+**Problem:**
+
+```typescript
+// ❌ WRONG - incomplete SELECT query
+const { data: users } = await supabase
+	.from('profiles')
+	.select('id, email, firstname, lastname')
+	.eq('class_id', classId);
+// Missing: school_id, is_test, and other fields needed for inline editing
+```
+
+**Result:**
+
+- Data appears to save successfully
+- But after page reload, changes to missing fields are lost
+- Happens when different endpoints load users (e.g., by search vs by class)
+- Very confusing for users - "I saved it but it disappeared!"
+
+**Solution:**
+
+```typescript
+// ✅ CORRECT - include ALL fields needed for inline editing
+const { data: users } = await supabase
+	.from('profiles')
+	.select(
+		`
+    id,
+    email,
+    firstname,
+    lastname,
+    gender,
+    role,
+    school_id,
+    is_test,
+    avatar_url,
+    created_at,
+    updated_at,
+    schools (name),
+    class_members (class_id)
+  `
+	)
+	.eq('class_id', classId);
+```
+
+**How to avoid:**
+
+1. Create a constant for the SELECT query string used across all user-fetching endpoints
+2. Or better: Create a reusable function that always returns the complete user data
+3. Test inline editing after loading users from EACH different endpoint
+4. Check browser Network tab to verify all fields are present in response
+
+**Example reusable pattern:**
+
+```typescript
+// src/lib/server/queries/users.ts
+export const USER_SELECT_QUERY = `
+  *,
+  schools (name),
+  class_members (class_id)
+`;
+
+// Then in all endpoints:
+const { data: users } = await supabase
+	.from('profiles')
+	.select(USER_SELECT_QUERY)
+	.eq('class_id', classId);
+```
+
+---
+
 ## Implementation Checklist
 
 Use this checklist when implementing inline editing on a new page:
@@ -1976,11 +2213,15 @@ Use this checklist when implementing inline editing on a new page:
 
 ### Phase 2: State Management
 
-- [ ] Create editing flag for each editable field (except checkboxes)
+- [ ] Create editing flag for each editable field (except checkboxes and MySelect invisible)
 - [ ] Create temp value variable for each editable field
 - [ ] Add proper TypeScript types for all temp values
+- [ ] For nullable MySelect fields, use `string` type with `''` for null (not `string | null`)
 - [ ] Implement `$derived` change detection comparing ALL temp values
+- [ ] For MySelect fields, convert `''` to `null` in change detection: `(tempValue || null)`
+- [ ] Implement `$derived.by` changedFields Set for per-field save feedback (NEW)
 - [ ] Create `initTempValues()` function
+- [ ] In `initTempValues()`, convert null to `''` for MySelect fields: `user.field || ''`
 - [ ] Force boolean conversion for nullable boolean fields (`!!value`)
 
 ### Phase 3: Field Implementations
@@ -1996,7 +2237,17 @@ For each field:
 - [ ] Display mode shows temp value (not original)
 - [ ] Empty value fallback (`|| '—'`)
 
-**Select Fields:**
+**Select Fields (RECOMMENDED: MySelect invisible variant):**
+
+- [ ] Use MySelect component with `variant="invisible"` (never native select)
+- [ ] No editing flag needed
+- [ ] No activation handler needed
+- [ ] No conditional rendering needed
+- [ ] Use empty string `''` for null values in temp state
+- [ ] Convert `''` to `null` in change detection and save
+- [ ] Add per-field save spinner next to label (optional)
+
+**Select Fields (Legacy: Toggle display/edit mode):**
 
 - [ ] Use MySelect component (never native select)
 - [ ] Add activation handler (onclick)
@@ -2049,6 +2300,7 @@ For each field:
 - [ ] Add loading state (`isSavingAll`)
 - [ ] Guard clause: exit if no changes or already saving
 - [ ] Build updates object with ALL temp values
+- [ ] Convert MySelect `''` values back to `null` for API: `tempValue || null`
 - [ ] Send PATCH request with proper headers
 - [ ] Handle response errors
 - [ ] Update original entity from server response
@@ -2056,12 +2308,13 @@ For each field:
 - [ ] Close all editing modes
 - [ ] Update any related lists (search results, filters)
 - [ ] Show success/error toast notifications
+- [ ] Per-field spinners display next to changed fields during save (optional)
 
 ### Phase 6: UI/UX Polish
 
-- [ ] Display mode has no visible borders
+- [ ] Display mode has no visible borders (or use MySelect invisible variant)
 - [ ] Hover effect on editable fields (color change)
-- [ ] Tooltips on editable fields ("Click to edit")
+- [ ] Tooltips on editable fields ("Click to edit") - not needed for invisible variant
 - [ ] Focus styles for edit mode
 - [ ] Save button appears only when `hasChanges` is true
 - [ ] Save button shows loading spinner during save
@@ -2069,6 +2322,7 @@ For each field:
 - [ ] Reset button with outline variant
 - [ ] Sticky save/reset button container
 - [ ] Button icons (Save, RotateCcw)
+- [ ] Per-field spinners next to labels of changed fields (NEW - optional but recommended)
 
 ### Phase 7: Testing
 
@@ -2082,6 +2336,10 @@ For each field:
 - [ ] Test API error handling
 - [ ] Test concurrent edits (multiple fields open)
 - [ ] Test keyboard navigation (Tab, Enter, ESC)
+- [ ] Test MySelect invisible variant appears correctly (plain text, chevron on hover)
+- [ ] Test per-field spinners appear only for changed fields during save (NEW)
+- [ ] Test loading entity from ALL different endpoints (search, filter, etc.) (NEW)
+- [ ] Verify all editable fields are present in API response from each endpoint (NEW)
 
 ### Phase 8: Security and Validation
 
@@ -2108,11 +2366,16 @@ For each field:
 The inline editing pattern provides a powerful, user-friendly way to edit structured data in UbuMaths. Key principles:
 
 1. **Ultra-subtle design** - fields look like regular content until hovered
-2. **Single save button** - edit multiple fields, save once
-3. **Persistent temp values** - closing a field keeps changes until saved or reset
-4. **Change detection** - automatic via `$derived` reactive state
-5. **Always use MySelect and MyCheckbox** - never native components
-6. **Always validate with Zod** - no exceptions for API endpoints
+2. **MySelect invisible variant (NEW)** - select fields appear as plain text, always editable, no mode switching
+3. **Single save button** - edit multiple fields, save once
+4. **Per-field save feedback (NEW)** - spinners appear next to labels of changed fields during save
+5. **Persistent temp values** - closing a field keeps changes until saved or reset
+6. **Change detection** - automatic via `$derived` reactive state
+7. **Per-field change tracking (NEW)** - `$derived.by` Set tracks which fields changed
+8. **Always use MySelect and MyCheckbox** - never native components
+9. **String conversion for nullable MySelect values (NEW)** - use `''` for null, convert in comparison/save
+10. **Always validate with Zod** - no exceptions for API endpoints
+11. **Complete API SELECT queries (NEW)** - ensure all editable fields are included in all endpoints
 
 By following this pattern consistently, we ensure a uniform, high-quality editing experience across the entire application.
 

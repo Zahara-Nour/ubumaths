@@ -6,6 +6,7 @@
 		items: { value: string; label: string; disabled?: boolean }[];
 		contentProps?: WithoutChildren<Select.ContentProps>;
 		triggerClass?: string;
+		variant?: 'default' | 'invisible';
 	};
 
 	let {
@@ -13,12 +14,21 @@
 		items,
 		contentProps,
 		placeholder,
-		triggerClass = 'h-9 w-32 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between',
+		variant = 'default',
+		triggerClass,
 		...restProps
 	}: Props = $props();
 
 	const selectedLabel = $derived(
 		value ? items.find((item) => item.value === value)?.label : placeholder || 'Select...'
+	);
+
+	// Compute trigger class based on variant (if not explicitly provided)
+	const computedTriggerClass = $derived(
+		triggerClass ||
+			(variant === 'invisible'
+				? 'h-9 px-0 text-sm inline-flex items-center justify-between bg-transparent border-none min-w-[150px] [&>svg]:opacity-0 hover:[&>svg]:opacity-100 [&>svg]:transition-opacity'
+				: 'h-9 w-32 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between')
 	);
 </script>
 
@@ -28,7 +38,7 @@ get along, so we shut typescript up by casting `value` to `never`, however,
 from the perspective of the consumer of this component, it will be typed appropriately.
 -->
 <Select.Root bind:value={value as never} {...restProps}>
-	<Select.Trigger class={triggerClass} aria-label={placeholder}>
+	<Select.Trigger class={computedTriggerClass} aria-label={placeholder}>
 		{selectedLabel}
 	</Select.Trigger>
 	<Select.Portal>
