@@ -33,7 +33,8 @@
 		onInlineEdit?: (
 			name: string,
 			description: string,
-			action: VipCardTemplate['action']
+			action: VipCardTemplate['action'],
+			rarity: VipCardTemplate['rarity']
 		) => Promise<void>;
 		onDelete?: () => void;
 		onUploadImage?: () => void;
@@ -89,6 +90,7 @@
 	let editingTitle = $state(false);
 	let editingDescription = $state(false);
 	let editingAction = $state(false);
+	let editingRarity = $state(false);
 	let tempName = $state(card.name);
 	let tempDescription = $state(card.description);
 	let tempActionType = $state<string | undefined>(
@@ -101,9 +103,10 @@
 				? card.action.count || 1
 				: 1
 	);
+	let tempRarity = $state(card.rarity);
 	let isSaving = $state(false);
 
-	const isEditing = $derived(editingTitle || editingDescription || editingAction);
+	const isEditing = $derived(editingTitle || editingDescription || editingAction || editingRarity);
 
 	// Action type options for select
 	const actionTypeOptions = [
@@ -112,6 +115,14 @@
 		{ value: 'remove_warnings', label: 'Retirer des avertissements' },
 		{ value: 'exchange_cards', label: 'Échanger des cartes' },
 		{ value: 'add_gidouilles', label: 'Ajouter des Gidouilles' }
+	];
+
+	// Rarity options for select
+	const rarityOptions = [
+		{ value: 'common', label: 'Commune' },
+		{ value: 'rare', label: 'Rare' },
+		{ value: 'epic', label: 'Épique' },
+		{ value: 'legendary', label: 'Légendaire' }
 	];
 
 	// Rarity gem colors (matching VipCard.svelte)
@@ -124,21 +135,11 @@
 		}[card.rarity] || { color: '#9ca3af', glow: false }
 	);
 
-	// Handle double-click to start editing
-	function handleTitleDoubleClick() {
-		if (!onInlineEdit || !showActions) return;
+	// Reset all temp values to match current card state
+	function resetTempValues() {
 		tempName = card.name;
-		editingTitle = true;
-	}
-
-	function handleDescriptionDoubleClick() {
-		if (!onInlineEdit || !showActions) return;
 		tempDescription = card.description;
-		editingDescription = true;
-	}
-
-	function handleActionDoubleClick() {
-		if (!onInlineEdit || !showActions) return;
+		tempRarity = card.rarity;
 		if (isTypedAction(card.action)) {
 			tempActionType = card.action.type;
 			tempActionValue =
@@ -147,7 +148,31 @@
 			tempActionType = undefined;
 			tempActionValue = 1;
 		}
+	}
+
+	// Handle double-click to start editing
+	function handleTitleDoubleClick() {
+		if (!onInlineEdit || !showActions) return;
+		resetTempValues();
+		editingTitle = true;
+	}
+
+	function handleDescriptionDoubleClick() {
+		if (!onInlineEdit || !showActions) return;
+		resetTempValues();
+		editingDescription = true;
+	}
+
+	function handleActionDoubleClick() {
+		if (!onInlineEdit || !showActions) return;
+		resetTempValues();
 		editingAction = true;
+	}
+
+	function handleRarityDoubleClick() {
+		if (!onInlineEdit || !showActions) return;
+		resetTempValues();
+		editingRarity = true;
 	}
 
 	// Handle ESC key to cancel editing
@@ -161,16 +186,8 @@
 		editingTitle = false;
 		editingDescription = false;
 		editingAction = false;
-		tempName = card.name;
-		tempDescription = card.description;
-		if (isTypedAction(card.action)) {
-			tempActionType = card.action.type;
-			tempActionValue =
-				card.action.type === 'add_gidouilles' ? card.action.amount || 0 : card.action.count || 1;
-		} else {
-			tempActionType = undefined;
-			tempActionValue = 1;
-		}
+		editingRarity = false;
+		resetTempValues();
 	}
 
 	// Build action object from temp state
@@ -191,10 +208,11 @@
 		isSaving = true;
 		try {
 			const action = buildAction();
-			await onInlineEdit(tempName, tempDescription, action);
+			await onInlineEdit(tempName, tempDescription, action, tempRarity);
 			editingTitle = false;
 			editingDescription = false;
 			editingAction = false;
+			editingRarity = false;
 		} catch (error) {
 			// Error handled by parent component
 			console.error('Save failed:', error);
@@ -230,27 +248,38 @@
 			</div>
 		{/if}
 
-		<!-- Rarity Diamond (Top Left) -->
-		<div class="absolute top-2 left-2 z-10">
-			<div
-				class="h-8 w-8 rounded-full bg-white/80 p-1.5 shadow-lg backdrop-blur-sm"
-				style="color: {rarityGemInfo.color}; {rarityGemInfo.glow
-					? 'filter: drop-shadow(0 0 4px currentColor) drop-shadow(0 0 8px currentColor);'
-					: ''}"
-			>
-				<svg class="h-full w-full" viewBox="0 0 24 24" fill="none">
-					<path
-						d="M12 2L4 8L2 12L12 22L22 12L20 8L12 2Z"
-						fill="currentColor"
-						stroke="currentColor"
-						stroke-width="1.5"
-					/>
-					<path d="M12 2L8 8H16L12 2Z" fill="white" opacity="0.3" />
-					<path d="M4 8L8 8L12 22L4 8Z" fill="black" opacity="0.2" />
-					<path d="M20 8L16 8L12 22L20 8Z" fill="black" opacity="0.2" />
-				</svg>
+		<!-- Rarity Diamond (Top Left) - Editable on double-click -->
+		{#if editingRarity}
+			<div class="absolute top-2 left-2 z-10 w-32">
+				<MySelect type="single" bind:value={tempRarity} items={rarityOptions} />
 			</div>
-		</div>
+		{:else}
+			<div class="absolute top-2 left-2 z-10">
+				<div
+					class="h-8 w-8 rounded-full bg-white/80 p-1.5 shadow-lg backdrop-blur-sm transition-all {onInlineEdit &&
+					showActions
+						? 'cursor-pointer hover:scale-110'
+						: ''}"
+					style="color: {rarityGemInfo.color}; {rarityGemInfo.glow
+						? 'filter: drop-shadow(0 0 4px currentColor) drop-shadow(0 0 8px currentColor);'
+						: ''}"
+					ondblclick={handleRarityDoubleClick}
+					title={onInlineEdit && showActions ? 'Double-cliquez pour éditer la rareté' : card.rarity}
+				>
+					<svg class="h-full w-full" viewBox="0 0 24 24" fill="none">
+						<path
+							d="M12 2L4 8L2 12L12 22L22 12L20 8L12 2Z"
+							fill="currentColor"
+							stroke="currentColor"
+							stroke-width="1.5"
+						/>
+						<path d="M12 2L8 8H16L12 2Z" fill="white" opacity="0.3" />
+						<path d="M4 8L8 8L12 22L4 8Z" fill="black" opacity="0.2" />
+						<path d="M20 8L16 8L12 22L20 8Z" fill="black" opacity="0.2" />
+					</svg>
+				</div>
+			</div>
+		{/if}
 
 		{#if showActions}
 			<!-- Save Button (Top Right) - Only shown during editing -->
@@ -318,13 +347,15 @@
 				/>
 			{:else}
 				<h3
-					class="truncate text-sm font-semibold {onInlineEdit && showActions
+					class="truncate text-sm font-semibold {card.name
+						? ''
+						: 'text-muted-foreground/50 italic'} {onInlineEdit && showActions
 						? 'cursor-pointer hover:text-primary'
 						: ''}"
 					ondblclick={handleTitleDoubleClick}
 					title={onInlineEdit && showActions ? 'Double-cliquez pour éditer' : card.name}
 				>
-					{card.name}
+					{card.name || (onInlineEdit && showActions ? '(Sans nom)' : '')}
 				</h3>
 			{/if}
 
@@ -342,13 +373,16 @@
 				/>
 			{:else}
 				<p
-					class="line-clamp-2 text-xs text-muted-foreground {onInlineEdit && showActions
+					class="line-clamp-2 text-xs {card.description
+						? 'text-muted-foreground'
+						: 'text-muted-foreground/50 italic'} {onInlineEdit && showActions
 						? 'cursor-pointer hover:text-primary'
 						: ''}"
 					ondblclick={handleDescriptionDoubleClick}
 					title={onInlineEdit && showActions ? 'Double-cliquez pour éditer' : card.description}
 				>
-					{card.description}
+					{card.description ||
+						(onInlineEdit && showActions ? '(Double-cliquez pour ajouter une description)' : '')}
 				</p>
 			{/if}
 

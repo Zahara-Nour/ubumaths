@@ -204,13 +204,14 @@
 		cardId: string,
 		name: string,
 		description: string,
-		action: VipCardTemplate['action']
+		action: VipCardTemplate['action'],
+		rarity: VipCardTemplate['rarity']
 	) {
 		try {
 			const response = await fetch(`/api/admin/vip-cards/templates/${cardId}`, {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ name, description, action })
+				body: JSON.stringify({ name, description, action, rarity })
 			});
 
 			if (!response.ok) {
@@ -357,8 +358,8 @@
 									isEnabled={optimisticToggles[card.id] ?? card.is_enabled}
 									showActions={true}
 									onToggle={(enabled) => handleToggleCard(card.id, enabled)}
-									onInlineEdit={(name, description, action) =>
-										handleInlineEdit(card.id, name, description, action)}
+									onInlineEdit={(name, description, action, rarity) =>
+										handleInlineEdit(card.id, name, description, action, rarity)}
 									onDelete={() => handleDeleteCard(card.id)}
 									onUploadImage={() => (uploadingImageCard = card)}
 								/>

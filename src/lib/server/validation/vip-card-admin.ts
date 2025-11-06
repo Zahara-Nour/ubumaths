@@ -107,6 +107,7 @@ export const createTemplateSchema = z
 /**
  * Schema for updating an existing VIP card template
  * All fields are optional to allow partial updates
+ * Note: action field accepts null (no action) or a valid action object
  */
 export const updateTemplateSchema = z
 	.object({
@@ -130,7 +131,7 @@ export const updateTemplateSchema = z
 			.min(1, 'Image path cannot be empty')
 			.max(255, 'Image path must be 255 characters or less')
 			.optional(),
-		action: actionSchema.optional(),
+		action: actionSchema.nullable().optional(),
 		sortOrder: z
 			.number()
 			.int('Sort order must be an integer')
