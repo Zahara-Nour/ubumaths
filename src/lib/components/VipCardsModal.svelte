@@ -75,11 +75,12 @@
 	interface Props {
 		studentName: string;
 		classId: string;
+		periodId: string;
 		studentId: string;
 		teacherView?: boolean;
 	}
 
-	let { studentName, classId, studentId, teacherView = false }: Props = $props();
+	let { studentName, classId, periodId, studentId, teacherView = false }: Props = $props();
 
 	// Removed: drawResultOpen and drawnCards (now handled by modal stack)
 
@@ -275,15 +276,59 @@
 	 */
 	async function handleRemoveWarnings(
 		action: Extract<VipCardType['action'], { type: 'remove_warnings' }>,
-		_instanceId: string,
+		instanceId: string,
 		_cardName: string
 	) {
 		openRemoveWarningsModal({
 			studentId,
+			classId,
+			periodId,
 			count: action.count,
 			warningType: action.warningType,
-			studentName
-			// NOTE: No onComplete callback needed - the remove-warnings API already marks the VIP card as used
+			studentName,
+			onComplete: async () => {
+				// Mark VIP card as used after successful warnings removal
+				// (markCardAsUsed already handles optimistic UI + API call + rollback)
+				const vipCards = getVipCards();
+				const previousVipCards = { ...vipCards };
+
+				try {
+					// Optimistic update
+					const instance = vipCards[instanceId];
+					const newVipCards = {
+						...vipCards,
+						[instanceId]: {
+							...instance,
+							usedAt: new Date().toISOString(),
+							activationRequestedAt: null,
+							activationRequestedBy: null
+						}
+					};
+
+					teacherCache.updateVipCardsOptimistic(classId, studentId, newVipCards);
+
+					// API call
+					const response = await fetch('/api/vip-cards/use-card', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ instanceId, studentId })
+					});
+
+					const result = await response.json();
+
+					if (!response.ok) {
+						throw new Error(result.message || 'Échec marquage carte utilisée');
+					}
+
+					// Success - no toast here, the warnings removal already showed success
+				} catch (err) {
+					// Rollback on error
+					teacherCache.updateVipCardsOptimistic(classId, studentId, previousVipCards);
+					const message = err instanceof Error ? err.message : 'Erreur inconnue';
+					toaster.error(`Erreur carte VIP : ${message}`);
+					throw err; // Re-throw to let RemoveWarningsModal know there was an error
+				}
+			}
 		});
 	}
 

@@ -449,6 +449,7 @@
 			studentId: student.id,
 			studentName: student.firstname,
 			classId,
+			periodId,
 			teacherView: true
 		});
 	}

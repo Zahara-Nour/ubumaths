@@ -72,3 +72,20 @@ export const getWarningsSchema = z.object({
  * Inferred TypeScript type for get warnings query params
  */
 export type GetWarningsQuery = z.infer<typeof getWarningsSchema>;
+
+// ============================================================================
+// GET STUDENT WARNINGS SCHEMA
+// ============================================================================
+
+/**
+ * Schema for retrieving warnings for a specific student
+ * Validates student_id from route parameter
+ */
+export const getStudentWarningsSchema = z.object({
+	student_id: z.string().uuid('ID élève invalide')
+});
+
+/**
+ * Inferred TypeScript type for get student warnings params
+ */
+export type GetStudentWarningsParams = z.infer<typeof getStudentWarningsSchema>;

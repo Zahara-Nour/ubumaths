@@ -116,6 +116,7 @@
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
+	import { getSelectedPeriodId } from '$lib/stores/selectedPeriod.svelte';
 	import * as Table from '$lib/components/ui/table';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -677,7 +678,8 @@
 	}
 
 	/**
-	 * Open VIP cards modal for a student
+	 * Open VIP cards modal for a student (teacher view)
+	 * Passes studentId/classId/periodId - modal reads from cache
 	 * VIP cards will be read from cache by the modal component itself
 	 */
 	function openVipModal(student: {
@@ -686,10 +688,17 @@
 		lastname: string | null;
 		full_name: string | null;
 	}) {
+		const periodId = getSelectedPeriodId();
+		if (!periodId) {
+			toaster.error('Aucune période académique sélectionnée');
+			return;
+		}
+
 		openVipCardsModal({
 			studentId: student.id,
 			studentName: getFullName(student.firstname, student.lastname, student.full_name),
 			classId: selectedClassId,
+			periodId,
 			teacherView: true
 		});
 	}

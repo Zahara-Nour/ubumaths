@@ -18,6 +18,7 @@ interface VipCardsModalOptions {
 	studentId: string;
 	studentName: string;
 	classId: string;
+	periodId: string;
 	teacherView?: boolean;
 	onComplete?: () => void;
 }
@@ -35,6 +36,7 @@ interface VipCardsModalOptions {
  *   studentId: '123',
  *   studentName: 'Alice',
  *   classId: 'class-uuid',
+ *   periodId: 'period-uuid',
  *   teacherView: true,
  *   onComplete: () => console.log('Modal closed')
  * });
@@ -47,6 +49,7 @@ export function openVipCardsModal(options: VipCardsModalOptions): string {
 			studentId: options.studentId,
 			studentName: options.studentName,
 			classId: options.classId,
+			periodId: options.periodId,
 			teacherView: options.teacherView ?? false
 		},
 		canDismiss: true,
@@ -165,6 +168,8 @@ export function openVipCardExchangeModal(options: ExchangeCardsOptions): string 
  */
 interface RemoveWarningsOptions {
 	studentId: string;
+	classId: string;
+	periodId: string;
 	count: number;
 	warningType?: 'C' | 'M' | 'R' | 'T';
 	studentName?: string;
@@ -182,6 +187,8 @@ interface RemoveWarningsOptions {
  * // Remove 2 warnings (any type)
  * openRemoveWarningsModal({
  *   studentId: '123',
+ *   classId: 'class-uuid',
+ *   periodId: 'period-uuid',
  *   count: 2,
  *   studentName: 'Bob',
  *   onComplete: () => console.log('Warnings removed!')
@@ -190,6 +197,8 @@ interface RemoveWarningsOptions {
  * // Remove 1 comportement warning
  * openRemoveWarningsModal({
  *   studentId: '123',
+ *   classId: 'class-uuid',
+ *   periodId: 'period-uuid',
  *   count: 1,
  *   warningType: 'C',
  *   studentName: 'Charlie'
@@ -201,6 +210,8 @@ export function openRemoveWarningsModal(options: RemoveWarningsOptions): string 
 		component: RemoveWarningsModal,
 		props: {
 			studentId: options.studentId,
+			classId: options.classId,
+			periodId: options.periodId,
 			count: options.count,
 			warningType: options.warningType,
 			studentName: options.studentName
