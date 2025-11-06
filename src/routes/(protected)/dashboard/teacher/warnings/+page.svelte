@@ -48,6 +48,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import { History, AlertCircle } from 'lucide-svelte';
+	import { openRemoveWarningsModal } from '$lib/utils/vip-card-modals';
 	import type { StudentWarningCounts } from '$lib/server/warnings';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
@@ -97,12 +98,7 @@
 	// Key: studentId, Value: timeout ID
 	let pendingAdds = $state<Record<string, number>>({});
 
-	// Confirmation modal state (no warningId needed - will delete most recent of type)
-	let warningToDelete = $state<{
-		studentId: string;
-		studentName: string;
-		warningType: string;
-	} | null>(null);
+	// Modal removed: now using RemoveWarningsModal from vip-card-modals
 
 	// ============================================================================
 	// COMPUTED VALUES
@@ -309,72 +305,27 @@
 	}
 
 	/**
-	 * Remove warning with optimistic UI
+	 * Remove warning using RemoveWarningsModal
+	 * Opens modal that shows exactly which warning will be removed
 	 */
-	async function removeWarning() {
-		if (!warningToDelete || !selectedClassId || !selectedPeriodId) return;
+	function handleRemoveWarning(
+		studentId: string,
+		studentName: string,
+		warningType: 'C' | 'M' | 'R' | 'T'
+	) {
+		if (!selectedClassId || !selectedPeriodId) return;
 
-		const { studentId, studentName, warningType } = warningToDelete;
-
-		// STEP 1: Save current state for rollback
-		const previousCounts = getStudentWarnings(studentId);
-
-		// STEP 2: Apply optimistic update (decrement count)
-		const newCounts: StudentWarningCounts = { ...previousCounts };
-		if (warningType === 'C' && newCounts.C > 0) newCounts.C--;
-		else if (warningType === 'M' && newCounts.M > 0) newCounts.M--;
-		else if (warningType === 'R' && newCounts.R > 0) newCounts.R--;
-		else if (warningType === 'T' && newCounts.T > 0) newCounts.T--;
-
-		teacherCache.updateWarningsOptimistic(selectedClassId, selectedPeriodId, studentId, newCounts);
-
-		// STEP 3: Close confirmation dialog
-		warningToDelete = null;
-
-		try {
-			// STEP 4: Make API call - delete most recent warning of this type
-			const response = await fetch(`/api/warnings/remove`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					student_id: studentId,
-					class_id: selectedClassId,
-					academic_period_id: selectedPeriodId,
-					warning_type: warningType
-				})
-			});
-
-			if (response.ok) {
-				// SUCCESS: Cache already has correct optimistic value
-				// No need to invalidate - optimistic update matches server response
-				// Cache will naturally expire and refresh later
-				toaster.success(
-					`Avertissement ${getWarningTypeLabel(warningType)} retiré (${studentName})`
-				);
-			} else {
-				// ERROR: Server returned error status (including 404) - rollback
-				teacherCache.updateWarningsOptimistic(
-					selectedClassId,
-					selectedPeriodId,
-					studentId,
-					previousCounts
-				);
-
-				toaster.error("Erreur lors de la suppression de l'avertissement");
-			}
-		} catch (err) {
-			console.error('Error removing warning:', err);
-
-			// NETWORK ERROR: Request failed completely - rollback
-			teacherCache.updateWarningsOptimistic(
-				selectedClassId,
-				selectedPeriodId,
-				studentId,
-				previousCounts
-			);
-
-			toaster.error("Erreur lors de la suppression de l'avertissement");
-		}
+		// Open RemoveWarningsModal - will load warnings via API and show user which one will be removed
+		openRemoveWarningsModal({
+			studentId,
+			classId: selectedClassId,
+			periodId: selectedPeriodId,
+			count: 1, // Remove 1 warning
+			warningType,
+			studentName
+			// No preloadedWarnings - modal will fetch them
+			// No onComplete - optimistic UI handled by modal
+		});
 	}
 
 	/**
@@ -540,16 +491,16 @@
 															type="button"
 															class="flex cursor-pointer items-center gap-1.5 rounded-full transition-all hover:scale-110"
 															onclick={() => {
-																// Open confirmation dialog to delete most recent of this type
-																warningToDelete = {
-																	studentId: student.id,
-																	studentName: getFullName(
+																// Open RemoveWarningsModal to see and confirm which warning will be deleted
+																handleRemoveWarning(
+																	student.id,
+																	getFullName(
 																		student.firstname,
 																		student.lastname,
 																		student.full_name
 																	),
-																	warningType: type
-																};
+																	type
+																);
 															}}
 														>
 															<!-- Badge contains ONLY the letter (e.g., "C") -->
@@ -672,26 +623,4 @@
 	</Dialog.Content>
 </Dialog.Root>
 
-<!-- CONFIRMATION DIALOG (Delete Warning) -->
-<Dialog.Root
-	open={warningToDelete !== null}
-	onOpenChange={(open) => !open && (warningToDelete = null)}
->
-	<Dialog.Content class="max-w-md">
-		<Dialog.Header>
-			<Dialog.Title>Retirer l'avertissement ?</Dialog.Title>
-			<Dialog.Description>
-				{#if warningToDelete}
-					Voulez-vous retirer l'avertissement
-					<strong>{getWarningTypeLabel(warningToDelete.warningType)}</strong>
-					pour <strong>{warningToDelete.studentName}</strong> ?
-				{/if}
-			</Dialog.Description>
-		</Dialog.Header>
-
-		<div class="flex justify-end gap-3">
-			<Button variant="outline" onclick={() => (warningToDelete = null)}>Annuler</Button>
-			<Button variant="destructive" onclick={removeWarning}>Retirer</Button>
-		</div>
-	</Dialog.Content>
-</Dialog.Root>
+<!-- Old confirmation dialog removed: now using RemoveWarningsModal via modal stack -->

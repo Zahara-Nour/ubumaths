@@ -43,11 +43,20 @@
 		count: number;
 		warningType?: 'C' | 'M' | 'R' | 'T';
 		studentName?: string;
+		preloadedWarnings?: Warning[]; // If provided, skip API loading
 		onComplete?: () => void | Promise<void>;
 	}
 
-	let { studentId, classId, periodId, count, warningType, studentName, onComplete }: Props =
-		$props();
+	let {
+		studentId,
+		classId,
+		periodId,
+		count,
+		warningType,
+		studentName,
+		preloadedWarnings,
+		onComplete
+	}: Props = $props();
 
 	// State
 	let loading = $state(true);
@@ -74,22 +83,24 @@
 	};
 
 	/**
-	 * Load student's warnings
+	 * Load student's warnings (or use preloaded ones)
 	 */
 	async function loadWarnings() {
 		loading = true;
 		error = null;
 
 		try {
-			// Fetch warnings from API
-			// Note: We assume an endpoint exists or we fetch from Supabase directly
-			// For simplicity, we'll use a direct Supabase query here
+			// If warnings are preloaded, use them directly (skip API call)
+			if (preloadedWarnings) {
+				warnings = preloadedWarnings;
+			} else {
+				// Fetch warnings from API
+				const response = await fetch(`/api/students/${studentId}/warnings`);
+				if (!response.ok) throw new Error('Failed to load warnings');
 
-			const response = await fetch(`/api/students/${studentId}/warnings`);
-			if (!response.ok) throw new Error('Failed to load warnings');
-
-			const data = await response.json();
-			warnings = data.warnings || [];
+				const data = await response.json();
+				warnings = data.warnings || [];
+			}
 
 			// Filter by type if specified
 			let filtered = warnings;

@@ -2,7 +2,18 @@
  * Remove Warning API Endpoint
  * ============================
  *
+ * @deprecated This endpoint is deprecated in favor of /api/warnings/remove-multiple
+ * which provides better UX by showing exactly which warnings will be removed.
+ * This endpoint is kept for backwards compatibility but should not be used in new code.
+ *
  * DELETE most recent warning of a specific type for a student
+ *
+ * **Replacement:**
+ * Use `/api/warnings/remove-multiple` with `RemoveWarningsModal` component instead.
+ * The new approach:
+ * - Shows user exactly which warning will be removed (with date, description)
+ * - Uses the same modal for VIP card actions and manual removal
+ * - Provides better user confirmation before deletion
  */
 
 import { error, json } from '@sveltejs/kit';
