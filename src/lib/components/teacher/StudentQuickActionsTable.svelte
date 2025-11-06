@@ -83,7 +83,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { StudentWarningCounts } from '$lib/server/warnings';
-	import VipCardsModal from '$lib/components/VipCardsModal.svelte';
+	import { openVipCardsModal } from '$lib/utils/vip-card-modals';
 	import { getAvatarFallback } from '$lib/utils/avatar';
 	import { AlertTriangle, Plus, Eye } from 'lucide-svelte';
 	import type { StudentVipCards } from '$lib/types/vip-card';
@@ -127,10 +127,6 @@
 	// Base gidouilles values (captured at first click, before optimistic updates)
 	// Used to calculate accumulated delta correctly across multiple rapid clicks
 	let baseGidouilles = $state<Record<string, number>>({});
-
-	// VIP cards modal state
-	let vipModalOpen = $state(false);
-	let selectedStudent = $state<StudentData | null>(null);
 
 	// ============================================================================
 	// CACHE DATA ACCESS (Reactive via $derived)
@@ -449,8 +445,12 @@
 	 * Handle show VIP cards button click
 	 */
 	function handleShowVipCards(student: StudentData) {
-		selectedStudent = student;
-		vipModalOpen = true;
+		openVipCardsModal({
+			studentId: student.id,
+			studentName: student.firstname,
+			classId,
+			teacherView: true
+		});
 	}
 </script>
 
@@ -568,13 +568,4 @@
 	{/if}
 </div>
 
-<!-- VIP Cards Modal -->
-{#if selectedStudent}
-	<VipCardsModal
-		bind:open={vipModalOpen}
-		studentName={selectedStudent.firstname}
-		studentId={selectedStudent.id}
-		{classId}
-		teacherView={true}
-	/>
-{/if}
+<!-- VIP Cards Modal is now managed by modal stack via openVipCardsModal() -->

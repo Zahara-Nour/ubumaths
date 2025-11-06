@@ -111,7 +111,6 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
-	import VipCardsModal from '$lib/components/VipCardsModal.svelte';
 	import { canAffordVipCard, getStudentCardCounts } from '$lib/utils/vip-cards';
 	import { Sparkles, Eye, Loader2, Check, X, Plus } from 'lucide-svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
@@ -123,7 +122,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { invalidateAll } from '$app/navigation';
-	import { openVipCardDrawModal } from '$lib/utils/vip-card-modals';
+	import { openVipCardDrawModal, openVipCardsModal } from '$lib/utils/vip-card-modals';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { VIP_CARDS, getVipCardById } from '$lib/types/vip-card';
 
@@ -195,14 +194,6 @@
 	let pendingSubmissions = $state<Record<string, { timeoutId: number; accumulatedDelta: number }>>(
 		{}
 	);
-
-	// VIP card states
-	let vipModalOpen = $state(false);
-	let selectedStudentForVipModal = $state<{
-		classId: string;
-		id: string;
-		name: string;
-	} | null>(null);
 
 	// Tab management (URL-based)
 	let activeTab = $derived(page.url.searchParams.get('tab') || 'gidouilles');
@@ -695,19 +686,12 @@
 		lastname: string | null;
 		full_name: string | null;
 	}) {
-		selectedStudentForVipModal = {
+		openVipCardsModal({
+			studentId: student.id,
+			studentName: getFullName(student.firstname, student.lastname, student.full_name),
 			classId: selectedClassId,
-			id: student.id,
-			name: getFullName(student.firstname, student.lastname, student.full_name)
-		};
-		vipModalOpen = true;
-	}
-
-	/**
-	 * Handle VIP modal open/close state
-	 */
-	function handleVipModalClose(newOpen: boolean) {
-		vipModalOpen = newOpen;
+			teacherView: true
+		});
 	}
 </script>
 
@@ -1112,20 +1096,4 @@
 	</Tabs.Root>
 </div>
 
-<!-- Modal des Cartes VIP (Teacher View with Removal) -->
-<!--
-	teacherView={true} enables:
-	- Trash buttons on each card for removal
-	- Optimistic UI for instant feedback
-	- No gidouilles refund when cards removed
--->
-{#if selectedStudentForVipModal && vipModalOpen}
-	<VipCardsModal
-		bind:open={vipModalOpen}
-		onOpenChange={handleVipModalClose}
-		studentName={selectedStudentForVipModal.name}
-		classId={selectedStudentForVipModal.classId}
-		studentId={selectedStudentForVipModal.id}
-		teacherView={true}
-	/>
-{/if}
+<!-- VIP Cards Modal is now managed by modal stack via openVipCardsModal() -->

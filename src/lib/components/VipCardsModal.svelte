@@ -51,8 +51,8 @@
 -->
 
 <script lang="ts">
-	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
+	import { X } from 'lucide-svelte';
 	import VipCard from './VipCard.svelte';
 	import VipCardHoloModal from './VipCardHoloModal.svelte';
 	import {
@@ -65,55 +65,59 @@
 	import { Sparkles } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	import { modalStack } from '$lib/stores/modalStack.svelte';
+	import {
+		openVipCardDrawModal,
+		openVipCardExchangeModal,
+		openRemoveWarningsModal
+	} from '$lib/utils/vip-card-modals';
 
 	interface Props {
-		open?: boolean;
-		onOpenChange?: (open: boolean) => void;
 		studentName: string;
 		classId: string;
 		studentId: string;
 		teacherView?: boolean;
 	}
 
-	let {
-		open = $bindable(false),
-		onOpenChange,
-		studentName,
-		classId,
-		studentId,
-		teacherView = false
-	}: Props = $props();
+	let { studentName, classId, studentId, teacherView = false }: Props = $props();
+
+	// Removed: drawResultOpen and drawnCards (now handled by modal stack)
 
 	// Holographic modal state
 	let holoModalVisible = $state(false);
 	let selectedCardForHolo = $state<{ card: VipCardType; count: number } | null>(null);
 
-	// READ VIP CARDS FROM CACHE (reactive)
-	// Automatically updates when cache changes
-	const vipCards = $derived.by(() => {
+	/**
+	 * Get VIP cards from cache (reactive function)
+	 * Called directly in template - Svelte tracks the .get() call automatically
+	 */
+	function getVipCards() {
 		const rewards = teacherCache.getRewardsSync(classId);
 		return rewards?.get(studentId)?.vip_cards || {};
-	});
+	}
 
-	// DERIVED CARDS WITH COUNTS
-	// Get cards sorted by rarity, filter out cards with 0 count
-	// Optimistic updates are handled by the cache itself
-	const cardsWithCounts = $derived(
-		sortCardsByPriority(getStudentCardsWithCounts(vipCards)).filter((card) => card.count > 0)
-	);
+	/**
+	 * Get cards with counts, sorted and filtered
+	 * Called directly in template - reactive to cache changes
+	 */
+	function getCardsWithCounts() {
+		const vipCards = getVipCards();
+		return sortCardsByPriority(getStudentCardsWithCounts(vipCards)).filter(
+			(card) => card.count > 0
+		);
+	}
 
-	// Statistics
+	// Statistics (using reactive functions)
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const uniqueCardsCount = $derived(getUniqueCardTypesCount(vipCards)); // For future stats display
+	const uniqueCardsCount = $derived(getUniqueCardTypesCount(getVipCards())); // For future stats display
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const totalCardsCount = $derived(getTotalUnusedCards(vipCards)); // For future stats display
+	const totalCardsCount = $derived(getTotalUnusedCards(getVipCards())); // For future stats display
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const totalAvailableCards = getTotalVipCards(); // Total cards in the game
 
-	// Handle dialog open/close
-	function handleOpenChange(newOpen: boolean) {
-		open = newOpen;
-		onOpenChange?.(newOpen);
+	// Handle modal close
+	function handleClose() {
+		modalStack.pop();
 	}
 
 	// Handle card click - open holographic modal
@@ -154,6 +158,7 @@
 	 * Check if a card has a pending activation request
 	 */
 	function cardHasPendingRequest(cardId: string): boolean {
+		const vipCards = getVipCards();
 		return Object.values(vipCards).some(
 			(inst) => inst.cardId === cardId && inst.activationRequestedAt && !inst.usedAt
 		);
@@ -163,6 +168,7 @@
 	 * Find instance to use (prefer instances with pending requests)
 	 */
 	function findInstanceToUse(cardId: string): string | null {
+		const vipCards = getVipCards();
 		const entries = Object.entries(vipCards);
 
 		// Priorité 1: Instance avec demande
@@ -177,50 +183,172 @@
 	}
 
 	/**
-	 * Handle card usage with optimistic UI via cache
+	 * Handle card usage with action dispatch
 	 *
-	 * FLOW:
-	 * 1. Save current VIP cards state (for rollback)
-	 * 2. Find instance to use (priority: pending request > first available)
-	 * 3. Mark instance as used (usedAt: now)
-	 * 4. Update cache optimistically → UI updates instantly via $derived
-	 * 5. Send request to server
-	 * 6. On success: Cache already correct, just show toast
-	 * 7. On error: Rollback by restoring previous state to cache
+	 * NEW ARCHITECTURE:
+	 * - Detects action type from card definition
+	 * - Opens appropriate specialized modal
+	 * - Modal handles UI interaction + API call
+	 * - After success, marks card as used via /api/vip-cards/use-card
 	 *
 	 * @param card - The VIP card to use
 	 */
-	async function handleUseCard(card: { id: string; name: string }) {
+	async function handleUseCard(card: { id: string; name: string; action?: VipCardType['action'] }) {
 		if (!teacherView) return;
 
-		// STEP 1: Save current state for rollback
-		const previousVipCards = { ...vipCards };
-
-		// STEP 2: Find instance to use
+		// Find instance to use
 		const instanceId = findInstanceToUse(card.id);
 		if (!instanceId) {
 			toaster.error('Aucune instance disponible');
 			return;
 		}
 
-		// STEP 3: Mark instance as used
-		const instance = vipCards[instanceId];
-		const newVipCards = {
-			...vipCards,
-			[instanceId]: {
-				...instance,
-				usedAt: new Date().toISOString(),
-				// Clear activation request fields
-				activationRequestedAt: null,
-				activationRequestedBy: null
-			}
-		};
+		// If no action, just mark as used directly
+		if (!card.action) {
+			await markCardAsUsed(instanceId, card.name);
+			return;
+		}
 
-		// STEP 4: Apply optimistic update to cache (instant UI feedback)
-		teacherCache.updateVipCardsOptimistic(classId, studentId, newVipCards);
+		// Dispatch to appropriate handler based on action type
+		switch (card.action.type) {
+			case 'draw_cards':
+				await handleDrawCards(card.action, instanceId, card.name);
+				break;
 
-		// STEP 5: Send server request
+			case 'exchange_cards':
+				await handleExchangeCards(card.action, instanceId, card.name);
+				break;
+
+			case 'remove_warnings':
+				await handleRemoveWarnings(card.action, instanceId, card.name);
+				break;
+
+			case 'add_gidouilles':
+				await handleAddGidouilles(card.action, instanceId, card.name);
+				break;
+
+			default:
+				toaster.error('Action inconnue');
+		}
+	}
+
+	/**
+	 * Handle draw_cards action
+	 */
+	async function handleDrawCards(
+		action: Extract<VipCardType['action'], { type: 'draw_cards' }>,
+		instanceId: string,
+		_cardName: string
+	) {
+		openVipCardDrawModal({
+			studentId,
+			count: action.count,
+			filters: action.filters,
+			paymentMethod: 'vip_card',
+			vipCardInstanceId: instanceId,
+			studentName,
+			classId
+			// NOTE: No onComplete callback needed - the draw-cards API already marks the VIP card as used
+		});
+	}
+
+	/**
+	 * Handle exchange_cards action
+	 */
+	async function handleExchangeCards(
+		action: Extract<VipCardType['action'], { type: 'exchange_cards' }>,
+		_instanceId: string,
+		_cardName: string
+	) {
+		openVipCardExchangeModal({
+			studentId,
+			exchange: action.exchange,
+			studentName,
+			classId
+			// NOTE: No onComplete callback needed - the exchange API already marks the VIP card as used
+		});
+	}
+
+	/**
+	 * Handle remove_warnings action
+	 */
+	async function handleRemoveWarnings(
+		action: Extract<VipCardType['action'], { type: 'remove_warnings' }>,
+		_instanceId: string,
+		_cardName: string
+	) {
+		openRemoveWarningsModal({
+			studentId,
+			count: action.count,
+			warningType: action.warningType,
+			studentName
+			// NOTE: No onComplete callback needed - the remove-warnings API already marks the VIP card as used
+		});
+	}
+
+	/**
+	 * Handle add_gidouilles action
+	 */
+	async function handleAddGidouilles(
+		action: Extract<VipCardType['action'], { type: 'add_gidouilles' }>,
+		instanceId: string,
+		cardName: string
+	) {
 		try {
+			const response = await fetch('/api/teacher/rewards/update-student', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					studentId,
+					gidouilles: action.amount,
+					operation: 'add'
+				})
+			});
+
+			if (!response.ok) {
+				const err = await response.json();
+				throw new Error(err.message || 'Échec ajout gidouilles');
+			}
+
+			// Optimistic update cache
+			teacherCache.updateGidouillesOptimistic(classId, studentId, action.amount);
+
+			// Mark card as used
+			await markCardAsUsed(instanceId, cardName);
+
+			toaster.success(`${action.amount} gidouilles ajoutées !`);
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Erreur inconnue';
+			toaster.error(message);
+		}
+	}
+
+	/**
+	 * Mark a VIP card instance as used
+	 */
+	async function markCardAsUsed(instanceId: string, cardName: string) {
+		// Get current VIP cards
+		const vipCards = getVipCards();
+
+		// Save current state for rollback
+		const previousVipCards = { ...vipCards };
+
+		try {
+			// Optimistic update
+			const instance = vipCards[instanceId];
+			const newVipCards = {
+				...vipCards,
+				[instanceId]: {
+					...instance,
+					usedAt: new Date().toISOString(),
+					activationRequestedAt: null,
+					activationRequestedBy: null
+				}
+			};
+
+			teacherCache.updateVipCardsOptimistic(classId, studentId, newVipCards);
+
+			// API call
 			const response = await fetch('/api/vip-cards/use-card', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -229,14 +357,16 @@
 
 			const result = await response.json();
 
-			if (!response.ok) throw new Error(result.message);
+			if (!response.ok) {
+				throw new Error(result.message || 'Échec marquage carte utilisée');
+			}
 
-			// STEP 6: SUCCESS - Cache already correct, just notify
-			toaster.success(`Carte ${card.name} utilisée !`);
-		} catch (_error) {
-			// STEP 7: ERROR - Rollback by restoring previous state
+			toaster.success(`Carte ${cardName} utilisée !`);
+		} catch (err) {
+			// Rollback on error
 			teacherCache.updateVipCardsOptimistic(classId, studentId, previousVipCards);
-			toaster.error("Échec de l'utilisation");
+			const message = err instanceof Error ? err.message : 'Erreur inconnue';
+			toaster.error(message);
 		}
 	}
 
@@ -263,6 +393,9 @@
 		rarity?: 'common' | 'rare' | 'epic' | 'legendary';
 	}) {
 		if (!teacherView) return;
+
+		// Get current VIP cards
+		const vipCards = getVipCards();
 
 		// STEP 1: Save current state for rollback
 		const previousVipCards = { ...vipCards };
@@ -314,66 +447,79 @@
 	}
 </script>
 
-<Dialog.Root {open} onOpenChange={handleOpenChange}>
-	<Dialog.Content class="max-h-[90vh] max-w-7xl overflow-y-auto">
-		<Dialog.Header>
-			<Dialog.Title class="flex items-center gap-2 text-2xl font-bold">
-				<Sparkles class="h-6 w-6 text-amber-500" />
-				Cartes VIP de {studentName}
-			</Dialog.Title>
-		</Dialog.Header>
+<!-- Modal Content (ModalStackRenderer provides backdrop and click-to-close) -->
+<div
+	class="relative max-h-[90vh] w-full max-w-7xl overflow-y-auto rounded-lg border bg-background p-6 shadow-lg"
+	role="dialog"
+	aria-modal="true"
+	aria-labelledby="vip-cards-title"
+>
+	<!-- Header with close button -->
+	<div class="mb-6 flex items-center justify-between">
+		<h2 id="vip-cards-title" class="flex items-center gap-2 text-2xl font-bold">
+			<Sparkles class="h-6 w-6 text-amber-500" />
+			Cartes VIP de {studentName}
+		</h2>
+		<button
+			onclick={handleClose}
+			class="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none"
+			aria-label="Fermer"
+		>
+			<X class="h-4 w-4" />
+		</button>
+	</div>
 
-		<!-- Cards Display -->
-		{#if cardsWithCounts.length === 0}
-			<!-- Empty State -->
-			<div class="flex flex-col items-center justify-center px-4 py-16 text-center">
-				<div class="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-muted">
-					<Sparkles class="h-12 w-12 text-muted-foreground" />
+	<!-- Cards Display -->
+	{#if getCardsWithCounts().length === 0}
+		<!-- Empty State -->
+		<div class="flex flex-col items-center justify-center px-4 py-16 text-center">
+			<div class="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-muted">
+				<Sparkles class="h-12 w-12 text-muted-foreground" />
+			</div>
+			<h3 class="mb-2 text-xl font-semibold text-foreground">Aucune carte VIP pour le moment</h3>
+			<p class="max-w-md text-muted-foreground">
+				{studentName} n'a pas encore de cartes VIP. Il faut dépenser 3 gidouilles pour obtenir une carte
+				aléatoire.
+			</p>
+		</div>
+	{:else}
+		<!-- All Cards Grid - Sorted by Rarity -->
+		<div class="grid grid-cols-2 gap-8 p-6 sm:grid-cols-3 xl:grid-cols-3">
+			{#each getCardsWithCounts() as card (card.id)}
+				<div
+					class="transform cursor-pointer transition-transform hover:scale-105"
+					onclick={() => handleCardClick(card, card.count)}
+					onkeydown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							e.preventDefault();
+							handleCardClick(card, card.count);
+						}
+					}}
+					role="button"
+					tabindex="0"
+					aria-label="Voir {card.name} en grand"
+				>
+					<VipCard
+						card={card as VipCardType}
+						count={card.count}
+						size="sm"
+						clickable={false}
+						showRemoveButton={teacherView}
+						onRemove={() => handleRemoveCard(card)}
+						showUseButton={teacherView}
+						hasPendingRequest={cardHasPendingRequest(card.id)}
+						onUse={() => handleUseCard(card)}
+					/>
 				</div>
-				<h3 class="mb-2 text-xl font-semibold text-foreground">Aucune carte VIP pour le moment</h3>
-				<p class="max-w-md text-muted-foreground">
-					{studentName} n'a pas encore de cartes VIP. Il faut dépenser 3 gidouilles pour obtenir une
-					carte aléatoire.
-				</p>
-			</div>
-		{:else}
-			<!-- All Cards Grid - Sorted by Rarity -->
-			<div class="grid grid-cols-2 gap-8 p-6 sm:grid-cols-3 xl:grid-cols-3">
-				{#each cardsWithCounts as card (card.id)}
-					<div
-						class="transform cursor-pointer transition-transform hover:scale-105"
-						onclick={() => handleCardClick(card, card.count)}
-						onkeydown={(e) => {
-							if (e.key === 'Enter' || e.key === ' ') {
-								e.preventDefault();
-								handleCardClick(card, card.count);
-							}
-						}}
-						role="button"
-						tabindex="0"
-						aria-label="Voir {card.name} en grand"
-					>
-						<VipCard
-							card={card as VipCardType}
-							count={card.count}
-							size="sm"
-							clickable={false}
-							showRemoveButton={teacherView}
-							onRemove={() => handleRemoveCard(card)}
-							showUseButton={teacherView}
-							hasPendingRequest={cardHasPendingRequest(card.id)}
-							onUse={() => handleUseCard(card)}
-						/>
-					</div>
-				{/each}
-			</div>
-		{/if}
+			{/each}
+		</div>
+	{/if}
 
-		<Dialog.Footer class="mt-6">
-			<Button variant="outline" onclick={() => handleOpenChange(false)}>Fermer</Button>
-		</Dialog.Footer>
-	</Dialog.Content>
-</Dialog.Root>
+	<!-- Footer -->
+	<div class="mt-6 flex justify-end">
+		<Button variant="outline" onclick={handleClose}>Fermer</Button>
+	</div>
+</div>
 
 <!-- Holographic Card Modal -->
 {#if selectedCardForHolo}
@@ -384,3 +530,5 @@
 		onClose={closeHoloModal}
 	/>
 {/if}
+
+<!-- VipCardDrawResultModal removed: now using VipCardDrawModal via modal stack -->
