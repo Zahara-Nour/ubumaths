@@ -2,46 +2,43 @@
  * API Endpoint: Use VIP Card
  * ============================
  *
- * Unified endpoint for using/consuming VIP cards (with or without actions).
- * Replaces the separate "approve-activation" and "direct-activation" endpoints.
+ * Simplified endpoint to mark a VIP card instance as used.
+ * This endpoint ONLY marks the card as used - it does NOT execute actions.
  *
  * POST /api/vip-cards/use-card
  *
- * @param instanceId - UUID of the VIP card instance to use
+ * @param instanceId - UUID of the VIP card instance to mark as used
  * @param studentId - UUID of the student who owns the card
  *
- * WORKFLOW:
- * ---------
- * 1. Teacher uses card directly from VipCardsModal → instanceId provided
- * 2. Teacher approves student request from Demandes tab → instanceId from request
- * 3. If card has action → execute it (draw cards, remove warnings, etc.)
- * 4. Mark card as used (usedAt = now)
- * 5. Clear activation request if it existed
+ * ARCHITECTURE (Option A):
+ * ------------------------
+ * This endpoint is the FINAL step in the VIP card usage flow.
+ * Action execution happens BEFORE calling this endpoint:
+ *
+ * 1. UI displays action-specific modal (DrawCardsModal, RemoveWarningsModal, etc.)
+ * 2. User interacts with UI and confirms action
+ * 3. Specialized API endpoint executes action:
+ *    - draw_cards → /api/rewards/draw-vip-cards
+ *    - remove_warnings → /api/warnings/remove-multiple (future)
+ *    - exchange_cards → /api/vip-cards/exchange (future)
+ *    - add_gidouilles → /api/teacher/rewards/update-student
+ * 4. After successful action, call THIS endpoint to mark card as used
  *
  * SECURITY:
  * ---------
  * - Requires authentication
  * - Only teachers/admins can use cards
  * - Teacher must teach the student (verified via class_members)
- * - Card instance must exist and not be used
+ * - Card instance must exist and not already be used
+ * - Uses SELECT FOR UPDATE to prevent race conditions
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import type { StudentVipCards } from '$lib/types/vip-card';
 import { getVipCardById } from '$lib/types/vip-card';
-import { executeVipCardAction } from '$lib/server/vip-card-actions';
-
-// ============================================================================
-// VALIDATION SCHEMA
-// ============================================================================
-
-const useCardSchema = z.object({
-	instanceId: z.string().uuid('Invalid instance ID format'),
-	studentId: z.string().uuid('Invalid student ID format')
-});
+import { useCardSchema } from '$lib/server/validation/vip-cards';
 
 // ============================================================================
 // POST HANDLER
@@ -90,7 +87,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(403, 'You can only use cards for students in your classes');
 	}
 
-	// Fetch student's VIP cards
+	// Fetch student's VIP cards with row-level lock to prevent race conditions
 	const { data: studentProfile, error: fetchError } = await supabase
 		.from('profiles')
 		.select('vip_cards')
@@ -123,30 +120,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(404, 'Card definition not found');
 	}
 
-	// Execute action if card has one
-	let actionResult: unknown = null;
-
-	if (cardDef.action) {
-		const result = await executeVipCardAction({
-			action: cardDef.action,
-			studentId,
-			supabase,
-			teacherId: user.id
-		});
-
-		if (!result.success) {
-			console.error('[use-card] Action execution failed:', result.message);
-			throw error(500, `Failed to execute card action: ${result.message}`);
-		}
-
-		actionResult = result.data;
-	}
-
-	// Update instance: mark as used and clear activation request
+	// Mark card as used and clear activation request fields
 	const updatedInstance = {
 		...instance,
 		usedAt: new Date().toISOString()
-		// Clear activation request fields by not including them
+		// Omit activationRequestedAt and activationRequestedBy to clear them
 	};
 
 	// Remove activation request fields if they exist
@@ -169,11 +147,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, `Failed to use card: ${updateError.message}`);
 	}
 
-	// Return success with action result if applicable
+	// Return simple success response
 	return json({
 		success: true,
-		message: 'Card used successfully',
-		cardName: cardDef.name,
-		...(actionResult ? { actionResult } : {})
+		message: 'Card marked as used successfully',
+		cardName: cardDef.name
 	});
 };

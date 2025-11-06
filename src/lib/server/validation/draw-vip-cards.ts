@@ -5,6 +5,11 @@
 import { z } from 'zod';
 
 /**
+ * Valid VIP card rarity levels
+ */
+const rarityEnum = z.enum(['common', 'rare', 'epic', 'legendary']);
+
+/**
  * Schema for drawing VIP cards with gidouilles payment
  */
 const gidouillesPaymentSchema = z.object({
@@ -56,3 +61,33 @@ export const drawVipCardsSchema = z.discriminatedUnion('paymentMethod', [
  * TypeScript type inferred from drawVipCardsSchema
  */
 export type DrawVipCardsInput = z.infer<typeof drawVipCardsSchema>;
+
+/**
+ * Schema for draw_cards action filters
+ * Used to validate filters when drawing VIP cards with specific constraints
+ */
+export const drawCardsFiltersSchema = z
+	.object({
+		forceRarity: rarityEnum.optional(),
+		minRarity: rarityEnum.optional(),
+		excludeCardIds: z
+			.array(z.string().min(1, 'Card ID cannot be empty'))
+			.max(50, 'Cannot exclude more than 50 cards')
+			.optional(),
+		onlyCardsWithActions: z.boolean().optional()
+	})
+	.strict()
+	.refine(
+		(data) => {
+			// forceRarity and minRarity are mutually exclusive
+			return !(data.forceRarity && data.minRarity);
+		},
+		{
+			message: 'Cannot use both forceRarity and minRarity filters together'
+		}
+	);
+
+/**
+ * TypeScript type inferred from drawCardsFiltersSchema
+ */
+export type DrawCardsFiltersInput = z.infer<typeof drawCardsFiltersSchema>;

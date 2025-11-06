@@ -246,6 +246,7 @@
 			filters: action.filters,
 			paymentMethod: 'vip_card',
 			vipCardInstanceId: instanceId,
+			usedCardInstanceId: instanceId, // Pass the card instance to be marked as used in cache
 			studentName,
 			classId
 			// NOTE: No onComplete callback needed - the draw-cards API already marks the VIP card as used

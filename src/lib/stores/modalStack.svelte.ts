@@ -66,19 +66,19 @@ class ModalStackStore {
 
 	/**
 	 * Pop the top modal from the stack
-	 * Calls onReturn callback of the new top modal (if exists)
+	 * Calls onReturn callback of the POPPED modal (before removing it)
 	 * @returns The popped modal entry or undefined if stack was empty
 	 */
 	pop(): ModalEntry | undefined {
-		const popped = this.stack.pop();
-
-		// If stack still has modals, call onReturn of new top
+		// Call onReturn of the modal BEFORE popping it (so it can clean up)
 		if (this.stack.length > 0) {
-			const newTop = this.stack[this.stack.length - 1];
-			if (newTop.onReturn) {
-				newTop.onReturn();
+			const currentTop = this.stack[this.stack.length - 1];
+			if (currentTop.onReturn) {
+				currentTop.onReturn();
 			}
 		}
+
+		const popped = this.stack.pop();
 
 		return popped;
 	}

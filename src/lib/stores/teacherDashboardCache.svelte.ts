@@ -290,6 +290,20 @@ export class TeacherDashboardCache {
 	}
 
 	/**
+	 * Get the rewards SvelteMap for a class (REACTIVE - no TTL check)
+	 *
+	 * IMPORTANT: Returns the SvelteMap itself so components can call .get()
+	 * directly in their $derived, allowing Svelte to track the reactive access.
+	 *
+	 * @param classId - The class ID
+	 * @returns SvelteMap of rewards or null if not cached
+	 */
+	getRewardsMapReactive(classId: string): Map<string, StudentRewards> | null {
+		const cached = this.rewardsCache.get(classId);
+		return cached ? cached.rewards : null;
+	}
+
+	/**
 	 * Get cached warnings synchronously (for $derived)
 	 * Returns null if not cached
 	 *
@@ -407,7 +421,8 @@ export class TeacherDashboardCache {
 	/**
 	 * Update VIP cards optimistically (instant UI feedback)
 	 *
-	 * REACTIVITY: Creates new objects and uses .set() to trigger SvelteMap reactivity
+	 * REACTIVITY: SvelteMap is automatically reactive. Calling .set() will notify
+	 * all $derived/$effect that read from this Map via .get()
 	 *
 	 * @param classId - The class ID
 	 * @param studentId - The student ID
@@ -426,15 +441,9 @@ export class TeacherDashboardCache {
 			vip_cards: vipCards
 		};
 
-		// Create new Map with updated student rewards
-		const newRewardsMap = new SvelteMap(cached.rewards);
-		newRewardsMap.set(studentId, updatedRewards);
-
-		// Update cache with new object to trigger SvelteMap reactivity
-		this.rewardsCache.set(classId, {
-			...cached,
-			rewards: newRewardsMap
-		});
+		// Update the SvelteMap - this automatically triggers reactivity
+		// for all $derived that read via .get(studentId)
+		cached.rewards.set(studentId, updatedRewards);
 
 		this.log('trace', `[Cache] Optimistic VIP cards update: student ${studentId}`);
 	}

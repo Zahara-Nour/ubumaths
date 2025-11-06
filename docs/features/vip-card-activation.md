@@ -10,6 +10,25 @@ Complete documentation for the unified VIP card activation and usage system.
 
 ## 🆕 Changelog
 
+### Version 2.2.0 (2025-11-06)
+
+**Optimistic UI for VIP Card Actions**
+
+- Fixed bug where used VIP card wasn't removed from UI until page refresh
+- Added `usedCardInstanceId` prop to `VipCardDrawModal` to track consumed card
+- Modal now marks used card as consumed in cache optimistically: `usedAt: new Date().toISOString()`
+- Used card disappears immediately from `VipCardsModal` after draw_cards action
+- Matches backend behavior where draw-cards API atomically marks card as used
+- Also applies to exchange_cards and remove_warnings actions
+
+**Technical Changes**:
+
+- Updated `VipCardDrawModal.svelte`: Added `usedCardInstanceId` prop and optimistic update logic
+- Updated `VipCardsModal.svelte`: Pass `usedCardInstanceId` when opening draw modal
+- Updated `vip-card-modals.ts`: Added `usedCardInstanceId` to `DrawCardsOptions` interface
+
+---
+
 ### Version 2.1.0 (2025-11-04)
 
 **Cache Synchronization for Award VIP Card**
@@ -44,7 +63,9 @@ Complete documentation for the unified VIP card activation and usage system.
 
 ## Overview
 
-The VIP card activation system allows teachers to manage student VIP card usage through two workflows:
+The VIP card activation system allows teachers to manage student VIP card usage with instant visual feedback through optimistic UI updates. All VIP card actions (draw_cards, exchange_cards, remove_warnings, add_gidouilles) immediately update the cache and UI before server confirmation.
+
+### Two Workflows
 
 ### 🎯 Workflow 1: Student Request → Teacher Approval
 
@@ -61,11 +82,236 @@ The VIP card activation system allows teachers to manage student VIP card usage 
 ### Key Features
 
 - ✅ **Unified endpoint**: Single `/api/vip-cards/use-card` for both workflows
-- ✅ **Optimistic UI**: Instant feedback with automatic rollback on errors
+- ✅ **Complete optimistic UI**: All VIP card actions update cache instantly
+- ✅ **Automatic rollback**: Errors revert optimistic updates automatically
 - ✅ **Priority system**: Instances with pending requests used first
 - ✅ **Visual indicators**: Orange icon for pending requests, green for available
 - ✅ **URL-based tabs**: Bookmarkable teacher dashboard with Gidouilles/Demandes tabs
 - ✅ **Centralized management**: All reward features in `/dashboard/teacher/rewards`
+
+---
+
+## Optimistic UI Pattern
+
+All VIP card actions follow a consistent optimistic UI pattern for instant feedback:
+
+### Pattern Overview
+
+```
+1. User triggers action (click "Utiliser")
+   ↓
+2. OPTIMISTIC UPDATE: Modify cache immediately
+   ├─> Mark card as used: vipCards[instanceId].usedAt = new Date()
+   ├─> Add new cards/gidouilles to cache
+   └─> UI updates instantly (card disappears, counts change)
+   ↓
+3. BACKGROUND SYNC: Send API request
+   ├─> Server validates and executes action
+   └─> Response confirms changes
+   ↓
+4a. SUCCESS: Keep optimistic changes
+    └─> Show success toast
+
+4b. ERROR: Rollback optimistic changes
+    ├─> Restore previous cache state
+    └─> Show error toast
+```
+
+### Action-Specific Patterns
+
+#### 1. draw_cards Action
+
+**Optimistic Updates:**
+
+- Mark used card as consumed: `usedAt: new Date().toISOString()`
+- Add newly drawn cards to cache with `usedAt: null`
+
+**Implementation:**
+
+```typescript
+// VipCardDrawModal.svelte (lines 149-159)
+if (paymentMethod === 'vip_card' && usedCardInstanceId) {
+	updatedVipCards[usedCardInstanceId] = {
+		...updatedVipCards[usedCardInstanceId],
+		usedAt: new Date().toISOString() // Mark as used immediately
+	};
+}
+
+// Add new cards
+for (const card of result.cards) {
+	updatedVipCards[card.instanceId] = {
+		cardId: card.cardId,
+		earnedAt: card.earnedAt,
+		usedAt: null // New cards are unused
+	};
+}
+
+teacherCache.updateVipCardsOptimistic(classId, studentId, updatedVipCards);
+```
+
+**User Experience:**
+
+- Used card disappears from VipCardsModal immediately
+- New cards appear with correct counts instantly
+- No page refresh needed
+
+---
+
+#### 2. exchange_cards Action
+
+**Optimistic Updates:**
+
+- Mark used card as consumed
+- Add newly received card to cache
+
+**Implementation:**
+
+```typescript
+// Similar to draw_cards, but typically exchanges 1 card for 1 card
+// Backend API marks original card as used and adds new card atomically
+```
+
+**User Experience:**
+
+- Original card disappears immediately
+- New card appears with count increment
+- Seamless card transformation
+
+---
+
+#### 3. remove_warnings Action
+
+**Optimistic Updates:**
+
+- Mark used card as consumed
+- Warnings removal happens on backend (not in VIP card cache)
+
+**Implementation:**
+
+```typescript
+// Modal marks card as used in cache
+// API removes warnings from student record
+// No warnings in VIP cards cache to update
+```
+
+**User Experience:**
+
+- Card disappears immediately
+- Warning count updates after API response
+- Teacher sees immediate feedback
+
+---
+
+#### 4. add_gidouilles Action
+
+**Optimistic Updates:**
+
+- Mark used card as consumed
+- Update gidouilles balance immediately
+
+**Implementation:**
+
+```typescript
+// VipCardsModal.svelte (line 315)
+teacherCache.updateGidouillesOptimistic(classId, studentId, action.amount);
+
+// Mark card as used
+await markCardAsUsed(instanceId, cardName);
+```
+
+**User Experience:**
+
+- Card disappears immediately
+- Gidouilles counter increments instantly
+- Smooth, responsive UX
+
+---
+
+### Rollback Pattern
+
+When errors occur, all optimistic updates are reverted:
+
+```typescript
+// VipCardsModal.svelte (lines 366-370)
+catch (err) {
+  // Rollback optimistic update
+  teacherCache.updateVipCardsOptimistic(classId, studentId, previousVipCards);
+  const message = err instanceof Error ? err.message : 'Erreur inconnue';
+  toaster.error(message);
+}
+```
+
+**Guarantees:**
+
+- User never sees inconsistent state
+- Cache always matches backend after error
+- Clear error messaging via toasts
+- No manual refresh needed
+
+---
+
+### Cache Synchronization
+
+The `teacherDashboardCache` provides methods for optimistic updates:
+
+```typescript
+// Update VIP cards (atomic replacement)
+teacherCache.updateVipCardsOptimistic(
+  classId: string,
+  studentId: string,
+  vipCards: StudentVipCards
+): void
+
+// Update gidouilles (add/subtract)
+teacherCache.updateGidouillesOptimistic(
+  classId: string,
+  studentId: string,
+  delta: number  // Can be positive or negative
+): void
+```
+
+**Cache Behavior:**
+
+- Updates persist until next cache invalidation
+- TTL: 5 minutes by default
+- Manual invalidation via `invalidateAll()`
+- Automatic invalidation on route changes
+
+---
+
+### Testing Optimistic UI
+
+**Manual Testing Checklist:**
+
+1. **Successful Flow:**
+   - [ ] Click "Utiliser" on card with action
+   - [ ] Card disappears immediately from modal
+   - [ ] New cards/gidouilles appear instantly
+   - [ ] No page refresh needed
+   - [ ] Toast notification shows success
+
+2. **Error Flow:**
+   - [ ] Simulate network error (DevTools offline)
+   - [ ] Click "Utiliser" on card
+   - [ ] Card disappears initially (optimistic)
+   - [ ] Card reappears after error (rollback)
+   - [ ] Error toast displays
+   - [ ] No inconsistent state visible
+
+3. **Race Conditions:**
+   - [ ] Quickly click "Utiliser" twice on same card
+   - [ ] First click succeeds
+   - [ ] Second click fails with "already used" error
+   - [ ] UI shows card used only once
+
+**Automated Testing:**
+
+See `tests/integration/vip-card-optimistic-ui.test.ts` for complete test suite covering:
+
+- Optimistic updates for all action types
+- Rollback scenarios
+- Cache synchronization
+- Race condition handling
 
 ---
 

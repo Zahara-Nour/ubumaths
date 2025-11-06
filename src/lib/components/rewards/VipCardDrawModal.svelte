@@ -43,8 +43,10 @@
 		paymentMethod: 'gidouilles' | 'vip_card';
 		gidouillesCost?: number;
 		vipCardInstanceId?: string;
+		usedCardInstanceId?: string; // Card instance ID that was consumed (for cache removal)
 		studentName?: string;
 		classId?: string; // Optional: for cache optimistic updates
+		filters?: import('$lib/types/vip-card').DrawCardsFilters; // Optional: filters for draw_cards action
 	}
 
 	let {
@@ -53,8 +55,10 @@
 		paymentMethod,
 		gidouillesCost,
 		vipCardInstanceId,
+		usedCardInstanceId,
 		studentName,
-		classId
+		classId,
+		filters
 	}: Props = $props();
 
 	// State
@@ -87,6 +91,7 @@
 					studentId,
 					count,
 					paymentMethod,
+					filters, // Pass filters to API
 					...(paymentMethod === 'gidouilles' ? { gidouillesCost } : { vipCardInstanceId })
 				})
 			});
@@ -132,11 +137,20 @@
 					// Merge new cards with existing cards
 					const updatedVipCards = { ...studentRewards.vip_cards };
 
+					// Add new cards
 					for (const c of result.cards) {
 						updatedVipCards[c.instanceId] = {
 							cardId: c.cardId,
 							earnedAt: c.earnedAt,
 							usedAt: null
+						};
+					}
+
+					// Mark the used card as used (if payment method is vip_card)
+					if (paymentMethod === 'vip_card' && usedCardInstanceId) {
+						updatedVipCards[usedCardInstanceId] = {
+							...updatedVipCards[usedCardInstanceId],
+							usedAt: new Date().toISOString()
 						};
 					}
 

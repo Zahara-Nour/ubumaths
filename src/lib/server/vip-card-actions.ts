@@ -1,4 +1,27 @@
 /**
+ * @deprecated This file is deprecated as of 2025-11-06.
+ *
+ * VIP card actions are now handled client-side with specialized modals.
+ * Each action type calls its own API endpoint:
+ *
+ * - draw_cards → /api/rewards/draw-vip-cards (existing)
+ * - remove_warnings → /api/warnings/remove-multiple (future)
+ * - exchange_cards → /api/vip-cards/exchange (future)
+ * - add_gidouilles → /api/teacher/rewards/update-student (existing)
+ *
+ * After action completion, all flows call /api/vip-cards/use-card
+ * to mark the VIP card instance as used.
+ *
+ * This file is kept for reference and potential logic reuse in new endpoints.
+ * The algorithms here (especially minRarity weighted selection) may be useful
+ * when implementing the new specialized endpoints.
+ *
+ * See: docs/features/vip-card-draw-system.md for new architecture
+ *
+ * ============================================================================
+ * ORIGINAL DOCUMENTATION (DEPRECATED)
+ * ============================================================================
+ *
  * VIP Card Actions Execution Service
  * ===================================
  *
@@ -53,9 +76,24 @@ export interface ActionResult {
 
 /**
  * Result of draw_cards action
+ *
+ * Enhanced format includes full card details when using filters:
+ * - cardId: Card definition ID
+ * - instanceId: Unique instance ID for the awarded card
+ * - name: Display name of the card
+ * - rarity: Rarity level (common, rare, epic, legendary)
+ * - earnedAt: ISO timestamp when card was awarded
+ *
+ * Legacy format (without filters) only includes cardId and name for backwards compatibility
  */
 export interface DrawCardsResult {
-	cardsDrawn: Array<{ cardId: string; name: string }>;
+	cardsDrawn: Array<{
+		cardId: string;
+		name: string;
+		instanceId?: string;
+		rarity?: string;
+		earnedAt?: string;
+	}>;
 }
 
 /**
@@ -110,7 +148,12 @@ export async function executeVipCardAction(options: {
 	try {
 		switch (action.type) {
 			case 'draw_cards':
-				return await executeDrawCards({ count: action.count, studentId, supabase });
+				return await executeDrawCards({
+					count: action.count,
+					filters: action.filters,
+					studentId,
+					supabase
+				});
 
 			case 'remove_warnings':
 				return await executeRemoveWarnings({
@@ -156,17 +199,93 @@ export async function executeVipCardAction(options: {
  * Execute draw_cards action
  *
  * Awards N random VIP cards to the student (no gidouilles cost).
+ *
+ * BEHAVIOR:
+ * - If `filters` parameter is provided with at least one property → uses new RPC `award_vip_cards_with_filters`
+ * - If no filters → uses legacy loop with `award_vip_card_no_cost` (backwards compatibility)
+ *
+ * NEW RPC WITH FILTERS:
+ * - Returns full card details: { cardId, instanceId, name, rarity, earnedAt }
+ * - Supports: forceRarity, minRarity, excludeCardIds, onlyCardsWithActions
+ * - More efficient (single RPC call instead of loop)
+ *
+ * LEGACY BEHAVIOR:
+ * - Returns basic details: { cardId, name }
+ * - Maintains compatibility with existing cards (soldes, mega-soldes)
  */
 async function executeDrawCards(options: {
 	count: number;
+	filters?: import('$lib/types/vip-card').DrawCardsFilters;
 	studentId: string;
 	supabase: SupabaseClient<Database>;
 }): Promise<ActionResult> {
-	const { count, studentId, supabase } = options;
+	const { count, filters, studentId, supabase } = options;
 
+	// Check if filters exist and have at least one defined property
+	const hasFilters =
+		filters &&
+		(filters.forceRarity !== undefined ||
+			filters.minRarity !== undefined ||
+			(filters.excludeCardIds !== undefined && filters.excludeCardIds.length > 0) ||
+			filters.onlyCardsWithActions !== undefined);
+
+	// ============================================================================
+	// NEW PATH: Use award_vip_cards_with_filters RPC (with filters)
+	// ============================================================================
+	if (hasFilters) {
+		// Type assertion needed until database types are regenerated after migration
+		const { data, error: rpcError } = (await supabase.rpc(
+			'award_vip_cards_with_filters' as never,
+			{
+				p_student_id: studentId,
+				p_count: count,
+				p_filters: filters || {}
+			} as never
+		)) as {
+			data: {
+				cards: Array<{
+					cardId: string;
+					instanceId: string;
+					name: string;
+					rarity: string;
+					earnedAt: string;
+				}>;
+			} | null;
+			error: { message: string } | null;
+		};
+
+		if (rpcError) {
+			console.error('[executeDrawCards] RPC error (with filters):', rpcError);
+			throw error(500, `Failed to draw cards with filters: ${rpcError.message}`);
+		}
+
+		if (!data || !data.cards || data.cards.length === 0) {
+			throw error(500, 'No cards were awarded. Filters may have excluded all available cards.');
+		}
+
+		// Return enhanced result with full card details
+		const result: DrawCardsResult = {
+			cardsDrawn: data.cards.map((card) => ({
+				cardId: card.cardId,
+				instanceId: card.instanceId,
+				name: card.name,
+				rarity: card.rarity,
+				earnedAt: card.earnedAt
+			}))
+		};
+
+		return {
+			success: true,
+			message: `Drew ${count} VIP card${count > 1 ? 's' : ''}`,
+			data: result
+		};
+	}
+
+	// ============================================================================
+	// LEGACY PATH: Use award_vip_card_no_cost in loop (no filters, backwards compatible)
+	// ============================================================================
 	const cardsDrawn: Array<{ cardId: string; name: string }> = [];
 
-	// Draw N random cards using RPC function
 	for (let i = 0; i < count; i++) {
 		// Type assertion needed until database types are regenerated after migration
 		const { data: cardId, error: rpcError } = (await supabase.rpc(
@@ -178,7 +297,7 @@ async function executeDrawCards(options: {
 		)) as { data: string | null; error: { message: string } | null };
 
 		if (rpcError) {
-			console.error('[executeDrawCards] RPC error:', rpcError);
+			console.error('[executeDrawCards] RPC error (legacy):', rpcError);
 			throw error(500, `Failed to draw card ${i + 1}: ${rpcError.message}`);
 		}
 

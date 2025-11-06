@@ -63,6 +63,7 @@ interface DrawCardsOptions {
 	paymentMethod: 'gidouilles' | 'vip_card';
 	gidouillesCost?: number;
 	vipCardInstanceId?: string;
+	usedCardInstanceId?: string; // Card instance that was consumed (for cache removal)
 	studentName?: string;
 	classId?: string; // Optional: for cache optimistic updates
 	filters?: import('$lib/types/vip-card').DrawCardsFilters; // Optional: filters for draw_cards action
@@ -106,6 +107,7 @@ export function openVipCardDrawModal(options: DrawCardsOptions): string {
 			paymentMethod: options.paymentMethod,
 			gidouillesCost: options.gidouillesCost,
 			vipCardInstanceId: options.vipCardInstanceId,
+			usedCardInstanceId: options.usedCardInstanceId,
 			studentName: options.studentName,
 			classId: options.classId,
 			filters: options.filters

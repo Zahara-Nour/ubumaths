@@ -47,6 +47,7 @@ export function getStudentCardsWithCounts(vipCards: StudentVipCards): Array<{
 	imagePath: string;
 	category?: string;
 	rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+	action?: VipCardAction;
 	count: number;
 }> {
 	const cardMap = new Map<
@@ -58,6 +59,7 @@ export function getStudentCardsWithCounts(vipCards: StudentVipCards): Array<{
 			imagePath: string;
 			category?: string;
 			rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+			action?: VipCardAction;
 			count: number;
 		}
 	>();
@@ -78,6 +80,7 @@ export function getStudentCardsWithCounts(vipCards: StudentVipCards): Array<{
 					imagePath: cardDef.imagePath,
 					category: cardDef.category || undefined,
 					rarity: cardDef.rarity,
+					action: cardDef.action,
 					count: 1
 				});
 			}
@@ -120,6 +123,7 @@ export function sortCardsByPriority(
 		imagePath: string;
 		category?: string;
 		rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+		action?: VipCardAction;
 		count: number;
 	}>
 ): Array<{
@@ -129,6 +133,7 @@ export function sortCardsByPriority(
 	imagePath: string;
 	category?: string;
 	rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+	action?: VipCardAction;
 	count: number;
 }> {
 	const rarityOrder = { legendary: 0, epic: 1, rare: 2, common: 3 };

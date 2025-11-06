@@ -69,12 +69,24 @@ export type ExchangeCardAction =
 	| ExchangeDiscardForSpecific;
 
 /**
+ * Filters for draw_cards action
+ * Allows fine-grained control over which cards can be drawn
+ */
+export interface DrawCardsFilters {
+	forceRarity?: VipCardRarity; // Force all drawn cards to be of this rarity
+	minRarity?: VipCardRarity; // Guarantee at least 1 card of this minimum rarity
+	excludeCardIds?: string[]; // Card IDs to exclude from the draw pool
+	onlyCardsWithActions?: boolean; // Only draw cards that have actions
+}
+
+/**
  * VIP Card Action - Draw random cards
  * Awards N random VIP cards to the student (no gidouilles cost)
  */
 interface DrawCardsAction {
 	type: 'draw_cards';
 	count: number; // Number of cards to draw
+	filters?: DrawCardsFilters; // Optional filters to control which cards can be drawn
 }
 
 /**
@@ -345,6 +357,48 @@ export const VIP_CARDS: VipCard[] = [
 		rarity: 'rare',
 		action: { type: 'draw_cards', count: 4 }
 	},
+	// ===== NEW: Cards with Filtered Draws =====
+	{
+		id: 'tirage-epique',
+		name: 'Tirage Épique',
+		description: 'Pioche 2 cartes VIP dont au moins 1 épique ou légendaire',
+		imagePath: '/images/vip-cards/mega-bonus1@0.5x.webp',
+		category: 'power',
+		rarity: 'epic',
+		action: { type: 'draw_cards', count: 2, filters: { minRarity: 'epic' } }
+	},
+	{
+		id: 'tirage-rare-garanti',
+		name: 'Tirage Rare Garanti',
+		description: 'Pioche 3 cartes VIP rares garanties',
+		imagePath: '/images/vip-cards/super-bonus1@0.5x.webp',
+		category: 'power',
+		rarity: 'rare',
+		action: { type: 'draw_cards', count: 3, filters: { forceRarity: 'rare' } }
+	},
+	{
+		id: 'tirage-actions',
+		name: 'Tirage Actions',
+		description: 'Pioche 2 cartes VIP avec actions uniquement',
+		imagePath: '/images/vip-cards/mathemagie1@0.5x.webp',
+		category: 'power',
+		rarity: 'rare',
+		action: { type: 'draw_cards', count: 2, filters: { onlyCardsWithActions: true } }
+	},
+	{
+		id: 'tirage-legendaire-exclu',
+		name: 'Tirage Sélectif',
+		description: 'Pioche 3 cartes VIP (exclut les cartes légendaires)',
+		imagePath: '/images/vip-cards/inventeur1@0.5x.webp',
+		category: 'power',
+		rarity: 'rare',
+		action: {
+			type: 'draw_cards',
+			count: 3,
+			filters: { excludeCardIds: ['Sheikh', 'fortune'] }
+		}
+	},
+	// ===== END: Cards with Filtered Draws =====
 	{
 		id: 'fortune',
 		name: 'Roue de la Fortune',

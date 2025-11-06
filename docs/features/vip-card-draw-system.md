@@ -102,8 +102,12 @@ FOR UPDATE;
 
 ### 4. Optimistic UI Updates
 
+The system provides instant visual feedback through optimistic cache updates for all payment methods.
+
+**Gidouilles Payment:**
+
 ```typescript
-// Immediate UI feedback
+// Immediate UI feedback - deduct gidouilles
 teacherCache.updateGidouillesOptimistic(classId, studentId, -cost);
 
 // Rollback on error
@@ -111,6 +115,45 @@ catch (err) {
   teacherCache.updateGidouillesOptimistic(classId, studentId, cost);
 }
 ```
+
+**VIP Card Payment (draw_cards action):**
+
+```typescript
+// Mark the used VIP card as consumed immediately in cache
+if (paymentMethod === 'vip_card' && usedCardInstanceId) {
+	const updatedVipCards = { ...currentVipCards };
+	updatedVipCards[usedCardInstanceId] = {
+		...updatedVipCards[usedCardInstanceId],
+		usedAt: new Date().toISOString()
+	};
+	teacherCache.updateVipCardsOptimistic(classId, studentId, updatedVipCards);
+}
+```
+
+**Adding Drawn Cards to Cache:**
+
+```typescript
+// Merge new cards with existing cards
+const updatedVipCards = { ...studentRewards.vip_cards };
+
+// Add newly drawn cards
+for (const card of result.cards) {
+	updatedVipCards[card.instanceId] = {
+		cardId: card.cardId,
+		earnedAt: card.earnedAt,
+		usedAt: null
+	};
+}
+
+teacherCache.updateVipCardsOptimistic(classId, studentId, updatedVipCards);
+```
+
+**Result:**
+
+- Gidouilles decrease instantly when drawing with gidouilles
+- Used card disappears immediately when drawing with VIP card (draw_cards action)
+- New cards appear in cache immediately after draw completes
+- No page refresh needed to see changes
 
 ### 5. Modal Stack Integration
 
@@ -218,19 +261,65 @@ supabase/migrations/
    ├─> SELECT FOR UPDATE: lock profile row
    ├─> Balance check: gidouilles >= 15
    ├─> Deduct: gidouilles -= 15
-   ├─> Draw 3 random cards (uniform distribution)
+   ├─> Draw 3 random cards (rarity-weighted distribution)
    ├─> Add cards to vip_cards JSONB
    └─> UPDATE profiles (atomic commit)
    ↓
 8. Response: { cards: [{ cardId, instanceId, earnedAt }, ...] }
    ↓
-9. Update cache with new cards
+9. Update cache with new cards (optimistic)
+   ├─> Merge new cards into existing vip_cards
+   └─> Cards now appear immediately in VipCardsModal
    ↓
 10. Trigger animation (VipCardMultiHoloReveal for 3 cards)
     ↓
 11. Show "Continuer" button → modalStack.pop()
     ↓
 12. Return to rewards page (cache updated, no reload needed)
+```
+
+#### Successful VIP Card Draw (5 cards using "Soldes" card)
+
+```
+1. User opens VipCardsModal, clicks "Utiliser" on Soldes card
+   ↓
+2. openVipCardDrawModal({
+     count: 5,
+     paymentMethod: 'vip_card',
+     vipCardInstanceId: 'uuid-of-soldes',
+     usedCardInstanceId: 'uuid-of-soldes'  // NEW: Track which card to mark as used
+   })
+   ↓
+3. Modal opens → handleDraw() called in $effect()
+   ↓
+4. POST /api/rewards/draw-vip-cards
+   Body: { studentId, count: 5, paymentMethod: 'vip_card', vipCardInstanceId: 'uuid' }
+   ↓
+5. Zod validation (drawVipCardsSchema)
+   ↓
+6. RPC: draw_multiple_vip_cards(p_student_id, 5, 'vip_card', null, 'uuid-of-soldes')
+   ├─> Authorization: verify teacher owns student's class
+   ├─> SELECT FOR UPDATE: lock profile row
+   ├─> Validate VIP card exists and not already used
+   ├─> Mark VIP card as used: vip_cards['uuid'].usedAt = NOW()
+   ├─> Draw 5 random cards (rarity-weighted distribution)
+   ├─> Add cards to vip_cards JSONB
+   └─> UPDATE profiles (atomic commit)
+   ↓
+7. Response: { cards: [{ cardId, instanceId, earnedAt }, ...] }
+   ↓
+8. Update cache with changes (optimistic):
+   ├─> Merge new 5 cards into existing vip_cards (appear immediately)
+   └─> Mark Soldes card as used: usedAt = new Date().toISOString() (disappears immediately)
+   ↓
+9. Trigger animation (VipCardBatchReveal for 5 cards)
+   ↓
+10. Show "Continuer" button → modalStack.pop()
+    ↓
+11. Return to VipCardsModal:
+    ├─> Used Soldes card no longer visible (filtered by usedAt)
+    ├─> New 5 cards now visible with counts
+    └─> No page refresh needed
 ```
 
 #### Error Handling (Insufficient Balance)
@@ -335,11 +424,14 @@ openVipCardDrawModal({
 
 ```typescript
 // Student uses "Mega-soldes" card (draws 5 cards for free)
+const megaSoldesInstanceId = 'uuid-of-mega-soldes-card';
+
 openVipCardDrawModal({
 	studentId: student.id,
 	count: 5,
 	paymentMethod: 'vip_card',
-	vipCardInstanceId: 'uuid-of-mega-soldes-card',
+	vipCardInstanceId: megaSoldesInstanceId, // Card to consume (API)
+	usedCardInstanceId: megaSoldesInstanceId, // Mark as used in cache (optimistic UI)
 	studentName: student.full_name,
 	classId: currentClass.id
 });
@@ -347,9 +439,11 @@ openVipCardDrawModal({
 
 **Result**:
 
-- Mega-soldes card marked as used
-- +5 new VIP cards added
+- Mega-soldes card disappears immediately from UI (optimistic update)
+- Backend marks card as used atomically
+- +5 new VIP cards added and appear immediately in cache
 - Animation: Batch grid reveal (5 cards)
+- No page refresh needed to see changes
 
 ### Example 4: Maximum Draw (10 Cards)
 
@@ -416,10 +510,12 @@ interface DrawCardsOptions {
 
 	// Required if paymentMethod === 'vip_card'
 	vipCardInstanceId?: string; // UUID of VIP card to consume
+	usedCardInstanceId?: string; // UUID of card instance to mark as used in cache (for optimistic UI)
 
 	// Optional
 	studentName?: string; // For display in modal
 	classId?: string; // For cache optimistic updates
+	filters?: DrawCardsFilters; // Optional filters for draw_cards action
 	onComplete?: () => void; // Called when returning from modal
 }
 ```
