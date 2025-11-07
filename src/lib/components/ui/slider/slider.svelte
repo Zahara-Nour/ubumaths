@@ -9,6 +9,10 @@
 		class: className,
 		...restProps
 	}: WithoutChildrenOrChild<SliderPrimitive.RootProps> = $props();
+
+	// Type assertion to work around Bits UI discriminated union limitation
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const safeRestProps = restProps as any;
 </script>
 
 <!--
@@ -25,7 +29,7 @@ Bits UI discriminated union type complexity requires casting restProps.
 		'relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',
 		className
 	)}
-	{...restProps as never}
+	{...safeRestProps}
 >
 	{#snippet children({ thumbs })}
 		<span

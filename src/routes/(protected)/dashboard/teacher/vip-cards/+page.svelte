@@ -111,7 +111,7 @@
 
 	// Count enabled cards by rarity for validation
 	const enabledByRarity = $derived(() => {
-		const counts = {
+		const counts: { common: number; rare: number; epic: number; legendary: number } = {
 			common: 0,
 			rare: 0,
 			epic: 0,
@@ -121,7 +121,8 @@
 		data.templates.forEach((template) => {
 			const isEnabled = overrides[template.id] ?? template.is_enabled;
 			if (isEnabled) {
-				counts[template.rarity]++;
+				const rarity = template.rarity as 'common' | 'rare' | 'epic' | 'legendary';
+				counts[rarity]++;
 			}
 		});
 

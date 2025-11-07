@@ -16,10 +16,10 @@
 	interface CreateConfigData {
 		config_name: string;
 		description: string | null;
-		probability_common: number;
-		probability_rare: number;
-		probability_epic: number;
-		probability_legendary: number;
+		common_probability: number;
+		rare_probability: number;
+		epic_probability: number;
+		legendary_probability: number;
 		valid_from: string | null;
 		valid_until: string | null;
 	}
@@ -30,10 +30,10 @@
 	let formData = $state<CreateConfigData>({
 		config_name: config?.config_name ?? '',
 		description: config?.description ?? '',
-		probability_common: config?.probability_common ?? 60,
-		probability_rare: config?.probability_rare ?? 25,
-		probability_epic: config?.probability_epic ?? 12,
-		probability_legendary: config?.probability_legendary ?? 3,
+		common_probability: config?.common_probability ?? 60,
+		rare_probability: config?.rare_probability ?? 25,
+		epic_probability: config?.epic_probability ?? 12,
+		legendary_probability: config?.legendary_probability ?? 3,
 		valid_from: config?.valid_from ?? null,
 		valid_until: config?.valid_until ?? null
 	});
@@ -43,10 +43,10 @@
 
 	// Calculate total probability
 	const totalProb = $derived(
-		formData.probability_common +
-			formData.probability_rare +
-			formData.probability_epic +
-			formData.probability_legendary
+		formData.common_probability +
+			formData.rare_probability +
+			formData.epic_probability +
+			formData.legendary_probability
 	);
 
 	const isProbabilityValid = $derived(totalProb === 100);
@@ -81,7 +81,7 @@
 		newValue: number
 	) {
 		// Update the changed value
-		formData[`probability_${type}`] = newValue;
+		formData[`${type}_probability`] = newValue;
 
 		// If total is not 100%, adjust the largest other probability
 		if (totalProb !== 100) {
@@ -91,22 +91,22 @@
 
 			// Find the largest other probability to adjust
 			let largestType = otherTypes[0];
-			let largestValue = formData[`probability_${largestType}`];
+			let largestValue = formData[`${largestType}_probability`];
 
 			for (const t of otherTypes) {
-				if (formData[`probability_${t}`] > largestValue) {
+				if (formData[`${t}_probability`] > largestValue) {
 					largestType = t;
-					largestValue = formData[`probability_${t}`];
+					largestValue = formData[`${t}_probability`];
 				}
 			}
 
 			// Adjust the largest to make total = 100
 			const adjustment = 100 - totalProb;
-			const newLargestValue = formData[`probability_${largestType}`] + adjustment;
+			const newLargestValue = formData[`${largestType}_probability`] + adjustment;
 
 			// Only adjust if result is valid (>= 0 and <= 100)
 			if (newLargestValue >= 0 && newLargestValue <= 100) {
-				formData[`probability_${largestType}`] = newLargestValue;
+				formData[`${largestType}_probability`] = newLargestValue;
 			}
 		}
 	}
@@ -170,15 +170,15 @@
 		<div class="space-y-2">
 			<div class="flex justify-between">
 				<Label for="prob_common">Communes</Label>
-				<span class="font-mono text-sm">{formData.probability_common}%</span>
+				<span class="font-mono text-sm">{formData.common_probability}%</span>
 			</div>
 			<input
 				id="prob_common"
 				type="range"
 				min="0"
 				max="100"
-				bind:value={formData.probability_common}
-				onchange={() => handleProbabilityChange('common', formData.probability_common)}
+				bind:value={formData.common_probability}
+				onchange={() => handleProbabilityChange('common', formData.common_probability)}
 				class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-gray-600"
 			/>
 		</div>
@@ -187,15 +187,15 @@
 		<div class="space-y-2">
 			<div class="flex justify-between">
 				<Label for="prob_rare">Rares</Label>
-				<span class="font-mono text-sm">{formData.probability_rare}%</span>
+				<span class="font-mono text-sm">{formData.rare_probability}%</span>
 			</div>
 			<input
 				id="prob_rare"
 				type="range"
 				min="0"
 				max="100"
-				bind:value={formData.probability_rare}
-				onchange={() => handleProbabilityChange('rare', formData.probability_rare)}
+				bind:value={formData.rare_probability}
+				onchange={() => handleProbabilityChange('rare', formData.rare_probability)}
 				class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-blue-200 accent-blue-600"
 			/>
 		</div>
@@ -204,15 +204,15 @@
 		<div class="space-y-2">
 			<div class="flex justify-between">
 				<Label for="prob_epic">Épiques</Label>
-				<span class="font-mono text-sm">{formData.probability_epic}%</span>
+				<span class="font-mono text-sm">{formData.epic_probability}%</span>
 			</div>
 			<input
 				id="prob_epic"
 				type="range"
 				min="0"
 				max="100"
-				bind:value={formData.probability_epic}
-				onchange={() => handleProbabilityChange('epic', formData.probability_epic)}
+				bind:value={formData.epic_probability}
+				onchange={() => handleProbabilityChange('epic', formData.epic_probability)}
 				class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-purple-200 accent-purple-600"
 			/>
 		</div>
@@ -221,15 +221,15 @@
 		<div class="space-y-2">
 			<div class="flex justify-between">
 				<Label for="prob_legendary">Légendaires</Label>
-				<span class="font-mono text-sm">{formData.probability_legendary}%</span>
+				<span class="font-mono text-sm">{formData.legendary_probability}%</span>
 			</div>
 			<input
 				id="prob_legendary"
 				type="range"
 				min="0"
 				max="100"
-				bind:value={formData.probability_legendary}
-				onchange={() => handleProbabilityChange('legendary', formData.probability_legendary)}
+				bind:value={formData.legendary_probability}
+				onchange={() => handleProbabilityChange('legendary', formData.legendary_probability)}
 				class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-yellow-200 accent-yellow-600"
 			/>
 		</div>

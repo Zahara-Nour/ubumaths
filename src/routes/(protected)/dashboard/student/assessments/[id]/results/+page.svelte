@@ -149,7 +149,7 @@
 						{#each data.attempts as attempt, index (attempt.id)}
 							<Table.Row>
 								<Table.Cell>
-									{new Date(attempt.created_at).toLocaleString('fr-FR')}
+									{attempt.created_at ? new Date(attempt.created_at).toLocaleString('fr-FR') : '-'}
 									{#if index === 0}
 										<Badge variant="outline" class="ml-2">Plus récent</Badge>
 									{/if}

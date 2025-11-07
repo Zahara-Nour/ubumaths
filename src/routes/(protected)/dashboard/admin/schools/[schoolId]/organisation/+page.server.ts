@@ -194,7 +194,14 @@ export const actions: Actions = {
 		}
 
 		const { id, ...updates } = validation.data;
-		const { error: dbError } = await supabase.from('school_years').update(updates).eq('id', id);
+		// Explicitly type updates to avoid spread type error
+		const updateData: {
+			name?: string;
+			start_date?: string;
+			end_date?: string;
+			is_active?: boolean;
+		} = updates;
+		const { error: dbError } = await supabase.from('school_years').update(updateData).eq('id', id);
 
 		if (dbError) {
 			console.error('Error updating school year:', dbError);
@@ -397,7 +404,19 @@ export const actions: Actions = {
 		}
 
 		const { id, ...updates } = validation.data;
-		const { error: dbError } = await supabase.from('academic_periods').update(updates).eq('id', id);
+		// Explicitly type updates to avoid spread type error
+		const updateData: {
+			type?: string;
+			name?: string;
+			start_date?: string;
+			end_date?: string;
+			period_order?: number;
+			color?: string | null;
+		} = updates;
+		const { error: dbError } = await supabase
+			.from('academic_periods')
+			.update(updateData)
+			.eq('id', id);
 
 		if (dbError) {
 			console.error('Error updating academic period:', dbError);
@@ -537,7 +556,16 @@ export const actions: Actions = {
 		}
 
 		const { id, ...updates } = validation.data;
-		const { error: dbError } = await supabase.from('school_holidays').update(updates).eq('id', id);
+		// Explicitly type updates to avoid spread type error
+		const updateData: {
+			name?: string;
+			start_date?: string;
+			end_date?: string;
+		} = updates;
+		const { error: dbError } = await supabase
+			.from('school_holidays')
+			.update(updateData)
+			.eq('id', id);
 
 		if (dbError) {
 			console.error('Error updating school holiday:', dbError);

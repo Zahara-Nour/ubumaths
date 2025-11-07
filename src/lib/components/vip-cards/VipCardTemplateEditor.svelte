@@ -24,7 +24,7 @@
 		rarity: 'common' | 'rare' | 'epic' | 'legendary';
 		category: 'bonus' | 'privilege' | 'social' | 'power';
 		is_enabled: boolean;
-		image_url: string;
+		image_path: string;
 		sort_order: number;
 		action?: VipCardAction | null;
 	}
@@ -36,12 +36,12 @@
 		id: card?.id ?? '',
 		name: card?.name ?? '',
 		description: card?.description ?? '',
-		rarity: card?.rarity ?? 'common',
-		category: card?.category ?? 'bonus',
+		rarity: (card?.rarity as 'common' | 'rare' | 'epic' | 'legendary') ?? 'common',
+		category: (card?.category as 'bonus' | 'privilege' | 'social' | 'power') ?? 'bonus',
 		is_enabled: card?.is_enabled ?? true,
-		image_url: card?.image_url ?? '',
+		image_path: card?.image_path ?? '',
 		sort_order: card?.sort_order ?? 0,
-		action: card?.action ?? null
+		action: card?.action as VipCardAction | null
 	});
 
 	let saving = $state(false);
@@ -130,7 +130,12 @@
 
 		saving = true;
 		try {
-			await onSave(formData);
+			// Ensure action is properly typed (null or VipCardAction, not undefined)
+			const dataToSave: CreateTemplateData = {
+				...formData,
+				action: formData.action ?? null
+			};
+			await onSave(dataToSave);
 		} finally {
 			saving = false;
 		}
@@ -220,8 +225,8 @@
 	<div class="space-y-2">
 		<Label for="image_url">URL de l'image</Label>
 		<Input
-			id="image_url"
-			bind:value={formData.image_url}
+			id="image_path"
+			bind:value={formData.image_path}
 			placeholder="/images/vip-cards/bonus_points_x2.webp"
 		/>
 		<p class="text-xs text-muted-foreground">
@@ -256,9 +261,9 @@
 
 	<!-- Action Configuration -->
 	<VipCardActionEditor
-		value={formData.action}
+		value={formData.action ?? null}
 		onValueChange={(newAction) => {
-			formData.action = newAction;
+			formData.action = newAction ?? null;
 		}}
 	/>
 

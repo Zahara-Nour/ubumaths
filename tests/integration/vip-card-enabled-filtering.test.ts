@@ -128,7 +128,7 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 					p_count: 10,
 					p_payment_method: 'gidouilles',
 					p_gidouilles_cost: 10,
-					p_vip_card_instance_id: null
+					p_vip_card_instance_id: undefined
 				});
 
 				expect(error).toBeNull();
@@ -183,7 +183,7 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 					p_count: 10,
 					p_payment_method: 'gidouilles',
 					p_gidouilles_cost: 10,
-					p_vip_card_instance_id: null
+					p_vip_card_instance_id: undefined
 				});
 
 				const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
@@ -252,7 +252,7 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 					p_count: 10,
 					p_payment_method: 'gidouilles',
 					p_gidouilles_cost: 10,
-					p_vip_card_instance_id: null
+					p_vip_card_instance_id: undefined
 				});
 
 				expect(error).toBeNull();
@@ -323,7 +323,7 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 					p_count: 10,
 					p_payment_method: 'gidouilles',
 					p_gidouilles_cost: 10,
-					p_vip_card_instance_id: null
+					p_vip_card_instance_id: undefined
 				});
 
 				expect(error).toBeNull();
@@ -392,7 +392,7 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 				p_count: 1,
 				p_payment_method: 'gidouilles',
 				p_gidouilles_cost: 10,
-				p_vip_card_instance_id: null
+				p_vip_card_instance_id: undefined
 			});
 
 			// ========================================
@@ -456,7 +456,7 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 				p_count: 10,
 				p_payment_method: 'gidouilles',
 				p_gidouilles_cost: 10,
-				p_vip_card_instance_id: null
+				p_vip_card_instance_id: undefined
 			});
 
 			// Should fail because fallback always targets 'common', which is now empty
@@ -500,7 +500,7 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 					p_count: 10,
 					p_payment_method: 'gidouilles',
 					p_gidouilles_cost: 10,
-					p_vip_card_instance_id: null
+					p_vip_card_instance_id: undefined
 				});
 
 				const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
@@ -536,7 +536,7 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 					p_count: 10,
 					p_payment_method: 'gidouilles',
 					p_gidouilles_cost: 10,
-					p_vip_card_instance_id: null
+					p_vip_card_instance_id: undefined
 				});
 
 				const parsedData = typeof data === 'string' ? JSON.parse(data) : data;

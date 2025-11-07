@@ -22,7 +22,7 @@
 		name: string;
 		description: string;
 		rarity: 'common' | 'rare' | 'epic' | 'legendary';
-		category: 'gameplay' | 'academic' | 'fun' | 'social';
+		category: 'bonus' | 'privilege' | 'social' | 'power';
 		is_enabled: boolean;
 		image_path: string;
 		sort_order: number;
@@ -31,10 +31,10 @@
 	interface CreateConfigData {
 		config_name: string;
 		description: string | null;
-		probability_common: number;
-		probability_rare: number;
-		probability_epic: number;
-		probability_legendary: number;
+		common_probability: number;
+		rare_probability: number;
+		epic_probability: number;
+		legendary_probability: number;
 		valid_from: string | null;
 		valid_until: string | null;
 	}
@@ -107,9 +107,10 @@
 
 	async function handleSaveCard(cardData: CreateTemplateData) {
 		const isEditing = !!editingCard;
-		const url = isEditing
-			? `/api/admin/vip-cards/templates/${editingCard.id}`
-			: '/api/admin/vip-cards/templates';
+		const url =
+			isEditing && editingCard
+				? `/api/admin/vip-cards/templates/${editingCard.id}`
+				: '/api/admin/vip-cards/templates';
 		const method = isEditing ? 'PATCH' : 'POST';
 
 		// Convert snake_case to camelCase for API
@@ -120,14 +121,9 @@
 			rarity: cardData.rarity,
 			category: cardData.category,
 			isEnabled: cardData.is_enabled,
-			imagePath: cardData.image_url,
+			imagePath: cardData.image_path,
 			sortOrder: cardData.sort_order
 		};
-
-		// Only include action if it's not null (Zod schema uses .optional() not .nullable())
-		if (cardData.action !== null && cardData.action !== undefined) {
-			apiPayload.action = cardData.action;
-		}
 
 		try {
 			const response = await fetch(url, {
@@ -235,9 +231,10 @@
 
 	async function handleSaveConfig(configData: CreateConfigData) {
 		const isEditing = !!editingConfig;
-		const url = isEditing
-			? `/api/admin/vip-cards/configs/${editingConfig.id}`
-			: '/api/admin/vip-cards/configs';
+		const url =
+			isEditing && editingConfig
+				? `/api/admin/vip-cards/configs/${editingConfig.id}`
+				: '/api/admin/vip-cards/configs';
 		const method = isEditing ? 'PATCH' : 'POST';
 
 		try {
@@ -426,6 +423,9 @@
 
 <!-- Upload Image Modal -->
 {#if uploadingImageCard}
+	{@const cardId = uploadingImageCard.id}
+	{@const cardName = uploadingImageCard.name}
+	{@const imagePath = uploadingImageCard.image_path}
 	<Dialog.Root
 		open={true}
 		onOpenChange={() => {
@@ -434,15 +434,15 @@
 	>
 		<Dialog.Content>
 			<Dialog.Header>
-				<Dialog.Title>Modifier l'image de "{uploadingImageCard.name}"</Dialog.Title>
+				<Dialog.Title>Modifier l'image de "{cardName}"</Dialog.Title>
 				<Dialog.Description>
 					Uploadez une nouvelle image pour cette carte VIP (max 2MB, format PNG/JPG/WebP)
 				</Dialog.Description>
 			</Dialog.Header>
 			<VipCardImageUploader
-				cardId={uploadingImageCard.id}
-				currentImageUrl={uploadingImageCard.image_path ?? undefined}
-				onComplete={(newUrl) => handleImageUploaded(uploadingImageCard.id, newUrl)}
+				{cardId}
+				currentImageUrl={imagePath ?? undefined}
+				onComplete={(newUrl) => handleImageUploaded(cardId, newUrl)}
 				onCancel={() => (uploadingImageCard = null)}
 			/>
 		</Dialog.Content>

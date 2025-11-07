@@ -5998,3 +5998,57 @@ export const Constants = {
 		}
 	}
 } as const;
+
+// Type Aliases - Commonly used types exported for convenience
+
+// Table Row Types
+export type Profile = Tables<'profiles'>;
+export type Class = Tables<'classes'>;
+export type ClassSchedule = Tables<'class_schedules'>;
+export type Notification = Tables<'notifications'>;
+export type NotificationRead = Tables<'notification_reads'>;
+export type Friendship = Tables<'friendships'>;
+
+// Enum Types
+export type UserRole = Enums<'user_role'>;
+export type NotificationType = Database['public']['Tables']['notifications']['Row']['type'];
+export type NotificationPriority = Database['public']['Tables']['notifications']['Row']['priority'];
+export type NotificationTargetType =
+	Database['public']['Tables']['notifications']['Row']['target_type'];
+export type SystemEventType =
+	Database['public']['Tables']['notifications']['Row']['system_event_type'];
+export type FriendshipType = Database['public']['Tables']['friendships']['Row']['status'];
+
+// Other Types
+export type Gender = string | null; // Gender is stored as string in profiles
+
+// Timetable Types (stored as Json in database)
+export type SchoolPeriod = {
+	number: number;
+	name?: string;
+	start_time: string;
+	end_time: string;
+	type?: 'lesson' | 'break' | 'lunch';
+};
+
+export type SchoolTimetable = {
+	periods: SchoolPeriod[];
+};
+
+// Extended Types with Joins
+export type FriendshipWithProfile = Friendship & {
+	friend_profile: {
+		id: string;
+		full_name: string | null;
+		firstname: string | null;
+		lastname: string | null;
+		avatar_url: string | null;
+		role: UserRole;
+	};
+	presence?: {
+		user_id: string;
+		status: string;
+		last_heartbeat: string;
+		updated_at: string;
+	};
+};

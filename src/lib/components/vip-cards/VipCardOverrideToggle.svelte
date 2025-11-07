@@ -21,7 +21,7 @@
 		<img src={card.image_path} alt={card.name} class="h-16 w-16 rounded border object-cover" />
 	{:else}
 		<div class="flex h-16 w-16 items-center justify-center rounded border bg-muted text-2xl">
-			{categoryIcon(card.category)}
+			{categoryIcon(card.category ?? 'bonus')}
 		</div>
 	{/if}
 

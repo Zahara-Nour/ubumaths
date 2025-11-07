@@ -7,6 +7,7 @@
 		contentProps?: WithoutChildren<Select.ContentProps>;
 		triggerClass?: string;
 		variant?: 'default' | 'invisible';
+		class?: string;
 	};
 
 	let {

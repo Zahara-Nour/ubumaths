@@ -308,11 +308,7 @@
 	 * Remove warning using RemoveWarningsModal
 	 * Opens modal that shows exactly which warning will be removed
 	 */
-	function handleRemoveWarning(
-		studentId: string,
-		studentName: string,
-		warningType: 'C' | 'M' | 'R' | 'T'
-	) {
+	function handleRemoveWarning(studentId: string, studentName: string, warningType: string) {
 		if (!selectedClassId || !selectedPeriodId) return;
 
 		// Open RemoveWarningsModal - will load warnings via API and show user which one will be removed
@@ -321,7 +317,7 @@
 			classId: selectedClassId,
 			periodId: selectedPeriodId,
 			count: 1, // Remove 1 warning
-			warningType,
+			warningType: warningType as 'C' | 'M' | 'R' | 'T',
 			studentName
 			// No preloadedWarnings - modal will fetch them
 			// No onComplete - optimistic UI handled by modal
@@ -499,7 +495,7 @@
 																		student.lastname,
 																		student.full_name
 																	),
-																	type
+																	type as 'C' | 'M' | 'R' | 'T'
 																);
 															}}
 														>

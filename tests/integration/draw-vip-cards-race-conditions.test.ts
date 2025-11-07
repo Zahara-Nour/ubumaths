@@ -89,7 +89,7 @@ describe('POST /api/rewards/draw-vip-cards - Race Condition Tests', () => {
 				p_count: 1,
 				p_payment_method: 'gidouilles' as const,
 				p_gidouilles_cost: 10,
-				p_vip_card_instance_id: null
+				p_vip_card_instance_id: undefined
 			};
 
 			// Execute both calls simultaneously using Promise.allSettled
@@ -147,7 +147,7 @@ describe('POST /api/rewards/draw-vip-cards - Race Condition Tests', () => {
 				// The succeeded response should return valid cards
 				const successResponse = succeeded[0];
 				expect(successResponse.data).toBeDefined();
-				const cards = successResponse.data?.cards;
+				const cards = (successResponse.data as { cards?: unknown[] })?.cards;
 				console.log('[test] Success returned', cards?.length, 'cards');
 				expect(cards).toBeDefined();
 				expect(Array.isArray(cards)).toBe(true);
@@ -204,7 +204,7 @@ describe('POST /api/rewards/draw-vip-cards - Race Condition Tests', () => {
 				p_count: 1,
 				p_payment_method: 'gidouilles' as const,
 				p_gidouilles_cost: 10,
-				p_vip_card_instance_id: null
+				p_vip_card_instance_id: undefined
 			};
 
 			const [result1, result2, result3] = await Promise.allSettled([
@@ -303,7 +303,7 @@ describe('POST /api/rewards/draw-vip-cards - Race Condition Tests', () => {
 				p_student_id: student.id,
 				p_count: 1,
 				p_payment_method: 'vip_card' as const,
-				p_gidouilles_cost: null,
+				p_gidouilles_cost: undefined,
 				p_vip_card_instance_id: vipCardInstanceId
 			};
 
@@ -339,7 +339,7 @@ describe('POST /api/rewards/draw-vip-cards - Race Condition Tests', () => {
 				// The succeeded response should return valid cards
 				const successResponse = succeeded[0];
 				expect(successResponse.data).toBeDefined();
-				const cards = successResponse.data?.cards;
+				const cards = (successResponse.data as { cards?: unknown[] })?.cards;
 				expect(cards).toBeDefined();
 				expect(Array.isArray(cards)).toBe(true);
 				expect(cards).toHaveLength(1);
@@ -410,7 +410,7 @@ describe('POST /api/rewards/draw-vip-cards - Race Condition Tests', () => {
 				p_student_id: student.id,
 				p_count: 1,
 				p_payment_method: 'vip_card' as const,
-				p_gidouilles_cost: null,
+				p_gidouilles_cost: undefined,
 				p_vip_card_instance_id: vipCardInstanceId
 			};
 
@@ -500,14 +500,14 @@ describe('POST /api/rewards/draw-vip-cards - Race Condition Tests', () => {
 				p_count: 1,
 				p_payment_method: 'gidouilles' as const,
 				p_gidouilles_cost: 10,
-				p_vip_card_instance_id: null
+				p_vip_card_instance_id: undefined
 			};
 
 			const vipCardRequest = {
 				p_student_id: student.id,
 				p_count: 1,
 				p_payment_method: 'vip_card' as const,
-				p_gidouilles_cost: null,
+				p_gidouilles_cost: undefined,
 				p_vip_card_instance_id: vipCardInstanceId
 			};
 

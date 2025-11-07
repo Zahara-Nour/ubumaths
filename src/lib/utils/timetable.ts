@@ -17,7 +17,7 @@ export function getPeriod(
 	periodNumber: number
 ): SchoolPeriod | undefined {
 	if (!timetable || !timetable.periods) return undefined;
-	return timetable.periods.find((p) => p.number === periodNumber);
+	return timetable.periods.find((p: SchoolPeriod) => p.number === periodNumber);
 }
 
 /**
@@ -174,7 +174,9 @@ export function findMatchingPeriod(
 ): SchoolPeriod | undefined {
 	if (!timetable || !timetable.periods) return undefined;
 
-	return timetable.periods.find((p) => p.start_time === startTime && p.end_time === endTime);
+	return timetable.periods.find(
+		(p: SchoolPeriod) => p.start_time === startTime && p.end_time === endTime
+	);
 }
 
 /**

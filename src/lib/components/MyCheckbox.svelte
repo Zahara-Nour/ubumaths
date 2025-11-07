@@ -37,7 +37,10 @@
 	} = $props();
 
 	function handleChange(value: boolean | 'indeterminate') {
-		checked = value;
+		// Only assign boolean values to checked, not 'indeterminate'
+		if (value !== 'indeterminate') {
+			checked = value;
+		}
 		if (onCheckedChange) {
 			onCheckedChange(value);
 		}

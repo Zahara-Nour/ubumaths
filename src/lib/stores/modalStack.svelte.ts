@@ -40,7 +40,8 @@ import type { Component } from 'svelte';
 
 export interface ModalEntry {
 	id: string; // UUID for identifying this modal instance
-	component: Component; // The Svelte component to render
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	component: Component<any, any, any>; // The Svelte component to render
 	props: Record<string, unknown>; // Props to pass to the component
 	onReturn?: () => void; // Callback when returning to this modal
 	canDismiss?: boolean; // If false, block Escape/backdrop clicks

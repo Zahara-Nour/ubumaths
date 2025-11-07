@@ -29,6 +29,7 @@ export interface VipCardTemplate {
 	} | null;
 	sort_order: number;
 	created_at: string;
+	updated_at: string;
 }
 
 /**
@@ -245,6 +246,7 @@ export function responseToTemplate(response: TemplateResponse): VipCardTemplate 
 		is_enabled: response.isEnabled,
 		action: response.action,
 		sort_order: response.sortOrder,
-		created_at: response.createdAt
+		created_at: response.createdAt,
+		updated_at: response.createdAt // Use createdAt as fallback for now
 	};
 }

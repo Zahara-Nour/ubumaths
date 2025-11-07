@@ -50,8 +50,10 @@
 			return `Du ${new Date(from).toLocaleDateString('fr-FR', options)} au ${new Date(until).toLocaleDateString('fr-FR', options)}`;
 		} else if (from) {
 			return `À partir du ${new Date(from).toLocaleDateString('fr-FR', options)}`;
-		} else {
+		} else if (until) {
 			return `Jusqu'au ${new Date(until).toLocaleDateString('fr-FR', options)}`;
+		} else {
+			return 'Pas de limite de date';
 		}
 	}
 </script>

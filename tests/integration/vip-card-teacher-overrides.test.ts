@@ -177,7 +177,7 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 				p_count: count,
 				p_payment_method: 'gidouilles',
 				p_gidouilles_cost: count,
-				p_vip_card_instance_id: null
+				p_vip_card_instance_id: undefined
 			});
 
 			expect(error).toBeNull();
@@ -751,7 +751,7 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 				p_count: 10,
 				p_payment_method: 'gidouilles',
 				p_gidouilles_cost: 10,
-				p_vip_card_instance_id: null
+				p_vip_card_instance_id: undefined
 			});
 
 			// ========================================
