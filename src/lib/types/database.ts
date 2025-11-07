@@ -5186,6 +5186,15 @@ export type Database = {
 			cleanup_expired_rate_limits: { Args: never; Returns: undefined };
 			cleanup_old_errors: { Args: { p_days_old?: number }; Returns: number };
 			cleanup_stale_presence: { Args: never; Returns: undefined };
+			complete_job_run: {
+				Args: {
+					run_id: string;
+					status: string;
+					error_message?: string;
+					metadata?: Json;
+				};
+				Returns: undefined;
+			};
 			create_1on1_chat: {
 				Args: { p_user1_id: string; p_user2_id: string };
 				Returns: string;
@@ -5776,6 +5785,13 @@ export type Database = {
 			soft_delete_message: {
 				Args: { p_message_id: string };
 				Returns: undefined;
+			};
+			start_job_run: {
+				Args: {
+					job_name: string;
+					metadata?: Json;
+				};
+				Returns: string;
 			};
 			student_has_exercise_access: {
 				Args: { p_exercise_id: string; p_student_id: string };
