@@ -621,42 +621,39 @@
 					</Avatar.Root>
 				{/if}
 
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<div
-					class="max-w-[80%] space-y-2 rounded-lg p-3 shadow-sm {message.role === 'user'
-						? 'bg-primary text-primary-foreground'
-						: 'border border-border bg-card'} {message.role === 'assistant' && message.isTyping
-						? 'cursor-pointer transition-colors hover:bg-muted/50'
-						: ''}"
-					onclick={() => message.role === 'assistant' && skipTypingAnimation(index)}
-				>
-					<!-- Display images if present -->
-					{#if getMessageImages(message.content).length > 0}
-						<div
-							class="grid gap-2 {getMessageImages(message.content).length === 1
-								? 'grid-cols-1'
-								: 'grid-cols-2'}"
-						>
-							{#each getMessageImages(message.content) as imageUrl (imageUrl)}
-								<img
-									src={imageUrl}
-									alt="Attached image"
-									class="max-h-[200px] w-full rounded border border-border object-contain"
-									loading="lazy"
-								/>
-							{/each}
-						</div>
-					{/if}
+				{#if message.role === 'assistant' && message.isTyping}
+					<button
+						type="button"
+						class="max-w-[80%] cursor-pointer space-y-2 rounded-lg border border-border bg-card p-3 text-left shadow-sm transition-colors hover:bg-muted/50"
+						onclick={() => skipTypingAnimation(index)}
+						aria-label="Cliquez pour afficher le message complet"
+					>
+						<!-- Display images if present -->
+						{#if getMessageImages(message.content).length > 0}
+							<div
+								class="grid gap-2 {getMessageImages(message.content).length === 1
+									? 'grid-cols-1'
+									: 'grid-cols-2'}"
+							>
+								{#each getMessageImages(message.content) as imageUrl (imageUrl)}
+									<img
+										src={imageUrl}
+										alt="Pièce jointe au message"
+										class="max-h-[200px] w-full rounded border border-border object-contain"
+										loading="lazy"
+									/>
+								{/each}
+							</div>
+						{/if}
 
-					<!-- Display text content -->
-					{#if getMessageText(message.content)}
-						<div
-							class="leading-relaxed break-words"
-							style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
-						>
-							{#if message.role === 'assistant'}
-								<!--
+						<!-- Display text content -->
+						{#if getMessageText(message.content)}
+							<div
+								class="leading-relaxed break-words"
+								style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
+							>
+								{#if message.role === 'assistant'}
+									<!--
 									Assistant messages: render with MathDisplay for LaTeX support
 									=================================================================
 
@@ -670,29 +667,98 @@
 									See: src/lib/components/MathDisplay.svelte
 									See: src/lib/utils/latex-parser.ts
 								-->
-								<MathDisplay text={getDisplayedText(index, message)} />
-								{#if isMessageTyping(index)}
-									<span class="ml-0.5 inline-block h-[1em] w-[2px] animate-pulse bg-current"></span>
+									<MathDisplay text={getDisplayedText(index, message)} />
+									{#if isMessageTyping(index)}
+										<span class="ml-0.5 inline-block h-[1em] w-[2px] animate-pulse bg-current"
+										></span>
+									{/if}
+								{:else}
+									<!-- User messages: plain text (no LaTeX parsing) -->
+									<span class="whitespace-pre-wrap">{getMessageText(message.content)}</span>
 								{/if}
-							{:else}
-								<!-- User messages: plain text (no LaTeX parsing) -->
-								<span class="whitespace-pre-wrap">{getMessageText(message.content)}</span>
-							{/if}
-						</div>
-					{/if}
+							</div>
+						{/if}
 
+						<div
+							class="text-right text-muted-foreground"
+							style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
+						>
+							{new Date(message.timestamp).toLocaleTimeString('fr-FR', {
+								hour: '2-digit',
+								minute: '2-digit'
+							})}
+						</div>
+					</button>
+				{:else}
 					<div
-						class="text-right {message.role === 'user'
-							? 'text-primary-foreground/70'
-							: 'text-muted-foreground'}"
-						style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
+						class="max-w-[80%] space-y-2 rounded-lg p-3 shadow-sm {message.role === 'user'
+							? 'bg-primary text-primary-foreground'
+							: 'border border-border bg-card'}"
 					>
-						{new Date(message.timestamp).toLocaleTimeString('fr-FR', {
-							hour: '2-digit',
-							minute: '2-digit'
-						})}
+						<!-- Display images if present -->
+						{#if getMessageImages(message.content).length > 0}
+							<div
+								class="grid gap-2 {getMessageImages(message.content).length === 1
+									? 'grid-cols-1'
+									: 'grid-cols-2'}"
+							>
+								{#each getMessageImages(message.content) as imageUrl (imageUrl)}
+									<img
+										src={imageUrl}
+										alt="Pièce jointe au message"
+										class="max-h-[200px] w-full rounded border border-border object-contain"
+										loading="lazy"
+									/>
+								{/each}
+							</div>
+						{/if}
+
+						<!-- Display text content -->
+						{#if getMessageText(message.content)}
+							<div
+								class="leading-relaxed break-words"
+								style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
+							>
+								{#if message.role === 'assistant'}
+									<!--
+										Assistant messages: render with MathDisplay for LaTeX support
+										=================================================================
+
+										The MathDisplay component:
+										- Parses text for $$...$$ LaTeX expressions
+										- Renders math as MathLive fields (read-only)
+										- Updates in real-time during typing animation
+										- Blends seamlessly with message bubble background
+										- No borders, no hover effects, transparent background
+
+										See: src/lib/components/MathDisplay.svelte
+										See: src/lib/utils/latex-parser.ts
+									-->
+									<MathDisplay text={getDisplayedText(index, message)} />
+									{#if isMessageTyping(index)}
+										<span class="ml-0.5 inline-block h-[1em] w-[2px] animate-pulse bg-current"
+										></span>
+									{/if}
+								{:else}
+									<!-- User messages: plain text (no LaTeX parsing) -->
+									<span class="whitespace-pre-wrap">{getMessageText(message.content)}</span>
+								{/if}
+							</div>
+						{/if}
+
+						<div
+							class="text-right {message.role === 'user'
+								? 'text-primary-foreground/70'
+								: 'text-muted-foreground'}"
+							style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
+						>
+							{new Date(message.timestamp).toLocaleTimeString('fr-FR', {
+								hour: '2-digit',
+								minute: '2-digit'
+							})}
+						</div>
 					</div>
-				</div>
+				{/if}
 
 				{#if message.role === 'user'}
 					<!-- User Avatar (right side) -->
@@ -750,7 +816,7 @@
 					<div class="relative">
 						<img
 							src={img.url}
-							alt={img.name || 'Image'}
+							alt={img.name || 'Pièce jointe'}
 							class="h-20 w-20 rounded border border-border object-cover"
 						/>
 						<button

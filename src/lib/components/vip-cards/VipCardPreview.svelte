@@ -255,16 +255,20 @@
 			</div>
 		{:else}
 			<div class="absolute top-2 left-2 z-10">
-				<div
+				<button
+					type="button"
 					class="h-8 w-8 rounded-full bg-white/80 p-1.5 shadow-lg backdrop-blur-sm transition-all {onInlineEdit &&
 					showActions
 						? 'cursor-pointer hover:scale-110'
-						: ''}"
+						: 'pointer-events-none'}"
 					style="color: {rarityGemInfo.color}; {rarityGemInfo.glow
 						? 'filter: drop-shadow(0 0 4px currentColor) drop-shadow(0 0 8px currentColor);'
 						: ''}"
 					ondblclick={handleRarityDoubleClick}
-					title={onInlineEdit && showActions ? 'Double-cliquez pour éditer la rareté' : card.rarity}
+					disabled={!onInlineEdit || !showActions}
+					aria-label={onInlineEdit && showActions
+						? 'Double-cliquez pour éditer la rareté'
+						: `Rareté: ${card.rarity}`}
 				>
 					<svg class="h-full w-full" viewBox="0 0 24 24" fill="none">
 						<path
@@ -277,7 +281,7 @@
 						<path d="M4 8L8 8L12 22L4 8Z" fill="black" opacity="0.2" />
 						<path d="M20 8L16 8L12 22L20 8Z" fill="black" opacity="0.2" />
 					</svg>
-				</div>
+				</button>
 			</div>
 		{/if}
 
@@ -342,21 +346,25 @@
 					class="w-full resize-none overflow-hidden rounded border border-primary bg-background px-2 py-1 text-sm font-semibold focus:ring-2 focus:ring-primary focus:outline-none"
 					placeholder="Nom de la carte"
 					rows="1"
-					autofocus
 					use:autoFocus
+					aria-label="Modifier le nom de la carte"
 				/>
 			{:else}
-				<h3
-					class="truncate text-sm font-semibold {card.name
+				<button
+					type="button"
+					class="w-full truncate text-left text-sm font-semibold {card.name
 						? ''
 						: 'text-muted-foreground/50 italic'} {onInlineEdit && showActions
 						? 'cursor-pointer hover:text-primary'
-						: ''}"
+						: 'cursor-default'}"
 					ondblclick={handleTitleDoubleClick}
-					title={onInlineEdit && showActions ? 'Double-cliquez pour éditer' : card.name}
+					disabled={!onInlineEdit || !showActions}
+					aria-label={onInlineEdit && showActions
+						? `Nom de la carte: ${card.name || '(Sans nom)'}. Double-cliquez pour éditer`
+						: card.name}
 				>
 					{card.name || (onInlineEdit && showActions ? '(Sans nom)' : '')}
-				</h3>
+				</button>
 			{/if}
 
 			<!-- Description - Editable on double-click -->
@@ -368,22 +376,26 @@
 					class="w-full resize-none overflow-hidden rounded border border-primary bg-background px-2 py-1 text-xs text-muted-foreground focus:ring-2 focus:ring-primary focus:outline-none"
 					placeholder="Description de la carte"
 					rows="2"
-					autofocus
 					use:autoFocus
+					aria-label="Modifier la description de la carte"
 				/>
 			{:else}
-				<p
-					class="line-clamp-2 text-xs {card.description
+				<button
+					type="button"
+					class="line-clamp-2 w-full text-left text-xs {card.description
 						? 'text-muted-foreground'
 						: 'text-muted-foreground/50 italic'} {onInlineEdit && showActions
 						? 'cursor-pointer hover:text-primary'
-						: ''}"
+						: 'cursor-default'}"
 					ondblclick={handleDescriptionDoubleClick}
-					title={onInlineEdit && showActions ? 'Double-cliquez pour éditer' : card.description}
+					disabled={!onInlineEdit || !showActions}
+					aria-label={onInlineEdit && showActions
+						? `Description: ${card.description || '(Aucune description)'}. Double-cliquez pour éditer`
+						: card.description}
 				>
 					{card.description ||
 						(onInlineEdit && showActions ? '(Double-cliquez pour ajouter une description)' : '')}
-				</p>
+				</button>
 			{/if}
 
 			<!-- Action - Editable on double-click -->
@@ -407,18 +419,20 @@
 					{/if}
 				</div>
 			{:else}
-				<div
+				<button
+					type="button"
 					class="flex items-center gap-1 text-xs {onInlineEdit && showActions
 						? 'cursor-pointer hover:text-primary'
-						: 'text-muted-foreground'}"
+						: 'cursor-default text-muted-foreground'}"
 					ondblclick={handleActionDoubleClick}
-					title={onInlineEdit && showActions
-						? 'Double-cliquez pour éditer'
+					disabled={!onInlineEdit || !showActions}
+					aria-label={onInlineEdit && showActions
+						? `Action: ${getActionLabel(card.action)}. Double-cliquez pour éditer`
 						: getActionLabel(card.action)}
 				>
-					<span>{getActionIcon(getActionType(card.action))}</span>
+					<span aria-hidden="true">{getActionIcon(getActionType(card.action))}</span>
 					<span>{getActionLabel(card.action)}</span>
-				</div>
+				</button>
 			{/if}
 		</div>
 

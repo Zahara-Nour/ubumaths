@@ -11,6 +11,7 @@
 	import type { QuestionInstance } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { Button } from '$lib/components/ui/button';
+	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { ArrowLeft } from 'lucide-svelte';
@@ -190,8 +191,8 @@
 		<Card.Content class="space-y-4">
 			<!-- Mode Selection -->
 			<div>
-				<label class="mb-2 block text-sm font-medium">Display Mode</label>
-				<div class="flex gap-2">
+				<Label class="mb-2 block">Display Mode</Label>
+				<div class="flex gap-2" role="group" aria-label="Sélection du mode d'affichage">
 					<Button
 						variant={!interactive ? 'default' : 'outline'}
 						onclick={() => (interactive = false)}
@@ -209,8 +210,8 @@
 
 			<!-- Question Type Selection -->
 			<div>
-				<label class="mb-2 block text-sm font-medium">Question Type</label>
-				<div class="flex flex-wrap gap-2">
+				<Label class="mb-2 block">Question Type</Label>
+				<div class="flex flex-wrap gap-2" role="group" aria-label="Sélection du type de question">
 					<Button
 						variant={selectedQuestionType === 'numerical' ? 'default' : 'outline'}
 						onclick={() => (selectedQuestionType = 'numerical')}

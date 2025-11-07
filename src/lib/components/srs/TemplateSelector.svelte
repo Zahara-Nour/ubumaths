@@ -211,11 +211,19 @@
 				<div
 					class="flex items-start gap-3 rounded-lg border bg-card p-3 transition-colors hover:bg-accent"
 					onclick={() => toggleTemplate(template.id)}
+					onkeydown={(e) =>
+						(e.key === 'Enter' || e.key === ' ') &&
+						(e.preventDefault(), toggleTemplate(template.id))}
 					role="button"
 					tabindex="0"
+					aria-label="Sélectionner le template {template.title || template.id.slice(0, 8)}"
 				>
 					<!-- Checkbox -->
-					<div onclick={(e) => e.stopPropagation()}>
+					<div
+						onclick={(e) => e.stopPropagation()}
+						onkeydown={(e) => e.key === 'Enter' && e.stopPropagation()}
+						role="none"
+					>
 						<Checkbox
 							checked={selectedIds.has(template.id)}
 							onCheckedChange={() => toggleTemplate(template.id)}

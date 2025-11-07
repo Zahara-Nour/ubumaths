@@ -768,16 +768,17 @@
 												onkeydown={(e) => handleFieldKeyDown(e, 'firstname')}
 												onblur={() => handleFieldBlur('firstname')}
 												class="w-full border-none bg-transparent p-0 text-base focus:ring-0 focus:outline-none"
-												autofocus
+												aria-label="Modifier le prénom"
 											/>
 										{:else}
-											<p
-												class="cursor-pointer text-base transition-colors hover:text-primary"
+											<button
+												type="button"
+												class="w-full cursor-pointer text-left text-base transition-colors hover:text-primary"
 												onclick={handleFirstnameDoubleClick}
-												title="Cliquez pour éditer"
+												aria-label="Prénom: {tempFirstname || 'Non défini'}. Cliquez pour éditer"
 											>
 												{tempFirstname || '—'}
-											</p>
+											</button>
 										{/if}
 									</div>
 
@@ -795,16 +796,17 @@
 												onkeydown={(e) => handleFieldKeyDown(e, 'lastname')}
 												onblur={() => handleFieldBlur('lastname')}
 												class="w-full border-none bg-transparent p-0 text-base focus:ring-0 focus:outline-none"
-												autofocus
+												aria-label="Modifier le nom"
 											/>
 										{:else}
-											<p
-												class="cursor-pointer text-base transition-colors hover:text-primary"
+											<button
+												type="button"
+												class="w-full cursor-pointer text-left text-base transition-colors hover:text-primary"
 												onclick={handleLastnameDoubleClick}
-												title="Cliquez pour éditer"
+												aria-label="Nom: {tempLastname || 'Non défini'}. Cliquez pour éditer"
 											>
 												{tempLastname || '—'}
-											</p>
+											</button>
 										{/if}
 									</div>
 								</div>
@@ -911,10 +913,13 @@
 									</div>
 
 									<!-- Display badges -->
-									<div
-										class="min-h-[40px] cursor-pointer"
+									<button
+										type="button"
+										class="min-h-[40px] w-full cursor-pointer text-left"
 										onclick={() => (editingClasses = true)}
-										title={editingClasses ? '' : 'Cliquez pour éditer'}
+										aria-label={editingClasses
+											? "Classes en cours d'édition"
+											: 'Cliquez pour éditer les classes'}
 									>
 										<div class="flex flex-wrap gap-2">
 											{#if selectedUser.class_ids && selectedUser.class_ids.length > 0}
@@ -943,7 +948,7 @@
 												<p class="text-sm text-muted-foreground">Aucune classe</p>
 											{/if}
 										</div>
-									</div>
+									</button>
 								</div>
 
 								<!-- Save/Reset Buttons -->

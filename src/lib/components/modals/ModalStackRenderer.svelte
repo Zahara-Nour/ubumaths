@@ -55,19 +55,26 @@
 <!-- Render modal if exists -->
 {#if currentModal}
 	<!-- Backdrop -->
-	<div
+	<button
+		type="button"
 		class="modal-backdrop"
 		style="z-index: {1000 + stackDepth}"
 		onclick={handleBackdropClick}
-		role="dialog"
-		aria-modal="true"
+		aria-label="Fermer la modale en cliquant sur l'arrière-plan"
 		transition:fade={{ duration: 200 }}
 	>
 		<!-- Modal container -->
-		<div class="modal-container" onclick={handleModalClick}>
+		<div
+			class="modal-container"
+			onclick={handleModalClick}
+			onkeydown={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+		>
 			<svelte:component this={currentModal.component} {...currentModal.props} />
 		</div>
-	</div>
+	</button>
 {/if}
 
 <style>
@@ -78,11 +85,16 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		border: none;
+		padding: 0;
+		cursor: default;
+		text-align: left;
 	}
 
 	.modal-container {
 		max-width: 90vw;
 		max-height: 90vh;
 		overflow: auto;
+		cursor: default;
 	}
 </style>

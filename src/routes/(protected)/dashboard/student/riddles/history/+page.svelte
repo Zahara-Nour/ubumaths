@@ -10,6 +10,7 @@
 	import { calculateBadges, getTierColorClass } from '$lib/utils/riddle-badges';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
+	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Progress from '$lib/components/ui/progress';
@@ -198,7 +199,7 @@
 			<div class="flex flex-col gap-4 sm:flex-row">
 				<!-- Difficulty Filter -->
 				<div class="flex-1 space-y-2">
-					<label class="text-sm font-medium">Difficulté</label>
+					<Label>Difficulté</Label>
 					<MySelect
 						type="single"
 						bind:value={selectedDifficulty}
@@ -211,7 +212,7 @@
 
 				<!-- Genre Filter -->
 				<div class="flex-1 space-y-2">
-					<label class="text-sm font-medium">Genre</label>
+					<Label>Genre</Label>
 					<MySelect
 						type="single"
 						bind:value={selectedGenre}

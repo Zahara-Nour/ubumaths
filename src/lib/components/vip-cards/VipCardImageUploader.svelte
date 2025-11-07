@@ -108,7 +108,7 @@
 			<p class="mb-2 text-sm font-medium">Image actuelle :</p>
 			<img
 				src={currentImageUrl}
-				alt="Image actuelle"
+				alt="Carte VIP actuelle"
 				class="h-32 w-32 rounded border object-cover"
 			/>
 		</div>
@@ -122,9 +122,17 @@
 		ondrop={handleDrop}
 		ondragover={handleDragOver}
 		ondragleave={handleDragLeave}
+		onkeydown={(e) => e.key === 'Enter' && fileInput.click()}
+		role="button"
+		tabindex="0"
+		aria-label="Zone de dépôt d'image : glissez-déposez une image ici ou appuyez sur Entrée pour sélectionner un fichier"
 	>
 		{#if preview}
-			<img src={preview} alt="Aperçu" class="mx-auto mb-4 h-48 w-48 rounded object-cover" />
+			<img
+				src={preview}
+				alt="Aperçu de la nouvelle image : {selectedFile?.name || 'image sélectionnée'}"
+				class="mx-auto mb-4 h-48 w-48 rounded object-cover"
+			/>
 			<p class="mb-2 text-sm text-muted-foreground">{selectedFile?.name}</p>
 			<p class="text-xs text-muted-foreground">
 				{((selectedFile?.size || 0) / 1024).toFixed(1)} KB

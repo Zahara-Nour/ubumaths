@@ -225,7 +225,7 @@
 					<p class="mb-2 text-sm font-medium">Aperçu:</p>
 					<img
 						src={imageUrl}
-						alt="Aperçu de l'image"
+						alt="Aperçu de l'énigme : {title || 'énigme sans titre'}"
 						class="max-h-48 rounded-lg border"
 						onerror={() => (imageUrl = '')}
 					/>

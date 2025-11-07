@@ -120,9 +120,11 @@
 				{:else}
 					<div class="space-y-3">
 						{#each data.classes as classData (classData.id)}
-							<div
-								class="flex cursor-pointer items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent/50"
+							<button
+								type="button"
+								class="flex w-full cursor-pointer items-center justify-between rounded-lg border p-4 text-left transition-colors hover:bg-accent/50"
 								onclick={() => toggleClass(classData.id)}
+								aria-label="Sélectionner la classe {classData.name}"
 							>
 								<div class="flex items-center gap-4">
 									<Checkbox checked={selectedClassIds.includes(classData.id)} />
@@ -139,7 +141,7 @@
 										Déjà assignée
 									</Badge>
 								{/if}
-							</div>
+							</button>
 						{/each}
 					</div>
 				{/if}

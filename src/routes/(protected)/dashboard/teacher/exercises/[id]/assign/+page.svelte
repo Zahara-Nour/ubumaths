@@ -311,16 +311,18 @@
 									{:else}
 										<div class="max-h-60 overflow-y-auto rounded-md border">
 											{#each data.students as student (student.id)}
-												<div
-													class="flex cursor-pointer items-center gap-3 border-b p-3 transition-colors last:border-b-0 hover:bg-accent"
+												<button
+													type="button"
+													class="flex w-full cursor-pointer items-center gap-3 border-b p-3 text-left transition-colors last:border-b-0 hover:bg-accent"
 													onclick={() => toggleStudent(student.id)}
+													aria-label="Sélectionner l'élève {student.full_name}"
 												>
 													<Checkbox checked={selectedStudents.includes(student.id)} />
 													<div class="flex-1">
 														<div class="font-medium">{student.full_name}</div>
 														<div class="text-xs text-muted-foreground">{student.email}</div>
 													</div>
-												</div>
+												</button>
 											{/each}
 										</div>
 									{/if}
@@ -387,9 +389,11 @@
 									{:else}
 										<div class="space-y-2">
 											{#each data.classes as classItem (classItem.id)}
-												<div
-													class="flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-accent"
+												<button
+													type="button"
+													class="flex w-full cursor-pointer items-center gap-3 rounded-lg border p-3 text-left transition-colors hover:bg-accent"
 													onclick={() => toggleClass(classItem.id)}
+													aria-label="Sélectionner la classe {classItem.name}"
 												>
 													<Checkbox checked={selectedClasses.includes(classItem.id)} />
 													<div class="flex-1">
@@ -400,7 +404,7 @@
 																: ''}
 														</div>
 													</div>
-												</div>
+												</button>
 											{/each}
 										</div>
 									{/if}

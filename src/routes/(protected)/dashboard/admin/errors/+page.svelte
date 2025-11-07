@@ -4,6 +4,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
+	import { Label } from '$lib/components/ui/label';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
@@ -168,7 +169,7 @@
 			<div class="grid gap-4 md:grid-cols-4">
 				<!-- Type Filter -->
 				<div class="space-y-2">
-					<label class="text-sm font-medium">Type d'erreur</label>
+					<Label>Type d'erreur</Label>
 					<MySelect
 						type="single"
 						bind:value={typeFilter}
@@ -180,7 +181,7 @@
 
 				<!-- Severity Filter -->
 				<div class="space-y-2">
-					<label class="text-sm font-medium">Sévérité</label>
+					<Label>Sévérité</Label>
 					<MySelect
 						type="single"
 						bind:value={severityFilter}
@@ -192,7 +193,7 @@
 
 				<!-- Resolved Filter -->
 				<div class="space-y-2">
-					<label class="text-sm font-medium">Statut</label>
+					<Label>Statut</Label>
 					<MySelect
 						type="single"
 						bind:value={resolvedFilter}
@@ -204,8 +205,9 @@
 
 				<!-- Search -->
 				<div class="space-y-2">
-					<label class="text-sm font-medium">Recherche</label>
+					<Label for="error-search">Recherche</Label>
 					<Input
+						id="error-search"
 						type="text"
 						placeholder="Message d'erreur..."
 						bind:value={searchInput}

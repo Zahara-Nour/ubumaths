@@ -51,6 +51,7 @@
 	import type { ClassSchedule, SchoolPeriod } from '$lib/types/database';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import MySelect from '$lib/components/MySelect.svelte';
@@ -219,9 +220,9 @@
 		>
 			<!-- Day of Week -->
 			<div>
-				<label class="mb-2 block text-sm font-medium text-foreground">
+				<Label class="mb-2 block">
 					Jour <span class="text-destructive">*</span>
-				</label>
+				</Label>
 				<MySelect
 					type="single"
 					bind:value={selectedDay}
@@ -234,9 +235,9 @@
 
 			<!-- Period Selection -->
 			<div>
-				<label class="mb-2 block text-sm font-medium text-foreground">
+				<Label class="mb-2 block">
 					Période <span class="text-destructive">*</span>
-				</label>
+				</Label>
 				{#if periods.length === 0}
 					<div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
 						Aucune période définie pour cette école. Contactez l'administrateur pour configurer
@@ -256,9 +257,7 @@
 
 			<!-- Subject -->
 			<div>
-				<label for="subject" class="mb-2 block text-sm font-medium text-foreground">
-					Matière
-				</label>
+				<Label for="subject" class="mb-2 block">Matière</Label>
 				<Input
 					id="subject"
 					type="text"
@@ -270,7 +269,7 @@
 
 			<!-- Room -->
 			<div>
-				<label for="room" class="mb-2 block text-sm font-medium text-foreground"> Salle </label>
+				<Label for="room" class="mb-2 block">Salle</Label>
 				<Input
 					id="room"
 					type="text"
@@ -282,7 +281,7 @@
 
 			<!-- Notes -->
 			<div>
-				<label for="notes" class="mb-2 block text-sm font-medium text-foreground"> Notes </label>
+				<Label for="notes" class="mb-2 block">Notes</Label>
 				<Textarea
 					id="notes"
 					bind:value={formData.notes}

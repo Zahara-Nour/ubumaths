@@ -14,6 +14,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
+	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Input } from '$lib/components/ui/input';
 	import { RefreshCw, Copy, Check } from 'lucide-svelte';
@@ -248,8 +249,9 @@
 		<Card.Content class="space-y-4">
 			<!-- Question Type Selector -->
 			<div class="space-y-2">
-				<label class="text-sm font-medium">Question Type</label>
+				<Label for="question-type">Question Type</Label>
 				<select
+					id="question-type"
 					bind:value={selectedQuestionType}
 					onchange={() => changeQuestion()}
 					class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
@@ -265,8 +267,8 @@
 			<div class="grid grid-cols-2 gap-4">
 				<!-- Mode -->
 				<div class="space-y-2">
-					<label class="text-sm font-medium">Mode</label>
-					<div class="flex gap-2">
+					<Label>Mode</Label>
+					<div class="flex gap-2" role="group" aria-label="Mode de visualisation">
 						<Button
 							variant={!interactive ? 'default' : 'outline'}
 							onclick={() => {
@@ -292,8 +294,9 @@
 
 				<!-- Size -->
 				<div class="space-y-2">
-					<label class="text-sm font-medium">Size</label>
+					<Label for="size-select">Size</Label>
 					<select
+						id="size-select"
 						bind:value={size}
 						class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 					>
@@ -307,13 +310,18 @@
 			<!-- Toggles -->
 			<div class="grid grid-cols-2 gap-4">
 				<label class="flex items-center gap-2">
-					<input type="checkbox" bind:checked={showCorrectionOnWrong} class="h-4 w-4" />
+					<input
+						type="checkbox"
+						bind:checked={showCorrectionOnWrong}
+						class="h-4 w-4"
+						aria-label="Auto-flip on wrong answer"
+					/>
 					<span class="text-sm">Auto-flip on wrong answer</span>
 				</label>
 
 				<div class="space-y-1">
-					<label class="text-sm">Max attempts (0 = unlimited)</label>
-					<Input type="number" min="0" bind:value={maxAttempts} class="w-full" />
+					<Label for="max-attempts">Max attempts (0 = unlimited)</Label>
+					<Input id="max-attempts" type="number" min="0" bind:value={maxAttempts} class="w-full" />
 				</div>
 			</div>
 
