@@ -7,16 +7,17 @@ import type { RequestHandler } from './$types';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 /**
- * POST /api/cache/cleanup
+ * GET/POST /api/cache/cleanup
  *
  * Cron job endpoint to clean up expired cache entries from server_cache table.
  * Calls cleanup_expired_cache() RPC function and tracks execution via job_runs.
  *
  * Expected to be called periodically (e.g., every 5-10 minutes) by a cron service.
+ * Vercel cron jobs use GET requests, but POST is also supported for manual triggers.
  *
  * @returns JSON with success status and deleted count
  */
-export const POST: RequestHandler = async () => {
+const cleanupHandler: RequestHandler = async () => {
 	const serviceClient = createServiceRoleClient();
 	let runId: string | null = null;
 
@@ -92,3 +93,7 @@ export const POST: RequestHandler = async () => {
 		);
 	}
 };
+
+// Export for both GET (Vercel cron) and POST (manual triggers)
+export const GET = cleanupHandler;
+export const POST = cleanupHandler;
