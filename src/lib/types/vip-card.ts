@@ -36,7 +36,7 @@ export type VipCardRarity = 'common' | 'rare' | 'epic' | 'legendary';
  */
 interface ExchangeReplaceRandom {
 	mode: 'replace_random';
-	count: number; // Number of cards to replace
+	count?: number; // Optional: Fixed number of cards to replace. If omitted, user can choose 1-10 cards
 }
 
 /**

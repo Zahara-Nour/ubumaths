@@ -51,8 +51,13 @@
 	);
 	let replaceRandomCount = $state<number>(
 		value?.type === 'exchange_cards' && value.exchange.mode === 'replace_random'
-			? value.exchange.count
+			? (value.exchange.count ?? 3)
 			: 3
+	);
+	let replaceRandomFlexible = $state<boolean>(
+		value?.type === 'exchange_cards' &&
+			value.exchange.mode === 'replace_random' &&
+			value.exchange.count === undefined
 	);
 	let rarityPointsTargetRarity = $state<string>(
 		value?.type === 'exchange_cards' && value.exchange.mode === 'rarity_points'
@@ -205,7 +210,7 @@
 					type: 'exchange_cards',
 					exchange: {
 						mode: 'replace_random',
-						count: replaceRandomCount
+						count: replaceRandomFlexible ? undefined : replaceRandomCount
 					}
 				};
 			}
@@ -509,25 +514,38 @@
 
 			<!-- Mode-specific parameters -->
 			{#if exchangeMode === 'replace_random'}
-				<div class="space-y-2">
-					<Label for="replace-count">Nombre de cartes à remplacer</Label>
-					<Input
-						id="replace-count"
-						type="number"
-						bind:value={replaceRandomCount}
-						min={1}
-						max={10}
-						class="w-32"
+				<div class="space-y-3">
+					<MyCheckbox
+						bind:checked={replaceRandomFlexible}
+						label="Nombre flexible (l'élève choisit entre 1 et 10 cartes)"
 					/>
-					<p class="text-sm text-muted-foreground">
-						L'élève échange {replaceRandomCount} carte{replaceRandomCount > 1 ? 's' : ''} aléatoire{replaceRandomCount >
-						1
-							? 's'
-							: ''} contre {replaceRandomCount} nouvelle{replaceRandomCount > 1 ? 's' : ''} carte{replaceRandomCount >
-						1
-							? 's'
-							: ''}.
-					</p>
+					{#if !replaceRandomFlexible}
+						<div class="space-y-2">
+							<Label for="replace-count">Nombre de cartes à remplacer</Label>
+							<Input
+								id="replace-count"
+								type="number"
+								bind:value={replaceRandomCount}
+								min={1}
+								max={10}
+								class="w-32"
+							/>
+							<p class="text-sm text-muted-foreground">
+								L'élève échange {replaceRandomCount} carte{replaceRandomCount > 1 ? 's' : ''} aléatoire{replaceRandomCount >
+								1
+									? 's'
+									: ''} contre {replaceRandomCount} nouvelle{replaceRandomCount > 1 ? 's' : ''} carte{replaceRandomCount >
+								1
+									? 's'
+									: ''}.
+							</p>
+						</div>
+					{:else}
+						<p class="text-sm text-muted-foreground">
+							L'élève peut sélectionner entre 1 et 10 cartes à échanger contre le même nombre de
+							nouvelles cartes aléatoires.
+						</p>
+					{/if}
 				</div>
 			{:else if exchangeMode === 'rarity_points'}
 				<div class="space-y-2">

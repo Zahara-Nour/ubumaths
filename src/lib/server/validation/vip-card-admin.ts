@@ -42,6 +42,7 @@ const exchangeReplaceRandomSchema = z.object({
 		.min(1, 'Count must be at least 1')
 		.max(10, 'Count cannot exceed 10')
 		.finite('Count must be finite')
+		.optional()
 });
 
 const exchangeRarityPointsSchema = z.object({

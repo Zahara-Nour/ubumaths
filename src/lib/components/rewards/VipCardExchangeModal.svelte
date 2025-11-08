@@ -73,11 +73,12 @@
 	const mode = $derived(exchange.mode);
 	const requiredCount = $derived(
 		exchange.mode === 'replace_random'
-			? exchange.count
+			? (exchange.count ?? 0) // 0 means flexible (any number 1-10)
 			: exchange.mode === 'discard_for_specific'
 				? exchange.discardCount
 				: 0 // rarity_points: variable
 	);
+	const isFlexibleCount = $derived(exchange.mode === 'replace_random' && !exchange.count);
 
 	const selectedPoints = $derived.by(() => {
 		if (exchange.mode !== 'rarity_points') return 0;
@@ -99,7 +100,12 @@
 	});
 
 	const canExchange = $derived.by(() => {
-		if (exchange.mode === 'replace_random') return selectedCards.size === requiredCount;
+		if (exchange.mode === 'replace_random') {
+			// Flexible mode: at least 1 card. Fixed mode: exact count
+			return isFlexibleCount
+				? selectedCards.size >= 1 && selectedCards.size <= 10
+				: selectedCards.size === requiredCount;
+		}
 		if (exchange.mode === 'discard_for_specific') return selectedCards.size === requiredCount;
 		if (exchange.mode === 'rarity_points') return selectedPoints >= targetPoints;
 		return false;
@@ -233,9 +239,13 @@
 		if (unselectedInstance) {
 			// Select next unselected instance
 			// For fixed count modes, remove oldest selection if at limit
+			// For flexible mode, enforce max of 10 cards
 			if (requiredCount > 0 && selectedCards.size >= requiredCount) {
 				const first = Array.from(selectedCards)[0];
 				selectedCards.delete(first);
+			} else if (isFlexibleCount && selectedCards.size >= 10) {
+				// Flexible mode: max 10 cards
+				return; // Don't add if already at max
 			}
 			selectedCards.add(unselectedInstance.instanceId);
 		} else {
@@ -377,7 +387,11 @@
 		<div>
 			<h2 id="exchange-title" class="text-2xl font-bold">
 				{#if mode === 'replace_random'}
-					🔄 Remplacer {requiredCount} carte{requiredCount > 1 ? 's' : ''}
+					{#if isFlexibleCount}
+						🔄 Échanger des cartes
+					{:else}
+						🔄 Remplacer {requiredCount} carte{requiredCount > 1 ? 's' : ''}
+					{/if}
 				{:else if mode === 'rarity_points'}
 					⭐ Échanger contre carte {exchange.mode === 'rarity_points' ? exchange.targetRarity : ''}
 				{:else if mode === 'discard_for_specific'}
@@ -448,16 +462,26 @@
 			<!-- Mode-specific instructions -->
 			<div class="mb-4 rounded-lg bg-muted p-4">
 				{#if mode === 'replace_random'}
-					<p class="text-sm">
-						Sélectionnez {requiredCount} carte{requiredCount > 1 ? 's' : ''} à échanger contre {requiredCount}
-						nouvelle{requiredCount > 1 ? 's' : ''} carte{requiredCount > 1 ? 's' : ''} aléatoire{requiredCount >
-						1
-							? 's'
-							: ''}.
-					</p>
-					<Button variant="outline" size="sm" onclick={autoSelect} class="mt-2">
-						Sélection aléatoire
-					</Button>
+					{#if isFlexibleCount}
+						<p class="text-sm">
+							Sélectionnez entre 1 et 10 cartes à échanger contre le même nombre de nouvelles cartes
+							aléatoires.
+						</p>
+						<p class="mt-2 text-sm">
+							Cartes sélectionnées : <span class="font-bold">{selectedCards.size} / 10 max</span>
+						</p>
+					{:else}
+						<p class="text-sm">
+							Sélectionnez {requiredCount} carte{requiredCount > 1 ? 's' : ''} à échanger contre {requiredCount}
+							nouvelle{requiredCount > 1 ? 's' : ''} carte{requiredCount > 1 ? 's' : ''} aléatoire{requiredCount >
+							1
+								? 's'
+								: ''}.
+						</p>
+						<Button variant="outline" size="sm" onclick={autoSelect} class="mt-2">
+							Sélection aléatoire
+						</Button>
+					{/if}
 				{:else if mode === 'rarity_points'}
 					<p class="text-sm">
 						Points requis : <span class="font-bold">{targetPoints}</span>

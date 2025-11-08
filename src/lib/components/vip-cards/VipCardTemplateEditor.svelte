@@ -103,7 +103,12 @@
 				}
 			} else if (formData.action.type === 'exchange_cards') {
 				if (formData.action.exchange.mode === 'replace_random') {
-					if (formData.action.exchange.count < 1 || formData.action.exchange.count > 10) {
+					// Count is optional for flexible mode. If provided, validate range.
+					if (
+						formData.action.exchange.count !== undefined &&
+						formData.action.exchange.count !== null &&
+						(formData.action.exchange.count < 1 || formData.action.exchange.count > 10)
+					) {
 						newErrors.action = 'Le nombre de cartes à remplacer doit être entre 1 et 10';
 					}
 				} else if (formData.action.exchange.mode === 'discard_for_specific') {

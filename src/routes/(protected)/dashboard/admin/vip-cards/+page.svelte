@@ -13,6 +13,7 @@
 	import type { PageData } from './$types';
 	import { responseToTemplate } from '$lib/types/vip-card-admin';
 	import type { TemplateResponse } from '$lib/types/vip-card-admin';
+	import { updateTemplate, addTemplate } from '$lib/stores/vipCardTemplates.svelte';
 
 	type VipCardTemplate = Database['public']['Tables']['vip_card_templates']['Row'];
 	type VipCardConfig = Database['public']['Tables']['vip_card_config']['Row'];
@@ -145,13 +146,14 @@
 
 			if (isEditing) {
 				templates = templates.map((t) => (t.id === savedCard.id ? savedCard : t));
+				updateTemplate(savedCard);
 				toaster.success('Carte modifiée avec succès');
 			} else {
 				templates = [...templates, savedCard];
+				addTemplate(savedCard);
 				toaster.success('Carte créée avec succès');
 			}
 
-			// Close modal
 			creatingCard = false;
 			editingCard = null;
 		} catch (error) {

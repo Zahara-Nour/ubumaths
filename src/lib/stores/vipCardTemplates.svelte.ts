@@ -27,6 +27,24 @@ export function initializeTemplates(templates: VipCardTemplate[]) {
 }
 
 /**
+ * Update a single template in the store
+ * Used by admin UI when editing cards
+ */
+export function updateTemplate(template: VipCardTemplate) {
+	vipCardTemplates.update((templates) =>
+		templates.map((t) => (t.id === template.id ? template : t))
+	);
+}
+
+/**
+ * Add a new template to the store
+ * Used by admin UI when creating cards
+ */
+export function addTemplate(template: VipCardTemplate) {
+	vipCardTemplates.update((templates) => [...templates, template]);
+}
+
+/**
  * Get a template by ID
  */
 export function getTemplateById(
