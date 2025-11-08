@@ -2,64 +2,58 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased]
+## [0.2.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.1.2...v0.2.0) (2025-11-08)
+
+### ⚠ BREAKING CHANGES
+
+- **vip-cards:** image_url renamed to image_path in VipCardPreview component
+
+* Fix all VIP cards API endpoints to use locals.profile instead of locals.user
+* Resolves 403 errors on all card operations (GET, POST, PATCH, DELETE)
+* Add responseToTemplate() conversion function for API responses
+* Fixes image_path and is_enabled disappearing after inline edits
+* Add VIP Cards navigation links for both teacher and admin dashboards
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
 
 ### ✨ Features
 
-- **vip-cards**: implement multi-card VIP drawing system with modalStack ([#vip-cards](https://github.com/Zahara-Nour/ubumaths/issues))
-  - Teachers can now draw 1-10 VIP cards at once for students
-  - Two payment methods: gidouilles (with cost validation) or VIP card consumption
-  - Adaptive animations: holographic reveal (1-3 cards), batch grid (4+ cards)
-  - Generic modal stack infrastructure for application-wide modal navigation
-  - Race condition protection via SELECT FOR UPDATE prevents double-spend attacks
-  - Students CANNOT draw free cards (cost=0), only teachers/admins can
-  - Proportional cost validation: maximum 10 gidouilles per card
-  - Optimistic UI updates with automatic rollback on error
-  - Cache integration for instant UI feedback without page reload
-  - Impact: Teachers can efficiently reward multiple students, improved UX with smooth animations
-
-### 🔒 Security Fixes
-
-- **vip-cards**: prevent student exploitation with comprehensive validation ([#vip-cards](https://github.com/Zahara-Nour/ubumaths/issues))
-  - Students cannot draw free cards (cost=0 blocked for non-teachers)
-  - Race condition protection prevents concurrent draws with insufficient balance
-  - Proportional validation enforces max 10 gidouilles per card limit
-  - VIP card usage validation (exists, not already used, atomic marking)
-  - Authorization checks verify teacher-student relationships
-  - All RPC errors provide user-friendly messages without leaking sensitive data
+- **admin:** add comprehensive health monitoring dashboard to proactively detect system issues ([2620e9a](https://github.com/Zahara-Nour/ubumaths/commit/2620e9a0b6a72d7fbbf6efff7f6c68ab2e59e0a6))
+- **admin:** add inline rarity editing for VIP cards and fix null action validation ([19883e8](https://github.com/Zahara-Nour/ubumaths/commit/19883e8c9ec5f06ee6ab866a9c67fe2a5019b127))
+- **admin:** enhance inline editing UX with MyCheckbox and pattern docs ([28840fa](https://github.com/Zahara-Nour/ubumaths/commit/28840fa65a7ebe712c294dca521340cd6469e2e5))
+- **admin:** enhance inline editing with invisible MySelect and per-field spinners ([e667a27](https://github.com/Zahara-Nour/ubumaths/commit/e667a271b3a8aa55551a154bcaf5e02664cbd904))
+- **rewards:** add VIP card exchange system and bulk warning removal ([7d2f6d1](https://github.com/Zahara-Nour/ubumaths/commit/7d2f6d10b76f03cd1b2562b62e8607f8af47a84c))
+- **rewards:** add VIP card filter for student list ([4a0e236](https://github.com/Zahara-Nour/ubumaths/commit/4a0e2369c0a0150662aa5eb9d3088a4c81181ad7))
+- **rewards:** add VIP card filter with instant grant capability ([e123eca](https://github.com/Zahara-Nour/ubumaths/commit/e123ecaceec31b2093e1f2b60bc1fa5f442377ee))
+- **rewards:** implement optimistic UI with rollback for VIP card grants ([6b991b0](https://github.com/Zahara-Nour/ubumaths/commit/6b991b0758cc73a34a43cfa8af9b40ecab1b936b))
+- **rewards:** implement VIP card "écrabouilleur" (remove warnings) action ([f76f9af](https://github.com/Zahara-Nour/ubumaths/commit/f76f9affca91d8dd86dd85f6491865e6cee1aa33))
+- **vip-cards:** add inline action editing in admin VIP card preview ([bd630f3](https://github.com/Zahara-Nour/ubumaths/commit/bd630f30c84aae3d0cfe7dda4ff3021cf52cbba2))
+- **vip-cards:** enhance admin interface with inline editing and auth fixes ([7658283](https://github.com/Zahara-Nour/ubumaths/commit/765828314769dd517a73c083dd4dd90c892a435c))
+- **vip-cards:** implement admin/teacher override system with image upload ([2daa25c](https://github.com/Zahara-Nour/ubumaths/commit/2daa25c9ffefbf9e447f9b223eccbdfc387421f1))
+- **vip-cards:** implement comprehensive action editor with modal deletion ([ee03873](https://github.com/Zahara-Nour/ubumaths/commit/ee03873d7840e201a9b5dfe22f0b2548d3678e96))
+- **vip-cards:** implement multi-card drawing system with modal stack infrastructure ([41b626d](https://github.com/Zahara-Nour/ubumaths/commit/41b626d948fe0bda8aaac4d977282e31c12070a6))
+- **vip-cards:** implement rarity-weighted drawing with configurable probabilities ([ddd6983](https://github.com/Zahara-Nour/ubumaths/commit/ddd6983c416ad9ae88b8ec7a1a6c6a9fff074283))
 
 ### 📚 Documentation
 
-- **vip-cards**: add comprehensive VIP card draw system documentation ([#vip-cards](https://github.com/Zahara-Nour/ubumaths/issues))
-  - Created `docs/features/vip-card-draw-system.md` (comprehensive feature guide)
-  - Created `docs/architecture/modal-stack.md` (modal stack architecture)
-  - Updated `docs/architecture/database-schema.md` with `draw_multiple_vip_cards()` RPC documentation
-  - Updated `docs/claude/best-practices.md` with modal stack usage patterns
-  - Total documentation: 2,500+ lines covering usage, API reference, security, testing, troubleshooting
+- add VIP card API documentation and layout analysis tools ([c62c67d](https://github.com/Zahara-Nour/ubumaths/commit/c62c67d6c27bc75d15e66bbda85796f085a883ce))
 
-### 🧪 Testing
+### 🐛 Bug Fixes
 
-- **vip-cards**: add comprehensive test suite for draw-vip-cards endpoint ([#vip-cards](https://github.com/Zahara-Nour/ubumaths/issues))
-  - 919 lines of tests across 3 priority levels (P0: security, P1: validation, P2: functional)
-  - P0 tests: free cards security, cost limits, insufficient balance, authorization, boundaries
-  - P1 tests: Zod schema validation, type safety
-  - P2 tests: successful draws, multiple cards, error handling
-  - Test coverage: All validation rules, error messages, success paths, security checks
-- **vip-cards**: add integration tests for race condition scenarios ([#vip-cards](https://github.com/Zahara-Nour/ubumaths/issues))
-  - 5 comprehensive integration tests verifying `SELECT FOR UPDATE` protection
-  - Tests: double-spend prevention (2 scenarios), double-use prevention (2 scenarios), mixed payments (1 scenario)
-  - All tests passing (5/5) with real Supabase instance on localhost:54321
-  - Created `tests/integration/draw-vip-cards-race-conditions.test.ts` (549 lines)
-  - Created `vitest.integration.config.ts` for integration test configuration
-  - Added `pnpm test:integration` and `pnpm test:integration:watch` scripts
-  - Verifies database consistency: no negative balances, no double-use of VIP cards
-  - Test execution: 2.34s with proper cleanup and isolation
-- **test-helpers**: implement authentication helpers for integration testing ([#vip-cards](https://github.com/Zahara-Nour/ubumaths/issues))
-  - Created `tests/database/helpers/supabase-client.ts` with `createAuthenticatedClient()` helper
-  - Updated `tests/database/helpers/postgres-client.ts` with password parameter support
-  - Enables testing of RPC functions that check `auth.uid()` for authorization
-  - Uses bcrypt hashed passwords for proper Supabase auth sign-in
-  - Fixed `ProfileBuilder.create()` duplicate key violation (also fixes `pnpm test:triggers`)
+- **a11y:** resolve all 69 accessibility warnings across 29 files ([5631d34](https://github.com/Zahara-Nour/ubumaths/commit/5631d34576f3347156de43fbbb5063d0f824ca02))
+- **admin:** correct AlertBadge $derived usage ([54953ee](https://github.com/Zahara-Nour/ubumaths/commit/54953ee6179842c04aed1f324479dce4eda3c89c))
+- **admin:** correct Svelte 5 $derived usage in dashboard widgets ([3b67c2e](https://github.com/Zahara-Nour/ubumaths/commit/3b67c2e049782fe903ec9008bd25ad831c5e804f))
+- **api:** add GET handler for Vercel cron cache cleanup endpoint ([d52d992](https://github.com/Zahara-Nour/ubumaths/commit/d52d992b6756e69ccf9894e2b35336e087e025b0))
+- **lint:** eliminate all 40 ESLint errors across components and routes ([f58d2c7](https://github.com/Zahara-Nour/ubumaths/commit/f58d2c709b56b8160671ac3034aebe189b37cdf5))
+- **rewards:** ensure used VIP card disappears immediately after draw_cards action ([a338c63](https://github.com/Zahara-Nour/ubumaths/commit/a338c6359c00acb2bd2e41d9c2dd43bc137c2f01))
+- **rewards:** migrate VipCardsModal to modal stack to resolve navigation bug ([77c1ef5](https://github.com/Zahara-Nour/ubumaths/commit/77c1ef5fdd04562d5e98f9921e14e018122361cb))
+- **tests:** resolve VIP card integration test failures ([7304aab](https://github.com/Zahara-Nour/ubumaths/commit/7304aab157b94bc8a95d6900dd656dd68bf17e28))
+- **types:** resolve 12 TypeScript errors across components and routes ([c57bc77](https://github.com/Zahara-Nour/ubumaths/commit/c57bc77241164ba68a59d7a7abde670c21d4b876))
+- **types:** resolve all TypeScript and ESLint errors (83 total) ([94d5815](https://github.com/Zahara-Nour/ubumaths/commit/94d5815bab8dd6ea5358577a0dca42eedf97e0b2))
+- **vip-cards:** correct probability display in config list ([e400346](https://github.com/Zahara-Nour/ubumaths/commit/e400346b60007c98663dbba3a9d5e66f69c163ec))
+- **vip-cards:** resolve teacher override persistence and auth issues ([f7108fb](https://github.com/Zahara-Nour/ubumaths/commit/f7108fbcca12807ae4362b8602fef0d2228c9049))
 
 ### [0.1.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.1.1...v0.1.2) (2025-11-03)
 
