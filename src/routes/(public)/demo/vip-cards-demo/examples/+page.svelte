@@ -1,11 +1,14 @@
 <script lang="ts">
 	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
-	import { VIP_CARDS } from '$lib/types/vip-card';
 	import { Button } from '$lib/components/ui/button';
 	import { resolve } from '$app/paths';
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
 
 	// Use a legendary card for all examples
-	const exampleCard = VIP_CARDS.find((c) => c.rarity === 'legendary') || VIP_CARDS[0];
+	const enabledCards = data.templates.filter((c) => c.enabled);
+	const exampleCard = enabledCards.find((c) => c.rarity === 'legendary') || enabledCards[0];
 
 	// Track showcase restarts by incrementing a key
 	let showcaseKey = $state(0);

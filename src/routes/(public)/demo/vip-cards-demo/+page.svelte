@@ -1,13 +1,16 @@
 <script lang="ts">
 	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
-	import { VIP_CARDS } from '$lib/types/vip-card';
 	import { resolve } from '$app/paths';
+	import type { PageData } from './$types';
 
-	// Group cards by rarity
-	const legendaryCards = VIP_CARDS.filter((c) => c.rarity === 'legendary');
-	const epicCards = VIP_CARDS.filter((c) => c.rarity === 'epic');
-	const rareCards = VIP_CARDS.filter((c) => c.rarity === 'rare');
-	const commonCards = VIP_CARDS.filter((c) => c.rarity === 'common');
+	let { data }: { data: PageData } = $props();
+
+	// Group cards by rarity (filter enabled cards only)
+	const enabledCards = data.templates.filter((c) => c.enabled);
+	const legendaryCards = enabledCards.filter((c) => c.rarity === 'legendary');
+	const epicCards = enabledCards.filter((c) => c.rarity === 'epic');
+	const rareCards = enabledCards.filter((c) => c.rarity === 'rare');
+	const commonCards = enabledCards.filter((c) => c.rarity === 'common');
 
 	// Showcase card (first legendary)
 	const showcaseCard = legendaryCards[0];
