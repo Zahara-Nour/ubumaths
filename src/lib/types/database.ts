@@ -238,6 +238,39 @@ export type Database = {
 					}
 				];
 			};
+			background_job_runs: {
+				Row: {
+					completed_at: string | null;
+					error_message: string | null;
+					execution_time_ms: number | null;
+					id: string;
+					job_name: string;
+					metadata: Json | null;
+					started_at: string;
+					status: string;
+				};
+				Insert: {
+					completed_at?: string | null;
+					error_message?: string | null;
+					execution_time_ms?: number | null;
+					id?: string;
+					job_name: string;
+					metadata?: Json | null;
+					started_at?: string;
+					status: string;
+				};
+				Update: {
+					completed_at?: string | null;
+					error_message?: string | null;
+					execution_time_ms?: number | null;
+					id?: string;
+					job_name?: string;
+					metadata?: Json | null;
+					started_at?: string;
+					status?: string;
+				};
+				Relationships: [];
+			};
 			class_members: {
 				Row: {
 					class_id: string;
@@ -3815,6 +3848,27 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			server_cache: {
+				Row: {
+					created_at: string | null;
+					expires_at: string;
+					key: string;
+					value: Json;
+				};
+				Insert: {
+					created_at?: string | null;
+					expires_at: string;
+					key: string;
+					value: Json;
+				};
+				Update: {
+					created_at?: string | null;
+					expires_at?: string;
+					key?: string;
+					value?: Json;
+				};
+				Relationships: [];
+			};
 			srs_card_stats: {
 				Row: {
 					card_reference_id: string;
@@ -4769,6 +4823,71 @@ export type Database = {
 			};
 		};
 		Views: {
+			admin_content_stats: {
+				Row: {
+					assignments_24h: number | null;
+					completions_24h: number | null;
+					total_assessments: number | null;
+					total_exercises: number | null;
+					total_riddles: number | null;
+					total_srs_decks: number | null;
+				};
+				Relationships: [];
+			};
+			admin_error_stats_24h: {
+				Row: {
+					critical_errors_1h: number | null;
+					critical_errors_24h: number | null;
+					error_level_24h: number | null;
+					total_errors_1h: number | null;
+					total_errors_24h: number | null;
+					unresolved_errors: number | null;
+					warning_level_24h: number | null;
+				};
+				Relationships: [];
+			};
+			admin_job_failures: {
+				Row: {
+					error_messages: string[] | null;
+					failure_count: number | null;
+					job_name: string | null;
+					last_failure: string | null;
+				};
+				Relationships: [];
+			};
+			admin_job_status: {
+				Row: {
+					completed_at: string | null;
+					error_message: string | null;
+					execution_time_ms: number | null;
+					job_name: string | null;
+					metadata: Json | null;
+					started_at: string | null;
+					status: string | null;
+				};
+				Relationships: [];
+			};
+			admin_online_users: {
+				Row: {
+					online_users: number | null;
+					online_users_1m: number | null;
+					online_users_5m: number | null;
+				};
+				Relationships: [];
+			};
+			admin_user_activity: {
+				Row: {
+					active_users_7d: number | null;
+					new_users_24h: number | null;
+					new_users_30d: number | null;
+					new_users_7d: number | null;
+					total_admins: number | null;
+					total_students: number | null;
+					total_teachers: number | null;
+					total_users: number | null;
+				};
+				Relationships: [];
+			};
 			assessment_results: {
 				Row: {
 					assessment_grade: string | null;
@@ -5170,6 +5289,10 @@ export type Database = {
 				Args: { p_card_id?: string; p_student_id: string };
 				Returns: string;
 			};
+			award_vip_cards_with_filters: {
+				Args: { p_count: number; p_filters?: Json; p_student_id: string };
+				Returns: Json;
+			};
 			calculate_riddle_gidouilles: {
 				Args: { p_attempt_number: number; p_difficulty: number };
 				Returns: number;
@@ -5183,15 +5306,27 @@ export type Database = {
 				Returns: boolean;
 			};
 			check_profanity_simple: { Args: { p_text: string }; Returns: boolean };
+			cleanup_expired_cache: {
+				Args: never;
+				Returns: {
+					deleted_count: number;
+				}[];
+			};
 			cleanup_expired_rate_limits: { Args: never; Returns: undefined };
 			cleanup_old_errors: { Args: { p_days_old?: number }; Returns: number };
+			cleanup_old_job_runs: {
+				Args: never;
+				Returns: {
+					deleted_count: number;
+				}[];
+			};
 			cleanup_stale_presence: { Args: never; Returns: undefined };
 			complete_job_run: {
 				Args: {
-					run_id: string;
-					status: string;
-					error_message?: string;
-					metadata?: Json;
+					p_error_message?: string;
+					p_metadata?: Json;
+					p_run_id: string;
+					p_status: string;
 				};
 				Returns: undefined;
 			};
@@ -5666,6 +5801,10 @@ export type Database = {
 					subject: string;
 				}[];
 			};
+			grant_specific_vip_card: {
+				Args: { p_card_id: string; p_count?: number; p_student_id: string };
+				Returns: Json;
+			};
 			is_admin: { Args: never; Returns: boolean };
 			is_class_teacher: { Args: { p_class_id: string }; Returns: boolean };
 			is_exercise_parameterized: {
@@ -5787,10 +5926,7 @@ export type Database = {
 				Returns: undefined;
 			};
 			start_job_run: {
-				Args: {
-					job_name: string;
-					metadata?: Json;
-				};
+				Args: { p_job_name: string; p_metadata?: Json };
 				Returns: string;
 			};
 			student_has_exercise_access: {
@@ -6014,57 +6150,3 @@ export const Constants = {
 		}
 	}
 } as const;
-
-// Type Aliases - Commonly used types exported for convenience
-
-// Table Row Types
-export type Profile = Tables<'profiles'>;
-export type Class = Tables<'classes'>;
-export type ClassSchedule = Tables<'class_schedules'>;
-export type Notification = Tables<'notifications'>;
-export type NotificationRead = Tables<'notification_reads'>;
-export type Friendship = Tables<'friendships'>;
-
-// Enum Types
-export type UserRole = Enums<'user_role'>;
-export type NotificationType = Database['public']['Tables']['notifications']['Row']['type'];
-export type NotificationPriority = Database['public']['Tables']['notifications']['Row']['priority'];
-export type NotificationTargetType =
-	Database['public']['Tables']['notifications']['Row']['target_type'];
-export type SystemEventType =
-	Database['public']['Tables']['notifications']['Row']['system_event_type'];
-export type FriendshipType = Database['public']['Tables']['friendships']['Row']['status'];
-
-// Other Types
-export type Gender = string | null; // Gender is stored as string in profiles
-
-// Timetable Types (stored as Json in database)
-export type SchoolPeriod = {
-	number: number;
-	name?: string;
-	start_time: string;
-	end_time: string;
-	type?: 'lesson' | 'break' | 'lunch';
-};
-
-export type SchoolTimetable = {
-	periods: SchoolPeriod[];
-};
-
-// Extended Types with Joins
-export type FriendshipWithProfile = Friendship & {
-	friend_profile: {
-		id: string;
-		full_name: string | null;
-		firstname: string | null;
-		lastname: string | null;
-		avatar_url: string | null;
-		role: UserRole;
-	};
-	presence?: {
-		user_id: string;
-		status: string;
-		last_heartbeat: string;
-		updated_at: string;
-	};
-};

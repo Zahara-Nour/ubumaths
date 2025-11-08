@@ -32,6 +32,7 @@ CREATE INDEX IF NOT EXISTS idx_server_cache_expires
 ALTER TABLE public.server_cache ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Admins can manage all cache operations
+DROP POLICY IF EXISTS "Admins can manage cache" ON public.server_cache;
 CREATE POLICY "Admins can manage cache"
   ON public.server_cache
   FOR ALL

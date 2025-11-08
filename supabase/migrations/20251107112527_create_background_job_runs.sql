@@ -40,9 +40,10 @@ CREATE INDEX IF NOT EXISTS idx_job_runs_status
   WHERE status != 'success'; -- Partial index for failures only
 
 -- Recent runs (last 7 days) for dashboard
+-- Note: Cannot use WHERE clause with now() as it's not IMMUTABLE
+-- Using full index instead for recent queries
 CREATE INDEX IF NOT EXISTS idx_job_runs_recent
-  ON public.background_job_runs(started_at DESC)
-  WHERE started_at > now() - interval '7 days';
+  ON public.background_job_runs(started_at DESC);
 
 -- ============================================================================
 -- ROW LEVEL SECURITY
@@ -50,6 +51,7 @@ CREATE INDEX IF NOT EXISTS idx_job_runs_recent
 ALTER TABLE public.background_job_runs ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Admins can view all job runs
+DROP POLICY IF EXISTS "Admins can view job runs" ON public.background_job_runs;
 CREATE POLICY "Admins can view job runs"
   ON public.background_job_runs
   FOR SELECT
@@ -63,6 +65,7 @@ CREATE POLICY "Admins can view job runs"
   );
 
 -- Policy: Service role can insert job runs (for cron jobs)
+DROP POLICY IF EXISTS "Service role can insert job runs" ON public.background_job_runs;
 CREATE POLICY "Service role can insert job runs"
   ON public.background_job_runs
   FOR INSERT
@@ -70,6 +73,7 @@ CREATE POLICY "Service role can insert job runs"
   WITH CHECK (true);
 
 -- Policy: Service role can update job runs (mark as completed/failed)
+DROP POLICY IF EXISTS "Service role can update job runs" ON public.background_job_runs;
 CREATE POLICY "Service role can update job runs"
   ON public.background_job_runs
   FOR UPDATE
