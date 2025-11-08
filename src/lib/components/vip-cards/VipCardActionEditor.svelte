@@ -2,7 +2,8 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import type { VipCardAction } from '$lib/types/vip-card';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import type { VipCardAction, VipCardRarity } from '$lib/types/vip-card';
 	import type { WarningType } from '$lib/server/warnings';
 	import { getRarityPoints } from '$lib/types/vip-card';
 
@@ -23,6 +24,26 @@
 		value?.type === 'remove_warnings' && value.warningType ? value.warningType : 'none'
 	);
 	let addGidouillesAmount = $state<number>(value?.type === 'add_gidouilles' ? value.amount : 50);
+
+	// draw_cards filters
+	let drawForceRarity = $state<VipCardRarity | undefined>(
+		value?.type === 'draw_cards' && value.filters?.forceRarity
+			? value.filters.forceRarity
+			: undefined
+	);
+	let drawMinRarity = $state<VipCardRarity | undefined>(
+		value?.type === 'draw_cards' && value.filters?.minRarity ? value.filters.minRarity : undefined
+	);
+	let drawExcludeCardIds = $state<string>(
+		value?.type === 'draw_cards' && value.filters?.excludeCardIds
+			? value.filters.excludeCardIds.join(', ')
+			: ''
+	);
+	let drawOnlyCardsWithActions = $state<boolean>(
+		value?.type === 'draw_cards' && value.filters?.onlyCardsWithActions
+			? value.filters.onlyCardsWithActions
+			: false
+	);
 
 	// Exchange cards parameters
 	let exchangeMode = $state<string>(
@@ -49,13 +70,34 @@
 			: ''
 	);
 
+	// Choose cards parameters
+	let chooseCardCount = $state<number>(value?.type === 'choose_card' ? value.count : 1);
+	let chooseCardFilterMode = $state<string>(
+		value?.type === 'choose_card'
+			? value.filter
+				? 'all'
+				: value.maxRarity
+					? 'maxRarity'
+					: value.possibleCardIds
+						? 'specific'
+						: 'all'
+			: 'all'
+	);
+	let chooseCardMaxRarity = $state<string>(
+		value?.type === 'choose_card' && value.maxRarity ? value.maxRarity : 'common'
+	);
+	let chooseCardPossibleIds = $state<string>(
+		value?.type === 'choose_card' && value.possibleCardIds ? value.possibleCardIds.join(', ') : ''
+	);
+
 	// Action type options
 	const actionTypeItems = [
 		{ value: 'none', label: 'Aucune (carte collectionnable uniquement)' },
 		{ value: 'draw_cards', label: 'Piocher des cartes' },
 		{ value: 'remove_warnings', label: 'Retirer des avertissements' },
 		{ value: 'exchange_cards', label: 'Échanger des cartes' },
-		{ value: 'add_gidouilles', label: 'Ajouter des gidouilles' }
+		{ value: 'add_gidouilles', label: 'Ajouter des gidouilles' },
+		{ value: 'choose_card', label: 'Choisir des cartes spécifiques' }
 	];
 
 	// Warning type options
@@ -82,6 +124,30 @@
 		{ value: 'legendary', label: 'Légendaire (27 points)' }
 	];
 
+	// Rarity options for choose_card max rarity filter (no points display)
+	const maxRarityItems = [
+		{ value: 'common', label: 'Commune' },
+		{ value: 'rare', label: 'Rare' },
+		{ value: 'epic', label: 'Épique' },
+		{ value: 'legendary', label: 'Légendaire' }
+	];
+
+	// Rarity filter options for draw_cards (with undefined option for "no filter")
+	const drawRarityFilterItems = [
+		{ value: undefined, label: 'Aucune contrainte' },
+		{ value: 'common', label: 'Commune' },
+		{ value: 'rare', label: 'Rare' },
+		{ value: 'epic', label: 'Épique' },
+		{ value: 'legendary', label: 'Légendaire' }
+	];
+
+	// Filter mode options for choose_card
+	const chooseCardFilterModeItems = [
+		{ value: 'all', label: 'Toutes les cartes' },
+		{ value: 'maxRarity', label: 'Limiter par rareté maximale' },
+		{ value: 'specific', label: 'Cartes spécifiques (IDs)' }
+	];
+
 	// Auto-calculated points required based on target rarity
 	const pointsRequired = $derived(
 		getRarityPoints(rarityPointsTargetRarity as 'common' | 'rare' | 'epic' | 'legendary')
@@ -94,9 +160,27 @@
 		}
 
 		if (actionType === 'draw_cards') {
+			const filters: {
+				forceRarity?: VipCardRarity;
+				minRarity?: VipCardRarity;
+				excludeCardIds?: string[];
+				onlyCardsWithActions?: boolean;
+			} = {};
+
+			if (drawForceRarity) filters.forceRarity = drawForceRarity;
+			if (drawMinRarity) filters.minRarity = drawMinRarity;
+			if (drawExcludeCardIds.trim()) {
+				filters.excludeCardIds = drawExcludeCardIds
+					.split(',')
+					.map((id) => id.trim())
+					.filter((id) => id);
+			}
+			if (drawOnlyCardsWithActions) filters.onlyCardsWithActions = true;
+
 			return {
 				type: 'draw_cards',
-				count: drawCardsCount
+				count: drawCardsCount,
+				...(Object.keys(filters).length > 0 ? { filters } : {})
 			};
 		}
 
@@ -149,6 +233,48 @@
 			}
 		}
 
+		if (actionType === 'choose_card') {
+			const baseAction = {
+				type: 'choose_card' as const,
+				count: chooseCardCount
+			};
+
+			if (chooseCardFilterMode === 'all') {
+				return {
+					...baseAction,
+					filter: 'all' as const
+				};
+			}
+
+			if (chooseCardFilterMode === 'maxRarity') {
+				return {
+					...baseAction,
+					maxRarity: chooseCardMaxRarity as 'common' | 'rare' | 'epic' | 'legendary'
+				};
+			}
+
+			if (chooseCardFilterMode === 'specific') {
+				// Parse comma-separated card IDs
+				const cardIds = chooseCardPossibleIds
+					.split(',')
+					.map((id) => id.trim())
+					.filter((id) => id.length > 0);
+
+				if (cardIds.length > 0) {
+					return {
+						...baseAction,
+						possibleCardIds: cardIds
+					};
+				}
+			}
+
+			// Default to 'all' if no valid filter
+			return {
+				...baseAction,
+				filter: 'all' as const
+			};
+		}
+
 		return null;
 	});
 
@@ -164,6 +290,10 @@
 		// Reset to default values when switching action types
 		if (newType === 'draw_cards') {
 			drawCardsCount = 2;
+			drawForceRarity = undefined;
+			drawMinRarity = undefined;
+			drawExcludeCardIds = '';
+			drawOnlyCardsWithActions = false;
 		} else if (newType === 'remove_warnings') {
 			removeWarningsCount = 1;
 			removeWarningsType = 'none';
@@ -172,6 +302,11 @@
 		} else if (newType === 'exchange_cards') {
 			exchangeMode = 'replace_random';
 			replaceRandomCount = 3;
+		} else if (newType === 'choose_card') {
+			chooseCardCount = 1;
+			chooseCardFilterMode = 'all';
+			chooseCardMaxRarity = 'common';
+			chooseCardPossibleIds = '';
 		}
 	}
 
@@ -219,22 +354,89 @@
 			</p>
 		</div>
 	{:else if actionType === 'draw_cards'}
-		<div class="space-y-2">
-			<Label for="draw-count">Nombre de cartes à piocher</Label>
-			<Input
-				id="draw-count"
-				type="number"
-				bind:value={drawCardsCount}
-				min={1}
-				max={10}
-				class="w-32"
-			/>
-			<p class="text-sm text-muted-foreground">
-				L'élève piochera {drawCardsCount} nouvelle{drawCardsCount > 1 ? 's' : ''} carte{drawCardsCount >
-				1
-					? 's'
-					: ''} VIP aléatoire{drawCardsCount > 1 ? 's' : ''}.
-			</p>
+		<div class="space-y-4">
+			<div class="space-y-2">
+				<Label for="draw-count">Nombre de cartes à piocher</Label>
+				<Input
+					id="draw-count"
+					type="number"
+					bind:value={drawCardsCount}
+					min={1}
+					max={10}
+					class="w-32"
+				/>
+				<p class="text-sm text-muted-foreground">
+					L'élève piochera {drawCardsCount} nouvelle{drawCardsCount > 1 ? 's' : ''} carte{drawCardsCount >
+					1
+						? 's'
+						: ''} VIP aléatoire{drawCardsCount > 1 ? 's' : ''}.
+				</p>
+			</div>
+
+			<!-- Advanced Filters Section -->
+			<div class="space-y-4 rounded-lg border border-border bg-muted/50 p-4">
+				<h4 class="text-sm font-semibold">Filtres avancés (optionnel)</h4>
+
+				<div class="space-y-4">
+					<!-- Force Rarity -->
+					<div class="space-y-2">
+						<Label for="draw-force-rarity">Forcer la rareté</Label>
+						<MySelect
+							type="single"
+							bind:value={drawForceRarity}
+							items={drawRarityFilterItems}
+							placeholder="Choisir une rareté..."
+							triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+						/>
+						<p class="text-xs text-muted-foreground">
+							Toutes les cartes tirées auront cette rareté
+						</p>
+					</div>
+
+					<!-- Min Rarity -->
+					<div class="space-y-2">
+						<Label for="draw-min-rarity">Rareté minimale garantie</Label>
+						<MySelect
+							type="single"
+							bind:value={drawMinRarity}
+							items={drawRarityFilterItems}
+							placeholder="Choisir une rareté..."
+							triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+						/>
+						<p class="text-xs text-muted-foreground">Au moins 1 carte aura cette rareté minimale</p>
+					</div>
+
+					<!-- Mutual exclusivity warning -->
+					{#if drawForceRarity && drawMinRarity}
+						<div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+							⚠️ "Forcer la rareté" et "Rareté minimale garantie" sont mutuellement exclusifs
+						</div>
+					{/if}
+
+					<!-- Exclude Card IDs -->
+					<div class="space-y-2">
+						<Label for="draw-exclude-ids">Exclure des cartes (IDs)</Label>
+						<Input
+							id="draw-exclude-ids"
+							type="text"
+							bind:value={drawExcludeCardIds}
+							placeholder="bonus, super-bonus, Sheikh"
+							class="w-full"
+						/>
+						<p class="text-xs text-muted-foreground">
+							Liste d'IDs de cartes à exclure du tirage (séparés par des virgules)
+						</p>
+					</div>
+
+					<!-- Only Cards With Actions -->
+					<div class="flex items-center space-x-2">
+						<MyCheckbox
+							bind:checked={drawOnlyCardsWithActions}
+							label="Tirer uniquement des cartes avec actions"
+						/>
+					</div>
+				</div>
+			</div>
 		</div>
 	{:else if actionType === 'remove_warnings'}
 		<div class="space-y-4">
@@ -375,6 +577,92 @@
 								? 's'
 								: ''} contre une carte spécifique (ID : {discardForSpecificTargetCardId ||
 								'à définir'}).
+						</p>
+					</div>
+				</div>
+			{/if}
+		</div>
+	{:else if actionType === 'choose_card'}
+		<div class="space-y-4">
+			<!-- Card Count -->
+			<div class="space-y-2">
+				<Label for="choose-card-count">Nombre de cartes à choisir</Label>
+				<Input
+					id="choose-card-count"
+					type="number"
+					bind:value={chooseCardCount}
+					min={1}
+					max={10}
+					class="w-32"
+				/>
+				<p class="text-sm text-muted-foreground">
+					L'élève pourra choisir {chooseCardCount} carte{chooseCardCount > 1 ? 's' : ''} VIP.
+				</p>
+			</div>
+
+			<!-- Filter Mode Selector -->
+			<div class="space-y-2">
+				<Label for="choose-filter-mode">Mode de filtrage</Label>
+				<MySelect
+					type="single"
+					bind:value={chooseCardFilterMode}
+					items={chooseCardFilterModeItems}
+					placeholder="Sélectionner un mode de filtrage"
+					triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+				/>
+			</div>
+
+			<!-- Filter Mode Parameters -->
+			{#if chooseCardFilterMode === 'all'}
+				<div class="rounded-md bg-muted p-3">
+					<p class="text-sm text-muted-foreground">
+						L'élève pourra choisir parmi toutes les cartes VIP disponibles.
+					</p>
+				</div>
+			{:else if chooseCardFilterMode === 'maxRarity'}
+				<div class="space-y-2">
+					<Label for="choose-max-rarity">Rareté maximale</Label>
+					<MySelect
+						type="single"
+						bind:value={chooseCardMaxRarity}
+						items={maxRarityItems}
+						placeholder="Sélectionner une rareté"
+						triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+					/>
+					<div class="rounded-md bg-muted p-3">
+						<p class="text-sm text-muted-foreground">
+							{#if chooseCardMaxRarity === 'common'}
+								L'élève ne pourra choisir que des cartes <strong>communes</strong>.
+							{:else if chooseCardMaxRarity === 'rare'}
+								L'élève pourra choisir des cartes <strong>communes</strong> ou
+								<strong>rares</strong>.
+							{:else if chooseCardMaxRarity === 'epic'}
+								L'élève pourra choisir des cartes <strong>communes</strong>,
+								<strong>rares</strong> ou <strong>épiques</strong>.
+							{:else}
+								L'élève pourra choisir parmi toutes les raretés (communes, rares, épiques,
+								légendaires).
+							{/if}
+						</p>
+					</div>
+				</div>
+			{:else if chooseCardFilterMode === 'specific'}
+				<div class="space-y-2">
+					<Label for="choose-card-ids">IDs des cartes autorisées (séparés par des virgules)</Label>
+					<Input
+						id="choose-card-ids"
+						type="text"
+						bind:value={chooseCardPossibleIds}
+						placeholder="bonus, super-bonus, mega-bonus"
+						class="w-full"
+					/>
+					<div class="rounded-md bg-muted p-3">
+						<p class="text-sm font-medium">
+							Cartes autorisées : {chooseCardPossibleIds || 'aucune'}
+						</p>
+						<p class="mt-1 text-xs text-muted-foreground">
+							Séparez les IDs de cartes par des virgules. L'élève ne pourra choisir que parmi ces
+							cartes spécifiques.
 						</p>
 					</div>
 				</div>

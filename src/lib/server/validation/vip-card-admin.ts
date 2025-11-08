@@ -9,6 +9,7 @@
  */
 
 import { z } from 'zod';
+import { drawCardsFiltersSchema } from './draw-vip-cards';
 
 /**
  * Valid rarity levels for VIP cards
@@ -21,37 +22,141 @@ const rarityEnum = z.enum(['common', 'rare', 'epic', 'legendary']);
 const categoryEnum = z.enum(['bonus', 'privilege', 'social', 'power']);
 
 /**
- * Valid action types for VIP cards
+ * Valid VIP card rarity levels (copied from draw-vip-cards.ts for consistency)
  */
-const actionTypeEnum = z.enum([
-	'draw_cards',
-	'remove_warnings',
-	'exchange_cards',
-	'add_gidouilles'
+const vipCardRarityEnum = z.enum(['common', 'rare', 'epic', 'legendary']);
+
+/**
+ * Valid warning types
+ */
+const warningTypeEnum = z.enum(['C', 'M', 'R', 'T']);
+
+/**
+ * Exchange card modes schemas
+ */
+const exchangeReplaceRandomSchema = z.object({
+	mode: z.literal('replace_random'),
+	count: z
+		.number()
+		.int('Count must be an integer')
+		.min(1, 'Count must be at least 1')
+		.max(10, 'Count cannot exceed 10')
+		.finite('Count must be finite')
+});
+
+const exchangeRarityPointsSchema = z.object({
+	mode: z.literal('rarity_points'),
+	targetRarity: vipCardRarityEnum,
+	pointsRequired: z
+		.number()
+		.int('Points must be an integer')
+		.positive('Points must be positive')
+		.finite('Points must be finite')
+});
+
+const exchangeDiscardForSpecificSchema = z.object({
+	mode: z.literal('discard_for_specific'),
+	discardCount: z
+		.number()
+		.int('Discard count must be an integer')
+		.min(1, 'Discard count must be at least 1')
+		.max(10, 'Discard count cannot exceed 10')
+		.finite('Discard count must be finite'),
+	targetCardId: z.string().min(1, 'Target card ID is required')
+});
+
+const exchangeCardActionSchema = z.discriminatedUnion('mode', [
+	exchangeReplaceRandomSchema,
+	exchangeRarityPointsSchema,
+	exchangeDiscardForSpecificSchema
 ]);
 
 /**
- * Action configuration schema
+ * Individual action schemas with proper type discrimination
  */
-const actionSchema = z
+const drawCardsActionSchema = z.object({
+	type: z.literal('draw_cards'),
+	count: z
+		.number()
+		.int('Count must be an integer')
+		.min(1, 'Count must be at least 1')
+		.max(10, 'Count cannot exceed 10')
+		.finite('Count must be finite'),
+	filters: drawCardsFiltersSchema.optional()
+});
+
+const removeWarningsActionSchema = z.object({
+	type: z.literal('remove_warnings'),
+	count: z
+		.number()
+		.int('Count must be an integer')
+		.min(1, 'Count must be at least 1')
+		.max(5, 'Count cannot exceed 5')
+		.finite('Count must be finite'),
+	warningType: warningTypeEnum.optional()
+});
+
+const exchangeCardsActionSchema = z.object({
+	type: z.literal('exchange_cards'),
+	exchange: exchangeCardActionSchema
+});
+
+const addGidouillesActionSchema = z.object({
+	type: z.literal('add_gidouilles'),
+	amount: z
+		.number()
+		.int('Amount must be an integer')
+		.min(1, 'Amount must be at least 1')
+		.max(1000, 'Amount cannot exceed 1000')
+		.finite('Amount must be finite')
+});
+
+/**
+ * Choose card action with three mutually exclusive filter modes
+ */
+const chooseCardActionSchema = z
 	.object({
-		type: actionTypeEnum,
+		type: z.literal('choose_card'),
 		count: z
 			.number()
 			.int('Count must be an integer')
-			.positive('Count must be positive')
+			.min(1, 'Count must be at least 1')
 			.max(10, 'Count cannot exceed 10')
-			.finite('Count must be finite')
-			.optional(),
-		amount: z
-			.number()
-			.int('Amount must be an integer')
-			.positive('Amount must be positive')
-			.max(1000, 'Amount cannot exceed 1000')
-			.finite('Amount must be finite')
+			.finite('Count must be finite'),
+		// Filter modes (mutually exclusive)
+		filter: z.literal('all').optional(),
+		maxRarity: vipCardRarityEnum.optional(),
+		possibleCardIds: z
+			.array(z.string().min(1, 'Card ID cannot be empty'))
+			.min(1, 'At least one card ID is required when using specific cards filter')
+			.max(20, 'Cannot specify more than 20 cards')
 			.optional()
 	})
-	.strict();
+	.strict()
+	.refine(
+		(data) => {
+			// Ensure only ONE filter mode is used (or none, defaulting to 'all')
+			const filterCount = [data.filter, data.maxRarity, data.possibleCardIds].filter(
+				(f) => f !== undefined
+			).length;
+			return filterCount <= 1;
+		},
+		{
+			message: 'Only one filter mode can be used at a time (filter, maxRarity, or possibleCardIds)'
+		}
+	);
+
+/**
+ * Action configuration schema using discriminated union
+ * Ensures each action type has the correct parameters
+ */
+const actionSchema = z.discriminatedUnion('type', [
+	drawCardsActionSchema,
+	removeWarningsActionSchema,
+	exchangeCardsActionSchema,
+	addGidouillesActionSchema,
+	chooseCardActionSchema
+]);
 
 /**
  * Schema for creating a new VIP card template
