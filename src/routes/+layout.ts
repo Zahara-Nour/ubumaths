@@ -123,6 +123,8 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 		// Verified user from server (safe to use)
 		user: data.user,
 		// User profile from server (includes role, gender, etc.)
-		profile: data.profile
+		profile: data.profile,
+		// VIP card templates from server (for client-side store)
+		vipCardTemplates: data.vipCardTemplates
 	};
 };

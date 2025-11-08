@@ -30,7 +30,7 @@ import { createAuthenticatedClient } from '../helpers/supabase-client';
 import { TestData } from '../helpers/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { VIP_CARDS, type VipCardRarity } from '$lib/types/vip-card';
+import type { VipCardRarity } from '$lib/types/vip-card';
 
 describe('VIP Card Draw Filters - RPC Function Tests', () => {
 	let serviceClient: SupabaseClient<Database>;
@@ -235,9 +235,14 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 
 			const teacherClient = await createAuthenticatedClient(teacher.email);
 
+			// Get all legendary cards from database
+			const { data: legendaryCards } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.eq('rarity', 'legendary');
+
 			// Disable all legendary cards
-			const legendaryCards = VIP_CARDS.filter((c) => c.rarity === 'legendary');
-			for (const card of legendaryCards) {
+			for (const card of legendaryCards || []) {
 				await serviceClient
 					.from('vip_card_templates')
 					.update({ is_enabled: false })
@@ -255,7 +260,7 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 			expect(data).toBeNull();
 
 			// Cleanup: Re-enable cards
-			for (const card of legendaryCards) {
+			for (const card of legendaryCards || []) {
 				await serviceClient
 					.from('vip_card_templates')
 					.update({ is_enabled: true })
@@ -440,8 +445,13 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 
 			const teacherClient = await createAuthenticatedClient(teacher.email);
 
-			// Exclude all legendary cards
-			const legendaryCardIds = VIP_CARDS.filter((c) => c.rarity === 'legendary').map((c) => c.id);
+			// Get all legendary card IDs from database
+			const { data: legendaryCards } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.eq('rarity', 'legendary');
+
+			const legendaryCardIds = legendaryCards?.map((c) => c.id) || [];
 
 			// Act
 			const { data, error } = await callAwardVipCardsWithFilters(teacherClient, student.id, 10, {
@@ -469,8 +479,10 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 
 			const teacherClient = await createAuthenticatedClient(teacher.email);
 
-			// Exclude all cards
-			const allCardIds = VIP_CARDS.map((c) => c.id);
+			// Get all card IDs from database
+			const { data: allCards } = await serviceClient.from('vip_card_templates').select('id');
+
+			const allCardIds = allCards?.map((c) => c.id) || [];
 
 			// Act
 			const { data, error } = await callAwardVipCardsWithFilters(teacherClient, student.id, 5, {
@@ -511,11 +523,16 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 			expect(data).toBeDefined();
 			expect(data?.cards).toHaveLength(10);
 
-			// Verify all drawn cards have actions
+			// Verify all drawn cards have actions by checking database
 			for (const card of data!.cards) {
-				const cardDef = VIP_CARDS.find((c) => c.id === card.cardId);
-				expect(cardDef).toBeDefined();
-				expect(cardDef?.action).toBeDefined();
+				const { data: cardTemplate } = await serviceClient
+					.from('vip_card_templates')
+					.select('action')
+					.eq('id', card.cardId)
+					.single();
+
+				expect(cardTemplate).toBeDefined();
+				expect(cardTemplate?.action).not.toBeNull();
 			}
 		});
 
@@ -531,8 +548,13 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 
 			const teacherClient = await createAuthenticatedClient(teacher.email);
 
-			// Get cards without actions
-			const cardsWithoutActions = VIP_CARDS.filter((c) => !c.action).map((c) => c.id);
+			// Get cards without actions from database
+			const { data: cardsWithoutActionsData } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.is('action', null);
+
+			const cardsWithoutActions = cardsWithoutActionsData?.map((c) => c.id) || [];
 
 			// Act
 			const { data, error } = await callAwardVipCardsWithFilters(teacherClient, student.id, 10, {
@@ -605,9 +627,13 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 
 			const teacherClient = await createAuthenticatedClient(teacher.email);
 
-			// Exclude some rare cards
-			const rareCards = VIP_CARDS.filter((c) => c.rarity === 'rare');
-			const excludedRareCardIds = rareCards.slice(0, 2).map((c) => c.id);
+			// Get rare cards from database
+			const { data: rareCards } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.eq('rarity', 'rare');
+
+			const excludedRareCardIds = rareCards?.slice(0, 2).map((c) => c.id) || [];
 
 			// Act
 			const { data, error } = await callAwardVipCardsWithFilters(teacherClient, student.id, 10, {
@@ -641,9 +667,13 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 
 			const teacherClient = await createAuthenticatedClient(teacher.email);
 
-			// Get a card with action and exclude it
-			const cardsWithActions = VIP_CARDS.filter((c) => c.action);
-			const excludedCardIds = cardsWithActions.slice(0, 2).map((c) => c.id);
+			// Get cards with actions from database
+			const { data: cardsWithActions } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.not('action', 'is', null);
+
+			const excludedCardIds = cardsWithActions?.slice(0, 2).map((c) => c.id) || [];
 
 			// Act
 			const { data, error } = await callAwardVipCardsWithFilters(teacherClient, student.id, 10, {
@@ -658,8 +688,13 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 
 			// All cards have actions
 			for (const card of data!.cards) {
-				const cardDef = VIP_CARDS.find((c) => c.id === card.cardId);
-				expect(cardDef?.action).toBeDefined();
+				const { data: cardTemplate } = await serviceClient
+					.from('vip_card_templates')
+					.select('action')
+					.eq('id', card.cardId)
+					.single();
+
+				expect(cardTemplate?.action).not.toBeNull();
 				expect(excludedCardIds).not.toContain(card.cardId);
 			}
 		});
@@ -696,8 +731,13 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 
 			// All cards have actions and none are excluded
 			for (const card of data!.cards) {
-				const cardDef = VIP_CARDS.find((c) => c.id === card.cardId);
-				expect(cardDef?.action).toBeDefined();
+				const { data: cardTemplate } = await serviceClient
+					.from('vip_card_templates')
+					.select('action')
+					.eq('id', card.cardId)
+					.single();
+
+				expect(cardTemplate?.action).not.toBeNull();
 				expect(excludedCardIds).not.toContain(card.cardId);
 			}
 		});
@@ -878,8 +918,13 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 
 			const teacherClient = await createAuthenticatedClient(teacher.email);
 
-			// Exclude all cards with actions, then require onlyCardsWithActions
-			const cardsWithActions = VIP_CARDS.filter((c) => c.action).map((c) => c.id);
+			// Get all cards with actions from database
+			const { data: cardsWithActionsData } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.not('action', 'is', null);
+
+			const cardsWithActions = cardsWithActionsData?.map((c) => c.id) || [];
 
 			// Act: This creates impossible constraints
 			const { data, error } = await callAwardVipCardsWithFilters(teacherClient, student.id, 5, {

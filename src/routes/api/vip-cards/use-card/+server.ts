@@ -37,7 +37,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import type { StudentVipCards } from '$lib/types/vip-card';
-import { getVipCardById } from '$lib/types/vip-card';
+import { getTemplateById } from '$lib/server/vip-card-queries';
 import { useCardSchema } from '$lib/server/validation/vip-cards';
 
 // ============================================================================
@@ -113,10 +113,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, 'This card has already been used');
 	}
 
-	// Get card definition
-	const cardDef = getVipCardById(instance.cardId);
+	// Get card template from database
+	const template = await getTemplateById(locals.supabase, instance.cardId);
 
-	if (!cardDef) {
+	if (!template) {
 		throw error(404, 'Card definition not found');
 	}
 

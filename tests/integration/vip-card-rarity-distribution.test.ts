@@ -25,7 +25,7 @@ import { createAuthenticatedClient } from '../database/helpers/supabase-client';
 import { TestData } from '../database/helpers/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { VIP_CARDS, type VipCardRarity } from '$lib/types/vip-card';
+import type { VipCardRarity } from '$lib/types/vip-card';
 
 describe('VIP Card Rarity Distribution - Statistical Tests', () => {
 	let serviceClient: SupabaseClient<Database>;
@@ -53,9 +53,11 @@ describe('VIP Card Rarity Distribution - Statistical Tests', () => {
 	});
 
 	/**
-	 * Helper function to count cards by rarity
+	 * Helper function to count cards by rarity (queries database for each card's rarity)
 	 */
-	function countByRarity(cards: Array<{ cardId: string }>): Record<VipCardRarity, number> {
+	async function countByRarity(
+		cards: Array<{ cardId: string }>
+	): Promise<Record<VipCardRarity, number>> {
 		const counts: Record<VipCardRarity, number> = {
 			common: 0,
 			rare: 0,
@@ -64,9 +66,14 @@ describe('VIP Card Rarity Distribution - Statistical Tests', () => {
 		};
 
 		for (const { cardId } of cards) {
-			const card = VIP_CARDS.find((c) => c.id === cardId);
+			const { data: card } = await serviceClient
+				.from('vip_card_templates')
+				.select('rarity')
+				.eq('id', cardId)
+				.single();
+
 			if (card) {
-				counts[card.rarity]++;
+				counts[card.rarity as VipCardRarity]++;
 			}
 		}
 
@@ -160,7 +167,7 @@ describe('VIP Card Rarity Distribution - Statistical Tests', () => {
 			expect(drawnCards).toHaveLength(sampleSize);
 
 			// Count by rarity
-			const rarityCounts = countByRarity(drawnCards.map((cardId) => ({ cardId })));
+			const rarityCounts = await countByRarity(drawnCards.map((cardId) => ({ cardId })));
 
 			// Log results
 			console.log('[test] Rarity distribution (10,000 cards):');
@@ -286,7 +293,7 @@ describe('VIP Card Rarity Distribution - Statistical Tests', () => {
 			// ASSERT: Verify custom distribution
 			// ========================================
 
-			const rarityCounts = countByRarity(drawnCards.map((cardId) => ({ cardId })));
+			const rarityCounts = await countByRarity(drawnCards.map((cardId) => ({ cardId })));
 
 			console.log('[test] Custom config distribution (1,000 cards):');
 			console.log(formatPercentages(rarityCounts, sampleSize));
@@ -417,7 +424,7 @@ describe('VIP Card Rarity Distribution - Statistical Tests', () => {
 			}
 
 			// Count distribution
-			const rarityCounts = countByRarity(singleCardDraws.map((cardId) => ({ cardId })));
+			const rarityCounts = await countByRarity(singleCardDraws.map((cardId) => ({ cardId })));
 
 			console.log('[test] Single card draws distribution (100 cards):');
 			console.log(formatPercentages(rarityCounts, 100));
@@ -472,8 +479,8 @@ describe('VIP Card Rarity Distribution - Statistical Tests', () => {
 			}
 
 			// Count distributions
-			const batch1Counts = countByRarity(batch1Cards.map((cardId) => ({ cardId })));
-			const batch2Counts = countByRarity(batch2Cards.map((cardId) => ({ cardId })));
+			const batch1Counts = await countByRarity(batch1Cards.map((cardId) => ({ cardId })));
+			const batch2Counts = await countByRarity(batch2Cards.map((cardId) => ({ cardId })));
 
 			console.log('[test] Batch 1 distribution (500 cards):');
 			console.log(formatPercentages(batch1Counts, 500));

@@ -31,7 +31,8 @@ import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { chooseCardsSchema } from '$lib/server/validation/choose-cards';
 import type { StudentVipCards } from '$lib/types/vip-card';
-import { getVipCardById, getRarityPoints } from '$lib/types/vip-card';
+import { getRarityPoints } from '$lib/types/vip-card';
+import { getTemplateById, getTemplatesByIds } from '$lib/server/vip-card-queries';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 // ============================================================================
@@ -104,8 +105,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, `Action card already used: ${data.actionCardInstanceId}`);
 	}
 
-	// Get action card definition
-	const actionCard = getVipCardById(actionCardInstance.cardId);
+	// Get action card template from database
+	const actionCard = await getTemplateById(supabase, actionCardInstance.cardId);
 	if (!actionCard) {
 		throw error(404, `Action card definition not found: ${actionCardInstance.cardId}`);
 	}
@@ -126,7 +127,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// Validate chosen cards respect filters
-	validateChosenCards(data.chosenCardIds, chooseAction);
+	await validateChosenCards(supabase, data.chosenCardIds, chooseAction);
 
 	// Award chosen cards
 	const result = await awardChosenCards(supabase, data.studentId, data.chosenCardIds, vipCards);
@@ -168,18 +169,23 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 /**
  * Validate that chosen card IDs respect the action's filters
  */
-function validateChosenCards(
+async function validateChosenCards(
+	supabase: SupabaseClient,
 	chosenCardIds: string[],
 	action: { count: number; filter?: 'all'; maxRarity?: string; possibleCardIds?: string[] }
 ) {
+	// Load all chosen card templates at once
+	const templates = await getTemplatesByIds(supabase, chosenCardIds);
+	const templatesMap = new Map(templates.map((t) => [t.id, t]));
+
 	// Mode 3: possibleCardIds (specific list)
 	if (action.possibleCardIds && action.possibleCardIds.length > 0) {
 		for (const cardId of chosenCardIds) {
 			if (!action.possibleCardIds.includes(cardId)) {
-				const card = getVipCardById(cardId);
+				const template = templatesMap.get(cardId);
 				throw error(
 					400,
-					`Card "${card?.name || cardId}" is not in the allowed list for this action`
+					`Card "${template?.name || cardId}" is not in the allowed list for this action`
 				);
 			}
 		}
@@ -193,16 +199,18 @@ function validateChosenCards(
 		);
 
 		for (const cardId of chosenCardIds) {
-			const card = getVipCardById(cardId);
-			if (!card) {
+			const template = templatesMap.get(cardId);
+			if (!template) {
 				throw error(404, `Card not found: ${cardId}`);
 			}
 
-			const cardRarityValue = getRarityPoints(card.rarity);
+			const cardRarityValue = getRarityPoints(
+				template.rarity as 'common' | 'rare' | 'epic' | 'legendary'
+			);
 			if (cardRarityValue > maxRarityValue) {
 				throw error(
 					400,
-					`Card "${card.name}" (${card.rarity}) exceeds maximum rarity ${action.maxRarity}`
+					`Card "${template.name}" (${template.rarity}) exceeds maximum rarity ${action.maxRarity}`
 				);
 			}
 		}
@@ -212,8 +220,8 @@ function validateChosenCards(
 	// Mode 1: filter='all' (default - all cards allowed)
 	// Just validate cards exist
 	for (const cardId of chosenCardIds) {
-		const card = getVipCardById(cardId);
-		if (!card) {
+		const template = templatesMap.get(cardId);
+		if (!template) {
 			throw error(404, `Card not found: ${cardId}`);
 		}
 	}
@@ -261,7 +269,7 @@ async function awardChosenCards(
 			throw error(500, `No card ID returned for "${cardId}"`);
 		}
 
-		const card = getVipCardById(awardedCardId);
+		const template = await getTemplateById(supabase, awardedCardId);
 
 		// Fetch updated VIP cards to get instance ID
 		const { data: updatedProfile } = await supabase
@@ -281,7 +289,7 @@ async function awardChosenCards(
 
 		cardsReceived.push({
 			cardId: awardedCardId,
-			name: card?.name || awardedCardId,
+			name: template?.name || awardedCardId,
 			instanceId: latestInstanceId || crypto.randomUUID(), // Fallback to new UUID
 			earnedAt: now
 		});

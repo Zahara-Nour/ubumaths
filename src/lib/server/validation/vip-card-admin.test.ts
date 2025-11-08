@@ -37,7 +37,9 @@ describe('VIP Card Action Validation', () => {
 				expect(result.success).toBe(true);
 				if (result.success) {
 					expect(result.data.action?.type).toBe('draw_cards');
-					expect(result.data.action?.count).toBe(1);
+					if (result.data.action?.type === 'draw_cards') {
+						expect(result.data.action.count).toBe(1);
+					}
 				}
 			});
 
@@ -57,8 +59,8 @@ describe('VIP Card Action Validation', () => {
 					sortOrder: 0
 				});
 				expect(result.success).toBe(true);
-				if (result.success) {
-					expect(result.data.action?.count).toBe(10);
+				if (result.success && result.data.action?.type === 'draw_cards') {
+					expect(result.data.action.count).toBe(10);
 				}
 			});
 
@@ -83,8 +85,8 @@ describe('VIP Card Action Validation', () => {
 						sortOrder: 0
 					});
 					expect(result.success).toBe(true);
-					if (result.success) {
-						expect(result.data.action?.filters?.forceRarity).toBe(rarity);
+					if (result.success && result.data.action?.type === 'draw_cards') {
+						expect(result.data.action.filters?.forceRarity).toBe(rarity);
 					}
 				});
 			});
@@ -110,8 +112,8 @@ describe('VIP Card Action Validation', () => {
 						sortOrder: 0
 					});
 					expect(result.success).toBe(true);
-					if (result.success) {
-						expect(result.data.action?.filters?.minRarity).toBe(rarity);
+					if (result.success && result.data.action?.type === 'draw_cards') {
+						expect(result.data.action.filters?.minRarity).toBe(rarity);
 					}
 				});
 			});
@@ -135,8 +137,8 @@ describe('VIP Card Action Validation', () => {
 					sortOrder: 0
 				});
 				expect(result.success).toBe(true);
-				if (result.success) {
-					expect(result.data.action?.filters?.excludeCardIds).toEqual(['bonus', 'super-bonus']);
+				if (result.success && result.data.action?.type === 'draw_cards') {
+					expect(result.data.action.filters?.excludeCardIds).toEqual(['bonus', 'super-bonus']);
 				}
 			});
 
@@ -159,8 +161,8 @@ describe('VIP Card Action Validation', () => {
 					sortOrder: 0
 				});
 				expect(result.success).toBe(true);
-				if (result.success) {
-					expect(result.data.action?.filters?.onlyCardsWithActions).toBe(true);
+				if (result.success && result.data.action?.type === 'draw_cards') {
+					expect(result.data.action.filters?.onlyCardsWithActions).toBe(true);
 				}
 			});
 
@@ -185,10 +187,10 @@ describe('VIP Card Action Validation', () => {
 					sortOrder: 0
 				});
 				expect(result.success).toBe(true);
-				if (result.success) {
-					expect(result.data.action?.filters?.minRarity).toBe('rare');
-					expect(result.data.action?.filters?.excludeCardIds).toEqual(['bonus', 'warning-remover']);
-					expect(result.data.action?.filters?.onlyCardsWithActions).toBe(true);
+				if (result.success && result.data.action?.type === 'draw_cards') {
+					expect(result.data.action.filters?.minRarity).toBe('rare');
+					expect(result.data.action.filters?.excludeCardIds).toEqual(['bonus', 'warning-remover']);
+					expect(result.data.action.filters?.onlyCardsWithActions).toBe(true);
 				}
 			});
 

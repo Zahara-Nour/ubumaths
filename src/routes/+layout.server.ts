@@ -21,6 +21,7 @@
  */
 
 import type { LayoutServerLoad } from './$types';
+import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 
 export const load: LayoutServerLoad = async ({ locals, cookies }) => {
 	console.log('🎨 [ROOT LAYOUT SERVER] Exécution');
@@ -30,12 +31,33 @@ export const load: LayoutServerLoad = async ({ locals, cookies }) => {
 		(cookie) => cookie.name.startsWith('sb-') // sb-access-token, sb-refresh-token, etc.
 	);
 
+	// Load VIP card templates from database (for client-side store)
+	let vipCardTemplates: VipCardTemplate[] = [];
+	try {
+		const { data, error } = await locals.supabase
+			.from('vip_card_templates')
+			.select('*')
+			.order('sort_order', { ascending: true });
+
+		if (error) {
+			console.error('❌ [ROOT LAYOUT SERVER] Error loading VIP card templates:', error);
+		} else {
+			vipCardTemplates = (data as VipCardTemplate[]) || [];
+			console.log(`✅ [ROOT LAYOUT SERVER] Loaded ${vipCardTemplates.length} VIP card templates`);
+		}
+	} catch (err) {
+		console.error('❌ [ROOT LAYOUT SERVER] Exception loading VIP card templates:', err);
+	}
+
 	return {
 		// User and profile are already loaded in locals by userProfileHandle (hooks.server.ts)
 		user: locals.user,
 		profile: locals.profile,
 
 		// ✅ Cookies filtrés - ne se réexécute que si cookies Supabase changent
-		cookies: supabaseAuthCookies
+		cookies: supabaseAuthCookies,
+
+		// VIP card templates for client-side store initialization
+		vipCardTemplates
 	};
 };

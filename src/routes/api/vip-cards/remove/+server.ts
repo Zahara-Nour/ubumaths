@@ -37,7 +37,7 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import type { StudentVipCards } from '$lib/types/vip-card';
-import { getVipCardById } from '$lib/types/vip-card';
+import { getTemplateById } from '$lib/server/vip-card-queries';
 
 // ============================================================================
 // VALIDATION SCHEMA
@@ -121,9 +121,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const [instanceIdToRemove] = matchingInstances[0];
 
-	// Get card definition for response
-	const cardDef = getVipCardById(cardId);
-	const cardName = cardDef?.name || cardId;
+	// Get card template for response
+	const template = await getTemplateById(supabase, cardId);
+	const cardName = template?.name || cardId;
 
 	// Remove the instance from the JSONB object
 	const updatedCards = { ...vipCards };

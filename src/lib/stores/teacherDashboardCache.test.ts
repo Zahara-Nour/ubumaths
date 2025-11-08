@@ -704,12 +704,13 @@ describe('Cache 2A: Student Rewards', () => {
 
 	describe('Hydration', () => {
 		it('should hydrate rewards from load function data', () => {
+			const testTimestamp = new Date().toISOString();
 			const students = [
 				{
 					id: 'student-1',
 					gidouilles: 10,
 					vip_cards: {
-						card1: { cardId: 'card1', earnedAt: new Date().toISOString(), usedAt: null }
+						card1: { cardId: 'card1', earnedAt: testTimestamp, usedAt: null }
 					}
 				},
 				{ id: 'student-2', gidouilles: 20, vip_cards: {} as StudentVipCards }
@@ -720,7 +721,12 @@ describe('Cache 2A: Student Rewards', () => {
 			const rewards = cache.getRewardsSync(classId);
 
 			expect(rewards?.size).toBe(2);
-			expect(rewards?.get('student-1')).toEqual({ gidouilles: 10, vip_cards: { card1: 1 } });
+			expect(rewards?.get('student-1')).toEqual({
+				gidouilles: 10,
+				vip_cards: {
+					card1: { cardId: 'card1', earnedAt: testTimestamp, usedAt: null }
+				}
+			});
 		});
 	});
 });

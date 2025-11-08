@@ -3,7 +3,8 @@
 // Helper functions for managing VIP cards in the reward system
 
 import type { StudentVipCards, VipCardAction } from '$lib/types/vip-card';
-import { getVipCardById } from '$lib/types/vip-card';
+import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
+import { getTemplateById } from '$lib/stores/vipCardTemplates.svelte';
 
 /**
  * Cost in gidouilles to purchase one VIP card
@@ -40,7 +41,10 @@ export function getStudentCardCounts(vipCards: StudentVipCards): Map<string, num
  * Returns an array of objects with card data and count
  * NOTE: Returns the full VipCard definition, not just the instance
  */
-export function getStudentCardsWithCounts(vipCards: StudentVipCards): Array<{
+export function getStudentCardsWithCounts(
+	vipCards: StudentVipCards,
+	templates: VipCardTemplate[]
+): Array<{
 	id: string;
 	name: string;
 	description: string;
@@ -66,21 +70,21 @@ export function getStudentCardsWithCounts(vipCards: StudentVipCards): Array<{
 
 	Object.values(vipCards).forEach((instance) => {
 		if (instance.usedAt === null) {
-			const cardDef = getVipCardById(instance.cardId);
-			if (!cardDef) return; // Skip if card definition not found
+			const template = getTemplateById(instance.cardId, templates);
+			if (!template) return; // Skip if card template not found
 
 			const existing = cardMap.get(instance.cardId);
 			if (existing) {
 				existing.count++;
 			} else {
 				cardMap.set(instance.cardId, {
-					id: cardDef.id,
-					name: cardDef.name,
-					description: cardDef.description,
-					imagePath: cardDef.imagePath,
-					category: cardDef.category || undefined,
-					rarity: cardDef.rarity,
-					action: cardDef.action,
+					id: template.id,
+					name: template.name,
+					description: template.description,
+					imagePath: template.image_path,
+					category: template.category || undefined,
+					rarity: template.rarity as 'common' | 'rare' | 'epic' | 'legendary',
+					action: template.action ?? undefined,
 					count: 1
 				});
 			}
@@ -155,7 +159,7 @@ export function sortCardsByPriority(
 /**
  * Get human-readable French description of a VIP card action
  */
-export function getActionDescription(action: VipCardAction): string {
+export function getActionDescription(action: VipCardAction, templates: VipCardTemplate[]): string {
 	switch (action.type) {
 		case 'draw_cards':
 			return `Piocher ${action.count} carte${action.count > 1 ? 's' : ''} VIP`;
@@ -185,8 +189,8 @@ export function getActionDescription(action: VipCardAction): string {
 				return `Échanger des cartes contre une carte ${rarityNames[action.exchange.targetRarity]}`;
 			} else {
 				// discard_for_specific
-				const targetCard = getVipCardById(action.exchange.targetCardId);
-				return `Échanger ${action.exchange.discardCount} carte${action.exchange.discardCount > 1 ? 's' : ''} contre ${targetCard?.name || action.exchange.targetCardId}`;
+				const targetTemplate = getTemplateById(action.exchange.targetCardId, templates);
+				return `Échanger ${action.exchange.discardCount} carte${action.exchange.discardCount > 1 ? 's' : ''} contre ${targetTemplate?.name || action.exchange.targetCardId}`;
 			}
 
 		case 'add_gidouilles':

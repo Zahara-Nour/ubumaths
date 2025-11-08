@@ -1,7 +1,12 @@
 <script lang="ts">
 	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
-	import { VIP_CARDS, type VipCard, type StudentVipCards } from '$lib/types/vip-card';
+	import type { VipCard, StudentVipCards } from '$lib/types/vip-card';
 	import { getStudentCardCounts } from '$lib/utils/vip-cards';
+	import {
+		vipCardTemplates,
+		getEnabledTemplates,
+		templateToVipCard
+	} from '$lib/stores/vipCardTemplates.svelte';
 
 	interface Props {
 		vipCards: StudentVipCards;
@@ -12,12 +17,17 @@
 	// Get student's card counts (only unused cards)
 	const cardCounts = $derived(getStudentCardCounts(vipCards));
 
+	// Get all enabled cards from store
+	const allCards = $derived(
+		getEnabledTemplates($vipCardTemplates).map((template) => templateToVipCard(template))
+	);
+
 	// Group cards by rarity
 	const cardsByRarity = $derived({
-		common: VIP_CARDS.filter((c) => c.rarity === 'common'),
-		rare: VIP_CARDS.filter((c) => c.rarity === 'rare'),
-		epic: VIP_CARDS.filter((c) => c.rarity === 'epic'),
-		legendary: VIP_CARDS.filter((c) => c.rarity === 'legendary')
+		common: allCards.filter((c) => c.rarity === 'common'),
+		rare: allCards.filter((c) => c.rarity === 'rare'),
+		epic: allCards.filter((c) => c.rarity === 'epic'),
+		legendary: allCards.filter((c) => c.rarity === 'legendary')
 	});
 
 	// Calculate stats for each rarity

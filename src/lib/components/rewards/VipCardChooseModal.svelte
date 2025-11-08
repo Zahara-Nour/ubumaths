@@ -31,8 +31,14 @@
 	import { modalStack } from '$lib/stores/modalStack.svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { getVipCardById, getRarityPoints, VIP_CARDS } from '$lib/types/vip-card';
+	import { getRarityPoints } from '$lib/types/vip-card';
 	import type { VipCardRarity, StudentVipCards } from '$lib/types/vip-card';
+	import {
+		vipCardTemplates,
+		getEnabledTemplates,
+		getTemplateById,
+		templateToVipCard
+	} from '$lib/stores/vipCardTemplates.svelte';
 	import { cn } from '$lib/utils';
 
 	interface Props {
@@ -60,20 +66,28 @@
 
 	// Get available cards based on action filters
 	const availableCards = $derived.by(() => {
+		const allCards = getEnabledTemplates($vipCardTemplates).map((t) => templateToVipCard(t));
+
 		// Mode 3: Specific list
 		if (action.possibleCardIds && action.possibleCardIds.length > 0) {
-			return VIP_CARDS.filter((card) => action.possibleCardIds!.includes(card.id));
+			return allCards.filter((card) => action.possibleCardIds!.includes(card.id));
 		}
 
 		// Mode 2: Max rarity
 		if (action.maxRarity) {
 			const maxRarityValue = getRarityPoints(action.maxRarity);
-			return VIP_CARDS.filter((card) => getRarityPoints(card.rarity) <= maxRarityValue);
+			return allCards.filter((card) => getRarityPoints(card.rarity) <= maxRarityValue);
 		}
 
 		// Mode 1: All cards (default)
-		return VIP_CARDS;
+		return allCards;
 	});
+
+	// Helper to get card by ID from store
+	const getCardById = (cardId: string) => {
+		const template = getTemplateById(cardId, $vipCardTemplates);
+		return template ? templateToVipCard(template) : null;
+	};
 
 	const canConfirm = $derived(selectedCardIds.size === action.count);
 
@@ -214,7 +228,7 @@
 					<h3 class="mb-4 text-lg font-semibold">Carte d'action utilisée :</h3>
 					<div class="flex justify-center">
 						<div class="w-48 text-center opacity-50">
-							<VipCard card={getVipCardById(result.actionCardUsed.cardId)!} size="md" />
+							<VipCard card={getCardById(result.actionCardUsed.cardId)!} size="md" />
 							<p class="mt-2 text-sm">{result.actionCardUsed.name}</p>
 						</div>
 					</div>
@@ -225,7 +239,7 @@
 					<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
 						{#each result.cardsReceived as card (card.instanceId)}
 							<div class="text-center">
-								<VipCard card={getVipCardById(card.cardId)!} size="md" />
+								<VipCard card={getCardById(card.cardId)!} size="md" />
 								<p class="mt-2 text-sm font-bold">{card.name}</p>
 							</div>
 						{/each}

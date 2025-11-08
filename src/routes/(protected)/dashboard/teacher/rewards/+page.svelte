@@ -125,7 +125,11 @@
 	import { invalidateAll } from '$app/navigation';
 	import { openVipCardDrawModal, openVipCardsModal } from '$lib/utils/vip-card-modals';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { VIP_CARDS, getVipCardById } from '$lib/types/vip-card';
+	import {
+		vipCardTemplates,
+		getTemplateById,
+		getEnabledTemplates
+	} from '$lib/stores/vipCardTemplates.svelte';
 
 	// Data from parent layouts (user/profile only)
 	let { data }: { data: PageData } = $props();
@@ -149,10 +153,13 @@
 	let filterMode = $state<'filter' | 'add'>('filter'); // Mode par défaut : filtrer
 
 	// Items for VIP card filter dropdown
-	const cardFilterItems = [
+	const cardFilterItems = $derived([
 		{ value: 'all', label: 'Toutes les cartes VIP' },
-		...VIP_CARDS.map((card) => ({ value: card.id, label: card.name }))
-	];
+		...getEnabledTemplates($vipCardTemplates).map((template) => ({
+			value: template.id,
+			label: template.name
+		}))
+	]);
 
 	// Filtered students list based on selected VIP card
 	let filteredStudents = $derived(
@@ -362,7 +369,7 @@
 			}
 
 			// Get card name for success message
-			const card = getVipCardById(selectedCardFilter);
+			const card = getTemplateById(selectedCardFilter, $vipCardTemplates);
 			toaster.success(`Carte "${card?.name || selectedCardFilter}" offerte !`);
 		} catch (err) {
 			console.error('Error granting VIP card:', err);
@@ -859,7 +866,7 @@
 											Sélectionnez une carte VIP pour activer le mode "Ajouter"
 										</p>
 									{:else}
-										{@const card = getVipCardById(selectedCardFilter)}
+										{@const card = getTemplateById(selectedCardFilter, $vipCardTemplates)}
 										<p class="px-4 text-xs text-muted-foreground">
 											Affiche tous les élèves. Cliquez sur + pour offrir la carte "{card?.name ||
 												selectedCardFilter}"
@@ -1023,7 +1030,10 @@
 
 															<!-- Grant Specific VIP Card Button (only shows when add mode is active) -->
 															{#if filterMode === 'add' && selectedCardFilter !== 'all'}
-																{@const card = getVipCardById(selectedCardFilter)}
+																{@const card = getTemplateById(
+																	selectedCardFilter,
+																	$vipCardTemplates
+																)}
 																<Tooltip.Root>
 																	<Tooltip.Trigger>
 																		<Button

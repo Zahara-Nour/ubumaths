@@ -8,7 +8,7 @@
 import type { PageServerLoad } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import type { StudentVipCards } from '$lib/types/vip-card';
-import { getVipCardById } from '$lib/types/vip-card';
+import { getTemplateById } from '$lib/server/vip-card-queries';
 import { getActionDescription } from '$lib/utils/vip-cards';
 
 interface ActivationRequest {
@@ -63,6 +63,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Extract pending activation requests
 	const activationRequests: ActivationRequest[] = [];
 
+	// Collect all pending requests first
+	interface PendingRequest {
+		studentId: string;
+		studentName: string;
+		instanceId: string;
+		cardId: string;
+		requestedAt: string;
+	}
+
+	const pendingRequests: PendingRequest[] = [];
+
 	profiles?.forEach((profile) => {
 		const vipCards = (profile.vip_cards || {}) as unknown as StudentVipCards;
 		const studentName = `${profile.firstname || ''} ${profile.lastname || ''}`.trim();
@@ -70,22 +81,37 @@ export const load: PageServerLoad = async ({ locals }) => {
 		Object.entries(vipCards).forEach(([instanceId, instance]) => {
 			// Only include instances with pending activation requests
 			if (instance.activationRequestedAt && !instance.usedAt) {
-				const cardDef = getVipCardById(instance.cardId);
-
-				if (cardDef && cardDef.action) {
-					activationRequests.push({
-						studentId: profile.id,
-						studentName: studentName || 'Élève',
-						instanceId,
-						cardId: instance.cardId,
-						cardName: cardDef.name,
-						actionDescription: getActionDescription(cardDef.action),
-						requestedAt: instance.activationRequestedAt
-					});
-				}
+				pendingRequests.push({
+					studentId: profile.id,
+					studentName: studentName || 'Élève',
+					instanceId,
+					cardId: instance.cardId,
+					requestedAt: instance.activationRequestedAt
+				});
 			}
 		});
 	});
+
+	// Fetch card templates for all pending requests
+	for (const request of pendingRequests) {
+		try {
+			const template = await getTemplateById(supabase, request.cardId);
+
+			if (template && template.action) {
+				activationRequests.push({
+					studentId: request.studentId,
+					studentName: request.studentName,
+					instanceId: request.instanceId,
+					cardId: request.cardId,
+					cardName: template.name, // ✅ Now reads from database, not hardcoded array!
+					actionDescription: getActionDescription(template.action),
+					requestedAt: request.requestedAt
+				});
+			}
+		} catch (error) {
+			console.error(`[rewards] Error fetching template ${request.cardId}:`, error);
+		}
+	}
 
 	// Sort by requested date (most recent first)
 	activationRequests.sort(

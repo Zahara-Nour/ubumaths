@@ -21,6 +21,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Loader2, Sparkles } from 'lucide-svelte';
+	import { vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
 
 	interface Props {
 		instanceId: string;
@@ -39,7 +40,9 @@
 	const isPending = $derived(!!vipCardInstance.activationRequestedAt);
 	const isUsed = $derived(!!vipCardInstance.usedAt);
 	const canActivate = $derived(!isUsed && !isPending && !!card.action);
-	const actionDescription = $derived(card.action ? getActionDescription(card.action) : '');
+	const actionDescription = $derived(
+		card.action ? getActionDescription(card.action, $vipCardTemplates) : ''
+	);
 
 	/**
 	 * Request activation from teacher

@@ -22,7 +22,7 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import type { StudentVipCards } from '$lib/types/vip-card';
-import { getVipCardById } from '$lib/types/vip-card';
+import { getTemplateById } from '$lib/server/vip-card-queries';
 
 // ============================================================================
 // VALIDATION SCHEMA
@@ -106,10 +106,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, 'No pending activation request for this card');
 	}
 
-	// Get card definition
-	const cardDef = getVipCardById(instance.cardId);
+	// Get card template
+	const template = await getTemplateById(supabase, instance.cardId);
 
-	if (!cardDef) {
+	if (!template) {
 		throw error(404, 'Card definition not found');
 	}
 
@@ -141,6 +141,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		success: true,
 		message: 'Activation request rejected successfully',
 		instance: updatedInstance,
-		cardName: cardDef.name
+		cardName: template.name
 	});
 };

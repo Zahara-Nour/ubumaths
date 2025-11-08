@@ -21,8 +21,8 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
-import type { StudentVipCards } from '$lib/types/vip-card';
-import { getVipCardById } from '$lib/types/vip-card';
+import type { StudentVipCards, VipCardAction } from '$lib/types/vip-card';
+import { getTemplateById } from '$lib/server/vip-card-queries';
 
 // ============================================================================
 // VALIDATION SCHEMA
@@ -88,14 +88,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, 'Activation request already pending');
 	}
 
-	// Get card definition to verify it has an action
-	const cardDef = getVipCardById(instance.cardId);
+	// Get card template to verify it has an action
+	const template = await getTemplateById(supabase, instance.cardId);
 
-	if (!cardDef) {
+	if (!template) {
 		throw error(404, 'Card definition not found');
 	}
 
-	if (!cardDef.action) {
+	if (!template.action) {
 		throw error(400, 'This card does not have an activatable action');
 	}
 
@@ -127,8 +127,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		success: true,
 		message: 'Activation request submitted successfully',
 		instance: updatedInstance,
-		cardName: cardDef.name,
-		actionDescription: getActionDescription(cardDef.action)
+		cardName: template.name,
+		actionDescription: getActionDescription(template.action)
 	});
 };
 
@@ -139,9 +139,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 /**
  * Get human-readable description of card action
  */
-function getActionDescription(
-	action: NonNullable<NonNullable<ReturnType<typeof getVipCardById>>['action']>
-): string {
+function getActionDescription(action: VipCardAction): string {
 	switch (action.type) {
 		case 'draw_cards':
 			return `Piocher ${action.count} carte${action.count > 1 ? 's' : ''} VIP`;

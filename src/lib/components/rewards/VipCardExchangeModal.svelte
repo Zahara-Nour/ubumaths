@@ -30,7 +30,7 @@
 	import { modalStack } from '$lib/stores/modalStack.svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { getVipCardById, getRarityPoints } from '$lib/types/vip-card';
+	import { getRarityPoints } from '$lib/types/vip-card';
 	import type {
 		ExchangeCardAction,
 		StudentVipCards,
@@ -38,6 +38,11 @@
 		VipCardInstance,
 		VipCardRarity
 	} from '$lib/types/vip-card';
+	import {
+		vipCardTemplates,
+		getTemplateById,
+		templateToVipCard
+	} from '$lib/stores/vipCardTemplates.svelte';
 	import { cn } from '$lib/utils';
 
 	interface Props {
@@ -98,9 +103,17 @@
 		return false;
 	});
 
-	const targetCard = $derived(
-		exchange.mode === 'discard_for_specific' ? getVipCardById(exchange.targetCardId) : null
-	);
+	const targetCard = $derived.by(() => {
+		if (exchange.mode !== 'discard_for_specific') return null;
+		const template = getTemplateById(exchange.targetCardId, $vipCardTemplates);
+		return template ? templateToVipCard(template) : null;
+	});
+
+	// Helper to get card by ID from store
+	const getCardById = (cardId: string) => {
+		const template = getTemplateById(cardId, $vipCardTemplates);
+		return template ? templateToVipCard(template) : null;
+	};
 
 	/**
 	 * Load student's VIP cards
@@ -120,8 +133,10 @@
 					availableCards = Object.entries(vipCards)
 						.filter(([_, instance]) => instance.usedAt === null)
 						.map(([instanceId, instance]) => {
-							const card = getVipCardById(instance.cardId);
-							return card ? { instance, card, instanceId } : null;
+							const template = getTemplateById(instance.cardId, $vipCardTemplates);
+							if (!template) return null;
+							const card = templateToVipCard(template);
+							return { instance, card, instanceId };
 						})
 						.filter(
 							(c): c is { instance: VipCardInstance; card: VipCardType; instanceId: string } =>
@@ -143,8 +158,10 @@
 			availableCards = Object.entries(vipCards)
 				.filter(([_, instance]) => instance.usedAt === null)
 				.map(([instanceId, instance]) => {
-					const card = getVipCardById(instance.cardId);
-					return card ? { instance, card, instanceId } : null;
+					const template = getTemplateById(instance.cardId, $vipCardTemplates);
+					if (!template) return null;
+					const card = templateToVipCard(template);
+					return { instance, card, instanceId };
 				})
 				.filter(
 					(c): c is { instance: VipCardInstance; card: VipCardType; instanceId: string } =>
@@ -326,7 +343,7 @@
 					<div class="grid grid-cols-3 gap-4">
 						{#each result.cardsDiscarded as card (card.instanceId)}
 							<div class="text-center opacity-50">
-								<VipCard card={getVipCardById(card.cardId)!} size="sm" />
+								<VipCard card={getCardById(card.cardId)!} size="sm" />
 								<p class="mt-2 text-sm">{card.name}</p>
 							</div>
 						{/each}
@@ -338,7 +355,7 @@
 					<div class="grid grid-cols-3 gap-4">
 						{#each result.cardsReceived as card (card.instanceId)}
 							<div class="text-center">
-								<VipCard card={getVipCardById(card.cardId)!} size="sm" />
+								<VipCard card={getCardById(card.cardId)!} size="sm" />
 								<p class="mt-2 text-sm font-bold">{card.name}</p>
 							</div>
 						{/each}

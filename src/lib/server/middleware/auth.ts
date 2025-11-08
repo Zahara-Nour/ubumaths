@@ -42,7 +42,7 @@ export type UserRole = 'student' | 'teacher' | 'admin';
 /**
  * Profile row from database
  */
-type Profile = Database['public']['Tables']['profiles']['Row'];
+export type Profile = Database['public']['Tables']['profiles']['Row'];
 
 /**
  * Result of successful authentication

@@ -57,7 +57,8 @@ import type {
 	StudentVipCards,
 	VipCardRarity
 } from '$lib/types/vip-card';
-import { getVipCardById, getRarityPoints } from '$lib/types/vip-card';
+import { getRarityPoints } from '$lib/types/vip-card';
+import { getTemplateById, getTemplatesByRarity } from '$lib/server/vip-card-queries';
 import { removeWarning, type Warning } from '$lib/server/warnings';
 import { error } from '@sveltejs/kit';
 
@@ -305,10 +306,10 @@ async function executeDrawCards(options: {
 			throw error(500, `No card ID returned for card ${i + 1}`);
 		}
 
-		const card = getVipCardById(cardId);
+		const template = await getTemplateById(supabase, cardId);
 		cardsDrawn.push({
 			cardId,
-			name: card?.name || cardId
+			name: template?.name || cardId
 		});
 	}
 
@@ -475,10 +476,10 @@ async function executeExchangeReplaceRandom(options: {
 			usedAt: new Date().toISOString()
 		};
 
-		const card = getVipCardById(instance.cardId);
+		const template = await getTemplateById(supabase, instance.cardId);
 		discardedCardInfo.push({
 			cardId: instance.cardId,
-			name: card?.name || instance.cardId
+			name: template?.name || instance.cardId
 		});
 	}
 
@@ -509,10 +510,10 @@ async function executeExchangeReplaceRandom(options: {
 			throw error(500, `Failed to draw replacement card ${i + 1}: ${rpcError.message}`);
 		}
 
-		const card = getVipCardById(cardId!);
+		const template = await getTemplateById(supabase, cardId!);
 		cardsReceived.push({
 			cardId: cardId!,
-			name: card?.name || cardId!
+			name: template?.name || cardId!
 		});
 	}
 
@@ -567,11 +568,16 @@ async function executeExchangeRarityPoints(options: {
 	}> = [];
 
 	for (const [instanceId, instance] of unusedCards) {
-		const card = getVipCardById(instance.cardId);
-		if (card) {
-			const points = getRarityPoints(card.rarity);
+		const template = await getTemplateById(supabase, instance.cardId);
+		if (template) {
+			const points = getRarityPoints(template.rarity as VipCardRarity);
 			totalPoints += points;
-			cardPoints.push({ instanceId, cardId: instance.cardId, rarity: card.rarity, points });
+			cardPoints.push({
+				instanceId,
+				cardId: instance.cardId,
+				rarity: template.rarity as VipCardRarity,
+				points
+			});
 		}
 	}
 
@@ -601,10 +607,10 @@ async function executeExchangeRarityPoints(options: {
 			usedAt: new Date().toISOString()
 		};
 
-		const card = getVipCardById(cardInfo.cardId);
+		const template = await getTemplateById(supabase, cardInfo.cardId);
 		discardedCardInfo.push({
 			cardId: cardInfo.cardId,
-			name: card?.name || cardInfo.cardId
+			name: template?.name || cardInfo.cardId
 		});
 	}
 
@@ -618,16 +624,15 @@ async function executeExchangeRarityPoints(options: {
 		throw error(500, `Failed to discard cards: ${updateError.message}`);
 	}
 
-	// Since VIP_CARDS is in-memory, we'll use it directly
-	const { VIP_CARDS } = await import('$lib/types/vip-card');
-	const targetCards = VIP_CARDS.filter((c) => c.rarity === targetRarity);
+	// Get all enabled templates of target rarity from database
+	const targetTemplates = await getTemplatesByRarity(supabase, targetRarity, true);
 
-	if (targetCards.length === 0) {
+	if (targetTemplates.length === 0) {
 		throw error(500, `No cards found with rarity ${targetRarity}`);
 	}
 
 	// Select random card from target rarity
-	const randomCard = targetCards[Math.floor(Math.random() * targetCards.length)];
+	const randomTemplate = targetTemplates[Math.floor(Math.random() * targetTemplates.length)];
 
 	// Award the card
 	// Type assertion needed until database types are regenerated after migration
@@ -635,7 +640,7 @@ async function executeExchangeRarityPoints(options: {
 		'award_vip_card_no_cost' as never,
 		{
 			p_student_id: studentId,
-			p_card_id: randomCard.id
+			p_card_id: randomTemplate.id
 		} as never
 	)) as { data: string | null; error: { message: string } | null };
 
@@ -645,7 +650,7 @@ async function executeExchangeRarityPoints(options: {
 
 	const result: ExchangeCardsResult = {
 		cardsDiscarded: discardedCardInfo,
-		cardsReceived: [{ cardId: randomCard.id, name: randomCard.name }]
+		cardsReceived: [{ cardId: randomTemplate.id, name: randomTemplate.name }]
 	};
 
 	return {
@@ -701,10 +706,10 @@ async function executeExchangeDiscardForSpecific(options: {
 			usedAt: new Date().toISOString()
 		};
 
-		const card = getVipCardById(instance.cardId);
+		const template = await getTemplateById(supabase, instance.cardId);
 		discardedCardInfo.push({
 			cardId: instance.cardId,
-			name: card?.name || instance.cardId
+			name: template?.name || instance.cardId
 		});
 	}
 
@@ -732,16 +737,16 @@ async function executeExchangeDiscardForSpecific(options: {
 		throw error(500, `Failed to award card: ${rpcError.message}`);
 	}
 
-	const targetCard = getVipCardById(targetCardId);
+	const targetTemplate = await getTemplateById(supabase, targetCardId);
 
 	const result: ExchangeCardsResult = {
 		cardsDiscarded: discardedCardInfo,
-		cardsReceived: [{ cardId: targetCardId, name: targetCard?.name || targetCardId }]
+		cardsReceived: [{ cardId: targetCardId, name: targetTemplate?.name || targetCardId }]
 	};
 
 	return {
 		success: true,
-		message: `Exchanged ${discardCount} card${discardCount > 1 ? 's' : ''} for ${targetCard?.name || targetCardId}`,
+		message: `Exchanged ${discardCount} card${discardCount > 1 ? 's' : ''} for ${targetTemplate?.name || targetCardId}`,
 		data: result
 	};
 }

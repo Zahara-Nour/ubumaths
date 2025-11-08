@@ -32,7 +32,8 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Profile, UserRole } from '$lib/types/database';
+import type { Database } from '$lib/types/database';
+import type { Profile, UserRole } from '$lib/server/middleware/auth';
 import { error, redirect } from '@sveltejs/kit';
 import { createLogger } from '$lib/utils/logger';
 

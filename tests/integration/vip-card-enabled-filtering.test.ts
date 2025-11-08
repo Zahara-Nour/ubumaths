@@ -25,7 +25,7 @@ import { createAuthenticatedClient } from '../database/helpers/supabase-client';
 import { TestData } from '../database/helpers/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { VIP_CARDS, type VipCardRarity } from '$lib/types/vip-card';
+import type { VipCardRarity } from '$lib/types/vip-card';
 
 describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 	let serviceClient: SupabaseClient<Database>;
@@ -75,9 +75,11 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 	});
 
 	/**
-	 * Helper function to count cards by rarity
+	 * Helper function to count cards by rarity (queries database for each card's rarity)
 	 */
-	function countByRarity(cards: Array<{ cardId: string }>): Record<VipCardRarity, number> {
+	async function countByRarity(
+		cards: Array<{ cardId: string }>
+	): Promise<Record<VipCardRarity, number>> {
 		const counts: Record<VipCardRarity, number> = {
 			common: 0,
 			rare: 0,
@@ -86,9 +88,14 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 		};
 
 		for (const { cardId } of cards) {
-			const card = VIP_CARDS.find((c) => c.id === cardId);
+			const { data: card } = await serviceClient
+				.from('vip_card_templates')
+				.select('rarity')
+				.eq('id', cardId)
+				.single();
+
 			if (card) {
-				counts[card.rarity]++;
+				counts[card.rarity as VipCardRarity]++;
 			}
 		}
 
@@ -157,10 +164,13 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 			console.log(`[test] Cards drawn: ${drawnCards.length} total, ${uniqueCards.length} unique`);
 			console.log('[test] Verified: NO disabled cards (candy, captain, team) were drawn ✓');
 
-			// Verify enabled cards WERE drawn
-			const enabledCardIds = VIP_CARDS.filter(
-				(c) => !['candy', 'captain', 'team'].includes(c.id)
-			).map((c) => c.id);
+			// Verify enabled cards WERE drawn (query database for enabled cards)
+			const { data: enabledCardsData } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.eq('is_enabled', true);
+
+			const enabledCardIds = enabledCardsData?.map((c) => c.id) || [];
 
 			const enabledCardsInDraw = drawnCards.filter((cardId) => enabledCardIds.includes(cardId));
 			expect(enabledCardsInDraw).toHaveLength(sampleSize);
@@ -191,7 +201,7 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 			}
 
 			// Count by rarity
-			const rarityCounts = countByRarity(drawnCards.map((cardId) => ({ cardId })));
+			const rarityCounts = await countByRarity(drawnCards.map((cardId) => ({ cardId })));
 
 			console.log('[test] Distribution with disabled cards (500 cards):');
 			console.log({
@@ -220,9 +230,13 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 			const student = await TestData.profile().withRole('student').withGidouilles(100000).create();
 			const studentClient = await createAuthenticatedClient(student.email);
 
-			// Get all legendary card IDs
-			const legendaryCards = VIP_CARDS.filter((c) => c.rarity === 'legendary');
-			const legendaryIds = legendaryCards.map((c) => c.id);
+			// Get all legendary card IDs from database
+			const { data: legendaryCards } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.eq('rarity', 'legendary');
+
+			const legendaryIds = legendaryCards?.map((c) => c.id) || [];
 
 			console.log('[test] Disabling legendary cards:', legendaryIds.join(', '));
 			await serviceClient
@@ -265,7 +279,7 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 			// ========================================
 
 			// Count by rarity
-			const rarityCounts = countByRarity(drawnCards.map((cardId) => ({ cardId })));
+			const rarityCounts = await countByRarity(drawnCards.map((cardId) => ({ cardId })));
 
 			console.log('[test] Distribution with legendary disabled (1,000 cards):');
 			console.log({
@@ -303,10 +317,21 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 			const student = await TestData.profile().withRole('student').withGidouilles(100000).create();
 			const studentClient = await createAuthenticatedClient(student.email);
 
-			// Get epic and legendary card IDs
-			const epicCards = VIP_CARDS.filter((c) => c.rarity === 'epic');
-			const legendaryCards = VIP_CARDS.filter((c) => c.rarity === 'legendary');
-			const disabledIds = [...epicCards, ...legendaryCards].map((c) => c.id);
+			// Get epic and legendary card IDs from database
+			const { data: epicCards } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.eq('rarity', 'epic');
+
+			const { data: legendaryCards } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.eq('rarity', 'legendary');
+
+			const disabledIds = [
+				...(epicCards?.map((c) => c.id) || []),
+				...(legendaryCards?.map((c) => c.id) || [])
+			];
 
 			console.log('[test] Disabling epic and legendary cards:', disabledIds.join(', '));
 			await serviceClient
@@ -331,7 +356,7 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 				drawnCards.push(...parsedData.cards.map((c: { cardId: string }) => c.cardId));
 			}
 
-			const rarityCounts = countByRarity(drawnCards.map((cardId) => ({ cardId })));
+			const rarityCounts = await countByRarity(drawnCards.map((cardId) => ({ cardId })));
 
 			console.log('[test] Distribution with epic+legendary disabled (500 cards):');
 			console.log({
@@ -430,9 +455,13 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 			const student = await TestData.profile().withRole('student').withGidouilles(100000).create();
 			const studentClient = await createAuthenticatedClient(student.email);
 
-			// Get all common card IDs from VIP_CARDS (enabled cards only)
-			const commonCards = VIP_CARDS.filter((c) => c.rarity === 'common');
-			const commonIds = commonCards.map((c) => c.id);
+			// Get all common card IDs from database
+			const { data: commonCards } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.eq('rarity', 'common');
+
+			const commonIds = commonCards?.map((c) => c.id) || [];
 
 			console.log('[test] Disabling all common cards:', commonIds.join(', '));
 			await serviceClient

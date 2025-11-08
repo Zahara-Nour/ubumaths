@@ -24,9 +24,10 @@ import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { exchangeCardsSchema } from '$lib/server/validation/exchange-cards';
 import type { StudentVipCards } from '$lib/types/vip-card';
-import { getVipCardById, getRarityPoints, VIP_CARDS } from '$lib/types/vip-card';
+import { getRarityPoints } from '$lib/types/vip-card';
 import type { VipCardRarity } from '$lib/types/vip-card';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { getTemplateById, getTemplatesByRarity } from '$lib/server/vip-card-queries';
 
 // ============================================================================
 // POST HANDLER
@@ -167,10 +168,10 @@ async function handleReplaceRandom(
 			usedAt: now
 		};
 
-		const card = getVipCardById(instance.cardId);
+		const template = await getTemplateById(supabase, instance.cardId);
 		cardsDiscarded.push({
 			cardId: instance.cardId,
-			name: card?.name || instance.cardId,
+			name: template?.name || instance.cardId,
 			instanceId
 		});
 	}
@@ -212,7 +213,7 @@ async function handleReplaceRandom(
 			throw error(500, `No card ID returned for card ${i + 1}`);
 		}
 
-		const card = getVipCardById(cardId);
+		const template = await getTemplateById(supabase, cardId);
 
 		// Generate instance ID for response (actual instance will be in DB)
 		// We need to query the DB to get the actual instance ID
@@ -232,7 +233,7 @@ async function handleReplaceRandom(
 
 		cardsReceived.push({
 			cardId,
-			name: card?.name || cardId,
+			name: template?.name || cardId,
 			instanceId: latestInstanceId || crypto.randomUUID(), // Fallback to new UUID
 			earnedAt: now
 		});
@@ -260,9 +261,9 @@ async function handleRarityPoints(
 	let totalPoints = 0;
 	for (const instanceId of cardsToDiscard) {
 		const instance = vipCards[instanceId];
-		const card = getVipCardById(instance.cardId);
-		if (card) {
-			totalPoints += getRarityPoints(card.rarity);
+		const template = await getTemplateById(supabase, instance.cardId);
+		if (template) {
+			totalPoints += getRarityPoints(template.rarity as VipCardRarity);
 		}
 	}
 
@@ -286,10 +287,10 @@ async function handleRarityPoints(
 			usedAt: now
 		};
 
-		const card = getVipCardById(instance.cardId);
+		const template = await getTemplateById(supabase, instance.cardId);
 		cardsDiscarded.push({
 			cardId: instance.cardId,
-			name: card?.name || instance.cardId,
+			name: template?.name || instance.cardId,
 			instanceId
 		});
 	}
@@ -306,20 +307,20 @@ async function handleRarityPoints(
 	}
 
 	// Get random card from target rarity
-	const targetCards = VIP_CARDS.filter((c) => c.rarity === targetRarity);
+	const targetTemplates = await getTemplatesByRarity(supabase, targetRarity, true);
 
-	if (targetCards.length === 0) {
+	if (targetTemplates.length === 0) {
 		throw error(500, `No cards found with rarity ${targetRarity}`);
 	}
 
-	const randomCard = targetCards[Math.floor(Math.random() * targetCards.length)];
+	const randomTemplate = targetTemplates[Math.floor(Math.random() * targetTemplates.length)];
 
 	// Award the card using RPC
 	const { data: _cardId, error: rpcError } = (await supabase.rpc(
 		'award_vip_card_no_cost' as never,
 		{
 			p_student_id: studentId,
-			p_card_id: randomCard.id
+			p_card_id: randomTemplate.id
 		} as never
 	)) as { data: string | null; error: { message: string } | null };
 
@@ -339,13 +340,13 @@ async function handleRarityPoints(
 
 	const latestInstanceId = Object.keys(latestVipCards).find((id) => {
 		const inst = latestVipCards[id];
-		return inst.cardId === randomCard.id && !updatedCards[id];
+		return inst.cardId === randomTemplate.id && !updatedCards[id];
 	});
 
 	const cardsReceived = [
 		{
-			cardId: randomCard.id,
-			name: randomCard.name,
+			cardId: randomTemplate.id,
+			name: randomTemplate.name,
 			instanceId: latestInstanceId || crypto.randomUUID(),
 			earnedAt: now
 		}
@@ -369,8 +370,8 @@ async function handleDiscardForSpecific(
 	const cardsDiscarded: Array<{ cardId: string; name: string; instanceId: string }> = [];
 
 	// Validate target card exists
-	const targetCard = getVipCardById(targetCardId);
-	if (!targetCard) {
+	const targetTemplate = await getTemplateById(supabase, targetCardId);
+	if (!targetTemplate) {
 		throw error(404, `Target card not found: ${targetCardId}`);
 	}
 
@@ -385,10 +386,10 @@ async function handleDiscardForSpecific(
 			usedAt: now
 		};
 
-		const card = getVipCardById(instance.cardId);
+		const template = await getTemplateById(supabase, instance.cardId);
 		cardsDiscarded.push({
 			cardId: instance.cardId,
-			name: card?.name || instance.cardId,
+			name: template?.name || instance.cardId,
 			instanceId
 		});
 	}
@@ -435,7 +436,7 @@ async function handleDiscardForSpecific(
 	const cardsReceived = [
 		{
 			cardId: targetCardId,
-			name: targetCard.name,
+			name: targetTemplate.name,
 			instanceId: latestInstanceId || crypto.randomUUID(),
 			earnedAt: now
 		}

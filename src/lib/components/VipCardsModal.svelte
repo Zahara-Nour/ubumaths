@@ -61,11 +61,12 @@
 		getTotalUnusedCards,
 		sortCardsByPriority
 	} from '$lib/utils/vip-cards';
-	import { getTotalVipCards, type VipCard as VipCardType } from '$lib/types/vip-card';
+	import type { VipCard as VipCardType } from '$lib/types/vip-card';
 	import { Sparkles } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { modalStack } from '$lib/stores/modalStack.svelte';
+	import { vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
 	import {
 		openVipCardDrawModal,
 		openVipCardExchangeModal,
@@ -100,22 +101,20 @@
 
 	/**
 	 * Get cards with counts, sorted and filtered
-	 * Called directly in template - reactive to cache changes
+	 * Using $derived to be reactive to both cache changes AND template store
 	 */
-	function getCardsWithCounts() {
+	const cardsWithCounts = $derived.by(() => {
 		const vipCards = getVipCards();
-		return sortCardsByPriority(getStudentCardsWithCounts(vipCards)).filter(
-			(card) => card.count > 0
-		);
-	}
+		const templates = $vipCardTemplates;
+		const cards = getStudentCardsWithCounts(vipCards, templates);
+		return sortCardsByPriority(cards).filter((card) => card.count > 0);
+	});
 
 	// Statistics (using reactive functions)
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const uniqueCardsCount = $derived(getUniqueCardTypesCount(getVipCards())); // For future stats display
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const totalCardsCount = $derived(getTotalUnusedCards(getVipCards())); // For future stats display
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const totalAvailableCards = getTotalVipCards(); // Total cards in the game
 
 	// Handle modal close
 	function handleClose() {
@@ -539,7 +538,7 @@
 	</div>
 
 	<!-- Cards Display -->
-	{#if getCardsWithCounts().length === 0}
+	{#if cardsWithCounts.length === 0}
 		<!-- Empty State -->
 		<div class="flex flex-col items-center justify-center px-4 py-16 text-center">
 			<div class="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-muted">
@@ -554,7 +553,7 @@
 	{:else}
 		<!-- All Cards Grid - Sorted by Rarity -->
 		<div class="grid grid-cols-2 gap-8 p-6 sm:grid-cols-3 xl:grid-cols-3">
-			{#each getCardsWithCounts() as card (card.id)}
+			{#each cardsWithCounts as card (card.id)}
 				<div
 					class="transform cursor-pointer transition-transform hover:scale-105"
 					onclick={() => handleCardClick(card, card.count)}

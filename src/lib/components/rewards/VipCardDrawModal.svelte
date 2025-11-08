@@ -31,8 +31,12 @@
 	import { modalStack } from '$lib/stores/modalStack.svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { getVipCardById } from '$lib/types/vip-card';
 	import type { VipCard } from '$lib/types/vip-card';
+	import {
+		vipCardTemplates,
+		getTemplateById,
+		templateToVipCard
+	} from '$lib/stores/vipCardTemplates.svelte';
 	import VipCardMultiHoloReveal from './VipCardMultiHoloReveal.svelte';
 	import VipCardBatchReveal from './VipCardBatchReveal.svelte';
 	import { onMount } from 'svelte';
@@ -106,11 +110,12 @@
 			// Map to full card objects
 			cards = result.cards
 				.map((c: { cardId: string; instanceId: string; earnedAt: string }) => {
-					const card = getVipCardById(c.cardId);
-					if (!card) {
+					const template = getTemplateById(c.cardId, $vipCardTemplates);
+					if (!template) {
 						console.error(`Card not found: ${c.cardId}`);
 						return null;
 					}
+					const card = templateToVipCard(template);
 					return {
 						card,
 						instanceId: c.instanceId,

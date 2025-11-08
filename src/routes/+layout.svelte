@@ -23,6 +23,7 @@
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { toaster as _toaster } from '$lib/stores/toaster.svelte';
+	import { initializeTemplates } from '$lib/stores/vipCardTemplates.svelte';
 	import { page } from '$app/state';
 	import { navigating } from '$app/stores';
 	import type { LayoutData } from './$types';
@@ -49,6 +50,16 @@
 		// Access to ensure reactivity
 		void theme.dark;
 		void fontSize.size;
+	});
+
+	// Initialize VIP card templates store from server data
+	$effect(() => {
+		if (data.vipCardTemplates && data.vipCardTemplates.length > 0) {
+			initializeTemplates(data.vipCardTemplates);
+			console.log(
+				`🎴 [ROOT LAYOUT] Initialized ${data.vipCardTemplates.length} VIP card templates`
+			);
+		}
 	});
 </script>
 

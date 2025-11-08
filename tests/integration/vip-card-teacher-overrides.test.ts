@@ -35,7 +35,7 @@ import { createAuthenticatedClient } from '../database/helpers/supabase-client';
 import { TestData } from '../database/helpers/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { VIP_CARDS, type VipCardRarity } from '$lib/types/vip-card';
+import type { VipCardRarity } from '$lib/types/vip-card';
 
 describe('VIP Card Teacher Override System - Integration Tests', () => {
 	let serviceClient: SupabaseClient<Database>;
@@ -194,9 +194,9 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 	}
 
 	/**
-	 * Helper: Count cards by rarity
+	 * Helper: Count cards by rarity (queries database for each card's rarity)
 	 */
-	function countByRarity(cardIds: string[]): Record<VipCardRarity, number> {
+	async function countByRarity(cardIds: string[]): Promise<Record<VipCardRarity, number>> {
 		const counts: Record<VipCardRarity, number> = {
 			common: 0,
 			rare: 0,
@@ -205,9 +205,14 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 		};
 
 		for (const cardId of cardIds) {
-			const card = VIP_CARDS.find((c) => c.id === cardId);
+			const { data: card } = await serviceClient
+				.from('vip_card_templates')
+				.select('rarity')
+				.eq('id', cardId)
+				.single();
+
 			if (card) {
-				counts[card.rarity]++;
+				counts[card.rarity as VipCardRarity]++;
 			}
 		}
 
@@ -262,10 +267,14 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 
 			console.log('[test] Verified: "candy" card blocked (0/100) ✓');
 
-			// Verify other common cards appear
-			const otherCommonCards = VIP_CARDS.filter(
-				(c) => c.rarity === 'common' && c.id !== 'candy' && c.id !== 'captain' && c.id !== 'team'
-			).map((c) => c.id);
+			// Verify other common cards appear (query database for common cards)
+			const { data: commonCardsData } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.eq('rarity', 'common')
+				.not('id', 'in', '("candy","captain","team")');
+
+			const otherCommonCards = commonCardsData?.map((c) => c.id) || [];
 
 			const otherCommonCount = drawnCards.filter((id) => otherCommonCards.includes(id)).length;
 			expect(otherCommonCount).toBeGreaterThan(0);
@@ -338,15 +347,14 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 				"[test] Intersection logic works: even though Bob didn't block it, Alice's block wins ✓"
 			);
 
-			// Verify other common cards appear
-			const otherCommonCards = VIP_CARDS.filter(
-				(c) =>
-					c.rarity === 'common' &&
-					c.id !== 'bonus' &&
-					c.id !== 'candy' &&
-					c.id !== 'captain' &&
-					c.id !== 'team'
-			).map((c) => c.id);
+			// Verify other common cards appear (query database for common cards)
+			const { data: commonCardsData } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.eq('rarity', 'common')
+				.not('id', 'in', '("bonus","candy","captain","team")');
+
+			const otherCommonCards = commonCardsData?.map((c) => c.id) || [];
 
 			const otherCommonCount = drawnCards.filter((id) => otherCommonCards.includes(id)).length;
 			expect(otherCommonCount).toBeGreaterThan(0);
@@ -441,8 +449,13 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 
 			console.log('[test] Globally disabled cards (candy, captain, team) still blocked ✓');
 
-			// Verify globally enabled cards appear
-			const enabledCards = VIP_CARDS.filter((c) => !disabledCards.includes(c.id)).map((c) => c.id);
+			// Verify globally enabled cards appear (query database for enabled cards)
+			const { data: enabledCardsData } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.eq('is_enabled', true);
+
+			const enabledCards = enabledCardsData?.map((c) => c.id) || [];
 			const enabledCount = drawnCards.filter((id) => enabledCards.includes(id)).length;
 			expect(enabledCount).toBe(100);
 
@@ -466,12 +479,16 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 			await addStudentToClass(bob.id, aliceClass.id);
 
 			console.log('[test] Alice disables ALL epic cards...');
-			const epicCards = VIP_CARDS.filter((c) => c.rarity === 'epic');
-			for (const card of epicCards) {
+			const { data: epicCards } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.eq('rarity', 'epic');
+
+			for (const card of epicCards || []) {
 				await createOverride(alice.id, card.id, false);
 			}
 
-			console.log(`[test] Disabled ${epicCards.length} epic cards`);
+			console.log(`[test] Disabled ${epicCards?.length || 0} epic cards`);
 
 			// ========================================
 			// ACT: Bob draws 100 cards
@@ -485,7 +502,7 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 			// ASSERT: No epic cards appear
 			// ========================================
 
-			const rarityCounts = countByRarity(drawnCards);
+			const rarityCounts = await countByRarity(drawnCards);
 
 			console.log('[test] Distribution with epic disabled (100 cards):');
 			console.log({
@@ -702,12 +719,14 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 			console.log('[test] Verified: "choix" blocked (Alice) - 0/200 ✓');
 			console.log('[test] Verified: "jeu" blocked (Bob) - 0/200 ✓');
 
-			// Verify other common cards appear
-			const allowedCommonCards = VIP_CARDS.filter(
-				(c) =>
-					c.rarity === 'common' &&
-					!['bonus', 'choix', 'jeu', 'candy', 'captain', 'team'].includes(c.id)
-			).map((c) => c.id);
+			// Verify other common cards appear (query database for allowed common cards)
+			const { data: commonCardsData } = await serviceClient
+				.from('vip_card_templates')
+				.select('id')
+				.eq('rarity', 'common')
+				.not('id', 'in', '("bonus","choix","jeu","candy","captain","team")');
+
+			const allowedCommonCards = commonCardsData?.map((c) => c.id) || [];
 
 			const allowedCommonCount = drawnCards.filter((id) => allowedCommonCards.includes(id)).length;
 			expect(allowedCommonCount).toBeGreaterThan(0);
@@ -733,11 +752,13 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 			await addStudentToClass(bob.id, aliceClass.id);
 
 			console.log('[test] Alice disables ALL cards...');
-			for (const card of VIP_CARDS) {
+			const { data: allCards } = await serviceClient.from('vip_card_templates').select('id');
+
+			for (const card of allCards || []) {
 				await createOverride(alice.id, card.id, false);
 			}
 
-			console.log(`[test] Disabled ${VIP_CARDS.length} cards`);
+			console.log(`[test] Disabled ${allCards?.length || 0} cards`);
 
 			// ========================================
 			// ACT: Bob attempts to draw cards
