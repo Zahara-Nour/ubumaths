@@ -1,12 +1,17 @@
 <script lang="ts">
 	import { Switch } from '$lib/components/ui/switch';
-	import { Check, ImageIcon, Trash2 } from 'lucide-svelte';
+	import { Check, ImageIcon, Pencil, Trash2 } from 'lucide-svelte';
 	import type { Database } from '$lib/types/database';
 	import { categoryIcon } from './utils';
 	import MySelect from '$lib/components/MySelect.svelte';
 
 	type VipCardTemplate = Database['public']['Tables']['vip_card_templates']['Row'];
-	type ActionType = 'draw_cards' | 'remove_warnings' | 'exchange_cards' | 'add_gidouilles';
+	type ActionType =
+		| 'draw_cards'
+		| 'remove_warnings'
+		| 'exchange_cards'
+		| 'add_gidouilles'
+		| 'choose_card';
 
 	// Typed action interface (Database stores as Json, but we know the structure)
 	interface TypedAction {
@@ -21,7 +26,9 @@
 		const a = action as Record<string, unknown>;
 		return (
 			typeof a.type === 'string' &&
-			['draw_cards', 'remove_warnings', 'exchange_cards', 'add_gidouilles'].includes(a.type)
+			['draw_cards', 'remove_warnings', 'exchange_cards', 'add_gidouilles', 'choose_card'].includes(
+				a.type
+			)
 		);
 	}
 
@@ -36,6 +43,7 @@
 			action: VipCardTemplate['action'],
 			rarity: VipCardTemplate['rarity']
 		) => Promise<void>;
+		onEdit?: () => void;
 		onDelete?: () => void;
 		onUploadImage?: () => void;
 	}
@@ -52,6 +60,8 @@
 				return '🔄';
 			case 'add_gidouilles':
 				return '💰';
+			case 'choose_card':
+				return '🎯';
 		}
 	}
 
@@ -71,6 +81,8 @@
 				return `Échanger ${action.count || 1} carte${(action.count || 1) > 1 ? 's' : ''}`;
 			case 'add_gidouilles':
 				return `Ajouter ${action.amount || 0} Gidouilles`;
+			case 'choose_card':
+				return `Choisir ${action.count || 1} carte${(action.count || 1) > 1 ? 's' : ''}`;
 		}
 	}
 
@@ -80,6 +92,7 @@
 		showActions = false,
 		onToggle,
 		onInlineEdit,
+		onEdit,
 		onDelete,
 		onUploadImage
 	}: Props = $props();
@@ -114,7 +127,8 @@
 		{ value: 'draw_cards', label: 'Tirer des cartes' },
 		{ value: 'remove_warnings', label: 'Retirer des avertissements' },
 		{ value: 'exchange_cards', label: 'Échanger des cartes' },
-		{ value: 'add_gidouilles', label: 'Ajouter des Gidouilles' }
+		{ value: 'add_gidouilles', label: 'Ajouter des Gidouilles' },
+		{ value: 'choose_card', label: 'Choisir des cartes' }
 	];
 
 	// Rarity options for select
@@ -299,6 +313,21 @@
 					aria-label="Sauvegarder les modifications"
 				>
 					<Check class="h-4 w-4" />
+				</button>
+			{/if}
+
+			<!-- Edit Button (Top Right) - Shown when not editing -->
+			{#if !isEditing && onEdit}
+				<button
+					type="button"
+					class="absolute top-2 right-2 z-10 rounded-full bg-blue-500 p-2 text-white shadow-lg transition-all hover:scale-110 hover:bg-blue-600 active:scale-95"
+					onclick={(e) => {
+						e.stopPropagation();
+						onEdit();
+					}}
+					aria-label="Éditer la carte complète"
+				>
+					<Pencil class="h-4 w-4" />
 				</button>
 			{/if}
 

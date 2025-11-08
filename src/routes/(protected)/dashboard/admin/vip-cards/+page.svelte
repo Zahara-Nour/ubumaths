@@ -114,15 +114,17 @@
 		const method = isEditing ? 'PATCH' : 'POST';
 
 		// Convert snake_case to camelCase for API
+		// Note: id is only sent for POST (creation), not PATCH (update)
 		const apiPayload: Record<string, unknown> = {
-			id: cardData.id,
+			...(isEditing ? {} : { id: cardData.id }),
 			name: cardData.name,
 			description: cardData.description,
 			rarity: cardData.rarity,
 			category: cardData.category,
 			isEnabled: cardData.is_enabled,
 			imagePath: cardData.image_path,
-			sortOrder: cardData.sort_order
+			sortOrder: cardData.sort_order,
+			...(cardData.action ? { action: cardData.action } : {})
 		};
 
 		try {
@@ -357,6 +359,7 @@
 									onToggle={(enabled) => handleToggleCard(card.id, enabled)}
 									onInlineEdit={(name, description, action, rarity) =>
 										handleInlineEdit(card.id, name, description, action, rarity)}
+									onEdit={() => (editingCard = card)}
 									onDelete={() => handleDeleteCard(card.id)}
 									onUploadImage={() => (uploadingImageCard = card)}
 								/>
