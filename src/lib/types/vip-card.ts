@@ -118,6 +118,25 @@ interface AddGidouillesAction {
 }
 
 /**
+ * VIP Card Action - Choose specific cards
+ * Allows user to select N specific VIP cards to receive (free, no discard cost)
+ *
+ * Supports 3 filter modes:
+ * 1. All cards: filter: 'all' (default)
+ * 2. Limited by rarity: maxRarity: 'epic' (e.g., only common/rare/epic)
+ * 3. Specific list: possibleCardIds: ['azuka', 'bonus']
+ */
+interface ChooseCardAction {
+	type: 'choose_card';
+	count: number; // Number of cards user can choose
+
+	// Filter modes (mutually exclusive - use only one)
+	filter?: 'all'; // Mode 1: All cards available (default)
+	maxRarity?: VipCardRarity; // Mode 2: Limit by max rarity (e.g., 'epic' = common/rare/epic only)
+	possibleCardIds?: string[]; // Mode 3: Specific list of allowed card IDs
+}
+
+/**
  * Union type for all VIP card actions
  * These actions require teacher approval to activate
  */
@@ -125,7 +144,8 @@ export type VipCardAction =
 	| DrawCardsAction
 	| RemoveWarningsAction
 	| ExchangeCardsAction
-	| AddGidouillesAction;
+	| AddGidouillesAction
+	| ChooseCardAction;
 
 /**
  * Definition of a VIP card type
@@ -417,6 +437,19 @@ export const VIP_CARDS: VipCard[] = [
 		category: 'power',
 		rarity: 'legendary',
 		action: { type: 'add_gidouilles', amount: 50 }
+	},
+	{
+		id: 'choix-vip',
+		name: 'Choix VIP',
+		description: 'Choisissez 2 cartes VIP Rare ou moins',
+		imagePath: '/images/vip-cards/inventeur1@0.5x.webp', // Using inventeur image temporarily
+		category: 'power',
+		rarity: 'epic',
+		action: {
+			type: 'choose_card',
+			count: 2,
+			maxRarity: 'rare'
+		}
 	}
 ];
 

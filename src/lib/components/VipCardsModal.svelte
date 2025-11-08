@@ -69,6 +69,7 @@
 	import {
 		openVipCardDrawModal,
 		openVipCardExchangeModal,
+		openVipCardChooseModal,
 		openRemoveWarningsModal
 	} from '$lib/utils/vip-card-modals';
 
@@ -220,6 +221,10 @@
 				await handleExchangeCards(card.action, instanceId, card.name);
 				break;
 
+			case 'choose_card':
+				await handleChooseCard(card.action, instanceId, card.name);
+				break;
+
 			case 'remove_warnings':
 				await handleRemoveWarnings(card.action, instanceId, card.name);
 				break;
@@ -268,6 +273,24 @@
 			studentName,
 			classId
 			// NOTE: No onComplete callback needed - the exchange API already marks the VIP card as used
+		});
+	}
+
+	/**
+	 * Handle choose_card action
+	 */
+	async function handleChooseCard(
+		action: Extract<VipCardType['action'], { type: 'choose_card' }>,
+		instanceId: string,
+		_cardName: string
+	) {
+		openVipCardChooseModal({
+			studentId,
+			action,
+			actionCardInstanceId: instanceId,
+			studentName,
+			classId
+			// NOTE: No onComplete callback needed - the choose API already marks the VIP card as used
 		});
 	}
 

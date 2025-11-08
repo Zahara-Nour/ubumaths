@@ -8,8 +8,9 @@ import { modalStack } from '$lib/stores/modalStack.svelte';
 import VipCardsModal from '$lib/components/VipCardsModal.svelte';
 import VipCardDrawModal from '$lib/components/rewards/VipCardDrawModal.svelte';
 import VipCardExchangeModal from '$lib/components/rewards/VipCardExchangeModal.svelte';
+import VipCardChooseModal from '$lib/components/rewards/VipCardChooseModal.svelte';
 import RemoveWarningsModal from '$lib/components/rewards/RemoveWarningsModal.svelte';
-import type { ExchangeCardAction } from '$lib/types/vip-card';
+import type { ExchangeCardAction, VipCardRarity } from '$lib/types/vip-card';
 
 /**
  * Options for opening a VIP cards modal
@@ -228,6 +229,66 @@ export function openRemoveWarningsModal(options: RemoveWarningsOptions): string 
 			warningType: options.warningType,
 			studentName: options.studentName,
 			preloadedWarnings: options.preloadedWarnings
+		},
+		canDismiss: true,
+		onReturn: options.onComplete
+	});
+}
+
+/**
+ * Options for opening a VIP card choose modal
+ */
+interface ChooseCardsOptions {
+	studentId: string;
+	action: {
+		type: 'choose_card';
+		count: number;
+		filter?: 'all';
+		maxRarity?: VipCardRarity;
+		possibleCardIds?: string[];
+	};
+	actionCardInstanceId: string;
+	studentName?: string;
+	classId?: string;
+	onComplete?: () => void;
+}
+
+/**
+ * Open a modal that allows choosing specific VIP cards
+ *
+ * @param options - Configuration for the choose modal
+ * @returns Modal ID for tracking
+ *
+ * @example
+ * ```typescript
+ * // Choose 2 cards (max rarity: rare)
+ * openVipCardChooseModal({
+ *   studentId: '123',
+ *   action: { type: 'choose_card', count: 2, maxRarity: 'rare' },
+ *   actionCardInstanceId: 'action-card-uuid',
+ *   studentName: 'Alice',
+ *   classId: 'class-uuid',
+ *   onComplete: () => console.log('Cards chosen!')
+ * });
+ *
+ * // Choose 3 cards from specific list
+ * openVipCardChooseModal({
+ *   studentId: '456',
+ *   action: { type: 'choose_card', count: 3, possibleCardIds: ['bonus', 'azuka', 'dragonnet'] },
+ *   actionCardInstanceId: 'action-card-uuid',
+ *   studentName: 'Bob'
+ * });
+ * ```
+ */
+export function openVipCardChooseModal(options: ChooseCardsOptions): string {
+	return modalStack.push({
+		component: VipCardChooseModal,
+		props: {
+			studentId: options.studentId,
+			action: options.action,
+			actionCardInstanceId: options.actionCardInstanceId,
+			studentName: options.studentName,
+			classId: options.classId
 		},
 		canDismiss: true,
 		onReturn: options.onComplete
