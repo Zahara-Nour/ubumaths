@@ -526,7 +526,7 @@
 		{#if stats.meta.cached}
 			<div class="flex items-center justify-center gap-2 text-xs text-muted-foreground">
 				<div class="h-2 w-2 rounded-full bg-blue-400"></div>
-				<span>Données en cache (rafraîchissement automatique toutes les 5 minutes)</span>
+				<span>Données en cache (rafraîchissement automatique après 60 secondes)</span>
 			</div>
 		{/if}
 	{:else}
