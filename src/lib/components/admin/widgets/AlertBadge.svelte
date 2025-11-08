@@ -37,7 +37,7 @@
 	<span
 		class={cn(
 			'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold',
-			severityClasses().badge
+			severityClasses.badge
 		)}
 	>
 		<span>{label}</span>
@@ -46,7 +46,7 @@
 
 	{#if pulse}
 		<span
-			class={cn('absolute inset-0 animate-ping rounded-full opacity-75', severityClasses().ring)}
+			class={cn('absolute inset-0 animate-ping rounded-full opacity-75', severityClasses.ring)}
 			aria-hidden="true"
 		/>
 	{/if}

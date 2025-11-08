@@ -132,7 +132,7 @@
 
 		<!-- Tooltip showing exact value -->
 		{#if hoveredIndex !== undefined}
-			{@const point = svgPath().points[hoveredIndex]}
+			{@const point = svgPath.points[hoveredIndex]}
 			<div
 				class="pointer-events-none absolute z-10 rounded bg-gray-900 px-2 py-1 text-xs text-white"
 				style="left: {point.x}%; top: -25px; transform: translateX(-50%);"
