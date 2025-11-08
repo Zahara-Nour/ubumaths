@@ -30,7 +30,10 @@ const baseSchema = z.object({
 	cardsToDiscard: z
 		.array(z.string().uuid('Invalid card instance ID format'))
 		.min(1, 'Must discard at least 1 card')
-		.max(10, 'Cannot discard more than 10 cards')
+		.max(10, 'Cannot discard more than 10 cards'),
+
+	/** UUID of the action card instance being used to perform this exchange */
+	actionCardInstanceId: z.string().uuid('Invalid action card instance ID format')
 });
 
 // ============================================================================

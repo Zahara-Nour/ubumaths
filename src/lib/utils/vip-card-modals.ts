@@ -127,6 +127,7 @@ export function openVipCardDrawModal(options: DrawCardsOptions): string {
 interface ExchangeCardsOptions {
 	studentId: string;
 	exchange: ExchangeCardAction;
+	actionCardInstanceId: string;
 	studentName?: string;
 	classId?: string;
 	onComplete?: () => void;
@@ -144,6 +145,7 @@ interface ExchangeCardsOptions {
  * openVipCardExchangeModal({
  *   studentId: '123',
  *   exchange: { mode: 'replace_random', count: 3 },
+ *   actionCardInstanceId: 'uuid-of-action-card',
  *   studentName: 'Alice',
  *   classId: 'class-uuid',
  *   onComplete: () => console.log('Exchange complete!')
@@ -156,6 +158,7 @@ export function openVipCardExchangeModal(options: ExchangeCardsOptions): string 
 		props: {
 			studentId: options.studentId,
 			exchange: options.exchange,
+			actionCardInstanceId: options.actionCardInstanceId,
 			studentName: options.studentName,
 			classId: options.classId
 		},

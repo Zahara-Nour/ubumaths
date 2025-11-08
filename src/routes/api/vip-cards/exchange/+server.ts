@@ -14,9 +14,7 @@
  * - Teacher must teach the student (class_members check)
  * - SELECT FOR UPDATE prevents race conditions
  * - All input validated with Zod discriminated union
- *
- * IMPORTANT: This endpoint does NOT mark the VIP card as used.
- * The caller must call /api/vip-cards/use-card after successful exchange.
+ * - Marks the action card as used after successful exchange
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -90,6 +88,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const vipCards = (studentProfile.vip_cards || {}) as unknown as StudentVipCards;
 
+	// Validate that action card exists and is not used
+	const actionCard = vipCards[data.actionCardInstanceId];
+	if (!actionCard) {
+		throw error(404, `Action card instance not found: ${data.actionCardInstanceId}`);
+	}
+	if (actionCard.usedAt) {
+		throw error(400, `Action card already used: ${data.actionCardInstanceId}`);
+	}
+
 	// Validate that all cards to discard exist and are not used
 	for (const instanceId of data.cardsToDiscard) {
 		const instance = vipCards[instanceId];
@@ -136,7 +143,47 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(400, `Unknown exchange mode: ${(data as { mode: string }).mode}`);
 	}
 
-	return json(result);
+	// Mark action card as used
+	const { data: finalProfile, error: finalFetchError } = await supabase
+		.from('profiles')
+		.select('vip_cards')
+		.eq('id', data.studentId)
+		.single();
+
+	if (finalFetchError) {
+		console.error('[exchange] Error fetching final profile:', finalFetchError);
+		throw error(500, `Failed to mark action card as used: ${finalFetchError.message}`);
+	}
+
+	const finalVipCards = (finalProfile.vip_cards || {}) as unknown as StudentVipCards;
+	const now = new Date().toISOString();
+
+	finalVipCards[data.actionCardInstanceId] = {
+		...finalVipCards[data.actionCardInstanceId],
+		usedAt: now
+	};
+
+	const { error: finalUpdateError } = await supabase
+		.from('profiles')
+		.update({ vip_cards: finalVipCards as never })
+		.eq('id', data.studentId);
+
+	if (finalUpdateError) {
+		console.error('[exchange] Error marking action card as used:', finalUpdateError);
+		throw error(500, `Failed to mark action card as used: ${finalUpdateError.message}`);
+	}
+
+	// Get action card template info for response
+	const actionCardTemplate = await getTemplateById(supabase, actionCard.cardId);
+
+	return json({
+		...result,
+		actionCardUsed: {
+			cardId: actionCard.cardId,
+			name: actionCardTemplate?.name || actionCard.cardId,
+			instanceId: data.actionCardInstanceId
+		}
+	});
 };
 
 // ============================================================================

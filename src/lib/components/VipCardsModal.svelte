@@ -263,15 +263,15 @@
 	 */
 	async function handleExchangeCards(
 		action: Extract<VipCardType['action'], { type: 'exchange_cards' }>,
-		_instanceId: string,
+		instanceId: string,
 		_cardName: string
 	) {
 		openVipCardExchangeModal({
 			studentId,
 			exchange: action.exchange,
 			studentName,
-			classId
-			// NOTE: No onComplete callback needed - the exchange API already marks the VIP card as used
+			classId,
+			actionCardInstanceId: instanceId
 		});
 	}
 

@@ -48,11 +48,12 @@
 	interface Props {
 		studentId: string;
 		exchange: ExchangeCardAction;
+		actionCardInstanceId: string;
 		studentName?: string;
 		classId?: string;
 	}
 
-	let { studentId, exchange, studentName, classId }: Props = $props();
+	let { studentId, exchange, actionCardInstanceId, studentName, classId }: Props = $props();
 
 	// State
 	let loading = $state(true);
@@ -63,6 +64,7 @@
 	let selectedCards = $state<Set<string>>(new Set());
 	let error = $state<string | null>(null);
 	let result = $state<{
+		actionCardUsed: { cardId: string; name: string; instanceId: string };
 		cardsDiscarded: Array<{ cardId: string; name: string; instanceId: string }>;
 		cardsReceived: Array<{ cardId: string; name: string; instanceId: string; earnedAt: string }>;
 	} | null>(null);
@@ -109,6 +111,44 @@
 		return template ? templateToVipCard(template) : null;
 	});
 
+	// Group cards by template
+	const groupedCards = $derived.by(() => {
+		const groups = new Map<
+			string,
+			{
+				cardId: string;
+				card: VipCardType;
+				instances: Array<{ instanceId: string; instance: VipCardInstance }>;
+				totalCount: number;
+				selectedCount: number;
+			}
+		>();
+
+		// Group by cardId
+		for (const { card, instance, instanceId } of availableCards) {
+			if (!groups.has(card.id)) {
+				groups.set(card.id, {
+					cardId: card.id,
+					card,
+					instances: [],
+					totalCount: 0,
+					selectedCount: 0
+				});
+			}
+			const group = groups.get(card.id)!;
+			group.instances.push({ instanceId, instance });
+			group.totalCount++;
+			if (selectedCards.has(instanceId)) {
+				group.selectedCount++;
+			}
+		}
+
+		// Convert to array and sort by rarity
+		return Array.from(groups.values()).sort(
+			(a, b) => getRarityPoints(a.card.rarity) - getRarityPoints(b.card.rarity)
+		);
+	});
+
 	// Helper to get card by ID from store
 	const getCardById = (cardId: string) => {
 		const template = getTemplateById(cardId, $vipCardTemplates);
@@ -141,7 +181,8 @@
 						.filter(
 							(c): c is { instance: VipCardInstance; card: VipCardType; instanceId: string } =>
 								c !== null
-						);
+						)
+						.sort((a, b) => getRarityPoints(a.card.rarity) - getRarityPoints(b.card.rarity));
 
 					loading = false;
 					return;
@@ -166,7 +207,8 @@
 				.filter(
 					(c): c is { instance: VipCardInstance; card: VipCardType; instanceId: string } =>
 						c !== null
-				);
+				)
+				.sort((a, b) => getRarityPoints(a.card.rarity) - getRarityPoints(b.card.rarity));
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Erreur de chargement';
 			toaster.error(error);
@@ -176,18 +218,31 @@
 	}
 
 	/**
-	 * Toggle card selection
+	 * Toggle card selection for a group
+	 * - If no instances selected, select first available
+	 * - If some instances selected, select next available
+	 * - If all instances selected, deselect all
 	 */
-	function toggleCard(instanceId: string) {
-		if (selectedCards.has(instanceId)) {
-			selectedCards.delete(instanceId);
-		} else {
-			// For fixed count modes, replace last selection
+	function toggleCardGroup(cardId: string) {
+		const group = groupedCards.find((g) => g.cardId === cardId);
+		if (!group) return;
+
+		// Find first unselected instance
+		const unselectedInstance = group.instances.find((i) => !selectedCards.has(i.instanceId));
+
+		if (unselectedInstance) {
+			// Select next unselected instance
+			// For fixed count modes, remove oldest selection if at limit
 			if (requiredCount > 0 && selectedCards.size >= requiredCount) {
 				const first = Array.from(selectedCards)[0];
 				selectedCards.delete(first);
 			}
-			selectedCards.add(instanceId);
+			selectedCards.add(unselectedInstance.instanceId);
+		} else {
+			// All selected, deselect all instances of this group
+			for (const { instanceId } of group.instances) {
+				selectedCards.delete(instanceId);
+			}
 		}
 		selectedCards = new Set(selectedCards); // Trigger reactivity
 	}
@@ -217,12 +272,14 @@
 				studentId: string;
 				mode: string;
 				cardsToDiscard: string[];
+				actionCardInstanceId: string;
 				targetRarity?: VipCardRarity;
 				targetCardId?: string;
 			} = {
 				studentId,
 				mode: exchange.mode,
-				cardsToDiscard: Array.from(selectedCards)
+				cardsToDiscard: Array.from(selectedCards),
+				actionCardInstanceId
 			};
 
 			if (exchange.mode === 'rarity_points') {
@@ -253,9 +310,17 @@
 
 				if (studentRewards) {
 					const updatedVipCards = { ...studentRewards.vip_cards } as StudentVipCards;
+					const now = new Date().toISOString();
+
+					// Mark action card as used
+					if (updatedVipCards[result.actionCardUsed.instanceId]) {
+						updatedVipCards[result.actionCardUsed.instanceId] = {
+							...updatedVipCards[result.actionCardUsed.instanceId],
+							usedAt: now
+						};
+					}
 
 					// Mark discarded cards as used
-					const now = new Date().toISOString();
 					for (const card of result.cardsDiscarded) {
 						if (updatedVipCards[card.instanceId]) {
 							updatedVipCards[card.instanceId] = {
@@ -279,11 +344,6 @@
 			}
 
 			toaster.success('Échange réussi !');
-
-			// Close after showing result
-			setTimeout(() => {
-				modalStack.pop();
-			}, 2000);
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Erreur inconnue';
 			toaster.error(error);
@@ -352,7 +412,7 @@
 		</div>
 	{:else if result}
 		<!-- Success State -->
-		<div class="py-6">
+		<div class="cursor-pointer py-6" onclick={handleClose} role="button" tabindex="0">
 			<div class="mb-6">
 				<h3 class="mb-4 text-lg font-semibold">Cartes données :</h3>
 				<div class="grid grid-cols-3 gap-4">
@@ -376,6 +436,11 @@
 					{/each}
 				</div>
 			</div>
+
+			<!-- Click anywhere hint -->
+			<p class="mt-6 text-center text-sm text-muted-foreground">
+				Cliquez n'importe où pour continuer
+			</p>
 		</div>
 	{:else}
 		<!-- Selection State -->
@@ -424,38 +489,52 @@
 				{/if}
 			</div>
 
-			<!-- Available cards grid -->
+			<!-- Available cards grid (grouped by template) -->
 			<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-				{#each availableCards as { card, instanceId } (instanceId)}
+				{#each groupedCards as group (group.cardId)}
 					<button
 						type="button"
-						onclick={() => toggleCard(instanceId)}
+						onclick={() => toggleCardGroup(group.cardId)}
 						class={cn(
 							'relative rounded-lg border-2 p-2 transition-all',
-							selectedCards.has(instanceId)
+							group.selectedCount > 0
 								? 'border-primary bg-primary/10'
 								: 'border-transparent hover:border-muted-foreground/30'
 						)}
 					>
-						<VipCard {card} size="sm" clickable={false} />
-						{#if selectedCards.has(instanceId)}
+						<VipCard card={group.card} size="sm" clickable={false} />
+
+						<!-- Selection badge (top right) -->
+						{#if group.totalCount > 1}
 							<div
-								class="absolute top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground"
+								class={cn(
+									'absolute -top-2 -right-2 flex h-7 min-w-[1.75rem] items-center justify-center rounded-full px-1.5 text-xs font-bold shadow-md',
+									group.selectedCount > 0
+										? 'bg-primary text-primary-foreground'
+										: 'bg-muted text-muted-foreground'
+								)}
+							>
+								{group.selectedCount}/{group.totalCount}
+							</div>
+						{:else if group.selectedCount > 0}
+							<div
+								class="absolute -top-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shadow-md"
 							>
 								✓
 							</div>
 						{/if}
-						<p class="mt-1 line-clamp-1 text-center text-xs">{card.name}</p>
+
+						<p class="mt-1 line-clamp-1 text-center text-xs">{group.card.name}</p>
 						{#if mode === 'rarity_points'}
 							<p class="text-center text-xs text-muted-foreground">
-								{getRarityPoints(card.rarity)} pts
+								{getRarityPoints(group.card.rarity)} pts
 							</p>
 						{/if}
 					</button>
 				{/each}
 			</div>
 
-			{#if availableCards.length === 0}
+			{#if groupedCards.length === 0}
 				<p class="py-8 text-center text-muted-foreground">Aucune carte disponible</p>
 			{/if}
 		</div>
