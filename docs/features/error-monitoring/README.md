@@ -67,6 +67,7 @@ Pour plus de détails, voir [system.md](system.md)
 - ✅ Admin dashboard with filtering
 - ✅ Error resolution tracking
 - ✅ Database storage with indexes
+- ✅ Bulk resolve errors (filter-based mass resolution) 🆕 2025-11-08
 
 ### In Progress 🔄
 
@@ -88,8 +89,9 @@ Pour plus de détails, voir [system.md](system.md)
 ## 📚 Documentation
 
 - [Quick Start (5 min)](quick-start.md) - Démarrage rapide
-- [Architecture complète](system.md) - Documentation détaillée (70+ pages)
-- [Dashboard admin](dashboard.md) - Utilisation du dashboard (à créer)
+- [Architecture complète](system.md) - Documentation détaillée du système
+- [Dashboard admin](dashboard.md) - Guide complet d'utilisation du dashboard 🆕
+- [API Reference](api-reference.md) - Documentation des endpoints API 🆕
 
 ---
 

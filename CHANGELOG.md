@@ -20,6 +20,18 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ### ✨ Features
 
+- **admin:** add bulk resolve errors feature for efficient error management ([#error-monitoring](https://github.com/Zahara-Nour/ubumaths/issues))
+  - Implemented `POST /api/errors/bulk-resolve` endpoint with filter-based resolution
+  - Added Zod validation schema `bulkResolveErrorsSchema` requiring at least one filter
+  - Created confirmation modal in admin dashboard showing affected errors count and active filters
+  - Optional resolution notes field (max 2000 characters) applied to all resolved errors
+  - Sequential processing via `resolveErrorBySignature()` for each matching occurrence
+  - Button disabled when no errors match or all are already resolved
+  - Auto-refresh dashboard after successful bulk resolution
+  - Toast notifications for success/error feedback
+  - Admin-only access with proper role verification
+  - Impact: Admins can now resolve dozens of errors in one action instead of individually
+
 - **admin:** add comprehensive health monitoring dashboard to proactively detect system issues ([2620e9a](https://github.com/Zahara-Nour/ubumaths/commit/2620e9a0b6a72d7fbbf6efff7f6c68ab2e59e0a6))
 - **admin:** add inline rarity editing for VIP cards and fix null action validation ([19883e8](https://github.com/Zahara-Nour/ubumaths/commit/19883e8c9ec5f06ee6ab866a9c67fe2a5019b127))
 - **admin:** enhance inline editing UX with MyCheckbox and pattern docs ([28840fa](https://github.com/Zahara-Nour/ubumaths/commit/28840fa65a7ebe712c294dca521340cd6469e2e5))
@@ -39,6 +51,13 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ### 📚 Documentation
 
 - add VIP card API documentation and layout analysis tools ([c62c67d](https://github.com/Zahara-Nour/ubumaths/commit/c62c67d6c27bc75d15e66bbda85796f085a883ce))
+- **error-monitoring:** create comprehensive dashboard documentation with bulk resolve guide ([#docs](https://github.com/Zahara-Nour/ubumaths/issues))
+  - Created `docs/features/error-monitoring/dashboard.md` (18KB, complete admin guide)
+  - Documented bulk resolve feature: UI flow, API endpoint, security, examples
+  - Added filter system documentation with all available types
+  - Included performance metrics and optimization notes
+  - Added use case examples (daily monitoring, post-deployment cleanup, user-specific errors)
+  - Updated `docs/features/error-monitoring/README.md` with bulk resolve in roadmap
 
 ### 🐛 Bug Fixes
 

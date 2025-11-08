@@ -57,3 +57,52 @@ export const cleanupErrorsSchema = z.object({
 		.default(90)
 		.optional()
 });
+
+/**
+ * Schema for bulk resolving errors (POST /api/errors/bulk-resolve)
+ * Admin specifies filters to determine which errors to resolve
+ */
+export const bulkResolveErrorsSchema = z
+	.object({
+		// Filter parameters (same as ErrorFilters)
+		error_type: z
+			.enum([
+				'client_js',
+				'server_api',
+				'server_load',
+				'server_action',
+				'validation',
+				'performance',
+				'database'
+			])
+			.optional(),
+		severity: z.enum(['info', 'warning', 'error', 'critical']).optional(),
+		resolved: z
+			.string()
+			.optional()
+			.transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
+		user_id: z.string().uuid().optional(),
+		date_from: z.string().datetime('Date de début invalide').optional(),
+		date_to: z.string().datetime('Date de fin invalide').optional(),
+		search: z.string().trim().max(200).optional(),
+		// Resolution notes
+		notes: z.string().max(2000, 'Notes trop longues (max 2000 caractères)').optional()
+	})
+	.refine(
+		(data) => {
+			// Require at least one filter to prevent accidentally resolving everything
+			return !!(
+				data.error_type ||
+				data.severity ||
+				data.resolved !== undefined ||
+				data.user_id ||
+				data.date_from ||
+				data.date_to ||
+				data.search
+			);
+		},
+		{
+			message:
+				'Au moins un filtre doit être spécifié pour éviter de résoudre toutes les erreurs accidentellement'
+		}
+	);

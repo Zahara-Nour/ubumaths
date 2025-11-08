@@ -1,6 +1,6 @@
 <!-- eslint-disable custom/require-zod-validation -->
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -8,6 +8,9 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { Textarea } from '$lib/components/ui/textarea';
+	import { toaster } from '$lib/stores/toaster.svelte';
 
 	let { data } = $props();
 
@@ -45,6 +48,47 @@
 		{ value: 'true', label: 'Résolues' }
 	];
 
+	// Bulk resolution state
+	let bulkResolveDialogOpen = $state(false);
+	let bulkResolveNotes = $state('');
+	let submitting = $state(false);
+
+	// Computed: filtered occurrences (for bulk actions)
+	const filteredOccurrences = $derived(data.occurrences || []);
+
+	// Computed: check if all filtered errors are already resolved
+	const allFilteredResolved = $derived(
+		filteredOccurrences.length > 0 && filteredOccurrences.every((o) => o.is_resolved)
+	);
+
+	// Computed: total count of individual errors in filtered occurrences
+	const totalFilteredErrors = $derived(
+		filteredOccurrences.reduce((sum, o) => sum + o.occurrence_count, 0)
+	);
+
+	// Computed: active filters for display
+	const activeFilters = $derived(() => {
+		const filters: string[] = [];
+		if (typeFilter !== 'all') {
+			const typeLabel = typeItems.find((item) => item.value === typeFilter)?.label || typeFilter;
+			filters.push(`Type: ${typeLabel}`);
+		}
+		if (severityFilter !== 'all') {
+			const severityLabel =
+				severityItems.find((item) => item.value === severityFilter)?.label || severityFilter;
+			filters.push(`Sévérité: ${severityLabel}`);
+		}
+		if (resolvedFilter !== 'all') {
+			const resolvedLabel =
+				resolvedItems.find((item) => item.value === resolvedFilter)?.label || resolvedFilter;
+			filters.push(`État: ${resolvedLabel}`);
+		}
+		if (searchInput) {
+			filters.push(`Recherche: "${searchInput}"`);
+		}
+		return filters;
+	});
+
 	// Apply filters
 	function applyFilters() {
 		const params = new URLSearchParams();
@@ -64,6 +108,55 @@
 		severityFilter = 'all';
 		resolvedFilter = 'all';
 		goto('?').then(() => {});
+	}
+
+	// Open bulk resolve dialog
+	function openBulkResolveDialog() {
+		bulkResolveNotes = '';
+		bulkResolveDialogOpen = true;
+	}
+
+	// Confirm bulk resolve
+	async function confirmBulkResolve() {
+		submitting = true;
+		try {
+			// Build request body with current filters
+			const requestBody = {
+				error_type: typeFilter !== 'all' ? typeFilter : undefined,
+				severity: severityFilter !== 'all' ? severityFilter : undefined,
+				resolved: resolvedFilter !== 'all' ? resolvedFilter : undefined,
+				search: searchInput || undefined,
+				notes: bulkResolveNotes || undefined
+			};
+
+			const response = await fetch('/api/errors/bulk-resolve', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(requestBody)
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.message || 'Erreur lors de la résolution groupée');
+			}
+
+			const result = await response.json();
+
+			// Show success toast
+			toaster.success(
+				`${result.resolved_count} ${result.resolved_count > 1 ? 'erreurs résolues' : 'erreur résolue'} avec succès`
+			);
+
+			// Close dialog and refresh data
+			bulkResolveDialogOpen = false;
+			await invalidateAll();
+		} catch (err) {
+			// Show error toast
+			const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
+			toaster.error(errorMessage);
+		} finally {
+			submitting = false;
+		}
 	}
 
 	// Format date
@@ -216,12 +309,90 @@
 				</div>
 			</div>
 
-			<div class="mt-4 flex gap-2">
+			<div class="mt-4 flex flex-wrap gap-2">
 				<Button onclick={applyFilters}>Appliquer</Button>
 				<Button variant="outline" onclick={resetFilters}>Réinitialiser</Button>
+				<Button
+					variant="destructive"
+					disabled={filteredOccurrences.length === 0 || allFilteredResolved}
+					onclick={openBulkResolveDialog}
+				>
+					Marquer tous comme résolus
+				</Button>
 			</div>
 		</Card.Content>
 	</Card.Root>
+
+	<!-- Bulk Resolve Confirmation Dialog -->
+	<Dialog.Root bind:open={bulkResolveDialogOpen}>
+		<Dialog.Content class="sm:max-w-[550px]">
+			<Dialog.Header>
+				<Dialog.Title>Marquer comme résolus ?</Dialog.Title>
+				<Dialog.Description>
+					Vous allez marquer {filteredOccurrences.length}
+					{filteredOccurrences.length > 1 ? "occurrences d'erreur" : "occurrence d'erreur"}
+					comme {filteredOccurrences.length > 1 ? 'résolues' : 'résolue'}
+					(représentant {totalFilteredErrors}
+					{totalFilteredErrors > 1 ? 'erreurs individuelles' : 'erreur individuelle'} au total).
+				</Dialog.Description>
+			</Dialog.Header>
+
+			<div class="space-y-4 py-4">
+				<!-- Active Filters Display -->
+				{#if activeFilters().length > 0}
+					<div class="rounded-lg border border-muted bg-muted/50 p-3">
+						<p class="mb-2 text-sm font-medium">Filtres actifs :</p>
+						<ul class="space-y-1 text-sm text-muted-foreground">
+							{#each activeFilters() as filter, index (index)}
+								<li>• {filter}</li>
+							{/each}
+						</ul>
+					</div>
+				{/if}
+
+				<!-- Notes Input -->
+				<div class="space-y-2">
+					<Label for="bulk-resolve-notes">Notes de résolution (optionnel)</Label>
+					<Textarea
+						id="bulk-resolve-notes"
+						bind:value={bulkResolveNotes}
+						placeholder="Notes de résolution (optionnel)..."
+						maxlength={2000}
+						rows={4}
+						class="resize-none"
+					/>
+					<p class="text-xs text-muted-foreground">
+						Ces notes seront ajoutées à toutes les erreurs résolues
+					</p>
+				</div>
+
+				<!-- Warning -->
+				<div
+					class="flex items-start gap-2 rounded-lg border border-orange-200 bg-orange-50 p-3 text-sm text-orange-800 dark:border-orange-900 dark:bg-orange-950 dark:text-orange-200"
+				>
+					<span class="text-base">⚠️</span>
+					<p>Cette action affectera toutes les erreurs correspondant aux filtres actifs.</p>
+				</div>
+			</div>
+
+			<Dialog.Footer>
+				<Button
+					variant="outline"
+					onclick={() => (bulkResolveDialogOpen = false)}
+					disabled={submitting}
+				>
+					Annuler
+				</Button>
+				<Button onclick={confirmBulkResolve} disabled={submitting}>
+					{#if submitting}
+						Résolution en cours...
+					{:else}
+						Confirmer
+					{/if}
+				</Button>
+			</Dialog.Footer>
+		</Dialog.Content>
+	</Dialog.Root>
 
 	<!-- Error Occurrences List -->
 	<Card.Root>
