@@ -51,7 +51,7 @@
 <Card.Root
 	class={cn(
 		'transition-all duration-200 hover:shadow-md',
-		statusClasses(),
+		statusClasses,
 		link ? 'cursor-pointer' : ''
 	)}
 	onclick={handleClick}
@@ -60,10 +60,10 @@
 		<div class="flex items-start justify-between">
 			<div class="flex-1">
 				<p class="text-sm font-medium text-gray-600">{label}</p>
-				<p class="mt-2 text-3xl font-bold text-gray-900">{formattedValue()}</p>
+				<p class="mt-2 text-3xl font-bold text-gray-900">{formattedValue}</p>
 
 				{#if trend !== undefined}
-					<div class="mt-2 flex items-center gap-1 {trendColor()}">
+					<div class="mt-2 flex items-center gap-1 {trendColor}">
 						{#if trend > 0}
 							<ArrowUp class="h-4 w-4" />
 						{:else}

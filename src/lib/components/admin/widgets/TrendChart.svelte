@@ -85,7 +85,7 @@
 	};
 </script>
 
-<div class={cn('rounded-lg p-3', colorClasses().bg)}>
+<div class={cn('rounded-lg p-3', colorClasses.bg)}>
 	<div class="mb-2 flex items-center justify-between">
 		<span class="text-xs font-medium text-gray-600">{label}</span>
 		<div class="flex items-center gap-2 text-xs text-gray-500">
@@ -98,20 +98,20 @@
 		<svg viewBox="0 0 100 40" class="h-12 w-full" preserveAspectRatio="none">
 			<!-- Line path -->
 			<path
-				d={svgPath().path}
-				class={cn(colorClasses().stroke, 'fill-none')}
+				d={svgPath.path}
+				class={cn(colorClasses.stroke, 'fill-none')}
 				stroke-width="2"
 				stroke-linecap="round"
 				stroke-linejoin="round"
 			/>
 
 			<!-- Data points (only visible on hover) -->
-			{#each svgPath().points as point, index (index)}
+			{#each svgPath.points as point, index (index)}
 				<circle
 					cx={point.x}
 					cy={point.y}
 					r={hoveredIndex === index ? '3' : '0'}
-					class={cn(colorClasses().fill, 'transition-all duration-150')}
+					class={cn(colorClasses.fill, 'transition-all duration-150')}
 					onmouseenter={(e) => handleMouseMove(e, index)}
 					onmouseleave={handleMouseLeave}
 					role="presentation"

@@ -73,12 +73,12 @@
 			<div class="flex flex-1 items-center gap-3">
 				<!-- Status indicator dot -->
 				<div class="relative">
-					<div class={cn('h-3 w-3 rounded-full', statusConfig().color)}></div>
+					<div class={cn('h-3 w-3 rounded-full', statusConfig.color)}></div>
 					{#if shouldPulse}
 						<div
 							class={cn(
 								'absolute inset-0 h-3 w-3 animate-ping rounded-full opacity-75',
-								statusConfig().color
+								statusConfig.color
 							)}
 						></div>
 					{/if}
@@ -87,8 +87,8 @@
 				<div class="min-w-0 flex-1">
 					<div class="flex flex-wrap items-center gap-2">
 						<h3 class="text-sm font-semibold text-gray-900">{service}</h3>
-						<span class={cn('text-xs font-medium', statusConfig().textColor)}>
-							{statusConfig().label}
+						<span class={cn('text-xs font-medium', statusConfig.textColor)}>
+							{statusConfig.label}
 						</span>
 					</div>
 
@@ -96,7 +96,7 @@
 						{#if latency !== undefined}
 							<span>{latency}ms</span>
 						{/if}
-						<span>{relativeTime()}</span>
+						<span>{relativeTime}</span>
 					</div>
 				</div>
 			</div>
