@@ -634,6 +634,29 @@ export async function cleanupOldErrors(
 }
 
 /**
+ * Delete all resolved errors (hard delete)
+ * WARNING: This is a destructive operation that permanently deletes all resolved errors
+ * regardless of age. Use with caution.
+ */
+export async function deleteAllResolvedErrors(
+	supabase: SupabaseClientType
+): Promise<{ success: boolean; deletedCount?: number; error?: string }> {
+	try {
+		const { data, error } = await supabase.rpc('delete_all_resolved_errors');
+
+		if (error) {
+			console.error('Failed to delete resolved errors:', error);
+			return { success: false, error: 'Failed to delete resolved errors' };
+		}
+
+		return { success: true, deletedCount: data as number };
+	} catch (error) {
+		console.error('Error in deleteAllResolvedErrors:', error);
+		return { success: false, error: 'Unexpected error' };
+	}
+}
+
+/**
  * Helper to extract user context from session
  */
 export async function getUserContext(

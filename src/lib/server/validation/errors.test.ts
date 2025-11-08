@@ -148,9 +148,7 @@ describe('bulkResolveErrorsSchema', () => {
 			});
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain(
-					'Au moins un filtre doit être spécifié'
-				);
+				expect(result.error.issues[0].message).toContain('Au moins un filtre doit être spécifié');
 			}
 		});
 

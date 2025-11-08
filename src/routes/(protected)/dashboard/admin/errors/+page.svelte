@@ -10,6 +10,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Textarea } from '$lib/components/ui/textarea';
+	import * as Alert from '$lib/components/ui/alert';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	let { data } = $props();
@@ -53,6 +54,10 @@
 	let bulkResolveNotes = $state('');
 	let submitting = $state(false);
 
+	// Delete resolved errors state
+	let deleteResolvedDialogOpen = $state(false);
+	let deletingResolved = $state(false);
+
 	// Computed: filtered occurrences (for bulk actions)
 	const filteredOccurrences = $derived(data.occurrences || []);
 
@@ -65,6 +70,9 @@
 	const totalFilteredErrors = $derived(
 		filteredOccurrences.reduce((sum, o) => sum + o.occurrence_count, 0)
 	);
+
+	// Computed: count of resolved errors
+	const resolvedCount = $derived(filteredOccurrences.filter((o) => o.is_resolved).length);
 
 	// Computed: active filters for display
 	const activeFilters = $derived(() => {
@@ -116,6 +124,11 @@
 		bulkResolveDialogOpen = true;
 	}
 
+	// Open delete resolved dialog
+	function openDeleteResolvedDialog() {
+		deleteResolvedDialogOpen = true;
+	}
+
 	// Confirm bulk resolve
 	async function confirmBulkResolve() {
 		submitting = true;
@@ -156,6 +169,39 @@
 			toaster.error(errorMessage);
 		} finally {
 			submitting = false;
+		}
+	}
+
+	// Confirm delete resolved errors
+	async function confirmDeleteResolved() {
+		deletingResolved = true;
+		try {
+			const response = await fetch('/api/errors/delete-resolved', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' }
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.message || 'Erreur lors de la suppression des erreurs résolues');
+			}
+
+			const result = await response.json();
+
+			// Show success toast
+			toaster.success(
+				`${result.deleted_count} ${result.deleted_count > 1 ? 'erreurs supprimées' : 'erreur supprimée'} avec succès`
+			);
+
+			// Close dialog and refresh data
+			deleteResolvedDialogOpen = false;
+			await invalidateAll();
+		} catch (err) {
+			// Show error toast
+			const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
+			toaster.error(errorMessage);
+		} finally {
+			deletingResolved = false;
 		}
 	}
 
@@ -319,6 +365,13 @@
 				>
 					Marquer tous comme résolus
 				</Button>
+				<Button
+					variant="destructive"
+					disabled={resolvedCount === 0}
+					onclick={openDeleteResolvedDialog}
+				>
+					Supprimer les erreurs résolues
+				</Button>
 			</div>
 		</Card.Content>
 	</Card.Root>
@@ -388,6 +441,78 @@
 						Résolution en cours...
 					{:else}
 						Confirmer
+					{/if}
+				</Button>
+			</Dialog.Footer>
+		</Dialog.Content>
+	</Dialog.Root>
+
+	<!-- Delete Resolved Errors Confirmation Dialog -->
+	<Dialog.Root bind:open={deleteResolvedDialogOpen}>
+		<Dialog.Content class="sm:max-w-[600px]">
+			<Dialog.Header>
+				<Dialog.Title class="flex items-center gap-2 text-destructive">
+					<span class="text-2xl">⚠️</span>
+					Supprimer définitivement ?
+				</Dialog.Title>
+				<Dialog.Description>
+					Cette action supprimera toutes les erreurs résolues de la base de données.
+				</Dialog.Description>
+			</Dialog.Header>
+
+			<div class="space-y-4 py-4">
+				<!-- Critical Warning Box -->
+				<Alert.Root
+					variant="destructive"
+					class="border-2 border-destructive bg-destructive/10 dark:bg-destructive/20"
+				>
+					<Alert.Title class="mb-2 flex items-center gap-2 text-base font-bold">
+						<span class="text-xl">🚨</span>
+						ATTENTION : Cette action est IRRÉVERSIBLE
+					</Alert.Title>
+					<Alert.Description class="space-y-2 text-sm">
+						<p class="font-semibold">
+							• Toutes les erreurs résolues seront supprimées de la base de données
+						</p>
+						<p class="font-semibold">• Les données ne pourront pas être récupérées</p>
+						<p class="font-semibold">• Cette action affecte l'historique permanent</p>
+					</Alert.Description>
+				</Alert.Root>
+
+				<!-- Count Display -->
+				<div class="rounded-lg border border-muted bg-muted/50 p-4">
+					<p class="mb-1 text-sm font-medium text-muted-foreground">Nombre d'erreurs à supprimer</p>
+					<p class="text-2xl font-bold text-destructive">{resolvedCount}</p>
+					<p class="mt-1 text-xs text-muted-foreground">
+						{resolvedCount > 1
+							? "occurrences d'erreur résolues seront supprimées"
+							: "occurrence d'erreur résolue sera supprimée"}
+					</p>
+				</div>
+
+				<!-- Final Confirmation -->
+				<div
+					class="rounded-lg border-2 border-orange-300 bg-orange-50 p-4 dark:border-orange-800 dark:bg-orange-950/30"
+				>
+					<p class="text-center text-sm font-semibold text-orange-900 dark:text-orange-200">
+						Êtes-vous absolument certain de vouloir continuer ?
+					</p>
+				</div>
+			</div>
+
+			<Dialog.Footer>
+				<Button
+					variant="outline"
+					onclick={() => (deleteResolvedDialogOpen = false)}
+					disabled={deletingResolved}
+				>
+					Annuler
+				</Button>
+				<Button variant="destructive" onclick={confirmDeleteResolved} disabled={deletingResolved}>
+					{#if deletingResolved}
+						Suppression en cours...
+					{:else}
+						Oui, supprimer définitivement
 					{/if}
 				</Button>
 			</Dialog.Footer>
