@@ -146,6 +146,7 @@
 
 	// Filter state for VIP cards
 	let selectedCardFilter = $state<string>('all');
+	let filterMode = $state<'filter' | 'add'>('filter'); // Mode par défaut : filtrer
 
 	// Items for VIP card filter dropdown
 	const cardFilterItems = [
@@ -156,13 +157,17 @@
 	// Filtered students list based on selected VIP card
 	let filteredStudents = $derived(
 		currentStudents.filter((student) => {
-			if (selectedCardFilter === 'all') return true;
-
-			const rewards = teacherCache.getRewardsSync(selectedClassId)?.get(student.id);
-			if (!rewards) return false;
-
-			const cardCounts = getStudentCardCounts(rewards.vip_cards);
-			return (cardCounts.get(selectedCardFilter) || 0) > 0;
+			if (filterMode === 'filter') {
+				// MODE FILTRER : comportement actuel
+				if (selectedCardFilter === 'all') return true;
+				const rewards = teacherCache.getRewardsSync(selectedClassId)?.get(student.id);
+				if (!rewards) return false;
+				const cardCounts = getStudentCardCounts(rewards.vip_cards);
+				return (cardCounts.get(selectedCardFilter) || 0) > 0;
+			} else {
+				// MODE AJOUTER : afficher tous les élèves
+				return true;
+			}
 		})
 	);
 
@@ -801,17 +806,65 @@
 									</div>
 								</div>
 
-								<!-- Filter Section -->
-								<div class="flex items-center gap-4 rounded-lg border border-border bg-card p-4">
-									<span class="text-sm font-medium">Filtrer par carte VIP :</span>
-									<div class="w-64">
-										<MySelect
-											type="single"
-											bind:value={selectedCardFilter}
-											items={cardFilterItems}
-											placeholder="Sélectionner une carte"
-										/>
+								<!-- Filter Section with Toggle Mode -->
+								<div class="space-y-2">
+									<div class="flex items-center gap-4 rounded-lg border border-border bg-card p-4">
+										<!-- Left side: Mode toggle -->
+										<div class="flex items-center gap-3">
+											<span class="text-sm font-medium">Mode :</span>
+											<div class="flex gap-2">
+												<Button
+													variant={filterMode === 'filter' ? 'default' : 'outline'}
+													size="sm"
+													onclick={() => (filterMode = 'filter')}
+												>
+													Filtrer
+												</Button>
+												<Button
+													variant={filterMode === 'add' ? 'default' : 'outline'}
+													size="sm"
+													disabled={selectedCardFilter === 'all'}
+													onclick={() => (filterMode = 'add')}
+													title={selectedCardFilter === 'all'
+														? "Sélectionnez une carte VIP d'abord"
+														: ''}
+												>
+													Ajouter
+												</Button>
+											</div>
+										</div>
+
+										<!-- Separator -->
+										<div class="h-8 w-px bg-border"></div>
+
+										<!-- Right side: Card selection -->
+										<span class="text-sm font-medium">Carte VIP :</span>
+										<div class="w-64">
+											<MySelect
+												type="single"
+												bind:value={selectedCardFilter}
+												items={cardFilterItems}
+												placeholder="Sélectionner une carte"
+											/>
+										</div>
 									</div>
+
+									<!-- Contextual help message -->
+									{#if filterMode === 'filter'}
+										<p class="px-4 text-xs text-muted-foreground">
+											Affiche uniquement les élèves qui possèdent déjà cette carte
+										</p>
+									{:else if selectedCardFilter === 'all'}
+										<p class="px-4 text-xs text-amber-600 dark:text-amber-400">
+											Sélectionnez une carte VIP pour activer le mode "Ajouter"
+										</p>
+									{:else}
+										{@const card = getVipCardById(selectedCardFilter)}
+										<p class="px-4 text-xs text-muted-foreground">
+											Affiche tous les élèves. Cliquez sur + pour offrir la carte "{card?.name ||
+												selectedCardFilter}"
+										</p>
+									{/if}
 								</div>
 
 								<!-- LISTE DES ÉLÈVES -->
@@ -968,8 +1021,8 @@
 																>
 															</Button>
 
-															<!-- Grant Specific VIP Card Button (only shows when filter is active) -->
-															{#if selectedCardFilter !== 'all'}
+															<!-- Grant Specific VIP Card Button (only shows when add mode is active) -->
+															{#if filterMode === 'add' && selectedCardFilter !== 'all'}
 																{@const card = getVipCardById(selectedCardFilter)}
 																<Tooltip.Root>
 																	<Tooltip.Trigger>
