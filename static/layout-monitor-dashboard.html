@@ -1,0 +1,559 @@
+<!-- Dashboard de monitoring des layouts -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layout Execution Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: #252526;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff3e00;
+        }
+        
+        h1 {
+            color: #ff3e00;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: #252526;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .stat-card.warning {
+            border-left-color: #FF9800;
+        }
+        
+        .stat-card.error {
+            border-left-color: #f44336;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #858585;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        .stat-card.warning .stat-value {
+            color: #FF9800;
+        }
+        
+        .stat-card.error .stat-value {
+            color: #f44336;
+        }
+        
+        .timeline {
+            background: #252526;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .timeline h2 {
+            color: #ff3e00;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .execution {
+            background: #2d2d30;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 4px solid #569cd6;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .execution.rerun {
+            border-left-color: #FF9800;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .execution-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .execution-title {
+            font-weight: bold;
+            color: #569cd6;
+        }
+        
+        .execution-time {
+            color: #858585;
+            font-size: 12px;
+        }
+        
+        .changes {
+            margin-top: 10px;
+        }
+        
+        .change-item {
+            background: #3e3e42;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+        
+        .change-field {
+            color: #ff3e00;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .change-value {
+            display: flex;
+            gap: 10px;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .change-old {
+            color: #f44336;
+            flex: 1;
+        }
+        
+        .change-new {
+            color: #4CAF50;
+            flex: 1;
+        }
+        
+        .arrow {
+            color: #858585;
+        }
+        
+        .controls {
+            background: #252526;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        button {
+            background: #ff3e00;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #e63900;
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .filters {
+            background: #252526;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        label {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #858585;
+        }
+        
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Layout Execution Monitor</h1>
+            <p>Surveillance en temps réel des exécutions de +layout.server.ts</p>
+        </header>
+        
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-label">Total Exécutions</div>
+                <div class="stat-value" id="total-executions">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Layouts Actifs</div>
+                <div class="stat-value" id="active-layouts">0</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-label">Réexécutions</div>
+                <div class="stat-value" id="reruns">0</div>
+            </div>
+            <div class="stat-card error">
+                <div class="stat-label">Réexécutions Inutiles</div>
+                <div class="stat-value" id="unnecessary-reruns">0</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="clearLog()">🗑️ Effacer</button>
+            <button onclick="exportLog()">📥 Exporter</button>
+            <button onclick="togglePause()" id="pause-btn">⏸️ Pause</button>
+            <div class="status">
+                <div class="status-dot"></div>
+                <span>Monitoring actif</span>
+            </div>
+        </div>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <div class="filter-item">
+                    <input type="checkbox" id="show-first" checked onchange="updateFilters()">
+                    <label for="show-first">Premières exécutions</label>
+                </div>
+                <div class="filter-item">
+                    <input type="checkbox" id="show-reruns" checked onchange="updateFilters()">
+                    <label for="show-reruns">Réexécutions</label>
+                </div>
+                <div class="filter-item">
+                    <input type="checkbox" id="show-params" checked onchange="updateFilters()">
+                    <label for="show-params">Changements params</label>
+                </div>
+                <div class="filter-item">
+                    <input type="checkbox" id="show-search" checked onchange="updateFilters()">
+                    <label for="show-search">Changements searchParams</label>
+                </div>
+                <div class="filter-item">
+                    <input type="checkbox" id="show-cookies" checked onchange="updateFilters()">
+                    <label for="show-cookies">Changements cookies</label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="timeline">
+            <h2>
+                <span>📊 Timeline des exécutions</span>
+            </h2>
+            <div id="timeline-content">
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔍</div>
+                    <p>En attente d'exécutions de layouts...</p>
+                    <p style="margin-top: 10px; font-size: 14px;">
+                        Naviguez dans votre application pour voir les exécutions apparaître ici.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Stockage des exécutions
+        let executions = [];
+        let isPaused = false;
+        let stats = {
+            total: 0,
+            layouts: new Set(),
+            reruns: 0,
+            unnecessaryReruns: 0
+        };
+        
+        // Simuler des données pour la démo (à remplacer par des vraies données)
+        function simulateExecution() {
+            const layouts = ['root-layout', 'blog-layout', 'shop-layout'];
+            const changeTypes = ['params', 'searchParams', 'cookies', 'pathname', null];
+            
+            const execution = {
+                id: Date.now(),
+                layout: layouts[Math.floor(Math.random() * layouts.length)],
+                timestamp: new Date().toISOString(),
+                isRerun: Math.random() > 0.3,
+                changes: []
+            };
+            
+            if (execution.isRerun) {
+                const changeType = changeTypes[Math.floor(Math.random() * changeTypes.length)];
+                if (changeType) {
+                    execution.changes.push({
+                        field: changeType,
+                        oldValue: changeType === 'params' ? '{id: 1}' : 'old-value',
+                        newValue: changeType === 'params' ? '{id: 2}' : 'new-value'
+                    });
+                }
+            }
+            
+            addExecution(execution);
+        }
+        
+        // Ajouter une exécution
+        function addExecution(execution) {
+            if (isPaused) return;
+            
+            executions.unshift(execution);
+            
+            // Limiter à 50 exécutions
+            if (executions.length > 50) {
+                executions.pop();
+            }
+            
+            // Mettre à jour les stats
+            stats.total++;
+            stats.layouts.add(execution.layout);
+            if (execution.isRerun) {
+                stats.reruns++;
+                if (execution.changes.length === 0) {
+                    stats.unnecessaryReruns++;
+                }
+            }
+            
+            updateUI();
+        }
+        
+        // Mettre à jour l'interface
+        function updateUI() {
+            // Stats
+            document.getElementById('total-executions').textContent = stats.total;
+            document.getElementById('active-layouts').textContent = stats.layouts.size;
+            document.getElementById('reruns').textContent = stats.reruns;
+            document.getElementById('unnecessary-reruns').textContent = stats.unnecessaryReruns;
+            
+            // Timeline
+            const timelineContent = document.getElementById('timeline-content');
+            timelineContent.innerHTML = '';
+            
+            const filteredExecutions = filterExecutions();
+            
+            if (filteredExecutions.length === 0) {
+                timelineContent.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <p>Aucune exécution ne correspond aux filtres</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredExecutions.forEach(execution => {
+                const executionEl = document.createElement('div');
+                executionEl.className = `execution ${execution.isRerun ? 'rerun' : ''}`;
+                
+                const time = new Date(execution.timestamp).toLocaleTimeString('fr-FR');
+                
+                let changesHTML = '';
+                if (execution.changes.length > 0) {
+                    changesHTML = '<div class="changes">';
+                    execution.changes.forEach(change => {
+                        changesHTML += `
+                            <div class="change-item">
+                                <div class="change-field">${change.field.toUpperCase()}</div>
+                                <div class="change-value">
+                                    <div class="change-old">❌ ${change.oldValue}</div>
+                                    <div class="arrow">→</div>
+                                    <div class="change-new">✅ ${change.newValue}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    changesHTML += '</div>';
+                }
+                
+                executionEl.innerHTML = `
+                    <div class="execution-header">
+                        <div class="execution-title">
+                            ${execution.isRerun ? '🔄' : '✨'} ${execution.layout}
+                            ${execution.isRerun ? '(Réexécution)' : '(Première exécution)'}
+                        </div>
+                        <div class="execution-time">${time}</div>
+                    </div>
+                    ${changesHTML}
+                    ${execution.isRerun && execution.changes.length === 0 ? 
+                        '<div style="color: #FF9800; margin-top: 10px;">⚠️ Réexécution sans changement détecté (invalidation manuelle ?)</div>' : 
+                        ''
+                    }
+                `;
+                
+                timelineContent.appendChild(executionEl);
+            });
+        }
+        
+        // Filtrer les exécutions
+        function filterExecutions() {
+            const showFirst = document.getElementById('show-first').checked;
+            const showReruns = document.getElementById('show-reruns').checked;
+            const showParams = document.getElementById('show-params').checked;
+            const showSearch = document.getElementById('show-search').checked;
+            const showCookies = document.getElementById('show-cookies').checked;
+            
+            return executions.filter(execution => {
+                if (!showFirst && !execution.isRerun) return false;
+                if (!showReruns && execution.isRerun) return false;
+                
+                if (execution.isRerun && execution.changes.length > 0) {
+                    const hasParams = execution.changes.some(c => c.field === 'params');
+                    const hasSearch = execution.changes.some(c => c.field === 'searchParams');
+                    const hasCookies = execution.changes.some(c => c.field === 'cookies');
+                    
+                    if (hasParams && !showParams) return false;
+                    if (hasSearch && !showSearch) return false;
+                    if (hasCookies && !showCookies) return false;
+                }
+                
+                return true;
+            });
+        }
+        
+        // Effacer le log
+        function clearLog() {
+            if (confirm('Effacer toutes les exécutions enregistrées ?')) {
+                executions = [];
+                stats = {
+                    total: 0,
+                    layouts: new Set(),
+                    reruns: 0,
+                    unnecessaryReruns: 0
+                };
+                updateUI();
+            }
+        }
+        
+        // Exporter le log
+        function exportLog() {
+            const dataStr = JSON.stringify(executions, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `layout-executions-${Date.now()}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+        
+        // Toggle pause
+        function togglePause() {
+            isPaused = !isPaused;
+            const btn = document.getElementById('pause-btn');
+            btn.textContent = isPaused ? '▶️ Reprendre' : '⏸️ Pause';
+            
+            const dot = document.querySelector('.status-dot');
+            dot.style.backgroundColor = isPaused ? '#FF9800' : '#4CAF50';
+        }
+        
+        // Mettre à jour les filtres
+        function updateFilters() {
+            updateUI();
+        }
+        
+        // Simuler des exécutions pour la démo
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                simulateExecution();
+            }
+        }, 2000);
+        
+        // Simulation initiale
+        setTimeout(() => {
+            simulateExecution();
+        }, 500);
+    </script>
+</body>
+</html>
