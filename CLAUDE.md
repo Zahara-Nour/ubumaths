@@ -615,6 +615,57 @@ function handleUpdate(id: string, delta: number) {
 
 ---
 
+## 🔄 Realtime Communication (Supabase)
+
+**Architecture** : Migrated from custom WebSocket to Supabase Realtime (Nov 2025)
+
+### Three Methods
+
+1. **postgres_changes** (DB-backed, ~300ms, COUNTS toward quota)
+   - Friend presence, notifications
+   - Use when: Need persistence + JOINs + RLS
+2. **Broadcast API** (Ephemeral, ~50ms, FREE)
+   - Typing indicators, live cursors
+   - Use when: Instant feedback, no persistence
+3. **Hybrid** (Both methods)
+   - Chat messages: Broadcast (50ms UX) + postgres_changes (300ms reliability)
+   - Best of both worlds
+
+### Critical Constants
+
+```typescript
+// BILLING CRITICAL - DO NOT CHANGE without recalculating quota
+const HEARTBEAT_INTERVAL = 180000; // 180 seconds (3 minutes)
+// Calculation: 200 users × 8h × 20 days = ~640K messages/month (32% of 2M free tier)
+```
+
+### Usage Pattern
+
+```typescript
+import { supabaseRealtimeManager } from '$lib/stores/supabaseRealtime.svelte';
+
+// Initialize (once)
+supabaseRealtimeManager.init(supabase, userId);
+
+// Create & subscribe to channel
+const channel = supabaseRealtimeManager.createChannel('my-channel');
+channel.on('postgres_changes', { event: 'INSERT', table: 'notifications' }, callback);
+await supabaseRealtimeManager.subscribeChannel('my-channel');
+
+// Cleanup
+await supabaseRealtimeManager.unsubscribeChannel('my-channel');
+```
+
+### Specialized Stores
+
+- **presenceManager** - Friend online/offline status (postgres_changes)
+- **notificationsRealtimeManager** - New notification alerts (postgres_changes)
+- **chatStore** - Hybrid chat (Broadcast + postgres_changes with deduplication)
+
+**📖 Complete Guide** : [docs/architecture/supabase-realtime.md](docs/architecture/supabase-realtime.md)
+
+---
+
 ## ✅ Pre-Commit Checklist
 
 Before committing code with API endpoints or forms:
