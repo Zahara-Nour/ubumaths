@@ -6,10 +6,37 @@
  *
  * AUTH: Student only (must be logged in)
  *
+ * CACHING:
+ * - Called automatically by studentCache.getRewards() on cache miss
+ * - Can also be hydrated from +layout.server.ts to avoid this API call
+ * - Cache TTL: 10 minutes (rewards change frequently)
+ * - Supports optimistic updates for instant UI feedback
+ *
  * RESPONSE:
  * {
- *   rewards: StudentRewards
+ *   rewards: {
+ *     gidouilles: number,
+ *     vip_cards: {
+ *       [instanceId: string]: {
+ *         cardId: string,
+ *         earnedAt: string,
+ *         usedAt: string | null
+ *       }
+ *     }
+ *   }
  * }
+ *
+ * USAGE:
+ * ```typescript
+ * // Auto-fetch via cache (recommended)
+ * const rewards = await studentCache.getRewards();
+ *
+ * // With optimistic updates
+ * studentCache.updateGidouillesOptimistic(+5);
+ * await updateServerAPI(+5);
+ * studentCache.invalidateRewards();
+ * await studentCache.getRewards(); // Sync with server
+ * ```
  */
 
 import { error, json } from '@sveltejs/kit';

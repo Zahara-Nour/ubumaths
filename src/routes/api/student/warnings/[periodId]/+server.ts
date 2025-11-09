@@ -6,13 +6,39 @@
  *
  * AUTH: Student only (must be logged in)
  *
+ * VALIDATION:
+ * - periodId must be a valid UUID
+ *
+ * CACHING:
+ * - Called automatically by studentCache.getWarnings(periodId) on cache miss
+ * - Cache TTL: 10 minutes per period
+ * - Map-based caching allows multiple periods to be cached simultaneously
+ *
  * NOTE: Currently students cannot view their own warnings in the UI.
  * This endpoint structure is ready for when/if this feature is added.
  *
  * RESPONSE:
  * {
- *   warnings: StudentWarnings
+ *   warnings: {
+ *     counts: {
+ *       C: number,  // Conduite warnings
+ *       M: number,  // Matériel warnings
+ *       R: number,  // Retard warnings
+ *       T: number   // Travail warnings
+ *     },
+ *     warnings: Warning[]  // Full warning objects
+ *   }
  * }
+ *
+ * USAGE:
+ * ```typescript
+ * // Auto-fetch via cache (recommended)
+ * const warnings = await studentCache.getWarnings(periodId);
+ *
+ * // Direct API call (not recommended)
+ * const response = await fetch(`/api/student/warnings/${periodId}`);
+ * const { warnings } = await response.json();
+ * ```
  */
 
 import { error, json } from '@sveltejs/kit';

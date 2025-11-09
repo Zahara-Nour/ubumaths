@@ -2,13 +2,33 @@
  * Student Dashboard Layout (Server)
  * ==================================
  *
- * Pre-loads student data and hydrates the cache for instant page loads.
+ * Pre-loads student data server-side and returns it for cache hydration.
  *
- * CACHING STRATEGY:
- * - Loads profile + class memberships server-side
- * - Loads rewards (gidouilles + VIP cards) server-side
- * - Hydrates studentCache to avoid client-side API calls
- * - Child pages get instant access to cached data
+ * HYDRATION STRATEGY:
+ * This layout fetches data on the server (single database query) and passes
+ * it to the client. The client layout (+layout.svelte) then hydrates the
+ * studentCache with this data, avoiding redundant API calls.
+ *
+ * WORKFLOW:
+ * 1. Server: Fetch profile + classes from database
+ * 2. Server: Fetch rewards (gidouilles + VIP cards) from database
+ * 3. Server: Return both as layout data
+ * 4. Client: Hydrate studentCache with server data
+ * 5. Child pages: Access cached data instantly (no API calls)
+ *
+ * DATA LOADED:
+ * - Student profile (id, email, name, avatar, etc.)
+ * - Class memberships (classes student is enrolled in)
+ * - Rewards (gidouilles balance + VIP cards)
+ *
+ * PERFORMANCE:
+ * - 2 database queries on server (profile + rewards)
+ * - 0 API calls on client (data already available)
+ * - Instant page loads for student dashboard
+ *
+ * ERROR HANDLING:
+ * - Non-critical failures (memberships, rewards) don't crash the page
+ * - Returns minimal data to ensure dashboard remains functional
  */
 
 import type { LayoutServerLoad } from './$types';

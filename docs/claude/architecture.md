@@ -87,20 +87,36 @@ function myFunction() { ... }
 
 ## 💾 Data Fetching Strategy
 
-**Architecture** (Updated 2025-10-30): **Direct database queries**, no caching layer.
+**Architecture** (Updated 2025-11-09): **Client-side caching** for dashboards, **direct database queries** for other routes.
 
-### Before (with Redis)
+### Client-Side Caching (Dashboards)
 
-- Server-side caching (Redis + in-memory)
-- Complex invalidation logic
-- Faster responses (~50ms cached)
+UbuMaths uses client-side caching for frequently accessed dashboard data:
 
-### After (current)
+**Teacher Dashboard Cache** ([docs/claude/teacher-cache.md](teacher-cache.md))
 
-- ✅ Direct Supabase queries
+- 5 separate caches (students, rewards, warnings, classes, school)
+- Keyed by classId and periodId for multi-class support
+- TTLs: 2h (students), 10min (rewards/warnings), 24h (classes/school)
+- Optimistic UI updates with debouncing
+- Hydration from server load functions
+
+**Student Dashboard Cache** ([docs/claude/student-cache.md](student-cache.md)) 🆕
+
+- 3 separate caches (profile, rewards, warnings)
+- Singleton pattern (student sees only their own data)
+- TTLs: 2h (profile), 10min (rewards/warnings)
+- Optimistic UI updates for rewards
+- Hydration from server load functions
+
+### Direct Database Queries (Other Routes)
+
+Routes outside dashboards use direct Supabase queries:
+
 - ✅ Always fresh data
 - ✅ Simpler architecture
 - ⚠️ Slightly slower (~100-200ms per query)
+- ✅ No cache invalidation complexity
 
 ### Server Load Function Pattern (Updated 2025-11-02)
 

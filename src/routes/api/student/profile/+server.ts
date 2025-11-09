@@ -6,10 +6,37 @@
  *
  * AUTH: Student only (must be logged in)
  *
+ * CACHING:
+ * - Called automatically by studentCache.getProfile() on cache miss
+ * - Can also be hydrated from +layout.server.ts to avoid this API call
+ * - Cache TTL: 2 hours (profile data changes infrequently)
+ *
  * RESPONSE:
  * {
- *   profile: StudentProfile
+ *   profile: {
+ *     id: string,
+ *     email: string,
+ *     firstname: string,
+ *     lastname: string | null,
+ *     full_name: string | null,
+ *     avatar_url: string | null,
+ *     gender: string | null,
+ *     grade: string | null,
+ *     is_test: boolean,
+ *     school_id: string | null,
+ *     classes: ClassMembership[]
+ *   }
  * }
+ *
+ * USAGE:
+ * ```typescript
+ * // Auto-fetch via cache
+ * const profile = await studentCache.getProfile();
+ *
+ * // Direct API call (not recommended)
+ * const response = await fetch('/api/student/profile');
+ * const { profile } = await response.json();
+ * ```
  */
 
 import { error, json } from '@sveltejs/kit';
