@@ -70,19 +70,24 @@
 	const availableCards = $derived.by(() => {
 		const allCards = getEnabledTemplates($vipCardTemplates).map((t) => templateToVipCard(t));
 
+		let filtered: ReturnType<typeof templateToVipCard>[];
+
 		// Mode 3: Specific list
 		if (action.possibleCardIds && action.possibleCardIds.length > 0) {
-			return allCards.filter((card) => action.possibleCardIds!.includes(card.id));
+			filtered = allCards.filter((card) => action.possibleCardIds!.includes(card.id));
 		}
-
 		// Mode 2: Max rarity
-		if (action.maxRarity) {
+		else if (action.maxRarity) {
 			const maxRarityValue = getRarityPoints(action.maxRarity);
-			return allCards.filter((card) => getRarityPoints(card.rarity) <= maxRarityValue);
+			filtered = allCards.filter((card) => getRarityPoints(card.rarity) <= maxRarityValue);
+		}
+		// Mode 1: All cards (default)
+		else {
+			filtered = allCards;
 		}
 
-		// Mode 1: All cards (default)
-		return allCards;
+		// Sort by rarity (common → rare → epic → legendary)
+		return filtered.sort((a, b) => getRarityPoints(a.rarity) - getRarityPoints(b.rarity));
 	});
 
 	// Helper to get card by ID from store
@@ -181,9 +186,9 @@
 			toaster.success('Cartes choisies avec succès !');
 
 			// Close after showing result
-			setTimeout(() => {
-				modalStack.pop();
-			}, 2000);
+			// setTimeout(() => {
+			// 	modalStack.pop();
+			// }, 2000);
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Erreur inconnue';
 			toaster.error(error);
@@ -215,13 +220,13 @@
 
 <!-- Modal Content (ModalStackRenderer provides backdrop and click-to-close) -->
 <div
-	class="relative max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-lg border bg-background p-6 shadow-lg"
+	class="relative flex max-h-[90vh] w-full max-w-5xl flex-col rounded-lg border bg-background shadow-lg"
 	role="dialog"
 	aria-modal="true"
 	aria-labelledby="choose-card-title"
 >
 	<!-- Header with close button -->
-	<div class="mb-6 flex items-center justify-between">
+	<div class="flex items-center justify-between border-b p-6 pb-4">
 		<div>
 			<h2 id="choose-card-title" class="text-2xl font-bold">
 				🎯 Choisir {action.count} carte{action.count > 1 ? 's' : ''} VIP
@@ -239,16 +244,18 @@
 		</button>
 	</div>
 
-	{#if error && !result}
-		<!-- Error State -->
-		<div class="flex flex-col items-center gap-4 py-8">
-			<div class="text-6xl">❌</div>
-			<p class="text-lg text-destructive">{error}</p>
-		</div>
-	{:else if result}
-		<!-- Success State -->
-		<div class="py-6">
-			<div class="mb-6">
+	<!-- Scrollable content -->
+	<div class="flex-1 overflow-y-auto p-6 pb-32">
+		{#if error && !result}
+			<!-- Error State -->
+			<div class="flex flex-col items-center gap-4 py-8">
+				<div class="text-6xl">❌</div>
+				<p class="text-lg text-destructive">{error}</p>
+			</div>
+		{:else if result}
+			<!-- Success State -->
+			<div class="py-6">
+				<!-- <div class="mb-6">
 				<h3 class="mb-4 text-lg font-semibold">Carte d'action utilisée :</h3>
 				<div class="flex justify-center">
 					<div class="w-48 text-center opacity-50">
@@ -256,75 +263,78 @@
 						<p class="mt-2 text-sm">{result.actionCardUsed.name}</p>
 					</div>
 				</div>
-			</div>
+			</div> -->
 
-			<div>
-				<h3 class="mb-4 text-lg font-semibold">Cartes reçues :</h3>
-				<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-					{#each result.cardsReceived as card (card.instanceId)}
-						<div class="text-center">
-							<VipCard card={getCardById(card.cardId)!} size="md" />
-							<p class="mt-2 text-sm font-bold">{card.name}</p>
-						</div>
-					{/each}
+				<div>
+					<h3 class="mb-4 text-lg font-semibold">Cartes reçues :</h3>
+					<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+						{#each result.cardsReceived as card (card.instanceId)}
+							<div class="text-center">
+								<VipCard card={getCardById(card.cardId)!} size="md" />
+								<p class="mt-2 text-sm font-bold">{card.name}</p>
+							</div>
+						{/each}
+					</div>
 				</div>
 			</div>
-		</div>
-	{:else}
-		<!-- Selection State -->
-		<div class="py-4">
-			<!-- Instructions -->
-			<div class="mb-6 rounded-lg bg-muted p-4">
-				<p class="mb-1 text-sm font-semibold">{selectionStatus}</p>
-				<p class="text-xs text-muted-foreground">{filterDescription}</p>
-			</div>
+		{:else}
+			<!-- Selection State -->
+			<div class="py-4">
+				<!-- Instructions -->
+				<div class="mb-6 rounded-lg bg-muted p-4">
+					<p class="mb-1 text-sm font-semibold">{selectionStatus}</p>
+					<p class="text-xs text-muted-foreground">{filterDescription}</p>
+				</div>
 
-			<!-- Available cards grid -->
-			<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-				{#each availableCards as card (card.id)}
-					<button
-						type="button"
-						onclick={() => toggleCard(card.id)}
-						class={cn(
-							'relative rounded-lg border-2 p-2 transition-all',
-							selectedCardIds.has(card.id)
-								? 'border-primary bg-primary/10 shadow-lg'
-								: 'border-transparent hover:border-muted-foreground/30'
-						)}
-						disabled={submitting}
-					>
-						<VipCard {card} size="sm" clickable={false} />
-						{#if selectedCardIds.has(card.id)}
-							<div
-								class="absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground shadow-md"
-							>
-								✓
-							</div>
-						{/if}
-						<p class="mt-1 line-clamp-2 text-center text-xs font-medium">{card.name}</p>
-						<p class="text-center text-xs text-muted-foreground capitalize">{card.rarity}</p>
-					</button>
-				{/each}
-			</div>
+				<!-- Available cards grid -->
+				<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+					{#each availableCards as card (card.id)}
+						<button
+							type="button"
+							onclick={() => toggleCard(card.id)}
+							class={cn(
+								'relative rounded-lg border-2 p-2 transition-all',
+								selectedCardIds.has(card.id) ? 'bg-primary/10 shadow-lg' : 'border-transparent'
+							)}
+							disabled={submitting}
+						>
+							<VipCard {card} size="sm" clickable={false} />
+							{#if selectedCardIds.has(card.id)}
+								<div
+									class="absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground shadow-md"
+								>
+									✓
+								</div>
+							{/if}
+							<!-- <p class="mt-1 line-clamp-2 text-center text-xs font-medium">{card.name}</p> -->
+							<!-- <p class="text-center text-xs text-muted-foreground capitalize">{card.rarity}</p> -->
+						</button>
+					{/each}
+				</div>
 
-			{#if availableCards.length === 0}
-				<p class="py-8 text-center text-muted-foreground">Aucune carte disponible</p>
-			{/if}
-		</div>
-	{/if}
-
-	<!-- Footer with action buttons -->
-	{#if !error && !result}
-		<div class="mt-6 flex justify-end gap-2">
-			<Button variant="outline" onclick={handleClose} disabled={submitting}>Annuler</Button>
-			<Button onclick={handleChoose} disabled={!canConfirm || submitting}>
-				{#if submitting}
-					<div
-						class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-					></div>
+				{#if availableCards.length === 0}
+					<p class="py-8 text-center text-muted-foreground">Aucune carte disponible</p>
 				{/if}
-				Confirmer ({selectionStatus})
-			</Button>
+			</div>
+		{/if}
+	</div>
+
+	<!-- Footer with action buttons (sticky) -->
+	{#if !error && !result}
+		<div
+			class="absolute right-0 bottom-0 left-0 border-t bg-white/80 p-6 pt-4 backdrop-blur-md dark:bg-gray-950/70"
+		>
+			<div class="flex justify-end gap-2">
+				<Button variant="secondary" onclick={handleClose} disabled={submitting}>Annuler</Button>
+				<Button onclick={handleChoose} disabled={!canConfirm || submitting}>
+					{#if submitting}
+						<div
+							class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+						></div>
+					{/if}
+					Confirmer
+				</Button>
+			</div>
 		</div>
 	{/if}
 </div>
