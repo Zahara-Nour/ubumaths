@@ -4,7 +4,7 @@
 
 	Displays a summary of student rewards with 3 tiles:
 	1. Gidouilles - Total count with treasure chest image
-	2. VIP Cards - Total owned cards count
+	2. VIP Cards - Total owned cards count (opens modal on click)
 	3. Riddles - Total solved riddles count
 
 	Used in: StudentDashboard.svelte
@@ -17,20 +17,35 @@
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { getStudentCardCounts } from '$lib/utils/vip-cards';
 	import { resolve } from '$app/paths';
+	import StudentVipCardsModal from '$lib/components/StudentVipCardsModal.svelte';
+	import { modalStack } from '$lib/stores/modalStack.svelte';
 
 	interface Props {
 		gidouilles: number;
 		vipCards: StudentVipCards;
 		riddlesSolved: number;
+		studentId: string;
 	}
 
-	let { gidouilles, vipCards, riddlesSolved }: Props = $props();
+	let { gidouilles, vipCards, riddlesSolved, studentId }: Props = $props();
 
 	// Calculate total VIP cards owned
 	const cardCounts = $derived(getStudentCardCounts(vipCards));
 	const totalCardsOwned = $derived(
 		Array.from(cardCounts.values()).reduce((sum, count) => sum + count, 0)
 	);
+
+	// Open VIP cards modal
+	function openVipCardsModal() {
+		modalStack.push({
+			component: StudentVipCardsModal,
+			props: {
+				vipCards,
+				studentId
+			},
+			canDismiss: true
+		});
+	}
 </script>
 
 <div class="rounded-lg border border-border bg-card p-6 shadow">
@@ -64,9 +79,10 @@
 		</a>
 
 		<!-- VIP Cards Tile -->
-		<a
-			href={resolve('/dashboard')}
-			class="group relative flex items-center gap-4 overflow-hidden rounded-lg border border-purple-200 bg-gradient-to-br from-purple-50 to-pink-100 p-6 transition-all hover:shadow-lg dark:border-purple-800 dark:from-purple-950 dark:to-pink-950"
+		<button
+			type="button"
+			onclick={openVipCardsModal}
+			class="group relative flex w-full cursor-pointer items-center gap-4 overflow-hidden rounded-lg border border-purple-200 bg-gradient-to-br from-purple-50 to-pink-100 p-6 text-left transition-all hover:shadow-lg dark:border-purple-800 dark:from-purple-950 dark:to-pink-950"
 		>
 			<!-- Image -->
 			<div class="flex-shrink-0">
@@ -84,7 +100,7 @@
 					{totalCardsOwned}
 				</p>
 			</div>
-		</a>
+		</button>
 
 		<!-- Riddles Tile -->
 		<a

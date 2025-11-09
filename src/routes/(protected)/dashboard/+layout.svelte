@@ -90,8 +90,21 @@
 	let skeletonType = $derived(getSkeletonType(page.url.pathname));
 
 	// Navigation links based on role
-	const getNavLinks = (role: string) => {
-		const commonLinks = [{ href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }];
+	const getNavLinks = (
+		role: string,
+		pendingVipRequestsCount: number = 0
+	): Array<{
+		href: string;
+		label: string;
+		icon: ComponentType;
+		badge?: number;
+	}> => {
+		const commonLinks: Array<{
+			href: string;
+			label: string;
+			icon: ComponentType;
+			badge?: number;
+		}> = [{ href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }];
 
 		if (role === 'student') {
 			return [
@@ -99,7 +112,8 @@
 				{ href: '/dashboard/friends', label: 'Amis', icon: Users },
 				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
 				{ href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap },
-				{ href: '/dashboard/student/assessments', label: 'Évaluations', icon: ClipboardList }
+				{ href: '/dashboard/student/assessments', label: 'Évaluations', icon: ClipboardList },
+				{ href: '/vip-cards/collection', label: 'Collection VIP', icon: Sparkles }
 			];
 		} else if (role === 'teacher') {
 			return [
@@ -110,7 +124,12 @@
 				{ href: '/dashboard/students', label: 'Students', icon: Users },
 				{ href: '/dashboard/teacher/riddles', label: 'Énigmes', icon: Lightbulb },
 				{ href: '/dashboard/teacher/exercises', label: 'Exercices', icon: BookOpen },
-				{ href: '/dashboard/teacher/rewards', label: 'Rewards', icon: Gift },
+				{
+					href: '/dashboard/teacher/rewards',
+					label: 'Rewards',
+					icon: Gift,
+					badge: pendingVipRequestsCount > 0 ? pendingVipRequestsCount : undefined
+				},
 				{ href: '/dashboard/teacher/vip-cards', label: 'VIP Cards', icon: Sparkles },
 				{ href: '/dashboard/teacher/warnings', label: 'Avertissements', icon: AlertTriangle }
 			];
@@ -373,10 +392,10 @@
 		<!-- RAIL SIDEBAR - Vertical icon navigation (Claude AI style) -->
 		<div class="w-20 border-r border-border bg-card/50 shadow-sm dark:bg-card">
 			<nav class="flex flex-col items-center gap-1 py-4">
-				{#each getNavLinks(data.profile.role) as link (link.href)}
+				{#each getNavLinks(data.profile.role, data.pendingVipRequestsCount) as link (link.href)}
 					<a
 						href={link.href}
-						class="group flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
+						class="group relative flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
 							link.href
 						)
 							? 'bg-primary/10 text-primary'
@@ -386,6 +405,16 @@
 						<!-- Svelte 5: Components are dynamic by default -->
 						<link.icon class="h-6 w-6 transition-transform duration-300 group-hover:scale-110" />
 						<span class="text-center text-xs leading-tight font-medium">{link.label}</span>
+
+						<!-- Badge notification -->
+						{#if link.badge && link.badge > 0}
+							<span
+								class="absolute top-1 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white ring-2 ring-background dark:bg-amber-600"
+								aria-label="{link.badge} demandes en attente"
+							>
+								{link.badge}
+							</span>
+						{/if}
 					</a>
 				{/each}
 

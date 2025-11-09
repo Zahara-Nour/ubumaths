@@ -30,6 +30,7 @@ import { z } from 'zod';
  * Validates:
  * - studentId must be a valid UUID
  * - warningIds must be an array of UUIDs (1-10 warnings)
+ * - vipCardInstanceId (optional) must be a valid UUID
  */
 export const removeWarningsSchema = z
 	.object({
@@ -40,7 +41,10 @@ export const removeWarningsSchema = z
 		warningIds: z
 			.array(z.string().uuid('Invalid warning ID format'))
 			.min(1, 'Must remove at least 1 warning')
-			.max(10, 'Cannot remove more than 10 warnings at once')
+			.max(10, 'Cannot remove more than 10 warnings at once'),
+
+		/** Optional: VIP card instance ID (for remove_warnings action cards) */
+		vipCardInstanceId: z.string().uuid('Invalid VIP card instance ID format').optional()
 	})
 	.strict(); // Reject unknown fields
 

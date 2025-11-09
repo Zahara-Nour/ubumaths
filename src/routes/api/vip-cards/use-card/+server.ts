@@ -1,36 +1,27 @@
 /**
- * API Endpoint: Use VIP Card
- * ============================
+ * API Endpoint: Approve VIP Card Activation
+ * ==========================================
  *
- * Simplified endpoint to mark a VIP card instance as used.
- * This endpoint ONLY marks the card as used - it does NOT execute actions.
+ * Teacher endpoint to approve a student's VIP card activation request.
+ * This endpoint ONLY approves the request - it does NOT activate/use the card.
  *
  * POST /api/vip-cards/use-card
  *
- * @param instanceId - UUID of the VIP card instance to mark as used
+ * @param instanceId - UUID of the VIP card instance to approve
  * @param studentId - UUID of the student who owns the card
  *
- * ARCHITECTURE (Option A):
- * ------------------------
- * This endpoint is the FINAL step in the VIP card usage flow.
- * Action execution happens BEFORE calling this endpoint:
- *
- * 1. UI displays action-specific modal (DrawCardsModal, RemoveWarningsModal, etc.)
- * 2. User interacts with UI and confirms action
- * 3. Specialized API endpoint executes action:
- *    - draw_cards → /api/rewards/draw-vip-cards
- *    - remove_warnings → /api/warnings/remove-multiple (future)
- *    - exchange_cards → /api/vip-cards/exchange (future)
- *    - add_gidouilles → /api/teacher/rewards/update-student
- * 4. After successful action, call THIS endpoint to mark card as used
+ * TWO-STEP ACTIVATION FLOW:
+ * -------------------------
+ * 1. Student requests activation (sets activationRequestedAt)
+ * 2. Teacher approves request → THIS ENDPOINT (sets activationApprovedAt)
+ * 3. Student activates card → /api/vip-cards/activate-card (sets usedAt)
  *
  * SECURITY:
  * ---------
  * - Requires authentication
- * - Only teachers/admins can use cards
+ * - Only teachers/admins can approve
  * - Teacher must teach the student (verified via class_members)
- * - Card instance must exist and not already be used
- * - Uses SELECT FOR UPDATE to prevent race conditions
+ * - Card instance must exist and not already be used or approved
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -51,7 +42,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	// Verify user is teacher or admin
 	if (profile.role !== 'teacher' && profile.role !== 'admin') {
-		throw error(403, 'Only teachers can use student VIP cards');
+		throw error(403, 'Only teachers can approve VIP card activation requests');
 	}
 
 	// Parse and validate request body
@@ -113,6 +104,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, 'This card has already been used');
 	}
 
+	// Verify that the card is not already approved
+	if (instance.activationApprovedAt) {
+		throw error(400, 'This card has already been approved');
+	}
+
 	// Get card template from database
 	const template = await getTemplateById(locals.supabase, instance.cardId);
 
@@ -120,16 +116,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(404, 'Card definition not found');
 	}
 
-	// Mark card as used and clear activation request fields
+	// Approve the activation request
 	const updatedInstance = {
 		...instance,
-		usedAt: new Date().toISOString()
-		// Omit activationRequestedAt and activationRequestedBy to clear them
+		activationApprovedAt: new Date().toISOString(),
+		activationApprovedBy: user.id
+		// Keep activationRequestedAt and activationRequestedBy for audit trail
+		// Clear them when student actually activates the card
 	};
-
-	// Remove activation request fields if they exist
-	delete (updatedInstance as { activationRequestedAt?: string | null }).activationRequestedAt;
-	delete (updatedInstance as { activationRequestedBy?: string | null }).activationRequestedBy;
 
 	const updatedCards = {
 		...vipCards,
@@ -144,13 +138,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (updateError) {
 		console.error('[use-card] Error updating vip_cards:', updateError);
-		throw error(500, `Failed to use card: ${updateError.message}`);
+		throw error(500, `Failed to approve card: ${updateError.message}`);
 	}
 
-	// Return simple success response
+	// Return success response
 	return json({
 		success: true,
-		message: 'Card marked as used successfully',
-		cardName: cardDef.name
+		message: 'Card activation approved. Student can now activate the card.',
+		cardName: template.name
 	});
 };

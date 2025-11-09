@@ -8,7 +8,7 @@
 import type { PageServerLoad } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import type { StudentVipCards } from '$lib/types/vip-card';
-import { getTemplateById } from '$lib/server/vip-card-queries';
+import { getTemplateById, getAllTemplates } from '$lib/server/vip-card-queries';
 import { getActionDescription } from '$lib/utils/vip-cards';
 
 interface ActivationRequest {
@@ -92,6 +92,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 		});
 	});
 
+	// Fetch all card templates once (for action descriptions)
+	const allTemplates = await getAllTemplates(supabase);
+
 	// Fetch card templates for all pending requests
 	for (const request of pendingRequests) {
 		try {
@@ -104,7 +107,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 					instanceId: request.instanceId,
 					cardId: request.cardId,
 					cardName: template.name, // ✅ Now reads from database, not hardcoded array!
-					actionDescription: getActionDescription(template.action),
+					actionDescription: getActionDescription(template.action, allTemplates),
 					requestedAt: request.requestedAt
 				});
 			}

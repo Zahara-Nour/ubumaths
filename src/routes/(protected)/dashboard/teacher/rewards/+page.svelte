@@ -125,11 +125,15 @@
 	import { invalidateAll } from '$app/navigation';
 	import { openVipCardDrawModal, openVipCardsModal } from '$lib/utils/vip-card-modals';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import { Search, CheckCircle, XCircle, AlertCircle } from 'lucide-svelte';
 	import {
 		vipCardTemplates,
 		getTemplateById,
 		getEnabledTemplates
 	} from '$lib/stores/vipCardTemplates.svelte';
+	import { getActionDescription } from '$lib/utils/vip-cards';
 
 	// Data from parent layouts (user/profile only)
 	let { data }: { data: PageData } = $props();
@@ -223,6 +227,240 @@
 	// Grant VIP card state (for grant button loading state)
 	let grantingCard = $state<string | null>(null);
 
+	// ============================================================================
+	// ACTIVATION REQUESTS TAB - SEARCH, FILTERS, AND BULK ACTIONS
+	// ============================================================================
+
+	// Search and filter state
+	let requestSearchQuery = $state('');
+	let requestCardFilter = $state<string>('all');
+	let requestSortOrder = $state<'oldest' | 'newest'>('oldest');
+
+	// Bulk selection state
+	let selectedRequests = $state<Set<string>>(new Set());
+
+	// Bulk action state
+	let isBulkProcessing = $state(false);
+	let bulkProgress = $state({ current: 0, total: 0 });
+
+	// Confirmation modals
+	let showBulkApproveDialog = $state(false);
+	let showBulkRejectDialog = $state(false);
+
+	// Card filter items for requests tab
+	const requestCardFilterItems = $derived([
+		{ value: 'all', label: 'Toutes les cartes' },
+		...getEnabledTemplates($vipCardTemplates).map((template) => ({
+			value: template.id,
+			label: template.name
+		}))
+	]);
+
+	// Filtered and sorted activation requests
+	let filteredActivationRequests = $derived.by(() => {
+		let results = [...data.activationRequests];
+
+		// Apply search filter
+		if (requestSearchQuery.trim()) {
+			const query = requestSearchQuery.toLowerCase();
+			results = results.filter((r) => r.studentName.toLowerCase().includes(query));
+		}
+
+		// Apply card filter
+		if (requestCardFilter !== 'all') {
+			results = results.filter((r) => r.cardId === requestCardFilter);
+		}
+
+		// Apply sort
+		results.sort((a, b) => {
+			const aTime = new Date(a.requestedAt).getTime();
+			const bTime = new Date(b.requestedAt).getTime();
+			return requestSortOrder === 'oldest' ? aTime - bTime : bTime - aTime;
+		});
+
+		return results;
+	});
+
+	// Check if all visible requests are selected
+	let allVisibleSelected = $derived(
+		filteredActivationRequests.length > 0 &&
+			filteredActivationRequests.every((r) => selectedRequests.has(r.instanceId))
+	);
+
+	// Get list of selected requests with details
+	let selectedRequestDetails = $derived(
+		filteredActivationRequests.filter((r) => selectedRequests.has(r.instanceId))
+	);
+
+	/**
+	 * Toggle select all visible requests
+	 */
+	function toggleSelectAll() {
+		if (allVisibleSelected) {
+			// Deselect all visible
+			filteredActivationRequests.forEach((r) => selectedRequests.delete(r.instanceId));
+		} else {
+			// Select all visible
+			filteredActivationRequests.forEach((r) => selectedRequests.add(r.instanceId));
+		}
+		selectedRequests = new Set(selectedRequests); // Trigger reactivity
+	}
+
+	/**
+	 * Toggle individual request selection
+	 */
+	function toggleRequestSelection(instanceId: string) {
+		if (selectedRequests.has(instanceId)) {
+			selectedRequests.delete(instanceId);
+		} else {
+			selectedRequests.add(instanceId);
+		}
+		selectedRequests = new Set(selectedRequests); // Trigger reactivity
+	}
+
+	/**
+	 * Clear all selections
+	 */
+	function clearSelections() {
+		selectedRequests.clear();
+		selectedRequests = new Set(selectedRequests); // Trigger reactivity
+	}
+
+	/**
+	 * Get relative time string in French
+	 */
+	function getRelativeTime(isoDate: string): string {
+		const date = new Date(isoDate);
+		const now = new Date();
+		const diffMs = now.getTime() - date.getTime();
+		const diffMins = Math.floor(diffMs / 60000);
+
+		if (diffMins < 1) return "À l'instant";
+		if (diffMins < 60) return `Il y a ${diffMins} min`;
+
+		const diffHours = Math.floor(diffMins / 60);
+		if (diffHours < 24) return `Il y a ${diffHours}h`;
+
+		const diffDays = Math.floor(diffHours / 24);
+		if (diffDays < 7) return `Il y a ${diffDays}j`;
+
+		return date.toLocaleDateString('fr-FR');
+	}
+
+	/**
+	 * Handle bulk approve action
+	 */
+	async function handleBulkApprove() {
+		if (selectedRequestDetails.length === 0) return;
+
+		isBulkProcessing = true;
+		bulkProgress = { current: 0, total: selectedRequestDetails.length };
+
+		const requestsToProcess = [...selectedRequestDetails];
+		const results = { success: 0, failed: 0 };
+
+		for (const request of requestsToProcess) {
+			try {
+				const response = await fetch('/api/vip-cards/use-card', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						instanceId: request.instanceId,
+						studentId: request.studentId
+					})
+				});
+
+				if (response.ok) {
+					results.success++;
+				} else {
+					results.failed++;
+					console.error(`Failed to approve request ${request.instanceId}`);
+				}
+			} catch (error) {
+				results.failed++;
+				console.error(`Error approving request ${request.instanceId}:`, error);
+			}
+
+			bulkProgress.current++;
+		}
+
+		// Show results
+		if (results.success > 0) {
+			toaster.success(
+				`${results.success} demande${results.success > 1 ? 's' : ''} approuvée${results.success > 1 ? 's' : ''}`
+			);
+		}
+		if (results.failed > 0) {
+			toaster.error(
+				`${results.failed} demande${results.failed > 1 ? 's' : ''} échouée${results.failed > 1 ? 's' : ''}`
+			);
+		}
+
+		// Clear selections and refresh data
+		clearSelections();
+		await invalidateAll();
+
+		isBulkProcessing = false;
+		showBulkApproveDialog = false;
+	}
+
+	/**
+	 * Handle bulk reject action
+	 */
+	async function handleBulkReject() {
+		if (selectedRequestDetails.length === 0) return;
+
+		isBulkProcessing = true;
+		bulkProgress = { current: 0, total: selectedRequestDetails.length };
+
+		const requestsToProcess = [...selectedRequestDetails];
+		const results = { success: 0, failed: 0 };
+
+		for (const request of requestsToProcess) {
+			try {
+				const response = await fetch('/api/vip-cards/reject-activation', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						instanceId: request.instanceId,
+						studentId: request.studentId
+					})
+				});
+
+				if (response.ok) {
+					results.success++;
+				} else {
+					results.failed++;
+					console.error(`Failed to reject request ${request.instanceId}`);
+				}
+			} catch (error) {
+				results.failed++;
+				console.error(`Error rejecting request ${request.instanceId}:`, error);
+			}
+
+			bulkProgress.current++;
+		}
+
+		// Show results
+		if (results.success > 0) {
+			toaster.success(
+				`${results.success} demande${results.success > 1 ? 's' : ''} rejetée${results.success > 1 ? 's' : ''}`
+			);
+		}
+		if (results.failed > 0) {
+			toaster.error(
+				`${results.failed} demande${results.failed > 1 ? 's' : ''} échouée${results.failed > 1 ? 's' : ''}`
+			);
+		}
+
+		// Clear selections and refresh data
+		clearSelections();
+		await invalidateAll();
+
+		isBulkProcessing = false;
+		showBulkRejectDialog = false;
+	}
+
 	// Handle use card from demandes tab
 	async function handleUseCard(instanceId: string, studentId: string, studentName: string) {
 		processingRequests[instanceId] = true;
@@ -241,7 +479,7 @@
 			}
 
 			// Success toast with action details
-			let message = `Carte ${result.cardName} utilisée pour ${studentName} !`;
+			let message = `Carte ${result.cardName} approuvée pour ${studentName} ! L'élève peut maintenant l'activer.`;
 			if (result.actionResult) {
 				const ar = result.actionResult;
 				if (ar.cardsDrawn) {
@@ -286,25 +524,6 @@
 		} finally {
 			processingRequests[instanceId] = false;
 		}
-	}
-
-	// Format date for demandes display
-	function formatDate(dateString: string): string {
-		const date = new Date(dateString);
-		const now = new Date();
-		const diffMs = now.getTime() - date.getTime();
-		const diffMins = Math.floor(diffMs / 60000);
-
-		if (diffMins < 1) return "À l'instant";
-		if (diffMins < 60) return `Il y a ${diffMins} min`;
-
-		const diffHours = Math.floor(diffMins / 60);
-		if (diffHours < 24) return `Il y a ${diffHours}h`;
-
-		const diffDays = Math.floor(diffHours / 24);
-		if (diffDays < 7) return `Il y a ${diffDays}j`;
-
-		return date.toLocaleDateString('fr-FR');
 	}
 
 	/**
@@ -1071,101 +1290,282 @@
 
 		<!-- TAB 2: DEMANDES D'ACTIVATION VIP -->
 		<Tabs.Content value="demandes">
-			{#if data.activationRequests.length === 0}
-				<Card.Root>
-					<Card.Content class="pt-6 text-center">
-						<Sparkles class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-						<p class="text-lg text-muted-foreground">Aucune demande d'activation en attente</p>
-						<p class="mt-2 text-sm text-muted-foreground">
-							Les demandes de vos élèves apparaîtront ici
-						</p>
-					</Card.Content>
-				</Card.Root>
-			{:else}
-				<Card.Root>
-					<Card.Header>
-						<Card.Title class="flex items-center justify-between">
-							<span>Demandes en attente</span>
-							<Badge variant="secondary">{data.activationRequests.length}</Badge>
-						</Card.Title>
-					</Card.Header>
-					<Card.Content>
-						<Table.Root>
-							<Table.Header>
-								<Table.Row>
-									<Table.Head>Élève</Table.Head>
-									<Table.Head>Carte</Table.Head>
-									<Table.Head>Action</Table.Head>
-									<Table.Head>Demandé</Table.Head>
-									<Table.Head class="text-right">Actions</Table.Head>
-								</Table.Row>
-							</Table.Header>
-							<Table.Body>
-								{#each data.activationRequests as request (request.instanceId)}
-									<Table.Row>
-										<Table.Cell class="font-medium">
-											{request.studentName}
-										</Table.Cell>
-										<Table.Cell>
-											<Badge variant="outline" class="font-semibold">
-												{request.cardName}
-											</Badge>
-										</Table.Cell>
-										<Table.Cell class="text-sm text-muted-foreground">
-											{request.actionDescription}
-										</Table.Cell>
-										<Table.Cell class="text-sm">
-											{formatDate(request.requestedAt)}
-										</Table.Cell>
-										<Table.Cell class="text-right">
-											<div class="flex justify-end gap-2">
-												<Button
-													onclick={() =>
-														handleUseCard(
-															request.instanceId,
-															request.studentId,
-															request.studentName
-														)}
-													disabled={processingRequests[request.instanceId]}
-													size="sm"
-													class="bg-green-600 hover:bg-green-700"
-												>
-													{#if processingRequests[request.instanceId]}
-														<Loader2 class="h-4 w-4 animate-spin" />
-													{:else}
-														<Check class="mr-1 h-4 w-4" />
-														Utiliser
-													{/if}
-												</Button>
-												<Button
-													onclick={() =>
-														handleReject(
-															request.instanceId,
-															request.studentId,
-															request.studentName
-														)}
-													disabled={processingRequests[request.instanceId]}
-													size="sm"
-													variant="destructive"
-												>
-													{#if processingRequests[request.instanceId]}
-														<Loader2 class="h-4 w-4 animate-spin" />
-													{:else}
-														<X class="mr-1 h-4 w-4" />
-														Rejeter
-													{/if}
-												</Button>
-											</div>
-										</Table.Cell>
-									</Table.Row>
-								{/each}
-							</Table.Body>
-						</Table.Root>
-					</Card.Content>
-				</Card.Root>
-			{/if}
+			<div class="space-y-6">
+				{#if data.activationRequests.length === 0}
+					<!-- Empty state -->
+					<Card.Root>
+						<Card.Content class="pt-6 text-center">
+							<Sparkles class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+							<p class="text-lg text-muted-foreground">Aucune demande d'activation en attente</p>
+							<p class="mt-2 text-sm text-muted-foreground">
+								Les demandes de vos élèves apparaîtront ici
+							</p>
+						</Card.Content>
+					</Card.Root>
+				{:else}
+					<!-- Search and Filters -->
+					<Card.Root>
+						<Card.Content class="pt-6">
+							<div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+								<!-- Search -->
+								<div class="relative flex-1">
+									<Search
+										class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+									/>
+									<Input
+										type="text"
+										placeholder="Rechercher un élève..."
+										bind:value={requestSearchQuery}
+										class="pl-10"
+									/>
+								</div>
+
+								<!-- Card Filter -->
+								<div class="w-full sm:w-64">
+									<MySelect
+										type="single"
+										bind:value={requestCardFilter}
+										items={requestCardFilterItems}
+										placeholder="Filtrer par carte"
+									/>
+								</div>
+
+								<!-- Sort Order -->
+								<div class="w-full sm:w-48">
+									<MySelect
+										type="single"
+										bind:value={requestSortOrder}
+										items={[
+											{ value: 'oldest', label: 'Plus anciennes' },
+											{ value: 'newest', label: 'Plus récentes' }
+										]}
+										placeholder="Trier par"
+									/>
+								</div>
+							</div>
+						</Card.Content>
+					</Card.Root>
+
+					<!-- Requests Table -->
+					{#if filteredActivationRequests.length === 0}
+						<Card.Root>
+							<Card.Content class="pt-6 text-center">
+								<AlertCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+								<p class="text-lg text-muted-foreground">
+									Aucune demande ne correspond aux filtres
+								</p>
+								<p class="mt-2 text-sm text-muted-foreground">
+									Essayez de modifier vos critères de recherche
+								</p>
+							</Card.Content>
+						</Card.Root>
+					{:else}
+						<Card.Root>
+							<Card.Header>
+								<Card.Title class="flex items-center justify-between">
+									<span>Demandes en attente</span>
+									<Badge variant="secondary">
+										{filteredActivationRequests.length}
+										{#if filteredActivationRequests.length !== data.activationRequests.length}
+											/ {data.activationRequests.length}
+										{/if}
+									</Badge>
+								</Card.Title>
+							</Card.Header>
+							<Card.Content>
+								<!-- Responsive Table -->
+								<div class="overflow-x-auto">
+									<Table.Root>
+										<Table.Header>
+											<Table.Row>
+												<!-- Select All Checkbox -->
+												<Table.Head class="w-12">
+													<MyCheckbox
+														checked={allVisibleSelected}
+														onCheckedChange={toggleSelectAll}
+													/>
+												</Table.Head>
+												<Table.Head>Élève</Table.Head>
+												<Table.Head>Carte</Table.Head>
+												<Table.Head class="hidden md:table-cell">Action</Table.Head>
+												<Table.Head class="hidden sm:table-cell">Demandé</Table.Head>
+												<Table.Head class="text-right">Actions</Table.Head>
+											</Table.Row>
+										</Table.Header>
+										<Table.Body>
+											{#each filteredActivationRequests as request (request.instanceId)}
+												{@const template = getTemplateById(request.cardId, $vipCardTemplates)}
+												<Table.Row class="group hover:bg-muted/50">
+													<!-- Checkbox -->
+													<Table.Cell>
+														<MyCheckbox
+															checked={selectedRequests.has(request.instanceId)}
+															onCheckedChange={() => toggleRequestSelection(request.instanceId)}
+															disabled={processingRequests[request.instanceId]}
+														/>
+													</Table.Cell>
+
+													<!-- Student Name -->
+													<Table.Cell class="font-medium">
+														{request.studentName}
+													</Table.Cell>
+
+													<!-- Card -->
+													<Table.Cell>
+														<div class="flex items-center gap-2">
+															{#if template}
+																<img
+																	src={template.image_path}
+																	alt={template.name}
+																	class="h-8 w-8 rounded object-cover"
+																/>
+															{/if}
+															<Badge variant="outline" class="font-semibold">
+																{request.cardName}
+															</Badge>
+														</div>
+													</Table.Cell>
+
+													<!-- Action Description (hidden on mobile) -->
+													<Table.Cell class="hidden text-sm text-muted-foreground md:table-cell">
+														{#if template && template.action}
+															{getActionDescription(template.action, $vipCardTemplates)}
+														{:else}
+															{request.actionDescription}
+														{/if}
+													</Table.Cell>
+
+													<!-- Requested Time (hidden on small screens) -->
+													<Table.Cell class="hidden text-sm sm:table-cell">
+														{getRelativeTime(request.requestedAt)}
+													</Table.Cell>
+
+													<!-- Actions -->
+													<Table.Cell class="text-right">
+														<div class="flex justify-end gap-2">
+															<Button
+																onclick={() =>
+																	handleUseCard(
+																		request.instanceId,
+																		request.studentId,
+																		request.studentName
+																	)}
+																disabled={processingRequests[request.instanceId]}
+																size="sm"
+																class="bg-green-600 hover:bg-green-700"
+															>
+																{#if processingRequests[request.instanceId]}
+																	<Loader2 class="h-4 w-4 animate-spin" />
+																{:else}
+																	<Check class="mr-1 h-4 w-4" />
+																	<span class="hidden sm:inline">Utiliser</span>
+																{/if}
+															</Button>
+															<Button
+																onclick={() =>
+																	handleReject(
+																		request.instanceId,
+																		request.studentId,
+																		request.studentName
+																	)}
+																disabled={processingRequests[request.instanceId]}
+																size="sm"
+																variant="destructive"
+															>
+																{#if processingRequests[request.instanceId]}
+																	<Loader2 class="h-4 w-4 animate-spin" />
+																{:else}
+																	<X class="mr-1 h-4 w-4" />
+																	<span class="hidden sm:inline">Rejeter</span>
+																{/if}
+															</Button>
+														</div>
+													</Table.Cell>
+												</Table.Row>
+											{/each}
+										</Table.Body>
+									</Table.Root>
+								</div>
+
+								<!-- Bulk Actions -->
+								{#if selectedRequests.size > 0}
+									<div
+										class="mt-4 flex flex-col items-center justify-between gap-4 rounded-lg border border-border bg-muted/30 p-4 sm:flex-row"
+									>
+										<div class="flex items-center gap-2 text-sm font-medium">
+											<span>
+												{selectedRequests.size} demande{selectedRequests.size > 1 ? 's' : ''} sélectionnée{selectedRequests.size >
+												1
+													? 's'
+													: ''}
+											</span>
+											<Button variant="ghost" size="sm" onclick={clearSelections}>
+												Désélectionner tout
+											</Button>
+										</div>
+
+										<div class="flex gap-2">
+											<Button
+												onclick={() => (showBulkApproveDialog = true)}
+												disabled={isBulkProcessing}
+												size="sm"
+												class="bg-green-600 hover:bg-green-700"
+											>
+												{#if isBulkProcessing && !showBulkRejectDialog}
+													<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+													{bulkProgress.current}/{bulkProgress.total}
+												{:else}
+													<CheckCircle class="mr-2 h-4 w-4" />
+													Approuver sélectionnées
+												{/if}
+											</Button>
+
+											<Button
+												onclick={() => (showBulkRejectDialog = true)}
+												disabled={isBulkProcessing}
+												size="sm"
+												variant="destructive"
+											>
+												{#if isBulkProcessing && showBulkRejectDialog}
+													<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+													{bulkProgress.current}/{bulkProgress.total}
+												{:else}
+													<XCircle class="mr-2 h-4 w-4" />
+													Rejeter sélectionnées
+												{/if}
+											</Button>
+										</div>
+									</div>
+								{/if}
+							</Card.Content>
+						</Card.Root>
+					{/if}
+				{/if}
+			</div>
 		</Tabs.Content>
 	</Tabs.Root>
 </div>
+
+<!-- Bulk Approve Confirmation Dialog -->
+<ConfirmDialog
+	bind:open={showBulkApproveDialog}
+	title="Approuver les demandes sélectionnées"
+	description={`Vous êtes sur le point d'approuver ${selectedRequestDetails.length} demande${selectedRequestDetails.length > 1 ? 's' : ''} d'activation VIP :\n\n${selectedRequestDetails.map((r) => `• ${r.studentName} - ${r.cardName}`).join('\n')}\n\nAprès approbation, les élèves pourront activer leurs cartes eux-mêmes.`}
+	confirmLabel="Approuver tout"
+	cancelLabel="Annuler"
+	variant="default"
+	onConfirm={handleBulkApprove}
+/>
+
+<!-- Bulk Reject Confirmation Dialog -->
+<ConfirmDialog
+	bind:open={showBulkRejectDialog}
+	title="Rejeter les demandes sélectionnées"
+	description={`Vous êtes sur le point de rejeter ${selectedRequestDetails.length} demande${selectedRequestDetails.length > 1 ? 's' : ''} d'activation VIP :\n\n${selectedRequestDetails.map((r) => `• ${r.studentName} - ${r.cardName}`).join('\n')}\n\nLes cartes retourneront dans la collection des élèves sans effet.`}
+	confirmLabel="Rejeter tout"
+	cancelLabel="Annuler"
+	variant="destructive"
+	onConfirm={handleBulkReject}
+/>
 
 <!-- VIP Cards Modal is now managed by modal stack via openVipCardsModal() -->

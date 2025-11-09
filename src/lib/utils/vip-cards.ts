@@ -178,7 +178,10 @@ export function getActionDescription(action: VipCardAction, templates: VipCardTe
 
 		case 'exchange_cards':
 			if (action.exchange.mode === 'replace_random') {
-				return `Échanger ${action.exchange.count} carte${action.exchange.count > 1 ? 's' : ''} contre de nouvelles cartes`;
+				const count = action.exchange.count;
+				return count
+					? `Échanger ${count} carte${count > 1 ? 's' : ''} contre de nouvelles cartes`
+					: `Échanger des cartes contre de nouvelles cartes`;
 			} else if (action.exchange.mode === 'rarity_points') {
 				const rarityNames = {
 					common: 'commune',

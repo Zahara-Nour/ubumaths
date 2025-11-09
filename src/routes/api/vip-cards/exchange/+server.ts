@@ -32,14 +32,9 @@ import { getTemplateById, getTemplatesByRarity } from '$lib/server/vip-card-quer
 // ============================================================================
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// Require authentication (teacher/admin)
+	// Require authentication
 	const { user, profile } = await requireAuth(locals);
 	const supabase = locals.supabase;
-
-	// Verify user is teacher or admin
-	if (profile.role !== 'teacher' && profile.role !== 'admin') {
-		throw error(403, 'Only teachers can exchange student VIP cards');
-	}
 
 	// Parse and validate request body
 	const body = await request.json();
@@ -51,28 +46,38 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const data = validation.data;
 
-	// Verify that teacher teaches this student
-	const { data: classCheck } = await supabase
-		.from('class_members')
-		.select(
+	// Authorization logic (two modes: teacher OR student with approved card)
+	const isTeacher = profile.role === 'teacher' || profile.role === 'admin';
+	const isStudent = user.id === data.studentId;
+
+	if (isTeacher) {
+		// Teacher flow: verify they teach this student
+		const { data: classCheck } = await supabase
+			.from('class_members')
+			.select(
+				`
+				class_id,
+				classes!inner(teacher_id)
 			`
-			class_id,
-			classes!inner(teacher_id)
-		`
-		)
-		.eq('student_id', data.studentId);
+			)
+			.eq('student_id', data.studentId);
 
-	const teachesStudent = classCheck?.some((cm) => {
-		const classes = cm.classes as unknown;
-		if (classes && typeof classes === 'object' && 'teacher_id' in classes) {
-			return (classes as { teacher_id: string }).teacher_id === user.id;
+		const teachesStudent = classCheck?.some((cm) => {
+			const classes = cm.classes as unknown;
+			if (classes && typeof classes === 'object' && 'teacher_id' in classes) {
+				return (classes as { teacher_id: string }).teacher_id === user.id;
+			}
+			return false;
+		});
+
+		if (!teachesStudent) {
+			throw error(403, 'You can only exchange cards for students in your classes');
 		}
-		return false;
-	});
-
-	if (!teachesStudent) {
-		throw error(403, 'You can only exchange cards for students in your classes');
+	} else if (!isStudent) {
+		// Neither teacher nor the student themselves
+		throw error(403, 'You can only exchange cards for yourself or your students');
 	}
+	// If isStudent, authorization check will happen after fetching the card (approval required)
 
 	// Fetch student's VIP cards with row-level lock to prevent race conditions
 	const { data: studentProfile, error: fetchError } = await supabase
@@ -95,6 +100,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 	if (actionCard.usedAt) {
 		throw error(400, `Action card already used: ${data.actionCardInstanceId}`);
+	}
+
+	// If student flow: require teacher approval
+	if (isStudent && actionCard.activationRequestedAt && !actionCard.activationApprovedAt) {
+		throw error(
+			400,
+			'This card activation has not been approved yet. Please wait for teacher approval.'
+		);
 	}
 
 	// Validate that all cards to discard exist and are not used
@@ -158,10 +171,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const finalVipCards = (finalProfile.vip_cards || {}) as unknown as StudentVipCards;
 	const now = new Date().toISOString();
 
-	finalVipCards[data.actionCardInstanceId] = {
+	// Mark card as used and clear approval metadata
+	const updatedActionCard = {
 		...finalVipCards[data.actionCardInstanceId],
 		usedAt: now
 	};
+
+	// Clear activation request/approval fields since card is now used
+	delete (updatedActionCard as { activationRequestedAt?: string | null }).activationRequestedAt;
+	delete (updatedActionCard as { activationRequestedBy?: string | null }).activationRequestedBy;
+	delete (updatedActionCard as { activationApprovedAt?: string | null }).activationApprovedAt;
+	delete (updatedActionCard as { activationApprovedBy?: string | null }).activationApprovedBy;
+
+	finalVipCards[data.actionCardInstanceId] = updatedActionCard;
 
 	const { error: finalUpdateError } = await supabase
 		.from('profiles')

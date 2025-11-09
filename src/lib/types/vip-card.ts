@@ -7,6 +7,12 @@ import type { WarningType } from '$lib/server/warnings';
 /**
  * Represents an instance of a VIP card owned by a student.
  * Each card can have multiple instances (student can collect duplicates).
+ *
+ * STATE FLOW:
+ * 1. Owned (not requested): activationRequestedAt = null
+ * 2. Pending approval: activationRequestedAt != null && activationApprovedAt = null
+ * 3. Approved (ready to activate): activationApprovedAt != null && usedAt = null
+ * 4. Activated (used): usedAt != null
  */
 export interface VipCardInstance {
 	cardId: string; // ID of the card definition
@@ -14,6 +20,8 @@ export interface VipCardInstance {
 	usedAt: string | null; // ISO timestamp when card was consumed, null if not used
 	activationRequestedAt?: string | null; // ISO timestamp when activation was requested by student
 	activationRequestedBy?: string | null; // UUID of student who requested activation
+	activationApprovedAt?: string | null; // ISO timestamp when teacher approved the activation
+	activationApprovedBy?: string | null; // UUID of teacher who approved activation
 }
 
 /**

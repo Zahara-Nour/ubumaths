@@ -437,7 +437,7 @@ async function executeExchangeCards(options: {
  * Discards N random unused cards and draws N new random cards.
  */
 async function executeExchangeReplaceRandom(options: {
-	count: number;
+	count?: number;
 	studentId: string;
 	supabase: SupabaseClient<Database>;
 }): Promise<ActionResult> {
@@ -459,12 +459,16 @@ async function executeExchangeReplaceRandom(options: {
 	// Get unused cards
 	const unusedCards = Object.entries(vipCards).filter(([, instance]) => instance.usedAt === null);
 
-	if (unusedCards.length < count) {
-		throw error(400, `Not enough unused cards (has ${unusedCards.length}, needs ${count})`);
+	// If count is undefined, this card allows user choice (1-10 cards)
+	// For server-side execution, we use a default of 1 card
+	const actualCount = count ?? 1;
+
+	if (unusedCards.length < actualCount) {
+		throw error(400, `Not enough unused cards (has ${unusedCards.length}, needs ${actualCount})`);
 	}
 
 	// Select N random cards to discard
-	const cardsToDiscard = unusedCards.sort(() => Math.random() - 0.5).slice(0, count);
+	const cardsToDiscard = unusedCards.sort(() => Math.random() - 0.5).slice(0, actualCount);
 
 	const discardedCardInfo: Array<{ cardId: string; name: string }> = [];
 
@@ -496,7 +500,7 @@ async function executeExchangeReplaceRandom(options: {
 	// Draw N new cards
 	const cardsReceived: Array<{ cardId: string; name: string }> = [];
 
-	for (let i = 0; i < count; i++) {
+	for (let i = 0; i < actualCount; i++) {
 		// Type assertion needed until database types are regenerated after migration
 		const { data: cardId, error: rpcError } = (await supabase.rpc(
 			'award_vip_card_no_cost' as never,
