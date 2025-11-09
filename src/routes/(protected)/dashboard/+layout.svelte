@@ -67,6 +67,7 @@
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { notificationStore } from '$lib/stores/notifications.svelte';
+	import { notificationsRealtimeManager } from '$lib/stores/notificationsRealtime.svelte';
 	import { activityStore } from '$lib/stores/activity.svelte';
 	import { getAvatarFallback, getAvatarInitials, type Gender } from '$lib/utils/avatar';
 	import gidouille from '$lib/assets/images/gidouille.png';
@@ -241,6 +242,19 @@
 		// Fetch initial activity counts (notifications + messages)
 		// No automatic polling - counters update on user actions only
 		activityStore.refresh();
+
+		// Start real-time notifications
+		if (data.supabase && data.user) {
+			notificationsRealtimeManager.init(data.supabase, data.user.id);
+			notificationsRealtimeManager.startListening();
+		}
+	});
+
+	// Cleanup real-time subscriptions on unmount
+	$effect(() => {
+		return () => {
+			notificationsRealtimeManager.stopListening();
+		};
 	});
 </script>
 

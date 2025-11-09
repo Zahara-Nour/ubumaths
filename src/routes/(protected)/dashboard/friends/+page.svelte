@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { friendsManager } from '$lib/stores/friends.svelte';
-	import { websocketManager } from '$lib/stores/websocket.svelte';
+	import { presenceManager } from '$lib/stores/presence.svelte';
+	import { supabaseRealtimeManager } from '$lib/stores/supabaseRealtime.svelte';
 	import FriendsList from '$lib/components/FriendsList.svelte';
 	import FriendRequests from '$lib/components/FriendRequests.svelte';
 	import AddFriend from '$lib/components/AddFriend.svelte';
@@ -19,17 +20,17 @@
 			friendsManager.init(data.supabase, data.user.id);
 			await friendsManager.loadFriendships();
 
-			// Connect to WebSocket for real-time presence
-			if (data.accessToken) {
-				websocketManager.connect(data.user.id, data.accessToken);
-			}
+			// Initialize presence manager
+			presenceManager.init(data.supabase, data.user.id);
+			// Presence tracking started automatically in friendsManager.loadFriendships()
 		}
 	});
 
 	// Cleanup effect
 	$effect(() => {
 		return () => {
-			websocketManager.disconnect();
+			presenceManager.stopPresenceTracking();
+			supabaseRealtimeManager.disconnect();
 		};
 	});
 </script>
@@ -42,13 +43,13 @@
 	</div>
 
 	<!-- Connection Status -->
-	{#if websocketManager.connectionStatus !== 'connected'}
+	{#if supabaseRealtimeManager.connectionStatus !== 'connected'}
 		<div class="mb-4 rounded-lg border border-yellow-500/50 bg-yellow-50 p-3 dark:bg-yellow-950">
 			<p class="text-sm text-yellow-800 dark:text-yellow-200">
-				{#if websocketManager.connectionStatus === 'connecting'}
-					Connexion au serveur de présence...
+				{#if supabaseRealtimeManager.connectionStatus === 'connecting'}
+					Connexion au système de présence...
 				{:else}
-					Déconnecté du serveur de présence. Les statuts en ligne ne seront pas affichés.
+					Déconnecté du système de présence. Les statuts en ligne ne seront pas affichés.
 				{/if}
 			</p>
 		</div>

@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, FriendshipWithProfile, FriendshipType } from '$lib/types/database';
-import { websocketManager } from './websocket.svelte';
+import { presenceManager } from './presence.svelte';
 
 class FriendsManager {
 	private supabase: SupabaseClient<Database> | null = null;
@@ -110,15 +110,11 @@ class FriendsManager {
 				(f) => f.status === 'pending' && f.requester_id === this.currentUserId
 			);
 
-			// Update websocket presence map for accepted friends
-			this.friendships.forEach((f) => {
-				if (f.presence) {
-					websocketManager.friendsPresence.set(
-						f.friend_profile.id,
-						f.presence.status as 'offline' | 'online'
-					);
-				}
-			});
+			// Start presence tracking for accepted friends
+			const friendIds = this.friendships.map((f) => f.friend_profile.id);
+			if (friendIds.length > 0) {
+				await presenceManager.startPresenceTracking(friendIds);
+			}
 		} catch (err) {
 			this.error = err instanceof Error ? err.message : 'Failed to load friendships';
 			console.error('Error loading friendships:', err);
@@ -149,6 +145,7 @@ class FriendsManager {
 			}
 
 			await this.loadFriendships();
+			await this.updatePresenceTracking();
 			return true;
 		} catch (err) {
 			this.error = err instanceof Error ? err.message : 'Failed to send friend request';
@@ -177,6 +174,7 @@ class FriendsManager {
 			}
 
 			await this.loadFriendships();
+			await this.updatePresenceTracking();
 			return true;
 		} catch (err) {
 			this.error = err instanceof Error ? err.message : 'Failed to accept friend request';
@@ -230,6 +228,7 @@ class FriendsManager {
 			}
 
 			await this.loadFriendships();
+			await this.updatePresenceTracking();
 			return true;
 		} catch (err) {
 			this.error = err instanceof Error ? err.message : 'Failed to unfriend';
@@ -247,10 +246,23 @@ class FriendsManager {
 	}
 
 	/**
-	 * Get friend presence status (from WebSocket)
+	 * Get friend presence status (from presence manager)
 	 */
 	getFriendPresence(friendId: string): 'online' | 'offline' {
-		return websocketManager.getFriendPresence(friendId);
+		return presenceManager.getFriendPresence(friendId);
+	}
+
+	/**
+	 * Update presence tracking when friends list changes
+	 */
+	private async updatePresenceTracking(): Promise<void> {
+		const friendIds = this.friendships.map((f) => f.friend_profile.id);
+		if (friendIds.length > 0) {
+			await presenceManager.updateFriendList(friendIds);
+		} else {
+			// No friends, stop tracking
+			await presenceManager.stopPresenceTracking();
+		}
 	}
 
 	/**
