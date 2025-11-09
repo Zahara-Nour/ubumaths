@@ -1,652 +1,844 @@
-/**
- * Chat Store (Svelte 5 Runes)
- * =============================
- *
- * Manages real-time chat state including:
- * - Conversations list
- * - Messages for each conversation
- * - Typing indicators
- * - Real-time WebSocket integration
- * - Optimistic UI updates
- *
- * Architecture:
- * - Uses Svelte 5 runes ($state, $derived, $effect)
- * - Integrates with websocketManager for real-time updates
- * - Communicates with Supabase for persistence
- */
-
 import { browser } from '$app/environment';
-import { websocketManager } from './websocket.svelte';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '$lib/types/database';
+import { supabaseRealtimeManager } from './supabaseRealtime.svelte';
+import { createLogger } from '$lib/utils/logger';
 
-// =============================================
-// Types
-// =============================================
+const logger = createLogger('chat.svelte.ts');
 
-export interface Conversation {
-	id: string;
-	name: string | null;
-	is_group: boolean;
-	class_id: string | null;
-	last_message_preview: string | null;
-	last_message_at: string | null;
-	unread_count: number;
-	participant_count: number;
-	// For 1-on-1 chats
-	other_user_id: string | null;
-	other_user_firstname: string | null;
-	other_user_lastname: string | null;
-	other_user_avatar_url: string | null;
-	is_muted: boolean;
-}
-
+/**
+ * Message type with client-side flags for optimistic updates and broadcast tracking
+ */
 export interface Message {
 	id: string;
 	conversation_id: string;
 	sender_id: string | null;
-	sender_firstname: string | null;
-	sender_lastname: string | null;
-	sender_avatar_url: string | null;
-	content: unknown; // TipTap JSON
-	plain_text: string;
-	created_at: string;
+	content: Database['public']['Tables']['messages']['Row']['content'];
+	plain_text: string | null;
+	created_at: string | null;
 	edited_at: string | null;
-	is_flagged: boolean;
-	attachments?: MessageAttachment[];
+	deleted_at: string | null;
+	is_flagged: boolean | null;
+	flag_reason: string | null;
+	is_optimistic?: boolean; // Temporary message, not yet saved to DB
+	is_broadcast?: boolean; // From broadcast channel, awaiting DB confirmation
+	sender?: {
+		id: string;
+		full_name: string | null;
+		avatar_url: string | null;
+	};
 	reactions?: MessageReaction[];
 }
 
-export interface MessageAttachment {
-	id: string;
-	file_name: string;
-	file_type: string;
-	file_size: number;
-	public_url: string;
-	uploaded_by: string;
-}
-
+/**
+ * Message reaction type
+ */
 export interface MessageReaction {
+	id: string;
+	message_id: string;
+	user_id: string;
 	emoji: string;
-	count: number;
-	user_reacted: boolean;
-	users?: {
+	created_at: string | null;
+}
+
+/**
+ * Broadcast message payload for new messages
+ */
+interface BroadcastMessagePayload {
+	type: 'new_message';
+	message: {
 		id: string;
-		firstname: string;
-		lastname: string;
-		avatar_url: string;
-	}[];
+		conversation_id: string;
+		sender_id: string;
+		content: Database['public']['Tables']['messages']['Row']['content'];
+		plain_text: string | null;
+		created_at: string;
+		sender: {
+			id: string;
+			full_name: string | null;
+			avatar_url: string | null;
+		};
+	};
 }
 
-export interface TypingUser {
+/**
+ * Broadcast typing indicator payload
+ */
+interface BroadcastTypingPayload {
+	type: 'typing_indicator';
 	userId: string;
-	firstname: string;
-	lastname: string;
-	timestamp: number;
+	isTyping: boolean;
 }
 
-// =============================================
-// Chat Store Class
-// =============================================
+/**
+ * Broadcast message reaction payload
+ */
+interface BroadcastReactionPayload {
+	type: 'message_reaction';
+	messageId: string;
+	userId: string;
+	emoji: string;
+	action: 'add' | 'remove';
+}
 
+/**
+ * Broadcast read receipt payload
+ */
+interface BroadcastReadReceiptPayload {
+	type: 'message_read';
+	userId: string;
+	messageId: string;
+	conversationId: string;
+}
+
+/**
+ * Union type for all broadcast payloads (unused, kept for reference)
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type BroadcastPayload =
+	| BroadcastMessagePayload
+	| BroadcastTypingPayload
+	| BroadcastReactionPayload
+	| BroadcastReadReceiptPayload;
+
+/**
+ * Hybrid Chat Store - Uses DUAL subscription strategy for optimal UX and quota management
+ *
+ * Strategy:
+ * 1. Broadcast Channel (FREE, ephemeral, 50ms latency) - Ultra-fast UX
+ * 2. postgres_changes (COUNTS toward quota, 300ms latency) - Source of truth with JOINs
+ *
+ * Flow:
+ * - Send: Optimistic UI → Broadcast (50ms) → DB insert (200ms) → postgres_changes (300ms)
+ * - Receive: Broadcast (50ms, show immediately) → postgres_changes (300ms, replace with DB version)
+ *
+ * Benefits:
+ * - Instant UX (50ms via Broadcast)
+ * - Reliable persistence (DB source of truth)
+ * - Quota optimization (Broadcast is FREE)
+ * - Full message data (postgres_changes includes JOINs)
+ *
+ * @example
+ * ```ts
+ * import { chatStore } from '$lib/stores/chat.svelte';
+ *
+ * // Initialize with Supabase client and user info
+ * chatStore.init(supabase, userId, { full_name: 'John Doe', avatar_url: 'https://...' });
+ *
+ * // Subscribe to a conversation
+ * await chatStore.subscribeToConversation('conv-123');
+ *
+ * // Load conversation history
+ * await chatStore.loadConversationHistory('conv-123');
+ *
+ * // Send a message
+ * await chatStore.sendMessage('conv-123', 'Hello world!');
+ *
+ * // Access messages
+ * const messages = chatStore.getMessages('conv-123');
+ *
+ * // Send typing indicator
+ * chatStore.sendTypingIndicator('conv-123', true);
+ *
+ * // Cleanup
+ * await chatStore.unsubscribeFromConversation('conv-123');
+ * ```
+ */
 class ChatStore {
-	// Reactive state
-	conversations = $state<Conversation[]>([]);
-	messages = $state<Map<string, Message[]>>(new Map());
-	typingUsers = $state<Map<string, TypingUser[]>>(new Map());
-	activeConversationId = $state<string | null>(null);
-	isLoadingConversations = $state(false);
-	isLoadingMessages = $state(false);
-
-	private supabase: SupabaseClient | null = null;
+	private supabase: SupabaseClient<Database> | null = null;
 	private userId: string | null = null;
-	private typingTimeouts = new Map<string, number>();
+	private currentUser: {
+		full_name: string | null;
+		avatar_url: string | null;
+	} | null = null;
 
 	/**
-	 * Initialize chat store with Supabase client and user ID
+	 * Messages organized by conversation ID
 	 */
-	init(supabase: SupabaseClient, userId: string): void {
-		if (!browser) return;
+	private messages = $state<Map<string, Message[]>>(new Map());
 
-		this.supabase = supabase;
-		this.userId = userId;
+	/**
+	 * Currently active conversation ID
+	 */
+	activeConversationId = $state<string | null>(null);
 
-		// Subscribe to WebSocket messages
-		this.subscribeToWebSocket();
+	/**
+	 * Typing users per conversation
+	 */
+	private typingUsers = $state<Map<string, Set<string>>>(new Map());
 
-		// Load initial conversations
-		this.loadConversations();
+	/**
+	 * Pagination tracking - whether more messages exist
+	 */
+	private hasMore = $state<Map<string, boolean>>(new Map());
+
+	/**
+	 * Loading state
+	 */
+	loading = $state<boolean>(false);
+
+	/**
+	 * Typing timeout timers per user per conversation
+	 */
+	private typingTimers = new Map<string, Map<string, ReturnType<typeof setTimeout>>>();
+
+	/**
+	 * Initialize the chat store
+	 *
+	 * @param client - Supabase client instance
+	 * @param currentUserId - Current authenticated user ID
+	 * @param user - Current user profile info (for optimistic updates)
+	 */
+	init(
+		client: SupabaseClient<Database>,
+		currentUserId: string,
+		user: { full_name: string | null; avatar_url: string | null }
+	): void {
+		if (!browser) {
+			logger.warn('Cannot initialize chat store on server');
+			return;
+		}
+
+		this.supabase = client;
+		this.userId = currentUserId;
+		this.currentUser = user;
+
+		logger.info('Chat store initialized for user:', currentUserId);
 	}
 
 	/**
-	 * Subscribe to WebSocket messages for real-time updates
+	 * Subscribe to a conversation (Broadcast + postgres_changes)
+	 *
+	 * @param conversationId - The conversation ID to subscribe to
 	 */
-	private subscribeToWebSocket(): void {
-		if (!browser) return;
+	async subscribeToConversation(conversationId: string): Promise<void> {
+		if (!browser || !this.supabase || !this.userId) {
+			logger.warn('Cannot subscribe: not initialized or not in browser');
+			return;
+		}
 
-		// Listen for WebSocket messages using $effect
-		$effect(() => {
-			// Note: In a real implementation, we'd subscribe to websocketManager events
-			// For now, this is a placeholder for the integration point
-		});
-	}
-
-	/**
-	 * Load user's conversations from database
-	 */
-	async loadConversations(): Promise<void> {
-		if (!this.supabase || !this.userId) return;
-
-		this.isLoadingConversations = true;
+		const channelName = `chat-${conversationId}`;
 
 		try {
-			const { data, error } = await this.supabase.rpc('get_user_conversations', {
-				p_user_id: this.userId
+			// Create channel via realtime manager
+			const channel = supabaseRealtimeManager.createChannel(channelName);
+
+			// Subscribe to Broadcast events (FREE, ephemeral, fast)
+			channel.on('broadcast', { event: 'new_message' }, ({ payload }) => {
+				this.handleBroadcastMessage(payload as BroadcastMessagePayload);
 			});
 
-			if (error) {
-				console.error('Error loading conversations:', error);
-				return;
-			}
+			channel.on('broadcast', { event: 'typing_indicator' }, ({ payload }) => {
+				this.handleTypingIndicator(payload as BroadcastTypingPayload);
+			});
 
-			this.conversations = (data || []).map((conv: Record<string, unknown>) => ({
-				id: conv.conversation_id,
-				name: conv.name,
-				is_group: conv.is_group,
-				class_id: conv.class_id,
-				last_message_preview: conv.last_message_preview,
-				last_message_at: conv.last_message_at,
-				unread_count: conv.unread_count || 0,
-				participant_count: conv.participant_count || 0,
-				other_user_id: conv.other_user_id,
-				other_user_firstname: conv.other_user_firstname,
-				other_user_lastname: conv.other_user_lastname,
-				other_user_avatar_url: conv.other_user_avatar_url,
-				is_muted: conv.is_muted || false
-			}));
+			channel.on('broadcast', { event: 'message_reaction' }, ({ payload }) => {
+				this.handleReaction(payload as BroadcastReactionPayload);
+			});
+
+			channel.on('broadcast', { event: 'message_read' }, ({ payload }) => {
+				this.handleReadReceipt(payload as BroadcastReadReceiptPayload);
+			});
+
+			// Subscribe to postgres_changes (COUNTS toward quota, has JOINs)
+			channel.on(
+				'postgres_changes',
+				{
+					event: 'INSERT',
+					schema: 'public',
+					table: 'messages',
+					filter: `conversation_id=eq.${conversationId}`
+				},
+				(payload) => {
+					this.handlePostgresMessage(
+						payload.new as Database['public']['Tables']['messages']['Row']
+					);
+				}
+			);
+
+			// Subscribe to the channel
+			await supabaseRealtimeManager.subscribeChannel(channelName);
+
+			logger.info(`Subscribed to conversation: ${conversationId}`);
 		} catch (error) {
-			console.error('Exception loading conversations:', error);
-		} finally {
-			this.isLoadingConversations = false;
+			logger.error(`Failed to subscribe to conversation ${conversationId}:`, error);
+			throw error;
 		}
 	}
 
 	/**
-	 * Load messages for a conversation
+	 * Unsubscribe from a conversation
+	 *
+	 * @param conversationId - The conversation ID to unsubscribe from
 	 */
-	async loadMessages(
-		conversationId: string,
-		limit: number = 50,
-		beforeId?: string,
-		beforeTimestamp?: string
-	): Promise<void> {
-		if (!this.supabase) return;
+	async unsubscribeFromConversation(conversationId: string): Promise<void> {
+		if (!browser) {
+			logger.warn('Cannot unsubscribe on server');
+			return;
+		}
 
-		this.isLoadingMessages = true;
+		const channelName = `chat-${conversationId}`;
+
+		try {
+			await supabaseRealtimeManager.unsubscribeChannel(channelName);
+
+			// Clear typing indicators for this conversation
+			this.typingUsers.delete(conversationId);
+			this.typingTimers.delete(conversationId);
+
+			logger.info(`Unsubscribed from conversation: ${conversationId}`);
+		} catch (error) {
+			logger.error(`Failed to unsubscribe from conversation ${conversationId}:`, error);
+		}
+	}
+
+	/**
+	 * Load conversation history (initial load)
+	 *
+	 * @param conversationId - The conversation ID
+	 * @param limit - Number of messages to load (default: 50)
+	 */
+	async loadConversationHistory(conversationId: string, limit = 50): Promise<void> {
+		if (!browser || !this.supabase) {
+			logger.warn('Cannot load history: not initialized or not in browser');
+			return;
+		}
+
+		this.loading = true;
+
+		try {
+			// Use the paginated function which includes JOINs
+			const { data, error } = await this.supabase.rpc('get_messages_paginated', {
+				p_conversation_id: conversationId,
+				p_limit: limit
+			});
+
+			if (error) {
+				throw error;
+			}
+
+			if (data) {
+				// Transform DB messages to our Message type
+				const transformedMessages: Message[] = data.map((msg) => ({
+					id: msg.id,
+					conversation_id: msg.conversation_id,
+					sender_id: msg.sender_id,
+					content: msg.content,
+					plain_text: msg.plain_text,
+					created_at: msg.created_at,
+					edited_at: msg.edited_at,
+					deleted_at: null, // Not returned by function
+					is_flagged: msg.is_flagged,
+					flag_reason: null, // Not returned by function
+					sender: {
+						id: msg.sender_id,
+						full_name: msg.sender_full_name,
+						avatar_url: msg.sender_avatar_url
+					}
+				}));
+
+				// Store messages (newest first in array, but we'll reverse for display)
+				this.messages.set(conversationId, transformedMessages);
+
+				// Update hasMore flag
+				this.hasMore.set(conversationId, data.length === limit);
+
+				logger.info(`Loaded ${data.length} messages for conversation ${conversationId}`);
+			}
+		} catch (error) {
+			logger.error(`Failed to load conversation history for ${conversationId}:`, error);
+			throw error;
+		} finally {
+			this.loading = false;
+		}
+	}
+
+	/**
+	 * Load more messages (pagination)
+	 *
+	 * @param conversationId - The conversation ID
+	 * @param limit - Number of messages to load (default: 50)
+	 */
+	async loadMoreMessages(conversationId: string, limit = 50): Promise<void> {
+		if (!browser || !this.supabase) {
+			logger.warn('Cannot load more messages: not initialized or not in browser');
+			return;
+		}
+
+		const existingMessages = this.messages.get(conversationId);
+		if (!existingMessages || existingMessages.length === 0) {
+			logger.warn('No existing messages to paginate from');
+			return;
+		}
+
+		// Get the oldest message to use as pagination cursor
+		const oldestMessage = existingMessages[existingMessages.length - 1];
+
+		this.loading = true;
 
 		try {
 			const { data, error } = await this.supabase.rpc('get_messages_paginated', {
 				p_conversation_id: conversationId,
-				p_limit: limit,
-				p_before_id: beforeId || null,
-				p_before_timestamp: beforeTimestamp || null
+				p_before_id: oldestMessage.id,
+				p_before_timestamp: oldestMessage.created_at,
+				p_limit: limit
 			});
 
 			if (error) {
-				console.error('Error loading messages:', error);
-				return;
+				throw error;
 			}
 
-			const messages: Message[] = (data || []).map((msg: Record<string, unknown>) => ({
-				id: msg.id,
-				conversation_id: msg.conversation_id,
-				sender_id: msg.sender_id,
-				sender_firstname: msg.sender_firstname,
-				sender_lastname: msg.sender_lastname,
-				sender_avatar_url: msg.sender_avatar_url,
-				content: msg.content,
-				plain_text: msg.plain_text,
-				created_at: msg.created_at,
-				edited_at: msg.edited_at,
-				is_flagged: msg.is_flagged,
-				attachments: [],
-				reactions: []
-			}));
+			if (data && data.length > 0) {
+				// Transform DB messages
+				const transformedMessages: Message[] = data.map((msg) => ({
+					id: msg.id,
+					conversation_id: msg.conversation_id,
+					sender_id: msg.sender_id,
+					content: msg.content,
+					plain_text: msg.plain_text,
+					created_at: msg.created_at,
+					edited_at: msg.edited_at,
+					deleted_at: null,
+					is_flagged: msg.is_flagged,
+					flag_reason: null,
+					sender: {
+						id: msg.sender_id,
+						full_name: msg.sender_full_name,
+						avatar_url: msg.sender_avatar_url
+					}
+				}));
 
-			// Reverse to show oldest first
-			messages.reverse();
+				// Append older messages
+				const updated = [...existingMessages, ...transformedMessages];
+				this.messages.set(conversationId, updated);
 
-			// If loading more (pagination), prepend to existing messages
-			if (beforeId && this.messages.has(conversationId)) {
-				const existing = this.messages.get(conversationId) || [];
-				this.messages.set(conversationId, [...messages, ...existing]);
+				// Update hasMore flag
+				this.hasMore.set(conversationId, data.length === limit);
+
+				logger.info(`Loaded ${data.length} more messages for conversation ${conversationId}`);
 			} else {
-				// First load or refresh
-				this.messages.set(conversationId, messages);
+				// No more messages
+				this.hasMore.set(conversationId, false);
+				logger.info(`No more messages to load for conversation ${conversationId}`);
 			}
 		} catch (error) {
-			console.error('Exception loading messages:', error);
+			logger.error(`Failed to load more messages for ${conversationId}:`, error);
+			throw error;
 		} finally {
-			this.isLoadingMessages = false;
+			this.loading = false;
 		}
 	}
 
 	/**
-	 * Send a message to a conversation
+	 * Send a message (Optimistic UI → Broadcast → DB → postgres_changes)
+	 *
+	 * @param conversationId - The conversation ID
+	 * @param plainText - The plain text message content
 	 */
-	async sendMessage(
-		conversationId: string,
-		content: unknown,
-		attachmentRecords?: Array<{
-			file_name: string;
-			file_type: string;
-			file_size: number;
-			storage_path: string;
-			public_url: string;
-		}>
-	): Promise<Message | null> {
-		if (!this.supabase || !this.userId) return null;
+	async sendMessage(conversationId: string, plainText: string): Promise<void> {
+		if (!browser || !this.supabase || !this.userId || !this.currentUser) {
+			logger.warn('Cannot send message: not initialized or not in browser');
+			return;
+		}
+
+		// Generate temporary ID for optimistic update
+		const tempId = `temp-${crypto.randomUUID()}`;
+		const now = new Date().toISOString();
+
+		// Create optimistic message
+		const optimisticMessage: Message = {
+			id: tempId,
+			conversation_id: conversationId,
+			sender_id: this.userId,
+			content: { text: plainText }, // Simple JSON content
+			plain_text: plainText,
+			created_at: now,
+			edited_at: null,
+			deleted_at: null,
+			is_flagged: false,
+			flag_reason: null,
+			is_optimistic: true,
+			sender: {
+				id: this.userId,
+				full_name: this.currentUser.full_name,
+				avatar_url: this.currentUser.avatar_url
+			}
+		};
+
+		// Add optimistic message to state
+		const existingMessages = this.messages.get(conversationId) || [];
+		this.messages.set(conversationId, [optimisticMessage, ...existingMessages]);
+
+		logger.info('Added optimistic message:', tempId);
 
 		try {
-			// Insert message into database
+			// Step 1: Broadcast to other users (50ms, ephemeral, FREE)
+			const channel = supabaseRealtimeManager.getChannel(`chat-${conversationId}`);
+			if (channel) {
+				await channel.send({
+					type: 'broadcast',
+					event: 'new_message',
+					payload: {
+						type: 'new_message',
+						message: {
+							id: tempId, // Use temp ID so others can deduplicate later
+							conversation_id: conversationId,
+							sender_id: this.userId,
+							content: { text: plainText },
+							plain_text: plainText,
+							created_at: now,
+							sender: {
+								id: this.userId,
+								full_name: this.currentUser.full_name,
+								avatar_url: this.currentUser.avatar_url
+							}
+						}
+					} satisfies BroadcastMessagePayload
+				});
+
+				logger.info('Broadcasted message to peers');
+			}
+
+			// Step 2: Insert to database (200ms, persists)
 			const { data, error } = await this.supabase
 				.from('messages')
 				.insert({
 					conversation_id: conversationId,
 					sender_id: this.userId,
-					content: content
+					content: { text: plainText },
+					plain_text: plainText
 				})
-				.select(
-					`
-					id,
-					conversation_id,
-					sender_id,
-					content,
-					plain_text,
-					created_at,
-					edited_at,
-					is_flagged
-				`
-				)
+				.select()
 				.single();
 
 			if (error) {
-				console.error('Error sending message:', error);
-				return null;
+				throw error;
 			}
 
-			// Insert attachments if any
-			if (attachmentRecords && attachmentRecords.length > 0) {
-				const attachmentsToInsert = attachmentRecords.map((att) => ({
-					message_id: data.id,
-					file_name: att.file_name,
-					file_type: att.file_type,
-					file_size: att.file_size,
-					storage_path: att.storage_path,
-					public_url: att.public_url,
-					uploaded_by: this.userId
-				}));
+			logger.info('Message inserted to DB:', data.id);
 
-				const { error: attachError } = await this.supabase
-					.from('message_attachments')
-					.insert(attachmentsToInsert);
+			// Step 3: Replace optimistic message with DB version
+			// postgres_changes will fire and handlePostgresMessage will replace it with full JOIN data
+			// For now, just update the ID to match the DB version
+			const updated = existingMessages.map((msg) =>
+				msg.id === tempId ? { ...msg, id: data.id, is_optimistic: false } : msg
+			);
+			this.messages.set(conversationId, updated);
 
-				if (attachError) {
-					console.error('Error inserting attachments:', attachError);
-				}
+			logger.info('Optimistic message updated with DB ID:', data.id);
+		} catch (error) {
+			logger.error('Failed to send message, rolling back optimistic update:', error);
+
+			// Rollback: Remove optimistic message
+			const rollback = existingMessages.filter((msg) => msg.id !== tempId);
+			this.messages.set(conversationId, rollback);
+
+			throw error;
+		}
+	}
+
+	/**
+	 * Handle incoming broadcast message (50ms, ephemeral)
+	 *
+	 * @param payload - Broadcast message payload
+	 */
+	private handleBroadcastMessage(payload: BroadcastMessagePayload): void {
+		const { message } = payload;
+
+		// Ignore if from current user (we already have optimistic update)
+		if (message.sender_id === this.userId) {
+			logger.info('Ignoring broadcast message from self:', message.id);
+			return;
+		}
+
+		// Add message with is_broadcast flag (will be replaced by postgres_changes)
+		const broadcastMessage: Message = {
+			id: message.id,
+			conversation_id: message.conversation_id,
+			sender_id: message.sender_id,
+			content: message.content,
+			plain_text: message.plain_text,
+			created_at: message.created_at,
+			edited_at: null,
+			deleted_at: null,
+			is_flagged: false,
+			flag_reason: null,
+			is_broadcast: true,
+			sender: message.sender
+		};
+
+		const existingMessages = this.messages.get(message.conversation_id) || [];
+		this.messages.set(message.conversation_id, [broadcastMessage, ...existingMessages]);
+
+		logger.info('Received broadcast message:', message.id);
+	}
+
+	/**
+	 * Handle incoming postgres_changes message (300ms, source of truth with JOINs)
+	 *
+	 * @param newMessage - The raw message row from postgres_changes
+	 */
+	private async handlePostgresMessage(
+		newMessage: Database['public']['Tables']['messages']['Row']
+	): Promise<void> {
+		if (!this.supabase) {
+			logger.warn('Cannot handle postgres message: not initialized');
+			return;
+		}
+
+		try {
+			// Fetch full message with JOINs (sender profile)
+			const { data, error } = await this.supabase
+				.from('messages')
+				.select(
+					`
+					*,
+					sender:profiles!sender_id(id, full_name, avatar_url)
+				`
+				)
+				.eq('id', newMessage.id)
+				.single();
+
+			if (error) {
+				throw error;
 			}
 
-			// Create message object
-			const message: Message = {
+			if (!data) {
+				logger.warn('Message not found after postgres_changes:', newMessage.id);
+				return;
+			}
+
+			// Transform to Message type
+			const fullMessage: Message = {
 				id: data.id,
 				conversation_id: data.conversation_id,
 				sender_id: data.sender_id,
-				sender_firstname: null, // Will be populated by optimistic update
-				sender_lastname: null,
-				sender_avatar_url: null,
 				content: data.content,
 				plain_text: data.plain_text,
 				created_at: data.created_at,
 				edited_at: data.edited_at,
+				deleted_at: data.deleted_at,
 				is_flagged: data.is_flagged,
-				attachments: attachmentRecords
-					? attachmentRecords.map((att, idx) => ({
-							id: `temp-${idx}`,
-							file_name: att.file_name,
-							file_type: att.file_type,
-							file_size: att.file_size,
-							public_url: att.public_url,
-							uploaded_by: this.userId || ''
-						}))
-					: [],
-				reactions: []
+				flag_reason: data.flag_reason,
+				sender: Array.isArray(data.sender)
+					? {
+							id: data.sender[0]?.id ?? '',
+							full_name: data.sender[0]?.full_name ?? null,
+							avatar_url: data.sender[0]?.avatar_url ?? null
+						}
+					: data.sender
+						? {
+								id: data.sender.id,
+								full_name: data.sender.full_name,
+								avatar_url: data.sender.avatar_url
+							}
+						: null
 			};
 
-			// Optimistic UI update
-			const existing = this.messages.get(conversationId) || [];
-			this.messages.set(conversationId, [...existing, message]);
+			const existingMessages = this.messages.get(data.conversation_id) || [];
 
-			// Broadcast via WebSocket
-			websocketManager.send({
-				type: 'chat_message',
-				conversationId,
-				messageId: message.id,
-				content: message.content,
-				attachments: attachmentRecords
-			});
+			// Find and replace broadcast/optimistic version
+			const broadcastIndex = existingMessages.findIndex(
+				(msg) =>
+					(msg.id === data.id || msg.created_at === data.created_at) &&
+					(msg.is_broadcast || msg.is_optimistic)
+			);
 
-			// Update conversation list (move to top)
-			await this.loadConversations();
+			if (broadcastIndex !== -1) {
+				// Replace broadcast/optimistic message with DB version
+				const updated = [...existingMessages];
+				updated[broadcastIndex] = fullMessage;
+				this.messages.set(data.conversation_id, updated);
 
-			return message;
+				logger.info('Replaced broadcast/optimistic message with DB version:', data.id);
+			} else {
+				// Message not found (from other device?), append
+				this.messages.set(data.conversation_id, [fullMessage, ...existingMessages]);
+
+				logger.info('Added new message from postgres_changes:', data.id);
+			}
 		} catch (error) {
-			console.error('Exception sending message:', error);
-			return null;
+			logger.error('Failed to handle postgres_changes message:', error);
 		}
 	}
 
 	/**
-	 * Send typing indicator
+	 * Send typing indicator (Broadcast only, ephemeral)
+	 *
+	 * @param conversationId - The conversation ID
+	 * @param isTyping - Whether the user is typing
 	 */
 	sendTypingIndicator(conversationId: string, isTyping: boolean): void {
-		websocketManager.send({
-			type: 'typing_indicator',
-			conversationId,
-			isTyping
-		});
-	}
+		if (!browser || !this.userId) {
+			return;
+		}
 
-	/**
-	 * Mark conversation as read
-	 */
-	async markAsRead(conversationId: string, messageId?: string): Promise<void> {
-		if (!this.supabase || !this.userId) return;
+		const channel = supabaseRealtimeManager.getChannel(`chat-${conversationId}`);
+		if (!channel) {
+			logger.warn('Channel not found for typing indicator:', conversationId);
+			return;
+		}
 
-		try {
-			await this.supabase.rpc('mark_conversation_read', {
-				p_conversation_id: conversationId,
-				p_user_id: this.userId,
-				p_message_id: messageId || null
+		channel
+			.send({
+				type: 'broadcast',
+				event: 'typing_indicator',
+				payload: {
+					type: 'typing_indicator',
+					userId: this.userId,
+					isTyping
+				} satisfies BroadcastTypingPayload
+			})
+			.catch((error) => {
+				logger.error('Failed to send typing indicator:', error);
 			});
-
-			// Update local state
-			const conversation = this.conversations.find((c) => c.id === conversationId);
-			if (conversation) {
-				conversation.unread_count = 0;
-			}
-
-			// Broadcast read receipt
-			if (messageId) {
-				websocketManager.send({
-					type: 'message_read',
-					conversationId,
-					messageId
-				});
-			}
-		} catch (error) {
-			console.error('Error marking conversation as read:', error);
-		}
 	}
 
 	/**
-	 * Toggle message reaction
+	 * Handle incoming typing indicator
+	 *
+	 * @param payload - Typing indicator payload
 	 */
-	async toggleReaction(messageId: string, emoji: string): Promise<void> {
-		if (!this.supabase) return;
+	private handleTypingIndicator(payload: BroadcastTypingPayload): void {
+		// Ignore self
+		if (payload.userId === this.userId) {
+			return;
+		}
 
-		try {
-			const { data, error } = await this.supabase.rpc('toggle_reaction', {
-				p_message_id: messageId,
-				p_emoji: emoji
-			});
+		// Get or create typing users set for this conversation
+		const conversationId = this.activeConversationId;
+		if (!conversationId) {
+			return;
+		}
 
-			if (error) {
-				console.error('Error toggling reaction:', error);
-				return;
+		let typingSet = this.typingUsers.get(conversationId);
+		if (!typingSet) {
+			// eslint-disable-next-line svelte/prefer-svelte-reactivity
+			typingSet = new Set();
+			this.typingUsers.set(conversationId, typingSet);
+		}
+
+		// Get or create timer map for this conversation
+		let timerMap = this.typingTimers.get(conversationId);
+		if (!timerMap) {
+			// eslint-disable-next-line svelte/prefer-svelte-reactivity
+			timerMap = new Map();
+			this.typingTimers.set(conversationId, timerMap);
+		}
+
+		if (payload.isTyping) {
+			// Add user to typing set
+			typingSet.add(payload.userId);
+
+			// Clear existing timer
+			const existingTimer = timerMap.get(payload.userId);
+			if (existingTimer) {
+				clearTimeout(existingTimer);
 			}
 
-			const action = data ? 'add' : 'remove';
-
-			// Broadcast via WebSocket
-			websocketManager.send({
-				type: 'message_reaction',
-				messageId,
-				emoji,
-				action
-			});
-
-			// Reload reactions for the message
-			await this.loadMessageReactions(messageId);
-		} catch (error) {
-			console.error('Exception toggling reaction:', error);
-		}
-	}
-
-	/**
-	 * Load reactions for a message
-	 */
-	async loadMessageReactions(messageId: string): Promise<void> {
-		if (!this.supabase) return;
-
-		try {
-			const { data, error } = await this.supabase.rpc('get_message_reaction_counts', {
-				p_message_id: messageId
-			});
-
-			if (error) {
-				console.error('Error loading reactions:', error);
-				return;
-			}
-
-			// Find message in messages map and update reactions
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			for (const [conversationId, msgs] of this.messages.entries()) {
-				const message = msgs.find((m) => m.id === messageId);
-				if (message) {
-					message.reactions = (data || []).map((r: Record<string, unknown>) => ({
-						emoji: r.emoji,
-						count: r.count,
-						user_reacted: r.user_reacted
-					}));
-					break;
-				}
-			}
-		} catch (error) {
-			console.error('Exception loading reactions:', error);
-		}
-	}
-
-	/**
-	 * Report a message
-	 */
-	async reportMessage(
-		messageId: string,
-		reason: 'spam' | 'harassment' | 'inappropriate' | 'other',
-		details?: string
-	): Promise<boolean> {
-		if (!this.supabase) return false;
-
-		try {
-			const { error } = await this.supabase.rpc('report_message', {
-				p_message_id: messageId,
-				p_reason: reason,
-				p_details: details || null
-			});
-
-			if (error) {
-				console.error('Error reporting message:', error);
-				return false;
-			}
-
-			return true;
-		} catch (error) {
-			console.error('Exception reporting message:', error);
-			return false;
-		}
-	}
-
-	/**
-	 * Create a 1-on-1 chat with a friend
-	 */
-	async create1on1Chat(friendId: string): Promise<string | null> {
-		if (!this.supabase || !this.userId) return null;
-
-		try {
-			const { data, error } = await this.supabase.rpc('create_1on1_chat', {
-				p_user1_id: this.userId,
-				p_user2_id: friendId
-			});
-
-			if (error) {
-				console.error('Error creating 1-on-1 chat:', error);
-				return null;
-			}
-
-			// Reload conversations to include new chat
-			await this.loadConversations();
-
-			return data;
-		} catch (error) {
-			console.error('Exception creating 1-on-1 chat:', error);
-			return null;
-		}
-	}
-
-	/**
-	 * Set active conversation
-	 */
-	setActiveConversation(conversationId: string | null): void {
-		this.activeConversationId = conversationId;
-
-		// Load messages if not already loaded
-		if (conversationId && !this.messages.has(conversationId)) {
-			this.loadMessages(conversationId);
-		}
-
-		// Mark as read
-		if (conversationId) {
-			this.markAsRead(conversationId);
-		}
-	}
-
-	/**
-	 * Get active conversation
-	 */
-	get activeConversation(): Conversation | null {
-		if (!this.activeConversationId) return null;
-		return this.conversations.find((c) => c.id === this.activeConversationId) || null;
-	}
-
-	/**
-	 * Get messages for active conversation
-	 */
-	get activeMessages(): Message[] {
-		if (!this.activeConversationId) return [];
-		return this.messages.get(this.activeConversationId) || [];
-	}
-
-	/**
-	 * Get typing users for active conversation
-	 */
-	get activeTypingUsers(): TypingUser[] {
-		if (!this.activeConversationId) return [];
-		return this.typingUsers.get(this.activeConversationId) || [];
-	}
-
-	/**
-	 * Handle incoming WebSocket messages
-	 * (Called by WebSocket manager)
-	 */
-	handleWebSocketMessage(message: {
-		type: string;
-		conversationId?: string;
-		userId?: string;
-		isTyping?: boolean;
-		messageId?: string;
-	}): void {
-		switch (message.type) {
-			case 'chat_message':
-				this.handleIncomingMessage(message);
-				break;
-			case 'typing_indicator':
-				this.handleTypingIndicator(message);
-				break;
-			case 'message_read':
-				this.handleMessageRead(message);
-				break;
-			case 'message_reaction':
-				this.handleMessageReaction(message);
-				break;
-		}
-	}
-
-	private handleIncomingMessage(message: { conversationId?: string }): void {
-		// Fetch full message details and add to conversation
-		if (this.activeConversationId === message.conversationId) {
-			this.loadMessages(message.conversationId, 1);
-		}
-
-		// Update conversation list
-		this.loadConversations();
-	}
-
-	private handleTypingIndicator(message: {
-		conversationId?: string;
-		userId?: string;
-		isTyping?: boolean;
-	}): void {
-		const { conversationId, userId, isTyping } = message;
-
-		if (!userId || !conversationId) return; // Guard against undefined
-
-		if (!this.typingUsers.has(conversationId)) {
-			this.typingUsers.set(conversationId, []);
-		}
-
-		const users = this.typingUsers.get(conversationId)!;
-
-		if (isTyping) {
-			// Add user if not already typing
-			if (!users.find((u) => u.userId === userId)) {
-				users.push({
-					userId,
-					firstname: '', // Would be populated from profiles
-					lastname: '',
-					timestamp: Date.now()
-				});
-			}
-
-			// Clear after 3 seconds
-			if (this.typingTimeouts.has(userId)) {
-				clearTimeout(this.typingTimeouts.get(userId)!);
-			}
-			const timeout = setTimeout(() => {
-				const index = users.findIndex((u) => u.userId === userId);
-				if (index !== -1) {
-					users.splice(index, 1);
-				}
+			// Auto-clear after 3 seconds
+			const timer = setTimeout(() => {
+				typingSet.delete(payload.userId);
+				timerMap.delete(payload.userId);
 			}, 3000);
-			this.typingTimeouts.set(userId, timeout as unknown as number);
+
+			timerMap.set(payload.userId, timer);
 		} else {
-			// Remove user from typing
-			const index = users.findIndex((u) => u.userId === userId);
-			if (index !== -1) {
-				users.splice(index, 1);
+			// Remove user from typing set
+			typingSet.delete(payload.userId);
+
+			// Clear timer
+			const timer = timerMap.get(payload.userId);
+			if (timer) {
+				clearTimeout(timer);
+				timerMap.delete(payload.userId);
+			}
+		}
+
+		logger.info('Typing indicator updated for user:', payload.userId, payload.isTyping);
+	}
+
+	/**
+	 * Handle incoming message reaction
+	 *
+	 * @param payload - Reaction payload
+	 */
+	private handleReaction(payload: BroadcastReactionPayload): void {
+		// Find the message across all conversations
+		for (const [conversationId, messages] of this.messages.entries()) {
+			const messageIndex = messages.findIndex((msg) => msg.id === payload.messageId);
+
+			if (messageIndex !== -1) {
+				const message = messages[messageIndex];
+
+				if (!message.reactions) {
+					message.reactions = [];
+				}
+
+				if (payload.action === 'add') {
+					// Add reaction
+					message.reactions.push({
+						id: crypto.randomUUID(),
+						message_id: payload.messageId,
+						user_id: payload.userId,
+						emoji: payload.emoji,
+						created_at: new Date().toISOString()
+					});
+				} else {
+					// Remove reaction
+					message.reactions = message.reactions.filter(
+						(r) => !(r.user_id === payload.userId && r.emoji === payload.emoji)
+					);
+				}
+
+				// Trigger reactivity
+				this.messages.set(conversationId, [...messages]);
+
+				logger.info('Reaction updated:', payload);
+				break;
 			}
 		}
 	}
 
-	private handleMessageRead(_message: unknown): void {
-		// Update read receipts (implementation depends on UI requirements)
-		// TODO: Implement read receipt handling
+	/**
+	 * Handle incoming read receipt
+	 *
+	 * @param payload - Read receipt payload
+	 */
+	private handleReadReceipt(payload: BroadcastReadReceiptPayload): void {
+		// This would update read status UI - implement as needed
+		logger.info('Read receipt received:', payload);
 	}
 
-	private handleMessageReaction(message: { messageId?: string }): void {
-		// Reload reactions for the message
-		if (message.messageId) {
-			this.loadMessageReactions(message.messageId);
-		}
+	/**
+	 * Get messages for a conversation
+	 *
+	 * @param conversationId - The conversation ID
+	 * @returns Array of messages (newest first)
+	 */
+	getMessages(conversationId: string): Message[] {
+		return this.messages.get(conversationId) || [];
+	}
+
+	/**
+	 * Get typing users for a conversation
+	 *
+	 * @param conversationId - The conversation ID
+	 * @returns Set of user IDs who are currently typing
+	 */
+	getTypingUsers(conversationId: string): Set<string> {
+		return this.typingUsers.get(conversationId) || new Set();
+	}
+
+	/**
+	 * Check if more messages can be loaded
+	 *
+	 * @param conversationId - The conversation ID
+	 * @returns True if more messages exist
+	 */
+	canLoadMore(conversationId: string): boolean {
+		return this.hasMore.get(conversationId) ?? false;
 	}
 }
 
-// Export singleton instance
 export const chatStore = new ChatStore();
