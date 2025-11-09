@@ -2,7 +2,7 @@
 
 Documentation complète de la plateforme éducative UbuMaths.
 
-**Dernière mise à jour** : 2025-10-29
+**Dernière mise à jour** : 2025-11-09
 **Statut** : 🟢 Active Development
 
 ---
@@ -178,9 +178,18 @@ Système de messagerie enseignant-élève avec templates et pièces jointes.
 
 ### 🔔 Notifications
 
-**Status** : ✅ Production | [Documentation →](features/notifications/README.md)
+**Status** : ✅ Production | [Documentation →](features/notifications-system.md) ⭐
 
-Système de notifications avec ciblage et priorités.
+Système de notifications intelligent avec ciblage multi-niveau et priorités.
+
+- [Documentation complète](features/notifications-system.md) - Guide complet du système
+- Ciblage intelligent (all, role, classes, users)
+- 3 priorités (normal, important, urgent) avec coloration
+- 3 modes d'affichage (banner, dropdown, page)
+- RLS policies sécurisées pour permissions granulaires
+- Intégrations actives : Assessments, Error Monitoring
+- Helpers d'auto-notification pour 8 types d'événements
+- **2025-11-09** : Documentation complète du système
 
 ### 🐛 Monitoring d'erreurs
 
@@ -346,8 +355,8 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
   - Optimistic UI for better perceived performance
   - 97% fewer N+1 queries (244 → 6 per load)
 - **Database Tables** : 3 new tables (school_years, academic_periods, school_holidays) 🆕
-- **Lignes de documentation** : ~30,000+
-- **Dernière mise à jour** : 2025-10-30
+- **Lignes de documentation** : ~32,000+ 🆕 (added notifications-system.md)
+- **Dernière mise à jour** : 2025-11-09
 
 ---
 

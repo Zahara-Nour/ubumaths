@@ -35,7 +35,6 @@
 		"db:fix-profiles": "supabase db execute --file supabase/migrations/005_fix_existing_users.sql",
 		"db:status": "supabase db execute --sql \"SELECT COUNT(CASE WHEN p.id IS NULL THEN 1 END) as missing_profiles, COUNT(CASE WHEN p.id IS NOT NULL THEN 1 END) as users_with_profiles, COUNT(*) as total_users FROM auth.users u LEFT JOIN public.profiles p ON u.id = p.id;\"",
 		"db:link": "supabase link",
-		"ws:dev": "npx tsx src/lib/server/websocket-server.ts",
 		"game:setup-assets": "bash scripts/setup-game-assets.sh",
 		"game:import-challenges": "npx tsx scripts/import-navadra-challenges.ts",
 		"game:seed-spells": "npx tsx scripts/seed-spell-definitions.ts",
