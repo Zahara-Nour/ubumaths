@@ -11,9 +11,19 @@
 	import { ArrowLeft } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto as _goto } from '$app/navigation';
+	import { syncGidouilles } from '$lib/utils/cache-sync';
 
 	let { data }: { data: PageData } = $props();
 
+	/**
+	 * Handle riddle answer submission
+	 *
+	 * PATTERN: Server-confirmed update (gidouilles awarded by server)
+	 * 1. Submit answer to API
+	 * 2. If correct answer: update cache with earned gidouilles (AFTER API confirms)
+	 * 3. Navigate back to riddles list (no page reload)
+	 * 4. On error: show error message, stay on page
+	 */
 	async function handleSubmit(answer: string | number) {
 		try {
 			const response = await fetch(`/api/riddles/${data.riddle.id}/submit`, {
@@ -28,10 +38,13 @@
 
 			if (response.ok && result.success) {
 				if (result.isCorrect === true) {
-					toaster.success(
-						result.message ||
-							`Bravo ! Tu as gagné ${result.attempt.gidouilles_awarded} gidouilles !`
-					);
+					// Update cache with earned gidouilles (server-confirmed amount)
+					const gidouillesEarned = result.attempt.gidouilles_awarded || 0;
+					if (gidouillesEarned > 0) {
+						syncGidouilles({ type: 'student' }, gidouillesEarned);
+					}
+
+					toaster.success(result.message || `Bravo ! Tu as gagné ${gidouillesEarned} gidouilles !`);
 				} else if (result.isCorrect === false) {
 					toaster.error(result.message || 'Réponse incorrecte. Réessaye !');
 				} else {
@@ -39,9 +52,9 @@
 					toaster.info(result.message || 'Ta réponse a été envoyée au professeur pour validation.');
 				}
 
-				// Reload page to show updated attempt
+				// Navigate back to riddles list (no full page reload)
 				setTimeout(() => {
-					window.location.reload();
+					_goto('/dashboard/student/riddles');
 				}, 2000);
 			} else {
 				toaster.error(result.message || 'Erreur lors de la soumission');

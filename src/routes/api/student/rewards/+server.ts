@@ -45,7 +45,7 @@ import type { StudentRewards } from '$lib/types/student-cache';
 import type { StudentVipCards } from '$lib/types/vip-card';
 
 export const GET: RequestHandler = async ({ locals }) => {
-	const { user, profile, supabaseServer } = await locals.safeGetSession();
+	const { user, profile, supabase } = locals;
 
 	// Auth check: Must be logged in
 	if (!user || !profile) {
@@ -59,7 +59,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 	try {
 		// Fetch student rewards from profiles table
-		const { data: studentData, error: fetchError } = await supabaseServer
+		const { data: studentData, error: fetchError } = await supabase
 			.from('profiles')
 			.select('gidouilles, vip_cards')
 			.eq('id', user.id)

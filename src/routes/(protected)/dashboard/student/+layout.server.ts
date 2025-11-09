@@ -37,7 +37,7 @@ import type { StudentVipCards } from '$lib/types/vip-card';
 import { error } from '@sveltejs/kit';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
-	const { user, profile, supabaseServer } = await locals.safeGetSession();
+	const { user, profile, supabase } = locals;
 
 	// Must be logged in as student
 	if (!user || !profile || profile.role !== 'student') {
@@ -46,7 +46,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 
 	try {
 		// Fetch class memberships with class and teacher details
-		const { data: memberships, error: membershipError } = await supabaseServer
+		const { data: memberships, error: membershipError } = await supabase
 			.from('class_members')
 			.select(
 				`
@@ -99,7 +99,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		};
 
 		// Fetch student rewards
-		const { data: rewardsData, error: rewardsError } = await supabaseServer
+		const { data: rewardsData, error: rewardsError } = await supabase
 			.from('profiles')
 			.select('gidouilles, vip_cards')
 			.eq('id', user.id)

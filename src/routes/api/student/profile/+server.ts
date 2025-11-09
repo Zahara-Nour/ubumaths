@@ -44,7 +44,7 @@ import type { RequestHandler } from './$types';
 import type { StudentProfile, ClassMembership } from '$lib/types/student-cache';
 
 export const GET: RequestHandler = async ({ locals }) => {
-	const { user, profile, supabaseServer } = await locals.safeGetSession();
+	const { user, profile, supabase } = locals;
 
 	// Auth check: Must be logged in
 	if (!user || !profile) {
@@ -58,7 +58,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 	try {
 		// Fetch class memberships with class and teacher details
-		const { data: memberships, error: membershipError } = await supabaseServer
+		const { data: memberships, error: membershipError } = await supabase
 			.from('class_members')
 			.select(
 				`

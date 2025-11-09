@@ -51,7 +51,7 @@ import { z } from 'zod';
 const periodIdSchema = z.string().uuid();
 
 export const GET: RequestHandler = async ({ locals, params }) => {
-	const { user, profile, supabaseServer } = await locals.safeGetSession();
+	const { user, profile, supabase } = locals;
 
 	// Auth check: Must be logged in
 	if (!user || !profile) {
@@ -72,7 +72,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	try {
 		// Fetch warnings for the student in this period
-		const { data: warningsData, error: fetchError } = await supabaseServer
+		const { data: warningsData, error: fetchError } = await supabase
 			.from('student_warnings')
 			.select('*')
 			.eq('student_id', user.id)

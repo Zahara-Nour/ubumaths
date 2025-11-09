@@ -18,9 +18,10 @@
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import { Search, Lock, Trophy, Sparkles } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
-	import type { VipCardRarity } from '$lib/types/vip-card';
+	import type { VipCardRarity, StudentVipCards } from '$lib/types/vip-card';
 	import type { CardCollectionStatus } from './+page.server';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { syncVipCards } from '$lib/utils/cache-sync';
 
 	let { data }: { data: PageData } = $props();
 
@@ -129,11 +130,19 @@
 
 	/**
 	 * Handle card use button click - request activation from teacher
+	 *
+	 * PATTERN: Optimistic update BEFORE API call
+	 * 1. Update cache immediately (activationRequestedAt = now)
+	 * 2. Update local data.ownedCards for instant UI feedback
+	 * 3. Make API call
+	 * 4. Success: Cache and local state already correct ✅
+	 * 5. Error: Rollback both cache and local state ❌
 	 */
 	async function handleUseCard(cardId: string) {
 		// Find the first unused instance of this card
 		const instances = Object.entries(data.ownedCards).filter(
-			([_, instance]) => instance.cardId === cardId && !instance.usedAt
+			([_, instance]) =>
+				instance.cardId === cardId && !instance.usedAt && !instance.activationRequestedAt
 		);
 
 		if (instances.length === 0) {
@@ -149,8 +158,26 @@
 			return;
 		}
 
-		// Request activation from teacher
+		// Save current state for potential rollback
+		const currentVipCards = { ...data.ownedCards };
+		const now = new Date().toISOString();
+
+		// 1. OPTIMISTIC UPDATE (instant UI feedback)
+		const optimisticCards: StudentVipCards = {
+			...data.ownedCards,
+			[instanceId]: {
+				...data.ownedCards[instanceId],
+				activationRequestedAt: now,
+				activationRequestedBy: data.studentId
+			}
+		};
+
+		// Update both cache AND local state
+		syncVipCards({ type: 'student' }, optimisticCards);
+		data.ownedCards = optimisticCards;
+
 		try {
+			// 2. API CALL
 			const response = await fetch('/api/vip-cards/request-activation', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -162,20 +189,23 @@
 
 			if (!response.ok) {
 				const error = await response.json();
-				toaster.error(error.message || "Erreur lors de la demande d'activation");
-				return;
+				throw new Error(error.message || "Erreur lors de la demande d'activation");
 			}
 
 			const result = await response.json();
+
+			// 3. SUCCESS: Cache and local state already correct ✅
 			toaster.success(
 				`Demande d'activation envoyée ! Ton enseignant recevra la demande pour : ${result.cardName}`
 			);
-
-			// Reload page data to update pending request status
-			window.location.reload();
 		} catch (err) {
+			// 4. ERROR: Rollback optimistic update ❌
+			syncVipCards({ type: 'student' }, currentVipCards);
+			data.ownedCards = currentVipCards;
+
+			const message = err instanceof Error ? err.message : 'Une erreur est survenue';
 			console.error('[collection] Error requesting activation:', err);
-			toaster.error('Une erreur est survenue');
+			toaster.error(message);
 		}
 	}
 

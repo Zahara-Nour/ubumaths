@@ -16,12 +16,14 @@
 -->
 
 <script lang="ts">
-	import type { VipCard, VipCardInstance } from '$lib/types/vip-card';
+	import type { VipCard, VipCardInstance, StudentVipCards } from '$lib/types/vip-card';
 	import { getActionDescription } from '$lib/utils/vip-cards';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Loader2, Sparkles } from 'lucide-svelte';
 	import { vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
+	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+	import { syncVipCards } from '$lib/utils/cache-sync';
 
 	interface Props {
 		instanceId: string;
@@ -46,13 +48,42 @@
 
 	/**
 	 * Request activation from teacher
+	 *
+	 * PATTERN: Optimistic update BEFORE API call
+	 * 1. Update cache immediately (activationRequestedAt = now)
+	 * 2. Make API call
+	 * 3. Success: Cache already correct ✅
+	 * 4. Error: Rollback cache update ❌
 	 */
 	async function requestActivation() {
 		if (!canActivate || isRequesting) return;
 
 		isRequesting = true;
 
+		// Get current VIP cards from cache
+		const currentRewards = studentCache.getRewardsSync();
+		if (!currentRewards) {
+			toaster.error('Impossible de charger les cartes VIP');
+			isRequesting = false;
+			return;
+		}
+
+		const currentVipCards = { ...currentRewards.vip_cards };
+		const now = new Date().toISOString();
+
+		// 1. OPTIMISTIC UPDATE (instant UI feedback)
+		const optimisticCards: StudentVipCards = {
+			...currentVipCards,
+			[instanceId]: {
+				...currentVipCards[instanceId],
+				activationRequestedAt: now
+			}
+		};
+
+		syncVipCards({ type: 'student' }, optimisticCards);
+
 		try {
+			// 2. API CALL
 			const response = await fetch('/api/vip-cards/request-activation', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -65,12 +96,23 @@
 				throw new Error(result.message || 'Erreur lors de la demande');
 			}
 
-			// Success
+			// 3. SUCCESS: Cache already has correct data ✅
 			toaster.success("Demande d'activation envoyée !");
 
-			// Update parent component
+			// Update parent component (optional callback)
 			onActivationRequested?.();
 		} catch (error) {
+			// 4. ERROR: Rollback optimistic update ❌
+			const rollbackCards: StudentVipCards = {
+				...currentVipCards,
+				[instanceId]: {
+					...currentVipCards[instanceId]
+					// Remove activationRequestedAt by not including it
+				}
+			};
+
+			syncVipCards({ type: 'student' }, rollbackCards);
+
 			console.error('[VipCardActivationButton] Error:', error);
 			toaster.error(
 				error instanceof Error ? error.message : "Erreur lors de la demande d'activation"

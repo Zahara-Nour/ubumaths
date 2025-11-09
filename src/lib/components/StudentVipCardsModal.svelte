@@ -59,6 +59,8 @@
 		openVipCardChooseModal,
 		openRemoveWarningsModal
 	} from '$lib/utils/vip-card-modals';
+	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+	import { syncVipCards } from '$lib/utils/cache-sync';
 
 	interface Props {
 		vipCards: StudentVipCards;
@@ -196,18 +198,18 @@
 			return;
 		}
 
-		// Callback after action completes successfully
-		// Action endpoints handle marking the card as used, so we just need to refresh state
+		/**
+		 * Callback after action completes successfully
+		 *
+		 * PATTERN: Server-confirmed optimistic update
+		 * The action endpoint marks the card as used on the server.
+		 * We refetch from cache to get the updated state.
+		 */
 		const onComplete = async () => {
 			try {
-				// Refetch student's VIP cards to get updated state
-				const response = await fetch(`/api/students/${studentId}/vip-cards`);
-				if (!response.ok) {
-					throw new Error('Failed to refresh VIP cards');
-				}
-
-				const data = await response.json();
-				vipCards = data.vipCards as StudentVipCards;
+				// Refetch from cache (will auto-fetch from API if cache expired)
+				const updatedRewards = await studentCache.getRewards();
+				vipCards = updatedRewards.vip_cards;
 
 				toaster.success(`${card.name} activée avec succès !`);
 			} catch (err) {
@@ -282,6 +284,12 @@
 	/**
 	 * Request activation for a card
 	 * Students cannot use cards directly - must request teacher approval
+	 *
+	 * PATTERN: Optimistic update BEFORE API call
+	 * 1. Update cache immediately (activationRequestedAt = now)
+	 * 2. Make API call
+	 * 3. Success: Cache already correct ✅
+	 * 4. Error: Rollback cache update ❌
 	 */
 	async function handleRequestActivation(card: {
 		id: string;
@@ -307,7 +315,26 @@
 			return;
 		}
 
+		// Save current state for potential rollback
+		const currentVipCards = { ...vipCards };
+		const now = new Date().toISOString();
+
+		// 1. OPTIMISTIC UPDATE (instant UI feedback)
+		const optimisticCards: StudentVipCards = {
+			...vipCards,
+			[instanceId]: {
+				...vipCards[instanceId],
+				activationRequestedAt: now,
+				activationRequestedBy: studentId
+			}
+		};
+
+		// Update cache AND local state
+		syncVipCards({ type: 'student' }, optimisticCards);
+		vipCards = optimisticCards;
+
 		try {
+			// 2. API CALL
 			const response = await fetch('/api/vip-cards/request-activation', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -320,21 +347,13 @@
 				throw new Error(result.message || "Échec de la demande d'activation");
 			}
 
-			// Update local vipCards state to reflect the pending request
-			// This provides instant UI feedback
-			const updatedInstance = {
-				...vipCards[instanceId],
-				activationRequestedAt: new Date().toISOString(),
-				activationRequestedBy: studentId
-			};
-
-			vipCards = {
-				...vipCards,
-				[instanceId]: updatedInstance
-			};
-
+			// 3. SUCCESS: Cache already correct ✅
 			toaster.success(`Demande d'activation envoyée pour ${card.name} !`);
 		} catch (err) {
+			// 4. ERROR: Rollback optimistic update ❌
+			syncVipCards({ type: 'student' }, currentVipCards);
+			vipCards = currentVipCards;
+
 			const message = err instanceof Error ? err.message : 'Erreur inconnue';
 			toaster.error(message);
 		}

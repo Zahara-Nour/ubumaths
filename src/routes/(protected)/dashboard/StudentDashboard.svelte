@@ -38,21 +38,33 @@
 	import { Button } from '$lib/components/ui/button';
 	import { formatDeadline, isDeadlinePassed, isDeadlineSoon } from '$lib/utils/dates';
 	import { BookOpen, FileText, Calendar, CheckCircle } from 'lucide-svelte';
+	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 
 	// Receive data from parent (+page.svelte)
 	// Contains profile with student's information
 	let { data }: { data: PageData } = $props();
+
+	/**
+	 * EFFECT: Auto-fetch student rewards on mount
+	 * getRewards() handles cache-first pattern internally
+	 * (checks cache, auto-fetches if miss/expired)
+	 */
+	$effect(() => {
+		if (data.user && data.profile) {
+			// Auto-fetch rewards (cache-first, auto-fetch if needed)
+			studentCache.getRewards();
+		}
+	});
 </script>
 
 <div class="space-y-6">
 	<!-- REWARDS BLOCK -->
-	<!-- Summary of rewards: Gidouilles, VIP Cards, and Riddles -->
-	<RewardsBlock
-		gidouilles={data.profile.gidouilles}
-		vipCards={data.profile.vip_cards as unknown as import('$lib/types/vip-card').StudentVipCards}
-		riddlesSolved={data.riddlesSolved}
-		studentId={data.profile.id}
-	/>
+	<!--
+		Summary of rewards: Gidouilles, VIP Cards, and Riddles
+		NOTE: RewardsBlock now derives gidouilles and vipCards from studentCache
+		Only riddlesSolved and studentId are passed as props
+	-->
+	<RewardsBlock riddlesSolved={data.riddlesSolved} studentId={data.profile.id} />
 
 	<!-- SRS REVISIONS SECTION -->
 	<!-- Quick access to spaced repetition system -->

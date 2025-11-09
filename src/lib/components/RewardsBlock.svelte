@@ -8,6 +8,11 @@
 	3. Riddles - Total solved riddles count
 
 	Used in: StudentDashboard.svelte
+
+	CACHE USAGE:
+	- Derives gidouilles and vipCards from studentCache
+	- riddlesSolved and studentId still passed as props (not in cache)
+	- Reactive to cache updates via $derived
 -->
 
 <script lang="ts">
@@ -19,15 +24,19 @@
 	import { resolve } from '$app/paths';
 	import StudentVipCardsModal from '$lib/components/StudentVipCardsModal.svelte';
 	import { modalStack } from '$lib/stores/modalStack.svelte';
+	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 
 	interface Props {
-		gidouilles: number;
-		vipCards: StudentVipCards;
-		riddlesSolved: number;
-		studentId: string;
+		riddlesSolved: number; // Not in cache, passed as prop
+		studentId: string; // Needed for modal
 	}
 
-	let { gidouilles, vipCards, riddlesSolved, studentId }: Props = $props();
+	let { riddlesSolved, studentId }: Props = $props();
+
+	// Derive rewards from cache (reactive to cache updates)
+	const rewards = $derived(studentCache.getRewardsSync());
+	const gidouilles = $derived(rewards?.gidouilles ?? 0);
+	const vipCards = $derived<StudentVipCards>(rewards?.vip_cards ?? {});
 
 	// Calculate total VIP cards owned
 	const cardCounts = $derived(getStudentCardCounts(vipCards));
