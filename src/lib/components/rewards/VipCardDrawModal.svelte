@@ -29,14 +29,16 @@
 
 <script lang="ts">
 	import { modalStack } from '$lib/stores/modalStack.svelte';
-	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { VipCard } from '$lib/types/vip-card';
+	import { syncVipCards, syncGidouilles } from '$lib/utils/cache-sync';
+	import type { CacheContext } from '$lib/types/cache-context';
+	import type { VipCard, StudentVipCards } from '$lib/types/vip-card';
 	import {
 		vipCardTemplates,
 		getTemplateById,
 		templateToVipCard
 	} from '$lib/stores/vipCardTemplates.svelte';
+	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import VipCardMultiHoloReveal from './VipCardMultiHoloReveal.svelte';
 	import VipCardBatchReveal from './VipCardBatchReveal.svelte';
 	import { onMount } from 'svelte';
@@ -82,9 +84,14 @@
 		loading = true;
 		error = null;
 
-		// Optimistic update (if gidouilles payment and classId provided)
-		if (paymentMethod === 'gidouilles' && gidouillesCost && classId) {
-			teacherCache.updateGidouillesOptimistic(classId, studentId, -gidouillesCost);
+		// Build cache context
+		const context: CacheContext = classId
+			? { type: 'teacher', classId, studentId }
+			: { type: 'student' };
+
+		// Optimistic update for gidouilles payment
+		if (paymentMethod === 'gidouilles' && gidouillesCost) {
+			syncGidouilles(context, -gidouillesCost);
 		}
 
 		try {
@@ -132,45 +139,42 @@
 					} => c !== null
 				);
 
-			// Update cache with new cards (if classId provided)
-			if (classId) {
-				// Get current VIP cards from cache
-				const currentRewards = teacherCache.getRewardsSync(classId);
-				const studentRewards = currentRewards?.get(studentId);
+			// Update cache with new cards
+			// Get current VIP cards to reconstruct state
+			const currentRewards = classId ? teacherCache.getRewardsSync(classId)?.get(studentId) : null;
 
-				if (studentRewards) {
-					// Merge new cards with existing cards
-					const updatedVipCards = { ...studentRewards.vip_cards };
+			// Reconstruct VIP cards state
+			const updatedVipCards: StudentVipCards = currentRewards
+				? { ...currentRewards.vip_cards }
+				: {};
 
-					// Add new cards
-					for (const c of result.cards) {
-						updatedVipCards[c.instanceId] = {
-							cardId: c.cardId,
-							earnedAt: c.earnedAt,
-							usedAt: null
-						};
-					}
-
-					// Mark the used card as used (if payment method is vip_card)
-					if (paymentMethod === 'vip_card' && usedCardInstanceId) {
-						updatedVipCards[usedCardInstanceId] = {
-							...updatedVipCards[usedCardInstanceId],
-							usedAt: new Date().toISOString()
-						};
-					}
-
-					teacherCache.updateVipCardsOptimistic(classId, studentId, updatedVipCards);
-				}
+			// Add new cards
+			for (const c of result.cards) {
+				updatedVipCards[c.instanceId] = {
+					cardId: c.cardId,
+					earnedAt: c.earnedAt,
+					usedAt: null
+				};
 			}
+
+			// Mark the used card as used (if payment method is vip_card)
+			if (paymentMethod === 'vip_card' && usedCardInstanceId) {
+				updatedVipCards[usedCardInstanceId] = {
+					...updatedVipCards[usedCardInstanceId],
+					usedAt: new Date().toISOString()
+				};
+			}
+
+			syncVipCards(context, updatedVipCards);
 
 			toaster.success(`${count} carte${count > 1 ? 's' : ''} VIP tirée${count > 1 ? 's' : ''} !`);
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Erreur inconnue';
 			toaster.error(error);
 
-			// Rollback optimistic update (if classId provided)
-			if (paymentMethod === 'gidouilles' && gidouillesCost && classId) {
-				teacherCache.updateGidouillesOptimistic(classId, studentId, gidouillesCost);
+			// Rollback optimistic update
+			if (paymentMethod === 'gidouilles' && gidouillesCost) {
+				syncGidouilles(context, gidouillesCost);
 			}
 
 			// Auto-close after showing error

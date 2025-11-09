@@ -80,7 +80,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 		Object.entries(vipCards).forEach(([instanceId, instance]) => {
 			// Only include instances with pending activation requests
-			if (instance.activationRequestedAt && !instance.usedAt) {
+			// Must have activationRequestedAt, not be used, and not be approved yet
+			if (instance.activationRequestedAt && !instance.usedAt && !instance.activationApprovedAt) {
 				pendingRequests.push({
 					studentId: profile.id,
 					studentName: studentName || 'Élève',

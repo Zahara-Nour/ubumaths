@@ -31,6 +31,8 @@
 	import { modalStack } from '$lib/stores/modalStack.svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { syncVipCards } from '$lib/utils/cache-sync';
+	import type { CacheContext } from '$lib/types/cache-context';
 	import { getRarityPoints } from '$lib/types/vip-card';
 	import type { VipCardRarity, StudentVipCards } from '$lib/types/vip-card';
 	import {
@@ -121,6 +123,11 @@
 		submitting = true;
 		error = null;
 
+		// Build cache context
+		const context: CacheContext = classId
+			? { type: 'teacher', classId, studentId }
+			: { type: 'student' };
+
 		try {
 			const response = await fetch('/api/vip-cards/choose', {
 				method: 'POST',
@@ -139,34 +146,36 @@
 
 			result = await response.json();
 
-			// Update cache if classId provided
-			if (classId && result) {
-				const currentRewards = teacherCache.getRewardsSync(classId);
-				const studentRewards = currentRewards?.get(studentId);
+			// Update cache with server response
+			if (result) {
+				// Get current VIP cards to reconstruct state
+				const currentRewards = classId
+					? teacherCache.getRewardsSync(classId)?.get(studentId)
+					: null;
 
-				if (studentRewards) {
-					const updatedVipCards = { ...studentRewards.vip_cards } as StudentVipCards;
+				const updatedVipCards: StudentVipCards = currentRewards
+					? { ...currentRewards.vip_cards }
+					: {};
 
-					// Mark action card as used
-					const now = new Date().toISOString();
-					if (updatedVipCards[result.actionCardUsed.instanceId]) {
-						updatedVipCards[result.actionCardUsed.instanceId] = {
-							...updatedVipCards[result.actionCardUsed.instanceId],
-							usedAt: now
-						};
-					}
-
-					// Add received cards
-					for (const card of result.cardsReceived) {
-						updatedVipCards[card.instanceId] = {
-							cardId: card.cardId,
-							earnedAt: card.earnedAt,
-							usedAt: null
-						};
-					}
-
-					teacherCache.updateVipCardsOptimistic(classId, studentId, updatedVipCards);
+				// Mark action card as used
+				const now = new Date().toISOString();
+				if (updatedVipCards[result.actionCardUsed.instanceId]) {
+					updatedVipCards[result.actionCardUsed.instanceId] = {
+						...updatedVipCards[result.actionCardUsed.instanceId],
+						usedAt: now
+					};
 				}
+
+				// Add received cards
+				for (const card of result.cardsReceived) {
+					updatedVipCards[card.instanceId] = {
+						cardId: card.cardId,
+						earnedAt: card.earnedAt,
+						usedAt: null
+					};
+				}
+
+				syncVipCards(context, updatedVipCards);
 			}
 
 			toaster.success('Cartes choisies avec succès !');

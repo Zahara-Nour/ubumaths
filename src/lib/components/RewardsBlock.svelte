@@ -49,7 +49,6 @@
 		modalStack.push({
 			component: StudentVipCardsModal,
 			props: {
-				vipCards,
 				studentId
 			},
 			canDismiss: true

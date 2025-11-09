@@ -63,13 +63,23 @@
 	import { syncVipCards } from '$lib/utils/cache-sync';
 
 	interface Props {
-		vipCards: StudentVipCards;
 		studentId: string;
 		classId?: string; // Optional: needed for remove_warnings action
 		periodId?: string; // Optional: needed for remove_warnings action
 	}
 
-	let { vipCards, studentId, classId, periodId }: Props = $props();
+	let { studentId, classId, periodId }: Props = $props();
+
+	// Local state for VIP cards (enables reactive updates)
+	let vipCards = $state<StudentVipCards>({});
+
+	// Sync with cache (reactive to cache changes)
+	$effect(() => {
+		const rewards = studentCache.getRewardsSync();
+		if (rewards) {
+			vipCards = rewards.vip_cards;
+		}
+	});
 
 	// Holographic modal state
 	let holoModalVisible = $state(false);
@@ -204,12 +214,25 @@
 		 * PATTERN: Server-confirmed optimistic update
 		 * The action endpoint marks the card as used on the server.
 		 * We refetch from cache to get the updated state.
+		 *
+		 * FIX: Force immediate local state update after cache refetch
+		 * to avoid race condition with $effect() reactivity.
 		 */
 		const onComplete = async () => {
 			try {
-				// Refetch from cache (will auto-fetch from API if cache expired)
-				const updatedRewards = await studentCache.getRewards();
-				vipCards = updatedRewards.vip_cards;
+				// CRITICAL: Invalidate cache FIRST to force fresh fetch from API
+				// Without this, getRewards() returns stale data if cache < 10min old
+				studentCache.invalidateRewards();
+
+				// Now fetch fresh data from API (cache is empty, so it will fetch)
+				await studentCache.getRewards();
+
+				// Force immediate UI update by directly updating local state
+				// This ensures the UI updates right away, avoiding race condition
+				const rewards = studentCache.getRewardsSync();
+				if (rewards) {
+					vipCards = rewards.vip_cards;
+				}
 
 				toaster.success(`${card.name} activée avec succès !`);
 			} catch (err) {
@@ -329,9 +352,8 @@
 			}
 		};
 
-		// Update cache AND local state
+		// Update cache (vipCards derived will update automatically)
 		syncVipCards({ type: 'student' }, optimisticCards);
-		vipCards = optimisticCards;
 
 		try {
 			// 2. API CALL
@@ -351,8 +373,8 @@
 			toaster.success(`Demande d'activation envoyée pour ${card.name} !`);
 		} catch (err) {
 			// 4. ERROR: Rollback optimistic update ❌
+			// Rollback cache (vipCards derived will update automatically)
 			syncVipCards({ type: 'student' }, currentVipCards);
-			vipCards = currentVipCards;
 
 			const message = err instanceof Error ? err.message : 'Erreur inconnue';
 			toaster.error(message);

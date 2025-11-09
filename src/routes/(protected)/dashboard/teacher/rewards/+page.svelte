@@ -227,6 +227,9 @@
 	// Grant VIP card state (for grant button loading state)
 	let grantingCard = $state<string | null>(null);
 
+	// Local state for activation requests (enables optimistic updates)
+	let activationRequests = $state<typeof data.activationRequests>([]);
+
 	// ============================================================================
 	// ACTIVATION REQUESTS TAB - SEARCH, FILTERS, AND BULK ACTIONS
 	// ============================================================================
@@ -256,9 +259,14 @@
 		}))
 	]);
 
+	// Sync local state with server data (runs on mount and after invalidateAll)
+	$effect(() => {
+		activationRequests = data.activationRequests;
+	});
+
 	// Filtered and sorted activation requests
 	let filteredActivationRequests = $derived.by(() => {
-		let results = [...data.activationRequests];
+		let results = [...activationRequests];
 
 		// Apply search filter
 		if (requestSearchQuery.trim()) {
@@ -396,8 +404,16 @@
 			);
 		}
 
-		// Clear selections and refresh data
+		// Clear selections
 		clearSelections();
+
+		// Optimistic update: Remove all processed requests from list
+		const processedInstanceIds = new Set(requestsToProcess.map((r) => r.instanceId));
+		activationRequests = activationRequests.filter(
+			(req) => !processedInstanceIds.has(req.instanceId)
+		);
+
+		// Sync with server in background
 		await invalidateAll();
 
 		isBulkProcessing = false;
@@ -453,8 +469,16 @@
 			);
 		}
 
-		// Clear selections and refresh data
+		// Clear selections
 		clearSelections();
+
+		// Optimistic update: Remove all processed requests from list
+		const processedInstanceIds = new Set(requestsToProcess.map((r) => r.instanceId));
+		activationRequests = activationRequests.filter(
+			(req) => !processedInstanceIds.has(req.instanceId)
+		);
+
+		// Sync with server in background
 		await invalidateAll();
 
 		isBulkProcessing = false;
@@ -495,6 +519,11 @@
 			}
 
 			toaster.success(message);
+
+			// Optimistic update: Remove request from list immediately
+			activationRequests = activationRequests.filter((req) => req.instanceId !== instanceId);
+
+			// Sync with server in background
 			await invalidateAll();
 		} catch (_error) {
 			console.error('[rewards] Use card error:', _error);
@@ -518,6 +547,11 @@
 			if (!response.ok) throw new Error('Erreur lors du rejet');
 
 			toaster.success(`Demande rejetée pour ${studentName}`);
+
+			// Optimistic update: Remove request from list immediately
+			activationRequests = activationRequests.filter((req) => req.instanceId !== instanceId);
+
+			// Sync with server in background
 			await invalidateAll();
 		} catch (_error) {
 			toaster.error('Erreur lors du rejet');
@@ -943,9 +977,9 @@
 			<Tabs.Trigger value="gidouilles">Gidouilles</Tabs.Trigger>
 			<Tabs.Trigger value="demandes" class="relative">
 				Demandes d'activation VIP
-				{#if data.activationRequests.length > 0}
+				{#if activationRequests.length > 0}
 					<Badge variant="destructive" class="ml-2">
-						{data.activationRequests.length}
+						{activationRequests.length}
 					</Badge>
 				{/if}
 			</Tabs.Trigger>
@@ -1291,7 +1325,7 @@
 		<!-- TAB 2: DEMANDES D'ACTIVATION VIP -->
 		<Tabs.Content value="demandes">
 			<div class="space-y-6">
-				{#if data.activationRequests.length === 0}
+				{#if activationRequests.length === 0}
 					<!-- Empty state -->
 					<Card.Root>
 						<Card.Content class="pt-6 text-center">
@@ -1366,8 +1400,8 @@
 									<span>Demandes en attente</span>
 									<Badge variant="secondary">
 										{filteredActivationRequests.length}
-										{#if filteredActivationRequests.length !== data.activationRequests.length}
-											/ {data.activationRequests.length}
+										{#if filteredActivationRequests.length !== activationRequests.length}
+											/ {activationRequests.length}
 										{/if}
 									</Badge>
 								</Card.Title>
