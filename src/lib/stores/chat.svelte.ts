@@ -7,6 +7,48 @@ import { createLogger } from '$lib/utils/logger';
 const logger = createLogger('chat.svelte.ts');
 
 /**
+ * Conversation type representing a chat conversation with metadata
+ */
+export interface Conversation {
+	id: string;
+	name: string | null;
+	is_group: boolean;
+	class_id: string | null;
+	last_message_preview: string | null;
+	last_message_at: string | null;
+	unread_count: number;
+	participant_count: number;
+	other_user_id: string | null;
+	other_user_firstname: string | null;
+	other_user_lastname: string | null;
+	other_user_avatar_url: string | null;
+	is_muted: boolean;
+	created_at: string | null;
+	updated_at: string | null;
+}
+
+/**
+ * Typing user with full profile information
+ */
+export interface TypingUser {
+	id: string;
+	firstname: string | null;
+	lastname: string | null;
+}
+
+/**
+ * Message attachment metadata
+ */
+export interface MessageAttachment {
+	id: string;
+	file_name: string;
+	file_type: string;
+	file_size: number;
+	storage_path: string;
+	public_url: string;
+}
+
+/**
  * Message type with client-side flags for optimistic updates and broadcast tracking
  */
 export interface Message {
@@ -27,6 +69,7 @@ export interface Message {
 		full_name: string | null;
 		avatar_url: string | null;
 	};
+	attachments?: MessageAttachment[];
 	reactions?: MessageReaction[];
 }
 
@@ -163,9 +206,29 @@ class ChatStore {
 	activeConversationId = $state<string | null>(null);
 
 	/**
-	 * Typing users per conversation
+	 * Typing users per conversation (user ID only)
 	 */
 	private typingUsers = $state<Map<string, Set<string>>>(new Map());
+
+	/**
+	 * Typing users with full profile information per conversation
+	 */
+	private typingUsersMap = $state<Map<string, Map<string, TypingUser>>>(new Map());
+
+	/**
+	 * Conversations list organized by ID
+	 */
+	private conversationsMap = $state<Map<string, Conversation>>(new Map());
+
+	/**
+	 * Loading state for conversations list
+	 */
+	private loadingConversations = $state<boolean>(false);
+
+	/**
+	 * Loading state for messages
+	 */
+	private loadingMessages = $state<boolean>(false);
 
 	/**
 	 * Pagination tracking - whether more messages exist
@@ -173,7 +236,7 @@ class ChatStore {
 	private hasMore = $state<Map<string, boolean>>(new Map());
 
 	/**
-	 * Loading state
+	 * General loading state (legacy, kept for backward compatibility)
 	 */
 	loading = $state<boolean>(false);
 
@@ -183,25 +246,81 @@ class ChatStore {
 	private typingTimers = new Map<string, Map<string, ReturnType<typeof setTimeout>>>();
 
 	/**
+	 * Get all conversations sorted by last message timestamp
+	 */
+	get conversations(): Conversation[] {
+		return Array.from(this.conversationsMap.values()).sort((a, b) => {
+			const aTime = a.last_message_at ? new Date(a.last_message_at).getTime() : 0;
+			const bTime = b.last_message_at ? new Date(b.last_message_at).getTime() : 0;
+			return bTime - aTime;
+		});
+	}
+
+	/**
+	 * Get the currently active conversation
+	 */
+	get activeConversation(): Conversation | null {
+		return this.activeConversationId
+			? (this.conversationsMap.get(this.activeConversationId) ?? null)
+			: null;
+	}
+
+	/**
+	 * Get messages for the active conversation
+	 */
+	get activeMessages(): Message[] {
+		return this.activeConversationId ? this.getMessages(this.activeConversationId) : [];
+	}
+
+	/**
+	 * Get typing users with profile info for the active conversation
+	 */
+	get activeTypingUsers(): TypingUser[] {
+		if (!this.activeConversationId) return [];
+		const typingSet = this.typingUsersMap.get(this.activeConversationId);
+		return typingSet ? Array.from(typingSet.values()) : [];
+	}
+
+	/**
+	 * Check if messages are currently loading
+	 */
+	get isLoadingMessages(): boolean {
+		return this.loadingMessages;
+	}
+
+	/**
+	 * Check if conversations are currently loading
+	 */
+	get isLoadingConversations(): boolean {
+		return this.loadingConversations;
+	}
+
+	/**
 	 * Initialize the chat store
 	 *
 	 * @param client - Supabase client instance
 	 * @param currentUserId - Current authenticated user ID
-	 * @param user - Current user profile info (for optimistic updates)
+	 * @param user - Optional user profile info (will be fetched if not provided)
 	 */
 	init(
 		client: SupabaseClient<Database>,
 		currentUserId: string,
-		user: { full_name: string | null; avatar_url: string | null }
+		user?: { full_name: string | null; avatar_url: string | null }
 	): void {
 		if (!browser) {
 			logger.warn('Cannot initialize chat store on server');
 			return;
 		}
 
+		// Guard against re-initialization
+		if (this.supabase && this.userId) {
+			logger.warn('Chat store already initialized. Call cleanup() first to re-initialize.');
+			return;
+		}
+
 		this.supabase = client;
 		this.userId = currentUserId;
-		this.currentUser = user;
+		this.currentUser = user ?? null;
 
 		logger.info('Chat store initialized for user:', currentUserId);
 	}
@@ -304,7 +423,8 @@ class ChatStore {
 			return;
 		}
 
-		this.loading = true;
+		this.loadingMessages = true;
+		this.loading = true; // Keep for backward compatibility
 
 		try {
 			// Use the paginated function which includes JOINs
@@ -349,6 +469,7 @@ class ChatStore {
 			logger.error(`Failed to load conversation history for ${conversationId}:`, error);
 			throw error;
 		} finally {
+			this.loadingMessages = false;
 			this.loading = false;
 		}
 	}
@@ -374,13 +495,14 @@ class ChatStore {
 		// Get the oldest message to use as pagination cursor
 		const oldestMessage = existingMessages[existingMessages.length - 1];
 
-		this.loading = true;
+		this.loadingMessages = true;
+		this.loading = true; // Keep for backward compatibility
 
 		try {
 			const { data, error } = await this.supabase.rpc('get_messages_paginated', {
 				p_conversation_id: conversationId,
 				p_before_id: oldestMessage.id,
-				p_before_timestamp: oldestMessage.created_at,
+				p_before_timestamp: oldestMessage.created_at ?? undefined,
 				p_limit: limit
 			});
 
@@ -425,6 +547,7 @@ class ChatStore {
 			logger.error(`Failed to load more messages for ${conversationId}:`, error);
 			throw error;
 		} finally {
+			this.loadingMessages = false;
 			this.loading = false;
 		}
 	}
@@ -433,30 +556,77 @@ class ChatStore {
 	 * Send a message (Optimistic UI → Broadcast → DB → postgres_changes)
 	 *
 	 * @param conversationId - The conversation ID
-	 * @param plainText - The plain text message content
+	 * @param content - The message content (plain text or rich JSON)
+	 * @param attachments - Optional array of attachment records (without IDs, will be generated)
+	 * @returns The sent message or null if failed
 	 */
-	async sendMessage(conversationId: string, plainText: string): Promise<void> {
+	async sendMessage(
+		conversationId: string,
+		content: unknown,
+		attachments?: Array<{
+			file_name: string;
+			file_type: string;
+			file_size: number;
+			storage_path: string;
+			public_url: string;
+		}>
+	): Promise<Message | null> {
 		if (!browser || !this.supabase || !this.userId || !this.currentUser) {
-			logger.warn('Cannot send message: not initialized or not in browser');
-			return;
+			logger.warn('Cannot send message: not initialized');
+
+			// If currentUser is missing, try to fetch it
+			if (this.supabase && this.userId && !this.currentUser) {
+				const { data: profile } = await this.supabase
+					.from('profiles')
+					.select('full_name, avatar_url')
+					.eq('id', this.userId)
+					.single();
+				this.currentUser = profile ?? { full_name: null, avatar_url: null };
+
+				// If still no user, bail out
+				if (!this.currentUser) {
+					logger.error('Cannot send message: user profile not found');
+					return null;
+				}
+			} else {
+				return null;
+			}
 		}
 
-		// Generate temporary ID for optimistic update
-		const tempId = `temp-${crypto.randomUUID()}`;
-		const now = new Date().toISOString();
+		// Convert content to the expected format
+		const messageContent =
+			typeof content === 'string'
+				? { text: content }
+				: (content as Database['public']['Tables']['messages']['Row']['content']);
 
-		// Create optimistic message
+		// Extract plain text for preview
+		const plainText =
+			typeof content === 'string' ? content : ((content as { text?: string })?.text ?? null);
+
+		// 1. Create optimistic message
+		const optimisticId = crypto.randomUUID();
+
+		// Transform attachments to include IDs
+		const messageAttachments: MessageAttachment[] = attachments
+			? attachments.map((att) => ({
+					id: crypto.randomUUID(),
+					...att
+				}))
+			: [];
+
 		const optimisticMessage: Message = {
-			id: tempId,
+			id: optimisticId,
 			conversation_id: conversationId,
 			sender_id: this.userId,
-			content: { text: plainText }, // Simple JSON content
+			content: messageContent,
 			plain_text: plainText,
-			created_at: now,
+			created_at: new Date().toISOString(),
 			edited_at: null,
 			deleted_at: null,
 			is_flagged: false,
 			flag_reason: null,
+			attachments: messageAttachments,
+			reactions: [],
 			is_optimistic: true,
 			sender: {
 				id: this.userId,
@@ -465,28 +635,28 @@ class ChatStore {
 			}
 		};
 
-		// Add optimistic message to state
+		// 2. Add to local state (optimistic UI)
 		const existingMessages = this.messages.get(conversationId) || [];
 		this.messages.set(conversationId, [optimisticMessage, ...existingMessages]);
 
-		logger.info('Added optimistic message:', tempId);
+		logger.info('Added optimistic message:', optimisticId);
 
-		try {
-			// Step 1: Broadcast to other users (50ms, ephemeral, FREE)
-			const channel = supabaseRealtimeManager.getChannel(`chat-${conversationId}`);
-			if (channel) {
-				await channel.send({
+		// 3. Broadcast to other participants (instant delivery, ~50ms)
+		const channel = supabaseRealtimeManager.getChannel(`chat-${conversationId}`);
+		if (channel) {
+			channel
+				.send({
 					type: 'broadcast',
 					event: 'new_message',
 					payload: {
 						type: 'new_message',
 						message: {
-							id: tempId, // Use temp ID so others can deduplicate later
+							id: optimisticId,
 							conversation_id: conversationId,
 							sender_id: this.userId,
-							content: { text: plainText },
+							content: messageContent as Database['public']['Tables']['messages']['Row']['content'],
 							plain_text: plainText,
-							created_at: now,
+							created_at: optimisticMessage.created_at ?? new Date().toISOString(),
 							sender: {
 								id: this.userId,
 								full_name: this.currentUser.full_name,
@@ -494,48 +664,110 @@ class ChatStore {
 							}
 						}
 					} satisfies BroadcastMessagePayload
-				});
+				})
+				.catch((err) => logger.error('Failed to broadcast message:', err));
+		}
 
-				logger.info('Broadcasted message to peers');
-			}
-
-			// Step 2: Insert to database (200ms, persists)
-			const { data, error } = await this.supabase
+		// 4. Insert to database (persistent, ~200ms)
+		try {
+			const { data: insertedMessage, error: insertError } = await this.supabase
 				.from('messages')
 				.insert({
+					id: optimisticId,
 					conversation_id: conversationId,
 					sender_id: this.userId,
-					content: { text: plainText },
+					content: messageContent,
 					plain_text: plainText
 				})
-				.select()
+				.select(
+					`
+				id,
+				conversation_id,
+				sender_id,
+				content,
+				plain_text,
+				created_at,
+				edited_at,
+				deleted_at,
+				is_flagged,
+				flag_reason,
+				sender:profiles!sender_id (
+					id,
+					full_name,
+					avatar_url
+				)
+			`
+				)
 				.single();
 
-			if (error) {
-				throw error;
+			if (insertError) {
+				logger.error('Failed to insert message to DB:', insertError);
+				// Remove optimistic message on failure
+				const currentMessages = this.messages.get(conversationId) || [];
+				const rollback = currentMessages.filter((msg) => msg.id !== optimisticId);
+				this.messages.set(conversationId, rollback);
+				return null;
 			}
 
-			logger.info('Message inserted to DB:', data.id);
+			// 5. Insert attachments if provided
+			if (attachments && attachments.length > 0) {
+				const attachmentRecords = attachments.map((att) => ({
+					message_id: optimisticId,
+					file_name: att.file_name,
+					file_type: att.file_type,
+					file_size: att.file_size,
+					storage_path: att.storage_path,
+					public_url: att.public_url,
+					uploaded_by: this.userId! // Safe to assert non-null as we checked at function start
+				}));
 
-			// Step 3: Replace optimistic message with DB version
-			// postgres_changes will fire and handlePostgresMessage will replace it with full JOIN data
-			// For now, just update the ID to match the DB version
+				const { error: attachError } = await this.supabase
+					.from('message_attachments')
+					.insert(attachmentRecords);
+
+				if (attachError) {
+					logger.error('Failed to insert attachments:', attachError);
+				}
+			}
+
+			// 6. Update optimistic message with DB data
+			const dbMessage: Message = {
+				id: insertedMessage.id,
+				conversation_id: insertedMessage.conversation_id,
+				sender_id: insertedMessage.sender_id,
+				content: insertedMessage.content,
+				plain_text: insertedMessage.plain_text,
+				created_at: insertedMessage.created_at,
+				edited_at: insertedMessage.edited_at,
+				deleted_at: insertedMessage.deleted_at,
+				is_flagged: insertedMessage.is_flagged,
+				flag_reason: insertedMessage.flag_reason,
+				attachments: messageAttachments,
+				reactions: [],
+				is_optimistic: false,
+				sender: Array.isArray(insertedMessage.sender)
+					? undefined
+					: insertedMessage.sender
+						? {
+								id: insertedMessage.sender.id,
+								full_name: insertedMessage.sender.full_name,
+								avatar_url: insertedMessage.sender.avatar_url
+							}
+						: undefined
+			};
+
 			const currentMessages = this.messages.get(conversationId) || [];
-			const updated = currentMessages.map((msg) =>
-				msg.id === tempId ? { ...msg, id: data.id, is_optimistic: false } : msg
-			);
+			const updated = currentMessages.map((msg) => (msg.id === optimisticId ? dbMessage : msg));
 			this.messages.set(conversationId, updated);
 
-			logger.info('Optimistic message updated with DB ID:', data.id);
+			logger.info('Message sent successfully:', optimisticId);
+			return dbMessage;
 		} catch (error) {
-			logger.error('Failed to send message, rolling back optimistic update:', error);
-
-			// Rollback: Remove optimistic message
+			logger.error('Failed to send message:', error);
 			const currentMessages = this.messages.get(conversationId) || [];
-			const rollback = currentMessages.filter((msg) => msg.id !== tempId);
+			const rollback = currentMessages.filter((msg) => msg.id !== optimisticId);
 			this.messages.set(conversationId, rollback);
-
-			throw error;
+			return null;
 		}
 	}
 
@@ -634,7 +866,7 @@ class ChatStore {
 								full_name: data.sender.full_name,
 								avatar_url: data.sender.avatar_url
 							}
-						: null
+						: undefined
 			};
 
 			const existingMessages = this.messages.get(data.conversation_id) || [];
@@ -840,6 +1072,91 @@ class ChatStore {
 	 */
 	canLoadMore(conversationId: string): boolean {
 		return this.hasMore.get(conversationId) ?? false;
+	}
+
+	/**
+	 * Set the active conversation ID and subscribe to it
+	 * @param conversationId - Conversation ID or null to clear
+	 */
+	setActiveConversation(conversationId: string | null): void {
+		if (!browser) {
+			logger.warn('Cannot set active conversation on server');
+			return;
+		}
+
+		// Unsubscribe from previous conversation
+		if (this.activeConversationId && this.activeConversationId !== conversationId) {
+			this.unsubscribeFromConversation(this.activeConversationId).catch((err) =>
+				logger.error('Failed to unsubscribe:', err)
+			);
+		}
+
+		// Set new active conversation
+		this.activeConversationId = conversationId;
+
+		// If setting to a conversation, subscribe to it
+		if (conversationId) {
+			this.subscribeToConversation(conversationId)
+				.then(() => this.loadConversationHistory(conversationId))
+				.catch((err) => logger.error('Failed to load conversation:', err));
+		}
+	}
+
+	/**
+	 * Create or find a 1-on-1 chat conversation with a friend
+	 * @param _friendId - Friend's user ID
+	 * @returns Conversation ID or null if failed
+	 */
+	async create1on1Chat(_friendId: string): Promise<string | null> {
+		// TODO: Phase 2 implementation
+		logger.warn('create1on1Chat not yet implemented - Phase 2');
+		return null;
+	}
+
+	/**
+	 * Toggle reaction on a message
+	 * @param _messageId - Message ID
+	 * @param _emoji - Emoji to toggle
+	 */
+	toggleReaction(_messageId: string, _emoji: string): void {
+		// TODO: Phase 3 implementation
+		logger.warn('toggleReaction not yet implemented - Phase 3');
+	}
+
+	/**
+	 * Report a message as inappropriate
+	 * @param _messageId - Message ID
+	 * @param _reason - Report reason
+	 * @param _details - Additional details
+	 * @returns True if successful
+	 */
+	async reportMessage(
+		_messageId: string,
+		_reason: 'spam' | 'harassment' | 'inappropriate' | 'other',
+		_details?: string
+	): Promise<boolean> {
+		// TODO: Phase 3 implementation
+		logger.warn('reportMessage not yet implemented - Phase 3');
+		return false;
+	}
+
+	/**
+	 * Load messages for a conversation (convenience wrapper)
+	 * @param conversationId - Conversation ID
+	 * @param limit - Number of messages to load
+	 * @param beforeId - Load messages before this ID (pagination)
+	 * @param _beforeTimestamp - Load messages before this timestamp
+	 */
+	async loadMessages(
+		conversationId: string,
+		limit = 50,
+		beforeId?: string,
+		_beforeTimestamp?: string | null
+	): Promise<void> {
+		if (beforeId) {
+			return this.loadMoreMessages(conversationId, limit);
+		}
+		return this.loadConversationHistory(conversationId, limit);
 	}
 }
 
