@@ -94,9 +94,24 @@ export const reportMessageSchema = z.object({
 });
 
 // ============================================================================
+// CONVERSATION MANAGEMENT SCHEMAS
+// ============================================================================
+
+/**
+ * Schema for creating a 1-on-1 conversation
+ *
+ * Security constraints:
+ * - friendId must be valid UUID (prevents injection)
+ */
+export const createConversationSchema = z.object({
+	friendId: z.string().uuid('Friend ID must be a valid UUID')
+});
+
+// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
 export type ChatMessage = z.infer<typeof chatMessageSchema>;
 export type ChatRequest = z.infer<typeof chatRequestSchema>;
 export type ReportMessageInput = z.infer<typeof reportMessageSchema>;
+export type CreateConversationInput = z.infer<typeof createConversationSchema>;
