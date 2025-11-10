@@ -277,11 +277,6 @@ BEGIN
   )
   RETURNING id INTO v_report_id;
 
-  -- Mark message as reported
-  UPDATE messages
-  SET is_reported = true
-  WHERE id = p_message_id;
-
   RETURN v_report_id;
 END;
 $$;

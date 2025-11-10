@@ -29,11 +29,18 @@
 	interface Props {
 		conversationId: string;
 		isTeacher?: boolean;
+		disabled?: boolean;
 		onSend: (content: unknown, attachments: File[]) => Promise<void>;
 		onTyping: (isTyping: boolean) => void;
 	}
 
-	let { conversationId: _conversationId, isTeacher = false, onSend, onTyping }: Props = $props(); // conversationId for future features
+	let {
+		conversationId: _conversationId,
+		isTeacher = false,
+		disabled = false,
+		onSend,
+		onTyping
+	}: Props = $props(); // conversationId for future features
 
 	// Component State
 	let attachments = $state<File[]>([]);
@@ -88,7 +95,8 @@
 	 * Handle message send
 	 */
 	async function handleSend(content: unknown): Promise<void> {
-		if (isSending) return;
+		// Prevent sending if disabled or already sending
+		if (disabled || isSending) return;
 
 		// Stop typing indicator
 		onTyping(false);
@@ -144,7 +152,7 @@
 	});
 </script>
 
-<div class="border-t border-border bg-card p-4">
+<div class="border-t border-border bg-card p-4 {disabled ? 'pointer-events-none opacity-50' : ''}">
 	<!-- File Attachments Preview -->
 	{#if attachments.length > 0}
 		<div class="mb-3 space-y-2">

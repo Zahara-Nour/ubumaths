@@ -74,8 +74,29 @@ export const chatRequestSchema = z.object({
 });
 
 // ============================================================================
+// MESSAGE MODERATION SCHEMAS
+// ============================================================================
+
+/**
+ * Schema for reporting a message
+ *
+ * Security constraints:
+ * - messageId must be valid UUID (prevents injection)
+ * - reason must be one of allowed values (prevents arbitrary data)
+ * - details max 500 chars (prevents abuse)
+ */
+export const reportMessageSchema = z.object({
+	messageId: z.string().uuid('Message ID must be a valid UUID'),
+	reason: z.enum(['spam', 'harassment', 'inappropriate', 'other'], {
+		message: 'Invalid reason. Must be spam, harassment, inappropriate, or other'
+	}),
+	details: z.string().max(500, 'Details cannot exceed 500 characters').optional()
+});
+
+// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
 export type ChatMessage = z.infer<typeof chatMessageSchema>;
 export type ChatRequest = z.infer<typeof chatRequestSchema>;
+export type ReportMessageInput = z.infer<typeof reportMessageSchema>;

@@ -1261,30 +1261,140 @@ class ChatStore {
 	}
 
 	/**
-	 * Toggle reaction on a message
-	 * @param _messageId - Message ID
-	 * @param _emoji - Emoji to toggle
+	 * Toggle reaction on a message (add or remove)
+	 * Uses Broadcast API (ephemeral, not persisted to database)
+	 *
+	 * @param messageId - Message ID
+	 * @param emoji - Emoji to toggle
 	 */
-	toggleReaction(_messageId: string, _emoji: string): void {
-		// TODO: Phase 3 implementation
-		logger.warn('toggleReaction not yet implemented - Phase 3');
+	toggleReaction(messageId: string, emoji: string): void {
+		if (!browser || !this.userId) {
+			logger.warn('Cannot toggle reaction: not initialized');
+			return;
+		}
+
+		// Find message across all conversations
+		for (const [conversationId, messages] of this.messages.entries()) {
+			const messageIndex = messages.findIndex((msg) => msg.id === messageId);
+
+			if (messageIndex !== -1) {
+				const message = messages[messageIndex];
+
+				// Initialize reactions array if needed
+				if (!message.reactions) {
+					message.reactions = [];
+				}
+
+				// Check if user already reacted with this emoji
+				const existingReactionIndex = message.reactions.findIndex(
+					(r) => r.user_id === this.userId && r.emoji === emoji
+				);
+
+				if (existingReactionIndex !== -1) {
+					// Remove reaction (toggle off)
+					message.reactions.splice(existingReactionIndex, 1);
+
+					// Broadcast removal
+					const channel = supabaseRealtimeManager.getChannel(`chat-${conversationId}`);
+					if (channel) {
+						channel
+							.send({
+								type: 'broadcast',
+								event: 'message_reaction',
+								payload: {
+									type: 'message_reaction',
+									messageId,
+									userId: this.userId,
+									emoji,
+									action: 'remove'
+								} satisfies BroadcastReactionPayload
+							})
+							.catch((err) => logger.error('Failed to broadcast reaction removal:', err));
+					}
+
+					logger.trace('Reaction removed:', { messageId, emoji, userId: this.userId });
+				} else {
+					// Add reaction (toggle on)
+					message.reactions.push({
+						id: crypto.randomUUID(),
+						message_id: messageId,
+						user_id: this.userId,
+						emoji,
+						created_at: new Date().toISOString()
+					});
+
+					// Broadcast addition
+					const channel = supabaseRealtimeManager.getChannel(`chat-${conversationId}`);
+					if (channel) {
+						channel
+							.send({
+								type: 'broadcast',
+								event: 'message_reaction',
+								payload: {
+									type: 'message_reaction',
+									messageId,
+									userId: this.userId,
+									emoji,
+									action: 'add'
+								} satisfies BroadcastReactionPayload
+							})
+							.catch((err) => logger.error('Failed to broadcast reaction:', err));
+					}
+
+					logger.trace('Reaction added:', { messageId, emoji, userId: this.userId });
+				}
+
+				// Trigger reactivity by replacing the messages array
+				this.messages.set(conversationId, [...messages]);
+
+				break;
+			}
+		}
 	}
 
 	/**
 	 * Report a message as inappropriate
-	 * @param _messageId - Message ID
-	 * @param _reason - Report reason
-	 * @param _details - Additional details
-	 * @returns True if successful
+	 * Calls the /api/chat/reports endpoint
+	 *
+	 * @param messageId - Message ID to report
+	 * @param reason - Report reason
+	 * @param details - Additional details (optional)
+	 * @returns True if successful, false otherwise
 	 */
 	async reportMessage(
-		_messageId: string,
-		_reason: 'spam' | 'harassment' | 'inappropriate' | 'other',
-		_details?: string
+		messageId: string,
+		reason: 'spam' | 'harassment' | 'inappropriate' | 'other',
+		details?: string
 	): Promise<boolean> {
-		// TODO: Phase 3 implementation
-		logger.warn('reportMessage not yet implemented - Phase 3');
-		return false;
+		if (!browser || !this.supabase) {
+			logger.warn('Cannot report message: not initialized');
+			return false;
+		}
+
+		try {
+			const response = await fetch('/api/chat/reports', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					messageId,
+					reason,
+					details: details ?? undefined
+				})
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+				throw new Error(errorData.message || 'Failed to report message');
+			}
+
+			logger.info('Message reported:', messageId, reason);
+			return true;
+		} catch (error) {
+			logger.error('Failed to report message:', error);
+			return false;
+		}
 	}
 
 	/**

@@ -24,6 +24,7 @@
 	import ChatComposer from './ChatComposer.svelte';
 	import NewChatDialog from './NewChatDialog.svelte';
 	import ReportMessageDialog from './ReportMessageDialog.svelte';
+	import RestrictedUserBanner from '$lib/components/moderation/RestrictedUserBanner.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -47,6 +48,13 @@
 	let showNewChatDialog = $state(false);
 	let reportMessageId = $state<string | null>(null);
 	let showReportDialog = $state(false);
+	let userRestriction = $state<{
+		restriction_type: 'mute' | 'timeout' | 'ban';
+		reason: string;
+		expires_at: string | null;
+		scope_type: 'conversation' | 'global';
+	} | null>(null);
+	let restrictionCheckTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	// Initialize chat store
 	onMount(() => {
@@ -61,11 +69,69 @@
 		};
 	});
 
+	// Check for restrictions when conversation changes
+	$effect(() => {
+		// Clear previous timeout
+		if (restrictionCheckTimeout !== null) {
+			clearTimeout(restrictionCheckTimeout);
+		}
+
+		if (chatStore.activeConversationId) {
+			// Debounce for 150ms to prevent query spam
+			restrictionCheckTimeout = setTimeout(() => {
+				checkUserRestrictions();
+			}, 150);
+		} else {
+			userRestriction = null;
+		}
+	});
+
 	/**
 	 * Check if mobile view (< 768px)
 	 */
 	function checkMobileView(): void {
 		isMobileView = window.innerWidth < 768;
+	}
+
+	/**
+	 * Check for user restrictions in current conversation
+	 */
+	async function checkUserRestrictions(): Promise<void> {
+		// Capture conversationId to prevent race conditions
+		const conversationId = chatStore.activeConversationId;
+
+		if (!conversationId) {
+			userRestriction = null;
+			return;
+		}
+
+		try {
+			// Query user_restrictions table
+			const { data, error } = await supabase
+				.from('user_restrictions')
+				.select('restriction_type, reason, expires_at, scope_type, scope_id')
+				.eq('user_id', userId)
+				.or(`scope_type.eq.global,and(scope_type.eq.conversation,scope_id.eq.${conversationId})`)
+				.or('expires_at.is.null,expires_at.gt.now()')
+				.maybeSingle();
+
+			if (error) {
+				console.error('Failed to check restrictions:', error);
+				return;
+			}
+
+			userRestriction = data
+				? {
+						restriction_type: data.restriction_type as 'mute' | 'timeout' | 'ban',
+						reason: data.reason,
+						expires_at: data.expires_at,
+						scope_type: data.scope_type as 'conversation' | 'global'
+					}
+				: null;
+		} catch (err) {
+			console.error('Error checking restrictions:', err);
+			userRestriction = null;
+		}
 	}
 
 	/**
@@ -370,10 +436,18 @@
 					/>
 				</div>
 
+				<!-- Restriction Banner (if user is restricted) -->
+				{#if userRestriction}
+					<div class="px-4 py-3">
+						<RestrictedUserBanner restriction={userRestriction} />
+					</div>
+				{/if}
+
 				<!-- Composer Area -->
 				<ChatComposer
 					conversationId={chatStore.activeConversationId || ''}
 					{isTeacher}
+					disabled={userRestriction !== null}
 					onSend={handleSendMessage}
 					onTyping={handleTyping}
 				/>
