@@ -562,87 +562,209 @@ private handleNewNotification(_payload: unknown): void {
 
 ### chatStore (Hybrid Chat System)
 
-**File**: `src/lib/stores/chat.svelte.ts` (842 lines)
+**File**: `src/lib/stores/chat.svelte.ts` (1,432 lines)
 
 **Purpose**: Real-time chat with instant UX and reliable persistence.
 
-**Method**: HYBRID (Broadcast for UX + postgres_changes for reliability)
+**Method**: HYBRID (Broadcast API for instant UX + postgres_changes for source of truth)
 
-**Architecture**:
+**Why Hybrid?**:
+
+- **Instant UX**: Broadcast delivers messages in ~50ms (FREE quota)
+- **Reliable persistence**: postgres_changes provides source of truth with JOINs (~300ms, COUNTS)
+- **Quota optimization**: Only 1 postgres_changes per message sent (not per recipient)
+
+**Architecture Flow**:
 
 ```
 User sends message:
   1. Optimistic UI (instant) ────────────────────────► Local state update
-  2. Broadcast (50ms) ───────────────────────────────► Other users see message
+  2. Broadcast (50ms, FREE) ─────────────────────────► Other users see message immediately
   3. Database INSERT (200ms) ────────────────────────► Persists to DB
-  4. postgres_changes (300ms) ───────────────────────► Replace with DB version
+  4. postgres_changes (300ms, COUNTS) ───────────────► Replace with DB version (has JOINs)
 
 Other user receives message:
-  1. Broadcast (50ms) ───────────────────────────────► Show message (is_broadcast: true)
-  2. postgres_changes (300ms) ───────────────────────► Replace with DB version (is_broadcast: false)
+  1. Broadcast (50ms) ───────────────────────────────► Show message with is_broadcast flag
+  2. postgres_changes (300ms) ───────────────────────► Replace with DB version (includes sender profile)
 ```
 
-**Deduplication**:
+**Deduplication Logic**:
+
+Messages use client-side flags to track their state and prevent duplicates:
 
 ```typescript
 interface Message {
   id: string;
-  content: string;
-  is_optimistic?: boolean; // Temporary, not yet sent
-  is_broadcast?: boolean;  // From Broadcast, awaiting DB confirmation
-  sender?: { ... };        // Included in Broadcast payload
+  content: unknown;
+  is_optimistic?: boolean; // Temporary, not yet sent to DB
+  is_broadcast?: boolean;  // From Broadcast API, awaiting DB confirmation
+  sender?: {              // Profile included in Broadcast payload
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+  };
 }
 
 // When postgres_changes event arrives, replace broadcast version
-function handlePostgresInsert(payload: PostgresChangePayload) {
-  const existingIndex = messages.findIndex(m => m.id === payload.new.id);
+private async handlePostgresMessage(
+  newMessage: Database['public']['Tables']['messages']['Row']
+): Promise<void> {
+  // Fetch full message with JOINs (sender profile)
+  const { data } = await this.supabase
+    .from('messages')
+    .select('*, sender:profiles!sender_id(id, full_name, avatar_url)')
+    .eq('id', newMessage.id)
+    .single();
+
+  const existingIndex = messages.findIndex(
+    (msg) => msg.id === data.id || msg.created_at === data.created_at
+  );
 
   if (existingIndex !== -1) {
-    // Replace broadcast version with DB version
-    messages[existingIndex] = {
-      ...payload.new,
-      is_broadcast: undefined, // Remove flag
-      is_optimistic: undefined
-    };
+    // Replace broadcast/optimistic version with DB version
+    messages[existingIndex] = fullMessage;
   } else {
-    // New message (not seen via Broadcast)
-    messages.push(payload.new);
+    // New message (user was offline when broadcast happened)
+    messages.push(fullMessage);
   }
 }
 ```
 
-**Features**:
+**Key Features**:
 
-1. **Typing Indicators** (Broadcast only, ephemeral):
+1. **Real-time Messages** (Hybrid):
+   - Broadcast: Instant delivery (50ms, FREE)
+   - postgres_changes: Source of truth with sender profile (300ms, COUNTS)
+
+2. **Typing Indicators** (Broadcast only, ephemeral):
 
 ```typescript
 // Send typing indicator (FREE, no quota impact)
 chatStore.sendTypingIndicator(conversationId, true);
 
-// Listen to typing indicators
-const typingUserIds = chatStore.getTypingUsers(conversationId); // Set<userId>
+// Get typing users with full profile info
+const typingUsers = chatStore.activeTypingUsers; // TypingUser[] with firstname, lastname
 ```
 
-2. **Message Reactions** (Broadcast + postgres_changes):
+3. **Message Reactions** (Broadcast only, ephemeral):
 
 ```typescript
-// Add reaction (Broadcast + DB)
-await chatStore.addReaction(messageId, '👍');
+// Toggle reaction (add or remove)
+chatStore.toggleReaction(messageId, '👍');
 
-// Broadcast for instant UX (50ms)
-// postgres_changes for persistence (300ms)
+// Instant update for all users via Broadcast (FREE)
+// NOT persisted to database (ephemeral only)
 ```
 
-3. **Read Receipts** (Broadcast only, ephemeral):
+4. **Read Receipts** (Broadcast only, ephemeral):
 
 ```typescript
-// Mark message as read (updates DB + broadcasts to sender)
-await chatStore.markMessageAsRead(messageId);
+// Automatically triggered when setting active conversation
+// Broadcasts read status to other participants (FREE)
 ```
 
-**Quota Impact**: ~1 postgres_changes message per actual message sent (not per recipient)
+5. **Message Reporting**:
 
-**Broadcast messages are FREE** (typing, reactions, read receipts)
+```typescript
+// Report inappropriate message (calls /api/chat/reports)
+const success = await chatStore.reportMessage(
+	messageId,
+	'harassment', // spam | harassment | inappropriate | other
+	'Optional details'
+);
+```
+
+6. **1-on-1 Chat Creation**:
+
+```typescript
+// Create or find existing chat with friend (requires friendship)
+const conversationId = await chatStore.create1on1Chat(friendId);
+if (conversationId) {
+	chatStore.setActiveConversation(conversationId);
+}
+```
+
+**State Management**:
+
+```typescript
+// Reactive getters using Svelte 5 $state
+const conversations = chatStore.conversations; // Conversation[]
+const activeConversation = chatStore.activeConversation; // Conversation | null
+const activeMessages = chatStore.activeMessages; // Message[]
+const activeTypingUsers = chatStore.activeTypingUsers; // TypingUser[]
+const isLoadingMessages = chatStore.isLoadingMessages; // boolean
+const isLoadingConversations = chatStore.isLoadingConversations; // boolean
+```
+
+**Pagination**:
+
+```typescript
+// Initial load (50 messages)
+await chatStore.loadConversationHistory(conversationId);
+
+// Load older messages (cursor-based pagination)
+if (chatStore.canLoadMore(conversationId)) {
+	await chatStore.loadMoreMessages(conversationId);
+}
+```
+
+**Lifecycle**:
+
+```typescript
+// 1. Initialize
+chatStore.init(supabase, userId, { full_name: 'John Doe', avatar_url: '...' });
+
+// 2. Load conversations list
+await chatStore.loadConversations(); // Calls get_user_conversations RPC
+
+// 3. Subscribe to conversation
+chatStore.setActiveConversation(conversationId);
+// - Auto-subscribes to Broadcast + postgres_changes
+// - Loads conversation history
+// - Marks conversation as read
+
+// 4. Send message
+await chatStore.sendMessage(conversationId, 'Hello!');
+
+// 5. Cleanup
+await chatStore.unsubscribeFromConversation(conversationId);
+```
+
+**Database Integration**:
+
+- **Conversations**: `get_user_conversations` RPC (includes metadata, unread counts)
+- **Messages**: `get_messages_paginated` RPC (cursor-based, includes sender profiles)
+- **1-on-1 Creation**: `create_1on1_chat` RPC (duplicate detection, friendship validation)
+- **Read Status**: `mark_conversation_read` RPC (optimistic UI, auto-called on focus)
+
+**Quota Impact**: ~300K messages/month (15% of 2M free tier)
+
+- Message sends: Broadcast (FREE) + postgres_changes (COUNTS)
+- Typing indicators: Broadcast only (FREE)
+- Reactions: Broadcast only (FREE)
+- Read receipts: Broadcast only (FREE)
+
+**Moderation Integration**:
+
+- Message reporting via `/api/chat/reports` endpoint
+- User restrictions enforced at INSERT policy level (mute/timeout/ban)
+- Teacher access to student 1-on-1 chats (RLS policy-based)
+- RestrictedUserBanner UI component shows active restrictions
+
+**Security**:
+
+- RLS policies on conversations, messages, conversation_participants
+- Zod validation on all API endpoints
+- Message soft-delete preserves audit trail
+- Friendship validation for 1-on-1 chat creation
+
+**Performance Optimizations**:
+
+- Conversations loaded once on mount (no realtime subscription)
+- Messages use hybrid realtime (instant + reliable)
+- Reactions use Broadcast only (no DB overhead)
+- Typing indicators auto-clear after 3 seconds
+- Deduplication prevents duplicate messages in UI
 
 ---
 

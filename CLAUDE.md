@@ -666,6 +666,51 @@ await supabaseRealtimeManager.unsubscribeChannel('my-channel');
 
 ---
 
+### Chat Message Reporting
+
+```typescript
+import { chatStore } from '$lib/stores/chat.svelte';
+
+// Report a message
+const success = await chatStore.reportMessage(messageId, 'inappropriate', 'Optional details here');
+
+if (success) {
+	toaster.success('Message signalé');
+} else {
+	toaster.error('Échec du signalement');
+}
+```
+
+### Creating 1-on-1 Chats
+
+```typescript
+// Create or get existing chat with a friend
+const conversationId = await chatStore.create1on1Chat(friendId);
+
+if (conversationId) {
+	chatStore.setActiveConversation(conversationId);
+} else {
+	toaster.error('Impossible de créer le chat (vous devez être amis)');
+}
+```
+
+### Using Chat with Presence
+
+```typescript
+import { presenceManager } from '$lib/stores/presence.svelte';
+import { chatStore } from '$lib/stores/chat.svelte';
+
+// Initialize both stores
+presenceManager.init(supabase, userId);
+chatStore.init(supabase, userId);
+
+// Get friend online status in chat UI
+const status = presenceManager.getFriendPresence(friendId);
+// Returns: 'online' | 'offline'
+```
+
+---
+
 ## ✅ Pre-Commit Checklist
 
 Before committing code with API endpoints or forms:

@@ -122,6 +122,23 @@ Système de gestion des avertissements comportementaux pour les élèves.
 - Cache 3 min TTL avec Event Bus
 - **2025-10-29** : UI refactoring (badge + count séparés, "Aucun" fallback)
 
+### 💬 Système de Chat
+
+**Status** : ✅ Production | [Documentation →](features/chat-system.md) 🆕
+
+Système de messagerie temps réel avec architecture hybride (Broadcast + postgres_changes).
+
+- [Documentation complète](features/chat-system.md) - Guide complet du système chat
+- Messagerie temps réel avec latence ~50ms (Broadcast API)
+- Conversations 1-on-1 (entre amis uniquement) et de groupe (class channels)
+- Messages riches (TipTap JSON), pièces jointes (teachers only)
+- Réactions emoji éphémères, indicateurs de saisie (typing indicators)
+- Signalement de messages pour modération enseignante
+- Intégration complète avec système de modération (restrictions utilisateur)
+- Intégration avec Friends system (statut en ligne temps réel)
+- Architecture hybride optimale : instant UX (50ms) + fiabilité (300ms)
+- **2025-11-11** : Documentation complète Phases 1-6 (47 tests ChatStore, 10 tests API)
+
 ### 🛡️ Modération de Chat
 
 **Status** : ✅ Production | [Documentation →](features/chat-moderation.md) 🆕
@@ -360,10 +377,10 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 ## 📊 Statistiques
 
-- **Features en production** : 14 🆕 (added Chat Moderation)
+- **Features en production** : 15 🆕 (added Chat System + Chat Moderation)
 - **Features en développement** : 1 (Navadra)
-- **Tests** : 3,396 tests (99.3% pass rate)
-  - Unit tests: 2,588/2,612 passing (99.1%)
+- **Tests** : 3,453 tests (99.3% pass rate)
+  - Unit tests: 2,635/2,659 passing (99.1%) 🆕 (+47 ChatStore, +10 API)
   - E2E tests: 303 ready to run
   - Validation tests: 366/366 passing (100%)
   - Database triggers: 139/139 passing (100%)
@@ -372,9 +389,9 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
   - Strategic database indexes on hot paths
   - Optimistic UI for better perceived performance
   - 97% fewer N+1 queries (244 → 6 per load)
-- **Database Tables** : 2 new moderation tables (user_restrictions, moderation_logs) 🆕
-- **Lignes de documentation** : ~40,000+ 🆕 (added chat-moderation.md: 8,000+ lines)
-- **Dernière mise à jour** : 2025-11-10
+- **Database Tables** : 5 chat tables (conversations, messages, conversation_participants, message_reports, user_restrictions) 🆕
+- **Lignes de documentation** : ~65,000+ 🆕 (added chat-system.md: 25,000+ lines comprehensive guide)
+- **Dernière mise à jour** : 2025-11-11
 
 ---
 
