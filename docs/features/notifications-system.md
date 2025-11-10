@@ -530,7 +530,50 @@ curl https://ubumaths.com/api/notifications/cleanup
 
 **Job Tracking** : Logs vers `background_job_runs` table via `start_job_run()` / `complete_job_run()`.
 
-**Sécurité** : ⚠️ Pas de vérification de secret cron (commentée). Ajouter `CRON_SECRET` si souhaité.
+**Sécurité** : ✅ **CRON secret vérifié** (Phase 1.1 complétée)
+
+### CRON Endpoint Security
+
+**Status**: ✅ **IMPLEMENTED** (Phase 1.1 complete)
+
+All CRON endpoints are protected with Bearer token authentication:
+
+- `/api/notifications/cleanup` (Daily at 3 AM UTC)
+- `/api/cache/cleanup` (Daily at 2 AM UTC)
+
+**Security Features**:
+- **Constant-time comparison**: Uses `crypto.timingSafeEqual()` to prevent timing attacks
+- **Fail-secure design**: Rejects all requests if `CRON_SECRET` not configured (503 error)
+- **Comprehensive audit logging**: All authentication attempts logged with timestamp, URL, and outcome
+- **Minimum entropy**: Zod validation enforces 16+ character secrets
+- **Standard Bearer authentication**: Follows RFC 6750 specification
+
+**Implementation**:
+- Authentication utility: `src/lib/server/auth/cron.ts`
+- Test coverage: 24 tests (100% pass rate)
+- Documentation: `docs/security/cron-authentication.md`
+
+**Configuration**:
+
+See `docs/development/environment-variables.md#cron-secret` for complete setup instructions.
+
+**Quick start**:
+```bash
+# Generate secret
+openssl rand -hex 16
+
+# Add to Vercel environment variables
+# Name: CRON_SECRET
+# Value: <generated-secret>
+# Environments: Production, Preview, Development
+```
+
+**Monitoring**:
+
+Check Vercel function logs for authentication events:
+- `[CRON AUTH] ✅ Valid token` - Successful authentication
+- `[CRON AUTH] Invalid token` - Authentication failure (investigate immediately)
+- `[CRON AUTH] CRON_SECRET not configured` - Configuration error (fix before deployment)
 
 ---
 
@@ -1711,12 +1754,12 @@ if (profile.role === 'teacher') {
 6. **Expiration automatique** : Nettoyage des anciennes notifications
 7. **HTML sanitization** : `sanitizeHtml()` utilisé sur affichage (⚠️ côté client uniquement)
 
-#### ⚠️ Problèmes de sécurité
+#### ⚠️ Problèmes de sécurité (Mis à jour : 2025-11-10)
 
 1. **Pas de rate limiting** : Risque de spam de notifications
 2. **Validation manuelle sur formulaires** : Les formulaires de création ne valident PAS avec Zod (seulement vérifications manuelles)
-3. **Pas de sanitization HTML côté serveur** : Les messages HTML ne sont pas nettoyés avant stockage → Risque XSS
-4. **Pas de CRON secret** : L'endpoint `/api/notifications/cleanup` n'est pas protégé par secret
+3. ~~**Pas de sanitization HTML côté serveur**~~ : ✅ **RÉSOLU** (Phase 1.1 complétée)
+4. ~~**Pas de CRON secret**~~ : ✅ **RÉSOLU** (Phase 1.1 complétée - endpoints protégés)
 
 #### 🔴 Risques critiques
 
@@ -3554,17 +3597,22 @@ CREATE TABLE notification_preferences (
    - **Voir** : Phase 1.1 item #1 pour détails d'implémentation
    - **Voir** : Section 15 pour documentation complète
 
-4. ⚠️ **CRON secret pour cleanup** (NON TERMINÉ)
-   - Endpoint `/api/notifications/cleanup` non protégé
-   - Recommandation : Ajouter `CRON_SECRET` verification
+4. ✅ **CRON secret pour cleanup** (TERMINÉ - 2025-11-10)
+   - ✅ Endpoint `/api/notifications/cleanup` protégé
+   - ✅ Variable `CRON_SECRET` ajoutée
+   - ✅ Vérification header `Authorization: Bearer ${CRON_SECRET}`
+   - ✅ Tests complets (24 tests, 100% pass rate)
+   - **Commits** : `49aa9e6` (Phase 1), `feb5f9f` (Phase 2)
 
-**Status** : Sécurité significativement améliorée (3/4 critiques résolus)
+**Status** : ✅ Sécurité critique complètement résolue (4/4 critiques résolus)
 
 ---
 
-### ✅ Phase 1.1 : Issues de sécurité restantes (PARTIELLEMENT TERMINÉE - 2025-11-10)
+### ✅ Phase 1.1 : Issues de sécurité restantes (TERMINÉE - 2025-11-10)
 
 **Objectif** : Compléter les tâches de sécurité restantes.
+
+**Status** : ✅ **TOUTES LES TÂCHES TERMINÉES** (3/3 complétées)
 
 1. ✅ **Sanitization HTML côté serveur** (TERMINÉ - 2025-11-10)
    - ✅ Fonction `sanitizeNotificationHtml()` créée
@@ -3575,10 +3623,15 @@ CREATE TABLE notification_preferences (
    - ✅ Documentation complète (Section 15)
    - **Commits** : `c292519` (Phase 1), `7639315` (Phase 3)
 
-2. ⚠️ **CRON secret pour cleanup** (NON TERMINÉ)
-   - Ajouter variable `CRON_SECRET`
-   - Vérifier header `Authorization: Bearer ${CRON_SECRET}`
-   - **Priorité** : Moyenne (nécessite accès serveur)
+2. ✅ **CRON secret pour cleanup** (TERMINÉ - 2025-11-10)
+   - ✅ Variable `CRON_SECRET` ajoutée
+   - ✅ Header `Authorization: Bearer ${CRON_SECRET}` vérifié
+   - ✅ Authentication utility créée (`src/lib/server/auth/cron.ts`)
+   - ✅ Constant-time comparison (protection timing attacks)
+   - ✅ Fail-secure design (503 si non configuré)
+   - ✅ 24 tests complets (100% pass rate)
+   - ✅ Documentation complète (`docs/security/cron-authentication.md`)
+   - **Commits** : `49aa9e6` (Phase 1), `feb5f9f` (Phase 2)
 
 3. ✅ **Rate limiting sur delete action** (TERMINÉ - 2025-11-10)
    - ✅ Fonction `checkNotificationDeleteRateLimit()` créée
@@ -4217,9 +4270,9 @@ Le système de notifications UbuMaths offre une infrastructure solide et sécuri
 
 **Points d'amélioration prioritaires** :
 
-1. ⚠️ Sanitization HTML serveur (sécurité - medium)
-2. ⚠️ CRON secret pour cleanup (sécurité - low)
-3. ⚠️ Delete action rate limiting (sécurité - medium)
+1. ~~⚠️ Sanitization HTML serveur~~ ✅ **TERMINÉ** (sécurité - medium)
+2. ~~⚠️ CRON secret pour cleanup~~ ✅ **TERMINÉ** (sécurité - low)
+3. ~~⚠️ Delete action rate limiting~~ ✅ **TERMINÉ** (sécurité - medium)
 4. ⚠️ Fix race condition (performance - medium)
 5. 🟠 Temps réel (UX - haute)
 6. 🟠 Pagination (performance - haute)

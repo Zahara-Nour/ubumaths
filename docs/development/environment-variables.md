@@ -366,8 +366,175 @@ if (!env.GROQ_API_KEY) {
 - **Example:** `.env.example`
 - **Total Variables:** 40+ (20+ required/optional, 20+ test/deployment)
 
+## CRON_SECRET (Required for Production)
+
+**Purpose**: Protects CRON job endpoints from unauthorized execution.
+
+**Format**: Minimum 16 characters (recommendation: 32+ characters, hex string)
+
+**Affected Endpoints**:
+- `/api/cache/cleanup` - Daily at 2 AM UTC
+- `/api/notifications/cleanup` - Daily at 3 AM UTC
+
+### Generation
+
+Generate a secure secret using one of these methods:
+
+```bash
+# Option 1: OpenSSL (recommended)
+openssl rand -hex 16  # Generates 32 characters
+
+# Option 2: Node.js crypto
+node -e "console.log(require('crypto').randomBytes(16).toString('hex'))"
+
+# Option 3: Using built-in generator
+node -e "const { generateCronSecret } = require('./src/lib/server/auth/cron.js'); console.log(generateCronSecret())"
+```
+
+### Local Development Setup
+
+Add to your `.env` file:
+
+```env
+CRON_SECRET=your-generated-32-character-secret-here
+```
+
+**Important**: Use different secrets for development vs. production.
+
+### Vercel Production Setup
+
+1. Generate a production secret (see methods above)
+2. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+3. Select your project → Settings → Environment Variables
+4. Add new variable:
+   - **Name**: `CRON_SECRET`
+   - **Value**: Your generated secret
+   - **Environments**: Select all (Production, Preview, Development)
+5. Click "Save"
+6. Redeploy your application for changes to take effect
+
+### How It Works
+
+CRON jobs configured in `vercel.json` automatically include the secret in the Authorization header:
+
+```json
+{
+  "crons": [{
+    "path": "/api/cache/cleanup",
+    "schedule": "0 2 * * *",
+    "headers": {
+      "Authorization": "Bearer ${CRON_SECRET}"
+    }
+  }]
+}
+```
+
+Vercel automatically replaces `${CRON_SECRET}` with the environment variable value when executing the job.
+
+### Security Features
+
+- ✅ **Constant-time comparison**: Prevents timing attacks
+- ✅ **Fail-secure**: Rejects all requests if `CRON_SECRET` not configured
+- ✅ **Comprehensive logging**: All authentication attempts logged for monitoring
+- ✅ **Minimum entropy**: Enforced by Zod validation (16+ characters)
+
+### Testing Locally
+
+Test your CRON endpoints locally with curl:
+
+```bash
+# Get secret from .env
+export CRON_SECRET=$(grep CRON_SECRET .env | cut -d '=' -f2)
+
+# Test notifications cleanup
+curl -X POST http://localhost:5175/api/notifications/cleanup \
+  -H "Authorization: Bearer $CRON_SECRET" -v
+
+# Expected: 200 OK with cleanup results
+
+# Test cache cleanup
+curl -X POST http://localhost:5175/api/cache/cleanup \
+  -H "Authorization: Bearer $CRON_SECRET" -v
+
+# Expected: 200 OK with cleanup results
+```
+
+### Troubleshooting
+
+#### Error: "CRON endpoints disabled: CRON_SECRET not configured"
+
+**Status Code**: 503 (Service Unavailable)
+
+**Cause**: `CRON_SECRET` environment variable is not set.
+
+**Solution**:
+1. Add `CRON_SECRET` to your `.env` file (local) or Vercel environment variables (production)
+2. Restart your development server or redeploy to Vercel
+3. Verify the variable is loaded: Check startup logs for "Environment variables validated successfully"
+
+#### Error: "Unauthorized: Missing Authorization header"
+
+**Status Code**: 401 (Unauthorized)
+
+**Cause**: Request doesn't include the Authorization header.
+
+**Solution**:
+- For manual testing: Add `-H "Authorization: Bearer $CRON_SECRET"` to your curl command
+- For Vercel CRON: Verify `vercel.json` includes the `headers` configuration (see example above)
+
+#### Error: "Unauthorized: Invalid token"
+
+**Status Code**: 401 (Unauthorized)
+
+**Cause**: Token in Authorization header doesn't match `CRON_SECRET`.
+
+**Solutions**:
+1. **For Vercel CRON jobs**: Verify `vercel.json` uses `${CRON_SECRET}` placeholder (NOT a hardcoded value)
+2. **For manual testing**: Ensure you're using the correct secret from `.env`
+3. **Check for typos**: Secret is case-sensitive and must match exactly
+4. **Verify environment**: Ensure you're using the correct environment's secret (dev vs. production)
+
+#### Vercel CRON Jobs Not Executing
+
+**Symptoms**: No logs, no cleanup happening
+
+**Possible causes**:
+1. **Invalid schedule**: Check cron expression syntax in `vercel.json`
+2. **Authorization failure**: Check Vercel function logs for 401 errors
+3. **Secret not configured**: Verify `CRON_SECRET` is set in Vercel dashboard
+
+**Debug steps**:
+1. Go to Vercel Dashboard → Deployments → Select latest deployment
+2. Click "Functions" tab → Find cleanup function → View logs
+3. Look for "[CRON AUTH]" log entries
+4. If you see "Invalid token", verify secret matches between Vercel env vars and `vercel.json`
+
+### Security Best Practices
+
+1. **Use strong secrets**: Always use 32+ character hex strings
+2. **Rotate regularly**: Change `CRON_SECRET` every 90 days (recommended)
+3. **Never commit secrets**: Ensure `.env` is in `.gitignore`
+4. **Use different secrets per environment**: Dev, preview, and production should have unique secrets
+5. **Monitor authentication logs**: Review logs weekly for suspicious 401 errors
+
+### Secret Rotation Procedure
+
+When rotating the CRON secret:
+
+1. Generate new secret (see Generation section above)
+2. Update in Vercel Dashboard (Settings → Environment Variables)
+3. Redeploy application (triggers Vercel to update CRON job headers)
+4. Monitor logs for first successful CRON execution with new secret
+5. Document rotation date for compliance/audit purposes
+
+**Important**: Update the secret in Vercel BEFORE the next scheduled CRON job runs to avoid service disruption.
+
+---
+
 ## Related Documentation
 
 - [Git Workflow](git-workflow.md) - Version control practices
 - [Testing](../testing/README.md) - Test configuration
 - [Deployment](../deployment/README.md) - Production deployment guide
+- [CRON Endpoints API Reference](../api/cron-endpoints.md) - Complete CRON endpoint documentation
+- [CRON Authentication Implementation](../security/cron-authentication.md) - Technical implementation details
