@@ -5,6 +5,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { verifyCronAuth } from '$lib/server/auth/cron';
 
 /**
  * GET/POST /api/cache/cleanup
@@ -17,7 +18,10 @@ import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
  *
  * @returns JSON with success status and deleted count
  */
-const cleanupHandler: RequestHandler = async () => {
+const cleanupHandler: RequestHandler = async ({ request }) => {
+	// SECURITY: Verify CRON authentication BEFORE any processing
+	// Throws 401 error if token is invalid or missing
+	verifyCronAuth(request);
 	const serviceClient = createServiceRoleClient();
 	let runId: string | null = null;
 
