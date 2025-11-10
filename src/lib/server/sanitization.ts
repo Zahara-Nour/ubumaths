@@ -8,6 +8,11 @@
  * - Client-side sanitization can be bypassed
  * - Server-side sanitization is the ONLY defense against stored XSS
  *
+ * **Configuration**:
+ * - Uses shared config from `$lib/utils/sanitize-configs.ts`
+ * - Server and client use IDENTICAL configuration (defense-in-depth)
+ * - 13 safe tags, 0 attributes, strict whitelist
+ *
  * **Attack Vectors Blocked**:
  * - `<script>` tags for JS execution
  * - Event handlers (`onclick`, `onerror`, etc.)
@@ -24,61 +29,12 @@
  */
 
 import * as DOMPurifyModule from 'isomorphic-dompurify';
+import { NOTIFICATION_SANITIZE_CONFIG } from '$lib/utils/sanitize-configs';
 
 // isomorphic-dompurify exports DOMPurify as both default and named export
 // Use type assertion to handle both module formats
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Required for DOMPurify module compatibility
 const DOMPurify = (DOMPurifyModule as any).default || DOMPurifyModule;
-
-/**
- * Safe HTML tags allowed in notifications
- *
- * Whitelist-based security: Only these tags are preserved.
- * All other tags are stripped, keeping only text content.
- *
- * Rationale for each tag:
- * - `p`, `br` - Paragraph structure
- * - `strong`, `b`, `em`, `i`, `u` - Text formatting
- * - `mark` - Highlighting important text
- * - `ul`, `ol`, `li` - Lists for structured content
- * - `blockquote` - Quotes
- * - `hr` - Section dividers
- */
-const ALLOWED_TAGS = [
-	'p',
-	'br',
-	'strong',
-	'b',
-	'em',
-	'i',
-	'u',
-	'mark',
-	'ul',
-	'ol',
-	'li',
-	'blockquote',
-	'hr'
-];
-
-/**
- * DOMPurify configuration for notification sanitization
- *
- * **Security hardening**:
- * - ALLOWED_ATTR: [] - NO attributes allowed (blocks onclick, href, style, etc.)
- * - ALLOW_DATA_ATTR: false - Blocks data-* attributes (XSS vector)
- * - ALLOW_UNKNOWN_PROTOCOLS: false - Only http:, https:, mailto:
- * - SAFE_FOR_TEMPLATES: true - Extra protection for template injection
- * - KEEP_CONTENT: true - Preserve text even if tags are stripped
- */
-const PURIFY_CONFIG = {
-	ALLOWED_TAGS,
-	ALLOWED_ATTR: [], // CRITICAL: No attributes = no event handlers, no hrefs, no styles
-	ALLOW_DATA_ATTR: false,
-	ALLOW_UNKNOWN_PROTOCOLS: false,
-	SAFE_FOR_TEMPLATES: true,
-	KEEP_CONTENT: true, // Strip tags but keep text (e.g., "<script>hi</script>" → "hi")
-	RETURN_TRUSTED_TYPE: false // Return string, not TrustedHTML
-} as const;
 
 /**
  * Sanitize notification HTML to prevent XSS attacks
@@ -113,9 +69,9 @@ export function sanitizeNotificationHtml(html: string): string {
 		return '';
 	}
 
-	// Sanitize using DOMPurify with strict configuration
-	// RETURN_TRUSTED_TYPE: false ensures we get a string back, not TrustedHTML
-	const cleaned = DOMPurify.sanitize(html, PURIFY_CONFIG) as string;
+	// Sanitize using DOMPurify with shared strict configuration
+	// SECURITY: Configuration is shared between server and client (defense-in-depth)
+	const cleaned = DOMPurify.sanitize(html, NOTIFICATION_SANITIZE_CONFIG) as string;
 
 	// Security logging: Detect potential attack attempts
 	// If sanitization removed content, log it for security monitoring
