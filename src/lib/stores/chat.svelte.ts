@@ -3,6 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { supabaseRealtimeManager } from './supabaseRealtime.svelte';
 import { createLogger } from '$lib/utils/logger';
+import { friendsManager } from './friends.svelte';
 
 const logger = createLogger('chat.svelte.ts');
 
@@ -1228,6 +1229,16 @@ class ChatStore {
 	async create1on1Chat(friendId: string): Promise<string | null> {
 		if (!browser || !this.supabase || !this.userId) {
 			logger.warn('Cannot create chat: not initialized');
+			return null;
+		}
+
+		// Pre-check if users are friends (client-side validation for immediate feedback)
+		const areFriends = friendsManager.friendships.some(
+			(f) => f.friend_profile.id === friendId && f.status === 'accepted'
+		);
+
+		if (!areFriends) {
+			logger.warn('Cannot create chat: users are not friends', { friendId });
 			return null;
 		}
 

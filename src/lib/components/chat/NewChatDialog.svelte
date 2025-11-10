@@ -18,8 +18,6 @@
 		- Handle friend selection
 -->
 <script lang="ts">
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	import { onMount } from 'svelte'; // For future friend loading
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Input } from '$lib/components/ui/input';
@@ -27,6 +25,7 @@
 	import OnlineStatus from '$lib/components/OnlineStatus.svelte';
 	import { Search, MessageSquare } from 'lucide-svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
+	import { presenceManager } from '$lib/stores/presence.svelte';
 
 	// Component Props
 	interface Props {
@@ -44,7 +43,6 @@
 		firstname: string;
 		lastname: string;
 		avatar_url: string | null;
-		status: 'online' | 'offline';
 	}
 
 	let friends = $state<Friend[]>([]);
@@ -97,29 +95,12 @@
 				return;
 			}
 
-			// Load presence status
-			const { data: presenceData, error: presenceError } = await supabase
-				.from('user_presence')
-				.select('user_id, status')
-				.in('user_id', friendIds);
-
-			if (presenceError) {
-				console.error('Error loading presence:', presenceError);
-			}
-
-			// Create presence map
-			const presenceMap = new Map<string, 'online' | 'offline'>();
-			presenceData?.forEach((p) => {
-				presenceMap.set(p.user_id, p.status as 'online' | 'offline');
-			});
-
-			// Combine data
+			// Combine data (use presenceManager for real-time status)
 			friends = (profiles || []).map((p) => ({
 				id: p.id,
 				firstname: p.firstname || '',
 				lastname: p.lastname || '',
-				avatar_url: p.avatar_url,
-				status: presenceMap.get(p.id) || 'offline'
+				avatar_url: p.avatar_url
 			}));
 		} catch (error) {
 			console.error('Exception loading friends:', error);
@@ -225,7 +206,7 @@
 								</Avatar.Root>
 
 								<div class="absolute -right-1 -bottom-1">
-									<OnlineStatus status="offline" size="sm" />
+									<OnlineStatus status={presenceManager.getFriendPresence(friend.id)} size="sm" />
 								</div>
 							</div>
 
@@ -236,7 +217,9 @@
 									{friend.lastname}
 								</p>
 								<p class="text-sm text-muted-foreground">
-									{friend.status === 'online' ? 'En ligne' : 'Hors ligne'}
+									{presenceManager.getFriendPresence(friend.id) === 'online'
+										? 'En ligne'
+										: 'Hors ligne'}
 								</p>
 							</div>
 

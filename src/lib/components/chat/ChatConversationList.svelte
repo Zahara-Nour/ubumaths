@@ -27,6 +27,7 @@
 	import OnlineStatus from '$lib/components/OnlineStatus.svelte';
 	import { Search, MessageSquarePlus, Users } from 'lucide-svelte';
 	import type { Conversation } from '$lib/stores/chat.svelte';
+	import { presenceManager } from '$lib/stores/presence.svelte';
 
 	// Component Props
 	interface Props {
@@ -187,7 +188,10 @@
 							<!-- Online status for 1-on-1 chats -->
 							{#if !conversation.is_group && conversation.other_user_id}
 								<div class="absolute right-0 bottom-0">
-									<OnlineStatus status="offline" size="sm" />
+									<OnlineStatus
+										status={presenceManager.getFriendPresence(conversation.other_user_id)}
+										size="sm"
+									/>
 								</div>
 							{/if}
 
