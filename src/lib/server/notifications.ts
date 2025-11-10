@@ -17,6 +17,7 @@ import type {
 	NotificationTargetType,
 	SystemEventType
 } from '$lib/types/notification';
+import { sanitizeNotificationHtml } from './sanitization';
 
 type SupabaseClientType = SupabaseClient<Database>;
 
@@ -98,13 +99,18 @@ export async function createNotification(
 		const expiresAt =
 			data.expires_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // +30 days
 
+		// SECURITY: Sanitize message HTML to prevent stored XSS attacks
+		// User-submitted HTML could contain <script> tags, event handlers (onclick),
+		// or malicious URLs. Server-side sanitization is the ONLY reliable defense.
+		const sanitizedMessage = sanitizeNotificationHtml(data.message);
+
 		// Create notification
 		const { data: notification, error: insertError } = await supabase
 			.from('notifications')
 			.insert({
 				created_by: createdBy,
 				title: data.title,
-				message: data.message,
+				message: sanitizedMessage, // Use sanitized message (not data.message)
 				type: data.type,
 				priority: data.priority,
 				action_label: data.action_label || null,
@@ -145,10 +151,15 @@ export async function createSystemNotification(
 	try {
 		const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
+		// SECURITY: Sanitize message HTML even for system notifications (defense-in-depth)
+		// System messages are controlled by code, but sanitization adds an extra security layer
+		// in case of bugs or future changes that introduce user-controlled content.
+		const sanitizedMessage = sanitizeNotificationHtml(data.message);
+
 		const { error: insertError } = await supabase.from('notifications').insert({
 			created_by: null, // System notifications have no creator
 			title: data.title,
-			message: data.message,
+			message: sanitizedMessage, // Use sanitized message
 			type: data.type,
 			priority: data.priority,
 			action_label: data.action_label || null,

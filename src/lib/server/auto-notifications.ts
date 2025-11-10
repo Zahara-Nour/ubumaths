@@ -3,6 +3,10 @@
  *
  * Functions to create system notifications for various events.
  * These should be called from form actions or API routes when events occur.
+ *
+ * **SECURITY NOTE**: All messages are sanitized in `createSystemNotification()`
+ * before database insertion. This provides defense-in-depth protection even though
+ * system messages are code-controlled and should be safe.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';

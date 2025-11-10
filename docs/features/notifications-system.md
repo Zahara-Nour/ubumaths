@@ -4,7 +4,7 @@ Documentation complète du système de notifications intelligent d'UbuMaths.
 
 **Date de création** : 2025-11-09
 **Dernière mise à jour** : 2025-11-10
-**Version** : 1.1 (Rate Limiting + Zod Validation)
+**Version** : 1.2 (Delete Rate Limiting + Race Condition Fix)
 **Status** : Production-ready
 
 ---
@@ -2053,7 +2053,8 @@ text: 'text-blue-900 dark:text-blue-100';
 Le système de notifications implémente une limitation de débit (rate limiting) robuste pour prévenir les abus et le spam. La limite est basée sur une base de données Supabase avec stratégie fail-open pour garantir la disponibilité.
 
 **Date d'implémentation** : 2025-11-10
-**Status** : Production-ready (42/42 tests passing)
+**Dernière mise à jour** : 2025-11-10 (Security fixes: delete rate limiting + race condition)
+**Status** : Production-ready (65/65 tests passing)
 
 ### Configuration des limites
 
@@ -2062,6 +2063,8 @@ Le système de notifications implémente une limitation de débit (rate limiting
 | **Création de notification** | 10 notifications | 1 heure    | Teacher   |
 | **Création de notification** | 50 notifications | 1 heure    | Admin     |
 | **Marquage lecture**         | 30 actions       | 15 minutes | All users |
+| **Suppression**              | 20 suppressions  | 1 heure    | Teacher   |
+| **Suppression**              | 100 suppressions | 1 heure    | Admin     |
 
 ### Endpoints protégés
 
@@ -2089,7 +2092,15 @@ Le système de notifications implémente une limitation de débit (rate limiting
    - Fonction : `checkNotificationCreateRateLimit(userId, 'admin')`
    - Message d'erreur : "Vous avez atteint la limite de création de notifications. Veuillez réessayer plus tard."
 
-5. **Teacher/Admin Delete Action** ⚠️ **NOT RATE LIMITED** (documented gap - issue #15)
+5. **Teacher Delete Action** (`/dashboard/teacher/notifications`)
+   - Limite : 20 suppressions / heure
+   - Fonction : `checkNotificationDeleteRateLimit(userId, 'teacher')`
+   - Message d'erreur : "Vous avez atteint la limite de suppression de notifications. Veuillez réessayer plus tard."
+
+6. **Admin Delete Action** (`/dashboard/admin/notifications`)
+   - Limite : 100 suppressions / heure
+   - Fonction : `checkNotificationDeleteRateLimit(userId, 'admin')`
+   - Message d'erreur : "Vous avez atteint la limite de suppression de notifications. Veuillez réessayer plus tard."
 
 ### Architecture
 
@@ -2118,6 +2129,40 @@ CREATE TABLE rate_limits (
 - En cas d'erreur database, les requêtes sont **autorisées** (fail-open)
 - Prévient les DoS si la database est indisponible
 - Logs d'erreur pour monitoring
+
+**Race Condition Protection** : 🆕 2025-11-10
+
+Le rate limiter utilise des opérations atomiques pour prévenir les race conditions lors de requêtes concurrentes :
+
+```typescript
+// ✅ Atomic UPDATE operation (thread-safe)
+const { data, error } = await supabase
+	.from('rate_limits')
+	.update({ count: sql`count + 1` })
+	.eq('key', key)
+	.lt('count', maxRequests)
+	.gt('expires_at', new Date().toISOString())
+	.select('count')
+	.single();
+
+// Si data === null, la limite est atteinte ou expirée
+if (!data) {
+	return { allowed: false, ... };
+}
+```
+
+**Avantages** :
+
+- ✅ **Thread-safe** : PostgreSQL garantit l'atomicité au niveau de la ligne
+- ✅ **Prévient overflow** : `UPDATE ... WHERE count < max` garantit que count ne dépasse jamais la limite
+- ✅ **Zero downtime** : Pas de migration requise, changement transparent
+- ✅ **Performance** : Une seule requête database au lieu de read-then-write
+
+**Pattern technique** :
+
+- Utilise `UPDATE ... WHERE count < max AND expires_at > NOW() RETURNING count`
+- Si aucune ligne n'est retournée (`data === null`), la limite est atteinte
+- Évite le pattern read-then-write qui est vulnérable aux race conditions
 
 #### Service Role Client
 
@@ -2163,7 +2208,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 };
 ```
 
-#### Exemple 2 : Rate Limiting sur Form Action
+#### Exemple 2 : Rate Limiting sur Form Action (Create)
 
 ```typescript
 // src/routes/(protected)/dashboard/teacher/notifications/+page.server.ts
@@ -2180,6 +2225,39 @@ export const actions: Actions = {
 		}
 
 		// Proceed with notification creation...
+	}
+};
+```
+
+#### Exemple 3 : Rate Limiting sur Form Action (Delete) 🆕 2025-11-10
+
+```typescript
+// src/routes/(protected)/dashboard/teacher/notifications/+page.server.ts
+import { checkNotificationDeleteRateLimit } from '$lib/server/rateLimiter';
+
+export const actions: Actions = {
+	delete: async ({ request, locals: { user } }) => {
+		// ====================================================================
+		// SECURITY: Rate Limiting
+		// ====================================================================
+		const rateLimitResult = await checkNotificationDeleteRateLimit(user.id, 'teacher');
+		if (!rateLimitResult.allowed) {
+			return fail(429, { error: rateLimitResult.message });
+		}
+
+		// ====================================================================
+		// SECURITY: Input Validation
+		// ====================================================================
+		const formData = await request.formData();
+		const validation = deleteNotificationSchema.safeParse({
+			notificationId: formData.get('notificationId')
+		});
+
+		if (!validation.success) {
+			return fail(400, { error: validation.error.issues[0].message });
+		}
+
+		// Proceed with notification deletion...
 	}
 };
 ```
@@ -2238,9 +2316,9 @@ export const createNotificationSchema = z.object({
 
 ### Tests
 
-**Couverture** : 42 tests (100% passing)
+**Couverture** : 65 tests (100% passing) 🆕 2025-11-10
 
-**Ajout de 16 tests pour notifications** :
+**Augmentation** : +23 tests (42 → 65) pour sécurité et race conditions
 
 #### Tests de limite teacher (6 tests)
 
@@ -2264,6 +2342,46 @@ export const createNotificationSchema = z.object({
 - ✅ Fournit message d'erreur + retryAfter
 - ✅ Isole les limites par utilisateur
 
+#### Tests de suppression (17 tests) 🆕 2025-11-10
+
+##### Tests de limite teacher (6 tests)
+
+- ✅ Permet 20 suppressions par heure
+- ✅ Bloque après 20 suppressions
+- ✅ Fournit message d'erreur + retryAfter
+- ✅ Isole les limites par utilisateur
+- ✅ Réinitialise après expiration
+- ✅ Gère missing userId (fail-open)
+
+##### Tests de limite admin (5 tests)
+
+- ✅ Permet 100 suppressions par heure
+- ✅ Bloque après 100 suppressions
+- ✅ Admins ont limite plus élevée que teachers
+- ✅ Isole les limites par utilisateur
+- ✅ Réinitialise après expiration
+
+##### Tests de validation Zod (3 tests)
+
+- ✅ Valide UUID du notificationId
+- ✅ Rejette ID invalide avec message d'erreur
+- ✅ Rejette ID manquant
+
+##### Tests d'intégration (3 tests)
+
+- ✅ Rate limiting + validation Zod combinés
+- ✅ Ordre d'exécution correct (rate limit → validation)
+- ✅ Messages d'erreur appropriés pour chaque cas
+
+#### Tests de race condition (6 tests) 🆕 2025-11-10
+
+- ✅ Opération atomique UPDATE thread-safe
+- ✅ Prévient overflow avec count < max
+- ✅ Requêtes concurrentes respectent la limite
+- ✅ Une seule requête database par appel
+- ✅ Retourne null si limite atteinte
+- ✅ Gère expiration correctement
+
 #### Tests de rôles (3 tests)
 
 - ✅ Applique limites différentes selon rôle
@@ -2281,57 +2399,43 @@ pnpm test:unit src/lib/server/rateLimiter.test.ts
 #### ✅ Implémenté
 
 1. **Rate limiting sur API** : Tous les endpoints sensibles protégés
-2. **Rate limiting sur formulaires** : Actions teacher/admin protégées
+2. **Rate limiting sur formulaires** : Actions teacher/admin protégées (create + delete)
 3. **Validation Zod** : Toutes les entrées validées
-4. **Limites par rôle** : Admins ont limite plus élevée (50 vs 10)
+4. **Limites par rôle** : Admins ont limite plus élevée (50 vs 10 create, 100 vs 20 delete)
 5. **Fail-open** : Disponibilité garantie même si DB down
 6. **Logging** : Tentatives de dépassement loggées
 7. **Retry-After header** : Client informé du temps d'attente
+8. **Race condition protection** : Opérations atomiques UPDATE pour thread-safety 🆕 2025-11-10
+9. **Delete rate limiting** : Actions de suppression protégées contre spam 🆕 2025-11-10
 
-#### ⚠️ Problèmes de sécurité (Medium Priority)
+#### ✅ Problèmes de sécurité résolus (2025-11-10)
 
-##### Issue #15 : Delete action non rate limited
+##### ~~Issue #15 : Delete action non rate limited~~ ✅ RÉSOLU
 
-**Risque** : Un admin/teacher pourrait spam la suppression de notifications.
+**Date de résolution** : 2025-11-10
 
-**Impact** : Moyen (nécessite compte légitime admin/teacher)
+**Implémentation** :
 
-**Mitigation** : RLS policies empêchent suppression non autorisée
+- ✅ Fonction `checkNotificationDeleteRateLimit()` créée
+- ✅ Appliquée aux pages teacher et admin notifications
+- ✅ Limites : Teacher 20/h, Admin 100/h
+- ✅ 17 tests complets (100% passing)
 
-**Solution recommandée** :
+**Commit** : `b4fa6c2` - fix(security): complete notification rate limiting security audit fixes
 
-```typescript
-// Add rate limiting to delete action
-export const actions: Actions = {
-	delete: async ({ request, locals: { user } }) => {
-		// Add rate limit check
-		const rateLimitResult = await checkNotificationDeleteRateLimit(user.id);
-		if (!rateLimitResult.allowed) {
-			return fail(429, { error: rateLimitResult.message });
-		}
+##### ~~Issue #16 : Race condition sur requêtes concurrentes~~ ✅ RÉSOLU
 
-		// Proceed with deletion...
-	}
-};
-```
+**Date de résolution** : 2025-11-10
 
-##### Issue #16 : Race condition sur requêtes concurrentes
+**Implémentation** :
 
-**Risque** : Requêtes simultanées peuvent contourner la limite.
+- ✅ Refactorisé `checkRateLimit()` avec opérations atomiques
+- ✅ Pattern `UPDATE ... WHERE count < max AND expires_at > NOW()`
+- ✅ PostgreSQL row-level locking garantit thread-safety
+- ✅ 6 tests de race condition (100% passing)
+- ✅ Zero downtime (pas de migration requise)
 
-**Impact** : Moyen (nécessite timing précis)
-
-**Détails** : Si 5 requêtes arrivent exactement en même temps avant que count soit incrémenté, toutes peuvent passer.
-
-**Solution recommandée** :
-
-```sql
--- Atomic SQL increment (requires migration)
-UPDATE rate_limits
-SET count = count + 1
-WHERE key = $1 AND expires_at > now()
-RETURNING count;
-```
+**Commit** : `b4fa6c2` - fix(security): complete notification rate limiting security audit fixes
 
 ### Exemples d'utilisation
 
@@ -2671,27 +2775,35 @@ CREATE TABLE notification_preferences (
 
 ---
 
-#### 15. Delete action non rate limited (Medium) 🆕 2025-11-10
+#### ~~15. Delete action non rate limited (Medium)~~ ✅ RÉSOLU (2025-11-10)
 
-**Problème** : L'action de suppression de notification n'est PAS rate limited.
+**Status** : Production-ready
 
-**Impact** : Moyen (nécessite compte légitime admin/teacher)
+**Problème original** : L'action de suppression de notification n'était PAS rate limited.
 
-**Mitigation actuelle** : RLS policies empêchent suppression non autorisée.
+**Solution implémentée** :
 
-**Solution** : Voir [Issue #15 dans Rate Limiting](#issue-15--delete-action-non-rate-limited)
+- ✅ `checkNotificationDeleteRateLimit()` créée et appliquée
+- ✅ Limites : Teacher 20/h, Admin 100/h
+- ✅ 17 tests complets (100% passing)
+
+**Voir** : [Problèmes de sécurité résolus](#problèmes-de-sécurité-résolus-2025-11-10)
 
 ---
 
-#### 16. Race condition sur requêtes concurrentes (Medium) 🆕 2025-11-10
+#### ~~16. Race condition sur requêtes concurrentes (Medium)~~ ✅ RÉSOLU (2025-11-10)
 
-**Problème** : Requêtes simultanées peuvent contourner la limite de rate limiting.
+**Status** : Production-ready
 
-**Impact** : Moyen (nécessite timing précis pour exploiter)
+**Problème original** : Requêtes simultanées pouvaient contourner la limite de rate limiting.
 
-**Détails** : Si plusieurs requêtes arrivent exactement en même temps avant que le compteur soit incrémenté, toutes peuvent passer.
+**Solution implémentée** :
 
-**Solution** : Voir [Issue #16 dans Rate Limiting](#issue-16--race-condition-sur-requêtes-concurrentes)
+- ✅ Opérations atomiques UPDATE avec `WHERE count < max`
+- ✅ PostgreSQL row-level locking garantit thread-safety
+- ✅ 6 tests de race condition (100% passing)
+
+**Voir** : [Race Condition Protection](#race-condition-protection)
 
 ---
 
@@ -2724,34 +2836,43 @@ CREATE TABLE notification_preferences (
    - Endpoint `/api/notifications/cleanup` non protégé
    - Recommandation : Ajouter `CRON_SECRET` verification
 
-**Status** : Sécurité significativement améliorée (2/4 critiques résolus, 2 medium restants)
+**Status** : Sécurité significativement améliorée (2/4 critiques résolus)
 
 ---
 
-### 🔴 Phase 1.1 : Issues restantes (Priorité 2)
+### ✅ Phase 1.1 : Issues de sécurité restantes (PARTIELLEMENT TERMINÉE - 2025-11-10)
 
 **Objectif** : Compléter les tâches de sécurité restantes.
 
-1. **Sanitization HTML côté serveur** (1 jour)
+1. ⚠️ **Sanitization HTML côté serveur** (NON TERMINÉ)
    - Installer `isomorphic-dompurify`
    - Sanitizer avant stockage dans `createNotification()`
    - Whitelist tags : `<p> <strong> <em> <br> <ul> <ol> <li>`
+   - **Priorité** : Haute (XSS prevention)
 
-2. **CRON secret pour cleanup** (0.5 jour)
+2. ⚠️ **CRON secret pour cleanup** (NON TERMINÉ)
    - Ajouter variable `CRON_SECRET`
    - Vérifier header `Authorization: Bearer ${CRON_SECRET}`
+   - **Priorité** : Moyenne (nécessite accès serveur)
 
-3. **Rate limiting sur delete action** (0.5 jour)
-   - Implémenter `checkNotificationDeleteRateLimit()`
-   - Appliquer aux actions teacher/admin delete
-   - Issue #15
+3. ✅ **Rate limiting sur delete action** (TERMINÉ - 2025-11-10)
+   - ✅ Fonction `checkNotificationDeleteRateLimit()` créée
+   - ✅ Appliquée aux pages teacher et admin notifications
+   - ✅ Limites : Teacher 20/h, Admin 100/h
+   - ✅ 17 tests complets (100% passing)
+   - **Commit** : `b4fa6c2`
 
-4. **Fix race condition** (1 jour)
-   - Migration SQL pour atomic increment
-   - Utiliser `UPDATE ... RETURNING count`
-   - Issue #16
+4. ✅ **Fix race condition** (TERMINÉ - 2025-11-10)
+   - ✅ Refactorisé `checkRateLimit()` avec opérations atomiques
+   - ✅ Pattern `UPDATE ... WHERE count < max AND expires_at > NOW()`
+   - ✅ PostgreSQL row-level locking garantit thread-safety
+   - ✅ 6 tests de race condition (100% passing)
+   - ✅ Zero downtime (pas de migration requise)
+   - **Commit** : `b4fa6c2`
 
-**Durée totale** : ~3 jours
+**Durée totale** : 1.5 jours restants (2/4 tâches complètes)
+
+**Status** : 2 medium-priority security issues résolus, 2 restants (haute priorité)
 
 ---
 
