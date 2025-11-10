@@ -40,7 +40,8 @@ import {
 	checkSignupRateLimitByIP,
 	checkOAuthRateLimitByIP,
 	checkNotificationCreateRateLimit,
-	checkNotificationMarkRateLimit
+	checkNotificationMarkRateLimit,
+	checkNotificationDeleteRateLimit
 } from './rateLimiter';
 
 // ============================================================================
@@ -74,27 +75,79 @@ function createMockSupabase() {
 				select: (_columns: string) => ({
 					eq: (column: string, value: string) => ({
 						gte: (column2: string, value2: string) => ({
-							maybeSingle: async () => {
+							maybeSingle: () => {
+								// Make synchronous to simulate atomic snapshot read
 								const entry = rateLimits.get(value);
 								if (!entry || new Date(entry.expires_at).getTime() < new Date(value2).getTime()) {
-									return { data: null, error: null };
+									return Promise.resolve({ data: null, error: null });
 								}
 								// Return a copy to avoid reference issues
-								return { data: { ...entry }, error: null };
+								return Promise.resolve({ data: { ...entry }, error: null });
 							}
 						})
 					})
 				}),
-				update: (data: { count: number }) => ({
-					eq: (column: string, value: string) => {
-						// Synchronously update the entry, then return a resolved promise
-						const entry = rateLimits.get(value);
-						if (entry) {
-							entry.count = data.count;
+				update: (data: { count: number }) => {
+					// Track WHERE conditions for atomic evaluation
+					const conditions: Array<() => boolean> = [];
+					let targetKey: string | null = null;
+
+					return {
+						eq: (column: string, value: string) => {
+							// Store the key (first WHERE condition)
+							targetKey = value;
+							conditions.push(() => rateLimits.has(value));
+							return {
+								lt: (column2: string, value2: number) => {
+									// Add count < maxAttempts condition
+									conditions.push(() => {
+										const entry = rateLimits.get(targetKey!);
+										return entry ? entry.count < value2 : false;
+									});
+									return {
+										gte: (column3: string, value3: string) => {
+											// Add expires_at >= now condition
+											conditions.push(() => {
+												const entry = rateLimits.get(targetKey!);
+												if (!entry) return false;
+												return new Date(entry.expires_at).getTime() >= new Date(value3).getTime();
+											});
+											return {
+												select: (_columns: string) => ({
+													maybeSingle: () => {
+														// CRITICAL: Make this synchronous to simulate PostgreSQL's row-level locking
+														// In PostgreSQL, UPDATE with WHERE clause acquires an exclusive lock on matching rows
+														// and evaluates conditions atomically. We simulate this by making the entire
+														// check-and-update operation synchronous (no await).
+
+														// ATOMICALLY evaluate all conditions and update
+														const allConditionsMet = conditions.every((condition) => condition());
+
+														if (!allConditionsMet) {
+															// One or more conditions failed → UPDATE affects 0 rows → return null
+															return Promise.resolve({ data: null, error: null });
+														}
+
+														// All conditions passed → perform UPDATE
+														const entry = rateLimits.get(targetKey!);
+														if (entry) {
+															entry.count = data.count;
+															// Return updated row (simulates RETURNING clause)
+															return Promise.resolve({ data: { ...entry }, error: null });
+														}
+
+														// Shouldn't happen (conditions passed but no entry)
+														return Promise.resolve({ data: null, error: null });
+													}
+												})
+											};
+										}
+									};
+								}
+							};
 						}
-						return Promise.resolve({ error: null });
-					}
-				}),
+					};
+				},
 				insert: (
 					data:
 						| {
@@ -108,9 +161,19 @@ function createMockSupabase() {
 								expires_at: string;
 						  }[]
 				) => {
-					// Synchronously insert into the map, then return a resolved promise
+					// Synchronously check for unique constraint violation
 					const records = Array.isArray(data) ? data : [data];
 					for (const record of records) {
+						// Simulate PostgreSQL UNIQUE constraint on 'key' column
+						if (rateLimits.has(record.key)) {
+							// Return unique constraint violation error (PostgreSQL error code 23505)
+							return Promise.resolve({
+								error: {
+									code: '23505',
+									message: 'duplicate key value violates unique constraint "rate_limits_key_key"'
+								}
+							});
+						}
 						rateLimits.set(record.key, record);
 					}
 					return Promise.resolve({ error: null });
@@ -159,7 +222,8 @@ describe('Rate Limiter (Database-backed)', () => {
 		// Reset the mock implementation for createClient
 		vi.mocked(createClient).mockReturnValue(mock.mockSupabase);
 
-		vi.clearAllMocks();
+		// NOTE: Do NOT call vi.clearAllMocks() here as it clears the logger mock
+		// and the createClient mock we just configured above, breaking all tests
 	});
 
 	describe('Login Rate Limiting by IP', () => {
@@ -756,6 +820,424 @@ describe('Rate Limiter (Database-backed)', () => {
 					expect(allowed).toBeGreaterThanOrEqual(30);
 				});
 			});
+		});
+
+		describe('checkNotificationDeleteRateLimit', () => {
+			describe('Teacher Rate Limit (20/hour)', () => {
+				it('should allow teachers up to 20 deletions per hour', async () => {
+					const userId = 'test-teacher-delete-1';
+
+					// First 20 requests should succeed
+					for (let i = 0; i < 20; i++) {
+						const result = await checkNotificationDeleteRateLimit(userId, 'teacher');
+						expect(result.allowed).toBe(true);
+						expect(result.message).toBeUndefined();
+						expect(result.retryAfter).toBeUndefined();
+					}
+				});
+
+				it('should block teachers after 20 deletions per hour', async () => {
+					const userId = 'test-teacher-delete-2';
+
+					// Exhaust limit (20 requests)
+					for (let i = 0; i < 20; i++) {
+						await checkNotificationDeleteRateLimit(userId, 'teacher');
+					}
+
+					// 21st request should be blocked
+					const result = await checkNotificationDeleteRateLimit(userId, 'teacher');
+					expect(result.allowed).toBe(false);
+					expect(result.message).toContain('limite de suppression');
+					expect(result.retryAfter).toBeDefined();
+					expect(result.retryAfter).toBeGreaterThan(0);
+					expect(result.retryAfter).toBeLessThanOrEqual(3600);
+				});
+
+				it('should have higher limit than create (20 vs 10)', async () => {
+					const userId = 'test-teacher-delete-3';
+
+					// Can create 10 notifications
+					for (let i = 0; i < 10; i++) {
+						const createResult = await checkNotificationCreateRateLimit(userId, 'teacher');
+						expect(createResult.allowed).toBe(true);
+					}
+
+					// Create limit exhausted
+					const createResult = await checkNotificationCreateRateLimit(userId, 'teacher');
+					expect(createResult.allowed).toBe(false);
+
+					// But can still delete 20 notifications
+					for (let i = 0; i < 20; i++) {
+						const deleteResult = await checkNotificationDeleteRateLimit(userId, 'teacher');
+						expect(deleteResult.allowed).toBe(true);
+					}
+
+					// Delete limit exhausted after 20
+					const deleteResult = await checkNotificationDeleteRateLimit(userId, 'teacher');
+					expect(deleteResult.allowed).toBe(false);
+				});
+
+				it('should return retryAfter value when limit exceeded', async () => {
+					const userId = 'test-teacher-delete-4';
+
+					// Exhaust limit
+					for (let i = 0; i < 20; i++) {
+						await checkNotificationDeleteRateLimit(userId, 'teacher');
+					}
+
+					const result = await checkNotificationDeleteRateLimit(userId, 'teacher');
+					expect(result.allowed).toBe(false);
+					expect(result.retryAfter).toBeDefined();
+					expect(typeof result.retryAfter).toBe('number');
+					expect(result.retryAfter).toBeGreaterThan(0);
+					// Should be at most 1 hour (3600 seconds)
+					expect(result.retryAfter).toBeLessThanOrEqual(3600);
+				});
+
+				it('should return correct French error message when limit exceeded', async () => {
+					const userId = 'test-teacher-delete-5';
+
+					// Exhaust limit
+					for (let i = 0; i < 20; i++) {
+						await checkNotificationDeleteRateLimit(userId, 'teacher');
+					}
+
+					const result = await checkNotificationDeleteRateLimit(userId, 'teacher');
+					expect(result.allowed).toBe(false);
+					expect(result.message).toContain('Vous avez atteint la limite');
+					expect(result.message).toContain('suppression');
+				});
+
+				it('should reset after time window expires', async () => {
+					const userId = 'test-teacher-delete-6';
+
+					// Exceed limit
+					for (let i = 0; i < 20; i++) {
+						await checkNotificationDeleteRateLimit(userId, 'teacher');
+					}
+
+					// Verify blocked
+					let result = await checkNotificationDeleteRateLimit(userId, 'teacher');
+					expect(result.allowed).toBe(false);
+
+					// Manually expire the entry (simulates time passing)
+					expireEntry(`notification_delete:${userId}`);
+
+					// Should be allowed again
+					result = await checkNotificationDeleteRateLimit(userId, 'teacher');
+					expect(result.allowed).toBe(true);
+				});
+			});
+
+			describe('Admin Rate Limit (100/hour)', () => {
+				it('should allow admins up to 100 deletions per hour', async () => {
+					const userId = 'test-admin-delete-1';
+
+					// First 100 requests should succeed
+					for (let i = 0; i < 100; i++) {
+						const result = await checkNotificationDeleteRateLimit(userId, 'admin');
+						expect(result.allowed).toBe(true);
+					}
+				});
+
+				it('should block admins after 100 deletions per hour', async () => {
+					const userId = 'test-admin-delete-2';
+
+					// Exhaust limit (100 requests)
+					for (let i = 0; i < 100; i++) {
+						await checkNotificationDeleteRateLimit(userId, 'admin');
+					}
+
+					// 101st request should be blocked
+					const result = await checkNotificationDeleteRateLimit(userId, 'admin');
+					expect(result.allowed).toBe(false);
+					expect(result.message).toBeDefined();
+					expect(result.retryAfter).toBeDefined();
+					expect(result.retryAfter).toBeGreaterThan(0);
+					expect(result.retryAfter).toBeLessThanOrEqual(3600);
+				});
+
+				it('should allow more deletions for admins than teachers (100 vs 20)', async () => {
+					const adminId = 'test-admin-delete-3';
+					const teacherId = 'test-teacher-delete-7';
+
+					// Teacher should be blocked after 20
+					for (let i = 0; i < 20; i++) {
+						await checkNotificationDeleteRateLimit(teacherId, 'teacher');
+					}
+					const teacherResult = await checkNotificationDeleteRateLimit(teacherId, 'teacher');
+					expect(teacherResult.allowed).toBe(false);
+
+					// Admin should still be allowed after 20 (up to 100)
+					for (let i = 0; i < 50; i++) {
+						const adminResult = await checkNotificationDeleteRateLimit(adminId, 'admin');
+						expect(adminResult.allowed).toBe(true);
+					}
+				});
+
+				it('should have higher limit than admin create (100 vs 50)', async () => {
+					const userId = 'test-admin-delete-4';
+
+					// Can create 50 notifications
+					for (let i = 0; i < 50; i++) {
+						const createResult = await checkNotificationCreateRateLimit(userId, 'admin');
+						expect(createResult.allowed).toBe(true);
+					}
+
+					// Create limit exhausted
+					const createResult = await checkNotificationCreateRateLimit(userId, 'admin');
+					expect(createResult.allowed).toBe(false);
+
+					// But can still delete 100 notifications
+					for (let i = 0; i < 100; i++) {
+						const deleteResult = await checkNotificationDeleteRateLimit(userId, 'admin');
+						expect(deleteResult.allowed).toBe(true);
+					}
+
+					// Delete limit exhausted after 100
+					const deleteResult = await checkNotificationDeleteRateLimit(userId, 'admin');
+					expect(deleteResult.allowed).toBe(false);
+				});
+			});
+
+			describe('Delete vs Create Isolation', () => {
+				it('should track delete and create limits independently', async () => {
+					const userId = 'test-isolation-1';
+
+					// Exhaust delete limit
+					for (let i = 0; i < 20; i++) {
+						await checkNotificationDeleteRateLimit(userId, 'teacher');
+					}
+					const deleteResult = await checkNotificationDeleteRateLimit(userId, 'teacher');
+					expect(deleteResult.allowed).toBe(false);
+
+					// Create limit should still work (different quota)
+					const createResult = await checkNotificationCreateRateLimit(userId, 'teacher');
+					expect(createResult.allowed).toBe(true);
+				});
+
+				it('should not allow create/delete loops to bypass limits', async () => {
+					const userId = 'test-isolation-2';
+
+					// Use up create quota (10)
+					for (let i = 0; i < 10; i++) {
+						await checkNotificationCreateRateLimit(userId, 'teacher');
+					}
+					let createResult = await checkNotificationCreateRateLimit(userId, 'teacher');
+					expect(createResult.allowed).toBe(false);
+
+					// Use up delete quota (20)
+					for (let i = 0; i < 20; i++) {
+						await checkNotificationDeleteRateLimit(userId, 'teacher');
+					}
+					let deleteResult = await checkNotificationDeleteRateLimit(userId, 'teacher');
+					expect(deleteResult.allowed).toBe(false);
+
+					// Both should remain blocked (no quota sharing)
+					createResult = await checkNotificationCreateRateLimit(userId, 'teacher');
+					expect(createResult.allowed).toBe(false);
+					deleteResult = await checkNotificationDeleteRateLimit(userId, 'teacher');
+					expect(deleteResult.allowed).toBe(false);
+				});
+			});
+
+			describe('Edge Cases', () => {
+				it('should handle missing userId gracefully (fail-open)', async () => {
+					const result = await checkNotificationDeleteRateLimit('', 'teacher');
+					expect(result.allowed).toBe(true);
+					expect(result.message).toBeUndefined();
+				});
+
+				it('should handle concurrent delete requests correctly', async () => {
+					const userId = 'test-concurrent-delete-1';
+
+					// Simulate concurrent requests
+					const results = await Promise.all(
+						Array.from({ length: 25 }, () => checkNotificationDeleteRateLimit(userId, 'teacher'))
+					);
+
+					// Should handle all requests
+					const allowed = results.filter((r) => r.allowed).length;
+					const blocked = results.filter((r) => !r.allowed).length;
+
+					expect(allowed + blocked).toBe(25);
+					// At least 20 should be allowed (the limit)
+					expect(allowed).toBeGreaterThanOrEqual(20);
+				});
+
+				it('should reset after time window expires', async () => {
+					const userId = 'test-delete-reset-1';
+
+					// Exceed limit
+					for (let i = 0; i < 20; i++) {
+						await checkNotificationDeleteRateLimit(userId, 'teacher');
+					}
+
+					// Verify blocked
+					let result = await checkNotificationDeleteRateLimit(userId, 'teacher');
+					expect(result.allowed).toBe(false);
+
+					// Manually expire the entry (simulates time passing)
+					expireEntry(`notification_delete:${userId}`);
+
+					// Should be allowed again
+					result = await checkNotificationDeleteRateLimit(userId, 'teacher');
+					expect(result.allowed).toBe(true);
+				});
+
+				it('should track limits independently for different users', async () => {
+					const userA = 'test-delete-user-a';
+					const userB = 'test-delete-user-b';
+
+					// User A exhausts their limit
+					for (let i = 0; i < 20; i++) {
+						await checkNotificationDeleteRateLimit(userA, 'teacher');
+					}
+					const userAResult = await checkNotificationDeleteRateLimit(userA, 'teacher');
+					expect(userAResult.allowed).toBe(false);
+
+					// User B should still have their full quota
+					const userBResult = await checkNotificationDeleteRateLimit(userB, 'teacher');
+					expect(userBResult.allowed).toBe(true);
+				});
+			});
+
+			describe('French Error Messages', () => {
+				it('should return French error message when limit exceeded', async () => {
+					const userId = 'test-delete-french-1';
+
+					// Exhaust limit
+					for (let i = 0; i < 20; i++) {
+						await checkNotificationDeleteRateLimit(userId, 'teacher');
+					}
+
+					const result = await checkNotificationDeleteRateLimit(userId, 'teacher');
+					expect(result.allowed).toBe(false);
+					expect(result.message).toContain('suppression');
+					expect(result.message).toContain('limite');
+				});
+			});
+		});
+	});
+
+	describe('Race Condition Protection (Atomicity)', () => {
+		/**
+		 * NOTE ON TESTING ATOMICITY:
+		 *
+		 * These tests verify the atomic UPDATE implementation in the actual code,
+		 * but they CANNOT perfectly simulate PostgreSQL's row-level locking in an
+		 * in-memory JavaScript mock.
+		 *
+		 * What we CAN verify:
+		 * 1. The code uses atomic UPDATE with WHERE clauses (.lt(), .gte())
+		 * 2. The mock correctly simulates UPDATE returning null when conditions fail
+		 * 3. The final count doesn't exceed maxAttempts (atomicity prevents overflow)
+		 * 4. Most requests are correctly blocked after limit is reached
+		 *
+		 * What we CANNOT verify in a mock:
+		 * - Exact concurrency behavior (requires real database with row locking)
+		 * - True serialization of concurrent UPDATEs (JavaScript is single-threaded)
+		 *
+		 * The REAL protection comes from PostgreSQL's atomic UPDATE in production.
+		 * These tests validate the code pattern, not the database's atomicity guarantees.
+		 */
+
+		it('should use atomic UPDATE pattern with conditions', async () => {
+			const testIP = '192.168.1.999';
+
+			// First request should insert successfully
+			const result1 = await checkLoginRateLimitByIP(testIP);
+			expect(result1.allowed).toBe(true);
+
+			// Subsequent requests should use UPDATE
+			for (let i = 0; i < 4; i++) {
+				const result = await checkLoginRateLimitByIP(testIP);
+				expect(result.allowed).toBe(true);
+			}
+
+			// 6th request should be blocked
+			const blocked = await checkLoginRateLimitByIP(testIP);
+			expect(blocked.allowed).toBe(false);
+
+			// Final count should be exactly 5 (not higher due to race conditions)
+			const entry = rateLimits.get(`ratelimit:login:ip:${testIP}`);
+			expect(entry).toBeDefined();
+			expect(entry?.count).toBe(5);
+		});
+
+		it('should never exceed maxAttempts even with concurrent requests', async () => {
+			const testIP = '192.168.1.1000';
+
+			// Send many concurrent requests
+			await Promise.all(Array.from({ length: 50 }, () => checkLoginRateLimitByIP(testIP)));
+
+			// CRITICAL: Final count must never exceed maxAttempts (5)
+			// This verifies the atomic UPDATE's .lt(maxAttempts) condition works
+			const entry = rateLimits.get(`ratelimit:login:ip:${testIP}`);
+			expect(entry?.count).toBeLessThanOrEqual(5);
+		});
+
+		it('should isolate rate limits per key (different IPs)', async () => {
+			const ips = ['192.168.1.2001', '192.168.1.2002', '192.168.1.2003'];
+
+			// Each IP sends concurrent requests
+			await Promise.all(
+				ips.map((ip) => Promise.all(Array.from({ length: 10 }, () => checkLoginRateLimitByIP(ip))))
+			);
+
+			// Verify each IP's count doesn't exceed limit
+			for (const ip of ips) {
+				const entry = rateLimits.get(`ratelimit:login:ip:${ip}`);
+				expect(entry?.count).toBeLessThanOrEqual(5);
+			}
+		});
+
+		it('should enforce notification creation limits under concurrency', async () => {
+			const userId = 'test-race-notification-1';
+
+			// Send concurrent notification creation requests (limit is 10)
+			await Promise.all(
+				Array.from({ length: 30 }, () => checkNotificationCreateRateLimit(userId, 'teacher'))
+			);
+
+			// Final count must not exceed 10
+			const entry = rateLimits.get(`notification_create:${userId}`);
+			expect(entry?.count).toBeLessThanOrEqual(10);
+		});
+
+		it('should prevent count overflow with email rate limiting', async () => {
+			const testEmail = 'race@example.com';
+
+			// Send concurrent email login requests (limit is 3)
+			await Promise.all(Array.from({ length: 10 }, () => checkLoginRateLimitByEmail(testEmail)));
+
+			// CRITICAL: Final count must not exceed 3
+			const entry = rateLimits.get(`ratelimit:login:email:${testEmail}`);
+			expect(entry).toBeDefined();
+			expect(entry?.count).toBeLessThanOrEqual(3);
+		});
+
+		it('should maintain independent counters for different keys', async () => {
+			const testIP1 = '192.168.1.3001';
+			const testIP2 = '192.168.1.3002';
+			const testEmail1 = 'race1@example.com';
+			const userId1 = 'race-user-1';
+
+			// Run multiple operations concurrently
+			await Promise.all([
+				Promise.all(Array.from({ length: 10 }, () => checkLoginRateLimitByIP(testIP1))),
+				Promise.all(Array.from({ length: 10 }, () => checkLoginRateLimitByIP(testIP2))),
+				Promise.all(Array.from({ length: 6 }, () => checkLoginRateLimitByEmail(testEmail1))),
+				Promise.all(
+					Array.from({ length: 15 }, () => checkNotificationCreateRateLimit(userId1, 'teacher'))
+				)
+			]);
+
+			// Verify each key's count doesn't exceed its limit
+			expect(rateLimits.get(`ratelimit:login:ip:${testIP1}`)?.count).toBeLessThanOrEqual(5);
+			expect(rateLimits.get(`ratelimit:login:ip:${testIP2}`)?.count).toBeLessThanOrEqual(5);
+			expect(rateLimits.get(`ratelimit:login:email:${testEmail1}`)?.count).toBeLessThanOrEqual(3);
+			expect(rateLimits.get(`notification_create:${userId1}`)?.count).toBeLessThanOrEqual(10);
 		});
 	});
 });

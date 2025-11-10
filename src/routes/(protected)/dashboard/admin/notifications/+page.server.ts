@@ -10,7 +10,10 @@ import {
 	createNotificationSchema,
 	deleteNotificationSchema
 } from '$lib/server/validation/notifications';
-import { checkNotificationCreateRateLimit } from '$lib/server/rateLimiter';
+import {
+	checkNotificationCreateRateLimit,
+	checkNotificationDeleteRateLimit
+} from '$lib/server/rateLimiter';
 
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -168,6 +171,14 @@ export const actions: Actions = {
 
 		if (!user) {
 			return fail(401, { error: 'Non authentifié' });
+		}
+
+		// ====================================================================
+		// SECURITY: Rate Limiting
+		// ====================================================================
+		const rateLimitResult = await checkNotificationDeleteRateLimit(user.id, 'admin');
+		if (!rateLimitResult.allowed) {
+			return fail(429, { error: rateLimitResult.message });
 		}
 
 		// ====================================================================

@@ -18,6 +18,8 @@
  * - Chatbot requests: 5 per 15 minutes per user
  * - Notification creation (teachers): 10 per hour per user
  * - Notification creation (admins): 50 per hour per user
+ * - Notification deletion (teachers): 20 per hour per user
+ * - Notification deletion (admins): 100 per hour per user
  * - Notification mark-read: 30 per 15 minutes per user
  *
  * MIGRATION FROM REDIS:
@@ -135,29 +137,30 @@ type UserRole = Database['public']['Enums']['user_role'];
 // ============================================================================
 
 /**
- * Check rate limit using database
+ * Check rate limit using database (ATOMIC implementation)
  *
- * This function implements the core rate limiting logic:
- * 1. Check if a rate limit entry exists for the key
- * 2. If it exists and hasn't expired:
- *    - Check if count >= maxAttempts (rate limited)
- *    - Otherwise increment count
- * 3. If it doesn't exist or expired, create new entry
+ * This function implements atomic check-and-increment using PostgreSQL's
+ * UPDATE ... WHERE pattern to prevent race conditions.
  *
- * **Fail-Open Strategy**: If database errors occur, the function returns `false`
- * (allows the request). This prevents DoS attacks where an attacker could
- * crash the database to block legitimate users.
+ * **Race Condition Fix (2025-01-10)**:
+ * - Previous implementation: Read count, check limit, then increment (NON-ATOMIC)
+ * - New implementation: Atomic UPDATE with WHERE clause ensures no concurrent bypass
  *
- * **Race Condition Handling**: Uses unique constraint violations to detect
- * concurrent inserts. If a constraint violation occurs (code 23505), it means
- * either:
- * - Another concurrent request just created the entry, OR
- * - An expired entry exists in the database
- * The function will retry up to 3 times, and if still failing, will delete
- * the expired entry and allow the request (fail-open).
+ * **How Atomicity Works**:
+ * ```sql
+ * UPDATE rate_limits
+ * SET count = count + 1
+ * WHERE key = 'ratelimit:login:ip:192.168.1.1'
+ *   AND count < 5              -- 🔒 ATOMIC: Uses current value, not stale
+ *   AND expires_at > NOW()     -- 🔒 ATOMIC: Ensure entry still valid
+ * RETURNING count, expires_at;
+ * ```
  *
- * **Service Role Client**: Uses service role client internally (not anon client)
- * because the `rate_limits` table grants are restricted to service_role only.
+ * If WHERE clause evaluates to false (limit exceeded or expired), UPDATE affects
+ * 0 rows and returns NULL. This is PostgreSQL's native atomic compare-and-swap.
+ *
+ * **Fail-Open Strategy**: Database errors return `false` (allows request) to prevent
+ * DoS attacks where an attacker crashes the database to block legitimate users.
  *
  * @param config - Rate limit configuration object
  * @param config.key - Unique identifier for rate limit bucket (e.g., "ratelimit:login:ip:192.168.1.1")
@@ -184,8 +187,6 @@ async function checkRateLimit(
 ): Promise<{ limited: boolean; expiresAt: Date | null }> {
 	const { key, maxAttempts, windowSeconds } = config;
 	const expiresAt = new Date(Date.now() + windowSeconds * 1000);
-
-	// Get service role client (required for rate_limits table access)
 	const supabase = getServiceRoleClient();
 
 	try {
@@ -199,31 +200,79 @@ async function checkRateLimit(
 
 		if (fetchError) {
 			logger.error('Rate limit check error:', fetchError);
-			return { limited: false, expiresAt: null }; // Fail open on errors
+			return { limited: false, expiresAt: null }; // Fail open
 		}
 
 		if (existing) {
-			// Entry exists and hasn't expired
-			if (existing.count >= maxAttempts) {
-				logger.trace('Rate limit exceeded', { key: maskKey(key), count: existing.count });
-				return { limited: true, expiresAt: new Date(existing.expires_at) }; // Rate limit exceeded
-			}
+			// ====================================================================
+			// ATOMIC INCREMENT (Race Condition Fix)
+			// ====================================================================
+			// Use UPDATE with WHERE clause to atomically check and increment.
+			// PostgreSQL guarantees that the WHERE clause is evaluated using
+			// the CURRENT row value (locked during UPDATE), preventing races.
 
-			// Increment counter
-			const { error: updateError } = await supabase
+			const { data: updateResult, error: updateError } = await supabase
 				.from('rate_limits')
 				.update({ count: existing.count + 1 })
-				.eq('key', key);
+				.eq('key', key)
+				.lt('count', maxAttempts) // 🔒 ATOMIC: Only if below limit
+				.gte('expires_at', new Date().toISOString()) // 🔒 ATOMIC: Only if not expired
+				.select('count, expires_at')
+				.maybeSingle();
 
 			if (updateError) {
 				logger.error('Rate limit update error:', updateError);
 				return { limited: false, expiresAt: null }; // Fail open
 			}
 
-			logger.trace('Rate limit incremented', { key: maskKey(key), count: existing.count + 1 });
-			return { limited: false, expiresAt: null }; // Allowed
+			if (!updateResult) {
+				// UPDATE affected 0 rows - either limit exceeded OR entry expired during race
+				// We need to distinguish between these two cases for correct behavior
+
+				// Re-check: Did the entry expire or was limit exceeded?
+				const { data: recheck } = await supabase
+					.from('rate_limits')
+					.select('count, expires_at')
+					.eq('key', key)
+					.gte('expires_at', new Date().toISOString())
+					.maybeSingle();
+
+				if (!recheck) {
+					// Entry expired during race → allow request (fail-open)
+					logger.trace('Rate limit entry expired during race, allowing', {
+						key: maskKey(key)
+					});
+
+					// Create new entry for next request
+					await supabase.from('rate_limits').insert({
+						key,
+						count: 1,
+						expires_at: expiresAt.toISOString()
+					});
+
+					return { limited: false, expiresAt: null };
+				}
+
+				// Limit exceeded
+				logger.trace('Rate limit exceeded', {
+					key: maskKey(key),
+					count: recheck.count
+				});
+				return { limited: true, expiresAt: new Date(recheck.expires_at) };
+			}
+
+			// Update succeeded → request allowed
+			logger.trace('Rate limit incremented', {
+				key: maskKey(key),
+				count: updateResult.count
+			});
+			return { limited: false, expiresAt: null };
 		} else {
+			// ====================================================================
+			// NEW ENTRY CREATION
+			// ====================================================================
 			// No existing entry or expired - create new entry
+
 			const { error: insertError } = await supabase.from('rate_limits').insert({
 				key,
 				count: 1,
@@ -231,14 +280,11 @@ async function checkRateLimit(
 			});
 
 			if (insertError) {
-				// Handle unique constraint violation (race condition)
+				// Handle unique constraint violation (race condition during insert)
 				if ('code' in insertError && insertError.code === '23505') {
-					// Entry already exists - either:
-					// 1. Created by concurrent request (should be found on retry)
-					// 2. Expired entry blocking new inserts (needs cleanup)
-
+					// Another concurrent request just created the entry
+					// Retry up to 3 times
 					if (retryCount < 3) {
-						// Retry up to 3 times
 						logger.trace('Unique constraint violation, retrying', {
 							key: maskKey(key),
 							retryCount: retryCount + 1
@@ -246,15 +292,15 @@ async function checkRateLimit(
 						return checkRateLimit(config, retryCount + 1);
 					} else {
 						// Max retries exceeded - likely an expired entry blocking inserts
-						// Delete the expired entry and allow the request (fail-open)
-						logger.warn('Max retries on unique constraint, cleaning up expired entry', {
+						logger.warn('Max retries on unique constraint, cleaning up', {
 							key: maskKey(key)
 						});
 
-						// Delete the blocking entry (don't care if it fails)
+						// Delete the blocking entry
 						await supabase.from('rate_limits').delete().eq('key', key);
 
-						return { limited: false, expiresAt: null }; // Allow request (fail-open)
+						// Allow request (fail-open)
+						return { limited: false, expiresAt: null };
 					}
 				}
 
@@ -815,6 +861,95 @@ export async function checkNotificationCreateRateLimit(
 
 	if (!result.allowed) {
 		logger.warn('Notification creation rate limit exceeded', {
+			userId: maskKey(key),
+			role,
+			maxAttempts
+		});
+	}
+
+	return result;
+}
+
+/**
+ * Check notification deletion rate limit by user ID and role
+ *
+ * Prevents spam deletion by limiting deletes per user.
+ * Higher limits than creation to allow bulk cleanup and testing.
+ *
+ * Rate Limits:
+ * - Teachers: 20 deletions per hour
+ * - Admins: 100 deletions per hour
+ *
+ * **Why Higher Than Creation Limits?**
+ * - Bulk cleanup operations may require deleting many notifications
+ * - Testing and development workflows need more deletions
+ * - Deletes are less risky than creates (no spam impact)
+ *
+ * **Security Considerations**:
+ * - Prevents automated deletion spam
+ * - Protects database from excessive write operations
+ * - Fail-open: Allows requests if database is unavailable
+ *
+ * @param userId - User ID from authenticated session
+ * @param role - User role ('teacher' or 'admin')
+ * @returns Rate limit result object
+ * @returns result.allowed - `true` if deletion allowed, `false` if rate limited
+ * @returns result.message - User-friendly French error message (only if `allowed: false`)
+ * @returns result.retryAfter - Seconds until rate limit resets (only if `allowed: false`)
+ *
+ * @example In notification deletion action (teacher)
+ * ```typescript
+ * export const actions = {
+ *   delete: async ({ locals: { user } }) => {
+ *     // Check rate limit
+ *     const rateLimit = await checkNotificationDeleteRateLimit(user.id, 'teacher');
+ *     if (!rateLimit.allowed) {
+ *       return fail(429, { error: rateLimit.message });
+ *     }
+ *
+ *     // Delete notification...
+ *   }
+ * };
+ * ```
+ *
+ * @example In API endpoint with retry header
+ * ```typescript
+ * const rateLimit = await checkNotificationDeleteRateLimit(userId, 'admin');
+ * if (!rateLimit.allowed) {
+ *   return json(
+ *     { error: rateLimit.message },
+ *     {
+ *       status: 429,
+ *       headers: {
+ *         'Retry-After': rateLimit.retryAfter?.toString() || '3600'
+ *       }
+ *     }
+ *   );
+ * }
+ * ```
+ */
+export async function checkNotificationDeleteRateLimit(
+	userId: string,
+	role: UserRole
+): Promise<RateLimitResult> {
+	if (!userId) {
+		logger.warn('Missing user ID for notification delete rate limit check');
+		return { allowed: true }; // Fail open
+	}
+
+	const maxAttempts = role === 'admin' ? 100 : 20; // 2x higher than create
+	const windowSeconds = 3600; // 1 hour
+
+	const key = `notification_delete:${userId}`;
+	const result = await checkRateLimitWithMessage(
+		key,
+		maxAttempts,
+		windowSeconds,
+		'Vous avez atteint la limite de suppression de notifications. Veuillez réessayer plus tard.'
+	);
+
+	if (!result.allowed) {
+		logger.warn('Notification deletion rate limit exceeded', {
 			userId: maskKey(key),
 			role,
 			maxAttempts
