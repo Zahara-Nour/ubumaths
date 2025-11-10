@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.2.0...v0.2.1) (2025-11-10)
+
+### 📚 Documentation
+
+- **cache:** add comprehensive documentation and JSDoc for student cache ([49ef943](https://github.com/Zahara-Nour/ubumaths/commit/49ef943fb13aa91d4dea578143a88ee3ca890cec))
+
+### ✨ Features
+
+- **admin:** add bulk resolve errors feature for efficient error management ([9a10ab2](https://github.com/Zahara-Nour/ubumaths/commit/9a10ab2a4b48709d8a7510f621807b2eadd25501))
+- **admin:** add destructive delete for all resolved errors ([6ffd51e](https://github.com/Zahara-Nour/ubumaths/commit/6ffd51e1e4a03870311206a7b0a6255fc0baf678))
+- **cache:** complete student dashboard cache migration (Phase 2) ([f20b662](https://github.com/Zahara-Nour/ubumaths/commit/f20b6626743e595b5eff193635a353999e1a600e))
+- **cache:** implement student dashboard cache system ([78ef36f](https://github.com/Zahara-Nour/ubumaths/commit/78ef36ffd51ce1e1a584e2c01d9d8c3dc2f28e46))
+- **realtime:** migrate from WebSocket to Supabase Realtime (Phase 1-2) ([486977f](https://github.com/Zahara-Nour/ubumaths/commit/486977f1dddf8aeea28b7319cd49e017be50d0cd))
+- **rewards:** add filter/add mode toggle for VIP card management ([26eb7c1](https://github.com/Zahara-Nour/ubumaths/commit/26eb7c1e1c61919d3f7021aac9debf90909af067))
+- **vip-cards:** add choose_card action for targeted VIP card selection ([eb9ffbc](https://github.com/Zahara-Nour/ubumaths/commit/eb9ffbc457596cdfcbef1218e330546326d00f10))
+- **vip-cards:** add edit button and fix save bug in admin UI ([bc2f350](https://github.com/Zahara-Nour/ubumaths/commit/bc2f350ed2b53cc3780a7aef23c9a43480507c0b))
+- **vip-cards:** add flexible exchange mode for VIP card actions ([870d3fb](https://github.com/Zahara-Nour/ubumaths/commit/870d3fbdc01a5295fd89439289e1e50b425e15f2))
+- **vip-cards:** enhance admin actions with choose_card support and advanced draw filters ([362878b](https://github.com/Zahara-Nour/ubumaths/commit/362878bb6612d37381083a069fb560a31b092f7d))
+- **vip-cards:** enhance VIP card selection modal UX ([34d0e9e](https://github.com/Zahara-Nour/ubumaths/commit/34d0e9ed8afbdfc90c29334223bd4ea4916a19ba))
+- **vip-cards:** implement two-step activation flow for students ([bd99c9b](https://github.com/Zahara-Nour/ubumaths/commit/bd99c9b995a68cbf39eddc72a85b268c640bf42b))
+
+### 🐛 Bug Fixes
+
+- **demo:** load VIP cards from database instead of hardcoded data ([78b351f](https://github.com/Zahara-Nour/ubumaths/commit/78b351f3f87ac22cb4e8810d43ebc127b1949054))
+- **deploy:** update Vercel cron schedule for free tier compatibility ([e53d055](https://github.com/Zahara-Nour/ubumaths/commit/e53d05572248ca59aa5cd8d3bcddd1cc90e210a7))
+- **realtime:** fix critical chat deduplication bugs and achieve 100% test pass rate ([af8ec09](https://github.com/Zahara-Nour/ubumaths/commit/af8ec096f734095877e0ee7a27a096c0fdeb2d7c))
+- **vip-cards:** ensure action cards marked as used after exchange ([c2ef15a](https://github.com/Zahara-Nour/ubumaths/commit/c2ef15a2feece74f2a930654450a74ef3720d11c))
+- **vip-cards:** remove double overlay in VIP card modals ([59ababe](https://github.com/Zahara-Nour/ubumaths/commit/59ababe179df1969a548f66a2c18c7648bc97b1f))
+- **vip-cards:** synchronize cache updates for student VIP card actions ([c425a04](https://github.com/Zahara-Nour/ubumaths/commit/c425a04be363dfed1541e0190b528223fc0ac0bc))
+
 ## [0.2.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.1.2...v0.2.0) (2025-11-08)
 
 ### ⚠ BREAKING CHANGES
