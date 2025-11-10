@@ -7,11 +7,16 @@
  * **SECURITY NOTE**: All messages are sanitized in `createSystemNotification()`
  * before database insertion. This provides defense-in-depth protection even though
  * system messages are code-controlled and should be safe.
+ *
+ * **SECURITY - HTML ESCAPING**: User-controlled data is HTML-escaped BEFORE
+ * template interpolation to prevent template injection attacks. This is an
+ * additional security layer (defense-in-depth) beyond DOMPurify sanitization.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { createSystemNotification } from './notifications';
+import { escapeHtml } from '$lib/utils/html-escape';
 
 type SupabaseClientType = SupabaseClient<Database>;
 
@@ -36,7 +41,7 @@ export async function notifyNewAssignment(
 	try {
 		await createSystemNotification(supabase, {
 			title: 'Nouveau devoir assigné',
-			message: `<p><strong>${data.teacherName}</strong> a assigné un nouveau devoir : <strong>${data.assignmentTitle}</strong></p>`,
+			message: `<p><strong>${escapeHtml(data.teacherName)}</strong> a assigné un nouveau devoir : <strong>${escapeHtml(data.assignmentTitle)}</strong></p>`,
 			type: 'info',
 			priority: 'normal',
 			system_event_type: 'assignment_created',
@@ -72,7 +77,7 @@ export async function notifyNewResource(
 	try {
 		await createSystemNotification(supabase, {
 			title: 'Nouvelle ressource disponible',
-			message: `<p><strong>${data.teacherName}</strong> a ajouté une nouvelle ressource : <strong>${data.resourceTitle}</strong></p>`,
+			message: `<p><strong>${escapeHtml(data.teacherName)}</strong> a ajouté une nouvelle ressource : <strong>${escapeHtml(data.resourceTitle)}</strong></p>`,
 			type: 'info',
 			priority: 'normal',
 			system_event_type: 'resource_added',
@@ -104,11 +109,11 @@ export async function notifyRewardEarned(
 ): Promise<void> {
 	try {
 		const message = data.reason
-			? `<p>Vous avez gagné <strong>${data.amount} gidouilles</strong> ! ${data.reason}</p>`
-			: `<p>Vous avez gagné <strong>${data.amount} gidouilles</strong> !</p>`;
+			? `<p>Vous avez gagné <strong>${Number(data.amount)} gidouilles</strong> ! ${escapeHtml(data.reason)}</p>`
+			: `<p>Vous avez gagné <strong>${Number(data.amount)} gidouilles</strong> !</p>`;
 
 		await createSystemNotification(supabase, {
-			title: `🎉 ${data.amount} gidouilles gagnées !`,
+			title: `🎉 ${Number(data.amount)} gidouilles gagnées !`,
 			message,
 			type: 'info',
 			priority: 'normal',
@@ -140,7 +145,7 @@ export async function notifyVipCardEarned(
 	try {
 		await createSystemNotification(supabase, {
 			title: '✨ Nouvelle carte VIP !',
-			message: `<p>Félicitations ! Vous avez obtenu une nouvelle carte VIP : <strong>${data.cardName}</strong></p>`,
+			message: `<p>Félicitations ! Vous avez obtenu une nouvelle carte VIP : <strong>${escapeHtml(data.cardName)}</strong></p>`,
 			type: 'info',
 			priority: 'normal',
 			system_event_type: 'reward_earned',
@@ -159,8 +164,8 @@ export async function notifyVipCardEarned(
  *
  * @param supabase - Supabase client
  * @param studentId - ID of the student
- * @param badgeName - Name of the badge
- * @param badgeDescription - Description of the badge (optional)
+ * @param badgeName - Name of the badge (system-defined constant)
+ * @param badgeDescription - Description of the badge (system-defined constant, optional)
  */
 export async function notifyBadgeUnlocked(
 	supabase: SupabaseClientType,
@@ -171,6 +176,8 @@ export async function notifyBadgeUnlocked(
 	}
 ): Promise<void> {
 	try {
+		// NOTE: badgeName and badgeDescription are system constants, NOT user input
+		// Do NOT escape them (they're defined in code, not from database/user)
 		const message = data.badgeDescription
 			? `<p>Bravo ! Vous avez débloqué le badge <strong>${data.badgeName}</strong> :<br/><em>${data.badgeDescription}</em></p>`
 			: `<p>Bravo ! Vous avez débloqué le badge <strong>${data.badgeName}</strong> !</p>`;
@@ -210,7 +217,7 @@ export async function notifyMaintenance(
 	try {
 		await createSystemNotification(supabase, {
 			title: 'Maintenance programmée',
-			message: `<p><strong>Une maintenance est prévue le ${data.date}</strong></p><p>Durée estimée : ${data.duration}</p><p>${data.description}</p>`,
+			message: `<p><strong>Une maintenance est prévue le ${escapeHtml(data.date)}</strong></p><p>Durée estimée : ${escapeHtml(data.duration)}</p><p>${escapeHtml(data.description)}</p>`,
 			type: 'alert',
 			priority: 'important',
 			system_event_type: 'maintenance_scheduled',
@@ -241,8 +248,8 @@ export async function notifyFeatureRelease(
 ): Promise<void> {
 	try {
 		await createSystemNotification(supabase, {
-			title: `🎉 Nouvelle fonctionnalité : ${data.featureName}`,
-			message: `<p>${data.description}</p>`,
+			title: `🎉 Nouvelle fonctionnalité : ${escapeHtml(data.featureName)}`,
+			message: `<p>${escapeHtml(data.description)}</p>`,
 			type: 'announcement',
 			priority: 'normal',
 			system_event_type: 'feature_released',
@@ -282,7 +289,7 @@ export async function notifyNewAssessment(
 
 		await createSystemNotification(supabase, {
 			title: 'Nouvelle évaluation assignée',
-			message: `<p><strong>${data.teacherName}</strong> vous a assigné une nouvelle évaluation : <strong>${data.assessmentTitle}</strong></p>`,
+			message: `<p><strong>${escapeHtml(data.teacherName)}</strong> vous a assigné une nouvelle évaluation : <strong>${escapeHtml(data.assessmentTitle)}</strong></p>`,
 			type: 'info',
 			priority: 'important',
 			system_event_type: 'assessment_assigned',
