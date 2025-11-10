@@ -3512,7 +3512,7 @@ reset() {
 <!-- Skeleton loaders during initial load -->
 {#if store.isLoading && store.notifications.length === 0}
 	{#each Array(3) as _}
-		<div class="animate-pulse bg-muted rounded-lg p-4 h-24"></div>
+		<div class="h-24 animate-pulse rounded-lg bg-muted p-4"></div>
 	{/each}
 {/if}
 
@@ -3570,11 +3570,11 @@ reset() {
 
 **Test Results** (20 notifications per page):
 
-| Notification Count | Before   | After   | Improvement |
-| ------------------ | -------- | ------- | ----------- |
-| 20 notifications   | 400ms    | 110ms   | 72%         |
-| 100 notifications  | 1200ms   | 120ms   | 90%         |
-| 500+ notifications | 4000ms   | 140ms   | 96.5%       |
+| Notification Count | Before | After | Improvement |
+| ------------------ | ------ | ----- | ----------- |
+| 20 notifications   | 400ms  | 110ms | 72%         |
+| 100 notifications  | 1200ms | 120ms | 90%         |
+| 500+ notifications | 4000ms | 140ms | 96.5%       |
 
 ---
 
@@ -3982,6 +3982,7 @@ const channel = supabase
 **Problème original** : `getUnreadNotifications()` chargeait TOUTES les notifications non lues (100-1000+ notifications).
 
 **Impact original** :
+
 - Requêtes lentes (400-4000ms)
 - Surcharge mémoire côté client
 - Mauvaise performance scrolling
@@ -3997,6 +3998,7 @@ const channel = supabase
 - ✅ Security limit: max 100 items per page
 
 **Commits** :
+
 - Phase 1 (Backend): `3bd6110`
 - Phase 2 (Frontend): `227040e`
 

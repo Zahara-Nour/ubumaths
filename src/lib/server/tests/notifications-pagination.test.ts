@@ -514,9 +514,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 
 	test('requires authentication', async () => {
 		// Mock requireAuth to throw error (no auth)
-		vi.mocked(authMiddleware.requireAuth).mockRejectedValue(
-			new Error('Authentication required')
-		);
+		vi.mocked(authMiddleware.requireAuth).mockRejectedValue(new Error('Authentication required'));
 
 		const url = new URL('https://example.com/api/notifications/unread');
 		const request = new Request(url.toString());

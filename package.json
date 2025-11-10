@@ -28,6 +28,7 @@
 		"release:minor": "standard-version --release-as minor",
 		"release:major": "standard-version --release-as major",
 		"kill:servers": "bash scripts/kill-servers.sh",
+		"db:types": "pnpm supabase gen types typescript --project-id aqtijumsgfufoztohdua > src/lib/types/database.ts",
 		"db:migrate": "supabase db push",
 		"db:start": "supabase start",
 		"db:stop": "supabase stop",

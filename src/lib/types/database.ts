@@ -6,31 +6,6 @@ export type Database = {
 	__InternalSupabase: {
 		PostgrestVersion: '13.0.5';
 	};
-	graphql_public: {
-		Tables: {
-			[_ in never]: never;
-		};
-		Views: {
-			[_ in never]: never;
-		};
-		Functions: {
-			graphql: {
-				Args: {
-					extensions?: Json;
-					operationName?: string;
-					query?: string;
-					variables?: Json;
-				};
-				Returns: Json;
-			};
-		};
-		Enums: {
-			[_ in never]: never;
-		};
-		CompositeTypes: {
-			[_ in never]: never;
-		};
-	};
 	public: {
 		Tables: {
 			academic_periods: {
@@ -3245,6 +3220,7 @@ export type Database = {
 					school_id: string | null;
 					updated_at: string;
 					vip_cards: Json;
+					vip_cards_history: Json;
 				};
 				Insert: {
 					avatar_url?: string | null;
@@ -3263,6 +3239,7 @@ export type Database = {
 					school_id?: string | null;
 					updated_at?: string;
 					vip_cards?: Json;
+					vip_cards_history?: Json;
 				};
 				Update: {
 					avatar_url?: string | null;
@@ -3281,6 +3258,7 @@ export type Database = {
 					school_id?: string | null;
 					updated_at?: string;
 					vip_cards?: Json;
+					vip_cards_history?: Json;
 				};
 				Relationships: [
 					{
@@ -5334,6 +5312,7 @@ export type Database = {
 				Args: { p_user1_id: string; p_user2_id: string };
 				Returns: string;
 			};
+			delete_all_resolved_errors: { Args: never; Returns: number };
 			delete_attachment: { Args: { p_attachment_id: string }; Returns: string };
 			draw_multiple_vip_cards: {
 				Args: {
@@ -6139,9 +6118,6 @@ export type CompositeTypes<
 		: never;
 
 export const Constants = {
-	graphql_public: {
-		Enums: {}
-	},
 	public: {
 		Enums: {
 			difficulty_level: ['easy', 'medium', 'hard'],

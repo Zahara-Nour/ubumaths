@@ -367,7 +367,10 @@ describe('NotificationStore - Pagination', () => {
 
 	test('hasMore becomes false on last page', async () => {
 		// Setup: On page 2 of 3
-		notificationStore.notifications = [createMockNotification('page1'), createMockNotification('page2')];
+		notificationStore.notifications = [
+			createMockNotification('page1'),
+			createMockNotification('page2')
+		];
 		notificationStore.currentPage = 2;
 		notificationStore.totalPages = 3;
 		notificationStore.hasMore = true;

@@ -65,7 +65,7 @@ function createMockNotification(
 }
 
 // Helper to create mock notification_read records
-function createMockReadRecords(notificationIds: string[]): { notification_id: string }[] {
+function _createMockReadRecords(notificationIds: string[]): { notification_id: string }[] {
 	return notificationIds.map((id) => ({ notification_id: id }));
 }
 
@@ -670,10 +670,7 @@ describe('getUnreadNotifications - Pagination Logic', () => {
 	// ============================================================================
 
 	test('handles user with no classes correctly', async () => {
-		const allNotifications = [
-			createMockNotification('notif-1'),
-			createMockNotification('notif-2')
-		];
+		const allNotifications = [createMockNotification('notif-1'), createMockNotification('notif-2')];
 
 		vi.mocked(mockSupabase.from).mockImplementation((table: string) => {
 			if (table === 'profiles') {
