@@ -332,7 +332,7 @@ class ChatStore {
 					flag_reason: null, // Not returned by function
 					sender: {
 						id: msg.sender_id,
-						full_name: msg.sender_full_name,
+						full_name: `${msg.sender_firstname} ${msg.sender_lastname}`.trim(),
 						avatar_url: msg.sender_avatar_url
 					}
 				}));
@@ -403,7 +403,7 @@ class ChatStore {
 					flag_reason: null,
 					sender: {
 						id: msg.sender_id,
-						full_name: msg.sender_full_name,
+						full_name: `${msg.sender_firstname} ${msg.sender_lastname}`.trim(),
 						avatar_url: msg.sender_avatar_url
 					}
 				}));
