@@ -8,10 +8,27 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { markAllAsRead } from '$lib/server/notifications';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { checkNotificationMarkRateLimit } from '$lib/server/rateLimiter';
 
 export const POST: RequestHandler = async ({ locals }) => {
 	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
+
+	// ====================================================================
+	// SECURITY: Rate Limiting
+	// ====================================================================
+	const rateLimitResult = await checkNotificationMarkRateLimit(user.id);
+	if (!rateLimitResult.allowed) {
+		return json(
+			{ error: rateLimitResult.message },
+			{
+				status: 429,
+				headers: {
+					'Retry-After': rateLimitResult.retryAfter?.toString() || '900'
+				}
+			}
+		);
+	}
 
 	// ====================================================================
 	// Business Logic

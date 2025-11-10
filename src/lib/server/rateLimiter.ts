@@ -1,11 +1,11 @@
 /**
- * Rate Limiter for Authentication Endpoints (Database-backed)
+ * Rate Limiter for Authentication and Notification Endpoints (Database-backed)
  *
- * SECURITY: Prevents brute force attacks on authentication endpoints
+ * SECURITY: Prevents brute force attacks and spam
  *
  * FEATURES:
  * - Database-backed rate limiting (replaces Redis)
- * - Dual tracking: by IP address AND email (double protection)
+ * - Dual tracking: by IP address AND email (double protection for auth)
  * - Transactional guarantees from Supabase Postgres
  * - Automatic cleanup via database function
  * - Fail-open on database errors (prevents DoS from DB issues)
@@ -16,6 +16,9 @@
  * - Signup attempts: 3 per hour per IP
  * - OAuth attempts: 10 per 15 minutes per IP
  * - Chatbot requests: 5 per 15 minutes per user
+ * - Notification creation (teachers): 10 per hour per user
+ * - Notification creation (admins): 50 per hour per user
+ * - Notification mark-read: 30 per 15 minutes per user
  *
  * MIGRATION FROM REDIS:
  * - Previous implementation used Redis atomic counters
@@ -119,10 +122,13 @@ interface RateLimitConfig {
 	windowSeconds: number;
 }
 
-interface RateLimitResult {
+export interface RateLimitResult {
 	allowed: boolean;
 	message?: string;
+	retryAfter?: number;
 }
+
+type UserRole = Database['public']['Enums']['user_role'];
 
 // ============================================================================
 // CORE RATE LIMITING LOGIC
@@ -158,21 +164,24 @@ interface RateLimitResult {
  * @param config.maxAttempts - Maximum allowed attempts within window
  * @param config.windowSeconds - Time window in seconds before entry expires
  * @param retryCount - Internal parameter tracking retry attempts (default: 0)
- * @returns `true` if rate limit exceeded (block request), `false` if allowed (or on error)
+ * @returns Object with `limited` (boolean) and `expiresAt` (Date | null)
  *
  * @example Basic usage (internal function)
  * ```typescript
- * const limited = await checkRateLimit({
+ * const result = await checkRateLimit({
  *   key: 'ratelimit:login:ip:192.168.1.1',
  *   maxAttempts: 5,
  *   windowSeconds: 900 // 15 minutes
  * });
- * if (limited) {
+ * if (result.limited) {
  *   return json({ error: 'Too many attempts' }, { status: 429 });
  * }
  * ```
  */
-async function checkRateLimit(config: RateLimitConfig, retryCount = 0): Promise<boolean> {
+async function checkRateLimit(
+	config: RateLimitConfig,
+	retryCount = 0
+): Promise<{ limited: boolean; expiresAt: Date | null }> {
 	const { key, maxAttempts, windowSeconds } = config;
 	const expiresAt = new Date(Date.now() + windowSeconds * 1000);
 
@@ -190,14 +199,14 @@ async function checkRateLimit(config: RateLimitConfig, retryCount = 0): Promise<
 
 		if (fetchError) {
 			logger.error('Rate limit check error:', fetchError);
-			return false; // Fail open on errors
+			return { limited: false, expiresAt: null }; // Fail open on errors
 		}
 
 		if (existing) {
 			// Entry exists and hasn't expired
 			if (existing.count >= maxAttempts) {
 				logger.trace('Rate limit exceeded', { key: maskKey(key), count: existing.count });
-				return true; // Rate limit exceeded
+				return { limited: true, expiresAt: new Date(existing.expires_at) }; // Rate limit exceeded
 			}
 
 			// Increment counter
@@ -208,11 +217,11 @@ async function checkRateLimit(config: RateLimitConfig, retryCount = 0): Promise<
 
 			if (updateError) {
 				logger.error('Rate limit update error:', updateError);
-				return false; // Fail open
+				return { limited: false, expiresAt: null }; // Fail open
 			}
 
 			logger.trace('Rate limit incremented', { key: maskKey(key), count: existing.count + 1 });
-			return false; // Allowed
+			return { limited: false, expiresAt: null }; // Allowed
 		} else {
 			// No existing entry or expired - create new entry
 			const { error: insertError } = await supabase.from('rate_limits').insert({
@@ -245,21 +254,50 @@ async function checkRateLimit(config: RateLimitConfig, retryCount = 0): Promise<
 						// Delete the blocking entry (don't care if it fails)
 						await supabase.from('rate_limits').delete().eq('key', key);
 
-						return false; // Allow request (fail-open)
+						return { limited: false, expiresAt: null }; // Allow request (fail-open)
 					}
 				}
 
 				logger.error('Rate limit insert error:', insertError);
-				return false; // Fail open
+				return { limited: false, expiresAt: null }; // Fail open
 			}
 
 			logger.trace('Rate limit entry created', { key: maskKey(key) });
-			return false; // First attempt, allowed
+			return { limited: false, expiresAt: null }; // First attempt, allowed
 		}
 	} catch (error) {
 		logger.error('Rate limit error:', error);
-		return false; // Fail open on exceptions
+		return { limited: false, expiresAt: null }; // Fail open on exceptions
 	}
+}
+
+/**
+ * Wrapper for checkRateLimit that returns RateLimitResult with user-friendly message
+ *
+ * @param key - Unique identifier for rate limit bucket
+ * @param maxAttempts - Maximum allowed attempts within window
+ * @param windowSeconds - Time window in seconds
+ * @param message - User-friendly French error message to return if rate limited
+ * @returns RateLimitResult with allowed flag, message, and retryAfter
+ */
+async function checkRateLimitWithMessage(
+	key: string,
+	maxAttempts: number,
+	windowSeconds: number,
+	message: string
+): Promise<RateLimitResult> {
+	const result = await checkRateLimit({ key, maxAttempts, windowSeconds });
+
+	if (result.limited && result.expiresAt) {
+		const retryAfter = Math.ceil((result.expiresAt.getTime() - Date.now()) / 1000);
+		return {
+			allowed: false,
+			message,
+			retryAfter: Math.max(retryAfter, 0)
+		};
+	}
+
+	return { allowed: true };
 }
 
 // ============================================================================
@@ -370,21 +408,18 @@ export async function checkLoginRateLimitByIP(ip: string): Promise<RateLimitResu
 	}
 
 	const key = `ratelimit:login:ip:${ip}`;
-	const limited = await checkRateLimit({
+	const result = await checkRateLimitWithMessage(
 		key,
-		maxAttempts: 5,
-		windowSeconds: 900 // 15 minutes
-	});
+		5,
+		900, // 15 minutes
+		'Trop de tentatives de connexion. Réessayez dans 15 minutes.'
+	);
 
-	if (limited) {
+	if (!result.allowed) {
 		logger.warn('Login rate limit exceeded by IP', { ip: maskKey(key) });
-		return {
-			allowed: false,
-			message: 'Trop de tentatives de connexion. Réessayez dans 15 minutes.'
-		};
 	}
 
-	return { allowed: true };
+	return result;
 }
 
 /**
@@ -453,21 +488,18 @@ export async function checkLoginRateLimitByEmail(email: string): Promise<RateLim
 	const normalizedEmail = email.toLowerCase().trim();
 	const key = `ratelimit:login:email:${normalizedEmail}`;
 
-	const limited = await checkRateLimit({
+	const result = await checkRateLimitWithMessage(
 		key,
-		maxAttempts: 3,
-		windowSeconds: 900 // 15 minutes
-	});
+		3,
+		900, // 15 minutes
+		'Trop de tentatives de connexion pour cet email. Réessayez dans 15 minutes.'
+	);
 
-	if (limited) {
+	if (!result.allowed) {
 		logger.warn('Login rate limit exceeded by email', { email: maskKey(key) });
-		return {
-			allowed: false,
-			message: 'Trop de tentatives de connexion pour cet email. Réessayez dans 15 minutes.'
-		};
 	}
 
-	return { allowed: true };
+	return result;
 }
 
 /**
@@ -521,21 +553,18 @@ export async function checkSignupRateLimitByIP(ip: string): Promise<RateLimitRes
 	}
 
 	const key = `ratelimit:signup:${ip}`;
-	const limited = await checkRateLimit({
+	const result = await checkRateLimitWithMessage(
 		key,
-		maxAttempts: 3,
-		windowSeconds: 3600 // 1 hour
-	});
+		3,
+		3600, // 1 hour
+		"Trop de tentatives d'inscription. Réessayez dans 1 heure."
+	);
 
-	if (limited) {
+	if (!result.allowed) {
 		logger.warn('Signup rate limit exceeded by IP', { ip: maskKey(key) });
-		return {
-			allowed: false,
-			message: "Trop de tentatives d'inscription. Réessayez dans 1 heure."
-		};
 	}
 
-	return { allowed: true };
+	return result;
 }
 
 /**
@@ -601,21 +630,18 @@ export async function checkOAuthRateLimitByIP(ip: string): Promise<RateLimitResu
 	}
 
 	const key = `ratelimit:oauth:${ip}`;
-	const limited = await checkRateLimit({
+	const result = await checkRateLimitWithMessage(
 		key,
-		maxAttempts: 10,
-		windowSeconds: 900 // 15 minutes
-	});
+		10,
+		900, // 15 minutes
+		'Trop de tentatives OAuth. Réessayez dans 15 minutes.'
+	);
 
-	if (limited) {
+	if (!result.allowed) {
 		logger.warn('OAuth rate limit exceeded by IP', { ip: maskKey(key) });
-		return {
-			allowed: false,
-			message: 'Trop de tentatives OAuth. Réessayez dans 15 minutes.'
-		};
 	}
 
-	return { allowed: true };
+	return result;
 }
 
 /**
@@ -686,19 +712,192 @@ export async function checkChatbotRateLimit(userId: string): Promise<RateLimitRe
 	}
 
 	const key = `ratelimit:chat:${userId}`;
-	const limited = await checkRateLimit({
+	const result = await checkRateLimitWithMessage(
 		key,
-		maxAttempts: 5,
-		windowSeconds: 900 // 15 minutes
-	});
+		5,
+		900, // 15 minutes
+		'Trop de requêtes au chatbot. Réessayez dans 15 minutes.'
+	);
 
-	if (limited) {
+	if (!result.allowed) {
 		logger.warn('Chatbot rate limit exceeded', { userId: maskKey(key) });
-		return {
-			allowed: false,
-			message: 'Trop de requêtes au chatbot. Réessayez dans 15 minutes.'
-		};
 	}
 
-	return { allowed: true };
+	return result;
+}
+
+/**
+ * Check notification creation rate limit by user ID and role
+ *
+ * Prevents notification spam by limiting how many notifications a user can create.
+ * Different limits apply based on user role:
+ * - Teachers: Can create 10 notifications per hour (for class announcements)
+ * - Admins: Can create 50 notifications per hour (for system-wide announcements)
+ *
+ * **Rate Limits**:
+ * - Teachers: 10 notifications per hour
+ * - Admins: 50 notifications per hour
+ *
+ * **Why Role-Based Limits?**
+ * - Teachers typically send notifications to their classes (smaller audience)
+ * - Admins may need to send system-wide notifications (larger audience, more urgent)
+ * - Higher admin limit accommodates emergency situations and system maintenance
+ *
+ * **Security Considerations**:
+ * - Prevents notification spam to students
+ * - Protects database from excessive notification records
+ * - Fail-open: Allows requests if database is unavailable
+ *
+ * @param userId - User ID from authenticated session
+ * @param role - User role ('teacher' or 'admin')
+ * @returns Rate limit result object
+ * @returns result.allowed - `true` if notification creation allowed, `false` if rate limited
+ * @returns result.message - User-friendly French error message (only if `allowed: false`)
+ * @returns result.retryAfter - Seconds until rate limit resets (only if `allowed: false`)
+ *
+ * @example In notification creation action (teacher)
+ * ```typescript
+ * export const actions = {
+ *   create: async ({ locals: { user } }) => {
+ *     // Get user role from database
+ *     const { data: profile } = await supabase
+ *       .from('profiles')
+ *       .select('role')
+ *       .eq('id', user.id)
+ *       .single();
+ *
+ *     // Check rate limit
+ *     const rateLimit = await checkNotificationCreateRateLimit(user.id, profile.role);
+ *     if (!rateLimit.allowed) {
+ *       return fail(429, { error: rateLimit.message });
+ *     }
+ *
+ *     // Create notification...
+ *   }
+ * };
+ * ```
+ *
+ * @example In API endpoint with retry header
+ * ```typescript
+ * const rateLimit = await checkNotificationCreateRateLimit(userId, 'teacher');
+ * if (!rateLimit.allowed) {
+ *   return json(
+ *     { error: rateLimit.message },
+ *     {
+ *       status: 429,
+ *       headers: {
+ *         'Retry-After': rateLimit.retryAfter?.toString() || '3600'
+ *       }
+ *     }
+ *   );
+ * }
+ * ```
+ */
+export async function checkNotificationCreateRateLimit(
+	userId: string,
+	role: UserRole
+): Promise<RateLimitResult> {
+	if (!userId) {
+		logger.warn('Missing user ID for notification create rate limit check');
+		return { allowed: true }; // Fail open
+	}
+
+	const maxAttempts = role === 'admin' ? 50 : 10; // Teachers default to 10
+	const windowSeconds = 3600; // 1 hour
+
+	const key = `notification_create:${userId}`;
+	const result = await checkRateLimitWithMessage(
+		key,
+		maxAttempts,
+		windowSeconds,
+		'Vous avez atteint la limite de création de notifications. Veuillez réessayer plus tard.'
+	);
+
+	if (!result.allowed) {
+		logger.warn('Notification creation rate limit exceeded', {
+			userId: maskKey(key),
+			role,
+			maxAttempts
+		});
+	}
+
+	return result;
+}
+
+/**
+ * Check notification mark-read rate limit by user ID
+ *
+ * Prevents abuse of the mark-read endpoint by limiting how often users can
+ * mark notifications as read. This protects against:
+ * - Automated scripts spamming the mark-read endpoint
+ * - Accidental infinite loops in client code
+ * - Database write overload from excessive updates
+ *
+ * **Rate Limit**: 30 mark-read actions per 15 minutes per user
+ *
+ * **Why This Limit?**
+ * - 30 actions = sufficient for normal usage (marking multiple notifications)
+ * - 15-minute window = short enough to not impact legitimate users
+ * - Prevents automated abuse while allowing batch marking
+ *
+ * **Implementation Notes**:
+ * - Applies to both single mark-read and mark-all-read operations
+ * - Uses user ID (requires authentication)
+ * - Fail-open: Allows requests if database is unavailable
+ *
+ * @param userId - Authenticated user ID from session
+ * @returns Rate limit result object
+ * @returns result.allowed - `true` if mark-read action allowed, `false` if rate limited
+ * @returns result.message - User-friendly French error message (only if `allowed: false`)
+ * @returns result.retryAfter - Seconds until rate limit resets (only if `allowed: false`)
+ *
+ * @example In mark-read API endpoint
+ * ```typescript
+ * export const POST: RequestHandler = async ({ request, locals: { user } }) => {
+ *   // Check rate limit
+ *   const rateLimit = await checkNotificationMarkRateLimit(user.id);
+ *   if (!rateLimit.allowed) {
+ *     return json(
+ *       { error: rateLimit.message },
+ *       {
+ *         status: 429,
+ *         headers: {
+ *           'Retry-After': rateLimit.retryAfter?.toString() || '900'
+ *         }
+ *       }
+ *     );
+ *   }
+ *
+ *   // Mark notification as read...
+ * };
+ * ```
+ *
+ * @example In mark-all-read endpoint
+ * ```typescript
+ * const rateLimit = await checkNotificationMarkRateLimit(user.id);
+ * if (!rateLimit.allowed) {
+ *   return json({ error: rateLimit.message }, { status: 429 });
+ * }
+ * // Mark all notifications as read...
+ * ```
+ */
+export async function checkNotificationMarkRateLimit(userId: string): Promise<RateLimitResult> {
+	if (!userId) {
+		logger.warn('Missing user ID for notification mark rate limit check');
+		return { allowed: true }; // Fail open
+	}
+
+	const key = `notification_mark:${userId}`;
+	const result = await checkRateLimitWithMessage(
+		key,
+		30,
+		900, // 15 minutes
+		'Trop de requêtes de marquage. Veuillez patienter quelques instants.'
+	);
+
+	if (!result.allowed) {
+		logger.warn('Notification mark rate limit exceeded', { userId: maskKey(key) });
+	}
+
+	return result;
 }

@@ -6,6 +6,11 @@ import {
 	deleteNotification
 } from '$lib/server/notifications';
 import type { CreateNotificationData } from '$lib/types/notification';
+import {
+	createNotificationSchema,
+	deleteNotificationSchema
+} from '$lib/server/validation/notifications';
+import { checkNotificationCreateRateLimit } from '$lib/server/rateLimiter';
 
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -83,40 +88,72 @@ export const actions: Actions = {
 			return fail(401, { error: 'Non authentifié' });
 		}
 
-		const formData = await request.formData();
-		const title = formData.get('title') as string;
-		const message = formData.get('message') as string;
-		const type = formData.get('type') as string;
-		const priority = formData.get('priority') as string;
-		const targetType = formData.get('targetType') as string;
-		const actionLabel = formData.get('actionLabel') as string | null;
-		const actionUrl = formData.get('actionUrl') as string | null;
-
-		// Validation
-		if (!title || !message || !type || !priority || !targetType) {
-			return fail(400, { error: 'Tous les champs requis doivent être remplis' });
+		// ====================================================================
+		// SECURITY: Rate Limiting
+		// ====================================================================
+		const rateLimitResult = await checkNotificationCreateRateLimit(user.id, 'teacher');
+		if (!rateLimitResult.allowed) {
+			return fail(429, { error: rateLimitResult.message });
 		}
 
+		// ====================================================================
+		// SECURITY: Input Validation with Zod
+		// ====================================================================
+		const formData = await request.formData();
+
+		// Convert FormData to plain object for Zod validation
+		const rawData = {
+			title: formData.get('title'),
+			message: formData.get('message'),
+			type: formData.get('type'),
+			priority: formData.get('priority'),
+			targetType: formData.get('targetType'),
+			actionLabel: formData.get('actionLabel') || undefined,
+			actionUrl: formData.get('actionUrl') || undefined,
+			classIds: formData.getAll('classIds'),
+			userIds: formData.getAll('userIds')
+		};
+
+		const validation = createNotificationSchema.safeParse(rawData);
+
+		if (!validation.success) {
+			const firstError = validation.error.issues[0];
+			return fail(400, { error: firstError.message });
+		}
+
+		const {
+			title,
+			message,
+			type,
+			priority,
+			targetType,
+			actionLabel,
+			actionUrl,
+			classIds,
+			userIds
+		} = validation.data;
+
+		// ====================================================================
+		// Business Logic
+		// ====================================================================
 		// Build notification data
 		const notificationData: CreateNotificationData = {
 			title,
 			message,
-			type: type as unknown as CreateNotificationData['type'],
-			priority: priority as unknown as CreateNotificationData['priority'],
-			target_type: targetType as unknown as CreateNotificationData['target_type'],
-			action_label: actionLabel || undefined,
-			action_url: actionUrl || undefined
+			type: type as CreateNotificationData['type'],
+			priority: priority as CreateNotificationData['priority'],
+			target_type: targetType as CreateNotificationData['target_type'],
+			action_label: actionLabel,
+			action_url: actionUrl
 		};
 
-		// Get target data based on type
+		// Add target data based on type
 		if (targetType === 'classes') {
-			const classIds = formData.getAll('classIds') as string[];
 			if (!classIds || classIds.length === 0) {
 				return fail(400, { error: 'Veuillez sélectionner au moins une classe' });
 			}
 			notificationData.target_class_ids = classIds;
 		} else if (targetType === 'users') {
-			const userIds = formData.getAll('userIds') as string[];
 			if (!userIds || userIds.length === 0) {
 				return fail(400, { error: 'Veuillez sélectionner au moins un élève' });
 			}
@@ -140,12 +177,18 @@ export const actions: Actions = {
 			return fail(401, { error: 'Non authentifié' });
 		}
 
+		// ====================================================================
+		// SECURITY: Input Validation with Zod
+		// ====================================================================
 		const formData = await request.formData();
-		const notificationId = formData.get('notificationId') as string;
+		const rawData = { notificationId: formData.get('notificationId') };
 
-		if (!notificationId) {
-			return fail(400, { error: 'ID de notification manquant' });
+		const validation = deleteNotificationSchema.safeParse(rawData);
+		if (!validation.success) {
+			return fail(400, { error: validation.error.issues[0].message });
 		}
+
+		const { notificationId } = validation.data;
 
 		const result = await deleteNotification(supabase, notificationId, user.id);
 
