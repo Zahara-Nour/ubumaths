@@ -17,23 +17,22 @@ class NotificationStore {
 	isLoading = $state(false);
 	error = $state<string | null>(null);
 
+	// Pagination state
+	currentPage = $state(1);
+	pageSize = $state(20);
+	totalPages = $state(1);
+	hasMore = $state(false);
+
 	/**
-	 * Fetch unread notifications from API
-	 *
-	 * @param page - Page number (default: 1)
-	 * @param limit - Items per page (default: 20)
+	 * Fetch unread notifications from API (resets to page 1)
 	 */
-	async fetchUnread(page = 1, limit = 20): Promise<void> {
+	async fetchUnread(): Promise<void> {
 		this.isLoading = true;
 		this.error = null;
+		this.currentPage = 1; // Reset to first page
 
 		try {
-			const params = new URLSearchParams();
-			if (page !== 1) params.set('page', page.toString());
-			if (limit !== 20) params.set('limit', limit.toString());
-
-			const url = `/api/notifications/unread${params.toString() ? `?${params.toString()}` : ''}`;
-			const response = await fetch(url);
+			const response = await fetch(`/api/notifications/unread?page=1&limit=${this.pageSize}`);
 
 			if (!response.ok) {
 				throw new Error('Failed to fetch notifications');
@@ -41,12 +40,49 @@ class NotificationStore {
 
 			const data = await response.json();
 			this.notifications = data.notifications || [];
-			this.unreadCount = data.pagination?.total || this.notifications.length;
+			this.unreadCount = data.pagination?.total || 0;
+			this.totalPages = data.pagination?.totalPages || 1;
+			this.hasMore = data.pagination?.hasMore || false;
 		} catch (err) {
 			console.error('Error fetching notifications:', err);
 			this.error = 'Erreur lors du chargement des notifications';
 			this.notifications = [];
 			this.unreadCount = 0;
+			this.totalPages = 1;
+			this.hasMore = false;
+		} finally {
+			this.isLoading = false;
+		}
+	}
+
+	/**
+	 * Load more notifications (appends next page)
+	 */
+	async loadMore(): Promise<void> {
+		if (!this.hasMore || this.isLoading) return;
+
+		this.isLoading = true;
+		const nextPage = this.currentPage + 1;
+
+		try {
+			const response = await fetch(
+				`/api/notifications/unread?page=${nextPage}&limit=${this.pageSize}`
+			);
+
+			if (!response.ok) {
+				throw new Error('Failed to load more notifications');
+			}
+
+			const data = await response.json();
+
+			// Append new notifications (don't replace)
+			this.notifications = [...this.notifications, ...(data.notifications || [])];
+			this.currentPage = nextPage;
+			this.hasMore = data.pagination?.hasMore || false;
+			this.totalPages = data.pagination?.totalPages || 1;
+		} catch (err) {
+			console.error('Failed to load more notifications:', err);
+			this.error = 'Échec du chargement des notifications';
 		} finally {
 			this.isLoading = false;
 		}
@@ -138,6 +174,10 @@ class NotificationStore {
 		this.unreadCount = 0;
 		this.isLoading = false;
 		this.error = null;
+		this.currentPage = 1;
+		this.pageSize = 20;
+		this.totalPages = 1;
+		this.hasMore = false;
 	}
 
 	/**

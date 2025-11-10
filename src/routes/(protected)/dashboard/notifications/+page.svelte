@@ -11,13 +11,15 @@
 	} from '$lib/types/notification';
 	import { Button } from '$lib/components/ui/button';
 	import { sanitizeNotificationHtml } from '$lib/utils/sanitize-notification';
-	import { Bell } from 'lucide-svelte';
+	import { Bell, Loader2 } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	const notifications = $derived(notificationStore.notifications);
 	const isLoading = $derived(notificationStore.isLoading);
 	const hasNotifications = $derived(notifications.length > 0);
+	const hasMore = $derived(notificationStore.hasMore);
+	const unreadCount = $derived(notificationStore.unreadCount);
 
 	// Fetch all unread notifications on mount
 	onMount(() => {
@@ -32,6 +34,11 @@
 	// Handle mark all as read
 	async function handleMarkAllAsRead() {
 		await notificationStore.markAllAsRead();
+	}
+
+	// Handle load more
+	function handleLoadMore() {
+		notificationStore.loadMore();
 	}
 
 	// Handle notification click (with action)
@@ -62,10 +69,16 @@
 
 <div class="space-y-6">
 	<!-- Header -->
-	<div class="flex items-center justify-between">
+	<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Notifications</h1>
-			<p class="mt-2 text-muted-foreground">Toutes vos notifications non lues</p>
+			<p class="mt-2 text-muted-foreground">
+				{#if unreadCount > 0}
+					{notifications.length} / {unreadCount} affichées
+				{:else}
+					Toutes vos notifications non lues
+				{/if}
+			</p>
 		</div>
 
 		{#if hasNotifications}
@@ -73,15 +86,12 @@
 		{/if}
 	</div>
 
-	<!-- Loading state -->
-	{#if isLoading}
-		<div class="flex items-center justify-center py-12">
-			<div class="text-center">
-				<div
-					class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"
-				></div>
-				<p class="mt-4 text-sm text-muted-foreground">Chargement...</p>
-			</div>
+	<!-- Initial loading skeleton -->
+	{#if isLoading && notifications.length === 0}
+		<div class="space-y-3">
+			{#each Array(3) as _, i (i)}
+				<div class="h-32 animate-pulse rounded-lg bg-muted"></div>
+			{/each}
 		</div>
 	{:else if hasNotifications}
 		<!-- Notifications list -->
@@ -183,6 +193,30 @@
 				</div>
 			{/each}
 		</div>
+
+		<!-- Load More button or end indicator -->
+		{#if hasMore}
+			<div class="mt-6 flex justify-center">
+				<Button
+					onclick={handleLoadMore}
+					disabled={isLoading}
+					variant="outline"
+					class="w-full sm:w-auto"
+				>
+					{#if isLoading}
+						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+						Chargement...
+					{:else}
+						Charger plus de notifications
+					{/if}
+				</Button>
+			</div>
+		{:else if notifications.length > 0}
+			<!-- End of list indicator -->
+			<div class="mt-6 text-center text-sm text-muted-foreground">
+				Toutes les notifications chargées ({unreadCount} au total)
+			</div>
+		{/if}
 	{:else}
 		<!-- Empty state -->
 		<div class="rounded-lg border border-dashed bg-muted/50 px-6 py-12 text-center">
