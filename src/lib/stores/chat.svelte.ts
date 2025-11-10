@@ -1099,18 +1099,165 @@ class ChatStore {
 			this.subscribeToConversation(conversationId)
 				.then(() => this.loadConversationHistory(conversationId))
 				.catch((err) => logger.error('Failed to load conversation:', err));
+
+			// Mark conversation as read
+			this.markConversationAsRead(conversationId);
+		}
+	}
+
+	/**
+	 * Load all conversations for the current user
+	 * Uses the get_user_conversations RPC which returns conversations with metadata
+	 *
+	 * @throws {Error} If RPC call fails - caller should handle gracefully
+	 */
+	async loadConversations(): Promise<void> {
+		if (!browser || !this.supabase || !this.userId) {
+			logger.warn('Cannot load conversations: not initialized');
+			return;
+		}
+
+		this.loadingConversations = true;
+
+		try {
+			// Call get_user_conversations RPC (exists in migration 042)
+			const { data, error } = await this.supabase.rpc('get_user_conversations', {
+				p_user_id: this.userId
+			});
+
+			if (error) {
+				throw error;
+			}
+
+			if (data) {
+				// Clear existing conversations
+				this.conversationsMap.clear();
+
+				// Populate conversations map
+				data.forEach((conv) => {
+					this.conversationsMap.set(conv.conversation_id, {
+						id: conv.conversation_id,
+						name: conv.name,
+						is_group: conv.is_group,
+						class_id: conv.class_id,
+						last_message_preview: conv.last_message_preview,
+						last_message_at: conv.last_message_at,
+						unread_count: conv.unread_count,
+						participant_count: conv.participant_count,
+						other_user_id: conv.other_user_id,
+						other_user_firstname: conv.other_user_firstname,
+						other_user_lastname: conv.other_user_lastname,
+						other_user_avatar_url: conv.other_user_avatar_url,
+						is_muted: conv.is_muted,
+						created_at: null, // Not returned by RPC
+						updated_at: null // Not returned by RPC
+					});
+				});
+
+				logger.info(`Loaded ${data.length} conversations`);
+			}
+		} catch (error) {
+			logger.error('Failed to load conversations:', error);
+			throw error;
+		} finally {
+			this.loadingConversations = false;
+		}
+	}
+
+	/**
+	 * Mark a conversation as read (clears unread count)
+	 * Uses optimistic update for instant UI feedback
+	 *
+	 * @param conversationId - Conversation ID
+	 * @private
+	 * @note Errors are logged but NOT thrown (non-critical operation)
+	 * @note Uses optimistic update - unread count cleared immediately, rolled back on error
+	 */
+	private async markConversationAsRead(conversationId: string): Promise<void> {
+		if (!browser || !this.supabase || !this.userId) {
+			return;
+		}
+
+		// Get conversation for optimistic update and rollback
+		const conv = this.conversationsMap.get(conversationId);
+		if (!conv) {
+			logger.warn('Cannot mark as read: conversation not found', conversationId);
+			return;
+		}
+
+		// Store original unread count for potential rollback
+		const originalUnreadCount = conv.unread_count;
+
+		// Optimistic update: Set unread count to 0 immediately (instant UI feedback)
+		this.conversationsMap.set(conversationId, {
+			...conv,
+			unread_count: 0
+		});
+
+		try {
+			// Call mark_conversation_read RPC (exists in migration 037)
+			const { error } = await this.supabase.rpc('mark_conversation_read', {
+				p_conversation_id: conversationId,
+				p_user_id: this.userId
+			});
+
+			if (error) {
+				throw error;
+			}
+
+			logger.trace('Marked conversation as read:', conversationId);
+		} catch (error) {
+			logger.error('Failed to mark conversation as read:', error);
+
+			// Rollback optimistic update on error
+			this.conversationsMap.set(conversationId, {
+				...conv,
+				unread_count: originalUnreadCount
+			});
+
+			// Non-critical error, don't throw
 		}
 	}
 
 	/**
 	 * Create or find a 1-on-1 chat conversation with a friend
-	 * @param _friendId - Friend's user ID
+	 * RPC has built-in duplicate detection, returns existing conversation if found
+	 * @param friendId - Friend's user ID
 	 * @returns Conversation ID or null if failed
 	 */
-	async create1on1Chat(_friendId: string): Promise<string | null> {
-		// TODO: Phase 2 implementation
-		logger.warn('create1on1Chat not yet implemented - Phase 2');
-		return null;
+	async create1on1Chat(friendId: string): Promise<string | null> {
+		if (!browser || !this.supabase || !this.userId) {
+			logger.warn('Cannot create chat: not initialized');
+			return null;
+		}
+
+		try {
+			// Call create_1on1_chat RPC (exists in migration 037)
+			// RPC has built-in duplicate detection, returns existing conversation if found
+			const { data, error } = await this.supabase.rpc('create_1on1_chat', {
+				p_user1_id: this.userId,
+				p_user2_id: friendId
+			});
+
+			if (error) {
+				throw error;
+			}
+
+			if (!data) {
+				logger.error('create_1on1_chat RPC returned no data');
+				throw new Error('No conversation ID returned');
+			}
+
+			logger.info('Created/found 1-on-1 chat:', data);
+
+			// Reload conversations to get the new one
+			await this.loadConversations();
+
+			return data; // RPC returns UUID
+		} catch (error) {
+			logger.error('Failed to create 1-on-1 chat:', error);
+			return null;
+		}
 	}
 
 	/**
