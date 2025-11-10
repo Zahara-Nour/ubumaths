@@ -39,7 +39,8 @@
 		"game:import-challenges": "npx tsx scripts/import-navadra-challenges.ts",
 		"game:seed-spells": "npx tsx scripts/seed-spell-definitions.ts",
 		"docs:check-links": "npx tsx scripts/check-doc-links.ts",
-		"openapi:generate": "npx tsx scripts/generate-openapi.ts"
+		"openapi:generate": "npx tsx scripts/generate-openapi.ts",
+		"migrate:sanitize": "tsx scripts/sanitize-existing-notifications.ts"
 	},
 	"lint-staged": {
 		"*.{js,ts,svelte}": [
