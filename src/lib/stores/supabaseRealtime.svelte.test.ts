@@ -24,19 +24,27 @@ import type { Database } from '$lib/types/database';
 
 type SubscribeCallback = (status: string) => void;
 
-function createMockChannel(name: string): RealtimeChannel {
+// Extended mock channel type with helper methods
+interface MockRealtimeChannel extends RealtimeChannel {
+	channelName: string;
+	simulateStatus: (status: string) => void;
+}
+
+function createMockChannel(name: string): MockRealtimeChannel {
 	let subscribeCallback: SubscribeCallback | null = null;
 
-	return {
+	const channel = {
 		channelName: name,
-		on: vi.fn(() => this as unknown as RealtimeChannel),
-		subscribe: vi.fn((callback?: SubscribeCallback) => {
+		on: vi.fn(function (this: MockRealtimeChannel) {
+			return this;
+		}),
+		subscribe: vi.fn(function (this: MockRealtimeChannel, callback?: SubscribeCallback) {
 			if (callback) {
 				subscribeCallback = callback;
 				// Simulate successful subscription after a delay
 				setTimeout(() => callback('SUBSCRIBED'), 0);
 			}
-			return this as unknown as RealtimeChannel;
+			return this;
 		}),
 		unsubscribe: vi.fn(),
 		// Helper to simulate status changes
@@ -45,7 +53,9 @@ function createMockChannel(name: string): RealtimeChannel {
 				subscribeCallback(status);
 			}
 		}
-	} as unknown as RealtimeChannel;
+	} as unknown as MockRealtimeChannel;
+
+	return channel;
 }
 
 function createMockSupabaseClient(): SupabaseClient<Database> {
@@ -104,7 +114,7 @@ describe('Channel Lifecycle', () => {
 		const channel = supabaseRealtimeManager.createChannel('test-channel');
 
 		expect(channel).toBeDefined();
-		expect(channel.channelName).toBe('test-channel');
+		expect((channel as MockRealtimeChannel).channelName).toBe('test-channel');
 		expect(supabase.channel).toHaveBeenCalledWith('test-channel');
 	});
 
@@ -504,7 +514,7 @@ describe('Edge Cases & Error Handling', () => {
 		const channelName = 'chat:user-123:conv-456';
 		const channel = supabaseRealtimeManager.createChannel(channelName);
 
-		expect(channel.channelName).toBe(channelName);
+		expect((channel as MockRealtimeChannel).channelName).toBe(channelName);
 	});
 });
 

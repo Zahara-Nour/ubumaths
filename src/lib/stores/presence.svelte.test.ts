@@ -24,6 +24,12 @@ import type { Database } from '$lib/types/database';
 // TEST SETUP
 // ============================================================================
 
+// Extended mock channel type with helper methods
+interface MockRealtimeChannel extends RealtimeChannel {
+	channelName: string;
+	simulateEvent: (type: string, config: unknown, payload: unknown) => void;
+}
+
 // Mock Supabase client
 function createMockSupabaseClient(): SupabaseClient<Database> {
 	return {
@@ -41,24 +47,29 @@ function createMockSupabaseClient(): SupabaseClient<Database> {
 	} as unknown as SupabaseClient<Database>;
 }
 
-function createMockChannel(name: string): RealtimeChannel {
+function createMockChannel(name: string): MockRealtimeChannel {
 	const listeners = new Map<string, ((payload: unknown) => void)[]>();
 
-	return {
+	const channel = {
 		channelName: name,
-		on: vi.fn((type: string, config: unknown, callback: (payload: unknown) => void) => {
+		on: vi.fn(function (
+			this: MockRealtimeChannel,
+			type: string,
+			config: unknown,
+			callback: (payload: unknown) => void
+		) {
 			const key = JSON.stringify({ type, config });
 			if (!listeners.has(key)) {
 				listeners.set(key, []);
 			}
 			listeners.get(key)!.push(callback);
-			return this as unknown as RealtimeChannel;
+			return this;
 		}),
-		subscribe: vi.fn((callback?: (status: string) => void) => {
+		subscribe: vi.fn(function (this: MockRealtimeChannel, callback?: (status: string) => void) {
 			if (callback) {
 				setTimeout(() => callback('SUBSCRIBED'), 0);
 			}
-			return this as unknown as RealtimeChannel;
+			return this;
 		}),
 		unsubscribe: vi.fn(),
 		// Helper to simulate events
@@ -69,7 +80,9 @@ function createMockChannel(name: string): RealtimeChannel {
 				callbacks.forEach((cb) => cb(payload));
 			}
 		}
-	} as unknown as RealtimeChannel;
+	} as unknown as MockRealtimeChannel;
+
+	return channel;
 }
 
 // Mock browser environment using vi.stubEnv
@@ -432,7 +445,7 @@ describe('Presence Tracking', () => {
 				)
 			}))
 		}));
-		supabase.from = fromMock as typeof supabase.from;
+		supabase.from = fromMock as unknown as typeof supabase.from;
 
 		await presenceManager.startPresenceTracking(friendIds);
 
@@ -525,7 +538,7 @@ describe('Presence Tracking', () => {
 				)
 			}))
 		}));
-		supabase.from = fromMock as typeof supabase.from;
+		supabase.from = fromMock as unknown as typeof supabase.from;
 
 		await presenceManager.startPresenceTracking(['friend-1']);
 		expect(presenceManager.getFriendPresence('friend-1')).toBe('online');
@@ -562,7 +575,7 @@ describe('Presence Tracking', () => {
 				)
 			}))
 		}));
-		supabase.from = fromMock as typeof supabase.from;
+		supabase.from = fromMock as unknown as typeof supabase.from;
 
 		// Should not throw
 		await expect(presenceManager.startPresenceTracking(['friend-1'])).resolves.not.toThrow();
@@ -616,7 +629,7 @@ describe('Friend Presence Management', () => {
 				)
 			}))
 		}));
-		supabase.from = fromMock as typeof supabase.from;
+		supabase.from = fromMock as unknown as typeof supabase.from;
 
 		await presenceManager.startPresenceTracking(['friend-1']);
 		expect(presenceManager.getFriendPresence('friend-1')).toBe('online');
@@ -642,7 +655,7 @@ describe('Friend Presence Management', () => {
 				)
 			}))
 		}));
-		supabase.from = fromMock as typeof supabase.from;
+		supabase.from = fromMock as unknown as typeof supabase.from;
 
 		await presenceManager.startPresenceTracking(['friend-1', 'friend-2', 'friend-3']);
 

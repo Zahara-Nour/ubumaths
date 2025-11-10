@@ -27,6 +27,13 @@ import type { Database } from '$lib/types/database';
 // TEST SETUP
 // ============================================================================
 
+// Extended mock channel type with helper methods
+interface MockRealtimeChannel extends RealtimeChannel {
+	channelName: string;
+	simulateBroadcast: (event: string, payload: unknown) => void;
+	simulatePostgresChanges: (payload: unknown) => void;
+}
+
 function createMockSupabaseClient(): SupabaseClient<Database> {
 	return {
 		channel: vi.fn((name: string) => createMockChannel(name)),
@@ -89,12 +96,17 @@ function createMockSupabaseClient(): SupabaseClient<Database> {
 	} as unknown as SupabaseClient<Database>;
 }
 
-function createMockChannel(name: string): RealtimeChannel {
+function createMockChannel(name: string): MockRealtimeChannel {
 	const listeners = new Map<string, Map<string, ((payload: unknown) => void)[]>>();
 
-	return {
+	const channel = {
 		channelName: name,
-		on: vi.fn((type: string, config: { event: string }, callback: (payload: unknown) => void) => {
+		on: vi.fn(function (
+			this: MockRealtimeChannel,
+			type: string,
+			config: { event: string },
+			callback: (payload: unknown) => void
+		) {
 			if (!listeners.has(type)) {
 				listeners.set(type, new Map());
 			}
@@ -103,10 +115,12 @@ function createMockChannel(name: string): RealtimeChannel {
 				typeListeners.set(config.event, []);
 			}
 			typeListeners.get(config.event)!.push(callback);
-			return this as unknown as RealtimeChannel;
+			return this;
 		}),
 		send: vi.fn(() => Promise.resolve('ok' as const)),
-		subscribe: vi.fn(() => this as unknown as RealtimeChannel),
+		subscribe: vi.fn(function (this: MockRealtimeChannel) {
+			return this;
+		}),
 		unsubscribe: vi.fn(),
 		// Helper to simulate events
 		simulateBroadcast: (event: string, payload: unknown) => {
@@ -127,7 +141,9 @@ function createMockChannel(name: string): RealtimeChannel {
 				}
 			}
 		}
-	} as unknown as RealtimeChannel;
+	} as unknown as MockRealtimeChannel;
+
+	return channel;
 }
 
 // Mock browser environment
@@ -295,7 +311,7 @@ describe('CRITICAL: Message Deduplication', () => {
 				}))
 			}))
 		}));
-		supabase.from = fromMock as typeof supabase.from;
+		supabase.from = fromMock as unknown as typeof supabase.from;
 
 		// Step 2: Simulate postgres_changes with same message (now with DB ID)
 		mockChannel.simulatePostgresChanges({
@@ -381,7 +397,7 @@ describe('CRITICAL: Message Deduplication', () => {
 				}))
 			}))
 		}));
-		supabase.from = fromMock as typeof supabase.from;
+		supabase.from = fromMock as unknown as typeof supabase.from;
 
 		// Simulate postgres_changes with different ID but same timestamp
 		mockChannel.simulatePostgresChanges({
@@ -477,7 +493,7 @@ describe('CRITICAL: Message Deduplication', () => {
 				}))
 			}))
 		}));
-		supabase.from = fromMock as typeof supabase.from;
+		supabase.from = fromMock as unknown as typeof supabase.from;
 
 		// Simulate postgres_changes for message we never saw via broadcast
 		// (e.g., from another device of same user)
@@ -577,7 +593,7 @@ describe('Optimistic UI Updates', () => {
 				}))
 			}))
 		}));
-		supabase.from = fromMock as typeof supabase.from;
+		supabase.from = fromMock as unknown as typeof supabase.from;
 
 		const sendPromise = chatStore.sendMessage(conversationId, 'Test');
 
@@ -605,7 +621,7 @@ describe('Optimistic UI Updates', () => {
 				}))
 			}))
 		}));
-		supabase.from = fromMock as typeof supabase.from;
+		supabase.from = fromMock as unknown as typeof supabase.from;
 
 		const sendPromise = chatStore.sendMessage(conversationId, 'Test');
 
@@ -802,7 +818,7 @@ describe('postgres_changes Integration', () => {
 		const fromMock = vi.fn(() => ({
 			select: selectMock
 		}));
-		supabase.from = fromMock as typeof supabase.from;
+		supabase.from = fromMock as unknown as typeof supabase.from;
 
 		await chatStore.subscribeToConversation(conversationId);
 
@@ -844,7 +860,7 @@ describe('postgres_changes Integration', () => {
 				}))
 			}))
 		}));
-		supabase.from = fromMock as typeof supabase.from;
+		supabase.from = fromMock as unknown as typeof supabase.from;
 
 		await chatStore.subscribeToConversation(conversationId);
 
@@ -902,7 +918,6 @@ describe('Conversation Management', () => {
 						created_at: new Date().toISOString(),
 						edited_at: null,
 						is_flagged: false,
-						sender_id: 'user-1',
 						sender_full_name: 'User 1',
 						sender_avatar_url: null
 					}
@@ -910,7 +925,7 @@ describe('Conversation Management', () => {
 				error: null
 			})
 		);
-		supabase.rpc = rpcMock;
+		supabase.rpc = rpcMock as unknown as typeof supabase.rpc;
 
 		await chatStore.loadConversationHistory(conversationId);
 
@@ -929,7 +944,7 @@ describe('Conversation Management', () => {
 					loadingDuringFetch = chatStore.loading;
 					setTimeout(() => resolve({ data: [], error: null }), 10);
 				})
-		);
+		) as unknown as typeof supabase.rpc;
 
 		await chatStore.loadConversationHistory(conversationId);
 
@@ -959,7 +974,7 @@ describe('Conversation Management', () => {
 				data: initialData,
 				error: null
 			})
-		);
+		) as unknown as typeof supabase.rpc;
 
 		await chatStore.loadConversationHistory(conversationId);
 
@@ -984,7 +999,7 @@ describe('Conversation Management', () => {
 				data: moreData,
 				error: null
 			})
-		);
+		) as unknown as typeof supabase.rpc;
 
 		await chatStore.loadMoreMessages(conversationId);
 
