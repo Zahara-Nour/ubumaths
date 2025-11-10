@@ -13,24 +13,35 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+
+// Mock the logger to avoid console noise in tests (must be hoisted)
+vi.mock('$lib/utils/logger', () => ({
+	createLogger: vi.fn(() => ({
+		info: vi.fn(),
+		warn: vi.fn(),
+		error: vi.fn(),
+		debug: vi.fn(),
+		trace: vi.fn()
+	}))
+}));
+
+// Mock Supabase createClient to return our mock
+vi.mock('@supabase/supabase-js', () => ({
+	createClient: vi.fn()
+}));
+
+// Import after mocks are set up
 import {
 	checkLoginRateLimitByIP,
 	checkLoginRateLimitByEmail,
 	checkSignupRateLimitByIP,
-	checkOAuthRateLimitByIP
+	checkOAuthRateLimitByIP,
+	checkNotificationCreateRateLimit,
+	checkNotificationMarkRateLimit
 } from './rateLimiter';
-
-// Mock the logger to avoid console noise in tests
-vi.mock('$lib/utils/logger', () => ({
-	createLogger: () => ({
-		info: vi.fn(),
-		warn: vi.fn(),
-		error: vi.fn(),
-		debug: vi.fn()
-	})
-}));
 
 // ============================================================================
 // MOCK SUPABASE CLIENT
@@ -41,17 +52,18 @@ vi.mock('$lib/utils/logger', () => ({
  *
  * This simulates the rate_limits table with in-memory storage
  */
-function createMockSupabase() {
-	// In-memory storage for rate limit entries
-	const rateLimits = new Map<
-		string,
-		{
-			key: string;
-			count: number;
-			expires_at: string;
-		}
-	>();
 
+// In-memory storage for rate limit entries (global to persist across function calls)
+const rateLimits = new Map<
+	string,
+	{
+		key: string;
+		count: number;
+		expires_at: string;
+	}
+>();
+
+function createMockSupabase() {
 	const mockSupabase = {
 		from: (table: string) => {
 			if (table !== 'rate_limits') {
@@ -64,14 +76,11 @@ function createMockSupabase() {
 						gte: (column2: string, value2: string) => ({
 							maybeSingle: async () => {
 								const entry = rateLimits.get(value);
-								console.log(`[MOCK SELECT] key=${value}, entry=`, entry);
 								if (!entry || new Date(entry.expires_at).getTime() < new Date(value2).getTime()) {
 									return { data: null, error: null };
 								}
 								// Return a copy to avoid reference issues
-								const result = { data: { ...entry }, error: null };
-								console.log(`[MOCK SELECT] Returning:`, result.data);
-								return result;
+								return { data: { ...entry }, error: null };
 							}
 						})
 					})
@@ -79,11 +88,9 @@ function createMockSupabase() {
 				update: (data: { count: number }) => ({
 					eq: (column: string, value: string) => {
 						// Synchronously update the entry, then return a resolved promise
-						console.log(`[MOCK UPDATE] key=${value}, count=${data.count}`);
 						const entry = rateLimits.get(value);
 						if (entry) {
 							entry.count = data.count;
-							console.log(`[MOCK UPDATE] Updated entry:`, entry);
 						}
 						return Promise.resolve({ error: null });
 					}
@@ -104,7 +111,6 @@ function createMockSupabase() {
 					// Synchronously insert into the map, then return a resolved promise
 					const records = Array.isArray(data) ? data : [data];
 					for (const record of records) {
-						console.log(`[MOCK INSERT] key=${record.key}, count=${record.count}`);
 						rateLimits.set(record.key, record);
 					}
 					return Promise.resolve({ error: null });
@@ -138,8 +144,21 @@ describe('Rate Limiter (Database-backed)', () => {
 	let expireEntry: (key: string) => void;
 
 	beforeEach(() => {
+		// Clear the in-memory storage
+		rateLimits.clear();
+
+		// Reset the singleton service role client
+		const globalForSupabase = globalThis as unknown as {
+			supabaseServiceRoleClient: SupabaseClient<Database> | undefined;
+		};
+		globalForSupabase.supabaseServiceRoleClient = undefined;
+
 		const mock = createMockSupabase();
 		expireEntry = mock.expireEntry;
+
+		// Reset the mock implementation for createClient
+		vi.mocked(createClient).mockReturnValue(mock.mockSupabase);
+
 		vi.clearAllMocks();
 	});
 
@@ -389,6 +408,354 @@ describe('Rate Limiter (Database-backed)', () => {
 			const result = await checkSignupRateLimitByIP(testIP);
 			expect(result.message).toContain('Trop de tentatives');
 			expect(result.message).toContain('inscription');
+		});
+	});
+
+	describe('Notification Rate Limits', () => {
+		describe('checkNotificationCreateRateLimit', () => {
+			describe('Teacher Rate Limit (10/hour)', () => {
+				it('should allow teachers up to 10 notifications per hour', async () => {
+					const userId = 'test-teacher-id-1';
+
+					// First 10 requests should succeed
+					for (let i = 0; i < 10; i++) {
+						const result = await checkNotificationCreateRateLimit(userId, 'teacher');
+						expect(result.allowed).toBe(true);
+						expect(result.message).toBeUndefined();
+						expect(result.retryAfter).toBeUndefined();
+					}
+				});
+
+				it('should block teachers after 10 notifications per hour', async () => {
+					const userId = 'test-teacher-id-2';
+
+					// Exhaust limit (10 requests)
+					for (let i = 0; i < 10; i++) {
+						await checkNotificationCreateRateLimit(userId, 'teacher');
+					}
+
+					// 11th request should be blocked
+					const result = await checkNotificationCreateRateLimit(userId, 'teacher');
+					expect(result.allowed).toBe(false);
+					expect(result.message).toContain('limite de création de notifications');
+					expect(result.retryAfter).toBeDefined();
+					expect(result.retryAfter).toBeGreaterThan(0);
+					expect(result.retryAfter).toBeLessThanOrEqual(3600);
+				});
+
+				it('should return correct French error message when limit exceeded', async () => {
+					const userId = 'test-teacher-id-3';
+
+					// Exhaust limit
+					for (let i = 0; i < 10; i++) {
+						await checkNotificationCreateRateLimit(userId, 'teacher');
+					}
+
+					const result = await checkNotificationCreateRateLimit(userId, 'teacher');
+					expect(result.allowed).toBe(false);
+					expect(result.message).toContain('Vous avez atteint la limite');
+					expect(result.message).toContain('notifications');
+				});
+
+				it('should return retryAfter value when teacher limit exceeded', async () => {
+					const userId = 'test-teacher-id-4';
+
+					// Exhaust limit
+					for (let i = 0; i < 10; i++) {
+						await checkNotificationCreateRateLimit(userId, 'teacher');
+					}
+
+					const result = await checkNotificationCreateRateLimit(userId, 'teacher');
+					expect(result.allowed).toBe(false);
+					expect(result.retryAfter).toBeDefined();
+					expect(typeof result.retryAfter).toBe('number');
+					expect(result.retryAfter).toBeGreaterThan(0);
+					// Should be at most 1 hour (3600 seconds)
+					expect(result.retryAfter).toBeLessThanOrEqual(3600);
+				});
+
+				it('should reset after time window expires', async () => {
+					const userId = 'test-teacher-id-5';
+
+					// Exceed limit
+					for (let i = 0; i < 10; i++) {
+						await checkNotificationCreateRateLimit(userId, 'teacher');
+					}
+
+					// Verify blocked
+					let result = await checkNotificationCreateRateLimit(userId, 'teacher');
+					expect(result.allowed).toBe(false);
+
+					// Manually expire the entry (simulates time passing)
+					expireEntry(`notification_create:${userId}`);
+
+					// Should be allowed again
+					result = await checkNotificationCreateRateLimit(userId, 'teacher');
+					expect(result.allowed).toBe(true);
+				});
+			});
+
+			describe('Admin Rate Limit (50/hour)', () => {
+				it('should allow admins up to 50 notifications per hour', async () => {
+					const userId = 'test-admin-id-1';
+
+					// First 50 requests should succeed
+					for (let i = 0; i < 50; i++) {
+						const result = await checkNotificationCreateRateLimit(userId, 'admin');
+						expect(result.allowed).toBe(true);
+					}
+				});
+
+				it('should block admins after 50 notifications per hour', async () => {
+					const userId = 'test-admin-id-2';
+
+					// Exhaust limit (50 requests)
+					for (let i = 0; i < 50; i++) {
+						await checkNotificationCreateRateLimit(userId, 'admin');
+					}
+
+					// 51st request should be blocked
+					const result = await checkNotificationCreateRateLimit(userId, 'admin');
+					expect(result.allowed).toBe(false);
+					expect(result.message).toBeDefined();
+					expect(result.retryAfter).toBeDefined();
+					expect(result.retryAfter).toBeGreaterThan(0);
+					expect(result.retryAfter).toBeLessThanOrEqual(3600);
+				});
+
+				it('should allow more requests for admins than teachers', async () => {
+					const adminId = 'test-admin-id-3';
+					const teacherId = 'test-teacher-id-6';
+
+					// Teacher should be blocked after 10
+					for (let i = 0; i < 10; i++) {
+						await checkNotificationCreateRateLimit(teacherId, 'teacher');
+					}
+					const teacherResult = await checkNotificationCreateRateLimit(teacherId, 'teacher');
+					expect(teacherResult.allowed).toBe(false);
+
+					// Admin should still be allowed after 10 (up to 50)
+					for (let i = 0; i < 25; i++) {
+						const adminResult = await checkNotificationCreateRateLimit(adminId, 'admin');
+						expect(adminResult.allowed).toBe(true);
+					}
+				});
+			});
+
+			describe('Role-Based Limits', () => {
+				it('should apply different limits based on role', async () => {
+					const userId = 'test-user-id-1';
+
+					// As teacher: 10 requests allowed
+					for (let i = 0; i < 10; i++) {
+						const result = await checkNotificationCreateRateLimit(userId, 'teacher');
+						expect(result.allowed).toBe(true);
+					}
+
+					// 11th request as teacher should fail
+					const teacherResult = await checkNotificationCreateRateLimit(userId, 'teacher');
+					expect(teacherResult.allowed).toBe(false);
+				});
+
+				it('should track limits independently for different users', async () => {
+					const userA = 'test-user-a';
+					const userB = 'test-user-b';
+
+					// User A exhausts their limit
+					for (let i = 0; i < 10; i++) {
+						await checkNotificationCreateRateLimit(userA, 'teacher');
+					}
+					const userAResult = await checkNotificationCreateRateLimit(userA, 'teacher');
+					expect(userAResult.allowed).toBe(false);
+
+					// User B should still have their full quota
+					const userBResult = await checkNotificationCreateRateLimit(userB, 'teacher');
+					expect(userBResult.allowed).toBe(true);
+				});
+
+				it('should default to teacher limit for invalid roles', async () => {
+					const userId = 'test-user-id-2';
+
+					// Using 'student' role (not admin) should default to teacher limit (10)
+					for (let i = 0; i < 10; i++) {
+						// @ts-expect-error - Testing invalid role handling
+						const result = await checkNotificationCreateRateLimit(userId, 'student');
+						expect(result.allowed).toBe(true);
+					}
+
+					// 11th request should be blocked (teacher limit applied)
+					// @ts-expect-error - Testing invalid role handling
+					const result = await checkNotificationCreateRateLimit(userId, 'student');
+					expect(result.allowed).toBe(false);
+				});
+			});
+
+			describe('Edge Cases', () => {
+				it('should handle missing userId gracefully (fail-open)', async () => {
+					const result = await checkNotificationCreateRateLimit('', 'teacher');
+					expect(result.allowed).toBe(true);
+					expect(result.message).toBeUndefined();
+				});
+
+				it('should handle concurrent requests correctly', async () => {
+					const userId = 'test-concurrent-create-1';
+
+					// Simulate concurrent requests
+					const results = await Promise.all(
+						Array.from({ length: 15 }, () => checkNotificationCreateRateLimit(userId, 'teacher'))
+					);
+
+					// Should handle all requests
+					const allowed = results.filter((r) => r.allowed).length;
+					const blocked = results.filter((r) => !r.allowed).length;
+
+					expect(allowed + blocked).toBe(15);
+					// At least 10 should be allowed (the limit)
+					expect(allowed).toBeGreaterThanOrEqual(10);
+				});
+			});
+		});
+
+		describe('checkNotificationMarkRateLimit', () => {
+			describe('Mark-Read Rate Limit (30/15min)', () => {
+				it('should allow up to 30 mark-read actions per 15 minutes', async () => {
+					const userId = 'test-mark-user-1';
+
+					// First 30 requests should succeed
+					for (let i = 0; i < 30; i++) {
+						const result = await checkNotificationMarkRateLimit(userId);
+						expect(result.allowed).toBe(true);
+						expect(result.message).toBeUndefined();
+						expect(result.retryAfter).toBeUndefined();
+					}
+				});
+
+				it('should block after 30 mark-read actions per 15 minutes', async () => {
+					const userId = 'test-mark-user-2';
+
+					// Exhaust limit (30 requests)
+					for (let i = 0; i < 30; i++) {
+						await checkNotificationMarkRateLimit(userId);
+					}
+
+					// 31st request should be blocked
+					const result = await checkNotificationMarkRateLimit(userId);
+					expect(result.allowed).toBe(false);
+					expect(result.message).toContain('marquage');
+					expect(result.retryAfter).toBeDefined();
+					expect(result.retryAfter).toBeGreaterThan(0);
+					expect(result.retryAfter).toBeLessThanOrEqual(900);
+				});
+
+				it('should return correct French error message when limit exceeded', async () => {
+					const userId = 'test-mark-user-3';
+
+					// Exhaust limit
+					for (let i = 0; i < 30; i++) {
+						await checkNotificationMarkRateLimit(userId);
+					}
+
+					const result = await checkNotificationMarkRateLimit(userId);
+					expect(result.allowed).toBe(false);
+					expect(result.message).toContain('Trop de requêtes de marquage');
+					expect(result.message).toContain('patienter');
+				});
+
+				it('should return retryAfter value when limit exceeded', async () => {
+					const userId = 'test-mark-user-4';
+
+					// Exhaust limit
+					for (let i = 0; i < 30; i++) {
+						await checkNotificationMarkRateLimit(userId);
+					}
+
+					const result = await checkNotificationMarkRateLimit(userId);
+					expect(result.allowed).toBe(false);
+					expect(result.retryAfter).toBeDefined();
+					expect(typeof result.retryAfter).toBe('number');
+					expect(result.retryAfter).toBeGreaterThan(0);
+					// Should be at most 15 minutes (900 seconds)
+					expect(result.retryAfter).toBeLessThanOrEqual(900);
+				});
+
+				it('should reset after time window expires', async () => {
+					const userId = 'test-mark-user-5';
+
+					// Exceed limit
+					for (let i = 0; i < 30; i++) {
+						await checkNotificationMarkRateLimit(userId);
+					}
+
+					// Verify blocked
+					let result = await checkNotificationMarkRateLimit(userId);
+					expect(result.allowed).toBe(false);
+
+					// Manually expire the entry (simulates time passing)
+					expireEntry(`notification_mark:${userId}`);
+
+					// Should be allowed again
+					result = await checkNotificationMarkRateLimit(userId);
+					expect(result.allowed).toBe(true);
+				});
+			});
+
+			describe('User Isolation', () => {
+				it('should track limits independently for different users', async () => {
+					const userA = 'test-mark-user-a';
+					const userB = 'test-mark-user-b';
+
+					// User A exhausts their limit
+					for (let i = 0; i < 30; i++) {
+						await checkNotificationMarkRateLimit(userA);
+					}
+					const userAResult = await checkNotificationMarkRateLimit(userA);
+					expect(userAResult.allowed).toBe(false);
+
+					// User B should still have their full quota
+					const userBResult = await checkNotificationMarkRateLimit(userB);
+					expect(userBResult.allowed).toBe(true);
+				});
+
+				it('should not share limits with notification creation', async () => {
+					const userId = 'test-mark-user-6';
+
+					// Exhaust mark-read limit
+					for (let i = 0; i < 30; i++) {
+						await checkNotificationMarkRateLimit(userId);
+					}
+					const markResult = await checkNotificationMarkRateLimit(userId);
+					expect(markResult.allowed).toBe(false);
+
+					// Notification creation should still work (different limit)
+					const createResult = await checkNotificationCreateRateLimit(userId, 'teacher');
+					expect(createResult.allowed).toBe(true);
+				});
+			});
+
+			describe('Edge Cases', () => {
+				it('should handle missing userId gracefully (fail-open)', async () => {
+					const result = await checkNotificationMarkRateLimit('');
+					expect(result.allowed).toBe(true);
+					expect(result.message).toBeUndefined();
+				});
+
+				it('should handle concurrent requests correctly', async () => {
+					const userId = 'test-concurrent-mark-1';
+
+					// Simulate concurrent requests
+					const results = await Promise.all(
+						Array.from({ length: 35 }, () => checkNotificationMarkRateLimit(userId))
+					);
+
+					// Should handle all requests
+					const allowed = results.filter((r) => r.allowed).length;
+					const blocked = results.filter((r) => !r.allowed).length;
+
+					expect(allowed + blocked).toBe(35);
+					// At least 30 should be allowed (the limit)
+					expect(allowed).toBeGreaterThanOrEqual(30);
+				});
+			});
 		});
 	});
 });
