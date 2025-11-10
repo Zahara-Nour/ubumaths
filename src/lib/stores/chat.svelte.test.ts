@@ -18,10 +18,35 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { chatStore } from './chat.svelte';
+import { chatStore, type TypingUser } from './chat.svelte';
 import { supabaseRealtimeManager } from './supabaseRealtime.svelte';
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+
+// Mock friendsManager (since friends.svelte.ts has TypeScript errors unrelated to this PR)
+const friendsManager = {
+	friendships: [] as Array<{
+		id: string;
+		user_id: string;
+		friend_id: string;
+		status: 'accepted' | 'pending';
+		created_at: string;
+		friend_profile: {
+			id: string;
+			full_name: string | null;
+			avatar_url: string | null;
+		};
+	}>
+};
+
+// Mock the module
+vi.mock('./friends.svelte', () => ({
+	friendsManager: {
+		get friendships() {
+			return friendsManager.friendships;
+		}
+	}
+}));
 
 // ============================================================================
 // TEST SETUP
@@ -1163,5 +1188,1162 @@ describe('Error Handling & Edge Cases', () => {
 		chatStore.init(supabase, userId, currentUser);
 
 		expect(chatStore.canLoadMore(conversationId)).toBe(false);
+	});
+});
+
+// ============================================================================
+// 8. Phase 1 Methods: Initialization & Active Conversation
+// ============================================================================
+
+describe('Phase 1: Initialization & Active Conversation', () => {
+	let supabase: SupabaseClient<Database>;
+	const userId = 'user-1';
+	const currentUser = { full_name: 'Test User', avatar_url: null };
+
+	beforeEach(() => {
+		supabase = createMockSupabaseClient();
+		mockBrowser(true);
+	});
+
+	afterEach(() => {
+		restoreBrowser();
+		vi.clearAllMocks();
+	});
+
+	describe('init()', () => {
+		it('should initialize store with user info', () => {
+			chatStore.init(supabase, userId, currentUser);
+
+			// Verify initialization by checking if methods work
+			expect(() => chatStore.sendTypingIndicator('conv-1', true)).not.toThrow();
+		});
+
+		it('should initialize without user profile (will fetch lazily)', () => {
+			chatStore.init(supabase, userId);
+
+			// Should not throw
+			expect(() => chatStore.sendTypingIndicator('conv-1', true)).not.toThrow();
+		});
+
+		it('should guard against re-initialization', () => {
+			chatStore.init(supabase, userId, currentUser);
+
+			const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+			// Try to re-initialize
+			chatStore.init(supabase, 'user-2', { full_name: 'Other User', avatar_url: null });
+
+			// Should log warning but not crash
+			expect(consoleSpy).toHaveBeenCalled();
+
+			consoleSpy.mockRestore();
+		});
+
+		it.skip('should not initialize on server', () => {
+			// SSR edge case - skip in browser environment tests
+			mockBrowser(false);
+
+			const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+			chatStore.init(supabase, userId, currentUser);
+
+			expect(consoleSpy).toHaveBeenCalledWith(
+				expect.stringContaining('Cannot initialize chat store on server')
+			);
+
+			consoleSpy.mockRestore();
+		});
+
+		it('should lazy-fetch user profile if missing when sending message', async () => {
+			// Mock profile fetch
+			const fromMock = vi.fn(() => ({
+				select: vi.fn(() => ({
+					eq: vi.fn(() => ({
+						single: vi.fn(() =>
+							Promise.resolve({
+								data: {
+									id: userId,
+									full_name: 'Fetched User',
+									avatar_url: 'https://avatar.url'
+								},
+								error: null
+							})
+						)
+					}))
+				})),
+				insert: vi.fn(() => ({
+					select: vi.fn(() => ({
+						single: vi.fn(() =>
+							Promise.resolve({
+								data: {
+									id: 'msg-1',
+									conversation_id: 'conv-1',
+									sender_id: userId,
+									content: { text: 'Test' },
+									plain_text: 'Test',
+									created_at: new Date().toISOString(),
+									edited_at: null,
+									deleted_at: null,
+									is_flagged: false,
+									flag_reason: null,
+									sender: {
+										id: userId,
+										full_name: 'Fetched User',
+										avatar_url: 'https://avatar.url'
+									}
+								},
+								error: null
+							})
+						)
+					}))
+				}))
+			}));
+
+			supabase.from = fromMock as unknown as typeof supabase.from;
+
+			// Initialize without user profile
+			chatStore.init(supabase, userId);
+
+			const mockChannel = createMockChannel('chat-conv-1');
+			vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(mockChannel);
+
+			// Send message should trigger lazy fetch
+			await chatStore.sendMessage('conv-1', 'Test');
+
+			// Should have fetched profile
+			expect(fromMock).toHaveBeenCalledWith('profiles');
+		});
+	});
+
+	describe('setActiveConversation()', () => {
+		beforeEach(() => {
+			chatStore.init(supabase, userId, currentUser);
+		});
+
+		it('should set active conversation ID', () => {
+			const mockChannel = createMockChannel('chat-conv-1');
+			vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
+			vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+
+			chatStore.setActiveConversation('conv-1');
+
+			expect(chatStore.activeConversationId).toBe('conv-1');
+		});
+
+		it('should subscribe to new conversation', async () => {
+			const mockChannel = createMockChannel('chat-conv-1');
+			const createChannelSpy = vi
+				.spyOn(supabaseRealtimeManager, 'createChannel')
+				.mockReturnValue(mockChannel);
+			const subscribeChannelSpy = vi
+				.spyOn(supabaseRealtimeManager, 'subscribeChannel')
+				.mockResolvedValue(undefined);
+
+			chatStore.setActiveConversation('conv-1');
+
+			// Wait for async subscription
+			await vi.waitFor(() => {
+				expect(createChannelSpy).toHaveBeenCalledWith('chat-conv-1');
+				expect(subscribeChannelSpy).toHaveBeenCalledWith('chat-conv-1');
+			});
+		});
+
+		it('should unsubscribe from previous conversation', async () => {
+			const mockChannel1 = createMockChannel('chat-conv-1');
+			const mockChannel2 = createMockChannel('chat-conv-2');
+
+			vi.spyOn(supabaseRealtimeManager, 'createChannel')
+				.mockReturnValueOnce(mockChannel1)
+				.mockReturnValueOnce(mockChannel2);
+			vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+			const unsubscribeSpy = vi
+				.spyOn(supabaseRealtimeManager, 'unsubscribeChannel')
+				.mockResolvedValue(undefined);
+
+			// Set first conversation
+			chatStore.setActiveConversation('conv-1');
+			await vi.waitFor(() => expect(chatStore.activeConversationId).toBe('conv-1'));
+
+			// Set second conversation
+			chatStore.setActiveConversation('conv-2');
+
+			// Should unsubscribe from first
+			await vi.waitFor(() => {
+				expect(unsubscribeSpy).toHaveBeenCalledWith('chat-conv-1');
+			});
+		});
+
+		it('should load conversation history on set', async () => {
+			const mockChannel = createMockChannel('chat-conv-1');
+			vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
+			vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+
+			const rpcMock = vi.fn(() =>
+				Promise.resolve({
+					data: [
+						{
+							id: 'msg-1',
+							conversation_id: 'conv-1',
+							sender_id: userId,
+							content: { text: 'Message' },
+							plain_text: 'Message',
+							created_at: new Date().toISOString(),
+							edited_at: null,
+							is_flagged: false,
+							sender_firstname: 'Test',
+							sender_lastname: 'User',
+							sender_avatar_url: null
+						}
+					],
+					error: null
+				})
+			);
+			supabase.rpc = rpcMock as unknown as typeof supabase.rpc;
+
+			chatStore.setActiveConversation('conv-1');
+
+			await vi.waitFor(() => {
+				expect(rpcMock).toHaveBeenCalledWith('get_messages_paginated', {
+					p_conversation_id: 'conv-1',
+					p_limit: 50
+				});
+			});
+		});
+
+		it('should mark conversation as read on set', async () => {
+			const mockChannel = createMockChannel('chat-conv-1');
+			vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
+			vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+
+			const rpcMock = vi.fn(() =>
+				Promise.resolve({
+					data: null,
+					error: null
+				})
+			);
+			supabase.rpc = rpcMock as unknown as typeof supabase.rpc;
+
+			// Add conversation to store first
+			chatStore['conversationsMap'].set('conv-1', {
+				id: 'conv-1',
+				name: 'Test Chat',
+				is_group: false,
+				class_id: null,
+				last_message_preview: null,
+				last_message_at: null,
+				unread_count: 5,
+				participant_count: 2,
+				other_user_id: 'user-2',
+				other_user_firstname: 'Other',
+				other_user_lastname: 'User',
+				other_user_avatar_url: null,
+				is_muted: false,
+				created_at: null,
+				updated_at: null
+			});
+
+			chatStore.setActiveConversation('conv-1');
+
+			await vi.waitFor(
+				() => {
+					expect(rpcMock).toHaveBeenCalledWith('mark_conversation_read', {
+						p_conversation_id: 'conv-1',
+						p_user_id: userId
+					});
+				},
+				{ timeout: 1000 }
+			);
+		});
+
+		it('should clear active conversation when set to null', async () => {
+			const mockChannel = createMockChannel('chat-conv-1');
+			vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
+			vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+
+			chatStore.setActiveConversation('conv-1');
+			await vi.waitFor(() => expect(chatStore.activeConversationId).toBe('conv-1'));
+
+			chatStore.setActiveConversation(null);
+
+			expect(chatStore.activeConversationId).toBe(null);
+		});
+
+		it.skip('should not set active conversation on server', () => {
+			// SSR edge case - skip in browser environment tests
+			mockBrowser(false);
+
+			const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+			chatStore.setActiveConversation('conv-1');
+
+			expect(consoleSpy).toHaveBeenCalledWith(
+				expect.stringContaining('Cannot set active conversation on server')
+			);
+
+			consoleSpy.mockRestore();
+		});
+	});
+});
+
+// ============================================================================
+// 9. Phase 1 Getters: Reactive Properties
+// ============================================================================
+
+describe('Phase 1: Reactive Getters', () => {
+	let supabase: SupabaseClient<Database>;
+	const userId = 'user-1';
+	const currentUser = { full_name: 'Test User', avatar_url: null };
+
+	beforeEach(() => {
+		supabase = createMockSupabaseClient();
+		mockBrowser(true);
+		chatStore.init(supabase, userId, currentUser);
+		chatStore['conversationsMap'].clear();
+		chatStore['messages'].clear();
+		chatStore['typingUsersMap'].clear();
+	});
+
+	afterEach(() => {
+		restoreBrowser();
+		vi.clearAllMocks();
+	});
+
+	describe('conversations getter', () => {
+		it('should return conversations sorted by last message timestamp', () => {
+			// Add conversations with different timestamps
+			chatStore['conversationsMap'].set('conv-1', {
+				id: 'conv-1',
+				name: 'Chat 1',
+				is_group: false,
+				class_id: null,
+				last_message_preview: 'Old message',
+				last_message_at: '2025-01-01T10:00:00Z',
+				unread_count: 0,
+				participant_count: 2,
+				other_user_id: 'user-2',
+				other_user_firstname: 'Alice',
+				other_user_lastname: 'Smith',
+				other_user_avatar_url: null,
+				is_muted: false,
+				created_at: null,
+				updated_at: null
+			});
+
+			chatStore['conversationsMap'].set('conv-2', {
+				id: 'conv-2',
+				name: 'Chat 2',
+				is_group: false,
+				class_id: null,
+				last_message_preview: 'Recent message',
+				last_message_at: '2025-01-02T10:00:00Z',
+				unread_count: 0,
+				participant_count: 2,
+				other_user_id: 'user-3',
+				other_user_firstname: 'Bob',
+				other_user_lastname: 'Jones',
+				other_user_avatar_url: null,
+				is_muted: false,
+				created_at: null,
+				updated_at: null
+			});
+
+			const conversations = chatStore.conversations;
+
+			expect(conversations).toHaveLength(2);
+			expect(conversations[0].id).toBe('conv-2'); // Most recent first
+			expect(conversations[1].id).toBe('conv-1');
+		});
+
+		it('should return empty array when no conversations', () => {
+			const conversations = chatStore.conversations;
+
+			expect(conversations).toEqual([]);
+		});
+	});
+
+	describe('activeConversation getter', () => {
+		it('should return active conversation', () => {
+			chatStore['conversationsMap'].set('conv-1', {
+				id: 'conv-1',
+				name: 'Active Chat',
+				is_group: false,
+				class_id: null,
+				last_message_preview: null,
+				last_message_at: null,
+				unread_count: 0,
+				participant_count: 2,
+				other_user_id: 'user-2',
+				other_user_firstname: 'Alice',
+				other_user_lastname: 'Smith',
+				other_user_avatar_url: null,
+				is_muted: false,
+				created_at: null,
+				updated_at: null
+			});
+
+			chatStore.activeConversationId = 'conv-1';
+
+			const activeConv = chatStore.activeConversation;
+
+			expect(activeConv).toBeDefined();
+			expect(activeConv?.id).toBe('conv-1');
+			expect(activeConv?.name).toBe('Active Chat');
+		});
+
+		it('should return null when no active conversation', () => {
+			chatStore.activeConversationId = null;
+
+			const activeConv = chatStore.activeConversation;
+
+			expect(activeConv).toBe(null);
+		});
+
+		it('should return null when active conversation not found', () => {
+			chatStore.activeConversationId = 'non-existent';
+
+			const activeConv = chatStore.activeConversation;
+
+			expect(activeConv).toBe(null);
+		});
+	});
+
+	describe('activeMessages getter', () => {
+		it('should return messages for active conversation', () => {
+			chatStore.activeConversationId = 'conv-1';
+
+			chatStore['messages'].set('conv-1', [
+				{
+					id: 'msg-1',
+					conversation_id: 'conv-1',
+					sender_id: userId,
+					content: { text: 'Hello' },
+					plain_text: 'Hello',
+					created_at: new Date().toISOString(),
+					edited_at: null,
+					deleted_at: null,
+					is_flagged: false,
+					flag_reason: null
+				}
+			]);
+
+			const messages = chatStore.activeMessages;
+
+			expect(messages).toHaveLength(1);
+			expect(messages[0].plain_text).toBe('Hello');
+		});
+
+		it('should return empty array when no active conversation', () => {
+			chatStore.activeConversationId = null;
+
+			const messages = chatStore.activeMessages;
+
+			expect(messages).toEqual([]);
+		});
+	});
+
+	describe('activeTypingUsers getter', () => {
+		it('should return typing users for active conversation', () => {
+			chatStore.activeConversationId = 'conv-1';
+
+			const typingMap = new Map<string, TypingUser>();
+			typingMap.set('user-2', {
+				id: 'user-2',
+				firstname: 'Alice',
+				lastname: 'Smith'
+			});
+
+			chatStore['typingUsersMap'].set('conv-1', typingMap);
+
+			const typingUsers = chatStore.activeTypingUsers;
+
+			expect(typingUsers).toHaveLength(1);
+			expect(typingUsers[0].id).toBe('user-2');
+		});
+
+		it('should return empty array when no typing users', () => {
+			chatStore.activeConversationId = 'conv-1';
+
+			const typingUsers = chatStore.activeTypingUsers;
+
+			expect(typingUsers).toEqual([]);
+		});
+
+		it('should return empty array when no active conversation', () => {
+			chatStore.activeConversationId = null;
+
+			const typingUsers = chatStore.activeTypingUsers;
+
+			expect(typingUsers).toEqual([]);
+		});
+	});
+
+	describe('isLoadingMessages getter', () => {
+		it('should return true when loading messages', () => {
+			chatStore['loadingMessages'] = true;
+
+			expect(chatStore.isLoadingMessages).toBe(true);
+		});
+
+		it('should return false when not loading messages', () => {
+			chatStore['loadingMessages'] = false;
+
+			expect(chatStore.isLoadingMessages).toBe(false);
+		});
+	});
+
+	describe('isLoadingConversations getter', () => {
+		it('should return true when loading conversations', () => {
+			chatStore['loadingConversations'] = true;
+
+			expect(chatStore.isLoadingConversations).toBe(true);
+		});
+
+		it('should return false when not loading conversations', () => {
+			chatStore['loadingConversations'] = false;
+
+			expect(chatStore.isLoadingConversations).toBe(false);
+		});
+	});
+});
+
+// ============================================================================
+// 10. Phase 2 Methods: Conversation Management
+// ============================================================================
+
+describe('Phase 2: Conversation Management', () => {
+	let supabase: SupabaseClient<Database>;
+	const userId = 'user-1';
+	const currentUser = { full_name: 'Test User', avatar_url: null };
+
+	beforeEach(() => {
+		supabase = createMockSupabaseClient();
+		mockBrowser(true);
+		chatStore.init(supabase, userId, currentUser);
+		chatStore['conversationsMap'].clear();
+	});
+
+	afterEach(() => {
+		restoreBrowser();
+		vi.clearAllMocks();
+	});
+
+	describe('loadConversations()', () => {
+		it('should load all conversations via RPC', async () => {
+			const mockConversations = [
+				{
+					conversation_id: 'conv-1',
+					name: 'Chat 1',
+					is_group: false,
+					class_id: null,
+					last_message_preview: 'Hello',
+					last_message_at: '2025-01-01T10:00:00Z',
+					unread_count: 2,
+					participant_count: 2,
+					other_user_id: 'user-2',
+					other_user_firstname: 'Alice',
+					other_user_lastname: 'Smith',
+					other_user_avatar_url: null,
+					is_muted: false
+				},
+				{
+					conversation_id: 'conv-2',
+					name: 'Chat 2',
+					is_group: false,
+					class_id: null,
+					last_message_preview: 'World',
+					last_message_at: '2025-01-02T10:00:00Z',
+					unread_count: 0,
+					participant_count: 2,
+					other_user_id: 'user-3',
+					other_user_firstname: 'Bob',
+					other_user_lastname: 'Jones',
+					other_user_avatar_url: null,
+					is_muted: false
+				}
+			];
+
+			const rpcMock = vi.fn(() =>
+				Promise.resolve({
+					data: mockConversations,
+					error: null
+				})
+			);
+			supabase.rpc = rpcMock as unknown as typeof supabase.rpc;
+
+			await chatStore.loadConversations();
+
+			expect(rpcMock).toHaveBeenCalledWith('get_user_conversations', {
+				p_user_id: userId
+			});
+
+			const conversations = chatStore.conversations;
+			expect(conversations).toHaveLength(2);
+			expect(conversations[0].id).toBe('conv-2'); // Sorted by last_message_at
+			expect(conversations[1].id).toBe('conv-1');
+		});
+
+		it('should set loading state during load', async () => {
+			let loadingDuringFetch = false;
+
+			supabase.rpc = vi.fn(
+				() =>
+					new Promise((resolve) => {
+						loadingDuringFetch = chatStore.isLoadingConversations;
+						setTimeout(() => resolve({ data: [], error: null }), 10);
+					})
+			) as unknown as typeof supabase.rpc;
+
+			await chatStore.loadConversations();
+
+			expect(loadingDuringFetch).toBe(true);
+			expect(chatStore.isLoadingConversations).toBe(false);
+		});
+
+		it('should handle RPC errors', async () => {
+			const rpcMock = vi.fn(() =>
+				Promise.resolve({
+					data: null,
+					error: { message: 'Database error' }
+				})
+			);
+			supabase.rpc = rpcMock as unknown as typeof supabase.rpc;
+
+			await expect(chatStore.loadConversations()).rejects.toThrow();
+		});
+
+		it('should clear existing conversations before loading', async () => {
+			// Add old conversation
+			chatStore['conversationsMap'].set('old-conv', {
+				id: 'old-conv',
+				name: 'Old Chat',
+				is_group: false,
+				class_id: null,
+				last_message_preview: null,
+				last_message_at: null,
+				unread_count: 0,
+				participant_count: 2,
+				other_user_id: 'user-99',
+				other_user_firstname: 'Old',
+				other_user_lastname: 'User',
+				other_user_avatar_url: null,
+				is_muted: false,
+				created_at: null,
+				updated_at: null
+			});
+
+			const rpcMock = vi.fn(() =>
+				Promise.resolve({
+					data: [
+						{
+							conversation_id: 'conv-1',
+							name: 'New Chat',
+							is_group: false,
+							class_id: null,
+							last_message_preview: null,
+							last_message_at: null,
+							unread_count: 0,
+							participant_count: 2,
+							other_user_id: 'user-2',
+							other_user_firstname: 'Alice',
+							other_user_lastname: 'Smith',
+							other_user_avatar_url: null,
+							is_muted: false
+						}
+					],
+					error: null
+				})
+			);
+			supabase.rpc = rpcMock as unknown as typeof supabase.rpc;
+
+			await chatStore.loadConversations();
+
+			const conversations = chatStore.conversations;
+			expect(conversations).toHaveLength(1);
+			expect(conversations[0].id).toBe('conv-1');
+		});
+
+		it.skip('should not load on server', async () => {
+			// SSR edge case - skip in browser environment tests
+			mockBrowser(false);
+
+			const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+			await chatStore.loadConversations();
+
+			expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Cannot load conversations'));
+
+			consoleSpy.mockRestore();
+		});
+	});
+
+	describe('markConversationAsRead() [private]', () => {
+		it('should use optimistic update (instant UI)', async () => {
+			// Add conversation with unread count
+			chatStore['conversationsMap'].set('conv-1', {
+				id: 'conv-1',
+				name: 'Chat 1',
+				is_group: false,
+				class_id: null,
+				last_message_preview: null,
+				last_message_at: null,
+				unread_count: 5,
+				participant_count: 2,
+				other_user_id: 'user-2',
+				other_user_firstname: 'Alice',
+				other_user_lastname: 'Smith',
+				other_user_avatar_url: null,
+				is_muted: false,
+				created_at: null,
+				updated_at: null
+			});
+
+			const rpcMock = vi.fn(() =>
+				Promise.resolve({
+					data: null,
+					error: null
+				})
+			);
+			supabase.rpc = rpcMock as unknown as typeof supabase.rpc;
+
+			// Mark as read via setActiveConversation
+			const mockChannel = createMockChannel('chat-conv-1');
+			vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
+			vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+
+			chatStore.setActiveConversation('conv-1');
+
+			// Unread count should be 0 immediately (optimistic)
+			const conv = chatStore.conversations.find((c) => c.id === 'conv-1');
+			expect(conv?.unread_count).toBe(0);
+
+			// RPC should be called in background
+			await vi.waitFor(() => {
+				expect(rpcMock).toHaveBeenCalledWith('mark_conversation_read', {
+					p_conversation_id: 'conv-1',
+					p_user_id: userId
+				});
+			});
+		});
+
+		it('should rollback on RPC error', async () => {
+			// Add conversation with unread count
+			chatStore['conversationsMap'].set('conv-1', {
+				id: 'conv-1',
+				name: 'Chat 1',
+				is_group: false,
+				class_id: null,
+				last_message_preview: null,
+				last_message_at: null,
+				unread_count: 5,
+				participant_count: 2,
+				other_user_id: 'user-2',
+				other_user_firstname: 'Alice',
+				other_user_lastname: 'Smith',
+				other_user_avatar_url: null,
+				is_muted: false,
+				created_at: null,
+				updated_at: null
+			});
+
+			const rpcMock = vi.fn(() =>
+				Promise.resolve({
+					data: null,
+					error: { message: 'Database error' }
+				})
+			);
+			supabase.rpc = rpcMock as unknown as typeof supabase.rpc;
+
+			const mockChannel = createMockChannel('chat-conv-1');
+			vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
+			vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+
+			chatStore.setActiveConversation('conv-1');
+
+			// Wait for RPC call and rollback
+			await vi.waitFor(
+				() => {
+					const conv = chatStore.conversations.find((c) => c.id === 'conv-1');
+					// Should rollback to original value
+					expect(conv?.unread_count).toBe(5);
+				},
+				{ timeout: 1000 }
+			);
+		});
+	});
+
+	describe('create1on1Chat()', () => {
+		beforeEach(() => {
+			// Mock friendsManager to have a friend
+			friendsManager.friendships = [
+				{
+					id: 'friendship-1',
+					user_id: userId,
+					friend_id: 'user-2',
+					status: 'accepted',
+					created_at: new Date().toISOString(),
+					friend_profile: {
+						id: 'user-2',
+						full_name: 'Alice Smith',
+						avatar_url: null
+					}
+				}
+			];
+		});
+
+		it('should create 1-on-1 chat via RPC', async () => {
+			const rpcMock = vi.fn(() =>
+				Promise.resolve({
+					data: 'conv-123',
+					error: null
+				})
+			);
+			supabase.rpc = rpcMock as unknown as typeof supabase.rpc;
+
+			// Mock loadConversations to verify it's called
+			const loadConversationsSpy = vi
+				.spyOn(chatStore, 'loadConversations')
+				.mockResolvedValue(undefined);
+
+			const conversationId = await chatStore.create1on1Chat('user-2');
+
+			expect(conversationId).toBe('conv-123');
+			expect(rpcMock).toHaveBeenCalledWith('create_1on1_chat', {
+				p_user1_id: userId,
+				p_user2_id: 'user-2'
+			});
+			expect(loadConversationsSpy).toHaveBeenCalled();
+
+			loadConversationsSpy.mockRestore();
+		});
+
+		it('should return existing conversation if already exists', async () => {
+			const rpcMock = vi.fn(() =>
+				Promise.resolve({
+					data: 'existing-conv',
+					error: null
+				})
+			);
+			supabase.rpc = rpcMock as unknown as typeof supabase.rpc;
+
+			vi.spyOn(chatStore, 'loadConversations').mockResolvedValue(undefined);
+
+			const conversationId = await chatStore.create1on1Chat('user-2');
+
+			expect(conversationId).toBe('existing-conv');
+		});
+
+		it('should reject if users are not friends', async () => {
+			// Mock friendsManager with no friends
+			friendsManager.friendships = [];
+
+			const conversationId = await chatStore.create1on1Chat('user-99');
+
+			expect(conversationId).toBe(null);
+			expect(supabase.rpc).not.toHaveBeenCalled();
+		});
+
+		it('should handle RPC errors', async () => {
+			const rpcMock = vi.fn(() =>
+				Promise.resolve({
+					data: null,
+					error: { message: 'Database error' }
+				})
+			);
+			supabase.rpc = rpcMock as unknown as typeof supabase.rpc;
+
+			const conversationId = await chatStore.create1on1Chat('user-2');
+
+			expect(conversationId).toBe(null);
+		});
+
+		it('should handle RPC returning no data', async () => {
+			const rpcMock = vi.fn(() =>
+				Promise.resolve({
+					data: null,
+					error: null
+				})
+			);
+			supabase.rpc = rpcMock as unknown as typeof supabase.rpc;
+
+			const conversationId = await chatStore.create1on1Chat('user-2');
+
+			expect(conversationId).toBe(null);
+		});
+	});
+});
+
+// ============================================================================
+// 11. Phase 3 Methods: Reactions & Reporting
+// ============================================================================
+
+describe('Phase 3: Reactions & Reporting', () => {
+	let supabase: SupabaseClient<Database>;
+	const userId = 'user-1';
+	const currentUser = { full_name: 'Test User', avatar_url: null };
+	const conversationId = 'conv-1';
+
+	beforeEach(() => {
+		supabase = createMockSupabaseClient();
+		mockBrowser(true);
+		chatStore.init(supabase, userId, currentUser);
+		chatStore['messages'].clear();
+	});
+
+	afterEach(() => {
+		restoreBrowser();
+		vi.clearAllMocks();
+	});
+
+	describe('toggleReaction()', () => {
+		beforeEach(() => {
+			// Add a message to the store
+			chatStore['messages'].set(conversationId, [
+				{
+					id: 'msg-1',
+					conversation_id: conversationId,
+					sender_id: 'user-2',
+					content: { text: 'Hello' },
+					plain_text: 'Hello',
+					created_at: new Date().toISOString(),
+					edited_at: null,
+					deleted_at: null,
+					is_flagged: false,
+					flag_reason: null,
+					reactions: []
+				}
+			]);
+		});
+
+		it('should add reaction if not present', () => {
+			const mockChannel = createMockChannel(`chat-${conversationId}`);
+			vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(mockChannel);
+
+			chatStore.toggleReaction('msg-1', '👍');
+
+			const messages = chatStore.getMessages(conversationId);
+			expect(messages[0].reactions).toHaveLength(1);
+			expect(messages[0].reactions?.[0].emoji).toBe('👍');
+			expect(messages[0].reactions?.[0].user_id).toBe(userId);
+
+			// Should broadcast
+			expect(mockChannel.send).toHaveBeenCalledWith({
+				type: 'broadcast',
+				event: 'message_reaction',
+				payload: expect.objectContaining({
+					type: 'message_reaction',
+					messageId: 'msg-1',
+					userId: userId,
+					emoji: '👍',
+					action: 'add'
+				})
+			});
+		});
+
+		it('should remove reaction if already present', () => {
+			// Add existing reaction
+			const messages = chatStore.getMessages(conversationId);
+			messages[0].reactions = [
+				{
+					id: 'reaction-1',
+					message_id: 'msg-1',
+					user_id: userId,
+					emoji: '👍',
+					created_at: new Date().toISOString()
+				}
+			];
+
+			const mockChannel = createMockChannel(`chat-${conversationId}`);
+			vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(mockChannel);
+
+			chatStore.toggleReaction('msg-1', '👍');
+
+			const updatedMessages = chatStore.getMessages(conversationId);
+			expect(updatedMessages[0].reactions).toHaveLength(0);
+
+			// Should broadcast removal
+			expect(mockChannel.send).toHaveBeenCalledWith({
+				type: 'broadcast',
+				event: 'message_reaction',
+				payload: expect.objectContaining({
+					type: 'message_reaction',
+					messageId: 'msg-1',
+					userId: userId,
+					emoji: '👍',
+					action: 'remove'
+				})
+			});
+		});
+
+		it('should handle multiple reactions from different users', () => {
+			const mockChannel = createMockChannel(`chat-${conversationId}`);
+			vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(mockChannel);
+
+			// User adds reaction
+			chatStore.toggleReaction('msg-1', '👍');
+
+			// Simulate another user's reaction via broadcast
+			const messages = chatStore.getMessages(conversationId);
+			messages[0].reactions?.push({
+				id: crypto.randomUUID(),
+				message_id: 'msg-1',
+				user_id: 'user-2',
+				emoji: '❤️',
+				created_at: new Date().toISOString()
+			});
+
+			const updatedMessages = chatStore.getMessages(conversationId);
+			expect(updatedMessages[0].reactions).toHaveLength(2);
+		});
+
+		it('should initialize reactions array if undefined', () => {
+			// Remove reactions array
+			const messages = chatStore.getMessages(conversationId);
+			delete messages[0].reactions;
+
+			const mockChannel = createMockChannel(`chat-${conversationId}`);
+			vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(mockChannel);
+
+			chatStore.toggleReaction('msg-1', '👍');
+
+			const updatedMessages = chatStore.getMessages(conversationId);
+			expect(updatedMessages[0].reactions).toBeDefined();
+			expect(updatedMessages[0].reactions).toHaveLength(1);
+		});
+
+		it('should not throw if channel not found', () => {
+			vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(undefined);
+
+			expect(() => {
+				chatStore.toggleReaction('msg-1', '👍');
+			}).not.toThrow();
+		});
+
+		it('should not throw if message not found', () => {
+			const mockChannel = createMockChannel(`chat-${conversationId}`);
+			vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(mockChannel);
+
+			expect(() => {
+				chatStore.toggleReaction('non-existent-msg', '👍');
+			}).not.toThrow();
+		});
+	});
+
+	describe('reportMessage()', () => {
+		it('should report message via API', async () => {
+			const fetchMock = vi.fn(() =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve({ success: true })
+				} as Response)
+			);
+			globalThis.fetch = fetchMock;
+
+			const success = await chatStore.reportMessage('msg-1', 'spam');
+
+			expect(success).toBe(true);
+			expect(fetchMock).toHaveBeenCalledWith('/api/chat/reports', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					messageId: 'msg-1',
+					reason: 'spam',
+					details: undefined
+				})
+			});
+		});
+
+		it('should report message with details', async () => {
+			const fetchMock = vi.fn(() =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve({ success: true })
+				} as Response)
+			);
+			globalThis.fetch = fetchMock;
+
+			const success = await chatStore.reportMessage('msg-1', 'harassment', 'User is threatening');
+
+			expect(success).toBe(true);
+			expect(fetchMock).toHaveBeenCalledWith('/api/chat/reports', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					messageId: 'msg-1',
+					reason: 'harassment',
+					details: 'User is threatening'
+				})
+			});
+		});
+
+		it('should handle API errors', async () => {
+			const fetchMock = vi.fn(() =>
+				Promise.resolve({
+					ok: false,
+					json: () => Promise.resolve({ message: 'Forbidden' })
+				} as Response)
+			);
+			globalThis.fetch = fetchMock;
+
+			const success = await chatStore.reportMessage('msg-1', 'spam');
+
+			expect(success).toBe(false);
+		});
+
+		it('should handle network errors', async () => {
+			const fetchMock = vi.fn(() => Promise.reject(new Error('Network error')));
+			globalThis.fetch = fetchMock;
+
+			const success = await chatStore.reportMessage('msg-1', 'spam');
+
+			expect(success).toBe(false);
+		});
+
+		it('should support all report reasons', async () => {
+			const fetchMock = vi.fn(() =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve({ success: true })
+				} as Response)
+			);
+			globalThis.fetch = fetchMock;
+
+			const reasons: Array<'spam' | 'harassment' | 'inappropriate' | 'other'> = [
+				'spam',
+				'harassment',
+				'inappropriate',
+				'other'
+			];
+
+			for (const reason of reasons) {
+				await chatStore.reportMessage('msg-1', reason);
+				expect(fetchMock).toHaveBeenCalledWith(
+					'/api/chat/reports',
+					expect.objectContaining({
+						body: JSON.stringify({
+							messageId: 'msg-1',
+							reason,
+							details: undefined
+						})
+					})
+				);
+			}
+		});
+
+		it.skip('should not report on server', async () => {
+			// SSR edge case - skip in browser environment tests
+			mockBrowser(false);
+
+			const fetchMock = vi.fn();
+			globalThis.fetch = fetchMock;
+
+			const success = await chatStore.reportMessage('msg-1', 'spam');
+
+			expect(success).toBe(false);
+			expect(fetchMock).not.toHaveBeenCalled();
+		});
 	});
 });
