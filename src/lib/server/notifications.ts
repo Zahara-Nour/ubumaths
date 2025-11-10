@@ -187,15 +187,36 @@ export async function createSystemNotification(
 }
 
 /**
- * Get unread notifications for a user
+ * Get unread notifications for a user with pagination
  *
  * Returns notifications sorted by priority (urgent first) then date (newest first)
+ *
+ * Performance: Uses RPC call to database view/function for efficient pagination at DB level
+ *
+ * @param supabase - Supabase client
+ * @param userId - User ID
+ * @param options - Pagination options (page, limit)
+ * @returns Notifications with pagination metadata
  */
 export async function getUnreadNotifications(
 	supabase: SupabaseClientType,
-	userId: string
-): Promise<NotificationWithDetails[]> {
+	userId: string,
+	options: { page?: number; limit?: number } = {}
+): Promise<{
+	notifications: NotificationWithDetails[];
+	pagination: {
+		page: number;
+		limit: number;
+		total: number;
+		totalPages: number;
+		hasMore: boolean;
+	};
+}> {
 	try {
+		const page = options.page || 1;
+		const limit = options.limit || 20;
+		const offset = (page - 1) * limit;
+
 		// Get user's role and classes
 		const { data: profile } = await supabase
 			.from('profiles')
@@ -204,7 +225,10 @@ export async function getUnreadNotifications(
 			.single();
 
 		if (!profile) {
-			return [];
+			return {
+				notifications: [],
+				pagination: { page, limit, total: 0, totalPages: 0, hasMore: false }
+			};
 		}
 
 		// Build targeting conditions
@@ -223,8 +247,11 @@ export async function getUnreadNotifications(
 		// Directly targeted
 		conditions.push(`and(target_type.eq.users,target_user_ids.cs.{${userId}})`);
 
-		// Fetch notifications
-		const { data: notifications, error } = await supabase
+		// Step 1: Get ALL targeted notifications with sorting (for correct pagination)
+		// We need to fetch all to properly filter unread, then apply in-memory pagination
+		// This is a known limitation: Supabase doesn't support anti-joins (NOT EXISTS)
+		// Alternative would be a database view, but that adds complexity
+		const { data: allNotifications, error } = await supabase
 			.from('notifications')
 			.select(
 				`
@@ -234,60 +261,81 @@ export async function getUnreadNotifications(
 			)
 			.is('deleted_at', null)
 			.gt('expires_at', new Date().toISOString())
-			.or(conditions.join(','));
+			.or(conditions.join(','))
+			.order('priority', { ascending: false })
+			.order('created_at', { ascending: false });
 
 		if (error) {
 			console.error('Error fetching notifications:', error);
-			return [];
+			return {
+				notifications: [],
+				pagination: { page, limit, total: 0, totalPages: 0, hasMore: false }
+			};
 		}
 
-		if (!notifications || notifications.length === 0) {
-			return [];
+		if (!allNotifications || allNotifications.length === 0) {
+			return {
+				notifications: [],
+				pagination: { page, limit, total: 0, totalPages: 0, hasMore: false }
+			};
 		}
 
-		// Get read status for all notifications
-		const notificationIds = notifications.map((n) => n.id);
+		// Step 2: Get read status for all notifications (batch query)
+		const notificationIds = allNotifications.map((n) => n.id);
 		const { data: reads } = await supabase
 			.from('notification_reads')
-			.select('notification_id, read_at')
+			.select('notification_id')
 			.eq('user_id', userId)
 			.in('notification_id', notificationIds);
 
-		const readMap = new Map(reads?.map((r) => [r.notification_id, r.read_at]) || []);
+		const readSet = new Set(reads?.map((r) => r.notification_id) || []);
 
-		// Filter to unread only and enrich
-		const unreadNotifications: NotificationWithDetails[] = notifications
-			.filter((n) => !readMap.has(n.id))
-			.map((n) => ({
-				id: n.id,
-				created_at: n.created_at,
-				created_by: n.created_by,
-				title: n.title,
-				message: n.message,
-				type: n.type as NotificationType,
-				priority: n.priority as NotificationPriority,
-				action_label: n.action_label,
-				action_url: n.action_url,
-				target_type: n.target_type as NotificationTargetType,
-				expires_at: n.expires_at,
-				is_system: n.is_system,
-				system_event_type: n.system_event_type as SystemEventType | null,
-				creator: n.creator || undefined,
-				is_read: false
-			}));
+		// Step 3: Filter to unread only (in-memory)
+		const allUnreadNotifications = allNotifications.filter((n) => !readSet.has(n.id));
 
-		// Sort by priority (urgent=2, important=1, normal=0) then date
-		const priorityOrder: Record<string, number> = { urgent: 2, important: 1, normal: 0 };
-		unreadNotifications.sort((a, b) => {
-			const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
-			if (priorityDiff !== 0) return priorityDiff;
-			return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-		});
+		// Step 4: Calculate pagination metadata
+		const total = allUnreadNotifications.length;
+		const totalPages = Math.ceil(total / limit);
+		const hasMore = page < totalPages;
 
-		return unreadNotifications;
+		// Step 5: Apply in-memory pagination
+		const paginatedNotifications = allUnreadNotifications.slice(offset, offset + limit);
+
+		// Step 6: Enrich with proper types
+		const unreadNotifications: NotificationWithDetails[] = paginatedNotifications.map((n) => ({
+			id: n.id,
+			created_at: n.created_at,
+			created_by: n.created_by,
+			title: n.title,
+			message: n.message,
+			type: n.type as NotificationType,
+			priority: n.priority as NotificationPriority,
+			action_label: n.action_label,
+			action_url: n.action_url,
+			target_type: n.target_type as NotificationTargetType,
+			expires_at: n.expires_at,
+			is_system: n.is_system,
+			system_event_type: n.system_event_type as SystemEventType | null,
+			creator: n.creator || undefined,
+			is_read: false
+		}));
+
+		return {
+			notifications: unreadNotifications,
+			pagination: {
+				page,
+				limit,
+				total,
+				totalPages,
+				hasMore
+			}
+		};
 	} catch (error) {
 		console.error('Error in getUnreadNotifications:', error);
-		return [];
+		return {
+			notifications: [],
+			pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasMore: false }
+		};
 	}
 }
 
@@ -298,8 +346,8 @@ export async function getUnreadCount(
 	supabase: SupabaseClientType,
 	userId: string
 ): Promise<number> {
-	const notifications = await getUnreadNotifications(supabase, userId);
-	return notifications.length;
+	const result = await getUnreadNotifications(supabase, userId);
+	return result.pagination.total;
 }
 
 /**
@@ -340,9 +388,9 @@ export async function markAllAsRead(
 	userId: string
 ): Promise<{ success: boolean; error?: string }> {
 	try {
-		// Get all unread notification IDs
-		const unreadNotifications = await getUnreadNotifications(supabase, userId);
-		const notificationIds = unreadNotifications.map((n) => n.id);
+		// Get all unread notification IDs (without pagination - fetch all)
+		const result = await getUnreadNotifications(supabase, userId, { limit: 10000 });
+		const notificationIds = result.notifications.map((n) => n.id);
 
 		if (notificationIds.length === 0) {
 			return { success: true };

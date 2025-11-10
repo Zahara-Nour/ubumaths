@@ -28,7 +28,7 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 }));
 
 // Import after mocks are set up
-const { POST, GET } = await import('./+server');
+const { POST, GET } = await import('../../../routes/api/cache/cleanup/+server');
 
 describe('POST /api/cache/cleanup', () => {
 	beforeEach(() => {

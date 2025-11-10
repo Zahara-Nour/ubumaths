@@ -12,7 +12,7 @@
  */
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { POST, GET } from './+server';
+import { POST, GET } from '../../../routes/api/notifications/cleanup/+server';
 import * as cronAuth from '$lib/server/auth/cron';
 import * as notificationsModule from '$lib/server/notifications';
 

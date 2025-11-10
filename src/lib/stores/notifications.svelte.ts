@@ -19,13 +19,21 @@ class NotificationStore {
 
 	/**
 	 * Fetch unread notifications from API
+	 *
+	 * @param page - Page number (default: 1)
+	 * @param limit - Items per page (default: 20)
 	 */
-	async fetchUnread(): Promise<void> {
+	async fetchUnread(page = 1, limit = 20): Promise<void> {
 		this.isLoading = true;
 		this.error = null;
 
 		try {
-			const response = await fetch('/api/notifications/unread');
+			const params = new URLSearchParams();
+			if (page !== 1) params.set('page', page.toString());
+			if (limit !== 20) params.set('limit', limit.toString());
+
+			const url = `/api/notifications/unread${params.toString() ? `?${params.toString()}` : ''}`;
+			const response = await fetch(url);
 
 			if (!response.ok) {
 				throw new Error('Failed to fetch notifications');
@@ -33,7 +41,7 @@ class NotificationStore {
 
 			const data = await response.json();
 			this.notifications = data.notifications || [];
-			this.unreadCount = this.notifications.length;
+			this.unreadCount = data.pagination?.total || this.notifications.length;
 		} catch (err) {
 			console.error('Error fetching notifications:', err);
 			this.error = 'Erreur lors du chargement des notifications';
