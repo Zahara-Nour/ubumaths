@@ -29,7 +29,7 @@ const logger = createLogger('PresenceManager');
  * CRITICAL: Set to 180 seconds (3 minutes) to stay within Supabase free tier.
  * DO NOT CHANGE without recalculating quota impact.
  */
-const HEARTBEAT_INTERVAL = 180000; // 180 seconds
+export const HEARTBEAT_INTERVAL = 180000; // 180 seconds
 
 /**
  * Channel name for presence updates.
