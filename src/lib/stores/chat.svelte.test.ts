@@ -163,6 +163,10 @@ describe('CRITICAL: Message Deduplication', () => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
 		chatStore.init(supabase, userId, currentUser);
+		// Clear all messages from previous tests
+		chatStore['messages'].clear();
+		chatStore['typingUsers'].clear();
+		chatStore['hasMore'].clear();
 	});
 
 	afterEach(() => {
@@ -262,6 +266,37 @@ describe('CRITICAL: Message Deduplication', () => {
 		expect(messages[0].id).toBe('temp-remote-123');
 		expect(messages[0].is_broadcast).toBe(true);
 
+		// Mock the DB SELECT query that handlePostgresMessage will make
+		const fromMock = vi.fn(() => ({
+			select: vi.fn(() => ({
+				eq: vi.fn(() => ({
+					single: vi.fn(() =>
+						Promise.resolve({
+							data: {
+								id: 'db-msg-456',
+								conversation_id: conversationId,
+								sender_id: 'user-2',
+								content: { text: 'Remote message' },
+								plain_text: 'Remote message',
+								created_at: broadcastPayload.message.created_at,
+								edited_at: null,
+								deleted_at: null,
+								is_flagged: false,
+								flag_reason: null,
+								sender: {
+									id: 'user-2',
+									full_name: 'Remote User',
+									avatar_url: null
+								}
+							},
+							error: null
+						})
+					)
+				}))
+			}))
+		}));
+		supabase.from = fromMock as typeof supabase.from;
+
 		// Step 2: Simulate postgres_changes with same message (now with DB ID)
 		mockChannel.simulatePostgresChanges({
 			new: {
@@ -316,6 +351,37 @@ describe('CRITICAL: Message Deduplication', () => {
 
 		let messages = chatStore.getMessages(conversationId);
 		expect(messages).toHaveLength(1);
+
+		// Mock the DB SELECT query for postgres_changes handler
+		const fromMock = vi.fn(() => ({
+			select: vi.fn(() => ({
+				eq: vi.fn(() => ({
+					single: vi.fn(() =>
+						Promise.resolve({
+							data: {
+								id: 'db-msg-456',
+								conversation_id: conversationId,
+								sender_id: 'user-2',
+								content: { text: 'Message' },
+								plain_text: 'Message',
+								created_at: timestamp,
+								edited_at: null,
+								deleted_at: null,
+								is_flagged: false,
+								flag_reason: null,
+								sender: {
+									id: 'user-2',
+									full_name: 'User 2',
+									avatar_url: null
+								}
+							},
+							error: null
+						})
+					)
+				}))
+			}))
+		}));
+		supabase.from = fromMock as typeof supabase.from;
 
 		// Simulate postgres_changes with different ID but same timestamp
 		mockChannel.simulatePostgresChanges({
@@ -380,6 +446,39 @@ describe('CRITICAL: Message Deduplication', () => {
 
 		await chatStore.subscribeToConversation(conversationId);
 
+		const timestamp = new Date().toISOString();
+
+		// Mock the DB SELECT query for postgres_changes handler
+		const fromMock = vi.fn(() => ({
+			select: vi.fn(() => ({
+				eq: vi.fn(() => ({
+					single: vi.fn(() =>
+						Promise.resolve({
+							data: {
+								id: 'db-msg-999',
+								conversation_id: conversationId,
+								sender_id: userId,
+								content: { text: 'From other device' },
+								plain_text: 'From other device',
+								created_at: timestamp,
+								edited_at: null,
+								deleted_at: null,
+								is_flagged: false,
+								flag_reason: null,
+								sender: {
+									id: userId,
+									full_name: 'Test User',
+									avatar_url: null
+								}
+							},
+							error: null
+						})
+					)
+				}))
+			}))
+		}));
+		supabase.from = fromMock as typeof supabase.from;
+
 		// Simulate postgres_changes for message we never saw via broadcast
 		// (e.g., from another device of same user)
 		mockChannel.simulatePostgresChanges({
@@ -389,7 +488,7 @@ describe('CRITICAL: Message Deduplication', () => {
 				sender_id: userId,
 				content: { text: 'From other device' },
 				plain_text: 'From other device',
-				created_at: new Date().toISOString()
+				created_at: timestamp
 			}
 		});
 
@@ -417,6 +516,10 @@ describe('Optimistic UI Updates', () => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
 		chatStore.init(supabase, userId, currentUser);
+		// Clear all messages from previous tests
+		chatStore['messages'].clear();
+		chatStore['typingUsers'].clear();
+		chatStore['hasMore'].clear();
 	});
 
 	afterEach(() => {
@@ -543,6 +646,10 @@ describe('Broadcast Channel Integration', () => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
 		chatStore.init(supabase, userId, currentUser);
+		// Clear all messages from previous tests
+		chatStore['messages'].clear();
+		chatStore['typingUsers'].clear();
+		chatStore['hasMore'].clear();
 	});
 
 	afterEach(() => {
@@ -629,6 +736,10 @@ describe('postgres_changes Integration', () => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
 		chatStore.init(supabase, userId, currentUser);
+		// Clear all messages from previous tests
+		chatStore['messages'].clear();
+		chatStore['typingUsers'].clear();
+		chatStore['hasMore'].clear();
 	});
 
 	afterEach(() => {
@@ -767,6 +878,10 @@ describe('Conversation Management', () => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
 		chatStore.init(supabase, userId, currentUser);
+		// Clear all messages from previous tests
+		chatStore['messages'].clear();
+		chatStore['typingUsers'].clear();
+		chatStore['hasMore'].clear();
 	});
 
 	afterEach(() => {
@@ -907,6 +1022,10 @@ describe('Typing Indicators', () => {
 		mockBrowser(true);
 		chatStore.init(supabase, userId, currentUser);
 		chatStore.activeConversationId = conversationId;
+		// Clear all messages from previous tests
+		chatStore['messages'].clear();
+		chatStore['typingUsers'].clear();
+		chatStore['hasMore'].clear();
 	});
 
 	afterEach(() => {

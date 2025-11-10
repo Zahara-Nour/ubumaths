@@ -139,7 +139,24 @@ describe('CRITICAL: Heartbeat Interval (Billing)', () => {
 		const rpcMock = vi.fn().mockResolvedValue({ error: null });
 		supabase.rpc = rpcMock;
 
-		await presenceManager.startPresenceTracking(['friend-1']);
+		// Mock realtime manager methods
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+
+		// Start tracking (this returns after setting up subscriptions)
+		const promise = presenceManager.startPresenceTracking(['friend-1']);
+
+		// Wait for the initial async operations to complete
+		await promise;
+
+		// Now wait for the async heartbeat call to complete
+		// The heartbeat is fire-and-forget (void), so we need to wait for promises to settle
+		await vi.waitFor(
+			() => {
+				expect(rpcMock).toHaveBeenCalled();
+			},
+			{ timeout: 1000 }
+		);
 
 		// Should call RPC immediately (before interval fires)
 		expect(rpcMock).toHaveBeenCalledWith('upsert_user_presence', {
@@ -173,7 +190,16 @@ describe('Heartbeat Lifecycle', () => {
 		const rpcMock = vi.fn().mockResolvedValue({ error: null });
 		supabase.rpc = rpcMock;
 
+		// Mock realtime manager methods
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+
 		await presenceManager.startPresenceTracking(['friend-1']);
+
+		// Wait for async heartbeat
+		await vi.waitFor(() => {
+			expect(rpcMock).toHaveBeenCalled();
+		});
 
 		expect(rpcMock).toHaveBeenCalledWith('upsert_user_presence', {
 			p_user_id: userId,
@@ -185,24 +211,40 @@ describe('Heartbeat Lifecycle', () => {
 		const rpcMock = vi.fn().mockResolvedValue({ error: null });
 		supabase.rpc = rpcMock;
 
+		// Mock realtime manager methods
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+
 		await presenceManager.startPresenceTracking(['friend-1']);
 
-		// Initial heartbeat
-		expect(rpcMock).toHaveBeenCalledTimes(1);
+		// Wait for initial heartbeat
+		await vi.waitFor(() => {
+			expect(rpcMock).toHaveBeenCalledTimes(1);
+		});
 
-		// Advance time by heartbeat interval
+		// Clear and advance time by heartbeat interval
+		rpcMock.mockClear();
 		await vi.advanceTimersByTimeAsync(HEARTBEAT_INTERVAL);
 
 		// Should have fired another heartbeat
-		await vi.waitFor(() => expect(rpcMock).toHaveBeenCalledTimes(2));
+		await vi.waitFor(() => {
+			expect(rpcMock).toHaveBeenCalledTimes(1);
+		});
 
 		// Advance again
 		await vi.advanceTimersByTimeAsync(HEARTBEAT_INTERVAL);
 
-		await vi.waitFor(() => expect(rpcMock).toHaveBeenCalledTimes(3));
+		await vi.waitFor(() => {
+			expect(rpcMock).toHaveBeenCalledTimes(2);
+		});
 	});
 
 	it('should clear heartbeat interval on stop', async () => {
+		// Mock realtime manager methods
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
+
 		await presenceManager.startPresenceTracking(['friend-1']);
 
 		// Interval should be active
@@ -218,10 +260,26 @@ describe('Heartbeat Lifecycle', () => {
 		const rpcMock = vi.fn().mockResolvedValue({ error: null });
 		supabase.rpc = rpcMock;
 
+		// Mock realtime manager methods
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
+
 		await presenceManager.startPresenceTracking(['friend-1']);
+
+		// Wait for initial heartbeat
+		await vi.waitFor(() => {
+			expect(rpcMock).toHaveBeenCalled();
+		});
+
 		rpcMock.mockClear();
 
 		await presenceManager.stopPresenceTracking();
+
+		// Wait for offline heartbeat
+		await vi.waitFor(() => {
+			expect(rpcMock).toHaveBeenCalled();
+		});
 
 		expect(rpcMock).toHaveBeenCalledWith('upsert_user_presence', {
 			p_user_id: userId,
@@ -230,11 +288,18 @@ describe('Heartbeat Lifecycle', () => {
 	});
 
 	it('should clear existing interval before starting new one', async () => {
+		// Mock realtime manager methods
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
+
 		await presenceManager.startPresenceTracking(['friend-1']);
+
 		const timersAfterFirst = vi.getTimerCount();
 		expect(timersAfterFirst).toBeGreaterThan(0);
 
 		await presenceManager.startPresenceTracking(['friend-2']);
+
 		const timersAfterSecond = vi.getTimerCount();
 
 		// Should still have same number of timers (old one cleared, new one created)
@@ -245,7 +310,16 @@ describe('Heartbeat Lifecycle', () => {
 		const rpcMock = vi.fn().mockResolvedValue({ error: null });
 		supabase.rpc = rpcMock;
 
+		// Mock realtime manager methods
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+
 		await presenceManager.startPresenceTracking([]);
+
+		// Wait for heartbeat
+		await vi.waitFor(() => {
+			expect(rpcMock).toHaveBeenCalled();
+		});
 
 		// Should still send heartbeat to maintain own presence
 		expect(rpcMock).toHaveBeenCalledWith('upsert_user_presence', {
@@ -261,15 +335,33 @@ describe('Heartbeat Lifecycle', () => {
 		});
 		supabase.rpc = rpcMock;
 
+		// Mock realtime manager methods
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+
 		// Should not throw
 		await expect(presenceManager.startPresenceTracking(['friend-1'])).resolves.not.toThrow();
+
+		// Wait for heartbeat attempt
+		await vi.waitFor(() => {
+			expect(rpcMock).toHaveBeenCalled();
+		});
 	});
 
 	it('should handle heartbeat network errors gracefully', async () => {
 		const rpcMock = vi.fn().mockRejectedValue(new Error('Network error'));
 		supabase.rpc = rpcMock;
 
+		// Mock realtime manager methods
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(createMockChannel('test'));
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+
 		await presenceManager.startPresenceTracking(['friend-1']);
+
+		// Wait for heartbeat attempt
+		await vi.waitFor(() => {
+			expect(rpcMock).toHaveBeenCalled();
+		});
 
 		// Should not throw, just log error
 		expect(rpcMock).toHaveBeenCalled();

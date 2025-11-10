@@ -520,7 +520,8 @@ class ChatStore {
 			// Step 3: Replace optimistic message with DB version
 			// postgres_changes will fire and handlePostgresMessage will replace it with full JOIN data
 			// For now, just update the ID to match the DB version
-			const updated = existingMessages.map((msg) =>
+			const currentMessages = this.messages.get(conversationId) || [];
+			const updated = currentMessages.map((msg) =>
 				msg.id === tempId ? { ...msg, id: data.id, is_optimistic: false } : msg
 			);
 			this.messages.set(conversationId, updated);
@@ -530,7 +531,8 @@ class ChatStore {
 			logger.error('Failed to send message, rolling back optimistic update:', error);
 
 			// Rollback: Remove optimistic message
-			const rollback = existingMessages.filter((msg) => msg.id !== tempId);
+			const currentMessages = this.messages.get(conversationId) || [];
+			const rollback = currentMessages.filter((msg) => msg.id !== tempId);
 			this.messages.set(conversationId, rollback);
 
 			throw error;
@@ -637,17 +639,17 @@ class ChatStore {
 
 			const existingMessages = this.messages.get(data.conversation_id) || [];
 
-			// Find and replace broadcast/optimistic version
-			const broadcastIndex = existingMessages.findIndex(
-				(msg) =>
-					(msg.id === data.id || msg.created_at === data.created_at) &&
-					(msg.is_broadcast || msg.is_optimistic)
+			// Find existing message to replace
+			// Match by ID first (if already updated from optimistic -> DB ID)
+			// OR by created_at timestamp (for broadcast messages or pre-update optimistic messages)
+			const existingIndex = existingMessages.findIndex(
+				(msg) => msg.id === data.id || msg.created_at === data.created_at
 			);
 
-			if (broadcastIndex !== -1) {
-				// Replace broadcast/optimistic message with DB version
+			if (existingIndex !== -1) {
+				// Replace existing message with full DB version (with JOINs)
 				const updated = [...existingMessages];
-				updated[broadcastIndex] = fullMessage;
+				updated[existingIndex] = fullMessage;
 				this.messages.set(data.conversation_id, updated);
 
 				logger.info('Replaced broadcast/optimistic message with DB version:', data.id);

@@ -155,6 +155,11 @@ describe('Channel Lifecycle', () => {
 	});
 
 	it('should throw error if creating channel before init', () => {
+		// Create a fresh supabase client but DON'T initialize the manager
+		// The afterEach from previous test may have left it initialized, so reset it
+		supabaseRealtimeManager['supabase'] = null;
+		supabaseRealtimeManager['userId'] = null;
+
 		expect(() => {
 			supabaseRealtimeManager.createChannel('test-channel');
 		}).toThrow('Realtime manager not initialized');
@@ -484,6 +489,10 @@ describe('Edge Cases & Error Handling', () => {
 
 	it('should return null user ID if not initialized', () => {
 		mockBrowser(true);
+
+		// Reset initialization state in case previous test initialized it
+		supabaseRealtimeManager['supabase'] = null;
+		supabaseRealtimeManager['userId'] = null;
 
 		expect(supabaseRealtimeManager.currentUserId).toBeNull();
 	});
