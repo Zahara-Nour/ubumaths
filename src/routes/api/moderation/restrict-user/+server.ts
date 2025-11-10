@@ -1,7 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { restrictUserSchema } from '$lib/server/validation/moderation';
-import { supabaseAdmin } from '$lib/server/supabase-admin';
 
 /**
  * POST /api/moderation/restrict-user
@@ -53,7 +52,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { userId, scopeType, scopeId, restrictionType, reason, expiresAt } = validation.data;
 
 	// 4. Verify target user exists and get their role
-	const { data: targetUser, error: targetUserError } = await supabaseAdmin
+	const { data: targetUser, error: targetUserError } = await locals.supabase
 		.from('profiles')
 		.select('id, role')
 		.eq('id', userId)
@@ -79,7 +78,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (locals.user.role !== 'admin') {
 			// Admins can globally restrict anyone
 			// Teachers can only globally restrict students in their classes
-			const { data: membership, error: membershipError } = await supabaseAdmin
+			const { data: membership, error: membershipError } = await locals.supabase
 				.from('class_members')
 				.select('student_id')
 				.eq('student_id', userId)
@@ -98,7 +97,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	} else if (scopeType === 'conversation' && scopeId) {
 		// Verify conversation exists and teacher has access to it
 		// RLS policies will ensure teacher can only access their own conversations
-		const { data: conversation, error: conversationError } = await supabaseAdmin
+		const { data: conversation, error: conversationError } = await locals.supabase
 			.from('conversations')
 			.select('id')
 			.eq('id', scopeId)
@@ -114,7 +113,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Additional check: Verify teacher is actually in this conversation
-		const { data: membership, error: membershipError } = await supabaseAdmin
+		const { data: membership, error: membershipError } = await locals.supabase
 			.from('conversation_participants')
 			.select('user_id')
 			.eq('conversation_id', scopeId)
@@ -132,7 +131,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// 6. Insert restriction
-	const { data: restriction, error: insertError } = await supabaseAdmin
+	const { data: restriction, error: insertError } = await locals.supabase
 		.from('user_restrictions')
 		.insert({
 			user_id: userId,
@@ -156,7 +155,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// 7. Log moderation action
-	const { error: logError } = await supabaseAdmin.rpc('log_moderation_action', {
+	const { error: logError } = await locals.supabase.rpc('log_moderation_action', {
 		p_action: `${restrictionType}_user`,
 		p_target_type: 'user',
 		p_target_id: userId,

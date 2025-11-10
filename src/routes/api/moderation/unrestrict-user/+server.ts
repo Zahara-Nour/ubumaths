@@ -1,7 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { unrestrictUserSchema } from '$lib/server/validation/moderation';
-import { supabaseAdmin } from '$lib/server/supabase-admin';
 
 /**
  * DELETE /api/moderation/unrestrict-user
@@ -47,7 +46,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 	const { restrictionId } = validation.data;
 
 	// 4. Fetch restriction to verify it exists and get details for logging
-	const { data: restriction, error: fetchError } = await supabaseAdmin
+	const { data: restriction, error: fetchError } = await locals.supabase
 		.from('user_restrictions')
 		.select('*')
 		.eq('id', restrictionId)
@@ -70,7 +69,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// 6. Delete restriction
-	const { error: deleteError } = await supabaseAdmin
+	const { error: deleteError } = await locals.supabase
 		.from('user_restrictions')
 		.delete()
 		.eq('id', restrictionId);
@@ -88,7 +87,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 	};
 	const action = actionMap[restriction.restriction_type as keyof typeof actionMap];
 
-	const { error: logError } = await supabaseAdmin.rpc('log_moderation_action', {
+	const { error: logError } = await locals.supabase.rpc('log_moderation_action', {
 		p_action: action,
 		p_target_type: 'user',
 		p_target_id: restriction.user_id,

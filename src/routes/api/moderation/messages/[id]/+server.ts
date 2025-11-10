@@ -1,7 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { deleteMessageSchema } from '$lib/server/validation/moderation';
-import { supabaseAdmin } from '$lib/server/supabase-admin';
 import { z } from 'zod';
 
 /**
@@ -63,7 +62,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 	const { reason } = validation.data;
 
 	// 5. Fetch message with conversation_id and content (for logging)
-	const { data: message, error: fetchError } = await supabaseAdmin
+	const { data: message, error: fetchError } = await locals.supabase
 		.from('messages')
 		.select('id, conversation_id, sender_id, content, created_at, deleted_at')
 		.eq('id', messageId)
@@ -93,7 +92,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		// Admins can delete any message - skip authorization checks
 	} else {
 		// Check if teacher is a participant in the conversation
-		const { data: membership } = await supabaseAdmin
+		const { data: membership } = await locals.supabase
 			.from('conversation_participants')
 			.select('user_id')
 			.eq('conversation_id', message.conversation_id)
@@ -102,7 +101,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 
 		if (!membership) {
 			// Teacher is NOT a participant - check if it's a student 1-on-1 chat
-			const { data: conversation } = await supabaseAdmin
+			const { data: conversation } = await locals.supabase
 				.from('conversations')
 				.select('is_group')
 				.eq('id', message.conversation_id)
@@ -118,7 +117,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			}
 
 			// It's a 1-on-1 chat - verify both participants are teacher's students
-			const { data: participants } = await supabaseAdmin
+			const { data: participants } = await locals.supabase
 				.from('conversation_participants')
 				.select('user_id')
 				.eq('conversation_id', message.conversation_id);
@@ -129,7 +128,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 
 			// Check if both participants are this teacher's students
 			const studentIds = participants.map((p) => p.user_id);
-			const { count } = await supabaseAdmin
+			const { count } = await locals.supabase
 				.from('class_members')
 				.select('student_id', { count: 'exact', head: true })
 				.eq('teacher_id', locals.user.id)
@@ -146,7 +145,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 	}
 
 	// 7. Soft delete the message (set deleted_at timestamp)
-	const { error: updateError } = await supabaseAdmin
+	const { error: updateError } = await locals.supabase
 		.from('messages')
 		.update({ deleted_at: new Date().toISOString() })
 		.eq('id', messageId);
@@ -157,7 +156,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 	}
 
 	// 8. Log moderation action (privacy: content length only, not full content)
-	const { error: logError } = await supabaseAdmin.rpc('log_moderation_action', {
+	const { error: logError } = await locals.supabase.rpc('log_moderation_action', {
 		p_action: 'delete_message',
 		p_target_type: 'message',
 		p_target_id: messageId,

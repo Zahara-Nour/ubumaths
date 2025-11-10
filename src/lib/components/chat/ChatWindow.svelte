@@ -210,6 +210,16 @@
 	}
 
 	/**
+	 * Handle delete message
+	 */
+	async function handleDelete(): Promise<void> {
+		// Refresh messages after deletion
+		if (chatStore.activeConversationId) {
+			await chatStore.loadConversationHistory(chatStore.activeConversationId);
+		}
+	}
+
+	/**
 	 * Handle report submission
 	 */
 	async function handleSubmitReport(
@@ -349,12 +359,14 @@
 					<ChatMessageList
 						messages={chatStore.activeMessages}
 						currentUserId={userId}
+						currentUserRole={isTeacher ? 'teacher' : 'student'}
 						typingUsers={chatStore.activeTypingUsers}
 						hasMore={true}
 						isLoading={chatStore.isLoadingMessages}
 						onLoadMore={handleLoadMore}
 						onReact={handleReaction}
 						onReport={handleReport}
+						onDelete={handleDelete}
 					/>
 				</div>
 

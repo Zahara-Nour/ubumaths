@@ -32,40 +32,67 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { MoreVertical, Flag, Download } from 'lucide-svelte';
+	import { MoreVertical, Flag, Download, Trash2 } from 'lucide-svelte';
+	import DeleteMessageDialog from '$lib/components/moderation/DeleteMessageDialog.svelte';
 	import type { Message, TypingUser } from '$lib/stores/chat.svelte';
 
 	// Component Props
 	interface Props {
 		messages: Message[];
 		currentUserId: string;
+		currentUserRole?: string;
 		typingUsers?: TypingUser[];
 		hasMore?: boolean;
 		isLoading?: boolean;
 		onLoadMore?: () => void;
 		onReact?: (messageId: string, emoji: string) => void;
 		onReport?: (messageId: string) => void;
+		onDelete?: (messageId: string) => void;
 	}
 
 	let {
 		messages,
 		currentUserId,
+		currentUserRole = 'student',
 		typingUsers = [],
 		hasMore = false,
 		isLoading = false,
 		onLoadMore,
 		onReact,
-		onReport
+		onReport,
+		onDelete
 	}: Props = $props();
 
 	let messagesContainer = $state<HTMLDivElement | null>(null);
 	let shouldAutoScroll = $state(true);
 	let prevMessagesLength = $state(0);
 
+	// Delete message dialog state
+	let showDeleteDialog = $state(false);
+	let messageToDelete = $state<string | null>(null);
+
 	/**
 	 * Common reaction emojis
 	 */
 	const reactionEmojis = ['👍', '❤️', '😂', '🎉', '😮', '😢', '🤔'];
+
+	/**
+	 * Open delete message dialog
+	 */
+	function openDeleteDialog(messageId: string): void {
+		messageToDelete = messageId;
+		showDeleteDialog = true;
+	}
+
+	/**
+	 * Handle successful message deletion
+	 */
+	function handleDeleteSuccess(): void {
+		if (messageToDelete && onDelete) {
+			onDelete(messageToDelete);
+		}
+		messageToDelete = null;
+	}
 
 	/**
 	 * Format timestamp
@@ -259,10 +286,16 @@
 								</div>
 							{/if}
 
-							<!-- Rich Text Content -->
-							<div class="prose prose-sm max-w-none {isOwnMessage(message) ? 'prose-invert' : ''}">
-								<RichTextDisplay content={message.content} />
-							</div>
+							<!-- Rich Text Content or Deleted State -->
+							{#if message.deleted_at}
+								<div class="text-muted-foreground italic">Message supprimé par un modérateur</div>
+							{:else}
+								<div
+									class="prose prose-sm max-w-none {isOwnMessage(message) ? 'prose-invert' : ''}"
+								>
+									<RichTextDisplay content={message.content} />
+								</div>
+							{/if}
 
 							<!-- Attachments -->
 							{#if message.attachments && message.attachments.length > 0}
@@ -296,10 +329,22 @@
 										</Button>
 									</DropdownMenu.Trigger>
 									<DropdownMenu.Content>
-										{#if onReport && !isOwnMessage(message)}
+										{#if onReport && !isOwnMessage(message) && !message.deleted_at}
 											<DropdownMenu.Item onclick={() => onReport?.(message.id)}>
 												<Flag class="mr-2 h-4 w-4" />
 												Signaler
+											</DropdownMenu.Item>
+										{/if}
+										{#if (currentUserRole === 'teacher' || currentUserRole === 'admin') && !message.deleted_at}
+											{#if onReport && !isOwnMessage(message)}
+												<DropdownMenu.Separator />
+											{/if}
+											<DropdownMenu.Item
+												onclick={() => openDeleteDialog(message.id)}
+												class="text-destructive focus:text-destructive"
+											>
+												<Trash2 class="mr-2 h-4 w-4" />
+												Supprimer le message
 											</DropdownMenu.Item>
 										{/if}
 									</DropdownMenu.Content>
@@ -372,3 +417,10 @@
 		{/if}
 	</div>
 </div>
+
+<!-- Delete Message Dialog -->
+<DeleteMessageDialog
+	bind:open={showDeleteDialog}
+	messageId={messageToDelete}
+	onSuccess={handleDeleteSuccess}
+/>
