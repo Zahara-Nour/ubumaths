@@ -9,10 +9,11 @@ The database is designed to support a complete math learning platform with:
 - **User Management**: Students, teachers, and admins
 - **School Management**: Multi-school support with school profiles
 - **Academic Calendar**: School years, academic periods (trimesters/semesters), holidays
-- **Student Management**: Behavioral warnings and monitoring (NEW)
+- **Student Management**: Behavioral warnings and monitoring
 - **Classroom Management**: Classes and class memberships
 - **Friend System**: Mutual friendships with request/accept workflow
 - **Real-Time Presence**: WebSocket-based online/offline status
+- **Chat Moderation**: User restrictions and moderation audit trail (NEW: 2025-11-10)
 - **Error Monitoring**: Comprehensive error logging and tracking system
 
 ## Entity Relationship Diagram
@@ -38,6 +39,17 @@ profiles (user_role: student/teacher/admin) ← pending_students (pre-populated)
     ├─→ friendships (requester_id, addressee_id FK) [mutual friend system]
     │       └─ status: pending/accepted/rejected
     │       └─ friendship_type: classmate/mentor
+    │
+    ├─→ user_restrictions (user_id FK) [chat moderation - NEW: 2025-11-10]
+    │       ├─ scope: conversation/global
+    │       ├─ restriction_type: mute/timeout/ban
+    │       ├─ restricted_by → profiles (teacher/admin)
+    │       └─ expires_at (NULL = permanent)
+    │
+    ├─→ moderation_logs (moderator_id FK) [audit trail - NEW: 2025-11-10]
+    │       ├─ action: delete_message/mute_user/ban_user/etc
+    │       ├─ target_type: message/user/conversation
+    │       └─ metadata (JSONB, NO message content)
     │
     └─→ user_presence (user_id FK) [real-time online/offline status]
             └─ WebSocket heartbeat (60s interval)
@@ -1018,6 +1030,174 @@ Error monitoring is fully automatic:
 - Critical errors trigger automatic notifications to admins
 
 **Documentation**: See `ERROR_MONITORING_SYSTEM.md` and `ERROR_MONITORING_QUICK_START.md`
+
+### Chat Moderation Tables
+
+> 🆕 2025-11-10
+
+The chat moderation system enables teachers and admins to maintain safe communication environments. See [Chat Moderation Feature Documentation](../features/chat-moderation.md) for complete details.
+
+#### `user_restrictions`
+
+Track mute, timeout, and ban restrictions at database level.
+
+| Column           | Type        | Description                            |
+| ---------------- | ----------- | -------------------------------------- |
+| id               | UUID (PK)   | Restriction ID                         |
+| user_id          | UUID (FK)   | User being restricted (FK to profiles) |
+| scope_type       | TEXT        | 'conversation' or 'global'             |
+| scope_id         | UUID (FK)   | conversation_id (NULL for global)      |
+| restriction_type | TEXT        | 'mute', 'timeout', or 'ban'            |
+| reason           | TEXT        | Reason for restriction (min 5 chars)   |
+| restricted_by    | UUID (FK)   | Moderator who created restriction      |
+| expires_at       | TIMESTAMPTZ | Expiration (NULL = permanent)          |
+| created_at       | TIMESTAMPTZ | Creation timestamp                     |
+| updated_at       | TIMESTAMPTZ | Last update timestamp                  |
+
+**Constraints**:
+
+- `CHECK (restriction_type IN ('mute', 'timeout', 'ban'))`
+- `CHECK (scope_type IN ('conversation', 'global'))`
+- `CHECK (length(reason) >= 5)`
+- `CHECK (scope_type = 'global' → scope_id IS NULL, scope_type = 'conversation' → scope_id NOT NULL)`
+- `UNIQUE (user_id, scope_type, scope_id, restriction_type)` - Prevents duplicate active restrictions
+
+**Foreign Keys**:
+
+- `user_id` → `profiles(id)` ON DELETE CASCADE
+- `scope_id` → `conversations(id)` ON DELETE CASCADE
+- `restricted_by` → `profiles(id)` (no cascade, audit trail)
+
+**Indexes**:
+
+- `idx_user_restrictions_user_id` ON (user_id)
+- `idx_user_restrictions_scope` ON (scope_type, scope_id)
+- `idx_user_restrictions_active` ON (user_id) WHERE expires_at IS NULL OR expires_at > now()
+- `idx_user_restrictions_moderator` ON (restricted_by, created_at DESC)
+
+**RLS Policies**:
+
+- Teachers/admins can view, create, update, delete restrictions
+- `restricted_by` must match `auth.uid()` on INSERT
+- UPDATE prevents changing `user_id` or `restricted_by` (immutable audit fields)
+
+**Migration**: `20251110120000_create_user_restrictions.sql`
+
+---
+
+#### `moderation_logs`
+
+Immutable audit trail of all moderation actions.
+
+| Column       | Type        | Description                                   |
+| ------------ | ----------- | --------------------------------------------- |
+| id           | UUID (PK)   | Log entry ID                                  |
+| moderator_id | UUID (FK)   | Moderator who performed action (FK profiles)  |
+| action       | TEXT        | Action type (see below)                       |
+| target_type  | TEXT        | What was affected (message, user, etc.)       |
+| target_id    | UUID        | ID of affected entity (NO FK, audit persists) |
+| reason       | TEXT        | Optional reason for action                    |
+| metadata     | JSONB       | Additional context (default '{}')             |
+| created_at   | TIMESTAMPTZ | Action timestamp                              |
+
+**Action Types**:
+
+```sql
+CHECK (action IN (
+  'delete_message',
+  'mute_user',
+  'unmute_user',
+  'timeout_user',
+  'ban_user',
+  'unban_user',
+  'review_report',
+  'export_conversation'
+))
+```
+
+**Target Types**:
+
+```sql
+CHECK (target_type IN ('message', 'user', 'conversation', 'report'))
+```
+
+**Privacy**: Message content is NEVER logged, only metadata (length, timestamp, IDs).
+
+**Indexes**:
+
+- `idx_moderation_logs_moderator` ON (moderator_id, created_at DESC)
+- `idx_moderation_logs_target` ON (target_type, target_id)
+- `idx_moderation_logs_action` ON (action, created_at DESC)
+
+**RLS Policies**:
+
+- Teachers/admins can SELECT and INSERT
+- NO UPDATE or DELETE policies (immutable audit trail)
+
+**Migration**: `20251110120001_create_moderation_logs_and_update_rls.sql`
+
+---
+
+#### Helper Functions (Moderation)
+
+**`is_user_restricted(p_user_id UUID, p_conversation_id UUID DEFAULT NULL) → BOOLEAN`**
+
+Check if user has active restriction (global or conversation-specific).
+
+```sql
+SELECT is_user_restricted('user-uuid', 'conversation-uuid'); -- TRUE if restricted
+SELECT is_user_restricted('user-uuid', NULL); -- Check global only
+```
+
+**`log_moderation_action(p_action TEXT, p_target_type TEXT, p_target_id UUID, p_reason TEXT, p_metadata JSONB) → UUID`**
+
+Create moderation log entry with authorization check (teacher/admin only).
+
+```sql
+SELECT log_moderation_action(
+  'delete_message',
+  'message',
+  'message-uuid',
+  'Inappropriate content',
+  '{"conversation_id": "conv-uuid"}'::jsonb
+);
+```
+
+**`get_user_moderation_history(p_user_id UUID, p_limit INTEGER DEFAULT 50) → TABLE`**
+
+Get moderation history for a user (teacher-only).
+
+```sql
+SELECT * FROM get_user_moderation_history('user-uuid', 20);
+```
+
+---
+
+#### RLS Policy Updates (Moderation)
+
+**conversations table**: Teachers can now view 1-on-1 chats where BOTH participants are their students.
+
+**messages table (SELECT)**: Teachers can view messages in student 1-on-1 chats (with authorization logic).
+
+**messages table (INSERT)**: Blocks message sending if user has active restriction (global or conversation-scoped).
+
+**Key Logic** (messages INSERT policy):
+
+```sql
+AND NOT EXISTS (
+  SELECT 1 FROM user_restrictions ur
+  WHERE ur.user_id = auth.uid()
+  AND (
+    (ur.scope_type = 'global' AND ur.scope_id IS NULL)
+    OR (ur.scope_type = 'conversation' AND ur.scope_id = messages.conversation_id)
+  )
+  AND (ur.expires_at IS NULL OR ur.expires_at > now())
+)
+```
+
+**Authorization Rationale**: Teachers need visibility into student interactions for safety while respecting privacy. Access requires BOTH students to be in teacher's classes, preventing overly broad access. See [Chat Moderation Documentation](../features/chat-moderation.md#teacher-authorization-logic) for complete details.
+
+---
 
 ## Row Level Security (RLS)
 

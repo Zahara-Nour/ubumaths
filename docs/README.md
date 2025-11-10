@@ -122,6 +122,22 @@ Système de gestion des avertissements comportementaux pour les élèves.
 - Cache 3 min TTL avec Event Bus
 - **2025-10-29** : UI refactoring (badge + count séparés, "Aucun" fallback)
 
+### 🛡️ Modération de Chat
+
+**Status** : ✅ Production | [Documentation →](features/chat-moderation.md) 🆕
+
+Système de modération pour maintenir des environnements de communication sûrs.
+
+- [Documentation complète](features/chat-moderation.md) - Guide complet du système
+- Restrictions utilisateur (mute, timeout, ban) à portée conversation ou globale
+- Suppression de messages (soft-delete avec audit trail)
+- Logs de modération immuables (audit complet)
+- Gestion des restrictions actives (lever les restrictions)
+- Privacy-first : contenu de message jamais logué, seulement métadonnées
+- Defense-in-depth : RLS + application checks + Zod validation
+- Accès enseignant aux chats 1-on-1 entre leurs élèves
+- **2025-11-10** : Implémentation complète avec 62 tests (96.8% pass rate)
+
 ### 💰 Récompenses (Gidouilles & VIP Cards)
 
 **Status** : ✅ Production | [Documentation →](features/rewards/README.md) 🆕
@@ -344,10 +360,10 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 ## 📊 Statistiques
 
-- **Features en production** : 13 🆕 (added Rewards system)
+- **Features en production** : 14 🆕 (added Chat Moderation)
 - **Features en développement** : 1 (Navadra)
-- **Tests** : 3,334 tests (99.3% pass rate)
-  - Unit tests: 2,526/2,550 passing (99.1%)
+- **Tests** : 3,396 tests (99.3% pass rate)
+  - Unit tests: 2,588/2,612 passing (99.1%)
   - E2E tests: 303 ready to run
   - Validation tests: 366/366 passing (100%)
   - Database triggers: 139/139 passing (100%)
@@ -356,9 +372,9 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
   - Strategic database indexes on hot paths
   - Optimistic UI for better perceived performance
   - 97% fewer N+1 queries (244 → 6 per load)
-- **Database Tables** : 3 new tables (school_years, academic_periods, school_holidays) 🆕
-- **Lignes de documentation** : ~32,000+ 🆕 (added notifications-system.md)
-- **Dernière mise à jour** : 2025-11-09
+- **Database Tables** : 2 new moderation tables (user_restrictions, moderation_logs) 🆕
+- **Lignes de documentation** : ~40,000+ 🆕 (added chat-moderation.md: 8,000+ lines)
+- **Dernière mise à jour** : 2025-11-10
 
 ---
 

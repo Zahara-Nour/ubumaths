@@ -61,6 +61,11 @@ Banque d'exercices en markdown avec export LaTeX/PDF.
 Gestion des avertissements comportementaux par période académique.
 **Status** : ✅ Production
 
+### [🛡️ Chat Moderation](chat-moderation.md)
+
+Système de modération de chat pour enseignants et admins.
+**Status** : ✅ Production
+
 ---
 
 ## Features en développement
