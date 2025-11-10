@@ -373,6 +373,7 @@ if (!env.GROQ_API_KEY) {
 **Format**: Minimum 16 characters (recommendation: 32+ characters, hex string)
 
 **Affected Endpoints**:
+
 - `/api/cache/cleanup` - Daily at 2 AM UTC
 - `/api/notifications/cleanup` - Daily at 3 AM UTC
 
@@ -419,13 +420,15 @@ CRON jobs configured in `vercel.json` automatically include the secret in the Au
 
 ```json
 {
-  "crons": [{
-    "path": "/api/cache/cleanup",
-    "schedule": "0 2 * * *",
-    "headers": {
-      "Authorization": "Bearer ${CRON_SECRET}"
-    }
-  }]
+	"crons": [
+		{
+			"path": "/api/cache/cleanup",
+			"schedule": "0 2 * * *",
+			"headers": {
+				"Authorization": "Bearer ${CRON_SECRET}"
+			}
+		}
+	]
 }
 ```
 
@@ -468,6 +471,7 @@ curl -X POST http://localhost:5175/api/cache/cleanup \
 **Cause**: `CRON_SECRET` environment variable is not set.
 
 **Solution**:
+
 1. Add `CRON_SECRET` to your `.env` file (local) or Vercel environment variables (production)
 2. Restart your development server or redeploy to Vercel
 3. Verify the variable is loaded: Check startup logs for "Environment variables validated successfully"
@@ -479,6 +483,7 @@ curl -X POST http://localhost:5175/api/cache/cleanup \
 **Cause**: Request doesn't include the Authorization header.
 
 **Solution**:
+
 - For manual testing: Add `-H "Authorization: Bearer $CRON_SECRET"` to your curl command
 - For Vercel CRON: Verify `vercel.json` includes the `headers` configuration (see example above)
 
@@ -489,6 +494,7 @@ curl -X POST http://localhost:5175/api/cache/cleanup \
 **Cause**: Token in Authorization header doesn't match `CRON_SECRET`.
 
 **Solutions**:
+
 1. **For Vercel CRON jobs**: Verify `vercel.json` uses `${CRON_SECRET}` placeholder (NOT a hardcoded value)
 2. **For manual testing**: Ensure you're using the correct secret from `.env`
 3. **Check for typos**: Secret is case-sensitive and must match exactly
@@ -499,11 +505,13 @@ curl -X POST http://localhost:5175/api/cache/cleanup \
 **Symptoms**: No logs, no cleanup happening
 
 **Possible causes**:
+
 1. **Invalid schedule**: Check cron expression syntax in `vercel.json`
 2. **Authorization failure**: Check Vercel function logs for 401 errors
 3. **Secret not configured**: Verify `CRON_SECRET` is set in Vercel dashboard
 
 **Debug steps**:
+
 1. Go to Vercel Dashboard → Deployments → Select latest deployment
 2. Click "Functions" tab → Find cleanup function → View logs
 3. Look for "[CRON AUTH]" log entries

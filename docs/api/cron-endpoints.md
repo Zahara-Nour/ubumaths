@@ -22,12 +22,12 @@ Authorization: Bearer <CRON_SECRET>
 
 ### Error Responses
 
-| Status | Error | Description |
-|--------|-------|-------------|
-| 401 | Missing Authorization header | No `Authorization` header provided |
-| 401 | Invalid Authorization header format | Header doesn't match `Bearer <token>` format |
-| 401 | Invalid token | Token doesn't match `CRON_SECRET` |
-| 503 | CRON endpoints disabled | `CRON_SECRET` not configured (fail-secure) |
+| Status | Error                               | Description                                  |
+| ------ | ----------------------------------- | -------------------------------------------- |
+| 401    | Missing Authorization header        | No `Authorization` header provided           |
+| 401    | Invalid Authorization header format | Header doesn't match `Bearer <token>` format |
+| 401    | Invalid token                       | Token doesn't match `CRON_SECRET`            |
+| 503    | CRON endpoints disabled             | `CRON_SECRET` not configured (fail-secure)   |
 
 ---
 
@@ -54,32 +54,33 @@ Authorization: Bearer <CRON_SECRET>
 
 ```json
 {
-  "success": true,
-  "deleted_count": 15,
-  "message": "Cleaned up 15 expired cache entries"
+	"success": true,
+	"deleted_count": 15,
+	"message": "Cleaned up 15 expired cache entries"
 }
 ```
 
 ### Response Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `success` | boolean | Whether cleanup completed successfully |
-| `deleted_count` | number | Number of cache entries deleted |
-| `message` | string | Human-readable result message |
+| Field           | Type    | Description                            |
+| --------------- | ------- | -------------------------------------- |
+| `success`       | boolean | Whether cleanup completed successfully |
+| `deleted_count` | number  | Number of cache entries deleted        |
+| `message`       | string  | Human-readable result message          |
 
 ### Error Response (500)
 
 ```json
 {
-  "success": false,
-  "error": "Cleanup failed: <error details>"
+	"success": false,
+	"error": "Cleanup failed: <error details>"
 }
 ```
 
 ### Job Tracking
 
 Execution logged to `background_job_runs` table:
+
 - **Job name**: `cleanup_expired_cache`
 - **Metadata**: `{ deleted_count: N }`
 - **Status**: `success` | `failed`
@@ -104,6 +105,7 @@ Cleanup expired notifications (hard delete).
 ### Retention Policy
 
 Deletes notifications where:
+
 - `dismissed_at IS NOT NULL` AND `dismissed_at < NOW() - INTERVAL '30 days'`
 
 **Important**: Unread notifications are NEVER auto-deleted.
@@ -119,32 +121,33 @@ Authorization: Bearer <CRON_SECRET>
 
 ```json
 {
-  "success": true,
-  "deletedCount": 42,
-  "message": "Cleaned up 42 expired notification(s)"
+	"success": true,
+	"deletedCount": 42,
+	"message": "Cleaned up 42 expired notification(s)"
 }
 ```
 
 ### Response Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `success` | boolean | Whether cleanup completed successfully |
-| `deletedCount` | number | Number of notifications deleted |
-| `message` | string | Human-readable result message |
+| Field          | Type    | Description                            |
+| -------------- | ------- | -------------------------------------- |
+| `success`      | boolean | Whether cleanup completed successfully |
+| `deletedCount` | number  | Number of notifications deleted        |
+| `message`      | string  | Human-readable result message          |
 
 ### Error Response (500)
 
 ```json
 {
-  "success": false,
-  "error": "<error details>"
+	"success": false,
+	"error": "<error details>"
 }
 ```
 
 ### Job Tracking
 
 Execution logged to `background_job_runs` table:
+
 - **Job name**: `cleanup_old_notifications`
 - **Metadata**: `{ deleted_count: N }`
 - **Status**: `success` | `failed`
@@ -208,16 +211,19 @@ curl -X POST http://localhost:5175/api/cache/cleanup \
 ### Log Patterns
 
 **Successful authentication**:
+
 ```
 [CRON AUTH] ✅ Valid token { url: '/api/cache/cleanup', method: 'POST', timestamp: '2025-01-10T02:00:00.000Z' }
 ```
 
 **Failed authentication**:
+
 ```
 [CRON AUTH] Invalid token (value mismatch) { url: '/api/cache/cleanup', method: 'POST', timestamp: '2025-01-10T02:00:00.000Z' }
 ```
 
 **Configuration error**:
+
 ```
 [CRON AUTH] CRON_SECRET not configured - CRON endpoints are disabled
 ```
@@ -225,6 +231,7 @@ curl -X POST http://localhost:5175/api/cache/cleanup \
 ### Alerting
 
 Set up alerts for:
+
 - **401 errors** on CRON endpoints (authentication failures)
 - **503 errors** (CRON_SECRET not configured)
 - **500 errors** (cleanup failures)
@@ -244,13 +251,13 @@ Set up alerts for:
 
 ### Threat Model
 
-| Threat | Mitigation | Status |
-|--------|------------|--------|
-| Unauthorized execution | Bearer token authentication | ✅ Implemented |
-| Timing attacks | Constant-time comparison | ✅ Implemented |
-| Token brute-force | 128-bit entropy minimum | ✅ Implemented |
-| Misconfiguration exposure | Fail-secure design | ✅ Implemented |
-| Information disclosure | Minimal error details | ✅ Implemented |
+| Threat                    | Mitigation                  | Status         |
+| ------------------------- | --------------------------- | -------------- |
+| Unauthorized execution    | Bearer token authentication | ✅ Implemented |
+| Timing attacks            | Constant-time comparison    | ✅ Implemented |
+| Token brute-force         | 128-bit entropy minimum     | ✅ Implemented |
+| Misconfiguration exposure | Fail-secure design          | ✅ Implemented |
+| Information disclosure    | Minimal error details       | ✅ Implemented |
 
 ### Compliance
 
