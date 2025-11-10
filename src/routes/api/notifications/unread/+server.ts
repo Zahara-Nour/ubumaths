@@ -27,9 +27,16 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 
 // Zod schema for pagination query parameters
+// Note: Handle null values explicitly before coercion to allow defaults
 const paginationSchema = z.object({
-	page: z.coerce.number().int().positive().default(1),
-	limit: z.coerce.number().int().positive().min(1).max(100).default(20)
+	page: z.preprocess(
+		(val) => (val === null ? undefined : val),
+		z.coerce.number().int().positive().default(1)
+	),
+	limit: z.preprocess(
+		(val) => (val === null ? undefined : val),
+		z.coerce.number().int().positive().min(1).max(100).default(20)
+	)
 });
 
 export const GET: RequestHandler = async ({ url, locals }) => {
