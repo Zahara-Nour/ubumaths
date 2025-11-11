@@ -136,6 +136,7 @@ Extends Supabase's `auth.users` with application-specific data.
 | grade      | TEXT        | Student's grade level (e.g., "6ème", "5ème", "4ème", "3ème")                     |
 | gender     | TEXT        | User's gender ('boy' or 'girl') for avatar fallback purposes                     |
 | gidouilles | INTEGER     | Student currency/points for rewards system (default: 0)                          |
+| bonus      | INTEGER     | Student bonus points for special achievements (default: 0)                       |
 | vip_cards  | JSONB       | JSON object storing student VIP cards and their properties                       |
 | created_at | TIMESTAMPTZ | Account creation time                                                            |
 | updated_at | TIMESTAMPTZ | Last update time                                                                 |
@@ -1289,6 +1290,17 @@ These functions use `SECURITY DEFINER` to bypass RLS when checking roles/permiss
 
 ### Gidouilles Management (Rewards System)
 
+**Implementation Notes** (Updated: 2025-11-11):
+
+Both gidouilles and bonus systems use atomic `GREATEST(0, value + delta)` updates to prevent race conditions in concurrent scenarios. This approach:
+
+- Ensures read and write happen atomically (no lost updates)
+- Enforces minimum value of 0 at database operation level
+- Prevents race conditions when multiple requests update the same student simultaneously
+- Backed by CHECK constraints (`profiles_gidouilles_non_negative`, `profiles_bonus_non_negative`) for defense in depth
+
+See migration `20251111173411_fix_gidouilles_race_conditions.sql` for implementation details.
+
 #### `update_student_gidouilles(student_id UUID, delta INTEGER)`
 
 **Returns**: INTEGER - New gidouilles count after update
@@ -1298,7 +1310,7 @@ These functions use `SECURITY DEFINER` to bypass RLS when checking roles/permiss
 - SECURITY DEFINER function (runs with elevated permissions)
 - Verifies caller is a teacher via `is_teacher_or_admin()`
 - Verifies student is in one of the teacher's classes
-- Enforces minimum of 0 gidouilles (cannot go negative)
+- Enforces minimum of 0 gidouilles via atomic GREATEST() operation
   **Usage**:
 
 ```sql
@@ -1313,7 +1325,8 @@ SELECT update_student_gidouilles('student-uuid', -2);
 
 - Raises exception if caller is not a teacher
 - Raises exception if student is not in teacher's classes
-- Raises exception if operation would result in negative gidouilles
+
+**Note**: Negative results are automatically clamped to 0 (no exception raised).
 
 #### `update_class_gidouilles(class_id UUID, delta INTEGER)`
 
@@ -1323,7 +1336,7 @@ SELECT update_student_gidouilles('student-uuid', -2);
 
 - SECURITY DEFINER function (runs with elevated permissions)
 - Verifies caller is the teacher who owns the class
-- Only updates students where new value would be >= 0
+- Uses atomic GREATEST() operation to clamp values at 0
   **Usage**:
 
 ```sql
@@ -1336,11 +1349,48 @@ SELECT update_class_gidouilles('class-uuid', -5);
 
 **Behavior**:
 
-- If delta is negative and would cause some students to go below 0, those students are SKIPPED
-- Returns count of students actually updated (may be less than total class size if some are skipped)
-  **Errors**:
+- All active students in the class are updated atomically
+- Students whose value would go negative are clamped to 0 (via GREATEST())
+- Returns total count of students updated
+
+**Errors**:
+
 - Raises exception if caller is not a teacher
 - Raises exception if caller doesn't own the class
+
+### Bonus Management (Rewards System)
+
+The bonus system works identically to gidouilles - it's a separate currency/points system for special achievements. Added in migration `20251111000000_add_bonus_system.sql`.
+
+#### `update_student_bonus(student_id UUID, delta INTEGER)`
+
+**Returns**: INTEGER - New bonus count after update
+**Purpose**: Securely updates a single student's bonus (special achievement points)
+**Security**:
+
+- SECURITY DEFINER function (runs with elevated permissions)
+- Verifies caller is a teacher via `is_teacher_or_admin()`
+- Verifies student is in one of the teacher's classes
+- Enforces minimum of 0 bonus via atomic GREATEST() operation
+
+**Usage**:
+
+```sql
+-- Add 5 bonus to a student
+SELECT update_student_bonus('student-uuid', 5);
+
+-- Remove 2 bonus from a student
+SELECT update_student_bonus('student-uuid', -2);
+```
+
+**Errors**:
+
+- Raises exception if caller is not a teacher
+- Raises exception if student is not in teacher's classes
+
+**Note**: Negative results are automatically clamped to 0 (no exception raised).
+
+**Implementation**: Uses the same atomic update pattern as gidouilles to prevent race conditions. See **Implementation Notes** under Gidouilles Management above.
 
 ### VIP Cards Management (Rewards System)
 
