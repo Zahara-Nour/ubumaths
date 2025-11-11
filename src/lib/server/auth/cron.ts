@@ -14,8 +14,9 @@ import { createHash, timingSafeEqual } from 'crypto';
 /**
  * Verify CRON authentication from request headers
  *
- * Validates that the request contains a valid Bearer token matching CRON_SECRET.
- * Uses constant-time comparison to prevent timing attacks.
+ * Supports two authentication methods:
+ * 1. Vercel Cron (automatic): x-vercel-cron: 1 header + VERCEL=1 environment
+ * 2. Manual triggers: Authorization: Bearer <CRON_SECRET> header
  *
  * @param request - The incoming HTTP request
  * @throws {Error} 401 if authentication fails
@@ -32,11 +33,10 @@ import { createHash, timingSafeEqual } from 'crypto';
  * ```
  *
  * @security
+ * - Method 1 (Vercel): Checks x-vercel-cron=1 header + VERCEL=1 env var
+ * - Method 2 (Manual): Bearer token with constant-time comparison
  * - Fails secure: Rejects all requests if CRON_SECRET undefined
- * - Constant-time comparison prevents timing attacks
  * - Logs all authentication attempts (success + failure)
- * - Case-insensitive "Bearer" keyword matching
- * - Validates Authorization header format before token extraction
  */
 export function verifyCronAuth(request: Request): void {
 	const env = getEnv();
@@ -48,14 +48,33 @@ export function verifyCronAuth(request: Request): void {
 		throw error(503, 'CRON endpoints disabled: CRON_SECRET not configured');
 	}
 
-	// Extract Authorization header
+	// METHOD 1: Check for Vercel Cron header (added automatically by Vercel)
+	const vercelCronHeader = request.headers.get('x-vercel-cron');
+	if (vercelCronHeader === '1') {
+		// Verify we're running on Vercel (additional security layer)
+		if (process.env.VERCEL === '1') {
+			console.log('[CRON AUTH] ✅ Valid Vercel Cron', {
+				url: request.url,
+				method: request.method,
+				timestamp: new Date().toISOString()
+			});
+			return; // Authorized
+		} else {
+			console.warn('[CRON AUTH] x-vercel-cron header present but not running on Vercel', {
+				url: request.url
+			});
+			throw error(401, 'Unauthorized: Invalid environment');
+		}
+	}
+
+	// METHOD 2: Check for Bearer token (for manual triggers)
 	const authHeader = request.headers.get('authorization');
 	if (!authHeader) {
-		console.warn('[CRON AUTH] Missing Authorization header', {
+		console.warn('[CRON AUTH] Missing authentication (no x-vercel-cron or Authorization header)', {
 			url: request.url,
 			method: request.method
 		});
-		throw error(401, 'Unauthorized: Missing Authorization header');
+		throw error(401, 'Unauthorized: Missing authentication');
 	}
 
 	// Validate Bearer token format (case-insensitive)
@@ -105,7 +124,7 @@ export function verifyCronAuth(request: Request): void {
 	}
 
 	// Success - log and continue
-	console.log('[CRON AUTH] ✅ Valid token', {
+	console.log('[CRON AUTH] ✅ Valid Bearer token', {
 		url: request.url,
 		method: request.method,
 		timestamp: new Date().toISOString()
