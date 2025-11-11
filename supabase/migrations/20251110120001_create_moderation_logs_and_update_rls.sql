@@ -49,15 +49,15 @@ CREATE TABLE IF NOT EXISTS public.moderation_logs (
 -- =============================================
 
 -- Query by moderator (who did what, ordered by time)
-CREATE INDEX idx_moderation_logs_moderator
+CREATE INDEX IF NOT EXISTS idx_moderation_logs_moderator
   ON public.moderation_logs(moderator_id, created_at DESC);
 
 -- Query by target (what happened to this message/user/conversation)
-CREATE INDEX idx_moderation_logs_target
+CREATE INDEX IF NOT EXISTS idx_moderation_logs_target
   ON public.moderation_logs(target_type, target_id);
 
 -- Query by action (all mutes, bans, etc.)
-CREATE INDEX idx_moderation_logs_action
+CREATE INDEX IF NOT EXISTS idx_moderation_logs_action
   ON public.moderation_logs(action, created_at DESC);
 
 -- =============================================
