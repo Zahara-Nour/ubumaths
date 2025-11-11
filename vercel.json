@@ -2,17 +2,11 @@
 	"crons": [
 		{
 			"path": "/api/cache/cleanup",
-			"schedule": "0 2 * * *",
-			"headers": {
-				"Authorization": "Bearer ${CRON_SECRET}"
-			}
+			"schedule": "0 2 * * *"
 		},
 		{
 			"path": "/api/notifications/cleanup",
-			"schedule": "0 3 * * *",
-			"headers": {
-				"Authorization": "Bearer ${CRON_SECRET}"
-			}
+			"schedule": "0 3 * * *"
 		}
 	]
 }

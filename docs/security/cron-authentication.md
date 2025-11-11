@@ -31,9 +31,9 @@ Secure authentication system for CRON endpoints using Bearer token authenticatio
    - No other changes to existing logic
 
 4. **`vercel.json`**
-   - Added `Authorization: Bearer ${CRON_SECRET}` headers
    - Added notifications cleanup CRON (3 AM UTC)
    - Kept cache cleanup CRON (2 AM UTC)
+   - Note: Vercel automatically adds `Authorization: Bearer ${CRON_SECRET}` header to cron requests
 
 ## Security Features
 
@@ -113,6 +113,8 @@ Add `CRON_SECRET` to Vercel environment variables:
 1. Go to Vercel Dashboard → Project Settings → Environment Variables
 2. Add `CRON_SECRET` with the generated value
 3. Apply to Production, Preview, and Development environments
+
+**Important**: Vercel automatically adds the `Authorization: Bearer ${CRON_SECRET}` header when calling cron endpoints. Do NOT add a `headers` property in `vercel.json` as it's not supported and will cause deployment errors.
 
 ## CRON Schedules
 
@@ -314,12 +316,12 @@ Check CRON execution logs in Vercel Dashboard:
 
 ### CRON endpoint returns 401
 
-**Cause**: Token mismatch between Vercel config and environment variable.
+**Cause**: Token mismatch or `CRON_SECRET` not properly configured in Vercel.
 
 **Fix**:
 
-1. Verify `vercel.json` uses `${CRON_SECRET}` (not hardcoded value)
-2. Verify Vercel environment variable is set correctly
+1. Verify Vercel environment variable `CRON_SECRET` is set correctly
+2. Ensure `vercel.json` does NOT contain a `headers` property (Vercel adds it automatically)
 3. Redeploy application
 
 ### Logs show "Invalid token (length mismatch)"
@@ -336,7 +338,7 @@ Check CRON execution logs in Vercel Dashboard:
 - [x] Create authentication utility (`src/lib/server/auth/cron.ts`)
 - [x] Update cache cleanup endpoint
 - [x] Update notifications cleanup endpoint
-- [x] Update `vercel.json` with Authorization headers
+- [x] Update `vercel.json` with cron schedules (Vercel adds Authorization header automatically)
 - [x] Verify ESLint passes
 - [x] Verify Prettier formatting
 - [x] Generate CRON secret for production
@@ -355,6 +357,9 @@ Check CRON execution logs in Vercel Dashboard:
 
 ## Changelog
 
+- **2025-11-11**: Fixed Vercel configuration
+  - Removed invalid `headers` property from `vercel.json` (not supported by Vercel)
+  - Updated documentation to clarify Vercel automatically adds Authorization header
 - **2025-11-10**: Initial implementation
   - Created authentication utility with constant-time comparison
   - Protected cache cleanup endpoint
