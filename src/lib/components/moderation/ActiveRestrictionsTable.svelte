@@ -19,10 +19,10 @@
 -->
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table';
-	import * as AlertDialog from '$lib/components/ui/alert-dialog';
+	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import { Trash2, Loader2 } from 'lucide-svelte';
+	import { Trash2 } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -88,7 +88,6 @@
 			}
 
 			toaster.success('Restriction retirée avec succès');
-			closeConfirmDialog();
 
 			// Call callback to refresh data
 			if (onUnrestrict) {
@@ -99,6 +98,7 @@
 			toaster.error('Erreur lors du retrait de la restriction');
 		} finally {
 			isRemoving = false;
+			selectedRestriction = null;
 		}
 	}
 
@@ -226,33 +226,15 @@
 {/if}
 
 <!-- Confirmation Dialog -->
-<AlertDialog.Root bind:open={showConfirmDialog}>
-	<AlertDialog.Content>
-		<AlertDialog.Header>
-			<AlertDialog.Title>Confirmer la suppression</AlertDialog.Title>
-			<AlertDialog.Description>
-				{#if selectedRestriction}
-					Êtes-vous sûr de vouloir retirer cette restriction pour
-					<strong>{getUserName(selectedRestriction.user)}</strong> ?
-					<br />
-					Cette action ne peut pas être annulée.
-				{/if}
-			</AlertDialog.Description>
-		</AlertDialog.Header>
-		<AlertDialog.Footer>
-			<AlertDialog.Cancel onclick={closeConfirmDialog} disabled={isRemoving}>
-				Annuler
-			</AlertDialog.Cancel>
-			<AlertDialog.Action
-				onclick={removeRestriction}
-				disabled={isRemoving}
-				class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-			>
-				{#if isRemoving}
-					<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-				{/if}
-				Retirer
-			</AlertDialog.Action>
-		</AlertDialog.Footer>
-	</AlertDialog.Content>
-</AlertDialog.Root>
+<ConfirmDialog
+	bind:open={showConfirmDialog}
+	title="Confirmer la suppression"
+	description={selectedRestriction
+		? `Êtes-vous sûr de vouloir retirer cette restriction pour ${getUserName(selectedRestriction.user)} ? Cette action ne peut pas être annulée.`
+		: ''}
+	confirmLabel={isRemoving ? 'Retrait...' : 'Retirer'}
+	cancelLabel="Annuler"
+	variant="destructive"
+	onConfirm={removeRestriction}
+	onCancel={closeConfirmDialog}
+/>

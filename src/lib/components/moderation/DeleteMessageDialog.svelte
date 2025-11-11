@@ -10,7 +10,7 @@
 		- onSuccess: Callback after successful deletion
 
 	Features:
-		- AlertDialog for confirmation
+		- Dialog for confirmation
 		- Textarea for reason (5-500 chars)
 		- Character count
 		- Form validation
@@ -18,7 +18,7 @@
 		- Toast notifications
 -->
 <script lang="ts">
-	import * as AlertDialog from '$lib/components/ui/alert-dialog';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Button } from '$lib/components/ui/button';
@@ -88,14 +88,14 @@
 	}
 </script>
 
-<AlertDialog.Root bind:open>
-	<AlertDialog.Content>
-		<AlertDialog.Header>
-			<AlertDialog.Title>Supprimer ce message ?</AlertDialog.Title>
-			<AlertDialog.Description>
+<Dialog.Root bind:open>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Supprimer ce message ?</Dialog.Title>
+			<Dialog.Description>
 				Cette action est irréversible. Le message sera masqué pour tous les participants.
-			</AlertDialog.Description>
-		</AlertDialog.Header>
+			</Dialog.Description>
+		</Dialog.Header>
 
 		<div class="space-y-2 py-4">
 			<Label for="delete-reason">Raison de la suppression</Label>
@@ -115,7 +115,7 @@
 			</p>
 		</div>
 
-		<AlertDialog.Footer>
+		<Dialog.Footer>
 			<Button variant="outline" onclick={closeDialog} disabled={isDeleting}>Annuler</Button>
 			<Button variant="destructive" onclick={deleteMessage} disabled={!isValid || isDeleting}>
 				{#if isDeleting}
@@ -123,6 +123,6 @@
 				{/if}
 				Supprimer le message
 			</Button>
-		</AlertDialog.Footer>
-	</AlertDialog.Content>
-</AlertDialog.Root>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>

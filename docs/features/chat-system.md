@@ -1194,11 +1194,13 @@ CREATE POLICY "Restricted users cannot send messages"
 
 ```svelte
 <script>
-  import RestrictedUserBanner from '$lib/components/RestrictedUserBanner.svelte';
+	import RestrictedUserBanner from '$lib/components/RestrictedUserBanner.svelte';
 
-  // Show active restriction with countdown
-  <RestrictedUserBanner {userId} {conversationId} />
+	let { userId, conversationId } = $props();
 </script>
+
+<!-- Show active restriction with countdown -->
+<RestrictedUserBanner {userId} {conversationId} />
 ```
 
 **Features** :

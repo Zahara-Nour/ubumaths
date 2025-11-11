@@ -111,9 +111,9 @@ class FriendsManager {
 			);
 
 			// Start presence tracking for accepted friends
-			const friendIds = this.friendships.map((f) => f.friend_profile.id);
-			if (friendIds.length > 0) {
-				await presenceManager.startPresenceTracking(friendIds);
+			const trackedFriendIds = this.friendships.map((f) => f.friend_profile.id);
+			if (trackedFriendIds.length > 0) {
+				await presenceManager.startPresenceTracking(trackedFriendIds);
 			}
 		} catch (err) {
 			this.error = err instanceof Error ? err.message : 'Failed to load friendships';

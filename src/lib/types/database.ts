@@ -2923,6 +2923,61 @@ export type Database = {
 					}
 				];
 			};
+			moderation_logs: {
+				Row: {
+					action: string;
+					created_at: string;
+					id: string;
+					metadata: Json | null;
+					moderator_id: string;
+					reason: string | null;
+					target_id: string;
+					target_type: string;
+				};
+				Insert: {
+					action: string;
+					created_at?: string;
+					id?: string;
+					metadata?: Json | null;
+					moderator_id: string;
+					reason?: string | null;
+					target_id: string;
+					target_type: string;
+				};
+				Update: {
+					action?: string;
+					created_at?: string;
+					id?: string;
+					metadata?: Json | null;
+					moderator_id?: string;
+					reason?: string | null;
+					target_id?: string;
+					target_type?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'moderation_logs_moderator_id_fkey';
+						columns: ['moderator_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'moderation_logs_moderator_id_fkey';
+						columns: ['moderator_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'moderation_logs_moderator_id_fkey';
+						columns: ['moderator_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			notification_reads: {
 				Row: {
 					created_at: string;
@@ -4712,6 +4767,102 @@ export type Database = {
 					}
 				];
 			};
+			user_restrictions: {
+				Row: {
+					created_at: string;
+					expires_at: string | null;
+					id: string;
+					reason: string;
+					restricted_by: string;
+					restriction_type: string;
+					scope_id: string | null;
+					scope_type: string;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					created_at?: string;
+					expires_at?: string | null;
+					id?: string;
+					reason: string;
+					restricted_by: string;
+					restriction_type: string;
+					scope_id?: string | null;
+					scope_type: string;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					created_at?: string;
+					expires_at?: string | null;
+					id?: string;
+					reason?: string;
+					restricted_by?: string;
+					restriction_type?: string;
+					scope_id?: string | null;
+					scope_type?: string;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'user_restrictions_restricted_by_fkey';
+						columns: ['restricted_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'user_restrictions_restricted_by_fkey';
+						columns: ['restricted_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'user_restrictions_restricted_by_fkey';
+						columns: ['restricted_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'user_restrictions_scope_id_fkey';
+						columns: ['scope_id'];
+						isOneToOne: false;
+						referencedRelation: 'conversations';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'user_restrictions_scope_id_fkey';
+						columns: ['scope_id'];
+						isOneToOne: false;
+						referencedRelation: 'user_conversations_view';
+						referencedColumns: ['conversation_id'];
+					},
+					{
+						foreignKeyName: 'user_restrictions_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'user_restrictions_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'user_restrictions_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			vip_card_config: {
 				Row: {
 					common_probability: number;
@@ -5766,6 +5917,20 @@ export type Database = {
 					subject: string;
 				}[];
 			};
+			get_user_moderation_history: {
+				Args: { p_limit?: number; p_user_id: string };
+				Returns: {
+					action: string;
+					created_at: string;
+					id: string;
+					metadata: Json;
+					moderator_id: string;
+					moderator_name: string;
+					reason: string;
+					target_id: string;
+					target_type: string;
+				}[];
+			};
 			get_user_sent_messages: {
 				Args: { p_limit?: number; p_offset?: number; p_user_id: string };
 				Returns: {
@@ -5797,9 +5962,23 @@ export type Database = {
 			is_riddle_of_the_day: { Args: { p_riddle_id: string }; Returns: boolean };
 			is_student: { Args: never; Returns: boolean };
 			is_teacher_or_admin: { Args: never; Returns: boolean };
+			is_user_restricted: {
+				Args: { p_conversation_id?: string; p_user_id: string };
+				Returns: boolean;
+			};
 			link_existing_assessments_to_periods: {
 				Args: { p_school_year_id: string };
 				Returns: number;
+			};
+			log_moderation_action: {
+				Args: {
+					p_action: string;
+					p_metadata?: Json;
+					p_reason?: string;
+					p_target_id: string;
+					p_target_type: string;
+				};
+				Returns: string;
 			};
 			log_template_action: {
 				Args: {
