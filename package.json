@@ -104,7 +104,10 @@
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"esbuild"
-		]
+		],
+		"overrides": {
+			"parse5": "7.2.1"
+		}
 	},
 	"dependencies": {
 		"@cortex-js/compute-engine": "^0.30.2",
