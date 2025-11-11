@@ -127,6 +127,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import VipCardSelector from '$lib/components/VipCardSelector.svelte';
 	import { Search, CheckCircle, XCircle, AlertCircle } from 'lucide-svelte';
 	import {
 		vipCardTemplates,
@@ -153,24 +154,18 @@
 	);
 
 	// Filter state for VIP cards
-	let selectedCardFilter = $state<string>('all');
+	let selectedCardFilter = $state<string | null>(null);
 	let filterMode = $state<'filter' | 'add'>('filter'); // Mode par défaut : filtrer
 
-	// Items for VIP card filter dropdown
-	const cardFilterItems = $derived([
-		{ value: 'all', label: 'Toutes les cartes VIP' },
-		...getEnabledTemplates($vipCardTemplates).map((template) => ({
-			value: template.id,
-			label: template.name
-		}))
-	]);
+	// Get enabled templates for VipCardSelector
+	const enabledCardTemplates = $derived(getEnabledTemplates($vipCardTemplates));
 
 	// Filtered students list based on selected VIP card
 	let filteredStudents = $derived(
 		currentStudents.filter((student) => {
 			if (filterMode === 'filter') {
 				// MODE FILTRER : comportement actuel
-				if (selectedCardFilter === 'all') return true;
+				if (!selectedCardFilter) return true; // No filter selected = show all
 				const rewards = teacherCache.getRewardsSync(selectedClassId)?.get(student.id);
 				if (!rewards) return false;
 				const cardCounts = getStudentCardCounts(rewards.vip_cards);
@@ -565,7 +560,7 @@
 	 * Called when teacher clicks the "+" button next to a filtered card
 	 */
 	async function handleGrantVipCard(studentId: string) {
-		if (selectedCardFilter === 'all') return; // Safety check
+		if (!selectedCardFilter) return; // Safety check - no card selected
 
 		grantingCard = studentId;
 
@@ -1083,11 +1078,9 @@
 												<Button
 													variant={filterMode === 'add' ? 'default' : 'outline'}
 													size="sm"
-													disabled={selectedCardFilter === 'all'}
+													disabled={!selectedCardFilter}
 													onclick={() => (filterMode = 'add')}
-													title={selectedCardFilter === 'all'
-														? "Sélectionnez une carte VIP d'abord"
-														: ''}
+													title={!selectedCardFilter ? "Sélectionnez une carte VIP d'abord" : ''}
 												>
 													Ajouter
 												</Button>
@@ -1100,11 +1093,9 @@
 										<!-- Right side: Card selection -->
 										<span class="text-sm font-medium">Carte VIP :</span>
 										<div class="w-64">
-											<MySelect
-												type="single"
-												bind:value={selectedCardFilter}
-												items={cardFilterItems}
-												placeholder="Sélectionner une carte"
+											<VipCardSelector
+												bind:selectedCardId={selectedCardFilter}
+												availableCards={enabledCardTemplates}
 											/>
 										</div>
 									</div>
@@ -1114,7 +1105,7 @@
 										<p class="px-4 text-xs text-muted-foreground">
 											Affiche uniquement les élèves qui possèdent déjà cette carte
 										</p>
-									{:else if selectedCardFilter === 'all'}
+									{:else if !selectedCardFilter}
 										<p class="px-4 text-xs text-amber-600 dark:text-amber-400">
 											Sélectionnez une carte VIP pour activer le mode "Ajouter"
 										</p>
@@ -1282,7 +1273,7 @@
 															</Button>
 
 															<!-- Grant Specific VIP Card Button (only shows when add mode is active) -->
-															{#if filterMode === 'add' && selectedCardFilter !== 'all'}
+															{#if filterMode === 'add' && selectedCardFilter}
 																{@const card = getTemplateById(
 																	selectedCardFilter,
 																	$vipCardTemplates
