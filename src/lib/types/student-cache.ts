@@ -110,7 +110,7 @@ export interface ClassMembership {
 }
 
 /**
- * Student rewards data (gidouilles + VIP cards)
+ * Student rewards data (gidouilles + bonus + VIP cards)
  *
  * Returned by:
  * - GET /api/student/rewards
@@ -120,12 +120,15 @@ export interface ClassMembership {
  * ```typescript
  * const rewards = await studentCache.getRewards();
  * console.log(rewards.gidouilles); // Current balance
+ * console.log(rewards.bonus); // Current bonus balance
  * console.log(Object.keys(rewards.vip_cards).length); // Number of VIP cards
  * ```
  */
 export interface StudentRewards {
 	/** Current gidouilles balance (virtual currency) */
 	gidouilles: number;
+	/** Current bonus points balance (separate reward system) */
+	bonus: number;
 	/**
 	 * VIP cards owned by the student
 	 * Key: instanceId (UUID)

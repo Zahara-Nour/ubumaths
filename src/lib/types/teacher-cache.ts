@@ -34,10 +34,11 @@ export interface BasicStudent {
 }
 
 /**
- * Student rewards data (gidouilles + VIP cards)
+ * Student rewards data (gidouilles + bonus + VIP cards)
  */
 export interface StudentRewards {
 	gidouilles: number;
+	bonus: number;
 	vip_cards: StudentVipCards;
 }
 
