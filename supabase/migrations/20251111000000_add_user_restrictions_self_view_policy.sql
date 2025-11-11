@@ -11,6 +11,9 @@
 -- Add Self-View Policy
 -- =============================================
 
+-- Drop existing policy if it exists (idempotent)
+DROP POLICY IF EXISTS "Users can view own restrictions" ON public.user_restrictions;
+
 -- Users can view their own restrictions
 CREATE POLICY "Users can view own restrictions"
   ON public.user_restrictions FOR SELECT
