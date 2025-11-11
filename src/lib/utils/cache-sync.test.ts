@@ -447,7 +447,7 @@ describe('refetchRewards', () => {
 	});
 
 	it('should invalidate and refetch for teacher context', async () => {
-		const mockRewards = { student1: { gidouilles: 100, vip_cards: {} } };
+		const mockRewards = new Map([['student1', { gidouilles: 100, vip_cards: {} }]]);
 		vi.mocked(teacherCache.getStudentRewards).mockResolvedValue(mockRewards);
 
 		const result = await refetchRewards(teacherContext);
@@ -475,7 +475,7 @@ describe('refetchWarnings', () => {
 	});
 
 	it('should invalidate and refetch for teacher context', async () => {
-		const mockWarnings = { student1: sampleWarnings };
+		const mockWarnings = new Map([['student1', sampleWarnings]]);
 		vi.mocked(teacherCache.getStudentWarnings).mockResolvedValue(mockWarnings);
 
 		const result = await refetchWarnings(teacherContext, 'period-2025');
@@ -486,7 +486,7 @@ describe('refetchWarnings', () => {
 	});
 
 	it('should invalidate and refetch for student context', async () => {
-		const mockWarnings = sampleWarnings;
+		const mockWarnings = { counts: sampleWarnings, warnings: [] };
 		vi.mocked(studentCache.getWarnings).mockResolvedValue(mockWarnings);
 
 		const result = await refetchWarnings(studentContext, 'period-2025');
@@ -513,7 +513,16 @@ describe('refetchProfile', () => {
 	it('should invalidate and refetch for student context', async () => {
 		const mockProfile = {
 			id: 'student-123',
+			email: null,
+			firstname: null,
+			lastname: null,
 			full_name: 'Test Student',
+			avatar_url: null,
+			gender: null,
+			grade: null,
+			is_test: false,
+			school_id: null,
+			classes: [],
 			gidouilles: 100,
 			vip_cards: {}
 		};

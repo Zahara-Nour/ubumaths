@@ -11,6 +11,7 @@
  * - Simplified: No exponential backoff tracking
  * - Configuration: Signup window changed from 30min to 1 hour
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
@@ -220,7 +221,7 @@ describe('Rate Limiter (Database-backed)', () => {
 		expireEntry = mock.expireEntry;
 
 		// Reset the mock implementation for createClient
-		vi.mocked(createClient).mockReturnValue(mock.mockSupabase);
+		vi.mocked(createClient).mockReturnValue(mock.mockSupabase as any);
 
 		// NOTE: Do NOT call vi.clearAllMocks() here as it clears the logger mock
 		// and the createClient mock we just configured above, breaking all tests
@@ -642,13 +643,11 @@ describe('Rate Limiter (Database-backed)', () => {
 
 					// Using 'student' role (not admin) should default to teacher limit (10)
 					for (let i = 0; i < 10; i++) {
-						// @ts-expect-error - Testing invalid role handling
 						const result = await checkNotificationCreateRateLimit(userId, 'student');
 						expect(result.allowed).toBe(true);
 					}
 
 					// 11th request should be blocked (teacher limit applied)
-					// @ts-expect-error - Testing invalid role handling
 					const result = await checkNotificationCreateRateLimit(userId, 'student');
 					expect(result.allowed).toBe(false);
 				});

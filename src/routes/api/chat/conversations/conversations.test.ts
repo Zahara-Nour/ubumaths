@@ -1,6 +1,8 @@
 /**
  * Tests for /api/chat/conversations endpoints
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { describe, it, expect, vi } from 'vitest';
 import { GET, POST } from './+server';
 
@@ -24,7 +26,7 @@ describe('GET /api/chat/conversations', () => {
 		await expect(
 			GET({
 				locals
-			} as Parameters<typeof GET>[0])
+			} as any)
 		).rejects.toMatchObject({
 			status: 401
 		});
@@ -54,7 +56,7 @@ describe('GET /api/chat/conversations', () => {
 
 		const response = await GET({
 			locals
-		} as Parameters<typeof GET>[0]);
+		} as any);
 
 		expect(mockSupabase.rpc).toHaveBeenCalledWith('get_user_conversations', {
 			p_user_id: 'user-123'
@@ -82,7 +84,7 @@ describe('GET /api/chat/conversations', () => {
 		await expect(
 			GET({
 				locals
-			} as Parameters<typeof GET>[0])
+			} as any)
 		).rejects.toMatchObject({
 			status: 500
 		});
@@ -101,7 +103,7 @@ describe('POST /api/chat/conversations', () => {
 			POST({
 				request,
 				locals
-			} as Parameters<typeof POST>[0])
+			} as any)
 		).rejects.toMatchObject({
 			status: 401
 		});
@@ -118,7 +120,7 @@ describe('POST /api/chat/conversations', () => {
 			POST({
 				request,
 				locals
-			} as Parameters<typeof POST>[0])
+			} as any)
 		).rejects.toMatchObject({
 			status: 400,
 			message: 'Invalid JSON'
@@ -136,7 +138,7 @@ describe('POST /api/chat/conversations', () => {
 			POST({
 				request,
 				locals
-			} as Parameters<typeof POST>[0])
+			} as any)
 		).rejects.toMatchObject({
 			status: 400
 		});
@@ -165,7 +167,7 @@ describe('POST /api/chat/conversations', () => {
 		const response = await POST({
 			request,
 			locals
-		} as Parameters<typeof POST>[0]);
+		} as any);
 
 		expect(mockSupabase.rpc).toHaveBeenCalledWith('create_1on1_chat', {
 			p_user1_id: 'user-123',
@@ -200,7 +202,7 @@ describe('POST /api/chat/conversations', () => {
 			POST({
 				request,
 				locals
-			} as Parameters<typeof POST>[0])
+			} as any)
 		).rejects.toMatchObject({
 			status: 403
 		});
@@ -228,7 +230,7 @@ describe('POST /api/chat/conversations', () => {
 			POST({
 				request,
 				locals
-			} as Parameters<typeof POST>[0])
+			} as any)
 		).rejects.toMatchObject({
 			status: 409
 		});
@@ -256,7 +258,7 @@ describe('POST /api/chat/conversations', () => {
 			POST({
 				request,
 				locals
-			} as Parameters<typeof POST>[0])
+			} as any)
 		).rejects.toMatchObject({
 			status: 500
 		});

@@ -17,9 +17,9 @@
  *
  * @module api/notifications/unread/+server.test
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import type { RequestEvent } from '@sveltejs/kit';
 import * as authMiddleware from '$lib/server/middleware/auth';
 import * as notificationsModule from '$lib/server/notifications';
 
@@ -49,8 +49,8 @@ describe('GET /api/notifications/unread - Pagination', () => {
 
 		// Mock requireAuth to return user
 		vi.mocked(authMiddleware.requireAuth).mockResolvedValue({
-			user: mockLocals.user,
-			profile: mockLocals.profile
+			user: mockLocals.user as any,
+			profile: mockLocals.profile as any
 		});
 	});
 
@@ -79,7 +79,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as unknown as RequestEvent);
+		} as any);
 
 		const data = await response.json();
 
@@ -127,7 +127,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as unknown as RequestEvent);
+		} as any);
 
 		const data = await response.json();
 
@@ -172,7 +172,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as unknown as RequestEvent);
+		} as any);
 
 		const data = await response.json();
 
@@ -197,7 +197,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: mockLocals,
 				request
-			} as unknown as RequestEvent)
+			} as any)
 		).rejects.toThrow();
 	});
 
@@ -220,7 +220,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as unknown as RequestEvent);
+		} as any);
 
 		const data = await response.json();
 
@@ -248,7 +248,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: mockLocals,
 				request
-			} as unknown as RequestEvent)
+			} as any)
 		).rejects.toThrow();
 	});
 
@@ -262,7 +262,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: mockLocals,
 				request
-			} as unknown as RequestEvent)
+			} as any)
 		).rejects.toThrow();
 	});
 
@@ -276,7 +276,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: mockLocals,
 				request
-			} as unknown as RequestEvent)
+			} as any)
 		).rejects.toThrow();
 	});
 
@@ -290,7 +290,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: mockLocals,
 				request
-			} as unknown as RequestEvent)
+			} as any)
 		).rejects.toThrow();
 	});
 
@@ -304,7 +304,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: mockLocals,
 				request
-			} as unknown as RequestEvent)
+			} as any)
 		).rejects.toThrow();
 	});
 
@@ -318,7 +318,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: mockLocals,
 				request
-			} as unknown as RequestEvent)
+			} as any)
 		).rejects.toThrow();
 	});
 
@@ -345,7 +345,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as unknown as RequestEvent);
+		} as any);
 
 		const data = await response.json();
 
@@ -377,7 +377,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as unknown as RequestEvent);
+		} as any);
 
 		const data = await response.json();
 
@@ -410,7 +410,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as unknown as RequestEvent);
+		} as any);
 
 		const data = await response.json();
 
@@ -441,7 +441,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url: url3,
 			locals: mockLocals,
 			request: request3
-		} as unknown as RequestEvent);
+		} as any);
 
 		const data3 = await response3.json();
 
@@ -474,7 +474,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as unknown as RequestEvent);
+		} as any);
 
 		const data = await response.json();
 
@@ -500,7 +500,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url: url5,
 			locals: mockLocals,
 			request: request5
-		} as unknown as RequestEvent);
+		} as any);
 
 		const data5 = await response5.json();
 
@@ -525,7 +525,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: { supabase: {}, user: null, profile: null },
 				request
-			} as unknown as RequestEvent)
+			} as any)
 		).rejects.toThrow('Authentication required');
 
 		// Verify getUnreadNotifications was NOT called
@@ -551,7 +551,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as unknown as RequestEvent);
+		} as any);
 
 		expect(response.status).toBe(200);
 		expect(authMiddleware.requireAuth).toHaveBeenCalledWith(mockLocals);
@@ -562,8 +562,8 @@ describe('GET /api/notifications/unread - Pagination', () => {
 		mockLocals.profile.role = 'teacher';
 
 		vi.mocked(authMiddleware.requireAuth).mockResolvedValue({
-			user: mockLocals.user,
-			profile: mockLocals.profile
+			user: mockLocals.user as any,
+			profile: mockLocals.profile as any
 		});
 
 		vi.mocked(notificationsModule.getUnreadNotifications).mockResolvedValue({
@@ -584,7 +584,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as unknown as RequestEvent);
+		} as any);
 
 		expect(response.status).toBe(200);
 		expect(notificationsModule.getUnreadNotifications).toHaveBeenCalledWith(

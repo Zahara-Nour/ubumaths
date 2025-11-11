@@ -5,6 +5,7 @@
  * Comprehensive tests for VIP card action validation using discriminated union pattern.
  * Tests all 5 action types with their specific parameters, constraints, and edge cases.
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect } from 'vitest';
 import { createTemplateSchema, updateTemplateSchema } from './vip-card-admin';
@@ -215,7 +216,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(true);
 				if (result.success) {
-					expect(result.data.action?.filters?.excludeCardIds?.length).toBe(50);
+					expect((result.data.action as any).filters?.excludeCardIds?.length).toBe(50);
 				}
 			});
 		});
@@ -460,7 +461,7 @@ describe('VIP Card Action Validation', () => {
 				expect(result.success).toBe(true);
 				if (result.success) {
 					expect(result.data.action?.type).toBe('remove_warnings');
-					expect(result.data.action?.count).toBe(1);
+					expect((result.data.action as any).count).toBe(1);
 				}
 			});
 
@@ -481,7 +482,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(true);
 				if (result.success) {
-					expect(result.data.action?.count).toBe(5);
+					expect((result.data.action as any).count).toBe(5);
 				}
 			});
 
@@ -504,8 +505,8 @@ describe('VIP Card Action Validation', () => {
 						sortOrder: 0
 					});
 					expect(result.success).toBe(true);
-					if (result.success) {
-						expect(result.data.action?.warningType).toBe(type);
+					if (result.success && result.data.action?.type === 'remove_warnings') {
+						expect(result.data.action.warningType).toBe(type);
 					}
 				});
 			});
@@ -679,8 +680,8 @@ describe('VIP Card Action Validation', () => {
 					expect(result.success).toBe(true);
 					if (result.success) {
 						expect(result.data.action?.type).toBe('exchange_cards');
-						expect(result.data.action?.exchange.mode).toBe('replace_random');
-						expect(result.data.action?.exchange.count).toBe(1);
+						expect((result.data.action as any).exchange.mode).toBe('replace_random');
+						expect((result.data.action as any).exchange.count).toBe(1);
 					}
 				});
 
@@ -704,7 +705,7 @@ describe('VIP Card Action Validation', () => {
 					});
 					expect(result.success).toBe(true);
 					if (result.success) {
-						expect(result.data.action?.exchange.count).toBe(10);
+						expect((result.data.action as any).exchange.count).toBe(10);
 					}
 				});
 			});
@@ -829,8 +830,8 @@ describe('VIP Card Action Validation', () => {
 						});
 						expect(result.success).toBe(true);
 						if (result.success) {
-							expect(result.data.action?.exchange.mode).toBe('rarity_points');
-							expect(result.data.action?.exchange.targetRarity).toBe(rarity);
+							expect((result.data.action as any).exchange.mode).toBe('rarity_points');
+							expect((result.data.action as any).exchange.targetRarity).toBe(rarity);
 						}
 					});
 				});
@@ -856,7 +857,7 @@ describe('VIP Card Action Validation', () => {
 					});
 					expect(result.success).toBe(true);
 					if (result.success) {
-						expect(result.data.action?.exchange.pointsRequired).toBe(1);
+						expect((result.data.action as any).exchange.pointsRequired).toBe(1);
 					}
 				});
 
@@ -1024,9 +1025,9 @@ describe('VIP Card Action Validation', () => {
 					});
 					expect(result.success).toBe(true);
 					if (result.success) {
-						expect(result.data.action?.exchange.mode).toBe('discard_for_specific');
-						expect(result.data.action?.exchange.discardCount).toBe(1);
-						expect(result.data.action?.exchange.targetCardId).toBe('bonus');
+						expect((result.data.action as any).exchange.mode).toBe('discard_for_specific');
+						expect((result.data.action as any).exchange.discardCount).toBe(1);
+						expect((result.data.action as any).exchange.targetCardId).toBe('bonus');
 					}
 				});
 
@@ -1051,7 +1052,7 @@ describe('VIP Card Action Validation', () => {
 					});
 					expect(result.success).toBe(true);
 					if (result.success) {
-						expect(result.data.action?.exchange.discardCount).toBe(10);
+						expect((result.data.action as any).exchange.discardCount).toBe(10);
 					}
 				});
 			});
@@ -1245,7 +1246,7 @@ describe('VIP Card Action Validation', () => {
 				expect(result.success).toBe(true);
 				if (result.success) {
 					expect(result.data.action?.type).toBe('add_gidouilles');
-					expect(result.data.action?.amount).toBe(1);
+					expect((result.data.action as any).amount).toBe(1);
 				}
 			});
 
@@ -1266,7 +1267,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(true);
 				if (result.success) {
-					expect(result.data.action?.amount).toBe(1000);
+					expect((result.data.action as any).amount).toBe(1000);
 				}
 			});
 
@@ -1287,7 +1288,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(true);
 				if (result.success) {
-					expect(result.data.action?.amount).toBe(50);
+					expect((result.data.action as any).amount).toBe(50);
 				}
 			});
 		});
@@ -1438,8 +1439,8 @@ describe('VIP Card Action Validation', () => {
 				expect(result.success).toBe(true);
 				if (result.success) {
 					expect(result.data.action?.type).toBe('choose_card');
-					expect(result.data.action?.count).toBe(2);
-					expect(result.data.action?.filter).toBe('all');
+					expect((result.data.action as any).count).toBe(2);
+					expect((result.data.action as any).filter).toBe('all');
 				}
 			});
 
@@ -1503,7 +1504,7 @@ describe('VIP Card Action Validation', () => {
 					});
 					expect(result.success).toBe(true);
 					if (result.success) {
-						expect(result.data.action?.maxRarity).toBe(rarity);
+						expect((result.data.action as any).maxRarity).toBe(rarity);
 					}
 				});
 			});
@@ -1528,7 +1529,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(true);
 				if (result.success) {
-					expect(result.data.action?.possibleCardIds).toEqual(['bonus']);
+					expect((result.data.action as any).possibleCardIds).toEqual(['bonus']);
 				}
 			});
 
@@ -1550,7 +1551,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(true);
 				if (result.success) {
-					expect(result.data.action?.possibleCardIds).toEqual([
+					expect((result.data.action as any).possibleCardIds).toEqual([
 						'bonus',
 						'super-bonus',
 						'mega-bonus'
@@ -1577,7 +1578,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(true);
 				if (result.success) {
-					expect(result.data.action?.possibleCardIds?.length).toBe(20);
+					expect((result.data.action as any).possibleCardIds?.length).toBe(20);
 				}
 			});
 		});
@@ -1601,11 +1602,11 @@ describe('VIP Card Action Validation', () => {
 				expect(result.success).toBe(true);
 				if (result.success) {
 					expect(result.data.action?.type).toBe('choose_card');
-					expect(result.data.action?.count).toBe(3);
+					expect((result.data.action as any).count).toBe(3);
 					// No filter specified means default to 'all'
-					expect(result.data.action?.filter).toBeUndefined();
-					expect(result.data.action?.maxRarity).toBeUndefined();
-					expect(result.data.action?.possibleCardIds).toBeUndefined();
+					expect((result.data.action as any).filter).toBeUndefined();
+					expect((result.data.action as any).maxRarity).toBeUndefined();
+					expect((result.data.action as any).possibleCardIds).toBeUndefined();
 				}
 			});
 		});

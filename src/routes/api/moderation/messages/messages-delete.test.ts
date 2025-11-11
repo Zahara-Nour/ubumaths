@@ -886,7 +886,7 @@ describe('DELETE /api/moderation/messages/[id] - Privacy & Logging', () => {
 		);
 
 		// Verify the actual content was NOT logged
-		const rpcCall = mockSupabase.rpc.mock.calls[0][1];
+		const rpcCall = (mockSupabase.rpc as any).mock.calls[0][1];
 		expect(JSON.stringify(rpcCall)).not.toContain(messageContent);
 	});
 

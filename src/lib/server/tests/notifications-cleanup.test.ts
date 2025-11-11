@@ -10,6 +10,7 @@
  *
  * @module api/notifications/cleanup/+server.test
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { POST, GET } from '../../../routes/api/notifications/cleanup/+server';
@@ -49,9 +50,7 @@ describe('POST /api/notifications/cleanup', () => {
 		};
 
 		// Should throw due to failed authentication
-		await expect(
-			POST({ request, locals: mockLocals } as Parameters<typeof POST>[0])
-		).rejects.toThrow('Unauthorized');
+		await expect(POST({ request, locals: mockLocals } as any)).rejects.toThrow('Unauthorized');
 
 		// Verify verifyCronAuth was called
 		expect(cronAuth.verifyCronAuth).toHaveBeenCalledWith(request);
@@ -87,7 +86,7 @@ describe('POST /api/notifications/cleanup', () => {
 			supabase: mockSupabase
 		};
 
-		const response = await POST({ request, locals: mockLocals } as Parameters<typeof POST>[0]);
+		const response = await POST({ request, locals: mockLocals } as any);
 		const data = await response.json();
 
 		// Verify response
@@ -124,7 +123,7 @@ describe('POST /api/notifications/cleanup', () => {
 			supabase: {}
 		};
 
-		const response = await POST({ request, locals: mockLocals } as Parameters<typeof POST>[0]);
+		const response = await POST({ request, locals: mockLocals } as any);
 		const data = await response.json();
 
 		// Verify error response
@@ -153,7 +152,7 @@ describe('POST /api/notifications/cleanup', () => {
 			supabase: {}
 		};
 
-		const response = await POST({ request, locals: mockLocals } as Parameters<typeof POST>[0]);
+		const response = await POST({ request, locals: mockLocals } as any);
 		const data = await response.json();
 
 		// Verify error response
