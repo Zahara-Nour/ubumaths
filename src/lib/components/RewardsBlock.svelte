@@ -2,21 +2,23 @@
 	Rewards Block Component
 	========================
 
-	Displays a summary of student rewards with 3 tiles:
+	Displays a summary of student rewards with 4 tiles:
 	1. Gidouilles - Total count with treasure chest image
-	2. VIP Cards - Total owned cards count (opens modal on click)
-	3. Riddles - Total solved riddles count
+	2. Bonus - Bonus points count with coup-double image
+	3. VIP Cards - Total owned cards count (opens modal on click)
+	4. Riddles - Total solved riddles count
 
 	Used in: StudentDashboard.svelte
 
 	CACHE USAGE:
-	- Derives gidouilles and vipCards from studentCache
+	- Derives gidouilles, bonus, and vipCards from studentCache
 	- riddlesSolved and studentId still passed as props (not in cache)
 	- Reactive to cache updates via $derived
 -->
 
 <script lang="ts">
 	import coffreGidouilles from '$lib/assets/images/coffre-gidouilles-transparent2.png';
+	import coupDoubleImage from '$lib/assets/images/coup-double.png';
 	import vipMemberImage from '$lib/assets/images/VIP-member.png';
 	import enigmeImage from '$lib/assets/images/enigme.png';
 	import type { StudentVipCards } from '$lib/types/vip-card';
@@ -36,6 +38,7 @@
 	// Derive rewards from cache (reactive to cache updates)
 	const rewards = $derived(studentCache.getRewardsSync());
 	const gidouilles = $derived(rewards?.gidouilles ?? 0);
+	const bonus = $derived(rewards?.bonus ?? 0);
 	const vipCards = $derived<StudentVipCards>(rewards?.vip_cards ?? {});
 
 	// Calculate total VIP cards owned
@@ -64,7 +67,7 @@
 	</div>
 
 	<!-- Tiles Grid -->
-	<div class="grid gap-4 md:grid-cols-3">
+	<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 		<!-- Gidouilles Tile -->
 		<a
 			href={resolve('/dashboard')}
@@ -83,6 +86,27 @@
 			<div class="flex-1">
 				<p class="text-sm font-medium text-amber-800 dark:text-amber-200">Gidouilles</p>
 				<p class="mt-1 text-3xl font-bold text-amber-600 dark:text-amber-400">{gidouilles}</p>
+			</div>
+		</a>
+
+		<!-- Bonus Tile -->
+		<a
+			href={resolve('/dashboard')}
+			class="group relative flex items-center gap-4 overflow-hidden rounded-lg border border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-100 p-6 transition-all hover:shadow-lg dark:border-emerald-800 dark:from-emerald-950 dark:to-teal-950"
+		>
+			<!-- Image -->
+			<div class="flex-shrink-0">
+				<img
+					src={coupDoubleImage}
+					alt="Bonus"
+					class="h-20 w-20 transition-transform group-hover:scale-110"
+				/>
+			</div>
+
+			<!-- Stats -->
+			<div class="flex-1">
+				<p class="text-sm font-medium text-emerald-800 dark:text-emerald-200">Bonus</p>
+				<p class="mt-1 text-3xl font-bold text-emerald-600 dark:text-emerald-400">{bonus}</p>
 			</div>
 		</a>
 
