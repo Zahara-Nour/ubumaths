@@ -1,20 +1,25 @@
 # CRON Authentication Implementation
 
-**Status**: ✅ Implemented (2025-11-10)
+**Status**: ✅ Implemented (2025-11-10, Fixed 2025-11-11)
 **Security Level**: High (Constant-time comparison, fail-secure)
 
 ## Overview
 
-Secure authentication system for CRON endpoints using Bearer token authentication with constant-time comparison to prevent timing attacks.
+Secure authentication system for CRON endpoints supporting two authentication methods:
+1. **Vercel automatic**: Uses `x-vercel-cron: 1` header (production)
+2. **Manual testing**: Uses `Authorization: Bearer <CRON_SECRET>` header (development/testing)
+
+Both methods use constant-time comparison to prevent timing attacks.
 
 ## Implementation Summary
 
 ### Files Created
 
 1. **`src/lib/server/auth/cron.ts`** (NEW)
-   - `verifyCronAuth(request)` - Validates CRON requests
+   - `verifyCronAuth(request)` - Validates CRON requests using dual authentication
    - `generateCronSecret()` - Generates secure 32-char secrets
    - Uses `crypto.timingSafeEqual()` for constant-time comparison
+   - Supports both `x-vercel-cron` header and Bearer token authentication
    - Comprehensive JSDoc documentation
 
 ### Files Modified
@@ -33,13 +38,43 @@ Secure authentication system for CRON endpoints using Bearer token authenticatio
 4. **`vercel.json`**
    - Added notifications cleanup CRON (3 AM UTC)
    - Kept cache cleanup CRON (2 AM UTC)
-   - Note: Vercel automatically adds `Authorization: Bearer ${CRON_SECRET}` header to cron requests
+   - Note: Vercel automatically adds `x-vercel-cron: 1` header to cron requests (NOT Authorization header)
 
 ## Security Features
 
-### 1. Constant-Time Comparison
+### 1. Dual Authentication System
 
-Prevents timing attacks by using `crypto.timingSafeEqual()`:
+Two authentication methods are supported:
+
+**Method 1: Vercel Automatic (Production)**
+```typescript
+// Vercel adds this header automatically to cron requests
+const vercelCron = request.headers.get('x-vercel-cron');
+const isVercel = env.VERCEL === '1';
+
+if (vercelCron === '1' && isVercel) {
+	// ✅ Authenticated via Vercel
+}
+```
+
+**Method 2: Bearer Token (Manual Testing)**
+```typescript
+// For local testing and manual invocations
+const authHeader = request.headers.get('authorization');
+const token = authHeader?.replace(/^Bearer\s+/i, '');
+
+// Constant-time comparison prevents timing attacks
+const expectedBuffer = Buffer.from(env.CRON_SECRET, 'utf8');
+const providedBuffer = Buffer.from(token, 'utf8');
+
+if (timingSafeEqual(expectedBuffer, providedBuffer)) {
+	// ✅ Authenticated via Bearer token
+}
+```
+
+### 2. Constant-Time Comparison
+
+Prevents timing attacks by using `crypto.timingSafeEqual()` for Bearer token validation:
 
 ```typescript
 const expectedBuffer = Buffer.from(env.CRON_SECRET, 'utf8');
@@ -50,7 +85,7 @@ if (!timingSafeEqual(expectedBuffer, providedBuffer)) {
 }
 ```
 
-### 2. Fail-Secure Design
+### 3. Fail-Secure Design
 
 If `CRON_SECRET` is not configured, all CRON endpoints are disabled:
 
@@ -61,21 +96,26 @@ if (!env.CRON_SECRET) {
 }
 ```
 
-### 3. Comprehensive Logging
+### 4. Comprehensive Logging
 
 All authentication attempts are logged (success and failure):
 
 ```typescript
-// Success
+// Success (Vercel automatic)
+console.log('[CRON AUTH] ✅ Authenticated via x-vercel-cron header', { url, method, timestamp });
+
+// Success (Bearer token)
 console.log('[CRON AUTH] ✅ Valid token', { url, method, timestamp });
 
 // Failure
 console.warn('[CRON AUTH] Invalid token (value mismatch)', { url });
 ```
 
-### 4. Input Validation
+### 5. Input Validation
 
-- Validates Authorization header presence
+- Validates `x-vercel-cron` header for Vercel requests
+- Validates VERCEL environment variable
+- Validates Authorization header presence for manual requests
 - Validates Bearer token format (case-insensitive)
 - Checks buffer lengths before comparison
 - Prevents header leakage in logs (first 20 chars only)
@@ -114,7 +154,11 @@ Add `CRON_SECRET` to Vercel environment variables:
 2. Add `CRON_SECRET` with the generated value
 3. Apply to Production, Preview, and Development environments
 
-**Important**: Vercel automatically adds the `Authorization: Bearer ${CRON_SECRET}` header when calling cron endpoints. Do NOT add a `headers` property in `vercel.json` as it's not supported and will cause deployment errors.
+**Important**:
+- Vercel automatically adds the `x-vercel-cron: 1` header to all cron requests
+- Vercel does NOT automatically add Authorization headers
+- The `CRON_SECRET` is only used for manual testing (not by Vercel's automatic cron system)
+- Do NOT add a `headers` property in `vercel.json` as it's not supported and will cause deployment errors
 
 ## CRON Schedules
 
@@ -141,13 +185,31 @@ import { verifyCronAuth } from '$lib/server/auth/cron';
 
 export const POST: RequestHandler = async ({ request }) => {
 	// SECURITY: Verify CRON authentication BEFORE any processing
+	// Supports both Vercel automatic (x-vercel-cron header)
+	// and manual testing (Bearer token)
 	verifyCronAuth(request); // Throws 401 if invalid
 
 	// ... proceed with CRON job logic
 };
 ```
 
+### How Authentication Works
+
+**Production (Vercel)**:
+1. Vercel's cron system calls your endpoint at scheduled time
+2. Vercel automatically adds `x-vercel-cron: 1` header
+3. `verifyCronAuth()` checks for this header + `VERCEL=1` environment variable
+4. If both present, request is authenticated
+
+**Development/Testing (Manual)**:
+1. You call the endpoint with `Authorization: Bearer <CRON_SECRET>` header
+2. `verifyCronAuth()` extracts the Bearer token
+3. Performs constant-time comparison with `CRON_SECRET` environment variable
+4. If tokens match, request is authenticated
+
 ### Manual Testing (Development)
+
+Use Bearer token authentication for local testing:
 
 ```bash
 # Get secret from .env
@@ -161,6 +223,8 @@ curl -X POST http://localhost:5175/api/cache/cleanup \
 curl -X POST http://localhost:5175/api/notifications/cleanup \
   -H "Authorization: Bearer $CRON_SECRET"
 ```
+
+**Note**: The `x-vercel-cron` header method only works in production on Vercel. For local testing, always use the Bearer token method.
 
 ### Expected Responses
 
@@ -286,8 +350,11 @@ curl -X POST http://localhost:5175/api/cache/cleanup -v
 Watch for authentication events:
 
 ```bash
-# Successful authentication
-[CRON AUTH] ✅ Valid token { url: '/api/cache/cleanup', method: 'POST', timestamp: '2025-11-10T...' }
+# Successful authentication (Vercel production)
+[CRON AUTH] ✅ Authenticated via x-vercel-cron header { url: '/api/cache/cleanup', method: 'POST', timestamp: '2025-11-11T...' }
+
+# Successful authentication (Bearer token)
+[CRON AUTH] ✅ Valid token { url: '/api/cache/cleanup', method: 'POST', timestamp: '2025-11-11T...' }
 
 # Failed authentication
 [CRON AUTH] Invalid token (value mismatch) { url: '/api/cache/cleanup' }
@@ -311,27 +378,47 @@ Check CRON execution logs in Vercel Dashboard:
 **Fix**:
 
 1. Generate secret: `node -e "...generate script..."`
-2. Add to Vercel: Project Settings → Environment Variables → Add `CRON_SECRET`
-3. Redeploy application
+2. Add to `.env` for local development
+3. Add to Vercel: Project Settings → Environment Variables → Add `CRON_SECRET`
+4. Redeploy application
 
-### CRON endpoint returns 401
+### CRON endpoint returns 401 (Production/Vercel)
 
-**Cause**: Token mismatch or `CRON_SECRET` not properly configured in Vercel.
+**Cause**: `x-vercel-cron` header missing or `VERCEL` environment variable not set.
 
 **Fix**:
 
-1. Verify Vercel environment variable `CRON_SECRET` is set correctly
-2. Ensure `vercel.json` does NOT contain a `headers` property (Vercel adds it automatically)
-3. Redeploy application
+1. Verify the request is coming from Vercel's cron system (check Vercel logs)
+2. Ensure `VERCEL=1` environment variable exists in Vercel (it's automatic, but verify)
+3. Check Vercel logs for the actual headers being sent
+4. If testing manually, use Bearer token method instead
+
+### CRON endpoint returns 401 (Local/Manual Testing)
+
+**Cause**: Bearer token mismatch or missing Authorization header.
+
+**Fix**:
+
+1. Verify `CRON_SECRET` is set in `.env` file
+2. Verify Authorization header format: `Authorization: Bearer <CRON_SECRET>`
+3. Check for whitespace or special characters in the secret
+4. Verify the secret matches exactly (case-sensitive)
 
 ### Logs show "Invalid token (length mismatch)"
 
-**Cause**: Secret length changed, but Vercel environment variable not updated.
+**Cause**: Secret length changed, but environment variable not updated.
 
 **Fix**:
 
-1. Update Vercel environment variable with new secret
-2. Redeploy application
+1. Update `.env` file with new secret
+2. Update Vercel environment variable with new secret
+3. Restart dev server / Redeploy application
+
+### Vercel cron runs but returns 401
+
+**Cause**: This was the original issue - Vercel does NOT add Authorization headers automatically.
+
+**Fix**: Already fixed! The code now checks for `x-vercel-cron: 1` header (which Vercel DOES add automatically).
 
 ## Migration Checklist
 
@@ -357,11 +444,16 @@ Check CRON execution logs in Vercel Dashboard:
 
 ## Changelog
 
-- **2025-11-11**: Fixed Vercel configuration
+- **2025-11-11**: Fixed Vercel cron authentication
+  - **BREAKING FIX**: Corrected authentication to support Vercel's `x-vercel-cron: 1` header
+  - Implemented dual authentication system (Vercel automatic + Bearer token for testing)
+  - Fixed issue where Vercel crons were returning 401 (Vercel does NOT add Authorization headers)
+  - Updated `verifyCronAuth()` to check `x-vercel-cron` header + `VERCEL` environment variable
   - Removed invalid `headers` property from `vercel.json` (not supported by Vercel)
-  - Updated documentation to clarify Vercel automatically adds Authorization header
+  - Updated documentation with accurate information about Vercel's cron system
 - **2025-11-10**: Initial implementation
   - Created authentication utility with constant-time comparison
   - Protected cache cleanup endpoint
   - Protected notifications cleanup endpoint
   - Updated Vercel CRON configuration
+  - **Note**: Initial implementation incorrectly assumed Vercel adds Authorization headers
