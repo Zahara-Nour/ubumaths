@@ -447,7 +447,7 @@ describe('refetchRewards', () => {
 	});
 
 	it('should invalidate and refetch for teacher context', async () => {
-		const mockRewards = new Map([['student1', { gidouilles: 100, vip_cards: {} }]]);
+		const mockRewards = new Map([['student1', { gidouilles: 100, bonus: 50, vip_cards: {} }]]);
 		vi.mocked(teacherCache.getStudentRewards).mockResolvedValue(mockRewards);
 
 		const result = await refetchRewards(teacherContext);
@@ -458,7 +458,7 @@ describe('refetchRewards', () => {
 	});
 
 	it('should invalidate and refetch for student context', async () => {
-		const mockRewards = { gidouilles: 50, vip_cards: sampleVipCards };
+		const mockRewards = { gidouilles: 50, bonus: 25, vip_cards: sampleVipCards };
 		vi.mocked(studentCache.getRewards).mockResolvedValue(mockRewards);
 
 		const result = await refetchRewards(studentContext);

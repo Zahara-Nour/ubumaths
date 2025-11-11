@@ -458,6 +458,36 @@ export class StudentDashboardCache {
 	}
 
 	/**
+	 * Update bonus optimistically (instant UI feedback)
+	 *
+	 * IMPORTANT: Call this BEFORE making the API request for instant UI update.
+	 * After API succeeds, call invalidateRewards() + getRewards() to sync.
+	 *
+	 * @param delta - The change in bonus (positive or negative)
+	 */
+	updateBonusOptimistic(delta: number): void {
+		const cached = this.rewardsCache;
+		if (!cached) return;
+
+		const currentBonus = cached.rewards.bonus ?? 0;
+		const newBonus = Math.max(0, currentBonus + delta);
+
+		// Update cache with new bonus value
+		this.rewardsCache = {
+			...cached,
+			rewards: {
+				...cached.rewards,
+				bonus: newBonus
+			}
+		};
+
+		this.log(
+			'trace',
+			`[Cache] Optimistic bonus update: ${currentBonus} → ${newBonus} (${delta >= 0 ? '+' : ''}${delta})`
+		);
+	}
+
+	/**
 	 * Update VIP cards optimistically (instant UI feedback)
 	 *
 	 * IMPORTANT: Call this BEFORE making the API request for instant UI update.
@@ -687,6 +717,7 @@ export class StudentDashboardCache {
 			// Return empty rewards as fallback
 			return {
 				gidouilles: 0,
+				bonus: 0,
 				vip_cards: {}
 			};
 		}

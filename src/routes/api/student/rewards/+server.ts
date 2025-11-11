@@ -61,7 +61,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Fetch student rewards from profiles table
 		const { data: studentData, error: fetchError } = await supabase
 			.from('profiles')
-			.select('gidouilles, vip_cards')
+			.select('gidouilles, bonus, vip_cards')
 			.eq('id', user.id)
 			.single();
 
@@ -88,6 +88,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		const rewards: StudentRewards = {
 			gidouilles: studentData.gidouilles || 0,
+			bonus: studentData.bonus || 0,
 			vip_cards: vipCards
 		};
 

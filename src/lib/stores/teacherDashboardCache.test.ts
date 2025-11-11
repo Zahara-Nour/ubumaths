@@ -84,6 +84,7 @@ function _createMockRewards(studentIds: string[]): Map<string, StudentRewards> {
 	studentIds.forEach((id, i) => {
 		rewards.set(id, {
 			gidouilles: i * 10,
+			bonus: i * 5,
 			vip_cards: {
 				card1: { cardId: 'card1', earnedAt: new Date().toISOString(), usedAt: null },
 				card2: { cardId: 'card2', earnedAt: new Date().toISOString(), usedAt: null }
@@ -709,11 +710,12 @@ describe('Cache 2A: Student Rewards', () => {
 				{
 					id: 'student-1',
 					gidouilles: 10,
+					bonus: 5,
 					vip_cards: {
 						card1: { cardId: 'card1', earnedAt: testTimestamp, usedAt: null }
 					}
 				},
-				{ id: 'student-2', gidouilles: 20, vip_cards: {} as StudentVipCards }
+				{ id: 'student-2', gidouilles: 20, bonus: 10, vip_cards: {} as StudentVipCards }
 			];
 
 			cache.hydrateRewards(classId, students);
@@ -723,6 +725,7 @@ describe('Cache 2A: Student Rewards', () => {
 			expect(rewards?.size).toBe(2);
 			expect(rewards?.get('student-1')).toEqual({
 				gidouilles: 10,
+				bonus: 5,
 				vip_cards: {
 					card1: { cardId: 'card1', earnedAt: testTimestamp, usedAt: null }
 				}

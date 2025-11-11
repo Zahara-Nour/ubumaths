@@ -106,7 +106,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		// Fetch student rewards
 		const { data: rewardsData, error: rewardsError } = await supabase
 			.from('profiles')
-			.select('gidouilles, vip_cards')
+			.select('gidouilles, bonus, vip_cards')
 			.eq('id', user.id)
 			.single();
 
@@ -127,6 +127,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 
 		const rewards: StudentRewards = {
 			gidouilles: rewardsData?.gidouilles || 0,
+			bonus: rewardsData?.bonus || 0,
 			vip_cards: vipCards
 		};
 

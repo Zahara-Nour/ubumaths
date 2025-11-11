@@ -419,6 +419,42 @@ export class TeacherDashboardCache {
 	}
 
 	/**
+	 * Update bonus optimistically (instant UI feedback)
+	 *
+	 * REACTIVITY: Creates new objects and uses .set() to trigger SvelteMap reactivity
+	 *
+	 * @param classId - The class ID
+	 * @param studentId - The student ID
+	 * @param delta - The change amount (positive or negative)
+	 */
+	updateBonusOptimistic(classId: string, studentId: string, delta: number): void {
+		const cached = this.rewardsCache.get(classId);
+		if (!cached) return;
+
+		const rewards = cached.rewards.get(studentId);
+		if (!rewards) return;
+
+		// Create new rewards object to trigger reactivity
+		const newBonus = Math.max(0, (rewards.bonus ?? 0) + delta);
+		const updatedRewards: StudentRewards = {
+			...rewards,
+			bonus: newBonus
+		};
+
+		// Create new Map with updated student rewards
+		const newRewardsMap = new SvelteMap(cached.rewards);
+		newRewardsMap.set(studentId, updatedRewards);
+
+		// Update cache with new object to trigger SvelteMap reactivity
+		this.rewardsCache.set(classId, {
+			...cached,
+			rewards: newRewardsMap
+		});
+
+		this.log('trace', `[Cache] Optimistic bonus update: student ${studentId} → ${newBonus}`);
+	}
+
+	/**
 	 * Update VIP cards optimistically (instant UI feedback)
 	 *
 	 * REACTIVITY: SvelteMap is automatically reactive. Calling .set() will notify
@@ -605,6 +641,7 @@ export class TeacherDashboardCache {
 			for (const item of data.gidouilles || []) {
 				rewardsMap.set(item.student_id, {
 					gidouilles: item.gidouilles || 0,
+					bonus: item.bonus || 0,
 					vip_cards: item.vip_cards || {}
 				});
 			}
@@ -693,17 +730,18 @@ export class TeacherDashboardCache {
 	 * Uses SvelteMap for reactive rewards data
 	 *
 	 * @param classId - The class ID
-	 * @param students - Array of students with gidouilles and vip_cards
+	 * @param students - Array of students with gidouilles, bonus, and vip_cards
 	 */
 	hydrateRewards(
 		classId: string,
-		students: Array<{ id: string; gidouilles: number; vip_cards: StudentVipCards }>
+		students: Array<{ id: string; gidouilles: number; bonus: number; vip_cards: StudentVipCards }>
 	): void {
 		const rewardsMap = new SvelteMap<string, StudentRewards>();
 
 		for (const student of students) {
 			rewardsMap.set(student.id, {
 				gidouilles: student.gidouilles,
+				bonus: student.bonus,
 				vip_cards: student.vip_cards
 			});
 		}
