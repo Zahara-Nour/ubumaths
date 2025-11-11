@@ -131,8 +131,8 @@
 	function shouldShowDateHeader(index: number): boolean {
 		if (index === 0) return true;
 
-		const currentDate = new Date(messages[index].created_at).toDateString();
-		const prevDate = new Date(messages[index - 1].created_at).toDateString();
+		const currentDate = new Date(messages[index].created_at ?? '').toDateString();
+		const prevDate = new Date(messages[index - 1].created_at ?? '').toDateString();
 
 		return currentDate !== prevDate;
 	}
@@ -239,7 +239,7 @@
 				{#if shouldShowDateHeader(index)}
 					<div class="my-4 text-center">
 						<span class="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-							{formatDateHeader(message.created_at)}
+							{formatDateHeader(message.created_at ?? '')}
 						</span>
 					</div>
 				{/if}
@@ -355,7 +355,7 @@
 						<!-- Timestamp & Reactions -->
 						<div class="mt-1 flex items-center gap-2">
 							<span class="text-xs text-muted-foreground">
-								{formatMessageTime(message.created_at)}
+								{formatMessageTime(message.created_at ?? '')}
 								{#if message.edited_at}
 									<span class="italic">(modifié)</span>
 								{/if}

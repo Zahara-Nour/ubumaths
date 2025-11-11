@@ -32,8 +32,8 @@ export const POST: RequestHandler = async ({ request, locals: { supabase } }) =>
 	try {
 		// Start job run
 		const { data: startData, error: startError } = await serviceClient.rpc('start_job_run', {
-			job_name: 'auto_select_daily_riddle',
-			metadata: {}
+			p_job_name: 'auto_select_daily_riddle',
+			p_metadata: {}
 		});
 
 		if (startError) {
@@ -55,9 +55,9 @@ export const POST: RequestHandler = async ({ request, locals: { supabase } }) =>
 			// Complete job run (success)
 			if (runId) {
 				await serviceClient.rpc('complete_job_run', {
-					run_id: runId,
-					status: 'success',
-					metadata: riddleId
+					p_run_id: runId,
+					p_status: 'success',
+					p_metadata: riddleId
 						? { riddle_id: riddleId, message: result.message }
 						: { message: result.message }
 				});
@@ -71,10 +71,10 @@ export const POST: RequestHandler = async ({ request, locals: { supabase } }) =>
 			// Complete job run (failed)
 			if (runId) {
 				await serviceClient.rpc('complete_job_run', {
-					run_id: runId,
-					status: 'failed',
-					error_message: result.message,
-					metadata: {}
+					p_run_id: runId,
+					p_status: 'failed',
+					p_error_message: result.message,
+					p_metadata: {}
 				});
 			}
 
@@ -90,10 +90,10 @@ export const POST: RequestHandler = async ({ request, locals: { supabase } }) =>
 		// Complete job run (failed)
 		if (runId) {
 			await serviceClient.rpc('complete_job_run', {
-				run_id: runId,
-				status: 'failed',
-				error_message: err instanceof Error ? err.message : 'Unknown error',
-				metadata: {}
+				p_run_id: runId,
+				p_status: 'failed',
+				p_error_message: err instanceof Error ? err.message : 'Unknown error',
+				p_metadata: {}
 			});
 		}
 

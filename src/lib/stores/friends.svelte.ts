@@ -85,10 +85,26 @@ class FriendsManager {
 						: friendship.requester_id;
 
 				const profile = profileMap.get(friendId);
-				const presence = presenceMap.get(friendId);
+				const presenceData = presenceMap.get(friendId);
+
+				// Transform presence to match FriendshipWithProfile type
+				const presence = presenceData
+					? {
+							is_online: presenceData.status === 'online',
+							last_seen: presenceData.last_heartbeat
+						}
+					: undefined;
 
 				return {
-					...friendship,
+					id: friendship.id,
+					user_id: this.currentUserId!,
+					friend_id: friendId,
+					status: friendship.status as FriendshipType,
+					friendship_type: friendship.friendship_type as FriendshipType | undefined,
+					created_at: friendship.created_at,
+					updated_at: friendship.updated_at,
+					requester_id: friendship.requester_id,
+					addressee_id: friendship.addressee_id,
 					friend_profile: {
 						id: friendId,
 						full_name: profile?.full_name ?? null,

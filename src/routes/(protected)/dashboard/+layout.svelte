@@ -80,7 +80,7 @@
 	import { getSkeletonType } from '$lib/utils/skeleton-detector';
 	import TestModeToggle from '$lib/components/teacher/TestModeToggle.svelte';
 
-	import type { Snippet } from 'svelte';
+	import type { ComponentType, Snippet } from 'svelte';
 
 	// PROPS RECEIVED FROM PARENT LAYOUT SERVER LOAD:
 	// - data: Contains profile from +layout.server.ts

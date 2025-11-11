@@ -95,6 +95,9 @@
 	// Get rarity display info for this card, defaulting to common if rarity not set
 	const rarityInfo = card.rarity ? rarityColors[card.rarity] : rarityColors.common;
 
+	// Compute imagePath if not provided (convention: /vip-cards/{id}.png)
+	const computedImagePath = $derived(card.imagePath || `/vip-cards/${card.id}.png`);
+
 	// Random seed for cosmos effect positioning
 	const randomSeed = {
 		x: Math.random(),
@@ -590,7 +593,7 @@
 
 			<!-- Card Front -->
 			<div class="holo-card__front" style={staticStyles}>
-				<img src={card.imagePath} alt={card.name} loading="lazy" width="660" height="921" />
+				<img src={computedImagePath} alt={card.name} loading="lazy" width="660" height="921" />
 				<div class="holo-card__shine"></div>
 				<div class="holo-card__glare"></div>
 

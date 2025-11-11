@@ -6305,3 +6305,83 @@ export const Constants = {
 		}
 	}
 } as const;
+
+// Type aliases for notifications table
+export type Notification = Tables<'notifications'>;
+export type NotificationRead = Tables<'notification_reads'>;
+export type NotificationType = 'info' | 'alert' | 'announcement' | 'reminder';
+export type NotificationPriority = 'normal' | 'important' | 'urgent';
+export type NotificationTargetType = 'all' | 'roles' | 'classes' | 'users';
+
+// Type alias for profiles table
+export type Profile = Tables<'profiles'>;
+export type SystemEventType =
+	| 'maintenance'
+	| 'update'
+	| 'incident'
+	| 'announcement'
+	| 'assessment_graded'
+	| 'assignment_created'
+	| 'resource_added'
+	| 'reward_earned'
+	| 'badge_unlocked'
+	| 'maintenance_scheduled'
+	| 'feature_released'
+	| 'assessment_assigned';
+
+// Type aliases for timetable (school periods)
+export interface SchoolPeriod {
+	number: number;
+	start_time: string;
+	end_time: string;
+	name?: string;
+}
+
+export interface SchoolTimetable {
+	periods: SchoolPeriod[];
+}
+
+// Additional type exports
+export type Class = Tables<'classes'>;
+export type Gender = 'male' | 'female' | 'other' | 'M' | 'F';
+export type UserRole = 'student' | 'teacher' | 'admin';
+export type FriendshipType = 'pending' | 'accepted' | 'blocked' | 'classmate';
+
+export interface FriendshipWithProfile {
+	id: string;
+	user_id: string;
+	friend_id: string;
+	status: FriendshipType;
+	friendship_type?: FriendshipType;
+	created_at: string;
+	updated_at: string;
+	requester_id?: string;
+	addressee_id?: string;
+	friend_profile: {
+		id: string;
+		full_name: string | null;
+		firstname: string | null;
+		lastname: string | null;
+		avatar_url: string | null;
+		role: UserRole;
+	};
+	presence?: {
+		is_online: boolean;
+		last_seen: string;
+	};
+}
+
+export interface ClassSchedule {
+	id: string;
+	class_id: string;
+	teacher_id: string;
+	day_of_week: number;
+	start_time: string;
+	end_time: string;
+	period_number: number | null;
+	subject: string | null;
+	room: string | null;
+	notes: string | null;
+	created_at: string;
+	updated_at: string;
+}

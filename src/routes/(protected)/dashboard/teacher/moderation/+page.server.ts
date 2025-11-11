@@ -17,7 +17,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Check teacher role
-	if (!['teacher', 'admin'].includes(locals.user.role)) {
+	if (!['teacher', 'admin'].includes(locals.user.role ?? '')) {
 		throw error(403, 'Access denied');
 	}
 

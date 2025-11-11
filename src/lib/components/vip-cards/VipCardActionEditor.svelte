@@ -139,7 +139,7 @@
 
 	// Rarity filter options for draw_cards (with undefined option for "no filter")
 	const drawRarityFilterItems = [
-		{ value: undefined, label: 'Aucune contrainte' },
+		{ value: '', label: 'Aucune contrainte' },
 		{ value: 'common', label: 'Commune' },
 		{ value: 'rare', label: 'Rare' },
 		{ value: 'epic', label: 'Épique' },

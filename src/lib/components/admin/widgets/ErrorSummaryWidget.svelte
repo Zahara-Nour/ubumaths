@@ -70,15 +70,13 @@
 		<div class="space-y-3">
 			<!-- Critical errors -->
 			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
-					<div class="flex items-center justify-between" {...builder}>
-						<span class="text-sm text-gray-600">Erreurs critiques (24h)</span>
-						<span
-							class={cn('text-lg font-bold', hasCriticalErrors ? 'text-red-600' : 'text-gray-900')}
-						>
-							{criticalErrors}
-						</span>
-					</div>
+				<Tooltip.Trigger class="flex w-full items-center justify-between">
+					<span class="text-sm text-gray-600">Erreurs critiques (24h)</span>
+					<span
+						class={cn('text-lg font-bold', hasCriticalErrors ? 'text-red-600' : 'text-gray-900')}
+					>
+						{criticalErrors}
+					</span>
 				</Tooltip.Trigger>
 				<Tooltip.Content>
 					<p>Erreurs critiques détectées dans les dernières 24 heures</p>
@@ -87,18 +85,16 @@
 
 			<!-- Unresolved errors -->
 			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
-					<div class="flex items-center justify-between" {...builder}>
-						<span class="text-sm text-gray-600">Erreurs non résolues</span>
-						<span
-							class={cn(
-								'text-lg font-bold',
-								hasHighUnresolvedErrors ? 'text-orange-600' : 'text-gray-900'
-							)}
-						>
-							{unresolvedErrors}
-						</span>
-					</div>
+				<Tooltip.Trigger class="flex w-full items-center justify-between">
+					<span class="text-sm text-gray-600">Erreurs non résolues</span>
+					<span
+						class={cn(
+							'text-lg font-bold',
+							hasHighUnresolvedErrors ? 'text-orange-600' : 'text-gray-900'
+						)}
+					>
+						{unresolvedErrors}
+					</span>
 				</Tooltip.Trigger>
 				<Tooltip.Content>
 					<p>Nombre total d'erreurs non marquées comme résolues</p>
@@ -107,11 +103,9 @@
 
 			<!-- Last hour errors -->
 			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
-					<div class="flex items-center justify-between" {...builder}>
-						<span class="text-sm text-gray-600">Dernière heure</span>
-						<span class="text-lg font-bold text-gray-900">{lastHourErrors}</span>
-					</div>
+				<Tooltip.Trigger class="flex w-full items-center justify-between">
+					<span class="text-sm text-gray-600">Dernière heure</span>
+					<span class="text-lg font-bold text-gray-900">{lastHourErrors}</span>
 				</Tooltip.Trigger>
 				<Tooltip.Content>
 					<p>Erreurs survenues dans la dernière heure</p>
@@ -120,14 +114,12 @@
 
 			<!-- Error rate -->
 			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
-					<div class="flex items-center justify-between" {...builder}>
-						<div class="flex items-center gap-1">
-							<TrendingUp class="h-4 w-4 text-gray-500" />
-							<span class="text-sm text-gray-600">Taux d'erreur</span>
-						</div>
-						<span class="text-lg font-bold text-gray-900">{formattedErrorRate}%</span>
+				<Tooltip.Trigger class="flex w-full items-center justify-between">
+					<div class="flex items-center gap-1">
+						<TrendingUp class="h-4 w-4 text-gray-500" />
+						<span class="text-sm text-gray-600">Taux d'erreur</span>
 					</div>
+					<span class="text-lg font-bold text-gray-900">{formattedErrorRate}%</span>
 				</Tooltip.Trigger>
 				<Tooltip.Content>
 					<p>Pourcentage de requêtes ayant généré une erreur</p>

@@ -162,10 +162,10 @@ export interface VipCard {
 	id: string; // Unique identifier (matches image filename without extension)
 	name: string; // Display name in French
 	description: string; // Description of the privilege in French
-	imagePath: string; // Path to card front image
-	category?: VipCardCategory; // Optional category for UI filtering
+	imagePath?: string; // Path to card front image (optional, computed from id if not provided)
+	category?: VipCardCategory | null; // Optional category for UI filtering (null from database)
 	rarity: VipCardRarity; // Required rarity level
-	action?: VipCardAction; // Optional action that can be activated
+	action?: VipCardAction | null; // Optional action that can be activated (null from database)
 }
 
 /**

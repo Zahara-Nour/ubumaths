@@ -1,12 +1,13 @@
 <script lang="ts">
 	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
 	import { resolve } from '$app/paths';
+	import { templateToVipCard } from '$lib/stores/vipCardTemplates.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
-	// Group cards by rarity (filter enabled cards only)
-	const enabledCards = data.templates.filter((c) => c.enabled);
+	// Group cards by rarity (filter enabled cards only) and convert to VipCard format
+	const enabledCards = data.templates.filter((c) => c.is_enabled).map(templateToVipCard);
 	const legendaryCards = enabledCards.filter((c) => c.rarity === 'legendary');
 	const epicCards = enabledCards.filter((c) => c.rarity === 'epic');
 	const rareCards = enabledCards.filter((c) => c.rarity === 'rare');

@@ -2,12 +2,13 @@
 	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { resolve } from '$app/paths';
+	import { templateToVipCard } from '$lib/stores/vipCardTemplates.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
-	// Use a legendary card for all examples
-	const enabledCards = data.templates.filter((c) => c.enabled);
+	// Use a legendary card for all examples (convert to VipCard format)
+	const enabledCards = data.templates.filter((c) => c.is_enabled).map(templateToVipCard);
 	const exampleCard = enabledCards.find((c) => c.rarity === 'legendary') || enabledCards[0];
 
 	// Track showcase restarts by incrementing a key

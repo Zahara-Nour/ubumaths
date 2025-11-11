@@ -74,5 +74,5 @@ export function sanitizeNotificationHtml(html: string): string {
 
 	// Sanitize using DOMPurify with shared strict configuration
 	// SECURITY: This config is IDENTICAL to server-side (defense-in-depth)
-	return DOMPurify.sanitize(html, NOTIFICATION_SANITIZE_CONFIG);
+	return DOMPurify.sanitize(html, NOTIFICATION_SANITIZE_CONFIG as any) as unknown as string;
 }

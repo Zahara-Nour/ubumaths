@@ -46,7 +46,7 @@ export const notificationPriorityFormSchema = z.enum(['normal', 'important', 'ur
  * Notification target type schema
  * Based on NotificationTargetType from notification types
  */
-export const notificationTargetTypeFormSchema = z.enum(['all', 'role', 'classes', 'users']);
+export const notificationTargetTypeFormSchema = z.enum(['all', 'roles', 'classes', 'users']);
 
 /**
  * User role schema (for target_roles validation)

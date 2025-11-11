@@ -70,6 +70,9 @@ export interface Message {
 		full_name: string | null;
 		avatar_url: string | null;
 	};
+	sender_firstname?: string | null; // Flattened for convenience
+	sender_lastname?: string | null; // Flattened for convenience
+	sender_avatar_url?: string | null; // Flattened for convenience
 	attachments?: MessageAttachment[];
 	reactions?: MessageReaction[];
 }
@@ -83,6 +86,8 @@ export interface MessageReaction {
 	user_id: string;
 	emoji: string;
 	created_at: string | null;
+	count?: number; // Aggregated count from grouped reactions
+	user_reacted?: boolean; // Did the current user react with this emoji
 }
 
 /**

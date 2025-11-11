@@ -58,9 +58,9 @@ export interface StudentProfile {
 	/** Student's UUID from profiles table */
 	id: string;
 	/** Student's email address */
-	email: string;
+	email: string | null;
 	/** Student's first name */
-	firstname: string;
+	firstname: string | null;
 	/** Student's last name (optional) */
 	lastname: string | null;
 	/** Computed full name (firstname + lastname) */

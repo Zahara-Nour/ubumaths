@@ -221,10 +221,10 @@
 						</div>
 
 						<!-- Role selection -->
-						{#if targetType === 'role' || targetType === 'users'}
+						{#if targetType === 'roles' || targetType === 'users'}
 							<div class="space-y-2">
 								<Label
-									>{targetType === 'role' ? 'Sélectionner les rôles' : 'Filtrer par rôle'}</Label
+									>{targetType === 'roles' ? 'Sélectionner les rôles' : 'Filtrer par rôle'}</Label
 								>
 								<div class="grid gap-2 sm:grid-cols-3">
 									{#each ['admin', 'teacher', 'student'] as role (role)}
@@ -236,7 +236,7 @@
 												class="h-4 w-4"
 											/>
 											<span>{roleLabels[role]}</span>
-											{#if targetType === 'role'}
+											{#if targetType === 'roles'}
 												<input
 													type="hidden"
 													name="roles"

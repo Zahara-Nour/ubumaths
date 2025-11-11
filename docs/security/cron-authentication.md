@@ -6,6 +6,7 @@
 ## Overview
 
 Secure authentication system for CRON endpoints supporting two authentication methods:
+
 1. **Vercel automatic**: Uses `x-vercel-cron: 1` header (production)
 2. **Manual testing**: Uses `Authorization: Bearer <CRON_SECRET>` header (development/testing)
 
@@ -47,6 +48,7 @@ Both methods use constant-time comparison to prevent timing attacks.
 Two authentication methods are supported:
 
 **Method 1: Vercel Automatic (Production)**
+
 ```typescript
 // Vercel adds this header automatically to cron requests
 const vercelCron = request.headers.get('x-vercel-cron');
@@ -58,6 +60,7 @@ if (vercelCron === '1' && isVercel) {
 ```
 
 **Method 2: Bearer Token (Manual Testing)**
+
 ```typescript
 // For local testing and manual invocations
 const authHeader = request.headers.get('authorization');
@@ -155,6 +158,7 @@ Add `CRON_SECRET` to Vercel environment variables:
 3. Apply to Production, Preview, and Development environments
 
 **Important**:
+
 - Vercel automatically adds the `x-vercel-cron: 1` header to all cron requests
 - Vercel does NOT automatically add Authorization headers
 - The `CRON_SECRET` is only used for manual testing (not by Vercel's automatic cron system)
@@ -196,12 +200,14 @@ export const POST: RequestHandler = async ({ request }) => {
 ### How Authentication Works
 
 **Production (Vercel)**:
+
 1. Vercel's cron system calls your endpoint at scheduled time
 2. Vercel automatically adds `x-vercel-cron: 1` header
 3. `verifyCronAuth()` checks for this header + `VERCEL=1` environment variable
 4. If both present, request is authenticated
 
 **Development/Testing (Manual)**:
+
 1. You call the endpoint with `Authorization: Bearer <CRON_SECRET>` header
 2. `verifyCronAuth()` extracts the Bearer token
 3. Performs constant-time comparison with `CRON_SECRET` environment variable

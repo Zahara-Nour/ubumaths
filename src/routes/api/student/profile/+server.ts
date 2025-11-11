@@ -86,14 +86,19 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Transform database response to ClassMembership[]
 		const classes: ClassMembership[] = (memberships || [])
 			.filter((m) => m.classes) // Filter out null classes
-			.map((m) => ({
-				class_id: m.class_id,
-				class_name: m.classes.name,
-				teacher_name: m.classes.teacher?.full_name || 'Unknown Teacher',
-				teacher_id: m.classes.teacher?.id || '',
-				joined_at: m.joined_at,
-				is_active: m.classes.is_active
-			}));
+			.map((m) => {
+				// Handle case where classes or teacher might be arrays
+				const classData = Array.isArray(m.classes) ? m.classes[0] : m.classes;
+				const teacher = Array.isArray(classData.teacher) ? classData.teacher[0] : classData.teacher;
+				return {
+					class_id: m.class_id,
+					class_name: classData.name,
+					teacher_name: teacher?.full_name || 'Unknown Teacher',
+					teacher_id: teacher?.id || '',
+					joined_at: m.joined_at,
+					is_active: classData.is_active
+				};
+			});
 
 		// Build student profile
 		const studentProfile: StudentProfile = {

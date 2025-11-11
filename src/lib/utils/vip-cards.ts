@@ -178,7 +178,7 @@ export function getActionDescription(action: VipCardAction, templates: VipCardTe
 
 		case 'exchange_cards':
 			if (action.exchange.mode === 'replace_random') {
-				const count = action.exchange.count;
+				const count = action.exchange.count ?? 0;
 				return count
 					? `Échanger ${count} carte${count > 1 ? 's' : ''} contre de nouvelles cartes`
 					: `Échanger des cartes contre de nouvelles cartes`;

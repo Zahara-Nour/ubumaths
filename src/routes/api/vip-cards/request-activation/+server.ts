@@ -149,7 +149,8 @@ function getActionDescription(action: VipCardAction): string {
 
 		case 'exchange_cards':
 			if (action.exchange.mode === 'replace_random') {
-				return `Échanger ${action.exchange.count} carte${action.exchange.count > 1 ? 's' : ''} contre de nouvelles cartes`;
+				const count = action.exchange.count ?? 0;
+				return `Échanger ${count} carte${count > 1 ? 's' : ''} contre de nouvelles cartes`;
 			} else if (action.exchange.mode === 'rarity_points') {
 				return `Échanger des cartes contre une carte ${action.exchange.targetRarity}`;
 			} else {

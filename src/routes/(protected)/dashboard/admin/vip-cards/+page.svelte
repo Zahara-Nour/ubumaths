@@ -14,6 +14,7 @@
 	import { responseToTemplate } from '$lib/types/vip-card-admin';
 	import type { TemplateResponse } from '$lib/types/vip-card-admin';
 	import { updateTemplate, addTemplate } from '$lib/stores/vipCardTemplates.svelte';
+	import type { VipCardAction } from '$lib/types/vip-card';
 
 	type VipCardTemplate = Database['public']['Tables']['vip_card_templates']['Row'];
 	type VipCardConfig = Database['public']['Tables']['vip_card_config']['Row'];
@@ -27,6 +28,7 @@
 		is_enabled: boolean;
 		image_path: string;
 		sort_order: number;
+		action?: VipCardAction | null;
 	}
 
 	interface CreateConfigData {
@@ -142,15 +144,15 @@
 
 			// API returns camelCase, convert to snake_case for local state
 			const apiResponse: TemplateResponse = await response.json();
-			const savedCard: VipCardTemplate = responseToTemplate(apiResponse);
+			const savedCard = responseToTemplate(apiResponse) as VipCardTemplate;
 
 			if (isEditing) {
 				templates = templates.map((t) => (t.id === savedCard.id ? savedCard : t));
-				updateTemplate(savedCard);
+				updateTemplate(savedCard as any);
 				toaster.success('Carte modifiée avec succès');
 			} else {
 				templates = [...templates, savedCard];
-				addTemplate(savedCard);
+				addTemplate(savedCard as any);
 				toaster.success('Carte créée avec succès');
 			}
 

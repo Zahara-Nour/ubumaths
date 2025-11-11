@@ -30,7 +30,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 	}
 
 	// 2. Check teacher role
-	if (!['teacher', 'admin'].includes(locals.user.role)) {
+	if (!['teacher', 'admin'].includes(locals.user.role ?? '')) {
 		throw error(403, 'Only teachers and admins can delete messages');
 	}
 

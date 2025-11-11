@@ -32,8 +32,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Start job run
 		const { data: startData, error: startError } = await serviceClient.rpc('start_job_run', {
-			job_name: 'cleanup_old_errors',
-			metadata: { days_old }
+			p_job_name: 'cleanup_old_errors',
+			p_metadata: { days_old }
 		});
 
 		if (startError) {
@@ -50,10 +50,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Complete job run (failed)
 			if (runId) {
 				await serviceClient.rpc('complete_job_run', {
-					run_id: runId,
-					status: 'failed',
-					error_message: result.error || 'Failed to cleanup errors',
-					metadata: { days_old }
+					p_run_id: runId,
+					p_status: 'failed',
+					p_error_message: result.error || 'Failed to cleanup errors',
+					p_metadata: { days_old }
 				});
 			}
 
@@ -63,9 +63,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Complete job run (success)
 		if (runId) {
 			await serviceClient.rpc('complete_job_run', {
-				run_id: runId,
-				status: 'success',
-				metadata: { days_old, deleted_count: result.deletedCount }
+				p_run_id: runId,
+				p_status: 'success',
+				p_metadata: { days_old, deleted_count: result.deletedCount }
 			});
 		}
 
@@ -77,10 +77,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Complete job run (failed) if not already completed
 		if (runId) {
 			await serviceClient.rpc('complete_job_run', {
-				run_id: runId,
-				status: 'failed',
-				error_message: err instanceof Error ? err.message : 'Unknown error',
-				metadata: {}
+				p_run_id: runId,
+				p_status: 'failed',
+				p_error_message: err instanceof Error ? err.message : 'Unknown error',
+				p_metadata: {}
 			});
 		}
 

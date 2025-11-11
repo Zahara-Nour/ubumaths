@@ -528,7 +528,7 @@ async function executeExchangeReplaceRandom(options: {
 
 	return {
 		success: true,
-		message: `Exchanged ${count} card${count > 1 ? 's' : ''} for ${count} new card${count > 1 ? 's' : ''}`,
+		message: `Exchanged ${actualCount} card${actualCount > 1 ? 's' : ''} for ${actualCount} new card${actualCount > 1 ? 's' : ''}`,
 		data: result
 	};
 }

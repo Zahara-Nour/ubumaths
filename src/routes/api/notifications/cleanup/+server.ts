@@ -39,8 +39,8 @@ const cleanupHandler: RequestHandler = async ({ request, locals: { supabase } })
 	try {
 		// Start job run
 		const { data: startData, error: startError } = await serviceClient.rpc('start_job_run', {
-			job_name: 'cleanup_old_notifications',
-			metadata: {}
+			p_job_name: 'cleanup_old_notifications',
+			p_metadata: {}
 		});
 
 		if (startError) {
@@ -57,10 +57,10 @@ const cleanupHandler: RequestHandler = async ({ request, locals: { supabase } })
 			// Complete job run (failed)
 			if (runId) {
 				await serviceClient.rpc('complete_job_run', {
-					run_id: runId,
-					status: 'failed',
-					error_message: result.error || 'Unknown error',
-					metadata: {}
+					p_run_id: runId,
+					p_status: 'failed',
+					p_error_message: result.error || 'Unknown error',
+					p_metadata: {}
 				});
 			}
 
@@ -76,9 +76,9 @@ const cleanupHandler: RequestHandler = async ({ request, locals: { supabase } })
 		// Complete job run (success)
 		if (runId) {
 			await serviceClient.rpc('complete_job_run', {
-				run_id: runId,
-				status: 'success',
-				metadata: { deleted_count: result.deletedCount }
+				p_run_id: runId,
+				p_status: 'success',
+				p_metadata: { deleted_count: result.deletedCount }
 			});
 		}
 
@@ -91,10 +91,10 @@ const cleanupHandler: RequestHandler = async ({ request, locals: { supabase } })
 		// Complete job run (failed)
 		if (runId) {
 			await serviceClient.rpc('complete_job_run', {
-				run_id: runId,
-				status: 'failed',
-				error_message: err instanceof Error ? err.message : 'Unknown error',
-				metadata: {}
+				p_run_id: runId,
+				p_status: 'failed',
+				p_error_message: err instanceof Error ? err.message : 'Unknown error',
+				p_metadata: {}
 			});
 		}
 

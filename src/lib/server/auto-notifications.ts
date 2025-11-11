@@ -253,7 +253,7 @@ export async function notifyFeatureRelease(
 			type: 'announcement',
 			priority: 'normal',
 			system_event_type: 'feature_released',
-			target_type: data.targetRoles ? 'role' : 'all',
+			target_type: data.targetRoles ? 'roles' : 'all',
 			target_roles: data.targetRoles,
 			action_label: data.actionUrl ? 'Découvrir' : undefined,
 			action_url: data.actionUrl

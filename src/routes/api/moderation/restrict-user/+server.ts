@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// 2. Check teacher role
-	if (!['teacher', 'admin'].includes(locals.user.role)) {
+	if (!['teacher', 'admin'].includes(locals.user.role ?? '')) {
 		throw error(403, 'Only teachers and admins can restrict users');
 	}
 
