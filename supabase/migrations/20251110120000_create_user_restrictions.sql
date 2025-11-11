@@ -60,9 +60,10 @@ CREATE INDEX idx_user_restrictions_scope
   ON public.user_restrictions(scope_type, scope_id);
 
 -- Fast query for active (non-expired) restrictions
+-- Composite index supports: WHERE user_id = ? AND (expires_at IS NULL OR expires_at > now())
+-- Note: Cannot use partial index with now() as it's STABLE, not IMMUTABLE
 CREATE INDEX idx_user_restrictions_active
-  ON public.user_restrictions(user_id)
-  WHERE expires_at IS NULL OR expires_at > now();
+  ON public.user_restrictions(user_id, expires_at);
 
 -- Lookup by moderator (for audit trail)
 CREATE INDEX idx_user_restrictions_moderator
