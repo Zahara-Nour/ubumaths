@@ -3,6 +3,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -168,9 +169,10 @@
 						<!-- Requester -->
 						<div class="flex items-center gap-3">
 							<Avatar.Root class="size-10">
-								{#if friendship.requester_avatar}
-									<Avatar.Image src={friendship.requester_avatar} alt={friendship.requester_name} />
-								{/if}
+								<Avatar.Image
+									src={getAvatarUrl({ avatar_url: friendship.requester_avatar })}
+									alt={friendship.requester_name}
+								/>
 								<Avatar.Fallback>
 									{friendship.requester_name.charAt(0).toUpperCase()}
 								</Avatar.Fallback>
@@ -193,9 +195,10 @@
 						<!-- Addressee -->
 						<div class="flex items-center gap-3">
 							<Avatar.Root class="size-10">
-								{#if friendship.addressee_avatar}
-									<Avatar.Image src={friendship.addressee_avatar} alt={friendship.addressee_name} />
-								{/if}
+								<Avatar.Image
+									src={getAvatarUrl({ avatar_url: friendship.addressee_avatar })}
+									alt={friendship.addressee_name}
+								/>
 								<Avatar.Fallback>
 									{friendship.addressee_name.charAt(0).toUpperCase()}
 								</Avatar.Fallback>

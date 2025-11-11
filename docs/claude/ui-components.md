@@ -125,6 +125,93 @@ See also: [Component Architecture](../architecture/components.md)
 
 ---
 
+## Avatar Component (User Profile Pictures)
+
+The Avatar component displays user profile pictures with a robust multi-level fallback system.
+
+**Location**: `src/lib/components/ui/avatar/`
+
+**Utility**: `src/lib/utils/avatar.ts`
+
+### Why Use getAvatarUrl()?
+
+Google OAuth stores avatars in `user_metadata.picture`, not `avatar_url`. Without proper fallback logic, Google avatars won't display if database sync fails. The `getAvatarUrl()` utility handles all fallback scenarios automatically.
+
+### Standard Usage
+
+```svelte
+<script lang="ts">
+	import * as Avatar from '$lib/components/ui/avatar';
+	import { getAvatarUrl, getAvatarInitials } from '$lib/utils/avatar';
+
+	let { profile, user } = $props();
+</script>
+
+<Avatar.Root class="h-10 w-10">
+	<Avatar.Image
+		src={getAvatarUrl(
+			{
+				avatar_url: profile.avatar_url,
+				role: profile.role,
+				gender: profile.gender
+			},
+			user // Pass user session for OAuth fallback
+		)}
+		alt={profile.email || 'User'}
+	/>
+	<Avatar.Fallback>
+		{getAvatarInitials(profile.firstname, profile.lastname) || '?'}
+	</Avatar.Fallback>
+</Avatar.Root>
+```
+
+### Without User Session
+
+When displaying avatars for other users (friends, students):
+
+```svelte
+<Avatar.Root class="h-10 w-10">
+	<Avatar.Image
+		src={getAvatarUrl({
+			avatar_url: student.avatar_url,
+			role: student.role,
+			gender: student.gender
+		})}
+		alt={student.firstname}
+	/>
+	<Avatar.Fallback>
+		{getAvatarInitials(student.firstname, student.lastname)}
+	</Avatar.Fallback>
+</Avatar.Root>
+```
+
+### Fallback Chain
+
+1. `profile.avatar_url` - Database stored
+2. `user.user_metadata.picture` - Google OAuth (**critical!**)
+3. `user.user_metadata.avatar_url` - Other OAuth providers
+4. Role/gender-based default image
+5. Initials (Avatar.Fallback)
+
+### Best Practices
+
+- ✅ **Always use `getAvatarUrl()`** for URL resolution
+- ✅ **Pass user session** when available (own profile)
+- ✅ **Include Avatar.Fallback** with initials
+- ❌ **Never check `avatar_url` directly** without fallback logic
+- ❌ **Never create custom avatar resolution functions**
+
+### Complete Documentation
+
+See [Avatar System](../architecture/avatar-system.md) for:
+
+- Complete API reference
+- Database integration details
+- Implementation coverage
+- Troubleshooting guide
+
+---
+
 ## Common UI Patterns
 
 ### Event Handlers

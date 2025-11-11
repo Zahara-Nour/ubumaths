@@ -35,6 +35,7 @@
 	import { MoreVertical, Flag, Download, Trash2 } from 'lucide-svelte';
 	import DeleteMessageDialog from '$lib/components/moderation/DeleteMessageDialog.svelte';
 	import type { Message, TypingUser } from '$lib/stores/chat.svelte';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Component Props
 	interface Props {
@@ -250,9 +251,10 @@
 					{#if !isOwnMessage(message)}
 						<div class="flex-shrink-0">
 							<Avatar.Root class="h-8 w-8">
-								{#if message.sender_avatar_url}
-									<Avatar.Image src={message.sender_avatar_url} alt={getSenderName(message)} />
-								{/if}
+								<Avatar.Image
+									src={getAvatarUrl({ avatar_url: message.sender_avatar_url })}
+									alt={getSenderName(message)}
+								/>
 								<Avatar.Fallback class="bg-primary/10 text-xs text-primary">
 									{message.sender_firstname?.[0]?.toUpperCase() || '?'}
 								</Avatar.Fallback>

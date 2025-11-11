@@ -1,30 +1,21 @@
 <script lang="ts">
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { getAvatarFallback, getAvatarInitials, type Gender } from '$lib/utils/avatar';
+	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 
 	let { data } = $props();
 
 	function getAvatarSrc() {
-		// First try profile avatar_url
-		if (data.profile?.avatar_url) {
-			return data.profile.avatar_url;
-		}
-
-		// Then try user metadata (Google uses 'picture')
-		if (data.user?.user_metadata?.picture) {
-			return data.user.user_metadata.picture;
-		}
-		if (data.user?.user_metadata?.avatar_url) {
-			return data.user.user_metadata.avatar_url;
-		}
-
-		// Finally, use role/gender-based fallback if profile is available
-		if (data.profile) {
-			return getAvatarFallback(data.profile.role, data.profile.gender as Gender | null);
-		}
-
-		// Default fallback - empty string will trigger Avatar.Fallback
-		return '';
+		// Use standardized getAvatarUrl utility
+		return getAvatarUrl(
+			data.profile
+				? {
+						avatar_url: data.profile.avatar_url,
+						role: data.profile.role,
+						gender: data.profile.gender
+					}
+				: { avatar_url: null },
+			data.user
+		);
 	}
 </script>
 

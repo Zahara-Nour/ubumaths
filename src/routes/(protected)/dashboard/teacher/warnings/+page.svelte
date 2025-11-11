@@ -46,7 +46,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
+	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { History, AlertCircle } from 'lucide-svelte';
 	import { openRemoveWarningsModal } from '$lib/utils/vip-card-modals';
 	import type { StudentWarningCounts } from '$lib/server/warnings';
@@ -442,11 +442,12 @@
 										<!-- AVATAR -->
 										<Avatar.Root class="h-12 w-12 flex-shrink-0">
 											<Avatar.Image
-												src={student.avatar_url ||
-													getAvatarFallback(
-														(student.role as 'student' | 'teacher' | 'admin') || 'student',
+												src={getAvatarUrl({
+													avatar_url: student.avatar_url,
+													role: (student.role as 'student' | 'teacher' | 'admin') || 'student',
+													gender:
 														student.gender === 'boy' ? 'M' : student.gender === 'girl' ? 'F' : null
-													)}
+												})}
 												alt={getFullName(student.firstname, student.lastname, student.full_name)}
 											/>
 											<Avatar.Fallback class="bg-primary/10 font-semibold text-primary">

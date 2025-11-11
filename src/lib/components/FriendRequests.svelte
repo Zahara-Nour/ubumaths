@@ -4,6 +4,7 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Button } from '$lib/components/ui/button';
 	import { Check, X, Clock, UserPlus } from 'lucide-svelte';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	function getFriendshipTypeLabel(type: 'classmate' | 'mentor'): string {
 		return type === 'classmate' ? 'Camarade' : 'Mentor';
@@ -58,12 +59,10 @@
 						<div class="flex items-center gap-3">
 							<!-- Avatar -->
 							<Avatar.Root class="size-10">
-								{#if request.friend_profile.avatar_url}
-									<Avatar.Image
-										src={request.friend_profile.avatar_url}
-										alt={friendsManager.getDisplayName(request)}
-									/>
-								{/if}
+								<Avatar.Image
+									src={getAvatarUrl(request.friend_profile)}
+									alt={friendsManager.getDisplayName(request)}
+								/>
 								<Avatar.Fallback>
 									{friendsManager.getDisplayName(request).charAt(0).toUpperCase()}
 								</Avatar.Fallback>
@@ -126,12 +125,10 @@
 						<div class="flex items-center gap-3">
 							<!-- Avatar -->
 							<Avatar.Root class="size-10">
-								{#if request.friend_profile.avatar_url}
-									<Avatar.Image
-										src={request.friend_profile.avatar_url}
-										alt={friendsManager.getDisplayName(request)}
-									/>
-								{/if}
+								<Avatar.Image
+									src={getAvatarUrl(request.friend_profile)}
+									alt={friendsManager.getDisplayName(request)}
+								/>
 								<Avatar.Fallback>
 									{friendsManager.getDisplayName(request).charAt(0).toUpperCase()}
 								</Avatar.Fallback>

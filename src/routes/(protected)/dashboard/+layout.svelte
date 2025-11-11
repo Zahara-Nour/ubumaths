@@ -69,7 +69,7 @@
 	import { notificationStore } from '$lib/stores/notifications.svelte';
 	import { notificationsRealtimeManager } from '$lib/stores/notificationsRealtime.svelte';
 	import { activityStore } from '$lib/stores/activity.svelte';
-	import { getAvatarFallback, getAvatarInitials, type Gender } from '$lib/utils/avatar';
+	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import NotificationBanner from '$lib/components/notifications/NotificationBanner.svelte';
 	import NotificationDropdown from '$lib/components/notifications/NotificationDropdown.svelte';
@@ -208,20 +208,6 @@
 		form.submit();
 	}
 
-	// Get user avatar URL with fallback based on role and gender
-	function getAvatarSrc(): string {
-		if (data.profile.avatar_url) {
-			return data.profile.avatar_url;
-		}
-		if (data.user?.user_metadata?.avatar_url) {
-			return data.user.user_metadata.avatar_url;
-		}
-		if (data.profile) {
-			return getAvatarFallback(data.profile.role, data.profile.gender as Gender | null);
-		}
-		return '';
-	}
-
 	// Fetch initial activity data when dashboard loads
 	// This fetches both notifications AND messages counts in a single request
 	// Only fetch if we have a valid profile (user is authenticated)
@@ -323,7 +309,17 @@
 						class="relative h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 					>
 						<Avatar.Root class="h-10 w-10">
-							<Avatar.Image src={getAvatarSrc()} alt={data.profile.email || 'User'} />
+							<Avatar.Image
+								src={getAvatarUrl(
+									{
+										avatar_url: data.profile.avatar_url,
+										role: data.profile.role,
+										gender: data.profile.gender
+									},
+									data.user
+								)}
+								alt={data.profile.email || 'User'}
+							/>
 							<Avatar.Fallback class="text-xl">
 								{getAvatarInitials(
 									data.profile?.firstname ?? null,

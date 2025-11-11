@@ -7,6 +7,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Search, UserPlus, Check, Clock, UserX } from 'lucide-svelte';
 	import type { FriendshipType } from '$lib/types/database';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	let searchQuery = $state('');
 	let searchResults = $state<
@@ -137,9 +138,7 @@
 					<div class="flex items-center gap-3">
 						<!-- Avatar -->
 						<Avatar.Root class="size-10">
-							{#if user.avatar_url}
-								<Avatar.Image src={user.avatar_url} alt={getDisplayName(user)} />
-							{/if}
+							<Avatar.Image src={getAvatarUrl(user)} alt={getDisplayName(user)} />
 							<Avatar.Fallback>
 								{getDisplayName(user).charAt(0).toUpperCase()}
 							</Avatar.Fallback>

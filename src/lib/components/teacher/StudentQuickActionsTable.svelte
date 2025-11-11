@@ -84,7 +84,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { StudentWarningCounts } from '$lib/server/warnings';
 	import { openVipCardsModal } from '$lib/utils/vip-card-modals';
-	import { getAvatarFallback } from '$lib/utils/avatar';
+	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { AlertTriangle, Plus, Eye } from 'lucide-svelte';
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
@@ -489,17 +489,17 @@
 						<Table.Cell class="font-medium">
 							<div class="flex items-center gap-2">
 								<Avatar.Root class="h-8 w-8">
-									{#if student.avatar_url}
-										<Avatar.Image src={student.avatar_url} alt={student.firstname} />
-									{/if}
-									<Avatar.Fallback>
-										<img
-											src={getAvatarFallback(
-												(student.role as 'student' | 'teacher' | 'admin') || 'student',
+									<Avatar.Image
+										src={getAvatarUrl({
+											avatar_url: student.avatar_url,
+											role: (student.role as 'student' | 'teacher' | 'admin') || 'student',
+											gender:
 												student.gender === 'boy' ? 'M' : student.gender === 'girl' ? 'F' : null
-											)}
-											alt={student.firstname}
-										/>
+										})}
+										alt={student.firstname}
+									/>
+									<Avatar.Fallback>
+										{getAvatarInitials(student.firstname, student.lastname)}
 									</Avatar.Fallback>
 								</Avatar.Root>
 								<span>{student.firstname}</span>

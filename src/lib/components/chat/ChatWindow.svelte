@@ -32,6 +32,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { uploadMultipleAttachments } from '$lib/utils/file-upload';
 	import type { SupabaseClient } from '@supabase/supabase-js';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Component Props
 	interface Props {
@@ -377,9 +378,10 @@
 
 					<!-- Avatar -->
 					<Avatar.Root class="h-10 w-10">
-						{#if avatar.src}
-							<Avatar.Image src={avatar.src} alt={getConversationDisplayName()} />
-						{/if}
+						<Avatar.Image
+							src={avatar.src ? getAvatarUrl({ avatar_url: avatar.src }) : ''}
+							alt={getConversationDisplayName()}
+						/>
 						<Avatar.Fallback class="bg-primary/10 text-primary">
 							{avatar.fallback}
 						</Avatar.Fallback>

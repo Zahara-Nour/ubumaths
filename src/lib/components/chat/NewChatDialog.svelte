@@ -26,6 +26,7 @@
 	import { Search, MessageSquare } from 'lucide-svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { presenceManager } from '$lib/stores/presence.svelte';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Component Props
 	interface Props {
@@ -193,12 +194,10 @@
 							<!-- Avatar with Online Status -->
 							<div class="relative flex-shrink-0">
 								<Avatar.Root class="h-10 w-10">
-									{#if friend.avatar_url}
-										<Avatar.Image
-											src={friend.avatar_url}
-											alt="{friend.firstname} {friend.lastname}"
-										/>
-									{/if}
+									<Avatar.Image
+										src={getAvatarUrl(friend)}
+										alt="{friend.firstname} {friend.lastname}"
+									/>
 									<Avatar.Fallback class="bg-primary/10 text-primary">
 										{friend.firstname[0]?.toUpperCase() || '?'}
 										{friend.lastname[0]?.toUpperCase() || ''}

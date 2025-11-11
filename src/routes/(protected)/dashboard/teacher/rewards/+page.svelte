@@ -7,9 +7,10 @@
 	FEATURES:
 	---------
 	- Select a class via Tabs component
-	- View all students in the selected class with their current gidouilles
-	- Add/remove gidouilles for individual students via input + buttons
-	- Add/remove gidouilles for all students in a class at once
+	- View all students in the selected class with their current gidouilles and bonus
+	- Add/remove gidouilles for individual students via +/- buttons (±1 per click, debounced)
+	- Add/remove bonus points for individual students via +/- buttons (±1 per click, debounced)
+	- Add/remove gidouilles for all students in a class at once via +/- buttons (±1 per click, debounced)
 	- Award random VIP cards to students (costs 3 gidouilles)
 	- View student VIP card collections (with removal capability)
 	- Remove VIP cards from students (teacher-only, no gidouilles refund)
@@ -110,7 +111,7 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
-	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
+	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { canAffordVipCard, getStudentCardCounts } from '$lib/utils/vip-cards';
 	import { Sparkles, Eye, Loader2, Check, X, Plus, Star } from 'lucide-svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
@@ -191,15 +192,6 @@
 			classStore.set(selectedClassId);
 		}
 	});
-
-	// Local state for gidouilles inputs (per student)
-	let studentDeltas = $state<Record<string, number>>({});
-
-	// Local state for gidouilles input at class level
-	let classDeltas = $state<Record<string, number>>({});
-
-	// Local state for bonus inputs (per student)
-	let studentBonusDeltas = $state<Record<string, number>>({});
 
 	// DEBOUNCING STATE
 	// Tracks pending server requests to batch rapid clicks
@@ -642,23 +634,6 @@
 			grantingCard = null;
 		}
 	}
-
-	// Initialize deltas to 1 for each student and class
-	$effect(() => {
-		classes.forEach((classItem) => {
-			if (!classDeltas[classItem.id]) {
-				classDeltas[classItem.id] = 1;
-			}
-		});
-		currentStudents.forEach((student) => {
-			if (!studentDeltas[student.id]) {
-				studentDeltas[student.id] = 1;
-			}
-			if (!studentBonusDeltas[student.id]) {
-				studentBonusDeltas[student.id] = 1;
-			}
-		});
-	});
 
 	/**
 	 * Award VIP Card Handler
@@ -1144,119 +1119,101 @@
 
 						{#each classes as classItem (classItem.id)}
 							<Tabs.Content value={classItem.id} class="mt-0 space-y-6">
-								<!-- CONTRÔLES AU NIVEAU CLASSE -->
-								<div class="rounded-lg border border-border bg-card p-6">
-									<h3 class="mb-4 text-lg font-semibold text-foreground">
-										Actions pour toute la classe
-									</h3>
-									<div class="flex items-end gap-3">
-										<div class="flex items-center gap-2">
-											<!-- Bouton pour enlever (debounced) -->
+								<!-- CONTRÔLES AU NIVEAU CLASSE ET CARTES VIP -->
+								<div
+									class="flex w-full justify-between rounded-lg border border-border bg-card p-6"
+								>
+									<div class="flex items-start gap-6">
+										<!-- Left: Gidouilles Section -->
+										<div class="flex items-center gap-3">
+											<img src={gidouilleImg} alt="Gidouille" class="h-6 w-6 flex-shrink-0" />
+
+											<!-- Bouton pour enlever 1 gidouille (debounced) -->
 											<Button
 												variant="default"
 												class="h-10 w-10 p-0"
 												onclick={() => {
-													const delta = -classDeltas[classItem.id];
-													debouncedUpdateClass(classItem.id, delta);
+													debouncedUpdateClass(classItem.id, -1);
 												}}
 											>
 												−
 											</Button>
 
-											<!-- Input pour le nombre de gidouilles -->
-											<div class="w-16">
-												<label
-													for="class-delta-{classItem.id}"
-													class="mb-2 block text-center text-sm text-muted-foreground"
-												>
-													Nombre
-												</label>
-												<Input
-													id="class-delta-{classItem.id}"
-													type="number"
-													min="1"
-													max="9"
-													bind:value={classDeltas[classItem.id]}
-													class="w-full text-center"
-												/>
-											</div>
-
-											<!-- Bouton pour ajouter (debounced) -->
+											<!-- Bouton pour ajouter 1 gidouille (debounced) -->
 											<Button
 												variant="default"
 												class="h-10 w-10 p-0"
 												onclick={() => {
-													const delta = classDeltas[classItem.id];
-													debouncedUpdateClass(classItem.id, delta);
+													debouncedUpdateClass(classItem.id, 1);
 												}}
 											>
 												+
 											</Button>
 										</div>
 
-										<span class="text-sm text-muted-foreground">
-											Appliquer à tous les élèves de la classe
-										</span>
-									</div>
-								</div>
+										<!-- Vertical separator -->
+										<div class="h-10 w-px bg-border"></div>
 
-								<!-- Filter Section with Toggle Mode -->
-								<div class="space-y-2">
-									<div class="flex items-center gap-4 rounded-lg border border-border bg-card p-4">
-										<!-- Left side: Mode toggle -->
-										<div class="flex items-center gap-3">
-											<span class="text-sm font-medium">Mode :</span>
-											<div class="flex gap-2">
-												<Button
-													variant={filterMode === 'filter' ? 'default' : 'outline'}
-													size="sm"
-													onclick={() => (filterMode = 'filter')}
-												>
-													Filtrer
-												</Button>
-												<Button
-													variant={filterMode === 'add' ? 'default' : 'outline'}
-													size="sm"
-													disabled={!selectedCardFilter}
-													onclick={() => (filterMode = 'add')}
-													title={!selectedCardFilter ? "Sélectionnez une carte VIP d'abord" : ''}
-												>
-													Ajouter
-												</Button>
+										<!-- Right: VIP Card Filter/Add Section -->
+										<div class="flex-1 space-y-2">
+											<div
+												class="flex items-center gap-4 rounded-lg border border-border bg-muted/30 p-4"
+											>
+												<!-- Left side: Mode toggle -->
+												<div class="flex items-center gap-3">
+													<div class="flex gap-2">
+														<Button
+															variant={filterMode === 'filter' ? 'default' : 'outline'}
+															size="sm"
+															onclick={() => (filterMode = 'filter')}
+														>
+															Filtrer
+														</Button>
+														<Button
+															variant={filterMode === 'add' ? 'default' : 'outline'}
+															size="sm"
+															disabled={!selectedCardFilter}
+															onclick={() => (filterMode = 'add')}
+															title={!selectedCardFilter
+																? "Sélectionnez une carte VIP d'abord"
+																: ''}
+														>
+															Ajouter
+														</Button>
+													</div>
+												</div>
+
+												<!-- Separator -->
+												<div class="h-8 w-px bg-border"></div>
+
+												<!-- Right side: Card selection -->
+												<div class="w-64">
+													<VipCardSelector
+														bind:selectedCardId={selectedCardFilter}
+														availableCards={enabledCardTemplates}
+													/>
+												</div>
 											</div>
-										</div>
 
-										<!-- Separator -->
-										<div class="h-8 w-px bg-border"></div>
-
-										<!-- Right side: Card selection -->
-										<span class="text-sm font-medium">Carte VIP :</span>
-										<div class="w-64">
-											<VipCardSelector
-												bind:selectedCardId={selectedCardFilter}
-												availableCards={enabledCardTemplates}
-											/>
+											<!-- Contextual help message -->
+											{#if filterMode === 'filter'}
+												<p class="text-xs text-muted-foreground">
+													Affiche uniquement les élèves qui possèdent déjà cette carte
+												</p>
+											{:else if !selectedCardFilter}
+												<p class="text-xs text-amber-600 dark:text-amber-400">
+													Sélectionnez une carte VIP pour activer le mode "Ajouter"
+												</p>
+											{:else}
+												{@const card = getTemplateById(selectedCardFilter, $vipCardTemplates)}
+												<p class="text-xs text-muted-foreground">
+													Affiche tous les élèves. Cliquez sur + pour offrir la carte "{card?.name ||
+														selectedCardFilter}"
+												</p>
+											{/if}
 										</div>
 									</div>
-
-									<!-- Contextual help message -->
-									{#if filterMode === 'filter'}
-										<p class="px-4 text-xs text-muted-foreground">
-											Affiche uniquement les élèves qui possèdent déjà cette carte
-										</p>
-									{:else if !selectedCardFilter}
-										<p class="px-4 text-xs text-amber-600 dark:text-amber-400">
-											Sélectionnez une carte VIP pour activer le mode "Ajouter"
-										</p>
-									{:else}
-										{@const card = getTemplateById(selectedCardFilter, $vipCardTemplates)}
-										<p class="px-4 text-xs text-muted-foreground">
-											Affiche tous les élèves. Cliquez sur + pour offrir la carte "{card?.name ||
-												selectedCardFilter}"
-										</p>
-									{/if}
 								</div>
-
 								<!-- LISTE DES ÉLÈVES -->
 								<Tooltip.Provider>
 									{#if currentStudents.length === 0}
@@ -1287,15 +1244,17 @@
 														<!-- AVATAR -->
 														<Avatar.Root class="h-12 w-12 flex-shrink-0">
 															<Avatar.Image
-																src={student.avatar_url ||
-																	getAvatarFallback(
+																src={getAvatarUrl({
+																	avatar_url: student.avatar_url,
+																	role:
 																		(student.role as 'student' | 'teacher' | 'admin') || 'student',
+																	gender:
 																		student.gender === 'boy'
 																			? 'M'
 																			: student.gender === 'girl'
 																				? 'F'
 																				: null
-																	)}
+																})}
 																alt={getFullName(
 																	student.firstname,
 																	student.lastname,
@@ -1330,46 +1289,32 @@
 															</span>
 														</div>
 
-														<!-- BOUTONS +/- AVEC INPUT AU MILIEU (GIDOUILLES) -->
+														<!-- BOUTONS +/- (GIDOUILLES) -->
 														<div class="flex flex-shrink-0 items-center gap-2">
-															<!-- Bouton pour enlever (debounced) -->
+															<!-- Bouton pour enlever 1 gidouille (debounced) -->
 															<Button
 																size="sm"
 																variant="default"
 																class="h-10 w-10 p-0"
-																disabled={getStudentGidouilles(student.id) <
-																	studentDeltas[student.id]}
+																disabled={getStudentGidouilles(student.id) < 1}
 																onclick={() => {
-																	const delta = -studentDeltas[student.id];
 																	// Get student name for toast (priority: firstname > full_name > fallback)
 																	const name = student.firstname || student.full_name || 'Élève';
-																	debouncedUpdateStudent(student.id, delta, name);
+																	debouncedUpdateStudent(student.id, -1, name);
 																}}
 															>
 																−
 															</Button>
 
-															<!-- INPUT POUR LE DELTA -->
-															<div class="w-14">
-																<Input
-																	type="number"
-																	min="1"
-																	max="9"
-																	bind:value={studentDeltas[student.id]}
-																	class="h-10 w-full text-center"
-																/>
-															</div>
-
-															<!-- Bouton pour ajouter (debounced) -->
+															<!-- Bouton pour ajouter 1 gidouille (debounced) -->
 															<Button
 																size="sm"
 																variant="default"
 																class="h-10 w-10 p-0"
 																onclick={() => {
-																	const delta = studentDeltas[student.id];
 																	// Get student name for toast (priority: firstname > full_name > fallback)
 																	const name = student.firstname || student.full_name || 'Élève';
-																	debouncedUpdateStudent(student.id, delta, name);
+																	debouncedUpdateStudent(student.id, 1, name);
 																}}
 															>
 																+
@@ -1387,45 +1332,32 @@
 															</span>
 														</div>
 
-														<!-- BOUTONS +/- AVEC INPUT AU MILIEU (BONUS) -->
+														<!-- BOUTONS +/- (BONUS) -->
 														<div class="flex flex-shrink-0 items-center gap-2">
-															<!-- Bouton pour enlever bonus (debounced) -->
+															<!-- Bouton pour enlever 1 bonus (debounced) -->
 															<Button
 																size="sm"
 																variant="default"
 																class="h-10 w-10 p-0"
-																disabled={getStudentBonus(student.id) < studentBonusDeltas[student.id]}
+																disabled={getStudentBonus(student.id) < 1}
 																onclick={() => {
-																	const delta = -studentBonusDeltas[student.id];
 																	// Get student name for toast (priority: firstname > full_name > fallback)
 																	const name = student.firstname || student.full_name || 'Élève';
-																	debouncedUpdateStudentBonus(student.id, delta, name);
+																	debouncedUpdateStudentBonus(student.id, -1, name);
 																}}
 															>
 																−
 															</Button>
 
-															<!-- INPUT POUR LE DELTA BONUS -->
-															<div class="w-14">
-																<Input
-																	type="number"
-																	min="1"
-																	max="9"
-																	bind:value={studentBonusDeltas[student.id]}
-																	class="h-10 w-full text-center"
-																/>
-															</div>
-
-															<!-- Bouton pour ajouter bonus (debounced) -->
+															<!-- Bouton pour ajouter 1 bonus (debounced) -->
 															<Button
 																size="sm"
 																variant="default"
 																class="h-10 w-10 p-0"
 																onclick={() => {
-																	const delta = studentBonusDeltas[student.id];
 																	// Get student name for toast (priority: firstname > full_name > fallback)
 																	const name = student.firstname || student.full_name || 'Élève';
-																	debouncedUpdateStudentBonus(student.id, delta, name);
+																	debouncedUpdateStudentBonus(student.id, 1, name);
 																}}
 															>
 																+

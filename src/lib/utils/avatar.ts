@@ -47,3 +47,58 @@ export function getAvatarInitials(firstname: string | null, lastname: string | n
 	const last = lastname?.charAt(0)?.toUpperCase() || '';
 	return first + last || '?';
 }
+
+/**
+ * Get user avatar URL with multi-level fallback strategy
+ *
+ * PRIORITY ORDER:
+ * 1. profile.avatar_url - Stored in database (primary source, saved on login)
+ * 2. user.user_metadata.picture - Google OAuth session data (Google's standard field)
+ * 3. user.user_metadata.avatar_url - Other OAuth providers (fallback field)
+ * 4. Role/gender-based default avatar - Static fallback images based on user role and gender
+ * 5. Empty string - Triggers Avatar.Fallback to show initials
+ *
+ * IMPORTANT: Google OAuth stores avatars in 'picture' field, not 'avatar_url'
+ * See: src/routes/(public)/auth/callback/+server.ts for avatar saving logic
+ * See: supabase/migrations/061_fix_google_avatar_picture_field.sql for database trigger
+ *
+ * @param profile - User profile with avatar_url, role, and gender
+ * @param user - Optional Supabase user object with OAuth metadata
+ * @returns Avatar URL string or empty string for fallback to initials
+ */
+export function getAvatarUrl(
+	profile: {
+		avatar_url: string | null;
+		role?: UserRole;
+		gender?: Gender | null;
+	},
+	user?: {
+		user_metadata?: {
+			picture?: string;
+			avatar_url?: string;
+		};
+	}
+): string {
+	// 1. Database stored avatar
+	if (profile.avatar_url) {
+		return profile.avatar_url;
+	}
+
+	// 2. Google OAuth 'picture' field (CRITICAL FALLBACK)
+	if (user?.user_metadata?.picture) {
+		return user.user_metadata.picture;
+	}
+
+	// 3. Other OAuth providers 'avatar_url' field
+	if (user?.user_metadata?.avatar_url) {
+		return user.user_metadata.avatar_url;
+	}
+
+	// 4. Role/gender-based default avatar
+	if (profile.role && profile.gender !== undefined) {
+		return getAvatarFallback(profile.role, profile.gender);
+	}
+
+	// 5. Empty string (triggers Avatar.Fallback for initials)
+	return '';
+}

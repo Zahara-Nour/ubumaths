@@ -28,6 +28,7 @@
 	import { Search, MessageSquarePlus, Users } from 'lucide-svelte';
 	import type { Conversation } from '$lib/stores/chat.svelte';
 	import { presenceManager } from '$lib/stores/presence.svelte';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Component Props
 	interface Props {
@@ -177,9 +178,10 @@
 						<!-- Avatar with Online Status -->
 						<div class="relative flex-shrink-0">
 							<Avatar.Root class="h-12 w-12">
-								{#if avatar.src}
-									<Avatar.Image src={avatar.src} alt={getConversationName(conversation)} />
-								{/if}
+								<Avatar.Image
+									src={avatar.src ? getAvatarUrl({ avatar_url: avatar.src }) : ''}
+									alt={getConversationName(conversation)}
+								/>
 								<Avatar.Fallback class="bg-primary/10 text-primary">
 									{avatar.fallback}
 								</Avatar.Fallback>

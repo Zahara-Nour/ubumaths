@@ -6,6 +6,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { MoreVertical, Search, User } from 'lucide-svelte';
+	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	let searchQuery = $state('');
 
@@ -52,12 +53,10 @@
 					<div class="flex items-center gap-3">
 						<!-- Avatar -->
 						<Avatar.Root class="size-10">
-							{#if friend.friend_profile.avatar_url}
-								<Avatar.Image
-									src={friend.friend_profile.avatar_url}
-									alt={friendsManager.getDisplayName(friend)}
-								/>
-							{/if}
+							<Avatar.Image
+								src={getAvatarUrl(friend.friend_profile)}
+								alt={friendsManager.getDisplayName(friend)}
+							/>
 							<Avatar.Fallback>
 								{friendsManager.getDisplayName(friend).charAt(0).toUpperCase()}
 							</Avatar.Fallback>

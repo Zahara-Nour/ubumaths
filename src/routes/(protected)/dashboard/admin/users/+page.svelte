@@ -19,7 +19,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
 	import type { Database } from '$lib/types/database';
-	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
+	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { Upload, Save, RotateCcw, Loader2 } from 'lucide-svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
@@ -673,8 +673,11 @@
 										<div class="flex items-center gap-3">
 											<Avatar.Root class="h-10 w-10">
 												<Avatar.Image
-													src={user.avatar_url ||
-														getAvatarFallback(user.role, toGender(user.gender))}
+													src={getAvatarUrl({
+														avatar_url: user.avatar_url,
+														role: user.role,
+														gender: toGender(user.gender)
+													})}
 													alt={getFullName(user)}
 												/>
 												<Avatar.Fallback
@@ -724,7 +727,11 @@
 									<div class="flex items-center gap-4">
 										<Avatar.Root class="h-20 w-20">
 											<Avatar.Image
-												src={selectedUser.avatar_url || getAvatarFallback(role, gender)}
+												src={getAvatarUrl({
+													avatar_url: selectedUser.avatar_url,
+													role: role,
+													gender: gender
+												})}
 												alt={getFullName(selectedUser)}
 											/>
 											<Avatar.Fallback class="text-2xl">

@@ -41,7 +41,7 @@
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import type { User } from '@supabase/supabase-js';
-	import type { Profile, Gender } from '$lib/types/database';
+	import type { Profile } from '$lib/types/database';
 	import {
 		Menu,
 		X,
@@ -59,7 +59,7 @@
 		Mail
 	} from 'lucide-svelte';
 	import gidouille from '$lib/assets/images/gidouille.png';
-	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
+	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { resolve } from '$app/paths';
 
 	// Fullscreen state
@@ -133,48 +133,6 @@
 		document.body.appendChild(form);
 		form.submit();
 	}
-
-	/**
-	 * Get user avatar URL with multi-level fallback strategy
-	 *
-	 * PRIORITY ORDER:
-	 * 1. profile.avatar_url - Stored in database (primary source, saved on login)
-	 * 2. user.user_metadata.picture - Google OAuth session data (Google's standard field)
-	 * 3. user.user_metadata.avatar_url - Other OAuth providers (fallback field)
-	 * 4. Role/gender-based default avatar - Static fallback images based on user role and gender
-	 * 5. Empty string - Triggers Avatar.Fallback to show initials
-	 *
-	 * IMPORTANT: Google OAuth stores avatars in 'picture' field, not 'avatar_url'
-	 * See: src/routes/(public)/auth/callback/+server.ts for avatar saving logic
-	 * See: supabase/migrations/061_fix_google_avatar_picture_field.sql for database trigger
-	 *
-	 * @returns Avatar URL string or empty string for fallback to initials
-	 */
-	function getAvatarSrc(): string {
-		// First try profile avatar_url (saved in database from OAuth login)
-		if (profile?.avatar_url) {
-			return profile.avatar_url;
-		}
-
-		// Then try user metadata - Google uses 'picture' field (OAuth standard)
-		if (user?.user_metadata?.picture) {
-			return user.user_metadata.picture;
-		}
-
-		// Check 'avatar_url' for other OAuth providers
-		if (user?.user_metadata?.avatar_url) {
-			return user.user_metadata.avatar_url;
-		}
-
-		// Use role/gender-based default avatar if profile is available
-		// See: src/lib/utils/avatar.ts for implementation
-		if (profile) {
-			return getAvatarFallback(profile.role, profile.gender as Gender | null);
-		}
-
-		// Empty string triggers Avatar.Fallback component to show initials
-		return '';
-	}
 </script>
 
 <header class="border-b border-border bg-background shadow-sm">
@@ -232,7 +190,19 @@
 							class="relative h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
 						>
 							<Avatar.Root class="h-10 w-10">
-								<Avatar.Image src={getAvatarSrc()} alt={user?.email || 'User'} />
+								<Avatar.Image
+									src={getAvatarUrl(
+										profile
+											? {
+													avatar_url: profile.avatar_url,
+													role: profile.role,
+													gender: profile.gender
+												}
+											: { avatar_url: null },
+										user
+									)}
+									alt={user?.email || 'User'}
+								/>
 								<Avatar.Fallback>
 									{getAvatarInitials(profile?.firstname ?? null, profile?.lastname ?? null) ||
 										user?.email?.charAt(0).toUpperCase() ||
