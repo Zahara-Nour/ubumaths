@@ -112,7 +112,7 @@
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 	import { getAvatarFallback, getAvatarInitials } from '$lib/utils/avatar';
 	import { canAffordVipCard, getStudentCardCounts } from '$lib/utils/vip-cards';
-	import { Sparkles, Eye, Loader2, Check, X, Plus } from 'lucide-svelte';
+	import { Sparkles, Eye, Loader2, Check, X, Plus, Star } from 'lucide-svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { selectedClassStore } from '$lib/stores/selectedClass.svelte';
@@ -198,6 +198,9 @@
 	// Local state for gidouilles input at class level
 	let classDeltas = $state<Record<string, number>>({});
 
+	// Local state for bonus inputs (per student)
+	let studentBonusDeltas = $state<Record<string, number>>({});
+
 	// DEBOUNCING STATE
 	// Tracks pending server requests to batch rapid clicks
 	// Key: "student-{id}" or "class-{id}"
@@ -206,6 +209,14 @@
 	let pendingSubmissions = $state<Record<string, { timeoutId: number; accumulatedDelta: number }>>(
 		{}
 	);
+
+	// DEBOUNCING STATE FOR BONUS
+	// Tracks pending bonus server requests (student-level only)
+	// Key: "bonus-student-{id}"
+	// Value: { timeoutId: timer ID, accumulatedDelta: sum of all pending bonus changes }
+	let pendingBonusSubmissions = $state<
+		Record<string, { timeoutId: number; accumulatedDelta: number }>
+	>({});
 
 	// Tab management (URL-based)
 	let activeTab = $derived(page.url.searchParams.get('tab') || 'gidouilles');
@@ -643,6 +654,9 @@
 			if (!studentDeltas[student.id]) {
 				studentDeltas[student.id] = 1;
 			}
+			if (!studentBonusDeltas[student.id]) {
+				studentBonusDeltas[student.id] = 1;
+			}
 		});
 	});
 
@@ -698,6 +712,27 @@
 	}
 
 	/**
+	 * Get current bonus for a student from cache (with optimistic override)
+	 *
+	 * Returns the cached value (which may include optimistic updates) if available,
+	 * otherwise returns 0 as fallback.
+	 *
+	 * @param studentId - The student's ID
+	 * @returns The bonus count to display in the UI
+	 */
+	function getStudentBonus(studentId: string): number {
+		// Check cache (includes optimistic overrides via SvelteMap reactivity)
+		const cached = teacherCache.getRewardsSync(selectedClassId);
+		if (cached) {
+			const rewards = cached.get(studentId);
+			if (rewards) return rewards.bonus;
+		}
+
+		// Fallback to 0 if not in cache yet
+		return 0;
+	}
+
+	/**
 	 * Apply optimistic update to a single student via cache
 	 *
 	 * Delegates to teacherCache.updateGidouillesOptimistic() for instant UI feedback.
@@ -708,6 +743,19 @@
 	 */
 	function updateStudentGidouillesOptimistic(studentId: string, delta: number) {
 		teacherCache.updateGidouillesOptimistic(selectedClassId, studentId, delta);
+	}
+
+	/**
+	 * Apply optimistic update to student bonus via cache
+	 *
+	 * Delegates to teacherCache.updateBonusOptimistic() for instant UI feedback.
+	 * The cache handles reactivity via SvelteMap.
+	 *
+	 * @param studentId - The student's ID
+	 * @param delta - The change amount (positive or negative)
+	 */
+	function updateStudentBonusOptimistic(studentId: string, delta: number) {
+		teacherCache.updateBonusOptimistic(selectedClassId, studentId, delta);
 	}
 
 	/**
@@ -819,6 +867,93 @@
 	}
 
 	/**
+	 * Debounced update for individual student bonus
+	 *
+	 * This function implements the same debouncing logic as gidouilles but for bonus:
+	 * 1. Applies optimistic UI update immediately via teacherCache (instant feedback)
+	 * 2. Starts/resets a 500ms timer
+	 * 3. Accumulates all deltas within the debounce window
+	 * 4. After 500ms of no clicks, sends ONE request with total accumulated delta
+	 * 5. On success: shows success toast
+	 * 6. On error: rollback optimistic update and shows error
+	 *
+	 * Example: User clicks +1, +1, +1 rapidly
+	 * - UI shows: 0 → 1 → 2 → 3 (instant via reactive cache)
+	 * - Server receives: ONE request with delta = +3 (after 500ms)
+	 * - Toast shows: "+3 bonus (Marie)"
+	 *
+	 * @param studentId - The student's ID
+	 * @param delta - The change amount for this click (positive or negative)
+	 * @param studentName - The student's first name for the success toast
+	 */
+	function debouncedUpdateStudentBonus(studentId: string, delta: number, studentName: string) {
+		const key = `bonus-student-${studentId}`;
+
+		// STEP 1: Apply optimistic update immediately for instant UI feedback
+		updateStudentBonusOptimistic(studentId, delta);
+
+		// STEP 2: Handle debouncing - accumulate or initialize
+		if (pendingBonusSubmissions[key]) {
+			// There's already a pending request - cancel it and accumulate the delta
+			clearTimeout(pendingBonusSubmissions[key].timeoutId);
+			pendingBonusSubmissions[key].accumulatedDelta += delta;
+		} else {
+			// First click - initialize tracking
+			pendingBonusSubmissions[key] = { timeoutId: 0, accumulatedDelta: delta };
+		}
+
+		// STEP 3: Set new timeout to submit after 500ms of inactivity
+		const timeoutId = setTimeout(async () => {
+			// Timeout fired - no more clicks for 500ms, time to sync with server
+			const accumulatedDelta = pendingBonusSubmissions[key].accumulatedDelta;
+			delete pendingBonusSubmissions[key]; // Clear pending state
+
+			// Prepare JSON payload with accumulated delta
+			const payload = {
+				studentId,
+				delta: accumulatedDelta
+			};
+
+			try {
+				// Send request to API endpoint
+				const response = await fetch('/api/teacher/rewards/update-student-bonus', {
+					method: 'POST',
+					body: JSON.stringify(payload),
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				});
+
+				if (response.ok) {
+					// SUCCESS: Server updated the database
+					await response.json();
+
+					// ✅ NO DATA UPDATE NEEDED
+					// The cache already has the correct optimistic value from the immediate UI update
+
+					// Show success toast with accumulated delta and student name
+					toaster.success(
+						`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} bonus (${studentName})`
+					);
+				} else {
+					// ERROR: Server returned error status - rollback by reversing the optimistic delta
+					teacherCache.updateBonusOptimistic(selectedClassId, studentId, -accumulatedDelta);
+
+					toaster.error('Échec de la mise à jour du bonus');
+				}
+			} catch {
+				// NETWORK ERROR: Request failed completely - rollback by reversing the optimistic delta
+				teacherCache.updateBonusOptimistic(selectedClassId, studentId, -accumulatedDelta);
+
+				toaster.error('Erreur réseau');
+			}
+		}, 500) as unknown as number;
+
+		// Store the timeout ID so we can cancel it if user clicks again
+		pendingBonusSubmissions[key].timeoutId = timeoutId;
+	}
+
+	/**
 	 * Debounced update for class-wide gidouilles
 	 *
 	 * Similar to debouncedUpdateStudent but applies to all students in a class.
@@ -913,8 +1048,12 @@
 	 */
 	$effect(() => {
 		return () => {
-			// Clear all pending timeouts
+			// Clear all pending gidouilles timeouts
 			Object.values(pendingSubmissions).forEach(({ timeoutId }) => {
+				clearTimeout(timeoutId);
+			});
+			// Clear all pending bonus timeouts
+			Object.values(pendingBonusSubmissions).forEach(({ timeoutId }) => {
 				clearTimeout(timeoutId);
 			});
 		};
@@ -1191,7 +1330,7 @@
 															</span>
 														</div>
 
-														<!-- BOUTONS +/- AVEC INPUT AU MILIEU -->
+														<!-- BOUTONS +/- AVEC INPUT AU MILIEU (GIDOUILLES) -->
 														<div class="flex flex-shrink-0 items-center gap-2">
 															<!-- Bouton pour enlever (debounced) -->
 															<Button
@@ -1231,6 +1370,62 @@
 																	// Get student name for toast (priority: firstname > full_name > fallback)
 																	const name = student.firstname || student.full_name || 'Élève';
 																	debouncedUpdateStudent(student.id, delta, name);
+																}}
+															>
+																+
+															</Button>
+														</div>
+
+														<!-- SÉPARATEUR VERTICAL -->
+														<div class="mx-2 h-10 w-px bg-border"></div>
+
+														<!-- BONUS ACTUELS -->
+														<div class="flex w-32 items-center justify-end gap-2">
+															<Star class="h-6 w-6 flex-shrink-0 fill-amber-400 text-amber-400" />
+															<span class="text-2xl font-bold text-foreground tabular-nums">
+																{getStudentBonus(student.id)}
+															</span>
+														</div>
+
+														<!-- BOUTONS +/- AVEC INPUT AU MILIEU (BONUS) -->
+														<div class="flex flex-shrink-0 items-center gap-2">
+															<!-- Bouton pour enlever bonus (debounced) -->
+															<Button
+																size="sm"
+																variant="default"
+																class="h-10 w-10 p-0"
+																disabled={getStudentBonus(student.id) < studentBonusDeltas[student.id]}
+																onclick={() => {
+																	const delta = -studentBonusDeltas[student.id];
+																	// Get student name for toast (priority: firstname > full_name > fallback)
+																	const name = student.firstname || student.full_name || 'Élève';
+																	debouncedUpdateStudentBonus(student.id, delta, name);
+																}}
+															>
+																−
+															</Button>
+
+															<!-- INPUT POUR LE DELTA BONUS -->
+															<div class="w-14">
+																<Input
+																	type="number"
+																	min="1"
+																	max="9"
+																	bind:value={studentBonusDeltas[student.id]}
+																	class="h-10 w-full text-center"
+																/>
+															</div>
+
+															<!-- Bouton pour ajouter bonus (debounced) -->
+															<Button
+																size="sm"
+																variant="default"
+																class="h-10 w-10 p-0"
+																onclick={() => {
+																	const delta = studentBonusDeltas[student.id];
+																	// Get student name for toast (priority: firstname > full_name > fallback)
+																	const name = student.firstname || student.full_name || 'Élève';
+																	debouncedUpdateStudentBonus(student.id, delta, name);
 																}}
 															>
 																+
