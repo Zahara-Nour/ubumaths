@@ -61,6 +61,19 @@ CREATE INDEX IF NOT EXISTS idx_moderation_logs_action
   ON public.moderation_logs(action, created_at DESC);
 
 -- =============================================
+-- Performance Optimization for RLS Policies
+-- =============================================
+
+-- Optimize teacher-student relationship lookups in RLS policies
+-- Used by conversations and messages SELECT policies to check if both
+-- participants are students of the requesting teacher
+CREATE INDEX IF NOT EXISTS idx_class_members_student_lookup
+  ON public.class_members(student_id, class_id);
+
+COMMENT ON INDEX idx_class_members_student_lookup IS
+  'Optimizes RLS policy checks for teacher access to student conversations';
+
+-- =============================================
 -- Enable Row Level Security
 -- =============================================
 
@@ -143,13 +156,15 @@ CREATE POLICY "Users can view their conversations"
             -- BOTH participants must be students of this teacher
             AND EXISTS (
               SELECT 1 FROM public.class_members cm1
+              JOIN public.classes c1 ON c1.id = cm1.class_id
               WHERE cm1.student_id = cp1.user_id
-              AND cm1.teacher_id = auth.uid()
+              AND c1.teacher_id = auth.uid()
             )
             AND EXISTS (
               SELECT 1 FROM public.class_members cm2
+              JOIN public.classes c2 ON c2.id = cm2.class_id
               WHERE cm2.student_id = cp2.user_id
-              AND cm2.teacher_id = auth.uid()
+              AND c2.teacher_id = auth.uid()
             )
           )
         )
@@ -205,13 +220,15 @@ CREATE POLICY "Users can view messages in their conversations"
                 WHERE cp1.conversation_id = c.id
                 AND EXISTS (
                   SELECT 1 FROM public.class_members cm1
+                  JOIN public.classes c1 ON c1.id = cm1.class_id
                   WHERE cm1.student_id = cp1.user_id
-                  AND cm1.teacher_id = auth.uid()
+                  AND c1.teacher_id = auth.uid()
                 )
                 AND EXISTS (
                   SELECT 1 FROM public.class_members cm2
+                  JOIN public.classes c2 ON c2.id = cm2.class_id
                   WHERE cm2.student_id = cp2.user_id
-                  AND cm2.teacher_id = auth.uid()
+                  AND c2.teacher_id = auth.uid()
                 )
               )
             )
