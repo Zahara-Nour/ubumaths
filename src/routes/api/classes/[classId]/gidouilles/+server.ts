@@ -7,7 +7,7 @@ import { requireRole } from '$lib/server/middleware/auth';
 /**
  * GET /api/classes/[classId]/gidouilles
  *
- * Fetches gidouilles and vip_cards data for all students in a class.
+ * Fetches gidouilles, bonus, and vip_cards data for all students in a class.
  *
  * FEATURES:
  * - Test mode aware (respects teacher's test_mode preference)
@@ -18,13 +18,13 @@ import { requireRole } from '$lib/server/middleware/auth';
  * - Verifies teacher owns the class
  *
  * RETURNS:
- * Array of { student_id, gidouilles, vip_cards } objects
+ * Array of { student_id, gidouilles, bonus, vip_cards } objects
  *
  * @example
  * fetch('/api/classes/abc-123/gidouilles')
  *   .then(res => res.json())
  *   .then(data => {
- *     console.log('Gidouilles data:', data.gidouilles);
+ *     console.log('Rewards data:', data.gidouilles);
  *   });
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
@@ -72,6 +72,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 				profiles!class_members_student_id_fkey (
 					id,
 					gidouilles,
+					bonus,
 					vip_cards,
 					is_test
 				)
@@ -94,11 +95,12 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 				return {
 					student_id: profile.id,
 					gidouilles: profile.gidouilles || 0,
+					bonus: profile.bonus || 0,
 					vip_cards: profile.vip_cards || {}
 				};
 			})
 			.filter(
-				(g): g is { student_id: string; gidouilles: number; vip_cards: Record<string, number> } =>
+				(g): g is { student_id: string; gidouilles: number; bonus: number; vip_cards: Record<string, number> } =>
 					g !== null
 			);
 
