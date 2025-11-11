@@ -36,6 +36,7 @@ Documentation détaillée pour Claude Code lors du développement d'UbuMaths.
 - 🛡️ **Input Validation** : [Quality Standards - Zod Validation](./quality-standards.md#input-validation-with-zod)
 - 🔌 **SSR Supabase Patterns** : [SSR-Compatible Supabase](./ssr-supabase-patterns.md) ⭐
 - 🧩 **MySelect Component** : [UI Components - MySelect](./ui-components.md#myselect-component)
+- 🎴 **VipCardSelector Component** : [UI Components - VipCardSelector](./ui-components.md#vipcardselector-component-visual-card-selection) 🆕 - Visual card selection
 - ✏️ **Inline Editing Pattern** : [Inline Editing](./inline-editing-pattern.md) 🆕 - Standard for data editing UIs
 - 💾 **Svelte 5 Runes** : [Best Practices - Svelte 5](./best-practices.md#svelte-5-runes)
 - 🗃️ **Database Migrations** : [Database - Workflow](./database.md#workflow-migrations)

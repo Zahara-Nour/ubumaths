@@ -66,6 +66,19 @@ Gestion des avertissements comportementaux par période académique.
 Système de modération de chat pour enseignants et admins.
 **Status** : ✅ Production
 
+### [🎴 VIP Card System](VIP_CARDS_INDEX.md)
+
+Système complet de cartes VIP avec échange, tirage, activation et interface visuelle.
+**Status** : ✅ Production
+
+**Guides disponibles** :
+
+- [Index complet](VIP_CARDS_INDEX.md) - Navigation de toute la documentation
+- [Guide UI](vip-card-ui-guide.md) - Interface de sélection visuelle (utilisateurs)
+- [Système d'échange](vip-card-exchange-system.md) - Échange et conversion de cartes
+- [Système de tirage](vip-card-draw-system.md) - Tirage de cartes avec distribution
+- [Système d'activation](vip-card-activation.md) - Activation et approbation
+
 ---
 
 ## Features en développement

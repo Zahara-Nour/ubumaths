@@ -88,6 +88,19 @@ This index provides navigation to all VIP card system documentation.
 - Request management
 - Activation UI
 
+### 5. VIP Card UI Guide (User-Facing)
+
+**File**: [vip-card-ui-guide.md](vip-card-ui-guide.md)
+**Size**: User guide
+**Content**:
+
+- Visual card selection interface (French)
+- Teacher rewards dashboard workflow
+- Card gallery modal usage
+- Responsive design behavior
+- Accessibility features
+- Troubleshooting guide
+
 ## Navigation by Task
 
 ### I need to understand...
@@ -121,6 +134,7 @@ This index provides navigation to all VIP card system documentation.
 
 1. Modal UI: [vip-card-exchange-system.md](vip-card-exchange-system.md#61-exchange-modal-component)
 2. Admin UI: [vip-card-exchange-system.md](vip-card-exchange-system.md#62-action-editor-component)
+3. Card Selection UI: [vip-card-ui-guide.md](vip-card-ui-guide.md) (User guide in French)
 
 **...constraints and validation**
 
@@ -231,11 +245,12 @@ Content-Type: application/json
 
 ## Statistics
 
-- Total Documentation: 4,106 lines
+- Total Documentation: 4,500+ lines
   - Comprehensive Exchange Guide: 545 lines
   - Quick Reference: 324 lines
   - Draw System: 2,002 lines
   - Activation System: 1,235 lines
+  - UI Guide (User-Facing): 400+ lines
 
 - Code Coverage:
   - 10+ files analyzed
@@ -247,14 +262,16 @@ Content-Type: application/json
 
 ## Document Maintenance
 
-**Last Updated**: 2025-11-08
-**Scope**: VIP Card Exchange System (4-action reward system)
+**Last Updated**: 2025-11-11
+**Scope**: VIP Card System (Exchange, Draw, Activation, UI)
 **Status**: Complete and comprehensive
 
 Related systems documented in:
 
+- vip-card-exchange-system.md (exchange_cards action)
 - vip-card-draw-system.md (draw_cards action)
 - vip-card-activation.md (student activation flow)
+- vip-card-ui-guide.md (visual card selection interface - user guide)
 
 ## Deprecated Information
 
