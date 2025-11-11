@@ -26,25 +26,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { studentId, delta } = validation.data;
 	const supabase = locals.supabase;
 
-	try {
-		// Call RPC to update student bonus
-		const { data: newValue, error: rpcError } = await supabase.rpc('update_student_bonus', {
-			p_student_id: studentId,
-			p_delta: delta
-		});
+	// Call RPC to update student bonus
+	const { data: newValue, error: rpcError } = await supabase.rpc('update_student_bonus', {
+		p_student_id: studentId,
+		p_delta: delta
+	});
 
-		if (rpcError) {
-			console.error('[API] RPC Error:', rpcError);
-			throw error(500, rpcError.message || 'Failed to update bonus');
-		}
-
-		return json({
-			success: true,
-			message: 'Bonus mis à jour avec succès',
-			newValue
-		});
-	} catch (err) {
-		console.error('[API] Error updating student bonus:', err);
-		throw error(500, 'An error occurred while updating bonus');
+	if (rpcError) {
+		console.error('[API] RPC Error updating bonus:', rpcError);
+		throw error(500, rpcError.message || 'Failed to update bonus');
 	}
+
+	console.log('[API] Bonus updated successfully:', { studentId, delta, newValue });
+
+	return json({
+		success: true,
+		message: 'Bonus mis à jour avec succès',
+		newValue
+	});
 };
