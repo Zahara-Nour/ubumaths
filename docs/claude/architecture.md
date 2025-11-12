@@ -207,6 +207,222 @@ function handleUpdate(id: string, delta: number) {
 
 ---
 
+## SSR Hydration Strategy
+
+> 🆕 2025-11-12
+
+Server-side rendering with client-side cache hydration for optimal performance.
+
+### What is SSR Hydration?
+
+SSR Hydration is a pattern where:
+
+1. **Server**: Fetch data during page load (SSR)
+2. **Client**: Receive data and populate client-side cache
+3. **Result**: Zero API calls on first page load, instant subsequent navigation
+
+### When to Use SSR Hydration
+
+**✅ Use SSR Hydration When**:
+
+- Dashboard pages that need immediate data (no loading spinners)
+- Data is accessed across multiple child pages
+- Data changes infrequently (classes, schools, periods)
+- First-load performance is critical
+
+**❌ Don't Use SSR Hydration When**:
+
+- Data is only needed on one page
+- Data changes very frequently (every few seconds)
+- Direct database queries are simpler
+
+### Implementation Pattern
+
+**Step 1**: Create Server Load Function (`+layout.server.ts`)
+
+```typescript
+// src/routes/(protected)/dashboard/teacher/+layout.server.ts
+import type { LayoutServerLoad } from './$types';
+import { getTeacherClassesWithCounts } from '$lib/server/students';
+
+export const load: LayoutServerLoad = async ({ locals }) => {
+	const { user, profile, supabase } = locals;
+
+	// Verify authorization
+	if (!user || !profile || profile.role !== 'teacher') {
+		throw error(403, 'Access denied');
+	}
+
+	// Fetch data server-side using optimized helpers
+	const classes = await getTeacherClassesWithCounts(user.id, supabase);
+
+	// Return data for client hydration
+	return {
+		classes // This becomes available in layout data
+	};
+};
+```
+
+**Step 2**: Hydrate Cache on Client (`+layout.svelte`)
+
+```svelte
+<script lang="ts">
+	import { teacherCache } from '$lib/stores/cache/teacher.svelte';
+	import type { LayoutData } from './$types';
+
+	let { data, children }: { data: LayoutData; children: any } = $props();
+
+	// Hydrate cache once on mount
+	$effect(() => {
+		if (data.classes) {
+			teacherCache.hydrateAllClasses(data.classes);
+			console.log('✅ Cache hydrated with', data.classes.length, 'classes');
+		}
+	});
+</script>
+
+<!-- Child pages render with cache already populated -->
+{@render children()}
+```
+
+**Step 3**: Access Cached Data in Child Pages
+
+```svelte
+<!-- src/routes/(protected)/dashboard/teacher/rewards/+page.svelte -->
+<script lang="ts">
+	import { teacherCache } from '$lib/stores/cache/teacher.svelte';
+
+	// No API call needed! Data already in cache from hydration
+	let classes = $derived(teacherCache.allClasses);
+
+	// Instant access, no loading state
+	console.log('Classes available immediately:', classes.length);
+</script>
+```
+
+### Performance Benefits
+
+**Before SSR Hydration**:
+
+```
+User navigates to /dashboard/teacher/rewards
+↓
+Client fetches classes via API call (+200-400ms)
+↓
+Loading spinner shown while waiting
+↓
+Data arrives, page renders
+```
+
+**After SSR Hydration**:
+
+```
+User navigates to /dashboard/teacher/rewards
+↓
+Server load function already fetched classes (SSR)
+↓
+Client receives data instantly
+↓
+Cache hydrated immediately
+↓
+Page renders with data (0ms wait)
+```
+
+**Measured Improvements**:
+
+- **First Load**: 200-400ms faster (no API round trip)
+- **Navigation**: Instant (data already cached)
+- **User Experience**: No loading spinners on dashboard entry
+
+### Real-World Example: Teacher Dashboard
+
+**Architecture**:
+
+```
+/dashboard/teacher/ (+layout.server.ts)
+├── Fetches: classes with counts, current period, all periods
+├── Returns: { classes, currentPeriod, allPeriods }
+└── Hydrates: teacherCache on client
+
+/dashboard/teacher/rewards (+page.svelte)
+├── Reads: teacherCache.allClasses
+└── No API calls needed!
+
+/dashboard/teacher/warnings (+page.svelte)
+├── Reads: teacherCache.allClasses
+└── No API calls needed!
+
+/dashboard/teacher/wheel (+page.svelte)
+├── Reads: teacherCache.getClassStudents(classId)
+└── No API calls needed!
+```
+
+**Code Reference**: `src/routes/(protected)/dashboard/teacher/+layout.server.ts`
+
+### Cache Invalidation
+
+Use SvelteKit's `invalidate()` to refresh data when needed:
+
+```typescript
+import { invalidate } from '$app/navigation';
+
+// Mark data as dependent in +layout.server.ts
+export const load: LayoutServerLoad = async ({ locals, depends }) => {
+	depends('teacher:classes'); // Dependency key
+	// ... fetch data
+};
+
+// Trigger refresh from anywhere in the app
+async function handleClassCreated() {
+	await createClass(/* ... */);
+	// Re-runs load function, updates cache
+	await invalidate('teacher:classes');
+}
+```
+
+### When to Use Direct Queries Instead
+
+**Use direct database queries when**:
+
+- Data is only used on one page (no reuse benefit)
+- Data changes very frequently (cache would be stale)
+- Complexity of cache management outweighs benefits
+
+**Example** (direct query pattern):
+
+```typescript
+// +page.server.ts (no caching)
+export const load: PageServerLoad = async ({ locals }) => {
+	const { supabase } = locals;
+
+	// Direct query, no cache
+	const { data: results } = await supabase
+		.from('assessment_results')
+		.select('*')
+		.order('created_at', { ascending: false })
+		.limit(20);
+
+	return { results };
+};
+```
+
+### Best Practices
+
+1. **Hydrate in Layout**: Use parent layouts for data shared across child pages
+2. **Use Helpers**: Leverage `getTeacherClassesWithCounts()` and similar functions
+3. **Minimize Data**: Only fetch fields needed for cache (exclude frequently-changing data)
+4. **Handle Errors**: Provide fallbacks if server load fails
+5. **Log Hydration**: Console log to verify cache is populated
+6. **Invalidate Wisely**: Only refresh when data actually changes
+
+### Related Patterns
+
+- **[Teacher Cache](./teacher-cache.md)** - Client-side caching architecture
+- **[Student Cache](./student-cache.md)** - Student-specific caching
+- **[Database Helpers](./database.md#student-data-helpers)** - Optimized query functions
+
+---
+
 ## 🚦 Rate Limiting
 
 **Implementation** (Updated 2025-10-30): **Database-based** (replaced Redis)

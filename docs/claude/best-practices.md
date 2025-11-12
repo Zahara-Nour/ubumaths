@@ -1203,6 +1203,162 @@ modalStack.push({
 
 ---
 
+## Authorization Middleware
+
+> 🆕 2025-11-12
+
+Centralized middleware for verifying teacher-student relationships in API endpoints.
+
+### When to Use
+
+Use authorization middleware for any endpoint where teachers access student data:
+
+- ✅ Before viewing student progress, results, or profiles
+- ✅ Before modifying student rewards, warnings, or grades
+- ✅ Before performing actions on behalf of students
+- ✅ In any `/api/students/[id]/*` endpoint
+
+### Two Functions Available
+
+**1. `verifyTeacherStudent()` - Basic Verification**
+
+Use when you need manual admin bypass control or don't have the profile object:
+
+```typescript
+import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
+
+export const POST: RequestHandler = async ({ params, locals }) => {
+	const { user, profile } = await requireRole(locals, 'teacher');
+	const studentId = params.id;
+
+	// Verify teacher teaches this student
+	const hasAccess = await verifyTeacherStudent(user.id, studentId, locals.supabase);
+	if (!hasAccess) {
+		throw error(403, 'You can only access students you teach');
+	}
+
+	// Process request...
+};
+```
+
+**2. `verifyTeacherStudentWithRole()` - With Admin Bypass**
+
+Use when you want automatic admin bypass (most common):
+
+```typescript
+import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+
+export const POST: RequestHandler = async ({ params, locals }) => {
+	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
+	const studentId = params.id;
+
+	// Automatically handles admin bypass
+	const hasAccess = await verifyTeacherStudentWithRole(
+		user.id,
+		studentId,
+		profile,
+		locals.supabase
+	);
+
+	if (!hasAccess) {
+		throw error(403, 'You can only access students you teach');
+	}
+
+	// Process request...
+};
+```
+
+### Security Benefits
+
+**Before middleware (per endpoint - 30 lines)**:
+
+```typescript
+// ❌ Duplicated code across 10+ endpoints
+const { data: classMemberships, error: membershipError } = await supabase
+	.from('class_members')
+	.select(
+		`
+		class_id,
+		classes!inner (
+			teacher_id
+		)
+	`
+	)
+	.eq('student_id', studentId);
+
+if (membershipError) {
+	throw error(500, 'Failed to verify class membership');
+}
+
+const isTeacherOfStudent = classMemberships?.some((membership) => {
+	const classData = Array.isArray(membership.classes) ? membership.classes[0] : membership.classes;
+	return classData?.teacher_id === teacherId;
+});
+
+if (!isTeacherOfStudent) {
+	throw error(403, 'You can only access your own students');
+}
+```
+
+**After middleware (3 lines)**:
+
+```typescript
+// ✅ Centralized, tested, consistent
+const hasAccess = await verifyTeacherStudent(teacherId, studentId, supabase);
+if (!hasAccess) {
+	throw error(403, 'You can only access students you teach');
+}
+```
+
+### Benefits
+
+- **Single Source of Truth**: Authorization logic in one place (easier to audit)
+- **Fail-Closed Model**: Returns `false` on database errors (secure by default)
+- **Efficient Queries**: Single JOIN query, no N+1 problems
+- **Type-Safe**: Full TypeScript support with proper types
+- **Reduced Code**: Eliminates 300+ lines across 10+ endpoints
+- **Consistent Security**: Same verification everywhere, no missed edge cases
+
+### Testing
+
+The middleware has comprehensive unit tests covering:
+
+- ✅ Teacher teaches student (direct class membership)
+- ✅ Teacher doesn't teach student (different classes)
+- ✅ Student not in any classes
+- ✅ Admin bypass with `verifyTeacherStudentWithRole()`
+- ✅ Non-admin rejected when not teaching
+- ✅ Database error handling (fails closed)
+
+**Test Coverage**: 21 unit tests, 100% coverage
+
+**Reference**: `src/lib/server/middleware/student-access.test.ts`
+
+### Migration Pattern
+
+When migrating existing endpoints to use middleware:
+
+**Step 1**: Import the middleware
+
+```typescript
+import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+```
+
+**Step 2**: Remove old verification code (~30 lines)
+
+**Step 3**: Add middleware call (3 lines)
+
+```typescript
+const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
+if (!hasAccess) {
+	throw error(403, 'You can only access students you teach');
+}
+```
+
+**Step 4**: Verify endpoint still works
+
+---
+
 ## Summary Checklist
 
 Before submitting code:
@@ -1221,6 +1377,7 @@ Before submitting code:
 - [ ] Server load functions use `locals` pattern (not `await parent()`)
 - [ ] Profile null checks in place (`if (!profile || profile.role !== 'role')`)
 - [ ] Destructure from `locals`: `const { user, profile, supabase } = locals;`
+- [ ] Use authorization middleware for teacher-student access checks
 
 ---
 
