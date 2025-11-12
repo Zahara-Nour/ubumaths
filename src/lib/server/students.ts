@@ -351,3 +351,26 @@ export async function getClassStudentCount(
 
 	return count || 0;
 }
+
+/**
+ * Get classes and students for assignment purposes
+ *
+ * Semantic alias for getTeacherClassesWithStudents, used by assignment pages
+ * to clarify intent (getting targets for assessments/exercises/SRS decks).
+ *
+ * @param teacherId - Teacher's user ID
+ * @param supabase - Supabase client instance
+ * @returns Promise resolving to array of classes with full student data
+ *
+ * @example
+ * const targets = await getAssignmentTargets(user.id, supabase);
+ * targets.forEach(cls => {
+ *   console.log('Can assign to', cls.students.length, 'students in', cls.name);
+ * });
+ */
+export async function getAssignmentTargets(
+	teacherId: string,
+	supabase: SupabaseClient<Database>
+): Promise<ClassWithStudents[]> {
+	return getTeacherClassesWithStudents(teacherId, supabase);
+}

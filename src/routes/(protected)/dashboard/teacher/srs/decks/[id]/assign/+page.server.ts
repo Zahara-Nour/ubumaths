@@ -7,8 +7,7 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getTeacherTestMode } from '$lib/server/test-mode';
-import { getTeacherClassesWithCounts } from '$lib/server/students';
+import { getAssignmentTargets } from '$lib/server/students';
 
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -46,34 +45,46 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			updatedAt: deck.updated_at
 		};
 
-		// Get test mode to filter students
-		const isTestMode = await getTeacherTestMode(user.id, supabase);
-
-		// Fetch teacher's students filtered by test mode
-		const { data: students, error: studentsError } = await supabase
-			.from('profiles')
-			.select('id, firstname, lastname, email, role, is_test')
-			.eq('role', 'student')
-			.eq('is_test', isTestMode)
-			.order('lastname');
-
-		if (studentsError) {
-			console.error('Error fetching students:', studentsError);
-		}
-
-		console.log('Students found:', students?.length || 0);
-
-		// Use unified helper to get classes with student counts
+		// Use unified helper to get classes with students
 		// Automatically handles test mode filtering
-		const classesWithCounts = await getTeacherClassesWithCounts(user.id, supabase);
+		const classesWithStudents = await getAssignmentTargets(user.id, supabase);
 
-		// Map students to match expected format
-		const mappedStudents = (students || []).map((s) => ({
-			id: s.id,
-			first_name: s.firstname,
-			last_name: s.lastname,
-			email: s.email
+		// Format classes with student counts for UI
+		const classesWithCounts = classesWithStudents.map((c) => ({
+			id: c.id,
+			name: c.name,
+			description: c.description,
+			student_count: c.students.length,
+			schedules: [] // Not needed for assignment page
 		}));
+
+		// Extract unique students across all classes
+		const studentsMap = new Map<
+			string,
+			{
+				id: string;
+				first_name: string;
+				last_name: string | null;
+				email: string;
+			}
+		>();
+
+		classesWithStudents.forEach((cls) => {
+			cls.students.forEach((student) => {
+				if (!studentsMap.has(student.id)) {
+					studentsMap.set(student.id, {
+						id: student.id,
+						first_name: student.firstname,
+						last_name: student.lastname,
+						email: '' // Email not available in StudentFull type
+					});
+				}
+			});
+		});
+
+		const mappedStudents = Array.from(studentsMap.values());
+
+		console.log('Students found:', mappedStudents.length);
 
 		return {
 			deck: mappedDeck,

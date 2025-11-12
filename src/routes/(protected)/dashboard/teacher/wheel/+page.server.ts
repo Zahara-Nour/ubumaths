@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { getTeacherClassesWithStudents } from '$lib/server/students';
 
 export const load: PageServerLoad = async ({ locals, parent: _parent }) => {
 	// Get authenticated user and profile from parent layout
@@ -14,75 +15,27 @@ export const load: PageServerLoad = async ({ locals, parent: _parent }) => {
 		throw error(403, 'Forbidden: Only teachers can access this page');
 	}
 
-	// Fetch teacher's classes with students
-	const { data: classes, error: classesError } = await supabase
-		.from('classes')
-		.select(
-			`
-			id,
-			name,
-			description,
-			is_active
-		`
-		)
-		.eq('teacher_id', user.id)
-		.eq('is_active', true)
-		.order('name');
+	// Use unified helper to get classes with students
+	// Automatically handles test mode filtering
+	const classesWithStudents = await getTeacherClassesWithStudents(user.id, supabase);
 
-	if (classesError) {
-		console.error('Error fetching classes:', classesError);
-		throw error(500, 'Failed to fetch classes');
-	}
-
-	// For each class, fetch students
-	const classesWithStudents = await Promise.all(
-		(classes || []).map(async (classItem) => {
-			const { data: members, error: membersError } = await supabase
-				.from('class_members')
-				.select(
-					`
-					student_id,
-					profiles!class_members_student_id_fkey (
-						id,
-						firstname,
-						lastname,
-						avatar_url
-					)
-				`
-				)
-				.eq('class_id', classItem.id);
-
-			if (membersError) {
-				console.error('Error fetching class members:', membersError);
-				return {
-					...classItem,
-					students: []
-				};
-			}
-
-			// Transform members to students array
-			const students = (members || [])
-				.map((member) => {
-					const profile = Array.isArray(member.profiles) ? member.profiles[0] : member.profiles;
-					if (!profile) return null;
-
-					return {
-						id: profile.id,
-						firstname: profile.firstname || '',
-						lastname: profile.lastname || '',
-						avatar_url: profile.avatar_url || ''
-					};
-				})
-				.filter((s): s is NonNullable<typeof s> => s !== null);
-
-			return {
-				...classItem,
-				students
-			};
-		})
-	);
+	// Filter for active classes only and format for UI
+	const activeClasses = classesWithStudents
+		.filter((c) => c.is_active)
+		.map((c) => ({
+			id: c.id,
+			name: c.name,
+			description: c.description,
+			is_active: c.is_active,
+			students: c.students.map((s) => ({
+				id: s.id,
+				firstname: s.firstname,
+				lastname: s.lastname || '',
+				avatar_url: s.avatar_url || ''
+			}))
+		}));
 
 	return {
-		classes: classesWithStudents
+		classes: activeClasses
 	};
 };

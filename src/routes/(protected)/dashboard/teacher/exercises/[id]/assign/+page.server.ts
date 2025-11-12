@@ -7,6 +7,7 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { getAssignmentTargets } from '$lib/server/students';
 
 export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const supabase = locals.supabase;
@@ -42,46 +43,18 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		assignments = await assignmentsResponse.json();
 	}
 
-	// Fetch teacher's classes with student count
-	const { data: classes } = await supabase
-		.from('classes')
-		.select(
-			`
-			id,
-			name,
-			class_members (
-				student_id
-			)
-		`
-		)
-		.eq('teacher_id', user.id);
+	// Use unified helper to get classes with students
+	// Automatically handles test mode filtering
+	const classesWithStudents = await getAssignmentTargets(user.id, supabase);
 
-	// Transform classes to include student count
-	const classesWithCount =
-		classes?.map((c) => ({
-			id: c.id,
-			name: c.name,
-			student_count: c.class_members.length
-		})) || [];
+	// Format for UI: classes with counts
+	const classesWithCount = classesWithStudents.map((c) => ({
+		id: c.id,
+		name: c.name,
+		student_count: c.students.length
+	}));
 
-	// Fetch all unique students from teacher's classes
-	const { data: classMembers } = await supabase
-		.from('class_members')
-		.select(
-			`
-			student:profiles!class_members_student_id_fkey (
-				id,
-				full_name,
-				email
-			),
-			class:classes!class_members_class_id_fkey (
-				teacher_id
-			)
-		`
-		)
-		.eq('class.teacher_id', user.id);
-
-	// Extract unique students
+	// Extract unique students across all classes
 	const studentsMap = new Map<
 		string,
 		{
@@ -91,22 +64,16 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		}
 	>();
 
-	classMembers?.forEach((member) => {
-		// Handle Supabase join result (student can be null or an object)
-		const studentData = Array.isArray(member.student) ? member.student[0] : member.student;
-
-		if (
-			studentData &&
-			typeof studentData === 'object' &&
-			'id' in studentData &&
-			!studentsMap.has(studentData.id)
-		) {
-			studentsMap.set(studentData.id, {
-				id: studentData.id,
-				full_name: studentData.full_name,
-				email: studentData.email
-			});
-		}
+	classesWithStudents.forEach((cls) => {
+		cls.students.forEach((student) => {
+			if (!studentsMap.has(student.id)) {
+				studentsMap.set(student.id, {
+					id: student.id,
+					full_name: student.full_name,
+					email: '' // Email not available in StudentFull type
+				});
+			}
+		});
 	});
 
 	const students = Array.from(studentsMap.values());
