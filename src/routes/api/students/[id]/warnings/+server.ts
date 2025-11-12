@@ -49,6 +49,7 @@ import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { getStudentWarningsSchema } from '$lib/server/validation/warnings';
 import type { Database } from '$lib/types/database';
+import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 
 // Type for warning response
 type WarningRow = Database['public']['Tables']['student_warnings']['Row'];
@@ -73,29 +74,10 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 	const { student_id: studentId } = validation.data;
 
-	// Verify that teacher teaches this student (admins skip this check)
-	if (profile.role === 'teacher') {
-		const { data: classCheck } = await supabase
-			.from('class_members')
-			.select(
-				`
-				class_id,
-				classes!inner(teacher_id)
-			`
-			)
-			.eq('student_id', studentId);
-
-		const teachesStudent = classCheck?.some((cm) => {
-			const classes = cm.classes as unknown;
-			if (classes && typeof classes === 'object' && 'teacher_id' in classes) {
-				return (classes as { teacher_id: string }).teacher_id === user.id;
-			}
-			return false;
-		});
-
-		if (!teachesStudent) {
-			throw error(403, 'You can only view warnings for students in your classes');
-		}
+	// Verify teacher-student relationship (admins bypass this check)
+	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
+	if (!hasAccess) {
+		throw error(403, 'You can only view warnings for students in your classes');
 	}
 
 	// Fetch all warnings for the student, ordered by most recent first

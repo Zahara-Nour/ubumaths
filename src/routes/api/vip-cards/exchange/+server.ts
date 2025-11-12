@@ -26,6 +26,7 @@ import { getRarityPoints } from '$lib/types/vip-card';
 import type { VipCardRarity } from '$lib/types/vip-card';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getTemplateById, getTemplatesByRarity } from '$lib/server/vip-card-queries';
+import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 
 // ============================================================================
 // POST HANDLER
@@ -52,25 +53,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (isTeacher) {
 		// Teacher flow: verify they teach this student
-		const { data: classCheck } = await supabase
-			.from('class_members')
-			.select(
-				`
-				class_id,
-				classes!inner(teacher_id)
-			`
-			)
-			.eq('student_id', data.studentId);
-
-		const teachesStudent = classCheck?.some((cm) => {
-			const classes = cm.classes as unknown;
-			if (classes && typeof classes === 'object' && 'teacher_id' in classes) {
-				return (classes as { teacher_id: string }).teacher_id === user.id;
-			}
-			return false;
-		});
-
-		if (!teachesStudent) {
+		const hasAccess = await verifyTeacherStudentWithRole(
+			user.id,
+			data.studentId,
+			profile,
+			supabase
+		);
+		if (!hasAccess) {
 			throw error(403, 'You can only exchange cards for students in your classes');
 		}
 	} else if (!isStudent) {

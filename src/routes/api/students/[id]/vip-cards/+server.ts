@@ -19,6 +19,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import type { StudentVipCards } from '$lib/types/vip-card';
+import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 
 // ============================================================================
 // GET HANDLER
@@ -33,33 +34,16 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 	// Authorization: student can access their own cards, teachers can access their students' cards
 	const isStudent = user.id === studentId;
-	const isTeacher = profile.role === 'teacher' || profile.role === 'admin';
+	const isTeacherOrAdmin = profile.role === 'teacher' || profile.role === 'admin';
 
-	if (isTeacher) {
-		// Verify teacher teaches this student
-		const { data: classCheck } = await supabase
-			.from('class_members')
-			.select(
-				`
-				class_id,
-				classes!inner(teacher_id)
-			`
-			)
-			.eq('student_id', studentId);
-
-		const teachesStudent = classCheck?.some((cm) => {
-			const classes = cm.classes as unknown;
-			if (classes && typeof classes === 'object' && 'teacher_id' in classes) {
-				return (classes as { teacher_id: string }).teacher_id === user.id;
-			}
-			return false;
-		});
-
-		if (!teachesStudent) {
+	if (isTeacherOrAdmin) {
+		// Verify teacher-student relationship (admins bypass this check)
+		const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
+		if (!hasAccess) {
 			throw error(403, 'You can only access VIP cards of students you teach');
 		}
 	} else if (!isStudent) {
-		// Neither teacher nor the student themselves
+		// Neither teacher/admin nor the student themselves
 		throw error(403, 'You can only access your own VIP cards');
 	}
 

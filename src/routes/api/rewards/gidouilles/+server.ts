@@ -1,10 +1,49 @@
+/**
+ * DEPRECATED: This endpoint is deprecated and will be removed in a future version.
+ *
+ * MIGRATION PATH:
+ * Please use `/api/teacher/rewards/update-student` instead. The new endpoint:
+ * - Uses RPC-based approach (more secure)
+ * - Handles both gidouilles and bonus updates
+ * - Has better error handling
+ * - Maintains audit trail
+ *
+ * Example migration:
+ * ```typescript
+ * // Before (this endpoint)
+ * await fetch('/api/rewards/gidouilles', {
+ *   method: 'POST',
+ *   body: JSON.stringify({ studentId, amount })
+ * });
+ *
+ * // After (new endpoint)
+ * await fetch('/api/teacher/rewards/update-student', {
+ *   method: 'POST',
+ *   body: JSON.stringify({
+ *     studentId,
+ *     gidouillesDelta: amount,
+ *     bonusDelta: 0
+ *   })
+ * });
+ * ```
+ *
+ * See: src/routes/api/teacher/rewards/update-student/+server.ts
+ */
+
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { awardGidouillesSchema } from '$lib/server/validation/rewards';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user } = await requireAuth(locals);
+	// DEPRECATION WARNING: Log usage of this deprecated endpoint
+	console.warn(
+		'[DEPRECATED] /api/rewards/gidouilles endpoint called. ' +
+			'Please migrate to /api/teacher/rewards/update-student. ' +
+			'This endpoint will be removed in a future version.'
+	);
+	const { user, profile } = await requireAuth(locals);
 	const supabase = locals.supabase;
 
 	try {
@@ -18,50 +57,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const { studentId, amount } = validation.data;
 
-		// Verify the user is a teacher
-		const { data: profile, error: profileError } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (profileError || !profile) {
-			throw error(500, 'Failed to fetch user profile');
-		}
-
+		// Verify the user is a teacher or admin
 		if (profile.role !== 'teacher' && profile.role !== 'admin') {
 			throw error(403, 'Only teachers and admins can award gidouilles');
 		}
 
-		// Verify the student exists and is in one of the teacher's classes (for teachers)
-		if (profile.role === 'teacher') {
-			const { data: classMemberships, error: membershipError } = await supabase
-				.from('class_members')
-				.select(
-					`
-					class_id,
-					classes!inner (
-						teacher_id
-					)
-				`
-				)
-				.eq('student_id', studentId);
-
-			if (membershipError) {
-				throw error(500, 'Failed to verify class membership');
-			}
-
-			// Check if any of the student's classes are taught by this teacher
-			const isTeacherOfStudent = classMemberships?.some((membership) => {
-				const classData = Array.isArray(membership.classes)
-					? membership.classes[0]
-					: membership.classes;
-				return classData?.teacher_id === user.id;
-			});
-
-			if (!isTeacherOfStudent) {
-				throw error(403, 'You can only award gidouilles to your own students');
-			}
+		// Verify teacher-student relationship (admins bypass this check)
+		const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
+		if (!hasAccess) {
+			throw error(403, 'You can only award gidouilles to your own students');
 		}
 
 		// Fetch current gidouilles amount

@@ -34,6 +34,7 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { removeWarningsSchema } from '$lib/server/validation/remove-warnings';
 import { removeWarning } from '$lib/server/warnings';
 import type { StudentVipCards } from '$lib/types/vip-card';
+import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 
 // ============================================================================
 // POST HANDLER
@@ -60,25 +61,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (isTeacher) {
 		// Teacher flow: verify they teach this student
-		const { data: classCheck } = await supabase
-			.from('class_members')
-			.select(
-				`
-				class_id,
-				classes!inner(teacher_id)
-			`
-			)
-			.eq('student_id', studentId);
-
-		const teachesStudent = classCheck?.some((cm) => {
-			const classes = cm.classes as unknown;
-			if (classes && typeof classes === 'object' && 'teacher_id' in classes) {
-				return (classes as { teacher_id: string }).teacher_id === user.id;
-			}
-			return false;
-		});
-
-		if (!teachesStudent) {
+		const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
+		if (!hasAccess) {
 			throw error(403, 'You can only remove warnings for students in your classes');
 		}
 	} else if (!isStudent) {
