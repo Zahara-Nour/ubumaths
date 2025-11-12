@@ -138,7 +138,7 @@ export const actions: Actions = {
 		};
 
 		// Add target data based on type
-		if (targetType === 'roles') {
+		if (targetType === 'role') {
 			if (!roles || roles.length === 0) {
 				return fail(400, { error: 'Veuillez sélectionner au moins un rôle' });
 			}

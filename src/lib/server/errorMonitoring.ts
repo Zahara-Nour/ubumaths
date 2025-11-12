@@ -353,7 +353,7 @@ async function notifyCriticalError(
 			priority: 'urgent',
 			action_label: 'Voir les détails',
 			action_url: `/dashboard/admin/errors/${errorId}`,
-			target_type: 'roles',
+			target_type: 'role',
 			target_roles: ['admin'],
 			system_event_type: 'assessment_graded' // Note: 'error_critical' not in SystemEventType enum, using fallback
 		});

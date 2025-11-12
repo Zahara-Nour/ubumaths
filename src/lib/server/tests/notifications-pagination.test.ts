@@ -17,7 +17,6 @@
  *
  * @module api/notifications/unread/+server.test
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import * as authMiddleware from '$lib/server/middleware/auth';
@@ -30,12 +29,17 @@ vi.mock('$lib/server/notifications');
 // Import after mocks
 const { GET } = await import('../../../routes/api/notifications/unread/+server');
 
+// Test helper types - minimal mock objects cast as needed
+type MockUser = { id: string; email: string };
+type MockProfile = { id: string; role: string };
+type MockLocals = {
+	user: MockUser;
+	profile: MockProfile;
+	supabase: unknown;
+};
+
 describe('GET /api/notifications/unread - Pagination', () => {
-	let mockLocals: {
-		user: { id: string; email: string };
-		profile: { id: string; role: string };
-		supabase: unknown;
-	};
+	let mockLocals: MockLocals;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -47,10 +51,10 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			supabase: {} // Mock Supabase client
 		};
 
-		// Mock requireAuth to return user
+		// Mock requireAuth to return user (cast to avoid full type requirements in tests)
 		vi.mocked(authMiddleware.requireAuth).mockResolvedValue({
-			user: mockLocals.user as any,
-			profile: mockLocals.profile as any
+			user: mockLocals.user as never,
+			profile: mockLocals.profile as never
 		});
 	});
 
@@ -79,7 +83,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as any);
+		} as never);
 
 		const data = await response.json();
 
@@ -127,7 +131,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as any);
+		} as never);
 
 		const data = await response.json();
 
@@ -172,7 +176,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as any);
+		} as never);
 
 		const data = await response.json();
 
@@ -197,7 +201,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: mockLocals,
 				request
-			} as any)
+			} as never)
 		).rejects.toThrow();
 	});
 
@@ -220,7 +224,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as any);
+		} as never);
 
 		const data = await response.json();
 
@@ -248,7 +252,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: mockLocals,
 				request
-			} as any)
+			} as never)
 		).rejects.toThrow();
 	});
 
@@ -262,7 +266,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: mockLocals,
 				request
-			} as any)
+			} as never)
 		).rejects.toThrow();
 	});
 
@@ -276,7 +280,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: mockLocals,
 				request
-			} as any)
+			} as never)
 		).rejects.toThrow();
 	});
 
@@ -290,7 +294,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: mockLocals,
 				request
-			} as any)
+			} as never)
 		).rejects.toThrow();
 	});
 
@@ -304,7 +308,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: mockLocals,
 				request
-			} as any)
+			} as never)
 		).rejects.toThrow();
 	});
 
@@ -318,7 +322,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: mockLocals,
 				request
-			} as any)
+			} as never)
 		).rejects.toThrow();
 	});
 
@@ -345,7 +349,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as any);
+		} as never);
 
 		const data = await response.json();
 
@@ -377,7 +381,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as any);
+		} as never);
 
 		const data = await response.json();
 
@@ -410,7 +414,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as any);
+		} as never);
 
 		const data = await response.json();
 
@@ -441,7 +445,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url: url3,
 			locals: mockLocals,
 			request: request3
-		} as any);
+		} as never);
 
 		const data3 = await response3.json();
 
@@ -474,7 +478,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as any);
+		} as never);
 
 		const data = await response.json();
 
@@ -500,7 +504,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url: url5,
 			locals: mockLocals,
 			request: request5
-		} as any);
+		} as never);
 
 		const data5 = await response5.json();
 
@@ -525,7 +529,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 				url,
 				locals: { supabase: {}, user: null, profile: null },
 				request
-			} as any)
+			} as never)
 		).rejects.toThrow('Authentication required');
 
 		// Verify getUnreadNotifications was NOT called
@@ -551,7 +555,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as any);
+		} as never);
 
 		expect(response.status).toBe(200);
 		expect(authMiddleware.requireAuth).toHaveBeenCalledWith(mockLocals);
@@ -562,8 +566,8 @@ describe('GET /api/notifications/unread - Pagination', () => {
 		mockLocals.profile.role = 'teacher';
 
 		vi.mocked(authMiddleware.requireAuth).mockResolvedValue({
-			user: mockLocals.user as any,
-			profile: mockLocals.profile as any
+			user: mockLocals.user as never,
+			profile: mockLocals.profile as never
 		});
 
 		vi.mocked(notificationsModule.getUnreadNotifications).mockResolvedValue({
@@ -584,7 +588,7 @@ describe('GET /api/notifications/unread - Pagination', () => {
 			url,
 			locals: mockLocals,
 			request
-		} as any);
+		} as never);
 
 		expect(response.status).toBe(200);
 		expect(notificationsModule.getUnreadNotifications).toHaveBeenCalledWith(

@@ -1,5 +1,4 @@
 <script lang="ts">
-	/* eslint-disable @typescript-eslint/no-explicit-any */
 	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -14,10 +13,13 @@
 	import type { PageData } from './$types';
 	import { responseToTemplate } from '$lib/types/vip-card-admin';
 	import type { TemplateResponse } from '$lib/types/vip-card-admin';
-	import { updateTemplate, addTemplate } from '$lib/stores/vipCardTemplates.svelte';
+	import {
+		updateTemplate,
+		addTemplate,
+		type VipCardTemplate
+	} from '$lib/stores/vipCardTemplates.svelte';
 	import type { VipCardAction } from '$lib/types/vip-card';
 
-	type VipCardTemplate = Database['public']['Tables']['vip_card_templates']['Row'];
 	type VipCardConfig = Database['public']['Tables']['vip_card_config']['Row'];
 
 	interface CreateTemplateData {
@@ -149,11 +151,11 @@
 
 			if (isEditing) {
 				templates = templates.map((t) => (t.id === savedCard.id ? savedCard : t));
-				updateTemplate(savedCard as any);
+				updateTemplate(savedCard);
 				toaster.success('Carte modifiée avec succès');
 			} else {
 				templates = [...templates, savedCard];
-				addTemplate(savedCard as any);
+				addTemplate(savedCard);
 				toaster.success('Carte créée avec succès');
 			}
 

@@ -99,7 +99,7 @@ function createMockCards(): VipCardTemplate[] {
 /**
  * Rarity priority mapping (extracted from component logic)
  */
-const rarityPriority = {
+const rarityPriority: Record<string, number> = {
 	legendary: 4,
 	epic: 3,
 	rare: 2,

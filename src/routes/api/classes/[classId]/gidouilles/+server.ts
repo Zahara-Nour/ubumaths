@@ -100,8 +100,14 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 				};
 			})
 			.filter(
-				(g): g is { student_id: string; gidouilles: number; bonus: number; vip_cards: Record<string, number> } =>
-					g !== null
+				(
+					g
+				): g is {
+					student_id: string;
+					gidouilles: number;
+					bonus: number;
+					vip_cards: Record<string, number>;
+				} => g !== null
 			);
 
 		return json({ gidouilles });

@@ -24,11 +24,11 @@ export function getAvatarFallback(role: UserRole, gender: Gender | null): string
 
 	// For students and teachers, use gender-specific avatars
 	if (role === 'student') {
-		return gender === 'F' ? avatarStudentGirl : avatarStudentBoy;
+		return gender === 'girl' ? avatarStudentGirl : avatarStudentBoy;
 	}
 
 	if (role === 'teacher') {
-		return gender === 'F' ? avatarTeacherGirl : avatarTeacherBoy;
+		return gender === 'girl' ? avatarTeacherGirl : avatarTeacherBoy;
 	}
 
 	// Fallback to student boy if role is unknown

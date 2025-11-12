@@ -49,7 +49,7 @@ export async function createNotification(
 
 		// For teachers, validate that they can only target their classes/students
 		if (profile.role === 'teacher') {
-			if (data.target_type === 'all' || data.target_type === 'roles') {
+			if (data.target_type === 'all' || data.target_type === 'role') {
 				return {
 					success: false,
 					error: 'Les professeurs ne peuvent cibler que leurs classes ou élèves'
@@ -559,7 +559,7 @@ export async function getCreatedNotifications(
 			if (n.target_type === 'all') {
 				totalRecipients = totalUsersCount || 0;
 				targetSummary = 'Tous les utilisateurs';
-			} else if (n.target_type === 'roles' && n.target_roles) {
+			} else if (n.target_type === 'role' && n.target_roles) {
 				// Note: For role-based targeting, we'd need a separate cached count per role
 				// For simplicity, using totalUsersCount as an approximation
 				// In production, consider caching role counts separately
