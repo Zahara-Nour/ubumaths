@@ -374,8 +374,7 @@ if (!env.GROQ_API_KEY) {
 
 **Affected Endpoints**:
 
-- `/api/cache/cleanup` - Daily at 2 AM UTC
-- `/api/notifications/cleanup` - Daily at 3 AM UTC
+- `/api/cleanup/all` - Daily at 2 AM UTC (unified cache + notifications cleanup)
 
 ### Generation
 
@@ -416,23 +415,20 @@ CRON_SECRET=your-generated-32-character-secret-here
 
 ### How It Works
 
-CRON jobs configured in `vercel.json` automatically include the secret in the Authorization header:
+CRON jobs configured in `vercel.json` are automatically authenticated:
 
 ```json
 {
 	"crons": [
 		{
-			"path": "/api/cache/cleanup",
-			"schedule": "0 2 * * *",
-			"headers": {
-				"Authorization": "Bearer ${CRON_SECRET}"
-			}
+			"path": "/api/cleanup/all",
+			"schedule": "0 2 * * *"
 		}
 	]
 }
 ```
 
-Vercel automatically replaces `${CRON_SECRET}` with the environment variable value when executing the job.
+Vercel automatically adds the `x-vercel-cron: 1` header when executing scheduled jobs. For manual testing, use `Authorization: Bearer ${CRON_SECRET}` instead.
 
 ### Security Features
 
@@ -449,17 +445,11 @@ Test your CRON endpoints locally with curl:
 # Get secret from .env
 export CRON_SECRET=$(grep CRON_SECRET .env | cut -d '=' -f2)
 
-# Test notifications cleanup
-curl -X POST http://localhost:5175/api/notifications/cleanup \
+# Test unified cleanup
+curl -X POST http://localhost:5175/api/cleanup/all \
   -H "Authorization: Bearer $CRON_SECRET" -v
 
-# Expected: 200 OK with cleanup results
-
-# Test cache cleanup
-curl -X POST http://localhost:5175/api/cache/cleanup \
-  -H "Authorization: Bearer $CRON_SECRET" -v
-
-# Expected: 200 OK with cleanup results
+# Expected: 200 OK with cleanup results for both cache and notifications
 ```
 
 ### Troubleshooting
@@ -495,7 +485,7 @@ curl -X POST http://localhost:5175/api/cache/cleanup \
 
 **Solutions**:
 
-1. **For Vercel CRON jobs**: Verify `vercel.json` uses `${CRON_SECRET}` placeholder (NOT a hardcoded value)
+1. **For Vercel CRON jobs**: This should not happen - Vercel uses `x-vercel-cron: 1` header authentication
 2. **For manual testing**: Ensure you're using the correct secret from `.env`
 3. **Check for typos**: Secret is case-sensitive and must match exactly
 4. **Verify environment**: Ensure you're using the correct environment's secret (dev vs. production)

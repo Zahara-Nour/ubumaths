@@ -134,7 +134,6 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 
 - `POST /api/notifications/mark-read` - Mark notification as read
 - `POST /api/notifications/mark-all-read` - Mark all as read
-- `DELETE /api/notifications/cleanup` - Cleanup old notifications
 - `GET /api/notifications/unread` - Get unread (safe method)
 - `GET /api/notifications/unread-count` - Get count (safe method)
 
@@ -175,11 +174,14 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 - `POST /api/errors/log` - Log client-side error
 - `PUT /api/errors/[id]` - Update error status
 - `DELETE /api/errors/[id]` - Delete error
-- `DELETE /api/errors/cleanup` - Cleanup old errors
 - `GET /api/errors` - List errors (safe method)
 - `GET /api/errors/[id]` - Get error details (safe method)
 - `GET /api/errors/stats` - Get statistics (safe method)
 - `GET /api/errors/occurrences` - Get occurrences (safe method)
+
+### Background Jobs & Cleanup
+
+- `POST /api/cleanup/all` - Unified cleanup endpoint (CRON-only, protected by `verifyCronAuth`)
 
 ### Admin Operations
 
@@ -225,10 +227,10 @@ All API endpoints with POST/PUT/DELETE/PATCH methods in `+server.ts` files:
 ### State-Changing Endpoints (Protected)
 
 - **Form Actions:** 60+ endpoints
-- **API POST:** 50+ endpoints
+- **API POST:** 49+ endpoints (including CRON endpoint with custom auth)
 - **API PUT:** 15+ endpoints
-- **API DELETE:** 12+ endpoints
-- **Total Protected:** **137+ endpoints**
+- **API DELETE:** 10+ endpoints (cleanup endpoints consolidated)
+- **Total Protected:** **134+ endpoints**
 
 ### Safe Methods (Not Protected, No Risk)
 
@@ -389,6 +391,7 @@ Monitor for patterns indicating attack attempts.
 
 ---
 
-**Last Updated:** 2025-10-27
-**Total Endpoints Protected:** 137+
+**Last Updated:** 2025-11-12
+**Total Endpoints Protected:** 134+
 **Protection Method:** Automatic (SvelteKit built-in)
+**Note:** CRON endpoints use custom authentication (`verifyCronAuth`) in addition to CSRF protection

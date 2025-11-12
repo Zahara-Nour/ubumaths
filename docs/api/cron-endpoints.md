@@ -4,12 +4,24 @@ This document describes the CRON job endpoints used for automated maintenance ta
 
 ## Authentication
 
-All CRON endpoints require Bearer token authentication.
+All CRON endpoints require authentication using one of two methods:
+
+1. **Vercel automatic**: `x-vercel-cron: 1` header (production)
+2. **Manual testing**: `Authorization: Bearer <CRON_SECRET>` header (development/testing)
 
 ### Request Format
 
+**Production (Vercel automatic):**
+
 ```http
-POST /api/notifications/cleanup
+POST /api/cleanup/all
+x-vercel-cron: 1
+```
+
+**Manual testing:**
+
+```http
+POST /api/cleanup/all
 Authorization: Bearer <CRON_SECRET>
 ```
 
@@ -31,89 +43,34 @@ Authorization: Bearer <CRON_SECRET>
 
 ---
 
-## POST /api/cache/cleanup
+## POST /api/cleanup/all
 
-Cleanup expired server-side cache entries.
+**Unified cleanup endpoint** that handles both cache and notifications cleanup.
 
 ### Schedule
 
 **Daily at 2 AM UTC** (configured in `vercel.json`)
 
-### Retention Policy
+### What It Cleans
 
-Deletes cache entries where `expires_at < NOW()`
-
-### Request
-
-```http
-POST /api/cache/cleanup
-Authorization: Bearer <CRON_SECRET>
-```
-
-### Response (200 OK)
-
-```json
-{
-	"success": true,
-	"deleted_count": 15,
-	"message": "Cleaned up 15 expired cache entries"
-}
-```
-
-### Response Fields
-
-| Field           | Type    | Description                            |
-| --------------- | ------- | -------------------------------------- |
-| `success`       | boolean | Whether cleanup completed successfully |
-| `deleted_count` | number  | Number of cache entries deleted        |
-| `message`       | string  | Human-readable result message          |
-
-### Error Response (500)
-
-```json
-{
-	"success": false,
-	"error": "Cleanup failed: <error details>"
-}
-```
-
-### Job Tracking
-
-Execution logged to `background_job_runs` table:
-
-- **Job name**: `cleanup_expired_cache`
-- **Metadata**: `{ deleted_count: N }`
-- **Status**: `success` | `failed`
-
-### Example
-
-```bash
-curl -X POST https://ubumaths.vercel.app/api/cache/cleanup \
-  -H "Authorization: Bearer ${CRON_SECRET}"
-```
-
----
-
-## POST /api/notifications/cleanup
-
-Cleanup expired notifications (hard delete).
-
-### Schedule
-
-**Daily at 3 AM UTC** (configured in `vercel.json`)
-
-### Retention Policy
-
-Deletes notifications where:
-
-- `dismissed_at IS NOT NULL` AND `dismissed_at < NOW() - INTERVAL '30 days'`
+1. **Cache entries**: Deletes where `expires_at < NOW()`
+2. **Notifications**: Deletes where `dismissed_at IS NOT NULL` AND `dismissed_at < NOW() - INTERVAL '30 days'`
 
 **Important**: Unread notifications are NEVER auto-deleted.
 
 ### Request
 
+**Production (Vercel):**
+
 ```http
-POST /api/notifications/cleanup
+POST /api/cleanup/all
+x-vercel-cron: 1
+```
+
+**Manual testing:**
+
+```http
+POST /api/cleanup/all
 Authorization: Bearer <CRON_SECRET>
 ```
 
@@ -122,25 +79,51 @@ Authorization: Bearer <CRON_SECRET>
 ```json
 {
 	"success": true,
-	"deletedCount": 42,
-	"message": "Cleaned up 42 expired notification(s)"
+	"cache": {
+		"deleted": 15,
+		"message": "Cleaned up 15 expired cache entries"
+	},
+	"notifications": {
+		"deleted": 42,
+		"message": "Cleaned up 42 expired notification(s)"
+	}
 }
 ```
 
 ### Response Fields
 
-| Field          | Type    | Description                            |
-| -------------- | ------- | -------------------------------------- |
-| `success`      | boolean | Whether cleanup completed successfully |
-| `deletedCount` | number  | Number of notifications deleted        |
-| `message`      | string  | Human-readable result message          |
+| Field                   | Type    | Description                                 |
+| ----------------------- | ------- | ------------------------------------------- |
+| `success`               | boolean | Whether overall cleanup completed           |
+| `cache.deleted`         | number  | Number of cache entries deleted             |
+| `cache.message`         | string  | Human-readable cache cleanup result         |
+| `notifications.deleted` | number  | Number of notifications deleted             |
+| `notifications.message` | string  | Human-readable notifications cleanup result |
+
+### Partial Success Response (200 OK)
+
+If one cleanup fails, the other continues:
+
+```json
+{
+	"success": false,
+	"cache": {
+		"deleted": 0,
+		"error": "Database connection failed"
+	},
+	"notifications": {
+		"deleted": 42,
+		"message": "Cleaned up 42 expired notification(s)"
+	}
+}
+```
 
 ### Error Response (500)
 
 ```json
 {
 	"success": false,
-	"error": "<error details>"
+	"error": "Both cleanups failed: <error details>"
 }
 ```
 
@@ -148,14 +131,23 @@ Authorization: Bearer <CRON_SECRET>
 
 Execution logged to `background_job_runs` table:
 
-- **Job name**: `cleanup_old_notifications`
-- **Metadata**: `{ deleted_count: N }`
-- **Status**: `success` | `failed`
+- **Job name**: `cleanup_all`
+- **Metadata**: `{ cache_deleted: N, notifications_deleted: M }`
+- **Status**: `success` | `failed` | `partial`
 
 ### Example
 
+**Production (Vercel automatically adds header):**
+
 ```bash
-curl -X POST https://ubumaths.vercel.app/api/notifications/cleanup \
+# Vercel calls this automatically at 2 AM UTC
+# No manual execution needed in production
+```
+
+**Manual testing:**
+
+```bash
+curl -X POST https://ubumaths.vercel.app/api/cleanup/all \
   -H "Authorization: Bearer ${CRON_SECRET}"
 ```
 
@@ -172,17 +164,10 @@ For local development or manual triggers:
 export CRON_SECRET=$(grep CRON_SECRET .env | cut -d '=' -f2)
 ```
 
-### Test Cache Cleanup
+### Test Unified Cleanup
 
 ```bash
-curl -X POST http://localhost:5175/api/cache/cleanup \
-  -H "Authorization: Bearer $CRON_SECRET" -v
-```
-
-### Test Notifications Cleanup
-
-```bash
-curl -X POST http://localhost:5175/api/notifications/cleanup \
+curl -X POST http://localhost:5175/api/cleanup/all \
   -H "Authorization: Bearer $CRON_SECRET" -v
 ```
 
@@ -190,10 +175,10 @@ curl -X POST http://localhost:5175/api/notifications/cleanup \
 
 ```bash
 # Should fail with 401
-curl -X POST http://localhost:5175/api/cache/cleanup -v
+curl -X POST http://localhost:5175/api/cleanup/all -v
 
 # Should fail with 401
-curl -X POST http://localhost:5175/api/cache/cleanup \
+curl -X POST http://localhost:5175/api/cleanup/all \
   -H "Authorization: Bearer wrong-token" -v
 ```
 
@@ -213,13 +198,13 @@ curl -X POST http://localhost:5175/api/cache/cleanup \
 **Successful authentication**:
 
 ```
-[CRON AUTH] ✅ Valid token { url: '/api/cache/cleanup', method: 'POST', timestamp: '2025-01-10T02:00:00.000Z' }
+[CRON AUTH] ✅ Valid token { url: '/api/cleanup/all', method: 'POST', timestamp: '2025-01-10T02:00:00.000Z' }
 ```
 
 **Failed authentication**:
 
 ```
-[CRON AUTH] Invalid token (value mismatch) { url: '/api/cache/cleanup', method: 'POST', timestamp: '2025-01-10T02:00:00.000Z' }
+[CRON AUTH] Invalid token (value mismatch) { url: '/api/cleanup/all', method: 'POST', timestamp: '2025-01-10T02:00:00.000Z' }
 ```
 
 **Configuration error**:
@@ -235,6 +220,7 @@ Set up alerts for:
 - **401 errors** on CRON endpoints (authentication failures)
 - **503 errors** (CRON_SECRET not configured)
 - **500 errors** (cleanup failures)
+- **Partial success** (one cleanup succeeded, one failed)
 - **Multiple 401s in short period** (potential brute-force attack)
 
 ---
@@ -277,6 +263,38 @@ See `docs/development/environment-variables.md#cron-secret` for complete trouble
 1. **401 Unauthorized**: Check `CRON_SECRET` matches between Vercel env vars and your request
 2. **503 Service Unavailable**: Add `CRON_SECRET` to Vercel environment variables
 3. **No CRON execution**: Verify schedule in `vercel.json` and check Vercel function logs
+4. **Partial success**: Check database connectivity and RPC function status in Supabase
+
+---
+
+## Migration Notes
+
+### From Separate Endpoints (Pre-2025-11-12)
+
+Previously, cache and notifications cleanup were handled by separate endpoints:
+
+- **OLD**: `/api/cache/cleanup` (deleted)
+- **OLD**: `/api/notifications/cleanup` (deleted)
+- **NEW**: `/api/cleanup/all` (unified)
+
+**Why the change?**
+
+- Vercel free tier allows only 2 cron jobs
+- Consolidation frees up 1 cron slot for future use
+- Single job tracking record instead of two
+- Resilient: if one cleanup fails, the other continues
+
+**Migration steps for manual testing:**
+
+```bash
+# OLD (no longer works)
+curl -X POST http://localhost:5175/api/cache/cleanup \
+  -H "Authorization: Bearer $CRON_SECRET"
+
+# NEW (use this instead)
+curl -X POST http://localhost:5175/api/cleanup/all \
+  -H "Authorization: Bearer $CRON_SECRET"
+```
 
 ---
 

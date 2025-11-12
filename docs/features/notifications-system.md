@@ -129,8 +129,7 @@ src/
 │           ├── unread/+server.ts         # GET notifications
 │           ├── unread-count/+server.ts   # GET count only
 │           ├── mark-read/+server.ts      # POST mark read
-│           ├── mark-all-read/+server.ts  # POST mark all
-│           └── cleanup/+server.ts        # POST/GET cleanup (cron)
+│           └── mark-all-read/+server.ts  # POST mark all
 └── supabase/
     └── migrations/
         └── 081_create_notifications_system.sql
@@ -491,94 +490,73 @@ const { success } = await response.json();
 
 ---
 
-### POST/GET `/api/notifications/cleanup`
+### Cleanup Endpoint (Consolidated)
 
-Nettoie les notifications expirées (hard delete). Endpoint prévu pour Vercel Cron.
+**NOTE**: As of 2025-11-12, notifications cleanup has been consolidated into `/api/cleanup/all` to stay within Vercel's free tier limit of 2 cron jobs.
 
-**Authentification** : Aucune (pensé pour cron job)
-**Méthodes** : POST (cron) / GET (test manuel)
-**Body** : Aucun
+**See**: [CRON Endpoints API Reference](../api/cron-endpoints.md) for complete documentation.
 
-**Réponse** :
+**Quick Summary**:
 
-```typescript
-{
-  success: true,
-  deletedCount: number,
-  message: string
-}
-```
+- **Endpoint**: `POST /api/cleanup/all`
+- **Schedule**: Daily at 2 AM UTC
+- **What it does**: Cleans up both expired cache entries AND expired notifications (dismissed 30+ days ago)
+- **Authentication**: Dual method (Vercel automatic `x-vercel-cron: 1` header + Bearer token for manual testing)
+- **Job Tracking**: Logs to `background_job_runs` table with job name `cleanup_all`
 
-**Exemple (cron)** :
+**Configuration**:
 
 ```json
 // vercel.json
 {
 	"crons": [
 		{
-			"path": "/api/notifications/cleanup",
+			"path": "/api/cleanup/all",
 			"schedule": "0 2 * * *"
 		}
 	]
 }
 ```
 
-**Exemple (manuel)** :
+**Manual testing**:
 
 ```bash
-curl https://ubumaths.com/api/notifications/cleanup
+# Get secret from .env
+export CRON_SECRET=$(grep CRON_SECRET .env | cut -d '=' -f2)
+
+# Test unified cleanup
+curl -X POST http://localhost:5175/api/cleanup/all \
+  -H "Authorization: Bearer $CRON_SECRET" -v
 ```
 
-**Job Tracking** : Logs vers `background_job_runs` table via `start_job_run()` / `complete_job_run()`.
+**Response**:
 
-**Sécurité** : ✅ **CRON secret vérifié** (Phase 1.1 complétée)
-
-### CRON Endpoint Security
-
-**Status**: ✅ **IMPLEMENTED** (Phase 1.1 complete)
-
-All CRON endpoints are protected with Bearer token authentication:
-
-- `/api/notifications/cleanup` (Daily at 3 AM UTC)
-- `/api/cache/cleanup` (Daily at 2 AM UTC)
+```json
+{
+	"success": true,
+	"cache": {
+		"deleted": 15,
+		"message": "Cleaned up 15 expired cache entries"
+	},
+	"notifications": {
+		"deleted": 42,
+		"message": "Cleaned up 42 expired notification(s)"
+	}
+}
+```
 
 **Security Features**:
 
-- **Constant-time comparison**: Uses `crypto.timingSafeEqual()` to prevent timing attacks
-- **Fail-secure design**: Rejects all requests if `CRON_SECRET` not configured (503 error)
-- **Comprehensive audit logging**: All authentication attempts logged with timestamp, URL, and outcome
-- **Minimum entropy**: Zod validation enforces 16+ character secrets
-- **Standard Bearer authentication**: Follows RFC 6750 specification
+- Constant-time comparison (prevents timing attacks)
+- Fail-secure design (503 if `CRON_SECRET` not configured)
+- Comprehensive audit logging
+- Resilient: if one cleanup fails, the other continues
 
-**Implementation**:
+**Documentation**:
 
-- Authentication utility: `src/lib/server/auth/cron.ts`
-- Test coverage: 24 tests (100% pass rate)
-- Documentation: `docs/security/cron-authentication.md`
-
-**Configuration**:
-
-See `docs/development/environment-variables.md#cron-secret` for complete setup instructions.
-
-**Quick start**:
-
-```bash
-# Generate secret
-openssl rand -hex 16
-
-# Add to Vercel environment variables
-# Name: CRON_SECRET
-# Value: <generated-secret>
-# Environments: Production, Preview, Development
-```
-
-**Monitoring**:
-
-Check Vercel function logs for authentication events:
-
-- `[CRON AUTH] ✅ Valid token` - Successful authentication
-- `[CRON AUTH] Invalid token` - Authentication failure (investigate immediately)
-- `[CRON AUTH] CRON_SECRET not configured` - Configuration error (fix before deployment)
+- Complete API docs: `docs/api/cron-endpoints.md`
+- Security implementation: `docs/security/cron-authentication.md`
+- Environment setup: `docs/development/environment-variables.md#cron-secret`
 
 ---
 
@@ -4168,12 +4146,13 @@ CREATE TABLE notification_preferences (
    - **Voir** : Phase 1.1 item #1 pour détails d'implémentation
    - **Voir** : Section 15 pour documentation complète
 
-4. ✅ **CRON secret pour cleanup** (TERMINÉ - 2025-11-10)
-   - ✅ Endpoint `/api/notifications/cleanup` protégé
+4. ✅ **CRON secret pour cleanup** (TERMINÉ - 2025-11-10, CONSOLIDÉ - 2025-11-12)
+   - ✅ Endpoint `/api/cleanup/all` (unified cache + notifications)
    - ✅ Variable `CRON_SECRET` ajoutée
-   - ✅ Vérification header `Authorization: Bearer ${CRON_SECRET}`
-   - ✅ Tests complets (24 tests, 100% pass rate)
+   - ✅ Dual authentication (Vercel `x-vercel-cron: 1` + Bearer token)
+   - ✅ Tests complets (10 tests for unified endpoint)
    - **Commits** : `49aa9e6` (Phase 1), `feb5f9f` (Phase 2)
+   - **Note** : Endpoint consolidé pour économiser un slot cron Vercel
 
 **Status** : ✅ Sécurité critique complètement résolue (4/4 critiques résolus)
 
@@ -4194,15 +4173,17 @@ CREATE TABLE notification_preferences (
    - ✅ Documentation complète (Section 15)
    - **Commits** : `c292519` (Phase 1), `7639315` (Phase 3)
 
-2. ✅ **CRON secret pour cleanup** (TERMINÉ - 2025-11-10)
+2. ✅ **CRON secret pour cleanup** (TERMINÉ - 2025-11-10, CONSOLIDÉ - 2025-11-12)
    - ✅ Variable `CRON_SECRET` ajoutée
-   - ✅ Header `Authorization: Bearer ${CRON_SECRET}` vérifié
+   - ✅ Dual authentication (Vercel `x-vercel-cron: 1` + Bearer token)
    - ✅ Authentication utility créée (`src/lib/server/auth/cron.ts`)
    - ✅ Constant-time comparison (protection timing attacks)
    - ✅ Fail-secure design (503 si non configuré)
-   - ✅ 24 tests complets (100% pass rate)
+   - ✅ 10 tests pour unified endpoint (100% pass rate)
    - ✅ Documentation complète (`docs/security/cron-authentication.md`)
+   - ✅ Endpoint consolidé `/api/cleanup/all` (cache + notifications)
    - **Commits** : `49aa9e6` (Phase 1), `feb5f9f` (Phase 2)
+   - **Raison consolidation** : Vercel free tier = 2 cron jobs max
 
 3. ✅ **Rate limiting sur delete action** (TERMINÉ - 2025-11-10)
    - ✅ Fonction `checkNotificationDeleteRateLimit()` créée
@@ -4488,11 +4469,11 @@ if (!membership) {
 1. **Vercel Cron configuré ?**
 
 ```json
-// vercel.json
+// vercel.json (updated 2025-11-12)
 {
 	"crons": [
 		{
-			"path": "/api/notifications/cleanup",
+			"path": "/api/cleanup/all",
 			"schedule": "0 2 * * *"
 		}
 	]
@@ -4502,8 +4483,20 @@ if (!membership) {
 2. **Job logs** :
 
 ```sql
+-- Check unified cleanup job
 SELECT * FROM background_job_runs
-WHERE job_name = 'cleanup_old_notifications'
+WHERE job_name = 'cleanup_all'
+ORDER BY started_at DESC
+LIMIT 10;
+
+-- Check notifications cleanup count
+SELECT
+  started_at,
+  status,
+  metadata->>'notifications_deleted' as notifications_count,
+  metadata->>'cache_deleted' as cache_count
+FROM background_job_runs
+WHERE job_name = 'cleanup_all' AND status = 'success'
 ORDER BY started_at DESC
 LIMIT 10;
 ```
@@ -4511,7 +4504,12 @@ LIMIT 10;
 3. **Test manuel** :
 
 ```bash
-curl https://ubumaths.com/api/notifications/cleanup
+# Get secret
+export CRON_SECRET=$(grep CRON_SECRET .env | cut -d '=' -f2)
+
+# Test unified cleanup
+curl -X POST http://localhost:5175/api/cleanup/all \
+  -H "Authorization: Bearer $CRON_SECRET"
 ```
 
 ---
@@ -4842,11 +4840,12 @@ Le système de notifications UbuMaths offre une infrastructure solide et sécuri
 **Points d'amélioration prioritaires** :
 
 1. ~~⚠️ Sanitization HTML serveur~~ ✅ **TERMINÉ** (sécurité - medium)
-2. ~~⚠️ CRON secret pour cleanup~~ ✅ **TERMINÉ** (sécurité - low)
+2. ~~⚠️ CRON secret pour cleanup~~ ✅ **TERMINÉ + CONSOLIDÉ** (sécurité - low)
 3. ~~⚠️ Delete action rate limiting~~ ✅ **TERMINÉ** (sécurité - medium)
 4. ~~⚠️ Fix race condition~~ ✅ **TERMINÉ** (performance - medium)
 5. 🟠 Temps réel (UX - haute)
-6. 🟠 Pagination (performance - haute)
+
+**Note 2025-11-12** : Endpoint cleanup consolidé dans `/api/cleanup/all` pour économiser un slot cron Vercel. 6. 🟠 Pagination (performance - haute)
 
 **Status global** : Production-ready avec améliorations planifiées
 

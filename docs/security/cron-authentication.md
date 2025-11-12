@@ -166,19 +166,15 @@ Add `CRON_SECRET` to Vercel environment variables:
 
 ## CRON Schedules
 
-### Cache Cleanup
+### Unified Cleanup Endpoint
 
-- **Path**: `/api/cache/cleanup`
+- **Path**: `/api/cleanup/all`
 - **Schedule**: `0 2 * * *` (2 AM UTC daily)
-- **Purpose**: Delete expired cache entries from `server_cache` table
+- **Purpose**:
+  - Delete expired cache entries from `server_cache` table
+  - Hard delete expired notifications (dismissed 30+ days ago)
 
-### Notifications Cleanup
-
-- **Path**: `/api/notifications/cleanup`
-- **Schedule**: `0 3 * * *` (3 AM UTC daily)
-- **Purpose**: Hard delete expired notifications
-
-**Note**: Schedules are staggered (1 hour apart) to spread database load.
+**Note**: This unified endpoint replaces the previous separate `/api/cache/cleanup` and `/api/notifications/cleanup` endpoints (removed 2025-11-12) to stay within Vercel's free tier limit of 2 cron jobs.
 
 ## Usage
 
@@ -221,12 +217,8 @@ Use Bearer token authentication for local testing:
 # Get secret from .env
 CRON_SECRET=$(grep CRON_SECRET .env | cut -d '=' -f2)
 
-# Test cache cleanup
-curl -X POST http://localhost:5175/api/cache/cleanup \
-  -H "Authorization: Bearer $CRON_SECRET"
-
-# Test notifications cleanup
-curl -X POST http://localhost:5175/api/notifications/cleanup \
+# Test unified cleanup
+curl -X POST http://localhost:5175/api/cleanup/all \
   -H "Authorization: Bearer $CRON_SECRET"
 ```
 
@@ -336,17 +328,17 @@ describe('verifyCronAuth', () => {
 
 ```bash
 # Test with valid token
-curl -X POST http://localhost:5175/api/cache/cleanup \
+curl -X POST http://localhost:5175/api/cleanup/all \
   -H "Authorization: Bearer $CRON_SECRET" \
   -v
 
 # Test with invalid token
-curl -X POST http://localhost:5175/api/cache/cleanup \
+curl -X POST http://localhost:5175/api/cleanup/all \
   -H "Authorization: Bearer invalid-token" \
   -v
 
 # Test without Authorization header
-curl -X POST http://localhost:5175/api/cache/cleanup -v
+curl -X POST http://localhost:5175/api/cleanup/all -v
 ```
 
 ## Monitoring
@@ -357,14 +349,14 @@ Watch for authentication events:
 
 ```bash
 # Successful authentication (Vercel production)
-[CRON AUTH] ✅ Authenticated via x-vercel-cron header { url: '/api/cache/cleanup', method: 'POST', timestamp: '2025-11-11T...' }
+[CRON AUTH] ✅ Authenticated via x-vercel-cron header { url: '/api/cleanup/all', method: 'POST', timestamp: '2025-11-11T...' }
 
 # Successful authentication (Bearer token)
-[CRON AUTH] ✅ Valid token { url: '/api/cache/cleanup', method: 'POST', timestamp: '2025-11-11T...' }
+[CRON AUTH] ✅ Valid token { url: '/api/cleanup/all', method: 'POST', timestamp: '2025-11-11T...' }
 
 # Failed authentication
-[CRON AUTH] Invalid token (value mismatch) { url: '/api/cache/cleanup' }
-[CRON AUTH] Missing Authorization header { url: '/api/cache/cleanup', method: 'POST' }
+[CRON AUTH] Invalid token (value mismatch) { url: '/api/cleanup/all' }
+[CRON AUTH] Missing Authorization header { url: '/api/cleanup/all', method: 'POST' }
 ```
 
 ### Vercel Logs
@@ -372,7 +364,7 @@ Watch for authentication events:
 Check CRON execution logs in Vercel Dashboard:
 
 1. Go to Vercel Dashboard → Deployments → Logs
-2. Filter by `/api/cache/cleanup` or `/api/notifications/cleanup`
+2. Filter by `/api/cleanup/all`
 3. Verify 200 status codes (not 401/503)
 
 ## Troubleshooting
@@ -429,16 +421,19 @@ Check CRON execution logs in Vercel Dashboard:
 ## Migration Checklist
 
 - [x] Create authentication utility (`src/lib/server/auth/cron.ts`)
-- [x] Update cache cleanup endpoint
-- [x] Update notifications cleanup endpoint
-- [x] Update `vercel.json` with cron schedules (Vercel adds Authorization header automatically)
+- [x] Create unified cleanup endpoint (`src/routes/api/cleanup/all/+server.ts`)
+- [x] Delete old cache cleanup endpoint (`src/routes/api/cache/cleanup/+server.ts`)
+- [x] Delete old notifications cleanup endpoint (`src/routes/api/notifications/cleanup/+server.ts`)
+- [x] Update `vercel.json` with single cron schedule
+- [x] Create unified test file (`src/lib/server/tests/cleanup-all.test.ts`)
+- [x] Delete old test files
 - [x] Verify ESLint passes
 - [x] Verify Prettier formatting
 - [x] Generate CRON secret for production
 - [ ] Add `CRON_SECRET` to Vercel environment variables (Production)
 - [ ] Add `CRON_SECRET` to Vercel environment variables (Preview)
 - [ ] Add `CRON_SECRET` to local `.env` file
-- [ ] Test endpoints locally
+- [ ] Test endpoint locally
 - [ ] Deploy to production
 - [ ] Monitor CRON execution logs
 
@@ -450,6 +445,14 @@ Check CRON execution logs in Vercel Dashboard:
 
 ## Changelog
 
+- **2025-11-12**: Consolidated cleanup endpoints
+  - **CONSOLIDATION**: Merged `/api/cache/cleanup` and `/api/notifications/cleanup` into `/api/cleanup/all`
+  - **Reason**: Vercel free tier allows only 2 cron jobs; this frees up 1 slot
+  - Created unified endpoint with resilient error handling (one failure doesn't block the other)
+  - Single job tracking record (`cleanup_all`) instead of two separate records
+  - Deleted old endpoints and test files
+  - Created new unified test file with 10 test scenarios
+  - Updated documentation to reflect new unified approach
 - **2025-11-11**: Fixed Vercel cron authentication
   - **BREAKING FIX**: Corrected authentication to support Vercel's `x-vercel-cron: 1` header
   - Implemented dual authentication system (Vercel automatic + Bearer token for testing)
