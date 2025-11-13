@@ -2,7 +2,7 @@
 
 Documentation complète de la plateforme éducative UbuMaths.
 
-**Dernière mise à jour** : 2025-11-09
+**Dernière mise à jour** : 2025-11-13
 **Statut** : 🟢 Active Development
 
 ---
@@ -173,6 +173,26 @@ Système de récompenses gamifié pour motiver les élèves.
 - Batching automatique (10 clics = 1 requête DB)
 - **2025-11-04** : Rarity-weighted VIP card drawing system
 - **2025-10-29** : Cache architecture séparée + cross-device sync
+
+### 📊 Résumés quotidiens & Récompenses hebdomadaires
+
+**Status** : ✅ Production | [Documentation →](features/daily-summaries-weekly-rewards.md) 🆕 ⭐
+
+Système automatisé de résumés d'activité quotidienne et récompenses hebdomadaires pour les élèves.
+
+- [Guide utilisateur](features/daily-summaries-weekly-rewards.md) - Comment fonctionnent les résumés et récompenses
+- [Guide administrateur](guides/school-configuration.md) - Configuration fuseau horaire et semaine scolaire
+- [Architecture technique](architecture/daily-summaries-system.md) - Conception et implémentation détaillée
+- [Guide de migration](guides/daily-summaries-migration.md) - Déploiement en production
+- [Documentation API](api/cron-endpoints.md) - Endpoints cron et configuration
+- Résumés quotidiens automatiques (gidouilles, bonus, avertissements, cartes VIP)
+- Récompenses hebdomadaires (1 gidouille si 0 avertissements)
+- Support multi-timezone (80+ fuseaux horaires IANA)
+- Calendriers scolaires configurables (Western Mon-Fri, Israeli Sun-Thu, custom)
+- Vercel Cron (quotidien 01:00 UTC)
+- 6 tables d'historique pour audit complet
+- 130 tests unitaires (100% pass rate)
+- **2025-11-13** : Implémentation complète avec documentation exhaustive
 
 ### 🔄 Synchronisation multi-appareils
 
@@ -377,10 +397,10 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 ## 📊 Statistiques
 
-- **Features en production** : 15 🆕 (added Chat System + Chat Moderation)
+- **Features en production** : 16 🆕 (added Daily Summaries & Weekly Rewards)
 - **Features en développement** : 1 (Navadra)
-- **Tests** : 3,453 tests (99.3% pass rate)
-  - Unit tests: 2,635/2,659 passing (99.1%) 🆕 (+47 ChatStore, +10 API)
+- **Tests** : 3,583 tests (99.3% pass rate)
+  - Unit tests: 2,765/2,789 passing (99.1%) 🆕 (+130 summaries tests)
   - E2E tests: 303 ready to run
   - Validation tests: 366/366 passing (100%)
   - Database triggers: 139/139 passing (100%)
@@ -389,9 +409,13 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
   - Strategic database indexes on hot paths
   - Optimistic UI for better perceived performance
   - 97% fewer N+1 queries (244 → 6 per load)
-- **Database Tables** : 5 chat tables (conversations, messages, conversation_participants, message_reports, user_restrictions) 🆕
-- **Lignes de documentation** : ~65,000+ 🆕 (added chat-system.md: 25,000+ lines comprehensive guide)
-- **Dernière mise à jour** : 2025-11-11
+- **Database Tables** :
+  - 5 chat tables (conversations, messages, conversation_participants, message_reports, user_restrictions)
+  - 6 history tables (gidouilles_history, bonus_history, vip_cards_activity, student_warnings history, daily_summaries, weekly_rewards) 🆕
+- **Automated Jobs** : 1 Vercel cron (daily summaries & weekly rewards at 01:00 UTC) 🆕
+- **Multi-Timezone Support** : 80+ IANA timezones with DST handling 🆕
+- **Lignes de documentation** : ~95,000+ 🆕 (added 30,000+ lines for daily summaries system)
+- **Dernière mise à jour** : 2025-11-13
 
 ---
 

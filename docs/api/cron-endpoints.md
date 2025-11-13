@@ -1,305 +1,700 @@
-# CRON Endpoints API Reference
+# Cron Endpoints API Documentation
 
-This document describes the CRON job endpoints used for automated maintenance tasks.
-
-## Authentication
-
-All CRON endpoints require authentication using one of two methods:
-
-1. **Vercel automatic**: `x-vercel-cron: 1` header (production)
-2. **Manual testing**: `Authorization: Bearer <CRON_SECRET>` header (development/testing)
-
-### Request Format
-
-**Production (Vercel automatic):**
-
-```http
-POST /api/cleanup/all
-x-vercel-cron: 1
-```
-
-**Manual testing:**
-
-```http
-POST /api/cleanup/all
-Authorization: Bearer <CRON_SECRET>
-```
-
-### Security
-
-- **Token source**: `CRON_SECRET` environment variable
-- **Minimum length**: 16 characters (32+ recommended)
-- **Comparison**: Constant-time comparison prevents timing attacks
-- **Fail-secure**: Endpoints disabled if `CRON_SECRET` not configured
-
-### Error Responses
-
-| Status | Error                               | Description                                  |
-| ------ | ----------------------------------- | -------------------------------------------- |
-| 401    | Missing Authorization header        | No `Authorization` header provided           |
-| 401    | Invalid Authorization header format | Header doesn't match `Bearer <token>` format |
-| 401    | Invalid token                       | Token doesn't match `CRON_SECRET`            |
-| 503    | CRON endpoints disabled             | `CRON_SECRET` not configured (fail-secure)   |
+**Audience**: Developers and DevOps
+**Last Updated**: 2025-11-13
 
 ---
 
-## POST /api/cleanup/all
+## Overview
 
-**Unified cleanup endpoint** that handles both cache and notifications cleanup.
+This document describes the cron endpoints used by UbuMaths for scheduled automated tasks. Currently, there is one primary cron endpoint for daily summaries and weekly rewards processing.
+
+---
+
+## `/api/cron/daily-summaries-and-rewards`
+
+### Purpose
+
+Processes daily summaries and weekly rewards for all active classes:
+
+1. **Daily Summaries**: Generates activity summaries for students in classes that had lessons yesterday
+2. **Weekly Rewards**: Awards 1 gidouille to students with zero warnings on the last day of the school week
 
 ### Schedule
 
-**Daily at 2 AM UTC** (configured in `vercel.json`)
+- **Frequency**: Daily
+- **Time**: 01:00 AM UTC (via Vercel Cron)
+- **Configuration**: `vercel.json` cron schedule
 
-### What It Cleans
-
-1. **Cache entries**: Deletes where `expires_at < NOW()`
-2. **Notifications**: Deletes where `dismissed_at IS NOT NULL` AND `dismissed_at < NOW() - INTERVAL '30 days'`
-
-**Important**: Unread notifications are NEVER auto-deleted.
-
-### Request
-
-**Production (Vercel):**
-
-```http
-POST /api/cleanup/all
-x-vercel-cron: 1
+```json
+{
+	"crons": [
+		{
+			"path": "/api/cron/daily-summaries-and-rewards",
+			"schedule": "0 1 * * *"
+		}
+	]
+}
 ```
 
-**Manual testing:**
+### HTTP Methods
 
-```http
-POST /api/cleanup/all
+Both `GET` and `POST` are supported:
+
+- **GET**: Used by Vercel Cron (default for cron jobs)
+- **POST**: Used for manual triggers (testing, recovery)
+
+### Authentication
+
+**Required Header**:
+
+```
 Authorization: Bearer <CRON_SECRET>
 ```
 
-### Response (200 OK)
+The `CRON_SECRET` environment variable must match the token in the Authorization header.
+
+**Security**:
+
+- Authentication check happens BEFORE any processing
+- Returns 401 Unauthorized if token is missing or invalid
+- Implemented via `verifyCronAuth(request)` helper
+
+### Request
+
+**Endpoint**: `GET /api/cron/daily-summaries-and-rewards`
+
+**Headers**:
+
+```http
+Authorization: Bearer <CRON_SECRET>
+```
+
+**Body**: None (GET request)
+
+### Response
+
+#### Success (200 OK)
+
+All operations completed successfully:
 
 ```json
 {
 	"success": true,
-	"cache": {
-		"deleted": 15,
-		"message": "Cleaned up 15 expired cache entries"
+	"timestamp": "2025-11-13T01:00:00.000Z",
+	"classesProcessed": 45,
+	"dailySummaries": {
+		"generated": 320,
+		"classesProcessed": 38
 	},
-	"notifications": {
-		"deleted": 42,
-		"message": "Cleaned up 42 expired notification(s)"
+	"weeklyRewards": {
+		"awarded": 85,
+		"classesProcessed": 45
 	}
 }
 ```
 
-### Response Fields
+#### Partial Success (207 Multi-Status)
 
-| Field                   | Type    | Description                                 |
-| ----------------------- | ------- | ------------------------------------------- |
-| `success`               | boolean | Whether overall cleanup completed           |
-| `cache.deleted`         | number  | Number of cache entries deleted             |
-| `cache.message`         | string  | Human-readable cache cleanup result         |
-| `notifications.deleted` | number  | Number of notifications deleted             |
-| `notifications.message` | string  | Human-readable notifications cleanup result |
-
-### Partial Success Response (200 OK)
-
-If one cleanup fails, the other continues:
+Some operations failed, but processing continued:
 
 ```json
 {
 	"success": false,
-	"cache": {
-		"deleted": 0,
-		"error": "Database connection failed"
+	"timestamp": "2025-11-13T01:00:00.000Z",
+	"classesProcessed": 45,
+	"dailySummaries": {
+		"generated": 310,
+		"classesProcessed": 37,
+		"errors": ["Class a1b2c3d4-... (Math 101): Database connection timeout"]
 	},
-	"notifications": {
-		"deleted": 42,
-		"message": "Cleaned up 42 expired notification(s)"
+	"weeklyRewards": {
+		"awarded": 82,
+		"classesProcessed": 44,
+		"errors": ["Class e5f6g7h8-... (Physics 201): Student not found"]
 	}
 }
 ```
 
-### Error Response (500)
+#### Complete Failure (500 Internal Server Error)
+
+Critical failure before any processing:
 
 ```json
 {
 	"success": false,
-	"error": "Both cleanups failed: <error details>"
+	"error": "Failed to fetch classes: Connection refused",
+	"timestamp": "2025-11-13T01:00:00.000Z",
+	"classesProcessed": 0,
+	"dailySummaries": {
+		"generated": 0,
+		"classesProcessed": 0
+	},
+	"weeklyRewards": {
+		"awarded": 0,
+		"classesProcessed": 0
+	}
 }
 ```
 
-### Job Tracking
+#### Authentication Failure (401 Unauthorized)
 
-Execution logged to `background_job_runs` table:
+Invalid or missing CRON_SECRET:
 
-- **Job name**: `cleanup_all`
-- **Metadata**: `{ cache_deleted: N, notifications_deleted: M }`
-- **Status**: `success` | `failed` | `partial`
-
-### Example
-
-**Production (Vercel automatically adds header):**
-
-```bash
-# Vercel calls this automatically at 2 AM UTC
-# No manual execution needed in production
+```json
+{
+	"error": "Unauthorized: Invalid or missing cron token"
+}
 ```
 
-**Manual testing:**
+### Processing Logic
 
-```bash
-curl -X POST https://ubumaths.vercel.app/api/cleanup/all \
-  -H "Authorization: Bearer ${CRON_SECRET}"
+#### Step 1: Fetch Active Classes
+
+```typescript
+const { data: classes } = await serviceClient
+	.from('classes')
+	.select('id, name, teacher_id, school_id, created_at, updated_at, schools(timezone, timetable)')
+	.eq('status', 'active');
+```
+
+#### Step 2: Process Each Class
+
+For each active class:
+
+1. **Extract Configuration**:
+   - Timezone: `schools.timezone` (default: 'Europe/Paris')
+   - Week Config: `schools.timetable.week_config` (default: Israeli Sunday-Thursday)
+
+2. **Calculate Yesterday**:
+   - Use `getYesterdayInTimezone(timezone)` to get yesterday's date in school's timezone
+   - Accounts for timezone offsets and DST
+
+3. **Check Class Schedule**:
+   - Query `class_schedules` table for classes on yesterday's day of week
+   - If no class scheduled → skip daily summary
+
+4. **Generate Daily Summary** (if class scheduled):
+   - Aggregate activity from multiple history tables:
+     - `gidouilles_history`: Gains/losses
+     - `bonus_history`: Gains/uses
+     - `student_warnings`: Issued/removed
+     - `vip_cards_activity`: Gained/used
+   - Create `daily_summaries` record (cache)
+   - Create notification if any changes occurred
+
+5. **Check Weekly Rewards Day**:
+   - Use `getCurrentDayOfWeekInTimezone(timezone)` to get current day of week
+   - Use `isWeeklyRewardsDay(weekConfig, currentDayOfWeek)` to check if today is last day of week
+
+6. **Generate Weekly Rewards** (if rewards day):
+   - Get all active students in class
+   - Check each student for warnings in previous week
+   - Award 1 gidouille if zero warnings
+   - Create `weekly_rewards` record
+   - Update `profiles.gidouilles`
+   - Create notification
+
+#### Step 3: Error Handling
+
+- **Graceful Degradation**: Class-level errors don't stop processing of other classes
+- **Error Logging**: All errors logged to console with class context
+- **Partial Success**: Returns 207 Multi-Status if any class failed
+- **Job Tracking**: Uses `start_job_run` / `complete_job_run` RPC functions for audit
+
+### Database Operations
+
+#### Service Role Client
+
+Uses `createServiceRoleClient()` which:
+
+- Bypasses Row Level Security (RLS)
+- Has full database permissions
+- Required for system-level operations across all schools
+
+#### Atomic Operations
+
+All database writes use:
+
+- `ON CONFLICT DO NOTHING` to prevent duplicates
+- Transactions where appropriate
+- Idempotent operations (safe to retry)
+
+#### History Tables
+
+Six history tables are queried:
+
+1. `gidouilles_history` - Gidouille transactions
+2. `bonus_history` - Bonus transactions
+3. `student_warnings` - Warning records (soft-deleted)
+4. `vip_cards_activity` - VIP card gains/uses
+5. `daily_summaries` - Cached daily summary data
+6. `weekly_rewards` - Audit trail of weekly rewards
+
+### Performance Characteristics
+
+**Expected Performance**:
+
+- ~1-2 seconds per class (with caching)
+- ~45-90 seconds for 45 classes
+- ~2-3 minutes for 100 classes
+
+**Optimization**:
+
+- Service role client (bypasses RLS overhead)
+- Indexed queries on all history tables
+- Batched notification creation
+- Graceful error handling (continue on failure)
+
+**Monitoring**:
+
+- Check Vercel logs for execution time
+- Monitor job_runs table for success/failure tracking
+- Use Error Monitoring for runtime errors
+
+---
+
+## `/api/admin/schools/[schoolId]/config`
+
+### Purpose
+
+Admin-only endpoint for configuring school timezone and week configuration. Used by the admin UI to update school settings.
+
+### HTTP Methods
+
+- **GET**: Fetch current configuration
+- **PUT**: Update configuration
+
+---
+
+### GET Configuration
+
+#### Request
+
+**Endpoint**: `GET /api/admin/schools/[schoolId]/config`
+
+**Headers**:
+
+```http
+Authorization: Bearer <session_token>
+Cookie: supabase-auth-token=...
+```
+
+**Parameters**:
+
+- `schoolId` (path): UUID of the school
+
+#### Response (200 OK)
+
+```json
+{
+	"success": true,
+	"school": {
+		"id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Collège Victor Hugo",
+		"timezone": "Europe/Paris",
+		"timetable": {
+			"periods": [],
+			"week_config": {
+				"first_day": 1,
+				"last_day": 0,
+				"school_days": [1, 2, 3, 4, 5],
+				"weekend_days": [6, 0]
+			}
+		}
+	}
+}
+```
+
+#### Error Responses
+
+**401 Unauthorized**:
+
+```json
+{
+	"error": "Unauthorized"
+}
+```
+
+**403 Forbidden** (non-admin user):
+
+```json
+{
+	"error": "Admin access required"
+}
+```
+
+**404 Not Found** (invalid school ID):
+
+```json
+{
+	"error": "School not found"
+}
 ```
 
 ---
 
-## Manual Testing
+### PUT Configuration
 
-For local development or manual triggers:
+#### Request
 
-### Setup
+**Endpoint**: `PUT /api/admin/schools/[schoolId]/config`
 
-```bash
-# Export CRON_SECRET from .env
-export CRON_SECRET=$(grep CRON_SECRET .env | cut -d '=' -f2)
+**Headers**:
+
+```http
+Authorization: Bearer <session_token>
+Cookie: supabase-auth-token=...
+Content-Type: application/json
 ```
 
-### Test Unified Cleanup
+**Parameters**:
 
-```bash
-curl -X POST http://localhost:5175/api/cleanup/all \
-  -H "Authorization: Bearer $CRON_SECRET" -v
+- `schoolId` (path): UUID of the school
+
+**Body**:
+
+```json
+{
+	"timezone": "Europe/Paris",
+	"week_config": {
+		"first_day": 1,
+		"last_day": 0,
+		"school_days": [1, 2, 3, 4, 5],
+		"weekend_days": [6, 0]
+	}
+}
 ```
 
-### Verify Authentication
+#### Validation
+
+All request bodies are validated with Zod schemas:
+
+**Schema**: `updateSchoolConfigSchema`
+
+```typescript
+const updateSchoolConfigSchema = z.object({
+	timezone: z.string().min(1).max(100),
+	week_config: z.object({
+		first_day: z.number().int().min(0).max(6),
+		last_day: z.number().int().min(0).max(6),
+		school_days: z.array(z.number().int().min(0).max(6)).min(1).max(7),
+		weekend_days: z.array(z.number().int().min(0).max(6)).min(1).max(7)
+	})
+});
+```
+
+**Validation Rules**:
+
+- `timezone`: Non-empty string, max 100 chars (IANA timezone identifier)
+- `first_day`: Integer 0-6 (0=Sunday, 6=Saturday)
+- `last_day`: Integer 0-6
+- `school_days`: Array of 1-7 integers (0-6), no duplicates
+- `weekend_days`: Array of 1-7 integers (0-6), no duplicates
+- Combined: All 7 days must be assigned (no overlap, no gaps)
+
+#### Response (200 OK)
+
+```json
+{
+	"success": true,
+	"message": "Configuration mise à jour avec succès",
+	"school": {
+		"id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Collège Victor Hugo",
+		"timezone": "Europe/Paris",
+		"timetable": {
+			"periods": [],
+			"week_config": {
+				"first_day": 1,
+				"last_day": 0,
+				"school_days": [1, 2, 3, 4, 5],
+				"weekend_days": [6, 0]
+			}
+		}
+	}
+}
+```
+
+#### Error Responses
+
+**400 Bad Request** (validation error):
+
+```json
+{
+	"error": "Invalid school_days: must contain integers between 0 and 6"
+}
+```
+
+**401 Unauthorized**:
+
+```json
+{
+	"error": "Unauthorized"
+}
+```
+
+**403 Forbidden** (non-admin user):
+
+```json
+{
+	"error": "Admin access required"
+}
+```
+
+**404 Not Found** (invalid school ID):
+
+```json
+{
+	"error": "School not found"
+}
+```
+
+**500 Internal Server Error**:
+
+```json
+{
+	"error": "Failed to update school configuration"
+}
+```
+
+#### Authorization
+
+- **Role**: Admin only
+- **Check**: `profile.role === 'admin'`
+- **Scope**: Can update any school in the system
+
+---
+
+## Environment Variables
+
+### Required Variables
+
+**CRON_SECRET**
+
+- **Purpose**: Authentication token for cron endpoints
+- **Format**: Random secure string (minimum 32 characters recommended)
+- **Example**: `cron_abc123def456ghi789jkl012mno345pqr678stu901vwx234yz`
+- **Set in**: Vercel project settings → Environment Variables
+- **Used by**: `verifyCronAuth()` middleware
+
+**Supabase Variables**
+
+- `PUBLIC_SUPABASE_URL`: Supabase project URL
+- `PUBLIC_SUPABASE_ANON_KEY`: Supabase anonymous key (public)
+- `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key (private, bypasses RLS)
+
+### Security Best Practices
+
+1. **Generate Strong Secrets**: Use `openssl rand -hex 32` or similar
+2. **Rotate Regularly**: Change CRON_SECRET every 90 days
+3. **Limit Access**: Never commit secrets to git
+4. **Use Vercel's Secret Management**: Store in environment variables, not code
+5. **Audit Logs**: Monitor job_runs table for unexpected executions
+
+---
+
+## Testing
+
+### Manual Trigger
+
+You can manually trigger the cron job for testing:
 
 ```bash
-# Should fail with 401
-curl -X POST http://localhost:5175/api/cleanup/all -v
+# Using curl
+curl -X POST https://your-domain.com/api/cron/daily-summaries-and-rewards \
+  -H "Authorization: Bearer YOUR_CRON_SECRET"
 
-# Should fail with 401
-curl -X POST http://localhost:5175/api/cleanup/all \
-  -H "Authorization: Bearer wrong-token" -v
+# Using Postman
+# POST https://your-domain.com/api/cron/daily-summaries-and-rewards
+# Header: Authorization: Bearer YOUR_CRON_SECRET
+```
+
+### Local Testing
+
+```bash
+# Set environment variable
+export CRON_SECRET="your-local-secret"
+
+# Start dev server
+pnpm dev -- --port 5175
+
+# Trigger endpoint
+curl -X POST http://localhost:5175/api/cron/daily-summaries-and-rewards \
+  -H "Authorization: Bearer your-local-secret"
+```
+
+### Vercel Testing
+
+```bash
+# Using Vercel CLI
+vercel env pull .env.local
+
+# Or manually in Vercel dashboard:
+# Settings → Crons → Find job → "Run now"
 ```
 
 ---
 
 ## Monitoring
 
-### Vercel Dashboard
+### Vercel Logs
 
-1. Go to **Vercel Dashboard** → **Deployments**
-2. Select latest deployment → **Functions** tab
-3. Find cleanup function → View logs
-4. Filter for `[CRON AUTH]` to see authentication events
+**Access**: Vercel Dashboard → Project → Logs
 
-### Log Patterns
-
-**Successful authentication**:
+**Filter for cron jobs**:
 
 ```
-[CRON AUTH] ✅ Valid token { url: '/api/cleanup/all', method: 'POST', timestamp: '2025-01-10T02:00:00.000Z' }
+path:/api/cron/daily-summaries-and-rewards
 ```
 
-**Failed authentication**:
+**Key metrics to monitor**:
 
+- Execution time (should be < 3 minutes)
+- Success rate (should be > 95%)
+- Error messages (any class failures)
+
+### Database Audit
+
+**Job Runs Table**:
+
+```sql
+SELECT *
+FROM public.job_runs
+WHERE job_name = 'daily_summaries_and_rewards'
+ORDER BY started_at DESC
+LIMIT 20;
 ```
-[CRON AUTH] Invalid token (value mismatch) { url: '/api/cleanup/all', method: 'POST', timestamp: '2025-01-10T02:00:00.000Z' }
+
+**Recent Daily Summaries**:
+
+```sql
+SELECT
+  DATE(summary_date) as date,
+  COUNT(*) as summaries_created,
+  COUNT(sent_at) as notifications_sent
+FROM public.daily_summaries
+WHERE created_at >= NOW() - INTERVAL '7 days'
+GROUP BY DATE(summary_date)
+ORDER BY date DESC;
 ```
 
-**Configuration error**:
+**Recent Weekly Rewards**:
 
+```sql
+SELECT
+  week_start,
+  week_end,
+  COUNT(*) as rewards_awarded,
+  SUM(gidouilles_awarded) as total_gidouilles
+FROM public.weekly_rewards
+WHERE created_at >= NOW() - INTERVAL '30 days'
+GROUP BY week_start, week_end
+ORDER BY week_start DESC;
 ```
-[CRON AUTH] CRON_SECRET not configured - CRON endpoints are disabled
-```
 
-### Alerting
+### Error Monitoring
 
-Set up alerts for:
+Use UbuMaths Error Monitoring system:
 
-- **401 errors** on CRON endpoints (authentication failures)
-- **503 errors** (CRON_SECRET not configured)
-- **500 errors** (cleanup failures)
-- **Partial success** (one cleanup succeeded, one failed)
-- **Multiple 401s in short period** (potential brute-force attack)
-
----
-
-## Security Considerations
-
-### Secret Management
-
-- Use 32+ character hex strings for production
-- Rotate secrets every 90 days (recommended)
-- Use different secrets per environment
-- Never commit secrets to version control
-- Monitor authentication logs weekly
-
-### Threat Model
-
-| Threat                    | Mitigation                  | Status         |
-| ------------------------- | --------------------------- | -------------- |
-| Unauthorized execution    | Bearer token authentication | ✅ Implemented |
-| Timing attacks            | Constant-time comparison    | ✅ Implemented |
-| Token brute-force         | 128-bit entropy minimum     | ✅ Implemented |
-| Misconfiguration exposure | Fail-secure design          | ✅ Implemented |
-| Information disclosure    | Minimal error details       | ✅ Implemented |
-
-### Compliance
-
-- **Authentication**: RFC 6750 Bearer Token
-- **Cryptography**: Node.js `crypto.timingSafeEqual()`
-- **Logging**: PII-free audit trail
-- **Fail-secure**: Rejects by default
+- Navigate to Admin Dashboard → Error Monitoring
+- Filter by: `context.endpoint = "/api/cron/daily-summaries-and-rewards"`
+- Check for recurring errors or patterns
 
 ---
 
 ## Troubleshooting
 
-See `docs/development/environment-variables.md#cron-secret` for complete troubleshooting guide.
+### Issue: Cron job not running
 
-**Quick fixes**:
+**Symptoms**: No new daily_summaries or weekly_rewards records
 
-1. **401 Unauthorized**: Check `CRON_SECRET` matches between Vercel env vars and your request
-2. **503 Service Unavailable**: Add `CRON_SECRET` to Vercel environment variables
-3. **No CRON execution**: Verify schedule in `vercel.json` and check Vercel function logs
-4. **Partial success**: Check database connectivity and RPC function status in Supabase
+**Check**:
 
----
+1. Vercel Dashboard → Crons → Verify schedule is active
+2. Vercel Logs → Check for authentication errors
+3. Environment Variables → Verify CRON_SECRET is set
 
-## Migration Notes
+**Solutions**:
 
-### From Separate Endpoints (Pre-2025-11-12)
+- Re-deploy the project to sync cron configuration
+- Verify `vercel.json` cron schedule is correct
+- Manually trigger to test authentication
 
-Previously, cache and notifications cleanup were handled by separate endpoints:
+### Issue: All classes failing
 
-- **OLD**: `/api/cache/cleanup` (deleted)
-- **OLD**: `/api/notifications/cleanup` (deleted)
-- **NEW**: `/api/cleanup/all` (unified)
+**Symptoms**: 207 Multi-Status response with all classes in errors array
 
-**Why the change?**
+**Check**:
 
-- Vercel free tier allows only 2 cron jobs
-- Consolidation frees up 1 cron slot for future use
-- Single job tracking record instead of two
-- Resilient: if one cleanup fails, the other continues
+1. Database connection (Supabase status page)
+2. Service role key validity (try a direct query)
+3. Recent schema changes (migrations applied?)
 
-**Migration steps for manual testing:**
+**Solutions**:
 
-```bash
-# OLD (no longer works)
-curl -X POST http://localhost:5175/api/cache/cleanup \
-  -H "Authorization: Bearer $CRON_SECRET"
+- Wait 5 minutes and retry (may be transient DB issue)
+- Verify all migrations are applied: `pnpm db:migrate`
+- Check Supabase dashboard for RLS policy changes
 
-# NEW (use this instead)
-curl -X POST http://localhost:5175/api/cleanup/all \
-  -H "Authorization: Bearer $CRON_SECRET"
-```
+### Issue: Some classes failing
+
+**Symptoms**: Partial success, specific classes repeatedly fail
+
+**Check**:
+
+1. School configuration (timezone, week_config)
+2. Class schedule data (class_schedules table)
+3. Student data (class_members, profiles)
+
+**Solutions**:
+
+- Verify school timezone is valid IANA timezone
+- Verify class has at least one schedule entry
+- Check that students are not marked as test accounts
+
+### Issue: Notifications not appearing
+
+**Symptoms**: daily_summaries created but students don't see them
+
+**Check**:
+
+1. Notifications table (were notifications created?)
+2. Notification settings (are students subscribed?)
+3. RLS policies (can students read their notifications?)
+
+**Solutions**:
+
+- Query notifications table for affected students
+- Check notification `target_mode` (should be 'dropdown')
+- Verify students are logged in and refreshing their page
+
+### Issue: Incorrect timezone calculations
+
+**Symptoms**: "Yesterday" seems wrong, rewards on wrong day
+
+**Check**:
+
+1. School timezone configuration
+2. Server time (should always be UTC)
+3. Week config (first_day, last_day)
+
+**Solutions**:
+
+- Verify school timezone with `SELECT timezone FROM schools WHERE id = '...'`
+- Verify week_config with `SELECT timetable->'week_config' FROM schools WHERE id = '...'`
+- Test timezone calculations with `getYesterdayInTimezone(timezone)` in dev
 
 ---
 
 ## Related Documentation
 
-- [Environment Variables Guide](../development/environment-variables.md#cron-secret)
-- [CRON Authentication Implementation](../security/cron-authentication.md)
-- [Notifications System](../features/notifications-system.md)
+- [User Guide (French)](../features/daily-summaries-weekly-rewards.md)
+- [Admin Guide (French)](../guides/school-configuration.md)
+- [Technical Architecture](../architecture/daily-summaries-system.md)
+- [Migration Guide](../guides/daily-summaries-migration.md)
+
+---
+
+**Last Updated**: 2025-11-13
+**Version**: 1.0.0
