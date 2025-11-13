@@ -5,6 +5,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
+	import SchoolConfigModal from '$lib/components/admin/SchoolConfigModal.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -16,6 +17,10 @@
 		Array<{ name: string; city?: string; country?: string; address?: string; logo_url?: string }>
 	>([]);
 	let parseError = $state('');
+
+	// Configuration modal state
+	let showConfigModal = $state(false);
+	let configuringSchool = $state<(typeof data.schools)[number] | null>(null);
 
 	let formData = $state({
 		name: '',
@@ -110,6 +115,16 @@
 		}
 
 		parsedSchools = schools;
+	}
+
+	function openConfigModal(school: (typeof data.schools)[number]) {
+		configuringSchool = school;
+		showConfigModal = true;
+	}
+
+	function handleConfigSave(updatedSchool: (typeof data.schools)[number]) {
+		// Update local school data
+		data.schools = data.schools.map((s) => (s.id === updatedSchool.id ? updatedSchool : s));
 	}
 </script>
 
@@ -212,6 +227,9 @@
 								>
 									<Button variant="ghost" size="sm">Organisation</Button>
 								</a>
+								<Button variant="ghost" size="sm" onclick={() => openConfigModal(school)}>
+									Configuration
+								</Button>
 								<Button variant="ghost" size="sm" onclick={() => openEditModal(school)}>
 									Modifier
 								</Button>
@@ -525,4 +543,13 @@ Another School	London	UK		"
 			</div>
 		</div>
 	</div>
+{/if}
+
+<!-- Configuration Modal -->
+{#if configuringSchool}
+	<SchoolConfigModal
+		bind:open={showConfigModal}
+		school={configuringSchool}
+		onsave={handleConfigSave}
+	/>
 {/if}
