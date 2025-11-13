@@ -1,6 +1,10 @@
 {
 	"crons": [
 		{
+			"path": "/api/cron/daily-summaries-and-rewards",
+			"schedule": "0 1 * * *"
+		},
+		{
 			"path": "/api/cleanup/all",
 			"schedule": "0 2 * * *"
 		}
