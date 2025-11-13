@@ -798,6 +798,7 @@
 			// Prepare JSON payload with accumulated delta
 			const payload = {
 				studentId,
+				classId: selectedClassId,
 				delta: accumulatedDelta
 			};
 
@@ -886,6 +887,7 @@
 			// Prepare JSON payload with accumulated delta
 			const payload = {
 				studentId,
+				classId: selectedClassId,
 				delta: accumulatedDelta
 			};
 

@@ -10,6 +10,7 @@ import { z } from 'zod';
  */
 export const awardGidouillesSchema = z.object({
 	studentId: z.string().uuid('Invalid student ID'),
+	classId: z.string().uuid('Invalid class ID'), // Required for history tracking
 	amount: z
 		.number()
 		.int('Amount must be an integer')
@@ -24,6 +25,7 @@ export const awardGidouillesSchema = z.object({
  */
 export const awardBonusSchema = z.object({
 	studentId: z.string().uuid('Invalid student ID'),
+	classId: z.string().uuid('Invalid class ID'), // Required for history tracking
 	delta: z
 		.number()
 		.int('Delta must be an integer')

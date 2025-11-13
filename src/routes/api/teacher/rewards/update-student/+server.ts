@@ -12,6 +12,7 @@ import { z } from 'zod';
 
 const schema = z.object({
 	studentId: z.string().uuid(),
+	classId: z.string().uuid(), // Required for history tracking
 	delta: z.number().int().min(-1000).max(1000) // Safety bounds
 });
 
@@ -28,13 +29,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { studentId, delta } = validation.data;
+	const { studentId, classId, delta } = validation.data;
 	const supabase = locals.supabase;
 
 	try {
 		// Call RPC to update student gidouilles
 		const { data: newValue, error: rpcError } = await supabase.rpc('update_student_gidouilles', {
 			p_student_id: studentId,
+			p_class_id: classId,
 			p_delta: delta
 		});
 
