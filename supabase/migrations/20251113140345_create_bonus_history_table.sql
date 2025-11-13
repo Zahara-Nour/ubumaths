@@ -68,6 +68,11 @@ USING (
     )
 );
 
+-- Drop all existing versions of update_student_bonus to avoid overload conflicts
+DROP FUNCTION IF EXISTS public.update_student_bonus(UUID, UUID, INTEGER, TEXT, UUID);
+DROP FUNCTION IF EXISTS public.update_student_bonus(UUID, UUID, INTEGER, TEXT);
+DROP FUNCTION IF EXISTS public.update_student_bonus(UUID, UUID, INTEGER);
+
 -- Modify existing update_student_bonus function to log changes
 -- This replaces the existing function with history tracking
 CREATE OR REPLACE FUNCTION public.update_student_bonus(
@@ -153,7 +158,7 @@ $$;
 
 -- Grant necessary permissions
 GRANT SELECT ON public.bonus_history TO authenticated;
-GRANT EXECUTE ON FUNCTION public.update_student_bonus TO authenticated;
+GRANT EXECUTE ON FUNCTION public.update_student_bonus(UUID, UUID, INTEGER, TEXT, UUID) TO authenticated;
 
 -- Verification
 DO $$
