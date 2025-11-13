@@ -115,6 +115,9 @@ WITH CHECK (
     AND deleted_by = auth.uid()
 );
 
+-- Drop existing versions of soft_delete_warning to avoid overload conflicts
+DROP FUNCTION IF EXISTS public.soft_delete_warning(UUID);
+
 -- Create helper function for soft-deleting warnings
 CREATE OR REPLACE FUNCTION public.soft_delete_warning(
     p_warning_id UUID
@@ -166,7 +169,7 @@ END;
 $$;
 
 -- Grant necessary permissions
-GRANT EXECUTE ON FUNCTION public.soft_delete_warning TO authenticated;
+GRANT EXECUTE ON FUNCTION public.soft_delete_warning(UUID) TO authenticated;
 
 -- Create view for active warnings only (convenience)
 CREATE OR REPLACE VIEW public.active_student_warnings AS
@@ -174,9 +177,11 @@ SELECT
     id,
     student_id,
     class_id,
-    reason,
+    academic_period_id,
+    warning_type,
     created_by,
-    created_at
+    created_at,
+    updated_at
 FROM public.student_warnings
 WHERE deleted_at IS NULL;
 
