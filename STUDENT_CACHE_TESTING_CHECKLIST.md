@@ -174,7 +174,7 @@ This checklist validates the student dashboard cache migration, focusing on:
 
 **Steps**:
 
-1. Navigate to `/vip-cards/collection`
+1. Navigate to `/dashboard/student/vip-cards/collection`
 2. Observe all VIP cards displayed
 3. Find an owned card with action and no pending request
 4. Click "Utiliser" button
@@ -288,7 +288,7 @@ This checklist validates the student dashboard cache migration, focusing on:
 **Steps**:
 
 1. Start on dashboard, note VIP card count
-2. Navigate to `/vip-cards/collection`
+2. Navigate to `/dashboard/student/vip-cards/collection`
 3. Request activation on a card
 4. Navigate back to `/dashboard` (use browser back button)
 5. **DO NOT REFRESH**
