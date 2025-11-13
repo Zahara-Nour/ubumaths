@@ -6406,11 +6406,23 @@ export interface SchoolPeriod {
 }
 
 /**
+ * Week configuration for school calendar
+ * Defines which days are school days vs weekend days
+ */
+export interface WeekConfig {
+	first_day: number; // 0-6 (0=Sunday, 1=Monday, etc.)
+	last_day: number; // 0-6
+	school_days: number[]; // Array of school days (ex: [0,1,2,3,4])
+	weekend_days: number[]; // Array of weekend days (ex: [5,6])
+}
+
+/**
  * School timetable with periods
  * Used in timetable system
  */
 export interface SchoolTimetable {
 	periods: SchoolPeriod[];
+	week_config?: WeekConfig;
 }
 
 // ============================================================================

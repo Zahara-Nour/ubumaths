@@ -63,18 +63,19 @@ profiles (user_role: student/teacher/admin) ← pending_students (pre-populated)
 
 Educational institutions where students and teachers belong.
 
-| Column     | Type        | Description                                    |
-| ---------- | ----------- | ---------------------------------------------- |
-| id         | UUID (PK)   | School ID                                      |
-| name       | TEXT        | School name                                    |
-| city       | TEXT        | City location                                  |
-| country    | TEXT        | Country location                               |
-| address    | TEXT        | Optional full address                          |
-| logo_url   | TEXT        | Optional school logo                           |
-| is_active  | BOOLEAN     | Whether school is active                       |
-| timetable  | JSONB       | School-level timetable configuration (periods) |
-| created_at | TIMESTAMPTZ | Creation time                                  |
-| updated_at | TIMESTAMPTZ | Last update time                               |
+| Column     | Type        | Description                                                                        |
+| ---------- | ----------- | ---------------------------------------------------------------------------------- |
+| id         | UUID (PK)   | School ID                                                                          |
+| name       | TEXT        | School name                                                                        |
+| city       | TEXT        | City location                                                                      |
+| country    | TEXT        | Country location                                                                   |
+| address    | TEXT        | Optional full address                                                              |
+| logo_url   | TEXT        | Optional school logo                                                               |
+| is_active  | BOOLEAN     | Whether school is active                                                           |
+| timezone   | TEXT        | IANA timezone (e.g., 'Europe/Paris', 'America/New_York') [NEW: 2025-11-13]         |
+| timetable  | JSONB       | School-level timetable configuration (periods + week config) [UPDATED: 2025-11-13] |
+| created_at | TIMESTAMPTZ | Creation time                                                                      |
+| updated_at | TIMESTAMPTZ | Last update time                                                                   |
 
 **Unique Constraint**: (name, city, country) combination must be unique.
 
@@ -94,9 +95,50 @@ Educational institutions where students and teachers belong.
 			"start_time": "08:00:00",
 			"end_time": "09:00:00"
 		}
-	]
+	],
+	"week_config": {
+		"first_day": 0, // 0=Sunday, 1=Monday, ..., 6=Saturday
+		"last_day": 6, // Last day of the school week
+		"school_days": [0, 1, 2, 3, 4], // Array of school days (Israeli: Sun-Thu)
+		"weekend_days": [5, 6] // Array of weekend days (Israeli: Fri-Sat)
+	}
 }
 ```
+
+**Week Configuration Examples**:
+
+```json
+// Israeli school week (Sunday-Thursday)
+{
+	"first_day": 0,
+	"last_day": 6,
+	"school_days": [0,1,2,3,4],
+	"weekend_days": [5,6]
+}
+
+// Western school week (Monday-Friday)
+{
+	"first_day": 1,
+	"last_day": 0,
+	"school_days": [1,2,3,4,5],
+	"weekend_days": [6,0]
+}
+
+// Middle Eastern school week (Saturday-Wednesday)
+{
+	"first_day": 6,
+	"last_day": 5,
+	"school_days": [6,0,1,2,3],
+	"weekend_days": [4,5]
+}
+```
+
+**Notes**:
+
+- The `timezone` field determines when daily summaries and weekly rewards are calculated
+- The `week_config` defines the school week structure for weekly reward calculations
+- Default timezone: 'Europe/Paris'
+- Default week_config: Israeli calendar (Sunday-Thursday school week)
 
 The timetable defines standardized periods that teachers must use when creating class schedules. All periods are identical across all days of the week (Sunday-Thursday).
 
