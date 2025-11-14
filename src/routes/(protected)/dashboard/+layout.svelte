@@ -41,6 +41,7 @@
 		GraduationCap,
 		Users,
 		ClipboardList,
+		ShoppingBag,
 		// TrendingUp, // Unused - for future features
 		School,
 		Settings,
@@ -132,6 +133,7 @@
 					badge: pendingVipRequestsCount > 0 ? pendingVipRequestsCount : undefined
 				},
 				{ href: '/dashboard/teacher/vip-cards', label: 'VIP Cards', icon: Sparkles },
+				{ href: '/dashboard/teacher/marketplace', label: 'Marché', icon: ShoppingBag },
 				{ href: '/dashboard/teacher/warnings', label: 'Avertissements', icon: AlertTriangle }
 			];
 		} else if (role === 'admin') {

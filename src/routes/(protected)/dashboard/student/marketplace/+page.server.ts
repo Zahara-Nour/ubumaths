@@ -1,8 +1,7 @@
 import type { PageServerLoad } from './$types';
-import { createClient } from '$lib/server/supabase';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const supabase = await createClient(locals);
+	const supabase = locals.supabase;
 
 	// Fetch marketplace configuration
 	const { data: config } = await supabase.from('marketplace_config').select('*').single();

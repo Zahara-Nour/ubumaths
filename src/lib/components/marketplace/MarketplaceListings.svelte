@@ -48,8 +48,11 @@
 	function applyFilters() {
 		marketplaceStore.setFilters({
 			type: selectedType === 'all' ? undefined : (selectedType as 'sell' | 'buy'),
-			sort_by: selectedSort as any,
-			card_rarity: selectedRarity === 'all' ? undefined : (selectedRarity as any),
+			sort_by: selectedSort as 'recent' | 'expiring_soon' | 'popular',
+			card_rarity:
+				selectedRarity === 'all'
+					? undefined
+					: (selectedRarity as 'common' | 'rare' | 'epic' | 'legendary'),
 			search: searchQuery || undefined
 		});
 	}

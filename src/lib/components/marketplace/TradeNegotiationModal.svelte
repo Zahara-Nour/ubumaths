@@ -5,11 +5,10 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import { Badge } from '$lib/components/ui/badge';
 	import { Avatar } from '$lib/components/ui/avatar';
 	import { Separator } from '$lib/components/ui/separator';
 	import VipCardSelector from './VipCardSelector.svelte';
-	import { ArrowLeftRight, MessageSquare, CheckCircle, XCircle } from 'lucide-svelte';
+	import { ArrowLeftRight, CheckCircle, XCircle } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import { toaster } from '$lib/stores/toaster.svelte';
 

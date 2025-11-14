@@ -3,7 +3,7 @@
 // Main store for managing marketplace state with Svelte 5 runes and Supabase realtime
 
 import { supabaseRealtimeManager } from '$lib/stores/supabaseRealtime.svelte';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
 import type {
 	MarketplaceListing,
 	MarketplaceTrade,
@@ -25,7 +25,7 @@ import {
 	createOfferSchema,
 	chatMessageSchema,
 	updateProposalSchema
-} from '$lib/server/marketplace/validation';
+} from '$lib/validation/marketplace';
 
 class MarketplaceStore {
 	// State - Using Svelte 5 runes
@@ -93,10 +93,10 @@ class MarketplaceStore {
 	// Private
 	private supabase: SupabaseClient | null = null;
 	private userId: string | null = null;
-	private listingsChannel: any = null;
-	private tradesChannel: any = null;
-	private proposalsChannel: any = null;
-	private chatChannel: any = null;
+	private listingsChannel: RealtimeChannel | null = null;
+	private tradesChannel: RealtimeChannel | null = null;
+	private proposalsChannel: RealtimeChannel | null = null;
+	private chatChannel: RealtimeChannel | null = null;
 
 	// Initialize
 	init(supabase: SupabaseClient, userId: string) {
@@ -209,7 +209,7 @@ class MarketplaceStore {
 				table: 'marketplace_trade_chat',
 				filter: `trade_id=eq.${tradeId}`
 			},
-			(payload: any) => {
+			(payload: { new: Record<string, unknown> }) => {
 				const message = payload.new as MarketplaceTradeChatMessage;
 				const messages = this.tradeChatMessages.get(tradeId) || [];
 				this.tradeChatMessages.set(tradeId, [...messages, message]);
@@ -220,7 +220,7 @@ class MarketplaceStore {
 	}
 
 	// Handlers
-	private handleNewListing(payload: any) {
+	private handleNewListing(payload: { new: Record<string, unknown> }) {
 		const newListing = payload.new as MarketplaceListing;
 		// Add to listings if not already present
 		if (!this.listings.find((l) => l.id === newListing.id)) {
@@ -229,7 +229,7 @@ class MarketplaceStore {
 		}
 	}
 
-	private handleListingUpdate(payload: any) {
+	private handleListingUpdate(payload: { new: Record<string, unknown> }) {
 		const updated = payload.new as MarketplaceListing;
 		this.listings = this.listings.map((l) => (l.id === updated.id ? updated : l));
 		this.myListings = this.myListings.map((l) => (l.id === updated.id ? updated : l));
@@ -240,8 +240,8 @@ class MarketplaceStore {
 		}
 	}
 
-	private handleListingDelete(payload: any) {
-		const deletedId = payload.old.id;
+	private handleListingDelete(payload: { old: Record<string, unknown> }) {
+		const deletedId = (payload.old as { id: string }).id;
 		this.listings = this.listings.filter((l) => l.id !== deletedId);
 		this.myListings = this.myListings.filter((l) => l.id !== deletedId);
 
@@ -250,7 +250,7 @@ class MarketplaceStore {
 		}
 	}
 
-	private handleTradeUpdate(payload: any) {
+	private handleTradeUpdate(payload: { new: Record<string, unknown> }) {
 		const trade = payload.new as MarketplaceTrade;
 		const existing = this.activeTrades.find((t) => t.id === trade.id);
 
@@ -269,7 +269,7 @@ class MarketplaceStore {
 		}
 	}
 
-	private handleProposalUpdate(payload: any) {
+	private handleProposalUpdate(payload: { new: Record<string, unknown> }) {
 		const proposal = payload.new as MarketplaceProposal;
 
 		// Update my proposals
@@ -314,7 +314,7 @@ class MarketplaceStore {
 			if (response.ok) {
 				this.config = await response.json();
 			}
-		} catch (error) {
+		} catch (_error) {
 			console.error('Failed to fetch marketplace config:', error);
 		} finally {
 			this.isLoading.config = false;
@@ -365,7 +365,7 @@ class MarketplaceStore {
 			} else {
 				throw new Error('Failed to fetch listings');
 			}
-		} catch (error) {
+		} catch (_error) {
 			this.errors.listings = error instanceof Error ? error.message : 'Failed to fetch listings';
 			toaster.error('Erreur lors du chargement des annonces');
 		} finally {
@@ -391,7 +391,7 @@ class MarketplaceStore {
 				// Also fetch proposals on my listings
 				await this.fetchReceivedProposals();
 			}
-		} catch (error) {
+		} catch (_error) {
 			console.error('Failed to fetch my listings:', error);
 		} finally {
 			this.isLoading.myListings = false;
@@ -411,7 +411,7 @@ class MarketplaceStore {
 				this.receivedProposals = await response.json();
 				this.updatePendingCounts();
 			}
-		} catch (error) {
+		} catch (_error) {
 			console.error('Failed to fetch received proposals:', error);
 		}
 	}
@@ -431,7 +431,7 @@ class MarketplaceStore {
 				).length;
 				this.updatePendingCounts();
 			}
-		} catch (error) {
+		} catch (_error) {
 			console.error('Failed to fetch my proposals:', error);
 		} finally {
 			this.isLoading.proposals = false;
@@ -454,7 +454,7 @@ class MarketplaceStore {
 				).length;
 				this.updatePendingCounts();
 			}
-		} catch (error) {
+		} catch (_error) {
 			this.errors.trades = 'Failed to fetch trades';
 			console.error('Failed to fetch trades:', error);
 		} finally {
@@ -475,7 +475,7 @@ class MarketplaceStore {
 			if (response.ok) {
 				this.myVipCards = await response.json();
 			}
-		} catch (error) {
+		} catch (_error) {
 			console.error('Failed to fetch VIP cards:', error);
 		} finally {
 			this.isLoading.cards = false;
@@ -496,7 +496,7 @@ class MarketplaceStore {
 			if (data && !error) {
 				this.userGidouilles = data.gidouilles || 0;
 			}
-		} catch (error) {
+		} catch (_error) {
 			console.error('Failed to fetch user gidouilles:', error);
 		}
 	}
@@ -530,7 +530,7 @@ class MarketplaceStore {
 				toaster.error(error || "Erreur lors de la création de l'annonce");
 				return false;
 			}
-		} catch (error) {
+		} catch (_error) {
 			toaster.error("Erreur lors de la création de l'annonce");
 			return false;
 		}
@@ -563,7 +563,7 @@ class MarketplaceStore {
 				toaster.error(error || "Erreur lors de l'envoi de la proposition");
 				return false;
 			}
-		} catch (error) {
+		} catch (_error) {
 			toaster.error("Erreur lors de l'envoi de la proposition");
 			return false;
 		}
@@ -598,7 +598,7 @@ class MarketplaceStore {
 				toaster.error(error || "Erreur lors de l'acceptation");
 				return false;
 			}
-		} catch (error) {
+		} catch (_error) {
 			toaster.error("Erreur lors de l'acceptation");
 			return false;
 		}
@@ -635,7 +635,7 @@ class MarketplaceStore {
 				toaster.error(error || 'Erreur lors du refus');
 				return false;
 			}
-		} catch (error) {
+		} catch (_error) {
 			toaster.error('Erreur lors du refus');
 			return false;
 		}
@@ -657,7 +657,7 @@ class MarketplaceStore {
 				toaster.error(error || "Erreur lors de l'annulation");
 				return false;
 			}
-		} catch (error) {
+		} catch (_error) {
 			toaster.error("Erreur lors de l'annulation");
 			return false;
 		}
@@ -697,7 +697,7 @@ class MarketplaceStore {
 				toaster.error(error || "Erreur lors de la création de l'échange");
 				return null;
 			}
-		} catch (error) {
+		} catch (_error) {
 			toaster.error("Erreur lors de la création de l'échange");
 			return null;
 		}
@@ -740,7 +740,7 @@ class MarketplaceStore {
 				toaster.error(error || "Erreur lors de l'envoi de l'offre");
 				return false;
 			}
-		} catch (error) {
+		} catch (_error) {
 			toaster.error("Erreur lors de l'envoi de l'offre");
 			return false;
 		}
@@ -763,7 +763,7 @@ class MarketplaceStore {
 				toaster.error(error || "Erreur lors de l'acceptation");
 				return false;
 			}
-		} catch (error) {
+		} catch (_error) {
 			toaster.error("Erreur lors de l'acceptation");
 			return false;
 		}
@@ -788,7 +788,7 @@ class MarketplaceStore {
 				toaster.error(error || "Erreur lors de l'annulation");
 				return false;
 			}
-		} catch (error) {
+		} catch (_error) {
 			toaster.error("Erreur lors de l'annulation");
 			return false;
 		}
@@ -802,7 +802,7 @@ class MarketplaceStore {
 				const messages = await response.json();
 				this.tradeChatMessages.set(tradeId, messages);
 			}
-		} catch (error) {
+		} catch (_error) {
 			console.error('Failed to fetch trade chat messages:', error);
 		}
 	}
@@ -833,7 +833,7 @@ class MarketplaceStore {
 				toaster.error("Erreur lors de l'envoi du message");
 				return false;
 			}
-		} catch (error) {
+		} catch (_error) {
 			toaster.error("Erreur lors de l'envoi du message");
 			return false;
 		}

@@ -9,9 +9,8 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import VipCardSelector from './VipCardSelector.svelte';
-	import { Info, Plus } from 'lucide-svelte';
+	import { Info } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// Props
@@ -71,10 +70,10 @@
 
 	// Get selected template names for display
 	let selectedTemplateNames = $derived(() => {
-		if (!vipCardTemplates.templates.length) return [];
+		if (!$vipCardTemplates.length) return [];
 
 		return wantedCardTemplateIds.map((id) => {
-			const template = vipCardTemplates.templates.find((t) => t.id === id);
+			const template = $vipCardTemplates.find((t) => t.id === id);
 			return template?.name || 'Inconnue';
 		});
 	});
@@ -140,12 +139,7 @@
 		}
 	}
 
-	// Load templates on mount
-	$effect(() => {
-		if (open && !vipCardTemplates.templates.length) {
-			vipCardTemplates.fetchTemplates();
-		}
-	});
+	// Templates are loaded in root layout, no need to fetch here
 
 	// Reset when closing
 	$effect(() => {
@@ -295,7 +289,7 @@
 
 					{#if selectedTemplateNames().length > 0}
 						<div class="mb-2 flex flex-wrap gap-2">
-							{#each selectedTemplateNames() as name}
+							{#each selectedTemplateNames() as name (name)}
 								<Badge variant="secondary">{name}</Badge>
 							{/each}
 						</div>
@@ -313,7 +307,7 @@
 					{#if showTemplateSelector}
 						<div class="mt-2 max-h-64 overflow-y-auto rounded-lg border p-2">
 							<div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
-								{#each vipCardTemplates.templates as template}
+								{#each $vipCardTemplates as template (template.id)}
 									<button
 										type="button"
 										onclick={() => toggleTemplate(template.id)}

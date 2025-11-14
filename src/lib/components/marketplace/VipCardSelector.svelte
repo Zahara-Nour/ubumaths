@@ -2,8 +2,6 @@
 	import type { VipCardWithLockStatus } from '$lib/types/marketplace';
 	import type { Database } from '$lib/types/database';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Label } from '$lib/components/ui/label';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Lock, Check } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 
@@ -141,22 +139,6 @@
 		onselectionchange?.(selectedCardIds);
 	}
 
-	// Get rarity color
-	function getRarityColor(rarity: string) {
-		switch (rarity) {
-			case 'legendary':
-				return 'text-yellow-500';
-			case 'epic':
-				return 'text-purple-500';
-			case 'rare':
-				return 'text-blue-500';
-			case 'common':
-				return 'text-gray-500';
-			default:
-				return 'text-gray-500';
-		}
-	}
-
 	// Get rarity badge variant
 	function getRarityBadgeVariant(
 		rarity: string
@@ -191,7 +173,7 @@
 				: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
 		)}
 	>
-		{#each groupedCards() as group}
+		{#each groupedCards() as group (group.template_id)}
 			{@const selectedCount = selectedCountPerTemplate().get(group.template.id) || 0}
 			{@const isDisabled =
 				group.availableCount === 0 ||

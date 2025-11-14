@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
-	import { page } from '$app/stores';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -30,7 +29,8 @@
 		};
 	});
 
-	// Computed
+	// Computed (unused but kept for potential future use)
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let totalPending = $derived(
 		marketplaceStore.pendingActions.listings +
 			marketplaceStore.pendingActions.trades +

@@ -4,7 +4,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Avatar } from '$lib/components/ui/avatar';
-	import { Clock, Eye, MessageSquare, Package } from 'lucide-svelte';
+	import { Clock, Eye, MessageSquare } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 

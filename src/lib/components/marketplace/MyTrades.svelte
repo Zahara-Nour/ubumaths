@@ -14,7 +14,6 @@
 		XCircle,
 		MessageSquare,
 		RefreshCw,
-		User,
 		AlertCircle
 	} from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
@@ -179,7 +178,7 @@
 					</Card.Content>
 				</Card.Root>
 			{:else}
-				{#each activeTrades() as trade}
+				{#each activeTrades() as trade (trade.id)}
 					{@const partner = getTradePartner(trade)}
 					{@const myTurn = isMyTurn(trade)}
 					{@const offerSummary = getOfferSummary(trade)}
@@ -285,7 +284,7 @@
 					</Card.Content>
 				</Card.Root>
 			{:else}
-				{#each completedTrades() as trade}
+				{#each completedTrades() as trade (trade.id)}
 					{@const partner = getTradePartner(trade)}
 
 					<Card.Root>

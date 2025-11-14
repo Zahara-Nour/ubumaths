@@ -14,7 +14,6 @@
 		MessageSquare,
 		Trash2,
 		CheckCircle,
-		XCircle,
 		AlertCircle,
 		RefreshCw
 	} from 'lucide-svelte';
@@ -136,7 +135,7 @@
 					</Card.Content>
 				</Card.Root>
 			{:else}
-				{#each activeListings() as listing}
+				{#each activeListings() as listing (listing.id)}
 					{@const proposals = getListingProposals(listing.id)}
 					{@const pendingCount = getPendingProposalsCount(listing.id)}
 
@@ -185,7 +184,7 @@
 							<Card.Content>
 								<h4 class="mb-3 font-medium">Propositions reçues</h4>
 								<div class="space-y-2">
-									{#each proposals.slice(0, 3) as proposal}
+									{#each proposals.slice(0, 3) as proposal (proposal.id)}
 										<div class="flex items-center justify-between rounded-lg border p-3">
 											<div class="flex items-center gap-3">
 												<Avatar.Root class="h-8 w-8">
@@ -265,7 +264,7 @@
 					</Card.Content>
 				</Card.Root>
 			{:else}
-				{#each completedListings() as listing}
+				{#each completedListings() as listing (listing.id)}
 					<Card.Root>
 						<Card.Content class="py-4">
 							<div class="flex items-center justify-between">
@@ -297,7 +296,7 @@
 					</Card.Content>
 				</Card.Root>
 			{:else}
-				{#each expiredListings() as listing}
+				{#each expiredListings() as listing (listing.id)}
 					<Card.Root>
 						<Card.Content class="py-4">
 							<div class="flex items-center justify-between">

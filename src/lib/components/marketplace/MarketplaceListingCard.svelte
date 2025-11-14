@@ -3,7 +3,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Avatar } from '$lib/components/ui/avatar';
-	import { Clock, Eye, MessageSquare, Coins } from 'lucide-svelte';
+	import { Clock, Eye, MessageSquare } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 
@@ -48,22 +48,6 @@
 
 	// Get listing type badge variant
 	let typeVariant = $derived(listing.listing_type === 'sell' ? 'default' : 'secondary');
-
-	// Get status badge variant
-	let statusVariant = $derived(() => {
-		switch (listing.status) {
-			case 'active':
-				return 'default';
-			case 'expired':
-				return 'destructive';
-			case 'completed':
-				return 'success';
-			case 'cancelled':
-				return 'outline';
-			default:
-				return 'outline';
-		}
-	});
 
 	// Format offer/demand text
 	let offerText = $derived(() => {
