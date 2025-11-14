@@ -1,5 +1,8 @@
 -- Fix critical and high-priority security issues in marketplace
 -- Generated: 2025-11-14
+--
+-- NOTE: This migration uses unique delimiters for each function ($function_name$)
+-- to avoid "cannot insert multiple commands into a prepared statement" error in Supabase.
 
 -- =====================================================
 -- 1. CRITICAL: Atomic proposal acceptance with row locking
@@ -11,7 +14,7 @@ CREATE OR REPLACE FUNCTION public.accept_proposal_atomic(
 RETURNS JSON
 LANGUAGE plpgsql
 SECURITY DEFINER
-AS $$
+AS $accept_proposal_atomic$
 DECLARE
   v_proposal marketplace_proposals;
   v_listing marketplace_listings;
@@ -74,8 +77,8 @@ BEGIN
   UPDATE marketplace_listings
   SET
     status = CASE
-      WHEN type = 'sale' THEN 'sold'::marketplace_listing_status
-      ELSE 'completed'::marketplace_listing_status
+      WHEN listing_type = 'sell' THEN 'completed'
+      ELSE 'completed'
     END,
     updated_at = NOW()
   WHERE id = v_proposal.listing_id;
@@ -90,28 +93,29 @@ BEGIN
     AND status = 'pending';
 
   -- Handle payment/trade based on listing type
-  IF v_listing.type = 'sale' THEN
-    -- Transfer gidouilles from buyer to seller
+  IF v_listing.listing_type = 'sell' THEN
+    -- Transfer gidouilles from buyer to seller (atomic check)
     UPDATE profiles
-    SET gidouilles = gidouilles - v_proposal.amount
-    WHERE id = v_proposal.user_id
-      AND gidouilles >= v_proposal.amount;
+    SET gidouilles = gidouilles - v_proposal.offered_gidouilles
+    WHERE id = v_proposal.proposer_id
+      AND gidouilles >= v_proposal.offered_gidouilles;
 
     IF NOT FOUND THEN
       RAISE EXCEPTION 'Insufficient gidouilles: user % needs % but has less',
-        v_proposal.user_id, v_proposal.amount;
+        v_proposal.proposer_id, v_proposal.offered_gidouilles;
     END IF;
 
     -- Credit seller
     UPDATE profiles
-    SET gidouilles = gidouilles + v_proposal.amount
+    SET gidouilles = gidouilles + v_proposal.offered_gidouilles
     WHERE id = v_listing.creator_id;
 
-    -- Transfer cards if any
+    -- Transfer cards from seller to buyer
     IF v_listing.offered_card_ids IS NOT NULL AND array_length(v_listing.offered_card_ids, 1) > 0 THEN
       UPDATE vip_cards
       SET
-        owner_id = v_proposal.user_id,
+        owner_id = v_proposal.proposer_id,
+        locked_until = NULL,
         updated_at = NOW()
       WHERE id = ANY(v_listing.offered_card_ids)
         AND owner_id = v_listing.creator_id;
@@ -123,65 +127,42 @@ BEGIN
       END IF;
     END IF;
 
-  ELSIF v_listing.type = 'trade' THEN
-    -- Handle card trade
-    -- Transfer seller's cards to buyer
-    IF v_listing.offered_card_ids IS NOT NULL AND array_length(v_listing.offered_card_ids, 1) > 0 THEN
-      UPDATE vip_cards
-      SET
-        owner_id = v_proposal.user_id,
-        updated_at = NOW()
-      WHERE id = ANY(v_listing.offered_card_ids)
-        AND owner_id = v_listing.creator_id;
-
-      GET DIAGNOSTICS v_updated_count = ROW_COUNT;
-      IF v_updated_count != array_length(v_listing.offered_card_ids, 1) THEN
-        RAISE EXCEPTION 'Card ownership verification failed (seller cards): expected % cards, updated %',
-          array_length(v_listing.offered_card_ids, 1), v_updated_count;
-      END IF;
-    END IF;
-
-    -- Transfer buyer's cards to seller
+  ELSIF v_listing.listing_type = 'buy' THEN
+    -- For buy listings, buyer (listing creator) receives cards from seller (proposer)
+    -- Transfer cards from proposer to listing creator
     IF v_proposal.offered_card_ids IS NOT NULL AND array_length(v_proposal.offered_card_ids, 1) > 0 THEN
       UPDATE vip_cards
       SET
         owner_id = v_listing.creator_id,
+        locked_until = NULL,
         updated_at = NOW()
       WHERE id = ANY(v_proposal.offered_card_ids)
-        AND owner_id = v_proposal.user_id;
+        AND owner_id = v_proposal.proposer_id;
 
       GET DIAGNOSTICS v_updated_count = ROW_COUNT;
       IF v_updated_count != array_length(v_proposal.offered_card_ids, 1) THEN
-        RAISE EXCEPTION 'Card ownership verification failed (buyer cards): expected % cards, updated %',
+        RAISE EXCEPTION 'Card ownership verification failed (proposer cards): expected % cards, updated %',
           array_length(v_proposal.offered_card_ids, 1), v_updated_count;
       END IF;
     END IF;
-  END IF;
 
-  -- Create transaction record
-  -- Note: marketplace_transactions table needs to be created first
-  -- Commenting out until table exists
-  -- INSERT INTO marketplace_transactions (
-  --   listing_id,
-  --   proposal_id,
-  --   seller_id,
-  --   buyer_id,
-  --   transaction_type,
-  --   amount,
-  --   card_ids_from_seller,
-  --   card_ids_from_buyer,
-  --   status
-  -- ) VALUES (
-  --   v_proposal.listing_id,
-  --   p_proposal_id,
-  --   v_listing.creator_id,
-  --   v_proposal.user_id,
-  --   v_listing.listing_type,
-  --   v_proposal.offered_gidouilles,
-  --   v_listing.offered_card_ids,
-  --   v_proposal.offered_card_ids,
-  --   'completed'
-  -- );
+    -- Transfer gidouilles from listing creator to proposer
+    IF v_listing.wanted_gidouilles > 0 THEN
+      UPDATE profiles
+      SET gidouilles = gidouilles - v_listing.wanted_gidouilles
+      WHERE id = v_listing.creator_id
+        AND gidouilles >= v_listing.wanted_gidouilles;
+
+      IF NOT FOUND THEN
+        RAISE EXCEPTION 'Insufficient gidouilles: buyer % needs % but has less',
+          v_listing.creator_id, v_listing.wanted_gidouilles;
+      END IF;
+
+      UPDATE profiles
+      SET gidouilles = gidouilles + v_listing.wanted_gidouilles
+      WHERE id = v_proposal.proposer_id;
+    END IF;
+  END IF;
 
   RETURN json_build_object(
     'success', true,
@@ -192,7 +173,7 @@ EXCEPTION
   WHEN lock_not_available THEN
     RETURN json_build_object(
       'success', false,
-      'error', 'Une autre transaction est en cours sur cette annonce'
+      'error', 'Une autre transaction est en cours sur cette annonce. Veuillez réessayer.'
     );
   WHEN OTHERS THEN
     RAISE LOG 'Error in accept_proposal_atomic: %', SQLERRM;
@@ -201,7 +182,7 @@ EXCEPTION
       'error', 'Une erreur est survenue lors de l''acceptation'
     );
 END;
-$$;
+$accept_proposal_atomic$;
 
 -- Grant execute permission
 GRANT EXECUTE ON FUNCTION public.accept_proposal_atomic TO authenticated;
@@ -216,7 +197,7 @@ CREATE OR REPLACE FUNCTION public.unlock_specific_cards(
 RETURNS JSON
 LANGUAGE plpgsql
 SECURITY DEFINER
-AS $$
+AS $unlock_specific_cards$
 DECLARE
   v_unlocked_count INTEGER;
 BEGIN
@@ -238,7 +219,7 @@ BEGIN
     'unlocked_count', v_unlocked_count
   );
 END;
-$$;
+$unlock_specific_cards$;
 
 -- Grant execute permission
 GRANT EXECUTE ON FUNCTION public.unlock_specific_cards TO authenticated;
@@ -256,7 +237,7 @@ CREATE TABLE IF NOT EXISTS public.marketplace_listing_views (
   PRIMARY KEY (listing_id, user_id)
 );
 
--- Add index for performance
+-- Add indexes for performance
 CREATE INDEX IF NOT EXISTS idx_marketplace_listing_views_listing_id
 ON marketplace_listing_views(listing_id);
 
@@ -272,7 +253,7 @@ CREATE OR REPLACE FUNCTION public.record_listing_view(
 RETURNS JSON
 LANGUAGE plpgsql
 SECURITY DEFINER
-AS $$
+AS $record_listing_view$
 DECLARE
   v_is_new_view BOOLEAN;
   v_view_count INTEGER;
@@ -289,7 +270,7 @@ BEGIN
   -- If it's a new view, increment the view count
   IF v_is_new_view THEN
     UPDATE marketplace_listings
-    SET view_count = view_count + 1
+    SET view_count = COALESCE(view_count, 0) + 1
     WHERE id = p_listing_id
     RETURNING view_count INTO v_view_count;
   ELSE
@@ -311,7 +292,7 @@ BEGIN
     'view_count', v_view_count
   );
 END;
-$$;
+$record_listing_view$;
 
 -- Grant execute permission
 GRANT EXECUTE ON FUNCTION public.record_listing_view TO authenticated;
@@ -338,15 +319,17 @@ CREATE OR REPLACE FUNCTION public.check_daily_trade_limit(
 RETURNS JSON
 LANGUAGE plpgsql
 SECURITY DEFINER
-AS $$
+AS $check_daily_trade_limit$
 DECLARE
   v_config marketplace_config;
   v_trade_count INTEGER;
   v_max_trades INTEGER;
 BEGIN
-  -- Get marketplace config
-  SELECT * INTO v_config
-  FROM marketplace_config
+  -- Get marketplace config for user's class
+  SELECT mc.* INTO v_config
+  FROM marketplace_config mc
+  JOIN class_members cm ON cm.class_id = mc.class_id
+  WHERE cm.student_id = p_user_id
   LIMIT 1;
 
   -- Default to 10 trades per day if not configured
@@ -356,6 +339,7 @@ BEGIN
   SELECT COUNT(*) INTO v_trade_count
   FROM marketplace_trades
   WHERE (initiator_id = p_user_id OR partner_id = p_user_id)
+    AND status = 'completed'
     AND created_at >= CURRENT_DATE
     AND created_at < CURRENT_DATE + INTERVAL '1 day';
 
@@ -367,7 +351,7 @@ BEGIN
     'remaining_trades', GREATEST(0, v_max_trades - v_trade_count)
   );
 END;
-$$;
+$check_daily_trade_limit$;
 
 -- Grant execute permission
 GRANT EXECUTE ON FUNCTION public.check_daily_trade_limit TO authenticated;
@@ -382,7 +366,7 @@ CREATE OR REPLACE FUNCTION public.check_gidouilles_balance(
 RETURNS JSON
 LANGUAGE plpgsql
 SECURITY DEFINER
-AS $$
+AS $check_gidouilles_balance$
 DECLARE
   v_balance INTEGER;
 BEGIN
@@ -414,7 +398,7 @@ EXCEPTION
       'error', 'Une autre transaction est en cours'
     );
 END;
-$$;
+$check_gidouilles_balance$;
 
 -- Grant execute permission
 GRANT EXECUTE ON FUNCTION public.check_gidouilles_balance TO authenticated;
@@ -428,7 +412,7 @@ ON marketplace_trades(created_at);
 CREATE INDEX IF NOT EXISTS idx_marketplace_trades_initiator_partner
 ON marketplace_trades(initiator_id, partner_id);
 
--- Add comment explaining the security fixes
+-- Add comments explaining the security fixes
 COMMENT ON FUNCTION public.accept_proposal_atomic IS 'Atomically accepts a proposal with proper row locking to prevent race conditions';
 COMMENT ON FUNCTION public.unlock_specific_cards IS 'Unlocks specific cards that were removed from trade offers';
 COMMENT ON FUNCTION public.record_listing_view IS 'Records unique views with deduplication to prevent view count manipulation';

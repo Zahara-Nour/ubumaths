@@ -1,6 +1,10 @@
 -- =====================================================
 -- Phase 9 Audit Fixes - Critical Security & Performance
 -- Generated: 2025-11-15
+-- Timestamp: 20251115160300
+--
+-- NOTE: This migration uses unique delimiters for each function
+-- to avoid "cannot insert multiple commands into a prepared statement" error.
 -- =====================================================
 
 -- =====================================================
@@ -15,7 +19,7 @@ RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $$
+AS $execute_trade$
 DECLARE
     v_trade RECORD;
     v_final_trade JSONB;
@@ -278,7 +282,7 @@ EXCEPTION
         RAISE LOG 'Error in execute_trade: %', SQLERRM;
         RETURN jsonb_build_object('success', false, 'error', 'Trade execution failed: ' || SQLERRM);
 END;
-$$;
+$execute_trade$;
 
 -- Grant execute permission
 GRANT EXECUTE ON FUNCTION public.execute_trade(UUID) TO authenticated;
@@ -297,7 +301,7 @@ CREATE OR REPLACE FUNCTION public.record_listing_views_batch(
 RETURNS JSON
 LANGUAGE plpgsql
 SECURITY DEFINER
-AS $$
+AS $record_listing_views_batch$
 DECLARE
   v_new_views INTEGER := 0;
   v_updated_listings UUID[];
@@ -341,7 +345,7 @@ EXCEPTION
       'new_views', 0
     );
 END;
-$$;
+$record_listing_views_batch$;
 
 -- Grant execute permission
 GRANT EXECUTE ON FUNCTION public.record_listing_views_batch TO authenticated;
