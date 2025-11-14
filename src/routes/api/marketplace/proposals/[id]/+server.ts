@@ -64,7 +64,19 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		throw error(404, 'Proposition non trouvée');
 	}
 
-	const listing = proposal.listing as { creator_id: string } | null | undefined;
+	// Type the listing from the relation
+	const listing = proposal.listing as
+		| {
+				id: string;
+				creator_id: string;
+				status: string;
+				title: string;
+				offered_card_ids: string[] | null;
+				offered_gidouilles: number | null;
+				proposal_count: number;
+		  }
+		| null
+		| undefined;
 
 	// Verify user owns the listing
 	if (!listing || listing.creator_id !== userId) {
