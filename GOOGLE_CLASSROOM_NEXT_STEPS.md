@@ -17,9 +17,13 @@ pnpm db:migrate
 
 Cette commande va créer :
 - 8 nouvelles tables (google_integrations, google_classroom_courses, etc.)
-- Les RLS policies
-- Les fonctions de chiffrement
-- Les catégories par défaut
+- 28 RLS policies (sécurité multi-tenant)
+- 20 indexes (performance)
+- 5 triggers (updated_at auto)
+- 1 fonction (initialize_default_categories)
+- 1 vue (student_coursework_view)
+
+**Note** : Le chiffrement des tokens se fait **côté Node.js** (AES-256-GCM), pas dans PostgreSQL. Les tables stockent les tokens déjà chiffrés.
 
 ---
 
@@ -67,18 +71,9 @@ GOOGLE_CLASSROOM_REDIRECT_URI="http://localhost:5175/api/google/auth/callback"
 GOOGLE_TOKEN_ENCRYPTION_KEY="votre_clé_base64_32_bytes"
 ```
 
-### 3.3 Supabase (base de données)
+⚠️ **IMPORTANT** : Cette clé sert au chiffrement AES-256-GCM côté Node.js. Elle n'est **jamais** envoyée à PostgreSQL. Conservez-la en sécurité !
 
-Configurer la clé de chiffrement dans Supabase :
-
-```sql
--- Via SQL Editor dans Supabase Dashboard
-ALTER DATABASE postgres SET app.encryption_key TO 'votre_clé_base64_32_bytes';
-```
-
-⚠️ **CRITICAL** : Utilisez la **même clé** dans `.env.local` et Supabase !
-
-### 3.4 Production (Vercel)
+### 3.3 Production (Vercel)
 
 Ajouter les mêmes variables dans **Vercel Dashboard** > **Project Settings** > **Environment Variables**.
 
@@ -89,9 +84,9 @@ Ajouter les mêmes variables dans **Vercel Dashboard** > **Project Settings** > 
 Une fois les étapes 1-3 complétées :
 
 ```bash
-# 1. Vérifier que les types sont corrects
+# 1. Vérifier que les types sont corrects (APRÈS pnpm db:types)
 pnpm check:fast
-# Résultat attendu : 0 erreurs dans les fichiers src/lib/server/google/* et src/routes/api/google/*
+# Résultat attendu : 0 erreurs TypeScript
 
 # 2. Vérifier le linting
 pnpm lint
