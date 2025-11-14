@@ -51,7 +51,3 @@ EXCEPTION
     );
 END;
 $$;
-
-COMMENT ON FUNCTION public.check_gidouilles_balance IS 'Atomically check if user has sufficient gidouilles balance with row-level locking';
-
-GRANT EXECUTE ON FUNCTION public.check_gidouilles_balance(UUID, INTEGER) TO authenticated;

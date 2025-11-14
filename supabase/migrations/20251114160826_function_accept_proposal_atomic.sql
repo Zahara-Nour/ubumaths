@@ -1,10 +1,4 @@
--- =====================================================================
--- MARKETPLACE SECURITY PHASE 6 - FUNCTION 1/5: accept_proposal_atomic
--- =====================================================================
 -- Atomic proposal acceptance with row-level locking to prevent race conditions
--- This function ensures that only one proposal can be accepted at a time for a listing
--- Generated: 2025-11-14
--- =====================================================================
 
 CREATE OR REPLACE FUNCTION public.accept_proposal_atomic(
   p_proposal_id UUID,
@@ -108,7 +102,3 @@ EXCEPTION
     );
 END;
 $$;
-
-COMMENT ON FUNCTION public.accept_proposal_atomic IS 'Atomically accept a marketplace proposal with row-level locking to prevent race conditions';
-
-GRANT EXECUTE ON FUNCTION public.accept_proposal_atomic(UUID, UUID) TO authenticated;

@@ -37,7 +37,3 @@ EXCEPTION
     );
 END;
 $$;
-
-COMMENT ON FUNCTION public.unlock_specific_cards IS 'Unlock specific VIP cards (not all) when removed from trade/listing offer';
-
-GRANT EXECUTE ON FUNCTION public.unlock_specific_cards(UUID, TEXT[]) TO authenticated;

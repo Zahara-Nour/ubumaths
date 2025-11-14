@@ -48,7 +48,3 @@ EXCEPTION
     );
 END;
 $$;
-
-COMMENT ON FUNCTION public.check_daily_trade_limit IS 'Check if user has reached daily trade limit before allowing trade creation';
-
-GRANT EXECUTE ON FUNCTION public.check_daily_trade_limit(UUID) TO authenticated;
