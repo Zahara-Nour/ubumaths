@@ -171,8 +171,11 @@ CREATE TABLE public.marketplace_trades (
     listing_id UUID REFERENCES public.marketplace_listings(id) ON DELETE SET NULL,
     proposal_id UUID REFERENCES public.marketplace_proposals(id) ON DELETE SET NULL,
 
-    -- Chat conversation (optional, for integration)
-    conversation_id UUID REFERENCES public.chat_conversations(id) ON DELETE SET NULL,
+    -- Chat conversation (optional, for future integration with main chat system)
+    -- NOTE: Foreign key constraint removed as chat_conversations table doesn't exist yet
+    -- Can be added later with: ALTER TABLE marketplace_trades ADD CONSTRAINT fk_conversation
+    --                          FOREIGN KEY (conversation_id) REFERENCES chat_conversations(id)
+    conversation_id UUID,
 
     -- Current negotiation state
     current_offer JSONB, -- {from_initiator: {cards: [], gidouilles: 0}, from_partner: {cards: [], gidouilles: 0}}
