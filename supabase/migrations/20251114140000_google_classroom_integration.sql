@@ -399,21 +399,6 @@ WITH CHECK (
     )
 );
 
--- RLS Policy: Students can view coursework shared with their classes
-CREATE POLICY "Students can view coursework shared with their classes"
-ON public.google_classroom_coursework
-FOR SELECT
-TO authenticated
-USING (
-    EXISTS (
-        SELECT 1 FROM public.shared_coursework sc
-        JOIN public.class_members cm ON cm.class_id = sc.class_id
-        WHERE sc.coursework_id = google_classroom_coursework.id
-        AND cm.student_id = auth.uid()
-        AND sc.visible = true
-    )
-);
-
 -- RLS Policy: Admins can view all coursework
 CREATE POLICY "Admins can view all coursework"
 ON public.google_classroom_coursework
@@ -480,30 +465,6 @@ WITH CHECK (
         JOIN public.google_classroom_courses gcc ON gcc.id = gcw.google_course_id
         WHERE gcw.id = coursework_materials.coursework_id
         AND gcc.teacher_id = auth.uid()
-    )
-);
-
--- RLS Policy: Students can view materials for shared coursework
-CREATE POLICY "Students can view materials for shared coursework"
-ON public.coursework_materials
-FOR SELECT
-TO authenticated
-USING (
-    EXISTS (
-        SELECT 1 FROM public.shared_coursework sc
-        JOIN public.class_members cm ON cm.class_id = sc.class_id
-        WHERE sc.coursework_id = coursework_materials.coursework_id
-        AND cm.student_id = auth.uid()
-        AND sc.visible = true
-        -- Check if student is NOT restricted (no entry in shared_coursework_students OR student IS in list)
-        AND (
-            NOT EXISTS (SELECT 1 FROM public.shared_coursework_students WHERE shared_coursework_id = sc.id)
-            OR EXISTS (
-                SELECT 1 FROM public.shared_coursework_students scs
-                WHERE scs.shared_coursework_id = sc.id
-                AND scs.student_id = auth.uid()
-            )
-        )
     )
 );
 
@@ -929,3 +890,46 @@ BEGIN
     RAISE NOTICE '  4. Configure Google Cloud OAuth credentials';
     RAISE NOTICE '===============================================';
 END $$;
+
+-- ============================================================================
+-- DEFERRED RLS POLICIES (require shared_coursework to exist first)
+-- ============================================================================
+
+-- RLS Policy: Students can view coursework shared with their classes
+CREATE POLICY "Students can view coursework shared with their classes"
+ON public.google_classroom_coursework
+FOR SELECT
+TO authenticated
+USING (
+    EXISTS (
+        SELECT 1 FROM public.shared_coursework sc
+        JOIN public.class_members cm ON cm.class_id = sc.class_id
+        WHERE sc.coursework_id = google_classroom_coursework.id
+        AND cm.student_id = auth.uid()
+        AND sc.visible = true
+    )
+);
+
+-- RLS Policy: Students can view materials for shared coursework
+CREATE POLICY "Students can view materials for shared coursework"
+ON public.coursework_materials
+FOR SELECT
+TO authenticated
+USING (
+    EXISTS (
+        SELECT 1 FROM public.shared_coursework sc
+        JOIN public.class_members cm ON cm.class_id = sc.class_id
+        WHERE sc.coursework_id = coursework_materials.coursework_id
+        AND cm.student_id = auth.uid()
+        AND sc.visible = true
+        -- Check if student is NOT restricted (no entry in shared_coursework_students OR student IS in list)
+        AND (
+            NOT EXISTS (SELECT 1 FROM public.shared_coursework_students WHERE shared_coursework_id = sc.id)
+            OR EXISTS (
+                SELECT 1 FROM public.shared_coursework_students scs
+                WHERE scs.shared_coursework_id = sc.id
+                AND scs.student_id = auth.uid()
+            )
+        )
+    )
+);
