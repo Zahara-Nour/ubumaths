@@ -311,18 +311,18 @@ Intégration avec Google Classroom pour partager les travaux et devoirs avec les
 
 ## 📖 Guides pratiques
 
-| Guide                                                      | Description                             |
-| ---------------------------------------------------------- | --------------------------------------- |
-| [Getting Started](getting-started/README.md) ⭐            | Installation et premiers pas            |
-| [Vue d'ensemble](guides/README.md)                         | Index des guides                        |
-| [Import d'élèves](guides/student-import.md)                | Workflow d'import CSV                   |
+| Guide                                                         | Description                                |
+| ------------------------------------------------------------- | ------------------------------------------ |
+| [Getting Started](getting-started/README.md) ⭐               | Installation et premiers pas               |
+| [Vue d'ensemble](guides/README.md)                            | Index des guides                           |
+| [Import d'élèves](guides/student-import.md)                   | Workflow d'import CSV                      |
 | [Google Classroom Setup](guides/google-classroom-setup.md) 🆕 | Configuration intégration Google Classroom |
-| [Déploiement](guides/deployment.md)                        | Déploiement sur Vercel                  |
-| [Dépannage](guides/troubleshooting.md)                     | Solutions aux problèmes courants        |
-| [Guide de tests](guides/testing-guide.md)                  | Comment tester l'application            |
-| [Composants UI](guides/ui-components.md)                   | Utilisation Shadcn-svelte               |
-| [Admin VIP Cards](guides/admin-vip-card-management.md) 🆕  | Gestion des cartes VIP (admin)          |
-| [Migration Reports](migrations/README.md) 🆕               | Rapports de migrations clés             |
+| [Déploiement](guides/deployment.md)                           | Déploiement sur Vercel                     |
+| [Dépannage](guides/troubleshooting.md)                        | Solutions aux problèmes courants           |
+| [Guide de tests](guides/testing-guide.md)                     | Comment tester l'application               |
+| [Composants UI](guides/ui-components.md)                      | Utilisation Shadcn-svelte                  |
+| [Admin VIP Cards](guides/admin-vip-card-management.md) 🆕     | Gestion des cartes VIP (admin)             |
+| [Migration Reports](migrations/README.md) 🆕                  | Rapports de migrations clés                |
 
 ---
 
