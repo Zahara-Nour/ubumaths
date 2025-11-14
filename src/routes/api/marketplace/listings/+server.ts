@@ -90,35 +90,37 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		throw error(500, 'Erreur lors de la récupération des annonces');
 	}
 
-	// Increment view count for listings not created by the current user
+	// Record unique views for listings not created by the current user
+	// This prevents view count manipulation and tracks unique viewers
 	if (listings && listings.length > 0) {
 		const otherListingIds = listings
 			.filter((listing) => listing.creator_id !== userId)
 			.map((listing) => listing.id);
 
 		if (otherListingIds.length > 0) {
-			// Increment view count for each listing (fire and forget)
-			// Note: This requires fetching current counts first, then updating
-			// A better approach would be to use an RPC function for atomic increment
-			const { data: currentListings } = await supabase
-				.from('marketplace_listings')
-				.select('id, view_count')
-				.in('id', otherListingIds);
+			// Record views using the new RPC function (fire and forget)
+			// The function handles deduplication and only increments for new unique views
+			for (const listingId of otherListingIds) {
+				void (async () => {
+					try {
+						const { data: viewResult, error: viewError } = await supabase.rpc(
+							'record_listing_view',
+							{
+								p_listing_id: listingId,
+								p_user_id: userId
+								// Note: IP address tracking could be added here if needed for additional security
+							}
+						);
 
-			if (currentListings) {
-				for (const listing of currentListings) {
-					// Fire and forget the updates
-					void (async () => {
-						try {
-							await supabase
-								.from('marketplace_listings')
-								.update({ view_count: (listing.view_count || 0) + 1 })
-								.eq('id', listing.id);
-						} catch (err) {
-							console.error('Error incrementing view count:', err);
+						if (viewError) {
+							console.error(`Error recording view for listing ${listingId}:`, viewError);
+						} else if (viewResult?.is_new_view) {
+							console.log(`Recorded new unique view for listing ${listingId}`);
 						}
-					})();
-				}
+					} catch (err) {
+						console.error(`Error recording view for listing ${listingId}:`, err);
+					}
+				})();
 			}
 		}
 	}

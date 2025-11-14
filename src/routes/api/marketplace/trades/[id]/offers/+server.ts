@@ -163,12 +163,29 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	// Unlock removed cards (cards that were in old offer but not in new offer)
 	if (removedCards.length > 0) {
-		// TODO: Enhancement needed - Unlock specific cards from an offer
-		// Current limitation: The unlockCardsForEntity function unlocks ALL cards for an entity,
-		// but we need to unlock only specific cards that were removed from the offer.
-		// This would require a new function like unlockSpecificCards(cardIds) or modifying
-		// the existing unlock function to accept an optional cardIds parameter.
-		// For now, removed cards remain locked as they're still part of the trade negotiation.
+		// Use the new RPC function to unlock specific cards that were removed from the offer
+		const { data: unlockResult, error: unlockError } = await supabase.rpc('unlock_specific_cards', {
+			p_entity_id: data.trade_id,
+			p_card_ids: removedCards
+		});
+
+		if (unlockError) {
+			console.error('Error unlocking removed cards:', unlockError);
+			// Rollback: revert trade offer and delete offer record
+			await supabase
+				.from('marketplace_trades')
+				.update({
+					current_offer: currentOffer,
+					updated_at: new Date().toISOString()
+				})
+				.eq('id', data.trade_id);
+
+			await supabase.from('marketplace_trade_offers').delete().eq('id', offer.id);
+
+			throw error(500, 'Erreur lors du déverrouillage des cartes retirées');
+		}
+
+		console.log(`Unlocked ${unlockResult.unlocked_count} cards that were removed from the offer`);
 	}
 
 	// Create notification for the other participant

@@ -17,6 +17,13 @@ import { z } from 'zod';
 // ID validation schema
 const idSchema = z.string().uuid('ID de proposition invalide');
 
+// RPC response validation schema
+const acceptProposalResponseSchema = z.object({
+	success: z.boolean(),
+	error: z.string().optional(),
+	message: z.string().optional()
+});
+
 /**
  * PATCH /api/marketplace/proposals/[id]
  * Accept or reject a proposal
@@ -95,99 +102,84 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	if (status === 'accepted') {
-		// Create a marketplace trade record
-		const { data: trade, error: tradeError } = await supabase
-			.from('marketplace_trades')
-			.insert({
-				initiator_id: listing.creator_id,
-				partner_id: proposal.proposer_id,
-				type: 'marketplace',
-				status: 'completed',
-				completed_at: new Date().toISOString(),
-				final_trade: {
-					initiator_cards: listing.offered_card_ids || [],
-					initiator_gidouilles: listing.offered_gidouilles || 0,
-					partner_cards: proposal.offered_card_ids || [],
-					partner_gidouilles: proposal.offered_gidouilles || 0
-				}
-			})
-			.select()
-			.single();
-
-		if (tradeError) {
-			console.error('Error creating trade:', tradeError);
-			throw error(500, "Erreur lors de la création de l'échange");
-		}
-
-		// Execute the trade using RPC
-		const { error: executeError } = await supabase.rpc('execute_trade', {
-			p_trade_id: trade.id
+		// Use the atomic RPC function to accept the proposal
+		// This handles all the locking, validation, and transaction logic atomically
+		const { data: result, error: rpcError } = await supabase.rpc('accept_proposal_atomic', {
+			p_proposal_id: proposalId,
+			p_user_id: userId
 		});
 
-		if (executeError) {
-			console.error('Error executing trade:', executeError);
-			// Rollback: delete the trade
-			await supabase.from('marketplace_trades').delete().eq('id', trade.id);
-			throw error(500, "Erreur lors de l'exécution de l'échange");
+		if (rpcError) {
+			console.error('Error in accept_proposal_atomic:', rpcError);
+			throw error(500, "Erreur lors de l'acceptation de la proposition");
 		}
 
-		// Update listing status to completed
-		await supabase
-			.from('marketplace_listings')
-			.update({
-				status: 'completed',
-				updated_at: new Date().toISOString()
-			})
-			.eq('id', listing.id);
+		// Validate response structure
+		const validation = acceptProposalResponseSchema.safeParse(result);
+		if (!validation.success) {
+			console.error('Invalid RPC response:', validation.error);
+			throw error(500, 'Réponse invalide de la base de données');
+		}
 
-		// Update proposal status
-		await supabase
+		const { success, error: rpcResultError } = validation.data;
+
+		// Check the result from the RPC function
+		if (!success) {
+			// Handle specific error cases
+			const errorMsg = rpcResultError || 'Erreur inconnue';
+			if (errorMsg === 'Une autre transaction est en cours sur cette annonce') {
+				throw error(409, errorMsg); // 409 Conflict
+			} else if (errorMsg === 'Cette proposition a déjà été traitée') {
+				throw error(403, errorMsg);
+			} else if (errorMsg === "Cette annonce n'est plus disponible") {
+				throw error(410, errorMsg); // 410 Gone
+			} else if (errorMsg.includes('suffisamment de gidouilles')) {
+				throw error(402, errorMsg); // 402 Payment Required
+			} else {
+				throw error(400, errorMsg);
+			}
+		}
+
+		// Get updated proposal data
+		const { data: updatedProposal, error: fetchError } = await supabase
 			.from('marketplace_proposals')
-			.update({
-				status: 'accepted',
-				response_message: response_message || null,
-				responded_at: new Date().toISOString()
-			})
-			.eq('id', proposalId);
+			.select('*')
+			.eq('id', proposalId)
+			.single();
 
-		// Reject all other pending proposals for this listing
-		const { data: otherProposals } = await supabase
+		if (fetchError || !updatedProposal) {
+			console.error('Error fetching updated proposal:', fetchError);
+			// Still return success since the operation completed
+			return json({
+				...proposal,
+				status: 'accepted',
+				response_message,
+				responded_at: new Date().toISOString()
+			});
+		}
+
+		// Create notification for accepted proposer
+		await notifyProposalAccepted(supabase, proposal.proposer_id, listing.title, proposalId);
+
+		// Notify rejected proposers (already handled by the RPC function but we still send notifications)
+		const { data: rejectedProposals } = await supabase
 			.from('marketplace_proposals')
 			.select('id, proposer_id')
 			.eq('listing_id', listing.id)
-			.eq('status', 'pending')
+			.eq('status', 'rejected')
 			.neq('id', proposalId);
 
-		if (otherProposals && otherProposals.length > 0) {
-			// Update their status
-			await supabase
-				.from('marketplace_proposals')
-				.update({
-					status: 'rejected',
-					response_message: "L'annonce a été complétée avec une autre proposition",
-					responded_at: new Date().toISOString()
-				})
-				.in(
-					'id',
-					otherProposals.map((p) => p.id)
-				);
-
-			// Unlock their cards
-			for (const otherProposal of otherProposals) {
-				await unlockCardsForEntity(supabase, otherProposal.id);
-
+		if (rejectedProposals && rejectedProposals.length > 0) {
+			for (const rejectedProposal of rejectedProposals) {
 				// Notify them
 				await notifyProposalRejected(
 					supabase,
-					otherProposal.proposer_id,
+					rejectedProposal.proposer_id,
 					listing.title,
 					"L'annonce a été complétée avec une autre proposition"
 				);
 			}
 		}
-
-		// Create notification for accepted proposer
-		await notifyProposalAccepted(supabase, proposal.proposer_id, listing.title, trade.id);
 
 		// Invalidate caches for both participants
 		// TODO: Implement cache invalidation
@@ -195,11 +187,9 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		// await invalidateTeacherCachesForStudents(supabase, [listing.creator_id, proposal.proposer_id]);
 
 		return json({
-			...proposal,
-			status: 'accepted',
+			...updatedProposal,
 			response_message,
-			responded_at: new Date().toISOString(),
-			trade_id: trade.id
+			trade_completed: true
 		});
 	} else {
 		// Rejecting the proposal

@@ -149,6 +149,43 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(403, "Le marketplace n'est pas activé pour le partenaire");
 	}
 
+	// Check daily trade limit for initiator
+	const { data: limitCheck, error: limitError } = await supabase.rpc('check_daily_trade_limit', {
+		p_user_id: userId
+	});
+
+	if (limitError) {
+		console.error('Error checking trade limit:', limitError);
+		throw error(500, 'Erreur lors de la vérification de la limite quotidienne');
+	}
+
+	if (!limitCheck.can_create_trade) {
+		throw error(
+			429, // 429 Too Many Requests
+			`Vous avez atteint la limite quotidienne de ${limitCheck.max_trades} échanges. Revenez demain pour créer de nouveaux échanges.`
+		);
+	}
+
+	// Check daily trade limit for partner (to prevent circumventing limits)
+	const { data: partnerLimitCheck, error: partnerLimitError } = await supabase.rpc(
+		'check_daily_trade_limit',
+		{
+			p_user_id: partner_id
+		}
+	);
+
+	if (partnerLimitError) {
+		console.error('Error checking partner trade limit:', partnerLimitError);
+		throw error(500, 'Erreur lors de la vérification de la limite quotidienne du partenaire');
+	}
+
+	if (!partnerLimitCheck.can_create_trade) {
+		throw error(
+			429,
+			`Votre ami a atteint sa limite quotidienne de ${partnerLimitCheck.max_trades} échanges. Réessayez demain.`
+		);
+	}
+
 	// Verify friendship exists
 	const areFriends = await verifyFriendship(supabase, userId, partner_id);
 	if (!areFriends) {

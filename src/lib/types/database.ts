@@ -2541,6 +2541,56 @@ export type Database = {
 					}
 				];
 			};
+			marketplace_listing_views: {
+				Row: {
+					listing_id: string;
+					user_id: string;
+					viewed_at: string;
+					ip_address: string | null;
+				};
+				Insert: {
+					listing_id: string;
+					user_id: string;
+					viewed_at?: string;
+					ip_address?: string | null;
+				};
+				Update: {
+					listing_id?: string;
+					user_id?: string;
+					viewed_at?: string;
+					ip_address?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'marketplace_listing_views_listing_id_fkey';
+						columns: ['listing_id'];
+						isOneToOne: false;
+						referencedRelation: 'marketplace_listings';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'marketplace_listing_views_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'marketplace_listing_views_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'marketplace_listing_views_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			marketplace_locked_cards: {
 				Row: {
 					card_instance_id: string;
@@ -6518,6 +6568,26 @@ export type Database = {
 				Returns: string;
 			};
 			execute_trade: { Args: { p_trade_id: string }; Returns: Json };
+			accept_proposal_atomic: {
+				Args: { p_proposal_id: string; p_user_id: string };
+				Returns: Json;
+			};
+			unlock_specific_cards: {
+				Args: { p_entity_id: string; p_card_ids: string[] };
+				Returns: Json;
+			};
+			record_listing_view: {
+				Args: { p_listing_id: string; p_user_id: string; p_ip_address?: string };
+				Returns: Json;
+			};
+			check_daily_trade_limit: {
+				Args: { p_user_id: string };
+				Returns: Json;
+			};
+			check_gidouilles_balance: {
+				Args: { p_user_id: string; p_required_amount: number };
+				Returns: Json;
+			};
 			exercises_search_vector: {
 				Args: {
 					solution_md: string;
