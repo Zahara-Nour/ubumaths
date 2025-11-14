@@ -118,9 +118,6 @@ EXCEPTION
 END;
 $$;
 
--- Grant execute permission
-GRANT EXECUTE ON FUNCTION public.accept_proposal_atomic TO authenticated;
-
 COMMENT ON FUNCTION public.accept_proposal_atomic IS 'Atomically accept a marketplace proposal with row-level locking to prevent race conditions';
 
 -- =====================================================
@@ -157,9 +154,6 @@ EXCEPTION
     );
 END;
 $$;
-
--- Grant execute permission
-GRANT EXECUTE ON FUNCTION public.unlock_specific_cards TO authenticated;
 
 COMMENT ON FUNCTION public.unlock_specific_cards IS 'Unlock specific VIP cards (not all) when removed from trade/listing offer';
 
@@ -221,9 +215,6 @@ EXCEPTION
 END;
 $$;
 
--- Grant execute permission
-GRANT EXECUTE ON FUNCTION public.record_listing_view TO authenticated;
-
 COMMENT ON FUNCTION public.record_listing_view IS 'Record unique view per user per listing to prevent DoS via view count inflation';
 
 -- =====================================================
@@ -271,9 +262,6 @@ EXCEPTION
     );
 END;
 $$;
-
--- Grant execute permission
-GRANT EXECUTE ON FUNCTION public.check_daily_trade_limit TO authenticated;
 
 COMMENT ON FUNCTION public.check_daily_trade_limit IS 'Check if user has reached daily trade limit before allowing trade creation';
 
@@ -326,7 +314,14 @@ EXCEPTION
 END;
 $$;
 
--- Grant execute permission
-GRANT EXECUTE ON FUNCTION public.check_gidouilles_balance TO authenticated;
-
 COMMENT ON FUNCTION public.check_gidouilles_balance IS 'Atomically check if user has sufficient gidouilles balance with row-level locking';
+
+-- =====================================================================
+-- GRANT PERMISSIONS (ALL AT THE END, SEPARATED FROM FUNCTION DEFINITIONS)
+-- =====================================================================
+
+GRANT EXECUTE ON FUNCTION public.accept_proposal_atomic(UUID, UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.unlock_specific_cards(UUID, TEXT[]) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.record_listing_view(UUID, UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.check_daily_trade_limit(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.check_gidouilles_balance(UUID, INTEGER) TO authenticated;
