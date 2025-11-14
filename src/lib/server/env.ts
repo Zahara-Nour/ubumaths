@@ -7,146 +7,198 @@ import { z } from 'zod';
  * This ensures the application fails fast with clear error messages
  * if critical configuration is missing or invalid.
  */
-const envSchema = z.object({
-	// ====================================================================
-	// Node Environment
-	// ====================================================================
-	NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+const envSchema = z
+	.object({
+		// ====================================================================
+		// Node Environment
+		// ====================================================================
+		NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
-	// ====================================================================
-	// Supabase Configuration
-	// ====================================================================
-	PUBLIC_SUPABASE_URL: z.string().url('Invalid Supabase URL'),
-	PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, 'Supabase anon key required'),
-	PUBLIC_SUPABASE_PUBLISHABLE_KEY: z
-		.string()
-		.min(1, 'Supabase publishable key required')
-		.optional(),
-	SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'Supabase service role key required'),
-	SUPABASE_ACCESS_TOKEN: z.string().min(1, 'Supabase access token required').optional(),
+		// ====================================================================
+		// Supabase Configuration
+		// ====================================================================
+		PUBLIC_SUPABASE_URL: z.string().url('Invalid Supabase URL'),
+		PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, 'Supabase anon key required'),
+		PUBLIC_SUPABASE_PUBLISHABLE_KEY: z
+			.string()
+			.min(1, 'Supabase publishable key required')
+			.optional(),
+		SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'Supabase service role key required'),
+		SUPABASE_ACCESS_TOKEN: z.string().min(1, 'Supabase access token required').optional(),
 
-	// ====================================================================
-	// Database Configuration (for direct connections)
-	// ====================================================================
-	DATABASE_URL: z.string().url('Invalid database URL').optional(),
+		// ====================================================================
+		// Database Configuration (for direct connections)
+		// ====================================================================
+		DATABASE_URL: z.string().url('Invalid database URL').optional(),
 
-	// ====================================================================
-	// Google OAuth Configuration
-	// ====================================================================
-	PUBLIC_GOOGLE_CLIENT_ID: z.string().min(1, 'Google client ID required').optional(),
-	SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET: z.string().optional(),
+		// ====================================================================
+		// Google OAuth Configuration
+		// ====================================================================
+		PUBLIC_GOOGLE_CLIENT_ID: z.string().min(1, 'Google client ID required').optional(),
+		SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET: z.string().optional(),
 
-	// ====================================================================
-	// AI Chatbot Configuration (Groq API)
-	// ====================================================================
-	GROQ_API_KEY: z.string().min(1, 'Groq API key required').optional(),
-	GROQ_MODEL: z.string().default('llama-3.3-70b-versatile'),
+		// ====================================================================
+		// Google Classroom Integration
+		// ====================================================================
+		GOOGLE_CLASSROOM_CLIENT_ID: z.string().min(1, 'Google Classroom client ID required').optional(),
+		GOOGLE_CLASSROOM_CLIENT_SECRET: z
+			.string()
+			.min(1, 'Google Classroom client secret required')
+			.optional(),
+		GOOGLE_CLASSROOM_REDIRECT_URI: z
+			.string()
+			.url('Invalid Google Classroom redirect URI')
+			.optional(),
+		GOOGLE_TOKEN_ENCRYPTION_KEY: z
+			.string()
+			.min(32, 'Token encryption key must be at least 32 characters')
+			.optional(),
 
-	// Legacy OpenAI support (optional, if migrating)
-	OPENAI_API_KEY: z.string().min(1, 'OpenAI API key required').optional(),
-	OPENAI_MODEL: z.string().default('gpt-4-turbo-preview'),
+		// ====================================================================
+		// AI Chatbot Configuration (Groq API)
+		// ====================================================================
+		GROQ_API_KEY: z.string().min(1, 'Groq API key required').optional(),
+		GROQ_MODEL: z.string().default('llama-3.3-70b-versatile'),
 
-	// ====================================================================
-	// App URLs
-	// ====================================================================
-	PUBLIC_APP_URL: z.string().url('Invalid app URL').optional(),
+		// Legacy OpenAI support (optional, if migrating)
+		OPENAI_API_KEY: z.string().min(1, 'OpenAI API key required').optional(),
+		OPENAI_MODEL: z.string().default('gpt-4-turbo-preview'),
 
-	// ====================================================================
-	// Feature Flags
-	// ====================================================================
-	ENABLE_AI_CHATBOT: z
-		.string()
-		.optional()
-		.default('true')
-		.transform((val) => val === 'true'),
-	ENABLE_WEBSOCKET: z
-		.string()
-		.optional()
-		.default('true')
-		.transform((val) => val === 'true'),
-	ENABLE_ERROR_LOGGING: z
-		.string()
-		.optional()
-		.default('true')
-		.transform((val) => val === 'true'),
+		// ====================================================================
+		// App URLs
+		// ====================================================================
+		PUBLIC_APP_URL: z.string().url('Invalid app URL').optional(),
 
-	// ====================================================================
-	// Rate Limiting Configuration
-	// ====================================================================
-	RATE_LIMIT_WINDOW_MS: z
-		.string()
-		.optional()
-		.default('900000')
-		.transform(Number)
-		.pipe(z.number().positive()), // 15 minutes
-	RATE_LIMIT_MAX_REQUESTS: z
-		.string()
-		.optional()
-		.default('5')
-		.transform(Number)
-		.pipe(z.number().positive()),
+		// ====================================================================
+		// Feature Flags
+		// ====================================================================
+		ENABLE_AI_CHATBOT: z
+			.string()
+			.optional()
+			.default('true')
+			.transform((val) => val === 'true'),
+		ENABLE_WEBSOCKET: z
+			.string()
+			.optional()
+			.default('true')
+			.transform((val) => val === 'true'),
+		ENABLE_ERROR_LOGGING: z
+			.string()
+			.optional()
+			.default('true')
+			.transform((val) => val === 'true'),
 
-	// ====================================================================
-	// Security Configuration
-	// ====================================================================
-	SESSION_SECRET: z.string().min(32, 'Session secret must be at least 32 characters').optional(),
-	CSRF_SECRET: z.string().min(32, 'CSRF secret must be at least 32 characters').optional(),
+		// ====================================================================
+		// Rate Limiting Configuration
+		// ====================================================================
+		RATE_LIMIT_WINDOW_MS: z
+			.string()
+			.optional()
+			.default('900000')
+			.transform(Number)
+			.pipe(z.number().positive()), // 15 minutes
+		RATE_LIMIT_MAX_REQUESTS: z
+			.string()
+			.optional()
+			.default('5')
+			.transform(Number)
+			.pipe(z.number().positive()),
 
-	// Cron job authentication
-	CRON_SECRET: z.string().min(16, 'Cron secret must be at least 16 characters').optional(),
+		// ====================================================================
+		// Security Configuration
+		// ====================================================================
+		SESSION_SECRET: z.string().min(32, 'Session secret must be at least 32 characters').optional(),
+		CSRF_SECRET: z.string().min(32, 'CSRF secret must be at least 32 characters').optional(),
 
-	// ====================================================================
-	// File Uploads Configuration
-	// ====================================================================
-	MAX_FILE_SIZE_MB: z
-		.string()
-		.optional()
-		.default('5')
-		.transform(Number)
-		.pipe(z.number().positive()),
-	ALLOWED_FILE_TYPES: z.string().default('image/png,image/jpeg,application/pdf'),
+		// Cron job authentication
+		CRON_SECRET: z.string().min(16, 'Cron secret must be at least 16 characters').optional(),
 
-	// ====================================================================
-	// Logging Configuration
-	// ====================================================================
-	LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
+		// ====================================================================
+		// File Uploads Configuration
+		// ====================================================================
+		MAX_FILE_SIZE_MB: z
+			.string()
+			.optional()
+			.default('5')
+			.transform(Number)
+			.pipe(z.number().positive()),
+		ALLOWED_FILE_TYPES: z.string().default('image/png,image/jpeg,application/pdf'),
 
-	// ====================================================================
-	// External Services (Optional)
-	// ====================================================================
+		// ====================================================================
+		// Logging Configuration
+		// ====================================================================
+		LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
 
-	// LaTeX/Typst compilation
-	LATEX_COMPILER_URL: z.string().url('Invalid LaTeX compiler URL').optional(),
-	TYPST_COMPILER_URL: z.string().url('Invalid Typst compiler URL').optional(),
+		// ====================================================================
+		// External Services (Optional)
+		// ====================================================================
 
-	// Email service (if using)
-	EMAIL_FROM: z.string().email('Invalid from email').optional(),
-	EMAIL_SERVICE_API_KEY: z.string().optional(),
+		// LaTeX/Typst compilation
+		LATEX_COMPILER_URL: z.string().url('Invalid LaTeX compiler URL').optional(),
+		TYPST_COMPILER_URL: z.string().url('Invalid Typst compiler URL').optional(),
 
-	// ====================================================================
-	// Monitoring & Error Tracking
-	// ====================================================================
-	SENTRY_DSN: z.string().url('Invalid Sentry DSN').optional(),
+		// Email service (if using)
+		EMAIL_FROM: z.string().email('Invalid from email').optional(),
+		EMAIL_SERVICE_API_KEY: z.string().optional(),
 
-	// ====================================================================
-	// Vercel Deployment (auto-populated by Vercel)
-	// ====================================================================
-	VERCEL: z.string().optional(),
-	VERCEL_ENV: z.enum(['production', 'preview', 'development']).optional(),
-	VERCEL_URL: z.string().optional(),
+		// ====================================================================
+		// Monitoring & Error Tracking
+		// ====================================================================
+		SENTRY_DSN: z.string().url('Invalid Sentry DSN').optional(),
 
-	// ====================================================================
-	// Test Configuration
-	// ====================================================================
-	VITE_TEST_API_BASE: z.string().url('Invalid test API base URL').optional(),
-	TEST_SKIP_INTEGRATION: z
-		.string()
-		.optional()
-		.transform((val) => val === 'true'),
-	TEST_CLASS_ID: z.string().optional(),
-	TEST_EMPTY_CLASS_ID: z.string().optional(),
-	TEST_OTHER_CLASS_ID: z.string().optional()
-});
+		// ====================================================================
+		// Vercel Deployment (auto-populated by Vercel)
+		// ====================================================================
+		VERCEL: z.string().optional(),
+		VERCEL_ENV: z.enum(['production', 'preview', 'development']).optional(),
+		VERCEL_URL: z.string().optional(),
+
+		// ====================================================================
+		// Test Configuration
+		// ====================================================================
+		VITE_TEST_API_BASE: z.string().url('Invalid test API base URL').optional(),
+		TEST_SKIP_INTEGRATION: z
+			.string()
+			.optional()
+			.transform((val) => val === 'true'),
+		TEST_CLASS_ID: z.string().optional(),
+		TEST_EMPTY_CLASS_ID: z.string().optional(),
+		TEST_OTHER_CLASS_ID: z.string().optional()
+	})
+	.superRefine((data, ctx) => {
+		// Validate Google Classroom configuration dependencies
+		const hasAnyGoogleVar = !!(
+			data.GOOGLE_CLASSROOM_CLIENT_ID ||
+			data.GOOGLE_CLASSROOM_CLIENT_SECRET ||
+			data.GOOGLE_CLASSROOM_REDIRECT_URI
+		);
+
+		if (hasAnyGoogleVar) {
+			if (!data.GOOGLE_CLASSROOM_CLIENT_ID) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: 'GOOGLE_CLASSROOM_CLIENT_ID required when using Google Classroom integration',
+					path: ['GOOGLE_CLASSROOM_CLIENT_ID']
+				});
+			}
+			if (!data.GOOGLE_CLASSROOM_CLIENT_SECRET) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message:
+						'GOOGLE_CLASSROOM_CLIENT_SECRET required when using Google Classroom integration',
+					path: ['GOOGLE_CLASSROOM_CLIENT_SECRET']
+				});
+			}
+			if (!data.GOOGLE_TOKEN_ENCRYPTION_KEY) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message:
+						'GOOGLE_TOKEN_ENCRYPTION_KEY required when using Google Classroom integration (generate with: openssl rand -base64 32)',
+					path: ['GOOGLE_TOKEN_ENCRYPTION_KEY']
+				});
+			}
+		}
+	});
 
 // Infer TypeScript type from schema
 export type Env = z.infer<typeof envSchema>;
