@@ -174,6 +174,24 @@ Système de récompenses gamifié pour motiver les élèves.
 - **2025-11-04** : Rarity-weighted VIP card drawing system
 - **2025-10-29** : Cache architecture séparée + cross-device sync
 
+### 🏪 Marketplace
+
+**Status** : ✅ Production | [Documentation →](features/marketplace.md) 🆕 ⭐
+
+Système d'échange de cartes VIP et gidouilles entre étudiants.
+
+- [Guide utilisateur](features/marketplace.md) - Guide complet pour étudiants et enseignants
+- [Architecture technique](architecture/marketplace.md) - Documentation développeur détaillée
+- Annonces publiques (vente/achat) avec système de propositions
+- Échanges directs entre amis avec négociation
+- Verrouillage de cartes pour prévenir double-spending
+- Transactions atomiques avec rollback complet
+- Tableau de bord analytique pour enseignants
+- Suivi d'activité en temps réel
+- Configuration par classe (limites, activation)
+- Chat intégré pour négociations
+- **2025-11-14** : Implémentation complète Phases 1-7
+
 ### 📊 Résumés quotidiens & Récompenses hebdomadaires
 
 **Status** : ✅ Production | [Documentation →](features/daily-summaries-weekly-rewards.md) 🆕 ⭐
@@ -283,6 +301,7 @@ Système d'authentification avec Google OAuth + email/password.
 | [Vue d'ensemble](architecture/README.md)                                 | Architecture générale du projet          |
 | [Structure du projet](architecture/project-structure.md)                 | Organisation des dossiers et fichiers    |
 | [Schéma base de données](architecture/database-schema.md)                | Tables, relations, RLS policies          |
+| [Marketplace Architecture](architecture/marketplace.md) 🆕 ⭐            | Architecture complète du marketplace     |
 | [Component Architecture](architecture/components.md) ⭐                  | MySelect, standardisation dropdowns      |
 | [Routing](architecture/routing.md)                                       | Routes SvelteKit et organisation         |
 | [WebSocket](architecture/websocket.md)                                   | Architecture temps réel                  |
