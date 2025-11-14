@@ -141,9 +141,6 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
 		// Log and handle other errors
 		console.error('[Google OAuth] Token exchange error:', err);
 		const message = err instanceof Error ? err.message : 'Unknown error during OAuth callback';
-		throw redirect(
-			303,
-			`/dashboard/teacher/settings/google?error=${encodeURIComponent(message)}`
-		);
+		throw redirect(303, `/dashboard/teacher/settings/google?error=${encodeURIComponent(message)}`);
 	}
 };
