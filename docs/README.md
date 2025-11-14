@@ -2,7 +2,7 @@
 
 Documentation complète de la plateforme éducative UbuMaths.
 
-**Dernière mise à jour** : 2025-11-13
+**Dernière mise à jour** : 2025-11-14
 **Statut** : 🟢 Active Development
 
 ---
@@ -292,6 +292,22 @@ Système d'authentification avec Google OAuth + email/password.
 
 - [Architecture système](features/authentication/system.md)
 
+### 📚 Google Classroom Integration
+
+**Status** : 🚧 En cours | [Documentation →](guides/google-classroom-setup.md) 🆕
+
+Intégration avec Google Classroom pour partager les travaux et devoirs avec les élèves.
+
+- [Guide de configuration](guides/google-classroom-setup.md) - Setup OAuth, migrations, tests
+- [Schéma base de données](architecture/google-classroom-schema.md) - 8 tables, RLS policies
+- OAuth 2.0 avec PKCE (sécurité renforcée)
+- Chiffrement AES-256-GCM des tokens
+- Synchronisation manuelle des cours et travaux
+- Catégorisation automatique (Cours, Exercices, Corrections, Devoirs, Évaluations)
+- Partage aux élèves avec aperçu et liens externes
+- **2025-11-14** : Phases 1-6 complètes (backend + UI enseignant + UI élève MVP)
+- **TODO** : Phases 7-8 (association classes, interface de partage avancée)
+
 ---
 
 ## 🏗️ Architecture
@@ -314,17 +330,18 @@ Système d'authentification avec Google OAuth + email/password.
 
 ## 📖 Guides pratiques
 
-| Guide                                                     | Description                      |
-| --------------------------------------------------------- | -------------------------------- |
-| [Getting Started](getting-started/README.md) ⭐           | Installation et premiers pas     |
-| [Vue d'ensemble](guides/README.md)                        | Index des guides                 |
-| [Import d'élèves](guides/student-import.md)               | Workflow d'import CSV            |
-| [Déploiement](guides/deployment.md)                       | Déploiement sur Vercel           |
-| [Dépannage](guides/troubleshooting.md)                    | Solutions aux problèmes courants |
-| [Guide de tests](guides/testing-guide.md)                 | Comment tester l'application     |
-| [Composants UI](guides/ui-components.md)                  | Utilisation Shadcn-svelte        |
-| [Admin VIP Cards](guides/admin-vip-card-management.md) 🆕 | Gestion des cartes VIP (admin)   |
-| [Migration Reports](migrations/README.md) 🆕              | Rapports de migrations clés      |
+| Guide                                                         | Description                                |
+| ------------------------------------------------------------- | ------------------------------------------ |
+| [Getting Started](getting-started/README.md) ⭐               | Installation et premiers pas               |
+| [Vue d'ensemble](guides/README.md)                            | Index des guides                           |
+| [Import d'élèves](guides/student-import.md)                   | Workflow d'import CSV                      |
+| [Google Classroom Setup](guides/google-classroom-setup.md) 🆕 | Configuration intégration Google Classroom |
+| [Déploiement](guides/deployment.md)                           | Déploiement sur Vercel                     |
+| [Dépannage](guides/troubleshooting.md)                        | Solutions aux problèmes courants           |
+| [Guide de tests](guides/testing-guide.md)                     | Comment tester l'application               |
+| [Composants UI](guides/ui-components.md)                      | Utilisation Shadcn-svelte                  |
+| [Admin VIP Cards](guides/admin-vip-card-management.md) 🆕     | Gestion des cartes VIP (admin)             |
+| [Migration Reports](migrations/README.md) 🆕                  | Rapports de migrations clés                |
 
 ---
 
@@ -416,8 +433,8 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 ## 📊 Statistiques
 
-- **Features en production** : 16 🆕 (added Daily Summaries & Weekly Rewards)
-- **Features en développement** : 1 (Navadra)
+- **Features en production** : 16
+- **Features en développement** : 2 (Navadra, Google Classroom Integration) 🆕
 - **Tests** : 3,583 tests (99.3% pass rate)
   - Unit tests: 2,765/2,789 passing (99.1%) 🆕 (+130 summaries tests)
   - E2E tests: 303 ready to run
@@ -433,8 +450,8 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
   - 6 history tables (gidouilles_history, bonus_history, vip_cards_activity, student_warnings history, daily_summaries, weekly_rewards) 🆕
 - **Automated Jobs** : 1 Vercel cron (daily summaries & weekly rewards at 01:00 UTC) 🆕
 - **Multi-Timezone Support** : 80+ IANA timezones with DST handling 🆕
-- **Lignes de documentation** : ~95,000+ 🆕 (added 30,000+ lines for daily summaries system)
-- **Dernière mise à jour** : 2025-11-13
+- **Lignes de documentation** : ~96,000+ 🆕 (added 1,000+ lines for Google Classroom setup guide)
+- **Dernière mise à jour** : 2025-11-14
 
 ---
 
