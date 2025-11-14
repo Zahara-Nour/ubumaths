@@ -42,7 +42,7 @@ COMMENT ON COLUMN public.google_integrations.last_sync_at IS 'Timestamp of last 
 
 -- Indexes
 CREATE INDEX idx_google_integrations_teacher ON public.google_integrations(teacher_id);
-CREATE INDEX idx_google_integrations_expiry ON public.google_integrations(token_expiry) WHERE token_expiry < NOW() + INTERVAL '1 hour';
+CREATE INDEX idx_google_integrations_expiry ON public.google_integrations(token_expiry);
 
 -- Enable Row Level Security
 ALTER TABLE public.google_integrations ENABLE ROW LEVEL SECURITY;
