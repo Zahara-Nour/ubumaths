@@ -106,7 +106,8 @@ async function generateCodeChallenge(verifier: string): Promise<string> {
 	const hash = await crypto.subtle.digest('SHA-256', data);
 
 	// Convert to base64url
-	const base64 = btoa(String.fromCharCode(...new Uint8Array(hash)));
+	const hashArray = Array.from(new Uint8Array(hash));
+	const base64 = btoa(String.fromCharCode(...hashArray));
 	return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
