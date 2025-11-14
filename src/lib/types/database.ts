@@ -246,6 +246,86 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			bonus_history: {
+				Row: {
+					class_id: string | null;
+					created_at: string;
+					created_by: string | null;
+					delta: number;
+					id: string;
+					reason: string | null;
+					student_id: string;
+				};
+				Insert: {
+					class_id?: string | null;
+					created_at?: string;
+					created_by?: string | null;
+					delta: number;
+					id?: string;
+					reason?: string | null;
+					student_id: string;
+				};
+				Update: {
+					class_id?: string | null;
+					created_at?: string;
+					created_by?: string | null;
+					delta?: number;
+					id?: string;
+					reason?: string | null;
+					student_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'bonus_history_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'bonus_history_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'bonus_history_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'bonus_history_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'bonus_history_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'bonus_history_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'bonus_history_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			class_members: {
 				Row: {
 					class_id: string;
@@ -576,6 +656,89 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: 'messages';
 						referencedColumns: ['id'];
+					}
+				];
+			};
+			daily_summaries: {
+				Row: {
+					bonus_gained: number | null;
+					bonus_used: number | null;
+					class_id: string;
+					created_at: string;
+					gidouilles_gained: number | null;
+					gidouilles_lost: number | null;
+					id: string;
+					sent_at: string | null;
+					student_id: string;
+					summary_date: string;
+					updated_at: string;
+					vip_cards_gained: number | null;
+					vip_cards_used: number | null;
+					warnings_issued: number | null;
+					warnings_removed: number | null;
+				};
+				Insert: {
+					bonus_gained?: number | null;
+					bonus_used?: number | null;
+					class_id: string;
+					created_at?: string;
+					gidouilles_gained?: number | null;
+					gidouilles_lost?: number | null;
+					id?: string;
+					sent_at?: string | null;
+					student_id: string;
+					summary_date: string;
+					updated_at?: string;
+					vip_cards_gained?: number | null;
+					vip_cards_used?: number | null;
+					warnings_issued?: number | null;
+					warnings_removed?: number | null;
+				};
+				Update: {
+					bonus_gained?: number | null;
+					bonus_used?: number | null;
+					class_id?: string;
+					created_at?: string;
+					gidouilles_gained?: number | null;
+					gidouilles_lost?: number | null;
+					id?: string;
+					sent_at?: string | null;
+					student_id?: string;
+					summary_date?: string;
+					updated_at?: string;
+					vip_cards_gained?: number | null;
+					vip_cards_used?: number | null;
+					warnings_issued?: number | null;
+					warnings_removed?: number | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'daily_summaries_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'daily_summaries_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'daily_summaries_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'daily_summaries_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
 					}
 				];
 			};
@@ -2084,6 +2247,86 @@ export type Database = {
 					{
 						foreignKeyName: 'game_timeslots_teacher_id_fkey';
 						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			gidouilles_history: {
+				Row: {
+					class_id: string | null;
+					created_at: string;
+					created_by: string | null;
+					delta: number;
+					id: string;
+					reason: string | null;
+					student_id: string;
+				};
+				Insert: {
+					class_id?: string | null;
+					created_at?: string;
+					created_by?: string | null;
+					delta: number;
+					id?: string;
+					reason?: string | null;
+					student_id: string;
+				};
+				Update: {
+					class_id?: string | null;
+					created_at?: string;
+					created_by?: string | null;
+					delta?: number;
+					id?: string;
+					reason?: string | null;
+					student_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'gidouilles_history_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'gidouilles_history_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'gidouilles_history_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'gidouilles_history_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'gidouilles_history_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'gidouilles_history_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'gidouilles_history_student_id_fkey';
+						columns: ['student_id'];
 						isOneToOne: false;
 						referencedRelation: 'riddle_progress';
 						referencedColumns: ['student_id'];
@@ -3856,6 +4099,7 @@ export type Database = {
 					logo_url: string | null;
 					name: string;
 					timetable: Json | null;
+					timezone: string;
 					updated_at: string | null;
 				};
 				Insert: {
@@ -3868,6 +4112,7 @@ export type Database = {
 					logo_url?: string | null;
 					name: string;
 					timetable?: Json | null;
+					timezone?: string;
 					updated_at?: string | null;
 				};
 				Update: {
@@ -3880,6 +4125,7 @@ export type Database = {
 					logo_url?: string | null;
 					name?: string;
 					timetable?: Json | null;
+					timezone?: string;
 					updated_at?: string | null;
 				};
 				Relationships: [];
@@ -4229,6 +4475,8 @@ export type Database = {
 					class_id: string;
 					created_at: string | null;
 					created_by: string;
+					deleted_at: string | null;
+					deleted_by: string | null;
 					id: string;
 					student_id: string;
 					updated_at: string | null;
@@ -4239,6 +4487,8 @@ export type Database = {
 					class_id: string;
 					created_at?: string | null;
 					created_by: string;
+					deleted_at?: string | null;
+					deleted_by?: string | null;
 					id?: string;
 					student_id: string;
 					updated_at?: string | null;
@@ -4249,6 +4499,8 @@ export type Database = {
 					class_id?: string;
 					created_at?: string | null;
 					created_by?: string;
+					deleted_at?: string | null;
+					deleted_by?: string | null;
 					id?: string;
 					student_id?: string;
 					updated_at?: string | null;
@@ -4286,6 +4538,27 @@ export type Database = {
 					{
 						foreignKeyName: 'student_warnings_created_by_fkey';
 						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_deleted_by_fkey';
+						columns: ['deleted_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_deleted_by_fkey';
+						columns: ['deleted_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_deleted_by_fkey';
+						columns: ['deleted_by'];
 						isOneToOne: false;
 						referencedRelation: 'riddle_progress';
 						referencedColumns: ['student_id'];
@@ -4953,8 +5226,662 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			vip_cards_activity: {
+				Row: {
+					action: string;
+					card_instance_id: string;
+					card_template_id: string;
+					created_at: string;
+					id: string;
+					metadata: Json | null;
+					student_id: string;
+				};
+				Insert: {
+					action: string;
+					card_instance_id: string;
+					card_template_id: string;
+					created_at?: string;
+					id?: string;
+					metadata?: Json | null;
+					student_id: string;
+				};
+				Update: {
+					action?: string;
+					card_instance_id?: string;
+					card_template_id?: string;
+					created_at?: string;
+					id?: string;
+					metadata?: Json | null;
+					student_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'vip_cards_activity_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'vip_cards_activity_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'vip_cards_activity_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			weekly_rewards: {
+				Row: {
+					class_id: string;
+					created_at: string;
+					gidouilles_awarded: number | null;
+					id: string;
+					reason: string | null;
+					student_id: string;
+					week_end: string;
+					week_start: string;
+				};
+				Insert: {
+					class_id: string;
+					created_at?: string;
+					gidouilles_awarded?: number | null;
+					id?: string;
+					reason?: string | null;
+					student_id: string;
+					week_end: string;
+					week_start: string;
+				};
+				Update: {
+					class_id?: string;
+					created_at?: string;
+					gidouilles_awarded?: number | null;
+					id?: string;
+					reason?: string | null;
+					student_id?: string;
+					week_end?: string;
+					week_start?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'weekly_rewards_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'weekly_rewards_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'weekly_rewards_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'weekly_rewards_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			marketplace_config: {
+				Row: {
+					id: string;
+					school_id: string | null;
+					class_id: string | null;
+					enabled_globally: boolean;
+					enabled_for_class: boolean;
+					max_listings_per_student: number;
+					max_trades_per_day: number;
+					listing_duration_days: number;
+					created_at: string;
+					updated_at: string;
+					updated_by: string | null;
+				};
+				Insert: {
+					id?: string;
+					school_id?: string | null;
+					class_id?: string | null;
+					enabled_globally?: boolean;
+					enabled_for_class?: boolean;
+					max_listings_per_student?: number;
+					max_trades_per_day?: number;
+					listing_duration_days?: number;
+					created_at?: string;
+					updated_at?: string;
+					updated_by?: string | null;
+				};
+				Update: {
+					id?: string;
+					school_id?: string | null;
+					class_id?: string | null;
+					enabled_globally?: boolean;
+					enabled_for_class?: boolean;
+					max_listings_per_student?: number;
+					max_trades_per_day?: number;
+					listing_duration_days?: number;
+					created_at?: string;
+					updated_at?: string;
+					updated_by?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'marketplace_config_school_id_fkey';
+						columns: ['school_id'];
+						isOneToOne: false;
+						referencedRelation: 'schools';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'marketplace_config_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'marketplace_config_updated_by_fkey';
+						columns: ['updated_by'];
+						isOneToOne: false;
+						referencedRelation: 'users';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			marketplace_listings: {
+				Row: {
+					id: string;
+					creator_id: string;
+					school_id: string;
+					listing_type: string;
+					status: string;
+					offered_card_ids: string[];
+					offered_gidouilles: number;
+					wanted_card_template_ids: string[];
+					wanted_gidouilles: number;
+					title: string;
+					description: string | null;
+					max_proposals: number;
+					created_at: string;
+					expires_at: string;
+					completed_at: string | null;
+					cancelled_at: string | null;
+					view_count: number;
+					proposal_count: number;
+				};
+				Insert: {
+					id?: string;
+					creator_id: string;
+					school_id: string;
+					listing_type: string;
+					status?: string;
+					offered_card_ids?: string[];
+					offered_gidouilles?: number;
+					wanted_card_template_ids?: string[];
+					wanted_gidouilles?: number;
+					title: string;
+					description?: string | null;
+					max_proposals?: number;
+					created_at?: string;
+					expires_at: string;
+					completed_at?: string | null;
+					cancelled_at?: string | null;
+					view_count?: number;
+					proposal_count?: number;
+				};
+				Update: {
+					id?: string;
+					creator_id?: string;
+					school_id?: string;
+					listing_type?: string;
+					status?: string;
+					offered_card_ids?: string[];
+					offered_gidouilles?: number;
+					wanted_card_template_ids?: string[];
+					wanted_gidouilles?: number;
+					title?: string;
+					description?: string | null;
+					max_proposals?: number;
+					created_at?: string;
+					expires_at?: string;
+					completed_at?: string | null;
+					cancelled_at?: string | null;
+					view_count?: number;
+					proposal_count?: number;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'marketplace_listings_creator_id_fkey';
+						columns: ['creator_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'marketplace_listings_school_id_fkey';
+						columns: ['school_id'];
+						isOneToOne: false;
+						referencedRelation: 'schools';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			marketplace_proposals: {
+				Row: {
+					id: string;
+					listing_id: string;
+					proposer_id: string;
+					status: string;
+					offered_card_ids: string[];
+					offered_gidouilles: number;
+					message: string | null;
+					response_message: string | null;
+					created_at: string;
+					responded_at: string | null;
+					withdrawn_at: string | null;
+				};
+				Insert: {
+					id?: string;
+					listing_id: string;
+					proposer_id: string;
+					status?: string;
+					offered_card_ids?: string[];
+					offered_gidouilles?: number;
+					message?: string | null;
+					response_message?: string | null;
+					created_at?: string;
+					responded_at?: string | null;
+					withdrawn_at?: string | null;
+				};
+				Update: {
+					id?: string;
+					listing_id?: string;
+					proposer_id?: string;
+					status?: string;
+					offered_card_ids?: string[];
+					offered_gidouilles?: number;
+					message?: string | null;
+					response_message?: string | null;
+					created_at?: string;
+					responded_at?: string | null;
+					withdrawn_at?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'marketplace_proposals_listing_id_fkey';
+						columns: ['listing_id'];
+						isOneToOne: false;
+						referencedRelation: 'marketplace_listings';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'marketplace_proposals_proposer_id_fkey';
+						columns: ['proposer_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			marketplace_trades: {
+				Row: {
+					id: string;
+					trade_type: string;
+					status: string;
+					initiator_id: string;
+					partner_id: string;
+					listing_id: string | null;
+					proposal_id: string | null;
+					conversation_id: string | null;
+					current_offer: Json | null;
+					last_offer_by: string | null;
+					final_trade: Json | null;
+					created_at: string;
+					completed_at: string | null;
+					cancelled_at: string | null;
+					updated_at: string;
+				};
+				Insert: {
+					id?: string;
+					trade_type: string;
+					status?: string;
+					initiator_id: string;
+					partner_id: string;
+					listing_id?: string | null;
+					proposal_id?: string | null;
+					conversation_id?: string | null;
+					current_offer?: Json | null;
+					last_offer_by?: string | null;
+					final_trade?: Json | null;
+					created_at?: string;
+					completed_at?: string | null;
+					cancelled_at?: string | null;
+					updated_at?: string;
+				};
+				Update: {
+					id?: string;
+					trade_type?: string;
+					status?: string;
+					initiator_id?: string;
+					partner_id?: string;
+					listing_id?: string | null;
+					proposal_id?: string | null;
+					conversation_id?: string | null;
+					current_offer?: Json | null;
+					last_offer_by?: string | null;
+					final_trade?: Json | null;
+					created_at?: string;
+					completed_at?: string | null;
+					cancelled_at?: string | null;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'marketplace_trades_initiator_id_fkey';
+						columns: ['initiator_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'marketplace_trades_partner_id_fkey';
+						columns: ['partner_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'marketplace_trades_listing_id_fkey';
+						columns: ['listing_id'];
+						isOneToOne: false;
+						referencedRelation: 'marketplace_listings';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'marketplace_trades_proposal_id_fkey';
+						columns: ['proposal_id'];
+						isOneToOne: false;
+						referencedRelation: 'marketplace_proposals';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'marketplace_trades_conversation_id_fkey';
+						columns: ['conversation_id'];
+						isOneToOne: false;
+						referencedRelation: 'chat_conversations';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'marketplace_trades_last_offer_by_fkey';
+						columns: ['last_offer_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			marketplace_trade_offers: {
+				Row: {
+					id: string;
+					trade_id: string;
+					offered_by: string;
+					offer_number: number;
+					initiator_cards: string[];
+					initiator_gidouilles: number;
+					partner_cards: string[];
+					partner_gidouilles: number;
+					status: string;
+					message: string | null;
+					created_at: string;
+					responded_at: string | null;
+				};
+				Insert: {
+					id?: string;
+					trade_id: string;
+					offered_by: string;
+					offer_number: number;
+					initiator_cards?: string[];
+					initiator_gidouilles?: number;
+					partner_cards?: string[];
+					partner_gidouilles?: number;
+					status?: string;
+					message?: string | null;
+					created_at?: string;
+					responded_at?: string | null;
+				};
+				Update: {
+					id?: string;
+					trade_id?: string;
+					offered_by?: string;
+					offer_number?: number;
+					initiator_cards?: string[];
+					initiator_gidouilles?: number;
+					partner_cards?: string[];
+					partner_gidouilles?: number;
+					status?: string;
+					message?: string | null;
+					created_at?: string;
+					responded_at?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'marketplace_trade_offers_trade_id_fkey';
+						columns: ['trade_id'];
+						isOneToOne: false;
+						referencedRelation: 'marketplace_trades';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'marketplace_trade_offers_offered_by_fkey';
+						columns: ['offered_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			marketplace_locked_cards: {
+				Row: {
+					id: string;
+					student_id: string;
+					card_instance_id: string;
+					locked_for: string;
+					locked_entity_id: string;
+					locked_at: string;
+				};
+				Insert: {
+					id?: string;
+					student_id: string;
+					card_instance_id: string;
+					locked_for: string;
+					locked_entity_id: string;
+					locked_at?: string;
+				};
+				Update: {
+					id?: string;
+					student_id?: string;
+					card_instance_id?: string;
+					locked_for?: string;
+					locked_entity_id?: string;
+					locked_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'marketplace_locked_cards_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'fk_locked_entity_listing';
+						columns: ['locked_entity_id'];
+						isOneToOne: false;
+						referencedRelation: 'marketplace_listings';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'fk_locked_entity_trade';
+						columns: ['locked_entity_id'];
+						isOneToOne: false;
+						referencedRelation: 'marketplace_trades';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			marketplace_chat_messages: {
+				Row: {
+					id: string;
+					trade_id: string;
+					sender_id: string;
+					message: string;
+					created_at: string;
+					is_flagged: boolean;
+					flagged_reason: string | null;
+				};
+				Insert: {
+					id?: string;
+					trade_id: string;
+					sender_id: string;
+					message: string;
+					created_at?: string;
+					is_flagged?: boolean;
+					flagged_reason?: string | null;
+				};
+				Update: {
+					id?: string;
+					trade_id?: string;
+					sender_id?: string;
+					message?: string;
+					created_at?: string;
+					is_flagged?: boolean;
+					flagged_reason?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'marketplace_chat_messages_trade_id_fkey';
+						columns: ['trade_id'];
+						isOneToOne: false;
+						referencedRelation: 'marketplace_trades';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'marketplace_chat_messages_sender_id_fkey';
+						columns: ['sender_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 		};
 		Views: {
+			active_student_warnings: {
+				Row: {
+					academic_period_id: string | null;
+					class_id: string | null;
+					created_at: string | null;
+					created_by: string | null;
+					id: string | null;
+					student_id: string | null;
+					updated_at: string | null;
+					warning_type: string | null;
+				};
+				Insert: {
+					academic_period_id?: string | null;
+					class_id?: string | null;
+					created_at?: string | null;
+					created_by?: string | null;
+					id?: string | null;
+					student_id?: string | null;
+					updated_at?: string | null;
+					warning_type?: string | null;
+				};
+				Update: {
+					academic_period_id?: string | null;
+					class_id?: string | null;
+					created_at?: string | null;
+					created_by?: string | null;
+					id?: string | null;
+					student_id?: string | null;
+					updated_at?: string | null;
+					warning_type?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'student_warnings_academic_period_id_fkey';
+						columns: ['academic_period_id'];
+						isOneToOne: false;
+						referencedRelation: 'academic_periods';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_warnings_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			admin_content_stats: {
 				Row: {
 					assignments_24h: number | null;
@@ -5425,6 +6352,17 @@ export type Database = {
 				Args: { p_count: number; p_filters?: Json; p_student_id: string };
 				Returns: Json;
 			};
+			award_weekly_reward: {
+				Args: {
+					p_class_id: string;
+					p_gidouilles?: number;
+					p_reason?: string;
+					p_student_id: string;
+					p_week_end: string;
+					p_week_start: string;
+				};
+				Returns: string;
+			};
 			calculate_riddle_gidouilles: {
 				Args: { p_attempt_number: number; p_difficulty: number };
 				Returns: number;
@@ -5461,6 +6399,14 @@ export type Database = {
 					p_status: string;
 				};
 				Returns: undefined;
+			};
+			compute_daily_summary: {
+				Args: {
+					p_class_id: string;
+					p_student_id: string;
+					p_summary_date: string;
+				};
+				Returns: string;
 			};
 			create_1on1_chat: {
 				Args: { p_user1_id: string; p_user2_id: string };
@@ -6009,6 +6955,19 @@ export type Database = {
 				Args: { p_folder_id: string; p_message_id: string; p_user_id: string };
 				Returns: undefined;
 			};
+			process_weekly_rewards: {
+				Args: {
+					p_class_ids?: string[];
+					p_week_end: string;
+					p_week_start: string;
+				};
+				Returns: {
+					awarded: boolean;
+					class_id: string;
+					reason: string;
+					student_id: string;
+				}[];
+			};
 			promote_user_to_admin: {
 				Args: { user_email: string };
 				Returns: undefined;
@@ -6086,6 +7045,7 @@ export type Database = {
 				Args: { p_message_id: string };
 				Returns: undefined;
 			};
+			soft_delete_warning: { Args: { p_warning_id: string }; Returns: boolean };
 			start_job_run: {
 				Args: { p_job_name: string; p_metadata?: Json };
 				Returns: string;
@@ -6123,14 +7083,30 @@ export type Database = {
 				Args: { p_message_id: string; p_status: string; p_user_id: string };
 				Returns: undefined;
 			};
-			update_student_bonus: {
-				Args: { p_delta: number; p_student_id: string };
-				Returns: number;
-			};
-			update_student_gidouilles: {
-				Args: { p_delta: number; p_student_id: string };
-				Returns: number;
-			};
+			update_student_bonus:
+				| { Args: { p_delta: number; p_student_id: string }; Returns: number }
+				| {
+						Args: {
+							p_class_id: string;
+							p_created_by?: string;
+							p_delta: number;
+							p_reason?: string;
+							p_student_id: string;
+						};
+						Returns: number;
+				  };
+			update_student_gidouilles:
+				| { Args: { p_delta: number; p_student_id: string }; Returns: number }
+				| {
+						Args: {
+							p_class_id: string;
+							p_created_by?: string;
+							p_delta: number;
+							p_reason?: string;
+							p_student_id: string;
+						};
+						Returns: number;
+				  };
 			upsert_error_occurrence: {
 				Args: {
 					p_error_log_id: string;
@@ -6175,6 +7151,31 @@ export type Database = {
 					p_teacher_id: string;
 				};
 				Returns: boolean;
+			};
+			check_marketplace_enabled: {
+				Args: { p_student_id: string };
+				Returns: boolean;
+			};
+			lock_cards: {
+				Args: {
+					p_student_id: string;
+					p_card_ids: string[];
+					p_entity_id: string;
+					p_lock_type: string;
+				};
+				Returns: boolean;
+			};
+			unlock_cards: {
+				Args: { p_entity_id: string };
+				Returns: number;
+			};
+			execute_trade: {
+				Args: { p_trade_id: string };
+				Returns: Json;
+			};
+			auto_expire_listings: {
+				Args: Record<PropertyKey, never>;
+				Returns: number;
 			};
 		};
 		Enums: {
@@ -6302,132 +7303,6 @@ export type CompositeTypes<
 	: PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
 		? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
 		: never;
-
-// ============================================================================
-// Custom Type Exports
-// ============================================================================
-// These types provide convenient aliases and extensions to the generated
-// database types above. They are used throughout the application.
-
-// -----------------------------------------------------------------------------
-// Table Type Aliases
-// -----------------------------------------------------------------------------
-
-/** Class table row type */
-export type Class = Tables<'classes'>;
-
-/** Class schedule table row type */
-export type ClassSchedule = Tables<'class_schedules'>;
-
-/** Notification table row type */
-export type Notification = Tables<'notifications'>;
-
-/** Notification read status table row type */
-export type NotificationRead = Tables<'notification_reads'>;
-
-// -----------------------------------------------------------------------------
-// Enum Type Aliases
-// -----------------------------------------------------------------------------
-
-/** User role enum: 'student' | 'teacher' | 'admin' */
-export type UserRole = Database['public']['Enums']['user_role'];
-
-// -----------------------------------------------------------------------------
-// String Union Types (from CHECK constraints in database)
-// -----------------------------------------------------------------------------
-
-/** Gender: 'boy' | 'girl' */
-export type Gender = 'boy' | 'girl';
-
-/** Friendship type: 'classmate' | 'mentor' */
-export type FriendshipType = 'classmate' | 'mentor';
-
-/** Notification type: 'info' | 'alert' | 'announcement' | 'reminder' */
-export type NotificationType = 'info' | 'alert' | 'announcement' | 'reminder';
-
-/** Notification priority: 'normal' | 'important' | 'urgent' */
-export type NotificationPriority = 'normal' | 'important' | 'urgent';
-
-/** Notification target type: 'all' | 'role' | 'classes' | 'users' */
-export type NotificationTargetType = 'all' | 'role' | 'classes' | 'users';
-
-/** System event types for automated notifications */
-export type SystemEventType =
-	| 'assignment_created'
-	| 'resource_added'
-	| 'reward_earned'
-	| 'badge_unlocked'
-	| 'maintenance_scheduled'
-	| 'feature_released'
-	| 'assessment_assigned'
-	| 'assessment_graded';
-
-// -----------------------------------------------------------------------------
-// Composite/Derived Types
-// -----------------------------------------------------------------------------
-
-/**
- * Friendship with enriched profile and presence data
- * Used in friends store to display friend information
- */
-export interface FriendshipWithProfile {
-	id: string;
-	user_id: string;
-	friend_id: string;
-	status: string; // 'pending' | 'accepted' | 'declined'
-	friendship_type?: FriendshipType;
-	created_at: string;
-	updated_at: string;
-	requester_id: string;
-	addressee_id: string;
-	friend_profile: {
-		id: string;
-		full_name: string | null;
-		firstname: string | null;
-		lastname: string | null;
-		avatar_url: string | null;
-		role: string;
-	};
-	presence?: {
-		is_online: boolean;
-		last_seen: string | null;
-	};
-}
-
-/**
- * School period definition
- * Used in timetable system
- */
-export interface SchoolPeriod {
-	number: number;
-	start_time: string; // HH:MM:SS format
-	end_time: string; // HH:MM:SS format
-	name?: string; // Optional display name (e.g., "Morning Break")
-}
-
-/**
- * Week configuration for school calendar
- * Defines which days are school days vs weekend days
- */
-export interface WeekConfig {
-	first_day: number; // 0-6 (0=Sunday, 1=Monday, etc.)
-	last_day: number; // 0-6
-	school_days: number[]; // Array of school days (ex: [0,1,2,3,4])
-	weekend_days: number[]; // Array of weekend days (ex: [5,6])
-}
-
-/**
- * School timetable with periods
- * Used in timetable system
- */
-export interface SchoolTimetable {
-	periods: SchoolPeriod[];
-	week_config?: WeekConfig;
-}
-
-// ============================================================================
-// Constants
-// ============================================================================
 
 export const Constants = {
 	public: {

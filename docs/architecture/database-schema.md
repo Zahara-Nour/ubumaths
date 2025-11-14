@@ -3650,3 +3650,296 @@ WHERE distribution_mode = 'per_student'
   - **Parameterization with variables** (random values, evaluations)
   - **Three distribution modes** (on-demand, per-student, per-group)
   - **Deterministic seeding** for consistent student experiences
+
+## Student Marketplace System
+
+The marketplace enables students to trade VIP cards and gidouilles within their school through two methods:
+
+1. **Friend-to-Friend Trading**: Private negotiation between friends with offer/counter-offer flow
+2. **Public Marketplace**: Public listings visible to all students in the same school
+
+### Tables
+
+#### `marketplace_config`
+
+Controls marketplace enable/disable at school and class levels.
+
+| Column                   | Type        | Description                                                             |
+| ------------------------ | ----------- | ----------------------------------------------------------------------- |
+| id                       | UUID        | Configuration ID                                                        |
+| school_id                | UUID        | School ID (nullable, exactly one of school_id or class_id must be set)  |
+| class_id                 | UUID        | Class ID (nullable, exactly one of school_id or class_id must be set)   |
+| enabled_globally         | BOOLEAN     | For school-level: enables marketplace for entire school (default false) |
+| enabled_for_class        | BOOLEAN     | For class-level: overrides school setting (default true)                |
+| max_listings_per_student | INTEGER     | Max active public listings per student (default 5)                      |
+| max_trades_per_day       | INTEGER     | Max completed trades per day per student (default 10)                   |
+| listing_duration_days    | INTEGER     | Days before listings auto-expire (default 7)                            |
+| created_at               | TIMESTAMPTZ | Creation timestamp                                                      |
+| updated_at               | TIMESTAMPTZ | Last update timestamp                                                   |
+| updated_by               | UUID        | User who last updated                                                   |
+
+#### `marketplace_listings`
+
+Public sell/buy listings in the marketplace.
+
+| Column                   | Type        | Description                                                     |
+| ------------------------ | ----------- | --------------------------------------------------------------- |
+| id                       | UUID        | Listing ID                                                      |
+| creator_id               | UUID        | Student who created the listing                                 |
+| school_id                | UUID        | School scope (students can only see listings from their school) |
+| listing_type             | TEXT        | 'sell' or 'buy'                                                 |
+| status                   | TEXT        | 'active', 'expired', 'completed', 'cancelled'                   |
+| offered_card_ids         | TEXT[]      | Array of VIP card instance IDs being offered                    |
+| offered_gidouilles       | INTEGER     | Gidouilles being offered                                        |
+| wanted_card_template_ids | TEXT[]      | Array of VIP card template IDs wanted (not specific instances)  |
+| wanted_gidouilles        | INTEGER     | Gidouilles wanted                                               |
+| title                    | TEXT        | Listing title (3-100 chars)                                     |
+| description              | TEXT        | Optional description (max 500 chars)                            |
+| max_proposals            | INTEGER     | Max number of proposals allowed (default 10)                    |
+| created_at               | TIMESTAMPTZ | Creation timestamp                                              |
+| expires_at               | TIMESTAMPTZ | Expiration timestamp (auto-set based on config)                 |
+| completed_at             | TIMESTAMPTZ | Completion timestamp                                            |
+| cancelled_at             | TIMESTAMPTZ | Cancellation timestamp                                          |
+| view_count               | INTEGER     | Number of views                                                 |
+| proposal_count           | INTEGER     | Number of proposals received                                    |
+
+#### `marketplace_proposals`
+
+Responses to public listings.
+
+| Column             | Type        | Description                                            |
+| ------------------ | ----------- | ------------------------------------------------------ |
+| id                 | UUID        | Proposal ID                                            |
+| listing_id         | UUID        | Related listing                                        |
+| proposer_id        | UUID        | Student making the proposal                            |
+| status             | TEXT        | 'pending', 'accepted', 'rejected', 'withdrawn'         |
+| offered_card_ids   | TEXT[]      | VIP card instance IDs offered                          |
+| offered_gidouilles | INTEGER     | Gidouilles offered                                     |
+| message            | TEXT        | Optional message from proposer (max 500 chars)         |
+| response_message   | TEXT        | Optional response from listing creator (max 500 chars) |
+| created_at         | TIMESTAMPTZ | Creation timestamp                                     |
+| responded_at       | TIMESTAMPTZ | Response timestamp                                     |
+| withdrawn_at       | TIMESTAMPTZ | Withdrawal timestamp                                   |
+
+**Constraint**: UNIQUE(listing_id, proposer_id) - one proposal per user per listing
+
+#### `marketplace_trades`
+
+Friend-to-friend negotiations and completed trade history.
+
+| Column          | Type        | Description                                    |
+| --------------- | ----------- | ---------------------------------------------- |
+| id              | UUID        | Trade ID                                       |
+| trade_type      | TEXT        | 'friend' or 'marketplace'                      |
+| status          | TEXT        | 'negotiating', 'completed', 'cancelled'        |
+| initiator_id    | UUID        | Student who initiated the trade                |
+| partner_id      | UUID        | Trade partner                                  |
+| listing_id      | UUID        | Related listing (for marketplace trades only)  |
+| proposal_id     | UUID        | Related proposal (for marketplace trades only) |
+| conversation_id | UUID        | Chat conversation ID (optional integration)    |
+| current_offer   | JSONB       | Current negotiation state                      |
+| last_offer_by   | UUID        | Who made the last offer                        |
+| final_trade     | JSONB       | Final agreed trade (immutable once set)        |
+| created_at      | TIMESTAMPTZ | Creation timestamp                             |
+| completed_at    | TIMESTAMPTZ | Completion timestamp                           |
+| cancelled_at    | TIMESTAMPTZ | Cancellation timestamp                         |
+| updated_at      | TIMESTAMPTZ | Last update timestamp                          |
+
+**JSONB Structure for offers**:
+
+```json
+{
+	"from_initiator": {
+		"cards": ["card_instance_id_1", "card_instance_id_2"],
+		"gidouilles": 100
+	},
+	"from_partner": {
+		"cards": ["card_instance_id_3"],
+		"gidouilles": 50
+	}
+}
+```
+
+#### `marketplace_trade_offers`
+
+Complete history of offers and counter-offers in friend trades.
+
+| Column               | Type        | Description                                    |
+| -------------------- | ----------- | ---------------------------------------------- |
+| id                   | UUID        | Offer ID                                       |
+| trade_id             | UUID        | Related trade                                  |
+| offered_by           | UUID        | Student making the offer                       |
+| offer_number         | INTEGER     | Sequential number (auto-incremented per trade) |
+| initiator_cards      | TEXT[]      | Cards offered by initiator                     |
+| initiator_gidouilles | INTEGER     | Gidouilles offered by initiator                |
+| partner_cards        | TEXT[]      | Cards offered by partner                       |
+| partner_gidouilles   | INTEGER     | Gidouilles offered by partner                  |
+| status               | TEXT        | 'pending', 'accepted', 'rejected', 'countered' |
+| message              | TEXT        | Optional message with offer (max 500 chars)    |
+| created_at           | TIMESTAMPTZ | Creation timestamp                             |
+| responded_at         | TIMESTAMPTZ | Response timestamp                             |
+
+**Constraint**: UNIQUE(trade_id, offer_number)
+
+#### `marketplace_locked_cards`
+
+Prevents double-spending by locking cards in active listings/trades.
+
+| Column           | Type        | Description                                 |
+| ---------------- | ----------- | ------------------------------------------- |
+| id               | UUID        | Lock ID                                     |
+| student_id       | UUID        | Card owner                                  |
+| card_instance_id | TEXT        | UUID key from profiles.vip_cards JSONB      |
+| locked_for       | TEXT        | 'listing' or 'trade'                        |
+| locked_entity_id | UUID        | ID of the listing or trade holding the lock |
+| locked_at        | TIMESTAMPTZ | Lock timestamp                              |
+
+**Constraint**: UNIQUE(card_instance_id) - one card can only be locked once
+**Auto-cleanup**: CASCADE DELETE when listing/trade is deleted
+
+#### `marketplace_chat_messages`
+
+Contextual chat for friend-to-friend trade negotiations.
+
+| Column         | Type        | Description                       |
+| -------------- | ----------- | --------------------------------- |
+| id             | UUID        | Message ID                        |
+| trade_id       | UUID        | Related trade                     |
+| sender_id      | UUID        | Message sender                    |
+| message        | TEXT        | Message content (1-1000 chars)    |
+| created_at     | TIMESTAMPTZ | Creation timestamp                |
+| is_flagged     | BOOLEAN     | Moderation flag                   |
+| flagged_reason | TEXT        | Reason if flagged (max 200 chars) |
+
+### RPC Functions
+
+#### `check_marketplace_enabled(p_student_id UUID)`
+
+Checks if marketplace is enabled for a student.
+
+**Returns**: BOOLEAN
+**Logic**:
+
+1. Check school-level config: enabled_globally must be TRUE
+2. Check all student's classes: enabled_for_class must be TRUE for all
+3. Return FALSE if disabled at any level
+
+#### `lock_cards(p_student_id UUID, p_card_ids TEXT[], p_entity_id UUID, p_lock_type TEXT)`
+
+Locks VIP cards to prevent double-spending.
+
+**Returns**: BOOLEAN
+**Logic**:
+
+1. Verify all cards exist in profiles.vip_cards for this student
+2. Verify none are already locked
+3. Verify cards are unused (check vip_cards_activity)
+4. Insert into marketplace_locked_cards
+5. Return success/failure
+
+#### `unlock_cards(p_entity_id UUID)`
+
+Unlocks VIP cards when listing/trade ends.
+
+**Returns**: INTEGER (number of cards unlocked)
+
+#### `execute_trade(p_trade_id UUID)`
+
+Atomically executes a completed trade.
+
+**Returns**: JSONB with success status
+**Critical**: Must be atomic transaction with full rollback on failure
+
+**Logic**:
+
+1. Lock trade row (FOR UPDATE)
+2. Verify status = 'negotiating'
+3. Check daily trade limits for both participants
+4. Transfer VIP cards (update profiles.vip_cards JSONB)
+5. Transfer gidouilles (call update_student_gidouilles)
+6. Update trade status = 'completed'
+7. Unlock cards
+8. Log in vip_cards_activity and gidouilles_history
+9. Return success or error
+
+#### `auto_expire_listings()`
+
+Auto-expires old listings (for cron job).
+
+**Returns**: INTEGER (number of listings expired)
+**Logic**:
+
+1. Update listings where expires_at < NOW()
+2. Unlock cards for expired listings
+3. Reject pending proposals
+
+### Security & RLS Policies
+
+All tables have Row Level Security enabled with the following key policies:
+
+**marketplace_listings**:
+
+- SELECT: Students see active listings from their school + their own listings
+- INSERT: Students can create if under limit (5 active)
+- UPDATE/DELETE: Only creator
+
+**marketplace_proposals**:
+
+- SELECT: Listing creator sees all; proposer sees own
+- INSERT: Any student (one per listing, can't propose to own listing)
+- UPDATE: Proposer can withdraw; creator can accept/reject
+
+**marketplace_trades**:
+
+- SELECT/UPDATE/DELETE: Participants only
+- INSERT: Must verify friendship exists
+
+**marketplace_locked_cards**:
+
+- SELECT: Student sees own locked cards
+- INSERT/DELETE: Via RPC functions only (SECURITY DEFINER)
+
+**marketplace_chat_messages**:
+
+- SELECT/INSERT: Trade participants only
+
+**marketplace_config**:
+
+- SELECT: All authenticated users
+- UPDATE: Teachers for their classes, admins for school-level
+
+### Important Implementation Notes
+
+1. **Card Instance IDs**: VIP cards are stored in profiles.vip_cards as JSONB with UUID keys. The marketplace_locked_cards.card_instance_id refers to these keys.
+
+2. **Atomicity**: The execute_trade function MUST be atomic - if ANY step fails, the entire trade rolls back.
+
+3. **Daily Limits**: Max 10 completed trades per day per student (configurable in marketplace_config).
+
+4. **Listing Limits**: Max 5 active listings per student (configurable).
+
+5. **Auto-expiry**: Listings expire after 7 days (configurable). A cron job should call auto_expire_listings() regularly.
+
+6. **School Scope**: All marketplace activity is limited to within the same school. Students cannot see or trade with students from other schools.
+
+7. **Unused Cards Only**: Only unused VIP cards can be traded. The system checks vip_cards_activity to ensure cards haven't been used.
+
+8. **Card Locking**: Critical to prevent double-spending. Cards in active listings or trades are locked and cannot be used elsewhere.
+
+### Integration Points
+
+- **profiles.vip_cards**: JSONB field storing VIP card instances
+- **profiles.gidouilles**: INTEGER field for gidouilles balance
+- **vip_cards_activity**: Tracks all VIP card actions including trades
+- **gidouilles_history**: Tracks all gidouille transactions
+- **friendships**: Friend verification for friend-to-friend trades
+- **update_student_gidouilles()**: Existing RPC for gidouille transfers
+- **chat_conversations**: Optional integration for trade chat
+
+### File Organization
+
+- **Migration**: `supabase/migrations/20251114082611_marketplace_foundation.sql`
+- **Types**: Updated in `src/lib/types/database.ts`
+- **Backend** (Phase 2): Will be in `src/routes/api/marketplace/`
+- **Frontend** (Phase 3): Will be in `src/routes/(protected)/dashboard/student/marketplace/`
+- **Components** (Phase 3): Will be in `src/lib/components/marketplace/`
