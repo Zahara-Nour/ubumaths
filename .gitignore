@@ -54,3 +54,6 @@ audit-validation.sh
 typescript-check-output.txt
 validation-audit.json
 /tmp/ts-*.log
+
+# Supabase temporary files
+supabase/.temp/
