@@ -461,11 +461,11 @@ ALTER DATABASE postgres SET app.encryption_key TO '<votre_clé>';
 ```typescript
 // Vérifier la configuration des cookies dans oauth.ts
 cookies.set('google_oauth_state', state, {
-  path: '/',
-  httpOnly: true,
-  secure: true,  // Doit être true en production HTTPS
-  sameSite: 'lax',
-  maxAge: 600  // 10 minutes
+	path: '/',
+	httpOnly: true,
+	secure: true, // Doit être true en production HTTPS
+	sameSite: 'lax',
+	maxAge: 600 // 10 minutes
 });
 ```
 
@@ -493,7 +493,7 @@ L'API client implémente déjà un retry avec exponential backoff (2s, 4s, 8s, 1
 ```typescript
 // Augmenter les délais dans classroom-api.ts
 const calculateBackoff = (attempt: number) => {
-  return Math.min(1000 * Math.pow(2, attempt), 32000); // Max 32s au lieu de 16s
+	return Math.min(1000 * Math.pow(2, attempt), 32000); // Max 32s au lieu de 16s
 };
 ```
 
@@ -516,16 +516,19 @@ pnpm dev -- --port 5175
 **Vérifications** :
 
 1. **Migration appliquée ?**
+
    ```sql
    SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_name = 'shared_coursework');
    ```
 
 2. **Travaux partagés ?**
+
    ```sql
    SELECT COUNT(*) FROM shared_coursework WHERE visible = true;
    ```
 
 3. **Élève inscrit dans la classe ?**
+
    ```sql
    SELECT * FROM class_members WHERE user_id = '<student_id>' AND role = 'student';
    ```
