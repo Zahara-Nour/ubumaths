@@ -98,30 +98,27 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.map((listing) => listing.id);
 
 		if (otherListingIds.length > 0) {
-			// Record views using the new RPC function (fire and forget)
-			// The function handles deduplication and only increments for new unique views
-			for (const listingId of otherListingIds) {
-				void (async () => {
-					try {
-						const { data: viewResult, error: viewError } = await supabase.rpc(
-							'record_listing_view',
-							{
-								p_listing_id: listingId,
-								p_user_id: userId
-								// Note: IP address tracking could be added here if needed for additional security
-							}
-						);
-
-						if (viewError) {
-							console.error(`Error recording view for listing ${listingId}:`, viewError);
-						} else if (viewResult?.is_new_view) {
-							console.log(`Recorded new unique view for listing ${listingId}`);
+			// Batch record views for all listings in a single database call
+			// This prevents N+1 query problem and significantly improves performance
+			void (async () => {
+				try {
+					const { data: viewResult, error: viewError } = await supabase.rpc(
+						'record_listing_views_batch',
+						{
+							p_listing_ids: otherListingIds,
+							p_user_id: userId
 						}
-					} catch (err) {
-						console.error(`Error recording view for listing ${listingId}:`, err);
+					);
+
+					if (viewError) {
+						console.error('Error recording batch views:', viewError);
+					} else if (viewResult?.new_views > 0) {
+						console.log(`Recorded ${viewResult.new_views} new unique views`);
 					}
-				})();
-			}
+				} catch (err) {
+					console.error('Error recording batch views:', err);
+				}
+			})();
 		}
 	}
 

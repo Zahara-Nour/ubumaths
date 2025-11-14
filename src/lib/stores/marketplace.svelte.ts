@@ -136,6 +136,34 @@ class MarketplaceStore {
 		await this.fetchInitialData();
 	}
 
+	// Announce status to screen readers for accessibility
+	announceStatus(message: string, priority: 'polite' | 'assertive' = 'polite') {
+		// Create or update status announcer element
+		let announcer = document.getElementById('marketplace-status-announcer');
+
+		if (!announcer) {
+			// Create the announcer if it doesn't exist
+			announcer = document.createElement('div');
+			announcer.id = 'marketplace-status-announcer';
+			announcer.setAttribute('role', 'status');
+			announcer.setAttribute('aria-live', priority);
+			announcer.setAttribute('aria-atomic', 'true');
+			announcer.className = 'sr-only';
+			document.body.appendChild(announcer);
+		}
+
+		// Update the announcement
+		announcer.setAttribute('aria-live', priority);
+		announcer.textContent = message;
+
+		// Clear after a delay to allow for repeated announcements
+		setTimeout(() => {
+			if (announcer) {
+				announcer.textContent = '';
+			}
+		}, 1000);
+	}
+
 	// Reconnect realtime subscriptions after connection loss
 	private async reconnectRealtime() {
 		console.log('Attempting to reconnect realtime subscriptions...');
@@ -686,6 +714,7 @@ class MarketplaceStore {
 				this.myListings = this.myListings.map((l) => (l.id === tempId ? newListing : l));
 
 				toaster.success('Annonce créée avec succès');
+				this.announceStatus('Annonce créée avec succès');
 
 				// Invalidate cache
 				this.invalidateCache('myListings');
@@ -765,6 +794,7 @@ class MarketplaceStore {
 
 			if (response.ok) {
 				toaster.success('Proposition acceptée - échange effectué');
+				this.announceStatus('Proposition acceptée avec succès');
 				await this.fetchMyListings();
 				await this.fetchReceivedProposals();
 				return true;

@@ -138,7 +138,7 @@
 				</Badge>
 			{/if}
 		</div>
-		<Button variant="outline" size="icon" onclick={refresh}>
+		<Button variant="outline" size="icon" onclick={refresh} aria-label="Actualiser les échanges">
 			<RefreshCw class="h-4 w-4" />
 		</Button>
 	</div>

@@ -198,7 +198,7 @@
 						{#if group.template.image_path}
 							<img
 								src={group.template.image_path}
-								alt={group.template.name}
+								alt={`Carte VIP ${group.template.name}, rareté ${group.template.rarity}, ${group.availableCount} disponible(s)`}
 								class="h-12 w-12 rounded object-cover"
 							/>
 						{:else}
@@ -240,7 +240,7 @@
 						{#if group.template.image_path}
 							<img
 								src={group.template.image_path}
-								alt={group.template.name}
+								alt={`Carte VIP ${group.template.name}, rareté ${group.template.rarity}, ${group.availableCount} disponible(s)`}
 								class="h-32 w-full rounded object-cover"
 							/>
 						{:else}
