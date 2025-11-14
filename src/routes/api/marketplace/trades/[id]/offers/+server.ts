@@ -6,9 +6,9 @@ import {
 	validateCardOwnership,
 	checkCardsUnused,
 	lockCardsForEntity,
-	createMarketplaceNotification,
 	getStudentGidouilles
 } from '$lib/server/marketplace/helpers';
+import { notifyNewTradeOffer } from '$lib/server/marketplace/notifications';
 
 /**
  * POST /api/marketplace/trades/[id]/offers
@@ -174,11 +174,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// Create notification for the other participant
 	const otherParticipantId = isInitiator ? trade.partner_id : trade.initiator_id;
 
-	await createMarketplaceNotification(supabase, otherParticipantId, 'trade_offer', {
-		trade_id: data.trade_id,
-		offer_by: userId,
-		message: data.message
-	});
+	await notifyNewTradeOffer(supabase, otherParticipantId, userId, data.trade_id);
 
 	return json(offer, { status: 201 });
 };

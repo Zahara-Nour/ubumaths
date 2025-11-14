@@ -9,7 +9,9 @@ type DbListing = Database['public']['Tables']['marketplace_listings']['Row'];
 type DbProposal = Database['public']['Tables']['marketplace_proposals']['Row'];
 type DbTrade = Database['public']['Tables']['marketplace_trades']['Row'];
 type DbTradeOffer = Database['public']['Tables']['marketplace_trade_offers']['Row'];
-type DbTradeChat = Database['public']['Tables']['marketplace_trade_chat']['Row'];
+// TODO Phase 6: Implement trade chat feature
+// Requires migration for marketplace_trade_chat table
+// type DbTradeChat = Database['public']['Tables']['marketplace_trade_chat']['Row'];
 
 // Listing types
 export interface MarketplaceListing extends DbListing {
@@ -92,13 +94,9 @@ export interface MarketplaceTrade extends DbTrade {
 }
 
 // Trade offer types
-export interface MarketplaceTradeOffer extends DbTradeOffer {
-	// Relations
-	offered_by_user?: {
-		id: string;
-		username: string;
-		avatar_url: string | null;
-	};
+export interface MarketplaceTradeOffer
+	extends Omit<DbTradeOffer, 'initiator_cards' | 'partner_cards'> {
+	// Override with expanded relation types
 	initiator_cards?: Array<{
 		id: string;
 		template_id: string;
@@ -108,7 +106,7 @@ export interface MarketplaceTradeOffer extends DbTradeOffer {
 			image_path: string | null;
 			rarity: 'common' | 'rare' | 'epic' | 'legendary';
 		};
-	}>;
+	}> | null;
 	partner_cards?: Array<{
 		id: string;
 		template_id: string;
@@ -118,12 +116,33 @@ export interface MarketplaceTradeOffer extends DbTradeOffer {
 			image_path: string | null;
 			rarity: 'common' | 'rare' | 'epic' | 'legendary';
 		};
-	}>;
+	}> | null;
+	// Relations
+	offered_by_user?: {
+		id: string;
+		username: string;
+		avatar_url: string | null;
+	};
 }
 
+// TODO Phase 6: Implement trade chat feature
 // Trade chat message
-export interface MarketplaceTradeChatMessage extends DbTradeChat {
-	// Relations
+// export interface MarketplaceTradeChatMessage extends DbTradeChat {
+// 	// Relations
+// 	sender?: {
+// 		id: string;
+// 		username: string;
+// 		avatar_url: string | null;
+// 	};
+// }
+
+// Temporary placeholder until Phase 6
+export interface MarketplaceTradeChatMessage {
+	id: string;
+	trade_id: string;
+	sender_id: string;
+	message: string;
+	created_at: string;
 	sender?: {
 		id: string;
 		username: string;

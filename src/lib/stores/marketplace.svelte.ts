@@ -23,7 +23,7 @@ import {
 	createProposalSchema,
 	createTradeSchema,
 	createOfferSchema,
-	chatMessageSchema,
+	// chatMessageSchema, // TODO Phase 6: Uncomment when trade chat is implemented
 	updateProposalSchema
 } from '$lib/validation/marketplace';
 
@@ -93,18 +93,87 @@ class MarketplaceStore {
 	// Private
 	private supabase: SupabaseClient | null = null;
 	private userId: string | null = null;
+	private classId: string | null = null;
 	private listingsChannel: RealtimeChannel | null = null;
 	private tradesChannel: RealtimeChannel | null = null;
 	private proposalsChannel: RealtimeChannel | null = null;
 	private chatChannel: RealtimeChannel | null = null;
 
+	// Cache management
+	private lastFetch = {
+		listings: 0,
+		myListings: 0,
+		proposals: 0,
+		trades: 0,
+		cards: 0
+	};
+	private readonly CACHE_TTL = 300000; // 5 minutes (realtime handles instant updates)
+
+	// Cache helper methods
+	private shouldRefetch(key: keyof typeof this.lastFetch): boolean {
+		return Date.now() - this.lastFetch[key] > this.CACHE_TTL;
+	}
+
+	private invalidateCache(key: keyof typeof this.lastFetch): void {
+		this.lastFetch[key] = 0;
+	}
+
+	private invalidateAllCaches(): void {
+		this.lastFetch.listings = 0;
+		this.lastFetch.myListings = 0;
+		this.lastFetch.proposals = 0;
+		this.lastFetch.trades = 0;
+		this.lastFetch.cards = 0;
+	}
+
 	// Initialize
-	init(supabase: SupabaseClient, userId: string) {
+	async init(supabase: SupabaseClient, userId: string, classId?: string) {
 		this.supabase = supabase;
 		this.userId = userId;
-		this.subscribeToRealtime();
-		this.fetchConfig();
-		this.fetchInitialData();
+		this.classId = classId || null;
+		await this.subscribeToRealtime();
+		await this.fetchConfig();
+		await this.fetchInitialData();
+	}
+
+	// Reconnect realtime subscriptions after connection loss
+	private async reconnectRealtime() {
+		console.log('Attempting to reconnect realtime subscriptions...');
+		try {
+			// Cleanup existing subscriptions
+			await this.cleanupRealtime();
+
+			// Resubscribe
+			await this.subscribeToRealtime();
+
+			// Invalidate all caches to force data refetch
+			this.invalidateAllCaches();
+
+			toaster.success('Connexion rétablie');
+		} catch (error) {
+			console.error('Failed to reconnect realtime:', error);
+			toaster.error('Échec de la reconnexion');
+		}
+	}
+
+	// Cleanup realtime subscriptions
+	private async cleanupRealtime() {
+		if (this.listingsChannel) {
+			await supabaseRealtimeManager.unsubscribeChannel('marketplace-listings');
+			this.listingsChannel = null;
+		}
+		if (this.tradesChannel) {
+			await supabaseRealtimeManager.unsubscribeChannel(`marketplace-trades-${this.userId}`);
+			this.tradesChannel = null;
+		}
+		if (this.proposalsChannel) {
+			await supabaseRealtimeManager.unsubscribeChannel(`marketplace-proposals-${this.userId}`);
+			this.proposalsChannel = null;
+		}
+		if (this.chatChannel) {
+			await supabaseRealtimeManager.unsubscribeChannel(this.chatChannel.topic);
+			this.chatChannel = null;
+		}
 	}
 
 	// Realtime subscriptions
@@ -141,7 +210,15 @@ class MarketplaceStore {
 					table: 'marketplace_listings'
 				},
 				this.handleListingDelete.bind(this)
-			);
+			)
+			.on('system', { event: 'error' }, (payload) => {
+				console.error('Realtime error on listings channel:', payload);
+				toaster.error('Connexion temps réel perdue. Actualisation...');
+				// Attempt to reconnect after 5 seconds
+				setTimeout(() => {
+					this.reconnectRealtime();
+				}, 5000);
+			});
 
 		await supabaseRealtimeManager.subscribeChannel('marketplace-listings');
 
@@ -189,48 +266,57 @@ class MarketplaceStore {
 		await supabaseRealtimeManager.subscribeChannel(`marketplace-proposals-${this.userId}`);
 	}
 
+	// TODO Phase 6: Implement trade chat feature
 	// Subscribe to trade chat
-	async subscribeToTradeChat(tradeId: string) {
-		if (!this.supabase || !tradeId) return;
+	// async subscribeToTradeChat(tradeId: string) {
+	// 	if (!this.supabase || !tradeId) return;
 
-		const channelName = `trade-chat-${tradeId}`;
+	// 	const channelName = `trade-chat-${tradeId}`;
 
-		// Unsubscribe from previous chat if any
-		if (this.chatChannel) {
-			await supabaseRealtimeManager.unsubscribeChannel(this.chatChannel.topic);
-		}
+	// 	// Unsubscribe from previous chat if any
+	// 	if (this.chatChannel) {
+	// 		await supabaseRealtimeManager.unsubscribeChannel(this.chatChannel.topic);
+	// 	}
 
-		this.chatChannel = supabaseRealtimeManager.createChannel(channelName);
-		this.chatChannel.on(
-			'postgres_changes',
-			{
-				event: 'INSERT',
-				schema: 'public',
-				table: 'marketplace_trade_chat',
-				filter: `trade_id=eq.${tradeId}`
-			},
-			(payload: { new: Record<string, unknown> }) => {
-				const message = payload.new as MarketplaceTradeChatMessage;
-				const messages = this.tradeChatMessages.get(tradeId) || [];
-				this.tradeChatMessages.set(tradeId, [...messages, message]);
-			}
-		);
+	// 	this.chatChannel = supabaseRealtimeManager.createChannel(channelName);
+	// 	this.chatChannel.on(
+	// 		'postgres_changes',
+	// 		{
+	// 			event: 'INSERT',
+	// 			schema: 'public',
+	// 			table: 'marketplace_trade_chat',
+	// 			filter: `trade_id=eq.${tradeId}`
+	// 		},
+	// 		(payload: { new: Record<string, unknown> }) => {
+	// 			const message = payload.new as MarketplaceTradeChatMessage;
+	// 			const messages = this.tradeChatMessages.get(tradeId) || [];
+	// 			this.tradeChatMessages.set(tradeId, [...messages, message]);
+	// 		}
+	// 	);
 
-		await supabaseRealtimeManager.subscribeChannel(channelName);
-	}
+	// 	await supabaseRealtimeManager.subscribeChannel(channelName);
+	// }
 
 	// Handlers
 	private handleNewListing(payload: { new: Record<string, unknown> }) {
-		const newListing = payload.new as MarketplaceListing;
-		// Add to listings if not already present
-		if (!this.listings.find((l) => l.id === newListing.id)) {
+		const newListing = payload.new as unknown as MarketplaceListing;
+		// Add to listings if not already present and not created by current user
+		if (
+			!this.listings.find((l) => l.id === newListing.id) &&
+			newListing.creator_id !== this.userId
+		) {
 			this.listings = [newListing, ...this.listings];
 			this.stats.active_listings++;
+
+			// Show toast notification
+			toaster.info(`Nouvelle annonce: ${newListing.title}`);
 		}
+		// Invalidate cache to force refetch on next navigation
+		this.invalidateCache('listings');
 	}
 
 	private handleListingUpdate(payload: { new: Record<string, unknown> }) {
-		const updated = payload.new as MarketplaceListing;
+		const updated = payload.new as unknown as MarketplaceListing;
 		this.listings = this.listings.map((l) => (l.id === updated.id ? updated : l));
 		this.myListings = this.myListings.map((l) => (l.id === updated.id ? updated : l));
 
@@ -238,6 +324,10 @@ class MarketplaceStore {
 		if (this.selectedListing?.id === updated.id) {
 			this.selectedListing = updated;
 		}
+
+		// Invalidate caches
+		this.invalidateCache('listings');
+		this.invalidateCache('myListings');
 	}
 
 	private handleListingDelete(payload: { old: Record<string, unknown> }) {
@@ -251,11 +341,20 @@ class MarketplaceStore {
 	}
 
 	private handleTradeUpdate(payload: { new: Record<string, unknown> }) {
-		const trade = payload.new as MarketplaceTrade;
+		const trade = payload.new as unknown as MarketplaceTrade;
 		const existing = this.activeTrades.find((t) => t.id === trade.id);
 
 		if (existing) {
 			this.activeTrades = this.activeTrades.map((t) => (t.id === trade.id ? trade : t));
+
+			// Show toast if status changed
+			if (existing.status !== trade.status) {
+				if (trade.status === 'completed') {
+					toaster.success('Échange terminé!');
+				} else if (trade.status === 'cancelled') {
+					toaster.info('Échange annulé');
+				}
+			}
 		} else {
 			this.activeTrades = [...this.activeTrades, trade];
 		}
@@ -267,16 +366,28 @@ class MarketplaceStore {
 		if (this.selectedTrade?.id === trade.id) {
 			this.selectedTrade = trade;
 		}
+
+		// Invalidate cache
+		this.invalidateCache('trades');
 	}
 
 	private handleProposalUpdate(payload: { new: Record<string, unknown> }) {
-		const proposal = payload.new as MarketplaceProposal;
+		const proposal = payload.new as unknown as MarketplaceProposal;
 
 		// Update my proposals
 		if (proposal.proposer_id === this.userId) {
 			const existing = this.myProposals.find((p) => p.id === proposal.id);
 			if (existing) {
 				this.myProposals = this.myProposals.map((p) => (p.id === proposal.id ? proposal : p));
+
+				// Show toast if status changed
+				if (existing.status !== proposal.status) {
+					if (proposal.status === 'accepted') {
+						toaster.success('Votre proposition a été acceptée!');
+					} else if (proposal.status === 'rejected') {
+						toaster.warning('Votre proposition a été refusée');
+					}
+				}
 			} else {
 				this.myProposals = [...this.myProposals, proposal];
 			}
@@ -284,6 +395,9 @@ class MarketplaceStore {
 
 		// Update pending counts
 		this.updatePendingCounts();
+
+		// Invalidate cache
+		this.invalidateCache('proposals');
 	}
 
 	// Update pending action counts
@@ -315,7 +429,7 @@ class MarketplaceStore {
 				this.config = await response.json();
 			}
 		} catch (_error) {
-			console.error('Failed to fetch marketplace config:', error);
+			console.error('Failed to fetch marketplace config:', _error);
 		} finally {
 			this.isLoading.config = false;
 		}
@@ -334,19 +448,35 @@ class MarketplaceStore {
 	}
 
 	// Fetch listings with filters
-	async fetchListings(loadMore = false) {
+	async fetchListings(force = false, loadMore = false) {
 		if (!this.supabase) return;
+
+		// Check cache unless forced or loading more
+		if (!force && !loadMore && !this.shouldRefetch('listings')) {
+			return; // Use cached data
+		}
 
 		this.isLoading.listings = true;
 		this.errors.listings = null;
 
 		try {
 			const page = loadMore ? this.pagination.listings.page + 1 : 1;
-			const params = new URLSearchParams({
-				...this.filters,
-				page: page.toString(),
-				limit: this.pagination.listings.limit.toString()
-			});
+			const params = new URLSearchParams();
+			if (this.filters.type && this.filters.type !== 'all')
+				params.append('type', this.filters.type);
+			if (this.filters.search) params.append('search', this.filters.search);
+			if (this.filters.min_gidouilles !== undefined) {
+				params.append('min_gidouilles', String(this.filters.min_gidouilles));
+			}
+			if (this.filters.max_gidouilles !== undefined) {
+				params.append('max_gidouilles', String(this.filters.max_gidouilles));
+			}
+			if (this.filters.card_template_id) {
+				params.append('card_template_id', this.filters.card_template_id);
+			}
+			if (this.filters.sort_by) params.append('sort_by', this.filters.sort_by);
+			params.append('page', page.toString());
+			params.append('limit', this.pagination.listings.limit.toString());
 
 			const response = await fetch(`/api/marketplace/listings?${params}`);
 			if (response.ok) {
@@ -362,11 +492,14 @@ class MarketplaceStore {
 				this.pagination.listings.hasMore = data.hasMore;
 				this.stats.total_listings = data.total;
 				this.stats.active_listings = data.active;
+
+				// Update cache timestamp
+				this.lastFetch.listings = Date.now();
 			} else {
 				throw new Error('Failed to fetch listings');
 			}
 		} catch (_error) {
-			this.errors.listings = error instanceof Error ? error.message : 'Failed to fetch listings';
+			this.errors.listings = _error instanceof Error ? _error.message : 'Failed to fetch listings';
 			toaster.error('Erreur lors du chargement des annonces');
 		} finally {
 			this.isLoading.listings = false;
@@ -392,7 +525,7 @@ class MarketplaceStore {
 				await this.fetchReceivedProposals();
 			}
 		} catch (_error) {
-			console.error('Failed to fetch my listings:', error);
+			console.error('Failed to fetch my listings:', _error);
 		} finally {
 			this.isLoading.myListings = false;
 		}
@@ -412,7 +545,7 @@ class MarketplaceStore {
 				this.updatePendingCounts();
 			}
 		} catch (_error) {
-			console.error('Failed to fetch received proposals:', error);
+			console.error('Failed to fetch received proposals:', _error);
 		}
 	}
 
@@ -432,7 +565,7 @@ class MarketplaceStore {
 				this.updatePendingCounts();
 			}
 		} catch (_error) {
-			console.error('Failed to fetch my proposals:', error);
+			console.error('Failed to fetch my proposals:', _error);
 		} finally {
 			this.isLoading.proposals = false;
 		}
@@ -456,7 +589,7 @@ class MarketplaceStore {
 			}
 		} catch (_error) {
 			this.errors.trades = 'Failed to fetch trades';
-			console.error('Failed to fetch trades:', error);
+			console.error('Failed to fetch trades:', _error);
 		} finally {
 			this.isLoading.trades = false;
 		}
@@ -476,7 +609,7 @@ class MarketplaceStore {
 				this.myVipCards = await response.json();
 			}
 		} catch (_error) {
-			console.error('Failed to fetch VIP cards:', error);
+			console.error('Failed to fetch VIP cards:', _error);
 		} finally {
 			this.isLoading.cards = false;
 		}
@@ -497,7 +630,7 @@ class MarketplaceStore {
 				this.userGidouilles = data.gidouilles || 0;
 			}
 		} catch (_error) {
-			console.error('Failed to fetch user gidouilles:', error);
+			console.error('Failed to fetch user gidouilles:', _error);
 		}
 	}
 
@@ -512,6 +645,33 @@ class MarketplaceStore {
 			return false;
 		}
 
+		// Create optimistic listing
+		const tempId = crypto.randomUUID();
+		const optimisticListing: MarketplaceListing = {
+			id: tempId,
+			creator_id: this.userId,
+			listing_type: validation.data.listing_type,
+			title: validation.data.title,
+			description: validation.data.description || null,
+			offered_card_ids: validation.data.offered_card_ids || null,
+			offered_gidouilles: validation.data.offered_gidouilles || null,
+			wanted_card_template_ids: validation.data.wanted_card_template_ids || null,
+			wanted_gidouilles: validation.data.wanted_gidouilles || null,
+			status: 'active',
+			proposal_count: 0,
+			max_proposals: null,
+			view_count: null,
+			created_at: new Date().toISOString(),
+			expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days default
+			cancelled_at: null,
+			completed_at: null,
+			school_id: '' // Will be set by server
+		};
+
+		// Optimistic UI update
+		this.myListings = [optimisticListing, ...this.myListings];
+		this.stats.my_active_listings++;
+
 		try {
 			const response = await fetch('/api/marketplace/listings', {
 				method: 'POST',
@@ -521,16 +681,31 @@ class MarketplaceStore {
 
 			if (response.ok) {
 				const newListing = await response.json();
-				this.myListings = [newListing, ...this.myListings];
-				this.stats.my_active_listings++;
+
+				// Replace optimistic with real listing
+				this.myListings = this.myListings.map((l) => (l.id === tempId ? newListing : l));
+
 				toaster.success('Annonce créée avec succès');
+
+				// Invalidate cache
+				this.invalidateCache('myListings');
+				this.invalidateCache('listings');
+
 				return true;
 			} else {
+				// Rollback on error
+				this.myListings = this.myListings.filter((l) => l.id !== tempId);
+				this.stats.my_active_listings--;
+
 				const error = await response.text();
 				toaster.error(error || "Erreur lors de la création de l'annonce");
 				return false;
 			}
 		} catch (_error) {
+			// Rollback on error
+			this.myListings = this.myListings.filter((l) => l.id !== tempId);
+			this.stats.my_active_listings--;
+
 			toaster.error("Erreur lors de la création de l'annonce");
 			return false;
 		}
@@ -708,11 +883,10 @@ class MarketplaceStore {
 		// Validate data with Zod (adding trade_id)
 		const validationData = {
 			trade_id: tradeId,
-			initiator_cards: offer.initiator_cards || [],
+			initiator_cards: offer.initiator_card_ids || [],
 			initiator_gidouilles: offer.initiator_gidouilles || 0,
-			partner_cards: offer.partner_cards || [],
-			partner_gidouilles: offer.partner_gidouilles || 0,
-			message: offer.message
+			partner_cards: offer.partner_card_ids || [],
+			partner_gidouilles: offer.partner_gidouilles || 0
 		};
 		const validation = createOfferSchema.safeParse(validationData);
 		if (!validation.success) {
@@ -794,50 +968,51 @@ class MarketplaceStore {
 		}
 	}
 
+	// TODO Phase 6: Implement trade chat feature
 	// Fetch trade chat messages
-	async fetchTradeChatMessages(tradeId: string) {
-		try {
-			const response = await fetch(`/api/marketplace/trades/${tradeId}/chat`);
-			if (response.ok) {
-				const messages = await response.json();
-				this.tradeChatMessages.set(tradeId, messages);
-			}
-		} catch (_error) {
-			console.error('Failed to fetch trade chat messages:', error);
-		}
-	}
+	// async fetchTradeChatMessages(tradeId: string) {
+	// 	try {
+	// 		const response = await fetch(`/api/marketplace/trades/${tradeId}/chat`);
+	// 		if (response.ok) {
+	// 			const messages = await response.json();
+	// 			this.tradeChatMessages.set(tradeId, messages);
+	// 		}
+	// 	} catch (_error) {
+	// 		console.error('Failed to fetch trade chat messages:', _error);
+	// 	}
+	// }
 
-	// Send trade chat message
-	async sendTradeChatMessage(tradeId: string, message: string): Promise<boolean> {
-		// Validate data with Zod
-		const validation = chatMessageSchema.safeParse({
-			trade_id: tradeId,
-			message
-		});
-		if (!validation.success) {
-			toaster.error(validation.error.issues[0].message);
-			return false;
-		}
+	// // Send trade chat message
+	// async sendTradeChatMessage(tradeId: string, message: string): Promise<boolean> {
+	// 	// Validate data with Zod
+	// 	const validation = chatMessageSchema.safeParse({
+	// 		trade_id: tradeId,
+	// 		message
+	// 	});
+	// 	if (!validation.success) {
+	// 		toaster.error(validation.error.issues[0].message);
+	// 		return false;
+	// 	}
 
-		try {
-			const response = await fetch(`/api/marketplace/trades/${tradeId}/chat`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(validation.data)
-			});
+	// 	try {
+	// 		const response = await fetch(`/api/marketplace/trades/${tradeId}/chat`, {
+	// 			method: 'POST',
+	// 			headers: { 'Content-Type': 'application/json' },
+	// 			body: JSON.stringify(validation.data)
+	// 		});
 
-			if (response.ok) {
-				// Message will be added via realtime
-				return true;
-			} else {
-				toaster.error("Erreur lors de l'envoi du message");
-				return false;
-			}
-		} catch (_error) {
-			toaster.error("Erreur lors de l'envoi du message");
-			return false;
-		}
-	}
+	// 		if (response.ok) {
+	// 			// Message will be added via realtime
+	// 			return true;
+	// 		} else {
+	// 			toaster.error("Erreur lors de l'envoi du message");
+	// 			return false;
+	// 		}
+	// 	} catch (_error) {
+	// 		toaster.error("Erreur lors de l'envoi du message");
+	// 		return false;
+	// 	}
+	// }
 
 	// Set filters
 	setFilters(newFilters: Partial<ListingsFilter>) {
@@ -853,26 +1028,16 @@ class MarketplaceStore {
 	// Select trade for negotiation
 	async selectTrade(trade: MarketplaceTrade | null) {
 		this.selectedTrade = trade;
-		if (trade) {
-			await this.subscribeToTradeChat(trade.id);
-			await this.fetchTradeChatMessages(trade.id);
-		}
+		// TODO Phase 6: Uncomment when trade chat is implemented
+		// if (trade) {
+		// 	await this.subscribeToTradeChat(trade.id);
+		// 	await this.fetchTradeChatMessages(trade.id);
+		// }
 	}
 
 	// Cleanup
-	cleanup() {
-		if (this.listingsChannel) {
-			supabaseRealtimeManager.unsubscribeChannel('marketplace-listings');
-		}
-		if (this.tradesChannel) {
-			supabaseRealtimeManager.unsubscribeChannel(`marketplace-trades-${this.userId}`);
-		}
-		if (this.proposalsChannel) {
-			supabaseRealtimeManager.unsubscribeChannel(`marketplace-proposals-${this.userId}`);
-		}
-		if (this.chatChannel) {
-			supabaseRealtimeManager.unsubscribeChannel(this.chatChannel.topic);
-		}
+	async cleanup() {
+		await this.cleanupRealtime();
 
 		// Reset state
 		this.listings = [];
@@ -883,6 +1048,9 @@ class MarketplaceStore {
 		this.selectedListing = null;
 		this.selectedTrade = null;
 		this.tradeChatMessages.clear();
+
+		// Reset cache timestamps
+		this.invalidateAllCaches();
 	}
 }
 

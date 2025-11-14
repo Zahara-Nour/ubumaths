@@ -57,9 +57,16 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	if (selectedClassId) statsUrl.searchParams.set('class_id', selectedClassId);
 	statsUrl.searchParams.set('period', period);
 
+	// Get the session to pass auth headers
+	const {
+		data: { session }
+	} = await supabase.auth.getSession();
+
 	const statsResponse = await fetch(statsUrl, {
 		headers: {
-			cookie: `sb-access-token=${await locals.session?.access_token}; sb-refresh-token=${await locals.session?.refresh_token}`
+			cookie: session
+				? `sb-access-token=${session.access_token}; sb-refresh-token=${session.refresh_token}`
+				: ''
 		}
 	});
 
@@ -76,7 +83,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	const activityResponse = await fetch(activityUrl, {
 		headers: {
-			cookie: `sb-access-token=${await locals.session?.access_token}; sb-refresh-token=${await locals.session?.refresh_token}`
+			cookie: session
+				? `sb-access-token=${session.access_token}; sb-refresh-token=${session.refresh_token}`
+				: ''
 		}
 	});
 

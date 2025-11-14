@@ -2,7 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import { acceptTradeSchema } from '$lib/server/marketplace/validation';
-import { createMarketplaceNotification } from '$lib/server/marketplace/helpers';
+import { notifyTradeCompleted } from '$lib/server/marketplace/notifications';
 // TODO: Implement cache invalidation
 // import {
 //   invalidateMarketplaceCaches,
@@ -119,13 +119,35 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		throw error(500, "Erreur lors de l'exécution de l'échange");
 	}
 
-	// Create notification for the other participant
-	const otherParticipantId = isInitiator ? trade.partner_id : trade.initiator_id;
+	// Notify both participants of completion
+	// Get both participants' names
+	const { data: initiatorProfile } = await supabase
+		.from('profiles')
+		.select('username, firstname, lastname')
+		.eq('id', trade.initiator_id)
+		.single();
 
-	await createMarketplaceNotification(supabase, otherParticipantId, 'trade_completed', {
-		trade_id: trade_id,
-		accepted_by: userId
-	});
+	const { data: partnerProfile } = await supabase
+		.from('profiles')
+		.select('username, firstname, lastname')
+		.eq('id', trade.partner_id)
+		.single();
+
+	const initiatorName = initiatorProfile
+		? initiatorProfile.username ||
+			`${initiatorProfile.firstname || ''} ${initiatorProfile.lastname || ''}`.trim() ||
+			'Un élève'
+		: 'Un élève';
+
+	const partnerName = partnerProfile
+		? partnerProfile.username ||
+			`${partnerProfile.firstname || ''} ${partnerProfile.lastname || ''}`.trim() ||
+			'Un élève'
+		: 'Un élève';
+
+	// Notify both participants
+	await notifyTradeCompleted(supabase, trade.initiator_id, partnerName, trade_id);
+	await notifyTradeCompleted(supabase, trade.partner_id, initiatorName, trade_id);
 
 	// Invalidate caches for both participants
 	// TODO: Implement cache invalidation

@@ -2,10 +2,11 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import { updateProposalSchema } from '$lib/server/marketplace/validation';
+import { unlockCardsForEntity } from '$lib/server/marketplace/helpers';
 import {
-	unlockCardsForEntity,
-	createMarketplaceNotification
-} from '$lib/server/marketplace/helpers';
+	notifyProposalAccepted,
+	notifyProposalRejected
+} from '$lib/server/marketplace/notifications';
 // TODO: Implement cache invalidation
 // import {
 //   invalidateMarketplaceCaches,
@@ -176,25 +177,17 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				await unlockCardsForEntity(supabase, otherProposal.id);
 
 				// Notify them
-				await createMarketplaceNotification(
+				await notifyProposalRejected(
 					supabase,
 					otherProposal.proposer_id,
-					'proposal_rejected',
-					{
-						listing_id: listing.id,
-						listing_title: listing.title,
-						reason: 'completed'
-					}
+					listing.title,
+					"L'annonce a été complétée avec une autre proposition"
 				);
 			}
 		}
 
 		// Create notification for accepted proposer
-		await createMarketplaceNotification(supabase, proposal.proposer_id, 'proposal_accepted', {
-			listing_id: listing.id,
-			listing_title: listing.title,
-			trade_id: trade.id
-		});
+		await notifyProposalAccepted(supabase, proposal.proposer_id, listing.title, trade.id);
 
 		// Invalidate caches for both participants
 		// TODO: Implement cache invalidation
@@ -232,11 +225,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			.eq('id', listing.id);
 
 		// Create notification for proposer
-		await createMarketplaceNotification(supabase, proposal.proposer_id, 'proposal_rejected', {
-			listing_id: listing.id,
-			listing_title: listing.title,
-			message: response_message
-		});
+		await notifyProposalRejected(supabase, proposal.proposer_id, listing.title, response_message);
 
 		return json({
 			...proposal,

@@ -7,9 +7,9 @@ import {
 	checkCardsUnused,
 	lockCardsForEntity,
 	isMarketplaceEnabled,
-	createMarketplaceNotification,
 	getStudentGidouilles
 } from '$lib/server/marketplace/helpers';
+import { notifyNewProposal } from '$lib/server/marketplace/notifications';
 import { z } from 'zod';
 
 // ID validation schema
@@ -222,11 +222,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		.eq('id', listingId);
 
 	// Create notification for listing creator
-	await createMarketplaceNotification(supabase, listing.creator_id, 'proposal_received', {
-		listing_id: listingId,
-		proposal_id: proposal.id,
-		listing_title: listing.title
-	});
+	await notifyNewProposal(supabase, listing.creator_id, userId, listing.title, proposal.id);
 
 	return json(proposal, { status: 201 });
 };

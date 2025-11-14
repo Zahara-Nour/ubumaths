@@ -233,11 +233,19 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.in('id', mostTradedCardIds);
 
 		// Use Map for O(1) lookups instead of O(n) find operations
+		// Note: Supabase returns joined relations as arrays, so we extract the first element
 		const cardMap = new Map(
-			cards?.map((c) => [
-				c.id,
-				c as { id: string; template_id: string; template: { name: string } }
-			]) || []
+			cards?.map((c) => {
+				const template = Array.isArray(c.template) ? c.template[0] : c.template;
+				return [
+					c.id,
+					{
+						id: c.id as string,
+						template_id: c.template_id as string,
+						template: template as { name: string }
+					}
+				];
+			}) || []
 		);
 
 		mostTradedCards = mostTradedCardIds.map((cardId) => {
