@@ -4,106 +4,10 @@
 -- Tables: google_integrations, google_classroom_courses, class_google_classroom_links,
 --         coursework_categories, google_classroom_coursework, coursework_materials,
 --         shared_coursework, shared_coursework_students
-
--- ============================================================================
--- ENCRYPTION HELPER FUNCTIONS
--- ============================================================================
--- pgcrypto extension is already enabled in 001_initial_schema.sql
-
--- Function to encrypt sensitive data (OAuth tokens)
-CREATE OR REPLACE FUNCTION public.encrypt_token(token TEXT)
-RETURNS TEXT
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE
-    encryption_key TEXT;
-BEGIN
-    -- In production, this should be stored in Supabase secrets (vault)
-    -- For now, we use a placeholder that should be replaced via environment variable
-    encryption_key := current_setting('app.encryption_key', true);
-
-    IF encryption_key IS NULL OR encryption_key = '' THEN
-        RAISE EXCEPTION 'Encryption key not configured. Set app.encryption_key in database settings.';
-    END IF;
-
-    RETURN encode(
-        pgp_sym_encrypt(token, encryption_key),
-        'base64'
-    );
-END;
-$$;
-
--- Function to decrypt sensitive data (OAuth tokens)
-CREATE OR REPLACE FUNCTION public.decrypt_token(encrypted_token TEXT)
-RETURNS TEXT
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE
-    encryption_key TEXT;
-BEGIN
-    IF encrypted_token IS NULL THEN
-        RETURN NULL;
-    END IF;
-
-    encryption_key := current_setting('app.encryption_key', true);
-
-    IF encryption_key IS NULL OR encryption_key = '' THEN
-        RAISE EXCEPTION 'Encryption key not configured. Set app.encryption_key in database settings.';
-    END IF;
-
-    RETURN pgp_sym_decrypt(
-        decode(encrypted_token, 'base64'),
-        encryption_key
-    );
-EXCEPTION
-    WHEN OTHERS THEN
-        RAISE EXCEPTION 'Failed to decrypt token: %', SQLERRM;
-END;
-$$;
-
-COMMENT ON FUNCTION public.encrypt_token IS 'Encrypts OAuth tokens using pgcrypto';
-COMMENT ON FUNCTION public.decrypt_token IS 'Decrypts OAuth tokens using pgcrypto';
-
--- ============================================================================
--- ENCRYPTION KEY VALIDATION
--- ============================================================================
-DO $$
-DECLARE
-    key_value TEXT;
-BEGIN
-    key_value := current_setting('app.encryption_key', true);
-
-    IF key_value IS NULL OR key_value = '' THEN
-        RAISE WARNING '';
-        RAISE WARNING '================================================================';
-        RAISE WARNING 'CRITICAL: Encryption key not configured!';
-        RAISE WARNING '================================================================';
-        RAISE WARNING 'The Google Classroom integration requires an encryption key';
-        RAISE WARNING 'to securely store OAuth tokens.';
-        RAISE WARNING '';
-        RAISE WARNING 'To set up encryption, run ONE of these commands:';
-        RAISE WARNING '';
-        RAISE WARNING '1. Via psql (recommended for production):';
-        RAISE WARNING '   ALTER DATABASE postgres SET app.encryption_key TO ''your-key'';';
-        RAISE WARNING '';
-        RAISE WARNING '2. Generate a secure key first:';
-        RAISE WARNING '   openssl rand -base64 32';
-        RAISE WARNING '';
-        RAISE WARNING 'After setting the key, reload the database configuration:';
-        RAISE WARNING '   SELECT pg_reload_conf();';
-        RAISE WARNING '';
-        RAISE WARNING 'Until the key is set, OAuth integration will fail with:';
-        RAISE WARNING '   "Encryption key not configured"';
-        RAISE WARNING '================================================================';
-        RAISE WARNING '';
-    ELSE
-        RAISE NOTICE '✓ Encryption key is configured';
-    END IF;
-END $$;
+--
+-- NOTE: Token encryption is handled server-side (Node.js) using AES-256-GCM.
+--       The database stores pre-encrypted tokens as TEXT.
+--       See: src/lib/server/google/encryption.ts
 
 -- ============================================================================
 -- TABLE: google_integrations
@@ -112,8 +16,8 @@ END $$;
 CREATE TABLE IF NOT EXISTS public.google_integrations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     teacher_id UUID NOT NULL UNIQUE REFERENCES public.profiles(id) ON DELETE CASCADE,
-    access_token TEXT NOT NULL, -- Encrypted OAuth access token
-    refresh_token TEXT NOT NULL, -- Encrypted OAuth refresh token
+    access_token TEXT NOT NULL, -- Encrypted OAuth access token (encrypted by Node.js)
+    refresh_token TEXT NOT NULL, -- Encrypted OAuth refresh token (encrypted by Node.js)
     token_expiry TIMESTAMPTZ NOT NULL, -- When access_token expires
     scopes TEXT[] NOT NULL DEFAULT '{}', -- OAuth scopes granted
     google_email TEXT NOT NULL, -- Email of linked Google account
@@ -129,8 +33,8 @@ CREATE TABLE IF NOT EXISTS public.google_integrations (
 -- Add comments for documentation
 COMMENT ON TABLE public.google_integrations IS 'Stores encrypted OAuth tokens for teacher Google account integration';
 COMMENT ON COLUMN public.google_integrations.teacher_id IS 'Teacher who linked their Google account (UNIQUE - one integration per teacher)';
-COMMENT ON COLUMN public.google_integrations.access_token IS 'Encrypted Google OAuth access token (short-lived, ~1 hour)';
-COMMENT ON COLUMN public.google_integrations.refresh_token IS 'Encrypted Google OAuth refresh token (long-lived, used to get new access tokens)';
+COMMENT ON COLUMN public.google_integrations.access_token IS 'Encrypted Google OAuth access token (short-lived, ~1 hour, encrypted by Node.js AES-256-GCM)';
+COMMENT ON COLUMN public.google_integrations.refresh_token IS 'Encrypted Google OAuth refresh token (long-lived, encrypted by Node.js AES-256-GCM)';
 COMMENT ON COLUMN public.google_integrations.token_expiry IS 'Timestamp when access_token expires and needs refresh';
 COMMENT ON COLUMN public.google_integrations.scopes IS 'Array of OAuth scopes granted (e.g., classroom.courses.readonly)';
 COMMENT ON COLUMN public.google_integrations.google_email IS 'Email address of the linked Google account';
@@ -989,10 +893,6 @@ GRANT INSERT, UPDATE, DELETE ON public.coursework_materials TO authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.shared_coursework TO authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.shared_coursework_students TO authenticated;
 
--- Grant EXECUTE on encryption functions (SECURITY DEFINER already restricts access)
-GRANT EXECUTE ON FUNCTION public.encrypt_token TO authenticated;
-GRANT EXECUTE ON FUNCTION public.decrypt_token TO authenticated;
-
 -- ============================================================================
 -- VERIFICATION
 -- ============================================================================
@@ -1002,7 +902,7 @@ BEGIN
     RAISE NOTICE 'Migration completed: Google Classroom Integration';
     RAISE NOTICE '===============================================';
     RAISE NOTICE 'Tables created: 8';
-    RAISE NOTICE '  - google_integrations (OAuth tokens, encrypted)';
+    RAISE NOTICE '  - google_integrations (OAuth tokens, encrypted by Node.js)';
     RAISE NOTICE '  - google_classroom_courses (synced courses)';
     RAISE NOTICE '  - class_google_classroom_links (class associations)';
     RAISE NOTICE '  - coursework_categories (teacher-defined organization)';
@@ -1014,15 +914,18 @@ BEGIN
     RAISE NOTICE 'RLS Policies: 28 total (covering all CRUD operations)';
     RAISE NOTICE 'Indexes: 20 performance indexes';
     RAISE NOTICE 'Triggers: 5 updated_at triggers';
-    RAISE NOTICE 'Functions: 3 (encrypt_token, decrypt_token, initialize_default_categories)';
+    RAISE NOTICE 'Functions: 1 (initialize_default_categories)';
     RAISE NOTICE 'Views: 1 (student_coursework_view)';
     RAISE NOTICE '';
-    RAISE NOTICE 'IMPORTANT: Set encryption key in Supabase settings:';
-    RAISE NOTICE '  ALTER DATABASE postgres SET app.encryption_key TO ''your-secret-key-here'';';
+    RAISE NOTICE 'ENCRYPTION: Handled server-side by Node.js (AES-256-GCM)';
+    RAISE NOTICE 'See: src/lib/server/google/encryption.ts';
+    RAISE NOTICE 'Encryption key must be set in .env.local:';
+    RAISE NOTICE '  GOOGLE_TOKEN_ENCRYPTION_KEY="<base64 key>"';
     RAISE NOTICE '';
     RAISE NOTICE 'Next steps:';
-    RAISE NOTICE '  1. Run: pnpm db:migrate';
-    RAISE NOTICE '  2. Update: src/lib/types/database.ts';
-    RAISE NOTICE '  3. Create: docs/architecture/google-classroom-schema.md';
+    RAISE NOTICE '  1. Generate encryption key: node -e "console.log(require(''crypto'').randomBytes(32).toString(''base64''))"';
+    RAISE NOTICE '  2. Add to .env.local: GOOGLE_TOKEN_ENCRYPTION_KEY="<key>"';
+    RAISE NOTICE '  3. Run: pnpm db:types (to regenerate TypeScript types)';
+    RAISE NOTICE '  4. Configure Google Cloud OAuth credentials';
     RAISE NOTICE '===============================================';
 END $$;
