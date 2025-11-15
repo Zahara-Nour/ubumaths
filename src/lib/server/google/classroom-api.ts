@@ -16,13 +16,21 @@ import type {
 	GoogleCoursework,
 	GoogleMaterial,
 	GoogleCourseList,
-	GoogleCourseworkList
+	GoogleCourseworkList,
+	GoogleTopic,
+	GoogleTopicList,
+	GoogleCourseWorkMaterial,
+	GoogleCourseWorkMaterialList
 } from '$lib/types/google';
 import {
 	googleCourseSchema,
 	googleCourseListSchema,
 	googleCourseworkSchema,
 	googleCourseworkListSchema,
+	googleTopicSchema,
+	googleTopicListSchema,
+	googleCourseWorkMaterialSchema,
+	googleCourseWorkMaterialListSchema,
 	googleAPIErrorSchema
 } from './schemas';
 import {
@@ -477,5 +485,97 @@ export class GoogleClassroomClient {
 		}
 
 		return result;
+	}
+
+	/**
+	 * List all topics for a course
+	 *
+	 * @param courseId - The Google Classroom course ID
+	 * @returns List of topics
+	 *
+	 * @example
+	 * ```typescript
+	 * const { topic } = await client.listTopics('123456');
+	 * topic?.forEach(t => console.log(t.name));
+	 * ```
+	 */
+	async listTopics(courseId: string): Promise<GoogleTopicList> {
+		if (!courseId) {
+			throw new Error('Course ID is required');
+		}
+
+		const endpoint = `/courses/${courseId}/topics`;
+		const data = await this.request<GoogleTopicList>(endpoint);
+
+		// Validate response
+		const validation = googleTopicListSchema.safeParse(data);
+		if (!validation.success) {
+			throw new GoogleAPIError(
+				`Invalid topic list response: ${validation.error.message}`,
+				0,
+				'VALIDATION_ERROR'
+			);
+		}
+
+		return validation.data;
+	}
+
+	/**
+	 * List course work materials (non-graded educational content)
+	 *
+	 * @param courseId - The Google Classroom course ID
+	 * @param options - Optional filters (courseWorkStates, pageSize, pageToken, orderBy)
+	 * @returns List of course work materials
+	 *
+	 * @example
+	 * ```typescript
+	 * const { courseWorkMaterial } = await client.listCourseWorkMaterials('123456', {
+	 *   pageSize: 50,
+	 *   courseWorkStates: ['PUBLISHED']
+	 * });
+	 * ```
+	 */
+	async listCourseWorkMaterials(
+		courseId: string,
+		options: ListCourseworkOptions = {}
+	): Promise<GoogleCourseWorkMaterialList> {
+		if (!courseId) {
+			throw new Error('Course ID is required');
+		}
+
+		const params = new URLSearchParams();
+
+		if (options.pageSize) {
+			params.set('pageSize', Math.min(options.pageSize, 100).toString());
+		}
+
+		if (options.pageToken) {
+			params.set('pageToken', options.pageToken);
+		}
+
+		if (options.orderBy) {
+			params.set('orderBy', options.orderBy);
+		}
+
+		if (options.courseWorkStates && options.courseWorkStates.length > 0) {
+			options.courseWorkStates.forEach((state) => {
+				params.append('courseWorkStates', state);
+			});
+		}
+
+		const endpoint = `/courses/${courseId}/courseWorkMaterials${params.toString() ? `?${params.toString()}` : ''}`;
+		const data = await this.request<GoogleCourseWorkMaterialList>(endpoint);
+
+		// Validate response
+		const validation = googleCourseWorkMaterialListSchema.safeParse(data);
+		if (!validation.success) {
+			throw new GoogleAPIError(
+				`Invalid course work material list response: ${validation.error.message}`,
+				0,
+				'VALIDATION_ERROR'
+			);
+		}
+
+		return validation.data;
 	}
 }

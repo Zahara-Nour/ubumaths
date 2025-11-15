@@ -163,6 +163,69 @@ export interface GoogleCourseworkList {
 }
 
 /**
+ * Google Classroom Topic (rubrique/theme for organizing coursework)
+ */
+export interface GoogleTopic {
+	/** Identifier of the course */
+	courseId: string;
+	/** Unique identifier for the topic */
+	topicId: string;
+	/** Name of the topic (max 100 chars) */
+	name: string;
+	/** Update time (ISO 8601 format) */
+	updateTime: string;
+}
+
+/**
+ * List of topics from Google Classroom API
+ */
+export interface GoogleTopicList {
+	/** List of topics */
+	topics?: GoogleTopic[];
+	/** Token for next page of results */
+	nextPageToken?: string;
+}
+
+/**
+ * Google Classroom CourseWorkMaterial (non-graded educational content)
+ * Different from coursework attachments - these are standalone materials
+ */
+export interface GoogleCourseWorkMaterial {
+	/** Unique identifier for the course work material */
+	id: string;
+	/** Identifier of the course */
+	courseId: string;
+	/** Title of the course work material */
+	title: string;
+	/** Optional description */
+	description?: string;
+	/** Additional materials attached */
+	materials?: GoogleMaterial[];
+	/** State of the course work material */
+	state: 'PUBLISHED' | 'DRAFT' | 'DELETED';
+	/** Absolute link to this material in the Classroom web UI */
+	alternateLink: string;
+	/** Timestamp when the material was created */
+	creationTime: string;
+	/** Timestamp when the material was last updated */
+	updateTime: string;
+	/** Scheduled time for material to become published */
+	scheduledTime?: string;
+	/** Topic ID */
+	topicId?: string;
+}
+
+/**
+ * List of course work materials from Google Classroom API
+ */
+export interface GoogleCourseWorkMaterialList {
+	/** List of course work materials */
+	courseWorkMaterial?: GoogleCourseWorkMaterial[];
+	/** Token for next page of results */
+	nextPageToken?: string;
+}
+
+/**
  * Material attached to coursework
  */
 export interface GoogleMaterial {
