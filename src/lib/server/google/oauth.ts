@@ -16,9 +16,11 @@ export const GOOGLE_CLASSROOM_SCOPES = [
 	'openid', // Required to get id_token with user info (sub, email)
 	'email', // Required to get user email
 	'profile', // Required to get user profile info
-	'https://www.googleapis.com/auth/classroom.courses.readonly',
-	'https://www.googleapis.com/auth/classroom.coursework.students.readonly', // View coursework and student submissions (teacher view)
-	'https://www.googleapis.com/auth/drive.readonly'
+	'https://www.googleapis.com/auth/classroom.courses.readonly', // Courses
+	'https://www.googleapis.com/auth/classroom.topics.readonly', // Topics/Rubriques (added 2025-11-15)
+	'https://www.googleapis.com/auth/classroom.coursework.students.readonly', // Graded coursework and submissions
+	'https://www.googleapis.com/auth/classroom.courseworkmaterials.readonly', // Non-graded materials (added 2025-11-15)
+	'https://www.googleapis.com/auth/drive.readonly' // Drive files
 ] as const;
 
 /**
