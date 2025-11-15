@@ -134,7 +134,7 @@
 	// ============================================================================
 
 	onMount(() => {
-		console.log('[Google Courses] Page loaded with', courses.length, 'courses');
+		// Page initialized with SSR data
 	});
 
 	// ============================================================================
@@ -515,6 +515,7 @@
 								variant="ghost"
 								size="sm"
 								class="shrink-0"
+								aria-label="Ouvrir {course.name} dans Google Classroom"
 							>
 								<ExternalLink class="h-4 w-4" />
 							</Button>
@@ -588,6 +589,7 @@
 													variant="ghost"
 													size="sm"
 													class="shrink-0"
+													aria-label="Ouvrir {work.title} dans Google Classroom"
 												>
 													<ExternalLink class="h-4 w-4" />
 												</Button>
@@ -626,12 +628,22 @@
 															{sharedClass.className}
 														</Badge>
 													{/each}
-													<Button variant="outline" size="sm">Gérer</Button>
+													<Button
+														variant="outline"
+														size="sm"
+														disabled
+														title="Fonctionnalité à venir (Phase 3)">Gérer</Button
+													>
 												</div>
 											{:else}
 												<div class="flex items-center gap-2">
 													<span class="text-sm text-muted-foreground">Non partagé</span>
-													<Button variant="outline" size="sm">Partager</Button>
+													<Button
+														variant="outline"
+														size="sm"
+														disabled
+														title="Fonctionnalité à venir (Phase 3)">Partager</Button
+													>
 												</div>
 											{/if}
 										</div>
