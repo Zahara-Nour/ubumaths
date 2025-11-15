@@ -49,6 +49,23 @@
  *       visible: boolean,
  *       categoryName: string | null
  *     }>
+ *   }>,
+ *   topics: Array<{
+ *     id: string,
+ *     googleTopicId: string,
+ *     name: string,
+ *     updateTime: string
+ *   }>,
+ *   materials: Array<{
+ *     id: string,
+ *     googleMaterialId: string,
+ *     title: string,
+ *     description: string | null,
+ *     state: string,
+ *     createdTime: string,
+ *     alternateLink: string,
+ *     topic: { id: string, name: string } | null,
+ *     attachments: Array<{...}>
  *   }>
  * }
  */
@@ -124,10 +141,58 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw error(500, 'Failed to fetch coursework');
 		}
 
+		// Fetch topics for this course
+		const { data: topics, error: topicsError } = await locals.supabase
+			.from('google_classroom_topics')
+			.select('id, google_topic_id, name, update_time')
+			.eq('google_course_id', course.id)
+			.order('name', { ascending: true });
+
+		if (topicsError) {
+			console.error('[Google Course Details] Topics fetch error:', topicsError);
+		}
+
+		// Fetch course work materials
+		const { data: courseWorkMaterials, error: courseWorkMaterialsError } = await locals.supabase
+			.from('google_classroom_materials')
+			.select(
+				`
+				id,
+				google_material_id,
+				title,
+				description,
+				state,
+				created_time,
+				alternate_link,
+				topic_id,
+				google_classroom_topics(id, name),
+				google_classroom_material_attachments(
+					id,
+					drive_file_id,
+					title,
+					alternate_link,
+					thumbnail_url,
+					youtube_url,
+					link_url,
+					form_url
+				)
+			`
+			)
+			.eq('google_course_id', course.id)
+			.eq('state', 'PUBLISHED')
+			.order('created_time', { ascending: false });
+
+		if (courseWorkMaterialsError) {
+			console.error(
+				'[Google Course Details] Course work materials fetch error:',
+				courseWorkMaterialsError
+			);
+		}
+
 		// Optimize: Fetch all materials and sharing data in bulk queries instead of N+1
 		const courseworkIds = (courseworkList || []).map((cw) => cw.id);
 
-		// Fetch ALL materials in one query
+		// Fetch ALL coursework materials in one query
 		const { data: materialsData, error: materialsError } = await locals.supabase
 			.from('coursework_materials')
 			.select('coursework_id')
@@ -231,9 +296,47 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			updatedAt: course.updated_at
 		};
 
+		// Transform topics to camelCase
+		const transformedTopics = (topics || []).map((topic) => ({
+			id: topic.id,
+			googleTopicId: topic.google_topic_id,
+			name: topic.name,
+			updateTime: topic.update_time
+		}));
+
+		// Transform course work materials to camelCase
+		const transformedMaterials = (courseWorkMaterials || []).map((material) => {
+			// Handle nested topic data
+			const topicData = material.google_classroom_topics as unknown as
+				| { id: string; name: string }
+				| { id: string; name: string }[]
+				| null;
+
+			const topic =
+				topicData && !Array.isArray(topicData)
+					? { id: topicData.id, name: topicData.name }
+					: Array.isArray(topicData) && topicData.length > 0
+						? { id: topicData[0].id, name: topicData[0].name }
+						: null;
+
+			return {
+				id: material.id,
+				googleMaterialId: material.google_material_id,
+				title: material.title,
+				description: material.description,
+				state: material.state,
+				createdTime: material.created_time,
+				alternateLink: material.alternate_link,
+				topic,
+				attachments: material.google_classroom_material_attachments || []
+			};
+		});
+
 		return json({
 			course: transformedCourse,
-			coursework: enrichedCoursework
+			coursework: enrichedCoursework,
+			topics: transformedTopics,
+			materials: transformedMaterials
 		});
 	} catch (err) {
 		// Re-throw SvelteKit errors
