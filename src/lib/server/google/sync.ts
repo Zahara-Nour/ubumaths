@@ -185,6 +185,7 @@ export async function syncTeacherCourses(
 						room: course.room || null,
 						enrollment_code: course.enrollmentCode || null,
 						course_state: course.courseState,
+						alternate_link: course.alternateLink || null,
 						last_synced_at: new Date().toISOString(),
 						updated_at: new Date().toISOString()
 					},
@@ -543,6 +544,7 @@ export async function syncSingleCourse(
 				room: course.room || null,
 				enrollment_code: course.enrollmentCode || null,
 				course_state: course.courseState,
+				alternate_link: course.alternateLink || null,
 				last_synced_at: new Date().toISOString(),
 				updated_at: new Date().toISOString()
 			},
