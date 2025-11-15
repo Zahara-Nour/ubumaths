@@ -2514,6 +2514,7 @@ export type Database = {
 			};
 			google_classroom_courses: {
 				Row: {
+					alternate_link: string | null;
 					course_state: string;
 					created_at: string;
 					description_heading: string | null;
@@ -2528,6 +2529,7 @@ export type Database = {
 					updated_at: string;
 				};
 				Insert: {
+					alternate_link?: string | null;
 					course_state?: string;
 					created_at?: string;
 					description_heading?: string | null;
@@ -2542,6 +2544,7 @@ export type Database = {
 					updated_at?: string;
 				};
 				Update: {
+					alternate_link?: string | null;
 					course_state?: string;
 					created_at?: string;
 					description_heading?: string | null;
@@ -2581,6 +2584,7 @@ export type Database = {
 			};
 			google_classroom_coursework: {
 				Row: {
+					alternate_link: string | null;
 					coursework_type: string;
 					created_at: string;
 					created_time: string;
@@ -2599,6 +2603,7 @@ export type Database = {
 					work_type: string;
 				};
 				Insert: {
+					alternate_link?: string | null;
 					coursework_type: string;
 					created_at?: string;
 					created_time: string;
@@ -2617,6 +2622,7 @@ export type Database = {
 					work_type?: string;
 				};
 				Update: {
+					alternate_link?: string | null;
 					coursework_type?: string;
 					created_at?: string;
 					created_time?: string;
@@ -7623,6 +7629,10 @@ export type Database = {
 			};
 			is_riddle_of_the_day: { Args: { p_riddle_id: string }; Returns: boolean };
 			is_student: { Args: never; Returns: boolean };
+			is_teacher_for_shared_coursework: {
+				Args: { p_shared_coursework_id: string };
+				Returns: boolean;
+			};
 			is_teacher_or_admin: { Args: never; Returns: boolean };
 			is_user_restricted: {
 				Args: { p_conversation_id?: string; p_user_id: string };
@@ -8023,73 +8033,3 @@ export const Constants = {
 		}
 	}
 } as const;
-
-// ============================================================================
-// Type Aliases for Common Table Rows
-// ============================================================================
-// These type aliases provide convenient access to table row types without
-// having to use the verbose Tables<'table_name'> syntax everywhere.
-
-// Core tables
-export type Class = Tables<'classes'>;
-export type Profile = Tables<'profiles'>;
-export type School = Tables<'schools'>;
-export type Notification = Tables<'notifications'>;
-// export type NotificationRead = Tables<'notifications_read'>; // Table doesn't exist
-export type Friendship = Tables<'friendships'>;
-
-// Enums (stored as strings in the database, but we define the valid values)
-export type UserRole = Database['public']['Enums']['user_role'];
-export type Gender = 'male' | 'female' | 'other' | 'prefer_not_to_say';
-export type NotificationType = 'info' | 'alert' | 'announcement' | 'reminder';
-export type NotificationPriority = 'normal' | 'important' | 'urgent';
-export type NotificationTargetType = 'all' | 'role' | 'class' | 'users';
-export type SystemEventType =
-	| 'maintenance'
-	| 'new_feature'
-	| 'policy_update'
-	| 'security_alert'
-	| 'performance_issue'
-	| 'assignment_created'
-	| 'resource_added'
-	| 'reward_earned'
-	| 'badge_unlocked'
-	| 'maintenance_scheduled'
-	| 'feature_released'
-	| 'assessment_assigned'
-	| 'assessment_graded';
-export type FriendshipType = 'pending' | 'accepted' | 'blocked';
-
-// Complex types with joins
-export type ClassSchedule = {
-	day_of_week: number;
-	start_time: string;
-	end_time: string;
-	subject?: string;
-	room?: string;
-};
-export type SchoolPeriod = {
-	number: number;
-	name?: string;
-	start_time: string;
-	end_time: string;
-};
-export type WeekConfig = {
-	first_day: number;
-	last_day: number;
-	school_days: number[];
-	weekend_days: number[];
-};
-export type SchoolTimetable = {
-	periods: SchoolPeriod[];
-	week_config?: WeekConfig;
-};
-
-// Friendship with profile information
-export interface FriendshipWithProfile extends Friendship {
-	friend_profile?: Profile;
-	presence?: {
-		is_online: boolean;
-		last_seen: string;
-	};
-}

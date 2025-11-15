@@ -26,6 +26,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { listStudentSharedCourseworkSchema } from '$lib/server/validation';
+import { createClient } from '@supabase/supabase-js';
+import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
+import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 
 /**
  * List all visible coursework shared with student's classes
@@ -190,9 +193,18 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const courseworkIds = (sharedCourseworkList || []).map((item) => item.coursework_id);
 		const sharedByIds = [...new Set((sharedCourseworkList || []).map((item) => item.shared_by))];
 
-		// Fetch ALL courses in one query
-		// Note: googleCourseIds contains UUIDs from coursework.google_course_id (FK to courses.id)
-		const { data: courses, error: coursesError } = await locals.supabase
+		// Create service role client to bypass RLS
+		// SAFE: We already verified user is a student and fetched shared_coursework with RLS
+		// We only fetch courses for coursework IDs that passed RLS checks
+		const supabaseAdmin = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+			auth: {
+				autoRefreshToken: false,
+				persistSession: false
+			}
+		});
+
+		// Fetch courses with service role (bypasses RLS to avoid circular dependency)
+		const { data: courses, error: coursesError } = await supabaseAdmin
 			.from('google_classroom_courses')
 			.select('id, name, google_course_id')
 			.in('id', googleCourseIds);
