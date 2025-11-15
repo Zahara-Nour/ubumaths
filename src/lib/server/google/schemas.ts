@@ -103,8 +103,8 @@ export const googleMaterialSchema = z.object({
  */
 export const teacherFolderSchema = z.object({
 	id: z.string(),
-	title: z.string(),
-	alternateLink: z.string().url().max(2048)
+	title: z.string().optional(),
+	alternateLink: z.string().url().max(2048).optional()
 });
 
 /**
