@@ -78,3 +78,50 @@ export const listStudentSharedCourseworkSchema = paginationSchema.extend({
 	classId: uuidSchema.nullish(),
 	categoryId: uuidSchema.nullish()
 });
+
+// ============================================================================
+// COURSE WORK MATERIAL SHARING SCHEMAS
+// ============================================================================
+
+/**
+ * Schema for material ID parameter validation
+ */
+export const materialIdParamSchema = z.object({
+	id: z.string().uuid('Invalid material ID format')
+});
+
+/**
+ * Schema for sharing course work materials
+ * POST /api/google/materials/[id]/share
+ */
+export const shareMaterialSchema = z.object({
+	classIds: z
+		.array(z.string().uuid())
+		.min(1, 'At least one class must be selected')
+		.max(50, 'Cannot share with more than 50 classes at once'),
+	categoryId: z.string().uuid().nullable().optional(),
+	topicId: z.string().uuid().nullable().optional(),
+	descriptionOverride: z.string().max(5000, 'Description cannot exceed 5000 characters').nullable().optional(),
+	visible: z.boolean().default(true)
+});
+
+/**
+ * Schema for unsharing course work materials
+ * DELETE /api/google/materials/[id]/share
+ */
+export const unshareMaterialSchema = z.object({
+	classIds: z
+		.array(z.string().uuid())
+		.min(1, 'At least one class must be selected')
+		.max(50, 'Cannot share with more than 50 classes at once')
+});
+
+/**
+ * Schema for listing student shared materials
+ * GET /api/student/shared-materials
+ */
+export const listStudentSharedMaterialsSchema = paginationSchema.extend({
+	classId: uuidSchema.optional(),
+	categoryId: uuidSchema.optional(),
+	topicId: uuidSchema.optional()
+});
