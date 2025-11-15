@@ -13,6 +13,9 @@ import type { GoogleOAuthTokenResponse, GoogleTokenInfo } from '$lib/types/googl
  * Google OAuth scopes required for Classroom integration
  */
 export const GOOGLE_CLASSROOM_SCOPES = [
+	'openid', // Required to get id_token with user info (sub, email)
+	'email', // Required to get user email
+	'profile', // Required to get user profile info
 	'https://www.googleapis.com/auth/classroom.courses.readonly',
 	'https://www.googleapis.com/auth/classroom.coursework.me.readonly',
 	'https://www.googleapis.com/auth/drive.readonly'
