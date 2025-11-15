@@ -2,7 +2,7 @@
 
 Documentation complète de la plateforme éducative UbuMaths.
 
-**Dernière mise à jour** : 2025-11-14
+**Dernière mise à jour** : 2025-11-15
 **Statut** : 🟢 Active Development
 
 ---
@@ -292,21 +292,25 @@ Système d'authentification avec Google OAuth + email/password.
 
 - [Architecture système](features/authentication/system.md)
 
-### 📚 Google Classroom Integration
+### 📚 Google Classroom Integration (Materials)
 
-**Status** : 🚧 En cours | [Documentation →](guides/google-classroom-setup.md) 🆕
+**Status** : ✅ Production | [Documentation →](features/google-classroom-materials.md) 🆕 ⭐
 
-Intégration avec Google Classroom pour partager les travaux et devoirs avec les élèves.
+Intégration complète avec Google Classroom pour synchroniser et partager du matériel pédagogique (documents, vidéos, liens) avec les élèves.
 
+- [Guide utilisateur](features/google-classroom-materials.md) - Documentation complète pour enseignants et élèves
+- [Guide technique](development/google-classroom-integration.md) - Architecture et implémentation développeur
 - [Guide de configuration](guides/google-classroom-setup.md) - Setup OAuth, migrations, tests
-- [Schéma base de données](architecture/google-classroom-schema.md) - 8 tables, RLS policies
-- OAuth 2.0 avec PKCE (sécurité renforcée)
-- Chiffrement AES-256-GCM des tokens
-- Synchronisation manuelle des cours et travaux
-- Catégorisation automatique (Cours, Exercices, Corrections, Devoirs, Évaluations)
-- Partage aux élèves avec aperçu et liens externes
-- **2025-11-14** : Phases 1-6 complètes (backend + UI enseignant + UI élève MVP)
-- **TODO** : Phases 7-8 (association classes, interface de partage avancée)
+- [Schéma base de données](architecture/google-classroom-schema.md) - 6 tables, 28 RLS policies, 4 triggers
+- **Features** :
+  - OAuth 2.0 avec PKCE (sécurité renforcée)
+  - Chiffrement AES-256-GCM des tokens
+  - Synchronisation Topics et CourseWorkMaterials (matériaux non-notés)
+  - Organisation hybride : Rubriques Google OU Catégories UbuMaths (par classe)
+  - Partage multi-classes avec visibilité contrôlée
+  - Interface élève avec filtres (classe/catégorie/rubrique) et pagination
+  - Dénormalisation stratégique (course_name, teacher_name) pour optimisation
+- **2025-11-15** : 🎉 Phases 1-7 complètes (76 tests validation 100% pass)
 
 ---
 
@@ -347,20 +351,21 @@ Intégration avec Google Classroom pour partager les travaux et devoirs avec les
 
 ## 🛠️ Développement
 
-| Document                                                       | Description                         |
-| -------------------------------------------------------------- | ----------------------------------- |
-| [Vue d'ensemble](development/README.md)                        | Process de développement            |
-| [Git workflow](development/git-workflow.md)                    | Workflow Git et branches            |
-| [Gestion de versions](development/version-management.md)       | Releases et versioning              |
-| [Migrations DB](development/database-migrations.md)            | Workflow migrations Supabase        |
-| [Style de code](development/code-style.md)                     | Standards et conventions            |
-| [Debugging Guide](development/debugging-guide.md) (OLD)        | ⚠️ Pre-2025-10-30 (Redis cache era) |
-| [Cache Logging Format](development/cache-logging-format.md) 🆕 | Format logs cache standardisé       |
-| [Polling Patterns](development/polling-patterns.md) 🆕         | Guide polling unifié                |
-| [Rate Limiting Redis](development/rate-limiting-redis.md) 🆕   | Migration rate limiting Redis       |
-| [Type Safety Patterns](development/type-safety-patterns.md) 🆕 | Patterns TypeScript sécurisés       |
-| [Migration Svelte 5](development/svelte5-migration.md)         | Guide migration runes               |
-| [MySelect Migration](development/myselect-migration.md)        | Guide migration vers MySelect       |
+| Document                                                                          | Description                            |
+| --------------------------------------------------------------------------------- | -------------------------------------- |
+| [Vue d'ensemble](development/README.md)                                           | Process de développement               |
+| [Git workflow](development/git-workflow.md)                                       | Workflow Git et branches               |
+| [Gestion de versions](development/version-management.md)                          | Releases et versioning                 |
+| [Migrations DB](development/database-migrations.md)                               | Workflow migrations Supabase           |
+| [Style de code](development/code-style.md)                                        | Standards et conventions               |
+| [Google Classroom Integration](development/google-classroom-integration.md) 🆕 ⭐ | Guide technique complet intégration GC |
+| [Debugging Guide](development/debugging-guide.md) (OLD)                           | ⚠️ Pre-2025-10-30 (Redis cache era)    |
+| [Cache Logging Format](development/cache-logging-format.md) 🆕                    | Format logs cache standardisé          |
+| [Polling Patterns](development/polling-patterns.md) 🆕                            | Guide polling unifié                   |
+| [Rate Limiting Redis](development/rate-limiting-redis.md) 🆕                      | Migration rate limiting Redis          |
+| [Type Safety Patterns](development/type-safety-patterns.md) 🆕                    | Patterns TypeScript sécurisés          |
+| [Migration Svelte 5](development/svelte5-migration.md)                            | Guide migration runes                  |
+| [MySelect Migration](development/myselect-migration.md)                           | Guide migration vers MySelect          |
 
 ---
 
@@ -433,8 +438,8 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 ## 📊 Statistiques
 
-- **Features en production** : 16
-- **Features en développement** : 2 (Navadra, Google Classroom Integration) 🆕
+- **Features en production** : 17 🆕 (Google Classroom Materials ajouté)
+- **Features en développement** : 1 (Navadra)
 - **Tests** : 3,583 tests (99.3% pass rate)
   - Unit tests: 2,765/2,789 passing (99.1%) 🆕 (+130 summaries tests)
   - E2E tests: 303 ready to run
@@ -450,8 +455,12 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
   - 6 history tables (gidouilles_history, bonus_history, vip_cards_activity, student_warnings history, daily_summaries, weekly_rewards) 🆕
 - **Automated Jobs** : 1 Vercel cron (daily summaries & weekly rewards at 01:00 UTC) 🆕
 - **Multi-Timezone Support** : 80+ IANA timezones with DST handling 🆕
-- **Lignes de documentation** : ~96,000+ 🆕 (added 1,000+ lines for Google Classroom setup guide)
-- **Dernière mise à jour** : 2025-11-14
+- **Database Tables (Google)** : 6 Google Classroom tables (integrations, courses, topics, materials, attachments, shared_materials) 🆕
+  - 28 RLS policies pour sécurité granulaire
+  - 4 triggers pour dénormalisation automatique (course_name, teacher_name)
+  - Chiffrement AES-256-GCM des tokens OAuth
+- **Lignes de documentation** : ~102,000+ 🆕 (added 6,000+ lines for Google Classroom Materials)
+- **Dernière mise à jour** : 2025-11-15
 
 ---
 
