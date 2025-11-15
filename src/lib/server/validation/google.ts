@@ -101,7 +101,11 @@ export const shareMaterialSchema = z.object({
 		.max(50, 'Cannot share with more than 50 classes at once'),
 	categoryId: z.string().uuid().nullable().optional(),
 	topicId: z.string().uuid().nullable().optional(),
-	descriptionOverride: z.string().max(5000, 'Description cannot exceed 5000 characters').nullable().optional(),
+	descriptionOverride: z
+		.string()
+		.max(5000, 'Description cannot exceed 5000 characters')
+		.nullable()
+		.optional(),
 	visible: z.boolean().default(true)
 });
 

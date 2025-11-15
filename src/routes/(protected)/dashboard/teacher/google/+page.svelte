@@ -50,11 +50,15 @@
 		Calendar,
 		Paperclip,
 		Share2,
-		BookOpen
+		BookOpen,
+		FileVideo,
+		Link2,
+		File
 	} from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import ShareCourseworkDialog from '$lib/components/google/ShareCourseworkDialog.svelte';
 	import ManageSharedCourseworkDialog from '$lib/components/google/ManageSharedCourseworkDialog.svelte';
+	import ShareMaterialDialog from '$lib/components/google/ShareMaterialDialog.svelte';
 
 	// ============================================================================
 	// Types
@@ -93,11 +97,44 @@
 		alternateLink: string;
 		materialsCount: number;
 		sharedWithClasses: SharedClass[];
+		topicId: string | null;
+	}
+
+	interface Topic {
+		id: string;
+		googleTopicId: string;
+		name: string;
+		updateTime: string;
+	}
+
+	interface MaterialAttachment {
+		id: string;
+		drive_file_id: string | null;
+		title: string | null;
+		alternate_link: string | null;
+		thumbnail_url: string | null;
+		youtube_url: string | null;
+		link_url: string | null;
+		form_url: string | null;
+	}
+
+	interface Material {
+		id: string;
+		googleMaterialId: string;
+		title: string;
+		description: string | null;
+		state: string;
+		createdTime: string;
+		alternateLink: string;
+		topic: { id: string; name: string } | null;
+		attachments: MaterialAttachment[];
 	}
 
 	interface CourseDetails {
 		course: Course;
 		coursework: Coursework[];
+		topics: Topic[];
+		materials: Material[];
 	}
 
 	interface SyncResult {
@@ -135,6 +172,8 @@
 	let shareDialogOpen = $state(false);
 	let manageDialogOpen = $state(false);
 	let selectedCoursework = $state<Coursework | null>(null);
+	let shareMaterialDialogOpen = $state(false);
+	let selectedMaterial = $state<Material | null>(null);
 
 	// ============================================================================
 	// API Functions
@@ -335,6 +374,24 @@
 		}
 	}
 
+	/**
+	 * Get icon component for material based on attachments
+	 */
+	function getMaterialIcon(attachments: MaterialAttachment[]) {
+		if (!attachments || attachments.length === 0) return FileText;
+
+		const hasYouTube = attachments.some((a) => a.youtube_url);
+		if (hasYouTube) return FileVideo;
+
+		const hasLink = attachments.some((a) => a.link_url);
+		if (hasLink) return Link2;
+
+		const hasDrive = attachments.some((a) => a.drive_file_id);
+		if (hasDrive) return File;
+
+		return FileText;
+	}
+
 	// ============================================================================
 	// Derived Values
 	// ============================================================================
@@ -347,6 +404,17 @@
 <svelte:head>
 	<title>Google Classroom - UbuMaths</title>
 </svelte:head>
+
+<!-- Screen reader announcements for loading states -->
+<div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+	{#if syncing}
+		Synchronisation en cours...
+	{:else if loadingCoursework}
+		Chargement des travaux...
+	{:else if refreshing}
+		Actualisation des cours...
+	{/if}
+</div>
 
 <div class="container mx-auto max-w-6xl space-y-6 p-4 md:p-6">
 	<!-- Page Header -->
@@ -527,6 +595,8 @@
 							onclick={() => toggleCourse(course.id)}
 							variant="ghost"
 							class="w-full justify-between"
+							aria-expanded={isExpanded}
+							aria-controls="course-content-{course.id}"
 						>
 							<span class="flex items-center gap-2">
 								{#if isExpanded}
@@ -546,11 +616,11 @@
 						</Button>
 					</Card.Footer>
 
-					<!-- Expanded Content: Coursework List -->
+					<!-- Expanded Content: Coursework and Materials List -->
 					{#if isExpanded}
-						<Card.Content class="border-t border-border pt-4">
+						<Card.Content id="course-content-{course.id}" class="border-t border-border pt-4">
 							{#if isLoadingCoursework}
-								<!-- Loading Coursework -->
+								<!-- Loading Content -->
 								<div class="space-y-3">
 									{#each Array(3) as _, i (i)}
 										<div class="rounded-lg border border-border p-4">
@@ -559,109 +629,518 @@
 										</div>
 									{/each}
 								</div>
-							{:else if courseDetails && courseDetails.coursework.length > 0}
-								<!-- Coursework List -->
-								<div class="space-y-3">
-									{#each courseDetails.coursework as work (work.id)}
-										<div
-											class="rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50"
-										>
-											<!-- Coursework Header -->
-											<div class="mb-3 flex items-start justify-between gap-4">
-												<div class="min-w-0 flex-1">
-													<h4 class="font-semibold break-words text-foreground">
-														{work.title}
-													</h4>
+							{:else if courseDetails}
+								{@const topics = courseDetails.topics || []}
+								{@const coursework = courseDetails.coursework || []}
+								{@const materials = courseDetails.materials || []}
 
-													{#if work.description}
-														<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
-															{work.description}
-														</p>
+								{#if topics.length > 0}
+									<!-- Display by Topics -->
+									<div class="space-y-6">
+										{#each topics as topic (topic.id)}
+											{@const topicCoursework = coursework.filter(
+												(cw) => cw.topicId === topic.googleTopicId
+											)}
+											{@const topicMaterials = materials.filter((m) => m.topic?.id === topic.id)}
+
+											{#if topicCoursework.length > 0 || topicMaterials.length > 0}
+												<div class="space-y-3">
+													<!-- Topic Header -->
+													<div class="flex items-center gap-2 border-b border-border pb-2">
+														<BookOpen class="h-5 w-5 text-primary" />
+														<h3 class="text-lg font-semibold text-foreground">{topic.name}</h3>
+														<Badge variant="secondary" class="ml-auto">
+															{topicCoursework.length + topicMaterials.length}
+														</Badge>
+													</div>
+
+													<!-- Coursework in this topic -->
+													{#each topicCoursework as work (work.id)}
+														<div
+															class="rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50"
+														>
+															<!-- Coursework Header -->
+															<div class="mb-3 flex items-start justify-between gap-4">
+																<div class="min-w-0 flex-1">
+																	<div class="mb-1 flex items-center gap-2">
+																		<Badge variant="default" class="bg-blue-600">Devoir</Badge>
+																		{#if work.maxPoints !== null}
+																			<span class="text-sm text-muted-foreground"
+																				>{work.maxPoints} pts</span
+																			>
+																		{/if}
+																	</div>
+																	<h4 class="font-semibold break-words text-foreground">
+																		{work.title}
+																	</h4>
+
+																	{#if work.description}
+																		<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
+																			{work.description}
+																		</p>
+																	{/if}
+																</div>
+
+																<Button
+																	href={work.alternateLink}
+																	target="_blank"
+																	rel="noopener noreferrer"
+																	variant="ghost"
+																	size="sm"
+																	class="shrink-0"
+																	aria-label="Ouvrir {work.title} dans Google Classroom"
+																>
+																	<ExternalLink class="h-4 w-4" />
+																</Button>
+															</div>
+
+															<!-- Coursework Metadata -->
+															<div class="mb-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
+																{#if work.dueDate}
+																	<span class="flex items-center gap-1">
+																		<Calendar class="h-4 w-4" />
+																		{formatDueDate(work.dueDate, work.dueTime)}
+																	</span>
+																{/if}
+
+																{#if work.materialsCount > 0}
+																	<span class="flex items-center gap-1">
+																		<Paperclip class="h-4 w-4" />
+																		{work.materialsCount} fichier{work.materialsCount > 1
+																			? 's'
+																			: ''}
+																	</span>
+																{/if}
+															</div>
+
+															<!-- Sharing Status -->
+															{#if work.sharedWithClasses.length > 0}
+																<div class="flex flex-wrap items-center gap-2">
+																	<span
+																		class="flex items-center gap-1 text-sm text-muted-foreground"
+																	>
+																		<Share2 class="h-4 w-4" />
+																		Partagé :
+																	</span>
+																	{#each work.sharedWithClasses as sharedClass (sharedClass.classId)}
+																		<Badge variant="default" class="bg-blue-600 text-white">
+																			{sharedClass.className}
+																		</Badge>
+																	{/each}
+																	<Button
+																		variant="outline"
+																		size="sm"
+																		onclick={() => {
+																			selectedCoursework = work;
+																			manageDialogOpen = true;
+																		}}
+																	>
+																		Gérer
+																	</Button>
+																</div>
+															{:else}
+																<Button
+																	variant="outline"
+																	size="sm"
+																	onclick={() => {
+																		selectedCoursework = work;
+																		shareDialogOpen = true;
+																	}}
+																>
+																	Partager
+																</Button>
+															{/if}
+														</div>
+													{/each}
+
+													<!-- Materials in this topic -->
+													{#each topicMaterials as material (material.id)}
+														{@const IconComponent = getMaterialIcon(material.attachments)}
+														<div
+															class="rounded-lg border border-green-200 bg-green-50/30 p-4 transition-colors hover:bg-green-50/50 dark:border-green-900 dark:bg-green-950/30 dark:hover:bg-green-950/50"
+														>
+															<div class="mb-3 flex items-start justify-between gap-4">
+																<div class="min-w-0 flex-1">
+																	<div class="mb-1 flex items-center gap-2">
+																		<Badge
+																			variant="outline"
+																			class="border-green-600 text-green-700 dark:border-green-400 dark:text-green-300"
+																			>Ressource</Badge
+																		>
+																		<IconComponent
+																			class="h-4 w-4 text-green-600 dark:text-green-400"
+																		/>
+																		{#if material.attachments.length > 0}
+																			<span class="text-sm text-muted-foreground"
+																				>{material.attachments.length} fichier{material.attachments
+																					.length > 1
+																					? 's'
+																					: ''}</span
+																			>
+																		{/if}
+																	</div>
+																	<h4 class="font-semibold break-words text-foreground">
+																		{material.title}
+																	</h4>
+
+																	{#if material.description}
+																		<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
+																			{material.description}
+																		</p>
+																	{/if}
+																</div>
+
+																<Button
+																	href={material.alternateLink}
+																	target="_blank"
+																	rel="noopener noreferrer"
+																	variant="ghost"
+																	size="sm"
+																	class="shrink-0"
+																	aria-label="Ouvrir {material.title} dans Google Classroom"
+																>
+																	<ExternalLink class="h-4 w-4" />
+																</Button>
+															</div>
+
+															<!-- Material Actions -->
+															<Button
+																variant="outline"
+																size="sm"
+																onclick={() => {
+																	selectedMaterial = material;
+																	shareMaterialDialogOpen = true;
+																}}
+															>
+																<Share2 class="mr-2 h-4 w-4" />
+																Partager
+															</Button>
+														</div>
+													{/each}
+												</div>
+											{/if}
+										{/each}
+
+										<!-- Items without topic -->
+										{@const noTopicCoursework = coursework.filter((cw) => !cw.topicId)}
+										{@const noTopicMaterials = materials.filter((m) => !m.topic)}
+
+										{#if noTopicCoursework.length > 0 || noTopicMaterials.length > 0}
+											<div class="space-y-3">
+												<div class="flex items-center gap-2 border-b border-border pb-2">
+													<FileText class="h-5 w-5 text-muted-foreground" />
+													<h3 class="text-lg font-semibold text-foreground">Sans rubrique</h3>
+													<Badge variant="secondary" class="ml-auto">
+														{noTopicCoursework.length + noTopicMaterials.length}
+													</Badge>
+												</div>
+
+												<!-- Similar rendering for no-topic items -->
+												{#each noTopicCoursework as work (work.id)}
+													<div
+														class="rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50"
+													>
+														<div class="mb-3 flex items-start justify-between gap-4">
+															<div class="min-w-0 flex-1">
+																<div class="mb-1 flex items-center gap-2">
+																	<Badge variant="default" class="bg-blue-600">Devoir</Badge>
+																	{#if work.maxPoints !== null}
+																		<span class="text-sm text-muted-foreground"
+																			>{work.maxPoints} pts</span
+																		>
+																	{/if}
+																</div>
+																<h4 class="font-semibold break-words text-foreground">
+																	{work.title}
+																</h4>
+																{#if work.description}
+																	<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
+																		{work.description}
+																	</p>
+																{/if}
+															</div>
+															<Button
+																href={work.alternateLink}
+																target="_blank"
+																rel="noopener noreferrer"
+																variant="ghost"
+																size="sm"
+																class="shrink-0"
+																aria-label="Ouvrir {work.title} dans Google Classroom"
+															>
+																<ExternalLink class="h-4 w-4" />
+															</Button>
+														</div>
+														<div class="mb-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
+															{#if work.dueDate}
+																<span class="flex items-center gap-1">
+																	<Calendar class="h-4 w-4" />
+																	{formatDueDate(work.dueDate, work.dueTime)}
+																</span>
+															{/if}
+															{#if work.materialsCount > 0}
+																<span class="flex items-center gap-1">
+																	<Paperclip class="h-4 w-4" />
+																	{work.materialsCount} fichier{work.materialsCount > 1 ? 's' : ''}
+																</span>
+															{/if}
+														</div>
+														{#if work.sharedWithClasses.length > 0}
+															<div class="flex flex-wrap items-center gap-2">
+																<span class="flex items-center gap-1 text-sm text-muted-foreground">
+																	<Share2 class="h-4 w-4" />
+																	Partagé :
+																</span>
+																{#each work.sharedWithClasses as sharedClass (sharedClass.classId)}
+																	<Badge variant="default" class="bg-blue-600 text-white">
+																		{sharedClass.className}
+																	</Badge>
+																{/each}
+																<Button
+																	variant="outline"
+																	size="sm"
+																	onclick={() => {
+																		selectedCoursework = work;
+																		manageDialogOpen = true;
+																	}}
+																>
+																	Gérer
+																</Button>
+															</div>
+														{:else}
+															<Button
+																variant="outline"
+																size="sm"
+																onclick={() => {
+																	selectedCoursework = work;
+																	shareDialogOpen = true;
+																}}
+															>
+																Partager
+															</Button>
+														{/if}
+													</div>
+												{/each}
+
+												{#each noTopicMaterials as material (material.id)}
+													{@const IconComponent = getMaterialIcon(material.attachments)}
+													<div
+														class="rounded-lg border border-green-200 bg-green-50/30 p-4 transition-colors hover:bg-green-50/50 dark:border-green-900 dark:bg-green-950/30 dark:hover:bg-green-950/50"
+													>
+														<div class="mb-3 flex items-start justify-between gap-4">
+															<div class="min-w-0 flex-1">
+																<div class="mb-1 flex items-center gap-2">
+																	<Badge
+																		variant="outline"
+																		class="border-green-600 text-green-700 dark:border-green-400 dark:text-green-300"
+																		>Ressource</Badge
+																	>
+																	<IconComponent
+																		class="h-4 w-4 text-green-600 dark:text-green-400"
+																	/>
+																	{#if material.attachments.length > 0}
+																		<span class="text-sm text-muted-foreground"
+																			>{material.attachments.length} fichier{material.attachments
+																				.length > 1
+																				? 's'
+																				: ''}</span
+																		>
+																	{/if}
+																</div>
+																<h4 class="font-semibold break-words text-foreground">
+																	{material.title}
+																</h4>
+																{#if material.description}
+																	<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
+																		{material.description}
+																	</p>
+																{/if}
+															</div>
+															<Button
+																href={material.alternateLink}
+																target="_blank"
+																rel="noopener noreferrer"
+																variant="ghost"
+																size="sm"
+																class="shrink-0"
+																aria-label="Ouvrir {material.title} dans Google Classroom"
+															>
+																<ExternalLink class="h-4 w-4" />
+															</Button>
+														</div>
+														<Button
+															variant="outline"
+															size="sm"
+															onclick={() => {
+																selectedMaterial = material;
+																shareMaterialDialogOpen = true;
+															}}
+														>
+															<Share2 class="mr-2 h-4 w-4" />
+															Partager
+														</Button>
+													</div>
+												{/each}
+											</div>
+										{/if}
+									</div>
+								{:else}
+									<!-- No topics - flat list -->
+									<div class="space-y-3">
+										{#if coursework.length === 0 && materials.length === 0}
+											<div class="py-8 text-center text-muted-foreground">
+												<FileText class="mx-auto mb-2 h-8 w-8" />
+												<p>Aucun contenu pour ce cours</p>
+											</div>
+										{:else}
+											<!-- Render all coursework -->
+											{#each coursework as work (work.id)}
+												<div
+													class="rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50"
+												>
+													<div class="mb-3 flex items-start justify-between gap-4">
+														<div class="min-w-0 flex-1">
+															<div class="mb-1 flex items-center gap-2">
+																<Badge variant="default" class="bg-blue-600">Devoir</Badge>
+																{#if work.maxPoints !== null}
+																	<span class="text-sm text-muted-foreground"
+																		>{work.maxPoints} pts</span
+																	>
+																{/if}
+															</div>
+															<h4 class="font-semibold break-words text-foreground">
+																{work.title}
+															</h4>
+															{#if work.description}
+																<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
+																	{work.description}
+																</p>
+															{/if}
+														</div>
+														<Button
+															href={work.alternateLink}
+															target="_blank"
+															rel="noopener noreferrer"
+															variant="ghost"
+															size="sm"
+															class="shrink-0"
+															aria-label="Ouvrir {work.title} dans Google Classroom"
+														>
+															<ExternalLink class="h-4 w-4" />
+														</Button>
+													</div>
+													<div class="mb-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
+														{#if work.dueDate}
+															<span class="flex items-center gap-1">
+																<Calendar class="h-4 w-4" />
+																{formatDueDate(work.dueDate, work.dueTime)}
+															</span>
+														{/if}
+														{#if work.materialsCount > 0}
+															<span class="flex items-center gap-1">
+																<Paperclip class="h-4 w-4" />
+																{work.materialsCount} fichier{work.materialsCount > 1 ? 's' : ''}
+															</span>
+														{/if}
+													</div>
+													{#if work.sharedWithClasses.length > 0}
+														<div class="flex flex-wrap items-center gap-2">
+															<span class="flex items-center gap-1 text-sm text-muted-foreground">
+																<Share2 class="h-4 w-4" />
+																Partagé :
+															</span>
+															{#each work.sharedWithClasses as sharedClass (sharedClass.classId)}
+																<Badge variant="default" class="bg-blue-600 text-white">
+																	{sharedClass.className}
+																</Badge>
+															{/each}
+															<Button
+																variant="outline"
+																size="sm"
+																onclick={() => {
+																	selectedCoursework = work;
+																	manageDialogOpen = true;
+																}}
+															>
+																Gérer
+															</Button>
+														</div>
+													{:else}
+														<Button
+															variant="outline"
+															size="sm"
+															onclick={() => {
+																selectedCoursework = work;
+																shareDialogOpen = true;
+															}}
+														>
+															Partager
+														</Button>
 													{/if}
 												</div>
+											{/each}
 
-												<!-- External Link to Coursework -->
-												<Button
-													href={work.alternateLink}
-													target="_blank"
-													rel="noopener noreferrer"
-													variant="ghost"
-													size="sm"
-													class="shrink-0"
-													aria-label="Ouvrir {work.title} dans Google Classroom"
+											<!-- Render all materials -->
+											{#each materials as material (material.id)}
+												{@const IconComponent = getMaterialIcon(material.attachments)}
+												<div
+													class="rounded-lg border border-green-200 bg-green-50/30 p-4 transition-colors hover:bg-green-50/50 dark:border-green-900 dark:bg-green-950/30 dark:hover:bg-green-950/50"
 												>
-													<ExternalLink class="h-4 w-4" />
-												</Button>
-											</div>
-
-											<!-- Coursework Metadata -->
-											<div class="mb-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
-												{#if work.dueDate}
-													<span class="flex items-center gap-1">
-														<Calendar class="h-4 w-4" />
-														Échéance : {formatDueDate(work.dueDate, work.dueTime)}
-													</span>
-												{/if}
-
-												{#if work.maxPoints !== null}
-													<span>Points : {work.maxPoints}</span>
-												{/if}
-
-												{#if work.materialsCount > 0}
-													<span class="flex items-center gap-1">
-														<Paperclip class="h-4 w-4" />
-														{work.materialsCount} fichier{work.materialsCount > 1 ? 's' : ''}
-													</span>
-												{/if}
-											</div>
-
-											<!-- Sharing Status -->
-											{#if work.sharedWithClasses.length > 0}
-												<div class="flex flex-wrap items-center gap-2">
-													<span class="flex items-center gap-1 text-sm text-muted-foreground">
-														<Share2 class="h-4 w-4" />
-														Partagé avec :
-													</span>
-													{#each work.sharedWithClasses as sharedClass (sharedClass.classId)}
-														<Badge variant="default" class="bg-blue-600 text-white">
-															{sharedClass.className}
-														</Badge>
-													{/each}
+													<div class="mb-3 flex items-start justify-between gap-4">
+														<div class="min-w-0 flex-1">
+															<div class="mb-1 flex items-center gap-2">
+																<Badge
+																	variant="outline"
+																	class="border-green-600 text-green-700 dark:border-green-400 dark:text-green-300"
+																	>Ressource</Badge
+																>
+																<IconComponent class="h-4 w-4 text-green-600 dark:text-green-400" />
+																{#if material.attachments.length > 0}
+																	<span class="text-sm text-muted-foreground"
+																		>{material.attachments.length} fichier{material.attachments
+																			.length > 1
+																			? 's'
+																			: ''}</span
+																	>
+																{/if}
+															</div>
+															<h4 class="font-semibold break-words text-foreground">
+																{material.title}
+															</h4>
+															{#if material.description}
+																<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
+																	{material.description}
+																</p>
+															{/if}
+														</div>
+														<Button
+															href={material.alternateLink}
+															target="_blank"
+															rel="noopener noreferrer"
+															variant="ghost"
+															size="sm"
+															class="shrink-0"
+															aria-label="Ouvrir {material.title} dans Google Classroom"
+														>
+															<ExternalLink class="h-4 w-4" />
+														</Button>
+													</div>
 													<Button
 														variant="outline"
 														size="sm"
 														onclick={() => {
-															selectedCoursework = work;
-															manageDialogOpen = true;
+															selectedMaterial = material;
+															shareMaterialDialogOpen = true;
 														}}
 													>
-														Gérer
-													</Button>
-												</div>
-											{:else}
-												<div class="flex items-center gap-2">
-													<span class="text-sm text-muted-foreground">Non partagé</span>
-													<Button
-														variant="outline"
-														size="sm"
-														onclick={() => {
-															selectedCoursework = work;
-															shareDialogOpen = true;
-														}}
-													>
+														<Share2 class="mr-2 h-4 w-4" />
 														Partager
 													</Button>
 												</div>
-											{/if}
-										</div>
-									{/each}
-								</div>
-							{:else if courseDetails}
-								<!-- No Coursework -->
-								<div class="py-8 text-center text-muted-foreground">
-									<FileText class="mx-auto mb-2 h-8 w-8" />
-									<p>Aucun travail pour ce cours</p>
-								</div>
+											{/each}
+										{/if}
+									</div>
+								{/if}
 							{/if}
 						</Card.Content>
 					{/if}
@@ -717,6 +1196,30 @@
 				courseworkCache.delete(expandedCourseId);
 				await toggleCourse(expandedCourseId);
 			}
+		}}
+	/>
+{/if}
+
+{#if shareMaterialDialogOpen && selectedMaterial}
+	<ShareMaterialDialog
+		material={{
+			id: selectedMaterial.id,
+			title: selectedMaterial.title,
+			description: selectedMaterial.description
+		}}
+		onClose={() => {
+			shareMaterialDialogOpen = false;
+			selectedMaterial = null;
+		}}
+		onSuccess={async () => {
+			shareMaterialDialogOpen = false;
+			selectedMaterial = null;
+			// Refresh course data for the expanded course
+			if (expandedCourseId) {
+				courseworkCache.delete(expandedCourseId);
+				await fetchCoursework(expandedCourseId);
+			}
+			toaster.success('Matériel partagé avec succès');
 		}}
 	/>
 {/if}
