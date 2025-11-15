@@ -46,8 +46,11 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		categoryId: url.searchParams.get('categoryId')
 	};
 
+	console.log('[Student Shared Coursework] Query params:', queryParams);
+
 	const validation = listStudentSharedCourseworkSchema.safeParse(queryParams);
 	if (!validation.success) {
+		console.error('[Student Shared Coursework] Validation error:', validation.error.issues);
 		throw error(400, validation.error.issues[0].message);
 	}
 

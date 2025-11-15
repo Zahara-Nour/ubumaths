@@ -75,6 +75,6 @@ export const courseIdParamSchema = z.object({
  * GET /api/student/shared-coursework
  */
 export const listStudentSharedCourseworkSchema = paginationSchema.extend({
-	classId: uuidSchema.optional(),
-	categoryId: uuidSchema.optional()
+	classId: uuidSchema.nullish(),
+	categoryId: uuidSchema.nullish()
 });
