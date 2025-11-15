@@ -83,7 +83,7 @@ export const googleLinkMaterialSchema = z.object({
  */
 export const googleFormMaterialSchema = z.object({
 	formUrl: z.string().url().max(2048),
-	title: z.string(),
+	title: z.string().optional(),
 	thumbnailUrl: z.string().url().max(2048).optional(),
 	responseUrl: z.string().url().max(2048).optional()
 });
@@ -160,7 +160,7 @@ export const googleCourseworkSchema = z.object({
 	description: z.string().optional(),
 	materials: z.array(googleMaterialSchema).optional(),
 	state: z.enum(['PUBLISHED', 'DRAFT', 'DELETED']),
-	alternateLink: z.string().url().max(2048),
+	alternateLink: z.string().url().max(2048).optional(),
 	creationTime: z.string(),
 	updateTime: z.string(),
 	dueDate: googleDateSchema.optional(),
