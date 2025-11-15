@@ -822,10 +822,10 @@
 										{/each}
 
 										<!-- Items without topic -->
-										{@const noTopicCoursework = coursework.filter((cw) => !cw.topicId)}
-										{@const noTopicMaterials = materials.filter((m) => !m.topic)}
 
-										{#if noTopicCoursework.length > 0 || noTopicMaterials.length > 0}
+													{#if coursework.filter((cw) => !cw.topicId).length > 0 || materials.filter((m) => !m.topic).length > 0}
+											{@const noTopicCoursework = coursework.filter((cw) => !cw.topicId)}
+											{@const noTopicMaterials = materials.filter((m) => !m.topic)}
 											<div class="space-y-3">
 												<div class="flex items-center gap-2 border-b border-border pb-2">
 													<FileText class="h-5 w-5 text-muted-foreground" />
