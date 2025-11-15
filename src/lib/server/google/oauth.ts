@@ -17,7 +17,7 @@ export const GOOGLE_CLASSROOM_SCOPES = [
 	'email', // Required to get user email
 	'profile', // Required to get user profile info
 	'https://www.googleapis.com/auth/classroom.courses.readonly',
-	'https://www.googleapis.com/auth/classroom.coursework.me.readonly',
+	'https://www.googleapis.com/auth/classroom.coursework.students.readonly', // View coursework and student submissions (teacher view)
 	'https://www.googleapis.com/auth/drive.readonly'
 ] as const;
 
