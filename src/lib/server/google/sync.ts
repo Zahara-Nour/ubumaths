@@ -313,9 +313,7 @@ export async function syncTopics(
 			syncedGoogleTopicIds.push(topic.topicId);
 			try {
 				// Note: TypeScript error here will resolve after running `pnpm db:migrate` and regenerating types
-				const { error: upsertError } = await supabase
-					.from('google_classroom_topics' as any)
-					.upsert(
+				const { error: upsertError } = await supabase.from('google_classroom_topics' as any).upsert(
 					{
 						google_course_id: courseId,
 						google_topic_id: topic.topicId,
@@ -372,11 +370,15 @@ export async function syncTopics(
 				result.errors.push(errorMsg);
 				console.error(`[Sync] ${errorMsg}`);
 			} else if (count && count > 0) {
-				console.log(`[Sync] No topics found. Cleaned up ${count} topics for course ${googleCourseId}`);
+				console.log(
+					`[Sync] No topics found. Cleaned up ${count} topics for course ${googleCourseId}`
+				);
 			}
 		}
 
-		console.log(`[Sync] Synced ${result.synced}/${topics.length} topics for course ${googleCourseId}`);
+		console.log(
+			`[Sync] Synced ${result.synced}/${topics.length} topics for course ${googleCourseId}`
+		);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : 'Unknown error';
 		result.errors.push(`Failed to sync topics: ${message}`);
@@ -748,7 +750,10 @@ export async function syncCourseWorkMaterials(
 	} catch (error) {
 		const message = error instanceof Error ? error.message : 'Unknown error';
 		result.errors.push(`Failed to sync course work materials: ${message}`);
-		console.error(`[Sync] Error syncing course work materials for course ${googleCourseId}:`, error);
+		console.error(
+			`[Sync] Error syncing course work materials for course ${googleCourseId}:`,
+			error
+		);
 	}
 
 	return result;
