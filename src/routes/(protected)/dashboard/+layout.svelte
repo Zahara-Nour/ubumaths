@@ -134,6 +134,7 @@
 				},
 				{ href: '/dashboard/teacher/vip-cards', label: 'VIP Cards', icon: Sparkles },
 				{ href: '/dashboard/teacher/marketplace', label: 'Marché', icon: ShoppingBag },
+				{ href: '/dashboard/teacher/google', label: 'Google Classroom', icon: School },
 				{ href: '/dashboard/teacher/warnings', label: 'Avertissements', icon: AlertTriangle }
 			];
 		} else if (role === 'admin') {
