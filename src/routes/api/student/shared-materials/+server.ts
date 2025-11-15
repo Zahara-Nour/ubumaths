@@ -45,7 +45,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		categoryId: url.searchParams.get('categoryId') || undefined,
 		topicId: url.searchParams.get('topicId') || undefined,
 		page: url.searchParams.get('page') || '1',
-		pageSize: url.searchParams.get('pageSize') || '20'
+		limit: url.searchParams.get('limit') || '20'
 	};
 
 	const validation = listStudentSharedMaterialsSchema.safeParse(queryParams);
@@ -54,7 +54,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { classId, categoryId, topicId, page, pageSize } = validation.data;
+	const { classId, categoryId, topicId, page, limit } = validation.data;
 
 	// Get student's classes (excluding test accounts)
 	const { data: studentClasses, error: classesError } = await locals.supabase
@@ -74,7 +74,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			materials: [],
 			total: 0,
 			page,
-			pageSize,
+			limit,
 			totalPages: 0
 		});
 	}
@@ -137,8 +137,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	// Pagination
-	const offset = (page - 1) * pageSize;
-	query = query.order('created_at', { ascending: false }).range(offset, offset + pageSize - 1);
+	const offset = (page - 1) * limit;
+	query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
 
 	// Get count for pagination
 	let countQuery = locals.supabase
@@ -275,7 +275,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		materials: transformedMaterials,
 		total: count || 0,
 		page,
-		pageSize,
-		totalPages: Math.ceil((count || 0) / pageSize)
+		limit,
+		totalPages: Math.ceil((count || 0) / limit)
 	});
 };

@@ -125,7 +125,7 @@ export const unshareMaterialSchema = z.object({
  * GET /api/student/shared-materials
  */
 export const listStudentSharedMaterialsSchema = paginationSchema.extend({
-	classId: uuidSchema.optional(),
-	categoryId: uuidSchema.optional(),
-	topicId: uuidSchema.optional()
+	classId: uuidSchema.nullish(),
+	categoryId: uuidSchema.nullish(),
+	topicId: uuidSchema.nullish()
 });
