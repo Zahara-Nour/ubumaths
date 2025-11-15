@@ -50,12 +50,17 @@ export function parseGoogleDate(googleDate?: {
  * // Returns: { hours: 14, minutes: 30 }
  */
 export function parseGoogleTime(googleTime?: {
-	hours: number;
-	minutes: number;
+	hours?: number;
+	minutes?: number;
 	seconds?: number;
 	nanos?: number;
 }): { hours: number; minutes: number } | null {
 	if (!googleTime) return null;
+
+	// Check that hours and minutes are defined
+	if (googleTime.hours === undefined || googleTime.minutes === undefined) {
+		return null;
+	}
 
 	// Validate hours and minutes are in valid ranges
 	if (
@@ -90,7 +95,7 @@ export function parseGoogleTime(googleTime?: {
  */
 export function parseGoogleDateTime(
 	googleDate?: { year: number; month: number; day: number },
-	googleTime?: { hours: number; minutes: number; seconds?: number; nanos?: number }
+	googleTime?: { hours?: number; minutes?: number; seconds?: number; nanos?: number }
 ): string | null {
 	const date = parseGoogleDate(googleDate);
 	if (!date) return null;
@@ -165,8 +170,8 @@ export function extractMaterialData(material: GoogleMaterial): {
 		return {
 			type: 'DRIVE_FILE',
 			fileId: material.driveFile.id,
-			fileName: material.driveFile.title,
-			url: material.driveFile.alternateLink,
+			fileName: material.driveFile.title || 'Untitled',
+			url: material.driveFile.alternateLink || '',
 			thumbnailUrl: material.driveFile.thumbnailUrl,
 			title: material.driveFile.title
 		};
@@ -200,7 +205,7 @@ export function extractMaterialData(material: GoogleMaterial): {
 	if (material.form) {
 		return {
 			type: 'FORM',
-			fileName: material.form.title,
+			fileName: material.form.title || 'Untitled Form',
 			mimeType: 'application/vnd.google-apps.form',
 			url: material.form.formUrl,
 			thumbnailUrl: material.form.thumbnailUrl,
