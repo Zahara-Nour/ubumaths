@@ -133,6 +133,25 @@ body {
  * Result: Only main content scales; header and sidebar stay at standard size
  */
 
+/*
+ * Screen Reader Only Utility Class
+ * =================================
+ *
+ * Visually hides content while keeping it accessible to screen readers.
+ * Used for accessibility improvements like hidden labels, landmarks, etc.
+ */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}
+
 /* Fix header and sidebar font sizes to prevent scaling */
 header,
 header *:not(svg):not(img) {

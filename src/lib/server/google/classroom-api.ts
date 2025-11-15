@@ -17,9 +17,7 @@ import type {
 	GoogleMaterial,
 	GoogleCourseList,
 	GoogleCourseworkList,
-	GoogleTopic,
 	GoogleTopicList,
-	GoogleCourseWorkMaterial,
 	GoogleCourseWorkMaterialList
 } from '$lib/types/google';
 import {

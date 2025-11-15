@@ -116,6 +116,7 @@
 				{ href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap },
 				{ href: '/dashboard/student/assessments', label: 'Évaluations', icon: ClipboardList },
 				{ href: '/dashboard/student/devoirs', label: 'Devoirs', icon: BookOpen },
+				{ href: '/dashboard/student/materials', label: 'Matériel', icon: FileText },
 				{ href: '/dashboard/student/vip-cards/collection', label: 'Collection VIP', icon: Sparkles }
 			];
 		} else if (role === 'teacher') {
