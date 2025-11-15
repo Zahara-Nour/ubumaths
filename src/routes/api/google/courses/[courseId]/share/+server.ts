@@ -61,12 +61,13 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const { courseworkId, classId, visible, categoryId, customDescription } = validation.data;
 
 	try {
-		// Verify coursework exists and belongs to teacher
+		// Verify coursework exists and belongs to teacher (via RLS)
+		// Note: google_classroom_coursework doesn't have teacher_id column.
+		// Ownership is verified via RLS policy that joins with google_classroom_courses.
 		const { data: coursework, error: courseworkError } = await locals.supabase
 			.from('google_classroom_coursework')
 			.select('id, google_course_id')
 			.eq('id', courseworkId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (courseworkError || !coursework) {
@@ -196,12 +197,13 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 	const { courseworkId: validCourseworkId, classId: validClassId } = validation.data;
 
 	try {
-		// Verify coursework belongs to teacher (for security)
+		// Verify coursework belongs to teacher (via RLS)
+		// Note: google_classroom_coursework doesn't have teacher_id column.
+		// Ownership is verified via RLS policy that joins with google_classroom_courses.
 		const { data: coursework, error: courseworkError } = await locals.supabase
 			.from('google_classroom_coursework')
 			.select('id')
 			.eq('id', validCourseworkId)
-			.eq('teacher_id', user.id)
 			.single();
 
 		if (courseworkError || !coursework) {
