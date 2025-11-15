@@ -326,7 +326,11 @@ export async function syncCoursework(
 						.split('T')[0];
 				}
 
-				if (work.dueTime && work.dueTime.hours !== undefined && work.dueTime.minutes !== undefined) {
+				if (
+					work.dueTime &&
+					work.dueTime.hours !== undefined &&
+					work.dueTime.minutes !== undefined
+				) {
 					dueTime = `${work.dueTime.hours.toString().padStart(2, '0')}:${work.dueTime.minutes.toString().padStart(2, '0')}:00`;
 				}
 
