@@ -69,3 +69,12 @@ export const unshareCourseworkSchema = z.object({
 export const courseIdParamSchema = z.object({
 	courseId: uuidSchema
 });
+
+/**
+ * Schema for listing student shared coursework
+ * GET /api/student/shared-coursework
+ */
+export const listStudentSharedCourseworkSchema = paginationSchema.extend({
+	classId: uuidSchema.optional(),
+	categoryId: uuidSchema.optional()
+});
