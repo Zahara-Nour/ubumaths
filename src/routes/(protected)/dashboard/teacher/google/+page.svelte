@@ -34,7 +34,6 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -53,6 +52,8 @@
 		BookOpen
 	} from 'lucide-svelte';
 	import type { PageData } from './$types';
+	import ShareCourseworkDialog from '$lib/components/google/ShareCourseworkDialog.svelte';
+	import ManageSharedCourseworkDialog from '$lib/components/google/ManageSharedCourseworkDialog.svelte';
 
 	// ============================================================================
 	// Types
@@ -129,13 +130,10 @@
 	let loadingCoursework = $state<string | null>(null);
 	let refreshing = $state(false);
 
-	// ============================================================================
-	// Lifecycle
-	// ============================================================================
-
-	onMount(() => {
-		// Page initialized with SSR data
-	});
+	// Dialog states
+	let shareDialogOpen = $state(false);
+	let manageDialogOpen = $state(false);
+	let selectedCoursework = $state<Coursework | null>(null);
 
 	// ============================================================================
 	// API Functions
@@ -631,9 +629,13 @@
 													<Button
 														variant="outline"
 														size="sm"
-														disabled
-														title="Fonctionnalité à venir (Phase 3)">Gérer</Button
+														onclick={() => {
+															selectedCoursework = work;
+															manageDialogOpen = true;
+														}}
 													>
+														Gérer
+													</Button>
 												</div>
 											{:else}
 												<div class="flex items-center gap-2">
@@ -641,9 +643,13 @@
 													<Button
 														variant="outline"
 														size="sm"
-														disabled
-														title="Fonctionnalité à venir (Phase 3)">Partager</Button
+														onclick={() => {
+															selectedCoursework = work;
+															shareDialogOpen = true;
+														}}
 													>
+														Partager
+													</Button>
 												</div>
 											{/if}
 										</div>
@@ -663,3 +669,53 @@
 		</div>
 	{/if}
 </div>
+
+<!-- Share/Manage Dialogs -->
+{#if shareDialogOpen && selectedCoursework}
+	<ShareCourseworkDialog
+		coursework={{
+			id: selectedCoursework.id,
+			title: selectedCoursework.title,
+			description: selectedCoursework.description,
+			courseId: expandedCourseId || ''
+		}}
+		existingShares={selectedCoursework.sharedWithClasses}
+		onClose={() => {
+			shareDialogOpen = false;
+			selectedCoursework = null;
+		}}
+		onSuccess={async () => {
+			shareDialogOpen = false;
+			selectedCoursework = null;
+			// Refresh coursework data for the expanded course
+			if (expandedCourseId) {
+				courseworkCache.delete(expandedCourseId);
+				await toggleCourse(expandedCourseId);
+			}
+		}}
+	/>
+{/if}
+
+{#if manageDialogOpen && selectedCoursework}
+	<ManageSharedCourseworkDialog
+		coursework={{
+			id: selectedCoursework.id,
+			title: selectedCoursework.title,
+			courseId: expandedCourseId || '',
+			sharedWithClasses: selectedCoursework.sharedWithClasses
+		}}
+		onClose={() => {
+			manageDialogOpen = false;
+			selectedCoursework = null;
+		}}
+		onSuccess={async () => {
+			manageDialogOpen = false;
+			selectedCoursework = null;
+			// Refresh coursework data for the expanded course
+			if (expandedCourseId) {
+				courseworkCache.delete(expandedCourseId);
+				await toggleCourse(expandedCourseId);
+			}
+		}}
+	/>
+{/if}

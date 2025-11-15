@@ -93,17 +93,28 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			throw error(403, 'Class does not belong to you');
 		}
 
-		// If categoryId is provided, verify it belongs to teacher
+		// If categoryId is provided, verify it belongs to teacher (via class)
 		if (categoryId) {
 			const { data: category, error: categoryError } = await locals.supabase
 				.from('coursework_categories')
-				.select('id')
+				.select('id, class_id')
 				.eq('id', categoryId)
-				.eq('teacher_id', user.id)
 				.single();
 
 			if (categoryError || !category) {
-				throw error(400, 'Invalid category or category does not belong to you');
+				throw error(400, 'Category not found');
+			}
+
+			// Verify the category's class belongs to the teacher
+			const { data: categoryClass, error: categoryClassError } = await locals.supabase
+				.from('classes')
+				.select('id')
+				.eq('id', category.class_id)
+				.eq('teacher_id', user.id)
+				.single();
+
+			if (categoryClassError || !categoryClass) {
+				throw error(400, 'Category does not belong to one of your classes');
 			}
 		}
 
@@ -218,12 +229,13 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 		}
 
 		// Delete from shared_coursework (idempotent - no error if not found)
+		// Note: Schema uses 'shared_by' column, not 'teacher_id'
 		const { error: deleteError } = await locals.supabase
 			.from('shared_coursework')
 			.delete()
 			.eq('coursework_id', validCourseworkId)
 			.eq('class_id', validClassId)
-			.eq('teacher_id', user.id);
+			.eq('shared_by', user.id);
 
 		if (deleteError) {
 			console.error('[Google Unshare] Delete error:', deleteError);

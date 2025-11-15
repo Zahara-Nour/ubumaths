@@ -291,17 +291,28 @@ export const PATCH: RequestHandler = async ({ locals, request }) => {
 			throw error(403, 'You do not have permission to update this record');
 		}
 
-		// If categoryId is being updated and is not null, verify it belongs to teacher
+		// If categoryId is being updated and is not null, verify it belongs to teacher (via class)
 		if (updates.categoryId !== undefined && updates.categoryId !== null) {
 			const { data: category, error: categoryError } = await locals.supabase
 				.from('coursework_categories')
-				.select('id')
+				.select('id, class_id')
 				.eq('id', updates.categoryId)
-				.eq('teacher_id', user.id)
 				.single();
 
 			if (categoryError || !category) {
-				throw error(400, 'Invalid category or category does not belong to you');
+				throw error(400, 'Category not found');
+			}
+
+			// Verify the category's class belongs to the teacher
+			const { data: categoryClass, error: categoryClassError } = await locals.supabase
+				.from('classes')
+				.select('id')
+				.eq('id', category.class_id)
+				.eq('teacher_id', user.id)
+				.single();
+
+			if (categoryClassError || !categoryClass) {
+				throw error(400, 'Category does not belong to one of your classes');
 			}
 		}
 
