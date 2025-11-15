@@ -39,6 +39,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 	import {
 		RefreshCw,
 		Settings,
@@ -123,7 +124,7 @@
 	let expandedCourseId = $state<string | null>(null);
 
 	// Coursework cache (courseId -> CourseDetails)
-	let courseworkCache = $state<Map<string, CourseDetails>>(new Map());
+	let courseworkCache = new SvelteMap<string, CourseDetails>();
 
 	// Loading states
 	let syncing = $state(false);
@@ -198,8 +199,6 @@
 
 			// Clear coursework cache (data might have changed)
 			courseworkCache.clear();
-			// Force Svelte reactivity
-			courseworkCache = courseworkCache;
 		} catch (error) {
 			console.error('[Google Courses] Error syncing:', error);
 			const message = error instanceof Error ? error.message : 'Erreur lors de la synchronisation';
@@ -232,8 +231,6 @@
 
 			// Cache the result
 			courseworkCache.set(courseId, data);
-			// Force Svelte reactivity by reassigning (Map mutations don't trigger reactivity)
-			courseworkCache = courseworkCache;
 		} catch (error) {
 			console.error('[Google Courses] Error fetching coursework:', error);
 			toaster.error('Erreur lors du chargement des travaux');
