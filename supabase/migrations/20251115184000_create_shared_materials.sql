@@ -215,9 +215,10 @@ USING (
     visible = true
     AND EXISTS (
         SELECT 1 FROM public.class_members cm
+        JOIN public.profiles p ON p.id = cm.student_id
         WHERE cm.class_id = shared_materials.class_id
         AND cm.student_id = auth.uid()
-        AND cm.is_test = false
+        AND p.is_test = false
     )
 );
 
@@ -244,9 +245,10 @@ USING (
     EXISTS (
         SELECT 1 FROM public.shared_materials sm
         JOIN public.class_members cm ON cm.class_id = sm.class_id
+        JOIN public.profiles p ON p.id = cm.student_id
         WHERE sm.material_id = google_classroom_materials.id
         AND cm.student_id = auth.uid()
-        AND cm.is_test = false
+        AND p.is_test = false
         AND sm.visible = true
     )
 );
@@ -260,9 +262,10 @@ USING (
     EXISTS (
         SELECT 1 FROM public.shared_materials sm
         JOIN public.class_members cm ON cm.class_id = sm.class_id
+        JOIN public.profiles p ON p.id = cm.student_id
         WHERE sm.material_id = google_classroom_material_attachments.google_material_id
         AND cm.student_id = auth.uid()
-        AND cm.is_test = false
+        AND p.is_test = false
         AND sm.visible = true
     )
 );
