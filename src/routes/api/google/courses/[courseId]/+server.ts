@@ -144,7 +144,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		// Fetch topics for this course
 		const { data: topics, error: topicsError } = await locals.supabase
 			.from('google_classroom_topics')
-			.select('id, google_topic_id, name, update_time')
+			.select('id, google_topic_id, name, updated_time')
 			.eq('google_course_id', course.id)
 			.order('name', { ascending: true });
 
@@ -168,13 +168,13 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				google_classroom_topics(id, name),
 				google_classroom_material_attachments(
 					id,
-					drive_file_id,
-					title,
-					alternate_link,
+					material_type,
+					google_file_id,
+					file_name,
+					mime_type,
+					file_url,
 					thumbnail_url,
-					youtube_url,
-					link_url,
-					form_url
+					title
 				)
 			`
 			)
@@ -301,7 +301,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			id: topic.id,
 			googleTopicId: topic.google_topic_id,
 			name: topic.name,
-			updateTime: topic.update_time
+			updateTime: topic.updated_time
 		}));
 
 		// Transform course work materials to camelCase
