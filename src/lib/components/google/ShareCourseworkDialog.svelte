@@ -85,7 +85,7 @@
 	let { coursework, existingShares, onClose, onSuccess }: Props = $props();
 
 	let classes = $state<Class[]>([]);
-	let classConfigs = $state<Map<string, ClassShareConfig>>(new Map());
+	let classConfigs = $state<ClassShareConfig[]>([]);
 	let submitting = $state(false);
 	let fetchingClasses = $state(true);
 
@@ -101,7 +101,7 @@
 	// Computed
 	// ============================================================================
 
-	let selectedCount = $derived(Array.from(classConfigs.values()).filter((c) => c.selected).length);
+	let selectedCount = $derived(classConfigs.filter((c) => c.selected).length);
 
 	let hasChanges = $derived(selectedCount > 0);
 
@@ -124,11 +124,10 @@
 			classes = data.classes || [];
 
 			// Initialize class configs
-			const configs = new Map<string, ClassShareConfig>();
-			for (const cls of classes) {
+			classConfigs = classes.map((cls) => {
 				const existingShare = existingShares.find((s) => s.classId === cls.id);
 
-				configs.set(cls.id, {
+				return {
 					classId: cls.id,
 					className: cls.name,
 					selected: !!existingShare,
@@ -137,15 +136,15 @@
 					customDescription: '',
 					categories: [],
 					loadingCategories: false
-				});
+				};
+			});
 
-				// If class is already shared, load its categories
-				if (existingShare) {
-					await fetchCategoriesForClass(cls.id);
+			// Load categories for already-shared classes
+			for (const config of classConfigs) {
+				if (config.selected) {
+					await fetchCategoriesForClass(config.classId);
 				}
 			}
-
-			classConfigs = configs;
 		} catch (err) {
 			console.error('[ShareDialog] Error fetching classes:', err);
 			toaster.error('Erreur lors du chargement des classes');
@@ -158,7 +157,7 @@
 	 * Fetch categories for a specific class
 	 */
 	async function fetchCategoriesForClass(classId: string) {
-		const config = classConfigs.get(classId);
+		const config = classConfigs.find((c) => c.classId === classId);
 		if (!config) return;
 
 		config.loadingCategories = true;
@@ -185,7 +184,7 @@
 		submitting = true;
 
 		try {
-			const selectedClasses = Array.from(classConfigs.values()).filter((c) => c.selected);
+			const selectedClasses = classConfigs.filter((c) => c.selected);
 
 			// Share with each selected class
 			const promises = selectedClasses.map(async (config) => {
@@ -227,11 +226,10 @@
 	 * Handle class selection toggle
 	 */
 	async function handleClassToggle(classId: string) {
-		const config = classConfigs.get(classId);
+		const config = classConfigs.find((c) => c.classId === classId);
 		if (!config) return;
 
 		config.selected = !config.selected;
-		classConfigs = classConfigs; // Trigger reactivity
 
 		// If selected, load categories if not already loaded
 		if (config.selected && config.categories.length === 0 && !config.loadingCategories) {
@@ -305,7 +303,7 @@
 			{:else}
 				<div class="space-y-3">
 					{#each classes as cls (cls.id)}
-						{@const config = classConfigs.get(cls.id)}
+						{@const config = classConfigs.find((c) => c.classId === cls.id)}
 						{#if config}
 							<Card.Root class={config.selected ? 'border-primary' : ''}>
 								<Card.Content class="p-4">
@@ -313,7 +311,7 @@
 										<!-- Class Selection -->
 										<div class="flex items-center justify-between">
 											<MyCheckbox
-												bind:checked={config.selected}
+												checked={config.selected}
 												label={cls.name}
 												onCheckedChange={() => handleClassToggle(cls.id)}
 											/>
