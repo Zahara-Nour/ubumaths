@@ -352,6 +352,7 @@ export async function syncCoursework(
 							updated_time: work.updateTime,
 							max_points: work.maxPoints || null,
 							work_type: work.workType,
+							alternate_link: work.alternateLink || null,
 							last_synced_at: new Date().toISOString(),
 							updated_at: new Date().toISOString()
 						},
