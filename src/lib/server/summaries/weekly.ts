@@ -4,7 +4,8 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, WeekConfig } from '$lib/types/database';
+import type { Database } from '$lib/types/database';
+import type { WeekConfig } from './database-types';
 import { format } from 'date-fns';
 import type { ClassWithSchool } from './types';
 import { getWeekRangeInTimezone } from './timezone-utils';

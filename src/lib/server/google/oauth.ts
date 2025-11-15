@@ -67,7 +67,7 @@ const googleAPIErrorSchema = z.object({
 					'@type': z.string(),
 					reason: z.string().optional(),
 					domain: z.string().optional(),
-					metadata: z.record(z.string()).optional()
+					metadata: z.record(z.string(), z.string()).optional()
 				})
 			)
 			.optional()

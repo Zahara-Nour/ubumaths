@@ -5,16 +5,27 @@ import * as serviceRoleClient from '$lib/server/serviceRoleClient';
 import * as summaries from '$lib/server/summaries';
 import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { RequestEvent } from '@sveltejs/kit';
 
 // Mock all dependencies
 vi.mock('$lib/server/auth/cron');
 vi.mock('$lib/server/serviceRoleClient');
 vi.mock('$lib/server/summaries');
 
-// Type for request context used in tests
-interface RequestContext {
-	request: Request;
-	locals: Record<string, unknown>;
+// Helper to create RequestEvent mock
+function createRequestEvent(
+	request: Request
+): RequestEvent<Record<string, never>, '/api/cron/daily-summaries-and-rewards'> {
+	return {
+		request,
+		locals: {},
+		params: {},
+		url: new URL(request.url),
+		route: { id: '/api/cron/daily-summaries-and-rewards' },
+		platform: undefined,
+		isDataRequest: false,
+		isSubRequest: false
+	} as RequestEvent<Record<string, never>, '/api/cron/daily-summaries-and-rewards'>;
 }
 
 describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
@@ -46,7 +57,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 		vi.mocked(cronAuth.verifyCronAuth).mockReturnValue(undefined);
 
 		// Mock job tracking RPCs (default: success)
-		mockSupabase.rpc.mockImplementation((funcName: string) => {
+		(mockSupabase.rpc as any).mockImplementation((funcName: string) => {
 			if (funcName === 'start_job_run') {
 				return Promise.resolve({ data: 'job-run-id', error: null });
 			}
@@ -66,7 +77,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				throw new Error('Unauthorized');
 			});
 
-			await expect(GET({ request: mockRequest, locals: {} } as RequestContext)).rejects.toThrow();
+			await expect(GET(createRequestEvent(mockRequest))).rejects.toThrow();
 
 			expect(cronAuth.verifyCronAuth).toHaveBeenCalledWith(mockRequest);
 		});
@@ -76,13 +87,13 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				throw new Error('Invalid token');
 			});
 
-			await expect(POST({ request: mockRequest, locals: {} } as RequestContext)).rejects.toThrow();
+			await expect(POST(createRequestEvent(mockRequest))).rejects.toThrow();
 
 			expect(cronAuth.verifyCronAuth).toHaveBeenCalledWith(mockRequest);
 		});
 
 		it('should accept valid CRON_SECRET via GET', async () => {
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: [],
@@ -91,14 +102,14 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				})
 			});
 
-			const response = await GET({ request: mockRequest, locals: {} } as RequestContext);
+			const response = await GET(createRequestEvent(mockRequest));
 
 			expect(response.status).toBe(200);
 			expect(cronAuth.verifyCronAuth).toHaveBeenCalledWith(mockRequest);
 		});
 
 		it('should accept valid CRON_SECRET via POST', async () => {
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: [],
@@ -107,7 +118,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				})
 			});
 
-			const response = await POST({ request: mockRequest, locals: {} } as RequestContext);
+			const response = await POST(createRequestEvent(mockRequest));
 
 			expect(response.status).toBe(200);
 			expect(cronAuth.verifyCronAuth).toHaveBeenCalledWith(mockRequest);
@@ -119,7 +130,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 	// ============================================================
 	describe('Happy Path', () => {
 		it('should handle no active classes', async () => {
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: [],
@@ -128,7 +139,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				})
 			});
 
-			const response = await GET({ request: mockRequest, locals: {} } as RequestContext);
+			const response = await GET(createRequestEvent(mockRequest));
 			const body = await response.json();
 
 			expect(response.status).toBe(200);
@@ -155,7 +166,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: [mockClass],
@@ -172,7 +183,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 			vi.mocked(summaries.getCurrentDayOfWeekInTimezone).mockReturnValue(1); // Monday
 			vi.mocked(summaries.isWeeklyRewardsDay).mockReturnValue(false);
 
-			const response = await GET({ request: mockRequest, locals: {} } as RequestContext);
+			const response = await GET(createRequestEvent(mockRequest));
 			const body = await response.json();
 
 			expect(response.status).toBe(200);
@@ -214,7 +225,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: [mockClass],
@@ -230,7 +241,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 			vi.mocked(summaries.getCurrentDayOfWeekInTimezone).mockReturnValue(1); // Monday
 			vi.mocked(summaries.isWeeklyRewardsDay).mockReturnValue(false);
 
-			const response = await GET({ request: mockRequest, locals: {} } as RequestContext);
+			const response = await GET(createRequestEvent(mockRequest));
 			const body = await response.json();
 
 			expect(response.status).toBe(200);
@@ -262,7 +273,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: [mockClass],
@@ -279,7 +290,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 			vi.mocked(summaries.isWeeklyRewardsDay).mockReturnValue(true);
 			vi.mocked(summaries.generateWeeklyRewards).mockResolvedValue(8); // 8 rewards
 
-			const response = await GET({ request: mockRequest, locals: {} } as RequestContext);
+			const response = await GET(createRequestEvent(mockRequest));
 			const body = await response.json();
 
 			expect(response.status).toBe(200);
@@ -316,7 +327,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: [mockClass],
@@ -334,7 +345,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 			vi.mocked(summaries.isWeeklyRewardsDay).mockReturnValue(true);
 			vi.mocked(summaries.generateWeeklyRewards).mockResolvedValue(8);
 
-			const response = await GET({ request: mockRequest, locals: {} } as RequestContext);
+			const response = await GET(createRequestEvent(mockRequest));
 			const body = await response.json();
 
 			expect(response.status).toBe(200);
@@ -380,7 +391,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			];
 
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: mockClasses,
@@ -397,7 +408,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 			vi.mocked(summaries.getCurrentDayOfWeekInTimezone).mockReturnValue(0);
 			vi.mocked(summaries.isWeeklyRewardsDay).mockReturnValue(false);
 
-			const response = await GET({ request: mockRequest, locals: {} } as RequestContext);
+			const response = await GET(createRequestEvent(mockRequest));
 			const body = await response.json();
 
 			expect(response.status).toBe(200);
@@ -432,7 +443,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: [mockClass],
@@ -449,7 +460,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 			vi.mocked(summaries.getCurrentDayOfWeekInTimezone).mockReturnValue(1);
 			vi.mocked(summaries.isWeeklyRewardsDay).mockReturnValue(false);
 
-			await GET({ request: mockRequest, locals: {} } as RequestContext);
+			await GET(createRequestEvent(mockRequest));
 
 			expect(summaries.getYesterdayInTimezone).toHaveBeenCalledWith('America/Los_Angeles');
 			expect(summaries.getCurrentDayOfWeekInTimezone).toHaveBeenCalledWith('America/Los_Angeles');
@@ -466,7 +477,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				schools: null // No school data
 			};
 
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: [mockClass],
@@ -483,7 +494,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 			vi.mocked(summaries.getCurrentDayOfWeekInTimezone).mockReturnValue(1);
 			vi.mocked(summaries.isWeeklyRewardsDay).mockReturnValue(false);
 
-			await GET({ request: mockRequest, locals: {} } as RequestContext);
+			await GET(createRequestEvent(mockRequest));
 
 			expect(summaries.getYesterdayInTimezone).toHaveBeenCalledWith('Europe/Paris');
 			expect(summaries.generateDailySummary).toHaveBeenCalledWith(
@@ -508,7 +519,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: [mockClass],
@@ -525,7 +536,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 			vi.mocked(summaries.isWeeklyRewardsDay).mockReturnValue(true);
 			vi.mocked(summaries.generateWeeklyRewards).mockResolvedValue(8);
 
-			await GET({ request: mockRequest, locals: {} } as RequestContext);
+			await GET(createRequestEvent(mockRequest));
 
 			expect(summaries.generateWeeklyRewards).toHaveBeenCalledWith(
 				mockSupabase,
@@ -541,7 +552,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 	// ============================================================
 	describe('Error Handling', () => {
 		it('should return 500 if fetching classes fails', async () => {
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: null,
@@ -550,7 +561,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				})
 			});
 
-			const response = await GET({ request: mockRequest, locals: {} } as RequestContext);
+			const response = await GET(createRequestEvent(mockRequest));
 			const body = await response.json();
 
 			expect(response.status).toBe(500);
@@ -588,7 +599,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			];
 
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: mockClasses,
@@ -610,7 +621,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 
 			vi.mocked(summaries.generateDailySummary).mockResolvedValue(5);
 
-			const response = await GET({ request: mockRequest, locals: {} } as RequestContext);
+			const response = await GET(createRequestEvent(mockRequest));
 			const body = await response.json();
 
 			expect(response.status).toBe(207); // Partial success
@@ -642,7 +653,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: [mockClass],
@@ -658,7 +669,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 			vi.mocked(summaries.getCurrentDayOfWeekInTimezone).mockReturnValue(1);
 			vi.mocked(summaries.isWeeklyRewardsDay).mockReturnValue(false);
 
-			await GET({ request: mockRequest, locals: {} } as RequestContext);
+			await GET(createRequestEvent(mockRequest));
 
 			expect(mockSupabase.rpc).toHaveBeenCalledWith(
 				'complete_job_run',
@@ -672,7 +683,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 		});
 
 		it('should handle job tracking failures gracefully', async () => {
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: [],
@@ -682,7 +693,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 			});
 
 			// Simulate job tracking failure
-			mockSupabase.rpc.mockImplementation((funcName: string) => {
+			(mockSupabase.rpc as any).mockImplementation((funcName: string) => {
 				if (funcName === 'start_job_run') {
 					return Promise.resolve({
 						data: null,
@@ -692,7 +703,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				return Promise.resolve({ data: null, error: null });
 			});
 
-			const response = await GET({ request: mockRequest, locals: {} } as RequestContext);
+			const response = await GET(createRequestEvent(mockRequest));
 
 			// Should still succeed (job tracking failure shouldn't block processing)
 			expect(response.status).toBe(200);
@@ -704,7 +715,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 	// ============================================================
 	describe('Response Format', () => {
 		it('should include timestamp in response', async () => {
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: [],
@@ -713,7 +724,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				})
 			});
 
-			const response = await GET({ request: mockRequest, locals: {} } as RequestContext);
+			const response = await GET(createRequestEvent(mockRequest));
 			const body = await response.json();
 
 			expect(body.timestamp).toBeDefined();
@@ -734,7 +745,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
-			mockSupabase.from.mockReturnValue({
+			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
 						data: [mockClass],
@@ -751,7 +762,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 			vi.mocked(summaries.getCurrentDayOfWeekInTimezone).mockReturnValue(1);
 			vi.mocked(summaries.isWeeklyRewardsDay).mockReturnValue(false);
 
-			const response = await GET({ request: mockRequest, locals: {} } as RequestContext);
+			const response = await GET(createRequestEvent(mockRequest));
 			const body = await response.json();
 
 			expect(body.dailySummaries.errors).toBeUndefined();

@@ -7,7 +7,7 @@
  */
 
 import { describe, test, expect, beforeEach, vi, afterEach } from 'vitest';
-import { GET, POST } from './+server';
+import { GET, POST } from '../../../routes/api/marketplace/listings/+server';
 import {
 	createMockSupabase,
 	createTestUser,
@@ -104,7 +104,7 @@ describe('/api/marketplace/listings', () => {
 			const response = await GET({
 				url: mockUrl,
 				locals: mockLocals
-			} as unknown as ListingsRequestEvent);
+			} as any);
 
 			const data = await response.json();
 
@@ -130,7 +130,7 @@ describe('/api/marketplace/listings', () => {
 				GET({
 					url: mockUrl,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent)
+				} as any)
 			).rejects.toThrow('Non authentifié');
 		});
 
@@ -147,7 +147,7 @@ describe('/api/marketplace/listings', () => {
 				GET({
 					url: mockUrl,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent)
+				} as any)
 			).rejects.toThrow('Le numéro de page doit être au moins 1');
 		});
 
@@ -182,7 +182,7 @@ describe('/api/marketplace/listings', () => {
 			const response = await GET({
 				url: mockUrl,
 				locals: mockLocals
-			} as unknown as ListingsRequestEvent);
+			} as any);
 
 			const data = await response.json();
 			expect(data.listings[0].listing_type).toBe('sell');
@@ -220,7 +220,7 @@ describe('/api/marketplace/listings', () => {
 			const response = await GET({
 				url: mockUrl,
 				locals: mockLocals
-			} as unknown as ListingsRequestEvent);
+			} as any);
 
 			const data = await response.json();
 			expect(data.listings).toHaveLength(10);
@@ -260,7 +260,7 @@ describe('/api/marketplace/listings', () => {
 			await GET({
 				url: mockUrl,
 				locals: mockLocals
-			} as unknown as ListingsRequestEvent);
+			} as any);
 
 			// Verify RPC was called only for other user's listing
 			expect(mockSupabase.rpc).toHaveBeenCalledWith('record_listing_view', {
@@ -290,7 +290,7 @@ describe('/api/marketplace/listings', () => {
 				GET({
 					url: mockUrl,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent)
+				} as any)
 			).rejects.toThrow("Le marketplace n'est pas activé pour votre classe");
 		});
 
@@ -309,7 +309,7 @@ describe('/api/marketplace/listings', () => {
 				GET({
 					url: mockUrl,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent)
+				} as any)
 			).rejects.toThrow('École non trouvée');
 		});
 	});
@@ -356,7 +356,7 @@ describe('/api/marketplace/listings', () => {
 			const response = await POST({
 				request: mockRequest,
 				locals: mockLocals
-			} as unknown as ListingsRequestEvent);
+			} as any);
 
 			const data = await response.json();
 
@@ -400,7 +400,7 @@ describe('/api/marketplace/listings', () => {
 			const response = await POST({
 				request: mockRequest,
 				locals: mockLocals
-			} as unknown as ListingsRequestEvent);
+			} as any);
 
 			const data = await response.json();
 
@@ -422,7 +422,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent)
+				} as any)
 			).rejects.toThrow('Non authentifié');
 		});
 
@@ -446,7 +446,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent)
+				} as any)
 			).rejects.toThrow();
 		});
 
@@ -471,7 +471,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent)
+				} as any)
 			).rejects.toThrow("Le marketplace n'est pas activé pour votre classe");
 		});
 
@@ -496,7 +496,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent)
+				} as any)
 			).rejects.toThrow("Vous avez atteint le nombre maximum d'annonces actives");
 		});
 
@@ -521,7 +521,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent)
+				} as any)
 			).rejects.toThrow('Vous ne possédez pas toutes les cartes spécifiées');
 		});
 
@@ -546,7 +546,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent)
+				} as any)
 			).rejects.toThrow('Certaines cartes ont déjà été utilisées');
 		});
 
@@ -599,7 +599,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent)
+				} as any)
 			).rejects.toThrow('Failed to lock cards');
 
 			// Verify rollback was performed
@@ -639,10 +639,10 @@ describe('/api/marketplace/listings', () => {
 			await POST({
 				request: mockRequest,
 				locals: mockLocals
-			} as unknown as ListingsRequestEvent);
+			} as any);
 
 			expect(capturedData).toBeTruthy();
-			const expiresAt = new Date(capturedData.expires_at);
+			const expiresAt = new Date((capturedData as { expires_at: string }).expires_at);
 			const now = new Date();
 			const diffDays = (expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
 			expect(diffDays).toBeCloseTo(7, 0);
@@ -679,7 +679,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent)
+				} as any)
 			).rejects.toThrow("Erreur lors de la création de l'annonce");
 		});
 
@@ -697,7 +697,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent)
+				} as any)
 			).rejects.toThrow();
 		});
 	});
@@ -751,7 +751,7 @@ describe('/api/marketplace/listings', () => {
 				await GET({
 					url: mockUrl,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent);
+				} as any);
 			}
 
 			// Only first view should be recorded as new
@@ -788,7 +788,7 @@ describe('/api/marketplace/listings', () => {
 					POST({
 						request: mockRequest,
 						locals: mockLocals
-					} as unknown as ListingsRequestEvent)
+					} as any)
 				).rejects.toThrow();
 			}
 		});
@@ -836,7 +836,7 @@ describe('/api/marketplace/listings', () => {
 				const response = await POST({
 					request: mockRequest,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent);
+				} as any);
 
 				const data = await response.json();
 
@@ -886,7 +886,7 @@ describe('/api/marketplace/listings', () => {
 			const response1 = await POST({
 				request: mockRequest,
 				locals: mockLocals
-			} as unknown as ListingsRequestEvent);
+			} as any);
 			expect(response1.status).toBe(201);
 
 			// Second request should fail due to limit
@@ -894,7 +894,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
-				} as unknown as ListingsRequestEvent)
+				} as any)
 			).rejects.toThrow("Vous avez atteint le nombre maximum d'annonces actives");
 		});
 	});
