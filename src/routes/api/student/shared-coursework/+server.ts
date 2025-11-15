@@ -197,11 +197,16 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const courseworkIds = (sharedCourseworkList || []).map((item) => item.coursework_id);
 		const sharedByIds = [...new Set((sharedCourseworkList || []).map((item) => item.shared_by))];
 
+		console.log('[Student Shared Coursework] Google course IDs:', googleCourseIds);
+		console.log('[Student Shared Coursework] Shared by IDs:', sharedByIds);
+
 		// Fetch ALL courses in one query
 		const { data: courses, error: coursesError } = await locals.supabase
 			.from('google_classroom_courses')
 			.select('id, name, google_course_id')
 			.in('google_course_id', googleCourseIds);
+
+		console.log('[Student Shared Coursework] Courses fetched:', courses);
 
 		if (coursesError) {
 			console.error('[Student Shared Coursework] Courses fetch error:', coursesError);
@@ -221,6 +226,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.from('profiles')
 			.select('id, firstname, lastname')
 			.in('id', sharedByIds);
+
+		console.log('[Student Shared Coursework] Teachers fetched:', teachers);
 
 		if (teachersError) {
 			console.error('[Student Shared Coursework] Teachers fetch error:', teachersError);
