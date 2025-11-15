@@ -16,6 +16,7 @@ pnpm db:migrate
 ```
 
 Cette commande va créer :
+
 - 8 nouvelles tables (google_integrations, google_classroom_courses, etc.)
 - 28 RLS policies (sécurité multi-tenant)
 - 20 indexes (performance)
@@ -37,6 +38,7 @@ pnpm db:types
 ```
 
 **Important** : Sans cette étape, vous aurez ~20 erreurs TypeScript dans les fichiers :
+
 - `src/lib/server/google/sync.ts`
 - `src/lib/server/google/oauth.ts`
 - `src/lib/server/google/schemas.ts`
@@ -112,6 +114,7 @@ pnpm dev -- --port 5175
 Après avoir vérifié que tout compile :
 
 ### Test 1 : Connexion OAuth
+
 - [ ] Se connecter en tant qu'enseignant
 - [ ] Aller dans Paramètres > Google Classroom
 - [ ] Cliquer "Connecter Google Classroom"
@@ -120,17 +123,20 @@ Après avoir vérifié que tout compile :
 - [ ] Vérifier statut "Connecté"
 
 ### Test 2 : Synchronisation
+
 - [ ] Cliquer "Synchroniser maintenant"
 - [ ] Vérifier le message de succès
 - [ ] Vérifier les statistiques affichées
 
 ### Test 3 : Visualisation élève
+
 - [ ] Se connecter en tant qu'élève
 - [ ] Aller dans Classe (menu principal)
 - [ ] Vérifier que la page se charge (même si vide)
 - [ ] Si des travaux ont été partagés, vérifier l'affichage
 
 ### Test 4 : Déconnexion
+
 - [ ] Retourner dans Paramètres > Google Classroom
 - [ ] Cliquer "Déconnecter"
 - [ ] Vérifier statut "Non connecté"
@@ -142,21 +148,25 @@ Après avoir vérifié que tout compile :
 Les phases suivantes ne sont **pas encore implémentées** :
 
 ### Phase 7 : Association Classes ↔ Cours
+
 - Permettre aux enseignants d'associer une classe UbuMaths à un cours Google Classroom
 - Table `class_google_classroom_links` déjà créée
 - UI à créer dans les paramètres de classe
 
 ### Phase 8 : Interface de partage enseignant
+
 - Permettre aux enseignants de choisir quels travaux partager
 - Choisir la classe cible
 - Optionnellement restreindre à certains élèves
 - Tables `shared_coursework` + `shared_coursework_students` déjà créées
 
 ### Phase 9 : Synchronisation automatique
+
 - Cron job ou webhook pour synchroniser automatiquement
 - Options : Vercel Cron, Supabase Functions, ou Google Pub/Sub
 
 ### Phase 10 : Analytics enseignant
+
 - Suivre quels élèves ont ouvert les documents
 - Temps passé sur chaque document
 - Taux de complétion
@@ -170,6 +180,7 @@ Pour tous les détails (setup OAuth, troubleshooting, architecture) :
 📖 **[docs/guides/google-classroom-setup.md](docs/guides/google-classroom-setup.md)** (762 lignes)
 
 Sections :
+
 - Configuration Google Cloud Console (étapes détaillées)
 - Configuration des variables d'environnement
 - Migration de la base de données
@@ -183,6 +194,7 @@ Sections :
 ## 8. Résumé des fichiers créés
 
 ### Backend (Phase 1-3)
+
 - ✅ `supabase/migrations/20251114120000_google_classroom_integration.sql` (8 tables, RLS)
 - ✅ `src/lib/server/google/oauth.ts` (OAuth 2.0 + PKCE)
 - ✅ `src/lib/server/google/encryption.ts` (AES-256-GCM)
@@ -196,6 +208,7 @@ Sections :
 - ✅ `src/lib/server/validation/google.ts` (Request validation)
 
 ### API Endpoints (Phase 4)
+
 - ✅ `src/routes/api/google/auth/connect/+server.ts`
 - ✅ `src/routes/api/google/auth/callback/+server.ts`
 - ✅ `src/routes/api/google/auth/disconnect/+server.ts`
@@ -204,11 +217,13 @@ Sections :
 - ✅ `src/routes/api/google/courses/+server.ts`
 
 ### UI (Phase 5-6)
+
 - ✅ `src/routes/(protected)/dashboard/teacher/settings/google/+page.svelte`
 - ✅ `src/routes/(protected)/dashboard/student/classroom/+page.server.ts`
 - ✅ `src/routes/(protected)/dashboard/student/classroom/+page.svelte`
 
 ### Documentation
+
 - ✅ `docs/architecture/google-classroom-schema.md`
 - ✅ `docs/guides/google-classroom-setup.md`
 - ✅ `docs/README.md` (mis à jour)
@@ -217,22 +232,23 @@ Sections :
 
 ## 9. Statut actuel
 
-| Phase | Statut | Description |
-|-------|--------|-------------|
-| **Phase 1** | ✅ Complète | Database schema (8 tables, RLS, encryption) |
-| **Phase 2** | ✅ Complète | OAuth config + encryption services |
-| **Phase 3** | ✅ Complète | API clients (Classroom, Drive, sync) |
-| **Phase 4** | ✅ Complète | REST API endpoints (6 endpoints) |
-| **Phase 5** | ✅ Complète | Teacher settings UI |
-| **Phase 6** | ✅ Complète | Student coursework view (MVP) |
-| **Phase 7** | ⏳ TODO | Class ↔ Course association UI |
-| **Phase 8** | ⏳ TODO | Teacher sharing interface |
-| **Phase 9** | ⏳ TODO | Auto-sync (cron/webhooks) |
-| **Phase 10** | ⏳ TODO | Student analytics |
+| Phase        | Statut      | Description                                 |
+| ------------ | ----------- | ------------------------------------------- |
+| **Phase 1**  | ✅ Complète | Database schema (8 tables, RLS, encryption) |
+| **Phase 2**  | ✅ Complète | OAuth config + encryption services          |
+| **Phase 3**  | ✅ Complète | API clients (Classroom, Drive, sync)        |
+| **Phase 4**  | ✅ Complète | REST API endpoints (6 endpoints)            |
+| **Phase 5**  | ✅ Complète | Teacher settings UI                         |
+| **Phase 6**  | ✅ Complète | Student coursework view (MVP)               |
+| **Phase 7**  | ⏳ TODO     | Class ↔ Course association UI              |
+| **Phase 8**  | ⏳ TODO     | Teacher sharing interface                   |
+| **Phase 9**  | ⏳ TODO     | Auto-sync (cron/webhooks)                   |
+| **Phase 10** | ⏳ TODO     | Student analytics                           |
 
 **Branche Git** : `claude/google-drive-integration-01K9ceVisTk1ZqDYicFjrHEt`
 
 **Commits** :
+
 1. `8451acb` - Phase 1: Database schema
 2. `7aeb3e1` - Phase 2: OAuth + encryption
 3. `c967bd7` - Phase 3: API clients + sync
@@ -247,6 +263,7 @@ Sections :
 ## ❓ Questions ?
 
 Consulter **[docs/guides/google-classroom-setup.md](docs/guides/google-classroom-setup.md)** pour :
+
 - Troubleshooting (encryption key, CSRF, rate limits, etc.)
 - Architecture détaillée (data flow, security layers)
 - Exemples de configuration

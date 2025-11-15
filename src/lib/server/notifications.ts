@@ -56,7 +56,7 @@ export async function createNotification(
 				};
 			}
 
-			if (data.target_type === 'classes' && data.target_class_ids) {
+			if (data.target_type === 'class' && data.target_class_ids) {
 				// Verify teacher owns these classes
 				const { data: teacherClasses } = await supabase
 					.from('class_members')
@@ -509,7 +509,7 @@ export async function getCreatedNotifications(
 		// Batch fetch all unique class IDs to avoid repeated queries
 		const uniqueClassIds = new Set<string>();
 		for (const n of notifications) {
-			if (n.target_type === 'classes' && n.target_class_ids) {
+			if (n.target_type === 'class' && n.target_class_ids) {
 				for (const classId of n.target_class_ids) {
 					uniqueClassIds.add(classId);
 				}
@@ -565,7 +565,7 @@ export async function getCreatedNotifications(
 				// In production, consider caching role counts separately
 				totalRecipients = totalUsersCount || 0;
 				targetSummary = n.target_roles.join(', ');
-			} else if (n.target_type === 'classes' && n.target_class_ids) {
+			} else if (n.target_type === 'class' && n.target_class_ids) {
 				// Use pre-fetched class names and member counts
 				const classNames = n.target_class_ids
 					.map((id) => classNamesMap.get(id))

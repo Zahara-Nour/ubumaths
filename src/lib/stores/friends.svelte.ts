@@ -78,44 +78,51 @@ class FriendsManager {
 			const presenceMap = new Map(presenceData?.map((p) => [p.user_id, p]) ?? []);
 
 			// Enrich friendships with profile and presence data
-			const enrichedFriendships: FriendshipWithProfile[] = friendshipsData.map((friendship) => {
-				const friendId =
-					friendship.requester_id === this.currentUserId
-						? friendship.addressee_id
-						: friendship.requester_id;
+			const enrichedFriendships = friendshipsData
+				.map((friendship) => {
+					const friendId =
+						friendship.requester_id === this.currentUserId
+							? friendship.addressee_id
+							: friendship.requester_id;
 
-				const profile = profileMap.get(friendId);
-				const presenceData = presenceMap.get(friendId);
+					const profile = profileMap.get(friendId);
+					const presenceData = presenceMap.get(friendId);
 
-				// Transform presence to match FriendshipWithProfile type
-				const presence = presenceData
-					? {
-							is_online: presenceData.status === 'online',
-							last_seen: presenceData.last_heartbeat
-						}
-					: undefined;
+					// Skip if profile not found (shouldn't happen but handle gracefully)
+					if (!profile) {
+						console.warn(`Profile not found for friend ${friendId}`);
+						return null;
+					}
 
-				return {
-					id: friendship.id,
-					user_id: this.currentUserId!,
-					friend_id: friendId,
-					status: friendship.status as FriendshipType,
-					friendship_type: friendship.friendship_type as FriendshipType | undefined,
-					created_at: friendship.created_at,
-					updated_at: friendship.updated_at,
-					requester_id: friendship.requester_id,
-					addressee_id: friendship.addressee_id,
-					friend_profile: {
-						id: friendId,
-						full_name: profile?.full_name ?? null,
-						firstname: profile?.firstname ?? null,
-						lastname: profile?.lastname ?? null,
-						avatar_url: profile?.avatar_url ?? null,
-						role: profile?.role ?? 'student'
-					},
-					presence
-				};
-			});
+					// Transform presence to match FriendshipWithProfile type
+					const presence = presenceData
+						? {
+								is_online: presenceData.status === 'online',
+								last_seen: presenceData.last_heartbeat
+							}
+						: undefined;
+
+					const enrichedFriendship: FriendshipWithProfile = {
+						id: friendship.id,
+						status: friendship.status as FriendshipType,
+						friendship_type: friendship.friendship_type as FriendshipType,
+						created_at: friendship.created_at,
+						updated_at: friendship.updated_at,
+						requester_id: friendship.requester_id,
+						addressee_id: friendship.addressee_id,
+						friend_profile: {
+							id: friendId,
+							full_name: profile.full_name ?? null,
+							firstname: profile.firstname ?? null,
+							lastname: profile.lastname ?? null,
+							avatar_url: profile.avatar_url ?? null,
+							role: profile.role ?? 'student'
+						} as Database['public']['Tables']['profiles']['Row'],
+						presence
+					};
+					return enrichedFriendship;
+				})
+				.filter((f): f is NonNullable<typeof f> => f !== null);
 
 			// Separate into categories
 			this.friendships = enrichedFriendships.filter((f) => f.status === 'accepted');
@@ -127,7 +134,9 @@ class FriendsManager {
 			);
 
 			// Start presence tracking for accepted friends
-			const trackedFriendIds = this.friendships.map((f) => f.friend_profile.id);
+			const trackedFriendIds = this.friendships
+				.map((f) => f.friend_profile?.id)
+				.filter((id): id is string => id !== undefined);
 			if (trackedFriendIds.length > 0) {
 				await presenceManager.startPresenceTracking(trackedFriendIds);
 			}
@@ -272,7 +281,9 @@ class FriendsManager {
 	 * Update presence tracking when friends list changes
 	 */
 	private async updatePresenceTracking(): Promise<void> {
-		const friendIds = this.friendships.map((f) => f.friend_profile.id);
+		const friendIds = this.friendships
+			.map((f) => f.friend_profile?.id)
+			.filter((id): id is string => id !== undefined);
 		if (friendIds.length > 0) {
 			await presenceManager.updateFriendList(friendIds);
 		} else {
@@ -347,6 +358,9 @@ class FriendsManager {
 	 * Get display name for a friend
 	 */
 	getDisplayName(friend: FriendshipWithProfile): string {
+		if (!friend.friend_profile) {
+			return 'Utilisateur inconnu';
+		}
 		if (friend.friend_profile.full_name) {
 			return friend.friend_profile.full_name;
 		}

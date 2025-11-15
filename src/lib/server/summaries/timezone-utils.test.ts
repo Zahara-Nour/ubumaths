@@ -14,7 +14,7 @@ import {
 	isDateInRange,
 	getDayBoundariesInTimezone
 } from './timezone-utils';
-import type { WeekConfig } from '$lib/types/database';
+import type { WeekConfig } from './database-types';
 
 describe('getYesterdayInTimezone', () => {
 	beforeEach(() => {

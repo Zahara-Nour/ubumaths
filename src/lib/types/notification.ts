@@ -7,7 +7,6 @@
 
 import type {
 	Notification,
-	NotificationRead,
 	NotificationType,
 	NotificationPriority,
 	NotificationTargetType,
@@ -17,7 +16,6 @@ import type {
 // Re-export base types for convenience
 export type {
 	Notification,
-	NotificationRead,
 	NotificationType,
 	NotificationPriority,
 	NotificationTargetType,

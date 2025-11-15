@@ -71,7 +71,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((GET as RequestHandler)(context), 401);
+			await expectError((GET as any)(context), 401);
 		});
 	});
 
@@ -90,7 +90,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((GET as RequestHandler)(context), 403);
+			await expectError((GET as any)(context), 403);
 		});
 
 		it('should return 403 when profile is missing', async () => {
@@ -104,7 +104,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((GET as RequestHandler)(context), 403);
+			await expectError((GET as any)(context), 403);
 		});
 	});
 
@@ -123,7 +123,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((GET as RequestHandler)(context), 400);
+			await expectError((GET as any)(context), 400);
 		});
 
 		it('should return 400 for empty schoolId', async () => {
@@ -137,7 +137,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((GET as RequestHandler)(context), 400);
+			await expectError((GET as any)(context), 400);
 		});
 	});
 
@@ -157,7 +157,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			vi.mocked(mockSupabase.single).mockResolvedValue({
+			vi.mocked(mockSupabase as any).single.mockResolvedValue({
 				data: mockSchool,
 				error: null
 			});
@@ -172,7 +172,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (GET as RequestHandler)(context);
+			const response = await (GET as any)(context);
 			const body = await response.json();
 
 			expect(response.status).toBe(200);
@@ -199,7 +199,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				timetable: null
 			};
 
-			vi.mocked(mockSupabase.single).mockResolvedValue({
+			vi.mocked(mockSupabase as any).single.mockResolvedValue({
 				data: mockSchool,
 				error: null
 			});
@@ -214,7 +214,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (GET as RequestHandler)(context);
+			const response = await (GET as any)(context);
 			const body = await response.json();
 
 			expect(response.status).toBe(200);
@@ -233,7 +233,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 		it('should return 404 when school not found', async () => {
 			const schoolId = '550e8400-e29b-41d4-a716-446655440000';
 
-			vi.mocked(mockSupabase.single).mockResolvedValue({
+			vi.mocked(mockSupabase as any).single.mockResolvedValue({
 				data: null,
 				error: { message: 'Not found', details: '', hint: '', code: '' }
 			});
@@ -248,7 +248,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((GET as RequestHandler)(context), 404);
+			await expectError((GET as any)(context), 404);
 		});
 	});
 });
@@ -291,7 +291,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 401);
+			await expectError((PUT as any)(context), 401);
 		});
 	});
 
@@ -315,7 +315,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 403);
+			await expectError((PUT as any)(context), 403);
 		});
 
 		it('should return 403 when profile is missing', async () => {
@@ -334,7 +334,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 403);
+			await expectError((PUT as any)(context), 403);
 		});
 	});
 
@@ -358,7 +358,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 400);
+			await expectError((PUT as any)(context), 400);
 		});
 
 		it('should return 400 for invalid JSON body', async () => {
@@ -378,7 +378,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 400);
+			await expectError((PUT as any)(context), 400);
 		});
 
 		it('should return 400 for invalid timezone', async () => {
@@ -397,7 +397,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 400);
+			await expectError((PUT as any)(context), 400);
 		});
 
 		it('should return 400 for missing timezone', async () => {
@@ -415,7 +415,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 400);
+			await expectError((PUT as any)(context), 400);
 		});
 
 		it('should return 400 for missing week_config', async () => {
@@ -433,7 +433,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 400);
+			await expectError((PUT as any)(context), 400);
 		});
 
 		it('should return 400 for invalid week_config - missing school_days', async () => {
@@ -457,7 +457,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 400);
+			await expectError((PUT as any)(context), 400);
 		});
 
 		it('should return 400 for invalid week_config - overlapping days', async () => {
@@ -481,7 +481,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 400);
+			await expectError((PUT as any)(context), 400);
 		});
 
 		it('should return 400 for invalid week_config - missing days', async () => {
@@ -505,7 +505,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 400);
+			await expectError((PUT as any)(context), 400);
 		});
 
 		it('should return 400 for invalid week_config - days out of range', async () => {
@@ -529,7 +529,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 400);
+			await expectError((PUT as any)(context), 400);
 		});
 
 		it('should return 400 for invalid week_config - first_day out of range', async () => {
@@ -553,7 +553,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 400);
+			await expectError((PUT as any)(context), 400);
 		});
 	});
 
@@ -595,8 +595,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			vi.mocked(mockSupabase.single)
-				.mockResolvedValueOnce({ data: existingSchool, error: null })
+			vi.mocked(mockSupabase as any)
+				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
 			const context: RequestContext = {
@@ -609,7 +609,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (PUT as RequestHandler)(context);
+			const response = await (PUT as any)(context);
 			const body = await response.json();
 
 			expect(response.status).toBe(200);
@@ -643,8 +643,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			vi.mocked(mockSupabase.single)
-				.mockResolvedValueOnce({ data: existingSchool, error: null })
+			vi.mocked(mockSupabase as any)
+				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
 			const context: RequestContext = {
@@ -657,7 +657,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (PUT as RequestHandler)(context);
+			const response = await (PUT as any)(context);
 			const body = await response.json();
 
 			expect(response.status).toBe(200);
@@ -695,8 +695,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			vi.mocked(mockSupabase.single)
-				.mockResolvedValueOnce({ data: existingSchool, error: null })
+			vi.mocked(mockSupabase as any)
+				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
 			const context: RequestContext = {
@@ -709,7 +709,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (PUT as RequestHandler)(context);
+			const response = await (PUT as any)(context);
 			expect(response.status).toBe(200);
 		});
 
@@ -744,8 +744,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			vi.mocked(mockSupabase.single)
-				.mockResolvedValueOnce({ data: existingSchool, error: null })
+			vi.mocked(mockSupabase as any)
+				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
 			const context: RequestContext = {
@@ -758,7 +758,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (PUT as RequestHandler)(context);
+			const response = await (PUT as any)(context);
 			expect(response.status).toBe(200);
 		});
 	});
@@ -775,7 +775,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				week_config: DEFAULT_WEEK_CONFIG
 			});
 
-			vi.mocked(mockSupabase.single).mockResolvedValue({
+			vi.mocked(mockSupabase as any).single.mockResolvedValue({
 				data: null,
 				error: { message: 'Not found', details: '', hint: '', code: '' }
 			});
@@ -790,7 +790,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 404);
+			await expectError((PUT as any)(context), 404);
 		});
 
 		it('should return 500 when update fails', async () => {
@@ -808,8 +808,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				timetable: { periods: [] }
 			};
 
-			vi.mocked(mockSupabase.single)
-				.mockResolvedValueOnce({ data: existingSchool, error: null })
+			vi.mocked(mockSupabase as any)
+				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({
 					data: null,
 					error: { message: 'Update failed', details: '', hint: '', code: '' }
@@ -825,7 +825,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as RequestHandler)(context), 500);
+			await expectError((PUT as any)(context), 500);
 		});
 	});
 
@@ -864,8 +864,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			vi.mocked(mockSupabase.single)
-				.mockResolvedValueOnce({ data: existingSchool, error: null })
+			vi.mocked(mockSupabase as any)
+				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
 			const context: RequestContext = {
@@ -878,7 +878,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (PUT as RequestHandler)(context);
+			const response = await (PUT as any)(context);
 			expect(response.status).toBe(200);
 		});
 
@@ -908,8 +908,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				timetable: { periods, week_config: DEFAULT_WEEK_CONFIG }
 			};
 
-			vi.mocked(mockSupabase.single)
-				.mockResolvedValueOnce({ data: existingSchool, error: null })
+			vi.mocked(mockSupabase as any)
+				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
 			const context: RequestContext = {
@@ -922,7 +922,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (PUT as RequestHandler)(context);
+			const response = await (PUT as any)(context);
 			const body = await response.json();
 
 			expect(body.school.timetable.periods).toEqual(periods);

@@ -7,7 +7,7 @@
  * and simulating concurrent operations.
  */
 
-import { vi } from 'vitest';
+import { vi, expect } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 

@@ -22,6 +22,20 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
 // =============================================================================
+// Custom Types
+// =============================================================================
+
+/**
+ * Week configuration for school schedules
+ */
+export interface WeekConfig {
+	first_day: number; // 0-6 (Sunday-Saturday)
+	last_day: number; // 0-6 (Sunday-Saturday)
+	school_days: number[]; // Array of day numbers
+	weekend_days: number[]; // Array of day numbers
+}
+
+// =============================================================================
 // Table Row Types (SELECT queries)
 // =============================================================================
 
