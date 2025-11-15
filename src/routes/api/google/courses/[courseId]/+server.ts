@@ -82,7 +82,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		const { data: course, error: courseError } = await locals.supabase
 			.from('google_classroom_courses')
 			.select(
-				'id, google_course_id, name, section, description, room, course_state, alternate_link, creation_time, update_time'
+				'id, google_course_id, name, section, description_heading, room, course_state, alternate_link, enrollment_code, last_synced_at, updated_at'
 			)
 			.eq('id', courseId)
 			.eq('teacher_id', user.id)
@@ -222,12 +222,13 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			googleCourseId: course.google_course_id,
 			name: course.name,
 			section: course.section,
-			description: course.description,
+			description: course.description_heading,
 			room: course.room,
 			courseState: course.course_state,
 			alternateLink: course.alternate_link,
-			creationTime: course.creation_time,
-			updateTime: course.update_time
+			enrollmentCode: course.enrollment_code,
+			lastSyncedAt: course.last_synced_at,
+			updatedAt: course.updated_at
 		};
 
 		return json({
