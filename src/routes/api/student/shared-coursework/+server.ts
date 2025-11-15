@@ -46,8 +46,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		categoryId: url.searchParams.get('categoryId')
 	};
 
-	console.log('[Student Shared Coursework] Query params:', queryParams);
-
 	const validation = listStudentSharedCourseworkSchema.safeParse(queryParams);
 	if (!validation.success) {
 		console.error('[Student Shared Coursework] Validation error:', validation.error.issues);
@@ -63,9 +61,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.select('class_id')
 			.eq('student_id', user.id);
 
-		console.log('[Student Shared Coursework] Student ID:', user.id);
-		console.log('[Student Shared Coursework] Student classes:', studentClasses);
-
 		if (classesError) {
 			console.error('[Student Shared Coursework] Classes fetch error:', classesError);
 			throw error(500, 'Failed to fetch student classes');
@@ -73,7 +68,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 		// If student is not in any classes, return empty result
 		if (!studentClasses || studentClasses.length === 0) {
-			console.log('[Student Shared Coursework] No classes found for student');
 			return json({
 				coursework: [],
 				pagination: {
@@ -87,7 +81,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 		// Extract class IDs
 		const classIds = studentClasses.map((c) => c.class_id);
-		console.log('[Student Shared Coursework] Class IDs:', classIds);
 
 		// Build base query with JOINs
 		// Note: Only fetch visible coursework for student's classes
@@ -197,17 +190,12 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const courseworkIds = (sharedCourseworkList || []).map((item) => item.coursework_id);
 		const sharedByIds = [...new Set((sharedCourseworkList || []).map((item) => item.shared_by))];
 
-		console.log('[Student Shared Coursework] Google course IDs:', googleCourseIds);
-		console.log('[Student Shared Coursework] Shared by IDs:', sharedByIds);
-
 		// Fetch ALL courses in one query
 		// Note: googleCourseIds contains UUIDs from coursework.google_course_id (FK to courses.id)
 		const { data: courses, error: coursesError } = await locals.supabase
 			.from('google_classroom_courses')
 			.select('id, name, google_course_id')
 			.in('id', googleCourseIds);
-
-		console.log('[Student Shared Coursework] Courses fetched:', courses);
 
 		if (coursesError) {
 			console.error('[Student Shared Coursework] Courses fetch error:', coursesError);
@@ -227,8 +215,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.from('profiles')
 			.select('id, firstname, lastname')
 			.in('id', sharedByIds);
-
-		console.log('[Student Shared Coursework] Teachers fetched:', teachers);
 
 		if (teachersError) {
 			console.error('[Student Shared Coursework] Teachers fetch error:', teachersError);
