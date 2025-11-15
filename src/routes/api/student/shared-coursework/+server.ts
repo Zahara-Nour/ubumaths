@@ -20,15 +20,13 @@
  * - Only returns visible coursework
  * - Only returns coursework for student's classes
  * - All inputs validated with Zod
+ * - No service role needed - uses denormalized fields!
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { listStudentSharedCourseworkSchema } from '$lib/server/validation';
-import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 
 /**
  * List all visible coursework shared with student's classes
@@ -86,7 +84,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const classIds = studentClasses.map((c) => c.class_id);
 
 		// Build base query with JOINs
-		// Note: Only fetch visible coursework for student's classes
+		// Note: Now using denormalized course_name and teacher_name fields!
 		let query = locals.supabase.from('shared_coursework').select(
 			`
 				id,
@@ -97,6 +95,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				created_at,
 				updated_at,
 				shared_by,
+				course_name,
+				teacher_name,
 				google_classroom_coursework!inner(
 					id,
 					title,
@@ -155,91 +155,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			});
 		}
 
-		// Optimize: Fetch all courses and materials in bulk queries instead of N+1
-		const googleCourseIds = [
-			...new Set(
-				(sharedCourseworkList || [])
-					.map((item) => {
-						const courseworkData = item.google_classroom_coursework as unknown as
-							| {
-									id: string;
-									title: string;
-									description: string | null;
-									google_course_id: string;
-									due_date: string | null;
-									due_time: string | null;
-									max_points: number | null;
-									work_type: string;
-									alternate_link: string;
-							  }
-							| {
-									id: string;
-									title: string;
-									description: string | null;
-									google_course_id: string;
-									due_date: string | null;
-									due_time: string | null;
-									max_points: number | null;
-									work_type: string;
-									alternate_link: string;
-							  }[];
-						const coursework = Array.isArray(courseworkData) ? courseworkData[0] : courseworkData;
-						return coursework?.google_course_id;
-					})
-					.filter(Boolean) as string[]
-			)
-		];
-
+		// Optimize: Fetch materials counts in bulk (N+1 optimization)
 		const courseworkIds = (sharedCourseworkList || []).map((item) => item.coursework_id);
-		const sharedByIds = [...new Set((sharedCourseworkList || []).map((item) => item.shared_by))];
-
-		// Create service role client to bypass RLS
-		// SAFE: We already verified user is a student and fetched shared_coursework with RLS
-		// We only fetch courses for coursework IDs that passed RLS checks
-		const supabaseAdmin = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-			auth: {
-				autoRefreshToken: false,
-				persistSession: false
-			}
-		});
-
-		// Fetch courses with service role (bypasses RLS to avoid circular dependency)
-		const { data: courses, error: coursesError } = await supabaseAdmin
-			.from('google_classroom_courses')
-			.select('id, name, google_course_id')
-			.in('id', googleCourseIds);
-
-		if (coursesError) {
-			console.error('[Student Shared Coursework] Courses fetch error:', coursesError);
-		}
-
-		// Create course lookup map (keyed by UUID id for matching with coursework.google_course_id)
-		const courseMap: Record<string, { id: string; name: string }> = (courses || []).reduce(
-			(acc, c) => {
-				acc[c.id] = { id: c.id, name: c.name };
-				return acc;
-			},
-			{} as Record<string, { id: string; name: string }>
-		);
-
-		// Fetch teacher names in one query
-		const { data: teachers, error: teachersError } = await locals.supabase
-			.from('profiles')
-			.select('id, firstname, lastname')
-			.in('id', sharedByIds);
-
-		if (teachersError) {
-			console.error('[Student Shared Coursework] Teachers fetch error:', teachersError);
-		}
-
-		// Create teacher lookup map
-		const teacherMap: Record<string, string> = (teachers || []).reduce(
-			(acc, t) => {
-				acc[t.id] = `${t.firstname} ${t.lastname}`;
-				return acc;
-			},
-			{} as Record<string, string>
-		);
 
 		// Fetch ALL materials in one query
 		const { data: materialsData, error: materialsError } = await locals.supabase
@@ -260,7 +177,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			{} as Record<string, number>
 		);
 
-		// Map with pre-fetched data (no additional queries)
+		// Map with denormalized data (no additional queries for courses/teachers!)
 		const enrichedData = (sharedCourseworkList || []).map((item) => {
 			// Handle nested coursework data from Supabase JOIN
 			const courseworkData = item.google_classroom_coursework as unknown as
@@ -288,8 +205,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				  }[];
 
 			const coursework = Array.isArray(courseworkData) ? courseworkData[0] : courseworkData;
-			const googleCourseId = coursework?.google_course_id;
-			const course = courseMap[googleCourseId || ''];
 
 			// Supabase JOIN types don't reflect !inner modifier, handle both cases defensively
 			const classData = item.classes as unknown as { name: string } | { name: string }[];
@@ -300,9 +215,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				name: string;
 				icon: string | null;
 			} | null;
-
-			// Get teacher name
-			const teacherName = teacherMap[item.shared_by] || 'Unknown Teacher';
 
 			// Custom description overrides original description
 			const description = item.description_override || coursework?.description || null;
@@ -319,8 +231,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				categoryId: item.category_id,
 				categoryName: categoryData?.name || null,
 				categoryIcon: categoryData?.icon || null,
-				teacherName,
-				courseName: course?.name || 'Unknown Course',
+				// Use denormalized fields - no service role needed!
+				teacherName: item.teacher_name || 'Unknown Teacher',
+				courseName: item.course_name || 'Unknown Course',
 				materialsCount: materialsCounts[item.coursework_id] || 0,
 				dueDate: coursework?.due_date || null,
 				dueTime: coursework?.due_time || null,
