@@ -60,6 +60,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.select('class_id')
 			.eq('student_id', user.id);
 
+		console.log('[Student Shared Coursework] Student ID:', user.id);
+		console.log('[Student Shared Coursework] Student classes:', studentClasses);
+
 		if (classesError) {
 			console.error('[Student Shared Coursework] Classes fetch error:', classesError);
 			throw error(500, 'Failed to fetch student classes');
@@ -67,6 +70,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 		// If student is not in any classes, return empty result
 		if (!studentClasses || studentClasses.length === 0) {
+			console.log('[Student Shared Coursework] No classes found for student');
 			return json({
 				coursework: [],
 				pagination: {
@@ -80,6 +84,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 		// Extract class IDs
 		const classIds = studentClasses.map((c) => c.class_id);
+		console.log('[Student Shared Coursework] Class IDs:', classIds);
 
 		// Build base query with JOINs
 		// Note: Only fetch visible coursework for student's classes

@@ -20,10 +20,15 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 	if (categoryId) params.set('categoryId', categoryId);
 
 	// Fetch shared coursework via API
+	console.log('[Student Devoirs Page] Fetching coursework with params:', params.toString());
 	const courseworkResponse = await fetch(`/api/student/shared-coursework?${params}`);
+	console.log('[Student Devoirs Page] Response status:', courseworkResponse.status);
+
 	const courseworkData = courseworkResponse.ok
 		? await courseworkResponse.json()
 		: { coursework: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
+
+	console.log('[Student Devoirs Page] Coursework data:', courseworkData);
 
 	// Fetch student's classes for filter dropdown
 	const { data: studentClasses, error: classesError } = await locals.supabase
