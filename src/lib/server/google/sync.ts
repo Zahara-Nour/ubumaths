@@ -293,7 +293,7 @@ export async function syncCoursework(
 						.split('T')[0];
 				}
 
-				if (work.dueTime) {
+				if (work.dueTime && work.dueTime.hours !== undefined && work.dueTime.minutes !== undefined) {
 					dueTime = `${work.dueTime.hours.toString().padStart(2, '0')}:${work.dueTime.minutes.toString().padStart(2, '0')}:00`;
 				}
 
@@ -326,7 +326,9 @@ export async function syncCoursework(
 					.single();
 
 				if (courseworkError) {
-					result.errors.push(`Failed to sync coursework ${work.title}: ${courseworkError.message}`);
+					const errorMsg = `Failed to sync coursework ${work.title}: ${courseworkError.message}`;
+					result.errors.push(errorMsg);
+					console.error(`[Sync] ${errorMsg}`);
 					continue;
 				}
 
@@ -356,7 +358,9 @@ export async function syncCoursework(
 						} catch (materialError) {
 							const message =
 								materialError instanceof Error ? materialError.message : 'Unknown error';
-							result.errors.push(`Failed to sync material for ${work.title}: ${message}`);
+							const errorMsg = `Failed to sync material for ${work.title}: ${message}`;
+							result.errors.push(errorMsg);
+							console.error(`[Sync] ${errorMsg}`);
 						}
 					}
 				}
@@ -364,7 +368,9 @@ export async function syncCoursework(
 				result.synced++;
 			} catch (error) {
 				const message = error instanceof Error ? error.message : 'Unknown error';
-				result.errors.push(`Failed to sync coursework ${work.title}: ${message}`);
+				const errorMsg = `Failed to sync coursework ${work.title}: ${message}`;
+				result.errors.push(errorMsg);
+				console.error(`[Sync] ${errorMsg}`, error);
 			}
 		}
 
