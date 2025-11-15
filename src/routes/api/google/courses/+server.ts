@@ -52,10 +52,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 		const { data: courses, error: fetchError } = await locals.supabase
 			.from('google_classroom_courses')
 			.select(
-				'id, google_course_id, name, section, description, room, course_state, alternate_link, creation_time, update_time'
+				'id, google_course_id, name, section, description_heading, room, course_state, enrollment_code, alternate_link, last_synced_at, updated_at'
 			)
 			.eq('teacher_id', user.id)
-			.order('update_time', { ascending: false });
+			.order('updated_at', { ascending: false });
 
 		if (fetchError) {
 			console.error('[Google Courses] Database error:', fetchError);
@@ -68,12 +68,13 @@ export const GET: RequestHandler = async ({ locals }) => {
 			googleCourseId: course.google_course_id,
 			name: course.name,
 			section: course.section,
-			description: course.description,
+			description: course.description_heading,
 			room: course.room,
 			courseState: course.course_state,
+			enrollmentCode: course.enrollment_code,
 			alternateLink: course.alternate_link,
-			creationTime: course.creation_time,
-			updateTime: course.update_time
+			lastSyncedAt: course.last_synced_at,
+			updatedAt: course.updated_at
 		}));
 
 		// Return transformed courses
