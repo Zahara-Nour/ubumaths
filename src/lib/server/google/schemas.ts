@@ -43,8 +43,8 @@ export const googleDateSchema = z.object({
  * Google time schema (used in dueTime)
  */
 export const googleTimeSchema = z.object({
-	hours: z.number().int().min(0).max(23),
-	minutes: z.number().int().min(0).max(59),
+	hours: z.number().int().min(0).max(23).optional(),
+	minutes: z.number().int().min(0).max(59).optional(),
 	seconds: z.number().int().min(0).max(59).optional(),
 	nanos: z.number().int().min(0).max(999999999).optional()
 });
@@ -53,9 +53,9 @@ export const googleTimeSchema = z.object({
  * Google Drive file material schema
  */
 export const googleDriveFileMaterialSchema = z.object({
-	id: z.string(),
-	title: z.string(),
-	alternateLink: z.string().url().max(2048),
+	id: z.string().optional(),
+	title: z.string().optional(),
+	alternateLink: z.string().url().max(2048).optional(),
 	thumbnailUrl: z.string().url().max(2048).optional()
 });
 
