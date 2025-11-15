@@ -182,6 +182,49 @@ export const googleCourseworkListSchema = z.object({
 });
 
 /**
+ * Google Classroom Topic schema
+ */
+export const googleTopicSchema = z.object({
+	courseId: z.string(),
+	topicId: z.string(),
+	name: z.string().max(100), // Google API limit
+	updateTime: z.string()
+});
+
+/**
+ * Google Classroom Topic list schema
+ */
+export const googleTopicListSchema = z.object({
+	topics: z.array(googleTopicSchema).optional(),
+	nextPageToken: z.string().optional()
+});
+
+/**
+ * Google Classroom CourseWorkMaterial schema
+ */
+export const googleCourseWorkMaterialSchema = z.object({
+	id: z.string(),
+	courseId: z.string(),
+	title: z.string(),
+	description: z.string().optional(),
+	materials: z.array(googleMaterialSchema).optional(), // Reuse existing schema
+	state: z.enum(['PUBLISHED', 'DRAFT', 'DELETED']),
+	alternateLink: z.string().url().max(2048).optional(),
+	creationTime: z.string(),
+	updateTime: z.string(),
+	scheduledTime: z.string().optional(),
+	topicId: z.string().optional()
+});
+
+/**
+ * Google Classroom CourseWorkMaterial list schema
+ */
+export const googleCourseWorkMaterialListSchema = z.object({
+	courseWorkMaterial: z.array(googleCourseWorkMaterialSchema).optional(),
+	nextPageToken: z.string().optional()
+});
+
+/**
  * Google API error detail schema
  */
 export const googleAPIErrorDetailSchema = z.object({
