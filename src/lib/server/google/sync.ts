@@ -156,7 +156,7 @@ export async function syncTeacherCourses(
 			const { courses, nextPageToken: token } = await client.listCourses({
 				pageSize: 100,
 				pageToken: nextPageToken,
-				courseStates: ['ACTIVE', 'ARCHIVED'] // Exclude PROVISIONED, DECLINED, SUSPENDED
+				courseStates: ['ACTIVE'] // Only sync active courses (exclude ARCHIVED, PROVISIONED, DECLINED, SUSPENDED)
 			});
 
 			if (courses) {
@@ -166,10 +166,14 @@ export async function syncTeacherCourses(
 			nextPageToken = token;
 		} while (nextPageToken);
 
-		console.log(`[Sync] Fetched ${allCourses.length} courses for teacher ${teacherId}`);
+		console.log(`[Sync] Fetched ${allCourses.length} active courses for teacher ${teacherId}`);
+
+		// Track synced Google course IDs for cleanup
+		const syncedGoogleCourseIds: string[] = [];
 
 		// Upsert each course into database
 		for (const course of allCourses) {
+			syncedGoogleCourseIds.push(course.id);
 			try {
 				const { error: upsertError } = await supabase.from('google_classroom_courses').upsert(
 					{
@@ -201,6 +205,35 @@ export async function syncTeacherCourses(
 			}
 		}
 
+		// Cleanup: Delete courses that are no longer in Google Classroom (archived, deleted, etc.)
+		if (syncedGoogleCourseIds.length > 0) {
+			const { error: deleteError, count } = await supabase
+				.from('google_classroom_courses')
+				.delete({ count: 'exact' })
+				.eq('teacher_id', teacherId)
+				.not('google_course_id', 'in', `(${syncedGoogleCourseIds.join(',')})`);
+
+			if (deleteError) {
+				result.errors.push(`Failed to cleanup old courses: ${deleteError.message}`);
+			} else if (count && count > 0) {
+				console.log(`[Sync] Cleaned up ${count} old/archived courses for teacher ${teacherId}`);
+			}
+		} else {
+			// No active courses - delete all courses for this teacher
+			const { error: deleteError, count } = await supabase
+				.from('google_classroom_courses')
+				.delete({ count: 'exact' })
+				.eq('teacher_id', teacherId);
+
+			if (deleteError) {
+				result.errors.push(`Failed to cleanup courses: ${deleteError.message}`);
+			} else if (count && count > 0) {
+				console.log(
+					`[Sync] No active courses found. Cleaned up ${count} courses for teacher ${teacherId}`
+				);
+			}
+		}
+
 		// Update last_sync_at on google_integrations
 		await supabase
 			.from('google_integrations')
@@ -208,7 +241,7 @@ export async function syncTeacherCourses(
 			.eq('teacher_id', teacherId);
 
 		console.log(
-			`[Sync] Synced ${result.synced}/${allCourses.length} courses for teacher ${teacherId}`
+			`[Sync] Synced ${result.synced}/${allCourses.length} active courses for teacher ${teacherId}`
 		);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : 'Unknown error';
@@ -421,12 +454,12 @@ export async function fullSync(
 		result.coursesSynced = coursesResult.synced;
 		result.errors.push(...coursesResult.errors);
 
-		// Step 2: Get all synced courses from database
+		// Step 2: Get all synced courses from database (only ACTIVE courses are synced)
 		const { data: courses, error: coursesError } = await supabase
 			.from('google_classroom_courses')
 			.select('id, google_course_id, name')
 			.eq('teacher_id', teacherId)
-			.in('course_state', ['ACTIVE', 'ARCHIVED']);
+			.eq('course_state', 'ACTIVE');
 
 		if (coursesError) {
 			result.errors.push(`Failed to fetch courses from database: ${coursesError.message}`);
