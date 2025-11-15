@@ -340,7 +340,7 @@ export async function syncCoursework(
 					.from('google_classroom_coursework')
 					.upsert(
 						{
-							google_course_id: googleCourseId,
+							google_course_id: courseId,
 							google_coursework_id: work.id,
 							title: work.title,
 							description: work.description || null,

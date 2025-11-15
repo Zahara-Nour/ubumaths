@@ -201,10 +201,11 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		console.log('[Student Shared Coursework] Shared by IDs:', sharedByIds);
 
 		// Fetch ALL courses in one query
+		// Note: googleCourseIds contains UUIDs from coursework.google_course_id (FK to courses.id)
 		const { data: courses, error: coursesError } = await locals.supabase
 			.from('google_classroom_courses')
 			.select('id, name, google_course_id')
-			.in('google_course_id', googleCourseIds);
+			.in('id', googleCourseIds);
 
 		console.log('[Student Shared Coursework] Courses fetched:', courses);
 
@@ -212,10 +213,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			console.error('[Student Shared Coursework] Courses fetch error:', coursesError);
 		}
 
-		// Create course lookup map (keyed by google_course_id for matching)
+		// Create course lookup map (keyed by UUID id for matching with coursework.google_course_id)
 		const courseMap: Record<string, { id: string; name: string }> = (courses || []).reduce(
 			(acc, c) => {
-				acc[c.google_course_id] = { id: c.id, name: c.name };
+				acc[c.id] = { id: c.id, name: c.name };
 				return acc;
 			},
 			{} as Record<string, { id: string; name: string }>
