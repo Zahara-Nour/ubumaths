@@ -167,7 +167,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		}
 
 		// Group sharing data by coursework_id
-		const sharedDataMap: Record<string, typeof allSharedData> = (allSharedData || []).reduce(
+		type SharedDataArray = NonNullable<typeof allSharedData>;
+		const sharedDataMap: Record<string, SharedDataArray> = (allSharedData || []).reduce(
 			(acc, shared) => {
 				if (!acc[shared.coursework_id]) {
 					acc[shared.coursework_id] = [];
@@ -175,7 +176,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				acc[shared.coursework_id].push(shared);
 				return acc;
 			},
-			{} as Record<string, typeof allSharedData>
+			{} as Record<string, SharedDataArray>
 		);
 
 		// Map coursework with pre-fetched data (no additional queries)
