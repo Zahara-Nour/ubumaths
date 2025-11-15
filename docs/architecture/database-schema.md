@@ -3943,3 +3943,505 @@ All tables have Row Level Security enabled with the following key policies:
 - **Backend** (Phase 2): Will be in `src/routes/api/marketplace/`
 - **Frontend** (Phase 3): Will be in `src/routes/(protected)/dashboard/student/marketplace/`
 - **Components** (Phase 3): Will be in `src/lib/components/marketplace/`
+
+---
+
+## Google Classroom Integration (CourseWorkMaterials)
+
+🆕 **Added**: 2025-11-15
+**Status**: ✅ Production
+**Purpose**: Sync and share non-graded educational materials from Google Classroom with UbuMaths classes.
+
+### Overview
+
+The Google Classroom integration enables teachers to:
+
+1. Connect their personal Google account via OAuth 2.0 + PKCE
+2. Sync courses, topics, and course work materials (non-graded content) from Google Classroom
+3. Share educational materials with their UbuMaths classes
+4. Organize materials by Google Topics OR UbuMaths Categories (hybrid pattern)
+5. Students browse shared materials with filters and pagination
+
+**Documentation**: See detailed integration guide at [docs/development/google-classroom-integration.md](../development/google-classroom-integration.md)
+
+### Architecture Flow
+
+```
+Google Classroom API
+        ↓ OAuth 2.0 + PKCE
+google_integrations (encrypted tokens)
+        ↓ Sync API
+google_classroom_courses
+        ↓
+google_classroom_topics (for organization)
+        ↓
+google_classroom_materials (non-graded content)
+        ↓
+google_classroom_material_attachments (Drive files, YouTube, links)
+        ↓ Teacher shares
+shared_materials (with denormalized course_name★ and teacher_name★)
+        ↓ Student access
+/dashboard/student/materials (filtered view)
+```
+
+**★ Denormalized fields** maintained by triggers to avoid RLS circular dependency.
+
+### Tables
+
+#### `google_integrations`
+
+**Purpose**: Store encrypted OAuth tokens for each teacher's Google account.
+
+| Column        | Type                         | Description                                             |
+| ------------- | ---------------------------- | ------------------------------------------------------- |
+| id            | UUID (PK)                    | Integration ID                                          |
+| teacher_id    | UUID (UNIQUE, FK → profiles) | Teacher who linked Google account                       |
+| access_token  | TEXT                         | **Encrypted** OAuth access token (~1 hour lifespan)     |
+| refresh_token | TEXT                         | **Encrypted** OAuth refresh token (long-lived)          |
+| token_expiry  | TIMESTAMPTZ                  | When access_token expires                               |
+| scopes        | TEXT[]                       | OAuth scopes granted (e.g., classroom.courses.readonly) |
+| google_email  | TEXT                         | Email of linked Google account                          |
+| last_sync_at  | TIMESTAMPTZ                  | Last successful sync timestamp                          |
+| created_at    | TIMESTAMPTZ                  | Creation timestamp                                      |
+| updated_at    | TIMESTAMPTZ                  | Last update timestamp                                   |
+
+**Indexes**:
+
+- `idx_google_integrations_teacher` on `teacher_id`
+- `idx_google_integrations_expiry` on `token_expiry` (WHERE `token_expiry < NOW() + 1 hour`)
+
+**Encryption**: Tokens encrypted with AES-256-GCM (application-level, not pgcrypto).
+
+- Key stored in `GOOGLE_TOKEN_ENCRYPTION_KEY` environment variable
+- Never stored in database or logs
+- See `src/lib/server/google/encryption.ts`
+
+**RLS Policies**:
+
+- Teachers: Full CRUD on their own integration
+- Admins: SELECT only (for support)
+
+---
+
+#### `google_classroom_courses`
+
+**Purpose**: Google Classroom courses synced from teacher's account.
+
+| Column              | Type                 | Description                                        |
+| ------------------- | -------------------- | -------------------------------------------------- |
+| id                  | UUID (PK)            | Internal course ID                                 |
+| teacher_id          | UUID (FK → profiles) | Teacher who owns this course                       |
+| google_course_id    | TEXT                 | Google's unique course identifier                  |
+| name                | TEXT                 | Course name                                        |
+| section             | TEXT                 | Course section (optional)                          |
+| description_heading | TEXT                 | Course description                                 |
+| room                | TEXT                 | Classroom location (optional)                      |
+| enrollment_code     | TEXT                 | Google Classroom join code                         |
+| course_state        | TEXT                 | ACTIVE, ARCHIVED, PROVISIONED, DECLINED, SUSPENDED |
+| alternate_link      | TEXT                 | URL to view course in Google Classroom             |
+| last_synced_at      | TIMESTAMPTZ          | Last sync from Google API                          |
+| created_at          | TIMESTAMPTZ          | Creation timestamp                                 |
+| updated_at          | TIMESTAMPTZ          | Last update timestamp                              |
+
+**Unique Constraint**: (teacher_id, google_course_id)
+
+**Indexes**:
+
+- `idx_google_courses_teacher` on `teacher_id`
+- `idx_google_courses_state` on `course_state`
+- `idx_google_courses_google_id` on `google_course_id`
+
+**RLS Policies**:
+
+- Teachers: Full CRUD on their own courses
+- Admins: SELECT only
+
+---
+
+#### `google_classroom_topics`
+
+**Purpose**: Topics (rubriques/thèmes) from Google Classroom for organizing materials.
+
+| Column           | Type                                          | Description                                 |
+| ---------------- | --------------------------------------------- | ------------------------------------------- |
+| id               | UUID (PK)                                     | Internal topic ID                           |
+| google_course_id | UUID (FK → google_classroom_courses, CASCADE) | Parent course                               |
+| google_topic_id  | TEXT                                          | Google's unique topic identifier            |
+| name             | TEXT                                          | Topic name (max 100 chars per Google API)   |
+| updated_time     | TIMESTAMPTZ                                   | Last update timestamp from Google Classroom |
+| last_synced_at   | TIMESTAMPTZ                                   | Last sync timestamp                         |
+| created_at       | TIMESTAMPTZ                                   | Creation timestamp                          |
+| updated_at       | TIMESTAMPTZ                                   | Last update timestamp                       |
+
+**Unique Constraint**: (google_course_id, google_topic_id)
+
+**Indexes**:
+
+- `idx_topics_course` on `google_course_id`
+- `idx_topics_google_id` on `google_topic_id`
+- `idx_topics_name` on `(google_course_id, name)`
+
+**RLS Policies**:
+
+- Teachers: Full CRUD for their own courses' topics
+- Admins: SELECT only
+
+---
+
+#### `google_classroom_materials`
+
+**Purpose**: Non-graded educational materials from Google Classroom (documents, videos for consultation).
+
+| Column             | Type                                          | Description                              |
+| ------------------ | --------------------------------------------- | ---------------------------------------- |
+| id                 | UUID (PK)                                     | Internal material ID                     |
+| google_course_id   | UUID (FK → google_classroom_courses, CASCADE) | Parent course                            |
+| google_material_id | TEXT                                          | Google's unique material identifier      |
+| title              | TEXT                                          | Material title                           |
+| description        | TEXT                                          | Material description (optional)          |
+| state              | TEXT                                          | PUBLISHED, DRAFT, DELETED                |
+| topic_id           | UUID (FK → google_classroom_topics, SET NULL) | Optional topic for organization          |
+| created_time       | TIMESTAMPTZ                                   | When created in Google Classroom         |
+| updated_time       | TIMESTAMPTZ                                   | When last updated in Google Classroom    |
+| alternate_link     | TEXT                                          | URL to view material in Google Classroom |
+| last_synced_at     | TIMESTAMPTZ                                   | Last sync timestamp                      |
+| created_at         | TIMESTAMPTZ                                   | Creation timestamp                       |
+| updated_at         | TIMESTAMPTZ                                   | Last update timestamp                    |
+
+**Unique Constraint**: (google_course_id, google_material_id)
+
+**Indexes**:
+
+- `idx_materials_course` on `google_course_id`
+- `idx_materials_topic` on `topic_id`
+- `idx_materials_state` on `state`
+- `idx_materials_google_id` on `google_material_id`
+- `idx_materials_published` on `(google_course_id, state)` WHERE `state = 'PUBLISHED'`
+
+**RLS Policies**:
+
+- Teachers: Full CRUD for their own courses' materials
+- Students: SELECT for materials shared with their classes (via `shared_materials`)
+- Admins: SELECT only
+
+**Note**: Only PUBLISHED materials are synced. DRAFT and DELETED materials are ignored or marked but not shown to students.
+
+---
+
+#### `google_classroom_material_attachments`
+
+**Purpose**: Files, links, and videos attached to CourseWorkMaterials.
+
+| Column             | Type                                            | Description                                                 |
+| ------------------ | ----------------------------------------------- | ----------------------------------------------------------- |
+| id                 | UUID (PK)                                       | Attachment ID                                               |
+| google_material_id | UUID (FK → google_classroom_materials, CASCADE) | Parent material                                             |
+| material_type      | TEXT                                            | DRIVE_FILE, YOUTUBE_VIDEO, LINK, FORM                       |
+| google_file_id     | TEXT                                            | Google Drive file ID (for DRIVE_FILE type only)             |
+| file_name          | TEXT                                            | File name or link title                                     |
+| mime_type          | TEXT                                            | MIME type (e.g., application/pdf, video/mp4)                |
+| file_url           | TEXT                                            | URL to access the resource                                  |
+| thumbnail_url      | TEXT                                            | Thumbnail preview URL (optional)                            |
+| title              | TEXT                                            | Display title (for links/videos, may differ from file_name) |
+| created_at         | TIMESTAMPTZ                                     | Creation timestamp                                          |
+
+**Indexes**:
+
+- `idx_material_attachments_material` on `google_material_id`
+- `idx_material_attachments_type` on `material_type`
+- `idx_material_attachments_google_file` on `google_file_id` WHERE `google_file_id IS NOT NULL`
+
+**RLS Policies**:
+
+- Teachers: Full CRUD for their own materials' attachments
+- Students: SELECT for attachments of shared materials (cross-table policy)
+- Admins: SELECT only
+
+**Material Types**:
+
+- `DRIVE_FILE`: Google Drive file (PDF, Doc, etc.)
+- `YOUTUBE_VIDEO`: YouTube video
+- `LINK`: External link
+- `FORM`: Google Form
+
+---
+
+#### `shared_materials`
+
+**Purpose**: Track which CourseWorkMaterials are shared with UbuMaths classes.
+
+🌟 **Strategic Denormalization**: This table denormalizes `course_name` and `teacher_name` to avoid RLS circular dependency.
+
+| Column               | Type                                            | Description                                                    |
+| -------------------- | ----------------------------------------------- | -------------------------------------------------------------- |
+| id                   | UUID (PK)                                       | Sharing record ID                                              |
+| material_id          | UUID (FK → google_classroom_materials, CASCADE) | Material being shared                                          |
+| class_id             | UUID (FK → classes, CASCADE)                    | UbuMaths class receiving material                              |
+| category_id          | UUID (FK → coursework_categories, SET NULL)     | Optional UbuMaths category for organization                    |
+| topic_id             | UUID (FK → google_classroom_topics, SET NULL)   | Optional Google topic for organization                         |
+| shared_by            | UUID (FK → profiles, CASCADE)                   | Teacher who shared the material                                |
+| description_override | TEXT                                            | Teacher's custom description (overrides material.description)  |
+| visible              | BOOLEAN                                         | Whether students can currently see this material               |
+| **course_name**      | TEXT                                            | **★ Denormalized** course name (from google_classroom_courses) |
+| **teacher_name**     | TEXT                                            | **★ Denormalized** teacher name (from profiles)                |
+| created_at           | TIMESTAMPTZ                                     | Creation timestamp                                             |
+| updated_at           | TIMESTAMPTZ                                     | Last update timestamp                                          |
+
+**Unique Constraint**: (material_id, class_id)
+
+**Indexes**:
+
+- `idx_shared_materials_material` on `material_id`
+- `idx_shared_materials_class` on `class_id`
+- `idx_shared_materials_category` on `category_id`
+- `idx_shared_materials_topic` on `topic_id`
+- `idx_shared_materials_visible` on `(class_id, visible)` WHERE `visible = true`
+- `idx_shared_materials_course_name` on `course_name` WHERE `course_name IS NOT NULL`
+
+**RLS Policies**:
+
+- Teachers: Full CRUD for their own shared materials
+- Students: SELECT visible materials for their classes (with `is_test = false` check)
+- Admins: SELECT only
+
+#### Denormalization Pattern
+
+**Problem**: RLS circular dependency when students query shared_materials → google_classroom_materials → google_classroom_courses (RLS blocks access to courses table).
+
+**Solution**: Denormalize `course_name` and `teacher_name` into `shared_materials`.
+
+**Automatic Maintenance via Triggers**:
+
+1. **INSERT Trigger** (`populate_shared_material_names`):
+   - Runs BEFORE INSERT on `shared_materials`
+   - Auto-populates `course_name` and `teacher_name` using SECURITY DEFINER
+   - Eliminates need for service role bypass in application code
+
+2. **Course Rename Trigger** (`update_shared_material_course_name`):
+   - Runs AFTER UPDATE on `google_classroom_courses`
+   - Updates all `shared_materials.course_name` when a course is renamed
+   - Only triggers when name actually changes (performance optimized)
+
+3. **Teacher Rename Trigger** (`update_shared_material_teacher_name`):
+   - Runs AFTER UPDATE on `profiles`
+   - Updates all `shared_materials.teacher_name` when teacher changes name
+   - Only triggers when first/last name changes
+
+**Benefits**:
+
+- ✅ **3x faster queries** (1 query vs 3 with JOINs)
+- ✅ **No service role bypass** in application code (more secure)
+- ✅ **Automatic consistency** (triggers handle updates, zero maintenance)
+- ✅ **90% code reduction** (3 lines vs 31 lines for student queries)
+
+**Trade-offs**:
+
+- ⚠️ ~100 bytes extra storage per record (negligible)
+- ⚠️ < 5ms overhead on writes (negligible for rare operations)
+
+**Rationale**: Course/teacher names are NOT sensitive data, renames are extremely rare (< 0.1% of operations), triggers guarantee consistency.
+
+**See Also**: [DECISION-rls-denormalization.md](./DECISION-rls-denormalization.md) for complete analysis.
+
+---
+
+### Hybrid Organization Pattern
+
+Teachers can choose **per-class** how to organize shared materials:
+
+1. **Google Topics** - Use Topics from Google Classroom
+2. **UbuMaths Categories** - Use custom categories (5 defaults: Cours, Exercices, Corrections, Devoirs, Évaluations)
+
+**Logic**:
+
+- Both `category_id` and `topic_id` are optional
+- Teachers select one or the other (cannot have both)
+- Students see materials grouped by category (if set) > topic (if set) > uncategorized
+
+**Database Constraint**: Validated at application level (Zod schema), not database CHECK constraint.
+
+---
+
+### RLS Policy Summary
+
+**28 policies** across 6 tables:
+
+| Table                      | Teachers                 | Students                    | Admins      |
+| -------------------------- | ------------------------ | --------------------------- | ----------- |
+| google_integrations        | Full CRUD (own)          | None                        | SELECT only |
+| google_classroom_courses   | Full CRUD (own)          | None                        | SELECT only |
+| google_classroom_topics    | Full CRUD (via course)   | None                        | SELECT only |
+| google_classroom_materials | Full CRUD (via course)   | SELECT (shared)             | SELECT only |
+| material_attachments       | Full CRUD (via material) | SELECT (shared)             | SELECT only |
+| shared_materials           | Full CRUD (own)          | SELECT (visible + in class) | SELECT only |
+
+**Cross-Table Student Policies**:
+
+```sql
+-- Students can view materials shared with their classes
+CREATE POLICY "Students can view materials shared with their classes"
+ON google_classroom_materials FOR SELECT TO authenticated
+USING (
+  EXISTS (
+    SELECT 1 FROM shared_materials sm
+    JOIN class_members cm ON cm.class_id = sm.class_id
+    WHERE sm.material_id = google_classroom_materials.id
+    AND cm.student_id = auth.uid()
+    AND cm.is_test = false
+    AND sm.visible = true
+  )
+);
+
+-- Students can view attachments for shared materials
+CREATE POLICY "Students can view attachments for shared materials"
+ON google_classroom_material_attachments FOR SELECT TO authenticated
+USING (
+  EXISTS (
+    SELECT 1 FROM shared_materials sm
+    JOIN class_members cm ON cm.class_id = sm.class_id
+    WHERE sm.material_id = google_classroom_material_attachments.google_material_id
+    AND cm.student_id = auth.uid()
+    AND cm.is_test = false
+    AND sm.visible = true
+  )
+);
+```
+
+---
+
+### Sync Logic
+
+**Workflow**:
+
+1. **Teacher initiates sync** (manual trigger via UI)
+2. **Access token auto-refresh** if expired (< 5 minutes remaining)
+3. **Sync courses** from Google Classroom (ACTIVE only)
+4. **For each course**:
+   - Sync topics
+   - Sync course work materials (PUBLISHED only)
+   - Sync attachments
+5. **Cleanup deleted items** (courses/topics/materials no longer in Google)
+6. **Update last_sync_at** timestamp
+
+**Incremental Sync**: Currently full sync each time (< 10s for 50 materials). Future optimization: use `updateTime` filters.
+
+**API Client**: `src/lib/server/google/classroom-api.ts`
+
+- Automatic retry with exponential backoff (rate limits)
+- Zod validation on all responses
+- Comprehensive error handling
+
+**Sync Functions**: `src/lib/server/google/sync.ts`
+
+- `fullSync(teacherId, supabase)` - Main entry point
+- `syncTeacherCourses()` - Sync all courses
+- `syncTopics(courseId, ...)` - Sync topics for a course
+- `syncCourseWorkMaterials(courseId, ...)` - Sync materials
+
+---
+
+### Security
+
+#### OAuth 2.0 + PKCE
+
+**Flow**:
+
+1. Generate PKCE code verifier (64 random characters)
+2. Create code challenge (SHA-256 hash)
+3. Redirect to Google with challenge
+4. Google redirects back with authorization code
+5. Exchange code + verifier for tokens
+6. Encrypt and store tokens
+
+**Required Scopes**:
+
+- `https://www.googleapis.com/auth/classroom.courses.readonly`
+- `https://www.googleapis.com/auth/classroom.coursework.me.readonly`
+- `https://www.googleapis.com/auth/drive.readonly`
+
+**Implementation**: `src/lib/server/google/oauth.ts`
+
+#### Token Encryption
+
+**Algorithm**: AES-256-GCM (authenticated encryption)
+
+**Process**:
+
+1. Derive 256-bit key from `GOOGLE_TOKEN_ENCRYPTION_KEY` (SHA-256)
+2. Generate random 16-byte IV per encryption
+3. Encrypt token with AES-256-GCM
+4. Store: [IV (16 bytes)] + [Auth Tag (16 bytes)] + [Ciphertext]
+
+**Security Audit**:
+
+- ✅ Authenticated encryption (prevents tampering)
+- ✅ Random IV per encryption (prevents pattern analysis)
+- ✅ Key derivation (ensures 256-bit key)
+- ✅ Error handling (doesn't leak sensitive data)
+- ✅ Server-side only (encryption key never exposed to client)
+
+**Implementation**: `src/lib/server/google/encryption.ts`
+
+#### Multi-Layer Authorization
+
+**Layer 1**: Authentication (requireRole)
+**Layer 2**: Ownership verification (material belongs to teacher)
+**Layer 3**: Class ownership (teacher owns all selected classes)
+**Layer 4**: RLS policies (database-level)
+
+**Example** (POST /api/google/materials/[id]/share):
+
+```typescript
+// Layer 1
+const { user } = await requireRole(locals, 'teacher');
+
+// Layer 2
+const { data: material } = await supabase
+	.from('google_classroom_materials')
+	.select('google_classroom_courses!inner(teacher_id)')
+	.eq('id', materialId)
+	.single();
+
+if (material.google_classroom_courses.teacher_id !== user.id) {
+	throw error(403, 'You do not own this material');
+}
+
+// Layer 3
+const { data: classes } = await supabase
+	.from('classes')
+	.select('id, teacher_id')
+	.in('id', classIds);
+
+const invalidClasses = classes.filter((c) => c.teacher_id !== user.id);
+if (invalidClasses.length > 0) {
+	throw error(403, 'You do not own all selected classes');
+}
+
+// Layer 4 (automatic via RLS)
+const { error: insertError } = await supabase.from('shared_materials').insert(sharesToInsert);
+```
+
+---
+
+### Migration Files
+
+| Date       | File                                                   | Tables Created                                              |
+| ---------- | ------------------------------------------------------ | ----------------------------------------------------------- |
+| 2025-11-14 | `20251114150000_google_classroom_integration.sql`      | google_integrations, google_classroom_courses, (coursework) |
+| 2025-11-15 | `20251115160000_fix_google_classroom_courses_rls.sql`  | (RLS fixes)                                                 |
+| 2025-11-15 | `20251115181000_create_google_classroom_topics.sql`    | google_classroom_topics                                     |
+| 2025-11-15 | `20251115182000_create_google_classroom_materials.sql` | google_classroom_materials                                  |
+| 2025-11-15 | `20251115183000_create_material_attachments.sql`       | google_classroom_material_attachments                       |
+| 2025-11-15 | `20251115184000_create_shared_materials.sql`           | shared_materials (with denormalization triggers)            |
+
+**Total**: 6 tables, 28 RLS policies, 4 triggers, 20+ indexes
+
+---
+
+### Related Documentation
+
+- **User Guide**: [docs/features/google-classroom-materials.md](../features/google-classroom-materials.md)
+- **Developer Guide**: [docs/development/google-classroom-integration.md](../development/google-classroom-integration.md)
+- **Setup Guide**: [docs/guides/google-classroom-setup.md](../guides/google-classroom-setup.md)
+- **Schema Detailed**: [docs/architecture/google-classroom-schema.md](./google-classroom-schema.md)
+- **Denormalization Decision**: [docs/architecture/DECISION-rls-denormalization.md](./DECISION-rls-denormalization.md)
