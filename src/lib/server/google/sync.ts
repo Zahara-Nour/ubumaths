@@ -627,7 +627,7 @@ export async function syncCourseWorkMaterials(
 					pageSize: 100,
 					pageToken: nextPageToken,
 					orderBy: 'updateTime desc',
-					courseWorkStates: ['PUBLISHED'] // Only sync published materials
+					courseWorkMaterialStates: ['PUBLISHED'] // Only sync published materials
 				});
 
 			if (courseWorkMaterial) {

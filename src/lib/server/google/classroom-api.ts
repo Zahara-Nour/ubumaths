@@ -25,9 +25,7 @@ import {
 	googleCourseListSchema,
 	googleCourseworkSchema,
 	googleCourseworkListSchema,
-	googleTopicSchema,
 	googleTopicListSchema,
-	googleCourseWorkMaterialSchema,
 	googleCourseWorkMaterialListSchema,
 	googleAPIErrorSchema
 } from './schemas';
@@ -74,6 +72,20 @@ export interface ListCourseworkOptions {
 	orderBy?: string;
 	/** Filter by coursework states */
 	courseWorkStates?: Array<'PUBLISHED' | 'DRAFT' | 'DELETED'>;
+}
+
+/**
+ * Options for listing coursework materials
+ */
+export interface ListCourseworkMaterialOptions {
+	/** Maximum number of materials to return per page (1-100) */
+	pageSize?: number;
+	/** Token for next page of results */
+	pageToken?: string;
+	/** Order by field (e.g., "updateTime desc") */
+	orderBy?: string;
+	/** Filter by coursework material states */
+	courseWorkMaterialStates?: Array<'PUBLISHED' | 'DRAFT' | 'DELETED'>;
 }
 
 /**
@@ -522,20 +534,20 @@ export class GoogleClassroomClient {
 	 * List course work materials (non-graded educational content)
 	 *
 	 * @param courseId - The Google Classroom course ID
-	 * @param options - Optional filters (courseWorkStates, pageSize, pageToken, orderBy)
+	 * @param options - Optional filters (courseWorkMaterialStates, pageSize, pageToken, orderBy)
 	 * @returns List of course work materials
 	 *
 	 * @example
 	 * ```typescript
 	 * const { courseWorkMaterial } = await client.listCourseWorkMaterials('123456', {
 	 *   pageSize: 50,
-	 *   courseWorkStates: ['PUBLISHED']
+	 *   courseWorkMaterialStates: ['PUBLISHED']
 	 * });
 	 * ```
 	 */
 	async listCourseWorkMaterials(
 		courseId: string,
-		options: ListCourseworkOptions = {}
+		options: ListCourseworkMaterialOptions = {}
 	): Promise<GoogleCourseWorkMaterialList> {
 		if (!courseId) {
 			throw new Error('Course ID is required');
@@ -555,9 +567,9 @@ export class GoogleClassroomClient {
 			params.set('orderBy', options.orderBy);
 		}
 
-		if (options.courseWorkStates && options.courseWorkStates.length > 0) {
-			options.courseWorkStates.forEach((state) => {
-				params.append('courseWorkStates', state);
+		if (options.courseWorkMaterialStates && options.courseWorkMaterialStates.length > 0) {
+			options.courseWorkMaterialStates.forEach((state) => {
+				params.append('courseWorkMaterialStates', state);
 			});
 		}
 
