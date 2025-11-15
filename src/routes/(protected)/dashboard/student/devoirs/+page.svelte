@@ -183,51 +183,55 @@
 		</p>
 	</div>
 
-	<!-- Filters Section -->
-	<Card.Root class="mb-6">
-		<Card.Header>
-			<Card.Title>Filtres</Card.Title>
-		</Card.Header>
-		<Card.Content>
-			<div class="flex flex-col gap-4 md:flex-row md:items-end">
-				<!-- Class Filter -->
-				<div class="flex-1">
-					<label for="class-select" class="mb-2 block text-sm font-medium">Classe</label>
-					<MySelect
-						bind:value={selectedClass}
-						items={classItems}
-						placeholder="Sélectionner une classe"
-						triggerClass="w-full h-10 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
-					/>
-				</div>
-
-				<!-- Category Filter (only show when class is selected) -->
-				{#if selectedClass && data.categories.length > 0}
-					<div class="flex-1">
-						<label for="category-select" class="mb-2 block text-sm font-medium">Catégorie</label>
-						<MySelect
-							bind:value={selectedCategory}
-							items={categoryItems}
-							placeholder="Sélectionner une catégorie"
-							triggerClass="w-full h-10 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
-						/>
-					</div>
-				{/if}
-
-				<!-- Action Buttons -->
-				<div class="flex gap-2">
-					<Button onclick={applyFilters} disabled={isLoading}>
-						{isLoading ? 'Chargement...' : 'Appliquer'}
-					</Button>
-					{#if hasFilters}
-						<Button variant="outline" onclick={clearFilters} disabled={isLoading}>
-							Effacer les filtres
-						</Button>
+	<!-- Filters Section (only show if student has multiple classes or categories) -->
+	{#if data.classes.length > 1 || (selectedClass && data.categories.length > 0)}
+		<Card.Root class="mb-6">
+			<Card.Header>
+				<Card.Title>Filtres</Card.Title>
+			</Card.Header>
+			<Card.Content>
+				<div class="flex flex-col gap-4 md:flex-row md:items-end">
+					<!-- Class Filter (only show if multiple classes) -->
+					{#if data.classes.length > 1}
+						<div class="flex-1">
+							<label for="class-select" class="mb-2 block text-sm font-medium">Classe</label>
+							<MySelect
+								bind:value={selectedClass}
+								items={classItems}
+								placeholder="Sélectionner une classe"
+								triggerClass="w-full h-10 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+							/>
+						</div>
 					{/if}
+
+					<!-- Category Filter (only show when class is selected) -->
+					{#if selectedClass && data.categories.length > 0}
+						<div class="flex-1">
+							<label for="category-select" class="mb-2 block text-sm font-medium">Catégorie</label>
+							<MySelect
+								bind:value={selectedCategory}
+								items={categoryItems}
+								placeholder="Sélectionner une catégorie"
+								triggerClass="w-full h-10 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+							/>
+						</div>
+					{/if}
+
+					<!-- Action Buttons -->
+					<div class="flex gap-2">
+						<Button onclick={applyFilters} disabled={isLoading}>
+							{isLoading ? 'Chargement...' : 'Appliquer'}
+						</Button>
+						{#if hasFilters}
+							<Button variant="outline" onclick={clearFilters} disabled={isLoading}>
+								Effacer les filtres
+							</Button>
+						{/if}
+					</div>
 				</div>
-			</div>
-		</Card.Content>
-	</Card.Root>
+			</Card.Content>
+		</Card.Root>
+	{/if}
 
 	<!-- Coursework Grid -->
 	{#if isLoading}
