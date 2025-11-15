@@ -541,28 +541,6 @@ WITH CHECK (
     )
 );
 
--- RLS Policy: Students can view visible coursework for their classes
-CREATE POLICY "Students can view visible shared coursework for their classes"
-ON public.shared_coursework
-FOR SELECT
-TO authenticated
-USING (
-    visible = true
-    AND EXISTS (
-        SELECT 1 FROM public.class_members
-        WHERE class_members.class_id = shared_coursework.class_id
-        AND class_members.student_id = auth.uid()
-    )
-    -- Check if student is NOT restricted (no entry in shared_coursework_students OR student IS in list)
-    AND (
-        NOT EXISTS (SELECT 1 FROM public.shared_coursework_students WHERE shared_coursework_id = shared_coursework.id)
-        OR EXISTS (
-            SELECT 1 FROM public.shared_coursework_students scs
-            WHERE scs.shared_coursework_id = shared_coursework.id
-            AND scs.student_id = auth.uid()
-        )
-    )
-);
 
 -- RLS Policy: Admins can view all shared coursework
 CREATE POLICY "Admins can view all shared coursework"
@@ -894,6 +872,30 @@ END $$;
 -- ============================================================================
 -- DEFERRED RLS POLICIES (require shared_coursework to exist first)
 -- ============================================================================
+
+-- RLS Policy: Students can view visible coursework for their classes
+CREATE POLICY "Students can view visible shared coursework for their classes"
+ON public.shared_coursework
+FOR SELECT
+TO authenticated
+USING (
+    visible = true
+    AND EXISTS (
+        SELECT 1 FROM public.class_members
+        WHERE class_members.class_id = shared_coursework.class_id
+        AND class_members.student_id = auth.uid()
+    )
+    -- Check if student is NOT restricted (no entry in shared_coursework_students OR student IS in list)
+    AND (
+        NOT EXISTS (SELECT 1 FROM public.shared_coursework_students WHERE shared_coursework_id = shared_coursework.id)
+        OR EXISTS (
+            SELECT 1 FROM public.shared_coursework_students scs
+            WHERE scs.shared_coursework_id = shared_coursework.id
+            AND scs.student_id = auth.uid()
+        )
+    )
+);
+
 
 -- RLS Policy: Students can view coursework shared with their classes
 CREATE POLICY "Students can view coursework shared with their classes"
