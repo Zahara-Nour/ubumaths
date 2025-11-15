@@ -823,7 +823,7 @@
 
 										<!-- Items without topic -->
 
-													{#if coursework.filter((cw) => !cw.topicId).length > 0 || materials.filter((m) => !m.topic).length > 0}
+										{#if coursework.filter((cw) => !cw.topicId).length > 0 || materials.filter((m) => !m.topic).length > 0}
 											{@const noTopicCoursework = coursework.filter((cw) => !cw.topicId)}
 											{@const noTopicMaterials = materials.filter((m) => !m.topic)}
 											<div class="space-y-3">
