@@ -38,11 +38,13 @@ function createMockSupabase() {
 }
 
 // Helper types
-type ClassWithSchool = {
+type TestClassWithSchool = {
 	id: string;
 	name: string;
 	teacher_id: string;
 	school_id: string;
+	created_at: string;
+	updated_at: string;
 	schools: {
 		timezone: string;
 		timetable: {
@@ -60,11 +62,13 @@ describe('Integration: Complete Daily Summary Flow', () => {
 	});
 
 	it.skip('should generate daily summaries for class with multiple students', async () => {
-		const mockClass: ClassWithSchool = {
+		const mockClass: TestClassWithSchool = {
 			id: 'class-1',
 			name: 'Math 101',
 			teacher_id: 'teacher-1',
 			school_id: 'school-1',
+			created_at: '2025-01-01T00:00:00Z',
+			updated_at: '2025-01-01T00:00:00Z',
 			schools: {
 				timezone: 'Europe/Paris',
 				timetable: {
@@ -90,7 +94,7 @@ describe('Integration: Complete Daily Summary Flow', () => {
 			{ id: 'student-3', first_name: 'Charlie', last_name: 'Brown' }
 		];
 
-		vi.mocked(mockSupabase.from).mockImplementation((table) => {
+		(vi.mocked(mockSupabase.from).mockImplementation as any)((table: string) => {
 			if (table === 'class_members') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -159,7 +163,7 @@ describe('Integration: Complete Daily Summary Flow', () => {
 		// Run daily summary generation
 		const summariesCreated = await generateDailySummary(
 			mockSupabase,
-			mockClass,
+			mockClass as unknown as import('./types').ClassWithSchool,
 			yesterday,
 			'Europe/Paris'
 		);
@@ -190,11 +194,13 @@ describe('Integration: Complete Daily Summary Flow', () => {
 	});
 
 	it.skip('should skip students with no activity', async () => {
-		const mockClass: ClassWithSchool = {
+		const mockClass: TestClassWithSchool = {
 			id: 'class-1',
 			name: 'Math 101',
 			teacher_id: 'teacher-1',
 			school_id: 'school-1',
+			created_at: '2025-01-01T00:00:00Z',
+			updated_at: '2025-01-01T00:00:00Z',
 			schools: {
 				timezone: 'Europe/Paris',
 				timetable: {
@@ -208,7 +214,7 @@ describe('Integration: Complete Daily Summary Flow', () => {
 		// Mock students
 		const students = [{ id: 'student-1', first_name: 'Alice', last_name: 'Smith' }];
 
-		vi.mocked(mockSupabase.from).mockImplementation((table) => {
+		(vi.mocked(mockSupabase.from).mockImplementation as any)((table: string) => {
 			if (table === 'class_members') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -247,7 +253,7 @@ describe('Integration: Complete Daily Summary Flow', () => {
 
 		const summariesCreated = await generateDailySummary(
 			mockSupabase,
-			mockClass,
+			mockClass as unknown as import('./types').ClassWithSchool,
 			yesterday,
 			'Europe/Paris'
 		);
@@ -268,11 +274,13 @@ describe('Integration: Complete Weekly Rewards Flow', () => {
 	});
 
 	it.skip('should distribute weekly rewards on last day of week', async () => {
-		const mockClass: ClassWithSchool = {
+		const mockClass: TestClassWithSchool = {
 			id: 'class-1',
 			name: 'Math 101',
 			teacher_id: 'teacher-1',
 			school_id: 'school-1',
+			created_at: '2025-01-01T00:00:00Z',
+			updated_at: '2025-01-01T00:00:00Z',
 			schools: {
 				timezone: 'Europe/Paris',
 				timetable: {
@@ -289,7 +297,7 @@ describe('Integration: Complete Weekly Rewards Flow', () => {
 			{ id: 'student-2', first_name: 'Bob', last_name: 'Jones' }
 		];
 
-		vi.mocked(mockSupabase.from).mockImplementation((table) => {
+		(vi.mocked(mockSupabase.from).mockImplementation as any)((table: string) => {
 			if (table === 'class_members') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -338,7 +346,7 @@ describe('Integration: Complete Weekly Rewards Flow', () => {
 
 		const rewardsAwarded = await generateWeeklyRewards(
 			mockSupabase,
-			mockClass,
+			mockClass as unknown as import('./types').ClassWithSchool,
 			weekConfig,
 			'Europe/Paris'
 		);
@@ -358,11 +366,13 @@ describe('Integration: Complete Weekly Rewards Flow', () => {
 	});
 
 	it.skip('should skip students with no weekly activity', async () => {
-		const mockClass: ClassWithSchool = {
+		const mockClass: TestClassWithSchool = {
 			id: 'class-1',
 			name: 'Math 101',
 			teacher_id: 'teacher-1',
 			school_id: 'school-1',
+			created_at: '2025-01-01T00:00:00Z',
+			updated_at: '2025-01-01T00:00:00Z',
 			schools: {
 				timezone: 'Europe/Paris',
 				timetable: {
@@ -374,7 +384,7 @@ describe('Integration: Complete Weekly Rewards Flow', () => {
 		// Mock students
 		const students = [{ id: 'student-1', first_name: 'Alice', last_name: 'Smith' }];
 
-		vi.mocked(mockSupabase.from).mockImplementation((table) => {
+		(vi.mocked(mockSupabase.from).mockImplementation as any)((table: string) => {
 			if (table === 'class_members') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -422,11 +432,13 @@ describe('Integration: Multi-Timezone Scenarios', () => {
 	});
 
 	it('should handle different schools in different timezones correctly', async () => {
-		const _parisClass: ClassWithSchool = {
+		const _parisClass: TestClassWithSchool = {
 			id: 'class-paris',
 			name: 'Paris Math',
 			teacher_id: 'teacher-1',
 			school_id: 'school-paris',
+			created_at: '2025-01-01T00:00:00Z',
+			updated_at: '2025-01-01T00:00:00Z',
 			schools: {
 				timezone: 'Europe/Paris',
 				timetable: {
@@ -435,11 +447,13 @@ describe('Integration: Multi-Timezone Scenarios', () => {
 			}
 		};
 
-		const _tokyoClass: ClassWithSchool = {
+		const _tokyoClass: TestClassWithSchool = {
 			id: 'class-tokyo',
 			name: 'Tokyo Math',
 			teacher_id: 'teacher-2',
 			school_id: 'school-tokyo',
+			created_at: '2025-01-01T00:00:00Z',
+			updated_at: '2025-01-01T00:00:00Z',
 			schools: {
 				timezone: 'Asia/Tokyo',
 				timetable: {
@@ -508,11 +522,13 @@ describe('Integration: Edge Cases', () => {
 	});
 
 	it.skip('should handle class with no schedules', async () => {
-		const _mockClass: ClassWithSchool = {
+		const _mockClass: TestClassWithSchool = {
 			id: 'class-1',
 			name: 'Math 101',
 			teacher_id: 'teacher-1',
 			school_id: 'school-1',
+			created_at: '2025-01-01T00:00:00Z',
+			updated_at: '2025-01-01T00:00:00Z',
 			schools: {
 				timezone: 'Europe/Paris',
 				timetable: {
@@ -535,11 +551,13 @@ describe('Integration: Edge Cases', () => {
 	});
 
 	it.skip('should handle class with no students', async () => {
-		const mockClass: ClassWithSchool = {
+		const mockClass: TestClassWithSchool = {
 			id: 'class-1',
 			name: 'Math 101',
 			teacher_id: 'teacher-1',
 			school_id: 'school-1',
+			created_at: '2025-01-01T00:00:00Z',
+			updated_at: '2025-01-01T00:00:00Z',
 			schools: {
 				timezone: 'Europe/Paris',
 				timetable: {
@@ -551,7 +569,7 @@ describe('Integration: Edge Cases', () => {
 		const yesterday = new Date('2025-11-12T00:00:00Z');
 
 		// Mock no students
-		vi.mocked(mockSupabase.from).mockImplementation((table) => {
+		(vi.mocked(mockSupabase.from).mockImplementation as any)((table: string) => {
 			if (table === 'class_members') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -569,7 +587,7 @@ describe('Integration: Edge Cases', () => {
 
 		const summariesCreated = await generateDailySummary(
 			mockSupabase,
-			mockClass,
+			mockClass as unknown as import('./types').ClassWithSchool,
 			yesterday,
 			'Europe/Paris'
 		);
@@ -578,11 +596,13 @@ describe('Integration: Edge Cases', () => {
 	});
 
 	it.skip('should continue processing other students if one fails', async () => {
-		const mockClass: ClassWithSchool = {
+		const mockClass: TestClassWithSchool = {
 			id: 'class-1',
 			name: 'Math 101',
 			teacher_id: 'teacher-1',
 			school_id: 'school-1',
+			created_at: '2025-01-01T00:00:00Z',
+			updated_at: '2025-01-01T00:00:00Z',
 			schools: {
 				timezone: 'Europe/Paris',
 				timetable: {
@@ -599,7 +619,7 @@ describe('Integration: Edge Cases', () => {
 			{ id: 'student-2', first_name: 'Bob', last_name: 'Jones' }
 		];
 
-		vi.mocked(mockSupabase.from).mockImplementation((table) => {
+		(vi.mocked(mockSupabase.from).mockImplementation as any)((table: string) => {
 			if (table === 'class_members') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -652,7 +672,7 @@ describe('Integration: Edge Cases', () => {
 		// Should process second student despite first failure
 		const summariesCreated = await generateDailySummary(
 			mockSupabase,
-			mockClass,
+			mockClass as unknown as import('./types').ClassWithSchool,
 			yesterday,
 			'Europe/Paris'
 		);
@@ -662,11 +682,13 @@ describe('Integration: Edge Cases', () => {
 	});
 
 	it('should handle null school data gracefully', async () => {
-		const mockClass: ClassWithSchool = {
+		const mockClass: TestClassWithSchool = {
 			id: 'class-1',
 			name: 'Math 101',
 			teacher_id: 'teacher-1',
 			school_id: 'school-1',
+			created_at: '2025-01-01T00:00:00Z',
+			updated_at: '2025-01-01T00:00:00Z',
 			schools: null // No school data
 		};
 
@@ -745,11 +767,13 @@ describe('Integration: Performance Considerations', () => {
 	});
 
 	it.skip('should batch process multiple students efficiently', async () => {
-		const mockClass: ClassWithSchool = {
+		const mockClass: TestClassWithSchool = {
 			id: 'class-1',
 			name: 'Large Class',
 			teacher_id: 'teacher-1',
 			school_id: 'school-1',
+			created_at: '2025-01-01T00:00:00Z',
+			updated_at: '2025-01-01T00:00:00Z',
 			schools: {
 				timezone: 'Europe/Paris',
 				timetable: {
@@ -767,7 +791,7 @@ describe('Integration: Performance Considerations', () => {
 			last_name: 'Test'
 		}));
 
-		vi.mocked(mockSupabase.from).mockImplementation((table) => {
+		(vi.mocked(mockSupabase.from).mockImplementation as any)((table: string) => {
 			if (table === 'class_members') {
 				return {
 					select: vi.fn().mockReturnValue({

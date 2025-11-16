@@ -554,6 +554,141 @@ Task tool with subagent_type=commit-manager
 
 ---
 
+## 📋 CRITICAL: Planning & Execution Policy
+
+**RÈGLE ABSOLUE** : Lors de la planification et de l'exécution de tâches complexes, Claude doit suivre un processus structuré rigoureux.
+
+### 📝 Lors de la Proposition d'un Plan
+
+**OBLIGATOIRE** : Chaque plan proposé doit :
+
+1. **Préciser les agents utilisés** pour chaque phase
+   - Indiquer explicitement quel agent sera utilisé (`subagent_type=...`)
+   - Justifier le choix de l'agent pour la phase
+
+2. **Inclure systématiquement à la fin de chaque phase** :
+   - ✅ **Code Review** (`subagent_type=code-reviewer`)
+   - 🚀 **Commit** (`subagent_type=commit-manager`)
+
+3. **Ajouter si approprié** :
+   - 🔒 **Security Audit** (`subagent_type=security-auditor`)
+     - OBLIGATOIRE pour : auth, API endpoints sensibles, manipulation données utilisateur
+   - ⚡ **Performance Audit** (`subagent_type=performance-optimizer`)
+     - RECOMMANDÉ pour : nouvelles features avec requêtes DB, opérations lourdes
+
+**EXEMPLE DE PLAN** :
+
+```markdown
+## Plan : Implémenter système de notifications en temps réel
+
+### Phase 1 : Database Schema
+
+- Agent : `supabase-expert`
+- Créer table `notifications` avec RLS policies
+- **→ Code Review** (`code-reviewer`)
+- **→ Security Audit** (`security-auditor`) - RLS policies critiques
+- **→ Commit** (`commit-manager`)
+
+### Phase 2 : API Endpoints
+
+- Agent : `backend-developer`
+- Créer endpoints GET/POST pour notifications
+- **→ Code Review** (`code-reviewer`)
+- **→ Security Audit** (`security-auditor`) - Validation Zod obligatoire
+- **→ Commit** (`commit-manager`)
+
+### Phase 3 : Realtime Integration
+
+- Agent : `backend-developer`
+- Intégrer Supabase Realtime pour notifications live
+- **→ Code Review** (`code-reviewer`)
+- **→ Performance Audit** (`performance-optimizer`) - Vérifier quota Realtime
+- **→ Commit** (`commit-manager`)
+
+### Phase 4 : UI Components
+
+- Agent : `frontend-developer`
+- Créer composant NotificationBell et NotificationList
+- **→ Code Review** (`code-reviewer`)
+- **→ Commit** (`commit-manager`)
+
+### Phase 5 : Tests
+
+- Agent : `test-automator`
+- Tests unitaires pour API et components
+- **→ Code Review** (`code-reviewer`)
+- **→ Commit** (`commit-manager`)
+```
+
+---
+
+### ⚙️ Lors de l'Exécution du Plan
+
+**RÈGLE CRITIQUE** : L'exécution doit être **autonome et résiliente**.
+
+1. **Correction Automatique des Erreurs**
+   - ❌ NE JAMAIS s'arrêter au premier échec
+   - ✅ TOUJOURS analyser et corriger automatiquement
+   - ✅ Utiliser `debugger` agent si nécessaire
+   - ✅ Continuer jusqu'à la fin complète du travail
+
+2. **Workflow de Correction**
+
+   ```
+   Erreur détectée
+     ↓
+   Analyser la cause
+     ↓
+   Corriger automatiquement
+     ↓
+   Vérifier (tests/build/lint)
+     ↓
+   Si encore des erreurs → Recommencer
+     ↓
+   Si OK → Continuer au prochain step
+   ```
+
+3. **Quand Utiliser le Debugger Agent**
+   - Erreur persistante après 2 tentatives de correction
+   - Erreur complexe nécessitant analyse approfondie
+   - Échecs de tests non évidents
+
+**EXEMPLES** :
+
+```typescript
+// ❌ INTERDIT - S'arrêter sur erreur
+Phase 1: Implementation...
+❌ Error: Type mismatch in line 42
+"Il y a une erreur, que voulez-vous faire ?"
+
+// ✅ OBLIGATOIRE - Correction automatique
+Phase 1: Implementation...
+❌ Error: Type mismatch in line 42
+→ Analyzing error...
+→ Root cause: Missing type annotation
+→ Fixing automatically...
+✅ Fixed. Continuing...
+Phase 2: Implementation...
+```
+
+---
+
+### 🎯 Checklist de Validation
+
+Avant de considérer une phase comme terminée :
+
+- [ ] Code implémenté et fonctionnel
+- [ ] Erreurs TypeScript = 0
+- [ ] Tests passent (si applicable)
+- [ ] Code review effectué
+- [ ] Security audit effectué (si approprié)
+- [ ] Performance audit effectué (si approprié)
+- [ ] Commit créé avec message descriptif
+
+**AUCUNE PHASE N'EST TERMINÉE** tant que toutes ces conditions ne sont pas remplies.
+
+---
+
 ## 🗃️ Database (Supabase)
 
 ### Migration Workflow

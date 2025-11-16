@@ -27,8 +27,24 @@ export const uuidArraySchema = z.array(z.string().uuid('Invalid UUID format'));
  * Pagination parameters
  */
 export const paginationSchema = z.object({
-	page: z.coerce.number().int().positive().max(1000).default(1),
-	limit: z.coerce.number().int().positive().max(100).default(50)
+	page: z
+		.string()
+		.nullish()
+		.transform((v) => {
+			if (!v) return 1;
+			const parsed = parseInt(v, 10);
+			if (isNaN(parsed) || parsed < 1 || parsed > 1000) return 1;
+			return parsed;
+		}),
+	limit: z
+		.string()
+		.nullish()
+		.transform((v) => {
+			if (!v) return 50;
+			const parsed = parseInt(v, 10);
+			if (isNaN(parsed) || parsed < 1 || parsed > 100) return 50;
+			return parsed;
+		})
 });
 
 // ============================================================================

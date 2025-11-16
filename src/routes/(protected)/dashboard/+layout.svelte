@@ -115,6 +115,8 @@
 				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
 				{ href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap },
 				{ href: '/dashboard/student/assessments', label: 'Évaluations', icon: ClipboardList },
+				{ href: '/dashboard/student/devoirs', label: 'Devoirs', icon: BookOpen },
+				{ href: '/dashboard/student/materials', label: 'Matériel', icon: FileText },
 				{ href: '/dashboard/student/vip-cards/collection', label: 'Collection VIP', icon: Sparkles }
 			];
 		} else if (role === 'teacher') {
@@ -134,6 +136,7 @@
 				},
 				{ href: '/dashboard/teacher/vip-cards', label: 'VIP Cards', icon: Sparkles },
 				{ href: '/dashboard/teacher/marketplace', label: 'Marché', icon: ShoppingBag },
+				{ href: '/dashboard/teacher/google', label: 'Google Classroom', icon: School },
 				{ href: '/dashboard/teacher/warnings', label: 'Avertissements', icon: AlertTriangle }
 			];
 		} else if (role === 'admin') {

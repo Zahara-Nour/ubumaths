@@ -26,7 +26,7 @@ import {
 	generateWeeklyRewards
 } from '$lib/server/summaries';
 import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
-import type { WeekConfig } from '$lib/types/database';
+import type { WeekConfig } from '$lib/server/summaries/database-types';
 
 interface ClassData {
 	id: string;

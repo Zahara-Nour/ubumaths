@@ -10,6 +10,7 @@ node_modules
 /build
 *.tsbuildinfo
 
+extern
 externe
 
 # OS
