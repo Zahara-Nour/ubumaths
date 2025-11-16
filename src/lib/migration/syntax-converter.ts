@@ -322,7 +322,7 @@ export class TinyCASConverter {
 		});
 
 		// Pattern for evaluation with parentheses [(_..._]
-		const pattern4 = /\[(_([^]*?)_]/g;
+		const pattern4 = /\[\(_([^]*?)_]/g;
 		result = result.replace(pattern4, (match, expr) => {
 			this.stats.evaluations++;
 			this.warnings.push(

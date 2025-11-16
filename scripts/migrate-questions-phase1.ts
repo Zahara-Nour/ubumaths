@@ -47,6 +47,8 @@ const __dirname = dirname(__filename);
 // CONFIGURATION
 // ============================================================================
 
+const IS_TEST_MODE = process.argv.includes('--test');
+
 const CONFIG = {
 	BATCH_SIZE: 50,
 	PHASE: 1 as const,
@@ -54,7 +56,13 @@ const CONFIG = {
 		__dirname,
 		'../extern/new-tinymath/apps/ubumaths/src/lib/questions/questions.ts'
 	),
-	REPORT_PATH: path.resolve(__dirname, '../.claude/migration-phase1-report.md'),
+	TEST_QUESTIONS_PATH: path.resolve(__dirname, '../.claude/test-questions-sample.json'),
+	REPORT_PATH: path.resolve(
+		__dirname,
+		IS_TEST_MODE
+			? '../.claude/migration-phase1-test-report.md'
+			: '../.claude/migration-phase1-report.md'
+	),
 	DRY_RUN: process.argv.includes('--dry-run'),
 	RESUME: process.argv.includes('--resume'),
 	ROLLBACK: process.argv.includes('--rollback'),
@@ -125,6 +133,7 @@ function createSupabaseClient() {
 async function main() {
 	console.log('🚀 Starting Phase 1 Migration...\n');
 	console.log('Configuration:');
+	console.log(`  - Test mode: ${IS_TEST_MODE ? 'YES' : 'NO'}`);
 	console.log(`  - Dry run: ${CONFIG.DRY_RUN ? 'YES' : 'NO'}`);
 	console.log(`  - Resume: ${CONFIG.RESUME ? 'YES' : 'NO'}`);
 	console.log(`  - Batch size: ${CONFIG.BATCH_SIZE}`);
@@ -219,6 +228,16 @@ async function main() {
 
 async function loadOldQuestions(): Promise<QuestionBase[]> {
 	try {
+		// If in test mode, load from test file
+		if (IS_TEST_MODE) {
+			console.log('🧪 TEST MODE: Loading sample questions...');
+			console.log('   File:', CONFIG.TEST_QUESTIONS_PATH);
+			const testContent = await fs.readFile(CONFIG.TEST_QUESTIONS_PATH, 'utf-8');
+			const questions = JSON.parse(testContent) as QuestionBase[];
+			console.log(`  ✓ Successfully loaded ${questions.length} test questions\n`);
+			return questions;
+		}
+
 		// First, check if JSON file exists
 		const jsonPath = path.resolve(__dirname, '../.claude/old-questions.json');
 
@@ -534,6 +553,14 @@ async function processQuestion(
 	// Set created_by to null for migration (admin will be set later)
 	template.created_by = null;
 
+	// Remove id field (will be auto-generated)
+	delete template.id;
+
+	// DEBUG: Log the template being inserted
+	if (CONFIG.DRY_RUN) {
+		console.log('DEBUG Template:', JSON.stringify(template, null, 2));
+	}
+
 	// 5. Insert into database
 	const { data: inserted, error: insertError } = await supabase
 		.from('question_templates')
@@ -542,6 +569,8 @@ async function processQuestion(
 		.single();
 
 	if (insertError) {
+		console.error('Insert error details:', insertError);
+		console.error('Template that failed:', JSON.stringify(template, null, 2));
 		throw new Error(`Database insert failed: ${insertError.message}`);
 	}
 
@@ -668,12 +697,13 @@ async function generateReport(results: MigrationResults): Promise<void> {
 	const successRate =
 		results.total > 0 ? ((results.successful / results.total) * 100).toFixed(1) : '0';
 
-	const report = `# Phase 1 Migration Report
+	const report = `# Phase 1 Migration Report${IS_TEST_MODE ? ' (TEST MODE)' : ''}
 
 Generated: ${new Date().toISOString()}
 Duration: ${duration} seconds
 
 ## Configuration
+- Test Mode: ${IS_TEST_MODE ? 'YES' : 'NO'}
 - Dry Run: ${CONFIG.DRY_RUN ? 'YES' : 'NO'}
 - Batch Size: ${CONFIG.BATCH_SIZE}
 - Index Range: ${CONFIG.FROM_INDEX} - ${CONFIG.TO_INDEX}
