@@ -95,7 +95,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		.from('classes')
 		.select('id, teacher_id')
 		.in('id', classIds)
-		.eq('is_archived', false);
+		.eq('is_active', true);
 
 	if (classesError) {
 		console.error('[Material Share] Error fetching classes:', classesError);

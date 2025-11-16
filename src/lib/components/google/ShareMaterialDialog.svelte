@@ -27,7 +27,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Loader2 } from 'lucide-svelte';
+	import { Loader2, BookOpen } from 'lucide-svelte';
 
 	// ============================================================================
 	// Types
@@ -74,6 +74,7 @@
 
 	interface Props {
 		material: Material;
+		materialTopic?: { id: string; name: string } | null;
 		onClose: () => void;
 		onSuccess: () => void;
 	}
@@ -82,7 +83,7 @@
 	// Props & State
 	// ============================================================================
 
-	let { material, onClose, onSuccess }: Props = $props();
+	let { material, materialTopic, onClose, onSuccess }: Props = $props();
 
 	let classes = $state<Class[]>([]);
 	let classConfigs = $state<ClassShareConfig[]>([]);
@@ -128,18 +129,20 @@
 			classes = data.classes || [];
 
 			// Initialize class configs
+			const hasAutoTopic = !!materialTopic;
+
 			classConfigs = classes.map((cls) => ({
 				classId: cls.id,
 				className: cls.name,
 				selected: false,
 				visible: true,
-				useTopics: true, // Default to Topics
-				topicId: '',
+				useTopics: hasAutoTopic ? true : true, // Force topics mode if auto
+				topicId: hasAutoTopic && materialTopic ? materialTopic.id : '', // Auto-fill topic ID
 				categoryId: '',
 				customDescription: '',
 				categories: [],
 				loadingCategories: false,
-				topics: [],
+				topics: hasAutoTopic ? [] : [], // Don't need to fetch if auto
 				loadingTopics: false
 			}));
 		} catch (err) {
@@ -180,6 +183,11 @@
 	async function fetchTopicsForClass(classId: string) {
 		const config = classConfigs.find((c) => c.classId === classId);
 		if (!config) return;
+
+		// Skip fetching if material has auto topic
+		if (materialTopic) {
+			return;
+		}
 
 		config.loadingTopics = true;
 		try {
@@ -360,69 +368,88 @@
 													/>
 												</div>
 
-												<!-- Organization Mode Toggle (Topics vs Categories) -->
-												<div class="space-y-2">
-													<Label>Organisation</Label>
-													<div class="flex gap-2" role="group" aria-label="Mode d'organisation">
-														<Button
-															size="sm"
-															variant={config.useTopics ? 'default' : 'outline'}
-															onclick={() => {
-																if (!config.useTopics) {
-																	toggleOrganizationMode(cls.id);
-																}
-															}}
-															role="radio"
-															aria-checked={config.useTopics}
-														>
-															Par rubrique Google
-														</Button>
-														<Button
-															size="sm"
-															variant={!config.useTopics ? 'default' : 'outline'}
-															onclick={() => {
-																if (config.useTopics) {
-																	toggleOrganizationMode(cls.id);
-																}
-															}}
-															role="radio"
-															aria-checked={!config.useTopics}
-														>
-															Par catégorie UbuMaths
-														</Button>
-													</div>
-												</div>
-
-												{#if config.useTopics}
-													<!-- Topic Selection -->
+												<!-- Organization Mode Selection (only if NO auto topic) -->
+												{#if !materialTopic}
 													<div class="space-y-2">
-														<Label for="topic-{cls.id}">Rubrique Google (optionnel)</Label>
-														{#if config.loadingTopics}
-															<div class="h-10 animate-pulse rounded-md bg-muted"></div>
-														{:else}
-															<MySelect
-																type="single"
-																bind:value={config.topicId}
-																items={getTopicItems(config.topics)}
-																placeholder="Sélectionnez une rubrique"
-															/>
-														{/if}
+														<Label>Organisation</Label>
+														<div class="flex gap-2" role="group" aria-label="Mode d'organisation">
+															<Button
+																size="sm"
+																variant={config.useTopics ? 'default' : 'outline'}
+																onclick={() => {
+																	if (!config.useTopics) {
+																		toggleOrganizationMode(cls.id);
+																	}
+																}}
+																role="radio"
+																aria-checked={config.useTopics}
+															>
+																Par rubrique Google
+															</Button>
+															<Button
+																size="sm"
+																variant={!config.useTopics ? 'default' : 'outline'}
+																onclick={() => {
+																	if (config.useTopics) {
+																		toggleOrganizationMode(cls.id);
+																	}
+																}}
+																role="radio"
+																aria-checked={!config.useTopics}
+															>
+																Par catégorie UbuMaths
+															</Button>
+														</div>
 													</div>
 												{:else}
-													<!-- Category Selection -->
+													<!-- Show auto-selected topic (read-only) -->
 													<div class="space-y-2">
-														<Label for="category-{cls.id}">Catégorie UbuMaths (optionnel)</Label>
-														{#if config.loadingCategories}
-															<div class="h-10 animate-pulse rounded-md bg-muted"></div>
-														{:else}
-															<MySelect
-																type="single"
-																bind:value={config.categoryId}
-																items={getCategoryItems(config.categories)}
-																placeholder="Sélectionnez une catégorie"
-															/>
-														{/if}
+														<Label>Rubrique</Label>
+														<div
+															class="flex items-center gap-2 rounded-md border border-input bg-muted px-3 py-2"
+														>
+															<BookOpen class="h-4 w-4 text-muted-foreground" />
+															<span class="text-sm">{materialTopic.name}</span>
+															<span class="ml-auto text-xs text-muted-foreground"
+																>(automatique)</span
+															>
+														</div>
 													</div>
+												{/if}
+
+												<!-- Topic/Category Selection (only show if NO auto topic) -->
+												{#if !materialTopic}
+													{#if config.useTopics}
+														<!-- Topic Selection -->
+														<div class="space-y-2">
+															<Label for="topic-{cls.id}">Rubrique Google (optionnel)</Label>
+															{#if config.loadingTopics}
+																<div class="h-10 animate-pulse rounded-md bg-muted"></div>
+															{:else}
+																<MySelect
+																	type="single"
+																	bind:value={config.topicId}
+																	items={getTopicItems(config.topics)}
+																	placeholder="Sélectionnez une rubrique"
+																/>
+															{/if}
+														</div>
+													{:else}
+														<!-- Category Selection -->
+														<div class="space-y-2">
+															<Label for="category-{cls.id}">Catégorie UbuMaths (optionnel)</Label>
+															{#if config.loadingCategories}
+																<div class="h-10 animate-pulse rounded-md bg-muted"></div>
+															{:else}
+																<MySelect
+																	type="single"
+																	bind:value={config.categoryId}
+																	items={getCategoryItems(config.categories)}
+																	placeholder="Sélectionnez une catégorie"
+																/>
+															{/if}
+														</div>
+													{/if}
 												{/if}
 
 												<!-- Custom Description -->

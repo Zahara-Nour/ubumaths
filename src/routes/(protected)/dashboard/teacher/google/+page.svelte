@@ -39,6 +39,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { fixUrl } from '$lib/utils';
 	import { SvelteMap } from 'svelte/reactivity';
 	import {
 		RefreshCw,
@@ -59,6 +60,9 @@
 	import ShareCourseworkDialog from '$lib/components/google/ShareCourseworkDialog.svelte';
 	import ManageSharedCourseworkDialog from '$lib/components/google/ManageSharedCourseworkDialog.svelte';
 	import ShareMaterialDialog from '$lib/components/google/ShareMaterialDialog.svelte';
+	import ManageSharedMaterialDialog from '$lib/components/google/ManageSharedMaterialDialog.svelte';
+	import ShareMultipleMaterialsDialog from '$lib/components/google/ShareMultipleMaterialsDialog.svelte';
+	import UnshareTopicMaterialsDialog from '$lib/components/google/UnshareTopicMaterialsDialog.svelte';
 
 	// ============================================================================
 	// Types
@@ -109,13 +113,12 @@
 
 	interface MaterialAttachment {
 		id: string;
-		drive_file_id: string | null;
-		title: string | null;
-		alternate_link: string | null;
+		material_type: string;
+		google_file_id: string | null;
+		file_name: string;
+		file_url: string;
 		thumbnail_url: string | null;
-		youtube_url: string | null;
-		link_url: string | null;
-		form_url: string | null;
+		title: string | null;
 	}
 
 	interface Material {
@@ -128,6 +131,7 @@
 		alternateLink: string;
 		topic: { id: string; name: string } | null;
 		attachments: MaterialAttachment[];
+		sharedWithClasses: SharedClass[];
 	}
 
 	interface CourseDetails {
@@ -173,7 +177,17 @@
 	let manageDialogOpen = $state(false);
 	let selectedCoursework = $state<Coursework | null>(null);
 	let shareMaterialDialogOpen = $state(false);
+	let manageMaterialDialogOpen = $state(false);
 	let selectedMaterial = $state<Material | null>(null);
+	let bulkShareDialogOpen = $state(false);
+	let selectedTopicMaterials = $state<Material[]>([]);
+	let selectedTopicName = $state<string | undefined>(undefined);
+	let selectedTopicId = $state<string | undefined>(undefined);
+	let selectedAutoSelectTopic = $state(false);
+	let unshareTopicDialogOpen = $state(false);
+	let selectedUnshareTopicMaterials = $state<Material[]>([]);
+	let selectedUnshareTopicName = $state<string | undefined>(undefined);
+	let selectedUnshareTopicId = $state<string | undefined>(undefined);
 
 	// ============================================================================
 	// API Functions
@@ -380,13 +394,13 @@
 	function getMaterialIcon(attachments: MaterialAttachment[]) {
 		if (!attachments || attachments.length === 0) return FileText;
 
-		const hasYouTube = attachments.some((a) => a.youtube_url);
+		const hasYouTube = attachments.some((a) => a.material_type === 'YOUTUBE_VIDEO');
 		if (hasYouTube) return FileVideo;
 
-		const hasLink = attachments.some((a) => a.link_url);
+		const hasLink = attachments.some((a) => a.material_type === 'LINK');
 		if (hasLink) return Link2;
 
-		const hasDrive = attachments.some((a) => a.drive_file_id);
+		const hasDrive = attachments.some((a) => a.material_type === 'DRIVE_FILE');
 		if (hasDrive) return File;
 
 		return FileText;
@@ -576,9 +590,7 @@
 
 							<!-- External Link -->
 							<Button
-								href={course.alternateLink}
-								target="_blank"
-								rel="noopener noreferrer"
+								onclick={() => window.open(fixUrl(course.alternateLink), '_blank')}
 								variant="ghost"
 								size="sm"
 								class="shrink-0"
@@ -649,9 +661,50 @@
 													<div class="flex items-center gap-2 border-b border-border pb-2">
 														<BookOpen class="h-5 w-5 text-primary" />
 														<h3 class="text-lg font-semibold text-foreground">{topic.name}</h3>
-														<Badge variant="secondary" class="ml-auto">
+														<Badge variant="secondary">
 															{topicCoursework.length + topicMaterials.length}
 														</Badge>
+														{#if topicMaterials.length > 0}
+															<div class="ml-auto flex gap-2">
+																<!-- Bulk Share Button (existing) -->
+																<Button
+																	variant="outline"
+																	size="sm"
+																	onclick={() => {
+																		selectedTopicMaterials = topicMaterials;
+																		selectedTopicName = topic.name;
+																		selectedTopicId = topic.id;
+
+																		// Check if ALL materials have the same topic
+																		const allHaveSameTopic = topicMaterials.every(
+																			(m) => m.topic?.id === topic.id
+																		);
+																		selectedAutoSelectTopic = allHaveSameTopic;
+
+																		bulkShareDialogOpen = true;
+																	}}
+																>
+																	<Share2 class="mr-2 h-4 w-4" />
+																	Partager tous ({topicMaterials.length})
+																</Button>
+
+																<!-- Bulk Unshare Button (NEW) -->
+																<Button
+																	variant="outline"
+																	size="sm"
+																	class="text-destructive hover:bg-destructive/10 hover:text-destructive"
+																	onclick={() => {
+																		selectedUnshareTopicMaterials = topicMaterials;
+																		selectedUnshareTopicName = topic.name;
+																		selectedUnshareTopicId = topic.id;
+																		unshareTopicDialogOpen = true;
+																	}}
+																>
+																	<Share2 class="mr-2 h-4 w-4 rotate-180" />
+																	Retirer le partage ({topicMaterials.length})
+																</Button>
+															</div>
+														{/if}
 													</div>
 
 													<!-- Coursework in this topic -->
@@ -682,9 +735,7 @@
 																</div>
 
 																<Button
-																	href={work.alternateLink}
-																	target="_blank"
-																	rel="noopener noreferrer"
+																	onclick={() => window.open(fixUrl(work.alternateLink), '_blank')}
 																	variant="ghost"
 																	size="sm"
 																	class="shrink-0"
@@ -791,9 +842,8 @@
 																</div>
 
 																<Button
-																	href={material.alternateLink}
-																	target="_blank"
-																	rel="noopener noreferrer"
+																	onclick={() =>
+																		window.open(fixUrl(material.alternateLink), '_blank')}
 																	variant="ghost"
 																	size="sm"
 																	class="shrink-0"
@@ -803,18 +853,44 @@
 																</Button>
 															</div>
 
-															<!-- Material Actions -->
-															<Button
-																variant="outline"
-																size="sm"
-																onclick={() => {
-																	selectedMaterial = material;
-																	shareMaterialDialogOpen = true;
-																}}
-															>
-																<Share2 class="mr-2 h-4 w-4" />
-																Partager
-															</Button>
+															<!-- Material Sharing Status/Actions -->
+															{#if material.sharedWithClasses.length > 0}
+																<div class="flex flex-wrap items-center gap-2">
+																	<span
+																		class="flex items-center gap-1 text-sm text-muted-foreground"
+																	>
+																		<Share2 class="h-4 w-4" />
+																		Partagé :
+																	</span>
+																	{#each material.sharedWithClasses as sharedClass (sharedClass.classId)}
+																		<Badge variant="default" class="bg-blue-600 text-white">
+																			{sharedClass.className}
+																		</Badge>
+																	{/each}
+																	<Button
+																		variant="outline"
+																		size="sm"
+																		onclick={() => {
+																			selectedMaterial = material;
+																			manageMaterialDialogOpen = true;
+																		}}
+																	>
+																		Gérer
+																	</Button>
+																</div>
+															{:else}
+																<Button
+																	variant="outline"
+																	size="sm"
+																	onclick={() => {
+																		selectedMaterial = material;
+																		shareMaterialDialogOpen = true;
+																	}}
+																>
+																	<Share2 class="mr-2 h-4 w-4" />
+																	Partager
+																</Button>
+															{/if}
 														</div>
 													{/each}
 												</div>
@@ -860,9 +936,7 @@
 																{/if}
 															</div>
 															<Button
-																href={work.alternateLink}
-																target="_blank"
-																rel="noopener noreferrer"
+																onclick={() => window.open(fixUrl(work.alternateLink), '_blank')}
 																variant="ghost"
 																size="sm"
 																class="shrink-0"
@@ -957,9 +1031,8 @@
 																{/if}
 															</div>
 															<Button
-																href={material.alternateLink}
-																target="_blank"
-																rel="noopener noreferrer"
+																onclick={() =>
+																	window.open(fixUrl(material.alternateLink), '_blank')}
 																variant="ghost"
 																size="sm"
 																class="shrink-0"
@@ -968,17 +1041,43 @@
 																<ExternalLink class="h-4 w-4" />
 															</Button>
 														</div>
-														<Button
-															variant="outline"
-															size="sm"
-															onclick={() => {
-																selectedMaterial = material;
-																shareMaterialDialogOpen = true;
-															}}
-														>
-															<Share2 class="mr-2 h-4 w-4" />
-															Partager
-														</Button>
+
+														<!-- Material Sharing Status/Actions -->
+														{#if material.sharedWithClasses.length > 0}
+															<div class="flex flex-wrap items-center gap-2">
+																<span class="flex items-center gap-1 text-sm text-muted-foreground">
+																	<Share2 class="h-4 w-4" />
+																	Partagé :
+																</span>
+																{#each material.sharedWithClasses as sharedClass (sharedClass.classId)}
+																	<Badge variant="default" class="bg-blue-600 text-white">
+																		{sharedClass.className}
+																	</Badge>
+																{/each}
+																<Button
+																	variant="outline"
+																	size="sm"
+																	onclick={() => {
+																		selectedMaterial = material;
+																		manageMaterialDialogOpen = true;
+																	}}
+																>
+																	Gérer
+																</Button>
+															</div>
+														{:else}
+															<Button
+																variant="outline"
+																size="sm"
+																onclick={() => {
+																	selectedMaterial = material;
+																	shareMaterialDialogOpen = true;
+																}}
+															>
+																<Share2 class="mr-2 h-4 w-4" />
+																Partager
+															</Button>
+														{/if}
 													</div>
 												{/each}
 											</div>
@@ -1018,9 +1117,7 @@
 															{/if}
 														</div>
 														<Button
-															href={work.alternateLink}
-															target="_blank"
-															rel="noopener noreferrer"
+															onclick={() => window.open(fixUrl(work.alternateLink), '_blank')}
 															variant="ghost"
 															size="sm"
 															class="shrink-0"
@@ -1114,9 +1211,7 @@
 															{/if}
 														</div>
 														<Button
-															href={material.alternateLink}
-															target="_blank"
-															rel="noopener noreferrer"
+															onclick={() => window.open(fixUrl(material.alternateLink), '_blank')}
 															variant="ghost"
 															size="sm"
 															class="shrink-0"
@@ -1125,17 +1220,43 @@
 															<ExternalLink class="h-4 w-4" />
 														</Button>
 													</div>
-													<Button
-														variant="outline"
-														size="sm"
-														onclick={() => {
-															selectedMaterial = material;
-															shareMaterialDialogOpen = true;
-														}}
-													>
-														<Share2 class="mr-2 h-4 w-4" />
-														Partager
-													</Button>
+
+													<!-- Material Sharing Status/Actions -->
+													{#if material.sharedWithClasses.length > 0}
+														<div class="flex flex-wrap items-center gap-2">
+															<span class="flex items-center gap-1 text-sm text-muted-foreground">
+																<Share2 class="h-4 w-4" />
+																Partagé :
+															</span>
+															{#each material.sharedWithClasses as sharedClass (sharedClass.classId)}
+																<Badge variant="default" class="bg-blue-600 text-white">
+																	{sharedClass.className}
+																</Badge>
+															{/each}
+															<Button
+																variant="outline"
+																size="sm"
+																onclick={() => {
+																	selectedMaterial = material;
+																	manageMaterialDialogOpen = true;
+																}}
+															>
+																Gérer
+															</Button>
+														</div>
+													{:else}
+														<Button
+															variant="outline"
+															size="sm"
+															onclick={() => {
+																selectedMaterial = material;
+																shareMaterialDialogOpen = true;
+															}}
+														>
+															<Share2 class="mr-2 h-4 w-4" />
+															Partager
+														</Button>
+													{/if}
 												</div>
 											{/each}
 										{/if}
@@ -1156,7 +1277,6 @@
 		coursework={{
 			id: selectedCoursework.id,
 			title: selectedCoursework.title,
-			description: selectedCoursework.description,
 			courseId: expandedCourseId || ''
 		}}
 		existingShares={selectedCoursework.sharedWithClasses}
@@ -1180,9 +1300,7 @@
 	<ManageSharedCourseworkDialog
 		coursework={{
 			id: selectedCoursework.id,
-			title: selectedCoursework.title,
-			courseId: expandedCourseId || '',
-			sharedWithClasses: selectedCoursework.sharedWithClasses
+			title: selectedCoursework.title
 		}}
 		onClose={() => {
 			manageDialogOpen = false;
@@ -1204,9 +1322,9 @@
 	<ShareMaterialDialog
 		material={{
 			id: selectedMaterial.id,
-			title: selectedMaterial.title,
-			description: selectedMaterial.description
+			title: selectedMaterial.title
 		}}
+		materialTopic={selectedMaterial.topic}
 		onClose={() => {
 			shareMaterialDialogOpen = false;
 			selectedMaterial = null;
@@ -1220,6 +1338,85 @@
 				await fetchCoursework(expandedCourseId);
 			}
 			toaster.success('Matériel partagé avec succès');
+		}}
+	/>
+{/if}
+
+{#if manageMaterialDialogOpen && selectedMaterial}
+	<ManageSharedMaterialDialog
+		material={{
+			id: selectedMaterial.id,
+			title: selectedMaterial.title
+		}}
+		onClose={() => {
+			manageMaterialDialogOpen = false;
+			selectedMaterial = null;
+		}}
+		onSuccess={async () => {
+			manageMaterialDialogOpen = false;
+			selectedMaterial = null;
+			// Refresh course data for the expanded course
+			if (expandedCourseId) {
+				courseworkCache.delete(expandedCourseId);
+				await fetchCoursework(expandedCourseId);
+			}
+		}}
+	/>
+{/if}
+
+{#if bulkShareDialogOpen && selectedTopicMaterials.length > 0}
+	<ShareMultipleMaterialsDialog
+		materials={selectedTopicMaterials}
+		topicName={selectedTopicName}
+		topicId={selectedTopicId}
+		autoSelectTopic={selectedAutoSelectTopic}
+		onClose={() => {
+			bulkShareDialogOpen = false;
+			selectedTopicMaterials = [];
+			selectedTopicName = undefined;
+			selectedTopicId = undefined;
+			selectedAutoSelectTopic = false;
+		}}
+		onSuccess={async () => {
+			bulkShareDialogOpen = false;
+			selectedTopicMaterials = [];
+			selectedTopicName = undefined;
+			selectedTopicId = undefined;
+			selectedAutoSelectTopic = false;
+			// Refresh course data for the expanded course
+			if (expandedCourseId) {
+				courseworkCache.delete(expandedCourseId);
+				await fetchCoursework(expandedCourseId);
+			}
+			toaster.success('Matériels partagés avec succès');
+		}}
+	/>
+{/if}
+
+{#if unshareTopicDialogOpen && selectedUnshareTopicMaterials.length > 0}
+	<UnshareTopicMaterialsDialog
+		materials={selectedUnshareTopicMaterials}
+		topicName={selectedUnshareTopicName || ''}
+		topicId={selectedUnshareTopicId || ''}
+		onClose={() => {
+			unshareTopicDialogOpen = false;
+			selectedUnshareTopicMaterials = [];
+			selectedUnshareTopicName = undefined;
+			selectedUnshareTopicId = undefined;
+		}}
+		onSuccess={async () => {
+			unshareTopicDialogOpen = false;
+			selectedUnshareTopicMaterials = [];
+			selectedUnshareTopicName = undefined;
+			selectedUnshareTopicId = undefined;
+
+			// Refresh course data for the expanded course
+			if (expandedCourseId) {
+				courseworkCache.delete(expandedCourseId);
+				await fetchCoursework(expandedCourseId);
+			}
+
+			toaster.success('Partage retiré avec succès');
 		}}
 	/>
 {/if}
