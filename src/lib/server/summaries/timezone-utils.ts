@@ -5,7 +5,7 @@
 
 import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { getDay, startOfDay, endOfDay, subDays, addDays } from 'date-fns';
-import type { WeekConfig } from '$lib/types/database';
+import type { WeekConfig } from './database-types';
 
 /**
  * Get yesterday's date in the specified timezone

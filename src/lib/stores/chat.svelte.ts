@@ -1239,7 +1239,7 @@ class ChatStore {
 
 		// Pre-check if users are friends (client-side validation for immediate feedback)
 		const areFriends = friendsManager.friendships.some(
-			(f) => f.friend_profile.id === friendId && f.status === 'accepted'
+			(f) => f.friend_profile?.id === friendId && f.status === 'accepted'
 		);
 
 		if (!areFriends) {

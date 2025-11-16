@@ -147,6 +147,7 @@ function createMockSchoolInfo(): SchoolInfo {
 			address: null,
 			logo_url: null,
 			timetable: null,
+			timezone: 'Europe/Paris',
 			is_active: true,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString()
