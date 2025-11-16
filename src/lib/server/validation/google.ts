@@ -261,3 +261,83 @@ export const updateSharedMaterialByIdSchema = z
 	.refine((data) => Object.keys(data).length > 0, {
 		message: 'At least one field must be provided'
 	});
+
+// ============================================================================
+// SHARED COURSEWORK MANAGEMENT SCHEMAS (New RESTful Endpoints)
+// ============================================================================
+
+/**
+ * Schema for sharing a single coursework with multiple classes (bulk)
+ * POST /api/google/shared-coursework
+ */
+export const shareSingleCourseworkSchema = z.object({
+	courseworkId: uuidSchema,
+	classIds: z
+		.array(uuidSchema)
+		.min(1, 'At least one class must be selected')
+		.max(50, 'Cannot share with more than 50 classes at once'),
+	visible: z.boolean().default(true),
+	categoryId: uuidSchema.nullable().optional(),
+	topicId: uuidSchema.nullable().optional(),
+	descriptionOverride: z
+		.string()
+		.max(2000, 'Description cannot exceed 2000 characters')
+		.nullable()
+		.optional()
+});
+
+/**
+ * Schema for bulk unsharing coursework from multiple classes
+ * DELETE /api/google/shared-coursework
+ */
+export const bulkUnshareCourseworkSchema = z.object({
+	courseworkId: uuidSchema,
+	classIds: z
+		.array(uuidSchema)
+		.min(1, 'At least one class must be specified')
+		.max(50, 'Cannot unshare from more than 50 classes at once')
+});
+
+/**
+ * Schema for listing shared coursework with enhanced filters
+ * GET /api/google/shared-coursework
+ */
+export const listSharedCourseworkEnhancedSchema = paginationSchema.extend({
+	classId: uuidSchema.nullish(),
+	courseId: uuidSchema.nullish(),
+	courseworkId: uuidSchema.nullish(), // NEW: filter by specific coursework
+	visible: z
+		.string()
+		.nullish()
+		.transform((val) => {
+			if (!val) return undefined;
+			return val === 'true';
+		})
+});
+
+/**
+ * Schema for updating shared coursework by record ID
+ * PATCH /api/google/shared-coursework/[id]
+ */
+export const updateSharedCourseworkByIdSchema = z
+	.object({
+		visible: z.boolean().optional(),
+		categoryId: uuidSchema.nullable().optional(),
+		topicId: uuidSchema.nullable().optional(),
+		descriptionOverride: z
+			.string()
+			.max(2000, 'Description cannot exceed 2000 characters')
+			.nullable()
+			.optional()
+	})
+	.refine((data) => Object.keys(data).length > 0, {
+		message: 'At least one field must be provided'
+	});
+
+/**
+ * Schema for shared coursework ID parameter
+ * For /api/google/shared-coursework/[id] endpoints
+ */
+export const sharedCourseworkIdParamSchema = z.object({
+	id: uuidSchema
+});
