@@ -281,6 +281,7 @@ describe('GET /api/exercises/assigned', () => {
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock RPC call for student exercises
+
 		(locals.supabase.rpc as any).mockResolvedValueOnce({
 			data: ['ex-1', 'ex-2', 'ex-3'],
 			error: null
@@ -338,6 +339,7 @@ describe('GET /api/exercises/assigned', () => {
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock empty result
+
 		(locals.supabase.rpc as any).mockResolvedValueOnce({
 			data: [],
 			error: null
@@ -688,6 +690,7 @@ describe('GET /api/exercises/[id]/access', () => {
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock RPC call returning true
+
 		(locals.supabase.rpc as any).mockResolvedValueOnce({
 			data: true,
 			error: null
@@ -717,6 +720,7 @@ describe('GET /api/exercises/[id]/access', () => {
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock RPC call returning false
+
 		(locals.supabase.rpc as any).mockResolvedValueOnce({
 			data: false,
 			error: null
@@ -742,6 +746,7 @@ describe('GET /api/exercises/[id]/access', () => {
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
 		// Mock RPC error
+
 		(locals.supabase.rpc as any).mockResolvedValueOnce({
 			data: null,
 			error: { message: 'RPC error' }

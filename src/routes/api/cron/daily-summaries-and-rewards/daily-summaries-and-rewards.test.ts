@@ -57,6 +57,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 		vi.mocked(cronAuth.verifyCronAuth).mockReturnValue(undefined);
 
 		// Mock job tracking RPCs (default: success)
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(mockSupabase.rpc as any).mockImplementation((funcName: string) => {
 			if (funcName === 'start_job_run') {
 				return Promise.resolve({ data: 'job-run-id', error: null });
@@ -93,6 +94,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 		});
 
 		it('should accept valid CRON_SECRET via GET', async () => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -109,6 +111,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 		});
 
 		it('should accept valid CRON_SECRET via POST', async () => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -130,6 +133,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 	// ============================================================
 	describe('Happy Path', () => {
 		it('should handle no active classes', async () => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -166,6 +170,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -225,6 +230,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -273,6 +279,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -327,6 +334,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -391,6 +399,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			];
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -443,6 +452,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -477,6 +487,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				schools: null // No school data
 			};
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -519,6 +530,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -552,6 +564,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 	// ============================================================
 	describe('Error Handling', () => {
 		it('should return 500 if fetching classes fails', async () => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -599,6 +612,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			];
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -653,6 +667,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -683,6 +698,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 		});
 
 		it('should handle job tracking failures gracefully', async () => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -693,6 +709,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 			});
 
 			// Simulate job tracking failure
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.rpc as any).mockImplementation((funcName: string) => {
 				if (funcName === 'start_job_run') {
 					return Promise.resolve({
@@ -715,6 +732,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 	// ============================================================
 	describe('Response Format', () => {
 		it('should include timestamp in response', async () => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({
@@ -745,6 +763,7 @@ describe('GET/POST /api/cron/daily-summaries-and-rewards', () => {
 				}
 			};
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(mockSupabase.from as any).mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					eq: vi.fn().mockResolvedValue({

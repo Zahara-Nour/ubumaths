@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
-import { GET, POST, DELETE } from '/src/routes/api/google/shared-materials/+server';
+import { GET, POST, DELETE } from '../../../src/routes/api/google/shared-materials/+server.js';
 import {
 	DELETE as DELETE_BY_ID,
 	PATCH as PATCH_BY_ID
-} from '/src/routes/api/google/shared-materials/[id]/+server';
+} from '../../../src/routes/api/google/shared-materials/[id]/+server.js';
 import * as authModule from '$lib/server/middleware/auth';
 
 /**
@@ -44,12 +44,16 @@ describe('Google Shared Materials API - Input Validation', () => {
 		vi.clearAllMocks();
 
 		// Mock requireRole to return teacher user
+
 		vi.mocked(authModule.requireRole).mockResolvedValue({
-			user: { id: teacherId, role: 'teacher' },
-			profile: { id: teacherId, role: 'teacher' }
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			user: { id: teacherId, role: 'teacher' } as any,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			profile: { id: teacherId, role: 'teacher' } as any
 		});
 
 		// Mock Supabase client (not used in validation tests)
+
 		mockLocals = {
 			supabase: {
 				from: vi.fn().mockReturnThis(),
@@ -62,8 +66,15 @@ describe('Google Shared Materials API - Input Validation', () => {
 				upsert: vi.fn(),
 				delete: vi.fn(),
 				update: vi.fn().mockReturnThis()
-			}
-		};
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			} as any,
+			user: { id: teacherId, role: 'teacher' },
+			session: null,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			safeGetSession: vi.fn() as any,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			profile: null as any
+		} as unknown as App.Locals;
 	});
 
 	// ============================================================================
@@ -93,7 +104,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 
 		it('should reject empty classIds array', async () => {
@@ -109,7 +121,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 
 		it('should reject classIds array exceeding 50 items', async () => {
@@ -125,7 +138,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 
 		it('should reject invalid classId UUID in array', async () => {
@@ -141,7 +155,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 
 		it('should reject descriptionOverride exceeding 2000 characters', async () => {
@@ -157,7 +172,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 
 		it('should accept descriptionOverride up to 2000 characters', async () => {
@@ -177,10 +193,12 @@ describe('Google Shared Materials API - Input Validation', () => {
 			} as unknown as RequestEvent;
 
 			// Should throw due to missing database setup, NOT validation error
-			const error = await POST(event).catch((e: Error) => e);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const error = await Promise.resolve(POST(event as any)).catch((e: Error) => e);
 			// Validation error messages mention "cannot exceed" or "must be"
 			// Database/business logic errors don't have these keywords
-			expect(error.message).not.toMatch(/cannot exceed|must be|should be/i);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((error as any).message).not.toMatch(/cannot exceed|must be|should be/i);
 		});
 
 		it('should reject array with mixed valid and invalid UUIDs', async () => {
@@ -196,7 +214,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 
 		it('should reject null materialId', async () => {
@@ -212,7 +231,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 
 		it('should reject undefined materialId', async () => {
@@ -228,7 +248,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 
 		it('should reject null classIds', async () => {
@@ -244,7 +265,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 	});
 
@@ -271,7 +293,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE(event as any)).rejects.toThrow();
 		});
 
 		it('should reject empty classIds array', async () => {
@@ -287,7 +310,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE(event as any)).rejects.toThrow();
 		});
 
 		it('should reject classIds array exceeding 50 items', async () => {
@@ -303,7 +327,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE(event as any)).rejects.toThrow();
 		});
 
 		it('should reject invalid classId UUID in array', async () => {
@@ -319,7 +344,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE(event as any)).rejects.toThrow();
 		});
 
 		it('should reject null materialId', async () => {
@@ -335,7 +361,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE(event as any)).rejects.toThrow();
 		});
 
 		it('should reject request missing classIds', async () => {
@@ -350,7 +377,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE(event as any)).rejects.toThrow();
 		});
 	});
 
@@ -367,7 +395,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE_BY_ID(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE_BY_ID(event as any)).rejects.toThrow();
 		});
 
 		it('should reject null ID param', async () => {
@@ -378,7 +407,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE_BY_ID(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE_BY_ID(event as any)).rejects.toThrow();
 		});
 
 		it('should reject undefined ID param', async () => {
@@ -389,7 +419,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE_BY_ID(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE_BY_ID(event as any)).rejects.toThrow();
 		});
 	});
 
@@ -410,7 +441,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(PATCH_BY_ID(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(PATCH_BY_ID(event as any)).rejects.toThrow();
 		});
 
 		it('should reject request with no update fields', async () => {
@@ -425,7 +457,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(PATCH_BY_ID(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(PATCH_BY_ID(event as any)).rejects.toThrow();
 		});
 
 		it('should reject descriptionOverride exceeding 2000 characters', async () => {
@@ -442,7 +475,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(PATCH_BY_ID(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(PATCH_BY_ID(event as any)).rejects.toThrow();
 		});
 
 		it('should reject invalid topicId UUID', async () => {
@@ -459,7 +493,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(PATCH_BY_ID(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(PATCH_BY_ID(event as any)).rejects.toThrow();
 		});
 
 		it('should reject invalid categoryId UUID', async () => {
@@ -476,7 +511,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(PATCH_BY_ID(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(PATCH_BY_ID(event as any)).rejects.toThrow();
 		});
 
 		it('should reject non-boolean visible value', async () => {
@@ -493,7 +529,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(PATCH_BY_ID(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(PATCH_BY_ID(event as any)).rejects.toThrow();
 		});
 	});
 
@@ -512,7 +549,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 			mockUrl.searchParams.set('materialId', materialId);
 
 			// Mock successful database queries
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -523,17 +561,20 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			expect(response.status).toBe(200);
 
 			// Verify filter was applied
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('material_id', materialId);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('material_id', materialId);
 		});
 
 		it('should accept missing materialId (optional parameter)', async () => {
 			// No materialId in query params
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -544,11 +585,16 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			expect(response.status).toBe(200);
 
 			// Verify materialId filter was NOT applied
-			expect(mockLocals.supabase.eq).not.toHaveBeenCalledWith('material_id', expect.anything());
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).not.toHaveBeenCalledWith(
+				'material_id',
+				expect.anything()
+			);
 		});
 
 		it('should reject invalid materialId UUID format', async () => {
@@ -559,7 +605,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(GET(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(GET(event as any)).rejects.toThrow();
 		});
 
 		it('should reject non-string materialId', async () => {
@@ -570,7 +617,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(GET(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(GET(event as any)).rejects.toThrow();
 		});
 
 		it('should reject empty string materialId', async () => {
@@ -581,13 +629,15 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(GET(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(GET(event as any)).rejects.toThrow();
 		});
 
 		it('should accept valid classId UUID', async () => {
 			mockUrl.searchParams.set('classId', classId1);
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -598,11 +648,13 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			expect(response.status).toBe(200);
 
 			// Verify filter was applied
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('class_id', classId1);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('class_id', classId1);
 		});
 
 		it('should reject invalid classId UUID', async () => {
@@ -613,13 +665,15 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(GET(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(GET(event as any)).rejects.toThrow();
 		});
 
 		it('should accept valid courseId UUID', async () => {
 			mockUrl.searchParams.set('courseId', materialId); // Reuse valid UUID
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -630,11 +684,13 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			expect(response.status).toBe(200);
 
 			// Verify filter was applied
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith(
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith(
 				'google_classroom_materials.google_course_id',
 				materialId
 			);
@@ -648,13 +704,15 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(GET(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(GET(event as any)).rejects.toThrow();
 		});
 
 		it('should accept visible=true', async () => {
 			mockUrl.searchParams.set('visible', 'true');
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -665,17 +723,20 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			expect(response.status).toBe(200);
 
 			// Verify filter was applied (z.coerce.boolean() converts "true" -> true)
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('visible', true);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('visible', true);
 		});
 
 		it('should accept visible=false', async () => {
 			mockUrl.searchParams.set('visible', 'false');
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -686,15 +747,18 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			expect(response.status).toBe(200);
 
 			// Verify filter was applied (z.coerce.boolean() converts "false" -> false)
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('visible', false);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('visible', false);
 		});
 
 		it('should default to page 1 and limit 50', async () => {
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -705,7 +769,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -713,14 +778,16 @@ describe('Google Shared Materials API - Input Validation', () => {
 			expect(data.pagination.limit).toBe(50);
 
 			// Verify range was called with offset 0 and limit 49 (0-indexed)
-			expect(mockLocals.supabase.range).toHaveBeenCalledWith(0, 49);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).range).toHaveBeenCalledWith(0, 49);
 		});
 
 		it('should accept custom page and limit', async () => {
 			mockUrl.searchParams.set('page', '3');
 			mockUrl.searchParams.set('limit', '10');
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 50
@@ -731,7 +798,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -740,13 +808,15 @@ describe('Google Shared Materials API - Input Validation', () => {
 			expect(data.pagination.totalPages).toBe(5); // 50 / 10 = 5
 
 			// Page 3 with limit 10: offset = (3-1) * 10 = 20
-			expect(mockLocals.supabase.range).toHaveBeenCalledWith(20, 29);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).range).toHaveBeenCalledWith(20, 29);
 		});
 
 		it('should transform page 0 to default (1)', async () => {
 			mockUrl.searchParams.set('page', '0');
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -757,7 +827,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -767,7 +838,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 		it('should transform negative page to default (1)', async () => {
 			mockUrl.searchParams.set('page', '-1');
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -778,7 +850,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -788,7 +861,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 		it('should transform limit 0 to default (50)', async () => {
 			mockUrl.searchParams.set('limit', '0');
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -799,7 +873,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -809,7 +884,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 		it('should transform limit over 100 to default (50)', async () => {
 			mockUrl.searchParams.set('limit', '101');
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -820,7 +896,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -838,7 +915,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 		it('should filter results by materialId when provided', async () => {
 			mockUrl.searchParams.set('materialId', materialId);
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -849,16 +927,19 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await GET(event as any);
 
 			// Verify materialId filter was applied
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('material_id', materialId);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('material_id', materialId);
 		});
 
 		it('should return all materials when materialId is omitted', async () => {
 			// No materialId in query params
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -869,17 +950,23 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await GET(event as any);
 
 			// Verify materialId filter was NOT applied
-			expect(mockLocals.supabase.eq).not.toHaveBeenCalledWith('material_id', expect.anything());
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).not.toHaveBeenCalledWith(
+				'material_id',
+				expect.anything()
+			);
 		});
 
 		it('should combine materialId with classId filter', async () => {
 			mockUrl.searchParams.set('materialId', materialId);
 			mockUrl.searchParams.set('classId', classId1);
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -890,18 +977,22 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await GET(event as any);
 
 			// Verify both filters were applied
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('material_id', materialId);
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('class_id', classId1);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('material_id', materialId);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('class_id', classId1);
 		});
 
 		it('should combine materialId with courseId filter', async () => {
 			mockUrl.searchParams.set('materialId', materialId);
 			mockUrl.searchParams.set('courseId', classId1); // Reuse valid UUID
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -912,11 +1003,14 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await GET(event as any);
 
 			// Verify both filters were applied
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('material_id', materialId);
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith(
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('material_id', materialId);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith(
 				'google_classroom_materials.google_course_id',
 				classId1
 			);
@@ -926,7 +1020,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 			mockUrl.searchParams.set('materialId', materialId);
 			mockUrl.searchParams.set('visible', 'true');
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -937,11 +1032,14 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await GET(event as any);
 
 			// Verify both filters were applied
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('material_id', materialId);
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('visible', true);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('material_id', materialId);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('visible', true);
 		});
 
 		it('should combine materialId with all other filters', async () => {
@@ -950,7 +1048,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 			mockUrl.searchParams.set('courseId', classId2); // Reuse valid UUID
 			mockUrl.searchParams.set('visible', 'false');
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -961,16 +1060,21 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await GET(event as any);
 
 			// Verify all filters were applied
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('material_id', materialId);
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('class_id', classId1);
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith(
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('material_id', materialId);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('class_id', classId1);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith(
 				'google_classroom_materials.google_course_id',
 				classId2
 			);
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('visible', false);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('visible', false);
 		});
 
 		it('should work with pagination when materialId is provided', async () => {
@@ -978,7 +1082,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 			mockUrl.searchParams.set('page', '2');
 			mockUrl.searchParams.set('limit', '15');
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 30
@@ -989,7 +1094,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -998,16 +1104,19 @@ describe('Google Shared Materials API - Input Validation', () => {
 			expect(data.pagination.totalPages).toBe(2); // 30 / 15 = 2
 
 			// Verify materialId filter was applied
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('material_id', materialId);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('material_id', materialId);
 
 			// Page 2 with limit 15: offset = (2-1) * 15 = 15
-			expect(mockLocals.supabase.range).toHaveBeenCalledWith(15, 29);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).range).toHaveBeenCalledWith(15, 29);
 		});
 
 		it('should return empty array when materialId has no matches', async () => {
 			mockUrl.searchParams.set('materialId', materialId);
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -1018,7 +1127,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -1030,7 +1140,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 		it('should return correct count when filtering by materialId', async () => {
 			mockUrl.searchParams.set('materialId', materialId);
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 5 // Filtered count
@@ -1041,12 +1152,14 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
 			expect(data.pagination.total).toBe(5);
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('material_id', materialId);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('material_id', materialId);
 		});
 	});
 
@@ -1068,17 +1181,22 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(GET(event)).rejects.toThrow('Unauthorized: teacher role required');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(GET(event as any)).rejects.toThrow('Unauthorized: teacher role required');
 		});
 
 		it('should allow teacher to access endpoint', async () => {
 			// Mock requireRole to succeed (teacher)
+
 			vi.mocked(authModule.requireRole).mockResolvedValueOnce({
-				user: { id: teacherId, role: 'teacher' },
-				profile: { id: teacherId, role: 'teacher' }
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				user: { id: teacherId, role: 'teacher' } as any,
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				profile: { id: teacherId, role: 'teacher' } as any
 			});
 
-			mockLocals.supabase.range = vi.fn().mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
 				data: [],
 				error: null,
 				count: 0
@@ -1089,7 +1207,8 @@ describe('Google Shared Materials API - Input Validation', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			expect(response.status).toBe(200);
 		});
 	});

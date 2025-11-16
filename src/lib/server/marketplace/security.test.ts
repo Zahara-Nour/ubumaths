@@ -19,8 +19,8 @@ import {
 
 // Type definitions for RPC parameters and responses
 interface AcceptProposalAtomicParams {
-	p_proposal_id?: string;
-	p_user_id?: string;
+	p_proposal_id: string;
+	p_user_id: string;
 	p_listing_id?: string;
 	simulate_card_transfer_failure?: boolean;
 }
@@ -32,8 +32,8 @@ interface _AcceptProposalAtomicResponse {
 }
 
 interface DeductGidouillesAtomicParams {
-	p_user_id?: string;
-	p_amount?: number;
+	p_user_id: string;
+	p_amount: number;
 }
 
 interface _DeductGidouillesAtomicResponse {
@@ -42,13 +42,13 @@ interface _DeductGidouillesAtomicResponse {
 }
 
 interface ComplexTradeParams {
-	p_gidouilles_required?: number;
-	p_user_balance?: number;
+	p_gidouilles_required: number;
+	p_user_balance: number;
 }
 
 interface RecordListingViewParams {
-	p_listing_id?: string;
-	p_user_id?: string;
+	p_listing_id: string;
+	p_user_id: string;
 }
 
 interface _RecordListingViewResponse {
@@ -58,8 +58,8 @@ interface _RecordListingViewResponse {
 }
 
 interface UnlockCardsParams {
-	p_entity_id?: string;
-	p_card_ids?: string[];
+	p_entity_id: string;
+	p_card_ids: string[];
 	simulate_partial_failure?: boolean;
 }
 
@@ -69,8 +69,8 @@ interface _UnlockCardsResponse {
 }
 
 interface RemoveTradeOfferParams {
-	p_offer_id?: string;
-	p_user_id?: string;
+	p_offer_id: string;
+	p_user_id: string;
 	simulate_unlock_failure?: boolean;
 }
 
@@ -80,9 +80,9 @@ interface _RemoveTradeOfferResponse {
 }
 
 interface LockCardParams {
-	p_card_id?: string;
-	p_entity_id?: string;
-	p_user_id?: string;
+	p_card_id: string;
+	p_entity_id: string;
+	p_user_id: string;
 }
 
 interface _LockCardResponse {
@@ -92,13 +92,13 @@ interface _LockCardResponse {
 }
 
 interface CheckDailyTradeLimitParams {
-	p_user_id?: string;
+	p_user_id: string;
 	p_date?: string;
 	force_exceed?: boolean;
 }
 
 interface CreateTradeParams {
-	p_user_id?: string;
+	p_user_id: string;
 	p_partner_id?: string;
 	p_trade_id?: string;
 }
@@ -110,9 +110,9 @@ interface _CreateTradeResponse {
 }
 
 interface SecureTradeParams {
-	trades_today?: number;
-	gidouilles_required?: number;
-	user_balance?: number;
+	trades_today: number;
+	gidouilles_required: number;
+	user_balance: number;
 }
 
 interface _SecureTradeResponse {
@@ -170,21 +170,21 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 
 			// Simulate 3 users trying to accept different proposals for the same listing concurrently
 			const operations = [
-				() =>
+				async () =>
 					mockSupabase.rpc('accept_proposal_atomic', {
 						p_proposal_id: 'proposal-1',
 						p_user_id: user1.id
-					} as any) as unknown as Promise<any>,
-				() =>
+					}),
+				async () =>
 					mockSupabase.rpc('accept_proposal_atomic', {
 						p_proposal_id: 'proposal-2',
 						p_user_id: user2.id
-					} as any) as unknown as Promise<any>,
-				() =>
+					}),
+				async () =>
 					mockSupabase.rpc('accept_proposal_atomic', {
 						p_proposal_id: 'proposal-3',
 						p_user_id: user3.id
-					} as any) as unknown as Promise<any>
+					})
 			];
 
 			const results = await simulateConcurrentOperations(operations, 5);
@@ -225,16 +225,16 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			const startTime = Date.now();
 
 			const operations = [
-				() =>
+				async () =>
 					mockSupabase.rpc('accept_proposal_atomic', {
 						p_proposal_id: 'p1',
 						p_user_id: 'u1'
-					}) as unknown as Promise<any>,
-				() =>
+					}),
+				async () =>
 					mockSupabase.rpc('accept_proposal_atomic', {
 						p_proposal_id: 'p2',
 						p_user_id: 'u2'
-					}) as unknown as Promise<any>
+					})
 			];
 
 			const results = await simulateConcurrentOperations(operations, 0);
@@ -278,7 +278,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 				p_user_id: 'u1'
 			});
 
-			expect((successResult.data as any)?.success).toBe(true);
+			expect((successResult.data as _AcceptProposalAtomicResponse | null)?.success).toBe(true);
 			expect(transactionSteps).toContain('commit');
 
 			// Reset and test failed transaction
@@ -289,7 +289,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 					p_proposal_id: 'p2',
 					p_user_id: 'u2',
 					simulate_card_transfer_failure: true
-				} as any)
+				} as AcceptProposalAtomicParams)
 			).rejects.toThrow('Failed to transfer cards');
 
 			expect(transactionSteps).toContain('rollback');
@@ -307,9 +307,9 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			let userBalance = 100;
 			const deductionAttempts: number[] = [];
 
-			mockSupabase._rpcMocks.set('deduct_gidouilles_atomic', async (params: unknown) => {
+			mockSupabase._rpcMocks.set('deduct_gidouilles_atomic' as never, async (params: unknown) => {
 				const p = params as DeductGidouillesAtomicParams;
-				const amount = p.p_amount || 0;
+				const amount = p.p_amount;
 				deductionAttempts.push(amount);
 
 				// Atomic check and deduct
@@ -323,18 +323,18 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 
 			// Simulate concurrent deductions that would overdraft if not atomic
 			const operations = [
-				() =>
-					(mockSupabase.rpc as any)('deduct_gidouilles_atomic', {
+				async () =>
+					mockSupabase.rpc('deduct_gidouilles_atomic', {
 						p_user_id: user1.id,
 						p_amount: 60
 					}),
-				() =>
-					(mockSupabase.rpc as any)('deduct_gidouilles_atomic', {
+				async () =>
+					mockSupabase.rpc('deduct_gidouilles_atomic', {
 						p_user_id: user1.id,
 						p_amount: 60
 					}),
-				() =>
-					(mockSupabase.rpc as any)('deduct_gidouilles_atomic', {
+				async () =>
+					mockSupabase.rpc('deduct_gidouilles_atomic', {
 						p_user_id: user1.id,
 						p_amount: 30
 					})
@@ -362,10 +362,10 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 		test('balance check uses row-level locking', async () => {
 			const lockAcquisitions: { userId: string; timestamp: number }[] = [];
 
-			mockSupabase._rpcMocks.set('deduct_gidouilles_atomic', async (params: unknown) => {
+			mockSupabase._rpcMocks.set('deduct_gidouilles_atomic' as never, async (params: unknown) => {
 				const p = params as DeductGidouillesAtomicParams;
 				const lockTime = Date.now();
-				lockAcquisitions.push({ userId: p.p_user_id || '', timestamp: lockTime });
+				lockAcquisitions.push({ userId: p.p_user_id, timestamp: lockTime });
 
 				// Simulate row lock with SELECT FOR UPDATE
 				await new Promise((resolve) => setTimeout(resolve, 50));
@@ -376,8 +376,8 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			// Same user, concurrent deductions - should serialize due to row lock
 			const operations = Array.from(
 				{ length: 3 },
-				() => () =>
-					(mockSupabase.rpc as any)('deduct_gidouilles_atomic', {
+				() => async () =>
+					mockSupabase.rpc('deduct_gidouilles_atomic', {
 						p_user_id: user1.id,
 						p_amount: 10
 					})
@@ -395,40 +395,43 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 		test.skip('RAISE EXCEPTION on insufficient balance triggers rollback', async () => {
 			const transactionLog: string[] = [];
 
-			mockSupabase._rpcMocks.set('complex_trade_with_gidouilles', async (params: unknown) => {
-				const p = params as ComplexTradeParams;
-				transactionLog.push('BEGIN');
-				transactionLog.push('lock_cards');
-				transactionLog.push('transfer_cards');
+			mockSupabase._rpcMocks.set(
+				'complex_trade_with_gidouilles' as never,
+				async (params: unknown) => {
+					const p = params as ComplexTradeParams;
+					transactionLog.push('BEGIN');
+					transactionLog.push('lock_cards');
+					transactionLog.push('transfer_cards');
 
-				// Check balance before deduction
-				if ((p.p_gidouilles_required || 0) > (p.p_user_balance || 0)) {
-					transactionLog.push('RAISE EXCEPTION: Insufficient balance');
-					transactionLog.push('ROLLBACK');
-					throw new Error('Insufficient gidouilles balance');
+					// Check balance before deduction
+					if (p.p_gidouilles_required > p.p_user_balance) {
+						transactionLog.push('RAISE EXCEPTION: Insufficient balance');
+						transactionLog.push('ROLLBACK');
+						throw new Error('Insufficient gidouilles balance');
+					}
+
+					transactionLog.push('deduct_gidouilles');
+					transactionLog.push('update_trade_status');
+					transactionLog.push('COMMIT');
+
+					return { success: true };
 				}
-
-				transactionLog.push('deduct_gidouilles');
-				transactionLog.push('update_trade_status');
-				transactionLog.push('COMMIT');
-
-				return { success: true };
-			});
+			);
 
 			// Test with sufficient balance
-			const successResult = await (mockSupabase.rpc as any)('complex_trade_with_gidouilles', {
+			const successResult = await mockSupabase.rpc('complex_trade_with_gidouilles', {
 				p_gidouilles_required: 50,
 				p_user_balance: 100
 			});
 
-			expect(successResult.data?.success).toBe(true);
+			expect((successResult.data as { success: boolean } | null)?.success).toBe(true);
 			expect(transactionLog).toContain('COMMIT');
 
 			// Reset and test with insufficient balance
 			transactionLog.length = 0;
 
 			await expect(
-				(mockSupabase.rpc as any)('complex_trade_with_gidouilles', {
+				mockSupabase.rpc('complex_trade_with_gidouilles', {
 					p_gidouilles_required: 150,
 					p_user_balance: 100
 				})
@@ -471,10 +474,10 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 				{ length: 100 },
 				() => () =>
 					mockSupabase.rpc('record_listing_view', {
-						p_listing_id: listingId,
+						p_listing_id: _listingId,
 						p_user_id: user1.id
 					})
-			) as any;
+			);
 
 			const results = await simulateConcurrentOperations(operations, 0);
 
@@ -533,8 +536,8 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			const userResults = await Promise.all(differentUsers.map((op) => op()));
 
 			userResults.forEach((result) => {
-				expect((result.data as any)?.is_new_view).toBe(true);
-				expect((result.data as any)?.rows_affected).toBe(1);
+				expect((result.data as _RecordListingViewResponse | null)?.is_new_view).toBe(true);
+				expect((result.data as _RecordListingViewResponse | null)?.rows_affected).toBe(1);
 			});
 
 			// Same user viewing multiple times - only first should count
@@ -551,8 +554,8 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 
 			// All subsequent attempts should return false
 			sameUserResults.forEach((result) => {
-				expect((result.data as any)?.is_new_view).toBe(false);
-				expect((result.data as any)?.rows_affected).toBe(0);
+				expect((result.data as _RecordListingViewResponse | null)?.is_new_view).toBe(false);
+				expect((result.data as _RecordListingViewResponse | null)?.rows_affected).toBe(0);
 			});
 		});
 
@@ -561,7 +564,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 
 			mockSupabase._rpcMocks.set('record_listing_view', async (params: unknown) => {
 				const p = params as RecordListingViewParams;
-				const _listingId = p.p_listing_id || '';
+				const listingId = p.p_listing_id || '';
 				const viewKey = `${listingId}-${p.p_user_id}`;
 
 				// Initialize count if needed
@@ -591,7 +594,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 					p_listing_id: listing,
 					p_user_id: user1.id
 				});
-				results.push((result.data as any)?.view_count);
+				results.push((result.data as _RecordListingViewResponse | null)?.view_count);
 			}
 
 			// All results should show the same count (idempotent)
@@ -637,8 +640,8 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 				p_card_ids: cardIds
 			});
 
-			expect((successResult.data as any)?.success).toBe(true);
-			expect((successResult.data as any)?.unlocked_count).toBe(3);
+			expect((successResult.data as _UnlockCardsResponse | null)?.success).toBe(true);
+			expect((successResult.data as _UnlockCardsResponse | null)?.unlocked_count).toBe(3);
 			expect(unlockLog).toContain('Unlocked card-1');
 			expect(unlockLog).toContain('Unlocked card-2');
 			expect(unlockLog).toContain('Unlocked card-3');
@@ -651,7 +654,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 					p_entity_id: 'trade-456',
 					p_card_ids: cardIds,
 					simulate_partial_failure: true
-				} as any)
+				} as UnlockCardsParams)
 			).rejects.toThrow('Failed to unlock all cards');
 
 			// Verify error was logged
@@ -662,7 +665,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 		test.skip('trade offer removal triggers card unlock with rollback on failure', async () => {
 			const transactionSteps: string[] = [];
 
-			mockSupabase._rpcMocks.set('remove_trade_offer', async (params: unknown) => {
+			mockSupabase._rpcMocks.set('remove_trade_offer' as never, async (params: unknown) => {
 				const p = params as RemoveTradeOfferParams;
 				transactionSteps.push('BEGIN TRANSACTION');
 				transactionSteps.push('DELETE trade_offer');
@@ -685,12 +688,12 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			});
 
 			// Test successful removal with unlock
-			const successResult = await (mockSupabase.rpc as any)('remove_trade_offer', {
+			const successResult = await mockSupabase.rpc('remove_trade_offer', {
 				p_offer_id: 'offer-1',
 				p_user_id: user1.id
 			});
 
-			expect(successResult.data?.success).toBe(true);
+			expect((successResult.data as { success: boolean } | null)?.success).toBe(true);
 			expect(transactionSteps).toContain('UNLOCK cards successful');
 			expect(transactionSteps).toContain('COMMIT TRANSACTION');
 
@@ -698,7 +701,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			transactionSteps.length = 0;
 
 			await expect(
-				(mockSupabase.rpc as any)('remove_trade_offer', {
+				mockSupabase.rpc('remove_trade_offer', {
 					p_offer_id: 'offer-2',
 					p_user_id: user1.id,
 					simulate_unlock_failure: true
@@ -740,17 +743,17 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			});
 
 			// User 1 locks card for trade A
-			const lock1 = await (mockSupabase.rpc as any)('lock_card_for_trade', {
+			const lock1 = await mockSupabase.rpc('lock_card_for_trade', {
 				p_card_id: 'card-1',
 				p_entity_id: 'trade-a',
 				p_user_id: user1.id
 			});
 
-			expect(lock1.data?.success).toBe(true);
+			expect((lock1.data as { success: boolean } | null)?.success).toBe(true);
 
 			// User 1 tries to lock same card for trade B (double-spending attempt)
 			await expect(
-				(mockSupabase.rpc as any)('lock_card_for_trade', {
+				mockSupabase.rpc('lock_card_for_trade', {
 					p_card_id: 'card-1',
 					p_entity_id: 'trade-b',
 					p_user_id: user1.id
@@ -759,7 +762,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 
 			// User 2 tries to lock user 1's card (ownership check)
 			await expect(
-				(mockSupabase.rpc as any)('lock_card_for_trade', {
+				mockSupabase.rpc('lock_card_for_trade', {
 					p_card_id: 'card-2',
 					p_entity_id: 'trade-c',
 					p_user_id: user2.id
@@ -808,27 +811,27 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 
 			// Create trades up to the limit
 			for (let i = 0; i < MAX_TRADES_PER_DAY; i++) {
-				const result = await (mockSupabase.rpc as any)('create_trade', {
+				const result = await mockSupabase.rpc('create_trade', {
 					p_user_id: user1.id,
 					p_partner_id: user2.id
 				});
-				expect(result.data?.success).toBe(true);
+				expect((result.data as { success: boolean } | null)?.success).toBe(true);
 			}
 
 			// Next trade should fail
 			await expect(
-				(mockSupabase.rpc as any)('create_trade', {
+				mockSupabase.rpc('create_trade', {
 					p_user_id: user1.id,
 					p_partner_id: user3.id
 				})
 			).rejects.toThrow('429: Daily trade limit exceeded');
 
 			// Different user should still be able to create trades
-			const otherUserResult = await (mockSupabase.rpc as any)('create_trade', {
+			const otherUserResult = await mockSupabase.rpc('create_trade', {
 				p_user_id: user2.id,
 				p_partner_id: user3.id
 			});
-			expect(otherUserResult.data?.success).toBe(true);
+			expect((otherUserResult.data as { success: boolean } | null)?.success).toBe(true);
 		});
 
 		test('trade limit check is called before trade creation', async () => {
@@ -853,7 +856,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 				const limitCheck = await mockSupabase.rpc('check_daily_trade_limit', {
 					p_user_id: userId,
 					force_exceed: forceExceed
-				} as any);
+				} as CheckDailyTradeLimitParams);
 
 				if (!limitCheck.data) {
 					callOrder.push('limit_exceeded');
@@ -861,7 +864,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 				}
 
 				// Only create if limit not exceeded
-				const result = await (mockSupabase.rpc as any)('create_trade_internal', {
+				const result = await mockSupabase.rpc('create_trade_internal', {
 					p_user_id: userId
 				});
 
@@ -904,7 +907,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 				const canCreate = await mockSupabase.rpc('check_daily_trade_limit', {
 					p_user_id: user1.id,
 					p_date: '2024-01-01'
-				} as any);
+				} as CheckDailyTradeLimitParams);
 				expect(canCreate.data).toBe(true);
 
 				// Simulate trade creation
@@ -916,14 +919,14 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			let canCreate = await mockSupabase.rpc('check_daily_trade_limit', {
 				p_user_id: user1.id,
 				p_date: '2024-01-01'
-			} as any);
+			} as CheckDailyTradeLimitParams);
 			expect(canCreate.data).toBe(false);
 
 			// Day 2: Should be able to create trades again
 			canCreate = await mockSupabase.rpc('check_daily_trade_limit', {
 				p_user_id: user1.id,
 				p_date: '2024-01-02'
-			} as any);
+			} as CheckDailyTradeLimitParams);
 			expect(canCreate.data).toBe(true);
 		});
 
@@ -932,7 +935,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			let tradeCount = 0;
 			const MAX_TRADES = 3;
 
-			mockSupabase._rpcMocks.set('create_trade_with_limit', async () => {
+			mockSupabase._rpcMocks.set('create_trade_with_limit' as never, async () => {
 				// Simulate atomic increment and check
 				await new Promise((resolve) => setTimeout(resolve, Math.random() * 10));
 
@@ -947,8 +950,8 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			// Attempt to create 5 trades concurrently
 			const operations = Array.from(
 				{ length: 5 },
-				(_, i) => () =>
-					(mockSupabase.rpc as any)('create_trade_with_limit', {
+				(_, i) => async () =>
+					mockSupabase.rpc('create_trade_with_limit', {
 						p_user_id: user1.id,
 						p_trade_id: `trade-${i}`
 					})
@@ -982,14 +985,14 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			const securityChecks: string[] = [];
 
 			// Setup comprehensive mock
-			mockSupabase._rpcMocks.set('execute_secure_trade', async (params: unknown) => {
+			mockSupabase._rpcMocks.set('execute_secure_trade' as never, async (params: unknown) => {
 				const p = params as SecureTradeParams;
 				const steps: string[] = [];
 
 				// 1. Check daily trade limit
 				steps.push('CHECK: Daily trade limit');
 				securityChecks.push('daily_limit_checked');
-				if ((p.trades_today || 0) >= 3) {
+				if (p.trades_today >= 3) {
 					throw new Error('429: Daily trade limit exceeded');
 				}
 
@@ -1000,7 +1003,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 				// 3. Check gidouilles balance atomically
 				steps.push('CHECK: Gidouilles balance');
 				securityChecks.push('balance_checked');
-				if ((p.gidouilles_required || 0) > (p.user_balance || 0)) {
+				if (p.gidouilles_required > p.user_balance) {
 					// Unlock cards before failing
 					steps.push('UNLOCK: Cards due to insufficient balance');
 					throw new Error('Insufficient gidouilles balance');
@@ -1017,13 +1020,13 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			});
 
 			// Successful trade
-			const result = await (mockSupabase.rpc as any)('execute_secure_trade', {
+			const result = await mockSupabase.rpc('execute_secure_trade', {
 				trades_today: 2,
 				gidouilles_required: 50,
 				user_balance: 100
 			});
 
-			expect(result.data?.success).toBe(true);
+			expect((result.data as { success: boolean } | null)?.success).toBe(true);
 			expect(securityChecks).toContain('daily_limit_checked');
 			expect(securityChecks).toContain('cards_locked');
 			expect(securityChecks).toContain('balance_checked');
@@ -1032,7 +1035,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			// Reset and test limit exceeded
 			securityChecks.length = 0;
 			await expect(
-				(mockSupabase.rpc as any)('execute_secure_trade', {
+				mockSupabase.rpc('execute_secure_trade', {
 					trades_today: 3,
 					gidouilles_required: 50,
 					user_balance: 100
@@ -1044,7 +1047,7 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			// Reset and test insufficient balance
 			securityChecks.length = 0;
 			try {
-				await (mockSupabase.rpc as any)('execute_secure_trade', {
+				await mockSupabase.rpc('execute_secure_trade', {
 					trades_today: 1,
 					gidouilles_required: 150,
 					user_balance: 100

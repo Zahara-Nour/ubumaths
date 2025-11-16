@@ -75,6 +75,7 @@ function createLocalsWithRole(
 	mockSupabase: ReturnType<typeof createMockSupabase>
 ) {
 	const locals = createMockLocals(userId, mockSupabase);
+
 	locals.user = { id: userId, role } as any;
 	return locals;
 }
@@ -886,6 +887,7 @@ describe('DELETE /api/moderation/messages/[id] - Privacy & Logging', () => {
 		);
 
 		// Verify the actual content was NOT logged
+
 		const rpcCall = (mockSupabase.rpc as any).mock.calls[0][1];
 		expect(JSON.stringify(rpcCall)).not.toContain(messageContent);
 	});

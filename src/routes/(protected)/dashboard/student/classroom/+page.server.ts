@@ -3,7 +3,7 @@ import { requireRole } from '$lib/server/middleware/auth';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Ensure user is a student
-	const { user } = await requireRole(locals, 'student');
+	await requireRole(locals, 'student');
 
 	// Fetch shared coursework for this student's classes
 	// Note: Requires Google Classroom integration tables from Phase 1 migration

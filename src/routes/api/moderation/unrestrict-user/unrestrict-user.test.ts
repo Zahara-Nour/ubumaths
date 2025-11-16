@@ -68,6 +68,7 @@ function createLocalsWithRole(
 	mockSupabase: ReturnType<typeof createMockSupabase>
 ) {
 	const locals = createMockLocals(userId, mockSupabase);
+
 	locals.user = { id: userId, role } as any;
 	return locals;
 }

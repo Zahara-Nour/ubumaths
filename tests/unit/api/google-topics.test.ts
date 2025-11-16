@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
-import { GET } from '/src/routes/api/google/topics/+server';
+import { GET } from '../../../src/routes/api/google/topics/+server';
 import * as authModule from '$lib/server/middleware/auth';
 import type { GoogleTopic } from '$lib/types/google';
+import { createMockSupabase } from '$lib/testing/mock-supabase';
 
 /**
  * API Endpoint Tests: GET /api/google/topics
@@ -32,20 +33,24 @@ describe('GET /api/google/topics', () => {
 		vi.clearAllMocks();
 
 		// Mock requireRole to return teacher user
+
 		vi.mocked(authModule.requireRole).mockResolvedValue({
-			user: { id: teacherId, role: 'teacher' },
-			profile: { id: teacherId, role: 'teacher' }
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			user: { id: teacherId, role: 'teacher' } as any,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			profile: { id: teacherId, role: 'teacher' } as any
 		});
 
 		// Mock Supabase client
 		mockLocals = {
-			supabase: {
-				from: vi.fn().mockReturnThis(),
-				select: vi.fn().mockReturnThis(),
-				eq: vi.fn().mockReturnThis(),
-				order: vi.fn()
-			}
-		};
+			supabase: createMockSupabase(),
+			user: { id: teacherId, role: 'teacher' },
+			session: null,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			safeGetSession: vi.fn() as any,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			profile: null as any
+		} as unknown as App.Locals;
 	});
 
 	describe('Happy Path', () => {
@@ -56,7 +61,8 @@ describe('GET /api/google/topics', () => {
 				{ id: topicId3, name: 'Trigonometry', google_topic_id: 'google-topic-3' }
 			];
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -65,7 +71,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -76,7 +83,8 @@ describe('GET /api/google/topics', () => {
 		});
 
 		it('should return empty array if no topics exist', async () => {
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: [],
 				error: null
 			});
@@ -85,7 +93,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -93,7 +102,8 @@ describe('GET /api/google/topics', () => {
 		});
 
 		it('should return empty array if data is null', async () => {
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: null,
 				error: null
 			});
@@ -102,7 +112,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -116,7 +127,8 @@ describe('GET /api/google/topics', () => {
 				{ id: topicId3, name: 'Calculus', google_topic_id: 'google-topic-3' }
 			];
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -125,16 +137,19 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await GET(event as any);
 
 			// Verify order was called with ascending name
-			expect(mockLocals.supabase.order).toHaveBeenCalledWith('name', { ascending: true });
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).order).toHaveBeenCalledWith('name', { ascending: true });
 		});
 
 		it('should rely on RLS policies for teacher filtering', async () => {
 			// Note: The endpoint does NOT explicitly filter by teacher_id
 			// RLS policies automatically restrict topics to only those from teacher's courses
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: [],
 				error: null
 			});
@@ -143,13 +158,17 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await GET(event as any);
 
 			// Verify no explicit teacher_id filter (RLS handles it)
-			expect(mockLocals.supabase.eq).not.toHaveBeenCalled();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).eq).not.toHaveBeenCalled();
 			// Instead, verify the query was made
-			expect(mockLocals.supabase.from).toHaveBeenCalledWith('google_classroom_topics');
-			expect(mockLocals.supabase.select).toHaveBeenCalledWith('id, name, google_topic_id');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).from).toHaveBeenCalledWith('google_classroom_topics');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expect((mockLocals.supabase as any).select).toHaveBeenCalledWith('id, name, google_topic_id');
 		});
 	});
 
@@ -163,7 +182,8 @@ describe('GET /api/google/topics', () => {
 				{ id: topicId3, name: 'Geometry', google_topic_id: 'google-topic-3' }
 			];
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -172,12 +192,17 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
 			expect(data.topics).toHaveLength(3); // All 3 topics kept (different IDs)
-			expect(data.topics.map((t: GoogleTopic) => t.name)).toEqual(['Algebra', 'Algebra', 'Geometry']);
+			expect(data.topics.map((t: GoogleTopic) => t.name)).toEqual([
+				'Algebra',
+				'Algebra',
+				'Geometry'
+			]);
 		});
 
 		it('should keep first occurrence when deduplicating by ID', async () => {
@@ -188,7 +213,8 @@ describe('GET /api/google/topics', () => {
 				{ id: topicId1, name: 'Math', google_topic_id: 'google-topic-1' } // Duplicate ID
 			];
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -197,7 +223,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -214,7 +241,8 @@ describe('GET /api/google/topics', () => {
 				{ id: topicId3, name: 'Chapter 1', google_topic_id: 'google-topic-3' }
 			];
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -223,7 +251,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -239,7 +268,8 @@ describe('GET /api/google/topics', () => {
 				{ id: topicId3, name: 'ALGEBRA', google_topic_id: 'google-topic-3' }
 			];
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -248,12 +278,17 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
 			expect(data.topics).toHaveLength(3); // All different due to case
-			expect(data.topics.map((t: GoogleTopic) => t.name)).toEqual(['algebra', 'Algebra', 'ALGEBRA']);
+			expect(data.topics.map((t: GoogleTopic) => t.name)).toEqual([
+				'algebra',
+				'Algebra',
+				'ALGEBRA'
+			]);
 		});
 
 		it('should preserve all topic fields when deduplicating by ID', async () => {
@@ -270,7 +305,8 @@ describe('GET /api/google/topics', () => {
 				}
 			];
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -279,7 +315,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -294,7 +331,8 @@ describe('GET /api/google/topics', () => {
 
 	describe('Database Errors (500)', () => {
 		it('should handle database fetch errors', async () => {
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: null,
 				error: { code: '42P01', message: 'Relation does not exist' }
 			});
@@ -303,11 +341,13 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(GET(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(GET(event as any)).rejects.toThrow();
 		});
 
 		it('should handle database connection errors', async () => {
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: null,
 				error: { code: '08006', message: 'Connection failure' }
 			});
@@ -316,11 +356,13 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(GET(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(GET(event as any)).rejects.toThrow();
 		});
 
 		it('should handle permission errors', async () => {
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: null,
 				error: { code: '42501', message: 'Permission denied' }
 			});
@@ -329,17 +371,22 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(GET(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(GET(event as any)).rejects.toThrow();
 		});
 
 		it('should handle unexpected errors gracefully', async () => {
-			mockLocals.supabase.order.mockRejectedValueOnce(new Error('Unexpected database error'));
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockLocals.supabase as any).order.mockRejectedValueOnce(
+				new Error('Unexpected database error')
+			);
 
 			const event = {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(GET(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(GET(event as any)).rejects.toThrow();
 		});
 	});
 
@@ -348,7 +395,8 @@ describe('GET /api/google/topics', () => {
 			const longTopicName = 'A'.repeat(500);
 			const mockTopics = [{ id: topicId1, name: longTopicName, google_topic_id: 'google-topic-1' }];
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -357,7 +405,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -371,7 +420,8 @@ describe('GET /api/google/topics', () => {
 				{ id: topicId3, name: 'Émojis 🎉 and ü', google_topic_id: 'google-topic-3' }
 			];
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -380,7 +430,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -397,7 +448,8 @@ describe('GET /api/google/topics', () => {
 				{ id: topicId2, name: 'Valid Topic', google_topic_id: 'google-topic-2' }
 			];
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -406,7 +458,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -420,7 +473,8 @@ describe('GET /api/google/topics', () => {
 				{ id: topicId2, name: '\t\n', google_topic_id: 'google-topic-2' }
 			];
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -429,7 +483,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -444,7 +499,8 @@ describe('GET /api/google/topics', () => {
 				google_topic_id: `google-topic-${i}`
 			}));
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: manyTopics,
 				error: null
 			});
@@ -453,7 +509,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -473,7 +530,8 @@ describe('GET /api/google/topics', () => {
 				}
 			}
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: topicsWithDuplicates,
 				error: null
 			});
@@ -482,7 +540,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -496,7 +555,8 @@ describe('GET /api/google/topics', () => {
 				{ id: topicId3, name: 'Математика', google_topic_id: 'google-topic-3' } // Russian
 			];
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -505,12 +565,17 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
 			expect(data.topics).toHaveLength(3);
-			expect(data.topics.map((t: GoogleTopic) => t.name)).toEqual(['数学', 'الرياضيات', 'Математика']);
+			expect(data.topics.map((t: GoogleTopic) => t.name)).toEqual([
+				'数学',
+				'الرياضيات',
+				'Математика'
+			]);
 		});
 
 		it('should deduplicate topics with same ID but different google_topic_id', async () => {
@@ -520,7 +585,8 @@ describe('GET /api/google/topics', () => {
 				{ id: topicId1, name: 'Topic A', google_topic_id: 'google-topic-2' } // Same ID
 			];
 
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -529,7 +595,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -540,7 +607,8 @@ describe('GET /api/google/topics', () => {
 
 	describe('Authorization', () => {
 		it('should require teacher role', async () => {
-			mockLocals.supabase.order.mockResolvedValueOnce({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
 				data: [],
 				error: null
 			});
@@ -549,7 +617,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await GET(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await GET(event as any);
 
 			// Verify requireRole was called with 'teacher'
 			expect(authModule.requireRole).toHaveBeenCalledWith(mockLocals, 'teacher');
@@ -562,7 +631,8 @@ describe('GET /api/google/topics', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(GET(event)).rejects.toThrow('Unauthorized');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(GET(event as any)).rejects.toThrow('Unauthorized');
 		});
 	});
 });

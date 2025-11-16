@@ -18,15 +18,9 @@ import {
 } from '$lib/test-utils/marketplace';
 
 // Type definitions for test request/response handling
-interface ProposalsRequestLocals {
+interface _ProposalsRequestLocals {
 	supabase: ReturnType<typeof createMockSupabase>;
 	user: { id: string } | null;
-}
-
-interface ProposalsRequestEvent {
-	request: { json: () => Promise<unknown> };
-	params: { id: string };
-	locals: ProposalsRequestLocals;
 }
 
 interface AcceptProposalAtomicParams {
@@ -137,6 +131,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				request: mockRequest,
 				params: mockParams,
 				locals: mockLocals
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any);
 
 			const data = await response.json();
@@ -199,6 +194,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				request: mockRequest,
 				params: mockParams,
 				locals: mockLocals
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any);
 
 			expect(response.status).toBe(201);
@@ -220,6 +216,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					request: mockRequest,
 					params: mockParams,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Non authentifié');
 		});
@@ -243,6 +240,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					request: mockRequest,
 					params: mockParams,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow();
 		});
@@ -267,6 +265,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					request: mockRequest,
 					params: mockParams,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Une proposition doit contenir au moins une carte ou des gidouilles');
 		});
@@ -310,6 +309,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					request: mockRequest,
 					params: mockParams,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Vous ne pouvez pas faire une proposition sur votre propre annonce');
 		});
@@ -347,6 +347,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					request: mockRequest,
 					params: mockParams,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow("Cette annonce n'est plus active");
 		});
@@ -388,6 +389,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					request: mockRequest,
 					params: mockParams,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Vous ne possédez pas toutes les cartes offertes');
 		});
@@ -429,6 +431,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					request: mockRequest,
 					params: mockParams,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Vous ne possédez pas assez de gidouilles');
 		});
@@ -470,6 +473,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					request: mockRequest,
 					params: mockParams,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Certaines cartes offertes sont déjà utilisées');
 		});
@@ -521,6 +525,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					request: mockRequest,
 					params: mockParams,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Vous avez déjà une proposition en cours pour cette annonce');
 		});
@@ -567,7 +572,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					})
 			];
 
-			const results = await simulateConcurrentOperations(operations as any, 10);
+			const results = await simulateConcurrentOperations(operations, 10);
 
 			// Only one should succeed
 			const successful = results.filter((r) => r.status === 'fulfilled');
@@ -615,7 +620,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				p_user_id: seller.id,
 				transfer_cards: true,
 				transfer_gidouilles: true
-			} as any);
+			} as AcceptProposalAtomicParams);
 
 			// Verify all steps were executed in order
 			expect(transactionSteps[0]).toBe('BEGIN');
@@ -641,7 +646,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					p_proposal_id: 'prop-1',
 					p_user_id: seller.id,
 					simulate_transfer_failure: true
-				} as any)
+				} as AcceptProposalAtomicParams)
 			).rejects.toThrow('Transfer failed');
 
 			// In a real scenario, verify nothing was changed in DB
@@ -701,6 +706,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				request: mockRequest,
 				params: mockParams,
 				locals: mockLocals
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any);
 
 			// Verify notification was sent
@@ -753,6 +759,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					request: mockRequest,
 					params: mockParams,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Annonce non trouvée');
 		});
@@ -804,6 +811,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					request: mockRequest,
 					params: mockParams,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Erreur lors de la création de la proposition');
 		});
@@ -858,6 +866,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				request: mockRequest,
 				params: mockParams,
 				locals: mockLocals
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any);
 
 			expect(response.status).toBe(201);
@@ -878,6 +887,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 					request: invalidRequest,
 					params: mockParams,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow();
 		});

@@ -46,9 +46,10 @@ type MockChain = {
 	then: MockChainMethod;
 };
 
-export type MockSupabaseClient = SupabaseClient<Database> & {
+export type MockSupabaseClient = Omit<SupabaseClient<Database>, 'rpc'> & {
 	_mockChain: MockChain;
 	_rpcMocks: Map<string, MockChainMethod | ((params: unknown) => unknown)>;
+	rpc: (name: string, params?: unknown) => Promise<{ data: unknown; error: null }>;
 };
 
 export type TestUser = {

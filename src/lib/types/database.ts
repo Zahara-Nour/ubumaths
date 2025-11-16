@@ -8305,3 +8305,67 @@ export const Constants = {
 		}
 	}
 } as const;
+
+// =============================================================================
+// Convenience Type Exports
+// =============================================================================
+
+// Table Row Types
+export type Class = Database['public']['Tables']['classes']['Row'];
+export type Notification = Database['public']['Tables']['notifications']['Row'];
+export type ClassSchedule = Database['public']['Tables']['class_schedules']['Row'];
+
+// Enum Types (extracted from table fields)
+export type UserRole = Database['public']['Enums']['user_role'];
+export type Gender = Database['public']['Tables']['profiles']['Row']['gender'];
+export type NotificationType = Database['public']['Tables']['notifications']['Row']['type'];
+export type NotificationPriority = Database['public']['Tables']['notifications']['Row']['priority'];
+export type NotificationTargetType =
+	Database['public']['Tables']['notifications']['Row']['target_type'];
+export type SystemEventType =
+	Database['public']['Tables']['notifications']['Row']['system_event_type'];
+export type FriendshipType = Database['public']['Tables']['friendships']['Row']['status'];
+
+// Complex JSON Types
+export interface WeekConfig {
+	first_day: number; // 0-6 (Sunday-Saturday)
+	last_day: number; // 0-6 (Sunday-Saturday)
+	school_days: number[]; // Array of day numbers
+	weekend_days: number[]; // Array of day numbers
+}
+
+export interface SchoolPeriod {
+	number: number;
+	name: string | null;
+	start_time: string; // HH:MM format
+	end_time: string; // HH:MM format
+}
+
+export interface SchoolTimetable {
+	periods: SchoolPeriod[];
+	week_config?: WeekConfig;
+}
+
+// Joined/Extended Types
+export interface FriendshipWithProfile {
+	id: string;
+	status: FriendshipType;
+	friendship_type: FriendshipType;
+	created_at: string;
+	updated_at: string;
+	requester_id: string;
+	addressee_id: string;
+	friend_profile: {
+		id: string;
+		full_name: string | null;
+		firstname: string | null;
+		lastname: string | null;
+		avatar_url: string | null;
+		role: UserRole;
+		gender: Gender;
+		presence?: {
+			is_online: boolean;
+			last_seen: string | null;
+		};
+	};
+}

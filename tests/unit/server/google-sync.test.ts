@@ -18,8 +18,23 @@ vi.mock('$lib/server/google/encryption', () => ({
 	encryptToken: vi.fn((token: string) => token)
 }));
 
+// Mock type that includes query builder methods
+type MockSupabaseClient = SupabaseClient<Database> & {
+	from: ReturnType<typeof vi.fn>;
+	select: ReturnType<typeof vi.fn>;
+	insert: ReturnType<typeof vi.fn>;
+	upsert: ReturnType<typeof vi.fn>;
+	delete: ReturnType<typeof vi.fn>;
+	eq: ReturnType<typeof vi.fn>;
+	filter: ReturnType<typeof vi.fn>;
+	single: ReturnType<typeof vi.fn>;
+};
+
 describe('Google Classroom Sync - Topics and Materials', () => {
-	let mockSupabase: SupabaseClient<Database>;
+	let mockSupabase: MockSupabaseClient;
+
+	// Type as any to avoid TypeScript errors while letting the mock work properly
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let mockClassroomClient: any;
 
 	const validUuid = '550e8400-e29b-41d4-a716-446655440000';
@@ -40,11 +55,11 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 			eq: vi.fn().mockReturnThis(),
 			filter: vi.fn().mockReturnThis(),
 			single: vi.fn()
-			// @ts-expect-error - Partial mock
-		} as SupabaseClient<Database>;
+		} as unknown as MockSupabaseClient;
 
 		// Mock Google Classroom client
-		mockClassroomClient = new GoogleClassroomClient();
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		mockClassroomClient = new (GoogleClassroomClient as any)();
 	});
 
 	afterEach(() => {

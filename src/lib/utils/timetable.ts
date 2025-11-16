@@ -218,14 +218,14 @@ export function isTimetableEmpty(timetable: SchoolTimetable | null): boolean {
 export function createDefaultTimetable(): SchoolTimetable {
 	return {
 		periods: [
-			{ number: 1, start_time: '07:00:00', end_time: '08:00:00' },
-			{ number: 2, start_time: '08:00:00', end_time: '09:00:00' },
-			{ number: 3, start_time: '09:00:00', end_time: '10:00:00' },
-			{ number: 4, start_time: '10:00:00', end_time: '11:00:00' },
-			{ number: 5, start_time: '11:00:00', end_time: '12:00:00' },
-			{ number: 6, start_time: '13:00:00', end_time: '14:00:00' },
-			{ number: 7, start_time: '14:00:00', end_time: '15:00:00' },
-			{ number: 8, start_time: '15:00:00', end_time: '16:00:00' }
+			{ number: 1, name: null, start_time: '07:00:00', end_time: '08:00:00' },
+			{ number: 2, name: null, start_time: '08:00:00', end_time: '09:00:00' },
+			{ number: 3, name: null, start_time: '09:00:00', end_time: '10:00:00' },
+			{ number: 4, name: null, start_time: '10:00:00', end_time: '11:00:00' },
+			{ number: 5, name: null, start_time: '11:00:00', end_time: '12:00:00' },
+			{ number: 6, name: null, start_time: '13:00:00', end_time: '14:00:00' },
+			{ number: 7, name: null, start_time: '14:00:00', end_time: '15:00:00' },
+			{ number: 8, name: null, start_time: '15:00:00', end_time: '16:00:00' }
 		]
 	};
 }

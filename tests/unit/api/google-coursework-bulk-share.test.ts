@@ -17,7 +17,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { POST } from '/src/routes/api/google/coursework/bulk-share/+server';
+import { POST } from '../../../src/routes/api/google/coursework/bulk-share/+server.js';
 import * as authModule from '$lib/server/middleware/auth';
 
 // Mock auth middleware
@@ -41,12 +41,16 @@ describe('POST /api/google/coursework/bulk-share', () => {
 		vi.clearAllMocks();
 
 		// Mock requireRole to return teacher user
+
 		vi.mocked(authModule.requireRole).mockResolvedValue({
-			user: { id: TEACHER_ID, role: 'teacher' },
-			profile: { id: TEACHER_ID, role: 'teacher' }
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			user: { id: TEACHER_ID, role: 'teacher' } as any,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			profile: { id: TEACHER_ID, role: 'teacher' } as any
 		});
 
 		// Mock Supabase client
+
 		mockLocals = {
 			supabase: {
 				from: vi.fn((table: string) => {
@@ -94,9 +98,14 @@ describe('POST /api/google/coursework/bulk-share', () => {
 					}
 					return {};
 				})
-			},
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			} as any,
 			user: { id: TEACHER_ID, role: 'teacher' },
-			session: null
+			session: null,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			safeGetSession: vi.fn() as any,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			profile: null as any
 		} as unknown as App.Locals;
 
 		// Mock request

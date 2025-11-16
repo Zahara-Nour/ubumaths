@@ -221,6 +221,7 @@ describe('Rate Limiter (Database-backed)', () => {
 		expireEntry = mock.expireEntry;
 
 		// Reset the mock implementation for createClient
+
 		vi.mocked(createClient).mockReturnValue(mock.mockSupabase as any);
 
 		// NOTE: Do NOT call vi.clearAllMocks() here as it clears the logger mock

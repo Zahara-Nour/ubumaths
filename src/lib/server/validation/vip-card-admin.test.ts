@@ -461,6 +461,7 @@ describe('VIP Card Action Validation', () => {
 				expect(result.success).toBe(true);
 				if (result.success) {
 					expect(result.data.action?.type).toBe('remove_warnings');
+
 					expect((result.data.action as any).count).toBe(1);
 				}
 			});
@@ -680,7 +681,9 @@ describe('VIP Card Action Validation', () => {
 					expect(result.success).toBe(true);
 					if (result.success) {
 						expect(result.data.action?.type).toBe('exchange_cards');
+
 						expect((result.data.action as any).exchange.mode).toBe('replace_random');
+
 						expect((result.data.action as any).exchange.count).toBe(1);
 					}
 				});
@@ -831,6 +834,7 @@ describe('VIP Card Action Validation', () => {
 						expect(result.success).toBe(true);
 						if (result.success) {
 							expect((result.data.action as any).exchange.mode).toBe('rarity_points');
+
 							expect((result.data.action as any).exchange.targetRarity).toBe(rarity);
 						}
 					});
@@ -1026,7 +1030,9 @@ describe('VIP Card Action Validation', () => {
 					expect(result.success).toBe(true);
 					if (result.success) {
 						expect((result.data.action as any).exchange.mode).toBe('discard_for_specific');
+
 						expect((result.data.action as any).exchange.discardCount).toBe(1);
+
 						expect((result.data.action as any).exchange.targetCardId).toBe('bonus');
 					}
 				});
@@ -1246,6 +1252,7 @@ describe('VIP Card Action Validation', () => {
 				expect(result.success).toBe(true);
 				if (result.success) {
 					expect(result.data.action?.type).toBe('add_gidouilles');
+
 					expect((result.data.action as any).amount).toBe(1);
 				}
 			});
@@ -1439,7 +1446,9 @@ describe('VIP Card Action Validation', () => {
 				expect(result.success).toBe(true);
 				if (result.success) {
 					expect(result.data.action?.type).toBe('choose_card');
+
 					expect((result.data.action as any).count).toBe(2);
+
 					expect((result.data.action as any).filter).toBe('all');
 				}
 			});
@@ -1602,10 +1611,14 @@ describe('VIP Card Action Validation', () => {
 				expect(result.success).toBe(true);
 				if (result.success) {
 					expect(result.data.action?.type).toBe('choose_card');
+
 					expect((result.data.action as any).count).toBe(3);
 					// No filter specified means default to 'all'
+
 					expect((result.data.action as any).filter).toBeUndefined();
+
 					expect((result.data.action as any).maxRarity).toBeUndefined();
+
 					expect((result.data.action as any).possibleCardIds).toBeUndefined();
 				}
 			});
