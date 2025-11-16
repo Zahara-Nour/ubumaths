@@ -7,13 +7,13 @@ import { requireRole } from '$lib/server/middleware/auth';
  * Returns all unique Google Classroom topics across teacher's courses
  */
 export const GET: RequestHandler = async ({ locals }) => {
-	const session = await requireRole(locals, 'teacher');
+	const _session = await requireRole(locals, 'teacher');
 
 	try {
+		// RLS policies automatically filter topics to only those from teacher's courses
 		const { data: topics, error: topicsError } = await locals.supabase
 			.from('google_classroom_topics')
 			.select('id, name, google_topic_id')
-			.eq('google_classroom_courses.teacher_id', session.user.id)
 			.order('name', { ascending: true });
 
 		if (topicsError) {
@@ -21,10 +21,14 @@ export const GET: RequestHandler = async ({ locals }) => {
 			throw error(500, 'Failed to fetch topics');
 		}
 
-		// Remove duplicates by name (topics can exist across multiple courses)
+		// Remove duplicates by database ID (not by name)
+		// Topics are course-specific, so multiple courses can have topics with the same name
+		// (e.g., "Homework" in Math 101 vs "Homework" in Physics 201)
+		// We deduplicate by id because the same topic might appear multiple times in the query result
+		// due to RLS policy joins, but each unique topic in the database should only appear once
 		const uniqueTopics =
 			topics?.reduce((acc: Array<{ id: string; name: string; google_topic_id: string }>, topic) => {
-				if (!acc.find((t) => t.name === topic.name)) {
+				if (!acc.find((t) => t.id === topic.id)) {
 					acc.push(topic);
 				}
 				return acc;
