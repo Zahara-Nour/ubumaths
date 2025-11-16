@@ -73,8 +73,8 @@ export interface GoogleCourse {
 	/** Teaching folder for the course */
 	teacherFolder?: {
 		id: string;
-		title: string;
-		alternateLink: string;
+		title?: string;
+		alternateLink?: string;
 	};
 	/** Teacher group email (optional) */
 	teacherGroupEmail?: string;
@@ -109,7 +109,7 @@ export interface GoogleCoursework {
 	/** State of the coursework */
 	state: 'PUBLISHED' | 'DRAFT' | 'DELETED';
 	/** Absolute link to this coursework in the Classroom web UI */
-	alternateLink: string;
+	alternateLink?: string;
 	/** Timestamp when the coursework was created */
 	creationTime: string;
 	/** Timestamp when the coursework was last updated */
@@ -126,9 +126,9 @@ export interface GoogleCoursework {
 	/** Optional due time */
 	dueTime?: {
 		/** Hours (0-23) */
-		hours: number;
+		hours?: number;
 		/** Minutes (0-59) */
-		minutes: number;
+		minutes?: number;
 		/** Seconds (0-59, optional) */
 		seconds?: number;
 		/** Nanoseconds (0-999999999, optional) */
@@ -178,10 +178,11 @@ export interface GoogleTopic {
 
 /**
  * List of topics from Google Classroom API
+ * Note: Google API returns "topic" (singular) not "topics" (plural)
  */
 export interface GoogleTopicList {
-	/** List of topics */
-	topics?: GoogleTopic[];
+	/** List of topics (field name is "topic" singular in API response) */
+	topic?: GoogleTopic[];
 	/** Token for next page of results */
 	nextPageToken?: string;
 }
@@ -204,7 +205,7 @@ export interface GoogleCourseWorkMaterial {
 	/** State of the course work material */
 	state: 'PUBLISHED' | 'DRAFT' | 'DELETED';
 	/** Absolute link to this material in the Classroom web UI */
-	alternateLink: string;
+	alternateLink?: string;
 	/** Timestamp when the material was created */
 	creationTime: string;
 	/** Timestamp when the material was last updated */
@@ -232,11 +233,11 @@ export interface GoogleMaterial {
 	/** Google Drive file */
 	driveFile?: {
 		/** Drive file ID */
-		id: string;
+		id?: string;
 		/** Title of the file */
-		title: string;
+		title?: string;
 		/** URL to the Drive file */
-		alternateLink: string;
+		alternateLink?: string;
 		/** Thumbnail URL */
 		thumbnailUrl?: string;
 	};
@@ -265,7 +266,7 @@ export interface GoogleMaterial {
 		/** URL to the form */
 		formUrl: string;
 		/** Title of the form */
-		title: string;
+		title?: string;
 		/** Thumbnail URL */
 		thumbnailUrl?: string;
 		/** Form response URL (for viewing responses) */
@@ -329,7 +330,7 @@ export function getMaterialType(material: GoogleMaterial): MaterialType | null {
  * Helper function to get material URL
  */
 export function getMaterialUrl(material: GoogleMaterial): string | null {
-	if (material.driveFile) return material.driveFile.alternateLink;
+	if (material.driveFile) return material.driveFile.alternateLink ?? null;
 	if (material.youtubeVideo) return material.youtubeVideo.alternateLink;
 	if (material.link) return material.link.url;
 	if (material.form) return material.form.formUrl;
@@ -340,10 +341,10 @@ export function getMaterialUrl(material: GoogleMaterial): string | null {
  * Helper function to get material title
  */
 export function getMaterialTitle(material: GoogleMaterial): string {
-	if (material.driveFile) return material.driveFile.title;
+	if (material.driveFile) return material.driveFile.title ?? 'Untitled file';
 	if (material.youtubeVideo) return material.youtubeVideo.title;
 	if (material.link) return material.link.title || material.link.url;
-	if (material.form) return material.form.title;
+	if (material.form) return material.form.title ?? 'Untitled form';
 	return 'Unknown material';
 }
 

@@ -32,7 +32,11 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
-import { shareCourseworkRequestSchema, unshareCourseworkSchema } from '$lib/server/validation';
+import {
+	shareCourseworkRequestSchema,
+	unshareCourseworkSchema,
+	unshareSingleMaterialSchema
+} from '$lib/server/validation';
 
 /**
  * Share coursework with a class
@@ -175,87 +179,180 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 };
 
 /**
- * Unshare coursework from a class
+ * Unshare coursework OR material from a class
  *
  * Security: Teacher role required, ownership verified
  *
- * Deletes shared_coursework record (idempotent)
+ * Deletes shared_coursework or shared_materials record (idempotent)
+ *
+ * Query params:
+ * - For coursework: ?courseworkId=xxx&classId=xxx
+ * - For materials: ?materialId=xxx&classId=xxx
  */
 export const DELETE: RequestHandler = async ({ locals, url }) => {
-	// Only teachers can unshare coursework
+	// Only teachers can unshare coursework/materials
 	const { user } = await requireRole(locals, 'teacher');
 
-	// Parse and validate query params
+	// Parse query params
 	const courseworkId = url.searchParams.get('courseworkId');
+	const materialId = url.searchParams.get('materialId');
 	const classId = url.searchParams.get('classId');
 
-	const validation = unshareCourseworkSchema.safeParse({ courseworkId, classId });
-	if (!validation.success) {
-		throw error(400, validation.error.issues[0].message);
+	// Validate: must have EITHER courseworkId OR materialId (but not both)
+	if (courseworkId && materialId) {
+		throw error(400, 'Cannot specify both courseworkId and materialId');
 	}
 
-	const { courseworkId: validCourseworkId, classId: validClassId } = validation.data;
-
-	try {
-		// Verify coursework belongs to teacher (via RLS)
-		// Note: google_classroom_coursework doesn't have teacher_id column.
-		// Ownership is verified via RLS policy that joins with google_classroom_courses.
-		const { data: coursework, error: courseworkError } = await locals.supabase
-			.from('google_classroom_coursework')
-			.select('id')
-			.eq('id', validCourseworkId)
-			.single();
-
-		if (courseworkError || !coursework) {
-			if (courseworkError?.code === 'PGRST116') {
-				throw error(404, 'Coursework not found or access denied');
-			}
-			console.error('[Google Unshare] Coursework verification error:', courseworkError);
-			throw error(403, 'Coursework does not belong to you');
-		}
-
-		// Verify class belongs to teacher (for security)
-		const { data: classData, error: classError } = await locals.supabase
-			.from('classes')
-			.select('id')
-			.eq('id', validClassId)
-			.eq('teacher_id', user.id)
-			.single();
-
-		if (classError || !classData) {
-			if (classError?.code === 'PGRST116') {
-				throw error(404, 'Class not found or access denied');
-			}
-			console.error('[Google Unshare] Class verification error:', classError);
-			throw error(403, 'Class does not belong to you');
-		}
-
-		// Delete from shared_coursework (idempotent - no error if not found)
-		// Note: Schema uses 'shared_by' column, not 'teacher_id'
-		const { error: deleteError } = await locals.supabase
-			.from('shared_coursework')
-			.delete()
-			.eq('coursework_id', validCourseworkId)
-			.eq('class_id', validClassId)
-			.eq('shared_by', user.id);
-
-		if (deleteError) {
-			console.error('[Google Unshare] Delete error:', deleteError);
-			throw error(500, 'Failed to unshare coursework');
-		}
-
-		return json({
-			success: true,
-			message: 'Coursework unshared successfully'
-		});
-	} catch (err) {
-		// Re-throw SvelteKit errors
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-
-		// Handle other errors
-		console.error('[Google Unshare] Error unsharing coursework:', err);
-		throw error(500, 'An error occurred while unsharing coursework');
+	if (!courseworkId && !materialId) {
+		throw error(400, 'Must specify either courseworkId or materialId');
 	}
+
+	// Handle coursework unsharing
+	if (courseworkId) {
+		const validation = unshareCourseworkSchema.safeParse({ courseworkId, classId });
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
+		}
+
+		const { courseworkId: validCourseworkId, classId: validClassId } = validation.data;
+
+		try {
+			// Verify coursework belongs to teacher (via RLS)
+			// Note: google_classroom_coursework doesn't have teacher_id column.
+			// Ownership is verified via RLS policy that joins with google_classroom_courses.
+			const { data: coursework, error: courseworkError } = await locals.supabase
+				.from('google_classroom_coursework')
+				.select('id')
+				.eq('id', validCourseworkId)
+				.single();
+
+			if (courseworkError || !coursework) {
+				if (courseworkError?.code === 'PGRST116') {
+					throw error(404, 'Coursework not found or access denied');
+				}
+				console.error('[Google Unshare] Coursework verification error:', courseworkError);
+				throw error(403, 'Coursework does not belong to you');
+			}
+
+			// Verify class belongs to teacher (for security)
+			const { data: classData, error: classError } = await locals.supabase
+				.from('classes')
+				.select('id')
+				.eq('id', validClassId)
+				.eq('teacher_id', user.id)
+				.single();
+
+			if (classError || !classData) {
+				if (classError?.code === 'PGRST116') {
+					throw error(404, 'Class not found or access denied');
+				}
+				console.error('[Google Unshare] Class verification error:', classError);
+				throw error(403, 'Class does not belong to you');
+			}
+
+			// Delete from shared_coursework (idempotent - no error if not found)
+			// Note: Schema uses 'shared_by' column, not 'teacher_id'
+			const { error: deleteError } = await locals.supabase
+				.from('shared_coursework')
+				.delete()
+				.eq('coursework_id', validCourseworkId)
+				.eq('class_id', validClassId)
+				.eq('shared_by', user.id);
+
+			if (deleteError) {
+				console.error('[Google Unshare] Delete error:', deleteError);
+				throw error(500, 'Failed to unshare coursework');
+			}
+
+			return json({
+				success: true,
+				message: 'Coursework unshared successfully'
+			});
+		} catch (err) {
+			// Re-throw SvelteKit errors
+			if (err && typeof err === 'object' && 'status' in err) {
+				throw err;
+			}
+
+			// Handle other errors
+			console.error('[Google Unshare] Error unsharing coursework:', err);
+			throw error(500, 'An error occurred while unsharing coursework');
+		}
+	}
+
+	// Handle material unsharing
+	if (materialId) {
+		const validation = unshareSingleMaterialSchema.safeParse({ materialId, classId });
+		if (!validation.success) {
+			throw error(400, validation.error.issues[0].message);
+		}
+
+		const { materialId: validMaterialId, classId: validClassId } = validation.data;
+
+		try {
+			// Verify material belongs to teacher (via RLS)
+			// Note: google_classroom_materials doesn't have teacher_id column.
+			// Ownership is verified via RLS policy that joins with google_classroom_courses.
+			const { data: material, error: materialError } = await locals.supabase
+				.from('google_classroom_materials')
+				.select('id')
+				.eq('id', validMaterialId)
+				.single();
+
+			if (materialError || !material) {
+				if (materialError?.code === 'PGRST116') {
+					throw error(404, 'Material not found or access denied');
+				}
+				console.error('[Google Unshare] Material verification error:', materialError);
+				throw error(403, 'Material does not belong to you');
+			}
+
+			// Verify class belongs to teacher (for security)
+			const { data: classData, error: classError } = await locals.supabase
+				.from('classes')
+				.select('id')
+				.eq('id', validClassId)
+				.eq('teacher_id', user.id)
+				.single();
+
+			if (classError || !classData) {
+				if (classError?.code === 'PGRST116') {
+					throw error(404, 'Class not found or access denied');
+				}
+				console.error('[Google Unshare] Class verification error:', classError);
+				throw error(403, 'Class does not belong to you');
+			}
+
+			// Delete from shared_materials (idempotent - no error if not found)
+			// Note: Schema uses 'shared_by' column, not 'teacher_id'
+			const { error: deleteError } = await locals.supabase
+				.from('shared_materials')
+				.delete()
+				.eq('material_id', validMaterialId)
+				.eq('class_id', validClassId)
+				.eq('shared_by', user.id);
+
+			if (deleteError) {
+				console.error('[Google Unshare] Delete error:', deleteError);
+				throw error(500, 'Failed to unshare material');
+			}
+
+			return json({
+				success: true,
+				message: 'Material unshared successfully'
+			});
+		} catch (err) {
+			// Re-throw SvelteKit errors
+			if (err && typeof err === 'object' && 'status' in err) {
+				throw err;
+			}
+
+			// Handle other errors
+			console.error('[Google Unshare] Error unsharing material:', err);
+			throw error(500, 'An error occurred while unsharing material');
+		}
+	}
+
+	// Should never reach here due to validation above
+	throw error(500, 'Unexpected error in unshare logic');
 };
