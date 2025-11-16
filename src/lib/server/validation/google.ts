@@ -109,7 +109,7 @@ export const shareMaterialSchema = z.object({
 	topicId: z.string().uuid().nullable().optional(),
 	descriptionOverride: z
 		.string()
-		.max(5000, 'Description cannot exceed 5000 characters')
+		.max(2000, 'Description cannot exceed 2000 characters')
 		.nullable()
 		.optional(),
 	visible: z.boolean().default(true)
@@ -143,7 +143,7 @@ export const bulkShareMaterialsSchema = z.object({
 	topicId: z.string().uuid().nullable().optional(),
 	descriptionOverride: z
 		.string()
-		.max(5000, 'Description cannot exceed 5000 characters')
+		.max(2000, 'Description cannot exceed 2000 characters')
 		.nullable()
 		.optional(),
 	visible: z.boolean().default(true)
@@ -340,4 +340,27 @@ export const updateSharedCourseworkByIdSchema = z
  */
 export const sharedCourseworkIdParamSchema = z.object({
 	id: uuidSchema
+});
+
+/**
+ * Schema for bulk sharing coursework with multiple classes
+ * POST /api/google/coursework/bulk-share
+ */
+export const bulkShareCourseworkSchema = z.object({
+	courseworkIds: z
+		.array(z.string().uuid())
+		.min(1, 'At least one coursework must be selected')
+		.max(50, 'Cannot share more than 50 coursework items at once'),
+	classIds: z
+		.array(z.string().uuid())
+		.min(1, 'At least one class must be selected')
+		.max(50, 'Cannot share with more than 50 classes at once'),
+	categoryId: z.string().uuid().nullable().optional(),
+	topicId: z.string().uuid().nullable().optional(),
+	descriptionOverride: z
+		.string()
+		.max(2000, 'Description cannot exceed 2000 characters')
+		.nullable()
+		.optional(),
+	visible: z.boolean().default(true)
 });
