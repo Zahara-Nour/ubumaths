@@ -4,6 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import { fixUrl } from '$lib/utils';
 	import {
 		Calendar,
 		Clock,
@@ -360,7 +361,7 @@
 						<Button
 							variant="outline"
 							class="w-full"
-							onclick={() => window.open(work.alternateLink, '_blank')}
+							onclick={() => window.open(fixUrl(work.alternateLink), '_blank')}
 						>
 							<ExternalLink class="mr-2 h-4 w-4" />
 							Ouvrir dans Google Classroom

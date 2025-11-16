@@ -193,9 +193,10 @@ export const googleTopicSchema = z.object({
 
 /**
  * Google Classroom Topic list schema
+ * Note: Google API returns "topic" (singular) not "topics" (plural)
  */
 export const googleTopicListSchema = z.object({
-	topics: z.array(googleTopicSchema).optional(),
+	topic: z.array(googleTopicSchema).optional(),
 	nextPageToken: z.string().optional()
 });
 

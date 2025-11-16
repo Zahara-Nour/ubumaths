@@ -6,6 +6,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import { fixUrl } from '$lib/utils';
 	import {
 		FileText,
 		ExternalLink,
@@ -76,13 +77,12 @@
 			topic: { id: string; name: string } | null;
 			attachments: Array<{
 				id: string;
-				drive_file_id: string | null;
-				title: string;
-				alternate_link: string;
+				material_type: string;
+				google_file_id: string | null;
+				file_name: string;
+				file_url: string;
 				thumbnail_url: string | null;
-				youtube_url: string | null;
-				link_url: string | null;
-				form_url: string | null;
+				title: string | null;
 			}>;
 		};
 		class: { id: string; name: string };
@@ -165,20 +165,15 @@
 	function getAttachmentIcon(
 		attachment: GroupedMaterial['material']['attachments'][0]
 	): typeof FileText {
-		if (attachment.youtube_url) return Youtube;
-		if (attachment.link_url) return LinkIcon;
-		if (attachment.form_url) return FileQuestion;
+		if (attachment.material_type === 'YOUTUBE_VIDEO') return Youtube;
+		if (attachment.material_type === 'LINK') return LinkIcon;
+		if (attachment.material_type === 'FORM') return FileQuestion;
 		return FileText;
 	}
 
 	// Get attachment URL
 	function getAttachmentUrl(attachment: GroupedMaterial['material']['attachments'][0]): string {
-		return (
-			attachment.youtube_url ||
-			attachment.link_url ||
-			attachment.form_url ||
-			attachment.alternate_link
-		);
+		return attachment.file_url;
 	}
 
 	// Format date
@@ -357,16 +352,17 @@
 												<div class="space-y-2">
 													{#each material.material.attachments as attachment (attachment.id)}
 														{@const AttachmentIcon = getAttachmentIcon(attachment)}
+														{@const displayTitle = attachment.title || attachment.file_name}
 														<a
 															href={getAttachmentUrl(attachment)}
 															target="_blank"
 															rel="noopener noreferrer"
 															class="flex items-center gap-2 rounded-md border border-border bg-card p-3 transition-colors hover:bg-muted/50"
-															aria-label="{attachment.title} (s'ouvre dans un nouvel onglet)"
+															aria-label="{displayTitle} (s'ouvre dans un nouvel onglet)"
 														>
 															<AttachmentIcon class="h-4 w-4 text-primary" aria-hidden="true" />
 															<div class="min-w-0 flex-1">
-																<p class="truncate text-sm font-medium">{attachment.title}</p>
+																<p class="truncate text-sm font-medium">{displayTitle}</p>
 															</div>
 															<ExternalLink
 																class="h-3 w-3 text-muted-foreground"
@@ -396,7 +392,7 @@
 										<Button
 											variant="outline"
 											class="w-full"
-											onclick={() => window.open(material.material.alternateLink, '_blank')}
+											onclick={() => window.open(fixUrl(material.material.alternateLink), '_blank')}
 											aria-label="Ouvrir dans Google Classroom (s'ouvre dans un nouvel onglet)"
 										>
 											<ExternalLink class="mr-2 h-4 w-4" aria-hidden="true" />

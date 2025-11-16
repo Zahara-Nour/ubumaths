@@ -65,7 +65,13 @@
  *     createdTime: string,
  *     alternateLink: string,
  *     topic: { id: string, name: string } | null,
- *     attachments: Array<{...}>
+ *     attachments: Array<{...}>,
+ *     sharedWithClasses: Array<{
+ *       classId: string,
+ *       className: string,
+ *       visible: boolean,
+ *       categoryName: string | null
+ *     }>
  *   }>
  * }
  */
@@ -191,6 +197,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 		// Optimize: Fetch all materials and sharing data in bulk queries instead of N+1
 		const courseworkIds = (courseworkList || []).map((cw) => cw.id);
+		const materialIds = (courseWorkMaterials || []).map((m) => m.id);
 
 		// Fetch ALL coursework materials in one query
 		const { data: materialsData, error: materialsError } = await locals.supabase
@@ -231,6 +238,24 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			console.error('[Google Course Details] Shared data fetch error:', sharedError);
 		}
 
+		// Fetch ALL material sharing data in one query
+		const { data: allSharedMaterialsData, error: sharedMaterialsError } = await locals.supabase
+			.from('shared_materials')
+			.select(
+				`
+				material_id,
+				class_id,
+				visible,
+				classes!inner(name),
+				coursework_categories(name)
+			`
+			)
+			.in('material_id', materialIds);
+
+		if (sharedMaterialsError) {
+			console.error('[Google Course Details] Shared materials fetch error:', sharedMaterialsError);
+		}
+
 		// Group sharing data by coursework_id
 		type SharedDataArray = NonNullable<typeof allSharedData>;
 		const sharedDataMap: Record<string, SharedDataArray> = (allSharedData || []).reduce(
@@ -242,6 +267,21 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				return acc;
 			},
 			{} as Record<string, SharedDataArray>
+		);
+
+		// Group sharing data by material_id
+		type SharedMaterialsDataArray = NonNullable<typeof allSharedMaterialsData>;
+		const sharedMaterialsDataMap: Record<string, SharedMaterialsDataArray> = (
+			allSharedMaterialsData || []
+		).reduce(
+			(acc, shared) => {
+				if (!acc[shared.material_id]) {
+					acc[shared.material_id] = [];
+				}
+				acc[shared.material_id].push(shared);
+				return acc;
+			},
+			{} as Record<string, SharedMaterialsDataArray>
 		);
 
 		// Map coursework with pre-fetched data (no additional queries)
@@ -304,8 +344,28 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			updateTime: topic.updated_time
 		}));
 
-		// Transform course work materials to camelCase
+		// Transform course work materials to camelCase with sharing data
 		const transformedMaterials = (courseWorkMaterials || []).map((material) => {
+			// Get sharing data for this material
+			const sharedMaterialData = sharedMaterialsDataMap[material.id] || [];
+
+			// Transform shared data
+			const sharedWithClasses = sharedMaterialData.map((shared) => {
+				// Supabase JOIN types don't reflect !inner modifier, handle both cases defensively
+				const classData = shared.classes as unknown as { name: string } | { name: string }[];
+				const className = Array.isArray(classData) ? classData[0]?.name : classData?.name;
+
+				// Handle nested category data
+				const categoryData = shared.coursework_categories as unknown as { name: string } | null;
+
+				return {
+					classId: shared.class_id,
+					className: className || 'Unknown Class',
+					visible: shared.visible,
+					categoryName: categoryData?.name || null
+				};
+			});
+
 			// Handle nested topic data
 			const topicData = material.google_classroom_topics as unknown as
 				| { id: string; name: string }
@@ -328,7 +388,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				createdTime: material.created_time,
 				alternateLink: material.alternate_link,
 				topic,
-				attachments: material.google_classroom_material_attachments || []
+				attachments: material.google_classroom_material_attachments || [],
+				sharedWithClasses
 			};
 		});
 

@@ -27,7 +27,7 @@ describe('GET /api/student/shared-materials', () => {
 	const categoryId = '8d8f7788-8536-51fg-a168-f18gd2g01bf8';
 	const topicId = '9e9g8899-9647-62gh-b279-g29hf3h12cg9';
 
-	let mockLocals: any;
+	let mockLocals: RequestEvent['locals'];
 	let mockUrl: URL;
 
 	beforeEach(() => {
@@ -286,23 +286,21 @@ describe('GET /api/student/shared-materials', () => {
 						google_classroom_material_attachments: [
 							{
 								id: 'attach-1',
-								drive_file_id: 'file-123',
-								title: 'Worksheet.pdf',
-								alternate_link: 'https://drive.google.com/...',
+								material_type: 'DRIVE_FILE',
+								google_file_id: 'file-123',
+								file_name: 'Worksheet.pdf',
+								file_url: 'https://drive.google.com/...',
 								thumbnail_url: 'https://drive.google.com/thumb',
-								youtube_url: null,
-								link_url: null,
-								form_url: null
+								title: 'Worksheet.pdf'
 							},
 							{
 								id: 'attach-2',
-								drive_file_id: null,
-								title: 'Tutorial',
-								alternate_link: 'https://youtube.com/...',
+								material_type: 'YOUTUBE_VIDEO',
+								google_file_id: null,
+								file_name: 'Tutorial',
+								file_url: 'https://youtube.com/...',
 								thumbnail_url: 'https://i.ytimg.com/...',
-								youtube_url: 'https://youtube.com/...',
-								link_url: null,
-								form_url: null
+								title: 'Tutorial'
 							}
 						]
 					},
@@ -640,8 +638,10 @@ describe('GET /api/student/shared-materials', () => {
 	});
 
 	describe('Security & RLS', () => {
-		it('should exclude test accounts', async () => {
-			// Verify is_test filter is applied
+		it('should NOT filter by is_test (student-side endpoints show all materials)', async () => {
+			// IMPORTANT: Test mode filtering is TEACHER-SIDE only (teachers toggle to see test/real students)
+			// STUDENT-SIDE: Students see all materials shared with their classes, regardless of is_test status
+			// This matches /api/student/shared-coursework behavior
 			mockLocals.supabase.eq.mockResolvedValueOnce({
 				data: [{ class_id: classId1 }],
 				error: null
@@ -664,8 +664,9 @@ describe('GET /api/student/shared-materials', () => {
 
 			await GET(event);
 
-			// Verify is_test = false filter was applied
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('is_test', false);
+			// Verify is_test filter was NOT applied (correct behavior)
+			expect(mockLocals.supabase.eq).not.toHaveBeenCalledWith('is_test', false);
+			expect(mockLocals.supabase.eq).not.toHaveBeenCalledWith('is_test', true);
 		});
 
 		it('should only show visible materials', async () => {
@@ -695,7 +696,7 @@ describe('GET /api/student/shared-materials', () => {
 			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('visible', true);
 		});
 
-		it('should exclude archived classes', async () => {
+		it('should only show active classes (is_active = true)', async () => {
 			mockLocals.supabase.eq.mockResolvedValueOnce({
 				data: [{ class_id: classId1 }],
 				error: null
@@ -718,8 +719,8 @@ describe('GET /api/student/shared-materials', () => {
 
 			await GET(event);
 
-			// Verify is_archived filter was applied
-			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('classes.is_archived', false);
+			// Verify is_active = true filter was applied
+			expect(mockLocals.supabase.eq).toHaveBeenCalledWith('classes.is_active', true);
 		});
 
 		it('should only show PUBLISHED materials', async () => {

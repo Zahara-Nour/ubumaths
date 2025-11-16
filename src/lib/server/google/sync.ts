@@ -295,7 +295,9 @@ export async function syncTopics(
 		const client = new GoogleClassroomClient(accessToken, teacherId);
 
 		// Fetch topics from Google Classroom
-		const { topics } = await client.listTopics(googleCourseId);
+		const topicListResponse = await client.listTopics(googleCourseId);
+
+		const { topic: topics } = topicListResponse; // Note: API returns "topic" (singular)
 
 		// If no topics, return early
 		if (!topics || topics.length === 0) {
@@ -312,8 +314,7 @@ export async function syncTopics(
 		for (const topic of topics) {
 			syncedGoogleTopicIds.push(topic.topicId);
 			try {
-				// Note: TypeScript error here will resolve after running `pnpm db:migrate` and regenerating types
-				const { error: upsertError } = await supabase.from('google_classroom_topics' as any).upsert(
+				const { error: upsertError } = await supabase.from('google_classroom_topics').upsert(
 					{
 						google_course_id: courseId,
 						google_topic_id: topic.topicId,
@@ -346,7 +347,7 @@ export async function syncTopics(
 		// Cleanup: Delete topics that no longer exist in Google Classroom
 		if (syncedGoogleTopicIds.length > 0) {
 			const { error: deleteError, count } = await supabase
-				.from('google_classroom_topics' as any)
+				.from('google_classroom_topics')
 				.delete({ count: 'exact' })
 				.eq('google_course_id', courseId)
 				.filter('google_topic_id', 'not.in', `(${syncedGoogleTopicIds.join(',')})`);
@@ -361,7 +362,7 @@ export async function syncTopics(
 		} else {
 			// No topics - delete all topics for this course
 			const { error: deleteError, count } = await supabase
-				.from('google_classroom_topics' as any)
+				.from('google_classroom_topics')
 				.delete({ count: 'exact' })
 				.eq('google_course_id', courseId);
 
@@ -455,7 +456,7 @@ export async function syncCoursework(
 
 		// Get topic ID mappings (google_topic_id -> internal id)
 		const { data: topics, error: topicsError } = await supabase
-			.from('google_classroom_topics' as any)
+			.from('google_classroom_topics')
 			.select('id, google_topic_id')
 			.eq('google_course_id', courseId);
 
@@ -649,7 +650,7 @@ export async function syncCourseWorkMaterials(
 
 		// Get topic ID mappings (google_topic_id -> internal id)
 		const { data: topics, error: topicsError } = await supabase
-			.from('google_classroom_topics' as any)
+			.from('google_classroom_topics')
 			.select('id, google_topic_id')
 			.eq('google_course_id', courseId);
 
@@ -670,9 +671,8 @@ export async function syncCourseWorkMaterials(
 		for (const material of allMaterials) {
 			try {
 				// Upsert material
-				// Note: TypeScript error here will resolve after running `pnpm db:migrate` and regenerating types
 				const { data: materialData, error: materialError } = await supabase
-					.from('google_classroom_materials' as any)
+					.from('google_classroom_materials')
 					.upsert(
 						{
 							google_course_id: courseId,
@@ -706,7 +706,7 @@ export async function syncCourseWorkMaterials(
 				if (material.materials && material.materials.length > 0) {
 					// Delete existing attachments for this material (will re-insert)
 					await supabase
-						.from('google_classroom_material_attachments' as any)
+						.from('google_classroom_material_attachments')
 						.delete()
 						.eq('google_material_id', materialData.id);
 
@@ -715,7 +715,7 @@ export async function syncCourseWorkMaterials(
 						try {
 							const attachmentData = extractMaterialData(attachment);
 
-							await supabase.from('google_classroom_material_attachments' as any).insert({
+							await supabase.from('google_classroom_material_attachments').insert({
 								google_material_id: materialData.id,
 								material_type: attachmentData.type,
 								google_file_id: attachmentData.fileId || null,
