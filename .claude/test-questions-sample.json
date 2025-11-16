@@ -1,0 +1,16 @@
+[
+  {
+    "description": "Addition simple",
+    "enounces": ["Calculer $1+1$"],
+    "solutionss": [["2"]],
+    "grade": "CP",
+    "type": "simple"
+  },
+  {
+    "description": "Soustraction simple",
+    "enounces": ["Calculer $3-1$"],
+    "solutionss": [["2"]],
+    "grade": "CP",
+    "type": "simple"
+  }
+]

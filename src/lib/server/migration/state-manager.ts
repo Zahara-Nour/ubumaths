@@ -10,7 +10,6 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
 	MigrationPhase,
 	MigrationTracking,
-	QuestionToMigrate,
 	FailedQuestion,
 	ValidationResult,
 	ResumePoint,
@@ -130,7 +129,8 @@ export class MigrationStateManager {
 		questionIndex: number,
 		status: MigrationStatus,
 		phase: MigrationPhase,
-		oldQuestion: QuestionToMigrate,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		oldQuestion: any, // Can be QuestionToMigrate or QuestionBase (old format)
 		options?: {
 			newTemplateId?: string;
 			errors?: ConversionError[];
@@ -441,22 +441,36 @@ export class MigrationStateManager {
 		}
 	}
 
-	private generateQuestionHash(question: QuestionToMigrate): string {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	private generateQuestionHash(question: any): string {
+		// Handle both QuestionToMigrate and QuestionBase formats
 		const content = JSON.stringify({
-			type: question.type,
-			statement: question.statement,
-			answer: question.answer,
+			type: question.type || 'unknown',
+			statement: question.statement || question.enounces?.[0] || question.description,
+			answer: question.answer || question.solutionss,
+			grade: question.grade,
+			theme: question.theme,
+			description: question.description,
+			enounces: question.enounces,
 			options: question.options
 		});
 		return crypto.createHash('sha256').update(content).digest('hex');
 	}
 
-	private generateDescription(question: QuestionToMigrate): string {
-		const parts = [question.type, question.grade || 'N/A', question.theme || 'N/A'];
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	private generateDescription(question: any): string {
+		// Handle both QuestionToMigrate and QuestionBase formats
+		const type = question.type || 'unknown';
+		const grade = question.grade || 'N/A';
+		const theme = question.theme || 'N/A';
 
-		// Truncate statement if too long
-		const statement = question.statement.substring(0, 50);
-		parts.push(statement + (question.statement.length > 50 ? '...' : ''));
+		// Get statement from either format
+		const statement =
+			question.statement || question.description || question.enounces?.[0] || 'No description';
+
+		const parts = [type, grade, theme];
+		const truncated = statement.substring(0, 50);
+		parts.push(truncated + (statement.length > 50 ? '...' : ''));
 
 		return parts.join(' | ');
 	}
