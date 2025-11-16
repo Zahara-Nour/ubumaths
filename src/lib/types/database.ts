@@ -6720,6 +6720,98 @@ export type Database = {
 					}
 				];
 			};
+			migration_tracking: {
+				Row: {
+					id: string;
+					old_question_hash: string;
+					old_question_index: number;
+					old_description: string;
+					migration_status: 'pending' | 'converted' | 'imported' | 'validated' | 'failed';
+					phase: number | null;
+					new_template_id: string | null;
+					conversion_errors: Json;
+					conversion_notes: string | null;
+					converted_at: string | null;
+					imported_at: string | null;
+					validated_at: string | null;
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					id?: string;
+					old_question_hash: string;
+					old_question_index: number;
+					old_description: string;
+					migration_status: 'pending' | 'converted' | 'imported' | 'validated' | 'failed';
+					phase?: number | null;
+					new_template_id?: string | null;
+					conversion_errors?: Json;
+					conversion_notes?: string | null;
+					converted_at?: string | null;
+					imported_at?: string | null;
+					validated_at?: string | null;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: {
+					id?: string;
+					old_question_hash?: string;
+					old_question_index?: number;
+					old_description?: string;
+					migration_status?: 'pending' | 'converted' | 'imported' | 'validated' | 'failed';
+					phase?: number | null;
+					new_template_id?: string | null;
+					conversion_errors?: Json;
+					conversion_notes?: string | null;
+					converted_at?: string | null;
+					imported_at?: string | null;
+					validated_at?: string | null;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'migration_tracking_new_template_id_fkey';
+						columns: ['new_template_id'];
+						isOneToOne: false;
+						referencedRelation: 'question_templates';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			migration_images: {
+				Row: {
+					id: string;
+					old_path: string;
+					new_path: string;
+					migrated_at: string | null;
+					file_size: number | null;
+					migration_status: 'pending' | 'migrated' | 'failed';
+					error_message: string | null;
+					created_at: string;
+				};
+				Insert: {
+					id?: string;
+					old_path: string;
+					new_path: string;
+					migrated_at?: string | null;
+					file_size?: number | null;
+					migration_status: 'pending' | 'migrated' | 'failed';
+					error_message?: string | null;
+					created_at?: string;
+				};
+				Update: {
+					id?: string;
+					old_path?: string;
+					new_path?: string;
+					migrated_at?: string | null;
+					file_size?: number | null;
+					migration_status?: 'pending' | 'migrated' | 'failed';
+					error_message?: string | null;
+					created_at?: string;
+				};
+				Relationships: [];
+			};
 		};
 		Views: {
 			active_student_warnings: {

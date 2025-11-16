@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0",
+  "currentPhase": 1,
+  "lastUpdated": null,
+  "phases": {
+    "1": {
+      "status": "pending",
+      "questionsProcessed": 0,
+      "startDate": null,
+      "endDate": null
+    },
+    "2": {
+      "status": "pending",
+      "questionsProcessed": 0,
+      "startDate": null,
+      "endDate": null
+    },
+    "3": {
+      "status": "pending",
+      "questionsProcessed": 0,
+      "startDate": null,
+      "endDate": null
+    },
+    "4": {
+      "status": "pending",
+      "questionsProcessed": 0,
+      "startDate": null,
+      "endDate": null
+    }
+  },
+  "totalQuestions": 0,
+  "lastProcessedIndex": 0,
+  "failedQuestionIndices": []
+}
