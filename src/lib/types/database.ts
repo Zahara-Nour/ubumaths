@@ -2598,6 +2598,7 @@ export type Database = {
 					max_points: number | null;
 					state: string;
 					title: string;
+					topic_id: string | null;
 					updated_at: string;
 					updated_time: string;
 					work_type: string;
@@ -2617,6 +2618,7 @@ export type Database = {
 					max_points?: number | null;
 					state: string;
 					title: string;
+					topic_id?: string | null;
 					updated_at?: string;
 					updated_time: string;
 					work_type?: string;
@@ -2636,6 +2638,7 @@ export type Database = {
 					max_points?: number | null;
 					state?: string;
 					title?: string;
+					topic_id?: string | null;
 					updated_at?: string;
 					updated_time?: string;
 					work_type?: string;
@@ -2643,6 +2646,164 @@ export type Database = {
 				Relationships: [
 					{
 						foreignKeyName: 'google_classroom_coursework_google_course_id_fkey';
+						columns: ['google_course_id'];
+						isOneToOne: false;
+						referencedRelation: 'google_classroom_courses';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'google_classroom_coursework_topic_id_fkey';
+						columns: ['topic_id'];
+						isOneToOne: false;
+						referencedRelation: 'google_classroom_topics';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			google_classroom_material_attachments: {
+				Row: {
+					created_at: string;
+					file_name: string;
+					file_url: string;
+					google_file_id: string | null;
+					google_material_id: string;
+					id: string;
+					material_type: string;
+					mime_type: string | null;
+					thumbnail_url: string | null;
+					title: string | null;
+				};
+				Insert: {
+					created_at?: string;
+					file_name: string;
+					file_url: string;
+					google_file_id?: string | null;
+					google_material_id: string;
+					id?: string;
+					material_type: string;
+					mime_type?: string | null;
+					thumbnail_url?: string | null;
+					title?: string | null;
+				};
+				Update: {
+					created_at?: string;
+					file_name?: string;
+					file_url?: string;
+					google_file_id?: string | null;
+					google_material_id?: string;
+					id?: string;
+					material_type?: string;
+					mime_type?: string | null;
+					thumbnail_url?: string | null;
+					title?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'google_classroom_material_attachments_google_material_id_fkey';
+						columns: ['google_material_id'];
+						isOneToOne: false;
+						referencedRelation: 'google_classroom_materials';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			google_classroom_materials: {
+				Row: {
+					alternate_link: string | null;
+					created_at: string;
+					created_time: string;
+					description: string | null;
+					google_course_id: string;
+					google_material_id: string;
+					id: string;
+					last_synced_at: string;
+					state: string;
+					title: string;
+					topic_id: string | null;
+					updated_at: string;
+					updated_time: string;
+				};
+				Insert: {
+					alternate_link?: string | null;
+					created_at?: string;
+					created_time: string;
+					description?: string | null;
+					google_course_id: string;
+					google_material_id: string;
+					id?: string;
+					last_synced_at?: string;
+					state: string;
+					title: string;
+					topic_id?: string | null;
+					updated_at?: string;
+					updated_time: string;
+				};
+				Update: {
+					alternate_link?: string | null;
+					created_at?: string;
+					created_time?: string;
+					description?: string | null;
+					google_course_id?: string;
+					google_material_id?: string;
+					id?: string;
+					last_synced_at?: string;
+					state?: string;
+					title?: string;
+					topic_id?: string | null;
+					updated_at?: string;
+					updated_time?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'google_classroom_materials_google_course_id_fkey';
+						columns: ['google_course_id'];
+						isOneToOne: false;
+						referencedRelation: 'google_classroom_courses';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'google_classroom_materials_topic_id_fkey';
+						columns: ['topic_id'];
+						isOneToOne: false;
+						referencedRelation: 'google_classroom_topics';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			google_classroom_topics: {
+				Row: {
+					created_at: string;
+					google_course_id: string;
+					google_topic_id: string;
+					id: string;
+					last_synced_at: string;
+					name: string;
+					updated_at: string;
+					updated_time: string;
+				};
+				Insert: {
+					created_at?: string;
+					google_course_id: string;
+					google_topic_id: string;
+					id?: string;
+					last_synced_at?: string;
+					name: string;
+					updated_at?: string;
+					updated_time: string;
+				};
+				Update: {
+					created_at?: string;
+					google_course_id?: string;
+					google_topic_id?: string;
+					id?: string;
+					last_synced_at?: string;
+					name?: string;
+					updated_at?: string;
+					updated_time?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'google_classroom_topics_google_course_id_fkey';
 						columns: ['google_course_id'];
 						isOneToOne: false;
 						referencedRelation: 'google_classroom_courses';
@@ -5117,36 +5278,45 @@ export type Database = {
 				Row: {
 					category_id: string | null;
 					class_id: string;
+					course_name: string | null;
 					coursework_id: string;
 					created_at: string;
 					description_override: string | null;
 					display_order: number;
 					id: string;
 					shared_by: string;
+					teacher_name: string | null;
+					topic_id: string | null;
 					updated_at: string;
 					visible: boolean;
 				};
 				Insert: {
 					category_id?: string | null;
 					class_id: string;
+					course_name?: string | null;
 					coursework_id: string;
 					created_at?: string;
 					description_override?: string | null;
 					display_order?: number;
 					id?: string;
 					shared_by: string;
+					teacher_name?: string | null;
+					topic_id?: string | null;
 					updated_at?: string;
 					visible?: boolean;
 				};
 				Update: {
 					category_id?: string | null;
 					class_id?: string;
+					course_name?: string | null;
 					coursework_id?: string;
 					created_at?: string;
 					description_override?: string | null;
 					display_order?: number;
 					id?: string;
 					shared_by?: string;
+					teacher_name?: string | null;
+					topic_id?: string | null;
 					updated_at?: string;
 					visible?: boolean;
 				};
@@ -5199,6 +5369,13 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: 'riddle_progress';
 						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'shared_coursework_topic_id_fkey';
+						columns: ['topic_id'];
+						isOneToOne: false;
+						referencedRelation: 'google_classroom_topics';
+						referencedColumns: ['id'];
 					}
 				];
 			};
@@ -5256,6 +5433,101 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: 'riddle_progress';
 						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			shared_materials: {
+				Row: {
+					category_id: string | null;
+					class_id: string;
+					course_name: string | null;
+					created_at: string;
+					description_override: string | null;
+					id: string;
+					material_id: string;
+					shared_by: string;
+					teacher_name: string | null;
+					topic_id: string | null;
+					updated_at: string;
+					visible: boolean;
+				};
+				Insert: {
+					category_id?: string | null;
+					class_id: string;
+					course_name?: string | null;
+					created_at?: string;
+					description_override?: string | null;
+					id?: string;
+					material_id: string;
+					shared_by: string;
+					teacher_name?: string | null;
+					topic_id?: string | null;
+					updated_at?: string;
+					visible?: boolean;
+				};
+				Update: {
+					category_id?: string | null;
+					class_id?: string;
+					course_name?: string | null;
+					created_at?: string;
+					description_override?: string | null;
+					id?: string;
+					material_id?: string;
+					shared_by?: string;
+					teacher_name?: string | null;
+					topic_id?: string | null;
+					updated_at?: string;
+					visible?: boolean;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'shared_materials_category_id_fkey';
+						columns: ['category_id'];
+						isOneToOne: false;
+						referencedRelation: 'coursework_categories';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'shared_materials_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'shared_materials_material_id_fkey';
+						columns: ['material_id'];
+						isOneToOne: false;
+						referencedRelation: 'google_classroom_materials';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'shared_materials_shared_by_fkey';
+						columns: ['shared_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'shared_materials_shared_by_fkey';
+						columns: ['shared_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'shared_materials_shared_by_fkey';
+						columns: ['shared_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'shared_materials_topic_id_fkey';
+						columns: ['topic_id'];
+						isOneToOne: false;
+						referencedRelation: 'google_classroom_topics';
+						referencedColumns: ['id'];
 					}
 				];
 			};

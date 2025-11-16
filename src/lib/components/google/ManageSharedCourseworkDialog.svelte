@@ -35,7 +35,6 @@
 	interface Course {
 		id: string;
 		title: string;
-		courseId: string;
 	}
 
 	interface Category {
@@ -47,6 +46,12 @@
 		displayOrder: number;
 	}
 
+	interface Topic {
+		id: string;
+		name: string;
+		googleCourseId: string;
+	}
+
 	interface SharedCourseworkRecord {
 		id: string;
 		classId: string;
@@ -54,9 +59,12 @@
 		visible: boolean;
 		categoryId: string | null;
 		categoryName: string | null;
-		customDescription: string | null;
+		topicId: string | null;
+		descriptionOverride: string | null;
 		categories: Category[];
+		topics: Topic[];
 		loadingCategories: boolean;
+		loadingTopics: boolean;
 		modified: boolean;
 	}
 
@@ -105,7 +113,7 @@
 		try {
 			// Fetch shared coursework records for this coursework
 			const response = await fetch(
-				`/api/google/shared-coursework?limit=100&courseId=${coursework.courseId}`
+				`/api/google/shared-coursework?page=1&limit=100&courseworkId=${coursework.id}`
 			);
 
 			if (!response.ok) {
@@ -113,12 +121,8 @@
 			}
 
 			const data = await response.json();
-			const records = data.sharedCoursework || [];
-
-			// Filter to only records for this specific coursework
-			const relevantRecords = records.filter(
-				(record: { courseworkId: string }) => record.courseworkId === coursework.id
-			);
+			// Server now filters by courseworkId, so all records are relevant
+			const relevantRecords = data.sharedCoursework || [];
 
 			// Initialize records map
 			const recordsMap = new Map<string, SharedCourseworkRecord>();
@@ -130,14 +134,18 @@
 					visible: record.visible,
 					categoryId: record.categoryId,
 					categoryName: record.categoryName,
-					customDescription: record.customDescription,
+					topicId: record.topicId || null,
+					descriptionOverride: record.descriptionOverride,
 					categories: [],
+					topics: [],
 					loadingCategories: false,
+					loadingTopics: false,
 					modified: false
 				});
 
-				// Load categories for each class
+				// Load categories and topics for each class
 				await fetchCategoriesForClass(record.classId);
+				await fetchTopicsForClass(record.classId);
 			}
 
 			sharedRecords = recordsMap;
@@ -174,6 +182,31 @@
 	}
 
 	/**
+	 * Fetch topics for the coursework's Google Classroom course
+	 */
+	async function fetchTopicsForClass(classId: string) {
+		const record = sharedRecords.get(classId);
+		if (!record) return;
+
+		record.loadingTopics = true;
+		try {
+			// Fetch all topics for the user's courses
+			const response = await fetch('/api/google/topics?page=1&limit=100');
+			if (!response.ok) {
+				throw new Error('Failed to fetch topics');
+			}
+
+			const data = await response.json();
+			record.topics = data.topics || [];
+		} catch (err) {
+			console.error('[ManageDialog] Error fetching topics:', err);
+			// Don't show error toast for topics - non-critical
+		} finally {
+			record.loadingTopics = false;
+		}
+	}
+
+	/**
 	 * Save changes for all modified records
 	 */
 	async function handleSave() {
@@ -182,16 +215,16 @@
 		try {
 			const modifiedRecords = Array.from(sharedRecords.values()).filter((r) => r.modified);
 
-			// Update each modified record
+			// Update each modified record using new endpoint
 			const promises = modifiedRecords.map(async (record) => {
-				const response = await fetch('/api/google/shared-coursework', {
+				const response = await fetch(`/api/google/shared-coursework/${record.id}`, {
 					method: 'PATCH',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
-						sharedCourseworkId: record.id,
 						visible: record.visible,
 						categoryId: record.categoryId || null,
-						customDescription: record.customDescription || null
+						topicId: record.topicId || null,
+						descriptionOverride: record.descriptionOverride || null
 					})
 				});
 
@@ -226,12 +259,10 @@
 
 		removingClass = classId;
 		try {
-			const response = await fetch(
-				`/api/google/courses/${coursework.courseId}/share?courseworkId=${coursework.id}&classId=${classId}`,
-				{
-					method: 'DELETE'
-				}
-			);
+			// Use new endpoint with shared_coursework record ID
+			const response = await fetch(`/api/google/shared-coursework/${record.id}`, {
+				method: 'DELETE'
+			});
 
 			if (!response.ok) {
 				throw new Error('Failed to unshare');
@@ -288,6 +319,17 @@
 		}
 	}
 
+	/**
+	 * Handle topic change
+	 */
+	function handleTopicChange(classId: string, topicId: string) {
+		const record = sharedRecords.get(classId);
+		if (record) {
+			record.topicId = topicId || null;
+			markModified(classId);
+		}
+	}
+
 	// ============================================================================
 	// Render Helpers
 	// ============================================================================
@@ -298,6 +340,16 @@
 			...categories.map((cat) => ({
 				value: cat.id,
 				label: cat.icon ? `${cat.icon} ${cat.name}` : cat.name
+			}))
+		];
+	}
+
+	function getTopicItems(topics: Topic[]) {
+		return [
+			{ value: '', label: 'Aucun sujet' },
+			...topics.map((topic) => ({
+				value: topic.id,
+				label: topic.name
 			}))
 		];
 	}
@@ -363,7 +415,7 @@
 
 								<!-- Category Selection -->
 								<div class="space-y-2">
-									<Label for="category-{record.classId}">Catégorie</Label>
+									<Label for="category-{record.classId}">Catégorie (UbuMaths)</Label>
 									{#if record.loadingCategories}
 										<div class="h-10 animate-pulse rounded-md bg-muted"></div>
 									{:else}
@@ -377,12 +429,28 @@
 									{/if}
 								</div>
 
+								<!-- Topic Selection -->
+								<div class="space-y-2">
+									<Label for="topic-{record.classId}">Sujet (Google Classroom)</Label>
+									{#if record.loadingTopics}
+										<div class="h-10 animate-pulse rounded-md bg-muted"></div>
+									{:else}
+										<MySelect
+											type="single"
+											value={record.topicId || ''}
+											items={getTopicItems(record.topics)}
+											placeholder="Sélectionnez un sujet"
+											onValueChange={(value) => handleTopicChange(record.classId, value ?? '')}
+										/>
+									{/if}
+								</div>
+
 								<!-- Custom Description -->
 								<div class="space-y-2">
 									<Label for="description-{record.classId}">Description personnalisée</Label>
 									<Textarea
 										id="description-{record.classId}"
-										bind:value={record.customDescription}
+										bind:value={record.descriptionOverride}
 										oninput={() => markModified(record.classId)}
 										placeholder="Remplace la description originale..."
 										maxlength={2000}
@@ -390,7 +458,7 @@
 										class="resize-none"
 									/>
 									<p class="text-xs text-muted-foreground">
-										{(record.customDescription || '').length}/2000 caractères
+										{(record.descriptionOverride || '').length}/2000 caractères
 									</p>
 								</div>
 
