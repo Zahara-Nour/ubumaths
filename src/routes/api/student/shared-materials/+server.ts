@@ -56,12 +56,18 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	const { classId, categoryId, topicId, page, limit } = validation.data;
 
-	// Get student's classes (excluding test accounts)
+	// Get student's classes
+	// NOTE: We DO NOT filter by is_test here - this is intentional and correct.
+	// Reasoning:
+	// 1. Student is already authenticated via requireRole(locals, 'student')
+	// 2. Test mode filtering is a TEACHER-SIDE concern (teachers toggle test mode to view test/real students)
+	// 3. STUDENT-SIDE: Students should see ALL materials shared with their classes, regardless of their is_test status
+	// 4. Access control happens at the shared_materials.class_id level (RLS policies)
+	// 5. This pattern matches /api/student/shared-coursework/+server.ts (consistent behavior)
 	const { data: studentClasses, error: classesError } = await locals.supabase
 		.from('class_members')
-		.select('class_id, profiles!inner(is_test)')
-		.eq('student_id', user.id)
-		.eq('profiles.is_test', false);
+		.select('class_id')
+		.eq('student_id', user.id);
 
 	if (classesError) {
 		console.error('[Student Shared Materials] Error fetching student classes:', classesError);
@@ -104,22 +110,21 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				google_classroom_topics(id, name),
 				google_classroom_material_attachments(
 					id,
-					drive_file_id,
-					title,
-					alternate_link,
+					material_type,
+					google_file_id,
+					file_name,
+					file_url,
 					thumbnail_url,
-					youtube_url,
-					link_url,
-					form_url
+					title
 				)
 			),
-			classes!inner(id, name, is_archived),
+			classes!inner(id, name, is_active),
 			coursework_categories(id, name, icon),
 			google_classroom_topics(id, name)
 		`
 		)
 		.eq('visible', true)
-		.eq('classes.is_archived', false)
+		.eq('classes.is_active', true)
 		.eq('google_classroom_materials.state', 'PUBLISHED')
 		.in('class_id', studentClassIds);
 
@@ -145,7 +150,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.from('shared_materials')
 		.select('classes!inner(*), google_classroom_materials!inner(*)', { count: 'exact', head: true })
 		.eq('visible', true)
-		.eq('classes.is_archived', false)
+		.eq('classes.is_active', true)
 		.eq('google_classroom_materials.state', 'PUBLISHED')
 		.in('class_id', studentClassIds);
 
@@ -187,13 +192,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					google_classroom_topics: { id: string; name: string } | null;
 					google_classroom_material_attachments: Array<{
 						id: string;
-						drive_file_id: string | null;
-						title: string;
-						alternate_link: string;
+						material_type: string;
+						google_file_id: string | null;
+						file_name: string;
+						file_url: string;
 						thumbnail_url: string | null;
-						youtube_url: string | null;
-						link_url: string | null;
-						form_url: string | null;
+						title: string | null;
 					}>;
 			  }
 			| Array<{
@@ -207,13 +211,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					google_classroom_topics: { id: string; name: string } | null;
 					google_classroom_material_attachments: Array<{
 						id: string;
-						drive_file_id: string | null;
-						title: string;
-						alternate_link: string;
+						material_type: string;
+						google_file_id: string | null;
+						file_name: string;
+						file_url: string;
 						thumbnail_url: string | null;
-						youtube_url: string | null;
-						link_url: string | null;
-						form_url: string | null;
+						title: string | null;
 					}>;
 			  }>;
 
