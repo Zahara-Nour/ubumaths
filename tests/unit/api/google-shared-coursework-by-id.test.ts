@@ -18,7 +18,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
-import { PATCH, DELETE } from '/src/routes/api/google/shared-coursework/[id]/+server';
+import { PATCH, DELETE } from '../../../src/routes/api/google/shared-coursework/[id]/+server.js';
 import * as authModule from '$lib/server/middleware/auth';
 
 // Mock middleware
@@ -31,7 +31,7 @@ describe('Google Shared Coursework by ID API', () => {
 	const otherTeacherId = '660e9500-f39c-52e5-b827-557766551111';
 	const sharedCourseworkId = 'bbbbbb99-bb68-84ab-d49b-b4bbe5b34eb1';
 	const classId = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
-	const categoryId = 'aaaa1111-aaaa-11aa-aaaa-111111111111';
+	const _categoryId = 'aaaa1111-aaaa-11aa-aaaa-111111111111';
 	const newCategoryId = 'bbbb2222-bbbb-22bb-bbbb-222222222222';
 	const courseworkId = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
 
@@ -41,12 +41,16 @@ describe('Google Shared Coursework by ID API', () => {
 		vi.clearAllMocks();
 
 		// Mock requireRole to return teacher user
+
 		vi.mocked(authModule.requireRole).mockResolvedValue({
-			user: { id: teacherId, role: 'teacher' },
-			profile: { id: teacherId, role: 'teacher' }
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			user: { id: teacherId, role: 'teacher' } as any,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			profile: { id: teacherId, role: 'teacher' } as any
 		});
 
 		// Mock Supabase client
+
 		mockLocals = {
 			supabase: {
 				from: vi.fn().mockReturnThis(),
@@ -55,8 +59,15 @@ describe('Google Shared Coursework by ID API', () => {
 				update: vi.fn().mockReturnThis(),
 				delete: vi.fn().mockReturnThis(),
 				single: vi.fn()
-			} as any
-		} as any;
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			} as any,
+			user: { id: teacherId, role: 'teacher' },
+			session: null,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			safeGetSession: vi.fn() as any,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			profile: null as any
+		} as unknown as App.Locals;
 	});
 
 	// ============================================================================
@@ -81,7 +92,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event)).rejects.toThrow('Unauthorized: authentication required');
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow('Unauthorized: authentication required');
 			});
 
 			it('returns 403 when not a teacher', async () => {
@@ -100,7 +112,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event)).rejects.toThrow('Unauthorized: teacher role required');
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow('Unauthorized: teacher role required');
 			});
 
 			it('returns 403 when record does not belong to teacher', async () => {
@@ -110,7 +123,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record exists but belongs to different teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						class_id: classId,
@@ -125,7 +139,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event)).rejects.toThrow(
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow(
 					'You do not have permission to update this record'
 				);
 			});
@@ -144,7 +159,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event)).rejects.toThrow('Invalid shared coursework ID');
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow('Invalid shared coursework ID');
 			});
 
 			it('returns 400 when no update fields provided', async () => {
@@ -159,7 +175,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event)).rejects.toThrow();
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow();
 			});
 
 			it('returns 400 for invalid categoryId UUID', async () => {
@@ -176,7 +193,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event)).rejects.toThrow();
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow();
 			});
 
 			it('returns 400 when descriptionOverride exceeds 2000 characters', async () => {
@@ -193,7 +211,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event)).rejects.toThrow();
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow();
 			});
 
 			it('accepts descriptionOverride up to 2000 characters', async () => {
@@ -205,7 +224,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						class_id: classId,
@@ -215,7 +235,8 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock successful update
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						coursework_id: courseworkId,
@@ -246,7 +267,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const response = await PATCH(event as any);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -268,7 +290,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event)).rejects.toThrow();
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow();
 			});
 		});
 
@@ -280,7 +303,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record not found
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: null,
 					error: { code: 'PGRST116', message: 'Not found' }
 				});
@@ -291,7 +315,10 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event)).rejects.toThrow('Shared coursework not found or access denied');
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow(
+					'Shared coursework not found or access denied'
+				);
 			});
 
 			it('returns 400 when category not found', async () => {
@@ -303,7 +330,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						class_id: classId,
@@ -313,7 +341,8 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock category not found
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: null,
 					error: { code: 'PGRST116' }
 				});
@@ -324,7 +353,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event)).rejects.toThrow('Category not found');
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow('Category not found');
 			});
 
 			it('returns 400 when category does not belong to teacher class', async () => {
@@ -336,7 +366,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						class_id: classId,
@@ -346,13 +377,15 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock category exists
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: { id: newCategoryId, class_id: 'other-class-id' },
 					error: null
 				});
 
 				// Mock category class check - doesn't belong to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: null,
 					error: { code: 'PGRST116' }
 				});
@@ -363,7 +396,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event)).rejects.toThrow(
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow(
 					'Category does not belong to one of your classes'
 				);
 			});
@@ -375,7 +409,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						class_id: classId,
@@ -385,7 +420,8 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock successful update
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						coursework_id: courseworkId,
@@ -416,7 +452,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const response = await PATCH(event as any);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -431,7 +468,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						class_id: classId,
@@ -441,19 +479,22 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock category exists and belongs to teacher's class
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: { id: newCategoryId, class_id: classId },
 					error: null
 				});
 
 				// Mock category class verification successful
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: { id: classId },
 					error: null
 				});
 
 				// Mock successful update
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						coursework_id: courseworkId,
@@ -484,7 +525,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const response = await PATCH(event as any);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -502,7 +544,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						class_id: classId,
@@ -512,7 +555,8 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock successful update
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						coursework_id: courseworkId,
@@ -543,7 +587,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const response = await PATCH(event as any);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -564,7 +609,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						class_id: classId,
@@ -574,19 +620,22 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock category exists and belongs to teacher's class
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: { id: newCategoryId, class_id: classId },
 					error: null
 				});
 
 				// Mock category class verification successful
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: { id: classId },
 					error: null
 				});
 
 				// Mock successful update
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						coursework_id: courseworkId,
@@ -617,7 +666,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const response = await PATCH(event as any);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -634,7 +684,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						class_id: classId,
@@ -644,7 +695,8 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock successful update (no category validation needed for null)
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						coursework_id: courseworkId,
@@ -675,7 +727,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const response = await PATCH(event as any);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -691,7 +744,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock database error during fetch
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: null,
 					error: { code: 'PGRST999', message: 'Database error' }
 				});
@@ -702,7 +756,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event)).rejects.toThrow('Shared coursework not found');
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow('Shared coursework not found');
 			});
 		});
 
@@ -718,7 +773,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						class_id: classId,
@@ -728,7 +784,8 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock topic exists and belongs to teacher's course
-				mockLocals.supabase.single = vi
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi
 					.fn()
 					.mockResolvedValueOnce({
 						data: { id: newTopicId, google_course_id: courseId },
@@ -740,7 +797,8 @@ describe('Google Shared Coursework by ID API', () => {
 					});
 
 				// Mock successful update
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						coursework_id: courseworkId,
@@ -772,7 +830,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const response = await PATCH(event as any);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -787,7 +846,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						class_id: classId,
@@ -797,7 +857,8 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock successful update (no topic validation needed for null)
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						coursework_id: courseworkId,
@@ -829,7 +890,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const response = await PATCH(event as any);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -844,7 +906,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						class_id: classId,
@@ -854,7 +917,8 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock topic exists but belongs to different teacher's course
-				mockLocals.supabase.single = vi
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi
 					.fn()
 					.mockResolvedValueOnce({
 						data: { id: newTopicId, google_course_id: 'other-course-id' },
@@ -871,7 +935,10 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event)).rejects.toThrow('Topic does not belong to one of your courses');
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow(
+					'Topic does not belong to one of your courses'
+				);
 			});
 
 			it('rejects non-existent topic UUID', async () => {
@@ -882,7 +949,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						class_id: classId,
@@ -892,7 +960,8 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock topic not found
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: null,
 					error: { code: 'PGRST116', message: 'Not found' }
 				});
@@ -903,7 +972,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(PATCH(event)).rejects.toThrow('Topic not found');
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow('Topic not found');
 			});
 
 			it('rejects invalid topic UUID format', async () => {
@@ -919,7 +989,8 @@ describe('Google Shared Coursework by ID API', () => {
 				} as unknown as RequestEvent;
 
 				// Should fail Zod validation
-				await expect(PATCH(event)).rejects.toThrow();
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(PATCH(event as any)).rejects.toThrow();
 			});
 
 			it('does not modify topic when not provided in request', async () => {
@@ -932,7 +1003,8 @@ describe('Google Shared Coursework by ID API', () => {
 				};
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						class_id: classId,
@@ -942,7 +1014,8 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock successful update - topic_id should remain unchanged
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						coursework_id: courseworkId,
@@ -974,7 +1047,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await PATCH(event);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const response = await PATCH(event as any);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -1003,7 +1077,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(DELETE(event)).rejects.toThrow('Unauthorized: authentication required');
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(DELETE(event as any)).rejects.toThrow('Unauthorized: authentication required');
 			});
 
 			it('returns 403 when not a teacher', async () => {
@@ -1018,14 +1093,16 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(DELETE(event)).rejects.toThrow('Unauthorized: teacher role required');
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(DELETE(event as any)).rejects.toThrow('Unauthorized: teacher role required');
 			});
 
 			it('returns 403 when record does not belong to teacher', async () => {
 				const mockParams = { id: sharedCourseworkId };
 
 				// Mock record exists but belongs to different teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						classes: { id: classId, teacher_id: otherTeacherId }
@@ -1038,7 +1115,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(DELETE(event)).rejects.toThrow(
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(DELETE(event as any)).rejects.toThrow(
 					'You do not have permission to delete this record'
 				);
 			});
@@ -1053,7 +1131,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(DELETE(event)).rejects.toThrow('Invalid shared coursework ID');
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(DELETE(event as any)).rejects.toThrow('Invalid shared coursework ID');
 			});
 
 			it('returns 400 for null ID param', async () => {
@@ -1064,7 +1143,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(DELETE(event)).rejects.toThrow();
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(DELETE(event as any)).rejects.toThrow();
 			});
 
 			it('returns 400 for undefined ID param', async () => {
@@ -1075,7 +1155,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(DELETE(event)).rejects.toThrow();
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(DELETE(event as any)).rejects.toThrow();
 			});
 		});
 
@@ -1084,7 +1165,8 @@ describe('Google Shared Coursework by ID API', () => {
 				const mockParams = { id: sharedCourseworkId };
 
 				// Mock record not found
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: null,
 					error: { code: 'PGRST116', message: 'Not found' }
 				});
@@ -1094,14 +1176,18 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(DELETE(event)).rejects.toThrow('Shared coursework not found or access denied');
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(DELETE(event as any)).rejects.toThrow(
+					'Shared coursework not found or access denied'
+				);
 			});
 
 			it('deletes record successfully', async () => {
 				const mockParams = { id: sharedCourseworkId };
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						classes: { id: classId, teacher_id: teacherId }
@@ -1110,8 +1196,10 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock successful delete
-				mockLocals.supabase.delete = vi.fn().mockReturnThis();
-				mockLocals.supabase.eq = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).delete = vi.fn().mockReturnThis();
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).eq = vi.fn().mockResolvedValueOnce({
 					data: null,
 					error: null
 				});
@@ -1121,20 +1209,24 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				const response = await DELETE(event);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const response = await DELETE(event as any);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
 				expect(data.success).toBe(true);
-				expect(mockLocals.supabase.delete).toHaveBeenCalled();
-				expect(mockLocals.supabase.eq).toHaveBeenCalledWith('id', sharedCourseworkId);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				expect((mockLocals.supabase as any).delete).toHaveBeenCalled();
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('id', sharedCourseworkId);
 			});
 
 			it('handles database errors during verification', async () => {
 				const mockParams = { id: sharedCourseworkId };
 
 				// Mock database error during fetch
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: null,
 					error: { code: 'PGRST999', message: 'Database error' }
 				});
@@ -1144,14 +1236,16 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(DELETE(event)).rejects.toThrow('Shared coursework not found');
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(DELETE(event as any)).rejects.toThrow('Shared coursework not found');
 			});
 
 			it('handles database errors during deletion', async () => {
 				const mockParams = { id: sharedCourseworkId };
 
 				// Mock record exists and belongs to teacher
-				mockLocals.supabase.single = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
 					data: {
 						id: sharedCourseworkId,
 						classes: { id: classId, teacher_id: teacherId }
@@ -1160,8 +1254,10 @@ describe('Google Shared Coursework by ID API', () => {
 				});
 
 				// Mock delete failure
-				mockLocals.supabase.delete = vi.fn().mockReturnThis();
-				mockLocals.supabase.eq = vi.fn().mockResolvedValueOnce({
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).delete = vi.fn().mockReturnThis();
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).eq = vi.fn().mockResolvedValueOnce({
 					data: null,
 					error: { code: 'PGRST999', message: 'Delete failed' }
 				});
@@ -1171,7 +1267,8 @@ describe('Google Shared Coursework by ID API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expect(DELETE(event)).rejects.toThrow('Failed to delete shared coursework');
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				await expect(DELETE(event as any)).rejects.toThrow('Failed to delete shared coursework');
 			});
 		});
 	});

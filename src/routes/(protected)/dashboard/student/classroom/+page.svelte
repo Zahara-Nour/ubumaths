@@ -96,14 +96,14 @@
 		</Card.Root>
 	{:else}
 		<div class="space-y-6">
-			{#each groupedByClass() as [className, items]}
+			{#each groupedByClass() as [className, items] (className)}
 				<div>
 					<h2 class="mb-3 text-lg font-semibold">
 						<Badge variant="outline">{className}</Badge>
 					</h2>
 
 					<div class="space-y-4">
-						{#each items as item}
+						{#each items as item (item.id)}
 							{@const coursework = item.coursework}
 							{@const dueBadge = getDueDateBadge(coursework?.due_date, coursework?.due_time)}
 
@@ -157,7 +157,7 @@
 										<div class="mt-4">
 											<h4 class="mb-2 text-sm font-semibold">Documents attachés :</h4>
 											<div class="space-y-2">
-												{#each coursework.materials as material}
+												{#each coursework.materials as material (material.id)}
 													<div class="flex items-center gap-2 rounded border p-2 hover:bg-muted/50">
 														<span class="text-lg">{getMaterialIcon(material.material_type)}</span>
 														<div class="flex-1">

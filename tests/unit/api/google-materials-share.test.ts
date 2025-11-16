@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
-import { POST, DELETE } from '/src/routes/api/google/materials/[id]/share/+server';
+import { POST, DELETE } from '../../../src/routes/api/google/materials/[id]/share/+server.js';
 import * as authModule from '$lib/server/middleware/auth';
 
 /**
@@ -25,16 +25,21 @@ describe('POST /api/google/materials/[id]/share', () => {
 	const classId2 = '8d8f7788-8536-51fg-a168-f18gd2g01bf8';
 	const categoryId = '9e9g8899-9647-62gh-b279-g29hf3h12cg9';
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let mockLocals: any;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let mockRequest: any;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
 
 		// Mock requireRole to return teacher user
+
 		vi.mocked(authModule.requireRole).mockResolvedValue({
-			user: { id: teacherId, role: 'teacher' },
-			profile: { id: teacherId, role: 'teacher' }
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			user: { id: teacherId, role: 'teacher' } as any,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			profile: { id: teacherId, role: 'teacher' } as any
 		});
 
 		// Mock Supabase client
@@ -93,7 +98,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await POST(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await POST(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -135,7 +141,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await POST(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await POST(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -174,7 +181,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await POST(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await POST(event as any);
 			expect(response.status).toBe(200);
 
 			// Verify upsert was called with null values
@@ -222,7 +230,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await POST(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await POST(event as any);
 			expect(response.status).toBe(200);
 
 			// Verify description was passed through
@@ -245,7 +254,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 
 		it('should reject empty classIds array', async () => {
@@ -260,7 +270,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 
 		it('should reject invalid UUID in classIds', async () => {
@@ -275,7 +286,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 
 		it('should reject classIds with more than 50 items', async () => {
@@ -291,7 +303,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 
 		it('should reject description over 5000 characters', async () => {
@@ -308,7 +321,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 
 		it('should reject invalid categoryId UUID', async () => {
@@ -324,7 +338,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow();
 		});
 	});
 
@@ -353,7 +368,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow('You do not own this material');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow('You do not own this material');
 		});
 
 		it('should reject if teacher does not own all classes', async () => {
@@ -386,7 +402,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow('Access denied');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow('Access denied');
 		});
 
 		it('should reject if trying to share with archived classes', async () => {
@@ -415,7 +432,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow('Invalid request');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow('Invalid request');
 		});
 	});
 
@@ -438,7 +456,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow('Material not found');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow('Material not found');
 		});
 	});
 
@@ -461,7 +480,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow('Failed to fetch material');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow('Failed to fetch material');
 		});
 
 		it('should handle class fetch errors', async () => {
@@ -490,7 +510,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow('Failed to verify class ownership');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow('Failed to verify class ownership');
 		});
 
 		it('should handle upsert errors', async () => {
@@ -524,7 +545,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(POST(event)).rejects.toThrow('Failed to share material');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(POST(event as any)).rejects.toThrow('Failed to share material');
 		});
 	});
 
@@ -560,7 +582,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await POST(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await POST(event as any);
 			expect(response.status).toBe(200);
 		});
 
@@ -600,7 +623,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await POST(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await POST(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -639,7 +663,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await POST(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await POST(event as any);
 			expect(response.status).toBe(200);
 		});
 	});
@@ -651,15 +676,19 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 	const classId1 = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
 	const classId2 = '8d8f7788-8536-51fg-a168-f18gd2g01bf8';
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let mockLocals: any;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let mockRequest: any;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
 
 		vi.mocked(authModule.requireRole).mockResolvedValue({
-			user: { id: teacherId, role: 'teacher' },
-			profile: { id: teacherId, role: 'teacher' }
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			user: { id: teacherId, role: 'teacher' } as any,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			profile: { id: teacherId, role: 'teacher' } as any
 		});
 
 		mockLocals = {
@@ -705,7 +734,8 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await DELETE(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await DELETE(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -737,7 +767,8 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			const response = await DELETE(event);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await DELETE(event as any);
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -758,7 +789,8 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE(event as any)).rejects.toThrow();
 		});
 
 		it('should reject empty classIds array', async () => {
@@ -772,7 +804,8 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE(event as any)).rejects.toThrow();
 		});
 
 		it('should reject invalid UUIDs in classIds', async () => {
@@ -786,7 +819,8 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE(event)).rejects.toThrow();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE(event as any)).rejects.toThrow();
 		});
 	});
 
@@ -811,7 +845,8 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE(event)).rejects.toThrow('Unauthorized');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE(event as any)).rejects.toThrow('Unauthorized');
 		});
 	});
 
@@ -832,7 +867,8 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE(event)).rejects.toThrow('Material not found');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE(event as any)).rejects.toThrow('Material not found');
 		});
 	});
 
@@ -862,7 +898,8 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 				locals: mockLocals
 			} as unknown as RequestEvent;
 
-			await expect(DELETE(event)).rejects.toThrow('Failed to unshare material');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expect(DELETE(event as any)).rejects.toThrow('Failed to unshare material');
 		});
 	});
 });

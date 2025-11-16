@@ -7,7 +7,8 @@
  */
 
 import { describe, test, expect, beforeEach, vi, afterEach } from 'vitest';
-import { GET, POST } from '../../../routes/api/marketplace/listings/+server';
+import type { RequestEvent as _RequestEvent } from '@sveltejs/kit';
+import { GET, POST } from '../../../routes/api/marketplace/listings/+server.js';
 import {
 	createMockSupabase,
 	createTestUser,
@@ -22,7 +23,7 @@ interface ListingsQueryLocals {
 	user: { id: string } | null;
 }
 
-interface ListingsRequestEvent {
+interface _ListingsRequestEvent {
 	url: URL;
 	locals: ListingsQueryLocals;
 	request?: { json: () => Promise<unknown> };
@@ -104,6 +105,7 @@ describe('/api/marketplace/listings', () => {
 			const response = await GET({
 				url: mockUrl,
 				locals: mockLocals
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any);
 
 			const data = await response.json();
@@ -130,6 +132,7 @@ describe('/api/marketplace/listings', () => {
 				GET({
 					url: mockUrl,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Non authentifié');
 		});
@@ -147,6 +150,7 @@ describe('/api/marketplace/listings', () => {
 				GET({
 					url: mockUrl,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Le numéro de page doit être au moins 1');
 		});
@@ -182,6 +186,7 @@ describe('/api/marketplace/listings', () => {
 			const response = await GET({
 				url: mockUrl,
 				locals: mockLocals
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any);
 
 			const data = await response.json();
@@ -220,6 +225,7 @@ describe('/api/marketplace/listings', () => {
 			const response = await GET({
 				url: mockUrl,
 				locals: mockLocals
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any);
 
 			const data = await response.json();
@@ -260,6 +266,7 @@ describe('/api/marketplace/listings', () => {
 			await GET({
 				url: mockUrl,
 				locals: mockLocals
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any);
 
 			// Verify RPC was called only for other user's listing
@@ -290,6 +297,7 @@ describe('/api/marketplace/listings', () => {
 				GET({
 					url: mockUrl,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow("Le marketplace n'est pas activé pour votre classe");
 		});
@@ -309,6 +317,7 @@ describe('/api/marketplace/listings', () => {
 				GET({
 					url: mockUrl,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('École non trouvée');
 		});
@@ -356,6 +365,7 @@ describe('/api/marketplace/listings', () => {
 			const response = await POST({
 				request: mockRequest,
 				locals: mockLocals
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any);
 
 			const data = await response.json();
@@ -400,6 +410,7 @@ describe('/api/marketplace/listings', () => {
 			const response = await POST({
 				request: mockRequest,
 				locals: mockLocals
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any);
 
 			const data = await response.json();
@@ -422,6 +433,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Non authentifié');
 		});
@@ -446,6 +458,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow();
 		});
@@ -471,6 +484,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow("Le marketplace n'est pas activé pour votre classe");
 		});
@@ -496,6 +510,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow("Vous avez atteint le nombre maximum d'annonces actives");
 		});
@@ -521,6 +536,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Vous ne possédez pas toutes les cartes spécifiées');
 		});
@@ -546,6 +562,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Certaines cartes ont déjà été utilisées');
 		});
@@ -599,6 +616,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow('Failed to lock cards');
 
@@ -639,6 +657,7 @@ describe('/api/marketplace/listings', () => {
 			await POST({
 				request: mockRequest,
 				locals: mockLocals
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any);
 
 			expect(capturedData).toBeTruthy();
@@ -679,6 +698,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow("Erreur lors de la création de l'annonce");
 		});
@@ -697,6 +717,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow();
 		});
@@ -751,6 +772,7 @@ describe('/api/marketplace/listings', () => {
 				await GET({
 					url: mockUrl,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any);
 			}
 
@@ -788,6 +810,7 @@ describe('/api/marketplace/listings', () => {
 					POST({
 						request: mockRequest,
 						locals: mockLocals
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					} as any)
 				).rejects.toThrow();
 			}
@@ -836,6 +859,7 @@ describe('/api/marketplace/listings', () => {
 				const response = await POST({
 					request: mockRequest,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any);
 
 				const data = await response.json();
@@ -886,6 +910,7 @@ describe('/api/marketplace/listings', () => {
 			const response1 = await POST({
 				request: mockRequest,
 				locals: mockLocals
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any);
 			expect(response1.status).toBe(201);
 
@@ -894,6 +919,7 @@ describe('/api/marketplace/listings', () => {
 				POST({
 					request: mockRequest,
 					locals: mockLocals
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
 			).rejects.toThrow("Vous avez atteint le nombre maximum d'annonces actives");
 		});

@@ -6,36 +6,31 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { RequestEvent as _RequestEvent } from '@sveltejs/kit';
 import { GET, PUT } from './+server';
-import type { RequestHandler } from './$types';
 import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
 import { DEFAULT_TIMEZONE } from '$lib/utils/timezones';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '$lib/types/database';
+import { createMockSupabase } from '$lib/testing/mock-supabase';
 
-// Helper to create request context
+// Helper to create request context - simplified to match actual RequestEvent structure
+type RouteParams = { schoolId: string };
+type _RoutePath = '/api/admin/schools/[schoolId]/config';
+
 interface RequestContext {
 	request: Request;
-	params: { schoolId: string };
+	params: RouteParams;
 	locals: {
 		user: { id: string } | null;
 		profile: { id: string; role: string } | null;
-		supabase: SupabaseClient;
+		supabase: SupabaseClient<Database>;
 	};
 }
 
-// Helper to create mock Supabase client
-function createMockSupabase() {
-	return {
-		from: vi.fn().mockReturnThis(),
-		select: vi.fn().mockReturnThis(),
-		eq: vi.fn().mockReturnThis(),
-		update: vi.fn().mockReturnThis(),
-		single: vi.fn()
-	} as unknown as SupabaseClient;
-}
-
 // Helper to expect SvelteKit error with specific status
-async function expectError(promise: Promise<unknown>, expectedStatus: number) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function expectError(promise: Promise<any> | any, expectedStatus: number) {
 	try {
 		await promise;
 		expect.fail('Should have thrown an error');
@@ -45,7 +40,7 @@ async function expectError(promise: Promise<unknown>, expectedStatus: number) {
 }
 
 describe('GET /api/admin/schools/[schoolId]/config', () => {
-	let mockSupabase: SupabaseClient;
+	let mockSupabase: SupabaseClient<Database>;
 	let mockRequest: Request;
 
 	beforeEach(() => {
@@ -71,7 +66,8 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((GET as any)(context), 401);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(GET(context as any), 401);
 		});
 	});
 
@@ -90,7 +86,8 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((GET as any)(context), 403);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(GET(context as any), 403);
 		});
 
 		it('should return 403 when profile is missing', async () => {
@@ -104,7 +101,8 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((GET as any)(context), 403);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(GET(context as any), 403);
 		});
 	});
 
@@ -123,7 +121,8 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((GET as any)(context), 400);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(GET(context as any), 400);
 		});
 
 		it('should return 400 for empty schoolId', async () => {
@@ -137,7 +136,8 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((GET as any)(context), 400);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(GET(context as any), 400);
 		});
 	});
 
@@ -157,7 +157,10 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			vi.mocked(mockSupabase as any).single.mockResolvedValue({
+			// Re-create mock to get fresh instance
+			mockSupabase = createMockSupabase();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockSupabase as any).single as any).mockResolvedValue({
 				data: mockSchool,
 				error: null
 			});
@@ -172,7 +175,8 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (GET as any)(context);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(context as any);
 			const body = await response.json();
 
 			expect(response.status).toBe(200);
@@ -199,7 +203,9 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				timetable: null
 			};
 
-			vi.mocked(mockSupabase as any).single.mockResolvedValue({
+			mockSupabase = createMockSupabase();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockSupabase as any).single as any).mockResolvedValue({
 				data: mockSchool,
 				error: null
 			});
@@ -214,7 +220,8 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (GET as any)(context);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await GET(context as any);
 			const body = await response.json();
 
 			expect(response.status).toBe(200);
@@ -233,7 +240,9 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 		it('should return 404 when school not found', async () => {
 			const schoolId = '550e8400-e29b-41d4-a716-446655440000';
 
-			vi.mocked(mockSupabase as any).single.mockResolvedValue({
+			mockSupabase = createMockSupabase();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockSupabase as any).single as any).mockResolvedValue({
 				data: null,
 				error: { message: 'Not found', details: '', hint: '', code: '' }
 			});
@@ -248,13 +257,14 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((GET as any)(context), 404);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(GET(context as any), 404);
 		});
 	});
 });
 
 describe('PUT /api/admin/schools/[schoolId]/config', () => {
-	let mockSupabase: SupabaseClient;
+	let mockSupabase: SupabaseClient<Database>;
 	let mockRequest: Request;
 
 	beforeEach(() => {
@@ -291,7 +301,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 401);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 401);
 		});
 	});
 
@@ -315,7 +326,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 403);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 403);
 		});
 
 		it('should return 403 when profile is missing', async () => {
@@ -334,7 +346,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 403);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 403);
 		});
 	});
 
@@ -358,7 +371,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 400);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 400);
 		});
 
 		it('should return 400 for invalid JSON body', async () => {
@@ -378,7 +392,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 400);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 400);
 		});
 
 		it('should return 400 for invalid timezone', async () => {
@@ -397,7 +412,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 400);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 400);
 		});
 
 		it('should return 400 for missing timezone', async () => {
@@ -415,7 +431,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 400);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 400);
 		});
 
 		it('should return 400 for missing week_config', async () => {
@@ -433,7 +450,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 400);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 400);
 		});
 
 		it('should return 400 for invalid week_config - missing school_days', async () => {
@@ -457,7 +475,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 400);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 400);
 		});
 
 		it('should return 400 for invalid week_config - overlapping days', async () => {
@@ -481,7 +500,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 400);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 400);
 		});
 
 		it('should return 400 for invalid week_config - missing days', async () => {
@@ -505,7 +525,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 400);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 400);
 		});
 
 		it('should return 400 for invalid week_config - days out of range', async () => {
@@ -529,7 +550,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 400);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 400);
 		});
 
 		it('should return 400 for invalid week_config - first_day out of range', async () => {
@@ -553,7 +575,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 400);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 400);
 		});
 	});
 
@@ -595,8 +618,10 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			vi.mocked(mockSupabase as any)
-				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
+			mockSupabase = createMockSupabase();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockSupabase as any).single as any)
+				.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
 			const context: RequestContext = {
@@ -609,7 +634,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (PUT as any)(context);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await PUT(context as any);
 			const body = await response.json();
 
 			expect(response.status).toBe(200);
@@ -643,8 +669,10 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			vi.mocked(mockSupabase as any)
-				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
+			mockSupabase = createMockSupabase();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockSupabase as any).single as any)
+				.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
 			const context: RequestContext = {
@@ -657,7 +685,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (PUT as any)(context);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await PUT(context as any);
 			const body = await response.json();
 
 			expect(response.status).toBe(200);
@@ -695,8 +724,10 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			vi.mocked(mockSupabase as any)
-				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
+			mockSupabase = createMockSupabase();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockSupabase as any).single as any)
+				.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
 			const context: RequestContext = {
@@ -709,7 +740,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (PUT as any)(context);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await PUT(context as any);
 			expect(response.status).toBe(200);
 		});
 
@@ -744,8 +776,10 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			vi.mocked(mockSupabase as any)
-				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
+			mockSupabase = createMockSupabase();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockSupabase as any).single as any)
+				.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
 			const context: RequestContext = {
@@ -758,7 +792,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (PUT as any)(context);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await PUT(context as any);
 			expect(response.status).toBe(200);
 		});
 	});
@@ -775,7 +810,9 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				week_config: DEFAULT_WEEK_CONFIG
 			});
 
-			vi.mocked(mockSupabase as any).single.mockResolvedValue({
+			mockSupabase = createMockSupabase();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockSupabase as any).single as any).mockResolvedValue({
 				data: null,
 				error: { message: 'Not found', details: '', hint: '', code: '' }
 			});
@@ -790,7 +827,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 404);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 404);
 		});
 
 		it('should return 500 when update fails', async () => {
@@ -808,6 +846,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				timetable: { periods: [] }
 			};
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			vi.mocked(mockSupabase as any)
 				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({
@@ -825,7 +864,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			await expectError((PUT as any)(context), 500);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			await expectError(PUT(context as any), 500);
 		});
 	});
 
@@ -864,8 +904,10 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			vi.mocked(mockSupabase as any)
-				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
+			mockSupabase = createMockSupabase();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockSupabase as any).single as any)
+				.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
 			const context: RequestContext = {
@@ -878,7 +920,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (PUT as any)(context);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await PUT(context as any);
 			expect(response.status).toBe(200);
 		});
 
@@ -908,8 +951,10 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				timetable: { periods, week_config: DEFAULT_WEEK_CONFIG }
 			};
 
-			vi.mocked(mockSupabase as any)
-				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
+			mockSupabase = createMockSupabase();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			((mockSupabase as any).single as any)
+				.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
 			const context: RequestContext = {
@@ -922,7 +967,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				}
 			};
 
-			const response = await (PUT as any)(context);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const response = await PUT(context as any);
 			const body = await response.json();
 
 			expect(body.school.timetable.periods).toEqual(periods);

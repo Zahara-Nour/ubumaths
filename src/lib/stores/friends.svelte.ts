@@ -52,7 +52,7 @@ class FriendsManager {
 			// Fetch friend profiles
 			const { data: profilesData, error: profilesError } = await this.supabase
 				.from('profiles')
-				.select('id, full_name, firstname, lastname, avatar_url, role')
+				.select('id, full_name, firstname, lastname, avatar_url, role, gender')
 				.in('id', friendIds);
 
 			if (profilesError) {
@@ -116,9 +116,10 @@ class FriendsManager {
 							firstname: profile.firstname ?? null,
 							lastname: profile.lastname ?? null,
 							avatar_url: profile.avatar_url ?? null,
-							role: profile.role ?? 'student'
-						} as Database['public']['Tables']['profiles']['Row'],
-						presence
+							role: profile.role ?? 'student',
+							gender: profile.gender ?? null,
+							presence
+						}
 					};
 					return enrichedFriendship;
 				})
@@ -315,7 +316,7 @@ class FriendsManager {
 			// Search users by name (case insensitive)
 			const { data: usersData, error: usersError } = await this.supabase
 				.from('profiles')
-				.select('id, full_name, firstname, lastname, avatar_url, role')
+				.select('id, full_name, firstname, lastname, avatar_url, role, gender')
 				.neq('id', this.currentUserId) // Exclude self
 				.or(`full_name.ilike.%${query}%,firstname.ilike.%${query}%,lastname.ilike.%${query}%`)
 				.limit(20);

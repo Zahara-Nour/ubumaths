@@ -94,7 +94,7 @@ describe('Integration: Complete Daily Summary Flow', () => {
 			{ id: 'student-3', first_name: 'Charlie', last_name: 'Brown' }
 		];
 
-		(vi.mocked(mockSupabase.from).mockImplementation as any)((table: string) => {
+		vi.mocked(mockSupabase.from).mockImplementation((table: string) => {
 			if (table === 'class_members') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -107,7 +107,7 @@ describe('Integration: Complete Daily Summary Flow', () => {
 					})
 				} as unknown as ReturnType<typeof mockSupabase.from>;
 			}
-			return mockSupabase;
+			return {} as ReturnType<typeof mockSupabase.from>;
 		});
 
 		// Mock history aggregation for each student
@@ -214,7 +214,7 @@ describe('Integration: Complete Daily Summary Flow', () => {
 		// Mock students
 		const students = [{ id: 'student-1', first_name: 'Alice', last_name: 'Smith' }];
 
-		(vi.mocked(mockSupabase.from).mockImplementation as any)((table: string) => {
+		vi.mocked(mockSupabase.from).mockImplementation((table: string) => {
 			if (table === 'class_members') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -227,7 +227,7 @@ describe('Integration: Complete Daily Summary Flow', () => {
 					})
 				} as unknown as ReturnType<typeof mockSupabase.from>;
 			}
-			return mockSupabase;
+			return {} as ReturnType<typeof mockSupabase.from>;
 		});
 
 		// Mock no activity
@@ -297,7 +297,7 @@ describe('Integration: Complete Weekly Rewards Flow', () => {
 			{ id: 'student-2', first_name: 'Bob', last_name: 'Jones' }
 		];
 
-		(vi.mocked(mockSupabase.from).mockImplementation as any)((table: string) => {
+		vi.mocked(mockSupabase.from).mockImplementation((table: string) => {
 			if (table === 'class_members') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -310,7 +310,7 @@ describe('Integration: Complete Weekly Rewards Flow', () => {
 					})
 				} as unknown as ReturnType<typeof mockSupabase.from>;
 			}
-			return mockSupabase;
+			return {} as ReturnType<typeof mockSupabase.from>;
 		});
 
 		// Mock weekly aggregations
@@ -384,7 +384,7 @@ describe('Integration: Complete Weekly Rewards Flow', () => {
 		// Mock students
 		const students = [{ id: 'student-1', first_name: 'Alice', last_name: 'Smith' }];
 
-		(vi.mocked(mockSupabase.from).mockImplementation as any)((table: string) => {
+		vi.mocked(mockSupabase.from).mockImplementation((table: string) => {
 			if (table === 'class_members') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -397,7 +397,7 @@ describe('Integration: Complete Weekly Rewards Flow', () => {
 					})
 				} as unknown as ReturnType<typeof mockSupabase.from>;
 			}
-			return mockSupabase;
+			return {} as ReturnType<typeof mockSupabase.from>;
 		});
 
 		// Mock no activity
@@ -569,7 +569,7 @@ describe('Integration: Edge Cases', () => {
 		const yesterday = new Date('2025-11-12T00:00:00Z');
 
 		// Mock no students
-		(vi.mocked(mockSupabase.from).mockImplementation as any)((table: string) => {
+		vi.mocked(mockSupabase.from).mockImplementation((table: string) => {
 			if (table === 'class_members') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -582,7 +582,7 @@ describe('Integration: Edge Cases', () => {
 					})
 				} as unknown as ReturnType<typeof mockSupabase.from>;
 			}
-			return mockSupabase;
+			return {} as ReturnType<typeof mockSupabase.from>;
 		});
 
 		const summariesCreated = await generateDailySummary(
@@ -619,7 +619,7 @@ describe('Integration: Edge Cases', () => {
 			{ id: 'student-2', first_name: 'Bob', last_name: 'Jones' }
 		];
 
-		(vi.mocked(mockSupabase.from).mockImplementation as any)((table: string) => {
+		vi.mocked(mockSupabase.from).mockImplementation((table: string) => {
 			if (table === 'class_members') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -632,7 +632,7 @@ describe('Integration: Edge Cases', () => {
 					})
 				} as unknown as ReturnType<typeof mockSupabase.from>;
 			}
-			return mockSupabase;
+			return {} as ReturnType<typeof mockSupabase.from>;
 		});
 
 		let rpcCallCount = 0;
@@ -791,7 +791,7 @@ describe('Integration: Performance Considerations', () => {
 			last_name: 'Test'
 		}));
 
-		(vi.mocked(mockSupabase.from).mockImplementation as any)((table: string) => {
+		vi.mocked(mockSupabase.from).mockImplementation((table: string) => {
 			if (table === 'class_members') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -804,7 +804,7 @@ describe('Integration: Performance Considerations', () => {
 					})
 				} as unknown as ReturnType<typeof mockSupabase.from>;
 			}
-			return mockSupabase;
+			return {} as ReturnType<typeof mockSupabase.from>;
 		});
 
 		// Mock aggregation and insertion

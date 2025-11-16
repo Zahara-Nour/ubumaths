@@ -56,6 +56,7 @@ describe('POST /api/cleanup/all', () => {
 		};
 
 		// Should throw due to failed authentication
+
 		await expect(POST({ request, locals: mockLocals } as any)).rejects.toThrow('Unauthorized');
 
 		// Verify verifyCronAuth was called
@@ -369,6 +370,7 @@ describe('GET /api/cleanup/all', () => {
 		};
 
 		// Should throw due to failed authentication
+
 		await expect(GET({ request, locals: mockLocals } as any)).rejects.toThrow('Unauthorized');
 
 		// Verify verifyCronAuth was called
