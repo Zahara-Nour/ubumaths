@@ -81,7 +81,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	try {
 		// Build base query with JOINs
-		// Note: Database uses 'description_override' but we map to 'descriptionOverride' in API
+		// Note: Uses denormalized course_name and teacher_name fields to avoid RLS circular dependencies
+		// Database uses 'description_override' but we map to 'descriptionOverride' in API
 		let query = locals.supabase.from('shared_coursework').select(
 			`
 				id,
@@ -91,6 +92,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				category_id,
 				description_override,
 				display_order,
+				course_name,
+				teacher_name,
 				created_at,
 				updated_at,
 				google_classroom_coursework!inner(
@@ -146,7 +149,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			throw error(500, 'Failed to fetch shared coursework');
 		}
 
-		// Optimize: Fetch all courses in bulk instead of N+1
+		// Get unique Google Course IDs for fetching course IDs (needed for courseId in response)
+		// Note: We use denormalized course_name, but still need course.id for the API response
 		const googleCourseIds = [
 			...new Set(
 				(sharedCourseworkList || [])
@@ -163,10 +167,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 		const courseworkIds = (sharedCourseworkList || []).map((item) => item.coursework_id);
 
-		// Fetch ALL courses in one query
+		// Fetch course IDs only (names come from denormalized field)
 		const { data: courses, error: coursesError } = await locals.supabase
 			.from('google_classroom_courses')
-			.select('id, name, google_course_id')
+			.select('id, google_course_id')
 			.in('google_course_id', googleCourseIds)
 			.eq('teacher_id', user.id);
 
@@ -174,13 +178,13 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			console.error('[Google Shared Coursework] Courses fetch error:', coursesError);
 		}
 
-		// Create course lookup map
-		const courseMap: Record<string, { id: string; name: string }> = (courses || []).reduce(
+		// Create course ID lookup map (only IDs, not names)
+		const courseIdMap: Record<string, string> = (courses || []).reduce(
 			(acc, c) => {
-				acc[c.google_course_id] = { id: c.id, name: c.name };
+				acc[c.google_course_id] = c.id;
 				return acc;
 			},
-			{} as Record<string, { id: string; name: string }>
+			{} as Record<string, string>
 		);
 
 		// Fetch ALL materials/attachments in one query
@@ -203,6 +207,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		);
 
 		// Map with pre-fetched data (no additional queries)
+		// Uses denormalized course_name and teacher_name from database
 		const enrichedData = (sharedCourseworkList || []).map((item) => {
 			// Handle nested coursework data from Supabase JOIN
 			const courseworkData = item.google_classroom_coursework as unknown as
@@ -229,7 +234,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 			const coursework = Array.isArray(courseworkData) ? courseworkData[0] : courseworkData;
 			const googleCourseId = coursework?.google_course_id;
-			const course = courseMap[googleCourseId || ''];
+
+			// Get course ID from map (name comes from denormalized field)
+			const courseId = courseIdMap[googleCourseId || ''] || null;
 
 			// Supabase JOIN types don't reflect !inner modifier, handle both cases defensively
 			const classData = item.classes as unknown as
@@ -253,8 +260,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				maxPoints: coursework?.max_points || null,
 				dueDate: coursework?.due_date || null,
 				dueTime: coursework?.due_time || null,
-				courseId: course?.id || null,
-				courseName: course?.name || 'Unknown Course',
+				courseId: courseId,
+				courseName: item.course_name || 'Unknown Course', // ✅ DENORMALIZED FIELD
+				teacherName: item.teacher_name || 'Unknown Teacher', // ✅ DENORMALIZED FIELD
 				classId: classId || item.class_id,
 				className: className || 'Unknown Class',
 				visible: item.visible,

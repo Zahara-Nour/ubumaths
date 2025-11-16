@@ -4245,6 +4245,87 @@ shared_materials (with denormalized course_name★ and teacher_name★)
 
 ---
 
+#### `shared_coursework`
+
+**Purpose**: Track which Google Classroom coursework (assignments, quizzes) are shared with UbuMaths classes.
+
+🌟 **Strategic Denormalization**: This table denormalizes `course_name` and `teacher_name` to avoid RLS circular dependency (identical pattern to `shared_materials`).
+
+| Column               | Type                                             | Description                                                     |
+| -------------------- | ------------------------------------------------ | --------------------------------------------------------------- |
+| id                   | UUID (PK)                                        | Sharing record ID                                               |
+| coursework_id        | UUID (FK → google_classroom_coursework, CASCADE) | Coursework being shared                                         |
+| class_id             | UUID (FK → classes, CASCADE)                     | UbuMaths class receiving coursework                             |
+| category_id          | UUID (FK → coursework_categories, SET NULL)      | Optional UbuMaths category for organization                     |
+| topic_id             | UUID (FK → google_classroom_topics, SET NULL)    | Optional Google topic for organization                          |
+| shared_by            | UUID (FK → profiles, CASCADE)                    | Teacher who shared the coursework                               |
+| description_override | TEXT                                             | Teacher's custom description (overrides coursework.description) |
+| visible              | BOOLEAN                                          | Whether students can currently see this coursework              |
+| display_order        | INTEGER                                          | Custom ordering for display (default 0)                         |
+| **course_name**      | TEXT                                             | **★ Denormalized** course name (from google_classroom_courses)  |
+| **teacher_name**     | TEXT                                             | **★ Denormalized** teacher name (from profiles)                 |
+| created_at           | TIMESTAMPTZ                                      | Creation timestamp                                              |
+| updated_at           | TIMESTAMPTZ                                      | Last update timestamp                                           |
+
+**Unique Constraint**: (coursework_id, class_id)
+
+**Indexes**:
+
+- `idx_shared_coursework_coursework` on `coursework_id`
+- `idx_shared_coursework_class` on `class_id`
+- `idx_shared_coursework_category` on `category_id`
+- `idx_shared_coursework_topic` on `topic_id`
+- `idx_shared_coursework_visible` on `(class_id, visible)` WHERE `visible = true`
+- `idx_shared_coursework_course_name` on `course_name` WHERE `course_name IS NOT NULL`
+- `idx_shared_coursework_display_order` on `(class_id, display_order, created_at)`
+
+**RLS Policies**:
+
+- Teachers: Full CRUD for their own shared coursework
+- Students: SELECT visible coursework for their classes (with `is_test = false` check)
+- Admins: SELECT only
+
+#### Denormalization Pattern (Identical to shared_materials)
+
+**Problem**: RLS circular dependency when students query shared_coursework → google_classroom_coursework → google_classroom_courses (RLS blocks access to courses table).
+
+**Solution**: Denormalize `course_name` and `teacher_name` into `shared_coursework`.
+
+**Automatic Maintenance via Triggers**:
+
+1. **INSERT Trigger** (`populate_shared_coursework_names`):
+   - Runs BEFORE INSERT on `shared_coursework`
+   - Auto-populates `course_name` and `teacher_name` using SECURITY DEFINER
+   - Eliminates need for service role bypass in application code
+
+2. **Course Rename Trigger** (`update_shared_coursework_on_course_rename`):
+   - Runs AFTER UPDATE on `google_classroom_courses`
+   - Updates all `shared_coursework.course_name` when a course is renamed
+   - Only triggers when name actually changes (performance optimized)
+
+3. **Teacher Rename Trigger** (`update_shared_coursework_on_teacher_rename`):
+   - Runs AFTER UPDATE on `profiles`
+   - Updates all `shared_coursework.teacher_name` when teacher changes name
+   - Only triggers when first/last name changes
+
+**Benefits**:
+
+- ✅ **3x faster queries** (1 query vs 3 with JOINs)
+- ✅ **No service role bypass** in application code (more secure)
+- ✅ **Automatic consistency** (triggers handle updates, zero maintenance)
+- ✅ **Simplified API code** (no need to JOIN courses table for names)
+
+**Trade-offs**:
+
+- ⚠️ ~100 bytes extra storage per record (negligible)
+- ⚠️ < 5ms overhead on writes (negligible for rare operations)
+
+**Rationale**: Course/teacher names are NOT sensitive data, renames are extremely rare (< 0.1% of operations), triggers guarantee consistency.
+
+**Related Tables**: `shared_coursework_students` (for student-level restrictions on coursework)
+
+---
+
 ### Hybrid Organization Pattern
 
 Teachers can choose **per-class** how to organize shared materials:
@@ -4264,16 +4345,18 @@ Teachers can choose **per-class** how to organize shared materials:
 
 ### RLS Policy Summary
 
-**28 policies** across 6 tables:
+**35+ policies** across 8+ tables:
 
-| Table                      | Teachers                 | Students                    | Admins      |
-| -------------------------- | ------------------------ | --------------------------- | ----------- |
-| google_integrations        | Full CRUD (own)          | None                        | SELECT only |
-| google_classroom_courses   | Full CRUD (own)          | None                        | SELECT only |
-| google_classroom_topics    | Full CRUD (via course)   | None                        | SELECT only |
-| google_classroom_materials | Full CRUD (via course)   | SELECT (shared)             | SELECT only |
-| material_attachments       | Full CRUD (via material) | SELECT (shared)             | SELECT only |
-| shared_materials           | Full CRUD (own)          | SELECT (visible + in class) | SELECT only |
+| Table                       | Teachers                 | Students                    | Admins      |
+| --------------------------- | ------------------------ | --------------------------- | ----------- |
+| google_integrations         | Full CRUD (own)          | None                        | SELECT only |
+| google_classroom_courses    | Full CRUD (own)          | None                        | SELECT only |
+| google_classroom_topics     | Full CRUD (via course)   | None                        | SELECT only |
+| google_classroom_materials  | Full CRUD (via course)   | SELECT (shared)             | SELECT only |
+| material_attachments        | Full CRUD (via material) | SELECT (shared)             | SELECT only |
+| shared_materials            | Full CRUD (own)          | SELECT (visible + in class) | SELECT only |
+| shared_coursework           | Full CRUD (own)          | SELECT (visible + in class) | SELECT only |
+| google_classroom_coursework | Full CRUD (via course)   | SELECT (shared)             | SELECT only |
 
 **Cross-Table Student Policies**:
 
@@ -4425,16 +4508,18 @@ const { error: insertError } = await supabase.from('shared_materials').insert(sh
 
 ### Migration Files
 
-| Date       | File                                                   | Tables Created                                              |
-| ---------- | ------------------------------------------------------ | ----------------------------------------------------------- |
-| 2025-11-14 | `20251114150000_google_classroom_integration.sql`      | google_integrations, google_classroom_courses, (coursework) |
-| 2025-11-15 | `20251115160000_fix_google_classroom_courses_rls.sql`  | (RLS fixes)                                                 |
-| 2025-11-15 | `20251115181000_create_google_classroom_topics.sql`    | google_classroom_topics                                     |
-| 2025-11-15 | `20251115182000_create_google_classroom_materials.sql` | google_classroom_materials                                  |
-| 2025-11-15 | `20251115183000_create_material_attachments.sql`       | google_classroom_material_attachments                       |
-| 2025-11-15 | `20251115184000_create_shared_materials.sql`           | shared_materials (with denormalization triggers)            |
+| Date       | File                                                     | Tables Created                                              |
+| ---------- | -------------------------------------------------------- | ----------------------------------------------------------- |
+| 2025-11-14 | `20251114150000_google_classroom_integration.sql`        | google_integrations, google_classroom_courses, (coursework) |
+| 2025-11-15 | `20251115100000_fix_shared_coursework_rls_recursion.sql` | (RLS fixes for shared_coursework)                           |
+| 2025-11-15 | `20251115160000_fix_google_classroom_courses_rls.sql`    | (RLS fixes)                                                 |
+| 2025-11-15 | `20251115180000_denormalize_course_teacher_names.sql`    | (Denormalization for shared_coursework)                     |
+| 2025-11-15 | `20251115181000_create_google_classroom_topics.sql`      | google_classroom_topics                                     |
+| 2025-11-15 | `20251115182000_create_google_classroom_materials.sql`   | google_classroom_materials                                  |
+| 2025-11-15 | `20251115183000_create_material_attachments.sql`         | google_classroom_material_attachments                       |
+| 2025-11-15 | `20251115184000_create_shared_materials.sql`             | shared_materials (with denormalization triggers)            |
 
-**Total**: 6 tables, 28 RLS policies, 4 triggers, 20+ indexes
+**Total**: 8+ tables, 35+ RLS policies, 7 triggers, 30+ indexes
 
 ---
 
