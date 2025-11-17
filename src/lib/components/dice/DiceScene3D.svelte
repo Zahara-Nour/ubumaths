@@ -135,7 +135,33 @@
 			// Thresholds for "settled" (lowered to 0.05 for more accurate detection)
 			if (linearSpeed > 0.05 || angularSpeed > 0.05) {
 				allSettled = false;
-				break;
+			}
+
+			// Check for wall collisions (position-based detection)
+			if (linearSpeed > 1) {
+				// Only check if dice is moving fast enough
+				const pos = ref.translation();
+
+				// Wall boundaries (walls are at ±10.25)
+				const WALL_THRESHOLD = 9.5; // Trigger flash when close to wall
+				const CEILING_THRESHOLD = 14; // Ceiling is at Y=15
+
+				// Check each wall
+				if (pos.z > WALL_THRESHOLD && !wallFlash.north) {
+					flashWall('north');
+				}
+				if (pos.z < -WALL_THRESHOLD && !wallFlash.south) {
+					flashWall('south');
+				}
+				if (pos.x > WALL_THRESHOLD && !wallFlash.east) {
+					flashWall('east');
+				}
+				if (pos.x < -WALL_THRESHOLD && !wallFlash.west) {
+					flashWall('west');
+				}
+				if (pos.y > CEILING_THRESHOLD && !wallFlash.ceiling) {
+					flashWall('ceiling');
+				}
 			}
 		}
 
@@ -336,8 +362,12 @@
 
 				<!-- Semi-transparent Walls (prevent dice from falling off) -->
 				<!-- North Wall (Z+) - Red -->
-				<RigidBody type="fixed" on:collisionenter={() => flashWall('north')}>
-					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
+				<RigidBody
+					type="fixed"
+					on:collisionenter={() => flashWall('north')}
+					on:contact={() => flashWall('north')}
+				>
+					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5} sensor={false}>
 						<T.Mesh position={[0, 7.5, 10.25]}>
 							<T.BoxGeometry args={[20, 15, 0.5]} />
 							<T.MeshStandardMaterial
@@ -352,8 +382,12 @@
 				</RigidBody>
 
 				<!-- South Wall (Z-) - Green -->
-				<RigidBody type="fixed" on:collisionenter={() => flashWall('south')}>
-					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
+				<RigidBody
+					type="fixed"
+					on:collisionenter={() => flashWall('south')}
+					on:contact={() => flashWall('south')}
+				>
+					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5} sensor={false}>
 						<T.Mesh position={[0, 7.5, -10.25]}>
 							<T.BoxGeometry args={[20, 15, 0.5]} />
 							<T.MeshStandardMaterial
@@ -368,8 +402,12 @@
 				</RigidBody>
 
 				<!-- East Wall (X+) - Blue -->
-				<RigidBody type="fixed" on:collisionenter={() => flashWall('east')}>
-					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
+				<RigidBody
+					type="fixed"
+					on:collisionenter={() => flashWall('east')}
+					on:contact={() => flashWall('east')}
+				>
+					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5} sensor={false}>
 						<T.Mesh position={[10.25, 7.5, 0]}>
 							<T.BoxGeometry args={[0.5, 15, 20]} />
 							<T.MeshStandardMaterial
@@ -384,8 +422,12 @@
 				</RigidBody>
 
 				<!-- West Wall (X-) - Yellow -->
-				<RigidBody type="fixed" on:collisionenter={() => flashWall('west')}>
-					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
+				<RigidBody
+					type="fixed"
+					on:collisionenter={() => flashWall('west')}
+					on:contact={() => flashWall('west')}
+				>
+					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5} sensor={false}>
 						<T.Mesh position={[-10.25, 7.5, 0]}>
 							<T.BoxGeometry args={[0.5, 15, 20]} />
 							<T.MeshStandardMaterial
@@ -400,8 +442,12 @@
 				</RigidBody>
 
 				<!-- Ceiling - Cyan -->
-				<RigidBody type="fixed" on:collisionenter={() => flashWall('ceiling')}>
-					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
+				<RigidBody
+					type="fixed"
+					on:collisionenter={() => flashWall('ceiling')}
+					on:contact={() => flashWall('ceiling')}
+				>
+					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5} sensor={false}>
 						<T.Mesh position={[0, 15, 0]}>
 							<T.BoxGeometry args={[20, 0.5, 20]} />
 							<T.MeshStandardMaterial
