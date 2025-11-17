@@ -29,8 +29,8 @@
 		rigidBodyRef?: RapierRigidBody | undefined;
 	} = $props();
 
-	// Internal rigid body reference
-	let rbRef: RapierRigidBody | undefined = $state(undefined);
+	// Internal rigid body reference (use .raw() for 3D objects to avoid proxy overhead)
+	let rbRef: RapierRigidBody | undefined = $state.raw(undefined);
 
 	// Sync internal ref with bindable prop
 	$effect(() => {

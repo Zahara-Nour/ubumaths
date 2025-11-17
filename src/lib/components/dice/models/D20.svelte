@@ -29,8 +29,8 @@
 		rigidBodyRef?: RapierRigidBody | undefined;
 	} = $props();
 
-	// Internal rigid body reference
-	let rbRef: RapierRigidBody | undefined = $state(undefined);
+	// Internal rigid body reference (use .raw() for 3D objects to avoid proxy overhead)
+	let rbRef: RapierRigidBody | undefined = $state.raw(undefined);
 
 	// Sync internal ref with bindable prop
 	$effect(() => {
@@ -52,8 +52,9 @@
 	// Scale geometry
 	const scaledSize = size * geometryData.scale;
 
-	// Face numbers for D20
-	const faceNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+	// Face numbers for D20 - must match faceValueMappings.d20 from dice-geometry.ts
+	// Standard icosahedron mapping where opposite faces sum to 21
+	const faceNumbers = [17, 3, 7, 1, 19, 16, 10, 15, 13, 9, 8, 12, 5, 11, 6, 20, 2, 18, 4, 14];
 
 	// Calculate font size based on die size (smaller for many faces)
 	const fontSize = scaledSize * 0.3;

@@ -195,7 +195,7 @@ export function getDiceGeometry(type: DiceType): DiceGeometry {
  *
  * @param type - Dice type
  * @param upVector - The "up" direction in world space [x, y, z]
- * @returns Face number (1 to max faces)
+ * @returns The actual dice value showing on top
  */
 export function detectTopFace(type: DiceType, upVector: Vector3Tuple): number {
 	const geometry = getDiceGeometry(type);
@@ -219,8 +219,8 @@ export function detectTopFace(type: DiceType, upVector: Vector3Tuple): number {
 		}
 	});
 
-	// Return face number (1-indexed)
-	return topFaceIndex + 1;
+	// Return the actual dice value for this face
+	return getFaceValue(type, topFaceIndex);
 }
 
 /**
@@ -231,6 +231,108 @@ export function detectTopFace(type: DiceType, upVector: Vector3Tuple): number {
  */
 export function getMaxFaceValue(type: DiceType): number {
 	return getDiceGeometry(type).faces;
+}
+
+/**
+ * Face index to dice value mappings
+ * Maps the geometry face index (from raycasting or normal detection) to the actual dice value
+ */
+const faceValueMappings: Record<DiceType, Record<number, number>> = {
+	// D4: Simple 1-4 mapping
+	d4: {
+		0: 1,
+		1: 2,
+		2: 3,
+		3: 4
+	},
+
+	// D6: Opposite faces sum to 7 (1↔6, 2↔5, 3↔4)
+	d6: {
+		0: 1, // Front
+		1: 6, // Back
+		2: 2, // Bottom
+		3: 5, // Top
+		4: 3, // Left
+		5: 4 // Right
+	},
+
+	// D8: Sequential numbering (1-8)
+	d8: {
+		0: 1,
+		1: 2,
+		2: 3,
+		3: 4,
+		4: 5,
+		5: 6,
+		6: 7,
+		7: 8
+	},
+
+	// D10: Standard D10 uses 0-9
+	d10: {
+		0: 1,
+		1: 2,
+		2: 3,
+		3: 4,
+		4: 5,
+		5: 6,
+		6: 7,
+		7: 8,
+		8: 9,
+		9: 0
+	},
+
+	// D12: Sequential numbering (1-12)
+	d12: {
+		0: 1,
+		1: 2,
+		2: 3,
+		3: 4,
+		4: 5,
+		5: 6,
+		6: 7,
+		7: 8,
+		8: 9,
+		9: 10,
+		10: 11,
+		11: 12
+	},
+
+	// D20: Standard icosahedron mapping (opposite faces sum to 21)
+	d20: {
+		0: 17,
+		1: 3,
+		2: 7,
+		3: 1,
+		4: 19,
+		5: 16,
+		6: 10,
+		7: 15,
+		8: 13,
+		9: 9,
+		10: 8,
+		11: 12,
+		12: 5,
+		13: 11,
+		14: 6,
+		15: 20,
+		16: 2,
+		17: 18,
+		18: 4,
+		19: 14
+	}
+};
+
+/**
+ * Get the dice value for a given face index
+ *
+ * @param type - Dice type
+ * @param faceIndex - Index of the face (0-based)
+ * @returns The actual dice value for that face
+ */
+export function getFaceValue(type: DiceType, faceIndex: number): number {
+	const mapping = faceValueMappings[type];
+	return mapping[faceIndex] ?? 1;
 }
 
 /**

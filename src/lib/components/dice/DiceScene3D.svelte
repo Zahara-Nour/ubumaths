@@ -41,7 +41,7 @@
 	// State
 	let isRolling = $state(false);
 	let rollTrigger = $state(0); // Increments on each roll to trigger animation
-	let diceRefs = $state<(RapierRigidBody | undefined)[]>([]);
+	let diceRefs = $state.raw<(RapierRigidBody | undefined)[]>([]); // Use .raw() for 3D objects
 	let settlingCheckInterval: ReturnType<typeof setInterval> | undefined = $state(undefined);
 
 	// Dice components map

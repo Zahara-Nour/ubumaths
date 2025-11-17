@@ -29,8 +29,8 @@
 		rigidBodyRef?: RapierRigidBody | undefined;
 	} = $props();
 
-	// Internal rigid body reference
-	let rbRef: RapierRigidBody | undefined = $state(undefined);
+	// Internal rigid body reference (use .raw() for 3D objects to avoid proxy overhead)
+	let rbRef: RapierRigidBody | undefined = $state.raw(undefined);
 
 	// Sync internal ref with bindable prop
 	$effect(() => {
@@ -52,8 +52,9 @@
 	// Scale geometry
 	const scaledSize = size * geometryData.scale;
 
-	// Face numbers for D10 (standard RPG dice use 0-9)
-	const faceNumbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+	// Face numbers for D10 - must match faceValueMappings.d10 from dice-geometry.ts
+	// Standard RPG D10: face 9 shows "0" (can represent 10 in d100 rolls)
+	const faceNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
 	// Calculate font size based on die size
 	const fontSize = scaledSize * 0.45;
