@@ -244,8 +244,28 @@
 					return;
 				}
 
-				// Keep the dice at their current position, just apply new forces
-				// Don't reset position - let them roll from where they are
+				// Calculate position spread for multiple dice
+				const totalDice = config.reduce((sum, c) => sum + (c.count ?? 1), 0);
+				const spacing = 2;
+				const xOffset = (index - totalDice / 2) * spacing;
+
+				// Wall boundaries (with safety margin)
+				const WALL_LIMIT = 9; // Walls are at ±10.25, so safe area is ±9
+
+				// Position at center of box at hand height
+				const xPos = clamp(xOffset + (Math.random() - 0.5) * 2, -WALL_LIMIT, WALL_LIMIT);
+				const zPos = clamp((Math.random() - 0.5) * 2, -WALL_LIMIT, WALL_LIMIT);
+				const yStart = 3 + Math.random() * 0.5; // Center height (3-3.5)
+
+				// Reposition dice at center of box
+				ref.setTranslation(
+					{
+						x: xPos,
+						y: yStart,
+						z: zPos
+					},
+					true
+				);
 
 				// Set random rotation for variety
 				ref.setRotation(
