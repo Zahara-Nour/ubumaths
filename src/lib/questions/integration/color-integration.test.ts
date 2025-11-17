@@ -70,16 +70,16 @@ describe('Color Template System - End to End', () => {
 			'Color {#color:primary.0}, value {@:a}, result {eval:{@:a}+5}'
 		);
 
-		// Note: resolveExpression from content-resolver only handles color references,
-		// not variable substitution or evaluation (those are handled by variable-resolver)
-		// For this test, we'll just verify the color is resolved
-		const resolved = resolveExpression(conversionResult.converted!, [], 42);
+		// Provide a resolved variable 'a' to test the integration
+		const resolvedVariables = [{ name: 'a', value: '7' }];
+		const resolved = resolveExpression(conversionResult.converted!, resolvedVariables, 42);
 
 		// Should contain the resolved color
 		expect(resolved).toContain(COLOR_PALETTES.primary[0]);
-		// Variables and eval expressions remain unresolved (handled by variable-resolver)
-		expect(resolved).toContain('{@:a}');
-		expect(resolved).toContain('{eval:{@:a}+5}');
+		// Variable should be resolved
+		expect(resolved).toContain('7');
+		// Eval expression should be resolved
+		expect(resolved).toContain('12'); // 7 + 5 = 12
 	});
 
 	it('should handle French color names', () => {

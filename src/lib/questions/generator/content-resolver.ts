@@ -13,6 +13,7 @@
 import type { ContentField, ResolvedVariable } from '../types';
 import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
+import { convertToMarkdownSyntax } from './syntax-adapter';
 
 /**
  * Resolve a single content field
@@ -30,8 +31,11 @@ export function resolveContentField(
 	resolvedVariables: ResolvedVariable[],
 	seed?: number
 ): ContentField {
+	// Convert Questions syntax to Markdown before resolution
+	const markdownContent = convertToMarkdownSyntax(field.content);
+
 	// Resolve content for both text and image fields (image URLs may contain variables)
-	let resolvedContent = resolveVariableExpression(field.content, resolvedVariables, seed);
+	let resolvedContent = resolveVariableExpression(markdownContent, resolvedVariables, seed);
 
 	// Also resolve color references (after variable resolution)
 	resolvedContent = resolveColorReferences(resolvedContent, seed);
@@ -71,7 +75,10 @@ export function resolveExpression(
 	resolvedVariables: ResolvedVariable[],
 	seed?: number
 ): string {
-	let resolved = resolveVariableExpression(expression, resolvedVariables, seed);
+	// Convert Questions syntax to Markdown before resolution
+	const markdownExpression = convertToMarkdownSyntax(expression);
+
+	let resolved = resolveVariableExpression(markdownExpression, resolvedVariables, seed);
 	// Also resolve color references
 	resolved = resolveColorReferences(resolved, seed);
 	return resolved;

@@ -23,28 +23,31 @@ import {
 	resolveVariables as sharedResolveVariables,
 	resolveExpression as sharedResolveExpression
 } from '$lib/shared/parameterization';
+import { convertVariableToMarkdown } from './syntax-adapter';
 
 /**
  * Resolve a single variable expression
  *
  * Uses shared library for resolution but maintains Questions API.
+ * NOTE: This function does NOT convert syntax - conversion should be done
+ * by the caller (e.g., resolveVariables, resolveContentField).
  *
- * @param expression - Variable expression string
+ * @param expression - Variable expression string (should already be in Markdown syntax)
  * @param alreadyResolved - Variables already resolved
  * @param seed - Optional seed for random generation
  * @returns Resolved value as string (LaTeX format)
  *
  * @example
  * ```typescript
- * // Simple random
- * resolveVariableExpression('{#:1-10}', [], 42)  // → "7"
+ * // Simple random (Markdown syntax)
+ * resolveVariableExpression('{{random:1-10}}', [], 42)  // → "7"
  *
  * // Reference to other variable
  * const resolved = [{ name: 'a', value: '5' }];
- * resolveVariableExpression('{@:a}^2', resolved)  // → "5^2"
+ * resolveVariableExpression('{{a}}^2', resolved)  // → "5^2"
  *
  * // With evaluation
- * resolveVariableExpression('{eval:{@:a}+3}', resolved)  // → "8"
+ * resolveVariableExpression('{{eval:{{a}}+3}}', resolved)  // → "8"
  * ```
  */
 export function resolveVariableExpression(
@@ -53,6 +56,7 @@ export function resolveVariableExpression(
 	seed?: number
 ): string {
 	// Use shared library's resolveExpression for full 3-stage pipeline
+	// NOTE: expression should already be in Markdown syntax at this point
 	return sharedResolveExpression(expression, alreadyResolved, seed);
 }
 
@@ -90,8 +94,11 @@ export function resolveVariables(
 		return [];
 	}
 
-	// Use shared library resolver
-	const result = sharedResolveVariables(variables, seed);
+	// Convert all variable expressions to Markdown syntax
+	const convertedVariables = variables.map(convertVariableToMarkdown);
+
+	// Use shared library resolver with converted variables
+	const result = sharedResolveVariables(convertedVariables, seed);
 
 	if (result === null) {
 		throw new Error('Failed to resolve variables');
