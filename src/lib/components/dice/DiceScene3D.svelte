@@ -301,7 +301,7 @@
 			<T.AmbientLight intensity={0.8} />
 
 			<!-- Physics World -->
-			<World gravity={[0, -9.81, 0]}>
+			<World gravity={[0, -15, 0]}>
 				<!-- Static Floor/Table (RigidBody with fixed type) -->
 				<RigidBody type="fixed">
 					<AutoColliders shape="cuboid" restitution={0.15} friction={1.2}>

@@ -130,6 +130,7 @@
 	{position}
 	linearDamping={0.4}
 	angularDamping={0.4}
+	density={3.0}
 >
 	<!-- AutoColliders with convexHull shape for complex polyhedron -->
 	<AutoColliders shape="convexHull" restitution={0.15} friction={1.2}>

@@ -97,6 +97,7 @@
 	{position}
 	linearDamping={0.4}
 	angularDamping={0.4}
+	density={3.0}
 >
 	<!-- AutoColliders with cuboid shape for D6 (most efficient for cubes) -->
 	<AutoColliders shape="cuboid" restitution={0.15} friction={1.2}>
