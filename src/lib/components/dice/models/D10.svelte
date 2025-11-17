@@ -64,7 +64,6 @@
 	bind:rigidBody={rbRef}
 	type="dynamic"
 	{position}
-	{rotation}
 	linearDamping={0.5}
 	angularDamping={0.5}
 >

@@ -276,7 +276,6 @@
 								{style}
 								size={diceConfig.size ?? 1}
 								position={[xOffset, yStart, zOffset]}
-								rotation={[0, 0, 0]}
 								bind:rigidBodyRef={diceRefs[overallIndex]}
 							/>
 						{/each}
