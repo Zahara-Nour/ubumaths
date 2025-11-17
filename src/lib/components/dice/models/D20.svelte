@@ -89,12 +89,19 @@
 		ctx.fillStyle = style.baseColor;
 		ctx.fillRect(0, 0, size, size);
 
+		// Flip vertically to correct upside-down numbers
+		ctx.save();
+		ctx.translate(size / 2, size / 2);
+		ctx.scale(1, -1); // Flip vertically
+
 		// Draw number - smaller font for D20's triangular faces
 		ctx.fillStyle = style.numberColor;
-		ctx.font = `bold ${size * 0.5}px Arial`;
+		ctx.font = `bold ${size * 0.4}px Arial`;
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
-		ctx.fillText(String(number), size / 2, size / 2);
+		ctx.fillText(String(number), 0, 0);
+
+		ctx.restore();
 
 		const texture = new THREE.CanvasTexture(canvas);
 		texture.needsUpdate = true;
