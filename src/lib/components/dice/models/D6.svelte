@@ -13,7 +13,6 @@
 	import type { Vector3Tuple } from 'three';
 	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
 	import * as THREE from 'three';
-	import { onMount } from 'svelte';
 
 	// Props
 	let {
@@ -38,25 +37,17 @@
 		rigidBodyRef = rbRef;
 	});
 
-	// Get D6 geometry data
+	// Get D6 geometry data for scale
 	const geometryData = getDiceGeometry('d6');
 
-	// Face numbers for D6 (matches faceNormals order)
-	const faceNumbers = [1, 6, 2, 5, 3, 4];
+	// Face numbers for D6 - BoxGeometry face order:
+	// Right(+X), Left(-X), Top(+Y), Bottom(-Y), Front(+Z), Back(-Z)
+	// We map: Right=4, Left=3, Top=5, Bottom=2, Front=1, Back=6
+	const faceNumbers = [4, 3, 5, 2, 1, 6];
 
-	// Create Three.js geometry from vertices and indices
-	const geometry = new THREE.BufferGeometry();
-	const vertices = new Float32Array(geometryData.vertices);
-	const indices = new Uint16Array(geometryData.indices);
-
-	geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-	geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-	geometry.computeVertexNormals();
-
-	// Add material groups (each face = 2 triangles = 6 indices)
-	for (let i = 0; i < 6; i++) {
-		geometry.addGroup(i * 6, 6, i); // start, count, materialIndex
-	}
+	// Use Three.js BoxGeometry which has proper UVs for textures
+	// Size 2x2x2 (will be scaled later)
+	const geometry = new THREE.BoxGeometry(2, 2, 2);
 
 	// Scale geometry
 	const scaledSize = size * geometryData.scale;
