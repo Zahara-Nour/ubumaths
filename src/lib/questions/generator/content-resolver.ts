@@ -12,6 +12,7 @@
 
 import type { ContentField, ResolvedVariable } from '../types';
 import { resolveVariableExpression } from './variable-resolver';
+import { resolveColorReferences } from '../parser/color-parser';
 
 /**
  * Resolve a single content field
@@ -30,7 +31,10 @@ export function resolveContentField(
 	seed?: number
 ): ContentField {
 	// Resolve content for both text and image fields (image URLs may contain variables)
-	const resolvedContent = resolveVariableExpression(field.content, resolvedVariables, seed);
+	let resolvedContent = resolveVariableExpression(field.content, resolvedVariables, seed);
+
+	// Also resolve color references (after variable resolution)
+	resolvedContent = resolveColorReferences(resolvedContent, seed);
 
 	return {
 		type: field.type,
@@ -67,7 +71,10 @@ export function resolveExpression(
 	resolvedVariables: ResolvedVariable[],
 	seed?: number
 ): string {
-	return resolveVariableExpression(expression, resolvedVariables, seed);
+	let resolved = resolveVariableExpression(expression, resolvedVariables, seed);
+	// Also resolve color references
+	resolved = resolveColorReferences(resolved, seed);
+	return resolved;
 }
 
 /**

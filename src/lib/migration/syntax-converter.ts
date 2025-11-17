@@ -42,6 +42,8 @@ interface ConversionStats {
 	variableRefs: number;
 	/** Number of evaluations converted */
 	evaluations: number;
+	/** Number of color references converted */
+	colorReferences: number;
 	/** Total number of conversions */
 	total: number;
 }
@@ -72,6 +74,7 @@ export class TinyCASConverter {
 		listSelections: 0,
 		variableRefs: 0,
 		evaluations: 0,
+		colorReferences: 0,
 		total: 0
 	};
 
@@ -99,7 +102,11 @@ export class TinyCASConverter {
 			// Apply conversions in specific order to avoid conflicts
 			let converted = oldSyntax;
 
-			// Step 1: Convert evaluation expressions FIRST (before variable conversion)
+			// Step 0: Convert color references FIRST (before evaluations)
+			// This prevents color store calls from being treated as evaluations
+			converted = this.convertColorReferences(converted);
+
+			// Step 1: Convert evaluation expressions (before variable conversion)
 			// This is important because evaluations contain variable references
 			// that need to be converted as part of the evaluation
 			converted = this.convertEvaluations(converted);
@@ -138,6 +145,34 @@ export class TinyCASConverter {
 				]
 			};
 		}
+	}
+
+	/**
+	 * Convert Svelte store color references to color template syntax
+	 * ${get(colorName)} → {#color:colorName}
+	 */
+	private convertColorReferences(input: string): string {
+		// Pattern: ${get(colorName)} or ${get(color1)}
+		const colorPattern = /\$\{get\((\w+)\)\}/g;
+
+		return input.replace(colorPattern, (match, colorName) => {
+			// Check if this is likely a color variable (starts with "color" or "couleur")
+			if (colorName.match(/^(color|couleur|col)\d*$/i)) {
+				this.stats.colorReferences++;
+				// Map common color names to palette references
+				// color1, color2, etc. will use primary palette with different indices
+				const colorMatch = colorName.match(/(\d+)$/);
+				if (colorMatch) {
+					const index = parseInt(colorMatch[1]) - 1; // Convert to 0-based
+					return `{#color:primary.${index}}`;
+				}
+				// Generic color name without number
+				return `{#color:primary}`;
+			}
+			// Not a color reference, leave as-is for now (might be other store variable)
+			this.warnings.push(`Store reference ${match} detected - may need manual review`);
+			return match;
+		});
 	}
 
 	/**
@@ -393,6 +428,7 @@ export class TinyCASConverter {
 			listSelections: 0,
 			variableRefs: 0,
 			evaluations: 0,
+			colorReferences: 0,
 			total: 0
 		};
 		this.warnings = [];
