@@ -273,7 +273,7 @@
 			<T.AmbientLight intensity={0.8} />
 
 			<!-- Physics World -->
-			<World gravity={{ x: 0, y: -9.81, z: 0 }}>
+			<World gravity={[0, -9.81, 0]}>
 				<!-- DEBUG: Test Sphere - Should be visible if rendering works -->
 				<T.Mesh position={[0, 2, 0]}>
 					<T.SphereGeometry args={[1, 32, 32]} />
