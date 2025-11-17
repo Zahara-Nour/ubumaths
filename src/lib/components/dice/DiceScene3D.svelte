@@ -238,40 +238,17 @@
 				diceRefs.filter((r) => r !== undefined).length
 			);
 
-			// First, reposition all dice
-			diceRefs.forEach((ref, index) => {
+			// Prepare dice for throw (freeze in place for 500ms)
+			diceRefs.forEach((ref) => {
 				if (!ref) {
-					console.warn('[DiceScene3D] Missing rigidBody ref at index:', index);
+					console.warn('[DiceScene3D] Missing rigidBody ref');
 					return;
 				}
-
-				// Calculate position spread for multiple dice
-				const totalDice = config.reduce((sum, c) => sum + (c.count ?? 1), 0);
-				const spacing = 2;
-				const xOffset = (index - totalDice / 2) * spacing;
-
-				// Wall boundaries (with safety margin)
-				const WALL_LIMIT = 9; // Walls are at ±10.25, so safe area is ±9
-
-				// Position at center of box at hand height
-				const xPos = clamp(xOffset + (Math.random() - 0.5) * 2, -WALL_LIMIT, WALL_LIMIT);
-				const zPos = clamp((Math.random() - 0.5) * 2, -WALL_LIMIT, WALL_LIMIT);
-				const yStart = 3 + Math.random() * 0.5; // Center height (3-3.5)
 
 				// Set to kinematic (physics disabled) during pause
 				ref.setBodyType(RAPIER.RigidBodyType.KinematicPositionBased, true);
 
-				// Reposition dice at center of box
-				ref.setTranslation(
-					{
-						x: xPos,
-						y: yStart,
-						z: zPos
-					},
-					true
-				);
-
-				// Stop any existing movement (keeps current rotation)
+				// Stop any existing movement but keep current position and rotation
 				ref.setLinvel({ x: 0, y: 0, z: 0 }, true);
 				ref.setAngvel({ x: 0, y: 0, z: 0 }, true);
 			});
@@ -284,15 +261,15 @@
 					// Re-enable physics (set back to dynamic)
 					ref.setBodyType(RAPIER.RigidBodyType.Dynamic, true);
 
-					// Powerful throw motion: random direction with high upward arc
+					// Powerful upward throw from floor: mostly vertical with some horizontal
 					const throwAngle = Math.random() * Math.PI * 2; // 0 to 360 degrees
-					const throwForce = 8 + Math.random() * 4; // Horizontal force (8-12)
+					const horizontalForce = 2 + Math.random() * 2; // Small horizontal (2-4)
 
 					ref.setLinvel(
 						{
-							x: Math.cos(throwAngle) * throwForce, // Horizontal direction X
-							y: 5 + Math.random() * 3, // Upward arc (5-8)
-							z: Math.sin(throwAngle) * throwForce // Horizontal direction Z
+							x: Math.cos(throwAngle) * horizontalForce, // Small horizontal X
+							y: 12 + Math.random() * 4, // Strong upward force (12-16)
+							z: Math.sin(throwAngle) * horizontalForce // Small horizontal Z
 						},
 						true
 					);
