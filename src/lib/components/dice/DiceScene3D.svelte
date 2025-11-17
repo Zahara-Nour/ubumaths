@@ -29,7 +29,7 @@
 		onRollStart,
 		onRollComplete,
 		physics: _physics,
-		duration = 2500
+		duration: _duration = 2500
 	}: {
 		config?: DiceConfig[];
 		onRollStart?: () => void;

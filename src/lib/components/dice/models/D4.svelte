@@ -19,7 +19,7 @@
 		style,
 		size = 1,
 		position = [0, 0, 0] as Vector3Tuple,
-		rotation = [0, 0, 0] as Vector3Tuple,
+		rotation: _rotation = [0, 0, 0] as Vector3Tuple,
 		rigidBodyRef = $bindable(undefined)
 	}: {
 		style: DiceStyleConfig;
@@ -88,7 +88,7 @@
 			text={String(faceNumbers[index])}
 			position={transform.position}
 			rotation={transform.rotation}
-			fontSize={fontSize}
+			{fontSize}
 			color={style.numberColor}
 			anchorX="center"
 			anchorY="middle"

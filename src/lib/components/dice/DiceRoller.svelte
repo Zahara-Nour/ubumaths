@@ -61,6 +61,14 @@
 		return [];
 	});
 
+	// Derived display history for UI
+	let displayHistory = $derived.by(() => {
+		if (!showHistory || diceStore.rollHistory.length === 0) {
+			return [];
+		}
+		return diceStore.rollHistory.slice(-maxHistory).reverse();
+	});
+
 	// Detect WebGL on mount
 	onMount(() => {
 		hasWebGL = isWebGLSupported();
@@ -204,11 +212,10 @@
 	</Button>
 
 	<!-- History -->
-	{#if showHistory && diceStore.rollHistory.length > 0}
+	{#if showHistory && displayHistory.length > 0}
 		<div class="history flex flex-col gap-2">
 			<h3 class="text-sm font-semibold text-foreground">Historique</h3>
 			<div class="history-list flex flex-col gap-1">
-				{@const displayHistory = diceStore.rollHistory.slice(-maxHistory).reverse()}
 				{#each displayHistory as roll, index (index)}
 					<div class="history-item rounded-md bg-muted p-2 text-xs text-muted-foreground">
 						<span class="font-medium">#{displayHistory.length - index}:</span>
