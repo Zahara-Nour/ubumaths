@@ -251,7 +251,7 @@
 
 {#if browser}
 	<div class="scene-container h-full w-full">
-		<Canvas>
+		<Canvas size={{ width: '100%', height: 400 }}>
 			<!-- Camera -->
 			<T.PerspectiveCamera makeDefault position={[0, 8, 12]} fov={50}>
 				<OrbitControls target={[0, 0, 0]} enableDamping />
