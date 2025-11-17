@@ -95,11 +95,12 @@
 		ctx.scale(1, -1); // Flip vertically
 
 		// Draw number - smaller font for D20's triangular faces
+		// Position at triangle centroid: Y offset = -(2/3 - 1/2) * size = -size/6
 		ctx.fillStyle = style.numberColor;
 		ctx.font = `bold ${size * 0.4}px Arial`;
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
-		ctx.fillText(String(number), 0, 0);
+		ctx.fillText(String(number), 0, -size / 6);
 
 		ctx.restore();
 
