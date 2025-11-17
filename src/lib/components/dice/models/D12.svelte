@@ -172,7 +172,7 @@
 
 		// Draw number at center
 		ctx.fillStyle = style.numberColor;
-		ctx.font = `bold ${canvasSize * 0.6}px Arial`;
+		ctx.font = `bold ${canvasSize * 0.45}px Arial`;
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
 		ctx.fillText(String(number), canvasSize / 2, canvasSize / 2);
