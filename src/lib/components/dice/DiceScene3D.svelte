@@ -186,6 +186,9 @@
 		rollStartTime = Date.now(); // Track start time for timeout fallback
 		rollTrigger++; // Trigger re-render to reset positions
 
+		console.log('[DiceScene3D] Starting roll, config:', config);
+		console.log('[DiceScene3D] Total dice:', config.reduce((sum, c) => sum + (c.count ?? 1), 0));
+
 		// Call start callback
 		if (onRollStart) {
 			onRollStart();
@@ -193,8 +196,14 @@
 
 		// After render, apply physics forces
 		setTimeout(() => {
+			console.log('[DiceScene3D] Applying physics, diceRefs count:', diceRefs.length);
+			console.log('[DiceScene3D] DiceRefs populated:', diceRefs.filter((r) => r !== undefined).length);
+
 			diceRefs.forEach((ref, index) => {
-				if (!ref) return;
+				if (!ref) {
+					console.warn('[DiceScene3D] Missing rigidBody ref at index:', index);
+					return;
+				}
 
 				// Calculate position spread
 				const totalDice = config.reduce((sum, c) => sum + (c.count ?? 1), 0);
@@ -258,9 +267,10 @@
 			</T.PerspectiveCamera>
 
 			<!-- Lighting -->
-			<T.DirectionalLight position={[10, 10, 10]} intensity={1.5} castShadow />
-			<T.DirectionalLight position={[-10, 10, -10]} intensity={0.5} />
-			<T.AmbientLight intensity={0.4} />
+			<T.DirectionalLight position={[10, 10, 10]} intensity={2} castShadow />
+			<T.DirectionalLight position={[-10, 10, -10]} intensity={1} />
+			<T.DirectionalLight position={[0, 10, 0]} intensity={1.5} />
+			<T.AmbientLight intensity={0.8} />
 
 			<!-- Physics World -->
 			<World gravity={{ x: 0, y: -9.81, z: 0 }}>
@@ -281,7 +291,7 @@
 						{@const count = diceConfig.count ?? 1}
 
 						{#each Array(count) as _, diceIndex (`${diceConfig.type}-${index}-${diceIndex}-${rollTrigger}`)}
-							{@const spacing = 2}
+							{@const spacing = 3}
 							{@const totalDice = config.reduce((sum, c) => sum + (c.count ?? 1), 0)}
 							{@const overallIndex =
 								config.slice(0, index).reduce((sum, c) => sum + (c.count ?? 1), 0) + diceIndex}
@@ -291,7 +301,7 @@
 
 							<DiceComponent
 								{style}
-								size={diceConfig.size ?? 1}
+								size={diceConfig.size ?? 2.5}
 								position={[xOffset, yStart, zOffset]}
 								bind:rigidBodyRef={diceRefs[overallIndex]}
 							/>
