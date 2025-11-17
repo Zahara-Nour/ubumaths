@@ -216,6 +216,9 @@ export interface DiceGeometry {
 
 	/** Scale factor to normalize size */
 	scale: number;
+
+	/** Inradius: distance from center to face (for number placement) */
+	inradius: number;
 }
 
 /**

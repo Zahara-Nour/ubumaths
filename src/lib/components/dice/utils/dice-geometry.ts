@@ -21,7 +21,8 @@ const d4Geometry: DiceGeometry = {
 		[-0.577, 0.577, -0.577],
 		[0.577, -0.577, -0.577]
 	],
-	scale: 1.0
+	scale: 1.0,
+	inradius: 0.333 // Distance from center to face = 1/3 for regular tetrahedron
 };
 
 /**
@@ -42,7 +43,8 @@ const d6Geometry: DiceGeometry = {
 		[-1, 0, 0], // Face 3 (left)
 		[1, 0, 0] // Face 4 (right)
 	],
-	scale: 1.0
+	scale: 1.0,
+	inradius: 1.0 // Distance from center to face = 1 for cube (half the side length)
 };
 
 /**
@@ -62,7 +64,8 @@ const d8Geometry: DiceGeometry = {
 		[-0.577, -0.577, 0.577],
 		[-0.577, 0.577, 0.577]
 	],
-	scale: 1.2
+	scale: 1.2,
+	inradius: 0.577 // Distance from center to face = 1/sqrt(3) for regular octahedron
 };
 
 /**
@@ -91,7 +94,8 @@ const d10Geometry: DiceGeometry = {
 		[0, 0.951, -0.309],
 		[0, -0.951, -0.309]
 	],
-	scale: 1.0
+	scale: 1.0,
+	inradius: 0.85 // Approximate inradius for pentagonal trapezohedron
 };
 
 /**
@@ -127,7 +131,8 @@ const d12Geometry: DiceGeometry = {
 		[0.934, 0, 0.357],
 		[-0.934, 0, 0.357]
 	],
-	scale: 0.8
+	scale: 0.8,
+	inradius: 1.113 // Inradius for regular dodecahedron (≈ 1.113 times edge length)
 };
 
 /**
@@ -165,7 +170,8 @@ const d20Geometry: DiceGeometry = {
 		[0, -0.934, -0.357],
 		[0, 0.934, -0.357]
 	],
-	scale: 0.7
+	scale: 0.7,
+	inradius: 0.756 // Inradius for regular icosahedron
 };
 
 /**
@@ -363,12 +369,14 @@ export function getDiceDisplayName(type: DiceType): string {
  *
  * @param faceNormal - Normal vector of the face
  * @param scale - Scale factor of the die
+ * @param inradius - Distance from center to face for the unscaled geometry
  * @param offset - Distance to offset text from face surface (default: 0.05)
  * @returns Object with position and rotation for the text
  */
 export function getFaceTransform(
 	faceNormal: Vector3Tuple,
 	scale: number,
+	inradius: number,
 	offset: number = 0.05
 ): {
 	position: Vector3Tuple;
@@ -376,9 +384,11 @@ export function getFaceTransform(
 } {
 	const [nx, ny, nz] = faceNormal;
 
-	// Position: scale the normal and add offset
-	const distance = scale + offset;
-	const position: Vector3Tuple = [nx * distance, ny * distance, nz * distance];
+	// Position: Place text at the face surface + offset
+	// The face is at distance (scale * inradius) from the center
+	// We add a small offset in the normal direction to prevent z-fighting
+	const faceDistance = scale * inradius + offset;
+	const position: Vector3Tuple = [nx * faceDistance, ny * faceDistance, nz * faceDistance];
 
 	// Rotation: align text perpendicular to face
 	// We need to create a rotation that aligns [0, 0, 1] (text forward) with the face normal
