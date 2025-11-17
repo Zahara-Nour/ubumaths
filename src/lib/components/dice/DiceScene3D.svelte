@@ -184,6 +184,13 @@
 	}
 
 	/**
+	 * Clamp a value between min and max
+	 */
+	function clamp(value: number, min: number, max: number): number {
+		return Math.min(Math.max(value, min), max);
+	}
+
+	/**
 	 * Roll the dice with physics simulation
 	 */
 	export function roll() {
@@ -223,12 +230,19 @@
 				const spacing = 6;
 				const xOffset = (index - totalDice / 2) * spacing;
 
-				// Set initial position (high above table)
+				// Wall boundaries (with safety margin)
+				const WALL_LIMIT = 9; // Walls are at ±10.25, so safe area is ±9
+
+				// Calculate position with random offset, then clamp to stay within walls
+				const xPos = clamp(xOffset + (Math.random() - 0.5) * 1, -WALL_LIMIT, WALL_LIMIT);
+				const zPos = clamp((Math.random() - 0.5) * 1, -WALL_LIMIT, WALL_LIMIT);
+
+				// Set initial position (high above table, constrained within walls)
 				ref.setTranslation(
 					{
-						x: xOffset + (Math.random() - 0.5) * 1,
+						x: xPos,
 						y: 5 + Math.random() * 2,
-						z: (Math.random() - 0.5) * 1
+						z: zPos
 					},
 					true
 				);
@@ -245,11 +259,12 @@
 				);
 
 				// Apply random throw velocity with realistic parabolic trajectory
+				// Reduced horizontal velocities to keep dice within walls
 				ref.setLinvel(
 					{
-						x: (Math.random() - 0.5) * 4, // Horizontal dispersion
+						x: (Math.random() - 0.5) * 2, // Reduced horizontal dispersion
 						y: Math.random() * 2, // Upward lift for parabolic arc
-						z: (Math.random() - 0.5) * 4 // Horizontal dispersion
+						z: (Math.random() - 0.5) * 2 // Reduced horizontal dispersion
 					},
 					true
 				);
@@ -298,41 +313,41 @@
 				</RigidBody>
 
 				<!-- Semi-transparent Walls (prevent dice from falling off) -->
-				<!-- North Wall (Z+) -->
+				<!-- North Wall (Z+) - Red -->
 				<RigidBody type="fixed">
 					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
-						<T.Mesh position={[0, 2.5, 10.25]}>
-							<T.BoxGeometry args={[20, 5, 0.5]} />
+						<T.Mesh position={[0, 7.5, 10.25]}>
+							<T.BoxGeometry args={[20, 15, 0.5]} />
 							<T.MeshStandardMaterial color="#ff0000" transparent opacity={0.3} />
 						</T.Mesh>
 					</AutoColliders>
 				</RigidBody>
 
-				<!-- South Wall (Z-) -->
+				<!-- South Wall (Z-) - Green -->
 				<RigidBody type="fixed">
 					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
-						<T.Mesh position={[0, 2.5, -10.25]}>
-							<T.BoxGeometry args={[20, 5, 0.5]} />
+						<T.Mesh position={[0, 7.5, -10.25]}>
+							<T.BoxGeometry args={[20, 15, 0.5]} />
 							<T.MeshStandardMaterial color="#00ff00" transparent opacity={0.3} />
 						</T.Mesh>
 					</AutoColliders>
 				</RigidBody>
 
-				<!-- East Wall (X+) -->
+				<!-- East Wall (X+) - Blue -->
 				<RigidBody type="fixed">
 					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
-						<T.Mesh position={[10.25, 2.5, 0]}>
-							<T.BoxGeometry args={[0.5, 5, 20]} />
+						<T.Mesh position={[10.25, 7.5, 0]}>
+							<T.BoxGeometry args={[0.5, 15, 20]} />
 							<T.MeshStandardMaterial color="#0000ff" transparent opacity={0.3} />
 						</T.Mesh>
 					</AutoColliders>
 				</RigidBody>
 
-				<!-- West Wall (X-) -->
+				<!-- West Wall (X-) - Yellow -->
 				<RigidBody type="fixed">
 					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
-						<T.Mesh position={[-10.25, 2.5, 0]}>
-							<T.BoxGeometry args={[0.5, 5, 20]} />
+						<T.Mesh position={[-10.25, 7.5, 0]}>
+							<T.BoxGeometry args={[0.5, 15, 20]} />
 							<T.MeshStandardMaterial color="#ffff00" transparent opacity={0.3} />
 						</T.Mesh>
 					</AutoColliders>
