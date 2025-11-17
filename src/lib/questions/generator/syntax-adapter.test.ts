@@ -73,8 +73,8 @@ describe('Syntax Adapter', () => {
 		it('handles empty and null inputs', () => {
 			expect(convertToMarkdownSyntax('')).toBe('');
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			expect(convertToMarkdownSyntax(null as any)).toBe(null);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			expect(convertToMarkdownSyntax(undefined as any)).toBe(undefined);
 		});
 

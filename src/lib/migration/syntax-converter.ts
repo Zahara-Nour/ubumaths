@@ -149,7 +149,7 @@ export class TinyCASConverter {
 
 	/**
 	 * Convert Svelte store color references to color template syntax
-	 * ${get(colorName)} → {#color:colorName}
+	 * ${get(colorName)} → {{color:colorName}}
 	 */
 	private convertColorReferences(input: string): string {
 		// Pattern: ${get(colorName)} or ${get(color1)}
@@ -164,10 +164,10 @@ export class TinyCASConverter {
 				const colorMatch = colorName.match(/(\d+)$/);
 				if (colorMatch) {
 					const index = parseInt(colorMatch[1]) - 1; // Convert to 0-based
-					return `{#color:primary.${index}}`;
+					return `{{color:primary.${index}}}`;
 				}
 				// Generic color name without number
-				return `{#color:primary}`;
+				return `{{color:primary}}`;
 			}
 			// Not a color reference, leave as-is for now (might be other store variable)
 			this.warnings.push(`Store reference ${match} detected - may need manual review`);
@@ -176,7 +176,7 @@ export class TinyCASConverter {
 	}
 
 	/**
-	 * Convert variable references: &varname → {@:varname}
+	 * Convert variable references: &varname → {{varname}}
 	 */
 	private convertVariableReferences(input: string): string {
 		// Match &followed by word characters or digits
@@ -184,12 +184,12 @@ export class TinyCASConverter {
 
 		return input.replace(pattern, (match, varName) => {
 			this.stats.variableRefs++;
-			return `{@:${varName}}`;
+			return `{{${varName}}}`;
 		});
 	}
 
 	/**
-	 * Convert random integers with exclusions: $e[min;max]\{excl1;excl2} → {#:min-max!excl1,excl2}
+	 * Convert random integers with exclusions: $e[min;max]\{excl1;excl2} → {{min-max!excl1,excl2}}
 	 */
 	private convertRandomWithExclusions(input: string): string {
 		// Pattern for random with exclusions
@@ -209,12 +209,12 @@ export class TinyCASConverter {
 			// Also convert any variable references in exclusions
 			const convertedExclusions = this.convertExclusionList(exclusions);
 
-			return `{#:${min}-${max}!${convertedExclusions}}`;
+			return `{{${min}-${max}!${convertedExclusions}}}`;
 		});
 	}
 
 	/**
-	 * Convert simple random integers: $e[min;max] → {#:min-max}
+	 * Convert simple random integers: $e[min;max] → {{min-max}}
 	 */
 	private convertRandomIntegers(input: string): string {
 		// Pattern for simple random integers (without exclusions)
@@ -222,28 +222,28 @@ export class TinyCASConverter {
 
 		return input.replace(pattern, (match, min, max) => {
 			this.stats.randomIntegers++;
-			return `{#:${min}-${max}}`;
+			return `{{${min}-${max}}}`;
 		});
 	}
 
 	/**
-	 * Convert n-digit number generation: $e{n;m} → {#:n.0} or {digits:n-m}
+	 * Convert n-digit number generation: $e{n;m} → {{n.0}} or {{digits:n-m}}
 	 */
 	private convertNDigitNumbers(input: string): string {
 		// First handle patterns with variable references like $e{&1;&1}
-		const varPattern = /\$e\{([^}]+)\}/g;
+		// Note: Variables are already converted by this point (Step 3), so we need to handle {{...}}
+		// Use a pattern that handles nested {{...}} braces properly
+		const varPattern = /\$e\{((?:[^{}]|\{\{[^}]*\}\})+)\}/g;
 
 		return input.replace(varPattern, (match, content) => {
 			// Check if it contains only digits and semicolons
 			if (!/^\d+;\d+$/.test(content)) {
-				// Contains variable references or other non-digit content
+				// Contains variable references (already converted to {{...}}) or other non-digit content
 				this.warnings.push(`Complex n-digit pattern $e{${content}} may need manual review`);
 
-				// Try to convert variable references within it
-				const convertedContent = content.replace(/&(\w+)/g, '{@:$1}');
-
-				// Return a custom pattern that will need implementation
-				return `{digits:${convertedContent}}`;
+				// Content already has variables converted (e.g., "{{1}};{{1}}")
+				// No further conversion needed - just wrap it
+				return `{{digits:${content}}}`;
 			}
 
 			// Split the numeric pattern
@@ -256,26 +256,26 @@ export class TinyCASConverter {
 			if (n === m) {
 				// Same number of digits - use special notation
 				// $e{3;3} means 3-digit number (100-999)
-				if (n === '2') return '{#:10-99}';
-				if (n === '3') return '{#:100-999}';
-				if (n === '4') return '{#:1000-9999}';
-				if (n === '5') return '{#:10000-99999}';
+				if (n === '2') return '{{10-99}}';
+				if (n === '3') return '{{100-999}}';
+				if (n === '4') return '{{1000-9999}}';
+				if (n === '5') return '{{10000-99999}}';
 
 				// For other cases, use a custom pattern
 				this.warnings.push(
-					`N-digit pattern $e{${n};${n}} converted to {#:${n}.0} - verify range is correct`
+					`N-digit pattern $e{${n};${n}} converted to {{${n}.0}} - verify range is correct`
 				);
-				return `{#:${n}.0}`;
+				return `{{${n}.0}}`;
 			} else {
 				// Variable number of digits
 				this.warnings.push(`Variable digit pattern $e{${n};${m}} needs custom implementation`);
-				return `{digits:${n}-${m}}`;
+				return `{{digits:${n}-${m}}}`;
 			}
 		});
 	}
 
 	/**
-	 * Convert random selection from list: $l{item1;item2;item3} → {#list:item1,item2,item3}
+	 * Convert random selection from list: $l{item1;item2;item3} → {{list:item1,item2,item3}}
 	 */
 	private convertListSelections(input: string): string {
 		// Pattern for list selection with semicolon separator
@@ -307,12 +307,12 @@ export class TinyCASConverter {
 			});
 
 			// Join with commas for new syntax
-			return `{#list:${itemList.join(',')}}`;
+			return `{{list:${itemList.join(',')}}}`;
 		});
 	}
 
 	/**
-	 * Convert evaluation expressions: [_expr_] → {eval:expr}
+	 * Convert evaluation expressions: [_expr_] → {{eval:expr}}
 	 */
 	private convertEvaluations(input: string): string {
 		// Helper function to convert variables within expressions
@@ -323,7 +323,7 @@ export class TinyCASConverter {
 				this.stats.variableRefs += varMatches.length;
 			}
 			// Convert variable references within the expression
-			return expr.replace(/&(\w+)/g, '{@:$1}');
+			return expr.replace(/&(\w+)/g, '{{$1}}');
 		};
 
 		// Pattern for basic evaluation [_..._]
@@ -333,38 +333,38 @@ export class TinyCASConverter {
 		let result = input.replace(pattern1, (match, expr) => {
 			this.stats.evaluations++;
 			const convertedExpr = convertVarsInExpr(expr);
-			return `{eval:${convertedExpr}}`;
+			return `{{eval:${convertedExpr}}}`;
 		});
 
 		// Pattern for decimal evaluation [._..._.]
-		const pattern2 = /\[._([^]*?)_.\]/g;
+		const pattern2 = /\[\._([\s\S]*?)_\.\]/g;
 		result = result.replace(pattern2, (match, expr) => {
 			this.stats.evaluations++;
 			this.warnings.push(`Decimal evaluation [._${expr}_.] converted - verify decimal handling`);
 			const convertedExpr = convertVarsInExpr(expr);
-			return `{eval:${convertedExpr}}`;
+			return `{{eval:${convertedExpr}}}`;
 		});
 
 		// Pattern for evaluation with + sign [+_..._]
-		const pattern3 = /\[+_([^]*?)_]/g;
+		const pattern3 = /\[\+_([\s\S]*?)_\]/g;
 		result = result.replace(pattern3, (match, expr) => {
 			this.stats.evaluations++;
 			this.warnings.push(
 				`Evaluation with + sign [+_${expr}_] converted - may need special handling`
 			);
 			const convertedExpr = convertVarsInExpr(expr);
-			return `{eval:+${convertedExpr}}`;
+			return `{{eval:+${convertedExpr}}}`;
 		});
 
 		// Pattern for evaluation with parentheses [(_..._]
-		const pattern4 = /\[\(_([^]*?)_]/g;
+		const pattern4 = /\[\(_([\s\S]*?)_\]/g;
 		result = result.replace(pattern4, (match, expr) => {
 			this.stats.evaluations++;
 			this.warnings.push(
 				`Evaluation with parentheses [(_${expr}_] converted - may need special handling`
 			);
 			const convertedExpr = convertVarsInExpr(expr);
-			return `{eval:(${convertedExpr})}`;
+			return `{{eval:(${convertedExpr})}}`;
 		});
 
 		return result;
@@ -378,7 +378,7 @@ export class TinyCASConverter {
 		let processedExclusions = exclusions;
 
 		// Convert variable references
-		processedExclusions = processedExclusions.replace(/&(\w+)/g, '{@:$1}');
+		processedExclusions = processedExclusions.replace(/&(\w+)/g, '{{$1}}');
 
 		// Split by semicolon and join with comma
 		const items = processedExclusions.split(';').map((item) => item.trim());
@@ -479,15 +479,15 @@ export function validateConversion(original: string, converted: string): boolean
 	}
 
 	// Check that new patterns exist if old ones did
-	if (/\$e\[/.test(original) && !/{#:/.test(converted)) {
+	if (/\$e\[/.test(original) && !/\{\{.*?\}\}/.test(converted)) {
 		return false;
 	}
 
-	if (/&\w+/.test(original) && !/{@:/.test(converted)) {
+	if (/&\w+/.test(original) && !/\{\{.*?\}\}/.test(converted)) {
 		return false;
 	}
 
-	if (/\[_.*?_\]/.test(original) && !/{eval:/.test(converted)) {
+	if (/\[_.*?_\]/.test(original) && !/\{\{eval:/.test(converted)) {
 		return false;
 	}
 
@@ -498,36 +498,36 @@ export function validateConversion(original: string, converted: string): boolean
 // These should all pass when the converter is working correctly:
 
 // Random integers:
-// "$e[1;10]" → "{#:1-10}"
-// "$e[0;99]" → "{#:0-99}"
-// "$e[-5;5]" → "{#:-5-5}"
+// "$e[1;10]" → "{{1-10}}"
+// "$e[0;99]" → "{{0-99}}"
+// "$e[-5;5]" → "{{-5-5}}"
 
 // Random with exclusions:
-// "$e[1;10]\\{5}" → "{#:1-10!5}"
-// "$e[1;10]\\{5;7}" → "{#:1-10!5,7}"
-// "$e[0;9]\\{&1}" → "{#:0-9!{@:1}}"
-// "$e[0;9]\\{&1;&2}" → "{#:0-9!{@:1},{@:2}}"
+// "$e[1;10]\\{5}" → "{{1-10!5}}"
+// "$e[1;10]\\{5;7}" → "{{1-10!5,7}}"
+// "$e[0;9]\\{&1}" → "{{0-9!{{1}}}}"
+// "$e[0;9]\\{&1;&2}" → "{{0-9!{{1}},{{2}}}}"
 
 // N-digit numbers:
-// "$e{3;3}" → "{#:100-999}" or "{#:3.0}"
-// "$e{2;2}" → "{#:10-99}" or "{#:2.0}"
-// "$e{4;4}" → "{#:1000-9999}" or "{#:4.0}"
+// "$e{3;3}" → "{{100-999}}" or "{{3.0}}"
+// "$e{2;2}" → "{{10-99}}" or "{{2.0}}"
+// "$e{4;4}" → "{{1000-9999}}" or "{{4.0}}"
 
 // List selection:
-// "$l{1;2;5;10}" → "{#list:1,2,5,10}"
-// "$l{rouge;bleu;vert}" → "{#list:rouge,bleu,vert}"
-// "$l{0;$e[1;9]}" → "{#list:0,{#:1-9}}" (with warning)
+// "$l{1;2;5;10}" → "{{list:1,2,5,10}}"
+// "$l{rouge;bleu;vert}" → "{{list:rouge,bleu,vert}}"
+// "$l{0;$e[1;9]}" → "{{list:0,{{1-9}}}}" (with warning)
 
 // Variable references:
-// "&1" → "{@:1}"
-// "&2" → "{@:2}"
-// "&varname" → "{@:varname}"
+// "&1" → "{{1}}"
+// "&2" → "{{2}}"
+// "&varname" → "{{varname}}"
 
 // Evaluations:
-// "[_&1+&2_]" → "{eval:{@:1}+{@:2}}"
-// "[_&1*10+&2_]" → "{eval:{@:1}*10+{@:2}}"
-// "[_2*&1_]" → "{eval:2*{@:1}}"
-// "[_10-&1_]" → "{eval:10-{@:1}}"
-// "[._expression_.]" → "{eval:expression}" (with warning)
-// "[+_expression_]" → "{eval:+expression}" (with warning)
-// "[(_expression_]" → "{eval:(expression)}" (with warning)
+// "[_&1+&2_]" → "{{eval:{{1}}+{{2}}}}"
+// "[_&1*10+&2_]" → "{{eval:{{1}}*10+{{2}}}}"
+// "[_2*&1_]" → "{{eval:2*{{1}}}}"
+// "[_10-&1_]" → "{{eval:10-{{1}}}}"
+// "[._expression_.]" → "{{eval:expression}}" (with warning)
+// "[+_expression_]" → "{{eval:+expression}}" (with warning)
+// "[(_expression_]" → "{{eval:(expression)}}" (with warning)

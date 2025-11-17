@@ -2,12 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { convertTinyCASToNew } from './syntax-converter';
 
 describe('TinyCAS Color Conversion', () => {
-	it('should convert ${get(color1)} to {#color:primary.0}', () => {
+	it('should convert ${get(color1)} to {{color:primary.0}}', () => {
 		const input = 'The color is ${get(color1)}';
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('The color is {#color:primary.0}');
+		expect(result.converted).toBe('The color is {{color:primary.0}}');
 		expect(result.stats?.colorReferences).toBe(1);
 	});
 
@@ -16,7 +16,7 @@ describe('TinyCAS Color Conversion', () => {
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('Color 1: {#color:primary.0}, Color 2: {#color:primary.1}');
+		expect(result.converted).toBe('Color 1: {{color:primary.0}}, Color 2: {{color:primary.1}}');
 		expect(result.stats?.colorReferences).toBe(2);
 	});
 
@@ -25,7 +25,7 @@ describe('TinyCAS Color Conversion', () => {
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('The color is {#color:primary}');
+		expect(result.converted).toBe('The color is {{color:primary}}');
 		expect(result.stats?.colorReferences).toBe(1);
 	});
 
@@ -34,7 +34,7 @@ describe('TinyCAS Color Conversion', () => {
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('La couleur est {#color:primary.0}');
+		expect(result.converted).toBe('La couleur est {{color:primary.0}}');
 		expect(result.stats?.colorReferences).toBe(1);
 	});
 
@@ -43,7 +43,7 @@ describe('TinyCAS Color Conversion', () => {
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('{#color:primary.2}');
+		expect(result.converted).toBe('{{color:primary.2}}');
 		expect(result.stats?.colorReferences).toBe(1);
 	});
 
@@ -64,7 +64,7 @@ describe('TinyCAS Color Conversion', () => {
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('{#color:primary.0} and {eval:{@:a}+5}');
+		expect(result.converted).toBe('{{color:primary.0}} and {{eval:{{a}}+5}}');
 		expect(result.stats?.colorReferences).toBe(1);
 		expect(result.stats?.evaluations).toBe(1);
 	});
@@ -74,7 +74,7 @@ describe('TinyCAS Color Conversion', () => {
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('Color: {#color:primary.0}, Random: {#:1-10}, Var: {@:x}');
+		expect(result.converted).toBe('Color: {{color:primary.0}}, Random: {{1-10}}, Var: {{x}}');
 		expect(result.stats?.colorReferences).toBe(1);
 		expect(result.stats?.randomIntegers).toBe(1);
 		expect(result.stats?.variableRefs).toBe(1);
@@ -86,7 +86,7 @@ describe('TinyCAS Color Conversion', () => {
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('{#color:primary.9} {#color:primary.24}');
+		expect(result.converted).toBe('{{color:primary.9}} {{color:primary.24}}');
 		expect(result.stats?.colorReferences).toBe(2);
 	});
 
