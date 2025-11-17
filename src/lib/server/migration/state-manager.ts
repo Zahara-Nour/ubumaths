@@ -18,7 +18,6 @@ import type {
 	MigrationStatus
 } from '$lib/types/migration';
 import type { Database } from '$lib/types/database';
-import crypto from 'crypto';
 import { lock } from 'proper-lockfile';
 import {
 	validateMigrationState,
@@ -27,6 +26,7 @@ import {
 	sanitizeConversionErrors,
 	type MigrationState
 } from '../validation/migration';
+import { generateStableQuestionHash, generateQuestionDescription } from './hash-utils';
 
 /**
  * State manager for the question migration process
@@ -141,9 +141,49 @@ export class MigrationStateManager {
 			throw new Error('Supabase client not initialized. Call init() first.');
 		}
 
-		// Generate hash for the question
-		const hash = this.generateQuestionHash(oldQuestion);
-		const description = this.generateDescription(oldQuestion);
+		// Generate hash for the question using centralized function
+		const hash = generateStableQuestionHash(oldQuestion);
+		const description = generateQuestionDescription(oldQuestion);
+
+		// LOGGING: Track hash generation for debugging
+		console.log(
+			`[Migration Tracking] Processing question ${questionIndex} (hash: ${hash.substring(0, 12)}...)`
+		);
+
+		// Check if an entry with this hash already exists (to detect potential conflicts)
+		const { data: existing, error: checkError } = await this.supabase
+			.from('migration_tracking')
+			.select('old_question_index, migration_status, phase')
+			.eq('old_question_hash', hash)
+			.maybeSingle();
+
+		if (checkError && checkError.code !== 'PGRST116') {
+			// PGRST116 = not found, which is OK
+			console.error('[Migration Tracking] Error checking existing entry:', checkError);
+		}
+
+		if (existing) {
+			// Entry exists - this is expected (updating status)
+			console.log(
+				`[Migration Tracking] ✓ Found existing entry for index ${questionIndex} (current status: ${existing.migration_status}, phase: ${existing.phase})`
+			);
+
+			// Verify index matches
+			if (existing.old_question_index !== questionIndex) {
+				console.warn(
+					`[Migration Tracking] ⚠️  HASH COLLISION DETECTED! Same hash for different indices: ${existing.old_question_index} vs ${questionIndex}`
+				);
+			}
+		} else {
+			// No entry found - this might indicate a hash mismatch problem
+			console.warn(
+				`[Migration Tracking] ⚠️  No existing entry found with hash ${hash.substring(0, 12)}... for index ${questionIndex}`
+			);
+			console.warn(
+				'[Migration Tracking]    This might indicate a hash mismatch between initialization and processing.'
+			);
+			console.warn(`[Migration Tracking]    Proceeding with upsert (will create new entry)...`);
+		}
 
 		// Build and validate the tracking record
 		const trackingData = {
@@ -164,6 +204,7 @@ export class MigrationStateManager {
 		// Validate with Zod before sending to database
 		const validation = validateMigrationTrackingInsert(trackingData);
 		if (!validation.success) {
+			console.error('[Migration Tracking] ❌ Validation failed:', validation.error.message);
 			throw new Error(`Invalid migration tracking data: ${validation.error.message}`);
 		}
 
@@ -175,9 +216,20 @@ export class MigrationStateManager {
 			});
 
 		if (dbError) {
-			console.error('Failed to update migration tracking in database:', dbError);
+			console.error(
+				`[Migration Tracking] ❌ Database update failed for index ${questionIndex}:`,
+				dbError
+			);
+			console.error(`[Migration Tracking]    Hash: ${hash.substring(0, 12)}...`);
+			console.error(`[Migration Tracking]    Status: ${status}`);
+			console.error(`[Migration Tracking]    Template ID: ${options?.newTemplateId || 'none'}`);
 			throw new Error(`Database update failed: ${dbError.message}`);
 		}
+
+		// SUCCESS logging
+		console.log(
+			`[Migration Tracking] ✅ Successfully recorded index ${questionIndex} as '${status}'${options?.newTemplateId ? ` (template: ${options.newTemplateId.substring(0, 8)}...)` : ''}`
+		);
 
 		// Update state file
 		const state = await this.getMigrationState();
@@ -441,39 +493,9 @@ export class MigrationStateManager {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	private generateQuestionHash(question: any): string {
-		// Handle both QuestionToMigrate and QuestionBase formats
-		const content = JSON.stringify({
-			type: question.type || 'unknown',
-			statement: question.statement || question.enounces?.[0] || question.description,
-			answer: question.answer || question.solutionss,
-			grade: question.grade,
-			theme: question.theme,
-			description: question.description,
-			enounces: question.enounces,
-			options: question.options
-		});
-		return crypto.createHash('sha256').update(content).digest('hex');
-	}
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	private generateDescription(question: any): string {
-		// Handle both QuestionToMigrate and QuestionBase formats
-		const type = question.type || 'unknown';
-		const grade = question.grade || 'N/A';
-		const theme = question.theme || 'N/A';
-
-		// Get statement from either format
-		const statement =
-			question.statement || question.description || question.enounces?.[0] || 'No description';
-
-		const parts = [type, grade, theme];
-		const truncated = statement.substring(0, 50);
-		parts.push(truncated + (statement.length > 50 ? '...' : ''));
-
-		return parts.join(' | ');
-	}
+	// Note: Hash and description generation functions have been moved to
+	// src/lib/server/migration/hash-utils.ts for centralization and consistency.
+	// This ensures the same hash is calculated during initialization and processing.
 
 	private async updateProgressReport(state: MigrationState): Promise<void> {
 		const report = this.generateProgressReport(state);

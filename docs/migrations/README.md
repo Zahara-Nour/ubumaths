@@ -6,6 +6,22 @@ Documentation des migrations importantes du projet UbuMaths.
 
 ## 📋 Migrations
 
+### [TinyMath Questions Migration - Phase 1](./tinymath-phase1-migration.md)
+
+**Date** : November 2025
+**Description** : Migration of 472 mathematical questions from TinyMath format to UbuMaths v2 question templates.
+
+**Changes** :
+
+- Centralized hash function for tracking
+- Enhanced logging and validation
+- 100% migration success with reconciliation
+- Ready for Phase 2 (images), Phase 3, Phase 4
+
+**Status** : ✅ Complete | **Next** : Phase 2
+
+---
+
 ### [Academic Periods Migration](./MIGRATION_REPORT_ACADEMIC_PERIODS.md)
 
 **Date** : 2025-10
