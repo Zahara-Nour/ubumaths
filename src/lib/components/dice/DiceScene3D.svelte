@@ -46,6 +46,15 @@
 	let settlingCheckInterval: ReturnType<typeof setInterval> | undefined = $state(undefined);
 	let rollStartTime = $state(0); // Track roll start for timeout fallback
 
+	// Wall flash state (track which walls are currently flashing)
+	let wallFlash = $state({
+		north: false,
+		south: false,
+		east: false,
+		west: false,
+		ceiling: false
+	});
+
 	// Dice components map
 	const diceComponents = {
 		d4: D4,
@@ -55,6 +64,14 @@
 		d12: D12,
 		d20: D20
 	};
+
+	// Flash a wall when hit
+	function flashWall(wallName: 'north' | 'south' | 'east' | 'west' | 'ceiling') {
+		wallFlash[wallName] = true;
+		setTimeout(() => {
+			wallFlash[wallName] = false;
+		}, 150); // Flash duration: 150ms
+	}
 
 	// Helper: Apply quaternion rotation to a vector
 	function applyQuaternionToVector(
@@ -318,51 +335,81 @@
 
 				<!-- Semi-transparent Walls (prevent dice from falling off) -->
 				<!-- North Wall (Z+) - Red -->
-				<RigidBody type="fixed">
+				<RigidBody type="fixed" on:collisionenter={() => flashWall('north')}>
 					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
 						<T.Mesh position={[0, 7.5, 10.25]}>
 							<T.BoxGeometry args={[20, 15, 0.5]} />
-							<T.MeshStandardMaterial color="#ff0000" transparent opacity={0.3} />
+							<T.MeshStandardMaterial
+								color="#ff0000"
+								transparent
+								opacity={wallFlash.north ? 0.7 : 0.3}
+								emissive="#ff0000"
+								emissiveIntensity={wallFlash.north ? 1.5 : 0}
+							/>
 						</T.Mesh>
 					</AutoColliders>
 				</RigidBody>
 
 				<!-- South Wall (Z-) - Green -->
-				<RigidBody type="fixed">
+				<RigidBody type="fixed" on:collisionenter={() => flashWall('south')}>
 					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
 						<T.Mesh position={[0, 7.5, -10.25]}>
 							<T.BoxGeometry args={[20, 15, 0.5]} />
-							<T.MeshStandardMaterial color="#00ff00" transparent opacity={0.3} />
+							<T.MeshStandardMaterial
+								color="#00ff00"
+								transparent
+								opacity={wallFlash.south ? 0.7 : 0.3}
+								emissive="#00ff00"
+								emissiveIntensity={wallFlash.south ? 1.5 : 0}
+							/>
 						</T.Mesh>
 					</AutoColliders>
 				</RigidBody>
 
 				<!-- East Wall (X+) - Blue -->
-				<RigidBody type="fixed">
+				<RigidBody type="fixed" on:collisionenter={() => flashWall('east')}>
 					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
 						<T.Mesh position={[10.25, 7.5, 0]}>
 							<T.BoxGeometry args={[0.5, 15, 20]} />
-							<T.MeshStandardMaterial color="#0000ff" transparent opacity={0.3} />
+							<T.MeshStandardMaterial
+								color="#0000ff"
+								transparent
+								opacity={wallFlash.east ? 0.7 : 0.3}
+								emissive="#0000ff"
+								emissiveIntensity={wallFlash.east ? 1.5 : 0}
+							/>
 						</T.Mesh>
 					</AutoColliders>
 				</RigidBody>
 
 				<!-- West Wall (X-) - Yellow -->
-				<RigidBody type="fixed">
+				<RigidBody type="fixed" on:collisionenter={() => flashWall('west')}>
 					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
 						<T.Mesh position={[-10.25, 7.5, 0]}>
 							<T.BoxGeometry args={[0.5, 15, 20]} />
-							<T.MeshStandardMaterial color="#ffff00" transparent opacity={0.3} />
+							<T.MeshStandardMaterial
+								color="#ffff00"
+								transparent
+								opacity={wallFlash.west ? 0.7 : 0.3}
+								emissive="#ffff00"
+								emissiveIntensity={wallFlash.west ? 1.5 : 0}
+							/>
 						</T.Mesh>
 					</AutoColliders>
 				</RigidBody>
 
 				<!-- Ceiling - Cyan -->
-				<RigidBody type="fixed">
+				<RigidBody type="fixed" on:collisionenter={() => flashWall('ceiling')}>
 					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
 						<T.Mesh position={[0, 15, 0]}>
 							<T.BoxGeometry args={[20, 0.5, 20]} />
-							<T.MeshStandardMaterial color="#00ffff" transparent opacity={0.2} />
+							<T.MeshStandardMaterial
+								color="#00ffff"
+								transparent
+								opacity={wallFlash.ceiling ? 0.6 : 0.2}
+								emissive="#00ffff"
+								emissiveIntensity={wallFlash.ceiling ? 1.5 : 0}
+							/>
 						</T.Mesh>
 					</AutoColliders>
 				</RigidBody>
