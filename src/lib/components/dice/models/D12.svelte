@@ -6,7 +6,8 @@
 -->
 <script lang="ts">
 	import { T } from '@threlte/core';
-	import { getDiceGeometry } from '../utils/dice-geometry';
+	import { Text } from '@threlte/extras';
+	import { getDiceGeometry, getFaceTransform } from '../utils/dice-geometry';
 	import type { DiceStyleConfig } from '../types';
 	import type { Vector3Tuple } from 'three';
 	import * as THREE from 'three';
@@ -38,14 +39,37 @@
 
 	// Scale geometry
 	const scaledSize = size * geometryData.scale;
+
+	// Face numbers for D12
+	const faceNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+	// Calculate font size based on die size (smaller for more faces)
+	const fontSize = scaledSize * 0.35;
 </script>
 
-<T.Mesh {geometry} {position} {rotation} scale={scaledSize} castShadow receiveShadow>
-	<T.MeshStandardMaterial
-		color={style.baseColor}
-		metalness={style.metalness ?? 0.1}
-		roughness={style.roughness ?? 0.6}
-		emissive={style.emissive ?? '#000000'}
-		emissiveIntensity={style.emissiveIntensity ?? 0}
-	/>
-</T.Mesh>
+<T.Group {position} {rotation}>
+	<!-- Die body -->
+	<T.Mesh {geometry} scale={scaledSize} castShadow receiveShadow>
+		<T.MeshStandardMaterial
+			color={style.baseColor}
+			metalness={style.metalness ?? 0.1}
+			roughness={style.roughness ?? 0.6}
+			emissive={style.emissive ?? '#000000'}
+			emissiveIntensity={style.emissiveIntensity ?? 0}
+		/>
+	</T.Mesh>
+
+	<!-- Numbers on each face -->
+	{#each geometryData.faceNormals as faceNormal, index (index)}
+		{@const transform = getFaceTransform(faceNormal, scaledSize, 0.02)}
+		<Text
+			text={String(faceNumbers[index])}
+			position={transform.position}
+			rotation={transform.rotation}
+			fontSize={fontSize}
+			color={style.numberColor}
+			anchorX="center"
+			anchorY="middle"
+		/>
+	{/each}
+</T.Group>

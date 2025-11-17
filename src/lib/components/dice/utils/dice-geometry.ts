@@ -255,3 +255,46 @@ export function getDiceDisplayName(type: DiceType): string {
 	};
 	return names[type];
 }
+
+/**
+ * Calculate face center position and rotation for placing numbers
+ *
+ * @param faceNormal - Normal vector of the face
+ * @param scale - Scale factor of the die
+ * @param offset - Distance to offset text from face surface (default: 0.05)
+ * @returns Object with position and rotation for the text
+ */
+export function getFaceTransform(
+	faceNormal: Vector3Tuple,
+	scale: number,
+	offset: number = 0.05
+): {
+	position: Vector3Tuple;
+	rotation: Vector3Tuple;
+} {
+	const [nx, ny, nz] = faceNormal;
+
+	// Position: scale the normal and add offset
+	const distance = scale + offset;
+	const position: Vector3Tuple = [nx * distance, ny * distance, nz * distance];
+
+	// Rotation: align text to face outward
+	// Calculate rotation to make the normal point along +Z (out of the text)
+	let rotationX = 0;
+	let rotationY = 0;
+	const rotationZ = 0;
+
+	// Calculate angles from normal vector
+	// We want the text to face outward (normal direction)
+	const horizontalLength = Math.sqrt(nx * nx + nz * nz);
+
+	if (horizontalLength > 0.0001) {
+		rotationY = Math.atan2(nx, nz);
+	}
+
+	rotationX = Math.atan2(-ny, horizontalLength);
+
+	const rotation: Vector3Tuple = [rotationX, rotationY, rotationZ];
+
+	return { position, rotation };
+}
