@@ -141,6 +141,31 @@ async function extractQuestions() {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const TERMINALE_SPE_MATHS = 'SPE_T';
 
+	// Mock color variables used in template strings with get()
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const color1 = 'color1';
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const color2 = 'color2';
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const color3 = 'color3';
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const correct_color = 'correct_color';
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const incorrect_color = 'incorrect_color';
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const couleur1 = 'couleur1';
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const couleur2 = 'couleur2';
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const couleur3 = 'couleur3';
+
+	// Mock the get() function used by Svelte stores (for color references)
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	function get(colorVar: unknown): string {
+		// Return a placeholder that will be converted by the color system during migration
+		return `\${get(${String(colorVar)})}`;
+	}
+
 	try {
 		// Use eval to evaluate the JavaScript object (safe here because it's just data)
 		const questionsObj = eval(`(${jsCode})`);
