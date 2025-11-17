@@ -39,8 +39,17 @@
 	// Scale the die
 	const scaledSize = size * 1.2;
 
-	// Face numbers for D4 - must match faceValueMappings.d4 from dice-geometry.ts
-	const faceNumbers = [1, 2, 3, 4];
+	// Face numbers for D4 - each face shows 3 different numbers (all except its own)
+	// Face 1 shows: 2,3,4 (all except 1)
+	// Face 2 shows: 1,3,4 (all except 2)
+	// Face 3 shows: 1,2,4 (all except 3)
+	// Face 4 shows: 1,2,3 (all except 4)
+	const faceNumbers: number[][] = [
+		[2, 3, 4], // Face 1
+		[1, 3, 4], // Face 2
+		[1, 2, 4], // Face 3
+		[1, 2, 3] // Face 4
+	];
 
 	// Tetrahedron vertices (alternating corners of a cube)
 	const vertices: Vector3Tuple[] = [
@@ -128,8 +137,8 @@
 	// Create the geometry
 	const geometry = createTetrahedronGeometry();
 
-	// Create number texture on canvas (D4 style: number repeated 3 times with 120° rotation)
-	function createNumberTexture(number: number): THREE.CanvasTexture {
+	// Create number texture on canvas (D4 style: 3 different numbers with 120° rotation)
+	function createNumberTexture(numbers: number[]): THREE.CanvasTexture {
 		const canvas = document.createElement('canvas');
 		const canvasSize = 256;
 		canvas.width = canvasSize;
@@ -147,7 +156,7 @@
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
 
-		// Draw number 3 times with 120° rotations (D4 triangular face pattern)
+		// Draw 3 different numbers with 120° rotations (D4 triangular face pattern)
 		for (let i = 0; i < 3; i++) {
 			// Save context
 			ctx.save();
@@ -158,8 +167,8 @@
 			// Rotate by 120° * i
 			ctx.rotate((Math.PI * 2 * i) / 3);
 
-			// Draw number offset from center toward edge
-			ctx.fillText(String(number), 0, -canvasSize * 0.28);
+			// Draw the i-th number offset from center toward edge
+			ctx.fillText(String(numbers[i]), 0, -canvasSize * 0.28);
 
 			// Restore context
 			ctx.restore();
