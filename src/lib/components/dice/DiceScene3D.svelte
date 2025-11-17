@@ -238,6 +238,7 @@
 				diceRefs.filter((r) => r !== undefined).length
 			);
 
+			// First, reposition all dice
 			diceRefs.forEach((ref, index) => {
 				if (!ref) {
 					console.warn('[DiceScene3D] Missing rigidBody ref at index:', index);
@@ -278,30 +279,40 @@
 					true
 				);
 
-				// Natural throw motion: random direction with upward arc (slower for visibility)
-				// Random angle for throw direction
-				const throwAngle = Math.random() * Math.PI * 2; // 0 to 360 degrees
-				const throwForce = 3 + Math.random() * 2; // Reduced horizontal force (3-5 instead of 5-8)
-
-				ref.setLinvel(
-					{
-						x: Math.cos(throwAngle) * throwForce, // Horizontal direction X
-						y: 2 + Math.random() * 1.5, // Reduced upward arc (2-3.5 instead of 3-5)
-						z: Math.sin(throwAngle) * throwForce // Horizontal direction Z
-					},
-					true
-				);
-
-				// Apply random spin
-				ref.setAngvel(
-					{
-						x: (Math.random() - 0.5) * 10,
-						y: (Math.random() - 0.5) * 10,
-						z: (Math.random() - 0.5) * 10
-					},
-					true
-				);
+				// Stop any existing movement
+				ref.setLinvel({ x: 0, y: 0, z: 0 }, true);
+				ref.setAngvel({ x: 0, y: 0, z: 0 }, true);
 			});
+
+			// Wait 500ms before applying throw forces
+			setTimeout(() => {
+				diceRefs.forEach((ref) => {
+					if (!ref) return;
+
+					// Natural throw motion: random direction with upward arc
+					const throwAngle = Math.random() * Math.PI * 2; // 0 to 360 degrees
+					const throwForce = 3 + Math.random() * 2; // Horizontal force (3-5)
+
+					ref.setLinvel(
+						{
+							x: Math.cos(throwAngle) * throwForce, // Horizontal direction X
+							y: 2 + Math.random() * 1.5, // Upward arc (2-3.5)
+							z: Math.sin(throwAngle) * throwForce // Horizontal direction Z
+						},
+						true
+					);
+
+					// Apply random spin
+					ref.setAngvel(
+						{
+							x: (Math.random() - 0.5) * 10,
+							y: (Math.random() - 0.5) * 10,
+							z: (Math.random() - 0.5) * 10
+						},
+						true
+					);
+				});
+			}, 500); // 500ms pause before throw
 
 			// Start checking for settling every 100ms
 			settlingCheckInterval = setInterval(checkSettling, 100);
