@@ -217,7 +217,6 @@
 
 		isRolling = true;
 		rollStartTime = Date.now(); // Track start time for timeout fallback
-		rollTrigger++; // Trigger re-render to reset positions
 
 		console.log('[DiceScene3D] Starting roll, config:', config);
 		console.log(
