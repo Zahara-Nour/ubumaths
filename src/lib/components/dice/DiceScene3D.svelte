@@ -146,8 +146,15 @@
 				// Get rotation (quaternion)
 				const rotation = ref.rotation();
 
-				// Apply rotation to "up" vector [0, 1, 0]
-				const upVector = applyQuaternionToVector([0, 1, 0], rotation);
+				// Apply INVERSE rotation to world "up" vector [0, 1, 0] to get it in dice local space
+				// We need the conjugate (inverse) of the quaternion
+				const rotationInverse = {
+					x: -rotation.x,
+					y: -rotation.y,
+					z: -rotation.z,
+					w: rotation.w
+				};
+				const upVector = applyQuaternionToVector([0, 1, 0], rotationInverse);
 
 				// Detect which face is on top
 				const faceValue = detectTopFace(diceConfig.type, upVector);
