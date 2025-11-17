@@ -6,9 +6,7 @@
 -->
 <script lang="ts">
 	import { T } from '@threlte/core';
-	import { Text } from '@threlte/extras';
 	import { RigidBody, AutoColliders } from '@threlte/rapier';
-	import { getDiceGeometry, getFaceTransform } from '../utils/dice-geometry';
 	import type { DiceStyleConfig } from '../types';
 	import type { Vector3Tuple } from 'three';
 	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
@@ -40,16 +38,76 @@
 	// Use Three.js IcosahedronGeometry (D20)
 	const geometry = new THREE.IcosahedronGeometry(1);
 
-	// Get geometry data for face normals and scale
-	const geometryData = getDiceGeometry('d20');
-	const scaledSize = size * geometryData.scale;
+	// Scale the die
+	const scaledSize = size * 1.0;
 
 	// Face numbers for D20 - must match faceValueMappings.d20 from dice-geometry.ts
 	// Standard icosahedron mapping where opposite faces sum to 21
 	const faceNumbers = [17, 3, 7, 1, 19, 16, 10, 15, 13, 9, 8, 12, 5, 11, 6, 20, 2, 18, 4, 14];
 
-	// Calculate font size based on die size (smaller for many faces)
-	const fontSize = scaledSize * 0.3;
+	// Setup UVs and material groups for textures
+	const numFaces = 20;
+	const numVertices = geometry.attributes.position.count;
+	const uvs = new Float32Array(numVertices * 2);
+
+	// Set UVs for each vertex to map full texture on each triangular face
+	for (let i = 0; i < numFaces; i++) {
+		const i0 = i * 3 + 0;
+		const i1 = i * 3 + 1;
+		const i2 = i * 3 + 2;
+
+		// Triangle corners: map to full texture
+		uvs[i0 * 2 + 0] = 0.5;
+		uvs[i0 * 2 + 1] = 0; // top
+		uvs[i1 * 2 + 0] = 0;
+		uvs[i1 * 2 + 1] = 1; // bottom-left
+		uvs[i2 * 2 + 0] = 1;
+		uvs[i2 * 2 + 1] = 1; // bottom-right
+	}
+
+	geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+
+	// Add material groups (each face = 1 triangle = 3 indices)
+	for (let i = 0; i < numFaces; i++) {
+		geometry.addGroup(i * 3, 3, i);
+	}
+
+	// Create number texture on canvas
+	function createNumberTexture(number: number): THREE.CanvasTexture {
+		const canvas = document.createElement('canvas');
+		const size = 256;
+		canvas.width = size;
+		canvas.height = size;
+		const ctx = canvas.getContext('2d')!;
+
+		// Fill background with base color
+		ctx.fillStyle = style.baseColor;
+		ctx.fillRect(0, 0, size, size);
+
+		// Draw number
+		ctx.fillStyle = style.numberColor;
+		ctx.font = `bold ${size * 0.7}px Arial`;
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		ctx.fillText(String(number), size / 2, size / 2);
+
+		const texture = new THREE.CanvasTexture(canvas);
+		texture.needsUpdate = true;
+		return texture;
+	}
+
+	// Create materials immediately (not in onMount)
+	const materials = faceNumbers.map((num) => {
+		const texture = createNumberTexture(num);
+		return new THREE.MeshStandardMaterial({
+			map: texture,
+			metalness: style.metalness ?? 0.1,
+			roughness: style.roughness ?? 0.6,
+			emissive: style.emissive ?? '#000000',
+			emissiveIntensity: style.emissiveIntensity ?? 0,
+			side: THREE.DoubleSide
+		});
+	});
 </script>
 
 <!-- RigidBody for physics simulation -->
@@ -62,30 +120,7 @@
 >
 	<!-- AutoColliders with convexHull shape for complex polyhedron -->
 	<AutoColliders shape="convexHull" restitution={0.3} friction={0.8}>
-		<!-- Die body -->
-		<T.Mesh {geometry} scale={scaledSize} castShadow receiveShadow>
-			<T.MeshStandardMaterial
-				color={style.baseColor}
-				metalness={style.metalness ?? 0.1}
-				roughness={style.roughness ?? 0.6}
-				emissive={style.emissive ?? '#000000'}
-				emissiveIntensity={style.emissiveIntensity ?? 0}
-				side={THREE.DoubleSide}
-			/>
-		</T.Mesh>
+		<!-- Die body with number textures -->
+		<T.Mesh {geometry} material={materials} scale={scaledSize} castShadow receiveShadow />
 	</AutoColliders>
-
-	<!-- Numbers on each face (outside AutoColliders but inside RigidBody) -->
-	{#each geometryData.faceNormals as faceNormal, index (index)}
-		{@const transform = getFaceTransform(faceNormal, scaledSize, geometryData.inradius, 0.005)}
-		<Text
-			text={String(faceNumbers[index])}
-			position={transform.position}
-			rotation={transform.rotation}
-			{fontSize}
-			color={style.numberColor}
-			anchorX="center"
-			anchorY="middle"
-		/>
-	{/each}
 </RigidBody>

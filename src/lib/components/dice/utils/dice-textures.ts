@@ -9,34 +9,6 @@ import * as THREE from 'three';
 import type { DiceType, DiceStyleConfig } from '../types';
 
 /**
- * Create a canvas texture with a number
- */
-function createNumberCanvas(
-	number: string,
-	size: number,
-	baseColor: string,
-	numberColor: string
-): HTMLCanvasElement {
-	const canvas = document.createElement('canvas');
-	canvas.width = size;
-	canvas.height = size;
-	const ctx = canvas.getContext('2d')!;
-
-	// Fill background with base color
-	ctx.fillStyle = baseColor;
-	ctx.fillRect(0, 0, size, size);
-
-	// Draw number
-	ctx.fillStyle = numberColor;
-	ctx.font = `bold ${size * 0.6}px Arial`;
-	ctx.textAlign = 'center';
-	ctx.textBaseline = 'middle';
-	ctx.fillText(number, size / 2, size / 2);
-
-	return canvas;
-}
-
-/**
  * Create a texture atlas for a dice type
  * Returns a THREE.Texture with all face numbers arranged in a grid
  */
@@ -87,10 +59,7 @@ export function createDiceTexture(
 /**
  * Get UV coordinates for a face in the texture atlas
  */
-export function getFaceUVs(
-	faceIndex: number,
-	totalFaces: number
-): number[] {
+export function getFaceUVs(faceIndex: number, totalFaces: number): number[] {
 	const gridSize = Math.ceil(Math.sqrt(totalFaces));
 	const col = faceIndex % gridSize;
 	const row = Math.floor(faceIndex / gridSize);
@@ -103,9 +72,13 @@ export function getFaceUVs(
 	// Return UVs for a quad (2 triangles)
 	// Each face needs 4 UV coordinates (one per vertex)
 	return [
-		uMin, vMax, // bottom-left
-		uMax, vMax, // bottom-right
-		uMax, vMin, // top-right
-		uMin, vMin  // top-left
+		uMin,
+		vMax, // bottom-left
+		uMax,
+		vMax, // bottom-right
+		uMax,
+		vMin, // top-right
+		uMin,
+		vMin // top-left
 	];
 }

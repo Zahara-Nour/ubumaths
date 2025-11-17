@@ -6,9 +6,7 @@
 -->
 <script lang="ts">
 	import { T } from '@threlte/core';
-	import { Text } from '@threlte/extras';
 	import { RigidBody, AutoColliders } from '@threlte/rapier';
-	import { getDiceGeometry, getFaceTransform } from '../utils/dice-geometry';
 	import type { DiceStyleConfig } from '../types';
 	import type { Vector3Tuple } from 'three';
 	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
@@ -40,15 +38,83 @@
 	// Use Three.js DodecahedronGeometry (D12)
 	const geometry = new THREE.DodecahedronGeometry(1);
 
-	// Get geometry data for face normals and scale
-	const geometryData = getDiceGeometry('d12');
-	const scaledSize = size * geometryData.scale;
+	// Scale the die
+	const scaledSize = size * 1.0;
 
-	// Face numbers for D12
+	// Face numbers for D12 - must match faceValueMappings.d12 from dice-geometry.ts
 	const faceNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-	// Calculate font size based on die size (smaller for more faces)
-	const fontSize = scaledSize * 0.35;
+	// Setup UVs and material groups for textures
+	const numFaces = 12;
+	const numVertices = geometry.attributes.position.count;
+	const uvs = new Float32Array(numVertices * 2);
+
+	// DodecahedronGeometry has 12 pentagonal faces, each split into 5 triangles
+	// Each pentagon is made of 5 vertices, so we need to map UVs for all vertices
+	// We'll map the full texture to each pentagonal face
+	for (let i = 0; i < numVertices; i++) {
+		// Simple UV mapping - can be improved for better appearance
+		const _faceIndex = Math.floor(i / 3);
+		const vertexInFace = i % 3;
+
+		// Map each triangle to full texture
+		if (vertexInFace === 0) {
+			uvs[i * 2 + 0] = 0.5;
+			uvs[i * 2 + 1] = 0; // top
+		} else if (vertexInFace === 1) {
+			uvs[i * 2 + 0] = 0;
+			uvs[i * 2 + 1] = 1; // bottom-left
+		} else {
+			uvs[i * 2 + 0] = 1;
+			uvs[i * 2 + 1] = 1; // bottom-right
+		}
+	}
+
+	geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+
+	// Add material groups - DodecahedronGeometry triangulates pentagons
+	// We need to group triangles by pentagon face
+	const indicesPerFace = geometry.index!.count / numFaces;
+	for (let i = 0; i < numFaces; i++) {
+		geometry.addGroup(i * indicesPerFace, indicesPerFace, i);
+	}
+
+	// Create number texture on canvas
+	function createNumberTexture(number: number): THREE.CanvasTexture {
+		const canvas = document.createElement('canvas');
+		const size = 256;
+		canvas.width = size;
+		canvas.height = size;
+		const ctx = canvas.getContext('2d')!;
+
+		// Fill background with base color
+		ctx.fillStyle = style.baseColor;
+		ctx.fillRect(0, 0, size, size);
+
+		// Draw number
+		ctx.fillStyle = style.numberColor;
+		ctx.font = `bold ${size * 0.7}px Arial`;
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		ctx.fillText(String(number), size / 2, size / 2);
+
+		const texture = new THREE.CanvasTexture(canvas);
+		texture.needsUpdate = true;
+		return texture;
+	}
+
+	// Create materials immediately (not in onMount)
+	const materials = faceNumbers.map((num) => {
+		const texture = createNumberTexture(num);
+		return new THREE.MeshStandardMaterial({
+			map: texture,
+			metalness: style.metalness ?? 0.1,
+			roughness: style.roughness ?? 0.6,
+			emissive: style.emissive ?? '#000000',
+			emissiveIntensity: style.emissiveIntensity ?? 0,
+			side: THREE.DoubleSide
+		});
+	});
 </script>
 
 <!-- RigidBody for physics simulation -->
@@ -61,30 +127,7 @@
 >
 	<!-- AutoColliders with convexHull shape for complex polyhedron -->
 	<AutoColliders shape="convexHull" restitution={0.3} friction={0.8}>
-		<!-- Die body -->
-		<T.Mesh {geometry} scale={scaledSize} castShadow receiveShadow>
-			<T.MeshStandardMaterial
-				color={style.baseColor}
-				metalness={style.metalness ?? 0.1}
-				roughness={style.roughness ?? 0.6}
-				emissive={style.emissive ?? '#000000'}
-				emissiveIntensity={style.emissiveIntensity ?? 0}
-				side={THREE.DoubleSide}
-			/>
-		</T.Mesh>
+		<!-- Die body with number textures -->
+		<T.Mesh {geometry} material={materials} scale={scaledSize} castShadow receiveShadow />
 	</AutoColliders>
-
-	<!-- Numbers on each face (outside AutoColliders but inside RigidBody) -->
-	{#each geometryData.faceNormals as faceNormal, index (index)}
-		{@const transform = getFaceTransform(faceNormal, scaledSize, geometryData.inradius, 0.005)}
-		<Text
-			text={String(faceNumbers[index])}
-			position={transform.position}
-			rotation={transform.rotation}
-			{fontSize}
-			color={style.numberColor}
-			anchorX="center"
-			anchorY="middle"
-		/>
-	{/each}
 </RigidBody>

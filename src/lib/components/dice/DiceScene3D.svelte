@@ -194,7 +194,10 @@
 		rollTrigger++; // Trigger re-render to reset positions
 
 		console.log('[DiceScene3D] Starting roll, config:', config);
-		console.log('[DiceScene3D] Total dice:', config.reduce((sum, c) => sum + (c.count ?? 1), 0));
+		console.log(
+			'[DiceScene3D] Total dice:',
+			config.reduce((sum, c) => sum + (c.count ?? 1), 0)
+		);
 
 		// Call start callback
 		if (onRollStart) {
@@ -204,7 +207,10 @@
 		// After render, apply physics forces
 		setTimeout(() => {
 			console.log('[DiceScene3D] Applying physics, diceRefs count:', diceRefs.length);
-			console.log('[DiceScene3D] DiceRefs populated:', diceRefs.filter((r) => r !== undefined).length);
+			console.log(
+				'[DiceScene3D] DiceRefs populated:',
+				diceRefs.filter((r) => r !== undefined).length
+			);
 
 			diceRefs.forEach((ref, index) => {
 				if (!ref) {
@@ -292,28 +298,28 @@
 				</RigidBody>
 
 				<!-- Dice -->
-					{#each config as diceConfig, index (`${diceConfig.type}-${index}`)}
-						{@const DiceComponent = diceComponents[diceConfig.type]}
-						{@const style = getStyleConfig(diceConfig.style ?? 'classic')}
-						{@const count = diceConfig.count ?? 1}
+				{#each config as diceConfig, index (`${diceConfig.type}-${index}`)}
+					{@const DiceComponent = diceComponents[diceConfig.type]}
+					{@const style = getStyleConfig(diceConfig.style ?? 'classic')}
+					{@const count = diceConfig.count ?? 1}
 
-						{#each Array(count) as _, diceIndex (`${diceConfig.type}-${index}-${diceIndex}-${rollTrigger}`)}
-							{@const spacing = 3}
-							{@const totalDice = config.reduce((sum, c) => sum + (c.count ?? 1), 0)}
-							{@const overallIndex =
-								config.slice(0, index).reduce((sum, c) => sum + (c.count ?? 1), 0) + diceIndex}
-							{@const xOffset = (overallIndex - totalDice / 2) * spacing}
-							{@const yStart = isRolling ? 3 : 1.5}
-							{@const zOffset = 0}
+					{#each Array(count) as _, diceIndex (`${diceConfig.type}-${index}-${diceIndex}-${rollTrigger}`)}
+						{@const spacing = 3}
+						{@const totalDice = config.reduce((sum, c) => sum + (c.count ?? 1), 0)}
+						{@const overallIndex =
+							config.slice(0, index).reduce((sum, c) => sum + (c.count ?? 1), 0) + diceIndex}
+						{@const xOffset = (overallIndex - totalDice / 2) * spacing}
+						{@const yStart = isRolling ? 3 : 1.5}
+						{@const zOffset = 0}
 
-							<DiceComponent
-								{style}
-								size={diceConfig.size ?? 2}
-								position={[xOffset, yStart, zOffset]}
-								bind:rigidBodyRef={diceRefs[overallIndex]}
-							/>
-						{/each}
+						<DiceComponent
+							{style}
+							size={diceConfig.size ?? 2}
+							position={[xOffset, yStart, zOffset]}
+							bind:rigidBodyRef={diceRefs[overallIndex]}
+						/>
 					{/each}
+				{/each}
 			</World>
 		</Canvas>
 	</div>
