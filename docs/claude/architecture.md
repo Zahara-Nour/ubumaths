@@ -601,27 +601,102 @@ Three options under consideration:
 
 **Decision pending**: Monitor adapter performance in production first.
 
+#### Phase 2: Database Migration (Ready for Execution)
+
+> 🆕 2025-11-17 - Phase 2 prepared but not yet executed
+
+**Status**: READY FOR EXECUTION (infrastructure complete, awaiting user confirmation)
+
+**What's Ready**:
+
+- Database migration SQL (567 lines) with automatic backup/rollback
+- Test script (283 lines) for validation
+- Comprehensive documentation and execution guide
+- Critical PostgreSQL syntax bug fixed (`:=` vs `=`)
+- Code reviewed and approved
+
+**What It Will Do**:
+Once executed, the migration will:
+
+- Convert all 70+ templates from Questions syntax → Markdown syntax
+- Create automatic backup: `question_templates_backup_20251117`
+- Provide one-command rollback if needed
+- Eliminate 5ms runtime conversion overhead
+- Enable removal of 600+ lines of adapter code (Phase 3)
+
+**Migration File**: `supabase/migrations/20251117120527_unify_template_syntax_to_markdown.sql`
+
+**Execution Commands** (after Docker running):
+
+```bash
+# 1. Start Supabase local
+pnpm db:start
+
+# 2. Run test script
+node --import tsx scripts/test-question-generation.ts
+
+# 3. Execute migration
+pnpm db:migrate
+
+# 4. Validate success
+# (See .claude/PHASE2-EXECUTION-GUIDE.md for full steps)
+```
+
+**Safety Features**:
+
+- Automatic backup created before any changes
+- Rollback function: `SELECT rollback_template_syntax_migration()`
+- Migration tracking in `migration_metadata` table
+- Fast execution (~2-5 seconds)
+- Row-level locks only (no table lock)
+
+**Bug Fixed**: PostgreSQL PL/pgSQL requires `:=` for assignment (not `=` like JavaScript). This was caught during code review and fixed before execution, preventing a migration failure.
+
+**After Execution** (Phase 3):
+Once migration is confirmed successful (1 week validation period):
+
+1. Remove syntax adapter from codebase
+2. Update documentation to show only Markdown syntax
+3. Archive backup table
+4. Mark template unification as complete
+
+**Documentation**:
+
+- **Execution Guide**: `.claude/PHASE2-EXECUTION-GUIDE.md` - Step-by-step checklist
+- **Detailed Status**: `.claude/migration-progress-phase2.md` - Complete migration info
+- **Overall Progress**: `.claude/migration-progress.md` - All phases tracking
+
 #### Related Documentation
 
-- **Complete Status**: `.claude/template-system-status.md` - Session recovery and details
+- **Phase 1 Complete**: `.claude/template-system-status.md` - Adapter implementation and testing
 - **Bug Report**: `BUG_REPORT_SYNTAX_MISMATCH.md` - Why adapter was needed
-- **Implementation**: `IMPLEMENTATION_PLAN_SYNTAX_FIX.md` - How it was built
+- **Implementation**: `IMPLEMENTATION_PLAN_SYNTAX_FIX.md` - How Phase 1 was built
 - **Syntax Guide**: `docs/features/questions/syntax-guide.md` - User-facing reference
 
 #### Development Notes
 
+**Current State** (Phase 1 Complete, Phase 2 Ready):
+
 **For Claude Code**:
 
-- When working with Questions module: Expect single-brace syntax in database
-- When working with Shared library: Expect double-brace syntax
-- The adapter bridges these automatically at runtime
-- Tests use Questions syntax to match database reality
+- **Now**: Database uses single-brace `{@:var}`, adapter converts at runtime
+- **After Phase 2**: Database will use double-brace `{{var}}`, no conversion needed
+- Tests currently use Questions syntax to match database
+- After migration: Tests will use Markdown syntax
 
 **For Users**:
 
-- Use Questions syntax (`{@:var}`) when creating templates in UI
-- Documentation shows both syntaxes for reference
-- System handles conversion transparently
+- **Now**: Use Questions syntax (`{@:var}`) when creating templates in UI
+- **After Phase 2**: Continue using same syntax (conversion happens transparently)
+- **Phase 3**: UI may be updated to show/accept Markdown syntax
+- System handles conversion automatically in all phases
+
+**Migration Impact**:
+
+- No breaking changes for users
+- No API changes
+- Templates remain compatible
+- Performance improves (5ms saved per question generation)
 
 ---
 
