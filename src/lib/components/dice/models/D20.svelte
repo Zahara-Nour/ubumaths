@@ -78,6 +78,7 @@
 				roughness={style.roughness ?? 0.6}
 				emissive={style.emissive ?? '#000000'}
 				emissiveIntensity={style.emissiveIntensity ?? 0}
+				side={THREE.DoubleSide}
 			/>
 		</T.Mesh>
 	</AutoColliders>
