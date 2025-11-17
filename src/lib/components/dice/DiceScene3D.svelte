@@ -207,7 +207,7 @@
 
 				// Calculate position spread
 				const totalDice = config.reduce((sum, c) => sum + (c.count ?? 1), 0);
-				const spacing = 2;
+				const spacing = 6;
 				const xOffset = (index - totalDice / 2) * spacing;
 
 				// Set initial position (high above table)
@@ -274,6 +274,12 @@
 
 			<!-- Physics World -->
 			<World gravity={{ x: 0, y: -9.81, z: 0 }}>
+				<!-- DEBUG: Test Sphere - Should be visible if rendering works -->
+				<T.Mesh position={[0, 2, 0]}>
+					<T.SphereGeometry args={[1, 32, 32]} />
+					<T.MeshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={0.5} />
+				</T.Mesh>
+
 				<!-- Static Floor/Table (RigidBody with fixed type) -->
 				<RigidBody type="fixed">
 					<AutoColliders shape="cuboid" restitution={0.3} friction={0.8}>
@@ -291,17 +297,17 @@
 						{@const count = diceConfig.count ?? 1}
 
 						{#each Array(count) as _, diceIndex (`${diceConfig.type}-${index}-${diceIndex}-${rollTrigger}`)}
-							{@const spacing = 3}
+							{@const spacing = 6}
 							{@const totalDice = config.reduce((sum, c) => sum + (c.count ?? 1), 0)}
 							{@const overallIndex =
 								config.slice(0, index).reduce((sum, c) => sum + (c.count ?? 1), 0) + diceIndex}
 							{@const xOffset = (overallIndex - totalDice / 2) * spacing}
-							{@const yStart = isRolling ? 3 : 1}
+							{@const yStart = isRolling ? 3 : 2}
 							{@const zOffset = 0}
 
 							<DiceComponent
 								{style}
-								size={diceConfig.size ?? 2.5}
+								size={diceConfig.size ?? 5}
 								position={[xOffset, yStart, zOffset]}
 								bind:rigidBodyRef={diceRefs[overallIndex]}
 							/>
