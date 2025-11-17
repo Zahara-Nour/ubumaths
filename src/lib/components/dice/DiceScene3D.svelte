@@ -244,30 +244,10 @@
 					return;
 				}
 
-				// Calculate position spread
-				const totalDice = config.reduce((sum, c) => sum + (c.count ?? 1), 0);
-				const spacing = 2;
-				const xOffset = (index - totalDice / 2) * spacing;
+				// Keep the dice at their current position, just apply new forces
+				// Don't reset position - let them roll from where they are
 
-				// Wall boundaries (with safety margin)
-				const WALL_LIMIT = 9; // Walls are at ±10.25, so safe area is ±9
-
-				// Natural hand throw: start from center area at hand height
-				const xPos = clamp(xOffset + (Math.random() - 0.5) * 2, -WALL_LIMIT, WALL_LIMIT);
-				const zPos = clamp((Math.random() - 0.5) * 4, -WALL_LIMIT, WALL_LIMIT);
-				const yStart = 2.5 + Math.random() * 0.5; // Lower hand position (2.5-3)
-
-				// Set initial position (at center of table, like holding dice in hand)
-				ref.setTranslation(
-					{
-						x: xPos,
-						y: yStart,
-						z: zPos
-					},
-					true
-				);
-
-				// Set random rotation
+				// Set random rotation for variety
 				ref.setRotation(
 					{
 						x: Math.random(),
