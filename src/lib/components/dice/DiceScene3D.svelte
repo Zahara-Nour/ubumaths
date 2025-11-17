@@ -67,6 +67,7 @@
 
 	// Flash a wall when hit
 	function flashWall(wallName: 'north' | 'south' | 'east' | 'west' | 'ceiling') {
+		console.log('[DiceScene3D] Wall collision detected:', wallName);
 		wallFlash[wallName] = true;
 		setTimeout(() => {
 			wallFlash[wallName] = false;
