@@ -280,6 +280,12 @@
 					<T.MeshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={0.5} />
 				</T.Mesh>
 
+				<!-- DEBUG: Blue cube WITHOUT RigidBody (should be visible) -->
+				<T.Mesh position={[3, 2, 0]} castShadow>
+					<T.BoxGeometry args={[2, 2, 2]} />
+					<T.MeshStandardMaterial color="#0000ff" />
+				</T.Mesh>
+
 				<!-- DEBUG: Test Cube with RigidBody (no AutoColliders) -->
 				<RigidBody type="dynamic" position={[-3, 2, 0]}>
 					<T.Mesh castShadow>
