@@ -56,20 +56,20 @@
 	const uvs = new Float32Array(totalVertices * 2);
 
 	// DodecahedronGeometry triangulates each pentagon into 3 triangles
-	// Map each triangle to full texture (0-1 range)
-	// The number will be drawn small at center, so it only appears once
+	// Map ALL vertices to the CENTER of texture (0.5, 0.5)
+	// This way all 3 triangles show only the center point = number appears once
 	for (let triangleIndex = 0; triangleIndex < totalTriangles; triangleIndex++) {
 		const v0 = triangleIndex * 3 + 0;
 		const v1 = triangleIndex * 3 + 1;
 		const v2 = triangleIndex * 3 + 2;
 
-		// Standard triangle UV mapping (full texture on each triangle)
+		// All vertices point to center (0.5, 0.5) - shows only central number
 		uvs[v0 * 2 + 0] = 0.5;
-		uvs[v0 * 2 + 1] = 0; // top
-		uvs[v1 * 2 + 0] = 0;
-		uvs[v1 * 2 + 1] = 1; // bottom-left
-		uvs[v2 * 2 + 0] = 1;
-		uvs[v2 * 2 + 1] = 1; // bottom-right
+		uvs[v0 * 2 + 1] = 0.5;
+		uvs[v1 * 2 + 0] = 0.5;
+		uvs[v1 * 2 + 1] = 0.5;
+		uvs[v2 * 2 + 0] = 0.5;
+		uvs[v2 * 2 + 1] = 0.5;
 	}
 
 	geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
@@ -98,10 +98,9 @@
 		ctx.translate(size / 2, size / 2);
 		ctx.scale(1, -1); // Flip vertically
 
-		// Draw number small at center (0.25x size) so it appears only once per pentagon
-		// Pentagon is triangulated into 3 triangles, small number prevents triple appearance
+		// Draw number at center - UVs point to center so it appears once
 		ctx.fillStyle = style.numberColor;
-		ctx.font = `bold ${size * 0.25}px Arial`;
+		ctx.font = `bold ${size * 0.5}px Arial`;
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
 		ctx.fillText(String(number), 0, 0);
