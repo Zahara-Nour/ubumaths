@@ -8,6 +8,7 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
 	import { RigidBody, AutoColliders } from '@threlte/rapier';
+	import { getDiceGeometry } from '../utils/dice-geometry';
 	import type { DiceStyleConfig } from '../types';
 	import type { Vector3Tuple } from 'three';
 	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
@@ -89,6 +90,32 @@
 		[5, 9, 11, 7, 19],
 		[6, 18, 19, 7, 15]
 	];
+
+	// Calculate face normals (centroid of vertices, normalized)
+	const faceNormals: Vector3Tuple[] = faces.map((face) => {
+		// Calculate centroid
+		let cx = 0,
+			cy = 0,
+			cz = 0;
+		face.forEach((vertexIndex) => {
+			const [x, y, z] = vertices[vertexIndex];
+			cx += x;
+			cy += y;
+			cz += z;
+		});
+		cx /= face.length;
+		cy /= face.length;
+		cz /= face.length;
+
+		// Normalize to get normal (since dodecahedron is centered at origin)
+		const length = Math.sqrt(cx * cx + cy * cy + cz * cz);
+		return [cx / length, cy / length, cz / length];
+	});
+
+	// Store face normals for detectTopFace to use
+	// Override the default D12 geometry normals with our custom ones
+	const customGeometry = getDiceGeometry('d12');
+	customGeometry.faceNormals = faceNormals;
 
 	// Create custom geometry with polar UV mapping
 	function createDodecahedronGeometry(): THREE.BufferGeometry {
