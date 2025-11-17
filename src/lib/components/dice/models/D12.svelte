@@ -56,20 +56,20 @@
 	const uvs = new Float32Array(totalVertices * 2);
 
 	// DodecahedronGeometry triangulates each pentagon into 3 triangles
-	// Map ALL vertices to the CENTER of texture (0.5, 0.5)
-	// This way all 3 triangles show only the center point = number appears once
+	// Map all triangles to a TINY region around center (0.45-0.55)
+	// All 3 triangles show the same small center area = number appears once
 	for (let triangleIndex = 0; triangleIndex < totalTriangles; triangleIndex++) {
 		const v0 = triangleIndex * 3 + 0;
 		const v1 = triangleIndex * 3 + 1;
 		const v2 = triangleIndex * 3 + 2;
 
-		// All vertices point to center (0.5, 0.5) - shows only central number
+		// Small triangle around center - all 3 triangles show same center region
 		uvs[v0 * 2 + 0] = 0.5;
-		uvs[v0 * 2 + 1] = 0.5;
-		uvs[v1 * 2 + 0] = 0.5;
-		uvs[v1 * 2 + 1] = 0.5;
-		uvs[v2 * 2 + 0] = 0.5;
-		uvs[v2 * 2 + 1] = 0.5;
+		uvs[v0 * 2 + 1] = 0.45; // top
+		uvs[v1 * 2 + 0] = 0.45;
+		uvs[v1 * 2 + 1] = 0.55; // bottom-left
+		uvs[v2 * 2 + 0] = 0.55;
+		uvs[v2 * 2 + 1] = 0.55; // bottom-right
 	}
 
 	geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
@@ -98,9 +98,9 @@
 		ctx.translate(size / 2, size / 2);
 		ctx.scale(1, -1); // Flip vertically
 
-		// Draw number at center - UVs point to center so it appears once
+		// Draw number at center - UVs map to small center region (0.45-0.55)
 		ctx.fillStyle = style.numberColor;
-		ctx.font = `bold ${size * 0.5}px Arial`;
+		ctx.font = `bold ${size * 0.6}px Arial`;
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
 		ctx.fillText(String(number), 0, 0);
