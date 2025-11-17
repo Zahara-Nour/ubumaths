@@ -258,6 +258,9 @@
 				const zPos = clamp((Math.random() - 0.5) * 2, -WALL_LIMIT, WALL_LIMIT);
 				const yStart = 3 + Math.random() * 0.5; // Center height (3-3.5)
 
+				// Set to kinematic (physics disabled) during pause
+				ref.setBodyType(RAPIER.RigidBodyType.KinematicPositionBased, true);
+
 				// Reposition dice at center of box
 				ref.setTranslation(
 					{
@@ -277,6 +280,9 @@
 			setTimeout(() => {
 				diceRefs.forEach((ref) => {
 					if (!ref) return;
+
+					// Re-enable physics (set back to dynamic)
+					ref.setBodyType(RAPIER.RigidBodyType.Dynamic, true);
 
 					// Natural throw motion: random direction with upward arc
 					const throwAngle = Math.random() * Math.PI * 2; // 0 to 360 degrees
