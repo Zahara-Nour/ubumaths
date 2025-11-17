@@ -280,6 +280,14 @@
 					<T.MeshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={0.5} />
 				</T.Mesh>
 
+				<!-- DEBUG: Test Cube with RigidBody (no AutoColliders) -->
+				<RigidBody type="dynamic" position={[-3, 2, 0]}>
+					<T.Mesh castShadow>
+						<T.BoxGeometry args={[2, 2, 2]} />
+						<T.MeshStandardMaterial color="#00ff00" />
+					</T.Mesh>
+				</RigidBody>
+
 				<!-- Static Floor/Table (RigidBody with fixed type) -->
 				<RigidBody type="fixed">
 					<AutoColliders shape="cuboid" restitution={0.3} friction={0.8}>
@@ -305,12 +313,28 @@
 							{@const yStart = isRolling ? 3 : 2}
 							{@const zOffset = 0}
 
+							<!-- DEBUG: Simple dice test (bypassing component) -->
+							<RigidBody
+								type="dynamic"
+								position={[xOffset, yStart, zOffset]}
+								bind:rigidBody={diceRefs[overallIndex]}
+							>
+								<AutoColliders shape="cuboid">
+									<T.Mesh scale={5} castShadow>
+										<T.BoxGeometry args={[1, 1, 1]} />
+										<T.MeshStandardMaterial color={style.baseColor} />
+									</T.Mesh>
+								</AutoColliders>
+							</RigidBody>
+
+							<!--
 							<DiceComponent
 								{style}
 								size={diceConfig.size ?? 5}
 								position={[xOffset, yStart, zOffset]}
 								bind:rigidBodyRef={diceRefs[overallIndex]}
 							/>
+							-->
 						{/each}
 					{/each}
 			</World>
