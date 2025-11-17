@@ -268,18 +268,7 @@
 					true
 				);
 
-				// Set random rotation for variety
-				ref.setRotation(
-					{
-						x: Math.random(),
-						y: Math.random(),
-						z: Math.random(),
-						w: Math.random()
-					},
-					true
-				);
-
-				// Stop any existing movement
+				// Stop any existing movement (keeps current rotation)
 				ref.setLinvel({ x: 0, y: 0, z: 0 }, true);
 				ref.setAngvel({ x: 0, y: 0, z: 0 }, true);
 			});
