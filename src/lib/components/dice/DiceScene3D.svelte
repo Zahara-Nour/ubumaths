@@ -72,7 +72,7 @@
 		wallFlash[wallName] = true;
 		setTimeout(() => {
 			wallFlash[wallName] = false;
-		}, 150); // Flash duration: 150ms
+		}, 400); // Flash duration: 400ms (longer for better visibility)
 	}
 
 	// Helper: Apply quaternion rotation to a vector
@@ -255,7 +255,7 @@
 				// Natural hand throw: start from center area at hand height
 				const xPos = clamp(xOffset + (Math.random() - 0.5) * 2, -WALL_LIMIT, WALL_LIMIT);
 				const zPos = clamp((Math.random() - 0.5) * 4, -WALL_LIMIT, WALL_LIMIT);
-				const yStart = 4 + Math.random() * 1; // Higher hand position
+				const yStart = 2.5 + Math.random() * 0.5; // Lower hand position (2.5-3)
 
 				// Set initial position (at center of table, like holding dice in hand)
 				ref.setTranslation(
@@ -278,15 +278,15 @@
 					true
 				);
 
-				// Natural throw motion: random direction with upward arc
+				// Natural throw motion: random direction with upward arc (slower for visibility)
 				// Random angle for throw direction
 				const throwAngle = Math.random() * Math.PI * 2; // 0 to 360 degrees
-				const throwForce = 5 + Math.random() * 3; // Horizontal force magnitude
+				const throwForce = 3 + Math.random() * 2; // Reduced horizontal force (3-5 instead of 5-8)
 
 				ref.setLinvel(
 					{
 						x: Math.cos(throwAngle) * throwForce, // Horizontal direction X
-						y: 3 + Math.random() * 2, // Higher upward arc (3-5)
+						y: 2 + Math.random() * 1.5, // Reduced upward arc (2-3.5 instead of 3-5)
 						z: Math.sin(throwAngle) * throwForce // Horizontal direction Z
 					},
 					true
