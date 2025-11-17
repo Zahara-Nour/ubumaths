@@ -237,59 +237,42 @@
 				diceRefs.filter((r) => r !== undefined).length
 			);
 
-			// Prepare dice for throw (freeze in place for 500ms)
+			// Apply throw forces directly
 			diceRefs.forEach((ref) => {
 				if (!ref) {
 					console.warn('[DiceScene3D] Missing rigidBody ref');
 					return;
 				}
 
-				// Set to kinematic (physics disabled) during pause
-				ref.setBodyType(RAPIER.RigidBodyType.KinematicPositionBased, true);
+				// Powerful upward throw from floor: mostly vertical with some horizontal
+				const throwAngle = Math.random() * Math.PI * 2; // 0 to 360 degrees
+				const horizontalForce = 2 + Math.random() * 2; // Small horizontal (2-4)
 
-				// Stop any existing movement but keep current position and rotation
-				ref.setLinvel({ x: 0, y: 0, z: 0 }, true);
-				ref.setAngvel({ x: 0, y: 0, z: 0 }, true);
+				ref.setLinvel(
+					{
+						x: Math.cos(throwAngle) * horizontalForce, // Small horizontal X
+						y: 12 + Math.random() * 4, // Strong upward force (12-16)
+						z: Math.sin(throwAngle) * horizontalForce // Small horizontal Z
+					},
+					true
+				);
+
+				// Apply random spin (increased for powerful throw)
+				ref.setAngvel(
+					{
+						x: (Math.random() - 0.5) * 20,
+						y: (Math.random() - 0.5) * 20,
+						z: (Math.random() - 0.5) * 20
+					},
+					true
+				);
 			});
 
-			// Wait 500ms before applying throw forces
+			// Start checking for settling after a short delay
+			// Wait a bit to avoid false positives during initial acceleration
 			setTimeout(() => {
-				diceRefs.forEach((ref) => {
-					if (!ref) return;
-
-					// Re-enable physics (set back to dynamic)
-					ref.setBodyType(RAPIER.RigidBodyType.Dynamic, true);
-
-					// Powerful upward throw from floor: mostly vertical with some horizontal
-					const throwAngle = Math.random() * Math.PI * 2; // 0 to 360 degrees
-					const horizontalForce = 2 + Math.random() * 2; // Small horizontal (2-4)
-
-					ref.setLinvel(
-						{
-							x: Math.cos(throwAngle) * horizontalForce, // Small horizontal X
-							y: 12 + Math.random() * 4, // Strong upward force (12-16)
-							z: Math.sin(throwAngle) * horizontalForce // Small horizontal Z
-						},
-						true
-					);
-
-					// Apply random spin (increased for powerful throw)
-					ref.setAngvel(
-						{
-							x: (Math.random() - 0.5) * 20,
-							y: (Math.random() - 0.5) * 20,
-							z: (Math.random() - 0.5) * 20
-						},
-						true
-					);
-				});
-
-				// Start checking for settling AFTER throw is applied
-				// Wait a bit to avoid false positives during initial acceleration
-				setTimeout(() => {
-					settlingCheckInterval = setInterval(checkSettling, 100);
-				}, 100);
-			}, 500); // 500ms pause before throw
+				settlingCheckInterval = setInterval(checkSettling, 100);
+			}, 100);
 		}, 50);
 	}
 </script>
