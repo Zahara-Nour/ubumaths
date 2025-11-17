@@ -114,7 +114,7 @@
 			<T.AmbientLight intensity={0.4} />
 
 			<!-- Physics World -->
-			<World gravity={[0, -9.81, 0]}>
+			<World gravity={{ x: 0, y: -9.81, z: 0 }}>
 				<!-- Floor/Table -->
 				<T.Mesh position={[0, -0.5, 0]} receiveShadow>
 					<T.BoxGeometry args={[20, 1, 20]} />
