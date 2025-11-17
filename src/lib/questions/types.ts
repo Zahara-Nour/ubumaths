@@ -425,6 +425,19 @@ export interface QuestionInstance {
 
 	/** Index of selected variation from template (for debugging) */
 	selectedVariationIndex?: number;
+
+	/**
+	 * Resolved colors used in this instance
+	 * Maps color reference (e.g., "color1") to hex code (e.g., "#FF5722")
+	 *
+	 * NOTE: Reserved for future use. Currently colors are resolved inline during
+	 * content generation and not tracked separately. This field can be populated
+	 * when we need to:
+	 * - Display a color legend with the question
+	 * - Allow instructors to see which colors were used
+	 * - Enable color consistency verification in tests
+	 */
+	resolvedColors?: Record<string, string>;
 }
 
 // ============================================================================
