@@ -233,17 +233,17 @@
 				// Wall boundaries (with safety margin)
 				const WALL_LIMIT = 9; // Walls are at ±10.25, so safe area is ±9
 
-				// Natural hand throw: start from near edge of table at hand height
-				const xPos = clamp(xOffset + (Math.random() - 0.5) * 0.5, -WALL_LIMIT, WALL_LIMIT);
-				const zStart = -7; // Start from back edge (negative Z)
-				const yStart = 3 + Math.random() * 0.5; // Hand height (lower than before)
+				// Natural hand throw: start from center area at hand height
+				const xPos = clamp(xOffset + (Math.random() - 0.5) * 2, -WALL_LIMIT, WALL_LIMIT);
+				const zPos = clamp((Math.random() - 0.5) * 4, -WALL_LIMIT, WALL_LIMIT);
+				const yStart = 4 + Math.random() * 1; // Higher hand position
 
-				// Set initial position (at edge of table, like holding dice in hand)
+				// Set initial position (at center of table, like holding dice in hand)
 				ref.setTranslation(
 					{
 						x: xPos,
 						y: yStart,
-						z: zStart
+						z: zPos
 					},
 					true
 				);
@@ -259,12 +259,16 @@
 					true
 				);
 
-				// Natural throw motion: strong forward velocity (Z+), upward arc (Y+), slight lateral spread (X)
+				// Natural throw motion: random direction with upward arc
+				// Random angle for throw direction
+				const throwAngle = Math.random() * Math.PI * 2; // 0 to 360 degrees
+				const throwForce = 5 + Math.random() * 3; // Horizontal force magnitude
+
 				ref.setLinvel(
 					{
-						x: (Math.random() - 0.5) * 1.5, // Slight lateral spread
-						y: 2 + Math.random() * 1.5, // Upward arc for natural throw
-						z: 6 + Math.random() * 2 // Strong forward throw velocity
+						x: Math.cos(throwAngle) * throwForce, // Horizontal direction X
+						y: 3 + Math.random() * 2, // Higher upward arc (3-5)
+						z: Math.sin(throwAngle) * throwForce // Horizontal direction Z
 					},
 					true
 				);
