@@ -84,7 +84,7 @@
 
 	<!-- Numbers on each face (outside AutoColliders but inside RigidBody) -->
 	{#each geometryData.faceNormals as faceNormal, index (index)}
-		{@const transform = getFaceTransform(faceNormal, scaledSize, 0.01)}
+		{@const transform = getFaceTransform(faceNormal, scaledSize, 0.02)}
 		<Text
 			text={String(faceNumbers[index])}
 			position={transform.position}

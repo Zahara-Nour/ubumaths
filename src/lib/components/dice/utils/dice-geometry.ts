@@ -380,21 +380,62 @@ export function getFaceTransform(
 	const distance = scale + offset;
 	const position: Vector3Tuple = [nx * distance, ny * distance, nz * distance];
 
-	// Rotation: align text to face outward
-	// Calculate rotation to make the normal point along +Z (out of the text)
-	let rotationX = 0;
-	let rotationY = 0;
-	const rotationZ = 0;
+	// Rotation: align text perpendicular to face
+	// We need to create a rotation that aligns [0, 0, 1] (text forward) with the face normal
 
-	// Calculate angles from normal vector
-	// We want the text to face outward (normal direction)
-	const horizontalLength = Math.sqrt(nx * nx + nz * nz);
+	// Create an orthonormal basis for the face
+	// Normal is already given, we need to find tangent and bitangent
 
-	if (horizontalLength > 0.0001) {
-		rotationY = Math.atan2(nx, nz);
+	// Choose an arbitrary "up" vector that's not parallel to the normal
+	let up: Vector3Tuple = [0, 1, 0];
+	const dotUp = Math.abs(nx * up[0] + ny * up[1] + nz * up[2]);
+
+	// If normal is too close to [0,1,0], use [1,0,0] as up
+	if (dotUp > 0.99) {
+		up = [1, 0, 0];
 	}
 
-	rotationX = Math.atan2(-ny, horizontalLength);
+	// Calculate tangent = cross(normal, up)
+	const tx = ny * up[2] - nz * up[1];
+	const ty = nz * up[0] - nx * up[2];
+	const tz = nx * up[1] - ny * up[0];
+
+	// Normalize tangent
+	const tlen = Math.sqrt(tx * tx + ty * ty + tz * tz);
+	const tangent: Vector3Tuple = [tx / tlen, ty / tlen, tz / tlen];
+
+	// Calculate bitangent = cross(normal, tangent)
+	const bx = ny * tangent[2] - nz * tangent[1];
+	const by = nz * tangent[0] - nx * tangent[2];
+	const bz = nx * tangent[1] - ny * tangent[0];
+
+	// Now we have a rotation matrix:
+	// [ tangent[0], bitangent[0], normal[0] ]
+	// [ tangent[1], bitangent[1], normal[1] ]
+	// [ tangent[2], bitangent[2], normal[2] ]
+
+	// Convert rotation matrix to Euler angles (ZYX order)
+	// This is the standard rotation matrix to Euler conversion
+	let rotationX: number;
+	let rotationY: number;
+	let rotationZ: number;
+
+	// Using the rotation matrix where columns are [tangent, bitangent, normal]
+	const m11 = tangent[0], m12 = bx, m13 = nx;
+	const m21 = tangent[1], m22 = by, m23 = ny;
+	const m31 = tangent[2], m32 = bz, m33 = nz;
+
+	// Extract Euler angles from rotation matrix
+	if (Math.abs(m13) < 0.99999) {
+		rotationY = Math.asin(m13);
+		rotationX = Math.atan2(-m23, m33);
+		rotationZ = Math.atan2(-m12, m11);
+	} else {
+		// Gimbal lock case
+		rotationY = m13 > 0 ? Math.PI / 2 : -Math.PI / 2;
+		rotationX = 0;
+		rotationZ = Math.atan2(m21, m22);
+	}
 
 	const rotation: Vector3Tuple = [rotationX, rotationY, rotationZ];
 
