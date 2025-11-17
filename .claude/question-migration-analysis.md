@@ -12,21 +12,22 @@
 1. [Executive Summary](#1-executive-summary)
 2. [Old System (TinyMath) Analysis](#2-old-system-tinymath-analysis)
 3. [New System (UbuMaths v2) Analysis](#3-new-system-ubumaths-v2-analysis)
-4. [Feature Comparison Table](#4-feature-comparison-table)
-5. [Gap Analysis](#5-gap-analysis)
-6. [Decision Rationale](#6-decision-rationale)
-7. [Question Tracking System](#7-question-tracking-system)
-8. [Migration State Files](#8-migration-state-files)
-9. [Implementation Strategy: Option 3 (Parallel/Agile)](#9-implementation-strategy-option-3-parallelagile)
-10. [Technical Specifications](#10-technical-specifications)
-11. [Question Distribution Analysis](#11-question-distribution-analysis)
-12. [Migration Workflow](#12-migration-workflow)
-13. [Testing Strategy](#13-testing-strategy)
-14. [Risk Analysis & Mitigation](#14-risk-analysis--mitigation)
-15. [Recovery Process](#15-recovery-process)
-16. [Success Criteria](#16-success-criteria)
-17. [Appendix: Complete Syntax Reference](#17-appendix-complete-syntax-reference)
-18. [Appendix: Sample Question Conversions](#18-appendix-sample-question-conversions)
+4. [Color Template System](#4-color-template-system)
+5. [Feature Comparison Table](#5-feature-comparison-table)
+6. [Gap Analysis](#6-gap-analysis)
+7. [Decision Rationale](#7-decision-rationale)
+8. [Question Tracking System](#8-question-tracking-system)
+9. [Migration State Files](#9-migration-state-files)
+10. [Implementation Strategy: Option 3 (Parallel/Agile)](#10-implementation-strategy-option-3-parallelagile)
+11. [Technical Specifications](#11-technical-specifications)
+12. [Question Distribution Analysis](#12-question-distribution-analysis)
+13. [Migration Workflow](#13-migration-workflow)
+14. [Testing Strategy](#14-testing-strategy)
+15. [Risk Analysis & Mitigation](#15-risk-analysis--mitigation)
+16. [Recovery Process](#16-recovery-process)
+17. [Success Criteria](#17-success-criteria)
+18. [Appendix: Complete Syntax Reference](#18-appendix-complete-syntax-reference)
+19. [Appendix: Sample Question Conversions](#19-appendix-sample-question-conversions)
 
 ---
 
@@ -364,7 +365,104 @@ interface ValidationOptions {
 
 ---
 
-## 4. Feature Comparison Table
+## 4. Color Template System
+
+**Status**: ✅ Implemented (2025-11-16)
+
+### Overview
+
+The color template system solves the `${get(color)}` extraction blocker found in old TinyMath questions. It converts runtime Svelte store calls to declarative template syntax that resolves during instance generation.
+
+### Syntax Conversion
+
+**Old TinyMath** (runtime JavaScript):
+```javascript
+"Draw a ${get(color1)} triangle"  // Runtime Svelte store call
+```
+
+**New Template** (declarative):
+```javascript
+"Draw a {#color:primary.0} triangle"  // Resolved during generation
+```
+
+### Color Palettes
+
+Five specialized palettes with 39 total colors:
+
+1. **Primary** (8 colors): Vibrant colors for highlighting
+   - `#FF5722`, `#2196F3`, `#4CAF50`, `#FFC107`, `#9C27B0`, `#FF9800`, `#00BCD4`, `#E91E63`
+
+2. **Shapes** (8 colors): Pastel colors for diagrams
+   - `#FFCDD2`, `#C5CAE9`, `#C8E6C9`, `#FFF9C4`, `#E1BEE7`, `#FFE0B2`, `#B2EBF2`, `#F8BBD0`
+
+3. **Text** (8 colors): Dark colors for emphasis
+   - `#D32F2F`, `#1976D2`, `#388E3C`, `#F57C00`, `#7B1FA2`, `#00796B`, `#C2185B`, `#512DA8`
+
+4. **Contrast** (4 pairs, 8 colors): High-contrast pairs for comparisons
+   - Red/Blue, Green/Red, Amber/Purple, Orange/Cyan
+
+5. **Rainbow** (7 colors): ROYGBIV spectrum
+   - Red, Orange, Yellow, Green, Blue, Indigo, Violet
+
+### Supported Formats
+
+- `{#color:primary}` - Random color from palette
+- `{#color:primary.0}` - Specific color by index
+- `{#color:primary.random}` - Explicit random
+- `{#color:contrast.0.0}` - First color of first contrast pair
+- `{#color:contrast.0.1}` - Second color of first contrast pair
+
+### Seeded Randomization
+
+Colors support seeded randomization for reproducibility:
+```typescript
+// Same seed always produces same color
+const instance1 = generateInstance(template, 42);
+const instance2 = generateInstance(template, 42);
+// Both will have identical colors
+```
+
+### Integration
+
+**Resolution Order**:
+1. Variable references (`{@:var}`)
+2. Random numbers (`{#:1-10}`)
+3. Evaluations (`{eval:...}`)
+4. **Colors** (`{#color:...}`) ← Added here
+5. Final rendering
+
+### Implementation Files
+
+- `src/lib/questions/colors.ts` - Core color palette system (157 lines)
+- `src/lib/questions/parser/color-parser.ts` - Parser (82 lines)
+- `src/lib/migration/syntax-converter.ts` - Conversion logic (updated)
+- `src/lib/questions/generator/content-resolver.ts` - Resolution (updated)
+
+### Testing
+
+- 45 unit tests for color module
+- 19 parser tests
+- 24 integration tests
+- 12 converter tests
+- **Total: 100 tests, 100% passing**
+
+### Impact
+
+- Removes `${get(color)}` extraction blocker
+- Enables migration of ~200-300 color-based questions
+- Provides extensible system for future visual features
+- No breaking changes to existing code
+
+### French Name Support
+
+The converter handles French color names:
+- `couleur1` → `{#color:primary.0}`
+- `couleur2` → `{#color:primary.1}`
+- `couleur3` → `{#color:primary.2}`
+
+---
+
+## 5. Feature Comparison Table
 
 | Feature | Old System (TinyMath) | New System (UbuMaths v2) | Migration Status | Priority |
 |---------|----------------------|-------------------------|------------------|----------|
@@ -2204,12 +2302,19 @@ EXAMPLES:
   - Ready for implementation
 
 - **v1.1.0** (2025-11-16): Enhanced with complete tracking and recovery systems
-  - Added Question Tracking System (Section 7)
-  - Added Migration State Files (Section 8)
+  - Added Question Tracking System (Section 8)
+  - Added Migration State Files (Section 9)
   - Added Phase Completion Workflows for all 4 phases
-  - Added Recovery Process (Section 15)
+  - Added Recovery Process (Section 16)
   - Updated Success Criteria with workflow requirements
   - Fixed section numbering throughout document
+
+- **v1.2.0** (2025-11-16): Added Color Template System documentation
+  - Added Color Template System (Section 4)
+  - Documents complete color palette implementation
+  - 100 tests, 100% passing
+  - Removes `${get(color)}` extraction blocker
+  - Updated section numbering throughout document
 
 ---
 
