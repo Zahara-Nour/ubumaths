@@ -43,7 +43,7 @@
 	let selectedStyle = $state<string>(style);
 
 	// Derived config for interactive mode
-	let activeConfig: DiceConfig[] = $derived(() => {
+	let activeConfig: DiceConfig[] = $derived.by(() => {
 		if (config) {
 			return config;
 		}
