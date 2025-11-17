@@ -2,13 +2,12 @@
 	D4 Dice Model (Tetrahedron)
 
 	Renders a 4-sided die using Threlte.
-	Uses custom geometry with physics-enabled mesh.
+	Uses custom geometry with canvas textures (inspired by threejs-dice).
 -->
 <script lang="ts">
 	import { T } from '@threlte/core';
-	import { Text } from '@threlte/extras';
 	import { RigidBody, AutoColliders } from '@threlte/rapier';
-	import { getDiceGeometry, getFaceTransform } from '../utils/dice-geometry';
+	import { getDiceGeometry } from '../utils/dice-geometry';
 	import type { DiceStyleConfig } from '../types';
 	import type { Vector3Tuple } from 'three';
 	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
@@ -37,18 +36,152 @@
 		rigidBodyRef = rbRef;
 	});
 
-	// Use Three.js TetrahedronGeometry (D4)
-	const geometry = new THREE.TetrahedronGeometry(1);
+	// Scale the die
+	const scaledSize = size * 1.2;
 
-	// Get geometry data for face normals and scale
-	const geometryData = getDiceGeometry('d4');
-	const scaledSize = size * geometryData.scale;
-
-	// Face numbers for D4
+	// Face numbers for D4 - must match faceValueMappings.d4 from dice-geometry.ts
 	const faceNumbers = [1, 2, 3, 4];
 
-	// Calculate font size based on die size
-	const fontSize = scaledSize * 0.5;
+	// Tetrahedron vertices (alternating corners of a cube)
+	const vertices: Vector3Tuple[] = [
+		[1, 1, 1],
+		[-1, -1, 1],
+		[-1, 1, -1],
+		[1, -1, -1]
+	];
+
+	// Triangular faces (each array: 3 vertex indices)
+	const faces: number[][] = [
+		[1, 0, 2],
+		[0, 1, 3],
+		[0, 3, 2],
+		[1, 2, 3]
+	];
+
+	// Calculate face normals (centroid of vertices, normalized)
+	const faceNormals: Vector3Tuple[] = faces.map((face) => {
+		// Calculate centroid
+		const v0 = vertices[face[0]];
+		const v1 = vertices[face[1]];
+		const v2 = vertices[face[2]];
+
+		let cx = (v0[0] + v1[0] + v2[0]) / 3;
+		let cy = (v0[1] + v1[1] + v2[1]) / 3;
+		let cz = (v0[2] + v1[2] + v2[2]) / 3;
+
+		// Normalize to get normal (since tetrahedron is centered at origin)
+		const length = Math.sqrt(cx * cx + cy * cy + cz * cz);
+		return [cx / length, cy / length, cz / length];
+	});
+
+	// Store face normals for detectTopFace to use
+	// Override the default D4 geometry normals with our custom ones
+	const customGeometry = getDiceGeometry('d4');
+	customGeometry.faceNormals = faceNormals;
+
+	// Create custom tetrahedron geometry with UV mapping
+	function createTetrahedronGeometry(): THREE.BufferGeometry {
+		const geometry = new THREE.BufferGeometry();
+		const positions: number[] = [];
+		const uvs: number[] = [];
+
+		// Angular parameters for UV mapping (from threejs-dice)
+		const angleIncrement = (Math.PI * 2) / 3; // 120 degrees for triangle
+		const angleOffset = (Math.PI * 7) / 6; // Rotation offset
+		const texMargin = -0.1; // Negative margin (chamfer)
+
+		// Process each triangular face
+		for (let faceIndex = 0; faceIndex < faces.length; faceIndex++) {
+			const face = faces[faceIndex];
+
+			// Add triangle vertices
+			const v0 = vertices[face[0]];
+			const v1 = vertices[face[1]];
+			const v2 = vertices[face[2]];
+
+			positions.push(...v0, ...v1, ...v2);
+
+			// Calculate UVs using polar coordinates
+			// Each vertex of the triangle
+			for (let j = 0; j < 3; j++) {
+				const angle = angleIncrement * j + angleOffset;
+				const u = (Math.cos(angle) + 1 + texMargin) / 2 / (1 + texMargin);
+				const v = (Math.sin(angle) + 1 + texMargin) / 2 / (1 + texMargin);
+				uvs.push(u, v);
+			}
+		}
+
+		// Set geometry attributes
+		geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+		geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+
+		// Add material groups (one per face)
+		for (let faceIndex = 0; faceIndex < faces.length; faceIndex++) {
+			geometry.addGroup(faceIndex * 3, 3, faceIndex);
+		}
+
+		geometry.computeVertexNormals();
+
+		return geometry;
+	}
+
+	// Create the geometry
+	const geometry = createTetrahedronGeometry();
+
+	// Create number texture on canvas (D4 style: number repeated 3 times with 120° rotation)
+	function createNumberTexture(number: number): THREE.CanvasTexture {
+		const canvas = document.createElement('canvas');
+		const canvasSize = 256;
+		canvas.width = canvasSize;
+		canvas.height = canvasSize;
+		const ctx = canvas.getContext('2d')!;
+
+		// Fill background with base color
+		ctx.fillStyle = style.baseColor;
+		ctx.fillRect(0, 0, canvasSize, canvasSize);
+
+		// Font setup
+		ctx.fillStyle = style.numberColor;
+		const fontSize = canvasSize * 0.4;
+		ctx.font = `bold ${fontSize}px Arial`;
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+
+		// Draw number 3 times with 120° rotations (D4 triangular face pattern)
+		for (let i = 0; i < 3; i++) {
+			// Save context
+			ctx.save();
+
+			// Translate to center
+			ctx.translate(canvasSize / 2, canvasSize / 2);
+
+			// Rotate by 120° * i
+			ctx.rotate((Math.PI * 2 * i) / 3);
+
+			// Draw number offset from center toward edge
+			ctx.fillText(String(number), 0, -canvasSize * 0.28);
+
+			// Restore context
+			ctx.restore();
+		}
+
+		const texture = new THREE.CanvasTexture(canvas);
+		texture.needsUpdate = true;
+		return texture;
+	}
+
+	// Create materials for each face
+	const materials = faceNumbers.map((num) => {
+		const texture = createNumberTexture(num);
+		return new THREE.MeshStandardMaterial({
+			map: texture,
+			metalness: style.metalness ?? 0.1,
+			roughness: style.roughness ?? 0.6,
+			emissive: style.emissive ?? '#000000',
+			emissiveIntensity: style.emissiveIntensity ?? 0,
+			side: THREE.DoubleSide
+		});
+	});
 </script>
 
 <!-- RigidBody for physics simulation -->
@@ -60,32 +193,9 @@
 	angularDamping={0.4}
 	density={3.0}
 >
-	<!-- AutoColliders with convexHull shape for complex polyhedron -->
+	<!-- AutoColliders with convexHull shape for tetrahedron -->
 	<AutoColliders shape="convexHull" restitution={0.15} friction={1.2}>
-		<!-- Die body -->
-		<T.Mesh {geometry} scale={scaledSize} castShadow receiveShadow>
-			<T.MeshStandardMaterial
-				color={style.baseColor}
-				metalness={style.metalness ?? 0.1}
-				roughness={style.roughness ?? 0.6}
-				emissive={style.emissive ?? '#000000'}
-				emissiveIntensity={style.emissiveIntensity ?? 0}
-				side={THREE.DoubleSide}
-			/>
-		</T.Mesh>
+		<!-- Die body with number textures -->
+		<T.Mesh {geometry} material={materials} scale={scaledSize} castShadow receiveShadow />
 	</AutoColliders>
-
-	<!-- Numbers on each face (outside AutoColliders but inside RigidBody) -->
-	{#each geometryData.faceNormals as faceNormal, index (index)}
-		{@const transform = getFaceTransform(faceNormal, scaledSize, geometryData.inradius, 0.005)}
-		<Text
-			text={String(faceNumbers[index])}
-			position={transform.position}
-			rotation={transform.rotation}
-			{fontSize}
-			color={style.numberColor}
-			anchorX="center"
-			anchorY="middle"
-		/>
-	{/each}
 </RigidBody>
