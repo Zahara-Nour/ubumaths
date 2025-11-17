@@ -33,7 +33,10 @@ import { MigrationStateManager } from '$lib/server/migration/state-manager';
 import { transformQuestion, type TransformResult } from '$lib/migration/question-transformer';
 import type { QuestionBase } from '$lib/migration/old-question-types';
 import type { Database } from '$lib/types/database';
-import crypto from 'crypto';
+import {
+	generateStableQuestionHash,
+	generateQuestionDescription
+} from '$lib/server/migration/hash-utils';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -341,8 +344,8 @@ async function initializeMigrationTracking(
 		const batch = oldQuestions.slice(i, i + batchSize);
 		const records = batch.map((question, batchIndex) => {
 			const index = i + batchIndex;
-			const hash = generateQuestionHash(question);
-			const description = generateDescription(question);
+			const hash = generateStableQuestionHash(question);
+			const description = generateQuestionDescription(question);
 
 			return {
 				old_question_hash: hash,
@@ -463,10 +466,10 @@ async function processBatches(
 				results.failed++;
 				results.errors.push({
 					index,
-					description: generateDescription(question),
+					description: generateQuestionDescription(question),
 					error: error instanceof Error ? error.message : String(error)
 				});
-				console.error(`  ❌ Failed: ${generateDescription(question).substring(0, 60)}...`);
+				console.error(`  ❌ Failed: ${generateQuestionDescription(question).substring(0, 60)}...`);
 
 				// Record failure in database
 				if (!CONFIG.DRY_RUN) {
@@ -516,7 +519,7 @@ async function processQuestion(
 	supabase: ReturnType<typeof createSupabaseClient>,
 	stateManager: MigrationStateManager
 ): Promise<void> {
-	const description = generateDescription(question);
+	const description = generateQuestionDescription(question);
 
 	// 1. Transform question
 	const transformResult: TransformResult = transformQuestion(question, index);
@@ -792,33 +795,9 @@ pnpm tsx scripts/migrate-questions-phase1.ts --rollback
 // HELPER FUNCTIONS
 // ============================================================================
 
-function generateQuestionHash(question: QuestionBase): string {
-	// Create a stable hash based on key question properties
-	const content = JSON.stringify({
-		description: question.description,
-		subdescription: question.subdescription,
-		enounces: question.enounces,
-		expressions: question.expressions,
-		variabless: question.variabless,
-		solutionss: question.solutionss
-	});
-	return crypto.createHash('sha256').update(content).digest('hex');
-}
-
-function generateDescription(question: QuestionBase): string {
-	const parts: string[] = [];
-
-	if (question.description) parts.push(question.description);
-	if (question.subdescription) parts.push(question.subdescription);
-	if (question.grade) parts.push(`[${question.grade}]`);
-
-	// If no description available, use first enounce
-	if (parts.length === 0 && question.enounces && question.enounces.length > 0) {
-		parts.push(question.enounces[0].substring(0, 50));
-	}
-
-	return parts.join(' - ') || 'No description';
-}
+// Note: Hash and description generation functions have been moved to
+// src/lib/server/migration/hash-utils.ts for centralization and consistency.
+// This ensures the same hash is calculated during initialization and processing.
 
 // ============================================================================
 // RUN THE SCRIPT
@@ -833,10 +812,4 @@ if (import.meta.url === `file://${__filename}`) {
 }
 
 // Export for testing
-export {
-	loadOldQuestions,
-	filterPhase1Questions,
-	processQuestion,
-	generateQuestionHash,
-	generateDescription
-};
+export { loadOldQuestions, filterPhase1Questions, processQuestion };
