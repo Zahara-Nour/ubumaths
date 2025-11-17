@@ -73,10 +73,10 @@
 	geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
 
 	// Add material groups - DodecahedronGeometry triangulates pentagons
-	// We need to group triangles by pentagon face
-	const indicesPerFace = geometry.index!.count / numFaces;
+	// Each pentagon is split into 3 triangles
+	const trianglesPerFace = 3;
 	for (let i = 0; i < numFaces; i++) {
-		geometry.addGroup(i * indicesPerFace, indicesPerFace, i);
+		geometry.addGroup(i * trianglesPerFace * 3, trianglesPerFace * 3, i);
 	}
 
 	// Create number texture on canvas
