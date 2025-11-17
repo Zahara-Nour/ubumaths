@@ -37,6 +37,7 @@
 
 	// State
 	let isRolling = $state(false);
+	let rollTrigger = $state(0); // Increments on each roll to trigger animation
 
 	// Dice components map
 	const diceComponents = {
@@ -55,6 +56,7 @@
 		if (isRolling) return;
 
 		isRolling = true;
+		rollTrigger++; // Trigger re-render with new random positions
 
 		// Call start callback
 		if (onRollStart) {
@@ -128,18 +130,19 @@
 						{@const style = getStyleConfig(diceConfig.style ?? 'classic')}
 						{@const count = diceConfig.count ?? 1}
 
-						{#each Array(count) as _, diceIndex (`${diceConfig.type}-${index}-${diceIndex}`)}
+						{#each Array(count) as _, diceIndex (`${diceConfig.type}-${index}-${diceIndex}-${rollTrigger}`)}
 							{@const spacing = 2}
 							{@const totalDice = config.reduce((sum, c) => sum + (c.count ?? 1), 0)}
 							{@const overallIndex =
 								config.slice(0, index).reduce((sum, c) => sum + (c.count ?? 1), 0) + diceIndex}
 							{@const xOffset = (overallIndex - totalDice / 2) * spacing}
-							{@const yStart = 5 + Math.random() * 2}
+							{@const yStart = isRolling ? 8 + Math.random() * 3 : 3}
+							{@const zOffset = isRolling ? Math.random() * 2 - 1 : 0}
 
 							<DiceComponent
 								{style}
 								size={diceConfig.size ?? 1}
-								position={[xOffset, yStart, 0]}
+								position={[xOffset, yStart, zOffset]}
 								rotation={[
 									Math.random() * Math.PI * 2,
 									Math.random() * Math.PI * 2,
