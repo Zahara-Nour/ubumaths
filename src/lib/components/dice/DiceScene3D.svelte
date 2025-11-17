@@ -7,10 +7,13 @@
 <script lang="ts">
 	import { Canvas } from '@threlte/core';
 	import { T } from '@threlte/core';
-	import { World } from '@threlte/rapier';
+	import { World, RigidBody, AutoColliders } from '@threlte/rapier';
 	import type { DiceConfig, DiceRollResult, SingleDiceResult, PhysicsConfig } from './types';
+	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
 	import { getStyleConfig } from './styles';
+	import { detectTopFace } from './utils/dice-geometry';
 	import { browser } from '$app/environment';
+	import type { Vector3Tuple } from 'three';
 
 	// Dice model imports
 	import D4 from './models/D4.svelte';
@@ -38,6 +41,8 @@
 	// State
 	let isRolling = $state(false);
 	let rollTrigger = $state(0); // Increments on each roll to trigger animation
+	let diceRefs = $state<(RapierRigidBody | undefined)[]>([]);
+	let settlingCheckInterval: ReturnType<typeof setInterval> | undefined = $state(undefined);
 
 	// Dice components map
 	const diceComponents = {
@@ -49,6 +54,111 @@
 		d20: D20
 	};
 
+	// Helper: Apply quaternion rotation to a vector
+	function applyQuaternionToVector(
+		vec: Vector3Tuple,
+		quat: { x: number; y: number; z: number; w: number }
+	): Vector3Tuple {
+		const [vx, vy, vz] = vec;
+		const { x: qx, y: qy, z: qz, w: qw } = quat;
+
+		// Quaternion multiplication: q * v * q^-1
+		const ix = qw * vx + qy * vz - qz * vy;
+		const iy = qw * vy + qz * vx - qx * vz;
+		const iz = qw * vz + qx * vy - qy * vx;
+		const iw = -qx * vx - qy * vy - qz * vz;
+
+		return [
+			ix * qw + iw * -qx + iy * -qz - iz * -qy,
+			iy * qw + iw * -qy + iz * -qx - ix * -qz,
+			iz * qw + iw * -qz + ix * -qy - iy * -qx
+		];
+	}
+
+	// Helper: Check if all dice have settled (velocity near zero)
+	function checkSettling() {
+		if (!isRolling) return;
+
+		let allSettled = true;
+
+		for (const ref of diceRefs) {
+			if (!ref) continue;
+
+			const linvel = ref.linvel();
+			const angvel = ref.angvel();
+
+			const linearSpeed = Math.sqrt(linvel.x ** 2 + linvel.y ** 2 + linvel.z ** 2);
+			const angularSpeed = Math.sqrt(angvel.x ** 2 + angvel.y ** 2 + angvel.z ** 2);
+
+			// Thresholds for "settled"
+			if (linearSpeed > 0.1 || angularSpeed > 0.1) {
+				allSettled = false;
+				break;
+			}
+		}
+
+		if (allSettled) {
+			// Clear interval
+			if (settlingCheckInterval) {
+				clearInterval(settlingCheckInterval);
+				settlingCheckInterval = undefined;
+			}
+
+			// Read results
+			readResults();
+		}
+	}
+
+	// Helper: Read dice results after settling
+	function readResults() {
+		const results: DiceRollResult[] = [];
+		let refIndex = 0;
+
+		// Group results by dice type
+		for (const diceConfig of config) {
+			const count = diceConfig.count ?? 1;
+			const diceResults: SingleDiceResult[] = [];
+			let total = 0;
+
+			for (let i = 0; i < count; i++) {
+				const ref = diceRefs[refIndex];
+				refIndex++;
+
+				if (!ref) continue;
+
+				// Get rotation (quaternion)
+				const rotation = ref.rotation();
+
+				// Apply rotation to "up" vector [0, 1, 0]
+				const upVector = applyQuaternionToVector([0, 1, 0], rotation);
+
+				// Detect which face is on top
+				const faceValue = detectTopFace(diceConfig.type, upVector);
+
+				diceResults.push({
+					type: diceConfig.type,
+					value: faceValue,
+					id: `${diceConfig.type}-${Date.now()}-${i}`
+				});
+				total += faceValue;
+			}
+
+			results.push({
+				dice: diceConfig.type,
+				results: diceResults,
+				total,
+				timestamp: Date.now()
+			});
+		}
+
+		isRolling = false;
+
+		// Call complete callback
+		if (onRollComplete) {
+			onRollComplete(results);
+		}
+	}
+
 	/**
 	 * Roll the dice with physics simulation
 	 */
@@ -56,49 +166,68 @@
 		if (isRolling) return;
 
 		isRolling = true;
-		rollTrigger++; // Trigger re-render with new random positions
+		rollTrigger++; // Trigger re-render to reset positions
 
 		// Call start callback
 		if (onRollStart) {
 			onRollStart();
 		}
 
-		// For now, simulate the roll with a timeout
-		// TODO: Implement actual physics simulation with Rapier
+		// After render, apply physics forces
 		setTimeout(() => {
-			// Generate random results
-			const results: DiceRollResult[] = config.map((diceConfig) => {
-				const count = diceConfig.count ?? 1;
-				const diceResults: SingleDiceResult[] = [];
-				let total = 0;
+			diceRefs.forEach((ref, index) => {
+				if (!ref) return;
 
-				const maxValue = parseInt(diceConfig.type.substring(1));
+				// Calculate position spread
+				const totalDice = config.reduce((sum, c) => sum + (c.count ?? 1), 0);
+				const spacing = 2;
+				const xOffset = (index - totalDice / 2) * spacing;
 
-				for (let i = 0; i < count; i++) {
-					const value = Math.floor(Math.random() * maxValue) + 1;
-					diceResults.push({
-						type: diceConfig.type,
-						value,
-						id: `${diceConfig.type}-${Date.now()}-${i}`
-					});
-					total += value;
-				}
+				// Set initial position (high above table)
+				ref.setTranslation(
+					{
+						x: xOffset + (Math.random() - 0.5) * 1,
+						y: 5 + Math.random() * 2,
+						z: (Math.random() - 0.5) * 1
+					},
+					true
+				);
 
-				return {
-					dice: diceConfig.type,
-					results: diceResults,
-					total,
-					timestamp: Date.now()
-				};
+				// Set random rotation
+				ref.setRotation(
+					{
+						x: Math.random(),
+						y: Math.random(),
+						z: Math.random(),
+						w: Math.random()
+					},
+					true
+				);
+
+				// Apply random throw velocity
+				ref.setLinvel(
+					{
+						x: (Math.random() - 0.5) * 5,
+						y: -2, // Downward
+						z: (Math.random() - 0.5) * 5
+					},
+					true
+				);
+
+				// Apply random spin
+				ref.setAngvel(
+					{
+						x: (Math.random() - 0.5) * 10,
+						y: (Math.random() - 0.5) * 10,
+						z: (Math.random() - 0.5) * 10
+					},
+					true
+				);
 			});
 
-			isRolling = false;
-
-			// Call complete callback
-			if (onRollComplete) {
-				onRollComplete(results);
-			}
-		}, duration);
+			// Start checking for settling every 100ms
+			settlingCheckInterval = setInterval(checkSettling, 100);
+		}, 50);
 	}
 </script>
 
@@ -117,11 +246,15 @@
 
 			<!-- Physics World -->
 			<World gravity={{ x: 0, y: -9.81, z: 0 }}>
-				<!-- Floor/Table -->
-				<T.Mesh position={[0, -0.5, 0]} receiveShadow>
-					<T.BoxGeometry args={[20, 1, 20]} />
-					<T.MeshStandardMaterial color="#2a2a2a" roughness={0.8} />
-				</T.Mesh>
+				<!-- Static Floor/Table (RigidBody with fixed type) -->
+				<RigidBody type="fixed">
+					<AutoColliders shape="cuboid" restitution={0.3} friction={0.8}>
+						<T.Mesh position={[0, -0.5, 0]} receiveShadow>
+							<T.BoxGeometry args={[20, 1, 20]} />
+							<T.MeshStandardMaterial color="#2a2a2a" roughness={0.8} />
+						</T.Mesh>
+					</AutoColliders>
+				</RigidBody>
 
 				<!-- Dice -->
 				{#if isRolling || config.length > 0}
@@ -136,18 +269,15 @@
 							{@const overallIndex =
 								config.slice(0, index).reduce((sum, c) => sum + (c.count ?? 1), 0) + diceIndex}
 							{@const xOffset = (overallIndex - totalDice / 2) * spacing}
-							{@const yStart = isRolling ? 8 + Math.random() * 3 : 3}
-							{@const zOffset = isRolling ? Math.random() * 2 - 1 : 0}
+							{@const yStart = 3}
+							{@const zOffset = 0}
 
 							<DiceComponent
 								{style}
 								size={diceConfig.size ?? 1}
 								position={[xOffset, yStart, zOffset]}
-								rotation={[
-									Math.random() * Math.PI * 2,
-									Math.random() * Math.PI * 2,
-									Math.random() * Math.PI * 2
-								]}
+								rotation={[0, 0, 0]}
+								bind:rigidBodyRef={diceRefs[overallIndex]}
 							/>
 						{/each}
 					{/each}
