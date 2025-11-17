@@ -3,10 +3,16 @@
 Documentation détaillée pour Claude Code lors du développement d'UbuMaths.
 
 > **Quick Start** : Voir [/CLAUDE.md](../../CLAUDE.md) pour les commandes essentielles
+>
+> **🔴 CURRENT WORK** : Two parallel projects in progress - [See Current Status](./CURRENT-PROJECTS-STATUS.md)
 
 ---
 
 ## 📚 Index
+
+### Current Projects 🔴
+
+- **[CURRENT PROJECTS STATUS](./CURRENT-PROJECTS-STATUS.md)** 🔴 - Status of two parallel projects (Migration + Syntax)
 
 ### Architecture & Structure
 

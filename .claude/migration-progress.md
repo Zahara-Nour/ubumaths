@@ -1,7 +1,27 @@
+# 🔄 MIGRATION PAUSED - Syntax Unification Required (2025-11-17)
+
+## Why Paused
+Before continuing Phase 2 of TinyMath migration, we discovered the migration converter outputs incompatible syntax (`%{variable}` instead of `{{variable}}`). This must be fixed first to avoid importing 2,238 questions with wrong syntax.
+
+## Current Priority
+**Project 2: Template Syntax Unification** (NEW)
+- **Status**: Plan ready, about to execute
+- **Duration**: 1-2 hours
+- **Next Step**: Delete seed questions, then fix converter
+- **Details**: See `.claude/PROJECT-OVERVIEW-2025-11-17.md`
+
+## When to Resume
+After Project 2 completes:
+- Converter will output correct `{{variable}}` syntax
+- Migration can proceed with clean data
+- No runtime adapter needed (cleaner solution)
+
+---
+
 # Migration Progress Report
 
-**Last Updated**: 2025-11-17 (Template System Phase 1 Complete)
-**Overall Progress**: Phase 1 Infrastructure Complete + Template System Fixed
+**Last Updated**: 2025-11-17 (Template System Phase 1 Complete, Migration Paused)
+**Overall Progress**: Phase 1 Infrastructure Complete + Template System Being Fixed
 
 ## Overall Progress Tracking
 
