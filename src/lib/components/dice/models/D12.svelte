@@ -3,12 +3,12 @@
 
 	Renders a 12-sided die using Threlte.
 	Dodecahedron shape with 12 pentagonal faces.
-	Uses textures for numbers instead of 3D text.
 -->
 <script lang="ts">
 	import { T } from '@threlte/core';
+	import { Text } from '@threlte/extras';
 	import { RigidBody, AutoColliders } from '@threlte/rapier';
-	import { getDiceGeometry } from '../utils/dice-geometry';
+	import { getDiceGeometry, getFaceTransform } from '../utils/dice-geometry';
 	import type { DiceStyleConfig } from '../types';
 	import type { Vector3Tuple } from 'three';
 	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
@@ -40,9 +40,6 @@
 	// Get D12 geometry data
 	const geometryData = getDiceGeometry('d12');
 
-	// Face numbers for D12 (matches faceNormals order)
-	const faceNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-
 	// Create Three.js geometry from vertices and indices
 	const geometry = new THREE.BufferGeometry();
 	const vertices = new Float32Array(geometryData.vertices);
@@ -52,50 +49,14 @@
 	geometry.setIndex(new THREE.BufferAttribute(indices, 1));
 	geometry.computeVertexNormals();
 
-	// Add material groups (each pentagonal face = 3 triangles = 9 indices)
-	for (let i = 0; i < 12; i++) {
-		geometry.addGroup(i * 9, 9, i); // start, count, materialIndex
-	}
-
 	// Scale geometry
 	const scaledSize = size * geometryData.scale;
 
-	// Create number texture on canvas
-	function createNumberTexture(number: number): THREE.CanvasTexture {
-		const canvas = document.createElement('canvas');
-		const size = 256;
-		canvas.width = size;
-		canvas.height = size;
-		const ctx = canvas.getContext('2d')!;
+	// Face numbers for D12
+	const faceNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-		// Fill background with base color
-		ctx.fillStyle = style.baseColor;
-		ctx.fillRect(0, 0, size, size);
-
-		// Draw number
-		ctx.fillStyle = style.numberColor;
-		ctx.font = `bold ${size * 0.7}px Arial`;
-		ctx.textAlign = 'center';
-		ctx.textBaseline = 'middle';
-		ctx.fillText(String(number), size / 2, size / 2);
-
-		const texture = new THREE.CanvasTexture(canvas);
-		texture.needsUpdate = true;
-		return texture;
-	}
-
-	// Create materials immediately (not in onMount)
-	const materials = faceNumbers.map((num) => {
-		const texture = createNumberTexture(num);
-		return new THREE.MeshStandardMaterial({
-			map: texture,
-			metalness: style.metalness ?? 0.1,
-			roughness: style.roughness ?? 0.6,
-			emissive: style.emissive ?? '#000000',
-			emissiveIntensity: style.emissiveIntensity ?? 0,
-			side: THREE.DoubleSide
-		});
-	});
+	// Calculate font size based on die size (smaller for more faces)
+	const fontSize = scaledSize * 0.35;
 </script>
 
 <!-- RigidBody for physics simulation -->
@@ -108,9 +69,30 @@
 >
 	<!-- AutoColliders with convexHull shape for complex polyhedron -->
 	<AutoColliders shape="convexHull" restitution={0.3} friction={0.8}>
-		<!-- Die body with textured materials -->
-		{#if materials.length > 0}
-			<T.Mesh {geometry} material={materials} scale={scaledSize} castShadow receiveShadow />
-		{/if}
+		<!-- Die body -->
+		<T.Mesh {geometry} scale={scaledSize} castShadow receiveShadow>
+			<T.MeshStandardMaterial
+				color={style.baseColor}
+				metalness={style.metalness ?? 0.1}
+				roughness={style.roughness ?? 0.6}
+				emissive={style.emissive ?? '#000000'}
+				emissiveIntensity={style.emissiveIntensity ?? 0}
+				side={THREE.DoubleSide}
+			/>
+		</T.Mesh>
 	</AutoColliders>
+
+	<!-- Numbers on each face (outside AutoColliders but inside RigidBody) -->
+	{#each geometryData.faceNormals as faceNormal, index (index)}
+		{@const transform = getFaceTransform(faceNormal, scaledSize, geometryData.inradius, 0.005)}
+		<Text
+			text={String(faceNumbers[index])}
+			position={transform.position}
+			rotation={transform.rotation}
+			{fontSize}
+			color={style.numberColor}
+			anchorX="center"
+			anchorY="middle"
+		/>
+	{/each}
 </RigidBody>
