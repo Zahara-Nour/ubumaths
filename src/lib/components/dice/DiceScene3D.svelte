@@ -353,6 +353,16 @@
 					</AutoColliders>
 				</RigidBody>
 
+				<!-- Ceiling - Cyan -->
+				<RigidBody type="fixed">
+					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
+						<T.Mesh position={[0, 15, 0]}>
+							<T.BoxGeometry args={[20, 0.5, 20]} />
+							<T.MeshStandardMaterial color="#00ffff" transparent opacity={0.2} />
+						</T.Mesh>
+					</AutoColliders>
+				</RigidBody>
+
 				<!-- Dice -->
 				{#each config as diceConfig, index (`${diceConfig.type}-${index}`)}
 					{@const DiceComponent = diceComponents[diceConfig.type]}
