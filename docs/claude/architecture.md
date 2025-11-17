@@ -480,4 +480,149 @@ export async function checkRateLimit(
 
 ---
 
+## 🔄 Template System Architecture
+
+> 🆕 2025-11-17
+
+### Dual Syntax Bridge Pattern
+
+UbuMaths currently uses **two different template syntaxes** that are bridged by a runtime adapter:
+
+1. **Questions Syntax** (Single-brace) - Database storage
+2. **Markdown Syntax** (Double-brace) - Shared library processing
+
+#### Why Two Syntaxes Exist
+
+**Historical Context**:
+
+- Questions module was developed first with single-brace syntax: `{@:var}`, `{#:1-10}`
+- Shared parameterization library was developed later with Markdown-standard double-brace: `{{var}}`, `{{random:1-10}}`
+- Database contains 71+ seed templates using single-brace syntax
+- Exercises module uses double-brace syntax from the start
+
+**Current State**: Adapter pattern bridges the gap at runtime.
+
+#### Syntax Comparison
+
+| Feature            | Questions Syntax | Markdown Syntax                     |
+| ------------------ | ---------------- | ----------------------------------- |
+| **Variables**      | `{@:varName}`    | `{{varName}}`                       |
+| **Random Integer** | `{#:1-10}`       | `{{random:1-10}}` or `{{1-10}}`     |
+| **Random Decimal** | `{#:2.3}`        | `{{random:2.3}}` or `{{2.3}}`       |
+| **Exclusions**     | `{#:1-10!5}`     | `{{random:1-10!5}}` or `{{1-10!5}}` |
+| **Evaluation**     | `{eval:expr}`    | `{{eval:expr}}`                     |
+| **Nested**         | `{#:1-{@:max}}`  | `{{random:1-{{max}}}}`              |
+
+#### How the Adapter Works
+
+**Location**: `src/lib/questions/generator/syntax-adapter.ts`
+
+**Pattern**: Convert Questions syntax → Markdown syntax before processing
+
+```typescript
+// Integration Point 1: Variable Resolution
+export function resolveVariables(variables, seed) {
+	// Convert all variable expressions to Markdown syntax
+	const convertedVariables = variables.map(convertVariableToMarkdown);
+
+	// Use shared library with converted syntax
+	return sharedResolveVariables(convertedVariables, seed);
+}
+
+// Integration Point 2: Content Resolution
+export function resolveContentField(field, resolvedVariables, seed) {
+	// Convert Questions syntax to Markdown before resolution
+	const markdownContent = convertToMarkdownSyntax(field.content);
+
+	// Resolve with converted content
+	return resolveVariableExpression(markdownContent, resolvedVariables, seed);
+}
+```
+
+**Conversion Examples**:
+
+```typescript
+// Questions → Markdown
+convertToMarkdownSyntax('{@:a}'); // → '{{a}}'
+convertToMarkdownSyntax('{#:1-10}'); // → '{{random:1-10}}'
+convertToMarkdownSyntax('{eval:a+b}'); // → '{{eval:a+b}}'
+
+// Nested conversions
+convertToMarkdownSyntax('{#:1-{@:max}}'); // → '{{random:1-{{max}}}}'
+convertToMarkdownSyntax('{eval:{@:a}+{@:b}}'); // → '{{eval:{{a}}+{{b}}}}'
+```
+
+#### Performance
+
+- **Overhead**: <5ms per question generation
+- **Tested**: 300 conversions in <100ms
+- **Impact**: Negligible for typical usage (1-10 questions/request)
+
+#### When to Use Which Syntax
+
+**Use Questions Syntax** (`{@:var}`):
+
+- Creating templates in database
+- Writing seed templates
+- Migrating from old system
+- Following existing database patterns
+
+**Use Markdown Syntax** (`{{var}}`):
+
+- Creating exercises
+- Using shared parameterization directly
+- Writing documentation examples
+- Following Markdown standards
+
+**The adapter handles conversion automatically** - you don't need to manually convert.
+
+#### Future Plans
+
+**Phase 2: Template System Unification** (Planned)
+
+Three options under consideration:
+
+1. **Keep Adapter** (Current)
+   - ✅ No breaking changes
+   - ✅ Already tested and working
+   - ⚠️ Permanent complexity layer
+
+2. **Migrate Database to Markdown**
+   - ✅ Single syntax across system
+   - ✅ No conversion overhead
+   - ⚠️ Requires database migration
+   - ⚠️ Breaking change for imports
+
+3. **Dual-Mode Tokenizer**
+   - ✅ Native support for both syntaxes
+   - ✅ Most future-proof
+   - ⚠️ Complex implementation
+   - ⚠️ Affects shared library
+
+**Decision pending**: Monitor adapter performance in production first.
+
+#### Related Documentation
+
+- **Complete Status**: `.claude/template-system-status.md` - Session recovery and details
+- **Bug Report**: `BUG_REPORT_SYNTAX_MISMATCH.md` - Why adapter was needed
+- **Implementation**: `IMPLEMENTATION_PLAN_SYNTAX_FIX.md` - How it was built
+- **Syntax Guide**: `docs/features/questions/syntax-guide.md` - User-facing reference
+
+#### Development Notes
+
+**For Claude Code**:
+
+- When working with Questions module: Expect single-brace syntax in database
+- When working with Shared library: Expect double-brace syntax
+- The adapter bridges these automatically at runtime
+- Tests use Questions syntax to match database reality
+
+**For Users**:
+
+- Use Questions syntax (`{@:var}`) when creating templates in UI
+- Documentation shows both syntaxes for reference
+- System handles conversion transparently
+
+---
+
 **Navigation** : [← Back to Claude Docs](./README.md)
