@@ -43,6 +43,7 @@
 	let rollTrigger = $state(0); // Increments on each roll to trigger animation
 	let diceRefs = $state.raw<(RapierRigidBody | undefined)[]>([]); // Use .raw() for 3D objects
 	let settlingCheckInterval: ReturnType<typeof setInterval> | undefined = $state(undefined);
+	let rollStartTime = $state(0); // Track roll start for timeout fallback
 
 	// Dice components map
 	const diceComponents = {
@@ -75,9 +76,31 @@
 		];
 	}
 
+	// Helper: Complete the roll and read results
+	function completeRoll() {
+		// Clear interval
+		if (settlingCheckInterval) {
+			clearInterval(settlingCheckInterval);
+			settlingCheckInterval = undefined;
+		}
+
+		// Read results
+		readResults();
+	}
+
 	// Helper: Check if all dice have settled (velocity near zero)
 	function checkSettling() {
 		if (!isRolling) return;
+
+		// Fallback: Force completion after maximum duration (prevents infinite waiting)
+		const elapsed = Date.now() - rollStartTime;
+		const MAX_ROLL_DURATION = 5000; // 5 seconds
+
+		if (elapsed > MAX_ROLL_DURATION) {
+			console.warn('Dice roll exceeded maximum duration, forcing completion');
+			completeRoll();
+			return;
+		}
 
 		let allSettled = true;
 
@@ -90,22 +113,15 @@
 			const linearSpeed = Math.sqrt(linvel.x ** 2 + linvel.y ** 2 + linvel.z ** 2);
 			const angularSpeed = Math.sqrt(angvel.x ** 2 + angvel.y ** 2 + angvel.z ** 2);
 
-			// Thresholds for "settled"
-			if (linearSpeed > 0.1 || angularSpeed > 0.1) {
+			// Thresholds for "settled" (lowered to 0.05 for more accurate detection)
+			if (linearSpeed > 0.05 || angularSpeed > 0.05) {
 				allSettled = false;
 				break;
 			}
 		}
 
 		if (allSettled) {
-			// Clear interval
-			if (settlingCheckInterval) {
-				clearInterval(settlingCheckInterval);
-				settlingCheckInterval = undefined;
-			}
-
-			// Read results
-			readResults();
+			completeRoll();
 		}
 	}
 
@@ -166,6 +182,7 @@
 		if (isRolling) return;
 
 		isRolling = true;
+		rollStartTime = Date.now(); // Track start time for timeout fallback
 		rollTrigger++; // Trigger re-render to reset positions
 
 		// Call start callback
@@ -204,12 +221,12 @@
 					true
 				);
 
-				// Apply random throw velocity
+				// Apply random throw velocity with realistic parabolic trajectory
 				ref.setLinvel(
 					{
-						x: (Math.random() - 0.5) * 5,
-						y: -2, // Downward
-						z: (Math.random() - 0.5) * 5
+						x: (Math.random() - 0.5) * 4, // Horizontal dispersion
+						y: Math.random() * 2, // Upward lift for parabolic arc
+						z: (Math.random() - 0.5) * 4 // Horizontal dispersion
 					},
 					true
 				);

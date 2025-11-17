@@ -64,8 +64,8 @@
 	bind:rigidBody={rbRef}
 	type="dynamic"
 	{position}
-	linearDamping={0.5}
-	angularDamping={0.5}
+	linearDamping={0.1}
+	angularDamping={0.1}
 >
 	<!-- AutoColliders with cuboid shape for D6 (most efficient for cubes) -->
 	<AutoColliders shape="cuboid" restitution={0.3} friction={0.8}>

@@ -65,8 +65,8 @@
 	bind:rigidBody={rbRef}
 	type="dynamic"
 	{position}
-	linearDamping={0.5}
-	angularDamping={0.5}
+	linearDamping={0.1}
+	angularDamping={0.1}
 >
 	<!-- AutoColliders with convexHull shape for complex polyhedron -->
 	<AutoColliders shape="convexHull" restitution={0.3} friction={0.8}>
