@@ -297,6 +297,43 @@
 					</AutoColliders>
 				</RigidBody>
 
+				<!-- Invisible Walls (prevent dice from falling off) -->
+				<!-- North Wall (Z+) -->
+				<RigidBody type="fixed" position={[0, 2.5, 10]}>
+					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
+						<T.Mesh visible={false}>
+							<T.BoxGeometry args={[20, 5, 0.5]} />
+						</T.Mesh>
+					</AutoColliders>
+				</RigidBody>
+
+				<!-- South Wall (Z-) -->
+				<RigidBody type="fixed" position={[0, 2.5, -10]}>
+					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
+						<T.Mesh visible={false}>
+							<T.BoxGeometry args={[20, 5, 0.5]} />
+						</T.Mesh>
+					</AutoColliders>
+				</RigidBody>
+
+				<!-- East Wall (X+) -->
+				<RigidBody type="fixed" position={[10, 2.5, 0]}>
+					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
+						<T.Mesh visible={false}>
+							<T.BoxGeometry args={[0.5, 5, 20]} />
+						</T.Mesh>
+					</AutoColliders>
+				</RigidBody>
+
+				<!-- West Wall (X-) -->
+				<RigidBody type="fixed" position={[-10, 2.5, 0]}>
+					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
+						<T.Mesh visible={false}>
+							<T.BoxGeometry args={[0.5, 5, 20]} />
+						</T.Mesh>
+					</AutoColliders>
+				</RigidBody>
+
 				<!-- Dice -->
 				{#each config as diceConfig, index (`${diceConfig.type}-${index}`)}
 					{@const DiceComponent = diceComponents[diceConfig.type]}
