@@ -123,11 +123,11 @@
 	bind:rigidBody={rbRef}
 	type="dynamic"
 	{position}
-	linearDamping={0.1}
-	angularDamping={0.1}
+	linearDamping={0.4}
+	angularDamping={0.4}
 >
 	<!-- AutoColliders with convexHull shape for complex polyhedron -->
-	<AutoColliders shape="convexHull" restitution={0.3} friction={0.8}>
+	<AutoColliders shape="convexHull" restitution={0.15} friction={1.2}>
 		<!-- Die body with number textures -->
 		<T.Mesh {geometry} material={materials} scale={scaledSize} castShadow receiveShadow />
 	</AutoColliders>

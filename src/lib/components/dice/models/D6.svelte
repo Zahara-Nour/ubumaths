@@ -95,11 +95,11 @@
 	bind:rigidBody={rbRef}
 	type="dynamic"
 	{position}
-	linearDamping={0.1}
-	angularDamping={0.1}
+	linearDamping={0.4}
+	angularDamping={0.4}
 >
 	<!-- AutoColliders with cuboid shape for D6 (most efficient for cubes) -->
-	<AutoColliders shape="cuboid" restitution={0.3} friction={0.8}>
+	<AutoColliders shape="cuboid" restitution={0.15} friction={1.2}>
 		<!-- Die body with textured materials -->
 		{#if materials.length > 0}
 			<T.Mesh {geometry} material={materials} scale={scaledSize} castShadow receiveShadow />

@@ -304,7 +304,7 @@
 			<World gravity={[0, -9.81, 0]}>
 				<!-- Static Floor/Table (RigidBody with fixed type) -->
 				<RigidBody type="fixed">
-					<AutoColliders shape="cuboid" restitution={0.3} friction={0.8}>
+					<AutoColliders shape="cuboid" restitution={0.15} friction={1.2}>
 						<T.Mesh position={[0, -0.5, 0]} receiveShadow>
 							<T.BoxGeometry args={[20, 1, 20]} />
 							<T.MeshStandardMaterial color="#2a2a2a" roughness={0.8} />
