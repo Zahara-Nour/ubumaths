@@ -36,7 +36,10 @@
 	});
 
 	// Use Three.js DodecahedronGeometry (D12)
-	const geometry = new THREE.DodecahedronGeometry(1);
+	const baseGeometry = new THREE.DodecahedronGeometry(1);
+
+	// Convert to non-indexed geometry so each face has independent vertices and UVs
+	const geometry = baseGeometry.toNonIndexed();
 
 	// Scale the die
 	const scaledSize = size * 1.0;
@@ -46,37 +49,35 @@
 
 	// Setup UVs and material groups for textures
 	const numFaces = 12;
-	const numVertices = geometry.attributes.position.count;
-	const uvs = new Float32Array(numVertices * 2);
+	const trianglesPerPentagon = 3; // Each pentagonal face is triangulated into 3 triangles
+	const totalTriangles = numFaces * trianglesPerPentagon; // 36 triangles
+	const totalVertices = totalTriangles * 3; // 108 vertices
 
-	// DodecahedronGeometry has 12 pentagonal faces, each split into 5 triangles
-	// Each pentagon is made of 5 vertices, so we need to map UVs for all vertices
-	// We'll map the full texture to each pentagonal face
-	for (let i = 0; i < numVertices; i++) {
-		// Simple UV mapping - can be improved for better appearance
-		const _faceIndex = Math.floor(i / 3);
-		const vertexInFace = i % 3;
+	const uvs = new Float32Array(totalVertices * 2);
 
-		// Map each triangle to full texture
-		if (vertexInFace === 0) {
-			uvs[i * 2 + 0] = 0.5;
-			uvs[i * 2 + 1] = 0; // top
-		} else if (vertexInFace === 1) {
-			uvs[i * 2 + 0] = 0;
-			uvs[i * 2 + 1] = 1; // bottom-left
-		} else {
-			uvs[i * 2 + 0] = 1;
-			uvs[i * 2 + 1] = 1; // bottom-right
-		}
+	// DodecahedronGeometry triangulates each pentagon into 3 triangles
+	// We map the full texture to ALL 3 triangles of each pentagon
+	for (let triangleIndex = 0; triangleIndex < totalTriangles; triangleIndex++) {
+		const v0 = triangleIndex * 3 + 0;
+		const v1 = triangleIndex * 3 + 1;
+		const v2 = triangleIndex * 3 + 2;
+
+		// Map each triangle to full texture (same texture will appear on all 3 triangles of pentagon)
+		uvs[v0 * 2 + 0] = 0.5;
+		uvs[v0 * 2 + 1] = 0; // top
+		uvs[v1 * 2 + 0] = 0;
+		uvs[v1 * 2 + 1] = 1; // bottom-left
+		uvs[v2 * 2 + 0] = 1;
+		uvs[v2 * 2 + 1] = 1; // bottom-right
 	}
 
 	geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
 
-	// Add material groups - DodecahedronGeometry triangulates pentagons
-	// Each pentagon is split into 3 triangles
-	const trianglesPerFace = 3;
-	for (let i = 0; i < numFaces; i++) {
-		geometry.addGroup(i * trianglesPerFace * 3, trianglesPerFace * 3, i);
+	// Add material groups - group 3 triangles per pentagon face
+	for (let faceIndex = 0; faceIndex < numFaces; faceIndex++) {
+		const startVertex = faceIndex * trianglesPerPentagon * 3; // 9 vertices per pentagon
+		const vertexCount = trianglesPerPentagon * 3; // 9 vertices
+		geometry.addGroup(startVertex, vertexCount, faceIndex);
 	}
 
 	// Create number texture on canvas

@@ -36,7 +36,12 @@
 	});
 
 	// Use Three.js IcosahedronGeometry (D20)
-	const geometry = new THREE.IcosahedronGeometry(1);
+	const baseGeometry = new THREE.IcosahedronGeometry(1);
+
+	// Convert to non-indexed geometry so each face has independent vertices and UVs
+	// This is critical because indexed geometry shares vertices between faces,
+	// making it impossible to have different UV coordinates per face
+	const geometry = baseGeometry.toNonIndexed();
 
 	// Scale the die
 	const scaledSize = size * 1.0;
@@ -47,27 +52,27 @@
 
 	// Setup UVs and material groups for textures
 	const numFaces = 20;
-	const numVertices = geometry.attributes.position.count;
-	const uvs = new Float32Array(numVertices * 2);
+	// After toNonIndexed(), we have 60 vertices (3 per face)
+	const uvs = new Float32Array(numFaces * 3 * 2);
 
 	// Set UVs for each vertex to map full texture on each triangular face
-	for (let i = 0; i < numFaces; i++) {
-		const i0 = i * 3 + 0;
-		const i1 = i * 3 + 1;
-		const i2 = i * 3 + 2;
+	for (let faceIndex = 0; faceIndex < numFaces; faceIndex++) {
+		const v0 = faceIndex * 3 + 0;
+		const v1 = faceIndex * 3 + 1;
+		const v2 = faceIndex * 3 + 2;
 
 		// Triangle corners: map to full texture
-		uvs[i0 * 2 + 0] = 0.5;
-		uvs[i0 * 2 + 1] = 0; // top
-		uvs[i1 * 2 + 0] = 0;
-		uvs[i1 * 2 + 1] = 1; // bottom-left
-		uvs[i2 * 2 + 0] = 1;
-		uvs[i2 * 2 + 1] = 1; // bottom-right
+		uvs[v0 * 2 + 0] = 0.5;
+		uvs[v0 * 2 + 1] = 0; // top
+		uvs[v1 * 2 + 0] = 0;
+		uvs[v1 * 2 + 1] = 1; // bottom-left
+		uvs[v2 * 2 + 0] = 1;
+		uvs[v2 * 2 + 1] = 1; // bottom-right
 	}
 
 	geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
 
-	// Add material groups (each face = 1 triangle = 3 indices)
+	// Add material groups (each face = 1 triangle = 3 vertices)
 	for (let i = 0; i < numFaces; i++) {
 		geometry.addGroup(i * 3, 3, i);
 	}
