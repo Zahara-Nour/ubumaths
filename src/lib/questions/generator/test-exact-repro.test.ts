@@ -17,12 +17,12 @@ describe('Exact reproduction', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Calculate {{a}} + {{b}}' }],
+					statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
 					variables: [
-						{ name: 'a', expression: '{{1-10}}' },
-						{ name: 'b', expression: '{{1-10}}' }
+						{ name: 'a', expression: '{#:1-10}' },
+						{ name: 'b', expression: '{#:1-10}' }
 					],
-					answer: '{{eval:{{a}} + {{b}}}}'
+					answer: '{eval:{@:a} + {@:b}}'
 				}
 			],
 			precision: { type: 'none' },

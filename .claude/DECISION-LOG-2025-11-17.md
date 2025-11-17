@@ -165,6 +165,78 @@ Deciding how to validate converter changes.
 
 ---
 
+## Decision 5: Fix Converter to Output Markdown Syntax
+
+### Context
+After deleting seed questions, need to decide how to fix the converter to output correct syntax.
+
+### Decision
+**FIX CONVERTER** to output Markdown syntax (`{{...}}`) instead of Questions syntax (`{@:...}`, `{#:...}`).
+
+### Details
+- **Date**: 2025-11-17
+- **File**: `src/lib/migration/syntax-converter.ts`
+- **Changes**: 108 lines modified
+- **Alternative Considered**: Create runtime adapter to convert at runtime
+- **Rationale**: Cleaner to fix at source than create permanent workaround
+- **Impact**: All 2,238 migrated questions will have correct syntax from day 1
+
+### Trade-offs
+
+**Chosen Approach** (Fix converter):
+- Pros: Cleaner codebase, no runtime overhead, correct from day 1
+- Cons: Required updating 108 lines of converter code
+
+**Rejected Approach** (Runtime adapter):
+- Pros: No converter changes needed
+- Cons: Permanent runtime overhead, more complex codebase
+
+### Implementation Details
+
+**Patterns Fixed**:
+```typescript
+// Old output (Questions syntax)
+$e[1;10]         → {@:1-10}
+&variable        → {@:variable}
+[_a+b_]          → {eval:a+b}
+
+// New output (Markdown syntax)
+$e[1;10]         → {{1-10}}
+&variable        → {{variable}}
+[_a+b_]          → {{eval:a+b}}
+```
+
+**Testing**:
+- 34 new integration tests
+- 126/126 total tests passing
+- Performance: <100ms for 100 questions
+
+**Code Review**:
+- Status: APPROVED for production
+- Minor issues: TypeScript strict mode (42 errors in tests, non-blocking)
+- Verdict: Ready to process 2,238 TinyMath questions
+
+### Outcome
+
+**Success**:
+- Converter now outputs Markdown syntax
+- All tests passing (100%)
+- Code review approved
+- Ready to resume Project 1 Phase 2
+
+**Long-term Impact**:
+- Single syntax throughout application
+- No runtime conversion overhead
+- Cleaner, more maintainable codebase
+- Better developer experience
+
+**Files Modified**:
+1. `src/lib/migration/syntax-converter.ts` (108 lines)
+2. `src/lib/migration/syntax-converter-integration.test.ts` (new, 34 tests)
+3. `.claude/BACKUP-SEED-QUESTIONS-2025-11-17.md` (backup documentation)
+
+---
+
 ## Key Learnings
 
 1. **Always verify syntax compatibility** before large-scale migrations

@@ -52,9 +52,9 @@ describe('Question Transformer', () => {
 				expect(variation?.variables).toHaveLength(2);
 				expect(variation?.variables?.[0]).toEqual({
 					name: '1',
-					expression: '{#:1-10}'
+					expression: '{{1-10}}'
 				});
-				expect(variation?.answer).toBe('{eval:{@:1}+{@:2}}');
+				expect(variation?.answer).toBe('{{eval:{{1}}+{{2}}}}');
 			});
 
 			it('should detect and transform decimal questions', () => {
@@ -177,7 +177,7 @@ describe('Question Transformer', () => {
 				expect(blanks).toHaveLength(1);
 				expect(blanks?.[0]).toEqual({
 					position: 0,
-					expectedAnswer: '{@:2}'
+					expectedAnswer: '{{2}}'
 				});
 			});
 
@@ -205,8 +205,8 @@ describe('Question Transformer', () => {
 
 				const blanks = result.template?.variations[0]?.blanks;
 				expect(blanks).toHaveLength(2);
-				expect(blanks?.[0]?.expectedAnswer).toBe('{@:1}');
-				expect(blanks?.[1]?.expectedAnswer).toBe('{@:2}');
+				expect(blanks?.[0]?.expectedAnswer).toBe('{{1}}');
+				expect(blanks?.[1]?.expectedAnswer).toBe('{{2}}');
 			});
 		});
 
@@ -232,11 +232,11 @@ describe('Question Transformer', () => {
 
 				const var1 = result.template?.variations[0];
 				expect(var1?.statement[0].content).toContain('Additionner');
-				expect(var1?.answer).toBe('{eval:{@:1}+{@:2}}');
+				expect(var1?.answer).toBe('{{eval:{{1}}+{{2}}}}');
 
 				const var2 = result.template?.variations[1];
 				expect(var2?.statement[0].content).toContain('Soustraire');
-				expect(var2?.answer).toBe('{eval:{@:1}-{@:2}}');
+				expect(var2?.answer).toBe('{{eval:{{1}}-{{2}}}}');
 			});
 		});
 
@@ -415,11 +415,11 @@ describe('Question Transformer', () => {
 				expect(result.success).toBe(true);
 
 				const vars = result.template?.variations[0]?.variables;
-				expect(vars?.[0]).toEqual({ name: '1', expression: '{#:1-9}' });
-				expect(vars?.[1]).toEqual({ name: '2', expression: '{#:0-9!{@:1}}' });
-				expect(vars?.[2]).toEqual({ name: '3', expression: '{eval:{@:1}*10+{@:2}}' });
+				expect(vars?.[0]).toEqual({ name: '1', expression: '{{1-9}}' });
+				expect(vars?.[1]).toEqual({ name: '2', expression: '{{0-9!{{1}}}}' });
+				expect(vars?.[2]).toEqual({ name: '3', expression: '{{eval:{{1}}*10+{{2}}}}' });
 
-				expect(result.template?.variations[0]?.answer).toBe('{@:1}');
+				expect(result.template?.variations[0]?.answer).toBe('{{1}}');
 			});
 
 			it('should handle n-digit number patterns', () => {
@@ -442,7 +442,7 @@ describe('Question Transformer', () => {
 				expect(result.success).toBe(true);
 
 				const vars = result.template?.variations[0]?.variables;
-				expect(vars?.[0]?.expression).toBe('{#:1000-9999}');
+				expect(vars?.[0]?.expression).toBe('{{1000-9999}}');
 			});
 
 			it('should convert list selections', () => {
@@ -465,7 +465,7 @@ describe('Question Transformer', () => {
 				expect(result.success).toBe(true);
 
 				const vars = result.template?.variations[0]?.variables;
-				expect(vars?.[0]?.expression).toBe('{#list:rouge,bleu,vert,jaune}');
+				expect(vars?.[0]?.expression).toBe('{{list:rouge,bleu,vert,jaune}}');
 			});
 		});
 	});
