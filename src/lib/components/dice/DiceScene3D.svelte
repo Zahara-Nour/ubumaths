@@ -7,6 +7,7 @@
 <script lang="ts">
 	import { Canvas } from '@threlte/core';
 	import { T } from '@threlte/core';
+	import { OrbitControls } from '@threlte/extras';
 	import { World, RigidBody, AutoColliders } from '@threlte/rapier';
 	import type { DiceConfig, DiceRollResult, SingleDiceResult, PhysicsConfig } from './types';
 	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
@@ -253,7 +254,7 @@
 		<Canvas>
 			<!-- Camera -->
 			<T.PerspectiveCamera makeDefault position={[0, 8, 12]} fov={50}>
-				<T.Object3D position={[0, 0, 0]} />
+				<OrbitControls target={[0, 0, 0]} enableDamping />
 			</T.PerspectiveCamera>
 
 			<!-- Lighting -->
