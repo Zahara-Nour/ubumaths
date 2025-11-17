@@ -14,6 +14,7 @@
 	import DiceFallback from './DiceFallback.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import { diceStore } from './stores/diceStore.svelte';
 
 	// Props
 	let {
@@ -35,7 +36,6 @@
 	let sceneRef: { roll: () => void } | null = $state(null);
 	let fallbackRef: { roll: () => void } | null = $state(null);
 	let isRolling = $state(false);
-	let history = $state<DiceRollResult[][]>([]);
 
 	// Interactive mode state
 	let selectedDiceType = $state<string>('d6');
@@ -98,10 +98,8 @@
 	function handleRollComplete(result: DiceRollResult[]) {
 		isRolling = false;
 
-		// Add to history if enabled
-		if (showHistory) {
-			history = [result, ...history].slice(0, maxHistory);
-		}
+		// Add to centralized store (single source of truth)
+		diceStore.addRoll(result);
 
 		if (onRollComplete) {
 			onRollComplete(result);
@@ -206,14 +204,15 @@
 	</Button>
 
 	<!-- History -->
-	{#if showHistory && history.length > 0}
+	{#if showHistory && diceStore.rollHistory.length > 0}
 		<div class="history flex flex-col gap-2">
 			<h3 class="text-sm font-semibold text-foreground">Historique</h3>
 			<div class="history-list flex flex-col gap-1">
-				{#each history as roll, index (index)}
+				{@const displayHistory = diceStore.rollHistory.slice(-maxHistory).reverse()}
+				{#each displayHistory as roll, index (index)}
 					<div class="history-item rounded-md bg-muted p-2 text-xs text-muted-foreground">
-						<span class="font-medium">#{history.length - index}:</span>
-						{formatResult(roll)}
+						<span class="font-medium">#{displayHistory.length - index}:</span>
+						{formatResult(roll.results)}
 					</div>
 				{/each}
 			</div>
