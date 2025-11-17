@@ -283,10 +283,13 @@
 						true
 					);
 				});
-			}, 500); // 500ms pause before throw
 
-			// Start checking for settling every 100ms
-			settlingCheckInterval = setInterval(checkSettling, 100);
+				// Start checking for settling AFTER throw is applied
+				// Wait a bit to avoid false positives during initial acceleration
+				setTimeout(() => {
+					settlingCheckInterval = setInterval(checkSettling, 100);
+				}, 100);
+			}, 500); // 500ms pause before throw
 		}, 50);
 	}
 </script>
