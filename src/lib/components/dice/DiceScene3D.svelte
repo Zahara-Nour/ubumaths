@@ -284,25 +284,25 @@
 					// Re-enable physics (set back to dynamic)
 					ref.setBodyType(RAPIER.RigidBodyType.Dynamic, true);
 
-					// Natural throw motion: random direction with upward arc
+					// Powerful throw motion: random direction with high upward arc
 					const throwAngle = Math.random() * Math.PI * 2; // 0 to 360 degrees
-					const throwForce = 3 + Math.random() * 2; // Horizontal force (3-5)
+					const throwForce = 8 + Math.random() * 4; // Horizontal force (8-12)
 
 					ref.setLinvel(
 						{
 							x: Math.cos(throwAngle) * throwForce, // Horizontal direction X
-							y: 2 + Math.random() * 1.5, // Upward arc (2-3.5)
+							y: 5 + Math.random() * 3, // Upward arc (5-8)
 							z: Math.sin(throwAngle) * throwForce // Horizontal direction Z
 						},
 						true
 					);
 
-					// Apply random spin
+					// Apply random spin (increased for powerful throw)
 					ref.setAngvel(
 						{
-							x: (Math.random() - 0.5) * 10,
-							y: (Math.random() - 0.5) * 10,
-							z: (Math.random() - 0.5) * 10
+							x: (Math.random() - 0.5) * 20,
+							y: (Math.random() - 0.5) * 20,
+							z: (Math.random() - 0.5) * 20
 						},
 						true
 					);
