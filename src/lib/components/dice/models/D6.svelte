@@ -61,9 +61,6 @@
 	// Scale geometry
 	const scaledSize = size * geometryData.scale;
 
-	// Create materials with textures for each face
-	let materials = $state.raw<THREE.MeshStandardMaterial[]>([]);
-
 	// Create number texture on canvas
 	function createNumberTexture(number: number): THREE.CanvasTexture {
 		const canvas = document.createElement('canvas');
@@ -72,8 +69,9 @@
 		canvas.height = size;
 		const ctx = canvas.getContext('2d')!;
 
-		// Fill background with transparent (texture will blend with material color)
-		ctx.clearRect(0, 0, size, size);
+		// Fill background with base color
+		ctx.fillStyle = style.baseColor;
+		ctx.fillRect(0, 0, size, size);
 
 		// Draw number
 		ctx.fillStyle = style.numberColor;
@@ -87,19 +85,16 @@
 		return texture;
 	}
 
-	// Initialize materials on mount
-	onMount(() => {
-		materials = faceNumbers.map((num) => {
-			const texture = createNumberTexture(num);
-			return new THREE.MeshStandardMaterial({
-				color: style.baseColor,
-				map: texture,
-				metalness: style.metalness ?? 0.1,
-				roughness: style.roughness ?? 0.6,
-				emissive: style.emissive ?? '#000000',
-				emissiveIntensity: style.emissiveIntensity ?? 0,
-				side: THREE.DoubleSide
-			});
+	// Create materials immediately (not in onMount)
+	const materials = faceNumbers.map((num) => {
+		const texture = createNumberTexture(num);
+		return new THREE.MeshStandardMaterial({
+			map: texture,
+			metalness: style.metalness ?? 0.1,
+			roughness: style.roughness ?? 0.6,
+			emissive: style.emissive ?? '#000000',
+			emissiveIntensity: style.emissiveIntensity ?? 0,
+			side: THREE.DoubleSide
 		});
 	});
 </script>
