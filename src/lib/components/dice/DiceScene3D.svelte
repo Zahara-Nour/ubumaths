@@ -275,7 +275,6 @@
 				</RigidBody>
 
 				<!-- Dice -->
-				{#if isRolling || config.length > 0}
 					{#each config as diceConfig, index (`${diceConfig.type}-${index}`)}
 						{@const DiceComponent = diceComponents[diceConfig.type]}
 						{@const style = getStyleConfig(diceConfig.style ?? 'classic')}
@@ -287,7 +286,7 @@
 							{@const overallIndex =
 								config.slice(0, index).reduce((sum, c) => sum + (c.count ?? 1), 0) + diceIndex}
 							{@const xOffset = (overallIndex - totalDice / 2) * spacing}
-							{@const yStart = 3}
+							{@const yStart = isRolling ? 3 : 1}
 							{@const zOffset = 0}
 
 							<DiceComponent
@@ -298,7 +297,6 @@
 							/>
 						{/each}
 					{/each}
-				{/if}
 			</World>
 		</Canvas>
 	</div>
