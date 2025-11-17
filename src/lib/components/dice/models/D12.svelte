@@ -56,19 +56,20 @@
 	const uvs = new Float32Array(totalVertices * 2);
 
 	// DodecahedronGeometry triangulates each pentagon into 3 triangles
-	// We map the full texture to ALL 3 triangles of each pentagon
+	// Map all vertices to center region so number appears only once per pentagon
 	for (let triangleIndex = 0; triangleIndex < totalTriangles; triangleIndex++) {
 		const v0 = triangleIndex * 3 + 0;
 		const v1 = triangleIndex * 3 + 1;
 		const v2 = triangleIndex * 3 + 2;
 
-		// Map each triangle to full texture (same texture will appear on all 3 triangles of pentagon)
+		// Map all vertices to center region (0.35-0.65) so number appears only once
+		// This prevents the number from appearing 3 times (once per triangle)
 		uvs[v0 * 2 + 0] = 0.5;
-		uvs[v0 * 2 + 1] = 0; // top
-		uvs[v1 * 2 + 0] = 0;
-		uvs[v1 * 2 + 1] = 1; // bottom-left
-		uvs[v2 * 2 + 0] = 1;
-		uvs[v2 * 2 + 1] = 1; // bottom-right
+		uvs[v0 * 2 + 1] = 0.35;
+		uvs[v1 * 2 + 0] = 0.35;
+		uvs[v1 * 2 + 1] = 0.65;
+		uvs[v2 * 2 + 0] = 0.65;
+		uvs[v2 * 2 + 1] = 0.65;
 	}
 
 	geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
