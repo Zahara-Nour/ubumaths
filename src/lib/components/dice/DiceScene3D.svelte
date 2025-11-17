@@ -227,22 +227,23 @@
 
 				// Calculate position spread
 				const totalDice = config.reduce((sum, c) => sum + (c.count ?? 1), 0);
-				const spacing = 6;
+				const spacing = 2;
 				const xOffset = (index - totalDice / 2) * spacing;
 
 				// Wall boundaries (with safety margin)
 				const WALL_LIMIT = 9; // Walls are at ±10.25, so safe area is ±9
 
-				// Calculate position with random offset, then clamp to stay within walls
-				const xPos = clamp(xOffset + (Math.random() - 0.5) * 1, -WALL_LIMIT, WALL_LIMIT);
-				const zPos = clamp((Math.random() - 0.5) * 1, -WALL_LIMIT, WALL_LIMIT);
+				// Natural hand throw: start from near edge of table at hand height
+				const xPos = clamp(xOffset + (Math.random() - 0.5) * 0.5, -WALL_LIMIT, WALL_LIMIT);
+				const zStart = -7; // Start from back edge (negative Z)
+				const yStart = 3 + Math.random() * 0.5; // Hand height (lower than before)
 
-				// Set initial position (high above table, constrained within walls)
+				// Set initial position (at edge of table, like holding dice in hand)
 				ref.setTranslation(
 					{
 						x: xPos,
-						y: 5 + Math.random() * 2,
-						z: zPos
+						y: yStart,
+						z: zStart
 					},
 					true
 				);
@@ -258,13 +259,12 @@
 					true
 				);
 
-				// Apply random throw velocity with realistic parabolic trajectory
-				// Reduced horizontal velocities to keep dice within walls
+				// Natural throw motion: strong forward velocity (Z+), upward arc (Y+), slight lateral spread (X)
 				ref.setLinvel(
 					{
-						x: (Math.random() - 0.5) * 2, // Reduced horizontal dispersion
-						y: Math.random() * 2, // Upward lift for parabolic arc
-						z: (Math.random() - 0.5) * 2 // Reduced horizontal dispersion
+						x: (Math.random() - 0.5) * 1.5, // Slight lateral spread
+						y: 2 + Math.random() * 1.5, // Upward arc for natural throw
+						z: 6 + Math.random() * 2 // Strong forward throw velocity
 					},
 					true
 				);
