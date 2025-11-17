@@ -299,9 +299,9 @@
 
 				<!-- Semi-transparent Walls (prevent dice from falling off) -->
 				<!-- North Wall (Z+) -->
-				<RigidBody type="fixed" position={[0, 2.5, 10]}>
+				<RigidBody type="fixed">
 					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
-						<T.Mesh>
+						<T.Mesh position={[0, 2.5, 10.25]}>
 							<T.BoxGeometry args={[20, 5, 0.5]} />
 							<T.MeshStandardMaterial color="#ff0000" transparent opacity={0.3} />
 						</T.Mesh>
@@ -309,9 +309,9 @@
 				</RigidBody>
 
 				<!-- South Wall (Z-) -->
-				<RigidBody type="fixed" position={[0, 2.5, -10]}>
+				<RigidBody type="fixed">
 					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
-						<T.Mesh>
+						<T.Mesh position={[0, 2.5, -10.25]}>
 							<T.BoxGeometry args={[20, 5, 0.5]} />
 							<T.MeshStandardMaterial color="#00ff00" transparent opacity={0.3} />
 						</T.Mesh>
@@ -319,9 +319,9 @@
 				</RigidBody>
 
 				<!-- East Wall (X+) -->
-				<RigidBody type="fixed" position={[10, 2.5, 0]}>
+				<RigidBody type="fixed">
 					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
-						<T.Mesh>
+						<T.Mesh position={[10.25, 2.5, 0]}>
 							<T.BoxGeometry args={[0.5, 5, 20]} />
 							<T.MeshStandardMaterial color="#0000ff" transparent opacity={0.3} />
 						</T.Mesh>
@@ -329,9 +329,9 @@
 				</RigidBody>
 
 				<!-- West Wall (X-) -->
-				<RigidBody type="fixed" position={[-10, 2.5, 0]}>
+				<RigidBody type="fixed">
 					<AutoColliders shape="cuboid" restitution={0.5} friction={0.5}>
-						<T.Mesh>
+						<T.Mesh position={[-10.25, 2.5, 0]}>
 							<T.BoxGeometry args={[0.5, 5, 20]} />
 							<T.MeshStandardMaterial color="#ffff00" transparent opacity={0.3} />
 						</T.Mesh>
