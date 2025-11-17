@@ -274,26 +274,6 @@
 
 			<!-- Physics World -->
 			<World gravity={[0, -9.81, 0]}>
-				<!-- DEBUG: Test Sphere - Should be visible if rendering works -->
-				<T.Mesh position={[0, 2, 0]}>
-					<T.SphereGeometry args={[1, 32, 32]} />
-					<T.MeshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={0.5} />
-				</T.Mesh>
-
-				<!-- DEBUG: Blue cube WITHOUT RigidBody (should be visible) -->
-				<T.Mesh position={[3, 2, 0]} castShadow>
-					<T.BoxGeometry args={[2, 2, 2]} />
-					<T.MeshStandardMaterial color="#0000ff" />
-				</T.Mesh>
-
-				<!-- DEBUG: Test Cube with RigidBody (no AutoColliders) -->
-				<RigidBody type="dynamic" position={[-3, 2, 0]}>
-					<T.Mesh castShadow>
-						<T.BoxGeometry args={[2, 2, 2]} />
-						<T.MeshStandardMaterial color="#00ff00" />
-					</T.Mesh>
-				</RigidBody>
-
 				<!-- Static Floor/Table (RigidBody with fixed type) -->
 				<RigidBody type="fixed">
 					<AutoColliders shape="cuboid" restitution={0.3} friction={0.8}>
@@ -311,36 +291,20 @@
 						{@const count = diceConfig.count ?? 1}
 
 						{#each Array(count) as _, diceIndex (`${diceConfig.type}-${index}-${diceIndex}-${rollTrigger}`)}
-							{@const spacing = 6}
+							{@const spacing = 3}
 							{@const totalDice = config.reduce((sum, c) => sum + (c.count ?? 1), 0)}
 							{@const overallIndex =
 								config.slice(0, index).reduce((sum, c) => sum + (c.count ?? 1), 0) + diceIndex}
 							{@const xOffset = (overallIndex - totalDice / 2) * spacing}
-							{@const yStart = isRolling ? 3 : 2}
+							{@const yStart = isRolling ? 3 : 1.5}
 							{@const zOffset = 0}
 
-							<!-- DEBUG: Simple dice test (bypassing component) -->
-							<RigidBody
-								type="dynamic"
-								position={[xOffset, yStart, zOffset]}
-								bind:rigidBody={diceRefs[overallIndex]}
-							>
-								<AutoColliders shape="cuboid">
-									<T.Mesh scale={5} castShadow>
-										<T.BoxGeometry args={[1, 1, 1]} />
-										<T.MeshStandardMaterial color={style.baseColor} />
-									</T.Mesh>
-								</AutoColliders>
-							</RigidBody>
-
-							<!--
 							<DiceComponent
 								{style}
-								size={diceConfig.size ?? 5}
+								size={diceConfig.size ?? 2}
 								position={[xOffset, yStart, zOffset]}
 								bind:rigidBodyRef={diceRefs[overallIndex]}
 							/>
-							-->
 						{/each}
 					{/each}
 			</World>
