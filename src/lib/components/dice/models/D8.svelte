@@ -37,19 +37,11 @@
 		rigidBodyRef = rbRef;
 	});
 
-	// Get D8 geometry data
+	// Use Three.js OctahedronGeometry (D8)
+	const geometry = new THREE.OctahedronGeometry(1);
+
+	// Get geometry data for face normals and scale
 	const geometryData = getDiceGeometry('d8');
-
-	// Create Three.js geometry from vertices and indices
-	const geometry = new THREE.BufferGeometry();
-	const vertices = new Float32Array(geometryData.vertices);
-	const indices = new Uint16Array(geometryData.indices);
-
-	geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-	geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-	geometry.computeVertexNormals();
-
-	// Scale geometry
 	const scaledSize = size * geometryData.scale;
 
 	// Face numbers for D8

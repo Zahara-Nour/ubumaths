@@ -50,7 +50,7 @@
 	geometry.computeVertexNormals();
 
 	// Scale geometry
-	const scaledSize = size * geometryData.scale;
+	const scaledSize = size * geometryData.scale * 0.9; // Scale down slightly for better proportions
 
 	// Face numbers for D10 - must match faceValueMappings.d10 from dice-geometry.ts
 	// Standard RPG D10: face 9 shows "0" (can represent 10 in d100 rolls)

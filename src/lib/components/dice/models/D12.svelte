@@ -37,19 +37,11 @@
 		rigidBodyRef = rbRef;
 	});
 
-	// Get D12 geometry data
+	// Use Three.js DodecahedronGeometry (D12)
+	const geometry = new THREE.DodecahedronGeometry(1);
+
+	// Get geometry data for face normals and scale
 	const geometryData = getDiceGeometry('d12');
-
-	// Create Three.js geometry from vertices and indices
-	const geometry = new THREE.BufferGeometry();
-	const vertices = new Float32Array(geometryData.vertices);
-	const indices = new Uint16Array(geometryData.indices);
-
-	geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-	geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-	geometry.computeVertexNormals();
-
-	// Scale geometry
 	const scaledSize = size * geometryData.scale;
 
 	// Face numbers for D12
