@@ -1,14 +1,13 @@
 <!--
-	D10 Dice Model (Pentagonal Trapezohedron)
+	D10 Dice Model (Pentagonal Dipyramid)
 
 	Renders a 10-sided die using Threlte.
-	Pentagonal trapezohedron shape (numbered 0-9 or 1-10).
+	Uses custom geometry with canvas textures (inspired by threejs-dice).
 -->
 <script lang="ts">
 	import { T } from '@threlte/core';
-	import { Text } from '@threlte/extras';
 	import { RigidBody, AutoColliders } from '@threlte/rapier';
-	import { getDiceGeometry, getFaceTransform } from '../utils/dice-geometry';
+	import { getDiceGeometry } from '../utils/dice-geometry';
 	import type { DiceStyleConfig } from '../types';
 	import type { Vector3Tuple } from 'three';
 	import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
@@ -29,38 +28,155 @@
 		rigidBodyRef?: RapierRigidBody | undefined;
 	} = $props();
 
-	// Internal rigid body reference (use .raw() for 3D objects to avoid proxy overhead)
+	// Internal rigid body reference
 	let rbRef: RapierRigidBody | undefined = $state.raw(undefined);
 
-	// Sync internal ref with bindable prop
 	$effect(() => {
 		rigidBodyRef = rbRef;
 	});
 
-	// Get D10 geometry data
-	const geometryData = getDiceGeometry('d10');
+	// Scale the die (threejs-dice uses 0.9 for D10)
+	const scaledSize = size * 0.9;
 
-	// Create Three.js geometry from vertices and indices
-	const geometry = new THREE.BufferGeometry();
-	const vertices = new Float32Array(geometryData.vertices);
-	const indices = new Uint16Array(geometryData.indices);
+	// Face numbers for D10 (0-9, standard D10 numbering)
+	const faceNumbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-	geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-	geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-	geometry.computeVertexNormals();
+	// Pentagonal dipyramid vertices (from threejs-dice)
+	// 10 vertices in circular pattern with alternating heights + 2 apex vertices
+	const vertices: Vector3Tuple[] = [];
+	for (let i = 0; i < 10; i++) {
+		const angle = (Math.PI * 2 * i) / 10;
+		const height = 0.105 * (i % 2 ? 1 : -1);
+		vertices.push([Math.cos(angle), Math.sin(angle), height]);
+	}
+	vertices.push([0, 0, -1]); // Bottom apex (vertex 10)
+	vertices.push([0, 0, 1]); // Top apex (vertex 11)
 
-	// Scale geometry
-	const scaledSize = size * geometryData.scale * 0.9; // Scale down slightly for better proportions
+	// 10 numbered faces (kite-shaped, defined by 4 vertices)
+	// From threejs-dice face definitions (first 10 faces are the numbered ones)
+	const faces: number[][] = [
+		[5, 7, 11, 0],
+		[4, 2, 10, 1],
+		[1, 3, 11, 2],
+		[0, 8, 10, 3],
+		[7, 9, 11, 4],
+		[8, 6, 10, 5],
+		[9, 1, 11, 6],
+		[2, 0, 10, 7],
+		[3, 5, 11, 8],
+		[6, 4, 10, 9]
+	];
 
-	// Face numbers for D10 - must match faceValueMappings.d10 from dice-geometry.ts
-	// Standard RPG D10: face 9 shows "0" (can represent 10 in d100 rolls)
-	const faceNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+	// Calculate face normals
+	const faceNormals: Vector3Tuple[] = faces.map((face) => {
+		// Calculate centroid
+		let cx = 0,
+			cy = 0,
+			cz = 0;
+		face.forEach((vertexIndex) => {
+			const [x, y, z] = vertices[vertexIndex];
+			cx += x;
+			cy += y;
+			cz += z;
+		});
+		cx /= face.length;
+		cy /= face.length;
+		cz /= face.length;
 
-	// Calculate font size based on die size
-	const fontSize = scaledSize * 0.45;
+		// Normalize to get normal
+		const length = Math.sqrt(cx * cx + cy * cy + cz * cz);
+		return [cx / length, cy / length, cz / length];
+	});
+
+	// Store face normals for detectTopFace
+	const customGeometry = getDiceGeometry('d10');
+	customGeometry.faceNormals = faceNormals;
+
+	// Create custom D10 geometry with UV mapping
+	function createD10Geometry(): THREE.BufferGeometry {
+		const geometry = new THREE.BufferGeometry();
+		const positions: number[] = [];
+		const uvs: number[] = [];
+
+		// Process each kite-shaped face (4 vertices)
+		for (let faceIndex = 0; faceIndex < faces.length; faceIndex++) {
+			const face = faces[faceIndex];
+
+			// Split kite face into 2 triangles
+			// Triangle 1: vertices 0, 1, 2
+			// Triangle 2: vertices 0, 2, 3
+
+			const v0 = vertices[face[0]];
+			const v1 = vertices[face[1]];
+			const v2 = vertices[face[2]];
+			const v3 = vertices[face[3]];
+
+			// Triangle 1
+			positions.push(...v0, ...v1, ...v2);
+			// UVs for triangle (simple planar mapping)
+			uvs.push(0.5, 0, 0, 1, 1, 1);
+
+			// Triangle 2
+			positions.push(...v0, ...v2, ...v3);
+			// UVs for triangle
+			uvs.push(0.5, 0, 1, 1, 0, 1);
+		}
+
+		geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+		geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+
+		// Add material groups (two triangles per face)
+		for (let faceIndex = 0; faceIndex < faces.length; faceIndex++) {
+			geometry.addGroup(faceIndex * 6, 6, faceIndex);
+		}
+
+		geometry.computeVertexNormals();
+		return geometry;
+	}
+
+	const geometry = createD10Geometry();
+
+	// Create number texture on canvas
+	function createNumberTexture(number: number): THREE.CanvasTexture {
+		const canvas = document.createElement('canvas');
+		const canvasSize = 256;
+		canvas.width = canvasSize;
+		canvas.height = canvasSize;
+		const ctx = canvas.getContext('2d')!;
+
+		// Fill background
+		ctx.fillStyle = style.baseColor;
+		ctx.fillRect(0, 0, canvasSize, canvasSize);
+
+		// Font setup
+		ctx.fillStyle = style.numberColor;
+		const fontSize = canvasSize * 0.5;
+		ctx.font = `bold ${fontSize}px Arial`;
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+
+		// Draw number centered
+		ctx.fillText(String(number), canvasSize / 2, canvasSize / 2);
+
+		const texture = new THREE.CanvasTexture(canvas);
+		texture.needsUpdate = true;
+		return texture;
+	}
+
+	// Create materials for each face
+	const materials = faceNumbers.map((num) => {
+		const texture = createNumberTexture(num);
+		return new THREE.MeshStandardMaterial({
+			map: texture,
+			metalness: style.metalness ?? 0.1,
+			roughness: style.roughness ?? 0.6,
+			emissive: style.emissive ?? '#000000',
+			emissiveIntensity: style.emissiveIntensity ?? 0,
+			side: THREE.DoubleSide
+		});
+	});
 </script>
 
-<!-- RigidBody for physics simulation -->
 <RigidBody
 	bind:rigidBody={rbRef}
 	type="dynamic"
@@ -69,32 +185,7 @@
 	angularDamping={0.4}
 	density={3.0}
 >
-	<!-- AutoColliders with convexHull shape for complex polyhedron -->
 	<AutoColliders shape="convexHull" restitution={0.15} friction={1.2}>
-		<!-- Die body -->
-		<T.Mesh {geometry} scale={scaledSize} castShadow receiveShadow>
-			<T.MeshStandardMaterial
-				color={style.baseColor}
-				metalness={style.metalness ?? 0.1}
-				roughness={style.roughness ?? 0.6}
-				emissive={style.emissive ?? '#000000'}
-				emissiveIntensity={style.emissiveIntensity ?? 0}
-				side={THREE.DoubleSide}
-			/>
-		</T.Mesh>
+		<T.Mesh {geometry} material={materials} scale={scaledSize} castShadow receiveShadow />
 	</AutoColliders>
-
-	<!-- Numbers on each face (outside AutoColliders but inside RigidBody) -->
-	{#each geometryData.faceNormals as faceNormal, index (index)}
-		{@const transform = getFaceTransform(faceNormal, scaledSize, geometryData.inradius, 0.005)}
-		<Text
-			text={String(faceNumbers[index])}
-			position={transform.position}
-			rotation={transform.rotation}
-			{fontSize}
-			color={style.numberColor}
-			anchorX="center"
-			anchorY="middle"
-		/>
-	{/each}
 </RigidBody>
