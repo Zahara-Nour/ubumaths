@@ -12,6 +12,19 @@ export interface CellState {
 	isExploded?: boolean;
 }
 
+/**
+ * Grid state DTO format for database storage and API communication
+ * This matches the JSONB structure in the database schema
+ */
+export interface GridStateDTO {
+	rows: number;
+	cols: number;
+	mines: [number, number][];
+	revealed: [number, number][];
+	flagged: [number, number][];
+	adjacentCounts: Record<string, number>;
+}
+
 export interface GameState {
 	id?: string; // UUID if saved to database
 	difficulty: 'beginner' | 'intermediate' | 'expert';
