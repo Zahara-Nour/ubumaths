@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Sword, Lock, Target } from 'lucide-svelte';
+	import { Sword, Lock, Target, Grid3x3 } from 'lucide-svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -11,7 +11,7 @@
 	const games: Array<{
 		title: string;
 		description: string;
-		icon: typeof Target | typeof Sword;
+		icon: typeof Target | typeof Sword | typeof Grid3x3;
 		href: string;
 		color: string;
 		emoji: string;
@@ -37,6 +37,15 @@
 			public: true
 		},
 		{
+			title: '2048',
+			description: 'Combinez les tuiles pour atteindre 2048 ! Un défi mathématique addictif.',
+			icon: Grid3x3,
+			href: '/games/2048',
+			color: 'from-purple-500 to-pink-600',
+			emoji: '🔢',
+			public: true
+		},
+		{
 			title: 'Navadra',
 			description: 'Une aventure épique !',
 			icon: Sword,
@@ -52,7 +61,7 @@
 	<title>Jeux Mathématiques | UbuMaths</title>
 	<meta
 		name="description"
-		content="Apprenez les mathématiques en vous amusant avec nos jeux éducatifs : Père Ubu, Trio, Mathémo et Navadra."
+		content="Apprenez les mathématiques en vous amusant avec nos jeux éducatifs : Trio, Mathémo, 2048 et Navadra."
 	/>
 </svelte:head>
 
