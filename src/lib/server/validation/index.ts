@@ -15,6 +15,7 @@ export * from './classes';
 export * from './draw-vip-cards';
 export * from './errors';
 export * from './exercises';
+export * from './games';
 export * from './google';
 export * from './latex';
 export * from './message-templates';

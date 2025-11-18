@@ -15,6 +15,7 @@ The database is designed to support a complete math learning platform with:
 - **Real-Time Presence**: WebSocket-based online/offline status
 - **Chat Moderation**: User restrictions and moderation audit trail (NEW: 2025-11-10)
 - **Error Monitoring**: Comprehensive error logging and tracking system
+- **Games**: Navadra RPG system, 2048 puzzle game with leaderboards (NEW: 2025-11-18)
 
 ## Entity Relationship Diagram
 
@@ -2119,6 +2120,92 @@ const { data: combats } = await supabase
 	.select('*, monster:game_monsters(*)')
 	.eq('organizer_id', session.user.id)
 	.order('created_at', { ascending: false });
+```
+
+---
+
+## 2048 Game
+
+The 2048 game provides a classic tile-merging puzzle game where students can compete for high scores on a leaderboard.
+
+### `game_2048_scores`
+
+Player scores and statistics for the 2048 game.
+
+| Column             | Type        | Description                                  |
+| ------------------ | ----------- | -------------------------------------------- |
+| id                 | UUID (PK)   | Score record ID                              |
+| user_id            | UUID (FK)   | References auth.users(id) - one row per user |
+| best_score         | INTEGER     | Highest score achieved (>= 0)                |
+| games_played       | INTEGER     | Total number of games played (>= 0)          |
+| tiles_2048_reached | INTEGER     | Count of times user reached 2048 tile (>= 0) |
+| tiles_4096_reached | INTEGER     | Count of times user reached 4096 tile (>= 0) |
+| created_at         | TIMESTAMPTZ | When user first played 2048                  |
+| updated_at         | TIMESTAMPTZ | Last score update                            |
+
+**Unique Constraint**: One row per user_id.
+
+**Indexes**:
+
+- `idx_2048_scores_leaderboard`: Index on `best_score DESC` for leaderboard queries
+- `idx_2048_scores_recent`: Index on `updated_at DESC` for recent activity
+- `idx_2048_scores_user_id`: Index on `user_id` for user lookup
+
+**RLS Policies**:
+
+- Students can view, insert, and update their own scores
+- All authenticated users can view the leaderboard (all scores)
+- Teachers and admins can view all scores
+
+**Trigger**: Automatically updates `updated_at` timestamp on row modification.
+
+**Example Query - Get Top 10 Leaderboard**:
+
+```typescript
+const { data: leaderboard } = await supabase
+	.from('game_2048_scores')
+	.select(
+		'best_score, games_played, tiles_2048_reached, tiles_4096_reached, profiles!inner(full_name, avatar_url)'
+	)
+	.order('best_score', { ascending: false })
+	.limit(10);
+```
+
+**Example Query - Get or Create User Score**:
+
+```typescript
+// Try to get existing score
+let { data: score } = await supabase
+	.from('game_2048_scores')
+	.select('*')
+	.eq('user_id', userId)
+	.single();
+
+// Create if doesn't exist
+if (!score) {
+	const { data: newScore } = await supabase
+		.from('game_2048_scores')
+		.insert({ user_id: userId })
+		.select()
+		.single();
+	score = newScore;
+}
+```
+
+**Example Query - Update Score After Game**:
+
+```typescript
+const { data: updatedScore } = await supabase
+	.from('game_2048_scores')
+	.update({
+		best_score: Math.max(currentBestScore, newScore),
+		games_played: currentGamesPlayed + 1,
+		tiles_2048_reached: reached2048 ? current2048Count + 1 : current2048Count,
+		tiles_4096_reached: reached4096 ? current4096Count + 1 : current4096Count
+	})
+	.eq('user_id', userId)
+	.select()
+	.single();
 ```
 
 ---
