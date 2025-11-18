@@ -44,27 +44,26 @@
 	// Pentagonal dipyramid vertices (from threejs-dice)
 	// 10 vertices in circular pattern with alternating heights + 2 apex vertices
 	const vertices: Vector3Tuple[] = [];
-	for (let i = 0; i < 10; i++) {
-		const angle = (Math.PI * 2 * i) / 10;
+	for (let i = 0, b = 0; i < 10; i++, b += (Math.PI * 2) / 10) {
 		const height = 0.105 * (i % 2 ? 1 : -1);
-		vertices.push([Math.cos(angle), Math.sin(angle), height]);
+		vertices.push([Math.cos(b), Math.sin(b), height]);
 	}
 	vertices.push([0, 0, -1]); // Bottom apex (vertex 10)
 	vertices.push([0, 0, 1]); // Top apex (vertex 11)
 
-	// 10 numbered faces (kite-shaped, defined by 4 vertices)
-	// From threejs-dice face definitions (first 10 faces are the numbered ones)
+	// 10 numbered faces (kite-shaped quadrilaterals)
+	// Each face has 4 vertices forming a kite shape
 	const faces: number[][] = [
-		[5, 7, 11, 0],
-		[4, 2, 10, 1],
-		[1, 3, 11, 2],
-		[0, 8, 10, 3],
-		[7, 9, 11, 4],
-		[8, 6, 10, 5],
-		[9, 1, 11, 6],
-		[2, 0, 10, 7],
-		[3, 5, 11, 8],
-		[6, 4, 10, 9]
+		[5, 7, 11, 0], // Face 0
+		[4, 2, 10, 1], // Face 1
+		[1, 3, 11, 2], // Face 2
+		[0, 8, 10, 3], // Face 3
+		[7, 9, 11, 4], // Face 4
+		[8, 6, 10, 5], // Face 5
+		[9, 1, 11, 6], // Face 6
+		[2, 0, 10, 7], // Face 7
+		[3, 5, 11, 8], // Face 8
+		[6, 4, 10, 9] // Face 9
 	];
 
 	// Calculate face normals
@@ -102,24 +101,24 @@
 		for (let faceIndex = 0; faceIndex < faces.length; faceIndex++) {
 			const face = faces[faceIndex];
 
-			// Split kite face into 2 triangles
-			// Triangle 1: vertices 0, 1, 2
-			// Triangle 2: vertices 0, 2, 3
+			// Kite face has 4 vertices - split into 2 triangles using fan triangulation
+			// Triangle 1: [v0, v1, v3]
+			// Triangle 2: [v1, v2, v3]
 
 			const v0 = vertices[face[0]];
 			const v1 = vertices[face[1]];
 			const v2 = vertices[face[2]];
 			const v3 = vertices[face[3]];
 
-			// Triangle 1
-			positions.push(...v0, ...v1, ...v2);
-			// UVs for triangle (simple planar mapping)
-			uvs.push(0.5, 0, 0, 1, 1, 1);
+			// Triangle 1: [v0, v1, v3]
+			positions.push(...v0, ...v1, ...v3);
+			// UVs mapping texture to kite shape
+			uvs.push(0, 1, 1, 1, 0, 0);
 
-			// Triangle 2
-			positions.push(...v0, ...v2, ...v3);
-			// UVs for triangle
-			uvs.push(0.5, 0, 1, 1, 0, 1);
+			// Triangle 2: [v1, v2, v3]
+			positions.push(...v1, ...v2, ...v3);
+			// UVs mapping texture to kite shape
+			uvs.push(1, 1, 1, 0, 0, 0);
 		}
 
 		geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
