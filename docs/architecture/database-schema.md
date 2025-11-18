@@ -3338,13 +3338,11 @@ Stores Minesweeper game sessions with support for both public and authenticated 
 | difficulty         | TEXT        | 'beginner', 'intermediate', or 'expert'                            |
 | status             | TEXT        | 'in_progress', 'won', or 'lost'                                    |
 | grid_state         | JSONB       | Complete game state for resuming (see structure below)             |
-| time_seconds       | INTEGER     | Time taken to complete (NULL for in_progress)                      |
-| mines_count        | INTEGER     | Number of mines in the grid                                        |
-| flags_used         | INTEGER     | Number of flags placed (default: 0)                                |
-| cells_revealed     | INTEGER     | Number of cells revealed (default: 0)                              |
-| gidouilles_awarded | INTEGER     | Gidouilles earned (0 for public games, >0 for authenticated wins)  |
-| created_at         | TIMESTAMPTZ | Game creation timestamp                                            |
+| time_seconds       | INTEGER     | Time elapsed in seconds (NULL for in_progress)                     |
+| gidouilles_awarded | INTEGER     | Gidouilles earned (0 for public games, calculated server-side)     |
+| started_at         | TIMESTAMPTZ | Auto-set by trigger on first move (NULL until first grid change)   |
 | completed_at       | TIMESTAMPTZ | Completion timestamp (NULL for in_progress)                        |
+| created_at         | TIMESTAMPTZ | Game creation timestamp                                            |
 
 **Foreign Keys**:
 - `student_id` → `profiles(id)` (ON DELETE CASCADE)
@@ -3352,29 +3350,98 @@ Stores Minesweeper game sessions with support for both public and authenticated 
 **Constraints**:
 - `difficulty` must be 'beginner', 'intermediate', or 'expert'
 - `status` must be 'in_progress', 'won', or 'lost'
-- `in_progress` games must have `completed_at = NULL`
-- Completed games (won/lost) must have `completed_at IS NOT NULL`
-- Completed games must have `time_seconds > 0`
-- Public games (`student_id = NULL`) must have `gidouilles_awarded = 0`
-- All numeric counts must be >= 0
+- `gidouilles_awarded >= 0 AND gidouilles_awarded <= 1000` (prevents abuse)
+- All numeric values must be >= 0
 
-**Grid State JSONB Structure**:
+**Grid State JSONB Structure** (GridStateDTO format):
 ```json
 {
   "rows": 9,
   "cols": 9,
-  "mines": [[0, 5], [2, 3], ...],           // Array of [row, col] mine positions
-  "revealed": [[0, 0], [0, 1], ...],         // Array of [row, col] revealed cells
-  "flagged": [[1, 2], ...],                  // Array of [row, col] flagged cells
-  "adjacentCounts": {"0-0": 1, "0-1": 2, ...} // Map of "row-col": adjacent mine count
+  "mines": [[0, 5], [2, 3], ...],            // Array of [row, col] mine positions
+  "revealed": [[0, 0], [0, 1], ...],          // Array of [row, col] revealed cells
+  "flagged": [[1, 2], ...],                   // Array of [row, col] flagged cells
+  "adjacentCounts": {"0,0": 1, "0,1": 2, ...} // Map of "row,col": adjacent mine count
 }
 ```
 
+**Note**: adjacentCounts uses comma separator ("0,0") not hyphen.
+
 **Indexes**:
-- `idx_minesweeper_games_student_id` on `student_id` (partial: WHERE student_id IS NOT NULL)
-- `idx_minesweeper_games_student_difficulty_status` on `(student_id, difficulty, status)` (partial: WHERE student_id IS NOT NULL)
-- `idx_minesweeper_games_leaderboard` on `(difficulty, time_seconds, completed_at)` (partial: WHERE status = 'won' AND student_id IS NOT NULL)
-- `idx_minesweeper_games_cleanup` on `(created_at, status)` (partial: WHERE status = 'in_progress')
+- `idx_minesweeper_games_student_status` on `(student_id, status)` (WHERE student_id IS NOT NULL)
+- `idx_minesweeper_games_resume` on `(student_id, status, created_at DESC)` (for resume game queries)
+- `idx_minesweeper_games_difficulty` on `(difficulty, status, time_seconds)` (for leaderboards)
+
+**Triggers**:
+- `set_minesweeper_started_at` (BEFORE UPDATE): Auto-sets `started_at` timestamp on first grid_state change
+
+### Functions (RPC)
+
+#### `complete_minesweeper_game(p_game_id UUID, p_grid_state JSONB)`
+
+**Security**: `SECURITY DEFINER` - Runs with elevated privileges for atomic gidouilles update
+
+**Purpose**: Server-side win validation and reward calculation (prevents client-side manipulation)
+
+**Parameters**:
+- `p_game_id`: UUID of the game being completed
+- `p_grid_state`: Final grid state in GridStateDTO format
+
+**Returns**: TABLE(success BOOLEAN, gidouilles_awarded INTEGER, time_seconds INTEGER)
+
+**Validation Steps**:
+1. Verify ownership (student_id matches authenticated user)
+2. Verify game is in_progress
+3. **Win validation**:
+   - All non-mine cells must be revealed
+   - No mine cells revealed (except flagged)
+   - Reject if validation fails
+4. Calculate time elapsed (NOW() - started_at)
+5. Calculate gidouilles with bonuses:
+   - Time bonus (degressive): 2.0× (≤50% target), 1.5× (≤75%), 1.0× (≤100%), 0.5× (>100%)
+   - Daily degressive: 1.0× (1st win), 0.8× (2nd), 0.6× (3rd), 0.4× (4th+)
+   - Cap at max 1000 gidouilles
+6. Atomically:
+   - Update game status to 'won'
+   - Set completed_at timestamp
+   - Update student's gidouilles balance
+
+**Example**:
+```sql
+SELECT * FROM complete_minesweeper_game(
+  'game-uuid-here',
+  '{"rows": 9, "cols": 9, "mines": [[0,3]], ...}'::jsonb
+);
+-- Returns: (true, 20, 90) for successful completion with 20 gidouilles in 90 seconds
+```
+
+#### `record_minesweeper_loss(p_game_id UUID, p_grid_state JSONB)`
+
+**Security**: `SECURITY DEFINER`
+
+**Purpose**: Records a game loss (mine explosion) with final grid state
+
+**Parameters**:
+- `p_game_id`: UUID of the game
+- `p_grid_state`: Final grid state with exploded mine
+
+**Returns**: TABLE(success BOOLEAN)
+
+**Flow**:
+1. Verify ownership
+2. Verify game is in_progress
+3. Update status to 'lost'
+4. Set completed_at timestamp
+5. Save final grid_state
+
+**Example**:
+```sql
+SELECT * FROM record_minesweeper_loss(
+  'game-uuid-here',
+  '{"rows": 9, "cols": 9, ...}'::jsonb
+);
+-- Returns: (true) for successful recording
+```
 
 ### Views
 
@@ -3494,10 +3561,35 @@ WHERE status = 'in_progress'
 - Awarded on game completion (won status)
 - Amount can vary by difficulty level (implementation detail in application logic)
 
-### Migration
+### Migrations
 
-Created: 2025-11-18
-Migration: `20251118063746_create_minesweeper_tables.sql`
+**Created**: 2025-11-18
+
+1. **`20251118063746_create_minesweeper_tables.sql`**
+   - Initial schema with minesweeper_games table and leaderboard view
+   - Basic RLS policies for authenticated users
+   - Indexes for performance
+
+2. **`20251118120000_harden_minesweeper_security.sql`**
+   - Security hardening based on security audit
+   - Added `started_at` column and auto-trigger
+   - Implemented SECURITY DEFINER RPC functions (complete_minesweeper_game, record_minesweeper_loss)
+   - Server-side win validation to prevent client manipulation
+   - Server-side gidouilles calculation with time bonuses
+   - Added gidouilles cap (max 1000) to prevent abuse
+   - Daily degressive multiplier for repeated wins
+
+### Related Documentation
+
+- **Feature Guide**: [docs/features/minesweeper.md](../features/minesweeper.md) - Complete user and technical guide
+- **Types**: `src/lib/types/minesweeper.ts` - TypeScript interfaces
+- **Store**: `src/lib/stores/minesweeper.svelte.ts` - Game logic and state management
+- **Validation**: `src/lib/server/validation/minesweeper.ts` - Difficulty-specific Zod schemas
+- **API Routes**: `src/routes/api/games/minesweeper/` - API endpoints
+- **Public Page**: `src/routes/(public)/games/minesweeper/` - Main game interface
+- **Stats Page**: `src/routes/(protected)/dashboard/student/minesweeper/stats/` - Personal statistics
+- **Leaderboard**: `src/routes/(protected)/dashboard/student/minesweeper/leaderboard/` - Rankings
+- **Components**: `src/lib/components/game/minesweeper/` - UI components
 
 ---
 
