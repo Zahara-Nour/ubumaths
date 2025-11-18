@@ -135,8 +135,9 @@
 					<div>
 						<h2 class="text-xl font-semibold text-foreground mb-4">Choisir la difficulté</h2>
 						<DifficultySelector
-							onSelect={handleDifficultySelect}
-							isLoading={minesweeperStore.isLoading}
+							selected={selectedDifficulty}
+							onChange={handleDifficultySelect}
+							disabled={minesweeperStore.isLoading}
 						/>
 					</div>
 
