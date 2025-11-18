@@ -224,7 +224,7 @@
 </main>
 
 <style>
-	:global {
+	:global(:root) {
 		--font-scale: 1;
 	}
 </style>
