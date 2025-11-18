@@ -25,6 +25,9 @@
 	// Track confetti interval to clean up on unmount
 	let confettiInterval: ReturnType<typeof setInterval> | null = null;
 
+	// Memoize active tiles to avoid redundant array operations on every render
+	let activeTiles = $derived(gameState.board.flat().filter((t): t is Tile => t !== null));
+
 	// Derive dialog states from game state
 	$effect(() => {
 		if (gameState.gameOver && !showGameOverDialog) {
@@ -223,20 +226,21 @@
 		ontouchstart={handleTouchStart}
 		ontouchend={handleTouchEnd}
 	>
-		<div class="grid grid-cols-4 gap-2 sm:gap-3">
-			{#each gameState.board as row, rowIndex (rowIndex)}
-				{#each row as tile, colIndex (`${rowIndex}-${colIndex}`)}
-					{#if tile}
-						<Tile2048 {tile} showPowerNotation={showEducationalHints} />
-					{:else}
-						<div
-							class="empty-cell h-16 w-16 rounded-lg bg-muted/30 sm:h-20 sm:w-20"
-							data-row={rowIndex}
-							data-col={colIndex}
-						></div>
-					{/if}
+		<!-- Tile container with absolute positioning for smooth animations -->
+		<div class="tile-container relative">
+			<!-- Background grid (empty cells) -->
+			<div class="grid grid-cols-4 gap-2 sm:gap-3" aria-hidden="true">
+				{#each Array(16) as _, index (index)}
+					<div class="empty-cell h-16 w-16 rounded-lg bg-muted/30 sm:h-20 sm:w-20"></div>
 				{/each}
-			{/each}
+			</div>
+
+			<!-- Active tiles (absolutely positioned for animations) -->
+			<div class="absolute inset-0 p-0">
+				{#each activeTiles as tile (tile.id)}
+					<Tile2048 {tile} showPowerNotation={showEducationalHints} />
+				{/each}
+			</div>
 		</div>
 	</div>
 
