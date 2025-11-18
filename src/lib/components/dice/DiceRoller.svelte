@@ -41,6 +41,7 @@
 	let selectedDiceType = $state<string>('d6');
 	let selectedCount = $state(1);
 	let selectedStyle = $state<string>(style);
+	let diceConfigs = $state<DiceConfig[]>([]); // List of added dice in interactive mode
 
 	// Derived config for interactive mode
 	let activeConfig: DiceConfig[] = $derived.by(() => {
@@ -49,13 +50,7 @@
 		}
 
 		if (interactive) {
-			return [
-				{
-					type: selectedDiceType as DiceType,
-					count: selectedCount,
-					style: selectedStyle as DiceStyle
-				}
-			];
+			return diceConfigs;
 		}
 
 		return [];
@@ -126,6 +121,33 @@
 			.join(' | ');
 	}
 
+	/**
+	 * Add dice configuration in interactive mode
+	 */
+	function addDice() {
+		if (selectedCount <= 0) return;
+
+		diceConfigs.push({
+			type: selectedDiceType as DiceType,
+			count: selectedCount,
+			style: selectedStyle as DiceStyle
+		});
+	}
+
+	/**
+	 * Remove dice configuration at index
+	 */
+	function removeDice(index: number) {
+		diceConfigs.splice(index, 1);
+	}
+
+	/**
+	 * Clear all dice configurations
+	 */
+	function clearAllDice() {
+		diceConfigs = [];
+	}
+
 	// Items for dice type selector
 	const diceTypeItems = allDiceTypes.map((type) => ({
 		value: type,
@@ -142,35 +164,73 @@
 <div class="dice-roller flex flex-col gap-4">
 	<!-- Interactive Controls (if in interactive mode) -->
 	{#if interactive}
-		<div class="controls flex flex-wrap items-end gap-4 rounded-lg bg-muted/50 p-4">
-			<!-- Dice Type Selector -->
-			<div class="flex flex-col gap-2">
-				<label class="text-sm font-medium text-foreground">Type de dé</label>
-				<div class="w-48">
-					<MySelect type="single" bind:value={selectedDiceType} items={diceTypeItems} />
+		<div class="controls-wrapper flex flex-col gap-4">
+			<!-- Add Dice Controls -->
+			<div class="controls flex flex-wrap items-end gap-4 rounded-lg bg-muted/50 p-4">
+				<!-- Dice Type Selector -->
+				<div class="flex flex-col gap-2">
+					<label class="text-sm font-medium text-foreground">Type de dé</label>
+					<div class="w-48">
+						<MySelect type="single" bind:value={selectedDiceType} items={diceTypeItems} />
+					</div>
 				</div>
+
+				<!-- Count Input -->
+				<div class="flex flex-col gap-2">
+					<label for="dice-count" class="text-sm font-medium text-foreground">Nombre</label>
+					<input
+						id="dice-count"
+						type="number"
+						min="1"
+						max="10"
+						bind:value={selectedCount}
+						class="h-10 w-24 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+					/>
+				</div>
+
+				<!-- Style Selector -->
+				<div class="flex flex-col gap-2">
+					<label class="text-sm font-medium text-foreground">Style</label>
+					<div class="w-40">
+						<MySelect type="single" bind:value={selectedStyle} items={styleItems} />
+					</div>
+				</div>
+
+				<!-- Add Button -->
+				<Button onclick={addDice} variant="secondary" size="default" class="h-10">
+					+ Ajouter
+				</Button>
 			</div>
 
-			<!-- Count Input -->
-			<div class="flex flex-col gap-2">
-				<label for="dice-count" class="text-sm font-medium text-foreground">Nombre</label>
-				<input
-					id="dice-count"
-					type="number"
-					min="1"
-					max="10"
-					bind:value={selectedCount}
-					class="h-10 w-24 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-				/>
-			</div>
-
-			<!-- Style Selector -->
-			<div class="flex flex-col gap-2">
-				<label class="text-sm font-medium text-foreground">Style</label>
-				<div class="w-40">
-					<MySelect type="single" bind:value={selectedStyle} items={styleItems} />
+			<!-- Added Dice List -->
+			{#if diceConfigs.length > 0}
+				<div class="dice-list flex flex-col gap-2 rounded-lg bg-muted/30 p-4">
+					<div class="flex items-center justify-between">
+						<h3 class="text-sm font-semibold text-foreground">Dés à lancer</h3>
+						<Button onclick={clearAllDice} variant="ghost" size="sm" class="h-8 text-xs">
+							Tout effacer
+						</Button>
+					</div>
+					<div class="flex flex-wrap gap-2">
+						{#each diceConfigs as config, index}
+							<div
+								class="dice-item flex items-center gap-2 rounded-md bg-background px-3 py-2 text-sm"
+							>
+								<span class="font-medium">
+									{config.count}× {getDiceDisplayName(config.type)}
+								</span>
+								<button
+									onclick={() => removeDice(index)}
+									class="ml-1 text-muted-foreground hover:text-destructive transition-colors"
+									aria-label="Supprimer"
+								>
+									×
+								</button>
+							</div>
+						{/each}
+					</div>
 				</div>
-			</div>
+			{/if}
 		</div>
 	{/if}
 
