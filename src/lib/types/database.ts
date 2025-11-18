@@ -6812,6 +6812,73 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			minesweeper_games: {
+				Row: {
+					id: string;
+					student_id: string | null;
+					difficulty: 'beginner' | 'intermediate' | 'expert';
+					status: 'in_progress' | 'won' | 'lost';
+					grid_state: Json;
+					time_seconds: number | null;
+					mines_count: number;
+					flags_used: number;
+					cells_revealed: number;
+					gidouilles_awarded: number;
+					created_at: string;
+					completed_at: string | null;
+				};
+				Insert: {
+					id?: string;
+					student_id?: string | null;
+					difficulty: 'beginner' | 'intermediate' | 'expert';
+					status: 'in_progress' | 'won' | 'lost';
+					grid_state: Json;
+					time_seconds?: number | null;
+					mines_count: number;
+					flags_used?: number;
+					cells_revealed?: number;
+					gidouilles_awarded?: number;
+					created_at?: string;
+					completed_at?: string | null;
+				};
+				Update: {
+					id?: string;
+					student_id?: string | null;
+					difficulty?: 'beginner' | 'intermediate' | 'expert';
+					status?: 'in_progress' | 'won' | 'lost';
+					grid_state?: Json;
+					time_seconds?: number | null;
+					mines_count?: number;
+					flags_used?: number;
+					cells_revealed?: number;
+					gidouilles_awarded?: number;
+					created_at?: string;
+					completed_at?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'minesweeper_games_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_games_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_games_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 		};
 		Views: {
 			active_student_warnings: {
@@ -7395,6 +7462,67 @@ export type Database = {
 					{
 						foreignKeyName: 'conversations_created_by_fkey';
 						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			minesweeper_leaderboard: {
+				Row: {
+					student_id: string | null;
+					first_name: string | null;
+					last_name: string | null;
+					difficulty: string | null;
+					games_won: number | null;
+					games_played: number | null;
+					best_time: number | null;
+					total_gidouilles: number | null;
+					win_rate: number | null;
+					rank: number | null;
+				};
+				Insert: {
+					student_id?: string | null;
+					first_name?: string | null;
+					last_name?: string | null;
+					difficulty?: string | null;
+					games_won?: number | null;
+					games_played?: number | null;
+					best_time?: number | null;
+					total_gidouilles?: number | null;
+					win_rate?: number | null;
+					rank?: never;
+				};
+				Update: {
+					student_id?: string | null;
+					first_name?: string | null;
+					last_name?: string | null;
+					difficulty?: string | null;
+					games_won?: number | null;
+					games_played?: number | null;
+					best_time?: number | null;
+					total_gidouilles?: number | null;
+					win_rate?: number | null;
+					rank?: never;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'minesweeper_games_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_games_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_games_student_id_fkey';
+						columns: ['student_id'];
 						isOneToOne: false;
 						referencedRelation: 'riddle_progress';
 						referencedColumns: ['student_id'];
