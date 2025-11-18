@@ -39,16 +39,14 @@
 	// Scale the die
 	const scaledSize = size * 1.2;
 
-	// Face numbers for D4 - each face shows 3 different numbers (all except its own)
-	// Face 1 shows: 2,3,4 (all except 1)
-	// Face 2 shows: 1,3,4 (all except 2)
-	// Face 3 shows: 1,2,4 (all except 3)
-	// Face 4 shows: 1,2,3 (all except 4)
+	// Face numbers for D4 - ordered by vertex position on each face
+	// Each vertex shows the number of the opposite face (the face that doesn't touch it)
+	// v0→4, v1→3, v2→2, v3→1
 	const faceNumbers: number[][] = [
-		[2, 3, 4], // Face 1
-		[1, 3, 4], // Face 2
-		[1, 2, 4], // Face 3
-		[1, 2, 3] // Face 4
+		[3, 4, 2], // Face 0 (value 1): vertices [v1→3, v0→4, v2→2]
+		[4, 3, 1], // Face 1 (value 2): vertices [v0→4, v1→3, v3→1]
+		[4, 1, 2], // Face 2 (value 3): vertices [v0→4, v3→1, v2→2]
+		[3, 2, 1] // Face 3 (value 4): vertices [v1→3, v2→2, v3→1]
 	];
 
 	// Tetrahedron vertices (alternating corners of a cube)
