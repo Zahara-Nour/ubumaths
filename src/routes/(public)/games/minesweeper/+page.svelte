@@ -69,6 +69,7 @@
 
 		<!-- Game Interface -->
 		{#if gameStarted && minesweeperStore.currentGame}
+			{@const game = minesweeperStore.currentGame}
 			<div class="space-y-6">
 				<!-- Header with back button and game info -->
 				<div class="flex items-center justify-between">
@@ -76,12 +77,12 @@
 						<h1 class="text-3xl md:text-4xl font-bold text-foreground">Démineur</h1>
 						<p class="text-sm text-muted-foreground mt-1">
 							Difficulté: <span class="font-semibold capitalize">
-								{#if minesweeperStore.currentGame.difficulty === 'beginner'}
-									Facile
-								{:else if minesweeperStore.currentGame.difficulty === 'intermediate'}
+								{#if game.difficulty === 'beginner'}
+									Débutant
+								{:else if game.difficulty === 'intermediate'}
 									Intermédiaire
 								{:else}
-									Difficile
+									Expert
 								{/if}
 							</span>
 						</p>
@@ -103,14 +104,26 @@
 					<div class="lg:col-span-3">
 						<Card class="p-6">
 							<div class="flex justify-center">
-								<MinesweeperBoard game={minesweeperStore.currentGame} />
+								<MinesweeperBoard
+									difficulty={game.difficulty}
+									gameState={game}
+									onCellReveal={(row, col) => minesweeperStore.revealCell(row, col)}
+									onCellFlag={(row, col) => minesweeperStore.toggleFlag(row, col)}
+									disabled={game.status === 'won' || game.status === 'lost'}
+								/>
 							</div>
 						</Card>
 					</div>
 
 					<!-- Controls (sidebar) -->
 					<div class="space-y-4">
-						<GameControls game={minesweeperStore.currentGame} />
+						<GameControls
+							timeElapsed={game.timeElapsed}
+							minesRemaining={game.minesCount - game.flagsUsed}
+							gameStatus={game.status}
+							onReset={() => startNewGame()}
+							difficulty={game.difficulty}
+						/>
 					</div>
 				</div>
 
