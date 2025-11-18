@@ -39,14 +39,12 @@
 	// Scale the die
 	const scaledSize = size * 1.2;
 
-	// Face numbers for D4 - ordered by vertex position on each face
-	// Each vertex shows the number of the opposite face (the face that doesn't touch it)
-	// v0→4, v1→3, v2→2, v3→1
+	// Face numbers for D4 - from threejs-dice d4FaceTexts[0] (indices 2-5)
 	const faceNumbers: number[][] = [
-		[3, 4, 2], // Face 0 (value 1): vertices [v1→3, v0→4, v2→2]
-		[4, 3, 1], // Face 1 (value 2): vertices [v0→4, v1→3, v3→1]
-		[4, 1, 2], // Face 2 (value 3): vertices [v0→4, v3→1, v2→2]
-		[3, 2, 1] // Face 3 (value 4): vertices [v1→3, v2→2, v3→1]
+		[2, 4, 3], // Face 1
+		[1, 3, 4], // Face 2
+		[2, 1, 4], // Face 3
+		[1, 2, 3] // Face 4
 	];
 
 	// Tetrahedron vertices (alternating corners of a cube)
@@ -136,6 +134,7 @@
 	const geometry = createTetrahedronGeometry();
 
 	// Create number texture on canvas (D4 style: 3 different numbers with 120° rotation)
+	// Exact implementation from threejs-dice customTextTextureFunction
 	function createNumberTexture(numbers: number[]): THREE.CanvasTexture {
 		const canvas = document.createElement('canvas');
 		const canvasSize = 256;
@@ -149,32 +148,21 @@
 
 		// Font setup
 		ctx.fillStyle = style.numberColor;
-		const fontSize = canvasSize * 0.4;
+		const fontSize = canvasSize / 5; // ts/5 from threejs-dice
 		ctx.font = `bold ${fontSize}px Arial`;
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
 
-		// UV mapping parameters (must match geometry UVs)
-		const angleIncrement = (Math.PI * 2) / 3; // 120 degrees
-		const angleOffset = (Math.PI * 7) / 6; // 210 degrees - matches UV mapping
+		// Draw 3 different numbers with 120° rotations (threejs-dice pattern)
+		// Important: Draw THEN rotate (not rotate then draw)
+		for (let i = 0; i < numbers.length; i++) {
+			// Draw number at current rotation (offset from center)
+			ctx.fillText(String(numbers[i]), canvasSize / 2, canvasSize / 2 - canvasSize * 0.3);
 
-		// Draw 3 different numbers with 120° rotations (D4 triangular face pattern)
-		for (let i = 0; i < 3; i++) {
-			// Save context
-			ctx.save();
-
-			// Translate to center
+			// Rotate for next number (translate to center, rotate, translate back)
 			ctx.translate(canvasSize / 2, canvasSize / 2);
-
-			// Rotate by same angle as UVs to align with vertices
-			const angle = angleIncrement * i + angleOffset;
-			ctx.rotate(angle);
-
-			// Draw the i-th number offset from center toward edge
-			ctx.fillText(String(numbers[i]), 0, -canvasSize * 0.28);
-
-			// Restore context
-			ctx.restore();
+			ctx.rotate((Math.PI * 2) / 3); // 120 degrees
+			ctx.translate(-canvasSize / 2, -canvasSize / 2);
 		}
 
 		const texture = new THREE.CanvasTexture(canvas);
