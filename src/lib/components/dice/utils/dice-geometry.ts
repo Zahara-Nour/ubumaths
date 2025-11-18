@@ -221,13 +221,18 @@ export function detectTopFace(type: DiceType, upVector: Vector3Tuple): number {
 	const length = Math.sqrt(x * x + y * y + z * z);
 	const normalizedUp: Vector3Tuple = [x / length, y / length, z / length];
 
-	// Find the face normal that best matches the up direction
+	// For D4, we need to invert the logic (detect bottom face, not top)
+	// This is because D4 result is read from the face touching the table
+	const targetVector: Vector3Tuple =
+		type === 'd4' ? [-normalizedUp[0], -normalizedUp[1], -normalizedUp[2]] : normalizedUp;
+
+	// Find the face normal that best matches the target direction
 	let maxDot = -Infinity;
 	let topFaceIndex = 0;
 
 	geometry.faceNormals.forEach((normal, index) => {
 		const dot =
-			normal[0] * normalizedUp[0] + normal[1] * normalizedUp[1] + normal[2] * normalizedUp[2];
+			normal[0] * targetVector[0] + normal[1] * targetVector[1] + normal[2] * targetVector[2];
 
 		if (dot > maxDot) {
 			maxDot = dot;
