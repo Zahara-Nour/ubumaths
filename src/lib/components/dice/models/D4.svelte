@@ -154,6 +154,10 @@
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
 
+		// UV mapping parameters (must match geometry UVs)
+		const angleIncrement = (Math.PI * 2) / 3; // 120 degrees
+		const angleOffset = (Math.PI * 7) / 6; // 210 degrees - matches UV mapping
+
 		// Draw 3 different numbers with 120° rotations (D4 triangular face pattern)
 		for (let i = 0; i < 3; i++) {
 			// Save context
@@ -162,8 +166,9 @@
 			// Translate to center
 			ctx.translate(canvasSize / 2, canvasSize / 2);
 
-			// Rotate by 120° * i
-			ctx.rotate((Math.PI * 2 * i) / 3);
+			// Rotate by same angle as UVs to align with vertices
+			const angle = angleIncrement * i + angleOffset;
+			ctx.rotate(angle);
 
 			// Draw the i-th number offset from center toward edge
 			ctx.fillText(String(numbers[i]), 0, -canvasSize * 0.28);
