@@ -27,6 +27,16 @@ interface LocalStorageGame {
 }
 
 /**
+ * Achievement data structure from API
+ */
+export interface UnlockedAchievement {
+	achievement_id: string;
+	name: string;
+	icon: string;
+	difficulty: string | null;
+}
+
+/**
  * Minesweeper Game Store
  * ======================
  *
@@ -87,6 +97,11 @@ class MinesweeperStore {
 	error = $state<string | null>(null);
 
 	/**
+	 * Newly unlocked achievements (for toast notifications)
+	 */
+	newlyUnlockedAchievements = $state<UnlockedAchievement[]>([]);
+
+	/**
 	 * Timer interval
 	 */
 	private timerInterval: ReturnType<typeof setInterval> | null = null;
@@ -131,6 +146,7 @@ class MinesweeperStore {
 
 		this.isLoading = true;
 		this.error = null;
+		this.newlyUnlockedAchievements = []; // Clear previous achievements
 
 		try {
 			const config = DIFFICULTY_CONFIGS[difficulty];
@@ -963,9 +979,20 @@ class MinesweeperStore {
 					throw error;
 				}
 
-				// Show reward notification
+				// Show reward notification and handle achievements
 				if (won && data && typeof data === 'object' && 'gidouilles_earned' in data) {
-					const gidouilles = (data as { gidouilles_earned: number }).gidouilles_earned;
+					const response = data as {
+						gidouilles_earned: number;
+						achievements?: UnlockedAchievement[];
+					};
+					const gidouilles = response.gidouilles_earned;
+
+					// Store newly unlocked achievements for toast display
+					if (response.achievements && response.achievements.length > 0) {
+						this.newlyUnlockedAchievements = response.achievements;
+						logger.info('Unlocked achievements:', response.achievements);
+					}
+
 					if (gidouilles > 0) {
 						toaster.success(`Victoire ! +${gidouilles} gidouilles 🎉`);
 					} else {
@@ -1157,6 +1184,13 @@ class MinesweeperStore {
 	}
 
 	/**
+	 * Clear newly unlocked achievements (after toasts are dismissed)
+	 */
+	clearAchievements(): void {
+		this.newlyUnlockedAchievements = [];
+	}
+
+	/**
 	 * Cleanup intervals and state
 	 */
 	cleanup(): void {
@@ -1166,6 +1200,7 @@ class MinesweeperStore {
 		this.stopAutoSave();
 		this.currentGame = null;
 		this.error = null;
+		this.newlyUnlockedAchievements = [];
 
 		logger.info('Minesweeper store cleaned up');
 	}

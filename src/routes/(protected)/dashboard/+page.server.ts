@@ -110,8 +110,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	if (profile.role === 'student') {
-		// Execute both queries in parallel for better performance
-		const [riddleCount, exercisesData] = await Promise.all([
+		// Execute queries in parallel for better performance
+		const [riddleCount, exercisesData, achievementsData] = await Promise.all([
 			// Get count of successfully solved riddles
 			supabase
 				.from('riddle_attempts')
@@ -145,19 +145,89 @@ export const load: PageServerLoad = async ({ locals }) => {
 				)
 				.eq('exercise_assignments.is_active', true)
 				.limit(5)
-				.order('exercise_assignments.optional_deadline', { ascending: true, nullsFirst: false })
+				.order('exercise_assignments.optional_deadline', { ascending: true, nullsFirst: false }),
+			// Get student Minesweeper achievements
+			supabase
+				.from('student_achievements')
+				.select(
+					`
+					id,
+					achievement_id,
+					unlocked_at,
+					game_achievements (
+						id,
+						name,
+						description,
+						icon,
+						difficulty,
+						game_id
+					)
+				`
+				)
+				.eq('student_id', profile.id)
+				.order('unlocked_at', { ascending: false })
 		]);
 
 		riddlesSolved = riddleCount.count || 0;
 		recentExercises = (exercisesData.data || []) as typeof recentExercises;
+
+		// Transform and flatten achievements data
+		type AchievementRow = {
+			id: string;
+			achievement_id: string;
+			unlocked_at: string;
+			game_achievements: {
+				id: string;
+				name: string;
+				description: string;
+				icon: string;
+				difficulty: string | null;
+				game_id: string;
+			};
+		};
+
+		const minesweeperAchievements =
+			(achievementsData.data as AchievementRow[] | null)?.map((a) => ({
+				id: a.id,
+				achievement_id: a.achievement_id,
+				name: a.game_achievements.name,
+				description: a.game_achievements.description,
+				icon: a.game_achievements.icon,
+				difficulty: a.game_achievements.difficulty,
+				unlocked_at: a.unlocked_at,
+				game_id: a.game_achievements.game_id
+			})) || [];
+
+		// Calculate achievement stats
+		const totalUnlocked = minesweeperAchievements.length;
+		const totalPossible = 10; // Total number of Minesweeper achievements
+
+		const achievementStats = {
+			total_unlocked: totalUnlocked,
+			total_possible: totalPossible,
+			progress_percentage: totalPossible > 0 ? Math.round((totalUnlocked / totalPossible) * 100) : 0
+		};
+
+		// Return profile to the client component
+		// +page.svelte will use profile.role to render the correct dashboard
+		return {
+			profile,
+			riddlesSolved,
+			recentExercises,
+			academicPeriods,
+			minesweeperAchievements,
+			achievementStats
+		};
 	}
 
-	// Return profile to the client component
+	// Return profile to the client component (for non-student roles)
 	// +page.svelte will use profile.role to render the correct dashboard
 	return {
 		profile,
 		riddlesSolved,
 		recentExercises,
-		academicPeriods
+		academicPeriods,
+		minesweeperAchievements: null,
+		achievementStats: null
 	};
 };

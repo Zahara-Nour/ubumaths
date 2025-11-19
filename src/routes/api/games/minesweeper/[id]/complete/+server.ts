@@ -4,6 +4,21 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { completeGameSchema, validateGridState } from '$lib/server/validation/minesweeper';
 
 /**
+ * Type for the complete_minesweeper_game RPC response
+ */
+interface CompleteMinesweeperGameResponse {
+	success: boolean;
+	gidouilles_awarded: number;
+	time_seconds: number;
+	achievements: Array<{
+		achievement_id: string;
+		name: string;
+		icon: string;
+		difficulty: string | null;
+	}>;
+}
+
+/**
  * Complete Minesweeper game (WIN)
  * POST /api/games/minesweeper/[id]/complete
  *
@@ -14,6 +29,7 @@ import { completeGameSchema, validateGridState } from '$lib/server/validation/mi
  * - Awarding Gidouilles based on difficulty
  * - Preventing duplicate rewards
  * - Atomic transaction (game update + reward insert)
+ * - Checking and unlocking achievements automatically
  *
  * **Security**:
  * - Requires authentication (students only)
@@ -39,8 +55,16 @@ import { completeGameSchema, validateGridState } from '$lib/server/validation/mi
  * ```json
  * {
  *   "success": true,
- *   "gidouilles_awarded": 10,
- *   "time_seconds": 145
+ *   "gidouilles": 10,
+ *   "time": 145,
+ *   "achievements": [
+ *     {
+ *       "achievement_id": "first_victory",
+ *       "name": "Premier pas",
+ *       "icon": "🎯",
+ *       "difficulty": null
+ *     }
+ *   ]
  * }
  * ```
  */
@@ -115,10 +139,15 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			throw error(500, 'Aucune donnée retournée par la fonction de complétion');
 		}
 
+		// Type assertion for RPC response
+		const response = data as CompleteMinesweeperGameResponse;
+
+		// ✅ Return success with gidouilles, time, and newly unlocked achievements
 		return json({
 			success: true,
-			gidouilles_awarded: data.gidouilles_awarded,
-			time_seconds: data.time_seconds
+			gidouilles: response.gidouilles_awarded,
+			time: response.time_seconds,
+			achievements: response.achievements || []
 		});
 	} catch (err) {
 		// Re-throw SvelteKit errors
