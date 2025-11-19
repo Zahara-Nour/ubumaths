@@ -59,7 +59,7 @@
 
 	<!-- Info cards for each difficulty -->
 	<div class="mt-4 grid gap-2 sm:grid-cols-3">
-		{#each items as item}
+		{#each items as item (item.value)}
 			<div
 				class="rounded-lg border p-3 transition-all {selected === item.value
 					? 'border-primary bg-primary/5'
