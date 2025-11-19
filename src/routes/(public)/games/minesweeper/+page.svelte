@@ -8,6 +8,7 @@
 	import GameControls from '$lib/components/game/minesweeper/GameControls.svelte';
 	import DifficultySelector from '$lib/components/game/minesweeper/DifficultySelector.svelte';
 	import PremiumBanner from '$lib/components/game/minesweeper/PremiumBanner.svelte';
+	import AchievementToast from '$lib/components/game/minesweeper/AchievementToast.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -181,7 +182,7 @@
 							</div>
 						</div>
 
-						<!-- Links to stats and leaderboard -->
+						<!-- Links to stats, achievements, and leaderboard -->
 						<div>
 							<Separator />
 							<div class="mt-6 space-y-2 border-t pt-6">
@@ -190,6 +191,12 @@
 									<Button variant="outline" class="w-full justify-start">
 										<span class="mr-2">📊</span>
 										Voir mes statistiques
+									</Button>
+								</a>
+								<a href="/dashboard/student/minesweeper/achievements" class="block">
+									<Button variant="outline" class="w-full justify-start">
+										<span class="mr-2">🏅</span>
+										Mes succès
 									</Button>
 								</a>
 								<a href="/dashboard/student/minesweeper/leaderboard" class="block">
@@ -247,6 +254,20 @@
 		{/if}
 	</div>
 </main>
+
+<!-- Achievement toasts (display when achievements are unlocked) -->
+{#each minesweeperStore.newlyUnlockedAchievements as achievement, index (achievement.achievement_id + (achievement.difficulty || ''))}
+	<AchievementToast
+		{achievement}
+		onClose={() => {
+			// Remove this achievement from the list
+			const achievements = [...minesweeperStore.newlyUnlockedAchievements];
+			achievements.splice(index, 1);
+			minesweeperStore.newlyUnlockedAchievements = achievements;
+		}}
+		autoDismiss={5000}
+	/>
+{/each}
 
 <style>
 	:global(:root) {
