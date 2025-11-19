@@ -640,7 +640,8 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
-  v_deleted_count INTEGER;
+  v_deleted_count INTEGER := 0;
+  v_temp INTEGER;
 BEGIN
   -- Delete public games (student_id IS NULL) older than 24 hours and in_progress
   DELETE FROM public.minesweeper_games
@@ -648,7 +649,8 @@ BEGIN
     AND status = 'in_progress'
     AND created_at < NOW() - INTERVAL '24 hours';
 
-  GET DIAGNOSTICS v_deleted_count = ROW_COUNT;
+  GET DIAGNOSTICS v_temp = ROW_COUNT;
+  v_deleted_count := v_temp;
 
   -- Delete in-progress authenticated games older than 7 days
   DELETE FROM public.minesweeper_games
@@ -656,7 +658,8 @@ BEGIN
     AND status = 'in_progress'
     AND created_at < NOW() - INTERVAL '7 days';
 
-  GET DIAGNOSTICS v_deleted_count = v_deleted_count + ROW_COUNT;
+  GET DIAGNOSTICS v_temp = ROW_COUNT;
+  v_deleted_count := v_deleted_count + v_temp;
 
   RETURN v_deleted_count;
 END;
