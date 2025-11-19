@@ -49,7 +49,7 @@
 	});
 </script>
 
-<div class="flex flex-col gap-3 p-4 bg-card rounded-lg border border-border">
+<div class="flex flex-col gap-3 rounded-lg border border-border bg-card p-4">
 	<!-- Top row: Mines, Difficulty, Timer -->
 	<div class="flex items-center justify-between gap-4 text-sm sm:text-base">
 		<div class="flex items-center gap-2 font-mono" aria-label="Mines restantes">
@@ -58,7 +58,7 @@
 		</div>
 
 		<div
-			class="flex items-center gap-2 px-3 py-1 bg-muted rounded-md font-semibold"
+			class="flex items-center gap-2 rounded-md bg-muted px-3 py-1 font-semibold"
 			aria-label="Difficulté"
 		>
 			<span class="text-lg" aria-hidden="true">🎮</span>
@@ -73,7 +73,7 @@
 
 	<!-- Status message (if game ended) -->
 	{#if statusMessage}
-		<div class={cn('text-center font-bold text-lg', statusColor)} role="status" aria-live="polite">
+		<div class={cn('text-center text-lg font-bold', statusColor)} role="status" aria-live="polite">
 			{statusMessage}
 		</div>
 	{/if}

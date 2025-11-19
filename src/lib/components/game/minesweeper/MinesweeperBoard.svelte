@@ -33,10 +33,14 @@
 
 <div class={containerClass}>
 	<div
-		class="inline-grid gap-0.5 p-2 bg-background rounded-lg border border-border"
+		class="inline-grid gap-0.5 rounded-lg border border-border bg-background p-2"
 		style="grid-template-columns: {gridCols};"
 		role="grid"
-		aria-label="Grille de démineur {difficulty === 'beginner' ? 'débutant' : difficulty === 'intermediate' ? 'intermédiaire' : 'expert'}"
+		aria-label="Grille de démineur {difficulty === 'beginner'
+			? 'débutant'
+			: difficulty === 'intermediate'
+				? 'intermédiaire'
+				: 'expert'}"
 	>
 		{#each gameState.grid as row, rowIndex}
 			{#each row as cell, colIndex}
@@ -58,7 +62,7 @@
 </div>
 
 {#if difficulty === 'expert'}
-	<p class="text-xs text-muted-foreground mt-2 text-center md:hidden">
+	<p class="mt-2 text-center text-xs text-muted-foreground md:hidden">
 		Faites défiler horizontalement pour voir toute la grille
 	</p>
 {/if}

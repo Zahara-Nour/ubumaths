@@ -105,7 +105,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 				throw error(400, 'Cette partie est déjà terminée');
 			}
 			if (rpcError.message?.includes('not in progress')) {
-				throw error(400, 'Cette partie n\'est pas en cours');
+				throw error(400, "Cette partie n'est pas en cours");
 			}
 
 			throw error(500, 'Erreur lors de la finalisation de la partie');

@@ -99,10 +99,10 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 				throw error(400, 'Cette partie est déjà terminée');
 			}
 			if (rpcError.message?.includes('not in progress')) {
-				throw error(400, 'Cette partie n\'est pas en cours');
+				throw error(400, "Cette partie n'est pas en cours");
 			}
 
-			throw error(500, 'Erreur lors de l\'enregistrement de la défaite');
+			throw error(500, "Erreur lors de l'enregistrement de la défaite");
 		}
 
 		return json({ success: true });
@@ -113,6 +113,6 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		}
 
 		console.error('Error in loss game endpoint:', err);
-		throw error(500, 'Erreur serveur lors de l\'enregistrement de la défaite');
+		throw error(500, "Erreur serveur lors de l'enregistrement de la défaite");
 	}
 };

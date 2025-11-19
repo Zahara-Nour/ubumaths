@@ -20,8 +20,16 @@ const createGridStateSchema = (difficulty: 'beginner' | 'intermediate' | 'expert
 
 	// Coordinate validator: [row, col] within grid bounds
 	const coordinateSchema = z.tuple([
-		z.number().int().min(0).max(config.rows - 1),
-		z.number().int().min(0).max(config.cols - 1)
+		z
+			.number()
+			.int()
+			.min(0)
+			.max(config.rows - 1),
+		z
+			.number()
+			.int()
+			.min(0)
+			.max(config.cols - 1)
 	]);
 
 	return z.object({

@@ -48,10 +48,12 @@ The Minesweeper game is a classic puzzle game implementation integrated into Ubu
 **Objective**: Reveal all cells that don't contain mines without triggering a mine.
 
 **Controls**:
+
 - **Left click / Tap**: Reveal a cell
 - **Right click / Long press**: Flag a suspected mine
 
 **Cell States**:
+
 - **Number (1-8)**: Shows how many mines are adjacent to that cell
 - **Empty**: No adjacent mines (triggers cascade reveal)
 - **🚩 Flag**: Marks a suspected mine
@@ -59,6 +61,7 @@ The Minesweeper game is a classic puzzle game implementation integrated into Ubu
 - **💥 Explosion**: The mine that ended the game
 
 **Game Flow**:
+
 1. Choose a difficulty level
 2. Click any cell to start (first click is always safe)
 3. Use numbers to deduce mine locations
@@ -67,11 +70,11 @@ The Minesweeper game is a classic puzzle game implementation integrated into Ubu
 
 ### Difficulty Levels
 
-| Difficulty    | Grid Size | Mines | Base Gidouilles | Target Time |
-|---------------|-----------|-------|-----------------|-------------|
-| **Débutant**  | 9×9       | 10    | 10              | 3 minutes   |
-| **Intermédiaire** | 16×16 | 40    | 30              | 10 minutes  |
-| **Expert**    | 16×30     | 99    | 60              | 20 minutes  |
+| Difficulty        | Grid Size | Mines | Base Gidouilles | Target Time |
+| ----------------- | --------- | ----- | --------------- | ----------- |
+| **Débutant**      | 9×9       | 10    | 10              | 3 minutes   |
+| **Intermédiaire** | 16×16     | 40    | 30              | 10 minutes  |
+| **Expert**        | 16×30     | 99    | 60              | 20 minutes  |
 
 ### Scoring System
 
@@ -82,18 +85,21 @@ gidouilles = baseGidouilles × timeBonus × dailyMultiplier
 ```
 
 **Time Bonus** (degressive):
+
 - Finish in ≤ 50% of target time: 2.0× multiplier
 - Finish in ≤ 75% of target time: 1.5× multiplier
 - Finish in ≤ 100% of target time: 1.0× multiplier
 - Finish in > 100% of target time: 0.5× multiplier
 
 **Daily Multiplier** (degressive):
+
 - First win of the day: 1.0×
 - Second win: 0.8×
 - Third win: 0.6×
 - Fourth+ wins: 0.4×
 
 **Example** (Beginner, 90 seconds):
+
 - Base: 10 gidouilles
 - Time bonus: 2.0× (90s ≤ 90s target)
 - Daily multiplier: 1.0× (first win)
@@ -102,6 +108,7 @@ gidouilles = baseGidouilles × timeBonus × dailyMultiplier
 ### Public vs Authenticated Play
 
 #### Public Play (No Account)
+
 - ✅ Unlimited gameplay
 - ✅ All difficulty levels
 - ✅ Game state saved in localStorage
@@ -111,6 +118,7 @@ gidouilles = baseGidouilles × timeBonus × dailyMultiplier
 - ❌ No leaderboard participation
 
 #### Authenticated Play (Student Account)
+
 - ✅ All public features
 - ✅ Game state saved to database
 - ✅ Resume game across devices
@@ -131,25 +139,27 @@ gidouilles = baseGidouilles × timeBonus × dailyMultiplier
 
 Stores game state for authenticated students.
 
-| Column               | Type        | Description                                      |
-|----------------------|-------------|--------------------------------------------------|
-| `id`                 | UUID (PK)   | Game ID                                          |
-| `student_id`         | UUID (FK)   | References profiles(id), NULLABLE for public     |
-| `difficulty`         | TEXT        | 'beginner', 'intermediate', 'expert'             |
-| `status`             | TEXT        | 'in_progress', 'won', 'lost'                     |
-| `grid_state`         | JSONB       | GridStateDTO format (see below)                  |
-| `gidouilles_awarded` | INTEGER     | Gidouilles awarded on completion (0-1000)        |
-| `time_seconds`       | INTEGER     | Time elapsed in seconds                          |
-| `started_at`         | TIMESTAMPTZ | Auto-set by trigger on first move                |
-| `completed_at`       | TIMESTAMPTZ | Set when status changes to won/lost              |
-| `created_at`         | TIMESTAMPTZ | Row creation timestamp                           |
+| Column               | Type        | Description                                  |
+| -------------------- | ----------- | -------------------------------------------- |
+| `id`                 | UUID (PK)   | Game ID                                      |
+| `student_id`         | UUID (FK)   | References profiles(id), NULLABLE for public |
+| `difficulty`         | TEXT        | 'beginner', 'intermediate', 'expert'         |
+| `status`             | TEXT        | 'in_progress', 'won', 'lost'                 |
+| `grid_state`         | JSONB       | GridStateDTO format (see below)              |
+| `gidouilles_awarded` | INTEGER     | Gidouilles awarded on completion (0-1000)    |
+| `time_seconds`       | INTEGER     | Time elapsed in seconds                      |
+| `started_at`         | TIMESTAMPTZ | Auto-set by trigger on first move            |
+| `completed_at`       | TIMESTAMPTZ | Set when status changes to won/lost          |
+| `created_at`         | TIMESTAMPTZ | Row creation timestamp                       |
 
 **Indexes**:
+
 - `idx_minesweeper_games_student_status` on (student_id, status)
 - `idx_minesweeper_games_resume` on (student_id, status, created_at DESC)
 - `idx_minesweeper_games_difficulty` on (difficulty, status, time_seconds)
 
 **Constraints**:
+
 - `gidouilles_awarded >= 0 AND gidouilles_awarded <= 1000` (prevents abuse)
 - `difficulty IN ('beginner', 'intermediate', 'expert')`
 - `status IN ('in_progress', 'won', 'lost')`
@@ -160,28 +170,37 @@ Game state is stored as JSONB in flattened format for efficiency:
 
 ```typescript
 interface GridStateDTO {
-  rows: number;             // Grid height (9, 16)
-  cols: number;             // Grid width (9, 16, 30)
-  mines: [number, number][]; // Mine coordinates [[row, col], ...]
-  revealed: [number, number][]; // Revealed cell coordinates
-  flagged: [number, number][]; // Flagged cell coordinates
-  adjacentCounts: Record<string, number>; // {"row,col": count}
+	rows: number; // Grid height (9, 16)
+	cols: number; // Grid width (9, 16, 30)
+	mines: [number, number][]; // Mine coordinates [[row, col], ...]
+	revealed: [number, number][]; // Revealed cell coordinates
+	flagged: [number, number][]; // Flagged cell coordinates
+	adjacentCounts: Record<string, number>; // {"row,col": count}
 }
 ```
 
 **Example**:
+
 ```json
 {
-  "rows": 9,
-  "cols": 9,
-  "mines": [[0, 3], [1, 5], [2, 2]],
-  "revealed": [[0, 0], [0, 1], [1, 1]],
-  "flagged": [[0, 3]],
-  "adjacentCounts": {
-    "0,2": 1,
-    "1,2": 2,
-    "1,3": 1
-  }
+	"rows": 9,
+	"cols": 9,
+	"mines": [
+		[0, 3],
+		[1, 5],
+		[2, 2]
+	],
+	"revealed": [
+		[0, 0],
+		[0, 1],
+		[1, 1]
+	],
+	"flagged": [[0, 3]],
+	"adjacentCounts": {
+		"0,2": 1,
+		"1,2": 2,
+		"1,3": 1
+	}
 }
 ```
 
@@ -203,6 +222,7 @@ interface GridStateDTO {
 **Purpose**: Validates win condition and calculates gidouilles server-side
 
 **Flow**:
+
 1. Verify ownership (student_id matches authenticated user)
 2. Verify game is in_progress
 3. **Validate win condition**:
@@ -216,11 +236,12 @@ interface GridStateDTO {
 8. Return awarded gidouilles and time
 
 **Returns**:
+
 ```typescript
 {
-  success: boolean;
-  gidouilles_awarded: number;
-  time_seconds: number;
+	success: boolean;
+	gidouilles_awarded: number;
+	time_seconds: number;
 }
 ```
 
@@ -231,6 +252,7 @@ interface GridStateDTO {
 **Purpose**: Records a loss (mine explosion)
 
 **Flow**:
+
 1. Verify ownership
 2. Verify game is in_progress
 3. Update status to 'lost'
@@ -248,6 +270,7 @@ interface GridStateDTO {
 **Purpose**: Auto-set `started_at` timestamp on first move
 
 **Logic**:
+
 - Triggers when `grid_state` changes from initial state
 - Sets `started_at = NOW()` if currently NULL
 - Prevents manual override of `started_at`
@@ -259,19 +282,20 @@ interface GridStateDTO {
 **Location**: `src/lib/stores/minesweeper.svelte.ts`
 
 **State Management** (Svelte 5 runes):
+
 ```typescript
 let gameState = $state<GameState>({
-  id: undefined,
-  difficulty: 'beginner',
-  status: 'not_started',
-  grid: [],
-  rows: 9,
-  cols: 9,
-  minesCount: 10,
-  flagsUsed: 0,
-  cellsRevealed: 0,
-  timeElapsed: 0,
-  startedAt: undefined
+	id: undefined,
+	difficulty: 'beginner',
+	status: 'not_started',
+	grid: [],
+	rows: 9,
+	cols: 9,
+	minesCount: 10,
+	flagsUsed: 0,
+	cellsRevealed: 0,
+	timeElapsed: 0,
+	startedAt: undefined
 });
 
 let isAuthenticated = $state(false);
@@ -427,30 +451,34 @@ All endpoints under `/api/games/minesweeper/`
 **Auth**: Required (student role)
 
 **Body**:
+
 ```typescript
 {
-  difficulty: 'beginner' | 'intermediate' | 'expert'
+	difficulty: 'beginner' | 'intermediate' | 'expert';
 }
 ```
 
 **Validation** (Zod):
+
 ```typescript
 const schema = z.object({
-  difficulty: z.enum(['beginner', 'intermediate', 'expert'])
+	difficulty: z.enum(['beginner', 'intermediate', 'expert'])
 });
 ```
 
 **Flow**:
+
 1. Validate request body
 2. Create new game row with initial grid_state
 3. Return game ID
 
 **Response**:
+
 ```json
 {
-  "id": "uuid-here",
-  "difficulty": "beginner",
-  "status": "in_progress"
+	"id": "uuid-here",
+	"difficulty": "beginner",
+	"status": "in_progress"
 }
 ```
 
@@ -461,16 +489,19 @@ const schema = z.object({
 **Purpose**: Fetch the most recent in-progress game
 
 **Query**:
+
 ```
 ?difficulty=beginner (optional)
 ```
 
 **Flow**:
+
 1. Query for in_progress games ordered by created_at DESC
 2. Filter by difficulty if provided
 3. Return most recent or null
 
 **Response**:
+
 ```json
 {
   "id": "uuid",
@@ -487,14 +518,16 @@ const schema = z.object({
 **Auth**: Required (student role, ownership verified)
 
 **Body**:
+
 ```typescript
 {
-  grid_state: GridStateDTO;
-  time_seconds: number;
+	grid_state: GridStateDTO;
+	time_seconds: number;
 }
 ```
 
 **Validation**:
+
 ```typescript
 // 1. Fetch game to get difficulty
 // 2. Validate with difficulty-specific schema
@@ -502,6 +535,7 @@ const validation = validateGridState(game.difficulty, body.grid_state);
 ```
 
 **Flow**:
+
 1. Verify ownership
 2. Verify game is in_progress
 3. Validate grid_state with difficulty-specific bounds
@@ -513,29 +547,29 @@ const validation = validateGridState(game.difficulty, body.grid_state);
 **Auth**: Required (student role, ownership verified)
 
 **Body**:
+
 ```typescript
 {
-  grid_state: GridStateDTO
+	grid_state: GridStateDTO;
 }
 ```
 
 **Validation**:
+
 ```typescript
 // Difficulty-specific validation with exact bounds
 const schema = z.object({
-  rows: z.literal(config.rows),
-  cols: z.literal(config.cols),
-  mines: z.array(coordinateSchema).length(config.mines),
-  revealed: z.array(coordinateSchema).max(config.maxCells),
-  flagged: z.array(coordinateSchema).max(config.mines * 2),
-  adjacentCounts: z.record(
-    z.string().regex(/^\d+,\d+$/),
-    z.number().int().min(0).max(8)
-  )
+	rows: z.literal(config.rows),
+	cols: z.literal(config.cols),
+	mines: z.array(coordinateSchema).length(config.mines),
+	revealed: z.array(coordinateSchema).max(config.maxCells),
+	flagged: z.array(coordinateSchema).max(config.mines * 2),
+	adjacentCounts: z.record(z.string().regex(/^\d+,\d+$/), z.number().int().min(0).max(8))
 });
 ```
 
 **Flow**:
+
 1. Fetch game to get difficulty
 2. Validate grid_state with difficulty-specific schema
 3. Call `complete_minesweeper_game()` RPC function
@@ -545,11 +579,12 @@ const schema = z.object({
 7. Return awarded gidouilles and time
 
 **Response**:
+
 ```json
 {
-  "success": true,
-  "gidouilles_awarded": 20,
-  "time_seconds": 90
+	"success": true,
+	"gidouilles_awarded": 20,
+	"time_seconds": 90
 }
 ```
 
@@ -558,13 +593,15 @@ const schema = z.object({
 **Auth**: Required (student role, ownership verified)
 
 **Body**:
+
 ```typescript
 {
-  grid_state: GridStateDTO
+	grid_state: GridStateDTO;
 }
 ```
 
 **Flow**:
+
 1. Verify ownership
 2. Validate grid_state
 3. Call `record_minesweeper_loss()` RPC
@@ -576,28 +613,30 @@ const schema = z.object({
 #### Input Validation (Zod)
 
 **CRITICAL**: All API endpoints use **difficulty-specific validation** to prevent:
+
 - DoS attacks (unbounded array sizes)
 - Invalid coordinates (out-of-bounds)
 - Grid size manipulation
 - Mine count tampering
 
 **Example** (Beginner difficulty):
+
 ```typescript
 const coordinateSchema = z.tuple([
-  z.number().int().min(0).max(8),  // row: 0-8
-  z.number().int().min(0).max(8)   // col: 0-8
+	z.number().int().min(0).max(8), // row: 0-8
+	z.number().int().min(0).max(8) // col: 0-8
 ]);
 
 const beginnerGridStateSchema = z.object({
-  rows: z.literal(9),                           // Exact match
-  cols: z.literal(9),                           // Exact match
-  mines: z.array(coordinateSchema).length(10),  // Exactly 10 mines
-  revealed: z.array(coordinateSchema).max(81),  // Max 81 cells
-  flagged: z.array(coordinateSchema).max(20),   // Max 2× mines
-  adjacentCounts: z.record(
-    z.string().regex(/^\d+,\d+$/),
-    z.number().int().min(0).max(8)              // 0-8 adjacent mines
-  )
+	rows: z.literal(9), // Exact match
+	cols: z.literal(9), // Exact match
+	mines: z.array(coordinateSchema).length(10), // Exactly 10 mines
+	revealed: z.array(coordinateSchema).max(81), // Max 81 cells
+	flagged: z.array(coordinateSchema).max(20), // Max 2× mines
+	adjacentCounts: z.record(
+		z.string().regex(/^\d+,\d+$/),
+		z.number().int().min(0).max(8) // 0-8 adjacent mines
+	)
 });
 ```
 
@@ -608,6 +647,7 @@ const beginnerGridStateSchema = z.object({
 **Problem**: Client could claim victory with unfinished grid.
 
 **Solution**: `complete_minesweeper_game()` RPC validates:
+
 1. All non-mine cells are revealed
 2. No mine cells are revealed (except allowed flags)
 3. Game is actually in_progress
@@ -684,34 +724,37 @@ MinesweeperPage (routes)
 **Purpose**: Individual grid cell with reveal/flag interactions
 
 **Props** (Svelte 5 `$props()`):
+
 ```typescript
 let {
-  row,
-  col,
-  isRevealed,
-  isFlagged,
-  isMine,
-  adjacentMines,
-  isExploded = false,
-  onReveal,
-  onFlag,
-  disabled = false
+	row,
+	col,
+	isRevealed,
+	isFlagged,
+	isMine,
+	adjacentMines,
+	isExploded = false,
+	onReveal,
+	onFlag,
+	disabled = false
 } = $props();
 ```
 
 **Computed Content** (`$derived.by`):
+
 ```typescript
 const cellContent = $derived.by(() => {
-  if (!isRevealed && isFlagged) return '🚩';
-  if (!isRevealed) return '';
-  if (isExploded) return '💥';
-  if (isMine) return '💣';
-  if (adjacentMines === 0) return '';
-  return adjacentMines.toString();
+	if (!isRevealed && isFlagged) return '🚩';
+	if (!isRevealed) return '';
+	if (isExploded) return '💥';
+	if (isMine) return '💣';
+	if (adjacentMines === 0) return '';
+	return adjacentMines.toString();
 });
 ```
 
 **Interactions**:
+
 - Left click → `onReveal(row, col)`
 - Right click / Long press → `onFlag(row, col)`
 
@@ -722,21 +765,19 @@ const cellContent = $derived.by(() => {
 **Purpose**: CSS Grid layout for the game board
 
 **Responsive Design**:
+
 - Beginner/Intermediate: Fits on screen
 - Expert: Horizontal scroll on mobile with hint text
 
 ```svelte
 <div class="overflow-x-auto md:overflow-x-visible">
-  <div
-    class="inline-grid gap-0.5"
-    style="grid-template-columns: repeat({cols}, minmax(0, 1fr));"
-  >
-    {#each grid as row, rowIndex}
-      {#each row as cell, colIndex}
-        <MinesweeperCell ... />
-      {/each}
-    {/each}
-  </div>
+	<div class="inline-grid gap-0.5" style="grid-template-columns: repeat({cols}, minmax(0, 1fr));">
+		{#each grid as row, rowIndex}
+			{#each row as cell, colIndex}
+				<MinesweeperCell ... />
+			{/each}
+		{/each}
+	</div>
 </div>
 ```
 
@@ -745,21 +786,23 @@ const cellContent = $derived.by(() => {
 **Purpose**: Game status, timer, mine counter, action buttons
 
 **Features**:
+
 - Real-time timer (updates every second)
 - Mine counter (total mines - flags used)
 - New Game button
 - Save Game button (authenticated only, disabled if not in_progress)
 
 **Timer** (`$effect` + cleanup):
+
 ```typescript
 $effect(() => {
-  if (status === 'in_progress') {
-    const interval = setInterval(() => {
-      timeElapsed++;
-    }, 1000);
+	if (status === 'in_progress') {
+		const interval = setInterval(() => {
+			timeElapsed++;
+		}, 1000);
 
-    return () => clearInterval(interval);
-  }
+		return () => clearInterval(interval);
+	}
 });
 ```
 
@@ -771,12 +814,12 @@ $effect(() => {
 
 ```svelte
 <MySelect
-  type="single"
-  bind:value={selected}
-  items={selectItems}
-  {disabled}
-  placeholder="Choisir une difficulté"
-  onValueChange={handleChange}
+	type="single"
+	bind:value={selected}
+	items={selectItems}
+	{disabled}
+	placeholder="Choisir une difficulté"
+	onValueChange={handleChange}
 />
 ```
 
@@ -787,6 +830,7 @@ $effect(() => {
 **Purpose**: Display personal statistics (authenticated only)
 
 **Data**:
+
 - Games played
 - Victories (with win rate %)
 - Best time (MM:SS format)
@@ -799,16 +843,18 @@ $effect(() => {
 **Purpose**: Top 3 players for current difficulty
 
 **Features**:
+
 - Medal emoji for ranks 1-3 (🥇🥈🥉)
 - Time display (MM:SS format)
 - Privacy: Non-authenticated users see only first letter of names
 - Link to full leaderboard page
 
 **Privacy Logic**:
+
 ```typescript
 function displayName(name: string): string {
-  if (isAuthenticated) return name;
-  return name.charAt(0).toUpperCase() + '.';
+	if (isAuthenticated) return name;
+	return name.charAt(0).toUpperCase() + '.';
 }
 ```
 
@@ -817,6 +863,7 @@ function displayName(name: string): string {
 **Purpose**: Encourage account creation (shown to public users)
 
 **Content**:
+
 - Highlights premium features (save games, earn gidouilles, leaderboards)
 - Call-to-action button to sign up
 
@@ -829,6 +876,7 @@ function displayName(name: string): string {
 **Challenge**: Expert mode = 480 cells (16×30)
 
 **Solution**:
+
 - CSS Grid (GPU-accelerated layout)
 - No virtualization needed (cells are simple)
 - Minimal re-renders (Svelte reactivity)
@@ -838,6 +886,7 @@ function displayName(name: string): string {
 **Pattern**: 5-second debounce to prevent excessive API calls
 
 **Benefit**:
+
 - 10 moves in 5 seconds = 1 API call (not 10)
 - Reduces database load
 - Improves UX (no jank from network requests)
@@ -845,6 +894,7 @@ function displayName(name: string): string {
 ### Format Conversion
 
 **Trade-off**:
+
 - Internal format (`CellState[][]`) optimized for game logic (fast lookups, simple iteration)
 - Database format (`GridStateDTO`) optimized for storage (compact, JSONB indexing)
 - Conversion happens only on save/load (not every render)
@@ -852,6 +902,7 @@ function displayName(name: string): string {
 ### BFS Cascade
 
 **Optimization**:
+
 - Set-based visited tracking (O(1) lookups)
 - Queue-based iteration (no recursion stack overflow)
 - Worst case: O(rows × cols) when entire grid is empty
@@ -865,6 +916,7 @@ function displayName(name: string): string {
 **Location**: `src/lib/stores/minesweeper.test.ts`
 
 **Coverage**:
+
 - [ ] Mine generation (Fisher-Yates)
 - [ ] First click safety (no mine on first click + neighbors)
 - [ ] Cascade reveal (BFS correctness)
@@ -879,6 +931,7 @@ function displayName(name: string): string {
 **Location**: `src/routes/api/games/minesweeper/**/*.test.ts`
 
 **Coverage**:
+
 - [x] Start game endpoint (Zod validation)
 - [x] Save game endpoint (ownership check)
 - [x] Complete game endpoint (win validation)
@@ -890,6 +943,7 @@ function displayName(name: string): string {
 **Location**: `tests/database/minesweeper-triggers.test.ts`
 
 **Coverage**:
+
 - [ ] `set_minesweeper_started_at` trigger
 - [ ] `complete_minesweeper_game` RPC (win validation)
 - [ ] `record_minesweeper_loss` RPC
@@ -937,7 +991,7 @@ function displayName(name: string): string {
 
 ## References
 
-- **Game Rules**: [Wikipedia - Minesweeper](https://fr.wikipedia.org/wiki/Démineur_(genre_de_jeu_vidéo))
+- **Game Rules**: [Wikipedia - Minesweeper](<https://fr.wikipedia.org/wiki/Démineur_(genre_de_jeu_vidéo)>)
 - **Svelte 5 Runes**: [Svelte Documentation](https://svelte.dev/docs/svelte/overview)
 - **BFS Algorithm**: [Breadth-First Search](https://en.wikipedia.org/wiki/Breadth-first_search)
 - **Fisher-Yates Shuffle**: [Knuth Shuffle](https://en.wikipedia.org/wiki/Fisher–Yates_shuffle)
