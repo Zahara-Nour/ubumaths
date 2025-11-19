@@ -115,7 +115,7 @@
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-border">
-						{#each currentLeaderboard as entry, idx (entry.student_id + '-' + entry.difficulty)}
+						{#each currentLeaderboard as entry (entry.student_id + '-' + entry.difficulty)}
 							<tr class={`transition-colors hover:bg-muted/50 ${getRankClass(entry.rank || 0)}`}>
 								<td class="px-4 py-3 text-center font-bold text-foreground">
 									<span class="text-lg">{getMedalEmoji(entry.rank || 0)}</span>
@@ -125,7 +125,8 @@
 									<div class="flex items-center gap-3">
 										<div>
 											<p class="font-semibold text-foreground">
-												{entry.firstname || ''} {entry.lastname || ''}
+												{entry.firstname || ''}
+												{entry.lastname || ''}
 											</p>
 											{#if entry.student_id === data.currentUserId}
 												<Badge class="mt-1" variant="default">C'est vous!</Badge>
