@@ -11,9 +11,7 @@
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import type { Database } from '$lib/types/database';
 
-type GameRecord = Database['public']['Tables']['minesweeper_games']['Row'];
 type GameStats = {
 	difficulty: 'beginner' | 'intermediate' | 'expert';
 	gamesPlayed: number;

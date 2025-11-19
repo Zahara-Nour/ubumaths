@@ -44,8 +44,8 @@
 				? 'intermédiaire'
 				: 'expert'}"
 	>
-		{#each gameState.grid as row, rowIndex}
-			{#each row as cell, colIndex}
+		{#each gameState.grid as row, rowIndex (rowIndex)}
+			{#each row as cell, colIndex (`${rowIndex}-${colIndex}`)}
 				<MinesweeperCell
 					row={rowIndex}
 					col={colIndex}

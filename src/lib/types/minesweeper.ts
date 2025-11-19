@@ -37,6 +37,7 @@ export interface GameState {
 	cellsRevealed: number;
 	timeElapsed: number;
 	startedAt?: Date;
+	seed?: string; // Optional seed for deterministic grid generation (daily challenges)
 }
 
 export interface DifficultyConfig {

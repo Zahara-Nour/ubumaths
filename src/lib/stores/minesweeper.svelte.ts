@@ -121,8 +121,9 @@ class MinesweeperStore {
 	 * Start a new game
 	 *
 	 * @param difficulty - Game difficulty level
+	 * @param seed - Optional seed for deterministic grid generation (for daily challenges)
 	 */
-	async startNewGame(difficulty: Difficulty): Promise<void> {
+	async startNewGame(difficulty: Difficulty, seed?: string): Promise<void> {
 		if (!browser) {
 			logger.warn('Cannot start game on server');
 			return;
@@ -138,14 +139,15 @@ class MinesweeperStore {
 			const newGame: GameState = {
 				difficulty,
 				status: 'not_started',
-				grid: this.generateGrid(config),
+				grid: this.generateGrid(config, undefined, undefined, seed),
 				rows: config.rows,
 				cols: config.cols,
 				minesCount: config.mines,
 				flagsUsed: 0,
 				cellsRevealed: 0,
 				timeElapsed: 0,
-				startedAt: undefined
+				startedAt: undefined,
+				seed // Store seed for potential grid regeneration
 			};
 
 			// Stop existing timers
@@ -193,17 +195,43 @@ class MinesweeperStore {
 	}
 
 	/**
+	 * Create a seeded random number generator (Mulberry32 algorithm)
+	 * Used for daily challenges to generate identical grids from the same seed
+	 *
+	 * @param seed - Seed string
+	 * @returns Function that returns random numbers between 0 and 1
+	 */
+	private createSeededRNG(seed: string): () => number {
+		// Convert string seed to 32-bit integer
+		let state = 0;
+		for (let i = 0; i < seed.length; i++) {
+			state = (state << 5) - state + seed.charCodeAt(i);
+			state = state & state; // Convert to 32bit integer
+		}
+
+		// Mulberry32 PRNG - simple and effective
+		return () => {
+			state = (state + 0x6d2b79f5) | 0;
+			let t = Math.imul(state ^ (state >>> 15), 1 | state);
+			t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+			return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+		};
+	}
+
+	/**
 	 * Generate a grid with random mine placement
 	 *
 	 * @param config - Difficulty configuration
 	 * @param firstClickRow - First click row (to avoid placing mine there)
 	 * @param firstClickCol - First click column (to avoid placing mine there)
+	 * @param seed - Optional seed for deterministic generation (for daily challenges)
 	 * @returns 2D array of cell states
 	 */
 	private generateGrid(
 		config: DifficultyConfig,
 		firstClickRow?: number,
-		firstClickCol?: number
+		firstClickCol?: number,
+		seed?: string
 	): CellState[][] {
 		const { rows, cols, mines } = config;
 
@@ -224,7 +252,6 @@ class MinesweeperStore {
 		}
 
 		// Place mines randomly (avoid first click position and its neighbors)
-		const totalCells = rows * cols;
 		const availableCells: { row: number; col: number }[] = [];
 
 		for (let row = 0; row < rows; row++) {
@@ -243,9 +270,11 @@ class MinesweeperStore {
 		}
 
 		// Fisher-Yates shuffle to select random mine positions
+		// Use seeded RNG if seed provided (for daily challenges), otherwise use Math.random()
+		const rng = seed ? this.createSeededRNG(seed) : Math.random;
 		const shuffled = [...availableCells];
 		for (let i = shuffled.length - 1; i > 0; i--) {
-			const j = Math.floor(Math.random() * (i + 1));
+			const j = Math.floor(rng() * (i + 1));
 			[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
 		}
 
@@ -409,9 +438,10 @@ class MinesweeperStore {
 			}
 
 			// Regenerate grid if first click is a mine (shouldn't happen but safety check)
+			// For seeded games (daily challenges), use the same seed to ensure consistency
 			if (cell.isMine) {
 				const config = DIFFICULTY_CONFIGS[game.difficulty];
-				game.grid = this.generateGrid(config, row, col);
+				game.grid = this.generateGrid(config, row, col, game.seed);
 				// Get the new cell after regeneration
 				const newCell = game.grid[row][col];
 				if (newCell.isMine) {

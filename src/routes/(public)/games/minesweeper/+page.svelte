@@ -8,7 +8,6 @@
 	import GameControls from '$lib/components/game/minesweeper/GameControls.svelte';
 	import DifficultySelector from '$lib/components/game/minesweeper/DifficultySelector.svelte';
 	import PremiumBanner from '$lib/components/game/minesweeper/PremiumBanner.svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
