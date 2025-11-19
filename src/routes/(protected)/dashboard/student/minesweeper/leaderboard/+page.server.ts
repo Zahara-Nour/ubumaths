@@ -37,7 +37,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		const { data: leaderboardData, error: leaderboardError } = await supabase
 			.from('minesweeper_leaderboard')
 			.select(
-				'student_id, first_name, last_name, difficulty, games_won, games_played, best_time, total_gidouilles, win_rate, rank'
+				'student_id, firstname, lastname, difficulty, games_won, games_played, best_time, total_gidouilles, win_rate, rank'
 			)
 			.order('difficulty', { ascending: true })
 			.order('rank', { ascending: true });
