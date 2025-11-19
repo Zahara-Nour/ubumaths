@@ -153,6 +153,73 @@ class MultiplayerStore {
 	// Error state
 	error = $state<string | null>(null);
 
+	// Connection state
+	private connectionLostAt = $state<Date | null>(null);
+	private reconnectAttempts = $state(0);
+	private readonly MAX_RECONNECT_ATTEMPTS = 5;
+	private readonly GRACE_PERIOD_MS = 30000; // 30 seconds
+
+	// Inactivity tracking
+	private lastActivityAt = $state<Date>(new Date());
+	private inactivityCheckInterval: ReturnType<typeof setInterval> | null = null;
+	private inactivityWarningShown = $state(false);
+	private readonly INACTIVITY_TIMEOUT_MS = 60000; // 60 seconds
+	private readonly INACTIVITY_WARNING_MS = 30000; // 30 seconds warning
+
+	// Countdown tracking (for reactive countdown display)
+	private countdownInterval: ReturnType<typeof setInterval> | null = null;
+	private countdownTimeout: ReturnType<typeof setTimeout> | null = null;
+	private currentCountdown = $state<number>(0);
+
+	// ============================================================================
+	// Derived Properties (for component API compatibility)
+	// ============================================================================
+
+	/**
+	 * Flattened queue status for easier access
+	 */
+	get inQueue(): boolean {
+		return this.queue.inQueue;
+	}
+
+	/**
+	 * Queue status text
+	 */
+	get queueStatus(): 'idle' | 'searching' | 'found' | 'error' {
+		if (!this.queue.inQueue) return 'idle';
+		if (this.error) return 'error';
+		if (this.match.id) return 'found';
+		return 'searching';
+	}
+
+	/**
+	 * Current player rank (from queue state)
+	 */
+	get rank(): number | null {
+		return this.queue.rank;
+	}
+
+	/**
+	 * Current match status
+	 */
+	get matchStatus(): MatchStatus {
+		return this.match.status;
+	}
+
+	/**
+	 * Countdown seconds remaining (reactive)
+	 */
+	get countdown(): number {
+		return this.currentCountdown;
+	}
+
+	/**
+	 * Whether connection is lost
+	 */
+	get isDisconnected(): boolean {
+		return this.connectionLostAt !== null;
+	}
+
 	// ============================================================================
 	// Initialization
 	// ============================================================================
@@ -211,8 +278,17 @@ class MultiplayerStore {
 		this.result = null;
 		this.error = null;
 
+		// Reset connection/activity state
+		this.connectionLostAt = null;
+		this.reconnectAttempts = 0;
+		this.lastActivityAt = new Date();
+		this.inactivityWarningShown = false;
+		this.currentCountdown = 0;
+
 		this.unsubscribeChannel();
 		this.stopPolling();
+		this.stopCountdown();
+		this.stopInactivityMonitoring();
 	}
 
 	// ============================================================================
@@ -277,7 +353,9 @@ class MultiplayerStore {
 					match_type: data.match_type,
 					player_number: data.player_number
 				});
-				toaster.success('Match trouvé !');
+				toaster.success(`Match trouvé ! Adversaire: ${data.opponent_name || 'Joueur'}`, {
+					duration: 3000
+				});
 			} else {
 				// Waiting in queue
 				this.queue = {
@@ -290,7 +368,7 @@ class MultiplayerStore {
 
 				// Start polling for match
 				this.startPolling();
-				toaster.success("En attente d'un adversaire...");
+				toaster.info("En attente d'un adversaire...", { duration: 2000 });
 			}
 
 			return true;
@@ -394,7 +472,9 @@ class MultiplayerStore {
 						player_number: data.player_number
 					});
 					this.stopPolling();
-					toaster.success('Match trouvé !');
+					toaster.success(`Match trouvé ! Adversaire: ${data.opponent_name || 'Joueur'}`, {
+						duration: 3000
+					});
 				}
 			} catch (err) {
 				this.pollErrorCount++;
@@ -449,9 +529,13 @@ class MultiplayerStore {
 		// Subscribe to match channel for real-time updates
 		this.subscribeToMatch(data.match_id);
 
-		// Auto-start match after countdown
-		setTimeout(() => {
+		// Start countdown timer for reactive UI
+		this.startCountdown();
+
+		// Auto-start match after countdown (tracked for cleanup)
+		this.countdownTimeout = setTimeout(() => {
 			this.startMatch();
+			this.countdownTimeout = null;
 		}, this.MATCH_COUNTDOWN_MS);
 	}
 
@@ -481,6 +565,11 @@ class MultiplayerStore {
 			this.match.status = 'in_progress';
 			this.match.startedAt = new Date();
 
+			// Start inactivity monitoring
+			this.startInactivityMonitoring();
+
+			toaster.info('La partie commence !', { duration: 2000 });
+
 			return true;
 		} catch (err) {
 			this.error = err instanceof Error ? err.message : 'Unknown error';
@@ -501,6 +590,9 @@ class MultiplayerStore {
 		if (!this.match.id || this.match.status !== 'in_progress') {
 			return false;
 		}
+
+		// Update activity timestamp
+		this.updateActivity();
 
 		try {
 			const response = await fetch(`/api/games/minesweeper/multiplayer/${this.match.id}/state`, {
@@ -584,10 +676,29 @@ class MultiplayerStore {
 
 			this.match.status = 'completed';
 
+			// Stop monitoring
+			this.stopInactivityMonitoring();
+
 			// Unsubscribe from channel
 			this.unsubscribeChannel();
 
-			toaster.success(`Victoire ! +${data.gidouilles} gidouilles`);
+			// Enhanced toast notification
+			if (data.speed_bonus > 0) {
+				toaster.success(
+					`🏆 Victoire ! +${data.gidouilles} gidouilles (dont ${data.speed_bonus} bonus de vitesse)`,
+					{ duration: 5000 }
+				);
+			} else {
+				toaster.success(`🏆 Victoire ! +${data.gidouilles} gidouilles`, {
+					duration: 5000
+				});
+			}
+
+			if (data.elo_change > 0) {
+				toaster.info(`📈 +${data.elo_change} ELO`, { duration: 3000 });
+			} else if (data.elo_change < 0) {
+				toaster.info(`📉 ${data.elo_change} ELO`, { duration: 3000 });
+			}
 
 			return true;
 		} catch (err) {
@@ -625,10 +736,20 @@ class MultiplayerStore {
 
 			this.match.status = 'abandoned';
 
+			// Stop monitoring
+			this.stopInactivityMonitoring();
+
 			// Unsubscribe from channel
 			this.unsubscribeChannel();
 
-			toaster.info('Match abandonné');
+			// Toast notification based on reason
+			if (reason === 'player_quit') {
+				toaster.info('Match abandonné');
+			} else if (reason === 'timeout') {
+				toaster.warning('Match abandonné pour inactivité');
+			} else if (reason === 'disconnect') {
+				toaster.error('Match abandonné pour déconnexion');
+			}
 
 			return true;
 		} catch (err) {
@@ -690,6 +811,9 @@ class MultiplayerStore {
 				console.log(`Subscribed to match ${matchId}`);
 			}
 		});
+
+		// Setup connection monitoring
+		this.setupConnectionMonitoring();
 	}
 
 	/**
@@ -760,16 +884,168 @@ class MultiplayerStore {
 	}
 
 	// ============================================================================
+	// Connection & Activity Monitoring
+	// ============================================================================
+
+	/**
+	 * Handle connection loss
+	 */
+	private handleConnectionLost() {
+		if (!this.connectionLostAt) {
+			this.connectionLostAt = new Date();
+			this.reconnectAttempts = 0;
+			toaster.warning('Connexion perdue. Tentative de reconnexion...');
+		}
+	}
+
+	/**
+	 * Handle connection restored
+	 */
+	private handleConnectionRestored() {
+		if (this.connectionLostAt) {
+			const lostDuration = Date.now() - this.connectionLostAt.getTime();
+			this.connectionLostAt = null;
+			this.reconnectAttempts = 0;
+
+			if (lostDuration > this.GRACE_PERIOD_MS) {
+				// Connection was lost for too long, abandon match
+				toaster.error('Connexion perdue trop longtemps. Match abandonné.');
+				this.abandonMatch('disconnect');
+			} else {
+				toaster.success('Connexion rétablie!');
+			}
+		}
+	}
+
+	/**
+	 * Setup connection monitoring on realtime channel
+	 */
+	private setupConnectionMonitoring() {
+		if (!this.channel) return;
+
+		this.channel.on('system', { event: 'error' }, () => {
+			this.handleConnectionLost();
+		});
+
+		this.channel.on('system', { event: 'connected' }, () => {
+			this.handleConnectionRestored();
+		});
+	}
+
+	/**
+	 * Update last activity timestamp (call this on any user action)
+	 */
+	updateActivity() {
+		this.lastActivityAt = new Date();
+	}
+
+	/**
+	 * Start monitoring for inactivity
+	 */
+	private startInactivityMonitoring() {
+		this.stopInactivityMonitoring();
+		this.inactivityWarningShown = false; // Reset warning flag
+
+		this.inactivityCheckInterval = setInterval(() => {
+			const inactiveDuration = Date.now() - this.lastActivityAt.getTime();
+
+			// Show warning once at 30 seconds
+			if (inactiveDuration > this.INACTIVITY_WARNING_MS && !this.inactivityWarningShown) {
+				this.inactivityWarningShown = true;
+				toaster.warning(
+					'Inactivité détectée. Le match sera abandonné si vous ne jouez pas.',
+					{ duration: 5000 }
+				);
+			}
+
+			// Abandon at 60 seconds
+			if (inactiveDuration > this.INACTIVITY_TIMEOUT_MS) {
+				toaster.error('Match abandonné pour inactivité');
+				this.abandonMatch('timeout');
+				this.stopInactivityMonitoring();
+			}
+		}, 10000); // Check every 10 seconds
+	}
+
+	/**
+	 * Stop inactivity monitoring
+	 */
+	private stopInactivityMonitoring() {
+		if (this.inactivityCheckInterval) {
+			clearInterval(this.inactivityCheckInterval);
+			this.inactivityCheckInterval = null;
+		}
+	}
+
+	/**
+	 * Start countdown timer (updates every second)
+	 */
+	private startCountdown() {
+		this.stopCountdown();
+
+		if (!this.match.countdownEndsAt) return;
+
+		// Update immediately
+		this.updateCountdown();
+
+		// Update every 100ms for smooth countdown
+		this.countdownInterval = setInterval(() => {
+			this.updateCountdown();
+
+			if (this.currentCountdown <= 0) {
+				this.stopCountdown();
+			}
+		}, 100);
+	}
+
+	/**
+	 * Update current countdown value
+	 */
+	private updateCountdown() {
+		if (!this.match.countdownEndsAt) {
+			this.currentCountdown = 0;
+			return;
+		}
+
+		const remaining = Math.max(0, this.match.countdownEndsAt.getTime() - Date.now());
+		this.currentCountdown = Math.ceil(remaining / 1000);
+	}
+
+	/**
+	 * Stop countdown timer
+	 */
+	private stopCountdown() {
+		if (this.countdownInterval) {
+			clearInterval(this.countdownInterval);
+			this.countdownInterval = null;
+		}
+		if (this.countdownTimeout) {
+			clearTimeout(this.countdownTimeout);
+			this.countdownTimeout = null;
+		}
+		this.currentCountdown = 0;
+	}
+
+	// ============================================================================
 	// Cleanup
 	// ============================================================================
 
 	/**
 	 * Cleanup on component unmount
 	 */
-	destroy() {
+	cleanup() {
 		this.unsubscribeChannel();
 		this.stopPolling();
+		this.stopCountdown();
+		this.stopInactivityMonitoring();
 		this.reset();
+	}
+
+	/**
+	 * @deprecated Use cleanup() instead
+	 */
+	destroy() {
+		this.cleanup();
 	}
 }
 
