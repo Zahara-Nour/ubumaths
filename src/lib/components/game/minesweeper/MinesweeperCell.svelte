@@ -12,6 +12,7 @@
 		isExploded = false,
 		onReveal,
 		onFlag,
+		onChord,
 		disabled = false
 	}: {
 		row: number;
@@ -23,6 +24,7 @@
 		isExploded?: boolean;
 		onReveal: (row: number, col: number) => void;
 		onFlag: (row: number, col: number) => void;
+		onChord?: (row: number, col: number) => void;
 		disabled?: boolean;
 	} = $props();
 
@@ -59,9 +61,28 @@
 	});
 
 	// Event handlers
-	function handleClick() {
-		if (disabled || isRevealed || isFlagged) return;
+	function handleClick(event: MouseEvent) {
+		if (disabled) return;
+
+		// Chord click: Shift+Click or Middle Click on revealed cell
+		if (isRevealed && onChord && (event.shiftKey || event.button === 1)) {
+			event.preventDefault();
+			onChord(row, col);
+			return;
+		}
+
+		// Normal click
+		if (isRevealed || isFlagged) return;
 		onReveal(row, col);
+	}
+
+	function handleMouseDown(event: MouseEvent) {
+		// Middle mouse button (wheel click) for chord
+		if (event.button === 1) {
+			event.preventDefault();
+			if (disabled || !isRevealed || !onChord) return;
+			onChord(row, col);
+		}
 	}
 
 	function handleRightClick(event: MouseEvent) {
@@ -73,11 +94,19 @@
 	function handleKeyDown(event: KeyboardEvent) {
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
-			handleClick();
+			if (!disabled && !isRevealed && !isFlagged) {
+				onReveal(row, col);
+			}
 		} else if (event.key === 'f' || event.key === 'F') {
 			event.preventDefault();
 			if (!disabled && !isRevealed) {
 				onFlag(row, col);
+			}
+		} else if (event.key === 'c' || event.key === 'C') {
+			// Chord click with 'c' key for keyboard users
+			event.preventDefault();
+			if (!disabled && isRevealed && onChord) {
+				onChord(row, col);
 			}
 		}
 	}
@@ -94,16 +123,19 @@
 		!isRevealed && isFlagged && 'bg-muted',
 		isRevealed && !isMine && 'bg-card',
 		isRevealed && isMine && !isExploded && 'bg-card',
+		isRevealed && adjacentMines > 0 && onChord && 'hover:ring-2 hover:ring-primary/50 cursor-pointer',
 		isExploded && 'bg-destructive animate-pulse',
 		disabled && 'cursor-not-allowed opacity-60'
 	)}
 	onclick={handleClick}
+	onmousedown={handleMouseDown}
 	oncontextmenu={handleRightClick}
 	onkeydown={handleKeyDown}
 	role="button"
 	aria-label={ariaLabel}
 	aria-pressed={isRevealed}
 	tabindex={disabled ? -1 : 0}
+	title={isRevealed && adjacentMines > 0 && onChord ? 'Shift+Clic ou clic molette pour révélation rapide' : ''}
 >
 	<span
 		class={cn(
