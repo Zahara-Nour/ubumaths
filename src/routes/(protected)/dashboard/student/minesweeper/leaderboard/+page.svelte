@@ -131,7 +131,7 @@
 									<div class="flex items-center gap-3">
 										<div>
 											<p class="font-semibold text-foreground">
-												{entry.first_name} {entry.last_name}
+												{entry.full_name}
 											</p>
 											{#if entry.student_id === data.currentUserId}
 												<Badge class="mt-1" variant="default">C'est vous!</Badge>

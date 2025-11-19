@@ -138,8 +138,7 @@ CREATE VIEW public.minesweeper_leaderboard AS
 WITH player_stats AS (
   SELECT
     mg.student_id,
-    p.first_name,
-    p.last_name,
+    p.full_name,
     mg.difficulty,
     COUNT(*) FILTER (WHERE mg.status = 'won') AS games_won,
     COUNT(*) AS games_played,
@@ -153,13 +152,12 @@ WITH player_stats AS (
   INNER JOIN public.profiles p ON mg.student_id = p.id
   WHERE mg.student_id IS NOT NULL  -- Only authenticated users
     AND mg.status IN ('won', 'lost')  -- Only completed games
-  GROUP BY mg.student_id, p.first_name, p.last_name, mg.difficulty
+  GROUP BY mg.student_id, p.full_name, mg.difficulty
   HAVING COUNT(*) FILTER (WHERE mg.status = 'won') > 0  -- At least 1 win
 )
 SELECT
   student_id,
-  first_name,
-  last_name,
+  full_name,
   difficulty,
   games_won,
   games_played,
