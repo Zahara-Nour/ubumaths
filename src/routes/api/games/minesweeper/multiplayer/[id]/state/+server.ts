@@ -8,7 +8,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/auth';
+import { requireRole } from '$lib/server/middleware/auth';
 import { realtimeStateUpdateSchema } from '$lib/server/validation/minesweeper-multiplayer';
 
 /**

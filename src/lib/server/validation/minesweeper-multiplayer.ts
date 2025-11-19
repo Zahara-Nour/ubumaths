@@ -97,9 +97,54 @@ export const realtimeStateUpdateSchema = z.object({
 		.optional()
 });
 
+/**
+ * Schema for completing a multiplayer match
+ * Validates completion time and grid state for server-side win verification
+ */
+export const completeMatchSchema = z.object({
+	time_seconds: z
+		.number()
+		.int({ message: 'Le temps doit être un entier' })
+		.min(10, 'Le temps minimum est de 10 secondes')
+		.max(7200, 'Le temps maximum est de 2 heures'),
+	grid_state: z.object({
+		rows: z.number().int().min(1).max(50),
+		cols: z.number().int().min(1).max(50),
+		mines: z
+			.array(
+				z.tuple([
+					z.number().int().min(0).max(49), // Row bounds (0-49 covers all difficulties)
+					z.number().int().min(0).max(49) // Col bounds
+				])
+			)
+			.max(999, 'Trop de mines'), // Max possible mines (expert has 99, allow margin)
+		revealed: z
+			.array(z.tuple([z.number().int().min(0).max(49), z.number().int().min(0).max(49)]))
+			.max(2500, 'Trop de cellules révélées'), // Max 50x50 grid cells
+		flagged: z
+			.array(z.tuple([z.number().int().min(0).max(49), z.number().int().min(0).max(49)]))
+			.max(999, 'Trop de drapeaux'), // Max flags (match mines limit)
+		adjacentCounts: z.record(z.string(), z.number().int().min(0).max(8)) // Max 2500 keys (validated server-side)
+	})
+});
+
+/**
+ * Schema for abandoning a multiplayer match
+ * Validates abandonment reason
+ */
+export const abandonMatchSchema = z.object({
+	reason: z
+		.enum(['player_quit', 'timeout', 'disconnect'], {
+			message: 'La raison doit être player_quit, timeout ou disconnect'
+		})
+		.default('player_quit')
+});
+
 // Type exports for use in API endpoints
 export type JoinQueueInput = z.infer<typeof joinQueueSchema>;
 export type MatchIdInput = z.infer<typeof matchIdSchema>;
 export type GameStateUpdateInput = z.infer<typeof gameStateUpdateSchema>;
 export type SurrenderInput = z.infer<typeof surrenderSchema>;
 export type RealtimeStateUpdateInput = z.infer<typeof realtimeStateUpdateSchema>;
+export type CompleteMatchInput = z.infer<typeof completeMatchSchema>;
+export type AbandonMatchInput = z.infer<typeof abandonMatchSchema>;
