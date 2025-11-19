@@ -19,9 +19,6 @@
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import type { Database } from '$lib/types/database';
-
-type LeaderboardEntry = Database['public']['Views']['minesweeper_leaderboard']['Row'];
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
