@@ -67,8 +67,39 @@ export const surrenderSchema = z.object({
 	})
 });
 
+/**
+ * Schema for real-time game state updates
+ * Used during active matches to sync player progress
+ */
+export const realtimeStateUpdateSchema = z.object({
+	cells_revealed: z
+		.number()
+		.int({ message: 'Le nombre de cellules révélées doit être un entier' })
+		.min(0, 'Le nombre de cellules révélées doit être positif')
+		.max(480, 'Le nombre de cellules révélées ne peut pas dépasser 480'), // 30x16 grid
+	flags_used: z
+		.number()
+		.int({ message: 'Le nombre de drapeaux utilisés doit être un entier' })
+		.min(0, 'Le nombre de drapeaux utilisés doit être positif')
+		.max(99, 'Le nombre de drapeaux utilisés ne peut pas dépasser 99'),
+	time_elapsed: z
+		.number()
+		.int({ message: 'Le temps écoulé doit être un entier' })
+		.min(0, 'Le temps écoulé doit être positif')
+		.max(7200, 'Le temps écoulé ne peut pas dépasser 2 heures'), // 2 hours max
+	last_action: z
+		.object({
+			type: z.enum(['reveal', 'flag', 'unflag']).optional(),
+			row: z.number().int().min(0).max(15).optional(),
+			col: z.number().int().min(0).max(29).optional(),
+			timestamp: z.number().optional()
+		})
+		.optional()
+});
+
 // Type exports for use in API endpoints
 export type JoinQueueInput = z.infer<typeof joinQueueSchema>;
 export type MatchIdInput = z.infer<typeof matchIdSchema>;
 export type GameStateUpdateInput = z.infer<typeof gameStateUpdateSchema>;
 export type SurrenderInput = z.infer<typeof surrenderSchema>;
+export type RealtimeStateUpdateInput = z.infer<typeof realtimeStateUpdateSchema>;
