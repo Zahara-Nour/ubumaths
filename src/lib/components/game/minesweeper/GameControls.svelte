@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
+	import HintButton from './HintButton.svelte';
 
 	// Props
 	let {
@@ -8,13 +9,21 @@
 		minesRemaining,
 		gameStatus,
 		onReset,
-		difficulty
+		difficulty,
+		hintsUsed = 0,
+		onUseHint,
+		isAuthenticated = false,
+		isLoading = false
 	}: {
 		timeElapsed: number;
 		minesRemaining: number;
 		gameStatus: 'not_started' | 'in_progress' | 'won' | 'lost';
 		onReset: () => void;
 		difficulty: string;
+		hintsUsed?: number;
+		onUseHint?: () => void;
+		isAuthenticated?: boolean;
+		isLoading?: boolean;
 	} = $props();
 
 	// Format time as MM:SS
@@ -89,4 +98,16 @@
 		<span class="mr-2" aria-hidden="true">🔄</span>
 		Nouvelle partie
 	</Button>
+
+	<!-- Hints section (only for authenticated users) -->
+	{#if isAuthenticated && onUseHint}
+		<div class="border-t border-border pt-3">
+			<HintButton
+				{hintsUsed}
+				disabled={gameStatus === 'won' || gameStatus === 'lost' || gameStatus === 'not_started'}
+				{isLoading}
+				{onUseHint}
+			/>
+		</div>
+	{/if}
 </div>

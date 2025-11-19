@@ -147,7 +147,8 @@ class MinesweeperStore {
 				cellsRevealed: 0,
 				timeElapsed: 0,
 				startedAt: undefined,
-				seed // Store seed for potential grid regeneration
+				seed, // Store seed for potential grid regeneration
+				hintsUsed: 0 // Initialize hints counter
 			};
 
 			// Stop existing timers
@@ -669,6 +670,112 @@ class MinesweeperStore {
 	}
 
 	/**
+	 * Use a hint to reveal a safe cell
+	 * Costs 10 gidouilles and applies 30% penalty to final reward
+	 * Maximum 3 hints per game
+	 *
+	 * @returns Promise that resolves when hint is used successfully
+	 */
+	async useHint(): Promise<void> {
+		if (!browser || !this.currentGame) {
+			toaster.error('Aucune partie en cours');
+			return;
+		}
+
+		const game = this.currentGame;
+
+		// Validate game status
+		if (game.status !== 'in_progress') {
+			toaster.error('La partie doit être en cours');
+			return;
+		}
+
+		// Check hint limit (max 3 per game)
+		const hintsUsed = game.hintsUsed || 0;
+		if (hintsUsed >= 3) {
+			toaster.error("Maximum d'indices atteint (3 par partie)");
+			return;
+		}
+
+		// Must be authenticated to use hints
+		if (!this.user || !this.supabase || !game.id) {
+			toaster.error('Vous devez être connecté pour utiliser les indices');
+			return;
+		}
+
+		// Find a safe unrevealed cell
+		const safeCells: { row: number; col: number }[] = [];
+		for (let row = 0; row < game.rows; row++) {
+			for (let col = 0; col < game.cols; col++) {
+				const cell = game.grid[row][col];
+				if (!cell.isRevealed && !cell.isFlagged && !cell.isMine) {
+					safeCells.push({ row, col });
+				}
+			}
+		}
+
+		if (safeCells.length === 0) {
+			toaster.error('Aucune cellule sûre disponible');
+			return;
+		}
+
+		this.isLoading = true;
+		try {
+			// Call API to spend gidouilles
+			const response = await fetch(`/api/games/minesweeper/${game.id}/hint`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' }
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.message || "Échec de l'utilisation de l'indice");
+			}
+
+			const result = await response.json();
+
+			// Select a random safe cell
+			const randomIndex = Math.floor(Math.random() * safeCells.length);
+			const selectedCell = safeCells[randomIndex];
+			const cell = game.grid[selectedCell.row][selectedCell.col];
+
+			// Reveal the cell
+			cell.isRevealed = true;
+			game.cellsRevealed++;
+
+			// Cascade reveal if it's an empty cell
+			if (cell.adjacentMines === 0) {
+				this.cascadeReveal(selectedCell.row, selectedCell.col);
+			}
+
+			// Increment hints counter
+			game.hintsUsed = hintsUsed + 1;
+
+			// Check win condition
+			if (this.checkWinCondition()) {
+				this.handleWin();
+			} else {
+				// Trigger reactivity
+				this.currentGame = { ...game };
+			}
+
+			toaster.success(
+				`Indice utilisé (${game.hintsUsed}/3). Pénalité de 30% appliquée sur la récompense finale.`
+			);
+
+			logger.info(
+				`Hint used. Hints remaining: ${3 - game.hintsUsed}. Gidouilles spent: ${result.gidouilles_spent || 10}`
+			);
+		} catch (err) {
+			const message = err instanceof Error ? err.message : "Échec de l'utilisation de l'indice";
+			logger.error('Failed to use hint:', err);
+			toaster.error(message);
+		} finally {
+			this.isLoading = false;
+		}
+	}
+
+	/**
 	 * Start the game timer
 	 */
 	private startTimer(): void {
@@ -744,7 +851,8 @@ class MinesweeperStore {
 						status: game.status,
 						time_elapsed: game.timeElapsed,
 						flags_used: game.flagsUsed,
-						cells_revealed: game.cellsRevealed
+						cells_revealed: game.cellsRevealed,
+						hints_used: game.hintsUsed || 0
 					})
 					.eq('id', game.id);
 

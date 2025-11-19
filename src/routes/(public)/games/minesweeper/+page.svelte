@@ -123,6 +123,10 @@
 							gameStatus={game.status}
 							onReset={() => startNewGame()}
 							difficulty={game.difficulty}
+							hintsUsed={game.hintsUsed || 0}
+							onUseHint={() => minesweeperStore.useHint()}
+							isAuthenticated={data.isAuthenticated}
+							isLoading={minesweeperStore.isLoading}
 						/>
 					</div>
 				</div>

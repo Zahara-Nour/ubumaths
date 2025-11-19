@@ -38,6 +38,7 @@ export interface GameState {
 	timeElapsed: number;
 	startedAt?: Date;
 	seed?: string; // Optional seed for deterministic grid generation (daily challenges)
+	hintsUsed?: number; // Number of hints used (0-3)
 }
 
 export interface DifficultyConfig {
