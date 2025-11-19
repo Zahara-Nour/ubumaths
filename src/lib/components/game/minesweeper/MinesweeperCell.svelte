@@ -116,15 +116,18 @@
 	type="button"
 	class={cn(
 		'flex items-center justify-center font-bold transition-all',
-		'w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12',
+		'h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12',
 		'border border-border',
-		'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+		'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',
 		!isRevealed && !isFlagged && 'bg-muted hover:bg-muted/80 active:scale-95',
 		!isRevealed && isFlagged && 'bg-muted',
 		isRevealed && !isMine && 'bg-card',
 		isRevealed && isMine && !isExploded && 'bg-card',
-		isRevealed && adjacentMines > 0 && onChord && 'hover:ring-2 hover:ring-primary/50 cursor-pointer',
-		isExploded && 'bg-destructive animate-pulse',
+		isRevealed &&
+			adjacentMines > 0 &&
+			onChord &&
+			'cursor-pointer hover:ring-2 hover:ring-primary/50',
+		isExploded && 'animate-pulse bg-destructive',
 		disabled && 'cursor-not-allowed opacity-60'
 	)}
 	onclick={handleClick}
@@ -135,7 +138,9 @@
 	aria-label={ariaLabel}
 	aria-pressed={isRevealed}
 	tabindex={disabled ? -1 : 0}
-	title={isRevealed && adjacentMines > 0 && onChord ? 'Shift+Clic ou clic molette pour révélation rapide' : ''}
+	title={isRevealed && adjacentMines > 0 && onChord
+		? 'Shift+Clic ou clic molette pour révélation rapide'
+		: ''}
 >
 	<span
 		class={cn(
