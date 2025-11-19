@@ -6,7 +6,7 @@
  * including templates, instances, random number generation, and validation.
  *
  * Key Features:
- * - Support for variables in random expressions: {#:{@:min}-{@:max}}
+ * - Support for variables in random expressions: {{random:{{min}}-{{max}}}}
  * - Multiple question types (numerical, algebraic, QCM, fill-in-blanks)
  * - Complex exclusion patterns (values, ranges, variables)
  * - Precision types for numerical answers
@@ -85,9 +85,9 @@ export type AlgebraicTransformType = 'factor' | 'expand' | 'simplify' | 'solve';
  *
  * Text content can contain:
  * - LaTeX expressions: $$expression$$
- * - Variables: {@:varName}
- * - Random numbers: {#:1-10}
- * - Evaluations: {eval:expression}
+ * - Variables: {{varName}}
+ * - Random numbers: {{random:1-10}}
+ * - Evaluations: {{eval:expression}}
  */
 export type ContentField =
 	| {
@@ -96,7 +96,7 @@ export type ContentField =
 	  }
 	| {
 			type: 'image';
-			content: string; // Image URL (may contain variables like {@:imageId})
+			content: string; // Image URL (may contain variables like {{imageId}})
 			alt?: string; // Alt text for accessibility
 	  };
 
@@ -145,24 +145,24 @@ export type PrecisionType =
  * previously defined variables.
  *
  * Expression syntax:
- * - {@:otherVar} - Reference to another variable
- * - {#:1-10} - Random integer from 1 to 10
- * - {#:{@:min}-{@:max}} - Random with variable bounds
- * - {#:2.3} - Random decimal (2 digits before, 3 after)
- * - {#:1-10!5,7} - Random excluding 5 and 7
- * - {#:1-100!{@:excluded}} - Random excluding variable value
- * - {eval:expression} - Evaluate mathematical expression
+ * - {{otherVar}} - Reference to another variable
+ * - {{random:1-10}} - Random integer from 1 to 10
+ * - {{random:{{min}}-{{max}}}} - Random with variable bounds
+ * - {{random:2.3}} - Random decimal (2 digits before, 3 after)
+ * - {{random:1-10!5,7}} - Random excluding 5 and 7
+ * - {{random:1-100!{{excluded}}}} - Random excluding variable value
+ * - {{eval:expression}} - Evaluate mathematical expression
  *
  * @example Simple random
- * { name: 'a', expression: '{#:1-10}' }
+ * { name: 'a', expression: '{{random:1-10}}' }
  *
  * @example Variable bounds
  * { name: 'max', expression: '20' }
- * { name: 'value', expression: '{#:1-{@:max}}' }
+ * { name: 'value', expression: '{{random:1-{{max}}}}' }
  *
  * @example Exclusion
- * { name: 'a', expression: '{#:1-10}' }
- * { name: 'b', expression: '{#:1-10!{@:a}}' }
+ * { name: 'a', expression: '{{random:1-10}}' }
+ * { name: 'b', expression: '{{random:1-10!{{a}}}}' }
  */
 export type QuestionVariable = SharedVariable;
 
@@ -198,7 +198,7 @@ export interface QuestionVariation {
 	/** Variables in declaration order (resolved sequentially) */
 	variables?: QuestionVariable[];
 
-	/** Expected answer(s) - can contain {@:var}, {#:...}, {eval:...} */
+	/** Expected answer(s) - can contain {{var}}, {{random:...}}, {{eval:...}} */
 	answer: string | string[];
 
 	/** Detailed correction/explanation (optional) */
@@ -211,13 +211,13 @@ export interface QuestionVariation {
 		/** Position in statement */
 		position: number;
 
-		/** Expected answer (can contain {@:var}) */
+		/** Expected answer (can contain {{var}}) */
 		expectedAnswer: string;
 	}[];
 
 	/** Choices for multiple choice */
 	choices?: {
-		/** Choice content (text or image, can contain {@:var}, {#:...}) */
+		/** Choice content (text or image, can contain {{var}}, {{random:...}}) */
 		content: ContentField;
 
 		/** Whether this choice is correct */
@@ -467,22 +467,22 @@ export type GenerationResult =
  * Random number specification
  *
  * Uses shared RandomSpec from parameterization library.
- * Parsed from {#:...} expressions with full support for variables
+ * Parsed from {{random:...}} expressions with full support for variables
  * in bounds, digits, and exclusions.
  *
  * @example Integer range
- * {#:1-10} → { type: 'integer', min: {type:'number',value:1}, max: {...,value:10} }
+ * {{random:1-10}} → { type: 'integer', min: {type:'number',value:1}, max: {...,value:10} }
  *
  * @example Variable bounds
- * {#:{@:min}-{@:max}} → { type: 'integer', min: {type:'variable',name:'min'}, max: {...} }
+ * {{random:{{min}}-{{max}}}} → { type: 'integer', min: {type:'variable',name:'min'}, max: {...} }
  *
  * @example Decimal by digits
- * {#:2.3} → { type: 'decimal-by-digits', digitsBefore: {type:'number',value:2}, digitsAfter: {...,value:3} }
+ * {{random:2.3}} → { type: 'decimal-by-digits', digitsBefore: {type:'number',value:2}, digitsAfter: {...,value:3} }
  *
  * @example Decimal range with step
- * {#:0.5-9.99:0.01} → { type: 'decimal-range', min: {...,value:0.5}, max: {...,value:9.99}, step: 0.01 }
+ * {{random:0.5-9.99:0.01}} → { type: 'decimal-range', min: {...,value:0.5}, max: {...,value:9.99}, step: 0.01 }
  *
  * @example With exclusions
- * {#:1-20!5,7-9,{@:a}} → { ..., exclusions: [...] }
+ * {{random:1-20!5,7-9,{{a}}}} → { ..., exclusions: [...] }
  */
 export type RandomSpec = SharedRandomSpec;

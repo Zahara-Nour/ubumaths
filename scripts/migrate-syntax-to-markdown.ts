@@ -30,7 +30,6 @@
 
 import { createClient } from '@supabase/supabase-js';
 import * as dotenv from 'dotenv';
-import { convertSyntax } from '../src/lib/shared/parameterization';
 import type { Database } from '../src/lib/types/database';
 
 dotenv.config();
@@ -73,10 +72,24 @@ interface ContentField {
 	content: string;
 }
 
+interface Blank {
+	position: number;
+	expectedAnswer: string;
+}
+
+interface Choice {
+	content: ContentField;
+	isCorrect: boolean;
+}
+
 interface Variation {
 	variables?: Variable[];
 	statement: ContentField[];
 	correction?: ContentField[];
+	answer?: string | string[];
+	blanks?: Blank[];
+	// Choices can be either string[] (old format) or Choice[] (new format)
+	choices?: (string | Choice)[];
 	[key: string]: unknown;
 }
 
@@ -88,6 +101,108 @@ interface QuestionTemplate {
 }
 
 // ============================================================================
+// SYNTAX CONVERSION FUNCTIONS
+// ============================================================================
+
+/**
+ * Convert Questions syntax to Markdown syntax
+ *
+ * FIXED VERSION: Handles mixed syntax correctly without creating triple braces.
+ * This version checks if eval expressions are already in Markdown format ({{eval:})
+ * and skips them to avoid double-conversion.
+ *
+ * Transforms:
+ * - {@:varName} → {{varName}}
+ * - {#:random-spec} → {{random:random-spec}}
+ * - {eval:expression} → {{eval:expression}} (but NOT {{eval:...}} → {{{eval:...}}})
+ */
+function convertToMarkdownSyntax(text: string): string {
+	if (!text) return text;
+
+	let result = text;
+
+	// Step 1: Convert variable references {@:var} → {{var}}
+	result = result.replace(/\{@:(\w+)\}/g, '{{$1}}');
+
+	// Step 2: Convert random expressions {#:spec} → {{random:spec}}
+	let randomStart = result.indexOf('{#:');
+	while (randomStart !== -1) {
+		let braceCount = 1;
+		let i = randomStart + 3; // Skip past '{#:'
+
+		while (i < result.length && braceCount > 0) {
+			if (result[i] === '{') braceCount++;
+			else if (result[i] === '}') braceCount--;
+			i++;
+		}
+
+		if (braceCount === 0) {
+			const randomSpec = result.substring(randomStart + 3, i - 1);
+			result =
+				result.substring(0, randomStart) + '{{random:' + randomSpec + '}}' + result.substring(i);
+			randomStart = result.indexOf('{#:', randomStart + randomSpec.length + 11);
+		} else {
+			randomStart = result.indexOf('{#:', randomStart + 1);
+		}
+	}
+
+	// Step 3: Convert eval expressions {eval:...} → {{eval:...}}
+	// FIXED: Skip if already {{eval:...}} to avoid triple braces
+	let evalStart = result.indexOf('{eval:');
+	while (evalStart !== -1) {
+		// Check if this is already {{eval: (preceded by another {)
+		if (evalStart > 0 && result[evalStart - 1] === '{') {
+			// Already Markdown format, skip it
+			evalStart = result.indexOf('{eval:', evalStart + 1);
+			continue;
+		}
+
+		let braceCount = 1;
+		let i = evalStart + 6; // Skip past '{eval:'
+
+		while (i < result.length && braceCount > 0) {
+			if (result[i] === '{') braceCount++;
+			else if (result[i] === '}') braceCount--;
+			i++;
+		}
+
+		if (braceCount === 0) {
+			const evalContent = result.substring(evalStart + 6, i - 1);
+			result =
+				result.substring(0, evalStart) + '{{eval:' + evalContent + '}}' + result.substring(i);
+			evalStart = result.indexOf('{eval:', evalStart + evalContent.length + 9);
+		} else {
+			evalStart = result.indexOf('{eval:', evalStart + 1);
+		}
+	}
+
+	return result;
+}
+
+// ============================================================================
+// SYNTAX DETECTION
+// ============================================================================
+
+/**
+ * Detect the syntax used in a question template
+ * Matches the logic from audit-question-syntax.ts for consistency
+ */
+function detectQuestionSyntax(template: QuestionTemplate): 'old' | 'new' | 'mixed' | 'none' {
+	const variationsText = JSON.stringify(template.variations);
+
+	// Check for old syntax patterns
+	const hasOldSyntax = /{@:/.test(variationsText) || /{#:/.test(variationsText);
+
+	// Check for new syntax patterns (but not triple braces which would be errors)
+	const hasNewSyntax = /\{\{/.test(variationsText) && !/\{\{\{/.test(variationsText);
+
+	if (hasOldSyntax && hasNewSyntax) return 'mixed';
+	if (hasOldSyntax) return 'old';
+	if (hasNewSyntax) return 'new';
+	return 'none';
+}
+
+// ============================================================================
 // MIGRATION FUNCTIONS
 // ============================================================================
 
@@ -96,7 +211,7 @@ interface QuestionTemplate {
  */
 function convertVariable(variable: Variable): { variable: Variable; changed: boolean } {
 	const oldExpression = variable.expression;
-	const newExpression = convertSyntax(oldExpression, 'questions', 'markdown');
+	const newExpression = convertToMarkdownSyntax(oldExpression);
 
 	return {
 		variable: {
@@ -116,7 +231,7 @@ function convertContentField(field: ContentField): { field: ContentField; change
 	}
 
 	const oldContent = field.content;
-	const newContent = convertSyntax(oldContent, 'questions', 'markdown');
+	const newContent = convertToMarkdownSyntax(oldContent);
 
 	return {
 		field: {
@@ -160,12 +275,77 @@ function convertVariation(variation: Variation): { variation: Variation; changes
 		return result.field;
 	});
 
+	// Convert answer field (string or array)
+	let updatedAnswer = variation.answer;
+	if (typeof variation.answer === 'string') {
+		const oldAnswer = variation.answer;
+		const newAnswer = convertToMarkdownSyntax(oldAnswer);
+		if (oldAnswer !== newAnswer) {
+			changes.push(`Answer: ${oldAnswer} → ${newAnswer}`);
+			updatedAnswer = newAnswer;
+		}
+	} else if (Array.isArray(variation.answer)) {
+		updatedAnswer = variation.answer.map((ans, idx) => {
+			const oldAnswer = ans;
+			const newAnswer = convertToMarkdownSyntax(oldAnswer);
+			if (oldAnswer !== newAnswer) {
+				changes.push(`Answer[${idx}]: ${oldAnswer} → ${newAnswer}`);
+			}
+			return newAnswer;
+		});
+	}
+
+	// Convert blanks expectedAnswer
+	const updatedBlanks = variation.blanks?.map((blank, idx) => {
+		const oldAnswer = blank.expectedAnswer;
+		const newAnswer = convertToMarkdownSyntax(oldAnswer);
+		if (oldAnswer !== newAnswer) {
+			changes.push(`Blank[${idx}] expectedAnswer: ${oldAnswer} → ${newAnswer}`);
+		}
+		return {
+			...blank,
+			expectedAnswer: newAnswer
+		};
+	});
+
+	// Convert choices content
+	// Handle both formats: array of strings OR array of {content, isCorrect} objects
+	const updatedChoices = variation.choices?.map((choice, idx) => {
+		// Format 1: String array (old format)
+		if (typeof choice === 'string') {
+			const oldChoice = choice;
+			const newChoice = convertToMarkdownSyntax(oldChoice);
+			if (oldChoice !== newChoice) {
+				changes.push(`Choice[${idx}]: ${oldChoice} → ${newChoice}`);
+			}
+			return newChoice;
+		}
+
+		// Format 2: Object with {content, isCorrect}
+		// Skip if choice.content is undefined
+		if (!choice.content) {
+			return choice;
+		}
+
+		const result = convertContentField(choice.content);
+		if (result.changed) {
+			changes.push(`Choice[${idx}] content: ${choice.content.content} → ${result.field.content}`);
+		}
+		return {
+			...choice,
+			content: result.field
+		};
+	});
+
 	return {
 		variation: {
 			...variation,
 			variables: updatedVariables,
 			statement: updatedStatement,
-			correction: updatedCorrection
+			correction: updatedCorrection,
+			answer: updatedAnswer,
+			blanks: updatedBlanks,
+			choices: updatedChoices
 		},
 		changes
 	};
@@ -256,6 +436,18 @@ async function migrateSyntax() {
 		try {
 			console.log(`📝 Processing: ${template.id}`);
 			console.log(`   Title: "${template.title}"`);
+
+			// First, detect the syntax to avoid migrating already-Markdown questions
+			const syntax = detectQuestionSyntax(template as unknown as QuestionTemplate);
+			console.log(`   Syntax detected: ${syntax}`);
+
+			// Only migrate if old or mixed syntax
+			if (syntax !== 'old' && syntax !== 'mixed') {
+				console.log('   ⏭️  Already using Markdown syntax or no variables');
+				stats.skipped++;
+				console.log(''); // Blank line between templates
+				continue;
+			}
 
 			const result = convertTemplate(template as unknown as QuestionTemplate);
 
