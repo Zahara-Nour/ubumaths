@@ -552,6 +552,93 @@ class MinesweeperStore {
 	}
 
 	/**
+	 * Chord click: Reveal all neighbors if flags match adjacent mine count
+	 * This is a classic Minesweeper feature for expert players.
+	 *
+	 * @param row - Cell row
+	 * @param col - Cell column
+	 */
+	chordClick(row: number, col: number): void {
+		if (!browser || !this.currentGame) {
+			return;
+		}
+
+		const game = this.currentGame;
+		const cell = game.grid[row]?.[col];
+
+		// Validate cell exists and is revealed
+		if (!cell || !cell.isRevealed) {
+			return;
+		}
+
+		// Only works on numbered cells (not empty cells or mines)
+		if (cell.adjacentMines === 0 || cell.isMine) {
+			return;
+		}
+
+		// Count flags around this cell
+		let flagCount = 0;
+		const neighbors: { row: number; col: number }[] = [];
+
+		for (let dRow = -1; dRow <= 1; dRow++) {
+			for (let dCol = -1; dCol <= 1; dCol++) {
+				if (dRow === 0 && dCol === 0) continue;
+
+				const newRow = row + dRow;
+				const newCol = col + dCol;
+
+				if (!this.isValidCell(newRow, newCol)) continue;
+
+				const neighbor = game.grid[newRow][newCol];
+				if (neighbor.isFlagged) {
+					flagCount++;
+				} else if (!neighbor.isRevealed) {
+					neighbors.push({ row: newRow, col: newCol });
+				}
+			}
+		}
+
+		// Only reveal if flag count matches adjacent mine count
+		if (flagCount !== cell.adjacentMines) {
+			return;
+		}
+
+		// Reveal all non-flagged neighbors
+		let hitMine = false;
+		for (const neighbor of neighbors) {
+			const neighborCell = game.grid[neighbor.row][neighbor.col];
+
+			if (neighborCell.isMine) {
+				// Hit a mine! Game over
+				neighborCell.isRevealed = true;
+				neighborCell.isExploded = true;
+				hitMine = true;
+			} else {
+				// Safe cell - reveal it
+				neighborCell.isRevealed = true;
+				game.cellsRevealed++;
+
+				// Cascade if empty
+				if (neighborCell.adjacentMines === 0) {
+					this.cascadeReveal(neighbor.row, neighbor.col);
+				}
+			}
+		}
+
+		if (hitMine) {
+			this.handleLoss();
+		} else {
+			// Check for win
+			if (this.checkWinCondition()) {
+				this.handleWin();
+			} else {
+				// Trigger reactivity
+				this.currentGame = { ...game };
+			}
+		}
+	}
+
+	/**
 	 * Start the game timer
 	 */
 	private startTimer(): void {

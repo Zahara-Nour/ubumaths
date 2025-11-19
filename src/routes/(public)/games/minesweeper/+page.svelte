@@ -109,6 +109,7 @@
 									gameState={game}
 									onCellReveal={(row, col) => minesweeperStore.revealCell(row, col)}
 									onCellFlag={(row, col) => minesweeperStore.toggleFlag(row, col)}
+									onCellChord={(row, col) => minesweeperStore.chordClick(row, col)}
 									disabled={game.status === 'won' || game.status === 'lost'}
 								/>
 							</div>
@@ -217,6 +218,13 @@
 						<li class="flex gap-3">
 							<span>🚩</span>
 							<span>Clic droit pour marquer/démarquer une mine</span>
+						</li>
+						<li class="flex gap-3">
+							<span>⚡</span>
+							<span
+								><strong>Révélation rapide :</strong> Shift+Clic ou clic molette sur une cellule révélée
+								pour révéler tous les voisins si le nombre de drapeaux est correct</span
+							>
 						</li>
 						<li class="flex gap-3">
 							<span>💥</span>
