@@ -8,12 +8,14 @@
 		gameState,
 		onCellReveal,
 		onCellFlag,
+		onCellChord,
 		disabled = false
 	}: {
 		difficulty: 'beginner' | 'intermediate' | 'expert';
 		gameState: GameState;
 		onCellReveal: (row: number, col: number) => void;
 		onCellFlag: (row: number, col: number) => void;
+		onCellChord?: (row: number, col: number) => void;
 		disabled?: boolean;
 	} = $props();
 
@@ -50,6 +52,7 @@
 					isExploded={cell.isExploded}
 					onReveal={onCellReveal}
 					onFlag={onCellFlag}
+					onChord={onCellChord}
 					{disabled}
 				/>
 			{/each}
