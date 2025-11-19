@@ -64,10 +64,11 @@ BEGIN
     RAISE EXCEPTION 'Non authentifié';
   END IF;
 
-  -- Fetch match details
+  -- Fetch match details WITH LOCK to prevent race condition
   SELECT * INTO v_match
   FROM minesweeper_multiplayer_matches
-  WHERE id = p_match_id;
+  WHERE id = p_match_id
+  FOR UPDATE;  -- CRITICAL: Locks row until transaction completes
 
   IF NOT FOUND THEN
     RAISE EXCEPTION 'Match introuvable';
@@ -286,10 +287,11 @@ BEGIN
     RAISE EXCEPTION 'Non authentifié';
   END IF;
 
-  -- Fetch match details
+  -- Fetch match details WITH LOCK to prevent race condition
   SELECT * INTO v_match
   FROM minesweeper_multiplayer_matches
-  WHERE id = p_match_id;
+  WHERE id = p_match_id
+  FOR UPDATE;  -- CRITICAL: Locks row until transaction completes
 
   IF NOT FOUND THEN
     RAISE EXCEPTION 'Match introuvable';
