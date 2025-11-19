@@ -7,7 +7,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/auth';
+import { requireRole } from '$lib/server/middleware/auth';
 
 /**
  * POST /api/games/minesweeper/multiplayer/[id]/start
