@@ -3331,29 +3331,32 @@ Classic Minesweeper game with public accessibility and premium features for auth
 
 Stores Minesweeper game sessions with support for both public and authenticated gameplay.
 
-| Column             | Type        | Description                                                        |
-| ------------------ | ----------- | ------------------------------------------------------------------ |
-| id                 | UUID (PK)   | Game session ID                                                    |
-| student_id         | UUID (FK)   | Student who played (NULL for public/anonymous games)               |
-| difficulty         | TEXT        | 'beginner', 'intermediate', or 'expert'                            |
-| status             | TEXT        | 'in_progress', 'won', or 'lost'                                    |
-| grid_state         | JSONB       | Complete game state for resuming (see structure below)             |
-| time_seconds       | INTEGER     | Time elapsed in seconds (NULL for in_progress)                     |
-| gidouilles_awarded | INTEGER     | Gidouilles earned (0 for public games, calculated server-side)     |
-| started_at         | TIMESTAMPTZ | Auto-set by trigger on first move (NULL until first grid change)   |
-| completed_at       | TIMESTAMPTZ | Completion timestamp (NULL for in_progress)                        |
-| created_at         | TIMESTAMPTZ | Game creation timestamp                                            |
+| Column             | Type        | Description                                                      |
+| ------------------ | ----------- | ---------------------------------------------------------------- |
+| id                 | UUID (PK)   | Game session ID                                                  |
+| student_id         | UUID (FK)   | Student who played (NULL for public/anonymous games)             |
+| difficulty         | TEXT        | 'beginner', 'intermediate', or 'expert'                          |
+| status             | TEXT        | 'in_progress', 'won', or 'lost'                                  |
+| grid_state         | JSONB       | Complete game state for resuming (see structure below)           |
+| time_seconds       | INTEGER     | Time elapsed in seconds (NULL for in_progress)                   |
+| gidouilles_awarded | INTEGER     | Gidouilles earned (0 for public games, calculated server-side)   |
+| started_at         | TIMESTAMPTZ | Auto-set by trigger on first move (NULL until first grid change) |
+| completed_at       | TIMESTAMPTZ | Completion timestamp (NULL for in_progress)                      |
+| created_at         | TIMESTAMPTZ | Game creation timestamp                                          |
 
 **Foreign Keys**:
+
 - `student_id` → `profiles(id)` (ON DELETE CASCADE)
 
 **Constraints**:
+
 - `difficulty` must be 'beginner', 'intermediate', or 'expert'
 - `status` must be 'in_progress', 'won', or 'lost'
 - `gidouilles_awarded >= 0 AND gidouilles_awarded <= 1000` (prevents abuse)
 - All numeric values must be >= 0
 
 **Grid State JSONB Structure** (GridStateDTO format):
+
 ```json
 {
   "rows": 9,
@@ -3368,11 +3371,13 @@ Stores Minesweeper game sessions with support for both public and authenticated 
 **Note**: adjacentCounts uses comma separator ("0,0") not hyphen.
 
 **Indexes**:
+
 - `idx_minesweeper_games_student_status` on `(student_id, status)` (WHERE student_id IS NOT NULL)
 - `idx_minesweeper_games_resume` on `(student_id, status, created_at DESC)` (for resume game queries)
 - `idx_minesweeper_games_difficulty` on `(difficulty, status, time_seconds)` (for leaderboards)
 
 **Triggers**:
+
 - `set_minesweeper_started_at` (BEFORE UPDATE): Auto-sets `started_at` timestamp on first grid_state change
 
 ### Functions (RPC)
@@ -3384,12 +3389,14 @@ Stores Minesweeper game sessions with support for both public and authenticated 
 **Purpose**: Server-side win validation and reward calculation (prevents client-side manipulation)
 
 **Parameters**:
+
 - `p_game_id`: UUID of the game being completed
 - `p_grid_state`: Final grid state in GridStateDTO format
 
 **Returns**: TABLE(success BOOLEAN, gidouilles_awarded INTEGER, time_seconds INTEGER)
 
 **Validation Steps**:
+
 1. Verify ownership (student_id matches authenticated user)
 2. Verify game is in_progress
 3. **Win validation**:
@@ -3407,6 +3414,7 @@ Stores Minesweeper game sessions with support for both public and authenticated 
    - Update student's gidouilles balance
 
 **Example**:
+
 ```sql
 SELECT * FROM complete_minesweeper_game(
   'game-uuid-here',
@@ -3422,12 +3430,14 @@ SELECT * FROM complete_minesweeper_game(
 **Purpose**: Records a game loss (mine explosion) with final grid state
 
 **Parameters**:
+
 - `p_game_id`: UUID of the game
 - `p_grid_state`: Final grid state with exploded mine
 
 **Returns**: TABLE(success BOOLEAN)
 
 **Flow**:
+
 1. Verify ownership
 2. Verify game is in_progress
 3. Update status to 'lost'
@@ -3435,6 +3445,7 @@ SELECT * FROM complete_minesweeper_game(
 5. Save final grid_state
 
 **Example**:
+
 ```sql
 SELECT * FROM record_minesweeper_loss(
   'game-uuid-here',
@@ -3449,20 +3460,21 @@ SELECT * FROM record_minesweeper_loss(
 
 Ranked leaderboard partitioned by difficulty level. Only includes authenticated users with at least one win.
 
-| Column            | Type    | Description                                        |
-| ----------------- | ------- | -------------------------------------------------- |
-| student_id        | UUID    | Student ID                                         |
-| first_name        | TEXT    | Student first name (from profiles)                 |
-| last_name         | TEXT    | Student last name (from profiles)                  |
-| difficulty        | TEXT    | Game difficulty level                              |
-| games_won         | INTEGER | Number of games won at this difficulty             |
-| games_played      | INTEGER | Total games played at this difficulty              |
-| best_time         | INTEGER | Best completion time in seconds                    |
-| total_gidouilles  | INTEGER | Total gidouilles earned at this difficulty         |
-| win_rate          | NUMERIC | Win percentage (rounded to 1 decimal place)        |
-| rank              | INTEGER | Rank within difficulty (ordered by best_time ASC)  |
+| Column           | Type    | Description                                       |
+| ---------------- | ------- | ------------------------------------------------- |
+| student_id       | UUID    | Student ID                                        |
+| first_name       | TEXT    | Student first name (from profiles)                |
+| last_name        | TEXT    | Student last name (from profiles)                 |
+| difficulty       | TEXT    | Game difficulty level                             |
+| games_won        | INTEGER | Number of games won at this difficulty            |
+| games_played     | INTEGER | Total games played at this difficulty             |
+| best_time        | INTEGER | Best completion time in seconds                   |
+| total_gidouilles | INTEGER | Total gidouilles earned at this difficulty        |
+| win_rate         | NUMERIC | Win percentage (rounded to 1 decimal place)       |
+| rank             | INTEGER | Rank within difficulty (ordered by best_time ASC) |
 
 **Ranking Logic**:
+
 - Partitioned by `difficulty`
 - Ordered by `best_time ASC` (fastest time = rank 1)
 - Secondary sort by `games_won DESC` for ties
@@ -3540,23 +3552,27 @@ WHERE status = 'in_progress'
 ### Design Decisions
 
 **Why NULL student_id for public games?**
+
 - Allows anyone to play without authentication
 - Enforced at DB level: public games cannot earn gidouilles
 - RLS policies ensure proper separation between public and authenticated gameplay
 
 **Why JSONB for grid_state?**
+
 - Enables complete game state persistence
 - Flexible structure for different difficulty levels
 - Supports efficient resume functionality
 - No need for complex relational structure for ephemeral game state
 
 **Why separate leaderboard view?**
+
 - Pre-computed rankings improve query performance
 - Simplifies frontend queries
 - Automatic filtering of incomplete data
 - Partition by difficulty for fair competition
 
 **Gidouilles reward strategy**:
+
 - Only awarded to authenticated students (incentivizes account creation)
 - Awarded on game completion (won status)
 - Amount can vary by difficulty level (implementation detail in application logic)

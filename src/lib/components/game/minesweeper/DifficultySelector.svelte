@@ -45,7 +45,7 @@
 </script>
 
 <div class="space-y-2">
-	<div class="text-sm font-medium mb-2">Difficulté</div>
+	<div class="mb-2 text-sm font-medium">Difficulté</div>
 
 	<MySelect
 		type="single"
@@ -58,16 +58,16 @@
 	/>
 
 	<!-- Info cards for each difficulty -->
-	<div class="grid gap-2 mt-4 sm:grid-cols-3">
+	<div class="mt-4 grid gap-2 sm:grid-cols-3">
 		{#each items as item}
 			<div
-				class="p-3 rounded-lg border transition-all {selected === item.value
+				class="rounded-lg border p-3 transition-all {selected === item.value
 					? 'border-primary bg-primary/5'
 					: 'border-border bg-card'}"
 			>
-				<div class="font-semibold text-sm">{item.label}</div>
-				<div class="text-xs text-muted-foreground mt-1">{item.description}</div>
-				<div class="text-xs text-muted-foreground mt-1">
+				<div class="text-sm font-semibold">{item.label}</div>
+				<div class="mt-1 text-xs text-muted-foreground">{item.description}</div>
+				<div class="mt-1 text-xs text-muted-foreground">
 					Base: {DIFFICULTY_CONFIGS[item.value].baseGidouilles} gidouilles
 				</div>
 			</div>

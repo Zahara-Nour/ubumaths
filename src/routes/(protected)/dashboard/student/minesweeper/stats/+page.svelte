@@ -17,11 +17,13 @@
 
 	// Get difficulty label in French
 	function getDifficultyLabel(difficulty: string): string {
-		return {
-			beginner: 'Facile',
-			intermediate: 'Intermédiaire',
-			expert: 'Difficile'
-		}[difficulty] || difficulty;
+		return (
+			{
+				beginner: 'Facile',
+				intermediate: 'Intermédiaire',
+				expert: 'Difficile'
+			}[difficulty] || difficulty
+		);
 	}
 
 	// Get status badge variant
@@ -31,12 +33,14 @@
 
 	// Get status label
 	function getStatusLabel(status: string): string {
-		return {
-			won: 'Victoire ✓',
-			lost: 'Défaite ✗',
-			in_progress: 'En cours',
-			not_started: 'Non commencée'
-		}[status] || status;
+		return (
+			{
+				won: 'Victoire ✓',
+				lost: 'Défaite ✗',
+				in_progress: 'En cours',
+				not_started: 'Non commencée'
+			}[status] || status
+		);
 	}
 </script>
 
@@ -61,10 +65,10 @@
 
 	<!-- Overall Statistics by Difficulty -->
 	<div>
-		<h2 class="text-xl font-semibold text-foreground mb-4">Vue d'ensemble</h2>
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+		<h2 class="mb-4 text-xl font-semibold text-foreground">Vue d'ensemble</h2>
+		<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 			{#each data.statistics as stats (stats.difficulty)}
-				<GameStats stats={stats} />
+				<GameStats {stats} />
 			{/each}
 		</div>
 	</div>
@@ -73,11 +77,11 @@
 
 	<!-- Recent Games History -->
 	<div>
-		<h2 class="text-xl font-semibold text-foreground mb-4">Historique récent</h2>
+		<h2 class="mb-4 text-xl font-semibold text-foreground">Historique récent</h2>
 
 		{#if data.recentGames.length === 0}
 			<Card class="p-12 text-center">
-				<p class="text-muted-foreground mb-4">Vous n'avez pas encore joué au Démineur</p>
+				<p class="mb-4 text-muted-foreground">Vous n'avez pas encore joué au Démineur</p>
 				<a href="/games/minesweeper">
 					<Button>Commencer une partie</Button>
 				</a>
@@ -85,7 +89,7 @@
 		{:else}
 			<div class="overflow-x-auto rounded-lg border border-border">
 				<table class="w-full text-sm">
-					<thead class="bg-muted/50 border-b border-border">
+					<thead class="border-b border-border bg-muted/50">
 						<tr>
 							<th class="px-4 py-3 text-left font-semibold text-foreground">Date</th>
 							<th class="px-4 py-3 text-left font-semibold text-foreground">Difficulté</th>
@@ -96,7 +100,7 @@
 					</thead>
 					<tbody class="divide-y divide-border">
 						{#each data.recentGames as game (game.id)}
-							<tr class="hover:bg-muted/50 transition-colors">
+							<tr class="transition-colors hover:bg-muted/50">
 								<td class="px-4 py-3 text-muted-foreground">
 									{new Date(game.created_at).toLocaleDateString('fr-FR', {
 										year: 'numeric',
@@ -116,10 +120,10 @@
 										{getStatusLabel(game.status)}
 									</Badge>
 								</td>
-								<td class="px-4 py-3 text-center text-foreground font-medium">
+								<td class="px-4 py-3 text-center font-medium text-foreground">
 									{formatTime(game.time_seconds)}
 								</td>
-								<td class="px-4 py-3 text-center text-foreground font-medium">
+								<td class="px-4 py-3 text-center font-medium text-foreground">
 									{#if game.status === 'won' && game.gidouilles_awarded > 0}
 										<span class="text-amber-500">+{game.gidouilles_awarded}</span>
 									{:else}
@@ -135,11 +139,11 @@
 	</div>
 
 	<!-- Link to leaderboard -->
-	<Card class="p-6 bg-gradient-to-r from-primary/10 to-transparent">
+	<Card class="bg-gradient-to-r from-primary/10 to-transparent p-6">
 		<div class="flex items-center justify-between">
 			<div>
 				<h3 class="font-semibold text-foreground">Voir le classement global</h3>
-				<p class="text-sm text-muted-foreground mt-1">
+				<p class="mt-1 text-sm text-muted-foreground">
 					Comparez vos performances avec les autres joueurs
 				</p>
 			</div>

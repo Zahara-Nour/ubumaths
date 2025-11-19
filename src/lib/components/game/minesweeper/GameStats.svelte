@@ -53,40 +53,40 @@
 	<Card.Content>
 		<dl class="space-y-3">
 			<!-- Games played -->
-			<div class="flex justify-between items-center">
+			<div class="flex items-center justify-between">
 				<dt class="text-sm text-muted-foreground">Parties jouées</dt>
 				<dd class="font-semibold tabular-nums">{gamesPlayed}</dd>
 			</div>
 
 			<!-- Victories -->
-			<div class="flex justify-between items-center">
+			<div class="flex items-center justify-between">
 				<dt class="text-sm text-muted-foreground">Victoires</dt>
 				<dd class="font-semibold tabular-nums">
 					{gamesWon}
 					{#if gamesPlayed > 0}
-						<span class="text-muted-foreground text-sm ml-1">({winRate}%)</span>
+						<span class="ml-1 text-sm text-muted-foreground">({winRate}%)</span>
 					{/if}
 				</dd>
 			</div>
 
 			<!-- Best time -->
-			<div class="flex justify-between items-center">
+			<div class="flex items-center justify-between">
 				<dt class="text-sm text-muted-foreground">Meilleur temps</dt>
-				<dd class="font-semibold tabular-nums font-mono">{formattedBestTime}</dd>
+				<dd class="font-mono font-semibold tabular-nums">{formattedBestTime}</dd>
 			</div>
 
 			<!-- Total gidouilles -->
-			<div class="flex justify-between items-center pt-3 border-t border-border">
-				<dt class="text-sm text-muted-foreground flex items-center gap-1">
+			<div class="flex items-center justify-between border-t border-border pt-3">
+				<dt class="flex items-center gap-1 text-sm text-muted-foreground">
 					<span aria-hidden="true">💰</span>
 					<span>Gidouilles gagnées</span>
 				</dt>
-				<dd class="font-bold text-lg tabular-nums text-primary">{formattedGidouilles}</dd>
+				<dd class="text-lg font-bold text-primary tabular-nums">{formattedGidouilles}</dd>
 			</div>
 		</dl>
 
 		{#if gamesPlayed === 0}
-			<p class="text-sm text-muted-foreground text-center mt-4 italic">
+			<p class="mt-4 text-center text-sm text-muted-foreground italic">
 				Jouez votre première partie pour commencer !
 			</p>
 		{/if}

@@ -74,8 +74,8 @@
 				<!-- Header with back button and game info -->
 				<div class="flex items-center justify-between">
 					<div>
-						<h1 class="text-3xl md:text-4xl font-bold text-foreground">Démineur</h1>
-						<p class="text-sm text-muted-foreground mt-1">
+						<h1 class="text-3xl font-bold text-foreground md:text-4xl">Démineur</h1>
+						<p class="mt-1 text-sm text-muted-foreground">
 							Difficulté: <span class="font-semibold capitalize">
 								{#if game.difficulty === 'beginner'}
 									Débutant
@@ -99,7 +99,7 @@
 				<Separator />
 
 				<!-- Game board and controls in responsive layout -->
-				<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+				<div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
 					<!-- Board (main area) -->
 					<div class="lg:col-span-3">
 						<Card class="p-6">
@@ -130,23 +130,23 @@
 				<!-- Error message if any -->
 				{#if minesweeperStore.error}
 					<Card class="border-destructive bg-destructive/10 p-4">
-						<p class="text-destructive text-sm">{minesweeperStore.error}</p>
+						<p class="text-sm text-destructive">{minesweeperStore.error}</p>
 					</Card>
 				{/if}
 			</div>
 		{:else}
 			<!-- Menu (difficulty selection) -->
-			<div class="max-w-2xl mx-auto space-y-8">
-				<div class="text-center space-y-3">
-					<h1 class="text-4xl md:text-5xl font-bold text-foreground">Démineur</h1>
-					<p class="text-muted-foreground text-lg">
+			<div class="mx-auto max-w-2xl space-y-8">
+				<div class="space-y-3 text-center">
+					<h1 class="text-4xl font-bold text-foreground md:text-5xl">Démineur</h1>
+					<p class="text-lg text-muted-foreground">
 						Révélez les cellules sans faire exploser les mines!
 					</p>
 				</div>
 
-				<Card class="p-8 space-y-6">
+				<Card class="space-y-6 p-8">
 					<div>
-						<h2 class="text-xl font-semibold text-foreground mb-4">Choisir la difficulté</h2>
+						<h2 class="mb-4 text-xl font-semibold text-foreground">Choisir la difficulté</h2>
 						<DifficultySelector
 							selected={selectedDifficulty}
 							onChange={handleDifficultySelect}
@@ -157,8 +157,8 @@
 					{#if data.isAuthenticated}
 						<div>
 							<Separator />
-							<div class="mt-6 pt-6 border-t">
-								<h3 class="text-sm font-semibold text-foreground mb-3">Continuer une partie</h3>
+							<div class="mt-6 border-t pt-6">
+								<h3 class="mb-3 text-sm font-semibold text-foreground">Continuer une partie</h3>
 								<Button
 									onclick={resumeGame}
 									variant="outline"
@@ -171,7 +171,7 @@
 										Charger la partie sauvegardée
 									{/if}
 								</Button>
-								<p class="text-xs text-muted-foreground mt-2">
+								<p class="mt-2 text-xs text-muted-foreground">
 									Reprendre votre dernière partie en cours
 								</p>
 							</div>
@@ -180,8 +180,8 @@
 						<!-- Links to stats and leaderboard -->
 						<div>
 							<Separator />
-							<div class="mt-6 pt-6 border-t space-y-2">
-								<h3 class="text-sm font-semibold text-foreground mb-3">Mes statistiques</h3>
+							<div class="mt-6 space-y-2 border-t pt-6">
+								<h3 class="mb-3 text-sm font-semibold text-foreground">Mes statistiques</h3>
 								<a href="/dashboard/student/minesweeper/stats" class="block">
 									<Button variant="outline" class="w-full justify-start">
 										<span class="mr-2">📊</span>
@@ -201,14 +201,14 @@
 					<!-- Error message if any -->
 					{#if minesweeperStore.error}
 						<Card class="border-destructive bg-destructive/10 p-4">
-							<p class="text-destructive text-sm">{minesweeperStore.error}</p>
+							<p class="text-sm text-destructive">{minesweeperStore.error}</p>
 						</Card>
 					{/if}
 				</Card>
 
 				<!-- Rules -->
-				<Card class="p-6 bg-muted/50">
-					<h3 class="font-semibold text-foreground mb-3">Règles du jeu</h3>
+				<Card class="bg-muted/50 p-6">
+					<h3 class="mb-3 font-semibold text-foreground">Règles du jeu</h3>
 					<ul class="space-y-2 text-sm text-muted-foreground">
 						<li class="flex gap-3">
 							<span>👆</span>

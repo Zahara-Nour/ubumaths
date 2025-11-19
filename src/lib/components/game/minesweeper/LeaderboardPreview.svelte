@@ -56,21 +56,23 @@
 	</Card.Header>
 	<Card.Content>
 		{#if topPlayers.length === 0}
-			<p class="text-sm text-muted-foreground text-center py-4 italic">
+			<p class="py-4 text-center text-sm text-muted-foreground italic">
 				Aucun record pour l'instant. Soyez le premier !
 			</p>
 		{:else}
-			<ol class="space-y-2 mb-4" aria-label="Top 3 des meilleurs temps">
+			<ol class="mb-4 space-y-2" aria-label="Top 3 des meilleurs temps">
 				{#each topPlayers as player (player.rank)}
 					<li
-						class="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+						class="flex items-center justify-between rounded-lg bg-muted/50 p-3 transition-colors hover:bg-muted"
 					>
 						<div class="flex items-center gap-3">
 							<span class="text-xl" aria-hidden="true">{getMedal(player.rank)}</span>
 							<div>
 								<div class="font-semibold">{displayName(player.name)}</div>
 								{#if !isAuthenticated}
-									<div class="text-xs text-muted-foreground">Connectez-vous pour voir le nom complet</div>
+									<div class="text-xs text-muted-foreground">
+										Connectez-vous pour voir le nom complet
+									</div>
 								{/if}
 							</div>
 						</div>
@@ -88,7 +90,7 @@
 		{/if}
 
 		{#if !isAuthenticated && topPlayers.length > 0}
-			<p class="text-xs text-muted-foreground text-center mt-4 italic">
+			<p class="mt-4 text-center text-xs text-muted-foreground italic">
 				Créez un compte pour apparaître dans le classement !
 			</p>
 		{/if}

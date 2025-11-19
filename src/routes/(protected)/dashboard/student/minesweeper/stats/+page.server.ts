@@ -84,7 +84,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 					stats.totalGidouilles += game.gidouilles_awarded || 0;
 
 					// Track best time (only for won games)
-					if (stats.bestTime === null || (game.time_seconds && game.time_seconds < stats.bestTime)) {
+					if (
+						stats.bestTime === null ||
+						(game.time_seconds && game.time_seconds < stats.bestTime)
+					) {
 						stats.bestTime = game.time_seconds || null;
 					}
 				}
