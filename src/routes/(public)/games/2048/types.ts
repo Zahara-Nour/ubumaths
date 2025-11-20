@@ -21,7 +21,32 @@ export interface Position {
 export interface Tile {
 	/** Unique identifier for animation tracking */
 	id: string;
-	/** Tile value (classic: powers of 2, educational modes: calculated value) */
+	/**
+	 * Tile value - encoding varies by game mode:
+	 *
+	 * **Classic mode**: Powers of 2 (2, 4, 8, 16, 32, ..., 2048, 4096, ...)
+	 *
+	 * **Multiplication mode**: Product of factors (2, 4, 6, 8, 12, 16, ..., 144)
+	 *   - Win condition: 144 (12×12, highest in standard multiplication tables)
+	 *   - Values > 144 display as numbers (no factor pairs in range 1-12)
+	 *
+	 * **Equations mode**: Solution value (2, 4, 6, 8, ..., 100)
+	 *   - Win condition: 100
+	 *   - displayValue shows equation format (e.g., "x+5", "2x", "x-3")
+	 *
+	 * **Fractions mode**: Encoded as `(numerator × 1000) + denominator`
+	 *   - Win condition: 1001 (encodes 1/1, which equals 1)
+	 *   - Example encodings:
+	 *     * 1/2 → 1002 (1 × 1000 + 2)
+	 *     * 1/4 → 1004 (1 × 1000 + 4)
+	 *     * 3/4 → 3004 (3 × 1000 + 4)
+	 *     * 2/3 → 2003 (2 × 1000 + 3)
+	 *   - Decoding: `numerator = Math.floor(value / 1000)`, `denominator = value % 1000`
+	 *   - Constraint: Denominator must be < 1000 for correct encoding/decoding
+	 *   - displayValue shows equivalent fractions (e.g., "2/4", "3/6" for 1/2)
+	 *
+	 * @see {@link educational-modes.ts} for tile generation logic
+	 */
 	value: number;
 	/** Current position on the board */
 	position: Position;

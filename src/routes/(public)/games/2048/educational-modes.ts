@@ -5,6 +5,30 @@
 
 import type { GameMode } from './types';
 
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+/**
+ * Maximum factor value in multiplication tables (12×12 = 144)
+ * Students typically learn multiplication tables up to 12
+ */
+const MAX_MULTIPLICATION_FACTOR = 12;
+
+/**
+ * Maximum value achievable with standard multiplication tables
+ * 12 × 12 = 144
+ */
+const MAX_MULTIPLICATION_VALUE = MAX_MULTIPLICATION_FACTOR * MAX_MULTIPLICATION_FACTOR;
+
+/**
+ * Encoding multiplier for fractions mode
+ * Fractions are encoded as: (numerator × 1000) + denominator
+ * This ensures denominators < 1000 don't collide with numerators
+ * Example: 1/2 = 1×1000 + 2 = 1002
+ */
+const FRACTION_ENCODING_BASE = 1000;
+
 /**
  * Tile configuration for educational modes
  */
@@ -79,13 +103,14 @@ function createMultiplicationDisplay(value: number): TileConfig {
 
 	// Find all factor pairs for the value
 	const factorPairs: [number, number][] = [];
-	for (let i = 1; i <= Math.min(value, 12); i++) {
-		if (value % i === 0 && value / i <= 12) {
+	for (let i = 1; i <= Math.min(value, MAX_MULTIPLICATION_FACTOR); i++) {
+		if (value % i === 0 && value / i <= MAX_MULTIPLICATION_FACTOR) {
 			factorPairs.push([i, value / i]);
 		}
 	}
 
-	// If no valid factor pairs (value > 144), show the number directly
+	// If no valid factor pairs (value > MAX_MULTIPLICATION_VALUE), show the number directly
+	// Rationale: We only teach multiplication tables up to 12×12
 	if (factorPairs.length === 0) {
 		return {
 			value,
@@ -180,7 +205,7 @@ function createEquationDisplay(value: number): TileConfig {
 /**
  * Fractions mode: Tiles show equivalent fractions
  * Examples: 1/2, 2/4, 3/6 (all equal to 0.5 but displayed differently)
- * Value is stored as numerator * 1000 + denominator for uniqueness
+ * Value is stored as (numerator × FRACTION_ENCODING_BASE) + denominator for uniqueness
  */
 function generateFractionTile(targetValue?: number): TileConfig {
 	// For initial tiles, start with simple fractions
@@ -194,15 +219,15 @@ function generateFractionTile(targetValue?: number): TileConfig {
 		];
 		const frac = simpleFractions[Math.floor(Math.random() * simpleFractions.length)];
 		return {
-			value: frac.num * 1000 + frac.den,
+			value: frac.num * FRACTION_ENCODING_BASE + frac.den,
 			displayValue: `${frac.num}/${frac.den}`
 		};
 	}
 
 	// For merged tiles, create equivalent fraction
-	// Decode: value = num * 1000 + den
-	const num = Math.floor(targetValue / 1000);
-	const den = targetValue % 1000;
+	// Decode: value = (num × FRACTION_ENCODING_BASE) + den
+	const num = Math.floor(targetValue / FRACTION_ENCODING_BASE);
+	const den = targetValue % FRACTION_ENCODING_BASE;
 
 	// Create equivalent fraction by multiplying both by same number
 	const multiplier = Math.floor(Math.random() * 3) + 2; // 2, 3, or 4
@@ -258,11 +283,11 @@ export function getWinningValue(mode: GameMode): number {
 		case 'classic':
 			return 2048;
 		case 'multiplication':
-			return 144; // 12×12
+			return MAX_MULTIPLICATION_VALUE; // 12×12 = 144
 		case 'equations':
-			return 100; // x+0 format
+			return 100; // Round number for algebraic complexity
 		case 'fractions':
-			return 1001; // 1/1 = 1
+			return FRACTION_ENCODING_BASE + 1; // 1001 (encodes 1/1, which equals 1)
 		default:
 			return 2048;
 	}

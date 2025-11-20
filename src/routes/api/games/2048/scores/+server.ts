@@ -162,72 +162,34 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const { score, reached_2048, reached_4096, mode } = validation.data;
 
-		// Fetch existing score record (if any) for this specific mode
-		const { data: existingScore, error: fetchError } = await supabase
-			.from('game_2048_scores')
-			.select('best_score, games_played, tiles_2048_reached, tiles_4096_reached')
-			.eq('user_id', user.id)
-			.eq('mode', mode)
+		// Use atomic UPSERT function to eliminate race condition
+		// Single database transaction handles INSERT or UPDATE with incrementing logic
+		const { data: upsertData, error: upsertError } = await supabase
+			.rpc('upsert_2048_score', {
+				p_user_id: user.id,
+				p_mode: mode,
+				p_score: score,
+				p_reached_2048: reached_2048,
+				p_reached_4096: reached_4096
+			})
 			.maybeSingle();
 
-		if (fetchError) {
-			console.error('[API] Error fetching existing score:', fetchError);
-			throw error(500, 'Failed to fetch existing score');
+		if (upsertError) {
+			console.error('[API] Error upserting score:', upsertError);
+			throw error(500, 'Failed to save game score');
 		}
 
-		let best_score: number;
-		let games_played: number;
-		let is_new_best: boolean;
-
-		if (!existingScore) {
-			// No existing record - INSERT new row
-			const { data: insertedData, error: insertError } = await supabase
-				.from('game_2048_scores')
-				.insert({
-					user_id: user.id,
-					best_score: score,
-					games_played: 1,
-					tiles_2048_reached: reached_2048 ? 1 : 0,
-					tiles_4096_reached: reached_4096 ? 1 : 0,
-					mode
-				})
-				.select('best_score, games_played')
-				.single();
-
-			if (insertError) {
-				console.error('[API] Error inserting new score:', insertError);
-				throw error(500, 'Failed to save game score');
-			}
-
-			best_score = insertedData.best_score;
-			games_played = insertedData.games_played;
-			is_new_best = true;
-		} else {
-			// Existing record - UPDATE
-			const newBestScore = Math.max(existingScore.best_score, score);
-			is_new_best = score > existingScore.best_score;
-
-			const { data: updatedData, error: updateError } = await supabase
-				.from('game_2048_scores')
-				.update({
-					best_score: newBestScore,
-					games_played: existingScore.games_played + 1,
-					tiles_2048_reached: existingScore.tiles_2048_reached + (reached_2048 ? 1 : 0),
-					tiles_4096_reached: existingScore.tiles_4096_reached + (reached_4096 ? 1 : 0)
-				})
-				.eq('user_id', user.id)
-				.eq('mode', mode)
-				.select('best_score, games_played')
-				.single();
-
-			if (updateError) {
-				console.error('[API] Error updating score:', updateError);
-				throw error(500, 'Failed to update game score');
-			}
-
-			best_score = updatedData.best_score;
-			games_played = updatedData.games_played;
+		if (!upsertData) {
+			console.error('[API] Upsert returned no data');
+			throw error(500, 'Failed to save game score');
 		}
+
+		// Type assertion: RPC function returns { best_score: integer, games_played: integer, is_new_best: boolean }
+		const { best_score, games_played, is_new_best } = upsertData as {
+			best_score: number;
+			games_played: number;
+			is_new_best: boolean;
+		};
 
 		// Build and validate response
 		const response = {
