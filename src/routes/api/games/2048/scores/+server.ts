@@ -68,7 +68,7 @@ import { validateJsonResponse } from '$lib/server/validation/response-utils';
 // GET - Fetch user's current score
 // ============================================================================
 
-export const GET: RequestHandler = async ({ locals }) => {
+export const GET: RequestHandler = async ({ locals, url }) => {
 	const { user, profile, supabase } = locals;
 
 	// Auth check: Must be logged in
@@ -82,11 +82,15 @@ export const GET: RequestHandler = async ({ locals }) => {
 	}
 
 	try {
-		// Fetch user's 2048 score record
+		// Get mode from query parameter (default: classic)
+		const mode = url.searchParams.get('mode') || 'classic';
+
+		// Fetch user's 2048 score record for the specified mode
 		const { data: scoreData, error: fetchError } = await supabase
 			.from('game_2048_scores')
-			.select('best_score, games_played, tiles_2048_reached, tiles_4096_reached')
+			.select('best_score, games_played, tiles_2048_reached, tiles_4096_reached, mode')
 			.eq('user_id', user.id)
+			.eq('mode', mode)
 			.maybeSingle();
 
 		if (fetchError) {
@@ -99,7 +103,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 			best_score: 0,
 			games_played: 0,
 			tiles_2048_reached: 0,
-			tiles_4096_reached: 0
+			tiles_4096_reached: 0,
+			mode: mode as 'classic' | 'multiplication' | 'equations' | 'fractions'
 		};
 
 		// Validate response before sending
@@ -147,13 +152,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(400, validation.error.issues[0].message);
 		}
 
-		const { score, reached_2048, reached_4096 } = validation.data;
+		const { score, reached_2048, reached_4096, mode } = validation.data;
 
-		// Fetch existing score record (if any)
+		// Fetch existing score record (if any) for this specific mode
 		const { data: existingScore, error: fetchError } = await supabase
 			.from('game_2048_scores')
 			.select('best_score, games_played, tiles_2048_reached, tiles_4096_reached')
 			.eq('user_id', user.id)
+			.eq('mode', mode)
 			.maybeSingle();
 
 		if (fetchError) {
@@ -174,7 +180,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					best_score: score,
 					games_played: 1,
 					tiles_2048_reached: reached_2048 ? 1 : 0,
-					tiles_4096_reached: reached_4096 ? 1 : 0
+					tiles_4096_reached: reached_4096 ? 1 : 0,
+					mode
 				})
 				.select('best_score, games_played')
 				.single();
@@ -201,6 +208,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					tiles_4096_reached: existingScore.tiles_4096_reached + (reached_4096 ? 1 : 0)
 				})
 				.eq('user_id', user.id)
+				.eq('mode', mode)
 				.select('best_score, games_played')
 				.single();
 

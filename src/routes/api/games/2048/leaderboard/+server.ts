@@ -56,7 +56,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
 		// ✅ SECURITY: Validate query parameters with Zod
 		const queryParams = {
-			limit: url.searchParams.get('limit') || '10'
+			limit: url.searchParams.get('limit') || '10',
+			mode: url.searchParams.get('mode') || 'classic'
 		};
 
 		const validation = leaderboard2048QuerySchema.safeParse(queryParams);
@@ -65,14 +66,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			throw error(400, validation.error.issues[0].message);
 		}
 
-		const { limit } = validation.data;
+		const { limit, mode } = validation.data;
 
 		// ============================================================================
 		// STEP 1: Fetch top N players for leaderboard
 		// ============================================================================
 
-		// Query: Get top players with user info
-		// Uses index: idx_2048_scores_leaderboard (best_score DESC)
+		// Query: Get top players with user info for the specified mode
+		// Uses index: idx_game_2048_scores_mode_score (mode, best_score DESC)
 		const { data: topPlayers, error: leaderboardError } = await supabase
 			.from('game_2048_scores')
 			.select(
@@ -88,6 +89,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				)
 			`
 			)
+			.eq('mode', mode)
 			.order('best_score', { ascending: false })
 			.limit(limit);
 
@@ -119,11 +121,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		let user_rank: number | null = null;
 
-		// First, check if user has a score record
+		// First, check if user has a score record for this mode
 		const { data: userScore, error: userScoreError } = await supabase
 			.from('game_2048_scores')
 			.select('best_score')
 			.eq('user_id', user.id)
+			.eq('mode', mode)
 			.maybeSingle();
 
 		if (userScoreError) {
@@ -132,13 +135,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		if (userScore) {
-			// Calculate rank by counting how many users have a better score
+			// Calculate rank by counting how many users have a better score in this mode
 			// ROW_NUMBER() would be more efficient but requires a custom SQL query
 			// This approach is simpler and works well for reasonable leaderboard sizes
 
 			const { count, error: rankError } = await supabase
 				.from('game_2048_scores')
 				.select('*', { count: 'exact', head: true })
+				.eq('mode', mode)
 				.gt('best_score', userScore.best_score);
 
 			if (rankError) {
