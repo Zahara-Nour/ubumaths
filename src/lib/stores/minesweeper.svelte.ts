@@ -1175,6 +1175,14 @@ class MinesweeperStore {
 
 		const game = this.currentGame;
 
+		// Guard: Skip auto-save for completed games
+		// Only save games that are still in progress to avoid RLS policy violations
+		// Completed games are saved via completeGame() RPC functions
+		if (game.status !== 'in_progress') {
+			logger.trace('Skipping auto-save for completed game:', { status: game.status });
+			return;
+		}
+
 		try {
 			if (this.user && this.supabase && game.id) {
 				// Save to database for authenticated users
