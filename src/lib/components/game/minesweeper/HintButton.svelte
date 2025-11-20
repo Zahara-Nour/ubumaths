@@ -44,9 +44,8 @@
 <div class="flex flex-col gap-2">
 	<!-- Hint button with tooltip -->
 	<Tooltip.Root>
-		<Tooltip.Trigger asChild let:builder>
+		<Tooltip.Trigger>
 			<Button
-				builders={[builder]}
 				onclick={onUseHint}
 				disabled={isButtonDisabled}
 				variant="secondary"
