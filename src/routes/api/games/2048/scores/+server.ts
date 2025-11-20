@@ -60,7 +60,8 @@ import type { RequestHandler } from './$types';
 import {
 	submit2048ScoreSchema,
 	submit2048ScoreResponseSchema,
-	get2048ScoreResponseSchema
+	get2048ScoreResponseSchema,
+	gameModeSchema
 } from '$lib/server/validation/games';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 
@@ -82,8 +83,15 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	}
 
 	try {
-		// Get mode from query parameter (default: classic)
-		const mode = url.searchParams.get('mode') || 'classic';
+		// ✅ SECURITY: Validate mode query parameter with Zod
+		const modeParam = url.searchParams.get('mode') || 'classic';
+		const modeValidation = gameModeSchema.safeParse(modeParam);
+
+		if (!modeValidation.success) {
+			throw error(400, 'Invalid game mode');
+		}
+
+		const mode = modeValidation.data;
 
 		// Fetch user's 2048 score record for the specified mode
 		const { data: scoreData, error: fetchError } = await supabase
@@ -104,7 +112,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			games_played: 0,
 			tiles_2048_reached: 0,
 			tiles_4096_reached: 0,
-			mode: mode as 'classic' | 'multiplication' | 'equations' | 'fractions'
+			mode
 		};
 
 		// Validate response before sending
