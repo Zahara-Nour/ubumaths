@@ -1023,3 +1023,204 @@ describe('Algorithm Integration', () => {
 		expect(game.cellsRevealed).toBeGreaterThan(0);
 	});
 });
+
+// ============================================================================
+// 4. AUTHORIZATION TESTS (shouldUseDatabase)
+// ============================================================================
+
+describe('Authorization - shouldUseDatabase()', () => {
+	let supabase: SupabaseClient<Database>;
+
+	beforeEach(() => {
+		supabase = createMockSupabaseClient();
+	});
+
+	afterEach(() => {
+		minesweeperStore.cleanup();
+		vi.clearAllMocks();
+	});
+
+	it('should return true for students', async () => {
+		const studentUser = {
+			id: 'student-123',
+			email: 'student@voltairedoha.com',
+			role: 'student'
+		} as Database['public']['Tables']['profiles']['Row'];
+
+		minesweeperStore.init(supabase, studentUser);
+		await minesweeperStore.startNewGame('beginner');
+
+		// Student game should have an ID (saved to database)
+		const game = minesweeperStore.currentGame!;
+		expect(game.id).toBeDefined();
+		expect(game.id).toMatch(/^test-game-id-/);
+
+		// Verify database insert was called
+		expect(supabase.from).toHaveBeenCalledWith('minesweeper_games');
+	});
+
+	it('should return false for teachers', async () => {
+		const teacherUser = {
+			id: 'teacher-123',
+			email: 'teacher@voltairedoha.com',
+			role: 'teacher'
+		} as Database['public']['Tables']['profiles']['Row'];
+
+		// Mock localStorage (browser environment)
+		const localStorageMock = {
+			getItem: vi.fn(),
+			setItem: vi.fn(),
+			removeItem: vi.fn(),
+			clear: vi.fn(),
+			length: 0,
+			key: vi.fn()
+		};
+		Object.defineProperty(window, 'localStorage', {
+			value: localStorageMock,
+			writable: true
+		});
+
+		minesweeperStore.init(supabase, teacherUser);
+		await minesweeperStore.startNewGame('beginner');
+
+		// Teacher game should NOT have an ID (not saved to database)
+		const game = minesweeperStore.currentGame!;
+		expect(game.id).toBeUndefined();
+
+		// Verify localStorage was used instead
+		expect(localStorageMock.setItem).toHaveBeenCalledWith('minesweeper_game', expect.any(String));
+
+		// Verify database insert was NOT called
+		expect(supabase.from).not.toHaveBeenCalledWith('minesweeper_games');
+	});
+
+	it('should return false for admins', async () => {
+		const adminUser = {
+			id: 'admin-123',
+			email: 'admin@voltairedoha.com',
+			role: 'admin'
+		} as Database['public']['Tables']['profiles']['Row'];
+
+		// Mock localStorage (browser environment)
+		const localStorageMock = {
+			getItem: vi.fn(),
+			setItem: vi.fn(),
+			removeItem: vi.fn(),
+			clear: vi.fn(),
+			length: 0,
+			key: vi.fn()
+		};
+		Object.defineProperty(window, 'localStorage', {
+			value: localStorageMock,
+			writable: true
+		});
+
+		minesweeperStore.init(supabase, adminUser);
+		await minesweeperStore.startNewGame('beginner');
+
+		// Admin game should NOT have an ID (not saved to database)
+		const game = minesweeperStore.currentGame!;
+		expect(game.id).toBeUndefined();
+
+		// Verify localStorage was used instead
+		expect(localStorageMock.setItem).toHaveBeenCalledWith('minesweeper_game', expect.any(String));
+
+		// Verify database insert was NOT called
+		expect(supabase.from).not.toHaveBeenCalledWith('minesweeper_games');
+	});
+
+	it('should return false for anonymous users (null user)', async () => {
+		// Mock localStorage (browser environment)
+		const localStorageMock = {
+			getItem: vi.fn(),
+			setItem: vi.fn(),
+			removeItem: vi.fn(),
+			clear: vi.fn(),
+			length: 0,
+			key: vi.fn()
+		};
+		Object.defineProperty(window, 'localStorage', {
+			value: localStorageMock,
+			writable: true
+		});
+
+		minesweeperStore.init(supabase, null); // Anonymous user
+		await minesweeperStore.startNewGame('beginner');
+
+		// Anonymous game should NOT have an ID (not saved to database)
+		const game = minesweeperStore.currentGame!;
+		expect(game.id).toBeUndefined();
+
+		// Verify localStorage was used instead
+		expect(localStorageMock.setItem).toHaveBeenCalledWith('minesweeper_game', expect.any(String));
+
+		// Verify database insert was NOT called
+		expect(supabase.from).not.toHaveBeenCalledWith('minesweeper_games');
+	});
+
+	it('should not auto-save for teachers (no auto-save interval started)', async () => {
+		const teacherUser = {
+			id: 'teacher-123',
+			email: 'teacher@voltairedoha.com',
+			role: 'teacher'
+		} as Database['public']['Tables']['profiles']['Row'];
+
+		// Mock localStorage
+		const localStorageMock = {
+			getItem: vi.fn(),
+			setItem: vi.fn(),
+			removeItem: vi.fn(),
+			clear: vi.fn(),
+			length: 0,
+			key: vi.fn()
+		};
+		Object.defineProperty(window, 'localStorage', {
+			value: localStorageMock,
+			writable: true
+		});
+
+		minesweeperStore.init(supabase, teacherUser);
+		await minesweeperStore.startNewGame('beginner');
+
+		// Start the game by revealing a cell
+		const game = minesweeperStore.currentGame!;
+		const safeCell = findCell(game.grid, (cell) => !cell.isMine);
+		if (safeCell) {
+			minesweeperStore.revealCell(safeCell.row, safeCell.col);
+		}
+
+		// Wait a bit to ensure no auto-save happens
+		await new Promise((resolve) => setTimeout(resolve, 100));
+
+		// Verify no database update was attempted
+		// Note: We can't directly test that the interval wasn't started,
+		// but we can verify no database calls were made
+		const updateCalls = (supabase.from as ReturnType<typeof vi.fn>).mock.calls.filter(
+			(call) => call[0] === 'minesweeper_games'
+		);
+		expect(updateCalls.length).toBe(0);
+	});
+
+	it('should use auto-save for students (database updates)', async () => {
+		const studentUser = {
+			id: 'student-123',
+			email: 'student@voltairedoha.com',
+			role: 'student'
+		} as Database['public']['Tables']['profiles']['Row'];
+
+		minesweeperStore.init(supabase, studentUser);
+		await minesweeperStore.startNewGame('beginner');
+
+		// Start the game by revealing a cell
+		const game = minesweeperStore.currentGame!;
+		const safeCell = findCell(game.grid, (cell) => !cell.isMine);
+		if (safeCell) {
+			minesweeperStore.revealCell(safeCell.row, safeCell.col);
+		}
+
+		// Game should have started auto-save (we can't test the interval directly,
+		// but we can verify the game has an ID, which is required for auto-save)
+		expect(game.id).toBeDefined();
+		expect(game.status).toBe('in_progress');
+	});
+});
