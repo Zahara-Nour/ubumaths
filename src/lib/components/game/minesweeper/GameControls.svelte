@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { cn } from '$lib/utils';
 	import HintButton from './HintButton.svelte';
 
@@ -102,12 +103,14 @@
 	<!-- Hints section (only for authenticated users) -->
 	{#if isAuthenticated && onUseHint}
 		<div class="border-t border-border pt-3">
-			<HintButton
-				{hintsUsed}
-				disabled={gameStatus === 'won' || gameStatus === 'lost' || gameStatus === 'not_started'}
-				{isLoading}
-				{onUseHint}
-			/>
+			<Tooltip.Provider>
+				<HintButton
+					{hintsUsed}
+					disabled={gameStatus === 'won' || gameStatus === 'lost' || gameStatus === 'not_started'}
+					{isLoading}
+					{onUseHint}
+				/>
+			</Tooltip.Provider>
 		</div>
 	{/if}
 </div>
