@@ -662,7 +662,7 @@ class MinesweeperStore {
 			game.cellsRevealed++;
 			// ⚡ OPT-5: Track changed cell
 			this.changedCells.add(`${row},${col}`);
-			game.status = 'lost';
+			// Don't set game.status here - let completeGame() handle it
 			this.completeGame(false);
 			return;
 		}
@@ -673,7 +673,7 @@ class MinesweeperStore {
 		// Check win condition
 		const totalCells = game.rows * game.cols;
 		if (game.cellsRevealed === totalCells - game.minesCount) {
-			game.status = 'won';
+			// Don't set game.status here - let completeGame() handle it
 			this.completeGame(true);
 		} else {
 			// ⚡ OPT-3: Trigger debounced save after user action
@@ -1588,7 +1588,7 @@ class MinesweeperStore {
 	 */
 	private handleWin(): void {
 		if (!this.currentGame) return;
-		this.currentGame.status = 'won';
+		// Don't set status here - let completeGame() handle it
 		this.completeGame(true);
 	}
 
@@ -1597,7 +1597,7 @@ class MinesweeperStore {
 	 */
 	private handleLoss(): void {
 		if (!this.currentGame) return;
-		this.currentGame.status = 'lost';
+		// Don't set status here - let completeGame() handle it
 		this.completeGame(false);
 	}
 
