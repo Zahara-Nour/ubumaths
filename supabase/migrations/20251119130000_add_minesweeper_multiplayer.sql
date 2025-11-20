@@ -148,16 +148,11 @@ CREATE TABLE IF NOT EXISTS public.minesweeper_multiplayer_game_state (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
   -- Primary key (composite)
-  PRIMARY KEY (match_id, player_id),
+  PRIMARY KEY (match_id, player_id)
 
-  -- Ensure player is part of the match
-  CONSTRAINT player_in_match CHECK (
-    player_id IN (
-      SELECT player1_id FROM public.minesweeper_multiplayer_matches WHERE id = match_id
-      UNION
-      SELECT player2_id FROM public.minesweeper_multiplayer_matches WHERE id = match_id
-    )
-  )
+  -- Note: Player participation validation is enforced by RLS policies and
+  -- SECURITY DEFINER functions (update_game_state, complete_multiplayer_match, etc.)
+  -- CHECK constraints cannot use subqueries in PostgreSQL
 );
 
 -- Index for Realtime subscriptions
