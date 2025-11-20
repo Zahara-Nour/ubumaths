@@ -58,6 +58,224 @@ export type Database = {
 					}
 				];
 			};
+			achievement_events: {
+				Row: {
+					created_at: string;
+					event_data: Json;
+					event_type: string;
+					id: string;
+					processed: boolean;
+					processed_at: string | null;
+					student_id: string;
+				};
+				Insert: {
+					created_at?: string;
+					event_data?: Json;
+					event_type: string;
+					id?: string;
+					processed?: boolean;
+					processed_at?: string | null;
+					student_id: string;
+				};
+				Update: {
+					created_at?: string;
+					event_data?: Json;
+					event_type?: string;
+					id?: string;
+					processed?: boolean;
+					processed_at?: string | null;
+					student_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'achievement_events_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'achievement_events_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			achievement_progress: {
+				Row: {
+					achievement_id: string;
+					context_key: string | null;
+					current_value: number;
+					id: string;
+					progress_percentage: number;
+					started_at: string;
+					student_id: string;
+					target_value: number;
+					updated_at: string;
+				};
+				Insert: {
+					achievement_id: string;
+					context_key?: string | null;
+					current_value?: number;
+					id?: string;
+					started_at?: string;
+					student_id: string;
+					target_value: number;
+					updated_at?: string;
+				};
+				Update: {
+					achievement_id?: string;
+					context_key?: string | null;
+					current_value?: number;
+					id?: string;
+					started_at?: string;
+					student_id?: string;
+					target_value?: number;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'achievement_progress_achievement_id_fkey';
+						columns: ['achievement_id'];
+						isOneToOne: false;
+						referencedRelation: 'achievements';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'achievement_progress_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'achievement_progress_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			achievements: {
+				Row: {
+					category: string | null;
+					context: string;
+					created_at: string;
+					description: string;
+					display_order: number;
+					icon: string;
+					id: string;
+					is_active: boolean;
+					metadata: Json;
+					name: string;
+					unlock_type: string;
+					updated_at: string;
+				};
+				Insert: {
+					category?: string | null;
+					context: string;
+					created_at?: string;
+					description: string;
+					display_order?: number;
+					icon: string;
+					id: string;
+					is_active?: boolean;
+					metadata?: Json;
+					name: string;
+					unlock_type: string;
+					updated_at?: string;
+				};
+				Update: {
+					category?: string | null;
+					context?: string;
+					created_at?: string;
+					description?: string;
+					display_order?: number;
+					icon?: string;
+					id?: string;
+					is_active?: boolean;
+					metadata?: Json;
+					name?: string;
+					unlock_type?: string;
+					updated_at?: string;
+				};
+				Relationships: [];
+			};
+			student_achievements: {
+				Row: {
+					achievement_id: string;
+					context_data: Json;
+					gidouilles_awarded: number;
+					id: string;
+					points_awarded: number;
+					student_id: string;
+					unlock_reason: string | null;
+					unlocked_at: string;
+					unlocked_by: string | null;
+				};
+				Insert: {
+					achievement_id: string;
+					context_data?: Json;
+					gidouilles_awarded?: number;
+					id?: string;
+					points_awarded?: number;
+					student_id: string;
+					unlock_reason?: string | null;
+					unlocked_at?: string;
+					unlocked_by?: string | null;
+				};
+				Update: {
+					achievement_id?: string;
+					context_data?: Json;
+					gidouilles_awarded?: number;
+					id?: string;
+					points_awarded?: number;
+					student_id?: string;
+					unlock_reason?: string | null;
+					unlocked_at?: string;
+					unlocked_by?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'student_achievements_achievement_id_fkey';
+						columns: ['achievement_id'];
+						isOneToOne: false;
+						referencedRelation: 'achievements';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_achievements_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'student_achievements_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_achievements_unlocked_by_fkey';
+						columns: ['unlocked_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'student_achievements_unlocked_by_fkey';
+						columns: ['unlocked_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			assessment_assignments: {
 				Row: {
 					assessment_id: string;

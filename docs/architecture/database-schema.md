@@ -15,6 +15,7 @@ The database is designed to support a complete math learning platform with:
 - **Real-Time Presence**: WebSocket-based online/offline status
 - **Chat Moderation**: User restrictions and moderation audit trail (NEW: 2025-11-10)
 - **Error Monitoring**: Comprehensive error logging and tracking system
+- **Achievements System**: Universal achievement tracking across all features (NEW: 2025-11-21)
 
 ## Entity Relationship Diagram
 
@@ -3606,6 +3607,325 @@ WHERE status = 'in_progress'
 - **Stats Page**: `src/routes/(protected)/dashboard/student/minesweeper/stats/` - Personal statistics
 - **Leaderboard**: `src/routes/(protected)/dashboard/student/minesweeper/leaderboard/` - Rankings
 - **Components**: `src/lib/components/game/minesweeper/` - UI components
+
+---
+
+## Universal Achievements System
+
+**NEW: 2025-11-21** - Context-aware achievement tracking across all UbuMaths features.
+
+### Overview
+
+The Universal Achievements System is a flexible, event-driven achievement tracking system that works across all features: Minesweeper, Questions, Assessments, SRS, Riddles, and Social interactions.
+
+**Key Features:**
+- Context-aware (achievements specific to features)
+- Flexible unlocking (automatic, progressive, or manual)
+- Context variations (same achievement for different difficulties/subjects/tiers)
+- Repeatable achievements with limits
+- Prerequisites support
+- XP points and Gidouilles rewards
+- Teacher manual awards
+- Real-time event processing
+
+### Tables
+
+#### `achievements`
+
+Achievement definitions (templates) that can be unlocked by students.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | TEXT (PK) | Slug identifier (e.g., `minesweeper_first_win`) |
+| `context` | TEXT | Feature: `minesweeper`, `questions`, `assessments`, `srs`, `riddles`, `social`, `meta`, `system` |
+| `category` | TEXT | Category: `speed`, `accuracy`, `streak`, `mastery`, `exploration`, `social`, `collection`, `milestone`, `special`, `seasonal` |
+| `name` | TEXT | Display name (French) |
+| `description` | TEXT | Description (French) |
+| `icon` | TEXT | Emoji or icon identifier |
+| `unlock_type` | TEXT | How unlocked: `automatic`, `event_based`, `progressive`, `manual` |
+| `metadata` | JSONB | Flexible configuration (rewards, conditions, tiers, etc.) |
+| `is_active` | BOOLEAN | Whether achievement is active (default: true) |
+| `display_order` | INTEGER | Sort order for UI (default: 0) |
+| `created_at` | TIMESTAMPTZ | Creation timestamp |
+| `updated_at` | TIMESTAMPTZ | Last update timestamp |
+
+**Indexes:**
+- `idx_achievements_context` (context) WHERE is_active = true
+- `idx_achievements_category` (category) WHERE is_active = true
+- `idx_achievements_display_order` (display_order) WHERE is_active = true
+- `idx_achievements_metadata_gin` GIN (metadata)
+
+**Metadata Examples:**
+
+```json
+// Minesweeper speed achievement
+{
+  "difficulty_specific": true,
+  "points": 50,
+  "gidouilles_reward": 20,
+  "rarity": "epic",
+  "unlock_conditions": {
+    "type": "minesweeper_game_completed",
+    "params": {
+      "max_time": 90,
+      "difficulty": "expert"
+    }
+  }
+}
+
+// Progressive questions achievement
+{
+  "subject_specific": true,
+  "show_progress": true,
+  "points": 100,
+  "gidouilles_reward": 50,
+  "rarity": "legendary",
+  "unlock_conditions": {
+    "type": "questions_answered",
+    "params": {
+      "target": 50,
+      "min_accuracy": 0.95,
+      "subject": "calculus"
+    }
+  }
+}
+
+// Repeatable social achievement
+{
+  "repeatable": true,
+  "max_repetitions": 5,
+  "points": 10,
+  "gidouilles_reward": 5,
+  "unlock_conditions": {
+    "type": "friend_added",
+    "params": {}
+  }
+}
+```
+
+#### `student_achievements`
+
+Records of achievements unlocked by students.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID (PK) | Unique ID |
+| `student_id` | UUID (FK → profiles) | Student who unlocked |
+| `achievement_id` | TEXT (FK → achievements) | Achievement unlocked |
+| `context_data` | JSONB | Context-specific data (difficulty, subject, tier, iteration) |
+| `unlocked_at` | TIMESTAMPTZ | When unlocked |
+| `unlocked_by` | UUID (FK → profiles, NULL) | NULL = system, UUID = teacher manual award |
+| `unlock_reason` | TEXT | Optional description |
+| `points_awarded` | INTEGER | XP points awarded (denormalized) |
+| `gidouilles_awarded` | INTEGER | Gidouilles awarded (denormalized) |
+
+**UNIQUE Constraint:**
+```sql
+CONSTRAINT unique_student_achievement UNIQUE NULLS NOT DISTINCT (
+  student_id,
+  achievement_id,
+  (context_data->>'difficulty'),
+  (context_data->>'subject'),
+  (context_data->>'tier'),
+  (context_data->>'iteration')
+)
+```
+
+This prevents duplicate unlocks while allowing the same achievement for different contexts (e.g., "First Win" achievement for beginner, intermediate, and expert difficulties).
+
+**Indexes:**
+- `idx_student_achievements_student` (student_id)
+- `idx_student_achievements_achievement` (achievement_id)
+- `idx_student_achievements_unlocked` (student_id, unlocked_at DESC)
+- `idx_student_achievements_context_gin` GIN (context_data)
+
+#### `achievement_progress`
+
+Tracks progress towards progressive achievements (e.g., "Answer 100 questions").
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID (PK) | Unique ID |
+| `student_id` | UUID (FK → profiles) | Student progressing |
+| `achievement_id` | TEXT (FK → achievements) | Achievement being progressed |
+| `current_value` | NUMERIC | Current progress value (CHECK >= 0) |
+| `target_value` | NUMERIC | Target value to complete (CHECK > 0) |
+| `progress_percentage` | INTEGER (GENERATED) | Auto-calculated 0-100% |
+| `context_key` | TEXT | Optional context (e.g., subject name) |
+| `is_active` | BOOLEAN | Whether progress is active |
+| `started_at` | TIMESTAMPTZ | When progress started |
+| `updated_at` | TIMESTAMPTZ | Last progress update |
+| `completed_at` | TIMESTAMPTZ | When completed (100%) |
+
+**UNIQUE Constraint:** (student_id, achievement_id, context_key)
+
+**Generated Column:**
+```sql
+progress_percentage INTEGER GENERATED ALWAYS AS (
+  LEAST(100, GREATEST(0, ROUND((current_value / NULLIF(target_value, 0)) * 100)))
+) STORED
+```
+
+**Indexes:**
+- `idx_achievement_progress_student` (student_id) WHERE is_active = true
+- `idx_achievement_progress_achievement` (achievement_id) WHERE is_active = true
+- `idx_achievement_progress_updated` (updated_at DESC) WHERE is_active = true
+- `idx_achievement_progress_incomplete` (student_id, achievement_id) WHERE is_active = true AND progress_percentage < 100
+
+#### `achievement_events`
+
+Event log for achievement processing (audit trail + retry queue).
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID (PK) | Unique ID |
+| `event_type` | TEXT | Event type (e.g., `minesweeper_game_completed`) |
+| `event_data` | JSONB | Event data (score, time, etc.) |
+| `student_id` | UUID (FK → profiles) | Student who triggered event |
+| `processed` | BOOLEAN | Whether event has been processed |
+| `processed_at` | TIMESTAMPTZ | When processed |
+| `processing_error` | TEXT | Error message if processing failed |
+| `created_at` | TIMESTAMPTZ | When event occurred |
+
+**Indexes:**
+- `idx_achievement_events_unprocessed` (created_at) WHERE processed = false
+- `idx_achievement_events_student` (student_id, event_type)
+- `idx_achievement_events_type` (event_type, created_at DESC)
+
+### Functions
+
+#### `check_achievement_prerequisites(p_student_id UUID, p_achievement_id TEXT) RETURNS BOOLEAN`
+
+Checks if a student has met all prerequisites for an achievement.
+
+**Security:** SECURITY DEFINER with SET search_path = public
+
+#### `update_achievement_progress(p_student_id UUID, p_achievement_id TEXT, p_delta NUMERIC, p_context_key TEXT DEFAULT NULL) RETURNS JSONB`
+
+Updates progress for a progressive achievement. Auto-unlocks when target reached.
+
+**Returns:** `{"current_value": 73, "target_value": 100, "progress_percentage": 73, "completed": false, "newly_unlocked": false}`
+
+**Security:** SECURITY DEFINER with SET search_path = public
+
+#### `process_achievement_event(p_event_type TEXT, p_student_id UUID, p_event_data JSONB DEFAULT '{}') RETURNS JSONB`
+
+Main entry point for achievement processing. Processes an event and unlocks any matching achievements.
+
+**Returns:** `{"event_id": "uuid", "unlocked_achievements": [...], "count": 1}`
+
+**Example:**
+```sql
+SELECT public.process_achievement_event(
+  'minesweeper_game_completed',
+  '123e4567-e89b-12d3-a456-426614174000'::uuid,
+  '{"difficulty": "expert", "score": 150, "time_seconds": 45, "perfect": true}'::jsonb
+);
+```
+
+**Security:** SECURITY DEFINER with SET search_path = public
+
+#### `award_achievement_manual(p_teacher_id UUID, p_student_id UUID, p_achievement_id TEXT, p_reason TEXT DEFAULT NULL) RETURNS BOOLEAN`
+
+Allows teachers to manually award achievements to their students.
+
+**Security:** SECURITY DEFINER with SET search_path = public
+- Verifies teacher has access to student (via class membership)
+- Only allows manual or event_based achievements
+
+### RLS Policies
+
+**`achievements` table:**
+- Anyone can view active achievements
+- Admins can manage achievements
+
+**`student_achievements` table:**
+- Students can view their own achievements
+- Teachers can view their students' achievements (via class membership)
+- System can insert (only via SECURITY DEFINER functions - WITH CHECK false)
+
+**`achievement_progress` table:**
+- Students can view their own progress
+- Teachers can view their students' progress (via class membership)
+- System can manage (only via SECURITY DEFINER functions - WITH CHECK false)
+
+**`achievement_events` table:**
+- All operations restricted to SECURITY DEFINER functions (WITH CHECK false)
+
+### Event Processing Flow
+
+```
+1. Action occurs (e.g., minesweeper game completed)
+   ↓
+2. Call process_achievement_event()
+   ↓
+3. Insert event into achievement_events table
+   ↓
+4. Find matching achievements (by context and unlock_type)
+   ↓
+5. For each achievement:
+   - Check prerequisites
+   - Evaluate unlock conditions
+   - For progressive: update progress
+   - For automatic/event-based: unlock immediately if conditions met
+   - Handle repeatable achievements
+   ↓
+6. Mark event as processed
+   ↓
+7. Return newly unlocked achievements
+```
+
+### Sample Achievements
+
+The migration includes 8 sample achievements:
+
+**Minesweeper:**
+- `minesweeper_first_win` - First victory (common, 10 points)
+- `minesweeper_speed_demon` - Expert in <90s (epic, 50 points)
+- `minesweeper_perfect_beginner` - Perfect beginner game (uncommon, 15 points)
+
+**Questions:**
+- `questions_first_answer` - First answer (common, 5 points)
+- `questions_streak_10` - 10 correct in a row (uncommon, 25 points, progressive)
+- `questions_master_calculus` - 95% accuracy, 50+ questions (legendary, 100 points, progressive)
+
+**Social:**
+- `social_first_friend` - First friend added (common, 10 points)
+- `social_popular` - 10 friends (rare, 30 points, progressive)
+
+**Meta:**
+- `meta_achievement_hunter` - Unlock 25 achievements (epic, 50 points, progressive)
+
+### Design Decisions
+
+**JSONB for Flexibility:** Different achievement types need different configuration. JSONB avoids 50+ columns with mostly NULL values.
+
+**Context Variations:** NULLS NOT DISTINCT allows same achievement for different difficulties/subjects/tiers without duplicate entries.
+
+**Event-Driven Architecture:** Decouples achievement logic from feature code. Single entry point for all unlocks.
+
+**SECURITY DEFINER Protection:** RLS policies block direct INSERT. Functions provide controlled access with search_path protection.
+
+**Generated Percentage:** Auto-calculated progress percentage ensures consistency.
+
+### Performance
+
+**Current:** 200-400ms per event, 2.5-5 events/second
+**Optimized:** 60-120ms per event, 50-100 events/second (with Phase 2 optimizations)
+
+See [Performance Analysis](.claude/achievements-performance-analysis.md) for optimization roadmap.
+
+### Migrations
+
+- `20251121000000_create_universal_achievements_system.sql` - Phase 1: Database schema (839 lines)
+
+### Related Documentation
+
+- **Architecture:** [docs/architecture/achievements-system.md](achievements-system.md) - Complete system guide
+- **Performance:** [.claude/achievements-performance-analysis.md](../../.claude/achievements-performance-analysis.md) - Optimization roadmap
+- **Tests:** [.claude/achievement-tests-summary.md](../../.claude/achievement-tests-summary.md) - Test coverage (77/77 passing)
+- **Types:** `src/lib/types/achievements.ts` - TypeScript interfaces
+- **Test Suite:** `src/lib/server/achievements/__tests__/` - Comprehensive test coverage
 
 ---
 
