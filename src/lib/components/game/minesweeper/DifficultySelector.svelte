@@ -1,76 +1,115 @@
 <script lang="ts">
-	import MySelect from '$lib/components/MySelect.svelte';
 	import { DIFFICULTY_CONFIGS } from '$lib/types/minesweeper';
+	import type { Difficulty } from '$lib/types/minesweeper';
+	import { cn } from '$lib/utils';
 
 	// Props
 	let {
 		selected,
-		onChange,
+		onSelect,
 		disabled = false
 	}: {
-		selected: 'beginner' | 'intermediate' | 'expert';
-		onChange: (difficulty: string) => void;
+		selected: Difficulty;
+		onSelect: (difficulty: Difficulty) => void;
 		disabled?: boolean;
 	} = $props();
 
-	// Difficulty options with French labels and info
-	const items = [
+	// Difficulty cards configuration with icons and details
+	const difficulties: Array<{
+		value: Difficulty;
+		label: string;
+		icon: string;
+		iconColor: string;
+		borderColor: string;
+		bgColor: string;
+	}> = [
 		{
 			value: 'beginner',
 			label: 'Débutant',
-			description: '9×9, 10 mines'
+			icon: '🌱',
+			iconColor: 'text-green-600',
+			borderColor: 'border-green-500',
+			bgColor: 'bg-green-50 dark:bg-green-950/20'
 		},
 		{
 			value: 'intermediate',
 			label: 'Intermédiaire',
-			description: '16×16, 40 mines'
+			icon: '⚡',
+			iconColor: 'text-yellow-600',
+			borderColor: 'border-yellow-500',
+			bgColor: 'bg-yellow-50 dark:bg-yellow-950/20'
 		},
 		{
 			value: 'expert',
 			label: 'Expert',
-			description: '16×30, 99 mines'
+			icon: '🔥',
+			iconColor: 'text-red-600',
+			borderColor: 'border-red-500',
+			bgColor: 'bg-red-50 dark:bg-red-950/20'
 		}
 	];
 
-	// Format items for MySelect component
-	const selectItems = items.map((item) => ({
-		value: item.value,
-		label: `${item.label} (${item.description})`
-	}));
-
-	// Handle change
-	function handleChange(value: string) {
-		onChange(value);
+	// Handle difficulty card click
+	function handleSelect(difficulty: Difficulty) {
+		if (!disabled) {
+			onSelect(difficulty);
+		}
 	}
 </script>
 
-<div class="space-y-2">
-	<div class="mb-2 text-sm font-medium">Difficulté</div>
+<div class="space-y-3">
+	<h3 class="text-sm font-medium text-foreground">Choisir la difficulté</h3>
 
-	<MySelect
-		type="single"
-		bind:value={selected}
-		items={selectItems}
-		{disabled}
-		placeholder="Choisir une difficulté"
-		onValueChange={handleChange}
-		class="w-full"
-	/>
+	<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+		{#each difficulties as diff (diff.value)}
+			{@const config = DIFFICULTY_CONFIGS[diff.value]}
+			{@const isSelected = selected === diff.value}
 
-	<!-- Info cards for each difficulty -->
-	<div class="mt-4 grid gap-2 sm:grid-cols-3">
-		{#each items as item (item.value)}
-			<div
-				class="rounded-lg border p-3 transition-all {selected === item.value
-					? 'border-primary bg-primary/5'
-					: 'border-border bg-card'}"
+			<button
+				type="button"
+				onclick={() => handleSelect(diff.value)}
+				disabled={disabled}
+				class={cn(
+					'group relative overflow-hidden rounded-lg border-2 p-4 text-left transition-all',
+					'hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+					'disabled:cursor-not-allowed disabled:opacity-50',
+					isSelected
+						? `${diff.borderColor} ${diff.bgColor} shadow-md`
+						: 'border-border bg-card hover:border-primary/50'
+				)}
 			>
-				<div class="text-sm font-semibold">{item.label}</div>
-				<div class="mt-1 text-xs text-muted-foreground">{item.description}</div>
-				<div class="mt-1 text-xs text-muted-foreground">
-					Base: {DIFFICULTY_CONFIGS[item.value].baseGidouilles} gidouilles
+				<!-- Icon -->
+				<div class="mb-3 flex items-center justify-center">
+					<span class={cn('text-4xl transition-transform group-hover:scale-110', diff.iconColor)}>
+						{diff.icon}
+					</span>
 				</div>
-			</div>
+
+				<!-- Difficulty name -->
+				<h4 class="mb-2 text-center text-lg font-bold text-foreground">
+					{diff.label}
+				</h4>
+
+				<!-- Grid details -->
+				<div class="space-y-1 text-center text-sm text-muted-foreground">
+					<p class="font-medium">
+						Grille : {config.rows}×{config.cols}
+					</p>
+					<p>Mines : {config.mines}</p>
+					<p class="font-semibold text-primary">
+						Récompense : {config.baseGidouilles} gidouilles
+					</p>
+				</div>
+
+				<!-- Selected indicator -->
+				{#if isSelected}
+					<div
+						class="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground"
+					>
+						✓
+					</div>
+				{/if}
+			</button>
 		{/each}
 	</div>
 </div>
