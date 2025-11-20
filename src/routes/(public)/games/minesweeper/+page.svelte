@@ -8,7 +8,6 @@
 	import GameControls from '$lib/components/game/minesweeper/GameControls.svelte';
 	import DifficultySelector from '$lib/components/game/minesweeper/DifficultySelector.svelte';
 	import SavedGameInfo from '$lib/components/game/minesweeper/SavedGameInfo.svelte';
-	import PremiumBanner from '$lib/components/game/minesweeper/PremiumBanner.svelte';
 	import AchievementToast from '$lib/components/game/minesweeper/AchievementToast.svelte';
 	import type { PageData } from './$types';
 	import type { GameState, Difficulty } from '$lib/types/minesweeper';
