@@ -1,10 +1,7 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { sanitizePostgresError } from '$lib/server/utils/error-handler';
-import { createLogger } from '$lib/utils/logger';
-
-const logger = createLogger('minesweeper-achievement-progress-api');
 
 /**
  * Get achievement progress for current student

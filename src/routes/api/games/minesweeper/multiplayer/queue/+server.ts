@@ -39,7 +39,7 @@ import { sanitizeRPCError } from '$lib/server/utils/error-handler';
  * }
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user } = await requireRole(locals, 'student');
+	await requireRole(locals, 'student');
 
 	// Validate request body
 	const body = await request.json();
@@ -75,7 +75,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
  * }
  */
 export const DELETE: RequestHandler = async ({ locals }) => {
-	const { user } = await requireRole(locals, 'student');
+	await requireRole(locals, 'student');
 
 	const { data, error: rpcError } = await locals.supabase.rpc('leave_multiplayer_queue');
 

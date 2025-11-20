@@ -3,7 +3,7 @@
  * GET - Check if a match was found while waiting in queue
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { sanitizeRPCError } from '$lib/server/utils/error-handler';

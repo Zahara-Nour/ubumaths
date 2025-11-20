@@ -2,6 +2,16 @@
  * Minesweeper game types and configuration
  */
 
+/**
+ * Game difficulty levels
+ */
+export type Difficulty = 'beginner' | 'intermediate' | 'expert';
+
+/**
+ * Game status values
+ */
+export type GameStatus = 'not_started' | 'in_progress' | 'won' | 'lost';
+
 export interface CellState {
 	row: number;
 	col: number;
@@ -27,8 +37,8 @@ export interface GridStateDTO {
 
 export interface GameState {
 	id?: string; // UUID if saved to database
-	difficulty: 'beginner' | 'intermediate' | 'expert';
-	status: 'not_started' | 'in_progress' | 'won' | 'lost';
+	difficulty: Difficulty;
+	status: GameStatus;
 	grid: CellState[][];
 	rows: number;
 	cols: number;

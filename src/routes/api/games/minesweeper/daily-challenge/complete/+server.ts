@@ -3,9 +3,6 @@ import { error, json } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { completeDailyChallengeSchema } from '$lib/server/validation/minesweeper-daily';
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
-import { createLogger } from '$lib/utils/logger';
-
-const logger = createLogger('minesweeper-daily-complete-api');
 
 /**
  * Submit daily challenge completion
