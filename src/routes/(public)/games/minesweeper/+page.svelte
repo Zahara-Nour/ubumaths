@@ -103,11 +103,6 @@
 
 <main class="min-h-screen bg-gradient-to-br from-background to-muted p-4 md:p-8">
 	<div class="mx-auto max-w-6xl">
-		<!-- Show premium banner if not authenticated -->
-		{#if !data.isAuthenticated}
-			<PremiumBanner />
-		{/if}
-
 		<!-- Game Interface -->
 		{#if gameStarted && minesweeperStore.currentGame}
 			{@const game = minesweeperStore.currentGame}
@@ -242,7 +237,7 @@
 						</div>
 					</div>
 
-					{#if data.isAuthenticated}
+					{#if data.profile?.role === 'student'}
 						<!-- Links to stats, achievements, and leaderboard -->
 						<div>
 							<Separator />
