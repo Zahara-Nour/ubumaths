@@ -284,6 +284,9 @@ COMMENT ON FUNCTION public.use_hint IS
 -- PART 4: Update minesweeper_leaderboard View - Add hints_used Column
 -- ============================================================================
 
+-- Drop dependent views first (minesweeper_leaderboard_public depends on minesweeper_leaderboard)
+DROP VIEW IF EXISTS public.minesweeper_leaderboard_public;
+
 -- Drop and recreate the view with hints_used column for transparency
 DROP VIEW IF EXISTS public.minesweeper_leaderboard;
 
@@ -345,6 +348,31 @@ GRANT SELECT ON public.minesweeper_leaderboard TO authenticated;
 
 COMMENT ON VIEW public.minesweeper_leaderboard IS
   'Ranked leaderboard partitioned by difficulty. Includes hints_used for transparency - shows if player used hints in their best time. Only includes authenticated users with at least 1 win.';
+
+-- Recreate anonymized public leaderboard with hints_used column
+CREATE OR REPLACE VIEW public.minesweeper_leaderboard_public AS
+SELECT
+  -- Hash student_id to create anonymous player identifier
+  substring(md5(student_id::text) from 1 for 8) AS player_id,
+  difficulty,
+  best_time,
+  hints_used,  -- NEW: Show hints used for transparency
+  games_won,
+  win_rate,
+  rank
+FROM public.minesweeper_leaderboard
+WHERE rank <= 100  -- Only show top 100 per difficulty
+ORDER BY difficulty, rank;
+
+-- Use security_invoker to respect RLS (though view data is already anonymized)
+ALTER VIEW public.minesweeper_leaderboard_public SET (security_invoker = on);
+
+-- Grant access to anonymized leaderboard
+GRANT SELECT ON public.minesweeper_leaderboard_public TO anon;
+GRANT SELECT ON public.minesweeper_leaderboard_public TO authenticated;
+
+COMMENT ON VIEW public.minesweeper_leaderboard_public IS
+  'Anonymized public leaderboard (top 100 per difficulty). Includes hints_used for transparency. No PII exposed. Safe for anonymous users.';
 
 -- ============================================================================
 -- PART 5: Create Index for Hint-Related Queries
