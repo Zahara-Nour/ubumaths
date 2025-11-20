@@ -6,6 +6,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
+import { sanitizeRPCError } from '$lib/server/utils/error-handler';
 
 /**
  * GET /api/games/minesweeper/multiplayer/match-status
@@ -34,8 +35,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	const { data, error: rpcError } = await locals.supabase.rpc('check_match_status');
 
 	if (rpcError) {
-		console.error('check_match_status RPC error:', rpcError);
-		throw error(500, 'Erreur lors de la vérification du match');
+		sanitizeRPCError(rpcError, 'check_match_status');
 	}
 
 	return json(data);

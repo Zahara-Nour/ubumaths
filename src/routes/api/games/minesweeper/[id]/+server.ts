@@ -2,6 +2,7 @@ import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { saveGameSchema, validateGridState } from '$lib/server/validation/minesweeper';
+import { sanitizePostgresError } from '$lib/server/utils/error-handler';
 
 /**
  * Save Minesweeper game progress
@@ -91,12 +92,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			.single();
 
 		if (updateError) {
-			// Check if game doesn't exist or is not owned by user
-			if (updateError.code === 'PGRST116') {
-				throw error(404, 'Partie non trouvée ou déjà terminée');
-			}
-			console.error('Error updating game:', updateError);
-			throw error(500, 'Erreur lors de la sauvegarde de la partie');
+			sanitizePostgresError(updateError, 'MINESWEEPER_SAVE');
 		}
 
 		if (!game) {
@@ -105,12 +101,6 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 
 		return json({ success: true });
 	} catch (err) {
-		// Re-throw SvelteKit errors
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-
-		console.error('Error in save game endpoint:', err);
-		throw error(500, 'Erreur serveur lors de la sauvegarde de la partie');
+		sanitizePostgresError(err, 'MINESWEEPER_SAVE');
 	}
 };

@@ -9,6 +9,7 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { completeMatchSchema } from '$lib/server/validation/minesweeper-multiplayer';
+import { sanitizeRPCError } from '$lib/server/utils/error-handler';
 
 /**
  * Complete a multiplayer match with server-side win validation
@@ -42,30 +43,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('complete_multiplayer_match error:', rpcError);
-
-		// Handle specific error cases
-		if (rpcError.message.includes('introuvable')) {
-			throw error(404, 'Match introuvable');
-		}
-		if (rpcError.message.includes('ne participez pas')) {
-			throw error(403, 'Vous ne participez pas à ce match');
-		}
-		if (rpcError.message.includes('pas en cours')) {
-			throw error(409, "Le match n'est pas en cours");
-		}
-		if (rpcError.message.includes('déjà terminé')) {
-			throw error(409, 'Le match est déjà terminé');
-		}
-		if (rpcError.message.includes('Temps invalide')) {
-			throw error(400, 'Temps de jeu invalide');
-		}
-		if (rpcError.message.includes('pas une victoire valide')) {
-			throw error(400, "La grille soumise n'est pas une victoire valide");
-		}
-
-		// Generic error
-		throw error(500, 'Erreur lors de la complétion du match');
+		sanitizeRPCError(rpcError, 'complete_multiplayer_match');
 	}
 
 	return json(data);

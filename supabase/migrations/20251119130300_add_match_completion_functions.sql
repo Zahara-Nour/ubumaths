@@ -53,8 +53,8 @@ DECLARE
   v_bonus_gidouilles INTEGER := 0;
   v_total_gidouilles INTEGER;
   v_elo_change INTEGER;
-  v_winner_stats RECORD;
-  v_loser_stats RECORD;
+  v_winner_elo INTEGER := 1500; -- Default ELO for new players
+  v_loser_elo INTEGER := 1500;   -- Default ELO for new players
   v_season TEXT;
   v_difficulty_config RECORD;
 BEGIN
@@ -144,28 +144,30 @@ BEGIN
 
   v_total_gidouilles := v_base_gidouilles + v_bonus_gidouilles;
 
-  -- Get current ELO ratings (filter by current season)
-  SELECT rank INTO v_winner_stats
+  -- Get current ELO ratings with COALESCE for NULL safety (filter by current season)
+  SELECT COALESCE(rank, 1500) INTO v_winner_elo
   FROM minesweeper_player_stats
   WHERE student_id = v_student_id AND season = v_season;
 
-  SELECT rank INTO v_loser_stats
+  -- If no record exists, v_winner_elo keeps default 1500
+  IF NOT FOUND THEN
+    v_winner_elo := 1500;
+  END IF;
+
+  SELECT COALESCE(rank, 1500) INTO v_loser_elo
   FROM minesweeper_player_stats
   WHERE student_id = v_opponent_id AND season = v_season;
 
-  -- Default ELO if no stats exist yet
-  IF v_winner_stats IS NULL THEN
-    v_winner_stats := ROW(1500);
-  END IF;
-  IF v_loser_stats IS NULL THEN
-    v_loser_stats := ROW(1500);
+  -- If no record exists, v_loser_elo keeps default 1500
+  IF NOT FOUND THEN
+    v_loser_elo := 1500;
   END IF;
 
   -- Calculate ELO change (only for ranked matches)
   IF v_match.match_type = 'ranked' THEN
     v_elo_change := calculate_elo_change(
-      v_winner_stats.rank,
-      v_loser_stats.rank
+      v_winner_elo,
+      v_loser_elo
     );
   ELSE
     v_elo_change := 0; -- No ELO change for quick/challenge matches
@@ -183,18 +185,42 @@ BEGIN
     elo_change = v_elo_change
   WHERE id = p_match_id;
 
-  -- Award gidouilles to winner
+  -- Award gidouilles to winner WITH PROPER AUDIT TRAIL
   INSERT INTO gidouilles_history (
     student_id,
-    amount,
+    class_id,
+    delta,
     reason,
-    description
-  ) VALUES (
+    created_by
+  )
+  SELECT
     v_student_id,
+    cm.class_id,
     v_total_gidouilles,
-    'minesweeper_multiplayer_win',
-    FORMAT('Victoire multijoueur (%s, %s)', v_match.difficulty, v_match.match_type)
-  );
+    'Minesweeper multiplayer: ' || v_match.difficulty || ' ' || v_match.match_type || ' won in ' || p_time_seconds || 's',
+    v_student_id
+  FROM class_members cm
+  WHERE cm.student_id = v_student_id
+    AND cm.status = 'active'
+  ORDER BY cm.joined_at ASC
+  LIMIT 1;
+
+  -- If student has no active class, insert with NULL class_id (acceptable fallback)
+  IF NOT FOUND THEN
+    INSERT INTO gidouilles_history (
+      student_id,
+      class_id,
+      delta,
+      reason,
+      created_by
+    ) VALUES (
+      v_student_id,
+      NULL,
+      v_total_gidouilles,
+      'Minesweeper multiplayer: ' || v_match.difficulty || ' ' || v_match.match_type || ' won in ' || p_time_seconds || 's',
+      v_student_id
+    );
+  END IF;
 
   -- Update winner stats
   INSERT INTO minesweeper_player_stats (
@@ -209,14 +235,14 @@ BEGIN
     v_season,
     1,
     1,
-    COALESCE(v_winner_stats.rank, 1500) + v_elo_change,
+    v_winner_elo + v_elo_change, -- Use calculated ELO variable
     1
   )
   ON CONFLICT (student_id, season) DO UPDATE
   SET
     games_played = minesweeper_player_stats.games_played + 1,
     games_won = minesweeper_player_stats.games_won + 1,
-    rank = EXCLUDED.rank, -- Use pre-calculated rank directly (already includes ELO change)
+    rank = GREATEST(0, v_winner_elo + v_elo_change), -- Use calculated ELO variable with floor at 0
     win_streak = minesweeper_player_stats.win_streak + 1,
     best_win_streak = GREATEST(
       minesweeper_player_stats.best_win_streak,
@@ -237,13 +263,13 @@ BEGIN
     v_season,
     1,
     0,
-    GREATEST(0, COALESCE(v_loser_stats.rank, 1500) - v_elo_change), -- Can't go below 0
+    GREATEST(0, v_loser_elo - v_elo_change), -- Use calculated ELO variable, can't go below 0
     0
   )
   ON CONFLICT (student_id, season) DO UPDATE
   SET
     games_played = minesweeper_player_stats.games_played + 1,
-    rank = EXCLUDED.rank, -- Use pre-calculated rank directly (already includes ELO loss and floor at 0)
+    rank = GREATEST(0, v_loser_elo - v_elo_change), -- Use calculated ELO variable with floor at 0
     win_streak = 0, -- Reset streak
     updated_at = NOW();
 
@@ -255,7 +281,7 @@ BEGIN
     'base_reward', v_base_gidouilles,
     'speed_bonus', v_bonus_gidouilles,
     'elo_change', v_elo_change,
-    'new_elo', COALESCE(v_winner_stats.rank, 1500) + v_elo_change,
+    'new_elo', v_winner_elo + v_elo_change, -- Use calculated ELO variable
     'time_seconds', p_time_seconds
   );
 END;
@@ -277,8 +303,8 @@ DECLARE
   v_opponent_id UUID;
   v_opponent_reward INTEGER;
   v_elo_change INTEGER;
-  v_abandoner_stats RECORD;
-  v_opponent_stats RECORD;
+  v_abandoner_elo INTEGER := 1500; -- Default ELO for new players
+  v_opponent_elo INTEGER := 1500;   -- Default ELO for new players
   v_season TEXT;
 BEGIN
   -- Get authenticated student ID
@@ -317,28 +343,30 @@ BEGIN
   -- Get current season
   v_season := TO_CHAR(NOW(), 'YYYY-MM');
 
-  -- Get ELO ratings
-  SELECT rank INTO v_abandoner_stats
+  -- Get ELO ratings with COALESCE for NULL safety
+  SELECT COALESCE(rank, 1500) INTO v_abandoner_elo
   FROM minesweeper_player_stats
   WHERE student_id = v_student_id AND season = v_season;
 
-  SELECT rank INTO v_opponent_stats
+  -- If no record exists, v_abandoner_elo keeps default 1500
+  IF NOT FOUND THEN
+    v_abandoner_elo := 1500;
+  END IF;
+
+  SELECT COALESCE(rank, 1500) INTO v_opponent_elo
   FROM minesweeper_player_stats
   WHERE student_id = v_opponent_id AND season = v_season;
 
-  -- Default ELO
-  IF v_abandoner_stats.rank IS NULL THEN
-    v_abandoner_stats := ROW(1500);
-  END IF;
-  IF v_opponent_stats.rank IS NULL THEN
-    v_opponent_stats := ROW(1500);
+  -- If no record exists, v_opponent_elo keeps default 1500
+  IF NOT FOUND THEN
+    v_opponent_elo := 1500;
   END IF;
 
   -- Calculate ELO change (opponent wins, abandoner loses)
   IF v_match.match_type = 'ranked' THEN
     v_elo_change := calculate_elo_change(
-      v_opponent_stats.rank,
-      v_abandoner_stats.rank
+      v_opponent_elo,
+      v_abandoner_elo
     );
   ELSE
     v_elo_change := 0;
@@ -363,18 +391,42 @@ BEGIN
     elo_change = v_elo_change
   WHERE id = p_match_id;
 
-  -- Award gidouilles to opponent
+  -- Award gidouilles to opponent WITH PROPER AUDIT TRAIL
   INSERT INTO gidouilles_history (
     student_id,
-    amount,
+    class_id,
+    delta,
     reason,
-    description
-  ) VALUES (
+    created_by
+  )
+  SELECT
     v_opponent_id,
+    cm.class_id,
     v_opponent_reward,
-    'minesweeper_multiplayer_opponent_quit',
-    FORMAT('Victoire par abandon (%s)', v_match.difficulty)
-  );
+    'Minesweeper multiplayer: ' || v_match.difficulty || ' ' || v_match.match_type || ' won by abandonment',
+    v_opponent_id
+  FROM class_members cm
+  WHERE cm.student_id = v_opponent_id
+    AND cm.status = 'active'
+  ORDER BY cm.joined_at ASC
+  LIMIT 1;
+
+  -- If opponent has no active class, insert with NULL class_id (acceptable fallback)
+  IF NOT FOUND THEN
+    INSERT INTO gidouilles_history (
+      student_id,
+      class_id,
+      delta,
+      reason,
+      created_by
+    ) VALUES (
+      v_opponent_id,
+      NULL,
+      v_opponent_reward,
+      'Minesweeper multiplayer: ' || v_match.difficulty || ' ' || v_match.match_type || ' won by abandonment',
+      v_opponent_id
+    );
+  END IF;
 
   -- Update opponent stats (win by forfeit)
   INSERT INTO minesweeper_player_stats (
@@ -389,14 +441,14 @@ BEGIN
     v_season,
     1,
     1,
-    v_opponent_stats.rank + v_elo_change,
+    v_opponent_elo + v_elo_change, -- Use calculated ELO variable
     1
   )
   ON CONFLICT (student_id, season) DO UPDATE
   SET
     games_played = minesweeper_player_stats.games_played + 1,
     games_won = minesweeper_player_stats.games_won + 1,
-    rank = EXCLUDED.rank, -- Use pre-calculated rank directly (already includes ELO change)
+    rank = GREATEST(0, v_opponent_elo + v_elo_change), -- Use calculated ELO variable with floor at 0
     win_streak = minesweeper_player_stats.win_streak + 1,
     best_win_streak = GREATEST(
       minesweeper_player_stats.best_win_streak,
@@ -417,13 +469,13 @@ BEGIN
     v_season,
     1,
     0,
-    GREATEST(0, v_abandoner_stats.rank - v_elo_change),
+    GREATEST(0, v_abandoner_elo - v_elo_change), -- Use calculated ELO variable, can't go below 0
     0
   )
   ON CONFLICT (student_id, season) DO UPDATE
   SET
     games_played = minesweeper_player_stats.games_played + 1,
-    rank = EXCLUDED.rank, -- Use pre-calculated rank directly (already includes ELO loss and floor at 0)
+    rank = GREATEST(0, v_abandoner_elo - v_elo_change), -- Use calculated ELO variable with floor at 0
     win_streak = 0,
     updated_at = NOW();
 

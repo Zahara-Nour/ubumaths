@@ -952,10 +952,9 @@ class MultiplayerStore {
 			// Show warning once at 30 seconds
 			if (inactiveDuration > this.INACTIVITY_WARNING_MS && !this.inactivityWarningShown) {
 				this.inactivityWarningShown = true;
-				toaster.warning(
-					'Inactivité détectée. Le match sera abandonné si vous ne jouez pas.',
-					{ duration: 5000 }
-				);
+				toaster.warning('Inactivité détectée. Le match sera abandonné si vous ne jouez pas.', {
+					duration: 5000
+				});
 			}
 
 			// Abandon at 60 seconds

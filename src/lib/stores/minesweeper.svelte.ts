@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database, Json } from '$lib/types/database';
 import { createLogger } from '$lib/utils/logger';
 import { toaster } from '$lib/stores/toaster.svelte';
 import type { GameState, CellState, DifficultyConfig } from '$lib/types/minesweeper';
@@ -173,14 +173,17 @@ class MinesweeperStore {
 
 			// Save to database if authenticated
 			if (this.user && this.supabase) {
+				const gridState = this.gridToDTO(newGame.grid);
+				const config = DIFFICULTY_CONFIGS[difficulty];
 				const { data, error } = await this.supabase
 					.from('minesweeper_games')
 					.insert({
-						user_id: this.user.id,
+						student_id: this.user.id,
 						difficulty,
 						status: 'not_started',
-						grid_state: this.gridToDTO(newGame.grid),
-						time_elapsed: 0
+						grid_state: gridState as unknown as Json,
+						time_seconds: 0,
+						mines_count: config.mines
 					})
 					.select('id')
 					.single();
@@ -860,12 +863,13 @@ class MinesweeperStore {
 		try {
 			if (this.user && this.supabase && game.id) {
 				// Save to database for authenticated users
+				const gridState = this.gridToDTO(game.grid);
 				const { error } = await this.supabase
 					.from('minesweeper_games')
 					.update({
-						grid_state: this.gridToDTO(game.grid),
+						grid_state: gridState as unknown as Json,
 						status: game.status,
-						time_elapsed: game.timeElapsed,
+						time_seconds: game.timeElapsed,
 						flags_used: game.flagsUsed,
 						cells_revealed: game.cellsRevealed,
 						hints_used: game.hintsUsed || 0
@@ -970,9 +974,10 @@ class MinesweeperStore {
 		try {
 			if (this.user && this.supabase && game.id) {
 				// Call RPC to complete game and calculate rewards
+				const gridState = this.gridToDTO(game.grid);
 				const { data, error } = await this.supabase.rpc('complete_minesweeper_game', {
 					p_game_id: game.id,
-					p_grid_state: this.gridToDTO(game.grid)
+					p_grid_state: gridState as unknown as Json
 				});
 
 				if (error) {
@@ -1076,7 +1081,7 @@ class MinesweeperStore {
 				const { data, error } = await this.supabase
 					.from('minesweeper_games')
 					.select('*')
-					.eq('user_id', this.user.id)
+					.eq('student_id', this.user.id)
 					.eq('status', 'in_progress')
 					.order('created_at', { ascending: false })
 					.limit(1)
@@ -1092,24 +1097,27 @@ class MinesweeperStore {
 					return;
 				}
 
-				const config = DIFFICULTY_CONFIGS[data.difficulty];
+				// Parse difficulty and status with proper type checking
+				const difficulty = data.difficulty as Difficulty;
+				const status = data.status as GameStatus;
+				const config = DIFFICULTY_CONFIGS[difficulty];
 
 				// Convert GridStateDTO from database to internal CellState[][]
 				const grid = this.dtoToGrid(
-					data.grid_state as import('$lib/types/minesweeper').GridStateDTO
+					data.grid_state as unknown as import('$lib/types/minesweeper').GridStateDTO
 				);
 
 				const game: GameState = {
 					id: data.id,
-					difficulty: data.difficulty,
-					status: data.status,
+					difficulty,
+					status,
 					grid,
 					rows: config.rows,
 					cols: config.cols,
 					minesCount: config.mines,
 					flagsUsed: this.countFlags(grid),
 					cellsRevealed: this.countRevealed(grid),
-					timeElapsed: data.time_elapsed,
+					timeElapsed: data.time_seconds ?? 0,
 					startedAt: new Date(data.created_at)
 				};
 
@@ -1181,6 +1189,48 @@ class MinesweeperStore {
 			}
 		}
 		return count;
+	}
+
+	/**
+	 * Check if coordinates are within grid bounds
+	 *
+	 * @param row - Row coordinate
+	 * @param col - Column coordinate
+	 * @returns True if cell is valid
+	 */
+	private isValidCell(row: number, col: number): boolean {
+		if (!this.currentGame) return false;
+		return row >= 0 && row < this.currentGame.rows && col >= 0 && col < this.currentGame.cols;
+	}
+
+	/**
+	 * Check win condition
+	 *
+	 * @returns True if player has won
+	 */
+	private checkWinCondition(): boolean {
+		if (!this.currentGame) return false;
+		const game = this.currentGame;
+		const totalCells = game.rows * game.cols;
+		return game.cellsRevealed === totalCells - game.minesCount;
+	}
+
+	/**
+	 * Handle win
+	 */
+	private handleWin(): void {
+		if (!this.currentGame) return;
+		this.currentGame.status = 'won';
+		this.completeGame(true);
+	}
+
+	/**
+	 * Handle loss
+	 */
+	private handleLoss(): void {
+		if (!this.currentGame) return;
+		this.currentGame.status = 'lost';
+		this.completeGame(false);
 	}
 
 	/**

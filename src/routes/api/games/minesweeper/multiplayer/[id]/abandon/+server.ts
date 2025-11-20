@@ -10,6 +10,7 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { abandonMatchSchema } from '$lib/server/validation/minesweeper-multiplayer';
+import { sanitizeRPCError } from '$lib/server/utils/error-handler';
 
 /**
  * Abandon a multiplayer match (forfeit/disconnect/timeout)
@@ -42,21 +43,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('abandon_multiplayer_match error:', rpcError);
-
-		// Handle specific error cases
-		if (rpcError.message.includes('introuvable')) {
-			throw error(404, 'Match introuvable');
-		}
-		if (rpcError.message.includes('ne participez pas')) {
-			throw error(403, 'Vous ne participez pas à ce match');
-		}
-		if (rpcError.message.includes('ne peut pas être abandonné')) {
-			throw error(409, 'Le match ne peut pas être abandonné');
-		}
-
-		// Generic error
-		throw error(500, "Erreur lors de l'abandon du match");
+		sanitizeRPCError(rpcError, 'abandon_multiplayer_match');
 	}
 
 	return json(data);

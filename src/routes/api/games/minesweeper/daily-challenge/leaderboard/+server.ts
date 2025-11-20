@@ -1,6 +1,7 @@
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { leaderboardQuerySchema } from '$lib/server/validation/minesweeper-daily';
+import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
 import { createLogger } from '$lib/utils/logger';
 
 const logger = createLogger('minesweeper-daily-leaderboard-api');
@@ -54,7 +55,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			throw error(400, validation.error.issues[0].message);
 		}
 
-		const { challenge_id, limit } = validation.data;
+		let { challenge_id } = validation.data;
+		const { limit } = validation.data;
 
 		// If no challenge_id provided, get today's challenge
 		if (!challenge_id) {
@@ -62,12 +64,17 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				.rpc('get_or_create_daily_challenge')
 				.single();
 
-			if (rpcError || !challengeData) {
-				logger.error("Error fetching today's challenge:", rpcError);
+			if (rpcError) {
+				sanitizeRPCError(rpcError, 'get_or_create_daily_challenge');
+			}
+
+			if (!challengeData) {
 				throw error(500, 'Erreur lors de la récupération du défi quotidien');
 			}
 
-			challenge_id = challengeData.id;
+			// Type assertion for RPC return value
+			const typedChallenge = challengeData as { id: string };
+			challenge_id = typedChallenge.id;
 		}
 
 		// Fetch challenge details
@@ -77,8 +84,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.eq('id', challenge_id)
 			.single();
 
-		if (challengeError || !challenge) {
-			logger.error('Error fetching challenge details:', challengeError);
+		if (challengeError) {
+			sanitizePostgresError(challengeError, 'MINESWEEPER_DAILY_LEADERBOARD_CHALLENGE');
+		}
+
+		if (!challenge) {
 			throw error(404, 'Défi quotidien non trouvé');
 		}
 
@@ -91,8 +101,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.limit(limit);
 
 		if (leaderboardError) {
-			logger.error('Error fetching leaderboard:', leaderboardError);
-			throw error(500, 'Erreur lors de la récupération du classement');
+			sanitizePostgresError(leaderboardError, 'MINESWEEPER_DAILY_LEADERBOARD');
 		}
 
 		// Format leaderboard data
@@ -130,12 +139,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			userPosition
 		});
 	} catch (err) {
-		// Re-throw SvelteKit errors
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-
-		logger.error('Error in daily challenge leaderboard endpoint:', err);
-		throw error(500, 'Erreur serveur lors de la récupération du classement');
+		sanitizePostgresError(err, 'MINESWEEPER_DAILY_LEADERBOARD');
 	}
 };

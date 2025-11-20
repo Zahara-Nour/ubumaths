@@ -46,7 +46,10 @@
 
 	// Effects
 	$effect(() => {
-		if (opponentProgress?.lastAction && opponentProgress.lastAction.timestamp !== lastActionTimestamp) {
+		if (
+			opponentProgress?.lastAction &&
+			opponentProgress.lastAction.timestamp !== lastActionTimestamp
+		) {
 			lastActionTimestamp = opponentProgress.lastAction.timestamp;
 			showActionAnimation = true;
 			setTimeout(() => {
@@ -60,7 +63,7 @@
 	<div
 		class={cn(
 			'rounded-lg border border-border bg-card p-3 shadow-sm transition-all',
-			'dark:bg-card dark:border-border'
+			'dark:border-border dark:bg-card'
 		)}
 	>
 		<!-- Opponent name -->
@@ -73,7 +76,9 @@
 		<div class="mb-2 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
 			<div class="flex items-center gap-1">
 				<span>📊</span>
-				<span>Cellules: <strong class="text-foreground">{opponentProgress.cellsRevealed}</strong></span>
+				<span
+					>Cellules: <strong class="text-foreground">{opponentProgress.cellsRevealed}</strong></span
+				>
 			</div>
 			<div class="flex items-center gap-1">
 				<span>🚩</span>

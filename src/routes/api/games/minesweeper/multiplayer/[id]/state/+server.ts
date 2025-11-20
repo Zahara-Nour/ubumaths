@@ -10,6 +10,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { realtimeStateUpdateSchema } from '$lib/server/validation/minesweeper-multiplayer';
+import { sanitizeRPCError } from '$lib/server/utils/error-handler';
 
 /**
  * GET /api/games/minesweeper/multiplayer/[id]/state
@@ -37,14 +38,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('get_match_state error:', rpcError);
-
-		// Handle specific error cases
-		if (rpcError.message.includes('not a participant')) {
-			throw error(403, 'Vous ne participez pas à ce match');
-		}
-
-		throw error(500, "Erreur lors de la récupération de l'état du match");
+		sanitizeRPCError(rpcError, 'get_match_state');
 	}
 
 	return json(data);
@@ -96,26 +90,7 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('update_game_state error:', rpcError);
-
-		// Handle specific error cases
-		if (rpcError.message.includes('not a participant')) {
-			throw error(403, 'Vous ne participez pas à ce match');
-		}
-		if (rpcError.message.includes('not in progress')) {
-			throw error(409, "Le match n'est pas en cours");
-		}
-		if (rpcError.message.includes('Invalid cells_revealed')) {
-			throw error(400, 'Nombre de cellules révélées invalide');
-		}
-		if (rpcError.message.includes('Invalid flags_used')) {
-			throw error(400, 'Nombre de drapeaux invalide');
-		}
-		if (rpcError.message.includes('Invalid time_elapsed')) {
-			throw error(400, 'Temps écoulé invalide');
-		}
-
-		throw error(500, "Erreur lors de la mise à jour de l'état du jeu");
+		sanitizeRPCError(rpcError, 'update_game_state');
 	}
 
 	return json(data);

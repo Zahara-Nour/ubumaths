@@ -8,6 +8,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
+import { sanitizeRPCError } from '$lib/server/utils/error-handler';
 
 /**
  * POST /api/games/minesweeper/multiplayer/[id]/start
@@ -44,20 +45,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('start_match error:', rpcError);
-
-		// Handle specific error cases
-		if (rpcError.message.includes('not a participant')) {
-			throw error(403, 'Vous ne participez pas à ce match');
-		}
-		if (rpcError.message.includes('cannot be started')) {
-			throw error(
-				409,
-				'Le match ne peut pas être démarré (doit être en phase de compte à rebours)'
-			);
-		}
-
-		throw error(500, 'Erreur lors du démarrage du match');
+		sanitizeRPCError(rpcError, 'start_match');
 	}
 
 	return json(data);

@@ -74,7 +74,8 @@ BEGIN
   FROM public.minesweeper_games
   WHERE id = p_game_id
     AND student_id = auth.uid() -- Must be authenticated and own the game
-    AND status = 'in_progress'; -- Must be in progress
+    AND status = 'in_progress' -- Must be in progress
+  FOR UPDATE; -- CRITICAL: Prevents concurrent completion (race condition protection)
 
   IF NOT FOUND THEN
     RAISE EXCEPTION 'Game not found, not owned by you, or already completed';
@@ -204,13 +205,14 @@ DECLARE
   v_hint_cost INTEGER := 10; -- Cost per hint in gidouilles (configurable constant)
   v_current_gidouilles INTEGER;
 BEGIN
-  -- Step 1: Get game info and validate ownership
+  -- Step 1: Get game info and validate ownership WITH ROW LOCK
   SELECT student_id, hints_used
   INTO v_student_id, v_hints_used
   FROM public.minesweeper_games
   WHERE id = p_game_id
     AND status = 'in_progress'
-    AND student_id = auth.uid(); -- Must be authenticated and own the game
+    AND student_id = auth.uid() -- Must be authenticated and own the game
+  FOR UPDATE; -- CRITICAL: Prevents concurrent hint usage (race condition protection)
 
   IF NOT FOUND THEN
     RAISE EXCEPTION 'Game not found, not owned by you, or not in progress';
@@ -221,10 +223,11 @@ BEGIN
     RAISE EXCEPTION 'Maximum hints reached (3 per game)';
   END IF;
 
-  -- Step 3: Check student has enough gidouilles
+  -- Step 3: Check student has enough gidouilles WITH ROW LOCK
   SELECT gidouilles INTO v_current_gidouilles
   FROM public.profiles
-  WHERE id = v_student_id;
+  WHERE id = v_student_id
+  FOR UPDATE; -- CRITICAL: Prevents negative balance race condition
 
   IF v_current_gidouilles < v_hint_cost THEN
     RAISE EXCEPTION 'Insufficient gidouilles (cost: % gidouilles, you have: %)', v_hint_cost, v_current_gidouilles;
