@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { minesweeperStore } from '$lib/stores/minesweeper.svelte';
 	import { Card } from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
@@ -7,28 +7,71 @@
 	import MinesweeperBoard from '$lib/components/game/minesweeper/MinesweeperBoard.svelte';
 	import GameControls from '$lib/components/game/minesweeper/GameControls.svelte';
 	import DifficultySelector from '$lib/components/game/minesweeper/DifficultySelector.svelte';
+	import SavedGameInfo from '$lib/components/game/minesweeper/SavedGameInfo.svelte';
 	import PremiumBanner from '$lib/components/game/minesweeper/PremiumBanner.svelte';
 	import AchievementToast from '$lib/components/game/minesweeper/AchievementToast.svelte';
 	import type { PageData } from './$types';
+	import type { GameState, Difficulty } from '$lib/types/minesweeper';
 
 	let { data }: { data: PageData } = $props();
 
 	// Game state
 	let gameStarted = $state(false);
-	let selectedDifficulty = $state<'beginner' | 'intermediate' | 'expert'>('beginner');
+	let selectedDifficulty = $state<Difficulty>('beginner');
+	let savedGame = $state<GameState | null>(null);
+	let isLoadingSavedGame = $state(false);
 
-	// Initialize store on mount
-	$effect(() => {
-		if (data.isAuthenticated && data.user && data.profile) {
-			// We'll initialize with supabase when needed in component
-			gameStarted = false;
+	// Initialize store and load saved game on mount
+	onMount(async () => {
+		if (data.isAuthenticated && data.user && data.profile && data.supabase) {
+			// Initialize store with Supabase client
+			minesweeperStore.init(data.supabase, data.profile);
+
+			// Try to load saved game
+			isLoadingSavedGame = true;
+			try {
+				await minesweeperStore.loadSavedGame();
+				// Check if a saved game was loaded
+				if (
+					minesweeperStore.currentGame &&
+					minesweeperStore.currentGame.status === 'in_progress'
+				) {
+					savedGame = minesweeperStore.currentGame;
+					// Reset the current game so we stay on menu
+					minesweeperStore.currentGame = null;
+				}
+			} catch (error) {
+				console.error('Failed to load saved game:', error);
+			} finally {
+				isLoadingSavedGame = false;
+			}
+		} else {
+			// Initialize store for public users (no Supabase)
+			minesweeperStore.init(null, null);
+
+			// Try to load from localStorage
+			isLoadingSavedGame = true;
+			try {
+				await minesweeperStore.loadSavedGame();
+				if (
+					minesweeperStore.currentGame &&
+					minesweeperStore.currentGame.status === 'in_progress'
+				) {
+					savedGame = minesweeperStore.currentGame;
+					// Reset the current game so we stay on menu
+					minesweeperStore.currentGame = null;
+				}
+			} catch (error) {
+				console.error('Failed to load saved game from localStorage:', error);
+			} finally {
+				isLoadingSavedGame = false;
+			}
 		}
 	});
 
-	// Handle difficulty selection
-	function handleDifficultySelect(difficulty: 'beginner' | 'intermediate' | 'expert') {
+	// Handle difficulty selection (just update the selected difficulty)
+	function handleDifficultySelect(difficulty: Difficulty) {
 		selectedDifficulty = difficulty;
-		startNewGame();
 	}
 
 	// Start a new game
@@ -37,15 +80,19 @@
 		await minesweeperStore.startNewGame(selectedDifficulty);
 	}
 
-	// Resume saved game (for authenticated users)
-	async function resumeGame() {
-		gameStarted = true;
-		await minesweeperStore.loadSavedGame();
+	// Continue saved game
+	function continueGame() {
+		if (savedGame) {
+			gameStarted = true;
+			minesweeperStore.currentGame = savedGame;
+			savedGame = null;
+		}
 	}
 
 	// Return to menu
 	function backToMenu() {
 		gameStarted = false;
+		savedGame = null;
 		minesweeperStore.cleanup();
 	}
 
@@ -150,43 +197,63 @@
 				</div>
 
 				<Card class="space-y-6 p-8">
-					<div>
-						<h2 class="mb-4 text-xl font-semibold text-foreground">Choisir la difficulté</h2>
-						<DifficultySelector
-							selected={selectedDifficulty}
-							onChange={handleDifficultySelect}
-							disabled={minesweeperStore.isLoading}
-						/>
+					<!-- Difficulty selector with cards -->
+					<DifficultySelector
+						selected={selectedDifficulty}
+						onSelect={handleDifficultySelect}
+						disabled={minesweeperStore.isLoading || isLoadingSavedGame}
+					/>
+
+					<Separator />
+
+					<!-- Game launch section -->
+					<div class="space-y-4">
+						<h3 class="text-sm font-medium text-foreground">Lancer une partie</h3>
+
+						<!-- Saved game info (if exists) -->
+						{#if savedGame}
+							<SavedGameInfo {savedGame} />
+						{/if}
+
+						<!-- Launch buttons -->
+						<div class="flex flex-col gap-3 sm:flex-row">
+							<!-- New game button (always visible) -->
+							<Button
+								onclick={startNewGame}
+								class="flex-1"
+								disabled={minesweeperStore.isLoading || isLoadingSavedGame}
+							>
+								{#if minesweeperStore.isLoading}
+									Création...
+								{:else}
+									Nouvelle partie
+								{/if}
+							</Button>
+
+							<!-- Continue game button (only if saved game exists) -->
+							{#if savedGame}
+								<Button
+									onclick={continueGame}
+									variant="secondary"
+									class="flex-1"
+									disabled={minesweeperStore.isLoading || isLoadingSavedGame}
+								>
+									{#if isLoadingSavedGame}
+										Chargement...
+									{:else}
+										Continuer la partie
+									{/if}
+								</Button>
+							{/if}
+						</div>
 					</div>
 
 					{#if data.isAuthenticated}
-						<div>
-							<Separator />
-							<div class="mt-6 border-t pt-6">
-								<h3 class="mb-3 text-sm font-semibold text-foreground">Continuer une partie</h3>
-								<Button
-									onclick={resumeGame}
-									variant="outline"
-									class="w-full"
-									disabled={minesweeperStore.isLoading}
-								>
-									{#if minesweeperStore.isLoading}
-										Chargement...
-									{:else}
-										Charger la partie sauvegardée
-									{/if}
-								</Button>
-								<p class="mt-2 text-xs text-muted-foreground">
-									Reprendre votre dernière partie en cours
-								</p>
-							</div>
-						</div>
-
 						<!-- Links to stats, achievements, and leaderboard -->
 						<div>
 							<Separator />
-							<div class="mt-6 space-y-2 border-t pt-6">
-								<h3 class="mb-3 text-sm font-semibold text-foreground">Mes statistiques</h3>
+							<div class="space-y-2 pt-6">
+								<h3 class="mb-3 text-sm font-medium text-foreground">Mes statistiques</h3>
 								<a href="/dashboard/student/minesweeper/stats" class="block">
 									<Button variant="outline" class="w-full justify-start">
 										<span class="mr-2">📊</span>
