@@ -202,7 +202,9 @@ AS $$
 DECLARE
   v_student_id UUID;
   v_hints_used INTEGER;
-  v_hint_cost INTEGER := 10; -- Cost per hint in gidouilles (configurable constant)
+  -- Cost per hint in gidouilles (configurable constant)
+  -- IMPORTANT: Keep in sync with UI display (HintButton.svelte) and docs
+  v_hint_cost INTEGER := 10;
   v_current_gidouilles INTEGER;
 BEGIN
   -- Step 1: Get game info and validate ownership WITH ROW LOCK

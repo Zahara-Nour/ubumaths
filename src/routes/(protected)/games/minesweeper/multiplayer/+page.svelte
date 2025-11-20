@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { minesweeperStore } from '$lib/stores/minesweeper.svelte';
 	import { multiplayerStore } from '$lib/stores/multiplayer.svelte';

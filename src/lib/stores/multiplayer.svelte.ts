@@ -97,6 +97,7 @@ class MultiplayerStore {
 	private userId = $state<string | null>(null);
 	private channel = $state<RealtimeChannel | null>(null);
 	private pollInterval = $state<ReturnType<typeof setInterval> | null>(null);
+	private pollAbortController = $state<AbortController | null>(null); // Abort controller for queue polling
 	private pollErrorCount = $state(0); // Track consecutive polling errors
 
 	// Queue state
@@ -430,14 +431,26 @@ class MultiplayerStore {
 	private startPolling() {
 		this.stopPolling();
 		this.pollErrorCount = 0; // Reset error count
+		this.pollAbortController = new AbortController();
 
 		this.pollInterval = setInterval(async () => {
+			// Check if we're still in queue before processing (race condition protection)
+			if (!this.queue.inQueue) {
+				this.stopPolling();
+				return;
+			}
+
 			try {
-				const response = await fetch('/api/games/minesweeper/multiplayer/match-status');
+				const response = await fetch('/api/games/minesweeper/multiplayer/match-status', {
+					signal: this.pollAbortController?.signal
+				});
 
 				if (!response.ok) return;
 
 				const rawData = await response.json();
+
+				// Double-check still in queue after async operation (race condition protection)
+				if (!this.queue.inQueue) return;
 
 				// Validate response
 				const validation = matchFoundResponseSchema.safeParse(rawData);
@@ -477,6 +490,9 @@ class MultiplayerStore {
 					});
 				}
 			} catch (err) {
+				// Ignore AbortError (expected when leaving queue)
+				if (err instanceof Error && err.name === 'AbortError') return;
+
 				this.pollErrorCount++;
 				console.error(`Polling error (${this.pollErrorCount}/${this.QUEUE_POLL_MAX_ERRORS}):`, err);
 
@@ -493,6 +509,12 @@ class MultiplayerStore {
 	 * Stop polling for match status
 	 */
 	private stopPolling() {
+		// Abort any in-flight fetch requests
+		if (this.pollAbortController) {
+			this.pollAbortController.abort();
+			this.pollAbortController = null;
+		}
+		// Clear the interval
 		if (this.pollInterval) {
 			clearInterval(this.pollInterval);
 			this.pollInterval = null;
