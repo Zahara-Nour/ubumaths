@@ -81,12 +81,26 @@ export const startGameSchema = z.object({
 });
 
 /**
+ * Base grid state schema for initial validation
+ * This provides structural validation before difficulty-specific validation
+ * ✅ SECURITY: Prevents malformed payloads from reaching database
+ */
+const gridStateBaseSchema = z.object({
+	rows: z.number().int().positive().max(100),
+	cols: z.number().int().positive().max(100),
+	mines: z.array(z.tuple([z.number().int(), z.number().int()])).max(999),
+	revealed: z.array(z.tuple([z.number().int(), z.number().int()])).max(10000),
+	flagged: z.array(z.tuple([z.number().int(), z.number().int()])).max(999),
+	adjacentCounts: z.record(z.string().regex(/^\d+,\d+$/), z.number().int().min(0).max(8))
+});
+
+/**
  * PUT /api/games/minesweeper/[id]
  * Save game progress (auto-save during gameplay)
- * Note: grid_state validation happens in endpoint after fetching difficulty
+ * Note: Basic validation here, difficulty-specific validation happens in endpoint
  */
 export const saveGameSchema = z.object({
-	grid_state: z.any(), // Will be validated in endpoint after fetching difficulty
+	grid_state: gridStateBaseSchema, // ✅ Proper validation (was z.any())
 	flags_used: z.number().int().min(0).max(200),
 	cells_revealed: z.number().int().min(0).max(10000)
 });
@@ -95,8 +109,8 @@ export const saveGameSchema = z.object({
  * POST /api/games/minesweeper/[id]/complete
  * POST /api/games/minesweeper/[id]/loss
  * Complete a game (win or loss) - calls SECURITY DEFINER RPC
- * Note: grid_state validation happens in endpoint after fetching difficulty
+ * Note: Basic validation here, difficulty-specific validation happens in endpoint
  */
 export const completeGameSchema = z.object({
-	grid_state: z.any() // Will be validated in endpoint after fetching difficulty
+	grid_state: gridStateBaseSchema // ✅ Proper validation (was z.any())
 });
