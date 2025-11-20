@@ -1162,16 +1162,26 @@ class MinesweeperStore {
 			if (this.user && this.supabase && game.id) {
 				// Save to database for authenticated users
 				const gridState = this.gridToDTO(game.grid);
+
+				// Build update payload (exclude time_seconds - it's server-controlled)
+				// The complete_minesweeper_game() function sets time_seconds when game ends
+				const updatePayload: {
+					grid_state: Json;
+					status: DatabaseGameStatus;
+					flags_used: number;
+					cells_revealed: number;
+					hints_used: number;
+				} = {
+					grid_state: gridState as unknown as Json,
+					status: this.toDbStatus(game.status),
+					flags_used: game.flagsUsed,
+					cells_revealed: game.cellsRevealed,
+					hints_used: game.hintsUsed || 0
+				};
+
 				const { error } = await this.supabase
 					.from('minesweeper_games')
-					.update({
-						grid_state: gridState as unknown as Json,
-						status: this.toDbStatus(game.status),
-						time_seconds: game.timeElapsed,
-						flags_used: game.flagsUsed,
-						cells_revealed: game.cellsRevealed,
-						hints_used: game.hintsUsed || 0
-					})
+					.update(updatePayload)
 					.eq('id', game.id);
 
 				if (error) {
