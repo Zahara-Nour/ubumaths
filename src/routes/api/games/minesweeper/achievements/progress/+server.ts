@@ -1,6 +1,7 @@
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
+import { sanitizePostgresError } from '$lib/server/utils/error-handler';
 import { createLogger } from '$lib/utils/logger';
 
 const logger = createLogger('minesweeper-achievement-progress-api');
@@ -79,8 +80,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.order('difficulty', { ascending: true, nullsFirst: true });
 
 		if (fetchError) {
-			logger.error('Error fetching achievement progress:', fetchError);
-			throw error(500, 'Erreur lors de la récupération de la progression des achievements');
+			sanitizePostgresError(fetchError, 'MINESWEEPER_ACHIEVEMENT_PROGRESS');
 		}
 
 		// Return all achievements with unlock status
@@ -88,12 +88,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 			achievements: progress || []
 		});
 	} catch (err) {
-		// Re-throw SvelteKit errors
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-
-		logger.error('Error in achievement progress endpoint:', err);
-		throw error(500, 'Erreur serveur lors de la récupération de la progression');
+		sanitizePostgresError(err, 'MINESWEEPER_ACHIEVEMENT_PROGRESS');
 	}
 };

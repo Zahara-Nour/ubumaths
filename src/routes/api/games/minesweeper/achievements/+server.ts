@@ -1,6 +1,7 @@
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
+import { sanitizePostgresError } from '$lib/server/utils/error-handler';
 import { createLogger } from '$lib/utils/logger';
 
 const logger = createLogger('minesweeper-achievements-api');
@@ -66,8 +67,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.order('unlocked_at', { ascending: false });
 
 		if (fetchError) {
-			logger.error('Error fetching achievements:', fetchError);
-			throw error(500, 'Erreur lors de la récupération des achievements');
+			sanitizePostgresError(fetchError, 'MINESWEEPER_ACHIEVEMENTS');
 		}
 
 		// Transform nested structure to flat format
@@ -103,12 +103,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 			}
 		});
 	} catch (err) {
-		// Re-throw SvelteKit errors
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-
-		logger.error('Error in achievements endpoint:', err);
-		throw error(500, 'Erreur serveur lors de la récupération des achievements');
+		sanitizePostgresError(err, 'MINESWEEPER_ACHIEVEMENTS');
 	}
 };

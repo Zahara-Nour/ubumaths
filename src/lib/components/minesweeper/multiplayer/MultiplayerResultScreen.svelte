@@ -64,7 +64,9 @@
 
 	let eloChangeColor = $derived.by(() => {
 		if (!result) return '';
-		return result.eloChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+		return result.eloChange >= 0
+			? 'text-green-600 dark:text-green-400'
+			: 'text-red-600 dark:text-red-400';
 	});
 </script>
 
@@ -91,7 +93,9 @@
 			<div class="mb-4 text-center text-sm text-muted-foreground">
 				<p>{difficultyLabel} • {matchTypeLabel} {formattedTime ? `• ${formattedTime}` : ''}</p>
 				{#if !isWinner && !isDraw && result.opponentName}
-					<p class="mt-1">Victoire de: <strong class="text-foreground">{result.opponentName}</strong></p>
+					<p class="mt-1">
+						Victoire de: <strong class="text-foreground">{result.opponentName}</strong>
+					</p>
 				{/if}
 			</div>
 

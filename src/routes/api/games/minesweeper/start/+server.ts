@@ -2,6 +2,7 @@ import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { startGameSchema } from '$lib/server/validation/minesweeper';
+import { sanitizePostgresError } from '$lib/server/utils/error-handler';
 
 /**
  * Difficulty configurations for Minesweeper game
@@ -81,8 +82,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.select()
 			.single();
 
-		if (createError || !game) {
-			console.error('Error creating game:', createError);
+		if (createError) {
+			sanitizePostgresError(createError, 'MINESWEEPER_START');
+		}
+
+		if (!game) {
 			throw error(500, 'Erreur lors de la création de la partie');
 		}
 
@@ -97,7 +101,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		});
 	} catch (err) {
-		console.error('Error in start game endpoint:', err);
-		throw error(500, 'Erreur serveur lors de la création de la partie');
+		sanitizePostgresError(err, 'MINESWEEPER_START');
 	}
 };

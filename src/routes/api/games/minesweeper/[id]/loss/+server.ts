@@ -2,6 +2,7 @@ import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { completeGameSchema, validateGridState } from '$lib/server/validation/minesweeper';
+import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
 
 /**
  * Record Minesweeper game loss
@@ -86,33 +87,11 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		});
 
 		if (rpcError) {
-			console.error('RPC error recording loss:', rpcError);
-
-			// Handle specific RPC errors
-			if (rpcError.message?.includes('not found')) {
-				throw error(404, 'Partie non trouvée');
-			}
-			if (rpcError.message?.includes('not owned')) {
-				throw error(403, 'Cette partie ne vous appartient pas');
-			}
-			if (rpcError.message?.includes('already completed')) {
-				throw error(400, 'Cette partie est déjà terminée');
-			}
-			if (rpcError.message?.includes('not in progress')) {
-				throw error(400, "Cette partie n'est pas en cours");
-			}
-
-			throw error(500, "Erreur lors de l'enregistrement de la défaite");
+			sanitizeRPCError(rpcError, 'record_minesweeper_loss');
 		}
 
 		return json({ success: true });
 	} catch (err) {
-		// Re-throw SvelteKit errors
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-
-		console.error('Error in loss game endpoint:', err);
-		throw error(500, "Erreur serveur lors de l'enregistrement de la défaite");
+		sanitizePostgresError(err, 'MINESWEEPER_LOSS');
 	}
 };

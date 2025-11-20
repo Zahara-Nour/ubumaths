@@ -2,6 +2,7 @@ import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { completeGameSchema, validateGridState } from '$lib/server/validation/minesweeper';
+import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
 
 /**
  * Type for the complete_minesweeper_game RPC response
@@ -116,23 +117,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			.single();
 
 		if (rpcError) {
-			console.error('RPC error completing game:', rpcError);
-
-			// Handle specific RPC errors
-			if (rpcError.message?.includes('not found')) {
-				throw error(404, 'Partie non trouvée');
-			}
-			if (rpcError.message?.includes('not owned')) {
-				throw error(403, 'Cette partie ne vous appartient pas');
-			}
-			if (rpcError.message?.includes('already completed')) {
-				throw error(400, 'Cette partie est déjà terminée');
-			}
-			if (rpcError.message?.includes('not in progress')) {
-				throw error(400, "Cette partie n'est pas en cours");
-			}
-
-			throw error(500, 'Erreur lors de la finalisation de la partie');
+			sanitizeRPCError(rpcError, 'complete_minesweeper_game');
 		}
 
 		if (!data) {
@@ -150,12 +135,6 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			achievements: response.achievements || []
 		});
 	} catch (err) {
-		// Re-throw SvelteKit errors
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-
-		console.error('Error in complete game endpoint:', err);
-		throw error(500, 'Erreur serveur lors de la finalisation de la partie');
+		sanitizePostgresError(err, 'MINESWEEPER_COMPLETE');
 	}
 };

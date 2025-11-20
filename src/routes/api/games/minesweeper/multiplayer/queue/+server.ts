@@ -8,6 +8,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { joinQueueSchema } from '$lib/server/validation/minesweeper-multiplayer';
 import { requireRole } from '$lib/server/middleware/auth';
+import { sanitizeRPCError } from '$lib/server/utils/error-handler';
 
 /**
  * POST /api/games/minesweeper/multiplayer/queue
@@ -57,28 +58,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('join_multiplayer_queue RPC error:', {
-			userId: user.id,
-			difficulty,
-			match_type,
-			error: rpcError
-		});
-
-		// Handle specific errors with French messages
-		if (rpcError.message.includes('Already in queue')) {
-			throw error(409, "Vous êtes déjà dans la file d'attente");
-		}
-		if (rpcError.message.includes('Already in active match')) {
-			throw error(409, 'Vous avez déjà un match en cours');
-		}
-		if (rpcError.message.includes('Invalid difficulty')) {
-			throw error(400, 'Difficulté invalide');
-		}
-		if (rpcError.message.includes('Invalid match_type')) {
-			throw error(400, 'Type de match invalide');
-		}
-
-		throw error(500, 'Erreur lors de la recherche de match');
+		sanitizeRPCError(rpcError, 'join_multiplayer_queue');
 	}
 
 	return json(data);
@@ -100,11 +80,7 @@ export const DELETE: RequestHandler = async ({ locals }) => {
 	const { data, error: rpcError } = await locals.supabase.rpc('leave_multiplayer_queue');
 
 	if (rpcError) {
-		console.error('leave_multiplayer_queue RPC error:', {
-			userId: user.id,
-			error: rpcError
-		});
-		throw error(500, "Erreur lors de l'annulation");
+		sanitizeRPCError(rpcError, 'leave_multiplayer_queue');
 	}
 
 	return json(data);

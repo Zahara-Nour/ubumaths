@@ -2,6 +2,7 @@ import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
+import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
 
 /**
  * Type definition for use_hint RPC function return value
@@ -84,32 +85,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 			.single();
 
 		if (rpcError) {
-			console.error('RPC error using hint:', rpcError);
-
-			// Handle specific RPC errors with appropriate HTTP status codes
-			const errorMessage = rpcError.message?.toLowerCase() || '';
-
-			// Game not found or not in correct state
-			if (
-				errorMessage.includes('not found') ||
-				errorMessage.includes('not in progress') ||
-				errorMessage.includes('game not found')
-			) {
-				throw error(404, 'Partie non trouvée ou déjà terminée');
-			}
-
-			// Maximum hints reached
-			if (errorMessage.includes('maximum hints') || errorMessage.includes('hints reached')) {
-				throw error(400, "Limite d'indices atteinte (3 maximum par partie)");
-			}
-
-			// Insufficient gidouilles
-			if (errorMessage.includes('insufficient') || errorMessage.includes('gidouilles')) {
-				throw error(400, 'Gidouilles insuffisantes (coût : 10 gidouilles par indice)');
-			}
-
-			// Generic RPC error
-			throw error(500, "Erreur lors de l'utilisation de l'indice");
+			sanitizeRPCError(rpcError, 'use_hint');
 		}
 
 		if (!data) {
@@ -129,13 +105,6 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 			penalty_notice: result.penalty_notice
 		});
 	} catch (err) {
-		// Re-throw SvelteKit errors (already formatted with proper status codes)
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-
-		// Log unexpected errors
-		console.error('Unexpected error in hint endpoint:', err);
-		throw error(500, "Erreur serveur lors de l'utilisation de l'indice");
+		sanitizePostgresError(err, 'MINESWEEPER_HINT');
 	}
 };

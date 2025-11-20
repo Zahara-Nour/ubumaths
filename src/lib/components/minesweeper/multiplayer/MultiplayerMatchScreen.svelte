@@ -6,7 +6,6 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { multiplayerStore } from '$lib/stores/multiplayer.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { cn } from '$lib/utils';
 
 	// Props
 	let {
@@ -54,7 +53,8 @@
 	});
 
 	let statusMessage = $derived.by(() => {
-		if (isCountdown) return `La partie commence dans ${countdown} seconde${countdown > 1 ? 's' : ''}...`;
+		if (isCountdown)
+			return `La partie commence dans ${countdown} seconde${countdown > 1 ? 's' : ''}...`;
 		if (isInProgress) return 'En cours';
 		if (isCompleted) return 'Partie terminée';
 		if (isAbandoned) return 'Partie abandonnée';
@@ -78,8 +78,8 @@
 			if (onMatchComplete) {
 				onMatchComplete();
 			}
-		} catch (err) {
-			toaster.error('Erreur lors de l\'abandon de la partie');
+		} catch (_err) {
+			toaster.error("Erreur lors de l'abandon de la partie");
 		}
 	}
 
@@ -151,7 +151,7 @@
 		{#if isCountdown && countdown > 0}
 			<Card className="bg-primary/5 p-8">
 				<div class="text-center">
-					<div class="mb-4 text-7xl font-bold text-primary animate-pulse">{countdown}</div>
+					<div class="mb-4 animate-pulse text-7xl font-bold text-primary">{countdown}</div>
 					<p class="text-lg text-muted-foreground">Préparez-vous...</p>
 				</div>
 			</Card>

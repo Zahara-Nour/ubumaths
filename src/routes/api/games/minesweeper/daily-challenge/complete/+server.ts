@@ -2,6 +2,7 @@ import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { completeDailyChallengeSchema } from '$lib/server/validation/minesweeper-daily';
+import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
 import { createLogger } from '$lib/utils/logger';
 
 const logger = createLogger('minesweeper-daily-complete-api');
@@ -88,51 +89,38 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (rpcError) {
-			logger.error('RPC error recording daily challenge attempt:', rpcError);
-
-			// Handle specific RPC errors
-			if (rpcError.message?.includes('Challenge not found')) {
-				throw error(404, 'Défi quotidien non trouvé');
-			}
-			if (rpcError.message?.includes('already attempted')) {
-				throw error(409, "Vous avez déjà tenté ce défi aujourd'hui");
-			}
-			if (rpcError.message?.includes('Invalid grid state')) {
-				throw error(400, 'État de grille invalide');
-			}
-			if (rpcError.message?.includes('Invalid difficulty')) {
-				throw error(400, 'Difficulté invalide');
-			}
-			if (rpcError.message?.includes('Grid validation failed')) {
-				throw error(400, 'Validation de la grille échouée - triche détectée');
-			}
-
-			throw error(500, "Erreur lors de l'enregistrement de la tentative");
+			sanitizeRPCError(rpcError, 'record_daily_challenge_attempt');
 		}
 
 		if (!data) {
 			throw error(500, "Aucune donnée retournée par la fonction d'enregistrement");
 		}
 
+		// Type assertion for RPC return value
+		const typedData = data as {
+			id: string;
+			challenge_id: string;
+			student_id: string;
+			time_seconds: number;
+			status: string;
+			gidouilles_earned: number;
+			rank: number;
+			completed_at: string;
+		};
+
 		return json({
 			attempt: {
-				id: data.id,
-				challenge_id: data.challenge_id,
-				student_id: data.student_id,
-				time_seconds: data.time_seconds,
-				status: data.status,
-				gidouilles_earned: data.gidouilles_earned,
-				rank: data.rank,
-				completed_at: data.completed_at
+				id: typedData.id,
+				challenge_id: typedData.challenge_id,
+				student_id: typedData.student_id,
+				time_seconds: typedData.time_seconds,
+				status: typedData.status,
+				gidouilles_earned: typedData.gidouilles_earned,
+				rank: typedData.rank,
+				completed_at: typedData.completed_at
 			}
 		});
 	} catch (err) {
-		// Re-throw SvelteKit errors
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-
-		logger.error('Error in daily challenge complete endpoint:', err);
-		throw error(500, "Erreur serveur lors de l'enregistrement de la tentative");
+		sanitizePostgresError(err, 'MINESWEEPER_DAILY_COMPLETE');
 	}
 };

@@ -114,25 +114,21 @@
 		const success = await multiplayerStore.completeMatch(gameState.timeElapsed, {
 			rows: gameState.rows,
 			cols: gameState.cols,
-			mines: gameState.grid
-				.flatMap((row, r) =>
-					row.filter((cell) => cell.isMine).map((cell) => [r, cell.col] as [number, number])
-				),
-			revealed: gameState.grid
-				.flatMap((row, r) =>
-					row.filter((cell) => cell.isRevealed).map((cell) => [r, cell.col] as [number, number])
-				),
-			flagged: gameState.grid
-				.flatMap((row, r) =>
-					row.filter((cell) => cell.isFlagged).map((cell) => [r, cell.col] as [number, number])
-				),
+			mines: gameState.grid.flatMap((row, r) =>
+				row.filter((cell) => cell.isMine).map((cell) => [r, cell.col] as [number, number])
+			),
+			revealed: gameState.grid.flatMap((row, r) =>
+				row.filter((cell) => cell.isRevealed).map((cell) => [r, cell.col] as [number, number])
+			),
+			flagged: gameState.grid.flatMap((row, r) =>
+				row.filter((cell) => cell.isFlagged).map((cell) => [r, cell.col] as [number, number])
+			),
 			adjacentCounts: Object.fromEntries(
-				gameState.grid
-					.flatMap((row, r) =>
-						row
-							.filter((cell) => !cell.isMine && cell.adjacentMines > 0)
-							.map((cell) => [`${r},${cell.col}`, cell.adjacentMines])
-					)
+				gameState.grid.flatMap((row, r) =>
+					row
+						.filter((cell) => !cell.isMine && cell.adjacentMines > 0)
+						.map((cell) => [`${r},${cell.col}`, cell.adjacentMines])
+				)
 			)
 		});
 
@@ -281,10 +277,12 @@
 			<!-- Game Stats -->
 			<div class="mt-4 flex justify-center gap-4 text-sm text-muted-foreground">
 				<div>
-					<span class="font-semibold">Mines:</span> {gameState.minesCount}
+					<span class="font-semibold">Mines:</span>
+					{gameState.minesCount}
 				</div>
 				<div>
-					<span class="font-semibold">Drapeaux:</span> {gameState.flagsUsed}/{gameState.minesCount}
+					<span class="font-semibold">Drapeaux:</span>
+					{gameState.flagsUsed}/{gameState.minesCount}
 				</div>
 				<div>
 					<span class="font-semibold">Cellules révélées:</span>

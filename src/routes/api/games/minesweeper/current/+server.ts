@@ -1,6 +1,7 @@
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
+import { sanitizePostgresError } from '$lib/server/utils/error-handler';
 
 /**
  * Load current in-progress Minesweeper game
@@ -49,19 +50,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.maybeSingle();
 
 		if (fetchError) {
-			console.error('Error fetching current game:', fetchError);
-			throw error(500, 'Erreur lors de la récupération de la partie');
+			sanitizePostgresError(fetchError, 'MINESWEEPER_CURRENT');
 		}
 
 		// Return game or null if none found
 		return json({ game: game || null });
 	} catch (err) {
-		// Re-throw SvelteKit errors
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-
-		console.error('Error in current game endpoint:', err);
-		throw error(500, 'Erreur serveur lors de la récupération de la partie');
+		sanitizePostgresError(err, 'MINESWEEPER_CURRENT');
 	}
 };

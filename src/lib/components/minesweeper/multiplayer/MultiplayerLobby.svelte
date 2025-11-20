@@ -40,7 +40,7 @@
 	let statusText = $derived.by(() => {
 		switch (queueStatus) {
 			case 'searching':
-				return 'En attente d\'un adversaire...';
+				return "En attente d'un adversaire...";
 			case 'found':
 				return 'Adversaire trouvé!';
 			case 'error':
@@ -54,16 +54,16 @@
 	async function handleJoinQueue() {
 		try {
 			await multiplayerStore.joinQueue(selectedDifficulty, selectedMatchType);
-		} catch (err) {
-			toaster.error('Impossible de rejoindre la file d\'attente');
+		} catch (_err) {
+			toaster.error("Impossible de rejoindre la file d'attente");
 		}
 	}
 
 	async function handleLeaveQueue() {
 		try {
 			await multiplayerStore.leaveQueue();
-			toaster.info('Vous avez quitté la file d\'attente');
-		} catch (err) {
+			toaster.info("Vous avez quitté la file d'attente");
+		} catch (_err) {
 			toaster.error('Erreur lors de la sortie de la file');
 		}
 	}
@@ -138,10 +138,7 @@
 		<!-- Queue Status -->
 		{#if inQueue}
 			<div
-				class={cn(
-					'rounded-lg p-4 text-center',
-					hasError ? 'bg-destructive/10' : 'bg-primary/10'
-				)}
+				class={cn('rounded-lg p-4 text-center', hasError ? 'bg-destructive/10' : 'bg-primary/10')}
 			>
 				<!-- Status Icon & Text -->
 				<div class="mb-2 flex items-center justify-center gap-2">
@@ -152,12 +149,7 @@
 					{:else if queueStatus === 'found'}
 						<span class="text-xl">✅</span>
 					{/if}
-					<p
-						class={cn(
-							'font-semibold',
-							hasError ? 'text-destructive' : 'text-foreground'
-						)}
-					>
+					<p class={cn('font-semibold', hasError ? 'text-destructive' : 'text-foreground')}>
 						{statusText}
 					</p>
 				</div>
