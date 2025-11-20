@@ -216,7 +216,7 @@ BEGIN
     WHERE id = v_game_record.student_id;
 
     -- Step 8: Insert into gidouilles_history for audit trail
-    -- Use student's first active class for history tracking
+    -- Use student's first class for history tracking (ordered by join date)
     INSERT INTO public.gidouilles_history (
       student_id,
       class_id,
@@ -236,7 +236,6 @@ BEGIN
       v_game_record.student_id
     FROM public.class_members cm
     WHERE cm.student_id = v_game_record.student_id
-      AND cm.status = 'active'
     ORDER BY cm.joined_at ASC
     LIMIT 1;
 
