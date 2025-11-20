@@ -6,14 +6,24 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import Tile2048 from './Tile2048.svelte';
 	import { initializeBoard, move } from './game-logic';
-	import type { GameState, Direction } from './types';
+	import type { GameState, Direction, GameMode } from './types';
 	import confetti from 'canvas-confetti';
 	import { browser } from '$app/environment';
 
+	// Game mode options
+	const modeOptions = [
+		{ value: 'classic', label: 'Classique (Puissances de 2)' },
+		{ value: 'multiplication', label: 'Tables de Multiplication' },
+		{ value: 'equations', label: 'Équations Simples' },
+		{ value: 'fractions', label: 'Fractions' }
+	];
+
 	// State management with Svelte 5 runes
-	let gameState = $state<GameState>(initializeBoard());
+	let selectedMode = $state<GameMode>('classic');
+	let gameState = $state<GameState>(initializeBoard(selectedMode));
 	let bestScore = $state(browser ? parseInt(localStorage.getItem('2048-best-score') || '0') : 0);
 	let showEducationalHints = $state(true);
 	let showGameOverDialog = $state(false);
@@ -54,10 +64,17 @@
 	 * Starts a new game
 	 */
 	function startNewGame() {
-		gameState = initializeBoard();
+		gameState = initializeBoard(selectedMode);
 		showGameOverDialog = false;
 		showVictoryDialog = false;
 		victoryCelebrated = false;
+	}
+
+	/**
+	 * Handles mode change - starts a new game with the selected mode
+	 */
+	function handleModeChange() {
+		startNewGame();
 	}
 
 	/**
@@ -214,10 +231,23 @@
 			<Button onclick={startNewGame} variant="default">Nouvelle Partie</Button>
 		</div>
 
-		<!-- Educational Hints Toggle -->
-		<div class="flex items-center gap-2">
-			<MyCheckbox bind:checked={showEducationalHints} label="Afficher les puissances" />
+		<!-- Mode Selector -->
+		<div class="mb-4">
+			<label class="mb-2 block text-sm font-semibold">Mode de Jeu</label>
+			<MySelect
+				type="single"
+				bind:value={selectedMode}
+				items={modeOptions}
+				onValueChange={handleModeChange}
+			/>
 		</div>
+
+		<!-- Educational Hints Toggle (only for classic mode) -->
+		{#if selectedMode === 'classic'}
+			<div class="flex items-center gap-2">
+				<MyCheckbox bind:checked={showEducationalHints} label="Afficher les puissances" />
+			</div>
+		{/if}
 	</div>
 
 	<!-- Game Board -->

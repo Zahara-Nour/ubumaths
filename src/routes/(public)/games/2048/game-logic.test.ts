@@ -336,7 +336,8 @@ describe('2048 Game Logic', () => {
 				score: 0,
 				gameOver: false,
 				won: false,
-				canUndo: false
+				canUndo: false,
+				mode: 'classic' as const
 			};
 
 			const newState = move(state, 'left');
@@ -364,7 +365,8 @@ describe('2048 Game Logic', () => {
 				score: 0,
 				gameOver: false,
 				won: false,
-				canUndo: false
+				canUndo: false,
+				mode: 'classic' as const
 			};
 
 			const newState = move(state, 'left');
@@ -382,7 +384,8 @@ describe('2048 Game Logic', () => {
 				score: 0,
 				gameOver: false,
 				won: false,
-				canUndo: false
+				canUndo: false,
+				mode: 'classic' as const
 			};
 
 			const newState = move(state, 'left');

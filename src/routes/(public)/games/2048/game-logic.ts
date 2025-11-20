@@ -3,8 +3,9 @@
  * All functions are pure (no side effects, no mutations)
  */
 
-import type { GameBoard, GameState, Tile, Direction, Position } from './types';
+import type { GameBoard, GameState, Tile, Direction, Position, GameMode } from './types';
 import { generateTileId } from './game-utils';
+import { generateEducationalTile, getWinningValue } from './educational-modes';
 
 const BOARD_SIZE = 4;
 const WIN_TILE_VALUE = 2048;
@@ -38,11 +39,11 @@ export function getEmptyCells(board: GameBoard): Position[] {
 
 /**
  * Adds a random tile to an empty cell on the board
- * 90% chance of value 2, 10% chance of value 4
  * @param board - Current game board
+ * @param mode - Game mode (determines tile generation)
  * @returns New board with added tile (or same board if no empty cells)
  */
-export function addRandomTile(board: GameBoard): GameBoard {
+export function addRandomTile(board: GameBoard, mode: GameMode = 'classic'): GameBoard {
 	const emptyCells = getEmptyCells(board);
 
 	if (emptyCells.length === 0) {
@@ -53,15 +54,16 @@ export function addRandomTile(board: GameBoard): GameBoard {
 	const randomIndex = Math.floor(Math.random() * emptyCells.length);
 	const position = emptyCells[randomIndex];
 
-	// 90% chance of 2, 10% chance of 4
-	const value = Math.random() < 0.9 ? 2 : 4;
+	// Generate tile based on mode
+	const tileConfig = generateEducationalTile(mode);
 
 	// Create new tile
 	const newTile: Tile = {
 		id: generateTileId(),
-		value,
+		value: tileConfig.value,
 		position,
-		isNew: true
+		isNew: true,
+		displayValue: mode !== 'classic' ? tileConfig.displayValue : undefined
 	};
 
 	// Create new board with the tile added
@@ -73,15 +75,16 @@ export function addRandomTile(board: GameBoard): GameBoard {
 
 /**
  * Initializes a new game with 2 random tiles
+ * @param mode - Game mode (default: classic)
  * @returns Initial game state
  */
-export function initializeBoard(): GameState {
+export function initializeBoard(mode: GameMode = 'classic'): GameState {
 	let board = createEmptyBoard();
 
 	// Add first tile
-	board = addRandomTile(board);
+	board = addRandomTile(board, mode);
 	// Add second tile
-	board = addRandomTile(board);
+	board = addRandomTile(board, mode);
 
 	// Reset isNew flag for initial tiles (no animation needed)
 	board = board.map((row) => row.map((tile) => (tile ? { ...tile, isNew: false } : null)));
@@ -91,7 +94,8 @@ export function initializeBoard(): GameState {
 		score: 0,
 		gameOver: false,
 		won: false,
-		canUndo: false
+		canUndo: false,
+		mode
 	};
 }
 
@@ -239,15 +243,17 @@ function moveLeft(board: GameBoard): { board: GameBoard; scoreGain: number; chan
 }
 
 /**
- * Checks if the game is won (any tile has value 2048)
+ * Checks if the game is won
  * @param board - Current board
+ * @param mode - Game mode (determines winning value)
  * @returns True if won
  */
-export function isGameWon(board: GameBoard): boolean {
+export function isGameWon(board: GameBoard, mode: GameMode = 'classic'): boolean {
+	const winningValue = getWinningValue(mode);
 	for (let row = 0; row < BOARD_SIZE; row++) {
 		for (let col = 0; col < BOARD_SIZE; col++) {
 			const tile = board[row][col];
-			if (tile && tile.value >= WIN_TILE_VALUE) {
+			if (tile && tile.value >= winningValue) {
 				return true;
 			}
 		}
@@ -348,7 +354,7 @@ export function move(state: GameState, direction: Direction): GameState {
 	}
 
 	// Add random tile
-	finalBoard = addRandomTile(finalBoard);
+	finalBoard = addRandomTile(finalBoard, state.mode);
 
 	// Clear isNew flag from previous tiles
 	finalBoard = finalBoard.map((row) =>
@@ -357,7 +363,7 @@ export function move(state: GameState, direction: Direction): GameState {
 
 	// Update game state
 	const newScore = state.score + scoreGain;
-	const won = state.won || isGameWon(finalBoard);
+	const won = state.won || isGameWon(finalBoard, state.mode);
 	const gameOver = isGameOver(finalBoard);
 
 	return {
@@ -365,6 +371,7 @@ export function move(state: GameState, direction: Direction): GameState {
 		score: newScore,
 		gameOver,
 		won,
-		canUndo: true
+		canUndo: true,
+		mode: state.mode
 	};
 }

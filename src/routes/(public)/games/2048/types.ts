@@ -3,6 +3,11 @@
  */
 
 /**
+ * Game mode - determines tile generation and merge rules
+ */
+export type GameMode = 'classic' | 'multiplication' | 'equations' | 'fractions';
+
+/**
  * Position on the game board (0-indexed)
  */
 export interface Position {
@@ -16,7 +21,7 @@ export interface Position {
 export interface Tile {
 	/** Unique identifier for animation tracking */
 	id: string;
-	/** Tile value (always a power of 2: 2, 4, 8, 16, ..., 2048) */
+	/** Tile value (classic: powers of 2, educational modes: calculated value) */
 	value: number;
 	/** Current position on the board */
 	position: Position;
@@ -24,6 +29,8 @@ export interface Tile {
 	isNew: boolean;
 	/** IDs of tiles that merged to create this tile (for merge animation) */
 	mergedFrom?: string[];
+	/** Display value for educational modes (e.g., "2×3", "x+5", "1/2") */
+	displayValue?: string;
 }
 
 /**
@@ -51,6 +58,8 @@ export interface GameState {
 	won: boolean;
 	/** Whether undo is available */
 	canUndo: boolean;
+	/** Current game mode */
+	mode: GameMode;
 }
 
 /**
