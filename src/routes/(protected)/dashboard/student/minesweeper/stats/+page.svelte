@@ -68,7 +68,7 @@
 		<h2 class="mb-4 text-xl font-semibold text-foreground">Vue d'ensemble</h2>
 		<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 			{#each data.statistics as stats (stats.difficulty)}
-				<GameStats {stats} />
+				<GameStats {...stats} />
 			{/each}
 		</div>
 	</div>
