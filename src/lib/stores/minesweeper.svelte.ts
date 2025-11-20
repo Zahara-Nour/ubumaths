@@ -8,7 +8,8 @@ import type {
 	CellState,
 	DifficultyConfig,
 	Difficulty,
-	GameStatus
+	GameStatus,
+	DatabaseGameStatus
 } from '$lib/types/minesweeper';
 import { DIFFICULTY_CONFIGS } from '$lib/types/minesweeper';
 import { SvelteSet } from 'svelte/reactivity';
@@ -204,6 +205,30 @@ class MinesweeperStore {
 	}
 
 	/**
+	 * Convert client GameStatus to DatabaseGameStatus
+	 * Used when persisting to database
+	 *
+	 * @param status - Client-side game status
+	 * @returns Database-compatible status
+	 * @throws Error if status is invalid
+	 */
+	private toDbStatus(status: GameStatus): DatabaseGameStatus {
+		// 'not_started' is client-only UX state
+		// Database uses 'in_progress' for games that haven't finished
+		if (status === 'not_started') {
+			return 'in_progress';
+		}
+
+		// Validate against allowed database values
+		if (status !== 'in_progress' && status !== 'won' && status !== 'lost') {
+			logger.error('Invalid database status:', status);
+			throw new Error(`Invalid database status: ${status}`);
+		}
+
+		return status;
+	}
+
+	/**
 	 * Start a new game
 	 *
 	 * @param difficulty - Game difficulty level
@@ -251,9 +276,9 @@ class MinesweeperStore {
 					.insert({
 						student_id: this.user.id,
 						difficulty,
-						status: 'not_started',
+						status: this.toDbStatus('in_progress'), // ✅ FIX: Database only accepts 'in_progress'|'won'|'lost'
 						grid_state: gridState as unknown as Json,
-						time_seconds: 0,
+						time_seconds: null, // ✅ FIX: NULL instead of 0 for in-progress games
 						mines_count: config.mines
 					})
 					.select('id')
@@ -1141,7 +1166,7 @@ class MinesweeperStore {
 					.from('minesweeper_games')
 					.update({
 						grid_state: gridState as unknown as Json,
-						status: game.status,
+						status: this.toDbStatus(game.status),
 						time_seconds: game.timeElapsed,
 						flags_used: game.flagsUsed,
 						cells_revealed: game.cellsRevealed,

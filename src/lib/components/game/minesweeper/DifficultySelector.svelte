@@ -68,10 +68,10 @@
 			<button
 				type="button"
 				onclick={() => handleSelect(diff.value)}
-				disabled={disabled}
+				{disabled}
 				class={cn(
 					'group relative overflow-hidden rounded-lg border-2 p-4 text-left transition-all',
-					'hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+					'hover:shadow-md focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none',
 					'disabled:cursor-not-allowed disabled:opacity-50',
 					isSelected
 						? `${diff.borderColor} ${diff.bgColor} shadow-md`
@@ -104,7 +104,7 @@
 				<!-- Selected indicator -->
 				{#if isSelected}
 					<div
-						class="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground"
+						class="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground"
 					>
 						✓
 					</div>

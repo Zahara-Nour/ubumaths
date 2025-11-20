@@ -8,9 +8,16 @@
 export type Difficulty = 'beginner' | 'intermediate' | 'expert';
 
 /**
- * Game status values
+ * Database-only status values (CHECK constraint: only these 3 are allowed)
+ * Note: Client-side uses 'not_started' for UX, but database uses 'in_progress' for persistence
  */
-export type GameStatus = 'not_started' | 'in_progress' | 'won' | 'lost';
+export type DatabaseGameStatus = 'in_progress' | 'won' | 'lost';
+
+/**
+ * Client-side status includes 'not_started' for UX flow
+ * Conversion: 'not_started' (client) → 'in_progress' (database)
+ */
+export type GameStatus = 'not_started' | DatabaseGameStatus;
 
 export interface CellState {
 	row: number;

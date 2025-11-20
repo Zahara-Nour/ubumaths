@@ -32,10 +32,7 @@
 			try {
 				await minesweeperStore.loadSavedGame();
 				// Check if a saved game was loaded
-				if (
-					minesweeperStore.currentGame &&
-					minesweeperStore.currentGame.status === 'in_progress'
-				) {
+				if (minesweeperStore.currentGame && minesweeperStore.currentGame.status === 'in_progress') {
 					savedGame = minesweeperStore.currentGame;
 					// Reset the current game so we stay on menu
 					minesweeperStore.currentGame = null;
@@ -53,10 +50,7 @@
 			isLoadingSavedGame = true;
 			try {
 				await minesweeperStore.loadSavedGame();
-				if (
-					minesweeperStore.currentGame &&
-					minesweeperStore.currentGame.status === 'in_progress'
-				) {
+				if (minesweeperStore.currentGame && minesweeperStore.currentGame.status === 'in_progress') {
 					savedGame = minesweeperStore.currentGame;
 					// Reset the current game so we stay on menu
 					minesweeperStore.currentGame = null;
