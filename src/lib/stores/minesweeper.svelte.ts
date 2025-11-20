@@ -891,17 +891,20 @@ class MinesweeperStore {
 				this.changedCells.add(`${neighbor.row},${neighbor.col}`);
 				hitMine = true;
 			} else {
-				// Safe cell - reveal it
-				neighborCell.isRevealed = true;
-				game.cellsRevealed++;
-				// ⚡ OPT-4: Track revealed cell
-				this.revealedArray.push([neighbor.row, neighbor.col]);
-				// ⚡ OPT-5: Track changed cell
-				this.changedCells.add(`${neighbor.row},${neighbor.col}`);
+				// Safe cell - reveal it (only if not already revealed by previous cascade)
+				// ✅ FIX: Prevent double-counting if cascade from previous neighbor already revealed this cell
+				if (!neighborCell.isRevealed) {
+					neighborCell.isRevealed = true;
+					game.cellsRevealed++;
+					// ⚡ OPT-4: Track revealed cell
+					this.revealedArray.push([neighbor.row, neighbor.col]);
+					// ⚡ OPT-5: Track changed cell
+					this.changedCells.add(`${neighbor.row},${neighbor.col}`);
 
-				// Cascade if empty
-				if (neighborCell.adjacentMines === 0) {
-					this.cascadeReveal(neighbor.row, neighbor.col);
+					// Cascade if empty
+					if (neighborCell.adjacentMines === 0) {
+						this.cascadeReveal(neighbor.row, neighbor.col);
+					}
 				}
 			}
 		}
@@ -992,17 +995,20 @@ class MinesweeperStore {
 			const selectedCell = safeCells[randomIndex];
 			const cell = game.grid[selectedCell.row][selectedCell.col];
 
-			// Reveal the cell
-			cell.isRevealed = true;
-			game.cellsRevealed++;
-			// ⚡ OPT-4: Track revealed cell
-			this.revealedArray.push([selectedCell.row, selectedCell.col]);
-			// ⚡ OPT-5: Track changed cell
-			this.changedCells.add(`${selectedCell.row},${selectedCell.col}`);
+			// Reveal the cell (defensive check in case it was already revealed)
+			// ✅ FIX: Prevent double-counting if cell was somehow revealed between selection and now
+			if (!cell.isRevealed) {
+				cell.isRevealed = true;
+				game.cellsRevealed++;
+				// ⚡ OPT-4: Track revealed cell
+				this.revealedArray.push([selectedCell.row, selectedCell.col]);
+				// ⚡ OPT-5: Track changed cell
+				this.changedCells.add(`${selectedCell.row},${selectedCell.col}`);
 
-			// Cascade reveal if it's an empty cell
-			if (cell.adjacentMines === 0) {
-				this.cascadeReveal(selectedCell.row, selectedCell.col);
+				// Cascade reveal if it's an empty cell
+				if (cell.adjacentMines === 0) {
+					this.cascadeReveal(selectedCell.row, selectedCell.col);
+				}
 			}
 
 			// Increment hints counter
