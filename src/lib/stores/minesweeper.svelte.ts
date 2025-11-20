@@ -1289,6 +1289,12 @@ class MinesweeperStore {
 
 		const game = this.currentGame;
 
+		// Guard: Prevent double-completion
+		if (game.status !== 'in_progress') {
+			logger.warn('Attempted to complete non-active game:', { status: game.status });
+			return;
+		}
+
 		// Stop timers
 		this.stopTimer();
 		this.stopAutoSave();
@@ -1298,43 +1304,62 @@ class MinesweeperStore {
 
 		try {
 			if (this.user && this.supabase && game.id) {
-				// Call RPC to complete game and calculate rewards
 				const gridState = this.gridToDTO(game.grid);
-				const { data, error } = await this.supabase.rpc('complete_minesweeper_game', {
-					p_game_id: game.id,
-					p_grid_state: gridState as unknown as Json
-				});
 
-				if (error) {
-					throw error;
-				}
+				if (won) {
+					// WIN: Call SECURITY DEFINER RPC to validate grid, calculate rewards, and update achievements
+					const { data, error } = await this.supabase.rpc('complete_minesweeper_game', {
+						p_game_id: game.id,
+						p_grid_state: gridState as unknown as Json
+					});
 
-				// Show reward notification and handle achievements
-				if (won && data && typeof data === 'object' && 'gidouilles_earned' in data) {
-					const response = data as {
-						gidouilles_earned: number;
-						achievements?: UnlockedAchievement[];
-					};
-					const gidouilles = response.gidouilles_earned;
-
-					// Store newly unlocked achievements for toast display
-					if (response.achievements && response.achievements.length > 0) {
-						this.newlyUnlockedAchievements = response.achievements;
-						logger.info('Unlocked achievements:', response.achievements);
+					if (error) {
+						throw error;
 					}
 
-					if (gidouilles > 0) {
-						toaster.success(`Victoire ! +${gidouilles} gidouilles 🎉`);
-					} else {
-						toaster.success('Victoire ! 🎉');
+					// Show reward notification and handle achievements
+					if (data && typeof data === 'object' && 'gidouilles_earned' in data) {
+						const response = data as {
+							gidouilles_earned: number;
+							achievements?: UnlockedAchievement[];
+						};
+						const gidouilles = response.gidouilles_earned;
+
+						// Store newly unlocked achievements for toast display
+						if (response.achievements && response.achievements.length > 0) {
+							this.newlyUnlockedAchievements = response.achievements;
+							logger.info('Unlocked achievements:', response.achievements);
+						}
+
+						if (gidouilles > 0) {
+							toaster.success(`Victoire ! +${gidouilles} gidouilles 🎉`);
+						} else {
+							toaster.success('Victoire ! 🎉');
+						}
 					}
-				} else if (!won) {
+
+					logger.info('Game completed (win):', { gameId: game.id });
+				} else {
+					// LOSS: Call SECURITY DEFINER RPC to record loss with server-side time calculation
+					// RPC handles: ownership verification, server-side time calculation, grid validation, audit trail
+					const { data, error } = await this.supabase.rpc('record_minesweeper_loss', {
+						p_game_id: game.id,
+						p_grid_state: gridState as unknown as Json
+					});
+
+					if (error) {
+						throw error;
+					}
+
 					// Reveal all mines on loss
 					this.revealAllMines();
 					toaster.error('Défaite ! Réessayez 💥');
-				}
 
-				logger.info('Game completed:', { won, gameId: game.id });
+					logger.info('Game completed (loss):', {
+						gameId: game.id,
+						success: Array.isArray(data) && data[0]?.success
+					});
+				}
 			} else {
 				// Public user - just show message
 				if (won) {
@@ -1357,12 +1382,22 @@ class MinesweeperStore {
 			logger.error('Failed to complete game:', err);
 			this.error = message;
 
-			// Still show result to user
-			if (won) {
-				toaster.success('Victoire ! 🎉');
+			// Show error toast for authenticated users (database save failed)
+			if (this.user && this.supabase && game.id) {
+				toaster.error('Erreur lors de la sauvegarde. Vérifiez votre connexion.');
+
+				// Still update UI to show result (but user knows it wasn't saved)
+				if (!won) {
+					this.revealAllMines();
+				}
 			} else {
-				this.revealAllMines();
-				toaster.error('Défaite ! Réessayez 💥');
+				// Public user - no save expected, show result normally
+				if (won) {
+					toaster.success('Victoire ! 🎉');
+				} else {
+					this.revealAllMines();
+					toaster.error('Défaite ! Réessayez 💥');
+				}
 			}
 		}
 
