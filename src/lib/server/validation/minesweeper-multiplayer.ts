@@ -100,6 +100,7 @@ export const realtimeStateUpdateSchema = z.object({
 /**
  * Schema for completing a multiplayer match
  * Validates completion time and grid state for server-side win verification
+ * Bounds match actual difficulty configs: Beginner (9×9, 10 mines), Intermediate (16×16, 40 mines), Expert (16×30, 99 mines)
  */
 export const completeMatchSchema = z.object({
 	time_seconds: z
@@ -108,23 +109,42 @@ export const completeMatchSchema = z.object({
 		.min(10, 'Le temps minimum est de 10 secondes')
 		.max(7200, 'Le temps maximum est de 2 heures'),
 	grid_state: z.object({
-		rows: z.number().int().min(1).max(50),
-		cols: z.number().int().min(1).max(50),
+		// Beginner: 9×9, Intermediate: 16×16, Expert: 16×30
+		rows: z.number().int().min(9).max(16), // Min: Beginner 9, Max: Expert 16
+		cols: z.number().int().min(9).max(30), // Min: Beginner 9, Max: Expert 30
 		mines: z
 			.array(
 				z.tuple([
-					z.number().int().min(0).max(49), // Row bounds (0-49 covers all difficulties)
-					z.number().int().min(0).max(49) // Col bounds
+					z.number().int().min(0).max(15), // Max row index for Expert (16-1)
+					z.number().int().min(0).max(29) // Max col index for Expert (30-1)
 				])
 			)
-			.max(999, 'Trop de mines'), // Max possible mines (expert has 99, allow margin)
+			.min(10, 'Pas assez de mines') // Min: Beginner 10
+			.max(99, 'Trop de mines'), // Max: Expert 99
 		revealed: z
-			.array(z.tuple([z.number().int().min(0).max(49), z.number().int().min(0).max(49)]))
-			.max(2500, 'Trop de cellules révélées'), // Max 50x50 grid cells
+			.array(
+				z.tuple([
+					z.number().int().min(0).max(15), // Max row index for Expert
+					z.number().int().min(0).max(29) // Max col index for Expert
+				])
+			)
+			.max(480, 'Trop de cellules révélées'), // Max cells: Expert 16×30 = 480
 		flagged: z
-			.array(z.tuple([z.number().int().min(0).max(49), z.number().int().min(0).max(49)]))
-			.max(999, 'Trop de drapeaux'), // Max flags (match mines limit)
-		adjacentCounts: z.record(z.string(), z.number().int().min(0).max(8)) // Max 2500 keys (validated server-side)
+			.array(
+				z.tuple([
+					z.number().int().min(0).max(15), // Max row index for Expert
+					z.number().int().min(0).max(29) // Max col index for Expert
+				])
+			)
+			.max(99, 'Trop de drapeaux'), // Max flags matches max mines (Expert)
+		adjacentCounts: z
+			.record(
+				z.string().regex(/^\d{1,2},\d{1,2}$/, 'Format invalide pour les coordonnées'), // Match "row,col" with max 2 digits
+				z.number().int().min(0).max(8) // Adjacent mine count (max 8)
+			)
+			.refine((obj) => Object.keys(obj).length <= 480, {
+				message: 'Trop de comptes adjacents (max 480 pour Expert 16×30)'
+			}) // DoS protection: max cells
 	})
 });
 

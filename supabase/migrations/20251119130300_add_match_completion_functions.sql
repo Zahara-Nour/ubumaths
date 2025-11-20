@@ -61,7 +61,7 @@ BEGIN
   -- Get authenticated student ID
   v_student_id := auth.uid();
   IF v_student_id IS NULL THEN
-    RAISE EXCEPTION 'Non authentifié';
+    RAISE EXCEPTION 'Not authenticated';
   END IF;
 
   -- Fetch match details WITH LOCK to prevent race condition
@@ -71,27 +71,27 @@ BEGIN
   FOR UPDATE;  -- CRITICAL: Locks row until transaction completes
 
   IF NOT FOUND THEN
-    RAISE EXCEPTION 'Match introuvable';
+    RAISE EXCEPTION 'Match not found';
   END IF;
 
   -- Verify player is a participant
   IF v_match.player1_id != v_student_id AND v_match.player2_id != v_student_id THEN
-    RAISE EXCEPTION 'Vous ne participez pas à ce match';
+    RAISE EXCEPTION 'You are not a participant in this match';
   END IF;
 
   -- Verify match is in progress
   IF v_match.status != 'in_progress' THEN
-    RAISE EXCEPTION 'Le match n''est pas en cours (status: %)', v_match.status;
+    RAISE EXCEPTION 'Match not in correct state (status: %)', v_match.status;
   END IF;
 
   -- Verify match hasn't already been completed
   IF v_match.winner_id IS NOT NULL THEN
-    RAISE EXCEPTION 'Le match est déjà terminé';
+    RAISE EXCEPTION 'Match already completed';
   END IF;
 
   -- Validate time bounds (min 10s, max 2 hours)
   IF p_time_seconds < 10 OR p_time_seconds > 7200 THEN
-    RAISE EXCEPTION 'Temps invalide: %s secondes', p_time_seconds;
+    RAISE EXCEPTION 'Invalid time: %s seconds', p_time_seconds;
   END IF;
 
   -- Get current season (needed for ELO queries)
@@ -109,7 +109,7 @@ BEGIN
       v_match.difficulty
     )
   ) THEN
-    RAISE EXCEPTION 'La grille soumise n''est pas une victoire valide';
+    RAISE EXCEPTION 'Invalid grid state: does not represent a valid win';
   END IF;
 
   -- Determine opponent
@@ -310,7 +310,7 @@ BEGIN
   -- Get authenticated student ID
   v_student_id := auth.uid();
   IF v_student_id IS NULL THEN
-    RAISE EXCEPTION 'Non authentifié';
+    RAISE EXCEPTION 'Not authenticated';
   END IF;
 
   -- Fetch match details WITH LOCK to prevent race condition
@@ -320,17 +320,17 @@ BEGIN
   FOR UPDATE;  -- CRITICAL: Locks row until transaction completes
 
   IF NOT FOUND THEN
-    RAISE EXCEPTION 'Match introuvable';
+    RAISE EXCEPTION 'Match not found';
   END IF;
 
   -- Verify player is a participant
   IF v_match.player1_id != v_student_id AND v_match.player2_id != v_student_id THEN
-    RAISE EXCEPTION 'Vous ne participez pas à ce match';
+    RAISE EXCEPTION 'You are not a participant in this match';
   END IF;
 
   -- Verify match can be abandoned (in_progress or countdown)
   IF v_match.status NOT IN ('in_progress', 'countdown') THEN
-    RAISE EXCEPTION 'Le match ne peut pas être abandonné (status: %)', v_match.status;
+    RAISE EXCEPTION 'Match not in correct state for abandonment (status: %)', v_match.status;
   END IF;
 
   -- Determine opponent
