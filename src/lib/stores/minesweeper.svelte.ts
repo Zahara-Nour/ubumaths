@@ -470,12 +470,23 @@ class MinesweeperStore {
 	 * @throws Error if DTO is invalid (defense in depth)
 	 */
 	private gridToDTO(grid: CellState[][]): import('$lib/types/minesweeper').GridStateDTO {
-		// ⚡ OPT-4: Use pre-maintained arrays instead of grid traversal
+		// ✅ FIX: Rebuild revealed array from grid (source of truth) to eliminate duplicates
+		// This prevents validation failures caused by duplicate entries in revealedArray
+		const revealed: [number, number][] = [];
+		for (let row = 0; row < grid.length; row++) {
+			for (let col = 0; col < grid[row].length; col++) {
+				if (grid[row][col].isRevealed && !grid[row][col].isMine) {
+					revealed.push([row, col]);
+				}
+			}
+		}
+
+		// ⚡ OPT-4: Use pre-maintained arrays for mines, flagged, adjacentCounts (less critical)
 		const dto = {
 			rows: grid.length,
 			cols: grid[0]?.length || 0,
 			mines: this.minesArray,
-			revealed: this.revealedArray,
+			revealed, // ✅ Use rebuilt array from grid
 			flagged: this.flaggedArray,
 			adjacentCounts: this.adjacentCountsMap
 		};
