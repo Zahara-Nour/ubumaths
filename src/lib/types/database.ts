@@ -8792,6 +8792,7 @@ export type Database = {
 			calculate_minesweeper_gidouilles: {
 				Args: {
 					p_difficulty: string;
+					p_hints_used?: number;
 					p_student_id: string;
 					p_time_seconds: number;
 				};
@@ -8853,7 +8854,6 @@ export type Database = {
 			complete_minesweeper_game: {
 				Args: { p_game_id: string; p_grid_state: Json };
 				Returns: {
-					achievements: Json;
 					gidouilles_awarded: number;
 					success: boolean;
 					time_seconds: number;

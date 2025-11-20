@@ -53,41 +53,46 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 	const { grid_state, flags_used, cells_revealed } = validation.data;
 
 	try {
-		// ⚡ PERFORMANCE OPTIMIZATION: Atomic UPDATE (single query instead of SELECT + UPDATE)
-		// This reduces latency by 10-20ms per auto-save operation
-		const { data: game, error: updateError } = await locals.supabase
+		// ✅ CRITICAL FIX (C-4): Fetch difficulty BEFORE updating to validate grid_state
+		// This prevents saving invalid data to the database
+		// Trade-off: Adds ~10-20ms latency but ensures data integrity
+		const { data: existingGame, error: fetchError } = await locals.supabase
+			.from('minesweeper_games')
+			.select('id, difficulty, status')
+			.eq('id', params.id)
+			.eq('student_id', user.id) // Explicit ownership check
+			.eq('status', 'in_progress') // Only fetch in-progress games
+			.single();
+
+		if (fetchError || !existingGame) {
+			throw error(404, 'Partie non trouvée ou déjà terminée');
+		}
+
+		// ✅ SECURITY: Pre-update validation (difficulty-specific bounds checking)
+		// This prevents invalid data from ever reaching the database
+		const gridValidation = validateGridState(existingGame.difficulty, grid_state);
+
+		if (!gridValidation.success) {
+			throw error(
+				400,
+				`État de grille invalide pour ${existingGame.difficulty}: ${gridValidation.error.issues[0].message}`
+			);
+		}
+
+		// ✅ DATA INTEGRITY: Now safe to update with validated data
+		const { error: updateError } = await locals.supabase
 			.from('minesweeper_games')
 			.update({
-				grid_state,
+				grid_state: gridValidation.data, // Use validated data
 				flags_used,
 				cells_revealed
 			})
 			.eq('id', params.id)
-			.eq('student_id', user.id) // Explicit ownership check
-			.eq('status', 'in_progress') // Only update in-progress games
-			.select('id, difficulty, status')
-			.single();
+			.eq('student_id', user.id)
+			.eq('status', 'in_progress');
 
 		if (updateError) {
 			sanitizePostgresError(updateError, 'MINESWEEPER_SAVE');
-		}
-
-		// If no row was updated, game doesn't exist, not owned, or already completed
-		if (!game) {
-			throw error(404, 'Partie non trouvée ou déjà terminée');
-		}
-
-		// ✅ SECURITY: Post-update validation (safety check for grid_state consistency)
-		// Note: Basic Zod validation already passed, this validates difficulty-specific bounds
-		const gridValidation = validateGridState(game.difficulty, grid_state);
-
-		if (!gridValidation.success) {
-			// This should rarely happen (only if client sent wrong difficulty data)
-			// Data is already saved, but we inform client of the inconsistency
-			throw error(
-				400,
-				`État de grille invalide pour ${game.difficulty}: ${gridValidation.error.issues[0].message}`
-			);
 		}
 
 		return json({ success: true });
