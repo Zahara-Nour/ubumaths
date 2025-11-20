@@ -1,18 +1,17 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
+import { requireRole } from '$lib/server/middleware/auth';
 import { sanitizeRPCError } from '$lib/server/utils/error-handler';
 
 /**
  * Get today's daily challenge and user's attempt status
  * GET /api/games/minesweeper/daily-challenge
  *
- * Returns today's challenge information and the user's attempt if authenticated.
- * Public endpoint - works for both authenticated and unauthenticated users.
+ * Returns today's challenge information and the authenticated student's attempt.
  *
  * **Security**:
- * - Public endpoint (no authentication required)
- * - If authenticated, returns user's attempt for today
- * - If not authenticated, returns only challenge (userAttempt = null)
+ * - Requires authentication (students only)
+ * - Returns only the authenticated student's attempt for today
  * - RLS policies ensure users only see their own attempts
  *
  * **Response**:
@@ -37,6 +36,9 @@ import { sanitizeRPCError } from '$lib/server/utils/error-handler';
  * ```
  */
 export const GET: RequestHandler = async ({ locals }) => {
+	// ✅ SECURITY: Only students can access minesweeper challenges
+	const { user } = await requireRole(locals, 'student');
+
 	try {
 		// ✅ Get or create today's challenge using RPC function
 		const { data: challengeData, error: rpcError } = await locals.supabase
@@ -83,38 +85,30 @@ export const GET: RequestHandler = async ({ locals }) => {
 			created_at: typedChallenge.created_at
 		};
 
-		// Check if user is authenticated
-		const {
-			data: { user }
-		} = await locals.supabase.auth.getUser();
-
+		// Fetch student's attempt for today's challenge
 		let userAttempt = null;
+		const { data: attemptData, error: attemptError } = await locals.supabase
+			.from('minesweeper_daily_attempts')
+			.select('*')
+			.eq('challenge_id', challenge.id)
+			.eq('student_id', user.id)
+			.maybeSingle();
 
-		// If authenticated, fetch user's attempt for today's challenge
-		if (user) {
-			const { data: attemptData, error: attemptError } = await locals.supabase
-				.from('minesweeper_daily_attempts')
-				.select('*')
-				.eq('challenge_id', challenge.id)
-				.eq('student_id', user.id)
-				.maybeSingle();
-
-			if (attemptError) {
-				// Log error but continue without user attempt (don't fail the entire request)
-				console.error('[MINESWEEPER_DAILY_ATTEMPT]', {
-					error: attemptError,
-					timestamp: new Date().toISOString()
-				});
-			} else if (attemptData) {
-				userAttempt = {
-					id: attemptData.id,
-					time_seconds: attemptData.time_seconds,
-					status: attemptData.status,
-					gidouilles_earned: attemptData.gidouilles_earned,
-					rank: attemptData.rank,
-					completed_at: attemptData.completed_at
-				};
-			}
+		if (attemptError) {
+			// Log error but continue without user attempt (don't fail the entire request)
+			console.error('[MINESWEEPER_DAILY_ATTEMPT]', {
+				error: attemptError,
+				timestamp: new Date().toISOString()
+			});
+		} else if (attemptData) {
+			userAttempt = {
+				id: attemptData.id,
+				time_seconds: attemptData.time_seconds,
+				status: attemptData.status,
+				gidouilles_earned: attemptData.gidouilles_earned,
+				rank: attemptData.rank,
+				completed_at: attemptData.completed_at
+			};
 		}
 
 		return json({

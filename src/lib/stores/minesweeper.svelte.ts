@@ -76,7 +76,7 @@ export interface UnlockedAchievement {
  * - Flag management
  * - Win/loss detection
  * - Timer
- * - Auto-save (localStorage for public, API for authenticated)
+ * - Auto-save (localStorage for public/teachers/admins, API for students)
  *
  * ⚠️ IMPORTANT: Components using this store MUST call cleanup() in onDestroy()
  * to prevent memory leaks from running intervals.
@@ -154,7 +154,7 @@ class MinesweeperStore {
 	private timerInterval: ReturnType<typeof setInterval> | null = null;
 
 	/**
-	 * Auto-save interval for authenticated users (fixed 15s)
+	 * Auto-save interval for students (fixed 15s)
 	 */
 	private autoSaveInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -176,10 +176,19 @@ class MinesweeperStore {
 	private cleanupHandler: (() => void) | null = null;
 
 	/**
+	 * Check if current user should use database storage
+	 * Only students use database. Teachers and admins use localStorage like anonymous users.
+	 * @returns true if user is a student with database access
+	 */
+	private shouldUseDatabase(): boolean {
+		return !!(this.user && this.supabase && this.user.role === 'student');
+	}
+
+	/**
 	 * Initialize the Minesweeper store
 	 *
-	 * @param client - Supabase client instance (required for authenticated users)
-	 * @param currentUser - Current authenticated user (null for public users)
+	 * @param client - Supabase client instance (required for authenticated students)
+	 * @param currentUser - Current authenticated user (null for public users, teachers, and admins)
 	 */
 	init(client: SupabaseClient<Database> | null, currentUser: User | null): void {
 		if (!browser) {
@@ -267,14 +276,13 @@ class MinesweeperStore {
 			this.stopTimer();
 			this.stopAutoSave();
 
-			// Save to database if authenticated
-			if (this.user && this.supabase) {
+			// Save to database if student
+			if (this.shouldUseDatabase()) {
 				const gridState = this.gridToDTO(newGame.grid);
 				const config = DIFFICULTY_CONFIGS[difficulty];
-				const { data, error } = await this.supabase
-					.from('minesweeper_games')
+				const { data, error } = await this.supabase!.from('minesweeper_games')
 					.insert({
-						student_id: this.user.id,
+						student_id: this.user!.id,
 						difficulty,
 						status: this.toDbStatus('in_progress'), // ✅ FIX: Database only accepts 'in_progress'|'won'|'lost'
 						grid_state: gridState as unknown as Json,
@@ -292,7 +300,7 @@ class MinesweeperStore {
 
 				logger.info('Created new game in database:', data.id);
 			} else {
-				// Save to localStorage for public users
+				// Save to localStorage for public users, teachers, and admins
 				this.saveToLocalStorage(newGame);
 				logger.info('Created new game in localStorage');
 			}
@@ -621,8 +629,8 @@ class MinesweeperStore {
 			game.startedAt = new Date();
 			this.startTimer();
 
-			// Start auto-save for authenticated users
-			if (this.user && this.supabase && game.id) {
+			// Start auto-save for students
+			if (this.shouldUseDatabase() && game.id) {
 				this.startAutoSave();
 			}
 
@@ -964,9 +972,9 @@ class MinesweeperStore {
 			return;
 		}
 
-		// Must be authenticated to use hints
-		if (!this.user || !this.supabase || !game.id) {
-			toaster.error('Vous devez être connecté pour utiliser les indices');
+		// Must be a student to use hints
+		if (!this.shouldUseDatabase() || !game.id) {
+			toaster.error("Vous devez être connecté en tant qu'élève pour utiliser les indices");
 			return;
 		}
 
@@ -1095,7 +1103,7 @@ class MinesweeperStore {
 	}
 
 	/**
-	 * Start auto-save system for authenticated users
+	 * Start auto-save system for students
 	 *
 	 * ⚡ OPT-3: Hybrid auto-save strategy
 	 * - Fixed interval (15s): Safety net, only saves if isDirty
@@ -1103,7 +1111,7 @@ class MinesweeperStore {
 	 * - Impact: 20% fewer requests, better UX (no data loss)
 	 */
 	private startAutoSave(): void {
-		if (!browser || this.autoSaveInterval || !this.user) {
+		if (!browser || this.autoSaveInterval || !this.shouldUseDatabase()) {
 			return;
 		}
 
@@ -1125,7 +1133,7 @@ class MinesweeperStore {
 	 * ⚡ OPT-3: Saves 5s after last move, OR at 15s interval (whichever comes first)
 	 */
 	private debouncedSave(): void {
-		if (!this.user || !this.supabase) {
+		if (!this.shouldUseDatabase()) {
 			return;
 		}
 
@@ -1184,8 +1192,8 @@ class MinesweeperStore {
 		}
 
 		try {
-			if (this.user && this.supabase && game.id) {
-				// Save to database for authenticated users
+			if (this.shouldUseDatabase() && game.id) {
+				// Save to database for students
 				const gridState = this.gridToDTO(game.grid);
 
 				// Build update payload (exclude time_seconds - it's server-controlled)
@@ -1204,8 +1212,7 @@ class MinesweeperStore {
 					hints_used: game.hintsUsed || 0
 				};
 
-				const { error } = await this.supabase
-					.from('minesweeper_games')
+				const { error } = await this.supabase!.from('minesweeper_games')
 					.update(updatePayload)
 					.eq('id', game.id);
 
@@ -1215,7 +1222,7 @@ class MinesweeperStore {
 
 				logger.trace('Game saved to database');
 			} else {
-				// Save to localStorage for public users
+				// Save to localStorage for public users, teachers, and admins
 				this.saveToLocalStorage(game);
 				logger.trace('Game saved to localStorage');
 			}
@@ -1311,12 +1318,12 @@ class MinesweeperStore {
 		game.status = won ? 'won' : 'lost';
 
 		try {
-			if (this.user && this.supabase && game.id) {
+			if (this.shouldUseDatabase() && game.id) {
 				const gridState = this.gridToDTO(game.grid);
 
 				if (won) {
 					// WIN: Call SECURITY DEFINER RPC to validate grid, calculate rewards, and update achievements
-					const { data, error } = await this.supabase.rpc('complete_minesweeper_game', {
+					const { data, error } = await this.supabase!.rpc('complete_minesweeper_game', {
 						p_game_id: game.id,
 						p_grid_state: gridState as unknown as Json
 					});
@@ -1350,7 +1357,7 @@ class MinesweeperStore {
 				} else {
 					// LOSS: Call SECURITY DEFINER RPC to record loss with server-side time calculation
 					// RPC handles: ownership verification, server-side time calculation, grid validation, audit trail
-					const { data, error } = await this.supabase.rpc('record_minesweeper_loss', {
+					const { data, error } = await this.supabase!.rpc('record_minesweeper_loss', {
 						p_game_id: game.id,
 						p_grid_state: gridState as unknown as Json
 					});
@@ -1390,8 +1397,8 @@ class MinesweeperStore {
 			logger.error('Failed to complete game:', err);
 			this.error = message;
 
-			// Show error toast for authenticated users (database save failed)
-			if (this.user && this.supabase && game.id) {
+			// Show error toast for students (database save failed)
+			if (this.shouldUseDatabase() && game.id) {
 				toaster.error('Erreur lors de la sauvegarde. Vérifiez votre connexion.');
 
 				// Still update UI to show result (but user knows it wasn't saved)
@@ -1399,7 +1406,7 @@ class MinesweeperStore {
 					this.revealAllMines();
 				}
 			} else {
-				// Public user - no save expected, show result normally
+				// Public users, teachers, and admins - no save expected, show result normally
 				if (won) {
 					toaster.success('Victoire ! 🎉');
 				} else {
@@ -1444,12 +1451,11 @@ class MinesweeperStore {
 		this.error = null;
 
 		try {
-			if (this.user && this.supabase) {
-				// Load from database for authenticated users
-				const { data, error } = await this.supabase
-					.from('minesweeper_games')
+			if (this.shouldUseDatabase()) {
+				// Load from database for students
+				const { data, error } = await this.supabase!.from('minesweeper_games')
 					.select('*')
-					.eq('student_id', this.user.id)
+					.eq('student_id', this.user!.id)
 					.eq('status', 'in_progress')
 					.order('created_at', { ascending: false })
 					.limit(1)
@@ -1499,7 +1505,7 @@ class MinesweeperStore {
 
 				logger.info('Loaded saved game from database:', data.id);
 			} else {
-				// Load from localStorage for public users
+				// Load from localStorage for public users, teachers, and admins
 				const game = this.loadFromLocalStorage();
 
 				if (!game) {
