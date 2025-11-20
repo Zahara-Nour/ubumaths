@@ -1,5 +1,6 @@
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
+import { requireRole } from '$lib/server/middleware/auth';
 import { leaderboardQuerySchema } from '$lib/server/validation/minesweeper-daily';
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
 
@@ -11,7 +12,7 @@ import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error
  * Uses the pre-calculated `minesweeper_daily_leaderboard` view for optimal performance.
  *
  * **Security**:
- * - Public endpoint (anyone can view leaderboard)
+ * - Requires authentication (students only)
  * - No sensitive data exposed (only public profile info)
  * - RLS policies ensure data integrity
  *
@@ -43,6 +44,9 @@ import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error
  * ```
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
+	// ✅ SECURITY: Only students can access minesweeper leaderboard
+	const { user } = await requireRole(locals, 'student');
+
 	try {
 		// ✅ SECURITY: Validate query parameters with Zod
 		const queryParams = Object.fromEntries(url.searchParams);
@@ -112,18 +116,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			rank: entry.rank
 		}));
 
-		// Check if user is authenticated and find their position
-		const {
-			data: { user }
-		} = await locals.supabase.auth.getUser();
-
+		// Find authenticated student's position
 		let userPosition: number | null = null;
-
-		if (user) {
-			const userEntry = leaderboard.find((entry) => entry.student_id === user.id);
-			if (userEntry) {
-				userPosition = userEntry.position;
-			}
+		const userEntry = leaderboard.find((entry) => entry.student_id === user.id);
+		if (userEntry) {
+			userPosition = userEntry.position;
 		}
 
 		return json({
