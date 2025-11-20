@@ -75,8 +75,7 @@ describe('Achievement System - Type Definitions', () => {
 		});
 
 		it('should enforce unlock_type enum values at type level', () => {
-			type AllowedUnlockTypes =
-				Database['public']['Tables']['achievements']['Row']['unlock_type'];
+			type AllowedUnlockTypes = Database['public']['Tables']['achievements']['Row']['unlock_type'];
 
 			const validUnlockTypes: AllowedUnlockTypes[] = [
 				'automatic',
@@ -258,8 +257,7 @@ describe('Achievement System - Schema Structure', () => {
 
 		it('student_achievements.student_id references profiles', () => {
 			// Type-level validation: verify Relationships type exists
-			type Relationships =
-				Database['public']['Tables']['student_achievements']['Relationships'];
+			type Relationships = Database['public']['Tables']['student_achievements']['Relationships'];
 
 			// Compile-time check: this will fail if Relationships doesn't have the right shape
 			const _typeCheck: Relationships = [
@@ -277,8 +275,7 @@ describe('Achievement System - Schema Structure', () => {
 		});
 
 		it('student_achievements.achievement_id references achievements', () => {
-			type Relationships =
-				Database['public']['Tables']['student_achievements']['Relationships'];
+			type Relationships = Database['public']['Tables']['student_achievements']['Relationships'];
 
 			const _typeCheck: Relationships = [
 				{
@@ -294,8 +291,7 @@ describe('Achievement System - Schema Structure', () => {
 		});
 
 		it('achievement_progress.student_id references profiles', () => {
-			type Relationships =
-				Database['public']['Tables']['achievement_progress']['Relationships'];
+			type Relationships = Database['public']['Tables']['achievement_progress']['Relationships'];
 
 			const _typeCheck: Relationships = [
 				{
@@ -311,8 +307,7 @@ describe('Achievement System - Schema Structure', () => {
 		});
 
 		it('achievement_progress.achievement_id references achievements', () => {
-			type Relationships =
-				Database['public']['Tables']['achievement_progress']['Relationships'];
+			type Relationships = Database['public']['Tables']['achievement_progress']['Relationships'];
 
 			const _typeCheck: Relationships = [
 				{
@@ -328,8 +323,7 @@ describe('Achievement System - Schema Structure', () => {
 		});
 
 		it('achievement_events.student_id references profiles', () => {
-			type Relationships =
-				Database['public']['Tables']['achievement_events']['Relationships'];
+			type Relationships = Database['public']['Tables']['achievement_events']['Relationships'];
 
 			const _typeCheck: Relationships = [
 				{
@@ -378,8 +372,7 @@ describe('Achievement System - Schema Structure', () => {
 		});
 
 		it('achievement_events.event_data should be JSONB (Json type)', () => {
-			type EventDataType =
-				Database['public']['Tables']['achievement_events']['Row']['event_data'];
+			type EventDataType = Database['public']['Tables']['achievement_events']['Row']['event_data'];
 
 			const eventData: EventDataType = {
 				game_id: 'uuid',
@@ -395,11 +388,11 @@ describe('Achievement System - Schema Structure', () => {
 		it('all tables should have created_at timestamps', () => {
 			type AchievementsCreatedAt =
 				Database['public']['Tables']['achievements']['Row']['created_at'];
-			type StudentAchievementsUnlockedAt =
+			type _StudentAchievementsUnlockedAt =
 				Database['public']['Tables']['student_achievements']['Row']['unlocked_at'];
-			type ProgressStartedAt =
+			type _ProgressStartedAt =
 				Database['public']['Tables']['achievement_progress']['Row']['started_at'];
-			type EventsCreatedAt =
+			type _EventsCreatedAt =
 				Database['public']['Tables']['achievement_events']['Row']['created_at'];
 
 			const timestamp: AchievementsCreatedAt = '2024-01-01T00:00:00Z';
@@ -409,7 +402,7 @@ describe('Achievement System - Schema Structure', () => {
 		it('achievements and achievement_progress should have updated_at', () => {
 			type AchievementsUpdatedAt =
 				Database['public']['Tables']['achievements']['Row']['updated_at'];
-			type ProgressUpdatedAt =
+			type _ProgressUpdatedAt =
 				Database['public']['Tables']['achievement_progress']['Row']['updated_at'];
 
 			const timestamp: AchievementsUpdatedAt = '2024-01-01T00:00:00Z';
@@ -597,12 +590,7 @@ describe('Achievement System - Constraints', () => {
 		it('achievements.unlock_type should only allow specific values', () => {
 			type UnlockType = Database['public']['Tables']['achievements']['Row']['unlock_type'];
 
-			const validUnlockTypes: UnlockType[] = [
-				'automatic',
-				'event_based',
-				'progressive',
-				'manual'
-			];
+			const validUnlockTypes: UnlockType[] = ['automatic', 'event_based', 'progressive', 'manual'];
 
 			validUnlockTypes.forEach((unlockType) => {
 				expect(unlockType).toBeDefined();
