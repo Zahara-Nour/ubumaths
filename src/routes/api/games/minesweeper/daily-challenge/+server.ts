@@ -1,9 +1,6 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
-import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
-import { createLogger } from '$lib/utils/logger';
-
-const logger = createLogger('minesweeper-daily-challenge-api');
+import { sanitizeRPCError } from '$lib/server/utils/error-handler';
 
 /**
  * Get today's daily challenge and user's attempt status
@@ -49,7 +46,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		if (rpcError) {
 			try {
 				sanitizeRPCError(rpcError, 'get_or_create_daily_challenge');
-			} catch (err) {
+			} catch {
 				return json(
 					{
 						error: 'Erreur lors de la récupération du défi quotidien'

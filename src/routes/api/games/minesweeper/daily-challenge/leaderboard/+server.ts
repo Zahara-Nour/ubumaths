@@ -2,9 +2,6 @@ import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { leaderboardQuerySchema } from '$lib/server/validation/minesweeper-daily';
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
-import { createLogger } from '$lib/utils/logger';
-
-const logger = createLogger('minesweeper-daily-leaderboard-api');
 
 /**
  * Get leaderboard for daily challenge

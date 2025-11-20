@@ -3,18 +3,38 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Json } from '$lib/types/database';
 import { createLogger } from '$lib/utils/logger';
 import { toaster } from '$lib/stores/toaster.svelte';
-import type { GameState, CellState, DifficultyConfig } from '$lib/types/minesweeper';
+import type {
+	GameState,
+	CellState,
+	DifficultyConfig,
+	Difficulty,
+	GameStatus
+} from '$lib/types/minesweeper';
 import { DIFFICULTY_CONFIGS } from '$lib/types/minesweeper';
+import { SvelteSet } from 'svelte/reactivity';
 
 const logger = createLogger('minesweeper.svelte.ts');
 
-type Difficulty = 'beginner' | 'intermediate' | 'expert';
-type GameStatus = 'not_started' | 'in_progress' | 'won' | 'lost';
 type User = Database['public']['Tables']['profiles']['Row'];
 
 const AUTOSAVE_INTERVAL = 10000; // 10 seconds
 const TIMER_INTERVAL = 1000; // 1 second
 const LOCALSTORAGE_KEY = 'minesweeper_game';
+
+/**
+ * 8 neighboring cell directions (relative positions)
+ * Used for mine counting and cascade reveal algorithms
+ */
+const NEIGHBOR_DIRECTIONS = [
+	[-1, -1],
+	[-1, 0],
+	[-1, 1],
+	[0, -1],
+	[0, 1],
+	[1, -1],
+	[1, 0],
+	[1, 1]
+] as const;
 
 interface LocalStorageGame {
 	difficulty: Difficulty;
@@ -112,6 +132,11 @@ class MinesweeperStore {
 	private autoSaveInterval: ReturnType<typeof setInterval> | null = null;
 
 	/**
+	 * Cleanup handler for window unload
+	 */
+	private cleanupHandler: (() => void) | null = null;
+
+	/**
 	 * Initialize the Minesweeper store
 	 *
 	 * @param client - Supabase client instance (required for authenticated users)
@@ -125,6 +150,14 @@ class MinesweeperStore {
 
 		this.supabase = client;
 		this.user = currentUser;
+
+		// ✅ MEMORY LEAK PROTECTION: Auto-cleanup on page unload
+		// Prevents intervals from running if components forget to call cleanup()
+		if (!this.cleanupHandler) {
+			this.cleanupHandler = () => this.cleanup();
+			window.addEventListener('beforeunload', this.cleanupHandler);
+			logger.info('Automatic cleanup handler registered');
+		}
 
 		logger.info(
 			'Minesweeper store initialized',
@@ -330,19 +363,15 @@ class MinesweeperStore {
 		const rows = grid.length;
 		const cols = grid[0].length;
 
-		// Check all 8 directions
-		for (let dRow = -1; dRow <= 1; dRow++) {
-			for (let dCol = -1; dCol <= 1; dCol++) {
-				if (dRow === 0 && dCol === 0) continue; // Skip center cell
+		// Check all 8 neighboring cells
+		for (const [dRow, dCol] of NEIGHBOR_DIRECTIONS) {
+			const newRow = row + dRow;
+			const newCol = col + dCol;
 
-				const newRow = row + dRow;
-				const newCol = col + dCol;
-
-				// Check bounds
-				if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
-					if (grid[newRow][newCol].isMine) {
-						count++;
-					}
+			// Check bounds
+			if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+				if (grid[newRow][newCol].isMine) {
+					count++;
 				}
 			}
 		}
@@ -457,11 +486,14 @@ class MinesweeperStore {
 				this.startAutoSave();
 			}
 
-			// Regenerate grid if first click is a mine (shouldn't happen but safety check)
-			// For seeded games (daily challenges), use the same seed to ensure consistency
-			if (cell.isMine) {
+			// ✅ H-3 SECURITY FIX: Disable first-click regeneration for daily challenges
+			// Daily challenges must use pre-determined grids (seeded) for fairness
+			// Regenerating with different first-click positions creates different grids
+			// This allows players to "shop" for easier layouts, violating competitive integrity
+			if (cell.isMine && !game.seed) {
+				// Only regenerate for non-seeded games (regular play)
 				const config = DIFFICULTY_CONFIGS[game.difficulty];
-				game.grid = this.generateGrid(config, row, col, game.seed);
+				game.grid = this.generateGrid(config, row, col);
 				// Get the new cell after regeneration
 				const newCell = game.grid[row][col];
 				if (newCell.isMine) {
@@ -470,6 +502,13 @@ class MinesweeperStore {
 					newCell.isMine = false;
 					newCell.adjacentMines = this.countAdjacentMines(game.grid, row, col);
 				}
+			} else if (cell.isMine && game.seed) {
+				// For seeded games (daily challenges), warn user they clicked a mine on first try
+				// This is fair because all players get the same grid
+				logger.warn('First click on mine in daily challenge - grid cannot be regenerated');
+				toaster.warning(
+					'Attention : Vous avez cliqué sur une mine ! Les défis quotidiens utilisent la même grille pour tous.'
+				);
 			}
 		}
 
@@ -511,7 +550,7 @@ class MinesweeperStore {
 
 		const game = this.currentGame;
 		const queue: { row: number; col: number }[] = [{ row: startRow, col: startCol }];
-		const visited = new Set<string>();
+		const visited = new SvelteSet<string>();
 
 		while (queue.length > 0) {
 			const { row, col } = queue.shift()!;
@@ -541,17 +580,13 @@ class MinesweeperStore {
 			}
 
 			// If empty (0 adjacent mines), add all neighbors to queue
-			for (let dRow = -1; dRow <= 1; dRow++) {
-				for (let dCol = -1; dCol <= 1; dCol++) {
-					if (dRow === 0 && dCol === 0) continue; // Skip center cell
+			for (const [dRow, dCol] of NEIGHBOR_DIRECTIONS) {
+				const newRow = row + dRow;
+				const newCol = col + dCol;
 
-					const newRow = row + dRow;
-					const newCol = col + dCol;
-
-					// Check bounds
-					if (newRow >= 0 && newRow < game.rows && newCol >= 0 && newCol < game.cols) {
-						queue.push({ row: newRow, col: newCol });
-					}
+				// Check bounds
+				if (newRow >= 0 && newRow < game.rows && newCol >= 0 && newCol < game.cols) {
+					queue.push({ row: newRow, col: newCol });
 				}
 			}
 		}
@@ -786,9 +821,23 @@ class MinesweeperStore {
 				`Hint used. Hints remaining: ${3 - game.hintsUsed}. Gidouilles spent: ${result.gidouilles_spent || 10}`
 			);
 		} catch (err) {
-			const message = err instanceof Error ? err.message : "Échec de l'utilisation de l'indice";
+			const rawMessage = err instanceof Error ? err.message : "Échec de l'utilisation de l'indice";
 			logger.error('Failed to use hint:', err);
-			toaster.error(message);
+
+			// Map common API errors to user-friendly messages
+			let userMessage = rawMessage;
+			if (rawMessage.toLowerCase().includes('insufficient') || rawMessage.includes('gidouilles')) {
+				userMessage = 'Gidouilles insuffisantes (10 requis)';
+			} else if (rawMessage.toLowerCase().includes('maximum') || rawMessage.includes('limite')) {
+				userMessage = "Maximum d'indices atteint (3 par partie)";
+			} else if (
+				rawMessage.toLowerCase().includes('not found') ||
+				rawMessage.includes('introuvable')
+			) {
+				userMessage = 'Partie introuvable';
+			}
+
+			toaster.error(userMessage);
 		} finally {
 			this.isLoading = false;
 		}
@@ -1242,6 +1291,8 @@ class MinesweeperStore {
 
 	/**
 	 * Cleanup intervals and state
+	 * ⚠️ IMPORTANT: This is now called automatically on beforeunload,
+	 * but components should still call it in onDestroy() for proper cleanup.
 	 */
 	cleanup(): void {
 		if (!browser) return;
@@ -1251,6 +1302,12 @@ class MinesweeperStore {
 		this.currentGame = null;
 		this.error = null;
 		this.newlyUnlockedAchievements = [];
+
+		// Remove beforeunload listener if exists
+		if (this.cleanupHandler) {
+			window.removeEventListener('beforeunload', this.cleanupHandler);
+			this.cleanupHandler = null;
+		}
 
 		logger.info('Minesweeper store cleaned up');
 	}
