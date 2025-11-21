@@ -11,6 +11,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import { sanitizeRPCError } from '$lib/server/utils/error-handler';
 import type { ShopItemWithStatus } from '$lib/types/shop';
 
 /**
@@ -49,7 +50,63 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 		const itemId = idValidation.data;
 
-		// 3. Fetch the item template
+		// 3. For students, use the optimized RPC that replaces 6 sequential queries
+		if (isStudent) {
+			const { data: rpcResult, error: rpcError } = await supabase.rpc('get_shop_item_detail', {
+				p_student_id: userId,
+				p_template_id: itemId
+			});
+
+			if (rpcError) {
+				sanitizeRPCError(rpcError, 'get_shop_item_detail');
+			}
+
+			// RPC returns JSONB with success flag and error message if not found
+			if (!rpcResult?.success) {
+				const errorMessage = rpcResult?.error ?? 'Article non trouvé';
+				if (errorMessage.includes('non trouvé') || errorMessage.includes('not found')) {
+					throw error(404, 'Article non trouvé');
+				}
+				throw error(400, errorMessage);
+			}
+
+			// Transform RPC response to ShopItemWithStatus format
+			const response: ShopItemWithStatus = {
+				id: rpcResult.id,
+				internal_name: rpcResult.internal_name,
+				display_name: rpcResult.display_name,
+				description: rpcResult.description,
+				category: rpcResult.category,
+				item_type: rpcResult.item_type,
+				rarity: rpcResult.rarity,
+				base_price: rpcResult.base_price,
+				discount_percentage: rpcResult.discount_percentage,
+				icon_url: rpcResult.icon_url,
+				properties: rpcResult.properties,
+				is_active: rpcResult.is_active,
+				available_from: rpcResult.available_from,
+				available_until: rpcResult.available_until,
+				max_owned_per_student: rpcResult.max_owned_per_student,
+				daily_purchase_limit: rpcResult.daily_purchase_limit,
+				weekly_purchase_limit: rpcResult.weekly_purchase_limit,
+				purchase_cooldown_hours: rpcResult.purchase_cooldown_hours,
+				is_tradeable: rpcResult.is_tradeable,
+				trade_cooldown_hours: rpcResult.trade_cooldown_hours,
+				sort_order: rpcResult.sort_order,
+				created_at: rpcResult.created_at,
+				updated_at: rpcResult.updated_at,
+				created_by: rpcResult.created_by,
+				// Computed fields from RPC
+				final_price: rpcResult.final_price,
+				owned_quantity: rpcResult.owned_quantity,
+				can_purchase: rpcResult.can_purchase,
+				purchase_limit_reason: rpcResult.cannot_purchase_reason
+			};
+
+			return json(response);
+		}
+
+		// 4. For non-students, fetch basic template data (they can't purchase anyway)
 		const { data: template, error: templateError } = await supabase
 			.from('shop_item_templates')
 			.select('*')
@@ -64,131 +121,15 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw error(500, "Erreur lors de la récupération de l'article");
 		}
 
-		// 4. Initialize response with base template data
+		// Return template with non-student defaults
 		const response: ShopItemWithStatus = {
 			...template,
 			final_price: Math.floor(template.base_price * (1 - template.discount_percentage / 100)),
 			owned_quantity: 0,
-			can_purchase: !isStudent, // Non-students can't purchase
-			purchase_limit_reason: !isStudent ? 'Réservé aux élèves' : null
+			can_purchase: false,
+			purchase_limit_reason: 'Réservé aux élèves'
 		};
 
-		// 5. For students, get ownership and purchase status
-		if (isStudent) {
-			// Get owned quantity
-			const { data: inventory, error: inventoryError } = await supabase
-				.from('student_item_inventory')
-				.select('quantity')
-				.eq('student_id', userId)
-				.eq('template_id', itemId)
-				.maybeSingle();
-
-			if (inventoryError) {
-				console.error('Error fetching inventory:', inventoryError);
-			} else if (inventory) {
-				response.owned_quantity = inventory.quantity;
-			}
-
-			// Check purchase limits
-			response.can_purchase = template.is_active;
-
-			if (!template.is_active) {
-				response.purchase_limit_reason = "Article non disponible à l'achat";
-			} else if (template.available_from && new Date(template.available_from) > new Date()) {
-				response.purchase_limit_reason = 'Article pas encore disponible';
-			} else if (template.available_until && new Date(template.available_until) < new Date()) {
-				response.purchase_limit_reason = "Article n'est plus disponible";
-			} else if (
-				template.max_owned_per_student &&
-				response.owned_quantity >= template.max_owned_per_student
-			) {
-				response.purchase_limit_reason = `Limite de possession atteinte (max: ${template.max_owned_per_student})`;
-			} else {
-				// Check daily/weekly purchase limits if they exist
-				if (template.daily_purchase_limit || template.weekly_purchase_limit) {
-					const now = new Date();
-					const todayStart = new Date(now);
-					todayStart.setHours(0, 0, 0, 0);
-					const weekStart = new Date(now);
-					weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-					weekStart.setHours(0, 0, 0, 0);
-
-					// Check daily limit
-					if (template.daily_purchase_limit) {
-						const { count: todayCount } = await supabase
-							.from('shop_purchase_history')
-							.select('*', { count: 'exact', head: true })
-							.eq('student_id', userId)
-							.eq('template_id', itemId)
-							.gte('purchased_at', todayStart.toISOString())
-							.is('refunded_at', null);
-
-						if (todayCount && todayCount >= template.daily_purchase_limit) {
-							response.can_purchase = false;
-							response.purchase_limit_reason = `Limite journalière atteinte (max: ${template.daily_purchase_limit})`;
-						}
-					}
-
-					// Check weekly limit
-					if (response.can_purchase && template.weekly_purchase_limit) {
-						const { count: weekCount } = await supabase
-							.from('shop_purchase_history')
-							.select('*', { count: 'exact', head: true })
-							.eq('student_id', userId)
-							.eq('template_id', itemId)
-							.gte('purchased_at', weekStart.toISOString())
-							.is('refunded_at', null);
-
-						if (weekCount && weekCount >= template.weekly_purchase_limit) {
-							response.can_purchase = false;
-							response.purchase_limit_reason = `Limite hebdomadaire atteinte (max: ${template.weekly_purchase_limit})`;
-						}
-					}
-				}
-
-				// Check cooldown if applicable
-				if (response.can_purchase && template.purchase_cooldown_hours) {
-					const { data: lastPurchase, error: lastPurchaseError } = await supabase
-						.from('shop_purchase_history')
-						.select('purchased_at')
-						.eq('student_id', userId)
-						.eq('template_id', itemId)
-						.is('refunded_at', null)
-						.order('purchased_at', { ascending: false })
-						.limit(1)
-						.maybeSingle();
-
-					if (!lastPurchaseError && lastPurchase) {
-						const cooldownEnd = new Date(lastPurchase.purchased_at);
-						cooldownEnd.setHours(cooldownEnd.getHours() + template.purchase_cooldown_hours);
-
-						if (cooldownEnd > new Date()) {
-							response.can_purchase = false;
-							const hoursRemaining = Math.ceil(
-								(cooldownEnd.getTime() - Date.now()) / (1000 * 60 * 60)
-							);
-							response.purchase_limit_reason = `Temps d'attente: ${hoursRemaining}h restantes`;
-						}
-					}
-				}
-
-				// Check gidouilles balance
-				if (response.can_purchase) {
-					const { data: profile } = await supabase
-						.from('profiles')
-						.select('gidouilles')
-						.eq('id', userId)
-						.single();
-
-					if (profile && profile.gidouilles < response.final_price) {
-						response.can_purchase = false;
-						response.purchase_limit_reason = 'Gidouilles insuffisantes';
-					}
-				}
-			}
-		}
-
-		// 6. Return the item with status
 		return json(response);
 	} catch (err) {
 		console.error('Error in GET /api/shop/items/[id]:', err);

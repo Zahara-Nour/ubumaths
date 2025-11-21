@@ -11,6 +11,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { shopItemsQuerySchema } from '$lib/validation/shop';
+import { sanitizeRPCError } from '$lib/server/utils/error-handler';
 import type { ShopItemWithStatus } from '$lib/types/shop';
 
 /**
@@ -73,8 +74,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const { category, rarity, search, page, limit, active_only, sort_by, sort_order } =
 			queryValidation.data;
 
-		// 4. Call the get_shop_items RPC function
-		const { data: items, error: rpcError } = await supabase.rpc('get_shop_items', {
+		// 4. Call the optimized get_shop_items RPC function
+		// Returns { items: JSONB, total_count: INTEGER } in a single query
+		const { data, error: rpcError } = await supabase.rpc('get_shop_items', {
 			p_student_id: studentId,
 			p_category: category || null,
 			p_rarity: rarity || null,
@@ -87,35 +89,23 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		});
 
 		if (rpcError) {
-			console.error('Error fetching shop items:', rpcError);
-			throw error(500, 'Erreur lors de la récupération des articles');
+			sanitizeRPCError(rpcError, 'get_shop_items');
 		}
 
-		// 5. Get total count for pagination
-		const { count, error: countError } = await supabase
-			.from('shop_item_templates')
-			.select('*', { count: 'exact', head: true })
-			.eq('is_active', active_only)
-			.match({
-				...(category && { category }),
-				...(rarity && { rarity })
-			});
+		// 5. Extract items and total_count from RPC response
+		// The RPC returns a single row with { items: JSONB, total_count: INTEGER }
+		const result = data?.[0] ?? { items: [], total_count: 0 };
+		const items: ShopItemWithStatus[] = result.items ?? [];
+		const totalCount: number = result.total_count ?? 0;
 
-		if (countError) {
-			console.error('Error counting shop items:', countError);
-		}
-
-		// 6. Transform the response data
-		const shopItems: ShopItemWithStatus[] = items || [];
-
-		// 7. Return paginated response
+		// 6. Return paginated response
 		return json({
-			items: shopItems,
+			items,
 			pagination: {
 				page,
 				limit,
-				total: count || 0,
-				totalPages: Math.ceil((count || 0) / limit)
+				total: totalCount,
+				totalPages: Math.ceil(totalCount / limit)
 			}
 		});
 	} catch (err) {
