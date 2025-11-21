@@ -88,6 +88,9 @@ class AchievementsManager {
 	private readonly CACHE_TTL = 5 * 60 * 1000;
 	private cacheTimestamp = $state<number>(0);
 
+	// Maximum toast queue size to prevent memory exhaustion
+	private readonly MAX_TOAST_QUEUE_SIZE = 10;
+
 	/**
 	 * Initialize the achievements manager
 	 */
@@ -313,8 +316,14 @@ class AchievementsManager {
 
 	/**
 	 * Queue a toast notification for an unlocked achievement
+	 * Implements queue size limit to prevent memory exhaustion from rapid unlocks
 	 */
 	private queueToast(achievement: Achievement, points: number, gidouilles: number): void {
+		// Prevent queue overflow by removing oldest toast if at limit
+		if (this.toastQueue.length >= this.MAX_TOAST_QUEUE_SIZE) {
+			this.toastQueue = this.toastQueue.slice(1);
+		}
+
 		const toast: AchievementToast = {
 			id: `${achievement.id}-${Date.now()}`,
 			achievement,
