@@ -1,7 +1,7 @@
 # LaTeX→Markdown Transpiler - Progress Tracker
 
 ## État Actuel
-- **Phase**: 4/10 - List Converters
+- **Phase**: 5/10 - Block Converters
 - **Statut**: Completed
 - **Dernière mise à jour**: 2025-11-21
 
@@ -104,18 +104,25 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ---
 
-### Phase 5: Blocs (quote, verbatim, code, images) (CURRENT)
-- [ ] Implémenter `\begin{quote}...\end{quote}` → `> ...`
-- [ ] Implémenter `\begin{verbatim}...\end{verbatim}` → triple backticks
-- [ ] Implémenter `\begin{lstlisting}[language=...]...\end{lstlisting}` → triple backticks avec langue
-- [ ] Implémenter `\includegraphics[options]{file}` → `![](file)`
-- [ ] Tests exhaustifs
+### Phase 5: Blocs (quote, verbatim, code, images)
+- [x] Implémenter `\begin{quote}...\end{quote}` → `> ...`
+- [x] Implémenter `\begin{quotation}...\end{quotation}` → `> ...`
+- [x] Implémenter `\begin{verbatim}...\end{verbatim}` → triple backticks
+- [x] Implémenter `\begin{lstlisting}[language=...]...\end{lstlisting}` → triple backticks avec langue
+- [x] Implémenter `\begin{minted}{lang}...\end{minted}` → triple backticks avec langue
+- [x] Implémenter `\begin{figure}...\caption{text}...\end{figure}` → `![text](file)`
+- [x] Implémenter `\includegraphics[options]{file}` → `![](file)`
+- [x] Implémenter `\begin{center}` et `\begin{flushleft}` / `\begin{flushright}`
+- [x] Language normalization for code blocks (Python → python, Java → java, etc.)
+- [x] `\includegraphics` options parsing (width, scale, angle, etc.)
+- [x] Figure caption extraction using nested brace counting
+- [x] Tests exhaustifs (117 tests)
 
-**État**: Pas commencée
+**État**: Complétée
 
 ---
 
-### Phase 6: Tables (tabular)
+### Phase 6: Tables (tabular) (CURRENT)
 - [ ] Parser `\begin{tabular}{colspec}...\end{tabular}`
 - [ ] Parser alignement de colonnes `{|l|c|r|}`
 - [ ] Parser cellules avec `&` et lignes avec `\\`
@@ -174,7 +181,22 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ## Décisions de Design Prises
 
-### 🆕 2025-11-21 - Phase 4 (List Converters)
+### 🆕 2025-11-21 - Phase 5 (Block Converters)
+1. **Quote Environments**: Both `\begin{quote}` and `\begin{quotation}` convert to blockquote markdown (`> ...`) - each line gets `> ` prefix
+2. **Code Block Environments**: Three types handled:
+   - `\begin{verbatim}` → triple backticks (no language, no parsing)
+   - `\begin{lstlisting}[language=X]` → triple backticks with language tag (extracted from options)
+   - `\begin{minted}{lang}` → triple backticks with language tag (extracted from required argument)
+3. **Language Normalization**: Language tags normalized (Python → python, Java → java, JavaScript → javascript) using `normalizeLanguage()` helper
+4. **Whitespace Preservation**: Verbatim blocks preserve exact whitespace and indentation
+5. **Figure Captions**: `\caption{text}` inside `\begin{figure}...\end{figure}` extracted as alt text using nested brace counting
+6. **Image Handling**: `\includegraphics{file}` or `\includegraphics[options]{file}` converted to markdown image syntax
+7. **Image Options Parsing**: Width, scale, angle, height options extracted but not converted (Markdown doesn't support these)
+8. **Alignment Blocks**: `\begin{center}`, `\begin{flushleft}`, `\begin{flushright}` wrapped in HTML div with style attribute
+9. **Whitespace Normalization**: Empty lines in blocks preserved to maintain paragraph structure
+10. **Test Coverage**: 117 comprehensive tests covering all block types, nesting, options, and edge cases
+
+### 2025-11-21 - Phase 4 (List Converters)
 1. **Recursive List Handling**: List converters use recursive approach for nested lists - each indentation level incremented by 2 spaces
 2. **List Item Parsing**: `parseListItems()` correctly extracts items by finding `\item` commands while skipping items inside nested environments (nested lists, math, etc.)
 3. **Indentation Strategy**: 2 spaces per nesting level (standard Markdown) - matches `getIndent(level)` utility
