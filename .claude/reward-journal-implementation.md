@@ -166,11 +166,38 @@ Implementation of a unified reward events tracking system (journal) for students
 ---
 
 ### Phase 4: Store Svelte
-**Status**: PENDING
+**Status**: COMPLETED
 **Agent**: svelte-expert (sonnet)
 
-Planned:
+#### Files Created:
 - `src/lib/stores/rewardJournal.svelte.ts`
+
+#### What was implemented:
+1. **Svelte 5 Runes Store** following class-based singleton pattern:
+   - `$state<T>()` for reactive state (events, loading, error, pagination, filters)
+   - `$derived()` for computed values (hasMore, isEmpty, isFiltered)
+   - Private state for currentStudentId and currentPage
+
+2. **Core Methods**:
+   - `fetchEvents(studentId?)` - Fetch events for current student or specific student (teacher view)
+   - `loadMore()` - Infinite scroll pagination (appends to existing events)
+   - `setFilters(newFilters)` - Apply filters and re-fetch
+   - `clearFilters()` - Reset filters to defaults
+   - `reset()` - Reset all state to initial values
+
+3. **Features**:
+   - Pagination with `hasMore` computed property for infinite scroll
+   - Filter support (reward_type, event_type, date range)
+   - French error messages for user-facing errors
+   - Query string builder for API URL construction
+   - Teacher view support via optional studentId parameter
+
+#### Review Status:
+- [x] Svelte 5 runes (no Svelte 4 patterns)
+- [x] Proper TypeScript types (no `any`)
+- [x] Error handling with French messages
+- [x] API calls match Phase 3 endpoints
+- [x] Follows existing store patterns in codebase
 
 ---
 
