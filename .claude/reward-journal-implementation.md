@@ -114,12 +114,54 @@ Implementation of a unified reward events tracking system (journal) for students
 ---
 
 ### Phase 3: API Endpoints
-**Status**: PENDING
+**Status**: COMPLETED
 **Agent**: backend-developer (sonnet)
 
-Planned endpoints:
-- `GET /api/rewards/journal` (student)
-- `GET /api/rewards/journal/[studentId]` (teacher)
+#### Files Created:
+- `src/lib/types/reward-journal.ts` - TypeScript types for reward journal
+- `src/lib/server/validation/reward-journal.ts` - Zod validation schemas
+- `src/routes/api/rewards/journal/+server.ts` - Student endpoint
+- `src/routes/api/rewards/journal/[studentId]/+server.ts` - Teacher endpoint
+
+#### What was implemented:
+1. **TypeScript Types** (`src/lib/types/reward-journal.ts`):
+   - `RewardType` and `RewardEventType` enums matching database
+   - `RewardEvent` interface for database rows
+   - `PaginationMeta` and `RewardJournalResponse` for API responses
+   - `RewardJournalFilters` and `RewardJournalQueryParams` for filtering
+
+2. **Zod Validation Schemas** (`src/lib/server/validation/reward-journal.ts`):
+   - `rewardTypeSchema` and `rewardEventTypeSchema` enums
+   - `rewardJournalQuerySchema` with:
+     - Optional reward_type and event_type filters
+     - Date range filters (from/to) with ISO 8601 validation
+     - Pagination (page default: 1, limit default: 20, max: 100)
+   - `studentIdParamSchema` for teacher endpoint path param
+
+3. **Student Endpoint** (`GET /api/rewards/journal`):
+   - Requires student authentication via `requireRole()`
+   - RLS enforces student can only see own events
+   - Supports all filters and pagination
+   - Returns `RewardJournalResponse` with events and pagination metadata
+
+4. **Teacher Endpoint** (`GET /api/rewards/journal/[studentId]`):
+   - Requires teacher or admin authentication via `requireRoles()`
+   - Uses `verifyTeacherStudentWithRole()` middleware for authorization
+   - Admins can view any student, teachers only their own students
+   - Same filters and pagination as student endpoint
+
+#### Design Decisions:
+- Used existing auth middleware (`requireRole`, `requireRoles`)
+- Used existing student access middleware (`verifyTeacherStudentWithRole`)
+- All query params validated with Zod including bounds checking
+- Consistent error messages in French for user-facing errors
+- Pagination calculates `totalPages` and `hasMore` for UI convenience
+
+#### Review Status:
+- [x] Zod validation for all inputs
+- [x] Authorization middleware used
+- [x] TypeScript types defined
+- [ ] Tests - Pending (Phase 7 or separate task)
 
 ---
 
