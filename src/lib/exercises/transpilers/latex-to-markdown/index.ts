@@ -6,8 +6,15 @@
 // Export all types
 export * from './types';
 
-// Main transpiler function (to be implemented)
-// export { transpileLatexToMarkdown } from './transpiler';
+// Main transpiler function
+export {
+	transpileLatexToMarkdown,
+	createConversionContext,
+	processTokens,
+	convertSingleToken,
+	cleanupMarkdown,
+	DEFAULT_OPTIONS
+} from './transpiler';
 
 // Tokenizer exports
 export { tokenize } from './tokenizer';

@@ -1,7 +1,7 @@
 # LaTeX→Markdown Transpiler - Progress Tracker
 
 ## État Actuel
-- **Phase**: 7/10 - Fallback Converter
+- **Phase**: 8/10 - Main Orchestrator
 - **Statut**: Completed
 - **Dernière mise à jour**: 2025-11-21
 
@@ -153,15 +153,18 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ---
 
-### Phase 8: Commandes Avancées (CURRENT)
-- [ ] Implémenter `\emph{...}` → `*...*`
-- [ ] Implémenter `\textup{}`, `\textsl{}`, `\textsc{}`
-- [ ] Implémenter `\url{...}` → `[...](link)`
-- [ ] Implémenter `\href{url}{text}` → `[text](url)`
-- [ ] Implémenter footnotes/références (adapter au markdown)
-- [ ] Tests exhaustifs
+### Phase 8: Main Orchestrator (CURRENT)
+- [x] Créer `transpiler.ts` avec orchestration complète
+- [x] Implémenter token processing pipeline (tokenize → convert → cleanup)
+- [x] Gérer le routage des tokens vers les convertisseurs appropriés
+- [x] Implémenter context propagation pour structures imbriquées
+- [x] Créer système de tracking des statistiques
+- [x] Gérer options (`preserveComments`, `mathDelimiters`, `maxNestingDepth`, `fallbackToText`, `preserveWhitespace`)
+- [x] Implémenter `cleanupMarkdown()` (newlines excessifs, trailing whitespace)
+- [x] Gérer commandes spéciales (`\item`, `\caption`, `\footnote`, `\url`, `\href`, etc.)
+- [x] Tests exhaustifs (91 tests)
 
-**État**: Pas commencée
+**État**: Complétée
 
 ---
 
@@ -186,7 +189,83 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ## Décisions de Design Prises
 
-### 🆕 2025-11-21 - Phase 7 (Fallback Converter)
+### 🆕 2025-11-21 - Phase 8 (Main Orchestrator)
+1. **Token Processing Pipeline**: Approche single-pass pipeline (tokenize → convert → cleanup)
+   - Tokenizer génère une liste plate de tokens typés
+   - Orchestrator parcourt les tokens et appelle les convertisseurs appropriés
+   - Chaque convertisseur retourne une string markdown
+   - Cleanup final: normalisation newlines, trailing whitespace, line endings
+   - Avantages: Simple, prévisible, pas de parsing multi-passes
+
+2. **Registry-Based Converter Routing**: Système de routage par registre plutôt que switch géant
+   - Convertisseurs simples: `getSimpleCommandConverter()`, `hasSimpleConverter()`
+   - Convertisseurs blocs: `getBlockCommandConverter()`, `hasBlockEnvironmentConverter()`
+   - Convertisseurs tables: `tableEnvironmentConverters` object
+   - Convertisseurs listes: `listEnvironmentConverters` object
+   - Fallback: `convertUnsupportedCommand()`, `convertUnsupportedEnvironment()`
+   - Avantages: Maintenable, extensible, découpling
+
+3. **Context Propagation**: Gestion des états imbriqués via `ConversionContext`
+   - Contexte inclut: `indentLevel`, `listStack`, `inListItem`, `inTable`, `inMath`, `inVerbatim`
+   - `environmentStack` pour tracking nesting depth
+   - `addWarning()` pour collection centralisée
+   - Helpers: `processChildren()` et `convertToken()` pour traitement récursif
+   - Avantages: État centralisé, évite les paramètres globals
+
+4. **Special Command Handling**: Commandes supportées mais sans convertisseurs dédiés
+   - `\label`, `\centering`, `\newpage`, etc. → pas d'output
+   - `\footnote` → texte + parenthèses (simplifié)
+   - `\url` → angle brackets `<URL>`
+   - `\href{url}{text}` → markdown link `[text](url)`
+   - `\verb` → inline code `` `content` ``
+   - `\caption` → italic text (standalone)
+   - `\item` → content only (standalone)
+   - Permet support sans codage des convertisseurs
+
+5. **Statistics Tracking**: Système de tracking optionnel
+   - `tokenCount`: Nombre de tokens traités
+   - `commandsConverted`: Nombre de commandes convertis
+   - `environmentsConverted`: Nombre d'environnements convertis
+   - `mathExpressions`: Nombre d'expressions mathématiques
+   - Utile pour debug et monitoring
+
+6. **Options Management**: 5 options avec defaults raisonnables
+   - `preserveComments` (default false): Commentaires LaTeX → HTML comments
+   - `mathDelimiters` (default 'dollar'): `$...$` ou `\(...\)`
+   - `maxNestingDepth` (default 10): Limite imbrication pour éviter stack overflow
+   - `fallbackToText` (default false): Commandes non supportées → texte pur
+   - `preserveWhitespace` (default false): Préserver exact whitespace (utile pour code)
+
+7. **Math Environment Support**: Handling spécialisé pour environnements math
+   - `equation`, `equation*` → simple `$$...$$ `
+   - Autres (`align`, `gather`, etc.) → `$$\begin{...}...\end{...}$$` (wrapped)
+   - Préserve la structure LaTeX exacte pour compatibilité
+
+8. **Document Environment Support**: Handling pour structure document
+   - `document`: Juste process le contenu
+   - `abstract`: Heading + contenu
+   - `theorem`, `lemma`, `definition`, etc.: Bold title + contenu
+   - `proof`: Italique proof + QED
+   - Convertit en markdown readable sans commandes LaTeX
+
+9. **Cleanup Logic**: Normalization post-transpilation
+   - Normalise line endings (`\r\n` → `\n`)
+   - Supprime >2 newlines consécutifs (preserve paragraph breaks)
+   - Trim trailing whitespace par ligne
+   - Trim début/fin du document
+   - Ensure single newline at end
+   - Optionnel si `preserveWhitespace: true`
+
+10. **Test Coverage**: 91 comprehensive tests couvrant:
+    - Main orchestrator function et résultats
+    - Options handling (preserveComments, mathDelimiters, etc.)
+    - Token processing pipeline (all token types)
+    - Special command handling (url, href, footnote, etc.)
+    - Math environments et document environments
+    - Statistics tracking et warnings collection
+    - Edge cases (empty input, deep nesting, etc.)
+
+### 2025-11-21 - Phase 7 (Fallback Converter)
 1. **HTML Comment Wrapping**: Commandes/environnements non supportés wrappés dans `<!-- LaTeX: ... -->` pour préservation
    - Permet aux utilisateurs de voir le LaTeX original
    - Facilite l'ajout de support futur (migration facile)

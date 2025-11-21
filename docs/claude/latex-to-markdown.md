@@ -2,7 +2,7 @@
 
 > Documentation exhaustive du transpileur LaTeX vers Custom Markdown pour le système d'exercices.
 >
-> **Statut**: Phase 7/10 - Fallback Converter (Complétée)
+> **Statut**: Phase 8/10 - Main Orchestrator (Complétée)
 > **Dernière mise à jour**: 2025-11-21
 
 ---
@@ -13,11 +13,12 @@
 2. [Architecture Générale](#architecture-générale)
 3. [API Publique](#api-publique)
 4. [Conversions Supportées](#conversions-supportées)
-5. [Structure de Dossiers](#structure-de-dossiers)
-6. [Algorithmes](#algorithmes)
-7. [Edge Cases](#edge-cases)
-8. [Limitations](#limitations)
-9. [Guide de Contribution](#guide-de-contribution)
+5. [Phase 8: Main Orchestrator](#phase-8-main-orchestrator)
+6. [Structure de Dossiers](#structure-de-dossiers)
+7. [Algorithmes](#algorithmes)
+8. [Edge Cases](#edge-cases)
+9. [Limitations](#limitations)
+10. [Guide de Contribution](#guide-de-contribution)
 
 ---
 
@@ -1126,9 +1127,576 @@ Avec `fallbackToText: true`:
 
 ---
 
-### Phase 8: Commandes Avancées
+## Phase 8: Main Orchestrator
 
-(À documenter pendant la prochaine phase)
+### Vue d'ensemble
+
+Phase 8 implémente l'orchestrateur principal qui coordonne le transpileur complet. Au lieu d'avoir une fonction monolithique, les conversions sont organisées en registres spécialisés avec un système de routage intelligente pour les tokens.
+
+**Fichier Principal**: `src/lib/exercises/transpilers/latex-to-markdown/transpiler.ts`
+
+### Fonction Principale: `transpileLatexToMarkdown()`
+
+**Signature**:
+
+```typescript
+export function transpileLatexToMarkdown(
+	latex: string,
+	options?: LatexToMarkdownOptions
+): TranspileResult;
+```
+
+**Description**: Point d'entrée principal du transpileur. Effectue les étapes suivantes:
+
+1. **Tokenization**: Convertit le LaTeX en liste de tokens typés
+2. **Processing**: Parcourt les tokens et applique les convertisseurs appropriés
+3. **Statistics**: Collecte les statistiques optionnelles
+4. **Cleanup**: Normalise la sortie markdown (newlines, whitespace, encoding)
+5. **Return**: Retourne objet `TranspileResult` avec markdown, warnings, et stats
+
+**Exemple Complet**:
+
+```typescript
+import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
+
+const latex = `
+\\documentclass{article}
+\\usepackage{geometry}
+
+\\begin{document}
+
+\\section{Introduction}
+
+This is \\textbf{bold} and \\textit{italic} text with math: $E = mc^2$.
+
+\\begin{itemize}
+  \\item First item
+  \\item Second item with \\url{https://example.com}
+\\end{itemize}
+
+\\begin{tabular}{|l|c|r|}
+  \\hline
+  Left & Center & Right \\\\
+  \\hline
+  A & B & C \\\\
+  \\hline
+\\end{tabular}
+
+\\end{document}
+`;
+
+const result = transpileLatexToMarkdown(latex, {
+	preserveComments: false,
+	mathDelimiters: 'dollar',
+	maxNestingDepth: 10,
+	fallbackToText: false,
+	preserveWhitespace: false
+});
+
+console.log(result.markdown);
+console.log(result.warnings);
+console.log(result.stats);
+// {
+//   tokenCount: 247,
+//   commandsConverted: 12,
+//   environmentsConverted: 5,
+//   mathExpressions: 1
+// }
+```
+
+### Options Détaillées
+
+#### `LatexToMarkdownOptions`
+
+```typescript
+interface LatexToMarkdownOptions {
+	/**
+	 * Préserver les commentaires LaTeX (%) comme commentaires HTML.
+	 * @default false
+	 *
+	 * Exemple:
+	 * Input:  text % this is a comment
+	 * false:  text
+	 * true:   text <!-- this is a comment -->
+	 */
+	preserveComments?: boolean;
+
+	/**
+	 * Délimiteurs mathématiques à utiliser en sortie.
+	 * @default 'dollar'
+	 *
+	 * 'dollar':   $...$ et $$...$$
+	 * 'brackets': \(...\) et \[...\]
+	 */
+	mathDelimiters?: 'dollar' | 'brackets';
+
+	/**
+	 * Profondeur d'imbrication maximale autorisée.
+	 * @default 10
+	 *
+	 * Dépasse cette limite → warning et contenu ignoré.
+	 * Protection contre stack overflow et input pathologique.
+	 */
+	maxNestingDepth?: number;
+
+	/**
+	 * Convertir les commandes non supportées en texte pur au lieu de wrapper HTML.
+	 * @default false
+	 *
+	 * Exemple:
+	 * Input: \\mycommand{Important content}
+	 * false: <!-- LaTeX: \\mycommand{Important content} -->
+	 * true:  Important content
+	 */
+	fallbackToText?: boolean;
+
+	/**
+	 * Préserver le whitespace exact du source LaTeX.
+	 * @default false
+	 *
+	 * Quand false: normalize whitespace (important pour code)
+	 * Quand true: preserve exactly (utile pour verbatim)
+	 */
+	preserveWhitespace?: boolean;
+}
+```
+
+### Résultat: `TranspileResult`
+
+```typescript
+interface TranspileResult {
+	/**
+	 * Le markdown généré.
+	 * Compatible avec markdown-parser existant.
+	 */
+	markdown: string;
+
+	/**
+	 * Avertissements rencontrés lors de la conversion.
+	 * (vide si tout s'est bien passé)
+	 */
+	warnings: TranspileWarning[];
+
+	/**
+	 * Statistiques de conversion optionnelles.
+	 */
+	stats: TranspileStats;
+}
+```
+
+#### `TranspileStats`
+
+```typescript
+interface TranspileStats {
+	/** Nombre total de tokens traités */
+	tokenCount: number;
+
+	/** Nombre de commandes LaTeX converties */
+	commandsConverted: number;
+
+	/** Nombre d'environnements LaTeX convertis */
+	environmentsConverted: number;
+
+	/** Nombre d'expressions mathématiques rencontrées */
+	mathExpressions: number;
+}
+```
+
+### Pipeline de Traitement
+
+```
+LaTeX Input
+    ↓
+[tokenize] → LatexToken[]
+    ↓
+[createConversionContext] → ConversionContext + stats
+    ↓
+[processTokens] → parcourt chaque token
+    ↓
+[convertSingleToken] → appelle convertisseur approprié
+    ├─ Simple commands → getSimpleCommandConverter()
+    ├─ List environments → listEnvironmentConverters
+    ├─ Table environments → tableEnvironmentConverters
+    ├─ Block environments → getBlockEnvironmentConverter()
+    ├─ Math environments → convertMathEnvironment()
+    ├─ Document structures → convertDocumentEnvironment()
+    ├─ Supported-but-special → handleSpecialCommand()
+    └─ Unsupported → convertUnsupportedCommand/Environment()
+    ↓
+[cleanupMarkdown] → normalize newlines, whitespace
+    ↓
+TranspileResult {markdown, warnings, stats}
+```
+
+### Système de Routage des Convertisseurs
+
+#### 1. Convertisseurs Simples
+
+Pour les commandes simples (`\textbf`, `\section`, etc.):
+
+```typescript
+if (hasSimpleConverter(name)) {
+	const converter = getSimpleCommandConverter(name);
+	if (converter) {
+		return converter(token, context);
+	}
+}
+```
+
+Source: `src/lib/exercises/transpilers/latex-to-markdown/converters/simple.ts`
+
+#### 2. Convertisseurs de Blocs
+
+Pour les environnements spécialisés (`\begin{quote}`, `\begin{lstlisting}`, images):
+
+```typescript
+if (hasBlockCommandConverter(name)) {
+	const converter = getBlockCommandConverter(name);
+	if (converter) {
+		return converter(token, context);
+	}
+}
+
+if (hasBlockEnvironmentConverter(name)) {
+	const converter = getBlockEnvironmentConverter(name);
+	if (converter) {
+		return converter(token, context);
+	}
+}
+```
+
+Source: `src/lib/exercises/transpilers/latex-to-markdown/converters/blocks.ts`
+
+#### 3. Convertisseurs de Listes
+
+Pour listes (`\begin{itemize}`, `\begin{enumerate}`, `\begin{description}`):
+
+```typescript
+if (isListEnvironment(name)) {
+	const converter = listEnvironmentConverters[name];
+	if (converter) {
+		return converter(token, context);
+	}
+}
+```
+
+Source: `src/lib/exercises/transpilers/latex-to-markdown/converters/lists.ts`
+
+#### 4. Convertisseurs de Tables
+
+Pour tableaux (`\begin{tabular}`, `\begin{table}`, variantes):
+
+```typescript
+if (isTableEnvironment(name)) {
+	const converter = tableEnvironmentConverters[name];
+	if (converter) {
+		return converter(token, context);
+	}
+}
+```
+
+Source: `src/lib/exercises/transpilers/latex-to-markdown/converters/tables.ts`
+
+#### 5. Commandes Spéciales
+
+Pour commandes reconnaissables mais sans convertisseurs dédiés:
+
+```typescript
+if (isSupportedCommand(name)) {
+	return handleSpecialCommand(token, context);
+}
+```
+
+**Commandes Gérées**:
+
+| Commande                   | Comportement             | Notes                            |
+| -------------------------- | ------------------------ | -------------------------------- |
+| `\label`                   | Aucun output             | Utilisé pour références internes |
+| `\centering`               | Aucun output             | Contexte visuel seulement        |
+| `\newpage`, `\pagebreak`   | Aucun output             | Non pertinent en markdown        |
+| `\footnote{text}`          | `(text)`                 | Foototes simplifiées             |
+| `\cite{key}`               | `[key]`                  | Références citations             |
+| `\ref{key}`, `\eqref{key}` | `[key]`                  | Références crossref              |
+| `\url{url}`                | `<url>`                  | Autolink format                  |
+| `\href{url}{text}`         | `[text](url)`            | Markdown link format             |
+| `\verb\|code\|`            | `` `code` ``             | Inline code                      |
+| `\input{file}`             | `<!-- Include: file -->` | Inclusions fichier               |
+| `\caption{text}`           | `*text*`                 | Caption standalone               |
+| `\item{text}`              | `text`                   | Item standalone                  |
+
+#### 6. Environnements Mathématiques
+
+Pour environnements math (`\begin{equation}`, `\begin{align}`, etc.):
+
+```typescript
+if (isMathEnvironment(name)) {
+	return convertMathEnvironment(token, context);
+}
+```
+
+**Traitement**:
+
+- `equation`, `equation*` → `$$content$$` (simple)
+- Autres (`align`, `gather`, `split`, etc.) → `$$\begin{name}content\end{name}$$` (wrapped)
+
+#### 7. Environnements de Structure Document
+
+Pour structure (`\begin{document}`, `\begin{theorem}`, etc.):
+
+```typescript
+if (isDocumentEnvironment(name)) {
+	return convertDocumentEnvironment(token, context);
+}
+```
+
+**Traitement**:
+
+- `document` → process contenu
+- `abstract` → `**Abstract**\n\ncontenu`
+- `theorem`, `lemma`, `definition` → `**Theorem:** contenu`
+- `proof` → `*Proof:* contenu QED`
+
+#### 8. Fallback pour Non-Supportés
+
+Pour commandes/environnements non reconnus:
+
+```typescript
+if (!isSupportedCommand(name)) {
+	return convertUnsupportedCommand(token, context);
+}
+if (!isSupportedEnvironment(name)) {
+	return convertUnsupportedEnvironment(token, context);
+}
+```
+
+Source: `src/lib/exercises/transpilers/latex-to-markdown/converters/fallback.ts`
+
+### Gestion du Contexte (`ConversionContext`)
+
+Le contexte est propagé à travers tous les convertisseurs pour maintenir l'état:
+
+```typescript
+interface ConversionContext {
+	// State tracking
+	indentLevel: number;
+	listStack: ListType[];
+	inListItem: boolean;
+	inTable: boolean;
+	inMath: boolean;
+	inVerbatim: boolean;
+	environmentStack: string[];
+
+	// Configuration
+	options: Required<LatexToMarkdownOptions>;
+
+	// Collections
+	warnings: TranspileWarning[];
+
+	// Helpers
+	addWarning(warning: Partial<TranspileWarning>, line?: number, column?: number): void;
+	processChildren(tokens: LatexToken[]): string;
+	convertToken(token: LatexToken): string;
+}
+```
+
+**Utilisation Typique**:
+
+```typescript
+function myConverter(token: EnvironmentToken, context: ConversionContext): string {
+	// Check state
+	if (context.inTable) {
+		// Handle specially when inside table
+	}
+
+	// Update context for children
+	const childContext: ConversionContext = {
+		...context,
+		indentLevel: context.indentLevel + 1
+	};
+
+	// Process children
+	const childMarkdown = context.processChildren(token.children);
+
+	// Add warning if needed
+	context.addWarning(
+		{
+			type: 'unsupported-command',
+			message: 'Something went wrong',
+			severity: 'warning'
+		},
+		token.line,
+		token.column
+	);
+
+	return childMarkdown;
+}
+```
+
+### Cleanup Post-Transpilation
+
+La fonction `cleanupMarkdown()` normalise la sortie markdown:
+
+```typescript
+function cleanupMarkdown(markdown: string, options: Required<LatexToMarkdownOptions>): string {
+	if (options.preserveWhitespace) {
+		return markdown; // Return as-is
+	}
+
+	// 1. Normaliser les line endings: \r\n → \n
+	let result = markdown.replace(/\r\n/g, '\n');
+
+	// 2. Supprimer >2 newlines consécutifs (preserve paragraph breaks)
+	result = result.replace(/\n{3,}/g, '\n\n');
+
+	// 3. Trim trailing whitespace per line
+	result = result
+		.split('\n')
+		.map((line) => line.trimEnd())
+		.join('\n');
+
+	// 4. Trim début/fin du document
+	result = result.trim();
+
+	// 5. Ensure single newline at end
+	if (result && !result.endsWith('\n')) {
+		result += '\n';
+	}
+
+	return result;
+}
+```
+
+### Gestion des Statistiques
+
+Les statistiques sont collectées en temps réel:
+
+```typescript
+const stats: TranspileStats = {
+	tokenCount: 0,
+	commandsConverted: 0,
+	environmentsConverted: 0,
+	mathExpressions: 0
+};
+
+// Dans convertSingleToken:
+switch (token.type) {
+	case 'command':
+		stats.commandsConverted++;
+	// ...
+	case 'environment':
+		stats.environmentsConverted++;
+	// ...
+	case 'math-inline':
+	case 'math-display':
+		stats.mathExpressions++;
+	// ...
+}
+```
+
+### Exemples Avancés
+
+#### Exemple 1: Préserver les Commentaires
+
+```typescript
+const result = transpileLatexToMarkdown(
+	`
+Some text % this is important
+More text
+`,
+	{ preserveComments: true }
+);
+
+console.log(result.markdown);
+// Some text <!-- this is important -->
+// More text
+```
+
+#### Exemple 2: Utiliser Délimiteurs Brackets
+
+```typescript
+const result = transpileLatexToMarkdown(
+	`
+Inline: $x^2$ and display: \\[E = mc^2\\]
+`,
+	{ mathDelimiters: 'brackets' }
+);
+
+console.log(result.markdown);
+// Inline: \(x^2\) and display: \[E = mc^2\]
+```
+
+#### Exemple 3: Fallback to Text
+
+```typescript
+const result = transpileLatexToMarkdown(
+	`
+Normal: \\textbf{bold}
+Custom: \\mycommand{important}
+`,
+	{ fallbackToText: true }
+);
+
+console.log(result.markdown);
+// Normal: **bold**
+// Custom: important
+```
+
+#### Exemple 4: Vérifier Statistiques
+
+```typescript
+const latex = `
+\\section{Title}
+$x^2$
+\\begin{itemize}
+\\item test
+\\end{itemize}
+`;
+
+const result = transpileLatexToMarkdown(latex);
+console.log(result.stats);
+// {
+//   tokenCount: ~15,
+//   commandsConverted: 2,
+//   environmentsConverted: 1,
+//   mathExpressions: 1
+// }
+```
+
+### Considérations de Sécurité
+
+Le transpileur génère du markdown qui sera parsé par `markdown-parser`. Considérations importantes:
+
+1. **Pas de Sanitization du Transpileur**: Le transpileur ne sanitize pas la sortie HTML
+   - Les commentaires HTML sont générés tels-quels
+   - Le markdown peut contenir du HTML brut
+   - **Responsibility**: `markdown-parser` et code client doivent utiliser DOMPurify
+
+2. **Injection HTML**: Contenu LaTeX non échappé peut devenir dangereux
+   - Exemple: `\href{javascript:alert('xss')}` ne sera pas détecté
+   - **Solution**: Utiliser DOMPurify sur la sortie du markdown-parser
+
+3. **Taille Input**: Pas de limite sur taille input
+   - Input très gros → tokenizer + processor lents
+   - **Recommandation**: Implémenter max-size limit (~10MB) en production
+
+4. **Limite Nesting**: `maxNestingDepth: 10` par défaut
+   - Protège contre structures pathologiques
+   - Peut être augmenté si nécessaire
+
+### Tests
+
+Tests pour Phase 8: `src/lib/exercises/transpilers/latex-to-markdown/__tests__/transpiler.test.ts`
+
+**Coverage**: 91 comprehensive tests couvrant:
+
+- Main entry point et résultats
+- Options handling (all 5 options)
+- Token processing pipeline (toutes les 10 types)
+- Special command handling
+- Math et document environments
+- Statistics tracking
+- Warning collection
+- Edge cases (empty input, deep nesting)
 
 ---
 
@@ -1486,4 +2054,4 @@ Ajouter une entrée dans la table [Conversions Supportées](#conversions-support
 
 **Maintainers**: Claude Code (@claude)
 
-**Status**: Phase 7/10 - Fallback Converter (Complétée)
+**Status**: Phase 8/10 - Main Orchestrator (Complétée)
