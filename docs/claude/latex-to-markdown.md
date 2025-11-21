@@ -2,7 +2,7 @@
 
 > Documentation exhaustive du transpileur LaTeX vers Custom Markdown pour le système d'exercices.
 >
-> **Statut**: Phase 5/10 - Block Converters (Complétée)
+> **Statut**: Phase 6/10 - Table Converter (Complétée)
 > **Dernière mise à jour**: 2025-11-21
 
 ---
@@ -250,7 +250,7 @@ type LatexToken =
 | `\includegraphics{path}`          | `![](path)`                        | 5     | Image (no alt text)        |
 | `\begin{figure}...\caption{text}` | `![text](path)`                    | 5     | Image with caption         |
 | `\begin{center}`                  | `<div style="text-align: center">` | 5     | Centered content           |
-| `\begin{tabular}`                 | `\| col \| col \|`                 | 6     | Table (TODO)               |
+| `\begin{tabular}`                 | `\| col \| col \|`                 | 6     | Table (Complétée)          |
 
 ---
 
@@ -588,7 +588,7 @@ Ou:
 
 #### Tabular (Tableaux)
 
-**LaTeX**:
+**LaTeX - Avec Alignement et Header**:
 
 ```latex
 \begin{tabular}{|l|c|r|}
@@ -605,18 +605,238 @@ D & E & F \\
 
 ```markdown
 | Gauche | Centre | Droite |
-| ------ | ------ | ------ |
-| A      | B      | C      |
-| D      | E      | F      |
+| :----- | :----: | -----: |
+| A      |   B    |      C |
+| D      |   E    |      F |
+```
+
+**Règles Principales**:
+
+- Spec de colonnes `{|l|c|r|}` → alignements
+- `l` = left (`:---`), `c` = center (`:---:`), `r` = right (`---:`)
+- `\hline` après première rangée → rangée est header
+- `\\` → fin de ligne
+- `&` → séparateur de cellules
+- Borders `|` → ignorés (pas supportés en Markdown)
+
+#### Column Specifications Supportées
+
+**Alignments Basiques**:
+
+```latex
+{lcr}           % left, center, right (sans borders)
+{|l|c|r|}       % avec borders
+{||l||c||r||}   % doubles borders (traités comme simples)
+```
+
+**Paragraph Columns**:
+
+```latex
+{l p{5cm} r}    % p{width} traité comme left-aligned
+{p{3cm} p{4cm}} % multiples paragraph columns
+```
+
+**Repeat Specification**:
+
+```latex
+{*{3}{c}}       % 3 colonnes centered
+{*{2}{l} c}     % 2 left + 1 center
+{|*{4}{c}|}     % 4 centered avec borders
+```
+
+**Column Separators** (non convertis):
+
+```latex
+{l@{}c@{\hspace{1cm}}r}  % @ {...} skipped
+{l@{-}c}                  % custom separators ignored
+```
+
+#### Header Detection Algorithm
+
+**Règle**: Première `\hline` après première rangée indique que cette rangée est un header.
+
+**Exemples**:
+
+```latex
+% Exemple 1: Header avec \hline
+\begin{tabular}{lcr}
+Name & Age & City \\
+\hline
+Alice & 25 & Paris \\
+Bob & 30 & Lyon \\
+\end{tabular}
+```
+
+Devient:
+
+```markdown
+| Name  | Age | City  |
+| :---- | :-- | :---- |
+| Alice | 25  | Paris |
+| Bob   | 30  | Lyon  |
+```
+
+```latex
+% Exemple 2: Sans header (pas de \hline)
+\begin{tabular}{lcr}
+Alice & 25 & Paris \\
+Bob & 30 & Lyon \\
+\end{tabular}
+```
+
+Devient:
+
+```markdown
+|       |     |       |
+| :---- | :-- | :---- |
+| Alice | 25  | Paris |
+| Bob   | 30  | Lyon  |
+```
+
+#### Booktabs Support
+
+LaTeX packages `booktabs` sont reconnus:
+
+```latex
+\begin{tabular}{lcr}
+\toprule
+Name & Age & City \\
+\midrule
+Alice & 25 & Paris \\
+Bob & 30 & Lyon \\
+\bottomrule
+\end{tabular}
+```
+
+**Traitement**:
+
+- `\toprule` → marque début (optionnel, like `\hline`)
+- `\midrule` → détecte header si une rangée existe
+- `\bottomrule` → fin de table (optionnel)
+- `\cline{2-3}` → ignored (partial borders not supported)
+
+#### Multicolumn Handling
+
+**LaTeX**:
+
+```latex
+\begin{tabular}{lcr}
+\hline
+Name & Values \\
+\hline
+Alice & \multicolumn{2}{c}{Merged Cell} \\
+\hline
+\end{tabular}
+```
+
+**Markdown** (colspan non supporté - warning émis):
+
+```markdown
+| Name  | Values      |     |
+| :---- | :---------- | :-- |
+| Alice | Merged Cell |     |
 ```
 
 **Règles**:
 
-- Spec de colonnes `{|l|c|r|}` → séquence de colonnes
-- `\hline` → separateur visual
-- `\\` → fin de ligne
-- `&` → séparateur de cellules
-- `\multicolumn` non supporté → warning
+- `\multicolumn{n}{spec}{content}` → content préservé
+- Colspan `n` non convertible → génère `n` colonnes vides
+- Alignment `spec` (`l`, `c`, `r`) extrait mais pas appliqué
+- Warning généré: "multicolumn colspan not supported in Markdown"
+
+#### Cell Content Formatting
+
+Cell contents are processed for LaTeX commands:
+
+```latex
+\begin{tabular}{lcr}
+\textbf{Bold} & \textit{Italic} & \texttt{Code} \\
+$x^2$ & \emph{Emphasized} & Normal \\
+\end{tabular}
+```
+
+Devient:
+
+```markdown
+| **Bold** | _Italic_ | `Code` |
+| $x^2$ | _Emphasized_ | Normal |
+```
+
+**Conversions Supportées**:
+
+| LaTeX dans Cellule | Markdown    | Notes                   |
+| ------------------ | ----------- | ----------------------- |
+| `\textbf{...}`     | `**...**`   | Bold text               |
+| `\textit{...}`     | `*...*`     | Italic text             |
+| `\emph{...}`       | `*...*`     | Emphasis (= italic)     |
+| `\texttt{...}`     | `` `...` `` | Monospace               |
+| `$...$`            | `$...$`     | Inline math - preserved |
+| `\&`               | `&`         | Escaped ampersand       |
+| `\%`               | `%`         | Escaped percent         |
+| `\#`               | `#`         | Escaped hash            |
+| `\$`               | `$`         | Escaped dollar          |
+| `\_`               | `_`         | Escaped underscore      |
+
+#### Table Environment Variants
+
+**Toutes les variantes supportées**:
+
+| Environment | Traitement                              | Notes                |
+| ----------- | --------------------------------------- | -------------------- |
+| `tabular`   | Directement converti en table Markdown  | Standard             |
+| `table`     | Wrapper → extrait `\caption` comme note | Caption optional     |
+| `array`     | Traité comme `tabular`                  | Math mode variant    |
+| `longtable` | Traité comme `tabular`                  | Multi-page tables    |
+| `tabularx`  | Traité comme `tabular`                  | Paragraph width cols |
+| `tabulary`  | Traité comme `tabular`                  | Automatic widths     |
+
+**Exemple avec caption**:
+
+```latex
+\begin{table}
+  \begin{tabular}{lcr}
+  A & B & C \\
+  \end{tabular}
+  \caption{Sample table caption}
+\end{table}
+```
+
+Devient:
+
+```markdown
+| A   | B   | C   |
+| :-- | :-- | :-- |
+
+_Sample table caption_
+```
+
+#### Alignment Row Generation
+
+Row de alignements générée automatiquement basée sur column spec:
+
+| Alignment | LaTeX Spec | Markdown Row |
+| --------- | ---------- | ------------ |
+| Left      | `l`        | `:---`       |
+| Center    | `c`        | `:---:`      |
+| Right     | `r`        | `---:`       |
+
+**Exemple complet**:
+
+```latex
+\begin{tabular}{|l|c|r|}
+Header1 & Header2 & Header3 \\
+\hline
+Left & Center & Right \\
+\end{tabular}
+```
+
+Devient:
+
+```markdown
+| Header1 | Header2 | Header3 |
+| :------ | :-----: | ------: |
+| Left    | Center  |   Right |
+```
 
 ---
 
@@ -1005,4 +1225,4 @@ Ajouter une entrée dans la table [Conversions Supportées](#conversions-support
 
 **Maintainers**: Claude Code (@claude)
 
-**Status**: Phase 0/10 - Setup Documentation (Complétée)
+**Status**: Phase 6/10 - Table Converter (Complétée)

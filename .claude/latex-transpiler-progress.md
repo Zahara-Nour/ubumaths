@@ -1,7 +1,7 @@
 # LaTeX→Markdown Transpiler - Progress Tracker
 
 ## État Actuel
-- **Phase**: 5/10 - Block Converters
+- **Phase**: 6/10 - Table Converter
 - **Statut**: Completed
 - **Dernière mise à jour**: 2025-11-21
 
@@ -122,19 +122,23 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ---
 
-### Phase 6: Tables (tabular) (CURRENT)
-- [ ] Parser `\begin{tabular}{colspec}...\end{tabular}`
-- [ ] Parser alignement de colonnes `{|l|c|r|}`
-- [ ] Parser cellules avec `&` et lignes avec `\\`
-- [ ] Convertir en markdown table `| col | col |`
-- [ ] Gérer hlines et autres séparateurs
-- [ ] Tests exhaustifs
+### Phase 6: Tables (tabular)
+- [x] Parser `\begin{tabular}{colspec}...\end{tabular}`
+- [x] Parser alignement de colonnes `{|l|c|r|}`, `{p{width}}`, `{*{n}{spec}}`, `{@{...}}`
+- [x] Parser cellules avec `&` et lignes avec `\\`
+- [x] Convertir en markdown table `| col | col |`
+- [x] Gérer hlines, \cline, \toprule, \midrule, \bottomrule
+- [x] Détecter header row via première \hline
+- [x] Gérer \multicolumn avec extraction d'alignement
+- [x] Convertir contenu de cellules (bold, italic, code, math)
+- [x] Tests exhaustifs (54 tests)
+- [x] Support pour tabular, table, array, longtable, tabularx, tabulary
 
-**État**: Pas commencée
+**État**: Complétée
 
 ---
 
-### Phase 7: Commandes Avancées
+### Phase 7: Commandes Avancées (CURRENT)
 - [ ] Implémenter `\emph{...}` → `*...*`
 - [ ] Implémenter `\textup{}`, `\textsl{}`, `\textsc{}`
 - [ ] Implémenter `\url{...}` → `[...](link)`
@@ -181,7 +185,59 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ## Décisions de Design Prises
 
-### 🆕 2025-11-21 - Phase 5 (Block Converters)
+### 🆕 2025-11-21 - Phase 6 (Table Converter)
+1. **Column Spec Parsing**: Column spec `{|l|c|r|}` parsed with support for:
+   - Basic alignments: `l` (left), `c` (center), `r` (right)
+   - Paragraph columns: `p{width}` treated as left-aligned
+   - Repeat specs: `*{n}{spec}` recursively parsed for repeated columns
+   - Column separators: `@{...}` skipped (not converted to Markdown)
+   - Borders: `|` character tracked but not output (Markdown doesn't support custom borders)
+2. **Brace Depth Tracking**: Cell content parsing uses brace depth counter to properly handle:
+   - Nested braces in formatting commands
+   - Balanced `{...}` in multicolumn arguments
+   - Escaped characters `\{` and `\}`
+3. **Booktabs Support**: Recognized special rules:
+   - `\toprule` marks start of header (similar to \hline)
+   - `\midrule` indicates header/data separation
+   - `\bottomrule` end of table (equivalent to final \hline)
+4. **Header Detection Algorithm**: First `\hline` after first data row = header marker
+   - Sets `hasHeader = true` and `headerRowIndex = 0`
+   - Subsequent rows become data rows
+   - If no \hline found, creates empty header row (Markdown requirement)
+5. **Multicolumn Handling**: `\multicolumn{n}{spec}{content}` parsed with:
+   - Column count extracted (not convertible to Markdown)
+   - Alignment extracted from spec (`l`, `c`, `r`)
+   - Content processed for formatting commands
+   - Warning issued (colspan not supported in Markdown)
+6. **Cell Content Formatting**: Cell text converted with support for:
+   - `\textbf{...}` → `**...**`
+   - `\textit{...}` / `\emph{...}` → `*...*`
+   - `\texttt{...}` → `` `...` ``
+   - Escaped chars: `\&`, `\%`, `\#`, `\$`, `\_`, `\{`, `\}`
+   - Math mode detected (contains `$` or common commands) → preserved as-is
+   - Unknown commands removed from non-math content
+7. **Row/Cell Normalization**:
+   - Column count enforced (fill or trim rows to match spec)
+   - Whitespace trimmed from cells
+   - Empty lines within cells converted to single space
+8. **Table Environment Support**: All table variants handled:
+   - `tabular`: Basic LaTeX tables
+   - `table`: Wrapper environment (caption extracted if present)
+   - `array`: Math mode variant (treated as tabular)
+   - `longtable`: Multi-page tables (treated as single table in Markdown)
+   - `tabularx`: Paragraph-width columns (treated as tabular)
+   - `tabulary`: Column width distribution (treated as tabular)
+9. **Alignment Row Generation**: Markdown alignment row generated from column specs:
+   - Left: `:---`
+   - Center: `:---:`
+   - Right: `---:`
+10. **Test Coverage**: 54 comprehensive tests covering:
+    - Column spec parsing (simple, borders, paragraph columns, repeats, complex specs, @ separators)
+    - Table content parsing (simple rows, headers, multiline cells, hlines, clines, booktabs)
+    - Cell content conversion (formatting commands, escapes, math preservation)
+    - Multicolumn handling and various table environments
+
+### 2025-11-21 - Phase 5 (Block Converters)
 1. **Quote Environments**: Both `\begin{quote}` and `\begin{quotation}` convert to blockquote markdown (`> ...`) - each line gets `> ` prefix
 2. **Code Block Environments**: Three types handled:
    - `\begin{verbatim}` → triple backticks (no language, no parsing)
