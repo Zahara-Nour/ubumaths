@@ -259,7 +259,9 @@ The shop system is a complete marketplace for students to purchase items with gi
 supabase/migrations/
 ├── 20251121080310_create_shop_system.sql          (Phase 1 - Core tables)
 ├── 20251121090000_migrate_minesweeper_hints_to_shop.sql  (Phase 10 - Hints)
-└── 20251121100000_optimize_shop_queries.sql       (Phase 11 - Optimization)
+├── 20251121100000_optimize_shop_queries.sql       (Phase 11 - Optimization)
+├── 20251121110000_fix_security_issues.sql         (Phase 12 - Security fixes)
+└── 20251121120000_cleanup_function_overloads.sql  (Cleanup - Remove duplicate function)
 ```
 
 ### Types & Validation
