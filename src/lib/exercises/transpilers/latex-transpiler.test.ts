@@ -380,6 +380,204 @@ describe('markdownToLatex', () => {
 		expect(latex).toContain('\\begin{document}');
 		expect(latex).toContain('\\end{document}');
 	});
+
+	it('should handle markdown with blockquotes', async () => {
+		const markdown = '> This is a quoted text\n> with multiple lines';
+
+		const latex = await markdownToLatex(markdown, { includePreamble: false });
+
+		expect(latex).toContain('\\begin{quote}');
+		expect(latex).toContain('\\end{quote}');
+	});
+
+	it('should handle markdown with code blocks', async () => {
+		const markdown = '```javascript\nconst x = 1;\n```';
+
+		const latex = await markdownToLatex(markdown, { includePreamble: false });
+
+		expect(latex).toContain('\\begin{lstlisting}');
+		expect(latex).toContain('language=JavaScript');
+		expect(latex).toContain('const x = 1;');
+	});
+});
+
+describe('Blockquote Transpilation', () => {
+	it('should transpile simple blockquote', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'blockquote',
+					children: [
+						{
+							type: 'paragraph',
+							children: [{ type: 'text', content: 'Quoted text' }]
+						}
+					]
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\begin{quote}');
+		expect(latex).toContain('\\end{quote}');
+		expect(latex).toContain('Quoted text');
+	});
+
+	it('should transpile nested blockquotes', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'blockquote',
+					children: [
+						{
+							type: 'paragraph',
+							children: [{ type: 'text', content: 'Outer quote' }]
+						},
+						{
+							type: 'blockquote',
+							children: [
+								{
+									type: 'paragraph',
+									children: [{ type: 'text', content: 'Inner quote' }]
+								}
+							]
+						}
+					]
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		// Should have nested quote environments
+		expect(latex.match(/\\begin{quote}/g)?.length).toBe(2);
+		expect(latex.match(/\\end{quote}/g)?.length).toBe(2);
+		expect(latex).toContain('Outer quote');
+		expect(latex).toContain('Inner quote');
+	});
+
+	it('should transpile blockquote with formatted content', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'blockquote',
+					children: [
+						{
+							type: 'paragraph',
+							children: [
+								{ type: 'text', content: 'This is ', bold: false },
+								{ type: 'text', content: 'important', bold: true },
+								{ type: 'text', content: ' text' }
+							]
+						}
+					]
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\begin{quote}');
+		expect(latex).toContain('\\textbf{important}');
+		expect(latex).toContain('\\end{quote}');
+	});
+});
+
+describe('Code Block Transpilation', () => {
+	it('should transpile code block without language', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'code-block',
+					code: 'const x = 1;'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\begin{lstlisting}');
+		expect(latex).toContain('\\end{lstlisting}');
+		expect(latex).toContain('const x = 1;');
+		// No language option when not specified
+		expect(latex).not.toContain('language=');
+	});
+
+	it('should transpile code block with javascript language', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'code-block',
+					code: 'function hello() {\n  console.log("Hello");\n}',
+					language: 'javascript'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\begin{lstlisting}[language=JavaScript]');
+		expect(latex).toContain('function hello()');
+		expect(latex).toContain('console.log("Hello")');
+	});
+
+	it('should transpile code block with python language', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'code-block',
+					code: 'def hello():\n    print("Hello")',
+					language: 'python'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\begin{lstlisting}[language=Python]');
+		expect(latex).toContain('def hello()');
+	});
+
+	it('should preserve code content exactly', () => {
+		const code = '  indented\n    double indented\n\nwith empty line';
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'code-block',
+					code: code
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain(code);
+	});
+
+	it('should include listings package in preamble', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'code-block',
+					code: 'code'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast);
+
+		expect(latex).toContain('\\usepackage{listings}');
+		expect(latex).toContain('\\lstset');
+	});
 });
 
 describe('Edge Cases', () => {
