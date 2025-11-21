@@ -149,17 +149,19 @@ CREATE TABLE IF NOT EXISTS public.student_achievements (
 
   -- Rewards granted (denormalized for performance)
   points_awarded INTEGER NOT NULL DEFAULT 0,
-  gidouilles_awarded INTEGER NOT NULL DEFAULT 0,
+  gidouilles_awarded INTEGER NOT NULL DEFAULT 0
+);
 
-  -- Ensure uniqueness considering context variations
-  CONSTRAINT unique_student_achievement UNIQUE NULLS NOT DISTINCT (
-    student_id,
-    achievement_id,
-    (context_data->>'difficulty'),
-    (context_data->>'subject'),
-    (context_data->>'tier'),
-    (context_data->>'iteration')
-  )
+-- Ensure uniqueness considering context variations
+-- Note: Expressions cannot be used in UNIQUE constraints, must use CREATE UNIQUE INDEX
+CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_student_achievement
+ON public.student_achievements (
+  student_id,
+  achievement_id,
+  COALESCE(context_data->>'difficulty', ''),
+  COALESCE(context_data->>'subject', ''),
+  COALESCE(context_data->>'tier', ''),
+  COALESCE(context_data->>'iteration', '')
 );
 
 COMMENT ON TABLE public.student_achievements IS 'Records of achievements unlocked by students';
