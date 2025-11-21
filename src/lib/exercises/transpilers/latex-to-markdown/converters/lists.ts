@@ -1,0 +1,464 @@
+/**
+ * List Converters for LaTeX to Markdown
+ * Handles itemize, enumerate, and description environments
+ * including nested lists with proper indentation.
+ */
+
+import type { EnvironmentToken, ConversionContext, ListItem, ListType } from '../types';
+
+// ===========================
+// Constants
+// ===========================
+
+/** Spaces per indentation level */
+const INDENT_SIZE = 2;
+
+/** List environment names */
+const LIST_ENVIRONMENTS: ListType[] = ['itemize', 'enumerate', 'description'];
+
+// ===========================
+// Utility Functions
+// ===========================
+
+/**
+ * Get indentation string based on nesting level.
+ * Level 0 = no indent, Level 1 = 2 spaces, etc.
+ */
+export function getIndent(level: number): string {
+	return ' '.repeat(level * INDENT_SIZE);
+}
+
+/**
+ * Check if an environment name is a list environment.
+ */
+export function isListEnvironment(name: string): boolean {
+	return LIST_ENVIRONMENTS.includes(name as ListType);
+}
+
+/**
+ * Find all nested environment ranges in content.
+ * Returns array of [startIndex, endIndex] for each nested environment.
+ */
+function findNestedEnvironments(content: string): Array<[number, number]> {
+	const ranges: Array<[number, number]> = [];
+	const envRegex = /\\begin\{(itemize|enumerate|description)\}/g;
+
+	let match: RegExpExecArray | null;
+	while ((match = envRegex.exec(content)) !== null) {
+		const startIdx = match.index;
+		const envName = match[1];
+
+		// Find the matching \end{envName}
+		let depth = 1;
+		let searchIdx = startIdx + match[0].length;
+		const beginRegex = new RegExp(`\\\\begin\\{${envName}\\}`, 'g');
+		const endRegex = new RegExp(`\\\\end\\{${envName}\\}`, 'g');
+
+		while (depth > 0 && searchIdx < content.length) {
+			// Find next begin or end
+			beginRegex.lastIndex = searchIdx;
+			endRegex.lastIndex = searchIdx;
+
+			const nextBegin = beginRegex.exec(content);
+			const nextEnd = endRegex.exec(content);
+
+			if (!nextEnd) {
+				// Malformed, no matching end
+				break;
+			}
+
+			if (nextBegin && nextBegin.index < nextEnd.index) {
+				// Found another begin first
+				depth++;
+				searchIdx = nextBegin.index + nextBegin[0].length;
+			} else {
+				// Found end
+				depth--;
+				searchIdx = nextEnd.index + nextEnd[0].length;
+				if (depth === 0) {
+					ranges.push([startIdx, searchIdx]);
+				}
+			}
+		}
+	}
+
+	return ranges;
+}
+
+/**
+ * Check if a position is inside any nested environment.
+ */
+function isInsideNestedEnv(pos: number, ranges: Array<[number, number]>): boolean {
+	return ranges.some(([start, end]) => pos > start && pos < end);
+}
+
+/**
+ * Parse list items from environment content.
+ * Handles \item commands and extracts content for each item.
+ * Correctly ignores \item commands inside nested environments.
+ *
+ * @param content - Raw content between \begin and \end tags
+ * @returns Array of parsed list items
+ */
+export function parseListItems(content: string): ListItem[] {
+	const items: ListItem[] = [];
+
+	// Find all nested environments first so we can skip \item inside them
+	const nestedRanges = findNestedEnvironments(content);
+
+	// Find all \item commands not inside nested environments
+	const itemRegex = /\\item(?:\s*\[([^\]]*)\])?\s*/g;
+	const itemPositions: Array<{ label?: string; startIndex: number; commandEnd: number }> = [];
+
+	let match: RegExpExecArray | null;
+	while ((match = itemRegex.exec(content)) !== null) {
+		// Skip if inside nested environment
+		if (isInsideNestedEnv(match.index, nestedRanges)) {
+			continue;
+		}
+
+		itemPositions.push({
+			label: match[1],
+			startIndex: match.index,
+			commandEnd: match.index + match[0].length
+		});
+	}
+
+	// Extract content for each item
+	for (let i = 0; i < itemPositions.length; i++) {
+		const current = itemPositions[i];
+		const nextStart =
+			i < itemPositions.length - 1 ? itemPositions[i + 1].startIndex : content.length;
+
+		const itemContent = content.slice(current.commandEnd, nextStart).trim();
+
+		items.push({
+			content: itemContent,
+			label: current.label
+		});
+	}
+
+	return items;
+}
+
+/**
+ * Split item content into text parts and nested lists.
+ * Returns the text before the first nested list, the nested list itself, and text after.
+ */
+function splitItemContent(content: string): {
+	textBefore: string;
+	nestedList: string | null;
+	textAfter: string;
+} {
+	// Find first nested list environment
+	const envRegex = /\\begin\{(itemize|enumerate|description)\}/;
+	const beginMatch = content.match(envRegex);
+
+	if (!beginMatch) {
+		return { textBefore: content, nestedList: null, textAfter: '' };
+	}
+
+	const envName = beginMatch[1];
+	const startIdx = beginMatch.index!;
+
+	// Find the matching \end{envName}
+	let depth = 1;
+	let searchIdx = startIdx + beginMatch[0].length;
+	const beginRegex = new RegExp(`\\\\begin\\{${envName}\\}`, 'g');
+	const endRegex = new RegExp(`\\\\end\\{${envName}\\}`, 'g');
+	let endIdx = content.length;
+
+	while (depth > 0 && searchIdx < content.length) {
+		beginRegex.lastIndex = searchIdx;
+		endRegex.lastIndex = searchIdx;
+
+		const nextBegin = beginRegex.exec(content);
+		const nextEnd = endRegex.exec(content);
+
+		if (!nextEnd) {
+			break;
+		}
+
+		if (nextBegin && nextBegin.index < nextEnd.index) {
+			depth++;
+			searchIdx = nextBegin.index + nextBegin[0].length;
+		} else {
+			depth--;
+			searchIdx = nextEnd.index + nextEnd[0].length;
+			if (depth === 0) {
+				endIdx = searchIdx;
+			}
+		}
+	}
+
+	return {
+		textBefore: content.slice(0, startIdx).trim(),
+		nestedList: content.slice(startIdx, endIdx),
+		textAfter: content.slice(endIdx).trim()
+	};
+}
+
+/**
+ * Convert a nested list found in item content.
+ */
+function convertNestedList(
+	nestedListStr: string,
+	parentLevel: number,
+	context: ConversionContext
+): string {
+	// Parse the nested list string to extract environment name and content
+	const match = nestedListStr.match(
+		/\\begin\{(itemize|enumerate|description)\}([\s\S]*)\\end\{\1\}$/
+	);
+
+	if (!match) {
+		return '';
+	}
+
+	const envName = match[1] as ListType;
+	const envContent = match[2];
+
+	const nestedToken: EnvironmentToken = {
+		type: 'environment',
+		name: envName,
+		content: envContent,
+		raw: nestedListStr,
+		start: 0,
+		end: nestedListStr.length,
+		line: 1,
+		column: 1,
+		depth: parentLevel + 1
+	};
+
+	const nestedContext: ConversionContext = {
+		...context,
+		indentLevel: parentLevel + 1,
+		listStack: [...context.listStack, envName],
+		inListItem: true
+	};
+
+	switch (envName) {
+		case 'itemize':
+			return convertItemize(nestedToken, nestedContext);
+		case 'enumerate':
+			return convertEnumerate(nestedToken, nestedContext);
+		case 'description':
+			return convertDescription(nestedToken, nestedContext);
+		default:
+			return '';
+	}
+}
+
+// ===========================
+// Main Converters
+// ===========================
+
+/**
+ * Convert itemize environment to Markdown unordered list.
+ *
+ * @example
+ * \begin{itemize}
+ *   \item First item
+ *   \item Second item
+ * \end{itemize}
+ * ->
+ * - First item
+ * - Second item
+ */
+export function convertItemize(token: EnvironmentToken, context: ConversionContext): string {
+	const items = parseListItems(token.content);
+	const level = token.depth ?? context.indentLevel;
+	const indent = getIndent(level);
+
+	if (items.length === 0) {
+		return '';
+	}
+
+	const lines: string[] = [];
+
+	for (const item of items) {
+		const { textBefore, nestedList, textAfter } = splitItemContent(item.content);
+
+		// Process the text content (before nested list)
+		if (textBefore) {
+			const textLines = textBefore.split('\n').filter((l) => l.trim());
+			for (let i = 0; i < textLines.length; i++) {
+				if (i === 0) {
+					lines.push(`${indent}- ${textLines[i].trim()}`);
+				} else {
+					lines.push(`${indent}  ${textLines[i].trim()}`);
+				}
+			}
+		} else {
+			// Empty text before nested list - still output the bullet
+			if (nestedList) {
+				lines.push(`${indent}-`);
+			}
+		}
+
+		// Handle nested list
+		if (nestedList) {
+			const nestedResult = convertNestedList(nestedList, level, context);
+			if (nestedResult) {
+				lines.push(nestedResult);
+			}
+		}
+
+		// Handle text after nested list
+		if (textAfter) {
+			const afterLines = textAfter.split('\n').filter((l) => l.trim());
+			for (const line of afterLines) {
+				lines.push(`${indent}  ${line.trim()}`);
+			}
+		}
+	}
+
+	return lines.join('\n');
+}
+
+/**
+ * Convert enumerate environment to Markdown ordered list.
+ *
+ * @example
+ * \begin{enumerate}
+ *   \item First
+ *   \item Second
+ * \end{enumerate}
+ * ->
+ * 1. First
+ * 2. Second
+ */
+export function convertEnumerate(token: EnvironmentToken, context: ConversionContext): string {
+	const items = parseListItems(token.content);
+	const level = token.depth ?? context.indentLevel;
+	const indent = getIndent(level);
+
+	if (items.length === 0) {
+		return '';
+	}
+
+	const lines: string[] = [];
+
+	for (let i = 0; i < items.length; i++) {
+		const item = items[i];
+		const number = i + 1;
+		const { textBefore, nestedList, textAfter } = splitItemContent(item.content);
+
+		// Process the text content (before nested list)
+		if (textBefore) {
+			const textLines = textBefore.split('\n').filter((l) => l.trim());
+			for (let j = 0; j < textLines.length; j++) {
+				if (j === 0) {
+					lines.push(`${indent}${number}. ${textLines[j].trim()}`);
+				} else {
+					lines.push(`${indent}   ${textLines[j].trim()}`);
+				}
+			}
+		} else {
+			// Empty text before nested list
+			if (nestedList) {
+				lines.push(`${indent}${number}.`);
+			}
+		}
+
+		// Handle nested list
+		if (nestedList) {
+			const nestedResult = convertNestedList(nestedList, level, context);
+			if (nestedResult) {
+				lines.push(nestedResult);
+			}
+		}
+
+		// Handle text after nested list
+		if (textAfter) {
+			const afterLines = textAfter.split('\n').filter((l) => l.trim());
+			for (const line of afterLines) {
+				lines.push(`${indent}   ${line.trim()}`);
+			}
+		}
+	}
+
+	return lines.join('\n');
+}
+
+/**
+ * Convert description environment to Markdown.
+ * Uses bold for terms and colon separator.
+ *
+ * @example
+ * \begin{description}
+ *   \item[Term] Definition
+ *   \item[Another] Another definition
+ * \end{description}
+ * ->
+ * **Term**: Definition
+ * **Another**: Another definition
+ */
+export function convertDescription(token: EnvironmentToken, context: ConversionContext): string {
+	const items = parseListItems(token.content);
+	const level = token.depth ?? context.indentLevel;
+	const indent = getIndent(level);
+
+	if (items.length === 0) {
+		return '';
+	}
+
+	const lines: string[] = [];
+
+	for (const item of items) {
+		const { textBefore, nestedList, textAfter } = splitItemContent(item.content);
+
+		// Format term and definition
+		const term = item.label ?? '';
+		const definition = textBefore.trim();
+
+		// Build the first line
+		if (term) {
+			if (definition) {
+				lines.push(`${indent}**${term}**: ${definition}`);
+			} else {
+				lines.push(`${indent}**${term}**:`);
+			}
+		} else if (definition) {
+			lines.push(`${indent}${definition}`);
+		}
+
+		// Handle nested list
+		if (nestedList) {
+			const nestedResult = convertNestedList(nestedList, level, context);
+			if (nestedResult) {
+				lines.push(nestedResult);
+			}
+		}
+
+		// Handle text after nested list
+		if (textAfter) {
+			const afterLines = textAfter.split('\n').filter((l) => l.trim());
+			for (const line of afterLines) {
+				lines.push(`${indent}  ${line.trim()}`);
+			}
+		}
+	}
+
+	return lines.join('\n');
+}
+
+// ===========================
+// Environment Converter Registry
+// ===========================
+
+/**
+ * Registry of list environment converters.
+ */
+export const listEnvironmentConverters = {
+	itemize: convertItemize,
+	enumerate: convertEnumerate,
+	description: convertDescription
+};
+
+/**
+ * Get the converter for a list environment.
+ */
+export function getListConverter(name: string): typeof convertItemize | undefined {
+	return listEnvironmentConverters[name as keyof typeof listEnvironmentConverters];
+}
