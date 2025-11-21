@@ -30,6 +30,7 @@ Convertir du code LaTeX (complet ou fragmentaire) en Custom Markdown compatible 
 ### Contexte
 
 Le système d'exercices d'UbuMaths supporte un format Markdown enrichi avec:
+
 - Formules mathématiques LaTeX (inline `$...$` et display `$$...$$`)
 - Nodes personnalisées (blockquotes, code blocks, listes)
 
@@ -113,16 +114,15 @@ Deux niveaux:
 ### `transpileLatexToMarkdown(latex, options?)`
 
 **Signature**:
+
 ```typescript
-function transpileLatexToMarkdown(
-  latex: string,
-  options?: LatexToMarkdownOptions
-): TranspileResult
+function transpileLatexToMarkdown(latex: string, options?: LatexToMarkdownOptions): TranspileResult;
 ```
 
 **Description**: Convertit une chaîne LaTeX en Markdown.
 
 **Exemple**:
+
 ```typescript
 import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
 
@@ -151,25 +151,25 @@ console.log(result.warnings);
 
 ```typescript
 interface LatexToMarkdownOptions {
-  /**
-   * Préserver les commentaires LaTeX (%) comme commentaires HTML.
-   * @default false
-   *
-   * Exemple:
-   * Input:  text % this is a comment
-   * false:  text
-   * true:   text <!-- comment: this is a comment -->
-   */
-  preserveComments?: boolean;
+	/**
+	 * Préserver les commentaires LaTeX (%) comme commentaires HTML.
+	 * @default false
+	 *
+	 * Exemple:
+	 * Input:  text % this is a comment
+	 * false:  text
+	 * true:   text <!-- comment: this is a comment -->
+	 */
+	preserveComments?: boolean;
 
-  /**
-   * Délimiteurs mathématiques à utiliser en sortie.
-   * @default 'dollar'
-   *
-   * 'dollar':   $...$ et $$...$$
-   * 'brackets': \(...\) et \[...\]
-   */
-  mathDelimiters?: 'dollar' | 'brackets';
+	/**
+	 * Délimiteurs mathématiques à utiliser en sortie.
+	 * @default 'dollar'
+	 *
+	 * 'dollar':   $...$ et $$...$$
+	 * 'brackets': \(...\) et \[...\]
+	 */
+	mathDelimiters?: 'dollar' | 'brackets';
 }
 ```
 
@@ -177,17 +177,17 @@ interface LatexToMarkdownOptions {
 
 ```typescript
 interface TranspileResult {
-  /**
-   * Le markdown généré.
-   * Compatible avec markdown-parser existant.
-   */
-  markdown: string;
+	/**
+	 * Le markdown généré.
+	 * Compatible avec markdown-parser existant.
+	 */
+	markdown: string;
 
-  /**
-   * Avertissements rencontrés lors de la conversion.
-   * (vide si tout s'est bien passé)
-   */
-  warnings: TranspileWarning[];
+	/**
+	 * Avertissements rencontrés lors de la conversion.
+	 * (vide si tout s'est bien passé)
+	 */
+	warnings: TranspileWarning[];
 }
 ```
 
@@ -195,23 +195,20 @@ interface TranspileResult {
 
 ```typescript
 interface TranspileWarning {
-  /** Type d'avertissement */
-  type: 'unsupported-command'
-       | 'unsupported-environment'
-       | 'parse-error'
-       | 'malformed-input';
+	/** Type d'avertissement */
+	type: 'unsupported-command' | 'unsupported-environment' | 'parse-error' | 'malformed-input';
 
-  /** Message descriptif */
-  message: string;
+	/** Message descriptif */
+	message: string;
 
-  /** Numéro de ligne (si disponible, 0-based) */
-  line?: number;
+	/** Numéro de ligne (si disponible, 0-based) */
+	line?: number;
 
-  /** Commande/environnement problématique */
-  command?: string;
+	/** Commande/environnement problématique */
+	command?: string;
 
-  /** Contexte additionnel */
-  context?: string;
+	/** Contexte additionnel */
+	context?: string;
 }
 ```
 
@@ -219,13 +216,13 @@ interface TranspileWarning {
 
 ```typescript
 type LatexToken =
-  | { type: 'text'; content: string }
-  | { type: 'command'; name: string; args: string[] }
-  | { type: 'environment'; name: string; content: string }
-  | { type: 'math'; mode: 'inline' | 'display'; content: string }
-  | { type: 'comment'; content: string }
-  | { type: 'whitespace'; content: string }
-  | { type: 'special'; char: string };
+	| { type: 'text'; content: string }
+	| { type: 'command'; name: string; args: string[] }
+	| { type: 'environment'; name: string; content: string }
+	| { type: 'math'; mode: 'inline' | 'display'; content: string }
+	| { type: 'comment'; content: string }
+	| { type: 'whitespace'; content: string }
+	| { type: 'special'; char: string };
 ```
 
 ---
@@ -236,52 +233,55 @@ type LatexToken =
 
 #### Formules Mathématiques (Pass-through)
 
-| LaTeX | Markdown | Notes |
-|-------|----------|-------|
-| `$x^2$` | `$x^2$` | Inline math - pass-through |
-| `\(x^2\)` | `$x^2$` | Alias inline math |
+| LaTeX     | Markdown  | Notes                               |
+| --------- | --------- | ----------------------------------- |
+| `$x^2$`   | `$x^2$`   | Inline math - pass-through          |
+| `\(x^2\)` | `$x^2$`   | Alias inline math                   |
 | `\[x^2\]` | `$$x^2$$` | Display math - délimiteurs changent |
-| `$$x^2$$` | `$$x^2$$` | Display math - pass-through |
+| `$$x^2$$` | `$$x^2$$` | Display math - pass-through         |
 
 **Règle**: Les contenus mathématiques ne sont jamais parsés. Ils sont préservés exactement comme fournis.
 
 #### Headings (Sections)
 
-| LaTeX | Markdown | Notes |
-|-------|----------|-------|
-| `\section{Titre}` | `# Titre` | Level 1 |
-| `\subsection{Titre}` | `## Titre` | Level 2 |
-| `\subsubsection{Titre}` | `### Titre` | Level 3 |
-| `\paragraph{Titre}` | `#### Titre` | Level 4 (rarement utilisé) |
+| LaTeX                   | Markdown     | Notes                      |
+| ----------------------- | ------------ | -------------------------- |
+| `\section{Titre}`       | `# Titre`    | Level 1                    |
+| `\subsection{Titre}`    | `## Titre`   | Level 2                    |
+| `\subsubsection{Titre}` | `### Titre`  | Level 3                    |
+| `\paragraph{Titre}`     | `#### Titre` | Level 4 (rarement utilisé) |
 
 **Règle**: Whitespace pré/post est nettoyé. Les arguments imbriqués sont récursivement convertis.
 
 **Exemples**:
+
 ```latex
 \section{Introduction to \textbf{Mathematics}}
 ```
+
 devient:
+
 ```markdown
 # Introduction to **Mathematics**
 ```
 
 #### Text Formatting (Basique)
 
-| LaTeX | Markdown | Notes |
-|-------|----------|-------|
-| `\textbf{text}` | `**text**` | Bold |
-| `\textit{text}` | `*text*` | Italic |
-| `\texttt{text}` | `` `text` `` | Monospace |
-| `\textup{text}` | `text` | Upright (no-op) |
-| `\emph{text}` | `*text*` | Emphasis (= italic) |
+| LaTeX           | Markdown     | Notes               |
+| --------------- | ------------ | ------------------- |
+| `\textbf{text}` | `**text**`   | Bold                |
+| `\textit{text}` | `*text*`     | Italic              |
+| `\texttt{text}` | `` `text` `` | Monospace           |
+| `\textup{text}` | `text`       | Upright (no-op)     |
+| `\emph{text}`   | `*text*`     | Emphasis (= italic) |
 
 **Règle**: Imbrication supportée. Exemple: `\textbf{\textit{bold-italic}}` → `***bold-italic***`
 
 #### Hrule (Ligne Horizontale)
 
-| LaTeX | Markdown |
-|-------|----------|
-| `\hrule` | `---` |
+| LaTeX    | Markdown            |
+| -------- | ------------------- |
+| `\hrule` | `---`               |
 | `\hline` | `---` (dans tables) |
 
 ---
@@ -291,6 +291,7 @@ devient:
 #### Itemize (Listes à Puces)
 
 **LaTeX**:
+
 ```latex
 \begin{itemize}
   \item Premier item
@@ -299,12 +300,14 @@ devient:
 ```
 
 **Markdown**:
+
 ```markdown
 - Premier item
 - Deuxième item
 ```
 
 **Règles**:
+
 - `\item` optionnel (certains dialectes LaTeX) → erreur parse
 - Imbrication supportée (convertie en indentation)
 - Espaces blancs pré/post ignorés
@@ -312,6 +315,7 @@ devient:
 #### Enumerate (Listes Numérotées)
 
 **LaTeX**:
+
 ```latex
 \begin{enumerate}
   \item Premier item
@@ -320,12 +324,14 @@ devient:
 ```
 
 **Markdown**:
+
 ```markdown
 1. Premier item
 2. Deuxième item
 ```
 
 **Règles**:
+
 - Les numéros LaTeX `\item[label]` sont ignorés, renuméroté automatiquement
 - Imbrication supportée
 - Remise à zéro à chaque niveau d'imbrication
@@ -337,6 +343,7 @@ devient:
 #### Quote (Citation)
 
 **LaTeX**:
+
 ```latex
 \begin{quote}
 Lorem ipsum dolor sit amet
@@ -344,17 +351,20 @@ Lorem ipsum dolor sit amet
 ```
 
 **Markdown**:
+
 ```markdown
 > Lorem ipsum dolor sit amet
 ```
 
 **Règles**:
+
 - Chaque ligne devient `> ...`
 - Imbrication non supportée (pas standard LaTeX)
 
 #### Verbatim (Code Brut)
 
 **LaTeX**:
+
 ```latex
 \begin{verbatim}
 def hello():
@@ -363,6 +373,7 @@ def hello():
 ```
 
 **Markdown**:
+
 ````markdown
 ```
 def hello():
@@ -371,12 +382,14 @@ def hello():
 ````
 
 **Règles**:
+
 - Aucun parsing interne (contrairement à lstlisting)
 - Whitespace préservé exactement
 
 #### Lstlisting (Code avec Couleurs)
 
 **LaTeX**:
+
 ```latex
 \begin{lstlisting}[language=python]
 def hello():
@@ -385,6 +398,7 @@ def hello():
 ```
 
 **Markdown**:
+
 ````markdown
 ```python
 def hello():
@@ -393,6 +407,7 @@ def hello():
 ````
 
 **Règles**:
+
 - `language=` extracté et utilisé pour fence
 - Autres options ignorées (caption, label, etc.) → warnings
 - Whitespace préservé exactement
@@ -400,16 +415,19 @@ def hello():
 #### Images
 
 **LaTeX**:
+
 ```latex
 \includegraphics[width=0.8\textwidth]{images/diagram.png}
 ```
 
 **Markdown**:
+
 ```markdown
 ![](images/diagram.png)
 ```
 
 **Règles**:
+
 - Options ignorées (width, height, angle, etc.) → warnings
 - Texte alternatif non supporté (LaTeX n'en a pas par défaut)
 - Chemin de fichier préservé exactement
@@ -421,6 +439,7 @@ def hello():
 #### Tabular (Tableaux)
 
 **LaTeX**:
+
 ```latex
 \begin{tabular}{|l|c|r|}
 \hline
@@ -433,14 +452,16 @@ D & E & F \\
 ```
 
 **Markdown**:
+
 ```markdown
 | Gauche | Centre | Droite |
-|--------|--------|--------|
+| ------ | ------ | ------ |
 | A      | B      | C      |
 | D      | E      | F      |
 ```
 
 **Règles**:
+
 - Spec de colonnes `{|l|c|r|}` → séquence de colonnes
 - `\hline` → separateur visual
 - `\\` → fin de ligne
@@ -464,15 +485,19 @@ Les commandes/environnements non reconnus sont wrappés ainsi:
 ```
 
 Exemple:
+
 ```latex
 \unknowncommand{arg1}{arg2}
 ```
+
 devient:
+
 ```markdown
 <!-- LaTeX: \unknowncommand{arg1}{arg2} -->
 ```
 
 Avec warning:
+
 ```typescript
 {
   type: 'unsupported-command',
@@ -514,6 +539,7 @@ src/lib/exercises/markdown-parser/  # Existant (utilisation seulement)
 ### Tokenizer LaTeX
 
 **Pseudo-code**:
+
 ```
 tokens = []
 i = 0
@@ -559,12 +585,14 @@ return tokens
 Trouve l'indice de la brace fermante correspondant à une brace ouverte.
 
 **Exemple**:
+
 ```
 Input:  "\textbf{hello {nested} world}", startIndex=7
 Output: [7, 29]  // Indices de { et }
 ```
 
 **Règles**:
+
 - Gère l'imbrication de braces
 - Gère l'échappement `\{` et `\}`
 - Lance une erreur si pas de match trouvé
@@ -574,6 +602,7 @@ Output: [7, 29]  // Indices de { et }
 Extrait un environnement `\begin{name}...\end{name}`.
 
 **Exemple**:
+
 ```
 Input:  \begin{itemize}\item test\end{itemize}
 Output: {
@@ -590,65 +619,84 @@ Output: {
 ### À Tester et Documenter
 
 #### Braces Imbriquées
+
 ```latex
 \textbf{outer \textit{inner} text}
 ```
+
 **Expected**: `**outer *inner* text**`
 
 #### Espaces Multiples
+
 ```latex
 \section{  Multiple   spaces  }
 ```
+
 **Expected**: `# Multiple spaces` (normalisés à un espace)
 
 #### Math Imbriquée (Non-Supportée)
+
 ```latex
 \textbf{$x^2$}
 ```
+
 **Expected**: `**$x^2$**` (math préservée exactement)
 
 #### Caractères Spéciaux dans Arguments
+
 ```latex
 \textbf{100\% discount}
 ```
+
 **Expected**: `**100\% discount**` (échappement préservé)
 
 #### Environnements Vides
+
 ```latex
 \begin{itemize}
 \end{itemize}
 ```
+
 **Expected**: `` (liste vide) avec warning
 
 #### Commentaires Partiels
+
 ```latex
 text % comment with \command{}
 more text
 ```
+
 **Expected**: `text` (ligne 1), `more text` (ligne 2)
+
 - Commande dans commentaire = ignorée
 
 #### Fragmentation (Commandes Non Fermées)
+
 ```latex
 \begin{itemize}
 \item test
 % Oups, pas de \end{itemize}
 ```
+
 **Expected**: Warning + traitement gracieux (wrapper dans commentaire HTML)
 
 #### Whitespace Significatif
+
 ```latex
 Ligne 1
 Ligne 2
 
 Ligne 4 (après paraphe)
 ```
+
 **Expected**: Préserver structure paragraphes (double newline)
 
 #### Commandes avec Arguments Optionnels
+
 ```latex
 \includegraphics[width=0.8\textwidth]{file.png}
 ```
+
 **Expected**: Ignorer `[...]`, utiliser `{file.png}`
 
 ---
@@ -694,6 +742,7 @@ Les packages suivants ne sont **jamais** supportés:
 #### 2. Créer la Fonction dans le Fichier Approprié
 
 **Exemple (Simple)**:
+
 ```typescript
 // src/lib/exercises/transpilers/latex-to-markdown/converters/simple.ts
 
@@ -703,11 +752,12 @@ Les packages suivants ne sont **jamais** supportés:
  * @returns Markdown bold
  */
 export function convertTextbf(content: string): string {
-  return `**${content}**`;
+	return `**${content}**`;
 }
 ```
 
 **Exemple (Environment)**:
+
 ```typescript
 // src/lib/exercises/transpilers/latex-to-markdown/converters/lists.ts
 
@@ -717,8 +767,8 @@ export function convertTextbf(content: string): string {
  * @returns Markdown list
  */
 export function convertItemize(content: string): string {
-  // Parse les \item{}
-  // Retourner markdown list
+	// Parse les \item{}
+	// Retourner markdown list
 }
 ```
 
@@ -728,15 +778,15 @@ export function convertItemize(content: string): string {
 // src/lib/exercises/transpilers/latex-to-markdown/index.ts
 
 const COMMAND_HANDLERS: Record<string, (args: string[]) => string> = {
-  textbf: (args) => convertTextbf(args[0]),
-  textit: (args) => convertTextit(args[0]),
-  // ... autres commandes
+	textbf: (args) => convertTextbf(args[0]),
+	textit: (args) => convertTextit(args[0])
+	// ... autres commandes
 };
 
 const ENV_HANDLERS: Record<string, (content: string) => string> = {
-  itemize: convertItemize,
-  enumerate: convertEnumerate,
-  // ... autres environnements
+	itemize: convertItemize,
+	enumerate: convertEnumerate
+	// ... autres environnements
 };
 ```
 
@@ -746,23 +796,23 @@ const ENV_HANDLERS: Record<string, (content: string) => string> = {
 // src/lib/exercises/transpilers/latex-to-markdown/__tests__/converters.test.ts
 
 describe('convertTextbf', () => {
-  it('should convert \\textbf{text} to **text**', () => {
-    const result = transpileLatexToMarkdown('\\textbf{bold}');
-    expect(result.markdown).toBe('**bold**');
-    expect(result.warnings).toHaveLength(0);
-  });
+	it('should convert \\textbf{text} to **text**', () => {
+		const result = transpileLatexToMarkdown('\\textbf{bold}');
+		expect(result.markdown).toBe('**bold**');
+		expect(result.warnings).toHaveLength(0);
+	});
 
-  it('should handle nested formatting', () => {
-    const result = transpileLatexToMarkdown('\\textbf{\\textit{nested}}');
-    expect(result.markdown).toBe('***nested***');
-  });
+	it('should handle nested formatting', () => {
+		const result = transpileLatexToMarkdown('\\textbf{\\textit{nested}}');
+		expect(result.markdown).toBe('***nested***');
+	});
 
-  it('should handle math inside formatting', () => {
-    const result = transpileLatexToMarkdown('\\textbf{$x^2$}');
-    expect(result.markdown).toBe('**$x^2$**');
-  });
+	it('should handle math inside formatting', () => {
+		const result = transpileLatexToMarkdown('\\textbf{$x^2$}');
+		expect(result.markdown).toBe('**$x^2$**');
+	});
 
-  // Edge cases...
+	// Edge cases...
 });
 ```
 
@@ -784,15 +834,18 @@ Ajouter une entrée dans la table [Conversions Supportées](#conversions-support
 ## Ressources
 
 ### Fichiers Connexes
+
 - **Markdown Parser**: `src/lib/exercises/markdown-parser/` - Utilise la sortie de ce transpileur
 - **Exercise System**: `src/lib/exercises/` - Contexte d'utilisation
 - **Tests**: `src/lib/exercises/__tests__/`
 
 ### Progress
+
 - **Tracker**: `.claude/latex-transpiler-progress.md`
 - **Branch**: `feature/audit-trail`
 
 ### Références
+
 - [LaTeX Reference](https://www.latex-project.org/help/documentation/)
 - [CommonMark Spec](https://spec.commonmark.org/)
 
