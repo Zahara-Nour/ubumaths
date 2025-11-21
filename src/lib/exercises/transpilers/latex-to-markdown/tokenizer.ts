@@ -751,7 +751,8 @@ function isSpecialChar(char: string): boolean {
  * Check if a character can be escaped with backslash.
  */
 function isEscapeChar(char: string): boolean {
-	return ['$', '%', '&', '#', '_', '{', '}', '~', '^', '\\'].includes(char);
+	// Standard LaTeX escape characters plus spacing commands (\, \; \: \!)
+	return ['$', '%', '&', '#', '_', '{', '}', '~', '^', '\\', ',', ';', ':', '!'].includes(char);
 }
 
 /**
