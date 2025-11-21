@@ -6,10 +6,19 @@ import {
 	validateCardOwnership,
 	checkCardsUnused,
 	lockCardsForEntity,
+	unlockCardsForEntity,
 	checkActiveListingsLimit,
 	isMarketplaceEnabled,
 	getStudentSchoolId
 } from '$lib/server/marketplace/helpers';
+import {
+	validateItemOwnership,
+	checkItemsTradeable,
+	checkItemsUnlocked,
+	lockItemsForListing,
+	getItemDetails,
+	getItemTemplateDetails
+} from '$lib/server/marketplace/item-helpers';
 // TODO: Add cache invalidation when cache-manager is properly implemented
 // import { invalidateListingCaches } from '$lib/server/marketplace/cache-manager';
 
@@ -90,6 +99,29 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		throw error(500, 'Erreur lors de la récupération des annonces');
 	}
 
+	// Enrich listings with item details
+	const enrichedListings = await Promise.all(
+		(listings || []).map(async (listing) => {
+			// Get offered item details if any
+			const offeredItems =
+				listing.offered_item_ids?.length > 0
+					? await getItemDetails(supabase, listing.offered_item_ids)
+					: [];
+
+			// Get wanted item template details if any
+			const wantedItemTemplates =
+				listing.wanted_item_template_ids?.length > 0
+					? await getItemTemplateDetails(supabase, listing.wanted_item_template_ids)
+					: [];
+
+			return {
+				...listing,
+				offered_items: offeredItems,
+				wanted_item_templates: wantedItemTemplates
+			};
+		})
+	);
+
 	// Record unique views for listings not created by the current user
 	// This prevents view count manipulation and tracks unique viewers
 	if (listings && listings.length > 0) {
@@ -123,7 +155,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	}
 
 	return json({
-		listings: listings || [],
+		listings: enrichedListings,
 		pagination: {
 			page,
 			limit,
@@ -167,18 +199,45 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(403, "Vous avez atteint le nombre maximum d'annonces actives");
 	}
 
-	// For 'sell' listings, validate card ownership and availability
-	if (data.listing_type === 'sell' && data.offered_card_ids.length > 0) {
-		// Verify ownership
-		const ownsCards = await validateCardOwnership(supabase, userId, data.offered_card_ids);
-		if (!ownsCards) {
-			throw error(403, 'Vous ne possédez pas toutes les cartes spécifiées');
+	// For 'sell' listings, validate card and item ownership and availability
+	if (data.listing_type === 'sell') {
+		// Validate cards if offered
+		if (data.offered_card_ids.length > 0) {
+			// Verify ownership
+			const ownsCards = await validateCardOwnership(supabase, userId, data.offered_card_ids);
+			if (!ownsCards) {
+				throw error(403, 'Vous ne possédez pas toutes les cartes spécifiées');
+			}
+
+			// Verify cards are unused
+			const cardsUnused = await checkCardsUnused(supabase, data.offered_card_ids);
+			if (!cardsUnused) {
+				throw error(403, 'Certaines cartes ont déjà été utilisées');
+			}
 		}
 
-		// Verify cards are unused
-		const cardsUnused = await checkCardsUnused(supabase, data.offered_card_ids);
-		if (!cardsUnused) {
-			throw error(403, 'Certaines cartes ont déjà été utilisées');
+		// Validate items if offered
+		if (data.offered_item_ids.length > 0) {
+			// Verify ownership
+			const ownsItems = await validateItemOwnership(supabase, userId, data.offered_item_ids);
+			if (!ownsItems) {
+				throw error(403, 'Vous ne possédez pas tous les objets spécifiés');
+			}
+
+			// Verify items are tradeable
+			const itemsTradeable = await checkItemsTradeable(supabase, data.offered_item_ids);
+			if (!itemsTradeable) {
+				throw error(
+					403,
+					'Certains objets ne sont pas échangeables ou sont en période de restriction'
+				);
+			}
+
+			// Verify items are not locked
+			const itemsUnlocked = await checkItemsUnlocked(supabase, data.offered_item_ids);
+			if (!itemsUnlocked) {
+				throw error(403, 'Certains objets sont déjà verrouillés pour une autre transaction');
+			}
 		}
 	}
 
@@ -202,8 +261,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			title: data.title,
 			description: data.description || null,
 			offered_card_ids: data.offered_card_ids,
+			offered_item_ids: data.offered_item_ids,
 			offered_gidouilles: data.offered_gidouilles,
 			wanted_card_template_ids: data.wanted_card_template_ids,
+			wanted_item_template_ids: data.wanted_item_template_ids,
 			wanted_gidouilles: data.wanted_gidouilles,
 			status: 'active',
 			expires_at: expiresAt.toISOString()
@@ -225,21 +286,44 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, "Erreur lors de la création de l'annonce");
 	}
 
-	// Lock cards if this is a 'sell' listing with cards
-	if (data.listing_type === 'sell' && data.offered_card_ids.length > 0) {
-		const lockResult = await lockCardsForEntity(
-			supabase,
-			userId,
-			data.offered_card_ids,
-			listing.id,
-			'listing'
-		);
+	// Lock cards and items if this is a 'sell' listing
+	if (data.listing_type === 'sell') {
+		// Lock cards if offered
+		if (data.offered_card_ids.length > 0) {
+			const lockResult = await lockCardsForEntity(
+				supabase,
+				userId,
+				data.offered_card_ids,
+				listing.id,
+				'listing'
+			);
 
-		if (!lockResult.success) {
-			// Rollback: delete the listing
-			await supabase.from('marketplace_listings').delete().eq('id', listing.id);
+			if (!lockResult.success) {
+				// Rollback: delete the listing
+				await supabase.from('marketplace_listings').delete().eq('id', listing.id);
 
-			throw error(500, lockResult.error || 'Erreur lors du verrouillage des cartes');
+				throw error(500, lockResult.error || 'Erreur lors du verrouillage des cartes');
+			}
+		}
+
+		// Lock items if offered
+		if (data.offered_item_ids.length > 0) {
+			const lockResult = await lockItemsForListing(
+				supabase,
+				userId,
+				data.offered_item_ids,
+				listing.id
+			);
+
+			if (!lockResult.success) {
+				// Rollback: delete the listing and unlock cards if they were locked
+				await supabase.from('marketplace_listings').delete().eq('id', listing.id);
+				if (data.offered_card_ids.length > 0) {
+					await unlockCardsForEntity(supabase, listing.id);
+				}
+
+				throw error(500, lockResult.error || 'Erreur lors du verrouillage des objets');
+			}
 		}
 	}
 
