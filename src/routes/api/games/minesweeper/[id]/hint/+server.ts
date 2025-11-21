@@ -6,13 +6,16 @@ import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error
 
 /**
  * Type definition for use_hint RPC function return value
+ * Updated to support shop item-based hints (no penalty when using items)
  */
 interface UseHintResult {
 	success: boolean;
 	hints_used: number;
 	hints_remaining: number;
+	source: 'item' | 'gidouilles';
+	item_consumed: boolean;
 	gidouilles_spent: number;
-	remaining_gidouilles: number;
+	remaining_gidouilles?: number;
 	penalty_notice: string;
 }
 
@@ -37,22 +40,40 @@ interface UseHintResult {
  * - RPC verifies ownership and game state server-side
  *
  * **Cost & Limits**:
- * - Cost: 10 gidouilles per hint
+ * - Cost: 10 gidouilles per hint (or free if using inventory items)
  * - Maximum: 3 hints per game
- * - Penalty: Using hints applies 30% penalty to final reward
+ * - Penalty: 30% penalty on final reward ONLY when using gidouilles (not items)
+ *
+ * **Priority**: First tries to consume "Indice Demineur" item from inventory,
+ * then falls back to gidouilles if no items available.
  *
  * **Request**:
  * - No request body required (game ID is in URL params)
  *
- * **Response**:
+ * **Response** (item used):
  * ```json
  * {
  *   "success": true,
  *   "hints_used": 1,
  *   "hints_remaining": 2,
+ *   "source": "item",
+ *   "item_consumed": true,
+ *   "gidouilles_spent": 0,
+ *   "penalty_notice": "No penalty - hint from inventory item"
+ * }
+ * ```
+ *
+ * **Response** (gidouilles used):
+ * ```json
+ * {
+ *   "success": true,
+ *   "hints_used": 1,
+ *   "hints_remaining": 2,
+ *   "source": "gidouilles",
+ *   "item_consumed": false,
  *   "gidouilles_spent": 10,
  *   "remaining_gidouilles": 90,
- *   "penalty_notice": "Using hints applies 30% penalty to final reward"
+ *   "penalty_notice": "Using gidouilles hints applies 30% penalty..."
  * }
  * ```
  *
@@ -96,10 +117,13 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 		const result = data as UseHintResult;
 
 		// Return success response with hint usage details
+		// Includes source field to indicate whether item or gidouilles was used
 		return json({
 			success: result.success,
 			hints_used: result.hints_used,
 			hints_remaining: result.hints_remaining,
+			source: result.source,
+			item_consumed: result.item_consumed,
 			gidouilles_spent: result.gidouilles_spent,
 			remaining_gidouilles: result.remaining_gidouilles,
 			penalty_notice: result.penalty_notice

@@ -12,6 +12,7 @@
 		onReset,
 		difficulty,
 		hintsUsed = 0,
+		hintItemsAvailable = 0,
 		onUseHint,
 		isAuthenticated = false,
 		isLoading = false
@@ -22,6 +23,7 @@
 		onReset: () => void;
 		difficulty: string;
 		hintsUsed?: number;
+		hintItemsAvailable?: number;
 		onUseHint?: () => void;
 		isAuthenticated?: boolean;
 		isLoading?: boolean;
@@ -106,6 +108,7 @@
 			<Tooltip.Provider>
 				<HintButton
 					{hintsUsed}
+					{hintItemsAvailable}
 					disabled={gameStatus === 'won' || gameStatus === 'lost' || gameStatus === 'not_started'}
 					{isLoading}
 					{onUseHint}

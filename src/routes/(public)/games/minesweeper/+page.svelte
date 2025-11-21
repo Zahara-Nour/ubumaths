@@ -26,10 +26,16 @@
 			// Initialize store with Supabase client
 			minesweeperStore.init(data.supabase, data.profile);
 
-			// Try to load saved game
+			// Try to load saved game and fetch hint item count in parallel
 			isLoadingSavedGame = true;
 			try {
-				await minesweeperStore.loadSavedGame();
+				await Promise.all([
+					minesweeperStore.loadSavedGame(),
+					// Fetch hint item count for students
+					data.profile.role === 'student'
+						? minesweeperStore.fetchHintItemCount()
+						: Promise.resolve()
+				]);
 				// Check if a saved game was loaded
 				if (minesweeperStore.currentGame && minesweeperStore.currentGame.status === 'in_progress') {
 					savedGame = minesweeperStore.currentGame;
@@ -160,6 +166,7 @@
 							onReset={() => startNewGame()}
 							difficulty={game.difficulty}
 							hintsUsed={game.hintsUsed || 0}
+							hintItemsAvailable={minesweeperStore.hintItemsAvailable}
 							onUseHint={() => minesweeperStore.useHint()}
 							isAuthenticated={data.isAuthenticated}
 							isLoading={minesweeperStore.isLoading}
