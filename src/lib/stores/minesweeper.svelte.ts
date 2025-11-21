@@ -29,7 +29,8 @@ const LOCALSTORAGE_KEY = 'minesweeper_game';
 // ✅ FIX (I-2): Hints system configuration constants
 const MAX_HINTS_PER_GAME = 3; // Maximum hints allowed per game
 const HINT_COST_GIDOUILLES = 10; // Gidouilles cost per hint
-const HINT_PENALTY_PERCENTAGE = 30; // Percentage penalty on final reward
+const HINT_PENALTY_PERCENTAGE = 30; // Percentage penalty on final reward (only for gidouilles hints)
+const HINT_ITEM_INTERNAL_NAME = 'minesweeper_hint'; // Shop item internal name
 
 /**
  * 8 neighboring cell directions (relative positions)
@@ -130,6 +131,12 @@ class MinesweeperStore {
 	 * Newly unlocked achievements (for toast notifications)
 	 */
 	newlyUnlockedAchievements = $state<UnlockedAchievement[]>([]);
+
+	/**
+	 * Number of hint items available in student's inventory
+	 * Used to show "No penalty" indicator when items are available
+	 */
+	hintItemsAvailable = $state(0);
 
 	/**
 	 * ⚡ OPT-5: Track changed cells for fine-grained reactivity
@@ -1044,12 +1051,23 @@ class MinesweeperStore {
 				this.currentGame = { ...game };
 			}
 
-			toaster.success(
-				`Indice utilisé (${game.hintsUsed}/${MAX_HINTS_PER_GAME}). Pénalité de ${HINT_PENALTY_PERCENTAGE}% appliquée sur la récompense finale.`
-			);
+			// Show appropriate toast based on hint source
+			if (result.source === 'item') {
+				toaster.success(
+					`Indice utilisé (${game.hintsUsed}/${MAX_HINTS_PER_GAME}). Aucune pénalité !`
+				);
+				// Decrement local hint item count
+				if (this.hintItemsAvailable > 0) {
+					this.hintItemsAvailable--;
+				}
+			} else {
+				toaster.success(
+					`Indice utilisé (${game.hintsUsed}/${MAX_HINTS_PER_GAME}). Pénalité de ${HINT_PENALTY_PERCENTAGE}% appliquée sur la récompense finale.`
+				);
+			}
 
 			logger.info(
-				`Hint used. Hints remaining: ${MAX_HINTS_PER_GAME - game.hintsUsed}. Gidouilles spent: ${result.gidouilles_spent || HINT_COST_GIDOUILLES}`
+				`Hint used. Source: ${result.source || 'gidouilles'}. Hints remaining: ${MAX_HINTS_PER_GAME - game.hintsUsed}. Gidouilles spent: ${result.gidouilles_spent || 0}`
 			);
 		} catch (err) {
 			const rawMessage = err instanceof Error ? err.message : "Échec de l'utilisation de l'indice";
@@ -1072,6 +1090,58 @@ class MinesweeperStore {
 		} finally {
 			this.isLoading = false;
 		}
+	}
+
+	/**
+	 * Fetch the count of hint items available in student's inventory
+	 * Updates `hintItemsAvailable` state
+	 *
+	 * @returns Promise that resolves with the count of available hint items
+	 */
+	async fetchHintItemCount(): Promise<number> {
+		if (!browser || !this.shouldUseDatabase()) {
+			this.hintItemsAvailable = 0;
+			return 0;
+		}
+
+		try {
+			// Query for minesweeper_hint items in student's inventory
+			const { data, error } = await this.supabase!.from('student_item_inventory')
+				.select(
+					`
+					quantity,
+					shop_item_templates!inner(internal_name)
+				`
+				)
+				.eq('student_id', this.user!.id)
+				.eq('shop_item_templates.internal_name', HINT_ITEM_INTERNAL_NAME)
+				.eq('is_locked', false)
+				.gt('quantity', 0);
+
+			if (error) {
+				logger.error('Failed to fetch hint item count:', error);
+				this.hintItemsAvailable = 0;
+				return 0;
+			}
+
+			// Sum up all quantities (should typically be 1 row but could be multiple)
+			const totalCount = data?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
+			this.hintItemsAvailable = totalCount;
+
+			logger.info(`Hint items available: ${totalCount}`);
+			return totalCount;
+		} catch (err) {
+			logger.error('Failed to fetch hint item count:', err);
+			this.hintItemsAvailable = 0;
+			return 0;
+		}
+	}
+
+	/**
+	 * Refresh hint item count (call after purchasing items from shop)
+	 */
+	async refreshHintItemCount(): Promise<void> {
+		await this.fetchHintItemCount();
 	}
 
 	/**
@@ -1635,6 +1705,7 @@ class MinesweeperStore {
 		this.currentGame = null;
 		this.error = null;
 		this.newlyUnlockedAchievements = [];
+		this.hintItemsAvailable = 0;
 		// ⚡ OPT-5: Clear changed cells
 		this.changedCells.clear();
 

@@ -6,11 +6,13 @@
 	// Props
 	let {
 		hintsUsed = 0,
+		hintItemsAvailable = 0,
 		disabled = false,
 		isLoading = false,
 		onUseHint
 	}: {
 		hintsUsed?: number;
+		hintItemsAvailable?: number;
 		disabled?: boolean;
 		isLoading?: boolean;
 		onUseHint: () => void;
@@ -18,6 +20,7 @@
 
 	// Derived state
 	const isMaxedOut = $derived(hintsUsed >= 3);
+	const hasItems = $derived(hintItemsAvailable > 0);
 
 	// Color coding for hints counter
 	const hintsColor = $derived.by(() => {
@@ -29,6 +32,14 @@
 	// Button disabled state
 	const isButtonDisabled = $derived(disabled || isMaxedOut || isLoading);
 
+	// Button label based on whether items are available
+	const buttonLabel = $derived.by(() => {
+		if (hasItems) {
+			return 'Utiliser un indice';
+		}
+		return 'Indice (10 gidouilles)';
+	});
+
 	// Tooltip content
 	const tooltipContent = $derived.by(() => {
 		if (isMaxedOut) {
@@ -37,20 +48,39 @@
 		if (disabled) {
 			return 'Terminez la partie actuelle pour utiliser un indice';
 		}
-		return 'Révèle une cellule sûre au hasard. Coûte 10 gidouilles et applique une pénalité de 30% sur la récompense finale.';
+		if (hasItems) {
+			return `Vous avez ${hintItemsAvailable} indice(s) en stock. Utiliser un indice de l'inventaire ne coûte rien et n'applique aucune pénalité !`;
+		}
+		return 'Révèle une cellule sûre au hasard. Coûte 10 gidouilles et applique une pénalité de 30% sur la récompense finale. Achetez des indices dans la boutique pour éviter la pénalité !';
 	});
 </script>
 
 <div class="flex flex-col gap-2">
+	<!-- Items available badge -->
+	{#if hasItems && !isMaxedOut}
+		<div
+			class="flex items-center justify-center gap-2 rounded-md bg-green-100 px-3 py-1.5 dark:bg-green-900/30"
+		>
+			<span class="text-sm font-semibold text-green-700 dark:text-green-400">
+				{hintItemsAvailable} indice(s) disponible(s)
+			</span>
+			<span
+				class="rounded-full bg-green-600 px-2 py-0.5 text-xs font-bold text-white dark:bg-green-500"
+			>
+				Sans pénalité !
+			</span>
+		</div>
+	{/if}
+
 	<!-- Hint button with tooltip -->
 	<Tooltip.Root>
 		<Tooltip.Trigger>
 			<Button
 				onclick={onUseHint}
 				disabled={isButtonDisabled}
-				variant="secondary"
+				variant={hasItems ? 'default' : 'secondary'}
 				size="sm"
-				class="w-full"
+				class={cn('w-full', hasItems && 'bg-green-600 hover:bg-green-700 dark:bg-green-600')}
 				aria-label="Utiliser un indice"
 			>
 				{#if isLoading}
@@ -72,7 +102,7 @@
 				{:else}
 					<span class="mr-2" aria-hidden="true">💡</span>
 				{/if}
-				Indice (10 gidouilles)
+				{buttonLabel}
 			</Button>
 		</Tooltip.Trigger>
 		<Tooltip.Content>
@@ -82,19 +112,30 @@
 
 	<!-- Hints counter -->
 	<div class="flex items-center justify-between text-sm" role="status" aria-live="polite">
-		<span class="text-muted-foreground">Indices utilisés:</span>
+		<span class="text-muted-foreground">Indices utilisés :</span>
 		<span class={cn('font-bold', hintsColor)}>
 			{hintsUsed}/3
 		</span>
 	</div>
 
-	<!-- Warning notice (only show if no hints used yet) -->
-	{#if hintsUsed === 0}
+	<!-- Warning notice (only show if no items available and no hints used yet) -->
+	{#if !hasItems && hintsUsed === 0}
 		<div class="rounded-md bg-yellow-50 p-2 dark:bg-yellow-900/10">
 			<p class="text-xs text-yellow-600 dark:text-yellow-400">
 				<span class="mr-1" aria-hidden="true">⚠️</span>
 				Pénalité de 30% sur la récompense finale
 			</p>
 		</div>
+	{/if}
+
+	<!-- Shop link when running low on items -->
+	{#if !hasItems && !isMaxedOut}
+		<a
+			href="/dashboard/student/shop"
+			class="mt-1 flex items-center justify-center gap-2 text-xs text-muted-foreground transition-colors hover:text-primary"
+		>
+			<span aria-hidden="true">🛒</span>
+			<span>Acheter des indices (sans pénalité)</span>
+		</a>
 	{/if}
 </div>
