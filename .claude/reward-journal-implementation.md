@@ -202,12 +202,56 @@ Implementation of a unified reward events tracking system (journal) for students
 ---
 
 ### Phase 5: UI Student Journal
-**Status**: PENDING
+**Status**: COMPLETED
 **Agent**: frontend-developer (sonnet)
 
-Planned:
-- `/dashboard/student/journal/+page.svelte`
-- Components: RewardEventCard, RewardJournalFilters, RewardJournalTimeline
+#### Files Created:
+- `src/lib/components/rewards/RewardEventCard.svelte` - Event card component
+- `src/lib/components/rewards/RewardJournalFilters.svelte` - Filter chips component
+- `src/routes/(protected)/dashboard/student/journal/+page.svelte` - Main journal page
+
+#### What was implemented:
+1. **RewardEventCard Component**:
+   - Displays individual reward events with icon, badges, description, timestamp
+   - Color-coded by event type (earned=green, spent=red, etc.)
+   - Icons per reward type (Coins, Star, Crown, Trophy, Package)
+   - French labels for all event types
+   - Dark mode support with proper color variants
+   - Relative time formatting in French (date-fns)
+
+2. **RewardJournalFilters Component**:
+   - Filter chips for reward types (Tout, Gidouilles, Bonus, Cartes VIP, Succes, Objets)
+   - Icons on filter buttons
+   - Mobile-friendly horizontal scroll with fade gradient
+   - Clear filter button when filter is active
+   - Two-way binding with `$bindable()`
+
+3. **Journal Page**:
+   - Header with icon, title, subtitle, and refresh button
+   - Filter section in a card
+   - Loading skeleton state (5 placeholder cards)
+   - Error state with retry button
+   - Empty state with contextual messages (filtered vs unfiltered)
+   - Events list with infinite scroll
+   - Load more button with loading spinner
+   - Pagination info ("X sur Y evenements")
+   - Uses rewardJournalStore for state management
+
+#### Design Decisions:
+- Used existing UI components (Card, Button, Badge, Skeleton)
+- Mobile-first responsive design
+- French UI text throughout
+- Accessible with ARIA labels and screen reader text
+- Cleanup on unmount via store.reset()
+
+#### Review Status:
+- [x] Svelte 5 runes (no Svelte 4 patterns)
+- [x] TypeScript types (no `any`)
+- [x] French UI text
+- [x] Mobile responsive
+- [x] Dark mode support
+- [x] Accessibility (ARIA labels, sr-only)
+- [x] ESLint passes (0 errors in new files)
 
 ---
 
