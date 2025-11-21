@@ -60,6 +60,17 @@ export {
 	getListConverter
 } from './converters/lists';
 
+// Splitter exports
+export {
+	// Main functions
+	splitStatementAndSolution,
+	detectSplitMethod,
+	// Types
+	type SplitMethod,
+	type SplitResult,
+	type SplitOptions
+} from './splitter';
+
 // Parser exports (to be implemented)
 // export { parseLatexTokens } from './parser';
 
