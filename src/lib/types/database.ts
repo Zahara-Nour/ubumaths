@@ -3548,6 +3548,7 @@ export type Database = {
 					listing_type: string;
 					max_proposals: number | null;
 					offered_card_ids: string[] | null;
+					offered_item_ids: string[] | null;
 					offered_gidouilles: number | null;
 					proposal_count: number | null;
 					school_id: string;
@@ -3555,6 +3556,7 @@ export type Database = {
 					title: string;
 					view_count: number | null;
 					wanted_card_template_ids: string[] | null;
+					wanted_item_template_ids: string[] | null;
 					wanted_gidouilles: number | null;
 				};
 				Insert: {
@@ -3568,6 +3570,7 @@ export type Database = {
 					listing_type: string;
 					max_proposals?: number | null;
 					offered_card_ids?: string[] | null;
+					offered_item_ids?: string[] | null;
 					offered_gidouilles?: number | null;
 					proposal_count?: number | null;
 					school_id: string;
@@ -3575,6 +3578,7 @@ export type Database = {
 					title: string;
 					view_count?: number | null;
 					wanted_card_template_ids?: string[] | null;
+					wanted_item_template_ids?: string[] | null;
 					wanted_gidouilles?: number | null;
 				};
 				Update: {
@@ -3588,6 +3592,7 @@ export type Database = {
 					listing_type?: string;
 					max_proposals?: number | null;
 					offered_card_ids?: string[] | null;
+					offered_item_ids?: string[] | null;
 					offered_gidouilles?: number | null;
 					proposal_count?: number | null;
 					school_id?: string;
@@ -3595,6 +3600,7 @@ export type Database = {
 					title?: string;
 					view_count?: number | null;
 					wanted_card_template_ids?: string[] | null;
+					wanted_item_template_ids?: string[] | null;
 					wanted_gidouilles?: number | null;
 				};
 				Relationships: [
@@ -3698,6 +3704,7 @@ export type Database = {
 					listing_id: string;
 					message: string | null;
 					offered_card_ids: string[] | null;
+					offered_item_ids: string[] | null;
 					offered_gidouilles: number | null;
 					proposer_id: string;
 					responded_at: string | null;
@@ -3711,6 +3718,7 @@ export type Database = {
 					listing_id: string;
 					message?: string | null;
 					offered_card_ids?: string[] | null;
+					offered_item_ids?: string[] | null;
 					offered_gidouilles?: number | null;
 					proposer_id: string;
 					responded_at?: string | null;
@@ -3724,6 +3732,7 @@ export type Database = {
 					listing_id?: string;
 					message?: string | null;
 					offered_card_ids?: string[] | null;
+					offered_item_ids?: string[] | null;
 					offered_gidouilles?: number | null;
 					proposer_id?: string;
 					responded_at?: string | null;
@@ -3999,6 +4008,347 @@ export type Database = {
 						columns: ['proposal_id'];
 						isOneToOne: false;
 						referencedRelation: 'marketplace_proposals';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			shop_item_templates: {
+				Row: {
+					id: string;
+					internal_name: string;
+					display_name: string;
+					description: string | null;
+					category: string;
+					item_type: string;
+					rarity: string;
+					base_price: number;
+					discount_percentage: number | null;
+					is_active: boolean | null;
+					available_from: string | null;
+					available_until: string | null;
+					max_owned_per_student: number | null;
+					daily_purchase_limit: number | null;
+					weekly_purchase_limit: number | null;
+					purchase_cooldown_hours: number | null;
+					properties: Json | null;
+					is_tradeable: boolean | null;
+					trade_cooldown_hours: number | null;
+					icon_url: string | null;
+					sort_order: number | null;
+					created_at: string;
+					updated_at: string;
+					created_by: string | null;
+				};
+				Insert: {
+					id?: string;
+					internal_name: string;
+					display_name: string;
+					description?: string | null;
+					category: string;
+					item_type: string;
+					rarity?: string;
+					base_price: number;
+					discount_percentage?: number | null;
+					is_active?: boolean | null;
+					available_from?: string | null;
+					available_until?: string | null;
+					max_owned_per_student?: number | null;
+					daily_purchase_limit?: number | null;
+					weekly_purchase_limit?: number | null;
+					purchase_cooldown_hours?: number | null;
+					properties?: Json | null;
+					is_tradeable?: boolean | null;
+					trade_cooldown_hours?: number | null;
+					icon_url?: string | null;
+					sort_order?: number | null;
+					created_at?: string;
+					updated_at?: string;
+					created_by?: string | null;
+				};
+				Update: {
+					id?: string;
+					internal_name?: string;
+					display_name?: string;
+					description?: string | null;
+					category?: string;
+					item_type?: string;
+					rarity?: string;
+					base_price?: number;
+					discount_percentage?: number | null;
+					is_active?: boolean | null;
+					available_from?: string | null;
+					available_until?: string | null;
+					max_owned_per_student?: number | null;
+					daily_purchase_limit?: number | null;
+					weekly_purchase_limit?: number | null;
+					purchase_cooldown_hours?: number | null;
+					properties?: Json | null;
+					is_tradeable?: boolean | null;
+					trade_cooldown_hours?: number | null;
+					icon_url?: string | null;
+					sort_order?: number | null;
+					created_at?: string;
+					updated_at?: string;
+					created_by?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'shop_item_templates_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'users';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			student_item_inventory: {
+				Row: {
+					id: string;
+					student_id: string;
+					template_id: string;
+					quantity: number | null;
+					uses_remaining: number | null;
+					is_equipped: boolean | null;
+					equipped_at: string | null;
+					acquired_at: string;
+					acquired_from: string;
+					acquisition_data: Json | null;
+					expires_at: string | null;
+					last_used_at: string | null;
+					total_uses_count: number | null;
+					is_locked: boolean | null;
+					locked_for_listing_id: string | null;
+					locked_for_trade_id: string | null;
+					locked_at: string | null;
+					instance_data: Json | null;
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					id?: string;
+					student_id: string;
+					template_id: string;
+					quantity?: number | null;
+					uses_remaining?: number | null;
+					is_equipped?: boolean | null;
+					equipped_at?: string | null;
+					acquired_at?: string;
+					acquired_from: string;
+					acquisition_data?: Json | null;
+					expires_at?: string | null;
+					last_used_at?: string | null;
+					total_uses_count?: number | null;
+					is_locked?: boolean | null;
+					locked_for_listing_id?: string | null;
+					locked_for_trade_id?: string | null;
+					locked_at?: string | null;
+					instance_data?: Json | null;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: {
+					id?: string;
+					student_id?: string;
+					template_id?: string;
+					quantity?: number | null;
+					uses_remaining?: number | null;
+					is_equipped?: boolean | null;
+					equipped_at?: string | null;
+					acquired_at?: string;
+					acquired_from?: string;
+					acquisition_data?: Json | null;
+					expires_at?: string | null;
+					last_used_at?: string | null;
+					total_uses_count?: number | null;
+					is_locked?: boolean | null;
+					locked_for_listing_id?: string | null;
+					locked_for_trade_id?: string | null;
+					locked_at?: string | null;
+					instance_data?: Json | null;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'student_item_inventory_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_item_inventory_template_id_fkey';
+						columns: ['template_id'];
+						isOneToOne: false;
+						referencedRelation: 'shop_item_templates';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_item_inventory_locked_for_listing_id_fkey';
+						columns: ['locked_for_listing_id'];
+						isOneToOne: false;
+						referencedRelation: 'marketplace_listings';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_item_inventory_locked_for_trade_id_fkey';
+						columns: ['locked_for_trade_id'];
+						isOneToOne: false;
+						referencedRelation: 'marketplace_trades';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			shop_purchase_history: {
+				Row: {
+					id: string;
+					student_id: string;
+					template_id: string;
+					inventory_id: string | null;
+					quantity: number;
+					unit_price: number;
+					total_price: number;
+					discount_applied: number | null;
+					purchase_context: Json | null;
+					gidouilles_history_id: string | null;
+					purchased_at: string;
+					refunded_at: string | null;
+					refund_reason: string | null;
+					refunded_by: string | null;
+				};
+				Insert: {
+					id?: string;
+					student_id: string;
+					template_id: string;
+					inventory_id?: string | null;
+					quantity: number;
+					unit_price: number;
+					total_price: number;
+					discount_applied?: number | null;
+					purchase_context?: Json | null;
+					gidouilles_history_id?: string | null;
+					purchased_at?: string;
+					refunded_at?: string | null;
+					refund_reason?: string | null;
+					refunded_by?: string | null;
+				};
+				Update: {
+					id?: string;
+					student_id?: string;
+					template_id?: string;
+					inventory_id?: string | null;
+					quantity?: number;
+					unit_price?: number;
+					total_price?: number;
+					discount_applied?: number | null;
+					purchase_context?: Json | null;
+					gidouilles_history_id?: string | null;
+					purchased_at?: string;
+					refunded_at?: string | null;
+					refund_reason?: string | null;
+					refunded_by?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'shop_purchase_history_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'shop_purchase_history_template_id_fkey';
+						columns: ['template_id'];
+						isOneToOne: false;
+						referencedRelation: 'shop_item_templates';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'shop_purchase_history_inventory_id_fkey';
+						columns: ['inventory_id'];
+						isOneToOne: false;
+						referencedRelation: 'student_item_inventory';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'shop_purchase_history_refunded_by_fkey';
+						columns: ['refunded_by'];
+						isOneToOne: false;
+						referencedRelation: 'users';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			item_usage_log: {
+				Row: {
+					id: string;
+					student_id: string;
+					inventory_id: string;
+					template_id: string;
+					used_at: string;
+					usage_context: string;
+					usage_data: Json | null;
+					effect_applied: Json | null;
+					effect_expires_at: string | null;
+					reversed_at: string | null;
+					reversal_reason: string | null;
+					reversed_by: string | null;
+				};
+				Insert: {
+					id?: string;
+					student_id: string;
+					inventory_id: string;
+					template_id: string;
+					used_at?: string;
+					usage_context: string;
+					usage_data?: Json | null;
+					effect_applied?: Json | null;
+					effect_expires_at?: string | null;
+					reversed_at?: string | null;
+					reversal_reason?: string | null;
+					reversed_by?: string | null;
+				};
+				Update: {
+					id?: string;
+					student_id?: string;
+					inventory_id?: string;
+					template_id?: string;
+					used_at?: string;
+					usage_context?: string;
+					usage_data?: Json | null;
+					effect_applied?: Json | null;
+					effect_expires_at?: string | null;
+					reversed_at?: string | null;
+					reversal_reason?: string | null;
+					reversed_by?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'item_usage_log_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'item_usage_log_inventory_id_fkey';
+						columns: ['inventory_id'];
+						isOneToOne: false;
+						referencedRelation: 'student_item_inventory';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'item_usage_log_template_id_fkey';
+						columns: ['template_id'];
+						isOneToOne: false;
+						referencedRelation: 'shop_item_templates';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'item_usage_log_reversed_by_fkey';
+						columns: ['reversed_by'];
+						isOneToOne: false;
+						referencedRelation: 'users';
 						referencedColumns: ['id'];
 					}
 				];
@@ -9335,6 +9685,13 @@ export type Database = {
 					user_id: string;
 				}[];
 			};
+			get_shop_items: {
+				Args: {
+					p_student_id: string;
+					p_category?: string;
+				};
+				Returns: Json;
+			};
 			get_reports_for_moderation: {
 				Args: { p_limit?: number; p_offset?: number; p_status?: string };
 				Returns: {
@@ -9629,6 +9986,22 @@ export type Database = {
 				};
 				Returns: boolean;
 			};
+			lock_items_for_listing: {
+				Args: {
+					p_student_id: string;
+					p_item_ids: string[];
+					p_listing_id: string;
+				};
+				Returns: Json;
+			};
+			lock_items_for_trade: {
+				Args: {
+					p_student_id: string;
+					p_item_ids: string[];
+					p_trade_id: string;
+				};
+				Returns: Json;
+			};
 			log_moderation_action: {
 				Args: {
 					p_action: string;
@@ -9681,6 +10054,14 @@ export type Database = {
 			promote_user_to_admin: {
 				Args: { user_email: string };
 				Returns: undefined;
+			};
+			purchase_shop_item: {
+				Args: {
+					p_student_id: string;
+					p_template_id: string;
+					p_quantity?: number;
+				};
+				Returns: Json;
 			};
 			record_daily_challenge_attempt: {
 				Args: {
@@ -9813,7 +10194,23 @@ export type Database = {
 				Args: { p_emoji: string; p_message_id: string };
 				Returns: boolean;
 			};
+			transfer_items: {
+				Args: {
+					p_from_student: string;
+					p_to_student: string;
+					p_item_ids: string[];
+					p_trade_id: string;
+				};
+				Returns: Json;
+			};
 			unlock_cards: { Args: { p_entity_id: string }; Returns: number };
+			unlock_items: {
+				Args: {
+					p_entity_id: string;
+					p_entity_type: string;
+				};
+				Returns: Json;
+			};
 			unlock_specific_cards: {
 				Args: { p_card_ids: string[]; p_entity_id: string };
 				Returns: Json;
@@ -9889,6 +10286,14 @@ export type Database = {
 			validate_1on1_chat_creation: {
 				Args: { p_user1_id: string; p_user2_id: string };
 				Returns: boolean;
+			};
+			use_item: {
+				Args: {
+					p_inventory_id: string;
+					p_context: string;
+					p_usage_data?: Json;
+				};
+				Returns: Json;
 			};
 			validate_attachment_upload: {
 				Args: { p_file_size: number; p_message_id: string; p_user_id: string };
