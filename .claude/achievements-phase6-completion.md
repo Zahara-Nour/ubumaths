@@ -193,12 +193,52 @@ const { data: refreshed } = await supabase.rpc('refresh_achievement_stats_if_nee
 - `supabase/migrations/20251121071510_achievements_performance_optimizations.sql` (NEW)
 - `.claude/achievements-phase6-completion.md` (NEW - this file)
 
+## Migration Deployment Fixes
+
+During deployment to Supabase remote, several issues were discovered and fixed:
+
+### Fix 1: UNIQUE Constraint with Expressions
+**Issue:** PostgreSQL doesn't allow expressions like `(context_data->>'difficulty')` in inline UNIQUE constraints.
+**Solution:** Changed to `CREATE UNIQUE INDEX` statement with `COALESCE` for NULL handling.
+
+```sql
+-- Before (invalid)
+CONSTRAINT unique_student_achievement UNIQUE NULLS NOT DISTINCT (
+  student_id, achievement_id, (context_data->>'difficulty'), ...
+)
+
+-- After (valid)
+CREATE UNIQUE INDEX idx_unique_student_achievement ON public.student_achievements (
+  student_id, achievement_id,
+  COALESCE(context_data->>'difficulty', ''), ...
+);
+```
+
+### Fix 2: Data Migration Validation
+**Issue:** Validation failed because sample achievements in Phase 1 migration didn't match old achievements count.
+**Solution:**
+- Changed migration to use `ON CONFLICT DO NOTHING` to insert missing achievements
+- Updated validation to check that ALL old achievements were migrated (not just count comparison)
+
+### Fix 3: Function Signature Disambiguation
+**Issue:** `COMMENT ON FUNCTION` and `GRANT EXECUTE` statements failed due to multiple overloaded versions of `complete_minesweeper_game`.
+**Solution:** Added full function signatures to all references:
+- `complete_minesweeper_game(UUID, JSONB)` - legacy 2-param version
+- `complete_minesweeper_game(UUID, JSONB, JSONB)` - new 3-param version with achievements
+
+## Migrations Deployed
+
+All migrations successfully deployed to Supabase remote:
+- `20251121000000_create_universal_achievements_system.sql`
+- `20251121000001_migrate_minesweeper_achievements_data.sql`
+- `20251121071510_achievements_performance_optimizations.sql`
+- `20251121080000_fix_gidouilles_history_column_names.sql`
+
 ## Next Steps
 
-1. Push migration to Supabase: `pnpm db:migrate`
-2. Set up scheduled refresh (pg_cron or application scheduler)
-3. Monitor performance metrics post-deployment
-4. Consider per-context materialized views if needed
+1. Set up scheduled refresh (pg_cron or application scheduler)
+2. Monitor performance metrics post-deployment
+3. Consider per-context materialized views if needed
 
 ## Universal Achievements System - Implementation Complete
 

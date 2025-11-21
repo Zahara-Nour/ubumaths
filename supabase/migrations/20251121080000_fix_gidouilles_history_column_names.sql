@@ -99,7 +99,7 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.complete_minesweeper_game IS
+COMMENT ON FUNCTION public.complete_minesweeper_game(UUID, JSONB) IS
   'Completes a Minesweeper game, validates win condition, calculates rewards, and unlocks achievements. Returns gidouilles_earned and achievements array.';
 
 -- ============================================================================

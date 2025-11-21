@@ -14,20 +14,21 @@ BEGIN;
 -- 1. MIGRATE ACHIEVEMENT DEFINITIONS
 -- =====================================================================
 
--- Only migrate if not already migrated (idempotent)
+-- Migrate achievement definitions (idempotent - only inserts missing ones)
 DO $$
 DECLARE
   v_migrated_count INTEGER;
+  v_existing_count INTEGER;
 BEGIN
-  -- Check if already migrated
-  SELECT COUNT(*) INTO v_migrated_count
-  FROM public.achievements
-  WHERE context = 'minesweeper';
+  -- Check how many old achievements exist
+  SELECT COUNT(*) INTO v_existing_count
+  FROM public.minesweeper_achievements;
 
-  IF v_migrated_count > 0 THEN
-    RAISE NOTICE 'Minesweeper achievements already migrated, skipping definitions migration';
+  IF v_existing_count = 0 THEN
+    RAISE NOTICE 'No old minesweeper achievements to migrate';
   ELSE
     -- Migrate achievement definitions from minesweeper_achievements to achievements
+    -- Uses ON CONFLICT to skip already existing achievements
     INSERT INTO public.achievements (
       id,
       context,
@@ -111,10 +112,15 @@ BEGIN
         ELSE 199
       END as display_order,
       ma.created_at
-    FROM public.minesweeper_achievements ma;
+    FROM public.minesweeper_achievements ma
+    ON CONFLICT (id) DO NOTHING;
 
     GET DIAGNOSTICS v_migrated_count = ROW_COUNT;
-    RAISE NOTICE 'Migrated % achievement definitions', v_migrated_count;
+    IF v_migrated_count > 0 THEN
+      RAISE NOTICE 'Migrated % achievement definitions from old system', v_migrated_count;
+    ELSE
+      RAISE NOTICE 'All old achievements already exist in new system (0 new records inserted)';
+    END IF;
   END IF;
 END $$;
 
@@ -200,15 +206,24 @@ DECLARE
   v_validation_failed BOOLEAN := false;
 BEGIN
   -- Validate achievement definitions migration
+  -- Count how many OLD achievements have been properly migrated to new system
+  -- Note: New system may have EXTRA achievements (samples) - that's fine
   SELECT COUNT(*) INTO v_old_achievement_count FROM public.minesweeper_achievements;
-  SELECT COUNT(*) INTO v_new_achievement_count FROM public.achievements WHERE context = 'minesweeper';
 
-  IF v_old_achievement_count > 0 AND v_new_achievement_count != v_old_achievement_count THEN
-    RAISE WARNING 'Achievement definition count mismatch: % old vs % new',
+  -- Count how many old achievements now exist in new system (with 'minesweeper_' prefix)
+  SELECT COUNT(*) INTO v_new_achievement_count
+  FROM public.minesweeper_achievements ma
+  WHERE EXISTS (
+    SELECT 1 FROM public.achievements a
+    WHERE a.id = 'minesweeper_' || ma.id
+  );
+
+  IF v_old_achievement_count > 0 AND v_new_achievement_count < v_old_achievement_count THEN
+    RAISE WARNING 'Not all old achievements were migrated: % old vs % migrated',
       v_old_achievement_count, v_new_achievement_count;
     v_validation_failed := true;
   ELSE
-    RAISE NOTICE '✓ Achievement definitions validated: % migrated', v_new_achievement_count;
+    RAISE NOTICE '✓ Achievement definitions validated: all % old achievements migrated', v_old_achievement_count;
   END IF;
 
   -- Validate student unlocks migration
@@ -470,7 +485,7 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.complete_minesweeper_game IS
+COMMENT ON FUNCTION public.complete_minesweeper_game(UUID, JSONB, JSONB) IS
   'Completes a Minesweeper game with validation and rewards. Now integrated with universal achievement system while maintaining backwards compatibility.';
 
 -- =====================================================================
@@ -512,8 +527,8 @@ DO UPDATE SET
 -- =====================================================================
 
 -- Ensure proper permissions on new functions
-GRANT EXECUTE ON FUNCTION public.complete_minesweeper_game TO authenticated;
-GRANT EXECUTE ON FUNCTION public.process_achievement_event TO authenticated;
+GRANT EXECUTE ON FUNCTION public.complete_minesweeper_game(UUID, JSONB, JSONB) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.process_achievement_event(TEXT, UUID, JSONB) TO authenticated;
 
 -- Grant permissions on migration tracking table
 GRANT SELECT ON public.achievement_migrations TO authenticated;
