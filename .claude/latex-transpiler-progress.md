@@ -1,8 +1,8 @@
 # LaTeX→Markdown Transpiler - Progress Tracker
 
 ## État Actuel
-- **Phase**: 0/10 - Setup Documentation
-- **Statut**: En cours
+- **Phase**: 1/10 - Architecture & Types
+- **Statut**: Completed
 - **Dernière mise à jour**: 2025-11-21
 
 ---
@@ -52,18 +52,19 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 ---
 
 ### Phase 1: Architecture & Types
-- [ ] Définir `LatexToMarkdownOptions`
-- [ ] Définir `TranspileResult` et types d'erreurs
-- [ ] Définir types tokens LaTeX
-- [ ] Créer `src/lib/exercises/transpilers/latex-to-markdown/types.ts`
-- [ ] Créer structure de dossiers
-- [ ] Créer `src/lib/exercises/transpilers/index.ts` avec re-exports
+- [x] Définir `LatexToMarkdownOptions`
+- [x] Définir `TranspileResult` et types d'erreurs
+- [x] Définir types tokens LaTeX
+- [x] Créer `src/lib/exercises/transpilers/latex-to-markdown/types.ts`
+- [x] Créer structure de dossiers
+- [x] Créer `src/lib/exercises/transpilers/index.ts` avec re-exports
+- [x] Créer 68 tests unitaires pour validation des types
 
-**État**: Pas commencée
+**État**: Complétée
 
 ---
 
-### Phase 2: Tokenizer LaTeX
+### Phase 2: Tokenizer LaTeX (CURRENT)
 - [ ] Implémenter tokenizer basique (caractères, commandes, environnements)
 - [ ] Implémenter `findMatchingBrace()` avec gestion d'imbrication
 - [ ] Implémenter `extractEnvironment()` pour `\begin{...}\end{...}`
@@ -172,7 +173,16 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ## Décisions de Design Prises
 
-### 🆕 2025-11-21 - Phase 0
+### 🆕 2025-11-21 - Phase 1 (Architecture & Types)
+1. **Token Types**: Discriminated union avec champ `type` (11 types: text, command, environment, math-inline, math-display, comment, newline, group, whitespace, special, verbatim)
+2. **Token Extension**: Tous les tokens héritent de `BaseToken` avec position tracking (start, end, line, column)
+3. **Converter Pattern**: Fonctions converters prennent `(token, context)` et retournent string
+4. **Context Type**: `ConversionContext` inclut indentLevel, inListItem, inTable, inMath, inVerbatim, environmentStack, options, warnings
+5. **Warning System**: 8 types d'avertissements: unsupported-command, unsupported-environment, parse-error, nested-too-deep, malformed-table, unclosed-group, mismatched-environment, invalid-math
+6. **Table Support**: Types complets avec support borders, alignments, multirow/multicol
+7. **Test Coverage**: 68 tests unitaires pour validation exhaustive des types
+
+### 2025-11-21 - Phase 0
 1. **Output Format**: Custom Markdown texte (pas AST) pour compatibilité avec `markdown-parser` existant
 2. **Strategy**: Tokenize LaTeX → Convertisseurs spécialisés → Markdown texte
 3. **Unsupported**: Wrapper en commentaires HTML `<!-- LaTeX: ... -->`
