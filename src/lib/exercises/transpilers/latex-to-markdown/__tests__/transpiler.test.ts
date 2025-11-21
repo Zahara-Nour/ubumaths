@@ -812,3 +812,70 @@ describe('transpileLatexToMarkdown - Regressions', () => {
 		expect(result.markdown).toContain('1. B');
 	});
 });
+
+// ===========================
+// Passthrough Environment Tests
+// ===========================
+
+describe('transpileLatexToMarkdown - Passthrough Environments', () => {
+	it('should process content inside EXO environment without warnings', () => {
+		const input = `\\begin{EXO}{Title}{}
+Content inside EXO
+\\end{EXO}`;
+		const result = transpileLatexToMarkdown(input);
+		expect(result.markdown).toContain('Content inside EXO');
+		expect(result.warnings).toHaveLength(0);
+		// Should NOT contain HTML comment wrapper
+		expect(result.markdown).not.toContain('<!-- LaTeX');
+	});
+
+	it('should process enumerate inside EXO environment', () => {
+		const input = `\\begin{EXO}{BAC 2025}{}
+\\begin{enumerate}
+\\item Premier point
+\\item Deuxième point
+\\end{enumerate}
+\\end{EXO}`;
+		const result = transpileLatexToMarkdown(input);
+		expect(result.markdown).toContain('1. Premier point');
+		expect(result.markdown).toContain('2. Deuxième point');
+		expect(result.warnings).toHaveLength(0);
+	});
+
+	it('should process content inside Correction environment', () => {
+		const input = `\\begin{Correction}
+La réponse est $x = 2$.
+\\end{Correction}`;
+		const result = transpileLatexToMarkdown(input);
+		expect(result.markdown).toContain('La réponse est');
+		expect(result.markdown).toContain('$x = 2$');
+		expect(result.warnings).toHaveLength(0);
+	});
+
+	it('should process nested passthrough environments', () => {
+		const input = `\\begin{EXO}{Test}{}
+\\begin{enumerate}
+\\item Question 1
+\\end{enumerate}
+\\end{EXO}
+\\begin{Correction}
+\\begin{enumerate}
+\\item Réponse 1
+\\end{enumerate}
+\\end{Correction}`;
+		const result = transpileLatexToMarkdown(input);
+		expect(result.markdown).toContain('1. Question 1');
+		expect(result.markdown).toContain('1. Réponse 1');
+		expect(result.warnings).toHaveLength(0);
+	});
+
+	it('should process text formatting inside passthrough environments', () => {
+		const input = `\\begin{exercice}
+Ceci est du texte en \\textbf{gras} et en \\textit{italique}.
+\\end{exercice}`;
+		const result = transpileLatexToMarkdown(input);
+		expect(result.markdown).toContain('**gras**');
+		expect(result.markdown).toContain('*italique*');
+		expect(result.warnings).toHaveLength(0);
+	});
+});

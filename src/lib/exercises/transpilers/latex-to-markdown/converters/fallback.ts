@@ -159,7 +159,29 @@ const SUPPORTED_ENVIRONMENTS = new Set([
 	'corollary',
 	'remark',
 	'example',
-	'exercise'
+	'exercise',
+
+	// Passthrough environments (exercise wrappers from various LaTeX packages)
+	// These environments are just containers - their content is processed normally
+	'EXO', // Common French exercise package
+	'Exo',
+	'exo',
+	'exercice',
+	'Exercice',
+	'probleme',
+	'Probleme',
+	'question',
+	'Question',
+	'Q', // Shorthand for question
+	'partie', // Part (French)
+	'Partie',
+	'enonce', // Statement (French)
+	'Enonce',
+	'correction', // Already in splitter, add here for passthrough
+	'Correction',
+	'reponse', // Answer (French)
+	'Reponse',
+	'solution' // Solution
 ]);
 
 // ===========================

@@ -487,14 +487,20 @@ function convertEnvironmentToken(token: EnvironmentToken, context: ConversionCon
 			return result;
 		}
 
-		// Check if environment is marked as supported
+		// Check if environment is marked as supported (passthrough environments)
 		if (isSupportedEnvironment(name)) {
 			// Process children if available
-			if (token.children && context.processChildren) {
+			if (token.children && token.children.length > 0 && context.processChildren) {
 				result = context.processChildren(token.children);
 				return result;
 			}
-			// Otherwise return content as-is (trimmed)
+			// Otherwise tokenize and process the content
+			if (token.content && context.processChildren) {
+				const childTokens = tokenize(token.content);
+				result = context.processChildren(childTokens);
+				return result;
+			}
+			// Last resort: return content as-is (trimmed)
 			return token.content.trim();
 		}
 

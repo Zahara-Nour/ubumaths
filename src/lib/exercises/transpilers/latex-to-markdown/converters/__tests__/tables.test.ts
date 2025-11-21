@@ -18,7 +18,7 @@ import type { EnvironmentToken, ConversionContext } from '../../types';
 
 // Mock context for testing
 function createMockContext(): ConversionContext {
-	const warnings: any[] = [];
+	const warnings: ConversionContext['warnings'] = [];
 	return {
 		indentLevel: 0,
 		listStack: [],
@@ -35,7 +35,7 @@ function createMockContext(): ConversionContext {
 			preserveWhitespace: false
 		},
 		warnings,
-		addWarning: (warning: any) => warnings.push(warning)
+		addWarning: (warning: ConversionContext['warnings'][number]) => warnings.push(warning)
 	};
 }
 
