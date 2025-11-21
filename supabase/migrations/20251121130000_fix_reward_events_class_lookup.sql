@@ -85,7 +85,7 @@ BEGIN
         'vip_cards_activity',
         NEW.id,
         v_class_id,
-        NEW.metadata->>'removed_by',
+        NULLIF(NEW.metadata->>'removed_by', '')::UUID,
         NEW.created_at
     );
 
@@ -580,7 +580,7 @@ SELECT
         ORDER BY cm.joined_at DESC
         LIMIT 1
     ),
-    vca.metadata->>'removed_by',
+    NULLIF(vca.metadata->>'removed_by', '')::UUID,
     vca.created_at
 FROM public.vip_cards_activity vca
 WHERE NOT EXISTS (

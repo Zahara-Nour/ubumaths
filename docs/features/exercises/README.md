@@ -96,6 +96,7 @@ Teacher Interface → API → Services → Database
 ### Technical Documentation
 
 - **[Architecture](architecture.md)** - System design, core components
+- **[Markdown Parser & AST](markdown-parser.md)** - Parser types and supported syntax
 - **[Components](components.md)** - UI components (editor, display, preview)
 - **[API Reference](api.md)** - 13 REST API endpoints
 - **[Import/Export](import-export.md)** - Formats and duplicate strategies
@@ -114,14 +115,16 @@ Teacher Interface → API → Services → Database
 
 ### Markdown Support
 
-| Feature         | Syntax                    | Example            |
-| --------------- | ------------------------- | ------------------ |
-| **Headings**    | `## Heading`              | Level 1-6 headers  |
-| **Bold/Italic** | `**bold**`, `*italic*`    | Text formatting    |
-| **Lists**       | `- item` or `1. item`     | Ordered/unordered  |
-| **Tables**      | <code>\| A \| B \|</code> | GFM tables         |
-| **Math**        | `$x^2$` or `$$x^2$$`      | Inline/block LaTeX |
-| **Images**      | Upload via UI             | Stored in Supabase |
+| Feature         | Syntax                    | Example               |
+| --------------- | ------------------------- | --------------------- |
+| **Headings**    | `## Heading`              | Level 1-6 headers     |
+| **Bold/Italic** | `**bold**`, `*italic*`    | Text formatting       |
+| **Lists**       | `- item` or `1. item`     | Ordered/unordered     |
+| **Tables**      | <code>\| A \| B \|</code> | GFM tables            |
+| **Math**        | `$x^2$` or `$$x^2$$`      | Inline/block LaTeX    |
+| **Images**      | Upload via UI             | Stored in Supabase    |
+| **Blockquotes** | `> text`                  | Quoted content        |
+| **Code Blocks** | ` ``` `                   | With language support |
 
 ### Assignment System
 

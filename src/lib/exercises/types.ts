@@ -633,6 +633,25 @@ export interface HorizontalRuleNode extends BaseNode {
 }
 
 /**
+ * Blockquote node (> content)
+ * Can contain any block content (paragraphs, lists, nested blockquotes)
+ */
+export interface BlockquoteNode extends BaseNode {
+	type: 'blockquote';
+	children: BlockNode[]; // Can contain paragraphs, lists, nested blockquotes
+}
+
+/**
+ * Code block node (```language\ncode\n```)
+ * Contains raw code with optional language identifier
+ */
+export interface CodeBlockNode extends BaseNode {
+	type: 'code-block';
+	code: string; // Raw code content (preserves all formatting)
+	language?: string; // Optional language identifier (e.g., 'typescript', 'python')
+}
+
+/**
  * Line break node (hard break with \\ or soft break)
  */
 export interface LineBreakNode extends BaseNode {
@@ -655,7 +674,9 @@ export type BlockNode =
 	| TableNode
 	| MathBlockNode
 	| ImageNode
-	| HorizontalRuleNode;
+	| HorizontalRuleNode
+	| BlockquoteNode
+	| CodeBlockNode;
 
 /**
  * Union of all AST nodes

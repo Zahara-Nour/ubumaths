@@ -529,7 +529,7 @@ BEGIN
         'vip_cards_activity',
         NEW.id,
         v_class_id,
-        NEW.metadata->>'removed_by',
+        NULLIF(NEW.metadata->>'removed_by', '')::UUID,
         NEW.created_at
     );
 
