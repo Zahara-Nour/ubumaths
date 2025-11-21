@@ -2,7 +2,7 @@
 
 > Documentation exhaustive du transpileur LaTeX vers Custom Markdown pour le système d'exercices.
 >
-> **Statut**: Phase 0/10 - Setup Documentation
+> **Statut**: Phase 5/10 - Block Converters (Complétée)
 > **Dernière mise à jour**: 2025-11-21
 
 ---
@@ -229,6 +229,31 @@ type LatexToken =
 
 ## Conversions Supportées
 
+### Table Récapitulative
+
+| LaTeX                             | Markdown                           | Phase | Notes                      |
+| --------------------------------- | ---------------------------------- | ----- | -------------------------- |
+| `$x^2$`                           | `$x^2$`                            | 3     | Inline math - pass-through |
+| `\[x^2\]`                         | `$$x^2$$`                          | 3     | Display math               |
+| `\section{...}`                   | `# ...`                            | 3     | Level 1 heading            |
+| `\subsection{...}`                | `## ...`                           | 3     | Level 2 heading            |
+| `\textbf{...}`                    | `**...**`                          | 3     | Bold text                  |
+| `\textit{...}`                    | `*...*`                            | 3     | Italic text                |
+| `\texttt{...}`                    | `` `...` ``                        | 3     | Monospace text             |
+| `\hrule`                          | `---`                              | 3     | Horizontal rule            |
+| `\begin{itemize}`                 | `- item`                           | 4     | Bullet list                |
+| `\begin{enumerate}`               | `1. item`                          | 4     | Numbered list              |
+| `\begin{quote}`                   | `> ...`                            | 5     | Blockquote                 |
+| `\begin{verbatim}`                | ` ``` `                            | 5     | Code block (no language)   |
+| `\begin{lstlisting}[language=X]`  | ` ```x `                           | 5     | Code block with language   |
+| `\begin{minted}{lang}`            | ` ```lang `                        | 5     | Code block with language   |
+| `\includegraphics{path}`          | `![](path)`                        | 5     | Image (no alt text)        |
+| `\begin{figure}...\caption{text}` | `![text](path)`                    | 5     | Image with caption         |
+| `\begin{center}`                  | `<div style="text-align: center">` | 5     | Centered content           |
+| `\begin{tabular}`                 | `\| col \| col \|`                 | 6     | Table (TODO)               |
+
+---
+
 ### Phase 3: Triviales et Faciles
 
 #### Formules Mathématiques (Pass-through)
@@ -340,26 +365,39 @@ devient:
 
 ### Phase 5: Blocs Spécialisés
 
-#### Quote (Citation)
+#### Quote & Quotation (Blockquotes)
 
 **LaTeX**:
 
 ```latex
 \begin{quote}
-Lorem ipsum dolor sit amet
+Lorem ipsum dolor sit amet.
+Multi-line quote works too.
 \end{quote}
+```
+
+Ou:
+
+```latex
+\begin{quotation}
+Another quote type with similar conversion.
+\end{quotation}
 ```
 
 **Markdown**:
 
 ```markdown
-> Lorem ipsum dolor sit amet
+> Lorem ipsum dolor sit amet.
+> Multi-line quote works too.
 ```
 
 **Règles**:
 
 - Chaque ligne devient `> ...`
+- Both `quote` and `quotation` environments convert identically
+- Empty lines preserved (create paragraph breaks in quote)
 - Imbrication non supportée (pas standard LaTeX)
+- Internal LaTeX commands are processed (e.g., `\textbf{bold}` inside quote)
 
 #### Verbatim (Code Brut)
 
@@ -397,6 +435,15 @@ def hello():
 \end{lstlisting}
 ```
 
+Ou avec plusieurs options:
+
+```latex
+\begin{lstlisting}[language=python,linewidth=0.8\textwidth]
+def hello():
+    print("Hello")
+\end{lstlisting}
+```
+
 **Markdown**:
 
 ````markdown
@@ -409,15 +456,49 @@ def hello():
 **Règles**:
 
 - `language=` extracté et utilisé pour fence
-- Autres options ignorées (caption, label, etc.) → warnings
+- Language tag normalized (Python → python, Java → java, C++ → cpp, etc.)
+- Autres options ignorées (caption, label, linewidth, etc.) → warnings
 - Whitespace préservé exactement
+- Empty lines preserved
 
-#### Images
+#### Minted (Code Blocks Alternative)
 
 **LaTeX**:
 
 ```latex
-\includegraphics[width=0.8\textwidth]{images/diagram.png}
+\begin{minted}{python}
+def hello():
+    print("Hello")
+\end{minted}
+```
+
+**Markdown**:
+
+````markdown
+```python
+def hello():
+    print("Hello")
+```
+````
+
+**Règles**:
+
+- Language extracted from required argument `{lang}`
+- Language tag normalized (same as lstlisting)
+- Whitespace preserved exactly
+
+#### Images (includegraphics)
+
+**LaTeX - Without Options**:
+
+```latex
+\includegraphics{images/diagram.png}
+```
+
+**LaTeX - With Options**:
+
+```latex
+\includegraphics[width=0.8\textwidth,angle=90]{images/diagram.png}
 ```
 
 **Markdown**:
@@ -428,9 +509,78 @@ def hello():
 
 **Règles**:
 
-- Options ignorées (width, height, angle, etc.) → warnings
+- Options (width, height, scale, angle, etc.) parsed but not converted → warnings
 - Texte alternatif non supporté (LaTeX n'en a pas par défaut)
 - Chemin de fichier préservé exactement
+- Supported options: `width`, `height`, `scale`, `angle`, `clip`, `draft`
+
+#### Figures (Avec Caption)
+
+**LaTeX**:
+
+```latex
+\begin{figure}
+  \includegraphics[width=0.8\textwidth]{diagram.png}
+  \caption{A sample diagram showing the process}
+\end{figure}
+```
+
+**Markdown**:
+
+```markdown
+![A sample diagram showing the process](diagram.png)
+```
+
+**Règles**:
+
+- Figure environment extracts `\caption{...}` as alt text
+- `\includegraphics` path extracted and used as image source
+- Other content (labels, references) ignored → warnings
+- Caption text processed for LaTeX commands (e.g., `\textbf` inside caption)
+- Multiple images per figure: only first `\includegraphics` used
+
+#### Alignment Blocks (center, flushleft, flushright)
+
+**LaTeX**:
+
+```latex
+\begin{center}
+  Centered text
+\end{center}
+```
+
+Ou:
+
+```latex
+\begin{flushleft}
+  Left-aligned text
+\end{flushleft}
+```
+
+Ou:
+
+```latex
+\begin{flushright}
+  Right-aligned text
+\end{flushright}
+```
+
+**Markdown**:
+
+```markdown
+<div style="text-align: center">
+  Centered text
+</div>
+```
+
+**Règles**:
+
+- `\begin{center}` → `<div style="text-align: center">`
+- `\begin{flushleft}` → `<div style="text-align: left">`
+- `\begin{flushright}` → `<div style="text-align: right">`
+- Closing tag: `</div>`
+- Internal content processed for LaTeX commands
+- HTML wrapping allows markdown-parser to preserve styling
 
 ---
 
