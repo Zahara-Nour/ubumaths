@@ -2,7 +2,7 @@
 
 > Documentation exhaustive du transpileur LaTeX vers Custom Markdown pour le système d'exercices.
 >
-> **Statut**: Phase 6/10 - Table Converter (Complétée)
+> **Statut**: Phase 7/10 - Fallback Converter (Complétée)
 > **Dernière mise à jour**: 2025-11-21
 
 ---
@@ -251,6 +251,8 @@ type LatexToken =
 | `\begin{figure}...\caption{text}` | `![text](path)`                    | 5     | Image with caption         |
 | `\begin{center}`                  | `<div style="text-align: center">` | 5     | Centered content           |
 | `\begin{tabular}`                 | `\| col \| col \|`                 | 6     | Table (Complétée)          |
+| Commandes non supportées          | `<!-- LaTeX: ... -->`              | 7     | Fallback wrapping          |
+| Environnements non supportés      | `<!-- LaTeX: ... -->`              | 7     | Fallback wrapping          |
 
 ---
 
@@ -840,41 +842,293 @@ Devient:
 
 ---
 
-### Phase 7-8: Commandes Avancées
+### Phase 7: Fallback Converter
 
-(À documenter pendant les phases d'implémentation)
+#### Vue d'ensemble
 
----
+Phase 7 implémente un système de gestion robuste pour les commandes et environnements LaTeX non reconnus. Au lieu de les ignorer ou de lever des erreurs, le transpileur les enveloppe dans des commentaires HTML spécialisés pour préservation et référence future.
 
-### Commandes Non Supportées
+**Fichier Principal**: `src/lib/exercises/transpilers/latex-to-markdown/converters/fallback.ts`
 
-Les commandes/environnements non reconnus sont wrappés ainsi:
+#### Commandes Non Supportées
 
-```markdown
-<!-- LaTeX: \unknowncommand{args} -->
-```
-
-Exemple:
+**Comportement par défaut** (wrapping HTML):
 
 ```latex
-\unknowncommand{arg1}{arg2}
+\customcommand{argument text}
 ```
 
 devient:
 
 ```markdown
-<!-- LaTeX: \unknowncommand{arg1}{arg2} -->
+<!-- LaTeX: \customcommand{argument text} -->
 ```
 
-Avec warning:
+**Avec option `fallbackToText: true`**:
+
+```markdown
+argument text
+```
+
+#### Environnements Non Supportés
+
+**Comportement par défaut** (wrapping HTML):
+
+```latex
+\begin{customenv}
+Content here
+\end{customenv}
+```
+
+devient:
+
+```markdown
+<!-- LaTeX: \begin{customenv}Content here\end{customenv} -->
+```
+
+**Avec option `fallbackToText: true`**:
+
+```markdown
+Content here
+```
+
+#### Support de Commandes
+
+Le fallback converter maintient un registre des commandes supportées pour déterminer quand utiliser le fallback:
+
+**Commandes Supportées** (50+):
+
+- **Headings**: `\chapter`, `\section`, `\subsection`, `\subsubsection`, `\paragraph`
+- **Formatting**: `\textbf`, `\textit`, `\emph`, `\texttt`, `\underline`, `\textsc`
+- **Escapes**: `\&`, `\%`, `\$`, `\_`, `\#`, `\{`, `\}`, `\ldots`, `\quad`, etc.
+- **Images**: `\includegraphics`
+- **Règles**: `\hrule`, `\hline`, `\rule`
+- **Line Breaks**: `\\`, `\newline`, `\linebreak`
+- **Links**: `\url`, `\href`
+- **Autres**: `\caption`, `\label`, `\footnote`, `\cite`, `\ref`, etc.
+
+**Vérifier le support**:
+
+```typescript
+import { isSupportedCommand, getSupportedCommands } from '$lib/exercises/transpilers';
+
+// Check si une commande est supportée
+if (isSupportedCommand('textbf')) {
+	// Sera convertie normalement
+}
+
+if (!isSupportedCommand('mycustomcmd')) {
+	// Sera wrappée en commentaire HTML
+}
+
+// Lister toutes les commandes supportées
+const supported = getSupportedCommands(); // Array<string>
+```
+
+#### Support d'Environnements
+
+Le fallback converter maintient un registre des environnements supportés:
+
+**Environnements Supportés** (20+):
+
+- **Listes**: `itemize`, `enumerate`, `description`
+- **Blocs**: `quote`, `quotation`, `verbatim`, `lstlisting`, `minted`
+- **Figures**: `figure`, `center`, `flushleft`, `flushright`
+- **Tables**: `tabular`, `table`, `array`, `longtable`, `tabularx`, `tabulary`
+- **Math**: `equation`, `align`, `gather`, `split`, `matrix`, `cases`, etc.
+- **Documents**: `document`, `abstract`, `theorem`, `lemma`, `proof`, etc.
+
+**Vérifier le support**:
+
+```typescript
+import { isSupportedEnvironment, getSupportedEnvironments } from '$lib/exercises/transpilers';
+
+// Check si un environnement est supporté
+if (isSupportedEnvironment('itemize')) {
+	// Sera converti normalement
+}
+
+if (!isSupportedEnvironment('customenv')) {
+	// Sera wrappé en commentaire HTML
+}
+
+// Lister tous les environnements supportés
+const supported = getSupportedEnvironments(); // Array<string>
+```
+
+#### Évasion de Caractères
+
+Les commentaires HTML nécessitent une évasion spéciale pour éviter de casser la syntaxe:
+
+```latex
+\command{text with -- in it}
+```
+
+devient:
+
+```markdown
+<!-- LaTeX: \command{text with ⸺ in it} -->
+```
+
+**Règles d'évasion** (via `escapeForHtmlComment()`):
+
+- `--` remplacé par em-dash Unicode (`\u2014`): `⸺`
+- `<!--` remplacé par `\u2039!--` (tiret-inférieur + ! + tiret-tiret)
+- `-->` remplacé par `--\u203A` (tiret-tiret + tiret-supérieur)
+
+**Pourquoi?** Les HTML comments ne peuvent pas contenir `--` (sauf aux délimiteurs). L'em-dash ressemble visuellement à `--` mais est un caractère unique (U+2014) qui ne casse pas la syntaxe.
+
+#### Option fallbackToText
+
+Nouvelle option dans `LatexToMarkdownOptions`:
+
+```typescript
+interface LatexToMarkdownOptions {
+	// ... autres options
+	/**
+	 * Si true, retourner le contenu texte au lieu de wrapper en HTML comment.
+	 * @default false
+	 *
+	 * Utile pour:
+	 * - Extraire le texte pur de commandes non supportées
+	 * - Conversion progressive (oublier les balises)
+	 * - Export simple sans préservation LaTeX
+	 */
+	fallbackToText?: boolean;
+}
+```
+
+**Exemple**:
+
+```typescript
+import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
+
+const latex = '\\mycommand{Important content here}';
+
+// Par défaut:
+const result1 = transpileLatexToMarkdown(latex);
+console.log(result1.markdown); // '<!-- LaTeX: \\mycommand{Important content here} -->'
+
+// Avec fallbackToText:
+const result2 = transpileLatexToMarkdown(latex, { fallbackToText: true });
+console.log(result2.markdown); // 'Important content here'
+```
+
+#### Extension du Registre
+
+Le registre des commandes/environnements est extensible à runtime:
+
+```typescript
+import {
+	addSupportedCommand,
+	addSupportedEnvironment,
+	removeSupportedCommand,
+	removeSupportedEnvironment
+} from '$lib/exercises/transpilers';
+
+// Ajouter le support custom
+addSupportedCommand('mycommand');
+addSupportedEnvironment('myenv');
+
+// Les deux sont maintenant considérés supportés
+console.log(isSupportedCommand('mycommand')); // true
+
+// Retirer le support (avec prudence!)
+removeSupportedCommand('mycommand');
+removeSupportedEnvironment('myenv');
+```
+
+**Utilité**: Permet aux plugins ou extensions d'ajouter des converters custom sans modifier le code principal.
+
+#### Avertissements
+
+Chaque commande/environnement non supporté génère un warning:
 
 ```typescript
 {
-  type: 'unsupported-command',
-  message: 'Command \\unknowncommand not supported',
-  command: 'unknowncommand'
+	type: 'unsupported-command', // ou 'unsupported-environment'
+	message: 'Unsupported LaTeX command: \\mycommand',
+	command: 'mycommand',
+	severity: 'warning',
+	line: 5,     // optional
+	column: 10   // optional
 }
 ```
+
+**Types de warnings**:
+
+- `unsupported-command`: Commande non reconnue (e.g., `\unknowncommand`)
+- `unsupported-environment`: Environnement non reconnu (e.g., `\begin{unknownenv}`)
+
+**Accéder aux warnings**:
+
+```typescript
+const result = transpileLatexToMarkdown(latex);
+
+for (const warning of result.warnings) {
+	if (warning.type === 'unsupported-command') {
+		console.log(`Line ${warning.line}: Unknown command \\${warning.command}`);
+	}
+}
+```
+
+#### Exemples Complexes
+
+**Exemple 1: Commande imbriquée non supportée**
+
+```latex
+\section{Introduction to \unknowncommand{special topic}}
+```
+
+Traitement:
+
+1. `\section{...}` est supporté → converti normalement
+2. `\unknowncommand{special topic}` non supporté → fallback
+3. Résultat final:
+
+```markdown
+# Introduction to <!-- LaTeX: \unknowncommand{special topic} -->
+```
+
+**Exemple 2: Environnement non supporté avec contenu formaté**
+
+```latex
+\begin{customblock}
+\textbf{Important:} Do something
+\end{customblock}
+```
+
+Traitement:
+
+1. Environnement `customblock` non supporté
+2. Le contenu n'est pas parsé
+3. Résultat:
+
+```markdown
+<!-- LaTeX: \begin{customblock}\textbf{Important:} Do something\end{customblock} -->
+```
+
+**Exemple 3: Fallback avec fallbackToText**
+
+```latex
+\begin{customblock}
+\textbf{Important:} Do something
+\end{customblock}
+```
+
+Avec `fallbackToText: true`:
+
+```markdown
+\textbf{Important:} Do something
+```
+
+(Note: `\textbf` est préservé car il est lui-même unsupported en mode text fallback)
+
+---
+
+### Phase 8: Commandes Avancées
+
+(À documenter pendant la prochaine phase)
 
 ---
 
@@ -891,7 +1145,14 @@ src/lib/exercises/transpilers/
 │   │   ├── simple.ts               # Headings, formatting, hrule
 │   │   ├── lists.ts                # itemize, enumerate
 │   │   ├── blocks.ts               # quote, verbatim, lstlisting, images
-│   │   └── tables.ts               # tabular
+│   │   ├── tables.ts               # tabular
+│   │   ├── fallback.ts             # Unsupported commands/environments (Phase 7)
+│   │   └── __tests__/
+│   │       ├── simple.test.ts
+│   │       ├── lists.test.ts
+│   │       ├── blocks.test.ts
+│   │       ├── tables.test.ts
+│   │       └── fallback.test.ts     # 113 tests for fallback converter
 │   └── __tests__/
 │       ├── index.test.ts           # Tests principaux
 │       ├── tokenizer.test.ts       # Tests tokenizer
@@ -1225,4 +1486,4 @@ Ajouter une entrée dans la table [Conversions Supportées](#conversions-support
 
 **Maintainers**: Claude Code (@claude)
 
-**Status**: Phase 6/10 - Table Converter (Complétée)
+**Status**: Phase 7/10 - Fallback Converter (Complétée)
