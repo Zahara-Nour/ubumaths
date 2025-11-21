@@ -30,7 +30,7 @@
 	// Computed
 	let totalPrice = $derived(item.final_price * quantity);
 	let canAfford = $derived(shopStore.gidouillesBalance >= totalPrice);
-	let maxQuantity = $derived(() => {
+	let maxQuantity = $derived.by(() => {
 		// Check various limits
 		let max = 99; // Default max
 
@@ -94,7 +94,7 @@
 
 	// Handle quantity change
 	function adjustQuantity(delta: number) {
-		quantity = Math.max(1, Math.min(maxQuantity(), quantity + delta));
+		quantity = Math.max(1, Math.min(maxQuantity, quantity + delta));
 	}
 
 	// Handle purchase
@@ -141,7 +141,7 @@
 
 		{#if purchaseSuccess}
 			<!-- Success state -->
-			<div class="flex flex-col items-center justify-center py-8">
+			<div class="flex flex-col items-center justify-center py-8" role="status" aria-live="polite">
 				<CheckCircle class="h-16 w-16 text-green-500" />
 				<h3 class="mt-4 text-lg font-semibold">Achat réussi !</h3>
 				<p class="mt-2 text-center text-sm text-muted-foreground">
@@ -163,7 +163,7 @@
 									class="h-full w-full object-contain"
 								/>
 							{:else}
-								<span class="text-2xl">{categoryIcon}</span>
+								<span class="text-2xl" aria-hidden="true">{categoryIcon}</span>
 							{/if}
 						</div>
 
@@ -198,7 +198,7 @@
 				</div>
 
 				<!-- Quantity selector -->
-				{#if maxQuantity() > 1}
+				{#if maxQuantity > 1}
 					<div>
 						<Label for="quantity">Quantité</Label>
 						<div class="mt-2 flex items-center gap-2">
@@ -207,6 +207,7 @@
 								disabled={quantity <= 1}
 								size="icon"
 								variant="outline"
+								aria-label="Diminuer la quantité"
 							>
 								<Minus class="h-4 w-4" />
 							</Button>
@@ -215,19 +216,20 @@
 								type="number"
 								bind:value={quantity}
 								min="1"
-								max={maxQuantity()}
+								max={maxQuantity}
 								class="w-20 text-center"
 							/>
 							<Button
 								onclick={() => adjustQuantity(1)}
-								disabled={quantity >= maxQuantity()}
+								disabled={quantity >= maxQuantity}
 								size="icon"
 								variant="outline"
+								aria-label="Augmenter la quantité"
 							>
 								<Plus class="h-4 w-4" />
 							</Button>
 							<span class="text-sm text-muted-foreground">
-								(max: {maxQuantity()})
+								(max: {maxQuantity})
 							</span>
 						</div>
 					</div>
@@ -282,7 +284,7 @@
 				</div>
 
 				{#if !canAfford}
-					<div class="flex items-start gap-2 rounded-lg bg-destructive/10 p-3">
+					<div class="flex items-start gap-2 rounded-lg bg-destructive/10 p-3" role="alert">
 						<AlertCircle class="mt-0.5 h-4 w-4 text-destructive" />
 						<div class="text-sm text-destructive">
 							<p class="font-semibold">Gidouilles insuffisantes</p>

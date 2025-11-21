@@ -12,7 +12,7 @@
 	let activeCategory = $state<ShopItemCategory | 'equipped' | 'all'>('all');
 
 	// Get items based on active category
-	let displayedItems = $derived(() => {
+	let displayedItems = $derived.by(() => {
 		if (activeCategory === 'all') {
 			return shopStore.inventory;
 		} else if (activeCategory === 'equipped') {
@@ -23,7 +23,7 @@
 	});
 
 	// Count items per category
-	let categoryCounts = $derived(() => {
+	let categoryCounts = $derived.by(() => {
 		const counts: Record<string, number> = {
 			all: shopStore.inventory.length,
 			equipped: shopStore.equippedItems.length,
@@ -80,9 +80,9 @@
 	<Tabs.Root bind:value={activeCategory} class="w-full">
 		<Tabs.List class="grid w-full grid-cols-3 lg:grid-cols-6">
 			{#each ['all', 'equipped', 'consumable', 'booster', 'cosmetic', 'utility'] as category (category)}
-				{@const count = categoryCounts()[category] || 0}
+				{@const count = categoryCounts[category] || 0}
 				<Tabs.Trigger value={category} class="relative gap-2">
-					<span>{categoryIcons[category]}</span>
+					<span aria-hidden="true">{categoryIcons[category]}</span>
 					<span class="hidden sm:inline">{categoryLabels[category]}</span>
 					{#if count > 0}
 						<Badge variant="secondary" class="ml-1 h-5 px-1 text-xs">
@@ -96,8 +96,13 @@
 		<Tabs.Content value={activeCategory} class="mt-6">
 			{#if isLoading}
 				<!-- Loading state -->
-				<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-					{#each Array(8) as _}
+				<div
+					class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+					role="status"
+					aria-live="polite"
+					aria-label="Chargement de l'inventaire"
+				>
+					{#each Array(8) as _, i (i)}
 						<Skeleton class="h-48 w-full" />
 					{/each}
 				</div>
@@ -106,7 +111,7 @@
 				<div class="rounded-lg border border-destructive/50 bg-destructive/10 p-6 text-center">
 					<p class="text-destructive">Impossible de charger l'inventaire. Veuillez réessayer.</p>
 				</div>
-			{:else if displayedItems().length === 0}
+			{:else if displayedItems.length === 0}
 				<!-- Empty state -->
 				<div class="flex flex-col items-center justify-center rounded-lg border bg-card p-12">
 					<Box class="h-16 w-16 text-muted-foreground" />
@@ -127,7 +132,7 @@
 			{:else}
 				<!-- Items grid -->
 				<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-					{#each displayedItems() as item (item.id)}
+					{#each displayedItems as item (item.id)}
 						<InventoryItemCard {item} />
 					{/each}
 				</div>

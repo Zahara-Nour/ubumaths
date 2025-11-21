@@ -5,6 +5,7 @@ import {
 	unlockCardsForEntity,
 	createMarketplaceNotification
 } from '$lib/server/marketplace/helpers';
+import { unlockItems } from '$lib/server/marketplace/item-helpers';
 import { z } from 'zod';
 
 // ID validation schema
@@ -151,6 +152,9 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	// Unlock all cards associated with this trade
 	await unlockCardsForEntity(supabase, tradeId);
+
+	// Unlock all items associated with this trade
+	await unlockItems(supabase, tradeId, 'trade');
 
 	// Create notification for the other participant
 	const otherParticipantId = trade.initiator_id === userId ? trade.partner_id : trade.initiator_id;

@@ -94,7 +94,7 @@
 						onkeydown={(e) => e.key === 'Enter' && handleSearch()}
 					/>
 				</div>
-				<Button onclick={handleSearch} size="icon" variant="secondary">
+				<Button onclick={handleSearch} size="icon" variant="secondary" aria-label="Rechercher">
 					<Search class="h-4 w-4" />
 				</Button>
 			</div>
@@ -123,7 +123,12 @@
 
 	<!-- Items Grid -->
 	{#if isLoading}
-		<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+		<div
+			class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+			role="status"
+			aria-live="polite"
+			aria-label="Chargement de la boutique"
+		>
 			{#each Array(8) as _, i (i)}
 				<Skeleton class="h-64 w-full" />
 			{/each}
