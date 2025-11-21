@@ -73,8 +73,43 @@ Implementation of a unified reward events tracking system (journal) for students
 ---
 
 ### Phase 2: Migration des donnees existantes
-**Status**: PENDING
+**Status**: COMPLETED (pending push)
 **Agent**: supabase-expert (opus)
+
+#### Files Created:
+- `supabase/migrations/20251121122128_backfill_reward_events.sql`
+
+#### What was implemented:
+1. **Backfill from 7 source tables**:
+   - `gidouilles_history` -> gidouilles earned/spent events
+   - `bonus_history` -> bonus earned/used events
+   - `vip_cards_activity` -> VIP card gained/used/removed events
+   - `student_achievements` -> achievement unlocked events
+   - `shop_purchase_history` -> item purchased events (excludes refunded)
+   - `item_usage_log` -> item used events (excludes reversed)
+   - `marketplace_trades` -> traded events (both SENT and RECEIVED for both parties)
+
+2. **Idempotent design**:
+   - All INSERTs use `WHERE NOT EXISTS` to prevent duplicates
+   - Safe to run multiple times
+
+3. **Marketplace trades handling**:
+   - Creates up to 4 events per completed trade:
+     - Initiator SENT (if they gave gidouilles)
+     - Partner SENT (if they gave gidouilles)
+     - Initiator RECEIVED (if they received gidouilles)
+     - Partner RECEIVED (if they received gidouilles)
+   - Uses metadata `direction` field for deduplication
+
+4. **Verification queries**:
+   - Total count by source table
+   - Orphaned records detection
+
+#### Review Status:
+- [x] Code Review completed - Idempotent, NULL-safe, proper JOINs
+- [x] Verification queries included
+- [ ] Tests - Not applicable (one-time migration)
+- [ ] Documentation update pending
 
 ---
 
