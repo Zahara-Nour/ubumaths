@@ -534,7 +534,7 @@ $$;
 COMMENT ON FUNCTION public.complete_minesweeper_game(UUID, JSONB) IS
   'Completes a Minesweeper game, validates win condition, calculates rewards (with item-based hint penalty exemption), and unlocks achievements. Returns gidouilles_earned and achievements array.';
 
-GRANT EXECUTE ON FUNCTION public.complete_minesweeper_game TO authenticated;
+GRANT EXECUTE ON FUNCTION public.complete_minesweeper_game(UUID, JSONB) TO authenticated;
 
 -- ============================================================================
 -- PART 7: Add Index for Item Lookups
