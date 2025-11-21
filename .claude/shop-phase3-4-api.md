@@ -60,26 +60,40 @@
 | `/api/shop/purchase` | POST | Student | Purchase item |
 | `/api/shop/purchase-history` | GET | Multi-role | Purchase history |
 
-## Phase 4: Inventory API Endpoints (PENDING)
+## Phase 4: Inventory API Endpoints (COMPLETED)
 
-### Endpoints to Create
+### Files Created
 
 #### 1. `src/routes/api/inventory/+server.ts`
 **GET** - Get student's inventory
 
-- Returns `StudentItemWithTemplate[]`
-- Filter by category, equipped status
-- Pagination support
+- Query params: student_id, template_id, category, equipped_only, include_expired
+- Returns `StudentItemWithTemplate[]` with joined template data
+- Multi-role support:
+  - Students: own inventory only
+  - Teachers: their students' inventory
+  - Admins: any student's inventory
+- Uses `verifyTeacherStudentWithRole` middleware
 
 #### 2. `src/routes/api/inventory/[id]/+server.ts`
 **GET** - Get single inventory item
+- Returns full item with template details
+- Owner only
+
 **PATCH** - Equip/unequip item
+- Body: `{ equip: boolean }`
+- Only cosmetics/boosters can be equipped
+- Locked items cannot be equipped
+- Owner only
 
 #### 3. `src/routes/api/inventory/[id]/use/+server.ts`
 **POST** - Use consumable item
 
+- Body: `{ context: string, usage_data?: object }`
 - Calls `use_item` RPC
-- Context-specific (game, assessment, etc.)
+- Handles quantity/uses decrement
+- Removes item when depleted
+- Owner only
 
 ## To Resume
 
