@@ -4,8 +4,11 @@
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import ExerciseMarkdownEditor from './ExerciseMarkdownEditor.svelte';
+	import LaTeXImportDialog from './LaTeXImportDialog.svelte';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { Database } from '$lib/types/database';
 	import type { SupabaseClient } from '@supabase/supabase-js';
+	import type { TranspileWarning } from '$lib/exercises/transpilers/latex-to-markdown';
 
 	type Exercise = Database['public']['Tables']['exercises']['Row'];
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
@@ -30,6 +33,9 @@
 	let gradeLevels = $state<string>(exercise?.grade_levels?.join(', ') || '');
 	let statementMd = $state(exercise?.statement_md || '');
 	let solutionMd = $state(exercise?.solution_md || '');
+
+	// LaTeX import state
+	let latexImportOpen = $state(false);
 
 	// Validation
 	let errors = $state<Record<string, string>>({});
@@ -85,7 +91,83 @@
 
 		await onsubmit(data);
 	}
+
+	/**
+	 * Handle LaTeX import
+	 */
+	function handleLatexImport(result: {
+		statement: string;
+		solution: string | null;
+		warnings: TranspileWarning[];
+	}) {
+		// Check if we should confirm overwriting existing content
+		const hasExistingStatement = statementMd.trim().length > 0;
+		const hasExistingSolution = solutionMd.trim().length > 0;
+
+		if (hasExistingStatement || hasExistingSolution) {
+			const confirmMsg = 'Le contenu existant sera remplacé par le contenu importé. Continuer ?';
+			if (!confirm(confirmMsg)) {
+				return;
+			}
+		}
+
+		// Apply imported content
+		statementMd = result.statement;
+		if (result.solution) {
+			solutionMd = result.solution;
+		}
+
+		// Close dialog
+		latexImportOpen = false;
+
+		// Show success toast with warning count if any
+		if (result.warnings.length > 0) {
+			const errorCount = result.warnings.filter((w) => w.severity === 'error').length;
+			const warningCount = result.warnings.filter((w) => w.severity === 'warning').length;
+
+			if (errorCount > 0) {
+				toaster.warning(
+					`Contenu importé avec ${errorCount} erreur${errorCount > 1 ? 's' : ''} et ${warningCount} avertissement${warningCount > 1 ? 's' : ''}. Vérifiez le contenu.`
+				);
+			} else if (warningCount > 0) {
+				toaster.info(
+					`Contenu importé avec ${warningCount} avertissement${warningCount > 1 ? 's' : ''}. Vérifiez le contenu.`
+				);
+			}
+		} else {
+			toaster.success('Contenu LaTeX importé avec succès');
+		}
+	}
 </script>
+
+<!-- Header with LaTeX import button -->
+<div class="mb-6 flex items-center justify-between">
+	<div>
+		<h2 class="text-lg font-semibold">{exercise ? "Modifier l'exercice" : 'Nouvel exercice'}</h2>
+		<p class="text-sm text-muted-foreground">
+			{exercise
+				? "Modifiez les informations de l'exercice"
+				: 'Créez un nouvel exercice avec support LaTeX'}
+		</p>
+	</div>
+	<Button variant="outline" onclick={() => (latexImportOpen = true)}>
+		<svg
+			class="mr-2 h-4 w-4"
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="2"
+				d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+			/>
+		</svg>
+		Import LaTeX
+	</Button>
+</div>
 
 <form onsubmit={handleSubmit} class="space-y-6">
 	<!-- Metadata -->
@@ -223,3 +305,6 @@
 		</Button>
 	</div>
 </form>
+
+<!-- LaTeX Import Dialog -->
+<LaTeXImportDialog bind:open={latexImportOpen} onImport={handleLatexImport} />
