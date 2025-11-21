@@ -16,7 +16,7 @@ import type { StudentItemWithTemplate } from './shop';
 // Extended listing with items
 export interface MarketplaceListingWithItems extends MarketplaceListing {
 	offered_items?: StudentItemWithTemplate[];
-	wanted_item_template_ids?: string[];
+	// Note: wanted_item_template_ids is already in MarketplaceListing as string[] | null
 }
 
 // Extended proposal with items

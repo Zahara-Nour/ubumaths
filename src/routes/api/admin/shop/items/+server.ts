@@ -97,10 +97,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					: sort_by || 'sort_order';
 		query = query.order(sortColumn, { ascending: sort_order === 'asc' });
 
-		// Add secondary sort for stability
-		if (sortColumn !== 'created_at') {
-			query = query.order('created_at', { ascending: false });
-		}
+		// Add secondary sort for stability (created_at is always different from sortColumn)
+		query = query.order('created_at', { ascending: false });
 
 		// Pagination
 		const offset = (page - 1) * limit;
