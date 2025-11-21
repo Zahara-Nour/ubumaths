@@ -270,7 +270,10 @@ describe('Indexes', () => {
 		});
 
 		it('should have index on achievement_id', () => {
-			assertContains(content, /CREATE INDEX.*idx_student_achievements_achievement.*achievement_id/i);
+			assertContains(
+				content,
+				/CREATE INDEX.*idx_student_achievements_achievement.*achievement_id/i
+			);
 		});
 
 		it('should have index on (student_id, unlocked_at DESC)', () => {
@@ -320,7 +323,10 @@ describe('Indexes', () => {
 		});
 
 		it('should have index on (student_id, event_type)', () => {
-			assertContains(content, /CREATE INDEX.*idx_achievement_events_student.*student_id.*event_type/i);
+			assertContains(
+				content,
+				/CREATE INDEX.*idx_achievement_events_student.*student_id.*event_type/i
+			);
 		});
 
 		it('should have index on (event_type, created_at DESC)', () => {
@@ -456,7 +462,9 @@ describe('SQL Functions', () => {
 	});
 
 	it('should set search_path = public for all SECURITY DEFINER functions', () => {
-		const securityDefinerFunctions = content.match(/SECURITY DEFINER[\s\S]*?SET search_path = public/gi);
+		const securityDefinerFunctions = content.match(
+			/SECURITY DEFINER[\s\S]*?SET search_path = public/gi
+		);
 		expect(securityDefinerFunctions).toBeDefined();
 		expect(securityDefinerFunctions!.length).toBeGreaterThanOrEqual(4);
 	});
@@ -553,7 +561,10 @@ describe('Grants and Permissions', () => {
 	});
 
 	it('should grant EXECUTE on functions to authenticated', () => {
-		assertContains(content, /GRANT EXECUTE ON FUNCTION public\.process_achievement_event TO authenticated/i);
+		assertContains(
+			content,
+			/GRANT EXECUTE ON FUNCTION public\.process_achievement_event TO authenticated/i
+		);
 		assertContains(
 			content,
 			/GRANT EXECUTE ON FUNCTION public\.update_achievement_progress TO authenticated/i
@@ -562,7 +573,10 @@ describe('Grants and Permissions', () => {
 			content,
 			/GRANT EXECUTE ON FUNCTION public\.check_achievement_prerequisites TO authenticated/i
 		);
-		assertContains(content, /GRANT EXECUTE ON FUNCTION public\.award_achievement_manual TO authenticated/i);
+		assertContains(
+			content,
+			/GRANT EXECUTE ON FUNCTION public\.award_achievement_manual TO authenticated/i
+		);
 	});
 });
 

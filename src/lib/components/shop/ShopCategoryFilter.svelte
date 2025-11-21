@@ -47,7 +47,7 @@
 	let selectedCategory = $derived(shopStore.filters.category);
 
 	// Count items per category
-	let categoryCounts = $derived(() => {
+	let categoryCounts = $derived.by(() => {
 		const counts: Partial<Record<ShopItemCategory | 'all', number>> = {
 			all: shopStore.shopItems.length
 		};
@@ -72,14 +72,14 @@
 	<!-- Mobile: Horizontal scroll -->
 	<div class="flex gap-2 overflow-x-auto pb-2 sm:hidden">
 		{#each categories as category (category.value)}
-			{@const count = categoryCounts()[category.value] || 0}
+			{@const count = categoryCounts[category.value] || 0}
 			<Button
 				onclick={() => selectCategory(category.value)}
 				variant={selectedCategory === category.value ? 'default' : 'outline'}
 				size="sm"
 				class="flex-shrink-0 gap-2"
 			>
-				<span class="text-lg">{category.icon}</span>
+				<span class="text-lg" aria-hidden="true">{category.icon}</span>
 				<span>{category.label}</span>
 				{#if count > 0}
 					<Badge variant="secondary" class="ml-1 px-1 py-0 text-xs">
@@ -93,7 +93,7 @@
 	<!-- Desktop: Grid -->
 	<div class="hidden grid-cols-5 gap-2 sm:grid">
 		{#each categories as category (category.value)}
-			{@const count = categoryCounts()[category.value] || 0}
+			{@const count = categoryCounts[category.value] || 0}
 			{@const isSelected = selectedCategory === category.value}
 			<button
 				onclick={() => selectCategory(category.value)}
@@ -108,7 +108,7 @@
 
 				<div class="flex items-start justify-between">
 					<div class="flex-1">
-						<div class="mb-1 text-2xl">{category.icon}</div>
+						<div class="mb-1 text-2xl" aria-hidden="true">{category.icon}</div>
 						<div class="text-sm font-medium">
 							{category.label}
 						</div>

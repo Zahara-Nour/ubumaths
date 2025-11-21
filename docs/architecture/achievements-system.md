@@ -58,12 +58,14 @@ Phase 1 establishes the complete database foundation:
 **Decision:** Use JSONB columns for `metadata`, `context_data`, and `event_data`
 
 **Rationale:**
+
 - Different achievement types need different configuration fields
 - Avoid 50+ columns with mostly NULL values
 - Easy to extend without schema migrations
 - PostgreSQL JSONB is performant with GIN indexes
 
 **Trade-offs:**
+
 - ✅ Extreme flexibility for new achievement types
 - ✅ No schema migrations for new fields
 - ⚠️ Requires validation in application code
@@ -74,12 +76,14 @@ Phase 1 establishes the complete database foundation:
 **Decision:** `process_achievement_event()` function processes events asynchronously
 
 **Rationale:**
+
 - Decouple achievement logic from feature code
 - Single entry point for all achievement unlocks
 - Event log provides audit trail
 - Retryable if processing fails
 
 **Trade-offs:**
+
 - ✅ Clean separation of concerns
 - ✅ Easy to add new achievement types
 - ✅ Can batch process events for performance
@@ -90,12 +94,14 @@ Phase 1 establishes the complete database foundation:
 **Decision:** Use composite UNIQUE constraint with `NULLS NOT DISTINCT`
 
 **Rationale:**
+
 - Same achievement can be earned for different difficulties (beginner, intermediate, expert)
 - Same achievement can be earned for different subjects (calculus, algebra, geometry)
 - Tiered achievements (bronze, silver, gold, platinum)
 - Repeatable achievements with iteration counter
 
 **Example:**
+
 ```sql
 CONSTRAINT unique_student_achievement UNIQUE NULLS NOT DISTINCT (
   student_id,
@@ -108,6 +114,7 @@ CONSTRAINT unique_student_achievement UNIQUE NULLS NOT DISTINCT (
 ```
 
 **Trade-offs:**
+
 - ✅ Prevents duplicate unlocks
 - ✅ Handles NULL values correctly (NULL != NULL in standard SQL)
 - ✅ Flexible for different achievement variations
@@ -118,11 +125,13 @@ CONSTRAINT unique_student_achievement UNIQUE NULLS NOT DISTINCT (
 **Decision:** Use GENERATED ALWAYS AS for `progress_percentage`
 
 **Rationale:**
+
 - Automatically calculates percentage (0-100) from current/target values
 - Always consistent (can't get out of sync)
 - Indexed for fast queries
 
 **Example:**
+
 ```sql
 progress_percentage INTEGER GENERATED ALWAYS AS (
   LEAST(100, GREATEST(0, ROUND((current_value / NULLIF(target_value, 0)) * 100)))
@@ -130,6 +139,7 @@ progress_percentage INTEGER GENERATED ALWAYS AS (
 ```
 
 **Trade-offs:**
+
 - ✅ Always accurate
 - ✅ Indexed for performance
 - ✅ No application logic needed
@@ -140,11 +150,13 @@ progress_percentage INTEGER GENERATED ALWAYS AS (
 **Decision:** All functions use `SECURITY DEFINER` with `SET search_path = public`
 
 **Rationale:**
+
 - RLS policies restrict direct INSERT to `student_achievements` and `achievement_events`
 - Functions run with elevated privileges to bypass RLS
 - `search_path = public` prevents search path injection attacks
 
 **Example:**
+
 ```sql
 CREATE OR REPLACE FUNCTION public.process_achievement_event(...)
 RETURNS JSONB
@@ -157,6 +169,7 @@ $$;
 ```
 
 **Trade-offs:**
+
 - ✅ Strong security (RLS + function-based access control)
 - ✅ Protects against search path injection
 - ✅ Functions are the only way to unlock achievements (prevents tampering)
@@ -170,22 +183,23 @@ $$;
 
 Achievement definitions (templates) that can be unlocked by students.
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | TEXT (PK) | Slug identifier (e.g., `minesweeper_first_win`) |
-| `context` | TEXT | Feature context: `minesweeper`, `questions`, `assessments`, `srs`, `riddles`, `social`, `meta`, `system` |
-| `category` | TEXT | Category: `speed`, `accuracy`, `streak`, `mastery`, `exploration`, `social`, `collection`, `milestone`, `special`, `seasonal` |
-| `name` | TEXT | Display name (French, e.g., "Première Victoire") |
-| `description` | TEXT | Description (French, e.g., "Gagnez votre première partie de démineur") |
-| `icon` | TEXT | Emoji or icon identifier (e.g., "🏆") |
-| `unlock_type` | TEXT | How unlocked: `automatic`, `event_based`, `progressive`, `manual` |
-| `metadata` | JSONB | Flexible configuration (see below) |
-| `is_active` | BOOLEAN | Whether achievement is currently active |
-| `display_order` | INTEGER | Sort order for UI |
-| `created_at` | TIMESTAMPTZ | Creation timestamp |
-| `updated_at` | TIMESTAMPTZ | Last update timestamp |
+| Column          | Type        | Description                                                                                                                   |
+| --------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `id`            | TEXT (PK)   | Slug identifier (e.g., `minesweeper_first_win`)                                                                               |
+| `context`       | TEXT        | Feature context: `minesweeper`, `questions`, `assessments`, `srs`, `riddles`, `social`, `meta`, `system`                      |
+| `category`      | TEXT        | Category: `speed`, `accuracy`, `streak`, `mastery`, `exploration`, `social`, `collection`, `milestone`, `special`, `seasonal` |
+| `name`          | TEXT        | Display name (French, e.g., "Première Victoire")                                                                              |
+| `description`   | TEXT        | Description (French, e.g., "Gagnez votre première partie de démineur")                                                        |
+| `icon`          | TEXT        | Emoji or icon identifier (e.g., "🏆")                                                                                         |
+| `unlock_type`   | TEXT        | How unlocked: `automatic`, `event_based`, `progressive`, `manual`                                                             |
+| `metadata`      | JSONB       | Flexible configuration (see below)                                                                                            |
+| `is_active`     | BOOLEAN     | Whether achievement is currently active                                                                                       |
+| `display_order` | INTEGER     | Sort order for UI                                                                                                             |
+| `created_at`    | TIMESTAMPTZ | Creation timestamp                                                                                                            |
+| `updated_at`    | TIMESTAMPTZ | Last update timestamp                                                                                                         |
 
 **Indexes:**
+
 - `idx_achievements_context` (context) WHERE is_active = true
 - `idx_achievements_category` (category) WHERE is_active = true
 - `idx_achievements_display_order` (display_order) WHERE is_active = true
@@ -256,19 +270,20 @@ Achievement definitions (templates) that can be unlocked by students.
 
 Records of achievements unlocked by students.
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID (PK) | Unique ID |
-| `student_id` | UUID (FK → profiles) | Student who unlocked |
-| `achievement_id` | TEXT (FK → achievements) | Achievement unlocked |
-| `context_data` | JSONB | Context-specific data (see below) |
-| `unlocked_at` | TIMESTAMPTZ | When unlocked |
-| `unlocked_by` | UUID (FK → profiles, NULL) | NULL = system, UUID = teacher manual award |
-| `unlock_reason` | TEXT | Optional description |
-| `points_awarded` | INTEGER | XP points awarded (denormalized) |
-| `gidouilles_awarded` | INTEGER | Gidouilles awarded (denormalized) |
+| Column               | Type                       | Description                                |
+| -------------------- | -------------------------- | ------------------------------------------ |
+| `id`                 | UUID (PK)                  | Unique ID                                  |
+| `student_id`         | UUID (FK → profiles)       | Student who unlocked                       |
+| `achievement_id`     | TEXT (FK → achievements)   | Achievement unlocked                       |
+| `context_data`       | JSONB                      | Context-specific data (see below)          |
+| `unlocked_at`        | TIMESTAMPTZ                | When unlocked                              |
+| `unlocked_by`        | UUID (FK → profiles, NULL) | NULL = system, UUID = teacher manual award |
+| `unlock_reason`      | TEXT                       | Optional description                       |
+| `points_awarded`     | INTEGER                    | XP points awarded (denormalized)           |
+| `gidouilles_awarded` | INTEGER                    | Gidouilles awarded (denormalized)          |
 
 **UNIQUE Constraint:**
+
 ```sql
 CONSTRAINT unique_student_achievement UNIQUE NULLS NOT DISTINCT (
   student_id,
@@ -281,6 +296,7 @@ CONSTRAINT unique_student_achievement UNIQUE NULLS NOT DISTINCT (
 ```
 
 **Indexes:**
+
 - `idx_student_achievements_student` (student_id)
 - `idx_student_achievements_achievement` (achievement_id)
 - `idx_student_achievements_unlocked` (student_id, unlocked_at DESC)
@@ -305,29 +321,31 @@ CONSTRAINT unique_student_achievement UNIQUE NULLS NOT DISTINCT (
 
 Tracks progress towards progressive achievements (e.g., "Answer 100 questions").
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID (PK) | Unique ID |
-| `student_id` | UUID (FK → profiles) | Student progressing |
-| `achievement_id` | TEXT (FK → achievements) | Achievement being progressed |
-| `current_value` | NUMERIC | Current progress value |
-| `target_value` | NUMERIC | Target value to complete |
-| `progress_percentage` | INTEGER (GENERATED) | Auto-calculated 0-100% |
-| `context_key` | TEXT | Optional context (e.g., subject name) |
-| `is_active` | BOOLEAN | Whether progress is active |
-| `started_at` | TIMESTAMPTZ | When progress started |
-| `updated_at` | TIMESTAMPTZ | Last progress update |
-| `completed_at` | TIMESTAMPTZ | When completed (100%) |
+| Column                | Type                     | Description                           |
+| --------------------- | ------------------------ | ------------------------------------- |
+| `id`                  | UUID (PK)                | Unique ID                             |
+| `student_id`          | UUID (FK → profiles)     | Student progressing                   |
+| `achievement_id`      | TEXT (FK → achievements) | Achievement being progressed          |
+| `current_value`       | NUMERIC                  | Current progress value                |
+| `target_value`        | NUMERIC                  | Target value to complete              |
+| `progress_percentage` | INTEGER (GENERATED)      | Auto-calculated 0-100%                |
+| `context_key`         | TEXT                     | Optional context (e.g., subject name) |
+| `is_active`           | BOOLEAN                  | Whether progress is active            |
+| `started_at`          | TIMESTAMPTZ              | When progress started                 |
+| `updated_at`          | TIMESTAMPTZ              | Last progress update                  |
+| `completed_at`        | TIMESTAMPTZ              | When completed (100%)                 |
 
 **UNIQUE Constraint:** (student_id, achievement_id, context_key)
 
 **Indexes:**
+
 - `idx_achievement_progress_student` (student_id) WHERE is_active = true
 - `idx_achievement_progress_achievement` (achievement_id) WHERE is_active = true
 - `idx_achievement_progress_updated` (updated_at DESC) WHERE is_active = true
 - `idx_achievement_progress_incomplete` (student_id, achievement_id) WHERE is_active = true AND progress_percentage < 100
 
 **Example:**
+
 ```sql
 -- Student has answered 73/100 questions in calculus
 {
@@ -346,18 +364,19 @@ Tracks progress towards progressive achievements (e.g., "Answer 100 questions").
 
 Event log for achievement processing (audit trail + retry queue).
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID (PK) | Unique ID |
-| `event_type` | TEXT | Event type (e.g., `minesweeper_game_completed`) |
-| `event_data` | JSONB | Event data (score, time, etc.) |
-| `student_id` | UUID (FK → profiles) | Student who triggered event |
-| `processed` | BOOLEAN | Whether event has been processed |
-| `processed_at` | TIMESTAMPTZ | When processed |
-| `processing_error` | TEXT | Error message if processing failed |
-| `created_at` | TIMESTAMPTZ | When event occurred |
+| Column             | Type                 | Description                                     |
+| ------------------ | -------------------- | ----------------------------------------------- |
+| `id`               | UUID (PK)            | Unique ID                                       |
+| `event_type`       | TEXT                 | Event type (e.g., `minesweeper_game_completed`) |
+| `event_data`       | JSONB                | Event data (score, time, etc.)                  |
+| `student_id`       | UUID (FK → profiles) | Student who triggered event                     |
+| `processed`        | BOOLEAN              | Whether event has been processed                |
+| `processed_at`     | TIMESTAMPTZ          | When processed                                  |
+| `processing_error` | TEXT                 | Error message if processing failed              |
+| `created_at`       | TIMESTAMPTZ          | When event occurred                             |
 
 **Indexes:**
+
 - `idx_achievement_events_unprocessed` (created_at) WHERE processed = false
 - `idx_achievement_events_student` (student_id, event_type)
 - `idx_achievement_events_type` (event_type, created_at DESC)
@@ -399,6 +418,7 @@ Event log for achievement processing (audit trail + retry queue).
 Checks if a student has met all prerequisites for an achievement.
 
 **Signature:**
+
 ```sql
 public.check_achievement_prerequisites(
   p_student_id UUID,
@@ -407,12 +427,14 @@ public.check_achievement_prerequisites(
 ```
 
 **Logic:**
+
 1. Get prerequisites array from achievement metadata
 2. If no prerequisites, return `true`
 3. For each prerequisite, check if student has unlocked it
 4. Return `true` only if ALL prerequisites are met
 
 **Usage:**
+
 ```sql
 SELECT public.check_achievement_prerequisites(
   '123e4567-e89b-12d3-a456-426614174000'::uuid,
@@ -430,6 +452,7 @@ SELECT public.check_achievement_prerequisites(
 Updates progress for a progressive achievement and auto-unlocks when target reached.
 
 **Signature:**
+
 ```sql
 public.update_achievement_progress(
   p_student_id UUID,
@@ -440,6 +463,7 @@ public.update_achievement_progress(
 ```
 
 **Logic:**
+
 1. Validate achievement exists and is progressive
 2. UPSERT into `achievement_progress` (increment current_value by delta)
 3. If progress reaches 100%:
@@ -449,6 +473,7 @@ public.update_achievement_progress(
 4. Return progress status with `newly_unlocked` flag
 
 **Usage:**
+
 ```sql
 SELECT public.update_achievement_progress(
   '123e4567-e89b-12d3-a456-426614174000'::uuid,
@@ -468,6 +493,7 @@ SELECT public.update_achievement_progress(
 Main entry point for achievement processing. Processes an event and unlocks any matching achievements.
 
 **Signature:**
+
 ```sql
 public.process_achievement_event(
   p_event_type TEXT,
@@ -477,6 +503,7 @@ public.process_achievement_event(
 ```
 
 **Logic:**
+
 1. Insert event into `achievement_events` table
 2. Find achievements that match this event type and context
 3. For each matching achievement:
@@ -499,6 +526,7 @@ public.process_achievement_event(
 ```
 
 **Usage:**
+
 ```sql
 SELECT public.process_achievement_event(
   'minesweeper_game_completed',
@@ -523,6 +551,7 @@ SELECT public.process_achievement_event(
 Allows teachers to manually award achievements to their students.
 
 **Signature:**
+
 ```sql
 public.award_achievement_manual(
   p_teacher_id UUID,
@@ -533,12 +562,14 @@ public.award_achievement_manual(
 ```
 
 **Logic:**
+
 1. Verify teacher has access to student (via class membership)
 2. Validate achievement exists and allows manual awarding
 3. Insert into `student_achievements` with `unlocked_by = p_teacher_id`
 4. Return success (idempotent - duplicate awards are ignored)
 
 **Usage:**
+
 ```sql
 SELECT public.award_achievement_manual(
   '123e4567-e89b-12d3-a456-426614174000'::uuid,  -- teacher_id
@@ -645,6 +676,7 @@ SET search_path = public  -- Prevents search path injection
 ```
 
 This prevents:
+
 - ✅ Search path injection attacks
 - ✅ Unauthorized direct INSERT to protected tables
 - ✅ Bypassing business logic validation
@@ -668,6 +700,7 @@ END IF;
 ### Security Rating: B+ (88/100)
 
 **Strengths:**
+
 - ✅ Strong RLS policies (defense in depth)
 - ✅ SECURITY DEFINER with search_path protection
 - ✅ Input validation in all functions
@@ -675,6 +708,7 @@ END IF;
 - ✅ Teacher authorization checks
 
 **Minor Issues (addressed):**
+
 - ⚠️ No rate limiting (recommended for production)
 - ⚠️ Event queue could grow unbounded (need cleanup job)
 
@@ -689,22 +723,22 @@ When a student completes an action (e.g., wins a minesweeper game):
 ```typescript
 // In application code (e.g., minesweeper game completion)
 const { data, error } = await supabase.rpc('process_achievement_event', {
-  p_event_type: 'minesweeper_game_completed',
-  p_student_id: studentId,
-  p_event_data: {
-    game_id: gameId,
-    difficulty: 'expert',
-    score: 150,
-    time_seconds: 45,
-    perfect: true
-  }
+	p_event_type: 'minesweeper_game_completed',
+	p_student_id: studentId,
+	p_event_data: {
+		game_id: gameId,
+		difficulty: 'expert',
+		score: 150,
+		time_seconds: 45,
+		perfect: true
+	}
 });
 
 if (data?.unlocked_achievements?.length > 0) {
-  // Show achievement unlock notification
-  for (const achievement of data.unlocked_achievements) {
-    showAchievementToast(achievement);
-  }
+	// Show achievement unlock notification
+	for (const achievement of data.unlocked_achievements) {
+		showAchievementToast(achievement);
+	}
 }
 ```
 
@@ -774,22 +808,22 @@ graph TD
 // From src/lib/types/achievements.ts
 
 export type AchievementContext =
-  | 'minesweeper'
-  | 'questions'
-  | 'assessments'
-  | 'srs'
-  | 'riddles'
-  | 'social'
-  | 'meta';
+	| 'minesweeper'
+	| 'questions'
+	| 'assessments'
+	| 'srs'
+	| 'riddles'
+	| 'social'
+	| 'meta';
 
 export type AchievementCategory =
-  | 'speed'
-  | 'accuracy'
-  | 'streak'
-  | 'mastery'
-  | 'participation'
-  | 'social'
-  | 'collection';
+	| 'speed'
+	| 'accuracy'
+	| 'streak'
+	| 'mastery'
+	| 'participation'
+	| 'social'
+	| 'collection';
 
 export type AchievementRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 
@@ -800,39 +834,39 @@ export type UnlockType = 'automatic' | 'event_based' | 'progressive' | 'manual';
 
 ```typescript
 export interface AchievementMetadata {
-  difficulty_specific?: boolean;
-  subject_specific?: boolean;
-  repeatable?: boolean;
-  max_repetitions?: number;
-  hidden?: boolean;
-  show_progress?: boolean;
-  tiers?: {
-    bronze?: number;
-    silver?: number;
-    gold?: number;
-    platinum?: number;
-  };
-  prerequisites?: string[];
-  requires_all?: boolean;
-  seasonal?: {
-    start: string;
-    end: string;
-    recurring?: boolean;
-  };
-  time_limit?: number;
-  unlock_conditions?: {
-    type: string;
-    params?: Record<string, unknown>;
-    events?: string[];
-  };
-  points?: number;
-  gidouilles_reward?: number;
-  rarity?: AchievementRarity;
-  progress_config?: {
-    target: number;
-    unit: string;
-    reset_on_fail?: boolean;
-  };
+	difficulty_specific?: boolean;
+	subject_specific?: boolean;
+	repeatable?: boolean;
+	max_repetitions?: number;
+	hidden?: boolean;
+	show_progress?: boolean;
+	tiers?: {
+		bronze?: number;
+		silver?: number;
+		gold?: number;
+		platinum?: number;
+	};
+	prerequisites?: string[];
+	requires_all?: boolean;
+	seasonal?: {
+		start: string;
+		end: string;
+		recurring?: boolean;
+	};
+	time_limit?: number;
+	unlock_conditions?: {
+		type: string;
+		params?: Record<string, unknown>;
+		events?: string[];
+	};
+	points?: number;
+	gidouilles_reward?: number;
+	rarity?: AchievementRarity;
+	progress_config?: {
+		target: number;
+		unit: string;
+		reset_on_fail?: boolean;
+	};
 }
 ```
 
@@ -843,11 +877,11 @@ export interface AchievementMetadata {
 import type { Database } from '$lib/types/database';
 
 export type Achievement = Database['public']['Tables']['achievements']['Row'] & {
-  metadata: AchievementMetadata;  // Typed JSONB
+	metadata: AchievementMetadata; // Typed JSONB
 };
 
 export type StudentAchievement = Database['public']['Tables']['student_achievements']['Row'] & {
-  context_data: AchievementContextData;  // Typed JSONB
+	context_data: AchievementContextData; // Typed JSONB
 };
 
 export type AchievementProgress = Database['public']['Tables']['achievement_progress']['Row'];
@@ -859,31 +893,31 @@ export type AchievementEvent = Database['public']['Tables']['achievement_events'
 
 ```typescript
 export interface AchievementWithUnlock extends Achievement {
-  is_unlocked: boolean;
-  unlocked_at?: string;
-  unlocked_by?: string;
-  unlock_reason?: string;
-  points_awarded?: number;
-  gidouilles_awarded?: number;
-  context_data?: AchievementContextData;
+	is_unlocked: boolean;
+	unlocked_at?: string;
+	unlocked_by?: string;
+	unlock_reason?: string;
+	points_awarded?: number;
+	gidouilles_awarded?: number;
+	context_data?: AchievementContextData;
 }
 
 export interface AchievementWithProgress extends AchievementWithUnlock {
-  progress?: {
-    current_value: number;
-    target_value: number;
-    progress_percentage: number;
-    context_key?: string;
-  };
+	progress?: {
+		current_value: number;
+		target_value: number;
+		progress_percentage: number;
+		context_key?: string;
+	};
 }
 
 export interface AchievementStats {
-  total_unlocked: number;
-  total_available: number;
-  progress_percentage: number;
-  by_context: Record<AchievementContext, number>;
-  total_points: number;
-  rarest_achievement?: Achievement;
+	total_unlocked: number;
+	total_available: number;
+	progress_percentage: number;
+	by_context: Record<AchievementContext, number>;
+	total_points: number;
+	rarest_achievement?: Achievement;
 }
 ```
 
@@ -896,29 +930,29 @@ export interface AchievementStats {
 ```typescript
 // In src/routes/api/games/minesweeper/complete/+server.ts
 export async function POST({ request, locals }) {
-  const supabase = locals.supabaseServerClient;
-  const { game_id, score, time_seconds, perfect } = await request.json();
+	const supabase = locals.supabaseServerClient;
+	const { game_id, score, time_seconds, perfect } = await request.json();
 
-  // ... complete the game in database ...
+	// ... complete the game in database ...
 
-  // Process achievement event
-  const { data: achievementResult } = await supabase.rpc('process_achievement_event', {
-    p_event_type: 'minesweeper_game_completed',
-    p_student_id: studentId,
-    p_event_data: {
-      game_id,
-      difficulty: 'expert',
-      score,
-      time_seconds,
-      perfect
-    }
-  });
+	// Process achievement event
+	const { data: achievementResult } = await supabase.rpc('process_achievement_event', {
+		p_event_type: 'minesweeper_game_completed',
+		p_student_id: studentId,
+		p_event_data: {
+			game_id,
+			difficulty: 'expert',
+			score,
+			time_seconds,
+			perfect
+		}
+	});
 
-  return json({
-    success: true,
-    game: completedGame,
-    achievements: achievementResult?.unlocked_achievements || []
-  });
+	return json({
+		success: true,
+		game: completedGame,
+		achievements: achievementResult?.unlocked_achievements || []
+	});
 }
 ```
 
@@ -927,32 +961,32 @@ export async function POST({ request, locals }) {
 ```typescript
 // In src/routes/api/questions/answer/+server.ts
 export async function POST({ request, locals }) {
-  const supabase = locals.supabaseServerClient;
-  const { question_id, is_correct, subject } = await request.json();
+	const supabase = locals.supabaseServerClient;
+	const { question_id, is_correct, subject } = await request.json();
 
-  // ... record answer in database ...
+	// ... record answer in database ...
 
-  if (is_correct) {
-    // Update progress for subject-specific mastery achievement
-    const { data: progressResult } = await supabase.rpc('update_achievement_progress', {
-      p_student_id: studentId,
-      p_achievement_id: 'questions_master_calculus',
-      p_delta: 1,  // Increment by 1 correct answer
-      p_context_key: subject
-    });
+	if (is_correct) {
+		// Update progress for subject-specific mastery achievement
+		const { data: progressResult } = await supabase.rpc('update_achievement_progress', {
+			p_student_id: studentId,
+			p_achievement_id: 'questions_master_calculus',
+			p_delta: 1, // Increment by 1 correct answer
+			p_context_key: subject
+		});
 
-    if (progressResult?.newly_unlocked) {
-      // Achievement completed! Show notification
-      showAchievementToast({
-        name: "Maître du Calcul",
-        icon: "🎓",
-        points: 100,
-        gidouilles: 50
-      });
-    }
-  }
+		if (progressResult?.newly_unlocked) {
+			// Achievement completed! Show notification
+			showAchievementToast({
+				name: 'Maître du Calcul',
+				icon: '🎓',
+				points: 100,
+				gidouilles: 50
+			});
+		}
+	}
 
-  return json({ success: true });
+	return json({ success: true });
 }
 ```
 
@@ -961,22 +995,22 @@ export async function POST({ request, locals }) {
 ```typescript
 // In src/routes/api/teacher/award-achievement/+server.ts
 export async function POST({ request, locals }) {
-  const supabase = locals.supabaseServerClient;
-  const session = await locals.session();
-  const { student_id, achievement_id, reason } = await request.json();
+	const supabase = locals.supabaseServerClient;
+	const session = await locals.session();
+	const { student_id, achievement_id, reason } = await request.json();
 
-  const { data: success, error } = await supabase.rpc('award_achievement_manual', {
-    p_teacher_id: session.user.id,
-    p_student_id: student_id,
-    p_achievement_id: achievement_id,
-    p_reason: reason
-  });
+	const { data: success, error } = await supabase.rpc('award_achievement_manual', {
+		p_teacher_id: session.user.id,
+		p_student_id: student_id,
+		p_achievement_id: achievement_id,
+		p_reason: reason
+	});
 
-  if (error) {
-    return json({ success: false, error: error.message }, { status: 400 });
-  }
+	if (error) {
+		return json({ success: false, error: error.message }, { status: 400 });
+	}
 
-  return json({ success: true });
+	return json({ success: true });
 }
 ```
 
@@ -985,12 +1019,13 @@ export async function POST({ request, locals }) {
 ```typescript
 // In src/routes/(protected)/dashboard/student/achievements/+page.ts
 export async function load({ parent }) {
-  const { supabase, session } = await parent();
+	const { supabase, session } = await parent();
 
-  // Get all achievements with unlock status
-  const { data: achievements } = await supabase
-    .from('achievements')
-    .select(`
+	// Get all achievements with unlock status
+	const { data: achievements } = await supabase
+		.from('achievements')
+		.select(
+			`
       *,
       student_achievements!left(
         unlocked_at,
@@ -998,25 +1033,26 @@ export async function load({ parent }) {
         gidouilles_awarded,
         context_data
       )
-    `)
-    .eq('is_active', true)
-    .order('display_order');
+    `
+		)
+		.eq('is_active', true)
+		.order('display_order');
 
-  // Get progress for progressive achievements
-  const { data: progress } = await supabase
-    .from('achievement_progress')
-    .select('*')
-    .eq('student_id', session.user.id)
-    .eq('is_active', true);
+	// Get progress for progressive achievements
+	const { data: progress } = await supabase
+		.from('achievement_progress')
+		.select('*')
+		.eq('student_id', session.user.id)
+		.eq('is_active', true);
 
-  // Merge data
-  const achievementsWithProgress = achievements?.map(achievement => ({
-    ...achievement,
-    is_unlocked: !!achievement.student_achievements?.[0],
-    progress: progress?.find(p => p.achievement_id === achievement.id)
-  }));
+	// Merge data
+	const achievementsWithProgress = achievements?.map((achievement) => ({
+		...achievement,
+		is_unlocked: !!achievement.student_achievements?.[0],
+		progress: progress?.find((p) => p.achievement_id === achievement.id)
+	}));
 
-  return { achievements: achievementsWithProgress };
+	return { achievements: achievementsWithProgress };
 }
 ```
 
@@ -1025,16 +1061,18 @@ export async function load({ parent }) {
 ```typescript
 // Get top students by achievement points
 const { data: leaderboard } = await supabase
-  .from('student_achievements')
-  .select(`
+	.from('student_achievements')
+	.select(
+		`
     student_id,
     profiles!inner(username, avatar_url),
     sum(points_awarded)::int as total_points,
     count(*)::int as achievement_count
-  `)
-  .gte('points_awarded', 1)
-  .order('total_points', { ascending: false })
-  .limit(100);
+  `
+	)
+	.gte('points_awarded', 1)
+	.order('total_points', { ascending: false })
+	.limit(100);
 ```
 
 ---
@@ -1043,13 +1081,13 @@ const { data: leaderboard } = await supabase
 
 ### Current Performance
 
-| Metric | Current Performance |
-|--------|-------------------|
-| Single event processing | 200-400ms |
-| Throughput | 2.5-5 events/second |
-| Achievement list load | 80-120ms |
-| Leaderboard query | 200-500ms |
-| Prerequisite check (5 prereqs) | 50ms |
+| Metric                         | Current Performance |
+| ------------------------------ | ------------------- |
+| Single event processing        | 200-400ms           |
+| Throughput                     | 2.5-5 events/second |
+| Achievement list load          | 80-120ms            |
+| Leaderboard query              | 200-500ms           |
+| Prerequisite check (5 prereqs) | 50ms                |
 
 ### Bottlenecks Identified
 
@@ -1071,6 +1109,7 @@ const { data: leaderboard } = await supabase
 #### HIGH PRIORITY (70% improvement)
 
 **1. Add Missing Indexes** (15 minutes)
+
 ```sql
 -- Teacher-awarded achievements lookup
 CREATE INDEX idx_student_achievements_unlocked_by
@@ -1084,6 +1123,7 @@ WHERE is_active = true;
 ```
 
 **2. Optimize JSONB Indexes** (30 minutes)
+
 ```sql
 -- Replace full GIN with targeted expression indexes
 DROP INDEX idx_achievements_metadata_gin;
@@ -1099,6 +1139,7 @@ ON public.achievements USING GIN ((metadata->'unlock_conditions'->'params'));
 **Expected:** 60-70% faster event processing
 
 **3. Optimize `process_achievement_event` Query** (1 hour)
+
 ```sql
 -- Pre-filter by context first (uses index)
 v_event_context := split_part(p_event_type, '_', 1);
@@ -1128,6 +1169,7 @@ LOOP
 #### MEDIUM PRIORITY (10x throughput)
 
 **4. Batch Event Processing** (2-3 hours)
+
 ```sql
 CREATE OR REPLACE FUNCTION public.process_achievement_events_batch(
   p_events JSONB  -- Array of {event_type, student_id, event_data}
@@ -1137,6 +1179,7 @@ CREATE OR REPLACE FUNCTION public.process_achievement_events_batch(
 **Expected:** 50-100 events/second (currently 2.5-5)
 
 **5. Optimize Prerequisite Checking** (30 minutes)
+
 ```sql
 -- Single query to check all prerequisites
 SELECT COUNT(DISTINCT achievement_id) INTO v_met_count
@@ -1152,6 +1195,7 @@ RETURN v_met_count = array_length(v_prerequisites, 1);
 #### LOW PRIORITY (95% faster leaderboards)
 
 **6. Materialized View for Leaderboards** (2-3 hours)
+
 ```sql
 CREATE MATERIALIZED VIEW student_achievement_stats AS
 SELECT
@@ -1171,11 +1215,13 @@ CREATE INDEX idx_student_stats_points ON student_achievement_stats(total_points 
 ### Scalability Projection
 
 **Current System:**
+
 - 1,000 students, 100 achievements: Acceptable (100-200ms avg)
 - 1,000 students, 500 achievements: Degraded (300-500ms avg)
 - 5,000 students, 500 achievements: Poor (500-1000ms avg)
 
 **Optimized System:**
+
 - 1,000 students, 100 achievements: Excellent (30-60ms avg)
 - 1,000 students, 500 achievements: Good (60-120ms avg)
 - 5,000 students, 500 achievements: Acceptable (100-200ms avg)
@@ -1211,6 +1257,7 @@ Track these metrics in production:
 **Goal:** RESTful API for achievement management
 
 **Endpoints:**
+
 - `GET /api/achievements` - List all achievements (with unlock status)
 - `GET /api/achievements/:id` - Get single achievement details
 - `GET /api/achievements/student/:id` - Get student's achievements
@@ -1219,6 +1266,7 @@ Track these metrics in production:
 - `GET /api/achievements/progress` - Get student's progress
 
 **Features:**
+
 - Pagination and filtering
 - Search by context/category
 - Zod validation for all inputs
@@ -1229,6 +1277,7 @@ Track these metrics in production:
 **Goal:** Real-time achievement unlock notifications
 
 **Features:**
+
 - Supabase Realtime subscription to `student_achievements`
 - Toast notifications on achievement unlock
 - Animated achievement unlock modal
@@ -1236,23 +1285,24 @@ Track these metrics in production:
 - Progress bar updates in real-time
 
 **Implementation:**
+
 ```typescript
 // Subscribe to achievement unlocks
 const channel = supabase
-  .channel('achievement-unlocks')
-  .on(
-    'postgres_changes',
-    {
-      event: 'INSERT',
-      schema: 'public',
-      table: 'student_achievements',
-      filter: `student_id=eq.${studentId}`
-    },
-    (payload) => {
-      showAchievementUnlockAnimation(payload.new);
-    }
-  )
-  .subscribe();
+	.channel('achievement-unlocks')
+	.on(
+		'postgres_changes',
+		{
+			event: 'INSERT',
+			schema: 'public',
+			table: 'student_achievements',
+			filter: `student_id=eq.${studentId}`
+		},
+		(payload) => {
+			showAchievementUnlockAnimation(payload.new);
+		}
+	)
+	.subscribe();
 ```
 
 ### Phase 4: Student Dashboard (Planned)
@@ -1260,11 +1310,13 @@ const channel = supabase
 **Goal:** Student-facing achievements UI
 
 **Pages:**
+
 - `/dashboard/student/achievements` - All achievements with filters
 - `/dashboard/student/achievements/:id` - Single achievement detail
 - `/dashboard/student/achievements/leaderboard` - Class/school leaderboard
 
 **Features:**
+
 - Filter by context, category, rarity
 - Sort by unlock date, rarity, points
 - Progress bars for progressive achievements
@@ -1277,10 +1329,12 @@ const channel = supabase
 **Goal:** Teacher achievement management
 
 **Pages:**
+
 - `/dashboard/teacher/achievements` - Class achievements overview
 - `/dashboard/teacher/achievements/award` - Award achievements to students
 
 **Features:**
+
 - View which students have unlocked which achievements
 - Manually award achievements with reason
 - Class achievement statistics
@@ -1291,11 +1345,13 @@ const channel = supabase
 **Goal:** Admin achievement creation and management
 
 **Pages:**
+
 - `/dashboard/admin/achievements` - Manage all achievements
 - `/dashboard/admin/achievements/create` - Create new achievement
 - `/dashboard/admin/achievements/:id/edit` - Edit achievement
 
 **Features:**
+
 - CRUD operations for achievements
 - Preview achievement before activation
 - Deactivate/reactivate achievements

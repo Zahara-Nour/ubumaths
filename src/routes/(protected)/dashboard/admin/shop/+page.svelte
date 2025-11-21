@@ -68,7 +68,7 @@
 	];
 
 	// Filter items based on search and filters
-	const filteredItems = $derived(() => {
+	const filteredItems = $derived.by(() => {
 		let filtered = items;
 
 		// Search filter
@@ -111,7 +111,7 @@
 	});
 
 	// Group items by category
-	const groupedItems = $derived(() => {
+	const groupedItems = $derived.by(() => {
 		const groups: Record<string, ShopItemTemplate[]> = {
 			consumable: [],
 			booster: [],
@@ -119,7 +119,7 @@
 			utility: []
 		};
 
-		filteredItems().forEach((item) => {
+		filteredItems.forEach((item) => {
 			if (groups[item.category]) {
 				groups[item.category].push(item);
 			}
@@ -306,8 +306,8 @@
 			<!-- Statistics bar -->
 			<div class="flex items-center justify-between text-sm text-muted-foreground">
 				<p>
-					{filteredItems().length} article{filteredItems().length > 1 ? 's' : ''} trouvé{filteredItems()
-						.length > 1
+					{filteredItems.length} article{filteredItems.length > 1 ? 's' : ''} trouvé{filteredItems.length >
+					1
 						? 's'
 						: ''}
 					{searchQuery ||
@@ -330,7 +330,7 @@
 			</div>
 
 			<!-- Items grouped by category -->
-			{#each Object.entries(groupedItems()) as [category, categoryItems] (category)}
+			{#each Object.entries(groupedItems) as [category, categoryItems] (category)}
 				{#if categoryItems.length > 0}
 					<div class="space-y-4">
 						<h2 class="text-xl font-semibold capitalize">
@@ -366,7 +366,7 @@
 				{/if}
 			{/each}
 
-			{#if filteredItems().length === 0}
+			{#if filteredItems.length === 0}
 				<div class="rounded-lg border bg-muted/20 py-12 text-center">
 					<p class="text-muted-foreground">
 						{searchQuery ||

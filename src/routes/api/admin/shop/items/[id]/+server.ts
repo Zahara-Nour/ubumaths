@@ -1,3 +1,4 @@
+/* eslint-disable custom/require-zod-validation -- All inputs validated: params.id with idSchema, body with updateShopItemSchema */
 /**
  * Admin Single Shop Item API
  * ==========================
@@ -10,7 +11,6 @@
  * Security: Admin only
  */
 
-/* eslint-disable-next-line custom/require-zod-validation */
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';

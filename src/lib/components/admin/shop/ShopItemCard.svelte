@@ -84,7 +84,7 @@
 	);
 
 	// Check if item is currently available
-	const isAvailable = $derived(() => {
+	const isAvailable = $derived.by(() => {
 		const now = new Date();
 		if (item.available_from && new Date(item.available_from) > now) {
 			return false;
@@ -103,7 +103,7 @@
 	class={cn(
 		'relative overflow-hidden transition-all',
 		!effectiveEnabled && 'opacity-60',
-		!isAvailable() && 'ring-2 ring-orange-200'
+		!isAvailable && 'ring-2 ring-orange-200'
 	)}
 >
 	{#if item.discount_percentage && item.discount_percentage > 0}
@@ -133,7 +133,7 @@
 			{#if onEdit || onDelete || onUploadImage || onToggle}
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger asChild>
-						<Button variant="ghost" size="icon" class="h-8 w-8">
+						<Button variant="ghost" size="icon" class="h-8 w-8" aria-label="Actions de l'article">
 							<MoreVertical class="h-4 w-4" />
 						</Button>
 					</DropdownMenu.Trigger>
@@ -241,7 +241,7 @@
 			{#if !effectiveEnabled}
 				<Badge variant="secondary" class="text-xs">Désactivé</Badge>
 			{/if}
-			{#if !isAvailable()}
+			{#if !isAvailable}
 				<Badge variant="secondary" class="bg-orange-100 text-xs text-orange-800">
 					Non disponible
 				</Badge>
