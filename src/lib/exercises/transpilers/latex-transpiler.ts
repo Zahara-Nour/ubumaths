@@ -28,6 +28,8 @@ import type {
 	ASTNode,
 	MathBlockNode,
 	ImageNode,
+	BlockquoteNode,
+	CodeBlockNode,
 	LatexTranspilerOptions
 } from '../types';
 
@@ -108,7 +110,10 @@ function generatePreamble(options: Required<LatexTranspilerOptions>): string {
 	preamble += '\\usepackage{array}\n';
 	preamble += '\\usepackage{booktabs}\n'; // For better tables
 	preamble += '\\usepackage{geometry}\n';
-	preamble += '\\geometry{margin=2cm}\n\n';
+	preamble += '\\geometry{margin=2cm}\n';
+	preamble += '\\usepackage{listings}\n'; // For code blocks
+	preamble += '\\usepackage{xcolor}\n'; // For code syntax colors
+	preamble += '\\lstset{basicstyle=\\ttfamily\\small,breaklines=true,frame=single}\n\n';
 
 	// Extra packages
 	if (extraPackages.length > 0) {
@@ -183,6 +188,12 @@ function transpileBlock(node: BlockNode, options: Required<LatexTranspilerOption
 
 		case 'horizontal-rule':
 			return '\\noindent\\rule{\\textwidth}{0.4pt}';
+
+		case 'blockquote':
+			return transpileBlockquote(node, options);
+
+		case 'code-block':
+			return transpileCodeBlock(node);
 
 		default:
 			return '';
@@ -391,6 +402,88 @@ function transpileImage(node: ImageNode, options: Required<LatexTranspilerOption
 	latex += `\\end{center}`;
 
 	return latex;
+}
+
+// ============================================================================
+// BLOCKQUOTE TRANSPILATION
+// ============================================================================
+
+/**
+ * Transpile blockquote node
+ *
+ * Uses the quote environment for blockquotes. Nested blockquotes
+ * are supported through recursive calls.
+ *
+ * @param node - Blockquote node
+ * @param options - Transpiler options
+ * @returns LaTeX quote environment
+ */
+function transpileBlockquote(
+	node: BlockquoteNode,
+	options: Required<LatexTranspilerOptions>
+): string {
+	const content = node.children.map((child) => transpileBlock(child, options)).join('\n\n');
+
+	return `\\begin{quote}\n${content}\n\\end{quote}`;
+}
+
+// ============================================================================
+// CODE BLOCK TRANSPILATION
+// ============================================================================
+
+/**
+ * Transpile code block node
+ *
+ * Uses the lstlisting environment for code blocks with optional
+ * language specification for syntax highlighting.
+ *
+ * @param node - Code block node
+ * @returns LaTeX lstlisting environment
+ */
+function transpileCodeBlock(node: CodeBlockNode): string {
+	// Map common language names to listings language identifiers
+	// Fallback choices are deliberate approximations:
+	// - TypeScript → JavaScript: Similar syntax highlighting needs
+	// - CSS → HTML: Both markup-like, acceptable for styling code
+	// - JSON → JavaScript: Object notation similarities
+	// - YAML → Python: Similar block-structure highlighting
+	const languageMap: Record<string, string> = {
+		javascript: 'JavaScript',
+		typescript: 'JavaScript', // listings doesn't have TS, use JS
+		js: 'JavaScript',
+		ts: 'JavaScript',
+		python: 'Python',
+		py: 'Python',
+		java: 'Java',
+		c: 'C',
+		cpp: 'C++',
+		'c++': 'C++',
+		csharp: 'CSharp',
+		'c#': 'CSharp',
+		ruby: 'Ruby',
+		php: 'PHP',
+		html: 'HTML',
+		css: 'HTML', // listings doesn't have CSS
+		sql: 'SQL',
+		bash: 'bash',
+		sh: 'bash',
+		shell: 'bash',
+		latex: 'TeX',
+		tex: 'TeX',
+		xml: 'XML',
+		json: 'JavaScript', // Use JS for JSON highlighting
+		yaml: 'Python', // Similar structure to Python
+		go: 'Go'
+	};
+
+	// Build lstlisting options
+	const langOption = node.language?.trim()
+		? `language=${languageMap[node.language.toLowerCase()] || node.language}`
+		: '';
+
+	const options = langOption ? `[${langOption}]` : '';
+
+	return `\\begin{lstlisting}${options}\n${node.code}\n\\end{lstlisting}`;
 }
 
 // ============================================================================
