@@ -240,6 +240,21 @@ Système de combat mathématique gamifié.
 - [Guide des assets](features/navadra/assets-guide.md)
 - [Phases d'implémentation](features/navadra/implementation-phases.md)
 
+### 💣 Minesweeper (Démineur)
+
+**Status** : ✅ Production | [Documentation →](features/minesweeper.md) 🆕 ⭐
+
+Jeu de démineur classique avec accessibilité publique et fonctionnalités premium pour étudiants.
+
+- [Guide complet](features/minesweeper.md) - Guide utilisateur et technique détaillé
+- Accessibilité publique (jeu sans authentification)
+- Sauvegarde et reprise de partie (étudiants connectés)
+- Système de récompenses avec gidouilles (bonus de temps et dégressif quotidien)
+- Statistiques personnelles et classements par difficulté
+- Trois niveaux : Débutant (9×9, 10 mines), Intermédiaire (16×16, 40 mines), Expert (16×30, 99 mines)
+- Validation serveur des victoires et calcul sécurisé des récompenses
+- **2025-11-18** : Implémentation complète avec sécurité renforcée
+
 ### 💬 Messagerie privée
 
 **Status** : ✅ Production | [Documentation →](features/messaging/README.md)
@@ -441,7 +456,7 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 ## 📊 Statistiques
 
-- **Features en production** : 17 🆕 (Google Classroom Materials ajouté)
+- **Features en production** : 18 🆕 (Minesweeper ajouté)
 - **Features en développement** : 1 (Navadra)
 - **Tests** : 3,583 tests (99.3% pass rate)
   - Unit tests: 2,765/2,789 passing (99.1%) 🆕 (+130 summaries tests)

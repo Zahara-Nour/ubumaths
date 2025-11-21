@@ -15,6 +15,7 @@ The database is designed to support a complete math learning platform with:
 - **Real-Time Presence**: WebSocket-based online/offline status
 - **Chat Moderation**: User restrictions and moderation audit trail (NEW: 2025-11-10)
 - **Error Monitoring**: Comprehensive error logging and tracking system
+- **Achievements System**: Universal achievement tracking across all features (NEW: 2025-11-21)
 
 ## Entity Relationship Diagram
 
@@ -3313,6 +3314,638 @@ ORDER BY last_attempt_at DESC;
 
 ---
 
+## Minesweeper Game System
+
+Classic Minesweeper game with public accessibility and premium features for authenticated students.
+
+### Features
+
+- **Public Gameplay**: Anyone can play without authentication
+- **Game Persistence**: Authenticated students can save and resume games
+- **Gidouilles Rewards**: Only authenticated students earn in-game currency
+- **Statistics Tracking**: Personal stats for authenticated students
+- **Leaderboard System**: Competitive rankings by difficulty level
+
+### Tables
+
+#### `minesweeper_games`
+
+Stores Minesweeper game sessions with support for both public and authenticated gameplay.
+
+| Column             | Type        | Description                                                      |
+| ------------------ | ----------- | ---------------------------------------------------------------- |
+| id                 | UUID (PK)   | Game session ID                                                  |
+| student_id         | UUID (FK)   | Student who played (NULL for public/anonymous games)             |
+| difficulty         | TEXT        | 'beginner', 'intermediate', or 'expert'                          |
+| status             | TEXT        | 'in_progress', 'won', or 'lost'                                  |
+| grid_state         | JSONB       | Complete game state for resuming (see structure below)           |
+| time_seconds       | INTEGER     | Time elapsed in seconds (NULL for in_progress)                   |
+| gidouilles_awarded | INTEGER     | Gidouilles earned (0 for public games, calculated server-side)   |
+| started_at         | TIMESTAMPTZ | Auto-set by trigger on first move (NULL until first grid change) |
+| completed_at       | TIMESTAMPTZ | Completion timestamp (NULL for in_progress)                      |
+| created_at         | TIMESTAMPTZ | Game creation timestamp                                          |
+
+**Foreign Keys**:
+
+- `student_id` → `profiles(id)` (ON DELETE CASCADE)
+
+**Constraints**:
+
+- `difficulty` must be 'beginner', 'intermediate', or 'expert'
+- `status` must be 'in_progress', 'won', or 'lost'
+- `gidouilles_awarded >= 0 AND gidouilles_awarded <= 1000` (prevents abuse)
+- All numeric values must be >= 0
+
+**Grid State JSONB Structure** (GridStateDTO format):
+
+```json
+{
+  "rows": 9,
+  "cols": 9,
+  "mines": [[0, 5], [2, 3], ...],            // Array of [row, col] mine positions
+  "revealed": [[0, 0], [0, 1], ...],          // Array of [row, col] revealed cells
+  "flagged": [[1, 2], ...],                   // Array of [row, col] flagged cells
+  "adjacentCounts": {"0,0": 1, "0,1": 2, ...} // Map of "row,col": adjacent mine count
+}
+```
+
+**Note**: adjacentCounts uses comma separator ("0,0") not hyphen.
+
+**Indexes**:
+
+- `idx_minesweeper_games_student_status` on `(student_id, status)` (WHERE student_id IS NOT NULL)
+- `idx_minesweeper_games_resume` on `(student_id, status, created_at DESC)` (for resume game queries)
+- `idx_minesweeper_games_difficulty` on `(difficulty, status, time_seconds)` (for leaderboards)
+
+**Triggers**:
+
+- `set_minesweeper_started_at` (BEFORE UPDATE): Auto-sets `started_at` timestamp on first grid_state change
+
+### Functions (RPC)
+
+#### `complete_minesweeper_game(p_game_id UUID, p_grid_state JSONB)`
+
+**Security**: `SECURITY DEFINER` - Runs with elevated privileges for atomic gidouilles update
+
+**Purpose**: Server-side win validation and reward calculation (prevents client-side manipulation)
+
+**Parameters**:
+
+- `p_game_id`: UUID of the game being completed
+- `p_grid_state`: Final grid state in GridStateDTO format
+
+**Returns**: TABLE(success BOOLEAN, gidouilles_awarded INTEGER, time_seconds INTEGER)
+
+**Validation Steps**:
+
+1. Verify ownership (student_id matches authenticated user)
+2. Verify game is in_progress
+3. **Win validation**:
+   - All non-mine cells must be revealed
+   - No mine cells revealed (except flagged)
+   - Reject if validation fails
+4. Calculate time elapsed (NOW() - started_at)
+5. Calculate gidouilles with bonuses:
+   - Time bonus (degressive): 2.0× (≤50% target), 1.5× (≤75%), 1.0× (≤100%), 0.5× (>100%)
+   - Daily degressive: 1.0× (1st win), 0.8× (2nd), 0.6× (3rd), 0.4× (4th+)
+   - Cap at max 1000 gidouilles
+6. Atomically:
+   - Update game status to 'won'
+   - Set completed_at timestamp
+   - Update student's gidouilles balance
+
+**Example**:
+
+```sql
+SELECT * FROM complete_minesweeper_game(
+  'game-uuid-here',
+  '{"rows": 9, "cols": 9, "mines": [[0,3]], ...}'::jsonb
+);
+-- Returns: (true, 20, 90) for successful completion with 20 gidouilles in 90 seconds
+```
+
+#### `record_minesweeper_loss(p_game_id UUID, p_grid_state JSONB)`
+
+**Security**: `SECURITY DEFINER`
+
+**Purpose**: Records a game loss (mine explosion) with final grid state
+
+**Parameters**:
+
+- `p_game_id`: UUID of the game
+- `p_grid_state`: Final grid state with exploded mine
+
+**Returns**: TABLE(success BOOLEAN)
+
+**Flow**:
+
+1. Verify ownership
+2. Verify game is in_progress
+3. Update status to 'lost'
+4. Set completed_at timestamp
+5. Save final grid_state
+
+**Example**:
+
+```sql
+SELECT * FROM record_minesweeper_loss(
+  'game-uuid-here',
+  '{"rows": 9, "cols": 9, ...}'::jsonb
+);
+-- Returns: (true) for successful recording
+```
+
+### Views
+
+#### `minesweeper_leaderboard`
+
+Ranked leaderboard partitioned by difficulty level. Only includes authenticated users with at least one win.
+
+| Column           | Type    | Description                                       |
+| ---------------- | ------- | ------------------------------------------------- |
+| student_id       | UUID    | Student ID                                        |
+| first_name       | TEXT    | Student first name (from profiles)                |
+| last_name        | TEXT    | Student last name (from profiles)                 |
+| difficulty       | TEXT    | Game difficulty level                             |
+| games_won        | INTEGER | Number of games won at this difficulty            |
+| games_played     | INTEGER | Total games played at this difficulty             |
+| best_time        | INTEGER | Best completion time in seconds                   |
+| total_gidouilles | INTEGER | Total gidouilles earned at this difficulty        |
+| win_rate         | NUMERIC | Win percentage (rounded to 1 decimal place)       |
+| rank             | INTEGER | Rank within difficulty (ordered by best_time ASC) |
+
+**Ranking Logic**:
+
+- Partitioned by `difficulty`
+- Ordered by `best_time ASC` (fastest time = rank 1)
+- Secondary sort by `games_won DESC` for ties
+- Only includes students with at least 1 win
+
+### RLS Policies
+
+**minesweeper_games**:
+
+- **SELECT**: Authenticated users can view their own games (`student_id = auth.uid()`)
+- **INSERT** (authenticated): Students can create games with `student_id = auth.uid()`
+- **INSERT** (anonymous): Anyone can create public games with `student_id = NULL` and `gidouilles_awarded = 0`
+- **UPDATE**: Only authenticated users can update their own games (`student_id = auth.uid()`)
+- **DELETE**: Only authenticated users can delete their own games (`student_id = auth.uid()`)
+
+**minesweeper_leaderboard** (view):
+
+- **SELECT**: Available to both `authenticated` and `anon` users (public leaderboard)
+- Security: Uses `security_invoker = on` to inherit RLS from base tables
+
+### Common Queries
+
+#### Get user's game statistics by difficulty
+
+```sql
+SELECT
+  difficulty,
+  COUNT(*) FILTER (WHERE status = 'won') as games_won,
+  COUNT(*) FILTER (WHERE status = 'lost') as games_lost,
+  COUNT(*) FILTER (WHERE status = 'in_progress') as games_in_progress,
+  MIN(time_seconds) FILTER (WHERE status = 'won') as best_time,
+  AVG(time_seconds) FILTER (WHERE status = 'won') as avg_time,
+  SUM(gidouilles_awarded) as total_gidouilles
+FROM minesweeper_games
+WHERE student_id = :student_id
+GROUP BY difficulty
+ORDER BY
+  CASE difficulty
+    WHEN 'beginner' THEN 1
+    WHEN 'intermediate' THEN 2
+    WHEN 'expert' THEN 3
+  END;
+```
+
+#### Get leaderboard for specific difficulty
+
+```sql
+SELECT *
+FROM minesweeper_leaderboard
+WHERE difficulty = 'expert'
+ORDER BY rank
+LIMIT 100;
+```
+
+#### Resume in-progress game
+
+```sql
+SELECT *
+FROM minesweeper_games
+WHERE student_id = :student_id
+  AND status = 'in_progress'
+ORDER BY created_at DESC
+LIMIT 1;
+```
+
+#### Cleanup old abandoned games (cron job)
+
+```sql
+-- Delete in-progress games older than 7 days
+DELETE FROM minesweeper_games
+WHERE status = 'in_progress'
+  AND created_at < NOW() - INTERVAL '7 days';
+```
+
+### Design Decisions
+
+**Why NULL student_id for public games?**
+
+- Allows anyone to play without authentication
+- Enforced at DB level: public games cannot earn gidouilles
+- RLS policies ensure proper separation between public and authenticated gameplay
+
+**Why JSONB for grid_state?**
+
+- Enables complete game state persistence
+- Flexible structure for different difficulty levels
+- Supports efficient resume functionality
+- No need for complex relational structure for ephemeral game state
+
+**Why separate leaderboard view?**
+
+- Pre-computed rankings improve query performance
+- Simplifies frontend queries
+- Automatic filtering of incomplete data
+- Partition by difficulty for fair competition
+
+**Gidouilles reward strategy**:
+
+- Only awarded to authenticated students (incentivizes account creation)
+- Awarded on game completion (won status)
+- Amount can vary by difficulty level (implementation detail in application logic)
+
+### Migrations
+
+**Created**: 2025-11-18
+
+1. **`20251118063746_create_minesweeper_tables.sql`**
+   - Initial schema with minesweeper_games table and leaderboard view
+   - Basic RLS policies for authenticated users
+   - Indexes for performance
+
+2. **`20251118120000_harden_minesweeper_security.sql`**
+   - Security hardening based on security audit
+   - Added `started_at` column and auto-trigger
+   - Implemented SECURITY DEFINER RPC functions (complete_minesweeper_game, record_minesweeper_loss)
+   - Server-side win validation to prevent client manipulation
+   - Server-side gidouilles calculation with time bonuses
+   - Added gidouilles cap (max 1000) to prevent abuse
+   - Daily degressive multiplier for repeated wins
+
+### Related Documentation
+
+- **Feature Guide**: [docs/features/minesweeper.md](../features/minesweeper.md) - Complete user and technical guide
+- **Types**: `src/lib/types/minesweeper.ts` - TypeScript interfaces
+- **Store**: `src/lib/stores/minesweeper.svelte.ts` - Game logic and state management
+- **Validation**: `src/lib/server/validation/minesweeper.ts` - Difficulty-specific Zod schemas
+- **API Routes**: `src/routes/api/games/minesweeper/` - API endpoints
+- **Public Page**: `src/routes/(public)/games/minesweeper/` - Main game interface
+- **Stats Page**: `src/routes/(protected)/dashboard/student/minesweeper/stats/` - Personal statistics
+- **Leaderboard**: `src/routes/(protected)/dashboard/student/minesweeper/leaderboard/` - Rankings
+- **Components**: `src/lib/components/game/minesweeper/` - UI components
+
+---
+
+## Universal Achievements System
+
+**NEW: 2025-11-21** - Context-aware achievement tracking across all UbuMaths features.
+
+### Overview
+
+The Universal Achievements System is a flexible, event-driven achievement tracking system that works across all features: Minesweeper, Questions, Assessments, SRS, Riddles, and Social interactions.
+
+**Key Features:**
+
+- Context-aware (achievements specific to features)
+- Flexible unlocking (automatic, progressive, or manual)
+- Context variations (same achievement for different difficulties/subjects/tiers)
+- Repeatable achievements with limits
+- Prerequisites support
+- XP points and Gidouilles rewards
+- Teacher manual awards
+- Real-time event processing
+
+### Tables
+
+#### `achievements`
+
+Achievement definitions (templates) that can be unlocked by students.
+
+| Column          | Type        | Description                                                                                                                   |
+| --------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `id`            | TEXT (PK)   | Slug identifier (e.g., `minesweeper_first_win`)                                                                               |
+| `context`       | TEXT        | Feature: `minesweeper`, `questions`, `assessments`, `srs`, `riddles`, `social`, `meta`, `system`                              |
+| `category`      | TEXT        | Category: `speed`, `accuracy`, `streak`, `mastery`, `exploration`, `social`, `collection`, `milestone`, `special`, `seasonal` |
+| `name`          | TEXT        | Display name (French)                                                                                                         |
+| `description`   | TEXT        | Description (French)                                                                                                          |
+| `icon`          | TEXT        | Emoji or icon identifier                                                                                                      |
+| `unlock_type`   | TEXT        | How unlocked: `automatic`, `event_based`, `progressive`, `manual`                                                             |
+| `metadata`      | JSONB       | Flexible configuration (rewards, conditions, tiers, etc.)                                                                     |
+| `is_active`     | BOOLEAN     | Whether achievement is active (default: true)                                                                                 |
+| `display_order` | INTEGER     | Sort order for UI (default: 0)                                                                                                |
+| `created_at`    | TIMESTAMPTZ | Creation timestamp                                                                                                            |
+| `updated_at`    | TIMESTAMPTZ | Last update timestamp                                                                                                         |
+
+**Indexes:**
+
+- `idx_achievements_context` (context) WHERE is_active = true
+- `idx_achievements_category` (category) WHERE is_active = true
+- `idx_achievements_display_order` (display_order) WHERE is_active = true
+- `idx_achievements_metadata_gin` GIN (metadata)
+
+**Metadata Examples:**
+
+```json
+// Minesweeper speed achievement
+{
+  "difficulty_specific": true,
+  "points": 50,
+  "gidouilles_reward": 20,
+  "rarity": "epic",
+  "unlock_conditions": {
+    "type": "minesweeper_game_completed",
+    "params": {
+      "max_time": 90,
+      "difficulty": "expert"
+    }
+  }
+}
+
+// Progressive questions achievement
+{
+  "subject_specific": true,
+  "show_progress": true,
+  "points": 100,
+  "gidouilles_reward": 50,
+  "rarity": "legendary",
+  "unlock_conditions": {
+    "type": "questions_answered",
+    "params": {
+      "target": 50,
+      "min_accuracy": 0.95,
+      "subject": "calculus"
+    }
+  }
+}
+
+// Repeatable social achievement
+{
+  "repeatable": true,
+  "max_repetitions": 5,
+  "points": 10,
+  "gidouilles_reward": 5,
+  "unlock_conditions": {
+    "type": "friend_added",
+    "params": {}
+  }
+}
+```
+
+#### `student_achievements`
+
+Records of achievements unlocked by students.
+
+| Column               | Type                       | Description                                                  |
+| -------------------- | -------------------------- | ------------------------------------------------------------ |
+| `id`                 | UUID (PK)                  | Unique ID                                                    |
+| `student_id`         | UUID (FK → profiles)       | Student who unlocked                                         |
+| `achievement_id`     | TEXT (FK → achievements)   | Achievement unlocked                                         |
+| `context_data`       | JSONB                      | Context-specific data (difficulty, subject, tier, iteration) |
+| `unlocked_at`        | TIMESTAMPTZ                | When unlocked                                                |
+| `unlocked_by`        | UUID (FK → profiles, NULL) | NULL = system, UUID = teacher manual award                   |
+| `unlock_reason`      | TEXT                       | Optional description                                         |
+| `points_awarded`     | INTEGER                    | XP points awarded (denormalized)                             |
+| `gidouilles_awarded` | INTEGER                    | Gidouilles awarded (denormalized)                            |
+
+**UNIQUE Constraint:**
+
+```sql
+CONSTRAINT unique_student_achievement UNIQUE NULLS NOT DISTINCT (
+  student_id,
+  achievement_id,
+  (context_data->>'difficulty'),
+  (context_data->>'subject'),
+  (context_data->>'tier'),
+  (context_data->>'iteration')
+)
+```
+
+This prevents duplicate unlocks while allowing the same achievement for different contexts (e.g., "First Win" achievement for beginner, intermediate, and expert difficulties).
+
+**Indexes:**
+
+- `idx_student_achievements_student` (student_id)
+- `idx_student_achievements_achievement` (achievement_id)
+- `idx_student_achievements_unlocked` (student_id, unlocked_at DESC)
+- `idx_student_achievements_context_gin` GIN (context_data)
+
+#### `achievement_progress`
+
+Tracks progress towards progressive achievements (e.g., "Answer 100 questions").
+
+| Column                | Type                     | Description                           |
+| --------------------- | ------------------------ | ------------------------------------- |
+| `id`                  | UUID (PK)                | Unique ID                             |
+| `student_id`          | UUID (FK → profiles)     | Student progressing                   |
+| `achievement_id`      | TEXT (FK → achievements) | Achievement being progressed          |
+| `current_value`       | NUMERIC                  | Current progress value (CHECK >= 0)   |
+| `target_value`        | NUMERIC                  | Target value to complete (CHECK > 0)  |
+| `progress_percentage` | INTEGER (GENERATED)      | Auto-calculated 0-100%                |
+| `context_key`         | TEXT                     | Optional context (e.g., subject name) |
+| `is_active`           | BOOLEAN                  | Whether progress is active            |
+| `started_at`          | TIMESTAMPTZ              | When progress started                 |
+| `updated_at`          | TIMESTAMPTZ              | Last progress update                  |
+| `completed_at`        | TIMESTAMPTZ              | When completed (100%)                 |
+
+**UNIQUE Constraint:** (student_id, achievement_id, context_key)
+
+**Generated Column:**
+
+```sql
+progress_percentage INTEGER GENERATED ALWAYS AS (
+  LEAST(100, GREATEST(0, ROUND((current_value / NULLIF(target_value, 0)) * 100)))
+) STORED
+```
+
+**Indexes:**
+
+- `idx_achievement_progress_student` (student_id) WHERE is_active = true
+- `idx_achievement_progress_achievement` (achievement_id) WHERE is_active = true
+- `idx_achievement_progress_updated` (updated_at DESC) WHERE is_active = true
+- `idx_achievement_progress_incomplete` (student_id, achievement_id) WHERE is_active = true AND progress_percentage < 100
+
+#### `achievement_events`
+
+Event log for achievement processing (audit trail + retry queue).
+
+| Column             | Type                 | Description                                     |
+| ------------------ | -------------------- | ----------------------------------------------- |
+| `id`               | UUID (PK)            | Unique ID                                       |
+| `event_type`       | TEXT                 | Event type (e.g., `minesweeper_game_completed`) |
+| `event_data`       | JSONB                | Event data (score, time, etc.)                  |
+| `student_id`       | UUID (FK → profiles) | Student who triggered event                     |
+| `processed`        | BOOLEAN              | Whether event has been processed                |
+| `processed_at`     | TIMESTAMPTZ          | When processed                                  |
+| `processing_error` | TEXT                 | Error message if processing failed              |
+| `created_at`       | TIMESTAMPTZ          | When event occurred                             |
+
+**Indexes:**
+
+- `idx_achievement_events_unprocessed` (created_at) WHERE processed = false
+- `idx_achievement_events_student` (student_id, event_type)
+- `idx_achievement_events_type` (event_type, created_at DESC)
+
+### Functions
+
+#### `check_achievement_prerequisites(p_student_id UUID, p_achievement_id TEXT) RETURNS BOOLEAN`
+
+Checks if a student has met all prerequisites for an achievement.
+
+**Security:** SECURITY DEFINER with SET search_path = public
+
+#### `update_achievement_progress(p_student_id UUID, p_achievement_id TEXT, p_delta NUMERIC, p_context_key TEXT DEFAULT NULL) RETURNS JSONB`
+
+Updates progress for a progressive achievement. Auto-unlocks when target reached.
+
+**Returns:** `{"current_value": 73, "target_value": 100, "progress_percentage": 73, "completed": false, "newly_unlocked": false}`
+
+**Security:** SECURITY DEFINER with SET search_path = public
+
+#### `process_achievement_event(p_event_type TEXT, p_student_id UUID, p_event_data JSONB DEFAULT '{}') RETURNS JSONB`
+
+Main entry point for achievement processing. Processes an event and unlocks any matching achievements.
+
+**Returns:** `{"event_id": "uuid", "unlocked_achievements": [...], "count": 1}`
+
+**Example:**
+
+```sql
+SELECT public.process_achievement_event(
+  'minesweeper_game_completed',
+  '123e4567-e89b-12d3-a456-426614174000'::uuid,
+  '{"difficulty": "expert", "score": 150, "time_seconds": 45, "perfect": true}'::jsonb
+);
+```
+
+**Security:** SECURITY DEFINER with SET search_path = public
+
+#### `award_achievement_manual(p_teacher_id UUID, p_student_id UUID, p_achievement_id TEXT, p_reason TEXT DEFAULT NULL) RETURNS BOOLEAN`
+
+Allows teachers to manually award achievements to their students.
+
+**Security:** SECURITY DEFINER with SET search_path = public
+
+- Verifies teacher has access to student (via class membership)
+- Only allows manual or event_based achievements
+
+### RLS Policies
+
+**`achievements` table:**
+
+- Anyone can view active achievements
+- Admins can manage achievements
+
+**`student_achievements` table:**
+
+- Students can view their own achievements
+- Teachers can view their students' achievements (via class membership)
+- System can insert (only via SECURITY DEFINER functions - WITH CHECK false)
+
+**`achievement_progress` table:**
+
+- Students can view their own progress
+- Teachers can view their students' progress (via class membership)
+- System can manage (only via SECURITY DEFINER functions - WITH CHECK false)
+
+**`achievement_events` table:**
+
+- All operations restricted to SECURITY DEFINER functions (WITH CHECK false)
+
+### Event Processing Flow
+
+```
+1. Action occurs (e.g., minesweeper game completed)
+   ↓
+2. Call process_achievement_event()
+   ↓
+3. Insert event into achievement_events table
+   ↓
+4. Find matching achievements (by context and unlock_type)
+   ↓
+5. For each achievement:
+   - Check prerequisites
+   - Evaluate unlock conditions
+   - For progressive: update progress
+   - For automatic/event-based: unlock immediately if conditions met
+   - Handle repeatable achievements
+   ↓
+6. Mark event as processed
+   ↓
+7. Return newly unlocked achievements
+```
+
+### Sample Achievements
+
+The migration includes 8 sample achievements:
+
+**Minesweeper:**
+
+- `minesweeper_first_win` - First victory (common, 10 points)
+- `minesweeper_speed_demon` - Expert in <90s (epic, 50 points)
+- `minesweeper_perfect_beginner` - Perfect beginner game (uncommon, 15 points)
+
+**Questions:**
+
+- `questions_first_answer` - First answer (common, 5 points)
+- `questions_streak_10` - 10 correct in a row (uncommon, 25 points, progressive)
+- `questions_master_calculus` - 95% accuracy, 50+ questions (legendary, 100 points, progressive)
+
+**Social:**
+
+- `social_first_friend` - First friend added (common, 10 points)
+- `social_popular` - 10 friends (rare, 30 points, progressive)
+
+**Meta:**
+
+- `meta_achievement_hunter` - Unlock 25 achievements (epic, 50 points, progressive)
+
+### Design Decisions
+
+**JSONB for Flexibility:** Different achievement types need different configuration. JSONB avoids 50+ columns with mostly NULL values.
+
+**Context Variations:** NULLS NOT DISTINCT allows same achievement for different difficulties/subjects/tiers without duplicate entries.
+
+**Event-Driven Architecture:** Decouples achievement logic from feature code. Single entry point for all unlocks.
+
+**SECURITY DEFINER Protection:** RLS policies block direct INSERT. Functions provide controlled access with search_path protection.
+
+**Generated Percentage:** Auto-calculated progress percentage ensures consistency.
+
+### Performance
+
+**Current:** 200-400ms per event, 2.5-5 events/second
+**Optimized:** 60-120ms per event, 50-100 events/second (with Phase 2 optimizations)
+
+See [Performance Analysis](.claude/achievements-performance-analysis.md) for optimization roadmap.
+
+### Migrations
+
+- `20251121000000_create_universal_achievements_system.sql` - Phase 1: Database schema (839 lines)
+
+### Related Documentation
+
+- **Architecture:** [docs/architecture/achievements-system.md](achievements-system.md) - Complete system guide
+- **Performance:** [.claude/achievements-performance-analysis.md](../../.claude/achievements-performance-analysis.md) - Optimization roadmap
+- **Tests:** [.claude/achievement-tests-summary.md](../../.claude/achievement-tests-summary.md) - Test coverage (77/77 passing)
+- **Types:** `src/lib/types/achievements.ts` - TypeScript interfaces
+- **Test Suite:** `src/lib/server/achievements/__tests__/` - Comprehensive test coverage
+
+---
+
 ## Exercise Bank System
 
 Math exercise bank with rich markdown content, LaTeX formulas, and multiple export formats (web, LaTeX/PDF).
@@ -3943,6 +4576,228 @@ All tables have Row Level Security enabled with the following key policies:
 - **Backend** (Phase 2): Will be in `src/routes/api/marketplace/`
 - **Frontend** (Phase 3): Will be in `src/routes/(protected)/dashboard/student/marketplace/`
 - **Components** (Phase 3): Will be in `src/lib/components/marketplace/`
+
+---
+
+## Shop System
+
+**Added**: 2025-11-21
+**Status**: 🚧 In Development
+**Purpose**: Virtual shop where students can purchase items using gidouilles (virtual currency). Items can be consumables (hints, skips), boosters (XP multipliers), cosmetics (avatar frames), or utilities. Purchased items can be traded in the marketplace.
+
+### Architecture Overview
+
+```
+shop_item_templates (admin-defined items)
+    ↓ Purchase with gidouilles
+student_item_inventory (owned items)
+    ↓ Can be used (consumables)
+    ↓ Can be equipped (cosmetics/boosters)
+    ↓ Can be traded (via marketplace)
+item_usage_log (analytics & cooldowns)
+
+Integration Points:
+- profiles.gidouilles (currency)
+- gidouilles_history (audit trail)
+- marketplace_listings/trades (item trading)
+```
+
+### Tables
+
+#### `shop_item_templates`
+
+**Purpose**: Admin-defined items available for purchase in the shop.
+
+| Column                  | Type        | Description                                                   |
+| ----------------------- | ----------- | ------------------------------------------------------------- |
+| id                      | UUID (PK)   | Template ID                                                   |
+| internal_name           | TEXT UNIQUE | Code identifier (e.g., 'minesweeper_hint')                    |
+| display_name            | TEXT        | French display name (e.g., 'Indice Démineur')                 |
+| description             | TEXT        | French description for UI                                     |
+| category                | TEXT        | Main category: consumable, booster, cosmetic, utility         |
+| item_type               | TEXT        | Specific type within category                                 |
+| rarity                  | TEXT        | Rarity: common, uncommon, rare, epic, legendary               |
+| base_price              | INTEGER     | Price in gidouilles                                           |
+| discount_percentage     | INTEGER     | Current discount (0-100)                                      |
+| is_active               | BOOLEAN     | Whether item is available                                     |
+| available_from/until    | TIMESTAMPTZ | Optional availability window                                  |
+| max_owned_per_student   | INTEGER     | Maximum ownership limit (NULL = unlimited)                    |
+| daily_purchase_limit    | INTEGER     | Max purchases per day                                         |
+| weekly_purchase_limit   | INTEGER     | Max purchases per week                                        |
+| purchase_cooldown_hours | INTEGER     | Hours before can purchase again                               |
+| properties              | JSONB       | Item-specific properties (stackable, uses, duration, effects) |
+| is_tradeable            | BOOLEAN     | Can be traded in marketplace                                  |
+| trade_cooldown_hours    | INTEGER     | Hours after acquisition before tradeable                      |
+| icon_url                | TEXT        | Item icon                                                     |
+| sort_order              | INTEGER     | Display order in shop                                         |
+
+**Properties Examples**:
+
+```json
+// Consumable hint
+{
+  "stackable": true,
+  "game": "minesweeper",
+  "effect": "reveal_safe_cell"
+}
+
+// XP Booster
+{
+  "duration_minutes": 30,
+  "multiplier": 2.0,
+  "stackable": false
+}
+
+// Avatar Frame
+{
+  "theme": "gold",
+  "animated": false
+}
+```
+
+#### `student_item_inventory`
+
+**Purpose**: Items owned by students with quantity and usage tracking.
+
+| Column                | Type        | Description                                     |
+| --------------------- | ----------- | ----------------------------------------------- |
+| id                    | UUID (PK)   | Inventory ID                                    |
+| student_id            | UUID (FK)   | Owner (→ profiles)                              |
+| template_id           | UUID (FK)   | Item template (→ shop_item_templates)           |
+| quantity              | INTEGER     | Number owned (for stackable items)              |
+| uses_remaining        | INTEGER     | For multi-use consumables (NULL for single-use) |
+| is_equipped           | BOOLEAN     | Currently equipped (cosmetics/boosters)         |
+| equipped_at           | TIMESTAMPTZ | When equipped                                   |
+| acquired_at           | TIMESTAMPTZ | When obtained                                   |
+| acquired_from         | TEXT        | Source: shop, trade, reward, gift, migration    |
+| acquisition_data      | JSONB       | Details (purchase_id, trade_id, etc.)           |
+| expires_at            | TIMESTAMPTZ | For time-limited items                          |
+| last_used_at          | TIMESTAMPTZ | Last usage timestamp                            |
+| total_uses_count      | INTEGER     | Total times used                                |
+| is_locked             | BOOLEAN     | Locked for trade/listing                        |
+| locked_for_listing_id | UUID (FK)   | → marketplace_listings                          |
+| locked_for_trade_id   | UUID (FK)   | → marketplace_trades                            |
+| instance_data         | JSONB       | Instance-specific properties                    |
+
+**Indexes**:
+
+- Composite UNIQUE on `(student_id, template_id)` WHERE `uses_remaining IS NULL AND instance_data = '{}'` (for stackables)
+- Index on `(student_id)`, `(template_id)`, `(is_locked)`, `(expires_at)`
+
+#### `shop_purchase_history`
+
+**Purpose**: Complete audit trail of all shop purchases.
+
+| Column                | Type        | Description                                       |
+| --------------------- | ----------- | ------------------------------------------------- |
+| id                    | UUID (PK)   | Purchase ID                                       |
+| student_id            | UUID (FK)   | Purchaser (→ profiles)                            |
+| template_id           | UUID (FK)   | Item purchased (→ shop_item_templates)            |
+| inventory_id          | UUID (FK)   | Created inventory item (→ student_item_inventory) |
+| quantity              | INTEGER     | Number purchased                                  |
+| unit_price            | INTEGER     | Price per item                                    |
+| total_price           | INTEGER     | Total gidouilles spent                            |
+| discount_applied      | INTEGER     | Discount amount                                   |
+| purchase_context      | JSONB       | Promo codes, events, etc.                         |
+| gidouilles_history_id | UUID        | Link to gidouilles transaction                    |
+| purchased_at          | TIMESTAMPTZ | Purchase timestamp                                |
+| refunded_at           | TIMESTAMPTZ | If refunded                                       |
+| refund_reason         | TEXT        | Refund explanation                                |
+
+#### `item_usage_log`
+
+**Purpose**: Track item usage for analytics and cooldown enforcement.
+
+| Column            | Type        | Description                                    |
+| ----------------- | ----------- | ---------------------------------------------- |
+| id                | UUID (PK)   | Log ID                                         |
+| student_id        | UUID (FK)   | User (→ profiles)                              |
+| inventory_id      | UUID (FK)   | Item used (→ student_item_inventory)           |
+| template_id       | UUID (FK)   | Item template (→ shop_item_templates)          |
+| used_at           | TIMESTAMPTZ | Usage timestamp                                |
+| usage_context     | TEXT        | Where used (e.g., 'minesweeper', 'assessment') |
+| usage_data        | JSONB       | Context details (game_id, cell position, etc.) |
+| effect_applied    | JSONB       | What effect was applied                        |
+| effect_expires_at | TIMESTAMPTZ | When effect ends (for boosters)                |
+| reversed_at       | TIMESTAMPTZ | If effect was reversed                         |
+| reversal_reason   | TEXT        | Why reversed                                   |
+
+### Extended Marketplace Tables
+
+**marketplace_listings** additions:
+
+- `offered_item_ids` UUID[] - Inventory IDs being sold
+- `wanted_item_template_ids` UUID[] - Item templates wanted
+
+**marketplace_proposals** additions:
+
+- `offered_item_ids` UUID[] - Inventory IDs offered
+
+### RPC Functions
+
+#### Core Functions
+
+| Function                   | Purpose                                         |
+| -------------------------- | ----------------------------------------------- |
+| `purchase_shop_item()`     | Atomic purchase with all validations and limits |
+| `use_item()`               | Use consumable with effect tracking             |
+| `get_shop_items()`         | Get available items with student-specific info  |
+| `lock_items_for_listing()` | Lock items for marketplace listing              |
+| `lock_items_for_trade()`   | Lock items for friend trade                     |
+| `unlock_items()`           | Unlock items when trade cancelled               |
+| `transfer_items()`         | Transfer items between students                 |
+
+#### purchase_shop_item
+
+**Args**: `p_student_id`, `p_template_id`, `p_quantity`
+**Returns**: `{success, inventory_id, purchase_id, gidouilles_spent, new_balance}`
+
+**Process**:
+
+1. Validate item availability and price
+2. Check student balance
+3. Enforce purchase limits (max owned, daily, weekly, cooldown)
+4. Deduct gidouilles (via update_student_gidouilles)
+5. Add to inventory (stack if stackable)
+6. Log purchase history
+7. Return success with details
+
+#### use_item
+
+**Args**: `p_inventory_id`, `p_context`, `p_usage_data`
+**Returns**: `{success, effect, remaining_uses}`
+
+**Process**:
+
+1. Validate ownership and item not locked
+2. Check item is consumable and valid for context
+3. Apply effect based on item_type
+4. Decrement uses/quantity
+5. Log usage
+6. Return effect details
+
+### Security
+
+**RLS Policies**:
+
+- Templates: Anyone can view active items, only admins can modify
+- Inventory: Students see own, teachers see their students', inserts via RPC only
+- Purchase history: View own or admin, inserts via RPC only
+- Usage log: View own or admin, inserts via RPC only
+
+**Validations**:
+
+- All monetary operations are atomic
+- Purchase limits enforced at database level
+- Items locked during trades to prevent double-spending
+- Cooldowns tracked and enforced
+
+### Integration with Existing Systems
+
+- **Gidouilles**: Uses existing `update_student_gidouilles()` for transactions
+- **Marketplace**: Items can be listed/traded like VIP cards
+- **Games**: Items can provide in-game benefits (hints, skips)
+- **Achievements**: Item purchases/usage can trigger achievements
 
 ---
 
