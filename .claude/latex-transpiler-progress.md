@@ -1,7 +1,7 @@
 # LaTeX→Markdown Transpiler - Progress Tracker
 
 ## État Actuel
-- **Phase**: 1/10 - Architecture & Types
+- **Phase**: 2/10 - Tokenizer LaTeX
 - **Statut**: Completed
 - **Dernière mise à jour**: 2025-11-21
 
@@ -64,19 +64,19 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ---
 
-### Phase 2: Tokenizer LaTeX (CURRENT)
-- [ ] Implémenter tokenizer basique (caractères, commandes, environnements)
-- [ ] Implémenter `findMatchingBrace()` avec gestion d'imbrication
-- [ ] Implémenter `extractEnvironment()` pour `\begin{...}\end{...}`
-- [ ] Implémenter gestion des commentaires `%`
-- [ ] Implémenter gestion des espaces significatifs/non significatifs
-- [ ] Tests exhaustifs du tokenizer
+### Phase 2: Tokenizer LaTeX
+- [x] Implémenter tokenizer basique (caractères, commandes, environnements)
+- [x] Implémenter `findMatchingBrace()` avec gestion d'imbrication
+- [x] Implémenter `extractEnvironment()` pour `\begin{...}\end{...}`
+- [x] Implémenter gestion des commentaires `%`
+- [x] Implémenter gestion des espaces significatifs/non significatifs
+- [x] Tests exhaustifs du tokenizer (56 tests)
 
-**État**: Pas commencée
+**État**: Complétée
 
 ---
 
-### Phase 3: Conversions Triviales & Faciles
+### Phase 3: Conversions Triviales & Faciles (CURRENT)
 - [ ] Passer les formules math en pass-through (`$...$` → `$...$`)
 - [ ] Convertir `\[...\]` → `$$...$$`
 - [ ] Implémenter `\section{...}` → `# ...`
@@ -173,7 +173,17 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ## Décisions de Design Prises
 
-### 🆕 2025-11-21 - Phase 1 (Architecture & Types)
+### 🆕 2025-11-21 - Phase 2 (Tokenizer LaTeX)
+1. **Token Types Handled**: 11 token types implemented (text, command, environment, math-inline, math-display, comment, newline, group, whitespace, special, verbatim)
+2. **Special Verbatim Handling**: Verbatim environments (verbatim, lstlisting, minted, Verbatim) don't parse nested content
+3. **Line Tracking**: All tokens include line and column numbers for error reporting
+4. **Nested Structure Support**: `findMatchingBrace()` and `findMatchingBracket()` handle proper nesting with escape awareness
+5. **Command Parsing**: Supports star variants (`\section*`), optional arguments `[opt]`, and multiple required arguments `{arg1}{arg2}`
+6. **Math Delimiters**: Supports `$...$`, `$$...$$`, `\(...\)`, and `\[...\]` with proper delimiter differentiation
+7. **Windows Line Endings**: Properly handles `\r\n` by skipping `\r`
+8. **Test Coverage**: 56 comprehensive tests covering all token types and edge cases
+
+### 2025-11-21 - Phase 1 (Architecture & Types)
 1. **Token Types**: Discriminated union avec champ `type` (11 types: text, command, environment, math-inline, math-display, comment, newline, group, whitespace, special, verbatim)
 2. **Token Extension**: Tous les tokens héritent de `BaseToken` avec position tracking (start, end, line, column)
 3. **Converter Pattern**: Fonctions converters prennent `(token, context)` et retournent string
