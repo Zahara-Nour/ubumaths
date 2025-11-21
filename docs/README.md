@@ -177,6 +177,22 @@ Système de récompenses gamifié pour motiver les élèves.
 - **2025-11-04** : Rarity-weighted VIP card drawing system
 - **2025-10-29** : Cache architecture séparée + cross-device sync
 
+### 📔 Journal des Récompenses
+
+**Status** : ✅ Production | [Documentation →](features/reward-journal.md) 🆕
+
+Historique unifié de toutes les activités liées aux récompenses.
+
+- [Guide utilisateur](features/reward-journal.md) - Guide complet élèves et enseignants
+- Timeline chronologique avec pagination infinie
+- Filtres par type de récompense (gidouilles, bonus, cartes VIP, succès, objets)
+- 9 types d'événements (gagné, dépensé, échangé, utilisé, etc.)
+- Vue enseignant pour consulter le journal d'un élève
+- Triggers automatiques depuis 7 tables sources
+- Descriptions en français générées automatiquement
+- Interface responsive avec mode sombre
+- **2025-11-21** : Implémentation complète avec documentation
+
 ### 🏪 Marketplace
 
 **Status** : ✅ Production | [Documentation →](features/marketplace.md) 🆕 ⭐
@@ -456,7 +472,7 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 ## 📊 Statistiques
 
-- **Features en production** : 18 🆕 (Minesweeper ajouté)
+- **Features en production** : 19 🆕 (Journal des Récompenses ajouté)
 - **Features en développement** : 1 (Navadra)
 - **Tests** : 3,583 tests (99.3% pass rate)
   - Unit tests: 2,765/2,789 passing (99.1%) 🆕 (+130 summaries tests)
@@ -470,15 +486,15 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
   - 97% fewer N+1 queries (244 → 6 per load)
 - **Database Tables** :
   - 5 chat tables (conversations, messages, conversation_participants, message_reports, user_restrictions)
-  - 6 history tables (gidouilles_history, bonus_history, vip_cards_activity, student_warnings history, daily_summaries, weekly_rewards) 🆕
+  - 7 history tables (gidouilles_history, bonus_history, vip_cards_activity, student_warnings history, daily_summaries, weekly_rewards, reward_events) 🆕
 - **Automated Jobs** : 1 Vercel cron (daily summaries & weekly rewards at 01:00 UTC) 🆕
 - **Multi-Timezone Support** : 80+ IANA timezones with DST handling 🆕
 - **Database Tables (Google)** : 6 Google Classroom tables (integrations, courses, topics, materials, attachments, shared_materials) 🆕
   - 28 RLS policies pour sécurité granulaire
   - 4 triggers pour dénormalisation automatique (course_name, teacher_name)
   - Chiffrement AES-256-GCM des tokens OAuth
-- **Lignes de documentation** : ~102,000+ 🆕 (added 6,000+ lines for Google Classroom Materials)
-- **Dernière mise à jour** : 2025-11-15
+- **Lignes de documentation** : ~104,000+ 🆕 (added reward journal documentation)
+- **Dernière mise à jour** : 2025-11-21
 
 ---
 
