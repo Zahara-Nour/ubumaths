@@ -172,7 +172,6 @@ export function parseTableContent(content: string): {
 					}
 					if (currentRow.length > 0) {
 						rows.push(currentRow);
-
 					}
 					currentRow = [];
 					currentCell = '';

@@ -1,7 +1,7 @@
 # LaTeX→Markdown Transpiler - Progress Tracker
 
 ## État Actuel
-- **Phase**: 6/10 - Table Converter
+- **Phase**: 7/10 - Fallback Converter
 - **Statut**: Completed
 - **Dernière mise à jour**: 2025-11-21
 
@@ -138,7 +138,22 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ---
 
-### Phase 7: Commandes Avancées (CURRENT)
+### Phase 7: Fallback Converter
+- [x] Implémenter `fallback.ts` avec gestion des commandes/environnements non supportés
+- [x] Créer registre des commandes supportées (SUPPORTED_COMMANDS)
+- [x] Créer registre des environnements supportés (SUPPORTED_ENVIRONMENTS)
+- [x] Implémenter wrapping en commentaires HTML `<!-- LaTeX: ... -->`
+- [x] Implémenter option `fallbackToText` pour retourner le contenu sans wrapper
+- [x] Implémenter évasion des caractères spéciaux (-- → em-dash)
+- [x] Implémenter fonctions d'extension du registre (`addSupportedCommand()`, etc.)
+- [x] Implémenter générateurs d'avertissements typés
+- [x] Tests exhaustifs (113 tests)
+
+**État**: Complétée
+
+---
+
+### Phase 8: Commandes Avancées (CURRENT)
 - [ ] Implémenter `\emph{...}` → `*...*`
 - [ ] Implémenter `\textup{}`, `\textsl{}`, `\textsc{}`
 - [ ] Implémenter `\url{...}` → `[...](link)`
@@ -150,21 +165,9 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ---
 
-### Phase 8: Gestion d'Erreurs & Avertissements
-- [ ] Implémenter système d'avertissements robuste
-- [ ] Wrapper commandes non supportées en commentaires HTML
-- [ ] Wrapper environnements non supportés en commentaires HTML
-- [ ] Logging détaillé des conversions
-- [ ] Tests exhaustifs
-
-**État**: Pas commencée
-
----
-
 ### Phase 9: Optimisations & Edge Cases
 - [ ] Optimiser perfs (tokenizer, convertisseurs)
 - [ ] Tester edge cases identifiés
-- [ ] Implémenter sanitization de caractères spéciaux
 - [ ] Tester avec documents réels
 - [ ] Performance profiling
 
@@ -174,8 +177,6 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ### Phase 10: Documentation & Tests Complets
 - [ ] Réviser `docs/claude/latex-to-markdown.md`
-- [ ] Ajouter exemples de conversions
-- [ ] Documenter tous les edge cases
 - [ ] Augmenter couverture de tests à 95%+
 - [ ] Documenter limitations et packages non supportés
 
@@ -185,7 +186,44 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ## Décisions de Design Prises
 
-### 🆕 2025-11-21 - Phase 6 (Table Converter)
+### 🆕 2025-11-21 - Phase 7 (Fallback Converter)
+1. **HTML Comment Wrapping**: Commandes/environnements non supportés wrappés dans `<!-- LaTeX: ... -->` pour préservation
+   - Permet aux utilisateurs de voir le LaTeX original
+   - Facilite l'ajout de support futur (migration facile)
+   - Format standardisé et lisible
+2. **Registre Extensible**: Deux `Set<string>` pour tracked supported commands/environments
+   - `SUPPORTED_COMMANDS`: 50+ commandes (headings, formatting, escapes, etc.)
+   - `SUPPORTED_ENVIRONMENTS`: 20+ environnements (lists, blocks, tables, math)
+   - Permet l'extension runtime avec `addSupportedCommand()` et `addSupportedEnvironment()`
+3. **Option fallbackToText**: Nouvelle option dans `LatexToMarkdownOptions`
+   - Quand `true`, retourne le contenu sans wrapper HTML
+   - Utile pour extraire du texte pur de commandes non supportées
+   - Commandes: première argument retournée | Environnements: contenu trimé retourné
+4. **Évasion de Caractères**: Protection contre XSS via `escapeForHtmlComment()`
+   - Remplace `--` avec em-dash Unicode (`\u2014`)
+   - Escapes `<!--` et `-->` avec caractères spéciaux (`\u2039!--` et `--\u203A`)
+   - Prévient la rupture de la syntaxe HTML comment
+5. **Avertissements Typés**: Fonction `createFallbackWarning()`
+   - Génère les bons types d'avertissements (`unsupported-command` vs `unsupported-environment`)
+   - Inclut position (line/column) si disponible
+   - Messages descriptifs avec le nom complet de la commande
+6. **Fonctions d'Util**: `reconstructCommand()` et `reconstructEnvironment()`
+   - Reconstruit la forme LaTeX originale pour le wrapping
+   - Supporte options `[...]` et arguments `{...}`
+   - Préserve la structure originale exactement
+7. **Factory Patterns**: `createCommandFallbackConverter()` et `createEnvironmentFallbackConverter()`
+   - Permet la réutilisation et composition
+   - Facilite l'injection de dépendances
+   - Prépare pour des patterns plus complexes (Phase 8+)
+8. **Test Coverage**: 113 tests exhaustifs couvrant:
+   - Support checks (isSupportedCommand, isSupportedEnvironment)
+   - Registry operations (add, remove, get lists)
+   - HTML comment formatting et escaping
+   - fallbackToText option behavior
+   - Warning generation et position tracking
+   - Edge cases (nested braces, special characters, empty content)
+
+### 2025-11-21 - Phase 6 (Table Converter)
 1. **Column Spec Parsing**: Column spec `{|l|c|r|}` parsed with support for:
    - Basic alignments: `l` (left), `c` (center), `r` (right)
    - Paragraph columns: `p{width}` treated as left-aligned
