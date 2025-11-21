@@ -26,10 +26,11 @@
 	interface Props {
 		achievement: Achievement;
 		points: number;
+		gidouilles?: number;
 		onClose: () => void;
 	}
 
-	let { achievement, points, onClose }: Props = $props();
+	let { achievement, points, gidouilles = 0, onClose }: Props = $props();
 
 	// Rarity-based styling configuration
 	const rarityConfig: Record<
@@ -211,6 +212,11 @@
 						<span class={cn('text-sm font-semibold', config.textColor)}>
 							+{points} points
 						</span>
+						{#if gidouilles > 0}
+							<span class={cn('text-sm font-semibold', config.textColor)}>
+								+{gidouilles} gidouilles
+							</span>
+						{/if}
 						<span class="text-lg" aria-hidden="true">🎉</span>
 					</div>
 				</div>

@@ -20,6 +20,7 @@
 
 export { default as AchievementCard } from './AchievementCard.svelte';
 export { default as AchievementList } from './AchievementList.svelte';
+export { default as AchievementNotifications } from './AchievementNotifications.svelte';
 export { default as AchievementProgress } from './AchievementProgress.svelte';
 export { default as AchievementToast } from './AchievementToast.svelte';
 export { default as AchievementLeaderboard } from './AchievementLeaderboard.svelte';
