@@ -177,11 +177,10 @@ SELECT
         SELECT cm.class_id
         FROM public.class_members cm
         WHERE cm.student_id = vca.student_id
-        AND cm.status = 'active'
         ORDER BY cm.joined_at DESC
         LIMIT 1
     ),
-    vca.metadata->>'removed_by', -- Extract created_by from metadata if available
+    NULLIF(vca.metadata->>'removed_by', '')::UUID, -- Extract created_by from metadata if available
     vca.created_at
 FROM public.vip_cards_activity vca
 WHERE NOT EXISTS (
@@ -249,7 +248,6 @@ SELECT
         SELECT cm.class_id
         FROM public.class_members cm
         WHERE cm.student_id = sa.student_id
-        AND cm.status = 'active'
         ORDER BY cm.joined_at DESC
         LIMIT 1
     ),
@@ -323,7 +321,6 @@ SELECT
         SELECT cm.class_id
         FROM public.class_members cm
         WHERE cm.student_id = sph.student_id
-        AND cm.status = 'active'
         ORDER BY cm.joined_at DESC
         LIMIT 1
     ),
@@ -392,7 +389,6 @@ SELECT
         SELECT cm.class_id
         FROM public.class_members cm
         WHERE cm.student_id = iul.student_id
-        AND cm.status = 'active'
         ORDER BY cm.joined_at DESC
         LIMIT 1
     ),
@@ -446,17 +442,17 @@ BEGIN
         WHERE status = 'completed'
         AND final_trade IS NOT NULL
     LOOP
-        -- Get classes for both participants
+        -- Get classes for both participants (most recent class)
         SELECT class_id INTO v_initiator_class
         FROM public.class_members
         WHERE student_id = v_trade.initiator_id
-        AND status = 'active'
+        ORDER BY joined_at DESC
         LIMIT 1;
 
         SELECT class_id INTO v_partner_class
         FROM public.class_members
         WHERE student_id = v_trade.partner_id
-        AND status = 'active'
+        ORDER BY joined_at DESC
         LIMIT 1;
 
         -- Extract gidouilles with null-safety
