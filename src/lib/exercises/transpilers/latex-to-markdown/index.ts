@@ -38,6 +38,21 @@ export {
 	hasSimpleConverter
 } from './converters/simple';
 
+// List converters
+export {
+	// List environment converters
+	convertItemize,
+	convertEnumerate,
+	convertDescription,
+	// Utility functions
+	parseListItems,
+	getIndent,
+	isListEnvironment,
+	// Registry
+	listEnvironmentConverters,
+	getListConverter
+} from './converters/lists';
+
 // Parser exports (to be implemented)
 // export { parseLatexTokens } from './parser';
 

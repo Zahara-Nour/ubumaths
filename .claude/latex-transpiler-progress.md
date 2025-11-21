@@ -1,7 +1,7 @@
 # LaTeX→Markdown Transpiler - Progress Tracker
 
 ## État Actuel
-- **Phase**: 3/10 - Simple Converters
+- **Phase**: 4/10 - List Converters
 - **Statut**: Completed
 - **Dernière mise à jour**: 2025-11-21
 
@@ -92,18 +92,19 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ---
 
-### Phase 4: Listes (itemize, enumerate) (CURRENT)
-- [ ] Parser `\begin{itemize}...\end{itemize}`
-- [ ] Parser `\begin{enumerate}...\end{enumerate}`
-- [ ] Gérer imbrication de listes
-- [ ] Gérer `\item` avec labels optionnels
-- [ ] Tests exhaustifs
+### Phase 4: Listes (itemize, enumerate, description)
+- [x] Parser `\begin{itemize}...\end{itemize}`
+- [x] Parser `\begin{enumerate}...\end{enumerate}`
+- [x] Parser `\begin{description}...\end{description}`
+- [x] Gérer imbrication de listes
+- [x] Gérer `\item` avec labels optionnels
+- [x] Tests exhaustifs (54 tests)
 
-**État**: Pas commencée
+**État**: Complétée
 
 ---
 
-### Phase 5: Blocs (quote, verbatim, code, images)
+### Phase 5: Blocs (quote, verbatim, code, images) (CURRENT)
 - [ ] Implémenter `\begin{quote}...\end{quote}` → `> ...`
 - [ ] Implémenter `\begin{verbatim}...\end{verbatim}` → triple backticks
 - [ ] Implémenter `\begin{lstlisting}[language=...]...\end{lstlisting}` → triple backticks avec langue
@@ -173,7 +174,16 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ## Décisions de Design Prises
 
-### 🆕 2025-11-21 - Phase 3 (Simple Converters)
+### 🆕 2025-11-21 - Phase 4 (List Converters)
+1. **Recursive List Handling**: List converters use recursive approach for nested lists - each indentation level incremented by 2 spaces
+2. **List Item Parsing**: `parseListItems()` correctly extracts items by finding `\item` commands while skipping items inside nested environments (nested lists, math, etc.)
+3. **Indentation Strategy**: 2 spaces per nesting level (standard Markdown) - matches `getIndent(level)` utility
+4. **Description Lists**: Converted to `**Term**: Definition` format (bold term followed by colon and definition on same line)
+5. **List Environment Detection**: `isListEnvironment()` identifies itemize, enumerate, description environments
+6. **Converter Registry**: `getListConverter()` returns appropriate converter function based on environment name
+7. **Test Coverage**: 54 comprehensive tests covering all list types, nesting levels, and edge cases
+
+### 2025-11-21 - Phase 3 (Simple Converters)
 1. **Converter Registry**: Command converters grouped in `simpleCommandConverters` object for easy lookup and composition
 2. **Math Pass-through**: Inline (`$...$`) and display (`$$...$$`) math preserved as-is (no content parsing)
 3. **Heading Levels**: Headings (section, subsection, etc.) mapped to Markdown heading levels (h1-h5)
