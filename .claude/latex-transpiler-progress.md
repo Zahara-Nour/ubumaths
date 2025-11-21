@@ -1,7 +1,7 @@
 # LaTeX→Markdown Transpiler - Progress Tracker
 
 ## État Actuel
-- **Phase**: 2/10 - Tokenizer LaTeX
+- **Phase**: 3/10 - Simple Converters
 - **Statut**: Completed
 - **Dernière mise à jour**: 2025-11-21
 
@@ -76,23 +76,23 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ---
 
-### Phase 3: Conversions Triviales & Faciles (CURRENT)
-- [ ] Passer les formules math en pass-through (`$...$` → `$...$`)
-- [ ] Convertir `\[...\]` → `$$...$$`
-- [ ] Implémenter `\section{...}` → `# ...`
-- [ ] Implémenter `\subsection{...}` → `## ...`
-- [ ] Implémenter `\subsubsection{...}` → `### ...`
-- [ ] Implémenter `\textbf{...}` → `**...**`
-- [ ] Implémenter `\textit{...}` → `*...*`
-- [ ] Implémenter `\texttt{...}` → `` `...` ``
-- [ ] Implémenter `\hrule` → `---`
-- [ ] Tests exhaustifs
+### Phase 3: Conversions Triviales & Faciles
+- [x] Passer les formules math en pass-through (`$...$` → `$...$`)
+- [x] Convertir `\[...\]` → `$$...$$`
+- [x] Implémenter `\section{...}` → `# ...`
+- [x] Implémenter `\subsection{...}` → `## ...`
+- [x] Implémenter `\subsubsection{...}` → `### ...`
+- [x] Implémenter `\textbf{...}` → `**...**`
+- [x] Implémenter `\textit{...}` → `*...*`
+- [x] Implémenter `\texttt{...}` → `` `...` ``
+- [x] Implémenter `\hrule` → `---`
+- [x] Tests exhaustifs (96 tests)
 
-**État**: Pas commencée
+**État**: Complétée
 
 ---
 
-### Phase 4: Listes (itemize, enumerate)
+### Phase 4: Listes (itemize, enumerate) (CURRENT)
 - [ ] Parser `\begin{itemize}...\end{itemize}`
 - [ ] Parser `\begin{enumerate}...\end{enumerate}`
 - [ ] Gérer imbrication de listes
@@ -173,7 +173,17 @@ Créer un transpileur LaTeX → Custom Markdown qui préserve les formules math�
 
 ## Décisions de Design Prises
 
-### 🆕 2025-11-21 - Phase 2 (Tokenizer LaTeX)
+### 🆕 2025-11-21 - Phase 3 (Simple Converters)
+1. **Converter Registry**: Command converters grouped in `simpleCommandConverters` object for easy lookup and composition
+2. **Math Pass-through**: Inline (`$...$`) and display (`$$...$$`) math preserved as-is (no content parsing)
+3. **Heading Levels**: Headings (section, subsection, etc.) mapped to Markdown heading levels (h1-h5)
+4. **Text Formatting**: Bold, italic, code, underline, small-caps using Markdown + minimal HTML
+5. **Special Characters**: 30+ escape sequences (\\&, \\%, \\$, \\ldots, \\quad, etc.) with proper mappings
+6. **Dash Conversion**: LaTeX dashes (---, --) converted to Unicode em-dash (U+2014) and en-dash (U+2013)
+7. **Helper Functions**: `isHeadingCommand()`, `isFormattingCommand()`, `isHorizontalRuleCommand()`, `isEscapeCommand()` for pattern matching
+8. **Test Coverage**: 96 comprehensive tests covering all converter functions and edge cases
+
+### 2025-11-21 - Phase 2 (Tokenizer LaTeX)
 1. **Token Types Handled**: 11 token types implemented (text, command, environment, math-inline, math-display, comment, newline, group, whitespace, special, verbatim)
 2. **Special Verbatim Handling**: Verbatim environments (verbatim, lstlisting, minted, Verbatim) don't parse nested content
 3. **Line Tracking**: All tokens include line and column numbers for error reporting
