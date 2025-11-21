@@ -576,14 +576,24 @@ function convertDocumentEnvironment(token: EnvironmentToken, context: Conversion
 
 	switch (name) {
 		case 'document':
-			// Document environment - just process content
+			// Document environment - tokenize and process content
 			if (token.children && context.processChildren) {
 				return context.processChildren(token.children);
 			}
+			// Tokenize the content and process it using processChildren
+			if (content && context.processChildren) {
+				const childTokens = tokenize(content);
+				return context.processChildren(childTokens);
+			}
 			return content.trim();
 
-		case 'abstract':
-			return `**Abstract**\n\n${content.trim()}`;
+		case 'abstract': {
+			// Process content for abstract
+			const processedContent = context.processChildren
+				? context.processChildren(tokenize(content))
+				: content.trim();
+			return `**Abstract**\n\n${processedContent}`;
+		}
 
 		case 'theorem':
 		case 'lemma':
@@ -594,14 +604,28 @@ function convertDocumentEnvironment(token: EnvironmentToken, context: Conversion
 		case 'exercise': {
 			// Capitalize first letter
 			const title = name.charAt(0).toUpperCase() + name.slice(1);
-			return `**${title}:** ${content.trim()}`;
+			// Process content
+			const processedContent = context.processChildren
+				? context.processChildren(tokenize(content))
+				: content.trim();
+			return `**${title}:** ${processedContent}`;
 		}
 
-		case 'proof':
-			return `*Proof:* ${content.trim()} QED`;
+		case 'proof': {
+			// Process content for proof
+			const processedContent = context.processChildren
+				? context.processChildren(tokenize(content))
+				: content.trim();
+			return `*Proof:* ${processedContent} QED`;
+		}
 
-		default:
-			return content.trim();
+		default: {
+			// Process content for unknown document environments
+			const processedContent = context.processChildren
+				? context.processChildren(tokenize(content))
+				: content.trim();
+			return processedContent;
+		}
 	}
 }
 
