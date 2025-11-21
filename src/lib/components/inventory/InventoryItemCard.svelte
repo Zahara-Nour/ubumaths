@@ -137,7 +137,7 @@
 					class="h-full w-full object-contain"
 				/>
 			{:else}
-				<span class="text-3xl">{categoryIcon}</span>
+				<span class="text-3xl" aria-hidden="true">{categoryIcon}</span>
 			{/if}
 		</div>
 
@@ -227,7 +227,13 @@
 			<!-- More options -->
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger asChild let:builder>
-					<Button builders={[builder]} size="icon" variant="ghost" class="h-8 w-8">
+					<Button
+						builders={[builder]}
+						size="icon"
+						variant="ghost"
+						class="h-8 w-8"
+						aria-label="Actions de l'objet"
+					>
 						<MoreVertical class="h-4 w-4" />
 					</Button>
 				</DropdownMenu.Trigger>

@@ -4,9 +4,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
-	ShopItemTemplate,
 	ShopItemWithStatus,
-	StudentItemWithTemplate,
 	InventoryItemWithLockStatus,
 	PurchaseRequest,
 	PurchaseResponse,
@@ -15,8 +13,7 @@ import type {
 	EquipItemRequest,
 	EquipItemResponse,
 	ShopItemCategory,
-	ShopItemRarity,
-	ShopItemsQuery
+	ShopItemRarity
 } from '$lib/types/shop';
 import { toaster } from '$lib/stores/toaster.svelte';
 
@@ -68,19 +65,19 @@ class ShopStore {
 
 		// Category filter
 		if (this.filters.category !== 'all') {
-			items = items.filter(item => item.category === this.filters.category);
+			items = items.filter((item) => item.category === this.filters.category);
 		}
 
 		// Rarity filter
 		if (this.filters.rarity !== 'all') {
-			items = items.filter(item => item.rarity === this.filters.rarity);
+			items = items.filter((item) => item.rarity === this.filters.rarity);
 		}
 
 		// Search filter
 		if (this.filters.search) {
 			const search = this.filters.search.toLowerCase();
 			items = items.filter(
-				item =>
+				(item) =>
 					item.display_name.toLowerCase().includes(search) ||
 					(item.description && item.description.toLowerCase().includes(search))
 			);
@@ -126,7 +123,7 @@ class ShopStore {
 	}
 
 	get equippedItems() {
-		return this.inventory.filter(item => item.is_equipped);
+		return this.inventory.filter((item) => item.is_equipped);
 	}
 
 	// Initialize
@@ -135,11 +132,7 @@ class ShopStore {
 		this.userId = userId;
 
 		// Load initial data
-		await Promise.all([
-			this.loadShopItems(),
-			this.loadInventory(),
-			this.loadGidouillesBalance()
-		]);
+		await Promise.all([this.loadShopItems(), this.loadInventory(), this.loadGidouillesBalance()]);
 	}
 
 	// Load shop items
@@ -176,15 +169,15 @@ class ShopStore {
 		try {
 			const response = await fetch('/api/inventory');
 			if (!response.ok) {
-				throw new Error('Erreur lors du chargement de l\'inventaire');
+				throw new Error("Erreur lors du chargement de l'inventaire");
 			}
 
 			const data = await response.json();
 			this.inventory = data.items;
 		} catch (error) {
 			console.error('Error loading inventory:', error);
-			this.errors.inventory = 'Impossible de charger l\'inventaire';
-			toaster.error('Impossible de charger l\'inventaire');
+			this.errors.inventory = "Impossible de charger l'inventaire";
+			toaster.error("Impossible de charger l'inventaire");
 		} finally {
 			this.isLoading.inventory = false;
 		}
@@ -229,7 +222,7 @@ class ShopStore {
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(error.error || 'Erreur lors de l\'achat');
+				throw new Error(error.error || "Erreur lors de l'achat");
 			}
 
 			const data: PurchaseResponse = await response.json();
@@ -252,11 +245,11 @@ class ShopStore {
 
 				return true;
 			} else {
-				throw new Error(data.error || 'Échec de l\'achat');
+				throw new Error(data.error || "Échec de l'achat");
 			}
 		} catch (error) {
 			console.error('Error purchasing item:', error);
-			toaster.error(error instanceof Error ? error.message : 'Erreur lors de l\'achat');
+			toaster.error(error instanceof Error ? error.message : "Erreur lors de l'achat");
 			return false;
 		} finally {
 			this.isLoading.purchase = false;
@@ -282,7 +275,7 @@ class ShopStore {
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(error.error || 'Erreur lors de l\'utilisation');
+				throw new Error(error.error || "Erreur lors de l'utilisation");
 			}
 
 			const data: UseItemResponse = await response.json();
@@ -291,10 +284,10 @@ class ShopStore {
 				// Update inventory to reflect usage
 				if (data.item_consumed) {
 					// Remove item from inventory
-					this.inventory = this.inventory.filter(item => item.id !== inventoryId);
+					this.inventory = this.inventory.filter((item) => item.id !== inventoryId);
 				} else if (data.remaining_uses !== undefined) {
 					// Update remaining uses
-					const item = this.inventory.find(i => i.id === inventoryId);
+					const item = this.inventory.find((i) => i.id === inventoryId);
 					if (item) {
 						item.uses_remaining = data.remaining_uses;
 					}
@@ -308,11 +301,11 @@ class ShopStore {
 
 				return true;
 			} else {
-				throw new Error(data.error || 'Échec de l\'utilisation');
+				throw new Error(data.error || "Échec de l'utilisation");
 			}
 		} catch (error) {
 			console.error('Error using item:', error);
-			toaster.error(error instanceof Error ? error.message : 'Erreur lors de l\'utilisation');
+			toaster.error(error instanceof Error ? error.message : "Erreur lors de l'utilisation");
 			return false;
 		} finally {
 			this.isLoading.use = false;
@@ -338,14 +331,14 @@ class ShopStore {
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(error.error || 'Erreur lors de l\'équipement');
+				throw new Error(error.error || "Erreur lors de l'équipement");
 			}
 
 			const data: EquipItemResponse = await response.json();
 
 			if (data.success) {
 				// Update local state
-				const item = this.inventory.find(i => i.id === inventoryId);
+				const item = this.inventory.find((i) => i.id === inventoryId);
 				if (item) {
 					item.is_equipped = data.is_equipped;
 					if (data.is_equipped) {
@@ -355,17 +348,15 @@ class ShopStore {
 					}
 				}
 
-				toaster.success(
-					`${data.item_name} ${data.is_equipped ? 'équipé' : 'déséquipé'} !`
-				);
+				toaster.success(`${data.item_name} ${data.is_equipped ? 'équipé' : 'déséquipé'} !`);
 
 				return true;
 			} else {
-				throw new Error(data.error || 'Échec de l\'équipement');
+				throw new Error(data.error || "Échec de l'équipement");
 			}
 		} catch (error) {
 			console.error('Error toggling equip:', error);
-			toaster.error(error instanceof Error ? error.message : 'Erreur lors de l\'équipement');
+			toaster.error(error instanceof Error ? error.message : "Erreur lors de l'équipement");
 			return false;
 		} finally {
 			this.isLoading.equip = false;
