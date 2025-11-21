@@ -16,6 +16,10 @@ export const createListingSchema = z
 			.array(z.string().uuid('ID de carte invalide'))
 			.max(10, 'Maximum 10 cartes peuvent être offertes')
 			.default([]),
+		offered_item_ids: z
+			.array(z.string().uuid("ID d'objet invalide"))
+			.max(10, 'Maximum 10 objets peuvent être offerts')
+			.default([]),
 		offered_gidouilles: z
 			.number()
 			.int('Les gidouilles doivent être un nombre entier')
@@ -28,6 +32,10 @@ export const createListingSchema = z
 		wanted_card_template_ids: z
 			.array(z.string().uuid('ID de modèle de carte invalide'))
 			.max(10, 'Maximum 10 modèles de cartes peuvent être demandés')
+			.default([]),
+		wanted_item_template_ids: z
+			.array(z.string().uuid("ID de modèle d'objet invalide"))
+			.max(10, "Maximum 10 modèles d'objets peuvent être demandés")
 			.default([]),
 		wanted_gidouilles: z
 			.number()
@@ -51,10 +59,18 @@ export const createListingSchema = z
 		(data) => {
 			// For 'sell' listings, must offer something
 			if (data.listing_type === 'sell') {
-				return data.offered_card_ids.length > 0 || data.offered_gidouilles > 0;
+				return (
+					data.offered_card_ids.length > 0 ||
+					data.offered_item_ids.length > 0 ||
+					data.offered_gidouilles > 0
+				);
 			}
 			// For 'buy' listings, must want something
-			return data.wanted_card_template_ids.length > 0 || data.wanted_gidouilles > 0;
+			return (
+				data.wanted_card_template_ids.length > 0 ||
+				data.wanted_item_template_ids.length > 0 ||
+				data.wanted_gidouilles > 0
+			);
 		},
 		{
 			message: 'Une annonce doit proposer ou demander au moins un élément'
@@ -74,6 +90,10 @@ export const updateListingSchema = z.object({
 	wanted_card_template_ids: z
 		.array(z.string().uuid('ID de modèle de carte invalide'))
 		.max(10, 'Maximum 10 modèles de cartes peuvent être demandés')
+		.optional(),
+	wanted_item_template_ids: z
+		.array(z.string().uuid("ID de modèle d'objet invalide"))
+		.max(10, "Maximum 10 modèles d'objets peuvent être demandés")
 		.optional(),
 	wanted_gidouilles: z
 		.number()
@@ -119,6 +139,10 @@ export const createProposalSchema = z
 			.array(z.string().uuid('ID de carte invalide'))
 			.max(10, 'Maximum 10 cartes peuvent être offertes')
 			.default([]),
+		offered_item_ids: z
+			.array(z.string().uuid("ID d'objet invalide"))
+			.max(10, 'Maximum 10 objets peuvent être offerts')
+			.default([]),
 		offered_gidouilles: z
 			.number()
 			.int('Les gidouilles doivent être un nombre entier')
@@ -128,9 +152,15 @@ export const createProposalSchema = z
 			.default(0),
 		message: z.string().max(500, 'Le message ne peut pas dépasser 500 caractères').optional()
 	})
-	.refine((data) => data.offered_card_ids.length > 0 || data.offered_gidouilles > 0, {
-		message: 'Une proposition doit contenir au moins une carte ou des gidouilles'
-	});
+	.refine(
+		(data) =>
+			data.offered_card_ids.length > 0 ||
+			data.offered_item_ids.length > 0 ||
+			data.offered_gidouilles > 0,
+		{
+			message: 'Une proposition doit contenir au moins une carte, un objet ou des gidouilles'
+		}
+	);
 
 /**
  * Schema for updating a proposal (accept/reject)
@@ -154,6 +184,10 @@ export const createTradeSchema = z.object({
 			.array(z.string().uuid('ID de carte invalide'))
 			.max(10, 'Maximum 10 cartes peuvent être offertes')
 			.default([]),
+		items: z
+			.array(z.string().uuid("ID d'objet invalide"))
+			.max(10, 'Maximum 10 objets peuvent être offerts')
+			.default([]),
 		gidouilles: z
 			.number()
 			.int('Les gidouilles doivent être un nombre entier')
@@ -173,6 +207,10 @@ export const createOfferSchema = z.object({
 		.array(z.string().uuid('ID de carte invalide'))
 		.max(10, 'Maximum 10 cartes')
 		.default([]),
+	initiator_items: z
+		.array(z.string().uuid("ID d'objet invalide"))
+		.max(10, 'Maximum 10 objets')
+		.default([]),
 	initiator_gidouilles: z
 		.number()
 		.int('Les gidouilles doivent être un nombre entier')
@@ -183,6 +221,10 @@ export const createOfferSchema = z.object({
 	partner_cards: z
 		.array(z.string().uuid('ID de carte invalide'))
 		.max(10, 'Maximum 10 cartes')
+		.default([]),
+	partner_items: z
+		.array(z.string().uuid("ID d'objet invalide"))
+		.max(10, 'Maximum 10 objets')
 		.default([]),
 	partner_gidouilles: z
 		.number()

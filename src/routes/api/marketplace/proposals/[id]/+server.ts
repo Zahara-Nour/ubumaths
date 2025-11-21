@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import { updateProposalSchema } from '$lib/server/marketplace/validation';
 import { unlockCardsForEntity } from '$lib/server/marketplace/helpers';
+import { unlockItems } from '$lib/server/marketplace/item-helpers';
 import {
 	notifyProposalAccepted,
 	notifyProposalRejected
@@ -80,6 +81,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				status: string;
 				title: string;
 				offered_card_ids: string[] | null;
+				offered_item_ids: string[] | null;
 				offered_gidouilles: number | null;
 				proposal_count: number;
 		  }
@@ -202,8 +204,9 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			})
 			.eq('id', proposalId);
 
-		// Unlock proposer's cards
+		// Unlock proposer's cards and items (proposals are considered listings for items)
 		await unlockCardsForEntity(supabase, proposalId);
+		await unlockItems(supabase, proposalId, 'listing');
 
 		// Decrement proposal count on listing
 		await supabase

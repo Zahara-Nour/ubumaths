@@ -3,6 +3,11 @@ import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import { updateListingSchema } from '$lib/server/marketplace/validation';
 import { unlockCardsForEntity, isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
+import {
+	unlockItems,
+	getItemDetails,
+	getItemTemplateDetails
+} from '$lib/server/marketplace/item-helpers';
 // TODO: Implement cache invalidation
 // import { invalidateListingCaches } from '$lib/server/marketplace/cache-manager';
 import { z } from 'zod';
@@ -56,7 +61,18 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		throw error(404, 'Annonce non trouvée');
 	}
 
-	// If user is the owner, include proposals
+	// Enrich listing with item details
+	const offeredItems =
+		listing.offered_item_ids?.length > 0
+			? await getItemDetails(supabase, listing.offered_item_ids)
+			: [];
+
+	const wantedItemTemplates =
+		listing.wanted_item_template_ids?.length > 0
+			? await getItemTemplateDetails(supabase, listing.wanted_item_template_ids)
+			: [];
+
+	// If user is the owner, include proposals with item details
 	let proposals = null;
 	if (listing.creator_id === userId) {
 		const { data: proposalData } = await supabase
@@ -75,7 +91,24 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.eq('status', 'pending')
 			.order('created_at', { ascending: false });
 
-		proposals = proposalData || [];
+		// Enrich proposals with item details
+		if (proposalData && proposalData.length > 0) {
+			proposals = await Promise.all(
+				proposalData.map(async (proposal) => {
+					const proposalOfferedItems =
+						proposal.offered_item_ids?.length > 0
+							? await getItemDetails(supabase, proposal.offered_item_ids)
+							: [];
+
+					return {
+						...proposal,
+						offered_items: proposalOfferedItems
+					};
+				})
+			);
+		} else {
+			proposals = [];
+		}
 	}
 
 	// Increment view count if not the owner
@@ -96,6 +129,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 	return json({
 		...listing,
+		offered_items: offeredItems,
+		wanted_item_templates: wantedItemTemplates,
 		proposals: proposals || undefined
 	});
 };
@@ -233,10 +268,11 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		throw error(500, "Erreur lors de l'annulation de l'annonce");
 	}
 
-	// Unlock any locked cards
+	// Unlock any locked cards and items
 	await unlockCardsForEntity(supabase, listingId);
+	await unlockItems(supabase, listingId, 'listing');
 
-	// Also unlock cards from any pending proposals
+	// Also unlock cards and items from any pending proposals (proposals are also considered listings for items)
 	const { data: proposals } = await supabase
 		.from('marketplace_proposals')
 		.select('id')
@@ -246,6 +282,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	if (proposals && proposals.length > 0) {
 		for (const proposal of proposals) {
 			await unlockCardsForEntity(supabase, proposal.id);
+			await unlockItems(supabase, proposal.id, 'listing');
 		}
 	}
 

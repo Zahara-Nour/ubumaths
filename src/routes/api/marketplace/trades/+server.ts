@@ -6,11 +6,18 @@ import {
 	validateCardOwnership,
 	checkCardsUnused,
 	lockCardsForEntity,
+	unlockCardsForEntity,
 	isMarketplaceEnabled,
 	verifyFriendship,
 	createMarketplaceNotification,
 	getStudentGidouilles
 } from '$lib/server/marketplace/helpers';
+import {
+	validateItemOwnership,
+	checkItemsTradeable,
+	checkItemsUnlocked,
+	lockItemsForTrade
+} from '$lib/server/marketplace/item-helpers';
 import { z } from 'zod';
 
 // Query schema
@@ -220,6 +227,27 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 	}
 
+	// Validate item ownership if offering items
+	if (initial_offer.items.length > 0) {
+		const ownsItems = await validateItemOwnership(supabase, userId, initial_offer.items);
+		if (!ownsItems) {
+			throw error(403, 'Vous ne possédez pas tous les objets spécifiés');
+		}
+
+		const itemsTradeable = await checkItemsTradeable(supabase, initial_offer.items);
+		if (!itemsTradeable) {
+			throw error(
+				403,
+				'Certains objets ne sont pas échangeables ou sont en période de restriction'
+			);
+		}
+
+		const itemsUnlocked = await checkItemsUnlocked(supabase, initial_offer.items);
+		if (!itemsUnlocked) {
+			throw error(403, 'Certains objets sont déjà verrouillés pour une autre transaction');
+		}
+	}
+
 	// Validate user has enough gidouilles if offering them
 	if (initial_offer.gidouilles > 0) {
 		const userGidouilles = await getStudentGidouilles(supabase, userId);
@@ -238,8 +266,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			status: 'negotiating',
 			current_offer: {
 				initiator_cards: initial_offer.cards,
+				initiator_items: initial_offer.items,
 				initiator_gidouilles: initial_offer.gidouilles,
 				partner_cards: [],
+				partner_items: [],
 				partner_gidouilles: 0
 			}
 		})
@@ -270,8 +300,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		trade_id: trade.id,
 		offer_by: userId,
 		initiator_cards: initial_offer.cards,
+		initiator_items: initial_offer.items,
 		initiator_gidouilles: initial_offer.gidouilles,
 		partner_cards: [],
+		partner_items: [],
 		partner_gidouilles: 0,
 		message: null
 	});
@@ -298,6 +330,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			await supabase.from('marketplace_trades').delete().eq('id', trade.id);
 
 			throw error(500, lockResult.error || 'Erreur lors du verrouillage des cartes');
+		}
+	}
+
+	// Lock items if offering any
+	if (initial_offer.items.length > 0) {
+		const lockResult = await lockItemsForTrade(supabase, userId, initial_offer.items, trade.id);
+
+		if (!lockResult.success) {
+			// Rollback: delete the trade and unlock cards if they were locked
+			await supabase.from('marketplace_trades').delete().eq('id', trade.id);
+			if (initial_offer.cards.length > 0) {
+				await unlockCardsForEntity(supabase, trade.id);
+			}
+
+			throw error(500, lockResult.error || 'Erreur lors du verrouillage des objets');
 		}
 	}
 

@@ -6,9 +6,17 @@ import {
 	validateCardOwnership,
 	checkCardsUnused,
 	lockCardsForEntity,
+	unlockCardsForEntity,
 	isMarketplaceEnabled,
 	getStudentGidouilles
 } from '$lib/server/marketplace/helpers';
+import {
+	validateItemOwnership,
+	checkItemsTradeable,
+	checkItemsUnlocked,
+	lockItemsForListing,
+	getItemDetails
+} from '$lib/server/marketplace/item-helpers';
 import { notifyNewProposal } from '$lib/server/marketplace/notifications';
 import { z } from 'zod';
 
@@ -71,7 +79,22 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		throw error(500, 'Erreur lors de la récupération des propositions');
 	}
 
-	return json(proposals || []);
+	// Enrich proposals with item details
+	const enrichedProposals = await Promise.all(
+		(proposals || []).map(async (proposal) => {
+			const offeredItems =
+				proposal.offered_item_ids?.length > 0
+					? await getItemDetails(supabase, proposal.offered_item_ids)
+					: [];
+
+			return {
+				...proposal,
+				offered_items: offeredItems
+			};
+		})
+	);
+
+	return json(enrichedProposals);
 };
 
 /**
@@ -158,6 +181,27 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		}
 	}
 
+	// Validate item ownership if offering items
+	if (data.offered_item_ids.length > 0) {
+		const ownsItems = await validateItemOwnership(supabase, userId, data.offered_item_ids);
+		if (!ownsItems) {
+			throw error(403, 'Vous ne possédez pas tous les objets spécifiés');
+		}
+
+		const itemsTradeable = await checkItemsTradeable(supabase, data.offered_item_ids);
+		if (!itemsTradeable) {
+			throw error(
+				403,
+				'Certains objets ne sont pas échangeables ou sont en période de restriction'
+			);
+		}
+
+		const itemsUnlocked = await checkItemsUnlocked(supabase, data.offered_item_ids);
+		if (!itemsUnlocked) {
+			throw error(403, 'Certains objets sont déjà verrouillés pour une autre transaction');
+		}
+	}
+
 	// Validate user has enough gidouilles if offering them
 	if (data.offered_gidouilles > 0) {
 		const userGidouilles = await getStudentGidouilles(supabase, userId);
@@ -173,6 +217,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			listing_id: listingId,
 			proposer_id: userId,
 			offered_card_ids: data.offered_card_ids,
+			offered_item_ids: data.offered_item_ids,
 			offered_gidouilles: data.offered_gidouilles,
 			message: data.message || null,
 			status: 'pending'
@@ -209,6 +254,26 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			await supabase.from('marketplace_proposals').delete().eq('id', proposal.id);
 
 			throw error(500, lockResult.error || 'Erreur lors du verrouillage des cartes');
+		}
+	}
+
+	// Lock items if offering any
+	if (data.offered_item_ids.length > 0) {
+		const lockResult = await lockItemsForListing(
+			supabase,
+			userId,
+			data.offered_item_ids,
+			proposal.id
+		);
+
+		if (!lockResult.success) {
+			// Rollback: delete the proposal and unlock cards if they were locked
+			await supabase.from('marketplace_proposals').delete().eq('id', proposal.id);
+			if (data.offered_card_ids.length > 0) {
+				await unlockCardsForEntity(supabase, proposal.id);
+			}
+
+			throw error(500, lockResult.error || 'Erreur lors du verrouillage des objets');
 		}
 	}
 
