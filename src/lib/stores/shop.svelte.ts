@@ -233,11 +233,8 @@ class ShopStore {
 					this.gidouillesBalance = data.new_balance;
 				}
 
-				// Reload inventory to show new item
-				await this.loadInventory();
-
-				// Update shop items to reflect ownership
-				await this.loadShopItems();
+				// Reload inventory and shop items in parallel to reflect changes
+				await Promise.all([this.loadInventory(), this.loadShopItems()]);
 
 				toaster.success(
 					`${data.item_name} acheté${quantity > 1 ? ` (x${quantity})` : ''} pour ${data.gidouilles_spent} gidouilles !`
