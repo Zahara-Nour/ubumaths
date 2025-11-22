@@ -14,7 +14,8 @@
 		{ href: '/dashboard/admin/debug/question-display', label: 'QuestionDisplay' },
 		{ href: '/dashboard/admin/debug/rich-text', label: 'RichTextEditor' },
 		{ href: '/dashboard/admin/debug/typst-preview', label: 'Typst PDF' },
-		{ href: '/dashboard/admin/debug/latex-preview', label: 'LaTeX PDF' }
+		{ href: '/dashboard/admin/debug/latex-preview', label: 'LaTeX PDF' },
+		{ href: '/dashboard/admin/debug/latex-transpiler', label: 'LaTeX Transpiler' }
 	];
 
 	function isActivePage(href: string): boolean {
