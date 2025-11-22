@@ -5,10 +5,12 @@
 	import * as Card from '$lib/components/ui/card';
 	import ExerciseMarkdownEditor from './ExerciseMarkdownEditor.svelte';
 	import LaTeXImportDialog from './LaTeXImportDialog.svelte';
+	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { Database } from '$lib/types/database';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import type { TranspileWarning } from '$lib/exercises/transpilers/latex-to-markdown';
+	import type { GradeCode } from '$lib/types/grades';
 
 	type Exercise = Database['public']['Tables']['exercises']['Row'];
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
@@ -29,7 +31,7 @@
 	let difficulty = $state<1 | 2 | 3>((exercise?.difficulty as 1 | 2 | 3) || 2);
 	let tags = $state<string>(exercise?.tags?.join(', ') || '');
 	let topic = $state(exercise?.topic || '');
-	let gradeLevels = $state<string>(exercise?.grade_levels?.join(', ') || '');
+	let gradeLevels = $state<GradeCode[]>((exercise?.grade_levels as GradeCode[]) || []);
 	let statementMd = $state(exercise?.statement_md || '');
 	let solutionMd = $state(exercise?.solution_md || '');
 
@@ -79,10 +81,7 @@
 				.map((t) => t.trim())
 				.filter(Boolean),
 			topic: topic.trim() || null,
-			grade_levels: gradeLevels
-				.split(',')
-				.map((g) => g.trim())
-				.filter(Boolean),
+			grade_levels: gradeLevels,
 			statement_md: statementMd,
 			solution_md: solutionMd
 		};
@@ -237,11 +236,8 @@
 				</div>
 
 				<div class="space-y-2">
-					<Label for="gradeLevels">Niveaux</Label>
-					<Input id="gradeLevels" type="text" placeholder="Ex: 3, 2, 1" bind:value={gradeLevels} />
-					<p class="text-xs text-muted-foreground">
-						Niveaux scolaires séparés par des virgules (6, 5, 4, 3, 2, 1, T)
-					</p>
+					<Label>Niveaux</Label>
+					<GradeBadgeSelector bind:value={gradeLevels} placeholder="Ajouter des niveaux" />
 				</div>
 			</div>
 		</Card.Content>
