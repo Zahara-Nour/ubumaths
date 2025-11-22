@@ -38,8 +38,13 @@
 		BlockNode,
 		InlineNode,
 		ListNode,
-		TableNode
+		TableNode,
+		ImageNode
 	} from '$lib/exercises/types';
+	import {
+		getDimensionsForFormat,
+		shouldUseFigureEnvironment
+	} from '$lib/exercises/services/image-dimensions';
 	import { Button } from '$lib/components/ui/button';
 	import 'mathlive';
 
@@ -223,10 +228,7 @@
 				</div>`;
 
 			case 'image':
-				return `<figure class="my-6">
-					<img src="${node.src}" alt="${node.alt || ''}" class="mx-auto max-w-full rounded-lg shadow-md" />
-					${node.alt ? `<figcaption class="mt-2 text-center text-sm text-muted-foreground">${node.alt}</figcaption>` : ''}
-				</figure>`;
+				return renderImage(node as ImageNode);
 
 			case 'horizontal-rule':
 				return '<hr class="my-6 border-t border-border" />';
@@ -379,12 +381,123 @@
 	}
 
 	/**
-	 * Escape HTML special characters
+	 * Render an image node with full format support
+	 *
+	 * Features:
+	 * - Size classes (inline, small, medium, large, full)
+	 * - Width percentage override
+	 * - Alignment (left, center, right)
+	 * - Optional caption with figure/figcaption
+	 * - Extreme aspect ratio handling
+	 * - XSS protection via escapeHtml
+	 * - Accessibility (alt, lazy loading, async decoding, aria-describedby)
+	 * - CLS prevention with aspect-ratio CSS
 	 */
-	function escapeHtml(text: string): string {
-		const div = document.createElement('div');
-		div.textContent = text;
-		return div.innerHTML;
+	function renderImage(node: ImageNode): string {
+		// Escape all user-provided values for XSS protection
+		const escapedSrc = escapeHtml(node.src);
+		const escapedAlt = escapeHtml(node.alt || '');
+		const escapedTitle = node.title ? escapeHtml(node.title) : undefined;
+		const escapedCaption = node.caption ? escapeHtml(node.caption) : undefined;
+
+		// Generate unique ID for aria-describedby (when caption exists)
+		const figcaptionId = escapedCaption
+			? `fig-caption-${Math.random().toString(36).substring(2, 9)}`
+			: undefined;
+
+		// Get dimensions from service
+		const dimensions = getDimensionsForFormat(node, 'html');
+		const alignment = node.alignment || 'center';
+
+		// Build inline styles for the image
+		const styleProperties: string[] = [];
+
+		// Apply width
+		if (dimensions.width) {
+			styleProperties.push(`width: ${dimensions.width}`);
+		}
+
+		// Apply max-width
+		if (dimensions.maxWidth) {
+			styleProperties.push(`max-width: ${dimensions.maxWidth}`);
+		}
+
+		// Handle extreme aspect ratios and add aspect-ratio CSS for CLS prevention
+		if (node.originalWidth && node.originalHeight) {
+			const aspectRatio = node.originalWidth / node.originalHeight;
+
+			// Very wide images (ratio > 3:1): Apply max-height constraint
+			if (aspectRatio > 3) {
+				styleProperties.push('max-height: 300px');
+				styleProperties.push('width: auto');
+			}
+			// Very tall images (ratio < 1:3): Apply max-width constraint
+			else if (aspectRatio < 1 / 3) {
+				styleProperties.push('max-width: 200px');
+				styleProperties.push('height: auto');
+			}
+
+			// Add aspect-ratio CSS to prevent CLS (Cumulative Layout Shift)
+			styleProperties.push(`aspect-ratio: ${node.originalWidth} / ${node.originalHeight}`);
+		}
+
+		// Apply max-height from dimensions if present
+		if (dimensions.maxHeight) {
+			styleProperties.push(`max-height: ${dimensions.maxHeight}`);
+		}
+
+		// Build CSS classes for the image
+		const imgClasses = ['exercise-image'];
+		if (node.sizeClass === 'inline') {
+			imgClasses.push('exercise-image-inline');
+		}
+
+		// Build the img element with accessibility attributes
+		const styleAttr = styleProperties.length > 0 ? ` style="${styleProperties.join('; ')}"` : '';
+		const titleAttr = escapedTitle ? ` title="${escapedTitle}"` : '';
+		const ariaDescribedBy = figcaptionId ? ` aria-describedby="${figcaptionId}"` : '';
+
+		const imgElement = `<img src="${escapedSrc}" alt="${escapedAlt}"${titleAttr}${ariaDescribedBy} class="${imgClasses.join(' ')}"${styleAttr} loading="lazy" decoding="async" />`;
+
+		// Determine container class based on alignment
+		const alignmentClass = `exercise-image-${alignment}`;
+
+		// Check if we should use figure environment
+		if (shouldUseFigureEnvironment(node)) {
+			const captionHtml = figcaptionId
+				? `<figcaption id="${figcaptionId}" class="exercise-figcaption">${escapedCaption}</figcaption>`
+				: '';
+
+			return `<figure class="exercise-figure ${alignmentClass}">
+				${imgElement}
+				${captionHtml}
+			</figure>`;
+		}
+
+		// Inline images: render directly without container
+		if (node.sizeClass === 'inline') {
+			return imgElement;
+		}
+
+		// Block images without caption: use a simple div container for alignment
+		return `<div class="${alignmentClass}">
+			${imgElement}
+		</div>`;
+	}
+
+	/**
+	 * Escape HTML special characters to prevent XSS attacks
+	 *
+	 * Uses string replacement for SSR compatibility (no DOM dependency).
+	 * Escapes: & < > " '
+	 */
+	function escapeHtml(str: string): string {
+		return str
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#039;');
 	}
 
 	/**
@@ -635,5 +748,93 @@
 
 	:global(.prose a:hover) {
 		opacity: 0.8;
+	}
+
+	/* ============================================================================ */
+	/* Exercise Image Styles */
+	/* ============================================================================ */
+
+	/* Base image styling - ensures responsive behavior */
+	:global(.exercise-image) {
+		max-width: 100%;
+		height: auto;
+		display: block;
+		border-radius: 0.5rem;
+		box-shadow:
+			0 1px 3px 0 rgb(0 0 0 / 0.1),
+			0 1px 2px -1px rgb(0 0 0 / 0.1);
+	}
+
+	/* Inline images - embedded within text flow */
+	:global(.exercise-image-inline) {
+		display: inline;
+		vertical-align: middle;
+		max-height: 1.5em;
+		width: auto;
+		border-radius: 0;
+		box-shadow: none;
+	}
+
+	/* Figure container styling */
+	:global(.exercise-figure) {
+		margin: 1em 0;
+	}
+
+	/* Figure caption styling */
+	:global(.exercise-figcaption) {
+		font-size: 0.9em;
+		color: hsl(var(--muted-foreground));
+		margin-top: 0.5em;
+		text-align: center;
+		font-style: italic;
+	}
+
+	/* Alignment classes for image containers */
+	:global(.exercise-image-left) {
+		text-align: left;
+	}
+
+	:global(.exercise-image-left .exercise-image) {
+		margin-right: auto;
+	}
+
+	:global(.exercise-image-center) {
+		text-align: center;
+	}
+
+	:global(.exercise-image-center .exercise-image) {
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	:global(.exercise-image-right) {
+		text-align: right;
+	}
+
+	:global(.exercise-image-right .exercise-image) {
+		margin-left: auto;
+	}
+
+	/* Dark mode adjustments for images */
+	:global(.dark .exercise-image) {
+		box-shadow:
+			0 1px 3px 0 rgb(0 0 0 / 0.3),
+			0 1px 2px -1px rgb(0 0 0 / 0.3);
+	}
+
+	/* Responsive adjustments for small screens */
+	@media (max-width: 640px) {
+		:global(.exercise-image) {
+			width: 100% !important;
+			max-width: 100% !important;
+		}
+
+		:global(.exercise-figure) {
+			margin: 0.75em 0;
+		}
+
+		:global(.exercise-figcaption) {
+			font-size: 0.85em;
+		}
 	}
 </style>
