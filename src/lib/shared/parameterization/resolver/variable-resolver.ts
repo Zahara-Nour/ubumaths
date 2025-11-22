@@ -178,23 +178,40 @@ export function resolveExpression(
 			}
 
 			// IMPORTANT: Resolve variable references inside eval expression first
-			// Example: {{eval:{{a}}+{{b}}}} → extract "{{a}}+{{b}}" → resolve to "7+10" → evaluate to 17
+			// Two cases:
+			// 1. {{eval:{{a}}+{{b}}}} → extract "{{a}}+{{b}}" → resolve to "7+10" → evaluate to 17
+			// 2. {{eval:a+b}} → substitute bare variable names → "7+10" → evaluate to 17
 			let resolvedEvalExpr = evalExpr;
+
+			// First try to find {{var}} style tokens
 			const varTokensInEval = tokenize(evalExpr).filter((t) => t.type === 'variable');
-			for (let j = varTokensInEval.length - 1; j >= 0; j--) {
-				const varToken = varTokensInEval[j];
-				const varName = parseVariableReference(varToken.content);
-				if (!varName) continue;
 
-				const resolvedVar = alreadyResolved.find((v) => v.name === varName);
-				if (!resolvedVar) {
-					throw new Error(`Variable "${varName}" not found in eval expression`);
+			if (varTokensInEval.length > 0) {
+				// Case 1: Variables with brackets {{var}}
+				for (let j = varTokensInEval.length - 1; j >= 0; j--) {
+					const varToken = varTokensInEval[j];
+					const varName = parseVariableReference(varToken.content);
+					if (!varName) continue;
+
+					const resolvedVar = alreadyResolved.find((v) => v.name === varName);
+					if (!resolvedVar) {
+						throw new Error(`Variable "${varName}" not found in eval expression`);
+					}
+
+					resolvedEvalExpr =
+						resolvedEvalExpr.slice(0, varToken.start) +
+						resolvedVar.value +
+						resolvedEvalExpr.slice(varToken.end);
 				}
-
-				resolvedEvalExpr =
-					resolvedEvalExpr.slice(0, varToken.start) +
-					resolvedVar.value +
-					resolvedEvalExpr.slice(varToken.end);
+			} else {
+				// Case 2: Bare variable names (common in eval expressions)
+				// Replace each resolved variable name with its value
+				for (const resolvedVar of alreadyResolved) {
+					// Use word boundary to avoid partial replacements
+					// e.g., don't replace 'a' in 'tan' or 'max'
+					const regex = new RegExp(`\\b${resolvedVar.name}\\b`, 'g');
+					resolvedEvalExpr = resolvedEvalExpr.replace(regex, resolvedVar.value);
+				}
 			}
 
 			const evaluatedValue = evaluateExpression(resolvedEvalExpr);
