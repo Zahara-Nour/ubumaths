@@ -25,7 +25,9 @@ import type {
 	MathPlaceholder,
 	ImageNode,
 	ListNode,
-	BlockquoteNode
+	BlockquoteNode,
+	ImageSizeClass,
+	ImageAlignment
 } from '../types';
 import {
 	extractMath,
@@ -47,9 +49,27 @@ import { isCodeFence, findCodeBlocks, parseCodeBlock } from './code-block-parser
 // ============================================================================
 
 /**
- * Regex for markdown images: ![alt](url "optional title")
+ * Regex for markdown images with optional attributes: ![alt](url "title"){attrs}
+ *
+ * Captures:
+ * - Group 1: alt text
+ * - Group 2: URL
+ * - Group 3: optional title (inside quotes)
+ * - Group 4: optional attributes (inside curly braces)
+ *
+ * @example Standard markdown
+ * ```
+ * ![alt](url.png)
+ * ![alt](url.png "title")
+ * ```
+ *
+ * @example Extended syntax with attributes
+ * ```
+ * ![alt](url.png){size=medium}
+ * ![alt](url.png "title"){size=large align=center caption="Figure 1"}
+ * ```
  */
-const IMAGE_REGEX = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g;
+const IMAGE_REGEX = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)(?:\{([^}]*)\})?/g;
 
 /**
  * Regex for headings: # Heading or ## Heading, etc.
@@ -465,30 +485,155 @@ function processListInlineContent(
 // ============================================================================
 
 /**
+ * Parsed image attributes from extended markdown syntax
+ *
+ * @internal Used by parseImageAttributes
+ */
+interface ParsedImageAttributes {
+	sizeClass?: ImageSizeClass;
+	widthPercent?: number;
+	alignment?: ImageAlignment;
+	caption?: string;
+}
+
+/**
+ * Valid size class values for validation
+ */
+const VALID_SIZE_CLASSES: ImageSizeClass[] = ['inline', 'small', 'medium', 'large', 'full'];
+
+/**
+ * Valid alignment values for validation
+ */
+const VALID_ALIGNMENTS: ImageAlignment[] = ['left', 'center', 'right'];
+
+/**
+ * Parse image attributes from curly brace syntax
+ *
+ * Supports the following attributes:
+ * - `size=<value>` or `size="<value>"` - Semantic size class (inline, small, medium, large, full)
+ * - `width=<value>%` or `width="<value>%"` - Width percentage (0-100)
+ * - `align=<value>` or `align="<value>"` - Alignment (left, center, right)
+ * - `caption="<value>"` or `caption='<value>'` - Figure caption text
+ *
+ * @param attrString - Attribute string from inside curly braces (e.g., "size=medium align=center")
+ * @returns Parsed attributes object
+ *
+ * @example Parse size class
+ * ```typescript
+ * parseImageAttributes('size=medium');
+ * // { sizeClass: 'medium' }
+ * ```
+ *
+ * @example Parse multiple attributes
+ * ```typescript
+ * parseImageAttributes('size=large align=center caption="Figure 1"');
+ * // { sizeClass: 'large', alignment: 'center', caption: 'Figure 1' }
+ * ```
+ *
+ * @example Parse width percentage
+ * ```typescript
+ * parseImageAttributes('width=60%');
+ * // { widthPercent: 60 }
+ * ```
+ */
+function parseImageAttributes(attrString: string | undefined): ParsedImageAttributes {
+	if (!attrString) return {};
+
+	const attrs: ParsedImageAttributes = {};
+
+	// Parse size=medium or size="medium"
+	const sizeMatch = attrString.match(/size=["']?(\w+)["']?/);
+	if (sizeMatch) {
+		const size = sizeMatch[1];
+		if (VALID_SIZE_CLASSES.includes(size as ImageSizeClass)) {
+			attrs.sizeClass = size as ImageSizeClass;
+		}
+	}
+
+	// Parse width=60% or width="60%"
+	const widthMatch = attrString.match(/width=["']?(\d+)%?["']?/);
+	if (widthMatch) {
+		const width = parseInt(widthMatch[1], 10);
+		// Validate width is between 0 and 100
+		if (width >= 0 && width <= 100) {
+			attrs.widthPercent = width;
+		}
+	}
+
+	// Parse align=center or align="center"
+	const alignMatch = attrString.match(/align=["']?(\w+)["']?/);
+	if (alignMatch) {
+		const align = alignMatch[1];
+		if (VALID_ALIGNMENTS.includes(align as ImageAlignment)) {
+			attrs.alignment = align as ImageAlignment;
+		}
+	}
+
+	// Parse caption="Figure 1" or caption='Figure 1'
+	const captionMatch = attrString.match(/caption=["']([^"']+)["']/);
+	if (captionMatch) {
+		attrs.caption = captionMatch[1];
+	}
+
+	return attrs;
+}
+
+/**
  * Parse an image from a line
  *
- * Format: ![alt](url "title")
+ * Supports standard markdown and extended syntax with attributes:
+ * - Standard: `![alt](url "title")`
+ * - Extended: `![alt](url "title"){size=medium align=center caption="Figure 1"}`
  *
  * @param line - Line containing image markdown
  * @returns ImageNode or null if no valid image
+ *
+ * @example Standard markdown
+ * ```typescript
+ * parseImageLine('![A cat](cat.png "My cat")');
+ * // { type: 'image', src: 'cat.png', alt: 'A cat', title: 'My cat' }
+ * ```
+ *
+ * @example Extended syntax
+ * ```typescript
+ * parseImageLine('![Figure](graph.png){size=large align=center caption="Results"}');
+ * // { type: 'image', src: 'graph.png', alt: 'Figure', sizeClass: 'large', alignment: 'center', caption: 'Results' }
+ * ```
  */
 function parseImageLine(line: string): ImageNode | null {
-	const match = line.match(IMAGE_REGEX);
+	// Use non-global regex for single match extraction
+	const regex = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)(?:\{([^}]*)\})?/;
+	const match = line.match(regex);
 	if (!match) return null;
 
-	// Extract parts
-	const fullMatch = match[0];
-	const parts = fullMatch.match(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/);
-	if (!parts) return null;
+	const [, alt, src, title, attrsStr] = match;
 
-	const [, alt, src, title] = parts;
+	// Parse extended attributes if present
+	const attrs = parseImageAttributes(attrsStr);
 
-	return {
+	// Build ImageNode with base fields
+	const imageNode: ImageNode = {
 		type: 'image',
 		src: src.trim(),
-		alt: alt.trim(),
+		alt: alt?.trim() || undefined,
 		title: title?.trim()
 	};
+
+	// Add extended attributes if present
+	if (attrs.sizeClass) {
+		imageNode.sizeClass = attrs.sizeClass;
+	}
+	if (attrs.widthPercent !== undefined) {
+		imageNode.widthPercent = attrs.widthPercent;
+	}
+	if (attrs.alignment) {
+		imageNode.alignment = attrs.alignment;
+	}
+	if (attrs.caption) {
+		imageNode.caption = attrs.caption;
+	}
+
+	return imageNode;
 }
 
 // ============================================================================
