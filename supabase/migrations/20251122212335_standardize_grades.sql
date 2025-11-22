@@ -120,6 +120,7 @@ BEGIN
         WHEN 'tle generale' THEN RETURN 'T_GEN';
         WHEN 'tle' THEN RETURN 'T_GEN';
         WHEN 'term' THEN RETURN 'T_GEN';
+        WHEN 'tale' THEN RETURN 'T_GEN';
 
         -- Terminale spécialité maths
         WHEN 'spe_t' THEN RETURN 'T_SPE';
@@ -420,8 +421,32 @@ EXCEPTION
 END $$;
 
 -- 6.6 Add constraint to exercises.grade_levels
+-- First, show any invalid values for diagnostic purposes
 DO $$
+DECLARE
+    invalid_grades TEXT;
+    invalid_count INTEGER;
+    valid_grades TEXT[] := ARRAY[
+        'CP', 'CE1', 'CE2', 'CM1', 'CM2',
+        '6', '5', '4', '3',
+        '2', '1_GEN', 'T_GEN', '1_SPE', 'T_SPE', 'T_EXP', 'T_COMP', '1_STMG', 'T_STMG'
+    ];
 BEGIN
+    -- Find invalid values in exercises.grade_levels
+    SELECT string_agg(DISTINCT g, ', '), COUNT(DISTINCT g)
+    INTO invalid_grades, invalid_count
+    FROM (
+        SELECT unnest(grade_levels) as g
+        FROM exercises
+        WHERE grade_levels IS NOT NULL
+    ) sub
+    WHERE NOT (g = ANY(valid_grades));
+
+    IF invalid_count > 0 THEN
+        RAISE NOTICE 'exercises.grade_levels: Found % INVALID grade values: %', invalid_count, invalid_grades;
+        RAISE EXCEPTION 'Cannot add constraint to exercises.grade_levels - invalid values exist: %. Add these to normalize_grade_value() function.', invalid_grades;
+    END IF;
+
     -- Drop existing constraint if it exists (for idempotency)
     ALTER TABLE public.exercises
     DROP CONSTRAINT IF EXISTS exercises_valid_grade_levels;
@@ -433,9 +458,6 @@ BEGIN
     );
 
     RAISE NOTICE 'exercises.grade_levels: CHECK constraint added';
-EXCEPTION
-    WHEN check_violation THEN
-        RAISE EXCEPTION 'Cannot add constraint to exercises.grade_levels - invalid values exist. Please run the data migration first.';
 END $$;
 
 -- ============================================================================
