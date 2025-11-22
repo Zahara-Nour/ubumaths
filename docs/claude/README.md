@@ -18,6 +18,7 @@ Documentation détaillée pour Claude Code lors du développement d'UbuMaths.
 
 - **[Architecture](./architecture.md)** - Structure projet, routing, data fetching, performance
 - **[Database](./database.md)** - Supabase, migrations, schéma
+- **[Grade System (Niveaux d'Étude)](./grades.md)** - Unified grade system, API reference, validation
 - **[Realtime](./realtime.md)** - Supabase Realtime, chat, presence, broadcast
 - **[SSR-Compatible Supabase Patterns](./ssr-supabase-patterns.md)** ⭐ - Essential patterns for Supabase in SSR
 - **[Teacher Cache](./teacher-cache.md)** - Client-side cache dashboard enseignant
