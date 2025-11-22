@@ -11,7 +11,7 @@
 | 5     | LaTeX Transpiler                 | ✅ Complète      | 2025-11-22      |
 | 6     | Typst Transpiler                 | ✅ Complète      | 2025-11-22      |
 | 7     | System d'upload d'images         | ✅ Complète      | 2025-11-22      |
-| 8     | Interface utilisateur enseignant | ⏳ Non commencée | -               |
+| 8     | Interface utilisateur enseignant | ✅ Complète      | 2025-11-22      |
 | 9     | Tests E2E                        | ⏳ Non commencée | -               |
 
 ## Objectif Global
