@@ -5,6 +5,7 @@
  */
 
 import type { EnvironmentToken, ConversionContext, ListItem, ListType } from '../types';
+import { tokenize } from '../tokenizer';
 
 // ===========================
 // Constants
@@ -12,6 +13,30 @@ import type { EnvironmentToken, ConversionContext, ListItem, ListType } from '..
 
 /** Spaces per indentation level */
 const INDENT_SIZE = 2;
+
+// ===========================
+// Content Processing Helper
+// ===========================
+
+/**
+ * Process item content text through the tokenizer and converter.
+ * This ensures LaTeX commands inside list items (like \, \%) are properly converted.
+ *
+ * @param text - Raw text content from a list item
+ * @param context - The conversion context with processChildren function
+ * @returns Processed text with LaTeX commands converted
+ */
+function processItemText(text: string, context: ConversionContext): string {
+	if (!text.trim() || !context.processChildren) {
+		return text;
+	}
+
+	// Tokenize the content to process any LaTeX commands
+	const tokens = tokenize(text);
+
+	// Convert the tokens using the context's processChildren
+	return context.processChildren(tokens);
+}
 
 /** List environment names */
 const LIST_ENVIRONMENTS: ListType[] = ['itemize', 'enumerate', 'description'];
@@ -283,10 +308,11 @@ export function convertItemize(token: EnvironmentToken, context: ConversionConte
 		if (textBefore) {
 			const textLines = textBefore.split('\n').filter((l) => l.trim());
 			for (let i = 0; i < textLines.length; i++) {
+				const processedText = processItemText(textLines[i].trim(), context);
 				if (i === 0) {
-					lines.push(`${indent}- ${textLines[i].trim()}`);
+					lines.push(`${indent}- ${processedText}`);
 				} else {
-					lines.push(`${indent}  ${textLines[i].trim()}`);
+					lines.push(`${indent}  ${processedText}`);
 				}
 			}
 		} else {
@@ -308,7 +334,8 @@ export function convertItemize(token: EnvironmentToken, context: ConversionConte
 		if (textAfter) {
 			const afterLines = textAfter.split('\n').filter((l) => l.trim());
 			for (const line of afterLines) {
-				lines.push(`${indent}  ${line.trim()}`);
+				const processedLine = processItemText(line.trim(), context);
+				lines.push(`${indent}  ${processedLine}`);
 			}
 		}
 	}
@@ -348,10 +375,11 @@ export function convertEnumerate(token: EnvironmentToken, context: ConversionCon
 		if (textBefore) {
 			const textLines = textBefore.split('\n').filter((l) => l.trim());
 			for (let j = 0; j < textLines.length; j++) {
+				const processedText = processItemText(textLines[j].trim(), context);
 				if (j === 0) {
-					lines.push(`${indent}${number}. ${textLines[j].trim()}`);
+					lines.push(`${indent}${number}. ${processedText}`);
 				} else {
-					lines.push(`${indent}   ${textLines[j].trim()}`);
+					lines.push(`${indent}   ${processedText}`);
 				}
 			}
 		} else {
@@ -373,7 +401,8 @@ export function convertEnumerate(token: EnvironmentToken, context: ConversionCon
 		if (textAfter) {
 			const afterLines = textAfter.split('\n').filter((l) => l.trim());
 			for (const line of afterLines) {
-				lines.push(`${indent}   ${line.trim()}`);
+				const processedLine = processItemText(line.trim(), context);
+				lines.push(`${indent}   ${processedLine}`);
 			}
 		}
 	}
@@ -410,7 +439,8 @@ export function convertDescription(token: EnvironmentToken, context: ConversionC
 
 		// Format term and definition
 		const term = item.label ?? '';
-		const definition = textBefore.trim();
+		const rawDefinition = textBefore.trim();
+		const definition = rawDefinition ? processItemText(rawDefinition, context) : '';
 
 		// Build the first line
 		if (term) {
@@ -435,7 +465,8 @@ export function convertDescription(token: EnvironmentToken, context: ConversionC
 		if (textAfter) {
 			const afterLines = textAfter.split('\n').filter((l) => l.trim());
 			for (const line of afterLines) {
-				lines.push(`${indent}  ${line.trim()}`);
+				const processedLine = processItemText(line.trim(), context);
+				lines.push(`${indent}  ${processedLine}`);
 			}
 		}
 	}
