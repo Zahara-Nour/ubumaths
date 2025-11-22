@@ -2,17 +2,17 @@
 
 ## Progression Générale
 
-| Phase | Nom                              | Statut           | Date de Reprise |
-| ----- | -------------------------------- | ---------------- | --------------- |
-| 1     | Types et modèle de données       | ✅ Complète      | 2025-11-22      |
-| 2     | Service de dimensionnement       | ✅ Complète      | 2025-11-22      |
-| 3     | Parser markdown enrichi          | ✅ Complète      | 2025-11-22      |
-| 4     | HTML Renderer                    | ✅ Complète      | 2025-11-22      |
-| 5     | LaTeX Transpiler                 | ✅ Complète      | 2025-11-22      |
-| 6     | Typst Transpiler                 | ✅ Complète      | 2025-11-22      |
-| 7     | System d'upload d'images         | ✅ Complète      | 2025-11-22      |
-| 8     | Interface utilisateur enseignant | ✅ Complète      | 2025-11-22      |
-| 9     | Tests E2E                        | ⏳ Non commencée | -               |
+| Phase | Nom                              | Statut      | Date de Reprise |
+| ----- | -------------------------------- | ----------- | --------------- |
+| 1     | Types et modèle de données       | ✅ Complète | 2025-11-22      |
+| 2     | Service de dimensionnement       | ✅ Complète | 2025-11-22      |
+| 3     | Parser markdown enrichi          | ✅ Complète | 2025-11-22      |
+| 4     | HTML Renderer                    | ✅ Complète | 2025-11-22      |
+| 5     | LaTeX Transpiler                 | ✅ Complète | 2025-11-22      |
+| 6     | Typst Transpiler                 | ✅ Complète | 2025-11-22      |
+| 7     | System d'upload d'images         | ✅ Complète | 2025-11-22      |
+| 8     | Interface utilisateur enseignant | ✅ Complète | 2025-11-22      |
+| 9     | Tests E2E                        | ✅ Complète | 2025-11-22      |
 
 ## Objectif Global
 
