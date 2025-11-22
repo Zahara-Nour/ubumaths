@@ -1,5 +1,7 @@
 # UbuMaths
 
+[![CI](https://github.com/Zahara-Nour/ubumaths/actions/workflows/quality.yml/badge.svg)](https://github.com/Zahara-Nour/ubumaths/actions/workflows/quality.yml)
+
 An educational math application built by a math teacher for students, featuring interactive mathematical input and rendering.
 
 ## Features
