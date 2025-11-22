@@ -291,9 +291,10 @@ describe('transpileToLatex', () => {
 
 		expect(latex).toContain('\\includegraphics');
 		expect(latex).toContain('image.png');
-		expect(latex).toContain('Test image');
-		expect(latex).toContain('\\begin{center}');
-		expect(latex).toContain('\\end{center}');
+		// Note: alt text is for accessibility (HTML), not displayed in LaTeX
+		// Use caption if you want visible text under the image
+		expect(latex).toContain('\\centering');
+		expect(latex).toContain('\\par');
 	});
 
 	it('should include title and author when provided', () => {
@@ -577,6 +578,309 @@ describe('Code Block Transpilation', () => {
 
 		expect(latex).toContain('\\usepackage{listings}');
 		expect(latex).toContain('\\lstset');
+	});
+});
+
+describe('Image Transpilation Enhanced', () => {
+	it('should transpile basic image without attributes (default medium size, center)', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'diagram.png'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\includegraphics');
+		expect(latex).toContain('width=0.5\\textwidth');
+		expect(latex).toContain('diagram.png');
+		expect(latex).toContain('\\centering');
+		expect(latex).toContain('\\par');
+	});
+
+	it('should transpile image with sizeClass small', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'small-img.png',
+					sizeClass: 'small'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('width=0.25\\textwidth');
+	});
+
+	it('should transpile image with sizeClass large', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'large-img.png',
+					sizeClass: 'large'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('width=0.75\\textwidth');
+	});
+
+	it('should transpile image with sizeClass full', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'full-img.png',
+					sizeClass: 'full'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('width=\\textwidth');
+	});
+
+	it('should transpile image with widthPercent (overrides sizeClass)', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'custom-width.png',
+					sizeClass: 'small', // Should be ignored
+					widthPercent: 60
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('width=0.6\\textwidth');
+		expect(latex).not.toContain('0.25'); // small sizeClass width should NOT appear
+	});
+
+	it('should transpile image with left alignment', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'left-img.png',
+					alignment: 'left'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\raggedright');
+	});
+
+	it('should transpile image with right alignment', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'right-img.png',
+					alignment: 'right'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\raggedleft');
+	});
+
+	it('should transpile image with caption in figure environment', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'figure.png',
+					caption: 'Figure 1: Test diagram'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\begin{figure}[htbp]');
+		expect(latex).toContain('\\end{figure}');
+		expect(latex).toContain('\\caption{Figure 1: Test diagram}');
+		expect(latex).toContain('\\centering');
+	});
+
+	it('should escape LaTeX special characters in caption', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'figure.png',
+					caption: 'Price: $10 & 50% off'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\caption{Price: \\$10 \\& 50\\% off}');
+	});
+
+	it('should transpile inline image', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'icon.png',
+					sizeClass: 'inline'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\includegraphics[height=1em]{icon.png}');
+		// Inline images should not have centering or figure environment
+		expect(latex).not.toContain('\\centering');
+		expect(latex).not.toContain('\\begin{figure}');
+		expect(latex).not.toContain('\\par');
+	});
+
+	it('should transpile image with all attributes combined', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'complex.png',
+					widthPercent: 80,
+					alignment: 'left',
+					caption: 'A complex figure',
+					alt: 'Complex diagram'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\begin{figure}[htbp]');
+		expect(latex).toContain('\\raggedright');
+		expect(latex).toContain('width=0.8\\textwidth');
+		expect(latex).toContain('\\caption{A complex figure}');
+		expect(latex).toContain('\\end{figure}');
+	});
+
+	it('should handle very wide images with aspect ratio constraints', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'panorama.png',
+					originalWidth: 1200,
+					originalHeight: 300 // 4:1 ratio (> 3:1)
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('keepaspectratio');
+		expect(latex).toContain('max height=0.3\\textheight');
+	});
+
+	it('should handle very tall images with aspect ratio constraints', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'tall.png',
+					originalWidth: 200,
+					originalHeight: 800 // 1:4 ratio (< 1:3)
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('keepaspectratio');
+		expect(latex).toContain('max width=0.5\\textwidth');
+	});
+
+	it('should resolve image path with base path', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'subdir/image.png'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, {
+			includePreamble: false,
+			imageBasePath: '/images'
+		});
+
+		expect(latex).toContain('/images/subdir/image.png');
+	});
+
+	it('should handle URL image paths', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'https://example.com/path/to/remote-image.png'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		// URL images get extracted to filename
+		expect(latex).toContain('remote-image.png');
+	});
+
+	it('should handle image without caption but with sizeClass (block, no figure)', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'image',
+					src: 'block-img.png',
+					sizeClass: 'large',
+					alignment: 'center'
+				}
+			]
+		};
+
+		const latex = transpileToLatex(ast, { includePreamble: false });
+
+		// Should use group with centering, not figure environment
+		expect(latex).toContain('{\\centering');
+		expect(latex).toContain('\\par}');
+		expect(latex).not.toContain('\\begin{figure}');
 	});
 });
 

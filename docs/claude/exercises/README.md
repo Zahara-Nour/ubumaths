@@ -8,7 +8,7 @@
 | 2     | Service de dimensionnement       | ✅ Complète      | 2025-11-22      |
 | 3     | Parser markdown enrichi          | ✅ Complète      | 2025-11-22      |
 | 4     | HTML Renderer                    | ✅ Complète      | 2025-11-22      |
-| 5     | LaTeX Transpiler                 | ⏳ Non commencée | -               |
+| 5     | LaTeX Transpiler                 | ✅ Complète      | 2025-11-22      |
 | 6     | Typst Transpiler                 | ⏳ Non commencée | -               |
 | 7     | System d'upload d'images         | ⏳ Non commencée | -               |
 | 8     | Interface utilisateur enseignant | ⏳ Non commencée | -               |
