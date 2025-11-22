@@ -244,7 +244,6 @@ export function generateExerciseInstance(
 			difficulty: exercise.difficulty,
 			tags: exercise.tags,
 			source: exercise.source,
-			estimated_time_minutes: exercise.estimated_time_minutes,
 			grade_levels: exercise.grade_levels,
 			topic: exercise.topic,
 

@@ -491,7 +491,6 @@ if (![1, 2, 3].includes(data.difficulty)) {
 - Only validates 3 fields, other fields unvalidated
 - No length limits on markdown content
 - `tags`, `grade_levels`, `topic` not validated
-- `estimated_time_minutes` could be negative or absurdly large
 
 **Good News**: Exercise import/export has excellent validation (`src/lib/exercises/validation.ts`), but it's not used for the API endpoint.
 

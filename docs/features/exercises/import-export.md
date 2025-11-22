@@ -84,7 +84,6 @@ Structured JSON format ideal for programmatic use and bulk operations.
 	"solution_md": "**Méthode de factorisation** :\n\n$$(x - 2)(x - 3) = 0$$\n\nDonc $x = 2$ ou $x = 3$",
 	"title": "Équation du second degré",
 	"source": "Livre de mathématiques 3ème",
-	"estimated_time_minutes": 10,
 	"grade_levels": ["3", "2"],
 	"topic": "Algèbre"
 }
@@ -113,25 +112,23 @@ Structured JSON format ideal for programmatic use and bulk operations.
 
 **Fields**:
 
-| Field                    | Type        | Required | Description                                 |
-| ------------------------ | ----------- | -------- | ------------------------------------------- |
-| `version`                | string      | ✅       | Format version (always "1.0")               |
-| `difficulty`             | 1 \| 2 \| 3 | ✅       | 1=Easy, 2=Medium, 3=Hard                    |
-| `tags`                   | string[]    | ✅       | Category tags (can be empty array)          |
-| `statement_md`           | string      | ✅       | Exercise statement (markdown with LaTeX)    |
-| `solution_md`            | string      | ✅       | Exercise solution (markdown with LaTeX)     |
-| `title`                  | string      | ❌       | Exercise title                              |
-| `source`                 | string      | ❌       | Source reference (textbook, etc.)           |
-| `estimated_time_minutes` | number      | ❌       | Estimated completion time in minutes        |
-| `grade_levels`           | string[]    | ❌       | Target grade levels (e.g., ["6", "5", "4"]) |
-| `topic`                  | string      | ❌       | Math topic/domain                           |
+| Field          | Type        | Required | Description                                 |
+| -------------- | ----------- | -------- | ------------------------------------------- |
+| `version`      | string      | ✅       | Format version (always "1.0")               |
+| `difficulty`   | 1 \| 2 \| 3 | ✅       | 1=Easy, 2=Medium, 3=Hard                    |
+| `tags`         | string[]    | ✅       | Category tags (can be empty array)          |
+| `statement_md` | string      | ✅       | Exercise statement (markdown with LaTeX)    |
+| `solution_md`  | string      | ✅       | Exercise solution (markdown with LaTeX)     |
+| `title`        | string      | ❌       | Exercise title                              |
+| `source`       | string      | ❌       | Source reference (textbook, etc.)           |
+| `grade_levels` | string[]    | ❌       | Target grade levels (e.g., ["6", "5", "4"]) |
+| `topic`        | string      | ❌       | Math topic/domain                           |
 
 **Notes**:
 
 - All strings are trimmed during validation
 - Empty strings in `statement_md` or `solution_md` are rejected
 - `difficulty` must be exactly 1, 2, or 3
-- `estimated_time_minutes` must be positive if provided
 - Markdown supports LaTeX with `$...$` (inline) and `$$...$$` (block)
 
 ### Markdown Format
@@ -147,7 +144,6 @@ tags:
   - équations
 title: 'Équation du second degré'
 source: 'Livre de mathématiques 3ème'
-estimated_time_minutes: 10
 grade_levels:
   - '3'
   - '2'
@@ -420,7 +416,6 @@ The system uses Zod schemas for runtime validation.
 {
   title?: string,                    // Trimmed, no min length
   source?: string,                   // Trimmed, no min length
-  estimated_time_minutes?: number,   // Positive integer
   grade_levels?: string[],           // Array of strings
   topic?: string                     // Trimmed, no min length
 }
@@ -726,7 +721,6 @@ export interface ExerciseExport {
 	solution_md: string;
 
 	// Additional metadata
-	estimated_time_minutes?: number;
 	grade_levels?: string[];
 	topic?: string;
 }
@@ -740,7 +734,6 @@ export interface ExerciseFrontmatter {
 	source?: string;
 	difficulty: 1 | 2 | 3;
 	tags: string[];
-	estimated_time_minutes?: number;
 	grade_levels?: string[];
 	topic?: string;
 }

@@ -249,9 +249,6 @@ export interface Exercise {
 	is_public?: boolean;
 
 	// Additional metadata
-	/** Estimated completion time in minutes */
-	estimated_time_minutes?: number;
-
 	/** Applicable grade levels (e.g., ['3', '2', '1_SPE']) - uses GradeCode from unified system */
 	grade_levels?: string[];
 
@@ -373,9 +370,6 @@ export interface ExerciseInstance {
 
 	/** Source reference (copied from template) */
 	source?: string;
-
-	/** Estimated time (copied from template) */
-	estimated_time_minutes?: number;
 
 	/** Grade levels (copied from template) */
 	grade_levels?: string[];
@@ -995,7 +989,6 @@ export interface ExerciseExport {
 	solution_md: string;
 
 	// Additional metadata
-	estimated_time_minutes?: number;
 	grade_levels?: string[];
 	topic?: string;
 }
@@ -1013,7 +1006,6 @@ export interface ExerciseFrontmatter {
 	source?: string;
 	difficulty: 1 | 2 | 3;
 	tags: string[];
-	estimated_time_minutes?: number;
 	grade_levels?: string[];
 	topic?: string;
 }

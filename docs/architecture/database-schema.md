@@ -3956,24 +3956,23 @@ Math exercise bank with rich markdown content, LaTeX formulas, and multiple expo
 
 Mathematical exercises with markdown-formatted statements and solutions.
 
-| Column                 | Type        | Description                                                       |
-| ---------------------- | ----------- | ----------------------------------------------------------------- |
-| id                     | UUID        | Exercise ID (primary key)                                         |
-| title                  | TEXT        | Exercise title (optional, for organization)                       |
-| source                 | TEXT        | Source reference (e.g., book name, author)                        |
-| difficulty             | INTEGER     | Difficulty level: 1 (easy), 2 (medium), 3 (hard)                  |
-| tags                   | TEXT[]      | Tags for categorization (e.g., ['algèbre', 'équations'])          |
-| statement_md           | TEXT        | Exercise statement in markdown with LaTeX ($...$ and $$...$$)     |
-| solution_md            | TEXT        | Solution/correction in markdown with LaTeX                        |
-| estimated_time_minutes | INTEGER     | Estimated completion time in minutes                              |
-| grade_levels           | TEXT[]      | Applicable grade levels (e.g., ['3', '2', 'SPE_1'])               |
-| topic                  | TEXT        | Topic category (e.g., 'Algèbre', 'Géométrie')                     |
-| variables              | JSONB       | Parameterization variables (default: `[]`)                        |
-| distribution_mode      | TEXT        | Instance distribution: `on_demand`, `per_student`, or `per_group` |
-| is_public              | BOOLEAN     | Whether exercise is publicly shared (default: `false`)            |
-| created_at             | TIMESTAMPTZ | Creation timestamp                                                |
-| updated_at             | TIMESTAMPTZ | Last update timestamp                                             |
-| created_by             | UUID        | Teacher who created the exercise (FK → profiles.id)               |
+| Column            | Type        | Description                                                       |
+| ----------------- | ----------- | ----------------------------------------------------------------- |
+| id                | UUID        | Exercise ID (primary key)                                         |
+| title             | TEXT        | Exercise title (optional, for organization)                       |
+| source            | TEXT        | Source reference (e.g., book name, author)                        |
+| difficulty        | INTEGER     | Difficulty level: 1 (easy), 2 (medium), 3 (hard)                  |
+| tags              | TEXT[]      | Tags for categorization (e.g., ['algèbre', 'équations'])          |
+| statement_md      | TEXT        | Exercise statement in markdown with LaTeX ($...$ and $$...$$)     |
+| solution_md       | TEXT        | Solution/correction in markdown with LaTeX                        |
+| grade_levels      | TEXT[]      | Applicable grade levels (e.g., ['3', '2', 'SPE_1'])               |
+| topic             | TEXT        | Topic category (e.g., 'Algèbre', 'Géométrie')                     |
+| variables         | JSONB       | Parameterization variables (default: `[]`)                        |
+| distribution_mode | TEXT        | Instance distribution: `on_demand`, `per_student`, or `per_group` |
+| is_public         | BOOLEAN     | Whether exercise is publicly shared (default: `false`)            |
+| created_at        | TIMESTAMPTZ | Creation timestamp                                                |
+| updated_at        | TIMESTAMPTZ | Last update timestamp                                             |
+| created_by        | UUID        | Teacher who created the exercise (FK → profiles.id)               |
 
 **Markdown Format**:
 
@@ -4169,7 +4168,6 @@ INSERT INTO exercises (
   tags,
   statement_md,
   solution_md,
-  estimated_time_minutes,
   grade_levels,
   topic,
   created_by

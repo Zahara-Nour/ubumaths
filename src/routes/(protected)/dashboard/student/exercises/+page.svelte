@@ -227,10 +227,6 @@
 								<span>Niveaux: {exercise.grade_levels.join(', ')}</span>
 							{/if}
 
-							{#if exercise.estimated_time_minutes}
-								<span>~{exercise.estimated_time_minutes} min</span>
-							{/if}
-
 							{#if exercise.distribution_mode === 'per_student'}
 								<span class="text-purple-600 dark:text-purple-400">🎲 Personnalisé</span>
 							{:else if exercise.distribution_mode === 'on_demand'}

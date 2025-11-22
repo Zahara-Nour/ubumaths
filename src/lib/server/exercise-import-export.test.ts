@@ -27,7 +27,6 @@ const sampleExercise: Exercise = {
 	tags: ['algèbre', 'équations'],
 	statement_md: 'Résoudre $x^2 = 4$',
 	solution_md: '$x = \\pm 2$',
-	estimated_time_minutes: 10,
 	grade_levels: ['3', '2'],
 	topic: 'Algèbre',
 	created_at: '2024-01-01T00:00:00Z',
@@ -68,7 +67,6 @@ describe('exportExerciseToJSON', () => {
 		expect(parsed.solution_md).toBe('$x = \\pm 2$');
 		expect(parsed.title).toBe('Test Exercise');
 		expect(parsed.source).toBe('Test Book');
-		expect(parsed.estimated_time_minutes).toBe(10);
 		expect(parsed.grade_levels).toEqual(['3', '2']);
 		expect(parsed.topic).toBe('Algèbre');
 	});
@@ -107,9 +105,9 @@ describe('exportExerciseToJSON', () => {
 		expect(parsed.version).toBe('1.0');
 		expect(parsed.difficulty).toBe(1);
 		expect(parsed.tags).toEqual([]);
-		// JSON.stringify includes null values, doesn't filter them
-		expect(parsed.title).toBeNull();
-		expect(parsed.source).toBeNull();
+		// Optional fields that are undefined in source are not included in export
+		expect(parsed.title).toBeUndefined();
+		expect(parsed.source).toBeUndefined();
 	});
 });
 

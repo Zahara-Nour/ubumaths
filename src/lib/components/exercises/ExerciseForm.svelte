@@ -29,7 +29,6 @@
 	let difficulty = $state<1 | 2 | 3>((exercise?.difficulty as 1 | 2 | 3) || 2);
 	let tags = $state<string>(exercise?.tags?.join(', ') || '');
 	let topic = $state(exercise?.topic || '');
-	let estimatedTime = $state<number | null>(exercise?.estimated_time_minutes || null);
 	let gradeLevels = $state<string>(exercise?.grade_levels?.join(', ') || '');
 	let statementMd = $state(exercise?.statement_md || '');
 	let solutionMd = $state(exercise?.solution_md || '');
@@ -80,7 +79,6 @@
 				.map((t) => t.trim())
 				.filter(Boolean),
 			topic: topic.trim() || null,
-			estimated_time_minutes: estimatedTime,
 			grade_levels: gradeLevels
 				.split(',')
 				.map((g) => g.trim())
@@ -199,8 +197,8 @@
 				</div>
 			</div>
 
-			<!-- Difficulty, Time, Topic -->
-			<div class="grid gap-4 md:grid-cols-3">
+			<!-- Difficulty & Topic -->
+			<div class="grid gap-4 md:grid-cols-2">
 				<div class="space-y-2">
 					<Label for="difficulty">
 						Difficulté <span class="text-destructive">*</span>
@@ -217,17 +215,6 @@
 					{#if errors.difficulty}
 						<p class="text-sm text-destructive">{errors.difficulty}</p>
 					{/if}
-				</div>
-
-				<div class="space-y-2">
-					<Label for="estimatedTime">Temps estimé (min)</Label>
-					<Input
-						id="estimatedTime"
-						type="number"
-						min="1"
-						placeholder="Ex: 15"
-						bind:value={estimatedTime}
-					/>
 				</div>
 
 				<div class="space-y-2">

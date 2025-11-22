@@ -35,7 +35,6 @@ describe('exercise validation schemas', () => {
 				topic: 'Linear Equations',
 				source: 'Textbook Chapter 3',
 				title: 'Simple Linear Equation',
-				estimated_time_minutes: 10,
 				variables: { x: 2 },
 				is_public: false
 			};
@@ -137,18 +136,6 @@ describe('exercise validation schemas', () => {
 				solution_md: 'Solution',
 				difficulty: 1,
 				tags: ['a'.repeat(51)]
-			};
-
-			const result = createExerciseSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject estimated_time_minutes exceeding max', () => {
-			const data = {
-				statement_md: 'Problem',
-				solution_md: 'Solution',
-				difficulty: 1,
-				estimated_time_minutes: 301
 			};
 
 			const result = createExerciseSchema.safeParse(data);
@@ -776,7 +763,6 @@ describe('exercise validation schemas', () => {
 				topic: 'Equations',
 				source: 'Textbook',
 				title: 'Linear Equation',
-				estimated_time_minutes: 10,
 				variables: { x: 2 },
 				is_public: true,
 				created_by: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',

@@ -19,7 +19,6 @@ describe('validateExerciseExport', () => {
 			solution_md: '$x = \\pm 2$',
 			title: 'Équation du second degré',
 			source: 'Livre de maths',
-			estimated_time_minutes: 10,
 			grade_levels: ['3', '2'],
 			topic: 'Algèbre'
 		};
@@ -125,23 +124,6 @@ describe('validateExerciseExport', () => {
 		expect(result.error).toBeDefined();
 	});
 
-	it('should reject negative estimated time', () => {
-		const invalidExport = {
-			version: '1.0',
-			difficulty: 2,
-			tags: [],
-			statement_md: 'Test',
-			solution_md: 'Test',
-			estimated_time_minutes: -10
-		};
-
-		const result = validateExerciseExport(invalidExport);
-
-		expect(result.success).toBe(false);
-		expect(result.error).toBeDefined();
-		expect(result.error).toContain('estimated_time');
-	});
-
 	it('should trim whitespace from strings', () => {
 		const exportWithWhitespace = {
 			version: '1.0',
@@ -176,7 +158,6 @@ describe('validateExerciseExport', () => {
 		expect(result.success).toBe(true);
 		expect(result.data?.title).toBeUndefined();
 		expect(result.data?.source).toBeUndefined();
-		expect(result.data?.estimated_time_minutes).toBeUndefined();
 		expect(result.data?.grade_levels).toBeUndefined();
 		expect(result.data?.topic).toBeUndefined();
 	});
