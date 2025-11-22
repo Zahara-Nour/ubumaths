@@ -148,8 +148,20 @@ Use proper types, `unknown` with type guards, or Database types from `$lib/types
 4. **Security Audit** si auth/API sensible
 5. **Performance Audit** si requetes DB lourdes
 6. **Quality Checks** (`pnpm lint`, `pnpm check`) a la FIN du plan uniquement
+7. **Documentation de progression** tout au long de l'implementation
 
 **IMPORTANT** : Les agents ne doivent PAS executer de commandes lint/format/check. Ces verifications sont faites une seule fois a la fin du plan.
+
+### Documentation de reprise (obligatoire)
+
+Produire des documents de progression pour permettre la reprise en cas de crash :
+
+- **Quand** : Apres chaque phase significative ou commit
+- **Ou** : `docs/wip/` (work in progress)
+- **Contenu** : Etat actuel, decisions prises, prochaines etapes, fichiers modifies
+- **A la fin du plan** : Lister explicitement tous les documents produits
+
+Format suggere : `docs/wip/<feature>-progress.md`
 
 ### Execution autonome
 
