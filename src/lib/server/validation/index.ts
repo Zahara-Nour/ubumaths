@@ -16,6 +16,7 @@ export * from './draw-vip-cards';
 export * from './errors';
 export * from './exercises';
 export * from './google';
+export * from './image-upload';
 export * from './latex';
 export * from './message-templates';
 export * from './messages';
