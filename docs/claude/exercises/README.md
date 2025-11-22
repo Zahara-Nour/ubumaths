@@ -6,7 +6,7 @@
 | ----- | -------------------------------- | ---------------- | --------------- |
 | 1     | Types et modèle de données       | ✅ Complète      | 2025-11-22      |
 | 2     | Service de dimensionnement       | ✅ Complète      | 2025-11-22      |
-| 3     | Parser markdown enrichi          | ⏳ Non commencée | -               |
+| 3     | Parser markdown enrichi          | ✅ Complète      | 2025-11-22      |
 | 4     | HTML Renderer                    | ⏳ Non commencée | -               |
 | 5     | LaTeX Transpiler                 | ⏳ Non commencée | -               |
 | 6     | Typst Transpiler                 | ⏳ Non commencée | -               |
@@ -181,16 +181,38 @@ Création du service centralisé pour transformer les classes de taille sémanti
 
 Voir `/docs/claude/exercises/phase-2-dimensions.md` pour détails complets.
 
-### Phase 3 : Parser Markdown Enrichi
+### Phase 3 : Parser Markdown Enrichi ✅
 
-**Objectif** : Parser le markdown et créer l'AST avec support des images.
+**Statut** : Complète
 
-**Tâches** :
+Implémentation du support complet des images enrichies dans le parser markdown.
 
-- Implémenter le parser principal
-- Supporter la syntaxe d'images enrichie
-- Gérer les métadonnées YAML frontmatter
-- Tests pour tous les cas d'usage
+**Fichiers modifiés** :
+
+- `/src/lib/exercises/parser/markdown-parser.ts`
+
+**Fonctionnalités implémentées** :
+
+1. Regex `IMAGE_REGEX` pour capturer images avec/sans attributs
+2. Fonction `parseImageAttributes()` pour parser `{size=... align=... ...}`
+3. Fonction `parseImageLine()` pour créer les ImageNodes
+4. Intégration dans `parseMarkdown()` pour détection automatique
+5. Validation stricte (whitelist) pour tous les énums
+6. Support complet de la syntaxe enrichie
+
+**Syntaxe supportée** :
+
+```markdown
+![alt](url)
+![alt](url 'title')
+![alt](url){size=medium}
+![alt](url){width=60%}
+![alt](url){align=center}
+![alt](url){caption="Figure 1"}
+![alt](url 'title'){size=large align=right caption="Figure 1"}
+```
+
+Voir `/docs/claude/exercises/phase-3-parser.md` pour détails complets.
 
 ### Phase 4 : HTML Renderer
 
