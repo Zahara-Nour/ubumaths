@@ -18,9 +18,10 @@ Documentation détaillée pour Claude Code lors du développement d'UbuMaths.
 
 - **[Architecture](./architecture.md)** - Structure projet, routing, data fetching, performance
 - **[Database](./database.md)** - Supabase, migrations, schéma
+- **[Realtime](./realtime.md)** - Supabase Realtime, chat, presence, broadcast
 - **[SSR-Compatible Supabase Patterns](./ssr-supabase-patterns.md)** ⭐ - Essential patterns for Supabase in SSR
 - **[Teacher Cache](./teacher-cache.md)** - Client-side cache dashboard enseignant
-- **[Student Cache](./student-cache.md)** 🆕 - Client-side cache dashboard étudiant
+- **[Student Cache](./student-cache.md)** - Client-side cache dashboard étudiant
 - **[UI Components](./ui-components.md)** - Shadcn, MySelect, Tailwind, toasts
 
 ### Standards & Best Practices
@@ -46,6 +47,7 @@ Documentation détaillée pour Claude Code lors du développement d'UbuMaths.
 - ✏️ **Inline Editing Pattern** : [Inline Editing](./inline-editing-pattern.md) 🆕 - Standard for data editing UIs
 - 💾 **Svelte 5 Runes** : [Best Practices - Svelte 5](./best-practices.md#svelte-5-runes)
 - 🗃️ **Database Migrations** : [Database - Workflow](./database.md#workflow-migrations)
+- 🔄 **Realtime Communication** : [Realtime](./realtime.md) - Chat, presence, broadcast patterns
 
 ---
 
