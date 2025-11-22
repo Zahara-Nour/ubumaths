@@ -108,26 +108,33 @@ Use proper types, `unknown` with type guards, or Database types from `$lib/types
 
 **Regle** : TOUJOURS deleguer aux agents specialises. Ne JAMAIS faire directement ce qu'un agent peut faire.
 
-| Agent                   | Trigger                              | Cas d'usage                                |
-| ----------------------- | ------------------------------------ | ------------------------------------------ |
-| `Explore`               | "Comment marche X ?", "Ou est Y ?"   | Architecture, recherche code, patterns     |
-| `frontend-developer`    | Composants Svelte, UI/UX             | Creer/modifier UI, layouts, formulaires    |
-| `backend-developer`     | +server.ts, +page.server.ts          | API endpoints, form actions, auth logic    |
-| `supabase-expert`       | Migrations, RLS, schema              | Database design, policies, troubleshooting |
-| `code-reviewer`         | **PROACTIF** apres chaque code       | Review qualite, best practices             |
-| `test-automator`        | Tests, couverture                    | Creer/fixer tests, E2E                     |
-| `security-auditor`      | **PROACTIF** apres auth/API sensible | Audit securite, vulnerabilites             |
-| `commit-manager`        | "commit", "ready to commit"          | Preparer commits, bump version             |
-| `documentation-writer`  | **PROACTIF** apres features          | Documenter code, API, features             |
-| `performance-optimizer` | Lenteurs, avant deploy               | Optimiser queries, bundle, load            |
-| `typescript-expert`     | Erreurs TS complexes                 | Types avances, generics                    |
-| `api-designer`          | Nouveaux endpoints REST              | Architecture API, pagination               |
-| `debugger`              | Erreurs, comportement inattendu      | Debug runtime, build, tests                |
+| Agent                   | Trigger                                | Cas d'usage                                |
+| ----------------------- | -------------------------------------- | ------------------------------------------ |
+| `Explore`               | "Comment marche X ?", "Ou est Y ?"     | Architecture, recherche code, patterns     |
+| `frontend-developer`    | Composants Svelte, UI/UX               | Creer/modifier UI, layouts, formulaires    |
+| `backend-developer`     | +server.ts, +page.server.ts            | API endpoints, form actions, auth logic    |
+| `supabase-expert`       | Migrations, RLS, schema                | Database design, policies, troubleshooting |
+| `code-reviewer`         | **PROACTIF** apres chaque code         | Review qualite, best practices             |
+| `test-automator`        | Tests, couverture                      | Creer/fixer tests, E2E                     |
+| `security-auditor`      | **PROACTIF** apres auth/API sensible   | Audit securite, vulnerabilites             |
+| `commit-manager`        | Commits complexes (features, refactor) | Analyser changes, message structure        |
+| `documentation-writer`  | **PROACTIF** apres features            | Documenter code, API, features             |
+| `performance-optimizer` | Lenteurs, avant deploy                 | Optimiser queries, bundle, load            |
+| `typescript-expert`     | Erreurs TS complexes                   | Types avances, generics                    |
+| `api-designer`          | Nouveaux endpoints REST                | Architecture API, pagination               |
+| `debugger`              | Erreurs, comportement inattendu        | Debug runtime, build, tests                |
+
+### Commits : Agent vs Direct
+
+| Situation                                       | Methode                             |
+| ----------------------------------------------- | ----------------------------------- |
+| Docs, typos, <5 fichiers evidents               | `git add -A && git commit -m "..."` |
+| Features, refactoring, multi-fichiers complexes | `commit-manager` agent              |
 
 ### Regle d'Or
 
 **SI** : >3 etapes OU code important OU plusieurs fichiers OU expertise specialisee
-**ALORS** : Agent obligatoire. **AUCUNE EXCEPTION.**
+**ALORS** : Agent obligatoire. **EXCEPTION** : commits simples (voir ci-dessus).
 
 ---
 
@@ -137,7 +144,7 @@ Use proper types, `unknown` with type guards, or Database types from `$lib/types
 
 1. **Agents specifies** pour chaque phase
 2. **Code Review** (`code-reviewer`) a la fin de chaque phase
-3. **Commit** (`commit-manager`) apres validation
+3. **Commit** apres validation (direct ou agent selon complexite)
 4. **Security Audit** si auth/API sensible
 5. **Performance Audit** si requetes DB lourdes
 
