@@ -571,8 +571,9 @@ describe('Constants', () => {
 		expect(ALLOWED_IMAGE_TYPES).toContain('image/jpeg');
 		expect(ALLOWED_IMAGE_TYPES).toContain('image/png');
 		expect(ALLOWED_IMAGE_TYPES).toContain('image/gif');
+		expect(ALLOWED_IMAGE_TYPES).toContain('image/webp');
 		expect(ALLOWED_IMAGE_TYPES).toContain('image/svg+xml');
-		expect(ALLOWED_IMAGE_TYPES).toHaveLength(4);
+		expect(ALLOWED_IMAGE_TYPES).toHaveLength(5);
 	});
 
 	it('should have correct bucket name', () => {
