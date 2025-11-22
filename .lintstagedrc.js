@@ -1,11 +1,12 @@
 /** @type {import('lint-staged').Config} */
 export default {
-	// Run type-check once (not per file) when TS/Svelte files are staged
-	'*.{ts,svelte}': () => 'pnpm check:fast',
+	// Lint JS/TS/Svelte files (all at once, not per file)
+	// Type-checking is done in CI (too slow for pre-commit)
+	'*.{js,ts,svelte}': (filenames) => [
+		`eslint --cache --fix ${filenames.join(' ')}`,
+		`prettier --write ${filenames.join(' ')}`
+	],
 
-	// Lint and format JS/TS/Svelte files (runs per file)
-	'*.{js,ts,svelte}': ['eslint --cache --fix', 'prettier --write'],
-
-	// Format other files (runs per file)
-	'*.{json,md,css,html}': 'prettier --write'
+	// Format other files (all at once)
+	'*.{json,md,css,html}': (filenames) => `prettier --write ${filenames.join(' ')}`
 };
