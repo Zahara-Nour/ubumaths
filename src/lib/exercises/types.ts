@@ -623,7 +623,86 @@ export interface ImageNode extends BaseNode {
 	src: string; // URL (relative or absolute)
 	alt?: string; // Alt text for accessibility
 	title?: string; // Optional title
+	// Multi-format sizing support
+	sizeClass?: ImageSizeClass;
+	widthPercent?: number; // 0-100, percentage of text width
+	alignment?: ImageAlignment;
+	caption?: string;
+	originalWidth?: number; // Original image width in pixels
+	originalHeight?: number; // Original image height in pixels
 }
+
+/**
+ * Classes of semantic sizes for images
+ *
+ * Used to define responsive sizing strategies for different contexts.
+ * Each class maps to specific dimensions in HTML, LaTeX, and Typst formats.
+ */
+export type ImageSizeClass = 'inline' | 'small' | 'medium' | 'large' | 'full';
+
+/**
+ * Alignment options for images
+ *
+ * Controls how images are positioned within their container
+ */
+export type ImageAlignment = 'left' | 'center' | 'right';
+
+/**
+ * Mapping of image dimensions by output format
+ *
+ * Defines how a semantic size class translates to actual dimensions
+ * in different output formats (HTML, LaTeX, Typst)
+ */
+export interface ImageSizeMapping {
+	html: {
+		width: string;
+		maxWidth?: string;
+		maxHeight?: string;
+	};
+	latex: string;
+	typst: string;
+}
+
+/**
+ * Default image size mappings by semantic class
+ *
+ * Provides standard dimension mappings for each size class across all formats.
+ * Can be customized per document or exercise as needed.
+ *
+ * @example Using in rendering
+ * ```typescript
+ * const imageNode: ImageNode = { type: 'image', src: 'img.png', sizeClass: 'medium' };
+ * const dimensions = DEFAULT_IMAGE_SIZE_MAPPINGS[imageNode.sizeClass || 'medium'];
+ * // dimensions = { html: { width: '50%', maxWidth: '600px' }, latex: '0.5\\textwidth', typst: '50%' }
+ * ```
+ */
+export const DEFAULT_IMAGE_SIZE_MAPPINGS: Record<ImageSizeClass, ImageSizeMapping> = {
+	inline: {
+		html: { width: '1.5em', maxHeight: '1.5em' },
+		latex: '1em',
+		typst: '1em'
+	},
+	small: {
+		html: { width: '25%', maxWidth: '300px' },
+		latex: '0.25\\textwidth',
+		typst: '25%'
+	},
+	medium: {
+		html: { width: '50%', maxWidth: '600px' },
+		latex: '0.5\\textwidth',
+		typst: '50%'
+	},
+	large: {
+		html: { width: '75%', maxWidth: '900px' },
+		latex: '0.75\\textwidth',
+		typst: '75%'
+	},
+	full: {
+		html: { width: '100%', maxWidth: '1200px' },
+		latex: '\\textwidth',
+		typst: '100%'
+	}
+};
 
 /**
  * Horizontal rule node (---, ***, ___)
