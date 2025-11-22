@@ -11,7 +11,7 @@ Guide essentiel pour Claude Code lors du développement d'UbuMaths.
 Application éducative de mathématiques pour élèves francophones.
 
 **Langue** : UI en français, code/comments en anglais
-**Stack** : Svelte 5 (runes) • TypeScript (strict) • Tailwind CSS 4 • Shadcn-svelte • MathLive • Supabase • Vercel • pnpm
+**Stack** : Svelte 5 (runes) • TypeScript (strict) • Tailwind CSS 4 • Shadcn-svelte • MathLive • Supabase (free tier) • Vercel • pnpm
 
 ---
 
@@ -64,40 +64,6 @@ pnpm release               # Create release (main branch only)
 **Standards** : Maintenir 0 errors obligatoire • Tests requis • Pre-commit hook automatique
 
 **📖 Détails** : [docs/claude/quality-standards.md](docs/claude/quality-standards.md)
-
----
-
-## 🆕 Recent Optimizations (2025-11-12)
-
-**Student Data Access Optimization** - Three major improvements completed:
-
-### Phase 1: Authorization Middleware
-
-- **Created**: `src/lib/server/middleware/student-access.ts`
-- **Functions**: `verifyTeacherStudent()` and `verifyTeacherStudentWithRole()`
-- **Impact**: Eliminated 300+ lines of duplicated code across 9 API endpoints
-- **Security**: Centralized authorization, fail-closed model, 21 unit tests
-- **📖 Guide**: [Authorization Middleware](docs/claude/best-practices.md#authorization-middleware)
-
-### Phase 2: SSR Hydration Strategy
-
-- **Created**: `src/routes/(protected)/dashboard/teacher/+layout.server.ts`
-- **Pattern**: Server-side data fetch + client-side cache hydration
-- **Impact**: 200-400ms faster first page load, zero API calls for cached data
-- **Benefits**: Instant navigation, no loading spinners on dashboard
-- **📖 Guide**: [SSR Hydration Strategy](docs/claude/architecture.md#ssr-hydration-strategy)
-
-### Phase 3: Student Data Helpers
-
-- **Created**: Helper functions in `src/lib/server/students.ts`
-- **Functions**: `getClassStudents()`, `getTeacherClassesWithStudents()`, `getTeacherClassesWithCounts()`
-- **Impact**: ~100 lines reduced, consistent test mode filtering
-- **Benefits**: Single source of truth, type-safe, easy to optimize
-- **📖 Guide**: [Student Data Helpers](docs/claude/database.md#student-data-helpers)
-
-**Total Impact**: 400+ lines of code reduced, improved security, better performance, easier maintenance
-
-**📖 Complete Summary**: [.claude/optimization-summary.md](.claude/optimization-summary.md)
 
 ---
 
@@ -328,29 +294,6 @@ Task tool with subagent_type=frontend-developer
 - Implémenter caching
 - Debug de performance serveur
 
-**❌ NE JAMAIS faire directement**:
-
-```typescript
-// ❌ INTERDIT de créer directement
-// src/routes/api/students/+server.ts
-export async function GET({ request }) {
-	// ...
-}
-```
-
-**✅ TOUJOURS utiliser**:
-
-```typescript
-// ✅ OBLIGATOIRE pour backend
-Task tool with subagent_type=backend-developer
-```
-
-**EXEMPLES**:
-
-- User: "Crée un endpoint pour récupérer les résultats paginés" → backend-developer
-- User: "Cette requête est trop lente" → backend-developer
-- User: "Ajoute une action pour créer des devoirs" → backend-developer
-
 ---
 
 ### 💾 Supabase Expert Agent - `subagent_type=supabase-expert`
@@ -365,27 +308,6 @@ Task tool with subagent_type=backend-developer
 - Troubleshooting database
 - Auditer la sécurité database
 
-**❌ NE JAMAIS faire directement**:
-
-```sql
--- ❌ INTERDIT de créer directement
--- supabase/migrations/20250131000000_add_table.sql
-CREATE TABLE public.new_table (...);
-```
-
-**✅ TOUJOURS utiliser**:
-
-```typescript
-// ✅ OBLIGATOIRE pour database
-Task tool with subagent_type=supabase-expert
-```
-
-**EXEMPLES**:
-
-- User: "Ajoute une table pour suivre la progression" → supabase-expert
-- User: "Révise les RLS policies sur class_members" → supabase-expert
-- Après avoir terminé une feature avec nouvelle table → supabase-expert (proactif)
-
 ---
 
 ### ✅ Code Reviewer Agent - `subagent_type=code-reviewer`
@@ -396,24 +318,6 @@ Task tool with subagent_type=supabase-expert
 - **TOUJOURS** après un bug fix
 - **TOUJOURS** après un refactoring
 - **SANS ATTENDRE** que l'utilisateur le demande
-
-**❌ NE JAMAIS**:
-
-- Envoyer du code sans review
-- Attendre que l'utilisateur demande une review
-
-**✅ TOUJOURS utiliser**:
-
-```typescript
-// ✅ OBLIGATOIRE après code significatif
-Task tool with subagent_type=code-reviewer
-```
-
-**EXEMPLES**:
-
-- Claude: "J'ai implémenté la fonction de validation" → code-reviewer (auto)
-- Claude: "J'ai fixé le bug d'avatar" → code-reviewer (auto)
-- User: "Crée une utility pour valider les téléphones" → implémenter → code-reviewer (auto)
 
 ---
 
@@ -427,12 +331,6 @@ Task tool with subagent_type=code-reviewer
 - Créer des tests E2E
 - Auditer la qualité des tests
 
-**EXEMPLES**:
-
-- User: "J'ai ajouté une fonction de parsing math" → test-automator
-- User: "Le module enrollment a été mis à jour, vérifie" → test-automator
-- Après nouvelle feature → test-automator (proactif)
-
 ---
 
 ### 🔒 Security Auditor Agent - `subagent_type=security-auditor`
@@ -445,12 +343,6 @@ Task tool with subagent_type=code-reviewer
 - **TOUJOURS** après manipulation de données utilisateur
 - **TOUJOURS** après file upload systems
 
-**EXEMPLES**:
-
-- User: "J'ai implémenté Google OAuth login" → security-auditor (auto)
-- User: "Voici les nouveaux endpoints pour les records étudiants" → security-auditor (auto)
-- User: "J'ajoute le package 'axios'" → security-auditor (auto)
-
 ---
 
 ### 🚀 Commit Manager Agent - `subagent_type=commit-manager`
@@ -460,21 +352,6 @@ Task tool with subagent_type=code-reviewer
 - User dit "commit", "ready to commit", "prépare un commit"
 - User demande de bump une version
 - User dit "c'est prêt à être commité"
-
-**❌ NE JAMAIS**:
-
-```bash
-# ❌ INTERDIT de commiter directement
-git add .
-git commit -m "message"
-```
-
-**✅ TOUJOURS utiliser**:
-
-```typescript
-// ✅ OBLIGATOIRE pour commits
-Task tool with subagent_type=commit-manager
-```
 
 ---
 
@@ -486,11 +363,6 @@ Task tool with subagent_type=commit-manager
 - **TOUJOURS** après changement de schéma database
 - **TOUJOURS** après création de middleware
 - User demande explicitement de documenter
-
-**EXEMPLES**:
-
-- User: "J'ai implémenté le tracking de progression" → documentation-writer (auto)
-- User: "J'ai modifié la table class_members" → documentation-writer (auto)
 
 ---
 
@@ -576,50 +448,6 @@ Task tool with subagent_type=commit-manager
    - ⚡ **Performance Audit** (`subagent_type=performance-optimizer`)
      - RECOMMANDÉ pour : nouvelles features avec requêtes DB, opérations lourdes
 
-**EXEMPLE DE PLAN** :
-
-```markdown
-## Plan : Implémenter système de notifications en temps réel
-
-### Phase 1 : Database Schema
-
-- Agent : `supabase-expert`
-- Créer table `notifications` avec RLS policies
-- **→ Code Review** (`code-reviewer`)
-- **→ Security Audit** (`security-auditor`) - RLS policies critiques
-- **→ Commit** (`commit-manager`)
-
-### Phase 2 : API Endpoints
-
-- Agent : `backend-developer`
-- Créer endpoints GET/POST pour notifications
-- **→ Code Review** (`code-reviewer`)
-- **→ Security Audit** (`security-auditor`) - Validation Zod obligatoire
-- **→ Commit** (`commit-manager`)
-
-### Phase 3 : Realtime Integration
-
-- Agent : `backend-developer`
-- Intégrer Supabase Realtime pour notifications live
-- **→ Code Review** (`code-reviewer`)
-- **→ Performance Audit** (`performance-optimizer`) - Vérifier quota Realtime
-- **→ Commit** (`commit-manager`)
-
-### Phase 4 : UI Components
-
-- Agent : `frontend-developer`
-- Créer composant NotificationBell et NotificationList
-- **→ Code Review** (`code-reviewer`)
-- **→ Commit** (`commit-manager`)
-
-### Phase 5 : Tests
-
-- Agent : `test-automator`
-- Tests unitaires pour API et components
-- **→ Code Review** (`code-reviewer`)
-- **→ Commit** (`commit-manager`)
-```
-
 ---
 
 ### ⚙️ Lors de l'Exécution du Plan
@@ -652,24 +480,6 @@ Task tool with subagent_type=commit-manager
    - Erreur persistante après 2 tentatives de correction
    - Erreur complexe nécessitant analyse approfondie
    - Échecs de tests non évidents
-
-**EXEMPLES** :
-
-```typescript
-// ❌ INTERDIT - S'arrêter sur erreur
-Phase 1: Implementation...
-❌ Error: Type mismatch in line 42
-"Il y a une erreur, que voulez-vous faire ?"
-
-// ✅ OBLIGATOIRE - Correction automatique
-Phase 1: Implementation...
-❌ Error: Type mismatch in line 42
-→ Analyzing error...
-→ Root cause: Missing type annotation
-→ Fixing automatically...
-✅ Fixed. Continuing...
-Phase 2: Implementation...
-```
 
 ---
 
