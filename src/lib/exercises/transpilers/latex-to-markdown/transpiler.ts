@@ -58,7 +58,6 @@ import { tableEnvironmentConverters, isTableEnvironment } from './converters/tab
 import {
 	convertUnsupportedCommand,
 	convertUnsupportedEnvironment,
-	isSupportedCommand,
 	isSupportedEnvironment
 } from './converters/fallback';
 
@@ -354,10 +353,10 @@ function convertCommandToken(token: CommandToken, context: ConversionContext): s
 		}
 	}
 
-	// Handle special commands that don't have dedicated converters
-	// but are marked as supported (e.g., \item, \caption, \label)
-	if (isSupportedCommand(name)) {
-		return handleSpecialCommand(token, context);
+	// Try special command handling (returns null if not handled)
+	const specialResult = handleSpecialCommand(token, context);
+	if (specialResult !== null) {
+		return specialResult;
 	}
 
 	// Fallback for unsupported commands
@@ -365,9 +364,11 @@ function convertCommandToken(token: CommandToken, context: ConversionContext): s
 }
 
 /**
- * Handle special commands that are supported but don't have dedicated converters.
+ * Handle special commands that don't have dedicated converters.
+ * Returns null if the command is not handled here (will fall through to unsupported handler).
+ * Returns empty string '' for commands that should be silently ignored.
  */
-function handleSpecialCommand(token: CommandToken, _context: ConversionContext): string {
+function handleSpecialCommand(token: CommandToken, _context: ConversionContext): string | null {
 	const { name, args } = token;
 
 	switch (name) {
@@ -378,6 +379,12 @@ function handleSpecialCommand(token: CommandToken, _context: ConversionContext):
 		case 'clearpage':
 		case 'pagebreak':
 		case 'noindent':
+		// falls through - Vertical spacing commands
+		case 'smallskip':
+		case 'medskip':
+		case 'bigskip':
+		case 'vspace':
+		case 'vfill':
 			return '';
 
 		// Commands that extract content from first argument
@@ -422,7 +429,8 @@ function handleSpecialCommand(token: CommandToken, _context: ConversionContext):
 			return args[0] ? args[0] : '';
 
 		default:
-			return '';
+			// Not handled here - let it fall through to unsupported handler
+			return null;
 	}
 }
 

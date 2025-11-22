@@ -203,20 +203,23 @@ describe('isSupportedCommand', () => {
 			expect(isSupportedCommand('includegraphics')).toBe(true);
 		});
 
-		it('should return true for item', () => {
-			expect(isSupportedCommand('item')).toBe(true);
-		});
-
 		it('should return true for hrule', () => {
 			expect(isSupportedCommand('hrule')).toBe(true);
 		});
 
-		it('should return true for newpage', () => {
-			expect(isSupportedCommand('newpage')).toBe(true);
+		// Note: item, newpage, clearpage, and other commands are now handled
+		// by handleSpecialCommand() in transpiler.ts, so they return false here
+		// but are still properly converted (not treated as unsupported)
+		it('should return false for item (handled by handleSpecialCommand)', () => {
+			expect(isSupportedCommand('item')).toBe(false);
 		});
 
-		it('should return true for clearpage', () => {
-			expect(isSupportedCommand('clearpage')).toBe(true);
+		it('should return false for newpage (handled by handleSpecialCommand)', () => {
+			expect(isSupportedCommand('newpage')).toBe(false);
+		});
+
+		it('should return false for clearpage (handled by handleSpecialCommand)', () => {
+			expect(isSupportedCommand('clearpage')).toBe(false);
 		});
 	});
 
