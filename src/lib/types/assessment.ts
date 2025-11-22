@@ -239,14 +239,20 @@ export interface ClassAssessmentStatistics {
 }
 
 // ===========================================================================
-// HELPER TYPES
+// GRADE TYPES (re-exported from unified system)
 // ===========================================================================
 
+// Import from unified grade system - single source of truth
+export { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
+
+// Backward compatibility alias - prefer GradeCode in new code
+export type { GradeCode as GradeLevel } from '$lib/types/grades';
+
 /**
- * Grade levels
+ * @deprecated Use GRADE_CODES from '$lib/types/grades' instead
+ * Legacy constant for backward compatibility
  */
-export const GRADE_LEVELS = ['6ème', '5ème', '4ème', '3ème'] as const;
-export type GradeLevel = (typeof GRADE_LEVELS)[number];
+export { GRADE_CODES as GRADE_LEVELS } from '$lib/types/grades';
 
 /**
  * Assessment list filters

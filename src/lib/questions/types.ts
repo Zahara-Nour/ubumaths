@@ -33,28 +33,23 @@ export type NumberOrVariable = SharedNumberOrVariable;
 export type Exclusion = SharedExclusion;
 
 // ============================================================================
-// GRADE LEVELS
+// GRADE LEVELS (re-exported from unified system)
 // ============================================================================
+
+// Import from unified grade system - single source of truth
+import { type GradeCode } from '$lib/types/grades';
+export { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
 
 /**
  * French educational grade levels
+ *
+ * Backward compatibility alias - prefer GradeCode in new code.
+ *
+ * NOTE: The old type included 'SPE_1', 'SPE_T', 'STMG' which are now
+ * '1_SPE', 'T_SPE', '1_STMG', 'T_STMG' in the unified system.
+ * See mapLegacyGradeCode() in utils/grades.ts for migration.
  */
-export type GradeLevel =
-	| 'CP'
-	| 'CE1'
-	| 'CE2'
-	| 'CM1'
-	| 'CM2' // École primaire
-	| '6'
-	| '5'
-	| '4'
-	| '3' // Collège
-	| '2' // Seconde
-	| 'SPE_1'
-	| 'SPE_T' // Première/Terminale spécialité
-	| 'T_EXP'
-	| 'T_COMP' // Terminale expert/complémentaire
-	| 'STMG'; // Terminale STMG
+export type GradeLevel = GradeCode;
 
 // ============================================================================
 // QUESTION TYPES

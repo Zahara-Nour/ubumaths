@@ -70,27 +70,15 @@ export const roleWithAllSchema = z.enum(['all', 'student', 'teacher', 'admin']);
  */
 export const difficultySchema = z.union([z.literal(1), z.literal(2), z.literal(3)]);
 
-/**
- * Grade levels in French education system (without accents - canonical format)
- */
-export const gradeSchema = z.enum(['6eme', '5eme', '4eme', '3eme', '2nde', '1ere', 'Terminale']);
+// Re-export grade schemas and utilities from unified system
+export {
+	gradeCodeSchema as gradeSchema,
+	gradeFlexibleSchema,
+	gradeArraySchema,
+	gradeArrayFlexibleSchema
+} from '$lib/server/validation/grades';
 
-/**
- * Format grade string with accents for display
- * Converts '6eme' to '6ème', etc.
- */
-export function formatGradeForDisplay(grade: string): string {
-	const gradeMap: Record<string, string> = {
-		'6eme': '6ème',
-		'5eme': '5ème',
-		'4eme': '4ème',
-		'3eme': '3ème',
-		'2nde': '2nde',
-		'1ere': '1ère',
-		Terminale: 'Terminale'
-	};
-	return gradeMap[grade] || grade;
-}
+export { formatGradeForDisplay } from '$lib/utils/grades';
 
 // ============================================================================
 // VALIDATION HELPER FUNCTION

@@ -18,7 +18,8 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import type { AssessmentSettings } from '$lib/types/assessment';
-	import { GRADE_LEVELS, DEFAULT_ASSESSMENT_SETTINGS } from '$lib/types/assessment';
+	import { DEFAULT_ASSESSMENT_SETTINGS } from '$lib/types/assessment';
+	import { getGradeSelectItemsByLevel } from '$lib/utils/grades';
 
 	interface AssessmentFormData {
 		title: string;
@@ -36,9 +37,12 @@
 
 	let { initialData, onSubmit, onCancel, submitLabel = 'Créer' }: Props = $props();
 
+	// Grade select items (middle school grades for assessments)
+	const gradeItems = getGradeSelectItemsByLevel('middle');
+
 	// Form state
 	let title = $state(initialData?.title || '');
-	let grade = $state(initialData?.grade || '6ème');
+	let grade = $state(initialData?.grade || '6');
 	let description = $state(initialData?.description || '');
 	let maxAttempts = $state<number | null>(
 		initialData?.settings?.max_attempts ?? DEFAULT_ASSESSMENT_SETTINGS.max_attempts
@@ -137,7 +141,7 @@
 		<MySelect
 			type="single"
 			bind:value={grade}
-			items={GRADE_LEVELS.map((level) => ({ value: level, label: level }))}
+			items={gradeItems}
 			placeholder="Sélectionner un niveau"
 			triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between {errors.grade
 				? 'border-red-500'
