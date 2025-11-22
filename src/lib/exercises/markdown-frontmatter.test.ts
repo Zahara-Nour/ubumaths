@@ -105,7 +105,6 @@ tags:
   - algèbre
 title: "Advanced Algebra"
 source: "Algebra Book"
-estimated_time_minutes: 25
 grade_levels:
   - "2"
   - "1"
@@ -124,7 +123,6 @@ Detailed solution
 		const result = parseMarkdownWithFrontmatter(markdown);
 
 		expect(result.success).toBe(true);
-		expect(result.data?.estimated_time_minutes).toBe(25);
 		expect(result.data?.grade_levels).toEqual(['2', '1']);
 		expect(result.data?.topic).toBe('Algèbre avancée');
 	});
@@ -304,7 +302,6 @@ describe('serializeToMarkdown', () => {
 			solution_md: '$x = \\pm 2$',
 			title: 'Équation du second degré',
 			source: 'Livre de maths',
-			estimated_time_minutes: 10,
 			grade_levels: ['3', '2'],
 			topic: 'Algèbre'
 		};
@@ -316,7 +313,6 @@ describe('serializeToMarkdown', () => {
 		expect(markdown).toContain('Équation du second degré');
 		expect(markdown).toContain('source:');
 		expect(markdown).toContain('Livre de maths');
-		expect(markdown).toContain('estimated_time_minutes: 10');
 		expect(markdown).toContain('topic:');
 		expect(markdown).toContain('Algèbre');
 		expect(markdown).toContain('- algèbre');
@@ -364,7 +360,6 @@ describe('round-trip serialization', () => {
 			solution_md: 'Test answer',
 			title: 'Round Trip Test',
 			source: 'Test Source',
-			estimated_time_minutes: 15,
 			grade_levels: ['3'],
 			topic: 'Testing'
 		};
@@ -384,7 +379,6 @@ describe('round-trip serialization', () => {
 		expect(result.data?.solution_md).toBe(original.solution_md);
 		expect(result.data?.title).toBe(original.title);
 		expect(result.data?.source).toBe(original.source);
-		expect(result.data?.estimated_time_minutes).toBe(original.estimated_time_minutes);
 		expect(result.data?.grade_levels).toEqual(original.grade_levels);
 		expect(result.data?.topic).toBe(original.topic);
 	});

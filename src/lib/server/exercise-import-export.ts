@@ -41,7 +41,6 @@ export function exerciseToExport(exercise: Exercise): ExerciseExport {
 		tags: exercise.tags,
 		statement_md: exercise.statement_md,
 		solution_md: exercise.solution_md,
-		estimated_time_minutes: exercise.estimated_time_minutes,
 		grade_levels: exercise.grade_levels,
 		topic: exercise.topic
 	};

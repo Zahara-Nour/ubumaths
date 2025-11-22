@@ -1781,7 +1781,6 @@ export type Database = {
 					created_by: string;
 					difficulty: number;
 					distribution_mode: string;
-					estimated_time_minutes: number | null;
 					grade_levels: string[] | null;
 					id: string;
 					is_public: boolean;
@@ -1799,7 +1798,6 @@ export type Database = {
 					created_by: string;
 					difficulty: number;
 					distribution_mode?: string;
-					estimated_time_minutes?: number | null;
 					grade_levels?: string[] | null;
 					id?: string;
 					is_public?: boolean;
@@ -1817,7 +1815,6 @@ export type Database = {
 					created_by?: string;
 					difficulty?: number;
 					distribution_mode?: string;
-					estimated_time_minutes?: number | null;
 					grade_levels?: string[] | null;
 					id?: string;
 					is_public?: boolean;

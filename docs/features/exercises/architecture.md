@@ -87,7 +87,6 @@ CREATE TABLE exercises (
   tags TEXT[],
   grade_levels TEXT[],
   topic TEXT,
-  estimated_time_minutes INTEGER,
 
   -- Content (markdown with LaTeX)
   statement_md TEXT NOT NULL,

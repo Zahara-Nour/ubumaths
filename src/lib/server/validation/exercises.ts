@@ -56,12 +56,6 @@ export const createExerciseSchema = z.object({
 	topic: z.string().trim().max(100, 'Topic too long').optional(),
 	source: z.string().trim().max(200, 'Source too long').optional(),
 	title: z.string().trim().max(200, 'Title too long').optional(),
-	estimated_time_minutes: z
-		.number()
-		.int('Must be an integer')
-		.positive('Must be positive')
-		.max(300, 'Maximum 300 minutes')
-		.optional(),
 	variables: z.record(z.string(), z.any()).optional(),
 	is_public: z.boolean().default(false).optional()
 });
@@ -359,7 +353,6 @@ export const exerciseResponseSchema = z.object({
 	topic: z.string().nullable().optional(),
 	source: z.string().nullable().optional(),
 	title: z.string().nullable().optional(),
-	estimated_time_minutes: z.number().int().positive().nullable().optional(),
 	variables: z.record(z.string(), z.any()).nullable().optional(),
 	is_public: z.boolean(),
 	created_by: z.string().uuid(),
@@ -429,7 +422,6 @@ export const assignedExerciseSchema = z.object({
 	grade_levels: z.array(z.string()).optional(),
 	topic: z.string().nullable().optional(),
 	title: z.string().nullable().optional(),
-	estimated_time_minutes: z.number().int().positive().nullable().optional(),
 	assignment_id: z.string().uuid().nullable().optional(),
 	optional_deadline: z.string().datetime().nullable().optional(),
 	notes: z.string().nullable().optional(),

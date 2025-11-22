@@ -145,7 +145,6 @@ List all exercises accessible by the current user.
 			],
 			"distribution_mode": "per_student",
 			"is_public": false,
-			"estimated_time_minutes": 15,
 			"created_at": "2024-01-15T10:00:00Z",
 			"updated_at": "2024-01-16T14:30:00Z",
 			"created_by": "teacher-uuid-456"
@@ -204,8 +203,7 @@ Create a new exercise.
 		{ "name": "b", "expression": "{{1-20}}" }
 	],
 	"distribution_mode": "on_demand",
-	"is_public": false,
-	"estimated_time_minutes": 5
+	"is_public": false
 }
 ```
 

@@ -148,10 +148,6 @@
 					<div class="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
 						<span>Difficulté: {data.exercise.difficulty}/3</span>
 
-						{#if data.exercise.estimated_time_minutes}
-							<span>Temps estimé: ~{data.exercise.estimated_time_minutes} min</span>
-						{/if}
-
 						{#if data.exercise.grade_levels && data.exercise.grade_levels.length > 0}
 							<span>Niveaux: {data.exercise.grade_levels.join(', ')}</span>
 						{/if}

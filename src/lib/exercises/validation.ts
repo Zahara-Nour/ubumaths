@@ -104,7 +104,6 @@ export const exerciseExportSchema = z.object({
 	solution_md: z.string().trim().min(1, 'Exercise solution cannot be empty'),
 
 	// Additional metadata
-	estimated_time_minutes: z.number().int().positive().optional(),
 	grade_levels: gradeLevelsSchema,
 	topic: z.string().trim().optional()
 });
@@ -129,7 +128,6 @@ export const exerciseFrontmatterSchema = z.object({
 	source: z.string().trim().optional(),
 	difficulty: difficultySchema,
 	tags: tagsSchema,
-	estimated_time_minutes: z.number().int().positive().optional(),
 	grade_levels: gradeLevelsSchema,
 	topic: z.string().trim().optional()
 });

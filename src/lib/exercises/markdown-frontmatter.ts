@@ -101,7 +101,6 @@ export function parseMarkdownWithFrontmatter(content: string): {
 			tags: frontmatterValidation.data!.tags,
 			statement_md: statement!,
 			solution_md: solution!,
-			estimated_time_minutes: frontmatterValidation.data!.estimated_time_minutes,
 			grade_levels: frontmatterValidation.data!.grade_levels,
 			topic: frontmatterValidation.data!.topic
 		};
@@ -176,7 +175,6 @@ export function serializeToMarkdown(exercise: ExerciseExport): string {
 		source: exercise.source,
 		difficulty: exercise.difficulty,
 		tags: exercise.tags,
-		estimated_time_minutes: exercise.estimated_time_minutes,
 		grade_levels: exercise.grade_levels,
 		topic: exercise.topic
 	};
