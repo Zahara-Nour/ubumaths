@@ -1,0 +1,307 @@
+<script lang="ts">
+	import { goto } from '$app/navigation';
+	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
+	import { Textarea } from '$lib/components/ui/textarea';
+	import { Label } from '$lib/components/ui/label';
+	import * as Card from '$lib/components/ui/card';
+	import * as Collapsible from '$lib/components/ui/collapsible';
+	import MySelect from '$lib/components/MySelect.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
+	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
+	import { toaster } from '$lib/stores/toaster.svelte';
+	import { ArrowLeft, ChevronDown, ChevronUp, Loader2, Save } from 'lucide-svelte';
+	import type { PageData } from './$types';
+	import type {
+		WorksheetType,
+		WorksheetConfig,
+		NumberingStyle,
+		WorksheetWithRelations
+	} from '$lib/types/worksheets';
+	import type { GradeCode } from '$lib/types/grades';
+
+	let { data }: { data: PageData } = $props();
+
+	// Get worksheet from data
+	let worksheetData = $derived(data.worksheet as WorksheetWithRelations);
+
+	// Form state - initialized from worksheet data
+	let title = $state(worksheetData.title || '');
+	let description = $state(worksheetData.description || '');
+	let worksheetType = $state<WorksheetType>(worksheetData.type);
+	let estimatedDuration = $state<number | null>(worksheetData.estimated_duration_minutes);
+	let selectedGrades = $state<GradeCode[]>(
+		(worksheetData.grade_levels || []).map((g) => String(g) as GradeCode)
+	);
+	let selectedTags = $state<string[]>(worksheetData.tags || []);
+
+	// Config options - initialized from worksheet config
+	let existingConfig = $derived(worksheetData.config || {});
+	let configOpen = $state(false);
+	let showTitle = $state(existingConfig.show_title ?? true);
+	let showDate = $state(existingConfig.show_date ?? true);
+	let showStudentName = $state(existingConfig.show_student_name ?? true);
+	let showClass = $state(existingConfig.show_class ?? true);
+	let showPoints = $state(existingConfig.show_points ?? true);
+	let numberingStyle = $state<NumberingStyle>(existingConfig.numbering_style ?? 'numeric');
+	let shuffleExercises = $state(existingConfig.shuffle_exercises ?? false);
+	let shuffleWithinSections = $state(existingConfig.shuffle_within_sections ?? false);
+	let pageLayout = $state<'A4' | 'Letter'>(existingConfig.page_layout ?? 'A4');
+
+	// Loading state
+	let submitting = $state(false);
+
+	// Type options
+	const typeOptions = [
+		{ value: 'worksheet', label: "Feuille d'exercices" },
+		{ value: 'assessment', label: 'Evaluation' },
+		{ value: 'exam', label: 'Examen' },
+		{ value: 'quiz', label: 'Quiz' },
+		{ value: 'homework', label: 'Devoirs' }
+	];
+
+	// Numbering style options
+	const numberingOptions = [
+		{ value: 'numeric', label: '1, 2, 3...' },
+		{ value: 'alphabetic', label: 'A, B, C...' },
+		{ value: 'roman', label: 'I, II, III...' }
+	];
+
+	// Page layout options
+	const layoutOptions = [
+		{ value: 'A4', label: 'A4' },
+		{ value: 'Letter', label: 'Letter' }
+	];
+
+	// Derived: build config object
+	let config = $derived<WorksheetConfig>({
+		show_title: showTitle,
+		show_date: showDate,
+		show_student_name: showStudentName,
+		show_class: showClass,
+		show_points: showPoints,
+		numbering_style: numberingStyle,
+		shuffle_exercises: shuffleExercises,
+		shuffle_within_sections: shuffleWithinSections,
+		page_layout: pageLayout
+	});
+
+	// Derived: form is valid
+	let isValid = $derived(title.trim().length > 0);
+
+	/**
+	 * Handle form submission
+	 */
+	async function handleSubmit() {
+		if (!isValid || submitting) return;
+
+		submitting = true;
+
+		try {
+			const updateData = {
+				title: title.trim(),
+				description: description.trim() || null,
+				type: worksheetType,
+				config,
+				estimated_duration_minutes: estimatedDuration,
+				grade_levels: selectedGrades.map((g) => parseInt(g, 10) || g),
+				tags: selectedTags
+			};
+
+			const response = await fetch(`/api/worksheets/${worksheetData.id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(updateData)
+			});
+
+			if (!response.ok) {
+				const error = await response.json().catch(() => ({ message: 'Erreur inconnue' }));
+				throw new Error(error.message || 'Erreur lors de la mise a jour');
+			}
+
+			toaster.success('Feuille mise a jour avec succes');
+			goto(`/dashboard/teacher/worksheets/${worksheetData.id}`);
+		} catch (error) {
+			console.error('Error updating worksheet:', error);
+			toaster.error(
+				error instanceof Error ? error.message : 'Erreur lors de la mise a jour de la feuille'
+			);
+		} finally {
+			submitting = false;
+		}
+	}
+</script>
+
+<svelte:head>
+	<title>Modifier - {worksheetData.title || 'Feuille'} - UbuMaths</title>
+</svelte:head>
+
+<div class="container mx-auto max-w-3xl py-6">
+	<!-- Header -->
+	<div class="mb-6 flex items-center gap-4">
+		<Button variant="ghost" size="icon" href="/dashboard/teacher/worksheets/{worksheetData.id}">
+			<ArrowLeft class="h-5 w-5" />
+		</Button>
+		<div>
+			<h1 class="text-3xl font-bold">Modifier la feuille</h1>
+			<p class="text-muted-foreground">Modifiez les informations de la feuille d'exercices</p>
+		</div>
+	</div>
+
+	<!-- Form -->
+	<form
+		onsubmit={(e) => {
+			e.preventDefault();
+			handleSubmit();
+		}}
+		class="space-y-6"
+	>
+		<!-- Basic info card -->
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Informations generales</Card.Title>
+			</Card.Header>
+			<Card.Content class="space-y-4">
+				<!-- Title -->
+				<div class="space-y-2">
+					<Label for="title">Titre *</Label>
+					<Input
+						id="title"
+						type="text"
+						placeholder="Ex: Equations du premier degre"
+						bind:value={title}
+						required
+					/>
+				</div>
+
+				<!-- Description -->
+				<div class="space-y-2">
+					<Label for="description">Description</Label>
+					<Textarea
+						id="description"
+						placeholder="Description de la feuille d'exercices..."
+						bind:value={description}
+						rows={3}
+					/>
+				</div>
+
+				<!-- Type and Duration row -->
+				<div class="grid gap-4 md:grid-cols-2">
+					<!-- Type -->
+					<div class="space-y-2">
+						<Label>Type</Label>
+						<MySelect items={typeOptions} bind:value={worksheetType} />
+					</div>
+
+					<!-- Estimated duration -->
+					<div class="space-y-2">
+						<Label for="duration">Duree estimee (minutes)</Label>
+						<Input
+							id="duration"
+							type="number"
+							placeholder="Ex: 45"
+							min={1}
+							max={300}
+							bind:value={estimatedDuration}
+						/>
+					</div>
+				</div>
+
+				<!-- Grade levels -->
+				<div class="space-y-2">
+					<Label>Niveaux scolaires</Label>
+					<GradeBadgeSelector bind:value={selectedGrades} placeholder="Selectionner les niveaux" />
+				</div>
+
+				<!-- Tags -->
+				<div class="space-y-2">
+					<Label>Tags</Label>
+					<TagBadgeSelector bind:value={selectedTags} placeholder="Ajouter des tags" />
+				</div>
+			</Card.Content>
+		</Card.Root>
+
+		<!-- Config options (collapsible) -->
+		<Card.Root>
+			<Collapsible.Root bind:open={configOpen}>
+				<Card.Header class="cursor-pointer" onclick={() => (configOpen = !configOpen)}>
+					<div class="flex items-center justify-between">
+						<Card.Title>Options d'affichage</Card.Title>
+						<Collapsible.Trigger asChild>
+							<Button variant="ghost" size="icon" class="h-8 w-8">
+								{#if configOpen}
+									<ChevronUp class="h-4 w-4" />
+								{:else}
+									<ChevronDown class="h-4 w-4" />
+								{/if}
+							</Button>
+						</Collapsible.Trigger>
+					</div>
+					<Card.Description>
+						Configurez l'apparence et le comportement de la feuille
+					</Card.Description>
+				</Card.Header>
+				<Collapsible.Content>
+					<Card.Content class="space-y-6 border-t pt-6">
+						<!-- Display options -->
+						<div class="space-y-4">
+							<h4 class="text-sm font-medium">Elements affiches</h4>
+							<div class="grid gap-4 sm:grid-cols-2">
+								<MyCheckbox bind:checked={showTitle} label="Afficher le titre" />
+								<MyCheckbox bind:checked={showDate} label="Afficher la date" />
+								<MyCheckbox bind:checked={showStudentName} label="Nom de l'eleve" />
+								<MyCheckbox bind:checked={showClass} label="Classe" />
+								<MyCheckbox bind:checked={showPoints} label="Points par exercice" />
+							</div>
+						</div>
+
+						<!-- Numbering and layout -->
+						<div class="grid gap-4 sm:grid-cols-2">
+							<div class="space-y-2">
+								<Label>Numerotation</Label>
+								<MySelect items={numberingOptions} bind:value={numberingStyle} />
+							</div>
+							<div class="space-y-2">
+								<Label>Format de page</Label>
+								<MySelect items={layoutOptions} bind:value={pageLayout} />
+							</div>
+						</div>
+
+						<!-- Shuffle options -->
+						<div class="space-y-4">
+							<h4 class="text-sm font-medium">Options de melange</h4>
+							<div class="grid gap-4 sm:grid-cols-2">
+								<MyCheckbox bind:checked={shuffleExercises} label="Melanger les exercices" />
+								<MyCheckbox
+									bind:checked={shuffleWithinSections}
+									label="Melanger dans les sections"
+								/>
+							</div>
+						</div>
+					</Card.Content>
+				</Collapsible.Content>
+			</Collapsible.Root>
+		</Card.Root>
+
+		<!-- Actions -->
+		<div class="flex justify-end gap-3">
+			<Button
+				variant="outline"
+				href="/dashboard/teacher/worksheets/{worksheetData.id}"
+				disabled={submitting}
+			>
+				Annuler
+			</Button>
+			<Button type="submit" disabled={!isValid || submitting}>
+				{#if submitting}
+					<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+					Enregistrement...
+				{:else}
+					<Save class="mr-2 h-4 w-4" />
+					Enregistrer
+				{/if}
+			</Button>
+		</div>
+	</form>
+</div>
