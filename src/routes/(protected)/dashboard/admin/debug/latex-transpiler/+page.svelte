@@ -455,15 +455,33 @@ Soit $f(x) = x^2 + 2x + 1$.
 	/* Math inline styling */
 	:global(.inline-math) {
 		display: inline-block;
-		vertical-align: middle;
-		margin: 0 2px;
+		vertical-align: baseline;
+		margin: 0 -2px; /* Compensate for MathLive's internal 2px padding */
 		font-size: inherit;
+		line-height: 1;
 	}
 
-	/* Math field read-only styling */
+	/* Math field read-only styling - minimize internal padding */
 	:global(math-field[read-only]) {
 		border: none;
 		background: transparent;
 		cursor: default;
+		padding: 0;
+		--_padding-vertical: 0;
+		--_padding-horizontal: 0;
+	}
+
+	/* Target MathLive internal elements */
+	:global(math-field[read-only]::part(container)) {
+		padding: 0 !important;
+		margin: 0 !important;
+	}
+
+	:global(math-field[read-only] .ML__container) {
+		padding: 0 !important;
+	}
+
+	:global(math-field[read-only] .ML__base) {
+		padding: 0 !important;
 	}
 </style>

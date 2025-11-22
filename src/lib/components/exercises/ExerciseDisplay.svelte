@@ -237,29 +237,61 @@
 	}
 
 	/**
-	 * Render inline nodes
+	 * Render inline nodes with intelligent whitespace preservation.
+	 *
+	 * Problem: `display: inline-block` on math-field elements causes adjacent
+	 * whitespace to collapse. Solution: Convert spaces adjacent to math-inline
+	 * elements to non-breaking spaces (&nbsp;) to preserve them.
+	 *
+	 * We use &nbsp; rather than word-joiner (U+2060) because:
+	 * - &nbsp; is universally supported and well-understood
+	 * - Line breaks right before/after math expressions are rarely desirable
+	 * - It reliably prevents whitespace collapse in all browsers
 	 */
 	function renderInlineChildren(children: InlineNode[]): string {
-		return children.map((child) => renderInline(child)).join('');
+		return children
+			.map((child, index) => {
+				// For non-text nodes, render normally
+				if (child.type !== 'text') {
+					return renderInline(child);
+				}
+
+				const prevNode = children[index - 1];
+				const nextNode = children[index + 1];
+				const prevIsMath = prevNode?.type === 'math-inline';
+				const nextIsMath = nextNode?.type === 'math-inline';
+
+				// Get the raw content before escaping to check for spaces
+				const rawContent = child.content;
+				let html = escapeHtml(rawContent);
+
+				// Preserve leading space after math-inline (use en-space for better visibility)
+				if (prevIsMath && rawContent.startsWith(' ')) {
+					html = '&ensp;' + html.slice(1);
+				}
+
+				// Preserve trailing space before math-inline (use en-space for better visibility)
+				if (nextIsMath && rawContent.endsWith(' ')) {
+					html = html.slice(0, -1) + '&ensp;';
+				}
+
+				// Apply formatting after space preservation
+				if (child.bold) html = `<strong>${html}</strong>`;
+				if (child.italic) html = `<em>${html}</em>`;
+				if (child.code)
+					html = `<code class="rounded bg-muted px-1 py-0.5 text-sm text-foreground">${html}</code>`;
+
+				return html;
+			})
+			.join('');
 	}
 
 	/**
-	 * Render an inline node
+	 * Render a non-text inline node.
+	 * Note: Text nodes are handled directly in renderInlineChildren for whitespace preservation.
 	 */
 	function renderInline(node: InlineNode): string {
 		switch (node.type) {
-			case 'text': {
-				let text = escapeHtml(node.content);
-
-				// Apply formatting
-				if (node.bold) text = `<strong>${text}</strong>`;
-				if (node.italic) text = `<em>${text}</em>`;
-				if (node.code)
-					text = `<code class="rounded bg-muted px-1 py-0.5 text-sm text-foreground">${text}</code>`;
-
-				return text;
-			}
-
 			case 'math-inline':
 				return `<math-field read-only class="inline-math">${node.latex}</math-field>`;
 
@@ -502,16 +534,40 @@
 	/* Math inline styling */
 	:global(.inline-math) {
 		display: inline-block;
-		vertical-align: middle;
-		margin: 0 2px;
+		vertical-align: baseline; /* Better text alignment than middle */
+		margin: 0; /*  margin: 0 -2px; Compensate for MathLive's internal 2px padding */
 		font-size: inherit;
+		line-height: 1; /* Reduce vertical spacing */
 	}
 
-	/* Math field read-only styling */
+	/* Math field read-only styling - minimize internal padding */
 	:global(math-field[read-only]) {
 		border: none;
 		background: transparent;
 		cursor: default;
+		padding: 0;
+		/* MathLive CSS custom properties to reduce internal spacing */
+		--_padding-vertical: 0;
+		--_padding-horizontal: 0;
+	}
+
+	/* Target MathLive's internal container via ::part() if exposed */
+	:global(math-field[read-only]::part(container)) {
+		padding: 0 !important;
+		margin: 0 !important;
+	}
+
+	/* Target internal MathLive elements */
+	:global(math-field[read-only] .ML__container) {
+		padding: 0 !important;
+	}
+
+	:global(math-field[read-only] .ML__content) {
+		padding: 0 !important;
+	}
+
+	:global(math-field[read-only] .ML__base) {
+		padding: 0 !important;
 	}
 
 	/* Prose styling adjustments */
