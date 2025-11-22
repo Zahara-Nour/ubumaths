@@ -140,6 +140,7 @@ Uses MySelect (custom select component) for grade selection with proper Label co
    - MySelect needs to accept and pass through `id` prop
 
 2. **Error Message Association** (line 150-152):
+
    ```svelte
    {#if errors.grade}
    	<p class="text-sm text-red-500">{errors.grade}</p>
@@ -282,6 +283,7 @@ Uses GradeMultiSelect in filter row with Label component nearby but not associat
 **4. IMPORTANT: Difficulty Level Range Inputs**
 
 - **Issue** (line 579-593):
+
   ```svelte
   <Label class="text-sm font-medium">Niveau de difficulté</Label>
   <div class="flex gap-2">
