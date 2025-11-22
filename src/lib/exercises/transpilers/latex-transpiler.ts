@@ -32,6 +32,7 @@ import type {
 	CodeBlockNode,
 	LatexTranspilerOptions
 } from '../types';
+import { getDimensionsForFormat, getAlignmentStyles } from '../services/image-dimensions';
 
 // ============================================================================
 // DEFAULT OPTIONS
@@ -381,27 +382,139 @@ function transpileMathBlock(node: MathBlockNode): string {
 // ============================================================================
 
 /**
- * Transpile image node
+ * Transpile image node with full multi-format sizing support
  *
- * Uses \includegraphics with path resolution.
+ * Supports:
+ * - sizeClass: Semantic sizes (inline, small, medium, large, full)
+ * - widthPercent: Explicit percentage width (0-100)
+ * - alignment: left, center, right positioning
+ * - caption: Wraps in figure environment with \caption{}
  *
- * @param node - Image node
+ * Output formats:
+ * - Inline image: \includegraphics[height=1em]{path}
+ * - Block without caption: {\centering\includegraphics[width=...]{path}\par}
+ * - Block with caption: \begin{figure}...\caption{...}\end{figure}
+ *
+ * @param node - Image node with optional sizing attributes
  * @param options - Transpiler options
- * @returns LaTeX includegraphics command
+ * @returns LaTeX includegraphics command with proper formatting
+ *
+ * @example Basic image
+ * ```typescript
+ * transpileImage({ type: 'image', src: 'fig.png' }, options);
+ * // {\centering\includegraphics[width=0.5\textwidth]{fig.png}\par}
+ * ```
+ *
+ * @example Image with caption
+ * ```typescript
+ * transpileImage({ type: 'image', src: 'fig.png', caption: 'Figure 1' }, options);
+ * // \begin{figure}[htbp]\centering\includegraphics[width=0.5\textwidth]{fig.png}\caption{Figure 1}\end{figure}
+ * ```
+ *
+ * @example Inline image
+ * ```typescript
+ * transpileImage({ type: 'image', src: 'icon.png', sizeClass: 'inline' }, options);
+ * // \includegraphics[height=1em]{icon.png}
+ * ```
  */
 function transpileImage(node: ImageNode, options: Required<LatexTranspilerOptions>): string {
 	const imagePath = resolveImagePath(node.src, options.imageBasePath);
+	const isInline = node.sizeClass === 'inline';
 
-	let latex = `\\begin{center}\n`;
-	latex += `\\includegraphics[width=0.8\\textwidth]{${imagePath}}\n`;
+	// Get dimensions from the service
+	const dimensions = getDimensionsForFormat(node, 'latex');
 
-	if (node.alt) {
-		latex += `\\\\[0.5em]\n{\\small ${escapeLatex(node.alt)}}\n`;
+	// Build includegraphics options
+	const graphicsOptions = buildGraphicsOptions(node, dimensions, isInline);
+
+	// Build the includegraphics command
+	const includegraphics = `\\includegraphics[${graphicsOptions}]{${imagePath}}`;
+
+	// Inline images: just return the command
+	if (isInline) {
+		return includegraphics;
 	}
 
-	latex += `\\end{center}`;
+	// Images with caption: use figure environment
+	if (node.caption) {
+		return buildFigureEnvironment(node, includegraphics);
+	}
 
-	return latex;
+	// Block images without caption: use alignment group
+	return buildAlignedImage(node, includegraphics);
+}
+
+/**
+ * Build the options string for \includegraphics
+ *
+ * @param node - Image node for aspect ratio checks
+ * @param dimensions - Computed dimensions from service
+ * @param isInline - Whether this is an inline image
+ * @returns Options string like "width=0.5\textwidth" or "height=1em"
+ */
+function buildGraphicsOptions(
+	node: ImageNode,
+	dimensions: { width: string; height?: string },
+	isInline: boolean
+): string {
+	const opts: string[] = [];
+
+	if (isInline) {
+		// Inline images use height to match text
+		opts.push('height=1em');
+	} else {
+		// Block images use width
+		opts.push(`width=${dimensions.width}`);
+
+		// Handle extreme aspect ratios to prevent overflow
+		if (node.originalWidth && node.originalHeight) {
+			const aspectRatio = node.originalWidth / node.originalHeight;
+
+			// Very wide images (panoramic, >3:1): add max height to prevent tiny images
+			if (aspectRatio > 3) {
+				opts.push('keepaspectratio');
+				opts.push('max height=0.3\\textheight');
+			}
+			// Very tall images (<1:3): add max width constraint
+			else if (aspectRatio < 0.33) {
+				opts.push('keepaspectratio');
+				opts.push('max width=0.5\\textwidth');
+			}
+		}
+	}
+
+	return opts.join(',');
+}
+
+/**
+ * Build a figure environment with caption
+ *
+ * @param node - Image node with caption
+ * @param includegraphics - The \includegraphics command
+ * @returns Complete figure environment
+ */
+function buildFigureEnvironment(node: ImageNode, includegraphics: string): string {
+	const alignment = getAlignmentStyles(node.alignment, 'latex');
+	const caption = node.caption ? `\n\\caption{${escapeLatex(node.caption)}}` : '';
+
+	return `\\begin{figure}[htbp]
+${alignment}
+${includegraphics}${caption}
+\\end{figure}`;
+}
+
+/**
+ * Build an aligned image block without figure environment
+ *
+ * Uses a group with alignment command and \par for proper spacing.
+ *
+ * @param node - Image node
+ * @param includegraphics - The \includegraphics command
+ * @returns Aligned image block
+ */
+function buildAlignedImage(node: ImageNode, includegraphics: string): string {
+	const alignment = getAlignmentStyles(node.alignment, 'latex');
+	return `{${alignment}${includegraphics}\\par}`;
 }
 
 // ============================================================================
