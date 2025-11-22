@@ -6,6 +6,7 @@
 	import ExerciseMarkdownEditor from './ExerciseMarkdownEditor.svelte';
 	import LaTeXImportDialog from './LaTeXImportDialog.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
+	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { Database } from '$lib/types/database';
 	import type { SupabaseClient } from '@supabase/supabase-js';
@@ -29,7 +30,7 @@
 	let title = $state(exercise?.title || '');
 	let source = $state(exercise?.source || '');
 	let difficulty = $state<1 | 2 | 3>((exercise?.difficulty as 1 | 2 | 3) || 2);
-	let tags = $state<string>(exercise?.tags?.join(', ') || '');
+	let tags = $state<string[]>(exercise?.tags || []);
 	let topic = $state(exercise?.topic || '');
 	let gradeLevels = $state<GradeCode[]>((exercise?.grade_levels as GradeCode[]) || []);
 	let statementMd = $state(exercise?.statement_md || '');
@@ -76,10 +77,7 @@
 			title: title.trim() || null,
 			source: source.trim() || null,
 			difficulty,
-			tags: tags
-				.split(',')
-				.map((t) => t.trim())
-				.filter(Boolean),
+			tags,
 			topic: topic.trim() || null,
 			grade_levels: gradeLevels,
 			statement_md: statementMd,
@@ -225,14 +223,8 @@
 			<!-- Tags & Grade Levels -->
 			<div class="grid gap-4 md:grid-cols-2">
 				<div class="space-y-2">
-					<Label for="tags">Tags</Label>
-					<Input
-						id="tags"
-						type="text"
-						placeholder="Ex: équations, algèbre, premier degré"
-						bind:value={tags}
-					/>
-					<p class="text-xs text-muted-foreground">Séparez les tags par des virgules</p>
+					<Label>Tags</Label>
+					<TagBadgeSelector bind:value={tags} placeholder="Ajouter des tags" maxSelections={20} />
 				</div>
 
 				<div class="space-y-2">
