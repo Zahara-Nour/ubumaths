@@ -48,13 +48,6 @@
 		"openapi:generate": "npx tsx scripts/generate-openapi.ts",
 		"migrate:sanitize": "tsx scripts/sanitize-existing-notifications.ts"
 	},
-	"lint-staged": {
-		"*.{js,ts,svelte}": [
-			"eslint --cache --fix",
-			"prettier --write"
-		],
-		"*.{json,md,css,html}": "prettier --write"
-	},
 	"devDependencies": {
 		"@asteasolutions/zod-to-openapi": "^8.1.0",
 		"@commitlint/cli": "^20.1.0",
