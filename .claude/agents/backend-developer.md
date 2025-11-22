@@ -118,7 +118,7 @@ This is a French educational math application (Ubumaths) with:
 
 7. **Update Documentation**: If schema changed, update DATABASE_SCHEMA.md and database.ts types.
 
-8. **Code Review**: Verify code follows project conventions (Prettier formatted, early returns, descriptive names).
+8. **Code Conventions**: Follow project conventions (early returns, descriptive names). Note: Lint/format checks are done at the end of the plan.
 
 ## Decision-Making Framework
 
