@@ -9,7 +9,7 @@
 | 3     | Parser markdown enrichi          | ✅ Complète      | 2025-11-22      |
 | 4     | HTML Renderer                    | ✅ Complète      | 2025-11-22      |
 | 5     | LaTeX Transpiler                 | ✅ Complète      | 2025-11-22      |
-| 6     | Typst Transpiler                 | ⏳ Non commencée | -               |
+| 6     | Typst Transpiler                 | ✅ Complète      | 2025-11-22      |
 | 7     | System d'upload d'images         | ⏳ Non commencée | -               |
 | 8     | Interface utilisateur enseignant | ⏳ Non commencée | -               |
 | 9     | Tests E2E                        | ⏳ Non commencée | -               |
