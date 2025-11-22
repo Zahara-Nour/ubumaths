@@ -46,6 +46,7 @@
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import GradeMultiSelect from '$lib/components/GradeMultiSelect.svelte';
 	import QuestionTemplateCard from '$lib/components/QuestionTemplateCard.svelte';
+	import { getGradeSelectItems } from '$lib/utils/grades';
 	import {
 		Plus,
 		Eye,
@@ -108,21 +109,8 @@
 		{ value: 'multiple_choice', label: 'QCM' }
 	];
 
-	// Grade levels for filter
-	const gradeLevels: { value: string; label: string }[] = [
-		{ value: 'CP', label: 'CP' },
-		{ value: 'CE1', label: 'CE1' },
-		{ value: 'CE2', label: 'CE2' },
-		{ value: 'CM1', label: 'CM1' },
-		{ value: 'CM2', label: 'CM2' },
-		{ value: '6', label: '6ème' },
-		{ value: '5', label: '5ème' },
-		{ value: '4', label: '4ème' },
-		{ value: '3', label: '3ème' },
-		{ value: '2', label: '2nde' },
-		{ value: 'SPE_1', label: '1ère Spé' },
-		{ value: 'SPE_T', label: 'Tale Spé' }
-	];
+	// Grade levels for filter - uses unified grades system
+	const gradeLevels = getGradeSelectItems();
 
 	// Sort field options
 	const sortFields = [

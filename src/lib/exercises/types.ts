@@ -252,7 +252,7 @@ export interface Exercise {
 	/** Estimated completion time in minutes */
 	estimated_time_minutes?: number;
 
-	/** Applicable grade levels (e.g., ['3', '2', 'SPE_1']) */
+	/** Applicable grade levels (e.g., ['3', '2', '1_SPE']) - uses GradeCode from unified system */
 	grade_levels?: string[];
 
 	/** Topic category (e.g., 'Algèbre', 'Géométrie') */

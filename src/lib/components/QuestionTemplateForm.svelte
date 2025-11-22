@@ -30,6 +30,7 @@
 		GradeLevel,
 		PrecisionType
 	} from '$lib/questions/types';
+	import { GRADE_CODES, GRADES } from '$lib/types/grades';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -240,24 +241,8 @@
 	// Current variation index for editing
 	let currentVariationIndex = $state(0);
 
-	// Available grade levels
-	const GRADE_LEVELS: GradeLevel[] = [
-		'CP',
-		'CE1',
-		'CE2',
-		'CM1',
-		'CM2',
-		'6',
-		'5',
-		'4',
-		'3',
-		'2',
-		'SPE_1',
-		'SPE_T',
-		'T_EXP',
-		'T_COMP',
-		'STMG'
-	];
+	// Available grade levels - use GRADE_CODES from unified system
+	// GRADE_CODES is already imported from '$lib/types/grades'
 
 	// Question type options
 	const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
@@ -673,14 +658,14 @@
 	<div class="space-y-2">
 		<Label>Niveaux scolaires<span class="text-destructive">*</span></Label>
 		<div class="flex flex-wrap gap-2">
-			{#each GRADE_LEVELS as grade (grade)}
+			{#each GRADE_CODES as grade (grade)}
 				<Badge
 					class={grades.includes(grade)
 						? 'cursor-pointer bg-primary text-primary-foreground hover:bg-primary/80'
 						: 'cursor-pointer bg-muted text-muted-foreground hover:bg-muted/80'}
 					onclick={() => toggleGrade(grade)}
 				>
-					{grade}
+					{GRADES[grade].displayName}
 				</Badge>
 			{/each}
 		</div>

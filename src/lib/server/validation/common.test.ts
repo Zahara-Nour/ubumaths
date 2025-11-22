@@ -178,8 +178,28 @@ describe('common validation schemas', () => {
 	});
 
 	describe('gradeSchema', () => {
-		it('should accept valid French grade levels', () => {
-			const validGrades = ['6eme', '5eme', '4eme', '3eme', '2nde', '1ere', 'Terminale'];
+		it('should accept valid French grade levels (GradeCodes)', () => {
+			// gradeSchema is now gradeCodeSchema from unified grades system
+			const validGrades = [
+				'CP',
+				'CE1',
+				'CE2',
+				'CM1',
+				'CM2',
+				'6',
+				'5',
+				'4',
+				'3',
+				'2',
+				'1_GEN',
+				'T_GEN',
+				'1_SPE',
+				'T_SPE',
+				'T_EXP',
+				'T_COMP',
+				'1_STMG',
+				'T_STMG'
+			];
 			validGrades.forEach((grade) => {
 				const result = gradeSchema.safeParse(grade);
 				expect(result.success).toBe(true);
@@ -190,16 +210,17 @@ describe('common validation schemas', () => {
 		});
 
 		it('should reject invalid grade levels', () => {
-			const invalidGrades = ['6th', 'CE2', 'Terminal', '6ème', '', null];
+			const invalidGrades = ['6th', 'Terminal', '6ème', '6eme', '', null, 'invalid'];
 			invalidGrades.forEach((grade) => {
 				const result = gradeSchema.safeParse(grade);
 				expect(result.success).toBe(false);
 			});
 		});
 
-		it('should reject accented grade levels (canonical format uses no accents)', () => {
-			const accentedGrades = ['6ème', '5ème', '4ème', '3ème', '1ère'];
-			accentedGrades.forEach((grade) => {
+		it('should reject old legacy grade names', () => {
+			// Old names were replaced in unified system
+			const legacyGrades = ['SPE_1', 'SPE_T', 'STMG'];
+			legacyGrades.forEach((grade) => {
 				const result = gradeSchema.safeParse(grade);
 				expect(result.success).toBe(false);
 			});
@@ -254,32 +275,39 @@ describe('common validation schemas', () => {
 	});
 
 	describe('formatGradeForDisplay', () => {
-		it('should convert grades to display format with accents', () => {
-			const gradeMap = {
-				'6eme': '6ème',
-				'5eme': '5ème',
-				'4eme': '4ème',
-				'3eme': '3ème',
-				'2nde': '2nde',
-				'1ere': '1ère',
-				Terminale: 'Terminale'
+		it('should convert GradeCodes to display format with accents', () => {
+			// formatGradeForDisplay is now from unified grades utils
+			// It takes GradeCode and returns displayName from GRADES
+			const gradeMap: Record<string, string> = {
+				'6': '6ème',
+				'5': '5ème',
+				'4': '4ème',
+				'3': '3ème',
+				'2': '2nde',
+				'1_GEN': '1ère générale',
+				T_GEN: 'Terminale générale',
+				'1_SPE': '1ère spécialité maths',
+				T_SPE: 'Terminale spécialité maths'
 			};
 
 			Object.entries(gradeMap).forEach(([input, expected]) => {
-				const result = formatGradeForDisplay(input);
+				// Need to cast as GradeCode for the unified function
+				const result = formatGradeForDisplay(input as import('$lib/types/grades').GradeCode);
 				expect(result).toBe(expected);
 			});
 		});
 
 		it('should return input unchanged for unknown grades', () => {
-			const unknownGrade = 'unknown_grade';
-			const result = formatGradeForDisplay(unknownGrade);
-			expect(result).toBe(unknownGrade);
+			// @ts-expect-error - testing invalid input
+			const result = formatGradeForDisplay('unknown_grade');
+			expect(result).toBe('unknown_grade');
 		});
 
-		it('should handle already-formatted grades', () => {
-			const result = formatGradeForDisplay('6ème');
-			expect(result).toBe('6ème');
+		it('should handle primary school grades', () => {
+			const result = formatGradeForDisplay('CP');
+			expect(result).toBe('CP');
+			const result2 = formatGradeForDisplay('CM2');
+			expect(result2).toBe('CM2');
 		});
 	});
 

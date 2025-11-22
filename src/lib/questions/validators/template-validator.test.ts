@@ -926,7 +926,21 @@ describe('validateTemplate - Edge Cases', () => {
 				}
 			],
 			precision: { type: 'none' },
-			grades: ['CP', 'CE1', 'CE2', 'CM1', 'CM2', '6', '5', '4', '3', '2', 'SPE_1', 'SPE_T', 'STMG'],
+			grades: [
+				'CP',
+				'CE1',
+				'CE2',
+				'CM1',
+				'CM2',
+				'6',
+				'5',
+				'4',
+				'3',
+				'2',
+				'1_SPE',
+				'T_SPE',
+				'T_STMG'
+			],
 			theme: 'Test',
 			domain: 'Test',
 			level: 1,
