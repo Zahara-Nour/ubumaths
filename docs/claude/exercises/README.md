@@ -5,7 +5,7 @@
 | Phase | Nom                              | Statut           | Date de Reprise |
 | ----- | -------------------------------- | ---------------- | --------------- |
 | 1     | Types et modèle de données       | ✅ Complète      | 2025-11-22      |
-| 2     | Service de dimensionnement       | ⏳ Non commencée | -               |
+| 2     | Service de dimensionnement       | ✅ Complète      | 2025-11-22      |
 | 3     | Parser markdown enrichi          | ⏳ Non commencée | -               |
 | 4     | HTML Renderer                    | ⏳ Non commencée | -               |
 | 5     | LaTeX Transpiler                 | ⏳ Non commencée | -               |
@@ -37,7 +37,7 @@ Consultez `/docs/claude/exercises/phase-1-types.md` pour comprendre :
 
 ### 2. Identifier la prochaine phase
 
-Lisez `/docs/claude/exercises/phase-2-dimensions.md` (à créer) pour connaître :
+Lisez `/docs/claude/exercises/phase-2-dimensions.md` pour connaître :
 
 - L'objectif exact
 - Les fichiers à créer/modifier
@@ -161,21 +161,25 @@ Création de la fondation du système :
 
 Voir `/docs/claude/exercises/phase-1-types.md` pour détails.
 
-### Phase 2 : Service de Dimensionnement
+### Phase 2 : Service de Dimensionnement ✅
 
-**Objectif** : Créer le service qui transforme les classes de taille en dimensions réelles.
+**Statut** : Complète
 
-**Tâches** :
+Création du service centralisé pour transformer les classes de taille sémantiques en dimensions réelles pour chaque format de sortie.
 
-- Implémenter `dimensionService` pour calculer les dimensions selon le format
-- Créer les fonctions de conversion (HTML → LaTeX, etc.)
-- Ajouter support pour override per-document
-- Tests unitaires complets
+**Fichiers créés** :
 
-**Fichiers à créer** :
+- `/src/lib/exercises/services/image-dimensions.ts`
 
-- `/src/lib/exercises/services/dimensions.ts`
-- `/src/lib/exercises/services/dimensions.test.ts`
+**Fonctions implémentées** :
+
+1. `getDimensionsForFormat(node, format)` - Calcule dimensions pour un format
+2. `getPercentDimensions(percent, format)` - Convertit % en dimensions
+3. `autoDetectSizeClass(width, height)` - Auto-détecte classe de taille
+4. `getAlignmentStyles(alignment, format)` - Génère styles d'alignement
+5. `shouldUseFigureEnvironment(node)` - Détermine figure environment
+
+Voir `/docs/claude/exercises/phase-2-dimensions.md` pour détails complets.
 
 ### Phase 3 : Parser Markdown Enrichi
 
