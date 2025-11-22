@@ -71,8 +71,8 @@ When implementing a feature, you follow this systematic approach:
 - Verify proper error handling and validation
 - Check responsive design and accessibility
 - Ensure proper loading states and feedback
-- Run `pnpm format` and fix any ESLint errors
 - Test on development port 5175
+- Note: Lint/format checks are done at the end of the plan, not per-feature
 
 ## Critical Code Standards
 

@@ -22,6 +22,14 @@ Développer UbuMaths en respectant les **4 règles critiques** :
 - **Tests required** : All new code must have tests, 100% pass rate
 - **Pre-commit hook** : Automatic lint-staged on `git commit`
 
+### Quality Check Policy (IMPORTANT)
+**Quality checks (lint, format, type check, svelte-check) are done ONLY at the end of a plan, NOT during individual agent tasks or commits.**
+
+- Agents must NOT run `pnpm lint`, `pnpm format`, `pnpm check` during their work
+- These commands are executed once, after all plan tasks are completed
+- This avoids redundant checks and speeds up development
+- The pre-commit hook still runs automatically on `git commit`
+
 ---
 
 ## 📚 Documentation Structure
@@ -170,20 +178,21 @@ function handleEvent(event: MouseEvent) {}
 
 ---
 
-## 📋 Pre-Commit Checklist
+## 📋 Pre-Commit Checklist (Mental Review)
 
-Before committing code:
+Before committing code, verify mentally (do NOT run lint/format commands here):
 
 - [ ] All `request.json()` calls have Zod validation
 - [ ] All query parameters are validated
 - [ ] All numeric inputs have bounds (`.min()`, `.max()`, `.finite()`)
 - [ ] All arrays have size limits (`.max()`)
 - [ ] All UUIDs validated (`.uuid()`)
-- [ ] Tests exist and pass (`pnpm test:unit`)
+- [ ] Tests exist for new code
 - [ ] No `any` types used
 - [ ] Using MySelect (not Shadcn Select or `<select>`)
 - [ ] Svelte 5 runes (not Svelte 4 patterns)
-- [ ] Lint passes (`pnpm lint`)
+
+Note: Lint/format/check commands are run at the END of the plan, not per-commit.
 
 ---
 
@@ -277,7 +286,8 @@ docs/claude/               # Detailed docs (~1,200 lignes)
 - Follow the 4 critical rules
 - Check relevant docs in `/docs/claude/`
 - Respect quality standards (0 errors, tests required)
-- Use pre-commit checklist
+- Use pre-commit checklist (as mental checklist, NOT running commands)
+- Do NOT run lint/format/check commands - these are done at the end of the plan
 
 ---
 

@@ -147,6 +147,9 @@ Use proper types, `unknown` with type guards, or Database types from `$lib/types
 3. **Commit** apres validation (direct ou agent selon complexite)
 4. **Security Audit** si auth/API sensible
 5. **Performance Audit** si requetes DB lourdes
+6. **Quality Checks** (`pnpm lint`, `pnpm check`) a la FIN du plan uniquement
+
+**IMPORTANT** : Les agents ne doivent PAS executer de commandes lint/format/check. Ces verifications sont faites une seule fois a la fin du plan.
 
 ### Execution autonome
 
@@ -157,7 +160,7 @@ Use proper types, `unknown` with type guards, or Database types from `$lib/types
 
 ### Checklist de validation (avant de terminer une phase)
 
-- [ ] Code fonctionnel, TypeScript 0 errors
+- [ ] Code fonctionnel
 - [ ] Tests passent
 - [ ] Code review effectue
 - [ ] Security/Performance audit si applicable
@@ -214,15 +217,18 @@ toaster.success('Message'); // error, warning, info
 
 ---
 
-## Pre-Commit Checklist
+## Pre-Commit Checklist (Mental Review)
+
+Verifier mentalement avant chaque commit (NE PAS executer de commandes lint/format/check) :
 
 - [ ] Zod validation on all `request.json()` and query params
 - [ ] Numeric bounds (`.min()`, `.max()`), array limits, UUID validation
 - [ ] No `any` types
 - [ ] MySelect/MyCheckbox (not Shadcn/native)
 - [ ] Svelte 5 runes only
-- [ ] Tests pass (`pnpm test:unit`)
-- [ ] Lint passes (`pnpm lint`)
+- [ ] Tests exist for new code
+
+Note: `pnpm lint` et `pnpm check` sont executes a la fin du plan uniquement.
 
 ---
 

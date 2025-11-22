@@ -101,10 +101,10 @@ description = $state('Initial HTML content');
 5. **Consistency**: Does it match the design system and other components?
 6. **Error States**: Are loading, error, and empty states handled?
 
-### Quality Checks
+### Quality Standards (mental checklist, no commands to run)
 
 - ✅ All event handlers lowercase (onclick, onsubmit, etc.)
-- ✅ No Shadcn Select components (use native `<select>`)
+- ✅ No Shadcn Select components (use MySelect)
 - ✅ Svelte 5 runes used correctly (no legacy patterns)
 - ✅ Responsive at all breakpoints (mobile-first approach)
 - ✅ Dark mode support (semantic color tokens)
@@ -112,6 +112,8 @@ description = $state('Initial HTML content');
 - ✅ French UI text (verify spelling and grammar)
 - ✅ Proper TypeScript types
 - ✅ Early returns and descriptive names
+
+Note: Do NOT run lint/format commands - these are done at the end of the plan.
 
 ## Decision-Making Framework
 
