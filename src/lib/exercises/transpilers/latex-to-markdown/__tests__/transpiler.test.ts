@@ -878,4 +878,28 @@ Ceci est du texte en \\textbf{gras} et en \\textit{italique}.
 		expect(result.markdown).toContain('*italique*');
 		expect(result.warnings).toHaveLength(0);
 	});
+
+	it('should convert spacing commands inside passthrough environments', () => {
+		// This tests that \\, (thin space) and \\% are properly converted in text mode
+		const input = `\\begin{EXO}{}{}
+Le score est de 95\\,\\% des élèves.
+\\end{EXO}`;
+		const result = transpileLatexToMarkdown(input);
+		// \\, should become a regular space and \\% should become %
+		expect(result.markdown).toContain('95 % des élèves');
+		expect(result.markdown).not.toContain('\\,');
+		expect(result.markdown).not.toContain('\\%');
+		expect(result.warnings).toHaveLength(0);
+	});
+
+	it('should preserve spacing commands inside math mode', () => {
+		// In math mode, \\, and \\% should be preserved for MathLive to render
+		const input = `\\begin{EXO}{}{}
+Le score est de $95\\,\\%$ des élèves.
+\\end{EXO}`;
+		const result = transpileLatexToMarkdown(input);
+		// Inside math mode, commands should be preserved
+		expect(result.markdown).toContain('$95\\,\\%$');
+		expect(result.warnings).toHaveLength(0);
+	});
 });
