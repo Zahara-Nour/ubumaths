@@ -25,4 +25,5 @@ export * from './questions';
 export * from './rewards';
 export * from './riddles';
 export * from './srs';
+export * from './tags';
 export * from './warnings';
