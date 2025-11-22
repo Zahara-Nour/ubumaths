@@ -81,28 +81,12 @@ const SUPPORTED_COMMANDS = new Set([
 	'!',
 
 	// Images (from blocks.ts)
-	'includegraphics',
+	'includegraphics'
 
-	// List item (from lists.ts)
-	'item',
-
-	// Additional common commands
-	'caption',
-	'label',
-	'centering',
-	'newpage',
-	'clearpage',
-	'pagebreak',
-	'noindent',
-	'footnote',
-	'cite',
-	'ref',
-	'eqref',
-	'url',
-	'href',
-	'verb',
-	'input',
-	'include'
+	// Note: Commands like label, centering, footnote, cite, ref, url, href, verb,
+	// input, include, caption, item, and vertical spacing commands (smallskip,
+	// medskip, bigskip, vspace, vfill) are handled by handleSpecialCommand()
+	// in transpiler.ts and don't need to be in this registry.
 ]);
 
 /**
