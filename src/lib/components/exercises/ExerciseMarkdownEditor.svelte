@@ -46,11 +46,18 @@
 		Loader2
 	} from 'lucide-svelte';
 	import ExerciseMarkdownPreview from './ExerciseMarkdownPreview.svelte';
+	import ImageAttributePanel from './ImageAttributePanel.svelte';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import { uploadExerciseImage } from '$lib/exercises/services/image-upload';
+	import {
+		findImageAtCursor,
+		replaceImageMarkdown,
+		type ExtractedImage
+	} from '$lib/exercises/services/image-markdown-editor';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import type { Variable } from '$lib/shared/parameterization';
-	import type { DistributionMode } from '$lib/exercises/types';
+	import type { DistributionMode, ImageSizeClass, ImageAlignment } from '$lib/exercises/types';
 
 	// Props
 	interface Props {
@@ -78,6 +85,18 @@
 	let previewVisible = $state(showPreview);
 	let fileInputEl = $state<HTMLInputElement | null>(null);
 	let uploadingImage = $state(false);
+
+	// Image configuration dialog state
+	let imageDialogOpen = $state(false);
+	let uploadedImageUrl = $state('');
+	let uploadedImageAlt = $state('');
+
+	// Edit mode state (for editing existing images)
+	let editingImage = $state<ExtractedImage | null>(null);
+	let editImageSizeClass = $state<ImageSizeClass | undefined>(undefined);
+	let editImageWidthPercent = $state<number | undefined>(undefined);
+	let editImageAlignment = $state<ImageAlignment | undefined>(undefined);
+	let editImageCaption = $state<string | undefined>(undefined);
 
 	// Section visibility
 	let textSectionOpen = $state(true);
@@ -225,10 +244,12 @@
 			const result = await uploadExerciseImage(supabase, file, userId);
 
 			if (result.success && result.url) {
-				// Insert markdown image syntax with the uploaded URL
+				// Store URL and alt text, then show configuration dialog
 				const imageName = file.name.replace(/\.[^/.]+$/, ''); // Remove extension
-				insertText(`![${imageName}](${result.url})`, '');
-				toaster.success('Image téléchargée avec succès');
+				uploadedImageUrl = result.url;
+				uploadedImageAlt = imageName.replace(/[-_]/g, ' ');
+				imageDialogOpen = true;
+				toaster.success('Image téléchargée - Configurez les options');
 			} else {
 				toaster.error(result.error || "Erreur lors du téléchargement de l'image");
 			}
@@ -240,6 +261,74 @@
 			// Reset file input
 			if (target) target.value = '';
 		}
+	}
+
+	/**
+	 * Handle markdown insertion from ImageAttributePanel
+	 */
+	function handleImageInsert(markdown: string) {
+		if (editingImage) {
+			// Edit mode: replace existing image
+			value = replaceImageMarkdown(value, editingImage, markdown);
+			toaster.success('Image mise à jour');
+		} else {
+			// Insert mode: add new image
+			insertText(markdown, '');
+		}
+		closeImageDialog();
+	}
+
+	/**
+	 * Close image dialog and reset state
+	 */
+	function closeImageDialog() {
+		imageDialogOpen = false;
+		uploadedImageUrl = '';
+		uploadedImageAlt = '';
+		editingImage = null;
+		editImageSizeClass = undefined;
+		editImageWidthPercent = undefined;
+		editImageAlignment = undefined;
+		editImageCaption = undefined;
+	}
+
+	/**
+	 * Try to edit an existing image at cursor position
+	 * Returns true if an image was found and dialog opened
+	 */
+	function tryEditImageAtCursor(): boolean {
+		if (!textareaEl) return false;
+
+		const cursorPos = textareaEl.selectionStart;
+		const image = findImageAtCursor(value, cursorPos);
+
+		if (image) {
+			// Store the image being edited
+			editingImage = image;
+			uploadedImageUrl = image.url;
+			uploadedImageAlt = image.alt;
+			editImageSizeClass = image.sizeClass;
+			editImageWidthPercent = image.widthPercent;
+			editImageAlignment = image.alignment;
+			editImageCaption = image.caption;
+			imageDialogOpen = true;
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Handle image button click - edit existing or upload new
+	 */
+	function handleImageButtonClick() {
+		// First try to edit image at cursor
+		if (tryEditImageAtCursor()) {
+			return;
+		}
+
+		// No image at cursor - open file picker for new upload
+		openImageUpload();
 	}
 </script>
 
@@ -403,13 +492,13 @@
 				</Button>
 
 				{#if supabase && userId}
-					<!-- Image upload button (when Supabase is available) -->
+					<!-- Image upload/edit button (when Supabase is available) -->
 					<Button
 						variant="ghost"
 						size="sm"
-						onclick={openImageUpload}
+						onclick={handleImageButtonClick}
 						disabled={uploadingImage}
-						title="Télécharger une image"
+						title="Image (editer si curseur sur image, sinon telecharger)"
 					>
 						{#if uploadingImage}
 							<Loader2 class="h-4 w-4 animate-spin" />
@@ -506,3 +595,34 @@
 	class="hidden"
 	aria-label="Upload image"
 />
+
+<!-- Image Configuration Dialog -->
+<Dialog.Root
+	bind:open={imageDialogOpen}
+	onOpenChange={(open) => {
+		if (!open) {
+			closeImageDialog();
+		}
+	}}
+>
+	<Dialog.Content class="max-h-[90vh] max-w-2xl overflow-y-auto">
+		<Dialog.Header>
+			<Dialog.Title>{editingImage ? "Modifier l'image" : "Configurer l'image"}</Dialog.Title>
+			<Dialog.Description>
+				{editingImage
+					? "Modifiez les parametres d'affichage de cette image."
+					: "Ajustez les parametres d'affichage de votre image avant de l'inserer."}
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<ImageAttributePanel
+			initialUrl={uploadedImageUrl}
+			initialAlt={uploadedImageAlt}
+			initialSizeClass={editImageSizeClass}
+			initialWidthPercent={editImageWidthPercent}
+			initialAlignment={editImageAlignment}
+			initialCaption={editImageCaption}
+			onInsert={handleImageInsert}
+		/>
+	</Dialog.Content>
+</Dialog.Root>

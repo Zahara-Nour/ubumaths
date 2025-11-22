@@ -48,18 +48,39 @@
 		onInsert?: (markdown: string) => void;
 		initialUrl?: string;
 		initialAlt?: string;
+		initialSizeClass?: ImageSizeClass;
+		initialWidthPercent?: number;
+		initialAlignment?: ImageAlignment;
+		initialCaption?: string;
 	}
 
-	let { onInsert, initialUrl = '', initialAlt = '' }: Props = $props();
+	let {
+		onInsert,
+		initialUrl = '',
+		initialAlt = '',
+		initialSizeClass,
+		initialWidthPercent,
+		initialAlignment,
+		initialCaption
+	}: Props = $props();
 
-	// State
+	// State - initialize with props if provided
 	let uploadedImage = $state<UploadedImage | null>(null);
-	let sizeClass = $state<ImageSizeClass>('medium');
-	let customWidth = $state<number | undefined>(undefined);
-	let alignment = $state<ImageAlignment>('center');
-	let caption = $state('');
+	let sizeClass = $state<ImageSizeClass>(initialSizeClass ?? 'medium');
+	let customWidth = $state<number | undefined>(initialWidthPercent);
+	let alignment = $state<ImageAlignment>(initialAlignment ?? 'center');
+	let caption = $state(initialCaption ?? '');
 	let altText = $state(initialAlt);
 	let copied = $state(false);
+
+	// Sync state when props change (e.g., editing different image)
+	$effect(() => {
+		sizeClass = initialSizeClass ?? 'medium';
+		customWidth = initialWidthPercent;
+		alignment = initialAlignment ?? 'center';
+		caption = initialCaption ?? '';
+		altText = initialAlt;
+	});
 
 	// Derived: The image URL to use (uploaded or initial)
 	const imageUrl = $derived(uploadedImage?.url || initialUrl);
@@ -142,7 +163,7 @@
 	function insertMarkdown() {
 		if (onInsert && markdownSyntax) {
 			onInsert(markdownSyntax);
-			toaster.success("Image inseree dans l'editeur");
+			toaster.success("Image insérée dans l'éditeur");
 		}
 	}
 
@@ -151,10 +172,10 @@
 	 */
 	function reset() {
 		uploadedImage = null;
-		sizeClass = 'medium';
-		customWidth = undefined;
-		alignment = 'center';
-		caption = '';
+		sizeClass = initialSizeClass ?? 'medium';
+		customWidth = initialWidthPercent;
+		alignment = initialAlignment ?? 'center';
+		caption = initialCaption ?? '';
 		altText = initialAlt;
 	}
 </script>
@@ -166,8 +187,22 @@
 		<h2 class="text-lg font-semibold">Gestion d'image</h2>
 	</div>
 
-	<!-- Image Uploader -->
-	<ImageUploader onUploadComplete={handleUploadComplete} />
+	<!-- Image Uploader (hidden if initialUrl is provided) -->
+	{#if !initialUrl}
+		<ImageUploader onUploadComplete={handleUploadComplete} />
+	{/if}
+
+	<!-- Image Preview when initialUrl is provided -->
+	{#if initialUrl && !uploadedImage}
+		<div class="flex flex-col items-center gap-2">
+			<img
+				src={initialUrl}
+				alt="Aperçu"
+				class="max-h-48 rounded-md border border-border object-contain"
+			/>
+			<p class="text-xs text-muted-foreground">Image téléchargée</p>
+		</div>
+	{/if}
 
 	{#if hasImage}
 		<Separator />
@@ -255,10 +290,10 @@
 		<div class="flex gap-2">
 			{#if onInsert}
 				<Button onclick={insertMarkdown} disabled={!markdownSyntax} class="flex-1">
-					Inserer dans l'editeur
+					Insérer dans l'éditeur
 				</Button>
 			{/if}
-			<Button variant="outline" onclick={reset}>Reinitialiser</Button>
+			<Button variant="outline" onclick={reset}>Réinitialiser</Button>
 		</div>
 	{/if}
 </div>
