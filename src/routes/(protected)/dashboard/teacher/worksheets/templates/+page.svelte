@@ -388,9 +388,9 @@
 					use:enhance={() => {
 						creatingFromDefault = selectedDefault?.id ?? null;
 						showDefaultsDialog = false;
-						return async ({ result }) => {
+						return async ({ result, update }) => {
 							if (result.type === 'redirect') {
-								// Let the redirect happen
+								await update();
 							} else if (result.type === 'failure') {
 								toaster.error('Erreur lors de la creation');
 							}
