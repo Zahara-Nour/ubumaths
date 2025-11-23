@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { goto, invalidateAll } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -13,15 +11,25 @@
 	import ExportDialog from '$lib/components/exercises/ExportDialog.svelte';
 	import ImportDialog from '$lib/components/exercises/ImportDialog.svelte';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import { Send, Pencil, Trash2, Loader2, ArrowUp, ArrowDown } from 'lucide-svelte';
 	import type { PageData } from './$types';
+	import type { GradeCode } from '$lib/types/grades';
+	import { formatGradeShort } from '$lib/utils/grades';
 
 	let { data }: { data: PageData } = $props();
+
+	// Local state for exercises (allows fetch-based updates)
+	let exercises = $state(data.exercises);
+	let pagination = $state(data.pagination);
+	let sortBy = $state<'title' | 'updated_at'>(data.sortBy || 'updated_at');
+	let sortOrder = $state<'asc' | 'desc'>(data.sortOrder || 'desc');
+	let isLoading = $state(false);
 
 	// Filter state
 	let searchQuery = $state(data.filters.search);
 	let selectedDifficulty = $state(data.filters.difficulty?.toString() || '');
-	let selectedTopic = $state(data.filters.topic);
+	let selectedGradeLevels = $state<GradeCode[]>((data.filters.grade_levels || []) as GradeCode[]);
 
 	// Delete confirmation
 	let deletingId = $state<string | null>(null);
@@ -49,7 +57,7 @@
 	 */
 	function selectAll() {
 		selectedExercises.clear();
-		data.exercises.forEach((ex) => selectedExercises.add(ex.id));
+		exercises.forEach((ex) => selectedExercises.add(ex.id));
 	}
 
 	/**
@@ -86,7 +94,8 @@
 
 		if (response.ok) {
 			toaster.success('Exercice supprimé');
-			await invalidateAll();
+			// Refresh exercises list via fetch
+			await fetchExercises(pagination.page);
 		} else {
 			toaster.error('Erreur lors de la suppression');
 		}
@@ -99,7 +108,7 @@
 	 * Toggle all selection
 	 */
 	function toggleSelectAll() {
-		if (selectedExercises.size === data.exercises.length) {
+		if (selectedExercises.size === exercises.length) {
 			clearSelection();
 		} else {
 			selectAll();
@@ -107,33 +116,60 @@
 	}
 
 	/**
-	 * Apply filters to URL
+	 * Build URL params from current filter/sort state
+	 */
+	function buildParams(page = 1): URLSearchParams {
+		const params = new URLSearchParams();
+
+		if (searchQuery) params.set('search', searchQuery);
+		if (selectedDifficulty) params.set('difficulty', selectedDifficulty);
+		if (selectedGradeLevels.length > 0) params.set('grade_levels', selectedGradeLevels.join(','));
+		if (sortBy !== 'updated_at') params.set('sortBy', sortBy);
+		if (sortOrder !== 'desc') params.set('order', sortOrder);
+		if (page > 1) params.set('page', String(page));
+
+		return params;
+	}
+
+	/**
+	 * Update browser URL without navigation
+	 */
+	function updateUrl(params: URLSearchParams) {
+		const url = params.toString()
+			? `${window.location.pathname}?${params.toString()}`
+			: window.location.pathname;
+		history.replaceState({}, '', url);
+	}
+
+	/**
+	 * Fetch exercises via API
+	 */
+	async function fetchExercises(page = 1) {
+		isLoading = true;
+
+		const params = buildParams(page);
+		updateUrl(params);
+
+		try {
+			const response = await fetch(`/api/teacher/exercises?${params.toString()}`);
+			if (!response.ok) throw new Error('Failed to fetch');
+
+			const result = await response.json();
+			exercises = result.exercises;
+			pagination = result.pagination;
+		} catch (err) {
+			console.error('Error fetching exercises:', err);
+			toaster.error('Erreur lors du chargement des exercices');
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	/**
+	 * Apply filters (fetch-based)
 	 */
 	function applyFilters() {
-		const params = new URLSearchParams($page.url.searchParams);
-
-		if (searchQuery) {
-			params.set('search', searchQuery);
-		} else {
-			params.delete('search');
-		}
-
-		if (selectedDifficulty) {
-			params.set('difficulty', selectedDifficulty);
-		} else {
-			params.delete('difficulty');
-		}
-
-		if (selectedTopic) {
-			params.set('topic', selectedTopic);
-		} else {
-			params.delete('topic');
-		}
-
-		// Reset to page 1 when filtering
-		params.set('page', '1');
-
-		goto(`?${params.toString()}`, { keepFocus: true });
+		fetchExercises(1);
 	}
 
 	/**
@@ -142,22 +178,23 @@
 	function clearFilters() {
 		searchQuery = '';
 		selectedDifficulty = '';
-		selectedTopic = '';
-		goto('/dashboard/teacher/exercises', { keepFocus: true });
+		selectedGradeLevels = [];
+		fetchExercises(1);
 	}
 
 	/**
-	 * Toggle sort order
+	 * Toggle sort on a column
 	 */
-	function toggleSortOrder() {
-		const params = new URLSearchParams($page.url.searchParams);
-		const newOrder = data.sortOrder === 'desc' ? 'asc' : 'desc';
-		if (newOrder === 'desc') {
-			params.delete('sort');
+	function toggleSort(column: 'title' | 'updated_at') {
+		if (sortBy === column) {
+			// Same column: toggle order
+			sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
 		} else {
-			params.set('sort', 'asc');
+			// Different column: switch to it with desc order
+			sortBy = column;
+			sortOrder = 'desc';
 		}
-		goto(`?${params.toString()}`, { keepFocus: true });
+		fetchExercises(1);
 	}
 
 	/**
@@ -247,15 +284,10 @@
 					</select>
 				</div>
 
-				<!-- Topic -->
+				<!-- Grade Level -->
 				<div class="space-y-2">
-					<Label for="topic">Thème</Label>
-					<Input
-						id="topic"
-						type="text"
-						placeholder="Algèbre, Géométrie..."
-						bind:value={selectedTopic}
-					/>
+					<Label>Niveau</Label>
+					<GradeBadgeSelector bind:value={selectedGradeLevels} placeholder="Tous niveaux" />
 				</div>
 
 				<!-- Actions -->
@@ -270,10 +302,13 @@
 	<!-- Results count & Actions -->
 	<div class="flex items-center justify-between">
 		<div class="text-sm text-muted-foreground">
-			{data.pagination.total} exercice{data.pagination.total > 1 ? 's' : ''} trouvé{data.pagination
-				.total > 1
-				? 's'
-				: ''}
+			{#if isLoading}
+				Chargement...
+			{:else}
+				{pagination.total} exercice{pagination.total > 1 ? 's' : ''} trouvé{pagination.total > 1
+					? 's'
+					: ''}
+			{/if}
 		</div>
 		{#if selectedExercises.size > 0}
 			<div class="flex items-center gap-2">
@@ -297,27 +332,41 @@
 						<Table.Head class="w-12">
 							<input
 								type="checkbox"
-								checked={selectedExercises.size === data.exercises.length &&
-									data.exercises.length > 0}
+								checked={selectedExercises.size === exercises.length && exercises.length > 0}
 								onchange={toggleSelectAll}
 								class="h-4 w-4 cursor-pointer"
 							/>
 						</Table.Head>
-						<Table.Head>Titre</Table.Head>
-						<Table.Head>Source</Table.Head>
+						<Table.Head>
+							<button
+								onclick={() => toggleSort('title')}
+								class="flex items-center gap-1 hover:text-foreground"
+							>
+								Titre
+								{#if sortBy === 'title'}
+									{#if sortOrder === 'desc'}
+										<ArrowDown class="h-4 w-4" />
+									{:else}
+										<ArrowUp class="h-4 w-4" />
+									{/if}
+								{/if}
+							</button>
+						</Table.Head>
 						<Table.Head>Difficulté</Table.Head>
-						<Table.Head>Thème</Table.Head>
+						<Table.Head>Niveau</Table.Head>
 						<Table.Head>Tags</Table.Head>
 						<Table.Head>
 							<button
-								onclick={toggleSortOrder}
+								onclick={() => toggleSort('updated_at')}
 								class="flex items-center gap-1 hover:text-foreground"
 							>
 								Modifié le
-								{#if data.sortOrder === 'desc'}
-									<ArrowDown class="h-4 w-4" />
-								{:else}
-									<ArrowUp class="h-4 w-4" />
+								{#if sortBy === 'updated_at'}
+									{#if sortOrder === 'desc'}
+										<ArrowDown class="h-4 w-4" />
+									{:else}
+										<ArrowUp class="h-4 w-4" />
+									{/if}
 								{/if}
 							</button>
 						</Table.Head>
@@ -325,14 +374,14 @@
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{#if data.exercises.length === 0}
+					{#if exercises.length === 0}
 						<Table.Row>
-							<Table.Cell colspan={8} class="py-8 text-center text-muted-foreground">
+							<Table.Cell colspan={7} class="py-8 text-center text-muted-foreground">
 								Aucun exercice trouvé. Créez votre premier exercice !
 							</Table.Cell>
 						</Table.Row>
 					{:else}
-						{#each data.exercises as exercise (exercise.id)}
+						{#each exercises as exercise (exercise.id)}
 							<Table.Row>
 								<Table.Cell>
 									<input
@@ -345,13 +394,27 @@
 								<Table.Cell class="font-medium">
 									{exercise.title || '(Sans titre)'}
 								</Table.Cell>
-								<Table.Cell>{exercise.source || '-'}</Table.Cell>
 								<Table.Cell>
 									<Badge variant={getDifficultyVariant(exercise.difficulty)}>
 										{getDifficultyLabel(exercise.difficulty)}
 									</Badge>
 								</Table.Cell>
-								<Table.Cell>{exercise.topic || '-'}</Table.Cell>
+								<Table.Cell>
+									<div class="flex flex-wrap gap-1">
+										{#if exercise.grade_levels && exercise.grade_levels.length > 0}
+											{#each exercise.grade_levels.slice(0, 3) as grade (grade)}
+												<Badge variant="secondary" class="text-xs">{formatGradeShort(grade)}</Badge>
+											{/each}
+											{#if exercise.grade_levels.length > 3}
+												<Badge variant="secondary" class="text-xs">
+													+{exercise.grade_levels.length - 3}
+												</Badge>
+											{/if}
+										{:else}
+											<span class="text-sm text-muted-foreground">-</span>
+										{/if}
+									</div>
+								</Table.Cell>
 								<Table.Cell>
 									<div class="flex flex-wrap gap-1">
 										{#if exercise.tags && exercise.tags.length > 0}
@@ -443,30 +506,22 @@
 	</Card.Root>
 
 	<!-- Pagination -->
-	{#if data.pagination.totalPages > 1}
+	{#if pagination.totalPages > 1}
 		<div class="flex items-center justify-center gap-2">
 			<Button
 				variant="outline"
-				disabled={data.pagination.page === 1}
-				onclick={() => {
-					const params = new URLSearchParams($page.url.searchParams);
-					params.set('page', String(data.pagination.page - 1));
-					goto(`?${params.toString()}`);
-				}}
+				disabled={pagination.page === 1 || isLoading}
+				onclick={() => fetchExercises(pagination.page - 1)}
 			>
 				Précédent
 			</Button>
 			<span class="text-sm text-muted-foreground">
-				Page {data.pagination.page} sur {data.pagination.totalPages}
+				Page {pagination.page} sur {pagination.totalPages}
 			</span>
 			<Button
 				variant="outline"
-				disabled={data.pagination.page === data.pagination.totalPages}
-				onclick={() => {
-					const params = new URLSearchParams($page.url.searchParams);
-					params.set('page', String(data.pagination.page + 1));
-					goto(`?${params.toString()}`);
-				}}
+				disabled={pagination.page === pagination.totalPages || isLoading}
+				onclick={() => fetchExercises(pagination.page + 1)}
 			>
 				Suivant
 			</Button>
