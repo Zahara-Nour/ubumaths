@@ -2,15 +2,18 @@
 	import { enhance } from '$app/forms';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { SvelteSet } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import ExportDialog from '$lib/components/exercises/ExportDialog.svelte';
 	import ImportDialog from '$lib/components/exercises/ImportDialog.svelte';
+	import { Send, Pencil, Trash2, Loader2 } from 'lucide-svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -24,7 +27,7 @@
 	let deletingId = $state<string | null>(null);
 
 	// Export/Import state
-	let selectedExercises = $state<Set<string>>(new Set());
+	let selectedExercises = new SvelteSet<string>();
 	let exportDialogOpen = $state(false);
 	let importDialogOpen = $state(false);
 
@@ -37,21 +40,21 @@
 		} else {
 			selectedExercises.add(id);
 		}
-		selectedExercises = selectedExercises; // Trigger reactivity
 	}
 
 	/**
 	 * Select all exercises
 	 */
 	function selectAll() {
-		selectedExercises = new Set(data.exercises.map((ex) => ex.id));
+		selectedExercises.clear();
+		data.exercises.forEach((ex) => selectedExercises.add(ex.id));
 	}
 
 	/**
 	 * Clear selection
 	 */
 	function clearSelection() {
-		selectedExercises = new Set();
+		selectedExercises.clear();
 	}
 
 	/**
@@ -149,13 +152,6 @@
 		</div>
 		<div class="flex gap-2">
 			<Button variant="outline" onclick={() => (importDialogOpen = true)}>Importer</Button>
-			<Button
-				variant="outline"
-				onclick={() => (exportDialogOpen = true)}
-				disabled={selectedExercises.size === 0}
-			>
-				Exporter ({selectedExercises.size})
-			</Button>
 			<Button href="/dashboard/teacher/exercises/new">Nouvel exercice</Button>
 		</div>
 	</div>
@@ -219,7 +215,7 @@
 		</Card.Content>
 	</Card.Root>
 
-	<!-- Results count & selection -->
+	<!-- Results count & Actions -->
 	<div class="flex items-center justify-between">
 		<div class="text-sm text-muted-foreground">
 			{data.pagination.total} exercice{data.pagination.total > 1 ? 's' : ''} trouvé{data.pagination
@@ -228,9 +224,15 @@
 				: ''}
 		</div>
 		{#if selectedExercises.size > 0}
-			<Button variant="ghost" size="sm" onclick={clearSelection}>
-				Désélectionner ({selectedExercises.size})
-			</Button>
+			<div class="flex items-center gap-2">
+				<span class="text-sm text-muted-foreground">
+					{selectedExercises.size} sélectionné{selectedExercises.size > 1 ? 's' : ''}
+				</span>
+				<Button variant="outline" size="sm" onclick={() => (exportDialogOpen = true)}>
+					Exporter
+				</Button>
+				<Button variant="ghost" size="sm" onclick={clearSelection}>Désélectionner</Button>
+			</div>
 		{/if}
 	</div>
 
@@ -306,49 +308,82 @@
 									{formatDate(exercise.created_at)}
 								</Table.Cell>
 								<Table.Cell class="text-right">
-									<div class="flex justify-end gap-2">
-										<Button
-											size="sm"
-											variant="ghost"
-											href="/dashboard/teacher/exercises/{exercise.id}/assign"
-										>
-											Assigner
-										</Button>
-										<Button
-											size="sm"
-											variant="outline"
-											href="/dashboard/teacher/exercises/{exercise.id}"
-										>
-											Modifier
-										</Button>
-										<form
-											method="POST"
-											action="?/delete"
-											use:enhance={() => {
-												deletingId = exercise.id;
-												return async ({ result, update }) => {
-													await update();
-													if (result.type === 'success') {
-														toaster.success('Exercice supprimé');
-														await invalidateAll();
-													} else {
-														toaster.error('Erreur lors de la suppression');
-													}
-													deletingId = null;
-												};
-											}}
-										>
-											<input type="hidden" name="exercise_id" value={exercise.id} />
-											<Button
-												size="sm"
-												variant="destructive"
-												type="submit"
-												disabled={deletingId === exercise.id}
+									<Tooltip.Provider>
+										<div class="flex justify-end gap-1">
+											<Tooltip.Root>
+												<Tooltip.Trigger>
+													<Button
+														size="icon"
+														variant="ghost"
+														href="/dashboard/teacher/exercises/{exercise.id}/assign"
+														class="h-8 w-8"
+													>
+														<Send class="h-4 w-4" />
+														<span class="sr-only">Assigner</span>
+													</Button>
+												</Tooltip.Trigger>
+												<Tooltip.Content>
+													<p>Assigner</p>
+												</Tooltip.Content>
+											</Tooltip.Root>
+											<Tooltip.Root>
+												<Tooltip.Trigger>
+													<Button
+														size="icon"
+														variant="ghost"
+														href="/dashboard/teacher/exercises/{exercise.id}"
+														class="h-8 w-8"
+													>
+														<Pencil class="h-4 w-4" />
+														<span class="sr-only">Modifier</span>
+													</Button>
+												</Tooltip.Trigger>
+												<Tooltip.Content>
+													<p>Modifier</p>
+												</Tooltip.Content>
+											</Tooltip.Root>
+											<form
+												method="POST"
+												action="?/delete"
+												use:enhance={() => {
+													deletingId = exercise.id;
+													return async ({ result, update }) => {
+														await update();
+														if (result.type === 'success') {
+															toaster.success('Exercice supprimé');
+															await invalidateAll();
+														} else {
+															toaster.error('Erreur lors de la suppression');
+														}
+														deletingId = null;
+													};
+												}}
 											>
-												{deletingId === exercise.id ? 'Suppression...' : 'Supprimer'}
-											</Button>
-										</form>
-									</div>
+												<input type="hidden" name="exercise_id" value={exercise.id} />
+												<Tooltip.Root>
+													<Tooltip.Trigger>
+														<Button
+															size="icon"
+															variant="ghost"
+															type="submit"
+															disabled={deletingId === exercise.id}
+															class="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+														>
+															{#if deletingId === exercise.id}
+																<Loader2 class="h-4 w-4 animate-spin" />
+															{:else}
+																<Trash2 class="h-4 w-4" />
+															{/if}
+															<span class="sr-only">Supprimer</span>
+														</Button>
+													</Tooltip.Trigger>
+													<Tooltip.Content>
+														<p>Supprimer</p>
+													</Tooltip.Content>
+												</Tooltip.Root>
+											</form>
+										</div>
+									</Tooltip.Provider>
 								</Table.Cell>
 							</Table.Row>
 						{/each}
