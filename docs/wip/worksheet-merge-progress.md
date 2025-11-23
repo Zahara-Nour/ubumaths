@@ -1,6 +1,6 @@
 # Worksheet Merge Progress
 
-## Statut: Phase 1 - En attente
+## Statut: Phase 2 - En cours
 
 ## Objectif
 
@@ -8,7 +8,7 @@ Fusionner les pages view (`/worksheets/[id]`) et edit (`/worksheets/[id]/edit`) 
 
 ## Phases
 
-- [ ] Phase 1: Extraction utilitaires partagés
+- [x] Phase 1: Extraction utilitaires partagés ✓ (commit 82fad175)
 - [ ] Phase 2: Composants metadata + security audit
 - [ ] Phase 3: Fusion page + security/perf audit
 - [ ] Phase 4: Nettoyage
@@ -38,7 +38,7 @@ Fusionner les pages view (`/worksheets/[id]`) et edit (`/worksheets/[id]/edit`) 
 
 ## Décisions prises
 
-- (aucune pour l'instant)
+- Phase 1: Constantes centralisées dans `worksheet-constants.ts`
 
 ## Audits effectués
 
@@ -48,4 +48,6 @@ Fusionner les pages view (`/worksheets/[id]`) et edit (`/worksheets/[id]/edit`) 
 
 ## Prochaines étapes
 
-1. Lancer l'agent backend-developer pour Phase 1
+1. Créer MetadataCards.svelte
+2. Créer MetadataForm.svelte
+3. Security audit sur validation Zod
