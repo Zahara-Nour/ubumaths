@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
@@ -8,6 +7,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -24,12 +24,12 @@
 		HelpCircle,
 		Home
 	} from 'lucide-svelte';
-	import type { PageData, ActionData } from './$types';
+	import type { PageData } from './$types';
 	import type { WorksheetType, WorksheetStatus } from '$lib/types/worksheets';
 	import { formatGradeShort } from '$lib/utils/grades';
 	import type { GradeCode } from '$lib/types/grades';
 
-	let { data, form }: { data: PageData; form: ActionData } = $props();
+	let { data }: { data: PageData } = $props();
 
 	// Filter state
 	let searchQuery = $state(data.filters.search || '');
@@ -39,6 +39,74 @@
 	// Loading states
 	let deletingId = $state<string | null>(null);
 	let duplicatingId = $state<string | null>(null);
+
+	// Delete confirmation dialog state
+	let deleteDialogOpen = $state(false);
+	let worksheetToDelete = $state<{ id: string; title: string } | null>(null);
+
+	/**
+	 * Open delete confirmation dialog
+	 */
+	function openDeleteDialog(worksheet: { id: string; title: string }) {
+		worksheetToDelete = worksheet;
+		deleteDialogOpen = true;
+	}
+
+	/**
+	 * Handle delete confirmation
+	 */
+	async function handleDelete() {
+		if (!worksheetToDelete) return;
+
+		deletingId = worksheetToDelete.id;
+		deleteDialogOpen = false;
+
+		try {
+			const response = await fetch(`/api/worksheets/${worksheetToDelete.id}`, {
+				method: 'DELETE'
+			});
+
+			if (!response.ok) {
+				const error = await response.json().catch(() => ({ message: 'Erreur inconnue' }));
+				throw new Error(error.message || 'Erreur lors de la suppression');
+			}
+
+			toaster.success('Feuille supprimee');
+			await invalidateAll();
+		} catch (error) {
+			console.error('Delete error:', error);
+			toaster.error(error instanceof Error ? error.message : 'Erreur lors de la suppression');
+		} finally {
+			deletingId = null;
+			worksheetToDelete = null;
+		}
+	}
+
+	/**
+	 * Handle duplicate
+	 */
+	async function handleDuplicate(worksheetId: string) {
+		duplicatingId = worksheetId;
+
+		try {
+			const response = await fetch(`/api/worksheets/${worksheetId}/duplicate`, {
+				method: 'POST'
+			});
+
+			if (!response.ok) {
+				const error = await response.json().catch(() => ({ message: 'Erreur inconnue' }));
+				throw new Error(error.message || 'Erreur lors de la duplication');
+			}
+
+			toaster.success('Feuille dupliquee');
+			await invalidateAll();
+		} catch (error) {
+			console.error('Duplicate error:', error);
+			toaster.error(error instanceof Error ? error.message : 'Erreur lors de la duplication');
+		} finally {
+			duplicatingId = null;
+		}
+	}
 
 	// Status filter options
 	const statusOptions = [
@@ -136,15 +204,6 @@
 			year: 'numeric'
 		});
 	}
-
-	// Show toast on form result
-	$effect(() => {
-		if (form?.success) {
-			toaster.success(form.message || 'Operation reussie');
-		} else if (form?.message) {
-			toaster.error(form.message);
-		}
-	});
 </script>
 
 <svelte:head>
@@ -323,62 +382,24 @@
 												</a>
 											</DropdownMenu.Item>
 											<DropdownMenu.Separator />
-											<form
-												method="POST"
-												action="?/duplicate"
-												use:enhance={() => {
-													duplicatingId = worksheet.id;
-													return async ({ result, update }) => {
-														await update();
-														if (result.type === 'success') {
-															toaster.success('Feuille dupliquee');
-															await invalidateAll();
-														}
-														duplicatingId = null;
-													};
-												}}
+											<DropdownMenu.Item
+												onclick={() => handleDuplicate(worksheet.id)}
+												disabled={duplicatingId === worksheet.id}
 											>
-												<input type="hidden" name="worksheet_id" value={worksheet.id} />
-												<DropdownMenu.Item>
-													<button
-														type="submit"
-														disabled={duplicatingId === worksheet.id}
-														class="flex w-full items-center gap-2"
-													>
-														<Copy class="h-4 w-4" />
-														{duplicatingId === worksheet.id ? 'Duplication...' : 'Dupliquer'}
-													</button>
-												</DropdownMenu.Item>
-											</form>
+												<Copy class="mr-2 h-4 w-4" />
+												{duplicatingId === worksheet.id ? 'Duplication...' : 'Dupliquer'}
+											</DropdownMenu.Item>
 											{#if worksheet.status === 'draft'}
 												<DropdownMenu.Separator />
-												<form
-													method="POST"
-													action="?/delete"
-													use:enhance={() => {
-														deletingId = worksheet.id;
-														return async ({ result, update }) => {
-															await update();
-															if (result.type === 'success') {
-																toaster.success('Feuille supprimee');
-																await invalidateAll();
-															}
-															deletingId = null;
-														};
-													}}
+												<DropdownMenu.Item
+													class="text-destructive focus:text-destructive"
+													onclick={() =>
+														openDeleteDialog({ id: worksheet.id, title: worksheet.title })}
+													disabled={deletingId === worksheet.id}
 												>
-													<input type="hidden" name="worksheet_id" value={worksheet.id} />
-													<DropdownMenu.Item class="text-destructive focus:text-destructive">
-														<button
-															type="submit"
-															disabled={deletingId === worksheet.id}
-															class="flex w-full items-center gap-2"
-														>
-															<Trash2 class="h-4 w-4" />
-															{deletingId === worksheet.id ? 'Suppression...' : 'Supprimer'}
-														</button>
-													</DropdownMenu.Item>
-												</form>
+													<Trash2 class="mr-2 h-4 w-4" />
+													{deletingId === worksheet.id ? 'Suppression...' : 'Supprimer'}
+												</DropdownMenu.Item>
 											{/if}
 										</DropdownMenu.Content>
 									</DropdownMenu.Root>
@@ -414,3 +435,25 @@
 		</div>
 	{/if}
 </div>
+
+<!-- Delete Confirmation Dialog -->
+<AlertDialog.Root bind:open={deleteDialogOpen}>
+	<AlertDialog.Content>
+		<AlertDialog.Header>
+			<AlertDialog.Title>Supprimer cette feuille ?</AlertDialog.Title>
+			<AlertDialog.Description>
+				Vous allez supprimer la feuille "{worksheetToDelete?.title || '(Sans titre)'}". Cette action
+				est irreversible.
+			</AlertDialog.Description>
+		</AlertDialog.Header>
+		<AlertDialog.Footer>
+			<AlertDialog.Cancel>Annuler</AlertDialog.Cancel>
+			<AlertDialog.Action
+				class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+				onclick={handleDelete}
+			>
+				Supprimer
+			</AlertDialog.Action>
+		</AlertDialog.Footer>
+	</AlertDialog.Content>
+</AlertDialog.Root>
