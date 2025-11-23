@@ -4,7 +4,7 @@
 
 	Displays worksheet metadata in inline-editable cards format.
 	All editable fields are in a single card with a subtle floating save button.
-	Click to edit fields, ESC to cancel all changes.
+	Click to edit fields, ESC to cancel current field, X per field to cancel that field.
 
 	Usage:
 	```svelte
@@ -22,7 +22,6 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -160,16 +159,43 @@
 
 	// Cancel all edits and restore original values
 	function cancelAllEdits() {
-		// Reset all temp values to original
-		tempTitle = worksheet.title || '';
-		tempDescription = worksheet.description || '';
-		tempType = worksheet.type || undefined;
-		tempDuration = worksheet.estimated_duration_minutes;
-		tempGrades = (worksheet.grade_levels as GradeCode[]) || [];
-		tempTags = worksheet.tags || [];
+		cancelTitle();
+		cancelDescription();
+		cancelType();
+		cancelDuration();
+		cancelGrades();
+		cancelTags();
+	}
 
-		// Close all editing modes
-		closeAllEditing();
+	// Per-field cancel functions (reset value + close editing)
+	function cancelTitle() {
+		tempTitle = worksheet.title || '';
+		editingTitle = false;
+	}
+
+	function cancelDescription() {
+		tempDescription = worksheet.description || '';
+		editingDescription = false;
+	}
+
+	function cancelType() {
+		tempType = worksheet.type || undefined;
+		editingType = false;
+	}
+
+	function cancelDuration() {
+		tempDuration = worksheet.estimated_duration_minutes;
+		editingDuration = false;
+	}
+
+	function cancelGrades() {
+		tempGrades = (worksheet.grade_levels as GradeCode[]) || [];
+		editingGrades = false;
+	}
+
+	function cancelTags() {
+		tempTags = worksheet.tags || [];
+		editingTags = false;
 	}
 
 	// Start editing functions (initialize temp values)
@@ -209,11 +235,17 @@
 		editingTags = true;
 	}
 
-	// Handle ESC key to cancel all editing
-	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Escape') {
-			cancelAllEdits();
-		}
+	// Per-field ESC handlers (cancel only the current field)
+	function handleKeydownTitle(e: KeyboardEvent) {
+		if (e.key === 'Escape') cancelTitle();
+	}
+
+	function handleKeydownDescription(e: KeyboardEvent) {
+		if (e.key === 'Escape') cancelDescription();
+	}
+
+	function handleKeydownDuration(e: KeyboardEvent) {
+		if (e.key === 'Escape') cancelDuration();
 	}
 
 	// Type options for MySelect (convert to mutable array)
@@ -238,7 +270,7 @@
 		<Card.Header>
 			<div class="flex items-center gap-2">
 				<Card.Title class="text-lg">Informations</Card.Title>
-				<!-- Cancel/Loading indicator next to title -->
+				<!-- Global cancel/loading indicator next to title -->
 				{#if hasChanges && onSave}
 					{#if isSaving}
 						<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
@@ -247,7 +279,7 @@
 							type="button"
 							class="rounded-full p-1 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
 							onclick={cancelAllEdits}
-							aria-label="Annuler les modifications"
+							aria-label="Annuler toutes les modifications"
 						>
 							<X class="h-4 w-4" />
 						</button>
@@ -260,7 +292,19 @@
 			<div class="flex items-center gap-3">
 				<Type class="h-4 w-4 shrink-0 text-muted-foreground" />
 				<div class="min-w-0 flex-1">
-					<p class="text-xs text-muted-foreground">Titre</p>
+					<div class="flex items-center gap-1">
+						<p class="text-xs text-muted-foreground">Titre</p>
+						{#if titleChanged}
+							<button
+								type="button"
+								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+								onclick={cancelTitle}
+								aria-label="Annuler la modification du titre"
+							>
+								<X class="h-3 w-3" />
+							</button>
+						{/if}
+					</div>
 					{#if !editingTitle}
 						<button
 							type="button"
@@ -273,22 +317,12 @@
 							{worksheet.title || '-'}
 						</button>
 					{:else}
-						<div class="flex items-center gap-2">
-							<Input
-								bind:value={tempTitle}
-								class="flex-1"
-								placeholder="Titre de la feuille"
-								onkeydown={handleKeydown}
-							/>
-							<Button
-								size="sm"
-								variant="ghost"
-								onclick={() => (editingTitle = false)}
-								aria-label="Fermer"
-							>
-								<X class="h-4 w-4" />
-							</Button>
-						</div>
+						<Input
+							bind:value={tempTitle}
+							class="w-full"
+							placeholder="Titre de la feuille"
+							onkeydown={handleKeydownTitle}
+						/>
 					{/if}
 				</div>
 			</div>
@@ -299,7 +333,19 @@
 			<div class="flex items-start gap-3">
 				<AlignLeft class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
 				<div class="min-w-0 flex-1">
-					<p class="text-xs text-muted-foreground">Description</p>
+					<div class="flex items-center gap-1">
+						<p class="text-xs text-muted-foreground">Description</p>
+						{#if descriptionChanged}
+							<button
+								type="button"
+								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+								onclick={cancelDescription}
+								aria-label="Annuler la modification de la description"
+							>
+								<X class="h-3 w-3" />
+							</button>
+						{/if}
+					</div>
 					{#if !editingDescription}
 						<button
 							type="button"
@@ -314,24 +360,12 @@
 							{worksheet.description || 'Aucune description'}
 						</button>
 					{:else}
-						<div class="space-y-2">
-							<Textarea
-								bind:value={tempDescription}
-								class="min-h-[80px] w-full"
-								placeholder="Description de la feuille..."
-								onkeydown={handleKeydown}
-							/>
-							<div class="flex justify-end">
-								<Button
-									size="sm"
-									variant="ghost"
-									onclick={() => (editingDescription = false)}
-									aria-label="Fermer"
-								>
-									<X class="h-4 w-4" />
-								</Button>
-							</div>
-						</div>
+						<Textarea
+							bind:value={tempDescription}
+							class="min-h-[80px] w-full"
+							placeholder="Description de la feuille..."
+							onkeydown={handleKeydownDescription}
+						/>
 					{/if}
 				</div>
 			</div>
@@ -346,7 +380,19 @@
 					<FileText class="h-4 w-4 shrink-0 text-muted-foreground" />
 				{/if}
 				<div class="min-w-0 flex-1">
-					<p class="text-xs text-muted-foreground">Type</p>
+					<div class="flex items-center gap-1">
+						<p class="text-xs text-muted-foreground">Type</p>
+						{#if typeChanged}
+							<button
+								type="button"
+								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+								onclick={cancelType}
+								aria-label="Annuler la modification du type"
+							>
+								<X class="h-3 w-3" />
+							</button>
+						{/if}
+					</div>
 					{#if !editingType}
 						<button
 							type="button"
@@ -359,22 +405,12 @@
 							{worksheet.type ? WORKSHEET_TYPE_LABELS[worksheet.type] : '-'}
 						</button>
 					{:else}
-						<div class="flex items-center gap-2">
-							<MySelect
-								type="single"
-								bind:value={tempType}
-								items={typeOptions}
-								placeholder="Choisir un type"
-							/>
-							<Button
-								size="sm"
-								variant="ghost"
-								onclick={() => (editingType = false)}
-								aria-label="Fermer"
-							>
-								<X class="h-4 w-4" />
-							</Button>
-						</div>
+						<MySelect
+							type="single"
+							bind:value={tempType}
+							items={typeOptions}
+							placeholder="Choisir un type"
+						/>
 					{/if}
 				</div>
 			</div>
@@ -385,7 +421,19 @@
 			<div class="flex items-center gap-3">
 				<Clock class="h-4 w-4 shrink-0 text-muted-foreground" />
 				<div class="min-w-0 flex-1">
-					<p class="text-xs text-muted-foreground">Duree estimee</p>
+					<div class="flex items-center gap-1">
+						<p class="text-xs text-muted-foreground">Duree estimee</p>
+						{#if durationChanged}
+							<button
+								type="button"
+								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+								onclick={cancelDuration}
+								aria-label="Annuler la modification de la duree"
+							>
+								<X class="h-3 w-3" />
+							</button>
+						{/if}
+					</div>
 					{#if !editingDuration}
 						<button
 							type="button"
@@ -406,17 +454,9 @@
 								min={0}
 								max={480}
 								placeholder="min"
-								onkeydown={handleKeydown}
+								onkeydown={handleKeydownDuration}
 							/>
 							<span class="text-sm text-muted-foreground">min</span>
-							<Button
-								size="sm"
-								variant="ghost"
-								onclick={() => (editingDuration = false)}
-								aria-label="Fermer"
-							>
-								<X class="h-4 w-4" />
-							</Button>
 						</div>
 					{/if}
 				</div>
@@ -428,7 +468,19 @@
 			<div class="flex items-start gap-3">
 				<GraduationCap class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
 				<div class="min-w-0 flex-1">
-					<p class="text-xs text-muted-foreground">Niveaux scolaires</p>
+					<div class="flex items-center gap-1">
+						<p class="text-xs text-muted-foreground">Niveaux scolaires</p>
+						{#if gradesChanged}
+							<button
+								type="button"
+								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+								onclick={cancelGrades}
+								aria-label="Annuler la modification des niveaux"
+							>
+								<X class="h-3 w-3" />
+							</button>
+						{/if}
+					</div>
 					{#if !editingGrades}
 						<button
 							type="button"
@@ -451,18 +503,8 @@
 							{/if}
 						</button>
 					{:else}
-						<div class="mt-1 space-y-2">
+						<div class="mt-1">
 							<GradeBadgeSelector bind:value={tempGrades} />
-							<div class="flex justify-end">
-								<Button
-									size="sm"
-									variant="ghost"
-									onclick={() => (editingGrades = false)}
-									aria-label="Fermer"
-								>
-									<X class="h-4 w-4" />
-								</Button>
-							</div>
 						</div>
 					{/if}
 				</div>
@@ -474,7 +516,19 @@
 			<div class="flex items-start gap-3">
 				<Tag class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
 				<div class="min-w-0 flex-1">
-					<p class="text-xs text-muted-foreground">Tags</p>
+					<div class="flex items-center gap-1">
+						<p class="text-xs text-muted-foreground">Tags</p>
+						{#if tagsChanged}
+							<button
+								type="button"
+								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+								onclick={cancelTags}
+								aria-label="Annuler la modification des tags"
+							>
+								<X class="h-3 w-3" />
+							</button>
+						{/if}
+					</div>
 					{#if !editingTags}
 						<button
 							type="button"
@@ -495,18 +549,8 @@
 							{/if}
 						</button>
 					{:else}
-						<div class="mt-1 space-y-2">
+						<div class="mt-1">
 							<TagBadgeSelector bind:value={tempTags} />
-							<div class="flex justify-end">
-								<Button
-									size="sm"
-									variant="ghost"
-									onclick={() => (editingTags = false)}
-									aria-label="Fermer"
-								>
-									<X class="h-4 w-4" />
-								</Button>
-							</div>
 						</div>
 					{/if}
 				</div>
