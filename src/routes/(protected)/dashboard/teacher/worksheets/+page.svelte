@@ -6,18 +6,15 @@
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
-		MoreHorizontal,
 		Plus,
 		Copy,
 		Pencil,
 		Trash2,
-		Eye,
 		FileText,
 		ClipboardCheck,
 		BookOpen,
@@ -350,56 +347,54 @@
 									{/if}
 								</Table.Cell>
 								<Table.Cell>
-									{worksheet.total_points ?? 0}
+									{worksheet.exercise_count ?? 0}
 								</Table.Cell>
 								<Table.Cell class="text-sm text-muted-foreground">
 									{formatDate(worksheet.created_at)}
 								</Table.Cell>
 								<Table.Cell>
-									{#if deletingId === worksheet.id || duplicatingId === worksheet.id}
-										<Button variant="ghost" size="icon" class="h-8 w-8" disabled>
-											<Loader2 class="h-4 w-4 animate-spin" />
+									<div class="flex items-center gap-1">
+										<Button
+											variant="ghost"
+											size="icon"
+											class="h-8 w-8"
+											href="/dashboard/teacher/worksheets/{worksheet.id}"
+											title="Modifier"
+										>
+											<Pencil class="h-4 w-4" />
 										</Button>
-									{:else}
-										<DropdownMenu.Root>
-											<DropdownMenu.Trigger>
-												<Button variant="ghost" size="icon" class="h-8 w-8">
-													<MoreHorizontal class="h-4 w-4" />
-													<span class="sr-only">Actions</span>
-												</Button>
-											</DropdownMenu.Trigger>
-											<DropdownMenu.Content align="end">
-												<DropdownMenu.Item
-													onclick={() => goto(`/dashboard/teacher/worksheets/${worksheet.id}`)}
-												>
-													<Eye class="mr-2 h-4 w-4" />
-													Voir
-												</DropdownMenu.Item>
-												<DropdownMenu.Item
-													onclick={() => goto(`/dashboard/teacher/worksheets/${worksheet.id}`)}
-												>
-													<Pencil class="mr-2 h-4 w-4" />
-													Modifier
-												</DropdownMenu.Item>
-												<DropdownMenu.Separator />
-												<DropdownMenu.Item onclick={() => handleDuplicate(worksheet.id)}>
-													<Copy class="mr-2 h-4 w-4" />
-													Dupliquer
-												</DropdownMenu.Item>
-												{#if worksheet.status === 'draft'}
-													<DropdownMenu.Separator />
-													<DropdownMenu.Item
-														class="text-destructive focus:text-destructive"
-														onclick={() =>
-															openDeleteDialog({ id: worksheet.id, title: worksheet.title })}
-													>
-														<Trash2 class="mr-2 h-4 w-4" />
-														Supprimer
-													</DropdownMenu.Item>
+										<Button
+											variant="ghost"
+											size="icon"
+											class="h-8 w-8"
+											disabled={duplicatingId === worksheet.id}
+											onclick={() => handleDuplicate(worksheet.id)}
+											title="Dupliquer"
+										>
+											{#if duplicatingId === worksheet.id}
+												<Loader2 class="h-4 w-4 animate-spin" />
+											{:else}
+												<Copy class="h-4 w-4" />
+											{/if}
+										</Button>
+										{#if worksheet.status === 'draft'}
+											<Button
+												variant="ghost"
+												size="icon"
+												class="h-8 w-8 text-destructive hover:text-destructive"
+												disabled={deletingId === worksheet.id}
+												onclick={() =>
+													openDeleteDialog({ id: worksheet.id, title: worksheet.title })}
+												title="Supprimer"
+											>
+												{#if deletingId === worksheet.id}
+													<Loader2 class="h-4 w-4 animate-spin" />
+												{:else}
+													<Trash2 class="h-4 w-4" />
 												{/if}
-											</DropdownMenu.Content>
-										</DropdownMenu.Root>
-									{/if}
+											</Button>
+										{/if}
+									</div>
 								</Table.Cell>
 							</Table.Row>
 						{/each}

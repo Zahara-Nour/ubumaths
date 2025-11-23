@@ -416,10 +416,17 @@ export const worksheetExerciseWithDataResponseSchema = worksheetExerciseResponse
 });
 
 /**
+ * Worksheet list item schema (includes exercise_count)
+ */
+export const worksheetListItemSchema = worksheetResponseSchema.extend({
+	exercise_count: z.number().int().nonnegative()
+});
+
+/**
  * Worksheet list response schema (GET /api/worksheets)
  */
 export const worksheetListResponseSchema = z.object({
-	worksheets: z.array(worksheetResponseSchema),
+	worksheets: z.array(worksheetListItemSchema),
 	pagination: z.object({
 		page: z.number().int().positive(),
 		limit: z.number().int().positive(),

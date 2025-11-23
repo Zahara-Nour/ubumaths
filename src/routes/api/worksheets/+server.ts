@@ -36,10 +36,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	const { page, limit, status, type, search } = queryValidation.data;
 
-	// Build query
+	// Build query - include exercise count via relation
 	let query = locals.supabase
 		.from('worksheets')
-		.select('*', { count: 'exact' })
+		.select('*, worksheet_exercises(count)', { count: 'exact' })
 		.order('created_at', { ascending: false });
 
 	// Filter by creator (teachers see their own, admins see all from their school)
@@ -74,6 +74,17 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(500, 'Failed to fetch worksheets');
 	}
 
+	// Transform worksheets to include exercise_count
+	const worksheetsWithCount = (worksheets ?? []).map((w) => {
+		const { worksheet_exercises, ...rest } = w as typeof w & {
+			worksheet_exercises: { count: number }[];
+		};
+		return {
+			...rest,
+			exercise_count: worksheet_exercises?.[0]?.count ?? 0
+		};
+	});
+
 	const total = count ?? 0;
 	const totalPages = Math.ceil(total / limit);
 
@@ -81,7 +92,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const validated = validateJsonResponse(
 		worksheetListResponseSchema,
 		{
-			worksheets: worksheets ?? [],
+			worksheets: worksheetsWithCount,
 			pagination: {
 				page,
 				limit,
