@@ -24,10 +24,6 @@
 		RotateCcw,
 		Clock,
 		FileText,
-		ClipboardCheck,
-		BookOpen,
-		HelpCircle,
-		Home,
 		Calendar,
 		GraduationCap,
 		Tag,
@@ -39,8 +35,6 @@
 	} from 'lucide-svelte';
 	import type { PageData, ActionData } from './$types';
 	import type {
-		WorksheetType,
-		WorksheetStatus,
 		WorksheetWithRelations,
 		WorksheetSectionRow,
 		WorksheetExerciseWithExercise,
@@ -48,6 +42,15 @@
 		WorksheetAssignmentInsert
 	} from '$lib/types/worksheets';
 	import { formatGradeShort } from '$lib/utils/grades';
+	import {
+		WORKSHEET_TYPE_ICONS,
+		WORKSHEET_TYPE_LABELS,
+		WORKSHEET_STATUS_VARIANTS,
+		WORKSHEET_STATUS_LABELS,
+		ASSIGNMENT_STATUS_LABELS,
+		formatDate,
+		formatDuration
+	} from '$lib/utils/worksheet-constants';
 	import type { GradeCode } from '$lib/types/grades';
 	import type { Exercise } from '$lib/exercises/types';
 
@@ -91,64 +94,6 @@
 
 	// Get IDs of already added exercises
 	let existingExerciseIds = $derived(worksheet.exercises?.map((e) => e.exercise_id) ?? []);
-
-	// Type icons
-	const typeIcons: Record<WorksheetType, typeof FileText> = {
-		worksheet: FileText,
-		assessment: ClipboardCheck,
-		exam: BookOpen,
-		quiz: HelpCircle,
-		homework: Home
-	};
-
-	// Type labels
-	const typeLabels: Record<WorksheetType, string> = {
-		worksheet: "Feuille d'exercices",
-		assessment: 'Evaluation',
-		exam: 'Examen',
-		quiz: 'Quiz',
-		homework: 'Devoirs'
-	};
-
-	// Status variants
-	const statusVariants: Record<WorksheetStatus, 'default' | 'secondary' | 'outline'> = {
-		draft: 'secondary',
-		published: 'default',
-		archived: 'outline'
-	};
-
-	// Status labels
-	const statusLabels: Record<WorksheetStatus, string> = {
-		draft: 'Brouillon',
-		published: 'Publie',
-		archived: 'Archive'
-	};
-
-	/**
-	 * Format date for display
-	 */
-	function formatDate(dateString: string | null): string {
-		if (!dateString) return '-';
-		const date = new Date(dateString);
-		return date.toLocaleDateString('fr-FR', {
-			day: 'numeric',
-			month: 'long',
-			year: 'numeric',
-			hour: '2-digit',
-			minute: '2-digit'
-		});
-	}
-
-	/**
-	 * Format duration in minutes
-	 */
-	function formatDuration(minutes: number | null): string {
-		if (!minutes) return '-';
-		if (minutes < 60) return `${minutes} min`;
-		const hours = Math.floor(minutes / 60);
-		const mins = minutes % 60;
-		return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
-	}
 
 	// Show toast on form result
 	$effect(() => {
@@ -307,19 +252,6 @@
 	async function handleAssignmentUpdate() {
 		await loadAssignments();
 	}
-
-	/**
-	 * Format assignment status
-	 */
-	function formatAssignmentStatus(status: string): string {
-		const labels: Record<string, string> = {
-			draft: 'Brouillon',
-			active: 'Actif',
-			completed: 'Termine',
-			cancelled: 'Annule'
-		};
-		return labels[status] || status;
-	}
 </script>
 
 <svelte:head>
@@ -336,16 +268,16 @@
 			<div>
 				<div class="flex items-center gap-3">
 					<h1 class="text-3xl font-bold">{worksheet.title || '(Sans titre)'}</h1>
-					<Badge variant={statusVariants[worksheet.status]}>
-						{statusLabels[worksheet.status]}
+					<Badge variant={WORKSHEET_STATUS_VARIANTS[worksheet.status]}>
+						{WORKSHEET_STATUS_LABELS[worksheet.status]}
 					</Badge>
 				</div>
 				{#if worksheet.type}
-					{@const TypeIcon = typeIcons[worksheet.type]}
+					{@const TypeIcon = WORKSHEET_TYPE_ICONS[worksheet.type]}
 					<p class="mt-1 text-muted-foreground">
 						<span class="inline-flex items-center gap-1">
 							<TypeIcon class="h-4 w-4" />
-							{typeLabels[worksheet.type]}
+							{WORKSHEET_TYPE_LABELS[worksheet.type]}
 						</span>
 					</p>
 				{/if}
@@ -722,7 +654,7 @@
 														<Badge
 															variant={assignment.status === 'active' ? 'default' : 'secondary'}
 														>
-															{formatAssignmentStatus(assignment.status)}
+															{ASSIGNMENT_STATUS_LABELS[assignment.status] || assignment.status}
 														</Badge>
 													</div>
 													<p class="text-sm text-muted-foreground">
