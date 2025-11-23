@@ -20,7 +20,8 @@
 		FileText,
 		Globe,
 		Lock,
-		Sparkles
+		Sparkles,
+		Loader2
 	} from 'lucide-svelte';
 	import type { PageData, ActionData } from './$types';
 	import type { DefaultTemplate } from '$lib/worksheets/default-templates';
@@ -300,7 +301,11 @@
 													disabled={deletingId === template.id}
 													title="Supprimer"
 												>
-													<Trash2 class="h-4 w-4" />
+													{#if deletingId === template.id}
+														<Loader2 class="h-4 w-4 animate-spin" />
+													{:else}
+														<Trash2 class="h-4 w-4" />
+													{/if}
 												</Button>
 											</form>
 										{/if}
