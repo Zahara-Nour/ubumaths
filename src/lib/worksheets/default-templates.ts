@@ -177,7 +177,7 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
           #align(center)[
             *Note*
             #v(0.5cm)
-            #text(size: 14pt)[\\/ {{total_points}}]
+            #text(size: 14pt)[/ {{total_points}}]
           ]
         ]
       ]
@@ -269,7 +269,7 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
   ],
   footer: [
     #line(length: 100%, stroke: 0.5pt)
-    #context [Page #counter(page).display() sur #counter(page).final().first()]
+    Page #context(counter(page).display()) sur #context(counter(page).final().first())
   ]
 )
 
@@ -722,7 +722,7 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
   )[
     #text(size: 9pt, fill: rgb("#64748b"))[Score]
     #h(10pt)
-    #text(size: 14pt, weight: "bold")[_____ \\/ {{total_points}}]
+    #text(size: 14pt, weight: "bold")[\\_\\_\\_\\_\\_ / {{total_points}}]
   ]
 )
 
@@ -749,7 +749,7 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
 #v(0.3cm)
 #align(center)[
   #text(size: 8pt, fill: rgb("#9ca3af"))[
-    #context [Page #counter(page).display() sur #counter(page).final().first()]
+    Page #context(counter(page).display()) sur #context(counter(page).final().first())
   ]
 ]`
 };
@@ -876,7 +876,7 @@ export const TWO_COLUMNS_TEMPLATE: DefaultTemplate = {
   align: (left, center, right),
   text(size: 8pt, fill: rgb("#9ca3af"))[{{teacher_name}}],
   text(size: 8pt, fill: rgb("#6b7280"), style: "italic")[
-    #context [Page #counter(page).display()]
+    Page #context(counter(page).display())
   ],
   text(size: 8pt, fill: rgb("#9ca3af"))[{{school_name}}]
 )`
@@ -917,7 +917,7 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
       align: (left, center, right),
       text(size: 8pt, fill: rgb("#9ca3af"))[{{teacher_name}}],
       text(size: 8pt, fill: rgb("#6b7280"))[
-        #context [Page #counter(page).display() \\/ #counter(page).final().first()]
+        #context(counter(page).display()) / #context(counter(page).final().first())
       ],
       []
     )
@@ -1077,18 +1077,31 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
 		...COMMON_PLACEHOLDERS,
 		{ key: 'theme_color', type: 'text', label: 'Couleur thème', default_value: '#e11d48' }
 	],
-	template_content: `// Configuration style magazine
+	template_content: `// Variables de couleur (définies avant #set page pour être accessibles dans footer)
+#let accent = rgb("#e11d48")
+#let accent-light = accent.lighten(85%)
+
+// Configuration style magazine
 #set page(
   paper: "a4",
-  margin: (top: 1.5cm, bottom: 2cm, left: 1.8cm, right: 1.8cm)
+  margin: (top: 1.5cm, bottom: 2cm, left: 1.8cm, right: 1.8cm),
+  footer: [
+    #line(length: 100%, stroke: 0.5pt + rgb("#e5e7eb"))
+    #v(0.2cm)
+    #grid(
+      columns: (1fr, auto, 1fr),
+      align: (left, center, right),
+      text(size: 7pt, fill: rgb("#9ca3af"))[© {{school_name}}],
+      text(size: 8pt, weight: "bold", fill: accent)[
+        #context(counter(page).display())
+      ],
+      text(size: 7pt, fill: rgb("#9ca3af"))[ubumaths.fr]
+    )
+  ]
 )
 
 #set text(font: "New Computer Modern", size: 10pt, lang: "fr")
 #set par(justify: true)
-
-// Variables de couleur
-#let accent = rgb("#e11d48")
-#let accent-light = accent.lighten(85%)
 
 // Header magazine avec numéro d'édition
 #grid(
@@ -1270,7 +1283,7 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
         #text(size: 9pt, fill: accent)[SCORE]
         #v(0.4cm)
         #text(size: 20pt, weight: "bold")[
-          ___ \\/ {{total_points}}
+          \\_\\_\\_ / {{total_points}}
         ]
       ]
     ]
@@ -1290,25 +1303,11 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
         #text(size: 8pt, weight: "bold")[
           Prochain cours
           #v(0.1cm)
-          ___________
+          \\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_
         ]
       ]
     ]
   ]
-)
-
-// Footer style magazine
-#v(1fr)
-#line(length: 100%, stroke: 0.5pt + rgb("#e5e7eb"))
-#v(0.2cm)
-#grid(
-  columns: (1fr, auto, 1fr),
-  align: (left, center, right),
-  text(size: 7pt, fill: rgb("#9ca3af"))[© {{school_name}}],
-  text(size: 8pt, weight: "bold", fill: accent)[
-    #context(counter(page).display())
-  ],
-  text(size: 7pt, fill: rgb("#9ca3af"))[ubumaths.fr]
 )`
 };
 
@@ -1337,7 +1336,7 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
     #text(size: 8pt, fill: rgb("#6b7280"))[
       Document généré par UbuMaths
       #h(1fr)
-      #context [Page #counter(page).display() sur #counter(page).final().first()]
+      Page #context(counter(page).display()) sur #context(counter(page).final().first())
     ]
   ]
 )
@@ -1472,11 +1471,11 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
   fill: (col, row) => if row == 0 { rgb("#e5e7eb") },
 
   [*Ex.*], [*Compétence évaluée*], [*Barème*], [*Note*], [*Observations*],
-  [1], [Calcul algébrique], [\\/5], [], [],
-  [2], [Résolution d'équations], [\\/5], [], [],
-  [3], [Raisonnement], [\\/5], [], [],
-  [4], [Application], [\\/5], [], [],
-  table.cell(colspan: 2)[*Total*], [\\/{{total_points}}], [], []
+  [1], [Calcul algébrique], [/5], [], [],
+  [2], [Résolution d'équations], [/5], [], [],
+  [3], [Raisonnement], [/5], [], [],
+  [4], [Application], [/5], [], [],
+  table.cell(colspan: 2)[*Total*], [/{{total_points}}], [], []
 )
 
 #v(0.8cm)
