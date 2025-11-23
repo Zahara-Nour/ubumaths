@@ -6,7 +6,6 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Separator } from '$lib/components/ui/separator';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import ExerciseSelector from '$lib/components/worksheets/ExerciseSelector.svelte';
 	import SectionManager from '$lib/components/worksheets/SectionManager.svelte';
@@ -15,6 +14,8 @@
 	import PdfPreview from '$lib/components/worksheets/PdfPreview.svelte';
 	import CorrectionManager from '$lib/components/worksheets/CorrectionManager.svelte';
 	import WorksheetAssignmentForm from '$lib/components/worksheets/WorksheetAssignmentForm.svelte';
+	import MetadataCards from '$lib/components/worksheets/MetadataCards.svelte';
+	import MetadataForm from '$lib/components/worksheets/MetadataForm.svelte';
 	import {
 		ArrowLeft,
 		Pencil,
@@ -22,12 +23,7 @@
 		Send,
 		Archive,
 		RotateCcw,
-		Clock,
 		FileText,
-		Calendar,
-		GraduationCap,
-		Tag,
-		ListOrdered,
 		Loader2,
 		FileDown,
 		Users,
@@ -39,19 +35,16 @@
 		WorksheetSectionRow,
 		WorksheetExerciseWithExercise,
 		WorksheetAssignmentRow,
-		WorksheetAssignmentInsert
+		WorksheetAssignmentInsert,
+		WorksheetMetadataUpdate
 	} from '$lib/types/worksheets';
-	import { formatGradeShort } from '$lib/utils/grades';
 	import {
 		WORKSHEET_TYPE_ICONS,
 		WORKSHEET_TYPE_LABELS,
 		WORKSHEET_STATUS_VARIANTS,
 		WORKSHEET_STATUS_LABELS,
-		ASSIGNMENT_STATUS_LABELS,
-		formatDate,
-		formatDuration
+		ASSIGNMENT_STATUS_LABELS
 	} from '$lib/utils/worksheet-constants';
-	import type { GradeCode } from '$lib/types/grades';
 	import type { Exercise } from '$lib/exercises/types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -61,6 +54,10 @@
 	let archiving = $state(false);
 	let unarchiving = $state(false);
 	let addingExercises = $state(false);
+	let savingMetadata = $state(false);
+
+	// Edit mode state
+	let editMode = $state(false);
 
 	// Exercise selector state
 	let exerciseSelectorOpen = $state(false);
@@ -98,7 +95,7 @@
 	// Show toast on form result
 	$effect(() => {
 		if (form?.success) {
-			toaster.success(form.message || 'Operation reussie');
+			toaster.success(form.message || 'Operation reussite');
 		} else if (form?.message) {
 			toaster.error(form.message);
 		}
@@ -252,6 +249,36 @@
 	async function handleAssignmentUpdate() {
 		await loadAssignments();
 	}
+
+	/**
+	 * Handle saving metadata from the MetadataForm component
+	 */
+	async function handleSaveMetadata(updateData: WorksheetMetadataUpdate): Promise<void> {
+		savingMetadata = true;
+		try {
+			const response = await fetch(`/api/worksheets/${worksheet.id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(updateData)
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({ message: 'Erreur serveur' }));
+				throw new Error(errorData.message || 'Erreur lors de la sauvegarde');
+			}
+
+			// Update local worksheet data with the response
+			const { worksheet: updatedWorksheet } = await response.json();
+			worksheetData = { ...worksheetData, ...updatedWorksheet };
+
+			editMode = false;
+			toaster.success('Modifications enregistrees');
+		} catch (err) {
+			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
+		} finally {
+			savingMetadata = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -373,125 +400,17 @@
 
 	<!-- Content -->
 	<div class="space-y-6">
-		<!-- Description -->
-		{#if worksheet.description}
-			<Card.Root>
-				<Card.Header>
-					<Card.Title class="text-lg">Description</Card.Title>
-				</Card.Header>
-				<Card.Content>
-					<p class="whitespace-pre-wrap">{worksheet.description}</p>
-				</Card.Content>
-			</Card.Root>
+		<!-- Metadata: View or Edit mode -->
+		{#if editMode}
+			<MetadataForm
+				{worksheet}
+				onSave={handleSaveMetadata}
+				onCancel={() => (editMode = false)}
+				saving={savingMetadata}
+			/>
+		{:else}
+			<MetadataCards {worksheet} onEdit={isDraft ? () => (editMode = true) : undefined} />
 		{/if}
-
-		<!-- Metadata grid -->
-		<div class="grid gap-4 md:grid-cols-2">
-			<!-- Left column -->
-			<Card.Root>
-				<Card.Header>
-					<Card.Title class="text-lg">Informations</Card.Title>
-				</Card.Header>
-				<Card.Content class="space-y-4">
-					<!-- Duration -->
-					<div class="flex items-center gap-3">
-						<Clock class="h-4 w-4 text-muted-foreground" />
-						<div>
-							<p class="text-sm text-muted-foreground">Duree estimee</p>
-							<p class="font-medium">{formatDuration(worksheet.estimated_duration_minutes)}</p>
-						</div>
-					</div>
-
-					<Separator />
-
-					<!-- Grade levels -->
-					<div class="flex items-start gap-3">
-						<GraduationCap class="mt-0.5 h-4 w-4 text-muted-foreground" />
-						<div>
-							<p class="text-sm text-muted-foreground">Niveaux scolaires</p>
-							{#if worksheet.grade_levels && worksheet.grade_levels.length > 0}
-								<div class="mt-1 flex flex-wrap gap-1">
-									{#each worksheet.grade_levels as grade, i (i)}
-										<Badge variant="outline">
-											{formatGradeShort(grade as unknown as GradeCode)}
-										</Badge>
-									{/each}
-								</div>
-							{:else}
-								<p class="font-medium">-</p>
-							{/if}
-						</div>
-					</div>
-
-					<Separator />
-
-					<!-- Tags -->
-					<div class="flex items-start gap-3">
-						<Tag class="mt-0.5 h-4 w-4 text-muted-foreground" />
-						<div>
-							<p class="text-sm text-muted-foreground">Tags</p>
-							{#if worksheet.tags && worksheet.tags.length > 0}
-								<div class="mt-1 flex flex-wrap gap-1">
-									{#each worksheet.tags as tag (tag)}
-										<Badge variant="secondary">{tag}</Badge>
-									{/each}
-								</div>
-							{:else}
-								<p class="font-medium">-</p>
-							{/if}
-						</div>
-					</div>
-				</Card.Content>
-			</Card.Root>
-
-			<!-- Right column -->
-			<Card.Root>
-				<Card.Header>
-					<Card.Title class="text-lg">Statistiques</Card.Title>
-				</Card.Header>
-				<Card.Content class="space-y-4">
-					<!-- Points total -->
-					<div class="flex items-center gap-3">
-						<ListOrdered class="h-4 w-4 text-muted-foreground" />
-						<div>
-							<p class="text-sm text-muted-foreground">Points total</p>
-							<p class="font-medium">{worksheet.total_points ?? 0} points</p>
-						</div>
-					</div>
-
-					<Separator />
-
-					<!-- Exercises count -->
-					<div class="flex items-center gap-3">
-						<FileText class="h-4 w-4 text-muted-foreground" />
-						<div>
-							<p class="text-sm text-muted-foreground">Exercices</p>
-							<p class="font-medium">{worksheet.exercises?.length ?? 0} exercice(s)</p>
-						</div>
-					</div>
-
-					<Separator />
-
-					<!-- Dates -->
-					<div class="flex items-center gap-3">
-						<Calendar class="h-4 w-4 text-muted-foreground" />
-						<div>
-							<p class="text-sm text-muted-foreground">Cree le</p>
-							<p class="font-medium">{formatDate(worksheet.created_at)}</p>
-						</div>
-					</div>
-
-					{#if worksheet.published_at}
-						<div class="ml-7 flex items-center gap-3">
-							<div>
-								<p class="text-sm text-muted-foreground">Publie le</p>
-								<p class="font-medium">{formatDate(worksheet.published_at)}</p>
-							</div>
-						</div>
-					{/if}
-				</Card.Content>
-			</Card.Root>
-		</div>
 
 		<!-- Main content tabs -->
 		<Tabs.Root
