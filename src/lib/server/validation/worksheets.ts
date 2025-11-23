@@ -128,8 +128,8 @@ export const createWorksheetSchema = z.object({
 		.optional()
 		.nullable(),
 	grade_levels: z
-		.array(z.number().int().min(1).max(13))
-		.max(13, 'Maximum 13 grade levels')
+		.array(z.string().trim().min(1).max(10))
+		.max(20, 'Maximum 20 grade levels')
 		.optional()
 		.default([]),
 	tags: z.array(z.string().trim().min(1).max(50)).max(30, 'Maximum 30 tags').optional().default([])
@@ -355,7 +355,7 @@ export const worksheetResponseSchema = z.object({
 	template_id: z.string().uuid().nullable(),
 	estimated_duration_minutes: z.number().int().nullable(),
 	total_points: z.number().int().nullable(),
-	grade_levels: z.array(z.number().int()),
+	grade_levels: z.array(z.string()),
 	tags: z.array(z.string()),
 	created_by: z.string().uuid(),
 	school_id: z.string().uuid().nullable(),

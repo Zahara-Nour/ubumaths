@@ -9,7 +9,7 @@
 	} from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
-	import { MySelect } from '$lib/components/ui/MySelect';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Eye, RefreshCw, Users, Copy } from 'lucide-svelte';
 	import type { InstanceData } from '$lib/types/worksheets';
