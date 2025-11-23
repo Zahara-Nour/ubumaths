@@ -1346,7 +1346,7 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
 
 // En-tête institutionnel
 #align(center)[
-  #text(size: 14pt, weight: "bold", smallcaps: true)[{{school_name}}]
+  #text(size: 14pt, weight: "bold")[{{school_name}}]
   #v(0.2cm)
   #text(size: 10pt)[Département de Mathématiques]
   #v(0.1cm)
