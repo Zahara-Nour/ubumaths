@@ -809,7 +809,7 @@ CREATE POLICY "Students can view class assignments"
       JOIN public.classes c ON c.id = cm.class_id
       WHERE cm.class_id = worksheet_assignments.class_id
       AND cm.student_id = auth.uid()
-      AND c.archived = FALSE
+      AND c.is_active = TRUE
     )
   );
 
