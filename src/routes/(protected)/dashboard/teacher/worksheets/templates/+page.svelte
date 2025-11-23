@@ -379,7 +379,7 @@
 						<p class="text-sm text-muted-foreground">{template.description}</p>
 						<div class="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
 							<FileText class="h-3 w-3" />
-							{template.placeholders.length} placeholders
+							{template.placeholders?.length ?? 0} placeholders
 						</div>
 					</Card.Content>
 				</Card.Root>

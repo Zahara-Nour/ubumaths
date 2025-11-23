@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -41,6 +42,7 @@
 		ASSIGNMENT_STATUS_LABELS
 	} from '$lib/utils/worksheet-constants';
 	import type { Exercise } from '$lib/exercises/types';
+	import { DEFAULT_TEMPLATES } from '$lib/worksheets/default-templates';
 
 	let { data }: { data: PageData } = $props();
 
@@ -67,6 +69,11 @@
 	);
 	let classes = $state<{ id: string; name: string }[]>([]);
 
+	// Templates state - initialize with default templates
+	let templates = $state<{ id: string; name: string; description: string | null }[]>(
+		DEFAULT_TEMPLATES.map((t) => ({ id: t.id, name: t.name, description: t.description }))
+	);
+
 	// Type-safe worksheet access with local state for updates
 	// This allows both local optimistic updates AND server data sync
 	// eslint-disable-next-line svelte/prefer-writable-derived -- intentional local state + server sync pattern
@@ -75,6 +82,11 @@
 	// Update local state when data changes (e.g., after invalidateAll)
 	$effect(() => {
 		worksheetData = data.worksheet as WorksheetWithRelations;
+	});
+
+	// Load templates on mount (needed for editing)
+	onMount(() => {
+		loadTemplates();
 	});
 
 	// Derived values
@@ -278,6 +290,24 @@
 	}
 
 	/**
+	 * Load available templates from database (includes seeded default templates)
+	 */
+	async function loadTemplates() {
+		try {
+			const response = await fetch('/api/worksheets/templates?include_public=true');
+			const data = await response.json();
+			if (response.ok && data.templates?.length > 0) {
+				// Use templates from database (includes seeded default templates)
+				templates = data.templates;
+			}
+			// If API returns empty, keep the initial default templates from state
+		} catch (err) {
+			console.error('Error loading templates:', err);
+			// On error, keep the initial default templates from state
+		}
+	}
+
+	/**
 	 * Handle assignment creation
 	 */
 	async function handleCreateAssignment(assignmentData: WorksheetAssignmentInsert) {
@@ -425,7 +455,7 @@
 	<!-- Content -->
 	<div class="space-y-6">
 		<!-- Metadata with inline editing -->
-		<MetadataCards {worksheet} onSave={isDraft ? handleFieldSave : undefined} />
+		<MetadataCards {worksheet} {templates} onSave={isDraft ? handleFieldSave : undefined} />
 
 		<!-- Main content tabs -->
 		<Tabs.Root
