@@ -1,6 +1,6 @@
 # Worksheet Merge Progress
 
-## Statut: Phase 2 - En cours
+## Statut: Phase 3 - En cours
 
 ## Objectif
 
@@ -9,7 +9,10 @@ Fusionner les pages view (`/worksheets/[id]`) et edit (`/worksheets/[id]/edit`) 
 ## Phases
 
 - [x] Phase 1: Extraction utilitaires partagés ✓ (commit 82fad175)
-- [ ] Phase 2: Composants metadata + security audit
+- [x] Phase 2: Composants metadata + security audit ✓ (commit 206ababe)
+  - MetadataCards.svelte créé
+  - MetadataForm.svelte créé avec validation Zod
+  - Security audit: fixes appliqués (parseInt, tags validation)
 - [ ] Phase 3: Fusion page + security/perf audit
 - [ ] Phase 4: Nettoyage
 - [ ] Phase 5: Validation finale
@@ -42,12 +45,12 @@ Fusionner les pages view (`/worksheets/[id]`) et edit (`/worksheets/[id]/edit`) 
 
 ## Audits effectués
 
-- Security Phase 2: En attente
+- Security Phase 2: ✓ Complété (3 fixes appliqués)
 - Security Phase 3: En attente
 - Performance Phase 3: En attente
 
 ## Prochaines étapes
 
-1. Créer MetadataCards.svelte
-2. Créer MetadataForm.svelte
-3. Security audit sur validation Zod
+1. Intégrer MetadataCards et MetadataForm dans la page view
+2. Ajouter toggle mode view/edit
+3. Implémenter handleSave avec API PATCH
