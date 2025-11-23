@@ -7,7 +7,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import * as AlertDialog from '$lib/components/ui/alert-dialog';
+	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -437,23 +437,11 @@
 </div>
 
 <!-- Delete Confirmation Dialog -->
-<AlertDialog.Root bind:open={deleteDialogOpen}>
-	<AlertDialog.Content>
-		<AlertDialog.Header>
-			<AlertDialog.Title>Supprimer cette feuille ?</AlertDialog.Title>
-			<AlertDialog.Description>
-				Vous allez supprimer la feuille "{worksheetToDelete?.title || '(Sans titre)'}". Cette action
-				est irreversible.
-			</AlertDialog.Description>
-		</AlertDialog.Header>
-		<AlertDialog.Footer>
-			<AlertDialog.Cancel>Annuler</AlertDialog.Cancel>
-			<AlertDialog.Action
-				class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-				onclick={handleDelete}
-			>
-				Supprimer
-			</AlertDialog.Action>
-		</AlertDialog.Footer>
-	</AlertDialog.Content>
-</AlertDialog.Root>
+<ConfirmDialog
+	bind:open={deleteDialogOpen}
+	title="Supprimer cette feuille ?"
+	description={`Vous allez supprimer la feuille "${worksheetToDelete?.title || '(Sans titre)'}". Cette action est irreversible.`}
+	confirmLabel="Supprimer"
+	variant="destructive"
+	onConfirm={handleDelete}
+/>
