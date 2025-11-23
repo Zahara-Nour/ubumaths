@@ -44,9 +44,9 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
-	import GradeMultiSelect from '$lib/components/GradeMultiSelect.svelte';
+	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import QuestionTemplateCard from '$lib/components/QuestionTemplateCard.svelte';
-	import { getGradeSelectItems } from '$lib/utils/grades';
+	import type { GradeCode } from '$lib/types/grades';
 	import {
 		Plus,
 		Eye,
@@ -75,9 +75,9 @@
 	 */
 	let searchTerm = $state(data.filters.search || ''); // Current search term
 	let selectedType = $state<string>(data.filters.type || 'all'); // Filter by question type
-	let selectedGradesList = $state<string[]>(
+	let selectedGradesList = $state<GradeCode[]>(
 		// Filter by grade levels (comma-separated in URL)
-		data.filters.grades ? data.filters.grades.split(',').map((g) => g.trim()) : []
+		(data.filters.grades ? data.filters.grades.split(',').map((g) => g.trim()) : []) as GradeCode[]
 	);
 	let selectedTheme = $state<string>(data.filters.theme || 'all'); // Filter by theme
 	let selectedDomain = $state<string>(data.filters.domain || 'all'); // Filter by domain
@@ -108,9 +108,6 @@
 		{ value: 'fill_in_blanks', label: 'À trous' },
 		{ value: 'multiple_choice', label: 'QCM' }
 	];
-
-	// Grade levels for filter - uses unified grades system
-	const gradeLevels = getGradeSelectItems();
 
 	// Sort field options
 	const sortFields = [
@@ -505,7 +502,7 @@
 							<!-- Grade filter -->
 							<div class="space-y-2">
 								<Label class="text-sm font-medium">Niveaux scolaires</Label>
-								<GradeMultiSelect bind:selectedGrades={selectedGradesList} grades={gradeLevels} />
+								<GradeBadgeSelector bind:value={selectedGradesList} placeholder="Tous niveaux" />
 							</div>
 
 							<!-- Search -->
