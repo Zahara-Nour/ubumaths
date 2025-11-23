@@ -52,9 +52,8 @@
 	let batchProgress = $state(0);
 	let batchTotal = $state(0);
 
-	// Typst library state - using unknown since typst.js doesn't have proper types
-	let typstLibrary = $state<unknown>(null);
-	let isTypstLoading = $state(true);
+	// Loading/error state
+	let isTypstLoading = $state(false);
 	let typstError = $state<string | null>(null);
 
 	// Student selection items for MySelect
@@ -73,7 +72,8 @@
 	// ============================================================================
 
 	onMount(() => {
-		loadTypstLibrary();
+		// Generate initial preview
+		generatePreview();
 
 		// Cleanup on unmount
 		return () => {
@@ -82,55 +82,6 @@
 			}
 		};
 	});
-
-	// ============================================================================
-	// TYPST LIBRARY LOADING
-	// ============================================================================
-
-	async function loadTypstLibrary() {
-		isTypstLoading = true;
-		typstError = null;
-
-		try {
-			// Load Typst.js library from CDN
-			const script = document.createElement('script');
-			script.type = 'module';
-			script.src =
-				'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst.ts/dist/esm/contrib/all-in-one-lite.bundle.js';
-
-			await new Promise((resolve, reject) => {
-				script.onload = resolve;
-				script.onerror = reject;
-				document.head.appendChild(script);
-			});
-
-			// Initialize Typst
-			const typst = (window as { $typst?: unknown }).$typst;
-			if (!typst) {
-				throw new Error('Typst library not available');
-			}
-
-			typst.setCompilerInitOptions({
-				getModule: () =>
-					'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm'
-			});
-
-			typst.setRendererInitOptions({
-				getModule: () =>
-					'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm'
-			});
-
-			typstLibrary = typst;
-			isTypstLoading = false;
-
-			// Generate initial preview
-			await generatePreview();
-		} catch (error) {
-			console.error('Failed to load Typst library:', error);
-			typstError = 'Impossible de charger la bibliothèque Typst';
-			isTypstLoading = false;
-		}
-	}
 
 	// ============================================================================
 	// PDF GENERATION
@@ -154,7 +105,7 @@
 					? formatStudentName(students.find((s) => s.id === selectedStudentId))
 					: undefined;
 
-			// Call API to generate PDF
+			// Try to call API to generate PDF
 			const response = await fetch(`/api/worksheets/${worksheet.id}/pdf`, {
 				method: 'POST',
 				headers: {
@@ -170,7 +121,16 @@
 			});
 
 			if (!response.ok) {
-				throw new Error(`Erreur ${response.status}: ${await response.text()}`);
+				const errorData = await response.json().catch(() => ({ message: 'Erreur inconnue' }));
+
+				// If 501 Not Implemented, show message about CLI requirement
+				if (response.status === 501) {
+					typstError =
+						'La génération PDF serveur nécessite Typst CLI. Veuillez installer Typst (typst.app) ou utiliser un aperçu manuel.';
+					return;
+				}
+
+				throw new Error(errorData.message || `Erreur ${response.status}`);
 			}
 
 			const data = await response.json();
@@ -187,10 +147,11 @@
 			pdfUrl = URL.createObjectURL(blob);
 			pdfBase64 = data.pdf;
 			pdfFilename = data.filename;
+			typstError = null;
 
 			toaster.success('PDF généré avec succès');
-		} catch (error) {
-			console.error('PDF generation error:', error);
+		} catch (err) {
+			console.error('PDF generation error:', err);
 			toaster.error('Erreur lors de la génération du PDF');
 		} finally {
 			isGenerating = false;
@@ -286,6 +247,7 @@
 	// Track previous values to detect changes
 	let prevMode = $state<'worksheet' | 'correction' | null>(null);
 	let prevStudentId = $state<string | null | undefined>(undefined);
+	let hasInitialized = $state(false);
 
 	// Regenerate preview when mode or student changes (not on initial load or errors)
 	$effect(() => {
@@ -293,21 +255,23 @@
 		const currentMode = mode;
 		const currentStudentId = selectedStudentId;
 
-		// Only regenerate if typst is ready and values have changed from previous
-		if (typstLibrary && !isTypstLoading && !isGenerating) {
-			// Skip if this is just initialization
-			if (prevMode === null) {
-				prevMode = currentMode;
-				prevStudentId = currentStudentId;
-				return;
-			}
+		// Skip if not yet initialized or currently generating
+		if (!hasInitialized || isGenerating) return;
 
-			// Check if mode or student actually changed
-			if (currentMode !== prevMode || currentStudentId !== prevStudentId) {
-				prevMode = currentMode;
-				prevStudentId = currentStudentId;
-				generatePreview();
-			}
+		// Check if mode or student actually changed
+		if (currentMode !== prevMode || currentStudentId !== prevStudentId) {
+			prevMode = currentMode;
+			prevStudentId = currentStudentId;
+			generatePreview();
+		}
+	});
+
+	// Mark as initialized after first render
+	$effect(() => {
+		if (!hasInitialized) {
+			prevMode = mode;
+			prevStudentId = selectedStudentId;
+			hasInitialized = true;
 		}
 	});
 </script>
