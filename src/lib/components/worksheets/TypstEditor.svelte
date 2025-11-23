@@ -28,13 +28,19 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
-	import { Code2, Eye, Plus, AlertCircle, FileText } from 'lucide-svelte';
+	import { Code2, Eye, Plus, AlertCircle, FileText, RefreshCw, Loader2 } from 'lucide-svelte';
 	import type { TemplatePlaceholder } from '$lib/types/worksheets';
 	import {
 		COMMON_PLACEHOLDERS,
 		SAMPLE_PREVIEW_DATA,
 		renderTemplate
 	} from '$lib/worksheets/default-templates';
+	import {
+		getTypstCompiler,
+		type TypstCompiler,
+		getCompilerError,
+		resetCompilerState
+	} from '$lib/worksheets/typst-compiler';
 
 	// Props
 	interface Props {
@@ -58,6 +64,13 @@
 	let textareaRef = $state<HTMLTextAreaElement | null>(null);
 	let renderedPreview = $state('');
 	let validationError = $state<string | null>(null);
+
+	// Typst compilation state
+	let typst = $state<TypstCompiler | null>(null);
+	let isTypstLoading = $state(false);
+	let typstError = $state<string | null>(null);
+	let svgContent = $state<string>('');
+	let isGeneratingSvg = $state(false);
 
 	// Derived: render preview when content changes
 	$effect(() => {
@@ -154,22 +167,115 @@
 	}
 
 	/**
-	 * Group placeholders by type
+	 * Group placeholders by type, ensuring unique keys
 	 */
 	function getPlaceholdersByType(type: 'text' | 'date' | 'dynamic'): TemplatePlaceholder[] {
-		return placeholders.filter((p) => p.type === type);
+		const filtered = placeholders.filter((p) => p.type === type);
+		// Deduplicate by key (keep first occurrence)
+		const seen = new Set<string>();
+		return filtered.filter((p) => {
+			if (seen.has(p.key)) return false;
+			seen.add(p.key);
+			return true;
+		});
 	}
 
 	/**
-	 * Extract used placeholders from content
+	 * Extract used placeholders from content (unique keys only)
 	 */
 	function getUsedPlaceholders(): string[] {
 		const matches = content.match(/\{\{([a-zA-Z0-9_]+)\}\}/g) || [];
-		return matches.map((m) => m.replace(/\{\{|\}\}/g, ''));
+		const keys = matches.map((m) => m.replace(/\{\{|\}\}/g, ''));
+		return [...new Set(keys)];
+	}
+
+	/**
+	 * Load Typst compiler (lazy loading on preview tab)
+	 */
+	async function loadTypstCompiler() {
+		if (typst || isTypstLoading) return;
+
+		isTypstLoading = true;
+		typstError = null;
+
+		try {
+			const compiler = await getTypstCompiler();
+			typst = compiler;
+			typstError = null;
+		} catch (err) {
+			typstError = getCompilerError() || `Erreur de chargement: ${err}`;
+			console.error('Typst loading error:', err);
+		} finally {
+			isTypstLoading = false;
+		}
+	}
+
+	/**
+	 * Retry loading Typst after an error
+	 */
+	async function retryLoadTypst() {
+		resetCompilerState();
+		typst = null;
+		await loadTypstCompiler();
+	}
+
+	/**
+	 * Generate SVG preview from Typst content
+	 */
+	async function generateSvgPreview() {
+		if (!typst || isGeneratingSvg) return;
+
+		isGeneratingSvg = true;
+		typstError = null;
+
+		try {
+			const svg = await typst.svg({ mainContent: renderedPreview });
+			svgContent = svg;
+
+			// Scale SVG to fit container after render
+			setTimeout(() => {
+				const container = document.getElementById('typst-svg-preview');
+				const svgElem = container?.querySelector('svg');
+				if (svgElem && container) {
+					const width = Number.parseFloat(svgElem.getAttribute('width') || '0');
+					const height = Number.parseFloat(svgElem.getAttribute('height') || '0');
+					const containerWidth = container.clientWidth - 40;
+
+					if (width > 0 && height > 0 && containerWidth > 0) {
+						svgElem.setAttribute('width', String(containerWidth));
+						svgElem.setAttribute('height', String((height * containerWidth) / width));
+					}
+				}
+			}, 50);
+		} catch (err) {
+			typstError = `Erreur de compilation: ${err}`;
+			console.error('Typst compilation error:', err);
+		} finally {
+			isGeneratingSvg = false;
+		}
+	}
+
+	/**
+	 * Handle preview tab activation - load Typst and generate preview
+	 */
+	async function handlePreviewTabActivated() {
+		if (!typst) {
+			await loadTypstCompiler();
+		}
+		if (typst && renderedPreview) {
+			await generateSvgPreview();
+		}
 	}
 
 	// Derived: used placeholders
 	let usedPlaceholders = $derived(getUsedPlaceholders());
+
+	// Auto-generate preview when switching to preview tab
+	$effect(() => {
+		if (activeTab === 'preview') {
+			handlePreviewTabActivated();
+		}
+	});
 </script>
 
 <div class="space-y-4">
@@ -328,22 +434,84 @@
 						<Button
 							variant="ghost"
 							size="sm"
-							onclick={() => {
+							onclick={async () => {
 								renderedPreview = renderTemplate(content, previewData);
+								await generateSvgPreview();
 							}}
+							disabled={isGeneratingSvg || isTypstLoading}
 							class="h-8 gap-2"
 						>
-							<RefreshCw class="h-3 w-3" />
+							{#if isGeneratingSvg}
+								<Loader2 class="h-3 w-3 animate-spin" />
+							{:else}
+								<RefreshCw class="h-3 w-3" />
+							{/if}
 							Actualiser
 						</Button>
 					</div>
 				</Card.Header>
 				<Card.Content>
-					<!-- Rendered preview (raw Typst for now) -->
-					<div class="rounded-lg border bg-white p-4 dark:bg-zinc-950">
-						<pre
-							class="font-mono text-xs leading-relaxed whitespace-pre-wrap text-foreground">{renderedPreview}</pre>
-					</div>
+					<!-- Typst loading state -->
+					{#if isTypstLoading}
+						<div class="flex items-center justify-center py-12">
+							<div class="space-y-3 text-center">
+								<Loader2 class="mx-auto h-8 w-8 animate-spin text-primary" />
+								<p class="text-sm text-muted-foreground">Chargement du generateur PDF...</p>
+							</div>
+						</div>
+					{:else if typstError && !typst}
+						<!-- Error state -->
+						<div class="rounded-lg border border-destructive/50 bg-destructive/5 p-4">
+							<div class="flex items-start gap-3">
+								<AlertCircle class="mt-0.5 h-5 w-5 text-destructive" />
+								<div class="flex-1">
+									<p class="font-medium text-destructive">Erreur de chargement</p>
+									<p class="mt-1 text-sm text-muted-foreground">{typstError}</p>
+									<Button variant="outline" size="sm" class="mt-3" onclick={retryLoadTypst}>
+										<RefreshCw class="mr-2 h-4 w-4" />
+										Reessayer
+									</Button>
+								</div>
+							</div>
+						</div>
+					{:else if svgContent}
+						<!-- SVG Preview -->
+						<div class="relative">
+							{#if isGeneratingSvg}
+								<div
+									class="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+								>
+									<div class="space-y-2 text-center">
+										<Loader2 class="mx-auto h-8 w-8 animate-spin text-primary" />
+										<p class="text-sm text-muted-foreground">Compilation en cours...</p>
+									</div>
+								</div>
+							{/if}
+							<div
+								id="typst-svg-preview"
+								class="min-h-[400px] overflow-auto rounded-lg border border-border bg-white p-5"
+							>
+								{@html svgContent}
+							</div>
+						</div>
+
+						<!-- Compilation error (shown below preview if any) -->
+						{#if typstError}
+							<div
+								class="mt-2 flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+							>
+								<AlertCircle class="h-4 w-4 shrink-0" />
+								<span>{typstError}</span>
+							</div>
+						{/if}
+					{:else}
+						<!-- Empty/initial state - show raw Typst for now -->
+						<div class="rounded-lg border bg-white p-4 dark:bg-zinc-950">
+							<pre
+								class="font-mono text-xs leading-relaxed whitespace-pre-wrap text-foreground">{renderedPreview ||
+									'Cliquez sur "Actualiser" pour generer l\'apercu'}</pre>
+						</div>
+					{/if}
 
 					<!-- Sample data used -->
 					<div class="mt-4 space-y-2">

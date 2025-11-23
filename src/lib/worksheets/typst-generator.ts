@@ -14,11 +14,13 @@ import type {
 	WorksheetConfig,
 	InstanceData,
 	ResolvedExercise,
-	WorksheetType
+	WorksheetType,
+	WorksheetTemplateRow
 } from '$lib/types/worksheets';
 import { transpileToTypst } from '$lib/exercises/transpilers/typst-transpiler';
 import { parseMarkdown } from '$lib/exercises/parser/markdown-parser';
 import { escapeTypst } from '$lib/exercises/transpilers/typst-transpiler';
+import { getDefaultTemplate, renderTemplate } from './default-templates';
 
 // ============================================================================
 // TYPES
@@ -31,6 +33,7 @@ export interface GenerateTypstParams {
 	mode: 'worksheet' | 'correction';
 	studentName?: string;
 	className?: string;
+	template?: WorksheetTemplateRow | null;
 }
 
 // ============================================================================
@@ -44,16 +47,197 @@ export interface GenerateTypstParams {
  * @returns Complete Typst document as string
  */
 export function generateWorksheetTypst(params: GenerateTypstParams): string {
-	const { worksheet, instance, config, mode, studentName, className } = params;
+	const { worksheet, instance, config, mode, studentName, className, template } = params;
 
-	// Generate document parts
+	// Try to get template content
+	const templateContent = getTemplateContent(worksheet.template_id, template);
+
+	// If we have a template, use it
+	if (templateContent) {
+		return generateFromTemplate(params, templateContent);
+	}
+
+	// Fallback to generated document
 	const setup = generateSetup(config, worksheet.type);
 	const header = generateHeader(worksheet, config, studentName, className, mode);
 	const exercises = generateExercises(instance, config, mode, worksheet.type);
 	const footer = generateFooter(worksheet, config, mode);
 
-	// Combine all parts
 	return [setup, header, exercises, footer].filter(Boolean).join('\n\n');
+}
+
+/**
+ * Get template content from either the passed template or default templates
+ */
+function getTemplateContent(
+	templateId: string | null | undefined,
+	template?: WorksheetTemplateRow | null
+): string | null {
+	// If a template object is passed, use its content
+	if (template?.template_content) {
+		return template.template_content;
+	}
+
+	// If we have a template_id, try to get from default templates
+	if (templateId) {
+		const defaultTemplate = getDefaultTemplate(templateId);
+		if (defaultTemplate) {
+			return defaultTemplate.template_content;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Generate Typst document from template
+ */
+function generateFromTemplate(params: GenerateTypstParams, templateContent: string): string {
+	const { worksheet, instance, config, mode, studentName, className } = params;
+
+	// Generate exercises content for the template
+	const exercisesTypst = generateExercisesOnly(instance, config, mode, worksheet.type);
+
+	// Prepare template data
+	const templateData: Record<string, string> = {
+		title: escapeTypst(worksheet.title),
+		date: new Date().toLocaleDateString('fr-FR', {
+			day: 'numeric',
+			month: 'long',
+			year: 'numeric'
+		}),
+		class: className ? escapeTypst(className) : '',
+		student_name: studentName ? escapeTypst(studentName) : '',
+		total_points: worksheet.total_points?.toString() || '',
+		duration: worksheet.estimated_duration_minutes?.toString() || '',
+		instructions: '', // Could be added to config later
+		school_name: '', // Could be added to config later
+		teacher_name: '', // Could be added to config later
+		exercises: exercisesTypst,
+		// Additional placeholders for specific templates
+		due_date: '',
+		exam_session: '',
+		subject: 'Mathematiques',
+		coefficient: '',
+		competences: ''
+	};
+
+	// Add correction banner if in correction mode
+	let result = '';
+	if (mode === 'correction') {
+		result += `#block(width: 100%, fill: rgb("#228b22"), inset: 10pt)[
+  #align(center)[
+    #text(size: 1.4em, weight: "bold", fill: white)[CORRECTION]
+  ]
+]
+
+#v(0.5em)
+
+`;
+	}
+
+	// Render template with data
+	result += renderTemplate(templateContent, templateData);
+
+	return result;
+}
+
+/**
+ * Generate only the exercises content (for use in templates)
+ */
+function generateExercisesOnly(
+	instance: InstanceData,
+	config: WorksheetConfig,
+	mode: 'worksheet' | 'correction',
+	worksheetType: WorksheetType
+): string {
+	const exercises = instance.exercises;
+	const numberingStyle = config.numbering_style || 'numeric';
+
+	// Apply exercise order if shuffled
+	const orderedExercises = instance.exercise_order
+		? instance.exercise_order.map((idx) => exercises[idx])
+		: exercises;
+
+	let content = '';
+
+	orderedExercises.forEach((exercise, index) => {
+		const number = formatExerciseNumber(index + 1, numberingStyle);
+		content += generateSingleExerciseSimple(exercise, number, mode, worksheetType, config);
+		content += '\n\n';
+	});
+
+	return content;
+}
+
+/**
+ * Generate a single exercise (simplified version for templates)
+ */
+function generateSingleExerciseSimple(
+	exercise: ResolvedExercise,
+	number: string,
+	mode: 'worksheet' | 'correction',
+	worksheetType: WorksheetType,
+	config: WorksheetConfig
+): string {
+	let content = '';
+
+	// Exercise header
+	content += `#block(width: 100%, inset: 0pt)[
+  #text(size: 1.1em, weight: "bold")[Exercice ${number}]`;
+
+	if (config.show_points && exercise.position) {
+		content += ` #h(1fr) #box(fill: rgb("#dcdcdc"), inset: (x: 6pt, y: 3pt), radius: 3pt)[${exercise.position} pts]`;
+	}
+
+	content += '\n  #v(0.3em)\n  \n';
+
+	// Exercise statement
+	const statementAst = parseMarkdown(exercise.statement);
+	const statementTypst = transpileToTypst(statementAst, {
+		includeSetup: false,
+		language: 'fr'
+	});
+
+	// Indent the statement content
+	const indentedStatement = statementTypst
+		.split('\n')
+		.map((line) => '  ' + line)
+		.join('\n');
+
+	content += indentedStatement + '\n';
+
+	// Add answer space for exams
+	if (mode === 'worksheet' && (worksheetType === 'exam' || worksheetType === 'assessment')) {
+		content += `  #v(0.5em)
+  #rect(width: 100%, height: 5cm, stroke: (paint: rgb("#c8c8c8"), thickness: 0.5pt, dash: "dashed"), fill: none)`;
+	}
+
+	content += '\n]\n';
+
+	// Solution (in correction mode)
+	if (mode === 'correction' && exercise.solution) {
+		content += `
+#block(width: 100%, fill: rgb("#f0f0f0"), inset: 10pt, radius: 4pt)[
+  #text(weight: "bold", fill: rgb("#006400"))[Solution :]
+  #v(0.3em)
+`;
+
+		const solutionAst = parseMarkdown(exercise.solution);
+		const solutionTypst = transpileToTypst(solutionAst, {
+			includeSetup: false,
+			language: 'fr'
+		});
+
+		const indentedSolution = solutionTypst
+			.split('\n')
+			.map((line) => '  ' + line)
+			.join('\n');
+
+		content += indentedSolution + '\n]\n';
+	}
+
+	return content;
 }
 
 // ============================================================================

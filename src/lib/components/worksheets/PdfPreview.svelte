@@ -28,21 +28,12 @@
 		WorksheetExerciseWithExercise
 	} from '$lib/types/worksheets';
 	import JSZip from 'jszip';
-
-	// ============================================================================
-	// TYPST LIBRARY TYPE
-	// ============================================================================
-
-	type TypstLibrary = {
-		setCompilerInitOptions: (options: { getModule: () => string }) => void;
-		setRendererInitOptions: (options: { getModule: () => string }) => void;
-		svg: (options: { mainContent: string }) => Promise<string>;
-		pdf: (options: { mainContent: string }) => Promise<Uint8Array>;
-	};
-
-	// Module-level flag to track if Typst has been initialized globally
-	// This persists across component mounts since $typst is on window
-	let typstInitialized = false;
+	import {
+		getTypstCompiler,
+		type TypstCompiler,
+		getCompilerError,
+		resetCompilerState
+	} from '$lib/worksheets/typst-compiler';
 
 	// ============================================================================
 	// PROPS AND STATE
@@ -61,7 +52,7 @@
 	let { worksheet, classId, students = [] }: Props = $props();
 
 	// Typst library state
-	let typst = $state<TypstLibrary | null>(null);
+	let typst = $state<TypstCompiler | null>(null);
 	let isTypstLoading = $state(true);
 	let typstError = $state<string | null>(null);
 
@@ -103,11 +94,6 @@
 			if (pdfUrl) {
 				URL.revokeObjectURL(pdfUrl);
 			}
-			// Remove script on unmount
-			const existingScript = document.getElementById('typst-pdf-preview-script');
-			if (existingScript) {
-				existingScript.remove();
-			}
 		};
 	});
 
@@ -115,71 +101,28 @@
 	// TYPST LIBRARY LOADING
 	// ============================================================================
 
-	function loadTypstLibrary() {
+	async function loadTypstLibrary() {
 		isTypstLoading = true;
 		typstError = null;
 
-		// Check if already loaded
-		const existingTypst = (window as { $typst?: TypstLibrary }).$typst;
-		if (existingTypst) {
-			initializeTypst(existingTypst);
-			return;
-		}
-
-		// Load typst.ts library from CDN
-		const script = document.createElement('script');
-		script.type = 'module';
-		script.src =
-			'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst.ts/dist/esm/contrib/all-in-one-lite.bundle.js';
-		script.id = 'typst-pdf-preview-script';
-
-		script.addEventListener('load', () => {
-			// Small delay to ensure $typst is available
-			setTimeout(() => {
-				const loadedTypst = (window as { $typst?: TypstLibrary }).$typst;
-				if (loadedTypst) {
-					initializeTypst(loadedTypst);
-				} else {
-					typstError = 'Typst library not available after loading';
-					isTypstLoading = false;
-				}
-			}, 100);
-		});
-
-		script.addEventListener('error', () => {
-			typstError = 'Failed to load Typst library from CDN';
-			isTypstLoading = false;
-		});
-
-		document.head.appendChild(script);
-	}
-
-	function initializeTypst(typstLib: TypstLibrary) {
 		try {
-			// Only set init options if not already initialized
-			if (!typstInitialized) {
-				typstLib.setCompilerInitOptions({
-					getModule: () =>
-						'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm'
-				});
-				typstLib.setRendererInitOptions({
-					getModule: () =>
-						'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm'
-				});
-				typstInitialized = true;
-			}
-
-			typst = typstLib;
+			const compiler = await getTypstCompiler();
+			typst = compiler;
 			typstError = null;
 			isTypstLoading = false;
 
 			// Generate initial preview
 			generatePreview();
 		} catch (err) {
-			typstError = `Initialization error: ${err}`;
+			typstError = getCompilerError() || `Initialization error: ${err}`;
 			isTypstLoading = false;
 			console.error('Typst initialization error:', err);
 		}
+	}
+
+	async function retryLoadTypst() {
+		resetCompilerState();
+		await loadTypstLibrary();
 	}
 
 	// ============================================================================
@@ -191,7 +134,7 @@
 	 * This creates the data structure needed for Typst generation
 	 */
 	function generateSimpleInstance(ws: WorksheetWithRelations, studentId?: string): InstanceData {
-		const exercises = ws.worksheet_exercises || [];
+		const exercises = ws.exercises || [];
 
 		// Sort exercises by position
 		const sortedExercises = [...exercises].sort((a, b) => a.position - b.position);
@@ -265,7 +208,8 @@
 				config: worksheet.config || {},
 				mode,
 				studentName,
-				className: classId ? 'Classe' : undefined
+				className: classId ? 'Classe' : undefined,
+				template: worksheet.template
 			});
 
 			// Generate SVG for preview
@@ -355,7 +299,8 @@
 					config: worksheet.config || {},
 					mode,
 					studentName,
-					className: classId ? 'Classe' : undefined
+					className: classId ? 'Classe' : undefined,
+					template: worksheet.template
 				});
 
 				// Compile to PDF
@@ -376,7 +321,8 @@
 					config: worksheet.config || {},
 					mode: 'correction',
 					studentName: 'CORRECTION GENERALE',
-					className: classId ? 'Classe' : undefined
+					className: classId ? 'Classe' : undefined,
+					template: worksheet.template
 				});
 				const masterPdf = await typst.pdf({ mainContent: masterTypst });
 				folder.file('00_CORRECTION_GENERALE.pdf', masterPdf);
@@ -551,7 +497,7 @@ INFORMATIONS
 					<div class="flex-1">
 						<p class="font-medium text-destructive">Erreur de chargement</p>
 						<p class="mt-1 text-sm text-muted-foreground">{typstError}</p>
-						<Button variant="outline" size="sm" class="mt-3" onclick={loadTypstLibrary}>
+						<Button variant="outline" size="sm" class="mt-3" onclick={retryLoadTypst}>
 							<RefreshCw class="mr-2 h-4 w-4" />
 							Reessayer
 						</Button>

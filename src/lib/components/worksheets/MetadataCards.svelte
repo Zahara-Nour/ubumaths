@@ -41,18 +41,27 @@
 	import type { WorksheetWithRelations, WorksheetConfig } from '$lib/types/worksheets';
 	import type { GradeCode } from '$lib/types/grades';
 
+	// Template type for the selector
+	interface TemplateOption {
+		id: string;
+		name: string;
+		description: string | null;
+	}
+
 	// Props
 	interface Props {
 		worksheet: WorksheetWithRelations;
+		templates?: TemplateOption[];
 		onSave?: (field: string, value: unknown) => Promise<void>;
 	}
 
-	let { worksheet, onSave }: Props = $props();
+	let { worksheet, templates = [], onSave }: Props = $props();
 
 	// Per-field editing flags for info card
 	let editingTitle = $state(false);
 	let editingDescription = $state(false);
 	let editingType = $state(false);
+	let editingTemplate = $state(false);
 	let editingDuration = $state(false);
 	let editingGrades = $state(false);
 	let editingTags = $state(false);
@@ -64,6 +73,7 @@
 	let tempTitle = $state(worksheet.title || '');
 	let tempDescription = $state(worksheet.description || '');
 	let tempType = $state<string | undefined>(worksheet.type || undefined);
+	let tempTemplateId = $state<string | undefined>(worksheet.template_id || undefined);
 	let tempDuration = $state<number | null>(worksheet.estimated_duration_minutes);
 	let tempGrades = $state<GradeCode[]>((worksheet.grade_levels as GradeCode[]) || []);
 	let tempTags = $state<string[]>(worksheet.tags || []);
@@ -86,6 +96,7 @@
 	let titleChanged = $derived(tempTitle !== (worksheet.title || ''));
 	let descriptionChanged = $derived(tempDescription !== (worksheet.description || ''));
 	let typeChanged = $derived(tempType !== (worksheet.type || undefined));
+	let templateChanged = $derived(tempTemplateId !== (worksheet.template_id || undefined));
 	let durationChanged = $derived(tempDuration !== worksheet.estimated_duration_minutes);
 	let gradesChanged = $derived(
 		JSON.stringify(tempGrades.sort()) !==
@@ -113,6 +124,7 @@
 		titleChanged ||
 			descriptionChanged ||
 			typeChanged ||
+			templateChanged ||
 			durationChanged ||
 			gradesChanged ||
 			tagsChanged ||
@@ -136,6 +148,9 @@
 			}
 			if (typeChanged) {
 				savePromises.push(onSave('type', tempType || null));
+			}
+			if (templateChanged) {
+				savePromises.push(onSave('template_id', tempTemplateId || null));
 			}
 			if (durationChanged) {
 				savePromises.push(onSave('estimated_duration_minutes', tempDuration));
@@ -180,6 +195,7 @@
 		editingTitle = false;
 		editingDescription = false;
 		editingType = false;
+		editingTemplate = false;
 		editingDuration = false;
 		editingGrades = false;
 		editingTags = false;
@@ -191,6 +207,7 @@
 		cancelTitle();
 		cancelDescription();
 		cancelType();
+		cancelTemplate();
 		cancelDuration();
 		cancelGrades();
 		cancelTags();
@@ -226,6 +243,11 @@
 		editingType = false;
 	}
 
+	function cancelTemplate() {
+		tempTemplateId = worksheet.template_id || undefined;
+		editingTemplate = false;
+	}
+
 	function cancelDuration() {
 		tempDuration = worksheet.estimated_duration_minutes;
 		editingDuration = false;
@@ -258,6 +280,12 @@
 		if (!onSave) return;
 		tempType = worksheet.type || undefined;
 		editingType = true;
+	}
+
+	function startEditTemplate() {
+		if (!onSave || templates.length === 0) return;
+		tempTemplateId = worksheet.template_id || undefined;
+		editingTemplate = true;
 	}
 
 	function startEditDuration() {
@@ -308,6 +336,22 @@
 
 	// Type options for MySelect (convert to mutable array)
 	const typeOptions = [...WORKSHEET_TYPE_OPTIONS] as { value: string; label: string }[];
+
+	// Template options for MySelect
+	let templateOptions = $derived(templates.map((t) => ({ value: t.id, label: t.name })));
+
+	// Helper to get template name by ID
+	function getTemplateName(templateId: string | null | undefined): string {
+		if (!templateId) return '-';
+		// First check in templates prop
+		const template = templates.find((t) => t.id === templateId);
+		if (template) return template.name;
+		// Then check in worksheet.template (for pre-loaded template)
+		if (worksheet.template?.name) return worksheet.template.name;
+		// Fallback: show the ID if it looks like a default template ID
+		if (!templateId.includes('-')) return templateId.charAt(0).toUpperCase() + templateId.slice(1);
+		return '-';
+	}
 
 	// Select options for config
 	const numberingOptions = [
@@ -486,14 +530,43 @@
 
 				<Separator />
 
-				<!-- Template (read-only) -->
-				{#if worksheet.template}
-					<div>
+				<!-- Template -->
+				<div>
+					<div class="flex items-center gap-1">
 						<p class="text-xs text-muted-foreground">Template</p>
-						<p class="font-medium">{worksheet.template.name}</p>
+						{#if templateChanged}
+							<button
+								type="button"
+								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+								onclick={cancelTemplate}
+								aria-label="Annuler la modification du template"
+							>
+								<X class="h-3 w-3" />
+							</button>
+						{/if}
 					</div>
-					<Separator />
-				{/if}
+					{#if !editingTemplate}
+						<button
+							type="button"
+							class="text-left font-medium {onSave && templates.length > 0
+								? 'cursor-pointer hover:text-primary'
+								: 'cursor-default'}"
+							onclick={startEditTemplate}
+							disabled={!onSave || templates.length === 0}
+						>
+							{getTemplateName(worksheet.template_id)}
+						</button>
+					{:else}
+						<MySelect
+							type="single"
+							bind:value={tempTemplateId}
+							items={templateOptions}
+							placeholder="Choisir un template"
+						/>
+					{/if}
+				</div>
+
+				<Separator />
 
 				<!-- Duration -->
 				<div>

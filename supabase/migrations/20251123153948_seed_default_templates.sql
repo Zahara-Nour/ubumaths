@@ -1,73 +1,45 @@
-/**
- * Default Typst templates for worksheet PDF generation
- *
- * These templates use Typst markup with placeholders in {{placeholder}} format.
- * Available placeholders:
- * - {{title}} - Worksheet title
- * - {{date}} - Current date or assignment date
- * - {{class}} - Class name
- * - {{student_name}} - Student's full name
- * - {{exercises}} - Rendered exercises content
- * - {{total_points}} - Total points for the worksheet
- * - {{duration}} - Estimated duration in minutes
- * - {{instructions}} - General instructions
- * - {{school_name}} - School name
- * - {{teacher_name}} - Teacher's name
- */
+-- Migration: Seed default worksheet templates
+-- These are system templates with well-known UUIDs that are referenced in the codebase
+-- They have is_public = true and created_by = NULL to mark them as system templates
 
-import type { TemplatePlaceholder } from '$lib/types/worksheets';
+-- Common placeholders JSON (reused across templates)
+DO $$
+DECLARE
+  common_placeholders JSONB := '[
+    {"key": "title", "type": "text", "label": "Titre", "default_value": "Feuille d''exercices"},
+    {"key": "date", "type": "date", "label": "Date", "default_value": ""},
+    {"key": "class", "type": "text", "label": "Classe", "default_value": ""},
+    {"key": "student_name", "type": "text", "label": "Nom de l''eleve", "default_value": ""},
+    {"key": "exercises", "type": "dynamic", "label": "Exercices", "default_value": ""},
+    {"key": "total_points", "type": "text", "label": "Total des points", "default_value": ""},
+    {"key": "duration", "type": "text", "label": "Duree estimee", "default_value": ""},
+    {"key": "instructions", "type": "text", "label": "Consignes", "default_value": ""},
+    {"key": "school_name", "type": "text", "label": "Nom de l''ecole", "default_value": ""},
+    {"key": "teacher_name", "type": "text", "label": "Nom du professeur", "default_value": ""}
+  ]'::JSONB;
 
-export interface DefaultTemplate {
-	id: string;
-	name: string;
-	description: string;
-	type: 'worksheet' | 'assessment' | 'exam' | 'quiz' | 'homework';
-	template_content: string;
-	placeholders: TemplatePlaceholder[];
-	is_system: boolean; // System templates cannot be deleted
-}
+  assessment_placeholders JSONB;
+  exam_placeholders JSONB;
+  homework_placeholders JSONB;
+BEGIN
+  -- Build specialized placeholders
+  assessment_placeholders := common_placeholders || '[{"key": "competences", "type": "text", "label": "Competences evaluees", "default_value": ""}]'::JSONB;
 
-/**
- * Common placeholders used across templates
- */
-export const COMMON_PLACEHOLDERS: TemplatePlaceholder[] = [
-	{ key: 'title', type: 'text', label: 'Titre', default_value: "Feuille d'exercices" },
-	{ key: 'date', type: 'date', label: 'Date', default_value: '' },
-	{ key: 'class', type: 'text', label: 'Classe', default_value: '' },
-	{ key: 'student_name', type: 'text', label: "Nom de l'eleve", default_value: '' },
-	{ key: 'exercises', type: 'dynamic', label: 'Exercices', default_value: '' },
-	{ key: 'total_points', type: 'text', label: 'Total des points', default_value: '' },
-	{ key: 'duration', type: 'text', label: 'Duree estimee', default_value: '' },
-	{ key: 'instructions', type: 'text', label: 'Consignes', default_value: '' },
-	{ key: 'school_name', type: 'text', label: "Nom de l'ecole", default_value: '' },
-	{ key: 'teacher_name', type: 'text', label: 'Nom du professeur', default_value: '' }
-];
+  exam_placeholders := common_placeholders || '[
+    {"key": "exam_session", "type": "text", "label": "Session d''examen", "default_value": ""},
+    {"key": "subject", "type": "text", "label": "Matiere", "default_value": "Mathematiques"},
+    {"key": "coefficient", "type": "text", "label": "Coefficient", "default_value": ""}
+  ]'::JSONB;
 
-/**
- * Well-known UUIDs for default templates (deterministic, same across all environments)
- * These templates are seeded into the database via migration
- */
-export const DEFAULT_TEMPLATE_IDS = {
-	standard: '00000000-0000-4000-8000-000000000001',
-	assessment: '00000000-0000-4000-8000-000000000002',
-	exam: '00000000-0000-4000-8000-000000000003',
-	homework: '00000000-0000-4000-8000-000000000004',
-	quiz: '00000000-0000-4000-8000-000000000005',
-	minimal: '00000000-0000-4000-8000-000000000006'
-} as const;
+  homework_placeholders := common_placeholders || '[{"key": "due_date", "type": "date", "label": "Date de rendu", "default_value": ""}]'::JSONB;
 
-/**
- * Standard worksheet template
- * Basic layout with title, student info, and exercises
- */
-export const STANDARD_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.standard,
-	name: 'Standard',
-	description: 'Mise en page basique avec titre, informations eleve et exercices',
-	type: 'worksheet',
-	is_system: true,
-	placeholders: COMMON_PLACEHOLDERS,
-	template_content: `// Configuration de la page
+  -- Insert Standard template
+  INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, is_public, created_by)
+  VALUES (
+    '00000000-0000-4000-8000-000000000001',
+    'Standard',
+    'Mise en page basique avec titre, informations eleve et exercices',
+    $TPL$// Configuration de la page
 #set page(
   paper: "a4",
   margin: (top: 2cm, bottom: 2cm, left: 1.5cm, right: 1.5cm)
@@ -126,24 +98,25 @@ export const STANDARD_TEMPLATE: DefaultTemplate = {
 
 // Exercices
 {{exercises}}
-`
-};
+$TPL$,
+    common_placeholders,
+    true,
+    NULL
+  ) ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    template_content = EXCLUDED.template_content,
+    placeholders = EXCLUDED.placeholders,
+    is_public = EXCLUDED.is_public,
+    updated_at = NOW();
 
-/**
- * Assessment template
- * Formal evaluation layout with grading section
- */
-export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.assessment,
-	name: 'Evaluation',
-	description: 'Mise en page formelle pour evaluation avec section notation',
-	type: 'assessment',
-	is_system: true,
-	placeholders: [
-		...COMMON_PLACEHOLDERS,
-		{ key: 'competences', type: 'text', label: 'Competences evaluees', default_value: '' }
-	],
-	template_content: `// Configuration de la page
+  -- Insert Assessment template
+  INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, is_public, created_by)
+  VALUES (
+    '00000000-0000-4000-8000-000000000002',
+    'Evaluation',
+    'Mise en page formelle pour evaluation avec section notation',
+    $TPL$// Configuration de la page
 #set page(
   paper: "a4",
   margin: (top: 2cm, bottom: 2cm, left: 1.5cm, right: 1.5cm)
@@ -240,26 +213,25 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
     Bareme indicatif - La note finale peut tenir compte de la qualite de la redaction
   ]
 ]
-`
-};
+$TPL$,
+    assessment_placeholders,
+    true,
+    NULL
+  ) ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    template_content = EXCLUDED.template_content,
+    placeholders = EXCLUDED.placeholders,
+    is_public = EXCLUDED.is_public,
+    updated_at = NOW();
 
-/**
- * Exam template
- * Official exam layout with header, instructions, and signature line
- */
-export const EXAM_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.exam,
-	name: 'Examen',
-	description: "Mise en page officielle d'examen avec en-tete, consignes et ligne de signature",
-	type: 'exam',
-	is_system: true,
-	placeholders: [
-		...COMMON_PLACEHOLDERS,
-		{ key: 'exam_session', type: 'text', label: "Session d'examen", default_value: '' },
-		{ key: 'subject', type: 'text', label: 'Matiere', default_value: 'Mathematiques' },
-		{ key: 'coefficient', type: 'text', label: 'Coefficient', default_value: '' }
-	],
-	template_content: `// Configuration de la page
+  -- Insert Exam template
+  INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, is_public, created_by)
+  VALUES (
+    '00000000-0000-4000-8000-000000000003',
+    'Examen',
+    'Mise en page officielle d''examen avec en-tete, consignes et ligne de signature',
+    $TPL$// Configuration de la page
 #set page(
   paper: "a4",
   margin: (top: 2.5cm, bottom: 2cm, left: 2cm, right: 2cm),
@@ -375,24 +347,25 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
 
 // Exercices
 {{exercises}}
-`
-};
+$TPL$,
+    exam_placeholders,
+    true,
+    NULL
+  ) ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    template_content = EXCLUDED.template_content,
+    placeholders = EXCLUDED.placeholders,
+    is_public = EXCLUDED.is_public,
+    updated_at = NOW();
 
-/**
- * Homework template
- * Simple homework assignment layout
- */
-export const HOMEWORK_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.homework,
-	name: 'Devoirs',
-	description: 'Mise en page simple pour devoirs a la maison',
-	type: 'homework',
-	is_system: true,
-	placeholders: [
-		...COMMON_PLACEHOLDERS,
-		{ key: 'due_date', type: 'date', label: 'Date de rendu', default_value: '' }
-	],
-	template_content: `// Configuration de la page
+  -- Insert Homework template
+  INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, is_public, created_by)
+  VALUES (
+    '00000000-0000-4000-8000-000000000004',
+    'Devoirs',
+    'Mise en page simple pour devoirs a la maison',
+    $TPL$// Configuration de la page
 #set page(
   paper: "a4",
   margin: (top: 2cm, bottom: 2cm, left: 1.5cm, right: 1.5cm)
@@ -487,21 +460,25 @@ export const HOMEWORK_TEMPLATE: DefaultTemplate = {
     Bon travail !
   ]
 ]
-`
-};
+$TPL$,
+    homework_placeholders,
+    true,
+    NULL
+  ) ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    template_content = EXCLUDED.template_content,
+    placeholders = EXCLUDED.placeholders,
+    is_public = EXCLUDED.is_public,
+    updated_at = NOW();
 
-/**
- * Quiz template
- * Quick quiz format with numbered questions
- */
-export const QUIZ_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.quiz,
-	name: 'Quiz',
-	description: 'Format quiz rapide avec questions numerotees',
-	type: 'quiz',
-	is_system: true,
-	placeholders: COMMON_PLACEHOLDERS,
-	template_content: `// Configuration de la page
+  -- Insert Quiz template
+  INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, is_public, created_by)
+  VALUES (
+    '00000000-0000-4000-8000-000000000005',
+    'Quiz',
+    'Format quiz rapide avec questions numerotees',
+    $TPL$// Configuration de la page
 #set page(
   paper: "a4",
   margin: (top: 1.5cm, bottom: 1.5cm, left: 1.5cm, right: 1.5cm)
@@ -582,21 +559,25 @@ export const QUIZ_TEMPLATE: DefaultTemplate = {
     *Note :* #h(2cm) / {{total_points}}
   ]
 ]
-`
-};
+$TPL$,
+    common_placeholders,
+    true,
+    NULL
+  ) ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    template_content = EXCLUDED.template_content,
+    placeholders = EXCLUDED.placeholders,
+    is_public = EXCLUDED.is_public,
+    updated_at = NOW();
 
-/**
- * Minimal template
- * Clean, minimalist layout
- */
-export const MINIMAL_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.minimal,
-	name: 'Minimaliste',
-	description: 'Mise en page epuree et minimaliste',
-	type: 'worksheet',
-	is_system: true,
-	placeholders: COMMON_PLACEHOLDERS,
-	template_content: `// Configuration de la page
+  -- Insert Minimal template
+  INSERT INTO public.worksheet_templates (id, name, description, template_content, placeholders, is_public, created_by)
+  VALUES (
+    '00000000-0000-4000-8000-000000000006',
+    'Minimaliste',
+    'Mise en page epuree et minimaliste',
+    $TPL$// Configuration de la page
 #set page(
   paper: "a4",
   margin: (top: 2cm, bottom: 2cm, left: 2cm, right: 2cm)
@@ -619,85 +600,19 @@ export const MINIMAL_TEMPLATE: DefaultTemplate = {
 
 // Exercices
 {{exercises}}
-`
-};
+$TPL$,
+    common_placeholders,
+    true,
+    NULL
+  ) ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    template_content = EXCLUDED.template_content,
+    placeholders = EXCLUDED.placeholders,
+    is_public = EXCLUDED.is_public,
+    updated_at = NOW();
 
-/**
- * All default templates
- */
-export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
-	STANDARD_TEMPLATE,
-	ASSESSMENT_TEMPLATE,
-	EXAM_TEMPLATE,
-	HOMEWORK_TEMPLATE,
-	QUIZ_TEMPLATE,
-	MINIMAL_TEMPLATE
-];
+END $$;
 
-/**
- * Get template by ID
- */
-export function getDefaultTemplate(id: string): DefaultTemplate | undefined {
-	return DEFAULT_TEMPLATES.find((t) => t.id === id);
-}
-
-/**
- * Get templates by type
- */
-export function getDefaultTemplatesByType(type: string): DefaultTemplate[] {
-	return DEFAULT_TEMPLATES.filter((t) => t.type === type);
-}
-
-/**
- * Sample data for template preview
- */
-export const SAMPLE_PREVIEW_DATA = {
-	title: 'Equations du premier degre',
-	date: new Date().toLocaleDateString('fr-FR'),
-	class: '3eme B',
-	student_name: 'Jean DUPONT',
-	total_points: '20',
-	duration: '45',
-	instructions: 'Repondez a toutes les questions. La calculatrice est autorisee.',
-	school_name: 'College Victor Hugo',
-	teacher_name: 'Mme Martin',
-	due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR'),
-	exam_session: 'Session 2025',
-	subject: 'Mathematiques',
-	coefficient: '4',
-	competences: 'Resoudre une equation, Modeliser un probleme',
-	exercises: `*Exercice 1* (5 points)
-
-Resoudre les equations suivantes :
-
-a) $2x + 5 = 11$
-
-b) $3x - 7 = 2x + 4$
-
-#v(1cm)
-
-*Exercice 2* (5 points)
-
-Un rectangle a un perimetre de 36 cm. Sa longueur est le triple de sa largeur.
-Calculer les dimensions de ce rectangle.
-
-#v(1cm)
-
-*Exercice 3* (10 points)
-
-Dans un cinema, le prix d'une place adulte est 12 euros et le prix d'une place enfant est 8 euros.
-Une famille de 5 personnes paie 48 euros au total.
-Combien y a-t-il d'adultes et d'enfants dans cette famille ?`
-};
-
-/**
- * Replace placeholders in template content with actual values
- */
-export function renderTemplate(templateContent: string, data: Record<string, string>): string {
-	let result = templateContent;
-	for (const [key, value] of Object.entries(data)) {
-		const placeholder = `{{${key}}}`;
-		result = result.split(placeholder).join(value);
-	}
-	return result;
-}
+-- Add comment to document these are system templates
+COMMENT ON TABLE public.worksheet_templates IS 'Worksheet templates for PDF generation. System templates have UUIDs starting with 00000000-0000-4000-8000- and created_by = NULL.';
