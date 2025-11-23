@@ -100,29 +100,23 @@ export const STANDARD_TEMPLATE: DefaultTemplate = {
   [
     *Date :* {{date}}
   ],
-  [
-    #if "{{total_points}}" != "" [
-      *Total :* {{total_points}} points
-    ]
-  ]
+  [*Total :* {{total_points}} points]
 )
 
 #v(0.5cm)
 #line(length: 100%, stroke: 0.5pt)
 #v(0.5cm)
 
-// Consignes (si presentes)
-#if "{{instructions}}" != "" [
-  #block(
-    fill: rgb("#f0f0f0"),
-    inset: 10pt,
-    radius: 4pt,
-    width: 100%
-  )[
-    *Consignes :* {{instructions}}
-  ]
-  #v(0.5cm)
+// Consignes
+#block(
+  fill: rgb("#f0f0f0"),
+  inset: 10pt,
+  radius: 4pt,
+  width: 100%
+)[
+  *Consignes :* {{instructions}}
 ]
+#v(0.5cm)
 
 // Exercices
 {{exercises}}
@@ -199,11 +193,9 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
 
 #v(0.3cm)
 
-// Duree si specifiee
-#if "{{duration}}" != "" [
-  #align(right)[
-    #text(style: "italic")[Duree : {{duration}} minutes]
-  ]
+// Duree
+#align(right)[
+  #text(style: "italic")[Duree : {{duration}} minutes]
 ]
 
 #v(0.5cm)
@@ -221,10 +213,8 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
   - Lisez attentivement chaque exercice avant de repondre.
   - Justifiez vos reponses sauf indication contraire.
   - La presentation et la redaction sont prises en compte.
-  #if "{{instructions}}" != "" [
-    #v(0.2cm)
-    {{instructions}}
-  ]
+  #v(0.2cm)
+  {{instructions}}
 ]
 
 #v(0.5cm)
@@ -342,10 +332,8 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
   - Aucun document n'est autorise.
   - Les reponses doivent etre redigees sur la copie d'examen.
   - Les exercices peuvent etre traites dans n'importe quel ordre.
-  #if "{{instructions}}" != "" [
-    #v(0.2cm)
-    {{instructions}}
-  ]
+  #v(0.2cm)
+  {{instructions}}
   #v(0.3cm)
   *Total des points :* {{total_points}}
 ]
@@ -452,17 +440,15 @@ export const HOMEWORK_TEMPLATE: DefaultTemplate = {
 #v(0.5cm)
 
 // Consignes
-#if "{{instructions}}" != "" [
-  #block(
-    fill: rgb("#e7f3ff"),
-    inset: 10pt,
-    radius: 4pt,
-    width: 100%
-  )[
-    *Consignes :* {{instructions}}
-  ]
-  #v(0.5cm)
+#block(
+  fill: rgb("#e7f3ff"),
+  inset: 10pt,
+  radius: 4pt,
+  width: 100%
+)[
+  *Consignes :* {{instructions}}
 ]
+#v(0.5cm)
 
 // Rappels
 #block(
@@ -544,27 +530,15 @@ export const QUIZ_TEMPLATE: DefaultTemplate = {
 // Informations rapides
 #grid(
   columns: (1fr, 1fr),
-  [
-    #if "{{duration}}" != "" [
-      #text(style: "italic")[Duree : {{duration}} min]
-    ]
-  ],
-  [
-    #align(right)[
-      #if "{{total_points}}" != "" [
-        *Total : {{total_points}} points*
-      ]
-    ]
-  ]
+  [#text(style: "italic")[Duree : {{duration}} min]],
+  [#align(right)[*Total : {{total_points}} points*]]
 )
 
 #v(0.3cm)
 
 // Consignes courtes
-#if "{{instructions}}" != "" [
-  #text(size: 10pt, style: "italic")[{{instructions}}]
-  #v(0.3cm)
-]
+#text(size: 10pt, style: "italic")[{{instructions}}]
+#v(0.3cm)
 
 #line(length: 100%, stroke: 0.5pt)
 #v(0.3cm)
@@ -668,11 +642,11 @@ export const SAMPLE_PREVIEW_DATA = {
 	competences: 'Resoudre une equation, Modeliser un probleme',
 	exercises: `*Exercice 1* (5 points)
 
-Resoudre les equations suivantes :
+Resoudre les equations suivantes:
 
-a) $2x + 5 = 11$
+a) 2x + 5 = 11
 
-b) $3x - 7 = 2x + 4$
+b) 3x - 7 = 2x + 4
 
 #v(1cm)
 
@@ -687,7 +661,7 @@ Calculer les dimensions de ce rectangle.
 
 Dans un cinema, le prix d'une place adulte est 12 euros et le prix d'une place enfant est 8 euros.
 Une famille de 5 personnes paie 48 euros au total.
-Combien y a-t-il d'adultes et d'enfants dans cette famille ?`
+Combien y a-t-il d'adultes et d'enfants dans cette famille?`
 };
 
 /**

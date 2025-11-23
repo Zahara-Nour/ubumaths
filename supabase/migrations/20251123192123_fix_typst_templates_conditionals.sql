@@ -1,0 +1,456 @@
+-- Migration: Fix Typst templates - remove #if conditionals that aren't compatible with all Typst versions
+-- This migration updates the template_content to use simpler syntax without conditionals
+
+-- Update Standard template
+UPDATE public.worksheet_templates
+SET template_content = $TPL$// Configuration de la page
+#set page(
+  paper: "a4",
+  margin: (top: 2cm, bottom: 2cm, left: 1.5cm, right: 1.5cm)
+)
+
+#set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+
+// En-tete
+#align(center)[
+  #text(size: 18pt, weight: "bold")[{{title}}]
+]
+
+#v(0.5cm)
+
+// Informations
+#grid(
+  columns: (1fr, 1fr),
+  gutter: 1cm,
+  [
+    *Nom :* #underline[#h(3cm) {{student_name}} #h(3cm)]
+  ],
+  [
+    *Classe :* {{class}}
+  ]
+)
+
+#grid(
+  columns: (1fr, 1fr),
+  gutter: 1cm,
+  [
+    *Date :* {{date}}
+  ],
+  [*Total :* {{total_points}} points]
+)
+
+#v(0.5cm)
+#line(length: 100%, stroke: 0.5pt)
+#v(0.5cm)
+
+// Consignes
+#block(
+  fill: rgb("#f0f0f0"),
+  inset: 10pt,
+  radius: 4pt,
+  width: 100%
+)[
+  *Consignes :* {{instructions}}
+]
+#v(0.5cm)
+
+// Exercices
+{{exercises}}
+$TPL$,
+    updated_at = NOW()
+WHERE id = '00000000-0000-4000-8000-000000000001';
+
+-- Update Assessment template
+UPDATE public.worksheet_templates
+SET template_content = $TPL$// Configuration de la page
+#set page(
+  paper: "a4",
+  margin: (top: 2cm, bottom: 2cm, left: 1.5cm, right: 1.5cm)
+)
+
+#set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+
+// En-tete avec encadre
+#rect(
+  width: 100%,
+  inset: 12pt,
+  stroke: 1pt
+)[
+  #grid(
+    columns: (1fr, auto),
+    gutter: 1cm,
+    [
+      #text(size: 10pt)[{{school_name}}]
+      #v(0.3cm)
+      #text(size: 16pt, weight: "bold")[EVALUATION]
+      #v(0.2cm)
+      #text(size: 14pt)[{{title}}]
+    ],
+    [
+      #align(right)[
+        #rect(
+          width: 3cm,
+          height: 2cm,
+          inset: 8pt,
+          stroke: 1pt
+        )[
+          #align(center)[
+            *Note*
+            #v(0.5cm)
+            #text(size: 14pt)[/ {{total_points}}]
+          ]
+        ]
+      ]
+    ]
+  )
+]
+
+#v(0.5cm)
+
+// Informations eleve
+#grid(
+  columns: (1fr, 1fr, 1fr),
+  gutter: 0.5cm,
+  [*Nom :* #underline[#h(2cm) {{student_name}} #h(2cm)]],
+  [*Classe :* {{class}}],
+  [*Date :* {{date}}]
+)
+
+#v(0.3cm)
+
+// Duree
+#align(right)[
+  #text(style: "italic")[Duree : {{duration}} minutes]
+]
+
+#v(0.5cm)
+#line(length: 100%, stroke: 1pt)
+#v(0.5cm)
+
+// Consignes
+#block(
+  fill: rgb("#fff3cd"),
+  inset: 10pt,
+  radius: 4pt,
+  width: 100%
+)[
+  *Consignes :*
+  - Lisez attentivement chaque exercice avant de repondre.
+  - Justifiez vos reponses sauf indication contraire.
+  - La presentation et la redaction sont prises en compte.
+  #v(0.2cm)
+  {{instructions}}
+]
+
+#v(0.5cm)
+
+// Exercices
+{{exercises}}
+
+// Bareme en bas de page (optionnel)
+#v(1cm)
+#line(length: 100%, stroke: 0.5pt)
+#align(center)[
+  #text(size: 9pt, style: "italic")[
+    Bareme indicatif - La note finale peut tenir compte de la qualite de la redaction
+  ]
+]
+$TPL$,
+    updated_at = NOW()
+WHERE id = '00000000-0000-4000-8000-000000000002';
+
+-- Update Exam template
+UPDATE public.worksheet_templates
+SET template_content = $TPL$// Configuration de la page
+#set page(
+  paper: "a4",
+  margin: (top: 2.5cm, bottom: 2cm, left: 2cm, right: 2cm),
+  header: [
+    #grid(
+      columns: (1fr, auto, 1fr),
+      [{{school_name}}],
+      [#text(weight: "bold")[EXAMEN]],
+      [#align(right)[{{date}}]]
+    )
+    #line(length: 100%, stroke: 0.5pt)
+  ],
+  footer: [
+    #line(length: 100%, stroke: 0.5pt)
+    #align(center)[Page #counter(page).display()]
+  ]
+)
+
+#set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+
+// Titre officiel
+#align(center)[
+  #rect(
+    width: 80%,
+    inset: 15pt,
+    stroke: 2pt
+  )[
+    #align(center)[
+      #text(size: 12pt)[{{exam_session}}]
+      #v(0.3cm)
+      #text(size: 18pt, weight: "bold")[{{subject}}]
+      #v(0.3cm)
+      #text(size: 14pt)[{{title}}]
+      #v(0.3cm)
+      #grid(
+        columns: (1fr, 1fr),
+        [*Duree :* {{duration}} min],
+        [*Coefficient :* {{coefficient}}]
+      )
+    ]
+  ]
+]
+
+#v(0.5cm)
+
+// Zone identification
+#rect(
+  width: 100%,
+  inset: 10pt,
+  stroke: 1pt
+)[
+  #grid(
+    columns: (1fr, 1fr),
+    gutter: 1cm,
+    [
+      *Nom :* #underline[#h(4cm)]
+      #v(0.3cm)
+      *Prenom :* #underline[#h(4cm)]
+    ],
+    [
+      *Classe :* {{class}}
+      #v(0.3cm)
+      *N candidat :* #underline[#h(3cm)]
+    ]
+  )
+]
+
+#v(0.5cm)
+
+// Instructions officielles
+#rect(
+  width: 100%,
+  inset: 12pt,
+  fill: rgb("#f8f9fa"),
+  stroke: 1pt
+)[
+  #text(weight: "bold", size: 12pt)[INSTRUCTIONS]
+  #v(0.3cm)
+  - L'usage de la calculatrice est autorise sauf mention contraire.
+  - Aucun document n'est autorise.
+  - Les reponses doivent etre redigees sur la copie d'examen.
+  - Les exercices peuvent etre traites dans n'importe quel ordre.
+  #v(0.2cm)
+  {{instructions}}
+  #v(0.3cm)
+  *Total des points :* {{total_points}}
+]
+
+#v(0.5cm)
+
+// Attestation sur l'honneur
+#block(
+  inset: 8pt,
+  stroke: (left: 3pt + rgb("#6c757d"))
+)[
+  #text(size: 10pt, style: "italic")[
+    Je soussigne(e) atteste sur l'honneur avoir pris connaissance du reglement
+    de l'examen et m'engage a le respecter.
+  ]
+  #v(0.3cm)
+  #grid(
+    columns: (1fr, 1fr),
+    [Date : #underline[#h(3cm)]],
+    [Signature : #underline[#h(4cm)]]
+  )
+]
+
+#v(1cm)
+#line(length: 100%, stroke: 1pt + rgb("#000"))
+#v(0.5cm)
+
+// Exercices
+{{exercises}}
+$TPL$,
+    updated_at = NOW()
+WHERE id = '00000000-0000-4000-8000-000000000003';
+
+-- Update Homework template
+UPDATE public.worksheet_templates
+SET template_content = $TPL$// Configuration de la page
+#set page(
+  paper: "a4",
+  margin: (top: 2cm, bottom: 2cm, left: 1.5cm, right: 1.5cm)
+)
+
+#set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+
+// En-tete simple
+#grid(
+  columns: (1fr, auto),
+  [
+    #text(size: 10pt)[{{school_name}}]
+    #v(0.2cm)
+    #text(size: 16pt, weight: "bold")[DEVOIRS]
+  ],
+  [
+    #align(right)[
+      #text(size: 10pt)[{{class}}]
+      #v(0.2cm)
+      #text(size: 10pt)[{{teacher_name}}]
+    ]
+  ]
+)
+
+#v(0.3cm)
+#align(center)[
+  #text(size: 14pt, weight: "bold")[{{title}}]
+]
+
+#v(0.3cm)
+
+// Informations importantes
+#grid(
+  columns: (1fr, 1fr),
+  gutter: 1cm,
+  [
+    #text(weight: "bold")[Date de distribution :] {{date}}
+  ],
+  [
+    #rect(
+      fill: rgb("#d4edda"),
+      inset: 5pt,
+      radius: 3pt
+    )[
+      #text(weight: "bold")[A rendre pour le :] {{due_date}}
+    ]
+  ]
+)
+
+#v(0.3cm)
+
+// Nom de l'eleve
+*Nom :* #underline[#h(4cm) {{student_name}} #h(4cm)]
+
+#v(0.5cm)
+#line(length: 100%, stroke: 0.5pt)
+#v(0.5cm)
+
+// Consignes
+#block(
+  fill: rgb("#e7f3ff"),
+  inset: 10pt,
+  radius: 4pt,
+  width: 100%
+)[
+  *Consignes :* {{instructions}}
+]
+#v(0.5cm)
+
+// Rappels
+#block(
+  inset: 8pt,
+  stroke: (left: 3pt + rgb("#17a2b8"))
+)[
+  #text(size: 10pt, style: "italic")[
+    Rappel : Le travail doit etre soigne et les reponses justifiees.
+    N'hesitez pas a poser des questions en classe si necessaire.
+  ]
+]
+
+#v(0.5cm)
+
+// Exercices
+{{exercises}}
+
+// Pied de page
+#v(1cm)
+#align(center)[
+  #text(size: 9pt, style: "italic")[
+    Bon travail !
+  ]
+]
+$TPL$,
+    updated_at = NOW()
+WHERE id = '00000000-0000-4000-8000-000000000004';
+
+-- Update Quiz template
+UPDATE public.worksheet_templates
+SET template_content = $TPL$// Configuration de la page
+#set page(
+  paper: "a4",
+  margin: (top: 1.5cm, bottom: 1.5cm, left: 1.5cm, right: 1.5cm)
+)
+
+#set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+
+// En-tete compact
+#rect(
+  width: 100%,
+  inset: 10pt,
+  fill: rgb("#f8f9fa"),
+  stroke: 0.5pt
+)[
+  #grid(
+    columns: (auto, 1fr, auto),
+    gutter: 1cm,
+    [
+      #text(size: 14pt, weight: "bold")[QUIZ]
+      #v(0.1cm)
+      #text(size: 12pt)[{{title}}]
+    ],
+    [
+      #align(center)[
+        *Nom :* #underline[#h(3cm) {{student_name}} #h(3cm)]
+      ]
+    ],
+    [
+      #align(right)[
+        *Classe :* {{class}}
+        #v(0.1cm)
+        *Date :* {{date}}
+      ]
+    ]
+  )
+]
+
+#v(0.3cm)
+
+// Informations rapides
+#grid(
+  columns: (1fr, 1fr),
+  [#text(style: "italic")[Duree : {{duration}} min]],
+  [#align(right)[*Total : {{total_points}} points*]]
+)
+
+#v(0.3cm)
+
+// Consignes courtes
+#text(size: 10pt, style: "italic")[{{instructions}}]
+#v(0.3cm)
+
+#line(length: 100%, stroke: 0.5pt)
+#v(0.3cm)
+
+// Exercices
+{{exercises}}
+
+// Zone de notation compacte
+#v(0.5cm)
+#align(right)[
+  #rect(
+    inset: 8pt,
+    stroke: 1pt
+  )[
+    *Note :* #h(2cm) / {{total_points}}
+  ]
+]
+$TPL$,
+    updated_at = NOW()
+WHERE id = '00000000-0000-4000-8000-000000000005';
+
+-- Note: Minimal template (ID ...006) doesn't have conditionals, so no update needed
