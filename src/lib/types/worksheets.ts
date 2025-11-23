@@ -297,20 +297,6 @@ export interface WorksheetSectionUpdate {
 	points_total?: number | null;
 }
 
-/**
- * Type for worksheet metadata updates from the MetadataForm component.
- * Unlike WorksheetUpdate, this requires all metadata fields and uses flexible grade_levels type.
- */
-export interface WorksheetMetadataUpdate {
-	title: string;
-	description: string | null;
-	type: WorksheetType;
-	estimated_duration_minutes: number | null;
-	grade_levels: (string | number)[];
-	tags: string[];
-	config: WorksheetConfig;
-}
-
 export interface WorksheetExerciseUpdate {
 	section_id?: string | null;
 	position?: number;

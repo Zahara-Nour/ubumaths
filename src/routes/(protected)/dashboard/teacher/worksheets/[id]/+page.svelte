@@ -14,7 +14,6 @@
 	import CorrectionManager from '$lib/components/worksheets/CorrectionManager.svelte';
 	import WorksheetAssignmentForm from '$lib/components/worksheets/WorksheetAssignmentForm.svelte';
 	import MetadataCards from '$lib/components/worksheets/MetadataCards.svelte';
-	import MetadataForm from '$lib/components/worksheets/MetadataForm.svelte';
 	import {
 		ArrowLeft,
 		Send,
@@ -32,8 +31,7 @@
 		WorksheetSectionRow,
 		WorksheetExerciseWithExercise,
 		WorksheetAssignmentRow,
-		WorksheetAssignmentInsert,
-		WorksheetMetadataUpdate
+		WorksheetAssignmentInsert
 	} from '$lib/types/worksheets';
 	import {
 		WORKSHEET_TYPE_ICONS,
@@ -51,10 +49,6 @@
 	let archiving = $state(false);
 	let unarchiving = $state(false);
 	let addingExercises = $state(false);
-	let savingMetadata = $state(false);
-
-	// Edit mode state
-	let editMode = $state(false);
 
 	// Exercise selector state
 	let exerciseSelectorOpen = $state(false);
@@ -248,33 +242,25 @@
 	}
 
 	/**
-	 * Handle saving metadata from the MetadataForm component
+	 * Handle saving a single field from inline editing
 	 */
-	async function handleSaveMetadata(updateData: WorksheetMetadataUpdate): Promise<void> {
-		savingMetadata = true;
-		try {
-			const response = await fetch(`/api/worksheets/${worksheet.id}`, {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(updateData)
-			});
+	async function handleFieldSave(field: string, value: unknown): Promise<void> {
+		const response = await fetch(`/api/worksheets/${worksheet.id}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ [field]: value })
+		});
 
-			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({ message: 'Erreur serveur' }));
-				throw new Error(errorData.message || 'Erreur lors de la sauvegarde');
-			}
-
-			// Update local worksheet data with the response
-			const { worksheet: updatedWorksheet } = await response.json();
-			worksheetData = { ...worksheetData, ...updatedWorksheet };
-
-			editMode = false;
-			toaster.success('Modifications enregistrees');
-		} catch (err) {
-			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
-		} finally {
-			savingMetadata = false;
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({ message: 'Erreur serveur' }));
+			throw new Error(errorData.message || 'Erreur lors de la sauvegarde');
 		}
+
+		// Update local worksheet data with the response
+		const { worksheet: updatedWorksheet } = await response.json();
+		worksheetData = { ...worksheetData, ...updatedWorksheet };
+
+		toaster.success('Modification enregistree');
 	}
 </script>
 
@@ -378,17 +364,8 @@
 
 	<!-- Content -->
 	<div class="space-y-6">
-		<!-- Metadata: View or Edit mode -->
-		{#if editMode}
-			<MetadataForm
-				{worksheet}
-				onSave={handleSaveMetadata}
-				onCancel={() => (editMode = false)}
-				saving={savingMetadata}
-			/>
-		{:else}
-			<MetadataCards {worksheet} onEdit={isDraft ? () => (editMode = true) : undefined} />
-		{/if}
+		<!-- Metadata with inline editing -->
+		<MetadataCards {worksheet} onSave={isDraft ? handleFieldSave : undefined} />
 
 		<!-- Main content tabs -->
 		<Tabs.Root
