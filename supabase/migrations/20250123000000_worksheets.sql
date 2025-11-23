@@ -184,9 +184,7 @@ CREATE TABLE IF NOT EXISTS public.worksheet_exercises (
   -- Constraints
   CONSTRAINT worksheet_exercises_position_check CHECK (position >= 0),
   CONSTRAINT worksheet_exercises_points_check CHECK (points IS NULL OR points >= 0),
-  CONSTRAINT worksheet_exercises_variant_mode_check CHECK (variant_mode IN ('none', 'individual', 'n_versions', 'group')),
-  -- Ensure unique position within worksheet (or section if exists)
-  CONSTRAINT worksheet_exercises_unique_position UNIQUE (worksheet_id, COALESCE(section_id, '00000000-0000-0000-0000-000000000000'::UUID), position)
+  CONSTRAINT worksheet_exercises_variant_mode_check CHECK (variant_mode IN ('none', 'individual', 'n_versions', 'group'))
 );
 
 -- Enable RLS
@@ -197,6 +195,9 @@ CREATE INDEX idx_worksheet_exercises_worksheet_id ON public.worksheet_exercises(
 CREATE INDEX idx_worksheet_exercises_exercise_id ON public.worksheet_exercises(exercise_id);
 CREATE INDEX idx_worksheet_exercises_section_id ON public.worksheet_exercises(section_id) WHERE section_id IS NOT NULL;
 CREATE INDEX idx_worksheet_exercises_position ON public.worksheet_exercises(worksheet_id, position);
+-- Unique constraint on position within worksheet/section (using index because COALESCE not allowed in UNIQUE constraint)
+CREATE UNIQUE INDEX idx_worksheet_exercises_unique_position
+  ON public.worksheet_exercises(worksheet_id, COALESCE(section_id, '00000000-0000-0000-0000-000000000000'::UUID), position);
 
 -- Comments
 COMMENT ON TABLE public.worksheet_exercises IS 'Links exercises to worksheets with order, points, and variant configuration';
