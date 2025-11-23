@@ -3,7 +3,6 @@
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -18,7 +17,6 @@
 	import MetadataForm from '$lib/components/worksheets/MetadataForm.svelte';
 	import {
 		ArrowLeft,
-		MoreHorizontal,
 		Send,
 		Archive,
 		RotateCcw,
@@ -312,84 +310,69 @@
 
 		<!-- Actions -->
 		<div class="flex gap-2">
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
-					<Button variant="outline" size="icon">
-						<MoreHorizontal class="h-4 w-4" />
+			{#if worksheet.status === 'draft'}
+				<form
+					method="POST"
+					action="?/publish"
+					use:enhance={() => {
+						publishing = true;
+						return async ({ result, update }) => {
+							await update();
+							if (result.type === 'success') {
+								await invalidateAll();
+							}
+							publishing = false;
+						};
+					}}
+				>
+					<Button type="submit" variant="default" disabled={publishing}>
+						<Send class="mr-2 h-4 w-4" />
+						{publishing ? 'Publication...' : 'Publier'}
 					</Button>
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content align="end">
-					{#if worksheet.status === 'draft'}
-						<form
-							method="POST"
-							action="?/publish"
-							use:enhance={() => {
-								publishing = true;
-								return async ({ result, update }) => {
-									await update();
-									if (result.type === 'success') {
-										await invalidateAll();
-									}
-									publishing = false;
-								};
-							}}
-						>
-							<DropdownMenu.Item>
-								<button type="submit" disabled={publishing} class="flex w-full items-center gap-2">
-									<Send class="h-4 w-4" />
-									{publishing ? 'Publication...' : 'Publier'}
-								</button>
-							</DropdownMenu.Item>
-						</form>
-					{/if}
-					{#if worksheet.status !== 'archived'}
-						<form
-							method="POST"
-							action="?/archive"
-							use:enhance={() => {
-								archiving = true;
-								return async ({ result, update }) => {
-									await update();
-									if (result.type === 'success') {
-										await invalidateAll();
-									}
-									archiving = false;
-								};
-							}}
-						>
-							<DropdownMenu.Item>
-								<button type="submit" disabled={archiving} class="flex w-full items-center gap-2">
-									<Archive class="h-4 w-4" />
-									{archiving ? 'Archivage...' : 'Archiver'}
-								</button>
-							</DropdownMenu.Item>
-						</form>
-					{/if}
-					{#if worksheet.status === 'archived'}
-						<form
-							method="POST"
-							action="?/unarchive"
-							use:enhance={() => {
-								unarchiving = true;
-								return async ({ result, update }) => {
-									await update();
-									if (result.type === 'success') {
-										await invalidateAll();
-									}
-									unarchiving = false;
-								};
-							}}
-						>
-							<DropdownMenu.Item>
-								<button type="submit" disabled={unarchiving} class="flex w-full items-center gap-2">
-									<RotateCcw class="h-4 w-4" />
-									{unarchiving ? 'Restauration...' : 'Restaurer en brouillon'}
-								</button>
-							</DropdownMenu.Item>
-						</form>
-					{/if}
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+				</form>
+			{/if}
+			{#if worksheet.status !== 'archived'}
+				<form
+					method="POST"
+					action="?/archive"
+					use:enhance={() => {
+						archiving = true;
+						return async ({ result, update }) => {
+							await update();
+							if (result.type === 'success') {
+								await invalidateAll();
+							}
+							archiving = false;
+						};
+					}}
+				>
+					<Button type="submit" variant="outline" disabled={archiving}>
+						<Archive class="mr-2 h-4 w-4" />
+						{archiving ? 'Archivage...' : 'Archiver'}
+					</Button>
+				</form>
+			{/if}
+			{#if worksheet.status === 'archived'}
+				<form
+					method="POST"
+					action="?/unarchive"
+					use:enhance={() => {
+						unarchiving = true;
+						return async ({ result, update }) => {
+							await update();
+							if (result.type === 'success') {
+								await invalidateAll();
+							}
+							unarchiving = false;
+						};
+					}}
+				>
+					<Button type="submit" variant="outline" disabled={unarchiving}>
+						<RotateCcw class="mr-2 h-4 w-4" />
+						{unarchiving ? 'Restauration...' : 'Restaurer'}
+					</Button>
+				</form>
+			{/if}
 		</div>
 	</div>
 
