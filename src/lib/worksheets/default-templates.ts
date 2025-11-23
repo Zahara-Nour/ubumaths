@@ -172,7 +172,7 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
           #align(center)[
             *Note*
             #v(0.5cm)
-            #text(size: 14pt)[/ {{total_points}}]
+            #text(size: 14pt)[\\/ {{total_points}}]
           ]
         ]
       ]
