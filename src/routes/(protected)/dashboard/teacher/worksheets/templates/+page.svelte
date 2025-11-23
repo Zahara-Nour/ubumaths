@@ -352,7 +352,7 @@
 
 <!-- Default templates dialog -->
 <Dialog.Root bind:open={showDefaultsDialog}>
-	<Dialog.Content class="max-w-3xl">
+	<Dialog.Content class="max-h-[90vh] max-w-3xl overflow-hidden">
 		<Dialog.Header>
 			<Dialog.Title>Templates par defaut</Dialog.Title>
 			<Dialog.Description>
@@ -360,7 +360,7 @@
 			</Dialog.Description>
 		</Dialog.Header>
 
-		<div class="grid gap-4 py-4 sm:grid-cols-2">
+		<div class="grid max-h-[60vh] gap-4 overflow-y-auto py-4 sm:grid-cols-2">
 			{#each data.defaultTemplates as template (template.id)}
 				<Card.Root
 					class="cursor-pointer transition-colors hover:bg-muted/50 {selectedDefault?.id ===
