@@ -6157,6 +6157,118 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			reward_events: {
+				Row: {
+					amount: number | null;
+					class_id: string | null;
+					created_at: string;
+					created_by: string | null;
+					description: string;
+					event_type: Database['public']['Enums']['reward_event_type'];
+					id: string;
+					item_name: string | null;
+					metadata: Json | null;
+					reward_type: Database['public']['Enums']['reward_type'];
+					source_id: string | null;
+					source_table: string;
+					student_id: string;
+				};
+				Insert: {
+					amount?: number | null;
+					class_id?: string | null;
+					created_at?: string;
+					created_by?: string | null;
+					description: string;
+					event_type: Database['public']['Enums']['reward_event_type'];
+					id?: string;
+					item_name?: string | null;
+					metadata?: Json | null;
+					reward_type: Database['public']['Enums']['reward_type'];
+					source_id?: string | null;
+					source_table: string;
+					student_id: string;
+				};
+				Update: {
+					amount?: number | null;
+					class_id?: string | null;
+					created_at?: string;
+					created_by?: string | null;
+					description?: string;
+					event_type?: Database['public']['Enums']['reward_event_type'];
+					id?: string;
+					item_name?: string | null;
+					metadata?: Json | null;
+					reward_type?: Database['public']['Enums']['reward_type'];
+					source_id?: string | null;
+					source_table?: string;
+					student_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'reward_events_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'reward_events_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'reward_events_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'reward_events_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'reward_events_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'reward_events_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'reward_events_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'reward_events_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'reward_events_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			riddle_assignments: {
 				Row: {
 					assigned_at: string;
@@ -7820,6 +7932,27 @@ export type Database = {
 					}
 				];
 			};
+			tags: {
+				Row: {
+					created_at: string;
+					created_by: string | null;
+					id: string;
+					name: string;
+				};
+				Insert: {
+					created_at?: string;
+					created_by?: string | null;
+					id?: string;
+					name: string;
+				};
+				Update: {
+					created_at?: string;
+					created_by?: string | null;
+					id?: string;
+					name?: string;
+				};
+				Relationships: [];
+			};
 			teacher_vip_card_overrides: {
 				Row: {
 					card_id: string;
@@ -8641,6 +8774,478 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: 'riddle_progress';
 						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			worksheet_assignments: {
+				Row: {
+					allow_late_submission: boolean | null;
+					assigned_at: string;
+					available_from: string | null;
+					class_id: string | null;
+					closes_at: string | null;
+					correction_release_at: string | null;
+					correction_release_mode: string | null;
+					created_at: string;
+					created_by: string;
+					due_at: string | null;
+					id: string;
+					individualized: boolean | null;
+					instructions: string | null;
+					max_attempts: number | null;
+					show_solutions_before_due: boolean | null;
+					status: string | null;
+					time_limit_minutes: number | null;
+					title: string | null;
+					updated_at: string;
+					worksheet_id: string;
+				};
+				Insert: {
+					allow_late_submission?: boolean | null;
+					assigned_at?: string;
+					available_from?: string | null;
+					class_id?: string | null;
+					closes_at?: string | null;
+					correction_release_at?: string | null;
+					correction_release_mode?: string | null;
+					created_at?: string;
+					created_by: string;
+					due_at?: string | null;
+					id?: string;
+					individualized?: boolean | null;
+					instructions?: string | null;
+					max_attempts?: number | null;
+					show_solutions_before_due?: boolean | null;
+					status?: string | null;
+					time_limit_minutes?: number | null;
+					title?: string | null;
+					updated_at?: string;
+					worksheet_id: string;
+				};
+				Update: {
+					allow_late_submission?: boolean | null;
+					assigned_at?: string;
+					available_from?: string | null;
+					class_id?: string | null;
+					closes_at?: string | null;
+					correction_release_at?: string | null;
+					correction_release_mode?: string | null;
+					created_at?: string;
+					created_by?: string;
+					due_at?: string | null;
+					id?: string;
+					individualized?: boolean | null;
+					instructions?: string | null;
+					max_attempts?: number | null;
+					show_solutions_before_due?: boolean | null;
+					status?: string | null;
+					time_limit_minutes?: number | null;
+					title?: string | null;
+					updated_at?: string;
+					worksheet_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'worksheet_assignments_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_assignments_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_assignments_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_assignments_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_assignments_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_assignments_worksheet_id_fkey';
+						columns: ['worksheet_id'];
+						isOneToOne: false;
+						referencedRelation: 'worksheets';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			worksheet_exercises: {
+				Row: {
+					created_at: string;
+					custom_instructions: string | null;
+					exercise_id: string;
+					id: string;
+					points: number | null;
+					position: number;
+					section_id: string | null;
+					updated_at: string;
+					variant_config: Json | null;
+					variant_mode: string | null;
+					worksheet_id: string;
+				};
+				Insert: {
+					created_at?: string;
+					custom_instructions?: string | null;
+					exercise_id: string;
+					id?: string;
+					points?: number | null;
+					position: number;
+					section_id?: string | null;
+					updated_at?: string;
+					variant_config?: Json | null;
+					variant_mode?: string | null;
+					worksheet_id: string;
+				};
+				Update: {
+					created_at?: string;
+					custom_instructions?: string | null;
+					exercise_id?: string;
+					id?: string;
+					points?: number | null;
+					position?: number;
+					section_id?: string | null;
+					updated_at?: string;
+					variant_config?: Json | null;
+					variant_mode?: string | null;
+					worksheet_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'worksheet_exercises_exercise_id_fkey';
+						columns: ['exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'exercises';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_exercises_section_id_fkey';
+						columns: ['section_id'];
+						isOneToOne: false;
+						referencedRelation: 'worksheet_sections';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_exercises_worksheet_id_fkey';
+						columns: ['worksheet_id'];
+						isOneToOne: false;
+						referencedRelation: 'worksheets';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			worksheet_instances: {
+				Row: {
+					accessed_at: string | null;
+					created_at: string;
+					generated_at: string;
+					id: string;
+					instance_data: Json;
+					status: string | null;
+					student_id: string;
+					submitted_at: string | null;
+					time_spent_seconds: number | null;
+					updated_at: string;
+					variant_seed: number;
+					variant_version: string | null;
+					worksheet_id: string;
+				};
+				Insert: {
+					accessed_at?: string | null;
+					created_at?: string;
+					generated_at?: string;
+					id?: string;
+					instance_data?: Json;
+					status?: string | null;
+					student_id: string;
+					submitted_at?: string | null;
+					time_spent_seconds?: number | null;
+					updated_at?: string;
+					variant_seed: number;
+					variant_version?: string | null;
+					worksheet_id: string;
+				};
+				Update: {
+					accessed_at?: string | null;
+					created_at?: string;
+					generated_at?: string;
+					id?: string;
+					instance_data?: Json;
+					status?: string | null;
+					student_id?: string;
+					submitted_at?: string | null;
+					time_spent_seconds?: number | null;
+					updated_at?: string;
+					variant_seed?: number;
+					variant_version?: string | null;
+					worksheet_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'worksheet_instances_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_instances_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_instances_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_instances_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_instances_worksheet_id_fkey';
+						columns: ['worksheet_id'];
+						isOneToOne: false;
+						referencedRelation: 'worksheets';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			worksheet_sections: {
+				Row: {
+					created_at: string;
+					id: string;
+					instructions: string | null;
+					points_total: number | null;
+					position: number;
+					title: string;
+					updated_at: string;
+					worksheet_id: string;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					instructions?: string | null;
+					points_total?: number | null;
+					position: number;
+					title: string;
+					updated_at?: string;
+					worksheet_id: string;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					instructions?: string | null;
+					points_total?: number | null;
+					position?: number;
+					title?: string;
+					updated_at?: string;
+					worksheet_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'worksheet_sections_worksheet_id_fkey';
+						columns: ['worksheet_id'];
+						isOneToOne: false;
+						referencedRelation: 'worksheets';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			worksheet_templates: {
+				Row: {
+					created_at: string;
+					created_by: string | null;
+					description: string | null;
+					id: string;
+					is_public: boolean | null;
+					name: string;
+					placeholders: Json | null;
+					template_content: string;
+					updated_at: string;
+				};
+				Insert: {
+					created_at?: string;
+					created_by?: string | null;
+					description?: string | null;
+					id?: string;
+					is_public?: boolean | null;
+					name: string;
+					placeholders?: Json | null;
+					template_content: string;
+					updated_at?: string;
+				};
+				Update: {
+					created_at?: string;
+					created_by?: string | null;
+					description?: string | null;
+					id?: string;
+					is_public?: boolean | null;
+					name?: string;
+					placeholders?: Json | null;
+					template_content?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'worksheet_templates_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_templates_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_templates_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_templates_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			worksheets: {
+				Row: {
+					archived_at: string | null;
+					config: Json | null;
+					created_at: string;
+					created_by: string;
+					description: string | null;
+					estimated_duration_minutes: number | null;
+					grade_levels: string[] | null;
+					id: string;
+					published_at: string | null;
+					school_id: string | null;
+					status: string;
+					tags: string[] | null;
+					template_id: string | null;
+					title: string;
+					total_points: number | null;
+					type: string;
+					updated_at: string;
+					version: number | null;
+				};
+				Insert: {
+					archived_at?: string | null;
+					config?: Json | null;
+					created_at?: string;
+					created_by: string;
+					description?: string | null;
+					estimated_duration_minutes?: number | null;
+					grade_levels?: string[] | null;
+					id?: string;
+					published_at?: string | null;
+					school_id?: string | null;
+					status?: string;
+					tags?: string[] | null;
+					template_id?: string | null;
+					title: string;
+					total_points?: number | null;
+					type?: string;
+					updated_at?: string;
+					version?: number | null;
+				};
+				Update: {
+					archived_at?: string | null;
+					config?: Json | null;
+					created_at?: string;
+					created_by?: string;
+					description?: string | null;
+					estimated_duration_minutes?: number | null;
+					grade_levels?: string[] | null;
+					id?: string;
+					published_at?: string | null;
+					school_id?: string | null;
+					status?: string;
+					tags?: string[] | null;
+					template_id?: string | null;
+					title?: string;
+					total_points?: number | null;
+					type?: string;
+					updated_at?: string;
+					version?: number | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'worksheets_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'worksheets_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'worksheets_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheets_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'worksheets_school_id_fkey';
+						columns: ['school_id'];
+						isOneToOne: false;
+						referencedRelation: 'schools';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheets_template_id_fkey';
+						columns: ['template_id'];
+						isOneToOne: false;
+						referencedRelation: 'worksheet_templates';
+						referencedColumns: ['id'];
 					}
 				];
 			};
@@ -9652,6 +10257,10 @@ export type Database = {
 				Args: { p_attempt_number: number; p_difficulty: number };
 				Returns: number;
 			};
+			calculate_worksheet_total_points: {
+				Args: { p_worksheet_id: string };
+				Returns: number;
+			};
 			can_moderate_message: {
 				Args: { message_uuid: string; moderator_uuid: string };
 				Returns: boolean;
@@ -9773,6 +10382,24 @@ export type Database = {
 				Returns: string;
 			};
 			generate_join_code: { Args: never; Returns: string };
+			generate_reward_event_description: {
+				Args: {
+					p_amount: number;
+					p_event_type: Database['public']['Enums']['reward_event_type'];
+					p_item_name: string;
+					p_metadata: Json;
+					p_reward_type: Database['public']['Enums']['reward_type'];
+				};
+				Returns: string;
+			};
+			generate_variant_seed: {
+				Args: {
+					p_base_seed?: number;
+					p_student_id: string;
+					p_worksheet_id: string;
+				};
+				Returns: number;
+			};
 			get_achievement_leaderboard: {
 				Args: { p_context?: string; p_limit?: number };
 				Returns: {
@@ -10279,6 +10906,7 @@ export type Database = {
 				Args: { p_conversation_id?: string; p_user_id: string };
 				Returns: boolean;
 			};
+			is_valid_grade_array: { Args: { grades: string[] }; Returns: boolean };
 			join_multiplayer_queue: {
 				Args: { p_difficulty: string; p_match_type?: string };
 				Returns: Json;
@@ -10345,6 +10973,11 @@ export type Database = {
 				Args: { p_folder_id: string; p_message_id: string; p_user_id: string };
 				Returns: undefined;
 			};
+			normalize_grade_array: {
+				Args: { input_grades: string[] };
+				Returns: string[];
+			};
+			normalize_grade_value: { Args: { input_grade: string }; Returns: string };
 			process_achievement_event: {
 				Args: {
 					p_event_data?: Json;
@@ -10654,6 +11287,17 @@ export type Database = {
 		Enums: {
 			difficulty_level: 'easy' | 'medium' | 'hard';
 			exercise_type: 'multiple_choice' | 'free_response' | 'true_false' | 'fill_blank';
+			reward_event_type:
+				| 'earned'
+				| 'spent'
+				| 'traded'
+				| 'used'
+				| 'expired'
+				| 'unlocked'
+				| 'purchased'
+				| 'awarded'
+				| 'removed';
+			reward_type: 'gidouilles' | 'bonus' | 'vip_card' | 'achievement' | 'item';
 			user_role: 'student' | 'teacher' | 'admin';
 		};
 		CompositeTypes: {
@@ -10782,6 +11426,18 @@ export const Constants = {
 		Enums: {
 			difficulty_level: ['easy', 'medium', 'hard'],
 			exercise_type: ['multiple_choice', 'free_response', 'true_false', 'fill_blank'],
+			reward_event_type: [
+				'earned',
+				'spent',
+				'traded',
+				'used',
+				'expired',
+				'unlocked',
+				'purchased',
+				'awarded',
+				'removed'
+			],
+			reward_type: ['gidouilles', 'bonus', 'vip_card', 'achievement', 'item'],
 			user_role: ['student', 'teacher', 'admin']
 		}
 	}
