@@ -1,0 +1,411 @@
+<script lang="ts">
+	import { Button } from '$lib/components/ui/button';
+	import * as Card from '$lib/components/ui/card';
+	import { Badge } from '$lib/components/ui/badge';
+	import { Label } from '$lib/components/ui/label';
+	import { Input } from '$lib/components/ui/input';
+	import { Separator } from '$lib/components/ui/separator';
+	import * as Alert from '$lib/components/ui/alert';
+	import MySelect from '$lib/components/MySelect.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import { toaster } from '$lib/stores/toaster.svelte';
+	import {
+		FileCheck,
+		Lock,
+		Unlock,
+		Eye,
+		Loader2,
+		AlertCircle,
+		CheckCircle2,
+		Info
+	} from 'lucide-svelte';
+	import type { WorksheetAssignmentRow, CorrectionReleaseMode } from '$lib/types/worksheets';
+
+	// ============================================================================
+	// PROPS AND STATE
+	// ============================================================================
+
+	interface CorrectionStatus {
+		mode: CorrectionReleaseMode;
+		isReleased: boolean;
+		releaseAt: string | null;
+		studentsWithAccess: number;
+		totalStudents: number;
+	}
+
+	interface Props {
+		assignment: WorksheetAssignmentRow;
+		correctionStatus?: CorrectionStatus | null;
+		worksheetId: string;
+		onUpdate?: () => void;
+	}
+
+	let { assignment, correctionStatus, worksheetId: _worksheetId, onUpdate }: Props = $props();
+
+	// Local state for editing
+	let releaseMode = $state<CorrectionReleaseMode>(assignment.correction_release_mode);
+	let scheduledDate = $state<string>(
+		assignment.correction_release_at
+			? new Date(assignment.correction_release_at).toISOString().slice(0, 16)
+			: ''
+	);
+	let showSolutionsBeforeDue = $state<boolean>(assignment.show_solutions_before_due);
+
+	// Loading states
+	let isUpdating = $state(false);
+	let isReleasing = $state(false);
+	let isRevoking = $state(false);
+	let isPreviewing = $state(false);
+
+	// Track if settings have changed
+	let hasChanges = $derived(
+		releaseMode !== assignment.correction_release_mode ||
+			(releaseMode === 'scheduled' &&
+				scheduledDate !==
+					(assignment.correction_release_at
+						? new Date(assignment.correction_release_at).toISOString().slice(0, 16)
+						: '')) ||
+			showSolutionsBeforeDue !== assignment.show_solutions_before_due
+	);
+
+	// Release mode options
+	const releaseModeItems = [
+		{ value: 'manual', label: 'Manuel' },
+		{ value: 'immediate', label: 'Immediat' },
+		{ value: 'scheduled', label: 'Programme' },
+		{ value: 'after_due', label: 'Apres date limite' }
+	];
+
+	// Status derived values
+	let isCorrectionsReleased = $derived(correctionStatus?.isReleased ?? false);
+	let releaseStatusText = $derived(getStatusText());
+	let releaseStatusVariant = $derived(getStatusVariant());
+
+	// ============================================================================
+	// HANDLERS
+	// ============================================================================
+
+	async function handleSaveSettings() {
+		if (!hasChanges) return;
+
+		isUpdating = true;
+		try {
+			const response = await fetch(`/api/worksheets/assignments/${assignment.id}`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					correction_release_mode: releaseMode,
+					correction_release_at:
+						releaseMode === 'scheduled' && scheduledDate
+							? new Date(scheduledDate).toISOString()
+							: null,
+					show_solutions_before_due: showSolutionsBeforeDue
+				})
+			});
+
+			const data = await response.json();
+
+			if (!response.ok) {
+				throw new Error(data.message || 'Erreur lors de la mise a jour');
+			}
+
+			toaster.success('Parametres de correction mis a jour');
+			onUpdate?.();
+		} catch (err) {
+			console.error('Error updating correction settings:', err);
+			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la mise a jour');
+		} finally {
+			isUpdating = false;
+		}
+	}
+
+	async function handleReleaseCorrections() {
+		isReleasing = true;
+		try {
+			const response = await fetch(`/api/worksheets/assignments/${assignment.id}`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ action: 'release_corrections' })
+			});
+
+			const data = await response.json();
+
+			if (!response.ok) {
+				throw new Error(data.message || 'Erreur lors de la publication');
+			}
+
+			toaster.success(
+				data.affectedStudents
+					? `Corrections publiees pour ${data.affectedStudents} eleve(s)`
+					: 'Corrections publiees'
+			);
+			onUpdate?.();
+		} catch (err) {
+			console.error('Error releasing corrections:', err);
+			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la publication');
+		} finally {
+			isReleasing = false;
+		}
+	}
+
+	async function handleRevokeCorrections() {
+		isRevoking = true;
+		try {
+			const response = await fetch(`/api/worksheets/assignments/${assignment.id}`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ action: 'revoke_corrections' })
+			});
+
+			const data = await response.json();
+
+			if (!response.ok) {
+				throw new Error(data.message || 'Erreur lors de la revocation');
+			}
+
+			toaster.success('Acces aux corrections revoque');
+			onUpdate?.();
+		} catch (err) {
+			console.error('Error revoking corrections:', err);
+			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la revocation');
+		} finally {
+			isRevoking = false;
+		}
+	}
+
+	async function handlePreviewCorrection() {
+		isPreviewing = true;
+		try {
+			const response = await fetch(
+				`/api/worksheets/assignments/${assignment.id}/correction?format=pdf`
+			);
+
+			const data = await response.json();
+
+			if (!response.ok) {
+				throw new Error(data.message || 'Erreur lors de la generation');
+			}
+
+			// Convert base64 to blob and open in new tab
+			const binaryString = atob(data.pdf);
+			const bytes = new Uint8Array(binaryString.length);
+			for (let i = 0; i < binaryString.length; i++) {
+				bytes[i] = binaryString.charCodeAt(i);
+			}
+			const blob = new Blob([bytes], { type: 'application/pdf' });
+			const url = URL.createObjectURL(blob);
+
+			window.open(url, '_blank');
+
+			// Cleanup after a delay
+			setTimeout(() => URL.revokeObjectURL(url), 60000);
+		} catch (err) {
+			console.error('Error previewing correction:', err);
+			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'apercu");
+		} finally {
+			isPreviewing = false;
+		}
+	}
+
+	// ============================================================================
+	// UTILITY FUNCTIONS
+	// ============================================================================
+
+	function getStatusText(): string {
+		if (!correctionStatus) return 'Statut inconnu';
+
+		if (correctionStatus.isReleased) {
+			return `Publiees (${correctionStatus.studentsWithAccess}/${correctionStatus.totalStudents} eleves)`;
+		}
+
+		switch (correctionStatus.mode) {
+			case 'immediate':
+				return 'Disponibles immediatement';
+			case 'scheduled':
+				if (correctionStatus.releaseAt) {
+					const date = new Date(correctionStatus.releaseAt);
+					return `Programmees pour le ${date.toLocaleDateString('fr-FR')} a ${date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+				}
+				return 'Date non definie';
+			case 'after_due':
+				return 'Apres la date limite';
+			case 'manual':
+			default:
+				return 'En attente de publication manuelle';
+		}
+	}
+
+	function getStatusVariant(): 'default' | 'secondary' | 'destructive' | 'outline' {
+		if (!correctionStatus) return 'outline';
+		return correctionStatus.isReleased ? 'default' : 'secondary';
+	}
+
+	function getModeDescription(mode: CorrectionReleaseMode): string {
+		switch (mode) {
+			case 'immediate':
+				return 'Les corrections sont disponibles des que le devoir est actif';
+			case 'scheduled':
+				return 'Les corrections seront publiees a la date et heure specifiees';
+			case 'after_due':
+				return 'Les corrections seront disponibles automatiquement apres la date limite';
+			case 'manual':
+			default:
+				return 'Vous devrez publier les corrections manuellement';
+		}
+	}
+</script>
+
+<Card.Root>
+	<Card.Header>
+		<Card.Title class="flex items-center gap-2">
+			<FileCheck class="h-5 w-5" />
+			Gestion des corrections
+		</Card.Title>
+		<Card.Description>
+			Configurez quand et comment les corrections sont mises a disposition des eleves
+		</Card.Description>
+	</Card.Header>
+
+	<Card.Content class="space-y-6">
+		<!-- Current Status -->
+		<div class="flex items-center justify-between rounded-lg border p-4">
+			<div class="space-y-1">
+				<p class="text-sm font-medium">Statut actuel</p>
+				<div class="flex items-center gap-2">
+					{#if isCorrectionsReleased}
+						<CheckCircle2 class="h-4 w-4 text-green-600" />
+					{:else}
+						<Lock class="h-4 w-4 text-muted-foreground" />
+					{/if}
+					<Badge variant={releaseStatusVariant}>{releaseStatusText}</Badge>
+				</div>
+			</div>
+
+			<!-- Quick Actions -->
+			<div class="flex gap-2">
+				{#if releaseMode === 'manual'}
+					{#if isCorrectionsReleased}
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={handleRevokeCorrections}
+							disabled={isRevoking}
+						>
+							{#if isRevoking}
+								<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+							{:else}
+								<Lock class="mr-2 h-4 w-4" />
+							{/if}
+							Revoquer
+						</Button>
+					{:else}
+						<Button size="sm" onclick={handleReleaseCorrections} disabled={isReleasing}>
+							{#if isReleasing}
+								<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+							{:else}
+								<Unlock class="mr-2 h-4 w-4" />
+							{/if}
+							Publier
+						</Button>
+					{/if}
+				{/if}
+
+				<Button
+					variant="outline"
+					size="sm"
+					onclick={handlePreviewCorrection}
+					disabled={isPreviewing}
+				>
+					{#if isPreviewing}
+						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+					{:else}
+						<Eye class="mr-2 h-4 w-4" />
+					{/if}
+					Apercu
+				</Button>
+			</div>
+		</div>
+
+		<Separator />
+
+		<!-- Release Mode Configuration -->
+		<div class="space-y-4">
+			<div class="space-y-2">
+				<Label for="release-mode">Mode de publication</Label>
+				<MySelect type="single" bind:value={releaseMode} items={releaseModeItems} />
+				<p class="text-sm text-muted-foreground">
+					{getModeDescription(releaseMode)}
+				</p>
+			</div>
+
+			<!-- Scheduled Date (only for scheduled mode) -->
+			{#if releaseMode === 'scheduled'}
+				<div class="space-y-2">
+					<Label for="scheduled-date">Date et heure de publication</Label>
+					<Input
+						id="scheduled-date"
+						type="datetime-local"
+						bind:value={scheduledDate}
+						class="w-full md:w-auto"
+					/>
+				</div>
+			{/if}
+
+			<!-- Warning for immediate mode -->
+			{#if releaseMode === 'immediate'}
+				<Alert.Root>
+					<AlertCircle class="h-4 w-4" />
+					<Alert.Title>Attention</Alert.Title>
+					<Alert.Description>
+						En mode immediat, les eleves pourront voir les corrections des qu'ils accedent au
+						devoir, meme avant de soumettre leur travail.
+					</Alert.Description>
+				</Alert.Root>
+			{/if}
+		</div>
+
+		<Separator />
+
+		<!-- Additional Options -->
+		<div class="space-y-4">
+			<h4 class="text-sm font-medium">Options supplementaires</h4>
+
+			<div class="flex items-start space-x-3">
+				<MyCheckbox id="show-before-due" bind:checked={showSolutionsBeforeDue} />
+				<div class="space-y-1">
+					<Label for="show-before-due" class="cursor-pointer">
+						Afficher les solutions avant la date limite
+					</Label>
+					<p class="text-sm text-muted-foreground">
+						Par defaut, les corrections ne sont accessibles qu'apres la date limite, meme si le mode
+						de publication est defini autrement.
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Save Button -->
+		{#if hasChanges}
+			<div class="flex justify-end pt-4">
+				<Button onclick={handleSaveSettings} disabled={isUpdating}>
+					{#if isUpdating}
+						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+						Enregistrement...
+					{:else}
+						Enregistrer les modifications
+					{/if}
+				</Button>
+			</div>
+		{/if}
+
+		<!-- Information Panel -->
+		<Alert.Root variant="default">
+			<Info class="h-4 w-4" />
+			<Alert.Title>Information</Alert.Title>
+			<Alert.Description>
+				Chaque eleve recevra une correction personnalisee correspondant a sa version de l'exercice.
+				Les parametres et valeurs numeriques seront identiques a ceux de sa feuille de travail.
+			</Alert.Description>
+		</Alert.Root>
+	</Card.Content>
+</Card.Root>

@@ -34,6 +34,14 @@ TipTap + MathLive, toolbar, math templates, emojis.
 
 Optimisations, patterns (optimistic UI + debouncing), best practices.
 
+### [Parameterization System](parameterization-system.md)
+
+Systeme de variables pour exercices parametres.
+
+### [Worksheet PDF Generation](worksheet-pdf-generation.md)
+
+Generation de PDF via Typst, variantes par eleve, templates personnalisables.
+
 ---
 
 ## Tech Stack

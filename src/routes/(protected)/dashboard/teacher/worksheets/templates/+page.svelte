@@ -8,86 +8,47 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
-	import MySelect from '$lib/components/MySelect.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
+		ArrowLeft,
 		MoreHorizontal,
 		Plus,
 		Copy,
-		Pencil,
 		Trash2,
 		Eye,
 		FileText,
-		ClipboardCheck,
-		BookOpen,
-		HelpCircle,
-		Home
+		Globe,
+		Lock,
+		Sparkles
 	} from 'lucide-svelte';
 	import type { PageData, ActionData } from './$types';
-	import type { WorksheetType, WorksheetStatus } from '$lib/types/worksheets';
-	import { formatGradeShort } from '$lib/utils/grades';
-	import type { GradeCode } from '$lib/types/grades';
+	import type { DefaultTemplate } from '$lib/worksheets/default-templates';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
 	// Filter state
 	let searchQuery = $state(data.filters.search || '');
-	let selectedStatus = $state<string>(data.filters.status || '');
-	let selectedType = $state<string>(data.filters.type || '');
+	let includePublic = $state(data.filters.includePublic);
+
+	// Dialog state
+	let showDefaultsDialog = $state(false);
+	let selectedDefault = $state<DefaultTemplate | null>(null);
 
 	// Loading states
 	let deletingId = $state<string | null>(null);
 	let duplicatingId = $state<string | null>(null);
+	let creatingFromDefault = $state<string | null>(null);
 
-	// Status filter options
-	const statusOptions = [
-		{ value: '', label: 'Tous les statuts' },
-		{ value: 'draft', label: 'Brouillon' },
-		{ value: 'published', label: 'Publie' },
-		{ value: 'archived', label: 'Archive' }
-	];
-
-	// Type filter options
-	const typeOptions = [
-		{ value: '', label: 'Tous les types' },
-		{ value: 'worksheet', label: "Feuille d'exercices" },
-		{ value: 'assessment', label: 'Evaluation' },
-		{ value: 'exam', label: 'Examen' },
-		{ value: 'quiz', label: 'Quiz' },
-		{ value: 'homework', label: 'Devoirs' }
-	];
-
-	// Type label map
-	const typeLabels: Record<WorksheetType, string> = {
+	// Type labels (for default templates)
+	const typeLabels: Record<string, string> = {
 		worksheet: 'Feuille',
 		assessment: 'Evaluation',
 		exam: 'Examen',
 		quiz: 'Quiz',
 		homework: 'Devoirs'
-	};
-
-	// Type icon map
-	const typeIcons: Record<WorksheetType, typeof FileText> = {
-		worksheet: FileText,
-		assessment: ClipboardCheck,
-		exam: BookOpen,
-		quiz: HelpCircle,
-		homework: Home
-	};
-
-	// Status badge variant map
-	const statusVariants: Record<WorksheetStatus, 'default' | 'secondary' | 'outline'> = {
-		draft: 'secondary',
-		published: 'default',
-		archived: 'outline'
-	};
-
-	// Status labels
-	const statusLabels: Record<WorksheetStatus, string> = {
-		draft: 'Brouillon',
-		published: 'Publie',
-		archived: 'Archive'
 	};
 
 	/**
@@ -96,12 +57,9 @@
 	function applyFilters() {
 		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- used only for URL building, not state
 		const params = new URLSearchParams();
-
 		if (searchQuery) params.set('search', searchQuery);
-		if (selectedStatus) params.set('status', selectedStatus);
-		if (selectedType) params.set('type', selectedType);
+		if (!includePublic) params.set('include_public', 'false');
 		params.set('page', '1');
-
 		goto(`?${params.toString()}`, { keepFocus: true });
 	}
 
@@ -110,9 +68,8 @@
 	 */
 	function clearFilters() {
 		searchQuery = '';
-		selectedStatus = '';
-		selectedType = '';
-		goto('/dashboard/teacher/worksheets', { keepFocus: true });
+		includePublic = true;
+		goto('/dashboard/teacher/worksheets/templates', { keepFocus: true });
 	}
 
 	/**
@@ -137,6 +94,13 @@
 		});
 	}
 
+	/**
+	 * Check if template is owned by current user
+	 */
+	function isOwnTemplate(createdBy: string | null): boolean {
+		return createdBy === data.userId;
+	}
+
 	// Show toast on form result
 	$effect(() => {
 		if (form?.success) {
@@ -148,26 +112,29 @@
 </script>
 
 <svelte:head>
-	<title>Feuilles d'exercices - UbuMaths</title>
+	<title>Templates - UbuMaths</title>
 </svelte:head>
 
 <div class="container mx-auto space-y-6 py-6">
 	<!-- Header -->
-	<div class="flex items-center justify-between">
-		<div>
-			<h1 class="text-3xl font-bold">Feuilles d'exercices</h1>
+	<div class="flex items-center gap-4">
+		<Button variant="ghost" size="icon" href="/dashboard/teacher/worksheets">
+			<ArrowLeft class="h-5 w-5" />
+		</Button>
+		<div class="flex-1">
+			<h1 class="text-3xl font-bold">Templates de mise en page</h1>
 			<p class="text-muted-foreground">
-				Creez et gerez vos feuilles d'exercices, evaluations et examens
+				Gerez vos templates Typst pour personnaliser la mise en page de vos feuilles
 			</p>
 		</div>
 		<div class="flex gap-2">
-			<Button variant="outline" href="/dashboard/teacher/worksheets/templates">
-				<FileText class="mr-2 h-4 w-4" />
-				Templates
+			<Button variant="outline" onclick={() => (showDefaultsDialog = true)}>
+				<Sparkles class="mr-2 h-4 w-4" />
+				Templates par defaut
 			</Button>
-			<Button href="/dashboard/teacher/worksheets/new">
+			<Button href="/dashboard/teacher/worksheets/templates/new">
 				<Plus class="mr-2 h-4 w-4" />
-				Nouvelle feuille
+				Nouveau template
 			</Button>
 		</div>
 	</div>
@@ -175,7 +142,7 @@
 	<!-- Filters -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Filtres</Card.Title>
+			<Card.Title class="text-base">Filtres</Card.Title>
 		</Card.Header>
 		<Card.Content>
 			<form
@@ -183,38 +150,27 @@
 					e.preventDefault();
 					applyFilters();
 				}}
-				class="grid gap-4 md:grid-cols-4"
+				class="flex flex-wrap items-end gap-4"
 			>
 				<!-- Search -->
-				<div class="space-y-2">
+				<div class="min-w-[200px] flex-1 space-y-2">
 					<Label for="search">Recherche</Label>
 					<Input
 						id="search"
 						type="text"
-						placeholder="Titre ou description..."
+						placeholder="Nom ou description..."
 						bind:value={searchQuery}
 					/>
 				</div>
 
-				<!-- Status -->
-				<div class="space-y-2">
-					<Label>Statut</Label>
-					<MySelect
-						items={statusOptions}
-						bind:value={selectedStatus}
-						placeholder="Tous les statuts"
-					/>
-				</div>
-
-				<!-- Type -->
-				<div class="space-y-2">
-					<Label>Type</Label>
-					<MySelect items={typeOptions} bind:value={selectedType} placeholder="Tous les types" />
+				<!-- Include public -->
+				<div class="flex items-center gap-2 pb-2">
+					<MyCheckbox bind:checked={includePublic} label="Afficher les templates publics" />
 				</div>
 
 				<!-- Actions -->
-				<div class="flex items-end gap-2">
-					<Button type="submit" class="flex-1">Filtrer</Button>
+				<div class="flex gap-2">
+					<Button type="submit">Filtrer</Button>
 					<Button type="button" variant="outline" onclick={clearFilters}>Effacer</Button>
 				</div>
 			</form>
@@ -223,77 +179,65 @@
 
 	<!-- Results count -->
 	<div class="text-sm text-muted-foreground">
-		{data.pagination.total} feuille{data.pagination.total > 1 ? 's' : ''} trouvee{data.pagination
+		{data.pagination.total} template{data.pagination.total > 1 ? 's' : ''} trouve{data.pagination
 			.total > 1
 			? 's'
 			: ''}
 	</div>
 
-	<!-- Worksheets table -->
+	<!-- Templates table -->
 	<Card.Root>
 		<Card.Content class="p-0">
 			<Table.Root>
 				<Table.Header>
 					<Table.Row>
-						<Table.Head>Titre</Table.Head>
-						<Table.Head>Type</Table.Head>
-						<Table.Head>Statut</Table.Head>
-						<Table.Head>Niveaux</Table.Head>
-						<Table.Head>Exercices</Table.Head>
+						<Table.Head>Nom</Table.Head>
+						<Table.Head>Description</Table.Head>
+						<Table.Head>Visibilite</Table.Head>
 						<Table.Head>Cree le</Table.Head>
 						<Table.Head class="w-16"></Table.Head>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{#if data.worksheets.length === 0}
+					{#if data.templates.length === 0}
 						<Table.Row>
-							<Table.Cell colspan={7} class="py-8 text-center text-muted-foreground">
-								Aucune feuille trouvee. Creez votre premiere feuille d'exercices !
+							<Table.Cell colspan={5} class="py-8 text-center text-muted-foreground">
+								Aucun template trouve. Creez votre premier template ou utilisez un template par
+								defaut !
 							</Table.Cell>
 						</Table.Row>
 					{:else}
-						{#each data.worksheets as worksheet (worksheet.id)}
-							{@const TypeIcon = typeIcons[worksheet.type]}
+						{#each data.templates as template (template.id)}
 							<Table.Row>
 								<Table.Cell class="font-medium">
-									<a href="/dashboard/teacher/worksheets/{worksheet.id}" class="hover:underline">
-										{worksheet.title || '(Sans titre)'}
+									<a
+										href="/dashboard/teacher/worksheets/templates/{template.id}"
+										class="hover:underline"
+									>
+										{template.name}
 									</a>
-								</Table.Cell>
-								<Table.Cell>
-									<div class="flex items-center gap-2">
-										<TypeIcon class="h-4 w-4 text-muted-foreground" />
-										<span>{typeLabels[worksheet.type]}</span>
-									</div>
-								</Table.Cell>
-								<Table.Cell>
-									<Badge variant={statusVariants[worksheet.status]}>
-										{statusLabels[worksheet.status]}
-									</Badge>
-								</Table.Cell>
-								<Table.Cell>
-									{#if worksheet.grade_levels && worksheet.grade_levels.length > 0}
-										<div class="flex flex-wrap gap-1">
-											{#each worksheet.grade_levels.slice(0, 3) as grade, i (i)}
-												<Badge variant="outline" class="text-xs">
-													{formatGradeShort(grade as unknown as GradeCode)}
-												</Badge>
-											{/each}
-											{#if worksheet.grade_levels.length > 3}
-												<Badge variant="outline" class="text-xs">
-													+{worksheet.grade_levels.length - 3}
-												</Badge>
-											{/if}
-										</div>
-									{:else}
-										<span class="text-sm text-muted-foreground">-</span>
+									{#if !isOwnTemplate(template.created_by)}
+										<Badge variant="outline" class="ml-2 text-xs">Partage</Badge>
 									{/if}
 								</Table.Cell>
+								<Table.Cell class="max-w-[300px] truncate text-sm text-muted-foreground">
+									{template.description || '-'}
+								</Table.Cell>
 								<Table.Cell>
-									{worksheet.total_points ?? 0}
+									{#if template.is_public}
+										<Badge variant="secondary" class="gap-1">
+											<Globe class="h-3 w-3" />
+											Public
+										</Badge>
+									{:else}
+										<Badge variant="outline" class="gap-1">
+											<Lock class="h-3 w-3" />
+											Prive
+										</Badge>
+									{/if}
 								</Table.Cell>
 								<Table.Cell class="text-sm text-muted-foreground">
-									{formatDate(worksheet.created_at)}
+									{formatDate(template.created_at)}
 								</Table.Cell>
 								<Table.Cell>
 									<DropdownMenu.Root>
@@ -306,20 +250,11 @@
 										<DropdownMenu.Content align="end">
 											<DropdownMenu.Item>
 												<a
-													href="/dashboard/teacher/worksheets/{worksheet.id}"
+													href="/dashboard/teacher/worksheets/templates/{template.id}"
 													class="flex items-center gap-2"
 												>
 													<Eye class="h-4 w-4" />
-													Voir
-												</a>
-											</DropdownMenu.Item>
-											<DropdownMenu.Item>
-												<a
-													href="/dashboard/teacher/worksheets/{worksheet.id}/edit"
-													class="flex items-center gap-2"
-												>
-													<Pencil class="h-4 w-4" />
-													Modifier
+													Voir / Modifier
 												</a>
 											</DropdownMenu.Item>
 											<DropdownMenu.Separator />
@@ -327,55 +262,55 @@
 												method="POST"
 												action="?/duplicate"
 												use:enhance={() => {
-													duplicatingId = worksheet.id;
+													duplicatingId = template.id;
 													return async ({ result, update }) => {
 														await update();
 														if (result.type === 'success') {
-															toaster.success('Feuille dupliquee');
+															toaster.success('Template duplique');
 															await invalidateAll();
 														}
 														duplicatingId = null;
 													};
 												}}
 											>
-												<input type="hidden" name="worksheet_id" value={worksheet.id} />
+												<input type="hidden" name="template_id" value={template.id} />
 												<DropdownMenu.Item>
 													<button
 														type="submit"
-														disabled={duplicatingId === worksheet.id}
+														disabled={duplicatingId === template.id}
 														class="flex w-full items-center gap-2"
 													>
 														<Copy class="h-4 w-4" />
-														{duplicatingId === worksheet.id ? 'Duplication...' : 'Dupliquer'}
+														{duplicatingId === template.id ? 'Duplication...' : 'Dupliquer'}
 													</button>
 												</DropdownMenu.Item>
 											</form>
-											{#if worksheet.status === 'draft'}
+											{#if isOwnTemplate(template.created_by)}
 												<DropdownMenu.Separator />
 												<form
 													method="POST"
 													action="?/delete"
 													use:enhance={() => {
-														deletingId = worksheet.id;
+														deletingId = template.id;
 														return async ({ result, update }) => {
 															await update();
 															if (result.type === 'success') {
-																toaster.success('Feuille supprimee');
+																toaster.success('Template supprime');
 																await invalidateAll();
 															}
 															deletingId = null;
 														};
 													}}
 												>
-													<input type="hidden" name="worksheet_id" value={worksheet.id} />
+													<input type="hidden" name="template_id" value={template.id} />
 													<DropdownMenu.Item class="text-destructive focus:text-destructive">
 														<button
 															type="submit"
-															disabled={deletingId === worksheet.id}
+															disabled={deletingId === template.id}
 															class="flex w-full items-center gap-2"
 														>
 															<Trash2 class="h-4 w-4" />
-															{deletingId === worksheet.id ? 'Suppression...' : 'Supprimer'}
+															{deletingId === template.id ? 'Suppression...' : 'Supprimer'}
 														</button>
 													</DropdownMenu.Item>
 												</form>
@@ -414,3 +349,68 @@
 		</div>
 	{/if}
 </div>
+
+<!-- Default templates dialog -->
+<Dialog.Root bind:open={showDefaultsDialog}>
+	<Dialog.Content class="max-w-3xl">
+		<Dialog.Header>
+			<Dialog.Title>Templates par defaut</Dialog.Title>
+			<Dialog.Description>
+				Selectionnez un template par defaut pour creer votre propre version personnalisable
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<div class="grid gap-4 py-4 sm:grid-cols-2">
+			{#each data.defaultTemplates as template (template.id)}
+				<Card.Root
+					class="cursor-pointer transition-colors hover:bg-muted/50 {selectedDefault?.id ===
+					template.id
+						? 'ring-2 ring-primary'
+						: ''}"
+					onclick={() => (selectedDefault = template)}
+				>
+					<Card.Header class="pb-2">
+						<div class="flex items-center justify-between">
+							<Card.Title class="text-base">{template.name}</Card.Title>
+							<Badge variant="outline">{typeLabels[template.type]}</Badge>
+						</div>
+					</Card.Header>
+					<Card.Content>
+						<p class="text-sm text-muted-foreground">{template.description}</p>
+						<div class="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+							<FileText class="h-3 w-3" />
+							{template.placeholders.length} placeholders
+						</div>
+					</Card.Content>
+				</Card.Root>
+			{/each}
+		</div>
+
+		<Dialog.Footer>
+			<Button variant="outline" onclick={() => (showDefaultsDialog = false)}>Annuler</Button>
+			{#if selectedDefault}
+				<form
+					method="POST"
+					action="?/createFromDefault"
+					use:enhance={() => {
+						creatingFromDefault = selectedDefault?.id ?? null;
+						showDefaultsDialog = false;
+						return async ({ result }) => {
+							if (result.type === 'redirect') {
+								// Let the redirect happen
+							} else if (result.type === 'failure') {
+								toaster.error('Erreur lors de la creation');
+							}
+							creatingFromDefault = null;
+						};
+					}}
+				>
+					<input type="hidden" name="template_id" value={selectedDefault.id} />
+					<Button type="submit" disabled={creatingFromDefault !== null}>
+						{creatingFromDefault ? 'Creation...' : `Utiliser "${selectedDefault.name}"`}
+					</Button>
+				</form>
+			{/if}
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
