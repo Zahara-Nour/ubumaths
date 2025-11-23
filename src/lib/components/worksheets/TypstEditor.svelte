@@ -270,10 +270,20 @@
 	// Derived: used placeholders
 	let usedPlaceholders = $derived(getUsedPlaceholders());
 
-	// Auto-generate preview when switching to preview tab
+	// Track previous tab to detect actual tab changes
+	let prevTab = $state<string | null>(null);
+
+	// Auto-generate preview when switching to preview tab (only on actual tab change)
 	$effect(() => {
-		if (activeTab === 'preview') {
-			handlePreviewTabActivated();
+		const currentTab = activeTab;
+		if (currentTab === 'preview' && prevTab !== 'preview') {
+			prevTab = currentTab;
+			// Use setTimeout to avoid state updates during effect
+			setTimeout(() => {
+				handlePreviewTabActivated();
+			}, 0);
+		} else if (currentTab !== 'preview') {
+			prevTab = currentTab;
 		}
 	});
 </script>
