@@ -22,7 +22,8 @@
 		Loader2,
 		FileDown,
 		Users,
-		Plus
+		Plus,
+		FilePenLine
 	} from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type {
@@ -45,6 +46,7 @@
 
 	// Loading states
 	let publishing = $state(false);
+	let unpublishing = $state(false);
 	let archiving = $state(false);
 	let unarchiving = $state(false);
 	let addingExercises = $state(false);
@@ -83,46 +85,73 @@
 	let existingExerciseIds = $derived(worksheet.exercises?.map((e) => e.exercise_id) ?? []);
 
 	/**
-	 * Handle status change (publish/archive/unarchive)
+	 * Handle status change (publish/unpublish/archive/unarchive)
 	 */
-	async function handleStatusChange(newStatus: 'published' | 'archived' | 'draft') {
-		const statusLoading = {
-			published: () => (publishing = true),
-			archived: () => (archiving = true),
-			draft: () => (unarchiving = true)
-		};
-		const statusReset = {
-			published: () => (publishing = false),
-			archived: () => (archiving = false),
-			draft: () => (unarchiving = false)
-		};
-		const statusMessages = {
-			published: { success: 'Feuille publiee', error: 'Erreur lors de la publication' },
-			archived: { success: 'Feuille archivee', error: "Erreur lors de l'archivage" },
-			draft: { success: 'Feuille restauree en brouillon', error: 'Erreur lors de la restauration' }
+	type StatusAction = 'publish' | 'unpublish' | 'archive' | 'unarchive';
+
+	async function handleStatusChange(action: StatusAction) {
+		const actionConfig: Record<
+			StatusAction,
+			{
+				status: 'published' | 'archived' | 'draft';
+				setLoading: () => void;
+				resetLoading: () => void;
+				success: string;
+				error: string;
+			}
+		> = {
+			publish: {
+				status: 'published',
+				setLoading: () => (publishing = true),
+				resetLoading: () => (publishing = false),
+				success: 'Feuille publiee',
+				error: 'Erreur lors de la publication'
+			},
+			unpublish: {
+				status: 'draft',
+				setLoading: () => (unpublishing = true),
+				resetLoading: () => (unpublishing = false),
+				success: 'Feuille depubliee',
+				error: 'Erreur lors de la depublication'
+			},
+			archive: {
+				status: 'archived',
+				setLoading: () => (archiving = true),
+				resetLoading: () => (archiving = false),
+				success: 'Feuille archivee',
+				error: "Erreur lors de l'archivage"
+			},
+			unarchive: {
+				status: 'draft',
+				setLoading: () => (unarchiving = true),
+				resetLoading: () => (unarchiving = false),
+				success: 'Feuille restauree en brouillon',
+				error: 'Erreur lors de la restauration'
+			}
 		};
 
-		statusLoading[newStatus]();
+		const config = actionConfig[action];
+		config.setLoading();
 
 		try {
 			const response = await fetch(`/api/worksheets/${worksheet.id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ status: newStatus })
+				body: JSON.stringify({ status: config.status })
 			});
 
 			if (!response.ok) {
 				const error = await response.json().catch(() => ({ message: 'Erreur inconnue' }));
-				throw new Error(error.message || statusMessages[newStatus].error);
+				throw new Error(error.message || config.error);
 			}
 
-			toaster.success(statusMessages[newStatus].success);
+			toaster.success(config.success);
 			await invalidateAll();
 		} catch (error) {
 			console.error('Status change error:', error);
-			toaster.error(error instanceof Error ? error.message : statusMessages[newStatus].error);
+			toaster.error(error instanceof Error ? error.message : config.error);
 		} finally {
-			statusReset[newStatus]();
+			config.resetLoading();
 		}
 	}
 
@@ -329,35 +358,65 @@
 		</div>
 
 		<!-- Actions -->
-		<div class="flex gap-2">
+		<div class="flex gap-1">
 			{#if worksheet.status === 'draft'}
 				<Button
 					variant="default"
+					size="icon"
 					disabled={publishing}
-					onclick={() => handleStatusChange('published')}
+					onclick={() => handleStatusChange('publish')}
+					title="Publier"
 				>
-					<Send class="mr-2 h-4 w-4" />
-					{publishing ? 'Publication...' : 'Publier'}
+					{#if publishing}
+						<Loader2 class="h-4 w-4 animate-spin" />
+					{:else}
+						<Send class="h-4 w-4" />
+					{/if}
+				</Button>
+			{/if}
+			{#if worksheet.status === 'published'}
+				<Button
+					variant="outline"
+					size="icon"
+					disabled={unpublishing}
+					onclick={() => handleStatusChange('unpublish')}
+					title="Repasser en brouillon"
+				>
+					{#if unpublishing}
+						<Loader2 class="h-4 w-4 animate-spin" />
+					{:else}
+						<FilePenLine class="h-4 w-4" />
+					{/if}
 				</Button>
 			{/if}
 			{#if worksheet.status !== 'archived'}
 				<Button
 					variant="outline"
+					size="icon"
 					disabled={archiving}
-					onclick={() => handleStatusChange('archived')}
+					onclick={() => handleStatusChange('archive')}
+					title="Archiver"
 				>
-					<Archive class="mr-2 h-4 w-4" />
-					{archiving ? 'Archivage...' : 'Archiver'}
+					{#if archiving}
+						<Loader2 class="h-4 w-4 animate-spin" />
+					{:else}
+						<Archive class="h-4 w-4" />
+					{/if}
 				</Button>
 			{/if}
 			{#if worksheet.status === 'archived'}
 				<Button
 					variant="outline"
+					size="icon"
 					disabled={unarchiving}
-					onclick={() => handleStatusChange('draft')}
+					onclick={() => handleStatusChange('unarchive')}
+					title="Restaurer"
 				>
-					<RotateCcw class="mr-2 h-4 w-4" />
-					{unarchiving ? 'Restauration...' : 'Restaurer'}
+					{#if unarchiving}
+						<Loader2 class="h-4 w-4 animate-spin" />
+					{:else}
+						<RotateCcw class="h-4 w-4" />
+					{/if}
 				</Button>
 			{/if}
 		</div>
