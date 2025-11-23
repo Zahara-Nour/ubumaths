@@ -72,11 +72,11 @@ export async function getUserProfile(
 	userId: string
 ): Promise<Profile | null> {
 	try {
-		// Add 3-second timeout to prevent hanging on slow database queries
+		// Add 10-second timeout to prevent hanging on slow database queries
 		const profilePromise = supabase.from('profiles').select('*').eq('id', userId).single();
 
 		const timeoutPromise = new Promise<never>((_, reject) =>
-			setTimeout(() => reject(new Error('Profile fetch timeout')), 3000)
+			setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
 		);
 
 		// Query the profiles table for this user's record (with timeout)
