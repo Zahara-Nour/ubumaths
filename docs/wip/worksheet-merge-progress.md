@@ -1,6 +1,6 @@
 # Worksheet Merge Progress
 
-## Statut: Phase 3 - En cours
+## Statut: Phase 4 - En cours
 
 ## Objectif
 
@@ -13,7 +13,10 @@ Fusionner les pages view (`/worksheets/[id]`) et edit (`/worksheets/[id]/edit`) 
   - MetadataCards.svelte créé
   - MetadataForm.svelte créé avec validation Zod
   - Security audit: fixes appliqués (parseInt, tags validation)
-- [ ] Phase 3: Fusion page + security/perf audit
+- [x] Phase 3: Fusion page + security/perf audit ✓ (commit 7a594db5)
+  - Mode toggle view/edit implémenté
+  - handleSaveMetadata avec PUT
+  - Security fix: PATCH→PUT, response parsing
 - [ ] Phase 4: Nettoyage
 - [ ] Phase 5: Validation finale
 
@@ -46,11 +49,11 @@ Fusionner les pages view (`/worksheets/[id]`) et edit (`/worksheets/[id]/edit`) 
 ## Audits effectués
 
 - Security Phase 2: ✓ Complété (3 fixes appliqués)
-- Security Phase 3: En attente
-- Performance Phase 3: En attente
+- Security Phase 3: ✓ Complété (PATCH→PUT, response parsing)
+- Performance Phase 3: ✓ Complété (pas de changements nécessaires)
 
 ## Prochaines étapes
 
-1. Intégrer MetadataCards et MetadataForm dans la page view
-2. Ajouter toggle mode view/edit
-3. Implémenter handleSave avec API PATCH
+1. Supprimer le dossier /edit
+2. Ajouter redirect dans hooks.server.ts
+3. Mettre à jour les liens pointant vers /edit

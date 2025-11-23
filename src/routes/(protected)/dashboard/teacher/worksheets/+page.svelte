@@ -376,7 +376,7 @@
 													Voir
 												</DropdownMenu.Item>
 												<DropdownMenu.Item
-													onclick={() => goto(`/dashboard/teacher/worksheets/${worksheet.id}/edit`)}
+													onclick={() => goto(`/dashboard/teacher/worksheets/${worksheet.id}`)}
 												>
 													<Pencil class="mr-2 h-4 w-4" />
 													Modifier
