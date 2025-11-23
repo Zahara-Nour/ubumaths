@@ -3,8 +3,8 @@
 	=======================
 
 	Displays worksheet metadata in inline-editable cards format.
-	Shows type, duration, grades, tags, statistics, and dates.
-	Single-click to edit fields, with a global save button when changes are detected.
+	All editable fields are in a single card with a subtle floating save button.
+	Click to edit fields, ESC to cancel all changes.
 
 	Usage:
 	```svelte
@@ -39,8 +39,8 @@
 		Type,
 		AlignLeft,
 		Loader2,
-		X,
-		Save
+		Check,
+		X
 	} from 'lucide-svelte';
 	import {
 		WORKSHEET_TYPE_ICONS,
@@ -220,133 +220,124 @@
 	const typeOptions = [...WORKSHEET_TYPE_OPTIONS] as { value: string; label: string }[];
 </script>
 
-<!-- Global action bar (appears when changes detected) -->
-{#if hasChanges && onSave}
-	<div
-		class="flex items-center justify-between gap-4 rounded-lg border border-primary/20 bg-primary/10 p-3"
-	>
-		<p class="text-sm text-muted-foreground">
-			Des modifications non enregistrees ont ete detectees
-		</p>
-		<div class="flex items-center gap-2">
-			{#if isSaving}
-				<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
-			{/if}
-			<Button size="sm" variant="outline" onclick={cancelAllEdits} disabled={isSaving}>
-				<X class="mr-1 h-4 w-4" />
-				Annuler
-			</Button>
-			<Button size="sm" onclick={handleSave} disabled={isSaving}>
-				<Save class="mr-1 h-4 w-4" />
-				Enregistrer
-			</Button>
-		</div>
-	</div>
-{/if}
+<div class="grid gap-4 md:grid-cols-2">
+	<!-- Left column: All editable information -->
+	<Card.Root class="relative">
+		<!-- Floating save button (appears when changes detected) -->
+		{#if hasChanges && onSave && !isSaving}
+			<button
+				type="button"
+				class="absolute top-3 right-3 z-10 rounded-full bg-green-500 p-2 text-white shadow-lg transition-all hover:scale-110 hover:bg-green-600 active:scale-95"
+				onclick={handleSave}
+				aria-label="Enregistrer les modifications"
+			>
+				<Check class="h-4 w-4" />
+			</button>
+		{/if}
 
-<!-- Title Card (always visible, inline-editable) -->
-<Card.Root>
-	<Card.Header>
-		<Card.Title class="text-lg">Titre</Card.Title>
-	</Card.Header>
-	<Card.Content>
-		<div class="flex items-center gap-3">
-			<Type class="h-4 w-4 shrink-0 text-muted-foreground" />
-			<div class="min-w-0 flex-1">
-				{#if !editingTitle}
-					<!-- READ MODE: clickable to edit -->
-					<button
-						type="button"
-						class="w-full text-left text-lg font-semibold {onSave
-							? 'cursor-pointer hover:text-primary'
-							: 'cursor-default'}"
-						onclick={startEditTitle}
-						disabled={!onSave}
-					>
-						{worksheet.title || '-'}
-					</button>
-				{:else}
-					<!-- EDIT MODE: input + close button -->
-					<div class="flex items-center gap-2">
-						<Input
-							bind:value={tempTitle}
-							class="flex-1"
-							placeholder="Titre de la feuille"
-							onkeydown={handleKeydown}
-						/>
-						<Button
-							size="sm"
-							variant="ghost"
-							onclick={() => (editingTitle = false)}
-							aria-label="Fermer"
+		<Card.Header>
+			<div class="flex items-center gap-2">
+				<Card.Title class="text-lg">Informations</Card.Title>
+				<!-- Cancel/Loading indicator next to title -->
+				{#if hasChanges && onSave}
+					{#if isSaving}
+						<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
+					{:else}
+						<button
+							type="button"
+							class="rounded-full p-1 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+							onclick={cancelAllEdits}
+							aria-label="Annuler les modifications"
 						>
 							<X class="h-4 w-4" />
-						</Button>
-					</div>
+						</button>
+					{/if}
 				{/if}
 			</div>
-		</div>
-	</Card.Content>
-</Card.Root>
-
-<!-- Description Card (always visible, inline-editable) -->
-<Card.Root>
-	<Card.Header>
-		<Card.Title class="text-lg">Description</Card.Title>
-	</Card.Header>
-	<Card.Content>
-		<div class="flex items-start gap-3">
-			<AlignLeft class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-			<div class="min-w-0 flex-1">
-				{#if !editingDescription}
-					<!-- READ MODE: clickable to edit -->
-					<button
-						type="button"
-						class="w-full text-left whitespace-pre-wrap {worksheet.description
-							? ''
-							: 'text-muted-foreground italic'} {onSave
-							? 'cursor-pointer hover:text-primary'
-							: 'cursor-default'}"
-						onclick={startEditDescription}
-						disabled={!onSave}
-					>
-						{worksheet.description || 'Aucune description'}
-					</button>
-				{:else}
-					<!-- EDIT MODE: textarea + close button -->
-					<div class="space-y-2">
-						<Textarea
-							bind:value={tempDescription}
-							class="min-h-[100px] w-full"
-							placeholder="Description de la feuille..."
-							onkeydown={handleKeydown}
-						/>
-						<div class="flex justify-end">
+		</Card.Header>
+		<Card.Content class="space-y-4">
+			<!-- Title -->
+			<div class="flex items-center gap-3">
+				<Type class="h-4 w-4 shrink-0 text-muted-foreground" />
+				<div class="min-w-0 flex-1">
+					<p class="text-xs text-muted-foreground">Titre</p>
+					{#if !editingTitle}
+						<button
+							type="button"
+							class="w-full text-left font-semibold {onSave
+								? 'cursor-pointer hover:text-primary'
+								: 'cursor-default'}"
+							onclick={startEditTitle}
+							disabled={!onSave}
+						>
+							{worksheet.title || '-'}
+						</button>
+					{:else}
+						<div class="flex items-center gap-2">
+							<Input
+								bind:value={tempTitle}
+								class="flex-1"
+								placeholder="Titre de la feuille"
+								onkeydown={handleKeydown}
+							/>
 							<Button
 								size="sm"
 								variant="ghost"
-								onclick={() => (editingDescription = false)}
+								onclick={() => (editingTitle = false)}
 								aria-label="Fermer"
 							>
-								<X class="mr-1 h-4 w-4" />
-								Fermer
+								<X class="h-4 w-4" />
 							</Button>
 						</div>
-					</div>
-				{/if}
+					{/if}
+				</div>
 			</div>
-		</div>
-	</Card.Content>
-</Card.Root>
 
-<!-- Metadata grid -->
-<div class="grid gap-4 md:grid-cols-2">
-	<!-- Left column: Information -->
-	<Card.Root>
-		<Card.Header>
-			<Card.Title class="text-lg">Informations</Card.Title>
-		</Card.Header>
-		<Card.Content class="space-y-4">
+			<Separator />
+
+			<!-- Description -->
+			<div class="flex items-start gap-3">
+				<AlignLeft class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+				<div class="min-w-0 flex-1">
+					<p class="text-xs text-muted-foreground">Description</p>
+					{#if !editingDescription}
+						<button
+							type="button"
+							class="w-full text-left whitespace-pre-wrap {worksheet.description
+								? 'font-medium'
+								: 'text-muted-foreground/50 italic'} {onSave
+								? 'cursor-pointer hover:text-primary'
+								: 'cursor-default'}"
+							onclick={startEditDescription}
+							disabled={!onSave}
+						>
+							{worksheet.description || 'Aucune description'}
+						</button>
+					{:else}
+						<div class="space-y-2">
+							<Textarea
+								bind:value={tempDescription}
+								class="min-h-[80px] w-full"
+								placeholder="Description de la feuille..."
+								onkeydown={handleKeydown}
+							/>
+							<div class="flex justify-end">
+								<Button
+									size="sm"
+									variant="ghost"
+									onclick={() => (editingDescription = false)}
+									aria-label="Fermer"
+								>
+									<X class="h-4 w-4" />
+								</Button>
+							</div>
+						</div>
+					{/if}
+				</div>
+			</div>
+
+			<Separator />
+
 			<!-- Type -->
 			<div class="flex items-center gap-3">
 				{#if TypeIcon}
@@ -355,9 +346,8 @@
 					<FileText class="h-4 w-4 shrink-0 text-muted-foreground" />
 				{/if}
 				<div class="min-w-0 flex-1">
-					<p class="text-sm text-muted-foreground">Type</p>
+					<p class="text-xs text-muted-foreground">Type</p>
 					{#if !editingType}
-						<!-- READ MODE -->
 						<button
 							type="button"
 							class="text-left font-medium {onSave
@@ -369,7 +359,6 @@
 							{worksheet.type ? WORKSHEET_TYPE_LABELS[worksheet.type] : '-'}
 						</button>
 					{:else}
-						<!-- EDIT MODE -->
 						<div class="flex items-center gap-2">
 							<MySelect
 								type="single"
@@ -396,9 +385,8 @@
 			<div class="flex items-center gap-3">
 				<Clock class="h-4 w-4 shrink-0 text-muted-foreground" />
 				<div class="min-w-0 flex-1">
-					<p class="text-sm text-muted-foreground">Duree estimee</p>
+					<p class="text-xs text-muted-foreground">Duree estimee</p>
 					{#if !editingDuration}
-						<!-- READ MODE -->
 						<button
 							type="button"
 							class="text-left font-medium {onSave
@@ -410,7 +398,6 @@
 							{formatDuration(worksheet.estimated_duration_minutes)}
 						</button>
 					{:else}
-						<!-- EDIT MODE -->
 						<div class="flex items-center gap-2">
 							<Input
 								type="number"
@@ -441,9 +428,8 @@
 			<div class="flex items-start gap-3">
 				<GraduationCap class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
 				<div class="min-w-0 flex-1">
-					<p class="text-sm text-muted-foreground">Niveaux scolaires</p>
+					<p class="text-xs text-muted-foreground">Niveaux scolaires</p>
 					{#if !editingGrades}
-						<!-- READ MODE -->
 						<button
 							type="button"
 							class="mt-1 w-full text-left {onSave
@@ -465,7 +451,6 @@
 							{/if}
 						</button>
 					{:else}
-						<!-- EDIT MODE -->
 						<div class="mt-1 space-y-2">
 							<GradeBadgeSelector bind:value={tempGrades} />
 							<div class="flex justify-end">
@@ -475,8 +460,7 @@
 									onclick={() => (editingGrades = false)}
 									aria-label="Fermer"
 								>
-									<X class="mr-1 h-4 w-4" />
-									Fermer
+									<X class="h-4 w-4" />
 								</Button>
 							</div>
 						</div>
@@ -490,9 +474,8 @@
 			<div class="flex items-start gap-3">
 				<Tag class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
 				<div class="min-w-0 flex-1">
-					<p class="text-sm text-muted-foreground">Tags</p>
+					<p class="text-xs text-muted-foreground">Tags</p>
 					{#if !editingTags}
-						<!-- READ MODE -->
 						<button
 							type="button"
 							class="mt-1 w-full text-left {onSave
@@ -512,7 +495,6 @@
 							{/if}
 						</button>
 					{:else}
-						<!-- EDIT MODE -->
 						<div class="mt-1 space-y-2">
 							<TagBadgeSelector bind:value={tempTags} />
 							<div class="flex justify-end">
@@ -522,8 +504,7 @@
 									onclick={() => (editingTags = false)}
 									aria-label="Fermer"
 								>
-									<X class="mr-1 h-4 w-4" />
-									Fermer
+									<X class="h-4 w-4" />
 								</Button>
 							</div>
 						</div>
@@ -543,7 +524,7 @@
 			<div class="flex items-center gap-3">
 				<ListOrdered class="h-4 w-4 shrink-0 text-muted-foreground" />
 				<div>
-					<p class="text-sm text-muted-foreground">Points total</p>
+					<p class="text-xs text-muted-foreground">Points total</p>
 					<p class="font-medium">{worksheet.total_points ?? 0} points</p>
 				</div>
 			</div>
@@ -554,7 +535,7 @@
 			<div class="flex items-center gap-3">
 				<FileText class="h-4 w-4 shrink-0 text-muted-foreground" />
 				<div>
-					<p class="text-sm text-muted-foreground">Exercices</p>
+					<p class="text-xs text-muted-foreground">Exercices</p>
 					<p class="font-medium">{worksheet.exercises?.length ?? 0} exercice(s)</p>
 				</div>
 			</div>
@@ -565,7 +546,7 @@
 			<div class="flex items-center gap-3">
 				<Calendar class="h-4 w-4 shrink-0 text-muted-foreground" />
 				<div>
-					<p class="text-sm text-muted-foreground">Cree le</p>
+					<p class="text-xs text-muted-foreground">Cree le</p>
 					<p class="font-medium">{formatDate(worksheet.created_at)}</p>
 				</div>
 			</div>
@@ -573,7 +554,7 @@
 			{#if worksheet.published_at}
 				<div class="ml-7 flex items-center gap-3">
 					<div>
-						<p class="text-sm text-muted-foreground">Publie le</p>
+						<p class="text-xs text-muted-foreground">Publie le</p>
 						<p class="font-medium">{formatDate(worksheet.published_at)}</p>
 					</div>
 				</div>
