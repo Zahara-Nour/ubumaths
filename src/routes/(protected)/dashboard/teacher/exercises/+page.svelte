@@ -15,14 +15,17 @@
 	import { Send, Pencil, Trash2, Loader2, ArrowUp, ArrowDown } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { GradeCode } from '$lib/types/grades';
-	import { formatGradeShort } from '$lib/utils/grades';
+	import { formatGradeShort, getMinGradeOrder } from '$lib/utils/grades';
 
 	let { data }: { data: PageData } = $props();
+
+	// Sort type including client-side grade_levels sorting
+	type SortByField = 'title' | 'updated_at' | 'grade_levels';
 
 	// Local state for exercises (allows fetch-based updates)
 	let exercises = $state(data.exercises);
 	let pagination = $state(data.pagination);
-	let sortBy = $state<'title' | 'updated_at'>(data.sortBy || 'updated_at');
+	let sortBy = $state<SortByField>((data.sortBy as SortByField) || 'updated_at');
 	let sortOrder = $state<'asc' | 'desc'>(data.sortOrder || 'desc');
 	let isLoading = $state(false);
 
@@ -124,7 +127,9 @@
 		if (searchQuery) params.set('search', searchQuery);
 		if (selectedDifficulty) params.set('difficulty', selectedDifficulty);
 		if (selectedGradeLevels.length > 0) params.set('grade_levels', selectedGradeLevels.join(','));
-		if (sortBy !== 'updated_at') params.set('sortBy', sortBy);
+		// grade_levels sorting is client-side only, don't send to API
+		if (sortBy !== 'updated_at' && sortBy !== 'grade_levels') params.set('sortBy', sortBy);
+		if (sortBy === 'grade_levels') params.set('sortBy', 'grade_levels'); // For URL persistence
 		if (sortOrder !== 'desc') params.set('order', sortOrder);
 		if (page > 1) params.set('page', String(page));
 
@@ -142,20 +147,40 @@
 	}
 
 	/**
+	 * Sort exercises by grade_levels (client-side)
+	 */
+	function sortByGradeLevels(exerciseList: typeof exercises): typeof exercises {
+		return [...exerciseList].sort((a, b) => {
+			const orderA = getMinGradeOrder(a.grade_levels as GradeCode[] | null);
+			const orderB = getMinGradeOrder(b.grade_levels as GradeCode[] | null);
+			return sortOrder === 'asc' ? orderA - orderB : orderB - orderA;
+		});
+	}
+
+	/**
 	 * Fetch exercises via API
 	 */
 	async function fetchExercises(page = 1) {
 		isLoading = true;
 
 		const params = buildParams(page);
-		updateUrl(params);
+		// Don't send grade_levels sort to API
+		if (sortBy === 'grade_levels') {
+			params.delete('sortBy');
+		}
+		updateUrl(buildParams(page)); // URL keeps sortBy for persistence
 
 		try {
 			const response = await fetch(`/api/teacher/exercises?${params.toString()}`);
 			if (!response.ok) throw new Error('Failed to fetch');
 
 			const result = await response.json();
-			exercises = result.exercises;
+			// Apply client-side sorting for grade_levels
+			if (sortBy === 'grade_levels') {
+				exercises = sortByGradeLevels(result.exercises);
+			} else {
+				exercises = result.exercises;
+			}
 			pagination = result.pagination;
 		} catch (err) {
 			console.error('Error fetching exercises:', err);
@@ -185,14 +210,14 @@
 	/**
 	 * Toggle sort on a column
 	 */
-	function toggleSort(column: 'title' | 'updated_at') {
+	function toggleSort(column: SortByField) {
 		if (sortBy === column) {
 			// Same column: toggle order
-			sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
+			sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
 		} else {
-			// Different column: switch to it with desc order
+			// Different column: switch to it with asc order for grade_levels, desc for others
 			sortBy = column;
-			sortOrder = 'desc';
+			sortOrder = column === 'grade_levels' ? 'asc' : 'desc';
 		}
 		fetchExercises(1);
 	}
@@ -353,7 +378,21 @@
 							</button>
 						</Table.Head>
 						<Table.Head>Difficulté</Table.Head>
-						<Table.Head>Niveau</Table.Head>
+						<Table.Head>
+							<button
+								onclick={() => toggleSort('grade_levels')}
+								class="flex items-center gap-1 hover:text-foreground"
+							>
+								Niveau
+								{#if sortBy === 'grade_levels'}
+									{#if sortOrder === 'desc'}
+										<ArrowDown class="h-4 w-4" />
+									{:else}
+										<ArrowUp class="h-4 w-4" />
+									{/if}
+								{/if}
+							</button>
+						</Table.Head>
 						<Table.Head>Tags</Table.Head>
 						<Table.Head>
 							<button

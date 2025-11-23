@@ -345,6 +345,24 @@ export function compareGrades(a: GradeCode, b: GradeCode): number {
 }
 
 /**
+ * Get the topological order index of a grade
+ * Based on GRADE_CODES which is already in topological order (prerequisites-based)
+ */
+export function getGradeOrder(grade: GradeCode): number {
+	const index = GRADE_CODES.indexOf(grade);
+	return index >= 0 ? index : Infinity;
+}
+
+/**
+ * Get the minimum grade order from an array of grades
+ * Useful for sorting items by their lowest grade level
+ */
+export function getMinGradeOrder(grades: GradeCode[] | null | undefined): number {
+	if (!grades || grades.length === 0) return Infinity;
+	return Math.min(...grades.map(getGradeOrder));
+}
+
+/**
  * Get the range of grades between two grades (inclusive)
  */
 export function getGradeRange(from: GradeCode, to: GradeCode): GradeCode[] {
