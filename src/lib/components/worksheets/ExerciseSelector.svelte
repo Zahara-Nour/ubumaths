@@ -302,11 +302,13 @@
 </script>
 
 <Dialog.Root {open} onOpenChange={handleOpenChange}>
-	<Dialog.Trigger asChild let:builder>
-		<Button builders={[builder]} variant="outline" class="gap-2">
-			<Plus class="h-4 w-4" />
-			Ajouter des exercices
-		</Button>
+	<Dialog.Trigger>
+		{#snippet child({ props })}
+			<Button {...props} variant="outline" class="gap-2">
+				<Plus class="h-4 w-4" />
+				Ajouter des exercices
+			</Button>
+		{/snippet}
 	</Dialog.Trigger>
 
 	<Dialog.Content class="max-h-[90vh] max-w-4xl overflow-hidden">

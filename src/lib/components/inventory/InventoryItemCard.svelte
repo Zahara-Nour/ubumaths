@@ -226,16 +226,18 @@
 
 			<!-- More options -->
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger asChild let:builder>
-					<Button
-						builders={[builder]}
-						size="icon"
-						variant="ghost"
-						class="h-8 w-8"
-						aria-label="Actions de l'objet"
-					>
-						<MoreVertical class="h-4 w-4" />
-					</Button>
+				<DropdownMenu.Trigger>
+					{#snippet child({ props })}
+						<Button
+							{...props}
+							size="icon"
+							variant="ghost"
+							class="h-8 w-8"
+							aria-label="Actions de l'objet"
+						>
+							<MoreVertical class="h-4 w-4" />
+						</Button>
+					{/snippet}
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end">
 					<DropdownMenu.Item onclick={() => shopStore.selectInventoryItem(item)}>
