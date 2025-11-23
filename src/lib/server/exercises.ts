@@ -37,6 +37,7 @@ export interface ExerciseFilters {
 export interface PaginationOptions {
 	page?: number; // Default: 1
 	limit?: number; // Default: 50, max: 100
+	sortOrder?: 'asc' | 'desc'; // Default: 'desc' (most recent first)
 }
 
 // ============================================================================
@@ -347,12 +348,13 @@ export async function getTeacherExercises(
 	const page = Math.max(1, pagination.page || 1);
 	const limit = Math.min(100, Math.max(1, pagination.limit || 50));
 	const offset = (page - 1) * limit;
+	const sortOrder = pagination.sortOrder || 'desc';
 
 	let query = supabase
 		.from('exercises')
 		.select('*', { count: 'exact' })
 		.eq('created_by', teacherId)
-		.order('created_at', { ascending: false });
+		.order('updated_at', { ascending: sortOrder === 'asc' });
 
 	// Apply filters (same as getExercises)
 	if (filters.difficulty) {

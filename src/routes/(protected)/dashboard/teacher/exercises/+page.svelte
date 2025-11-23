@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { SvelteSet } from 'svelte/reactivity';
@@ -13,7 +12,8 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import ExportDialog from '$lib/components/exercises/ExportDialog.svelte';
 	import ImportDialog from '$lib/components/exercises/ImportDialog.svelte';
-	import { Send, Pencil, Trash2, Loader2 } from 'lucide-svelte';
+	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import { Send, Pencil, Trash2, Loader2, ArrowUp, ArrowDown } from 'lucide-svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -25,6 +25,8 @@
 
 	// Delete confirmation
 	let deletingId = $state<string | null>(null);
+	let deleteDialogOpen = $state(false);
+	let exerciseToDelete = $state<{ id: string; title: string } | null>(null);
 
 	// Export/Import state
 	let selectedExercises = new SvelteSet<string>();
@@ -55,6 +57,42 @@
 	 */
 	function clearSelection() {
 		selectedExercises.clear();
+	}
+
+	/**
+	 * Open delete confirmation dialog
+	 */
+	function openDeleteDialog(exercise: { id: string; title: string }) {
+		exerciseToDelete = exercise;
+		deleteDialogOpen = true;
+	}
+
+	/**
+	 * Handle delete confirmation
+	 */
+	async function handleDelete() {
+		if (!exerciseToDelete) return;
+
+		deletingId = exerciseToDelete.id;
+		deleteDialogOpen = false;
+
+		const formData = new FormData();
+		formData.append('exercise_id', exerciseToDelete.id);
+
+		const response = await fetch('?/delete', {
+			method: 'POST',
+			body: formData
+		});
+
+		if (response.ok) {
+			toaster.success('Exercice supprimé');
+			await invalidateAll();
+		} else {
+			toaster.error('Erreur lors de la suppression');
+		}
+
+		deletingId = null;
+		exerciseToDelete = null;
 	}
 
 	/**
@@ -106,6 +144,20 @@
 		selectedDifficulty = '';
 		selectedTopic = '';
 		goto('/dashboard/teacher/exercises', { keepFocus: true });
+	}
+
+	/**
+	 * Toggle sort order
+	 */
+	function toggleSortOrder() {
+		const params = new URLSearchParams($page.url.searchParams);
+		const newOrder = data.sortOrder === 'desc' ? 'asc' : 'desc';
+		if (newOrder === 'desc') {
+			params.delete('sort');
+		} else {
+			params.set('sort', 'asc');
+		}
+		goto(`?${params.toString()}`, { keepFocus: true });
 	}
 
 	/**
@@ -256,7 +308,19 @@
 						<Table.Head>Difficulté</Table.Head>
 						<Table.Head>Thème</Table.Head>
 						<Table.Head>Tags</Table.Head>
-						<Table.Head>Créé le</Table.Head>
+						<Table.Head>
+							<button
+								onclick={toggleSortOrder}
+								class="flex items-center gap-1 hover:text-foreground"
+							>
+								Modifié le
+								{#if data.sortOrder === 'desc'}
+									<ArrowDown class="h-4 w-4" />
+								{:else}
+									<ArrowUp class="h-4 w-4" />
+								{/if}
+							</button>
+						</Table.Head>
 						<Table.Head class="text-right">Actions</Table.Head>
 					</Table.Row>
 				</Table.Header>
@@ -305,7 +369,7 @@
 									</div>
 								</Table.Cell>
 								<Table.Cell class="text-sm text-muted-foreground">
-									{formatDate(exercise.created_at)}
+									{formatDate(exercise.updated_at)}
 								</Table.Cell>
 								<Table.Cell class="text-right">
 									<Tooltip.Provider>
@@ -342,46 +406,31 @@
 													<p>Modifier</p>
 												</Tooltip.Content>
 											</Tooltip.Root>
-											<form
-												method="POST"
-												action="?/delete"
-												use:enhance={() => {
-													deletingId = exercise.id;
-													return async ({ result, update }) => {
-														await update();
-														if (result.type === 'success') {
-															toaster.success('Exercice supprimé');
-															await invalidateAll();
-														} else {
-															toaster.error('Erreur lors de la suppression');
-														}
-														deletingId = null;
-													};
-												}}
-											>
-												<input type="hidden" name="exercise_id" value={exercise.id} />
-												<Tooltip.Root>
-													<Tooltip.Trigger>
-														<Button
-															size="icon"
-															variant="ghost"
-															type="submit"
-															disabled={deletingId === exercise.id}
-															class="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
-														>
-															{#if deletingId === exercise.id}
-																<Loader2 class="h-4 w-4 animate-spin" />
-															{:else}
-																<Trash2 class="h-4 w-4" />
-															{/if}
-															<span class="sr-only">Supprimer</span>
-														</Button>
-													</Tooltip.Trigger>
-													<Tooltip.Content>
-														<p>Supprimer</p>
-													</Tooltip.Content>
-												</Tooltip.Root>
-											</form>
+											<Tooltip.Root>
+												<Tooltip.Trigger>
+													<Button
+														size="icon"
+														variant="ghost"
+														onclick={() =>
+															openDeleteDialog({
+																id: exercise.id,
+																title: exercise.title || '(Sans titre)'
+															})}
+														disabled={deletingId === exercise.id}
+														class="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+													>
+														{#if deletingId === exercise.id}
+															<Loader2 class="h-4 w-4 animate-spin" />
+														{:else}
+															<Trash2 class="h-4 w-4" />
+														{/if}
+														<span class="sr-only">Supprimer</span>
+													</Button>
+												</Tooltip.Trigger>
+												<Tooltip.Content>
+													<p>Supprimer</p>
+												</Tooltip.Content>
+											</Tooltip.Root>
 										</div>
 									</Tooltip.Provider>
 								</Table.Cell>
@@ -428,3 +477,13 @@
 <!-- Export/Import Dialogs -->
 <ExportDialog exerciseIds={Array.from(selectedExercises)} bind:open={exportDialogOpen} />
 <ImportDialog bind:open={importDialogOpen} onSuccess={() => clearSelection()} />
+
+<!-- Delete Confirmation Dialog -->
+<ConfirmDialog
+	bind:open={deleteDialogOpen}
+	title="Supprimer cet exercice ?"
+	description={`Vous allez supprimer l'exercice "${exerciseToDelete?.title || ''}". Cette action est irréversible.`}
+	confirmLabel="Supprimer"
+	variant="destructive"
+	onConfirm={handleDelete}
+/>
