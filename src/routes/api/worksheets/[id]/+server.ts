@@ -60,7 +60,7 @@ async function getWorksheetWithAuth(
 
 /**
  * GET /api/worksheets/[id]
- * Get worksheet with sections and exercises
+ * Get worksheet with sections, exercises and template
  * Teachers and admins only
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
@@ -110,6 +110,20 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Failed to fetch worksheet exercises');
 	}
 
+	// Fetch template if template_id exists
+	let template = null;
+	if (worksheet.template_id) {
+		const { data: templateData, error: templateError } = await locals.supabase
+			.from('worksheet_templates')
+			.select('id, name, description')
+			.eq('id', worksheet.template_id)
+			.single();
+
+		if (!templateError && templateData) {
+			template = templateData;
+		}
+	}
+
 	// Validate response
 	const validated = validateJsonResponse(
 		worksheetDetailResponseSchema,
@@ -117,7 +131,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			worksheet: {
 				...worksheet,
 				sections: sections ?? [],
-				exercises: exercises ?? []
+				exercises: exercises ?? [],
+				template
 			}
 		},
 		'GET /api/worksheets/[id]'

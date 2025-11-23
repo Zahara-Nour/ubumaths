@@ -486,6 +486,15 @@
 
 				<Separator />
 
+				<!-- Template (read-only) -->
+				{#if worksheet.template}
+					<div>
+						<p class="text-xs text-muted-foreground">Template</p>
+						<p class="font-medium">{worksheet.template.name}</p>
+					</div>
+					<Separator />
+				{/if}
+
 				<!-- Duration -->
 				<div>
 					<div class="flex items-center gap-1">
