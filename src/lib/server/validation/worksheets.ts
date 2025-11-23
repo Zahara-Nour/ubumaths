@@ -342,6 +342,11 @@ export function validateWorksheetId(params: Record<string, string>) {
 /**
  * Single worksheet response schema
  */
+// Helper for Supabase timestamps (accepts both Z and +00:00 formats)
+const timestampSchema = z
+	.string()
+	.refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid timestamp' });
+
 export const worksheetResponseSchema = z.object({
 	id: z.string().uuid(),
 	title: z.string(),
@@ -350,17 +355,17 @@ export const worksheetResponseSchema = z.object({
 	config: z.record(z.string(), z.unknown()),
 	status: worksheetStatusSchema,
 	version: z.number().int(),
-	published_at: z.string().datetime().nullable(),
-	archived_at: z.string().datetime().nullable(),
+	published_at: timestampSchema.nullable(),
+	archived_at: timestampSchema.nullable(),
 	template_id: z.string().uuid().nullable(),
 	estimated_duration_minutes: z.number().int().nullable(),
-	total_points: z.number().int().nullable(),
+	total_points: z.number().nullable(),
 	grade_levels: z.array(z.string()),
 	tags: z.array(z.string()),
 	created_by: z.string().uuid(),
 	school_id: z.string().uuid().nullable(),
-	created_at: z.string().datetime(),
-	updated_at: z.string().datetime()
+	created_at: timestampSchema,
+	updated_at: timestampSchema
 });
 
 /**
@@ -373,8 +378,8 @@ export const worksheetSectionResponseSchema = z.object({
 	instructions: z.string().nullable(),
 	position: z.number().int(),
 	points_total: z.number().int().nullable(),
-	created_at: z.string().datetime(),
-	updated_at: z.string().datetime()
+	created_at: timestampSchema,
+	updated_at: timestampSchema
 });
 
 /**
@@ -390,8 +395,8 @@ export const worksheetExerciseResponseSchema = z.object({
 	variant_mode: variantModeSchema,
 	variant_config: z.record(z.string(), z.unknown()),
 	custom_instructions: z.string().nullable(),
-	created_at: z.string().datetime(),
-	updated_at: z.string().datetime()
+	created_at: timestampSchema,
+	updated_at: timestampSchema
 });
 
 /**
@@ -516,8 +521,8 @@ export const templateResponseSchema = z.object({
 	placeholders: z.array(templatePlaceholderSchema),
 	is_public: z.boolean(),
 	created_by: z.string().uuid().nullable(),
-	created_at: z.string().datetime(),
-	updated_at: z.string().datetime()
+	created_at: timestampSchema,
+	updated_at: timestampSchema
 });
 
 /**
