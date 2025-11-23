@@ -82,7 +82,7 @@ function generateSetup(config: WorksheetConfig, type: WorksheetType): string {
 )
 
 #set text(
-  font: ("New Computer Modern", "Noto Sans", "DejaVu Sans"),
+  font: "New Computer Modern",
   size: ${fontSize}pt,
   lang: "fr",
   region: "FR"
@@ -439,7 +439,7 @@ function generateFooter(
 		footer += '  Correction - ';
 	}
 
-	footer += `  ${escapeTypst(worksheet.title)} - Page #counter(page).display()\n`;
+	footer += `  ${escapeTypst(worksheet.title)} - Page #context counter(page).display()\n`;
 	footer += '])\n';
 
 	// Add generation info for corrections

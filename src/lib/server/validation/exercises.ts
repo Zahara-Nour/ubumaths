@@ -47,16 +47,21 @@ export const createExerciseSchema = z.object({
 		.array(z.string().trim().min(1).max(50))
 		.max(20, 'Maximum 20 tags allowed')
 		.default([])
-		.optional(),
+		.optional()
+		.nullable(),
 	grade_levels: z
 		.array(z.string().trim().min(1).max(20))
-		.min(1, 'At least one grade level required')
 		.max(7, 'Maximum 7 grade levels')
-		.optional(),
-	topic: z.string().trim().max(100, 'Topic too long').optional(),
-	source: z.string().trim().max(200, 'Source too long').optional(),
-	title: z.string().trim().max(200, 'Title too long').optional(),
-	variables: z.record(z.string(), z.any()).optional(),
+		.optional()
+		.nullable()
+		.default([]),
+	topic: z.string().trim().max(100, 'Topic too long').optional().nullable(),
+	source: z.string().trim().max(200, 'Source too long').optional().nullable(),
+	title: z.string().trim().max(200, 'Title too long').optional().nullable(),
+	variables: z
+		.union([z.array(z.any()), z.record(z.string(), z.any())])
+		.optional()
+		.nullable(),
 	is_public: z.boolean().default(false).optional()
 });
 
@@ -353,11 +358,18 @@ export const exerciseResponseSchema = z.object({
 	topic: z.string().nullable().optional(),
 	source: z.string().nullable().optional(),
 	title: z.string().nullable().optional(),
-	variables: z.record(z.string(), z.any()).nullable().optional(),
+	// Variables can be an array (from DB) or a record - accept both
+	variables: z
+		.union([z.array(z.any()), z.record(z.string(), z.any())])
+		.nullable()
+		.optional(),
 	is_public: z.boolean(),
 	created_by: z.string().uuid(),
-	created_at: z.string().datetime(),
-	updated_at: z.string().datetime()
+	// Supabase returns datetime with +00:00 offset, not Z suffix
+	created_at: z.string(),
+	updated_at: z.string(),
+	// Optional field returned by some queries
+	distribution_mode: z.string().optional()
 });
 
 /**

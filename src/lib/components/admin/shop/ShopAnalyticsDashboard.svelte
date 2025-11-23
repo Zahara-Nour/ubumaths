@@ -228,6 +228,7 @@
 		<Card.Content>
 			<div class="space-y-3">
 				{#each analytics.top_selling_items as item (item.template_id)}
+					{@const config = rarityConfig[item.rarity]}
 					<div class="flex items-center gap-3">
 						<span class="text-sm font-medium text-muted-foreground">
 							#{analytics.top_selling_items.indexOf(item) + 1}
@@ -251,7 +252,6 @@
 								<Badge variant="outline" class="text-xs">
 									{categoryLabels[item.category] || item.category}
 								</Badge>
-								{@const config = rarityConfig[item.rarity]}
 								<Badge class={cn('text-xs', config?.color || '')}>
 									{config?.label || item.rarity}
 								</Badge>

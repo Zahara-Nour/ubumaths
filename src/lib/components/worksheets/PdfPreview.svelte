@@ -21,7 +21,24 @@
 		Printer,
 		RefreshCw
 	} from 'lucide-svelte';
-	import type { WorksheetWithRelations } from '$lib/types/worksheets';
+	import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
+	import type {
+		WorksheetWithRelations,
+		InstanceData,
+		WorksheetExerciseWithExercise
+	} from '$lib/types/worksheets';
+	import JSZip from 'jszip';
+
+	// ============================================================================
+	// TYPST LIBRARY TYPE
+	// ============================================================================
+
+	type TypstLibrary = {
+		setCompilerInitOptions: (options: { getModule: () => string }) => void;
+		setRendererInitOptions: (options: { getModule: () => string }) => void;
+		svg: (options: { mainContent: string }) => Promise<string>;
+		pdf: (options: { mainContent: string }) => Promise<Uint8Array>;
+	};
 
 	// ============================================================================
 	// PROPS AND STATE
@@ -39,22 +56,25 @@
 
 	let { worksheet, classId, students = [] }: Props = $props();
 
+	// Typst library state
+	let typst = $state<TypstLibrary | null>(null);
+	let isTypstLoading = $state(true);
+	let typstError = $state<string | null>(null);
+
 	// Preview state
 	let mode = $state<'worksheet' | 'correction'>('worksheet');
 	let selectedStudentId = $state<string | null>(null);
 	let isGenerating = $state(false);
 	let pdfUrl = $state<string | null>(null);
-	let pdfBase64 = $state<string | null>(null);
+	let pdfBlob = $state<Blob | null>(null);
 	let pdfFilename = $state<string>('');
+	let svgContent = $state<string>('');
 
 	// Batch generation state
 	let isBatchGenerating = $state(false);
 	let batchProgress = $state(0);
 	let batchTotal = $state(0);
-
-	// Loading/error state
-	let isTypstLoading = $state(false);
-	let typstError = $state<string | null>(null);
+	let batchCurrentStudent = $state<string>('');
 
 	// Student selection items for MySelect
 	let studentItems = $derived(
@@ -64,113 +84,210 @@
 		}))
 	);
 
-	// Add "Preview générique" option
-	let previewItems = $derived([{ value: 'generic', label: 'Aperçu générique' }, ...studentItems]);
+	// Add "Preview generique" option
+	let previewItems = $derived([{ value: 'generic', label: 'Apercu generique' }, ...studentItems]);
 
 	// ============================================================================
 	// LIFECYCLE
 	// ============================================================================
 
 	onMount(() => {
-		// Generate initial preview
-		generatePreview();
+		loadTypstLibrary();
 
 		// Cleanup on unmount
 		return () => {
 			if (pdfUrl) {
 				URL.revokeObjectURL(pdfUrl);
 			}
+			// Remove script on unmount
+			const existingScript = document.getElementById('typst-pdf-preview-script');
+			if (existingScript) {
+				existingScript.remove();
+			}
 		};
 	});
 
 	// ============================================================================
-	// PDF GENERATION
+	// TYPST LIBRARY LOADING
+	// ============================================================================
+
+	function loadTypstLibrary() {
+		isTypstLoading = true;
+		typstError = null;
+
+		// Check if already loaded
+		const existingTypst = (window as { $typst?: TypstLibrary }).$typst;
+		if (existingTypst) {
+			initializeTypst(existingTypst);
+			return;
+		}
+
+		// Load typst.ts library from CDN
+		const script = document.createElement('script');
+		script.type = 'module';
+		script.src =
+			'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst.ts/dist/esm/contrib/all-in-one-lite.bundle.js';
+		script.id = 'typst-pdf-preview-script';
+
+		script.addEventListener('load', () => {
+			// Small delay to ensure $typst is available
+			setTimeout(() => {
+				const loadedTypst = (window as { $typst?: TypstLibrary }).$typst;
+				if (loadedTypst) {
+					initializeTypst(loadedTypst);
+				} else {
+					typstError = 'Typst library not available after loading';
+					isTypstLoading = false;
+				}
+			}, 100);
+		});
+
+		script.addEventListener('error', () => {
+			typstError = 'Failed to load Typst library from CDN';
+			isTypstLoading = false;
+		});
+
+		document.head.appendChild(script);
+	}
+
+	function initializeTypst(typstLib: TypstLibrary) {
+		try {
+			typstLib.setCompilerInitOptions({
+				getModule: () =>
+					'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm'
+			});
+			typstLib.setRendererInitOptions({
+				getModule: () =>
+					'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm'
+			});
+
+			typst = typstLib;
+			typstError = null;
+			isTypstLoading = false;
+
+			// Generate initial preview
+			generatePreview();
+		} catch (err) {
+			typstError = `Initialization error: ${err}`;
+			isTypstLoading = false;
+			console.error('Typst initialization error:', err);
+		}
+	}
+
+	// ============================================================================
+	// INSTANCE GENERATION
+	// ============================================================================
+
+	/**
+	 * Generate a simple instance from worksheet exercises
+	 * This creates the data structure needed for Typst generation
+	 */
+	function generateSimpleInstance(ws: WorksheetWithRelations, studentId?: string): InstanceData {
+		const exercises = ws.worksheet_exercises || [];
+
+		// Sort exercises by position
+		const sortedExercises = [...exercises].sort((a, b) => a.position - b.position);
+
+		// Map to resolved exercises
+		const resolvedExercises = sortedExercises.map((we: WorksheetExerciseWithExercise) => ({
+			exercise_id: we.exercise_id,
+			position: we.position,
+			parameters: {},
+			statement: we.exercise?.statement_md || '',
+			solution: we.exercise?.solution_md || ''
+		}));
+
+		// Generate a deterministic seed based on student ID if provided
+		const seed = studentId ? hashString(ws.id + studentId) : Math.floor(Math.random() * 1000000);
+
+		return {
+			exercises: resolvedExercises,
+			variant_info: {
+				seed,
+				version: studentId ? 'student' : 'preview'
+			}
+		};
+	}
+
+	/**
+	 * Simple hash function for deterministic seed generation
+	 */
+	function hashString(str: string): number {
+		let hash = 0;
+		for (let i = 0; i < str.length; i++) {
+			const char = str.charCodeAt(i);
+			hash = (hash << 5) - hash + char;
+			hash = hash & hash; // Convert to 32bit integer
+		}
+		return Math.abs(hash);
+	}
+
+	// ============================================================================
+	// PDF GENERATION (CLIENT-SIDE)
 	// ============================================================================
 
 	async function generatePreview() {
-		if (!worksheet || isGenerating) return;
+		if (!worksheet || isGenerating || !typst) return;
 
 		isGenerating = true;
+		svgContent = '';
 
 		// Clean up previous PDF
 		if (pdfUrl) {
 			URL.revokeObjectURL(pdfUrl);
 			pdfUrl = null;
 		}
+		pdfBlob = null;
 
 		try {
 			// Determine student info
-			const studentName =
-				selectedStudentId && selectedStudentId !== 'generic'
-					? formatStudentName(students.find((s) => s.id === selectedStudentId))
-					: undefined;
+			const studentId =
+				selectedStudentId && selectedStudentId !== 'generic' ? selectedStudentId : undefined;
+			const studentName = studentId
+				? formatStudentName(students.find((s) => s.id === studentId))
+				: undefined;
 
-			// Try to call API to generate PDF
-			const response = await fetch(`/api/worksheets/${worksheet.id}/pdf`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					mode,
-					studentId:
-						selectedStudentId && selectedStudentId !== 'generic' ? selectedStudentId : undefined,
-					studentName,
-					className: classId ? 'Classe' : undefined
-				})
+			// Generate instance data
+			const instanceData = generateSimpleInstance(worksheet, studentId);
+
+			// Generate Typst content
+			const typstContent = generateWorksheetTypst({
+				worksheet,
+				instance: instanceData,
+				config: worksheet.config || {},
+				mode,
+				studentName,
+				className: classId ? 'Classe' : undefined
 			});
 
-			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({ message: 'Erreur inconnue' }));
+			// Generate SVG for preview
+			const svg = await typst.svg({ mainContent: typstContent });
+			svgContent = svg;
 
-				// If 501 Not Implemented, show message about CLI requirement
-				if (response.status === 501) {
-					typstError =
-						'La génération PDF serveur nécessite Typst CLI. Veuillez installer Typst (typst.app) ou utiliser un aperçu manuel.';
-					return;
-				}
+			// Generate PDF
+			const pdfData = await typst.pdf({ mainContent: typstContent });
+			pdfBlob = new Blob([pdfData], { type: 'application/pdf' });
+			pdfUrl = URL.createObjectURL(pdfBlob);
 
-				throw new Error(errorData.message || `Erreur ${response.status}`);
-			}
+			// Set filename
+			const safeName = studentName ? sanitizeFilename(studentName) : 'preview';
+			pdfFilename = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${safeName}_${mode}.pdf`;
 
-			const data = await response.json();
-
-			// Convert base64 to blob
-			const binaryString = atob(data.pdf);
-			const bytes = new Uint8Array(binaryString.length);
-			for (let i = 0; i < binaryString.length; i++) {
-				bytes[i] = binaryString.charCodeAt(i);
-			}
-			const blob = new Blob([bytes], { type: 'application/pdf' });
-
-			// Create URL for preview
-			pdfUrl = URL.createObjectURL(blob);
-			pdfBase64 = data.pdf;
-			pdfFilename = data.filename;
-			typstError = null;
-
-			toaster.success('PDF généré avec succès');
+			toaster.success('PDF genere avec succes');
 		} catch (err) {
 			console.error('PDF generation error:', err);
-			toaster.error('Erreur lors de la génération du PDF');
+			typstError = `Erreur de compilation: ${err}`;
+			toaster.error('Erreur lors de la generation du PDF');
 		} finally {
 			isGenerating = false;
 		}
 	}
 
 	async function downloadSinglePdf() {
-		if (!pdfBase64 || !pdfFilename) return;
-
-		// Convert base64 to blob
-		const binaryString = atob(pdfBase64);
-		const bytes = new Uint8Array(binaryString.length);
-		for (let i = 0; i < binaryString.length; i++) {
-			bytes[i] = binaryString.charCodeAt(i);
-		}
-		const blob = new Blob([bytes], { type: 'application/pdf' });
+		if (!pdfBlob || !pdfFilename) return;
 
 		// Create download link
-		const url = URL.createObjectURL(blob);
+		const url = URL.createObjectURL(pdfBlob);
 		const link = document.createElement('a');
 		link.href = url;
 		link.download = pdfFilename;
@@ -180,51 +297,146 @@
 		URL.revokeObjectURL(url);
 	}
 
+	async function printPdf() {
+		if (!pdfUrl) return;
+
+		// Open PDF in new window for printing
+		const printWindow = window.open(pdfUrl, '_blank');
+		if (printWindow) {
+			printWindow.addEventListener('load', () => {
+				printWindow.print();
+			});
+		}
+	}
+
+	// ============================================================================
+	// BATCH PDF GENERATION (CLIENT-SIDE)
+	// ============================================================================
+
 	async function generateBatchPdfs() {
-		if (!classId || isBatchGenerating) return;
+		if (!typst || isBatchGenerating || students.length === 0) return;
 
 		isBatchGenerating = true;
 		batchProgress = 0;
 		batchTotal = students.length;
+		batchCurrentStudent = '';
 
 		try {
-			// Call batch API
-			const response = await fetch(`/api/worksheets/${worksheet.id}/pdf/batch`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					classId,
-					mode
-				})
-			});
+			const zip = new JSZip();
+			const folderName = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${mode}`;
+			const folder = zip.folder(folderName);
 
-			if (!response.ok) {
-				throw new Error(`Erreur ${response.status}: ${await response.text()}`);
+			if (!folder) {
+				throw new Error('Failed to create zip folder');
 			}
 
-			// Get zip file
-			const blob = await response.blob();
+			// Generate PDFs for each student
+			for (let i = 0; i < students.length; i++) {
+				const student = students[i];
+				const studentName = formatStudentName(student);
+				batchCurrentStudent = studentName;
+				batchProgress = i;
 
-			// Create download link
-			const url = URL.createObjectURL(blob);
+				// Generate instance for this student
+				const instanceData = generateSimpleInstance(worksheet, student.id);
+
+				// Generate Typst content
+				const typstContent = generateWorksheetTypst({
+					worksheet,
+					instance: instanceData,
+					config: worksheet.config || {},
+					mode,
+					studentName,
+					className: classId ? 'Classe' : undefined
+				});
+
+				// Compile to PDF
+				const pdfData = await typst.pdf({ mainContent: typstContent });
+
+				// Add to zip
+				const filename = `${sanitizeFilename(studentName)}_${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${mode}.pdf`;
+				folder.file(filename, pdfData);
+			}
+
+			// If correction mode, add master correction document
+			if (mode === 'correction') {
+				batchCurrentStudent = 'Correction generale...';
+				const masterInstance = generateSimpleInstance(worksheet);
+				const masterTypst = generateWorksheetTypst({
+					worksheet,
+					instance: masterInstance,
+					config: worksheet.config || {},
+					mode: 'correction',
+					studentName: 'CORRECTION GENERALE',
+					className: classId ? 'Classe' : undefined
+				});
+				const masterPdf = await typst.pdf({ mainContent: masterTypst });
+				folder.file('00_CORRECTION_GENERALE.pdf', masterPdf);
+			}
+
+			// Add summary document
+			const summary = generateBatchSummary();
+			folder.file('00_SOMMAIRE.txt', summary);
+
+			batchProgress = batchTotal;
+			batchCurrentStudent = 'Creation du fichier ZIP...';
+
+			// Generate zip file
+			const zipData = await zip.generateAsync({
+				type: 'blob',
+				compression: 'DEFLATE',
+				compressionOptions: { level: 6 }
+			});
+
+			// Download zip
+			const url = URL.createObjectURL(zipData);
 			const link = document.createElement('a');
 			link.href = url;
-			link.download = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_classe_${mode}.zip`;
+			link.download = `${folderName}.zip`;
 			link.click();
-
-			// Cleanup
 			URL.revokeObjectURL(url);
 
-			toaster.success(`${batchTotal} PDFs générés et téléchargés avec succès`);
-		} catch (error) {
-			console.error('Batch PDF generation error:', error);
-			toaster.error('Erreur lors de la génération des PDFs en lot');
+			toaster.success(`${batchTotal} PDFs generes et telecharges avec succes`);
+		} catch (err) {
+			console.error('Batch PDF generation error:', err);
+			toaster.error('Erreur lors de la generation des PDFs en lot');
 		} finally {
 			isBatchGenerating = false;
 			batchProgress = 0;
+			batchCurrentStudent = '';
 		}
+	}
+
+	function generateBatchSummary(): string {
+		const date = new Date().toLocaleString('fr-FR');
+		const modeLabel = mode === 'correction' ? 'Corrections' : 'Feuilles de travail';
+
+		return `========================================
+GENERATION BATCH DE PDFS
+========================================
+
+Feuille de travail : ${worksheet.title}
+Type : ${worksheet.type}
+Mode : ${modeLabel}
+Date de generation : ${date}
+
+========================================
+LISTE DES ELEVES (${students.length})
+========================================
+
+${students.map((s, i) => `${i + 1}. ${formatStudentName(s)}`).join('\n')}
+
+========================================
+INFORMATIONS
+========================================
+
+- Chaque PDF est personnalise avec le nom de l'eleve
+- Les exercices peuvent etre melanges selon la configuration
+- ${mode === 'correction' ? 'Les solutions sont incluses' : 'Les solutions ne sont pas incluses'}
+- Generation effectuee cote client (navigateur)
+
+========================================
+`;
 	}
 
 	// ============================================================================
@@ -237,7 +449,16 @@
 		if (!student) return '';
 		const firstName = student.first_name || '';
 		const lastName = student.last_name || '';
-		return `${lastName} ${firstName}`.trim() || 'Élève';
+		return `${lastName} ${firstName}`.trim() || 'Eleve';
+	}
+
+	function sanitizeFilename(name: string): string {
+		return name
+			.normalize('NFD')
+			.replace(/[\u0300-\u036f]/g, '') // Remove accents
+			.replace(/[^a-zA-Z0-9_-]/g, '_') // Replace special chars with underscore
+			.replace(/__+/g, '_') // Remove duplicate underscores
+			.trim();
 	}
 
 	// ============================================================================
@@ -249,14 +470,14 @@
 	let prevStudentId = $state<string | null | undefined>(undefined);
 	let hasInitialized = $state(false);
 
-	// Regenerate preview when mode or student changes (not on initial load or errors)
+	// Regenerate preview when mode or student changes
 	$effect(() => {
 		// Capture current values to track as dependencies
 		const currentMode = mode;
 		const currentStudentId = selectedStudentId;
 
-		// Skip if not yet initialized or currently generating
-		if (!hasInitialized || isGenerating) return;
+		// Skip if not yet initialized, Typst not ready, or currently generating
+		if (!hasInitialized || !typst || isGenerating) return;
 
 		// Check if mode or student actually changed
 		if (currentMode !== prevMode || currentStudentId !== prevStudentId) {
@@ -266,12 +487,33 @@
 		}
 	});
 
-	// Mark as initialized after first render
+	// Mark as initialized after Typst is ready
 	$effect(() => {
-		if (!hasInitialized) {
+		if (typst && !hasInitialized) {
 			prevMode = mode;
 			prevStudentId = selectedStudentId;
 			hasInitialized = true;
+		}
+	});
+
+	// Scale SVG to fit container
+	$effect(() => {
+		if (svgContent) {
+			setTimeout(() => {
+				const container = document.getElementById('pdf-svg-preview');
+				const svgElem = container?.querySelector('svg');
+				if (svgElem && container) {
+					const width = Number.parseFloat(svgElem.getAttribute('width') || '0');
+					const height = Number.parseFloat(svgElem.getAttribute('height') || '0');
+					const containerWidth = container.clientWidth - 40;
+
+					// Only resize if we have valid dimensions
+					if (width > 0 && height > 0 && containerWidth > 0) {
+						svgElem.setAttribute('width', String(containerWidth));
+						svgElem.setAttribute('height', String((height * containerWidth) / width));
+					}
+				}
+			}, 50);
 		}
 	});
 </script>
@@ -280,9 +522,9 @@
 	<Card.Header>
 		<Card.Title class="flex items-center gap-2">
 			<FileDown class="h-5 w-5" />
-			Génération PDF
+			Generation PDF
 		</Card.Title>
-		<Card.Description>Générez et prévisualisez les PDFs de la feuille de travail</Card.Description>
+		<Card.Description>Generez et previsualisez les PDFs de la feuille de travail</Card.Description>
 	</Card.Header>
 	<Card.Content class="space-y-4">
 		{#if isTypstLoading}
@@ -290,11 +532,11 @@
 			<div class="flex items-center justify-center py-8">
 				<div class="space-y-3 text-center">
 					<Loader2 class="mx-auto h-8 w-8 animate-spin text-primary" />
-					<p class="text-sm text-muted-foreground">Chargement du générateur PDF...</p>
+					<p class="text-sm text-muted-foreground">Chargement du generateur PDF...</p>
 				</div>
 			</div>
-		{:else if typstError}
-			<!-- Error state -->
+		{:else if typstError && !typst}
+			<!-- Error state (only show if Typst completely failed) -->
 			<div class="rounded-lg border border-destructive/50 bg-destructive/5 p-4">
 				<div class="flex items-start gap-3">
 					<AlertCircle class="mt-0.5 h-5 w-5 text-destructive" />
@@ -303,7 +545,7 @@
 						<p class="mt-1 text-sm text-muted-foreground">{typstError}</p>
 						<Button variant="outline" size="sm" class="mt-3" onclick={loadTypstLibrary}>
 							<RefreshCw class="mr-2 h-4 w-4" />
-							Réessayer
+							Reessayer
 						</Button>
 					</div>
 				</div>
@@ -314,11 +556,11 @@
 				<Tabs.List class="grid w-full grid-cols-2">
 					<Tabs.Trigger value="preview">
 						<Eye class="mr-2 h-4 w-4" />
-						Aperçu
+						Apercu
 					</Tabs.Trigger>
 					<Tabs.Trigger value="batch">
 						<Users class="mr-2 h-4 w-4" />
-						Génération en lot
+						Generation en lot
 					</Tabs.Trigger>
 				</Tabs.List>
 
@@ -340,7 +582,7 @@
 
 						{#if students.length > 0}
 							<div class="space-y-2">
-								<Label>Élève</Label>
+								<Label>Eleve</Label>
 								<MySelect type="single" bind:value={selectedStudentId} items={previewItems} />
 							</div>
 						{/if}
@@ -351,19 +593,19 @@
 						<Button onclick={generatePreview} disabled={isGenerating} variant="outline">
 							{#if isGenerating}
 								<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-								Génération...
+								Generation...
 							{:else}
 								<RefreshCw class="mr-2 h-4 w-4" />
-								Rafraîchir
+								Rafraichir
 							{/if}
 						</Button>
 
-						<Button onclick={downloadSinglePdf} disabled={!pdfBase64 || isGenerating}>
+						<Button onclick={downloadSinglePdf} disabled={!pdfBlob || isGenerating}>
 							<Download class="mr-2 h-4 w-4" />
-							Télécharger
+							Telecharger
 						</Button>
 
-						<Button variant="outline" disabled={!pdfUrl}>
+						<Button variant="outline" disabled={!pdfUrl} onclick={printPdf}>
 							<Printer class="mr-2 h-4 w-4" />
 							Imprimer
 						</Button>
@@ -371,7 +613,7 @@
 
 					<Separator />
 
-					<!-- PDF Preview -->
+					<!-- SVG Preview -->
 					<div class="relative">
 						{#if isGenerating}
 							<div
@@ -379,15 +621,17 @@
 							>
 								<div class="space-y-2 text-center">
 									<Loader2 class="mx-auto h-8 w-8 animate-spin text-primary" />
-									<p class="text-sm text-muted-foreground">Génération du PDF...</p>
+									<p class="text-sm text-muted-foreground">Generation du PDF...</p>
 								</div>
 							</div>
 						{/if}
 
-						{#if pdfUrl}
-							<div class="overflow-hidden rounded-lg border bg-white">
-								<iframe src={pdfUrl} title="Aperçu PDF" class="h-[600px] w-full" loading="lazy"
-								></iframe>
+						{#if svgContent}
+							<div
+								id="pdf-svg-preview"
+								class="min-h-[400px] overflow-auto rounded-lg border border-border bg-white p-5"
+							>
+								{@html svgContent}
 							</div>
 						{:else}
 							<div
@@ -396,7 +640,7 @@
 								<div class="space-y-3 text-center">
 									<FileText class="mx-auto h-12 w-12 text-muted-foreground/50" />
 									<p class="text-muted-foreground">
-										Cliquez sur "Rafraîchir" pour générer un aperçu
+										Cliquez sur "Rafraichir" pour generer un apercu
 									</p>
 								</div>
 							</div>
@@ -406,15 +650,15 @@
 
 				<!-- Batch Tab -->
 				<Tabs.Content value="batch" class="space-y-4">
-					{#if !classId || students.length === 0}
+					{#if students.length === 0}
 						<div class="border-warning/50 bg-warning/5 rounded-lg border p-4">
 							<div class="flex items-start gap-3">
 								<AlertCircle class="text-warning mt-0.5 h-5 w-5" />
 								<div class="flex-1">
-									<p class="font-medium">Aucune classe sélectionnée</p>
+									<p class="font-medium">Aucun eleve disponible</p>
 									<p class="mt-1 text-sm text-muted-foreground">
-										La génération en lot nécessite qu'une classe soit assignée à cette feuille de
-										travail.
+										La generation en lot necessite qu'une classe avec des eleves soit associee a
+										cette feuille de travail.
 									</p>
 								</div>
 							</div>
@@ -424,16 +668,29 @@
 						<div class="rounded-lg border bg-muted/5 p-4">
 							<div class="space-y-2">
 								<div class="flex items-center gap-2">
-									<Badge variant="secondary">{students.length} élèves</Badge>
+									<Badge variant="secondary">{students.length} eleves</Badge>
 									<Badge variant={mode === 'correction' ? 'default' : 'outline'}>
 										Mode: {mode === 'correction' ? 'Corrections' : 'Feuilles de travail'}
 									</Badge>
 								</div>
 								<p class="text-sm text-muted-foreground">
-									Générez un PDF personnalisé pour chaque élève de la classe. Les PDFs seront
-									téléchargés dans un fichier ZIP.
+									Generez un PDF personnalise pour chaque eleve. Les PDFs seront telecharges dans un
+									fichier ZIP.
 								</p>
 							</div>
+						</div>
+
+						<!-- Mode selector for batch -->
+						<div class="space-y-2">
+							<Label>Mode de generation</Label>
+							<MySelect
+								type="single"
+								bind:value={mode}
+								items={[
+									{ value: 'worksheet', label: 'Feuilles de travail' },
+									{ value: 'correction', label: 'Corrections' }
+								]}
+							/>
 						</div>
 
 						<!-- Batch actions -->
@@ -441,10 +698,10 @@
 							<Button onclick={generateBatchPdfs} disabled={isBatchGenerating}>
 								{#if isBatchGenerating}
 									<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-									Génération en cours...
+									Generation en cours...
 								{:else}
 									<Users class="mr-2 h-4 w-4" />
-									Générer pour toute la classe
+									Generer pour tous les eleves
 								{/if}
 							</Button>
 						</div>
@@ -453,7 +710,7 @@
 						{#if isBatchGenerating && batchTotal > 0}
 							<div class="space-y-2">
 								<div class="flex items-center justify-between text-sm">
-									<span>Progression</span>
+									<span class="truncate">{batchCurrentStudent}</span>
 									<span class="text-muted-foreground">{batchProgress} / {batchTotal}</span>
 								</div>
 								<Progress value={(batchProgress / batchTotal) * 100} />
@@ -464,16 +721,17 @@
 						<div class="space-y-3 rounded-lg border p-4">
 							<h4 class="flex items-center gap-2 font-medium">
 								<CheckCircle class="h-4 w-4 text-green-600" />
-								Fonctionnalités incluses
+								Fonctionnalites incluses
 							</h4>
 							<ul class="space-y-1 text-sm text-muted-foreground">
-								<li>• PDF personnalisé avec le nom de chaque élève</li>
-								<li>• Variantes d'exercices selon la configuration</li>
-								<li>• Fichier ZIP contenant tous les PDFs</li>
-								<li>• Document de synthèse avec la liste des élèves</li>
+								<li>- PDF personnalise avec le nom de chaque eleve</li>
+								<li>- Variantes d'exercices selon la configuration</li>
+								<li>- Fichier ZIP contenant tous les PDFs</li>
+								<li>- Document de synthese avec la liste des eleves</li>
 								{#if mode === 'correction'}
-									<li>• Correction générale incluse</li>
+									<li>- Correction generale incluse</li>
 								{/if}
+								<li>- Generation 100% cote client (pas de serveur)</li>
 							</ul>
 						</div>
 					{/if}

@@ -68,7 +68,7 @@ Typst permet de créer facilement des documents mathématiques professionnels av
 	let isRendering = $state(false);
 	let isExporting = $state(false);
 	let error = $state<string | null>(null);
-	let textareaElement: HTMLTextAreaElement | null = null;
+	let textareaElement = $state<HTMLTextAreaElement | null>(null);
 
 	// Debounce timer for preview updates
 	let previewTimer: ReturnType<typeof setTimeout> | null = null;
