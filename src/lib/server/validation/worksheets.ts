@@ -429,12 +429,20 @@ export const worksheetListResponseSchema = z.object({
 });
 
 /**
- * Worksheet with sections and exercises response schema (GET /api/worksheets/[id])
+ * Worksheet with sections, exercises and template response schema (GET /api/worksheets/[id])
  */
 export const worksheetDetailResponseSchema = z.object({
 	worksheet: worksheetResponseSchema.extend({
 		sections: z.array(worksheetSectionResponseSchema).optional(),
-		exercises: z.array(worksheetExerciseWithDataResponseSchema).optional()
+		exercises: z.array(worksheetExerciseWithDataResponseSchema).optional(),
+		template: z
+			.object({
+				id: z.string().uuid(),
+				name: z.string(),
+				description: z.string().nullable()
+			})
+			.nullable()
+			.optional()
 	})
 });
 
