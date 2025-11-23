@@ -9,6 +9,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import { requireRoles } from '$lib/server/middleware/auth';
 import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import type { InstanceData, WorksheetWithRelations } from '$lib/types/worksheets';
 
@@ -37,11 +38,8 @@ const generatePdfSchema = z.object({
 // ============================================================================
 
 export const POST: RequestHandler = async ({ params, locals, request }) => {
-	// Check authentication
-	const user = await locals.safeGetUser();
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+	// Check authentication - require teacher or admin
+	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
 	// Validate request body
 	const body = await request.json().catch(() => null);
@@ -84,7 +82,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		}
 
 		// Check permissions (only teachers who created the worksheet or admins)
-		if (worksheet.created_by !== user.id && user.role !== 'admin') {
+		if (worksheet.created_by !== user.id && profile.role !== 'admin') {
 			throw error(403, 'Non autorisé');
 		}
 
@@ -212,11 +210,8 @@ function generateSimpleInstance(worksheet: WorksheetWithRelations): InstanceData
 // ============================================================================
 
 export const GET: RequestHandler = async ({ locals }) => {
-	// Check authentication
-	const user = await locals.safeGetUser();
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+	// Check authentication - require teacher or admin
+	await requireRoles(locals, ['teacher', 'admin']);
 
 	// This could be implemented to retrieve stored PDFs from a cache
 	// For now, redirect to POST
