@@ -40,6 +40,10 @@
 		pdf: (options: { mainContent: string }) => Promise<Uint8Array>;
 	};
 
+	// Module-level flag to track if Typst has been initialized globally
+	// This persists across component mounts since $typst is on window
+	let typstInitialized = false;
+
 	// ============================================================================
 	// PROPS AND STATE
 	// ============================================================================
@@ -152,14 +156,18 @@
 
 	function initializeTypst(typstLib: TypstLibrary) {
 		try {
-			typstLib.setCompilerInitOptions({
-				getModule: () =>
-					'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm'
-			});
-			typstLib.setRendererInitOptions({
-				getModule: () =>
-					'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm'
-			});
+			// Only set init options if not already initialized
+			if (!typstInitialized) {
+				typstLib.setCompilerInitOptions({
+					getModule: () =>
+						'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm'
+				});
+				typstLib.setRendererInitOptions({
+					getModule: () =>
+						'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm'
+				});
+				typstInitialized = true;
+			}
 
 			typst = typstLib;
 			typstError = null;
